@@ -51,8 +51,12 @@
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
-			<groupId>com.huawei.paas.cse</groupId>
-			<artifactId>cse-handler-performance-stats</artifactId>
+			<groupId>commons-configuration</groupId>
+			<artifactId>commons-configuration</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.netflix.archaius</groupId>
+			<artifactId>archaius-core</artifactId>
 		</dependency>
 	</dependencies>
 	<dependencyManagement>

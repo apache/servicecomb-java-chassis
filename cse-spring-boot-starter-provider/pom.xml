@@ -91,10 +91,6 @@
 		</dependency>
 		<dependency>
 			<groupId>com.huawei.paas.cse</groupId>
-			<artifactId>cse-handler-performance-stats</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>com.huawei.paas.cse</groupId>
 			<artifactId>cse-handler-flowcontrol-qps</artifactId>
 		</dependency>
 	</dependencies>
