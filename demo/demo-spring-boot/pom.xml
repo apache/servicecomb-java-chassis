@@ -28,8 +28,10 @@
 	<modules>
 		<module>demo-spring-boot-jaxrs-server</module>
 		<module>demo-spring-boot-jaxrs-client</module>
-		<module>demo-spring-boot-springmvc-server</module>
+    <!--
+    <module>demo-spring-boot-springmvc-server</module>
 		<module>demo-spring-boot-springmvc-client</module>
+    -->
 	</modules>
 
 	<properties>

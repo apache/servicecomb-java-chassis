@@ -22,7 +22,6 @@ import org.slf4j.LoggerFactory;
 import com.huawei.paas.cse.demo.server.TestRequest;
 import com.huawei.paas.cse.demo.server.User;
 import com.huawei.paas.cse.demo.tccserver.TestTcc;
-import com.huawei.paas.cse.tcc.annotation.TccTransaction;
 import com.huawei.paas.foundation.common.utils.BeanUtils;
 
 /**
@@ -37,7 +36,6 @@ public class TestTccBusiness {
         this.testTcc = BeanUtils.getBean("tcc-server");
     }
 
-    @TccTransaction(confirmMethod = "clientConfirm", cancelMethod = "clientCancel")
     public User start(int index) {
         User user = new User();
         user.setIndex(index);

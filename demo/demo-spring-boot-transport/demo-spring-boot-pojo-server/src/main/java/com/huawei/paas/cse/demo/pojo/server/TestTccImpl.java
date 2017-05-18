@@ -22,13 +22,11 @@ import org.slf4j.LoggerFactory;
 import com.huawei.paas.cse.demo.server.TestRequest;
 import com.huawei.paas.cse.demo.server.User;
 import com.huawei.paas.cse.demo.tccserver.TestTcc;
-import com.huawei.paas.cse.tcc.annotation.TccTransaction;
 
 public class TestTccImpl implements TestTcc {
     private static final Logger LOGGER = LoggerFactory.getLogger(TestTccImpl.class);
 
     @Override
-    @TccTransaction(confirmMethod = "serverConfirm", cancelMethod = "serverCancel")
     public User splitParam(int index, User user) {
         int division = 1 / index;
         LOGGER.info("division is {}", division);

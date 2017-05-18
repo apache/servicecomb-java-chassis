@@ -35,10 +35,10 @@
 			<groupId>com.huawei.paas.cse</groupId>
 			<artifactId>cse-provider-springmvc</artifactId>
 		</dependency>
-		<dependency>
+		<!--dependency>
 			<groupId>com.huawei.paas.cse</groupId>
 			<artifactId>cse-adapter-springmvc</artifactId>
-		</dependency>
+		</dependency-->
 	</dependencies>
 
 	<properties>

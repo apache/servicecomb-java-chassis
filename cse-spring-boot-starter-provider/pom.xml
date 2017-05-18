@@ -70,10 +70,6 @@
 		</dependency>
 		<dependency>
 			<groupId>com.huawei.paas.cse</groupId>
-			<artifactId>cse-handler-tcc</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>com.huawei.paas.cse</groupId>
 			<artifactId>cse-transport-highway</artifactId>
 		</dependency>
 		<dependency>
