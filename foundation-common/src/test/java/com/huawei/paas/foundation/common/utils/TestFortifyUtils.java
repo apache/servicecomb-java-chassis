@@ -21,6 +21,7 @@ import static org.junit.Assert.assertNull;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URLEncoder;
 import java.nio.file.Files;
 import java.nio.file.LinkOption;
 import java.nio.file.Path;
@@ -34,16 +35,18 @@ import mockit.Mock;
 import mockit.MockUp;
 
 public class TestFortifyUtils {
-
+    
+    public static final String FILE_PATH = "target/testfile";
+    
     @Test
     public void testFortifyUtils() throws IOException {
-        Assert.assertNotEquals(null, FortifyUtils.getDefaultFileAttributes("test"));
-        FortifyUtils.writeFile("test", (new String("testSomething").getBytes()));
-        Assert.assertEquals(true, (FortifyUtils.isInSecureDir("test")));
-        Assert.assertEquals(true, (FortifyUtils.isInSecureDir(new File("test").toPath())));
-        Assert.assertEquals(true, FortifyUtils.isInSecureResult(new File("test").toPath()));
-        Assert.assertEquals(true, FortifyUtils.isRegularFile("test"));
-        Assert.assertEquals("test", FortifyUtils.getSecurityStr("test"));
+        Assert.assertNotEquals(null, FortifyUtils.getDefaultFileAttributes(FILE_PATH));
+        FortifyUtils.writeFile(FILE_PATH, (new String("testSomething").getBytes()));
+        Assert.assertEquals(true, (FortifyUtils.isInSecureDir(FILE_PATH)));
+        Assert.assertEquals(true, (FortifyUtils.isInSecureDir(new File(FILE_PATH).toPath())));
+        Assert.assertEquals(true, FortifyUtils.isInSecureResult(new File(FILE_PATH).toPath()));
+        Assert.assertEquals(true, FortifyUtils.isRegularFile(FILE_PATH));
+        Assert.assertEquals(URLEncoder.encode(FILE_PATH), FortifyUtils.getSecurityStr(FILE_PATH));
         Assert.assertEquals("", FortifyUtils.getErrorMsg(null));
         Assert.assertEquals("", FortifyUtils.getErrorStack(null));
         Assert.assertEquals(null, FortifyUtils.getSecurityStr(null));

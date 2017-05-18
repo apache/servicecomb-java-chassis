@@ -409,6 +409,7 @@ public final class FortifyUtils {
         try {
             return URLEncoder.encode(encodevalue, "UTF-8");
         } catch (UnsupportedEncodingException e) {
+            //TODO this need to be fixed
             return encodevalue;
         }
     }
