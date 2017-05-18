@@ -1,0 +1,45 @@
+trace:
+  handler:
+    enabled: false
+    sampler:
+      percent: 0.5
+  metric:
+    service:
+      enable: false
+zq:
+  - tlist: a
+  - tlist: b
+  - tlist: 1
+validate:
+  parameter:
+    enabled: true
+  returnValue:
+    enabled: true
+  apiInvoke:
+    enabled: true
+
+shutDownHandler:
+  enabled: true
+  timeLimit: 30000
+
+eureka:
+  instance:
+    preferIpAddress: true
+    leaseRenewalIntervalInSeconds: 3
+    leaseExpirationDurationInSeconds: 5
+  client:
+    serviceUrl:
+      defaultZone: http://10.120.169.202:9980/
+
+cse:
+  config:
+    client:
+      serviceName: testDemo
+      serverUri: https://10.22.87.59:30103
+      tenantName: csetest
+      refreshMode: 1
+      refresh_interval: 10000
+
+service_description:
+  name: testDemo
+      

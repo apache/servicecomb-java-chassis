@@ -1,0 +1,7 @@
+server:
+  port: 8088
+spring:
+  cloud:
+    cse:
+      host: 10.120.168.229
+      port: 32800

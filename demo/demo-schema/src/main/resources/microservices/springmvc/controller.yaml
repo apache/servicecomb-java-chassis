@@ -1,0 +1,106 @@
+# this is an example of the Uber API
+# as a demonstration of an API spec in YAML
+swagger: '2.0'
+info:
+  title: rest test
+  version: 1.0.0
+  x-java-interface: com.huawei.paas.cse.demo.controller.Controller
+  
+# the domain of the service
+#host: api.uber.com
+
+# array of all schemes that your API supports
+#schemes:
+#  - https
+
+# will be prefixed to all paths
+basePath: /controller
+produces:
+  - application/json
+  
+paths:
+  /add:
+    get:
+      operationId: add
+      parameters:
+        - name: a
+          in: query
+          required: true
+          type: integer
+          format: int32
+        - name: b
+          in: query
+          required: true
+          type: integer
+          format: int32
+      responses: 
+        200:
+          description: add numer
+          schema: 
+            type: integer
+            format: int32
+  
+  /sayhello/{name}:
+    post:
+      operationId: sayHello
+      parameters:
+        - name: name
+          in: path
+          required: true
+          type: string
+      responses:
+        200:
+          description: say hello
+          schema:
+            type: string
+  /saysomething:
+    post:
+      operationId: saySomething
+      parameters:
+        - name: prefix
+          in: query
+          required: true
+          type: string
+        - name: user
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/Person'
+      responses:
+        200:
+          description: say something
+          schema:
+            type: string
+  /sayhi:
+    get:
+      operationId: sayHi
+      parameters:
+        - name: name
+          in: query
+          required: true
+          type: string
+      responses:
+        200:
+          description: say hi
+          schema:
+            type: string
+  /sayhei:
+    get:
+      operationId: sayHei
+      parameters:
+        - name: name
+          in: header
+          required: true
+          type: string
+      responses:
+        200:
+          description: say hei
+          schema:
+            type: string
+
+definitions:
+  Person:
+    type: object
+    properties:
+      name:
+        type: string

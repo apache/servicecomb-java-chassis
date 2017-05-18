@@ -1,0 +1,19 @@
+swagger: '2.0'
+info:
+  title: hello service
+  version: 1.0.0
+  x-java-interface: com.huawei.paas.cse.demo.crossapp.HelloWorld
+
+basePath: /helloworld
+produces:
+  - application/json
+
+paths:
+  /hello:
+    get:
+      operationId: sayHello
+      responses: 
+        200:
+          description: say hello
+          schema: 
+            type: string

@@ -1,0 +1,30 @@
+APPLICATION_ID: springmvctest
+service_description:
+  name: springmvcClient
+  version: 0.0.1
+cse:
+  service:
+    registry:
+      address: http://127.0.0.1:9980
+  handler:
+    chain:
+      Consumer:
+        default: loadbalance,bizkeeper-consumer
+  tracing:
+    enabled: true
+    samplingRate: 0.5
+      
+#########SSL options
+ssl.protocols: TLSv1.2
+ssl.authPeer: true
+ssl.checkCN.host: false
+
+#########certificates config
+ssl.trustStore: trust.jks
+ssl.trustStoreType: JKS
+ssl.trustStoreValue: Changeme_123
+ssl.keyStore: server.p12
+ssl.keyStoreType: PKCS12
+ssl.keyStoreValue: Changeme_123
+ssl.crl: revoke.crl
+ssl.sslCustomClass: com.huawei.paas.cse.demo.DemoSSLCustom

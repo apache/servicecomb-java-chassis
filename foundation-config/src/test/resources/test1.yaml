@@ -1,0 +1,46 @@
+﻿trace:
+  handler:
+    enabled: false
+    sampler:
+      percent: 0.5
+  metric:
+    service:
+      enable: false
+
+validate:
+  parameter:
+    enabled: true
+  returnValue:
+    enabled: true
+  apiInvoke:
+    enabled: true
+
+shutDownHandler:
+  enabled: true
+  timeLimit: 30000
+
+hsa:
+  manager:
+    url:  127.0.0.1
+  serializer: 
+    default: protostuff    
+  provider:
+    service:
+      name: ${spring.application.name}
+      version: 1.2
+      group: prod
+      protocols:
+        rpc:
+          serviceLevel: interface
+          dsf:
+#            ip: "10.57.65.225"   
+            port: 7450
+
+eureka:
+  instance:
+    preferIpAddress: true
+    leaseRenewalIntervalInSeconds: 3
+    leaseExpirationDurationInSeconds: 5
+  client:
+    serviceUrl:
+      defaultZone: http://10.120.169.202:9980/

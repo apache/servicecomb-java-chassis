@@ -1,0 +1,2 @@
+org.springframework.boot.SpringApplicationRunListener=com.huawei.cse.springboot.starter.transport.CseSpringApplicationRunListener
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=com.huawei.cse.springboot.starter.transport.CseEmbeddedServlet

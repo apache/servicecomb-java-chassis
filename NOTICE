@@ -1,0 +1,335 @@
+Copyright 2017 Huawei Technologies Co., Ltd
+ 
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+ 
+   http://www.apache.org/licenses/LICENSE-2.0
+ 
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+
+================================================================
+Dependencies:
+
+Software:HornetQ	2.2.21	
+  * LICENSE:
+    * http://www.apache.org/licenses/LICENSE-2.0  
+  * HOMEPAGE:
+    * http://hornetq.jboss.org
+
+Software:JSON in JavaScript	20111019	
+  * LICENSE:
+    * http://www.thepublicdomain.org/
+  * HOMEPAGE:
+    * http://www.json.org/
+
+Software:jqplot	1.0.8r1250	
+  * LICENSE:
+    * http://mit-license.org/
+  * HOMEPAGE:
+    * http://jqplot.org/
+	
+Software:Hibernate Validator	4.3.1	
+License:Apache License Version 2.0
+  * LICENSE:
+    * http://www.apache.org/licenses/LICENSE-2.0  
+  * HOMEPAGE:
+    * http://hibernate.org/validator
+
+Software:Jackson	1.9.2	
+License:Apache License Version 2.0
+  * LICENSE:
+    * http://www.apache.org/licenses/LICENSE-2.0  
+  * HOMEPAGE:
+    * http://jackson.codehaus.org/
+
+Software:Apache Jakarta Commons DBCP	2.0.1	
+License:Apache License Version 2.0
+  * LICENSE:
+    * http://www.apache.org/licenses/LICENSE-2.0  
+  * HOMEPAGE:
+    * http://commons.apache.org/
+
+Software:Apache Jakarta Commons IO	2.4	
+License:Apache License Version 2.0
+  * LICENSE:
+    * http://www.apache.org/licenses/LICENSE-2.0  
+  * HOMEPAGE:
+    * http://commons.apache.org/
+	
+Software:Eclipse AspectJ	1.8.5	
+License:Mozilla Public License Version 1.1
+  * LICENSE:
+    * http://www.mozilla.org/en-US/MPL/1.1
+  * HOMEPAGE:
+    * http://www.eclipse.org/aspectj/
+	
+Software:Java Persistence API	2.0.0	
+License:EPL V1.0
+  * LICENSE:
+    * http://www.eclipse.org/legal/epl-v10.html
+  * HOMEPAGE:
+    * http://www.oracle.com/technetwork/java/javaee/tech/
+
+Software:JBoss - Javassist	3.18.1-GA	
+License:LGPL V2.1;Apache License Version 2.0
+  * LICENSE:
+    * http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html  http://www.apache.org/licenses/LICENSE-2.0 
+  * HOMEPAGE:
+    * https://github.com/jboss-javassist/javassist/tree/3.18
+	
+Software:kazoo	2.1	
+License:Apache License Version 2.0
+  * LICENSE:
+    * http://www.apache.org/licenses/LICENSE-2.0  
+  * HOMEPAGE:
+    * http://kazoo.readthedocs.io/
+
+Software:lua-cjson	2.1.0	
+License:MIT License
+  * LICENSE:
+    * http://mit-license.org/
+  * HOMEPAGE:
+    * https://luarocks.org/
+
+Software:LuaJIT	2.0.4	
+License:MIT License V2
+  * LICENSE:
+    * http://mit-license.org/
+  * HOMEPAGE:
+    * http://luarocks.org/
+	
+Software:mybatis	3.2.7	
+License:Apache License Version 2.0
+  * LICENSE:
+    * http://www.apache.org/licenses/LICENSE-2.0  
+  * HOMEPAGE:
+    * http://www.mybatis.org/mybatis-3/
+
+Software:mybatis-spring	1.2.0	
+License:Apache License Version 2.0
+  * LICENSE:
+    * http://www.apache.org/licenses/LICENSE-2.0  
+  * HOMEPAGE:
+    * http://www.mybatis.org/
+	
+Software:fuzzy	0.1.1 	
+License:MIT
+  * LICENSE:
+    * http://mit-license.org/
+  * HOMEPAGE:
+    * http://pypi.python.org/pypi/
+	
+Software:lodash	4.11.1	
+License:MIT
+  * LICENSE:
+    * http://mit-license.org/
+  * HOMEPAGE:
+    * https://lodash.com/
+	
+Software:angular.js	1.4.8	
+License:MIT
+  * LICENSE:
+    * http://mit-license.org/
+  * HOMEPAGE:
+    * https://angularjs.org/
+	
+Software:Node.js	4.4.6	
+License:MIT
+  * LICENSE:
+    * http://mit-license.org/
+  * HOMEPAGE:
+    * https://node.js.org/
+	
+Software:redux	3.4.0	
+License:MIT
+  * LICENSE:
+    * http://mit-license.org/
+  * HOMEPAGE:
+    * http://redux.js.org/
+	
+Software:camelcase	2.1.1	
+License:MIT
+  * LICENSE:
+    * http://mit-license.org/
+  * HOMEPAGE:
+    * http://www.camelcase.com/
+	
+Software:normalize.css	4.0.0	
+License:MIT
+  * LICENSE:
+    * http://mit-license.org/
+  * HOMEPAGE:
+    * http://necolas.github.io/normalize.css/
+
+Software:Apache Curator 	2.8.0	
+License:Apache License Version 2.0
+  * LICENSE:
+    * http://www.apache.org/licenses/LICENSE-2.0  
+  * HOMEPAGE:
+    * http://curator.apache.org/
+	
+Software:okhttp	3.4.1	
+License:Apache License 2.0
+  * LICENSE:
+    * http://www.apache.org/licenses/LICENSE-2.0  
+  * HOMEPAGE:
+    * http://square.github.io/okhttp/
+	
+Software:spring cloud sleuth	1.0.1.RELEASE	
+License:Apache License Version 2.0
+  * LICENSE:
+    * http://www.apache.org/licenses/LICENSE-2.0  
+  * HOMEPAGE:
+    * http://www.spring.io/
+
+Software:spring cloud stream	1.0.0.RELEASE	
+License:Apache License 2.0
+  * LICENSE:
+    * http://www.apache.org/licenses/LICENSE-2.0  
+  * HOMEPAGE:
+    * http://www.spring.io/
+	
+Software:protostuff	1.0.7	
+License:Apache License Version 2.0
+  * LICENSE:
+    * http://www.apache.org/licenses/LICENSE-2.0  
+  * HOMEPAGE:
+    * http://www.protostuff.io/
+	
+Software:jsoup	1.8.3	
+License:MIT License
+  * LICENSE:
+    * http://mit-license.org/
+  * HOMEPAGE:
+    * http://jsoup.org/
+	
+Software:restlet-framework-java	2.2.1	
+License:Apache License Version 2.0
+  * LICENSE:
+    * http://www.apache.org/licenses/LICENSE-2.0  
+  * HOMEPAGE:
+    * https://github.com/restlet/restlet-framework-java
+	
+Software:rxjava  	1.1.6	
+License:Apache License 2.0
+  * LICENSE:
+    * http://www.apache.org/licenses/LICENSE-2.0  
+  * HOMEPAGE:
+    * http://reactive.io/
+
+Software:netflix-commons 	0.1.1	
+License:Apache License 2.0
+  * LICENSE:
+    * http://www.apache.org/licenses/LICENSE-2.0  
+  * HOMEPAGE:
+    * https://github.com/Netflix/netflix-commons
+
+Software:PyYAML - a YAML parser and emitter for Python	3.11	
+License:MIT License
+  * LICENSE:
+    * http://mit-license.org/
+  * HOMEPAGE:
+    * https://pypi.python.org/pypi/PyYAML/
+	
+Software:six	1.10.0	
+License:MIT License
+  * LICENSE:
+    * http://mit-license.org/
+  * HOMEPAGE:
+    * https://pypi.python.org/pypi/six/
+	
+Software:HttpAsyncClient	4.1.2	
+License:Apache License Version 2.0
+  * LICENSE:
+    * http://www.apache.org/licenses/LICENSE-2.0  
+  * HOMEPAGE:
+    * http://hc.apache.org/httpcomponents-asyncclient-dev/index.html
+
+Software:spring cloud starter zuul	1.1.0RELEASE	
+License:Apache License Version 2.0
+  * LICENSE:
+    * http://www.apache.org/licenses/LICENSE-2.0  
+  * HOMEPAGE:
+    * http://www.spring.io/
+	
+Software:Hibernate Validator	5.3.2.Final	
+License:Apache License Version 2.0
+  * LICENSE:
+    * http://www.apache.org/licenses/LICENSE-2.0  
+  * HOMEPAGE:
+    * http://hibernate.org/validator
+
+Software:HttpComponents Core	4.4.4	
+License:Apache License Version 2.0
+  * LICENSE:
+    * http://www.apache.org/licenses/LICENSE-2.0  
+  * HOMEPAGE:
+    * http://hc.apache.org/
+
+Software:react-router	2.8.1	
+License:The MIT License
+  * LICENSE:
+    * http://mit-license.org/
+  * HOMEPAGE:
+    * https://www.npmjs.com/package/react-router/
+
+Software:react-router-redux	4.0.7	
+License:The MIT License
+  * LICENSE:
+    * http://mit-license.org/
+  * HOMEPAGE:
+    * https://www.npmjs.com/package/react-router-redux/
+	
+Software:Jetty - Java HTTP Servlet Server	Jetty - Java HTTP Servlet Server 9.2.21	
+License:Apache License 2.0
+  * LICENSE:
+    * http://www.apache.org/licenses/LICENSE-2.0  
+  * HOMEPAGE:
+    * http://jetty.mortbay.org
+
+Software:cal10n-api	0.8.1	
+License:Apache License 2.0
+  * LICENSE:
+    * http://www.apache.org/licenses/LICENSE-2.0  
+  * HOMEPAGE:
+    * http://cal10.qos.ch/
+	
+Software:protostuff	1.5.2	
+License:Apache License 2.0
+  * LICENSE:
+    * http://www.apache.org/licenses/LICENSE-2.0  
+  * HOMEPAGE:
+    * http://www.protostuff.io/
+	
+Software:Spring Cloud Commons	1.1.0.RELEASE	
+License:Apache License Version 2.0
+  * LICENSE:
+    * http://www.apache.org/licenses/LICENSE-2.0  
+  * HOMEPAGE:
+    * http://www.spring.io/
+	
+Software:vis	4.17.0	
+License:Apache License 2.0 & The MIT License
+  * LICENSE:
+    * http://www.apache.org/licenses/LICENSE-2.0   http://mit-license.org/
+  * HOMEPAGE:
+    * http://visjs.org/
+	
+Software:Apache Tomcat	7.0.75	
+License:Apache License 2.0
+  * LICENSE:
+    * http://www.apache.org/licenses/LICENSE-2.0  
+  * HOMEPAGE:
+    * http://tomcat.apache.org/
+
+Software:fastjson 	1.2.29	
+License:Apache License 2.0
+  * LICENSE:
+    * http://www.apache.org/licenses/LICENSE-2.0  
+  * HOMEPAGE:
+    * http://code.alibabatech.com/wiki/fastjson

@@ -1,0 +1,46 @@
+package cse.basic;
+
+message BasicRequest {
+    required AllBasicTypes request = 1;
+}
+
+message BasicResponse {
+    required AllBasicTypes request = 1;
+}
+
+message AllBasicTypes {
+    required double tdouble = 1;
+    required float tfloat = 2;
+    required int32 tint32 = 3;
+    required int64 tint64 = 4;
+    required uint32 tuint32 = 5;
+    required uint64 tuint64 = 6;
+    required sint32 tsint32 = 7;
+    required sint64 tsint64 = 8;
+    required fixed32 tfixed32 = 9;
+    required fixed64 tfixed64 = 10;
+    required sfixed32 tsfixed32 = 11;
+    required sfixed64 tsfixed64 = 12;
+    required bool tbool = 13;
+    required string tstring = 14;
+    required bytes tbytes = 15;
+    
+    enum EnumType {
+        ONE = 0;
+        TWO = 1;
+    }
+    required EnumType enumType = 16;
+    
+    // map<string, string> mapType = 17;
+    //message MapFieldEntry {
+        //required string key = 1;
+        //required string value = 2;
+    //}
+    //repeated MapFieldEntry mapType = 17;
+
+    repeated string tstringList = 17;
+}
+
+service Basic {
+    rpc schalarType(BasicRequest) returns(BasicResponse);
+}

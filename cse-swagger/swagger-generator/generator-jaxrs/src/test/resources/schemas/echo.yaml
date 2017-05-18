@@ -1,0 +1,51 @@
+---
+swagger: "2.0"
+info:
+  version: "1.0.0"
+  title: "swagger definition for com.huawei.paas.cse.swagger.generator.jaxrs.Echo"
+  x-java-interface: "gen.cse.ms.ut.EchoIntf"
+basePath: "/Echo"
+consumes:
+- "application/json"
+produces:
+- "application/json"
+paths:
+  /echo/{targetName}:
+    post:
+      operationId: "echo"
+      consumes:
+      - "json"
+      - "xml"
+      produces:
+      - "json"
+      - "xml"
+      parameters:
+      - in: "body"
+        name: "srcUser"
+        required: false
+        schema:
+          $ref: "#/definitions/User"
+      - name: "header"
+        in: "header"
+        required: false
+        type: "string"
+      - name: "targetName"
+        in: "path"
+        required: true
+        type: "string"
+      - name: "word"
+        in: "query"
+        required: false
+        type: "string"
+      responses:
+        200:
+          description: "response of 200"
+          schema:
+            type: "string"
+definitions:
+  User:
+    type: "object"
+    properties:
+      name:
+        type: "string"
+    x-java-class: "com.huawei.paas.cse.swagger.generator.jaxrs.User"

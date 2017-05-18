@@ -1,0 +1,24 @@
+service_description:
+  name: default
+  version: 0.0.1
+  propertyExtentedClass: com.huawei.paas.cse.serviceregistry.MicroServicePropertyExtendedStub
+cse:
+  service:
+    registry:
+      address: http://127.0.0.1:9980
+      client:
+        httpVersion: HTTP_1_1
+        workerPoolSize: 1
+        timeout:
+          connection: 30000
+          idle: 30000
+      instance:
+        watch: true
+        preferIpAddress: false
+        healthCheck:
+          interval: 1
+          times: 5
+#ssl.keystore.path=
+#ssl.keystore.pass=
+#ssl.truststore.path=
+#ssl.truststore.pass=

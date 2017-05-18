@@ -1,0 +1,681 @@
+---
+swagger: "2.0"
+info:
+  version: "1.0.0"
+  title: "swagger definition for com.huawei.paas.cse.swagger.generator.core.schema.Schema"
+  x-java-interface: "gen.cse.ms.ut.SchemaIntf"
+basePath: "/Schema"
+consumes:
+- "application/json"
+produces:
+- "application/json"
+paths:
+  /testBoolean:
+    post:
+      operationId: "testBoolean"
+      parameters:
+      - in: "body"
+        name: "value"
+        required: false
+        schema:
+          $ref: "#/definitions/testBooleanBody"
+      responses:
+        200:
+          description: "response of 200"
+  /testInteger:
+    post:
+      operationId: "testInteger"
+      parameters:
+      - in: "body"
+        name: "value"
+        required: false
+        schema:
+          $ref: "#/definitions/testIntegerBody"
+      responses:
+        200:
+          description: "response of 200"
+  /testchar:
+    post:
+      operationId: "testchar"
+      parameters:
+      - in: "body"
+        name: "value"
+        required: false
+        schema:
+          $ref: "#/definitions/testcharBody"
+      responses:
+        200:
+          description: "response of 200"
+  /testSet:
+    post:
+      operationId: "testSet"
+      parameters:
+      - in: "body"
+        name: "value"
+        required: false
+        schema:
+          $ref: "#/definitions/testSetBody"
+      responses:
+        200:
+          description: "response of 200"
+  /testbytes:
+    post:
+      operationId: "testbytes"
+      parameters:
+      - in: "body"
+        name: "value"
+        required: false
+        schema:
+          $ref: "#/definitions/testbytesBody"
+      responses:
+        200:
+          description: "response of 200"
+  /testfloat:
+    post:
+      operationId: "testfloat"
+      parameters:
+      - in: "body"
+        name: "value"
+        required: false
+        schema:
+          $ref: "#/definitions/testfloatBody"
+      responses:
+        200:
+          description: "response of 200"
+  /testLong:
+    post:
+      operationId: "testLong"
+      parameters:
+      - in: "body"
+        name: "value"
+        required: false
+        schema:
+          $ref: "#/definitions/testLongBody"
+      responses:
+        200:
+          description: "response of 200"
+  /testApiResponse:
+    post:
+      operationId: "testApiResponse"
+      parameters: []
+      responses:
+        200:
+          description: "response of 200"
+          headers:
+            h:
+              type: "string"
+  /testChar:
+    post:
+      operationId: "testChar"
+      parameters:
+      - in: "body"
+        name: "value"
+        required: false
+        schema:
+          $ref: "#/definitions/testCharBody"
+      responses:
+        200:
+          description: "response of 200"
+  /testMultiParam:
+    post:
+      operationId: "testMultiParam"
+      parameters:
+      - in: "body"
+        name: "testMultiParamBody"
+        required: false
+        schema:
+          $ref: "#/definitions/testMultiParamBody"
+      responses:
+        200:
+          description: "response of 200"
+          schema:
+            type: "array"
+            items:
+              type: "string"
+  /testObject:
+    post:
+      operationId: "testObject"
+      parameters:
+      - in: "body"
+        name: "user"
+        required: false
+        schema:
+          $ref: "#/definitions/User"
+      responses:
+        200:
+          description: "response of 200"
+  /testshort:
+    post:
+      operationId: "testshort"
+      parameters:
+      - in: "body"
+        name: "value"
+        required: false
+        schema:
+          $ref: "#/definitions/testshortBody"
+      responses:
+        200:
+          description: "response of 200"
+  /testdouble:
+    post:
+      operationId: "testdouble"
+      parameters:
+      - in: "body"
+        name: "value"
+        required: false
+        schema:
+          $ref: "#/definitions/testdoubleBody"
+      responses:
+        200:
+          description: "response of 200"
+  /testMap:
+    post:
+      operationId: "testMap"
+      parameters:
+      - in: "body"
+        name: "value"
+        required: false
+        schema:
+          $ref: "#/definitions/testMapBody"
+      responses:
+        200:
+          description: "response of 200"
+  /testMapList:
+    post:
+      operationId: "testMapList"
+      parameters:
+      - in: "body"
+        name: "value"
+        required: false
+        schema:
+          $ref: "#/definitions/testMapListBody"
+      responses:
+        200:
+          description: "response of 200"
+  /testDouble:
+    post:
+      operationId: "testDouble"
+      parameters:
+      - in: "body"
+        name: "value"
+        required: false
+        schema:
+          $ref: "#/definitions/testDoubleBody"
+      responses:
+        200:
+          description: "response of 200"
+  /testResponseHeader:
+    post:
+      operationId: "testResponseHeader"
+      parameters: []
+      responses:
+        200:
+          description: "response of 200"
+          headers:
+            h:
+              type: "string"
+  /testApiOperation:
+    post:
+      operationId: "testApiOperation"
+      parameters: []
+      responses:
+        200:
+          description: "response of 200"
+          headers:
+            h:
+              type: "string"
+  /testArray:
+    post:
+      operationId: "testArray"
+      parameters:
+      - in: "body"
+        name: "value"
+        required: false
+        schema:
+          $ref: "#/definitions/testArrayBody"
+      responses:
+        200:
+          description: "response of 200"
+  /testByte:
+    post:
+      operationId: "testByte"
+      parameters:
+      - in: "body"
+        name: "value"
+        required: false
+        schema:
+          $ref: "#/definitions/testByteBody"
+      responses:
+        200:
+          description: "response of 200"
+  /testboolean:
+    post:
+      operationId: "testboolean"
+      parameters:
+      - in: "body"
+        name: "value"
+        required: false
+        schema:
+          $ref: "#/definitions/testbooleanBody"
+      responses:
+        200:
+          description: "response of 200"
+  /testint:
+    post:
+      operationId: "testint"
+      parameters:
+      - in: "body"
+        name: "value"
+        required: false
+        schema:
+          $ref: "#/definitions/testintBody"
+      responses:
+        200:
+          description: "response of 200"
+  /testBytes:
+    post:
+      operationId: "testBytes"
+      parameters:
+      - in: "body"
+        name: "value"
+        required: false
+        schema:
+          $ref: "#/definitions/testBytesBody"
+      responses:
+        200:
+          description: "response of 200"
+  /testEnum:
+    post:
+      operationId: "testEnum"
+      parameters:
+      - in: "body"
+        name: "color"
+        required: false
+        schema:
+          $ref: "#/definitions/testEnumBody"
+      responses:
+        200:
+          description: "response of 200"
+  /testFloat:
+    post:
+      operationId: "testFloat"
+      parameters:
+      - in: "body"
+        name: "value"
+        required: false
+        schema:
+          $ref: "#/definitions/testFloatBody"
+      responses:
+        200:
+          description: "response of 200"
+  /testShort:
+    post:
+      operationId: "testShort"
+      parameters:
+      - in: "body"
+        name: "value"
+        required: false
+        schema:
+          $ref: "#/definitions/testShortBody"
+      responses:
+        200:
+          description: "response of 200"
+  /testList:
+    post:
+      operationId: "testList"
+      parameters:
+      - in: "body"
+        name: "value"
+        required: false
+        schema:
+          $ref: "#/definitions/testListBody"
+      responses:
+        200:
+          description: "response of 200"
+  /testAllType:
+    post:
+      operationId: "testAllType"
+      parameters:
+      - in: "body"
+        name: "obj"
+        required: false
+        schema:
+          $ref: "#/definitions/AllType"
+      responses:
+        200:
+          description: "response of 200"
+  /testbyte:
+    post:
+      operationId: "testbyte"
+      parameters:
+      - in: "body"
+        name: "value"
+        required: false
+        schema:
+          $ref: "#/definitions/testbyteBody"
+      responses:
+        200:
+          description: "response of 200"
+  /testString:
+    post:
+      operationId: "testString"
+      parameters:
+      - in: "body"
+        name: "value"
+        required: false
+        schema:
+          $ref: "#/definitions/testStringBody"
+      responses:
+        200:
+          description: "response of 200"
+  /testDate:
+    post:
+      operationId: "testDate"
+      parameters: []
+      responses:
+        200:
+          description: "response of 200"
+          schema:
+            type: "string"
+            format: "date-time"
+  /testlong:
+    post:
+      operationId: "testlong"
+      parameters:
+      - in: "body"
+        name: "value"
+        required: false
+        schema:
+          $ref: "#/definitions/testlongBody"
+      responses:
+        200:
+          description: "response of 200"
+definitions:
+  testBooleanBody:
+    type: "object"
+    properties:
+      value:
+        type: "boolean"
+  testByteBody:
+    type: "object"
+    properties:
+      value:
+        type: "integer"
+        format: "int8"
+  testShortBody:
+    type: "object"
+    properties:
+      value:
+        type: "integer"
+        format: "int16"
+  testLongBody:
+    type: "object"
+    properties:
+      value:
+        type: "integer"
+        format: "int64"
+  testFloatBody:
+    type: "object"
+    properties:
+      value:
+        type: "number"
+        format: "float"
+  testDoubleBody:
+    type: "object"
+    properties:
+      value:
+        type: "number"
+        format: "double"
+  testEnumBody:
+    type: "object"
+    properties:
+      color:
+        type: "string"
+        enum:
+        - "WHITE"
+        - "BLACK"
+  testCharBody:
+    type: "object"
+    properties:
+      value:
+        type: "string"
+  testBytesBody:
+    type: "object"
+    properties:
+      value:
+        type: "string"
+        format: "byte"
+  testStringBody:
+    type: "object"
+    properties:
+      value:
+        type: "string"
+  User:
+    type: "object"
+    properties:
+      name:
+        type: "string"
+      age:
+        type: "integer"
+        format: "int32"
+    x-java-class: "com.huawei.paas.cse.swagger.generator.core.schema.User"
+  testArrayBody:
+    type: "object"
+    properties:
+      value:
+        type: "array"
+        items:
+          type: "string"
+  testSetBody:
+    type: "object"
+    properties:
+      value:
+        type: "array"
+        uniqueItems: true
+        items:
+          type: "string"
+  testListBody:
+    type: "object"
+    properties:
+      value:
+        type: "array"
+        items:
+          $ref: "#/definitions/User"
+  testMapBody:
+    type: "object"
+    properties:
+      value:
+        type: "object"
+        additionalProperties:
+          $ref: "#/definitions/User"
+  testMapListBody:
+    type: "object"
+    properties:
+      value:
+        type: "object"
+        additionalProperties:
+          type: "array"
+          items:
+            $ref: "#/definitions/User"
+  AllType:
+    type: "object"
+    properties:
+      bValue:
+        type: "boolean"
+      byteValue:
+        type: "integer"
+        format: "int8"
+      byteObjectValue:
+        type: "integer"
+        format: "int8"
+      sValue:
+        type: "integer"
+        format: "int16"
+      sObjectValue:
+        type: "integer"
+        format: "int16"
+      iValue:
+        type: "integer"
+        format: "int32"
+      iObjectValue:
+        type: "integer"
+        format: "int32"
+      lValue:
+        type: "integer"
+        format: "int64"
+      lObjectValue:
+        type: "integer"
+        format: "int64"
+      fValue:
+        type: "number"
+        format: "float"
+      fObjectValue:
+        type: "number"
+        format: "float"
+      dValue:
+        type: "number"
+        format: "double"
+      dObjectValue:
+        type: "number"
+        format: "double"
+      enumValue:
+        type: "string"
+        enum:
+        - "WHITE"
+        - "BLACK"
+      cValue:
+        type: "string"
+      cObjectValue:
+        type: "string"
+      bytes:
+        type: "string"
+        format: "byte"
+      strValue:
+        type: "string"
+      set:
+        type: "array"
+        uniqueItems: true
+        items:
+          type: "string"
+      list:
+        type: "array"
+        items:
+          $ref: "#/definitions/User"
+      map:
+        type: "object"
+        additionalProperties:
+          $ref: "#/definitions/User"
+    x-java-class: "com.huawei.paas.cse.swagger.generator.core.schema.AllType"
+  testMultiParamBody:
+    type: "object"
+    properties:
+      obj:
+        $ref: "#/definitions/AllType"
+      bValue:
+        type: "boolean"
+      byteValue:
+        type: "integer"
+        format: "int8"
+      sValue:
+        type: "integer"
+        format: "int16"
+      iValue:
+        type: "integer"
+        format: "int32"
+      lValue:
+        type: "integer"
+        format: "int64"
+      fValue:
+        type: "number"
+        format: "float"
+      dValue:
+        type: "number"
+        format: "double"
+      enumValue:
+        type: "string"
+        enum:
+        - "WHITE"
+        - "BLACK"
+      cValue:
+        type: "string"
+      bytes:
+        type: "string"
+        format: "byte"
+      strValue:
+        type: "string"
+      strArray:
+        type: "array"
+        items:
+          type: "string"
+      set:
+        type: "array"
+        uniqueItems: true
+        items:
+          type: "string"
+      list:
+        type: "array"
+        items:
+          $ref: "#/definitions/User"
+      map:
+        type: "object"
+        additionalProperties:
+          $ref: "#/definitions/User"
+    x-java-class: "gen.cse.ms.ut.testMultiParamBody"
+  testbooleanBody:
+    type: "object"
+    properties:
+      value:
+        type: "boolean"
+  testbyteBody:
+    type: "object"
+    properties:
+      value:
+        type: "integer"
+        format: "int8"
+  testshortBody:
+    type: "object"
+    properties:
+      value:
+        type: "integer"
+        format: "int16"
+  testintBody:
+    type: "object"
+    properties:
+      value:
+        type: "integer"
+        format: "int32"
+  testIntegerBody:
+    type: "object"
+    properties:
+      value:
+        type: "integer"
+        format: "int32"
+  testlongBody:
+    type: "object"
+    properties:
+      value:
+        type: "integer"
+        format: "int64"
+  testfloatBody:
+    type: "object"
+    properties:
+      value:
+        type: "number"
+        format: "float"
+  testdoubleBody:
+    type: "object"
+    properties:
+      value:
+        type: "number"
+        format: "double"
+  testcharBody:
+    type: "object"
+    properties:
+      value:
+        type: "string"
+  testbytesBody:
+    type: "object"
+    properties:
+      value:
+        type: "string"
+        format: "byte"

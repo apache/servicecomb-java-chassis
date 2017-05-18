@@ -1,0 +1,7 @@
+springmvctest:
+  - id: 001
+    version: 1.0
+    appid: myapp
+    instances:
+      - endpoints:
+        - rest://127.0.0.1:8080

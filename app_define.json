@@ -1,0 +1,15 @@
+{
+	"fileVersion": "1",
+	"name": "CSEJavaSDK",
+	"description": "description",
+	"version": "1.0.0",
+	"fileSuffix": "zip",
+	"packagePath": "",
+	"packageName": "",
+	"type": "microService",
+	"processes": {
+		"CSEJavaSDK": {
+			"subscribes": []
+		}
+	}
+}

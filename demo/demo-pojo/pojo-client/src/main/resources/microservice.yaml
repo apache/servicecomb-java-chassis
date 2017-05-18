@@ -1,0 +1,15 @@
+APPLICATION_ID: pojotest
+service_description:
+  name: pojoClient
+  version: 0.0.1
+cse:
+  service:
+    registry:
+      address: http://127.0.0.1:9980
+  handler:
+    chain:
+      Consumer:
+        default: bizkeeper-consumer,loadbalance,tcc-client
+  isolation:
+    Consumer:
+      enabled: false

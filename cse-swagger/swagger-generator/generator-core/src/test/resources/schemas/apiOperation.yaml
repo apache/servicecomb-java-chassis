@@ -1,0 +1,22 @@
+---
+swagger: "2.0"
+info:
+  version: "1.0.0"
+  title: "swagger definition for com.huawei.paas.cse.swagger.generator.core.schema.Schema"
+  x-java-interface: "gen.cse.ms.ut.SchemaIntf"
+basePath: "/Schema"
+consumes:
+- "application/json"
+produces:
+- "application/json"
+paths:
+  /testApiOperation:
+    post:
+      operationId: "testApiOperation"
+      parameters: []
+      responses:
+        200:
+          description: "response of 200"
+          headers:
+            h:
+              type: "string"

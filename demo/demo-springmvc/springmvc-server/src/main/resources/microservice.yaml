@@ -1,0 +1,39 @@
+APPLICATION_ID: springmvctest
+service_description:
+  name: springmvc
+  version: 0.0.1
+cse:
+  service:
+    registry:
+      address: http://127.0.0.1:9980
+  grpc:
+    address: 0.0.0.0:9090
+  rest:
+    address: 0.0.0.0:8080?sslEnabled=true
+  highway:
+    address: 0.0.0.0:7070?sslEnabled=true
+  handler:
+    chain:
+      Provider:
+        default: bizkeeper-provider
+  tracing:
+    enabled: true
+    samplingRate: 0.5
+  config:
+    client:
+      serverUri: https://10.22.87.59:30103
+
+#########SSL options
+ssl.protocols: TLSv1.2
+ssl.authPeer: true
+ssl.checkCN.host: true
+
+#########certificates config
+ssl.trustStore: trust.jks
+ssl.trustStoreType: JKS
+ssl.trustStoreValue: Changeme_123
+ssl.keyStore: server.p12
+ssl.keyStoreType: PKCS12
+ssl.keyStoreValue: Changeme_123
+ssl.crl: revoke.crl
+ssl.sslCustomClass: com.huawei.paas.cse.demo.DemoSSLCustom

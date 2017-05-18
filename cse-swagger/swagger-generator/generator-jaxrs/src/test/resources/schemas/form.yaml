@@ -1,0 +1,25 @@
+---
+swagger: "2.0"
+info:
+  version: "1.0.0"
+  title: "swagger definition for com.huawei.paas.cse.swagger.generator.jaxrs.Echo"
+  x-java-interface: "gen.cse.ms.ut.EchoIntf"
+basePath: "/Echo"
+consumes:
+- "application/json"
+produces:
+- "application/json"
+paths:
+  /form:
+    post:
+      operationId: "form"
+      parameters:
+      - name: "form"
+        in: "formData"
+        required: false
+        type: "string"
+      responses:
+        200:
+          description: "response of 200"
+          schema:
+            type: "string"

@@ -1,0 +1,19 @@
+package helloworld;
+
+message StandardRequest {
+    required ComplexType args0 = 1;
+}
+
+message StandardResponse {
+    required ComplexType response = 1;
+}
+
+message ComplexType {
+  repeated int32 intType = 1;
+  repeated bool boolType = 2;
+  repeated string stringType = 3;
+}
+
+service Standard {
+  rpc sayHelloComplex (StandardRequest) returns (StandardResponse);
+}

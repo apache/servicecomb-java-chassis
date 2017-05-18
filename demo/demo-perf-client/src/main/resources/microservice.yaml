@@ -1,0 +1,30 @@
+﻿APPLICATION_ID: pojotest
+service_description:
+  name: perfClient
+  version: 0.0.1
+cse:
+  service:
+    registry:
+      address: http://127.0.0.1:9980
+  grpc:
+    thread-count: 10
+    connection-pool-per-thread: 1
+  rest:
+    client:
+      thread-count: 10
+      connection-pool-per-thread: 1
+    server:
+      thread-count: 10
+  highway:
+    thread-count: 1
+    connection-pool-per-thread: 10
+  handler:
+    chain:
+      Consumer:
+        default: loadbalance
+  metrics:
+    cycle:
+      ms: 1000
+  references:
+    pojo:
+      version-rule: 0.0.2

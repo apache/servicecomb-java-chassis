@@ -1,0 +1,82 @@
+message TestRequest{
+	required int32 index = 1;
+	required User user = 2;
+	required bytes data = 3;
+	//repeated MapFieldEntry friends = 4;
+}
+
+message User{
+	required string name = 1;
+	required int32 age = 2;
+	required int32 index = 3;
+	//repeated MapFieldEntry friends = 4;
+}
+
+message MapFieldEntry {
+  required string key = 1;
+  required int32 value = 2;
+}
+
+message TestResponse{
+	required User user = 1;
+}
+
+enum EnumType {
+    ONE = 0;
+    TWO = 1;
+}
+
+message EnumMessage{
+	required EnumType enumType = 1;
+}
+
+message Empty{
+}
+
+message MicroService{
+    optional string service_id = 1;
+    required string app_id = 2;
+    required string name = 3;
+    required string version = 4;
+    optional string description = 5;
+    optional string level = 6 [default = "front"];
+    repeated ServiceDefinition definitions = 7;
+    optional ServiceStatus status = 8 [default = INSERVICE];
+}
+
+message ServiceDefinition {
+    required string name = 1;
+    required string version = 2;
+    required string transport = 3;
+    repeated string schema = 4;
+    //map<string, string> properties = 5;
+}
+
+enum ServiceStatus {
+    INSERVICE = 0;
+    OUTOFSERVICE = 1;
+}
+
+message MicroServiceWrap{
+	required MicroService service = 1;
+}
+
+service server {
+	rpc splitParam(TestRequest) returns(User);
+	rpc standard(TestRequest) returns(TestResponse);
+	rpc sayHello (HelloRequest) returns (HelloReply);
+	rpc standardSayHello (HelloRequest) returns (HelloReply);
+	rpc testEnum(EnumMessage) returns(EnumMessage);
+	rpc testStandardEnum(EnumMessage) returns(EnumMessage);
+	rpc testEmpty(Empty) returns(Empty);
+	rpc testMicroService(MicroService) returns(MicroService);
+	rpc testCreateMicroService(MicroServiceWrap) returns(MicroServiceWrap);
+}
+
+message HelloRequest {
+	required string name = 1;
+}
+
+message HelloReply {
+	required string message = 1;
+}

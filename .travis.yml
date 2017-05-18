@@ -1,0 +1,12 @@
+sudo: required
+
+language: java
+
+services:
+  - docker
+
+script:
+  - mvn clean install
+
+after_success:
+  - mvn clean verify coveralls:report

@@ -1,0 +1,19 @@
+#########SSL options
+ssl:
+  protocols: TLSv1.2,TLSv1.1,TLSv1,SSLv2Hello
+  ciphers: TLS_DHE_RSA_WITH_AES_128_CBC_SHA256,TLS_DHE_DSS_WITH_AES_128_CBC_SHA256,TLS_RSA_WITH_AES_128_CBC_SHA256,TLS_DHE_RSA_WITH_AES_128_CBC_SHA,TLS_DHE_DSS_WITH_AES_128_CBC_SHA,TLS_RSA_WITH_AES_128_CBC_SHA
+  authPeer: true
+  checkCN.host: true
+  checkCN.white: true
+  checkCN.white.file: white.list
+  allowRenegociate: false
+  storePath: internal
+  trustStore: trust.jks
+  trustStoreType: JKS
+  trustStoreValue: Changeme_123
+  keyStore: server.p12
+  keyStoreType: PKCS12
+  keyStoreValue: Changeme_123
+  crl: revoke.crl
+  server:
+    sslCustomClass: wwrong

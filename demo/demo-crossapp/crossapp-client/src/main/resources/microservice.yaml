@@ -1,0 +1,18 @@
+APPLICATION_ID: appClient
+service_description:
+  name: appClientService
+  version: 0.0.1
+cse:
+  service:
+    registry:
+      address: http://127.0.0.1:9980
+  handler:
+    chain:
+      Consumer:
+        default: loadbalance
+  loadbalance:
+    appServer:appService:
+      transactionControl:
+        policy: com.huawei.paas.cse.loadbalance.filter.SimpleTransactionControlFilter
+        options:
+          tag0: value0

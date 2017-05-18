@@ -1,0 +1,6 @@
+server:
+  port: 7999
+cse:
+  servlet:
+    name: RestServlet
+    url: /pojo/rest/*

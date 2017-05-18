@@ -1,0 +1,30 @@
+---
+swagger: "2.0"
+info:
+  version: "1.0.0"
+  title: "swagger definition for com.huawei.paas.cse.swagger.generator.core.schema.Schema"
+  x-java-interface: "gen.cse.ms.ut.SchemaIntf"
+basePath: "/Schema"
+consumes:
+- "application/json"
+produces:
+- "application/json"
+paths:
+  /testboolean:
+    post:
+      operationId: "testboolean"
+      parameters:
+      - in: "body"
+        name: "value"
+        required: false
+        schema:
+          $ref: "#/definitions/testbooleanBody"
+      responses:
+        200:
+          description: "response of 200"
+definitions:
+  testbooleanBody:
+    type: "object"
+    properties:
+      value:
+        type: "boolean"

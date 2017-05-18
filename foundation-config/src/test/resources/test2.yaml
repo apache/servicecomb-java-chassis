@@ -1,0 +1,6 @@
+  dsf:
+    serializer:
+      kryo:
+        enabled: true
+        referencesRequired: false
+        registrationRequired: false

@@ -1,0 +1,91 @@
+# this is an example of the Uber API
+# as a demonstration of an API spec in YAML
+swagger: '2.0'
+info:
+  title: cse test
+  version: 1.0.0
+  x-java-interface: com.huawei.paas.cse.demo.tccserver.TestTcc
+  
+# the domain of the service
+#host: api.uber.com
+
+# array of all schemes that your API supports
+#schemes:
+#  - https
+
+# will be prefixed to all paths
+basePath: /pojo/rest/tcc-server
+produces:
+  - application/json
+  
+paths:
+  /splitParam:
+    post:
+      operationId: splitParam
+      parameters:
+        - name: index
+          in: query
+          required: true
+          type: number
+        - name: user
+          in: body
+          schema:
+            $ref: '#/definitions/User'
+      responses: 
+        200:
+          description: asdf
+          schema: 
+            $ref: '#/definitions/User'
+        default:
+          description: asf
+          schema:
+            $ref: '#/definitions/Error'
+  /wrapParam:
+    post:
+      operationId: wrapParam
+      parameters:
+        - name: TestRequest
+          in: body
+          required: true
+          schema: 
+            $ref: '#/definitions/TestRequest'
+      responses: 
+        200:
+          description: asdf
+          schema: 
+            $ref: '#/definitions/User'
+        default:
+          description: asf
+          schema:
+            $ref: '#/definitions/Error'
+            
+definitions:
+  Error:
+    type: object
+    x-java-class: com.huawei.paas.cse.core.exception.CommonExceptionData
+    properties:
+      message:
+        type: string
+  TestRequest:
+    type: object
+    properties:
+      index:
+        type: number
+      user:
+        $ref: '#/definitions/User'
+      users:
+        type: array
+        items:
+          $ref: '#/definitions/User'
+      data:
+        type: string
+        format: byte
+  User:
+    type: object
+    properties:
+      name:
+        type: string
+      age:
+        type: number
+      index:
+        type: number

@@ -1,0 +1,16 @@
+APPLICATION_ID: appServer
+service_description:
+  name: appService
+  version: 0.0.1
+  properties:
+    allowCrossApp: true
+instance_description:
+  properties:
+    tag0: value0
+
+cse:
+  service:
+    registry:
+      address: http://127.0.0.1:9980
+  rest:
+    address: 127.0.0.1:8080

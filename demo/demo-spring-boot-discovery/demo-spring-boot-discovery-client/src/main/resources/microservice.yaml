@@ -1,0 +1,42 @@
+APPLICATION_ID: springmvctest
+service_description:
+  name: springmvc
+  version: 0.0.1
+cse:
+  service:
+    registry:
+      address: http://10.120.168.229:32800
+  grpc:
+    address: 0.0.0.0:9099
+  rest:
+    address: 0.0.0.0:8088?sslEnabled=false
+  highway:
+    address: 0.0.0.0:7077?sslEnabled=true
+  handler:
+    chain:
+      Provider:
+        default: perf-stats,tracing-provider,sla-provider,bizkeeper-provider
+  tracing:
+    enabled: true
+    samplingRate: 0.5
+  config:
+    client:
+      serverUri: https://10.22.87.59:30103
+#########cloud test for cc/sc
+ssl.cc.consumer.sslOptionFactory: com.huawei.paas.foundation.auth.SSLOptionFactoryCloud
+ssl.sc.consumer.sslOptionFactory: com.huawei.paas.foundation.auth.SSLOptionFactoryCloud
+
+#########SSL options
+ssl.protocols: TLSv1.2
+ssl.authPeer: true
+ssl.checkCN.host: true
+
+#########certificates config
+ssl.trustStore: trust.jks
+ssl.trustStoreType: JKS
+ssl.trustStoreValue: Changeme_123
+ssl.keyStore: server.p12
+ssl.keyStoreType: PKCS12
+ssl.keyStoreValue: Changeme_123
+ssl.crl: revoke.crl
+ssl.sslCustomClass: com.huawei.paas.cse.demo.DemoSSLCustom

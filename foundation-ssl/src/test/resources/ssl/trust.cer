@@ -1,0 +1,134 @@
+Certificate:
+    Data:
+        Version: 3 (0x2)
+        Serial Number:
+            7d:fd:c5:d8:70:da:6e:0f:00:00:00:00:00:00:00:00
+        Signature Algorithm: sha256WithRSAEncryption
+        Issuer: C=CN, ST=GuangDong, L=ShenZhen, O=Huawei Technologies Co., Ltd, OU=OSS & Service Tools Dept, CN=OSS3.0 CA
+        Validity
+            Not Before: Nov  1 00:00:00 2015 GMT
+            Not After : Oct 25 00:00:00 2040 GMT
+        Subject: C=CN, ST=GuangDong, L=ShenZhen, O=Huawei Technologies Co., Ltd, OU=OSS & Service Tools Dept, CN=OSS3.0 CA
+        Subject Public Key Info:
+            Public Key Algorithm: rsaEncryption
+            RSA Public Key: (4096 bit)
+                Modulus (4096 bit):
+                    00:a3:9d:7e:e8:7b:98:9a:d2:7f:fc:7f:4c:cc:79:
+                    d1:80:fa:1d:77:6f:dd:39:83:4d:4a:4a:2d:49:9f:
+                    e4:e8:ca:3a:7b:89:fa:1c:fc:17:0c:4a:bb:6e:6d:
+                    12:cf:e8:d8:bf:e0:70:b7:0f:ca:fc:9d:d6:26:6d:
+                    ae:92:47:70:ad:33:e3:de:50:f9:6f:9a:75:84:c8:
+                    10:a0:46:b6:4b:37:a3:68:ba:bc:86:86:d4:60:44:
+                    2c:38:38:0e:fb:24:ce:e5:53:4b:6b:42:b6:9e:de:
+                    12:f1:25:21:73:f3:87:d0:cc:bb:6b:fb:e6:b3:53:
+                    21:b3:38:2e:55:90:46:0e:07:3e:48:41:35:3c:13:
+                    f0:69:fd:24:b0:cd:4e:1d:d7:ed:66:80:00:01:ff:
+                    31:1c:48:d1:36:1f:82:82:b6:ed:57:c0:b0:af:cd:
+                    7b:55:57:eb:93:8a:62:e0:74:5d:5c:1e:76:98:f9:
+                    3b:f2:21:c0:5c:08:dd:40:fe:c9:d2:8e:26:69:93:
+                    10:cd:bc:1f:48:30:47:d5:5a:0d:4e:3d:24:ca:c5:
+                    c0:72:14:08:38:db:df:03:6c:43:87:c0:bb:70:15:
+                    e7:55:87:b5:53:18:77:e0:78:46:50:c8:74:78:ba:
+                    19:7f:bf:84:7e:fb:87:d9:a1:6c:bd:53:8f:13:4f:
+                    b3:0c:23:66:7b:69:4e:a3:64:de:48:72:76:37:a2:
+                    86:58:74:7f:dd:77:b1:b0:68:93:9c:cf:6b:00:b9:
+                    0f:10:76:bf:9f:3f:8e:86:3d:da:4b:d2:7b:b1:db:
+                    f1:59:81:b7:87:0b:40:a5:38:ad:91:cd:1a:4c:d9:
+                    79:59:e7:54:40:06:68:68:de:6b:8b:54:fd:84:e3:
+                    89:35:fa:bd:8c:1d:0f:4e:0d:a6:ba:39:f8:bd:e6:
+                    88:ca:a0:aa:d7:92:4d:14:75:09:af:bc:10:e1:98:
+                    c5:fa:40:28:bc:04:0d:b0:ad:63:92:eb:27:94:e9:
+                    a8:65:c9:6f:b3:ab:52:c6:8e:87:2f:64:de:d6:11:
+                    69:77:5c:ce:1e:31:45:fb:6f:b4:72:01:ce:2c:c8:
+                    4d:74:f2:48:28:1a:51:a3:14:50:b1:81:13:7a:4b:
+                    d8:05:e5:98:00:78:c9:2f:a2:46:24:a9:8f:9a:b0:
+                    e0:42:78:80:73:da:cb:7f:50:3c:c5:b9:1b:3c:7f:
+                    b6:e1:c0:cf:c6:f0:94:80:8c:64:87:d5:d4:4e:e4:
+                    53:c8:6e:74:0a:f5:e8:b2:a6:56:11:b4:da:14:46:
+                    82:91:7e:63:8e:58:9f:2d:15:41:dc:d0:81:4d:d8:
+                    40:bd:ca:6a:67:42:b5:5b:87:24:70:95:ce:a4:61:
+                    05:60:4b
+                Exponent: 65537 (0x10001)
+        X509v3 extensions:
+            X509v3 Basic Constraints: 
+                CA:TRUE
+            X509v3 Key Usage: critical
+                Certificate Sign, CRL Sign
+            X509v3 Subject Key Identifier: 
+                D5:4E:82:08:70:16:63:3D:DF:87:25:0B:7D:2E:EB:83:21:6A:BA:5B
+            X509v3 Authority Key Identifier: 
+                keyid:D5:4E:82:08:70:16:63:3D:DF:87:25:0B:7D:2E:EB:83:21:6A:BA:5B
+                DirName:/C=CN/ST=GuangDong/L=ShenZhen/O=Huawei Technologies Co., Ltd/OU=OSS & Service Tools Dept/CN=OSS3.0 CA
+                serial:7D:FD:C5:D8:70:DA:6E:0F:00:00:00:00:00:00:00:00
+
+            X509v3 Subject Alternative Name: 
+                email:oss3ca@huawei.com
+    Signature Algorithm: sha256WithRSAEncryption
+        8a:52:5f:99:d0:7b:a0:8c:2d:e8:6c:ff:7a:bc:89:64:03:d4:
+        4d:64:7f:91:65:e4:0c:97:2b:0d:44:c4:b0:74:cc:9c:88:03:
+        96:51:db:7c:94:cf:a0:42:23:7d:34:f4:50:be:b1:3d:b6:c3:
+        30:ce:a1:59:f5:f2:76:b0:1e:c3:e2:4a:62:40:54:3e:5e:f3:
+        f1:5f:d9:19:30:27:e7:4d:42:84:b7:14:a3:cc:be:95:9d:77:
+        b2:35:0d:5e:0b:47:07:2c:18:a9:00:be:37:f9:a5:ba:0b:46:
+        4d:0f:30:a7:04:73:3c:ff:f5:a9:80:24:44:81:83:5c:15:d7:
+        37:cf:ab:aa:81:68:22:4f:b9:a6:e2:c5:2f:d7:12:44:9a:0d:
+        be:a9:dc:74:80:07:fe:19:5c:bd:1c:0c:4c:da:13:c4:89:1b:
+        38:29:67:83:57:2d:83:77:4c:9c:77:65:79:46:4b:80:7f:85:
+        14:8a:84:7c:12:89:55:54:44:48:17:da:4d:5d:04:f3:8f:5b:
+        1c:7e:11:7c:d8:27:16:8d:13:e8:e6:e6:25:49:3f:e2:77:0e:
+        f9:9c:3a:51:fb:8e:90:60:25:a9:4f:51:21:58:ac:ab:9f:d0:
+        cc:fb:1d:11:fc:14:a6:0b:47:76:ab:79:7d:e2:27:80:25:9a:
+        6c:df:e1:1a:ca:e2:14:5d:82:2c:94:bb:0b:d1:ac:09:96:75:
+        da:60:02:97:3c:f9:db:53:29:42:07:65:1e:36:f4:df:c1:fe:
+        29:b6:33:97:fb:94:b5:e8:a3:ec:98:da:ed:a2:62:46:7b:31:
+        75:cb:76:b5:63:b7:2f:14:da:c8:1e:5c:1e:8e:17:b2:08:ad:
+        71:93:e0:d9:a1:53:49:89:32:41:80:01:0e:a9:da:52:72:e3:
+        8d:75:b6:fc:51:04:35:8a:ec:bc:7d:b3:d3:c5:30:d6:71:4f:
+        c0:d0:3e:79:02:4d:38:7a:17:13:7c:39:d3:e7:cb:99:72:c1:
+        76:fd:bf:a2:7a:14:e6:d9:48:f6:28:31:98:af:ab:04:ca:78:
+        35:26:51:11:04:f3:ad:0d:33:38:00:14:3d:07:6c:00:cc:9f:
+        f7:ef:ec:e1:e9:1e:4a:1f:27:22:c2:f3:b9:e8:58:7f:54:80:
+        d2:66:c4:01:2b:d2:c2:19:f0:da:10:3d:e9:3a:0e:d5:76:d5:
+        ca:1f:ea:4d:84:b1:d6:ee:4a:c9:bd:4a:fd:72:68:97:75:8e:
+        f6:7d:95:35:0b:ab:72:42:d3:5c:10:bc:d9:44:e9:dd:1c:a1:
+        be:26:04:e4:10:67:45:b4:96:88:77:e3:1d:a1:d0:dc:60:73:
+        75:c0:f7:ac:4b:4b:47:8e
+-----BEGIN CERTIFICATE-----
+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
+-----END CERTIFICATE-----
