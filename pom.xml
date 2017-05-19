@@ -239,16 +239,6 @@
 		<pluginManagement>
 			<plugins>
 				<plugin>
-					<groupId>org.eluder.coveralls</groupId>
-					<artifactId>coveralls-maven-plugin</artifactId>
-					<version>4.3.0</version>
-					<configuration>
-						<jacocoReports>
-							<jacocoReport>${project.basedir}/integration-tests/target/site/jacoco-aggregate/jacoco.xml</jacocoReport>
-						</jacocoReports>
-					</configuration>
-				</plugin>
-				<plugin>
 					<groupId>org.jacoco</groupId>
 					<artifactId>jacoco-maven-plugin</artifactId>
 					<version>0.7.8</version>
