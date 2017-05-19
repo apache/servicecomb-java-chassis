@@ -20,7 +20,7 @@
 	<parent>
 		<groupId>com.huawei.paas.cse</groupId>
 		<artifactId>paas-cse</artifactId>
-		<version>0.1</version>
+		<version>0.1.0-SNAPSHOT</version>
 	</parent>
 	<artifactId>cse-spring-boot-starter-provider</artifactId>
 

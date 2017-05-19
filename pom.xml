@@ -20,7 +20,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.huawei.paas.cse</groupId>
 	<artifactId>paas-cse</artifactId>
-	<version>0.1</version>
+	<version>0.1.0-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
 	<name>ServiceComb Java Chassis</name>
@@ -157,18 +157,16 @@
 		<module>demo</module>
 	</modules>
 
-	<distributionManagement>
-		<repository>
-			<id>releases</id>
-			<name>Internal Releases</name>
-			<url>http://10.120.179.11:8081/nexus/content/repositories/releases/</url>
-		</repository>
-		<snapshotRepository>
-			<id>snapshots</id>
-			<name>Internal Snapshots</name>
-			<url>http://10.120.179.11:8081/nexus/content/repositories/snapshots/</url>
-		</snapshotRepository>
-	</distributionManagement>
+    <distributionManagement>
+        <repository>
+            <id>ossrh</id>
+            <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+        </repository>
+        <snapshotRepository>
+            <id>ossrh</id>
+            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+        </snapshotRepository>
+    </distributionManagement>
 
 	<build>
 		<plugins>
@@ -354,16 +352,6 @@
 					</plugin>
                 </plugins>
 			</build>
-			<distributionManagement>
-				<repository>
-					<id>ossrh</id>
-					<url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
-				</repository>
-				<snapshotRepository>
-					<id>ossrh</id>
-					<url>https://oss.sonatype.org/content/repositories/snapshots</url>
-				</snapshotRepository>
-			</distributionManagement>
 		</profile>
 	</profiles>
 </project>
