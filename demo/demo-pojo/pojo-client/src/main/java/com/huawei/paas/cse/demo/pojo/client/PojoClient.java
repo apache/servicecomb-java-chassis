@@ -27,7 +27,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import com.huawei.paas.cse.core.CseContext;
-import com.huawei.paas.cse.core.exception.CommonExceptionData;
 import com.huawei.paas.cse.core.exception.InvocationException;
 import com.huawei.paas.cse.core.provider.consumer.InvokerUtils;
 import com.huawei.paas.cse.demo.DemoConst;
@@ -64,8 +63,6 @@ public class PojoClient {
 
     private static SmartCare smartcare;
 
-    private static TestTccBusiness testTccBusiness;
-
     public static final byte buffer[] = new byte[1024];
 
     static {
@@ -95,8 +92,6 @@ public class PojoClient {
 
         smartcare = BeanUtils.getBean("smartcare");
 
-        testTccBusiness = BeanUtils.getBean("testTccBusiness");
-        testTccBusiness.init();
     }
 
     public static void runTest() throws Exception {
@@ -122,7 +117,6 @@ public class PojoClient {
             if (!transport.equals("grpc") && !transport.equals("")) {
                 testException(test);
 
-                testTcc(testTccBusiness);
             }
 
             testSmartCare(smartcare);
@@ -172,21 +166,6 @@ public class PojoClient {
             test.testException(557);
         } catch (InvocationException e) {
             TestMgr.check("[[557 error]]", e.getErrorData());
-        }
-    }
-
-    /**
-     * <一句话功能简述>
-     * <功能详细描述>
-     */
-    private static void testTcc(TestTccBusiness testTccBusiness) {
-        User result = testTccBusiness.start(1);
-        TestMgr.check("User [name=haha, age=10, index=1]", result);
-
-        try {
-            result = testTccBusiness.start(0);
-        } catch (InvocationException e) {
-            TestMgr.check("Cse Internal Server Error", ((CommonExceptionData) e.getErrorData()).getMessage());
         }
     }
 
