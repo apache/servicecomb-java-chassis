@@ -155,6 +155,7 @@
 		<module>cse-spring-boot-starter-provider</module>
 		<module>cse-spring-boot-starter-transport</module>
 		<module>demo</module>
+		<module>integration-tests</module>
 	</modules>
 
     <distributionManagement>
@@ -213,41 +214,6 @@
 				</configuration>
 			</plugin>
 			<plugin>
-				<groupId>org.jacoco</groupId>
-				<artifactId>jacoco-maven-plugin</artifactId>
-				<version>0.7.1.201405082137</version>
-
-				<executions>
-					<!-- prepare agent for measuring integration tests -->
-					<execution>
-						<id>prepare-integration-tests</id>
-						<phase>pre-integration-test</phase>
-						<goals>
-							<goal>prepare-agent</goal>
-						</goals>
-						<configuration>
-							<destFile>${basedir}/target/coverage-reports/jacoco-unit.exec</destFile>
-							<excludes>
-								<exclude>*$Impl_*</exclude>
-							</excludes>
-						</configuration>
-					</execution>
-					<execution>
-						<id>jacoco-site</id>
-						<phase>post-integration-test</phase>
-						<goals>
-							<goal>report</goal>
-						</goals>
-						<configuration>
-							<dataFile>${basedir}/target/coverage-reports/jacoco-unit.exec</dataFile>
-							<excludes>
-								<exclude>*$Impl_*</exclude>
-							</excludes>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
-			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>findbugs-maven-plugin</artifactId>
 				<version>3.0.1</version>
@@ -270,6 +236,64 @@
 				</configuration>
 			</plugin>
 		</plugins>
+		<pluginManagement>
+			<plugins>
+				<plugin>
+					<groupId>org.eluder.coveralls</groupId>
+					<artifactId>coveralls-maven-plugin</artifactId>
+					<version>4.3.0</version>
+					<configuration>
+						<jacocoReports>
+							<jacocoReport>${project.basedir}/integration-tests/target/site/jacoco-aggregate/jacoco.xml</jacocoReport>
+						</jacocoReports>
+					</configuration>
+				</plugin>
+				<plugin>
+					<groupId>org.jacoco</groupId>
+					<artifactId>jacoco-maven-plugin</artifactId>
+					<version>0.7.8</version>
+					<configuration>
+						<excludes>
+							<exclude>*$Impl_*</exclude>
+						</excludes>
+					</configuration>
+					<executions>
+						<execution>
+							<id>default-prepare-agent</id>
+							<goals>
+								<goal>prepare-agent</goal>
+							</goals>
+							<configuration>
+								<destFile>${project.build.directory}/jacoco.exec</destFile>
+							</configuration>
+						</execution>
+						<execution>
+							<id>default-prepare-agent-integration</id>
+							<phase>pre-integration-test</phase>
+							<goals>
+								<goal>prepare-agent-integration</goal>
+							</goals>
+							<configuration>
+								<destFile>${project.build.directory}/jacoco-it.exec</destFile>
+								<propertyName>jacoco.failsafe.argLine</propertyName>
+							</configuration>
+						</execution>
+						<execution>
+							<id>default-report</id>
+							<goals>
+								<goal>report</goal>
+							</goals>
+						</execution>
+						<execution>
+							<id>default-report-integration</id>
+							<goals>
+								<goal>report-integration</goal>
+							</goals>
+						</execution>
+					</executions>
+				</plugin>
+			</plugins>
+		</pluginManagement>
 	</build>
 
 	<reporting>
@@ -283,6 +307,17 @@
 	</reporting>
 
 	<profiles>
+		<profile>
+			<id>jacoco</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.jacoco</groupId>
+						<artifactId>jacoco-maven-plugin</artifactId>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
 		<profile>
 			<id>release</id>
 			<build>
