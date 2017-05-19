@@ -12,10 +12,6 @@ cse:
     address: 0.0.0.0:8080
   highway:
     address: 0.0.0.0:7070
-  handler:
-    chain:
-      Provider:
-        default: tcc-server
   #executors:
     #default: test
     #Provider:

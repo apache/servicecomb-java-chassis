@@ -31,12 +31,6 @@
 	<cse:rpc-reference id="helloworld.Greeter"
 		microservice-name="pojo" schema-id="helloworld.Greeter"></cse:rpc-reference>
 
-	<cse:rpc-reference id="tcc-server" microservice-name="pojo"
-		schema-id="tcc-server"></cse:rpc-reference>
-
-	<bean id="testTccBusiness" class="com.huawei.paas.cse.demo.pojo.client.TestTccBusiness">
-	</bean>
-
 	<cse:rpc-reference id="server" microservice-name="pojo"
 		schema-id="server" interface="com.huawei.paas.cse.demo.server.Test"></cse:rpc-reference>
 		
