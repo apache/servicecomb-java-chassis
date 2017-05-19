@@ -22,10 +22,10 @@
 	<groupId>com.huawei.paas.cse</groupId>
 	<artifactId>cse-dependency</artifactId>
 	<packaging>pom</packaging>
-	<version>0.1</version>
+	<version>0.1.0-SNAPSHOT</version>
 
 	<properties>
-		<paas.cse.version>0.1</paas.cse.version>
+		<paas.cse.version>0.1.0-SNAPSHOT</paas.cse.version>
 		<jackson.version>2.8.1</jackson.version>
 		<vertx.version>3.3.3</vertx.version>
 		<tec.zkclient.version>0.8</tec.zkclient.version>
@@ -1307,14 +1307,12 @@
 
 	<distributionManagement>
 		<repository>
-			<id>releases</id>
-			<name>Internal Releases</name>
-			<url>http://10.120.179.11:8081/nexus/content/repositories/releases/</url>
+			<id>ossrh</id>
+			<url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
 		</repository>
 		<snapshotRepository>
-			<id>snapshots</id>
-			<name>Internal Snapshots</name>
-			<url>http://10.120.179.11:8081/nexus/content/repositories/snapshots/</url>
+			<id>ossrh</id>
+			<url>https://oss.sonatype.org/content/repositories/snapshots</url>
 		</snapshotRepository>
 	</distributionManagement>
 
