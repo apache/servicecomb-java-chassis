@@ -9,7 +9,7 @@ script:
   - mvn clean install
 
 after_success:
-  - mvn clean deploy --settings .travis.settings.xml coveralls:report
+  - mvn clean deploy -Pjacoco --settings .travis.settings.xml coveralls:report
 
 env:
   global:
