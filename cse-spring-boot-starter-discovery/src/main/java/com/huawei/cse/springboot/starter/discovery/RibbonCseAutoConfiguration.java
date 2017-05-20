@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package com.huawei.cse.springboot.starter.discovery;
 
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
@@ -25,7 +24,7 @@ import org.springframework.cloud.netflix.ribbon.SpringClientFactory;
 import org.springframework.context.annotation.Configuration;
 
 /**
- * @author
+ * @author Sukesh
  */
 @Configuration
 @EnableConfigurationProperties

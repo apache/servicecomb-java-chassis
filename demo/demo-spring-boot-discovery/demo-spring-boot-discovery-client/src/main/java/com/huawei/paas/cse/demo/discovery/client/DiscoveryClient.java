@@ -21,13 +21,13 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 
 /**
- * @author   
+ * @author Sukesh
  */
 @SpringBootApplication
 @EnableDiscoveryClient
 public class DiscoveryClient {
 
     public static void main(String[] args) throws Exception {
-    	SpringApplication.run(DiscoveryClient.class, args);
+        SpringApplication.run(DiscoveryClient.class, args);
     }
 }

@@ -43,6 +43,7 @@ import com.huawei.paas.foundation.common.utils.FortifyUtils;
 public class CseApplicationListener implements ApplicationListener<ApplicationEvent> {
     private static final Logger LOGGER = LoggerFactory.getLogger(CseApplicationListener.class);
 
+    private static boolean isInit = false;
     @Inject
     private ProducerProviderManager producerProviderManager;
 
@@ -70,10 +71,9 @@ public class CseApplicationListener implements ApplicationListener<ApplicationEv
     public void onApplicationEvent(ApplicationEvent event) {
         if (event instanceof ContextRefreshedEvent) {
             ApplicationContext applicationContext = ((ContextRefreshedEvent) event).getApplicationContext();
-            if (applicationContext.getParent() != null) {
-                return;
-            }
-
+            //TODO to load when webapplication context is used for discovery client, need to check if can use the order and undo this change with proper fix.
+            if(!isInit)
+            {
             try {
                 BeanUtils.setContext(applicationContext);
                 bootListenerList = applicationContext.getBeansOfType(BootListener.class).values();
@@ -106,12 +106,15 @@ public class CseApplicationListener implements ApplicationListener<ApplicationEv
                 if (applicationContext instanceof AbstractApplicationContext) {
                     ((AbstractApplicationContext) applicationContext).registerShutdownHook();
                 }
+                isInit = true;
             } catch (Exception e) {
                 LOGGER.error("cse init failed, {}", FortifyUtils.getErrorInfo(e));
+            }
             }
         } else if (event instanceof ContextClosedEvent) {
             LOGGER.warn("cse is closing now...");
             RegistryUtils.destory();
+            isInit = false;
         }
     }
 }

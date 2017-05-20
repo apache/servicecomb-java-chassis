@@ -15,37 +15,28 @@
  */
 package com.huawei.cse.springboot.starter.discovery;
 
-import org.springframework.boot.context.properties.ConfigurationProperties;
+import com.huawei.paas.cse.core.Transport;
+import com.huawei.paas.cse.loadbalance.CseServer;
+import com.huawei.paas.cse.serviceregistry.cache.CacheEndpoint;
+import com.huawei.paas.foundation.common.net.URIEndpointObject;
 
 /**
  * @author Sukesh
  */
-@ConfigurationProperties("spring.cloud.cse")
-public class CseDiscoveryProperties {
+public class CseServerWrapper extends CseServer {
 
-    /** Hostname to use when accessing server */
-    private String host;
-
-    /** Port to register the service under (defaults to listening port) */
-    private String port;
-
-    public CseDiscoveryProperties() {
+    public CseServerWrapper(Transport transport, CacheEndpoint cacheEndpoint) {
+        super(transport, cacheEndpoint);
     }
 
+    // used in LoadBalancerContext
     public String getHost() {
-        return host;
+        URIEndpointObject host = (URIEndpointObject) getEndpoint().getAddress();
+        return host.getHostOrIp();
     }
 
-    public void setHost(String host) {
-        this.host = host;
+    public int getPort() {
+        URIEndpointObject host = (URIEndpointObject) getEndpoint().getAddress();
+        return host.getPort();
     }
-
-    public String getPort() {
-        return port;
-    }
-
-    public void setPort(String port) {
-        this.port = port;
-    }
-
 }

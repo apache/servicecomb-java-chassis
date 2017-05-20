@@ -15,34 +15,36 @@
  */
 package com.huawei.cse.springboot.starter.discovery;
 
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.cloud.netflix.zuul.filters.discovery.ServiceRouteMapper;
+import org.springframework.cloud.netflix.zuul.filters.ZuulProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 /**
- * @author
+ * @author Sukesh
  */
 @Configuration
 @EnableConfigurationProperties
 public class CseDiscoveryClientConfiguration {
 
-	@Bean
-	public CseDiscoveryProperties cseDiscoveryProperties() {
-		return new CseDiscoveryProperties();
-	}
-
-   @Bean
-    public ServiceRouteMapper cseServiceRouteMapper() {
-        return new CseServiceRouteMapper();
+    @Bean
+    public CseDiscoveryProperties cseDiscoveryProperties() {
+        return new CseDiscoveryProperties();
     }
-   
-	@Bean
-	@ConditionalOnMissingBean
-	public CseDiscoveryClient cseDiscoveryClient() {
-		CseDiscoveryClient discoveryClient = new CseDiscoveryClient();
-		return discoveryClient;
-	}
+
+    @Bean
+    @ConditionalOnBean(ZuulProperties.class)
+    public CseRoutesProperties cseRoutesProperties() {
+        return new CseRoutesProperties();
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public CseDiscoveryClient cseDiscoveryClient() {
+        CseDiscoveryClient discoveryClient = new CseDiscoveryClient();
+        return discoveryClient;
+    }
 
 }
