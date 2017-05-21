@@ -42,7 +42,7 @@
 	</dependencies>
 
 	<properties>
-		<demo.main>com.huawei.paas.cse.demo.springmvc.server.SpringmvcServer</demo.main>
+		<demo.main>io.servicecomb.demo.springmvc.server.SpringmvcServer</demo.main>
 	</properties>
 	<build>
 		<plugins>

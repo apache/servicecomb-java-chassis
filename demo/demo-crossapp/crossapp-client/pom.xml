@@ -42,7 +42,7 @@
 	</dependencies>
 
 	<properties>
-		<demo.main>com.huawei.paas.cse.demo.crossapp.CrossappClient</demo.main>
+		<demo.main>io.servicecomb.demo.crossapp.CrossappClient</demo.main>
 	</properties>
 	<build>
 		<plugins>

@@ -31,7 +31,7 @@
 	</dependencies>
 
 	<properties>
-		<demo.main>com.huawei.paas.cse.demo.client.perf.PerfClient</demo.main>
+		<demo.main>io.servicecomb.demo.client.perf.PerfClient</demo.main>
 	</properties>
 	<build>
 		<plugins>

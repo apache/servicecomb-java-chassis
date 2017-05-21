@@ -34,7 +34,7 @@
 	<cse:rpc-reference id="tcc-server" microservice-name="pojo"
 		schema-id="tcc-server"></cse:rpc-reference>
 
-	<bean id="testTccBusiness" class="com.huawei.paas.cse.demo.pojo.client.TestTccBusiness">
+	<bean id="testTccBusiness" class="io.servicecomb.demo.pojo.client.TestTccBusiness">
 	</bean>
 
 	<cse:rpc-reference id="server" microservice-name="pojo"

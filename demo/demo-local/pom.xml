@@ -35,7 +35,7 @@
 	</dependencies>
 
 	<properties>
-		<demo.main>com.huawei.paas.cse.demo.local.DemoLocal</demo.main>
+		<demo.main>io.servicecomb.demo.local.DemoLocal</demo.main>
 	</properties>
 	<build>
 		<plugins>

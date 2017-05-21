@@ -21,7 +21,7 @@
 	xsi:schemaLocation="
 		http://www.springframework.org/schema/beans classpath:org/springframework/beans/factory/xml/spring-beans-3.0.xsd">
 
-	<bean class="com.huawei.paas.cse.demo.client.perf.Config">
+	<bean class="io.servicecomb.demo.client.perf.Config">
 		<property name="clientThread" value="${cse.demo.client.thread}"></property>
 		<property name="transport" value="${cse.demo.client.transport}"></property>
 		<property name="mode" value="${cse.demo.client.mode}"></property>

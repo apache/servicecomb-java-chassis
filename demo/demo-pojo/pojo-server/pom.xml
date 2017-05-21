@@ -38,7 +38,7 @@
 	</dependencies>
 
 	<properties>
-		<demo.main>com.huawei.paas.cse.demo.pojo.server.PojoServer</demo.main>
+		<demo.main>io.servicecomb.demo.pojo.server.PojoServer</demo.main>
 	</properties>
 	<build>
 		<plugins>
