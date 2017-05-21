@@ -30,7 +30,7 @@ import org.springframework.util.ClassUtils;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.type.TypeFactory;
 import com.huawei.paas.cse.codec.protobuf.utils.schema.WrapSchemaFactory;
-import com.huawei.paas.cse.common.javassist.JavassistUtils;
+import io.servicecomb.common.javassist.JavassistUtils;
 import com.huawei.paas.cse.core.definition.OperationMeta;
 
 import io.protostuff.Schema;

@@ -23,7 +23,7 @@ import java.util.Map;
 import org.junit.Assert;
 import org.junit.Test;
 
-import com.huawei.paas.cse.common.javassist.FieldConfig;
+import io.servicecomb.common.javassist.FieldConfig;
 
 import io.protostuff.ByteArrayInput;
 import io.protostuff.Input;

@@ -24,7 +24,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 
-import com.huawei.paas.cse.common.javassist.MultiWrapper;
+import io.servicecomb.common.javassist.MultiWrapper;
 
 import io.protostuff.Input;
 import io.protostuff.LinkedBuffer;

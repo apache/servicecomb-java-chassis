@@ -25,8 +25,8 @@ import java.util.Map.Entry;
 import org.springframework.util.StringUtils;
 
 import com.fasterxml.jackson.databind.JavaType;
-import com.huawei.paas.cse.common.javassist.ClassConfig;
-import com.huawei.paas.cse.common.javassist.JavassistUtils;
+import io.servicecomb.common.javassist.ClassConfig;
+import io.servicecomb.common.javassist.JavassistUtils;
 import com.huawei.paas.cse.swagger.converter.ConverterMgr;
 import com.huawei.paas.cse.swagger.generator.core.OperationGenerator;
 import com.huawei.paas.cse.swagger.generator.core.SwaggerConst;

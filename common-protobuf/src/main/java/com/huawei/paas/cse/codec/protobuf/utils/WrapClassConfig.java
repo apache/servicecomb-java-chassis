@@ -16,7 +16,7 @@
 
 package com.huawei.paas.cse.codec.protobuf.utils;
 
-import com.huawei.paas.cse.common.javassist.ClassConfig;
+import io.servicecomb.common.javassist.ClassConfig;
 
 /**
  * <一句话功能简述>

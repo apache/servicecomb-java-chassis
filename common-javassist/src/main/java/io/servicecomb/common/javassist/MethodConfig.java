@@ -14,17 +14,35 @@
  * limitations under the License.
  */
 
-package com.huawei.paas.cse.common.javassist;
+package io.servicecomb.common.javassist;
 
 /**
- * 数组每个元素对应class的一个field
+ * <一句话功能简述>
+ * <功能详细描述>
+ *
  * @author   
- * @version  [版本号, 2017年2月20日]
+ * @version  [版本号, 2017年3月30日]
  * @see  [相关类/方法]
  * @since  [产品/模块版本]
  */
-public interface MultiWrapper {
-    void writeFields(Object[] values);
+public class MethodConfig {
+    private String source;
 
-    Object[] readFields();
+    private String genericSignature;
+
+    public String getSource() {
+        return source;
+    }
+
+    public void setSource(String source) {
+        this.source = source;
+    }
+
+    public String getGenericSignature() {
+        return genericSignature;
+    }
+
+    public void setGenericSignature(String genericSignature) {
+        this.genericSignature = genericSignature;
+    }
 }

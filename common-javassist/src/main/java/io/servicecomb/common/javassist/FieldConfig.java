@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.huawei.paas.cse.common.javassist;
+package io.servicecomb.common.javassist;
 
 /**
  * <一句话功能简述>

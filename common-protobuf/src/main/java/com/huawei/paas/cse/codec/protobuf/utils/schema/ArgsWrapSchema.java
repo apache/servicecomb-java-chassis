@@ -18,7 +18,7 @@ package com.huawei.paas.cse.codec.protobuf.utils.schema;
 
 import java.io.IOException;
 
-import com.huawei.paas.cse.common.javassist.MultiWrapper;
+import io.servicecomb.common.javassist.MultiWrapper;
 
 import io.protostuff.Input;
 import io.protostuff.Output;

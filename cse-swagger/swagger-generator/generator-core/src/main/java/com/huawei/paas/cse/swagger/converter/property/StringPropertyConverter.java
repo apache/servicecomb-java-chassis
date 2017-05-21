@@ -22,7 +22,7 @@ import java.util.Map;
 
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.type.TypeFactory;
-import com.huawei.paas.cse.common.javassist.JavassistUtils;
+import io.servicecomb.common.javassist.JavassistUtils;
 import com.huawei.paas.cse.swagger.converter.ConverterMgr;
 
 import io.swagger.models.Swagger;
