@@ -32,9 +32,9 @@ import org.slf4j.LoggerFactory;
  * @since  [产品/模块版本]
  */
 public class TestMgr {
-    private static Logger LOGGER = LoggerFactory.getLogger(TestMgr.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(TestMgr.class);
 
-    private static List<Throwable> errorList = new ArrayList<>();
+    private static final List<Throwable> errorList = new ArrayList<>();
 
     private static String msg = "";
 
@@ -65,5 +65,9 @@ public class TestMgr {
         for (Throwable e : errorList) {
             LOGGER.info("", e);
         }
+    }
+
+    public static List<Throwable> errors() {
+        return errorList;
     }
 }

@@ -48,4 +48,67 @@
 			</plugin>
 		</plugins>
 	</build>
+
+	<profiles>
+		<profile>
+			<id>docker</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>io.fabric8</groupId>
+						<artifactId>docker-maven-plugin</artifactId>
+						<configuration>
+							<images>
+								<image>
+									<name>${project.artifactId}:${project.version}</name>
+									<alias>${project.artifactId}</alias>
+									<build>
+										<from>openjdk:8-jre-alpine</from>
+										<ports>
+											<port>8080</port>
+										</ports>
+										<assembly>
+											<mode>tar</mode>
+											<descriptor>${project.basedir}/src/assembly/assembly.xml</descriptor>
+										</assembly>
+										<entryPoint>
+											<shell>java $JAVA_OPTS -jar $JAR_PATH</shell>
+										</entryPoint>
+									</build>
+								</image>
+							</images>
+						</configuration>
+						<executions>
+							<execution>
+								<id>build</id>
+								<phase>package</phase>
+								<goals>
+									<goal>build</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-jar-plugin</artifactId>
+						<executions>
+							<execution>
+								<id>assembly</id>
+								<phase>package</phase>
+							</execution>
+						</executions>
+						<configuration>
+							<archive>
+								<manifest>
+									<mainClass>${demo.main}</mainClass>
+									<addClasspath>true</addClasspath>
+									<classpathPrefix>lib/</classpathPrefix>
+								</manifest>
+							</archive>
+						</configuration>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
 </project>
