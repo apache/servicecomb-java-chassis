@@ -6,7 +6,7 @@ services:
   - docker
 
 script:
-  - mvn clean install
+  - mvn clean install -Pdocker
 
 after_success:
   - mvn clean deploy -Pjacoco coveralls:report --settings .travis.settings.xml
