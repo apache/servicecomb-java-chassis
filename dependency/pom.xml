@@ -19,7 +19,7 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
-	<groupId>com.huawei.paas.cse</groupId>
+	<groupId>io.servicecomb</groupId>
 	<artifactId>cse-dependency</artifactId>
 	<packaging>pom</packaging>
 	<version>0.1.0-SNAPSHOT</version>
@@ -989,47 +989,47 @@
 			</dependency>
 
 			<dependency>
-				<groupId>com.huawei.paas.cse</groupId>
+				<groupId>io.servicecomb</groupId>
 				<artifactId>foundation-common</artifactId>
 				<version>${paas.cse.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>com.huawei.paas.cse</groupId>
+				<groupId>io.servicecomb</groupId>
 				<artifactId>foundation-ssl</artifactId>
 				<version>${paas.cse.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>com.huawei.paas.cse</groupId>
+				<groupId>io.servicecomb</groupId>
 				<artifactId>cse-adapter-springmvc</artifactId>
 				<version>${paas.cse.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>com.huawei.paas.cse</groupId>
+				<groupId>io.servicecomb</groupId>
 				<artifactId>foundation-crypt</artifactId>
 				<version>${paas.cse.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>com.huawei.paas.cse</groupId>
+				<groupId>io.servicecomb</groupId>
 				<artifactId>foundation-httpclient</artifactId>
 				<version>${paas.cse.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>com.huawei.paas.cse</groupId>
+				<groupId>io.servicecomb</groupId>
 				<artifactId>foundation-config</artifactId>
 				<version>${paas.cse.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>com.huawei.paas.cse</groupId>
+				<groupId>io.servicecomb</groupId>
 				<artifactId>foundation-config-cc</artifactId>
 				<version>${paas.cse.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>com.huawei.paas.cse</groupId>
+				<groupId>io.servicecomb</groupId>
 				<artifactId>foundation-vertx</artifactId>
 				<version>${paas.cse.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>com.huawei.paas.cse</groupId>
+				<groupId>io.servicecomb</groupId>
 				<artifactId>foundation-metrics</artifactId>
 				<version>${paas.cse.version}</version>
 			</dependency>
@@ -1070,167 +1070,167 @@
 				<version>${swagger.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>com.huawei.paas.cse</groupId>
+				<groupId>io.servicecomb</groupId>
 				<artifactId>cse-core</artifactId>
 				<version>${paas.cse.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>com.huawei.paas.cse</groupId>
+				<groupId>io.servicecomb</groupId>
 				<artifactId>foundation-auth</artifactId>
 				<version>${paas.cse.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>com.huawei.paas.cse</groupId>
+				<groupId>io.servicecomb</groupId>
 				<artifactId>cse-transport-grpc</artifactId>
 				<version>${paas.cse.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>com.huawei.paas.cse</groupId>
+				<groupId>io.servicecomb</groupId>
 				<artifactId>cse-handler-bizkeeper</artifactId>
 				<version>${paas.cse.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>com.huawei.paas.cse</groupId>
+				<groupId>io.servicecomb</groupId>
 				<artifactId>cse-handler-loadbalance</artifactId>
 				<version>${paas.cse.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>com.huawei.paas.cse</groupId>
+				<groupId>io.servicecomb</groupId>
 				<artifactId>cse-handler-tracing</artifactId>
 				<version>${paas.cse.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>com.huawei.paas.cse</groupId>
+				<groupId>io.servicecomb</groupId>
 				<artifactId>cse-handler-performance-stats</artifactId>
 				<version>${paas.cse.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>com.huawei.paas.cse</groupId>
+				<groupId>io.servicecomb</groupId>
 				<artifactId>cse-handler-flowcontrol-qps</artifactId>
 				<version>${paas.cse.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>com.huawei.paas.cse</groupId>
+				<groupId>io.servicecomb</groupId>
 				<artifactId>cse-adapter-common</artifactId>
 				<version>${paas.cse.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>com.huawei.paas.cse</groupId>
+				<groupId>io.servicecomb</groupId>
 				<artifactId>cse-common-rest</artifactId>
 				<version>${paas.cse.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>com.huawei.paas.cse</groupId>
+				<groupId>io.servicecomb</groupId>
 				<artifactId>cse-transport-rest-client</artifactId>
 				<version>${paas.cse.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>com.huawei.paas.cse</groupId>
+				<groupId>io.servicecomb</groupId>
 				<artifactId>cse-transport-rest-vertx</artifactId>
 				<version>${paas.cse.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>com.huawei.paas.cse</groupId>
+				<groupId>io.servicecomb</groupId>
 				<artifactId>cse-transport-rest-servlet</artifactId>
 				<version>${paas.cse.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>com.huawei.paas.cse</groupId>
+				<groupId>io.servicecomb</groupId>
 				<artifactId>cse-common-protobuf</artifactId>
 				<version>${paas.cse.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>com.huawei.paas.cse</groupId>
+				<groupId>io.servicecomb</groupId>
 				<artifactId>cse-common-javassist</artifactId>
 				<version>${paas.cse.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>com.huawei.paas.cse</groupId>
+				<groupId>io.servicecomb</groupId>
 				<artifactId>cse-common-swagger-generator</artifactId>
 				<version>${paas.cse.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>com.huawei.paas.cse</groupId>
+				<groupId>io.servicecomb</groupId>
 				<artifactId>swagger-generator-core</artifactId>
 				<version>${paas.cse.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>com.huawei.paas.cse</groupId>
+				<groupId>io.servicecomb</groupId>
 				<artifactId>swagger-generator-jaxrs</artifactId>
 				<version>${paas.cse.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>com.huawei.paas.cse</groupId>
+				<groupId>io.servicecomb</groupId>
 				<artifactId>swagger-generator-springmvc</artifactId>
 				<version>${paas.cse.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>com.huawei.paas.cse</groupId>
+				<groupId>io.servicecomb</groupId>
 				<artifactId>swagger-invocation-core</artifactId>
 				<version>${paas.cse.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>com.huawei.paas.cse</groupId>
+				<groupId>io.servicecomb</groupId>
 				<artifactId>swagger-invocation-jaxrs</artifactId>
 				<version>${paas.cse.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>com.huawei.paas.cse</groupId>
+				<groupId>io.servicecomb</groupId>
 				<artifactId>swagger-invocation-springmvc</artifactId>
 				<version>${paas.cse.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>com.huawei.paas.cse</groupId>
+				<groupId>io.servicecomb</groupId>
 				<artifactId>cse-serviceregistry</artifactId>
 				<version>${paas.cse.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>com.huawei.paas.cse</groupId>
+				<groupId>io.servicecomb</groupId>
 				<artifactId>cse-handler-tcc</artifactId>
 				<version>${paas.cse.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>com.huawei.paas.cse</groupId>
+				<groupId>io.servicecomb</groupId>
 				<artifactId>cse-provider-pojo</artifactId>
 				<version>${paas.cse.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>com.huawei.paas.cse</groupId>
+				<groupId>io.servicecomb</groupId>
 				<artifactId>cse-provider-rest-common</artifactId>
 				<version>${paas.cse.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>com.huawei.paas.cse</groupId>
+				<groupId>io.servicecomb</groupId>
 				<artifactId>cse-provider-jaxrs</artifactId>
 				<version>${paas.cse.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>com.huawei.paas.cse</groupId>
+				<groupId>io.servicecomb</groupId>
 				<artifactId>cse-provider-springmvc</artifactId>
 				<version>${paas.cse.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>com.huawei.paas.cse</groupId>
+				<groupId>io.servicecomb</groupId>
 				<artifactId>cse-transport-highway</artifactId>
 				<version>${paas.cse.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>com.huawei.paas.cse</groupId>
+				<groupId>io.servicecomb</groupId>
 				<artifactId>cse-spring-boot-starter-config</artifactId>
 				<version>${paas.cse.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>com.huawei.paas.cse</groupId>
+				<groupId>io.servicecomb</groupId>
 				<artifactId>cse-spring-boot-starter-configuration</artifactId>
 				<version>${paas.cse.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>com.huawei.paas.cse</groupId>
+				<groupId>io.servicecomb</groupId>
 				<artifactId>cse-spring-boot-starter-provider</artifactId>
 				<version>${paas.cse.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>com.huawei.paas.cse</groupId>
+				<groupId>io.servicecomb</groupId>
 				<artifactId>cse-spring-boot-starter-transport</artifactId>
 				<version>${paas.cse.version}</version>
 			</dependency>

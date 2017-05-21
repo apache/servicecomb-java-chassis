@@ -19,7 +19,7 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
-		<groupId>com.huawei.paas.cse</groupId>
+		<groupId>io.servicecomb</groupId>
 		<artifactId>paas-cse</artifactId>
 		<version>0.1.0-SNAPSHOT</version>
 	</parent>
@@ -41,52 +41,52 @@
 	<dependencyManagement>
 		<dependencies>
 			<dependency>
-				<groupId>com.huawei.paas.cse</groupId>
+				<groupId>io.servicecomb</groupId>
 				<artifactId>demo-schema</artifactId>
 				<version>${paas.cse.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>com.huawei.paas.cse</groupId>
+				<groupId>io.servicecomb</groupId>
 				<artifactId>all-client</artifactId>
 				<version>${paas.cse.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>com.huawei.paas.cse</groupId>
+				<groupId>io.servicecomb</groupId>
 				<artifactId>pojo-server</artifactId>
 				<version>${paas.cse.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>com.huawei.paas.cse</groupId>
+				<groupId>io.servicecomb</groupId>
 				<artifactId>jaxrs-server</artifactId>
 				<version>${paas.cse.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>com.huawei.paas.cse</groupId>
+				<groupId>io.servicecomb</groupId>
 				<artifactId>springmvc-server</artifactId>
 				<version>${paas.cse.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>com.huawei.paas.cse</groupId>
+				<groupId>io.servicecomb</groupId>
 				<artifactId>crossapp-server</artifactId>
 				<version>${paas.cse.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>com.huawei.paas.cse</groupId>
+				<groupId>io.servicecomb</groupId>
 				<artifactId>pojo-client</artifactId>
 				<version>${paas.cse.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>com.huawei.paas.cse</groupId>
+				<groupId>io.servicecomb</groupId>
 				<artifactId>jaxrs-client</artifactId>
 				<version>${paas.cse.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>com.huawei.paas.cse</groupId>
+				<groupId>io.servicecomb</groupId>
 				<artifactId>springmvc-client</artifactId>
 				<version>${paas.cse.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>com.huawei.paas.cse</groupId>
+				<groupId>io.servicecomb</groupId>
 				<artifactId>crossapp-client</artifactId>
 				<version>${paas.cse.version}</version>
 			</dependency>

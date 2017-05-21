@@ -18,7 +18,7 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
-		<groupId>com.huawei.paas.cse</groupId>
+		<groupId>io.servicecomb</groupId>
 		<artifactId>paas-cse</artifactId>
 		<version>0.1.0-SNAPSHOT</version>
 	</parent>
@@ -49,35 +49,35 @@
 			</exclusions>
 		</dependency>
 		<dependency>
-			<groupId>com.huawei.paas.cse</groupId>
+			<groupId>io.servicecomb</groupId>
 			<artifactId>cse-provider-springmvc</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>com.huawei.paas.cse</groupId>
+			<groupId>io.servicecomb</groupId>
 			<artifactId>cse-provider-jaxrs</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>com.huawei.paas.cse</groupId>
+			<groupId>io.servicecomb</groupId>
 			<artifactId>cse-provider-pojo</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>com.huawei.paas.cse</groupId>
+			<groupId>io.servicecomb</groupId>
 			<artifactId>cse-handler-bizkeeper</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>com.huawei.paas.cse</groupId>
+			<groupId>io.servicecomb</groupId>
 			<artifactId>cse-handler-loadbalance</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>com.huawei.paas.cse</groupId>
+			<groupId>io.servicecomb</groupId>
 			<artifactId>cse-transport-highway</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>com.huawei.paas.cse</groupId>
+			<groupId>io.servicecomb</groupId>
 			<artifactId>cse-transport-grpc</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>com.huawei.paas.cse</groupId>
+			<groupId>io.servicecomb</groupId>
 			<artifactId>cse-transport-rest-servlet</artifactId>
 		</dependency>
 		<dependency>
@@ -86,14 +86,14 @@
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
-			<groupId>com.huawei.paas.cse</groupId>
+			<groupId>io.servicecomb</groupId>
 			<artifactId>cse-handler-flowcontrol-qps</artifactId>
 		</dependency>
 	</dependencies>
 	<dependencyManagement>
 		<dependencies>
 			<dependency>
-				<groupId>com.huawei.paas.cse</groupId>
+				<groupId>io.servicecomb</groupId>
 				<artifactId>cse-dependency</artifactId>
 				<version>${paas.cse.version}</version>
 				<type>pom</type>
