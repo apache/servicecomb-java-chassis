@@ -36,7 +36,7 @@ import com.huawei.paas.cse.provider.pojo.TestPojoConsumerProvider;
 import com.huawei.paas.cse.provider.pojo.instance.PojoInstanceFactory;
 import com.huawei.paas.cse.provider.pojo.reference.PojoReferenceMeta;
 import com.huawei.paas.cse.provider.pojo.schema.PojoProducerMeta;
-import com.huawei.paas.foundation.common.utils.BeanUtils;
+import io.servicecomb.foundation.common.utils.BeanUtils;
 
 import mockit.Mock;
 import mockit.MockUp;

@@ -30,12 +30,12 @@ import io.servicecomb.core.Invocation;
 import io.servicecomb.core.definition.OperationMeta;
 import com.huawei.paas.cse.transport.highway.message.LoginRequest;
 import com.huawei.paas.cse.transport.highway.message.RequestHeader;
-import com.huawei.paas.foundation.vertx.VertxUtils;
-import com.huawei.paas.foundation.vertx.client.ClientPoolManager;
-import com.huawei.paas.foundation.vertx.client.tcp.TcpClientConfig;
-import com.huawei.paas.foundation.vertx.client.tcp.TcpClientPool;
-import com.huawei.paas.foundation.vertx.server.TcpParser;
-import com.huawei.paas.foundation.vertx.tcp.TcpOutputStream;
+import io.servicecomb.foundation.vertx.VertxUtils;
+import io.servicecomb.foundation.vertx.client.ClientPoolManager;
+import io.servicecomb.foundation.vertx.client.tcp.TcpClientConfig;
+import io.servicecomb.foundation.vertx.client.tcp.TcpClientPool;
+import io.servicecomb.foundation.vertx.server.TcpParser;
+import io.servicecomb.foundation.vertx.tcp.TcpOutputStream;
 
 import io.netty.buffer.ByteBuf;
 import io.vertx.core.AbstractVerticle;

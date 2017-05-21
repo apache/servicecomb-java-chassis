@@ -33,7 +33,7 @@ import io.servicecomb.swagger.converter.ConverterMgr;
 import io.servicecomb.swagger.generator.core.schema.RepeatOperation;
 import io.servicecomb.swagger.generator.core.schema.User;
 import io.servicecomb.swagger.generator.core.utils.ClassUtils;
-import com.huawei.paas.foundation.common.utils.ReflectUtils;
+import io.servicecomb.foundation.common.utils.ReflectUtils;
 
 import io.swagger.models.Model;
 import io.swagger.models.RefModel;

@@ -42,7 +42,7 @@ import io.servicecomb.common.rest.codec.param.ParamValueProcessorCreatorManager;
 import io.servicecomb.common.rest.codec.param.PathProcessorCreator;
 import io.servicecomb.common.rest.codec.param.QueryProcessorCreator;
 import io.servicecomb.common.rest.codec.param.RestClientRequestImpl;
-import com.huawei.paas.foundation.common.utils.ReflectUtils;
+import io.servicecomb.foundation.common.utils.ReflectUtils;
 
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.http.HttpClientRequest;

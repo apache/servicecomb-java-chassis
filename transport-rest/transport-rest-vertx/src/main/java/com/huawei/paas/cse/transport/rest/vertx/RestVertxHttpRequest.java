@@ -24,7 +24,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import io.servicecomb.common.rest.codec.RestServerRequestInternal;
-import com.huawei.paas.foundation.vertx.stream.BufferInputStream;
+import io.servicecomb.foundation.vertx.stream.BufferInputStream;
 
 import io.vertx.core.Future;
 import io.vertx.core.http.HttpServerRequest;

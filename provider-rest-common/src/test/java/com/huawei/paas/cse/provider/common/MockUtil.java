@@ -23,7 +23,7 @@ import java.lang.reflect.Type;
 import org.mockito.Mockito;
 import org.springframework.context.ApplicationContext;
 
-import com.huawei.paas.foundation.common.utils.BeanUtils;
+import io.servicecomb.foundation.common.utils.BeanUtils;
 
 import mockit.Mock;
 import mockit.MockUp;

@@ -49,7 +49,7 @@ import io.servicecomb.core.provider.consumer.ReferenceConfig;
 import com.huawei.paas.cse.provider.springmvc.reference.CseClientHttpRequest;
 import com.huawei.paas.cse.provider.springmvc.reference.CseClientHttpResponse;
 import com.huawei.paas.cse.provider.springmvc.reference.RequestMeta;
-import com.huawei.paas.foundation.common.utils.BeanUtils;
+import io.servicecomb.foundation.common.utils.BeanUtils;
 
 import io.swagger.models.Operation;
 import io.swagger.models.Swagger;

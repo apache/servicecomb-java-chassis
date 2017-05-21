@@ -21,7 +21,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.huawei.paas.cse.serviceregistry.config.ServiceRegistryConfig;
-import com.huawei.paas.foundation.common.utils.BeanUtils;
+import io.servicecomb.foundation.common.utils.BeanUtils;
 import mockit.Mock;
 import mockit.MockUp;
 

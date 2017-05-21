@@ -27,7 +27,7 @@ import io.servicecomb.core.CseContext;
 import io.servicecomb.core.definition.SchemaMeta;
 import com.huawei.paas.cse.serviceregistry.RegistryUtils;
 import com.huawei.paas.cse.serviceregistry.api.registry.Microservice;
-import com.huawei.paas.foundation.common.utils.ReflectUtils;
+import io.servicecomb.foundation.common.utils.ReflectUtils;
 
 /**
  * <一句话功能简述>

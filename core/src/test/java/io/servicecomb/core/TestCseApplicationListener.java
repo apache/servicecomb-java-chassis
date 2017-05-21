@@ -29,7 +29,7 @@ import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.context.support.AbstractApplicationContext;
 
 import com.huawei.paas.cse.serviceregistry.RegistryUtils;
-import com.huawei.paas.foundation.common.utils.ReflectUtils;
+import io.servicecomb.foundation.common.utils.ReflectUtils;
 
 import mockit.Expectations;
 import mockit.Injectable;

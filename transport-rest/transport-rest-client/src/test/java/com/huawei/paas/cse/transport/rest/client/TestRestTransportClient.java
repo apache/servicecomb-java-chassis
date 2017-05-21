@@ -29,9 +29,9 @@ import io.servicecomb.core.Invocation;
 import io.servicecomb.core.definition.OperationMeta;
 import com.huawei.paas.cse.transport.rest.client.http.HttpMethodFactory;
 import com.huawei.paas.cse.transport.rest.client.http.VertxHttpMethod;
-import com.huawei.paas.foundation.vertx.VertxUtils;
-import com.huawei.paas.foundation.vertx.client.ClientPoolManager;
-import com.huawei.paas.foundation.vertx.client.http.HttpClientWithContext;
+import io.servicecomb.foundation.vertx.VertxUtils;
+import io.servicecomb.foundation.vertx.client.ClientPoolManager;
+import io.servicecomb.foundation.vertx.client.http.HttpClientWithContext;
 
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.DeploymentOptions;

@@ -23,7 +23,7 @@ import org.slf4j.LoggerFactory;
 
 import io.servicecomb.core.Endpoint;
 import io.servicecomb.core.transport.AbstractTransport;
-import com.huawei.paas.foundation.common.net.URIEndpointObject;
+import io.servicecomb.foundation.common.net.URIEndpointObject;
 
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Context;

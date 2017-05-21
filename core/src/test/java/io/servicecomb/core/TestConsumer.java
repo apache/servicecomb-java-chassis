@@ -31,7 +31,7 @@ import org.junit.Test;
 import org.mockito.Mockito;
 
 import io.servicecomb.core.definition.SchemaMeta;
-import com.huawei.paas.foundation.common.RegisterManager;
+import io.servicecomb.foundation.common.RegisterManager;
 
 public class TestConsumer {
 

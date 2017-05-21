@@ -23,8 +23,8 @@ import io.servicecomb.core.provider.consumer.InvokerUtils;
 import io.servicecomb.demo.TestMgr;
 import com.huawei.paas.cse.provider.pojo.RpcReference;
 import com.huawei.paas.cse.provider.springmvc.reference.RestTemplateBuilder;
-import com.huawei.paas.foundation.common.utils.BeanUtils;
-import com.huawei.paas.foundation.common.utils.Log4jUtils;
+import io.servicecomb.foundation.common.utils.BeanUtils;
+import io.servicecomb.foundation.common.utils.Log4jUtils;
 
 /**
  * <一句话功能简述>

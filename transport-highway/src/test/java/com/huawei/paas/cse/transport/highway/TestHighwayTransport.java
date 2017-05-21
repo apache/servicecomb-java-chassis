@@ -28,7 +28,7 @@ import io.servicecomb.core.AsyncResponse;
 import io.servicecomb.core.Endpoint;
 import io.servicecomb.core.Invocation;
 import io.servicecomb.core.definition.OperationMeta;
-import com.huawei.paas.foundation.common.net.URIEndpointObject;
+import io.servicecomb.foundation.common.net.URIEndpointObject;
 
 import mockit.Mock;
 import mockit.MockUp;

@@ -19,8 +19,8 @@ package io.servicecomb.core.exception;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.huawei.paas.foundation.common.RegisterManager;
-import com.huawei.paas.foundation.common.utils.FortifyUtils;
+import io.servicecomb.foundation.common.RegisterManager;
+import io.servicecomb.foundation.common.utils.FortifyUtils;
 
 /**
  * <一句话功能简述>

@@ -21,7 +21,7 @@ import java.util.Map;
 
 import javax.ws.rs.core.HttpHeaders;
 
-import com.huawei.paas.foundation.common.utils.HttpUtils;
+import io.servicecomb.foundation.common.utils.HttpUtils;
 
 /**
  * <一句话功能简述>

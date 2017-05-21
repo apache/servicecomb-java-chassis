@@ -24,9 +24,9 @@ import com.huawei.paas.cse.transport.highway.message.LoginRequest;
 import com.huawei.paas.cse.transport.highway.message.LoginResponse;
 import com.huawei.paas.cse.transport.highway.message.RequestHeader;
 import com.huawei.paas.cse.transport.highway.message.ResponseHeader;
-import com.huawei.paas.foundation.vertx.server.TcpBufferHandler;
-import com.huawei.paas.foundation.vertx.server.TcpParser;
-import com.huawei.paas.foundation.vertx.server.TcpServerConnection;
+import io.servicecomb.foundation.vertx.server.TcpBufferHandler;
+import io.servicecomb.foundation.vertx.server.TcpParser;
+import io.servicecomb.foundation.vertx.server.TcpServerConnection;
 
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.net.NetSocket;

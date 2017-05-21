@@ -18,7 +18,7 @@ package io.servicecomb.swagger.generator.core;
 
 import java.lang.annotation.Annotation;
 
-import com.huawei.paas.foundation.common.RegisterManager;
+import io.servicecomb.foundation.common.RegisterManager;
 
 /**
  * 管理各种注解processor

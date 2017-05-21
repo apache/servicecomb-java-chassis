@@ -26,7 +26,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.core.io.Resource;
 
 import com.huawei.paas.cse.serviceregistry.RegistryUtils;
-import com.huawei.paas.foundation.common.config.PaaSResourceUtils;
+import io.servicecomb.foundation.common.config.PaaSResourceUtils;
 
 /**
  * 场景：

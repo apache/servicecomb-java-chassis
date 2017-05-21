@@ -17,7 +17,7 @@
 package io.servicecomb.demo.client.perf;
 
 import io.servicecomb.demo.pojo.client.PojoClient;
-import com.huawei.paas.foundation.vertx.VertxUtils;
+import io.servicecomb.foundation.vertx.VertxUtils;
 
 import io.vertx.core.Vertx;
 

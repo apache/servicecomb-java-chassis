@@ -24,7 +24,7 @@ import com.huawei.paas.cse.serviceregistry.config.ServiceRegistryConfig;
 import com.huawei.paas.cse.serviceregistry.notify.NotifyManager;
 import com.huawei.paas.cse.serviceregistry.notify.RegistryEvent;
 import com.huawei.paas.cse.serviceregistry.utils.TimerException;
-import com.huawei.paas.foundation.common.CommonThread;
+import io.servicecomb.foundation.common.CommonThread;
 
 /**
  * <一句话功能简述>

@@ -16,9 +16,9 @@
 
 package com.huawei.paas.cse.transport.highway;
 
-import com.huawei.paas.foundation.common.net.URIEndpointObject;
-import com.huawei.paas.foundation.vertx.server.TcpServer;
-import com.huawei.paas.foundation.vertx.server.TcpServerConnection;
+import io.servicecomb.foundation.common.net.URIEndpointObject;
+import io.servicecomb.foundation.vertx.server.TcpServer;
+import io.servicecomb.foundation.vertx.server.TcpServerConnection;
 
 public class HighwayServer extends TcpServer {
     /**

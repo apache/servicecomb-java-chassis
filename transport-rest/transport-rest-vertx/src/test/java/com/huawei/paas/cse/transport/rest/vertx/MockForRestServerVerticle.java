@@ -21,7 +21,7 @@ package com.huawei.paas.cse.transport.rest.vertx;
 
 import org.mockito.Mockito;
 
-import com.huawei.paas.foundation.common.net.IpPort;
+import io.servicecomb.foundation.common.net.IpPort;
 
 import io.vertx.core.Future;
 import io.vertx.core.http.HttpServer;

@@ -34,7 +34,7 @@ import io.servicecomb.core.handler.impl.SimpleLoadBalanceHandler;
 import com.huawei.paas.cse.serviceregistry.RegistryUtils;
 import com.huawei.paas.cse.serviceregistry.api.registry.Microservice;
 import io.servicecomb.swagger.generator.core.unittest.UnitTestSwaggerUtils;
-import com.huawei.paas.foundation.common.utils.BeanUtils;
+import io.servicecomb.foundation.common.utils.BeanUtils;
 
 import io.swagger.models.Swagger;
 import mockit.Mock;

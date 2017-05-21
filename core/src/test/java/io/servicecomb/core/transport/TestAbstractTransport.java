@@ -21,7 +21,7 @@ import io.servicecomb.core.Invocation;
 import org.junit.Assert;
 import org.junit.Test;
 
-import com.huawei.paas.foundation.common.net.IpPort;
+import io.servicecomb.foundation.common.net.IpPort;
 
 import mockit.Mocked;
 

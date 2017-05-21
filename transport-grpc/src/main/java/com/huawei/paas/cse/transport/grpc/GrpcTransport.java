@@ -27,11 +27,11 @@ import io.servicecomb.core.Response;
 import io.servicecomb.core.definition.OperationMeta;
 import io.servicecomb.core.transport.AbstractTransport;
 import io.servicecomb.swagger.invocation.response.ResponseMeta;
-import com.huawei.paas.foundation.common.net.IpPort;
-import com.huawei.paas.foundation.common.utils.JsonUtils;
-import com.huawei.paas.foundation.vertx.VertxUtils;
-import com.huawei.paas.foundation.vertx.client.ClientPoolManager;
-import com.huawei.paas.foundation.vertx.client.http.HttpClientWithContext;
+import io.servicecomb.foundation.common.net.IpPort;
+import io.servicecomb.foundation.common.utils.JsonUtils;
+import io.servicecomb.foundation.vertx.VertxUtils;
+import io.servicecomb.foundation.vertx.client.ClientPoolManager;
+import io.servicecomb.foundation.vertx.client.http.HttpClientWithContext;
 
 import io.vertx.core.DeploymentOptions;
 import io.vertx.core.Handler;

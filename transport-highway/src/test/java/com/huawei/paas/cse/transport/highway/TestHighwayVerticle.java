@@ -25,7 +25,7 @@ import org.mockito.Mockito;
 import io.servicecomb.core.Endpoint;
 import io.servicecomb.core.Transport;
 import com.huawei.paas.cse.transport.common.MockUtil;
-import com.huawei.paas.foundation.common.net.URIEndpointObject;
+import io.servicecomb.foundation.common.net.URIEndpointObject;
 
 import io.vertx.core.Context;
 import io.vertx.core.Future;

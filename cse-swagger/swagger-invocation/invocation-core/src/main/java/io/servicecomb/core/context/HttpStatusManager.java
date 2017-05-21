@@ -21,7 +21,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.Response.StatusType;
 
-import com.huawei.paas.foundation.common.utils.SPIServiceUtils;
+import io.servicecomb.foundation.common.utils.SPIServiceUtils;
 
 /**
  * <一句话功能简述>

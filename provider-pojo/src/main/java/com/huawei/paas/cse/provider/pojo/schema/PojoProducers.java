@@ -23,8 +23,8 @@ import org.springframework.util.StringUtils;
 
 import io.servicecomb.core.provider.CseBeanPostProcessor.ProviderProcessor;
 import com.huawei.paas.cse.provider.pojo.RpcSchema;
-import com.huawei.paas.foundation.common.RegisterManager;
-import com.huawei.paas.foundation.common.utils.BeanUtils;
+import io.servicecomb.foundation.common.RegisterManager;
+import io.servicecomb.foundation.common.utils.BeanUtils;
 
 /**
  * <一句话功能简述>

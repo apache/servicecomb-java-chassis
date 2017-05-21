@@ -23,7 +23,7 @@ import org.springframework.stereotype.Component;
 
 import io.servicecomb.core.provider.CseBeanPostProcessor.ProviderProcessor;
 import io.servicecomb.core.provider.producer.ProducerMeta;
-import com.huawei.paas.foundation.common.utils.BeanUtils;
+import io.servicecomb.foundation.common.utils.BeanUtils;
 
 /**
  * <一句话功能简述>

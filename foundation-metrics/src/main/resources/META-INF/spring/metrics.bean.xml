@@ -22,6 +22,6 @@
         http://www.springframework.org/schema/beans
         http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
 
-	<bean class="com.huawei.paas.foundation.metrics.MetricsConfig">
+	<bean class="io.servicecomb.foundation.metrics.MetricsConfig">
 	</bean>
 </beans>

@@ -50,8 +50,8 @@ import io.servicecomb.swagger.invocation.arguments.consumer.ConsumerArgumentsMap
 import io.servicecomb.swagger.invocation.arguments.consumer.ConsumerArgumentsMapperFactory;
 import io.servicecomb.swagger.invocation.response.consumer.ConsumerResponseMapper;
 import io.servicecomb.swagger.invocation.response.consumer.ConsumerResponseMapperFactory;
-import com.huawei.paas.foundation.common.config.PaaSResourceUtils;
-import com.huawei.paas.foundation.common.utils.ReflectUtils;
+import io.servicecomb.foundation.common.config.PaaSResourceUtils;
+import io.servicecomb.foundation.common.utils.ReflectUtils;
 
 import io.swagger.models.Swagger;
 import io.swagger.models.parameters.Parameter;

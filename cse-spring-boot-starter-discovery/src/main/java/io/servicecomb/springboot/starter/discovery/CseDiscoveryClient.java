@@ -27,7 +27,7 @@ import com.huawei.paas.cse.serviceregistry.api.registry.Microservice;
 import com.huawei.paas.cse.serviceregistry.api.registry.MicroserviceInstance;
 import com.huawei.paas.cse.serviceregistry.client.RegistryClientFactory;
 import com.huawei.paas.cse.serviceregistry.client.ServiceRegistryClient;
-import com.huawei.paas.foundation.common.net.URIEndpointObject;
+import io.servicecomb.foundation.common.net.URIEndpointObject;
 import com.netflix.config.DynamicPropertyFactory;
 
 public class CseDiscoveryClient implements DiscoveryClient {

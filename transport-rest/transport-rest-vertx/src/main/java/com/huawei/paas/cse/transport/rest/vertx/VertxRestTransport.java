@@ -24,9 +24,9 @@ import io.servicecomb.core.Invocation;
 import io.servicecomb.core.transport.AbstractTransport;
 import com.huawei.paas.cse.transport.rest.client.RestTransportClient;
 import com.huawei.paas.cse.transport.rest.client.RestTransportClientManager;
-import com.huawei.paas.foundation.common.net.URIEndpointObject;
-import com.huawei.paas.foundation.vertx.SimpleJsonObject;
-import com.huawei.paas.foundation.vertx.VertxUtils;
+import io.servicecomb.foundation.common.net.URIEndpointObject;
+import io.servicecomb.foundation.vertx.SimpleJsonObject;
+import io.servicecomb.foundation.vertx.VertxUtils;
 
 import io.vertx.core.DeploymentOptions;
 

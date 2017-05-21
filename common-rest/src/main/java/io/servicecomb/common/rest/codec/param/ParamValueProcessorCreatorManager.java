@@ -16,7 +16,7 @@
 
 package io.servicecomb.common.rest.codec.param;
 
-import com.huawei.paas.foundation.common.RegisterManager;
+import io.servicecomb.foundation.common.RegisterManager;
 
 /**
  * 管理所有parameter processor creater

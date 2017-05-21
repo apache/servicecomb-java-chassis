@@ -37,9 +37,9 @@ import io.servicecomb.core.definition.OperationMeta;
 import io.servicecomb.core.definition.SchemaMeta;
 import com.huawei.paas.cse.transport.highway.message.RequestHeader;
 import com.huawei.paas.cse.transport.highway.message.ResponseHeader;
-import com.huawei.paas.foundation.vertx.client.tcp.TcpData;
-import com.huawei.paas.foundation.vertx.server.TcpParser;
-import com.huawei.paas.foundation.vertx.tcp.TcpOutputStream;
+import io.servicecomb.foundation.vertx.client.tcp.TcpData;
+import io.servicecomb.foundation.vertx.server.TcpParser;
+import io.servicecomb.foundation.vertx.tcp.TcpOutputStream;
 
 import io.netty.buffer.ByteBuf;
 import io.protostuff.Input;

@@ -49,9 +49,9 @@ import com.huawei.paas.cse.serviceregistry.notify.RegistryEvent;
 import com.huawei.paas.cse.serviceregistry.notify.RegistryListener;
 import com.huawei.paas.cse.serviceregistry.utils.Timer;
 import com.huawei.paas.cse.serviceregistry.utils.TimerException;
-import com.huawei.paas.foundation.common.CommonThread;
-import com.huawei.paas.foundation.common.net.IpPort;
-import com.huawei.paas.foundation.common.net.NetUtils;
+import io.servicecomb.foundation.common.CommonThread;
+import io.servicecomb.foundation.common.net.IpPort;
+import io.servicecomb.foundation.common.net.NetUtils;
 import com.netflix.config.DynamicPropertyFactory;
 
 /**

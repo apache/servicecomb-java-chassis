@@ -24,8 +24,8 @@ import javax.servlet.ServletContextListener;
 
 import org.apache.commons.lang3.StringUtils;
 
-import com.huawei.paas.foundation.common.utils.BeanUtils;
-import com.huawei.paas.foundation.common.utils.Log4jUtils;
+import io.servicecomb.foundation.common.utils.BeanUtils;
+import io.servicecomb.foundation.common.utils.Log4jUtils;
 
 /**
  * Rest transport on servlet初始化工作

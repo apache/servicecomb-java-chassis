@@ -26,8 +26,8 @@ import com.huawei.paas.cse.serviceregistry.api.MicroserviceKey;
 import com.huawei.paas.cse.serviceregistry.api.registry.Microservice;
 import com.huawei.paas.cse.serviceregistry.api.registry.WatchAction;
 import com.huawei.paas.cse.serviceregistry.api.response.MicroserviceInstanceChangedEvent;
-import com.huawei.paas.foundation.common.utils.BeanUtils;
-import com.huawei.paas.foundation.common.utils.Log4jUtils;
+import io.servicecomb.foundation.common.utils.BeanUtils;
+import io.servicecomb.foundation.common.utils.Log4jUtils;
 
 /**
  * @author  

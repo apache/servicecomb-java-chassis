@@ -16,7 +16,7 @@
 
 package com.huawei.paas.cse.serviceregistry.client.http;
 
-import com.huawei.paas.foundation.vertx.client.http.HttpClientWithContext;
+import io.servicecomb.foundation.vertx.client.http.HttpClientWithContext;
 
 import io.vertx.core.http.HttpClientOptions;
 

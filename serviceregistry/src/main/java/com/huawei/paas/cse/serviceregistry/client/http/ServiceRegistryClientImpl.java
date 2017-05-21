@@ -57,9 +57,9 @@ import com.huawei.paas.cse.serviceregistry.api.response.RegisterInstanceResponse
 import com.huawei.paas.cse.serviceregistry.client.ClientException;
 import com.huawei.paas.cse.serviceregistry.client.IpPortManager;
 import com.huawei.paas.cse.serviceregistry.client.ServiceRegistryClient;
-import com.huawei.paas.foundation.common.net.IpPort;
-import com.huawei.paas.foundation.common.utils.JsonUtils;
-import com.huawei.paas.foundation.vertx.AsyncResultCallback;
+import io.servicecomb.foundation.common.net.IpPort;
+import io.servicecomb.foundation.common.utils.JsonUtils;
+import io.servicecomb.foundation.vertx.AsyncResultCallback;
 
 import io.vertx.core.Handler;
 import io.vertx.core.http.HttpClientResponse;

@@ -24,7 +24,7 @@ import org.springframework.util.StringUtils;
 
 import io.servicecomb.core.Handler;
 import io.servicecomb.core.handler.config.Config;
-import com.huawei.paas.foundation.common.AbstractObjectManager;
+import io.servicecomb.foundation.common.AbstractObjectManager;
 import com.netflix.config.DynamicPropertyFactory;
 
 // key为microserviceName

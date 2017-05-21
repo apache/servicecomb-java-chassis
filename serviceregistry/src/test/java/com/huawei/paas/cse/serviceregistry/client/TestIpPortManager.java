@@ -30,7 +30,7 @@ import com.huawei.paas.cse.serviceregistry.api.registry.Microservice;
 import com.huawei.paas.cse.serviceregistry.api.registry.MicroserviceInstance;
 import com.huawei.paas.cse.serviceregistry.cache.CacheEndpoint;
 import com.huawei.paas.cse.serviceregistry.cache.InstanceCache;
-import com.huawei.paas.foundation.common.net.IpPort;
+import io.servicecomb.foundation.common.net.IpPort;
 
 import mockit.Deencapsulation;
 import mockit.Mock;

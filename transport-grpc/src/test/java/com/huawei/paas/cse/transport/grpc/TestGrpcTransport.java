@@ -26,9 +26,9 @@ import io.servicecomb.core.AsyncResponse;
 import io.servicecomb.core.Endpoint;
 import io.servicecomb.core.Invocation;
 import io.servicecomb.core.definition.OperationMeta;
-import com.huawei.paas.foundation.common.net.IpPort;
-import com.huawei.paas.foundation.vertx.client.ClientPoolManager;
-import com.huawei.paas.foundation.vertx.client.http.HttpClientWithContext;
+import io.servicecomb.foundation.common.net.IpPort;
+import io.servicecomb.foundation.vertx.client.ClientPoolManager;
+import io.servicecomb.foundation.vertx.client.http.HttpClientWithContext;
 
 import mockit.Mock;
 import mockit.MockUp;

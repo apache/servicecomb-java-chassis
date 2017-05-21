@@ -18,7 +18,7 @@ package io.servicecomb.core.definition;
 
 import java.util.Collection;
 
-import com.huawei.paas.foundation.common.RegisterManager;
+import io.servicecomb.foundation.common.RegisterManager;
 
 /**
  * <一句话功能简述>

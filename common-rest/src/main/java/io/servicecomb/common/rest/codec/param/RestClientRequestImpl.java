@@ -25,7 +25,7 @@ import javax.ws.rs.core.MediaType;
 
 import io.servicecomb.common.rest.codec.RestClientRequest;
 import io.servicecomb.common.rest.codec.RestObjectMapper;
-import com.huawei.paas.foundation.vertx.stream.BufferOutputStream;
+import io.servicecomb.foundation.vertx.stream.BufferOutputStream;
 
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.http.HttpClientRequest;

@@ -25,7 +25,7 @@ import io.servicecomb.swagger.generator.core.OperationGenerator;
 import io.servicecomb.swagger.generator.core.SwaggerGenerator;
 import io.servicecomb.swagger.generator.core.utils.ClassUtils;
 import io.servicecomb.swagger.invocation.arguments.ArgumentsMapperFactory;
-import com.huawei.paas.foundation.common.utils.ReflectUtils;
+import io.servicecomb.foundation.common.utils.ReflectUtils;
 
 import io.swagger.models.Operation;
 import io.swagger.models.Path;

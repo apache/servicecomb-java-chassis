@@ -21,7 +21,7 @@ import java.util.Properties;
 
 import org.springframework.beans.factory.config.PropertyPlaceholderConfigurer;
 
-import com.huawei.paas.foundation.common.config.ConfigMgr;
+import io.servicecomb.foundation.common.config.ConfigMgr;
 
 /**
  * 本部分包含用户Spring的property holder文件

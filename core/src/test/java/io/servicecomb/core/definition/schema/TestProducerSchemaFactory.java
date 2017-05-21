@@ -41,8 +41,8 @@ import io.servicecomb.swagger.generator.core.CompositeSwaggerGeneratorContext;
 import io.servicecomb.swagger.invocation.arguments.producer.ProducerArgumentsMapperFactory;
 import io.servicecomb.swagger.invocation.response.producer.ProducerResponseMapperFactory;
 import io.servicecomb.swagger.invocation.response.producer.ProducerResponseSame;
-import com.huawei.paas.foundation.common.utils.BeanUtils;
-import com.huawei.paas.foundation.common.utils.ReflectUtils;
+import io.servicecomb.foundation.common.utils.BeanUtils;
+import io.servicecomb.foundation.common.utils.ReflectUtils;
 
 /**
  * <一句话功能简述>

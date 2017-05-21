@@ -28,8 +28,8 @@ import com.huawei.paas.cse.serviceregistry.api.registry.Microservice;
 import com.huawei.paas.cse.serviceregistry.api.registry.MicroserviceInstance;
 import com.huawei.paas.cse.serviceregistry.api.response.HeartbeatResponse;
 import com.huawei.paas.cse.serviceregistry.client.http.ServiceRegistryClientImpl;
-import com.huawei.paas.foundation.common.utils.BeanUtils;
-import com.huawei.paas.foundation.common.utils.Log4jUtils;
+import io.servicecomb.foundation.common.utils.BeanUtils;
+import io.servicecomb.foundation.common.utils.Log4jUtils;
 
 /**
  * Created by   on 2016/12/6.

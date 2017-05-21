@@ -21,9 +21,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
 
 import io.servicecomb.core.transport.AbstractTransport;
-import com.huawei.paas.foundation.common.net.IpPort;
-import com.huawei.paas.foundation.common.net.NetUtils;
-import com.huawei.paas.foundation.vertx.client.http.HttpClientVerticle;
+import io.servicecomb.foundation.common.net.IpPort;
+import io.servicecomb.foundation.common.net.NetUtils;
+import io.servicecomb.foundation.vertx.client.http.HttpClientVerticle;
 
 import io.vertx.core.Context;
 import io.vertx.core.Future;

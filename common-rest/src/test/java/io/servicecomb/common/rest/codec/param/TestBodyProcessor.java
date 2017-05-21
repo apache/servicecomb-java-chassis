@@ -24,7 +24,7 @@ import org.junit.Test;
 import org.mockito.Mockito;
 
 import io.servicecomb.common.rest.codec.RestServerRequest;
-import com.huawei.paas.foundation.vertx.stream.BufferInputStream;
+import io.servicecomb.foundation.vertx.stream.BufferInputStream;
 
 import io.vertx.core.buffer.Buffer;
 

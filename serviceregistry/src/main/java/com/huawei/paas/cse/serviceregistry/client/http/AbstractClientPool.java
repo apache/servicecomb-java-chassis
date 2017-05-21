@@ -20,14 +20,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.huawei.paas.cse.serviceregistry.config.ServiceRegistryConfig;
-import com.huawei.paas.foundation.ssl.SSLCustom;
-import com.huawei.paas.foundation.ssl.SSLOption;
-import com.huawei.paas.foundation.ssl.SSLOptionFactory;
-import com.huawei.paas.foundation.vertx.VertxTLSBuilder;
-import com.huawei.paas.foundation.vertx.VertxUtils;
-import com.huawei.paas.foundation.vertx.client.ClientPoolManager;
-import com.huawei.paas.foundation.vertx.client.http.HttpClientVerticle;
-import com.huawei.paas.foundation.vertx.client.http.HttpClientWithContext;
+import io.servicecomb.foundation.ssl.SSLCustom;
+import io.servicecomb.foundation.ssl.SSLOption;
+import io.servicecomb.foundation.ssl.SSLOptionFactory;
+import io.servicecomb.foundation.vertx.VertxTLSBuilder;
+import io.servicecomb.foundation.vertx.VertxUtils;
+import io.servicecomb.foundation.vertx.client.ClientPoolManager;
+import io.servicecomb.foundation.vertx.client.http.HttpClientVerticle;
+import io.servicecomb.foundation.vertx.client.http.HttpClientWithContext;
 
 import io.vertx.core.DeploymentOptions;
 import io.vertx.core.Vertx;

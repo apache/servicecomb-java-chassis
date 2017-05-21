@@ -27,8 +27,8 @@ import com.huawei.paas.cse.provider.pojo.instance.SpringInstanceFactory;
 import com.huawei.paas.cse.provider.pojo.schema.PojoProducerMeta;
 import com.huawei.paas.cse.provider.pojo.schema.PojoProducers;
 import com.huawei.paas.cse.serviceregistry.RegistryUtils;
-import com.huawei.paas.foundation.common.RegisterManager;
-import com.huawei.paas.foundation.common.utils.BeanUtils;
+import io.servicecomb.foundation.common.RegisterManager;
+import io.servicecomb.foundation.common.utils.BeanUtils;
 
 /**
  * <一句话功能简述>

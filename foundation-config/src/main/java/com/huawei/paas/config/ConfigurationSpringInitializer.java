@@ -27,7 +27,7 @@ import org.springframework.beans.factory.config.PropertyPlaceholderConfigurer;
 
 import com.huawei.paas.config.archaius.scheduler.NeverStartPollingScheduler;
 import com.huawei.paas.config.archaius.sources.YAMLConfigurationSource;
-import com.huawei.paas.foundation.common.utils.SPIServiceUtils;
+import io.servicecomb.foundation.common.utils.SPIServiceUtils;
 import com.netflix.config.ConcurrentCompositeConfiguration;
 import com.netflix.config.ConcurrentMapConfiguration;
 import com.netflix.config.ConfigurationManager;

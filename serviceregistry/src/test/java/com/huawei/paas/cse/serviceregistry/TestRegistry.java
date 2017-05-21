@@ -40,8 +40,8 @@ import com.huawei.paas.cse.serviceregistry.notify.NotifyManager;
 import com.huawei.paas.cse.serviceregistry.notify.RegistryEvent;
 import com.huawei.paas.cse.serviceregistry.utils.Timer;
 import com.huawei.paas.cse.serviceregistry.utils.TimerException;
-import com.huawei.paas.foundation.common.utils.BeanUtils;
-import com.huawei.paas.foundation.common.utils.Log4jUtils;
+import io.servicecomb.foundation.common.utils.BeanUtils;
+import io.servicecomb.foundation.common.utils.Log4jUtils;
 
 import mockit.Expectations;
 import mockit.Mock;

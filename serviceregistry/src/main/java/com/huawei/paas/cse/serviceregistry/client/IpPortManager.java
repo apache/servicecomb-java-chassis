@@ -35,8 +35,8 @@ import com.huawei.paas.cse.serviceregistry.cache.InstanceCacheManager;
 import com.huawei.paas.cse.serviceregistry.config.ServiceRegistryConfig;
 import com.huawei.paas.cse.serviceregistry.utils.Timer;
 import com.huawei.paas.cse.serviceregistry.utils.TimerException;
-import com.huawei.paas.foundation.common.net.IpPort;
-import com.huawei.paas.foundation.common.net.URIEndpointObject;
+import io.servicecomb.foundation.common.net.IpPort;
+import io.servicecomb.foundation.common.net.URIEndpointObject;
 
 /**
  * Created by   on 2017/1/9.

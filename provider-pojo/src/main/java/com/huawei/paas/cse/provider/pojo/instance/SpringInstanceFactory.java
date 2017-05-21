@@ -18,7 +18,7 @@ package com.huawei.paas.cse.provider.pojo.instance;
 
 import com.huawei.paas.cse.provider.pojo.InstanceFactory;
 import com.huawei.paas.cse.provider.pojo.PojoConst;
-import com.huawei.paas.foundation.common.utils.BeanUtils;
+import io.servicecomb.foundation.common.utils.BeanUtils;
 
 /**
  * <一句话功能简述>

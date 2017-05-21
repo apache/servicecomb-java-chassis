@@ -20,13 +20,13 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.ServiceLoader;
 
-import com.huawei.paas.foundation.auth.AuthHeaderProvider;
+import io.servicecomb.foundation.auth.AuthHeaderProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.huawei.paas.cse.serviceregistry.config.ServiceRegistryConfig;
-import com.huawei.paas.foundation.common.net.IpPort;
-import com.huawei.paas.foundation.vertx.client.http.HttpClientWithContext;
+import io.servicecomb.foundation.common.net.IpPort;
+import io.servicecomb.foundation.vertx.client.http.HttpClientWithContext;
 
 import io.vertx.core.Handler;
 import io.vertx.core.MultiMap;

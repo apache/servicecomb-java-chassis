@@ -16,7 +16,7 @@
 
 package com.huawei.paas.cse.transport.grpc;
 
-import com.huawei.paas.foundation.vertx.SimpleBodyHandler;
+import io.servicecomb.foundation.vertx.SimpleBodyHandler;
 
 /**
  * Grpc通道body只支持自定义的application/grpc格式数据

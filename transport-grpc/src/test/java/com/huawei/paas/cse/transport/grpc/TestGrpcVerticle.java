@@ -21,7 +21,7 @@ import org.junit.Test;
 import org.mockito.Mockito;
 
 import com.huawei.paas.cse.transport.common.MockUtil;
-import com.huawei.paas.foundation.common.net.IpPort;
+import io.servicecomb.foundation.common.net.IpPort;
 
 import io.vertx.core.Context;
 import io.vertx.core.Future;

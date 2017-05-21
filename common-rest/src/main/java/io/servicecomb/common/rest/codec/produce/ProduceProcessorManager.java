@@ -18,7 +18,7 @@ package io.servicecomb.common.rest.codec.produce;
 
 import javax.ws.rs.core.MediaType;
 
-import com.huawei.paas.foundation.common.RegisterManager;
+import io.servicecomb.foundation.common.RegisterManager;
 
 /**
  * 用于管理各种类型的produce processor

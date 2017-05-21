@@ -19,7 +19,7 @@ package io.servicecomb.core.executor;
 import java.util.concurrent.Executor;
 
 import io.servicecomb.core.definition.OperationMeta;
-import com.huawei.paas.foundation.common.utils.BeanUtils;
+import io.servicecomb.foundation.common.utils.BeanUtils;
 import com.netflix.config.DynamicPropertyFactory;
 
 /**

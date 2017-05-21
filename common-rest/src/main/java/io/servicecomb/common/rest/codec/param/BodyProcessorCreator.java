@@ -26,7 +26,7 @@ import org.apache.commons.io.IOUtils;
 
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.type.TypeFactory;
-import com.huawei.paas.foundation.vertx.stream.BufferOutputStream;
+import io.servicecomb.foundation.vertx.stream.BufferOutputStream;
 
 import io.vertx.core.buffer.Buffer;
 

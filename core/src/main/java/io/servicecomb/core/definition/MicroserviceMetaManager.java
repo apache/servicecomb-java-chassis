@@ -20,7 +20,7 @@ import java.util.Collection;
 
 import org.springframework.stereotype.Component;
 
-import com.huawei.paas.foundation.common.RegisterManager;
+import io.servicecomb.foundation.common.RegisterManager;
 
 /**
  * key为microserviceName(app内部)或者appId:microserviceName(跨app)

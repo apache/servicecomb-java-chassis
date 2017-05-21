@@ -29,7 +29,7 @@ import org.junit.Test;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.type.TypeFactory;
 import io.servicecomb.common.rest.codec.produce.ProduceProcessorManager;
-import com.huawei.paas.foundation.vertx.stream.BufferOutputStream;
+import io.servicecomb.foundation.vertx.stream.BufferOutputStream;
 
 import io.vertx.core.buffer.Buffer;
 

@@ -23,8 +23,8 @@ import org.mockito.Mockito;
 import io.servicecomb.core.AsyncResponse;
 import io.servicecomb.core.Endpoint;
 import io.servicecomb.core.Invocation;
-import com.huawei.paas.foundation.common.net.URIEndpointObject;
-import com.huawei.paas.foundation.vertx.VertxUtils;
+import io.servicecomb.foundation.common.net.URIEndpointObject;
+import io.servicecomb.foundation.vertx.VertxUtils;
 
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.DeploymentOptions;

@@ -34,7 +34,7 @@ import com.fasterxml.jackson.dataformat.protobuf.ProtobufGenerator;
 import com.fasterxml.jackson.dataformat.protobuf.schema.ProtobufField;
 import com.fasterxml.jackson.dataformat.protobuf.schema.ProtobufMessage;
 import com.fasterxml.jackson.dataformat.protobuf.schema.ProtobufSchema;
-import com.huawei.paas.foundation.vertx.stream.BufferOutputStream;
+import io.servicecomb.foundation.vertx.stream.BufferOutputStream;
 
 import mockit.Mock;
 import mockit.MockUp;

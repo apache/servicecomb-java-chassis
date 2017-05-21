@@ -25,7 +25,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import io.servicecomb.core.definition.OperationMeta;
-import com.huawei.paas.foundation.common.AbstractObjectManager;
+import io.servicecomb.foundation.common.AbstractObjectManager;
 import com.netflix.config.DynamicProperty;
 
 /**

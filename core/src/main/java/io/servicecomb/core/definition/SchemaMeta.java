@@ -23,7 +23,7 @@ import java.util.Map.Entry;
 import io.servicecomb.core.Handler;
 import io.servicecomb.core.exception.ExceptionUtils;
 import io.servicecomb.swagger.generator.core.utils.ClassUtils;
-import com.huawei.paas.foundation.common.utils.ReflectUtils;
+import io.servicecomb.foundation.common.utils.ReflectUtils;
 
 import io.swagger.models.HttpMethod;
 import io.swagger.models.Operation;

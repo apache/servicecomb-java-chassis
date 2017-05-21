@@ -21,7 +21,7 @@ import io.servicecomb.demo.pojo.client.PojoClient;
 import io.servicecomb.demo.server.Test;
 import io.servicecomb.demo.server.TestRequest;
 import io.servicecomb.demo.server.User;
-import com.huawei.paas.foundation.common.CommonThread;
+import io.servicecomb.foundation.common.CommonThread;
 
 /**
  * <一句话功能简述>

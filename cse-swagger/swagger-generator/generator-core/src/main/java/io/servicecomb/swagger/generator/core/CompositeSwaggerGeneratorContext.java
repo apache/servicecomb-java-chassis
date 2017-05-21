@@ -22,7 +22,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
-import com.huawei.paas.foundation.common.utils.SPIServiceUtils;
+import io.servicecomb.foundation.common.utils.SPIServiceUtils;
 
 /**
  * <一句话功能简述>

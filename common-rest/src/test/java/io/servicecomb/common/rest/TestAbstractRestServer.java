@@ -33,7 +33,7 @@ import io.servicecomb.core.Const;
 import io.servicecomb.core.Invocation;
 import io.servicecomb.core.Response;
 import io.servicecomb.core.Transport;
-import com.huawei.paas.foundation.common.utils.JsonUtils;
+import io.servicecomb.foundation.common.utils.JsonUtils;
 
 /**
  * <一句话功能简述> <功能详细描述>

@@ -31,7 +31,7 @@ import org.junit.Test;
 
 import io.servicecomb.swagger.invocation.SwaggerInvocationContext;
 import io.servicecomb.swagger.invocation.models.Person;
-import com.huawei.paas.foundation.common.utils.ReflectUtils;
+import io.servicecomb.foundation.common.utils.ReflectUtils;
 
 /**
  * <一句话功能简述>

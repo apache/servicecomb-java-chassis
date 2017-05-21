@@ -22,9 +22,9 @@ import java.util.Map.Entry;
 import io.servicecomb.core.Endpoint;
 import io.servicecomb.core.Transport;
 import com.huawei.paas.cse.serviceregistry.RegistryUtils;
-import com.huawei.paas.foundation.common.net.NetUtils;
-import com.huawei.paas.foundation.common.net.URIEndpointObject;
-import com.huawei.paas.foundation.vertx.VertxUtils;
+import io.servicecomb.foundation.common.net.NetUtils;
+import io.servicecomb.foundation.common.net.URIEndpointObject;
+import io.servicecomb.foundation.vertx.VertxUtils;
 import com.netflix.config.DynamicPropertyFactory;
 
 import io.vertx.core.Vertx;

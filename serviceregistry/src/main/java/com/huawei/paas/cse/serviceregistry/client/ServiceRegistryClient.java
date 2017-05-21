@@ -23,7 +23,7 @@ import com.huawei.paas.cse.serviceregistry.api.registry.Microservice;
 import com.huawei.paas.cse.serviceregistry.api.registry.MicroserviceInstance;
 import com.huawei.paas.cse.serviceregistry.api.response.HeartbeatResponse;
 import com.huawei.paas.cse.serviceregistry.api.response.MicroserviceInstanceChangedEvent;
-import com.huawei.paas.foundation.vertx.AsyncResultCallback;
+import io.servicecomb.foundation.vertx.AsyncResultCallback;
 
 /**
  * <一句话功能简述>

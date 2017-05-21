@@ -25,7 +25,7 @@ import io.servicecomb.core.Invocation;
 import io.servicecomb.core.transport.AbstractTransport;
 import com.huawei.paas.cse.transport.rest.client.RestTransportClient;
 import com.huawei.paas.cse.transport.rest.client.RestTransportClientManager;
-import com.huawei.paas.foundation.common.net.URIEndpointObject;
+import io.servicecomb.foundation.common.net.URIEndpointObject;
 
 /**
  * <一句话功能简述>

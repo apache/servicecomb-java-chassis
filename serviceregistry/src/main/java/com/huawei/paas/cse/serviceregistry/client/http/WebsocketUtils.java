@@ -16,8 +16,8 @@
 
 package com.huawei.paas.cse.serviceregistry.client.http;
 
-import com.huawei.paas.foundation.common.net.IpPort;
-import com.huawei.paas.foundation.vertx.client.http.HttpClientWithContext;
+import io.servicecomb.foundation.common.net.IpPort;
+import io.servicecomb.foundation.vertx.client.http.HttpClientWithContext;
 
 import io.vertx.core.Handler;
 import io.vertx.core.buffer.Buffer;

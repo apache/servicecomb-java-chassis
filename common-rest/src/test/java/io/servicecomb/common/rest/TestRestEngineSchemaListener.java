@@ -29,7 +29,7 @@ import io.servicecomb.core.definition.MicroserviceMeta;
 import io.servicecomb.core.definition.SchemaMeta;
 import io.servicecomb.swagger.generator.core.DefaultSwaggerGeneratorContext;
 import io.servicecomb.swagger.generator.core.SwaggerGenerator;
-import com.huawei.paas.foundation.common.utils.BeanUtils;
+import io.servicecomb.foundation.common.utils.BeanUtils;
 
 import io.swagger.models.Swagger;
 

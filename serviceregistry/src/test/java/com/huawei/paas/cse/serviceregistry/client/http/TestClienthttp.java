@@ -30,9 +30,9 @@ import com.huawei.paas.cse.serviceregistry.api.registry.Microservice;
 import com.huawei.paas.cse.serviceregistry.client.Endpoints;
 import com.huawei.paas.cse.serviceregistry.client.IpPortManager;
 import com.huawei.paas.cse.serviceregistry.client.RegistryClientFactory;
-import com.huawei.paas.foundation.common.net.IpPort;
-import com.huawei.paas.foundation.common.utils.BeanUtils;
-import com.huawei.paas.foundation.vertx.AsyncResultCallback;
+import io.servicecomb.foundation.common.net.IpPort;
+import io.servicecomb.foundation.common.utils.BeanUtils;
+import io.servicecomb.foundation.vertx.AsyncResultCallback;
 
 import mockit.Expectations;
 import mockit.Mocked;

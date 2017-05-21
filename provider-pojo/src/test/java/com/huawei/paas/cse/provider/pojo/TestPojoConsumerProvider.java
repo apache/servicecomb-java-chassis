@@ -25,7 +25,7 @@ import org.junit.Test;
 import com.huawei.paas.cse.provider.common.MockUtil;
 import com.huawei.paas.cse.provider.pojo.reference.PojoConsumers;
 import com.huawei.paas.cse.provider.pojo.reference.PojoReferenceMeta;
-import com.huawei.paas.foundation.common.utils.ReflectUtils;
+import io.servicecomb.foundation.common.utils.ReflectUtils;
 
 import mockit.Deencapsulation;
 import mockit.Expectations;

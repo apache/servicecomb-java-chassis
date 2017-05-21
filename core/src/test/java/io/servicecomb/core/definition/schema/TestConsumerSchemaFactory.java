@@ -43,7 +43,7 @@ import io.servicecomb.swagger.invocation.arguments.consumer.ConsumerArgumentToBo
 import io.servicecomb.swagger.invocation.arguments.consumer.ConsumerArgumentsMapperFactory;
 import io.servicecomb.swagger.invocation.response.consumer.ConsumerResponseMapperFactory;
 import io.servicecomb.swagger.invocation.response.consumer.ConsumerResponseSame;
-import com.huawei.paas.foundation.common.utils.ReflectUtils;
+import io.servicecomb.foundation.common.utils.ReflectUtils;
 
 /**
  * <一句话功能简述>

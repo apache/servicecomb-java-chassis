@@ -36,8 +36,8 @@ import io.servicecomb.swagger.generator.core.processor.annotation.ApiResponsesMe
 import io.servicecomb.swagger.generator.core.processor.annotation.ResponseHeaderProcessor;
 import io.servicecomb.swagger.generator.core.processor.annotation.ResponseHeadersProcessor;
 import io.servicecomb.swagger.generator.core.processor.annotation.SwaggerDefinitionProcessor;
-import com.huawei.paas.foundation.common.RegisterManager;
-import com.huawei.paas.foundation.common.utils.SPIServiceUtils;
+import io.servicecomb.foundation.common.RegisterManager;
+import io.servicecomb.foundation.common.utils.SPIServiceUtils;
 
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;

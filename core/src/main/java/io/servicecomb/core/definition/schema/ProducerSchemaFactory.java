@@ -39,7 +39,7 @@ import io.servicecomb.swagger.invocation.arguments.producer.ProducerArgumentsMap
 import io.servicecomb.swagger.invocation.arguments.producer.ProducerArgumentsMapperFactory;
 import io.servicecomb.swagger.invocation.response.producer.ProducerResponseMapper;
 import io.servicecomb.swagger.invocation.response.producer.ProducerResponseMapperFactory;
-import com.huawei.paas.foundation.common.utils.ReflectUtils;
+import io.servicecomb.foundation.common.utils.ReflectUtils;
 
 import io.swagger.models.Swagger;
 import io.swagger.models.parameters.Parameter;

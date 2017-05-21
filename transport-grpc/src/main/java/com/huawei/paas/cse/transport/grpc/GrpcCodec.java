@@ -28,8 +28,8 @@ import io.servicecomb.core.Invocation;
 import io.servicecomb.core.Response;
 import io.servicecomb.core.definition.OperationMeta;
 import io.servicecomb.core.invocation.InvocationFactory;
-import com.huawei.paas.foundation.common.utils.JsonUtils;
-import com.huawei.paas.foundation.vertx.stream.BufferOutputStream;
+import io.servicecomb.foundation.common.utils.JsonUtils;
+import io.servicecomb.foundation.vertx.stream.BufferOutputStream;
 
 import io.protostuff.LinkedBuffer;
 import io.protostuff.ProtobufOutput;

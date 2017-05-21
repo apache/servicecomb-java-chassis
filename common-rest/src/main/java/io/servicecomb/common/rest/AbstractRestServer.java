@@ -42,7 +42,7 @@ import io.servicecomb.core.definition.OperationMeta;
 import io.servicecomb.core.exception.InvocationException;
 import io.servicecomb.core.invocation.InvocationFactory;
 import com.huawei.paas.cse.serviceregistry.RegistryUtils;
-import com.huawei.paas.foundation.common.utils.JsonUtils;
+import io.servicecomb.foundation.common.utils.JsonUtils;
 
 /**
  * <一句话功能简述>

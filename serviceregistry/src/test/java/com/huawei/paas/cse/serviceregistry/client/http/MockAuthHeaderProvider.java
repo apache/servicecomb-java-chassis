@@ -16,7 +16,7 @@
 
 package com.huawei.paas.cse.serviceregistry.client.http;
 
-import com.huawei.paas.foundation.auth.AuthHeaderProvider;
+import io.servicecomb.foundation.auth.AuthHeaderProvider;
 
 import java.util.HashMap;
 import java.util.Map;

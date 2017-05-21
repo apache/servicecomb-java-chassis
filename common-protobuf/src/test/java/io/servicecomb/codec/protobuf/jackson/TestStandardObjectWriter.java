@@ -28,7 +28,7 @@ import org.mockito.Mockito;
 import com.fasterxml.jackson.core.JsonGenerationException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectWriter;
-import com.huawei.paas.foundation.vertx.stream.BufferOutputStream;
+import io.servicecomb.foundation.vertx.stream.BufferOutputStream;
 
 import mockit.Mock;
 import mockit.MockUp;

@@ -16,7 +16,7 @@
 
 package com.huawei.paas.cse.serviceregistry.client.http;
 
-import com.huawei.paas.foundation.common.net.IpPort;
+import io.servicecomb.foundation.common.net.IpPort;
 
 import io.vertx.core.http.HttpMethod;
 

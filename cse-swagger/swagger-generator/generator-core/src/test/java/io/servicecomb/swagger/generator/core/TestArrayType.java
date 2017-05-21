@@ -23,7 +23,7 @@ import org.junit.Test;
 
 import io.servicecomb.swagger.generator.core.schema.ArrayType;
 import io.servicecomb.swagger.generator.core.utils.ClassUtils;
-import com.huawei.paas.foundation.common.utils.ReflectUtils;
+import io.servicecomb.foundation.common.utils.ReflectUtils;
 
 import javassist.CtClass;
 import javassist.CtMethod;

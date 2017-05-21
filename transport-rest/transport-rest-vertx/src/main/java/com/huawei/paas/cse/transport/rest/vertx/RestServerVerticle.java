@@ -23,11 +23,11 @@ import io.servicecomb.core.Const;
 import io.servicecomb.core.CseContext;
 import io.servicecomb.core.Endpoint;
 import io.servicecomb.core.transport.AbstractTransport;
-import com.huawei.paas.foundation.common.net.URIEndpointObject;
-import com.huawei.paas.foundation.ssl.SSLCustom;
-import com.huawei.paas.foundation.ssl.SSLOption;
-import com.huawei.paas.foundation.ssl.SSLOptionFactory;
-import com.huawei.paas.foundation.vertx.VertxTLSBuilder;
+import io.servicecomb.foundation.common.net.URIEndpointObject;
+import io.servicecomb.foundation.ssl.SSLCustom;
+import io.servicecomb.foundation.ssl.SSLOption;
+import io.servicecomb.foundation.ssl.SSLOptionFactory;
+import io.servicecomb.foundation.vertx.VertxTLSBuilder;
 import com.netflix.config.DynamicPropertyFactory;
 
 import io.vertx.core.AbstractVerticle;

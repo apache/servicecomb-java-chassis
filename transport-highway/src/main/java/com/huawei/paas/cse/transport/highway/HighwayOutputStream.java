@@ -18,7 +18,7 @@ package com.huawei.paas.cse.transport.highway;
 import io.servicecomb.codec.protobuf.utils.WrapSchema;
 import com.huawei.paas.cse.transport.highway.message.RequestHeader;
 import com.huawei.paas.cse.transport.highway.message.ResponseHeader;
-import com.huawei.paas.foundation.vertx.tcp.TcpOutputStream;
+import io.servicecomb.foundation.vertx.tcp.TcpOutputStream;
 
 import io.protostuff.LinkedBuffer;
 import io.protostuff.ProtobufOutput;

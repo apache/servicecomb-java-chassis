@@ -20,7 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import com.huawei.paas.foundation.common.CommonThread;
+import io.servicecomb.foundation.common.CommonThread;
 
 /**
  * Created by   on 2017/3/12.

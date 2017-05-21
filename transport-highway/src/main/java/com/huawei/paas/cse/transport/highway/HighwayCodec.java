@@ -23,8 +23,8 @@ import io.servicecomb.core.Response;
 import io.servicecomb.core.invocation.InvocationFactory;
 import com.huawei.paas.cse.transport.highway.message.RequestHeader;
 import com.huawei.paas.cse.transport.highway.message.ResponseHeader;
-import com.huawei.paas.foundation.vertx.client.tcp.TcpData;
-import com.huawei.paas.foundation.vertx.tcp.TcpOutputStream;
+import io.servicecomb.foundation.vertx.client.tcp.TcpData;
+import io.servicecomb.foundation.vertx.tcp.TcpOutputStream;
 
 import io.vertx.core.buffer.Buffer;
 

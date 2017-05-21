@@ -22,7 +22,7 @@ import org.slf4j.LoggerFactory;
 import io.servicecomb.demo.server.TestRequest;
 import io.servicecomb.demo.server.User;
 import io.servicecomb.demo.tccserver.TestTcc;
-import com.huawei.paas.foundation.common.utils.BeanUtils;
+import io.servicecomb.foundation.common.utils.BeanUtils;
 
 /**
  * Created by   on 2016/12/14.

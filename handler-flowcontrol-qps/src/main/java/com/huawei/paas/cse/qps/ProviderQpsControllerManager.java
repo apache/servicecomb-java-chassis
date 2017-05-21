@@ -24,7 +24,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.huawei.paas.foundation.common.AbstractObjectManager;
+import io.servicecomb.foundation.common.AbstractObjectManager;
 import com.netflix.config.DynamicProperty;
 
 public class ProviderQpsControllerManager extends AbstractObjectManager<String, String, QpsController> {

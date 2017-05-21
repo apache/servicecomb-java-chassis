@@ -31,7 +31,7 @@ import com.huawei.paas.cse.serviceregistry.api.registry.MicroserviceInstance;
 import com.huawei.paas.cse.serviceregistry.client.RegistryClientFactory;
 import com.huawei.paas.cse.serviceregistry.client.ClientException;
 import com.huawei.paas.cse.serviceregistry.config.ServiceRegistryConfig;
-import com.huawei.paas.foundation.common.utils.BeanUtils;
+import io.servicecomb.foundation.common.utils.BeanUtils;
 
 import io.vertx.core.http.HttpClientOptions;
 import io.vertx.core.http.HttpVersion;

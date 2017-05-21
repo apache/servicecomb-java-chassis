@@ -25,8 +25,8 @@ import org.springframework.context.ApplicationContext;
 
 import io.servicecomb.common.rest.RestConst;
 import io.servicecomb.core.definition.schema.ProducerSchemaFactory;
-import com.huawei.paas.foundation.common.utils.BeanUtils;
-import com.huawei.paas.foundation.common.utils.ReflectUtils;
+import io.servicecomb.foundation.common.utils.BeanUtils;
+import io.servicecomb.foundation.common.utils.ReflectUtils;
 
 import mockit.Mock;
 import mockit.MockUp;

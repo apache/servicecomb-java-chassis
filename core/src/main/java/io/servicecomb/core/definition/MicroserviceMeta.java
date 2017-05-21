@@ -22,7 +22,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import com.huawei.paas.cse.serviceregistry.RegistryUtils;
 import com.huawei.paas.cse.serviceregistry.api.Const;
-import com.huawei.paas.foundation.common.RegisterManager;
+import io.servicecomb.foundation.common.RegisterManager;
 
 /**
  * 微服务名为microserviceName(app内部)或者appId:microserviceName(跨app)

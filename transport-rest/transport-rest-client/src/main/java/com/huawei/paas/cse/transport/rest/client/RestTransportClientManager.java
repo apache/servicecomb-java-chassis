@@ -19,7 +19,7 @@ package com.huawei.paas.cse.transport.rest.client;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.huawei.paas.foundation.vertx.VertxUtils;
+import io.servicecomb.foundation.vertx.VertxUtils;
 
 import io.vertx.core.Vertx;
 
