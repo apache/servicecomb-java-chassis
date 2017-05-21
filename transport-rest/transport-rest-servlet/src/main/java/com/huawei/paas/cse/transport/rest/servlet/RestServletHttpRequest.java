@@ -24,7 +24,7 @@ import javax.servlet.AsyncContext;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 
-import com.huawei.paas.cse.common.rest.codec.RestServerRequestInternal;
+import io.servicecomb.common.rest.codec.RestServerRequestInternal;
 
 /**
  * 封装HttpServletRequest为具有RestHttpRequest接口的类，统一多种rest transport request

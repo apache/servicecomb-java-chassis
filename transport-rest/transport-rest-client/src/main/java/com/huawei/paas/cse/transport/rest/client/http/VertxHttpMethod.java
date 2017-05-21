@@ -21,11 +21,11 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.huawei.paas.cse.common.rest.RestConst;
-import com.huawei.paas.cse.common.rest.codec.RestCodec;
-import com.huawei.paas.cse.common.rest.codec.param.RestClientRequestImpl;
-import com.huawei.paas.cse.common.rest.codec.produce.ProduceProcessor;
-import com.huawei.paas.cse.common.rest.definition.RestOperationMeta;
+import io.servicecomb.common.rest.RestConst;
+import io.servicecomb.common.rest.codec.RestCodec;
+import io.servicecomb.common.rest.codec.param.RestClientRequestImpl;
+import io.servicecomb.common.rest.codec.produce.ProduceProcessor;
+import io.servicecomb.common.rest.definition.RestOperationMeta;
 import com.huawei.paas.cse.core.AsyncResponse;
 import com.huawei.paas.cse.core.Const;
 import com.huawei.paas.cse.core.Invocation;

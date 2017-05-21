@@ -35,7 +35,7 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response.Status;
 
-import com.huawei.paas.cse.common.rest.codec.RestObjectMapper;
+import io.servicecomb.common.rest.codec.RestObjectMapper;
 import com.huawei.paas.cse.core.Response;
 import com.huawei.paas.cse.core.context.ContextUtils;
 import com.huawei.paas.cse.demo.compute.Person;

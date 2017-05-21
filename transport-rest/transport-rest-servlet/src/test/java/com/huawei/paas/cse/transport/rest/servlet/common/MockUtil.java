@@ -30,9 +30,9 @@ import javax.servlet.http.HttpServletResponse;
  */
 import org.mockito.Mockito;
 
-import com.huawei.paas.cse.common.rest.AbstractRestServer;
-import com.huawei.paas.cse.common.rest.codec.RestServerRequestInternal;
-import com.huawei.paas.cse.common.rest.definition.RestOperationMeta;
+import io.servicecomb.common.rest.AbstractRestServer;
+import io.servicecomb.common.rest.codec.RestServerRequestInternal;
+import io.servicecomb.common.rest.definition.RestOperationMeta;
 import com.huawei.paas.cse.core.definition.OperationMeta;
 import com.huawei.paas.cse.transport.rest.servlet.ServletRestServer;
 

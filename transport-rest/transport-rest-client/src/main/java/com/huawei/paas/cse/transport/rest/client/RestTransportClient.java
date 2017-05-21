@@ -19,8 +19,8 @@ package com.huawei.paas.cse.transport.rest.client;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.huawei.paas.cse.common.rest.RestConst;
-import com.huawei.paas.cse.common.rest.definition.RestOperationMeta;
+import io.servicecomb.common.rest.RestConst;
+import io.servicecomb.common.rest.definition.RestOperationMeta;
 import com.huawei.paas.cse.core.AsyncResponse;
 import com.huawei.paas.cse.core.Invocation;
 import com.huawei.paas.cse.core.definition.OperationMeta;

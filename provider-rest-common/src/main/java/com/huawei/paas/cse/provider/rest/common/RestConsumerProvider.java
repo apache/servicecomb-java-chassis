@@ -18,7 +18,7 @@ package com.huawei.paas.cse.provider.rest.common;
 
 import org.springframework.stereotype.Component;
 
-import com.huawei.paas.cse.common.rest.RestConst;
+import io.servicecomb.common.rest.RestConst;
 import com.huawei.paas.cse.core.provider.consumer.AbstractConsumerProvider;
 
 @Component

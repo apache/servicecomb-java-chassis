@@ -25,7 +25,7 @@ import org.springframework.web.util.DefaultUriTemplateHandler;
 import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import com.huawei.paas.cse.common.rest.RestConst;
+import io.servicecomb.common.rest.RestConst;
 
 /**
  * 默认不支持下面第1个场景，需要做出修正

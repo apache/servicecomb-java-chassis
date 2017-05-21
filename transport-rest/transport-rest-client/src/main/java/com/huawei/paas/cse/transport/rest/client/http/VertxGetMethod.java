@@ -16,7 +16,7 @@
 
 package com.huawei.paas.cse.transport.rest.client.http;
 
-import com.huawei.paas.cse.common.rest.definition.RestOperationMeta;
+import io.servicecomb.common.rest.definition.RestOperationMeta;
 import com.huawei.paas.cse.core.AsyncResponse;
 import com.huawei.paas.cse.core.Invocation;
 import com.huawei.paas.foundation.common.net.IpPort;

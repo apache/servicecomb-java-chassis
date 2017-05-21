@@ -23,7 +23,7 @@ import org.junit.Test;
 import org.mockito.Mockito;
 import org.springframework.context.ApplicationContext;
 
-import com.huawei.paas.cse.common.rest.RestConst;
+import io.servicecomb.common.rest.RestConst;
 import com.huawei.paas.cse.core.definition.schema.ProducerSchemaFactory;
 import com.huawei.paas.foundation.common.utils.BeanUtils;
 import com.huawei.paas.foundation.common.utils.ReflectUtils;

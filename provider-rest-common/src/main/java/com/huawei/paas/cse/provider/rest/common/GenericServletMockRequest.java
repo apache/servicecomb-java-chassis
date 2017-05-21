@@ -41,9 +41,9 @@ import javax.servlet.http.HttpSession;
 import javax.servlet.http.HttpUpgradeHandler;
 import javax.servlet.http.Part;
 
-import com.huawei.paas.cse.common.rest.RestConst;
-import com.huawei.paas.cse.common.rest.definition.RestOperationMeta;
-import com.huawei.paas.cse.common.rest.definition.RestParam;
+import io.servicecomb.common.rest.RestConst;
+import io.servicecomb.common.rest.definition.RestOperationMeta;
+import io.servicecomb.common.rest.definition.RestParam;
 import com.huawei.paas.cse.core.Invocation;
 
 /**

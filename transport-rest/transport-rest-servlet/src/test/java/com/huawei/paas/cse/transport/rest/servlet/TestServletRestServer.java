@@ -28,9 +28,9 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 
-import com.huawei.paas.cse.common.rest.codec.RestServerRequestInternal;
-import com.huawei.paas.cse.common.rest.codec.produce.ProduceProcessor;
-import com.huawei.paas.cse.common.rest.definition.RestOperationMeta;
+import io.servicecomb.common.rest.codec.RestServerRequestInternal;
+import io.servicecomb.common.rest.codec.produce.ProduceProcessor;
+import io.servicecomb.common.rest.definition.RestOperationMeta;
 import com.huawei.paas.cse.core.Invocation;
 import com.huawei.paas.cse.core.Response;
 import com.huawei.paas.cse.core.definition.OperationMeta;

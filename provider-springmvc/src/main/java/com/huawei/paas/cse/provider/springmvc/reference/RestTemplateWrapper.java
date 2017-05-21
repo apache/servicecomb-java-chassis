@@ -27,7 +27,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
-import com.huawei.paas.cse.common.rest.RestConst;
+import io.servicecomb.common.rest.RestConst;
 
 /**
  * 用于同时支持cse调用和非cse调用

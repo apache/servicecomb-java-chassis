@@ -23,7 +23,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import com.huawei.paas.cse.common.rest.codec.RestServerRequestInternal;
+import io.servicecomb.common.rest.codec.RestServerRequestInternal;
 import com.huawei.paas.foundation.vertx.stream.BufferInputStream;
 
 import io.vertx.core.Future;

@@ -20,7 +20,7 @@ import javax.inject.Inject;
 
 import org.springframework.stereotype.Component;
 
-import com.huawei.paas.cse.common.rest.RestConst;
+import io.servicecomb.common.rest.RestConst;
 import com.huawei.paas.cse.core.definition.schema.ProducerSchemaFactory;
 import com.huawei.paas.cse.core.provider.producer.AbstractProducerProvider;
 import com.huawei.paas.cse.core.provider.producer.ProducerMeta;

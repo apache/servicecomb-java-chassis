@@ -37,7 +37,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import com.huawei.paas.cse.common.rest.codec.RestObjectMapper;
+import io.servicecomb.common.rest.codec.RestObjectMapper;
 import com.huawei.paas.cse.core.Response;
 import com.huawei.paas.cse.core.context.ContextUtils;
 import com.huawei.paas.cse.demo.compute.Person;

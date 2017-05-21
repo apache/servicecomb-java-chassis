@@ -22,10 +22,10 @@ import java.util.Map.Entry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.huawei.paas.cse.common.rest.AbstractRestServer;
-import com.huawei.paas.cse.common.rest.RestConst;
-import com.huawei.paas.cse.common.rest.codec.RestServerRequestInternal;
-import com.huawei.paas.cse.common.rest.codec.produce.ProduceProcessor;
+import io.servicecomb.common.rest.AbstractRestServer;
+import io.servicecomb.common.rest.RestConst;
+import io.servicecomb.common.rest.codec.RestServerRequestInternal;
+import io.servicecomb.common.rest.codec.produce.ProduceProcessor;
 import com.huawei.paas.cse.core.Invocation;
 import com.huawei.paas.cse.core.Response;
 import com.huawei.paas.cse.core.exception.InvocationException;

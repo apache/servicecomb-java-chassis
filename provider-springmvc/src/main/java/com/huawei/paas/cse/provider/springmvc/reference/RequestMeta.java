@@ -18,7 +18,7 @@ package com.huawei.paas.cse.provider.springmvc.reference;
 
 import java.util.Map;
 
-import com.huawei.paas.cse.common.rest.definition.RestOperationMeta;
+import io.servicecomb.common.rest.definition.RestOperationMeta;
 import com.huawei.paas.cse.core.definition.OperationMeta;
 import com.huawei.paas.cse.core.provider.consumer.ReferenceConfig;
 

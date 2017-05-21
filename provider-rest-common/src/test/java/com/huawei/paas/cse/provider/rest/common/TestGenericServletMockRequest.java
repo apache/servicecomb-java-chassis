@@ -25,10 +25,10 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.Mockito;
 
-import com.huawei.paas.cse.common.rest.RestConst;
-import com.huawei.paas.cse.common.rest.definition.RestOperationMeta;
-import com.huawei.paas.cse.common.rest.definition.RestParam;
-import com.huawei.paas.cse.common.rest.definition.path.URLPathBuilder;
+import io.servicecomb.common.rest.RestConst;
+import io.servicecomb.common.rest.definition.RestOperationMeta;
+import io.servicecomb.common.rest.definition.RestParam;
+import io.servicecomb.common.rest.definition.path.URLPathBuilder;
 import com.huawei.paas.cse.core.Invocation;
 import com.huawei.paas.cse.core.definition.OperationMeta;
 

@@ -24,10 +24,10 @@ import javax.servlet.AsyncContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.huawei.paas.cse.common.rest.AbstractRestServer;
-import com.huawei.paas.cse.common.rest.RestConst;
-import com.huawei.paas.cse.common.rest.codec.RestServerRequestInternal;
-import com.huawei.paas.cse.common.rest.codec.produce.ProduceProcessor;
+import io.servicecomb.common.rest.AbstractRestServer;
+import io.servicecomb.common.rest.RestConst;
+import io.servicecomb.common.rest.codec.RestServerRequestInternal;
+import io.servicecomb.common.rest.codec.produce.ProduceProcessor;
 import com.huawei.paas.cse.core.Invocation;
 import com.huawei.paas.cse.core.Response;
 

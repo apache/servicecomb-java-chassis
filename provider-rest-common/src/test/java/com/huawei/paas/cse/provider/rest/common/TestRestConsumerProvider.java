@@ -19,7 +19,7 @@ package com.huawei.paas.cse.provider.rest.common;
 import org.junit.Assert;
 import org.junit.Test;
 
-import com.huawei.paas.cse.common.rest.RestConst;
+import io.servicecomb.common.rest.RestConst;
 
 public class TestRestConsumerProvider {
 

@@ -30,9 +30,9 @@ import org.springframework.util.ReflectionUtils;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
-import com.huawei.paas.cse.common.rest.definition.RestOperationMeta;
-import com.huawei.paas.cse.common.rest.locator.OperationLocator;
-import com.huawei.paas.cse.common.rest.locator.ServicePathManager;
+import io.servicecomb.common.rest.definition.RestOperationMeta;
+import io.servicecomb.common.rest.locator.OperationLocator;
+import io.servicecomb.common.rest.locator.ServicePathManager;
 import com.huawei.paas.cse.core.CseContext;
 import com.huawei.paas.cse.core.Invocation;
 import com.huawei.paas.cse.core.Response;
