@@ -78,15 +78,6 @@
 								</image>
 							</images>
 						</configuration>
-						<executions>
-							<execution>
-								<id>build</id>
-								<phase>package</phase>
-								<goals>
-									<goal>build</goal>
-								</goals>
-							</execution>
-						</executions>
 					</plugin>
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>

@@ -128,7 +128,7 @@
 
 		<module>common-javassist</module>
 		<module>cse-swagger</module>
-		
+
 		<module>common-protobuf</module>
 
 		<module>core</module>
@@ -286,6 +286,29 @@
 					<groupId>io.fabric8</groupId>
 					<artifactId>docker-maven-plugin</artifactId>
 					<version>0.18.1</version>
+					<executions>
+						<execution>
+							<id>build</id>
+							<phase>package</phase>
+							<goals>
+								<goal>build</goal>
+							</goals>
+						</execution>
+                        <execution>
+                            <id>start</id>
+                            <phase>pre-integration-test</phase>
+                            <goals>
+                                <goal>start</goal>
+                            </goals>
+                        </execution>
+                        <execution>
+                            <id>stop</id>
+                            <phase>post-integration-test</phase>
+                            <goals>
+                                <goal>stop</goal>
+                            </goals>
+                        </execution>
+					</executions>
 				</plugin>
 				<plugin>
 					<groupId>org.codehaus.gmaven</groupId>
