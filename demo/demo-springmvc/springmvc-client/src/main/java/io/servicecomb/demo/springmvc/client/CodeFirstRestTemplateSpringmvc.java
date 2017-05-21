@@ -25,7 +25,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
 import io.servicecomb.core.Response;
-import com.huawei.paas.cse.provider.pojo.RpcReference;
+import io.servicecomb.provider.pojo.RpcReference;
 
 /**
  * <一句话功能简述>

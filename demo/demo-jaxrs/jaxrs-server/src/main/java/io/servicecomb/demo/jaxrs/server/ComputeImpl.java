@@ -38,7 +38,7 @@ import org.slf4j.LoggerFactory;
 import io.servicecomb.common.rest.codec.RestObjectMapper;
 import io.servicecomb.core.context.ContextUtils;
 import io.servicecomb.demo.compute.Person;
-import com.huawei.paas.cse.provider.rest.common.RestSchema;
+import io.servicecomb.provider.rest.common.RestSchema;
 
 @RestSchema(schemaId = "compute")
 @Path("/compute")

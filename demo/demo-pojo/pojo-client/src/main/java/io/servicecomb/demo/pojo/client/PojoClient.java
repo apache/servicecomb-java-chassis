@@ -37,7 +37,7 @@ import io.servicecomb.demo.server.User;
 import io.servicecomb.demo.smartcare.Application;
 import io.servicecomb.demo.smartcare.Group;
 import io.servicecomb.demo.smartcare.SmartCare;
-import com.huawei.paas.cse.provider.pojo.RpcReference;
+import io.servicecomb.provider.pojo.RpcReference;
 import io.servicecomb.foundation.common.utils.BeanUtils;
 import io.servicecomb.foundation.common.utils.Log4jUtils;
 

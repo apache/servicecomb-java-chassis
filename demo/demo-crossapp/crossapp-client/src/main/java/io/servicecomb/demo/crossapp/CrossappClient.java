@@ -21,8 +21,8 @@ import org.springframework.web.client.RestTemplate;
 
 import io.servicecomb.core.provider.consumer.InvokerUtils;
 import io.servicecomb.demo.TestMgr;
-import com.huawei.paas.cse.provider.pojo.RpcReference;
-import com.huawei.paas.cse.provider.springmvc.reference.RestTemplateBuilder;
+import io.servicecomb.provider.pojo.RpcReference;
+import io.servicecomb.provider.springmvc.reference.RestTemplateBuilder;
 import io.servicecomb.foundation.common.utils.BeanUtils;
 import io.servicecomb.foundation.common.utils.Log4jUtils;
 

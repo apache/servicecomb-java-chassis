@@ -26,7 +26,7 @@ import io.servicecomb.demo.CodeFirstPojoIntf;
 import io.servicecomb.demo.DemoConst;
 import io.servicecomb.demo.TestMgr;
 import io.servicecomb.demo.compute.Person;
-import com.huawei.paas.cse.provider.pojo.RpcReference;
+import io.servicecomb.provider.pojo.RpcReference;
 
 /**
  * <一句话功能简述>

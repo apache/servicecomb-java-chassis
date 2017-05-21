@@ -42,7 +42,7 @@ import io.servicecomb.common.rest.codec.RestObjectMapper;
 import io.servicecomb.core.Response;
 import io.servicecomb.core.context.ContextUtils;
 import io.servicecomb.demo.compute.Person;
-import com.huawei.paas.cse.provider.rest.common.RestSchema;
+import io.servicecomb.provider.rest.common.RestSchema;
 import io.servicecomb.swagger.extend.annotations.ResponseHeaders;
 
 import io.swagger.annotations.ApiImplicitParam;

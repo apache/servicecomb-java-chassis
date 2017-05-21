@@ -22,7 +22,7 @@ import java.util.List;
 import io.servicecomb.core.context.ContextUtils;
 import io.servicecomb.demo.CodeFirstPojoIntf;
 import io.servicecomb.demo.compute.Person;
-import com.huawei.paas.cse.provider.pojo.RpcSchema;
+import io.servicecomb.provider.pojo.RpcSchema;
 
 @RpcSchema()
 public class CodeFirstPojo implements CodeFirstPojoIntf {
