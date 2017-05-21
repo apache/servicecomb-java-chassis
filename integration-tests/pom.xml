@@ -19,75 +19,6 @@
         </dependency>
     </dependencies>
 
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>io.fabric8</groupId>
-                <artifactId>docker-maven-plugin</artifactId>
-                <configuration>
-                    <images>
-                        <image>
-                            <name>seanyinx/sc</name>
-                            <alias>service-center</alias>
-                            <run>
-                                <wait>
-                                    <log>listen on server</log>
-                                    <time>60000</time>
-                                </wait>
-                                <ports>
-                                    <port>service.center.port:9980</port>
-                                </ports>
-                            </run>
-                        </image>
-                        <image>
-                            <name>crossapp-server:${project.version}</name>
-                            <alias>crossapp-server</alias>
-                            <run>
-                                <env>
-                                    <JAVA_OPTS>
-                                        -Dcse.rest.address=0.0.0.0:8080 -Dcse.service.registry.address=http://sc.servicecomb.io:9980 -Dcse.service.publishAddress=${docker.hostname}
-                                    </JAVA_OPTS>
-                                    <JAR_PATH>/maven/crossapp-server-${project.version}.jar</JAR_PATH>
-                                </env>
-                                <links>
-                                    <link>service-center:sc.servicecomb.io</link>
-                                </links>
-                                <wait>
-                                    <log>Register microservice instance success</log>
-                                    <time>60000</time>
-                                </wait>
-                                <ports>
-                                    <port>8080:8080</port>
-                                </ports>
-                                <dependsOn>
-                                    <dependsOn>service-center</dependsOn>
-                                </dependsOn>
-                            </run>
-                        </image>
-                    </images>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-failsafe-plugin</artifactId>
-                <version>2.19.1</version>
-                <configuration>
-                    <systemPropertyVariables>
-                        <cse.service.registry.address>http://${docker.hostname}:${service.center.port}</cse.service.registry.address>
-                    </systemPropertyVariables>
-                    <argLine>${jacoco.failsafe.argLine}</argLine>
-                </configuration>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>integration-test</goal>
-                            <goal>verify</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-        </plugins>
-    </build>
     <profiles>
         <profile>
             <id>jacoco</id>
@@ -117,6 +48,52 @@
             <build>
                 <plugins>
                     <plugin>
+                        <groupId>io.fabric8</groupId>
+                        <artifactId>docker-maven-plugin</artifactId>
+                        <configuration>
+                            <images>
+                                <image>
+                                    <name>seanyinx/sc</name>
+                                    <alias>service-center</alias>
+                                    <run>
+                                        <wait>
+                                            <log>listen on server</log>
+                                            <time>60000</time>
+                                        </wait>
+                                        <ports>
+                                            <port>service.center.port:9980</port>
+                                        </ports>
+                                    </run>
+                                </image>
+                                <image>
+                                    <name>crossapp-server:${project.version}</name>
+                                    <alias>crossapp-server</alias>
+                                    <run>
+                                        <env>
+                                            <JAVA_OPTS>
+                                                -Dcse.rest.address=0.0.0.0:8080 -Dcse.service.registry.address=http://sc.servicecomb.io:9980 -Dcse.service.publishAddress=${docker.hostname}
+                                            </JAVA_OPTS>
+                                            <JAR_PATH>/maven/crossapp-server-${project.version}.jar</JAR_PATH>
+                                        </env>
+                                        <links>
+                                            <link>service-center:sc.servicecomb.io</link>
+                                        </links>
+                                        <wait>
+                                            <log>Register microservice instance success</log>
+                                            <time>60000</time>
+                                        </wait>
+                                        <ports>
+                                            <port>8080:8080</port>
+                                        </ports>
+                                        <dependsOn>
+                                            <dependsOn>service-center</dependsOn>
+                                        </dependsOn>
+                                    </run>
+                                </image>
+                            </images>
+                        </configuration>
+                    </plugin>
+                    <plugin>
                         <groupId>org.codehaus.gmaven</groupId>
                         <artifactId>gmaven-plugin</artifactId>
                         <executions>
@@ -132,6 +109,25 @@
                                         log.info("Docker hostname is " + project.properties['docker.hostname'])
                                     </source>
                                 </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-failsafe-plugin</artifactId>
+                        <version>2.19.1</version>
+                        <configuration>
+                            <systemPropertyVariables>
+                                <cse.service.registry.address>http://${docker.hostname}:${service.center.port}</cse.service.registry.address>
+                            </systemPropertyVariables>
+                            <argLine>${jacoco.failsafe.argLine}</argLine>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <goals>
+                                    <goal>integration-test</goal>
+                                    <goal>verify</goal>
+                                </goals>
                             </execution>
                         </executions>
                     </plugin>
