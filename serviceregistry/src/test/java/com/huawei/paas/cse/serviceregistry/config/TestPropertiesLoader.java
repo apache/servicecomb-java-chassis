@@ -25,8 +25,8 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.springframework.util.ReflectionUtils;
 
-import com.huawei.paas.config.archaius.scheduler.NeverStartPollingScheduler;
-import com.huawei.paas.config.archaius.sources.YAMLConfigurationSource;
+import io.servicecomb.config.archaius.scheduler.NeverStartPollingScheduler;
+import io.servicecomb.config.archaius.sources.YAMLConfigurationSource;
 import com.huawei.paas.cse.serviceregistry.RegistryUtils;
 import com.huawei.paas.cse.serviceregistry.api.registry.Microservice;
 import com.huawei.paas.cse.serviceregistry.api.registry.MicroserviceInstance;

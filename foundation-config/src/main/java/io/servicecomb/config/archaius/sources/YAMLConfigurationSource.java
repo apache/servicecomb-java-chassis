@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.huawei.paas.config.archaius.sources;
+package io.servicecomb.config.archaius.sources;
 
 import java.io.File;
 import java.io.InputStream;
@@ -30,8 +30,8 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.huawei.paas.config.ConfigMapping;
-import com.huawei.paas.config.YAMLUtil;
+import io.servicecomb.config.ConfigMapping;
+import io.servicecomb.config.YAMLUtil;
 import com.netflix.config.PollResult;
 import com.netflix.config.PolledConfigurationSource;
 

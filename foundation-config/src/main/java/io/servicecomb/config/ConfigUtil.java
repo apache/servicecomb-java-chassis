@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.huawei.paas.config;
+package io.servicecomb.config;
 
 import com.netflix.config.ConcurrentCompositeConfiguration;
 import com.netflix.config.DynamicPropertyFactory;

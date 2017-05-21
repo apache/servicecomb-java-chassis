@@ -22,7 +22,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
-import com.huawei.paas.config.archaius.sources.YAMLConfigurationSource;
+import io.servicecomb.config.archaius.sources.YAMLConfigurationSource;
 import com.huawei.paas.cse.adapter.spingmvc.RegistryInitializer;
 import com.huawei.paas.cse.adapter.springmvc.impl.SEPLoadbalance;
 import com.huawei.paas.cse.adapter.springmvc.impl.SEPRestTemplate;

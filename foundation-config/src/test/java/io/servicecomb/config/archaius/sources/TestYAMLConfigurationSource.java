@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.huawei.paas.config.archaius.sources;
+package io.servicecomb.config.archaius.sources;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -25,6 +25,7 @@ import java.net.URL;
 import java.util.List;
 import java.util.Map;
 
+import io.servicecomb.config.archaius.scheduler.NeverStartPollingScheduler;
 import org.apache.commons.configuration.SystemConfiguration;
 import org.junit.Assert;
 import org.junit.Test;
@@ -37,8 +38,7 @@ import com.netflix.config.DynamicDoubleProperty;
 import com.netflix.config.DynamicPropertyFactory;
 import com.netflix.config.PollResult;
 
-import com.huawei.paas.config.ConfigUtil;
-import com.huawei.paas.config.archaius.scheduler.NeverStartPollingScheduler;
+import io.servicecomb.config.ConfigUtil;
 
 /**
  * Created by   on 2017/1/5.

@@ -21,6 +21,6 @@
 	xsi:schemaLocation="
 		http://www.springframework.org/schema/beans
 		classpath:/org/springframework/beans/factory/xml/spring-beans-3.0.xsd">
-	<bean class="com.huawei.paas.config.ConfigurationSpringInitializer">
+	<bean class="io.servicecomb.config.ConfigurationSpringInitializer">
 	</bean>
 </beans>

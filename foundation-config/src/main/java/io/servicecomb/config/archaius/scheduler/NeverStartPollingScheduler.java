@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.huawei.paas.config.archaius.scheduler;
+package io.servicecomb.config.archaius.scheduler;
 
 import com.netflix.config.AbstractPollingScheduler;
 

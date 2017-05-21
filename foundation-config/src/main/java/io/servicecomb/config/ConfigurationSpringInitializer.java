@@ -14,19 +14,19 @@
  * limitations under the License.
  */
 
-package com.huawei.paas.config;
+package io.servicecomb.config;
 
 import java.util.HashMap;
 import java.util.Map;
 
+import io.servicecomb.config.archaius.scheduler.NeverStartPollingScheduler;
+import io.servicecomb.config.archaius.sources.YAMLConfigurationSource;
 import org.apache.commons.configuration.EnvironmentConfiguration;
 import org.apache.commons.configuration.SystemConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.config.PropertyPlaceholderConfigurer;
 
-import com.huawei.paas.config.archaius.scheduler.NeverStartPollingScheduler;
-import com.huawei.paas.config.archaius.sources.YAMLConfigurationSource;
 import io.servicecomb.foundation.common.utils.SPIServiceUtils;
 import com.netflix.config.ConcurrentCompositeConfiguration;
 import com.netflix.config.ConcurrentMapConfiguration;

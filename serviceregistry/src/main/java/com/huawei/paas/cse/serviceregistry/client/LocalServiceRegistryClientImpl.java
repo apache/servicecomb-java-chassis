@@ -27,7 +27,7 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.huawei.paas.config.YAMLUtil;
+import io.servicecomb.config.YAMLUtil;
 import com.huawei.paas.cse.serviceregistry.api.registry.Microservice;
 import com.huawei.paas.cse.serviceregistry.api.registry.MicroserviceInstance;
 import com.huawei.paas.cse.serviceregistry.api.response.HeartbeatResponse;

@@ -27,8 +27,8 @@ import org.apache.commons.configuration.SystemConfiguration;
 import org.junit.Assert;
 import org.junit.Test;
 
-import com.huawei.paas.config.archaius.scheduler.NeverStartPollingScheduler;
-import com.huawei.paas.config.archaius.sources.YAMLConfigurationSource;
+import io.servicecomb.config.archaius.scheduler.NeverStartPollingScheduler;
+import io.servicecomb.config.archaius.sources.YAMLConfigurationSource;
 import com.netflix.config.ConcurrentCompositeConfiguration;
 import com.netflix.config.ConcurrentMapConfiguration;
 import com.netflix.config.ConfigurationManager;
