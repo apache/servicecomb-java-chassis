@@ -21,8 +21,8 @@ import java.util.Map;
 
 import javax.ws.rs.core.Response.Status.Family;
 
-import com.huawei.paas.cse.codec.protobuf.definition.OperationProtobuf;
-import com.huawei.paas.cse.codec.protobuf.definition.ProtobufManager;
+import io.servicecomb.codec.protobuf.definition.OperationProtobuf;
+import io.servicecomb.codec.protobuf.definition.ProtobufManager;
 import com.huawei.paas.cse.core.Const;
 import com.huawei.paas.cse.core.Invocation;
 import com.huawei.paas.cse.core.Response;

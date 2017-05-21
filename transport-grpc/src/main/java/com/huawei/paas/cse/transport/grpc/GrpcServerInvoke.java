@@ -24,8 +24,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.ReflectionUtils;
 
-import com.huawei.paas.cse.codec.protobuf.definition.OperationProtobuf;
-import com.huawei.paas.cse.codec.protobuf.definition.ProtobufManager;
+import io.servicecomb.codec.protobuf.definition.OperationProtobuf;
+import io.servicecomb.codec.protobuf.definition.ProtobufManager;
 import com.huawei.paas.cse.core.Const;
 import com.huawei.paas.cse.core.CseContext;
 import com.huawei.paas.cse.core.Invocation;

@@ -23,8 +23,8 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.huawei.paas.cse.codec.protobuf.utils.ProtobufSchemaUtils;
-import com.huawei.paas.cse.codec.protobuf.utils.WrapSchema;
+import io.servicecomb.codec.protobuf.utils.ProtobufSchemaUtils;
+import io.servicecomb.codec.protobuf.utils.WrapSchema;
 import com.huawei.paas.cse.transport.highway.message.LoginRequest;
 import com.huawei.paas.cse.transport.highway.message.RequestHeader;
 import com.huawei.paas.foundation.vertx.stream.BufferOutputStream;

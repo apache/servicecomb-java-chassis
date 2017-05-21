@@ -21,9 +21,9 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.huawei.paas.cse.codec.protobuf.definition.OperationProtobuf;
-import com.huawei.paas.cse.codec.protobuf.definition.ProtobufManager;
-import com.huawei.paas.cse.codec.protobuf.utils.WrapSchema;
+import io.servicecomb.codec.protobuf.definition.OperationProtobuf;
+import io.servicecomb.codec.protobuf.definition.ProtobufManager;
+import io.servicecomb.codec.protobuf.utils.WrapSchema;
 import com.huawei.paas.cse.core.CseContext;
 import com.huawei.paas.cse.core.Invocation;
 import com.huawei.paas.cse.core.Response;

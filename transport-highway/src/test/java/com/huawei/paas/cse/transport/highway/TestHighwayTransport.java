@@ -22,8 +22,8 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.Mockito;
 
-import com.huawei.paas.cse.codec.protobuf.definition.OperationProtobuf;
-import com.huawei.paas.cse.codec.protobuf.utils.WrapSchema;
+import io.servicecomb.codec.protobuf.definition.OperationProtobuf;
+import io.servicecomb.codec.protobuf.utils.WrapSchema;
 import com.huawei.paas.cse.core.AsyncResponse;
 import com.huawei.paas.cse.core.Endpoint;
 import com.huawei.paas.cse.core.Invocation;

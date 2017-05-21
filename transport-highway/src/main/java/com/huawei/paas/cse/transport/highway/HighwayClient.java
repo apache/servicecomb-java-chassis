@@ -16,8 +16,8 @@
 
 package com.huawei.paas.cse.transport.highway;
 
-import com.huawei.paas.cse.codec.protobuf.definition.OperationProtobuf;
-import com.huawei.paas.cse.codec.protobuf.definition.ProtobufManager;
+import io.servicecomb.codec.protobuf.definition.OperationProtobuf;
+import io.servicecomb.codec.protobuf.definition.ProtobufManager;
 import com.huawei.paas.cse.core.AsyncResponse;
 import com.huawei.paas.cse.core.Invocation;
 import com.huawei.paas.cse.core.Response;

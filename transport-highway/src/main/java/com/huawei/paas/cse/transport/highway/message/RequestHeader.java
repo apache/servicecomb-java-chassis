@@ -18,8 +18,8 @@ package com.huawei.paas.cse.transport.highway.message;
 
 import java.util.Map;
 
-import com.huawei.paas.cse.codec.protobuf.utils.ProtobufSchemaUtils;
-import com.huawei.paas.cse.codec.protobuf.utils.WrapSchema;
+import io.servicecomb.codec.protobuf.utils.ProtobufSchemaUtils;
+import io.servicecomb.codec.protobuf.utils.WrapSchema;
 
 import io.protostuff.ProtobufOutput;
 import io.protostuff.Tag;

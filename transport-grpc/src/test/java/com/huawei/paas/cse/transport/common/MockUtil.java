@@ -21,7 +21,7 @@ import java.util.concurrent.Executor;
 
 import org.mockito.Mockito;
 
-import com.huawei.paas.cse.codec.protobuf.definition.OperationProtobuf;
+import io.servicecomb.codec.protobuf.definition.OperationProtobuf;
 import com.huawei.paas.cse.core.definition.MicroserviceMetaManager;
 import com.huawei.paas.cse.core.definition.OperationMeta;
 import com.huawei.paas.cse.core.definition.SchemaMeta;

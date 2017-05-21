@@ -15,7 +15,7 @@
  */
 package com.huawei.paas.cse.transport.highway;
 
-import com.huawei.paas.cse.codec.protobuf.utils.WrapSchema;
+import io.servicecomb.codec.protobuf.utils.WrapSchema;
 import com.huawei.paas.cse.transport.highway.message.RequestHeader;
 import com.huawei.paas.cse.transport.highway.message.ResponseHeader;
 import com.huawei.paas.foundation.vertx.tcp.TcpOutputStream;
