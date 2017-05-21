@@ -25,8 +25,9 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 
-import com.huawei.paas.cse.core.CseContext;
 import com.huawei.paas.cse.demo.compute.Person;
+
+import io.servicecomb.core.CseContext;
 
 /**
  * <一句话功能简述>

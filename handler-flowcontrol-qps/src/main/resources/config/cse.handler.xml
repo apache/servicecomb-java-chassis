@@ -16,7 +16,7 @@
 
 <config>
 	<handler id="qps-flowcontrol-consumer"
-		class="com.huawei.paas.cse.qps.ConsumerQpsFlowControlHandler" />
+		class="io.servicecomb.qps.ConsumerQpsFlowControlHandler" />
 	<handler id="qps-flowcontrol-provider"
-		class="com.huawei.paas.cse.qps.ProviderQpsFlowControlHandler" />
+		class="io.servicecomb.qps.ProviderQpsFlowControlHandler" />
 </config>

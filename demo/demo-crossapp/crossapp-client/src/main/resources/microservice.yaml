@@ -13,6 +13,6 @@ cse:
   loadbalance:
     appServer:appService:
       transactionControl:
-        policy: com.huawei.paas.cse.loadbalance.filter.SimpleTransactionControlFilter
+        policy: io.servicecomb.loadbalance.filter.SimpleTransactionControlFilter
         options:
           tag0: value0

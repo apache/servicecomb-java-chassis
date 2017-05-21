@@ -16,7 +16,7 @@
 
 <config>
 	<handler id="bizkeeper-consumer"
-		class="com.huawei.paas.cse.bizkeeper.ConsumerBizkeeperHandler" />
+		class="io.servicecomb.bizkeeper.ConsumerBizkeeperHandler" />
 	<handler id="bizkeeper-provider"
-		class="com.huawei.paas.cse.bizkeeper.ProviderBizkeeperHanlder" />
+		class="io.servicecomb.bizkeeper.ProviderBizkeeperHanlder" />
 </config>

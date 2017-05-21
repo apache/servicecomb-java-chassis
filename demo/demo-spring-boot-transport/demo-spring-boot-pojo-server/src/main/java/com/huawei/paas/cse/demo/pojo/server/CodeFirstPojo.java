@@ -18,9 +18,10 @@ package com.huawei.paas.cse.demo.pojo.server;
 
 import java.util.List;
 
-import com.huawei.paas.cse.core.context.ContextUtils;
 import com.huawei.paas.cse.demo.compute.Person;
-import com.huawei.paas.cse.provider.pojo.RpcSchema;
+
+import io.servicecomb.core.context.ContextUtils;
+import io.servicecomb.provider.pojo.RpcSchema;
 
 @RpcSchema(schemaId = "codeFirst")
 public class CodeFirstPojo {

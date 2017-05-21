@@ -16,5 +16,5 @@
 
 <config>
 	<handler id="simpleLB"
-		class="com.huawei.paas.cse.core.handler.impl.SimpleLoadBalanceHandler" />
+		class="io.servicecomb.core.handler.impl.SimpleLoadBalanceHandler" />
 </config>

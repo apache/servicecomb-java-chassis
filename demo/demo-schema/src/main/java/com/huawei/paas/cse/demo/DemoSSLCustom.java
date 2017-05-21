@@ -19,7 +19,7 @@ package com.huawei.paas.cse.demo;
 import java.io.File;
 import java.io.IOException;
 
-import com.huawei.paas.foundation.ssl.SSLCustom;
+import io.servicecomb.foundation.ssl.SSLCustom;
 
 public class DemoSSLCustom extends SSLCustom {
     @Override

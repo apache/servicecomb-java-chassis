@@ -16,7 +16,7 @@
 
 package com.huawei.paas.cse.demo;
 
-import com.huawei.paas.cse.core.Const;
+import io.servicecomb.core.Const;
 
 /**
  * <一句话功能简述>

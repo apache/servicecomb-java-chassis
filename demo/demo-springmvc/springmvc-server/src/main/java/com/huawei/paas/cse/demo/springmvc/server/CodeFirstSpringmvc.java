@@ -37,14 +37,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import com.huawei.paas.cse.common.rest.codec.RestObjectMapper;
-import com.huawei.paas.cse.core.Response;
-import com.huawei.paas.cse.core.context.ContextUtils;
 import com.huawei.paas.cse.demo.compute.Person;
 import com.huawei.paas.cse.demo.server.User;
-import com.huawei.paas.cse.provider.rest.common.RestSchema;
-import com.huawei.paas.cse.swagger.extend.annotations.ResponseHeaders;
 
+import io.servicecomb.common.rest.codec.RestObjectMapper;
+import io.servicecomb.core.Response;
+import io.servicecomb.core.context.ContextUtils;
+import io.servicecomb.provider.rest.common.RestSchema;
+import io.servicecomb.swagger.extend.annotations.ResponseHeaders;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiResponse;

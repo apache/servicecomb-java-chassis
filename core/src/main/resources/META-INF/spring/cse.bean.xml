@@ -23,16 +23,17 @@
 	<context:annotation-config />
 	<!-- <context:spring-configured /> -->
 	<context:component-scan base-package="com.huawei.paas.cse" />
+	<context:component-scan base-package="io.servicecomb" />
 
-	<bean class="com.huawei.paas.cse.core.config.ConfigurationSpringInitializer">
+	<bean class="io.servicecomb.core.config.ConfigurationSpringInitializer">
 		<property name="configId" value="config" />
 	</bean>
 
-	<bean class="com.huawei.paas.cse.core.CseContext" factory-method="getInstance"></bean>
+	<bean class="io.servicecomb.core.CseContext" factory-method="getInstance"></bean>
 
-	<bean class="com.huawei.paas.cse.core.CseApplicationListener">
+	<bean class="io.servicecomb.core.CseApplicationListener">
 	</bean>
 
-	<bean id="cse.executor.default" class="com.huawei.paas.cse.core.executor.FixedThreadExecutor"></bean>
-	<bean id="cse.executor.reactive" class="com.huawei.paas.cse.core.executor.ReactiveExecutor"></bean>
+	<bean id="cse.executor.default" class="io.servicecomb.core.executor.FixedThreadExecutor"></bean>
+	<bean id="cse.executor.reactive" class="io.servicecomb.core.executor.ReactiveExecutor"></bean>
 </beans>
