@@ -44,7 +44,7 @@ public class TestSimpleTransactionControlFilter {
     public static void beforeCls() {
         AbstractConfiguration configuration = new BaseConfiguration();
         configuration.addProperty("cse.loadbalance.test.flowsplitFilter.policy",
-                "com.huawei.paas.cse.loadbalance.filter.SimpleFlowsplitFilter");
+                "io.servicecomb.loadbalance.filter.SimpleFlowsplitFilter");
         configuration.addProperty("cse.loadbalance.test.flowsplitFilter.options.tag0", "value0");
     }
 

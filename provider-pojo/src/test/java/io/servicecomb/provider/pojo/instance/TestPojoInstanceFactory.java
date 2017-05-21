@@ -48,7 +48,7 @@ public class TestPojoInstanceFactory {
         throws Exception {
 
         PojoInstanceFactory lPojoInstanceFactory = new PojoInstanceFactory();
-        lPojoInstanceFactory.create("com.huawei.paas.cse.provider.pojo.instance.TestPojoInstanceFactory");
+        lPojoInstanceFactory.create("io.servicecomb.provider.pojo.instance.TestPojoInstanceFactory");
         Assert.assertEquals(PojoConst.POJO, lPojoInstanceFactory.getImplName());
     }
 

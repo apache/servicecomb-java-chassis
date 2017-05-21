@@ -50,9 +50,9 @@ public class TestOperationMeta {
         Assert.assertEquals("POST", operationMeta.getHttpMethod());
         Assert.assertEquals("/test", operationMeta.getOperationPath());
         Assert.assertEquals(schemaMeta, operationMeta.getSchemaMeta());
-        Assert.assertEquals("com.huawei.paas.cse.core.definition.TestOperationMeta$Impl.test",
+        Assert.assertEquals("io.servicecomb.core.definition.TestOperationMeta$Impl.test",
                 operationMeta.getSchemaQualifiedName());
-        Assert.assertEquals("app:test.com.huawei.paas.cse.core.definition.TestOperationMeta$Impl.test",
+        Assert.assertEquals("app:test.io.servicecomb.core.definition.TestOperationMeta$Impl.test",
                 operationMeta.getMicroserviceQualifiedName());
         Assert.assertEquals("app:test", operationMeta.getMicroserviceName());
         Assert.assertEquals("test", operationMeta.getOperationId());

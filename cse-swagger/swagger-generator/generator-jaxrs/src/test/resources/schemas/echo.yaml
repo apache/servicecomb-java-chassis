@@ -2,7 +2,7 @@
 swagger: "2.0"
 info:
   version: "1.0.0"
-  title: "swagger definition for com.huawei.paas.cse.swagger.generator.jaxrs.Echo"
+  title: "swagger definition for io.servicecomb.swagger.generator.jaxrs.Echo"
   x-java-interface: "gen.cse.ms.ut.EchoIntf"
 basePath: "/Echo"
 consumes:
@@ -48,4 +48,4 @@ definitions:
     properties:
       name:
         type: "string"
-    x-java-class: "com.huawei.paas.cse.swagger.generator.jaxrs.User"
+    x-java-class: "io.servicecomb.swagger.generator.jaxrs.User"

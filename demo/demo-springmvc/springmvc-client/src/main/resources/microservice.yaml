@@ -27,4 +27,4 @@ ssl.keyStore: server.p12
 ssl.keyStoreType: PKCS12
 ssl.keyStoreValue: Changeme_123
 ssl.crl: revoke.crl
-ssl.sslCustomClass: com.huawei.paas.cse.demo.DemoSSLCustom
+ssl.sslCustomClass: io.servicecomb.demo.DemoSSLCustom

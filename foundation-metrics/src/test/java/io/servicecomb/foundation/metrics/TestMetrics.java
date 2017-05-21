@@ -24,8 +24,8 @@ import org.junit.Test;
 public class TestMetrics {
 
     /**
-     * Test com.huawei.paas.foundation.metrics.Metrics.onCycle()
-     * test com.huawei.paas.foundation.metrics.Metrics.getOrCreateLocalPerfStat(String, int)
+     * Test io.servicecomb.foundation.metrics.Metrics.onCycle()
+     * test io.servicecomb.foundation.metrics.Metrics.getOrCreateLocalPerfStat(String, int)
      * @throws Exception 
      */
     @Test

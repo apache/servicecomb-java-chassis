@@ -51,7 +51,7 @@ public class TestSSLOptionFactory {
             @Mock
             public String getStringProperty(ConcurrentCompositeConfiguration configSource, String defaultValue,
                     String... keys) {
-                return "com.huawei.paas.foundation.ssl.MyOptionFactory";
+                return "io.servicecomb.foundation.ssl.MyOptionFactory";
             }
         };
         SSLOptionFactory factory = SSLOptionFactory.createSSLOptionFactory("cc", null);

@@ -38,7 +38,7 @@ import io.servicecomb.provider.pojo.RpcReference;
  * @since  [产品/模块版本]
  */
 public class CodeFirstPojoClient {
-    @RpcReference(microserviceName = "pojo", schemaId = "com.huawei.paas.cse.demo.CodeFirstPojoIntf")
+    @RpcReference(microserviceName = "pojo", schemaId = "io.servicecomb.demo.CodeFirstPojoIntf")
     public CodeFirstPojoIntf codeFirstAnnotation;
 
     @RpcReference(microserviceName = "pojo")

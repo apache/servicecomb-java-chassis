@@ -220,7 +220,7 @@ public class TestSwaggerUtils {
     @Test
     public void testRepeatOperation() {
         UnitTestSwaggerUtils.testException(
-                "OperationId must be unique. com.huawei.paas.cse.swagger.generator.core.schema.RepeatOperation:add",
+                "OperationId must be unique. io.servicecomb.swagger.generator.core.schema.RepeatOperation:add",
                 context,
                 RepeatOperation.class);
     }

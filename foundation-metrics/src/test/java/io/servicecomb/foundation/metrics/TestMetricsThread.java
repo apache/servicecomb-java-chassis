@@ -48,7 +48,7 @@ public class TestMetricsThread {
     }
 
     /**
-     * Test com.huawei.paas.foundation.metrics.MetricsThread.run()
+     * Test io.servicecomb.foundation.metrics.MetricsThread.run()
      */
     @Test
     public void test() {

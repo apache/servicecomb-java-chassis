@@ -1,1 +1,1 @@
-http\://www.huawei.com/schema/paas/cse/rpc=com.huawei.paas.foundation.common.spring.PaasNamespaceHandler
+http\://www.huawei.com/schema/paas/cse/rpc=io.servicecomb.foundation.common.spring.PaasNamespaceHandler

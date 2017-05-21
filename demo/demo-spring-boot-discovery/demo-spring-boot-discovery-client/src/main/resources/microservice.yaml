@@ -23,8 +23,8 @@ cse:
     client:
       serverUri: https://10.22.87.59:30103
 #########cloud test for cc/sc
-ssl.cc.consumer.sslOptionFactory: com.huawei.paas.foundation.auth.SSLOptionFactoryCloud
-ssl.sc.consumer.sslOptionFactory: com.huawei.paas.foundation.auth.SSLOptionFactoryCloud
+ssl.cc.consumer.sslOptionFactory: io.servicecomb.foundation.auth.SSLOptionFactoryCloud
+ssl.sc.consumer.sslOptionFactory: io.servicecomb.foundation.auth.SSLOptionFactoryCloud
 
 #########SSL options
 ssl.protocols: TLSv1.2
@@ -39,4 +39,4 @@ ssl.keyStore: server.p12
 ssl.keyStoreType: PKCS12
 ssl.keyStoreValue: Changeme_123
 ssl.crl: revoke.crl
-ssl.sslCustomClass: com.huawei.paas.cse.demo.DemoSSLCustom
+ssl.sslCustomClass: io.servicecomb.demo.DemoSSLCustom

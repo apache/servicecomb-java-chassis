@@ -48,7 +48,7 @@ public class TestApiImplicitParams {
                 value = {@ApiImplicitParam(
                         paramType = "body",
                         name = "body",
-                        dataType = "com.huawei.paas.cse.swagger.generator.core.schema.User")})
+                        dataType = "io.servicecomb.swagger.generator.core.schema.User")})
         void testBody();
     }
 

@@ -2,7 +2,7 @@
 swagger: "2.0"
 info:
   version: "1.0.0"
-  title: "swagger definition for com.huawei.paas.cse.swagger.generator.springmvc.Echo"
+  title: "swagger definition for io.servicecomb.swagger.generator.springmvc.Echo"
   x-java-interface: "gen.cse.ms.ut.EchoIntf"
 basePath: "/Echo"
 consumes:
@@ -54,4 +54,4 @@ definitions:
     properties:
       name:
         type: "string"
-    x-java-class: "com.huawei.paas.cse.swagger.generator.springmvc.User"
+    x-java-class: "io.servicecomb.swagger.generator.springmvc.User"

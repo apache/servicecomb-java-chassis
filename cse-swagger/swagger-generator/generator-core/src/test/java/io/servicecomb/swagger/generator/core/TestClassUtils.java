@@ -67,7 +67,7 @@ public class TestClassUtils {
         Assert.assertEquals("getUser", method.getName());
 
         Assert.assertEquals("gen.swagger.names", method.getGenericParameterTypes()[0].getTypeName());
-        Assert.assertEquals("java.util.List<com.huawei.paas.cse.swagger.generator.core.schema.User>",
+        Assert.assertEquals("java.util.List<io.servicecomb.swagger.generator.core.schema.User>",
                 method.getGenericReturnType().getTypeName());
     }
 }

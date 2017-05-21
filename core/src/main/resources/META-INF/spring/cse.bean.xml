@@ -22,7 +22,7 @@
 		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd">
 	<context:annotation-config />
 	<!-- <context:spring-configured /> -->
-	<context:component-scan base-package="com.huawei.paas.cse" />
+	<context:component-scan base-package="io.servicecomb" />
 
 	<bean class="io.servicecomb.core.config.ConfigurationSpringInitializer">
 		<property name="configId" value="config" />

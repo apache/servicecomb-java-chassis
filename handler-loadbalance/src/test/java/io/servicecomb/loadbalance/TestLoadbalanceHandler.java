@@ -64,7 +64,7 @@ public class TestLoadbalanceHandler {
         DynamicPropertyFactory
                 .initWithConfigurationSource(new ConfigurationBackedDynamicPropertySupportImpl(configuration));
         configuration.addProperty("cse.loadbalance.test.transactionControl.policy",
-                "com.huawei.paas.cse.loadbalance.filter.SimpleTransactionControlFilter");
+                "io.servicecomb.loadbalance.filter.SimpleTransactionControlFilter");
         configuration.addProperty("cse.loadbalance.test.transactionControl.options.tag0", "value0");
         configuration.addProperty("cse.loadbalance.test.isolation.enabled", "true");
     }

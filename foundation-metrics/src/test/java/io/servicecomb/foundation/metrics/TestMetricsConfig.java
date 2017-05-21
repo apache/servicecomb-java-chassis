@@ -47,9 +47,9 @@ public class TestMetricsConfig {
     }
 
     /**
-     * Test com.huawei.paas.foundation.metrics.MetricsConfig.getMsCycle()
-     * com.huawei.paas.foundation.metrics.MetricsConfig.isEnable()
-     * com.huawei.paas.foundation.metrics.MetricsConfig.afterPropertiesSet() This cannot be tested as it will start original Thread
+     * Test io.servicecomb.foundation.metrics.MetricsConfig.getMsCycle()
+     * io.servicecomb.foundation.metrics.MetricsConfig.isEnable()
+     * io.servicecomb.foundation.metrics.MetricsConfig.afterPropertiesSet() This cannot be tested as it will start original Thread
      */
     @Test
     public void test() {

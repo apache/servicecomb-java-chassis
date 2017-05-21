@@ -81,7 +81,7 @@ public class YAMLConfigurationSource implements PolledConfigurationSource {
      * Create the instance for the default list of URLs, which is composed by the following order
      * <p>
      * <ul>
-     * <li>A configuration file (default name to be <code>com.huawei.paas.config.archaius.sources.com.huawei.
+     * <li>A configuration file (default name to be <code>io.servicecomb.config.archaius.sources.com.huawei.
      * paas.config.properties</code>, see {@link #DEFAULT_CONFIG_FILE_NAME}) on the classpath
      * <li>A list of URLs defined by system property {@value #CONFIG_URL} with values separated
      *  by comma <code>","</code>.

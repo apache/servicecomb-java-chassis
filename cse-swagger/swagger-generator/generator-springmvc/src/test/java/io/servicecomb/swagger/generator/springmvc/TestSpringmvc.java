@@ -68,7 +68,7 @@ public class TestSpringmvc {
     @Test
     public void testMethodMultiHttpMethod() throws Exception {
         UnitTestSwaggerUtils.testException(
-                "not allowed multi http method for com.huawei.paas.cse.swagger.generator.springmvc.Echo:multiHttpMethod",
+                "not allowed multi http method for io.servicecomb.swagger.generator.springmvc.Echo:multiHttpMethod",
                 context,
                 Echo.class,
                 "multiHttpMethod");
@@ -77,7 +77,7 @@ public class TestSpringmvc {
     @Test
     public void testClassMultiHttpMethod() throws Exception {
         UnitTestSwaggerUtils.testException(
-                "not allowed multi http method for com.huawei.paas.cse.swagger.generator.springmvc.ClassMultiHttpMethod",
+                "not allowed multi http method for io.servicecomb.swagger.generator.springmvc.ClassMultiHttpMethod",
                 context,
                 ClassMultiHttpMethod.class);
     }
@@ -85,7 +85,7 @@ public class TestSpringmvc {
     @Test
     public void testMethodMultiPath() throws Exception {
         UnitTestSwaggerUtils.testException(
-                "not allowed multi path for com.huawei.paas.cse.swagger.generator.springmvc.Echo:multiPath",
+                "not allowed multi path for io.servicecomb.swagger.generator.springmvc.Echo:multiPath",
                 context,
                 Echo.class,
                 "multiPath");
@@ -94,7 +94,7 @@ public class TestSpringmvc {
     @Test
     public void testClassMultiPath() throws Exception {
         UnitTestSwaggerUtils.testException(
-                "not support multi path for com.huawei.paas.cse.swagger.generator.springmvc.ClassMultiPath",
+                "not support multi path for io.servicecomb.swagger.generator.springmvc.ClassMultiPath",
                 context,
                 ClassMultiPath.class);
     }

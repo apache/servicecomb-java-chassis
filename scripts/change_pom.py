@@ -22,13 +22,13 @@ def change_pom(pom_path):
         child.text = VERSION
     print 'replace second level vesion'
     for child in tree.iterfind('%sparent' % (POM_NS)):
-        if child.find('%sgroupId' % POM_NS).text == "com.huawei.paas.cse":
+        if child.find('%sgroupId' % POM_NS).text == "io.servicecomb":
             if child.find('%sversion' % POM_NS) is not None:
                 print 'change module version from ' + child.find('%sversion' % POM_NS).text + " to " + VERSION
                 child.find('%sversion' % POM_NS).text = VERSION
     print 'replace cse dependency version'
     for child in tree.iter('%sdependency' % (POM_NS)):
-        if child.find('%sgroupId' % POM_NS).text == "com.huawei.paas.cse":
+        if child.find('%sgroupId' % POM_NS).text == "io.servicecomb":
             if child.find('%sversion' % POM_NS) is not None:
                 print 'change module version from ' + child.find('%sversion' % POM_NS).text + " to " + VERSION
                 child.find('%sversion' % POM_NS).text = VERSION

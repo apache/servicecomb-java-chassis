@@ -66,7 +66,7 @@ public class TestJaxrs {
     @Test
     public void testQueryComplex() throws Exception {
         UnitTestSwaggerUtils.testException(
-                "not allow complex type for query parameter, method=com.huawei.paas.cse.swagger.generator.jaxrs.Echo:queryComplex, paramIdx=0, type=java.util.List<com.huawei.paas.cse.swagger.generator.jaxrs.User>",
+                "not allow complex type for query parameter, method=io.servicecomb.swagger.generator.jaxrs.Echo:queryComplex, paramIdx=0, type=java.util.List<io.servicecomb.swagger.generator.jaxrs.User>",
                 context,
                 Echo.class,
                 "queryComplex");

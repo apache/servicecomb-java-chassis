@@ -23,9 +23,9 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
 import io.servicecomb.config.archaius.sources.YAMLConfigurationSource;
-import com.huawei.paas.cse.adapter.spingmvc.RegistryInitializer;
-import com.huawei.paas.cse.adapter.springmvc.impl.SEPLoadbalance;
-import com.huawei.paas.cse.adapter.springmvc.impl.SEPRestTemplate;
+import io.servicecomb.adapter.spingmvc.RegistryInitializer;
+import io.servicecomb.adapter.springmvc.impl.SEPLoadbalance;
+import io.servicecomb.adapter.springmvc.impl.SEPRestTemplate;
 import io.servicecomb.serviceregistry.api.registry.Microservice;
 import io.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
 import io.servicecomb.serviceregistry.client.ServiceRegistryClient;

@@ -52,7 +52,7 @@ public class TestSpringInstanceFactory {
         SpringInstanceFactory lSpringInstanceFactory = new SpringInstanceFactory();
         MockUtil.getInstance().mockBeanUtils();
         MockUtil.getInstance().mockBeanUtilsObject();
-        lSpringInstanceFactory.create("com.huawei.paas.cse.provider.pojo.instance.TestPojoInstanceFactory");
+        lSpringInstanceFactory.create("io.servicecomb.provider.pojo.instance.TestPojoInstanceFactory");
         Assert.assertEquals(PojoConst.SPRING, lSpringInstanceFactory.getImplName());
     }
 

@@ -69,7 +69,7 @@ public class TestPojoProducerProvider {
                 meta.getInstance();
                 result = null;
                 meta.getImplementation();
-                result = "pojo:com.huawei.paas.cse.provider.pojo.Person";
+                result = "pojo:io.servicecomb.provider.pojo.Person";
                 RegistryUtils.getMicroservice();
                 result = service;
                 service.getServiceName();

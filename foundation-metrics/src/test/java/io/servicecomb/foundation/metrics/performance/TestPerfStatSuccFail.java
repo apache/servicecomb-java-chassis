@@ -54,7 +54,7 @@ public class TestPerfStatSuccFail {
         oPerfStatSuccFail.add(true, new PerfStatContext());
         Assert.assertEquals(2, oPerfStatSuccFail.getPerfStatDataList().size());
 
-        //Test com.huawei.paas.foundation.metrics.performance.PerfStatSuccFail.add(boolean, int, long)
+        //Test io.servicecomb.foundation.metrics.performance.PerfStatSuccFail.add(boolean, int, long)
         oPerfStatSuccFail.add(false, 10, 100);;
         Assert.assertEquals(2, oPerfStatSuccFail.getPerfStatDataList().size());
     }

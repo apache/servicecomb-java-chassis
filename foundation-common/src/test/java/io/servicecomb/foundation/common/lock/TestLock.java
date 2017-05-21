@@ -30,7 +30,7 @@ public class TestLock {
     @Test
     public void testLockException() {
         LockException oLockException = new LockException();
-        Assert.assertEquals("com.huawei.paas.foundation.common.lock.LockException",
+        Assert.assertEquals("io.servicecomb.foundation.common.lock.LockException",
                 oLockException.getClass().getName());
 
         oLockException = new LockException("error");

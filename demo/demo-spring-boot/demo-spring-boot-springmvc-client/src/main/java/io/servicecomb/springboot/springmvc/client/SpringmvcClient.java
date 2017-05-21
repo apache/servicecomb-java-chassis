@@ -35,7 +35,7 @@ public class SpringmvcClient {
     public static void main(final String[] args) throws Exception {
         SpringApplication.run(SpringmvcClient.class, args);
 
-        com.huawei.paas.cse.demo.springmvc.client.SpringmvcClient.run();
+        io.servicecomb.demo.springmvc.client.SpringmvcClient.run();
     }
 
 }

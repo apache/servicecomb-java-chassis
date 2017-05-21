@@ -28,7 +28,7 @@ import io.servicecomb.serviceregistry.api.PropertyExtended;
 public class MicroServicePropertyExtendedStub implements PropertyExtended {
 
     /* (non-Javadoc)
-     * @see com.huawei.paas.cse.serviceregistry.api.PropertyExtended#getExtendedProperties()
+     * @see io.servicecomb.serviceregistry.api.PropertyExtended#getExtendedProperties()
      */
     @Override
     public Map<String, String> getExtendedProperties() {
