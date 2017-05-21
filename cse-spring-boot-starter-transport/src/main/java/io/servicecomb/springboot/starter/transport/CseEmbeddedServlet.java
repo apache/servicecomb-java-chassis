@@ -15,7 +15,7 @@
  */
 package io.servicecomb.springboot.starter.transport;
 
-import com.huawei.paas.cse.transport.rest.servlet.RestServlet;
+import io.servicecomb.transport.rest.servlet.RestServlet;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.servlet.ServletRegistrationBean;
