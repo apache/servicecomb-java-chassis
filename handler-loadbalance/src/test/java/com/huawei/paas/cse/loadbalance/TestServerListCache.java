@@ -22,7 +22,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 
-import com.huawei.paas.cse.core.Transport;
+import io.servicecomb.core.Transport;
 import com.huawei.paas.cse.serviceregistry.RegistryUtils;
 import com.huawei.paas.cse.serviceregistry.api.registry.Microservice;
 import com.huawei.paas.cse.serviceregistry.cache.CacheEndpoint;

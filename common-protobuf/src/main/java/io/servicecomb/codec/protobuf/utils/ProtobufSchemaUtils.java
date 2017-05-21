@@ -31,7 +31,7 @@ import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.type.TypeFactory;
 import io.servicecomb.codec.protobuf.utils.schema.WrapSchemaFactory;
 import io.servicecomb.common.javassist.JavassistUtils;
-import com.huawei.paas.cse.core.definition.OperationMeta;
+import io.servicecomb.core.definition.OperationMeta;
 
 import io.protostuff.Schema;
 import io.protostuff.runtime.RuntimeSchema;

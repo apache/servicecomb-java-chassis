@@ -36,7 +36,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import io.servicecomb.common.rest.codec.RestObjectMapper;
-import com.huawei.paas.cse.core.context.ContextUtils;
+import io.servicecomb.core.context.ContextUtils;
 import com.huawei.paas.cse.demo.compute.Person;
 import com.huawei.paas.cse.provider.rest.common.RestSchema;
 

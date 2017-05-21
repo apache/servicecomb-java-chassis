@@ -33,7 +33,7 @@ import org.mockito.Mockito;
 import io.servicecomb.common.rest.AbstractRestServer;
 import io.servicecomb.common.rest.codec.RestServerRequestInternal;
 import io.servicecomb.common.rest.definition.RestOperationMeta;
-import com.huawei.paas.cse.core.definition.OperationMeta;
+import io.servicecomb.core.definition.OperationMeta;
 import com.huawei.paas.cse.transport.rest.servlet.ServletRestServer;
 
 import mockit.Mock;

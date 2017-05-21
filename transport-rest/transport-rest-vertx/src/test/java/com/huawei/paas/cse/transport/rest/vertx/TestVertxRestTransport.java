@@ -20,9 +20,9 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.Mockito;
 
-import com.huawei.paas.cse.core.AsyncResponse;
-import com.huawei.paas.cse.core.Endpoint;
-import com.huawei.paas.cse.core.Invocation;
+import io.servicecomb.core.AsyncResponse;
+import io.servicecomb.core.Endpoint;
+import io.servicecomb.core.Invocation;
 import com.huawei.paas.foundation.common.net.URIEndpointObject;
 import com.huawei.paas.foundation.vertx.VertxUtils;
 

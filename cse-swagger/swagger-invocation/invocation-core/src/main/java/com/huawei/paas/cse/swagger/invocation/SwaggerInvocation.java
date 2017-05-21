@@ -16,7 +16,7 @@
 
 package com.huawei.paas.cse.swagger.invocation;
 
-import com.huawei.paas.cse.core.invocation.InvocationType;
+import io.servicecomb.core.invocation.InvocationType;
 
 /**
  * <一句话功能简述>

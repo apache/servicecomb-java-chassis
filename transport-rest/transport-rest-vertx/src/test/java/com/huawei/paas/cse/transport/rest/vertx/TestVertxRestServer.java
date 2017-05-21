@@ -25,8 +25,8 @@ import org.mockito.Mockito;
 import io.servicecomb.common.rest.codec.RestServerRequestInternal;
 import io.servicecomb.common.rest.codec.produce.ProduceProcessor;
 import io.servicecomb.common.rest.definition.RestOperationMeta;
-import com.huawei.paas.cse.core.Invocation;
-import com.huawei.paas.cse.core.Response;
+import io.servicecomb.core.Invocation;
+import io.servicecomb.core.Response;
 
 import io.vertx.core.http.HttpServerResponse;
 import io.vertx.ext.web.Router;

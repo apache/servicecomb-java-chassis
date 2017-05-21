@@ -21,11 +21,11 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.huawei.paas.cse.core.CseContext;
-import com.huawei.paas.cse.core.Endpoint;
-import com.huawei.paas.cse.core.Transport;
-import com.huawei.paas.cse.core.transport.AbstractTransport;
-import com.huawei.paas.cse.core.transport.TransportManager;
+import io.servicecomb.core.CseContext;
+import io.servicecomb.core.Endpoint;
+import io.servicecomb.core.Transport;
+import io.servicecomb.core.transport.AbstractTransport;
+import io.servicecomb.core.transport.TransportManager;
 import com.huawei.paas.foundation.common.net.URIEndpointObject;
 
 import io.vertx.core.Context;

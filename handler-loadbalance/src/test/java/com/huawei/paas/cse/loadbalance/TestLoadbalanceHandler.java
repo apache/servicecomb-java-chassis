@@ -31,10 +31,10 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mockito.Mockito;
 
-import com.huawei.paas.cse.core.AsyncResponse;
-import com.huawei.paas.cse.core.Invocation;
-import com.huawei.paas.cse.core.Response;
-import com.huawei.paas.cse.core.provider.consumer.SyncResponseExecutor;
+import io.servicecomb.core.AsyncResponse;
+import io.servicecomb.core.Invocation;
+import io.servicecomb.core.Response;
+import io.servicecomb.core.provider.consumer.SyncResponseExecutor;
 import com.huawei.paas.cse.loadbalance.filter.IsolationServerListFilter;
 import com.huawei.paas.cse.loadbalance.filter.TransactionControlFilter;
 import com.netflix.config.ConfigurationBackedDynamicPropertySupportImpl;

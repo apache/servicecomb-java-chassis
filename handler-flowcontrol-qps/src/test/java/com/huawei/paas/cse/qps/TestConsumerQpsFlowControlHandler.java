@@ -23,9 +23,9 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.Mockito;
 
-import com.huawei.paas.cse.core.AsyncResponse;
-import com.huawei.paas.cse.core.Invocation;
-import com.huawei.paas.cse.core.definition.OperationMeta;
+import io.servicecomb.core.AsyncResponse;
+import io.servicecomb.core.Invocation;
+import io.servicecomb.core.definition.OperationMeta;
 
 import mockit.Mock;
 import mockit.MockUp;

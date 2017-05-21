@@ -19,7 +19,7 @@ package com.huawei.paas.cse.demo.crossapp;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
-import com.huawei.paas.cse.core.provider.consumer.InvokerUtils;
+import io.servicecomb.core.provider.consumer.InvokerUtils;
 import com.huawei.paas.cse.demo.TestMgr;
 import com.huawei.paas.cse.provider.pojo.RpcReference;
 import com.huawei.paas.cse.provider.springmvc.reference.RestTemplateBuilder;

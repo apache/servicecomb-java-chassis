@@ -22,7 +22,7 @@ import javax.ws.rs.core.Response.Status.Family;
 
 import io.servicecomb.codec.protobuf.utils.ProtobufSchemaUtils;
 import io.servicecomb.codec.protobuf.utils.WrapSchema;
-import com.huawei.paas.cse.core.definition.OperationMeta;
+import io.servicecomb.core.definition.OperationMeta;
 import com.huawei.paas.cse.swagger.invocation.response.ResponseMeta;
 
 public class OperationProtobuf {

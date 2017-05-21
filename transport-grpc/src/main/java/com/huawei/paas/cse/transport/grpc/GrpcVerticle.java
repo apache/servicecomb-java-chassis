@@ -20,7 +20,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
 
-import com.huawei.paas.cse.core.transport.AbstractTransport;
+import io.servicecomb.core.transport.AbstractTransport;
 import com.huawei.paas.foundation.common.net.IpPort;
 import com.huawei.paas.foundation.common.net.NetUtils;
 import com.huawei.paas.foundation.vertx.client.http.HttpClientVerticle;

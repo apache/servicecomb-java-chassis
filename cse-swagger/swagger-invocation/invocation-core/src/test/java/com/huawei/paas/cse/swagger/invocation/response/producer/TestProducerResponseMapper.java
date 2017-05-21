@@ -22,7 +22,7 @@ import javax.ws.rs.core.Response.Status;
 import org.junit.Assert;
 import org.junit.Test;
 
-import com.huawei.paas.cse.core.Response;
+import io.servicecomb.core.Response;
 
 /**
  * <一句话功能简述>

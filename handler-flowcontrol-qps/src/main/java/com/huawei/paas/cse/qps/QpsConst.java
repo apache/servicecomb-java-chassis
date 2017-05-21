@@ -17,7 +17,7 @@ package com.huawei.paas.cse.qps;
 
 import javax.ws.rs.core.Response.StatusType;
 
-import com.huawei.paas.cse.core.context.HttpStatus;
+import io.servicecomb.core.context.HttpStatus;
 
 /**
  * <一句话功能简述>

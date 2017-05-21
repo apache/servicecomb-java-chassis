@@ -21,8 +21,8 @@ import java.util.List;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
-import com.huawei.paas.cse.core.provider.CseBeanPostProcessor.ProviderProcessor;
-import com.huawei.paas.cse.core.provider.producer.ProducerMeta;
+import io.servicecomb.core.provider.CseBeanPostProcessor.ProviderProcessor;
+import io.servicecomb.core.provider.producer.ProducerMeta;
 import com.huawei.paas.foundation.common.utils.BeanUtils;
 
 /**

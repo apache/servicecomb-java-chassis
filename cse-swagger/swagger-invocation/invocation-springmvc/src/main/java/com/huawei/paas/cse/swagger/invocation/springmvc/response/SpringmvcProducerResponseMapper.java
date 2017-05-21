@@ -24,8 +24,8 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
-import com.huawei.paas.cse.core.Response;
-import com.huawei.paas.cse.core.context.HttpStatus;
+import io.servicecomb.core.Response;
+import io.servicecomb.core.context.HttpStatus;
 import com.huawei.paas.cse.swagger.invocation.response.Headers;
 import com.huawei.paas.cse.swagger.invocation.response.producer.ProducerResponseMapper;
 

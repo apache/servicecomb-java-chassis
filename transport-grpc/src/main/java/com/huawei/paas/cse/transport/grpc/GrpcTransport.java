@@ -20,12 +20,12 @@ import org.springframework.stereotype.Component;
 
 import io.servicecomb.codec.protobuf.definition.OperationProtobuf;
 import io.servicecomb.codec.protobuf.definition.ProtobufManager;
-import com.huawei.paas.cse.core.AsyncResponse;
-import com.huawei.paas.cse.core.Const;
-import com.huawei.paas.cse.core.Invocation;
-import com.huawei.paas.cse.core.Response;
-import com.huawei.paas.cse.core.definition.OperationMeta;
-import com.huawei.paas.cse.core.transport.AbstractTransport;
+import io.servicecomb.core.AsyncResponse;
+import io.servicecomb.core.Const;
+import io.servicecomb.core.Invocation;
+import io.servicecomb.core.Response;
+import io.servicecomb.core.definition.OperationMeta;
+import io.servicecomb.core.transport.AbstractTransport;
 import com.huawei.paas.cse.swagger.invocation.response.ResponseMeta;
 import com.huawei.paas.foundation.common.net.IpPort;
 import com.huawei.paas.foundation.common.utils.JsonUtils;

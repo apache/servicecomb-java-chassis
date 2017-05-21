@@ -16,7 +16,7 @@
 
 package com.huawei.paas.cse.loadbalance.filter;
 
-import com.huawei.paas.cse.core.Invocation;
+import io.servicecomb.core.Invocation;
 import com.netflix.loadbalancer.LoadBalancerStats;
 import com.netflix.loadbalancer.Server;
 import com.netflix.loadbalancer.ServerListFilter;

@@ -16,7 +16,7 @@
 
 package com.huawei.paas.cse.bizkeeper;
 
-import com.huawei.paas.cse.core.Invocation;
+import io.servicecomb.core.Invocation;
 import com.netflix.hystrix.HystrixCommandProperties;
 import com.netflix.hystrix.HystrixObservableCommand;
 

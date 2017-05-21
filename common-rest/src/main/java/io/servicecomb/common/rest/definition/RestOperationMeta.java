@@ -34,7 +34,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import io.servicecomb.common.rest.definition.path.PathRegExp;
-import com.huawei.paas.cse.core.definition.OperationMeta;
+import io.servicecomb.core.definition.OperationMeta;
 
 import io.swagger.models.Operation;
 import io.swagger.models.Swagger;

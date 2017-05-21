@@ -18,9 +18,9 @@ package com.huawei.paas.cse.transport.highway;
 
 import io.servicecomb.codec.protobuf.definition.OperationProtobuf;
 import io.servicecomb.codec.protobuf.utils.WrapSchema;
-import com.huawei.paas.cse.core.Invocation;
-import com.huawei.paas.cse.core.Response;
-import com.huawei.paas.cse.core.invocation.InvocationFactory;
+import io.servicecomb.core.Invocation;
+import io.servicecomb.core.Response;
+import io.servicecomb.core.invocation.InvocationFactory;
 import com.huawei.paas.cse.transport.highway.message.RequestHeader;
 import com.huawei.paas.cse.transport.highway.message.ResponseHeader;
 import com.huawei.paas.foundation.vertx.client.tcp.TcpData;

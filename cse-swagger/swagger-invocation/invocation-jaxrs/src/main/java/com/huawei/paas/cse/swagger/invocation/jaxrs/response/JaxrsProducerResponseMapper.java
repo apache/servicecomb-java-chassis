@@ -23,7 +23,7 @@ import javax.ws.rs.core.Response.StatusType;
 
 import org.springframework.stereotype.Component;
 
-import com.huawei.paas.cse.core.Response;
+import io.servicecomb.core.Response;
 import com.huawei.paas.cse.swagger.invocation.response.producer.ProducerResponseMapper;
 
 /**

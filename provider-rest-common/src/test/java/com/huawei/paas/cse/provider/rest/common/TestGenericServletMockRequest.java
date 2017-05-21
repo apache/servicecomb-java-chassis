@@ -29,8 +29,8 @@ import io.servicecomb.common.rest.RestConst;
 import io.servicecomb.common.rest.definition.RestOperationMeta;
 import io.servicecomb.common.rest.definition.RestParam;
 import io.servicecomb.common.rest.definition.path.URLPathBuilder;
-import com.huawei.paas.cse.core.Invocation;
-import com.huawei.paas.cse.core.definition.OperationMeta;
+import io.servicecomb.core.Invocation;
+import io.servicecomb.core.definition.OperationMeta;
 
 public class TestGenericServletMockRequest {
 

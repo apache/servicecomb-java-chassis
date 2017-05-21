@@ -26,9 +26,9 @@ import io.servicecomb.common.rest.AbstractRestServer;
 import io.servicecomb.common.rest.RestConst;
 import io.servicecomb.common.rest.codec.RestServerRequestInternal;
 import io.servicecomb.common.rest.codec.produce.ProduceProcessor;
-import com.huawei.paas.cse.core.Invocation;
-import com.huawei.paas.cse.core.Response;
-import com.huawei.paas.cse.core.exception.InvocationException;
+import io.servicecomb.core.Invocation;
+import io.servicecomb.core.Response;
+import io.servicecomb.core.exception.InvocationException;
 
 import io.netty.handler.codec.http.multipart.HttpPostRequestDecoder.ErrorDataDecoderException;
 import io.vertx.core.Future;

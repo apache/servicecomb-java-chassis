@@ -25,12 +25,12 @@ import java.util.concurrent.Executor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.huawei.paas.cse.core.AsyncResponse;
-import com.huawei.paas.cse.core.Invocation;
-import com.huawei.paas.cse.core.Response;
-import com.huawei.paas.cse.core.exception.ExceptionUtils;
-import com.huawei.paas.cse.core.handler.impl.AbstractHandler;
-import com.huawei.paas.cse.core.provider.consumer.SyncResponseExecutor;
+import io.servicecomb.core.AsyncResponse;
+import io.servicecomb.core.Invocation;
+import io.servicecomb.core.Response;
+import io.servicecomb.core.exception.ExceptionUtils;
+import io.servicecomb.core.handler.impl.AbstractHandler;
+import io.servicecomb.core.provider.consumer.SyncResponseExecutor;
 import com.huawei.paas.cse.loadbalance.filter.IsolationServerListFilter;
 import com.huawei.paas.cse.loadbalance.filter.TransactionControlFilter;
 import com.netflix.client.DefaultLoadBalancerRetryHandler;

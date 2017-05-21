@@ -26,11 +26,11 @@ import org.mockito.Mockito;
 
 import io.servicecomb.codec.protobuf.definition.OperationProtobuf;
 import io.servicecomb.codec.protobuf.utils.WrapSchema;
-import com.huawei.paas.cse.core.Invocation;
-import com.huawei.paas.cse.core.Response;
-import com.huawei.paas.cse.core.definition.OperationMeta;
-import com.huawei.paas.cse.core.definition.SchemaMeta;
-import com.huawei.paas.cse.core.executor.ExecutorManager;
+import io.servicecomb.core.Invocation;
+import io.servicecomb.core.Response;
+import io.servicecomb.core.definition.OperationMeta;
+import io.servicecomb.core.definition.SchemaMeta;
+import io.servicecomb.core.executor.ExecutorManager;
 import com.huawei.paas.cse.transport.common.MockUtil;
 
 import io.swagger.models.Operation;

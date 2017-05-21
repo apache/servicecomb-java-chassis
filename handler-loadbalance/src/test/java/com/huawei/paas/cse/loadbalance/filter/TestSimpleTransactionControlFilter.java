@@ -29,7 +29,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mockito.Mockito;
 
-import com.huawei.paas.cse.core.Invocation;
+import io.servicecomb.core.Invocation;
 import com.huawei.paas.cse.loadbalance.CseServer;
 import com.huawei.paas.cse.serviceregistry.api.registry.MicroserviceInstance;
 import com.netflix.loadbalancer.Server;

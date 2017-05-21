@@ -22,10 +22,10 @@ import io.servicecomb.common.rest.definition.RestOperationMeta;
 import org.junit.Assert;
 import org.junit.Test;
 
-import com.huawei.paas.cse.core.definition.MicroserviceMeta;
-import com.huawei.paas.cse.core.definition.OperationMeta;
-import com.huawei.paas.cse.core.exception.CommonExceptionData;
-import com.huawei.paas.cse.core.exception.InvocationException;
+import io.servicecomb.core.definition.MicroserviceMeta;
+import io.servicecomb.core.definition.OperationMeta;
+import io.servicecomb.core.exception.CommonExceptionData;
+import io.servicecomb.core.exception.InvocationException;
 
 public class TestLocator {
     @Test

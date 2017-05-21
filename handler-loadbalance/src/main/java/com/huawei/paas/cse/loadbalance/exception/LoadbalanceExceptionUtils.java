@@ -16,8 +16,8 @@
 
 package com.huawei.paas.cse.loadbalance.exception;
 
-import com.huawei.paas.cse.core.exception.CseException;
-import com.huawei.paas.cse.core.exception.ExceptionUtils;
+import io.servicecomb.core.exception.CseException;
+import io.servicecomb.core.exception.ExceptionUtils;
 
 public class LoadbalanceExceptionUtils extends ExceptionUtils {
 

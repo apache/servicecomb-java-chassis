@@ -26,10 +26,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
-import com.huawei.paas.cse.core.CseContext;
-import com.huawei.paas.cse.core.exception.CommonExceptionData;
-import com.huawei.paas.cse.core.exception.InvocationException;
-import com.huawei.paas.cse.core.provider.consumer.InvokerUtils;
+import io.servicecomb.core.CseContext;
+import io.servicecomb.core.exception.CommonExceptionData;
+import io.servicecomb.core.exception.InvocationException;
+import io.servicecomb.core.provider.consumer.InvokerUtils;
 import com.huawei.paas.cse.demo.DemoConst;
 import com.huawei.paas.cse.demo.TestMgr;
 import com.huawei.paas.cse.demo.server.Test;

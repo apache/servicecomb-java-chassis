@@ -23,7 +23,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ReflectionUtils;
 
-import com.huawei.paas.cse.core.provider.CseBeanPostProcessor.ConsumerFieldProcessor;
+import io.servicecomb.core.provider.CseBeanPostProcessor.ConsumerFieldProcessor;
 import com.huawei.paas.cse.provider.pojo.RpcReference;
 
 /**

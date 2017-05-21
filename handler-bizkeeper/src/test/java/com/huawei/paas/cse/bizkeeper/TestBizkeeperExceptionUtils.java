@@ -19,7 +19,7 @@ package com.huawei.paas.cse.bizkeeper;
 import org.junit.Assert;
 import org.junit.Test;
 
-import com.huawei.paas.cse.core.exception.CseException;
+import io.servicecomb.core.exception.CseException;
 
 public class TestBizkeeperExceptionUtils {
 

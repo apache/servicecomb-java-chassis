@@ -35,8 +35,8 @@ import org.mockito.Mockito;
 
 import io.servicecomb.common.rest.definition.RestOperationMeta;
 import io.servicecomb.common.rest.definition.RestParam;
-import com.huawei.paas.cse.core.exception.CommonExceptionData;
-import com.huawei.paas.cse.core.exception.InvocationException;
+import io.servicecomb.core.exception.CommonExceptionData;
+import io.servicecomb.core.exception.InvocationException;
 
 import io.swagger.models.parameters.HeaderParameter;
 import io.swagger.models.parameters.Parameter;

@@ -16,8 +16,8 @@
 
 package com.huawei.paas.cse.bizkeeper;
 
-import com.huawei.paas.cse.core.exception.CseException;
-import com.huawei.paas.cse.core.exception.ExceptionUtils;
+import io.servicecomb.core.exception.CseException;
+import io.servicecomb.core.exception.ExceptionUtils;
 
 public class BizkeeperExceptionUtils extends ExceptionUtils {
     public static final String CSE_HANDLER_BK_FALLBACK = "cse.bizkeeper.fallback";

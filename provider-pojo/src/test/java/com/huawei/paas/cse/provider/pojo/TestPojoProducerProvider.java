@@ -22,7 +22,7 @@ import java.util.List;
 import org.junit.Assert;
 import org.junit.Test;
 
-import com.huawei.paas.cse.core.definition.schema.ProducerSchemaFactory;
+import io.servicecomb.core.definition.schema.ProducerSchemaFactory;
 import com.huawei.paas.cse.provider.pojo.schema.PojoProducerMeta;
 import com.huawei.paas.cse.provider.pojo.schema.PojoProducers;
 import com.huawei.paas.cse.serviceregistry.RegistryUtils;

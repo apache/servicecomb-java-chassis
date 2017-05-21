@@ -26,8 +26,8 @@ import javax.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.huawei.paas.cse.core.Const;
-import com.huawei.paas.cse.core.CseContext;
+import io.servicecomb.core.Const;
+import io.servicecomb.core.CseContext;
 
 /**
  * Rest Servlet Server，通过Tomcat拉起

@@ -23,8 +23,8 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.Mockito;
 
-import com.huawei.paas.cse.core.Invocation;
-import com.huawei.paas.cse.core.definition.OperationMeta;
+import io.servicecomb.core.Invocation;
+import io.servicecomb.core.definition.OperationMeta;
 import com.netflix.hystrix.HystrixCommandGroupKey;
 import com.netflix.hystrix.HystrixCommandKey;
 

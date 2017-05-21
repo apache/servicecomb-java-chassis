@@ -22,7 +22,7 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.http.HttpStatus;
 
-import com.huawei.paas.cse.core.Response;
+import io.servicecomb.core.Response;
 
 public class TestCseClientHttpResponse {
     private Object result;

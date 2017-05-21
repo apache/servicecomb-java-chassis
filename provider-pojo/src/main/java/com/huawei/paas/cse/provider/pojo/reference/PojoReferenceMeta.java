@@ -26,12 +26,12 @@ import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.StringUtils;
 
-import com.huawei.paas.cse.core.CseContext;
-import com.huawei.paas.cse.core.definition.MicroserviceMeta;
-import com.huawei.paas.cse.core.definition.SchemaMeta;
-import com.huawei.paas.cse.core.provider.CseBeanPostProcessor.EmptyBeanPostProcessor;
-import com.huawei.paas.cse.core.provider.consumer.ConsumerOperationMeta;
-import com.huawei.paas.cse.core.provider.consumer.ReferenceConfig;
+import io.servicecomb.core.CseContext;
+import io.servicecomb.core.definition.MicroserviceMeta;
+import io.servicecomb.core.definition.SchemaMeta;
+import io.servicecomb.core.provider.CseBeanPostProcessor.EmptyBeanPostProcessor;
+import io.servicecomb.core.provider.consumer.ConsumerOperationMeta;
+import io.servicecomb.core.provider.consumer.ReferenceConfig;
 import com.huawei.paas.cse.provider.pojo.Invoker;
 
 public class PojoReferenceMeta implements FactoryBean<Object>, InitializingBean, EmptyBeanPostProcessor {

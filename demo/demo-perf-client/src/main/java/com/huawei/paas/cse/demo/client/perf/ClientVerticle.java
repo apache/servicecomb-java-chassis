@@ -16,14 +16,14 @@
 
 package com.huawei.paas.cse.demo.client.perf;
 
-import com.huawei.paas.cse.core.CseContext;
-import com.huawei.paas.cse.core.Invocation;
-import com.huawei.paas.cse.core.definition.SchemaMeta;
-import com.huawei.paas.cse.core.exception.CommonExceptionData;
-import com.huawei.paas.cse.core.exception.InvocationException;
-import com.huawei.paas.cse.core.invocation.InvocationFactory;
-import com.huawei.paas.cse.core.provider.consumer.InvokerUtils;
-import com.huawei.paas.cse.core.provider.consumer.ReferenceConfig;
+import io.servicecomb.core.CseContext;
+import io.servicecomb.core.Invocation;
+import io.servicecomb.core.definition.SchemaMeta;
+import io.servicecomb.core.exception.CommonExceptionData;
+import io.servicecomb.core.exception.InvocationException;
+import io.servicecomb.core.invocation.InvocationFactory;
+import io.servicecomb.core.provider.consumer.InvokerUtils;
+import io.servicecomb.core.provider.consumer.ReferenceConfig;
 import com.huawei.paas.cse.demo.pojo.client.PojoClient;
 import com.huawei.paas.cse.demo.server.Test;
 import com.huawei.paas.cse.demo.server.TestRequest;

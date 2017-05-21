@@ -30,7 +30,7 @@ import io.servicecomb.common.rest.definition.RestOperationMeta;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.huawei.paas.cse.core.definition.MicroserviceMeta;
+import io.servicecomb.core.definition.MicroserviceMeta;
 
 /**
  * 对静态路径和动态路径的operation进行预先处理，加速operation的查询定位

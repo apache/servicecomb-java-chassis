@@ -21,7 +21,7 @@ import java.util.Date;
 
 import javax.inject.Inject;
 
-import com.huawei.paas.cse.core.CseContext;
+import io.servicecomb.core.CseContext;
 import com.huawei.paas.cse.demo.CodeFirstPojoIntf;
 import com.huawei.paas.cse.demo.DemoConst;
 import com.huawei.paas.cse.demo.TestMgr;

@@ -19,10 +19,10 @@ package com.huawei.paas.cse.transport.rest.vertx;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.huawei.paas.cse.core.Const;
-import com.huawei.paas.cse.core.CseContext;
-import com.huawei.paas.cse.core.Endpoint;
-import com.huawei.paas.cse.core.transport.AbstractTransport;
+import io.servicecomb.core.Const;
+import io.servicecomb.core.CseContext;
+import io.servicecomb.core.Endpoint;
+import io.servicecomb.core.transport.AbstractTransport;
 import com.huawei.paas.foundation.common.net.URIEndpointObject;
 import com.huawei.paas.foundation.ssl.SSLCustom;
 import com.huawei.paas.foundation.ssl.SSLOption;

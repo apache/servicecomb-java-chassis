@@ -21,7 +21,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
-import com.huawei.paas.cse.core.provider.CseBeanPostProcessor.ProviderProcessor;
+import io.servicecomb.core.provider.CseBeanPostProcessor.ProviderProcessor;
 import com.huawei.paas.cse.provider.pojo.RpcSchema;
 import com.huawei.paas.foundation.common.RegisterManager;
 import com.huawei.paas.foundation.common.utils.BeanUtils;

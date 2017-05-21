@@ -21,7 +21,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
-import com.huawei.paas.cse.core.Response;
+import io.servicecomb.core.Response;
 import com.huawei.paas.cse.demo.CodeFirstRestTemplate;
 import com.huawei.paas.cse.demo.TestMgr;
 import com.huawei.paas.cse.demo.server.User;

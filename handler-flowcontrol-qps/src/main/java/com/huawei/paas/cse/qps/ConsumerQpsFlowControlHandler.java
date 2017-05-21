@@ -16,12 +16,12 @@
 
 package com.huawei.paas.cse.qps;
 
-import com.huawei.paas.cse.core.AsyncResponse;
-import com.huawei.paas.cse.core.Invocation;
-import com.huawei.paas.cse.core.definition.OperationMeta;
-import com.huawei.paas.cse.core.exception.CommonExceptionData;
-import com.huawei.paas.cse.core.exception.InvocationException;
-import com.huawei.paas.cse.core.handler.impl.AbstractHandler;
+import io.servicecomb.core.AsyncResponse;
+import io.servicecomb.core.Invocation;
+import io.servicecomb.core.definition.OperationMeta;
+import io.servicecomb.core.exception.CommonExceptionData;
+import io.servicecomb.core.exception.InvocationException;
+import io.servicecomb.core.handler.impl.AbstractHandler;
 
 /**
  * consumer端针对调用目标的qps控制

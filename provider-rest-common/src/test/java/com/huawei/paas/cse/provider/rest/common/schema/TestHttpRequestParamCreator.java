@@ -24,8 +24,8 @@ import org.mockito.Mockito;
 
 import io.servicecomb.common.rest.RestConst;
 import io.servicecomb.common.rest.definition.RestOperationMeta;
-import com.huawei.paas.cse.core.Invocation;
-import com.huawei.paas.cse.core.definition.OperationMeta;
+import io.servicecomb.core.Invocation;
+import io.servicecomb.core.definition.OperationMeta;
 import com.huawei.paas.cse.provider.rest.common.ProducerHttpRequestArgMapper;
 
 public class TestHttpRequestParamCreator {

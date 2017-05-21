@@ -22,9 +22,9 @@ import java.util.concurrent.Executor;
 import org.mockito.Mockito;
 
 import io.servicecomb.codec.protobuf.definition.OperationProtobuf;
-import com.huawei.paas.cse.core.definition.MicroserviceMetaManager;
-import com.huawei.paas.cse.core.definition.OperationMeta;
-import com.huawei.paas.cse.core.definition.SchemaMeta;
+import io.servicecomb.core.definition.MicroserviceMetaManager;
+import io.servicecomb.core.definition.OperationMeta;
+import io.servicecomb.core.definition.SchemaMeta;
 import com.huawei.paas.cse.transport.grpc.GrpcConfig;
 
 import mockit.Mock;

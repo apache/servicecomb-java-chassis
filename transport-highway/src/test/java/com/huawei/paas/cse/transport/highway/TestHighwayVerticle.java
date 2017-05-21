@@ -22,8 +22,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 
-import com.huawei.paas.cse.core.Endpoint;
-import com.huawei.paas.cse.core.Transport;
+import io.servicecomb.core.Endpoint;
+import io.servicecomb.core.Transport;
 import com.huawei.paas.cse.transport.common.MockUtil;
 import com.huawei.paas.foundation.common.net.URIEndpointObject;
 

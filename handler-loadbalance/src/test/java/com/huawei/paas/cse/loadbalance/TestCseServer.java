@@ -24,7 +24,7 @@ import static org.junit.Assert.assertNotNull;
 import org.junit.Test;
 import org.mockito.Mockito;
 
-import com.huawei.paas.cse.core.Transport;
+import io.servicecomb.core.Transport;
 import com.huawei.paas.cse.serviceregistry.cache.CacheEndpoint;
 
 /**

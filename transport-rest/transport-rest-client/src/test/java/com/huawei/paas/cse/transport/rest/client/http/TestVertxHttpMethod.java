@@ -25,10 +25,10 @@ import io.servicecomb.common.rest.RestConst;
 import io.servicecomb.common.rest.codec.produce.ProduceProcessor;
 import io.servicecomb.common.rest.definition.RestOperationMeta;
 import io.servicecomb.common.rest.definition.path.URLPathBuilder;
-import com.huawei.paas.cse.core.AsyncResponse;
-import com.huawei.paas.cse.core.Endpoint;
-import com.huawei.paas.cse.core.Invocation;
-import com.huawei.paas.cse.core.definition.OperationMeta;
+import io.servicecomb.core.AsyncResponse;
+import io.servicecomb.core.Endpoint;
+import io.servicecomb.core.Invocation;
+import io.servicecomb.core.definition.OperationMeta;
 import com.huawei.paas.foundation.common.net.IpPort;
 import com.huawei.paas.foundation.vertx.client.http.HttpClientWithContext;
 

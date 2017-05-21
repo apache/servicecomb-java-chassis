@@ -19,8 +19,8 @@ package com.huawei.paas.cse.bizkeeper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.huawei.paas.cse.core.Invocation;
-import com.huawei.paas.cse.core.Response;
+import io.servicecomb.core.Invocation;
+import io.servicecomb.core.Response;
 import com.netflix.hystrix.HystrixObservableCommand;
 import com.netflix.hystrix.strategy.concurrency.HystrixRequestContext;
 

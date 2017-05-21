@@ -25,7 +25,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 
-import com.huawei.paas.cse.core.CseContext;
+import io.servicecomb.core.CseContext;
 import com.huawei.paas.cse.demo.DemoConst;
 import com.huawei.paas.cse.demo.TestMgr;
 import com.huawei.paas.cse.demo.controller.Controller;

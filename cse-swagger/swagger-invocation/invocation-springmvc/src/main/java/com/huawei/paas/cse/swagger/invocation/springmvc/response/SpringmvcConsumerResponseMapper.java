@@ -24,7 +24,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
-import com.huawei.paas.cse.core.Response;
+import io.servicecomb.core.Response;
 import com.huawei.paas.cse.swagger.invocation.response.consumer.ConsumerResponseMapper;
 
 /**

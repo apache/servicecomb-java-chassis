@@ -16,7 +16,7 @@
 
 package com.huawei.paas.cse.demo.client.perf;
 
-import com.huawei.paas.cse.core.CseContext;
+import io.servicecomb.core.CseContext;
 import com.huawei.paas.cse.demo.pojo.client.PojoClient;
 import com.huawei.paas.cse.demo.server.Test;
 import com.huawei.paas.cse.demo.server.TestRequest;

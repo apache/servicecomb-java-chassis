@@ -19,7 +19,7 @@ package com.huawei.paas.cse.demo.pojo.server;
 import java.util.Arrays;
 import java.util.List;
 
-import com.huawei.paas.cse.core.exception.InvocationException;
+import io.servicecomb.core.exception.InvocationException;
 import com.huawei.paas.cse.demo.server.Test;
 import com.huawei.paas.cse.demo.server.TestRequest;
 import com.huawei.paas.cse.demo.server.User;

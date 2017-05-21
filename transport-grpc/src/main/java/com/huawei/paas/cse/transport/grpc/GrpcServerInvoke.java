@@ -26,14 +26,14 @@ import org.springframework.util.ReflectionUtils;
 
 import io.servicecomb.codec.protobuf.definition.OperationProtobuf;
 import io.servicecomb.codec.protobuf.definition.ProtobufManager;
-import com.huawei.paas.cse.core.Const;
-import com.huawei.paas.cse.core.CseContext;
-import com.huawei.paas.cse.core.Invocation;
-import com.huawei.paas.cse.core.Response;
-import com.huawei.paas.cse.core.definition.MicroserviceMeta;
-import com.huawei.paas.cse.core.definition.MicroserviceMetaManager;
-import com.huawei.paas.cse.core.definition.OperationMeta;
-import com.huawei.paas.cse.core.definition.SchemaMeta;
+import io.servicecomb.core.Const;
+import io.servicecomb.core.CseContext;
+import io.servicecomb.core.Invocation;
+import io.servicecomb.core.Response;
+import io.servicecomb.core.definition.MicroserviceMeta;
+import io.servicecomb.core.definition.MicroserviceMetaManager;
+import io.servicecomb.core.definition.OperationMeta;
+import io.servicecomb.core.definition.SchemaMeta;
 
 import io.netty.channel.ChannelHandlerContext;
 import io.vertx.core.buffer.Buffer;

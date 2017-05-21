@@ -24,8 +24,8 @@ import org.junit.Test;
 import org.mockito.Mockito;
 
 import io.servicecomb.common.rest.definition.RestOperationMeta;
-import com.huawei.paas.cse.core.definition.OperationMeta;
-import com.huawei.paas.cse.core.provider.consumer.ReferenceConfig;
+import io.servicecomb.core.definition.OperationMeta;
+import io.servicecomb.core.provider.consumer.ReferenceConfig;
 
 public class TestRequestMeta {
     ReferenceConfig referenceConfig = Mockito.mock(ReferenceConfig.class);

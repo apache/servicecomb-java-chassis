@@ -26,7 +26,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.huawei.paas.cse.core.endpoint.AbstractEndpointsCache;
+import io.servicecomb.core.endpoint.AbstractEndpointsCache;
 import com.huawei.paas.cse.serviceregistry.RegistryUtils;
 import com.huawei.paas.cse.serviceregistry.api.registry.Microservice;
 import com.huawei.paas.cse.serviceregistry.cache.InstanceCache;

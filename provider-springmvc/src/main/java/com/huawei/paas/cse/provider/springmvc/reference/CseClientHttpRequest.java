@@ -36,14 +36,14 @@ import io.servicecomb.common.rest.definition.RestOperationMeta;
 import io.servicecomb.common.rest.definition.RestParam;
 import io.servicecomb.common.rest.locator.OperationLocator;
 import io.servicecomb.common.rest.locator.ServicePathManager;
-import com.huawei.paas.cse.core.CseContext;
-import com.huawei.paas.cse.core.Invocation;
-import com.huawei.paas.cse.core.Response;
-import com.huawei.paas.cse.core.definition.MicroserviceMeta;
-import com.huawei.paas.cse.core.exception.ExceptionFactory;
-import com.huawei.paas.cse.core.invocation.InvocationFactory;
-import com.huawei.paas.cse.core.provider.consumer.InvokerUtils;
-import com.huawei.paas.cse.core.provider.consumer.ReferenceConfig;
+import io.servicecomb.core.CseContext;
+import io.servicecomb.core.Invocation;
+import io.servicecomb.core.Response;
+import io.servicecomb.core.definition.MicroserviceMeta;
+import io.servicecomb.core.exception.ExceptionFactory;
+import io.servicecomb.core.invocation.InvocationFactory;
+import io.servicecomb.core.provider.consumer.InvokerUtils;
+import io.servicecomb.core.provider.consumer.ReferenceConfig;
 
 import io.netty.handler.codec.http.QueryStringDecoder;
 

@@ -20,7 +20,7 @@ import javax.inject.Inject;
 
 import org.springframework.stereotype.Component;
 
-import com.huawei.paas.cse.core.provider.consumer.AbstractConsumerProvider;
+import io.servicecomb.core.provider.consumer.AbstractConsumerProvider;
 import com.huawei.paas.cse.provider.pojo.reference.PojoConsumers;
 import com.huawei.paas.cse.provider.pojo.reference.PojoReferenceMeta;
 

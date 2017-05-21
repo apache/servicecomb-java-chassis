@@ -25,7 +25,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.client.ClientHttpResponse;
 
-import com.huawei.paas.cse.core.Response;
+import io.servicecomb.core.Response;
 import com.huawei.paas.cse.swagger.invocation.response.Headers;
 
 /**

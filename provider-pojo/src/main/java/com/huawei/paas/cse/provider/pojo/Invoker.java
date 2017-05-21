@@ -20,14 +20,14 @@ import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.util.Map;
 
-import com.huawei.paas.cse.core.Invocation;
-import com.huawei.paas.cse.core.Response;
-import com.huawei.paas.cse.core.definition.SchemaMeta;
-import com.huawei.paas.cse.core.exception.ExceptionFactory;
-import com.huawei.paas.cse.core.invocation.InvocationFactory;
-import com.huawei.paas.cse.core.provider.consumer.ConsumerOperationMeta;
-import com.huawei.paas.cse.core.provider.consumer.InvokerUtils;
-import com.huawei.paas.cse.core.provider.consumer.ReferenceConfig;
+import io.servicecomb.core.Invocation;
+import io.servicecomb.core.Response;
+import io.servicecomb.core.definition.SchemaMeta;
+import io.servicecomb.core.exception.ExceptionFactory;
+import io.servicecomb.core.invocation.InvocationFactory;
+import io.servicecomb.core.provider.consumer.ConsumerOperationMeta;
+import io.servicecomb.core.provider.consumer.InvokerUtils;
+import io.servicecomb.core.provider.consumer.ReferenceConfig;
 
 /**
  * <一句话功能简述>

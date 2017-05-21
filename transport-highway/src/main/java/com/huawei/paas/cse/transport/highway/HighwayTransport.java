@@ -20,9 +20,9 @@ import java.util.Collections;
 
 import org.springframework.stereotype.Component;
 
-import com.huawei.paas.cse.core.AsyncResponse;
-import com.huawei.paas.cse.core.Invocation;
-import com.huawei.paas.cse.core.transport.AbstractTransport;
+import io.servicecomb.core.AsyncResponse;
+import io.servicecomb.core.Invocation;
+import io.servicecomb.core.transport.AbstractTransport;
 import com.huawei.paas.foundation.common.net.URIEndpointObject;
 import com.huawei.paas.foundation.vertx.SimpleJsonObject;
 import com.huawei.paas.foundation.vertx.VertxUtils;

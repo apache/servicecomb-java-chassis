@@ -21,8 +21,8 @@ import java.net.InetSocketAddress;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.huawei.paas.cse.core.Endpoint;
-import com.huawei.paas.cse.core.transport.AbstractTransport;
+import io.servicecomb.core.Endpoint;
+import io.servicecomb.core.transport.AbstractTransport;
 import com.huawei.paas.foundation.common.net.URIEndpointObject;
 
 import io.vertx.core.AbstractVerticle;

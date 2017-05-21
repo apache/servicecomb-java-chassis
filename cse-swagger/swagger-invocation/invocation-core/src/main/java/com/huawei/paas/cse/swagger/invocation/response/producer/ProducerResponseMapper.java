@@ -17,7 +17,7 @@ package com.huawei.paas.cse.swagger.invocation.response.producer;
 
 import javax.ws.rs.core.Response.StatusType;
 
-import com.huawei.paas.cse.core.Response;
+import io.servicecomb.core.Response;
 
 /**
  * <一句话功能简述>

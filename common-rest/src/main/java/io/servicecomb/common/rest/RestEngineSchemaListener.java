@@ -25,10 +25,10 @@ import org.springframework.stereotype.Component;
 
 import io.servicecomb.common.rest.definition.RestOperationMeta;
 import io.servicecomb.common.rest.locator.ServicePathManager;
-import com.huawei.paas.cse.core.definition.MicroserviceMeta;
-import com.huawei.paas.cse.core.definition.OperationMeta;
-import com.huawei.paas.cse.core.definition.SchemaMeta;
-import com.huawei.paas.cse.core.definition.loader.SchemaListener;
+import io.servicecomb.core.definition.MicroserviceMeta;
+import io.servicecomb.core.definition.OperationMeta;
+import io.servicecomb.core.definition.SchemaMeta;
+import io.servicecomb.core.definition.loader.SchemaListener;
 
 /**
  * <一句话功能简述>

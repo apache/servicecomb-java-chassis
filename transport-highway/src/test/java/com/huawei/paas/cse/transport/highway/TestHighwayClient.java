@@ -24,10 +24,10 @@ import org.mockito.Mockito;
 
 import io.servicecomb.codec.protobuf.definition.OperationProtobuf;
 import io.servicecomb.codec.protobuf.definition.ProtobufManager;
-import com.huawei.paas.cse.core.AsyncResponse;
-import com.huawei.paas.cse.core.Endpoint;
-import com.huawei.paas.cse.core.Invocation;
-import com.huawei.paas.cse.core.definition.OperationMeta;
+import io.servicecomb.core.AsyncResponse;
+import io.servicecomb.core.Endpoint;
+import io.servicecomb.core.Invocation;
+import io.servicecomb.core.definition.OperationMeta;
 import com.huawei.paas.cse.transport.highway.message.LoginRequest;
 import com.huawei.paas.cse.transport.highway.message.RequestHeader;
 import com.huawei.paas.foundation.vertx.VertxUtils;

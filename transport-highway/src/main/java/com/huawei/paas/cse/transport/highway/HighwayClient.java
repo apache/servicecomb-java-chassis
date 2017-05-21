@@ -18,11 +18,11 @@ package com.huawei.paas.cse.transport.highway;
 
 import io.servicecomb.codec.protobuf.definition.OperationProtobuf;
 import io.servicecomb.codec.protobuf.definition.ProtobufManager;
-import com.huawei.paas.cse.core.AsyncResponse;
-import com.huawei.paas.cse.core.Invocation;
-import com.huawei.paas.cse.core.Response;
-import com.huawei.paas.cse.core.definition.OperationMeta;
-import com.huawei.paas.cse.core.transport.AbstractTransport;
+import io.servicecomb.core.AsyncResponse;
+import io.servicecomb.core.Invocation;
+import io.servicecomb.core.Response;
+import io.servicecomb.core.definition.OperationMeta;
+import io.servicecomb.core.transport.AbstractTransport;
 import com.huawei.paas.cse.transport.highway.message.LoginRequest;
 import com.huawei.paas.cse.transport.highway.message.RequestHeader;
 import com.huawei.paas.foundation.ssl.SSLCustom;

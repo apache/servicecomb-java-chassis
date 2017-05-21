@@ -26,7 +26,7 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.Mockito;
 
-import com.huawei.paas.cse.core.Transport;
+import io.servicecomb.core.Transport;
 import com.huawei.paas.cse.serviceregistry.cache.CacheEndpoint;
 import com.netflix.loadbalancer.LoadBalancerStats;
 import com.netflix.loadbalancer.Server;

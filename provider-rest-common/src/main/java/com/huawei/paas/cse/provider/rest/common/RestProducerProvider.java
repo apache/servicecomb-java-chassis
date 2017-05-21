@@ -21,9 +21,9 @@ import javax.inject.Inject;
 import org.springframework.stereotype.Component;
 
 import io.servicecomb.common.rest.RestConst;
-import com.huawei.paas.cse.core.definition.schema.ProducerSchemaFactory;
-import com.huawei.paas.cse.core.provider.producer.AbstractProducerProvider;
-import com.huawei.paas.cse.core.provider.producer.ProducerMeta;
+import io.servicecomb.core.definition.schema.ProducerSchemaFactory;
+import io.servicecomb.core.provider.producer.AbstractProducerProvider;
+import io.servicecomb.core.provider.producer.ProducerMeta;
 import com.huawei.paas.cse.serviceregistry.RegistryUtils;
 
 /**

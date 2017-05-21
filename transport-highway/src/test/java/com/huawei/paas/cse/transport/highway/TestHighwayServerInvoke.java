@@ -20,10 +20,10 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.huawei.paas.cse.core.definition.OperationMeta;
-import com.huawei.paas.cse.core.definition.SchemaMeta;
-import com.huawei.paas.cse.core.executor.ReactiveExecutor;
-import com.huawei.paas.cse.core.unittest.UnitTestMeta;
+import io.servicecomb.core.definition.OperationMeta;
+import io.servicecomb.core.definition.SchemaMeta;
+import io.servicecomb.core.executor.ReactiveExecutor;
+import io.servicecomb.core.unittest.UnitTestMeta;
 import com.huawei.paas.cse.transport.common.MockUtil;
 import com.huawei.paas.cse.transport.highway.message.RequestHeader;
 

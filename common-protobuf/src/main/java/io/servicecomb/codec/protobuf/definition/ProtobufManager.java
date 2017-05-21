@@ -20,7 +20,7 @@ import com.fasterxml.jackson.databind.ObjectReader;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.dataformat.protobuf.ProtobufMapper;
-import com.huawei.paas.cse.core.definition.OperationMeta;
+import io.servicecomb.core.definition.OperationMeta;
 
 /**
  * <一句话功能简述>

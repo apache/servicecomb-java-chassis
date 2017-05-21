@@ -16,8 +16,8 @@
 
 package com.huawei.paas.cse.loadbalance;
 
-import com.huawei.paas.cse.core.Endpoint;
-import com.huawei.paas.cse.core.Transport;
+import io.servicecomb.core.Endpoint;
+import io.servicecomb.core.Transport;
 import com.huawei.paas.cse.serviceregistry.api.registry.MicroserviceInstance;
 import com.huawei.paas.cse.serviceregistry.cache.CacheEndpoint;
 import com.netflix.loadbalancer.Server;

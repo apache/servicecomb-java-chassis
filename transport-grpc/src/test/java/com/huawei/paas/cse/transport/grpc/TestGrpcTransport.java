@@ -22,10 +22,10 @@ import org.mockito.Mockito;
 
 import io.servicecomb.codec.protobuf.definition.OperationProtobuf;
 import io.servicecomb.codec.protobuf.utils.WrapSchema;
-import com.huawei.paas.cse.core.AsyncResponse;
-import com.huawei.paas.cse.core.Endpoint;
-import com.huawei.paas.cse.core.Invocation;
-import com.huawei.paas.cse.core.definition.OperationMeta;
+import io.servicecomb.core.AsyncResponse;
+import io.servicecomb.core.Endpoint;
+import io.servicecomb.core.Invocation;
+import io.servicecomb.core.definition.OperationMeta;
 import com.huawei.paas.foundation.common.net.IpPort;
 import com.huawei.paas.foundation.vertx.client.ClientPoolManager;
 import com.huawei.paas.foundation.vertx.client.http.HttpClientWithContext;

@@ -22,8 +22,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.ws.rs.core.Response.Status;
 
-import com.huawei.paas.cse.core.exception.CommonExceptionData;
-import com.huawei.paas.cse.core.exception.ExceptionFactory;
+import io.servicecomb.core.exception.CommonExceptionData;
+import io.servicecomb.core.exception.ExceptionFactory;
 
 import io.netty.handler.codec.http.multipart.HttpPostRequestDecoder.ErrorDataDecoderException;
 import io.vertx.core.Handler;

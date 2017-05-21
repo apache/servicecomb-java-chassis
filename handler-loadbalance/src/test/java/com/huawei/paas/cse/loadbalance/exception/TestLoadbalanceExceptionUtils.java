@@ -24,7 +24,7 @@ import static org.junit.Assert.assertEquals;
 import org.junit.Assert;
 import org.junit.Test;
 
-import com.huawei.paas.cse.core.exception.CseException;
+import io.servicecomb.core.exception.CseException;
 
 /**
  * @author 

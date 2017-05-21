@@ -18,8 +18,8 @@ package com.huawei.paas.cse.demo.crossapp;
 
 import org.springframework.stereotype.Component;
 
-import com.huawei.paas.cse.core.BootListener;
-import com.huawei.paas.cse.core.definition.loader.DynamicSchemaLoader;
+import io.servicecomb.core.BootListener;
+import io.servicecomb.core.definition.loader.DynamicSchemaLoader;
 
 /**
  * <一句话功能简述>

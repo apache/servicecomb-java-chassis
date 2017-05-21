@@ -25,8 +25,8 @@ import org.mockito.Mockito;
 import org.springframework.context.ApplicationContext;
 
 import io.servicecomb.common.rest.locator.ServicePathManager;
-import com.huawei.paas.cse.core.definition.MicroserviceMeta;
-import com.huawei.paas.cse.core.definition.SchemaMeta;
+import io.servicecomb.core.definition.MicroserviceMeta;
+import io.servicecomb.core.definition.SchemaMeta;
 import com.huawei.paas.cse.swagger.generator.core.DefaultSwaggerGeneratorContext;
 import com.huawei.paas.cse.swagger.generator.core.SwaggerGenerator;
 import com.huawei.paas.foundation.common.utils.BeanUtils;

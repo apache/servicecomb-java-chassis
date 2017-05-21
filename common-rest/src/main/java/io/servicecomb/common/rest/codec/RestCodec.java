@@ -23,8 +23,8 @@ import io.servicecomb.common.rest.definition.RestParam;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.huawei.paas.cse.core.exception.ExceptionFactory;
-import com.huawei.paas.cse.core.exception.InvocationException;
+import io.servicecomb.core.exception.ExceptionFactory;
+import io.servicecomb.core.exception.InvocationException;
 
 /**
  * <一句话功能简述>

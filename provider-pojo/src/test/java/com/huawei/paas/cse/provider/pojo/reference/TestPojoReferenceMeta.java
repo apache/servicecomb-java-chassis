@@ -21,11 +21,11 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.huawei.paas.cse.core.CseContext;
-import com.huawei.paas.cse.core.definition.MicroserviceMeta;
-import com.huawei.paas.cse.core.definition.schema.ConsumerSchemaFactory;
-import com.huawei.paas.cse.core.provider.consumer.ConsumerProviderManager;
-import com.huawei.paas.cse.core.provider.consumer.ReferenceConfig;
+import io.servicecomb.core.CseContext;
+import io.servicecomb.core.definition.MicroserviceMeta;
+import io.servicecomb.core.definition.schema.ConsumerSchemaFactory;
+import io.servicecomb.core.provider.consumer.ConsumerProviderManager;
+import io.servicecomb.core.provider.consumer.ReferenceConfig;
 import com.huawei.paas.cse.provider.pojo.IPerson;
 
 import mockit.Expectations;

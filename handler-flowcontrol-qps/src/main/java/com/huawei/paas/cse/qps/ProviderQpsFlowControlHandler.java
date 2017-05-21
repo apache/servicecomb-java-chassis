@@ -16,12 +16,12 @@
 
 package com.huawei.paas.cse.qps;
 
-import com.huawei.paas.cse.core.AsyncResponse;
-import com.huawei.paas.cse.core.Const;
-import com.huawei.paas.cse.core.Invocation;
-import com.huawei.paas.cse.core.exception.CommonExceptionData;
-import com.huawei.paas.cse.core.exception.InvocationException;
-import com.huawei.paas.cse.core.handler.impl.AbstractHandler;
+import io.servicecomb.core.AsyncResponse;
+import io.servicecomb.core.Const;
+import io.servicecomb.core.Invocation;
+import io.servicecomb.core.exception.CommonExceptionData;
+import io.servicecomb.core.exception.InvocationException;
+import io.servicecomb.core.handler.impl.AbstractHandler;
 
 public class ProviderQpsFlowControlHandler extends AbstractHandler {
     private ProviderQpsControllerManager qpsControllerMgr = new ProviderQpsControllerManager();

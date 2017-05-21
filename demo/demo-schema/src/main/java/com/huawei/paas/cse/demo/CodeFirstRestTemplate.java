@@ -27,7 +27,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 
-import com.huawei.paas.cse.core.CseContext;
+import io.servicecomb.core.CseContext;
 import com.huawei.paas.cse.demo.compute.Person;
 import com.huawei.paas.cse.demo.server.User;
 

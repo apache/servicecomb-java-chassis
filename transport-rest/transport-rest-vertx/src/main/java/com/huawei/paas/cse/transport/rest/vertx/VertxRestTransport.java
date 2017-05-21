@@ -18,10 +18,10 @@ package com.huawei.paas.cse.transport.rest.vertx;
 
 import org.springframework.stereotype.Component;
 
-import com.huawei.paas.cse.core.AsyncResponse;
-import com.huawei.paas.cse.core.Const;
-import com.huawei.paas.cse.core.Invocation;
-import com.huawei.paas.cse.core.transport.AbstractTransport;
+import io.servicecomb.core.AsyncResponse;
+import io.servicecomb.core.Const;
+import io.servicecomb.core.Invocation;
+import io.servicecomb.core.transport.AbstractTransport;
 import com.huawei.paas.cse.transport.rest.client.RestTransportClient;
 import com.huawei.paas.cse.transport.rest.client.RestTransportClientManager;
 import com.huawei.paas.foundation.common.net.URIEndpointObject;

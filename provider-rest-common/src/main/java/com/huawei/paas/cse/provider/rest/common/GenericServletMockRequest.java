@@ -44,7 +44,7 @@ import javax.servlet.http.Part;
 import io.servicecomb.common.rest.RestConst;
 import io.servicecomb.common.rest.definition.RestOperationMeta;
 import io.servicecomb.common.rest.definition.RestParam;
-import com.huawei.paas.cse.core.Invocation;
+import io.servicecomb.core.Invocation;
 
 /**
  * 根据Invocation和swagger operation构造一个servlet http request

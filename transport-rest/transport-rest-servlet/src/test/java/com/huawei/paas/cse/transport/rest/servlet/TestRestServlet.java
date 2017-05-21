@@ -26,8 +26,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 
-import com.huawei.paas.cse.core.CseContext;
-import com.huawei.paas.cse.core.transport.TransportManager;
+import io.servicecomb.core.CseContext;
+import io.servicecomb.core.transport.TransportManager;
 import com.huawei.paas.cse.transport.rest.servlet.common.MockUtil;
 
 public class TestRestServlet {

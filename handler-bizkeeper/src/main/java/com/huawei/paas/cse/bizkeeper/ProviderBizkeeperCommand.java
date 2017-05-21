@@ -16,10 +16,10 @@
 
 package com.huawei.paas.cse.bizkeeper;
 
-import com.huawei.paas.cse.core.Invocation;
-import com.huawei.paas.cse.core.Response;
-import com.huawei.paas.cse.core.exception.ExceptionFactory;
-import com.huawei.paas.cse.core.exception.InvocationException;
+import io.servicecomb.core.Invocation;
+import io.servicecomb.core.Response;
+import io.servicecomb.core.exception.ExceptionFactory;
+import io.servicecomb.core.exception.InvocationException;
 
 public class ProviderBizkeeperCommand extends BizkeeperCommand {
     protected ProviderBizkeeperCommand(String type, Invocation invocation,

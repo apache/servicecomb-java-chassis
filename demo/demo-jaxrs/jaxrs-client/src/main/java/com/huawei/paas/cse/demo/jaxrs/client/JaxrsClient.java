@@ -28,7 +28,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 
 import io.servicecomb.common.rest.codec.RestObjectMapper;
-import com.huawei.paas.cse.core.CseContext;
+import io.servicecomb.core.CseContext;
 import com.huawei.paas.cse.demo.CodeFirstRestTemplate;
 import com.huawei.paas.cse.demo.DemoConst;
 import com.huawei.paas.cse.demo.TestMgr;

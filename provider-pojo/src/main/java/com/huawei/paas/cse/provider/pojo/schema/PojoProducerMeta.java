@@ -20,7 +20,7 @@ import javax.inject.Inject;
 
 import org.springframework.beans.factory.InitializingBean;
 
-import com.huawei.paas.cse.core.provider.producer.ProducerMeta;
+import io.servicecomb.core.provider.producer.ProducerMeta;
 
 /**
  * <一句话功能简述>

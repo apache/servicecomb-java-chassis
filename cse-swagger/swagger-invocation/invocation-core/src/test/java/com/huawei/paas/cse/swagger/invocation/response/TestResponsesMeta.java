@@ -18,7 +18,7 @@ package com.huawei.paas.cse.swagger.invocation.response;
 import org.junit.Assert;
 import org.junit.Test;
 
-import com.huawei.paas.cse.core.exception.CommonExceptionData;
+import io.servicecomb.core.exception.CommonExceptionData;
 import com.huawei.paas.cse.swagger.generator.core.SwaggerGenerator;
 import com.huawei.paas.cse.swagger.generator.core.unittest.UnitTestSwaggerUtils;
 

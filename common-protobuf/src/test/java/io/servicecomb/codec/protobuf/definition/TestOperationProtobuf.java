@@ -22,9 +22,9 @@ import org.junit.Test;
 import io.servicecomb.codec.protobuf.utils.WrapSchema;
 import io.servicecomb.codec.protobuf.utils.schema.ArgsNotWrapSchema;
 import io.servicecomb.codec.protobuf.utils.schema.NormalWrapSchema;
-import com.huawei.paas.cse.core.definition.OperationMeta;
-import com.huawei.paas.cse.core.definition.SchemaMeta;
-import com.huawei.paas.cse.core.unittest.UnitTestMeta;
+import io.servicecomb.core.definition.OperationMeta;
+import io.servicecomb.core.definition.SchemaMeta;
+import io.servicecomb.core.unittest.UnitTestMeta;
 
 import io.swagger.annotations.ApiResponse;
 

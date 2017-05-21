@@ -21,9 +21,9 @@ import org.slf4j.LoggerFactory;
 
 import io.servicecomb.common.rest.RestConst;
 import io.servicecomb.common.rest.definition.RestOperationMeta;
-import com.huawei.paas.cse.core.AsyncResponse;
-import com.huawei.paas.cse.core.Invocation;
-import com.huawei.paas.cse.core.definition.OperationMeta;
+import io.servicecomb.core.AsyncResponse;
+import io.servicecomb.core.Invocation;
+import io.servicecomb.core.definition.OperationMeta;
 import com.huawei.paas.cse.transport.rest.client.http.HttpMethodFactory;
 import com.huawei.paas.cse.transport.rest.client.http.VertxHttpMethod;
 import com.huawei.paas.foundation.ssl.SSLCustom;
