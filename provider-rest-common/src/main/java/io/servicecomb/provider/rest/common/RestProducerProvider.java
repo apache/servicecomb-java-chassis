@@ -24,7 +24,7 @@ import io.servicecomb.common.rest.RestConst;
 import io.servicecomb.core.definition.schema.ProducerSchemaFactory;
 import io.servicecomb.core.provider.producer.AbstractProducerProvider;
 import io.servicecomb.core.provider.producer.ProducerMeta;
-import com.huawei.paas.cse.serviceregistry.RegistryUtils;
+import io.servicecomb.serviceregistry.RegistryUtils;
 
 /**
  * <一句话功能简述>

@@ -17,7 +17,7 @@ package io.servicecomb.springboot.starter.serviceregistry;
 
 import org.springframework.cloud.client.serviceregistry.Registration;
 
-import com.huawei.paas.cse.serviceregistry.api.registry.Microservice;
+import io.servicecomb.serviceregistry.api.registry.Microservice;
 
 public class CseRegistration implements Registration{
 	

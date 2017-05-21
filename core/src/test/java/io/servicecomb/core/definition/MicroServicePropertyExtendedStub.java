@@ -18,7 +18,7 @@ package io.servicecomb.core.definition;
 
 import java.util.Map;
 
-import com.huawei.paas.cse.serviceregistry.api.PropertyExtended;
+import io.servicecomb.serviceregistry.api.PropertyExtended;
 
 /**
  * @author  

@@ -19,8 +19,8 @@ package io.servicecomb.springboot.starter.serviceregistry;
 import org.springframework.cloud.client.serviceregistry.ServiceRegistry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import com.huawei.paas.cse.serviceregistry.api.registry.Microservice;
-import com.huawei.paas.cse.serviceregistry.client.ServiceRegistryClient;
+import io.servicecomb.serviceregistry.api.registry.Microservice;
+import io.servicecomb.serviceregistry.client.ServiceRegistryClient;
 
 public class CseServiceRegistry implements ServiceRegistry<CseRegistration> {
 

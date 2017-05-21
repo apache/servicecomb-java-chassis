@@ -21,7 +21,7 @@ import java.util.Map.Entry;
 
 import io.servicecomb.core.Endpoint;
 import io.servicecomb.core.Transport;
-import com.huawei.paas.cse.serviceregistry.RegistryUtils;
+import io.servicecomb.serviceregistry.RegistryUtils;
 import io.servicecomb.foundation.common.net.NetUtils;
 import io.servicecomb.foundation.common.net.URIEndpointObject;
 import io.servicecomb.foundation.vertx.VertxUtils;

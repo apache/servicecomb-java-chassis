@@ -31,8 +31,8 @@ import io.servicecomb.core.definition.loader.SchemaLoader;
 import io.servicecomb.core.handler.ProducerHandlerManager;
 import io.servicecomb.core.handler.config.Config;
 import io.servicecomb.core.handler.impl.SimpleLoadBalanceHandler;
-import com.huawei.paas.cse.serviceregistry.RegistryUtils;
-import com.huawei.paas.cse.serviceregistry.api.registry.Microservice;
+import io.servicecomb.serviceregistry.RegistryUtils;
+import io.servicecomb.serviceregistry.api.registry.Microservice;
 import io.servicecomb.swagger.generator.core.unittest.UnitTestSwaggerUtils;
 import io.servicecomb.foundation.common.utils.BeanUtils;
 

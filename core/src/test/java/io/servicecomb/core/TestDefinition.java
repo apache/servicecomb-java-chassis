@@ -25,8 +25,8 @@ import org.junit.Test;
 
 import io.servicecomb.core.definition.MicroserviceMeta;
 import io.servicecomb.core.definition.MicroserviceMetaManager;
-import com.huawei.paas.cse.serviceregistry.RegistryUtils;
-import com.huawei.paas.cse.serviceregistry.api.registry.Microservice;
+import io.servicecomb.serviceregistry.RegistryUtils;
+import io.servicecomb.serviceregistry.api.registry.Microservice;
 import io.servicecomb.swagger.generator.core.utils.ClassUtils;
 
 import io.swagger.models.Info;

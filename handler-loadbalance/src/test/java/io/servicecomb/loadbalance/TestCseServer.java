@@ -25,7 +25,7 @@ import org.junit.Test;
 import org.mockito.Mockito;
 
 import io.servicecomb.core.Transport;
-import com.huawei.paas.cse.serviceregistry.cache.CacheEndpoint;
+import io.servicecomb.serviceregistry.cache.CacheEndpoint;
 
 /**
  * @author 

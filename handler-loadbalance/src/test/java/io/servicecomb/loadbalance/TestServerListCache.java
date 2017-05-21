@@ -23,11 +23,11 @@ import org.junit.Test;
 import org.mockito.Mockito;
 
 import io.servicecomb.core.Transport;
-import com.huawei.paas.cse.serviceregistry.RegistryUtils;
-import com.huawei.paas.cse.serviceregistry.api.registry.Microservice;
-import com.huawei.paas.cse.serviceregistry.cache.CacheEndpoint;
-import com.huawei.paas.cse.serviceregistry.cache.InstanceCache;
-import com.huawei.paas.cse.serviceregistry.cache.InstanceCacheManager;
+import io.servicecomb.serviceregistry.RegistryUtils;
+import io.servicecomb.serviceregistry.api.registry.Microservice;
+import io.servicecomb.serviceregistry.cache.CacheEndpoint;
+import io.servicecomb.serviceregistry.cache.InstanceCache;
+import io.servicecomb.serviceregistry.cache.InstanceCacheManager;
 import com.netflix.loadbalancer.Server;
 
 import mockit.Mock;

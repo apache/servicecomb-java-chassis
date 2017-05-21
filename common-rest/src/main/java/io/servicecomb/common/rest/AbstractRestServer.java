@@ -41,7 +41,7 @@ import io.servicecomb.core.definition.MicroserviceMeta;
 import io.servicecomb.core.definition.OperationMeta;
 import io.servicecomb.core.exception.InvocationException;
 import io.servicecomb.core.invocation.InvocationFactory;
-import com.huawei.paas.cse.serviceregistry.RegistryUtils;
+import io.servicecomb.serviceregistry.RegistryUtils;
 import io.servicecomb.foundation.common.utils.JsonUtils;
 
 /**

@@ -34,9 +34,9 @@ import org.springframework.stereotype.Component;
 import io.servicecomb.core.Handler;
 import io.servicecomb.core.definition.SchemaMeta;
 import io.servicecomb.core.definition.SchemaUtils;
-import com.huawei.paas.cse.serviceregistry.RegistryUtils;
-import com.huawei.paas.cse.serviceregistry.api.registry.BasePath;
-import com.huawei.paas.cse.serviceregistry.api.registry.Microservice;
+import io.servicecomb.serviceregistry.RegistryUtils;
+import io.servicecomb.serviceregistry.api.registry.BasePath;
+import io.servicecomb.serviceregistry.api.registry.Microservice;
 
 import io.swagger.models.Swagger;
 

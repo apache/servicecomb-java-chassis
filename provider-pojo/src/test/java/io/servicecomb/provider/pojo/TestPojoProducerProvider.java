@@ -25,8 +25,8 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import io.servicecomb.core.definition.schema.ProducerSchemaFactory;
-import com.huawei.paas.cse.serviceregistry.RegistryUtils;
-import com.huawei.paas.cse.serviceregistry.api.registry.Microservice;
+import io.servicecomb.serviceregistry.RegistryUtils;
+import io.servicecomb.serviceregistry.api.registry.Microservice;
 
 import mockit.Deencapsulation;
 import mockit.Expectations;

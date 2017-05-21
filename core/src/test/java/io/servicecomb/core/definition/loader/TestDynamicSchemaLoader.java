@@ -25,8 +25,8 @@ import org.junit.Test;
 
 import io.servicecomb.core.CseContext;
 import io.servicecomb.core.definition.SchemaMeta;
-import com.huawei.paas.cse.serviceregistry.RegistryUtils;
-import com.huawei.paas.cse.serviceregistry.api.registry.Microservice;
+import io.servicecomb.serviceregistry.RegistryUtils;
+import io.servicecomb.serviceregistry.api.registry.Microservice;
 import io.servicecomb.foundation.common.utils.ReflectUtils;
 
 /**

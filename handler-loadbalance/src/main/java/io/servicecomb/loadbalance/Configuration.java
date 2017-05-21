@@ -18,7 +18,7 @@ package io.servicecomb.loadbalance;
 
 import java.util.Map;
 
-import com.huawei.paas.cse.serviceregistry.config.ConfigurePropertyUtils;
+import io.servicecomb.serviceregistry.config.ConfigurePropertyUtils;
 import com.netflix.config.DynamicPropertyFactory;
 
 /**

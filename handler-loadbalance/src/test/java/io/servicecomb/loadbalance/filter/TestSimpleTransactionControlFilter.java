@@ -31,7 +31,7 @@ import org.junit.Test;
 import org.mockito.Mockito;
 
 import io.servicecomb.core.Invocation;
-import com.huawei.paas.cse.serviceregistry.api.registry.MicroserviceInstance;
+import io.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
 import com.netflix.loadbalancer.Server;
 
 public class TestSimpleTransactionControlFilter {

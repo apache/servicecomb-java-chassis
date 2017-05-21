@@ -26,9 +26,9 @@ import io.servicecomb.core.Transport;
 import org.springframework.util.StringUtils;
 
 import io.servicecomb.core.transport.TransportManager;
-import com.huawei.paas.cse.serviceregistry.cache.CacheEndpoint;
-import com.huawei.paas.cse.serviceregistry.cache.InstanceCache;
-import com.huawei.paas.cse.serviceregistry.cache.InstanceCacheManager;
+import io.servicecomb.serviceregistry.cache.CacheEndpoint;
+import io.servicecomb.serviceregistry.cache.InstanceCache;
+import io.servicecomb.serviceregistry.cache.InstanceCacheManager;
 
 /**
  * registry模块不理解core中的概念

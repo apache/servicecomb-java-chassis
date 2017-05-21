@@ -19,7 +19,7 @@ package io.servicecomb.core.definition.schema;
 import java.util.Map;
 
 import io.servicecomb.core.provider.consumer.ConsumerOperationMeta;
-import com.huawei.paas.cse.serviceregistry.api.registry.Microservice;
+import io.servicecomb.serviceregistry.api.registry.Microservice;
 
 /**
  * <一句话功能简述>

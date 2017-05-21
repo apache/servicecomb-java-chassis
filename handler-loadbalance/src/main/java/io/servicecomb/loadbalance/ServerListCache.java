@@ -18,7 +18,7 @@ package io.servicecomb.loadbalance;
 
 import io.servicecomb.core.Transport;
 import io.servicecomb.core.endpoint.AbstractEndpointsCache;
-import com.huawei.paas.cse.serviceregistry.cache.CacheEndpoint;
+import io.servicecomb.serviceregistry.cache.CacheEndpoint;
 import com.netflix.loadbalancer.Server;
 
 /**

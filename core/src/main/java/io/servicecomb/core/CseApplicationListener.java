@@ -36,7 +36,7 @@ import io.servicecomb.core.handler.HandlerConfigUtils;
 import io.servicecomb.core.provider.consumer.ConsumerProviderManager;
 import io.servicecomb.core.provider.producer.ProducerProviderManager;
 import io.servicecomb.core.transport.TransportManager;
-import com.huawei.paas.cse.serviceregistry.RegistryUtils;
+import io.servicecomb.serviceregistry.RegistryUtils;
 import io.servicecomb.foundation.common.utils.BeanUtils;
 import io.servicecomb.foundation.common.utils.FortifyUtils;
 

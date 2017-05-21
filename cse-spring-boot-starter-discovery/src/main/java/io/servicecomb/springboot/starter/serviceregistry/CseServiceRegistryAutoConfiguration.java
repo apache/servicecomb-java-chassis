@@ -23,7 +23,7 @@ import org.springframework.cloud.client.serviceregistry.ServiceRegistryAutoConfi
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import com.huawei.paas.cse.serviceregistry.client.ServiceRegistryClient;
+import io.servicecomb.serviceregistry.client.ServiceRegistryClient;
 
 @Configuration
 @ConditionalOnProperty(value = "spring.cloud.service-registry.enabled", matchIfMissing = true)

@@ -18,7 +18,7 @@ package io.servicecomb.core.endpoint;
 
 import io.servicecomb.core.Endpoint;
 import io.servicecomb.core.Transport;
-import com.huawei.paas.cse.serviceregistry.cache.CacheEndpoint;
+import io.servicecomb.serviceregistry.cache.CacheEndpoint;
 
 /**
  * <一句话功能简述>

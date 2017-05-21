@@ -23,8 +23,8 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import io.servicecomb.core.endpoint.EndpointsCache;
-import com.huawei.paas.cse.serviceregistry.RegistryUtils;
-import com.huawei.paas.cse.serviceregistry.api.registry.Microservice;
+import io.servicecomb.serviceregistry.RegistryUtils;
+import io.servicecomb.serviceregistry.api.registry.Microservice;
 
 import mockit.Mock;
 import mockit.MockUp;

@@ -25,7 +25,7 @@ import io.servicecomb.core.definition.MicroserviceMetaManager;
 import io.servicecomb.core.definition.SchemaMeta;
 import io.servicecomb.core.definition.SchemaUtils;
 import io.servicecomb.core.definition.loader.SchemaLoader;
-import com.huawei.paas.cse.serviceregistry.api.Const;
+import io.servicecomb.serviceregistry.api.Const;
 import io.servicecomb.swagger.generator.core.CompositeSwaggerGeneratorContext;
 import io.servicecomb.swagger.generator.core.SwaggerGenerator;
 import io.servicecomb.swagger.generator.core.SwaggerGeneratorContext;

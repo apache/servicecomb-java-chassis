@@ -26,7 +26,7 @@ import org.springframework.stereotype.Component;
 import io.servicecomb.core.definition.schema.ProducerSchemaFactory;
 import io.servicecomb.core.provider.producer.AbstractProducerProvider;
 import io.servicecomb.provider.pojo.instance.PojoInstanceFactory;
-import com.huawei.paas.cse.serviceregistry.RegistryUtils;
+import io.servicecomb.serviceregistry.RegistryUtils;
 import io.servicecomb.foundation.common.RegisterManager;
 import io.servicecomb.foundation.common.utils.BeanUtils;
 

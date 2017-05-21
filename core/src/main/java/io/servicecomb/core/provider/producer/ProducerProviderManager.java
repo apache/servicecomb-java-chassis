@@ -27,7 +27,7 @@ import org.springframework.stereotype.Component;
 import io.servicecomb.core.ProducerProvider;
 import io.servicecomb.core.definition.SchemaMeta;
 import io.servicecomb.core.definition.SchemaUtils;
-import com.huawei.paas.cse.serviceregistry.RegistryUtils;
+import io.servicecomb.serviceregistry.RegistryUtils;
 
 /**
  * <一句话功能简述>
