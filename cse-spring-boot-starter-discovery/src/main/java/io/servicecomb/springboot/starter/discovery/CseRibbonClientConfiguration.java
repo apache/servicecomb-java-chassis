@@ -20,8 +20,8 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import com.huawei.paas.cse.loadbalance.CseServerList;
-import com.huawei.paas.cse.loadbalance.filter.IsolationServerListFilter;
+import io.servicecomb.loadbalance.CseServerList;
+import io.servicecomb.loadbalance.filter.IsolationServerListFilter;
 import com.netflix.client.config.IClientConfig;
 import com.netflix.loadbalancer.Server;
 import com.netflix.loadbalancer.ServerList;
