@@ -80,7 +80,7 @@
                                         </links>
                                         <wait>
                                             <log>Register microservice instance success</log>
-                                            <time>60000</time>
+                                            <time>120000</time>
                                         </wait>
                                         <ports>
                                             <port>8080:8080</port>
