@@ -21,7 +21,7 @@ import java.net.URL;
 import org.apache.commons.io.IOUtils;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.huawei.paas.cse.swagger.generator.core.utils.ClassUtils;
+import io.servicecomb.swagger.generator.core.utils.ClassUtils;
 
 import io.swagger.models.Swagger;
 import io.swagger.util.Yaml;

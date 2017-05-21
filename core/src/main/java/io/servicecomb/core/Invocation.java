@@ -25,7 +25,7 @@ import io.servicecomb.core.definition.OperationMeta;
 import io.servicecomb.core.definition.SchemaMeta;
 import io.servicecomb.core.invocation.InvocationType;
 import io.servicecomb.core.provider.consumer.ReferenceConfig;
-import com.huawei.paas.cse.swagger.invocation.SwaggerInvocation;
+import io.servicecomb.swagger.invocation.SwaggerInvocation;
 
 /**
  * <一句话功能简述>

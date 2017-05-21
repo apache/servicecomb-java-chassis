@@ -18,8 +18,8 @@ package com.huawei.paas.cse.provider.rest.common;
 
 import io.servicecomb.common.rest.RestConst;
 import io.servicecomb.core.Invocation;
-import com.huawei.paas.cse.swagger.invocation.SwaggerInvocation;
-import com.huawei.paas.cse.swagger.invocation.arguments.producer.AbstractProducerContextArgMapper;
+import io.servicecomb.swagger.invocation.SwaggerInvocation;
+import io.servicecomb.swagger.invocation.arguments.producer.AbstractProducerContextArgMapper;
 
 /**
  * <一句话功能简述>

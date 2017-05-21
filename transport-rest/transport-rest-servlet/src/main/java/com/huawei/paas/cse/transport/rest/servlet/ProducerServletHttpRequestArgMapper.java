@@ -18,8 +18,8 @@ package com.huawei.paas.cse.transport.rest.servlet;
 
 import javax.servlet.http.HttpServletRequest;
 
-import com.huawei.paas.cse.swagger.invocation.SwaggerInvocation;
-import com.huawei.paas.cse.swagger.invocation.arguments.producer.AbstractProducerContextArgMapper;
+import io.servicecomb.swagger.invocation.SwaggerInvocation;
+import io.servicecomb.swagger.invocation.arguments.producer.AbstractProducerContextArgMapper;
 
 /**
  * 使用Servlet http request构造其他各种http request

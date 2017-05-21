@@ -26,7 +26,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.client.ClientHttpResponse;
 
 import io.servicecomb.core.Response;
-import com.huawei.paas.cse.swagger.invocation.response.Headers;
+import io.servicecomb.swagger.invocation.response.Headers;
 
 /**
  * cse应答在transport层已经完成了码流到对象的转换

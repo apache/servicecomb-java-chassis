@@ -23,7 +23,7 @@ import io.servicecomb.core.exception.CommonExceptionData;
 import io.servicecomb.core.exception.ExceptionFactory;
 import io.servicecomb.core.exception.InvocationException;
 import io.servicecomb.core.invocation.InvocationType;
-import com.huawei.paas.cse.swagger.invocation.response.Headers;
+import io.servicecomb.swagger.invocation.response.Headers;
 
 /**
  * 用jaxrs的Response能表达所有概念

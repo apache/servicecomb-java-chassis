@@ -22,7 +22,7 @@ import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.Response.StatusType;
 
 import io.servicecomb.core.CseContext;
-import com.huawei.paas.cse.swagger.invocation.SwaggerInvocationContext;
+import io.servicecomb.swagger.invocation.SwaggerInvocationContext;
 
 /**
  * 设置特定的Cse Context数据

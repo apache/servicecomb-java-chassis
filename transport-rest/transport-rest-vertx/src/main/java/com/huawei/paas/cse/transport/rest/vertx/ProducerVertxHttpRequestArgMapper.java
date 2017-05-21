@@ -16,8 +16,8 @@
 
 package com.huawei.paas.cse.transport.rest.vertx;
 
-import com.huawei.paas.cse.swagger.invocation.SwaggerInvocation;
-import com.huawei.paas.cse.swagger.invocation.arguments.producer.AbstractProducerContextArgMapper;
+import io.servicecomb.swagger.invocation.SwaggerInvocation;
+import io.servicecomb.swagger.invocation.arguments.producer.AbstractProducerContextArgMapper;
 
 import io.vertx.core.http.HttpServerRequest;
 

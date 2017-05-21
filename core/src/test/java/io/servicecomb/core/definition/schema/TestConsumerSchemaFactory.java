@@ -36,13 +36,13 @@ import io.servicecomb.core.unittest.UnitTestMeta;
 import com.huawei.paas.cse.serviceregistry.api.registry.Microservice;
 import com.huawei.paas.cse.serviceregistry.client.RegistryClientFactory;
 import com.huawei.paas.cse.serviceregistry.client.ServiceRegistryClient;
-import com.huawei.paas.cse.swagger.generator.core.CompositeSwaggerGeneratorContext;
-import com.huawei.paas.cse.swagger.generator.core.unittest.UnitTestSwaggerUtils;
-import com.huawei.paas.cse.swagger.invocation.arguments.consumer.ConsumerArgumentSame;
-import com.huawei.paas.cse.swagger.invocation.arguments.consumer.ConsumerArgumentToBodyField;
-import com.huawei.paas.cse.swagger.invocation.arguments.consumer.ConsumerArgumentsMapperFactory;
-import com.huawei.paas.cse.swagger.invocation.response.consumer.ConsumerResponseMapperFactory;
-import com.huawei.paas.cse.swagger.invocation.response.consumer.ConsumerResponseSame;
+import io.servicecomb.swagger.generator.core.CompositeSwaggerGeneratorContext;
+import io.servicecomb.swagger.generator.core.unittest.UnitTestSwaggerUtils;
+import io.servicecomb.swagger.invocation.arguments.consumer.ConsumerArgumentSame;
+import io.servicecomb.swagger.invocation.arguments.consumer.ConsumerArgumentToBodyField;
+import io.servicecomb.swagger.invocation.arguments.consumer.ConsumerArgumentsMapperFactory;
+import io.servicecomb.swagger.invocation.response.consumer.ConsumerResponseMapperFactory;
+import io.servicecomb.swagger.invocation.response.consumer.ConsumerResponseSame;
 import com.huawei.paas.foundation.common.utils.ReflectUtils;
 
 /**

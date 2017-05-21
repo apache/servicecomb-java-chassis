@@ -28,8 +28,8 @@ import io.servicecomb.core.Response;
 import io.servicecomb.core.context.ContextUtils;
 import io.servicecomb.core.context.InvocationContext;
 import io.servicecomb.core.exception.InvocationException;
-import com.huawei.paas.cse.swagger.invocation.arguments.producer.ProducerArgumentsMapper;
-import com.huawei.paas.cse.swagger.invocation.response.producer.ProducerResponseMapper;
+import io.servicecomb.swagger.invocation.arguments.producer.ProducerArgumentsMapper;
+import io.servicecomb.swagger.invocation.response.producer.ProducerResponseMapper;
 
 /**
  * <一句话功能简述>

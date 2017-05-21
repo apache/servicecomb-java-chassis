@@ -20,8 +20,8 @@ import io.servicecomb.core.unittest.UnitTestMeta;
 import org.junit.Assert;
 import org.junit.Test;
 
-import com.huawei.paas.cse.swagger.extend.annotations.ResponseHeaders;
-import com.huawei.paas.cse.swagger.invocation.response.ResponseMeta;
+import io.servicecomb.swagger.extend.annotations.ResponseHeaders;
+import io.servicecomb.swagger.invocation.response.ResponseMeta;
 
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ResponseHeader;

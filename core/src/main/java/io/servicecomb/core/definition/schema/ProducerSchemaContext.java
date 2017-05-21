@@ -16,7 +16,7 @@
 
 package io.servicecomb.core.definition.schema;
 
-import com.huawei.paas.cse.swagger.generator.core.SwaggerGenerator;
+import io.servicecomb.swagger.generator.core.SwaggerGenerator;
 
 /**
  * <一句话功能简述>

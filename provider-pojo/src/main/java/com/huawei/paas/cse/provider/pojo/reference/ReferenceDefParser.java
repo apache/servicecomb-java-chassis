@@ -23,7 +23,7 @@ import org.springframework.util.StringUtils;
 import org.w3c.dom.Element;
 
 import com.huawei.paas.cse.provider.pojo.PojoConst;
-import com.huawei.paas.cse.swagger.generator.core.utils.ClassUtils;
+import io.servicecomb.swagger.generator.core.utils.ClassUtils;
 
 public class ReferenceDefParser extends AbstractSingleBeanDefinitionParser {
     @Override

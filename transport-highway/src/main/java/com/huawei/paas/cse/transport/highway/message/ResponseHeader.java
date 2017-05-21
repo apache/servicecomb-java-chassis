@@ -20,7 +20,7 @@ import java.util.Map;
 
 import io.servicecomb.codec.protobuf.utils.ProtobufSchemaUtils;
 import io.servicecomb.codec.protobuf.utils.WrapSchema;
-import com.huawei.paas.cse.swagger.invocation.response.Headers;
+import io.servicecomb.swagger.invocation.response.Headers;
 
 import io.protostuff.ProtobufOutput;
 import io.protostuff.Tag;

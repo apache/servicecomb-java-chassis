@@ -24,8 +24,8 @@ import java.util.concurrent.Executor;
 
 import io.servicecomb.core.AsyncResponse;
 import io.servicecomb.core.executor.ExecutorManager;
-import com.huawei.paas.cse.swagger.invocation.response.ResponseMeta;
-import com.huawei.paas.cse.swagger.invocation.response.ResponsesMeta;
+import io.servicecomb.swagger.invocation.response.ResponseMeta;
+import io.servicecomb.swagger.invocation.response.ResponsesMeta;
 
 import io.swagger.models.Operation;
 

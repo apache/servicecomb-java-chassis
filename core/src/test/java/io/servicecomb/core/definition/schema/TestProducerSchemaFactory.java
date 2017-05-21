@@ -37,10 +37,10 @@ import io.servicecomb.core.definition.loader.SchemaLoader;
 import io.servicecomb.core.exception.CommonExceptionData;
 import io.servicecomb.core.exception.InvocationException;
 import io.servicecomb.core.unittest.UnitTestMeta;
-import com.huawei.paas.cse.swagger.generator.core.CompositeSwaggerGeneratorContext;
-import com.huawei.paas.cse.swagger.invocation.arguments.producer.ProducerArgumentsMapperFactory;
-import com.huawei.paas.cse.swagger.invocation.response.producer.ProducerResponseMapperFactory;
-import com.huawei.paas.cse.swagger.invocation.response.producer.ProducerResponseSame;
+import io.servicecomb.swagger.generator.core.CompositeSwaggerGeneratorContext;
+import io.servicecomb.swagger.invocation.arguments.producer.ProducerArgumentsMapperFactory;
+import io.servicecomb.swagger.invocation.response.producer.ProducerResponseMapperFactory;
+import io.servicecomb.swagger.invocation.response.producer.ProducerResponseSame;
 import com.huawei.paas.foundation.common.utils.BeanUtils;
 import com.huawei.paas.foundation.common.utils.ReflectUtils;
 

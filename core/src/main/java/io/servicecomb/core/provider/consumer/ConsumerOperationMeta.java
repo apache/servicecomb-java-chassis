@@ -17,8 +17,8 @@
 package io.servicecomb.core.provider.consumer;
 
 import io.servicecomb.core.definition.OperationMeta;
-import com.huawei.paas.cse.swagger.invocation.arguments.consumer.ConsumerArgumentsMapper;
-import com.huawei.paas.cse.swagger.invocation.response.consumer.ConsumerResponseMapper;
+import io.servicecomb.swagger.invocation.arguments.consumer.ConsumerArgumentsMapper;
+import io.servicecomb.swagger.invocation.response.consumer.ConsumerResponseMapper;
 
 /**
  * <一句话功能简述>

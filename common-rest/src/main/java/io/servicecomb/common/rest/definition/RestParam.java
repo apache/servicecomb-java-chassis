@@ -25,7 +25,7 @@ import io.servicecomb.common.rest.codec.param.BodyProcessorCreator;
 import io.servicecomb.common.rest.codec.param.ParamValueProcessor;
 import io.servicecomb.common.rest.codec.param.ParamValueProcessorCreator;
 import io.servicecomb.common.rest.codec.param.ParamValueProcessorCreatorManager;
-import com.huawei.paas.cse.swagger.generator.core.utils.ClassUtils;
+import io.servicecomb.swagger.generator.core.utils.ClassUtils;
 
 import io.swagger.models.parameters.Parameter;
 

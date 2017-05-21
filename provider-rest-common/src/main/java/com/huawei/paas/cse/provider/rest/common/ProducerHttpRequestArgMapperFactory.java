@@ -19,9 +19,9 @@ package com.huawei.paas.cse.provider.rest.common;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
-import com.huawei.paas.cse.swagger.extend.parameter.HttpRequestParameter;
-import com.huawei.paas.cse.swagger.invocation.arguments.ArgumentMapper;
-import com.huawei.paas.cse.swagger.invocation.arguments.ContextArgumentMapperFactory;
+import io.servicecomb.swagger.extend.parameter.HttpRequestParameter;
+import io.servicecomb.swagger.invocation.arguments.ArgumentMapper;
+import io.servicecomb.swagger.invocation.arguments.ContextArgumentMapperFactory;
 
 /**
  * <一句话功能简述>

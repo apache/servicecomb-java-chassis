@@ -34,7 +34,7 @@ import io.servicecomb.core.definition.OperationMeta;
 import io.servicecomb.core.exception.CommonExceptionData;
 import io.servicecomb.core.exception.ExceptionFactory;
 import io.servicecomb.core.transport.AbstractTransport;
-import com.huawei.paas.cse.swagger.invocation.response.ResponseMeta;
+import io.servicecomb.swagger.invocation.response.ResponseMeta;
 import com.huawei.paas.foundation.common.net.IpPort;
 import com.huawei.paas.foundation.common.utils.JsonUtils;
 import com.huawei.paas.foundation.vertx.client.http.HttpClientWithContext;

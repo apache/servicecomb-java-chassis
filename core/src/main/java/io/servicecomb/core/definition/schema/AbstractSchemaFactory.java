@@ -26,10 +26,10 @@ import io.servicecomb.core.definition.SchemaMeta;
 import io.servicecomb.core.definition.SchemaUtils;
 import io.servicecomb.core.definition.loader.SchemaLoader;
 import com.huawei.paas.cse.serviceregistry.api.Const;
-import com.huawei.paas.cse.swagger.generator.core.CompositeSwaggerGeneratorContext;
-import com.huawei.paas.cse.swagger.generator.core.SwaggerGenerator;
-import com.huawei.paas.cse.swagger.generator.core.SwaggerGeneratorContext;
-import com.huawei.paas.cse.swagger.generator.core.utils.ClassUtils;
+import io.servicecomb.swagger.generator.core.CompositeSwaggerGeneratorContext;
+import io.servicecomb.swagger.generator.core.SwaggerGenerator;
+import io.servicecomb.swagger.generator.core.SwaggerGeneratorContext;
+import io.servicecomb.swagger.generator.core.utils.ClassUtils;
 
 import io.swagger.models.Swagger;
 
