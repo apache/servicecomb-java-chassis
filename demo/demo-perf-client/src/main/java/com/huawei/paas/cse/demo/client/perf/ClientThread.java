@@ -16,12 +16,13 @@
 
 package com.huawei.paas.cse.demo.client.perf;
 
-import com.huawei.paas.cse.core.CseContext;
 import com.huawei.paas.cse.demo.pojo.client.PojoClient;
 import com.huawei.paas.cse.demo.server.Test;
 import com.huawei.paas.cse.demo.server.TestRequest;
 import com.huawei.paas.cse.demo.server.User;
-import com.huawei.paas.foundation.common.CommonThread;
+
+import io.servicecomb.core.CseContext;
+import io.servicecomb.foundation.common.CommonThread;
 
 /**
  * <一句话功能简述>

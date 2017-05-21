@@ -1,1 +1,1 @@
-org.springframework.boot.SpringApplicationRunListener=com.huawei.cse.springboot.starter.provider.CseSpringApplicationRunListener
+org.springframework.boot.SpringApplicationRunListener=io.servicecomb.springboot.starter.provider.CseSpringApplicationRunListener

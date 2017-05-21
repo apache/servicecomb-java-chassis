@@ -21,12 +21,13 @@ import java.util.Date;
 
 import javax.inject.Inject;
 
-import com.huawei.paas.cse.core.CseContext;
 import com.huawei.paas.cse.demo.CodeFirstPojoIntf;
 import com.huawei.paas.cse.demo.DemoConst;
 import com.huawei.paas.cse.demo.TestMgr;
 import com.huawei.paas.cse.demo.compute.Person;
-import com.huawei.paas.cse.provider.pojo.RpcReference;
+
+import io.servicecomb.core.CseContext;
+import io.servicecomb.provider.pojo.RpcReference;
 
 /**
  * <一句话功能简述>

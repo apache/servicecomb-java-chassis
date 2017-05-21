@@ -4,7 +4,7 @@ service_description:
   properties:
     key1: value1
     key2: value2
-  propertyExtentedClass: com.huawei.paas.cse.serviceregistry.MicroServicePropertyExtendedStub
+  propertyExtentedClass: io.servicecomb.serviceregistry.MicroServicePropertyExtendedStub
 instance_description:
   properties:
     key0: value0

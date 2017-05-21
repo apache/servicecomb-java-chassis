@@ -17,8 +17,8 @@
 package com.huawei.paas.cse.demo.client.perf;
 
 import com.huawei.paas.cse.demo.pojo.client.PojoClient;
-import com.huawei.paas.foundation.vertx.VertxUtils;
 
+import io.servicecomb.foundation.vertx.VertxUtils;
 import io.vertx.core.Vertx;
 
 /**

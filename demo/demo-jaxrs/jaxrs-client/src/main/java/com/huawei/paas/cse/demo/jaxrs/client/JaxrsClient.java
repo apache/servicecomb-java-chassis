@@ -27,15 +27,16 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 
-import com.huawei.paas.cse.common.rest.codec.RestObjectMapper;
-import com.huawei.paas.cse.core.CseContext;
 import com.huawei.paas.cse.demo.CodeFirstRestTemplate;
 import com.huawei.paas.cse.demo.DemoConst;
 import com.huawei.paas.cse.demo.TestMgr;
 import com.huawei.paas.cse.demo.compute.Person;
-import com.huawei.paas.cse.provider.springmvc.reference.RestTemplateBuilder;
-import com.huawei.paas.foundation.common.utils.BeanUtils;
-import com.huawei.paas.foundation.common.utils.Log4jUtils;
+
+import io.servicecomb.common.rest.codec.RestObjectMapper;
+import io.servicecomb.core.CseContext;
+import io.servicecomb.foundation.common.utils.BeanUtils;
+import io.servicecomb.foundation.common.utils.Log4jUtils;
+import io.servicecomb.provider.springmvc.reference.RestTemplateBuilder;
 
 /**
  * <一句话功能简述>

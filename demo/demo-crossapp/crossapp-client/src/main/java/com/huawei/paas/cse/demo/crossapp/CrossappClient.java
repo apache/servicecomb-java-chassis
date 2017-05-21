@@ -19,12 +19,13 @@ package com.huawei.paas.cse.demo.crossapp;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
-import com.huawei.paas.cse.core.provider.consumer.InvokerUtils;
 import com.huawei.paas.cse.demo.TestMgr;
-import com.huawei.paas.cse.provider.pojo.RpcReference;
-import com.huawei.paas.cse.provider.springmvc.reference.RestTemplateBuilder;
-import com.huawei.paas.foundation.common.utils.BeanUtils;
-import com.huawei.paas.foundation.common.utils.Log4jUtils;
+
+import io.servicecomb.core.provider.consumer.InvokerUtils;
+import io.servicecomb.foundation.common.utils.BeanUtils;
+import io.servicecomb.foundation.common.utils.Log4jUtils;
+import io.servicecomb.provider.pojo.RpcReference;
+import io.servicecomb.provider.springmvc.reference.RestTemplateBuilder;
 
 /**
  * <一句话功能简述>

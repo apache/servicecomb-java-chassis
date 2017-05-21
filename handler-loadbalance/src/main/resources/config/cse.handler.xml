@@ -16,5 +16,5 @@
 
 <config>
 	<handler id="loadbalance"
-		class="com.huawei.paas.cse.loadbalance.LoadbalanceHandler" />
+		class="io.servicecomb.loadbalance.LoadbalanceHandler" />
 </config>

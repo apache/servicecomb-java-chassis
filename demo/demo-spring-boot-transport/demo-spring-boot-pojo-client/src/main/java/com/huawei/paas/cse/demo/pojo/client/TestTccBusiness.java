@@ -22,7 +22,8 @@ import org.slf4j.LoggerFactory;
 import com.huawei.paas.cse.demo.server.TestRequest;
 import com.huawei.paas.cse.demo.server.User;
 import com.huawei.paas.cse.demo.tccserver.TestTcc;
-import com.huawei.paas.foundation.common.utils.BeanUtils;
+
+import io.servicecomb.foundation.common.utils.BeanUtils;
 
 /**
  * Created by   on 2016/12/14.

@@ -26,10 +26,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
-import com.huawei.paas.cse.core.CseContext;
-import com.huawei.paas.cse.core.exception.CommonExceptionData;
-import com.huawei.paas.cse.core.exception.InvocationException;
-import com.huawei.paas.cse.core.provider.consumer.InvokerUtils;
 import com.huawei.paas.cse.demo.DemoConst;
 import com.huawei.paas.cse.demo.TestMgr;
 import com.huawei.paas.cse.demo.server.Test;
@@ -38,9 +34,14 @@ import com.huawei.paas.cse.demo.server.User;
 import com.huawei.paas.cse.demo.smartcare.Application;
 import com.huawei.paas.cse.demo.smartcare.Group;
 import com.huawei.paas.cse.demo.smartcare.SmartCare;
-import com.huawei.paas.cse.provider.pojo.RpcReference;
-import com.huawei.paas.foundation.common.utils.BeanUtils;
-import com.huawei.paas.foundation.common.utils.Log4jUtils;
+
+import io.servicecomb.core.CseContext;
+import io.servicecomb.core.exception.CommonExceptionData;
+import io.servicecomb.core.exception.InvocationException;
+import io.servicecomb.core.provider.consumer.InvokerUtils;
+import io.servicecomb.foundation.common.utils.BeanUtils;
+import io.servicecomb.foundation.common.utils.Log4jUtils;
+import io.servicecomb.provider.pojo.RpcReference;
 
 /**
  * <一句话功能简述>

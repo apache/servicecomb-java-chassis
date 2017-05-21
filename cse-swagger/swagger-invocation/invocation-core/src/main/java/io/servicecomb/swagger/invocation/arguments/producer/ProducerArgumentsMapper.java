@@ -1,0 +1,53 @@
+/*
+ * Copyright 2017 Huawei Technologies Co., Ltd
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package io.servicecomb.swagger.invocation.arguments.producer;
+
+import java.util.List;
+
+import io.servicecomb.swagger.invocation.SwaggerInvocation;
+import io.servicecomb.swagger.invocation.arguments.ArgumentMapper;
+
+/**
+ * 将契约参数转为producer原型
+ * 比如契约原型是         int add(int x, int y)
+ * 而producer原型是int add(HttpRequest request, int x, int y)
+ *
+ * @author   
+ * @version  [版本号, 2017年1月24日]
+ * @see  [相关类/方法]
+ * @since  [产品/模块版本]
+ */
+public class ProducerArgumentsMapper {
+    private List<ArgumentMapper> producerArgMapperList;
+
+    private int producerParameterCount;
+
+    public ProducerArgumentsMapper(List<ArgumentMapper> producerArgMapperList, int producerParameterCount) {
+        this.producerArgMapperList = producerArgMapperList;
+        this.producerParameterCount = producerParameterCount;
+    }
+
+    public Object[] toProducerArgs(SwaggerInvocation invocation) {
+        Object[] producerArgs = new Object[producerParameterCount];
+
+        for (ArgumentMapper argMapper : producerArgMapperList) {
+            argMapper.mapArgument(invocation, producerArgs);
+        }
+
+        return producerArgs;
+    }
+}

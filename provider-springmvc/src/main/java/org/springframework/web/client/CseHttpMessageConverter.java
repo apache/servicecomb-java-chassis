@@ -29,8 +29,8 @@ import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.http.converter.HttpMessageNotWritableException;
 import org.springframework.util.ReflectionUtils;
 
-import com.huawei.paas.cse.provider.springmvc.reference.CseClientHttpRequest;
-import com.huawei.paas.cse.provider.springmvc.reference.CseClientHttpResponse;
+import io.servicecomb.provider.springmvc.reference.CseClientHttpRequest;
+import io.servicecomb.provider.springmvc.reference.CseClientHttpResponse;
 
 /**
  * 需要访问MessageBodyClientHttpResponseWrapper

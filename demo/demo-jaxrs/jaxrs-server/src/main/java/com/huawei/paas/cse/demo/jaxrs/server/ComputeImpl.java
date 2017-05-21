@@ -35,10 +35,11 @@ import javax.ws.rs.core.MediaType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.huawei.paas.cse.common.rest.codec.RestObjectMapper;
-import com.huawei.paas.cse.core.context.ContextUtils;
 import com.huawei.paas.cse.demo.compute.Person;
-import com.huawei.paas.cse.provider.rest.common.RestSchema;
+
+import io.servicecomb.common.rest.codec.RestObjectMapper;
+import io.servicecomb.core.context.ContextUtils;
+import io.servicecomb.provider.rest.common.RestSchema;
 
 @RestSchema(schemaId = "compute")
 @Path("/compute")
