@@ -63,7 +63,7 @@
 			<dependency>
 				<groupId>io.servicecomb</groupId>
 				<artifactId>cse-dependency</artifactId>
-				<version>${paas.cse.version}</version>
+				<version>${servicecomb.version}</version>
 				<type>pom</type>
 				<scope>import</scope>
 			</dependency>

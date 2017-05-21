@@ -28,8 +28,10 @@
 	<modules>
 		<module>demo-spring-boot-jaxrs-server</module>
 		<module>demo-spring-boot-jaxrs-client</module>
-    <module>demo-spring-boot-springmvc-server</module>
+<!--
+	    <module>demo-spring-boot-springmvc-server</module>
 		<module>demo-spring-boot-springmvc-client</module>
+-->
 	</modules>
 
 	<properties>
@@ -44,7 +46,7 @@
 			<dependency>
 				<groupId>io.servicecomb</groupId>
 				<artifactId>cse-dependency</artifactId>
-				<version>${paas.cse.version}</version>
+				<version>${servicecomb.version}</version>
 				<type>pom</type>
 				<scope>import</scope>
 			</dependency>

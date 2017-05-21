@@ -60,7 +60,7 @@
 		<argLine>-Dfile.encoding=UTF-8</argLine>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
-		<paas.cse.version>0.1.0-SNAPSHOT</paas.cse.version>
+		<servicecomb.version>0.1.0-SNAPSHOT</servicecomb.version>
 	</properties>
 
 	<dependencyManagement>
@@ -68,7 +68,7 @@
 			<dependency>
 				<groupId>io.servicecomb</groupId>
 				<artifactId>cse-dependency</artifactId>
-				<version>${paas.cse.version}</version>
+				<version>${servicecomb.version}</version>
 				<type>pom</type>
 				<scope>import</scope>
 			</dependency>

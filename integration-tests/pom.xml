@@ -15,7 +15,7 @@
         <dependency>
             <groupId>io.servicecomb</groupId>
             <artifactId>crossapp-client</artifactId>
-            <version>${paas.cse.version}</version>
+            <version>${servicecomb.version}</version>
         </dependency>
     </dependencies>
 

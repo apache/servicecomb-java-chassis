@@ -43,52 +43,52 @@
 			<dependency>
 				<groupId>io.servicecomb</groupId>
 				<artifactId>demo-schema</artifactId>
-				<version>${paas.cse.version}</version>
+				<version>${servicecomb.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>io.servicecomb</groupId>
 				<artifactId>all-client</artifactId>
-				<version>${paas.cse.version}</version>
+				<version>${servicecomb.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>io.servicecomb</groupId>
 				<artifactId>pojo-server</artifactId>
-				<version>${paas.cse.version}</version>
+				<version>${servicecomb.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>io.servicecomb</groupId>
 				<artifactId>jaxrs-server</artifactId>
-				<version>${paas.cse.version}</version>
+				<version>${servicecomb.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>io.servicecomb</groupId>
 				<artifactId>springmvc-server</artifactId>
-				<version>${paas.cse.version}</version>
+				<version>${servicecomb.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>io.servicecomb</groupId>
 				<artifactId>crossapp-server</artifactId>
-				<version>${paas.cse.version}</version>
+				<version>${servicecomb.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>io.servicecomb</groupId>
 				<artifactId>pojo-client</artifactId>
-				<version>${paas.cse.version}</version>
+				<version>${servicecomb.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>io.servicecomb</groupId>
 				<artifactId>jaxrs-client</artifactId>
-				<version>${paas.cse.version}</version>
+				<version>${servicecomb.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>io.servicecomb</groupId>
 				<artifactId>springmvc-client</artifactId>
-				<version>${paas.cse.version}</version>
+				<version>${servicecomb.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>io.servicecomb</groupId>
 				<artifactId>crossapp-client</artifactId>
-				<version>${paas.cse.version}</version>
+				<version>${servicecomb.version}</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
