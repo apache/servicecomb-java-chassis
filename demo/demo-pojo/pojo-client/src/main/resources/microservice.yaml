@@ -13,3 +13,6 @@ cse:
   isolation:
     Consumer:
       enabled: false
+  references:
+    pojo:
+      version-rule: 0.0.2

@@ -4,7 +4,7 @@ swagger: '2.0'
 info:
   title: cse test
   version: 1.0.0
-  x-java-interface: com.huawei.paas.cse.demo.tccserver.TestTcc
+  x-java-interface: io.servicecomb.demo.tccserver.TestTcc
   
 # the domain of the service
 #host: api.uber.com
@@ -62,7 +62,7 @@ paths:
 definitions:
   Error:
     type: object
-    x-java-class: com.huawei.paas.cse.core.exception.CommonExceptionData
+    x-java-class: io.servicecomb.core.exception.CommonExceptionData
     properties:
       message:
         type: string

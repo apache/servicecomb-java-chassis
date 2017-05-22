@@ -1,0 +1,66 @@
+/*
+ * Copyright 2017 Huawei Technologies Co., Ltd
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package io.servicecomb.transport.highway;
+
+import com.netflix.config.DynamicIntProperty;
+import com.netflix.config.DynamicPropertyFactory;
+import com.netflix.config.DynamicStringProperty;
+
+public final class HighwayConfig {
+    private HighwayConfig() {
+    }
+
+    /**
+     * 获取address的值
+     * @return 返回 address
+     */
+    public static String getAddress() {
+        DynamicStringProperty address =
+            DynamicPropertyFactory.getInstance().getStringProperty("cse.highway.address", null);
+        return address.get();
+    }
+
+    /**
+     * 获取服务端threadCount的值
+     * @return 返回 threadCount
+     */
+    public static int getServerThreadCount() {
+        DynamicIntProperty address =
+            DynamicPropertyFactory.getInstance().getIntProperty("cse.highway.server.thread-count", 1);
+        return address.get();
+    }
+
+    /**
+     * 获取客户端threadCount的值
+     * @return 返回 threadCount
+     */
+    public static int getClientThreadCount() {
+        DynamicIntProperty address =
+            DynamicPropertyFactory.getInstance().getIntProperty("cse.highway.client.thread-count", 1);
+        return address.get();
+    }
+
+    /**
+     * 获取客户端connectionPoolPerThread的值
+     * @return 返回 connectionPoolPerThread
+     */
+    public static int getClientConnectionPoolPerThread() {
+        DynamicIntProperty address =
+            DynamicPropertyFactory.getInstance().getIntProperty("cse.highway.client.connection-pool-per-thread", 1);
+        return address.get();
+    }
+}

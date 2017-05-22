@@ -25,12 +25,12 @@
 		http://www.huawei.com/schema/paas/cse/rpc classpath:META-INF/spring/spring-paas-cse-rpc.xsd">
 
 	<cse:rpc-schema schema-id="helloworld.Greeter"
-		implementation="com.huawei.paas.cse.demo.pojo.server.HelloImpl"></cse:rpc-schema>
+		implementation="io.servicecomb.demo.pojo.server.HelloImpl"></cse:rpc-schema>
 
-	<bean id="testTccImpl" class="com.huawei.paas.cse.demo.pojo.server.TestTccImpl" />
+	<bean id="testTccImpl" class="io.servicecomb.demo.pojo.server.TestTccImpl" />
 
 	<cse:rpc-schema schema-id="tcc-server" implementation="spring:testTccImpl"></cse:rpc-schema>
 
 	<cse:rpc-schema schema-id="smartcare"
-		implementation="com.huawei.paas.cse.demo.pojo.server.SmartCareImpl"></cse:rpc-schema>
+		implementation="io.servicecomb.demo.pojo.server.SmartCareImpl"></cse:rpc-schema>
 </beans>

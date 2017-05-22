@@ -18,7 +18,7 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>com.huawei.paas.cse</groupId>
+	<groupId>io.servicecomb</groupId>
 	<artifactId>paas-cse</artifactId>
 	<version>0.1.0-SNAPSHOT</version>
 	<packaging>pom</packaging>
@@ -60,15 +60,15 @@
 		<argLine>-Dfile.encoding=UTF-8</argLine>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
-		<paas.cse.version>0.1.0-SNAPSHOT</paas.cse.version>
+		<servicecomb.version>0.1.0-SNAPSHOT</servicecomb.version>
 	</properties>
 
 	<dependencyManagement>
 		<dependencies>
 			<dependency>
-				<groupId>com.huawei.paas.cse</groupId>
+				<groupId>io.servicecomb</groupId>
 				<artifactId>cse-dependency</artifactId>
-				<version>${paas.cse.version}</version>
+				<version>${servicecomb.version}</version>
 				<type>pom</type>
 				<scope>import</scope>
 			</dependency>
@@ -128,7 +128,7 @@
 
 		<module>common-javassist</module>
 		<module>cse-swagger</module>
-		
+
 		<module>common-protobuf</module>
 
 		<module>core</module>
@@ -239,6 +239,11 @@
 		<pluginManagement>
 			<plugins>
 				<plugin>
+					<groupId>org.eluder.coveralls</groupId>
+					<artifactId>coveralls-maven-plugin</artifactId>
+					<version>4.3.0</version>
+				</plugin>
+				<plugin>
 					<groupId>org.jacoco</groupId>
 					<artifactId>jacoco-maven-plugin</artifactId>
 					<version>0.7.8</version>
@@ -282,6 +287,39 @@
 						</execution>
 					</executions>
 				</plugin>
+				<plugin>
+					<groupId>io.fabric8</groupId>
+					<artifactId>docker-maven-plugin</artifactId>
+					<version>0.18.1</version>
+					<executions>
+						<execution>
+							<id>build</id>
+							<phase>package</phase>
+							<goals>
+								<goal>build</goal>
+							</goals>
+						</execution>
+                        <execution>
+                            <id>start</id>
+                            <phase>pre-integration-test</phase>
+                            <goals>
+                                <goal>start</goal>
+                            </goals>
+                        </execution>
+                        <execution>
+                            <id>stop</id>
+                            <phase>post-integration-test</phase>
+                            <goals>
+                                <goal>stop</goal>
+                            </goals>
+                        </execution>
+					</executions>
+				</plugin>
+				<plugin>
+					<groupId>org.codehaus.gmaven</groupId>
+					<artifactId>gmaven-plugin</artifactId>
+					<version>1.5</version>
+				</plugin>
 			</plugins>
 		</pluginManagement>
 	</build>
@@ -298,6 +336,25 @@
 
 	<profiles>
 		<profile>
+			<id>docker-machine</id>
+			<build>
+				<pluginManagement>
+					<plugins>
+						<plugin>
+							<groupId>io.fabric8</groupId>
+							<artifactId>docker-maven-plugin</artifactId>
+							<configuration>
+								<machine>
+									<name>default</name>
+									<autoCreate>true</autoCreate>
+								</machine>
+							</configuration>
+						</plugin>
+					</plugins>
+				</pluginManagement>
+			</build>
+		</profile>
+		<profile>
 			<id>jacoco</id>
 			<build>
 				<plugins>
@@ -312,7 +369,6 @@
 			<id>release</id>
 			<build>
 				<plugins>
-
 					<plugin>
 						<groupId>org.sonatype.plugins</groupId>
 						<artifactId>nexus-staging-maven-plugin</artifactId>

@@ -4,7 +4,7 @@ swagger: '2.0'
 info:
   title: rest test
   version: 1.0.0
-  x-java-interface: com.huawei.paas.cse.demo.compute.Compute
+  x-java-interface: io.servicecomb.demo.compute.Compute
   
 # the domain of the service
 #host: api.uber.com

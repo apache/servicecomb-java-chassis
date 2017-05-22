@@ -14,4 +14,4 @@
 # limitations under the License.
 #
 
-com.huawei.paas.cse.swagger.extend.ModelResolverExt
+io.servicecomb.swagger.extend.ModelResolverExt

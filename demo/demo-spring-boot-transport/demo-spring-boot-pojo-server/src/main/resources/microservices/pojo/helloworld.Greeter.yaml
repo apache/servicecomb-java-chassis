@@ -4,7 +4,7 @@ swagger: '2.0'
 info:
   title: helloworld.Greeter
   version: 1.0.0
-  x-java-interface: com.huawei.paas.cse.demo.helloworld.greeter.Hello
+  x-java-interface: io.servicecomb.demo.helloworld.greeter.Hello
 
 # the domain of the service
 #host: api.uber.com

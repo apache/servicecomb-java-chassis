@@ -1,7 +1,7 @@
 service_description:
   name: default
   version: 0.0.1
-  propertyExtentedClass: com.huawei.paas.cse.serviceregistry.MicroServicePropertyExtendedStub
+  propertyExtentedClass: io.servicecomb.serviceregistry.MicroServicePropertyExtendedStub
 cse:
   service:
     registry:

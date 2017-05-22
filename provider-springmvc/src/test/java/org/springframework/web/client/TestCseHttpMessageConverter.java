@@ -25,8 +25,8 @@ import org.springframework.http.HttpOutputMessage;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.http.converter.HttpMessageNotWritableException;
 
-import com.huawei.paas.cse.provider.common.MockUtil;
-import com.huawei.paas.cse.provider.springmvc.reference.CseClientHttpRequest;
+import io.servicecomb.provider.common.MockUtil;
+import io.servicecomb.provider.springmvc.reference.CseClientHttpRequest;
 
 public class TestCseHttpMessageConverter{
 

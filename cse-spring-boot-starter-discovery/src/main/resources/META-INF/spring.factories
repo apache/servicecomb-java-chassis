@@ -1,7 +1,7 @@
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-com.huawei.cse.springboot.starter.discovery.RibbonCseAutoConfiguration
+io.servicecomb.springboot.starter.discovery.RibbonCseAutoConfiguration
 
 # Discovery Client Configuration
 org.springframework.cloud.client.discovery.EnableDiscoveryClient=\
-com.huawei.cse.springboot.starter.discovery.CseDiscoveryClientConfiguration
-org.springframework.boot.SpringApplicationRunListener=com.huawei.cse.springboot.starter.discovery.CseSpringApplicationRunListener
+io.servicecomb.springboot.starter.discovery.CseDiscoveryClientConfiguration
+org.springframework.boot.SpringApplicationRunListener=io.servicecomb.springboot.starter.discovery.CseSpringApplicationRunListener

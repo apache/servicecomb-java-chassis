@@ -32,15 +32,15 @@
 		microservice-name="pojo" schema-id="helloworld.Greeter"></cse:rpc-reference>
 
 	<cse:rpc-reference id="server" microservice-name="pojo"
-		schema-id="server" interface="com.huawei.paas.cse.demo.server.Test"></cse:rpc-reference>
+		schema-id="server" interface="io.servicecomb.demo.server.Test"></cse:rpc-reference>
 		
-	<bean class="com.huawei.paas.cse.demo.pojo.client.PojoClient">
+	<bean class="io.servicecomb.demo.pojo.client.PojoClient">
 		<property name="testFromXml" ref="server"></property>
 	</bean>
 	
 	<cse:rpc-reference id="codeFirstFromXml" microservice-name="pojo"
-		schema-id="com.huawei.paas.cse.demo.CodeFirstPojoIntf"></cse:rpc-reference>
+		schema-id="io.servicecomb.demo.CodeFirstPojoIntf"></cse:rpc-reference>
 	
-	<bean class="com.huawei.paas.cse.demo.pojo.client.CodeFirstPojoClient">
+	<bean class="io.servicecomb.demo.pojo.client.CodeFirstPojoClient">
 	</bean>
 </beans>

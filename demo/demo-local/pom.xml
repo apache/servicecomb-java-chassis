@@ -18,24 +18,24 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
-		<groupId>com.huawei.paas.cse</groupId>
+		<groupId>io.servicecomb</groupId>
 		<artifactId>cse-demo</artifactId>
 		<version>0.1.0-SNAPSHOT</version>
 	</parent>
 	<artifactId>demo-local</artifactId>
 	<dependencies>
 		<dependency>
-			<groupId>com.huawei.paas.cse</groupId>
+			<groupId>io.servicecomb</groupId>
 			<artifactId>pojo-client</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>com.huawei.paas.cse</groupId>
+			<groupId>io.servicecomb</groupId>
 			<artifactId>pojo-server</artifactId>
 		</dependency>
 	</dependencies>
 
 	<properties>
-		<demo.main>com.huawei.paas.cse.demo.local.DemoLocal</demo.main>
+		<demo.main>io.servicecomb.demo.local.DemoLocal</demo.main>
 	</properties>
 	<build>
 		<plugins>

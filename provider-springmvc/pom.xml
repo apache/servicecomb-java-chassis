@@ -20,7 +20,7 @@
 	xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
-		<groupId>com.huawei.paas.cse</groupId>
+		<groupId>io.servicecomb</groupId>
 		<artifactId>paas-cse</artifactId>
 		<version>0.1.0-SNAPSHOT</version>
 	</parent>
@@ -28,15 +28,15 @@
 
 	<dependencies>
 		<dependency>
-			<groupId>com.huawei.paas.cse</groupId>
+			<groupId>io.servicecomb</groupId>
 			<artifactId>cse-provider-rest-common</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>com.huawei.paas.cse</groupId>
+			<groupId>io.servicecomb</groupId>
 			<artifactId>swagger-invocation-springmvc</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>com.huawei.paas.cse</groupId>
+			<groupId>io.servicecomb</groupId>
 			<artifactId>swagger-generator-springmvc</artifactId>
 		</dependency>
 	</dependencies>

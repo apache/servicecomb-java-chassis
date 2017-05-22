@@ -19,7 +19,7 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
-		<groupId>com.huawei.paas.cse</groupId>
+		<groupId>io.servicecomb</groupId>
 		<artifactId>cse-demo</artifactId>
 		<version>0.1.0-SNAPSHOT</version>
 	</parent>
@@ -28,10 +28,10 @@
 	<modules>
 		<module>demo-spring-boot-jaxrs-server</module>
 		<module>demo-spring-boot-jaxrs-client</module>
-    <!--
-    <module>demo-spring-boot-springmvc-server</module>
+<!--
+	    <module>demo-spring-boot-springmvc-server</module>
 		<module>demo-spring-boot-springmvc-client</module>
-    -->
+-->
 	</modules>
 
 	<properties>
@@ -44,9 +44,9 @@
 	<dependencyManagement>
 		<dependencies>
 			<dependency>
-				<groupId>com.huawei.paas.cse</groupId>
+				<groupId>io.servicecomb</groupId>
 				<artifactId>cse-dependency</artifactId>
-				<version>${paas.cse.version}</version>
+				<version>${servicecomb.version}</version>
 				<type>pom</type>
 				<scope>import</scope>
 			</dependency>
@@ -62,7 +62,7 @@
 
 	<dependencies>
 		<dependency>
-			<groupId>com.huawei.paas.cse</groupId>
+			<groupId>io.servicecomb</groupId>
 			<artifactId>cse-spring-boot-starter-provider</artifactId>
 		</dependency>
 		<dependency>
