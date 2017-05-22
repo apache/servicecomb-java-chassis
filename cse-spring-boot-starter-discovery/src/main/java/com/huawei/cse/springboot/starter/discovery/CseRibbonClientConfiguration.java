@@ -16,7 +16,6 @@
 package com.huawei.cse.springboot.starter.discovery;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -36,13 +35,11 @@ public class CseRibbonClientConfiguration {
     }
 
     @Bean
-    @ConditionalOnMissingBean
     public ServerList<?> ribbonServerList(IClientConfig config) {
         String serviceName = config.getClientName();
         String appID = cseRoutesProperties.getAppID();
         String versionRule = cseRoutesProperties.getVersionRule(serviceName);
-        CseServerListWrapper serverList = new CseServerListWrapper(appID, serviceName, versionRule, "rest");
-        return serverList;
+        return new CseServerListWrapper(appID, serviceName, versionRule, "rest");
     }
 
 }

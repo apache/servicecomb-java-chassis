@@ -39,10 +39,9 @@ public final class CseRoutesProperties {
     @Autowired
     private ZuulProperties zuulProperties;
 
-    private Map<String, String> appServiceMap = null;
+    private final Map<String, String> appServiceMap =  new HashMap<String, String>();
 
     private void loadZuulRoutes() {
-        appServiceMap = new HashMap<String, String>();
         Map<String, ZuulRoute> zuulrouteMap = zuulProperties.getRoutes();
         for (String key : zuulrouteMap.keySet()) {
             appServiceMap.put(key, zuulrouteMap.get(key).getServiceId());
@@ -50,7 +49,7 @@ public final class CseRoutesProperties {
     }
 
     public String getServiceName(String appID) {
-        if (null == appServiceMap) {
+        if (appServiceMap.isEmpty()) {
             loadZuulRoutes();
         }
         String serviceName = appServiceMap.get(appID);

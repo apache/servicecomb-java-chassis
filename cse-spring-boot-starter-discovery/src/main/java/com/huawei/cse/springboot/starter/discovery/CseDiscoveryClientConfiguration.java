@@ -16,8 +16,6 @@
 package com.huawei.cse.springboot.starter.discovery;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.cloud.netflix.zuul.filters.ZuulProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -26,7 +24,6 @@ import org.springframework.context.annotation.Configuration;
  * @author Sukesh
  */
 @Configuration
-@EnableConfigurationProperties
 public class CseDiscoveryClientConfiguration {
 
     @Bean
@@ -41,7 +38,6 @@ public class CseDiscoveryClientConfiguration {
     }
 
     @Bean
-    @ConditionalOnMissingBean
     public CseDiscoveryClient cseDiscoveryClient() {
         CseDiscoveryClient discoveryClient = new CseDiscoveryClient();
         return discoveryClient;

@@ -44,6 +44,7 @@ public class CseApplicationListener implements ApplicationListener<ApplicationEv
     private static final Logger LOGGER = LoggerFactory.getLogger(CseApplicationListener.class);
 
     private static boolean isInit = false;
+
     @Inject
     private ProducerProviderManager producerProviderManager;
 
@@ -72,44 +73,43 @@ public class CseApplicationListener implements ApplicationListener<ApplicationEv
         if (event instanceof ContextRefreshedEvent) {
             ApplicationContext applicationContext = ((ContextRefreshedEvent) event).getApplicationContext();
             //TODO to load when webapplication context is used for discovery client, need to check if can use the order and undo this change with proper fix.
-            if(!isInit)
-            {
-            try {
-                BeanUtils.setContext(applicationContext);
-                bootListenerList = applicationContext.getBeansOfType(BootListener.class).values();
+            if (!isInit) {
+                try {
+                    BeanUtils.setContext(applicationContext);
+                    bootListenerList = applicationContext.getBeansOfType(BootListener.class).values();
 
-                triggerEvent(EventType.BEFORE_HANDLER);
-                HandlerConfigUtils.init();
-                triggerEvent(EventType.AFTER_HANDLER);
+                    triggerEvent(EventType.BEFORE_HANDLER);
+                    HandlerConfigUtils.init();
+                    triggerEvent(EventType.AFTER_HANDLER);
 
-                triggerEvent(EventType.BEFORE_PRODUCER_PROVIDER);
-                producerProviderManager.init();
-                triggerEvent(EventType.AFTER_PRODUCER_PROVIDER);
+                    triggerEvent(EventType.BEFORE_PRODUCER_PROVIDER);
+                    producerProviderManager.init();
+                    triggerEvent(EventType.AFTER_PRODUCER_PROVIDER);
 
-                triggerEvent(EventType.BEFORE_CONSUMER_PROVIDER);
-                consumerProviderManager.init();
-                triggerEvent(EventType.AFTER_CONSUMER_PROVIDER);
+                    triggerEvent(EventType.BEFORE_CONSUMER_PROVIDER);
+                    consumerProviderManager.init();
+                    triggerEvent(EventType.AFTER_CONSUMER_PROVIDER);
 
-                triggerEvent(EventType.BEFORE_TRANSPORT);
-                transportManager.init();
-                triggerEvent(EventType.AFTER_TRANSPORT);
+                    triggerEvent(EventType.BEFORE_TRANSPORT);
+                    transportManager.init();
+                    triggerEvent(EventType.AFTER_TRANSPORT);
 
-                schemaListenerManager.notifySchemaListener();
+                    schemaListenerManager.notifySchemaListener();
 
-                triggerEvent(EventType.BEFORE_REGISTRY);
-                RegistryUtils.init();
-                triggerEvent(EventType.AFTER_REGISTRY);
+                    triggerEvent(EventType.BEFORE_REGISTRY);
+                    RegistryUtils.init();
+                    triggerEvent(EventType.AFTER_REGISTRY);
 
-                // 当程序退出时，进行相关清理，注意：kill -9 {pid}下无效
-                // 1. 去注册实例信息
-                // TODO 服务优雅退出
-                if (applicationContext instanceof AbstractApplicationContext) {
-                    ((AbstractApplicationContext) applicationContext).registerShutdownHook();
+                    // 当程序退出时，进行相关清理，注意：kill -9 {pid}下无效
+                    // 1. 去注册实例信息
+                    // TODO 服务优雅退出
+                    if (applicationContext instanceof AbstractApplicationContext) {
+                        ((AbstractApplicationContext) applicationContext).registerShutdownHook();
+                    }
+                    isInit = true;
+                } catch (Exception e) {
+                    LOGGER.error("cse init failed, {}", FortifyUtils.getErrorInfo(e));
                 }
-                isInit = true;
-            } catch (Exception e) {
-                LOGGER.error("cse init failed, {}", FortifyUtils.getErrorInfo(e));
-            }
             }
         } else if (event instanceof ContextClosedEvent) {
             LOGGER.warn("cse is closing now...");
