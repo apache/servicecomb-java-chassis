@@ -13,11 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package io.servicecomb.springboot.starter.discovery;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.inject.Inject;
 
 import org.springframework.cloud.client.DefaultServiceInstance;
 import org.springframework.cloud.client.ServiceInstance;
@@ -28,9 +29,16 @@ import io.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
 import io.servicecomb.serviceregistry.client.RegistryClientFactory;
 import io.servicecomb.serviceregistry.client.ServiceRegistryClient;
 import io.servicecomb.foundation.common.net.URIEndpointObject;
+
 import com.netflix.config.DynamicPropertyFactory;
 
+/**
+ * @author Sukesh
+ */
 public class CseDiscoveryClient implements DiscoveryClient {
+
+    @Inject
+    private ConsumerProviderManager consumerProviderManager;
 
     @Override
     public String description() {
@@ -42,45 +50,25 @@ public class CseDiscoveryClient implements DiscoveryClient {
         List<ServiceInstance> instances = new ArrayList<ServiceInstance>();
         ServiceRegistryClient client = RegistryClientFactory.getRegistryClient();
         String appId = DynamicPropertyFactory.getInstance().getStringProperty("APPLICATION_ID", "default").get();
-        String versionRule = DynamicPropertyFactory.getInstance().getStringProperty("service_description.version", "1.0.0").get();
-        String cseServiceID = client.getMicroserviceId(appId , serviceId, versionRule);
+        ReferenceConfig referenceConfig = consumerProviderManager.getReferenceConfig(serviceId);
+        String versionRule = referenceConfig.getMicroserviceVersionRule();
+        String cseServiceID = client.getMicroserviceId(appId, serviceId, versionRule);
         List<MicroserviceInstance> cseServices = client.getMicroserviceInstance(cseServiceID, cseServiceID);
-        if(null != cseServices && !cseServices.isEmpty())
-        {
-        for(MicroserviceInstance instance:cseServices) 
-        {
-            List<String> eps=instance.getEndpoints();
-            for(String ep:eps)
-            {
-                URIEndpointObject uri = new URIEndpointObject(ep);
-                instances.add(new DefaultServiceInstance(instance.getServiceId(), uri.getHostOrIp(), uri.getPort(), false));
+        if (null != cseServices && !cseServices.isEmpty()) {
+            for (MicroserviceInstance instance : cseServices) {
+                List<String> eps = instance.getEndpoints();
+                for (String ep : eps) {
+                    URIEndpointObject uri = new URIEndpointObject(ep);
+                    instances.add(new DefaultServiceInstance(instance.getServiceId(), uri.getHostOrIp(),
+                            uri.getPort(), false));
+                }
             }
-        }
         }
         return instances;
     }
 
     @Override
     public ServiceInstance getLocalServiceInstance() {
-        /*ServiceRegistryClient client = RegistryClientFactory.getRegistryClient();
-        String appId = DynamicPropertyFactory.getInstance().getStringProperty("APPLICATION_ID", "default").get();
-        String versionRule = DynamicPropertyFactory.getInstance().getStringProperty("service_description.version", "1.0.0").get();
-        String cseServiceID = client.getMicroserviceId(appId , "springmvc", versionRule);
-        List<MicroserviceInstance> cseServices = client.getMicroserviceInstance(cseServiceID, cseServiceID);
-        DefaultServiceInstance serviceInstance = null;
-        if(null != cseServices && !cseServices.isEmpty())
-        {
-        for(MicroserviceInstance instance:cseServices) 
-        {
-            List<String> eps=instance.getEndpoints();
-            for(String ep:eps)
-            {
-                URIEndpointObject uri = new URIEndpointObject(ep);
-                serviceInstance =  new DefaultServiceInstance("springmvc", uri.getHostOrIp(), uri.getPort(), false);
-            }
-        }
-        }
-        return serviceInstance;*/
         return null;
     }
 
@@ -89,38 +77,10 @@ public class CseDiscoveryClient implements DiscoveryClient {
         ServiceRegistryClient client = RegistryClientFactory.getRegistryClient();
         List<Microservice> services = client.getAllMicroservices();
         List<String> serviceIDList = new ArrayList<String>();
-        for (Microservice service : services) {
-            serviceIDList.add(service.getServiceName());
-        }
-       /* List<String> serviceIDList = new ArrayList<String>();
-        ServiceRegistryClient client = RegistryClientFactory.getRegistryClient();
-        String appId = DynamicPropertyFactory.getInstance().getStringProperty("APPLICATION_ID", "default").get();
-        String versionRule = DynamicPropertyFactory.getInstance().getStringProperty("service_description.version", "1.0.0").get();
-        String cseServiceID = client.getMicroserviceId(appId , "springmvc", versionRule);
-        List<MicroserviceInstance> cseServices = client.getMicroserviceInstance(cseServiceID, cseServiceID);
-         if(null != cseServices && !cseServices.isEmpty())
-        {
-             for(MicroserviceInstance instance:cseServices) 
-        {
-            List<String> eps=instance.getEndpoints();
-            for(String ep:eps)
-            {
-                if(ep.startsWith("rest"))
-                {
-                    String path = ep.replace("rest", "http");
-                    if(path.contains("?"))
-                    {
-                        path = path.split("\\?")[0];
-                    }
-                    serviceIDList.add(path+"/springmvctest");
-                }
+        if (null != services && !services.isEmpty())
+            for (Microservice service : services) {
+                serviceIDList.add(service.getServiceName());
             }
-        
-            
-            }
-        }
-//        serviceIDList.add("springmvctest");
-        serviceIDList.add("http://10.18.212.132:8080/springmvctest");*/
         return serviceIDList;
     }
 }

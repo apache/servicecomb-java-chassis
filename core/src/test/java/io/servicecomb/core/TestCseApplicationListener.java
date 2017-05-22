@@ -51,8 +51,6 @@ public class TestCseApplicationListener {
             {
                 event.getApplicationContext();
                 result = context;
-                context.getParent();
-                result = null;
                 context.getBeansOfType(BootListener.class);
                 result = listeners;
             }
@@ -78,8 +76,6 @@ public class TestCseApplicationListener {
             {
                 event.getApplicationContext();
                 result = context;
-                context.getParent();
-                result = null;
                 context.getBeansOfType(BootListener.class);
                 result = listeners;
                 producerProviderManager.init();
@@ -100,8 +96,6 @@ public class TestCseApplicationListener {
             {
                 event.getApplicationContext();
                 result = context;
-                context.getParent();
-                result = pContext;
             }
         };
         CseApplicationListener cal = new CseApplicationListener();

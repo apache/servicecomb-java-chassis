@@ -13,44 +13,33 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package io.servicecomb.springboot.starter.discovery;
 
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import io.servicecomb.loadbalance.CseServerList;
-import io.servicecomb.loadbalance.filter.IsolationServerListFilter;
 import com.netflix.client.config.IClientConfig;
-import com.netflix.loadbalancer.Server;
 import com.netflix.loadbalancer.ServerList;
-import com.netflix.loadbalancer.ServerListFilter;
 
+/**
+ * @author Sukesh
+ */
 @Configuration
 public class CseRibbonClientConfiguration {
 
-    private String serviceId = "client";
-    
+    @Autowired
+    private CseRoutesProperties cseRoutesProperties;
+
     public CseRibbonClientConfiguration() {
     }
 
-    public CseRibbonClientConfiguration(String serviceId) {
-        this.serviceId = serviceId;
-    }
-    
     @Bean
-    @ConditionalOnMissingBean
     public ServerList<?> ribbonServerList(IClientConfig config) {
-        
-        CseServerList serverList = new CseServerList("springmvctest","springmvc","0.0.1","rest");
-//        serverList.initWithNiwsConfig(config);
-        return serverList;
+        String serviceName = config.getClientName();
+        String appID = cseRoutesProperties.getAppID();
+        String versionRule = cseRoutesProperties.getVersionRule(serviceName);
+        return new CseServerListWrapper(appID, serviceName, versionRule, "rest");
     }
-    
-    @Bean
-    public ServerListFilter<Server> ribbonServerListFilter() {
-        return new IsolationServerListFilter();
-    }
-    
+
 }

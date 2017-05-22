@@ -14,20 +14,22 @@
  * limitations under the License.
  */
 
-package io.servicecomb.demo.discovery.client;
+package io.servicecomb.demo.discovery.zuul;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
+import org.springframework.cloud.netflix.zuul.EnableZuulProxy;
 
 /**
  * @author Sukesh
  */
 @SpringBootApplication
+@EnableZuulProxy
 @EnableDiscoveryClient
-public class DiscoveryClient {
+public class DiscoveryZuulProxy {
 
     public static void main(String[] args) throws Exception {
-        SpringApplication.run(DiscoveryClient.class, args);
+        SpringApplication.run(DiscoveryZuulProxy.class, args);
     }
 }

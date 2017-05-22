@@ -23,8 +23,7 @@ import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.xml.XmlBeanDefinitionReader;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.SpringApplicationRunListener;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
-import org.springframework.boot.autoconfigure.web.ServerProperties;
+import org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext;
 import org.springframework.cloud.bootstrap.config.PropertySourceLocator;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.core.env.ConfigurableEnvironment;
@@ -36,14 +35,8 @@ import io.servicecomb.foundation.common.utils.BeanUtils;
 import io.servicecomb.foundation.common.utils.Log4jUtils;
 
 /**
- * <一句话功能简述>
- * <功能详细描述>
- * @author  
- * @version  [版本号, 2017年4月17日]
- * @see  [相关类/方法]
- * @since  [产品/模块版本]
+ * @author Sukesh
  */
-@ConditionalOnBean(ServerProperties.class)
 public class CseSpringApplicationRunListener implements SpringApplicationRunListener, PropertySourceLocator {
     private static final Logger LOGGER = LoggerFactory.getLogger(CseSpringApplicationRunListener.class);
 
@@ -83,13 +76,10 @@ public class CseSpringApplicationRunListener implements SpringApplicationRunList
      */
     @Override
     public void contextLoaded(ConfigurableApplicationContext context) {
-        // 引入了spring cloud context的场景中会实例化多个springApplication，需要规避一下
-        if (context.getParent() != null) {
+        if (!(context instanceof AnnotationConfigEmbeddedWebApplicationContext)) {
             return;
         }
-
         LOGGER.info("Initializing the CSE...");
-
         try {
             XmlBeanDefinitionReader beanDefinitionReader =
                 new XmlBeanDefinitionReader((BeanDefinitionRegistry) context.getBeanFactory());

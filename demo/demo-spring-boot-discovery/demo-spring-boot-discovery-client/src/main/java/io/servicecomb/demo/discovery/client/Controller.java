@@ -27,18 +27,22 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+/**
+ * @author Sukesh
+ */
 @RestController
 @RequestMapping(path = "/controller", produces = MediaType.APPLICATION_JSON)
 public class Controller {
-	
-	@Autowired
+
+    @Autowired
     private DiscoveryClient discoveryClient;
 
-	@RequestMapping(path = "/add", method = RequestMethod.GET)
-    public void add() {
-		 List<ServiceInstance> instances = discoveryClient.getInstances("springmvc");
-	        for(ServiceInstance si : instances){
-	           System.out.println(si.getUri().toString());
-	        }
+    @RequestMapping(path = "/instances", method = RequestMethod.GET)
+    public void getInstances() {
+        List<ServiceInstance> instances = discoveryClient.getInstances("springmvc");
+        for (ServiceInstance si : instances) {
+            System.out.println(si.getUri().toString());
+        }
+        
     }
 }
