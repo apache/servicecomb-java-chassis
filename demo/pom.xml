@@ -29,10 +29,10 @@
 		<module>docker-build-config</module>
 		<module>docker-run-config</module>
 		<module>demo-local</module>
-		<module>demo-perf-client</module>
 		<module>demo-server-servlet</module>
 		<module>demo-pojo</module>
 		<module>demo-jaxrs</module>
+		<module>demo-perf-client</module>
 		<!--module>demo-springmvc</module-->
 		<module>demo-schema</module>
 		<module>demo-crossapp</module>
