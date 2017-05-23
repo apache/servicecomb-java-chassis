@@ -19,9 +19,6 @@ cse:
   tracing:
     enabled: true
     samplingRate: 0.5
-  config:
-    client:
-      serverUri: https://10.22.87.59:30103
 
 #########SSL options
 ssl.protocols: TLSv1.2

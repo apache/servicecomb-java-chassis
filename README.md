@@ -1,5 +1,9 @@
+<<<<<<< HEAD
 # Java Chassis [![Build Status](https://travis-ci.org/ServiceComb/java-chassis.svg?branch=master)](https://travis-ci.org/ServiceComb/java-chassis.svg?branch=master)[![Coverage Status](https://coveralls.io/repos/github/WillemJiang/java-chassis/badge.svg?branch=master)](https://coveralls.io/github/WillemJiang/java-chassis?branch=master)
 
+=======
+# Java Chassis [![Build Status](https://travis-ci.org/ServiceComb/java-chassis.svg?branch=master)](https://travis-ci.org/WillemJiang/java-chassis)[![Coverage Status](https://coveralls.io/repos/github/WillemJiang/java-chassis/badge.svg?branch=master)](https://coveralls.io/github/WillemJiang/java-chassis?branch=master)
+>>>>>>> a6891685f01681c2dc744e7aa46e9c68a3994390
 ServiceComb Java Chassis is a Software Development Kit (SDK) for rapid development of microservices in Java, providing service registration, service discovery, dynamic routing, and service management features
 
 - [http://www.servicecomb.io](http://www.servicecomb.io)

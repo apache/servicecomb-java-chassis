@@ -13,6 +13,9 @@ cse:
   tracing:
     enabled: true
     samplingRate: 0.5
+  references:
+      springmvc:
+        version-rule: 0.0.1
       
 #########SSL options
 ssl.protocols: TLSv1.2

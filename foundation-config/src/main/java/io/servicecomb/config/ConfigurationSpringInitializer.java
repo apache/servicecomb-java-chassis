@@ -43,7 +43,7 @@ public class ConfigurationSpringInitializer extends PropertyPlaceholderConfigure
 
     public ConfigurationSpringInitializer() {
         if (ConfigurationManager.isConfigurationInstalled()) {
-            LOGGER.warn("Configuration installed by others, will igore this configuration.");
+            LOGGER.warn("Configuration installed by others, will ignore this configuration.");
         } else {
             YAMLConfigurationSource yamlConfigurationSource = new YAMLConfigurationSource();
             // configuration from yaml files: default microservice.yaml

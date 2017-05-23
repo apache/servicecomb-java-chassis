@@ -26,11 +26,11 @@
 	<dependencies>
 		<dependency>
 			<groupId>io.servicecomb</groupId>
-			<artifactId>pojo-client</artifactId>
+			<artifactId>pojo-server</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>io.servicecomb</groupId>
-			<artifactId>pojo-server</artifactId>
+			<artifactId>pojo-client</artifactId>
 		</dependency>
 	</dependencies>
 
