@@ -4,14 +4,21 @@ ServiceComb Java Chassis is a Software Development Kit (SDK) for rapid developme
 - [http://www.servicecomb.io](http://www.servicecomb.io)
 # Quick Start
 Provider service:
+[source,java,indent=0]
+----
+import io.servicecomb.*;
 @RpcSchema(schemaId = "helloworld")
 public class HelloWorldProvider implements HelloWorld {
     public String sayHello(String name) {
         return "Hello " + name;
     }
 }
+----
 
 Consumer service:
+[source,java,indent=0]
+----
+import io.servicecomb.*;
 @Component
 public class HelloWorldConsumer  {
 	@RpcReference(microserviceName = "pojo", schemaId = "helloworld")
@@ -21,6 +28,7 @@ public class HelloWorldConsumer  {
 		helloWorld.sayHello("Tank");
 	}
 }
+----
 
 # Building
 You don’t need to build from source to use Java Chassis (binaries in repo.servicecomb.io), but if you want to try out the latest and greatest, Java Chassis can be easily built with the maven.  You also need JDK 1.8.
