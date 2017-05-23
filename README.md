@@ -2,10 +2,9 @@
 ServiceComb Java Chassis is a Software Development Kit (SDK) for rapid development of microservices in Java, providing service registration, service discovery, dynamic routing, and service management features
 
 - [http://www.servicecomb.io](http://www.servicecomb.io)
-# Quick Start
+## Quick Start
 Provider service:
-[source,java,indent=0]
-----
+```java
 import io.servicecomb.*;
 @RpcSchema(schemaId = "helloworld")
 public class HelloWorldProvider implements HelloWorld {
@@ -13,11 +12,10 @@ public class HelloWorldProvider implements HelloWorld {
         return "Hello " + name;
     }
 }
-----
+```
 
 Consumer service:
-[source,java,indent=0]
-----
+```java
 import io.servicecomb.*;
 @Component
 public class HelloWorldConsumer  {
@@ -28,16 +26,16 @@ public class HelloWorldConsumer  {
 		helloWorld.sayHello("Tank");
 	}
 }
-----
+```
 
-# Building
+## Building
 You don’t need to build from source to use Java Chassis (binaries in repo.servicecomb.io), but if you want to try out the latest and greatest, Java Chassis can be easily built with the maven.  You also need JDK 1.8.
 
-$ ./mvn clean install
+   mvn clean install
 
 The first build may take a longer than expected as Maven downloads all the dependencies.
 
-# Automated Testing
+## Automated Testing
   To build the docker image and run the integration tests with docker, you can use maven docker profile 
   
       mvn clean install -Pdocker
@@ -46,19 +44,19 @@ The first build may take a longer than expected as Maven downloads all the depen
   
       mvn clean install -Pdocker -Pdocker-machine
       
-# Documentation
+## Documentation
 Project documentation is available on the ServiceComb website.
 
 http://www.servicecomb.io/java-chassis/documentation
 
 
-# Contact
+## Contact
 Mailing list: 
 Planning/Roadmap: milestones, roadmap
 Bugs: issues
 
-# Contributing
+## Contributing
 See CONTRIBUTING for details on submitting patches and the contribution workflow.
 
-# Reporting Issues
+## Reporting Issues
 See reporting bugs for details about reporting any issues.
