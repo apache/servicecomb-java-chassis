@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>cse-demo</artifactId>
+        <groupId>io.servicecomb</groupId>
+        <version>0.1.0-SNAPSHOT</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>docker-run-config</artifactId>
+    <packaging>pom</packaging>
+
+    <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>io.fabric8</groupId>
+                    <artifactId>docker-maven-plugin</artifactId>
+                    <configuration>
+                        <images>
+                            <image>
+                                <name>seanyinx/sc</name>
+                                <alias>service-center</alias>
+                                <run>
+                                    <wait>
+                                        <log>listen on server</log>
+                                        <time>60000</time>
+                                    </wait>
+                                    <ports>
+                                        <port>service.center.port:9980</port>
+                                    </ports>
+                                </run>
+                            </image>
+                            <image>
+                                <name>${demo.service.name}:${project.version}</name>
+                                <alias>${demo.service.name}</alias>
+                                <run>
+                                    <env>
+                                        <JAVA_OPTS>
+                                            ${demo.vm.options} -Dcse.service.registry.address=http://sc.servicecomb.io:9980 -Dcse.service.publishAddress=${docker.hostname}
+                                        </JAVA_OPTS>
+                                        <JAR_PATH>/maven/${demo.service.name}-${project.version}.jar</JAR_PATH>
+                                    </env>
+                                    <links>
+                                        <link>service-center:sc.servicecomb.io</link>
+                                    </links>
+                                    <wait>
+                                        <log>Register microservice instance success</log>
+                                        <time>120000</time>
+                                    </wait>
+                                    <ports>
+                                        <port>7070:7070</port>
+                                        <port>8080:8080</port>
+                                        <port>9090:9090</port>
+                                    </ports>
+                                    <dependsOn>
+                                        <dependsOn>service-center</dependsOn>
+                                    </dependsOn>
+                                </run>
+                            </image>
+                        </images>
+                    </configuration>
+                    <executions>
+                        <execution>
+                            <id>start</id>
+                            <phase>pre-integration-test</phase>
+                            <goals>
+                                <goal>start</goal>
+                            </goals>
+                        </execution>
+                        <execution>
+                            <id>stop</id>
+                            <phase>post-integration-test</phase>
+                            <goals>
+                                <goal>stop</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+    </build>
+
+    <profiles>
+        <profile>
+            <id>docker</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.codehaus.gmaven</groupId>
+                        <artifactId>gmaven-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>add-default-properties</id>
+                                <phase>initialize</phase>
+                                <goals>
+                                    <goal>execute</goal>
+                                </goals>
+                                <configuration>
+                                    <source>
+                                        project.properties.setProperty('docker.hostname', 'localhost')
+                                        log.info("Docker hostname is " + project.properties['docker.hostname'])
+                                    </source>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-failsafe-plugin</artifactId>
+                        <version>2.19.1</version>
+                        <configuration>
+                            <forkCount>1</forkCount>
+                            <reuseForks>false</reuseForks>
+                            <systemPropertyVariables>
+                                <cse.service.registry.address>http://${docker.hostname}:${service.center.port}</cse.service.registry.address>
+                            </systemPropertyVariables>
+                            <argLine>${jacoco.failsafe.argLine}</argLine>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <goals>
+                                    <goal>integration-test</goal>
+                                    <goal>verify</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <id>docker-machine</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.codehaus.gmaven</groupId>
+                        <artifactId>gmaven-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>add-dynamic-properties</id>
+                                <phase>prepare-package</phase>
+                                <goals>
+                                    <goal>execute</goal>
+                                </goals>
+                                <configuration>
+                                    <source>
+                                        def process = "docker-machine ip default".execute()
+                                        process.waitFor()
+                                        project.properties.setProperty('docker.hostname', process.in.text.trim())
+
+                                        log.info("Docker hostname is " + project.properties['docker.hostname'])
+                                    </source>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+</project>

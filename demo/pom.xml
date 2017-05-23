@@ -26,6 +26,8 @@
 	<artifactId>cse-demo</artifactId>
 	<packaging>pom</packaging>
 	<modules>
+		<module>docker-build-config</module>
+		<module>docker-run-config</module>
 		<module>demo-local</module>
 		<module>demo-perf-client</module>
 		<module>demo-server-servlet</module>
@@ -102,6 +104,17 @@
 		<pluginManagement>
 			<plugins>
 				<plugin>
+					<groupId>com.github.odavid.maven.plugins</groupId>
+					<artifactId>mixin-maven-plugin</artifactId>
+					<version>0.1-alpha-39</version>
+					<extensions>true</extensions>
+				</plugin>
+				<plugin>
+					<groupId>org.commonjava.maven.plugins</groupId>
+					<artifactId>directory-maven-plugin</artifactId>
+					<version>0.1</version>
+				</plugin>
+				<plugin>
 					<artifactId>maven-deploy-plugin</artifactId>
 					<version>2.8.2</version>
 					<configuration>
@@ -119,17 +132,19 @@
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-jar-plugin</artifactId>
 					<version>2.6</version>
+					<executions>
+						<execution>
+							<id>assembly</id>
+							<phase>package</phase>
+						</execution>
+					</executions>
 					<configuration>
-						<outputDirectory>${demo.output.dir}/${project.name}</outputDirectory>
 						<archive>
 							<manifest>
 								<addClasspath>true</addClasspath>
-								<classpathPrefix>../lib/</classpathPrefix>
+								<classpathPrefix>lib/</classpathPrefix>
 								<mainClass>${demo.main}</mainClass>
 							</manifest>
-							<manifestEntries>
-								<Class-Path>. ..</Class-Path>
-							</manifestEntries>
 						</archive>
 					</configuration>
 				</plugin>
