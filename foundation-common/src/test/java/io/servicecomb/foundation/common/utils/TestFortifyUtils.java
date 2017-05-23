@@ -29,16 +29,16 @@ import java.nio.file.attribute.BasicFileAttributes;
 import java.nio.file.attribute.UserPrincipal;
 
 import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import mockit.Mock;
 import mockit.MockUp;
 
 public class TestFortifyUtils {
-    
+
     public static final String FILE_PATH = "target/testfile";
-    
+
+    @SuppressWarnings("deprecation")
     @Test
     public void testFortifyUtils() throws IOException {
         Assert.assertNotEquals(null, FortifyUtils.getDefaultFileAttributes(FILE_PATH));

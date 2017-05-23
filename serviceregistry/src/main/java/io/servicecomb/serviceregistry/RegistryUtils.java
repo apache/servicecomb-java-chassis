@@ -24,35 +24,36 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.netflix.config.DynamicPropertyFactory;
+
+import io.servicecomb.foundation.common.CommonThread;
+import io.servicecomb.foundation.common.net.IpPort;
+import io.servicecomb.foundation.common.net.NetUtils;
 import io.servicecomb.serviceregistry.api.Const;
 import io.servicecomb.serviceregistry.api.registry.BasePath;
 import io.servicecomb.serviceregistry.api.registry.HealthCheck;
 import io.servicecomb.serviceregistry.api.registry.HealthCheckMode;
+import io.servicecomb.serviceregistry.api.registry.Microservice;
 import io.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
 import io.servicecomb.serviceregistry.api.response.HeartbeatResponse;
 import io.servicecomb.serviceregistry.api.response.MicroserviceInstanceChangedEvent;
+import io.servicecomb.serviceregistry.cache.CacheRegistryListener;
+import io.servicecomb.serviceregistry.cache.InstanceCacheManager;
 import io.servicecomb.serviceregistry.client.ClientException;
 import io.servicecomb.serviceregistry.client.RegistryClientFactory;
+import io.servicecomb.serviceregistry.client.ServiceRegistryClient;
+import io.servicecomb.serviceregistry.config.InstancePropertiesLoader;
 import io.servicecomb.serviceregistry.config.MicroservicePropertiesLoader;
+import io.servicecomb.serviceregistry.config.ServiceRegistryConfig;
+import io.servicecomb.serviceregistry.notify.NotifyManager;
+import io.servicecomb.serviceregistry.notify.NotifyThread;
 import io.servicecomb.serviceregistry.notify.RegistryEvent;
 import io.servicecomb.serviceregistry.notify.RegistryListener;
 import io.servicecomb.serviceregistry.utils.Timer;
 import io.servicecomb.serviceregistry.utils.TimerException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import io.servicecomb.serviceregistry.api.registry.Microservice;
-import io.servicecomb.serviceregistry.cache.CacheRegistryListener;
-import io.servicecomb.serviceregistry.cache.InstanceCacheManager;
-import io.servicecomb.serviceregistry.client.ServiceRegistryClient;
-import io.servicecomb.serviceregistry.config.InstancePropertiesLoader;
-import io.servicecomb.serviceregistry.config.ServiceRegistryConfig;
-import io.servicecomb.serviceregistry.notify.NotifyManager;
-import io.servicecomb.serviceregistry.notify.NotifyThread;
-import io.servicecomb.foundation.common.CommonThread;
-import io.servicecomb.foundation.common.net.IpPort;
-import io.servicecomb.foundation.common.net.NetUtils;
-import com.netflix.config.DynamicPropertyFactory;
 
 /**
  * <一句话功能简述> <功能详细描述>
@@ -81,6 +82,8 @@ public final class RegistryUtils {
     private static final String DEFAULT_PATH_CHECKSESSION = "false";
 
     private static final String PUBLISH_ADDRESS = "cse.service.publishAddress";
+
+    private static final String PUBLISH_PORT = "cse.{transport_name}.publishPort";
 
     private static CommonThread registryThread = null;
 
@@ -268,18 +271,22 @@ public final class RegistryUtils {
 
         String instanceId = srClient.registerMicroserviceInstance(getMicroserviceInstance());
         if (isEmpty(instanceId)) {
-            LOGGER.error("Register microservice instance failed. microserviceId={}", getMicroservice().getServiceId());
+            LOGGER.error("Register microservice instance failed. microserviceId={}",
+                    getMicroservice().getServiceId());
             return false;
         }
         getMicroserviceInstance().setInstanceId(instanceId);
         if (RegistryClientFactory.getLocalModeFile().isEmpty()) {
             LOGGER.info(
                     "Register microservice instance success. microserviceId={} instanceId={} endpoints={} lease {}s",
-                    microservice.getServiceId(), instanceId, microserviceInstance.getEndpoints(),
+                    microservice.getServiceId(),
+                    instanceId,
+                    microserviceInstance.getEndpoints(),
                     microserviceInstance.getHealthCheck().getTTL());
         } else {
             LOGGER.info("Register microservice instance success. microserviceId={} instanceId={}",
-                    getMicroservice().getServiceId(), instanceId);
+                    getMicroservice().getServiceId(),
+                    instanceId);
         }
 
         return true;
@@ -295,11 +302,13 @@ public final class RegistryUtils {
                 getMicroserviceInstance().getInstanceId());
         if (!result) {
             LOGGER.error("Unregister microservice instance failed. microserviceId={} instanceId={}",
-                    getMicroservice().getServiceId(), getMicroserviceInstance().getInstanceId());
+                    getMicroservice().getServiceId(),
+                    getMicroserviceInstance().getInstanceId());
             return false;
         }
         LOGGER.info("Unregister microservice instance success. microserviceId={} instanceId={}",
-                getMicroservice().getServiceId(), getMicroserviceInstance().getInstanceId());
+                getMicroservice().getServiceId(),
+                getMicroserviceInstance().getInstanceId());
         return true;
     }
 
@@ -333,24 +342,32 @@ public final class RegistryUtils {
     }
 
     private static boolean regsiterMicroservice() {
-        String serviceId = srClient.getMicroserviceId(getMicroservice().getAppId(), getMicroservice().getServiceName(),
-                getMicroservice().getVersion());
+        String serviceId =
+            srClient.getMicroserviceId(getMicroservice().getAppId(),
+                    getMicroservice().getServiceName(),
+                    getMicroservice().getVersion());
         if (!isEmpty(serviceId)) {
             // 已经注册过了，不需要重新注册
             LOGGER.info(
                     "Microservice exists in service center, no need to register. id={} appId={}, name={}, version={}",
-                    serviceId, getMicroservice().getAppId(), getMicroservice().getServiceName(),
+                    serviceId,
+                    getMicroservice().getAppId(),
+                    getMicroservice().getServiceName(),
                     getMicroservice().getVersion());
         } else {
             serviceId = srClient.registerMicroservice(getMicroservice());
             if (isEmpty(serviceId)) {
                 LOGGER.error("Registry microservice failed. appId={}, name={}, version={}",
-                        getMicroservice().getAppId(), getMicroservice().getServiceName(),
+                        getMicroservice().getAppId(),
+                        getMicroservice().getServiceName(),
                         getMicroservice().getVersion());
                 return false;
             }
-            LOGGER.info("Registry Microservice successfully. id={} appId={}, name={}, version={}", serviceId,
-                    getMicroservice().getAppId(), getMicroservice().getServiceName(), getMicroservice().getVersion());
+            LOGGER.info("Registry Microservice successfully. id={} appId={}, name={}, version={}",
+                    serviceId,
+                    getMicroservice().getAppId(),
+                    getMicroservice().getServiceName(),
+                    getMicroservice().getVersion());
         }
 
         registerSchemas(serviceId);
@@ -365,7 +382,8 @@ public final class RegistryUtils {
 
         HeartbeatResponse response;
         while (true) {
-            response = srClient.heartbeat(getMicroservice().getServiceId(), getMicroserviceInstance().getInstanceId());
+            response =
+                srClient.heartbeat(getMicroservice().getServiceId(), getMicroserviceInstance().getInstanceId());
             if (response != null) {
                 break;
             }
@@ -375,32 +393,40 @@ public final class RegistryUtils {
 
             try {
                 LOGGER.warn("Update heartbeat to service center failed, retry after {}s. service={}/{}",
-                        timer.getNextTimeout(), getMicroservice().getServiceId(),
+                        timer.getNextTimeout(),
+                        getMicroservice().getServiceId(),
                         getMicroserviceInstance().getInstanceId());
                 timer.sleep();
             } catch (TimerException e) {
                 LOGGER.error(
                         "Update heartbeat to service center failed, can not connect to service center. service={}/{}",
-                        getMicroservice().getServiceId(), getMicroserviceInstance().getInstanceId());
+                        getMicroservice().getServiceId(),
+                        getMicroserviceInstance().getInstanceId());
                 return null;
             }
         }
         if (!response.isOk()) {
             LOGGER.error("Update heartbeat to service center failed, microservice instance={}/{} does not exist",
-                    getMicroservice().getServiceId(), getMicroserviceInstance().getInstanceId());
+                    getMicroservice().getServiceId(),
+                    getMicroserviceInstance().getInstanceId());
         }
         return response;
     }
 
-    public static List<MicroserviceInstance> findServiceInstance(String appId, String serviceName, String versionRule) {
-        List<MicroserviceInstance> instances = srClient.findServiceInstance(getMicroservice().getServiceId(), appId,
-                serviceName, versionRule);
+    public static List<MicroserviceInstance> findServiceInstance(String appId, String serviceName,
+            String versionRule) {
+        List<MicroserviceInstance> instances = srClient.findServiceInstance(getMicroservice().getServiceId(),
+                appId,
+                serviceName,
+                versionRule);
         if (instances == null) {
             LOGGER.error("find empty instances from service center. service={}/{}", appId, serviceName);
             return null;
         }
 
-        LOGGER.info("find instances[{}] from service center success. service={}/{}", instances.size(), appId,
+        LOGGER.info("find instances[{}] from service center success. service={}/{}",
+                instances.size(),
+                appId,
                 serviceName);
         return instances;
     }
@@ -464,9 +490,9 @@ public final class RegistryUtils {
     }
 
     public static String getPublishAddress() {
-        String publicAddressSetting = DynamicPropertyFactory.getInstance().getStringProperty(PUBLISH_ADDRESS, "").get();
+        String publicAddressSetting =
+            DynamicPropertyFactory.getInstance().getStringProperty(PUBLISH_ADDRESS, "").get();
         publicAddressSetting = publicAddressSetting.trim();
-        // String publicAddressSetting = System.getProperty(PUBLISH_ADDRESS);
         if (publicAddressSetting.isEmpty()) {
             return NetUtils.getHostAddress();
         } else {
@@ -479,7 +505,8 @@ public final class RegistryUtils {
     }
 
     public static String getPublishHostName() {
-        String publicAddressSetting = DynamicPropertyFactory.getInstance().getStringProperty(PUBLISH_ADDRESS, "").get();
+        String publicAddressSetting =
+            DynamicPropertyFactory.getInstance().getStringProperty(PUBLISH_ADDRESS, "").get();
         publicAddressSetting = publicAddressSetting.trim();
         if (publicAddressSetting.isEmpty()) {
             return NetUtils.getHostName();
@@ -507,7 +534,8 @@ public final class RegistryUtils {
         }
 
         try {
-            String publicAddressSetting = DynamicPropertyFactory.getInstance().getStringProperty(PUBLISH_ADDRESS, "")
+            String publicAddressSetting = DynamicPropertyFactory.getInstance()
+                    .getStringProperty(PUBLISH_ADDRESS, "")
                     .get();
             publicAddressSetting = publicAddressSetting.trim();
 
@@ -525,7 +553,9 @@ public final class RegistryUtils {
                 if (socketAddress.getAddress().isAnyLocalAddress()) {
                     host = NetUtils.getHostAddress();
                     LOGGER.warn("address {}, auto select a host address to publish {}:{}, maybe not the correct one",
-                            address, host, socketAddress.getPort());
+                            address,
+                            host,
+                            socketAddress.getPort());
                     URI newURI = new URI(originalURI.getScheme(), originalURI.getUserInfo(), host,
                             originalURI.getPort(), originalURI.getPath(), originalURI.getQuery(),
                             originalURI.getFragment());
@@ -539,8 +569,12 @@ public final class RegistryUtils {
                 publicAddressSetting = NetUtils
                         .getHostAddress(publicAddressSetting.substring(1, publicAddressSetting.length() - 1));
             }
+
+            String publishPortKey = PUBLISH_PORT.replace("{transport_name}", originalURI.getScheme());
+            int publishPortSetting = DynamicPropertyFactory.getInstance().getIntProperty(publishPortKey, 0).get();
+            int publishPort = publishPortSetting == 0 ? originalURI.getPort() : publishPortSetting;
             URI newURI = new URI(originalURI.getScheme(), originalURI.getUserInfo(), publicAddressSetting,
-                    originalURI.getPort(), originalURI.getPath(), originalURI.getQuery(), originalURI.getFragment());
+                    publishPort, originalURI.getPath(), originalURI.getQuery(), originalURI.getFragment());
             return newURI.toString();
 
         } catch (URISyntaxException e) {
@@ -559,7 +593,8 @@ public final class RegistryUtils {
      */
     public static boolean updateInstanceProperties(Map<String, String> instanceProperties) {
         boolean success = srClient.updateInstanceProperties(microserviceInstance.getServiceId(),
-                microserviceInstance.getInstanceId(), instanceProperties);
+                microserviceInstance.getInstanceId(),
+                instanceProperties);
         if (success) {
             microserviceInstance.setProperties(instanceProperties);
         }
