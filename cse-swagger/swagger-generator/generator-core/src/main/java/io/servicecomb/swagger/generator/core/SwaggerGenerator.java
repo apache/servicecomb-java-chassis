@@ -29,6 +29,7 @@ import javax.ws.rs.core.MediaType;
 
 import org.springframework.util.StringUtils;
 
+import io.swagger.annotations.ApiOperation;
 import io.swagger.models.Info;
 import io.swagger.models.Swagger;
 
@@ -246,7 +247,16 @@ public class SwaggerGenerator {
             return true;
         }
 
-        return method.getDeclaringClass().getName().equals(Object.class.getName());
+        if (method.getDeclaringClass().getName().equals(Object.class.getName())) {
+            return true;
+        }
+
+        ApiOperation apiOperation = method.getAnnotation(ApiOperation.class);
+        if (apiOperation != null) {
+            return apiOperation.hidden();
+        }
+
+        return false;
     }
 
     protected void scanMethods() {
