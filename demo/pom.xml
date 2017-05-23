@@ -33,7 +33,7 @@
 		<module>demo-pojo</module>
 		<module>demo-jaxrs</module>
 		<module>demo-perf-client</module>
-		<!--module>demo-springmvc</module-->
+		<module>demo-springmvc</module>
 		<module>demo-schema</module>
 		<module>demo-crossapp</module>
 		<module>demo-spring-boot</module>
