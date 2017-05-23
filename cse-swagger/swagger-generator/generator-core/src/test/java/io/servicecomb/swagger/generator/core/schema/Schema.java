@@ -27,6 +27,11 @@ import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ResponseHeader;
 
 public class Schema {
+    @ApiOperation(value = "", hidden = true)
+    public void hidden() {
+
+    }
+
     @ApiResponse(responseHeaders = {@ResponseHeader(name = "h", response = String.class)}, code = 200, message = "")
     public void testApiResponse() {
 
