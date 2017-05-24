@@ -47,7 +47,7 @@
                                         <link>service-center:sc.servicecomb.io</link>
                                     </links>
                                     <wait>
-                                        <log>Register microservice instance success</log>
+                                        <log>Register [Mm]icroservice .* success</log>
                                         <time>120000</time>
                                     </wait>
                                     <ports>
