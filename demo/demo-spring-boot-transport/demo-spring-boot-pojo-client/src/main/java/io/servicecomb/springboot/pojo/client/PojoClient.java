@@ -35,7 +35,7 @@ public class PojoClient {
     public static void main(final String[] args) throws Exception {
         SpringApplication.run(PojoClient.class, args);
 
-        io.servicecomb.demo.pojo.client.PojoClient.runTest();
+        io.servicecomb.demo.pojo.client.PojoClientTest.runTest();
     }
 
 }

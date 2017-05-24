@@ -10,15 +10,3 @@ cse:
     address: 0.0.0.0:9090
   rest:
     address: 0.0.0.0:7999
-  highway:
-    address: 0.0.0.0:7070
-  handler:
-    chain:
-      Provider:
-        default: tcc-server
-  #executors:
-    #default: test 
-    #Provider: 
-      #server: test
-      #server.wrapParam: test
-        

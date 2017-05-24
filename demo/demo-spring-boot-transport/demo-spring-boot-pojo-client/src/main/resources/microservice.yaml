@@ -9,8 +9,7 @@ cse:
   handler:
     chain:
       Consumer:
-        #default: loadbalance
-        default: bizkeeper-consumer,loadbalance,tcc-client
+        default: bizkeeper-consumer,loadbalance
   isolation:
     Consumer:
       enabled: false
