@@ -16,31 +16,20 @@
 
 package io.servicecomb.demo.pojo.client;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
-
-import javax.inject.Inject;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import io.servicecomb.core.CseContext;
-import io.servicecomb.core.exception.CommonExceptionData;
-import io.servicecomb.core.exception.InvocationException;
 import io.servicecomb.core.provider.consumer.InvokerUtils;
 import io.servicecomb.demo.DemoConst;
 import io.servicecomb.demo.TestMgr;
 import io.servicecomb.demo.server.Test;
 import io.servicecomb.demo.server.TestRequest;
 import io.servicecomb.demo.server.User;
-import io.servicecomb.demo.smartcare.Application;
-import io.servicecomb.demo.smartcare.Group;
-import io.servicecomb.demo.smartcare.SmartCare;
 import io.servicecomb.provider.pojo.RpcReference;
-import io.servicecomb.foundation.common.utils.BeanUtils;
-import io.servicecomb.foundation.common.utils.Log4jUtils;
 
 /**
  * <一句话功能简述>
@@ -51,18 +40,14 @@ import io.servicecomb.foundation.common.utils.Log4jUtils;
  * @see  [相关类/方法]
  * @since [产品/模块版本]
  */
-@Component(value = "normalPojoClient")
-public class PojoClient {
-    private static Logger LOGGER = LoggerFactory.getLogger(PojoClient.class);
-
-    public static CodeFirstPojoClient codeFirstPojoClient;
+@Component
+public class PojoClientTest {
+    private static Logger LOGGER = LoggerFactory.getLogger(PojoClientTest.class);
 
     @RpcReference(microserviceName = "pojo")
     public static Test test;
 
-    private static SmartCare smartcare;
-
-    private static TestTccBusiness testTccBusiness;
+    public static Test testFromXml;
 
     public static final byte buffer[] = new byte[1024];
 
@@ -70,36 +55,19 @@ public class PojoClient {
         Arrays.fill(buffer, (byte) 1);
     }
 
-    @Inject
-    public void setCodeFirstPojoClient(CodeFirstPojoClient codeFirstPojoClient) {
-        PojoClient.codeFirstPojoClient = codeFirstPojoClient;
-    }
-
-    public static void main(String[] args) throws Exception {
-        init();
-
-        runTest();
-    }
-
-    public static void init() throws Exception {
-        Log4jUtils.init();
-        BeanUtils.init();
+    public static void setTestFromXml(Test testFromXml) {
+        PojoClientTest.testFromXml = testFromXml;
     }
 
     public static void runTest() throws Exception {
-        smartcare = BeanUtils.getBean("smartcare");
-
-        testTccBusiness = BeanUtils.getBean("testTccBusiness");
-        testTccBusiness.init();
-
         String microserviceName = "pojo";
-        codeFirstPojoClient.testCodeFirst(microserviceName);
 
         for (String transport : DemoConst.transports) {
             CseContext.getInstance().getConsumerProviderManager().setTransport(microserviceName, transport);
             TestMgr.setMsg(microserviceName, transport);
             LOGGER.info("test {}, transport {}", microserviceName, transport);
 
+            testNull(testFromXml);
             testNull(test);
             testEmpty(test);
             testStringArray(test);
@@ -109,78 +77,9 @@ public class PojoClient {
             testSplitParam(test);
             testInputArray(test);
 
-            // 异常，当前只有grpc不支持
-            if (!transport.equals("grpc") && !transport.equals("")) {
-                testException(test);
-
-                testTcc(testTccBusiness);
-            }
-
-            testSmartCare(smartcare);
-
             testCommonInvoke(transport);
         }
-
         TestMgr.summary();
-    }
-
-    private static void testSmartCare(SmartCare smartCare) {
-        Group group = new Group();
-        group.setName("group0");
-
-        Application application = new Application();
-        application.setName("app0");
-        application.setDefaultGroup("group0");
-        application.setVersion("v1");
-        application.setDynamicFlag(true);
-        List<Group> groups = new ArrayList<>();
-        groups.add(group);
-        application.setGroups(groups);
-
-        TestMgr.check("resultCode: 0\nresultMessage: add application app0 success",
-                smartCare.addApplication(application));
-        TestMgr.check("resultCode: 1\nresultMessage: delete application app0 failed",
-                smartCare.delApplication("app0"));
-    }
-
-    /**
-     * <一句话功能简述>
-     * <功能详细描述>
-     * @param test
-     */
-    private static void testException(Test test) {
-        try {
-            test.testException(456);
-        } catch (InvocationException e) {
-            TestMgr.check("456 error", e.getErrorData());
-        }
-
-        try {
-            test.testException(556);
-        } catch (InvocationException e) {
-            TestMgr.check("[556 error]", e.getErrorData());
-        }
-
-        try {
-            test.testException(557);
-        } catch (InvocationException e) {
-            TestMgr.check("[[557 error]]", e.getErrorData());
-        }
-    }
-
-    /**
-     * <一句话功能简述>
-     * <功能详细描述>
-     */
-    private static void testTcc(TestTccBusiness testTccBusiness) {
-        User result = testTccBusiness.start(1);
-        TestMgr.check("User [name=haha, age=10, index=1]", result);
-
-        try {
-            result = testTccBusiness.start(0);
-        } catch (InvocationException e) {
-            TestMgr.check("Cse Internal Server Error", ((CommonExceptionData) e.getErrorData()).getMessage());
-        }
     }
 
     /**

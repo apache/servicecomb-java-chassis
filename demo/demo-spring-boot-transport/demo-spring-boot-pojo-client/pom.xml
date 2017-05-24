@@ -26,4 +26,47 @@
 		<artifactId>demo-spring-boot-transport</artifactId>
 		<version>0.1.0-SNAPSHOT</version>
 	</parent>
+	
+	<properties>
+		<demo.main>io.servicecomb.springboot.pojo.client.PojoClient</demo.main>
+	</properties>
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-dependency-plugin</artifactId>
+			</plugin>
+			<plugin>
+				<groupId>com.github.odavid.maven.plugins</groupId>
+				<artifactId>mixin-maven-plugin</artifactId>
+				<configuration>
+					<mixins>
+						<mixin>
+							<groupId>io.servicecomb</groupId>
+							<artifactId>docker-run-config</artifactId>
+							<version>${servicecomb.version}</version>
+						</mixin>
+					</mixins>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+
+	<profiles>
+		<profile>
+			<id>docker</id>
+			<properties>
+				<demo.service.name>demo-spring-boot-pojo-server</demo.service.name>
+				<demo.vm.options>-Dcse.rest.address=0.0.0.0:8080</demo.vm.options>
+			</properties>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>io.fabric8</groupId>
+						<artifactId>docker-maven-plugin</artifactId>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
 </project>

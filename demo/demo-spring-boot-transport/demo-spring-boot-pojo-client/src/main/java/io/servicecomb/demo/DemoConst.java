@@ -28,5 +28,5 @@ import io.servicecomb.core.Const;
  * @since  [产品/模块版本]
  */
 public interface DemoConst {
-    String[] transports = new String[] {"highway", "grpc", "rest", Const.ANY_TRANSPORT};
+    String[] transports = new String[] {"grpc", "rest", Const.ANY_TRANSPORT};
 }
