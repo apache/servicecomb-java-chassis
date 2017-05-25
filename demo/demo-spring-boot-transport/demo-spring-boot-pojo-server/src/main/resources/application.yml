@@ -1,5 +1,5 @@
 server:
-  port: 7999
+  port: 8080
 cse:
   servlet:
     name: RestServlet

@@ -29,8 +29,7 @@ public class HelloImpl implements Hello {
     public String SayHelloAgain(String name) {
         try {
             Thread.sleep(5000);
-        }
-        catch (InterruptedException e) {
+        } catch (InterruptedException e) {
             e.printStackTrace();
         }
         return "Hello Message slow";
