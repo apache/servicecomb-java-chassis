@@ -57,7 +57,7 @@
 			<id>docker</id>
 			<properties>
 				<demo.service.name>demo-spring-boot-pojo-server</demo.service.name>
-				<demo.vm.options>-Dcse.rest.address=0.0.0.0:7999</demo.vm.options>
+				<demo.vm.options>-Dcse.rest.address=0.0.0.0:8080</demo.vm.options>
 			</properties>
 			<build>
 				<plugins>
