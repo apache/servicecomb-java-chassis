@@ -34,13 +34,12 @@ public class PojoServer {
      * @param args
      * @throws Exception
      */
-    public static void main(final String[] args)
-        throws Exception {
+    public static void main(final String[] args) throws Exception {
 
         SpringApplication.run(PojoServer.class, args);
         String port = DynamicPropertyFactory.getInstance().getStringProperty("server.port", null).get();
-        System.out.println("port ----------->"+port);
+        System.out.println("port ----------->" + port);
         String name = DynamicPropertyFactory.getInstance().getStringProperty("cse.servlet.name", null).get();
-        System.out.println("profiles ----------->"+name);
+        System.out.println("profiles ----------->" + name);
     }
 }
