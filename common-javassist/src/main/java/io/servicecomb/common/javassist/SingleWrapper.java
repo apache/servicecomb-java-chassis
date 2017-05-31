@@ -18,7 +18,7 @@ package io.servicecomb.common.javassist;
 
 /**
  * 只有一个field的场景
- * @author   
+ *
  * @version  [版本号, 2017年2月20日]
  * @see  [相关类/方法]
  * @since  [产品/模块版本]

@@ -32,7 +32,7 @@ import io.servicecomb.serviceregistry.api.registry.MicroserviceInstanceStatus;
 /**
  * 缓存指定微服务的所有实例
  * 当实例状态变化时，需要重新创建InstanceCache，由外部控制
- * @author  
+ *
  * @version [版本号, 2017年04月10日]
  * @see  [相关类/方法]
  * @since [产品/模块版本]

@@ -27,7 +27,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 /**
- * @author  
+ *
  * @since Mar 13, 2017
  * @see
  */

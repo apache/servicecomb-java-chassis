@@ -21,7 +21,7 @@ package io.servicecomb.swagger.generator.core;
  * jaxrs中，处理为body参数
  * springmvc中处理为requestParam参数
  *
- * @author
+ *
  * @version  [版本号, 2017年3月8日]
  * @see  [相关类/方法]
  * @since  [产品/模块版本]

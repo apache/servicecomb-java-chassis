@@ -23,7 +23,7 @@ import com.netflix.config.DynamicPropertyFactory;
 
 /**
  * 
- * @author  
+ *
  *
  */
 @SpringBootApplication

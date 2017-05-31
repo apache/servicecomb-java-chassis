@@ -31,7 +31,7 @@ import mockit.Mock;
 import mockit.MockUp;
 
 /**
- * @author 
+ *
  *
  */
 public class TestConsumerQpsFlowControlHandler {

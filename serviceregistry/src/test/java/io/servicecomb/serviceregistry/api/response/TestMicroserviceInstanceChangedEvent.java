@@ -28,7 +28,7 @@ import io.servicecomb.serviceregistry.api.MicroserviceKey;
 import org.junit.Assert;
 
 /**
- * @author  
+ *
  * @since Mar 14, 2017
  * @see 
  */

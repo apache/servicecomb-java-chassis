@@ -28,7 +28,7 @@ import com.netflix.loadbalancer.ServerListFilter;
 
 /**
  * 实现不包含服务器状态监测的负载均衡器。（这些职责在注册中心客户端实现）
- * @author   
+ *
  * @version  [版本号, 2016年12月29日]
  * @see  [相关类/方法]
  * @since  [产品/模块版本]

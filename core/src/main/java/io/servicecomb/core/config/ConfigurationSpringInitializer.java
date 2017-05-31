@@ -25,7 +25,7 @@ import io.servicecomb.foundation.common.config.ConfigMgr;
 
 /**
  * 本部分包含用户Spring的property holder文件
- * @author   
+ *
  * @version  [版本号, 2017年1月14日]
  * @see  [相关类/方法]
  * @since  [产品/模块版本]

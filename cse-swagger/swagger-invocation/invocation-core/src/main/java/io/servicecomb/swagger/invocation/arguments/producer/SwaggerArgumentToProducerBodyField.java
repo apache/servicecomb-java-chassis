@@ -29,7 +29,7 @@ import io.servicecomb.swagger.invocation.arguments.ArgumentMapper;
  * 所以，所有参数被包装为一个class，每个参数是一个field
  * producer在处理时，需要将这些field取出来当作参数使用
  *
- * @author   
+ *
  * @version  [版本号, 2017年4月8日]
  * @see  [相关类/方法]
  * @since  [产品/模块版本]

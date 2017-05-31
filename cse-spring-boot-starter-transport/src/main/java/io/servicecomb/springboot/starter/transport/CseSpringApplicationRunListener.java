@@ -30,7 +30,7 @@ import io.servicecomb.foundation.common.utils.Log4jUtils;
 /**
  * Cse bean initialization class.
  *
- * @author
+ *
  *
  * @version
  */

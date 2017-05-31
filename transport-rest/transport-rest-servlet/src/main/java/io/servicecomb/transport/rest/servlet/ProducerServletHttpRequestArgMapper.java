@@ -23,7 +23,7 @@ import io.servicecomb.swagger.invocation.arguments.producer.AbstractProducerCont
 
 /**
  * 使用Servlet http request构造其他各种http request
- * @author   
+ *
  * @version  [版本号, 2017年1月22日]
  * @see  [相关类/方法]
  * @since  [产品/模块版本]

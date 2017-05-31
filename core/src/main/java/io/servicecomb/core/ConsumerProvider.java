@@ -19,7 +19,7 @@ package io.servicecomb.core;
 /**
  * consumer端对业务的接口，不同场景是完全不同的
  * 所以这里只定义consumer对core的接口
- * @author   
+ *
  * @version  [版本号, 2016年12月26日]
  * @see  [相关类/方法]
  * @since  [产品/模块版本]

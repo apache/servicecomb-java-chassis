@@ -30,7 +30,7 @@ import com.netflix.loadbalancer.ServerStats;
 /**
  * 会话保持策略：优先选择上一次选中的服务器，保证请求都发送到同一个服务器上去。
  * 提供当会话过期或者失败次数超过限制后，轮询选择其他服务器的能力。
- * @author   
+ *
  * @version  [版本号, 2017年2月27日]
  * @see  [相关类/方法]
  * @since  [产品/模块版本]

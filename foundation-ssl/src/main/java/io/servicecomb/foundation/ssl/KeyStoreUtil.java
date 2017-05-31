@@ -34,7 +34,7 @@ import javax.net.ssl.TrustManagerFactory;
 
 /**
  * 读取证书的一些公共方法。
- * @author  
+ *
  */
 public final class KeyStoreUtil {
     private KeyStoreUtil() {

@@ -22,7 +22,7 @@ import io.servicecomb.foundation.common.RegisterManager;
 
 /**
  * 管理各种注解processor
- * @author
+ *
  * @version  [版本号, 2017年3月1日]
  * @see  [相关类/方法]
  * @since  [产品/模块版本]

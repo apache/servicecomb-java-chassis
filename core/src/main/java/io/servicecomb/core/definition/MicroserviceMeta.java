@@ -27,7 +27,7 @@ import io.servicecomb.foundation.common.RegisterManager;
 /**
  * 微服务名为microserviceName(app内部)或者appId:microserviceName(跨app)
  * operation的查询key为operation的qualifiedName
- * @author   
+ *
  * @version  [版本号, 2016年12月29日]
  * @see  [相关类/方法]
  * @since  [产品/模块版本]

@@ -24,7 +24,7 @@ import io.servicecomb.core.Response;
 /**
  * 业务线程在阻塞等待着，不必另起线程
  * 将应答流程包装为Runnable，先唤醒业务线程，再在业务线程中执行runnable
- * @author   
+ *
  * @version  [版本号, 2016年12月20日]
  * @see  [相关类/方法]
  * @since  [产品/模块版本]

@@ -24,7 +24,7 @@ import org.mockito.Mockito;
 import org.springframework.core.env.ConfigurableEnvironment;
 
 /**
- * @author
+ *
  */
 public class TestConfigurableEnvironmentConfiguration{
 

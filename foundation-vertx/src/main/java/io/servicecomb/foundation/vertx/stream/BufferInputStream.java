@@ -23,7 +23,7 @@ import io.netty.buffer.ByteBuf;
 
 /**
  *  本stream不必close
- * @author  
+ *
  *
  */
 public class BufferInputStream extends InputStream {

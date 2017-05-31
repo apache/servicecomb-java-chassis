@@ -32,7 +32,7 @@ import com.netflix.config.DynamicPropertyFactory;
 
 /**
  * SSL配置选项。
- * @author  
+ *
  */
 public final class SSLOption {
     private static final SSLOption DEFAULT_OPTION = new SSLOption();

@@ -18,7 +18,7 @@ package io.servicecomb.core.context;
 
 /**
  * 传递调用过程的上下文数据
- * @author   
+ *
  * @version  [版本号, 2017年2月14日]
  * @see  [相关类/方法]
  * @since  [产品/模块版本]

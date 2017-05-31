@@ -28,7 +28,7 @@ import io.servicecomb.core.definition.OperationMeta;
 import com.netflix.hystrix.strategy.HystrixPlugins;
 
 /**
- * @author 
+ *
  *
  */
 public class TestConsumerBizkeeperHandler {

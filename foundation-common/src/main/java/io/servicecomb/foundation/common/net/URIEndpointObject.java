@@ -27,7 +27,7 @@ import java.util.Map;
 
 /**
  * tranport公共的Endpoint Object，当transport使用URI表示的时候，可以转化为这个对象。
- * @author   
+ *
  * @version  [版本号, 2017年3月21日]
  * @see  [相关类/方法]
  * @since  [产品/模块版本]

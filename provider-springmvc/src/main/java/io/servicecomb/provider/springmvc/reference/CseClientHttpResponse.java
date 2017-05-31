@@ -31,7 +31,7 @@ import io.servicecomb.swagger.invocation.response.Headers;
 /**
  * cse应答在transport层已经完成了码流到对象的转换
  * 这里是适配springmvc的机制，让调用者能拿到已经转换好的对象
- * @author   
+ *
  * @version  [版本号, 2017年1月14日]
  * @see  [相关类/方法]
  * @since  [产品/模块版本]

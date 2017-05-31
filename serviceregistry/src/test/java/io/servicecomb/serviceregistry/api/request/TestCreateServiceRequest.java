@@ -26,7 +26,7 @@ import org.mockito.Mockito;
 import io.servicecomb.serviceregistry.api.registry.Microservice;
 
 /**
- * @author  
+ *
  * @since Mar 14, 2017
  * @see 
  */

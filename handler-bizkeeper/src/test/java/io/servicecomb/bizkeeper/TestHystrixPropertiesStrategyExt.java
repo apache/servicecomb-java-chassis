@@ -31,7 +31,7 @@ import com.netflix.hystrix.HystrixCommandKey;
 import com.netflix.hystrix.HystrixCommandProperties;
 
 /**
- * @author 
+ *
  */
 public class TestHystrixPropertiesStrategyExt {
 

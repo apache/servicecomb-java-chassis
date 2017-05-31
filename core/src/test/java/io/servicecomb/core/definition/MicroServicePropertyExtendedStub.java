@@ -21,7 +21,7 @@ import java.util.Map;
 import io.servicecomb.serviceregistry.api.PropertyExtended;
 
 /**
- * @author  
+ *
  * @since Mar 7, 2017
  * @see 
  */

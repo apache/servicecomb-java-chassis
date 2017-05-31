@@ -30,7 +30,7 @@ import io.servicecomb.foundation.common.utils.BeanUtils;
 import io.servicecomb.foundation.common.utils.Log4jUtils;
 
 /**
- * @author  
+ *
  * @since Mar 14, 2017
  * @see 
  */

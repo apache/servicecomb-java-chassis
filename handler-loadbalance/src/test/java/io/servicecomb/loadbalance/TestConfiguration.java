@@ -27,7 +27,7 @@ import mockit.Mock;
 import mockit.MockUp;
 
 /**
- * @author 
+ *
  */
 public class TestConfiguration {
 

@@ -22,7 +22,7 @@ import org.springframework.context.ConfigurableApplicationContext;
 import com.netflix.config.ConfigurationManager;
 
 /**
- * @author
+ *
  */
 public final class CseDelegatingProxyUtils {
 

@@ -49,7 +49,7 @@ import io.swagger.annotations.SwaggerDefinition;
 
 /**
  * 根据class反向生成swagger的上下文对象
- * @author
+ *
  * @version  [版本号, 2017年3月8日]
  * @see  [相关类/方法]
  * @since  [产品/模块版本]

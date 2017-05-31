@@ -35,7 +35,7 @@ import io.swagger.models.properties.RefProperty;
  * 反向生成契约时，x、y都是备选body，最终再合并成body
  * 如果直接使用BodyParamter,会导致y有信息丢失
  *
- * @author
+ *
  * @version  [版本号, 2017年3月20日]
  * @see  [相关类/方法]
  * @since  [产品/模块版本]

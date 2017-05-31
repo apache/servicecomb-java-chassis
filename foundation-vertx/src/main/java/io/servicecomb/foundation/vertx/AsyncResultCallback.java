@@ -21,7 +21,7 @@ import io.vertx.core.Future;
 
 /**
  * AsyncResultCallback
- * @author  
+ *
  *
  * @param <T>  T
  */

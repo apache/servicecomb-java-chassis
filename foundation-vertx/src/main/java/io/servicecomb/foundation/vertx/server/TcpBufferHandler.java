@@ -20,7 +20,7 @@ import io.vertx.core.buffer.Buffer;
 
 /**
  * TcpBufferHandler
- * @author  
+ *
  *
  */
 public interface TcpBufferHandler {

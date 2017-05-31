@@ -124,7 +124,7 @@ public class TestRegistry {
     /**
     * Test With Stubs
     * @throws Exception
-    * @author  
+    *
     * @since Mar 7, 2017 
     */
     @Test

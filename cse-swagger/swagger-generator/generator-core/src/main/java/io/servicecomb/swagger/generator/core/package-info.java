@@ -18,7 +18,7 @@
  * 根据annotation及接口反射，反向生成swagger
  * 本package中的功能会被cse依赖，但是不会依赖cse的概念
  *
- * @author
+ *
  * @version  [版本号, 2017年3月17日]
  * @see  [相关类/方法]
  * @since  [产品/模块版本]

@@ -47,7 +47,7 @@ import rx.Observable;
 
 /**
  * 负载均衡处理链
- * @author
+ *
  * @version  [版本号, 2017年1月9日]
  * @see  [相关类/方法]
  * @since  [产品/模块版本]

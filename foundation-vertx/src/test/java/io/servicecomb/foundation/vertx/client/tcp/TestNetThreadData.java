@@ -31,7 +31,7 @@ import org.junit.Test;
 import org.mockito.Mockito;
 
 /**
- * @author 
+ *
  *
  */
 public class TestNetThreadData {

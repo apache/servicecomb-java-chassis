@@ -21,7 +21,7 @@ import org.junit.Test;
 
 /**
  * Test SPIServiceUtils 
- * @author  
+ *
  *
  */
 public class TestSPIServiceUtils {

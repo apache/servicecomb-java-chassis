@@ -39,7 +39,7 @@ import io.servicecomb.foundation.common.config.PaaSResourceUtils;
  *   微服务名是由环境变量等等方式注入的
  *   此时可以在BootListener中进行注册（必须在producer初始化之前注册契约）
  *
- * @author   
+ *
  * @version  [版本号, 2017年3月30日]
  * @see  [相关类/方法]
  * @since  [产品/模块版本]

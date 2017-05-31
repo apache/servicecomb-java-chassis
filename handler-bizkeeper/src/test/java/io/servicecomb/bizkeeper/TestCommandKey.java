@@ -29,7 +29,7 @@ import com.netflix.hystrix.HystrixCommandGroupKey;
 import com.netflix.hystrix.HystrixCommandKey;
 
 /**
- * @author 
+ *
  *
  */
 public class TestCommandKey {

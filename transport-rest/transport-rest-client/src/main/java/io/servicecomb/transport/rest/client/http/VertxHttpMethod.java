@@ -45,7 +45,7 @@ import io.vertx.core.http.HttpClientResponse;
 
 /**
  * Http client实际发送请求的地方
- * @author   
+ *
  * @version  [版本号, 2017年1月2日]
  * @see  [相关类/方法]
  * @since  [产品/模块版本]

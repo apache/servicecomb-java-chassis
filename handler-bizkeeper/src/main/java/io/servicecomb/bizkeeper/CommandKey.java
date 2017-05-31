@@ -22,7 +22,7 @@ import com.netflix.hystrix.HystrixCommandKey;
 
 /**
  * 创建对应的Key值
- * @author   
+ *
  * @version  [版本号, 2016年12月17日]
  * @see  [相关类/方法]
  * @since  [产品/模块版本]

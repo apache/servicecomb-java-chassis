@@ -26,7 +26,7 @@ import com.fasterxml.jackson.databind.ObjectWriter;
 /**
  * <一句话功能简述>
  * <功能详细描述>
- * @author   
+ *
  * @version  [版本号, 2016年12月6日]
  * @see  [相关类/方法]
  * @since  [产品/模块版本]

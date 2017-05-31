@@ -34,7 +34,7 @@ import io.servicecomb.core.definition.MicroserviceMeta;
 
 /**
  * 对静态路径和动态路径的operation进行预先处理，加速operation的查询定位
- * @author   
+ *
  * @version  [版本号, 2017年1月2日]
  * @see  [相关类/方法]
  * @since  [产品/模块版本]

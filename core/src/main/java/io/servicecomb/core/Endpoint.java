@@ -18,7 +18,7 @@ package io.servicecomb.core;
 
 /**
  * Endpoint : 表示一个Endpoint。Tranport识别其内部格式.
- * @author   
+ *
  * @version  [版本号, 2017年1月26日]
  * @see  [相关类/方法]
  * @since  [产品/模块版本]

@@ -20,7 +20,7 @@ import org.springframework.web.client.RestTemplate;
 
 /**
  * RestTemplate builder
- * @author   
+ *
  * @version  [版本号, 2016年12月27日]
  * @see  [相关类/方法]
  * @since  [产品/模块版本]

@@ -20,7 +20,7 @@ import com.netflix.client.config.DefaultClientConfigImpl;
 
 /**
  * 配置转换（暂时没有配置项，待新增）
- * @author   
+ *
  * @version  [版本号, 2016年12月29日]
  * @see  [相关类/方法]
  * @since  [产品/模块版本]

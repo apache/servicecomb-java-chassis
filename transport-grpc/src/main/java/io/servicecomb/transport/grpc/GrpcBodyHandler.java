@@ -20,7 +20,7 @@ import io.servicecomb.foundation.vertx.SimpleBodyHandler;
 
 /**
  * Grpc通道body只支持自定义的application/grpc格式数据
- * @author   
+ *
  * @version  [版本号, 2017年3月27日]
  * @see  [相关类/方法]
  * @since  [产品/模块版本]

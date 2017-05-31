@@ -25,7 +25,7 @@ import org.apache.log4j.spi.LoggingEvent;
 
 /**
  * 扩展增加2个功能：1. 设置文件权限；2. 文件删除后重建。
- * @author   
+ *
  * @version  [版本号, 2017年4月11日]
  * @see  [相关类/方法]
  * @since  [产品/模块版本]

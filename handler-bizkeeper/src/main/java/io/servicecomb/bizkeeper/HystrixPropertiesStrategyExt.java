@@ -29,7 +29,7 @@ import com.netflix.hystrix.strategy.properties.HystrixPropertiesStrategy;
  * CircuitBreake需要统计并记录请求数据，需要缓存并保证每个commandKey对应一个Breaker；单纯清理CommandKey无法动态生效。
  * 参考：HystrixCircuitBreaker.Factory.getInstance(commandKey, groupKey,
  * properties, metrics)
- * @author  
+ *
  * @version [版本号, 2017年2月13日]
  * @see [相关类/方法]
  * @since [产品/模块版本]

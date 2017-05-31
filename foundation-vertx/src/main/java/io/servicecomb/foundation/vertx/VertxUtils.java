@@ -39,7 +39,7 @@ import io.vertx.core.logging.SLF4JLogDelegateFactory;
 
 /**
  * VertxUtils
- * @author  
+ *
  *
  */
 public final class VertxUtils {

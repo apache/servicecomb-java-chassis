@@ -28,7 +28,7 @@ import io.servicecomb.swagger.invocation.arguments.ArgumentMapper;
  *
  * 除了context参数，剩下的参数，必须与契约中的一一匹配，包括顺序、类型
  *
- * @author   
+ *
  * @version  [版本号, 2017年1月24日]
  * @see  [相关类/方法]
  * @since  [产品/模块版本]

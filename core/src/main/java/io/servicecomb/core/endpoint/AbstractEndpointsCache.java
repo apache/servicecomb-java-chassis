@@ -33,7 +33,7 @@ import io.servicecomb.serviceregistry.cache.InstanceCacheManager;
 /**
  * registry模块不理解core中的概念
  * 所以要将字符串的各种信息转义一下，方便运行时使用
- * @author   
+ *
  * @version  [版本号, 2017年1月26日]
  * @see  [相关类/方法]
  * @since  [产品/模块版本]

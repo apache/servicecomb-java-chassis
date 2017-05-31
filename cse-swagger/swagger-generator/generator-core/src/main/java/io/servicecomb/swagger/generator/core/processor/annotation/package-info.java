@@ -17,7 +17,7 @@
 /**
  * swagger竟然没提供从annotation生成swagger对象的功能，只好自己做了
  *
- * @author
+ *
  * @version  [版本号, 2017年3月2日]
  * @see  [相关类/方法]
  * @since  [产品/模块版本]

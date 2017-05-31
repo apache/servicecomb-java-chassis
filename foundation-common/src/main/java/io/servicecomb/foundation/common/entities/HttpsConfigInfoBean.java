@@ -18,7 +18,7 @@ package io.servicecomb.foundation.common.entities;
 /**
  * https请求的参数类
  * <功能详细描述>
- * @author  oW 
+ *  oW
  * @version  [版本号, 2016年11月4日]
  * @see  [相关类/方法]
  * @since  [产品/模块版本]

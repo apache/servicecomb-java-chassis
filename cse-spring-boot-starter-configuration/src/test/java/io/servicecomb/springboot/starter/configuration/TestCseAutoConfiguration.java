@@ -26,7 +26,7 @@ import mockit.Injectable;
 import mockit.Tested;
 
 /**
- * @author
+ *
  */
 public class TestCseAutoConfiguration{
 

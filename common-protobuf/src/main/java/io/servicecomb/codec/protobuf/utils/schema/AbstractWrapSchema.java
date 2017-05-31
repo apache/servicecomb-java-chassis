@@ -21,7 +21,7 @@ import io.servicecomb.codec.protobuf.utils.WrapSchema;
 import io.protostuff.Schema;
 
 /**
- * @author   
+ *
  * @version  [版本号, 2016年12月16日]
  * @see  [相关类/方法]
  * @since  [产品/模块版本]

@@ -18,7 +18,7 @@ package io.servicecomb.foundation.metrics.performance;
 
 /**
  * PerfStatSuccFail
- * @author  
+ *
  *
  */
 public class PerfStatSuccFail extends PerfStatImpl {

@@ -27,7 +27,7 @@ import io.vertx.core.buffer.Buffer;
 
 /**
  * 将response按照指定的produce类型进行编解码
- * @author   
+ *
  * @version  [版本号, 2017年1月2日]
  * @see  [相关类/方法]
  * @since  [产品/模块版本]

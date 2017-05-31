@@ -21,7 +21,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * 和应用相关的信息，方便定制使用。 目前主要包含密码解密、证书路径、IP和Port等内容。
- * @author  
+ *
  */
 public abstract class SSLCustom {
     private static final Logger LOG = LoggerFactory.getLogger(SSLCustom.class);

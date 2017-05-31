@@ -14,6 +14,6 @@
  * limitations under the License.
  */
 /**
- * @author Sukesh
+ * Sukesh
  */
 package io.servicecomb.springboot.starter.discovery;

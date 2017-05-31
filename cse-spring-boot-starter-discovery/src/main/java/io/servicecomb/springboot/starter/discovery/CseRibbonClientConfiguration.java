@@ -23,7 +23,7 @@ import com.netflix.client.config.IClientConfig;
 import com.netflix.loadbalancer.ServerList;
 
 /**
- * @author Sukesh
+ * Sukesh
  */
 @Configuration
 public class CseRibbonClientConfiguration {

@@ -38,7 +38,7 @@ import io.swagger.models.Swagger;
  * 在consumer场景中，如果本地没有契约，需要从服务中心下载契约
  * 在producer场景中，如果本地没有契约，需要根据实现类动态生成契约
  *
- * @author   
+ *
  * @version  [版本号, 2017年4月5日]
  * @see  [相关类/方法]
  * @since  [产品/模块版本]

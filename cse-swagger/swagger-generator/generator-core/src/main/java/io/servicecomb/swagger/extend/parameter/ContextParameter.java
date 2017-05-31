@@ -21,7 +21,7 @@ import io.swagger.models.parameters.Parameter;
 /**
  * http request这种不在swagger中体现出来的参数的包装
  *
- * @author
+ *
  * @version  [版本号, 2017年4月1日]
  * @see  [相关类/方法]
  * @since  [产品/模块版本]

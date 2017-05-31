@@ -29,7 +29,7 @@ import mockit.Expectations;
 import mockit.Mocked;
 
 /**
- * @author 
+ *
  *
  */
 public class TestConsumerQpsControllermanager {

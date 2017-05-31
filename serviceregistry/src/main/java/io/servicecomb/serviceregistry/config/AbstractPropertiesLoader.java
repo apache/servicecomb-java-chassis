@@ -27,7 +27,7 @@ import com.netflix.config.DynamicPropertyFactory;
 
 /**
  * 加载微服务和微服务实例的properties
- * @author   
+ *
  * @version  [版本号, 2017年3月21日]
  * @see  [相关类/方法]
  * @since  [产品/模块版本]

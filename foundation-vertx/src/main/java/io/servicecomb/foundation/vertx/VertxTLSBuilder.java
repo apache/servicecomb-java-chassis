@@ -32,7 +32,7 @@ import io.vertx.core.net.TCPSSLOptions;
 
 /**
  * TLS配置模型应用于vertx
- * @author  
+ *
  * @version [版本号, 2017年3月10日]
  * @see [相关类/方法]
  * @since [产品/模块版本]

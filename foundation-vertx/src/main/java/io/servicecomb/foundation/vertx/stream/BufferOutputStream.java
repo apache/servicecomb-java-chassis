@@ -24,7 +24,7 @@ import io.vertx.core.buffer.Buffer;
 
 /**
  * BufferOutputStream
- * @author  
+ *
  *
  */
 public class BufferOutputStream extends OutputStream {

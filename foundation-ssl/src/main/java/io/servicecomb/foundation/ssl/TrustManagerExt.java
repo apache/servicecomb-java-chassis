@@ -42,7 +42,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * 扩展TurstManager
- * @author  
+ *
  */
 public class TrustManagerExt extends X509ExtendedTrustManager {
     private static final Logger LOG = LoggerFactory.getLogger(TrustManagerExt.class);

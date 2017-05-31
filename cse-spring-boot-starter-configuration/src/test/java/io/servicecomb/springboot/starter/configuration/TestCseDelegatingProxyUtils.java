@@ -22,7 +22,7 @@ import org.mockito.Mockito;
 import org.springframework.context.ConfigurableApplicationContext;
 
 /**
- * @author
+ *
  */
 public class TestCseDelegatingProxyUtils{
 

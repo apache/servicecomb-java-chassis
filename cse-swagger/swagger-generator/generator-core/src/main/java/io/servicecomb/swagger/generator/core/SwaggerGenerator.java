@@ -43,7 +43,7 @@ import io.swagger.models.Swagger;
  * jaxrs/spring mvc的场景，需要配合各自的插件jar包
  * 非场景1，如果标注不完整，仍然会尝试使用场景1的规则产生默认数据
  *
- * @author
+ *
  * @version  [版本号, 2017年3月1日]
  * @see  [相关类/方法]
  * @since  [产品/模块版本]

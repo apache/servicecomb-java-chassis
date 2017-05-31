@@ -26,7 +26,7 @@ import io.vertx.core.parsetools.impl.RecordParserImpl;
 
 /**
  * TcpParser
- * @author  
+ *
  *
  */
 public class TcpParser implements Handler<Buffer> {
@@ -46,7 +46,7 @@ public class TcpParser implements Handler<Buffer> {
 
     /**
      * ParseStatus
-     * @author  
+     *
      *
      */
     enum ParseStatus {

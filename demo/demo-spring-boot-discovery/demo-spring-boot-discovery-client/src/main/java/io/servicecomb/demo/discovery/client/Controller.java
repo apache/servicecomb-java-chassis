@@ -28,7 +28,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
- * @author Sukesh
+ * Sukesh
  */
 @RestController
 @RequestMapping(path = "/controller", produces = MediaType.APPLICATION_JSON)

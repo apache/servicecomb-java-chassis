@@ -29,7 +29,7 @@ import com.netflix.config.ConcurrentCompositeConfiguration;
 import com.netflix.config.ConfigurationManager;
 
 /**
- * @author
+ *
  */
 public class CseEndpoint extends AbstractEndpoint<Map<String, Object>> {
 

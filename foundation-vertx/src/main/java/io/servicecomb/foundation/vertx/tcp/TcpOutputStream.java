@@ -22,7 +22,7 @@ import io.servicecomb.foundation.vertx.stream.BufferOutputStream;
 
 /**
  * TcpOutputStream
- * @author  
+ *
  *
  */
 public class TcpOutputStream extends BufferOutputStream {

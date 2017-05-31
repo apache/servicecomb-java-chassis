@@ -27,7 +27,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  * 之所以再包装一层，是因为多个线程使用一个连接池的场景下
  * 会导致多个线程抢连接池的同一把锁
  * 包装之后，允许使用m个网络线程，每个线程中有n个连接池
- * @author   
+ *
  * @version  [版本号, 2016年12月5日]
  * @see  [相关类/方法]
  * @since  [产品/模块版本]

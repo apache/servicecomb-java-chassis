@@ -25,7 +25,7 @@ import java.util.Set;
 
 /**
  * 证书处理的功能方法
- * @author  
+ *
  */
 public final class CertificateUtil {
     private static final int SUBALTNAME_DNSNAME = 2;

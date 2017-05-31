@@ -21,7 +21,7 @@ import io.servicecomb.foundation.common.RegisterManager;
 
 /**
  * 存放具有相同path，不同httpmethod的operation
- * @author   
+ *
  * @version  [版本号, 2017年1月2日]
  * @see  [相关类/方法]
  * @since  [产品/模块版本]

@@ -27,7 +27,7 @@ import org.junit.Test;
 import io.servicecomb.core.exception.CseException;
 
 /**
- * @author 
+ *
  *
  */
 public class TestLoadbalanceExceptionUtils {

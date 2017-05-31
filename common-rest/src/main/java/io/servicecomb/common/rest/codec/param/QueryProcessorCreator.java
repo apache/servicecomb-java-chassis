@@ -27,7 +27,7 @@ import io.servicecomb.common.rest.codec.RestServerRequest;
 
 /**
  * 用于处理Jaxrs中的Query类型参数
- * @author   
+ *
  * @version  [版本号, 2017年1月2日]
  * @see  [相关类/方法]
  * @since  [产品/模块版本]

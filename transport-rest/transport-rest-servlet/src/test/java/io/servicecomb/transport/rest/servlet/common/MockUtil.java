@@ -25,7 +25,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /**
- * @author 
+ *
  *
  */
 import io.servicecomb.transport.rest.servlet.ServletRestServer;

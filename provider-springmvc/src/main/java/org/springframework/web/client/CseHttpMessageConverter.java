@@ -35,7 +35,7 @@ import io.servicecomb.provider.springmvc.reference.CseClientHttpResponse;
 /**
  * 需要访问MessageBodyClientHttpResponseWrapper
  * 这是一个package级别的类，只好放在特殊的包内了
- * @author   
+ *
  * @version  [版本号, 2017年1月16日]
  * @see  [相关类/方法]
  * @since  [产品/模块版本]

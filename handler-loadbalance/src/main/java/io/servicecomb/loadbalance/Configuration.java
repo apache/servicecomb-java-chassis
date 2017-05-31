@@ -23,7 +23,7 @@ import com.netflix.config.DynamicPropertyFactory;
 
 /**
  * configuration items
- * @author   
+ *
  * @version  [版本号, 2017年1月9日]
  * @see  [相关类/方法]
  * @since  [产品/模块版本]

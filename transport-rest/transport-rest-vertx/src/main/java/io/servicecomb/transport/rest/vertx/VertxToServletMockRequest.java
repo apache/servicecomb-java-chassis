@@ -47,7 +47,7 @@ import io.vertx.core.http.HttpServerRequest;
 
 /**
  * 使用vertx http request模拟一个Servlet http request
- * @author   
+ *
  * @version  [版本号, 2017年1月19日]
  * @see  [相关类/方法]
  * @since  [产品/模块版本]

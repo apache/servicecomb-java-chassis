@@ -31,7 +31,7 @@ import io.servicecomb.core.CseContext;
 
 /**
  * Rest Servlet Server，通过Tomcat拉起
- * @author   
+ *
  * @version  [版本号, 2017年1月2日]
  * @see  [相关类/方法]
  * @since  [产品/模块版本]

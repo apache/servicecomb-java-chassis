@@ -31,7 +31,7 @@ import org.springframework.core.env.PropertySource;
 import org.springframework.core.env.StandardEnvironment;
 
 /**
- * @author
+ *
  */
 public class ConfigurableEnvironmentConfiguration extends AbstractConfiguration {
 

@@ -27,7 +27,7 @@ import io.servicecomb.foundation.metrics.performance.PerfStatSuccFail;
 /**
  * Metrics
  * core layer performance logger
- * @author  
+ *
  */
 public class Metrics extends CommonThread {
     // 每个线程只在本线程内部做统计，不涉及多线程并发

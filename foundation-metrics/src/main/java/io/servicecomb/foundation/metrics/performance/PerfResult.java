@@ -18,7 +18,7 @@ package io.servicecomb.foundation.metrics.performance;
 
 /**
  * PerfResult
- * @author  
+ *
  *
  */
 public class PerfResult {

@@ -18,7 +18,7 @@ package io.servicecomb.springboot.starter.discovery;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
- * @author Sukesh
+ * Sukesh
  */
 @ConfigurationProperties("spring.cloud.cse")
 public class CseDiscoveryProperties {

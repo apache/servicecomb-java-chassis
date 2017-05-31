@@ -28,7 +28,7 @@ import com.fasterxml.jackson.dataformat.protobuf.schema.ProtobufField;
 
 /**
  * 将idl msg中的field拆出来，每个field是一个参数
- * @author   
+ *
  * @version  [版本号, 2016年12月6日]
  * @see  [相关类/方法]
  * @since  [产品/模块版本]

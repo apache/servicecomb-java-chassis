@@ -26,7 +26,7 @@ import javax.net.ssl.SSLSocketFactory;
 
 /**
  * 扩展SSLSocketFactory，设置算法和协议列表。
- * @author  
+ *
  */
 public class SSLSocketFactoryExt extends SSLSocketFactory {
     private SSLSocketFactory sslSocketFactory;

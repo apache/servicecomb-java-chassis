@@ -33,7 +33,7 @@ import io.servicecomb.foundation.common.net.URIEndpointObject;
 import com.netflix.config.DynamicPropertyFactory;
 
 /**
- * @author Sukesh
+ * Sukesh
  */
 public class CseDiscoveryClient implements DiscoveryClient {
 

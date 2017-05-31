@@ -36,7 +36,7 @@ import javax.net.ssl.X509ExtendedTrustManager;
 
 /**
  * 根据传递的SSLOption构造SSL上下文。请参考JSSE获取相关API的层次参考。
- * @author  
+ *
  */
 public final class SSLManager {
     private SSLManager() {

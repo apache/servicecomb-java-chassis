@@ -29,7 +29,7 @@ import io.servicecomb.core.exception.ExceptionUtils;
 
 /**
  * 内置轮询lb，方便demo之类的场景，不必去依赖lb包
- * @author   
+ *
  * @version  [版本号, 2017年1月20日]
  * @see  [相关类/方法]
  * @since  [产品/模块版本]

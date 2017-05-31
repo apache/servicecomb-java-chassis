@@ -28,7 +28,7 @@ import io.servicecomb.core.Transport;
 import io.servicecomb.serviceregistry.cache.CacheEndpoint;
 
 /**
- * @author 
+ *
  *
  */
 public class TestCseServer {

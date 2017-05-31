@@ -25,7 +25,7 @@ import org.w3c.dom.Element;
 
 /**
  * 根据id合并
- * @author   
+ *
  * @version  [版本号, 2016年11月21日]
  * @see  [相关类/方法]
  * @since  [产品/模块版本]

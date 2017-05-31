@@ -40,7 +40,7 @@ import io.vertx.ext.web.handler.CookieHandler;
 
 /**
  * Rest Server on Vertx
- * @author   
+ *
  * @version  [版本号, 2016年12月31日]
  * @see  [相关类/方法]
  * @since  [产品/模块版本]

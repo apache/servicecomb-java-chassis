@@ -23,7 +23,7 @@ import org.junit.Assert;
 import org.junit.Test;
 
 /**
- * @author 
+ *
  *
  */
 public class TestBizkeeperRequestContext {

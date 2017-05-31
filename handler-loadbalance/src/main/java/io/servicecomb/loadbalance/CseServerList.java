@@ -23,7 +23,7 @@ import com.netflix.loadbalancer.ServerList;
 
 /**
  * 通过RegistryUtils查询服务器列表。 RegistryUtils本身具备缓存和刷新不可用服务器的功能，因此这里不需要进行列表缓存和状态检测。
- * @author   
+ *
  * @version  [版本号, 2016年12月19日]
  * @see  [相关类/方法]
  * @since  [产品/模块版本]

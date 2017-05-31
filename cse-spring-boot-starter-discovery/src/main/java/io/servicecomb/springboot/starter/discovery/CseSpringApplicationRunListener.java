@@ -35,7 +35,7 @@ import io.servicecomb.foundation.common.utils.BeanUtils;
 import io.servicecomb.foundation.common.utils.Log4jUtils;
 
 /**
- * @author Sukesh
+ * Sukesh
  */
 public class CseSpringApplicationRunListener implements SpringApplicationRunListener, PropertySourceLocator {
     private static final Logger LOGGER = LoggerFactory.getLogger(CseSpringApplicationRunListener.class);

@@ -19,7 +19,7 @@ package io.servicecomb.core.consumer;
 /**
  * 为了兼容而保留
  *
- * @author   
+ *
  * @version  [版本号, 2017年4月12日]
  * @see  [相关类/方法]
  * @since  [产品/模块版本]

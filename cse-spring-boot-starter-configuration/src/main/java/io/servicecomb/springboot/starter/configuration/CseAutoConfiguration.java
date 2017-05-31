@@ -56,7 +56,7 @@ import com.netflix.config.DynamicPropertyFactory;
 import com.netflix.config.DynamicURLConfiguration;
 
 /**
- * @author
+ *
  */
 @Configuration
 @ConditionalOnClass({ConcurrentCompositeConfiguration.class,
