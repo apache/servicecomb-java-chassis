@@ -13,27 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package io.servicecomb.springboot.starter.provider;
 
-package io.servicecomb.springboot.jaxrs.server;
+import io.servicecomb.foundation.common.utils.BeanUtils;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.ImportResource;
 
-import io.servicecomb.springboot.starter.provider.EnableServiceComb;
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-
-/**
- * 
- *
- *
- */
-@SpringBootApplication
-@EnableServiceComb
-public class JaxrsServer {
-    /**
-     * 
-     * @param args
-     * @throws Exception
-     */
-    public static void main(final String[] args) throws Exception {
-        SpringApplication.run(JaxrsServer.class, args);
-    }
+@Configuration
+@ImportResource(BeanUtils.DEFAULT_BEAN_RESOURCE)
+class ServiceCombSpringConfiguration {
 }
