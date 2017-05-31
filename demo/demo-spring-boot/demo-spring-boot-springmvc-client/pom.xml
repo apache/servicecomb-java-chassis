@@ -22,13 +22,13 @@
 	<groupId>io.servicecomb.springboot.springmvc.client</groupId>
 	<artifactId>demo-spring-boot-springmvc-client</artifactId>
 	<parent>
-		<groupId>io.servicecomb</groupId>
+		<groupId>io.servicecomb.demo</groupId>
 		<artifactId>demo-spring-boot</artifactId>
 		<version>0.1.0-SNAPSHOT</version>
 	</parent>
 	<dependencies>
 		<dependency>
-			<groupId>io.servicecomb</groupId>
+			<groupId>io.servicecom.demo</groupId>
 			<artifactId>springmvc-client</artifactId>
 		</dependency>
 	</dependencies>

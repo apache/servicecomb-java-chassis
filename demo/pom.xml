@@ -23,6 +23,7 @@
 		<artifactId>paas-cse</artifactId>
 		<version>0.1.0-SNAPSHOT</version>
 	</parent>
+	<groupId>io.servicecomb.demo</groupId>
 	<artifactId>cse-demo</artifactId>
 	<packaging>pom</packaging>
 	<modules>
@@ -43,52 +44,52 @@
 	<dependencyManagement>
 		<dependencies>
 			<dependency>
-				<groupId>io.servicecomb</groupId>
+				<groupId>io.servicecomb.demo</groupId>
 				<artifactId>demo-schema</artifactId>
 				<version>${servicecomb.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>io.servicecomb</groupId>
+				<groupId>io.servicecomb.demo</groupId>
 				<artifactId>all-client</artifactId>
 				<version>${servicecomb.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>io.servicecomb</groupId>
+				<groupId>io.servicecomb.demo</groupId>
 				<artifactId>pojo-server</artifactId>
 				<version>${servicecomb.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>io.servicecomb</groupId>
+				<groupId>io.servicecomb.demo</groupId>
 				<artifactId>jaxrs-server</artifactId>
 				<version>${servicecomb.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>io.servicecomb</groupId>
+				<groupId>io.servicecomb.demo</groupId>
 				<artifactId>springmvc-server</artifactId>
 				<version>${servicecomb.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>io.servicecomb</groupId>
+				<groupId>io.servicecomb.demo</groupId>
 				<artifactId>crossapp-server</artifactId>
 				<version>${servicecomb.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>io.servicecomb</groupId>
+				<groupId>io.servicecomb.demo</groupId>
 				<artifactId>pojo-client</artifactId>
 				<version>${servicecomb.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>io.servicecomb</groupId>
+				<groupId>io.servicecomb.demo</groupId>
 				<artifactId>jaxrs-client</artifactId>
 				<version>${servicecomb.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>io.servicecomb</groupId>
+				<groupId>io.servicecomb.demo</groupId>
 				<artifactId>springmvc-client</artifactId>
 				<version>${servicecomb.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>io.servicecomb</groupId>
+				<groupId>io.servicecomb.demo</groupId>
 				<artifactId>crossapp-client</artifactId>
 				<version>${servicecomb.version}</version>
 			</dependency>
@@ -165,7 +166,7 @@
 						</archive>
 					</configuration>
 				</plugin>
-				<plugin>
+				<!--plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-dependency-plugin</artifactId>
 					<version>2.10</version>
@@ -181,7 +182,7 @@
 							</configuration>
 						</execution>
 					</executions>
-				</plugin>
+				</plugin-->
 			</plugins>
 		</pluginManagement>
 	</build>
