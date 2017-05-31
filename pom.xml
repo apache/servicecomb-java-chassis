@@ -156,6 +156,7 @@
 		<module>cse-spring-boot-starter-transport</module>
 		<module>demo</module>
 		<module>integration-tests</module>
+		<module>java-chassis-distribution</module>
 	</modules>
 
     <distributionManagement>
