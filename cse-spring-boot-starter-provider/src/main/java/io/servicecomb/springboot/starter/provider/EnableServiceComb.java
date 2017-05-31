@@ -13,27 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package io.servicecomb.springboot.starter.provider;
 
-package io.servicecomb.springboot.jaxrs.server;
-
-import io.servicecomb.springboot.starter.provider.EnableServiceComb;
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+import org.springframework.context.annotation.Import;
 
 /**
- * 
- *
- *
+ * This annotation enables auto-configuration of Spring beans to integrate with ServiceComb modules.
  */
-@SpringBootApplication
-@EnableServiceComb
-public class JaxrsServer {
-    /**
-     * 
-     * @param args
-     * @throws Exception
-     */
-    public static void main(final String[] args) throws Exception {
-        SpringApplication.run(JaxrsServer.class, args);
-    }
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.TYPE)
+@Import(ServiceCombSpringConfiguration.class)
+public @interface EnableServiceComb {
+
 }
