@@ -25,7 +25,7 @@
 
 	<name>ServiceComb Java Chassis</name>
 	<description>Software Development Kit (SDK) for rapid development of microservices</description>
-	<url>https://github.com/Huawei/ServiceComb_java_chassis</url>
+	<url>https://github.com/ServiceComb/java-chassis</url>
 
 	<licenses>
 		<license>
@@ -47,9 +47,9 @@
 	</developers>
 
 	<scm>
-		<url>https://github.com/Huawei/ServiceComb_java_chassis</url>
-		<connection>scm:git:https://github.com/Huawei/ServiceComb_java_chassis.git</connection>
-		<developerConnection>scm:git:https://github.com/Huawei/ServiceComb_java_chassis.git</developerConnection>
+		<url>https://github.com/ServiceComb/java-chassis</url>
+		<connection>scm:git:https://github.com/ServiceComb/java-chassis.git</connection>
+		<developerConnection>scm:git:https://github.com/ServiceComb/java-chassis.git</developerConnection>
 		<tag>v${project.version}</tag>
 	</scm>
 
