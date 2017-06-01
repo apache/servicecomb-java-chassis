@@ -32,9 +32,6 @@
 
 	<properties>
 		<spring-boot.version>1.4.5.RELEASE</spring-boot.version>
-		<demo.output.dir>
-			../../../../cse-demo-bin
-		</demo.output.dir>
 	</properties>
 	<dependencies>
 		<dependency>

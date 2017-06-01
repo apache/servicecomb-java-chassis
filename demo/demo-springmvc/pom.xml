@@ -30,10 +30,4 @@
 		<module>springmvc-client</module>
 	</modules>
 
-	<properties>
-		<demo.output.dir>
-			../../../../cse-demo-bin
-		</demo.output.dir>
-	</properties>
-
 </project>

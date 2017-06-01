@@ -28,7 +28,7 @@
 	<modules>
 		<module>demo-spring-boot-jaxrs-server</module>
 		<module>demo-spring-boot-jaxrs-client</module>
-<!--
+<!-- 
 	    <module>demo-spring-boot-springmvc-server</module>
 		<module>demo-spring-boot-springmvc-client</module>
 -->
@@ -36,7 +36,6 @@
 
 	<properties>
 		<spring-boot.version>1.3.2.RELEASE</spring-boot.version>
-		
 	</properties>
 
 	<dependencyManagement>
