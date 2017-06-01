@@ -11,15 +11,15 @@
     <dependencies>
         <dependency>
             <groupId>io.servicecomb</groupId>
-            <artifactId>cse-common-javassist</artifactId>
+            <artifactId>common-javassist</artifactId>
         </dependency>
         <dependency>
             <groupId>io.servicecomb</groupId>
-            <artifactId>cse-common-protobuf</artifactId>
+            <artifactId>common-protobuf</artifactId>
         </dependency>
         <dependency>
             <groupId>io.servicecomb</groupId>
-            <artifactId>cse-common-rest</artifactId>
+            <artifactId>common-rest</artifactId>
         </dependency>
         <dependency>
             <groupId>io.servicecomb</groupId>
