@@ -83,15 +83,15 @@
         </dependency>
         <dependency>
             <groupId>io.servicecomb</groupId>
-            <artifactId>cse-handler-bizkeeper</artifactId>
+            <artifactId>handler-bizkeeper</artifactId>
         </dependency>
         <dependency>
             <groupId>io.servicecomb</groupId>
-            <artifactId>cse-handler-flowcontrol-qps</artifactId>
+            <artifactId>handler-flowcontrol-qps</artifactId>
         </dependency>
         <dependency>
             <groupId>io.servicecomb</groupId>
-            <artifactId>cse-handler-loadbalance</artifactId>
+            <artifactId>handler-loadbalance</artifactId>
         </dependency>
         <dependency>
             <groupId>io.servicecomb</groupId>

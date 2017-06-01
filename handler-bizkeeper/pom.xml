@@ -23,7 +23,7 @@
 		<version>0.1.0-SNAPSHOT</version>
 	</parent>
 
-	<artifactId>cse-handler-bizkeeper</artifactId>
+	<artifactId>handler-bizkeeper</artifactId>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

@@ -1085,12 +1085,12 @@
 			</dependency>
 			<dependency>
 				<groupId>io.servicecomb</groupId>
-				<artifactId>cse-handler-bizkeeper</artifactId>
+				<artifactId>handler-bizkeeper</artifactId>
 				<version>${servicecomb.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>io.servicecomb</groupId>
-				<artifactId>cse-handler-loadbalance</artifactId>
+				<artifactId>handler-loadbalance</artifactId>
 				<version>${servicecomb.version}</version>
 			</dependency>
 			<dependency>
@@ -1105,7 +1105,7 @@
 			</dependency>
 			<dependency>
 				<groupId>io.servicecomb</groupId>
-				<artifactId>cse-handler-flowcontrol-qps</artifactId>
+				<artifactId>handler-flowcontrol-qps</artifactId>
 				<version>${servicecomb.version}</version>
 			</dependency>
 			<dependency>
