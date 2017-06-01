@@ -29,7 +29,7 @@
 	<dependencies>
 		<dependency>
 			<groupId>io.servicecomb</groupId>
-			<artifactId>cse-core</artifactId>
+			<artifactId>java-chassis-core</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>javax.servlet</groupId>

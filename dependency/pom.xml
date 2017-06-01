@@ -1070,7 +1070,7 @@
 			</dependency>
 			<dependency>
 				<groupId>io.servicecomb</groupId>
-				<artifactId>cse-core</artifactId>
+				<artifactId>java-chassis-core</artifactId>
 				<version>${servicecomb.version}</version>
 			</dependency>
 			<dependency>
