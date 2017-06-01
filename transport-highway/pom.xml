@@ -22,7 +22,7 @@
 		<artifactId>java-chassis-parent</artifactId>
 		<version>0.1.0-SNAPSHOT</version>
 	</parent>
-	<artifactId>cse-transport-highway</artifactId>
+	<artifactId>transport-highway</artifactId>
 	<dependencies>
 		<dependency>
 			<groupId>io.servicecomb</groupId>

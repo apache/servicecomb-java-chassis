@@ -24,7 +24,7 @@
 		<artifactId>cse-transport-rest</artifactId>
 		<version>0.1.0-SNAPSHOT</version>
 	</parent>
-	<artifactId>cse-transport-rest-servlet</artifactId>
+	<artifactId>transport-rest-servlet</artifactId>
 
 	<dependencies>
 		<dependency>
@@ -34,7 +34,7 @@
 
 		<dependency>
 			<groupId>io.servicecomb</groupId>
-			<artifactId>cse-transport-rest-client</artifactId>
+			<artifactId>transport-rest-client</artifactId>
 		</dependency>
 
 		<dependency>
