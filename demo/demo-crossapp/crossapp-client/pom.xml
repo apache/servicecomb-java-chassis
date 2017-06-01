@@ -33,11 +33,11 @@
 		</dependency>
 		<dependency>
 			<groupId>io.servicecomb</groupId>
-			<artifactId>cse-provider-pojo</artifactId>
+			<artifactId>provider-pojo</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>io.servicecomb</groupId>
-			<artifactId>cse-provider-springmvc</artifactId>
+			<artifactId>provider-springmvc</artifactId>
 		</dependency>
 	</dependencies>
 
