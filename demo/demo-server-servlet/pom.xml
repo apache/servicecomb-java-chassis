@@ -30,7 +30,7 @@
 	<dependencies>
 		<dependency>
 			<groupId>io.servicecomb</groupId>
-			<artifactId>cse-transport-rest-servlet</artifactId>
+			<artifactId>transport-rest-servlet</artifactId>
 		</dependency>
 
 		<dependency>
@@ -39,7 +39,7 @@
 			<exclusions>
 				<exclusion>
 					<groupId>io.servicecomb</groupId>
-					<artifactId>cse-transport-rest-vertx</artifactId>
+					<artifactId>transport-rest-vertx</artifactId>
 				</exclusion>
 			</exclusions>
 		</dependency>

@@ -69,15 +69,15 @@
 		</dependency>
 		<dependency>
 			<groupId>io.servicecomb</groupId>
-			<artifactId>cse-transport-highway</artifactId>
+			<artifactId>transport-highway</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>io.servicecomb</groupId>
-			<artifactId>cse-transport-grpc</artifactId>
+			<artifactId>transport-grpc</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>io.servicecomb</groupId>
-			<artifactId>cse-transport-rest-vertx</artifactId>
+			<artifactId>transport-rest-vertx</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>javax.servlet</groupId>

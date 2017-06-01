@@ -1080,7 +1080,7 @@
 			</dependency>
 			<dependency>
 				<groupId>io.servicecomb</groupId>
-				<artifactId>cse-transport-grpc</artifactId>
+				<artifactId>transport-grpc</artifactId>
 				<version>${servicecomb.version}</version>
 			</dependency>
 			<dependency>
@@ -1120,17 +1120,17 @@
 			</dependency>
 			<dependency>
 				<groupId>io.servicecomb</groupId>
-				<artifactId>cse-transport-rest-client</artifactId>
+				<artifactId>transport-rest-client</artifactId>
 				<version>${servicecomb.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>io.servicecomb</groupId>
-				<artifactId>cse-transport-rest-vertx</artifactId>
+				<artifactId>transport-rest-vertx</artifactId>
 				<version>${servicecomb.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>io.servicecomb</groupId>
-				<artifactId>cse-transport-rest-servlet</artifactId>
+				<artifactId>transport-rest-servlet</artifactId>
 				<version>${servicecomb.version}</version>
 			</dependency>
 			<dependency>
@@ -1210,7 +1210,7 @@
 			</dependency>
 			<dependency>
 				<groupId>io.servicecomb</groupId>
-				<artifactId>cse-transport-highway</artifactId>
+				<artifactId>transport-highway</artifactId>
 				<version>${servicecomb.version}</version>
 			</dependency>
 			<dependency>
