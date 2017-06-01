@@ -23,7 +23,7 @@
 		<version>0.1.0-SNAPSHOT</version>
 	</parent>
 
-	<artifactId>cse-handler-loadbalance</artifactId>
+	<artifactId>handler-loadbalance</artifactId>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
