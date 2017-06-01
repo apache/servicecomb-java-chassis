@@ -127,7 +127,7 @@
 		<module>foundation-config</module>
 
 		<module>common-javassist</module>
-		<module>cse-swagger</module>
+		<module>swagger</module>
 
 		<module>common-protobuf</module>
 
