@@ -1115,7 +1115,7 @@
 			</dependency>
 			<dependency>
 				<groupId>io.servicecomb</groupId>
-				<artifactId>cse-common-rest</artifactId>
+				<artifactId>common-rest</artifactId>
 				<version>${servicecomb.version}</version>
 			</dependency>
 			<dependency>
@@ -1135,12 +1135,12 @@
 			</dependency>
 			<dependency>
 				<groupId>io.servicecomb</groupId>
-				<artifactId>cse-common-protobuf</artifactId>
+				<artifactId>common-protobuf</artifactId>
 				<version>${servicecomb.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>io.servicecomb</groupId>
-				<artifactId>cse-common-javassist</artifactId>
+				<artifactId>common-javassist</artifactId>
 				<version>${servicecomb.version}</version>
 			</dependency>
 			<dependency>
