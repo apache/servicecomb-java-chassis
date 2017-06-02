@@ -20,7 +20,7 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>io.servicecomb</groupId>
-	<artifactId>cse-dependency</artifactId>
+	<artifactId>java-chassis-dependency</artifactId>
 	<packaging>pom</packaging>
 	<version>0.1.0-SNAPSHOT</version>
 

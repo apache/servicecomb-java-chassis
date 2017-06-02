@@ -67,8 +67,8 @@
 		<dependencies>
 			<dependency>
 				<groupId>io.servicecomb</groupId>
-				<artifactId>cse-dependency</artifactId>
-				<version>0.1.0-SNAPSHOT</version>
+				<artifactId>java-chassis-dependency</artifactId>
+				<version>${servicecomb.version}</version>
 				<type>pom</type>
 				<scope>import</scope>
 			</dependency>
