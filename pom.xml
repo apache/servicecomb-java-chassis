@@ -144,7 +144,7 @@
 		<module>handler-bizkeeper</module>
 		<module>handler-flowcontrol-qps</module>
 
-		<module>serviceregistry</module>
+		<module>service-registry</module>
 
 		<module>provider-jaxrs</module>
 		<module>provider-pojo</module>

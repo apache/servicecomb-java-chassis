@@ -111,7 +111,7 @@
         </dependency>
         <dependency>
             <groupId>io.servicecomb</groupId>
-            <artifactId>cse-serviceregistry</artifactId>
+            <artifactId>service-registry</artifactId>
         </dependency>
         <dependency>
             <groupId>io.servicecomb</groupId>
