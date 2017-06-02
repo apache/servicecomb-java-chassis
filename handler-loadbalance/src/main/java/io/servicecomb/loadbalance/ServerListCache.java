@@ -21,22 +21,8 @@ import io.servicecomb.core.endpoint.AbstractEndpointsCache;
 import io.servicecomb.serviceregistry.cache.CacheEndpoint;
 import com.netflix.loadbalancer.Server;
 
-/**
- * <一句话功能简述>
- * <功能详细描述>
- *
- * @version  [版本号, 2017年1月26日]
- * @see  [相关类/方法]
- * @since  [产品/模块版本]
- */
 public class ServerListCache extends AbstractEndpointsCache<Server> {
-    /**
-     * <构造函数>
-     * @param appId
-     * @param microserviceName
-     * @param microserviceVersionRule
-     * @param transportName [参数说明]
-     */
+
     public ServerListCache(String appId, String microserviceName, String microserviceVersionRule,
             String transportName) {
         super(appId, microserviceName, microserviceVersionRule, transportName);
