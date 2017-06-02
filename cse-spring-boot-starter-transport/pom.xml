@@ -23,7 +23,7 @@
 		<version>0.1.0-SNAPSHOT</version>
 	</parent>
 
-	<artifactId>cse-spring-boot-starter-transport</artifactId>
+	<artifactId>spring-boot-starter-transport</artifactId>
 
 	<properties>
 		<spring-boot.version>1.4.5.RELEASE</spring-boot.version>
