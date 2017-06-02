@@ -56,11 +56,11 @@
 	<dependencies>
 		<dependency>
 			<groupId>io.servicecomb</groupId>
-			<artifactId>cse-spring-boot-starter-transport</artifactId>
+			<artifactId>spring-boot-starter-transport</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>io.servicecomb</groupId>
-			<artifactId>cse-spring-boot-starter-configuration</artifactId>
+			<artifactId>spring-boot-starter-configuration</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
