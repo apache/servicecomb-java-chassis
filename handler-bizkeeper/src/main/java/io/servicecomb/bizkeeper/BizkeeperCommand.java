@@ -29,9 +29,6 @@ import rx.Observable;
 /**
  * 接管调用链的处理流程，处理完成后，将结果交给调用链。额外还提供了请求缓存的功能和容错/降级处理能力。
  *
- * @version  [版本号, 2016年12月17日]
- * @see  [相关类/方法]
- * @since  [产品/模块版本]
  */
 public abstract class BizkeeperCommand extends HystrixObservableCommand<Response> {
     private static final Logger LOG = LoggerFactory.getLogger(BizkeeperCommand.class);

@@ -21,9 +21,6 @@ import com.netflix.hystrix.strategy.concurrency.HystrixRequestContext;
 /**
  * 使用缓存功能的时候，需要首先使用BizkeeperRequestContext来初始化上下文
  *
- * @version  [版本号, 2016年12月17日]
- * @see  [相关类/方法]
- * @since  [产品/模块版本]
  */
 public final class BizkeeperRequestContext {
     private HystrixRequestContext context;

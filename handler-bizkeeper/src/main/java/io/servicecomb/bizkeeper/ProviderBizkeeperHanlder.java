@@ -23,9 +23,6 @@ import com.netflix.hystrix.HystrixObservableCommand;
 /**
  * 服务端调用链处理流程
  *
- * @version  [版本号, 2016年12月17日]
- * @see  [相关类/方法]
- * @since  [产品/模块版本]
  */
 public class ProviderBizkeeperHanlder extends BizkeeperHandler {
     private static final String COMMAND_GROUP = "Provider";

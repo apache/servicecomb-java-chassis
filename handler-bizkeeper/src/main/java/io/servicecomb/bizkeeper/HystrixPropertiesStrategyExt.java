@@ -30,9 +30,6 @@ import com.netflix.hystrix.strategy.properties.HystrixPropertiesStrategy;
  * 参考：HystrixCircuitBreaker.Factory.getInstance(commandKey, groupKey,
  * properties, metrics)
  *
- * @version [版本号, 2017年2月13日]
- * @see [相关类/方法]
- * @since [产品/模块版本]
  */
 public final class HystrixPropertiesStrategyExt extends HystrixPropertiesStrategy {
 

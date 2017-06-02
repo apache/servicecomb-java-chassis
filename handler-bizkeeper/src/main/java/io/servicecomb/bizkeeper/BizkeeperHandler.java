@@ -33,9 +33,6 @@ import rx.Observable;
 /**
  * 提供createBizkeeperCommand抽象接口来创建不同的处理链实例。
  *
- * @version  [版本号, 2016年12月17日]
- * @see  [相关类/方法]
- * @since  [产品/模块版本]
  */
 public abstract class BizkeeperHandler extends AbstractHandler {
     private static final Logger LOG = LoggerFactory.getLogger(BizkeeperHandler.class);
