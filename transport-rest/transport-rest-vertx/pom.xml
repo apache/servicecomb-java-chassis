@@ -22,7 +22,7 @@
 	<parent>
 		<groupId>io.servicecomb</groupId>
 		<artifactId>cse-transport-rest</artifactId>
-		<version>0.1.0-SNAPSHOT</version>
+		<version>0.1.0-m1</version>
 	</parent>
 	<artifactId>transport-rest-vertx</artifactId>
 
