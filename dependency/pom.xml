@@ -22,10 +22,10 @@
 	<groupId>io.servicecomb</groupId>
 	<artifactId>java-chassis-dependency</artifactId>
 	<packaging>pom</packaging>
-	<version>0.1.0-m1</version>
+	<version>0.1.0-SNAPSHOT</version>
 
 	<properties>
-		<servicecomb.version>0.1.0-m1</servicecomb.version>
+		<servicecomb.version>0.1.0-SNAPSHOT</servicecomb.version>
 		<jackson.version>2.8.1</jackson.version>
 		<vertx.version>3.3.3</vertx.version>
 		<tec.zkclient.version>0.8</tec.zkclient.version>
