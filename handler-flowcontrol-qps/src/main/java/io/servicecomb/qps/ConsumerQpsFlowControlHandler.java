@@ -27,7 +27,7 @@ import io.servicecomb.core.handler.impl.AbstractHandler;
  * consumer端针对调用目标的qps控制
  * 支持microservice、schema、operation三个级别的控制
  *
- * @versi*/
+ */
 public class ConsumerQpsFlowControlHandler extends AbstractHandler {
     private ConsumerQpsControllerManager qpsControllerMgr = new ConsumerQpsControllerManager();
 

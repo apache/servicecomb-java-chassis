@@ -36,9 +36,6 @@ import com.netflix.config.DynamicProperty;
  * schema级独立的qpsController统计时，并不会导致microservice级别的统计也改变，operation级别规则也相同
  * 即：统计只在qpsController实例内部生效，不会产生实例间的关联
  *
- * @version  [版本号, 2017年3月16日]
- * @see  [相关类/方法]
- * @since  [产品/模块版本]
  */
 public class ConsumerQpsControllerManager extends AbstractObjectManager<OperationMeta, String, QpsController> {
     private static final Logger LOGGER = LoggerFactory.getLogger(ConsumerQpsControllerManager.class);
