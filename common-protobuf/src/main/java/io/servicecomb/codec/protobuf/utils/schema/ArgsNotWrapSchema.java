@@ -29,10 +29,7 @@ import io.protostuff.Schema;
  * @since  [产品/模块版本]
  */
 public class ArgsNotWrapSchema extends AbstractWrapSchema {
-    /**
-     * <构造函数>
-     * @param schema [参数说明]
-     */
+
     @SuppressWarnings("unchecked")
     public ArgsNotWrapSchema(Schema<?> schema) {
         this.schema = (Schema<Object>) schema;

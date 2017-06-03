@@ -60,18 +60,12 @@ public class Invocation extends SwaggerInvocation {
     // 同步模式：避免应答在网络线程中处理解码等等业务级逻辑
     private Executor responseExecutor;
 
-    /**
-     * <构造函数> [参数说明]
-     */
     public Invocation(ReferenceConfig referenceConfig, OperationMeta operationMeta, Object[] swaggerArguments) {
         this.invocationType = InvocationType.CONSUMER;
         this.referenceConfig = referenceConfig;
         init(operationMeta, swaggerArguments);
     }
 
-    /**
-     * <构造函数> [参数说明]
-     */
     public Invocation(Endpoint endpoint, OperationMeta operationMeta, Object[] swaggerArguments) {
         this.invocationType = InvocationType.PRODUCER;
         this.endpoint = endpoint;

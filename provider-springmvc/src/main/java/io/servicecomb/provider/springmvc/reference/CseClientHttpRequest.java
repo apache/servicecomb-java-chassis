@@ -70,11 +70,6 @@ public class CseClientHttpRequest extends OutputStream implements ClientHttpRequ
     public CseClientHttpRequest() {
     }
 
-    /**
-     * <构造函数>
-     * @param params
-     * @param body [参数说明]
-     */
     public CseClientHttpRequest(URI uri, HttpMethod method) {
         this.uri = uri;
         this.method = method;

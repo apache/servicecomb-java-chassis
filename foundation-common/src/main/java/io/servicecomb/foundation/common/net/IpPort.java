@@ -35,16 +35,10 @@ public class IpPort {
 
     private final Object lock = new Object();
 
-    /**
-     * <构造函数> [参数说明]
-     */
     public IpPort() {
 
     }
 
-    /**
-     * <构造函数> [参数说明]
-     */
     public IpPort(String hostOrIp, int port) {
         this.hostOrIp = hostOrIp;
         this.port = port;

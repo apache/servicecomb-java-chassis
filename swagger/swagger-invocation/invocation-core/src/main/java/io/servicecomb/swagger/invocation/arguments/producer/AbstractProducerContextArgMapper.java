@@ -31,9 +31,6 @@ import io.servicecomb.swagger.invocation.arguments.ArgumentMapper;
 public abstract class AbstractProducerContextArgMapper implements ArgumentMapper {
     protected int producerArgIdx;
 
-    /**
-     * <构造函数> [参数说明]
-     */
     public AbstractProducerContextArgMapper(int producerArgIdx) {
         this.producerArgIdx = producerArgIdx;
     }

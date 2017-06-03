@@ -38,9 +38,6 @@ import io.servicecomb.foundation.common.CommonThread;
 public class RegistryThread extends CommonThread {
     private boolean registerSuccess = false;
 
-    /**
-     * <构造函数> [参数说明]
-     */
     public RegistryThread() {
         super();
         setName("RegistryThread");

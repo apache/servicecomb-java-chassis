@@ -31,10 +31,6 @@ import io.servicecomb.foundation.common.config.ConfigLoader;
 public abstract class AbstractLoader implements ConfigLoader {
     protected List<String> locationPatternList;
 
-    /**
-     * <构造函数>
-     * @param locationPatternList List<String>
-     */
     public AbstractLoader(List<String> locationPatternList) {
         this.locationPatternList = locationPatternList;
     }

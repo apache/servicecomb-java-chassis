@@ -49,10 +49,6 @@ public class MicroserviceMeta extends CommonService<OperationMeta> {
 
     private Map<String, Object> extData = new ConcurrentHashMap<>();
 
-    /**
-     * <构造函数>
-     * @param microserviceName [参数说明]
-     */
     public MicroserviceMeta(String microserviceName) {
         classLoader = Thread.currentThread().getContextClassLoader();
         parseMicroserviceName(microserviceName);

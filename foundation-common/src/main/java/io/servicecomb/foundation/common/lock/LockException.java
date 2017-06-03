@@ -29,26 +29,14 @@ public class LockException extends RuntimeException {
      */
     private static final long serialVersionUID = -6761470821175384480L;
 
-    /**
-     * <默认构造函数>
-     */
     public LockException() {
         super();
     }
 
-    /**
-     * 构造函数
-     * @param msg String
-     * @param throwable throwable
-     */
     public LockException(String msg, Throwable throwable) {
         super(msg, throwable);
     }
 
-    /**
-     * 构造函数
-     * @param msg String
-     */
     public LockException(String msg) {
         super(msg);
     }

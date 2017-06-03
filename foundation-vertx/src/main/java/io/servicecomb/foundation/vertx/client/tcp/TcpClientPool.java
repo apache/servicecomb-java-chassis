@@ -43,12 +43,6 @@ public class TcpClientPool {
     // key为address
     private Map<String, TcpClient> tcpClientMap = new ConcurrentHashMap<>();
 
-    /**
-     * <构造函数>
-     * @param context
-     * @param netClient
-     * @param context [参数说明]
-     */
     public TcpClientPool(TcpClientConfig clientConfig, Context context, NetClient netClient) {
         this.clientConfig = clientConfig;
         this.context = context;

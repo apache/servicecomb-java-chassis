@@ -28,13 +28,6 @@ import com.netflix.loadbalancer.ServerList;
 public class CseServerList implements ServerList<Server> {
     private ServerListCache serverListCache;
 
-    /**
-     * 构造函数
-     * @param appId
-     * @param microserviceName
-     * @param microserviceVersionRule
-     * @param transportName 可能为""，表示走任意健康的地址即可
-     */
     public CseServerList(String appId, String microserviceName, String microserviceVersionRule,
             String transportName) {
         serverListCache = new ServerListCache(appId, microserviceName, microserviceVersionRule, transportName);

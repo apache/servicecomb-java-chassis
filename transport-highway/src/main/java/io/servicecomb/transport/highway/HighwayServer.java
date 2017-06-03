@@ -21,11 +21,7 @@ import io.servicecomb.foundation.vertx.server.TcpServer;
 import io.servicecomb.foundation.vertx.server.TcpServerConnection;
 
 public class HighwayServer extends TcpServer {
-    /**
-     * <构造函数>
-     * @param endpointObject
-     * @param tcpBufferHandler [参数说明]
-     */
+
     public HighwayServer(URIEndpointObject endpointObject) {
         super(endpointObject);
     }

@@ -67,9 +67,6 @@ public class ServicePathManager {
         microserviceMeta.putExtData(REST_PATH_MANAGER, this);
     }
 
-    /**
-     * <构造函数> [参数说明]
-     */
     public ServicePathManager(MicroserviceMeta microserviceMeta) {
         this.microserviceMeta = microserviceMeta;
     }

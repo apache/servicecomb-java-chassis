@@ -33,9 +33,6 @@ import com.fasterxml.jackson.databind.ObjectReader;
 public class StandardObjectReader extends ObjectReader {
     private static final long serialVersionUID = -8162644250351645123L;
 
-    /**
-     * <构造函数> [参数说明]
-     */
     public StandardObjectReader(ObjectReader base) {
         super(base, base.getConfig());
     }

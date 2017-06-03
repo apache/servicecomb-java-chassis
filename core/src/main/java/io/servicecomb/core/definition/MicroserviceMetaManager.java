@@ -35,9 +35,6 @@ public class MicroserviceMetaManager extends RegisterManager<String, Microservic
 
     private final Object lock = new Object();
 
-    /**
-     * <构造函数> [参数说明]
-     */
     public MicroserviceMetaManager() {
         super(MICROSERVICE_SCHEMA_MGR);
     }

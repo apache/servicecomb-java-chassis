@@ -36,19 +36,10 @@ public class XmlLoader extends AbstractLoader {
 
     private String suffix;
 
-    /**
-     * <构造函数>
-     * @param locationPatternList locationPatternList
-     */
     public XmlLoader(List<String> locationPatternList) {
         this(locationPatternList, PaaSResourceUtils.XML_SUFFIX);
     }
 
-    /**
-     * <构造函数>
-     * @param locationPatternList locationPatternList
-     * @param suffix suffix
-     */
     public XmlLoader(List<String> locationPatternList, String suffix) {
         super(locationPatternList);
         this.suffix = suffix;

@@ -26,15 +26,9 @@ package io.servicecomb.core.exception;
 public class CommonExceptionData {
     private String message;
 
-    /**
-     * <构造函数> [参数说明]
-     */
     public CommonExceptionData() {
     }
 
-    /**
-     * <构造函数> [参数说明]
-     */
     public CommonExceptionData(String message) {
         this.message = message;
     }

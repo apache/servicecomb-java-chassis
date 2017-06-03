@@ -33,19 +33,10 @@ import org.w3c.dom.Element;
 public class IdXmlLoader extends XmlLoader {
     private Map<String, Element> idMap = new HashMap<>();
 
-    /**
-     * <构造函数>
-     * @param locationPatternList List<String>
-     */
     public IdXmlLoader(List<String> locationPatternList) {
         super(locationPatternList);
     }
 
-    /**
-     * <构造函数>
-     * @param locationPatternList locationPatternList
-     * @param suffix suffix
-     */
     public IdXmlLoader(List<String> locationPatternList, String suffix) {
         super(locationPatternList, suffix);
     }

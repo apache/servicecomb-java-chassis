@@ -29,9 +29,7 @@ import org.springframework.web.client.RestTemplate;
  * @since  [产品/模块版本]
  */
 public class CseRestTemplate extends RestTemplate {
-    /**
-     * <构造函数> [参数说明]
-     */
+
     public CseRestTemplate() {
         setMessageConverters(Arrays.asList(new CseHttpMessageConverter()));
         setRequestFactory(new CseClientHttpRequestFactory());

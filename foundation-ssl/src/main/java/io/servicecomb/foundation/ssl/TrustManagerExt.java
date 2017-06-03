@@ -55,15 +55,6 @@ public class TrustManagerExt extends X509ExtendedTrustManager {
 
     private SSLCustom custom;
 
-    /**
-     * 构造函数
-     * @param manager
-     *            原来的checker
-     * @param option
-     *            选项
-     * @param custom
-     *            自定义选项
-     */
     public TrustManagerExt(X509ExtendedTrustManager manager, SSLOption option,
             SSLCustom custom) {
         this.trustManager = manager;

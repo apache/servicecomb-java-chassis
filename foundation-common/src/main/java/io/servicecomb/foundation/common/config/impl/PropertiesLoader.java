@@ -35,10 +35,6 @@ import io.servicecomb.foundation.common.config.PaaSResourceUtils;
 public class PropertiesLoader extends AbstractLoader {
     private List<Resource> foundResList = new ArrayList<>();
 
-    /**
-     * <构造函数>
-     * @param locationPatternList locationPatternList
-     */
     public PropertiesLoader(List<String> locationPatternList) {
         super(locationPatternList);
     }

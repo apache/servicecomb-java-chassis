@@ -76,9 +76,6 @@ public class DefaultSwaggerGeneratorContext implements SwaggerGeneratorContext {
 
     protected ResponseTypeProcessor defaultResponseTypeProcessor = new DefaultResponseTypeProcessor();
 
-    /**
-     * <构造函数> [参数说明]
-     */
     public DefaultSwaggerGeneratorContext() {
         initClassAnnotationMgr();
         initMethodAnnotationMgr();

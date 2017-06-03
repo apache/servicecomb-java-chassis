@@ -29,11 +29,6 @@ public abstract class AbstractParamProcessor implements ParamValueProcessor {
 
     protected JavaType targetType;
 
-    /**
-     * <构造函数>
-     * @param paramPath
-     * @param targetType [参数说明]
-     */
     public AbstractParamProcessor(String paramPath, JavaType targetType) {
         this.paramPath = paramPath;
         this.targetType = targetType;

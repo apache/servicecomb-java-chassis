@@ -51,9 +51,6 @@ public class ModelResolverExt extends ModelResolver {
 
     private Map<Class<?>, PropertyCreator> creatorMap = new HashMap<>();
 
-    /**
-     * <构造函数>
-     */
     public ModelResolverExt() {
         super(Json.mapper());
 

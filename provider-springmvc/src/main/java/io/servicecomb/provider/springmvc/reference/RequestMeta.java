@@ -38,12 +38,6 @@ public class RequestMeta {
 
     private Map<String, String> pathParams;
 
-    /**
-     * <构造函数>
-     * @param referenceConfig
-     * @param swaggerRestOperation
-     * @param pathParams [参数说明]
-     */
     public RequestMeta(ReferenceConfig referenceConfig, RestOperationMeta swaggerRestOperation,
             Map<String, String> pathParams) {
         this.referenceConfig = referenceConfig;

@@ -33,10 +33,7 @@ import io.protostuff.Schema;
  * @since  [产品/模块版本]
  */
 public class NormalWrapSchema extends AbstractWrapSchema {
-    /**
-     * <构造函数>
-     * @param schema [参数说明]
-     */
+
     @SuppressWarnings("unchecked")
     public NormalWrapSchema(Schema<?> schema) {
         this.schema = (Schema<Object>) schema;

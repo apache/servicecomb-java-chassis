@@ -38,17 +38,10 @@ public class NamedThreadFactory implements ThreadFactory {
      */
     private String prefix;
 
-    /**
-     * <构造函数> [参数说明]
-     */
     public NamedThreadFactory() {
         this("Thread");
     }
 
-    /**
-     *<默认构造函数>
-     * @param prefix    线程名的前缀
-     */
     public NamedThreadFactory(String prefix) {
         this.prefix = prefix;
     }

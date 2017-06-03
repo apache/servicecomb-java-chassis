@@ -51,13 +51,6 @@ public abstract class AbstractEndpointsCache<ENDPOINT> {
         AbstractEndpointsCache.transportManager = transportManager;
     }
 
-    /**
-     * <构造函数>
-     * @param appId
-     * @param microserviceName
-     * @param microserviceVersionRule
-     * @param transportName 可能为""，表示走任意健康的地址即可
-     */
     public AbstractEndpointsCache(String appId, String microserviceName, String microserviceVersionRule,
             String transportName) {
         this.transportName = transportName;

@@ -38,9 +38,6 @@ public class MetricsThread extends CommonThread {
     // 这不是一个精确值，用于不关注精度的超时检测
     private static long msTick = 0;
 
-    /**
-     * <构造函数> [参数说明]
-     */
     public MetricsThread() {
         setName("metrics");
     }

@@ -36,9 +36,6 @@ public class HttpClientWithContext {
 
     private Context context;
 
-    /**
-     * <构造函数> [参数说明]
-     */
     public HttpClientWithContext(HttpClient httpClient, Context context) {
         this.httpClient = httpClient;
         this.context = context;

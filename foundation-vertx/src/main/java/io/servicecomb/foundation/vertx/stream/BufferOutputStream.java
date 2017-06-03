@@ -34,9 +34,6 @@ public class BufferOutputStream extends OutputStream {
 
     private boolean needReleaseBuffer;
 
-    /**
-     * 构造函数
-     */
     public BufferOutputStream() {
         // TODO:默认大小加配置项
         // TODO:如何与pool配合起来，vertx中默认都是unpool的，我们的阻塞模式下，申请与释放也不在一个线程，估计更用不上？
@@ -54,10 +51,6 @@ public class BufferOutputStream extends OutputStream {
         needReleaseBuffer = false;
     }
 
-    /**
-     * 构造函数
-     * @param buffer  buffer
-     */
 
     public BufferOutputStream(ByteBuf buffer) {
         this.byteBuf = buffer;

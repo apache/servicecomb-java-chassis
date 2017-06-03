@@ -39,9 +39,6 @@ public class FixedThreadExecutor implements Executor {
 
     private Map<Long, Executor> threadExectorMap = new ConcurrentHashMap<>();
 
-    /**
-     * <构造函数> [参数说明]
-     */
     public FixedThreadExecutor() {
         executorList.add(Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors()));
         executorList.add(Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors()));

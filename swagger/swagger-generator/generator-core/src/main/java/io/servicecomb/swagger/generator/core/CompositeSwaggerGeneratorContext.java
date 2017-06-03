@@ -39,9 +39,6 @@ public class CompositeSwaggerGeneratorContext {
 
     private List<SwaggerGeneratorContext> contextList;
 
-    /**
-     * <构造函数> [参数说明]
-     */
     public CompositeSwaggerGeneratorContext() {
         contextList = SPIServiceUtils.getAllService(SwaggerGeneratorContext.class);
 

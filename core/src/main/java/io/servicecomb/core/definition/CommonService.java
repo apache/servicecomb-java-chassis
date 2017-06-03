@@ -33,9 +33,6 @@ public class CommonService<OPERATION> {
 
     protected RegisterManager<String, OPERATION> operationMgr;
 
-    /**
-     * <构造函数> [参数说明]
-     */
     public void createOperationMgr(String operationMgrName) {
         operationMgr = new RegisterManager<>(operationMgrName);
     }

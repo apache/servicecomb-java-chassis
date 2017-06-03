@@ -30,13 +30,6 @@ import io.servicecomb.serviceregistry.cache.CacheEndpoint;
  */
 public class EndpointsCache extends AbstractEndpointsCache<Endpoint> {
 
-    /**
-     * <构造函数>
-     * @param appId
-     * @param microserviceName
-     * @param microserviceVersionRule
-     * @param transportName [参数说明]
-     */
     public EndpointsCache(String appId, String microserviceName, String microserviceVersionRule,
             String transportName) {
         super(appId, microserviceName, microserviceVersionRule, transportName);

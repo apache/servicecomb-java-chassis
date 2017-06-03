@@ -27,18 +27,10 @@ package io.servicecomb.foundation.common;
 public class CommonThread extends Thread {
     protected volatile boolean shutdown;
 
-    /**
-     * <构造函数> [参数说明]
-     */
     public CommonThread() {
         super();
     }
 
-    /**
-     * <构造函数>
-     * @param name name
-     * @param stackSize stackSize
-     */
     public CommonThread(String name, long stackSize) {
         super(null, null, name, stackSize);
     }

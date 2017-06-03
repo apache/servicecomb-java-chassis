@@ -36,9 +36,6 @@ public class SyncResponseExecutor implements Executor {
 
     private Response response;
 
-    /**
-     * <构造函数> [参数说明]
-     */
     public SyncResponseExecutor() {
         latch = new CountDownLatch(1);
     }

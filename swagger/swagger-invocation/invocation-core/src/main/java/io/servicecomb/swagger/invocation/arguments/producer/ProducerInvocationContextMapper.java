@@ -29,9 +29,7 @@ import io.servicecomb.swagger.invocation.SwaggerInvocationContext;
  * @since  [产品/模块版本]
  */
 public class ProducerInvocationContextMapper extends AbstractProducerContextArgMapper {
-    /**
-     * <构造函数> [参数说明]
-     */
+
     public ProducerInvocationContextMapper(int producerIdx) {
         super(producerIdx);
     }

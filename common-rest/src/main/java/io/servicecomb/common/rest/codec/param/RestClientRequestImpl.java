@@ -48,9 +48,6 @@ public class RestClientRequestImpl implements RestClientRequest {
 
     protected Buffer bodyBuffer;
 
-    /**
-     * <构造函数> [参数说明]
-     */
     public RestClientRequestImpl(HttpClientRequest request) {
         this.request = request;
     }

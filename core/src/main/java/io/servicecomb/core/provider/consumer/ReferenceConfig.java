@@ -38,12 +38,6 @@ public class ReferenceConfig {
     public ReferenceConfig() {
     }
 
-    /**
-     * <构造函数>
-     * @param microserviceName
-     * @param microserviceVersionRule
-     * @param transport [参数说明]
-     */
     public ReferenceConfig(String microserviceName, String microserviceVersionRule, String transport) {
         this.microserviceMeta =
             CseContext.getInstance().getConsumerSchemaFactory().getOrCreateConsumer(microserviceName,

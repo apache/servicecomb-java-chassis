@@ -34,9 +34,6 @@ import com.fasterxml.jackson.databind.ObjectWriter;
 public class StandardObjectWriter extends ObjectWriter {
     private static final long serialVersionUID = -8162644250351645123L;
 
-    /**
-     * <构造函数> [参数说明]
-     */
     public StandardObjectWriter(ObjectWriter base) {
         super(base, base.getConfig());
     }

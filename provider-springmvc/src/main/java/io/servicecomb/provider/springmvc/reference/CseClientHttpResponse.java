@@ -61,9 +61,6 @@ public class CseClientHttpResponse implements ClientHttpResponse {
 
     private HttpHeaders httpHeaders;
 
-    /**
-     * <构造函数> [参数说明]
-     */
     public CseClientHttpResponse(Response response) {
         this.response = response;
     }

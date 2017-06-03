@@ -33,11 +33,6 @@ public class QueryVarParamWriter extends AbstractUrlParamWriter {
     // ? or &
     private char prefix;
 
-    /**
-     * <构造函数>
-     * @param paramName
-     * @param argIndex [参数说明]
-     */
     public QueryVarParamWriter(char prefix, RestParam param) {
         this.param = param;
         this.prefix = prefix;
