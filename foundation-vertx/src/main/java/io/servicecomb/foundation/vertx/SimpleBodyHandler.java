@@ -36,10 +36,6 @@ public abstract class SimpleBodyHandler extends BodyHandlerImpl {
         }
     }
 
-    /**
-     * 检查ContentType是否支持
-     * @param context
-     */
     protected boolean checkContentType(RoutingContext context) {
         String contentType = context.request().getHeader(HttpHeaders.CONTENT_TYPE);
         if (contentTypeSupported(contentType)) {

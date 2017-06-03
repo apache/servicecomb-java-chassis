@@ -23,17 +23,11 @@ import io.servicecomb.core.Response;
 
 @Component
 public class ProducerResponseCseSame implements ProducerResponseMapper {
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public Class<?> getResponseClass() {
         return Response.class;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public Response mapResponse(StatusType status, Object response) {
         return (Response) response;

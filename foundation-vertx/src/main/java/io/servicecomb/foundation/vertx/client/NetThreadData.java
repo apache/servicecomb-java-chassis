@@ -33,34 +33,18 @@ public class NetThreadData<CLIENT_POOL> {
         pools = (CLIENT_POOL[]) new Object[poolCount];
     }
 
-    /**
-     * 获取factory的值
-     * @return 返回 factory
-     */
     public ClientPoolFactory<CLIENT_POOL> getFactory() {
         return factory;
     }
 
-    /**
-     * 获取pools的值
-     * @return 返回 pools
-     */
     public CLIENT_POOL[] getPools() {
         return pools;
     }
 
-    /**
-     * 获取bindIndex的值
-     * @return 返回 bindIndex
-     */
     public AtomicInteger getBindIndex() {
         return bindIndex;
     }
 
-    /**
-     * 在ClientPoolManager中被调用，是被锁保护的
-     * @return
-     */
     public CLIENT_POOL selectClientPool() {
         int idx = bindIndex.getAndIncrement() % pools.length;
         CLIENT_POOL clientPool = pools[idx];

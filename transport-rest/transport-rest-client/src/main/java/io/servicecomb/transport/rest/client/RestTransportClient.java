@@ -61,10 +61,6 @@ public final class RestTransportClient {
         VertxUtils.blockDeploy(vertx, HttpClientVerticle.class, deployOptions);
     }
 
-    /**
-     * 创建http client配置项
-     * @return
-     */
     private HttpClientOptions createHttpClientOptions() {
         HttpClientOptions httpClientOptions = new HttpClientOptions();
 

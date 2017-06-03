@@ -23,9 +23,6 @@ import org.junit.Test;
 import io.servicecomb.core.exception.ExceptionUtils;
 
 public class TestException {
-    /**
-     * Test CSE Exceptions
-     */
     @Test
     public void testCseException() {
         CseException oExeception = new CseException("500", "InternalServerError");
@@ -37,9 +34,6 @@ public class TestException {
         Assert.assertEquals("503", oExeception.getCode());
     }
 
-    /**
-     * Test ExceptionUtils
-     */
     @Test
     public void testExceptionUtils() {
         CseException oExeception = ExceptionUtils.createCseException("cse.handler.ref.not.exist", new String("test"));

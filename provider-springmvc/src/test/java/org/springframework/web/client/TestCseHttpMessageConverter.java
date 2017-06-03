@@ -30,9 +30,6 @@ import io.servicecomb.provider.springmvc.reference.CseClientHttpRequest;
 
 public class TestCseHttpMessageConverter{
 
-    /**
-     * Test Config
-     */
     @Test
     public void testAll() {
         MockUtil.getInstance().mockReflectionUtils();

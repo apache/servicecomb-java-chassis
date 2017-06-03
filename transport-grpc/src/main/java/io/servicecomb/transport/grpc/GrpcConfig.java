@@ -24,30 +24,18 @@ public final class GrpcConfig {
     private GrpcConfig() {
     }
 
-    /**
-     * 获取address的值
-     * @return 返回 address
-     */
     public static String getAddress() {
         DynamicStringProperty address =
             DynamicPropertyFactory.getInstance().getStringProperty("cse.grpc.address", null);
         return address.get();
     }
 
-    /**
-     * 获取threadCount的值
-     * @return 返回 threadCount
-     */
     public static int getThreadCount() {
         DynamicIntProperty address =
             DynamicPropertyFactory.getInstance().getIntProperty("cse.grpc.thread-count", 1);
         return address.get();
     }
 
-    /**
-     * 获取connectionPoolPerThread的值
-     * @return 返回 connectionPoolPerThread
-     */
     public static int getConnectionPoolPerThread() {
         DynamicIntProperty address =
             DynamicPropertyFactory.getInstance().getIntProperty("cse.grpc.connection-pool-per-thread", 1);

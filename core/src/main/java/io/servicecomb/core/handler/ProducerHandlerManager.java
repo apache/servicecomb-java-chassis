@@ -22,25 +22,16 @@ import io.servicecomb.core.handler.impl.ProducerOperationHandler;
 public class ProducerHandlerManager extends AbstractHandlerManager {
     public static final ProducerHandlerManager INSTANCE = new ProducerHandlerManager();
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected String getName() {
         return "Provider";
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected String getInnerDefaultChainDef() {
         return "";
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected Handler getLastHandler() {
         return ProducerOperationHandler.INSTANCE;

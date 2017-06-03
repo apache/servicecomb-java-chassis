@@ -54,9 +54,6 @@ public class GrpcTransport extends AbstractTransport {
 
     private ClientPoolManager<HttpClientWithContext> clientMgr = new ClientPoolManager<>();
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public String getName() {
         return GRPC;
@@ -93,9 +90,6 @@ public class GrpcTransport extends AbstractTransport {
         return httpClientOptions;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void send(Invocation invocation, AsyncResponse asyncResp) throws Exception {
         HttpClientWithContext httpClientWithContext = clientMgr.findThreadBindClientPool();

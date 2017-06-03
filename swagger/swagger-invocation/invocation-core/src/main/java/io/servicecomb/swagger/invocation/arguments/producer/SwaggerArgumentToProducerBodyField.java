@@ -40,9 +40,6 @@ public class SwaggerArgumentToProducerBodyField implements ArgumentMapper {
         this.fieldMap = fieldMap;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void mapArgument(SwaggerInvocation invocation, Object[] producerArguments) {
         Object body = invocation.getSwaggerArgument(swaggerIdx);

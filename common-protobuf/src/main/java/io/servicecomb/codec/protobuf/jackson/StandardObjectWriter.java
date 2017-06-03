@@ -30,9 +30,6 @@ public class StandardObjectWriter extends ObjectWriter {
         super(base, base.getConfig());
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void writeValue(OutputStream out,
             Object value) throws IOException, JsonGenerationException, JsonMappingException {

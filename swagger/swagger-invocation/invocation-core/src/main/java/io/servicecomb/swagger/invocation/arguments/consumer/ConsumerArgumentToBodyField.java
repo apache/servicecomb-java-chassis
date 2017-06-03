@@ -46,9 +46,6 @@ public class ConsumerArgumentToBodyField implements ArgumentMapper {
         return swaggerParamType;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void mapArgument(SwaggerInvocation invocation, Object[] consumerArguments) {
         try {

@@ -40,10 +40,6 @@ public class TestLock {
         Assert.assertEquals("throwableError", oLockException.getMessage());
     }
 
-    /**
-     * Test AbstractDistributedLock
-     * @throws InterruptedException 
-     */
     @Test
     public void testAbstractDistributedLock() throws InterruptedException {
         AbstractDistributedLock oLock = new AbstractDistributedLock() {

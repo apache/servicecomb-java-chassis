@@ -20,17 +20,11 @@ import io.servicecomb.provider.pojo.InstanceFactory;
 import io.servicecomb.provider.pojo.PojoConst;
 
 public class PojoInstanceFactory implements InstanceFactory {
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public String getImplName() {
         return PojoConst.POJO;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public Object create(String className) {
         try {

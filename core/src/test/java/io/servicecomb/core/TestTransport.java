@@ -85,10 +85,6 @@ public class TestTransport {
         Assert.assertEquals("rest://127.0.0.1:8080", oEndpoint.getEndpoint().toString());
     }
 
-    /**
-     * TestAbstractTransport
-     * @throws Exception 
-     */
     @Test
     public void testAbstractTransport(@Mocked Microservice microservice) throws Exception {
 

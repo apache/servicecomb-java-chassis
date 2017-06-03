@@ -34,9 +34,6 @@ import io.servicecomb.core.definition.loader.SchemaListener;
 public class RestEngineSchemaListener implements SchemaListener {
     private static final Logger LOGGER = LoggerFactory.getLogger(RestEngineSchemaListener.class);
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void onSchemaLoaded(SchemaMeta... schemaMetas) {
         // 此时相应的ServicePathManager可能正在被使用，为避免太高的复杂度，使用copy on write逻辑

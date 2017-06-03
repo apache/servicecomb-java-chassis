@@ -25,9 +25,6 @@ public abstract class AbstractConsumerProvider implements ConsumerProvider {
     @Inject
     protected MicroserviceMetaManager microserviceMetaManager;
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void init() throws Exception {
     }

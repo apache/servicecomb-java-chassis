@@ -19,18 +19,10 @@ package io.servicecomb.demo.server;
 public class TestResponse {
     private User user;
 
-    /**
-     * 获取user的值
-     * @return 返回 user
-     */
     public User getUser() {
         return user;
     }
 
-    /**
-     * 对user进行赋值
-     * @param user user的新值
-     */
     public void setUser(User user) {
         this.user = user;
     }

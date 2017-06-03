@@ -93,252 +93,126 @@ public final class SSLOption {
 
     private String sslCustomClass;
 
-    /**
-     * 设置协议列表
-     * @param protocols 协议列表
-     */
     public void setProtocols(String protocols) {
         this.protocols = protocols;
     }
 
-    /**
-     * 设置算法列表
-     * @param ciphers 算法列表
-     */
     public void setCiphers(String ciphers) {
         this.ciphers = ciphers;
     }
 
-    /**
-     * 设置是否认证对端
-     * @param authPeer 是否认证对端
-     */
     public void setAuthPeer(boolean authPeer) {
         this.authPeer = authPeer;
     }
 
-    /**
-     * 设置是否检查CN（按照输入的主机名检查）
-     * @param checkCNHost 是否检查CN
-     */
     public void setCheckCNHost(boolean checkCNHost) {
         this.checkCNHost = checkCNHost;
     }
 
-    /**
-     * 设置是否检查CN（按照白名单文件检查）
-     * @param checkCNWhite 是否检查CN
-     */
     public void setCheckCNWhite(boolean checkCNWhite) {
         this.checkCNWhite = checkCNWhite;
     }
 
-    /**
-     * 按照白名单文件检查CN的文件
-     * @param checkCNWhiteFile 文件
-     */
     public void setCheckCNWhiteFile(String checkCNWhiteFile) {
         this.checkCNWhiteFile = checkCNWhiteFile;
     }
 
-    /**
-     * 是否允许重协商
-     * @param allowRenegociate 是否允许重协商
-     */
     public void setAllowRenegociate(boolean allowRenegociate) {
         this.allowRenegociate = allowRenegociate;
     }
 
-    /**
-     * 证书所在的目录，比如internal等
-     * @param storePath 证书所在的目录，
-     */
     public void setStorePath(String storePath) {
         this.storePath = storePath;
     }
 
-    /**
-     * 设置信任证书
-     * @param trustStore 信任证书
-     */
     public void setTrustStore(String trustStore) {
         this.trustStore = trustStore;
     }
 
-    /**
-     * 设置信任证书类型
-     * @param trustStoreType 信任证书类型
-     */
     public void setTrustStoreType(String trustStoreType) {
         this.trustStoreType = trustStoreType;
     }
 
-    /**
-     * 设置信任证书密码
-     * @param trustStoreValue 信任证书密码
-     */
     public void setTrustStoreValue(String trustStoreValue) {
         this.trustStoreValue = trustStoreValue;
     }
 
-    /**
-     * 设置身份证书
-     * @param keyStore 身份证书
-     */
     public void setKeyStore(String keyStore) {
         this.keyStore = keyStore;
     }
 
-    /**
-     * 设置身份证书类型
-     * @param keyStoreType 身份证书类型
-     */
     public void setKeyStoreType(String keyStoreType) {
         this.keyStoreType = keyStoreType;
     }
 
-    /**
-     * 设置身份证书密码
-     * @param keyStoreValue 身份证书密码
-     */
     public void setKeyStoreValue(String keyStoreValue) {
         this.keyStoreValue = keyStoreValue;
     }
 
-    /**
-     * 设置吊销证书
-     * @param crl 吊销证书
-     */
     public void setCrl(String crl) {
         this.crl = crl;
     }
 
-    /**
-     * 支持的协议列表
-     * @return 支持的协议列表
-     */
     public String getProtocols() {
         return protocols;
     }
 
-    /**
-     * 支持的算法列表
-     * @return 支持的算法列表
-     */
     public String getCiphers() {
         return ciphers;
     }
 
-    /**
-     * 是否认证对端
-     * @return 是否认证对端
-     */
     public boolean isAuthPeer() {
         return authPeer;
     }
 
-    /**
-     * 是否检查CN(通过ＩＰ匹配)
-     * @return 是否检查CN
-     */
     public boolean isCheckCNHost() {
         return checkCNHost;
     }
 
-    /**
-     * 是否检查CN(通过白名单匹配)
-     * @return 是否检查CN
-     */
     public boolean isCheckCNWhite() {
         return checkCNWhite;
     }
 
-    /**
-     * 白名单文件，当isCheckCNWhite为true时有效
-     * @return 白名单文件
-     */
     public String getCheckCNWhiteFile() {
         return checkCNWhiteFile;
     }
 
-    /**
-     * 是否关闭重协商
-     * @return 是否关闭重协商
-     */
     public boolean isAllowRenegociate() {
         return allowRenegociate;
     }
 
-    /**
-     * 获取证书子目录
-     * @return storePath
-     */
     public String getStorePath() {
         return storePath;
     }
 
-    /**
-     * 信任证书
-     * @return 信任证书
-     */
     public String getTrustStore() {
         return trustStore;
     }
 
-    /**
-     * 信任证书
-     * @return 信任证书
-     */
     public String getTrustStoreType() {
         return trustStoreType;
     }
 
-    /**
-     * 信任证书
-     * @return 信任证书
-     */
     public String getTrustStoreValue() {
         return trustStoreValue;
     }
 
-    /**
-     * 身份证书
-     * @return 身份证书
-     */
     public String getKeyStore() {
         return keyStore;
     }
 
-    /**
-     * 身份证书
-     * @return 身份证书
-     */
     public String getKeyStoreType() {
         return keyStoreType;
     }
 
-    /**
-     * 身份证书
-     * @return 身份证书
-     */
     public String getKeyStoreValue() {
         return keyStoreValue;
     }
 
-    /**
-     * 吊销证书。
-     * @return 吊销证书。
-     */
     public String getCrl() {
         return crl;
     }
 
-    /**
-     * 根据传入的路径读取SSL选项。
-     * @param optionfile
-     *            配置文件路径。
-     * @return 配置信息
-     */
     public static SSLOption build(String optionfile) {
         File file = new File(optionfile);
         if (!file.isFile()) {

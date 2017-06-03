@@ -22,9 +22,6 @@ import io.servicecomb.swagger.generator.core.ParameterAnnotationProcessor;
 import io.servicecomb.swagger.generator.core.utils.ParamUtils;
 
 public class RequestBodyAnnotationProcessor implements ParameterAnnotationProcessor {
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void process(Object annotation, OperationGenerator operationGenerator, int paramIdx) {
         PendingBodyParameter pendingBodyParameter =

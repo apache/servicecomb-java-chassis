@@ -37,9 +37,6 @@ public class TestFindInstancesResponse {
 
     List<MicroserviceInstance> oListMicroserviceInstance = null;
 
-    /**
-     * @throws java.lang.Exception
-     */
     @Before
     public void setUp() throws Exception {
         oFindInstancesResponse = new FindInstancesResponse();
@@ -47,35 +44,23 @@ public class TestFindInstancesResponse {
         oListMicroserviceInstance.add(Mockito.mock(MicroserviceInstance.class));
     }
 
-    /**
-     * @throws java.lang.Exception
-     */
     @After
     public void tearDown() throws Exception {
         oFindInstancesResponse = null;
         oListMicroserviceInstance = null;
     }
 
-    /**
-     * Test Un-Initialized Values
-     */
     @Test
     public void testDefaultValues() {
         Assert.assertNull(oFindInstancesResponse.getInstances());
     }
 
-    /**
-     * Test InitializedValues
-     */
     @Test
     public void testIntializedValues() {
         initFields(); //Initialize the Object
         Assert.assertEquals(1, oFindInstancesResponse.getInstances().size());
     }
 
-    /**
-     * Initialize the Values
-     */
     private void initFields() {
         oFindInstancesResponse.setInstances(oListMicroserviceInstance);
     }

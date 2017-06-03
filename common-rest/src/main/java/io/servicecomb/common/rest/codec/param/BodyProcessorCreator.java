@@ -41,9 +41,6 @@ public class BodyProcessorCreator implements ParamValueProcessorCreator {
             this.targetType = targetType;
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public Object getValue(RestServerRequest request) throws Exception {
             // 从payload中获取参数
@@ -60,9 +57,6 @@ public class BodyProcessorCreator implements ParamValueProcessorCreator {
             return RestObjectMapper.INSTANCE.convertValue(body, targetType);
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public void setValue(RestClientRequest clientRequest, Object arg) throws Exception {
             try (BufferOutputStream output = new BufferOutputStream()) {
@@ -71,17 +65,11 @@ public class BodyProcessorCreator implements ParamValueProcessorCreator {
             }
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public String getParameterPath() {
             return "";
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public String getProcessorType() {
             return PARAMTYPE;
@@ -94,9 +82,6 @@ public class BodyProcessorCreator implements ParamValueProcessorCreator {
             super(targetType);
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public Object getValue(RestServerRequest request) throws Exception {
             // 从payload中获取参数
@@ -113,9 +98,6 @@ public class BodyProcessorCreator implements ParamValueProcessorCreator {
             return RestObjectMapper.INSTANCE.convertValue(body, targetType);
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public void setValue(RestClientRequest clientRequest, Object arg) throws Exception {
             clientRequest.write(Buffer.buffer((String) arg));
@@ -127,9 +109,6 @@ public class BodyProcessorCreator implements ParamValueProcessorCreator {
         ParamValueProcessorCreatorManager.INSTANCE.register(PARAMTYPE, this);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public ParamValueProcessor create(String paramValue, Type genericParamType) {
         JavaType targetType = TypeFactory.defaultInstance().constructType(genericParamType);

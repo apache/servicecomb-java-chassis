@@ -24,9 +24,6 @@ import io.servicecomb.swagger.generator.core.MethodAnnotationProcessor;
 import io.servicecomb.swagger.generator.core.OperationGenerator;
 
 public class ProducesAnnotationProcessor implements MethodAnnotationProcessor {
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void process(Object annotation, OperationGenerator operationGenerator) {
         Produces produces = (Produces) annotation;

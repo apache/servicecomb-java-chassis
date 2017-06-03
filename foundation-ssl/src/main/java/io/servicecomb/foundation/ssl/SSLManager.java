@@ -43,14 +43,6 @@ public final class SSLManager {
 
     }
 
-    /**
-     * 创建SSLContext
-     * @param option
-     *            SSL选项
-     * @param custom
-     *            SSL自定义选项
-     * @return SSLContext
-     */
     public static SSLContext createSSLContext(SSLOption option, SSLCustom custom) {
         try {
             String keyStoreName = custom.getFullPath(option.getKeyStore());
@@ -103,14 +95,6 @@ public final class SSLManager {
         }
     }
 
-    /**
-     * 创建SSLSocketFactory
-     * @param option
-     *            SSL选项
-     * @param custom
-     *            SSL自定义选项
-     * @return SSLSocketFactory
-     */
     public static SSLSocketFactory createSSLSocketFactory(SSLOption option, SSLCustom custom) {
         SSLContext context = createSSLContext(option, custom);
         SSLSocketFactory factory = context.getSocketFactory();
@@ -120,14 +104,6 @@ public final class SSLManager {
                 option.getProtocols().split(","));
     }
 
-    /**
-     * 创建SSLEngine
-     * @param option
-     *            SSL选项
-     * @param custom
-     *            SSL自定义选项
-     * @return SSLEngine
-     */
     public static SSLEngine createSSLEngine(SSLOption option, SSLCustom custom) {
         SSLContext context = createSSLContext(option, custom);
         SSLEngine engine =
@@ -140,18 +116,6 @@ public final class SSLManager {
         return engine;
     }
 
-    /**
-     * 创建SSLEngine
-     * @param option
-     *            SSL选项
-     * @param custom
-     *            SSL自定义选项
-     * @param peerHost
-     *            对端IP
-     * @param peerPort
-     *            对端端口
-     * @return SSLEngine
-     */
     public static SSLEngine createSSLEngine(SSLOption option, SSLCustom custom, String peerHost, int peerPort) {
         SSLContext context = createSSLContext(option, custom);
         SSLEngine engine =
@@ -164,14 +128,6 @@ public final class SSLManager {
         return engine;
     }
 
-    /**
-     * 创建SSLServerSocket
-     * @param option
-     *            SSL选项
-     * @param custom
-     *            SSL自定义选项
-     * @return SSLServerSocket
-     */
     public static SSLServerSocket createSSLServerSocket(SSLOption option,
             SSLCustom custom) {
         try {
@@ -193,14 +149,6 @@ public final class SSLManager {
 
     }
 
-    /**
-     * 创建SSLSocket
-     * @param option
-     *            SSL选项
-     * @param custom
-     *            SSL自定义选项
-     * @return SSLSocket
-     */
     public static SSLSocket createSSLSocket(SSLOption option, SSLCustom custom) {
         try {
             SSLContext context = createSSLContext(option, custom);

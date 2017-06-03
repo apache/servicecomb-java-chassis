@@ -24,40 +24,24 @@ public final class HighwayConfig {
     private HighwayConfig() {
     }
 
-    /**
-     * 获取address的值
-     * @return 返回 address
-     */
     public static String getAddress() {
         DynamicStringProperty address =
             DynamicPropertyFactory.getInstance().getStringProperty("cse.highway.address", null);
         return address.get();
     }
 
-    /**
-     * 获取服务端threadCount的值
-     * @return 返回 threadCount
-     */
     public static int getServerThreadCount() {
         DynamicIntProperty address =
             DynamicPropertyFactory.getInstance().getIntProperty("cse.highway.server.thread-count", 1);
         return address.get();
     }
 
-    /**
-     * 获取客户端threadCount的值
-     * @return 返回 threadCount
-     */
     public static int getClientThreadCount() {
         DynamicIntProperty address =
             DynamicPropertyFactory.getInstance().getIntProperty("cse.highway.client.thread-count", 1);
         return address.get();
     }
 
-    /**
-     * 获取客户端connectionPoolPerThread的值
-     * @return 返回 connectionPoolPerThread
-     */
     public static int getClientConnectionPoolPerThread() {
         DynamicIntProperty address =
             DynamicPropertyFactory.getInstance().getIntProperty("cse.highway.client.connection-pool-per-thread", 1);

@@ -23,9 +23,6 @@ import io.servicecomb.common.rest.definition.path.PathRegExp;
 
 public class RestOperationComparator implements Serializable, Comparator<RestOperationMeta> {
 
-    /**
-     * findbugs提示需要加上该UID
-     */
     private static final long serialVersionUID = -2364909265520813678L;
 
     @Override

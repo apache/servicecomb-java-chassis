@@ -28,11 +28,6 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 @SpringBootApplication
 @EnableServiceComb
 public class JaxrsServer {
-    /**
-     * 
-     * @param args
-     * @throws Exception
-     */
     public static void main(final String[] args) throws Exception {
         SpringApplication.run(JaxrsServer.class, args);
     }

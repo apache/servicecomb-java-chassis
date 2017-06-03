@@ -40,9 +40,6 @@ public class RestProducerProvider extends AbstractProducerProvider {
         return RestConst.REST;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void init() throws Exception {
         for (ProducerMeta producerMeta : restProducers.getProducerMetaList()) {

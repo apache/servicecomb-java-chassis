@@ -32,9 +32,6 @@ public class CookieProcessorCreator implements ParamValueProcessorCreator {
             super(paramPath, targetType);
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public Object getValue(RestServerRequest request) throws Exception {
             String param = request.getCookieParam(paramPath);
@@ -45,9 +42,6 @@ public class CookieProcessorCreator implements ParamValueProcessorCreator {
             return convertValue(param, targetType);
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public void setValue(RestClientRequest clientRequest, Object arg) throws Exception {
             clientRequest.addCookie(paramPath, RestObjectMapper.INSTANCE.convertToString(arg));
@@ -63,9 +57,6 @@ public class CookieProcessorCreator implements ParamValueProcessorCreator {
         ParamValueProcessorCreatorManager.INSTANCE.register(PARAMTYPE, this);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public ParamValueProcessor create(String paramValue, Type genericParamType) {
         JavaType targetType = TypeFactory.defaultInstance().constructType(genericParamType);

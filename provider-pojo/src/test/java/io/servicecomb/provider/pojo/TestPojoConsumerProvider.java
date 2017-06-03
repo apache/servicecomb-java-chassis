@@ -35,10 +35,6 @@ public class TestPojoConsumerProvider {
 
     public String fieldTest = "test";
 
-    /**
-     * Test Init
-     * @throws Exception 
-     */
     @Test
     public void testInit() throws Exception {
         MockUtil.getInstance().mockMicroserviceMeta();

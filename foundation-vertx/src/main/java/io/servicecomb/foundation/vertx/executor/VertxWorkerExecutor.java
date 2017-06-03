@@ -22,9 +22,6 @@ import io.vertx.core.Vertx;
 
 public class VertxWorkerExecutor implements Executor {
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void execute(Runnable command) {
         Vertx.currentContext().owner().executeBlocking(future -> {

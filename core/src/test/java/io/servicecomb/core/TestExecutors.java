@@ -32,9 +32,6 @@ public class TestExecutors {
 
     String strThreadTest = "default";
 
-    /**
-     * Test FixedThreadExecutor
-     */
     @Test
     public void testFixedThreadExecutor() {
         FixedThreadExecutor oFixedThreadExecutor = new FixedThreadExecutor();

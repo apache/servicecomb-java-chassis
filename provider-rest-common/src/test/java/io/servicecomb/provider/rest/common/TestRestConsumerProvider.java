@@ -23,10 +23,6 @@ import io.servicecomb.common.rest.RestConst;
 
 public class TestRestConsumerProvider {
 
-    /**
-     * Test Init
-     * @throws Exception 
-     */
     @Test
     public void testInit() throws Exception {
         RestConsumerProvider instance = new RestConsumerProvider();

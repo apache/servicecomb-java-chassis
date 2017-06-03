@@ -29,11 +29,6 @@ import com.netflix.config.DynamicPropertyFactory;
 @SpringBootApplication
 public class PojoServer {
 
-    /**
-     * 
-     * @param args
-     * @throws Exception
-     */
     public static void main(final String[] args) throws Exception {
 
         SpringApplication.run(PojoServer.class, args);

@@ -40,9 +40,6 @@ public class TestTcpServer {
         @Override
         protected TcpServerConnection createTcpServerConnection() {
             return new TcpServerConnection() {
-                /**
-                 * {@inheritDoc}
-                 */
                 @Override
                 public void init(NetSocket netSocket) {
                     super.init(netSocket);

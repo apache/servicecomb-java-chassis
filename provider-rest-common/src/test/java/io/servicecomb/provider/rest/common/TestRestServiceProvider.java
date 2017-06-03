@@ -33,10 +33,6 @@ import mockit.MockUp;
 
 public class TestRestServiceProvider {
 
-    /**
-     * Test Init
-     * @throws Exception 
-     */
     @Test
     public void testInit() throws Exception {
         ApplicationContext context = Mockito.mock(ApplicationContext.class);
@@ -57,10 +53,6 @@ public class TestRestServiceProvider {
         Assert.assertEquals(RestConst.REST, restProducerProvider.getName());
     }
 
-    /**
-     * Test Invoke
-     * @throws Exception 
-     */
     @Test
     public void testInvoke() throws Exception {
         //        Invocation invocation = Mockito.mock(Invocation.class);

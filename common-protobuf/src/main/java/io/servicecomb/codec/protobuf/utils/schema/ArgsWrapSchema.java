@@ -31,9 +31,6 @@ public class ArgsWrapSchema extends AbstractWrapSchema {
         this.schema = (Schema<Object>) schema;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public Object readFromEmpty() {
         MultiWrapper wrapper = (MultiWrapper) schema.newMessage();

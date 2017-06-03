@@ -80,12 +80,6 @@ public final class FortifyUtils {
     private FortifyUtils() {
     }
 
-    /**
-     * 获取异常message
-     * 直接调用getMessage，fortify会报安全问题
-     * @param e    异常
-     * @return     异常message
-     */
     public static String getErrorMsg(Throwable e) {
         if (e == null) {
             return "";
@@ -98,12 +92,6 @@ public final class FortifyUtils {
         }
     }
 
-    /**
-     * 获取异常堆栈信息
-     * 直接调用printStackTrace，fortify会报安全问题
-     * @param e     异常
-     * @return      异常堆栈
-     */
     public static String getErrorStack(Throwable e) {
         if (null == e) {
             return "";
@@ -118,21 +106,10 @@ public final class FortifyUtils {
         }
     }
 
-    /**
-     * 抽取异常信息，规避fortify安全问题
-     * @param e     异常
-     * @return      异常信息
-     */
     public static String getErrorInfo(Throwable e) {
         return getErrorInfo(e, true);
     }
 
-    /**
-     * 抽取异常信息，规避fortify安全问题
-     * @param e               异常
-     * @param isPrintMsg      是否包含用户自定义message
-     * @return String         异常信息
-     */
     public static String getErrorInfo(Throwable e, boolean isPrintMsg) {
         StringBuffer error = new StringBuffer(System.lineSeparator());
         error.append("Exception: ").append(e.getClass().getName()).append("; ");
@@ -145,11 +122,6 @@ public final class FortifyUtils {
         return error.toString();
     }
 
-    /**
-     * 代码摘取http://3ms.huawei.com/hi/group/2028623/blog_1508533.html?uid=44138&mapId=2184035
-     * @param filePath    filaPath
-     * @return            FileAttribute
-     */
     public static FileAttribute<?> getDefaultFileAttributes(String filePath) {
         Path file = new File(filePath).toPath();
         if (isPosix()) {
@@ -187,10 +159,6 @@ public final class FortifyUtils {
         }
     }
 
-    /**
-     * 代码摘取http://3ms.huawei.com/hi/group/2028623/blog_1508533.html?uid=44138&mapId=2184035
-     * @return    posix: true, other:false
-     */
     public static boolean isPosix() {
         return FileSystems.getDefault().supportedFileAttributeViews().contains("posix");
     }
@@ -308,11 +276,6 @@ public final class FortifyUtils {
         return true;
     }
 
-    /**
-     * 是否普通文件，非链接文件
-     * @param file   file
-     * @return       true or false
-     */
     public static boolean isRegularFile(String file) {
         BasicFileAttributes attr;
         try {
@@ -330,11 +293,6 @@ public final class FortifyUtils {
         return true;
     }
 
-    /**
-     * getSecurityXmlDocumentFactory
-     * @return  DocumentBuilderFactory
-     * @throws ParserConfigurationException ParserConfigurationException
-     */
     public static DocumentBuilderFactory getSecurityXmlDocumentFactory() throws ParserConfigurationException {
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         factory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);

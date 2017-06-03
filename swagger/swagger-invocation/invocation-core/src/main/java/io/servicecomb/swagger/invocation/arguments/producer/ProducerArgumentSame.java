@@ -29,9 +29,6 @@ public class ProducerArgumentSame implements ArgumentMapper {
         this.producerIdx = producerIdx;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void mapArgument(SwaggerInvocation invocation, Object[] producerArguments) {
         producerArguments[producerIdx] = invocation.getSwaggerArgument(swaggerIdx);

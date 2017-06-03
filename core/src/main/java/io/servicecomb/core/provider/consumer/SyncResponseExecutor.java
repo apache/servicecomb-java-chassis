@@ -36,9 +36,6 @@ public class SyncResponseExecutor implements Executor {
         latch = new CountDownLatch(1);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void execute(Runnable cmd) {
         this.cmd = cmd;
@@ -56,10 +53,6 @@ public class SyncResponseExecutor implements Executor {
         return response;
     }
 
-    /**
-     * 对response进行赋值
-     * @param response response的新值
-     */
     public void setResponse(Response response) {
         this.response = response;
         if (cmd == null) {

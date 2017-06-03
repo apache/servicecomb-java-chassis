@@ -31,17 +31,11 @@ import io.servicecomb.core.context.HttpStatus;
 
 @Component
 public class SpringmvcProducerResponseMapper implements ProducerResponseMapper {
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public Class<?> getResponseClass() {
         return ResponseEntity.class;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @SuppressWarnings("unchecked")
     @Override
     public Response mapResponse(StatusType status, Object response) {

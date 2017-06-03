@@ -25,10 +25,6 @@ import io.servicecomb.core.provider.producer.ProducerOperation;
 public class ProducerOperationHandler extends AbstractHandler {
     public static final ProducerOperationHandler INSTANCE = new ProducerOperationHandler();
 
-    /**
-     * {@inheritDoc}
-     * @throws Exception
-     */
     @Override
     public void handle(Invocation invocation, AsyncResponse asyncResp) throws Exception {
         ProducerOperation producerOperation = invocation.getOperationMeta().getExtData(Const.PRODUCER_OPERATION);

@@ -27,9 +27,6 @@ public class EndpointsCache extends AbstractEndpointsCache<Endpoint> {
         super(appId, microserviceName, microserviceVersionRule, transportName);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected Endpoint createEndpoint(Transport transport, CacheEndpoint cacheEndpoint) {
         return new Endpoint(transport, cacheEndpoint.getEndpoint());

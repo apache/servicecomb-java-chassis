@@ -28,10 +28,6 @@ import io.servicecomb.core.context.HttpStatus;
 public class InvocationException extends RuntimeException {
     private static final long serialVersionUID = 8027482777502649656L;
 
-    /**
-     * http header中的statusCode
-     * 不直接使用Status类型，是为了支持业务自定义code
-     */
     private StatusType status;
 
     private Object errorData;
@@ -57,34 +53,18 @@ public class InvocationException extends RuntimeException {
         this.errorData = errorData;
     }
 
-    /**
-     * 获取status的值
-     * @return 返回 status
-     */
     public StatusType getStatus() {
         return status;
     }
 
-    /**
-     * 获取statusCode的值
-     * @return 返回 statusCode
-     */
     public int getStatusCode() {
         return status.getStatusCode();
     }
 
-    /**
-     * 获取reasonPhrase的值
-     * @return 返回 reasonPhrase
-     */
     public String getReasonPhrase() {
         return status.getReasonPhrase();
     }
 
-    /**
-     * 获取errorData的值
-     * @return 返回 errorData
-     */
     public Object getErrorData() {
         return errorData;
     }

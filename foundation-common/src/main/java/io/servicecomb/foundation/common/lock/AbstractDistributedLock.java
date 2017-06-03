@@ -21,14 +21,8 @@ import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
 
 public abstract class AbstractDistributedLock implements DistributedLock {
-    /**
-     * verbose
-     */
     protected volatile boolean verbose;
 
-    /**
-     * listener
-     */
     protected volatile Listener listener;
 
     protected final ReentrantLock localLock = new ReentrantLock();

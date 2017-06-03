@@ -35,26 +35,17 @@ public class TestPerfStatImpl {
 
     PerfStatSuccFail oPerfStatSuccFail = null;
 
-    /**
-     * @throws java.lang.Exception
-     */
     @Before
     public void setUp() throws Exception {
         oPerfStatImpl = new PerfStatImpl("testData");
         oPerfStatSuccFail = new PerfStatSuccFail("testMergeFrom");
     }
 
-    /**
-     * @throws java.lang.Exception
-     */
     @After
     public void tearDown() throws Exception {
         oPerfStatImpl = null;
     }
 
-    /**
-     * Test mergeFrom
-     */
     @Test
     public void testMergeFrom() {
         oPerfStatImpl.mergeFrom(oPerfStatSuccFail);
@@ -62,9 +53,6 @@ public class TestPerfStatImpl {
         Assert.assertEquals(2, oPerfStatImpl.getPerfStatDataList().size());
     }
 
-    /**
-     * Test the calc
-     */
     @Test
     public void testCalc() {
         oPerfStatImpl = new PerfStatImpl("testConstructor", new PerfStatData("test"));

@@ -97,9 +97,6 @@ public class GenericServletMockRequest implements HttpServletRequest {
         throw new Error("not supported method");
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public String getParameter(String name) {
         RestParam param = swaggerOperation.getParamByName(name);
@@ -120,9 +117,6 @@ public class GenericServletMockRequest implements HttpServletRequest {
         throw new Error("not supported method");
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public String[] getParameterValues(String name) {
         RestParam param = swaggerOperation.getParamByName(name);
@@ -134,9 +128,6 @@ public class GenericServletMockRequest implements HttpServletRequest {
         return param.getValueAsStrings(args);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public Map<String, String[]> getParameterMap() {
         Map<String, String[]> paramMap = new HashMap<String, String[]>();
@@ -288,9 +279,6 @@ public class GenericServletMockRequest implements HttpServletRequest {
         throw new Error("not supported method");
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public String getHeader(String name) {
         return getParameter(name);
@@ -306,9 +294,6 @@ public class GenericServletMockRequest implements HttpServletRequest {
         throw new Error("not supported method");
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public int getIntHeader(String name) {
         String header = getHeader(name);
@@ -319,17 +304,11 @@ public class GenericServletMockRequest implements HttpServletRequest {
         return Integer.parseInt(header);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public String getMethod() {
         return this.swaggerOperation.getHttpMethod();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public String getPathInfo() {
         try {
@@ -384,9 +363,6 @@ public class GenericServletMockRequest implements HttpServletRequest {
         throw new Error("not supported method");
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public String getServletPath() {
         return this.getPathInfo();

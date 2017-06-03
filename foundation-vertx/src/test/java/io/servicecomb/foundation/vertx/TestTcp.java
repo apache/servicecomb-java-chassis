@@ -52,10 +52,6 @@ public class TestTcp {
         BODY
     }
 
-    /**
-     * Test TcpClient
-     * @throws Exception 
-     */
     @Test
     public void testTcpClient() throws Exception {
         NetClient oNetClient = new NetClient() {
@@ -129,9 +125,6 @@ public class TestTcp {
         Assert.assertNotNull(oTcpClient);
     }
 
-    /**
-     * test TcpOutputStream
-     */
     @Test
     public void testTcpOutputStream() {
         TcpOutputStream oStream = new TcpOutputStream();
@@ -141,9 +134,6 @@ public class TestTcp {
         Assert.assertEquals(oStream.getMsgId(), buffer.getLong(TcpParser.TCP_MAGIC.length));
     }
 
-    /**
-     * test TcpServerStarter
-     */
     @Test
     public void testTcpServerStarter() {
         URIEndpointObject endpiont = new URIEndpointObject("highway://127.0.0.1:9900");

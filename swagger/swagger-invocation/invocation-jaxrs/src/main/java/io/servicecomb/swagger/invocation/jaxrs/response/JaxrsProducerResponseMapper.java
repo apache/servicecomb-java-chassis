@@ -28,17 +28,11 @@ import io.servicecomb.core.Response;
 
 @Component
 public class JaxrsProducerResponseMapper implements ProducerResponseMapper {
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public Class<?> getResponseClass() {
         return javax.ws.rs.core.Response.class;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public Response mapResponse(StatusType status, Object response) {
         javax.ws.rs.core.Response jaxrsResponse = (javax.ws.rs.core.Response) response;

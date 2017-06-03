@@ -44,9 +44,6 @@ public class ServletRestServer extends AbstractRestServer<HttpServletResponse> {
         handleRequest(restRequest, response);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @SuppressWarnings("deprecation")
     @Override
     protected void doSendResponse(HttpServletResponse httpServerResponse, ProduceProcessor produceProcessor,
@@ -71,9 +68,6 @@ public class ServletRestServer extends AbstractRestServer<HttpServletResponse> {
         httpServerResponse.flushBuffer();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void setHttpRequestContext(Invocation invocation, RestServerRequestInternal restRequest) {
         invocation.getHandlerContext().put(RestConst.HTTP_REQUEST_CREATOR,

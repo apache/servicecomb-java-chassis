@@ -55,17 +55,11 @@ public class CseBeanPostProcessor implements ApplicationContextAware, BeanPostPr
     @Autowired(required = false)
     private List<ConsumerFieldProcessor> consumerProcessorList;
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
         this.applicationContext = applicationContext;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
         if (consumerProcessorList == null || consumerProcessorList.isEmpty()) {
@@ -82,9 +76,6 @@ public class CseBeanPostProcessor implements ApplicationContextAware, BeanPostPr
         return bean;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
         if (providerProcessorList != null && !providerProcessorList.isEmpty()) {

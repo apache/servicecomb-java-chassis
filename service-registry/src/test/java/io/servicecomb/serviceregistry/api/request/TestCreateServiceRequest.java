@@ -36,44 +36,29 @@ public class TestCreateServiceRequest {
 
     Microservice oMockMicroservice = null;
 
-    /**
-     * @throws java.lang.Exception
-     */
     @Before
     public void setUp() throws Exception {
         oCreateServiceRequest = new CreateServiceRequest();
         oMockMicroservice = Mockito.mock(Microservice.class);
     }
 
-    /**
-     * @throws java.lang.Exception
-     */
     @After
     public void tearDown() throws Exception {
         oCreateServiceRequest = null;
         oMockMicroservice = null;
     }
 
-    /**
-     * Test Un-Initialized Values
-     */
     @Test
     public void testDefaultValues() {
         Assert.assertNull(oCreateServiceRequest.getService());
     }
 
-    /**
-     * Test InitializedValues
-     */
     @Test
     public void testIntializedValues() {
         initCreateServiceRequest(); //Initialize the Object
         Assert.assertEquals(oMockMicroservice, oCreateServiceRequest.getService());
     }
 
-    /**
-     * Initialize the Values
-     */
     private void initCreateServiceRequest() {
         oCreateServiceRequest.setService(oMockMicroservice);
     }

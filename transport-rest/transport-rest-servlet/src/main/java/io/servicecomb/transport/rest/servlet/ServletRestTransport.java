@@ -29,17 +29,11 @@ import io.servicecomb.foundation.common.net.URIEndpointObject;
 
 @Component
 public class ServletRestTransport extends AbstractTransport {
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public String getName() {
         return Const.RESTFUL;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public boolean init() throws Exception {
         String listenAddress = ServletConfig.getLocalServerAddress();
@@ -50,9 +44,6 @@ public class ServletRestTransport extends AbstractTransport {
         return true;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void send(Invocation invocation, AsyncResponse asyncResp) throws Exception {
         URIEndpointObject endpoint = (URIEndpointObject) invocation.getEndpoint().getAddress();

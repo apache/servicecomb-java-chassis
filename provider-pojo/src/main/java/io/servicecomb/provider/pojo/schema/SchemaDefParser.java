@@ -29,9 +29,6 @@ public class SchemaDefParser extends AbstractSingleBeanDefinitionParser {
         return true;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected boolean shouldParseNameAsAliases() {
         return false;

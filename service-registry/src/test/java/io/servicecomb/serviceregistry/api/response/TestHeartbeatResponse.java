@@ -30,34 +30,22 @@ public class TestHeartbeatResponse {
 
     HeartbeatResponse oHeartbeatResponse = null;
 
-    /**
-     * @throws java.lang.Exception
-     */
     @Before
     public void setUp() throws Exception {
         oHeartbeatResponse = new HeartbeatResponse();
     }
 
-    /**
-     * @throws java.lang.Exception
-     */
     @After
     public void tearDown() throws Exception {
         oHeartbeatResponse = null;
     }
 
-    /**
-     * Test Un-Initialized Values
-     */
     @Test
     public void testDefaultValues() {
         Assert.assertNull(oHeartbeatResponse.getMessage());
         Assert.assertEquals(false, oHeartbeatResponse.isOk());
     }
 
-    /**
-     * Test InitializedValues
-     */
     @Test
     public void testIntializedValues() {
         initFields(); //Initialize the Object
@@ -65,9 +53,6 @@ public class TestHeartbeatResponse {
         Assert.assertEquals(true, oHeartbeatResponse.isOk());
     }
 
-    /**
-     * Initialize the Values
-     */
     private void initFields() {
         oHeartbeatResponse.setMessage("testMessage");
         oHeartbeatResponse.setOk(true);

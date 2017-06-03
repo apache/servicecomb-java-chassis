@@ -38,11 +38,6 @@ public class PerfStatMonitor {
     // 每周期计算产生的结果
     private List<PerfResult> perfResultList;
 
-    /**
-     * 构造
-     * @param name  name
-     * @param index index
-     */
     public PerfStatMonitor(String name, int index) {
         this.name = name;
         this.index = index;
@@ -56,19 +51,10 @@ public class PerfStatMonitor {
         return index;
     }
 
-    /**
-     * addThreadStat
-     * @param threadStat threadStat
-     */
     public void addThreadStat(PerfStat threadStat) {
         threadStats.add(threadStat);
     }
 
-    /**
-     * calcCycle
-     * @param msNow    now
-     * @param msCycle  cycle
-     */
     public void calcCycle(long msNow, long msCycle) {
         PerfStat newSumStat = new PerfStatImpl(null);
         for (PerfStat threadStat : threadStats) {
@@ -82,11 +68,6 @@ public class PerfStatMonitor {
         sumStat = newSumStat;
     }
 
-    /**
-     * foramt
-     * @param sb   content
-     * @param fmt  format
-     */
     public void format(StringBuilder sb, String fmt) {
         for (PerfResult result : perfResultList) {
             String msg = String.format(result.getName() + fmt,

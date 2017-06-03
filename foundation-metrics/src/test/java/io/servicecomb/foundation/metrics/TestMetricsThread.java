@@ -30,26 +30,17 @@ public class TestMetricsThread {
 
     MetricsThread oMetricsThread = null;
 
-    /**
-     * @throws java.lang.Exception
-     */
     @Before
     public void setUp() throws Exception {
         oMetricsThread = new MetricsThread();
     }
 
-    /**
-     * @throws java.lang.Exception
-     */
     @After
     public void tearDown() throws Exception {
         oMetricsThread.shutdown();
         oMetricsThread = null;
     }
 
-    /**
-     * Test io.servicecomb.foundation.metrics.MetricsThread.run()
-     */
     @Test
     public void test() {
         oMetricsThread.start();

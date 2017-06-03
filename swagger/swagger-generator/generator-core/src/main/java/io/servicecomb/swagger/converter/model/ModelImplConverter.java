@@ -25,9 +25,6 @@ import io.swagger.models.ModelImpl;
 import io.swagger.models.Swagger;
 
 public class ModelImplConverter extends AbstractModelConverter {
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public JavaType doConvert(ClassLoader classLoader, String packageName, Swagger swagger, Object model) {
         ModelImpl modelImpl = (ModelImpl) model;

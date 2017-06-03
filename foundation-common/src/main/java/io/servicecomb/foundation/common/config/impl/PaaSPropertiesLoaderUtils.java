@@ -35,8 +35,7 @@ public class PaaSPropertiesLoaderUtils extends org.springframework.core.io.suppo
      *   2./a/b/abc.[ext].properties
      * @param locationPattern locationPattern
      * @return Properties
-     * @throws IOException
-     * @throws Exception Exception
+     * @throws IOException Exception
      */
     public static Properties loadMergedProperties(String locationPattern) throws IOException {
         Properties prop = new Properties();

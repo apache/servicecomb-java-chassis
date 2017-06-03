@@ -37,26 +37,17 @@ public class ConsumerArgumentsMapperFactory extends ArgumentsMapperFactory {
         createFactoryMap(factoryList);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @SuppressWarnings("unchecked")
     @Override
     protected <T> T createArgumentsMapper(ArgumentsMapperConfig config) {
         return (T) new ConsumerArgumentsMapper(config.getArgumentMapperList(), config.getSwaggerParameters().size());
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected ArgumentMapper createArgumentSame(int swaggerIdx, int consumerIdx) {
         return new ConsumerArgumentSame(consumerIdx, swaggerIdx);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected ArgumentMapper createBodyFieldArgMapper(ArgumentsMapperConfig config, int swaggerArgIdx,
             Map<Integer, Field> fieldMap) {

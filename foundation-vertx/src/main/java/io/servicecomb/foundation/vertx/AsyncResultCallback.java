@@ -20,18 +20,10 @@ import io.vertx.core.AsyncResultHandler;
 import io.vertx.core.Future;
 
 public interface AsyncResultCallback<T> extends AsyncResultHandler<T> {
-    /**
-     * on success
-     * @param data data
-     */
     default void success(T data) {
         handle(Future.succeededFuture(data));
     }
 
-    /**
-     * on fail
-     * @param e  err
-     */
     default void fail(Throwable e) {
         handle(Future.failedFuture(e));
     }

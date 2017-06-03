@@ -29,10 +29,6 @@ import io.netty.buffer.ByteBuf;
 public class BufferInputStream extends InputStream {
     private ByteBuf byteBuf;
 
-    /**
-     * 构造
-     * @param buffer  buffer
-     */
     public BufferInputStream(ByteBuf buffer) {
         this.byteBuf = buffer;
     }
@@ -44,10 +40,6 @@ public class BufferInputStream extends InputStream {
         return skipLen;
     }
 
-    /**
-     * readByte
-     * @return  byte
-     */
     public byte readByte() {
         return byteBuf.readByte();
     }
@@ -57,34 +49,18 @@ public class BufferInputStream extends InputStream {
         return byteBuf.readByte();
     }
 
-    /**
-     * readBoolean
-     * @return   boolean
-     */
     public boolean readBoolean() {
         return byteBuf.readBoolean();
     }
 
-    /**
-     * readShort
-     * @return   short
-     */
     public short readShort() {
         return byteBuf.readShort();
     }
 
-    /**
-     * readInt
-     * @return   int
-     */
     public int readInt() {
         return byteBuf.readInt();
     }
 
-    /**
-     * readLong
-     * @return   long
-     */
     public long readLong() {
         return byteBuf.readLong();
     }
@@ -93,10 +69,6 @@ public class BufferInputStream extends InputStream {
         return byteBuf.readerIndex();
     }
 
-    /**
-     * readString
-     * @return   string
-     */
     public String readString() {
         int length = readInt();
         byte[] bytes = new byte[length];

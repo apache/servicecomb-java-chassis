@@ -33,9 +33,6 @@ public class SimpleLoadBalanceHandler extends AbstractHandler {
     // key为transportName
     private volatile Map<String, EndpointsCache> endpointsCacheMap = new ConcurrentHashMap<>();
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void handle(Invocation invocation, AsyncResponse asyncResp) throws Exception {
         // 调用者未指定transport时，这里得到的是""，也直接使用，不必特殊处理

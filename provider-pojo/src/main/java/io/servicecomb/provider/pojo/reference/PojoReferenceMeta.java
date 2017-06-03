@@ -98,34 +98,18 @@ public class PojoReferenceMeta implements FactoryBean<Object>, InitializingBean,
         }
     }
 
-    /**
-     * 获取consumerOperationMap的值
-     * @return 返回 consumerOperationMap
-     */
     public Map<String, ConsumerOperationMeta> getConsumerOperationMap() {
         return consumerOperationMap;
     }
 
-    /**
-     * 获取referenceConfig的值
-     * @return 返回 referenceConfig
-     */
     public ReferenceConfig getReferenceConfig() {
         return referenceConfig;
     }
 
-    /**
-     * 获取proxy的值
-     * @return 返回 proxy
-     */
     public Object getProxy() {
         return getObject();
     }
 
-    /**
-     * 对proxy进行赋值
-     * @param proxy proxy的新值
-     */
     public void setProxy(Object proxy) {
         this.proxy = proxy;
     }
@@ -152,41 +136,22 @@ public class PojoReferenceMeta implements FactoryBean<Object>, InitializingBean,
         return true;
     }
 
-    /**
-     * 对intf进行赋值
-     * @param intf intf的新值
-     */
     public void setConsumerIntf(Class<?> intf) {
         this.consumerIntf = intf;
     }
 
-    /**
-     * 获取schemaMeta的值
-     * @return 返回 schemaMeta
-     */
     public SchemaMeta getSchemaMeta() {
         return schemaMeta;
     }
 
-    /**
-     * 对microserviceName进行赋值
-     * @param microserviceName microserviceName的新值
-     */
     public void setMicroserviceName(String microserviceName) {
         this.microserviceName = microserviceName;
     }
 
-    /**
-     * 对schemaId进行赋值
-     * @param schemaId schemaId的新值
-     */
     public void setSchemaId(String schemaId) {
         this.schemaId = schemaId;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void afterPropertiesSet() {
         if (consumerIntf != null) {

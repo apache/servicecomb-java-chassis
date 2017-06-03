@@ -67,57 +67,35 @@ public class CseClientHttpRequest extends OutputStream implements ClientHttpRequ
         this.method = method;
     }
 
-    /**
-     * 不支持，从outputStream继承，仅仅是为了在CseHttpMessageConverter中，将requestBody保存进来而已
-     */
     @Override
     public void write(int b) throws IOException {
         throw new Error("not support");
     }
 
-    /**
-     * 对requestBody进行赋值
-     * @param requestBody requestBody的新值
-     */
     public void setRequestBody(Object requestBody) {
         this.requestBody = requestBody;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public HttpMethod getMethod() {
         return method;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public URI getURI() {
         return uri;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public HttpHeaders getHeaders() {
         return httpHeaders;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public OutputStream getBody() throws IOException {
         return this;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public ClientHttpResponse execute() throws IOException {
         RequestMeta requestMeta = createRequestMeta(method.name(), uri);
@@ -175,11 +153,6 @@ public class CseClientHttpRequest extends OutputStream implements ClientHttpRequ
         throw ExceptionFactory.convertConsumerException((Throwable) response.getResult());
     }
 
-    /**
-     * 从输入中获取args
-     * @return
-     * @throws Exception
-     */
     private Object[] collectArguments(RequestMeta requestMeta, Map<String, List<String>> queryParams) {
         RestServerRequest mockRequest =
             new LocalRestServerRequest(requestMeta.getPathParams(), queryParams, httpHeaders, requestBody);

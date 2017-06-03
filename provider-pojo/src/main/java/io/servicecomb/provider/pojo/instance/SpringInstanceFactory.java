@@ -21,17 +21,11 @@ import io.servicecomb.provider.pojo.PojoConst;
 import io.servicecomb.foundation.common.utils.BeanUtils;
 
 public class SpringInstanceFactory implements InstanceFactory {
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public String getImplName() {
         return PojoConst.SPRING;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public Object create(String beanId) {
         Object instance = BeanUtils.getBean(beanId);

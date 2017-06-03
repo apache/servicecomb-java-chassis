@@ -31,9 +31,6 @@ public class PathProcessorCreator implements ParamValueProcessorCreator {
             super(paramPath, targetType);
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public Object getValue(RestServerRequest request) throws Exception {
             String value = request.getPathParam(paramPath);
@@ -43,9 +40,6 @@ public class PathProcessorCreator implements ParamValueProcessorCreator {
             return convertValue(value, targetType);
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public void setValue(RestClientRequest clientRequest, Object arg) throws Exception {
             // path不需要set
@@ -62,9 +56,6 @@ public class PathProcessorCreator implements ParamValueProcessorCreator {
         ParamValueProcessorCreatorManager.INSTANCE.register(PARAMTYPE, this);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public ParamValueProcessor create(String paramValue, Type genericParamType) {
         JavaType targetType = TypeFactory.defaultInstance().constructType(genericParamType);

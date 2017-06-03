@@ -48,9 +48,6 @@ public class TestClienthttp {
     public void tearDown() throws Exception {
     }
 
-    /**
-     * Test ServiceRegistryClientImpl
-     */
     @SuppressWarnings("unchecked")
     @Test
     public void testServiceRegistryClientImpl(@Mocked IpPortManager manager) {
@@ -96,9 +93,6 @@ public class TestClienthttp {
                         RegistryUtils.getMicroserviceInstance().getInstanceId()));
     }
 
-    /**
-     * Test RequestContext
-     */
     @Test
     public void testRequestContext() {
         RequestContext oContext = new RequestContext();
@@ -119,9 +113,6 @@ public class TestClienthttp {
 
     }
 
-    /**
-     * Test RequestParam
-     */
     @Test
     public void testRequestParam() {
         RequestParam oParam = new RequestParam();
@@ -147,9 +138,6 @@ public class TestClienthttp {
 
     }
 
-    /**
-     * Test IpPortManager
-     */
     @Test
     public void testIpPortManager() throws Exception {
         IpPortManager oManager = new IpPortManager();

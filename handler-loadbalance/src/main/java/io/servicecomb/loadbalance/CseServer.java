@@ -53,10 +53,6 @@ public class CseServer extends Server {
         this.setReadyToServe(true);
     }
 
-    /**
-     * 获取endpoint的值
-     * @return 返回 endpoint
-     */
     public Endpoint getEndpoint() {
         return endpoint;
     }

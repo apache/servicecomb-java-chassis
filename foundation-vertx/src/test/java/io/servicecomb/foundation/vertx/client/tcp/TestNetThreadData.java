@@ -38,9 +38,6 @@ public class TestNetThreadData {
 
     private NetThreadData<HttpClientWithContext> instance;
 
-    /**
-     * @throws java.lang.Exception
-     */
     @Before
     public void setUp() throws Exception {
         @SuppressWarnings("unchecked")
@@ -49,44 +46,29 @@ public class TestNetThreadData {
         Assert.assertNotNull(instance);
     }
 
-    /**
-     * @throws java.lang.Exception
-     */
     @After
     public void tearDown() throws Exception {
         instance = null;
     }
 
-    /**
-     * Test method for {@link NetThreadData#getFactory()}.
-     */
     @Test
     public void testGetFactory() {
         ClientPoolFactory<HttpClientWithContext> factory = instance.getFactory();
         Assert.assertNotNull(factory);
     }
 
-    /**
-     * Test method for {@link NetThreadData#getPools()}.
-     */
     @Test
     public void testGetPools() {
         instance.getPools();
         Assert.assertNotNull(instance.getPools());
     }
 
-    /**
-     * Test method for {@link NetThreadData#getBindIndex()}.
-     */
     @Test
     public void testGetBindIndex() {
         AtomicInteger count = instance.getBindIndex();
         Assert.assertNotNull(count);
     }
 
-    /**
-     * Test method for {@link NetThreadData#selectClientPool()}.
-     */
     @Test
     public void testSelectClientPool() {
         Assert.assertNull(instance.selectClientPool());

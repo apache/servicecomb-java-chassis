@@ -26,21 +26,12 @@ import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
 public class IncConfigs {
 
     public static class IncConfig {
-        /**
-         * id
-         */
         @JacksonXmlProperty(isAttribute = true)
         private String id;
 
-        /**
-         * loader
-         */
         @JacksonXmlProperty(isAttribute = true)
         private String loader;
 
-        /**
-         * pathList
-         */
         @JacksonXmlProperty(localName = "path")
         @JacksonXmlElementWrapper(useWrapping = false)
         private List<String> pathList;
@@ -71,16 +62,10 @@ public class IncConfigs {
 
     }
 
-    /**
-     * propertiesList
-     */
     @JacksonXmlProperty(localName = "properties")
     @JacksonXmlElementWrapper(useWrapping = false)
     private List<IncConfig> propertiesList;
 
-    /**
-     * xmlList
-     */
     @JacksonXmlProperty(localName = "xml")
     @JacksonXmlElementWrapper(useWrapping = false)
     private List<IncConfig> xmlList;

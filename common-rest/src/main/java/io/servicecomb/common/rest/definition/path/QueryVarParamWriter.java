@@ -32,9 +32,6 @@ public class QueryVarParamWriter extends AbstractUrlParamWriter {
         this.prefix = prefix;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void write(StringBuilder builder, Object[] args) throws Exception {
         builder.append(prefix);

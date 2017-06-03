@@ -22,10 +22,6 @@ import io.servicecomb.core.Invocation;
 public class TransportClientHandler extends AbstractHandler {
     public static final TransportClientHandler INSTANCE = new TransportClientHandler();
 
-    /**
-     * {@inheritDoc}
-     * @throws Exception
-     */
     @Override
     public void handle(Invocation invocation, AsyncResponse asyncResp) throws Exception {
         invocation.getTransport().send(invocation, asyncResp);

@@ -32,33 +32,18 @@ public class Endpoint {
         this.address = transport.parseAddress(this.endpoint);
     }
 
-    /**
-     * 获取endpoint的值
-     * @return 返回 endpoint
-     */
     public String getEndpoint() {
         return endpoint;
     }
 
-    /**
-     * 获取transport的值
-     * @return 返回 transport
-     */
     public Transport getTransport() {
         return transport;
     }
 
-    /**
-     * 获取address的值
-     * @return 返回 address
-     */
     public Object getAddress() {
         return address;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public String toString() {
         return endpoint;

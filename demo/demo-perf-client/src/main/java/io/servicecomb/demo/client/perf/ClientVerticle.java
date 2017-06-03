@@ -40,9 +40,6 @@ public class ClientVerticle extends AbstractVerticle {
 
     int idx = 0;
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void start() throws Exception {
 

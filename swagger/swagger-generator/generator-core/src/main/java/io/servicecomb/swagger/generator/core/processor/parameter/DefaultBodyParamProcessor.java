@@ -23,9 +23,6 @@ import io.servicecomb.swagger.generator.core.utils.ParamUtils;
 
 public class DefaultBodyParamProcessor implements DefaultParameterProcessor {
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void process(OperationGenerator operationGenerator, int paramIndex) {
         PendingBodyParameter pendingBodyParameter =

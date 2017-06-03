@@ -43,9 +43,6 @@ public class Invoker implements InvocationHandler {
         this.consumerOperationMap = consumerOperationMap;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
         Invocation invocation =

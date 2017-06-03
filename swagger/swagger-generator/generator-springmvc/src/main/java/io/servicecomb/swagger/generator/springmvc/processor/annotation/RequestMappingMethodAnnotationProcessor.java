@@ -28,9 +28,6 @@ import io.swagger.models.Operation;
 
 public class RequestMappingMethodAnnotationProcessor implements MethodAnnotationProcessor {
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void process(Object annotation, OperationGenerator operationGenerator) {
         RequestMapping requestMapping = (RequestMapping) annotation;

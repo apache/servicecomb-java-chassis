@@ -24,9 +24,6 @@ public class StaticUrlParamWriter implements UrlParamWriter {
         this.staticPath = staticPath;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void write(StringBuilder builder, Object[] args) {
         builder.append(staticPath);

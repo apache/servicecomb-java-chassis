@@ -36,14 +36,8 @@ import org.w3c.dom.Document;
 import io.servicecomb.foundation.common.utils.JsonUtils;
 
 public class PaaSResourceUtils extends org.springframework.util.ResourceUtils {
-    /**
-     * propertie suffix
-     */
     public static final String PROPERTIES_SUFFIX = ".properties";
 
-    /**
-     * xml suffix
-     */
     public static final String XML_SUFFIX = ".xml";
 
     private static ResourcePatternResolver resourcePatternResolver = new PathMatchingResourcePatternResolver();
@@ -66,17 +60,6 @@ public class PaaSResourceUtils extends org.springframework.util.ResourceUtils {
         return ret;
     }
 
-    /**
-     * 文件同名时，jar的优先级比较低
-     * jar: xxx.xml
-     * jar: xxx.model.xml
-     * file:xxx.xml
-     * 调用者保证，所有res的后缀都是suffix
-     * file文件应该只有一个，因为放在目录中的配置文件，应该是最终的部署定制文件
-     * 此时，还分多个，是不合适的
-     * @param resList resList
-     * @param suffix suffix
-     */
     public static void sortResources(List<Resource> resList, String suffix) {
         resList.sort(new Comparator<Resource>() {
             @Override

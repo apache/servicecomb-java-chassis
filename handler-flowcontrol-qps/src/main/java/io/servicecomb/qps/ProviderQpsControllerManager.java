@@ -36,9 +36,6 @@ public class ProviderQpsControllerManager extends AbstractObjectManager<String, 
     // 只会在create流程中调用，是有锁保护的，不必考虑多线程并发
     private Set<String> watchedKeySet = new HashSet<>();
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected String getKey(String microServiceName) {
         return microServiceName;
@@ -80,9 +77,6 @@ public class ProviderQpsControllerManager extends AbstractObjectManager<String, 
         return qpsController;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected QpsController create(String microServiceName) {
         // create在父类中是加了锁的，不存在并发的场景

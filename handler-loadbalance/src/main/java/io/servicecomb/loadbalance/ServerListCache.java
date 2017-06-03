@@ -28,9 +28,6 @@ public class ServerListCache extends AbstractEndpointsCache<Server> {
         super(appId, microserviceName, microserviceVersionRule, transportName);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected Server createEndpoint(Transport transport, CacheEndpoint cacheEndpoint) {
         return new CseServer(transport, cacheEndpoint);

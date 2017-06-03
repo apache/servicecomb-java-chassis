@@ -24,10 +24,6 @@ import io.servicecomb.core.handler.HandlerConfigUtils;
 
 public class TestHandler {
 
-    /**
-     * Test AbstractHandlerManager
-     * @throws Exception 
-     */
     @Test
     public void testAbstractHandlerManager() throws Exception {
         HandlerConfigUtils.init();

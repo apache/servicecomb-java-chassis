@@ -89,50 +89,26 @@ public class OperationGenerator {
         responseHeaderMap.put(name, header);
     }
 
-    /**
-     * 获取context的值
-     * @return 返回 context
-     */
     public SwaggerGeneratorContext getContext() {
         return context;
     }
 
-    /**
-     * 获取swaggerGenerator的值
-     * @return 返回 swaggerGenerator
-     */
     public SwaggerGenerator getSwaggerGenerator() {
         return swaggerGenerator;
     }
 
-    /**
-     * 获取swagger的值
-     * @return 返回 swagger
-     */
     public Swagger getSwagger() {
         return swagger;
     }
 
-    /**
-     * 获取operation的值
-     * @return 返回 operation
-     */
     public Operation getOperation() {
         return operation;
     }
 
-    /**
-     * 获取path的值
-     * @return 返回 path
-     */
     public String getPath() {
         return path;
     }
 
-    /**
-     * 对path进行赋值
-     * @param path path的新值
-     */
     public void setPath(String path) {
         if (!path.startsWith("/")) {
             path = "/" + path;
@@ -291,10 +267,6 @@ public class OperationGenerator {
         }
     }
 
-    /**
-     *
-     * 根据method上的数据，综合生成契约参数
-     */
     protected void scanMethodParameters() {
         Annotation[][] allAnnotations = providerMethod.getParameterAnnotations();
         Type[] parameterTypes = providerMethod.getGenericParameterTypes();
@@ -406,10 +378,6 @@ public class OperationGenerator {
         return processor.process(this);
     }
 
-    /**
-     * 获取providerMethod的值
-     * @return 返回 providerMethod
-     */
     public Method getProviderMethod() {
         return providerMethod;
     }

@@ -39,9 +39,6 @@ public class TestMicroService {
 
     List<String> oListSchemas = null;
 
-    /**
-     * @throws java.lang.Exception
-     */
     @Before
     public void setUp() throws Exception {
         oMicroservice = new Microservice();
@@ -49,9 +46,6 @@ public class TestMicroService {
         oListSchemas = new ArrayList<>();
     }
 
-    /**
-     * @throws java.lang.Exception
-     */
     @After
     public void tearDown() throws Exception {
         oMicroservice = null;
@@ -59,9 +53,6 @@ public class TestMicroService {
         oListSchemas = null;
     }
 
-    /**
-     * Test Un-Initialized Values
-     */
     @Test
     public void testDefaultValues() {
         Assert.assertNull(oMicroservice.getAppId());
@@ -76,9 +67,6 @@ public class TestMicroService {
         Assert.assertEquals(0, oMicroservice.getPaths().size());
     }
 
-    /**
-     * Test InitializedValues
-     */
     @Test
     public void testIntializedValues() {
         initMicroservice(); //Initialize the Object
@@ -94,9 +82,6 @@ public class TestMicroService {
         Assert.assertEquals(1, oMicroservice.getPaths().size());
     }
 
-    /**
-     * Initialize the Values
-     */
     private void initMicroservice() {
         oMicroservice.setAppId("testAppID");
         oMicroservice.setDescription("This is the test");

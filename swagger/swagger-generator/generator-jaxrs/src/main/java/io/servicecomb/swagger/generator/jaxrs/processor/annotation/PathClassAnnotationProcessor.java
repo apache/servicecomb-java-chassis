@@ -23,9 +23,6 @@ import io.servicecomb.swagger.generator.core.SwaggerGenerator;
 
 public class PathClassAnnotationProcessor implements ClassAnnotationProcessor {
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void process(Object annotation, SwaggerGenerator swaggerGenerator) {
         Path path = (Path) annotation;

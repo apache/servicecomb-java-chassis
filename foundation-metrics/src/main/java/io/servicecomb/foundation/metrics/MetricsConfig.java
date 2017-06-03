@@ -24,27 +24,16 @@ public class MetricsConfig implements InitializingBean {
 
     private static final int DEFAULT_METRICS_CYCLE = 60000;
 
-    /**
-     * 获取msCycle的值
-     * @return 返回 msCycle
-     */
     public static int getMsCycle() {
         return DynamicPropertyFactory.getInstance()
                 .getIntProperty("cse.metrics.cycle.ms", DEFAULT_METRICS_CYCLE)
                 .get();
     }
 
-    /**
-     * 获取enable的值
-     * @return 返回 enable
-     */
     public static boolean isEnable() {
         return DynamicPropertyFactory.getInstance().getBooleanProperty("cse.metrics.enabled", true).get();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void afterPropertiesSet() throws Exception {
         if (!isEnable()) {

@@ -63,9 +63,6 @@ public class RegistryThread extends CommonThread {
         NotifyManager.INSTANCE.notify(RegistryEvent.INITIALIZED, null);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void run() {
         // 本进程微服务及实例注册

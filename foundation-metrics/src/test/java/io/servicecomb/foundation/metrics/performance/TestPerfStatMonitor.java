@@ -32,26 +32,17 @@ public class TestPerfStatMonitor {
 
     PerfStatSuccFail oPerfStatSuccFail = null;
 
-    /**
-     * @throws java.lang.Exception
-     */
     @Before
     public void setUp() throws Exception {
         oPerfStatMonitor = new PerfStatMonitor("testMonitor", 0);
         oPerfStatSuccFail = new PerfStatSuccFail("testMergeFrom");
     }
 
-    /**
-     * @throws java.lang.Exception
-     */
     @After
     public void tearDown() throws Exception {
         oPerfStatMonitor = null;
     }
 
-    /**
-     * Test calcCycle
-     */
     @Test
     public void testCalcCycle() {
         Assert.assertEquals("testMonitor", oPerfStatMonitor.getName());

@@ -30,42 +30,27 @@ public class TestCreateServiceResponse {
 
     CreateServiceResponse oCreateServiceResponse = null;
 
-    /**
-     * @throws java.lang.Exception
-     */
     @Before
     public void setUp() throws Exception {
         oCreateServiceResponse = new CreateServiceResponse();
     }
 
-    /**
-     * @throws java.lang.Exception
-     */
     @After
     public void tearDown() throws Exception {
         oCreateServiceResponse = null;
     }
 
-    /**
-     * Test Un-Initialized Values
-     */
     @Test
     public void testDefaultValues() {
         Assert.assertNull(oCreateServiceResponse.getServiceId());
     }
 
-    /**
-     * Test InitializedValues
-     */
     @Test
     public void testIntializedValues() {
         initFields(); //Initialize the Object
         Assert.assertEquals("testServiceId", oCreateServiceResponse.getServiceId());
     }
 
-    /**
-     * Initialize the Values
-     */
     private void initFields() {
         oCreateServiceResponse.setServiceId("testServiceId");
     }

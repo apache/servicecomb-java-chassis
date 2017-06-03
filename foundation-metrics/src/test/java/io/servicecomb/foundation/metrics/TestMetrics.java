@@ -23,11 +23,6 @@ import org.junit.Test;
 
 public class TestMetrics {
 
-    /**
-     * Test io.servicecomb.foundation.metrics.Metrics.onCycle()
-     * test io.servicecomb.foundation.metrics.Metrics.getOrCreateLocalPerfStat(String, int)
-     * @throws Exception 
-     */
     @Test
     public void testOnCycle() throws Exception {
         PerfStatSuccFail oPerfStatSuccFail = Metrics.getOrCreateLocalPerfStat("test", 1);

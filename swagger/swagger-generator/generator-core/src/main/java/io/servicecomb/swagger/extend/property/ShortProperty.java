@@ -27,9 +27,6 @@ public class ShortProperty extends AbstractBaseIntegerProperty<Short> {
         return TYPE.equals(type) && FORMAT.equals(format);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected Short parseNumber(String strValue) {
         return Short.parseShort(strValue);

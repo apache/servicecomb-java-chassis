@@ -27,9 +27,6 @@ public class ConsumerInvocationContextMapper implements ArgumentMapper {
         this.consumerIdx = consumerIdx;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void mapArgument(SwaggerInvocation invocation, Object[] consumerArguments) {
         SwaggerInvocationContext context = (SwaggerInvocationContext) consumerArguments[consumerIdx];

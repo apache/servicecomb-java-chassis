@@ -29,17 +29,11 @@ public class PojoConsumerProvider extends AbstractConsumerProvider {
     @Inject
     private PojoConsumers pojoConsumers;
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public String getName() {
         return PojoConst.POJO;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void init() throws Exception {
         for (PojoReferenceMeta pojoReference : pojoConsumers.getConsumerList()) {

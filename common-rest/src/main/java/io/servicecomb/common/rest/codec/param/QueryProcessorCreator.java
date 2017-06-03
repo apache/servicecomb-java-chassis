@@ -37,9 +37,6 @@ public class QueryProcessorCreator implements ParamValueProcessorCreator {
             this.isArrayOrCollection = isArrayOrCollection;
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public Object getValue(RestServerRequest request) throws Exception {
             String[] param = request.getQueryParam(paramPath);
@@ -59,9 +56,6 @@ public class QueryProcessorCreator implements ParamValueProcessorCreator {
             return convertValue(param[0], targetType);
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public void setValue(RestClientRequest clientRequest, Object arg) throws Exception {
             // query不需要set
@@ -82,9 +76,6 @@ public class QueryProcessorCreator implements ParamValueProcessorCreator {
         ParamValueProcessorCreatorManager.INSTANCE.register(PARAMTYPE, this);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public ParamValueProcessor create(String paramValue, Type genericParamType) {
         JavaType targetType = TypeFactory.defaultInstance().constructType(genericParamType);

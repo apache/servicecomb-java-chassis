@@ -32,13 +32,6 @@ public final class RestCodec {
     private RestCodec() {
     }
 
-    /**
-     * 将标准参数序列化成RESTful数据
-     * @param args
-     * @param restOperation
-     * @return
-     * @throws Exception
-     */
     public static void argsToRest(Object[] args, RestOperationMeta restOperation,
             RestClientRequest clientRequest) throws Exception {
         int paramSize = restOperation.getParamList().size();
@@ -56,13 +49,6 @@ public final class RestCodec {
         }
     }
 
-    /**
-     * 将RESTful数据反序列化成标准pojo参数
-     * @param request
-     * @param restOperation
-     * @return
-     * @throws Exception
-     */
     public static Object[] restToArgs(RestServerRequest request,
             RestOperationMeta restOperation) throws InvocationException {
         List<RestParam> paramList = restOperation.getParamList();

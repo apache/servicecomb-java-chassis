@@ -51,9 +51,6 @@ public class ConsumerQpsControllerManager extends AbstractObjectManager<Operatio
     // 只会在create流程中调用，是有锁保护的，不必考虑多线程并发
     private Set<String> watchedKeySet = new HashSet<>();
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected String getKey(OperationMeta operationMeta) {
         return operationMeta.getMicroserviceQualifiedName();
@@ -119,9 +116,6 @@ public class ConsumerQpsControllerManager extends AbstractObjectManager<Operatio
         return initQpsLimit(operationMeta.getMicroserviceName(), Integer.MAX_VALUE);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected QpsController create(OperationMeta operationMeta) {
         // create在父类中是加了锁的，不存在并发的场景

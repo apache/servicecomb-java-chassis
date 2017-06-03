@@ -27,9 +27,6 @@ import io.servicecomb.core.exception.ExceptionFactory;
 import io.servicecomb.core.exception.InvocationException;
 
 public class TestException {
-    /**
-     * Test CommonExceptionData
-     */
     @Test
     public void testCommonExceptionData() {
         CommonExceptionData oData = new CommonExceptionData();

@@ -25,9 +25,6 @@ import org.springframework.http.HttpMethod;
 
 public class TestCseClientHttpRequestFactory {
 
-    /**
-     * Test CseClientHttpRequestFactory
-     */
     @Test
     public void testCseClientHttpRequestFactory() {
 

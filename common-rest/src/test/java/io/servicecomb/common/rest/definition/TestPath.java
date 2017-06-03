@@ -45,11 +45,6 @@ public class TestPath {
     public void tearDown() throws Exception {
     }
 
-    /**
-     * Test PathRegExp
-     * 
-     * @throws Exception
-     */
     @Test
     public void testPathRegExp() throws Exception {
         PathRegExp oPathRegExp = new PathRegExp("//{test}//");
@@ -95,11 +90,6 @@ public class TestPath {
 
     }
 
-    /**
-     * test UrlPathBuilder
-     * 
-     * @throws Exception
-     */
     @Test
     public void testUrlPathBuilder() throws Exception {
         Map<String, RestParam> paramMap = new HashMap<>();
@@ -120,12 +110,6 @@ public class TestPath {
         Assert.assertEquals("/root/100", oURLPathBuilder.createPathString(args));
     }
 
-    /**
-     * test QueryVarParamWriter
-     * 
-     * @throws Exception
-     * 
-     */
     @Test
     public void testQueryVarParamWriter() throws Exception {
         boolean status = true;

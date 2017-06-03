@@ -26,9 +26,6 @@ public abstract class AbstractProducerContextArgMapper implements ArgumentMapper
         this.producerArgIdx = producerArgIdx;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void mapArgument(SwaggerInvocation invocation, Object[] producerArguments) {
         Object producerArg = createContextArg(invocation);

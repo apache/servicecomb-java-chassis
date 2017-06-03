@@ -24,17 +24,11 @@ import javax.servlet.AsyncListener;
 import javax.servlet.ServletResponse;
 
 public class RestAsyncListener implements AsyncListener {
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void onComplete(AsyncEvent event) throws IOException {
         // 未使用
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void onTimeout(AsyncEvent event) throws IOException {
         // TODO:超时的处理，要重新考虑
@@ -43,17 +37,11 @@ public class RestAsyncListener implements AsyncListener {
         out.write("TimeOut Error in Processing");
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void onError(AsyncEvent event) throws IOException {
         // 未使用
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void onStartAsync(AsyncEvent event) throws IOException {
         // 未使用

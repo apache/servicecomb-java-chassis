@@ -31,9 +31,6 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 public final class JsonUtils {
-    /**
-     * ObjectMapper
-     */
     public static final ObjectMapper OBJ_MAPPER;
 
     static {
@@ -85,11 +82,6 @@ public final class JsonUtils {
     }
 
     // TODO：移走
-    /**
-     * Converts the local time to UTC time
-     * @param date local date
-     * @return UTC Date
-     */
     public static Date getUTCDate(Date date) {
         Calendar cal = Calendar.getInstance();
         cal.setTime(new Date());

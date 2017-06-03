@@ -24,10 +24,6 @@ import org.w3c.dom.Element;
 
 public class TestSchemaDefParser {
 
-    /**
-     * Test doParse
-     * @throws Exception 
-     */
     @Test
     public void testDoParse()
         throws Exception {

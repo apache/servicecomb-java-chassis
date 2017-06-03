@@ -84,21 +84,10 @@ public class TcpClient extends TcpConnection {
         this.clientConfig = clientConfig;
     }
 
-    /**
-     * 获取context的值
-     * @return 返回 context
-     */
     public Context getContext() {
         return context;
     }
 
-    /**
-     * 回调在tcp client verticle线程执行
-     * send没有锁优化的意义，因为netSocket.write内部本身会加锁
-     * @param msgId   msgId
-     * @param buffer  buffer
-     * @param callback callback
-     */
     public synchronized void send(TcpOutputStream os, long msTimeout, TcpResonseCallback callback) {
         requestMap.put(os.getMsgId(), new TcpRequest(msTimeout, callback));
 
@@ -238,11 +227,6 @@ public class TcpClient extends TcpConnection {
         oldMap.clear();
     }
 
-    /**
-     * onReply
-     * @param msgId   msgId
-     * @param buffer  buffer
-     */
     protected void onReply(long msgId, Buffer headerBuffer, Buffer bodyBuffer) {
         TcpRequest request = requestMap.remove(msgId);
         if (request == null) {

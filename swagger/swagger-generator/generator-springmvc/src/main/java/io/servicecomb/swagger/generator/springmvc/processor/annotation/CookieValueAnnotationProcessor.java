@@ -23,17 +23,11 @@ import io.servicecomb.swagger.generator.core.processor.parameter.AbstractParamet
 import io.swagger.models.parameters.CookieParameter;
 
 public class CookieValueAnnotationProcessor extends AbstractParameterProcessor<CookieParameter> {
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected String getAnnotationParameterName(Object annotation) {
         return ((CookieValue) annotation).name();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected CookieParameter createParameter() {
         return new CookieParameter();

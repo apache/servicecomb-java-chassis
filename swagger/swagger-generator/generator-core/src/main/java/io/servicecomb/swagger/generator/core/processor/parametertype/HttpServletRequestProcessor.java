@@ -23,17 +23,11 @@ import io.servicecomb.swagger.generator.core.CommonParameterTypeProcessor;
 import io.servicecomb.swagger.generator.core.OperationGenerator;
 
 public class HttpServletRequestProcessor implements CommonParameterTypeProcessor {
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public Class<?> getParameterType() {
         return HttpServletRequest.class;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void process(OperationGenerator operationGenerator, int paramIdx) {
         HttpRequestParameter parameter = new HttpRequestParameter();

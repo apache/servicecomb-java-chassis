@@ -30,25 +30,16 @@ public class TestPerfStatSuccFail {
 
     PerfStatSuccFail oPerfStatSuccFail = null;
 
-    /**
-     * @throws java.lang.Exception
-     */
     @Before
     public void setUp() throws Exception {
         oPerfStatSuccFail = new PerfStatSuccFail("testSuccFail");
     }
 
-    /**
-     * @throws java.lang.Exception
-     */
     @After
     public void tearDown() throws Exception {
         oPerfStatSuccFail = null;
     }
 
-    /**
-     * Test add
-     */
     @Test
     public void testAdd() {
         oPerfStatSuccFail.add(true, new PerfStatContext());

@@ -37,25 +37,16 @@ public class HttpStatus implements StatusType {
         this.reason = reasonPhrase;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public int getStatusCode() {
         return statusCode;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public Family getFamily() {
         return Family.familyOf(statusCode);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public String getReasonPhrase() {
         return reason;

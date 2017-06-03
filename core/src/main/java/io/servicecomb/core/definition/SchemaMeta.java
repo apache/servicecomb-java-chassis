@@ -66,10 +66,6 @@ public class SchemaMeta extends CommonService<OperationMeta> {
         initOperations();
     }
 
-    /**
-     * 获取packageName的值
-     * @return 返回 packageName
-     */
     public String getPackageName() {
         return packageName;
     }
@@ -97,10 +93,6 @@ public class SchemaMeta extends CommonService<OperationMeta> {
         }
     }
 
-    /**
-     * 获取swagger的值
-     * @return 返回 swagger
-     */
     public Swagger getSwagger() {
         return swagger;
     }
@@ -109,66 +101,34 @@ public class SchemaMeta extends CommonService<OperationMeta> {
         return name;
     }
 
-    /**
-     * 获取microserviceQualifiedName的值
-     * @return 返回 microserviceQualifiedName
-     */
     public String getMicroserviceQualifiedName() {
         return microserviceQualifiedName;
     }
 
-    /**
-     * 获取microserviceName的值
-     * @return 返回 microserviceName
-     */
     public String getMicroserviceName() {
         return microserviceMeta.getName();
     }
 
-    /**
-     * 获取microserviceMeta的值
-     * @return 返回 microserviceMeta
-     */
     public MicroserviceMeta getMicroserviceMeta() {
         return microserviceMeta;
     }
 
-    /**
-     * 获取intf的值
-     * @return 返回 intf
-     */
     public Class<?> getSwaggerIntf() {
         return swaggerIntf;
     }
 
-    /**
-     * 获取consumerHandlerChain的值
-     * @return 返回 consumerHandlerChain
-     */
     public List<Handler> getConsumerHandlerChain() {
         return consumerHandlerChain;
     }
 
-    /**
-     * 对consumerHandlerChain进行赋值
-     * @param consumerHandlerChain consumerHandlerChain的新值
-     */
     public void setConsumerHandlerChain(List<Handler> consumerHandlerChain) {
         this.consumerHandlerChain = consumerHandlerChain;
     }
 
-    /**
-     * 获取providerHandlerChain的值
-     * @return 返回 providerHandlerChain
-     */
     public List<Handler> getProviderHandlerChain() {
         return providerHandlerChain;
     }
 
-    /**
-     * 对providerHandlerChain进行赋值
-     * @param providerHandlerChain providerHandlerChain的新值
-     */
     public void setProviderHandlerChain(List<Handler> providerHandlerChain) {
         this.providerHandlerChain = providerHandlerChain;
     }

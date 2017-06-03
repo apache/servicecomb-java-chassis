@@ -29,19 +29,9 @@ public interface Transport {
      */
     Object parseAddress(String endpoint);
 
-    /**
-     * 本tranport的监听地址
-     * @return
-     * @throws Exception
-     */
     Endpoint getEndpoint() throws Exception;
 
     
-    /**
-     * 用于上报到服务中心，要求是其他节点可访问的地址
-     * @return
-     * @throws Exception
-     */
     Endpoint getPublishEndpoint() throws Exception;
 
     void send(Invocation invocation, AsyncResponse asyncResp) throws Exception;

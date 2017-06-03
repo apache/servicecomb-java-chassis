@@ -28,9 +28,6 @@ public class PerfStatContext {
     // 本次统计涉及消息数量
     private int msgCount;
 
-    /**
-     * PerfStatContext
-     */
     public PerfStatContext() {
         reset();
     }
@@ -47,9 +44,6 @@ public class PerfStatContext {
         this.msgCount = msgCount;
     }
 
-    /**
-     * reset
-     */
     public void reset() {
         callBegin = System.currentTimeMillis();
         msgCount = 0;

@@ -45,9 +45,6 @@ public class TestConfig {
         }
     }
 
-    /**
-     * Test Constants
-     */
     @Test
     public void testConstants() {
         Assert.assertEquals("x-cse-context", Const.CSE_CONTEXT);
@@ -57,9 +54,6 @@ public class TestConfig {
         Assert.assertEquals("latest", Const.DEFAULT_VERSION_RULE);
     }
 
-    /**
-     * Test HttpResonse
-     */
     @Test
     public void testHttpResponse() {
         String objectString = new String("Unit Testing");
@@ -80,18 +74,12 @@ public class TestConfig {
         Assert.assertEquals(true, oResponse.isFailed());
     }
 
-    /**
-     * Test HttpStatus
-     */
     @Test
     public void testHttpStatus() {
         StatusType oStatus = new HttpStatus(204, "InternalServerError");
         Assert.assertEquals("InternalServerError", oStatus.getReasonPhrase());
     }
 
-    /**
-     * Test ContextUtils
-     */
     @Test
     public void testContextUtils() {
         ThreadLocal<InvocationContext> contextMgr = new ThreadLocal<>();
@@ -126,9 +114,6 @@ public class TestConfig {
         Assert.assertNotEquals(oContext, oInnovation);
     }
 
-    /**
-     * Test Response
-     */
     @Test
     public void testResponse() {
         Response response = Response.create(400, "test", null);
@@ -140,9 +125,6 @@ public class TestConfig {
         Assert.assertEquals("errorData", exception.getErrorData());
     }
 
-    /**
-     * Test ConfigurationSpringInitializer
-     */
     @Test
     public void testConfigurationSpringInitializer() throws Exception {
         Properties p = new Properties();

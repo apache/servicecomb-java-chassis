@@ -38,7 +38,7 @@ public final class CertificateUtil {
 
     /**
      * 将证书链进行排序。颁发机构的证书排在前面，所有者排在后面。如：rootCA > subCA > owner。
-     * </p> <B>注意：</B>传入的证书必须是“一条完整证书链"。
+     * <B>注意：</B>传入的证书必须是“一条完整证书链"。
      * @param cerChain
      *            将要排序的证书链。
      * @return 排序后的证书链。
@@ -71,7 +71,7 @@ public final class CertificateUtil {
 
     /**
      * 从证书链里面返回根证书，即自签名的证书。
-     * </p> <B>注意：</B>传入的证书必须是“一条完整证书链"。
+     * <B>注意：</B>传入的证书必须是“一条完整证书链"。
      * @param cerChain
      *            证书链。
      * @return 根证书。
@@ -94,7 +94,7 @@ public final class CertificateUtil {
 
     /**
      * 从证书链里面返回证书所有者。即CA颁发的证书的所有者。位于证书链最下方。
-     * </p> <B>注意：</B>传入的证书必须是“一条完整证书链"。
+     * <B>注意：</B>传入的证书必须是“一条完整证书链"。
      * @param cerChain
      *            证书链。
      * @return 所有者
@@ -104,12 +104,6 @@ public final class CertificateUtil {
         return sorted[sorted.length - 1];
     }
 
-    /**
-     * 读取证书的CN名称
-     * @param cert
-     *            证书
-     * @return 名称
-     */
     public static Set<String> getCN(X509Certificate cert) {
         Set<String> names = new HashSet<String>();
 

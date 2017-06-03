@@ -32,35 +32,22 @@ public class TestPerfStatContext {
 
     PerfStatContext oPerfStatContext = null;
 
-    /**
-     * @throws java.lang.Exception
-     */
     @Before
     public void setUp() throws Exception {
         oPerfStatContext = new PerfStatContext();
     }
 
-    /**
-     * @throws java.lang.Exception
-     */
     @After
     public void tearDown() throws Exception {
         oPerfStatContext = null;
     }
 
-    /**
-     * Test Un-Initialized Values
-     */
     @Test
     public void testDefaultValues() {
         Assert.assertEquals(0, oPerfStatContext.getMsgCount());
         Assert.assertTrue(oPerfStatContext.getLatency() >= 0);
     }
 
-    /**
-     * Test the values after Initialization
-     * @throws InterruptedException 
-     */
     @Test
     public void testIntializedValues() throws InterruptedException {
         initializeObject(); //Initialize the object.
@@ -69,9 +56,6 @@ public class TestPerfStatContext {
         Assert.assertTrue(oPerfStatContext.getLatency() > 2);
     }
 
-    /**
-     * Initialize the values for the object
-     */
     private void initializeObject() {
         oPerfStatContext.setMsgCount(10);
 

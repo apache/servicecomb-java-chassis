@@ -23,9 +23,6 @@ import io.swagger.annotations.ApiResponses;
 
 public class ApiResponsesMethodProcessor implements MethodAnnotationProcessor {
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void process(Object annotation, OperationGenerator operationGenerator) {
         ApiResponses apiResponses = (ApiResponses) annotation;

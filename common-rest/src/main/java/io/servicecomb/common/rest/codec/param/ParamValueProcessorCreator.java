@@ -19,11 +19,5 @@ package io.servicecomb.common.rest.codec.param;
 import java.lang.reflect.Type;
 
 public interface ParamValueProcessorCreator {
-    /**
-     * 创建processor，设置参数路径和类型
-     * @param paramValue
-     * @param genericParamType
-     * @return
-     */
     ParamValueProcessor create(String paramValue, Type genericParamType);
 }

@@ -20,11 +20,6 @@ import org.junit.Test;
 
 public class TestRestSchemaMeta {
 
-    /**
-     * Test RestSchemaMeta
-     * 
-     * @throws Exception
-     */
     @Test
     public void testRestSchemaMeta() throws Exception {
         //        new ConfigurationSpringInitializer();

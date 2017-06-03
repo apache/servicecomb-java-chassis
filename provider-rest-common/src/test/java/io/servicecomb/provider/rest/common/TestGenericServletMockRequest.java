@@ -34,10 +34,6 @@ import io.servicecomb.core.definition.OperationMeta;
 
 public class TestGenericServletMockRequest {
 
-    /**
-     * Test GenericServletMockRequest
-     * @throws Exception 
-     */
     @Test
     public void testGenericServletMockRequest()
         throws Exception {

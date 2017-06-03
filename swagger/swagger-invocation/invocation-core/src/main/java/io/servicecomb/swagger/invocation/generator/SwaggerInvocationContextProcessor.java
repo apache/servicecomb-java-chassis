@@ -22,17 +22,11 @@ import io.servicecomb.swagger.generator.core.OperationGenerator;
 import io.servicecomb.swagger.invocation.SwaggerInvocationContext;
 
 public class SwaggerInvocationContextProcessor implements CommonParameterTypeProcessor {
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public Class<?> getParameterType() {
         return SwaggerInvocationContext.class;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void process(OperationGenerator operationGenerator, int paramIdx) {
         SwaggerInvocationContextParameter parameter = new SwaggerInvocationContextParameter();

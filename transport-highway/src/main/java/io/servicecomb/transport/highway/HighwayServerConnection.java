@@ -34,18 +34,12 @@ import io.vertx.core.net.NetSocket;
 public class HighwayServerConnection extends TcpServerConnection implements TcpBufferHandler {
     private static final Logger LOGGER = LoggerFactory.getLogger(HighwayServerConnection.class);
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void init(NetSocket netSocket) {
         splitter = new TcpParser(this);
         super.init(netSocket);
     }
 
-    /**
-    * {@inheritDoc}
-    */
     @Override
     public void handle(long msgId, Buffer headerBuffer, Buffer bodyBuffer) {
         RequestHeader requestHeader = decodeRequestHeader(msgId, headerBuffer);

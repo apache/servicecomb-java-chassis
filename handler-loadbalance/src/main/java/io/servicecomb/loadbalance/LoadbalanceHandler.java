@@ -97,11 +97,6 @@ public class LoadbalanceHandler extends AbstractHandler {
         }
     }
 
-    /**
-     * 设置隔离机制
-     * @param lb
-     * @param invocation
-     */
     protected void setIsolationFilter(LoadBalancer lb, Invocation invocation) {
         final String filterName = IsolationServerListFilter.class.getName();
         boolean isIsolationOpen = Configuration.INSTANCE.isIsolationFilterOpen(invocation.getMicroserviceName());
@@ -118,11 +113,6 @@ public class LoadbalanceHandler extends AbstractHandler {
         lb.putFilter(filterName, isolationListFilter);
     }
 
-    /**
-     * 设置动态路由分流机制
-     * @param lb
-     * @param invocation
-     */
     protected void setTransactionControlFilter(LoadBalancer lb, Invocation invocation) {
         final String filterName = TransactionControlFilter.class.getName();
         String policyClsName = Configuration.INSTANCE.getFlowsplitFilterPolicy(invocation.getMicroserviceName());

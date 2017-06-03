@@ -29,9 +29,6 @@ public class StandardObjectReader extends ObjectReader {
         super(base, base.getConfig());
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @SuppressWarnings("unchecked")
     @Override
     public <T> T readValue(InputStream src) throws IOException, JsonProcessingException {

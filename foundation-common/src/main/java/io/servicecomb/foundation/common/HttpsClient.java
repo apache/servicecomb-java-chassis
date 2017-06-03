@@ -72,24 +72,12 @@ import io.servicecomb.foundation.common.utils.FortifyUtils;
 public final class HttpsClient {
     private static final Logger LOGGER = LoggerFactory.getLogger(HttpsClient.class);
 
-    /**
-    * http连接超时时间
-    */
     private static final int CONNECTION_TIMEOUT = 10000;
 
-    /**
-    * SO超时时间
-    */
     private static final int SO_TIMEOUT = 10000;
 
-    /**
-    * 端口80
-    */
     private static final int PORT_80 = 80;
 
-    /**
-    * 端口443
-    */
     private static final int PORT_443 = 443;
 
     private static final String SSL_VERSION = "TLSv1.2";
@@ -155,13 +143,6 @@ public final class HttpsClient {
         }
     }
 
-    /**
-     * 创建SSLContext
-     * @return
-     * @throws GeneralSecurityException
-     * @throws IOException
-     * @throws Exception
-     */
     private static SSLContext createSSLContext(
             HttpsConfigInfoBean configBean) throws GeneralSecurityException, IOException {
         String sslVersion = SSL_VERSION;
@@ -214,13 +195,6 @@ public final class HttpsClient {
         return sslContext;
     }
 
-    /**
-     * 实例化并初始keystore
-     * @param keystoreFile
-     * @param keyPass
-     * @return
-     * @throws IOException
-     */
     private static KeyStore initKeyStore(String storePath, String storePasswd, String storeType) throws IOException {
         FileInputStream inputStream = null;
         try {
@@ -276,14 +250,6 @@ public final class HttpsClient {
 
     }
 
-    /**
-     * post请求
-     * @param url url
-     * @param body 消息体
-     * @return HttpResponse 响应结果
-     * @throws IOException IO异常
-     * @throws ClientProtocolException 客户端协议异常
-     */
     private static HttpResponse post(HttpClient httpClient, String url, String body,
             Map<String, String> headers) throws ClientProtocolException, IOException {
         HttpPost postRequest = new HttpPost(url);

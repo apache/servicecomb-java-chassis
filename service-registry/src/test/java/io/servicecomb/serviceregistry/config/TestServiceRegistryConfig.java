@@ -21,9 +21,6 @@ import org.junit.Test;
 
 public class TestServiceRegistryConfig {
 
-    /**
-     * Test ServiceRegistryConfig
-     */
     @Test
     public void testServiceRegistryConfig() {
         ServiceRegistryConfig oConfig = ServiceRegistryConfig.INSTANCE;

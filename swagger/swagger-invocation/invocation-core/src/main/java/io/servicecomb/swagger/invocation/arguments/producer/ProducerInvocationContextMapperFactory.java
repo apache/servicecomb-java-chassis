@@ -26,17 +26,11 @@ import org.springframework.stereotype.Component;
 @Qualifier("producer")
 public class ProducerInvocationContextMapperFactory implements ContextArgumentMapperFactory {
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public Class<?> getContextClass() {
         return SwaggerInvocationContextParameter.class;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public ArgumentMapper create(int producerArgIdx) {
         return new ProducerInvocationContextMapper(producerArgIdx);

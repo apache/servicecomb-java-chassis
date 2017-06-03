@@ -24,10 +24,6 @@ import io.servicecomb.provider.pojo.PojoConst;
 
 public class TestSpringInstanceFactory {
 
-    /**
-     * Test Init Exception
-     * @throws Exception 
-     */
     @Test
     public void testInitException()
         throws Exception {
@@ -41,10 +37,6 @@ public class TestSpringInstanceFactory {
         }
     }
 
-    /**
-     * Test Init
-     * @throws Exception 
-     */
     @Test
     public void testInit()
         throws Exception {

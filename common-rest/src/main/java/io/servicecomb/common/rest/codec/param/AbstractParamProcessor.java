@@ -28,9 +28,6 @@ public abstract class AbstractParamProcessor implements ParamValueProcessor {
         this.targetType = targetType;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public String getParameterPath() {
         return paramPath;
     }

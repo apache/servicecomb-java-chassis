@@ -34,44 +34,29 @@ public class TestRegisterInstanceRequest {
 
     MicroserviceInstance oMockMicroserviceInstance = null;
 
-    /**
-     * @throws java.lang.Exception
-     */
     @Before
     public void setUp() throws Exception {
         oRegisterInstanceRequest = new RegisterInstanceRequest();
         oMockMicroserviceInstance = Mockito.mock(MicroserviceInstance.class);
     }
 
-    /**
-     * @throws java.lang.Exception
-     */
     @After
     public void tearDown() throws Exception {
         oRegisterInstanceRequest = null;
         oMockMicroserviceInstance = null;
     }
 
-    /**
-     * Test Un-Initialized Values
-     */
     @Test
     public void testDefaultValues() {
         Assert.assertNull(oRegisterInstanceRequest.getInstance());
     }
 
-    /**
-     * Test InitializedValues
-     */
     @Test
     public void testIntializedValues() {
         initRegisterInstanceRequest(); //Initialize the Object
         Assert.assertEquals(oMockMicroserviceInstance, oRegisterInstanceRequest.getInstance());
     }
 
-    /**
-     * Initialize the Values
-     */
     private void initRegisterInstanceRequest() {
         oRegisterInstanceRequest.setInstance(oMockMicroserviceInstance);
     }

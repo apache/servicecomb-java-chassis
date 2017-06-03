@@ -27,25 +27,16 @@ import io.servicecomb.provider.pojo.RpcSchema;
 
 @RpcSchema(schemaId = "server")
 public class TestImpl implements Test {
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public String testStringArray(String[] arr) {
         return String.format("arr is '%s'", Arrays.toString(arr));
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public String getTestString(String code) {
         return String.format("code is '%s'", String.valueOf(code));
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public String postTestStatic(int code) {
         return null;
@@ -63,9 +54,6 @@ public class TestImpl implements Test {
         return user;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public String testException(int code) {
         String strCode = String.valueOf(code);
@@ -85,9 +73,6 @@ public class TestImpl implements Test {
         return "not expected";
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public User splitParam(int index, User user) {
         return doTest(index, user, null, null);
@@ -101,9 +86,6 @@ public class TestImpl implements Test {
         return doTest(request.getIndex(), request.getUser(), request.getUsers(), request.getData());
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public String addString(String[] strArr) {
         String result = Arrays.toString(strArr);

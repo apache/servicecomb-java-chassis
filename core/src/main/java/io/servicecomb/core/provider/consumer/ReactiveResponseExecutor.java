@@ -19,9 +19,6 @@ package io.servicecomb.core.provider.consumer;
 import java.util.concurrent.Executor;
 
 public class ReactiveResponseExecutor implements Executor {
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void execute(Runnable cmd) {
         cmd.run();

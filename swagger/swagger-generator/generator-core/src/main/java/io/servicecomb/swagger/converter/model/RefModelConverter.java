@@ -23,9 +23,6 @@ import io.swagger.models.RefModel;
 import io.swagger.models.Swagger;
 
 public class RefModelConverter extends AbstractModelConverter {
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public JavaType doConvert(ClassLoader classLoader, String packageName, Swagger swagger, Object model) {
         RefModel refModel = (RefModel) model;

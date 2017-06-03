@@ -36,9 +36,6 @@ public class FixedThreadExecutor implements Executor {
         executorList.add(Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors()));
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void execute(Runnable command) {
         long threadId = Thread.currentThread().getId();

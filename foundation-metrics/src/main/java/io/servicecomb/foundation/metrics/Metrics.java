@@ -48,23 +48,12 @@ public class Metrics extends CommonThread {
         return MetricsThread.getMsTick();
     }
 
-    /**
-     * 注册监控项
-     * @param perfStat  perfStat
-     * @param index     序号
-     */
     public static void registerPerfStat(PerfStat perfStat, int index) {
         synchronized (perfMonitorMgr) {
             perfMonitorMgr.registerPerfStat(perfStat, index);
         }
     }
 
-    /**
-     * getOrCreateLocalPerfStat
-     * @param name      统计名称
-     * @param index     序号
-     * @return PerfStatSuccFail
-     */
     public static PerfStatSuccFail getOrCreateLocalPerfStat(String name, int index) {
         Map<String, PerfStatSuccFail> map = LOCAL_PERF_STAT_MAP.get();
         if (map == null) {
@@ -86,10 +75,6 @@ public class Metrics extends CommonThread {
         return perfStat;
     }
 
-    /**
-     * 获取统计数据
-     * @return name -> perfstat
-     */
     public static Map<String, PerfStat> getMonitorPerfStat() {
         synchronized (perfMonitorMgr) {
             return perfMonitorMgr.getMonitorPerfStat();

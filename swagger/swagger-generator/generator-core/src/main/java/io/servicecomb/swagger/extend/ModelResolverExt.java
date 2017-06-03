@@ -69,9 +69,6 @@ public class ModelResolverExt extends ModelResolver {
         vendorExtensions.put(ExtendConst.EXT_JAVA_CLASS, type.getRawClass().getName());
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public Model resolve(JavaType type, ModelConverterContext context, Iterator<ModelConverter> next) {
         Model model = super.resolve(type, context, next);
@@ -86,9 +83,6 @@ public class ModelResolverExt extends ModelResolver {
         return model;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public Property resolveProperty(JavaType propType, ModelConverterContext context, Annotation[] annotations,
             Iterator<ModelConverter> next) {

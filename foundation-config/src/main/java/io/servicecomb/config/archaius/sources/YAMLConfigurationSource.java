@@ -42,10 +42,6 @@ public class YAMLConfigurationSource implements PolledConfigurationSource {
 
     private URL[] configUrls = new URL[0];
 
-    /**
-     * System property name to define a set of URLs to be used by the
-     * default constructor.
-     */
     private static final String CONFIG_URL = "cse.configurationSource.additionalUrls";
 
     /**

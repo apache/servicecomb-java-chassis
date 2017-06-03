@@ -64,18 +64,10 @@ public class BufferOutputStream extends OutputStream {
         return Buffer.buffer(byteBuf);
     }
 
-    /**
-     * buffer readable length
-     * @return       len
-     */
     public int length() {
         return byteBuf.readableBytes();
     }
 
-    /**
-     * writeByte
-     * @param value   value
-     */
     public void writeByte(byte value) {
         byteBuf.writeByte(value);
     }
@@ -86,60 +78,31 @@ public class BufferOutputStream extends OutputStream {
         byteBuf.writeByte((byte) byteValue);
     }
 
-    /**
-     * write
-     * @param value   value
-     */
     public void write(boolean value) {
         byteBuf.writeBoolean(value);
     }
 
-    /**
-     * writeInt
-     * @param pos     pos
-     * @param value   value
-     */
     public void writeInt(int pos, int value) {
         byteBuf.setInt(pos, value);
     }
 
-    /**
-     * writeShort
-     * @param value      value
-     */
     public void writeShort(short value) {
         byteBuf.writeShort(value);
     }
 
-    /**
-     * writeInt
-     * @param value      value
-     */
     public void writeInt(int value) {
         byteBuf.writeInt(value);
     }
 
-    /**
-     * writeLong
-     * @param value      value
-     */
     public void writeLong(long value) {
         byteBuf.writeLong(value);
     }
 
-    /**
-     * writeString
-     * @param value      value
-     */
     public void writeString(String value) {
         byteBuf.writeInt(value.length());
         byteBuf.writeCharSequence(value, StandardCharsets.UTF_8);
     }
 
-    /**
-     * write
-     * @param b   bytes
-     */
     public void write(byte[] b) {
         write(b, 0, b.length);
     }

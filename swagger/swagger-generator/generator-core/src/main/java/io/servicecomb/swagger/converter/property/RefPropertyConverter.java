@@ -23,9 +23,6 @@ import io.swagger.models.Swagger;
 import io.swagger.models.properties.RefProperty;
 
 public class RefPropertyConverter extends AbstractPropertyConverter {
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public JavaType doConvert(ClassLoader classLoader, String packageName, Swagger swagger, Object property) {
         RefProperty refProperty = (RefProperty) property;

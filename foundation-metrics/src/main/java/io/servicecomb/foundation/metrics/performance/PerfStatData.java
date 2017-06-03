@@ -49,19 +49,11 @@ public class PerfStatData {
 
     private static final int MILLI_COUNT_IN_SECOND = 1000;
 
-    /**
-     * 构造
-     * @param name  name
-     */
     public PerfStatData(String name) {
         msLatencySegments = new long[segmentDef.length + 1];
         this.name = name;
     }
 
-    /**
-     * setSegmentDef
-     * @param segmentDef  segmentDef
-     */
     public static void setSegmentDef(long[] segmentDef) {
         PerfStatData.segmentDef = segmentDef;
 
@@ -99,11 +91,6 @@ public class PerfStatData {
         return msLatencySegments;
     }
 
-    /**
-     * findSegmentIdx
-     * @param latency latency
-     * @return     segment idx
-     */
     protected int findSegmentIdx(long latency) {
         long lastDef = 0;
         for (int idx = 0; idx < segmentDef.length; idx++) {
@@ -118,11 +105,6 @@ public class PerfStatData {
         return segmentDef.length;
     }
 
-    /**
-     * add
-     * @param count    msgCount
-     * @param latency   msLatency
-     */
     public void add(int count, long latency) {
         this.callCount++;
         this.msgCount += count;
@@ -132,18 +114,10 @@ public class PerfStatData {
         this.msLatencySegments[segmentIdx]++;
     }
 
-    /**
-     * msLatency
-     * @param context context
-     */
     public void add(PerfStatContext context) {
         add(context.getMsgCount(), context.getLatency());
     }
 
-    /**
-     * mergeFrom
-     * @param other  PerfStatData
-     */
     public void mergeFrom(PerfStatData other) {
         callCount += other.callCount;
         msgCount += other.msgCount;
@@ -153,11 +127,6 @@ public class PerfStatData {
         }
     }
 
-    /**
-     * calc
-     * @param msNow  now
-     * @return PerfResult
-     */
     public PerfResult calc(long msNow) {
         PerfResult perf = new PerfResult();
         perf.setName("  all " + name + "  :");
@@ -170,12 +139,6 @@ public class PerfStatData {
         return perf;
     }
 
-    /**
-     * calc
-     * @param lastCycle lastCycle
-     * @param msCycle msCycle
-     * @return PerfResult
-     */
     public PerfResult calc(PerfStatData lastCycle, long msCycle) {
         PerfResult perf = new PerfResult();
 

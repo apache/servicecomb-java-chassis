@@ -35,9 +35,6 @@ import io.swagger.models.Tag;
 import io.swagger.util.BaseReaderUtils;
 
 public class SwaggerDefinitionProcessor implements ClassAnnotationProcessor {
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void process(Object annotation, SwaggerGenerator swaggerGenerator) {
         SwaggerDefinition definitionAnnotation = (SwaggerDefinition) annotation;

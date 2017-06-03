@@ -31,9 +31,6 @@ public class ReferenceDefParser extends AbstractSingleBeanDefinitionParser {
         return PojoReferenceMeta.class;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void doParse(Element element, ParserContext parserContext, BeanDefinitionBuilder builder) {
         builder.addPropertyValue(PojoConst.FIELD_MICROSERVICE_NAME,

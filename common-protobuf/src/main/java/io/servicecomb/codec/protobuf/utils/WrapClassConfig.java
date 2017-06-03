@@ -21,18 +21,10 @@ import io.servicecomb.common.javassist.ClassConfig;
 public class WrapClassConfig extends ClassConfig {
     private WrapType type;
 
-    /**
-     * 获取type的值
-     * @return 返回 type
-     */
     public WrapType getType() {
         return type;
     }
 
-    /**
-     * 对type进行赋值
-     * @param type type的新值
-     */
     public void setType(WrapType type) {
         this.type = type;
     }

@@ -27,9 +27,6 @@ public class ByteProperty extends AbstractBaseIntegerProperty<Byte> {
         return TYPE.equals(type) && FORMAT.equals(format);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected Byte parseNumber(String strValue) {
         return Byte.parseByte(strValue);

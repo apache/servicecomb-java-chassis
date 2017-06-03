@@ -23,9 +23,6 @@ public class NamedThreadFactory implements ThreadFactory {
 
     private final AtomicInteger threadNumber = new AtomicInteger();
 
-    /**
-     * 线程名的前缀
-     */
     private String prefix;
 
     public NamedThreadFactory() {
@@ -36,29 +33,15 @@ public class NamedThreadFactory implements ThreadFactory {
         this.prefix = prefix;
     }
 
-    /**
-     * 获取新的名字以prefix为前缀的线程
-     * @param r 线程的Runnable对象
-     * @return  新的线程
-     * @see ThreadFactory#newThread(Runnable)
-     */
     @Override
     public Thread newThread(Runnable r) {
         return new Thread(r, prefix + "-" + threadNumber.getAndIncrement());
     }
 
-    /**
-     * 获得prefix的值
-     * @return 返回 prefix
-     */
     public String getPrefix() {
         return prefix;
     }
 
-    /**
-     * 对prefix进行赋值
-     * @param prefix prefix
-     */
     public void setPrefix(String prefix) {
         this.prefix = prefix;
     }

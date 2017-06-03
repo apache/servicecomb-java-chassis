@@ -29,35 +29,22 @@ import org.junit.Test;
 public class TestBasePath {
     private BasePath oBasePath;
 
-    /**
-     * @throws java.lang.Exception
-     */
     @Before
     public void setUp() throws Exception {
         oBasePath = new BasePath();
     }
 
-    /**
-     * @throws java.lang.Exception
-     */
     @After
     public void tearDown() throws Exception {
         oBasePath = null;
     }
 
-    /**
-     * Test un-initialized Values
-     */
     @Test
     public void testDefaultValues() {
         Assert.assertNull(oBasePath.getPath());
         Assert.assertNull(oBasePath.getProperty());
     }
 
-    /**
-     * Test Getter and Setter
-     * Its insane but need to do it
-     */
     @Test
     public void testIntializedValues() {
         initBasePath(); //Initialize the Values
@@ -65,9 +52,6 @@ public class TestBasePath {
         Assert.assertNotNull(oBasePath.getProperty());
     }
 
-    /**
-     * Initialize the Values
-     */
     private void initBasePath() {
         oBasePath.setPath("a");
         oBasePath.setProperty(new HashMap<>());

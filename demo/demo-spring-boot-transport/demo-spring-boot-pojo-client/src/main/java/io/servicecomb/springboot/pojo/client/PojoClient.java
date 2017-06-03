@@ -27,11 +27,6 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 @SpringBootApplication
 public class PojoClient {
 
-    /**
-     * 
-     * @param args
-     * @throws Exception
-     */
     public static void main(final String[] args) throws Exception {
         SpringApplication.run(PojoClient.class, args);
 

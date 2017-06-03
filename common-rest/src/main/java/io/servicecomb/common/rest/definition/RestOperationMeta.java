@@ -103,10 +103,6 @@ public class RestOperationMeta {
         this.pathBuilder = new URLPathBuilder(absolutePath, paramMap);
     }
 
-    /**
-     * 对operationMeta进行赋值
-     * @param operationMeta operationMeta的新值
-     */
     public void setOperationMeta(OperationMeta operationMeta) {
         this.operationMeta = operationMeta;
     }
@@ -174,17 +170,10 @@ public class RestOperationMeta {
         return paramList.get(index);
     }
 
-    /**
-     * 获取operationMeta的值
-     * @return 返回 operationMeta
-     */
     public OperationMeta getOperationMeta() {
         return operationMeta;
     }
 
-    /**
-     * 为operation创建支持的多种produce processor
-     */
     protected void createProduceProcessors() {
         if (null == produces || produces.isEmpty()) {
             for (ProduceProcessor processor : ProduceProcessorManager.INSTANCE.values()) {
@@ -221,11 +210,6 @@ public class RestOperationMeta {
         return this.produceProcessorMap.get(type);
     }
 
-    /**
-     * 选择与accept匹配的produce processor或者缺省的
-     * @param accept
-     * @return
-     */
     public ProduceProcessor ensureFindProduceProcessor(String types) {
         if (StringUtils.isEmpty(types)) {
             return defaultProcessor;
@@ -248,11 +232,6 @@ public class RestOperationMeta {
         return null;
     }
 
-    /**
-     * 只提取出media type，忽略charset和q值等
-     * @param types
-     * @return
-     */
     protected String[] splitAcceptTypes(String types) {
         String[] typeArr = types.split(ACCEPT_TYPE_SEPARATER);
         for (int idxX = 0; idxX < typeArr.length; idxX++) {
@@ -267,12 +246,6 @@ public class RestOperationMeta {
         return typeArr;
     }
 
-    /**
-     * 检查是否包含特定的类型
-     * @param typeArr
-     * @param specType
-     * @return
-     */
     protected boolean containSpecType(String[] typeArr, String specType) {
         for (String type : typeArr) {
             if (specType.equals(type)) {
@@ -286,10 +259,6 @@ public class RestOperationMeta {
         return this.defaultProcessor;
     }
 
-    /**
-     * 仅用于测试
-     * @param defaultProcessor
-     */
     protected void setDefaultProcessor(ProduceProcessor defaultProcessor) {
         this.defaultProcessor = defaultProcessor;
     }

@@ -159,9 +159,6 @@ public final class ServiceRegistryClientImpl implements ServiceRegistryClient {
         return null;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public boolean isSchemaExist(String microserviceId, String schemaId) {
         Holder<GetExistenceResponse> holder = new Holder<>();
@@ -185,9 +182,6 @@ public final class ServiceRegistryClientImpl implements ServiceRegistryClient {
         return holder.value != null;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public boolean registerSchema(String microserviceId, String schemaId, String schemaContent) {
         Holder<HttpClientResponse> holder = new Holder<>();
@@ -225,9 +219,6 @@ public final class ServiceRegistryClientImpl implements ServiceRegistryClient {
         return false;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public String getSchema(String microserviceId, String schemaId) {
         Holder<GetSchemaResponse> holder = new Holder<>();

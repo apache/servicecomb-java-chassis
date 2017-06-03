@@ -30,25 +30,16 @@ public class TestPerfResult {
 
     PerfResult oPerfResult = null;
 
-    /**
-     * @throws java.lang.Exception
-     */
     @Before
     public void setUp() throws Exception {
         oPerfResult = new PerfResult();
     }
 
-    /**
-     * @throws java.lang.Exception
-     */
     @After
     public void tearDown() throws Exception {
         oPerfResult = null;
     }
 
-    /**
-     * Test Un-Initialized Values
-     */
     @Test
     public void testDefaultValues() {
         Assert.assertNull(oPerfResult.getName());
@@ -60,9 +51,6 @@ public class TestPerfResult {
 
     }
 
-    /**
-     * Test the values after Initialization
-     */
     @Test
     public void testIntializedValues() {
         initializeObject(); //Initialize the object.
@@ -76,9 +64,6 @@ public class TestPerfResult {
 
     }
 
-    /**
-     * Initialize the values for the object
-     */
     private void initializeObject() {
         long[] oLongLatencySegment = new long[] {123, 154};
         oPerfResult.setAvgCallCount(2);

@@ -29,9 +29,6 @@ import io.swagger.models.properties.Property;
 
 public class ResponseProcessor implements ResponseTypeProcessor {
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public Property process(OperationGenerator operationGenerator) {
         // Response完全表达应答类型

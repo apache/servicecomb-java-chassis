@@ -34,26 +34,14 @@ public class ConsumerOperationMeta {
         this.responseMapper = responseMapper;
     }
 
-    /**
-     * 获取operationMeta的值
-     * @return 返回 operationMeta
-     */
     public OperationMeta getOperationMeta() {
         return operationMeta;
     }
 
-    /**
-     * 获取argsMapper的值
-     * @return 返回 argsMapper
-     */
     public ConsumerArgumentsMapper getArgsMapper() {
         return argsMapper;
     }
 
-    /**
-     * 获取responseMapper的值
-     * @return 返回 responseMapper
-     */
     public ConsumerResponseMapper getResponseMapper() {
         return responseMapper;
     }

@@ -39,16 +39,6 @@ public final class VertxTLSBuilder {
 
     }
 
-    /**
-     * TLS配置模型应用于 NetServerOptions
-     * @param sslOption
-     *            SSLOption
-     * @param sslCustom
-     *            SSLCustom
-     * @param netServerOptions
-     *            NetServerOptions
-     * @return NetServerOptions
-     */
     public static NetServerOptions buildNetServerOptions(SSLOption sslOption, SSLCustom sslCustom,
             NetServerOptions netServerOptions) {
         buildTCPSSLOptions(sslOption, sslCustom, netServerOptions);
@@ -60,16 +50,6 @@ public final class VertxTLSBuilder {
         return netServerOptions;
     }
 
-    /**
-     * TLS配置模型应用于 HttpClientOptions
-     * @param sslOption
-     *            SSLOption
-     * @param sslCustom
-     *            SSLCustom
-     * @param httpClientOptions
-     *            HttpClientOptions
-     * @return HttpClientOptions
-     */
     public static HttpClientOptions buildHttpClientOptions(SSLOption sslOption, SSLCustom sslCustom,
             HttpClientOptions httpClientOptions) {
         buildClientOptionsBase(sslOption, sslCustom, httpClientOptions);

@@ -38,26 +38,14 @@ public class RegisterManager<KEY, VALUE> {
         this.name = name;
     }
 
-    /**
-     * 获取name的值
-     * @return 返回 name
-     */
     public String getName() {
         return name;
     }
 
-    /**
-     * 获取registerErrorFmt的值
-     * @return 返回 registerErrorFmt
-     */
     public String getRegisterErrorFmt() {
         return registerErrorFmt;
     }
 
-    /**
-     * 对registerErrorFmt进行赋值
-     * @param registerErrorFmt registerErrorFmt的新值
-     */
     public void setRegisterErrorFmt(String registerErrorFmt) {
         this.registerErrorFmt = registerErrorFmt;
     }

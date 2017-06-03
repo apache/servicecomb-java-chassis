@@ -23,10 +23,6 @@ import io.servicecomb.provider.pojo.PojoConst;
 
 public class TestPojoInstanceFactory {
 
-    /**
-     * Test Init Exception
-     * @throws Exception 
-     */
     @Test
     public void testInitException()
         throws Exception {
@@ -39,10 +35,6 @@ public class TestPojoInstanceFactory {
         }
     }
 
-    /**
-     * Test Init
-     * @throws Exception 
-     */
     @Test
     public void testInit()
         throws Exception {

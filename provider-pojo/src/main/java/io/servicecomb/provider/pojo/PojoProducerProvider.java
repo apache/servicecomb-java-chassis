@@ -50,10 +50,6 @@ public class PojoProducerProvider extends AbstractProducerProvider {
         regsiterInstanceFactory(new SpringInstanceFactory());
     }
 
-    /**
-     * {@inheritDoc}
-     * @throws Exception
-     */
     @Override
     public void init() throws Exception {
         for (PojoProducerMeta pojoProducerMeta : pojoProducers.getProcucers()) {
@@ -67,9 +63,6 @@ public class PojoProducerProvider extends AbstractProducerProvider {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public String getName() {
         return PojoConst.POJO;

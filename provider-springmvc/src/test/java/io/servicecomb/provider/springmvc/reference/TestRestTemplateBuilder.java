@@ -21,9 +21,6 @@ import org.junit.Test;
 
 public class TestRestTemplateBuilder {
 
-    /**
-     * Test RestTemplateBuilder
-     */
     @Test
     public void testRestTemplateBuilder() {
         Assert.assertEquals(RestTemplateWrapper.class, RestTemplateBuilder.create().getClass());

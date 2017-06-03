@@ -21,10 +21,6 @@ import io.servicecomb.common.rest.definition.RestParam;
 public abstract class AbstractUrlParamWriter implements UrlParamWriter {
     protected RestParam param;
 
-    /**
-     * 对param进行赋值
-     * @param param param的新值
-     */
     public void setParam(RestParam param) {
         this.param = param;
     }

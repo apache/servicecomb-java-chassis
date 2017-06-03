@@ -42,10 +42,6 @@ public class CompositeSwaggerGeneratorContext {
         }
     }
 
-    /**
-     * 获取contextList的值
-     * @return 返回 contextList
-     */
     public List<SwaggerGeneratorContext> getContextList() {
         return contextList;
     }

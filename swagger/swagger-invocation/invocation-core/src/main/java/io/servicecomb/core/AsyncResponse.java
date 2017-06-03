@@ -21,11 +21,6 @@ import javax.ws.rs.core.Response.StatusType;
 import io.servicecomb.core.invocation.InvocationType;
 
 public interface AsyncResponse {
-    /**
-     * Something has happened, so handle it.
-     *
-     * @param event  the event to handle
-     */
     void handle(Response response);
 
     default void success(StatusType status, Object result) {

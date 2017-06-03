@@ -17,9 +17,6 @@
 package io.servicecomb.foundation.common.lock;
 
 public class LockException extends RuntimeException {
-    /**
-     * 注释内容
-     */
     private static final long serialVersionUID = -6761470821175384480L;
 
     public LockException() {

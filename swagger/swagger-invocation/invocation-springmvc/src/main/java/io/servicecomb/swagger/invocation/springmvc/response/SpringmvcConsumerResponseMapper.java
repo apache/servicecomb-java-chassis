@@ -29,17 +29,11 @@ import io.servicecomb.swagger.invocation.response.consumer.ConsumerResponseMappe
 
 @Component
 public class SpringmvcConsumerResponseMapper implements ConsumerResponseMapper {
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public Class<?> getResponseClass() {
         return ResponseEntity.class;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public Object mapResponse(Response response) {
         HttpStatus status = HttpStatus.valueOf(response.getStatusCode());

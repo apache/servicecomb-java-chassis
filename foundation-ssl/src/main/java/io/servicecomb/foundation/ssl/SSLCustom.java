@@ -26,10 +26,6 @@ import org.slf4j.LoggerFactory;
 public abstract class SSLCustom {
     private static final Logger LOG = LoggerFactory.getLogger(SSLCustom.class);
 
-    /**
-     * 构造默认的SSLCustom，不对配置值进行转换.
-     * @return 默认的SSLCustom
-     */
     public static SSLCustom defaultSSLCustom() {
         final SSLCustom custom = new SSLCustom() {
             @Override
@@ -56,26 +52,10 @@ public abstract class SSLCustom {
         return defaultSSLCustom();
     }
 
-    /**
-     * 将SSLOption中的密文解密为明文。
-     * @param encrypted
-     *            密文
-     * @return 明文
-     */
     public abstract char[] decode(char[] encrypted);
 
-    /**
-     * 将SSLOption配置的证书名称转换为绝对路径, 包括身份证书、信任证书、吊销证书、白名单文件等涉及文件路径的内容
-     * @param filename
-     *            证书名称。
-     * @return 证书的绝对路径。
-     */
     public abstract String getFullPath(String filename);
 
-    /**
-     * 获取host名称，用于CN检查。 一般可以通过SSLSession获取到peerHost，但是一些实现获取到null.
-     * @return host名称
-     */
     public String getHost() {
         return null;
     }

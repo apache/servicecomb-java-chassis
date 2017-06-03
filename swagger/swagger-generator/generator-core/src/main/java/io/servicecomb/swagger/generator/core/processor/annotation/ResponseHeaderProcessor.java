@@ -24,9 +24,6 @@ import io.swagger.models.properties.Property;
 
 public class ResponseHeaderProcessor implements MethodAnnotationProcessor {
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void process(Object annotation, OperationGenerator operationGenerator) {
         ResponseHeader responseHeader = (ResponseHeader) annotation;

@@ -100,9 +100,6 @@ public class VertxRestServer extends AbstractRestServer<HttpServerResponse> {
         httpServerResponse.end(buffer);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void setHttpRequestContext(Invocation invocation, RestServerRequestInternal restRequest) {
 

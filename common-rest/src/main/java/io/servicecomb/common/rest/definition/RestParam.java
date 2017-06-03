@@ -54,10 +54,6 @@ public class RestParam {
         this.paramProcessor = paramProcessor;
     }
 
-    /**
-     * 获取paramName的值
-     * @return 返回 paramName
-     */
     public String getParamName() {
         return paramName;
     }

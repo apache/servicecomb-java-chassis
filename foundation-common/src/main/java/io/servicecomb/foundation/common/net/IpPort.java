@@ -36,10 +36,6 @@ public class IpPort {
         this.port = port;
     }
 
-    /**
-     * 获取hostOrIp的值
-     * @return 返回 hostOrIp
-     */
     public String getHostOrIp() {
         return hostOrIp;
     }
@@ -48,26 +44,14 @@ public class IpPort {
         this.hostOrIp = hostOrIp;
     }
 
-    /**
-     * 获取port的值
-     * @return 返回 port
-     */
     public int getPort() {
         return port;
     }
 
-    /**
-     * 对port进行赋值
-     * @param port port的新值
-     */
     public void setPort(int port) {
         this.port = port;
     }
 
-    /**
-     * 获取socketAddress的值
-     * @return 返回 socketAddress
-     */
     public InetSocketAddress getSocketAddress() {
         if (socketAddress == null) {
             synchronized (lock) {

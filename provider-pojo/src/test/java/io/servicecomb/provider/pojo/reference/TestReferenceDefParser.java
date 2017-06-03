@@ -26,10 +26,6 @@ import io.servicecomb.provider.pojo.PojoConst;
 
 public class TestReferenceDefParser {
 
-    /**
-     * Test doParse
-     * @throws Exception 
-     */
     @Test
     public void testDoParse()
         throws Exception {

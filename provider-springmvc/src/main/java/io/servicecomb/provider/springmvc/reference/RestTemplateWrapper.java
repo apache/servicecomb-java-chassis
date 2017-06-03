@@ -40,9 +40,6 @@ public class RestTemplateWrapper extends RestTemplate {
         return RestConst.SCHEME.equals(uri.getScheme());
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public <T> T getForObject(String url, Class<T> responseType, Object... urlVariables) throws RestClientException {
         if (isCse(url)) {
@@ -52,9 +49,6 @@ public class RestTemplateWrapper extends RestTemplate {
         return super.getForObject(url, responseType, urlVariables);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public <T> T getForObject(String url, Class<T> responseType,
             Map<String, ?> urlVariables) throws RestClientException {
@@ -65,9 +59,6 @@ public class RestTemplateWrapper extends RestTemplate {
         return super.getForObject(url, responseType, urlVariables);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public <T> T getForObject(URI url, Class<T> responseType) throws RestClientException {
         if (isCse(url)) {
@@ -77,9 +68,6 @@ public class RestTemplateWrapper extends RestTemplate {
         return super.getForObject(url, responseType);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public <T> ResponseEntity<T> getForEntity(String url, Class<T> responseType,
             Object... urlVariables) throws RestClientException {
@@ -90,9 +78,6 @@ public class RestTemplateWrapper extends RestTemplate {
         return super.getForEntity(url, responseType, urlVariables);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public <T> ResponseEntity<T> getForEntity(String url, Class<T> responseType,
             Map<String, ?> urlVariables) throws RestClientException {
@@ -103,9 +88,6 @@ public class RestTemplateWrapper extends RestTemplate {
         return super.getForEntity(url, responseType, urlVariables);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public <T> ResponseEntity<T> getForEntity(URI url, Class<T> responseType) throws RestClientException {
         if (isCse(url)) {
@@ -115,9 +97,6 @@ public class RestTemplateWrapper extends RestTemplate {
         return super.getForEntity(url, responseType);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public <T> T postForObject(String url, Object request, Class<T> responseType,
             Object... uriVariables) throws RestClientException {
@@ -128,9 +107,6 @@ public class RestTemplateWrapper extends RestTemplate {
         return super.postForObject(url, request, responseType, uriVariables);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public <T> T postForObject(String url, Object request, Class<T> responseType,
             Map<String, ?> uriVariables) throws RestClientException {
@@ -141,9 +117,6 @@ public class RestTemplateWrapper extends RestTemplate {
         return super.postForObject(url, request, responseType, uriVariables);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public <T> T postForObject(URI url, Object request, Class<T> responseType) throws RestClientException {
         if (isCse(url)) {
@@ -153,9 +126,6 @@ public class RestTemplateWrapper extends RestTemplate {
         return super.postForObject(url, request, responseType);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public <T> ResponseEntity<T> postForEntity(String url, Object request, Class<T> responseType,
             Object... uriVariables) throws RestClientException {
@@ -166,9 +136,6 @@ public class RestTemplateWrapper extends RestTemplate {
         return super.postForEntity(url, request, responseType, uriVariables);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public <T> ResponseEntity<T> postForEntity(String url, Object request, Class<T> responseType,
             Map<String, ?> uriVariables) throws RestClientException {
@@ -179,9 +146,6 @@ public class RestTemplateWrapper extends RestTemplate {
         return super.postForEntity(url, request, responseType, uriVariables);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public <T> ResponseEntity<T> postForEntity(URI url, Object request,
             Class<T> responseType) throws RestClientException {
@@ -192,9 +156,6 @@ public class RestTemplateWrapper extends RestTemplate {
         return super.postForEntity(url, request, responseType);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void put(String url, Object request, Object... urlVariables) throws RestClientException {
         if (isCse(url)) {
@@ -205,9 +166,6 @@ public class RestTemplateWrapper extends RestTemplate {
         super.put(url, request, urlVariables);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void put(String url, Object request, Map<String, ?> urlVariables) throws RestClientException {
         if (isCse(url)) {
@@ -218,9 +176,6 @@ public class RestTemplateWrapper extends RestTemplate {
         super.put(url, request, urlVariables);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void put(URI url, Object request) throws RestClientException {
         if (isCse(url)) {
@@ -231,9 +186,6 @@ public class RestTemplateWrapper extends RestTemplate {
         super.put(url, request);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void delete(String url, Object... urlVariables) throws RestClientException {
         if (isCse(url)) {
@@ -244,9 +196,6 @@ public class RestTemplateWrapper extends RestTemplate {
         super.delete(url, urlVariables);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void delete(String url, Map<String, ?> urlVariables) throws RestClientException {
         if (isCse(url)) {
@@ -257,9 +206,6 @@ public class RestTemplateWrapper extends RestTemplate {
         super.delete(url, urlVariables);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void delete(URI url) throws RestClientException {
         if (isCse(url)) {
@@ -270,9 +216,6 @@ public class RestTemplateWrapper extends RestTemplate {
         super.delete(url);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public <T> ResponseEntity<T> exchange(String url, HttpMethod method, HttpEntity<?> requestEntity,
             Class<T> responseType, Object... uriVariables) throws RestClientException {
@@ -283,9 +226,6 @@ public class RestTemplateWrapper extends RestTemplate {
         return super.exchange(url, method, requestEntity, responseType, uriVariables);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public <T> ResponseEntity<T> exchange(String url, HttpMethod method, HttpEntity<?> requestEntity,
             ParameterizedTypeReference<T> responseType, Map<String, ?> uriVariables) throws RestClientException {
@@ -296,9 +236,6 @@ public class RestTemplateWrapper extends RestTemplate {
         return super.exchange(url, method, requestEntity, responseType, uriVariables);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public <T> ResponseEntity<T> exchange(String url, HttpMethod method, HttpEntity<?> requestEntity,
             Class<T> responseType, Map<String, ?> uriVariables) throws RestClientException {
@@ -309,9 +246,6 @@ public class RestTemplateWrapper extends RestTemplate {
         return super.exchange(url, method, requestEntity, responseType, uriVariables);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public <T> ResponseEntity<T> exchange(String url, HttpMethod method, HttpEntity<?> requestEntity,
             ParameterizedTypeReference<T> responseType, Object... uriVariables) throws RestClientException {
@@ -322,9 +256,6 @@ public class RestTemplateWrapper extends RestTemplate {
         return super.exchange(url, method, requestEntity, responseType, uriVariables);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public <T> ResponseEntity<T> exchange(RequestEntity<?> requestEntity,
             Class<T> responseType) throws RestClientException {
@@ -335,9 +266,6 @@ public class RestTemplateWrapper extends RestTemplate {
         return super.exchange(requestEntity, responseType);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public <T> ResponseEntity<T> exchange(RequestEntity<?> requestEntity,
             ParameterizedTypeReference<T> responseType) throws RestClientException {
@@ -348,9 +276,6 @@ public class RestTemplateWrapper extends RestTemplate {
         return super.exchange(requestEntity, responseType);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public <T> ResponseEntity<T> exchange(URI url, HttpMethod method, HttpEntity<?> requestEntity,
             Class<T> responseType) throws RestClientException {
@@ -361,9 +286,6 @@ public class RestTemplateWrapper extends RestTemplate {
         return super.exchange(url, method, requestEntity, responseType);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public <T> ResponseEntity<T> exchange(URI url, HttpMethod method, HttpEntity<?> requestEntity,
             ParameterizedTypeReference<T> responseType) throws RestClientException {

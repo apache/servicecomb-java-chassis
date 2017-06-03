@@ -30,28 +30,15 @@ public class PerfStatImpl implements PerfStat {
 
     private List<PerfStatData> dataList = new ArrayList<>();
 
-    /**
-     * 构造
-     * @param name name
-     */
     public PerfStatImpl(String name) {
         this.name = name;
     }
 
-    /**
-     * 构造
-     * @param name   name
-     * @param data   data
-     */
     public PerfStatImpl(String name, PerfStatData data) {
         this.name = name;
         addPerfStatData(data);
     }
 
-    /**
-     * addPerfStatData
-     * @param data   data
-     */
     public void addPerfStatData(PerfStatData data) {
         dataList.add(data);
     }

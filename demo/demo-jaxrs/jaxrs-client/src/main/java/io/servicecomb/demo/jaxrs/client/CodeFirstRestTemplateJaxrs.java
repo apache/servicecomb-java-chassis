@@ -22,9 +22,6 @@ import io.servicecomb.demo.CodeFirstRestTemplate;
 import io.servicecomb.demo.TestMgr;
 
 public class CodeFirstRestTemplateJaxrs extends CodeFirstRestTemplate {
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void testExtend(RestTemplate template, String cseUrlPrefix) {
         super.testExtend(template, cseUrlPrefix);

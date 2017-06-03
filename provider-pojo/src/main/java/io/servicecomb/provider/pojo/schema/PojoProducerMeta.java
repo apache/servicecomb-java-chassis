@@ -28,25 +28,14 @@ public class PojoProducerMeta extends ProducerMeta implements InitializingBean {
 
     private String implementation;
 
-    /**
-     * 获取implementation的值
-     * @return 返回 implementation
-     */
     public String getImplementation() {
         return implementation;
     }
 
-    /**
-    * 对implementation进行赋值
-    * @param implementation implementation的新值
-    */
     public void setImplementation(String implementation) {
         this.implementation = implementation;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void afterPropertiesSet() throws Exception {
         pojoProducers.registerPojoProducer(this);

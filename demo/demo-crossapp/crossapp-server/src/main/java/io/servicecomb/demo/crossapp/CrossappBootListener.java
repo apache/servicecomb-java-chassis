@@ -23,9 +23,6 @@ import io.servicecomb.core.definition.loader.DynamicSchemaLoader;
 
 @Component
 public class CrossappBootListener implements BootListener {
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void onBootEvent(BootEvent event) {
         if (EventType.BEFORE_PRODUCER_PROVIDER.equals(event.getEventType())) {

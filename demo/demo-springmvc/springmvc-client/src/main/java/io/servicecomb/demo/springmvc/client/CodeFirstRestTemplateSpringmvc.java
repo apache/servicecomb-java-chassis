@@ -33,9 +33,6 @@ public class CodeFirstRestTemplateSpringmvc extends CodeFirstRestTemplate {
     @RpcReference(microserviceName = "springmvc", schemaId = "codeFirst")
     private CodeFirstSprigmvcIntf intf;
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void testExtend(RestTemplate template, String cseUrlPrefix) {
         super.testExtend(template, cseUrlPrefix);

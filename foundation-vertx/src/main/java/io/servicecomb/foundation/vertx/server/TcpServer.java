@@ -32,10 +32,6 @@ import io.vertx.core.net.NetServerOptions;
 public class TcpServer {
     private URIEndpointObject endpointObject;
 
-    /**
-     * 构造
-     * @param endpointObject               server addr
-     */
     public TcpServer(URIEndpointObject endpointObject) {
         this.endpointObject = endpointObject;
     }

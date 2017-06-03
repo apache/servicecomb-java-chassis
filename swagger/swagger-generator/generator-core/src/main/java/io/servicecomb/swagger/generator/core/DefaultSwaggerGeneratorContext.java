@@ -81,17 +81,11 @@ public class DefaultSwaggerGeneratorContext implements SwaggerGeneratorContext {
         initResponseTypeProcessorMgr();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public int getOrder() {
         return 0;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public boolean canProcess(Class<?> cls) {
         return true;
@@ -162,9 +156,6 @@ public class DefaultSwaggerGeneratorContext implements SwaggerGeneratorContext {
         return defaultParameterProcessor;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public ResponseTypeProcessor findResponseTypeProcessor(Type responseType) {
         ResponseTypeProcessor processor = responseTypeProcessorMgr.findValue(responseType);
@@ -175,9 +166,6 @@ public class DefaultSwaggerGeneratorContext implements SwaggerGeneratorContext {
         return processor;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void correctPath(OperationGenerator operationGenerator) {
         // 默认是透明rpc的方案

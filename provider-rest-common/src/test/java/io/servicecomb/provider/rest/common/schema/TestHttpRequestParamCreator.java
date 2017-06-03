@@ -30,10 +30,6 @@ import io.servicecomb.provider.rest.common.ProducerHttpRequestArgMapper;
 
 public class TestHttpRequestParamCreator {
 
-    /**
-     * Test createMockParam
-     * @throws Exception 
-     */
     @Test
     public void testCreateMockParam() throws Exception {
         ProducerHttpRequestArgMapper lHttpRequestParamCreator = new ProducerHttpRequestArgMapper(0);

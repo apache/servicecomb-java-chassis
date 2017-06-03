@@ -29,9 +29,6 @@ import io.swagger.models.properties.StringProperty;
 
 public class AbstractSerializableParameterConverter implements Converter {
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public JavaType convert(ClassLoader classLoader, String packageName, Swagger swagger, Object def) {
         AbstractSerializableParameter<?> param = (AbstractSerializableParameter<?>) def;

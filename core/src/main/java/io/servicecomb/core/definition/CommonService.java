@@ -45,18 +45,10 @@ public class CommonService<OPERATION> {
         return operationMgr.values();
     }
 
-    /**
-     * 获取name的值
-     * @return 返回 name
-     */
     public String getName() {
         return name;
     }
 
-    /**
-     * 对name进行赋值
-     * @param name name的新值
-     */
     public void setName(String name) {
         this.name = name;
     }

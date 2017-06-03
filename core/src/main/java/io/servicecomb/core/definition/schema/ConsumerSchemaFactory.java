@@ -170,9 +170,6 @@ public class ConsumerSchemaFactory extends AbstractSchemaFactory<ConsumerSchemaC
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void connectToProvider(ConsumerSchemaContext context) {
         // 什么都不做，由调用者主动调用connectToConsumer
@@ -248,9 +245,6 @@ public class ConsumerSchemaFactory extends AbstractSchemaFactory<ConsumerSchemaC
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected SchemaMeta createSchema(ConsumerSchemaContext context) {
         // 尝试从规划的目录或服务中心加载契约
@@ -260,9 +254,6 @@ public class ConsumerSchemaFactory extends AbstractSchemaFactory<ConsumerSchemaC
         return schemaLoader.registerSchema(context.getMicroserviceMeta(), context.getSchemaId(), swagger);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected Swagger loadSwagger(ConsumerSchemaContext context) {
         Swagger swagger = super.loadSwagger(context);

@@ -65,9 +65,6 @@ public class StringPropertyConverter extends AbstractPropertyConverter {
         return getOrCreateEnumByNames(packageName, enums);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public JavaType doConvert(ClassLoader classLoader, String packageName, Swagger swagger, Object property) {
         StringProperty stringProperty = (StringProperty) property;

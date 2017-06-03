@@ -26,18 +26,10 @@ public class CommonExceptionData {
         this.message = message;
     }
 
-    /**
-     * 获取message的值
-     * @return 返回 message
-     */
     public String getMessage() {
         return message;
     }
 
-    /**
-     * 对message进行赋值
-     * @param message message的新值
-     */
     public void setMessage(String message) {
         this.message = message;
     }

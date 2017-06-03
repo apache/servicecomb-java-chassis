@@ -30,25 +30,16 @@ public class TestPerfStatData {
 
     PerfStatData oPerfStatData = null;
 
-    /**
-     * @throws java.lang.Exception
-     */
     @Before
     public void setUp() throws Exception {
         oPerfStatData = new PerfStatData("testData");
     }
 
-    /**
-     * @throws java.lang.Exception
-     */
     @After
     public void tearDown() throws Exception {
         oPerfStatData = null;
     }
 
-    /**
-     * Test Un-Initialized Values
-     */
     @Test
     public void testDefaultValues() {
         Assert.assertEquals("testData", oPerfStatData.getName());
@@ -60,9 +51,6 @@ public class TestPerfStatData {
 
     }
 
-    /**
-     * Test the add
-     */
     @Test
     public void testAdd() {
         oPerfStatData.add(10, 100);
@@ -76,9 +64,6 @@ public class TestPerfStatData {
         Assert.assertEquals(40, oPerfStatData.getMsgCount());
     }
 
-    /**
-     * Test MergeFrom
-     */
     @Test
     public void testMergeFrom() {
         oPerfStatData.mergeFrom(new PerfStatData("anotherData"));
@@ -87,9 +72,6 @@ public class TestPerfStatData {
         Assert.assertEquals(0, oPerfStatData.getMsLatency());
     }
 
-    /**
-     * Test calc
-     */
     @Test
     public void testCalc() {
         PerfResult oPerfResult = oPerfStatData.calc(System.currentTimeMillis() + 18989);

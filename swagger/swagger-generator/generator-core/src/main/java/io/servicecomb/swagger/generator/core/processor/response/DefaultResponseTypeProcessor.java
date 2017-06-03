@@ -26,9 +26,6 @@ import io.swagger.models.properties.Property;
 
 public class DefaultResponseTypeProcessor implements ResponseTypeProcessor {
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public Property process(OperationGenerator operationGenerator) {
         Type responseType = operationGenerator.getProviderMethod().getGenericReturnType();

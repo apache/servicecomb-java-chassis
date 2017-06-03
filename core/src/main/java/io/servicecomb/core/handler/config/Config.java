@@ -38,10 +38,6 @@ public class Config {
         return this.handlerClassMap;
     }
 
-    /**
-     * 对handlerList进行赋值
-     * @param handlerConfigList handlerList的新值
-     */
     @JacksonXmlProperty(localName = "handler")
     @JacksonXmlElementWrapper(useWrapping = false)
     public void setHandlerConfigList(List<HandlerConfig> handlerConfigList) {

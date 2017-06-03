@@ -39,34 +39,18 @@ public class RequestMeta {
         this.pathParams = pathParams;
     }
 
-    /**
-     * 获取referenceConfig的值
-     * @return 返回 referenceConfig
-     */
     public ReferenceConfig getReferenceConfig() {
         return referenceConfig;
     }
 
-    /**
-     * 获取pathParams的值
-     * @return 返回 pathParams
-     */
     public Map<String, String> getPathParams() {
         return pathParams;
     }
 
-    /**
-     * 获取swaggerRestOperation的值
-     * @return 返回 swaggerRestOperation
-     */
     public RestOperationMeta getSwaggerRestOperation() {
         return swaggerRestOperation;
     }
 
-    /**
-     * 获取operationMeta的值
-     * @return 返回 operationMeta
-     */
     public OperationMeta getOperationMeta() {
         return operationMeta;
     }

@@ -49,9 +49,6 @@ public class RestServlet extends HttpServlet {
         LOGGER.info("Rest Servlet inited");
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void service(final HttpServletRequest request,
             final HttpServletResponse response) throws ServletException, IOException {

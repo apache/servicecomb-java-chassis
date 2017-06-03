@@ -23,17 +23,11 @@ import io.servicecomb.swagger.generator.core.processor.parameter.AbstractParamet
 import io.swagger.models.parameters.HeaderParameter;
 
 public class HeaderParamAnnotationProcessor extends AbstractParameterProcessor<HeaderParameter> {
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected HeaderParameter createParameter() {
         return new HeaderParameter();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected String getAnnotationParameterName(Object annotation) {
         return ((HeaderParam) annotation).value();

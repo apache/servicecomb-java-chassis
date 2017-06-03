@@ -24,10 +24,6 @@ import io.servicecomb.common.rest.definition.path.PathRegExp;
 
 public class TestDefPath {
 
-    /**
-     * Test PathRegExp
-     * @throws Exception
-     */
     @Test
     public void testPathRegExp() throws Exception {
         PathRegExp oPathRegExp = new PathRegExp("//{test}//");

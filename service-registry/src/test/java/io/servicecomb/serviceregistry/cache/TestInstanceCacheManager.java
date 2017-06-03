@@ -36,9 +36,6 @@ import io.servicecomb.foundation.common.utils.Log4jUtils;
  */
 public class TestInstanceCacheManager {
 
-    /**
-     * @throws java.lang.Exception
-     */
     @Before
     public void setUp() throws Exception {
         Log4jUtils.init();
@@ -46,16 +43,10 @@ public class TestInstanceCacheManager {
         RegistryUtils.setSrClient(null);
     }
 
-    /**
-     * @throws java.lang.Exception
-     */
     @After
     public void tearDown() throws Exception {
     }
 
-    /**
-     * Test InstanceUpdate
-     */
     @Test
     public void testInstanceUpdate() {
         Microservice oInstance = RegistryUtils.getMicroservice();

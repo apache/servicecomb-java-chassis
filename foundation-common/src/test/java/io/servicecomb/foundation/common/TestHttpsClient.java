@@ -43,9 +43,6 @@ import mockit.Mocked;
 
 public class TestHttpsClient {
 
-    /**
-     * Create default Client and test requests
-     */
     @Test
     public void testHttpClient() throws ClientProtocolException, IOException {
 
@@ -126,9 +123,6 @@ public class TestHttpsClient {
 
     }
 
-    /**
-     * Test AbstractObjectManager
-     */
     @Test
     public void testAbstractObjectManager() {
         AbstractObjectManager<String, String, String> oAbstractObjectManager =
@@ -154,9 +148,6 @@ public class TestHttpsClient {
         Assert.assertEquals("test", oAbstractObjectManager.findByContainer("test"));
     }
 
-    /**
-     * Test CommonThread
-     */
     @Test
     public void testCommonThread() {
         CommonThread oThread = new CommonThread();
@@ -166,9 +157,6 @@ public class TestHttpsClient {
         Assert.assertEquals(false, oThread.isShutdown());
     }
 
-    /**
-     * Test NamedThreadFactory
-     */
     @Test
     public void testNamedThreadFactory() {
         NamedThreadFactory oNamedThreadFactory = new NamedThreadFactory();

@@ -38,9 +38,6 @@ public class PojoConsumers implements ConsumerFieldProcessor {
         return consumerList;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void processConsumerField(ApplicationContext applicationContext, Object bean, Field field) {
         RpcReference reference = field.getAnnotation(RpcReference.class);

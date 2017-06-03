@@ -29,9 +29,6 @@ public class ProducerVertxHttpRequestArgMapper extends AbstractProducerContextAr
         this.httpRequest = httpRequest;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public Object createContextArg(SwaggerInvocation invocation) {
         return new VertxToServletMockRequest(httpRequest);

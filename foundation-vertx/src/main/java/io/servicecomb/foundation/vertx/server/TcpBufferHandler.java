@@ -24,11 +24,5 @@ import io.vertx.core.buffer.Buffer;
  *
  */
 public interface TcpBufferHandler {
-    /**
-     * handle
-     * @param msgId     msgId
-     * @param headerBuffer    buffer
-     * @param bodyBuffer TODO
-     */
     void handle(long msgId, Buffer headerBuffer, Buffer bodyBuffer);
 }

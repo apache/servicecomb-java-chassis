@@ -23,9 +23,6 @@ import io.servicecomb.core.provider.consumer.AbstractConsumerProvider;
 
 @Component
 public class RestConsumerProvider extends AbstractConsumerProvider {
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public String getName() {
         return RestConst.REST;

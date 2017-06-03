@@ -33,9 +33,6 @@ public class RestProducers implements ProviderProcessor {
         return producerMetaList;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void processProvider(ApplicationContext applicationContext, String beanName, Object bean) {
         RestSchema restSchema = bean.getClass().getAnnotation(RestSchema.class);

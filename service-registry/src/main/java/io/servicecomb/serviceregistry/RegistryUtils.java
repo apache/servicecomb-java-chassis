@@ -84,11 +84,6 @@ public final class RegistryUtils {
     private RegistryUtils() {
     }
 
-    /**
-     * 获取microservice的值
-     * 
-     * @return 返回 microservice
-     */
     public static Microservice getMicroservice() {
         if (microservice == null) {
             microservice = createMicroserviceFromDefinition();
@@ -97,11 +92,6 @@ public final class RegistryUtils {
         return microservice;
     }
 
-    /**
-     * 获取microserviceInstance的值
-     * 
-     * @return 返回 microserviceInstance
-     */
     public static MicroserviceInstance getMicroserviceInstance() {
         if (microserviceInstance == null) {
             microserviceInstance = createMicroserviceInstance();
@@ -167,10 +157,6 @@ public final class RegistryUtils {
         return microserviceInstance;
     }
 
-    /**
-     * This method is written so that the UT of this class can be done
-     * appropriately.
-     */
     public static void setSrClient(ServiceRegistryClient oServiceRegistryClient) {
         srClient = oServiceRegistryClient;
     }
@@ -493,15 +479,6 @@ public final class RegistryUtils {
         }
     }
 
-    /**
-     * 对于配置为0.0.0.0的地址，通过查询网卡地址，转换为实际监听的地址。
-     * 
-     * @param schema
-     *            schema, e.g. http
-     * @param address
-     *            adddress, e.g 0.0.0.0:8080
-     * @return 实际监听的地址
-     */
     public static String getPublishAddress(String schema, String address) {
         if (address == null) {
             return address;
@@ -557,14 +534,6 @@ public final class RegistryUtils {
         }
     }
 
-    /**
-     * 更新本实例的properties
-     * 
-     * @param microserviceId
-     * @param microserviceInstanceId
-     * @param instanceProperties
-     * @return
-     */
     public static boolean updateInstanceProperties(Map<String, String> instanceProperties) {
         boolean success = srClient.updateInstanceProperties(microserviceInstance.getServiceId(),
                 microserviceInstance.getInstanceId(),

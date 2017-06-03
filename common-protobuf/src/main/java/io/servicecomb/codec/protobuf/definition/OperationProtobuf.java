@@ -42,26 +42,14 @@ public class OperationProtobuf {
         responseSchema = ProtobufSchemaUtils.getOrCreateSchema(method.getReturnType(), method.getGenericReturnType());
     }
 
-    /**
-     * 获取operationMeta的值
-     * @return 返回 operationMeta
-     */
     public OperationMeta getOperationMeta() {
         return operationMeta;
     }
 
-    /**
-     * 获取requestSchema的值
-     * @return 返回 requestSchema
-     */
     public WrapSchema getRequestSchema() {
         return requestSchema;
     }
 
-    /**
-     * 获取responseSchema的值
-     * @return 返回 responseSchema
-     */
     public WrapSchema getResponseSchema() {
         return responseSchema;
     }

@@ -24,9 +24,6 @@ import io.swagger.models.parameters.QueryParameter;
 
 public class SpringmvcDefaultParameterProcessor implements DefaultParameterProcessor {
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void process(OperationGenerator operationGenerator, int paramIdx) {
         String paramName = ParamUtils.getParameterName(operationGenerator.getProviderMethod(), paramIdx);

@@ -24,36 +24,13 @@ import java.util.List;
  *
  */
 public interface PerfStat {
-    /**
-     * getName
-     * @return   perfstat name
-     */
     String getName();
 
-    /**
-     * getPerfStatDataList
-     * @return   perstat datas
-     */
     List<PerfStatData> getPerfStatDataList();
 
-    /**
-     * mergeFrom
-     * @param otherPerfStat   otherPerfStat
-     */
     void mergeFrom(PerfStat otherPerfStat);
 
-    /**
-     * 计算统计数据
-     * @param msNow             msNow
-     * @param perfResultList    perfResultList
-     */
     void calc(long msNow, List<PerfResult> perfResultList);
 
-    /**
-     * 计算统计数据
-     * @param lastCycle         lastCycle
-     * @param msCycle           msCycle
-     * @param perfResultList    perfResultList
-     */
     void calc(PerfStat lastCycle, long msCycle, List<PerfResult> perfResultList);
 }

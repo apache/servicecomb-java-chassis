@@ -27,11 +27,6 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 @SpringBootApplication
 public class SpringmvcClient {
 
-    /**
-     * 
-     * @param args
-     * @throws Exception
-     */
     public static void main(final String[] args) throws Exception {
         SpringApplication.run(SpringmvcClient.class, args);
 

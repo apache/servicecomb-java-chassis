@@ -113,9 +113,6 @@ public class HighwayClient implements TcpLogin {
         });
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public TcpOutputStream createLogin() {
         try {
@@ -138,9 +135,6 @@ public class HighwayClient implements TcpLogin {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public boolean onLoginResponse(Buffer bodyBuffer) {
         return true;

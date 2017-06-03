@@ -139,25 +139,16 @@ public class LocalServiceRegistryClientImpl implements ServiceRegistryClient {
         return retInstances;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public boolean isSchemaExist(String microserviceId, String schemaId) {
         return true;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public boolean registerSchema(String microserviceId, String schemaId, String schemaContent) {
         return true;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public String getSchema(String microserviceId, String schemaId) {
         return null;

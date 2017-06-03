@@ -47,13 +47,6 @@ public class OperationLocator {
         return this.pathVarMap;
     }
 
-    /**
-     * 先在静态路径operation list中查找；如果找不到，则在动态路径operation list中查找
-     * @param servicePathManager
-     * @param path
-     * @param httpMethod
-     * @return
-     */
     public void locate(ServicePathManager servicePathManager, String path, String httpMethod) {
         // 在静态路径中查找
         operation = locateStaticPathOperation(path, httpMethod, servicePathManager.getStaticPathOperationMap());

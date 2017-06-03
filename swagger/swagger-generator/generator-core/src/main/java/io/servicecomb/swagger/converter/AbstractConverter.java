@@ -31,9 +31,6 @@ public abstract class AbstractConverter implements Converter {
 
     protected abstract JavaType doConvert(ClassLoader classLoader, String packageName, Swagger swagger, Object def);
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public JavaType convert(ClassLoader classLoader, String packageName, Swagger swagger, Object def) {
         Map<String, Object> vendorExtensions = findVendorExtensions(def);

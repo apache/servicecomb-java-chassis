@@ -27,17 +27,11 @@ import io.servicecomb.swagger.invocation.arguments.ContextArgumentMapperFactory;
 @Qualifier("consumer")
 public class ConsumerInvocationContextMapperFactory implements ContextArgumentMapperFactory {
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public Class<?> getContextClass() {
         return SwaggerInvocationContextParameter.class;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public ArgumentMapper create(int consumerArgIdx) {
         return new ConsumerInvocationContextMapper(consumerArgIdx);

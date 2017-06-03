@@ -30,9 +30,6 @@ import com.netflix.config.DynamicPropertyFactory;
 import io.vertx.core.Vertx;
 
 public abstract class AbstractTransport implements Transport {
-    /**
-     * 用于参数传递：比如王RestServerVerticle传递endpoint地址。
-     */
     public static final String ENDPOINT_KEY = "cse.endpoint";
 
     private static final long DEFAULT_TIMEOUT_MILLIS = 30000;
@@ -62,17 +59,11 @@ public abstract class AbstractTransport implements Transport {
 
     protected Endpoint publishEndpoint;
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public Endpoint getPublishEndpoint() {
         return publishEndpoint;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public Endpoint getEndpoint() throws Exception {
         return endpoint;
@@ -82,10 +73,6 @@ public abstract class AbstractTransport implements Transport {
         setListenAddressWithoutSchema(addressWithoutSchema, null);
     }
 
-    /**
-     * 将配置的URI转换为endpoint
-     * @param addressWithoutSchema 配置的URI，没有schema部分
-     */
     protected void setListenAddressWithoutSchema(String addressWithoutSchema,
             Map<String, String> pairs) {
         if (addressWithoutSchema != null && pairs != null && !pairs.isEmpty()) {
@@ -113,9 +100,6 @@ public abstract class AbstractTransport implements Transport {
 
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public Object parseAddress(String address) {
         if (address == null) {

@@ -62,9 +62,6 @@ public class TestDefinition {
         oCommonService = null;
     }
 
-    /**
-     * TestCommonService
-     */
     @Test
     public void testCommonService() {
 
@@ -90,10 +87,6 @@ public class TestDefinition {
         Assert.assertEquals("op1", oCommonService.ensureFindOperation("oName1"));
     }
 
-    /**
-     * Test MicroService
-     * @throws Exception
-     */
     @Test
     public void testMicroServiceMeta() {
         MicroserviceMeta oMicroMeta = new MicroserviceMeta("micro1");
@@ -108,10 +101,6 @@ public class TestDefinition {
         }
     }
 
-    /**
-     * Test MicroserviceMetaManager
-     * @throws Exception 
-     */
     @Test
     public void testMicroserviceMetaManager() throws Exception {
         MicroserviceMetaManager microserviceMetaManager = new MicroserviceMetaManager();

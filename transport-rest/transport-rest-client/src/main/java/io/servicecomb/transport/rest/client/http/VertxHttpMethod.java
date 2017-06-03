@@ -82,27 +82,11 @@ public abstract class VertxHttpMethod {
         });
     }
 
-    /**
-     * 创建get, post, put, delete等httpclient request
-     * @param invocation
-     * @param ipPort
-     * @param path
-     * @param operation
-     * @param asyncResp
-     * @return
-     */
     protected abstract HttpClientRequest createRequest(HttpClient client, Invocation invocation, IpPort ipPort,
             String path,
             RestOperationMeta operation,
             AsyncResponse asyncResp);
 
-    /**
-     * 处理http请求的异步response
-     * @param invocation
-     * @param httpResponse
-     * @param restOperation
-     * @param asyncResp
-     */
     protected void handleResponse(Invocation invocation, HttpClientResponse httpResponse,
             RestOperationMeta restOperation,
             AsyncResponse asyncResp) {

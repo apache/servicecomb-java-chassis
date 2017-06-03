@@ -115,11 +115,6 @@ public final class VertxUtils {
         return vertx;
     }
 
-    /**
-     * init
-     * @param vertxOptions   vertxOptions
-     * @return vertx
-     */
     public static Vertx init(VertxOptions vertxOptions) {
         if (vertxOptions == null) {
             vertxOptions = new VertxOptions();
@@ -135,19 +130,12 @@ public final class VertxUtils {
         return Vertx.vertx(vertxOptions);
     }
 
-    /**
-     * 配置vertx的文件缓存功能，默认关闭
-     */
     protected static void configureVertxFileCaching() {
         if (System.getProperty(FileResolver.DISABLE_CP_RESOLVING_PROP_NAME) == null) {
             System.setProperty(FileResolver.DISABLE_CP_RESOLVING_PROP_NAME, "true");
         }
     }
 
-    /**
-     * 获取 current vertx
-     * @return vertx
-     */
     public static Vertx currentVertx() {
         Context context = Vertx.currentContext();
         if (context == null) {

@@ -27,9 +27,6 @@ import io.swagger.models.properties.MapProperty;
 import io.swagger.models.properties.Property;
 
 public class MapPropertyConverter extends AbstractPropertyConverter {
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public JavaType doConvert(ClassLoader classLoader, String packageName, Swagger swagger, Object property) {
         MapProperty mapProperty = (MapProperty) property;

@@ -95,17 +95,11 @@ public abstract class AbstractHandlerManager extends AbstractObjectManager<Strin
         return handlerList;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected String getKey(String microserviceName) {
         return microserviceName;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected List<Handler> create(String microserviceName) {
         String chainDef = DynamicPropertyFactory.getInstance()

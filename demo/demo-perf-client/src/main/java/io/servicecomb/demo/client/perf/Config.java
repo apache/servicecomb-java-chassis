@@ -23,34 +23,18 @@ public class Config {
 
     private static String mode;
 
-    /**
-     * 获取transport的值
-     * @return 返回 transport
-     */
     public static String getTransport() {
         return transport;
     }
 
-    /**
-     * 对transport进行赋值
-     * @param transport transport的新值
-     */
     public static void setTransport(String transport) {
         Config.transport = transport;
     }
 
-    /**
-     * 获取clientThread的值
-     * @return 返回 clientThread
-     */
     public static int getClientThread() {
         return clientThread;
     }
 
-    /**
-     * 对clientThread进行赋值
-     * @param clientThread clientThread的新值
-     */
     public static void setClientThread(int clientThread) {
         Config.clientThread = clientThread;
     }

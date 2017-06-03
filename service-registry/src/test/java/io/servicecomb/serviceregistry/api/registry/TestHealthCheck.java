@@ -31,25 +31,16 @@ public class TestHealthCheck {
 
     HealthCheck oHealthCheck = null;
 
-    /**
-     * @throws java.lang.Exception
-     */
     @Before
     public void setUp() throws Exception {
         oHealthCheck = new HealthCheck();
     }
 
-    /**
-     * @throws java.lang.Exception
-     */
     @After
     public void tearDown() throws Exception {
         oHealthCheck = null;
     }
 
-    /**
-     * Test un-initialized Values
-     */
     @Test
     public void testDefaultValues() {
         Assert.assertEquals(0, oHealthCheck.getInterval());
@@ -59,10 +50,6 @@ public class TestHealthCheck {
         Assert.assertEquals(0, oHealthCheck.getTTL());
     }
 
-    /**
-     * Test Getter and Setter
-     * Its insane but need to do it
-     */
     @Test
     public void testIntializedValues() {
         initHealthCheck(); //Initialize the Values
@@ -86,9 +73,6 @@ public class TestHealthCheck {
 
     }
 
-    /**
-     * Initialize the Values
-     */
     private void initHealthCheck() {
         oHealthCheck.setInterval(10);
         oHealthCheck.setMode(HealthCheckMode.PLATFORM);

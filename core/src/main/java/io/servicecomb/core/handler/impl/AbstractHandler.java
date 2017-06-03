@@ -21,9 +21,6 @@ import io.servicecomb.core.definition.MicroserviceMeta;
 import io.servicecomb.core.invocation.InvocationType;
 
 public abstract class AbstractHandler implements Handler {
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void init(MicroserviceMeta microserviceMeta, InvocationType invocationType) {
 

@@ -22,9 +22,6 @@ import io.swagger.annotations.ApiResponse;
 
 public class ApiResponseMethodProcessor implements MethodAnnotationProcessor {
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void process(Object annotation, OperationGenerator operationGenerator) {
         // swagger号称不允许独立使用这个标注，不过支持独立使用，也没什么后果

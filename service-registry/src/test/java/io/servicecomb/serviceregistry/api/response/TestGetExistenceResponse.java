@@ -30,34 +30,22 @@ public class TestGetExistenceResponse {
 
     GetExistenceResponse oGetExistenceResponse = null;
 
-    /**
-     * @throws java.lang.Exception
-     */
     @Before
     public void setUp() throws Exception {
         oGetExistenceResponse = new GetExistenceResponse();
     }
 
-    /**
-     * @throws java.lang.Exception
-     */
     @After
     public void tearDown() throws Exception {
         oGetExistenceResponse = null;
     }
 
-    /**
-     * Test Un-Initialized Values
-     */
     @Test
     public void testDefaultValues() {
         Assert.assertNull(oGetExistenceResponse.getSchemaId());
         Assert.assertNull(oGetExistenceResponse.getServiceId());
     }
 
-    /**
-     * Test InitializedValues
-     */
     @Test
     public void testIntializedValues() {
         initFields(); //Initialize the Object
@@ -65,9 +53,6 @@ public class TestGetExistenceResponse {
         Assert.assertEquals("testServiceId", oGetExistenceResponse.getServiceId());
     }
 
-    /**
-     * Initialize the Values
-     */
     private void initFields() {
         oGetExistenceResponse.setSchemaId("testSchemaId");
         oGetExistenceResponse.setServiceId("testServiceId");

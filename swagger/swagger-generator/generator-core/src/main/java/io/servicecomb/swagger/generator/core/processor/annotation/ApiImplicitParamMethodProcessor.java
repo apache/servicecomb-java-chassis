@@ -23,9 +23,6 @@ import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.models.parameters.Parameter;
 
 public class ApiImplicitParamMethodProcessor implements MethodAnnotationProcessor {
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void process(Object annotation, OperationGenerator operationGenerator) {
         ApiImplicitParam paramAnnotation = (ApiImplicitParam) annotation;

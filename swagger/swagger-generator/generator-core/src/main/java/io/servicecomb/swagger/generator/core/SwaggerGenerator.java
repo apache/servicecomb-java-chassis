@@ -69,18 +69,10 @@ public class SwaggerGenerator {
         this.packageName = "gen.swagger";
     }
 
-    /**
-     * 获取context的值
-     * @return 返回 context
-     */
     public SwaggerGeneratorContext getContext() {
         return context;
     }
 
-    /**
-     * 对packageName进行赋值
-     * @param packageName packageName的新值
-     */
     public void setPackageName(String packageName) {
         this.packageName = packageName;
     }
@@ -94,50 +86,26 @@ public class SwaggerGenerator {
         return packageName;
     }
 
-    /**
-     * 获取classLoader的值
-     * @return 返回 classLoader
-     */
     public ClassLoader getClassLoader() {
         return classLoader;
     }
 
-    /**
-     * 对classLoader进行赋值
-     * @param classLoader classLoader的新值
-     */
     public void setClassLoader(ClassLoader classLoader) {
         this.classLoader = classLoader;
     }
 
-    /**
-     * 获取swagger的值
-     * @return 返回 swagger
-     */
     public Swagger getSwagger() {
         return swagger;
     }
 
-    /**
-     * 获取cls的值
-     * @return 返回 cls
-     */
     public Class<?> getCls() {
         return cls;
     }
 
-    /**
-     * 获取httpMethod的值
-     * @return 返回 httpMethod
-     */
     public String getHttpMethod() {
         return httpMethod;
     }
 
-    /**
-     * 对httpMethod进行赋值
-     * @param httpMethod httpMethod的新值
-     */
     public void setHttpMethod(String httpMethod) {
         this.httpMethod = httpMethod.toLowerCase(Locale.US);
     }
@@ -159,12 +127,6 @@ public class SwaggerGenerator {
         return swagger;
     }
 
-    /**
-     * 查找必填但是没值的字段，将之设置为默认值
-     * 如果无法构造默认值，则抛出异常
-     * @param cls
-     * @param swagger
-     */
     protected void correctSwagger() {
         if (StringUtils.isEmpty(swagger.getSwagger())) {
             swagger.setSwagger("2.0");
@@ -284,10 +246,6 @@ public class SwaggerGenerator {
         swagger.setBasePath(basePath);
     }
 
-    /**
-     * 获取operationGeneratorMap的值
-     * @return 返回 operationGeneratorMap
-     */
     public Map<String, OperationGenerator> getOperationGeneratorMap() {
         return operationGeneratorMap;
     }

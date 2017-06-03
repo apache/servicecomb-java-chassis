@@ -39,9 +39,6 @@ public class PojoProducers implements ProviderProcessor {
         return pojoMgr.values();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void processProvider(ApplicationContext applicationContext, String beanName, Object bean) {
         RpcSchema rpcSchema = bean.getClass().getAnnotation(RpcSchema.class);

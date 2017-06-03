@@ -32,36 +32,24 @@ public class TestPerfStatMonitorMgr {
 
     PerfStatSuccFail oPerfStatSuccFail = null;
 
-    /**
-     * @throws java.lang.Exception
-     */
     @Before
     public void setUp() throws Exception {
         oPerfStatMonitorMgr = new PerfStatMonitorMgr();
         oPerfStatSuccFail = new PerfStatSuccFail("testMergeFrom");
     }
 
-    /**
-     * @throws java.lang.Exception
-     */
     @After
     public void tearDown() throws Exception {
         oPerfStatMonitorMgr = null;
         oPerfStatSuccFail = null;
     }
 
-    /**
-     * Test registerPerfStat
-     */
     @Test
     public void testRegisterPerfStat() {
         oPerfStatMonitorMgr.registerPerfStat(oPerfStatSuccFail, 0);
         Assert.assertEquals(1, oPerfStatMonitorMgr.getMonitorList().size());
     }
 
-    /**
-     * Test onCycle
-     */
     @Test
     public void testOnCycle() {
         oPerfStatMonitorMgr.registerPerfStat(oPerfStatSuccFail, 0);

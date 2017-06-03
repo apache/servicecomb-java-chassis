@@ -61,25 +61,15 @@ public class CseClientHttpResponse implements ClientHttpResponse {
         this.response = response;
     }
 
-    /**
-     * 获取result的值
-     * @return 返回 result
-     */
     public Object getResult() {
         return response.getResult();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public InputStream getBody() throws IOException {
         return BODY_INPUT_STREAM;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public HttpHeaders getHeaders() {
         if (httpHeaders == null) {
@@ -101,34 +91,22 @@ public class CseClientHttpResponse implements ClientHttpResponse {
         return httpHeaders;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public HttpStatus getStatusCode() throws IOException {
         // TODO:springmvc不允许自定义http错误码
         return HttpStatus.valueOf(response.getStatusCode());
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public int getRawStatusCode() throws IOException {
         return response.getStatusCode();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public String getStatusText() throws IOException {
         return response.getReasonPhrase();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void close() {
     }

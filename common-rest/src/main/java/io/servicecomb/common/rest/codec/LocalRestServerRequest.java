@@ -41,17 +41,11 @@ public class LocalRestServerRequest implements RestServerRequest {
         this.bodyObject = bodyObject;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public String getPath() {
         throw new Error("no need to impl");
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public String getMethod() {
         throw new Error("not support");

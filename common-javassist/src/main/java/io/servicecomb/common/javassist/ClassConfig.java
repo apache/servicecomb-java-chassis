@@ -37,34 +37,18 @@ public class ClassConfig {
 
     private List<MethodConfig> methodList = new ArrayList<>();
 
-    /**
-     * 获取intf的值
-     * @return 返回 intf
-     */
     public boolean isIntf() {
         return intf;
     }
 
-    /**
-     * 对intf进行赋值
-     * @param intf intf的新值
-     */
     public void setIntf(boolean intf) {
         this.intf = intf;
     }
 
-    /**
-     * 获取className的值
-     * @return 返回 className
-     */
     public String getClassName() {
         return className;
     }
 
-    /**
-     * 对className进行赋值
-     * @param className className的新值
-     */
     public void setClassName(String className) {
         this.className = className;
     }
@@ -77,18 +61,10 @@ public class ClassConfig {
         intfList.add(intf);
     }
 
-    /**
-     * 获取intfList的值
-     * @return 返回 intfList
-     */
     public List<String> getIntfList() {
         return intfList;
     }
 
-    /**
-     * 获取fieldList的值
-     * @return 返回 fieldList
-     */
     public List<FieldConfig> getFieldList() {
         return fieldList;
     }
@@ -132,10 +108,6 @@ public class ClassConfig {
         addMethod(methodConfig);
     }
 
-    /**
-     * 获取methodSourceList的值
-     * @return 返回 methodSourceList
-     */
     public List<MethodConfig> getMethodList() {
         return methodList;
     }

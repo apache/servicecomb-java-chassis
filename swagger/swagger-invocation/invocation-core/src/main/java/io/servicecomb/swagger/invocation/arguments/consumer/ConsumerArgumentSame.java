@@ -29,9 +29,6 @@ public final class ConsumerArgumentSame implements ArgumentMapper {
         this.swaggerIdx = swaggerIdx;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void mapArgument(SwaggerInvocation invocation, Object[] consumerArguments) {
         invocation.setSwaggerArgument(swaggerIdx, consumerArguments[consumerIdx]);

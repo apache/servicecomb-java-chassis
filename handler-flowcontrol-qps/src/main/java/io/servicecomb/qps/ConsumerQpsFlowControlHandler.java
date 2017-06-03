@@ -31,9 +31,6 @@ import io.servicecomb.core.handler.impl.AbstractHandler;
 public class ConsumerQpsFlowControlHandler extends AbstractHandler {
     private ConsumerQpsControllerManager qpsControllerMgr = new ConsumerQpsControllerManager();
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void handle(Invocation invocation, AsyncResponse asyncResp) throws Exception {
         if (!Config.INSTANCE.isConsumerEnabled()) {

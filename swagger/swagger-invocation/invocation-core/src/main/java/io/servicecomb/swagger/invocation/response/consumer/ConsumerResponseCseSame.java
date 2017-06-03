@@ -21,17 +21,11 @@ import io.servicecomb.core.Response;
 
 @Component
 public class ConsumerResponseCseSame implements ConsumerResponseMapper {
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public Class<?> getResponseClass() {
         return Response.class;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public Object mapResponse(Response response) {
         return response;

@@ -27,9 +27,6 @@ import io.swagger.models.properties.Property;
 
 public class ResponseEntityProcessor implements ResponseTypeProcessor {
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public Property process(OperationGenerator operationGenerator) {
         ParameterizedType type =

@@ -39,10 +39,6 @@ public class User {
         this.age = age;
     }
 
-    /**
-     * 获取index的值
-     * @return 返回 index
-     */
     public int getIndex() {
         return index;
     }

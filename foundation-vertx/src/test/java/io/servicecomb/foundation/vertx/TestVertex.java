@@ -25,9 +25,6 @@ import io.vertx.core.json.JsonObject;
 
 public class TestVertex {
 
-    /**
-     * Test VertxUtils
-     */
     @Test
     public void testVertxUtils() {
         VertxUtils.init(null);
@@ -36,9 +33,6 @@ public class TestVertex {
         Assert.assertNotEquals(null,VertxUtils.init(oOptions));
     }
 
-    /**
-     * Test SimpleJsonObject
-     */
     @Test
     public void testSimpleJsonObject() {
         SimpleJsonObject oObject = new SimpleJsonObject();

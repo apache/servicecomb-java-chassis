@@ -30,25 +30,16 @@ public class TestMicroserviceKey {
 
     MicroserviceKey oMicroserviceKey = null;
 
-    /**
-     * @throws java.lang.Exception
-     */
     @Before
     public void setUp() throws Exception {
         oMicroserviceKey = new MicroserviceKey();
     }
 
-    /**
-     * @throws java.lang.Exception
-     */
     @After
     public void tearDown() throws Exception {
         oMicroserviceKey = null;
     }
 
-    /**
-     * Test Un-Initialized Values
-     */
     @Test
     public void testDefaultValues() {
         Assert.assertNull(oMicroserviceKey.getAppId());
@@ -58,9 +49,6 @@ public class TestMicroserviceKey {
         Assert.assertNull(oMicroserviceKey.getVersion());
     }
 
-    /**
-     * Test InitializedValues
-     */
     @Test
     public void testIntializedValues() {
         initFields(); //Initialize the Object
@@ -71,9 +59,6 @@ public class TestMicroserviceKey {
         Assert.assertEquals(Const.REGISTRY_APP_ID, oMicroserviceKey.getAppId());
     }
 
-    /**
-     * Initialize the Values
-     */
     private void initFields() {
         oMicroserviceKey.setAppId(Const.REGISTRY_APP_ID);
         oMicroserviceKey.setServiceName("testServiceName");

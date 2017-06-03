@@ -38,34 +38,22 @@ public class TestGetAllServicesResponse {
 
     Microservice oMockMicroservice = null;
 
-    /**
-     * @throws Exception
-     */
     @Before
     public void setUp() throws Exception {
         oGetAllServicesResponse = new GetAllServicesResponse();
         oMockMicroservice = Mockito.mock(Microservice.class);
     }
 
-    /**
-     * @throws Exception
-     */
     @After
     public void tearDown() throws Exception {
         oGetAllServicesResponse = null;
     }
 
-    /**
-     * Test Un-Initialized Values
-     */
     @Test
     public void testDefaultValues() {
         Assert.assertNull(oGetAllServicesResponse.getServices());
     }
 
-    /**
-     * Test InitializedValues
-     */
     @Test
     public void testIntializedValues() {
         initFields(); //Initialize the Object
@@ -73,9 +61,6 @@ public class TestGetAllServicesResponse {
         Assert.assertEquals(oMockMicroservice, list.get(0));
     }
 
-    /**
-     * Initialize the Values
-     */
     private void initFields() {
         List<Microservice> list = new ArrayList<>();
         list.add(oMockMicroservice);

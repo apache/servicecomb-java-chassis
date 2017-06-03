@@ -80,9 +80,6 @@ public class ProducerSchemaFactory extends AbstractSchemaFactory<ProducerSchemaC
         return getOrCreateSchema(context);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void connectToProvider(ProducerSchemaContext context) {
         if (context.getGenerator() == null) {
@@ -113,9 +110,6 @@ public class ProducerSchemaFactory extends AbstractSchemaFactory<ProducerSchemaC
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected SwaggerGenerator generateSwagger(ProducerSchemaContext context) {
         SwaggerGenerator generator = super.generateSwagger(context);

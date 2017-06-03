@@ -44,11 +44,6 @@ public class PerfStatMonitorMgr {
 
     private String statFmt = "%-16d %-16d %-10d %-16.3f %s\n";
 
-    /**
-     * registerPerfStat
-     * @param perfStat  perfStat
-     * @param index     index
-     */
     public void registerPerfStat(PerfStat perfStat, int index) {
         String name = perfStat.getName();
         PerfStatMonitor monitor = monitorMap.get(name);
@@ -70,11 +65,6 @@ public class PerfStatMonitorMgr {
         monitor.addThreadStat(perfStat);
     }
 
-    /**
-     * onCycle
-     * @param msNow    now
-     * @param msCycle  cycle
-     */
     public void onCycle(long msNow, long msCycle) {
         StringBuilder sb = new StringBuilder();
         sb.append("Cycle stat output:\n" + header + "\n");

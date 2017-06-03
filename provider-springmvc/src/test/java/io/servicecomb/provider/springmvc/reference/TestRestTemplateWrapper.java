@@ -38,14 +38,6 @@ import mockit.MockUp;
 
 public class TestRestTemplateWrapper {
 
-    /**
-     * Test RestTemplateWrapper
-     * @throws IllegalAccessException 
-     * @throws InstantiationException 
-     * @throws MalformedURLException 
-     * @throws URISyntaxException 
-     * @throws IOException 
-     */
     @SuppressWarnings({"rawtypes", "unchecked"})
     @Test
     public void testRestTemplateWrapper() {

@@ -50,25 +50,16 @@ import io.servicecomb.swagger.generator.jaxrs.processor.annotation.QueryParamAnn
 public class JaxrsSwaggerGeneratorContext extends DefaultSwaggerGeneratorContext {
     private static final int ORDER = 500;
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public int getOrder() {
         return ORDER;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public boolean canProcess(Class<?> cls) {
         return ClassUtils.hasAnnotation(cls, Path.class);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void initClassAnnotationMgr() {
         super.initClassAnnotationMgr();
@@ -76,9 +67,6 @@ public class JaxrsSwaggerGeneratorContext extends DefaultSwaggerGeneratorContext
         classAnnotationMgr.register(Path.class, new PathClassAnnotationProcessor());
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void initMethodAnnotationMgr() {
         super.initMethodAnnotationMgr();
@@ -94,9 +82,6 @@ public class JaxrsSwaggerGeneratorContext extends DefaultSwaggerGeneratorContext
         methodAnnotationMgr.register(DELETE.class, httpMethodProcessor);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void initParameterAnnotationMgr() {
         super.initParameterAnnotationMgr();
@@ -109,9 +94,6 @@ public class JaxrsSwaggerGeneratorContext extends DefaultSwaggerGeneratorContext
         parameterAnnotationMgr.register(QueryParam.class, new QueryParamAnnotationProcessor());
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void initResponseTypeProcessorMgr() {
         super.initResponseTypeProcessorMgr();
@@ -119,9 +101,6 @@ public class JaxrsSwaggerGeneratorContext extends DefaultSwaggerGeneratorContext
         responseTypeProcessorMgr.register(Response.class, new ResponseProcessor());
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void correctPath(OperationGenerator operationGenerator) {
         String path = operationGenerator.getPath();

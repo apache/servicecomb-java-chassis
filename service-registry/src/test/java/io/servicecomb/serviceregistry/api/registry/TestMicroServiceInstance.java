@@ -43,9 +43,6 @@ public class TestMicroServiceInstance {
 
     HealthCheck oMockHealthCheck = null;
 
-    /**
-     * @throws java.lang.Exception
-     */
     @Before
     public void setUp() throws Exception {
         oMicroserviceInstance = new MicroserviceInstance();
@@ -54,9 +51,6 @@ public class TestMicroServiceInstance {
         oMockHealthCheck = Mockito.mock(HealthCheck.class);
     }
 
-    /**
-     * @throws java.lang.Exception
-     */
     @After
     public void tearDown() throws Exception {
         oMicroserviceInstance = null;
@@ -65,9 +59,6 @@ public class TestMicroServiceInstance {
         oMockHealthCheck = null;
     }
 
-    /**
-     * Test Un-Initialized Values
-     */
     @Test
     public void testDefaultValues() {
         Assert.assertNull(oMicroserviceInstance.getHostName());
@@ -81,9 +72,6 @@ public class TestMicroServiceInstance {
 
     }
 
-    /**
-     * Test InitializedValues
-     */
     @Test
     public void testIntializedValues() {
         initMicroserviceInstance(); //Initialize the Object
@@ -98,9 +86,6 @@ public class TestMicroServiceInstance {
 
     }
 
-    /**
-     * Initialize the Values
-     */
     private void initMicroserviceInstance() {
         oMicroserviceInstance.setHostName("testHostName");
         oMicroserviceInstance.setInstanceId("testInstanceID");

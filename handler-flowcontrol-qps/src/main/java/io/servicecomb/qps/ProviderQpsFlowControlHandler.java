@@ -26,9 +26,6 @@ import io.servicecomb.core.handler.impl.AbstractHandler;
 public class ProviderQpsFlowControlHandler extends AbstractHandler {
     private ProviderQpsControllerManager qpsControllerMgr = new ProviderQpsControllerManager();
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void handle(Invocation invocation, AsyncResponse asyncResp) throws Exception {
         if (!Config.INSTANCE.isProviderEnabled()) {

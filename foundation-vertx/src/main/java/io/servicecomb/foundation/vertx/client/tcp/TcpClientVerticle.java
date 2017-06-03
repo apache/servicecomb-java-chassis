@@ -28,9 +28,6 @@ public class TcpClientVerticle extends AbstractClientVerticle<TcpClientPool> {
     // 每线程一个实例即可
     private NetClient netClient;
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void start() throws Exception {
         super.start();
@@ -40,9 +37,6 @@ public class TcpClientVerticle extends AbstractClientVerticle<TcpClientPool> {
         netClient = new NetClientImpl((VertxInternal) vertx, clientConfig, false);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public TcpClientPool createClientPool() {
         return new TcpClientPool(clientConfig, context, netClient);

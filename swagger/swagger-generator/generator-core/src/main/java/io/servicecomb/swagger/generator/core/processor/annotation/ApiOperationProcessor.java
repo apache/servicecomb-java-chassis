@@ -27,9 +27,6 @@ import io.swagger.models.Scheme;
 import io.swagger.util.BaseReaderUtils;
 
 public class ApiOperationProcessor implements MethodAnnotationProcessor {
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void process(Object annotation, OperationGenerator operationGenerator) {
         ApiOperation apiOperationAnnotation = (ApiOperation) annotation;

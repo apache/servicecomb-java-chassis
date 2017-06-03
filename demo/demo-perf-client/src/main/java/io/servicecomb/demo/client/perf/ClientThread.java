@@ -24,9 +24,6 @@ import io.servicecomb.demo.server.User;
 import io.servicecomb.foundation.common.CommonThread;
 
 public class ClientThread extends CommonThread {
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void run() {
         Test test = PojoClient.test;

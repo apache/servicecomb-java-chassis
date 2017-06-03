@@ -43,9 +43,6 @@ public class ArrayPropertyConverter extends AbstractPropertyConverter {
 
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public JavaType doConvert(ClassLoader classLoader, String packageName, Swagger swagger, Object property) {
         ArrayProperty arrayProperty = (ArrayProperty) property;

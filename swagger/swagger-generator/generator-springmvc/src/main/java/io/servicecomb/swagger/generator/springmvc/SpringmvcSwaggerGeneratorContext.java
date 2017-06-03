@@ -43,25 +43,16 @@ import io.servicecomb.swagger.generator.springmvc.processor.response.ResponseEnt
 public class SpringmvcSwaggerGeneratorContext extends DefaultSwaggerGeneratorContext {
     private static final int ORDER = 1000;
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public int getOrder() {
         return ORDER;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public boolean canProcess(Class<?> cls) {
         return ClassUtils.hasAnnotation(cls, RequestMapping.class);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void initClassAnnotationMgr() {
         super.initClassAnnotationMgr();
@@ -69,9 +60,6 @@ public class SpringmvcSwaggerGeneratorContext extends DefaultSwaggerGeneratorCon
         classAnnotationMgr.register(RequestMapping.class, new RequestMappingClassAnnotationProcessor());
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void initMethodAnnotationMgr() {
         super.initMethodAnnotationMgr();
@@ -79,9 +67,6 @@ public class SpringmvcSwaggerGeneratorContext extends DefaultSwaggerGeneratorCon
         methodAnnotationMgr.register(RequestMapping.class, new RequestMappingMethodAnnotationProcessor());
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void initParameterAnnotationMgr() {
         super.initParameterAnnotationMgr();
@@ -94,25 +79,16 @@ public class SpringmvcSwaggerGeneratorContext extends DefaultSwaggerGeneratorCon
         parameterAnnotationMgr.register(RequestAttribute.class, new RequestAttributeAnnotationProcessor());
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void initParameterTypeProcessorMgr() {
         super.initParameterTypeProcessorMgr();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void initDefaultParameterProcessor() {
         defaultParameterProcessor = new SpringmvcDefaultParameterProcessor();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void initResponseTypeProcessorMgr() {
         super.initResponseTypeProcessorMgr();
@@ -120,9 +96,6 @@ public class SpringmvcSwaggerGeneratorContext extends DefaultSwaggerGeneratorCon
         responseTypeProcessorMgr.register(ResponseEntity.class, new ResponseEntityProcessor());
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void correctPath(OperationGenerator operationGenerator) {
         String path = operationGenerator.getPath();

@@ -25,9 +25,6 @@ import io.swagger.models.parameters.BodyParameter;
 
 public class BodyParameterConverter implements Converter {
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public JavaType convert(ClassLoader classLoader, String packageName, Swagger swagger, Object def) {
         BodyParameter param = (BodyParameter) def;

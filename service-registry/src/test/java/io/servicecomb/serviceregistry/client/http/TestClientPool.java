@@ -38,9 +38,6 @@ public class TestClientPool {
     public void tearDown() throws Exception {
     }
 
-    /**
-     * Test ServiceRegistryClientImpl
-     */
     @Test
     public void testHttpClientPool() {
         new MockUp<ServiceRegistryConfig>() {
@@ -57,9 +54,6 @@ public class TestClientPool {
         HttpClientPool.INSTANCE.create();
     }
 
-    /**
-     * Test RequestContext
-     */
     @Test
     public void testWebsocketClientPool() {
         new MockUp<ServiceRegistryConfig>() {

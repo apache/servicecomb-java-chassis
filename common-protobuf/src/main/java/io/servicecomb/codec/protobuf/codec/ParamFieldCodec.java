@@ -26,9 +26,6 @@ import io.servicecomb.codec.protobuf.jackson.ParamDeserializer;
 import io.servicecomb.codec.protobuf.jackson.ParamSerializer;
 
 public class ParamFieldCodec extends AbstractFieldCodec {
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void init(ProtobufSchema schema, Type... types) {
         writer = new CseObjectWriter(ProtobufManager.getWriter(), schema, new ParamSerializer());

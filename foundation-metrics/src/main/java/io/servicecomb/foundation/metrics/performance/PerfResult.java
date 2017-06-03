@@ -82,11 +82,6 @@ public class PerfResult {
         this.msLatencySegments = msLatencySegments;
     }
 
-    /**
-     * format output
-     * @param fmt     format
-     * @return        str
-     */
     public String segmentsToString(String fmt) {
         StringBuilder sb = new StringBuilder();
         for (long segCount : msLatencySegments) {

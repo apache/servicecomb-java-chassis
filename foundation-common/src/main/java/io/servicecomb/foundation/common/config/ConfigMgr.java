@@ -31,20 +31,12 @@ import io.servicecomb.foundation.common.config.impl.XmlLoader;
 import io.servicecomb.foundation.common.config.impl.IncConfigs.IncConfig;
 
 public class ConfigMgr {
-    /**
-     * ConfigMgr instance
-     */
     public static final ConfigMgr INSTANCE = new ConfigMgr();
 
     private Map<String, Object> configMap = new ConcurrentHashMap<>();
 
     private Map<String, ConfigLoader> configLoaderMap;
 
-    /**
-     * 扫描所有的*.inc.config.xml
-     * 根据配置初始化所有的loader
-     * @throws Exception Exception
-     */
     public void init() throws Exception {
         List<Resource> resArr =
             PaaSResourceUtils.getSortedResources("classpath*:config/config.inc.xml", ".inc.xml");

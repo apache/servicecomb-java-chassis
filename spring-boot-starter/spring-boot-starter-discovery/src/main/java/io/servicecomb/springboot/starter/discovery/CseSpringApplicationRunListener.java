@@ -43,9 +43,6 @@ public class CseSpringApplicationRunListener implements SpringApplicationRunList
     public CseSpringApplicationRunListener(SpringApplication app, String[] args) {
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void started() {
         try {
@@ -55,25 +52,16 @@ public class CseSpringApplicationRunListener implements SpringApplicationRunList
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void environmentPrepared(ConfigurableEnvironment environment) {
 
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void contextPrepared(ConfigurableApplicationContext context) {
 
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void contextLoaded(ConfigurableApplicationContext context) {
         if (!(context instanceof AnnotationConfigEmbeddedWebApplicationContext)) {
@@ -91,9 +79,6 @@ public class CseSpringApplicationRunListener implements SpringApplicationRunList
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void finished(ConfigurableApplicationContext context, Throwable exception) {
 

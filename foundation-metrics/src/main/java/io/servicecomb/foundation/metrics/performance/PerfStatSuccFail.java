@@ -27,10 +27,6 @@ public class PerfStatSuccFail extends PerfStatImpl {
 
     private PerfStatData fail = new PerfStatData("fail");
 
-    /**
-     * 构造
-     * @param name name
-     */
     public PerfStatSuccFail(String name) {
         super(name);
 
@@ -38,12 +34,6 @@ public class PerfStatSuccFail extends PerfStatImpl {
         addPerfStatData(fail);
     }
 
-    /**
-     * add
-     * @param isSucc    isSucc
-     * @param msgCount  msgCount
-     * @param latency   latency
-     */
     public void add(boolean isSucc, int msgCount, long latency) {
         PerfStatData statData = succ;
         if (!isSucc) {
@@ -53,11 +43,6 @@ public class PerfStatSuccFail extends PerfStatImpl {
         statData.add(msgCount, latency);
     }
 
-    /**
-     * add
-     * @param isSucc    isSucc
-     * @param context   context
-     */
     public void add(boolean isSucc, PerfStatContext context) {
         add(isSucc, context.getMsgCount(), context.getLatency());
     }

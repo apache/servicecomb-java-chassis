@@ -35,9 +35,6 @@ import io.servicecomb.foundation.common.RegisterManager;
 
 public class TestConsumer {
 
-    /**
-     * Test ConsumerProvider
-     */
     @SuppressWarnings({"rawtypes", "unchecked"})
     @Test
     public void testConsumerProviderManager() {
@@ -59,10 +56,6 @@ public class TestConsumer {
         Assert.assertFalse(validAssert);
     }
 
-    /**
-     * Test ReferenceConfig
-     * @throws InterruptedException 
-     */
     @Test
     public void testReferenceConfig() throws InterruptedException {
         Map<String, String> oMap = new ConcurrentHashMap<>();
@@ -84,9 +77,6 @@ public class TestConsumer {
 
     }
 
-    /**
-     * Test InvokerUtils
-     */
     @Test
     public void testInvokerUtils() {
         Invocation oInvocation = Mockito.mock(Invocation.class);
@@ -120,9 +110,6 @@ public class TestConsumer {
         Assert.assertFalse(validInvoke);
     }
 
-    /**
-     * Test Invocation
-     */
     @Test
     public void testInvocation() {
         OperationMeta oOperationMeta = Mockito.mock(OperationMeta.class);

@@ -22,9 +22,6 @@ import io.vertx.core.http.HttpClient;
 import io.vertx.core.http.HttpClientOptions;
 
 public class HttpClientVerticle extends AbstractClientVerticle<HttpClientWithContext> {
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public HttpClientWithContext createClientPool() {
         HttpClientOptions httpClientOptions = (HttpClientOptions) config().getValue(CLIENT_OPTIONS);

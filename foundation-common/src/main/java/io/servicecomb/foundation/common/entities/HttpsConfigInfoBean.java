@@ -16,24 +16,12 @@
 package io.servicecomb.foundation.common.entities;
 
 public class HttpsConfigInfoBean {
-    /**
-     * keyStore路径
-     */
     private String keyStorePath = null;
 
-    /**
-     * keyStore密码
-     */
     private String keyStorePasswd = null;
 
-    /**
-     * trustStore路径
-     */
     private String trustStorePath = null;
 
-    /**
-     * trustStore密码
-     */
     private String trustStorePasswd = null;
 
     public String getKeyStorePath() {

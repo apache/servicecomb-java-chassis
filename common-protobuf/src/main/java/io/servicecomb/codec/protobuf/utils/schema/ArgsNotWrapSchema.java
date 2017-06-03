@@ -29,9 +29,6 @@ public class ArgsNotWrapSchema extends AbstractWrapSchema {
         this.schema = (Schema<Object>) schema;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public Object readFromEmpty() {
         return new Object[] {null};

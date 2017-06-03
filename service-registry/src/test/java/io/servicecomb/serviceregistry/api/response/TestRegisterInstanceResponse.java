@@ -30,42 +30,27 @@ public class TestRegisterInstanceResponse {
 
     RegisterInstanceResponse oRegisterInstanceResponse = null;
 
-    /**
-     * @throws java.lang.Exception
-     */
     @Before
     public void setUp() throws Exception {
         oRegisterInstanceResponse = new RegisterInstanceResponse();
     }
 
-    /**
-     * @throws java.lang.Exception
-     */
     @After
     public void tearDown() throws Exception {
         oRegisterInstanceResponse = null;
     }
 
-    /**
-     * Test Un-Initialized Values
-     */
     @Test
     public void testDefaultValues() {
         Assert.assertNull(oRegisterInstanceResponse.getInstanceId());
     }
 
-    /**
-     * Test InitializedValues
-     */
     @Test
     public void testIntializedValues() {
         initFields(); //Initialize the Object
         Assert.assertEquals("testInstanceID", oRegisterInstanceResponse.getInstanceId());
     }
 
-    /**
-     * Initialize the Values
-     */
     private void initFields() {
         oRegisterInstanceResponse.setInstanceId("testInstanceID");
     }

@@ -40,26 +40,14 @@ public class QpsController {
         this.msCycleBegin = System.currentTimeMillis();
     }
 
-    /**
-     * 获取key的值
-     * @return 返回 key
-     */
     public String getKey() {
         return key;
     }
 
-    /**
-     * 获取qpsLimit的值
-     * @return 返回 qpsLimit
-     */
     public Integer getQpsLimit() {
         return qpsLimit;
     }
 
-    /**
-     * 对qpsLimit进行赋值
-     * @param qpsLimit qpsLimit的新值
-     */
     public void setQpsLimit(Integer qpsLimit) {
         this.qpsLimit = qpsLimit;
     }

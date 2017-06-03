@@ -109,26 +109,14 @@ public class InstanceCache {
         return transportMap;
     }
 
-    /**
-     *返回instanceMap的值
-     * @return
-     */
     public Map<String, MicroserviceInstance> getInstanceMap() {
         return instanceMap;
     }
 
-    /**
-     * 获取microserviceName的值
-     * @return 返回 microserviceName
-     */
     public String getMicroserviceName() {
         return microserviceName;
     }
 
-    /**
-     * 获取microserviceVersionRule的值
-     * @return 返回 microserviceVersionRule
-     */
     public String getMicroserviceVersionRule() {
         return microserviceVersionRule;
     }

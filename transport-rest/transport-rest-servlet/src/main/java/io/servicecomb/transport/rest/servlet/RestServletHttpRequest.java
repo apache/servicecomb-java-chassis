@@ -38,33 +38,21 @@ public class RestServletHttpRequest implements RestServerRequestInternal {
         this.asyncCtx = asyncCtx;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public String getPath() {
         return request.getRequestURI();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public String getMethod() {
         return request.getMethod();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void setPathParamMap(Map<String, String> pathParamMap) {
         this.pathParamMap = pathParamMap;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void complete() {
         asyncCtx.complete();

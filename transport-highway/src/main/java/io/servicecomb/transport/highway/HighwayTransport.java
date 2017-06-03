@@ -34,9 +34,6 @@ import io.vertx.core.DeploymentOptions;
 public class HighwayTransport extends AbstractTransport {
     public static final String NAME = "highway";
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public String getName() {
         return NAME;
@@ -53,9 +50,6 @@ public class HighwayTransport extends AbstractTransport {
         return VertxUtils.blockDeploy(transportVertx, HighwayServerVerticle.class, deployOptions);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void send(Invocation invocation, AsyncResponse asyncResp) throws Exception {
         URIEndpointObject endpoint = (URIEndpointObject) invocation.getEndpoint().getAddress();

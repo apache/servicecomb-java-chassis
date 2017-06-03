@@ -24,36 +24,20 @@ public class HandlerConfig {
 
     private Class<Handler> clazz;
 
-    /**
-     * 获取handlerId的值
-     * @return 返回 handlerId
-     */
     @JacksonXmlProperty(localName = "id", isAttribute = true)
     public String getHandlerId() {
         return handlerId;
     }
 
-    /**
-     * 对handlerId进行赋值
-     * @param handlerId handlerId的新值
-     */
     public void setHandlerId(String handlerId) {
         this.handlerId = handlerId;
     }
 
-    /**
-     * 获取clazz的值
-     * @return 返回 clazz
-     */
     @JacksonXmlProperty(localName = "class", isAttribute = true)
     public Class<Handler> getClazz() {
         return clazz;
     }
 
-    /**
-     * 对clazz进行赋值
-     * @param clazz clazz的新值
-     */
     public void setClazz(Class<Handler> clazz) {
         this.clazz = clazz;
     }

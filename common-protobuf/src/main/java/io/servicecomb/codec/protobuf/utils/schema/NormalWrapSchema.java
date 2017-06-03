@@ -31,9 +31,6 @@ public class NormalWrapSchema extends AbstractWrapSchema {
         this.schema = (Schema<Object>) schema;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public Object readFromEmpty() {
         SingleWrapper wrapper = (SingleWrapper) schema.newMessage();

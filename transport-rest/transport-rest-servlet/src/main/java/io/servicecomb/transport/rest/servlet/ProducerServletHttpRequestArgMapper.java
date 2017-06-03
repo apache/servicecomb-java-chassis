@@ -30,9 +30,6 @@ public class ProducerServletHttpRequestArgMapper extends AbstractProducerContext
         this.httpRequest = httpRequest;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public Object createContextArg(SwaggerInvocation invocation) {
         return httpRequest;

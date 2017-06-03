@@ -26,9 +26,6 @@ public abstract class AbstractClientVerticle<CLIENT_POOL> extends AbstractVertic
 
     public static final String CLIENT_OPTIONS = "clientOptions";
 
-    /**
-         * {@inheritDoc}
-         */
     @SuppressWarnings("unchecked")
     @Override
     public void start() throws Exception {

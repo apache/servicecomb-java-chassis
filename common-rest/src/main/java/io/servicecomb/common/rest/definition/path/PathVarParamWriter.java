@@ -23,9 +23,6 @@ public class PathVarParamWriter extends AbstractUrlParamWriter {
         this.param = param;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void write(StringBuilder builder, Object[] args) throws Exception {
         builder.append((Object) getParamValue(args));

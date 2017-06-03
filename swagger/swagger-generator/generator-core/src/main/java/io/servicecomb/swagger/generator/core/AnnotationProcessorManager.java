@@ -29,11 +29,6 @@ public class AnnotationProcessorManager<T> extends RegisterManager<String, T> {
         super(annotationType + " annotation processor mgr");
     }
 
-    /**
-     * 注册processor
-     * @param name
-     * @param processor
-     */
     public void register(Class<? extends Annotation> annotationCls, T processor) {
         register(annotationCls.getName(), processor);
     }

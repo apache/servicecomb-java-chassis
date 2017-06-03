@@ -26,9 +26,6 @@ import io.servicecomb.codec.protobuf.jackson.ResultDeserializer;
 import io.servicecomb.codec.protobuf.jackson.ResultSerializer;
 
 public class ResultFieldCodec extends AbstractFieldCodec {
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void init(ProtobufSchema schema, Type... types) {
         writer = new CseObjectWriter(ProtobufManager.getWriter(), schema, new ResultSerializer());

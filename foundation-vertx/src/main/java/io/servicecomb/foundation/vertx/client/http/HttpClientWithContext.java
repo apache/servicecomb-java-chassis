@@ -33,10 +33,6 @@ public class HttpClientWithContext {
         this.context = context;
     }
 
-    /**
-     * 获取httpClient的值
-     * @return 返回 httpClient
-     */
     public HttpClient getHttpClient() {
         return httpClient;
     }

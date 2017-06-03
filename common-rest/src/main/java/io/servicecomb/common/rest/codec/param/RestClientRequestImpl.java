@@ -44,18 +44,11 @@ public class RestClientRequestImpl implements RestClientRequest {
         this.request = request;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void write(Buffer bodyBuffer) {
         this.bodyBuffer = bodyBuffer;
     }
 
-    /**
-     * {@inheritDoc}
-     * @throws Exception
-     */
     @Override
     public void end() throws Exception {
         writeCookies();
@@ -111,9 +104,6 @@ public class RestClientRequestImpl implements RestClientRequest {
         request.putHeader(HttpHeaders.COOKIE, builder.toString());
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void addCookie(String name, String value) {
         if (cookieMap == null) {
@@ -123,9 +113,6 @@ public class RestClientRequestImpl implements RestClientRequest {
         cookieMap.put(name, value);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void addForm(String name, Object value) {
         if (formMap == null) {
@@ -135,9 +122,6 @@ public class RestClientRequestImpl implements RestClientRequest {
         formMap.put(name, value);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void putHeader(String name, String value) {
         request.putHeader(name, value);

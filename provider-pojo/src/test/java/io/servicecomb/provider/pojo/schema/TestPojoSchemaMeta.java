@@ -40,10 +40,6 @@ public class TestPojoSchemaMeta {
         lPojoSchemaMeta = null;
     }
 
-    /**
-     * Test GetImplementation
-     * @throws Exception 
-     */
     @Test
     public void testGetImplementation(@Mocked PojoProducers producers)
         throws Exception {

@@ -22,42 +22,16 @@ import io.servicecomb.common.rest.codec.RestObjectMapper;
 import io.servicecomb.common.rest.codec.RestServerRequest;
 
 public interface ParamValueProcessor {
-    /**
-     * 从http request中获取到parameter值
-     * @param request
-     * @return
-     * @throws Exception
-     */
     Object getValue(RestServerRequest request) throws Exception;
 
-    /**
-     * 将参数值设置到request的相应位置中
-     * @param paramData
-     * @param arg
-     * @throws Exception
-     */
     void setValue(RestClientRequest clientRequest, Object arg) throws Exception;
 
-    /**
-     * 将对象转换成指定类型的值
-     * @param value
-     * @param targetType
-     * @return
-     */
     default Object convertValue(Object value, JavaType targetType) {
         return RestObjectMapper.INSTANCE.convertValue(value, targetType);
     }
 
-    /**
-     * 获取该参数的路径名
-     * @return
-     */
     String getParameterPath();
 
-    /**
-     * 获取processor的类型
-     * @return
-     */
     String getProcessorType();
 
 }

@@ -50,10 +50,6 @@ import mockit.Mocked;
 
 public class TestRegistry {
 
-    /**
-     * Test RegistryUtils
-     * @throws Exception
-     */
     @BeforeClass
     public static void initSetup() throws Exception {
         Log4jUtils.init();
@@ -121,12 +117,6 @@ public class TestRegistry {
 
     }
 
-    /**
-    * Test With Stubs
-    * @throws Exception
-    *
-    * @since Mar 7, 2017 
-    */
     @Test
     public void testRegistryUtilsWithStub(
             final @Mocked ServiceRegistryClientImpl oMockServiceRegistryClient) throws Exception {

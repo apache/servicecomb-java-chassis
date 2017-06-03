@@ -48,9 +48,6 @@ public class TestVertxRestServer {
                 return super.findRestOperation(restRequest);
             }
 
-            /**
-             * {@inheritDoc}
-             */
             @Override
             public void sendFailResponse(RestServerRequestInternal restRequest, HttpServerResponse httpResponse,
                     Throwable throwable) {

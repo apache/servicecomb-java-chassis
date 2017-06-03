@@ -39,10 +39,6 @@ public class ReferenceConfig {
         this.transport = transport;
     }
 
-    /**
-     * 获取microserviceMeta的值
-     * @return 返回 microserviceMeta
-     */
     public MicroserviceMeta getMicroserviceMeta() {
         return microserviceMeta;
     }

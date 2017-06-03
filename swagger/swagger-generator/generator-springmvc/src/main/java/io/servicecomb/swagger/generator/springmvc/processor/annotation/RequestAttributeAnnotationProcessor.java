@@ -23,17 +23,11 @@ import io.servicecomb.swagger.generator.core.processor.parameter.AbstractParamet
 import io.swagger.models.parameters.FormParameter;
 
 public class RequestAttributeAnnotationProcessor extends AbstractParameterProcessor<FormParameter> {
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected FormParameter createParameter() {
         return new FormParameter();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected String getAnnotationParameterName(Object annotation) {
         return ((RequestAttribute) annotation).name();

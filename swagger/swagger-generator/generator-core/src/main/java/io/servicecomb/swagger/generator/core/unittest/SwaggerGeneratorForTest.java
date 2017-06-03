@@ -65,9 +65,6 @@ public class SwaggerGeneratorForTest extends SwaggerGenerator {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected boolean isSkipMethod(Method method) {
         boolean skip = super.isSkipMethod(method);

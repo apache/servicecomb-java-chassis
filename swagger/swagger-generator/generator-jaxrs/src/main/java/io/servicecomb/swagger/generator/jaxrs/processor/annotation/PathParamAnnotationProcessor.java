@@ -23,17 +23,11 @@ import io.servicecomb.swagger.generator.core.processor.parameter.AbstractParamet
 import io.swagger.models.parameters.PathParameter;
 
 public class PathParamAnnotationProcessor extends AbstractParameterProcessor<PathParameter> {
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected PathParameter createParameter() {
         return new PathParameter();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected String getAnnotationParameterName(Object annotation) {
         return ((PathParam) annotation).value();

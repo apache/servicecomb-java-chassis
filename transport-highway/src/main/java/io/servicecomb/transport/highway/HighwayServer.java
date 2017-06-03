@@ -26,9 +26,6 @@ public class HighwayServer extends TcpServer {
         super(endpointObject);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected TcpServerConnection createTcpServerConnection() {
         return new HighwayServerConnection();

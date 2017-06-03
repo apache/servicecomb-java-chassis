@@ -26,9 +26,6 @@ public class ProducerHttpRequestArgMapper extends AbstractProducerContextArgMapp
         super(producerArgIdx);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public Object createContextArg(SwaggerInvocation swaggerInvocation) {
         Invocation invocation = (Invocation) swaggerInvocation;

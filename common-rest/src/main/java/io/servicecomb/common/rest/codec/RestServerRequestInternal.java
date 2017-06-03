@@ -19,10 +19,6 @@ package io.servicecomb.common.rest.codec;
 import java.util.Map;
 
 public interface RestServerRequestInternal extends RestServerRequest {
-    /**
-     * 对pathParamMap进行赋值
-     * @param pathParamMap pathParamMap的新值
-     */
     void setPathParamMap(Map<String, String> pathParamMap);
 
     void complete();

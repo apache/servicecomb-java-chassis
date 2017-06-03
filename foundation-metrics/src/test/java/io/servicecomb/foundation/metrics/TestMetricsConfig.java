@@ -30,27 +30,16 @@ public class TestMetricsConfig {
 
     MetricsConfig oMetricsConfig = null;
 
-    /**
-     * @throws java.lang.Exception
-     */
     @Before
     public void setUp() throws Exception {
         oMetricsConfig = new MetricsConfig();
     }
 
-    /**
-     * @throws java.lang.Exception
-     */
     @After
     public void tearDown() throws Exception {
         oMetricsConfig = null;
     }
 
-    /**
-     * Test io.servicecomb.foundation.metrics.MetricsConfig.getMsCycle()
-     * io.servicecomb.foundation.metrics.MetricsConfig.isEnable()
-     * io.servicecomb.foundation.metrics.MetricsConfig.afterPropertiesSet() This cannot be tested as it will start original Thread
-     */
     @Test
     public void test() {
         Assert.assertEquals(60000, MetricsConfig.getMsCycle());

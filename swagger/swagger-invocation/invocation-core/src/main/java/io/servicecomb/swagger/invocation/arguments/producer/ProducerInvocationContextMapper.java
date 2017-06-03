@@ -25,9 +25,6 @@ public class ProducerInvocationContextMapper extends AbstractProducerContextArgM
         super(producerIdx);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public Object createContextArg(SwaggerInvocation invocation) {
         return new SwaggerInvocationContext(invocation.getContext());

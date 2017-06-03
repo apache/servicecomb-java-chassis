@@ -31,7 +31,6 @@ import io.swagger.models.properties.RefProperty;
 
 /**
  * 备选body
- * int test(int x, Set<String> y)
  * 反向生成契约时，x、y都是备选body，最终再合并成body
  * 如果直接使用BodyParamter,会导致y有信息丢失
  */

@@ -48,14 +48,6 @@ public final class InvocationFactory {
         return invocation;
     }
 
-    /**
-     * consumer端使用，schemaMeta级别的缓存，每次调用根据operationName来执行
-     * @param referenceConfig
-     * @param schemaMeta
-     * @param operationName
-     * @param swaggerArguments
-     * @return
-     */
     public static Invocation forConsumer(ReferenceConfig referenceConfig, SchemaMeta schemaMeta, String operationName,
             Object[] swaggerArguments) {
         OperationMeta operationMeta = schemaMeta.ensureFindOperation(operationName);
@@ -66,13 +58,6 @@ public final class InvocationFactory {
         return invocation;
     }
 
-    /**
-     * 为tcc场景提供的快捷方式,consumer端使用
-     * @param referenceConfig
-     * @param operationQualifiedName
-     * @param swaggerArguments
-     * @return
-     */
     public static Invocation forConsumer(ReferenceConfig referenceConfig, String operationQualifiedName,
             Object[] swaggerArguments) {
         MicroserviceMeta microserviceMeta = referenceConfig.getMicroserviceMeta();
@@ -85,13 +70,6 @@ public final class InvocationFactory {
         return invocation;
     }
 
-    /**
-     * transport server收到请求时，创建invocation
-     * @param endpoint
-     * @param operationMeta
-     * @param swaggerArguments
-     * @return
-     */
     public static Invocation forProvider(Endpoint endpoint,
             OperationMeta operationMeta,
             Object[] swaggerArguments) {

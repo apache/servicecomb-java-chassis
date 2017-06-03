@@ -23,17 +23,11 @@ import io.servicecomb.swagger.generator.core.processor.parameter.AbstractParamet
 import io.swagger.models.parameters.QueryParameter;
 
 public class QueryParamAnnotationProcessor extends AbstractParameterProcessor<QueryParameter> {
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected QueryParameter createParameter() {
         return new QueryParameter();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected String getAnnotationParameterName(Object annotation) {
         return ((QueryParam) annotation).value();

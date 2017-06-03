@@ -40,9 +40,6 @@ public class TestMicroserviceInstanceChangedEvent {
 
     MicroserviceInstance oMockMicroserviceInstance = null;
 
-    /**
-     * @throws java.lang.Exception
-     */
     @Before
     public void setUp() throws Exception {
         oMicroserviceInstanceChangedEvent = new MicroserviceInstanceChangedEvent();
@@ -50,9 +47,6 @@ public class TestMicroserviceInstanceChangedEvent {
         oMockMicroserviceInstance = Mockito.mock(MicroserviceInstance.class);
     }
 
-    /**
-     * @throws java.lang.Exception
-     */
     @After
     public void tearDown() throws Exception {
         oMicroserviceInstanceChangedEvent = null;
@@ -60,9 +54,6 @@ public class TestMicroserviceInstanceChangedEvent {
         oMockMicroserviceInstance = null;
     }
 
-    /**
-     * Test Un-Initialized Values
-     */
     @Test
     public void testDefaultValues() {
         Assert.assertNull(oMicroserviceInstanceChangedEvent.getAction());
@@ -70,9 +61,6 @@ public class TestMicroserviceInstanceChangedEvent {
         Assert.assertNull(oMicroserviceInstanceChangedEvent.getKey());
     }
 
-    /**
-     * Test InitializedValues
-     */
     @Test
     public void testIntializedValues() {
         initFields(); //Initialize the Object
@@ -89,9 +77,6 @@ public class TestMicroserviceInstanceChangedEvent {
         Assert.assertEquals("DELETE", oMicroserviceInstanceChangedEvent.getAction().getName());
     }
 
-    /**
-     * Initialize the Values
-     */
     private void initFields() {
         oMicroserviceInstanceChangedEvent.setInstance(oMockMicroserviceInstance);
         oMicroserviceInstanceChangedEvent.setKey(oMockMicroserviceKey);

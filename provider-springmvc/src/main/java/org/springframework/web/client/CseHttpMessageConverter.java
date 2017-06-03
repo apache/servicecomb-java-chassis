@@ -43,33 +43,21 @@ public class CseHttpMessageConverter implements HttpMessageConverter<Object> {
         RESPONSE_FIELD.setAccessible(true);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public boolean canRead(Class<?> clazz, MediaType mediaType) {
         return true;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public boolean canWrite(Class<?> clazz, MediaType mediaType) {
         return true;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public List<MediaType> getSupportedMediaTypes() {
         return ALL_MEDIA_TYPE;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public Object read(Class<? extends Object> clazz,
             HttpInputMessage inputMessage) throws IOException, HttpMessageNotReadableException {
@@ -79,9 +67,6 @@ public class CseHttpMessageConverter implements HttpMessageConverter<Object> {
         return resp.getResult();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void write(Object t, MediaType contentType,
             HttpOutputMessage outputMessage) throws IOException, HttpMessageNotWritableException {

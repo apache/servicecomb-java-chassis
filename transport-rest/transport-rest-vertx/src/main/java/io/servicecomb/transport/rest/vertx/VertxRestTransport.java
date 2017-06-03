@@ -32,17 +32,11 @@ import io.vertx.core.DeploymentOptions;
 
 @Component
 public class VertxRestTransport extends AbstractTransport {
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public String getName() {
         return Const.RESTFUL;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public boolean init() throws Exception {
         // 部署transport server
@@ -54,9 +48,6 @@ public class VertxRestTransport extends AbstractTransport {
         return VertxUtils.blockDeploy(transportVertx, RestServerVerticle.class, options);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void send(Invocation invocation, AsyncResponse asyncResp) throws Exception {
         URIEndpointObject endpoint = (URIEndpointObject) invocation.getEndpoint().getAddress();
