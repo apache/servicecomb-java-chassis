@@ -21,7 +21,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>io.servicecomb</groupId>
-		<artifactId>cse-transport-rest</artifactId>
+		<artifactId>transport-rest</artifactId>
 		<version>0.1.0-SNAPSHOT</version>
 	</parent>
 	<artifactId>transport-rest-servlet</artifactId>
