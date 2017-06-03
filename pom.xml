@@ -20,7 +20,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>io.servicecomb</groupId>
 	<artifactId>java-chassis-parent</artifactId>
-	<version>0.1.0-SNAPSHOT</version>
+	<version>0.1.0-m1-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
 	<name>ServiceComb Java Chassis</name>
@@ -59,8 +59,6 @@
 
 		<argLine>-Dfile.encoding=UTF-8</argLine>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-
-		<servicecomb.version>0.1.0-SNAPSHOT</servicecomb.version>
 	</properties>
 
 	<dependencyManagement>
@@ -68,7 +66,7 @@
 			<dependency>
 				<groupId>io.servicecomb</groupId>
 				<artifactId>java-chassis-dependency</artifactId>
-				<version>${servicecomb.version}</version>
+				<version>0.1.0-m1-SNAPSHOT</version>
 				<type>pom</type>
 				<scope>import</scope>
 			</dependency>

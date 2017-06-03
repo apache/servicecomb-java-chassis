@@ -22,10 +22,9 @@
 	<groupId>io.servicecomb</groupId>
 	<artifactId>java-chassis-dependency</artifactId>
 	<packaging>pom</packaging>
-	<version>0.1.0-SNAPSHOT</version>
+	<version>0.1.0-m1-SNAPSHOT</version>
 
 	<properties>
-		<servicecomb.version>0.1.0-SNAPSHOT</servicecomb.version>
 		<jackson.version>2.8.1</jackson.version>
 		<vertx.version>3.3.3</vertx.version>
 		<tec.zkclient.version>0.8</tec.zkclient.version>
@@ -990,47 +989,37 @@
 			<dependency>
 				<groupId>io.servicecomb</groupId>
 				<artifactId>foundation-common</artifactId>
-				<version>${servicecomb.version}</version>
+				<version>0.1.0-m1-SNAPSHOT</version>
 			</dependency>
 			<dependency>
 				<groupId>io.servicecomb</groupId>
 				<artifactId>foundation-ssl</artifactId>
-				<version>${servicecomb.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>io.servicecomb</groupId>
-				<artifactId>cse-adapter-springmvc</artifactId>
-				<version>${servicecomb.version}</version>
+				<version>0.1.0-m1-SNAPSHOT</version>
 			</dependency>
 			<dependency>
 				<groupId>io.servicecomb</groupId>
 				<artifactId>foundation-crypt</artifactId>
-				<version>${servicecomb.version}</version>
+				<version>0.1.0-m1-SNAPSHOT</version>
 			</dependency>
 			<dependency>
 				<groupId>io.servicecomb</groupId>
 				<artifactId>foundation-httpclient</artifactId>
-				<version>${servicecomb.version}</version>
+				<version>0.1.0-m1-SNAPSHOT</version>
 			</dependency>
 			<dependency>
 				<groupId>io.servicecomb</groupId>
 				<artifactId>foundation-config</artifactId>
-				<version>${servicecomb.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>io.servicecomb</groupId>
-				<artifactId>foundation-config-cc</artifactId>
-				<version>${servicecomb.version}</version>
+				<version>0.1.0-m1-SNAPSHOT</version>
 			</dependency>
 			<dependency>
 				<groupId>io.servicecomb</groupId>
 				<artifactId>foundation-vertx</artifactId>
-				<version>${servicecomb.version}</version>
+				<version>0.1.0-m1-SNAPSHOT</version>
 			</dependency>
 			<dependency>
 				<groupId>io.servicecomb</groupId>
 				<artifactId>foundation-metrics</artifactId>
-				<version>${servicecomb.version}</version>
+				<version>0.1.0-m1-SNAPSHOT</version>
 			</dependency>
 
 			<dependency>
@@ -1071,167 +1060,132 @@
 			<dependency>
 				<groupId>io.servicecomb</groupId>
 				<artifactId>java-chassis-core</artifactId>
-				<version>${servicecomb.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>io.servicecomb</groupId>
-				<artifactId>foundation-auth</artifactId>
-				<version>${servicecomb.version}</version>
+				<version>0.1.0-m1-SNAPSHOT</version>
 			</dependency>
 			<dependency>
 				<groupId>io.servicecomb</groupId>
 				<artifactId>transport-grpc</artifactId>
-				<version>${servicecomb.version}</version>
+				<version>0.1.0-m1-SNAPSHOT</version>
 			</dependency>
 			<dependency>
 				<groupId>io.servicecomb</groupId>
 				<artifactId>handler-bizkeeper</artifactId>
-				<version>${servicecomb.version}</version>
+				<version>0.1.0-m1-SNAPSHOT</version>
 			</dependency>
 			<dependency>
 				<groupId>io.servicecomb</groupId>
 				<artifactId>handler-loadbalance</artifactId>
-				<version>${servicecomb.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>io.servicecomb</groupId>
-				<artifactId>cse-handler-tracing</artifactId>
-				<version>${servicecomb.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>io.servicecomb</groupId>
-				<artifactId>cse-handler-performance-stats</artifactId>
-				<version>${servicecomb.version}</version>
+				<version>0.1.0-m1-SNAPSHOT</version>
 			</dependency>
 			<dependency>
 				<groupId>io.servicecomb</groupId>
 				<artifactId>handler-flowcontrol-qps</artifactId>
-				<version>${servicecomb.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>io.servicecomb</groupId>
-				<artifactId>cse-adapter-common</artifactId>
-				<version>${servicecomb.version}</version>
+				<version>0.1.0-m1-SNAPSHOT</version>
 			</dependency>
 			<dependency>
 				<groupId>io.servicecomb</groupId>
 				<artifactId>common-rest</artifactId>
-				<version>${servicecomb.version}</version>
+				<version>0.1.0-m1-SNAPSHOT</version>
 			</dependency>
 			<dependency>
 				<groupId>io.servicecomb</groupId>
 				<artifactId>transport-rest-client</artifactId>
-				<version>${servicecomb.version}</version>
+				<version>0.1.0-m1-SNAPSHOT</version>
 			</dependency>
 			<dependency>
 				<groupId>io.servicecomb</groupId>
 				<artifactId>transport-rest-vertx</artifactId>
-				<version>${servicecomb.version}</version>
+				<version>0.1.0-m1-SNAPSHOT</version>
 			</dependency>
 			<dependency>
 				<groupId>io.servicecomb</groupId>
 				<artifactId>transport-rest-servlet</artifactId>
-				<version>${servicecomb.version}</version>
+				<version>0.1.0-m1-SNAPSHOT</version>
 			</dependency>
 			<dependency>
 				<groupId>io.servicecomb</groupId>
 				<artifactId>common-protobuf</artifactId>
-				<version>${servicecomb.version}</version>
+				<version>0.1.0-m1-SNAPSHOT</version>
 			</dependency>
 			<dependency>
 				<groupId>io.servicecomb</groupId>
 				<artifactId>common-javassist</artifactId>
-				<version>${servicecomb.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>io.servicecomb</groupId>
-				<artifactId>cse-common-swagger-generator</artifactId>
-				<version>${servicecomb.version}</version>
+				<version>0.1.0-m1-SNAPSHOT</version>
 			</dependency>
 			<dependency>
 				<groupId>io.servicecomb</groupId>
 				<artifactId>swagger-generator-core</artifactId>
-				<version>${servicecomb.version}</version>
+				<version>0.1.0-m1-SNAPSHOT</version>
 			</dependency>
 			<dependency>
 				<groupId>io.servicecomb</groupId>
 				<artifactId>swagger-generator-jaxrs</artifactId>
-				<version>${servicecomb.version}</version>
+				<version>0.1.0-m1-SNAPSHOT</version>
 			</dependency>
 			<dependency>
 				<groupId>io.servicecomb</groupId>
 				<artifactId>swagger-generator-springmvc</artifactId>
-				<version>${servicecomb.version}</version>
+				<version>0.1.0-m1-SNAPSHOT</version>
 			</dependency>
 			<dependency>
 				<groupId>io.servicecomb</groupId>
 				<artifactId>swagger-invocation-core</artifactId>
-				<version>${servicecomb.version}</version>
+				<version>0.1.0-m1-SNAPSHOT</version>
 			</dependency>
 			<dependency>
 				<groupId>io.servicecomb</groupId>
 				<artifactId>swagger-invocation-jaxrs</artifactId>
-				<version>${servicecomb.version}</version>
+				<version>0.1.0-m1-SNAPSHOT</version>
 			</dependency>
 			<dependency>
 				<groupId>io.servicecomb</groupId>
 				<artifactId>swagger-invocation-springmvc</artifactId>
-				<version>${servicecomb.version}</version>
+				<version>0.1.0-m1-SNAPSHOT</version>
 			</dependency>
 			<dependency>
 				<groupId>io.servicecomb</groupId>
 				<artifactId>service-registry</artifactId>
-				<version>${servicecomb.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>io.servicecomb</groupId>
-				<artifactId>cse-handler-tcc</artifactId>
-				<version>${servicecomb.version}</version>
+				<version>0.1.0-m1-SNAPSHOT</version>
 			</dependency>
 			<dependency>
 				<groupId>io.servicecomb</groupId>
 				<artifactId>provider-pojo</artifactId>
-				<version>${servicecomb.version}</version>
+				<version>0.1.0-m1-SNAPSHOT</version>
 			</dependency>
 			<dependency>
 				<groupId>io.servicecomb</groupId>
 				<artifactId>provider-rest-common</artifactId>
-				<version>${servicecomb.version}</version>
+				<version>0.1.0-m1-SNAPSHOT</version>
 			</dependency>
 			<dependency>
 				<groupId>io.servicecomb</groupId>
 				<artifactId>provider-jaxrs</artifactId>
-				<version>${servicecomb.version}</version>
+				<version>0.1.0-m1-SNAPSHOT</version>
 			</dependency>
 			<dependency>
 				<groupId>io.servicecomb</groupId>
 				<artifactId>provider-springmvc</artifactId>
-				<version>${servicecomb.version}</version>
+				<version>0.1.0-m1-SNAPSHOT</version>
 			</dependency>
 			<dependency>
 				<groupId>io.servicecomb</groupId>
 				<artifactId>transport-highway</artifactId>
-				<version>${servicecomb.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>io.servicecomb</groupId>
-				<artifactId>cse-spring-boot-starter-config</artifactId>
-				<version>${servicecomb.version}</version>
+				<version>0.1.0-m1-SNAPSHOT</version>
 			</dependency>
 			<dependency>
 				<groupId>io.servicecomb</groupId>
 				<artifactId>spring-boot-starter-configuration</artifactId>
-				<version>${servicecomb.version}</version>
+				<version>0.1.0-m1-SNAPSHOT</version>
 			</dependency>
 			<dependency>
 				<groupId>io.servicecomb</groupId>
 				<artifactId>spring-boot-starter-provider</artifactId>
-				<version>${servicecomb.version}</version>
+				<version>0.1.0-m1-SNAPSHOT</version>
 			</dependency>
 			<dependency>
 				<groupId>io.servicecomb</groupId>
 				<artifactId>spring-boot-starter-transport</artifactId>
-				<version>${servicecomb.version}</version>
+				<version>0.1.0-m1-SNAPSHOT</version>
 			</dependency>
 		</dependencies>
 
