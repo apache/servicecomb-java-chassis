@@ -41,6 +41,10 @@
 		<module>demo-spring-boot-transport</module>
 	</modules>
 
+	<properties>
+		<spring-boot.version>1.4.5.RELEASE</spring-boot.version>
+	</properties>
+
 	<dependencyManagement>
 		<dependencies>
 			<dependency>
@@ -92,6 +96,13 @@
 				<groupId>io.servicecomb.demo</groupId>
 				<artifactId>crossapp-client</artifactId>
 				<version>0.1.0-m1-SNAPSHOT</version>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-dependencies</artifactId>
+				<version>${spring-boot.version}</version>
+				<type>pom</type>
+				<scope>import</scope>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>

@@ -30,9 +30,6 @@
 		<module>demo-spring-boot-zuul-proxy</module>
 	</modules>
 
-	<properties>
-		<spring-boot.version>1.4.5.RELEASE</spring-boot.version>
-	</properties>
 	<dependencies>
 		<dependency>
 			<groupId>io.servicecomb</groupId>
@@ -95,15 +92,4 @@
 				<version>1.5.10</version>
 			</dependency>
 	</dependencies>
-	<dependencyManagement>
-		<dependencies>
-			<dependency>
-				<groupId>org.springframework.boot</groupId>
-				<artifactId>spring-boot-dependencies</artifactId>
-				<version>${spring-boot.version}</version>
-				<type>pom</type>
-				<scope>import</scope>
-			</dependency>
-		</dependencies>
-	</dependencyManagement>
 </project>
