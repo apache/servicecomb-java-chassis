@@ -29,8 +29,8 @@ import io.servicecomb.common.rest.RestConst;
 
 /**
  * 默认不支持下面第1个场景，需要做出修正
- * cse://app:ms/path  -> cse://app/ms/path
- * cse://ms/path -> cse://ms/path
+ * cse://app:ms/path to cse://app/ms/path
+ * cse://ms/path to cse://ms/path
  */
 public class CseUriTemplateHandler extends DefaultUriTemplateHandler {
     private Field hostField = ReflectionUtils.findField(UriComponentsBuilder.class, "host");

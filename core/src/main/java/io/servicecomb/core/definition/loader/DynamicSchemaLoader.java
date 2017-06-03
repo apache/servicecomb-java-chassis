@@ -47,7 +47,6 @@ public class DynamicSchemaLoader {
     /**
      * 动态注册指定目录下的schema契约到当前服务
      * @param schemaLocation eg. "classpath*:schemas/*.yaml"
-     * @throws Exception
      */
     public void registerSchemas(String schemaLocation) {
         registerSchemas(RegistryUtils.getMicroservice().getServiceName(), schemaLocation);
@@ -55,9 +54,8 @@ public class DynamicSchemaLoader {
 
     /**
      * 动态注册指定目录下的schema契约到指定服务
-     * @param microserviceName
+     * @param microserviceName name of microservice
      * @param schemaLocation eg. "classpath*:schemas/*.yaml"
-     * @throws Exception
      */
     public void registerSchemas(String microserviceName, String schemaLocation) {
         LOGGER.info("dynamic register schemas for {} in {}", microserviceName, schemaLocation);

@@ -22,11 +22,6 @@ public interface Transport {
 
     boolean init() throws Exception;
 
-    /**
-     * endpoint的格式为 URI，比如rest://192.168.1.1:8080
-     * @param endpoint endpoint URI representation
-     * @return tranport specific address.
-     */
     Object parseAddress(String endpoint);
 
     Endpoint getEndpoint() throws Exception;

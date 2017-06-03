@@ -206,308 +206,103 @@ public class HystrixCommandPropertiesExt extends HystrixCommandProperties {
                 .add(propertyPrefix + ".command." + key.name() + ".threadPoolKeyOverride", null).build();
     }
 
-    /**
-     * Whether to use a {@link HystrixCircuitBreaker} or not. If false no
-     * circuit-breaker logic will be used and all requests permitted.
-     * <p>
-     * This is similar in effect to {@link #circuitBreakerForceClosed()} except
-     * that continues tracking metrics and knowing whether it should be
-     * open/closed, this property results in not even instantiating a
-     * circuit-breaker.
-     * @return {@code HystrixProperty<Boolean>}
-     */
     public HystrixProperty<Boolean> circuitBreakerEnabled() {
         return circuitBreakerEnabled;
     }
 
-    /**
-     * Error percentage threshold (as whole number such as 50) at which point
-     * the circuit breaker will trip open and reject requests.
-     * <p>
-     * It will stay tripped for the duration defined in
-     * {@link #circuitBreakerSleepWindowInMilliseconds()};
-     * <p>
-     * The error percentage this is compared against comes from
-     * {@link HystrixCommandMetrics#getHealthCounts()}.
-     * @return {@code HystrixProperty<Integer>}
-     */
     public HystrixProperty<Integer> circuitBreakerErrorThresholdPercentage() {
         return circuitBreakerErrorThresholdPercentage;
     }
 
-    /**
-     * If true the {@link HystrixCircuitBreaker#allowRequest()} will always
-     * return true to allow requests regardless of the error percentage from
-     * {@link HystrixCommandMetrics#getHealthCounts()}.
-     * <p>
-     * The {@link #circuitBreakerForceOpen()} property takes precedence so if it
-     * set to true this property does nothing.
-     * @return {@code HystrixProperty<Boolean>}
-     */
     public HystrixProperty<Boolean> circuitBreakerForceClosed() {
         return circuitBreakerForceClosed;
     }
 
-    /**
-     * If true the {@link HystrixCircuitBreaker#allowRequest()} will always
-     * return false, causing the circuit to be open (tripped) and reject all
-     * requests.
-     * <p>
-     * This property takes precedence over {@link #circuitBreakerForceClosed()};
-     * @return {@code HystrixProperty<Boolean>}
-     */
     public HystrixProperty<Boolean> circuitBreakerForceOpen() {
         return circuitBreakerForceOpen;
     }
 
-    /**
-     * Minimum number of requests in the
-     * {@link #metricsRollingStatisticalWindowInMilliseconds()} that must exist
-     * before the {@link HystrixCircuitBreaker} will trip.
-     * <p>
-     * If below this number the circuit will not trip regardless of error
-     * percentage.
-     * @return {@code HystrixProperty<Integer>}
-     */
     public HystrixProperty<Integer> circuitBreakerRequestVolumeThreshold() {
         return circuitBreakerRequestVolumeThreshold;
     }
 
-    /**
-     * The time in milliseconds after a {@link HystrixCircuitBreaker} trips open
-     * that it should wait before trying requests again.
-     * @return {@code HystrixProperty<Integer>}
-     */
     public HystrixProperty<Integer> circuitBreakerSleepWindowInMilliseconds() {
         return circuitBreakerSleepWindowInMilliseconds;
     }
 
-    /**
-     * Number of concurrent requests permitted to {@link HystrixCommand#run()}.
-     * Requests beyond the concurrent limit will be rejected.
-     * <p>
-     * Applicable only when {@link #executionIsolationStrategy()} == SEMAPHORE.
-     * @return {@code HystrixProperty<Integer>}
-     */
     public HystrixProperty<Integer> executionIsolationSemaphoreMaxConcurrentRequests() {
         return executionIsolationSemaphoreMaxConcurrentRequests;
     }
 
-    /**
-     * What isolation strategy {@link HystrixCommand#run()} will be executed
-     * with.
-     * <p>
-     * If {@link ExecutionIsolationStrategy#THREAD} then it will be executed on
-     * a separate thread and concurrent requests limited by the number of
-     * threads in the thread-pool.
-     * <p>
-     * If {@link ExecutionIsolationStrategy#SEMAPHORE} then it will be executed
-     * on the calling thread and concurrent requests limited by the semaphore
-     * count.
-     * @return {@code HystrixProperty<Boolean>}
-     */
     public HystrixProperty<ExecutionIsolationStrategy> executionIsolationStrategy() {
         return executionIsolationStrategy;
     }
 
-    /**
-     * Whether the execution thread should attempt an interrupt (using
-     * {@link Future#cancel}) when a thread times out.
-     * <p>
-     * Applicable only when {@link #executionIsolationStrategy()} == THREAD.
-     * @return {@code HystrixProperty<Boolean>}
-     */
     public HystrixProperty<Boolean> executionIsolationThreadInterruptOnTimeout() {
         return executionIsolationThreadInterruptOnTimeout;
     }
 
-    /**
-     * Allow a dynamic override of the {@link HystrixThreadPoolKey} that will
-     * dynamically change which {@link HystrixThreadPool} a
-     * {@link HystrixCommand} executes on.
-     * <p>
-     * Typically this should return NULL which will cause it to use the
-     * {@link HystrixThreadPoolKey} injected into a {@link HystrixCommand} or
-     * derived from the {@link HystrixCommandGroupKey}.
-     * <p>
-     * When set the injected or derived values will be ignored and a new
-     * {@link HystrixThreadPool} created (if necessary) and the
-     * {@link HystrixCommand} will begin using the newly defined pool.
-     * @return {@code HystrixProperty<String>}
-     */
     public HystrixProperty<String> executionIsolationThreadPoolKeyOverride() {
         return executionIsolationThreadPoolKeyOverride;
     }
 
-    /**
-     * @deprecated As of release 1.4.0, replaced by
-     *             {@link #executionTimeoutInMilliseconds()}. Timeout is no
-     *             longer specific to thread-isolation commands, so the
-     *             thread-specific name is misleading. Time in milliseconds at
-     *             which point the command will timeout and halt execution.
-     *             <p>
-     *             If {@link #executionIsolationThreadInterruptOnTimeout} ==
-     *             true and the command is thread-isolated, the executing thread
-     *             will be interrupted. If the command is semaphore-isolated and
-     *             a {@link HystrixObservableCommand}, that command will get
-     *             unsubscribed.
-     *             <p>
-     * @return {@code HystrixProperty<Integer>}
-     */
     @Deprecated // prefer {@link #executionTimeoutInMilliseconds}
     public HystrixProperty<Integer> executionIsolationThreadTimeoutInMilliseconds() {
         return executionTimeoutInMilliseconds;
     }
 
-    /**
-     * Time in milliseconds at which point the command will timeout and halt
-     * execution.
-     * <p>
-     * If {@link #executionIsolationThreadInterruptOnTimeout} == true and the
-     * command is thread-isolated, the executing thread will be interrupted. If
-     * the command is semaphore-isolated and a {@link HystrixObservableCommand},
-     * that command will get unsubscribed.
-     * <p>
-     * @return {@code HystrixProperty<Integer>}
-     */
     public HystrixProperty<Integer> executionTimeoutInMilliseconds() {
-        /**
-         * Calling a deprecated method here is a temporary workaround. We do
-         * this because {@link #executionTimeoutInMilliseconds()} is a new
-         * method (as of 1.4.0-rc.7) and an extending class will not have this
-         * method. It will have
-         * {@link #executionIsolationThreadTimeoutInMilliseconds()}, however.
-         * So, to stay compatible with an extension, we perform this redirect.
-         */
         return executionIsolationThreadTimeoutInMilliseconds();
     }
 
-    /**
-     * Whether the timeout mechanism is enabled for this command
-     * @return {@code HystrixProperty<Boolean>}
-     * @since 1.4.4
-     */
     public HystrixProperty<Boolean> executionTimeoutEnabled() {
         return executionTimeoutEnabled;
     }
 
-    /**
-     * Number of concurrent requests permitted to
-     * {@link HystrixCommand#getFallback()}. Requests beyond the concurrent
-     * limit will fail-fast and not attempt retrieving a fallback.
-     * @return {@code HystrixProperty<Integer>}
-     */
     public HystrixProperty<Integer> fallbackIsolationSemaphoreMaxConcurrentRequests() {
         return fallbackIsolationSemaphoreMaxConcurrentRequests;
     }
 
-    /**
-     * Whether {@link HystrixCommand#getFallback()} should be attempted when
-     * failure occurs.
-     * @return {@code HystrixProperty<Boolean>}
-     * @since 1.2
-     */
     public HystrixProperty<Boolean> fallbackEnabled() {
         return fallbackEnabled;
     }
 
-    /**
-     * Time in milliseconds to wait between allowing health snapshots to be
-     * taken that calculate success and error percentages and affect
-     * {@link HystrixCircuitBreaker#isOpen()} status.
-     * <p>
-     * On high-volume circuits the continual calculation of error percentage can
-     * become CPU intensive thus this controls how often it is calculated.
-     * @return {@code HystrixProperty<Integer>}
-     */
     public HystrixProperty<Integer> metricsHealthSnapshotIntervalInMilliseconds() {
         return metricsHealthSnapshotIntervalInMilliseconds;
     }
 
-    /**
-     * Maximum number of values stored in each bucket of the rolling percentile.
-     * This is passed into {@link HystrixRollingPercentile} inside
-     * {@link HystrixCommandMetrics}.
-     * @return {@code HystrixProperty<Integer>}
-     */
     public HystrixProperty<Integer> metricsRollingPercentileBucketSize() {
         return metricsRollingPercentileBucketSize;
     }
 
-    /**
-     * Whether percentile metrics should be captured using
-     * {@link HystrixRollingPercentile} inside {@link HystrixCommandMetrics}.
-     * @return {@code HystrixProperty<Boolean>}
-     */
     public HystrixProperty<Boolean> metricsRollingPercentileEnabled() {
         return metricsRollingPercentileEnabled;
     }
 
-    /**
-     * Duration of percentile rolling window in milliseconds. This is passed
-     * into {@link HystrixRollingPercentile} inside
-     * {@link HystrixCommandMetrics}.
-     * @return {@code HystrixProperty<Integer>}
-     * @deprecated Use {@link #metricsRollingPercentileWindowInMilliseconds()}
-     */
     public HystrixProperty<Integer> metricsRollingPercentileWindow() {
         return metricsRollingPercentileWindowInMilliseconds;
     }
 
-    /**
-     * Duration of percentile rolling window in milliseconds. This is passed
-     * into {@link HystrixRollingPercentile} inside
-     * {@link HystrixCommandMetrics}.
-     * @return {@code HystrixProperty<Integer>}
-     */
     public HystrixProperty<Integer> metricsRollingPercentileWindowInMilliseconds() {
         return metricsRollingPercentileWindowInMilliseconds;
     }
 
-    /**
-     * Number of buckets the rolling percentile window is broken into. This is
-     * passed into {@link HystrixRollingPercentile} inside
-     * {@link HystrixCommandMetrics}.
-     * @return {@code HystrixProperty<Integer>}
-     */
     public HystrixProperty<Integer> metricsRollingPercentileWindowBuckets() {
         return metricsRollingPercentileWindowBuckets;
     }
 
-    /**
-     * Duration of statistical rolling window in milliseconds. This is passed
-     * into {@link HystrixRollingNumber} inside {@link HystrixCommandMetrics}.
-     * @return {@code HystrixProperty<Integer>}
-     */
     public HystrixProperty<Integer> metricsRollingStatisticalWindowInMilliseconds() {
         return metricsRollingStatisticalWindowInMilliseconds;
     }
 
-    /**
-     * Number of buckets the rolling statistical window is broken into. This is
-     * passed into {@link HystrixRollingNumber} inside
-     * {@link HystrixCommandMetrics}.
-     * @return {@code HystrixProperty<Integer>}
-     */
     public HystrixProperty<Integer> metricsRollingStatisticalWindowBuckets() {
         return metricsRollingStatisticalWindowBuckets;
     }
 
-    /**
-     * Whether {@link HystrixCommand#getCacheKey()} should be used with
-     * {@link HystrixRequestCache} to provide de-duplication functionality via
-     * request-scoped caching.
-     * @return {@code HystrixProperty<Boolean>}
-     */
     public HystrixProperty<Boolean> requestCacheEnabled() {
         return requestCacheEnabled;
     }
 
-    /**
-     * Whether {@link HystrixCommand} execution and events should be logged to
-     * {@link HystrixRequestLog}.
-     * @return {@code HystrixProperty<Boolean>}
-     */
     public HystrixProperty<Boolean> requestLogEnabled() {
         return requestLogEnabled;
     }
@@ -519,10 +314,6 @@ public class HystrixCommandPropertiesExt extends HystrixCommandProperties {
                 defaultValue, instanceProperty);
     }
 
-    /**
-     * HystrixProperty that converts a String to ExecutionIsolationStrategy so
-     * we remain TypeSafe.
-     */
     private static final class ExecutionIsolationStrategyHystrixProperty
             implements HystrixProperty<ExecutionIsolationStrategy> {
         private final HystrixDynamicProperty<String> property;

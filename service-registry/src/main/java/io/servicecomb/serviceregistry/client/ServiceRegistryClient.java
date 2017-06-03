@@ -29,11 +29,6 @@ public interface ServiceRegistryClient {
     void init() throws Exception;
 
 
-    /**
-     *
-     * get all microservices
-     * @return a list of Microservice
-     */
     List<Microservice> getAllMicroservices();
 
     String getMicroserviceId(String appId, String microserviceName, String versionRule);

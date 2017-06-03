@@ -109,14 +109,6 @@ public class CseClientHttpRequest extends OutputStream implements ClientHttpRequ
         return this.invoke(requestMeta, args);
     }
 
-    /**
-     * 处理调用URL
-     * URL格式：cse://microserviceName/业务url
-     * <功能详细描述>
-     * @param httpMetod
-     * @param url
-     * @return
-     */
     private RequestMeta createRequestMeta(String httpMetod, URI uri) {
         String microserviceName = uri.getAuthority();
         ReferenceConfig referenceConfig =

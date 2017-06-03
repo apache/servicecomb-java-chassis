@@ -106,11 +106,6 @@ public class OperationLocator {
         return false;
     }
 
-    /**
-     * Path: /a/b/c -> a/b/c/
-     * @param path
-     * @return
-     */
     public static String getStandardPath(String path) {
         if (path.startsWith(SLASH)) {
             path = path.substring(1);

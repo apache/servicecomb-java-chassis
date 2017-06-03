@@ -62,9 +62,6 @@ public class TestConfig {
         Assert.assertEquals("2", bp.getTest());
     }
 
-    /**
-     * Test Get/Set Context
-     */
     @Test
     public void testBeanContext() {
         BeanUtils.setContext(context);
