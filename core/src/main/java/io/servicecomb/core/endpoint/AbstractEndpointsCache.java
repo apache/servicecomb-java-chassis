@@ -74,12 +74,6 @@ public abstract class AbstractEndpointsCache<ENDPOINT> {
         return endpoints;
     }
 
-    /**
-     * <一句话功能简述>
-     * <功能详细描述>
-     * @param newCache
-     * @return
-     */
     protected List<ENDPOINT> createEndpints(InstanceCache newCache) {
         Map<String, List<CacheEndpoint>> transportMap = getOrCreateTransportMap(newCache);
 
@@ -119,12 +113,5 @@ public abstract class AbstractEndpointsCache<ENDPOINT> {
         return transportMap;
     }
 
-    /**
-     * <一句话功能简述>
-     * <功能详细描述>
-     * @param transport
-     * @param address
-     * @return
-     */
     protected abstract ENDPOINT createEndpoint(Transport transport, CacheEndpoint cacheEndpoint);
 }

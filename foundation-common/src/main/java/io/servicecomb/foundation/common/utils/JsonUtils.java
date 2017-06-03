@@ -60,104 +60,33 @@ public final class JsonUtils {
     private JsonUtils() {
     }
 
-    /**
-     * <一句话功能简述>
-     * <功能详细描述>
-     * @param src src
-     * @param valueType valueType
-     * @param <T> T
-     * @return T
-     * @throws IOException
-     * @throws JsonMappingException
-     * @throws JsonParseException
-     * @throws Exception Exception
-     */
     public static <T> T readValue(byte[] src,
             Class<T> valueType) throws JsonParseException, JsonMappingException, IOException {
         return OBJ_MAPPER.readValue(src, valueType);
     }
 
-    /**
-     * <一句话功能简述>
-     * <功能详细描述>
-     * @param is is
-     * @param valueType valueType
-     * @param <T> T
-     * @return T
-     * @throws IOException
-     * @throws JsonMappingException
-     * @throws JsonParseException
-     * @throws Exception Exception
-     */
     public static <T> T readValue(InputStream is,
             Class<T> valueType) throws JsonParseException, JsonMappingException, IOException {
         return OBJ_MAPPER.readValue(is, valueType);
     }
 
-    /**
-     * <一句话功能简述>
-     * <功能详细描述>
-     * @param is is
-     * @param valueType valueType
-     * @param <T> T
-     * @return T
-     * @throws IOException
-     * @throws JsonMappingException
-     * @throws JsonParseException
-     * @throws Exception Exception
-     */
     public static <T> T readValue(InputStream is,
             JavaType valueType) throws JsonParseException, JsonMappingException, IOException {
         return OBJ_MAPPER.readValue(is, valueType);
     }
 
-    /**
-     * <一句话功能简述>
-     * <功能详细描述>
-     * @param value value
-     * @return byte[]
-     * @throws JsonProcessingException
-     * @throws Exception Exception
-     */
     public static byte[] writeValueAsBytes(Object value) throws JsonProcessingException {
         return OBJ_MAPPER.writeValueAsBytes(value);
     }
 
-    /**
-     * <一句话功能简述>
-     * <功能详细描述>
-     * @param value value
-     * @return String
-     * @throws JsonProcessingException
-     * @throws Exception Exception
-     */
     public static String writeValueAsString(Object value) throws JsonProcessingException {
         return OBJ_MAPPER.writeValueAsString(value);
     }
 
-    /**
-     * <一句话功能简述>
-     * <功能详细描述>
-     * @param fromValue fromValue
-     * @param toValueType toValueType
-     * @param <T> T
-     * @return T
-     * @throws Exception Exception
-     */
     public static <T> T convertValue(Object fromValue, Class<T> toValueType) {
         return OBJ_MAPPER.convertValue(fromValue, toValueType);
     }
 
-    /**
-     * <一句话功能简述>
-     * <功能详细描述>
-     * @param out out
-     * @param value value
-     * @throws IOException
-     * @throws JsonMappingException
-     * @throws JsonGenerationException
-     * @throws Exception Exception
-     */
     public static void writeValue(OutputStream out,
             Object value) throws JsonGenerationException, JsonMappingException, IOException {
         OBJ_MAPPER.writeValue(out, value);

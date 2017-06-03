@@ -43,10 +43,6 @@ public class CommonThread extends Thread {
         return !shutdown;
     }
 
-    /**
-     * <一句话功能简述>
-     * <功能详细描述>
-     */
     public void shutdown() {
         shutdown = true;
         interrupt();

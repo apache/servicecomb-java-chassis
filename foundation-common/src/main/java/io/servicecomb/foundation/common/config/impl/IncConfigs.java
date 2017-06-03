@@ -32,11 +32,7 @@ import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
  */
 @JacksonXmlRootElement(localName = "configs")
 public class IncConfigs {
-    /**
-     * <一句话功能简述>
-     * <功能详细描述>
-     *
-     */
+
     public static class IncConfig {
         /**
          * id

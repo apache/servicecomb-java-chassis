@@ -47,14 +47,6 @@ public final class InvocationFactory {
         InvocationFactory.microserviceName = microserviceName;
     }
 
-    /**
-     * <一句话功能简述>
-     * <功能详细描述>
-     * @param referenceConfig
-     * @param operationMeta
-     * @param swaggerArguments
-     * @return
-     */
     public static Invocation forConsumer(ReferenceConfig referenceConfig, OperationMeta operationMeta,
                                          Object[] swaggerArguments) {
         Invocation invocation = new Invocation(referenceConfig,

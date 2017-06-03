@@ -42,13 +42,6 @@ import io.servicecomb.core.Response;
 public class ServletRestServer extends AbstractRestServer<HttpServletResponse> {
     protected RestAsyncListener restAsyncListener = new RestAsyncListener();
 
-    /**
-     * <一句话功能简述>
-     * <功能详细描述>
-     * @param request
-     * @param response
-     * @throws Exception
-     */
     public void service(HttpServletRequest request, HttpServletResponse response) {
         // 异步场景
         final AsyncContext asyncCtx = request.startAsync();

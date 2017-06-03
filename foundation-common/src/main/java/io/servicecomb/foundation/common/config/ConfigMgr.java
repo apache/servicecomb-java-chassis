@@ -90,14 +90,6 @@ public class ConfigMgr {
         }
     }
 
-    /**
-     * <一句话功能简述>
-     * <功能详细描述>
-     * @param configId configId
-     * @param <T> T
-     * @return T
-     * @throws Exception Exception
-     */
     @SuppressWarnings("unchecked")
     public <T> T getConfig(String configId) throws Exception {
         T config = (T) configMap.get(configId);

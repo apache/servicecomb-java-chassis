@@ -92,13 +92,6 @@ public final class RestTransportClient {
         return httpClientOptions;
     }
 
-    /**
-     * <一句话功能简述>
-     * <功能详细描述>
-     * @param invocation
-     * @param asyncResp
-     * @throws Exception
-     */
     public void send(Invocation invocation, AsyncResponse asyncResp) throws Exception {
         HttpClientWithContext httpClientWithContext = clientMgr.findThreadBindClientPool();
 

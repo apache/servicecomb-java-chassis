@@ -83,10 +83,6 @@ public class PojoProducerProvider extends AbstractProducerProvider {
         return PojoConst.POJO;
     }
 
-    /**
-     * <一句话功能简述>
-     * <功能详细描述>
-     */
     private void initPojoProducerMeta(PojoProducerMeta pojoProducerMeta) {
         if (pojoProducerMeta.getInstance() != null) {
             return;
@@ -102,11 +98,6 @@ public class PojoProducerProvider extends AbstractProducerProvider {
         pojoProducerMeta.setInstanceClass(instanceClass);
     }
 
-    /**
-     * <一句话功能简述>
-     * <功能详细描述>
-     * @return
-     */
     private String[] parseImplementation(String implementation) {
         String implName = PojoConst.POJO;
         String implValue = implementation;

@@ -67,14 +67,6 @@ public class InstanceCacheManager {
         return instCache;
     }
 
-    /**
-     * <一句话功能简述>
-     * <功能详细描述>
-     * @param appId
-     * @param microserviceName
-     * @param microserviceVersionRule
-     * @return
-     */
     public InstanceCache getOrCreate(String appId, String microserviceName, String microserviceVersionRule) {
         String key = getKey(appId, microserviceName);
         InstanceCache cache = cacheMap.get(key);

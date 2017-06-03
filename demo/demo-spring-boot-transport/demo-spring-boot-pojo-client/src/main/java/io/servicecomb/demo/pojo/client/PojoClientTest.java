@@ -82,10 +82,6 @@ public class PojoClientTest {
         TestMgr.summary();
     }
 
-    /**
-     * <一句话功能简述>
-     * <功能详细描述>
-     */
     private static void testInputArray(Test test) {
         String result = test.addString(new String[] {"a", "b"});
         LOGGER.info("input array result:{}", result);
@@ -139,10 +135,6 @@ public class PojoClientTest {
         TestMgr.check("arr is '[a, b]'", test.testStringArray(new String[] {"a", "b"}));
     }
 
-    /**
-     * <一句话功能简述>
-     * <功能详细描述>
-     */
     private static void testWrapParam(Test test) {
         User user = new User();
 

@@ -28,20 +28,8 @@ import java.util.concurrent.locks.Lock;
  */
 public interface DistributedLock extends Lock {
 
-    /**
-     * <一句话功能简述>
-     * <功能详细描述>
-     * @return Listener
-     * @see [类、类#方法、类#成员]
-     */
     Listener getListener();
 
-    /**
-     * <一句话功能简述>
-     * <功能详细描述>
-     * @param listener Listener
-     * @see [类、类#方法、类#成员]
-     */
     void setListener(Listener listener);
 
     /**
@@ -54,13 +42,6 @@ public interface DistributedLock extends Lock {
      */
     interface Listener {
 
-        /**
-         * <一句话功能简述>
-         * <功能详细描述>
-         * @param lock DistributedLock
-         * @param e Exception
-         * @see [类、类#方法、类#成员]
-         */
         void onAbort(DistributedLock lock, Exception e);
     }
 }

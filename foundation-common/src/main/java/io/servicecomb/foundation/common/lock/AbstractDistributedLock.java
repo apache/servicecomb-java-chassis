@@ -41,94 +41,30 @@ public abstract class AbstractDistributedLock implements DistributedLock {
 
     protected final ReentrantLock localLock = new ReentrantLock();
 
-    /**
-     * <一句话功能简述>
-     * <功能详细描述>
-     * @return boolean
-     * @see [类、类#方法、类#成员]
-     */
     protected abstract boolean doLock();
 
-    /**
-     * <一句话功能简述>
-     * <功能详细描述>
-     * @return boolean
-     * @see [类、类#方法、类#成员]
-     */
     protected abstract boolean doUnlock();
 
-    /**
-     * <一句话功能简述>
-     * <功能详细描述>
-     * @return boolean
-     * @see [类、类#方法、类#成员]
-     */
     protected abstract boolean doTryLock();
 
-    /**
-     * <一句话功能简述>
-     * <功能详细描述>
-     * @return boolean
-     * @see [类、类#方法、类#成员]
-     */
     protected abstract boolean hasDistLock();
 
-    /**
-     * <一句话功能简述>
-     * <功能详细描述>
-     * @param timeout long
-     * @param unit TimeUnit
-     * @return boolean
-     * @throws InterruptedException InterruptedException;
-     * @see [类、类#方法、类#成员]
-     */
     protected abstract boolean doTryLock(long timeout, TimeUnit unit) throws InterruptedException;
 
-    /**
-     * <一句话功能简述>
-     * <功能详细描述>
-     * @return boolean
-     * @throws InterruptedException InterruptedException;
-     * @see [类、类#方法、类#成员]
-     */
     protected abstract boolean doLockInterruptibly() throws InterruptedException;
 
-    /**
-     * <一句话功能简述>
-     * <功能详细描述>
-     * @return boolean
-     * @see [类、类#方法、类#成员]
-     */
     public boolean isVerbose() {
         return verbose;
     }
 
-    /**
-     * <一句话功能简述>
-     * <功能详细描述>
-     * @param verbose boolean
-     * @see [类、类#方法、类#成员]
-     */
     public void setVerbose(boolean verbose) {
         this.verbose = verbose;
     }
 
-    /**
-     * <一句话功能简述>
-     * <功能详细描述>
-     * @return boolean
-     * @see [类、类#方法、类#成员]
-     */
     public boolean isLocked() {
         return this.localLock.isLocked() && hasDistLock();
     }
 
-    /**
-     * <一句话功能简述>
-     * <功能详细描述>
-     * @return boolean
-     * @see [类、类#方法、类#成员]
-     */
     public boolean isHeldByCurrentThread() {
         return this.localLock.isHeldByCurrentThread() && hasDistLock();
     }

@@ -151,10 +151,6 @@ public class GrpcServerInvoke {
         ctx.flush();
     }
 
-    /**
-     * <一句话功能简述>
-     * <功能详细描述>
-     */
     private void sendFailResponse(Throwable throwable) {
         // TODO:如果exception.getErrorData是protobuf不支持的类型，怎么包装？
         //        InvocationException exception = ExceptionUtils.convertException(throwable);

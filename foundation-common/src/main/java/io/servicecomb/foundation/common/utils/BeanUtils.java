@@ -36,19 +36,10 @@ public final class BeanUtils {
     private BeanUtils() {
     }
 
-    /**
-     * <一句话功能简述>
-     * <功能详细描述>
-     */
     public static void init() {
         init(DEFAULT_BEAN_RESOURCE);
     }
 
-    /**
-     * <一句话功能简述>
-     * <功能详细描述>
-     * @param configLocations configLocations
-     */
     public static void init(String... configLocations) {
         context = new ClassPathXmlApplicationContext(configLocations);
     }
@@ -57,11 +48,6 @@ public final class BeanUtils {
         return context;
     }
 
-    /**
-     * <一句话功能简述>
-     * <功能详细描述>
-     * @param applicationContext
-     */
     public static void setContext(ApplicationContext applicationContext) {
         context = applicationContext;
     }

@@ -20,11 +20,6 @@ package io.servicecomb.core;
 public interface Transport {
     String getName();
 
-    /**
-     * <一句话功能简述>
-     * <功能详细描述>
-     * @throws Exception
-     */
     boolean init() throws Exception;
 
     /**
@@ -48,13 +43,6 @@ public interface Transport {
      * @throws Exception
      */
     Endpoint getPublishEndpoint() throws Exception;
-    
-    /**
-    * <一句话功能简述>
-    * <功能详细描述>
-    * @param invocation
-    * @param asyncResp
-    * @throws Exception
-    */
+
     void send(Invocation invocation, AsyncResponse asyncResp) throws Exception;
 }

@@ -87,22 +87,12 @@ public class TestConfig {
         Assert.assertEquals(context, BeanUtils.getContext());
     }
 
-    /**
-     * <一句话功能简述>
-     * <功能详细描述>
-     * @throws Exception Exception
-     */
     @Test
     public void testConvertProperties() throws Exception {
         BeanProp bp = PaaSResourceUtils.loadConfigAs("pTest", BeanProp.class);
         Assert.assertEquals("2", bp.getTest());
     }
 
-    /**
-     * <一句话功能简述>
-     * <功能详细描述> 
-     * @throws Exception Exception
-     */
     @Test
     public void testConvertXml() throws Exception {
         Object ret = PaaSResourceUtils.loadConfigAs("xTest", BeanProp.class);

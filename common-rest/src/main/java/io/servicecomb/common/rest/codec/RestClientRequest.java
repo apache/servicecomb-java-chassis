@@ -28,42 +28,14 @@ import io.vertx.core.buffer.Buffer;
  */
 public interface RestClientRequest {
 
-    /**
-     * <一句话功能简述>
-     * <功能详细描述>
-     * @param bodyBuffer
-     */
     void write(Buffer bodyBuffer);
 
-    /**
-     * <一句话功能简述>
-     * <功能详细描述>
-     * @throws Exception
-     */
     void end() throws Exception;
 
-    /**
-     * <一句话功能简述>
-     * <功能详细描述>
-     * @param name
-     * @param value
-     */
     void addCookie(String name, String value);
 
-    /**
-     * <一句话功能简述>
-     * <功能详细描述>
-     * @param name
-     * @param value
-     */
     void putHeader(String name, String value);
 
-    /**
-     * <一句话功能简述>
-     * <功能详细描述>
-     * @param name
-     * @param value
-     */
     void addForm(String name, Object value);
 
 }

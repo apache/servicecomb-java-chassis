@@ -78,11 +78,6 @@ public class RestClientRequestImpl implements RestClientRequest {
         request.end(bodyBuffer);
     }
 
-    /**
-     * <一句话功能简述>
-     * <功能详细描述>
-     * @throws Exception
-     */
     private void genBodyBuffer() throws Exception {
         request.putHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON);
 

@@ -68,12 +68,6 @@ public class AbstractFieldCodec extends AbstractCodec {
 
     }
 
-    /**
-     * <一句话功能简述>
-     * <功能详细描述>
-     * @param schema
-     * @param types
-     */
     private void initFieldMap(ProtobufSchema schema, Type[] types) {
         Iterator<ProtobufField> fieldIter = schema.getRootType().fields().iterator();
         for (int idx = 0; idx < schema.getRootType().getFieldCount(); idx++) {

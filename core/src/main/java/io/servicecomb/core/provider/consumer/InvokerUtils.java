@@ -67,13 +67,6 @@ public final class InvokerUtils {
         throw ExceptionFactory.convertConsumerException((Throwable) response.getResult());
     }
 
-    /**
-     * <一句话功能简述>
-     * <功能详细描述>
-     * @param invocation
-     * @return
-     * @throws Throwable
-     */
     public static Response innerSyncInvoke(Invocation invocation) {
         try {
             SyncResponseExecutor respExecutor = new SyncResponseExecutor();

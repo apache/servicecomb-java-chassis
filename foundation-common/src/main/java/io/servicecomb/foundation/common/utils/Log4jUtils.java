@@ -52,21 +52,10 @@ public final class Log4jUtils {
     private Log4jUtils() {
     }
 
-    /**
-     * <一句话功能简述>
-     * <功能详细描述>
-     * @throws Exception Exception
-     */
     public static void init() throws Exception {
         init("classpath*:config/log4j.properties");
     }
 
-    /**
-     * <一句话功能简述>
-     * <功能详细描述>
-     * @param locationPattern locationPattern
-     * @throws Exception Exception
-     */
     public static void init(String locationPattern) throws Exception {
         if (inited) {
             return;

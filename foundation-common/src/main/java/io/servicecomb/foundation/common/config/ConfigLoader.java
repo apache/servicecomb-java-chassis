@@ -26,13 +26,6 @@ package io.servicecomb.foundation.common.config;
  */
 public interface ConfigLoader {
 
-    /**
-     * <一句话功能简述>
-     * <功能详细描述>
-     * @param <T> T
-     * @return T
-     * @throws Exception Exception
-     */
     <T> T load() throws Exception;
 
 }

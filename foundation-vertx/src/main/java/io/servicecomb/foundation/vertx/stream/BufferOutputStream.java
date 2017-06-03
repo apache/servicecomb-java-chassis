@@ -156,11 +156,6 @@ public class BufferOutputStream extends OutputStream {
         }
     }
 
-    /**
-     * <一句话功能简述>
-     * <功能详细描述>
-     * @return
-     */
     public int writerIndex() {
         return byteBuf.writerIndex();
     }

@@ -84,12 +84,6 @@ public class XmlLoader extends AbstractLoader {
         return (T) doc;
     }
 
-    /**
-     * <一句话功能简述>
-     * <功能详细描述>
-     * @param ele ele
-     * @return Element
-     */
     protected Element findAndSetExist(Element ele) {
         return null;
     }

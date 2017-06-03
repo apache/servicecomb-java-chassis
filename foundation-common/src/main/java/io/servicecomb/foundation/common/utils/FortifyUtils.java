@@ -195,13 +195,6 @@ public final class FortifyUtils {
         return FileSystems.getDefault().supportedFileAttributeViews().contains("posix");
     }
 
-    /**
-     * <一句话功能简述>
-     * <功能详细描述>
-     * @param file file
-     * @param content content
-     * @throws IOException IOException
-     */
     public static void writeFile(String file, byte[] content) throws IOException {
         Set<OpenOption> options = new HashSet<OpenOption>();
         //options.add(StandardOpenOption.CREATE_NEW);
@@ -221,49 +214,18 @@ public final class FortifyUtils {
         }
     }
 
-    /**
-     * <一句话功能简述>
-     * <功能详细描述>
-     * @param file Path
-     * @return boolean
-     * @see [类、类#方法、类#成员]
-     */
     public static boolean isInSecureDir(String file) {
         return isInSecureDir(new File(file).toPath(), null);
     }
 
-    /**
-     * <一句话功能简述>
-     * <功能详细描述>
-     * @param file Path
-     * @return boolean
-     * @see [类、类#方法、类#成员]
-     */
     public static boolean isInSecureDir(Path file) {
         return isInSecureDir(file, null);
     }
 
-    /**
-     * <一句话功能简述>
-     * <功能详细描述>
-     * @param file Path
-     * @param user UserPrincipal
-     * @return boolean
-     * @see [类、类#方法、类#成员]
-     */
     public static boolean isInSecureDir(Path file, UserPrincipal user) {
         return isInSecureDir(file, user, SYMBOLIC_LINK_DEPTH);
     }
 
-    /**
-     * <一句话功能简述>
-     * <功能详细描述>
-     * @param file Path
-     * @param user UserPrincipal
-     * @param symlinkDepth int
-     * @return boolean
-     * @see [类、类#方法、类#成员]
-     */
     public static boolean isInSecureDir(Path file, UserPrincipal user, int symlinkDepth) {
         if (!file.isAbsolute()) {
             file = file.toAbsolutePath();
@@ -329,13 +291,6 @@ public final class FortifyUtils {
         return true;
     }
 
-    /**
-     * <一句话功能简述>
-     * <功能详细描述>
-     * @param path Path
-     * @return boolean
-     * @see [类、类#方法、类#成员]
-     */
     public static boolean isInSecureResult(Path path) {
         try {
             if (!isInSecureDir(path)) {

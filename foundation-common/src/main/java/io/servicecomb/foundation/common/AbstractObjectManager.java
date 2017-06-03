@@ -36,12 +36,6 @@ public abstract class AbstractObjectManager<KEY_OWNER, KEY, VALUE> {
 
     protected final Object lockObj = new Object();
 
-    /**
-     * <一句话功能简述>
-     * <功能详细描述>
-     * @param key key
-     * @return VALUE
-     */
     public VALUE getOrCreate(KEY_OWNER keyOwner) {
         KEY key = getKey(keyOwner);
         VALUE value = objMap.get(key);
@@ -79,12 +73,6 @@ public abstract class AbstractObjectManager<KEY_OWNER, KEY, VALUE> {
         return objMap.values();
     }
 
-    /**
-     * <一句话功能简述>
-     * <功能详细描述>
-     * @param keyContainer
-     * @return
-     */
     protected abstract KEY getKey(KEY_OWNER keyOwner);
 
     /**

@@ -144,11 +144,6 @@ public class PojoClient {
                 smartCare.delApplication("app0"));
     }
 
-    /**
-     * <一句话功能简述>
-     * <功能详细描述>
-     * @param test
-     */
     private static void testException(Test test) {
         try {
             test.testException(456);
@@ -169,10 +164,6 @@ public class PojoClient {
         }
     }
 
-    /**
-     * <一句话功能简述>
-     * <功能详细描述>
-     */
     private static void testInputArray(Test test) {
         String result = test.addString(new String[] {"a", "b"});
         LOGGER.info("input array result:{}", result);
@@ -226,10 +217,6 @@ public class PojoClient {
         TestMgr.check("arr is '[a, b]'", test.testStringArray(new String[] {"a", "b"}));
     }
 
-    /**
-     * <一句话功能简述>
-     * <功能详细描述>
-     */
     private static void testWrapParam(Test test) {
         User user = new User();
 

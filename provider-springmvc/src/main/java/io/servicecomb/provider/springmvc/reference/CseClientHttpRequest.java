@@ -167,14 +167,6 @@ public class CseClientHttpRequest extends OutputStream implements ClientHttpRequ
         return new RequestMeta(referenceConfig, swaggerRestOperation, pathParams);
     }
 
-    /**
-     * <一句话功能简述>
-     * <功能详细描述>
-     * @param args
-     * @param variables
-     * @return
-     * @throws Throwable
-     */
     private CseClientHttpResponse invoke(RequestMeta requestMeta, Object[] args) {
         Invocation invocation =
             InvocationFactory.forConsumer(requestMeta.getReferenceConfig(),

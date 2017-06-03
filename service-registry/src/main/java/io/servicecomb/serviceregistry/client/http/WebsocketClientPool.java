@@ -36,11 +36,6 @@ public final class WebsocketClientPool extends AbstractClientPool {
     private WebsocketClientPool() {
     }
 
-    /**
-     * <一句话功能简述>
-     * <功能详细描述>
-     * @return
-     */
     @Override
     public HttpClientOptions createHttpClientOptions() {
         HttpVersion ver = ServiceRegistryConfig.INSTANCE.getHttpVersion();

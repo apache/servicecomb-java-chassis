@@ -74,10 +74,6 @@ public class SchemaMeta extends CommonService<OperationMeta> {
         return packageName;
     }
 
-    /**
-     * <一句话功能简述>
-     * <功能详细描述>
-     */
     private void initOperations() {
         for (Entry<String, Path> entry : swagger.getPaths().entrySet()) {
             String strPath = entry.getKey();

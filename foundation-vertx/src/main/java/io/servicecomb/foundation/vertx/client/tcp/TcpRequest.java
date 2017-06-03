@@ -66,19 +66,10 @@ public class TcpRequest {
         responseCallback.fail(e);
     }
 
-    /**
-     * <一句话功能简述>
-     * <功能详细描述>
-     * @return
-     */
     public boolean isTimeout() {
         return System.currentTimeMillis() - begin >= msTimeout;
     }
 
-    /**
-     * <一句话功能简述>
-     * <功能详细描述>
-     */
     public void onTimeout(TimeoutException e) {
         responseCallback.fail(e);
     }

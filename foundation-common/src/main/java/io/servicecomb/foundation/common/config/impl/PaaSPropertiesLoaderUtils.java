@@ -51,15 +51,6 @@ public class PaaSPropertiesLoaderUtils extends org.springframework.core.io.suppo
         return fillMergedProperties(prop, locationPattern);
     }
 
-    /**
-     * <一句话功能简述>
-     * <功能详细描述>
-     * @param prop prop
-     * @param locationPattern locationPattern
-     * @return Properties
-     * @throws IOException
-     * @throws Exception Exception
-     */
     public static Properties fillMergedProperties(Properties prop, String locationPattern) throws IOException {
         if (StringUtils.isEmpty(locationPattern)) {
             throw new RuntimeException("Resource path must not be null or empty");
@@ -79,14 +70,6 @@ public class PaaSPropertiesLoaderUtils extends org.springframework.core.io.suppo
         return prop;
     }
 
-    /**
-     * <一句话功能简述>
-     * <功能详细描述>
-     * @param prop prop
-     * @param resList resList
-     * @throws IOException
-     * @throws Exception Exception
-     */
     public static void fillAllProperties(Properties prop, List<Resource> resList) throws IOException {
         for (Resource res : resList) {
             PaaSPropertiesLoaderUtils.fillProperties(prop, res);

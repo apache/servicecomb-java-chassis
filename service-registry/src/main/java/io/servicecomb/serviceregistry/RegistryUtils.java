@@ -183,11 +183,6 @@ public final class RegistryUtils {
         srClient = oServiceRegistryClient;
     }
 
-    /**
-     * <一句话功能简述> <功能详细描述>
-     * 
-     * @throws Exception
-     */
     public static void init() throws Exception {
         serviceRegistryConfig = ServiceRegistryConfig.INSTANCE;
         if (null == srClient) {
@@ -230,9 +225,6 @@ public final class RegistryUtils {
         }
     }
 
-    /**
-     * <一句话功能简述> <功能详细描述>
-     */
     public static void ensureRegisterInstance() throws TimerException {
         // 确保注册成功
         Timer timer = Timer.newForeverTimer();
@@ -249,11 +241,6 @@ public final class RegistryUtils {
         return str == null || str.isEmpty();
     }
 
-    /**
-     * <一句话功能简述> <功能详细描述>
-     * 
-     * @return
-     */
     public static boolean regsiterInstance() {
         String hostName = "";
         if (serviceRegistryConfig.isPreferIpAddress()) {
@@ -292,11 +279,6 @@ public final class RegistryUtils {
         return true;
     }
 
-    /**
-     * <一句话功能简述> <功能详细描述>
-     * 
-     * @return
-     */
     public static boolean unregsiterInstance() {
         boolean result = srClient.unregisterMicroserviceInstance(getMicroservice().getServiceId(),
                 getMicroserviceInstance().getInstanceId());

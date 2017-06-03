@@ -47,30 +47,11 @@ public final class XmlLoaderUtils {
 
     private static ObjectMapper xmlMapper = new XmlMapper();
 
-    /**
-     * <一句话功能简述>
-     * <功能详细描述>
-     * @param res res
-     * @param cls Class<?>
-     * @param <T> T
-     * @return <T>
-     * @throws Exception Exception
-     */
     @SuppressWarnings("unchecked")
     public static <T> T load(Resource res, Class<?> cls) throws Exception {
         return (T) xmlMapper.readValue(res.getURL(), cls);
     }
 
-    /**
-     * <一句话功能简述>
-     * <功能详细描述>
-     * @param url url
-     * @return Document
-     * @throws ParserConfigurationException
-     * @throws IOException
-     * @throws SAXException
-     * @throws Exception Exception
-     */
     public static Document load(URL url) throws ParserConfigurationException, SAXException, IOException {
         DocumentBuilderFactory dbf = FortifyUtils.getSecurityXmlDocumentFactory();
         // CodeDEX要求xml必须校验
@@ -81,36 +62,16 @@ public final class XmlLoaderUtils {
         return db.parse(url.toString());
     }
 
-    /**
-     * <一句话功能简述>
-     * <功能详细描述>
-     * @param res res
-     * @return Document
-     * @throws Exception Exception
-     */
     public static Document load(Resource res) throws Exception {
         return load(res.getURL());
     }
 
-    /**
-     * <一句话功能简述>
-     * <功能详细描述>
-     * @return Document
-     * @throws ParserConfigurationException
-     * @throws Exception Exception
-     */
     public static Document newDoc() throws ParserConfigurationException {
         DocumentBuilderFactory factory = FortifyUtils.getSecurityXmlDocumentFactory();
         DocumentBuilder builder = factory.newDocumentBuilder();
         return builder.newDocument();
     }
 
-    /**
-     * <一句话功能简述>
-     * <功能详细描述>
-     * @param from from
-     * @param to to
-     */
     public static void mergeElement(Element from, Element to) {
         // attrs
         for (int idx = 0; idx < from.getAttributes().getLength(); idx++) {

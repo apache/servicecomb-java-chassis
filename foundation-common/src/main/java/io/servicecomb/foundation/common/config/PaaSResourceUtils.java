@@ -128,31 +128,14 @@ public class PaaSResourceUtils extends org.springframework.util.ResourceUtils {
         });
     }
 
-    /**
-     * <一句话功能简述>
-     * <功能详细描述>
-     * @param resList resList
-     */
     public static void sortProperties(List<Resource> resList) {
         sortResources(resList, PROPERTIES_SUFFIX);
     }
 
-    /**
-     * <一句话功能简述>
-     * <功能详细描述>
-     * @param resList resList
-     */
     public static void sortXmls(List<Resource> resList) {
         sortResources(resList, XML_SUFFIX);
     }
 
-    /**
-     * <一句话功能简述>
-     * <功能详细描述>
-     * @param locationPattern locationPattern
-     * @param suffix suffix
-     * @return List<Resource>
-     */
     public static List<Resource> getSortedResources(String locationPattern, String suffix) {
         if (StringUtils.isEmpty(locationPattern)) {
             throw new RuntimeException("Resource path must not be null or empty");
@@ -169,34 +152,15 @@ public class PaaSResourceUtils extends org.springframework.util.ResourceUtils {
         return resList;
     }
 
-    /**
-     * <一句话功能简述>
-     * <功能详细描述>
-     * @param locationPattern locationPattern
-     * @return List<Resource>
-     */
     public static List<Resource> getSortedPorperties(String locationPattern) {
         return getSortedResources(locationPattern, PROPERTIES_SUFFIX);
     }
 
-    /**
-     * <一句话功能简述>
-     * <功能详细描述>
-     * @param locationPattern locationPattern
-     * @return Properties
-     * @throws Exception Exception
-     */
     public static Properties loadMergedProperties(String locationPattern) throws Exception {
         PropertiesLoader loader = new PropertiesLoader(Arrays.asList(locationPattern));
         return loader.load();
     }
 
-    /**
-     * <一句话功能简述>
-     * <功能详细描述>
-     * @param locationPattern locationPattern
-     * @return List<Resource>
-     */
     public static List<Resource> getSortedXmls(String locationPattern) {
         return getSortedResources(locationPattern, XML_SUFFIX);
     }

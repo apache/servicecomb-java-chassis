@@ -107,12 +107,6 @@ public final class NetUtils {
         return;
     }
 
-    /**
-     * <一句话功能简述>
-     * <功能详细描述>
-     * @param address ip:port格式
-     * @return InetSocketAddress
-     */
     public static IpPort parseIpPort(String address) {
         if (address == null) {
             return null;

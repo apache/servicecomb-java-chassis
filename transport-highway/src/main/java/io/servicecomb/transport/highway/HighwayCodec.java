@@ -46,15 +46,6 @@ public final class HighwayCodec {
         HighwayCodec.highwayTransport = highwayTransport;
     }
 
-    /**
-     * <一句话功能简述>
-     * <功能详细描述>
-     * @param invocation
-     * @param operationProtobuf
-     * @param msgId
-     * @return
-     * @throws Exception
-     */
     public static TcpOutputStream encodeRequest(Invocation invocation,
             OperationProtobuf operationProtobuf) throws Exception {
         // 写header

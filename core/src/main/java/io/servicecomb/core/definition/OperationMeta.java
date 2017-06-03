@@ -187,11 +187,6 @@ public class OperationMeta {
         return (T) extData.get(key);
     }
 
-    /**
-     * <一句话功能简述>
-     * <功能详细描述>
-     * @return
-     */
     public boolean isSync() {
         return sync;
     }
