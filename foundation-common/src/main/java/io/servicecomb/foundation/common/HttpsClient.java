@@ -97,12 +97,6 @@ public final class HttpsClient {
     private HttpsClient() {
     }
 
-    /**
-     * get https connect
-     * <功能详细描述>
-     * @return HttpClient
-     * @see [类、类#方法、类#成员]
-     */
     public static HttpClient getHttpsClient() {
         try {
             KeyStore trustStore = KeyStore.getInstance(KeyStore.getDefaultType());
@@ -133,12 +127,6 @@ public final class HttpsClient {
         }
     }
 
-    /**
-     * get https connect
-     * <功能详细描述>
-     * @return HttpClient
-     * @see [类、类#方法、类#成员]
-     */
     public static HttpClient getHttpsClient(HttpsConfigInfoBean configBean) {
         try {
             SSLContext sslContext = createSSLContext(configBean);
@@ -253,18 +241,6 @@ public final class HttpsClient {
         }
     }
 
-    /**
-     * 执行请求
-     * <功能详细描述>
-     * @param method 请求方法
-     * @param headers 请求头信息
-     * @param url 请求URL
-     * @param body 请求的数据
-     * @return HttpResponse
-     * @throws ClientProtocolException ClientProtocolException
-     * @throws IOException IOException
-     * @see [类、类#方法、类#成员]
-     */
     public static HttpResponse execute(String method, Map<String, String> headers, String url,
             String body, HttpsConfigInfoBean configBean) throws ClientProtocolException, IOException {
         if (StringUtils.isEmpty(method)) {
@@ -326,15 +302,6 @@ public final class HttpsClient {
         return httpClient.execute(postRequest);
     }
 
-    /**
-     * http的get请求
-     * <功能详细描述>
-     * @param url 请求URL
-     * @return 响应结果
-     * @throws ClientProtocolException
-     * @throws IOException
-     * @see [类、类#方法、类#成员]
-     */
     private static HttpResponse get(HttpClient httpClient, String url,
             Map<String, String> headers) throws ClientProtocolException, IOException {
         HttpGet getRequest = new HttpGet(url);
@@ -345,14 +312,6 @@ public final class HttpsClient {
         return response;
     }
 
-    /**
-     * 向rest服务器发起delete请求
-     * @param url 请求URL
-     * @return 响应结果
-     * @throws IOException IO异常
-     * @throws ClientProtocolException 客户端协议异常
-     * @see [类、类#方法、类#成员]
-     */
     private static HttpResponse delete(HttpClient httpClient, String url,
             Map<String, String> headers) throws ClientProtocolException, IOException {
         HttpDelete deleteRequest = new HttpDelete(url);

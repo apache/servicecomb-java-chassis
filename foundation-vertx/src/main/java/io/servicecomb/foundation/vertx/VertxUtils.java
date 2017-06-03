@@ -59,13 +59,6 @@ public final class VertxUtils {
     private VertxUtils() {
     }
 
-    /**
-     * deployVerticle
-     * @param vertx           vertx
-     * @param cls             class
-     * @param instanceCount   instanceCount
-     * @param <T>             verticle type
-     */
     public static <T extends AbstractVerticle> void deployVerticle(Vertx vertx, Class<T> cls, int instanceCount) {
         DeploymentOptions options = new DeploymentOptions().setInstances(instanceCount);
 
@@ -168,14 +161,6 @@ public final class VertxUtils {
         return vertxMap.get(name);
     }
 
-    /**
-     * run in context
-     * @param context    context
-     * @param callback   callback
-     * @param result     result
-     * @param e          err
-     * @param <T>        result type
-     */
     public static <T> void runInContext(Context context, AsyncResultCallback<T> callback, T result, Throwable e) {
         if (context == Vertx.currentContext()) {
             complete(callback, result, e);

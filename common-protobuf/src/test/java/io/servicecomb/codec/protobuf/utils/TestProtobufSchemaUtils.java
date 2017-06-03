@@ -34,9 +34,6 @@ public class TestProtobufSchemaUtils {
     public static class TestMap {
         public Map<String, String> map = new HashMap<>();
 
-        /** 
-         * <构造函数> [参数说明]
-         */
         public TestMap() {
             map.put("asdf", "jjj");
         }

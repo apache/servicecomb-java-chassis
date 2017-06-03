@@ -48,11 +48,6 @@ public class PaaSResourceUtils extends org.springframework.util.ResourceUtils {
 
     private static ResourcePatternResolver resourcePatternResolver = new PathMatchingResourcePatternResolver();
 
-    /**
-     * 失败，则返回空数组
-     * @param locationPattern locationPattern
-     * @return Resource[]
-     */
     public static Resource[] getResources(String locationPattern) {
         try {
             return resourcePatternResolver.getResources(locationPattern);
@@ -61,11 +56,6 @@ public class PaaSResourceUtils extends org.springframework.util.ResourceUtils {
         }
     }
 
-    /**
-     * 失败，则返回空数组
-     * @param locationPatterns locationPatterns
-     * @return List<Resource>
-     */
     public static List<Resource> getResources(String... locationPatterns) {
         List<Resource> ret = new ArrayList<>();
         for (String locationPattern : locationPatterns) {

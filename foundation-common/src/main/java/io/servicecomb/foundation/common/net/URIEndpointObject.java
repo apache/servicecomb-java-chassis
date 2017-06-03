@@ -32,10 +32,6 @@ public class URIEndpointObject extends IpPort {
 
     private Map<String, List<String>> querys;
 
-    /**
-     * 使用URI初始化对象
-     * @param endpoint [参数说明]
-     */
     public URIEndpointObject(String endpoint) {
         URI uri = URI.create(endpoint);
         setHostOrIp(uri.getHost());

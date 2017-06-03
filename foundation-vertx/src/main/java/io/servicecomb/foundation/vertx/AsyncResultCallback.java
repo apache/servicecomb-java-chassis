@@ -19,12 +19,6 @@ package io.servicecomb.foundation.vertx;
 import io.vertx.core.AsyncResultHandler;
 import io.vertx.core.Future;
 
-/**
- * AsyncResultCallback
- *
- *
- * @param <T>  T
- */
 public interface AsyncResultCallback<T> extends AsyncResultHandler<T> {
     /**
      * on success

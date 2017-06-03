@@ -348,13 +348,6 @@ public final class FortifyUtils {
         return factory;
     }
 
-    /**
-     * <A brief description>
-     * <function details>
-     * @param value value
-     * @return String
-     * @see [class,class#method,class#field]
-     */
     public static String getSecurityStr(final String value) {
         if (value == null) {
             return value;

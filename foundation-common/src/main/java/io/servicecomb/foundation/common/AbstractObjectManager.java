@@ -65,11 +65,5 @@ public abstract class AbstractObjectManager<KEY_OWNER, KEY, VALUE> {
 
     protected abstract KEY getKey(KEY_OWNER keyOwner);
 
-    /**
-     * 只会在锁的保护下执行
-     * <功能详细描述>
-     * @param key key
-     * @return VALUE
-     */
     protected abstract VALUE create(KEY_OWNER keyOwner);
 }

@@ -57,13 +57,6 @@ public class InstanceCache {
 
     private Object lockObj = new Object();
 
-    /**
-     * 用于初始化场景
-     * @param appId
-     * @param microserviceName
-     * @param microserviceVersionRule
-     * @param instanceMap [参数说明]
-     */
     public InstanceCache(String appId, String microserviceName, String microserviceVersionRule,
             Map<String, MicroserviceInstance> instanceMap) {
         cacheVersion = VERSION.getAndIncrement();
