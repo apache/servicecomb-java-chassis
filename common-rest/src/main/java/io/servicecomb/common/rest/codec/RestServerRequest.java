@@ -18,14 +18,6 @@ package io.servicecomb.common.rest.codec;
 
 import java.util.Map;
 
-/**
- * 各种类型的http request接口统一化
- * TODO: 该接口需继续扩展增强，满足更多对request数据的需求
- *
- * @version  [版本号, 2017年1月2日]
- * @see  [相关类/方法]
- * @since  [产品/模块版本]
- */
 public interface RestServerRequest {
     String getPath();
 

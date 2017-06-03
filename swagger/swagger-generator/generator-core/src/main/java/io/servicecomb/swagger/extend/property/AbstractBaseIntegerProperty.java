@@ -22,15 +22,6 @@ import java.util.List;
 import io.swagger.models.Xml;
 import io.swagger.models.properties.BaseIntegerProperty;
 
-/**
- * copy from io.swagger.models.properties.IntegerProperty
- * to avoid so many repeated code.
- *
- *
- * @version  [版本号, 2017年3月21日]
- * @see  [相关类/方法]
- * @since  [产品/模块版本]
- */
 public abstract class AbstractBaseIntegerProperty<T> extends BaseIntegerProperty {
     protected T defaultValue;
 

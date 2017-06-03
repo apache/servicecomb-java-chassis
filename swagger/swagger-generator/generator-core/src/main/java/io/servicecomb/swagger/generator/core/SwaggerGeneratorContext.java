@@ -19,15 +19,6 @@ package io.servicecomb.swagger.generator.core;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 
-/**
- * <一句话功能简述>
- * <功能详细描述>
- *
- *
- * @version  [版本号, 2017年3月27日]
- * @see  [相关类/方法]
- * @since  [产品/模块版本]
- */
 public interface SwaggerGeneratorContext {
     // 用于排序，规避cse中定义的restSchema无法识别是jaxrs还是springmvc模式的问题
     // 实际使用时springmvc的context优先级最高

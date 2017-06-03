@@ -26,13 +26,6 @@ import io.servicecomb.core.handler.impl.AbstractHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/**
- * 实现调用链的优雅停止： 当调用链没有返回的时候，等待返回或者超时
- *
- * @version  [版本号, 2017年3月28日]
- * @see  [相关类/方法]
- * @since  [产品/模块版本]
- */
 public final class ShutdownHookHandler extends AbstractHandler implements Runnable {
     private static final Logger LOG = LoggerFactory.getLogger(ShutdownHookHandler.class);
 

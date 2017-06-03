@@ -26,14 +26,6 @@ import org.springframework.util.ReflectionUtils;
 import io.servicecomb.core.provider.CseBeanPostProcessor.ConsumerFieldProcessor;
 import io.servicecomb.provider.pojo.RpcReference;
 
-/**
- * <一句话功能简述>
- * <功能详细描述>
- *
- * @version  [版本号, 2017年4月28日]
- * @see  [相关类/方法]
- * @since  [产品/模块版本]
- */
 @Component
 public class PojoConsumers implements ConsumerFieldProcessor {
     private List<PojoReferenceMeta> consumerList = new ArrayList<>();

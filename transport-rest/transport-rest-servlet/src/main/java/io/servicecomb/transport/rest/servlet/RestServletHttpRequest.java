@@ -26,13 +26,6 @@ import javax.servlet.http.HttpServletRequest;
 
 import io.servicecomb.common.rest.codec.RestServerRequestInternal;
 
-/**
- * 封装HttpServletRequest为具有RestHttpRequest接口的类，统一多种rest transport request
- *
- * @version  [版本号, 2017年1月2日]
- * @see  [相关类/方法]
- * @since  [产品/模块版本]
- */
 public class RestServletHttpRequest implements RestServerRequestInternal {
     private HttpServletRequest request;
 

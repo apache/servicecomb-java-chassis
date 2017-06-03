@@ -16,13 +16,6 @@
 
 package io.servicecomb.core;
 
-/**
- * Endpoint : 表示一个Endpoint。Tranport识别其内部格式.
- *
- * @version  [版本号, 2017年1月26日]
- * @see  [相关类/方法]
- * @since  [产品/模块版本]
- */
 public class Endpoint {
     // 格式：grpc://192.168.1.1:8080
     // see: http://www.ietf.org/rfc/rfc2396.txt

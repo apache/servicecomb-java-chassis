@@ -19,14 +19,6 @@ import io.servicecomb.foundation.vertx.tcp.TcpOutputStream;
 
 import io.vertx.core.buffer.Buffer;
 
-/**
- * <一句话功能简述>
- * <功能详细描述>
- *
- * @version  [版本号, 2017年5月9日]
- * @see  [相关类/方法]
- * @since  [产品/模块版本]
- */
 public interface TcpLogin {
     TcpOutputStream createLogin();
 

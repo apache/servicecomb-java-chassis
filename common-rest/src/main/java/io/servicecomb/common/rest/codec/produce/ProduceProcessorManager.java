@@ -20,13 +20,6 @@ import javax.ws.rs.core.MediaType;
 
 import io.servicecomb.foundation.common.RegisterManager;
 
-/**
- * 用于管理各种类型的produce processor
- *
- * @version  [版本号, 2017年1月2日]
- * @see  [相关类/方法]
- * @since  [产品/模块版本]
- */
 public final class ProduceProcessorManager extends RegisterManager<String, ProduceProcessor> {
     private static final String NAME = "produce processor mgr";
 

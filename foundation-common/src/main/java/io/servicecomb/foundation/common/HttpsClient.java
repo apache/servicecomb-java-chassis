@@ -68,14 +68,6 @@ import org.springframework.util.StringUtils;
 import io.servicecomb.foundation.common.entities.HttpsConfigInfoBean;
 import io.servicecomb.foundation.common.utils.FortifyUtils;
 
-/**
- * Https客户端
- * <功能详细描述>
- *  oW
- * @version  [版本号, 2016年6月8日]
- * @see  [相关类/方法]
- * @since  [产品/模块版本]
- */
 @SuppressWarnings("deprecation")
 public final class HttpsClient {
     private static final Logger LOGGER = LoggerFactory.getLogger(HttpsClient.class);
@@ -100,9 +92,6 @@ public final class HttpsClient {
     */
     private static final int PORT_443 = 443;
 
-    /**
-     * SSL版本号
-     */
     private static final String SSL_VERSION = "TLSv1.2";
 
     private HttpsClient() {
@@ -374,14 +363,6 @@ public final class HttpsClient {
         return httpClient.execute(deleteRequest);
     }
 
-    /**
-     * MySSLSocketFactory
-     * <功能详细描述>
-     *  oW
-     * @version  [版本号, 2016年6月8日]
-     * @see  [相关类/方法]
-     * @since  [产品/模块版本]
-     */
     private static class MySSLSocketFactory extends SSLSocketFactory {
         private SSLContext sslContext = SSLContext.getInstance(SSL_VERSION);
 

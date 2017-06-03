@@ -23,15 +23,6 @@ import java.util.Set;
 import io.servicecomb.swagger.generator.core.SwaggerGenerator;
 import io.servicecomb.swagger.generator.core.SwaggerGeneratorContext;
 
-/**
- * <一句话功能简述>
- * <功能详细描述>
- *
- *
- * @version  [版本号, 2017年3月27日]
- * @see  [相关类/方法]
- * @since  [产品/模块版本]
- */
 public class SwaggerGeneratorForTest extends SwaggerGenerator {
     // 可用于控制一次扫描中有哪些method需要处理
     // 如果methodNameSet为null，表示全部处理

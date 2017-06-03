@@ -18,12 +18,6 @@ package io.servicecomb.common.rest.codec.param;
 
 import com.fasterxml.jackson.databind.JavaType;
 
-/**
- *
- * @version  [版本号, 2017年1月2日]
- * @see  [相关类/方法]
- * @since  [产品/模块版本]
- */
 public abstract class AbstractParamProcessor implements ParamValueProcessor {
     protected String paramPath;
 

@@ -25,14 +25,6 @@ import io.servicecomb.loadbalance.Configuration;
 import io.servicecomb.loadbalance.CseServer;
 import com.netflix.loadbalancer.Server;
 
-/**
- * 简单的分流filter
- * 策略：选择properties包含filter的所有options的所有实例，即filter的options为所选实例的properties的一个子集
- *
- * @version  [版本号, 2017年3月28日]
- * @see  [相关类/方法]
- * @since  [产品/模块版本]
- */
 public class SimpleTransactionControlFilter extends TransactionControlFilter {
 
     @Override

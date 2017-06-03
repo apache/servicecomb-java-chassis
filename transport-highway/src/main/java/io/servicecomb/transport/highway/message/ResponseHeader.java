@@ -26,14 +26,6 @@ import io.protostuff.ProtobufOutput;
 import io.protostuff.Tag;
 import io.vertx.core.buffer.Buffer;
 
-/**
- * <一句话功能简述>
- * <功能详细描述>
- *
- * @version  [版本号, 2017年2月11日]
- * @see  [相关类/方法]
- * @since  [产品/模块版本]
- */
 public class ResponseHeader {
     private static WrapSchema responseHeaderSchema = ProtobufSchemaUtils.getOrCreateSchema(ResponseHeader.class);
 

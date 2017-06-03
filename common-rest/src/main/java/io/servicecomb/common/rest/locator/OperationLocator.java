@@ -28,13 +28,6 @@ import org.slf4j.LoggerFactory;
 
 import io.servicecomb.core.exception.InvocationException;
 
-/**
- * 从path和http method定位到具体的operation
- *
- * @version  [版本号, 2017年1月2日]
- * @see  [相关类/方法]
- * @since  [产品/模块版本]
- */
 public class OperationLocator {
     private static final Logger LOGGER = LoggerFactory.getLogger(OperationLocator.class);
 

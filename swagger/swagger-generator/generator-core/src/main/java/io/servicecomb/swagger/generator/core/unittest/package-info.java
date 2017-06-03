@@ -14,12 +14,4 @@
  * limitations under the License.
  */
 
-/**
- * 专用于ut场景
- *
- *
- * @version  [版本号, 2017年3月27日]
- * @see  [相关类/方法]
- * @since  [产品/模块版本]
- */
 package io.servicecomb.swagger.generator.core.unittest;

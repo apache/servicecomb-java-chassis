@@ -32,13 +32,6 @@ import org.slf4j.LoggerFactory;
 
 import io.servicecomb.core.definition.MicroserviceMeta;
 
-/**
- * 对静态路径和动态路径的operation进行预先处理，加速operation的查询定位
- *
- * @version  [版本号, 2017年1月2日]
- * @see  [相关类/方法]
- * @since  [产品/模块版本]
- */
 public class ServicePathManager {
     private static final Logger LOGGER = LoggerFactory.getLogger(ServicePathManager.class);
 

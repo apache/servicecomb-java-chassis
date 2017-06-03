@@ -27,13 +27,6 @@ import io.servicecomb.core.definition.MicroserviceMetaManager;
 import io.servicecomb.core.definition.SchemaMeta;
 import org.springframework.stereotype.Component;
 
-/**
- * key为microserviceName
- *
- * @version [版本号, 2016年11月30日]
- * @see  [相关类/方法]
- * @since [产品/模块版本]
- */
 @Component
 public class SchemaListenerManager {
     @Inject

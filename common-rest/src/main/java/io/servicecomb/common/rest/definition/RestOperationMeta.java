@@ -40,13 +40,6 @@ import io.swagger.models.Operation;
 import io.swagger.models.Swagger;
 import io.swagger.models.parameters.Parameter;
 
-/**
- * 在transport中使用
- *
- * @version  [版本号, 2017年1月2日]
- * @see  [相关类/方法]
- * @since  [产品/模块版本]
- */
 public class RestOperationMeta {
     private static final Logger LOGGER = LoggerFactory.getLogger(RestOperationMeta.class);
 
@@ -301,10 +294,6 @@ public class RestOperationMeta {
         this.defaultProcessor = defaultProcessor;
     }
 
-    /**
-     * 获取缺省的或者第一个processor
-     * @return
-     */
     private ProduceProcessor getDefaultOrFirstProcessor() {
         ProduceProcessor processor = this.produceProcessorMap.get(ProduceProcessorManager.DEFAULT_TYPE);
         if (null == processor) {

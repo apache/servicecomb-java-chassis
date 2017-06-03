@@ -18,13 +18,6 @@ package io.servicecomb.core.executor;
 
 import java.util.concurrent.Executor;
 
-/**
- * 用于在verticle中就地执行，不做多余的调度，这是性能最高的一种模型
- *
- * @version  [版本号, 2017年2月16日]
- * @see  [相关类/方法]
- * @since  [产品/模块版本]
- */
 public class ReactiveExecutor implements Executor {
 
     /**

@@ -32,10 +32,6 @@ import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.TrustManagerFactory;
 
-/**
- * 读取证书的一些公共方法。
- *
- */
 public final class KeyStoreUtil {
     private KeyStoreUtil() {
 

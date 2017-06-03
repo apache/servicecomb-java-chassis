@@ -26,14 +26,6 @@ import io.swagger.models.Response;
 import io.swagger.models.Swagger;
 import io.swagger.models.properties.Property;
 
-/**
- * <一句话功能简述>
- * <功能详细描述>
- *
- * @version  [版本号, 2017年4月24日]
- * @see  [相关类/方法]
- * @since  [产品/模块版本]
- */
 public class ResponseMeta {
     /**
      * swagger中定义的statusCode与java类型的映射，方便consumer端transport将码流转换为具体的类型

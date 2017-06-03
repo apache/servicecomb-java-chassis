@@ -18,15 +18,6 @@ package io.servicecomb.swagger.invocation;
 
 import io.servicecomb.core.invocation.InvocationType;
 
-/**
- * <一句话功能简述>
- * <功能详细描述>
- *
- *
- * @version  [版本号, 2017年4月14日]
- * @see  [相关类/方法]
- * @since  [产品/模块版本]
- */
 public class SwaggerInvocation extends SwaggerInvocationContext {
     // 本实例是在consumer端，还是在provider端
     protected InvocationType invocationType;

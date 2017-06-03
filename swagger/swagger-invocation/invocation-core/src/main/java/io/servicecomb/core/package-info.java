@@ -13,11 +13,5 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-/**
- * 为保持兼容性，保留此package
- *
- * @version  [版本号, 2017年4月19日]
- * @see  [相关类/方法]
- * @since  [产品/模块版本]
- */
+
 package io.servicecomb.core;

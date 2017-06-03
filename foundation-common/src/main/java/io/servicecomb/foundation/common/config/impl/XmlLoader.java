@@ -25,13 +25,6 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-/**
- * 无逻辑append xml
- *
- * @version  [版本号, 2016年11月21日]
- * @see  [相关类/方法]
- * @since  [产品/模块版本]
- */
 public class XmlLoader extends AbstractLoader {
 
     private String suffix;

@@ -31,13 +31,6 @@ import io.vertx.core.http.HttpServerRequest;
 import io.vertx.ext.web.Cookie;
 import io.vertx.ext.web.RoutingContext;
 
-/**
- * 将HttpServerRequest封装为RestHttpRequest接口的类型，统一多种rest transport
- *
- * @version  [版本号, 2017年1月2日]
- * @see  [相关类/方法]
- * @since  [产品/模块版本]
- */
 public class RestVertxHttpRequest implements RestServerRequestInternal {
     private RoutingContext context;
 

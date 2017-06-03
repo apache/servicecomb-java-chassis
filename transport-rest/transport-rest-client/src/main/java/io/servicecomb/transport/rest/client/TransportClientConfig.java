@@ -19,14 +19,6 @@ package io.servicecomb.transport.rest.client;
 import com.netflix.config.DynamicIntProperty;
 import com.netflix.config.DynamicPropertyFactory;
 
-/**
- * <一句话功能简述>
- * <功能详细描述>
- *
- * @version  [版本号, 2017年1月2日]
- * @see  [相关类/方法]
- * @since  [产品/模块版本]
- */
 public final class TransportClientConfig {
     private TransportClientConfig() {
     }

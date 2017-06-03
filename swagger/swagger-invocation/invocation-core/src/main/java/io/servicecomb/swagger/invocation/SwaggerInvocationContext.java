@@ -19,12 +19,6 @@ package io.servicecomb.swagger.invocation;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- *
- * @version  [版本号, 2017年2月13日]
- * @see  [相关类/方法]
- * @since  [产品/模块版本]
- */
 public class SwaggerInvocationContext {
     // value只能是简单类型
     protected Map<String, String> context = new HashMap<>();

@@ -22,14 +22,6 @@ import io.servicecomb.foundation.vertx.tcp.TcpConnection;
 
 import io.vertx.core.net.NetSocket;
 
-/**
- * <一句话功能简述>
- * <功能详细描述>
- *
- * @version  [版本号, 2017年5月8日]
- * @see  [相关类/方法]
- * @since  [产品/模块版本]
- */
 public class TcpServerConnection extends TcpConnection {
     private static final Logger LOGGER = LoggerFactory.getLogger(TcpServerConnection.class);
 

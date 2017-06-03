@@ -26,15 +26,6 @@ import io.servicecomb.serviceregistry.notify.RegistryEvent;
 import io.servicecomb.serviceregistry.utils.TimerException;
 import io.servicecomb.foundation.common.CommonThread;
 
-/**
- * <一句话功能简述>
- * <功能详细描述>
- *
- *
- * @version [版本号, 2016年12月15日]
- * @see  [相关类/方法]
- * @since [产品/模块版本]
- */
 public class RegistryThread extends CommonThread {
     private boolean registerSuccess = false;
 

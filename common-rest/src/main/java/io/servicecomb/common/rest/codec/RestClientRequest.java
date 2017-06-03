@@ -18,14 +18,6 @@ package io.servicecomb.common.rest.codec;
 
 import io.vertx.core.buffer.Buffer;
 
-/**
- * vertx的HttpClientRequest没有getHeader的能力
- * 在写cookie参数时，没办法多次添加cookie，所以只能进行接口包装
- *
- * @version  [版本号, 2017年1月23日]
- * @see  [相关类/方法]
- * @since  [产品/模块版本]
- */
 public interface RestClientRequest {
 
     void write(Buffer bodyBuffer);

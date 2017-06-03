@@ -21,14 +21,6 @@ import io.servicecomb.core.Invocation;
 import io.servicecomb.swagger.invocation.SwaggerInvocation;
 import io.servicecomb.swagger.invocation.arguments.producer.AbstractProducerContextArgMapper;
 
-/**
- * <一句话功能简述>
- * <功能详细描述>
- *
- * @version  [版本号, 2017年1月24日]
- * @see  [相关类/方法]
- * @since  [产品/模块版本]
- */
 public class ProducerHttpRequestArgMapper extends AbstractProducerContextArgMapper {
     public ProducerHttpRequestArgMapper(int producerArgIdx) {
         super(producerArgIdx);

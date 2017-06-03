@@ -23,14 +23,6 @@ import io.servicecomb.swagger.generator.core.processor.annotation.AnnotationUtil
 import io.swagger.annotations.ResponseHeader;
 import io.swagger.models.Response;
 
-/**
- * Response的数据源太多，单单是标注都有N个
- * 所以将数据提取出来，统一处理
- *
- * @version  [版本号, 2017年4月20日]
- * @see  [相关类/方法]
- * @since  [产品/模块版本]
- */
 public class ResponseConfig extends ResponseConfigBase {
     private int code;
 

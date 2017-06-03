@@ -25,13 +25,6 @@ import io.servicecomb.codec.protobuf.definition.ProtobufManager;
 import io.servicecomb.codec.protobuf.jackson.StandardObjectReader;
 import io.servicecomb.codec.protobuf.jackson.StandardObjectWriter;
 
-/**
- * protobuf标准场景，一个schema对应一个msg，对应一个java实例
- *
- * @version  [版本号, 2016年12月6日]
- * @see  [相关类/方法]
- * @since  [产品/模块版本]
- */
 public class StandardParamCodec extends AbstractCodec {
     @Override
     public void init(ProtobufSchema schema, Type... types) {

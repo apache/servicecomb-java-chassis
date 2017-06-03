@@ -28,13 +28,6 @@ import com.fasterxml.jackson.dataformat.protobuf.schema.ProtobufField;
 import com.fasterxml.jackson.dataformat.protobuf.schema.ProtobufSchema;
 import io.servicecomb.codec.protobuf.jackson.CseObjectReader;
 
-/**
- * 将idl msg中的field拆出来，每个field作为一个参数(同时适用于请求、应答场景)
- *
- * @version  [版本号, 2016年12月6日]
- * @see  [相关类/方法]
- * @since  [产品/模块版本]
- */
 public class AbstractFieldCodec extends AbstractCodec {
     public static class ReaderHelpData {
         // 在reader返回的Object[]中的下标

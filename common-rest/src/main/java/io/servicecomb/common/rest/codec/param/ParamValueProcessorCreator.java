@@ -18,13 +18,6 @@ package io.servicecomb.common.rest.codec.param;
 
 import java.lang.reflect.Type;
 
-/**
- * 创建各种类型的parameter processor的工厂接口
- *
- * @version  [版本号, 2017年1月2日]
- * @see  [相关类/方法]
- * @since  [产品/模块版本]
- */
 public interface ParamValueProcessorCreator {
     /**
      * 创建processor，设置参数路径和类型

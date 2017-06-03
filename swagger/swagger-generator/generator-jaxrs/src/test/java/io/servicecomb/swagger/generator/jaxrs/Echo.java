@@ -33,15 +33,6 @@ import javax.ws.rs.core.Response;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 
-/**
- * <一句话功能简述>
- * <功能详细描述>
- *
- *
- * @version  [版本号, 2017年3月27日]
- * @see  [相关类/方法]
- * @since  [产品/模块版本]
- */
 @Path(value = "Echo")
 public class Echo {
     @ApiResponse(response = int.class, code = 200, message = "")

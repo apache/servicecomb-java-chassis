@@ -23,13 +23,6 @@ import com.fasterxml.jackson.databind.type.TypeFactory;
 import io.servicecomb.common.rest.codec.RestClientRequest;
 import io.servicecomb.common.rest.codec.RestServerRequest;
 
-/**
- * 用于处理Jaxrs中的Path类型参数
- *
- * @version  [版本号, 2017年1月2日]
- * @see  [相关类/方法]
- * @since  [产品/模块版本]
- */
 public class PathProcessorCreator implements ParamValueProcessorCreator {
     public static final String PARAMTYPE = "path";
 

@@ -22,13 +22,6 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-/**
- * 处理path中的正则表达式
- *
- * @version  [版本号, 2017年1月2日]
- * @see  [相关类/方法]
- * @since  [产品/模块版本]
- */
 public class PathRegExp {
     // 不带正则表达式的group,使用这个作为正则表达式
     private static final String DEFAULT_REG_EXP = "[^/]+?";

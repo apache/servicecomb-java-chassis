@@ -20,15 +20,6 @@ import com.fasterxml.jackson.databind.JavaType;
 
 import io.swagger.models.Swagger;
 
-/**
- * <一句话功能简述>
- * <功能详细描述>
- *
- *
- * @version  [版本号, 2017年3月20日]
- * @see  [相关类/方法]
- * @since  [产品/模块版本]
- */
 public interface Converter {
     // def可能是property或model
     // def不可能为null

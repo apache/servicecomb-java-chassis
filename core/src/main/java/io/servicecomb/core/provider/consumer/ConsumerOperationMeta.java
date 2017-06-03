@@ -20,15 +20,6 @@ import io.servicecomb.core.definition.OperationMeta;
 import io.servicecomb.swagger.invocation.arguments.consumer.ConsumerArgumentsMapper;
 import io.servicecomb.swagger.invocation.response.consumer.ConsumerResponseMapper;
 
-/**
- * <一句话功能简述>
- * <功能详细描述>
- *
- *
- * @version  [版本号, 2017年4月1日]
- * @see  [相关类/方法]
- * @since  [产品/模块版本]
- */
 public class ConsumerOperationMeta {
     private OperationMeta operationMeta;
 

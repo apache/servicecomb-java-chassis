@@ -18,13 +18,6 @@ package io.servicecomb.serviceregistry.api.request;
 
 import java.util.Map;
 
-/**
- * 更新微服务和实例properties的request
- *
- * @version  [版本号, 2017年3月20日]
- * @see  [相关类/方法]
- * @since  [产品/模块版本]
- */
 public class UpdatePropertiesRequest {
     private Map<String, String> properties;
 

@@ -20,13 +20,6 @@ import java.lang.annotation.Annotation;
 
 import io.servicecomb.foundation.common.RegisterManager;
 
-/**
- * 管理各种注解processor
- *
- * @version  [版本号, 2017年3月1日]
- * @see  [相关类/方法]
- * @since  [产品/模块版本]
- */
 public class AnnotationProcessorManager<T> extends RegisterManager<String, T> {
     enum AnnotationType {
         CLASS, METHOD, PARAMETER

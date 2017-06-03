@@ -26,10 +26,6 @@ import io.vertx.ext.web.handler.impl.BodyHandlerImpl;
 /**
  * 扩展的BodyHandler
  * 只支持指定ContentType格式的body数据，关闭了文件上传能力
- *
- * @version  [版本号, 2017年3月4日]
- * @see  [相关类/方法]
- * @since  [产品/模块版本]
  */
 public abstract class SimpleBodyHandler extends BodyHandlerImpl {
 

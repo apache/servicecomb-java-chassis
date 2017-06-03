@@ -22,14 +22,6 @@ import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
 
-/**
- * <一句话功能简述>
- * <功能详细描述>
- *
- * @version  [版本号, 2016年11月21日]
- * @see  [相关类/方法]
- * @since  [产品/模块版本]
- */
 @JacksonXmlRootElement(localName = "configs")
 public class IncConfigs {
 

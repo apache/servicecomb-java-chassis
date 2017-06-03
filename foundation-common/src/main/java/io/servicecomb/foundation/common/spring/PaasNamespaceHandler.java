@@ -27,14 +27,6 @@ import org.springframework.beans.factory.xml.NamespaceHandlerSupport;
 import io.servicecomb.foundation.common.config.PaaSResourceUtils;
 import io.servicecomb.foundation.common.utils.FortifyUtils;
 
-/**
- * <一句话功能简述>
- * <功能详细描述>
- *
- * @version  [版本号, 2016年11月26日]
- * @see  [相关类/方法]
- * @since  [产品/模块版本]
- */
 //根据各个jar提供的信息来注册parser
 public class PaasNamespaceHandler extends NamespaceHandlerSupport {
     private static final Logger LOGGER = LoggerFactory.getLogger(PaasNamespaceHandler.class);

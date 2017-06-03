@@ -18,15 +18,6 @@ package io.servicecomb.swagger.invocation.arguments.utils;
 
 import org.springframework.util.ReflectionUtils;
 
-/**
- * <一句话功能简述>
- * <功能详细描述>
- *
- *
- * @version  [版本号, 2017年4月15日]
- * @see  [相关类/方法]
- * @since  [产品/模块版本]
- */
 public class Utils {
     public static Object getFieldValue(Object instance, String fieldName) {
         try {

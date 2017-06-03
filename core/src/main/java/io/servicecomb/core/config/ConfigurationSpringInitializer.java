@@ -23,13 +23,6 @@ import org.springframework.beans.factory.config.PropertyPlaceholderConfigurer;
 
 import io.servicecomb.foundation.common.config.ConfigMgr;
 
-/**
- * 本部分包含用户Spring的property holder文件
- *
- * @version  [版本号, 2017年1月14日]
- * @see  [相关类/方法]
- * @since  [产品/模块版本]
- */
 public class ConfigurationSpringInitializer extends PropertyPlaceholderConfigurer {
     // 以逗号分隔
     private String configId;

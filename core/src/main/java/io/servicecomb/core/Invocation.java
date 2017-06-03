@@ -27,14 +27,6 @@ import io.servicecomb.core.invocation.InvocationType;
 import io.servicecomb.core.provider.consumer.ReferenceConfig;
 import io.servicecomb.swagger.invocation.SwaggerInvocation;
 
-/**
- * <一句话功能简述>
- * <功能详细描述>
- *
- * @version  [版本号, 2016年11月30日]
- * @see  [相关类/方法]
- * @since  [产品/模块版本]
- */
 public class Invocation extends SwaggerInvocation {
     private ReferenceConfig referenceConfig;
 

@@ -38,13 +38,6 @@ import io.vertx.ext.web.Router;
 import io.vertx.ext.web.RoutingContext;
 import io.vertx.ext.web.handler.CookieHandler;
 
-/**
- * Rest Server on Vertx
- *
- * @version  [版本号, 2016年12月31日]
- * @see  [相关类/方法]
- * @since  [产品/模块版本]
- */
 public class VertxRestServer extends AbstractRestServer<HttpServerResponse> {
     private static final Logger LOGGER = LoggerFactory.getLogger(VertxRestServer.class);
 

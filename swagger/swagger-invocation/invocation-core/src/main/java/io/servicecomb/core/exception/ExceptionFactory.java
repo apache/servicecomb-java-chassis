@@ -21,14 +21,6 @@ import javax.ws.rs.core.Response.StatusType;
 
 import io.servicecomb.core.context.HttpStatus;
 
-/**
- * <一句话功能简述>
- * <功能详细描述>
- *
- * @version  [版本号, 2017年4月19日]
- * @see  [相关类/方法]
- * @since  [产品/模块版本]
- */
 public final class ExceptionFactory {
     // cse内置的错误
     // 考虑到springmvc不支持自定义http错误码，所以只能使用“标准”错误码

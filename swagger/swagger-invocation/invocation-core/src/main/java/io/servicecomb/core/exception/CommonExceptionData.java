@@ -16,13 +16,6 @@
 
 package io.servicecomb.core.exception;
 
-/**
- * 将普通异常转换为InvocationException时，保存message信息
- *
- * @version  [版本号, 2017年1月6日]
- * @see  [相关类/方法]
- * @since  [产品/模块版本]
- */
 public class CommonExceptionData {
     private String message;
 

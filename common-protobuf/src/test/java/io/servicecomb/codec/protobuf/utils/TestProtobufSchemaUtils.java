@@ -30,14 +30,6 @@ import io.protostuff.Input;
 import io.protostuff.LinkedBuffer;
 import io.protostuff.ProtobufOutput;
 
-/**
- * <一句话功能简述>
- * <功能详细描述>
- *
- * @version  [版本号, 2017年2月20日]
- * @see  [相关类/方法]
- * @since  [产品/模块版本]
- */
 public class TestProtobufSchemaUtils {
     public static class TestMap {
         public Map<String, String> map = new HashMap<>();

@@ -25,11 +25,6 @@ import io.servicecomb.swagger.invocation.arguments.ArgumentMapper;
  * 将契约参数转为producer原型
  * 比如契约原型是         int add(int x, int y)
  * 而producer原型是int add(HttpRequest request, int x, int y)
- *
- *
- * @version  [版本号, 2017年1月24日]
- * @see  [相关类/方法]
- * @since  [产品/模块版本]
  */
 public class ProducerArgumentsMapper {
     private List<ArgumentMapper> producerArgMapperList;

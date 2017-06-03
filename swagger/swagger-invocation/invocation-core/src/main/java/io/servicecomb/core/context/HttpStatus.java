@@ -19,14 +19,6 @@ import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.Response.Status.Family;
 import javax.ws.rs.core.Response.StatusType;
 
-/**
- * <一句话功能简述>
- * <功能详细描述>
- *
- * @version  [版本号, 2017年4月19日]
- * @see  [相关类/方法]
- * @since  [产品/模块版本]
- */
 public class HttpStatus implements StatusType {
     public static boolean isSuccess(int code) {
         return Status.Family.SUCCESSFUL.equals(Status.Family.familyOf(code));

@@ -46,13 +46,6 @@ import io.servicecomb.common.rest.definition.RestOperationMeta;
 import io.servicecomb.common.rest.definition.RestParam;
 import io.servicecomb.core.Invocation;
 
-/**
- * 根据Invocation和swagger operation构造一个servlet http request
- *
- * @version  [版本号, 2017年1月19日]
- * @see  [相关类/方法]
- * @since  [产品/模块版本]
- */
 public class GenericServletMockRequest implements HttpServletRequest {
 
     private RestOperationMeta swaggerOperation;

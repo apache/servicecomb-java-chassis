@@ -28,15 +28,6 @@ import io.servicecomb.swagger.converter.ConverterMgr;
 import io.swagger.models.Swagger;
 import io.swagger.models.properties.StringProperty;
 
-/**
- * <一句话功能简述>
- * <功能详细描述>
- *
- *
- * @version  [版本号, 2017年3月20日]
- * @see  [相关类/方法]
- * @since  [产品/模块版本]
- */
 public class StringPropertyConverter extends AbstractPropertyConverter {
     // 用于生成唯一的enum名称
     // key为enum names， value为enum cls javaType

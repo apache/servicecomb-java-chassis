@@ -42,11 +42,6 @@ import io.swagger.models.Swagger;
  * 场景1，使用默认规则处理rest入参，比如将所有参数包装为一个class，统一放在body中
  * jaxrs/spring mvc的场景，需要配合各自的插件jar包
  * 非场景1，如果标注不完整，仍然会尝试使用场景1的规则产生默认数据
- *
- *
- * @version  [版本号, 2017年3月1日]
- * @see  [相关类/方法]
- * @since  [产品/模块版本]
  */
 public class SwaggerGenerator {
     protected SwaggerGeneratorContext context;

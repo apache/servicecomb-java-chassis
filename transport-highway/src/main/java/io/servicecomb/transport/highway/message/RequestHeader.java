@@ -28,10 +28,6 @@ import io.vertx.core.buffer.Buffer;
 /**
  * tag的缺失、乱序，是因为要兼容历史版本
  * 1.tag(4)，是历史版本中的压缩算法名，转移到login消息中传递
- *
- * @version  [版本号, 2017年2月11日]
- * @see  [相关类/方法]
- * @since  [产品/模块版本]
  */
 public class RequestHeader {
     private static WrapSchema requestHeaderSchema = ProtobufSchemaUtils.getOrCreateSchema(RequestHeader.class);

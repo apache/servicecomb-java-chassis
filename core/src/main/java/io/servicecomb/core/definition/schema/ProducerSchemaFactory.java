@@ -45,15 +45,6 @@ import io.swagger.models.Swagger;
 import io.swagger.models.parameters.Parameter;
 import io.swagger.util.Yaml;
 
-/**
- * <一句话功能简述>
- * <功能详细描述>
- *
- *
- * @version  [版本号, 2017年4月5日]
- * @see  [相关类/方法]
- * @since  [产品/模块版本]
- */
 @Component
 public class ProducerSchemaFactory extends AbstractSchemaFactory<ProducerSchemaContext> {
     private static final Logger LOGGER = LoggerFactory.getLogger(ProducerSchemaFactory.class);

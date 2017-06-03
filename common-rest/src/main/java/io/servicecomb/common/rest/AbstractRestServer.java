@@ -44,14 +44,6 @@ import io.servicecomb.core.invocation.InvocationFactory;
 import io.servicecomb.serviceregistry.RegistryUtils;
 import io.servicecomb.foundation.common.utils.JsonUtils;
 
-/**
- * <一句话功能简述>
- * <功能详细描述>
- *
- * @version  [版本号, 2017年1月9日]
- * @see  [相关类/方法]
- * @since  [产品/模块版本]
- */
 public abstract class AbstractRestServer<HTTP_RESPONSE> {
     private static final Logger LOGGER = LoggerFactory.getLogger(AbstractRestServer.class);
 
@@ -159,14 +151,6 @@ public abstract class AbstractRestServer<HTTP_RESPONSE> {
         sendResponse(restRequest, httpResponse, ProduceProcessorManager.DEFAULT_PROCESSOR, response);
     }
 
-    /**
-     * 成功、失败的统一应答处理，这里不能再出异常了，再出了异常也没办法处理
-     * @param httpServerResponse
-     * @param produceProcessor
-     * @param statusCode
-     * @param reasonPhrase
-     * @param errorData
-     */
     protected void sendResponse(RestServerRequestInternal restRequest, HTTP_RESPONSE httpServerResponse,
             ProduceProcessor produceProcessor, Response response) {
         try {
@@ -183,13 +167,6 @@ public abstract class AbstractRestServer<HTTP_RESPONSE> {
         }
     }
 
-    /**
-     * 成功、失败的统一应答处理
-     * @param httpServerResponse
-     * @param produceProcessor
-     * @param response
-     * @throws Exception
-     */
     protected abstract void doSendResponse(HTTP_RESPONSE httpServerResponse, ProduceProcessor produceProcessor,
             Response response) throws Exception;
 

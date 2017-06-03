@@ -47,15 +47,6 @@ import io.servicecomb.swagger.generator.jaxrs.processor.annotation.PathMethodAnn
 import io.servicecomb.swagger.generator.jaxrs.processor.annotation.PathParamAnnotationProcessor;
 import io.servicecomb.swagger.generator.jaxrs.processor.annotation.QueryParamAnnotationProcessor;
 
-/**
- * <一句话功能简述>
- * <功能详细描述>
- *
- *
- * @version  [版本号, 2017年3月27日]
- * @see  [相关类/方法]
- * @since  [产品/模块版本]
- */
 public class JaxrsSwaggerGeneratorContext extends DefaultSwaggerGeneratorContext {
     private static final int ORDER = 500;
 

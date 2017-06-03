@@ -21,13 +21,6 @@ import java.util.Comparator;
 
 import io.servicecomb.common.rest.definition.path.PathRegExp;
 
-/**
- * 用于RestOperation的排序
- *
- * @version  [版本号, 2017年1月2日]
- * @see  [相关类/方法]
- * @since  [产品/模块版本]
- */
 public class RestOperationComparator implements Serializable, Comparator<RestOperationMeta> {
 
     /**

@@ -35,14 +35,6 @@ import org.w3c.dom.Document;
 
 import io.servicecomb.foundation.common.utils.JsonUtils;
 
-/**
- * <一句话功能简述>
- * <功能详细描述>
- *
- * @version  [版本号, 2016年11月22日]
- * @see  [相关类/方法]
- * @since  [产品/模块版本]
- */
 public class PaaSResourceUtils extends org.springframework.util.ResourceUtils {
     /**
      * propertie suffix
@@ -165,14 +157,6 @@ public class PaaSResourceUtils extends org.springframework.util.ResourceUtils {
         return getSortedResources(locationPattern, XML_SUFFIX);
     }
 
-    /**
-     * TODO:同一个id转为不同class，重复加载数据了，可以考虑增加一个接口
-     * @param configId configId
-     * @param clazz Class<?>
-     * @param <T> T
-     * @return T
-     * @throws Exception Exception
-     */
     @SuppressWarnings("unchecked")
     public static <T> T loadConfigAs(String configId, Class<?> clazz) throws Exception {
         Object config = ConfigMgr.INSTANCE.getConfig(configId);

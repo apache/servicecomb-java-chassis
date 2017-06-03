@@ -28,15 +28,6 @@ import io.servicecomb.swagger.invocation.arguments.producer.ProducerArgumentsMap
 import io.servicecomb.swagger.invocation.arguments.producer.ProducerArgumentsMapperFactory;
 import io.servicecomb.swagger.invocation.arguments.producer.ProducerInvocationContextMapperFactory;
 
-/**
- * <一句话功能简述>
- * <功能详细描述>
- *
- *
- * @version  [版本号, 2017年4月14日]
- * @see  [相关类/方法]
- * @since  [产品/模块版本]
- */
 public class Meta {
     public OpMeta<ConsumerArgumentsMapper> consumerOpMeta = new OpMeta<>();
 

@@ -18,14 +18,6 @@ package io.servicecomb.foundation.vertx.client;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
-/**
- * <一句话功能简述>
- * <功能详细描述>
- *
- * @version  [版本号, 2016年12月28日]
- * @see  [相关类/方法]
- * @since  [产品/模块版本]
- */
 public class NetThreadData<CLIENT_POOL> {
     // 每个网络线程提供一个factory
     private ClientPoolFactory<CLIENT_POOL> factory;

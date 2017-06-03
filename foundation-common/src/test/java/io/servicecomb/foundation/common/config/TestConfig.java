@@ -35,15 +35,6 @@ import org.w3c.dom.NodeList;
 import io.servicecomb.foundation.common.utils.BeanUtils;
 import io.servicecomb.foundation.common.utils.Log4jUtils;
 
-/**
- * <一句话功能简述>
- * <功能详细描述>
- * 
- *
- * @version  [版本号, 2016年11月22日]
- * @see  [相关类/方法]
- * @since  [产品/模块版本]
- */
 public class TestConfig {
 
     private static final int TEST_PROP_LIST_SIZE = 2;

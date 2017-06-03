@@ -31,15 +31,6 @@ import org.springframework.web.client.RestTemplate;
 import io.servicecomb.core.CseContext;
 import io.servicecomb.demo.compute.Person;
 
-/**
- * <一句话功能简述>
- * <功能详细描述>
- *
- *
- * @version  [版本号, 2017年4月10日]
- * @see  [相关类/方法]
- * @since  [产品/模块版本]
- */
 public class CodeFirstRestTemplate {
     public void testCodeFirst(RestTemplate template, String microserviceName, String basePath) {
         for (String transport : DemoConst.transports) {

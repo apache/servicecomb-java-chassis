@@ -21,14 +21,6 @@ import org.junit.Test;
 import io.vertx.core.net.NetSocket;
 import mockit.Mocked;
 
-/**
- * <一句话功能简述>
- * <功能详细描述>
- *
- * @version  [版本号, 2017年5月10日]
- * @see  [相关类/方法]
- * @since  [产品/模块版本]
- */
 public class TestTcpServerConnection {
     @Test
     public void test(@Mocked NetSocket netSocket) {

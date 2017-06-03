@@ -38,13 +38,6 @@ import io.vertx.core.http.HttpServer;
 import io.vertx.core.http.HttpServerOptions;
 import io.vertx.ext.web.Router;
 
-/**
- * 设置rest server监听端口
- *
- * @version  [版本号, 2017年1月2日]
- * @see  [相关类/方法]
- * @since  [产品/模块版本]
- */
 public class RestServerVerticle extends AbstractVerticle {
     private static final Logger LOGGER = LoggerFactory.getLogger(RestServerVerticle.class);
 

@@ -24,10 +24,6 @@ import io.servicecomb.core.context.HttpStatus;
  * 业务在provider端，想返回在swagger中定义好的错误
  * 通过抛出本类型的异常来实现
  * 如果不是本类型的异常，则强制认为是PRODUCER_INNER_STATUS_CODE错误
- *
- * @version  [版本号, 2017年1月6日]
- * @see  [相关类/方法]
- * @since  [产品/模块版本]
  */
 public class InvocationException extends RuntimeException {
     private static final long serialVersionUID = 8027482777502649656L;

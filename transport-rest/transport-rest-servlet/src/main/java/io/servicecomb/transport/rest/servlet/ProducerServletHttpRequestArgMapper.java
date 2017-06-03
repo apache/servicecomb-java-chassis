@@ -21,13 +21,6 @@ import javax.servlet.http.HttpServletRequest;
 import io.servicecomb.swagger.invocation.SwaggerInvocation;
 import io.servicecomb.swagger.invocation.arguments.producer.AbstractProducerContextArgMapper;
 
-/**
- * 使用Servlet http request构造其他各种http request
- *
- * @version  [版本号, 2017年1月22日]
- * @see  [相关类/方法]
- * @since  [产品/模块版本]
- */
 public class ProducerServletHttpRequestArgMapper extends AbstractProducerContextArgMapper {
 
     private HttpServletRequest httpRequest;

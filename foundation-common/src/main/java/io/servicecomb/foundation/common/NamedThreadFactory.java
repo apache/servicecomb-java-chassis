@@ -19,18 +19,8 @@ package io.servicecomb.foundation.common;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicInteger;
 
-/**
- * 已命名线程工厂.
- * 获取新的名字有固定前缀的线程工厂.
- *
- * @version  [版本号, 2016年3月28日]
- * @see  [相关类/方法]
- * @since  [产品/模块版本]
- */
 public class NamedThreadFactory implements ThreadFactory {
-    /**
-     * 定义一个AtomicInteger
-     */
+
     private final AtomicInteger threadNumber = new AtomicInteger();
 
     /**

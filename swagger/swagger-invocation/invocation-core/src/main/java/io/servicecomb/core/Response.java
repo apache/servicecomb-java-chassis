@@ -30,11 +30,6 @@ import io.servicecomb.swagger.invocation.response.Headers;
  * 但是那个是abstract类，在不引入jersey之类的库的情况下，我们需要补充的功能太多
  *
  * 所以，使用一个简单的归一化类
- *
- *
- * @version  [版本号, 2017年4月19日]
- * @see  [相关类/方法]
- * @since  [产品/模块版本]
  */
 public class Response {
     private StatusType status;

@@ -20,14 +20,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-/**
- * <一句话功能简述>
- * <功能详细描述>
- *
- * @version  [版本号, 2017年4月24日]
- * @see  [相关类/方法]
- * @since  [产品/模块版本]
- */
 public class Headers {
     private Map<String, List<Object>> headerMap;
 

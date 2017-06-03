@@ -27,11 +27,6 @@ import io.servicecomb.swagger.invocation.arguments.ArgumentMapper;
  * 而consumer原型是int add(InvocationContext context, int x, int y)
  *
  * 除了context参数，剩下的参数，必须与契约中的一一匹配，包括顺序、类型
- *
- *
- * @version  [版本号, 2017年1月24日]
- * @see  [相关类/方法]
- * @since  [产品/模块版本]
  */
 public class ConsumerArgumentsMapper {
     private List<ArgumentMapper> consumerArgMapperList;

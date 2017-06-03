@@ -25,13 +25,6 @@ import org.slf4j.LoggerFactory;
 
 import com.netflix.config.DynamicPropertyFactory;
 
-/**
- * 加载微服务和微服务实例的properties
- *
- * @version  [版本号, 2017年3月21日]
- * @see  [相关类/方法]
- * @since  [产品/模块版本]
- */
 public abstract class AbstractPropertiesLoader {
     private static final Logger LOGGER = LoggerFactory.getLogger(AbstractPropertiesLoader.class);
 

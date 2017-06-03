@@ -55,14 +55,6 @@ import io.servicecomb.serviceregistry.notify.RegistryListener;
 import io.servicecomb.serviceregistry.utils.Timer;
 import io.servicecomb.serviceregistry.utils.TimerException;
 
-/**
- * <一句话功能简述> <功能详细描述>
- *
- *
- * @version [版本号, 2016年12月8日]
- * @see [相关类/方法]
- * @since [产品/模块版本]
- */
 public final class RegistryUtils {
     private static final Logger LOGGER = LoggerFactory.getLogger(RegistryUtils.class);
 

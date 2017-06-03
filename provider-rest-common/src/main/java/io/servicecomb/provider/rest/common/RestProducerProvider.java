@@ -26,14 +26,6 @@ import io.servicecomb.core.provider.producer.AbstractProducerProvider;
 import io.servicecomb.core.provider.producer.ProducerMeta;
 import io.servicecomb.serviceregistry.RegistryUtils;
 
-/**
- * <一句话功能简述>
- * <功能详细描述>
- *
- * @version  [版本号, 2016年12月29日]
- * @see  [相关类/方法]
- * @since  [产品/模块版本]
- */
 @Component
 public class RestProducerProvider extends AbstractProducerProvider {
 

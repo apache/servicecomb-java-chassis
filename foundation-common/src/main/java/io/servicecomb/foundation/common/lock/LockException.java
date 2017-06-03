@@ -16,13 +16,6 @@
 
 package io.servicecomb.foundation.common.lock;
 
-/**
- * 配置异常
- *
- * @version  [版本号, 2016年5月11日]
- * @see  [相关类/方法]
- * @since  [产品/模块版本]
- */
 public class LockException extends RuntimeException {
     /**
      * 注释内容

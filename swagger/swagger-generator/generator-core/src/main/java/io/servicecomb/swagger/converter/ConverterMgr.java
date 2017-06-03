@@ -65,15 +65,6 @@ import io.swagger.models.properties.Property;
 import io.swagger.models.properties.RefProperty;
 import io.swagger.models.properties.StringProperty;
 
-/**
- * <一句话功能简述>
- * <功能详细描述>
- *
- *
- * @version  [版本号, 2017年3月20日]
- * @see  [相关类/方法]
- * @since  [产品/模块版本]
- */
 public final class ConverterMgr {
     private static final JavaType VOID_JAVA_TYPE = TypeFactory.defaultInstance().constructType(void.class);
 

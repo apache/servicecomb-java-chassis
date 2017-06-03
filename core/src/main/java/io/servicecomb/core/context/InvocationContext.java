@@ -24,13 +24,6 @@ import javax.ws.rs.core.Response.StatusType;
 import io.servicecomb.core.CseContext;
 import io.servicecomb.swagger.invocation.SwaggerInvocationContext;
 
-/**
- * 设置特定的Cse Context数据
- *
- * @version  [版本号, 2017年2月13日]
- * @see  [相关类/方法]
- * @since  [产品/模块版本]
- */
 public class InvocationContext extends SwaggerInvocationContext {
     private StatusType httpStatus;
 

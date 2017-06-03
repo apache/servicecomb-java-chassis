@@ -36,14 +36,6 @@ import io.swagger.models.properties.ByteArrayProperty;
 import io.swagger.models.properties.Property;
 import io.swagger.util.Json;
 
-/**
- * <一句话功能简述>
- * <功能详细描述>
- *
- * @version  [版本号, 2017年3月9日]
- * @see  [相关类/方法]
- * @since  [产品/模块版本]
- */
 public class ModelResolverExt extends ModelResolver {
     private interface PropertyCreator {
         Property createProperty();

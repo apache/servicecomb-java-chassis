@@ -34,13 +34,6 @@ public class BodyProcessorCreator implements ParamValueProcessorCreator {
 
     public static final String PARAMTYPE = "body";
 
-    /**
-     * Body Parameter Processor
-     *
-     * @version  [版本号, 2017年1月2日]
-     * @see  [相关类/方法]
-     * @since  [产品/模块版本]
-     */
     public static class BodyProcessor implements ParamValueProcessor {
         protected JavaType targetType;
 
@@ -95,13 +88,6 @@ public class BodyProcessorCreator implements ParamValueProcessorCreator {
         }
     }
 
-    /**
-     * 针对raw json string类型的Body Processor
-     *
-     * @version  [版本号, 2017年3月10日]
-     * @see  [相关类/方法]
-     * @since  [产品/模块版本]
-     */
     public static class RawJsonBodyProcessor extends BodyProcessor {
 
         public RawJsonBodyProcessor(JavaType targetType) {

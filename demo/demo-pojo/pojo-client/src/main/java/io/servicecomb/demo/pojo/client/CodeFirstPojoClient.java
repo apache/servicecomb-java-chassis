@@ -28,15 +28,6 @@ import io.servicecomb.demo.TestMgr;
 import io.servicecomb.demo.compute.Person;
 import io.servicecomb.provider.pojo.RpcReference;
 
-/**
- * <一句话功能简述>
- * <功能详细描述>
- *
- *
- * @version  [版本号, 2017年4月10日]
- * @see  [相关类/方法]
- * @since  [产品/模块版本]
- */
 public class CodeFirstPojoClient {
     @RpcReference(microserviceName = "pojo", schemaId = "io.servicecomb.demo.CodeFirstPojoIntf")
     public CodeFirstPojoIntf codeFirstAnnotation;

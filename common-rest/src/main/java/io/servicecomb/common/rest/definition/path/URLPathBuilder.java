@@ -23,13 +23,6 @@ import java.util.Map;
 import io.servicecomb.common.rest.codec.param.QueryProcessorCreator;
 import io.servicecomb.common.rest.definition.RestParam;
 
-/**
- * 初始化阶段创建URLPathBuilder，用于加速调用阶段的path创建
- *
- * @version  [版本号, 2017年1月18日]
- * @see  [相关类/方法]
- * @since  [产品/模块版本]
- */
 public class URLPathBuilder {
 
     private List<UrlParamWriter> pathParamWriterList = new ArrayList<>();

@@ -47,13 +47,6 @@ import io.swagger.annotations.ApiResponses;
 import io.swagger.annotations.ResponseHeader;
 import io.swagger.annotations.SwaggerDefinition;
 
-/**
- * 根据class反向生成swagger的上下文对象
- *
- * @version  [版本号, 2017年3月8日]
- * @see  [相关类/方法]
- * @since  [产品/模块版本]
- */
 public class DefaultSwaggerGeneratorContext implements SwaggerGeneratorContext {
     protected AnnotationProcessorManager<ClassAnnotationProcessor> classAnnotationMgr =
         new AnnotationProcessorManager<>(AnnotationProcessorManager.AnnotationType.CLASS);

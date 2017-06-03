@@ -30,13 +30,6 @@ import io.vertx.core.net.NetServerOptions;
 import io.vertx.core.net.PfxOptions;
 import io.vertx.core.net.TCPSSLOptions;
 
-/**
- * TLS配置模型应用于vertx
- *
- * @version [版本号, 2017年3月10日]
- * @see [相关类/方法]
- * @since [产品/模块版本]
- */
 public final class VertxTLSBuilder {
     private static final String STORE_PKCS12 = "PKCS12";
 

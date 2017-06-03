@@ -20,14 +20,6 @@ import io.servicecomb.core.Endpoint;
 import io.servicecomb.core.Transport;
 import io.servicecomb.serviceregistry.cache.CacheEndpoint;
 
-/**
- * <一句话功能简述>
- * <功能详细描述>
- *
- * @version  [版本号, 2017年1月26日]
- * @see  [相关类/方法]
- * @since  [产品/模块版本]
- */
 public class EndpointsCache extends AbstractEndpointsCache<Endpoint> {
 
     public EndpointsCache(String appId, String microserviceName, String microserviceVersionRule,

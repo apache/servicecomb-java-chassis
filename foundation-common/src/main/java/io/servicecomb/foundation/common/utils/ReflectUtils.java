@@ -22,12 +22,6 @@ import java.lang.reflect.Modifier;
 
 import org.springframework.util.ReflectionUtils;
 
-/**
- *
- * @version  [版本号, 2017年3月13日]
- * @see  [相关类/方法]
- * @since  [产品/模块版本]
- */
 public final class ReflectUtils {
     private static final Field MODIFIERS_FIELD =
         ReflectionUtils.findField(Field.class, "modifiers");

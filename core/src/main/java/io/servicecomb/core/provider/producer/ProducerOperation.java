@@ -31,15 +31,6 @@ import io.servicecomb.core.exception.InvocationException;
 import io.servicecomb.swagger.invocation.arguments.producer.ProducerArgumentsMapper;
 import io.servicecomb.swagger.invocation.response.producer.ProducerResponseMapper;
 
-/**
- * <一句话功能简述>
- * <功能详细描述>
- *
- *
- * @version  [版本号, 2017年4月1日]
- * @see  [相关类/方法]
- * @since  [产品/模块版本]
- */
 public class ProducerOperation {
     private static final Logger LOGGER = LoggerFactory.getLogger(ProducerOperation.class);
 
