@@ -22,7 +22,7 @@
 	<parent>
 		<groupId>io.servicecomb.demo</groupId>
 		<artifactId>demo-jaxrs</artifactId>
-		<version>0.1.0-m1</version>
+		<version>0.1.0-m2-SNAPSHOT</version>
 	</parent>
 	<artifactId>jaxrs-client</artifactId>
 
@@ -58,7 +58,7 @@
 						<mixin>
 							<groupId>io.servicecomb.demo</groupId>
 							<artifactId>docker-run-config</artifactId>
-							<version>0.1.0-m1</version>
+							<version>0.1.0-m2-SNAPSHOT</version>
 						</mixin>
 					</mixins>
 				</configuration>
