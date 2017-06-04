@@ -18,7 +18,7 @@
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>io.servicecomb</groupId>
-    <artifactId>java-chassis-parent</artifactId>
+    <artifactId>java-chassis</artifactId>
     <version>0.1.0-m1-SNAPSHOT</version>
   </parent>
   <artifactId>sprint-boot-starter-parent</artifactId>
