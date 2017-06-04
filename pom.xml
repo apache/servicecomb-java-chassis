@@ -85,6 +85,7 @@
 	</dependencies>
 
 	<modules>
+		<module>parent</module>
 		<module>java-chassis-dependencies</module>
 
 		<module>foundation-ssl</module>
