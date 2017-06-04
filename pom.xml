@@ -21,13 +21,13 @@
 	<parent>
 		<groupId>io.servicecomb</groupId>
 		<artifactId>java-chassis-parent</artifactId>
-		<version>0.1.0-m1-SNAPSHOT</version>
+		<version>0.1.0-m1</version>
 		<relativePath>parent</relativePath>
 	</parent>
 	
 	<groupId>io.servicecomb</groupId>
 	<artifactId>java-chassis</artifactId>
-	<version>0.1.0-m1-SNAPSHOT</version>
+	<version>0.1.0-m1</version>
 	<packaging>pom</packaging>
 
 	<dependencyManagement>
@@ -35,7 +35,7 @@
 			<dependency>
 				<groupId>io.servicecomb</groupId>
 				<artifactId>java-chassis-dependencies</artifactId>
-				<version>0.1.0-m1-SNAPSHOT</version>
+				<version>0.1.0-m1</version>
 				<type>pom</type>
 				<scope>import</scope>
 			</dependency>
