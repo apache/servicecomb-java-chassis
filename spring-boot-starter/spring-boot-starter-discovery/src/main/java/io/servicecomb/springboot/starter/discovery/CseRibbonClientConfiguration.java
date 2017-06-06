@@ -22,9 +22,6 @@ import org.springframework.context.annotation.Configuration;
 import com.netflix.client.config.IClientConfig;
 import com.netflix.loadbalancer.ServerList;
 
-/**
- * Sukesh
- */
 @Configuration
 public class CseRibbonClientConfiguration {
 
