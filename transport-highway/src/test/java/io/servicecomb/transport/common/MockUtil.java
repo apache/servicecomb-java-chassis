@@ -22,6 +22,7 @@ import io.servicecomb.codec.protobuf.definition.OperationProtobuf;
 import io.servicecomb.codec.protobuf.definition.ProtobufManager;
 import io.servicecomb.core.Invocation;
 import io.servicecomb.core.definition.OperationMeta;
+import io.protostuff.runtime.ProtobufFeature;
 import io.servicecomb.transport.highway.HighwayCodec;
 import io.servicecomb.transport.highway.HighwayConfig;
 import io.servicecomb.transport.highway.message.RequestHeader;
@@ -67,7 +68,7 @@ public class MockUtil {
 
             @Mock
             public Invocation decodeRequest(RequestHeader header, OperationProtobuf operationProtobuf,
-                    Buffer bodyBuffer) throws Exception {
+                    Buffer bodyBuffer, ProtobufFeature protobufFeature) throws Exception {
                 if (decodeRequestSucc) {
                     return Mockito.mock(Invocation.class);
                 }

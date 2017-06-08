@@ -24,12 +24,12 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.JsonToken;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
-import io.servicecomb.codec.protobuf.codec.AbstractFieldCodec;
+import io.servicecomb.codec.protobuf.codec.AbstractFieldCodec.ReaderHelpData;
 
 public abstract class AbstractDeserializer extends JsonDeserializer<Object> {
-    protected Map<String, AbstractFieldCodec.ReaderHelpData> readerHelpDataMap;
+    protected Map<String, ReaderHelpData> readerHelpDataMap;
 
-    public AbstractDeserializer(Map<String, AbstractFieldCodec.ReaderHelpData> readerHelpDataMap) {
+    public AbstractDeserializer(Map<String, ReaderHelpData> readerHelpDataMap) {
         this.readerHelpDataMap = readerHelpDataMap;
     }
 
@@ -39,7 +39,7 @@ public abstract class AbstractDeserializer extends JsonDeserializer<Object> {
         for (String fieldName = p.nextFieldName(); fieldName != null; fieldName = p.nextFieldName()) {
             // p实际是ProtobufParser，其内部是可以直接取到proto field的，理论上可以根据id来索引
             // 可是field默认没暴露出来，所以，直接用name索引了
-            AbstractFieldCodec.ReaderHelpData helpData = readerHelpDataMap.get(fieldName);
+            ReaderHelpData helpData = readerHelpDataMap.get(fieldName);
             if (helpData == null) {
                 continue;
             }
@@ -61,5 +61,5 @@ public abstract class AbstractDeserializer extends JsonDeserializer<Object> {
 
     protected abstract Object createResult();
 
-    protected abstract Object updateResult(Object result, Object value, AbstractFieldCodec.ReaderHelpData helpData);
+    protected abstract Object updateResult(Object result, Object value, ReaderHelpData helpData);
 }

@@ -25,6 +25,8 @@ import io.servicecomb.common.rest.codec.RestClientRequest;
 import io.servicecomb.common.rest.codec.RestObjectMapper;
 import io.servicecomb.common.rest.codec.RestServerRequest;
 
+import io.swagger.models.parameters.Parameter;
+
 public class QueryProcessorCreator implements ParamValueProcessorCreator {
     public static final String PARAMTYPE = "query";
 
@@ -77,10 +79,10 @@ public class QueryProcessorCreator implements ParamValueProcessorCreator {
     }
 
     @Override
-    public ParamValueProcessor create(String paramValue, Type genericParamType) {
+    public ParamValueProcessor create(Parameter parameter, Type genericParamType) {
         JavaType targetType = TypeFactory.defaultInstance().constructType(genericParamType);
         Class<?> rawCls = targetType.getRawClass();
         boolean isArrayOrCollection = rawCls.isArray() || Collection.class.isAssignableFrom(rawCls);
-        return new QueryProcessor(paramValue, targetType, isArrayOrCollection);
+        return new QueryProcessor(parameter.getName(), targetType, isArrayOrCollection);
     }
 }

@@ -1,0 +1,12 @@
+﻿APPLICATION_ID: spring-boot-jaxrstest
+service_description:
+  name: jaxrsClient
+  version: 0.0.1
+cse:
+  service:
+    registry:
+      address: http://127.0.0.1:9980
+  handler:
+    chain:
+      Consumer:
+        default: bizkeeper-consumer,loadbalance

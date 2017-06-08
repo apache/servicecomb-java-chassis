@@ -32,6 +32,10 @@ import org.springframework.util.ReflectionUtils;
 import io.servicecomb.provider.springmvc.reference.CseClientHttpRequest;
 import io.servicecomb.provider.springmvc.reference.CseClientHttpResponse;
 
+/**
+ * 需要访问MessageBodyClientHttpResponseWrapper
+ * 这是一个package级别的类，只好放在特殊的包内了
+ */
 public class CseHttpMessageConverter implements HttpMessageConverter<Object> {
 
     private static final List<MediaType> ALL_MEDIA_TYPE = Arrays.asList(MediaType.ALL);

@@ -20,7 +20,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-import io.servicecomb.demo.server.User;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -30,6 +29,8 @@ import org.springframework.web.client.RestTemplate;
 
 import io.servicecomb.core.CseContext;
 import io.servicecomb.demo.compute.Person;
+import io.servicecomb.demo.server.User;
+import io.servicecomb.serviceregistry.RegistryUtils;
 
 public class CodeFirstRestTemplate {
     public void testCodeFirst(RestTemplate template, String microserviceName, String basePath) {
@@ -39,19 +40,19 @@ public class CodeFirstRestTemplate {
 
             String cseUrlPrefix = "cse://" + microserviceName + basePath;
 
+            testExtend(template, cseUrlPrefix);
+
+            testCodeFirstUserMap(template, cseUrlPrefix);
+            testCodeFirstTextPlain(template, cseUrlPrefix);
             testCodeFirstBytes(template, cseUrlPrefix);
             testCseResponse(microserviceName, template, cseUrlPrefix);
             testCodeFirstAddDate(template, cseUrlPrefix);
-            testExtend(template, cseUrlPrefix);
 
             testCodeFirstAdd(template, cseUrlPrefix);
             testCodeFirstAddString(template, cseUrlPrefix);
             testCodeFirstIsTrue(template, cseUrlPrefix);
             testCodeFirstSayHi2(template, cseUrlPrefix);
-            // grpc没处理非200的场景
-            if (!transport.equals("grpc") && !transport.equals("")) {
-                testCodeFirstSayHi(template, cseUrlPrefix);
-            }
+            testCodeFirstSayHi(template, cseUrlPrefix);
             testCodeFirstSaySomething(template, cseUrlPrefix);
             //            testCodeFirstRawJsonString(template, cseUrlPrefix);
             testCodeFirstSayHello(template, cseUrlPrefix);
@@ -59,9 +60,38 @@ public class CodeFirstRestTemplate {
         }
     }
 
+    private void testCodeFirstUserMap(RestTemplate template, String cseUrlPrefix) {
+        User user1 = new User();
+        user1.setNames(new String[] {"u1", "u2"});
+
+        User user2 = new User();
+        user2.setNames(new String[] {"u3", "u4"});
+
+        Map<String, User> userMap = new HashMap<>();
+        userMap.put("u1", user1);
+        userMap.put("u2", user2);
+
+        @SuppressWarnings("unchecked")
+        Map<String, User> result = template.postForObject(cseUrlPrefix + "testUserMap",
+                userMap,
+                Map.class);
+
+        TestMgr.check("u1", result.get("u1").getNames()[0]);
+        TestMgr.check("u2", result.get("u1").getNames()[1]);
+        TestMgr.check("u3", result.get("u2").getNames()[0]);
+        TestMgr.check("u4", result.get("u2").getNames()[1]);
+    }
+
+    private void testCodeFirstTextPlain(RestTemplate template, String cseUrlPrefix) {
+        String body = "a=1";
+        String result = template.postForObject(cseUrlPrefix + "textPlain",
+                body,
+                String.class);
+        TestMgr.check(body, result);
+    }
+
     private void testCodeFirstBytes(RestTemplate template, String cseUrlPrefix) {
-        Map<String, Object> body = new HashMap<>();
-        body.put("input", new byte[] {0, 1, 2});
+        byte[] body = new byte[] {0, 1, 2};
         byte[] result = template.postForObject(cseUrlPrefix + "bytes",
                 body,
                 byte[].class);
@@ -72,23 +102,20 @@ public class CodeFirstRestTemplate {
     }
 
     protected void checkStatusCode(String microserviceName, int expectStatusCode, HttpStatus httpStatus) {
-        // grpc未实现非200
-        String transport =
-            CseContext.getInstance().getConsumerProviderManager().getReferenceConfig(microserviceName).getTransport();
-        if (transport.equals("grpc") || transport.equals("")) {
-            return;
-        }
-
         TestMgr.check(expectStatusCode, httpStatus.value());
     }
 
-    private void testCseResponse(String microserviceName, RestTemplate template, String cseUrlPrefix) {
+    private void testCseResponse(String targetMicroserviceName, RestTemplate template,
+            String cseUrlPrefix) {
+        String srcMicroserviceName = RegistryUtils.getMicroservice().getServiceName();
+        String context = String.format("{x-cse-src-microservice=%s}", srcMicroserviceName);
+
         ResponseEntity<User> responseEntity =
             template.exchange(cseUrlPrefix + "cseResponse", HttpMethod.GET, null, User.class);
         TestMgr.check("User [name=nameA, age=100, index=0]", responseEntity.getBody());
-        TestMgr.check("h1v", responseEntity.getHeaders().getFirst("h1"));
-        TestMgr.check("h2v", responseEntity.getHeaders().getFirst("h2"));
-        checkStatusCode(microserviceName, 202, responseEntity.getStatusCode());
+        TestMgr.check("h1v " + context, responseEntity.getHeaders().getFirst("h1"));
+        TestMgr.check("h2v " + context, responseEntity.getHeaders().getFirst("h2"));
+        checkStatusCode(targetMicroserviceName, 202, responseEntity.getStatusCode());
     }
 
     private void testCodeFirstAddDate(RestTemplate template, String cseUrlPrefix) {

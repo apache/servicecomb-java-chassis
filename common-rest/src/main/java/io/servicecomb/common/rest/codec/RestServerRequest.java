@@ -18,8 +18,13 @@ package io.servicecomb.common.rest.codec;
 
 import java.util.Map;
 
+/**
+ * 各种类型的http request接口统一化
+ */
 public interface RestServerRequest {
     String getPath();
+
+    String getContentType();
 
     String getMethod();
 

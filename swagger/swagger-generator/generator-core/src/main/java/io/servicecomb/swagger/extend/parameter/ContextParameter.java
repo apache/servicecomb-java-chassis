@@ -18,5 +18,8 @@ package io.servicecomb.swagger.extend.parameter;
 
 import io.swagger.models.parameters.Parameter;
 
+/**
+ * http request这种不在swagger中体现出来的参数的包装
+ */
 public interface ContextParameter extends Parameter {
 }

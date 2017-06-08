@@ -21,10 +21,9 @@ import java.util.Map.Entry;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response.StatusType;
 
+import io.servicecomb.swagger.invocation.Response;
 import io.servicecomb.swagger.invocation.response.producer.ProducerResponseMapper;
 import org.springframework.stereotype.Component;
-
-import io.servicecomb.core.Response;
 
 @Component
 public class JaxrsProducerResponseMapper implements ProducerResponseMapper {

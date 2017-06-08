@@ -22,6 +22,10 @@ import java.util.List;
 import io.swagger.models.Xml;
 import io.swagger.models.properties.BaseIntegerProperty;
 
+/**
+ * copy from io.swagger.models.properties.IntegerProperty
+ * to avoid so many repeated code.
+ */
 public abstract class AbstractBaseIntegerProperty<T> extends BaseIntegerProperty {
     protected T defaultValue;
 

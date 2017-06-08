@@ -21,10 +21,9 @@ import java.util.Map.Entry;
 
 import javax.ws.rs.core.Response.ResponseBuilder;
 
+import io.servicecomb.swagger.invocation.Response;
 import io.servicecomb.swagger.invocation.response.consumer.ConsumerResponseMapper;
 import org.springframework.stereotype.Component;
-
-import io.servicecomb.core.Response;
 
 @Component
 public class JaxrsConsumerResponseMapper implements ConsumerResponseMapper {

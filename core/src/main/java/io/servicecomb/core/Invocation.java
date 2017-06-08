@@ -23,8 +23,9 @@ import java.util.concurrent.Executor;
 
 import io.servicecomb.core.definition.OperationMeta;
 import io.servicecomb.core.definition.SchemaMeta;
-import io.servicecomb.core.invocation.InvocationType;
 import io.servicecomb.core.provider.consumer.ReferenceConfig;
+import io.servicecomb.swagger.invocation.AsyncResponse;
+import io.servicecomb.swagger.invocation.InvocationType;
 import io.servicecomb.swagger.invocation.SwaggerInvocation;
 
 public class Invocation extends SwaggerInvocation {
@@ -160,4 +161,7 @@ public class Invocation extends SwaggerInvocation {
         return invocationType.name() + " " + getRealTransportName() + " "
                 + getOperationMeta().getMicroserviceQualifiedName();
     }
+    public String getMicroserviceQualifiedName() {
+        return operationMeta.getMicroserviceQualifiedName();
+    }    
 }

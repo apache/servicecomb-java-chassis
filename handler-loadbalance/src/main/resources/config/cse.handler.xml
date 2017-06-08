@@ -17,4 +17,6 @@
 <config>
 	<handler id="loadbalance"
 		class="io.servicecomb.loadbalance.LoadbalanceHandler" />
+	<handler id="grayrelease"
+		class="io.servicecomb.grayrelease.GrayReleaseHandler"/>			
 </config>

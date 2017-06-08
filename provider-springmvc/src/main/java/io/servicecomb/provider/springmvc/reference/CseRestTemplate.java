@@ -16,16 +16,31 @@
 
 package io.servicecomb.provider.springmvc.reference;
 
+import java.lang.reflect.Type;
 import java.util.Arrays;
 
 import org.springframework.web.client.CseHttpMessageConverter;
+import org.springframework.web.client.RequestCallback;
 import org.springframework.web.client.RestTemplate;
 
 public class CseRestTemplate extends RestTemplate {
-
     public CseRestTemplate() {
         setMessageConverters(Arrays.asList(new CseHttpMessageConverter()));
         setRequestFactory(new CseClientHttpRequestFactory());
         setUriTemplateHandler(new CseUriTemplateHandler());
+    }
+
+    @Override
+    protected <T> RequestCallback httpEntityCallback(Object requestBody) {
+        RequestCallback callback = super.httpEntityCallback(requestBody);
+        CseRequestCallback cseCallback = new CseRequestCallback(requestBody, callback);
+        return cseCallback;
+    }
+
+    @Override
+    protected <T> RequestCallback httpEntityCallback(Object requestBody, Type responseType) {
+        RequestCallback callback = super.httpEntityCallback(requestBody, responseType);
+        CseRequestCallback cseCallback = new CseRequestCallback(requestBody, callback);
+        return cseCallback;
     }
 }

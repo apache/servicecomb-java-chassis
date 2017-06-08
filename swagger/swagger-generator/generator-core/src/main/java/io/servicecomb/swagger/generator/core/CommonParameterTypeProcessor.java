@@ -16,6 +16,9 @@
 
 package io.servicecomb.swagger.generator.core;
 
+/**
+ * 通过spi自动注入到所有的GeneratorContext实例中去
+ */
 public interface CommonParameterTypeProcessor extends ParameterTypeProcessor {
     Class<?> getParameterType();
 }

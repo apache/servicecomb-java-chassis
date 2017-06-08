@@ -17,7 +17,7 @@ package io.servicecomb.qps;
 
 import javax.ws.rs.core.Response.StatusType;
 
-import io.servicecomb.core.context.HttpStatus;
+import io.servicecomb.swagger.invocation.context.HttpStatus;
 
 public final class QpsConst {
     public static final StatusType TOO_MANY_REQUESTS_STATUS = new HttpStatus(429, "Too Many Requests");

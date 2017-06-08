@@ -21,9 +21,10 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.springframework.util.StringUtils;
+
 import io.servicecomb.swagger.generator.core.ClassAnnotationProcessor;
 import io.servicecomb.swagger.generator.core.SwaggerGenerator;
-
 import io.swagger.annotations.SwaggerDefinition;
 import io.swagger.models.Contact;
 import io.swagger.models.ExternalDocs;
@@ -132,14 +133,26 @@ public class SwaggerDefinitionProcessor implements ClassAnnotationProcessor {
     }
 
     private void convertProduces(SwaggerDefinition definitionAnnotation, Swagger swagger) {
-        if (definitionAnnotation.produces() != null) {
-            swagger.setProduces(Arrays.asList(definitionAnnotation.produces()));
+        String[] produces = definitionAnnotation.produces();
+        if (produces == null) {
+            return;
+        }
+        for (String produce : produces) {
+            if (!StringUtils.isEmpty(produce)) {
+                swagger.addProduces(produce);
+            }
         }
     }
 
     private void convertConsumes(SwaggerDefinition definitionAnnotation, Swagger swagger) {
-        if (definitionAnnotation.consumes() != null) {
-            swagger.setConsumes(Arrays.asList(definitionAnnotation.consumes()));
+        String[] consumes = definitionAnnotation.consumes();
+        if (consumes == null) {
+            return;
+        }
+        for (String consume : consumes) {
+            if (!StringUtils.isEmpty(consume)) {
+                swagger.addConsumes(consume);
+            }
         }
     }
 }

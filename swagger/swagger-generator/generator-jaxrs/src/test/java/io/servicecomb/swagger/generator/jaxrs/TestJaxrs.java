@@ -22,9 +22,18 @@ import org.junit.Test;
 import io.servicecomb.swagger.generator.core.CompositeSwaggerGeneratorContext;
 import io.servicecomb.swagger.generator.core.SwaggerGeneratorContext;
 import io.servicecomb.swagger.generator.core.unittest.UnitTestSwaggerUtils;
+import io.servicecomb.swagger.generator.jaxrs.JaxrsSwaggerGeneratorContext;
 
 public class TestJaxrs {
     SwaggerGeneratorContext context = new JaxrsSwaggerGeneratorContext();
+
+    @Test
+    public void testMultiDefaultPath() {
+        UnitTestSwaggerUtils.testException(
+                "Only allowed one default path. io.servicecomb.swagger.generator.jaxrs.MultiDefaultPath:p2",
+                context,
+                MultiDefaultPath.class);
+    }
 
     @Test
     public void testResponse() throws Exception {
@@ -33,7 +42,9 @@ public class TestJaxrs {
 
     @Test
     public void testInvalidResponse() throws Exception {
-        UnitTestSwaggerUtils.testException("Use ApiOperation or ApiResponses to declare response type",
+        UnitTestSwaggerUtils.testException(
+                "generate operation swagger failed, io.servicecomb.swagger.generator.jaxrs.Echo:invalidResponse",
+                "Use ApiOperation or ApiResponses to declare response type",
                 context,
                 Echo.class,
                 "invalidResponse");
@@ -57,6 +68,7 @@ public class TestJaxrs {
     @Test
     public void testQueryComplex() throws Exception {
         UnitTestSwaggerUtils.testException(
+                "generate operation swagger failed, io.servicecomb.swagger.generator.jaxrs.Echo:queryComplex",
                 "not allow complex type for query parameter, method=io.servicecomb.swagger.generator.jaxrs.Echo:queryComplex, paramIdx=0, type=java.util.List<io.servicecomb.swagger.generator.jaxrs.User>",
                 context,
                 Echo.class,
@@ -71,6 +83,15 @@ public class TestJaxrs {
     @Test
     public void testEmptyPath() throws Exception {
         UnitTestSwaggerUtils.testSwagger("schemas/emptyPath.yaml", context, Echo.class, "emptyPath");
+    }
+
+    @Test
+    public void testClassMethodNoPath() throws Exception {
+        UnitTestSwaggerUtils.testException(
+                "generate operation swagger failed, io.servicecomb.swagger.generator.jaxrs.ClassMethodNoPath:p1",
+                "Path must not both be empty in class and method",
+                context,
+                ClassMethodNoPath.class);
     }
 
     @Test

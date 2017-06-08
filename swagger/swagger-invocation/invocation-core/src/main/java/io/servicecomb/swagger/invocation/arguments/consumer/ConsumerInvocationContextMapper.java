@@ -17,8 +17,8 @@
 package io.servicecomb.swagger.invocation.arguments.consumer;
 
 import io.servicecomb.swagger.invocation.SwaggerInvocation;
-import io.servicecomb.swagger.invocation.SwaggerInvocationContext;
 import io.servicecomb.swagger.invocation.arguments.ArgumentMapper;
+import io.servicecomb.swagger.invocation.context.InvocationContext;
 
 public class ConsumerInvocationContextMapper implements ArgumentMapper {
     private int consumerIdx;
@@ -29,7 +29,7 @@ public class ConsumerInvocationContextMapper implements ArgumentMapper {
 
     @Override
     public void mapArgument(SwaggerInvocation invocation, Object[] consumerArguments) {
-        SwaggerInvocationContext context = (SwaggerInvocationContext) consumerArguments[consumerIdx];
+        InvocationContext context = (InvocationContext) consumerArguments[consumerIdx];
         invocation.addContext(context.getContext());
     }
 }

@@ -16,16 +16,20 @@
 
 package io.servicecomb.demo.springmvc.client;
 
-import io.servicecomb.demo.CodeFirstRestTemplate;
-import io.servicecomb.demo.TestMgr;
-import io.servicecomb.demo.server.User;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
-import io.servicecomb.core.Response;
+import io.servicecomb.demo.CodeFirstRestTemplate;
+import io.servicecomb.demo.TestMgr;
 import io.servicecomb.provider.pojo.RpcReference;
+import io.servicecomb.provider.springmvc.reference.CseHttpEntity;
+import io.servicecomb.swagger.invocation.Response;
 
 @Component
 public class CodeFirstRestTemplateSpringmvc extends CodeFirstRestTemplate {
@@ -37,30 +41,41 @@ public class CodeFirstRestTemplateSpringmvc extends CodeFirstRestTemplate {
     protected void testExtend(RestTemplate template, String cseUrlPrefix) {
         super.testExtend(template, cseUrlPrefix);
 
-        testIntf();
         testResponseEntity("springmvc", template, cseUrlPrefix);
+        testIntf();
     }
 
     private void testIntf() {
-        ResponseEntity<User> responseEntity = intf.responseEntity();
-        TestMgr.check("User [name=nameA, age=100, index=0]", responseEntity.getBody());
-        TestMgr.check("h1v", responseEntity.getHeaders().getFirst("h1"));
-        TestMgr.check("h2v", responseEntity.getHeaders().getFirst("h2"));
+        Date date = new Date();
+
+        ResponseEntity<Date> responseEntity = intf.responseEntity(date);
+        TestMgr.check(date, responseEntity.getBody());
+        TestMgr.check("h1v {x-cse-src-microservice=springmvcClient}", responseEntity.getHeaders().getFirst("h1"));
+        TestMgr.check("h2v {x-cse-src-microservice=springmvcClient}", responseEntity.getHeaders().getFirst("h2"));
 
         checkStatusCode("springmvc", 202, responseEntity.getStatusCode());
 
         Response cseResponse = intf.cseResponse();
         TestMgr.check("User [name=nameA, age=100, index=0]", cseResponse.getResult());
-        TestMgr.check("h1v", cseResponse.getHeaders().getFirst("h1"));
-        TestMgr.check("h2v", cseResponse.getHeaders().getFirst("h2"));
+        TestMgr.check("h1v {x-cse-src-microservice=springmvcClient}", cseResponse.getHeaders().getFirst("h1"));
+        TestMgr.check("h2v {x-cse-src-microservice=springmvcClient}", cseResponse.getHeaders().getFirst("h2"));
     }
 
     private void testResponseEntity(String microserviceName, RestTemplate template, String cseUrlPrefix) {
-        ResponseEntity<User> responseEntity =
-            template.exchange(cseUrlPrefix + "responseEntity", HttpMethod.GET, null, User.class);
-        TestMgr.check("User [name=nameA, age=100, index=0]", responseEntity.getBody());
-        TestMgr.check("h1v", responseEntity.getHeaders().getFirst("h1"));
-        TestMgr.check("h2v", responseEntity.getHeaders().getFirst("h2"));
+        Map<String, Object> body = new HashMap<>();
+        Date date = new Date();
+        body.put("date", date);
+
+        CseHttpEntity<Map<String, Object>> httpEntity = new CseHttpEntity<>(body);
+        httpEntity.addContext("contextKey", "contextValue");
+
+        ResponseEntity<Date> responseEntity =
+            template.exchange(cseUrlPrefix + "responseEntity", HttpMethod.POST, httpEntity, Date.class);
+        TestMgr.check(date, responseEntity.getBody());
+        TestMgr.check("h1v {contextKey=contextValue, x-cse-src-microservice=springmvcClient}",
+                responseEntity.getHeaders().getFirst("h1"));
+        TestMgr.check("h2v {contextKey=contextValue, x-cse-src-microservice=springmvcClient}",
+                responseEntity.getHeaders().getFirst("h2"));
         checkStatusCode(microserviceName, 202, responseEntity.getStatusCode());
     }
 }

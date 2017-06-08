@@ -28,7 +28,6 @@
 	
 	<artifactId>java-chassis-dependencies</artifactId>
 	<packaging>pom</packaging>
-	<version>0.1.0-m2-SNAPSHOT</version>
 
 	<properties>
 		<jackson.version>2.8.1</jackson.version>
@@ -1070,11 +1069,6 @@
 			</dependency>
 			<dependency>
 				<groupId>io.servicecomb</groupId>
-				<artifactId>transport-grpc</artifactId>
-				<version>0.1.0-m2-SNAPSHOT</version>
-			</dependency>
-			<dependency>
-				<groupId>io.servicecomb</groupId>
 				<artifactId>handler-bizkeeper</artifactId>
 				<version>0.1.0-m2-SNAPSHOT</version>
 			</dependency>
@@ -1204,7 +1198,6 @@
 					<artifactId>maven-compiler-plugin</artifactId>
 					<version>3.1</version>
 					<configuration>
-						<compilerArgument>-parameters</compilerArgument>
 						<source>1.8</source>
 						<target>1.8</target>
 					</configuration>

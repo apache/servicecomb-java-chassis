@@ -32,6 +32,8 @@ import org.mockito.Mockito;
 
 import io.servicecomb.core.definition.SchemaMeta;
 import io.servicecomb.foundation.common.RegisterManager;
+import io.servicecomb.swagger.invocation.AsyncResponse;
+import io.servicecomb.swagger.invocation.Response;
 
 public class TestConsumer {
 

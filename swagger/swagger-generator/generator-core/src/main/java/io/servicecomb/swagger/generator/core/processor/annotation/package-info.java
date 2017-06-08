@@ -14,4 +14,7 @@
  * limitations under the License.
  */
 
+/**
+ * swagger竟然没提供从annotation生成swagger对象的功能，只好自己做了
+ */
 package io.servicecomb.swagger.generator.core.processor.annotation;

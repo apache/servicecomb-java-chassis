@@ -19,10 +19,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import io.servicecomb.swagger.generator.core.processor.annotation.AnnotationUtils;
-
 import io.swagger.annotations.ResponseHeader;
 import io.swagger.models.Response;
 
+/**
+ * Response的数据源太多，单单是标注都有N个
+ * 所以将数据提取出来，统一处理
+ */
 public class ResponseConfig extends ResponseConfigBase {
     private int code;
 

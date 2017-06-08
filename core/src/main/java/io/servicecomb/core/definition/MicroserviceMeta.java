@@ -16,7 +16,9 @@
 
 package io.servicecomb.core.definition;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -41,7 +43,11 @@ public class MicroserviceMeta extends CommonService<OperationMeta> {
     private RegisterManager<String, SchemaMeta> idSchemaMetaMgr;
 
     // key为schema interface
-    private RegisterManager<Class<?>, SchemaMeta> intfSchemaMetaMgr;
+    // 只有一个interface对应一个schemaMeta时，才允许根据接口查询schema
+    // 否则直接抛异常，只能显式地指定schemaId来使用
+    private Map<Class<?>, List<SchemaMeta>> intfSchemaMetaMgr = new ConcurrentHashMap<>();
+
+    private final Object intfSchemaLock = new Object();
 
     private Map<String, Object> extData = new ConcurrentHashMap<>();
 
@@ -50,15 +56,27 @@ public class MicroserviceMeta extends CommonService<OperationMeta> {
         parseMicroserviceName(microserviceName);
         createOperationMgr("Operation meta mgr for microservice " + microserviceName);
         idSchemaMetaMgr = new RegisterManager<>("Schema meta id mgr for microservice " + microserviceName);
-        intfSchemaMetaMgr = new RegisterManager<>("Schema meta interface mgr for microservice " + microserviceName);
     }
 
     public void regSchemaMeta(SchemaMeta schemaMeta) {
         idSchemaMetaMgr.register(schemaMeta.getSchemaId(), schemaMeta);
-        intfSchemaMetaMgr.register(schemaMeta.getSwaggerIntf(), schemaMeta);
+        regSchemaAndInterface(schemaMeta);
 
         for (OperationMeta operationMeta : schemaMeta.getOperations()) {
             regOperation(operationMeta.getSchemaQualifiedName(), operationMeta);
+        }
+    }
+
+    private void regSchemaAndInterface(SchemaMeta schemaMeta) {
+        Class<?> intf = schemaMeta.getSwaggerIntf();
+        synchronized (intfSchemaLock) {
+            List<SchemaMeta> schemaList = intfSchemaMetaMgr.get(intf);
+            if (schemaList == null) {
+                schemaList = new ArrayList<>();
+                intfSchemaMetaMgr.put(intf, schemaList);
+            }
+
+            schemaList.add(schemaMeta);
         }
     }
 
@@ -71,11 +89,32 @@ public class MicroserviceMeta extends CommonService<OperationMeta> {
     }
 
     public SchemaMeta ensureFindSchemaMeta(Class<?> schemaIntf) {
-        return intfSchemaMetaMgr.ensureFindValue(schemaIntf);
+        SchemaMeta schemaMeta = findSchemaMeta(schemaIntf);
+        if (schemaMeta == null) {
+            String msg =
+                String.format("No schema interface is %s.", schemaIntf.getName());
+            throw new Error(msg);
+        }
+
+        return schemaMeta;
     }
 
     public SchemaMeta findSchemaMeta(Class<?> schemaIntf) {
-        return intfSchemaMetaMgr.findValue(schemaIntf);
+        List<SchemaMeta> schemaList = intfSchemaMetaMgr.get(schemaIntf);
+        if (schemaList == null) {
+            return null;
+        }
+
+        if (schemaList.size() > 1) {
+            String msg =
+                String.format("More than one schema interface is %s, please use schemaId to choose a schema.",
+                        schemaIntf.getName());
+            throw new Error(msg);
+        }
+
+        synchronized (intfSchemaLock) {
+            return schemaList.get(0);
+        }
     }
 
     public Collection<SchemaMeta> getSchemaMetas() {

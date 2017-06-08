@@ -33,8 +33,8 @@ import io.servicecomb.common.rest.codec.RestServerRequestInternal;
 import io.servicecomb.common.rest.codec.produce.ProduceProcessor;
 import io.servicecomb.common.rest.definition.RestOperationMeta;
 import io.servicecomb.core.Invocation;
-import io.servicecomb.core.Response;
 import io.servicecomb.core.definition.OperationMeta;
+import io.servicecomb.swagger.invocation.Response;
 
 public class TestServletRestServer {
 

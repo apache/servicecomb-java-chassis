@@ -19,6 +19,10 @@ package io.servicecomb.foundation.common;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicInteger;
 
+/**
+ * 已命名线程工厂.
+ * 获取新的名字有固定前缀的线程工厂.
+ */
 public class NamedThreadFactory implements ThreadFactory {
 
     private final AtomicInteger threadNumber = new AtomicInteger();
@@ -33,6 +37,9 @@ public class NamedThreadFactory implements ThreadFactory {
         this.prefix = prefix;
     }
 
+    /**
+     * 获取新的名字以prefix为前缀的线程
+     */
     @Override
     public Thread newThread(Runnable r) {
         return new Thread(r, prefix + "-" + threadNumber.getAndIncrement());

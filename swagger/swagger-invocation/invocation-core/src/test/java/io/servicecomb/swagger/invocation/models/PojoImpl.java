@@ -16,13 +16,14 @@
 
 package io.servicecomb.swagger.invocation.models;
 
+import java.util.Arrays;
 import java.util.List;
 
-import io.servicecomb.swagger.invocation.SwaggerInvocationContext;
+import io.servicecomb.swagger.invocation.context.InvocationContext;
 
 public class PojoImpl {
-    public int testTwoSimple(int a, int b) {
-        return a - b;
+    public int testSimple(int a, int b, int c) {
+        return a - b - c;
     }
 
     public Person testObject(Person user) {
@@ -34,16 +35,44 @@ public class PojoImpl {
         return prefix + " " + user.getName();
     }
 
-    public String testContext(SwaggerInvocationContext context, String name) {
+    public String testContext(InvocationContext context, String name) {
         context.addContext("name", name);
         return name + " sayhi";
     }
 
-    public String testList(List<String> s) {
-        String result = "";
-        for (String x : s) {
-            result += x;
-        }
-        return result;
+    public byte[] testBytes(byte[] bytes) {
+        return bytes;
+    }
+
+    public String[] testArrayArray(String[] s) {
+        return s;
+    }
+
+    public List<String> testArrayList(String[] s) {
+        return Arrays.asList(s);
+    }
+
+    public String[] testListArray(List<String> s) {
+        return s.toArray(new String[s.size()]);
+    }
+
+    public List<String> testListList(List<String> s) {
+        return s;
+    }
+
+    public Person[] testObjectArrayArray(Person[] s) {
+        return s;
+    }
+
+    public List<Person> testObjectArrayList(Person[] s) {
+        return Arrays.asList(s);
+    }
+
+    public Person[] testObjectListArray(List<Person> s) {
+        return s.toArray(new Person[s.size()]);
+    }
+
+    public List<Person> testObjectListList(List<Person> s) {
+        return s;
     }
 }

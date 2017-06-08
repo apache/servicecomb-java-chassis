@@ -17,24 +17,25 @@ package io.servicecomb.swagger.generator.core;
 
 import java.lang.reflect.Method;
 
-import io.servicecomb.swagger.generator.core.unittest.UnitTestSwaggerUtils;
 import org.junit.Assert;
 import org.junit.Test;
 
-import io.servicecomb.swagger.generator.core.schema.ArrayType;
-import io.servicecomb.swagger.generator.core.utils.ClassUtils;
 import io.servicecomb.foundation.common.utils.ReflectUtils;
-
+import io.servicecomb.swagger.generator.core.schema.ArrayType;
+import io.servicecomb.swagger.generator.core.unittest.UnitTestSwaggerUtils;
+import io.servicecomb.swagger.generator.core.utils.ClassUtils;
 import javassist.CtClass;
 import javassist.CtMethod;
 
 public class TestArrayType {
     @Test
-    public void test() {
+    public void test() throws Exception {
         SwaggerGenerator generator = UnitTestSwaggerUtils.generateSwagger(ArrayType.class);
         Class<?> cls = ClassUtils.getOrCreateInterface(generator);
         Method method = ReflectUtils.findMethod(cls, "testBytes");
 
+        Class<?> param = (Class<?>) method.getParameters()[0].getParameterizedType();
+        Assert.assertEquals(byte[].class, param.getField("value").getType());
         Assert.assertEquals(byte[].class, method.getReturnType());
     }
 

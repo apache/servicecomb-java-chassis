@@ -25,6 +25,9 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+/**
+ * 无逻辑append xml
+ */
 public class XmlLoader extends AbstractLoader {
 
     private String suffix;

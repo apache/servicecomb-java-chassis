@@ -38,6 +38,12 @@
 		<dependency>
 			<groupId>io.servicecomb</groupId>
 			<artifactId>spring-boot-starter-provider</artifactId>
+			<exclusions>
+				<exclusion>
+					<groupId>io.servicecomb</groupId>
+					<artifactId>transport-rest-vertx</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>

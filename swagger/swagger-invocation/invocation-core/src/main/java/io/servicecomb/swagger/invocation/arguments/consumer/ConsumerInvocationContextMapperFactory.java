@@ -16,12 +16,12 @@
 
 package io.servicecomb.swagger.invocation.arguments.consumer;
 
-import io.servicecomb.swagger.extend.parameter.SwaggerInvocationContextParameter;
-import io.servicecomb.swagger.invocation.arguments.ArgumentMapper;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
+import io.servicecomb.swagger.invocation.arguments.ArgumentMapper;
 import io.servicecomb.swagger.invocation.arguments.ContextArgumentMapperFactory;
+import io.servicecomb.swagger.invocation.context.InvocationContext;
 
 @Component
 @Qualifier("consumer")
@@ -29,7 +29,7 @@ public class ConsumerInvocationContextMapperFactory implements ContextArgumentMa
 
     @Override
     public Class<?> getContextClass() {
-        return SwaggerInvocationContextParameter.class;
+        return InvocationContext.class;
     }
 
     @Override

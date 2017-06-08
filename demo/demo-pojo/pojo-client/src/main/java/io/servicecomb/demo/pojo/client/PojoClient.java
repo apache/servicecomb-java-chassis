@@ -27,7 +27,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import io.servicecomb.core.CseContext;
-import io.servicecomb.core.exception.InvocationException;
 import io.servicecomb.core.provider.consumer.InvokerUtils;
 import io.servicecomb.demo.DemoConst;
 import io.servicecomb.demo.TestMgr;
@@ -37,9 +36,10 @@ import io.servicecomb.demo.server.User;
 import io.servicecomb.demo.smartcare.Application;
 import io.servicecomb.demo.smartcare.Group;
 import io.servicecomb.demo.smartcare.SmartCare;
-import io.servicecomb.provider.pojo.RpcReference;
 import io.servicecomb.foundation.common.utils.BeanUtils;
 import io.servicecomb.foundation.common.utils.Log4jUtils;
+import io.servicecomb.provider.pojo.RpcReference;
+import io.servicecomb.swagger.invocation.exception.InvocationException;
 
 @Component
 public class PojoClient {
@@ -104,11 +104,7 @@ public class PojoClient {
             testSplitParam(test);
             testInputArray(test);
 
-            // 异常，当前只有grpc不支持
-            if (!transport.equals("grpc") && !transport.equals("")) {
-                testException(test);
-
-            }
+            testException(test);
 
             testSmartCare(smartcare);
 

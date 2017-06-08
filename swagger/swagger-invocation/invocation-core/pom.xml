@@ -30,6 +30,11 @@
 			<artifactId>swagger-generator-core</artifactId>
 		</dependency>
 		<dependency>
+			<groupId>io.servicecomb</groupId>
+			<artifactId>swagger-generator-jaxrs</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-log4j12</artifactId>
 			<scope>test</scope>

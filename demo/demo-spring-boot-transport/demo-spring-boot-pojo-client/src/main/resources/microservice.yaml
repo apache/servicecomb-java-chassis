@@ -1,4 +1,4 @@
-APPLICATION_ID: pojotest
+APPLICATION_ID: spring-boot-pojotest
 service_description:
   name: pojoClient
   version: 0.0.1
@@ -9,6 +9,7 @@ cse:
   handler:
     chain:
       Consumer:
+        #default: loadbalance
         default: bizkeeper-consumer,loadbalance
   isolation:
     Consumer:

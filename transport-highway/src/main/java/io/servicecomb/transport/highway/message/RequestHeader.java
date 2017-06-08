@@ -23,6 +23,7 @@ import io.servicecomb.codec.protobuf.utils.WrapSchema;
 
 import io.protostuff.ProtobufOutput;
 import io.protostuff.Tag;
+import io.protostuff.runtime.ProtobufFeature;
 import io.vertx.core.buffer.Buffer;
 
 /**
@@ -36,8 +37,8 @@ public class RequestHeader {
         return requestHeaderSchema;
     }
 
-    public static RequestHeader readObject(Buffer bodyBuffer) throws Exception {
-        return requestHeaderSchema.readObject(bodyBuffer);
+    public static RequestHeader readObject(Buffer bodyBuffer, ProtobufFeature protobufFeature) throws Exception {
+        return requestHeaderSchema.readObject(bodyBuffer, protobufFeature);
     }
 
     //CHECKSTYLE:OFF: magicnumber

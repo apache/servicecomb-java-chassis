@@ -16,8 +16,8 @@
 
 package io.servicecomb.core.handler.impl;
 
-import io.servicecomb.core.AsyncResponse;
 import io.servicecomb.core.Invocation;
+import io.servicecomb.swagger.invocation.AsyncResponse;
 
 public class TransportClientHandler extends AbstractHandler {
     public static final TransportClientHandler INSTANCE = new TransportClientHandler();

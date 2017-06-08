@@ -18,26 +18,25 @@ package io.servicecomb.transport.highway;
 
 import java.util.concurrent.Executor;
 
-import io.servicecomb.transport.highway.message.RequestHeader;
 import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.Mockito;
 
+import io.netty.buffer.ByteBuf;
+import io.protostuff.runtime.ProtobufCompatibleUtils;
 import io.servicecomb.codec.protobuf.definition.OperationProtobuf;
 import io.servicecomb.codec.protobuf.definition.ProtobufManager;
-import io.servicecomb.core.AsyncResponse;
 import io.servicecomb.core.Endpoint;
 import io.servicecomb.core.Invocation;
 import io.servicecomb.core.definition.OperationMeta;
-import io.servicecomb.transport.highway.message.LoginRequest;
 import io.servicecomb.foundation.vertx.VertxUtils;
 import io.servicecomb.foundation.vertx.client.ClientPoolManager;
 import io.servicecomb.foundation.vertx.client.tcp.TcpClientConfig;
-import io.servicecomb.foundation.vertx.client.tcp.TcpClientPool;
 import io.servicecomb.foundation.vertx.server.TcpParser;
 import io.servicecomb.foundation.vertx.tcp.TcpOutputStream;
-
-import io.netty.buffer.ByteBuf;
+import io.servicecomb.swagger.invocation.AsyncResponse;
+import io.servicecomb.transport.highway.message.LoginRequest;
+import io.servicecomb.transport.highway.message.RequestHeader;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.DeploymentOptions;
 import io.vertx.core.Vertx;
@@ -108,8 +107,11 @@ public class TestHighwayClient {
 
     @Test
     public void testCreateLogin() throws Exception {
-        HighwayClient client = new HighwayClient(false);
-        TcpOutputStream os = client.createLogin();
+        ProtobufCompatibleUtils.init();
+
+        HighwayClientConnection connection =
+            new HighwayClientConnection(null, null, "highway://127.0.0.1:7890", null);
+        TcpOutputStream os = connection.createLogin();
         ByteBuf buf = os.getBuffer().getByteBuf();
 
         byte[] magic = new byte[TcpParser.TCP_MAGIC.length];
@@ -126,7 +128,7 @@ public class TestHighwayClient {
         start += headerLen;
         Buffer bodyBuffer = os.getBuffer().slice(start, end);
 
-        RequestHeader header = RequestHeader.readObject(headerBuffer);
+        RequestHeader header = RequestHeader.readObject(headerBuffer, connection.getProtobufFeature());
         Assert.assertEquals(MsgType.LOGIN, header.getMsgType());
 
         LoginRequest login = LoginRequest.readObject(bodyBuffer);
@@ -135,11 +137,11 @@ public class TestHighwayClient {
 
     private void mockUps() {
 
-        new MockUp<ClientPoolManager<TcpClientPool>>() {
+        new MockUp<ClientPoolManager<HighwayClientConnectionPool>>() {
 
             @Mock
-            public TcpClientPool findThreadBindClientPool() {
-                return Mockito.mock(TcpClientPool.class);
+            public HighwayClientConnectionPool findThreadBindClientPool() {
+                return Mockito.mock(HighwayClientConnectionPool.class);
             }
 
         };

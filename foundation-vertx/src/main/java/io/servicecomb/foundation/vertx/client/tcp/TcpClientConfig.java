@@ -23,8 +23,6 @@ public class TcpClientConfig extends NetClientOptions {
 
     private long msRequestTimeout;
 
-    private TcpLogin tcpLogin;
-
     public TcpClientConfig() {
         // 30 second
         msRequestTimeout = DEFAULT_TIMEOUT;
@@ -36,13 +34,5 @@ public class TcpClientConfig extends NetClientOptions {
 
     public void setRequestTimeoutMillis(long msTimeout) {
         this.msRequestTimeout = msTimeout;
-    }
-
-    public TcpLogin getTcpLogin() {
-        return tcpLogin;
-    }
-
-    public void setTcpLogin(TcpLogin tcpLogin) {
-        this.tcpLogin = tcpLogin;
     }
 }

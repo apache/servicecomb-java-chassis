@@ -24,6 +24,8 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.context.ApplicationContext;
 
+import io.servicecomb.core.provider.CseBeanPostProcessor.ConsumerFieldProcessor;
+import io.servicecomb.core.provider.CseBeanPostProcessor.ProviderProcessor;
 import mockit.Deencapsulation;
 import mockit.Injectable;
 
@@ -48,10 +50,10 @@ public class TestCseBeanPostProcessor {
     public void testCseBeanPostProcessor(@Injectable ApplicationContext context) {
         CseBeanPostProcessor processor = new CseBeanPostProcessor();
         processor.setApplicationContext(context);
-        List<CseBeanPostProcessor.ProviderProcessor> providerProcessor = new ArrayList<>();
+        List<ProviderProcessor> providerProcessor = new ArrayList<>();
         providerProcessor.add(new MyProviderProcessor());
 
-        List<CseBeanPostProcessor.ConsumerFieldProcessor> consumerProcessor = new ArrayList<>();
+        List<ConsumerFieldProcessor> consumerProcessor = new ArrayList<>();
         consumerProcessor.add(new MyConsumerFieldProcessor());
 
         Deencapsulation.setField(processor, "providerProcessorList", providerProcessor);
@@ -65,9 +67,9 @@ public class TestCseBeanPostProcessor {
     public void testCseBeanPostProcessorListNull(@Injectable ApplicationContext context) {
         CseBeanPostProcessor processor = new CseBeanPostProcessor();
         processor.setApplicationContext(context);
-        List<CseBeanPostProcessor.ProviderProcessor> providerProcessor = new ArrayList<>();
+        List<ProviderProcessor> providerProcessor = new ArrayList<>();
 
-        List<CseBeanPostProcessor.ConsumerFieldProcessor> consumerProcessor = new ArrayList<>();
+        List<ConsumerFieldProcessor> consumerProcessor = new ArrayList<>();
 
         Deencapsulation.setField(processor, "providerProcessorList", providerProcessor);
         Deencapsulation.setField(processor, "consumerProcessorList", consumerProcessor);

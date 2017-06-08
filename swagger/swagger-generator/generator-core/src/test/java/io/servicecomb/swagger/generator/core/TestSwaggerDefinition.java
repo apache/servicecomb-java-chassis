@@ -19,10 +19,14 @@ package io.servicecomb.swagger.generator.core;
 import java.util.Arrays;
 import java.util.Map;
 
-import io.servicecomb.swagger.generator.core.unittest.SwaggerGeneratorForTest;
 import org.junit.Assert;
 import org.junit.Test;
 
+import io.servicecomb.swagger.generator.core.SwaggerConst;
+import io.servicecomb.swagger.generator.core.SwaggerGenerator;
+import io.servicecomb.swagger.generator.core.SwaggerGeneratorContext;
+import io.servicecomb.swagger.generator.core.unittest.SwaggerGeneratorForTest;
+import io.servicecomb.swagger.generator.pojo.PojoSwaggerGeneratorContext;
 import io.swagger.annotations.Contact;
 import io.swagger.annotations.Extension;
 import io.swagger.annotations.ExtensionProperty;
@@ -34,7 +38,7 @@ import io.swagger.annotations.Tag;
 import io.swagger.models.Swagger;
 
 public class TestSwaggerDefinition {
-    SwaggerGeneratorContext context = new DefaultSwaggerGeneratorContext();
+    SwaggerGeneratorContext context = new PojoSwaggerGeneratorContext();
 
     @SwaggerDefinition(
             basePath = "base",

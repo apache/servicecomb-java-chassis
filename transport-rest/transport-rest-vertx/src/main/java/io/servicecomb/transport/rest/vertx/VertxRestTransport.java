@@ -18,7 +18,6 @@ package io.servicecomb.transport.rest.vertx;
 
 import org.springframework.stereotype.Component;
 
-import io.servicecomb.core.AsyncResponse;
 import io.servicecomb.core.Const;
 import io.servicecomb.core.Invocation;
 import io.servicecomb.core.transport.AbstractTransport;
@@ -27,7 +26,7 @@ import io.servicecomb.transport.rest.client.RestTransportClientManager;
 import io.servicecomb.foundation.common.net.URIEndpointObject;
 import io.servicecomb.foundation.vertx.SimpleJsonObject;
 import io.servicecomb.foundation.vertx.VertxUtils;
-
+import io.servicecomb.swagger.invocation.AsyncResponse;
 import io.vertx.core.DeploymentOptions;
 
 @Component

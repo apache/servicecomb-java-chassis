@@ -1,4 +1,4 @@
-﻿APPLICATION_ID: pojotest
+﻿APPLICATION_ID: spring-boot-pojotest
 service_description:
   name: pojo
   version: 0.0.1
@@ -6,7 +6,5 @@ cse:
   service:
     registry:
       address: http://127.0.0.1:9980
-  grpc:
-    address: 0.0.0.0:9090
   rest:
     address: 0.0.0.0:8080

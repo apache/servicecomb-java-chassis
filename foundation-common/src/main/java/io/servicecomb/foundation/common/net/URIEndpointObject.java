@@ -25,6 +25,9 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * tranport公共的Endpoint Object，当transport使用URI表示的时候，可以转化为这个对象。
+ */
 public class URIEndpointObject extends IpPort {
     private static final String SSL_ENABLED_KEY = "sslEnabled";
 

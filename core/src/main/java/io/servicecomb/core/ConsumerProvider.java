@@ -16,6 +16,10 @@
 
 package io.servicecomb.core;
 
+/**
+ * consumer端对业务的接口，不同场景是完全不同的
+ * 所以这里只定义consumer对core的接口
+ */
 public interface ConsumerProvider {
     String getName();
 

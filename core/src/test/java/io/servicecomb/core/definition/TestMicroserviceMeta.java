@@ -21,6 +21,9 @@ import java.util.Collection;
 import org.junit.Assert;
 import org.junit.Test;
 
+import mockit.Expectations;
+import mockit.Mocked;
+
 public class TestMicroserviceMeta {
     MicroserviceMeta microservicemeta = new MicroserviceMeta("app:microservice");
 
@@ -38,4 +41,44 @@ public class TestMicroserviceMeta {
         Assert.assertNotNull(response);
     }
 
+    @Test
+    public void testIntf(@Mocked SchemaMeta sm1, @Mocked SchemaMeta sm2) {
+        Class<?> intf = Object.class;
+        new Expectations() {
+            {
+                sm1.getSchemaId();
+                result = "a";
+                sm2.getSchemaId();
+                result = "b";
+                sm1.getSwaggerIntf();
+                result = intf;
+                sm2.getSwaggerIntf();
+                result = intf;
+            }
+        };
+
+        try {
+            microservicemeta.ensureFindSchemaMeta(intf);
+            Assert.assertEquals(1, 2);
+        } catch (Throwable e) {
+            Assert.assertEquals(
+                    "No schema interface is java.lang.Object.",
+                    e.getMessage());
+        }
+        microservicemeta.regSchemaMeta(sm1);
+        Assert.assertEquals(sm1, microservicemeta.findSchemaMeta(intf));
+        Assert.assertEquals(sm1, microservicemeta.ensureFindSchemaMeta(intf));
+
+        microservicemeta.regSchemaMeta(sm2);
+        Assert.assertEquals(sm1, microservicemeta.ensureFindSchemaMeta("a"));
+        Assert.assertEquals(sm2, microservicemeta.ensureFindSchemaMeta("b"));
+        try {
+            microservicemeta.findSchemaMeta(intf);
+            Assert.assertEquals(1, 2);
+        } catch (Throwable e) {
+            Assert.assertEquals(
+                    "More than one schema interface is java.lang.Object, please use schemaId to choose a schema.",
+                    e.getMessage());
+        }
+    }
 }

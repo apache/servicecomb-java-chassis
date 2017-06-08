@@ -16,10 +16,11 @@
 
 package io.servicecomb.provider.rest.common;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
-import io.servicecomb.swagger.extend.parameter.HttpRequestParameter;
 import io.servicecomb.swagger.invocation.arguments.ArgumentMapper;
 import io.servicecomb.swagger.invocation.arguments.ContextArgumentMapperFactory;
 
@@ -29,7 +30,7 @@ public class ProducerHttpRequestArgMapperFactory implements ContextArgumentMappe
 
     @Override
     public Class<?> getContextClass() {
-        return HttpRequestParameter.class;
+        return HttpServletRequest.class;
     }
 
     @Override

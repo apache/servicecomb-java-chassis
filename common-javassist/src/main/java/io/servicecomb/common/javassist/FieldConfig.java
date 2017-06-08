@@ -16,12 +16,21 @@
 
 package io.servicecomb.common.javassist;
 
+import org.springframework.util.ClassUtils;
+
+import com.fasterxml.jackson.databind.JavaType;
+
 public class FieldConfig {
     private String name;
 
-    private Class<?> type;
+    // javassist的成员不支持int这样的类型，必须是Integer才行
+    private Class<?> rawType;
 
-    private String genericSignature;
+    private JavaType type;
+
+    private boolean genGetter;
+
+    private boolean genSetter;
 
     public String getName() {
         return name;
@@ -31,19 +40,40 @@ public class FieldConfig {
         this.name = name;
     }
 
-    public Class<?> getType() {
+    public Class<?> getRawType() {
+        return rawType;
+    }
+
+    public JavaType getType() {
         return type;
     }
 
-    public void setType(Class<?> type) {
+    public void setType(JavaType type) {
+        this.rawType = ClassUtils.resolvePrimitiveIfNecessary(type.getRawClass());
         this.type = type;
     }
 
-    public String getGenericSignature() {
-        return genericSignature;
+    public boolean isGenGetter() {
+        return genGetter;
     }
 
-    public void setGenericSignature(String genericSignature) {
-        this.genericSignature = genericSignature;
+    public void setGenGetter(boolean genGetter) {
+        this.genGetter = genGetter;
+    }
+
+    public boolean isGenSetter() {
+        return genSetter;
+    }
+
+    public void setGenSetter(boolean genSetter) {
+        this.genSetter = genSetter;
+    }
+
+    public String getGenericSignature() {
+        if (type.hasGenericTypes()) {
+            return type.getGenericSignature();
+        }
+
+        return null;
     }
 }

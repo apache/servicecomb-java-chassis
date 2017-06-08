@@ -21,16 +21,16 @@ import java.util.concurrent.atomic.AtomicLong;
 
 import javax.xml.ws.Holder;
 
-import io.servicecomb.core.AsyncResponse;
 import io.servicecomb.core.Invocation;
-import io.servicecomb.core.exception.InvocationException;
-import io.servicecomb.core.invocation.InvocationType;
+import io.servicecomb.swagger.invocation.AsyncResponse;
+import io.servicecomb.swagger.invocation.InvocationType;
+import io.servicecomb.swagger.invocation.Response;
+import io.servicecomb.swagger.invocation.exception.CommonExceptionData;
+import io.servicecomb.swagger.invocation.exception.InvocationException;
+
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.util.ReflectionUtils;
-
-import io.servicecomb.core.Response;
-import io.servicecomb.core.exception.CommonExceptionData;
 
 import mockit.Deencapsulation;
 import mockit.Mock;

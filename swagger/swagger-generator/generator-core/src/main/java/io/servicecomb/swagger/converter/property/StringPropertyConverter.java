@@ -57,7 +57,7 @@ public class StringPropertyConverter extends AbstractPropertyConverter {
 
     public static JavaType findJavaType(ClassLoader classLoader, String packageName, Swagger swagger, String type,
             String format, List<String> enums) {
-        if (enums == null || enums.isEmpty()) {
+        if (!isEnum(enums)) {
             return ConverterMgr.findJavaType(type, format);
         }
 
@@ -65,9 +65,18 @@ public class StringPropertyConverter extends AbstractPropertyConverter {
         return getOrCreateEnumByNames(packageName, enums);
     }
 
+    public static boolean isEnum(StringProperty stringProperty) {
+        return isEnum(stringProperty.getEnum());
+    }
+
+    public static boolean isEnum(List<String> enums) {
+        return enums != null && !enums.isEmpty();
+    }
+
     @Override
     public JavaType doConvert(ClassLoader classLoader, String packageName, Swagger swagger, Object property) {
         StringProperty stringProperty = (StringProperty) property;
+
         List<String> enums = stringProperty.getEnum();
         return findJavaType(classLoader,
                 packageName,

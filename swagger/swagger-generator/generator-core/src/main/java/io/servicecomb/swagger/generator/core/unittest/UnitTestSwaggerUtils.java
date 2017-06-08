@@ -19,15 +19,15 @@ package io.servicecomb.swagger.generator.core.unittest;
 import java.io.IOException;
 import java.net.URL;
 
-import io.servicecomb.swagger.generator.core.CompositeSwaggerGeneratorContext;
 import org.apache.commons.io.IOUtils;
 import org.junit.Assert;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectWriter;
+
+import io.servicecomb.swagger.generator.core.CompositeSwaggerGeneratorContext;
 import io.servicecomb.swagger.generator.core.SwaggerGenerator;
 import io.servicecomb.swagger.generator.core.SwaggerGeneratorContext;
-
 import io.swagger.models.Swagger;
 import io.swagger.util.Yaml;
 
@@ -80,6 +80,8 @@ public final class UnitTestSwaggerUtils {
     public static SwaggerGenerator testSwagger(String resPath, SwaggerGeneratorContext context, Class<?> cls,
             String... methods) {
         SwaggerGeneratorForTest generator = new SwaggerGeneratorForTest(context, cls);
+        generator.setClassLoader(new ClassLoader() {
+        });
         generator.replaceMethods(methods);
 
         Swagger swagger = generator.generate();
@@ -97,7 +99,7 @@ public final class UnitTestSwaggerUtils {
         return generator;
     }
 
-    public static void testException(String expectMsg, SwaggerGeneratorContext context, Class<?> cls,
+    public static Throwable getException(SwaggerGeneratorContext context, Class<?> cls,
             String... methods) {
         try {
             SwaggerGeneratorForTest generator = new SwaggerGeneratorForTest(context, cls);
@@ -105,11 +107,25 @@ public final class UnitTestSwaggerUtils {
 
             generator.generate();
         } catch (Throwable e) {
-            Assert.assertEquals(expectMsg, e.getMessage());
-            return;
+            return e;
         }
 
         // 不允许成功
         Assert.assertEquals("not allowed run to here", "run to here");
+        return null;
+    }
+
+    public static void testException(String expectMsgLevel1, String expectMsgLevel2, SwaggerGeneratorContext context,
+            Class<?> cls,
+            String... methods) {
+        Throwable exception = getException(context, cls, methods);
+        Assert.assertEquals(expectMsgLevel1, exception.getMessage());
+        Assert.assertEquals(expectMsgLevel2, exception.getCause().getMessage());
+    }
+
+    public static void testException(String expectMsg, SwaggerGeneratorContext context, Class<?> cls,
+            String... methods) {
+        Throwable exception = getException(context, cls, methods);
+        Assert.assertEquals(expectMsg, exception.getMessage());
     }
 }

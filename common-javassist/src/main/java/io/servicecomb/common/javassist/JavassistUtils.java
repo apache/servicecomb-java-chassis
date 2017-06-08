@@ -16,6 +16,8 @@
 
 package io.servicecomb.common.javassist;
 
+import static java.util.Locale.ENGLISH;
+
 import java.lang.reflect.Modifier;
 import java.util.Arrays;
 import java.util.IdentityHashMap;
@@ -24,6 +26,7 @@ import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.util.ClassUtils;
 
 import com.fasterxml.jackson.databind.JavaType;
 
@@ -34,6 +37,7 @@ import javassist.CtConstructor;
 import javassist.CtField;
 import javassist.CtMethod;
 import javassist.LoaderClassPath;
+import javassist.NotFoundException;
 
 public final class JavassistUtils {
     private static final Logger LOGGER = LoggerFactory.getLogger(JavassistUtils.class);
@@ -132,12 +136,14 @@ public final class JavassistUtils {
 
         appendThreadClassPath();
 
-        CtClass ctClass = null;
-        if (config.isIntf()) {
-            ctClass = POOL.makeInterface(config.getClassName());
-        } else {
+        CtClass ctClass = POOL.getOrNull(config.getClassName());
+        if (ctClass == null) {
+            if (config.isIntf()) {
+                ctClass = POOL.makeInterface(config.getClassName());
+            } else {
 
-            ctClass = POOL.makeClass(config.getClassName());
+                ctClass = POOL.makeClass(config.getClassName());
+            }
         }
 
         try {
@@ -148,6 +154,14 @@ public final class JavassistUtils {
             for (FieldConfig fieldConfig : config.getFieldList()) {
                 CtField field = createCtField(POOL, ctClass, fieldConfig);
                 ctClass.addField(field);
+
+                if (fieldConfig.isGenGetter()) {
+                    addFieldGetter(config, fieldConfig);
+                }
+
+                if (fieldConfig.isGenSetter()) {
+                    addFieldSetter(config, fieldConfig);
+                }
             }
 
             for (MethodConfig methodConfig : config.getMethodList()) {
@@ -162,6 +176,37 @@ public final class JavassistUtils {
         } catch (Throwable e) {
             throw new Error(e);
         }
+    }
+
+    public static String capitalize(String name) {
+        if (name == null || name.length() == 0) {
+            return name;
+        }
+        return name.substring(0, 1).toUpperCase(ENGLISH) + name.substring(1);
+    }
+
+    private static void addFieldGetter(ClassConfig config, FieldConfig fieldConfig) {
+        MethodConfig methodConfig = new MethodConfig();
+
+        Class<?> cls = fieldConfig.getRawType();
+        String prefix = "get";
+        if (cls.equals(Boolean.class) || cls.equals(boolean.class)) {
+            prefix = "is";
+        }
+        methodConfig.setName(prefix + capitalize(fieldConfig.getName()));
+        methodConfig.setResult(fieldConfig.getType());
+        methodConfig.setBodySource("return " + fieldConfig.getName() + ";");
+
+        config.addMethod(methodConfig);
+    }
+
+    private static void addFieldSetter(ClassConfig config, FieldConfig fieldConfig) {
+        MethodConfig methodConfig = new MethodConfig();
+        methodConfig.setName("set" + capitalize(fieldConfig.getName()));
+        methodConfig.addParameter(fieldConfig.getName(), fieldConfig.getType());
+        methodConfig.setBodySource(" this." + fieldConfig.getName() + " = " + fieldConfig.getName() + ";");
+
+        config.addMethod(methodConfig);
     }
 
     public static void genMultiWrapperInterface(ClassConfig config) {
@@ -218,7 +263,7 @@ public final class JavassistUtils {
             FieldConfig fieldConfig = fieldList.get(idx);
 
             String fieldName = fieldConfig.getName();
-            Class<?> type = fieldConfig.getType();
+            Class<?> type = fieldConfig.getRawType();
             String code = String.format("    %s = (%s)values[%d];",
                     fieldName,
                     type.getTypeName(),
@@ -252,7 +297,10 @@ public final class JavassistUtils {
 
         if (!fieldList.isEmpty()) {
             FieldConfig fieldConfig = fieldList.get(0);
-            sb.append(String.format("    %s=(%s)value;", fieldConfig.getName(), fieldConfig.getType().getTypeName()));
+            sb.append(
+                    String.format("    %s=(%s)value;",
+                            fieldConfig.getName(),
+                            fieldConfig.getRawType().getTypeName()));
         }
 
         sb.append("}");
@@ -261,7 +309,7 @@ public final class JavassistUtils {
     }
 
     private static CtField createCtField(ClassPool pool, CtClass ctClass, FieldConfig field) throws Exception {
-        Class<?> fieldType = field.getType();
+        Class<?> fieldType = field.getRawType();
 
         CtField ctField = new CtField(pool.getCtClass(fieldType.getName()), field.getName(), ctClass);
         if (field.getGenericSignature() != null) {
@@ -277,9 +325,19 @@ public final class JavassistUtils {
         }
 
         if (!javaType.isArrayType()) {
-            return javaType.getRawClass().getName();
+            Class<?> rawClass = ClassUtils.resolvePrimitiveIfNecessary(javaType.getRawClass());
+            return rawClass.getTypeName();
         }
 
         return javaType.getContentType().getRawClass().getName() + "[]";
+    }
+
+    // for test
+    public static void detach(String clsName) {
+        try {
+            POOL.getCtClass(clsName).detach();
+        } catch (NotFoundException e) {
+            // do nothing.
+        }
     }
 }

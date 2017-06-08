@@ -29,7 +29,8 @@ import io.servicecomb.common.rest.RestConst;
 import io.servicecomb.common.rest.codec.RestServerRequestInternal;
 import io.servicecomb.common.rest.codec.produce.ProduceProcessor;
 import io.servicecomb.core.Invocation;
-import io.servicecomb.core.Response;
+import io.servicecomb.swagger.invocation.Response;
+import io.servicecomb.swagger.invocation.exception.InvocationException;
 
 public class ServletRestServer extends AbstractRestServer<HttpServletResponse> {
     protected RestAsyncListener restAsyncListener = new RestAsyncListener();
@@ -61,10 +62,12 @@ public class ServletRestServer extends AbstractRestServer<HttpServletResponse> {
 
         // 直接写到stream中去，避免重复分配内存，这是chunk模式，不必设置contentLength
         // TODO:设置buffer大小，这很影响性能
-        if (response.getResult() != null) {
-            OutputStream output = httpServerResponse.getOutputStream();
-            produceProcessor.encodeResponse(output, response.getResult());
+        Object body = response.getResult();
+        if (response.isFailed()) {
+            body = ((InvocationException) body).getErrorData();
         }
+        OutputStream output = httpServerResponse.getOutputStream();
+        produceProcessor.encodeResponse(output, body);
         httpServerResponse.flushBuffer();
     }
 

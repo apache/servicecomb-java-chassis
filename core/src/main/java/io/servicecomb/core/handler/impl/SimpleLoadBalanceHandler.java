@@ -21,12 +21,15 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import io.servicecomb.core.AsyncResponse;
 import io.servicecomb.core.Endpoint;
 import io.servicecomb.core.Invocation;
 import io.servicecomb.core.endpoint.EndpointsCache;
 import io.servicecomb.core.exception.ExceptionUtils;
+import io.servicecomb.swagger.invocation.AsyncResponse;
 
+/**
+ * 内置轮询lb，方便demo之类的场景，不必去依赖lb包
+ */
 public class SimpleLoadBalanceHandler extends AbstractHandler {
     private AtomicInteger index = new AtomicInteger();
 

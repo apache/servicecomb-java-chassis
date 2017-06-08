@@ -16,18 +16,19 @@
 
 package io.servicecomb.core.handler.impl;
 
-import io.servicecomb.core.AsyncResponse;
 import io.servicecomb.core.Const;
 import io.servicecomb.core.Invocation;
 import io.servicecomb.core.exception.ExceptionUtils;
-import io.servicecomb.core.provider.producer.ProducerOperation;
+import io.servicecomb.swagger.engine.SwaggerProducerOperation;
+import io.servicecomb.swagger.invocation.AsyncResponse;
 
 public class ProducerOperationHandler extends AbstractHandler {
     public static final ProducerOperationHandler INSTANCE = new ProducerOperationHandler();
 
     @Override
     public void handle(Invocation invocation, AsyncResponse asyncResp) throws Exception {
-        ProducerOperation producerOperation = invocation.getOperationMeta().getExtData(Const.PRODUCER_OPERATION);
+        SwaggerProducerOperation producerOperation =
+            invocation.getOperationMeta().getExtData(Const.PRODUCER_OPERATION);
         if (producerOperation == null) {
             asyncResp.producerFail(
                     ExceptionUtils.producerOperationNotExist(invocation.getSchemaId(),

@@ -18,9 +18,10 @@ package io.servicecomb.swagger.converter.model;
 
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.type.TypeFactory;
-import io.servicecomb.swagger.converter.ConverterMgr;
-import io.servicecomb.swagger.generator.core.utils.ClassUtils;
 
+import io.servicecomb.swagger.converter.ConverterMgr;
+import io.servicecomb.swagger.converter.property.MapPropertyConverter;
+import io.servicecomb.swagger.generator.core.utils.ClassUtils;
 import io.swagger.models.ModelImpl;
 import io.swagger.models.Swagger;
 
@@ -38,12 +39,20 @@ public class ModelImplConverter extends AbstractModelConverter {
             return ConverterMgr.findByRef(classLoader, packageName, swagger, modelImpl.getReference());
         }
 
+        if (modelImpl.getAdditionalProperties() != null) {
+            return MapPropertyConverter.findJavaType(classLoader,
+                    packageName,
+                    swagger,
+                    modelImpl.getAdditionalProperties());
+        }
+
         // 根据name、property动态生成class
         if (packageName == null) {
             throw new Error("packageName should not be null");
         }
         String clsName = packageName + "." + modelImpl.getName();
-        Class<?> cls = ClassUtils.getOrCreateClass(classLoader, packageName, swagger, modelImpl, clsName);
+        Class<?> cls =
+            ClassUtils.getOrCreateClass(classLoader, packageName, swagger, modelImpl.getProperties(), clsName);
         return TypeFactory.defaultInstance().constructType(cls);
     }
 

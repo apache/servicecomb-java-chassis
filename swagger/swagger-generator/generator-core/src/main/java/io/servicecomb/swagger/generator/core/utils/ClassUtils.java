@@ -22,17 +22,17 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.springframework.util.StringUtils;
+
+import com.fasterxml.jackson.databind.JavaType;
+
+import io.servicecomb.common.javassist.ClassConfig;
+import io.servicecomb.common.javassist.JavassistUtils;
+import io.servicecomb.common.javassist.MethodConfig;
 import io.servicecomb.swagger.converter.ConverterMgr;
 import io.servicecomb.swagger.generator.core.OperationGenerator;
 import io.servicecomb.swagger.generator.core.SwaggerConst;
 import io.servicecomb.swagger.generator.core.SwaggerGenerator;
-import org.springframework.util.StringUtils;
-
-import com.fasterxml.jackson.databind.JavaType;
-import io.servicecomb.common.javassist.ClassConfig;
-import io.servicecomb.common.javassist.JavassistUtils;
-
-import io.swagger.models.ModelImpl;
 import io.swagger.models.Operation;
 import io.swagger.models.Path;
 import io.swagger.models.Response;
@@ -58,7 +58,7 @@ public final class ClassUtils {
 
     // 获取modelImpl对应的class
     public static Class<?> getOrCreateClass(ClassLoader classLoader, String packageName, Swagger swagger,
-            ModelImpl modelImpl,
+            Map<String, Property> properties,
             String clsName) {
         Class<?> cls = getClassByName(classLoader, clsName);
         if (cls != null) {
@@ -68,7 +68,7 @@ public final class ClassUtils {
         ClassConfig classConfig = new ClassConfig();
         classConfig.setClassName(clsName);
 
-        for (Entry<String, Property> entry : modelImpl.getProperties().entrySet()) {
+        for (Entry<String, Property> entry : properties.entrySet()) {
             JavaType propertyJavaType =
                 ConverterMgr.findJavaType(classLoader,
                         packageName,
@@ -179,52 +179,33 @@ public final class ClassUtils {
         classConfig.setClassName(intfName);
         classConfig.setIntf(true);
 
-        StringBuilder sbMethod = new StringBuilder();
-        StringBuilder sbMethodGenericSignature = new StringBuilder();
         for (Path path : swagger.getPaths().values()) {
             for (Operation operation : path.getOperations()) {
-                boolean hasGenericSignature = false;
-
-                sbMethod.setLength(0);
-                sbMethodGenericSignature.setLength(0);
+                // 参数可能重名，所以packageName必须跟operation相关才能隔离
+                String opPackageName = packageName + "." + operation.getOperationId();
 
                 Response result = operation.getResponses().get(SwaggerConst.SUCCESS_KEY);
                 JavaType resultJavaType = ConverterMgr.findJavaType(classLoader,
-                        packageName,
+                        opPackageName,
                         swagger,
                         result.getSchema());
-                hasGenericSignature = hasGenericSignature || resultJavaType.hasGenericTypes();
 
-                sbMethod.append(JavassistUtils.getNameForGenerateCode(resultJavaType))
-                        .append(" ")
-                        .append(operation.getOperationId())
-                        .append("(");
-                sbMethodGenericSignature.append("(");
+                MethodConfig methodConfig = new MethodConfig();
+                methodConfig.setName(operation.getOperationId());
+                methodConfig.setResult(resultJavaType);
+
                 for (Parameter parameter : operation.getParameters()) {
                     String paramName = parameter.getName();
                     paramName = correctMethodParameterName(paramName);
+
                     JavaType paramJavaType = ConverterMgr.findJavaType(classLoader,
-                            packageName,
+                            opPackageName,
                             swagger,
                             parameter);
-                    hasGenericSignature = hasGenericSignature || paramJavaType.hasGenericTypes();
+                    methodConfig.addParameter(paramName, paramJavaType);
+                }
 
-                    String code = String.format("%s %s,", paramJavaType.getRawClass().getName(), paramName);
-                    sbMethod.append(code);
-                    sbMethodGenericSignature.append(paramJavaType.getGenericSignature());
-                }
-                if (!operation.getParameters().isEmpty()) {
-                    sbMethod.setLength(sbMethod.length() - 1);
-                }
-                sbMethod.append(");");
-                sbMethodGenericSignature.append(")");
-                sbMethodGenericSignature.append(resultJavaType.getGenericSignature());
-
-                if (hasGenericSignature) {
-                    classConfig.addMethod(sbMethod.toString(), sbMethodGenericSignature.toString());
-                } else {
-                    classConfig.addMethod(sbMethod.toString(), null);
-                }
+                classConfig.addMethod(methodConfig);
             }
         }
 

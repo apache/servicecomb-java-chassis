@@ -17,10 +17,10 @@ package io.servicecomb.swagger.invocation.response;
 
 import io.servicecomb.swagger.generator.core.SwaggerGenerator;
 import io.servicecomb.swagger.generator.core.unittest.UnitTestSwaggerUtils;
+import io.servicecomb.swagger.invocation.exception.CommonExceptionData;
+
 import org.junit.Assert;
 import org.junit.Test;
-
-import io.servicecomb.core.exception.CommonExceptionData;
 
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;

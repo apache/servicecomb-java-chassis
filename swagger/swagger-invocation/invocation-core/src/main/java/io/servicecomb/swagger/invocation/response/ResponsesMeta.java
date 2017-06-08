@@ -25,9 +25,9 @@ import javax.ws.rs.core.Response.Status;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.type.SimpleType;
 import com.fasterxml.jackson.databind.type.TypeFactory;
-import io.servicecomb.core.context.HttpStatus;
-import io.servicecomb.core.exception.CommonExceptionData;
 
+import io.servicecomb.swagger.invocation.context.HttpStatus;
+import io.servicecomb.swagger.invocation.exception.CommonExceptionData;
 import io.swagger.models.Operation;
 import io.swagger.models.Response;
 import io.swagger.models.Swagger;

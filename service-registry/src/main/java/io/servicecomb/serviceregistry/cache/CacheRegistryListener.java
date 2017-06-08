@@ -65,6 +65,7 @@ public class CacheRegistryListener extends AbstractRegistryListener {
     private void cleanUpCache() {
         InstanceCacheManager.INSTANCE.cleanUp();
         IpPortManager.INSTANCE.clearInstanceCache();
+        InstanceVersionCacheManager.INSTANCE.cleanUp();        
         LOGGER.info(
                 "Reconnected to service center, clean up the provider's microservice instances cache.");
     }

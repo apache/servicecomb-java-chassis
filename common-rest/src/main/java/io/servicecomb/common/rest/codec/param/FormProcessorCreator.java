@@ -23,6 +23,8 @@ import com.fasterxml.jackson.databind.type.TypeFactory;
 import io.servicecomb.common.rest.codec.RestClientRequest;
 import io.servicecomb.common.rest.codec.RestServerRequest;
 
+import io.swagger.models.parameters.Parameter;
+
 public class FormProcessorCreator implements ParamValueProcessorCreator {
     public static final String PARAMTYPE = "formData";
 
@@ -57,8 +59,8 @@ public class FormProcessorCreator implements ParamValueProcessorCreator {
     }
 
     @Override
-    public ParamValueProcessor create(String paramValue, Type genericParamType) {
+    public ParamValueProcessor create(Parameter parameter, Type genericParamType) {
         JavaType targetType = TypeFactory.defaultInstance().constructType(genericParamType);
-        return new FormProcessor(paramValue, targetType);
+        return new FormProcessor(parameter.getName(), targetType);
     }
 }

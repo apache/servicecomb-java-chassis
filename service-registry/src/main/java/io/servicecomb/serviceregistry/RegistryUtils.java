@@ -20,9 +20,11 @@ import java.net.InetSocketAddress;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,6 +44,7 @@ import io.servicecomb.serviceregistry.api.response.HeartbeatResponse;
 import io.servicecomb.serviceregistry.api.response.MicroserviceInstanceChangedEvent;
 import io.servicecomb.serviceregistry.cache.CacheRegistryListener;
 import io.servicecomb.serviceregistry.cache.InstanceCacheManager;
+import io.servicecomb.serviceregistry.cache.InstanceVersionCacheManager;
 import io.servicecomb.serviceregistry.client.ClientException;
 import io.servicecomb.serviceregistry.client.RegistryClientFactory;
 import io.servicecomb.serviceregistry.client.ServiceRegistryClient;
@@ -107,8 +110,8 @@ public final class RegistryUtils {
             throw new IllegalArgumentException("You must configure service_description.name");
         }
         microservice.setServiceName(name);
-        microservice
-                .setAppId(DynamicPropertyFactory.getInstance().getStringProperty("APPLICATION_ID", "default").get());
+        microservice.setAppId(
+                DynamicPropertyFactory.getInstance().getStringProperty("APPLICATION_ID", "default").get());
         microservice.setVersion(
                 DynamicPropertyFactory.getInstance().getStringProperty("service_description.version", "1.0.0").get());
         microservice.setDescription(
@@ -146,8 +149,7 @@ public final class RegistryUtils {
             microserviceInstance.setProperties(propertiesMap);
         }
 
-        // This is not the local mode for the development so we need to set the
-        // healthcheck
+        //This is not the local mode for the development so we need to set the healthcheck
         if (RegistryClientFactory.getLocalModeFile().isEmpty()) {
             HealthCheck healthCheck = new HealthCheck();
             healthCheck.setMode(HealthCheckMode.HEARTBEAT);
@@ -157,6 +159,9 @@ public final class RegistryUtils {
         return microserviceInstance;
     }
 
+    /**
+     * This method is written so that the UT of this class can be done appropriately.
+     */
     public static void setSrClient(ServiceRegistryClient oServiceRegistryClient) {
         srClient = oServiceRegistryClient;
     }
@@ -164,11 +169,7 @@ public final class RegistryUtils {
     public static void init() throws Exception {
         serviceRegistryConfig = ServiceRegistryConfig.INSTANCE;
         if (null == srClient) {
-            srClient = RegistryClientFactory.getRegistryClient(); // Changes has
-                                                                  // been done
-                                                                  // to test the
-                                                                  // code
-                                                                  // properly
+            srClient = RegistryClientFactory.getRegistryClient(); //Changes has been done to test the code properly
         }
 
         // 初始化vertx & sr client
@@ -302,10 +303,9 @@ public final class RegistryUtils {
     }
 
     private static boolean regsiterMicroservice() {
-        String serviceId =
-            srClient.getMicroserviceId(getMicroservice().getAppId(),
-                    getMicroservice().getServiceName(),
-                    getMicroservice().getVersion());
+        String serviceId = srClient.getMicroserviceId(getMicroservice().getAppId(),
+                getMicroservice().getServiceName(),
+                getMicroservice().getVersion());
         if (!isEmpty(serviceId)) {
             // 已经注册过了，不需要重新注册
             LOGGER.info(
@@ -314,20 +314,28 @@ public final class RegistryUtils {
                     getMicroservice().getAppId(),
                     getMicroservice().getServiceName(),
                     getMicroservice().getVersion());
+
+            checkSchemaIdSet(serviceId);
         } else {
             serviceId = srClient.registerMicroservice(getMicroservice());
             if (isEmpty(serviceId)) {
-                LOGGER.error("Registry microservice failed. appId={}, name={}, version={}",
+                LOGGER.error(
+                        "Registry microservice failed. appId={}, name={}, version={}",
                         getMicroservice().getAppId(),
                         getMicroservice().getServiceName(),
                         getMicroservice().getVersion());
                 return false;
             }
-            LOGGER.info("Registry Microservice successfully. id={} appId={}, name={}, version={}",
+            LOGGER.info(
+                    "Registry Microservice successfully. id={} appId={}, name={}, version={}, schemaIds={}",
                     serviceId,
                     getMicroservice().getAppId(),
                     getMicroservice().getServiceName(),
-                    getMicroservice().getVersion());
+                    getMicroservice().getVersion(),
+                    getMicroservice().getSchemas());
+
+            // 重新注册服务场景下，instanceId不应该缓存
+            getMicroserviceInstance().setInstanceId(null);
         }
 
         registerSchemas(serviceId);
@@ -337,13 +345,39 @@ public final class RegistryUtils {
         return true;
     }
 
+    private static void checkSchemaIdSet(String serviceId) {
+        Microservice existMicroservice = srClient.getMicroservice(serviceId);
+        Set<String> existSchemas = new HashSet<>(existMicroservice.getSchemas());
+        Set<String> localSchemas = new HashSet<>(microservice.getSchemas());
+        if (!existSchemas.equals(localSchemas)) {
+            LOGGER.error(
+                    "SchemaIds is different between local and service center. Please change microservice version. "
+                            + "id={} appId={}, name={}, version={}, local schemaIds={}, service center schemaIds={}",
+                    serviceId,
+                    getMicroservice().getAppId(),
+                    getMicroservice().getServiceName(),
+                    getMicroservice().getVersion(),
+                    localSchemas,
+                    existSchemas);
+            return;
+        }
+
+        LOGGER.info(
+                "SchemaIds is equals to service center. id={} appId={}, name={}, version={}, schemaIds={}",
+                serviceId,
+                getMicroservice().getAppId(),
+                getMicroservice().getServiceName(),
+                getMicroservice().getVersion(),
+                localSchemas);
+    }
+
     public static HeartbeatResponse heartbeat() {
         Timer timer = Timer.newForeverTimer();
 
         HeartbeatResponse response;
         while (true) {
-            response =
-                srClient.heartbeat(getMicroservice().getServiceId(), getMicroserviceInstance().getInstanceId());
+            response = srClient.heartbeat(getMicroservice().getServiceId(),
+                    getMicroserviceInstance().getInstanceId());
             if (response != null) {
                 break;
             }
@@ -388,6 +422,12 @@ public final class RegistryUtils {
                 instances.size(),
                 appId,
                 serviceName);
+        for (MicroserviceInstance instance : instances) {
+            LOGGER.info("service id={}, instance id={}, endpoints={}",
+                    instance.getServiceId(),
+                    instance.getInstanceId(),
+                    instance.getEndpoints());
+        }
         return instances;
     }
 
@@ -396,23 +436,28 @@ public final class RegistryUtils {
             return;
         }
 
-        srClient.watch(getMicroservice().getServiceId(), (event) -> {
-            if (event.failed()) {
-                exception(event.cause());
-                return;
-            }
-            MicroserviceInstanceChangedEvent changedEvent = event.result();
-            if (isProviderInstancesChanged(changedEvent) && !serviceRegistryConfig.isWatch()) {
-                return;
-            }
-            if (!isProviderInstancesChanged(changedEvent) && !serviceRegistryConfig.isRegistryAutoDiscovery()) {
-                return;
-            }
-            InstanceCacheManager.INSTANCE.onInstanceUpdate(changedEvent);
-        }, open -> {
-            recover();
-        }, close -> {
-        });
+        srClient.watch(getMicroservice().getServiceId(),
+                (event) -> {
+                    if (event.failed()) {
+                        exception(event.cause());
+                        return;
+                    }
+                    MicroserviceInstanceChangedEvent changedEvent = event.result();
+                    if (isProviderInstancesChanged(changedEvent) && !serviceRegistryConfig.isWatch()) {
+                        return;
+                    }
+                    if (!isProviderInstancesChanged(changedEvent)
+                            && !serviceRegistryConfig.isRegistryAutoDiscovery()) {
+                        return;
+                    }
+                    InstanceCacheManager.INSTANCE.onInstanceUpdate(changedEvent);
+                    InstanceVersionCacheManager.INSTANCE.onInstanceUpdate(changedEvent);
+                },
+                open -> {
+                    recover();
+                },
+                close -> {
+                });
     }
 
     private static void recover() {
@@ -479,6 +524,9 @@ public final class RegistryUtils {
         }
     }
 
+    /**
+     * 对于配置为0.0.0.0的地址，通过查询网卡地址，转换为实际监听的地址。
+     */
     public static String getPublishAddress(String schema, String address) {
         if (address == null) {
             return address;
@@ -522,7 +570,9 @@ public final class RegistryUtils {
             }
 
             String publishPortKey = PUBLISH_PORT.replace("{transport_name}", originalURI.getScheme());
-            int publishPortSetting = DynamicPropertyFactory.getInstance().getIntProperty(publishPortKey, 0).get();
+            int publishPortSetting = DynamicPropertyFactory.getInstance()
+                    .getIntProperty(publishPortKey, 0)
+                    .get();
             int publishPort = publishPortSetting == 0 ? originalURI.getPort() : publishPortSetting;
             URI newURI = new URI(originalURI.getScheme(), originalURI.getUserInfo(), publicAddressSetting,
                     publishPort, originalURI.getPath(), originalURI.getQuery(), originalURI.getFragment());
@@ -534,6 +584,9 @@ public final class RegistryUtils {
         }
     }
 
+    /**
+     * 更新本实例的properties
+     */
     public static boolean updateInstanceProperties(Map<String, String> instanceProperties) {
         boolean success = srClient.updateInstanceProperties(microserviceInstance.getServiceId(),
                 microserviceInstance.getInstanceId(),
@@ -542,6 +595,10 @@ public final class RegistryUtils {
             microserviceInstance.setProperties(instanceProperties);
         }
         return success;
+    }
+
+    public static Microservice getMicroservice(String microserviceId) {
+        return srClient.getMicroservice(microserviceId);
     }
 
 }

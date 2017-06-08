@@ -17,6 +17,7 @@
 package io.servicecomb.swagger.extend;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Modifier;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -24,9 +25,10 @@ import java.util.Map;
 import org.springframework.util.StringUtils;
 
 import com.fasterxml.jackson.databind.JavaType;
+
+import io.servicecomb.swagger.converter.property.StringPropertyConverter;
 import io.servicecomb.swagger.extend.property.ByteProperty;
 import io.servicecomb.swagger.extend.property.ShortProperty;
-
 import io.swagger.converter.ModelConverter;
 import io.swagger.converter.ModelConverterContext;
 import io.swagger.jackson.ModelResolver;
@@ -34,6 +36,7 @@ import io.swagger.models.Model;
 import io.swagger.models.ModelImpl;
 import io.swagger.models.properties.ByteArrayProperty;
 import io.swagger.models.properties.Property;
+import io.swagger.models.properties.StringProperty;
 import io.swagger.util.Json;
 
 public class ModelResolverExt extends ModelResolver {
@@ -69,12 +72,44 @@ public class ModelResolverExt extends ModelResolver {
         vendorExtensions.put(ExtendConst.EXT_JAVA_CLASS, type.getRawClass().getName());
     }
 
+    private void checkType(JavaType type) {
+        // 原子类型/string在java中是abstract的
+        if (type.getRawClass().isPrimitive()
+                || byte[].class.equals(type.getRawClass())
+                || Byte[].class.equals(type.getRawClass())
+                || String.class.equals(type.getRawClass())) {
+            return;
+        }
+
+        if (type.isMapLikeType()) {
+            if (!String.class.equals(type.getKeyType().getRawClass())) {
+                // swagger中map的key只允许为string
+                throw new Error("Key of map must be string.");
+            }
+        }
+
+        if (type.isContainerType()) {
+            checkType(type.getContentType());
+            return;
+        }
+
+        if (type.getRawClass().isInterface()) {
+            throw new Error(type.getTypeName() + " is interface.");
+        }
+
+        if (Modifier.isAbstract(type.getRawClass().getModifiers())) {
+            throw new Error(type.getTypeName() + " is abstract.");
+        }
+    }
+
     @Override
     public Model resolve(JavaType type, ModelConverterContext context, Iterator<ModelConverter> next) {
         Model model = super.resolve(type, context, next);
         if (model == null) {
             return null;
         }
+
+        checkType(type);
 
         // 只有声明model的地方才需要标注类型
         if (ModelImpl.class.isInstance(model) && !StringUtils.isEmpty(((ModelImpl) model).getName())) {
@@ -86,13 +121,19 @@ public class ModelResolverExt extends ModelResolver {
     @Override
     public Property resolveProperty(JavaType propType, ModelConverterContext context, Annotation[] annotations,
             Iterator<ModelConverter> next) {
+        checkType(propType);
+
         PropertyCreator creator = creatorMap.get(propType.getRawClass());
         if (creator != null) {
             return creator.createProperty();
         }
 
         Property property = super.resolveProperty(propType, context, annotations, next);
-        //            setType(propType, property.getVendorExtensions());
+        if (StringProperty.class.isInstance(property)) {
+            if (StringPropertyConverter.isEnum((StringProperty) property)) {
+                setType(propType, property.getVendorExtensions());
+            }
+        }
         return property;
     }
 }

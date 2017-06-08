@@ -24,7 +24,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
-import io.servicecomb.core.Response;
+import io.servicecomb.swagger.invocation.Response;
 import io.servicecomb.swagger.invocation.response.consumer.ConsumerResponseMapper;
 
 @Component

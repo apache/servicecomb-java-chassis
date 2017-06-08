@@ -16,16 +16,15 @@
 
 package io.servicecomb.swagger.generator.springmvc.processor.annotation;
 
-import io.servicecomb.swagger.extend.parameter.PendingBodyParameter;
 import io.servicecomb.swagger.generator.core.OperationGenerator;
 import io.servicecomb.swagger.generator.core.ParameterAnnotationProcessor;
 import io.servicecomb.swagger.generator.core.utils.ParamUtils;
+import io.swagger.models.parameters.BodyParameter;
 
 public class RequestBodyAnnotationProcessor implements ParameterAnnotationProcessor {
     @Override
     public void process(Object annotation, OperationGenerator operationGenerator, int paramIdx) {
-        PendingBodyParameter pendingBodyParameter =
-            ParamUtils.createPendingBodyParameter(operationGenerator, paramIdx);
-        operationGenerator.addProviderParameter(pendingBodyParameter);
+        BodyParameter bodyParameter = ParamUtils.createBodyParameter(operationGenerator, paramIdx);
+        operationGenerator.addProviderParameter(bodyParameter);
     }
 }

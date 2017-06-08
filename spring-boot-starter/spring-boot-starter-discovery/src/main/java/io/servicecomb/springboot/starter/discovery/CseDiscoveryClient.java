@@ -24,13 +24,15 @@ import org.springframework.cloud.client.DefaultServiceInstance;
 import org.springframework.cloud.client.ServiceInstance;
 import org.springframework.cloud.client.discovery.DiscoveryClient;
 
+import com.netflix.config.DynamicPropertyFactory;
+
+import io.servicecomb.core.provider.consumer.ConsumerProviderManager;
+import io.servicecomb.core.provider.consumer.ReferenceConfig;
+import io.servicecomb.foundation.common.net.URIEndpointObject;
 import io.servicecomb.serviceregistry.api.registry.Microservice;
 import io.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
 import io.servicecomb.serviceregistry.client.RegistryClientFactory;
 import io.servicecomb.serviceregistry.client.ServiceRegistryClient;
-import io.servicecomb.foundation.common.net.URIEndpointObject;
-
-import com.netflix.config.DynamicPropertyFactory;
 
 /**
  * Sukesh

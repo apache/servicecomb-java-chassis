@@ -22,8 +22,8 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executor;
 
-import io.servicecomb.core.AsyncResponse;
 import io.servicecomb.core.executor.ExecutorManager;
+import io.servicecomb.swagger.invocation.AsyncResponse;
 import io.servicecomb.swagger.invocation.response.ResponseMeta;
 import io.servicecomb.swagger.invocation.response.ResponsesMeta;
 
@@ -157,5 +157,9 @@ public class OperationMeta {
 
     public void setExecutor(Executor executor) {
         this.executor = executor;
+    }
+
+    public int getParamSize() {
+        return swaggerOperation.getParameters().size();
     }
 }

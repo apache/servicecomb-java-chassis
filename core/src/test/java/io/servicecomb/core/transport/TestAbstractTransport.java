@@ -16,13 +16,12 @@
 
 package io.servicecomb.core.transport;
 
-import io.servicecomb.core.AsyncResponse;
 import io.servicecomb.core.Invocation;
 import org.junit.Assert;
 import org.junit.Test;
 
 import io.servicecomb.foundation.common.net.IpPort;
-
+import io.servicecomb.swagger.invocation.AsyncResponse;
 import mockit.Mocked;
 
 public class TestAbstractTransport {

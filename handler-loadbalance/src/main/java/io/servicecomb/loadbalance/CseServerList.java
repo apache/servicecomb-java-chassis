@@ -21,6 +21,9 @@ import java.util.List;
 import com.netflix.loadbalancer.Server;
 import com.netflix.loadbalancer.ServerList;
 
+/**
+ * 通过RegistryUtils查询服务器列表。 RegistryUtils本身具备缓存和刷新不可用服务器的功能，因此这里不需要进行列表缓存和状态检测。
+ */
 public class CseServerList implements ServerList<Server> {
     private ServerListCache serverListCache;
 

@@ -16,24 +16,40 @@
 
 package io.servicecomb.core;
 
+import io.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
+
+/**
+ * Endpoint : 表示一个Endpoint。Tranport识别其内部格式.
+ */
 public class Endpoint {
-    // 格式：grpc://192.168.1.1:8080
+    // 格式：rest://192.168.1.1:8080
     // see: http://www.ietf.org/rfc/rfc2396.txt
     private final String endpoint;
 
     private final Transport transport;
 
+    private final MicroserviceInstance instance;
+
     // 内部格式， 只有Transport能够认识
     private final Object address;
 
     public Endpoint(Transport transport, String endpoint) {
+        this(transport, endpoint, null);
+    }
+
+    public Endpoint(Transport transport, String endpoint, MicroserviceInstance instance) {
         this.transport = transport;
         this.endpoint = endpoint;
+        this.instance = instance;
         this.address = transport.parseAddress(this.endpoint);
     }
 
     public String getEndpoint() {
         return endpoint;
+    }
+
+    public MicroserviceInstance getMicroserviceInstance() {
+        return instance;
     }
 
     public Transport getTransport() {

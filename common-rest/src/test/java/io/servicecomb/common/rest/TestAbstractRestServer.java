@@ -31,9 +31,9 @@ import io.servicecomb.common.rest.codec.RestServerRequestInternal;
 import io.servicecomb.common.rest.codec.produce.ProduceProcessor;
 import io.servicecomb.core.Const;
 import io.servicecomb.core.Invocation;
-import io.servicecomb.core.Response;
 import io.servicecomb.core.Transport;
 import io.servicecomb.foundation.common.utils.JsonUtils;
+import io.servicecomb.swagger.invocation.Response;
 
 public class TestAbstractRestServer {
     private Invocation invocation;

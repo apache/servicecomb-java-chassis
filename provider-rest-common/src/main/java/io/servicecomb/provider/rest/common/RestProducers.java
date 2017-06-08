@@ -35,12 +35,14 @@ public class RestProducers implements ProviderProcessor {
 
     @Override
     public void processProvider(ApplicationContext applicationContext, String beanName, Object bean) {
-        RestSchema restSchema = bean.getClass().getAnnotation(RestSchema.class);
+        // aop后，新的实例的父类可能是原class，也可能只是个proxy，父类不是原class
+        // 所以，需要先取出原class，再取标注
+        Class<?> beanCls = BeanUtils.getImplClassFromBean(bean);
+        RestSchema restSchema = beanCls.getAnnotation(RestSchema.class);
         if (restSchema == null) {
             return;
         }
 
-        Class<?> beanCls = BeanUtils.getImplClassFromBean(bean);
         ProducerMeta producerMeta = new ProducerMeta(restSchema.schemaId(), bean, beanCls);
         producerMetaList.add(producerMeta);
     }

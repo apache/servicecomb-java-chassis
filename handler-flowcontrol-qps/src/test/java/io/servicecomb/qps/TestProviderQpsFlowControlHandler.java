@@ -21,10 +21,11 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 
-import io.servicecomb.core.AsyncResponse;
 import io.servicecomb.core.Const;
 import io.servicecomb.core.Invocation;
 import io.servicecomb.core.definition.OperationMeta;
+import io.servicecomb.swagger.invocation.AsyncResponse;
+
 import com.netflix.config.DynamicProperty;
 
 import mockit.Mock;

@@ -22,15 +22,19 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import io.servicecomb.core.definition.MicroserviceMeta;
 import io.servicecomb.core.definition.MicroserviceMetaManager;
 import io.servicecomb.core.definition.SchemaMeta;
 import org.springframework.stereotype.Component;
 
+/**
+ * key为microserviceName
+ */
 @Component
 public class SchemaListenerManager {
-    @Inject
-    private List<SchemaListener> schemaListenerList;
+    @Autowired(required = false)
+    private List<SchemaListener> schemaListenerList = new ArrayList<>();
 
     @Inject
     private MicroserviceMetaManager microserviceMetaManager;
