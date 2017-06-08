@@ -26,6 +26,9 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import io.servicecomb.loadbalance.filter.IsolationServerListFilter;
 import io.servicecomb.loadbalance.filter.TransactionControlFilter;
+import io.servicecomb.swagger.invocation.AsyncResponse;
+import io.servicecomb.swagger.invocation.Response;
+
 import org.apache.commons.configuration.AbstractConfiguration;
 import org.apache.commons.configuration.BaseConfiguration;
 import org.junit.Assert;
@@ -33,9 +36,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mockito.Mockito;
 
-import io.servicecomb.core.AsyncResponse;
 import io.servicecomb.core.Invocation;
-import io.servicecomb.core.Response;
 import io.servicecomb.core.provider.consumer.SyncResponseExecutor;
 import com.netflix.config.ConfigurationBackedDynamicPropertySupportImpl;
 import com.netflix.config.DynamicPropertyFactory;

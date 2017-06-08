@@ -17,7 +17,8 @@
 package io.servicecomb.bizkeeper;
 
 import io.servicecomb.core.Invocation;
-import io.servicecomb.core.Response;
+import io.servicecomb.swagger.invocation.Response;
+
 import com.netflix.hystrix.HystrixObservable;
 
 import rx.Observable;

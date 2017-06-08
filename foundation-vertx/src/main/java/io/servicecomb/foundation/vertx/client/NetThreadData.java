@@ -45,6 +45,9 @@ public class NetThreadData<CLIENT_POOL> {
         return bindIndex;
     }
 
+    /**
+     * 在ClientPoolManager中被调用，是被锁保护的
+     */
     public CLIENT_POOL selectClientPool() {
         int idx = bindIndex.getAndIncrement() % pools.length;
         CLIENT_POOL clientPool = pools[idx];

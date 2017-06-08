@@ -23,7 +23,6 @@ import org.slf4j.LoggerFactory;
 
 import io.servicecomb.common.rest.RestConst;
 import io.servicecomb.common.rest.definition.RestOperationMeta;
-import io.servicecomb.core.AsyncResponse;
 import io.servicecomb.core.Invocation;
 import io.servicecomb.core.definition.OperationMeta;
 import io.servicecomb.foundation.ssl.SSLCustom;
@@ -34,7 +33,7 @@ import io.servicecomb.foundation.vertx.VertxUtils;
 import io.servicecomb.foundation.vertx.client.ClientPoolManager;
 import io.servicecomb.foundation.vertx.client.http.HttpClientVerticle;
 import io.servicecomb.foundation.vertx.client.http.HttpClientWithContext;
-
+import io.servicecomb.swagger.invocation.AsyncResponse;
 import io.vertx.core.DeploymentOptions;
 import io.vertx.core.Vertx;
 import io.vertx.core.http.HttpClientOptions;

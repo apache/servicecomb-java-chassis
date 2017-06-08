@@ -19,15 +19,19 @@ package io.servicecomb.common.rest.codec.param;
 import java.io.InputStream;
 import java.lang.reflect.Type;
 
-import io.servicecomb.common.rest.codec.RestClientRequest;
-import io.servicecomb.common.rest.codec.RestObjectMapper;
-import io.servicecomb.common.rest.codec.RestServerRequest;
+import javax.ws.rs.core.MediaType;
+
 import org.apache.commons.io.IOUtils;
 
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.type.TypeFactory;
-import io.servicecomb.foundation.vertx.stream.BufferOutputStream;
 
+import io.servicecomb.common.rest.codec.RestClientRequest;
+import io.servicecomb.common.rest.codec.RestObjectMapper;
+import io.servicecomb.common.rest.codec.RestServerRequest;
+import io.servicecomb.foundation.vertx.stream.BufferOutputStream;
+import io.servicecomb.swagger.generator.core.utils.ClassUtils;
+import io.swagger.models.parameters.Parameter;
 import io.vertx.core.buffer.Buffer;
 
 public class BodyProcessorCreator implements ParamValueProcessorCreator {
@@ -51,6 +55,11 @@ public class BodyProcessorCreator implements ParamValueProcessorCreator {
 
             if (InputStream.class.isInstance(body)) {
                 InputStream inputStream = (InputStream) body;
+
+                String contentType = request.getContentType();
+                if (contentType != null && contentType.startsWith(MediaType.TEXT_PLAIN)) {
+                    return IOUtils.toString(inputStream);
+                }
                 return RestObjectMapper.INSTANCE.readValue(inputStream, targetType);
             }
 
@@ -110,17 +119,13 @@ public class BodyProcessorCreator implements ParamValueProcessorCreator {
     }
 
     @Override
-    public ParamValueProcessor create(String paramValue, Type genericParamType) {
+    public ParamValueProcessor create(Parameter parameter, Type genericParamType) {
         JavaType targetType = TypeFactory.defaultInstance().constructType(genericParamType);
-        return new BodyProcessor(targetType);
-    }
-
-    public ParamValueProcessor create(boolean rawJson, Type genericParamType) {
-        JavaType targetType = TypeFactory.defaultInstance().constructType(genericParamType);
+        boolean rawJson = ClassUtils.isRawJsonType(parameter);
         if (genericParamType.getTypeName().equals(String.class.getTypeName()) && rawJson) {
             return new RawJsonBodyProcessor(targetType);
         }
+
         return new BodyProcessor(targetType);
     }
-
 }

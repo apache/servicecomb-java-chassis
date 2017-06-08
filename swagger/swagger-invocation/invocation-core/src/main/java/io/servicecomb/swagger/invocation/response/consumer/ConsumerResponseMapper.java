@@ -15,7 +15,7 @@
  */
 package io.servicecomb.swagger.invocation.response.consumer;
 
-import io.servicecomb.core.Response;
+import io.servicecomb.swagger.invocation.Response;
 
 public interface ConsumerResponseMapper {
     Class<?> getResponseClass();

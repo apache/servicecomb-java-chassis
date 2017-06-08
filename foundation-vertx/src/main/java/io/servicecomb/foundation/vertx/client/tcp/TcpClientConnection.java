@@ -1,0 +1,278 @@
+/*
+ * Copyright 2017 Huawei Technologies Co., Ltd
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package io.servicecomb.foundation.vertx.client.tcp;
+
+import java.io.IOException;
+import java.net.InetSocketAddress;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeoutException;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import io.servicecomb.foundation.common.net.URIEndpointObject;
+import io.servicecomb.foundation.vertx.server.TcpParser;
+import io.servicecomb.foundation.vertx.tcp.TcpConnection;
+import io.servicecomb.foundation.vertx.tcp.TcpConst;
+import io.servicecomb.foundation.vertx.tcp.TcpOutputStream;
+import io.vertx.core.AsyncResult;
+import io.vertx.core.Context;
+import io.vertx.core.buffer.Buffer;
+import io.vertx.core.net.NetClient;
+import io.vertx.core.net.NetSocket;
+
+public class TcpClientConnection extends TcpConnection {
+    private static final Logger LOGGER = LoggerFactory.getLogger(TcpClientConnection.class);
+
+    enum Status {
+        CONNECTING,
+        DISCONNECTED,
+        TRY_LOGIN,
+        WORKING
+    }
+
+    // 是在哪个context中创建的
+    private Context context;
+
+    private NetClient netClient;
+
+    private TcpClientConfig clientConfig;
+
+    private InetSocketAddress socketAddress;
+
+    private boolean localSupportLogin = false;
+
+    private boolean remoteSupportLogin;
+
+    private volatile Status status = Status.DISCONNECTED;
+
+    private NetSocket netSocket;
+
+    // 连接未建立时，临时保存发送消息的队列
+    private List<AbstractTcpClientPackage> tmpPackageList = new LinkedList<>();
+
+    // 所有的访问，都在锁的保护中，是线程安全的
+    private volatile Map<Long, TcpRequest> requestMap = new ConcurrentHashMap<>();
+
+    public TcpClientConnection(Context context, NetClient netClient, String endpoint, TcpClientConfig clientConfig) {
+        this.context = context;
+        this.netClient = netClient;
+        URIEndpointObject ipPort = new URIEndpointObject(endpoint);
+        this.socketAddress = ipPort.getSocketAddress();
+        this.remoteSupportLogin = Boolean.parseBoolean(ipPort.getFirst(TcpConst.LOGIN));
+        this.clientConfig = clientConfig;
+    }
+
+    public Context getContext() {
+        return context;
+    }
+
+    public boolean isLocalSupportLogin() {
+        return localSupportLogin;
+    }
+
+    public void setLocalSupportLogin(boolean localSupportLogin) {
+        this.localSupportLogin = localSupportLogin;
+    }
+
+    protected TcpOutputStream createLogin() {
+        return null;
+    }
+
+    protected boolean onLoginResponse(Buffer bodyBuffer) {
+        return true;
+    }
+
+    /**
+     * 回调在tcp client verticle线程执行
+     * send没有锁优化的意义，因为netSocket.write内部本身会加锁
+     */
+    public synchronized void send(AbstractTcpClientPackage tcpClientPackage, long msTimeout,
+            TcpResonseCallback callback) {
+        requestMap.put(tcpClientPackage.getMsgId(), new TcpRequest(msTimeout, callback));
+
+        if (Status.WORKING.equals(status)) {
+            TcpOutputStream os = tcpClientPackage.createStream();
+            netSocket.write(os.getBuffer());
+            return;
+        }
+
+        tmpPackageList.add(tcpClientPackage);
+        if (Status.DISCONNECTED.equals(status)) {
+            connect();
+        }
+    }
+
+    private void connect() {
+        this.status = Status.CONNECTING;
+        LOGGER.info("connecting to address {}", socketAddress.toString());
+
+        netClient.connect(socketAddress.getPort(), socketAddress.getHostString(), ar -> {
+            if (ar.succeeded()) {
+                onConnectSuccess(ar.result());
+                return;
+            }
+
+            onConnectFailed(ar.cause());
+        });
+    }
+
+    private synchronized void onConnectSuccess(NetSocket socket) {
+        LOGGER.info("connect to address {} success", socketAddress.toString());
+        this.netSocket = socket;
+        socket.handler(new TcpParser(this::onReply));
+
+        socket.exceptionHandler(this::onException);
+        socket.closeHandler(this::onClosed);
+
+        // 开始登录
+        tryLogin();
+    }
+
+    private void onClosed(Void v) {
+        onDisconnected(new IOException("socket closed"));
+    }
+
+    // 异常断连时，先触发onException，再触发onClosed
+    // 正常断连时，只触发onClosed
+    private void onException(Throwable e) {
+        LOGGER.error("{} disconnected from {}, in thread {}, cause {}",
+                netSocket.localAddress().toString(),
+                socketAddress.toString(),
+                Thread.currentThread().getName(),
+                e.getMessage());
+    }
+
+    private synchronized void onDisconnected(Throwable e) {
+        this.status = Status.DISCONNECTED;
+        LOGGER.error("{} disconnected from {}, in thread {}, cause {}",
+                netSocket.localAddress().toString(),
+                socketAddress.toString(),
+                Thread.currentThread().getName(),
+                e.getMessage());
+
+        clearCachedRequest(e);
+    }
+
+    protected synchronized void tryLogin() {
+        if (!localSupportLogin || !remoteSupportLogin) {
+            LOGGER.error(
+                    "local or remote not support login, address={}, localSupportLogin={}, remoteSupportLogin={}.",
+                    socketAddress.toString(),
+                    localSupportLogin,
+                    remoteSupportLogin);
+            onLoginSuccess();
+            return;
+        }
+
+        this.status = Status.TRY_LOGIN;
+        LOGGER.info("try login to address {}", socketAddress.toString());
+
+        try (TcpOutputStream os = createLogin()) {
+            requestMap.put(os.getMsgId(),
+                    new TcpRequest(clientConfig.getRequestTimeoutMillis(), this::onLoginResponse));
+            netSocket.write(os.getBuffer());
+        }
+    }
+
+    private synchronized void onLoginResponse(AsyncResult<TcpData> asyncResult) {
+        if (asyncResult.failed()) {
+            LOGGER.error("login failed, address {}", socketAddress.toString(), asyncResult.cause());
+            // 在相应回调中设置状态
+            netSocket.close();
+            return;
+        }
+
+        if (!onLoginResponse(asyncResult.result().getBodyBuffer())) {
+            LOGGER.error("login failed, address {}", socketAddress.toString());
+            // 在相应回调中设置状态
+            netSocket.close();
+            return;
+        }
+
+        LOGGER.info("login success, address {}", socketAddress.toString());
+        onLoginSuccess();
+    }
+
+    private synchronized void onLoginSuccess() {
+        if (!tmpPackageList.isEmpty()) {
+            LOGGER.info("writting cached buffer to address {}", socketAddress.toString());
+            for (AbstractTcpClientPackage tcpClientPackage : tmpPackageList) {
+                TcpOutputStream os = tcpClientPackage.createStream();
+                if (os != null) {
+                    netSocket.write(os.getBuffer());
+                }
+            }
+            tmpPackageList.clear();
+        }
+
+        this.status = Status.WORKING;
+    }
+
+    private synchronized void onConnectFailed(Throwable cause) {
+        // 连接失败
+        this.status = Status.DISCONNECTED;
+        String msg = String.format("connect to address %s failed.",
+                socketAddress.toString());
+        LOGGER.error(msg, cause);
+
+        clearCachedRequest(cause);
+    }
+
+    protected synchronized void clearCachedRequest(Throwable cause) {
+        // 在onSendError，用户可能发起一次新的调用，需要避免作多余的清理
+        Map<Long, TcpRequest> oldMap = requestMap;
+        requestMap = new ConcurrentHashMap<>();
+
+        for (TcpRequest request : oldMap.values()) {
+            request.onSendError(cause);
+        }
+        oldMap.clear();
+    }
+
+    protected void onReply(long msgId, Buffer headerBuffer, Buffer bodyBuffer) {
+        TcpRequest request = requestMap.remove(msgId);
+        if (request == null) {
+            LOGGER.error("Unknown reply msgId {}, waiting count {}", msgId, requestMap.size());
+            return;
+        }
+
+        request.onReply(headerBuffer, bodyBuffer);
+    }
+
+    public void checkTimeout() {
+        for (Entry<Long, TcpRequest> entry : requestMap.entrySet()) {
+            TcpRequest request = entry.getValue();
+            if (request.isTimeout()) {
+                // 可能正好收到reply，且被处理了，所以这里的remove不一定有效
+                // 是否有效，根据remove的结果来决定
+                request = requestMap.remove(entry.getKey());
+                if (request != null) {
+                    String msg =
+                        String.format("request timeout, msgId=%d, address=%s", entry.getKey(), socketAddress);
+                    LOGGER.error(msg);
+
+                    request.onTimeout(new TimeoutException(msg));
+                }
+            }
+        }
+    }
+}

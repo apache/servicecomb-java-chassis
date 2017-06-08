@@ -16,14 +16,15 @@
 
 package io.servicecomb.core.provider.consumer;
 
-import io.servicecomb.core.AsyncResponse;
 import io.servicecomb.core.Invocation;
-import io.servicecomb.core.exception.InvocationException;
+import io.servicecomb.swagger.invocation.AsyncResponse;
+import io.servicecomb.swagger.invocation.Response;
+import io.servicecomb.swagger.invocation.exception.InvocationException;
+
 import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.Mockito;
 
-import io.servicecomb.core.Response;
 import io.servicecomb.core.definition.OperationMeta;
 
 import mockit.Mock;

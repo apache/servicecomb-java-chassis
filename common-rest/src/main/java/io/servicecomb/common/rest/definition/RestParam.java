@@ -21,11 +21,9 @@ import java.util.Collection;
 
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.type.TypeFactory;
-import io.servicecomb.common.rest.codec.param.BodyProcessorCreator;
 import io.servicecomb.common.rest.codec.param.ParamValueProcessor;
 import io.servicecomb.common.rest.codec.param.ParamValueProcessorCreator;
 import io.servicecomb.common.rest.codec.param.ParamValueProcessorCreatorManager;
-import io.servicecomb.swagger.generator.core.utils.ClassUtils;
 
 import io.swagger.models.parameters.Parameter;
 
@@ -63,14 +61,7 @@ public class RestParam {
         ParamValueProcessorCreator creater =
             ParamValueProcessorCreatorManager.INSTANCE.ensureFindValue(paramType);
 
-        if (BodyProcessorCreator.class.isInstance(creater)) {
-            boolean rawJson = ClassUtils.isRawJsonType(parameter);
-            this.setParamProcessor(((BodyProcessorCreator) creater).create(rawJson, genericParamType));
-
-            return;
-        }
-
-        this.setParamProcessor(creater.create(paramName, genericParamType));
+        this.setParamProcessor(creater.create(parameter, genericParamType));
     }
 
     @SuppressWarnings("unchecked")

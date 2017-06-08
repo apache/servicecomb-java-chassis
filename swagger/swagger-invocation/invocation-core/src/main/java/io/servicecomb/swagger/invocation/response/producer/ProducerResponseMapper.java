@@ -17,7 +17,7 @@ package io.servicecomb.swagger.invocation.response.producer;
 
 import javax.ws.rs.core.Response.StatusType;
 
-import io.servicecomb.core.Response;
+import io.servicecomb.swagger.invocation.Response;
 
 public interface ProducerResponseMapper {
     Class<?> getResponseClass();

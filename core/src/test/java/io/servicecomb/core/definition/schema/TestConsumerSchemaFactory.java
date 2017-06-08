@@ -16,10 +16,7 @@
 package io.servicecomb.core.definition.schema;
 
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
 
-import io.servicecomb.core.provider.consumer.ConsumerOperationMeta;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -33,17 +30,12 @@ import io.servicecomb.core.definition.loader.SchemaListener;
 import io.servicecomb.core.definition.loader.SchemaListenerManager;
 import io.servicecomb.core.definition.loader.SchemaLoader;
 import io.servicecomb.core.unittest.UnitTestMeta;
+import io.servicecomb.foundation.common.utils.ReflectUtils;
 import io.servicecomb.serviceregistry.api.registry.Microservice;
 import io.servicecomb.serviceregistry.client.RegistryClientFactory;
 import io.servicecomb.serviceregistry.client.ServiceRegistryClient;
 import io.servicecomb.swagger.generator.core.CompositeSwaggerGeneratorContext;
 import io.servicecomb.swagger.generator.core.unittest.UnitTestSwaggerUtils;
-import io.servicecomb.swagger.invocation.arguments.consumer.ConsumerArgumentSame;
-import io.servicecomb.swagger.invocation.arguments.consumer.ConsumerArgumentToBodyField;
-import io.servicecomb.swagger.invocation.arguments.consumer.ConsumerArgumentsMapperFactory;
-import io.servicecomb.swagger.invocation.response.consumer.ConsumerResponseMapperFactory;
-import io.servicecomb.swagger.invocation.response.consumer.ConsumerResponseSame;
-import io.servicecomb.foundation.common.utils.ReflectUtils;
 
 public class TestConsumerSchemaFactory {
     private static ConsumerSchemaFactory consumerSchemaFactory = new ConsumerSchemaFactory();
@@ -76,17 +68,11 @@ public class TestConsumerSchemaFactory {
         SchemaListenerManager schemaListenerManager = new SchemaListenerManager();
         schemaListenerManager.setSchemaListenerList(Arrays.asList(schemaListener));
 
-        ConsumerResponseMapperFactory responseMapperFactory = new ConsumerResponseMapperFactory();
-        responseMapperFactory.setMapperList(Arrays.asList(new ConsumerResponseSame()));
-
-        ConsumerArgumentsMapperFactory consumerArgsMapperFactory = new ConsumerArgumentsMapperFactory();
         MicroserviceMetaManager microserviceMetaManager = new MicroserviceMetaManager();
         SchemaLoader schemaLoader = new SchemaLoader();
         CompositeSwaggerGeneratorContext compositeSwaggerGeneratorContext = new CompositeSwaggerGeneratorContext();
 
         ReflectUtils.setField(consumerSchemaFactory, "schemaListenerManager", schemaListenerManager);
-        ReflectUtils.setField(consumerSchemaFactory, "consumerArgsMapperFactory", consumerArgsMapperFactory);
-        ReflectUtils.setField(consumerSchemaFactory, "responseMapperFactory", responseMapperFactory);
         ReflectUtils.setField(consumerSchemaFactory, "microserviceMetaManager", microserviceMetaManager);
         ReflectUtils.setField(consumerSchemaFactory, "schemaLoader", schemaLoader);
         ReflectUtils.setField(consumerSchemaFactory,
@@ -109,43 +95,8 @@ public class TestConsumerSchemaFactory {
     @Test
     public void testGetOrCreateConsumer() {
         MicroserviceMeta microserviceMeta =
-            consumerSchemaFactory.getOrCreateConsumer("ms", "latest");
+            consumerSchemaFactory.getOrCreateMicroserviceMeta("ms", "latest");
         OperationMeta operationMeta = microserviceMeta.ensureFindOperation("schema.add");
         Assert.assertEquals("add", operationMeta.getOperationId());
     }
-
-    @Test
-    public void testConnectToConsumerSame() {
-        MicroserviceMeta microserviceMeta =
-            consumerSchemaFactory.getOrCreateConsumer("ms", "latest");
-        SchemaMeta schemaMeta = microserviceMeta.ensureFindSchemaMeta("schema");
-
-        Map<String, ConsumerOperationMeta> consumerOperationMap = new HashMap<>();
-        consumerSchemaFactory.connectToConsumer(schemaMeta, null, consumerOperationMap);
-        Assert.assertEquals(1, consumerOperationMap.size());
-
-        ConsumerOperationMeta consumerOperationMeta = consumerOperationMap.get("add");
-        Assert.assertEquals(ConsumerArgumentSame.class,
-                consumerOperationMeta.getArgsMapper().getArgumentMapper(0).getClass());
-        Assert.assertEquals(ConsumerResponseSame.class,
-                consumerOperationMeta.getResponseMapper().getClass());
-    }
-
-    @Test
-    public void testConnectToConsumerDiff() {
-        MicroserviceMeta microserviceMeta =
-            consumerSchemaFactory.getOrCreateConsumer("ms", "latest");
-        SchemaMeta schemaMeta = microserviceMeta.ensureFindSchemaMeta("schema");
-
-        Map<String, ConsumerOperationMeta> consumerOperationMap = new HashMap<>();
-        consumerSchemaFactory.connectToConsumer(schemaMeta, Intf.class, consumerOperationMap);
-        Assert.assertEquals(1, consumerOperationMap.size());
-
-        ConsumerOperationMeta consumerOperationMeta = consumerOperationMap.get("add");
-        Assert.assertEquals(ConsumerArgumentToBodyField.class,
-                consumerOperationMeta.getArgsMapper().getArgumentMapper(0).getClass());
-        Assert.assertEquals(ConsumerResponseSame.class,
-                consumerOperationMeta.getResponseMapper().getClass());
-    }
-
 }

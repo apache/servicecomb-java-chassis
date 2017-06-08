@@ -24,6 +24,8 @@ import io.servicecomb.common.rest.codec.RestClientRequest;
 import io.servicecomb.common.rest.codec.RestObjectMapper;
 import io.servicecomb.common.rest.codec.RestServerRequest;
 
+import io.swagger.models.parameters.Parameter;
+
 public class CookieProcessorCreator implements ParamValueProcessorCreator {
     public static final String PARAMTYPE = "cookie";
 
@@ -58,8 +60,8 @@ public class CookieProcessorCreator implements ParamValueProcessorCreator {
     }
 
     @Override
-    public ParamValueProcessor create(String paramValue, Type genericParamType) {
+    public ParamValueProcessor create(Parameter parameter, Type genericParamType) {
         JavaType targetType = TypeFactory.defaultInstance().constructType(genericParamType);
-        return new CookieProcessor(paramValue, targetType);
+        return new CookieProcessor(parameter.getName(), targetType);
     }
 }

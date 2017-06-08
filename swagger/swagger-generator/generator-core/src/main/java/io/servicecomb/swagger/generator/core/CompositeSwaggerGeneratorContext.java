@@ -34,7 +34,7 @@ public class CompositeSwaggerGeneratorContext {
         contextList = SPIServiceUtils.getAllService(SwaggerGeneratorContext.class);
 
         contextList.sort((context1, context2) -> {
-            return context2.getOrder() - context1.getOrder();
+            return context1.getOrder() - context2.getOrder();
         });
 
         for (SwaggerGeneratorContext context : contextList) {

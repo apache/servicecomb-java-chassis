@@ -26,9 +26,8 @@ import org.springframework.core.DefaultParameterNameDiscoverer;
 import org.springframework.core.MethodParameter;
 
 import com.fasterxml.jackson.databind.ser.std.MapProperty;
-import io.servicecomb.swagger.extend.parameter.PendingBodyParameter;
-import io.servicecomb.swagger.generator.core.OperationGenerator;
 
+import io.servicecomb.swagger.generator.core.OperationGenerator;
 import io.swagger.converter.ModelConverters;
 import io.swagger.models.Model;
 import io.swagger.models.Swagger;
@@ -73,30 +72,16 @@ public final class ParamUtils {
         return method.getGenericParameterTypes()[paramIdx];
     }
 
-    public static PendingBodyParameter createPendingBodyParameter(OperationGenerator operationGenerator,
+    public static String generateBodyParameterName(Method method) {
+        return method.getName() + "Body";
+    }
+
+    public static BodyParameter createBodyParameter(OperationGenerator operationGenerator,
             int paramIdx) {
         Method method = operationGenerator.getProviderMethod();
         String paramName = getParameterName(method, paramIdx);
         Type paramType = getGenericParameterType(method, paramIdx);
-        return createPendingBodyParameter(operationGenerator, paramName, paramType);
-    }
-
-    public static PendingBodyParameter createPendingBodyParameter(OperationGenerator operationGenerator,
-            String paramName, Type paramType) {
-        addDefinitions(operationGenerator.getSwagger(), paramType);
-        Property property = ModelConverters.getInstance().readAsProperty(paramType);
-
-        PendingBodyParameter pendingBodyParameter = new PendingBodyParameter();
-        pendingBodyParameter.setName(paramName);
-        pendingBodyParameter.setProperty(property);
-        pendingBodyParameter.setType(paramType);
-        pendingBodyParameter.setOperationGenerator(operationGenerator);
-
-        return pendingBodyParameter;
-    }
-
-    public static String generateBodyParameterName(Method method) {
-        return method.getName() + "Body";
+        return createBodyParameter(operationGenerator.getSwagger(), paramName, paramType);
     }
 
     public static BodyParameter createBodyParameter(Swagger swagger, String paramName, Type paramType) {

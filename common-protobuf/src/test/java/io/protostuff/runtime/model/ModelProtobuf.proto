@@ -1,0 +1,18 @@
+syntax = "proto3";
+package io.protostuff.runtime.model;
+
+message User{
+	string name = 1;
+}
+
+message RequestHeader{
+	string destMicroservice = 1;
+	int32 msgType = 2;
+	int32 flags = 3;
+	string schemaId = 5;
+	string operationName = 6;
+	map<string, string> cseContext = 7;
+	map<string, User> userMap = 8;
+	repeated string list = 9;
+	repeated User userList = 10;
+}

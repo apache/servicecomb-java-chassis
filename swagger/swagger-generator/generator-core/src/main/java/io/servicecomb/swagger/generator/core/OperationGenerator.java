@@ -26,18 +26,15 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import io.servicecomb.swagger.generator.core.utils.ParamUtils;
-import org.apache.commons.lang3.StringUtils;
+import org.springframework.util.StringUtils;
 
 import io.servicecomb.swagger.extend.parameter.ContextParameter;
-import io.servicecomb.swagger.extend.parameter.PendingBodyParameter;
-import io.servicecomb.swagger.generator.core.utils.ClassUtils;
-
+import io.servicecomb.swagger.generator.core.utils.ParamUtils;
+import io.swagger.models.HttpMethod;
 import io.swagger.models.Operation;
 import io.swagger.models.Path;
 import io.swagger.models.Response;
 import io.swagger.models.Swagger;
-import io.swagger.models.parameters.BodyParameter;
 import io.swagger.models.parameters.Parameter;
 import io.swagger.models.properties.Property;
 import io.swagger.util.ReflectionUtils;
@@ -89,6 +86,10 @@ public class OperationGenerator {
         responseHeaderMap.put(name, header);
     }
 
+    public List<Parameter> getSwaggerParameters() {
+        return swaggerParameters;
+    }
+
     public SwaggerGeneratorContext getContext() {
         return context;
     }
@@ -114,6 +115,10 @@ public class OperationGenerator {
             path = "/" + path;
         }
         this.path = path;
+    }
+
+    public String getHttpMethod() {
+        return httpMethod;
     }
 
     public void setHttpMethod(String httpMethod) {
@@ -143,59 +148,9 @@ public class OperationGenerator {
 
         checkBodyParameter();
         copyToSwaggerParameters();
-        processBodyBasedParameter();
         operation.setParameters(swaggerParameters);
 
         correctOperation();
-    }
-
-    protected void processBodyBasedParameter() {
-        List<BodyParameter> bodyParameters = collectBodyBasedParameters();
-        if (bodyParameters.isEmpty()) {
-            return;
-        }
-
-        if (bodyParameters.size() == 1) {
-            Parameter bodyParameter = bodyParameters.get(0);
-            replaceBodyBasedParameter(bodyParameter);
-            return;
-        }
-
-        // 将多个pending合并成一个body
-        mergeBodyBasedParameters(bodyParameters);
-    }
-
-    protected void mergeBodyBasedParameters(List<BodyParameter> bodyParameters) {
-        for (Parameter parameter : bodyParameters) {
-            swaggerParameters.remove(parameter);
-        }
-
-        // 将这些body包装为一个class，整体做为一个body参数
-        String bodyParamName = ParamUtils.generateBodyParameterName(providerMethod);
-        Class<?> cls = ClassUtils.getOrCreateBodyClass(this, bodyParameters);
-        BodyParameter bodyParameter = ParamUtils.createBodyParameter(swagger, bodyParamName, cls);
-        swaggerParameters.add(bodyParameter);
-    }
-
-    protected void replaceBodyBasedParameter(Parameter bodyBasedParameter) {
-        if (ParamUtils.isRealBodyParameter(bodyBasedParameter)) {
-            return;
-        }
-
-        int idx = swaggerParameters.indexOf(bodyBasedParameter);
-        String bodyParamName = bodyBasedParameter.getName();
-        BodyParameter bodyParameter = ((PendingBodyParameter) bodyBasedParameter).createBodyParameter(bodyParamName);
-        swaggerParameters.set(idx, bodyParameter);
-    }
-
-    protected List<BodyParameter> collectBodyBasedParameters() {
-        List<BodyParameter> bodyParameters = new ArrayList<>();
-        for (Parameter parameter : swaggerParameters) {
-            if (BodyParameter.class.isInstance(parameter)) {
-                bodyParameters.add((BodyParameter) parameter);
-            }
-        }
-        return bodyParameters;
     }
 
     protected void copyToSwaggerParameters() {
@@ -239,8 +194,6 @@ public class OperationGenerator {
         }
 
         // providerParameters中不能有多个body
-        // 多个pending body没有问题
-        // 多个pending body和一个body也没有问题
         int parameterBodyCount = countRealBodyParameter(providerParameters);
         if (parameterBodyCount > 1) {
             throw new Error(String.format("too many (%d) body parameter in %s:%s parameters",
@@ -267,6 +220,10 @@ public class OperationGenerator {
         }
     }
 
+    /**
+     *
+     * 根据method上的数据，综合生成契约参数
+     */
     protected void scanMethodParameters() {
         Annotation[][] allAnnotations = providerMethod.getParameterAnnotations();
         Type[] parameterTypes = providerMethod.getGenericParameterTypes();
@@ -315,9 +272,8 @@ public class OperationGenerator {
             operation.setOperationId(providerMethod.getName());
         }
 
-        context.correctPath(this);
+        context.postProcessOperation(this);
 
-        correctHttpMethod();
         correctResponse();
     }
 
@@ -335,16 +291,6 @@ public class OperationGenerator {
 
                 response.addHeader(entry.getKey(), entry.getValue());
             }
-        }
-    }
-
-    private void correctHttpMethod() {
-        if (StringUtils.isEmpty(httpMethod)) {
-            httpMethod = swaggerGenerator.getHttpMethod();
-        }
-
-        if (StringUtils.isEmpty(httpMethod)) {
-            httpMethod = "post";
         }
     }
 
@@ -383,12 +329,22 @@ public class OperationGenerator {
     }
 
     protected void addOperationToSwagger() {
+        if (StringUtils.isEmpty(httpMethod)) {
+            return;
+        }
+
         Path pathObj = swagger.getPath(path);
         if (pathObj == null) {
             pathObj = new Path();
             swagger.path(path, pathObj);
         }
 
+        HttpMethod hm = HttpMethod.valueOf(httpMethod.toUpperCase(Locale.US));
+        if (pathObj.getOperationMap().get(hm) != null) {
+            throw new Error(String.format("Only allowed one default path. %s:%s",
+                    swaggerGenerator.getCls().getName(),
+                    providerMethod.getName()));
+        }
         pathObj.set(httpMethod, operation);
     }
 }

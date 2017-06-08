@@ -6,9 +6,6 @@ cse:
   service:
     registry:
       address: http://127.0.0.1:9980
-  grpc:
-    thread-count: 10
-    connection-pool-per-thread: 1
   rest:
     client:
       thread-count: 10
@@ -25,6 +22,3 @@ cse:
   metrics:
     cycle:
       ms: 1000
-  references:
-    pojo:
-      version-rule: 0.0.2

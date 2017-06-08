@@ -19,12 +19,16 @@ package io.servicecomb.serviceregistry.config;
 import java.util.HashMap;
 import java.util.Map;
 
-import io.servicecomb.serviceregistry.api.PropertyExtended;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.netflix.config.DynamicPropertyFactory;
 
+import io.servicecomb.serviceregistry.api.PropertyExtended;
+
+/**
+ * 加载微服务和微服务实例的properties
+ */
 public abstract class AbstractPropertiesLoader {
     private static final Logger LOGGER = LoggerFactory.getLogger(AbstractPropertiesLoader.class);
 

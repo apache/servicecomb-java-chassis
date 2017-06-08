@@ -23,6 +23,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import javax.ws.rs.core.HttpHeaders;
+
 import io.servicecomb.common.rest.codec.RestServerRequestInternal;
 import io.servicecomb.foundation.vertx.stream.BufferInputStream;
 
@@ -31,6 +33,9 @@ import io.vertx.core.http.HttpServerRequest;
 import io.vertx.ext.web.Cookie;
 import io.vertx.ext.web.RoutingContext;
 
+/**
+ * 将HttpServerRequest封装为RestHttpRequest接口的类型，统一多种rest transport
+ */
 public class RestVertxHttpRequest implements RestServerRequestInternal {
     private RoutingContext context;
 
@@ -54,6 +59,11 @@ public class RestVertxHttpRequest implements RestServerRequestInternal {
     @Override
     public String getMethod() {
         return request.method().name();
+    }
+
+    @Override
+    public String getContentType() {
+        return request.getHeader(HttpHeaders.CONTENT_TYPE);
     }
 
     public void setPathParamMap(Map<String, String> pathParamMap) {

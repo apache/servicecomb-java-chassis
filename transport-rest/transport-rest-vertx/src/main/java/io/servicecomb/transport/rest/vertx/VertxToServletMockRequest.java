@@ -45,6 +45,9 @@ import javax.servlet.http.Part;
 import io.vertx.core.MultiMap;
 import io.vertx.core.http.HttpServerRequest;
 
+/**
+ * 使用vertx http request模拟一个Servlet http request
+ */
 public class VertxToServletMockRequest implements HttpServletRequest {
 
     private HttpServerRequest vertxRequest;

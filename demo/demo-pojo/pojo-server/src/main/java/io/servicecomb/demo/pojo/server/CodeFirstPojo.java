@@ -18,14 +18,33 @@ package io.servicecomb.demo.pojo.server;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
-import io.servicecomb.core.context.ContextUtils;
 import io.servicecomb.demo.CodeFirstPojoIntf;
 import io.servicecomb.demo.compute.Person;
+import io.servicecomb.demo.server.User;
 import io.servicecomb.provider.pojo.RpcSchema;
+import io.servicecomb.swagger.invocation.context.ContextUtils;
+import io.swagger.annotations.SwaggerDefinition;
 
 @RpcSchema()
+@SwaggerDefinition(basePath = "/pojo/rest")
 public class CodeFirstPojo implements CodeFirstPojoIntf {
+    @Override
+    public Map<String, User> testUserMap(Map<String, User> userMap) {
+        return userMap;
+    }
+
+    @Override
+    public List<User> testUserArray(List<User> users) {
+        return users;
+    }
+
+    public String[] testStrings(String[] input) {
+        input[0] += input[0] + "0";
+        return input;
+    }
+
     public byte[] testBytes(byte[] input) {
         input[0] = (byte) (input[0] + 1);
         return input;

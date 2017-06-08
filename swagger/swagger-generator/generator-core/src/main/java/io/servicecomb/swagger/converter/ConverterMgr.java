@@ -26,20 +26,20 @@ import java.util.Map.Entry;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.type.SimpleType;
 import com.fasterxml.jackson.databind.type.TypeFactory;
+
+import io.servicecomb.swagger.converter.model.ArrayModelConverter;
 import io.servicecomb.swagger.converter.model.ModelImplConverter;
 import io.servicecomb.swagger.converter.model.RefModelConverter;
 import io.servicecomb.swagger.converter.parameter.AbstractSerializableParameterConverter;
 import io.servicecomb.swagger.converter.parameter.BodyParameterConverter;
-import io.servicecomb.swagger.converter.parameter.PendingBodyParameterConverter;
 import io.servicecomb.swagger.converter.property.ArrayPropertyConverter;
 import io.servicecomb.swagger.converter.property.MapPropertyConverter;
 import io.servicecomb.swagger.converter.property.RefPropertyConverter;
 import io.servicecomb.swagger.converter.property.StringPropertyConverter;
-import io.servicecomb.swagger.extend.parameter.PendingBodyParameter;
 import io.servicecomb.swagger.extend.property.ByteProperty;
 import io.servicecomb.swagger.extend.property.ShortProperty;
 import io.servicecomb.swagger.generator.core.SwaggerGenerator;
-
+import io.swagger.models.ArrayModel;
 import io.swagger.models.Model;
 import io.swagger.models.ModelImpl;
 import io.swagger.models.RefModel;
@@ -137,9 +137,9 @@ public final class ConverterMgr {
 
         converterMap.put(ModelImpl.class, new ModelImplConverter());
         converterMap.put(RefModel.class, new RefModelConverter());
+        converterMap.put(ArrayModel.class, new ArrayModelConverter());
 
         converterMap.put(BodyParameter.class, new BodyParameterConverter());
-        converterMap.put(PendingBodyParameter.class, new PendingBodyParameterConverter());
 
         AbstractSerializableParameterConverter converter = new AbstractSerializableParameterConverter();
         converterMap.put(QueryParameter.class, converter);
@@ -156,6 +156,10 @@ public final class ConverterMgr {
         }
 
         converterMap.put(propertyCls, (classLoader, packageName, swagger, def) -> javaType);
+    }
+
+    public static void addConverter(Class<?> cls, Converter converter) {
+        converterMap.put(cls, converter);
     }
 
     public static JavaType findJavaType(String type, String format) {

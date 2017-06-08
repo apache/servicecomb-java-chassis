@@ -19,7 +19,7 @@ package io.servicecomb.codec.protobuf.jackson;
 import java.util.HashMap;
 import java.util.Map;
 
-import io.servicecomb.codec.protobuf.codec.AbstractFieldCodec;
+import io.servicecomb.codec.protobuf.codec.AbstractFieldCodec.ReaderHelpData;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -37,11 +37,11 @@ public class TestAbstractDeserializer extends AbstractDeserializer {
 
     private JsonParser jsonParser = Mockito.mock(JsonParser.class);
 
-    static AbstractFieldCodec.ReaderHelpData readerHelpData = Mockito.mock(AbstractFieldCodec.ReaderHelpData.class);
+    static ReaderHelpData readerHelpData = Mockito.mock(ReaderHelpData.class);
 
-    static Map<String, AbstractFieldCodec.ReaderHelpData> readerHelpDataMap = new HashMap<String, AbstractFieldCodec.ReaderHelpData>();
+    static Map<String, ReaderHelpData> readerHelpDataMap = new HashMap<String, ReaderHelpData>();
 
-    public static void setReaderHelpDataMap(Map<String, AbstractFieldCodec.ReaderHelpData> readerHelpDataMap) {
+    public static void setReaderHelpDataMap(Map<String, ReaderHelpData> readerHelpDataMap) {
         TestAbstractDeserializer.readerHelpDataMap = readerHelpDataMap;
         readerHelpDataMap.put("abc", readerHelpData);
         readerHelpDataMap.put("null", readerHelpData);
@@ -93,7 +93,7 @@ public class TestAbstractDeserializer extends AbstractDeserializer {
     }
 
     @Override
-    protected Object updateResult(Object result, Object value, AbstractFieldCodec.ReaderHelpData helpData) {
+    protected Object updateResult(Object result, Object value, ReaderHelpData helpData) {
         /* Do not worry, overridden method*/
         try {
             Mockito.when(jsonParser.nextToken()).thenReturn(JsonToken.VALUE_NULL);

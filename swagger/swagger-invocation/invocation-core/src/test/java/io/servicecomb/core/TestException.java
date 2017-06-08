@@ -22,9 +22,9 @@ import javax.ws.rs.core.Response.Status;
 import org.junit.Assert;
 import org.junit.Test;
 
-import io.servicecomb.core.exception.CommonExceptionData;
-import io.servicecomb.core.exception.ExceptionFactory;
-import io.servicecomb.core.exception.InvocationException;
+import io.servicecomb.swagger.invocation.exception.CommonExceptionData;
+import io.servicecomb.swagger.invocation.exception.ExceptionFactory;
+import io.servicecomb.swagger.invocation.exception.InvocationException;
 
 public class TestException {
     @Test

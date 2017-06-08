@@ -18,12 +18,12 @@ package io.servicecomb.swagger.generator.springmvc.processor.annotation;
 
 import java.util.Arrays;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import io.servicecomb.swagger.generator.core.MethodAnnotationProcessor;
 import io.servicecomb.swagger.generator.core.OperationGenerator;
-
 import io.swagger.models.Operation;
 
 public class RequestMappingMethodAnnotationProcessor implements MethodAnnotationProcessor {
@@ -40,6 +40,11 @@ public class RequestMappingMethodAnnotationProcessor implements MethodAnnotation
 
         this.processConsumes(requestMapping.consumes(), operation);
         this.processProduces(requestMapping.produces(), operation);
+
+        if (StringUtils.isEmpty(operationGenerator.getHttpMethod())
+                && StringUtils.isEmpty(operationGenerator.getSwaggerGenerator().getHttpMethod())) {
+            throw new Error("HttpMethod must not both be empty in class and method");
+        }
     }
 
     protected void processPath(String[] paths, OperationGenerator operationGenerator) {

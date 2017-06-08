@@ -16,17 +16,17 @@
 
 package io.servicecomb.core.provider.consumer;
 
-import io.servicecomb.core.AsyncResponse;
 import io.servicecomb.core.Invocation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import io.servicecomb.core.CseContext;
-import io.servicecomb.core.Response;
 import io.servicecomb.core.definition.SchemaMeta;
-import io.servicecomb.core.exception.ExceptionFactory;
-import io.servicecomb.core.exception.InvocationException;
 import io.servicecomb.core.invocation.InvocationFactory;
+import io.servicecomb.swagger.invocation.AsyncResponse;
+import io.servicecomb.swagger.invocation.Response;
+import io.servicecomb.swagger.invocation.exception.ExceptionFactory;
+import io.servicecomb.swagger.invocation.exception.InvocationException;
 
 public final class InvokerUtils {
     private static final Logger LOGGER = LoggerFactory.getLogger(InvokerUtils.class);

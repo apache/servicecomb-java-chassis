@@ -20,11 +20,11 @@ import java.util.List;
 
 import io.servicecomb.common.rest.definition.RestOperationMeta;
 import io.servicecomb.common.rest.definition.RestParam;
+import io.servicecomb.swagger.invocation.exception.ExceptionFactory;
+import io.servicecomb.swagger.invocation.exception.InvocationException;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import io.servicecomb.core.exception.ExceptionFactory;
-import io.servicecomb.core.exception.InvocationException;
 
 public final class RestCodec {
     private static final Logger LOG = LoggerFactory.getLogger(RestCodec.class);

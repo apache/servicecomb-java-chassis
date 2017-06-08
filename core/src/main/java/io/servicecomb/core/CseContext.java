@@ -18,7 +18,6 @@ package io.servicecomb.core;
 
 import javax.inject.Inject;
 
-import io.servicecomb.core.context.HttpStatusManager;
 import io.servicecomb.core.definition.MicroserviceMetaManager;
 import io.servicecomb.core.definition.loader.SchemaListenerManager;
 import io.servicecomb.core.definition.loader.SchemaLoader;
@@ -26,6 +25,7 @@ import io.servicecomb.core.definition.schema.ConsumerSchemaFactory;
 import io.servicecomb.core.provider.consumer.ConsumerProviderManager;
 import io.servicecomb.core.provider.producer.ProducerProviderManager;
 import io.servicecomb.core.transport.TransportManager;
+import io.servicecomb.swagger.engine.SwaggerEnvironment;
 
 public class CseContext {
     private static final CseContext INSTANCE = new CseContext();
@@ -48,7 +48,7 @@ public class CseContext {
 
     private TransportManager transportManager;
 
-    private HttpStatusManager statusMgr = new HttpStatusManager();
+    private SwaggerEnvironment swaggerEnvironment;
 
     public SchemaListenerManager getSchemaListenerManager() {
         return schemaListenerManager;
@@ -78,8 +78,13 @@ public class CseContext {
         return transportManager;
     }
 
-    public HttpStatusManager getStatusMgr() {
-        return statusMgr;
+    public SwaggerEnvironment getSwaggerEnvironment() {
+        return swaggerEnvironment;
+    }
+
+    @Inject
+    public void setSwaggerEnvironment(SwaggerEnvironment swaggerEnvironment) {
+        this.swaggerEnvironment = swaggerEnvironment;
     }
 
     @Inject

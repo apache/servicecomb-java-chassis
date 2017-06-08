@@ -17,6 +17,7 @@
 package io.servicecomb.swagger.generator.core;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 
 public interface SwaggerGeneratorContext {
@@ -25,6 +26,8 @@ public interface SwaggerGeneratorContext {
     int getOrder();
 
     boolean canProcess(Class<?> cls);
+
+    boolean canProcess(Method method);
 
     ClassAnnotationProcessor findClassAnnotationProcessor(Class<? extends Annotation> annotationType);
 
@@ -41,5 +44,5 @@ public interface SwaggerGeneratorContext {
 
     ResponseTypeProcessor findResponseTypeProcessor(Type responseType);
 
-    void correctPath(OperationGenerator operationGenerator);
+    void postProcessOperation(OperationGenerator operationGenerator);
 }

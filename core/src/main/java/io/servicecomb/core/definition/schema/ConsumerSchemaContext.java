@@ -16,15 +16,10 @@
 
 package io.servicecomb.core.definition.schema;
 
-import java.util.Map;
-
-import io.servicecomb.core.provider.consumer.ConsumerOperationMeta;
 import io.servicecomb.serviceregistry.api.registry.Microservice;
 
 public class ConsumerSchemaContext extends SchemaContext {
     protected Microservice microservice;
-
-    protected Map<String, ConsumerOperationMeta> consumerOperationMap;
 
     public Microservice getMicroservice() {
         return microservice;
@@ -32,13 +27,5 @@ public class ConsumerSchemaContext extends SchemaContext {
 
     public void setMicroservice(Microservice microservice) {
         this.microservice = microservice;
-    }
-
-    public Map<String, ConsumerOperationMeta> getConsumerOperationMap() {
-        return consumerOperationMap;
-    }
-
-    public void setConsumerOperationMap(Map<String, ConsumerOperationMeta> consumerOperationMap) {
-        this.consumerOperationMap = consumerOperationMap;
     }
 }

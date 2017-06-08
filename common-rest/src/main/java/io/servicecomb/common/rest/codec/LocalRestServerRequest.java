@@ -52,6 +52,11 @@ public class LocalRestServerRequest implements RestServerRequest {
     }
 
     @Override
+    public String getContentType() {
+        return null;
+    }
+
+    @Override
     public String[] getQueryParam(String key) {
         List<String> values = queryParams.get(key);
         if (values == null) {

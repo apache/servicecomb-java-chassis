@@ -21,6 +21,9 @@ import io.servicecomb.swagger.invocation.arguments.producer.AbstractProducerCont
 
 import io.vertx.core.http.HttpServerRequest;
 
+/**
+ * 使用vertx http request构造其他各种http request
+ */
 public class ProducerVertxHttpRequestArgMapper extends AbstractProducerContextArgMapper {
     private HttpServerRequest httpRequest;
 

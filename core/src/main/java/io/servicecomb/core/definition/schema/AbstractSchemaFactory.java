@@ -48,6 +48,10 @@ public abstract class AbstractSchemaFactory<CONTEXT extends SchemaContext> {
     @Inject
     protected CompositeSwaggerGeneratorContext compositeSwaggerGeneratorContext;
 
+    public void setMicroserviceMetaManager(MicroserviceMetaManager microserviceMetaManager) {
+        this.microserviceMetaManager = microserviceMetaManager;
+    }
+
     // 因为aop的存在，schemaInstance的class不一定等于schemaClass
     protected SchemaMeta getOrCreateSchema(CONTEXT context) {
         MicroserviceMeta microserviceMeta = context.getMicroserviceMeta();
@@ -57,12 +61,8 @@ public abstract class AbstractSchemaFactory<CONTEXT extends SchemaContext> {
         }
         context.setSchemaMeta(schemaMeta);
 
-        connectToProvider(context);
-
         return schemaMeta;
     }
-
-    protected abstract void connectToProvider(CONTEXT context);
 
     protected abstract SchemaMeta createSchema(CONTEXT context);
 

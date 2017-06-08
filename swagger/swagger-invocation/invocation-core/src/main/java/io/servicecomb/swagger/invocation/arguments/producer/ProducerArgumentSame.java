@@ -18,19 +18,25 @@ package io.servicecomb.swagger.invocation.arguments.producer;
 
 import io.servicecomb.swagger.invocation.SwaggerInvocation;
 import io.servicecomb.swagger.invocation.arguments.ArgumentMapper;
+import io.servicecomb.swagger.invocation.converter.Converter;
 
 public class ProducerArgumentSame implements ArgumentMapper {
     private int swaggerIdx;
 
     private int producerIdx;
 
-    public ProducerArgumentSame(int swaggerIdx, int producerIdx) {
+    private Converter converter;
+
+    public ProducerArgumentSame(int swaggerIdx, int producerIdx, Converter converter) {
         this.swaggerIdx = swaggerIdx;
         this.producerIdx = producerIdx;
+        this.converter = converter;
     }
 
     @Override
     public void mapArgument(SwaggerInvocation invocation, Object[] producerArguments) {
-        producerArguments[producerIdx] = invocation.getSwaggerArgument(swaggerIdx);
+        Object swaggerParam = invocation.getSwaggerArgument(swaggerIdx);
+        Object producerParam = converter.convert(swaggerParam);
+        producerArguments[producerIdx] = producerParam;
     }
 }

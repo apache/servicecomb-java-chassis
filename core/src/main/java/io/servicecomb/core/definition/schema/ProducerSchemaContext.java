@@ -16,12 +16,8 @@
 
 package io.servicecomb.core.definition.schema;
 
-import io.servicecomb.swagger.generator.core.SwaggerGenerator;
-
 public class ProducerSchemaContext extends SchemaContext {
     protected Object producerInstance;
-
-    protected SwaggerGenerator generator;
 
     public Object getProducerInstance() {
         return producerInstance;
@@ -29,13 +25,5 @@ public class ProducerSchemaContext extends SchemaContext {
 
     public void setProducerInstance(Object producerInstance) {
         this.producerInstance = producerInstance;
-    }
-
-    public SwaggerGenerator getGenerator() {
-        return generator;
-    }
-
-    public void setGenerator(SwaggerGenerator generator) {
-        this.generator = generator;
     }
 }

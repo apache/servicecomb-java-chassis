@@ -16,12 +16,16 @@
 
 package io.servicecomb.swagger.generator.jaxrs;
 
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Method;
+
 import javax.ws.rs.Consumes;
 import javax.ws.rs.CookieParam;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.HeaderParam;
+import javax.ws.rs.HttpMethod;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
@@ -30,25 +34,23 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response;
 
-import io.servicecomb.swagger.generator.jaxrs.processor.annotation.HeaderParamAnnotationProcessor;
-import io.servicecomb.swagger.generator.jaxrs.processor.annotation.PathClassAnnotationProcessor;
-import io.servicecomb.swagger.generator.jaxrs.processor.annotation.ProducesAnnotationProcessor;
-import io.servicecomb.swagger.generator.jaxrs.processor.response.ResponseProcessor;
-import org.apache.commons.lang3.StringUtils;
-
-import io.servicecomb.swagger.generator.core.DefaultSwaggerGeneratorContext;
-import io.servicecomb.swagger.generator.core.OperationGenerator;
 import io.servicecomb.swagger.generator.core.utils.ClassUtils;
 import io.servicecomb.swagger.generator.jaxrs.processor.annotation.ConsumesAnnotationProcessor;
 import io.servicecomb.swagger.generator.jaxrs.processor.annotation.CookieParamAnnotationProcessor;
 import io.servicecomb.swagger.generator.jaxrs.processor.annotation.FormParamAnnotationProcessor;
+import io.servicecomb.swagger.generator.jaxrs.processor.annotation.HeaderParamAnnotationProcessor;
 import io.servicecomb.swagger.generator.jaxrs.processor.annotation.HttpMethodAnnotationProcessor;
+import io.servicecomb.swagger.generator.jaxrs.processor.annotation.PathClassAnnotationProcessor;
 import io.servicecomb.swagger.generator.jaxrs.processor.annotation.PathMethodAnnotationProcessor;
 import io.servicecomb.swagger.generator.jaxrs.processor.annotation.PathParamAnnotationProcessor;
+import io.servicecomb.swagger.generator.jaxrs.processor.annotation.ProducesAnnotationProcessor;
 import io.servicecomb.swagger.generator.jaxrs.processor.annotation.QueryParamAnnotationProcessor;
+import io.servicecomb.swagger.generator.jaxrs.processor.parameter.JaxrsDefaultParameterProcessor;
+import io.servicecomb.swagger.generator.jaxrs.processor.response.ResponseProcessor;
+import io.servicecomb.swagger.generator.rest.RestSwaggerGeneratorContext;
 
-public class JaxrsSwaggerGeneratorContext extends DefaultSwaggerGeneratorContext {
-    private static final int ORDER = 500;
+public class JaxrsSwaggerGeneratorContext extends RestSwaggerGeneratorContext {
+    private static final int ORDER = 2000;
 
     @Override
     public int getOrder() {
@@ -58,6 +60,23 @@ public class JaxrsSwaggerGeneratorContext extends DefaultSwaggerGeneratorContext
     @Override
     public boolean canProcess(Class<?> cls) {
         return ClassUtils.hasAnnotation(cls, Path.class);
+    }
+
+    @Override
+    public boolean canProcess(Method method) {
+        for (Annotation annotation : method.getAnnotations()) {
+            HttpMethod httpMethod = annotation.annotationType().getAnnotation(HttpMethod.class);
+            if (httpMethod != null) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    @Override
+    protected void initDefaultParameterProcessor() {
+        defaultParameterProcessor = new JaxrsDefaultParameterProcessor();
     }
 
     @Override
@@ -99,14 +118,5 @@ public class JaxrsSwaggerGeneratorContext extends DefaultSwaggerGeneratorContext
         super.initResponseTypeProcessorMgr();
 
         responseTypeProcessorMgr.register(Response.class, new ResponseProcessor());
-    }
-
-    @Override
-    public void correctPath(OperationGenerator operationGenerator) {
-        String path = operationGenerator.getPath();
-        if (StringUtils.isEmpty(path)) {
-            path = "/";
-        }
-        operationGenerator.setPath(path);
     }
 }

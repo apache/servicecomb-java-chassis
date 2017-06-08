@@ -22,22 +22,26 @@ import java.lang.reflect.Type;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Map;
-import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.springframework.util.ClassUtils;
 
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.type.TypeFactory;
+
+import io.protostuff.Schema;
+import io.protostuff.runtime.ProtobufCompatibleUtils;
+import io.protostuff.runtime.RuntimeSchema;
 import io.servicecomb.codec.protobuf.utils.schema.WrapSchemaFactory;
 import io.servicecomb.common.javassist.JavassistUtils;
 import io.servicecomb.core.definition.OperationMeta;
 
-import io.protostuff.Schema;
-import io.protostuff.runtime.RuntimeSchema;
-
 public final class ProtobufSchemaUtils {
     private static volatile Map<String, WrapSchema> schemaCache = new ConcurrentHashMap<>();
+
+    static {
+        ProtobufCompatibleUtils.init();
+    }
 
     private interface SchemaCreator {
         WrapSchema create() throws Exception;
@@ -95,40 +99,25 @@ public final class ProtobufSchemaUtils {
 
     // 适用于将单个类型包装的场景
     // 比如return
-    public static WrapSchema getOrCreateSchema(Class<?> type) {
-        return getOrCreateSchema(type, (String) null);
-    }
-
-    public static WrapSchema getOrCreateSchema(JavaType javaType) {
-        return getOrCreateSchema(javaType.getRawClass(), javaType.getGenericSignature());
-    }
-
-    public static WrapSchema getOrCreateSchema(Class<?> type, Type genericType) {
-        return getOrCreateSchema(type,
-                TypeFactory.defaultInstance().constructType(genericType).getGenericSignature());
-    }
-
-    public static WrapSchema getOrCreateSchema(Class<?> type, String genericSignature) {
-        String key = type.getCanonicalName();
-        if (genericSignature != null) {
-            key = genericSignature;
-        }
+    public static WrapSchema getOrCreateSchema(Type type) {
+        JavaType javaType = TypeFactory.defaultInstance().constructType(type);
+        // List<String> -> java.util.List<java.lang.String>
+        // List<List<String>> -> java.util.List<java.util.List<java.lang.String>>
+        String key = javaType.toCanonical();
         return getOrCreateSchema(key, () -> {
-            if (!isNeedWrap(type)) {
+            if (!isNeedWrap(javaType.getRawClass())) {
                 // 可以直接使用
-                Schema<?> schema = RuntimeSchema.createFrom(type);
+                Schema<?> schema = RuntimeSchema.createFrom(javaType.getRawClass());
                 return WrapSchemaFactory.createSchema(schema, WrapType.NOT_WRAP);
             }
 
             // 需要包装
             WrapClassConfig config = new WrapClassConfig();
             config.setType(WrapType.NORMAL_WRAP);
-            // 为了处理泛型包装的场景，必须加上uuid
-            // 否则List<List<String>>就会与List<String>冲突
-            config.setClassName(
-                    "gen." + type.getCanonicalName() + "." + UUID.randomUUID().toString().replaceAll("-", ""));
-            if (!Void.TYPE.isAssignableFrom(type)) {
-                config.addField("field0", type, genericSignature);
+
+            config.setClassName("gen.wrap.protobuf." + key.replaceAll("[<>]", "_").replace("[", "array_"));
+            if (!Void.TYPE.isAssignableFrom(javaType.getRawClass())) {
+                config.addField("field0", javaType);
             }
 
             JavassistUtils.genSingleWrapperInterface(config);

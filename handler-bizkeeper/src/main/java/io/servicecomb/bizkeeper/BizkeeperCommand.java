@@ -20,7 +20,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import io.servicecomb.core.Invocation;
-import io.servicecomb.core.Response;
+import io.servicecomb.swagger.invocation.Response;
+
 import com.netflix.hystrix.HystrixObservableCommand;
 import com.netflix.hystrix.strategy.concurrency.HystrixRequestContext;
 

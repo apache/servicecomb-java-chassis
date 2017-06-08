@@ -20,8 +20,6 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.springframework.util.ClassUtils;
-
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.type.TypeFactory;
 
@@ -69,31 +67,22 @@ public class ClassConfig {
         return fieldList;
     }
 
-    public void addField(String name, Class<?> type) {
-        addField(name, type, (String) null);
+    public FieldConfig addField(String name, Type genericType) {
+        return addField(name, TypeFactory.defaultInstance().constructType(genericType));
     }
 
-    public void addField(String name, Type genericType) {
-        addField(name, TypeFactory.defaultInstance().constructType(genericType));
-    }
-
-    public void addField(String name, JavaType javaType) {
-        String genericSignature = javaType.hasGenericTypes() ? javaType.getGenericSignature() : null;
-        addField(name, javaType.getRawClass(), genericSignature);
-    }
-
-    public void addField(String name, Class<?> type, String genericSignature) {
-        type = ClassUtils.resolvePrimitiveIfNecessary(type);
-
+    public FieldConfig addField(String name, JavaType javaType) {
         FieldConfig field = new FieldConfig();
         field.setName(name);
-        field.setType(type);
-        field.setGenericSignature(genericSignature);
+        field.setType(javaType);
 
         fieldList.add(field);
+
+        return field;
     }
 
     public void addMethod(MethodConfig methodConfig) {
+        methodConfig.init();
         methodList.add(methodConfig);
     }
 

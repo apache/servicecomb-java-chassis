@@ -69,6 +69,7 @@ definitions:
         enum:
         - "WHITE"
         - "BLACK"
+        x-java-class: "io.servicecomb.swagger.generator.core.schema.Color"
       cValue:
         type: "string"
       cObjectValue:

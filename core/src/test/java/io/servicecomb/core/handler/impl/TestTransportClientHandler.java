@@ -18,13 +18,13 @@ package io.servicecomb.core.handler.impl;
 
 import io.servicecomb.core.Invocation;
 import io.servicecomb.core.Transport;
+import io.servicecomb.swagger.invocation.AsyncResponse;
+
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
-
-import io.servicecomb.core.AsyncResponse;
 
 public class TestTransportClientHandler {
     TransportClientHandler transportClientHandler;

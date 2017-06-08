@@ -23,6 +23,9 @@ import org.apache.log4j.RollingFileAppender;
 import org.apache.log4j.helpers.LogLog;
 import org.apache.log4j.spi.LoggingEvent;
 
+/**
+ * 扩展增加2个功能：1. 设置文件权限；2. 文件删除后重建。
+ */
 public class RollingFileAppenderExt extends RollingFileAppender {
     private File currentFile;
 

@@ -19,7 +19,7 @@ import javax.ws.rs.core.Response.StatusType;
 
 import org.springframework.stereotype.Component;
 
-import io.servicecomb.core.Response;
+import io.servicecomb.swagger.invocation.Response;
 
 @Component
 public class ProducerResponseCseSame implements ProducerResponseMapper {

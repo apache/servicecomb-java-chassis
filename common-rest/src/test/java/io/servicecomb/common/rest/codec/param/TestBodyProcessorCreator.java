@@ -22,6 +22,10 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
+import io.servicecomb.common.rest.codec.param.BodyProcessorCreator.RawJsonBodyProcessor;
+import io.servicecomb.swagger.generator.core.SwaggerConst;
+import io.swagger.models.parameters.BodyParameter;
+
 public class TestBodyProcessorCreator {
     private static BodyProcessorCreator bodyCreator;
 
@@ -32,14 +36,19 @@ public class TestBodyProcessorCreator {
 
     @Test
     public void testBodyProcessorCreator() throws Exception {
-        ParamValueProcessor processor = bodyCreator.create(true, String.class);
-        Assert.assertTrue(BodyProcessorCreator.RawJsonBodyProcessor.class.isInstance(processor));
+        BodyParameter bp = new BodyParameter();
+        bp.setVendorExtension(SwaggerConst.EXT_RAW_JSON_TYPE, true);
 
-        processor = bodyCreator.create(false, String.class);
-        Assert.assertFalse(BodyProcessorCreator.RawJsonBodyProcessor.class.isInstance(processor));
+        ParamValueProcessor processor = bodyCreator.create(bp, String.class);
+        Assert.assertTrue(RawJsonBodyProcessor.class.isInstance(processor));
 
-        processor = bodyCreator.create(true, List.class);
-        Assert.assertFalse(BodyProcessorCreator.RawJsonBodyProcessor.class.isInstance(processor));
+        bp.setVendorExtension(SwaggerConst.EXT_RAW_JSON_TYPE, false);
+        processor = bodyCreator.create(bp, String.class);
+        Assert.assertFalse(RawJsonBodyProcessor.class.isInstance(processor));
+
+        bp.setVendorExtension(SwaggerConst.EXT_RAW_JSON_TYPE, true);
+        processor = bodyCreator.create(bp, List.class);
+        Assert.assertFalse(RawJsonBodyProcessor.class.isInstance(processor));
     }
 
 }

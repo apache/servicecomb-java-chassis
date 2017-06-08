@@ -35,9 +35,8 @@ import org.mockito.Mockito;
 
 import io.servicecomb.common.rest.definition.RestOperationMeta;
 import io.servicecomb.common.rest.definition.RestParam;
-import io.servicecomb.core.exception.CommonExceptionData;
-import io.servicecomb.core.exception.InvocationException;
-
+import io.servicecomb.swagger.invocation.exception.CommonExceptionData;
+import io.servicecomb.swagger.invocation.exception.InvocationException;
 import io.swagger.models.parameters.HeaderParameter;
 import io.swagger.models.parameters.Parameter;
 import mockit.Expectations;

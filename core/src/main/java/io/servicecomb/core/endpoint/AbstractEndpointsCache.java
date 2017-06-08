@@ -30,6 +30,10 @@ import io.servicecomb.serviceregistry.cache.CacheEndpoint;
 import io.servicecomb.serviceregistry.cache.InstanceCache;
 import io.servicecomb.serviceregistry.cache.InstanceCacheManager;
 
+/**
+ * registry模块不理解core中的概念
+ * 所以要将字符串的各种信息转义一下，方便运行时使用
+ */
 public abstract class AbstractEndpointsCache<ENDPOINT> {
     static TransportManager transportManager;
 
@@ -43,6 +47,9 @@ public abstract class AbstractEndpointsCache<ENDPOINT> {
         AbstractEndpointsCache.transportManager = transportManager;
     }
 
+    /**
+     * transportName 可能为""，表示走任意健康的地址即可
+     */
     public AbstractEndpointsCache(String appId, String microserviceName, String microserviceVersionRule,
             String transportName) {
         this.transportName = transportName;

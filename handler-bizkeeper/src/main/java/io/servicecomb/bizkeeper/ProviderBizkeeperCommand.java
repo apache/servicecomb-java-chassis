@@ -17,9 +17,9 @@
 package io.servicecomb.bizkeeper;
 
 import io.servicecomb.core.Invocation;
-import io.servicecomb.core.Response;
-import io.servicecomb.core.exception.ExceptionFactory;
-import io.servicecomb.core.exception.InvocationException;
+import io.servicecomb.swagger.invocation.Response;
+import io.servicecomb.swagger.invocation.exception.ExceptionFactory;
+import io.servicecomb.swagger.invocation.exception.InvocationException;
 
 public class ProviderBizkeeperCommand extends BizkeeperCommand {
     protected ProviderBizkeeperCommand(String type, Invocation invocation,

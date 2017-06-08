@@ -55,11 +55,16 @@ public class PojoProducerProvider extends AbstractProducerProvider {
         for (PojoProducerMeta pojoProducerMeta : pojoProducers.getProcucers()) {
             initPojoProducerMeta(pojoProducerMeta);
 
-            producerSchemaFactory.getOrCreateProducerSchema(
-                    RegistryUtils.getMicroservice().getServiceName(),
-                    pojoProducerMeta.getSchemaId(),
-                    pojoProducerMeta.getInstanceClass(),
-                    pojoProducerMeta.getInstance());
+            try {
+                producerSchemaFactory.getOrCreateProducerSchema(
+                        RegistryUtils.getMicroservice().getServiceName(),
+                        pojoProducerMeta.getSchemaId(),
+                        pojoProducerMeta.getInstanceClass(),
+                        pojoProducerMeta.getInstance());
+            } catch (Throwable e) {
+                throw new Error(
+                        "create producer schema failed, class=" + pojoProducerMeta.getInstanceClass().getName(), e);
+            }
         }
     }
 

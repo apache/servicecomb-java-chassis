@@ -20,10 +20,10 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.Mockito;
 
-import io.servicecomb.core.AsyncResponse;
 import io.servicecomb.core.Endpoint;
 import io.servicecomb.core.Invocation;
 import io.servicecomb.foundation.common.net.URIEndpointObject;
+import io.servicecomb.swagger.invocation.AsyncResponse;
 
 public class TestServletRestTransport {
     ServletRestTransport transport = new ServletRestTransport();

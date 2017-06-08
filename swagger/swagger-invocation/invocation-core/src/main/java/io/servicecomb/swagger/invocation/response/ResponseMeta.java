@@ -27,6 +27,9 @@ import io.swagger.models.Swagger;
 import io.swagger.models.properties.Property;
 
 public class ResponseMeta {
+    /**
+     * swagger中定义的statusCode与java类型的映射，方便consumer端transport将码流转换为具体的类型
+     */
     private JavaType javaType;
 
     private Map<String, JavaType> headers = new HashMap<>();

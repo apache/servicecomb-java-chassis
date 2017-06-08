@@ -44,6 +44,9 @@ public final class BeanUtils {
         context = applicationContext;
     }
 
+    /**
+     * 不应该在业务流程中频繁调用，因为内部必然会加一个锁做互斥，会影响并发度
+     */
     @SuppressWarnings("unchecked")
     public static <T> T getBean(String name) {
         return (T) context.getBean(name);

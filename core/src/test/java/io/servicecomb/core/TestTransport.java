@@ -25,7 +25,7 @@ import org.junit.Test;
 import io.servicecomb.core.endpoint.EndpointsCache;
 import io.servicecomb.serviceregistry.RegistryUtils;
 import io.servicecomb.serviceregistry.api.registry.Microservice;
-
+import io.servicecomb.swagger.invocation.AsyncResponse;
 import mockit.Mock;
 import mockit.MockUp;
 import mockit.Mocked;

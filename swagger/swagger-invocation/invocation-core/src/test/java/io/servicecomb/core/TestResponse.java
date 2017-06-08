@@ -17,10 +17,13 @@ package io.servicecomb.core;
 
 import javax.ws.rs.core.Response.Status;
 
-import io.servicecomb.core.exception.CommonExceptionData;
-import io.servicecomb.core.exception.ExceptionFactory;
-import io.servicecomb.core.exception.InvocationException;
-import io.servicecomb.core.invocation.InvocationType;
+import io.servicecomb.swagger.invocation.AsyncResponse;
+import io.servicecomb.swagger.invocation.InvocationType;
+import io.servicecomb.swagger.invocation.Response;
+import io.servicecomb.swagger.invocation.exception.CommonExceptionData;
+import io.servicecomb.swagger.invocation.exception.ExceptionFactory;
+import io.servicecomb.swagger.invocation.exception.InvocationException;
+
 import org.junit.Assert;
 import org.junit.Test;
 

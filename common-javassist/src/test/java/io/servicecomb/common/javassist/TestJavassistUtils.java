@@ -16,8 +16,12 @@
 
 package io.servicecomb.common.javassist;
 
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -27,6 +31,80 @@ import com.fasterxml.jackson.databind.type.TypeFactory;
 import io.servicecomb.foundation.common.utils.ReflectUtils;
 
 public class TestJavassistUtils {
+    @Test
+    public void testField() throws Exception {
+        ClassConfig classConfig = new ClassConfig();
+        classConfig.setClassName("cse.ut.testField");
+
+        FieldConfig fieldConfig = classConfig.addField("intField", int.class);
+        fieldConfig.setGenGetter(true);
+        fieldConfig.setGenSetter(true);
+
+        fieldConfig = classConfig.addField("intArrayField", int[].class);
+        fieldConfig.setGenGetter(true);
+        fieldConfig.setGenSetter(true);
+
+        fieldConfig = classConfig.addField("listStringField",
+                TypeFactory.defaultInstance().constructCollectionType(List.class, String.class));
+        fieldConfig.setGenGetter(true);
+        fieldConfig.setGenSetter(true);
+
+        Class<?> cls = JavassistUtils.createClass(classConfig);
+
+        // intField
+        Field field = cls.getField("intField");
+        Assert.assertEquals(Integer.class, field.getType());
+
+        Method method = cls.getMethod("getIntField");
+        Assert.assertEquals(Integer.class, method.getReturnType());
+        method = cls.getMethod("setIntField", Integer.class);
+
+        // intArrayField
+        field = cls.getField("intArrayField");
+        Assert.assertEquals(int[].class, field.getType());
+
+        method = cls.getMethod("getIntArrayField");
+        Assert.assertEquals(int[].class, method.getReturnType());
+        method = cls.getMethod("setIntArrayField", int[].class);
+
+        // listStringField
+        field = cls.getField("listStringField");
+        Assert.assertEquals("java.util.List<java.lang.String>", field.getGenericType().getTypeName());
+
+        method = cls.getMethod("getListStringField");
+        Assert.assertEquals("java.util.List<java.lang.String>", method.getGenericReturnType().getTypeName());
+        method = cls.getMethod("setListStringField", List.class);
+    }
+
+    @Test
+    public void testAddParameter() {
+        ClassConfig classConfig = new ClassConfig();
+        classConfig.setIntf(true);
+        String intfName = "cse.ut.TestAddParameter";
+        classConfig.setClassName(intfName);
+
+        // List<String> method(Map<String, String> map, Set<String> set)
+        MethodConfig methodConfig = new MethodConfig();
+        methodConfig.setName("method");
+        methodConfig.setResult(TypeFactory.defaultInstance().constructCollectionType(List.class, String.class));
+        methodConfig.addParameter("map",
+                TypeFactory.defaultInstance().constructMapType(Map.class, String.class, String.class));
+        methodConfig.addParameter("set",
+                TypeFactory.defaultInstance().constructCollectionType(Set.class, String.class));
+        classConfig.addMethod(methodConfig);
+
+        Class<?> intf = JavassistUtils.createClass(classConfig);
+
+        Assert.assertEquals(intfName, intf.getName());
+        Method method = ReflectUtils.findMethod(intf, "method");
+        Assert.assertEquals("method", method.getName());
+        Assert.assertEquals("java.util.List<java.lang.String>", method.getGenericReturnType().getTypeName());
+
+        Type[] types = method.getGenericParameterTypes();
+        Assert.assertEquals("java.util.Map<java.lang.String, java.lang.String>", types[0].getTypeName());
+        Assert.assertEquals("java.util.Set<java.lang.String>", types[1].getTypeName());
+    }
+
     @Test
     public void testInterface() throws Exception {
         ClassConfig classConfig = new ClassConfig();
@@ -105,11 +183,11 @@ public class TestJavassistUtils {
         JavaType jt = TypeFactory.defaultInstance().constructType(byte[].class);
         String name = JavassistUtils.getNameForGenerateCode(jt);
         Assert.assertEquals("byte[]", name);
-        
+
         jt = TypeFactory.defaultInstance().constructType(Byte[].class);
         name = JavassistUtils.getNameForGenerateCode(jt);
         Assert.assertEquals("java.lang.Byte[]", name);
-        
+
         jt = TypeFactory.defaultInstance().constructType(Object[].class);
         name = JavassistUtils.getNameForGenerateCode(jt);
         Assert.assertEquals("java.lang.Object[]", name);

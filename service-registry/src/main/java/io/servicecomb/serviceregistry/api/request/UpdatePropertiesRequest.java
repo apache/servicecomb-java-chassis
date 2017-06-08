@@ -18,6 +18,9 @@ package io.servicecomb.serviceregistry.api.request;
 
 import java.util.Map;
 
+/**
+ * 更新微服务和实例properties的request
+ */
 public class UpdatePropertiesRequest {
     private Map<String, String> properties;
 

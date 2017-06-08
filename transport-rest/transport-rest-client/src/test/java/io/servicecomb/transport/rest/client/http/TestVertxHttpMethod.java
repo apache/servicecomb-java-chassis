@@ -25,13 +25,12 @@ import io.servicecomb.common.rest.RestConst;
 import io.servicecomb.common.rest.codec.produce.ProduceProcessor;
 import io.servicecomb.common.rest.definition.RestOperationMeta;
 import io.servicecomb.common.rest.definition.path.URLPathBuilder;
-import io.servicecomb.core.AsyncResponse;
 import io.servicecomb.core.Endpoint;
 import io.servicecomb.core.Invocation;
 import io.servicecomb.core.definition.OperationMeta;
 import io.servicecomb.foundation.common.net.IpPort;
 import io.servicecomb.foundation.vertx.client.http.HttpClientWithContext;
-
+import io.servicecomb.swagger.invocation.AsyncResponse;
 import io.vertx.core.Context;
 import io.vertx.core.Handler;
 import io.vertx.core.http.HttpClient;

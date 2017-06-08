@@ -16,46 +16,34 @@
 
 package io.servicecomb.core.definition.schema;
 
-import java.lang.reflect.Method;
-import java.util.List;
-
 import javax.inject.Inject;
 
-import io.servicecomb.core.definition.MicroserviceMeta;
-import io.servicecomb.core.provider.producer.ProducerOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectWriter;
+
 import io.servicecomb.core.Const;
+import io.servicecomb.core.definition.MicroserviceMeta;
 import io.servicecomb.core.definition.OperationMeta;
 import io.servicecomb.core.definition.SchemaMeta;
-import io.servicecomb.swagger.generator.core.OperationGenerator;
+import io.servicecomb.swagger.engine.SwaggerEnvironment;
+import io.servicecomb.swagger.engine.SwaggerProducer;
+import io.servicecomb.swagger.engine.SwaggerProducerOperation;
 import io.servicecomb.swagger.generator.core.SwaggerGenerator;
-import io.servicecomb.swagger.generator.core.utils.ClassUtils;
-import io.servicecomb.swagger.invocation.arguments.producer.ProducerArgumentsMapper;
-import io.servicecomb.swagger.invocation.arguments.producer.ProducerArgumentsMapperFactory;
-import io.servicecomb.swagger.invocation.response.producer.ProducerResponseMapper;
-import io.servicecomb.swagger.invocation.response.producer.ProducerResponseMapperFactory;
-import io.servicecomb.foundation.common.utils.ReflectUtils;
-
 import io.swagger.models.Swagger;
-import io.swagger.models.parameters.Parameter;
 import io.swagger.util.Yaml;
 
 @Component
 public class ProducerSchemaFactory extends AbstractSchemaFactory<ProducerSchemaContext> {
     private static final Logger LOGGER = LoggerFactory.getLogger(ProducerSchemaFactory.class);
 
+    @Inject
+    private SwaggerEnvironment swaggerEnv;
+
     private ObjectWriter writer = Yaml.pretty();
-
-    @Inject
-    private ProducerResponseMapperFactory responseMapperFactory;
-
-    @Inject
-    protected ProducerArgumentsMapperFactory producerArgsMapperFactory;
 
     private String getSwaggerContent(Swagger swagger) {
         try {
@@ -63,6 +51,10 @@ public class ProducerSchemaFactory extends AbstractSchemaFactory<ProducerSchemaC
         } catch (JsonProcessingException e) {
             throw new Error(e);
         }
+    }
+
+    public void setSwaggerEnv(SwaggerEnvironment swaggerEnv) {
+        this.swaggerEnv = swaggerEnv;
     }
 
     // 只会在启动流程中调用
@@ -77,45 +69,15 @@ public class ProducerSchemaFactory extends AbstractSchemaFactory<ProducerSchemaC
         context.setProviderClass(producerClass);
         context.setProducerInstance(producerInstance);
 
-        return getOrCreateSchema(context);
-    }
+        SchemaMeta schemaMeta = getOrCreateSchema(context);
 
-    @Override
-    protected void connectToProvider(ProducerSchemaContext context) {
-        if (context.getGenerator() == null) {
-            generateSwagger(context);
+        SwaggerProducer producer = swaggerEnv.createProducer(producerInstance, schemaMeta.getSwagger());
+        for (OperationMeta operationMeta : schemaMeta.getOperations()) {
+            SwaggerProducerOperation producerOperation = producer.findOperation(operationMeta.getOperationId());
+            operationMeta.putExtData(Const.PRODUCER_OPERATION, producerOperation);
         }
 
-        // 建立契约与producer之间的参数映射关系
-        Class<?> swaggerIntf = ClassUtils.getJavaInterface(context.getSchemaMeta().getSwagger());
-
-        for (OperationMeta operationMeta : context.getSchemaMeta().getOperations()) {
-            OperationGenerator operationGenerator =
-                context.getGenerator().getOperationGeneratorMap().get(operationMeta.getOperationId());
-
-            Method swaggerMethod = ReflectUtils.findMethod(swaggerIntf, operationMeta.getOperationId());
-            List<Parameter> swaggerParameters = operationMeta.getSwaggerOperation().getParameters();
-
-            Method producerMethod = operationGenerator.getProviderMethod();
-            List<Parameter> producerParameters = operationGenerator.getProviderParameters();
-
-            ProducerArgumentsMapper argsMapper =
-                producerArgsMapperFactory.createArgumentsMapper(context.getSchemaMeta().getSwagger(),
-                        swaggerMethod,
-                        swaggerParameters,
-                        producerMethod,
-                        producerParameters);
-
-            createOperation(context, operationMeta, argsMapper);
-        }
-    }
-
-    @Override
-    protected SwaggerGenerator generateSwagger(ProducerSchemaContext context) {
-        SwaggerGenerator generator = super.generateSwagger(context);
-        context.setGenerator(generator);
-
-        return generator;
+        return schemaMeta;
     }
 
     protected SchemaMeta createSchema(ProducerSchemaContext context) {
@@ -137,16 +99,4 @@ public class ProducerSchemaFactory extends AbstractSchemaFactory<ProducerSchemaC
         // 注册契约
         return schemaLoader.registerSchema(context.getMicroserviceMeta(), context.getSchemaId(), swagger);
     }
-
-    protected void createOperation(ProducerSchemaContext context, OperationMeta operationMeta,
-            ProducerArgumentsMapper argsMapper) {
-        Object producerInstance = context.getProducerInstance();
-        Method method = ReflectUtils.findMethod(producerInstance.getClass(), operationMeta.getMethod().getName());
-
-        ProducerResponseMapper responseMapper = responseMapperFactory.createResponseMapper(method.getReturnType());
-        ProducerOperation producerOperation =
-            new ProducerOperation(producerInstance, method, argsMapper, responseMapper);
-        operationMeta.putExtData(Const.PRODUCER_OPERATION, producerOperation);
-    }
-
 }

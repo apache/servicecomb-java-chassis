@@ -96,7 +96,7 @@ public class ServiceRegistryClientDemo {
 
         // 注册实例
         List<String> addresses = new ArrayList<>();
-        addresses.add("grpc:127.0.0.1:8081");
+        addresses.add("rest:127.0.0.1:8081");
 
         HealthCheck healthCheck = new HealthCheck();
         healthCheck.setMode(HealthCheckMode.HEARTBEAT);

@@ -24,7 +24,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response.Status;
 
-import io.servicecomb.demo.server.User;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -39,12 +38,14 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import io.servicecomb.common.rest.codec.RestObjectMapper;
-import io.servicecomb.core.Response;
-import io.servicecomb.core.context.ContextUtils;
 import io.servicecomb.demo.compute.Person;
+import io.servicecomb.demo.server.User;
 import io.servicecomb.provider.rest.common.RestSchema;
 import io.servicecomb.swagger.extend.annotations.ResponseHeaders;
-
+import io.servicecomb.swagger.invocation.Response;
+import io.servicecomb.swagger.invocation.context.ContextUtils;
+import io.servicecomb.swagger.invocation.context.InvocationContext;
+import io.servicecomb.swagger.invocation.response.Headers;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiResponse;
@@ -55,22 +56,40 @@ import io.swagger.annotations.ResponseHeader;
 public class CodeFirstSpringmvc {
     @ResponseHeaders({@ResponseHeader(name = "h1", response = String.class),
             @ResponseHeader(name = "h2", response = String.class)})
-    @RequestMapping(path = "/responseEntity", method = RequestMethod.GET)
-    public ResponseEntity<User> responseEntity() {
+    @RequestMapping(path = "/responseEntity", method = RequestMethod.POST)
+    public ResponseEntity<Date> responseEntity(InvocationContext c1, @RequestAttribute("date") Date date) {
         HttpHeaders headers = new HttpHeaders();
-        headers.add("h1", "h1v");
-        headers.add("h2", "h2v");
-        return new ResponseEntity<User>(new User(), headers, HttpStatus.ACCEPTED);
+        headers.add("h1", "h1v " + c1.getContext().toString());
+
+        InvocationContext c2 = ContextUtils.getInvocationContext();
+        headers.add("h2", "h2v " + c2.getContext().toString());
+
+        return new ResponseEntity<Date>(date, headers, HttpStatus.ACCEPTED);
     }
 
     @ApiResponse(code = 200, response = User.class, message = "")
     @ResponseHeaders({@ResponseHeader(name = "h1", response = String.class),
             @ResponseHeader(name = "h2", response = String.class)})
     @RequestMapping(path = "/cseResponse", method = RequestMethod.GET)
-    public Response cseResponse() {
+    public Response cseResponse(InvocationContext c1) {
         Response response = Response.createSuccess(Status.ACCEPTED, new User());
-        response.getHeaders().addHeader("h1", "h1v").addHeader("h2", "h2v");
+        Headers headers = response.getHeaders();
+        headers.addHeader("h1", "h1v " + c1.getContext().toString());
+
+        InvocationContext c2 = ContextUtils.getInvocationContext();
+        headers.addHeader("h2", "h2v " + c2.getContext().toString());
+
         return response;
+    }
+
+    @RequestMapping(path = "/testUserMap", method = RequestMethod.POST)
+    public Map<String, User> testUserMap(@RequestBody Map<String, User> userMap) {
+        return userMap;
+    }
+
+    @RequestMapping(path = "/textPlain", method = RequestMethod.POST, consumes = MediaType.TEXT_PLAIN_VALUE)
+    public String textPlain(@RequestBody String body) {
+        return body;
     }
 
     @RequestMapping(path = "/bytes", method = RequestMethod.POST)

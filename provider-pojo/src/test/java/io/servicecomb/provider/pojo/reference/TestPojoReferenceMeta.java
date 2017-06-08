@@ -16,7 +16,6 @@
 
 package io.servicecomb.provider.pojo.reference;
 
-import io.servicecomb.provider.pojo.IPerson;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -27,10 +26,10 @@ import io.servicecomb.core.definition.MicroserviceMeta;
 import io.servicecomb.core.definition.schema.ConsumerSchemaFactory;
 import io.servicecomb.core.provider.consumer.ConsumerProviderManager;
 import io.servicecomb.core.provider.consumer.ReferenceConfig;
-
+import io.servicecomb.provider.pojo.IPerson;
+import io.servicecomb.swagger.engine.bootstrap.BootstrapNormal;
 import mockit.Expectations;
 import mockit.Injectable;
-import mockit.Mocked;
 
 public class TestPojoReferenceMeta {
 
@@ -75,24 +74,23 @@ public class TestPojoReferenceMeta {
     }
 
     @Test
-    public void test(@Mocked CseContext context, @Injectable ConsumerProviderManager manager,
+    public void test(@Injectable ConsumerProviderManager manager,
             @Injectable ReferenceConfig config,
             @Injectable MicroserviceMeta microserviceMeta,
             @Injectable ConsumerSchemaFactory factory) {
         new Expectations() {
             {
-                CseContext.getInstance().getConsumerProviderManager();
-                result = manager;
                 manager.getReferenceConfig("test");
                 result = config;
                 config.getMicroserviceMeta();
                 result = microserviceMeta;
                 microserviceMeta.ensureFindSchemaMeta("schemaId");
-                CseContext.getInstance().getConsumerSchemaFactory();
-                result = factory;
-
             }
         };
+        CseContext.getInstance().setConsumerProviderManager(manager);
+        CseContext.getInstance().setConsumerSchemaFactory(factory);
+        CseContext.getInstance().setSwaggerEnvironment(new BootstrapNormal().boot());
+
         PojoReferenceMeta lPojoReferenceMeta = new PojoReferenceMeta();
         lPojoReferenceMeta.setMicroserviceName("test");
         lPojoReferenceMeta.setSchemaId("schemaId");

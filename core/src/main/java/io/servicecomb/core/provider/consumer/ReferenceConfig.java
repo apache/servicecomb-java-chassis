@@ -32,7 +32,7 @@ public class ReferenceConfig {
 
     public ReferenceConfig(String microserviceName, String microserviceVersionRule, String transport) {
         this.microserviceMeta =
-            CseContext.getInstance().getConsumerSchemaFactory().getOrCreateConsumer(microserviceName,
+            CseContext.getInstance().getConsumerSchemaFactory().getOrCreateMicroserviceMeta(microserviceName,
                     microserviceVersionRule);
 
         this.microserviceVersionRule = microserviceVersionRule;

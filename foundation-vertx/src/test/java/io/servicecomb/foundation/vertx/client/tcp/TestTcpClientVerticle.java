@@ -27,7 +27,7 @@ import mockit.Expectations;
 import mockit.Mocked;
 
 public class TestTcpClientVerticle {
-    private ClientPoolManager<TcpClientPool> clientMgr = new ClientPoolManager<>();
+    private ClientPoolManager<TcpClientConnectionPool> clientMgr = new ClientPoolManager<>();
 
     @Test
     public void testTcpClientVerticle(@Mocked TcpClientConfig config, @Mocked VertxInternal vertx,
@@ -48,7 +48,7 @@ public class TestTcpClientVerticle {
         TcpClientVerticle client = new TcpClientVerticle();
         client.init(vertx, context);
         client.start();
-        TcpClientPool pool = client.createClientPool();
+        TcpClientConnectionPool pool = client.createClientPool();
         Assert.assertNotNull(pool);
     }
 }

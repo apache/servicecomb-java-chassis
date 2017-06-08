@@ -18,29 +18,29 @@ package io.servicecomb.provider.pojo;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
-import java.util.Map;
 
 import io.servicecomb.core.Invocation;
-import io.servicecomb.core.Response;
 import io.servicecomb.core.definition.SchemaMeta;
-import io.servicecomb.core.exception.ExceptionFactory;
 import io.servicecomb.core.invocation.InvocationFactory;
-import io.servicecomb.core.provider.consumer.ConsumerOperationMeta;
 import io.servicecomb.core.provider.consumer.InvokerUtils;
 import io.servicecomb.core.provider.consumer.ReferenceConfig;
+import io.servicecomb.swagger.engine.SwaggerConsumer;
+import io.servicecomb.swagger.engine.SwaggerConsumerOperation;
+import io.servicecomb.swagger.invocation.Response;
+import io.servicecomb.swagger.invocation.exception.ExceptionFactory;
 
 public class Invoker implements InvocationHandler {
     private SchemaMeta schemaMeta;
 
     private ReferenceConfig config;
 
-    private Map<String, ConsumerOperationMeta> consumerOperationMap;
+    private SwaggerConsumer swaggerConsumer;
 
     public void init(ReferenceConfig config, SchemaMeta schemaMeta,
-            Map<String, ConsumerOperationMeta> consumerOperationMap) {
+            SwaggerConsumer swaggerConsumer) {
         this.config = config;
         this.schemaMeta = schemaMeta;
-        this.consumerOperationMap = consumerOperationMap;
+        this.swaggerConsumer = swaggerConsumer;
     }
 
     @Override
@@ -48,8 +48,8 @@ public class Invoker implements InvocationHandler {
         Invocation invocation =
             InvocationFactory.forConsumer(config, schemaMeta, method.getName(), null);
 
-        ConsumerOperationMeta consumerOperation = consumerOperationMap.get(method.getName());
-        consumerOperation.getArgsMapper().toInvocation(args, invocation);
+        SwaggerConsumerOperation consumerOperation = swaggerConsumer.findOperation(method.getName());
+        consumerOperation.getArgumentsMapper().toInvocation(args, invocation);
 
         Response response = InvokerUtils.innerSyncInvoke(invocation);
         if (response.isSuccessed()) {
@@ -57,6 +57,5 @@ public class Invoker implements InvocationHandler {
         }
 
         throw ExceptionFactory.convertConsumerException((Throwable) response.getResult());
-        //        return InvokerUtils.invoke(invocation);
     }
 }

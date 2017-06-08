@@ -25,13 +25,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import io.servicecomb.common.rest.definition.RestOperationMeta;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 
 import com.fasterxml.jackson.databind.util.ISO8601Utils;
+
 import io.servicecomb.common.rest.codec.param.BodyProcessorCreator;
 import io.servicecomb.common.rest.codec.param.CookieProcessorCreator;
 import io.servicecomb.common.rest.codec.param.FormProcessorCreator;
@@ -42,8 +42,14 @@ import io.servicecomb.common.rest.codec.param.ParamValueProcessorCreatorManager;
 import io.servicecomb.common.rest.codec.param.PathProcessorCreator;
 import io.servicecomb.common.rest.codec.param.QueryProcessorCreator;
 import io.servicecomb.common.rest.codec.param.RestClientRequestImpl;
+import io.servicecomb.common.rest.definition.RestOperationMeta;
 import io.servicecomb.foundation.common.utils.ReflectUtils;
-
+import io.swagger.models.parameters.BodyParameter;
+import io.swagger.models.parameters.CookieParameter;
+import io.swagger.models.parameters.FormParameter;
+import io.swagger.models.parameters.HeaderParameter;
+import io.swagger.models.parameters.PathParameter;
+import io.swagger.models.parameters.QueryParameter;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.http.HttpClientRequest;
 import io.vertx.core.http.HttpHeaders;
@@ -104,7 +110,9 @@ public class TestParam {
     public void testCookie() throws Exception {
         ParamValueProcessorCreator creator =
             ParamValueProcessorCreatorManager.INSTANCE.findValue(CookieProcessorCreator.PARAMTYPE);
-        ParamValueProcessor processor = creator.create("c1", String.class);
+        CookieParameter cp = new CookieParameter();
+        cp.setName("c1");
+        ParamValueProcessor processor = creator.create(cp, String.class);
 
         Date date = new Date();
         processor.setValue(clientRequest, date);
@@ -121,7 +129,9 @@ public class TestParam {
     public void testPath() throws Exception {
         ParamValueProcessorCreator creator =
             ParamValueProcessorCreatorManager.INSTANCE.findValue(PathProcessorCreator.PARAMTYPE);
-        ParamValueProcessor processor = creator.create("p1", String.class);
+        PathParameter pp = new PathParameter();
+        pp.setName("p1");
+        ParamValueProcessor processor = creator.create(pp, String.class);
 
         serverPathParams.put("p1", "path");
         Object value = processor.getValue(serverRequest);
@@ -132,8 +142,10 @@ public class TestParam {
     public void testQuery() throws Exception {
         ParamValueProcessorCreator creator =
             ParamValueProcessorCreatorManager.INSTANCE.findValue(QueryProcessorCreator.PARAMTYPE);
+        QueryParameter qp = new QueryParameter();
+        qp.setName("q1");
 
-        ParamValueProcessor processor = creator.create("q1", Date.class);
+        ParamValueProcessor processor = creator.create(qp, Date.class);
         Date value = (Date) processor.getValue(serverRequest);
         Assert.assertEquals(null, value);
 
@@ -144,7 +156,7 @@ public class TestParam {
         value = (Date) processor.getValue(serverRequest);
         Assert.assertEquals(date.toString(), value.toString());
 
-        processor = creator.create("q1", Date[].class);
+        processor = creator.create(qp, Date[].class);
         Date[] values = (Date[]) processor.getValue(serverRequest);
         Assert.assertEquals(1, values.length);
         Assert.assertEquals(date.toString(), values[0].toString());
@@ -154,7 +166,10 @@ public class TestParam {
     public void testHeader() throws Exception {
         ParamValueProcessorCreator creator =
             ParamValueProcessorCreatorManager.INSTANCE.findValue(HeaderProcessorCreator.PARAMTYPE);
-        ParamValueProcessor processor = creator.create("h1", Date.class);
+        HeaderParameter hp = new HeaderParameter();
+        hp.setName("h1");
+
+        ParamValueProcessor processor = creator.create(hp, Date.class);
 
         Date date = new Date();
         processor.setValue(clientRequest, date);
@@ -171,7 +186,9 @@ public class TestParam {
     public void testForm() throws Exception {
         ParamValueProcessorCreator creator =
             ParamValueProcessorCreatorManager.INSTANCE.findValue(FormProcessorCreator.PARAMTYPE);
-        ParamValueProcessor processor = creator.create("f1", Date.class);
+        FormParameter fp = new FormParameter();
+        fp.setName("f1");
+        ParamValueProcessor processor = creator.create(fp, Date.class);
 
         Date date = new Date();
         processor.setValue(clientRequest, date);
@@ -187,7 +204,8 @@ public class TestParam {
     public void testBody() throws Exception {
         ParamValueProcessorCreator creator =
             ParamValueProcessorCreatorManager.INSTANCE.findValue(BodyProcessorCreator.PARAMTYPE);
-        ParamValueProcessor processor = creator.create("", Body.class);
+        BodyParameter bp = new BodyParameter();
+        ParamValueProcessor processor = creator.create(bp, Body.class);
 
         Body body = new Body();
         processor.setValue(clientRequest, body);

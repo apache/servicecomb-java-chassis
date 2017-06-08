@@ -27,10 +27,12 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import io.servicecomb.core.config.ConfigurationSpringInitializer;
-import io.servicecomb.core.context.ContextUtils;
-import io.servicecomb.core.context.HttpStatus;
-import io.servicecomb.core.context.InvocationContext;
-import io.servicecomb.core.exception.InvocationException;
+import io.servicecomb.swagger.invocation.Response;
+import io.servicecomb.swagger.invocation.SwaggerInvocation;
+import io.servicecomb.swagger.invocation.context.ContextUtils;
+import io.servicecomb.swagger.invocation.context.HttpStatus;
+import io.servicecomb.swagger.invocation.context.InvocationContext;
+import io.servicecomb.swagger.invocation.exception.InvocationException;
 
 public class TestConfig {
     class MyConfigurationSpringInitializer extends ConfigurationSpringInitializer {
@@ -85,33 +87,33 @@ public class TestConfig {
         ThreadLocal<InvocationContext> contextMgr = new ThreadLocal<>();
         Assert.assertEquals(contextMgr.get(), ContextUtils.getInvocationContext());
 
-        Map<String, String> oContext = new HashMap<>();
-        oContext.put("test1", new String("testObject"));
+        SwaggerInvocation invocation = new SwaggerInvocation();
+        invocation.addContext("test1", "testObject");
 
-        InvocationContext oInnovation = new InvocationContext(oContext);
-        Assert.assertEquals(oContext, oInnovation.getContext());
+        Assert.assertEquals("testObject", invocation.getContext("test1"));
 
-        oContext.put("test2", new String("testObject"));
-        oInnovation.setContext(oContext);
-        Assert.assertEquals(oContext, oInnovation.getContext());
+        Map<String, String> context = new HashMap<>();
+        context.put("test2", new String("testObject"));
+        invocation.setContext(context);
+        Assert.assertEquals(context, invocation.getContext());
 
-        oInnovation.setStatus(Status.OK);
-        Assert.assertEquals(200, oInnovation.getStatus().getStatusCode());
+        invocation.setStatus(Status.OK);
+        Assert.assertEquals(200, invocation.getStatus().getStatusCode());
 
-        oInnovation.setStatus(204);
-        Assert.assertEquals(204, oInnovation.getStatus().getStatusCode());
+        invocation.setStatus(204);
+        Assert.assertEquals(204, invocation.getStatus().getStatusCode());
 
-        oInnovation.setStatus(Status.OK);
-        Assert.assertEquals((Status.OK).getStatusCode(), oInnovation.getStatus().getStatusCode());
+        invocation.setStatus(Status.OK);
+        Assert.assertEquals((Status.OK).getStatusCode(), invocation.getStatus().getStatusCode());
 
-        oInnovation.setStatus(203, "Done");
-        Assert.assertEquals(203, oInnovation.getStatus().getStatusCode());
+        invocation.setStatus(203, "Done");
+        Assert.assertEquals(203, invocation.getStatus().getStatusCode());
 
-        ContextUtils.setInvocationContext(oInnovation);
-        Assert.assertEquals(oInnovation, ContextUtils.getInvocationContext());
+        ContextUtils.setInvocationContext(invocation);
+        Assert.assertEquals(invocation, ContextUtils.getInvocationContext());
 
         ContextUtils.removeInvocationContext();
-        Assert.assertNotEquals(oContext, oInnovation);
+        Assert.assertEquals(null, ContextUtils.getInvocationContext());
     }
 
     @Test

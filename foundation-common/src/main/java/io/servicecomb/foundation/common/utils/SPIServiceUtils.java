@@ -38,6 +38,9 @@ public final class SPIServiceUtils {
 
     }
 
+    /**
+     * get target service.if target services are array,only random access to a service.
+     */
     public static <T> T getTargetService(Class<T> serviceType) {
         ServiceLoader<T> loader = ServiceLoader.load(serviceType);
         Iterator<T> targetServices = loader.iterator();

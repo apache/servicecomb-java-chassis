@@ -24,8 +24,8 @@ import org.junit.Test;
 
 import io.servicecomb.core.definition.MicroserviceMeta;
 import io.servicecomb.core.definition.OperationMeta;
-import io.servicecomb.core.exception.CommonExceptionData;
-import io.servicecomb.core.exception.InvocationException;
+import io.servicecomb.swagger.invocation.exception.CommonExceptionData;
+import io.servicecomb.swagger.invocation.exception.InvocationException;
 
 public class TestLocator {
     @Test

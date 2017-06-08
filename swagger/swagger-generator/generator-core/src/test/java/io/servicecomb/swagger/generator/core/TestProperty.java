@@ -19,18 +19,21 @@ package io.servicecomb.swagger.generator.core;
 import java.util.Arrays;
 import java.util.List;
 
-import io.servicecomb.swagger.generator.core.unittest.SwaggerGeneratorForTest;
 import org.junit.Assert;
 import org.junit.Test;
 
 import com.fasterxml.jackson.databind.JavaType;
-import io.servicecomb.swagger.converter.property.StringPropertyConverter;
 
+import io.servicecomb.swagger.converter.property.StringPropertyConverter;
+import io.servicecomb.swagger.generator.core.SwaggerGenerator;
+import io.servicecomb.swagger.generator.core.SwaggerGeneratorContext;
+import io.servicecomb.swagger.generator.core.unittest.SwaggerGeneratorForTest;
+import io.servicecomb.swagger.generator.pojo.PojoSwaggerGeneratorContext;
 import io.swagger.converter.ModelConverters;
 import io.swagger.models.properties.StringProperty;
 
 public class TestProperty {
-    SwaggerGeneratorContext context = new DefaultSwaggerGeneratorContext();
+    SwaggerGeneratorContext context = new PojoSwaggerGeneratorContext();
 
     @Test
     public void testStringProperty() {

@@ -18,7 +18,6 @@ package io.servicecomb.swagger.generator.core;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -31,7 +30,10 @@ import org.springframework.util.StringUtils;
 
 import io.swagger.annotations.ApiOperation;
 import io.swagger.models.Info;
+import io.swagger.models.Operation;
+import io.swagger.models.Path;
 import io.swagger.models.Swagger;
+import io.swagger.models.parameters.Parameter;
 
 /**
  * 根据class提取swagger信息
@@ -127,6 +129,10 @@ public class SwaggerGenerator {
         return swagger;
     }
 
+    /**
+     * 查找必填但是没值的字段，将之设置为默认值
+     * 如果无法构造默认值，则抛出异常
+     */
     protected void correctSwagger() {
         if (StringUtils.isEmpty(swagger.getSwagger())) {
             swagger.setSwagger("2.0");
@@ -140,7 +146,7 @@ public class SwaggerGenerator {
 
     private void correctProduces() {
         List<String> produces = swagger.getProduces();
-        if (produces == null) {
+        if (produces == null || produces.isEmpty()) {
             produces = Arrays.asList(MediaType.APPLICATION_JSON);
             swagger.setProduces(produces);
         }
@@ -148,7 +154,7 @@ public class SwaggerGenerator {
 
     private void correctConsumes() {
         List<String> consumes = swagger.getConsumes();
-        if (consumes == null) {
+        if (consumes == null || consumes.isEmpty()) {
             consumes = Arrays.asList(MediaType.APPLICATION_JSON);
             swagger.setConsumes(consumes);
         }
@@ -199,11 +205,6 @@ public class SwaggerGenerator {
     }
 
     protected boolean isSkipMethod(Method method) {
-        // jaxrs实现中跳过了volatile的方法，按同样的逻辑处理
-        if (Modifier.isVolatile(method.getModifiers())) {
-            return true;
-        }
-
         if (method.getDeclaringClass().getName().equals(Object.class.getName())) {
             return true;
         }
@@ -213,17 +214,29 @@ public class SwaggerGenerator {
             return apiOperation.hidden();
         }
 
-        return false;
+        return !context.canProcess(method);
     }
 
     protected void scanMethods() {
-        for (Method method : cls.getMethods()) {
+        // 有时方法顺序不同，很不利于测试，所以先排序
+        List<Method> methods = Arrays.asList(cls.getMethods());
+        methods.sort((m1, m2) -> {
+            return m1.getName().compareTo(m2.getName());
+        });
+        for (Method method : methods) {
             if (isSkipMethod(method)) {
                 continue;
             }
 
             OperationGenerator operationGenerator = new OperationGenerator(this, method);
-            operationGenerator.generate();
+            operationGenerator.setHttpMethod(httpMethod);
+            try {
+                operationGenerator.generate();
+            } catch (Throwable e) {
+                String msg =
+                    String.format("generate operation swagger failed, %s:%s", this.cls.getName(), method.getName());
+                throw new Error(msg, e);
+            }
 
             String operationId = operationGenerator.getOperation().getOperationId();
             if (operationGeneratorMap.containsKey(operationId)) {
@@ -240,13 +253,31 @@ public class SwaggerGenerator {
     }
 
     public void setBasePath(String basePath) {
-        if (!basePath.startsWith("/")) {
-            basePath = "/" + basePath;
-        }
         swagger.setBasePath(basePath);
     }
 
     public Map<String, OperationGenerator> getOperationGeneratorMap() {
         return operationGeneratorMap;
+    }
+
+    public List<Parameter> findProviderParameter(String methodName) {
+        OperationGenerator operationGenerator = operationGeneratorMap.get(methodName);
+        if (operationGenerator == null) {
+            throw new Error("method not found, name=" + methodName);
+        }
+
+        return operationGenerator.getProviderParameters();
+    }
+
+    public List<Parameter> findSwaggerParameter(String methodName) {
+        for (Path path : swagger.getPaths().values()) {
+            for (Operation operation : path.getOperations()) {
+                if (methodName.equals(operation.getOperationId())) {
+                    return operation.getParameters();
+                }
+            }
+        }
+
+        throw new Error("method not found, name=" + methodName);
     }
 }
