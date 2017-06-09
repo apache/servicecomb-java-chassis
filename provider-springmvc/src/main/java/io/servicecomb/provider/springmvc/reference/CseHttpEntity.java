@@ -20,14 +20,6 @@ import org.springframework.util.MultiValueMap;
 
 import io.servicecomb.swagger.invocation.context.InvocationContext;
 
-/**
- * <一句话功能简述>
- * <功能详细描述>
- * @author
- * @version  [版本号, 2017年5月27日]
- * @see  [相关类/方法]
- * @since  [产品/模块版本]
- */
 public class CseHttpEntity<T> extends HttpEntity<T> {
 
     private InvocationContext context;

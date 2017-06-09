@@ -15,14 +15,6 @@
  */
 package io.protostuff.runtime;
 
-/**
- * <一句话功能简述>
- * <功能详细描述>
- * @author
- * @version  [版本号, 2017年6月5日]
- * @see  [相关类/方法]
- * @since  [产品/模块版本]
- */
 public class ProtobufFeature {
     // 历史版本中的protoStuff实现的protobuf的map编码与标准的protobuf不兼容
     // 为保持highway的兼容，旧的不兼容编码也要保留
