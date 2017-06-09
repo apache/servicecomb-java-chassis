@@ -27,10 +27,6 @@ import io.servicecomb.foundation.common.utils.ReflectUtils;
 /**
  * protostuff实现protobuf逻辑时，关于map的编码与protobuf不兼容
  * 这里修改map的编码逻辑
- * @author
- * @version  [版本号, 2017年6月2日]
- * @see  [相关类/方法]
- * @since  [产品/模块版本]
  */
 public final class ProtobufCompatibleUtils {
     private static boolean inited = false;
