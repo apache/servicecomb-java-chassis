@@ -124,9 +124,7 @@ public abstract class AbstractRestServer<HTTP_RESPONSE> {
         return locator.getOperation();
     }
 
-    /**
-     * 找不到processor，则已经完成了应答，外界不必再处理
-     */
+    // 找不到processor，则已经完成了应答，外界不必再处理
     protected ProduceProcessor locateProduceProcessor(RestServerRequestInternal restRequest,
             HTTP_RESPONSE httpResponse,
             RestOperationMeta restOperation, String acceptType) {
@@ -147,9 +145,7 @@ public abstract class AbstractRestServer<HTTP_RESPONSE> {
         sendResponse(restRequest, httpResponse, ProduceProcessorManager.DEFAULT_PROCESSOR, response);
     }
 
-    /**
-     * 成功、失败的统一应答处理，这里不能再出异常了，再出了异常也没办法处理
-     */
+    // 成功、失败的统一应答处理，这里不能再出异常了，再出了异常也没办法处理
     protected void sendResponse(RestServerRequestInternal restRequest, HTTP_RESPONSE httpServerResponse,
             ProduceProcessor produceProcessor, Response response) {
         try {
@@ -166,14 +162,10 @@ public abstract class AbstractRestServer<HTTP_RESPONSE> {
         }
     }
 
-    /**
-     * 成功、失败的统一应答处理
-     */
+    //  成功、失败的统一应答处理
     protected abstract void doSendResponse(HTTP_RESPONSE httpServerResponse, ProduceProcessor produceProcessor,
             Response response) throws Exception;
 
-    /**
-     * 将http request注入到invocation的handler context
-     */
+    // 将http request注入到invocation的handler context
     protected abstract void setHttpRequestContext(Invocation invocation, RestServerRequestInternal restRequest);
 }

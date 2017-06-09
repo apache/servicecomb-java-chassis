@@ -58,6 +58,7 @@ public class RuntimeMapFieldProtobuf<T> extends RuntimeMapField<T, Object, Objec
         this.field = field;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     protected void mergeFrom(Input input, T message) throws IOException {
         if (!ProtobufFeatureUtils.isUseProtobufMapCodec()) {
@@ -65,39 +66,41 @@ public class RuntimeMapFieldProtobuf<T> extends RuntimeMapField<T, Object, Objec
             return;
         }
 
+        Map<Object, Object> value = null;
         try {
-            @SuppressWarnings("unchecked")
-            Map<Object, Object> value = (Map<Object, Object>) field.get(message);
+            value = (Map<Object, Object>) field.get(message);
             if (value == null) {
                 value = schema.newMessage();
                 field.set(message, value);
             }
-
-            MapWrapper<Object, Object> mapWrapper = MapSchemaUtils.createMapWrapper(value);
-            if (ByteArrayInput.class.isInstance(input)) {
-                ((ByteArrayInput) input).readRawVarint32();
-            } else if (ByteBufferInput.class.isInstance(input)) {
-                ((ByteBufferInput) input).readRawVarint32();
-            } else {
-                throw new Error("not handler " + input.getClass().getName());
-            }
-
-            int keyNumber = input.readFieldNumber(schema);
-            if (keyNumber != 1) {
-                throw new ProtostuffException(
-                        "The map was incorrectly serialized, expect key number 1, but be " + keyNumber);
-            }
-            Object key = kFrom(input, null);
-
-            int valueNumber = input.readFieldNumber(schema);
-            if (valueNumber != 2) {
-                throw new ProtostuffException(
-                        "The map was incorrectly serialized, expect value number 2, but be " + valueNumber);
-            }
-            vPutFrom(input, mapWrapper, key);
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            throw new ProtostuffException(
+                    "Failed to get or set map field " + field.getDeclaringClass().getName() + ":" + field.getName(),
+                    e);
         }
+
+        MapWrapper<Object, Object> mapWrapper = MapSchemaUtils.createMapWrapper(value);
+        if (ByteArrayInput.class.isInstance(input)) {
+            ((ByteArrayInput) input).readRawVarint32();
+        } else if (ByteBufferInput.class.isInstance(input)) {
+            ((ByteBufferInput) input).readRawVarint32();
+        } else {
+            throw new Error("not handler " + input.getClass().getName());
+        }
+
+        int keyNumber = input.readFieldNumber(schema);
+        if (keyNumber != 1) {
+            throw new ProtostuffException(
+                    "The map was incorrectly serialized, expect key number 1, but be " + keyNumber);
+        }
+        Object key = kFrom(input, null);
+
+        int valueNumber = input.readFieldNumber(schema);
+        if (valueNumber != 2) {
+            throw new ProtostuffException(
+                    "The map was incorrectly serialized, expect value number 2, but be " + valueNumber);
+        }
+        vPutFrom(input, mapWrapper, key);
     }
 
     @Override

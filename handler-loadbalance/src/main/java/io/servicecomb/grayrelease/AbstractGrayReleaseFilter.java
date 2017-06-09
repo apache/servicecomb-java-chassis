@@ -159,12 +159,8 @@ public abstract class AbstractGrayReleaseFilter implements IGrayReleaseFilter {
         return reqParams;
     }
 
-    /**
-     * 灰度发布规则是否需要请求参数作匹配。
-     * 例：只需要按照请求占比作灰度，则不需要请求参数参与，返回false即可。如需要依据某个参数作对比来作灰度，则需要返回true
-     * 
-     * @return
-     */
+    // 灰度发布规则是否需要请求参数作匹配。
+    // 例：只需要按照请求占比作灰度，则不需要请求参数参与，返回false即可。如需要依据某个参数作对比来作灰度，则需要返回true
     protected abstract boolean isReqCompare();
 
     /**
@@ -193,11 +189,7 @@ public abstract class AbstractGrayReleaseFilter implements IGrayReleaseFilter {
         }
     }
 
-    /**
-     * 根据灰度发布规则、分组规则以及请求参数返回所匹配的GroupId
-     * 
-     * @return
-     */
+    // 根据灰度发布规则、分组规则以及请求参数返回所匹配的GroupId
     protected abstract String grayChooseForGroupIdByRules();
 
     protected void fillInstanceGroup() {
@@ -238,12 +230,7 @@ public abstract class AbstractGrayReleaseFilter implements IGrayReleaseFilter {
         groupInstance(instanceMap);
     }
 
-    /**
-     * 
-     * 更新instance缓存 <功能详细描述>如果没有匹配到灰度规则，instance的范围按照versionrule的控制规则
-     * 
-     * @param chosenGroup
-     */
+    // 更新instance缓存 <功能详细描述>如果没有匹配到灰度规则，instance的范围按照versionrule的控制规则
     protected void updateInstanceCache(String chosenGroup) {
         Map<String, MicroserviceInstance> chosenMap;
         if (chosenGroup == null || "".equals(chosenGroup)) {

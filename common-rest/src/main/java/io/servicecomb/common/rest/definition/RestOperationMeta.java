@@ -174,9 +174,7 @@ public class RestOperationMeta {
         return operationMeta;
     }
 
-    /**
-     * 为operation创建支持的多种produce processor
-     */
+    // 为operation创建支持的多种produce processor
     protected void createProduceProcessors() {
         if (null == produces || produces.isEmpty()) {
             for (ProduceProcessor processor : ProduceProcessorManager.INSTANCE.values()) {
@@ -213,9 +211,7 @@ public class RestOperationMeta {
         return this.produceProcessorMap.get(type);
     }
 
-    /**
-     * 选择与accept匹配的produce processor或者缺省的
-     */
+    // 选择与accept匹配的produce processor或者缺省的
     public ProduceProcessor ensureFindProduceProcessor(String types) {
         if (StringUtils.isEmpty(types)) {
             return defaultProcessor;
@@ -238,9 +234,7 @@ public class RestOperationMeta {
         return null;
     }
 
-    /**
-     * 只提取出media type，忽略charset和q值等
-     */
+    // 只提取出media type，忽略charset和q值等
     protected String[] splitAcceptTypes(String types) {
         String[] typeArr = types.split(ACCEPT_TYPE_SEPARATER);
         for (int idxX = 0; idxX < typeArr.length; idxX++) {
@@ -255,9 +249,7 @@ public class RestOperationMeta {
         return typeArr;
     }
 
-    /**
-     * 检查是否包含特定的类型
-     */
+    // 检查是否包含特定的类型
     protected boolean containSpecType(String[] typeArr, String specType) {
         for (String type : typeArr) {
             if (specType.equals(type)) {
@@ -271,16 +263,12 @@ public class RestOperationMeta {
         return this.defaultProcessor;
     }
 
-    /**
-     * 仅用于测试
-     */
+    // 仅用于测试
     protected void setDefaultProcessor(ProduceProcessor defaultProcessor) {
         this.defaultProcessor = defaultProcessor;
     }
 
-    /**
-     * 获取缺省的或者第一个processor
-     */
+    // 获取缺省的或者第一个processor
     private ProduceProcessor getDefaultOrFirstProcessor() {
         ProduceProcessor processor = this.produceProcessorMap.get(ProduceProcessorManager.DEFAULT_TYPE);
         if (null == processor) {

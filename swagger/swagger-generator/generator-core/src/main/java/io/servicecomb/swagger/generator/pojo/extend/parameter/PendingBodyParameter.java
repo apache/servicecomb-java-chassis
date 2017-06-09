@@ -28,14 +28,14 @@ import io.swagger.models.properties.Property;
 import io.swagger.models.properties.PropertyBuilder;
 import io.swagger.models.properties.RefProperty;
 
-/**
- * 备选body
- * int test(int x, Set<String> y)
- * 反向生成契约时，x、y都是备选body，最终再合并成body
- * 如果直接使用BodyParamter,会导致y有信息丢失
- * 只在透明rpc模式中使用
- * jaxrs、springmvc这种模式，要求符合模式本身的定义场景，不允许随意组合
- */
+//
+// 备选body
+// int test(int x, Set<String> y)
+// 反向生成契约时，x、y都是备选body，最终再合并成body
+// 如果直接使用BodyParamter,会导致y有信息丢失
+// 只在透明rpc模式中使用
+// jaxrs、springmvc这种模式，要求符合模式本身的定义场景，不允许随意组合
+//
 public class PendingBodyParameter extends BodyParameter {
     private OperationGenerator operationGenerator;
 
