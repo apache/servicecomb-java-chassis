@@ -21,7 +21,7 @@
                     <configuration>
                         <images>
                             <image>
-                                <name>seanyinx/sc</name>
+                                <name>tank2428/servicecenter:0.1.0-m1</name>
                                 <alias>service-center</alias>
                                 <run>
                                     <wait>
@@ -29,7 +29,7 @@
                                         <time>60000</time>
                                     </wait>
                                     <ports>
-                                        <port>service.center.port:9980</port>
+                                        <port>service.center.port:30100</port>
                                     </ports>
                                 </run>
                             </image>
@@ -39,7 +39,7 @@
                                 <run>
                                     <env>
                                         <JAVA_OPTS>
-                                            ${demo.vm.options} -Dcse.service.registry.address=http://sc.servicecomb.io:9980 -Dcse.service.publishAddress=${docker.hostname}
+                                            ${demo.vm.options} -Dcse.service.registry.address=http://sc.servicecomb.io:30100 -Dcse.service.publishAddress=${docker.hostname}
                                         </JAVA_OPTS>
                                         <JAR_PATH>/maven/${demo.service.name}-${project.version}.jar</JAR_PATH>
                                     </env>
