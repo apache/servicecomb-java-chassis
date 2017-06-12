@@ -19,15 +19,17 @@ package io.servicecomb.demo.discovery.client;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
+import org.springframework.cloud.netflix.zuul.EnableZuulProxy;
 
-/**
- * Sukesh
- */
+import io.servicecomb.springboot.starter.provider.EnableServiceComb;
+
 @SpringBootApplication
+@EnableServiceComb
+@EnableZuulProxy
 @EnableDiscoveryClient
 public class DiscoveryClient {
 
-    public static void main(String[] args) throws Exception {
-        SpringApplication.run(DiscoveryClient.class, args);
-    }
+	public static void main(String[] args) throws Exception {
+		SpringApplication.run(DiscoveryClient.class, args);
+	}
 }

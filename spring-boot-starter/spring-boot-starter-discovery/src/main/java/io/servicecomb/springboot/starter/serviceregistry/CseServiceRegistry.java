@@ -20,21 +20,23 @@ import org.springframework.cloud.client.serviceregistry.ServiceRegistry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import io.servicecomb.serviceregistry.api.registry.Microservice;
+import io.servicecomb.serviceregistry.client.RegistryClientFactory;
 import io.servicecomb.serviceregistry.client.ServiceRegistryClient;
 
 public class CseServiceRegistry implements ServiceRegistry<CseRegistration> {
 
 	private static final Logger log = LoggerFactory.getLogger(CseServiceRegistry.class);
 
-	private final ServiceRegistryClient client;
+	private ServiceRegistryClient client;
 
-	public CseServiceRegistry(ServiceRegistryClient client) {
-		this.client = client;
-		try {
-			this.client.init();
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+	public CseServiceRegistry() {
+		if (null == this.client) {
+			this.client = RegistryClientFactory.getRegistryClient();
+			try {
+				this.client.init();
+			} catch (Exception e) {
+				log.error(e.getMessage());
+			}
 		}
 	}
 
@@ -66,8 +68,6 @@ public class CseServiceRegistry implements ServiceRegistry<CseRegistration> {
 
 	@Override
 	public void setStatus(CseRegistration registration, String status) {
-		// client.updateInstanceProperties(registration.getService(),
-		// registration.getInstanceId(), status);
 		// TODO Expose an Api in ServiceRegistryClient to change the status of
 		// the MicroService
 
@@ -84,8 +84,6 @@ public class CseServiceRegistry implements ServiceRegistry<CseRegistration> {
 
 	@Override
 	public void deregister(CseRegistration arg0) {
-		// TODO Auto-generated method stub
-
 		client.unregisterMicroserviceInstance(arg0.getServiceId(), arg0.getInstanceId());
 		log.info("MicroService unregistered successfully" + arg0.getService().getServiceName());
 	}

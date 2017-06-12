@@ -44,6 +44,10 @@
 			</exclusions>
 		</dependency>
 		<dependency>
+			<groupId>org.springframework.cloud</groupId>
+			<artifactId>spring-cloud-netflix-core</artifactId>
+		</dependency>
+		<dependency>
 			<groupId>io.servicecomb</groupId>
 			<artifactId>provider-springmvc</artifactId>
 		</dependency>
