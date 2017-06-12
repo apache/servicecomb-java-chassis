@@ -15,35 +15,20 @@
  */
 package io.servicecomb.springboot.starter.discovery;
 
-import org.springframework.boot.context.properties.ConfigurationProperties;
+import io.servicecomb.core.Transport;
+import io.servicecomb.loadbalance.ServerListCache;
+import io.servicecomb.serviceregistry.cache.CacheEndpoint;
+import com.netflix.loadbalancer.Server;
 
+public class CseServerListCacheWrapper extends ServerListCache {
 
-@ConfigurationProperties("spring.cloud.cse")
-public class CseDiscoveryProperties {
+	public CseServerListCacheWrapper(String appId, String microserviceName, String microserviceVersionRule,
+			String transportName) {
+		super(appId, microserviceName, microserviceVersionRule, transportName);
+	}
 
-    /** Hostname to use when accessing server */
-    private String host;
-
-    /** Port to register the service under (defaults to listening port) */
-    private String port;
-
-    public CseDiscoveryProperties() {
-    }
-
-    public String getHost() {
-        return host;
-    }
-
-    public void setHost(String host) {
-        this.host = host;
-    }
-
-    public String getPort() {
-        return port;
-    }
-
-    public void setPort(String port) {
-        this.port = port;
-    }
-
+	@Override
+	protected Server createEndpoint(Transport transport, CacheEndpoint cacheEndpoint) {
+		return new CseServerWrapper(transport, cacheEndpoint);
+	}
 }

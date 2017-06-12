@@ -15,35 +15,25 @@
  */
 package io.servicecomb.springboot.starter.discovery;
 
-import org.springframework.boot.context.properties.ConfigurationProperties;
+import io.servicecomb.core.Transport;
+import io.servicecomb.loadbalance.CseServer;
+import io.servicecomb.serviceregistry.cache.CacheEndpoint;
+import io.servicecomb.foundation.common.net.URIEndpointObject;
 
+public class CseServerWrapper extends CseServer {
 
-@ConfigurationProperties("spring.cloud.cse")
-public class CseDiscoveryProperties {
-
-    /** Hostname to use when accessing server */
-    private String host;
-
-    /** Port to register the service under (defaults to listening port) */
-    private String port;
-
-    public CseDiscoveryProperties() {
+    public CseServerWrapper(Transport transport, CacheEndpoint cacheEndpoint) {
+        super(transport, cacheEndpoint);
     }
 
+    // used in LoadBalancerContext
     public String getHost() {
-        return host;
+        URIEndpointObject host = (URIEndpointObject) getEndpoint().getAddress();
+        return host.getHostOrIp();
     }
 
-    public void setHost(String host) {
-        this.host = host;
+    public int getPort() {
+        URIEndpointObject host = (URIEndpointObject) getEndpoint().getAddress();
+        return host.getPort();
     }
-
-    public String getPort() {
-        return port;
-    }
-
-    public void setPort(String port) {
-        this.port = port;
-    }
-
 }
