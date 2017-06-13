@@ -75,7 +75,7 @@ public class CseDiscoveryClient implements DiscoveryClient {
     public List<String> getServices() {
         ServiceRegistryClient client = RegistryClientFactory.getRegistryClient();
         List<Microservice> services = client.getAllMicroservices();
-        List<String> serviceIDList = new ArrayList<String>();
+        List<String> serviceIDList = new ArrayList<>();
         if (null != services && !services.isEmpty())
             for (Microservice service : services) {
                 serviceIDList.add(service.getServiceName());

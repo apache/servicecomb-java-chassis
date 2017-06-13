@@ -26,7 +26,7 @@ import io.servicecomb.serviceregistry.api.response.HeartbeatResponse;
 import io.servicecomb.serviceregistry.api.response.MicroserviceInstanceChangedEvent;
 
 public interface ServiceRegistryClient {
-    void init() throws Exception;
+    void init();
 
     /**
      * meta相关

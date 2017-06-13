@@ -67,11 +67,7 @@ public class TestClienthttp {
         ServiceRegistryClientImpl oClient = (ServiceRegistryClientImpl) RegistryClientFactory.getRegistryClient();
         oClient.registerMicroservice(oInstance);
         oClient.registerMicroserviceInstance(RegistryUtils.getMicroserviceInstance());
-        try {
-            oClient.init();
-        } catch (Exception e) {
-            Assert.assertEquals(null, e.getMessage());
-        }
+        oClient.init();
         Assert.assertEquals(null, oClient.getMicroservice(RegistryUtils.getMicroservice().getServiceId()));
         Assert.assertEquals(null, oClient.getMicroserviceInstance("testConsumerID", "testproviderID"));
         Assert.assertEquals(null,

@@ -166,7 +166,7 @@ public final class RegistryUtils {
         srClient = oServiceRegistryClient;
     }
 
-    public static void init() throws Exception {
+    public static void init() {
         serviceRegistryConfig = ServiceRegistryConfig.INSTANCE;
         if (null == srClient) {
             srClient = RegistryClientFactory.getRegistryClient(); //Changes has been done to test the code properly

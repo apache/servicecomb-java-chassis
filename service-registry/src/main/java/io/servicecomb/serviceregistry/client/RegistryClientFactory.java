@@ -66,12 +66,7 @@ public final class RegistryClientFactory {
                 client = new LocalServiceRegistryClientImpl();
             }
 
-            try {
-                client.init();
-            } catch (Exception e) {
-                LOGGER.error("init registry client failed.", e);
-                return null;
-            }
+            client.init();
 
             registryClient = client;
             return registryClient;
