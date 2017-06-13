@@ -211,16 +211,16 @@ public abstract class AbstractCseRuleGrayReleaseFilter extends AbstractGrayRelea
             } else if (subRuleStr.contains(">=")) {
                 newSubRule.put(OPERATOR_NAME, LogicSymbol.LargerOrEqual);
                 logicSymbol = ">=";
+            } else if (subRuleStr.contains("!=")) {
+                newSubRule.put(OPERATOR_NAME, LogicSymbol.NotEqual);
+                logicSymbol = "!=";
             } else if (subRuleStr.contains("=")) {
                 newSubRule.put(OPERATOR_NAME, LogicSymbol.Equal);
                 logicSymbol = "=";
             } else if (subRuleStr.contains("~")) {
                 newSubRule.put(OPERATOR_NAME, LogicSymbol.Like);
                 logicSymbol = "~";
-            } else if (subRuleStr.contains("!=")) {
-                newSubRule.put(OPERATOR_NAME, LogicSymbol.NotEqual);
-                logicSymbol = "!=";
-            }
+            } 
 
             String[] subStrs = subRuleStr.split(logicSymbol);
             newSubRule.put(RULE_DETAILS_NAME_KEY, subStrs[0]);

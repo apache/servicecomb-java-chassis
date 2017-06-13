@@ -20,16 +20,18 @@ public class GrayReleaseHandler extends AbstractHandler {
 
     @Override
     public void handle(Invocation invocation, AsyncResponse asyncResp) throws Exception {
-        //读取规则
-        String p = Configuration.INSTANCE.getGrayreleaseRuleClassName(invocation.getMicroserviceName(),
-                invocation.getMicroserviceQualifiedName());
-        this.policy = p;
-        if (this.policy == null) {
-            invocation.next(asyncResp);
-        }
-        IGrayReleaseFilter rule = createGrayReleaseFilterRule(invocation);
-        rule.filterRule();
-        invocation.next(asyncResp);
+		// 读取规则
+		String p = Configuration.INSTANCE.getGrayreleaseRuleClassName(invocation.getMicroserviceName(),
+				invocation.getMicroserviceQualifiedName());
+		this.policy = p;
+		if (this.policy == null) {
+			invocation.next(asyncResp);
+		}
+		IGrayReleaseFilter rule = createGrayReleaseFilterRule(invocation);
+		if (rule != null) {
+			rule.filterRule();
+		}
+		invocation.next(asyncResp);
     }
 
     private IGrayReleaseFilter createGrayReleaseFilterRule(Invocation invocation) {
