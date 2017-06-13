@@ -20,9 +20,6 @@ import io.servicecomb.serviceregistry.RegistryUtils;
 import io.servicecomb.foundation.common.utils.BeanUtils;
 import io.servicecomb.foundation.common.utils.Log4jUtils;
 
-/**
- * Created by   on 2017/1/26.
- */
 public class ServiceRegistryDemo {
     public static void main(String[] args) throws Exception {
         Log4jUtils.init();
