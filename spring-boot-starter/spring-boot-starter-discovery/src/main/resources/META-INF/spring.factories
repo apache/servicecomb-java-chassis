@@ -4,4 +4,3 @@ io.servicecomb.springboot.starter.discovery.RibbonCseAutoConfiguration
 # Discovery Client Configuration
 org.springframework.cloud.client.discovery.EnableDiscoveryClient=\
 io.servicecomb.springboot.starter.discovery.CseDiscoveryClientConfiguration
-org.springframework.boot.SpringApplicationRunListener=io.servicecomb.springboot.starter.discovery.CseSpringApplicationRunListener

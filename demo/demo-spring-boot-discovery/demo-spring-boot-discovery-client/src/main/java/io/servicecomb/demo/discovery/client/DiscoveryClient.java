@@ -16,18 +16,42 @@
 
 package io.servicecomb.demo.discovery.client;
 
+import java.net.URI;
+
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
+import org.springframework.web.client.RestTemplate;
 
-/**
- * Sukesh
- */
+import com.netflix.config.DynamicPropertyFactory;
+
+import io.servicecomb.demo.TestMgr;
+import io.servicecomb.provider.springmvc.reference.RestTemplateBuilder;
+import io.servicecomb.springboot.starter.provider.EnableServiceComb;
+
 @SpringBootApplication
+@EnableServiceComb
 @EnableDiscoveryClient
 public class DiscoveryClient {
 
-    public static void main(String[] args) throws Exception {
-        SpringApplication.run(DiscoveryClient.class, args);
-    }
+	private static RestTemplate restTemplate;
+
+	public static void main(String[] args) throws Exception {
+		SpringApplication.run(DiscoveryClient.class, args);
+		runIT();
+	}
+
+	private static void runIT() throws Exception {
+		restTemplate = RestTemplateBuilder.create();
+		new DiscoveryClient().testInstances(restTemplate);
+		TestMgr.summary();
+	}
+
+	private void testInstances(RestTemplate template) {
+		String port = DynamicPropertyFactory.getInstance().getStringProperty("server.port", "9993").get();
+		String urlPrefix = "http://localhost:" + port + "/controller/instances";
+		URI result = template.getForObject(urlPrefix, URI.class);
+		TestMgr.check(8080, result.getPort());
+	}
+
 }

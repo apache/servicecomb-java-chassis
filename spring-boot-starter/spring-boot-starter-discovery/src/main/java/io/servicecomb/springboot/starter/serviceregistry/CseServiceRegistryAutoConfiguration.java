@@ -23,8 +23,6 @@ import org.springframework.cloud.client.serviceregistry.ServiceRegistryAutoConfi
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import io.servicecomb.serviceregistry.client.ServiceRegistryClient;
-
 @Configuration
 @ConditionalOnProperty(value = "spring.cloud.service-registry.enabled", matchIfMissing = true)
 @AutoConfigureBefore(ServiceRegistryAutoConfiguration.class)
@@ -32,7 +30,7 @@ public class CseServiceRegistryAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public CseServiceRegistry consulServiceRegistry(ServiceRegistryClient oServiceRegistryClient) {
-		return new CseServiceRegistry(oServiceRegistryClient);
+	public CseServiceRegistry cseServiceRegistry() {
+		return new CseServiceRegistry();
 	}
 }
