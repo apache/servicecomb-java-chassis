@@ -1003,16 +1003,6 @@
 			</dependency>
 			<dependency>
 				<groupId>io.servicecomb</groupId>
-				<artifactId>foundation-crypt</artifactId>
-				<version>0.1.0-m2-SNAPSHOT</version>
-			</dependency>
-			<dependency>
-				<groupId>io.servicecomb</groupId>
-				<artifactId>foundation-httpclient</artifactId>
-				<version>0.1.0-m2-SNAPSHOT</version>
-			</dependency>
-			<dependency>
-				<groupId>io.servicecomb</groupId>
 				<artifactId>foundation-config</artifactId>
 				<version>0.1.0-m2-SNAPSHOT</version>
 			</dependency>
