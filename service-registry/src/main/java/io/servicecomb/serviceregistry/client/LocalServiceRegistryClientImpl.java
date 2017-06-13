@@ -16,6 +16,14 @@
 
 package io.servicecomb.serviceregistry.client;
 
+import static java.util.Collections.emptyList;
+
+import io.servicecomb.config.YAMLUtil;
+import io.servicecomb.foundation.vertx.AsyncResultCallback;
+import io.servicecomb.serviceregistry.api.registry.Microservice;
+import io.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
+import io.servicecomb.serviceregistry.api.response.HeartbeatResponse;
+import io.servicecomb.serviceregistry.api.response.MicroserviceInstanceChangedEvent;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -23,20 +31,9 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import io.servicecomb.config.YAMLUtil;
-import io.servicecomb.serviceregistry.api.registry.Microservice;
-import io.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
-import io.servicecomb.serviceregistry.api.response.HeartbeatResponse;
-import io.servicecomb.serviceregistry.api.response.MicroserviceInstanceChangedEvent;
-import io.servicecomb.foundation.vertx.AsyncResultCallback;
-
-/**
- * Created by   on 2017/3/31.
- */
 public class LocalServiceRegistryClientImpl implements ServiceRegistryClient {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(LocalServiceRegistryClientImpl.class);
@@ -58,13 +55,13 @@ public class LocalServiceRegistryClientImpl implements ServiceRegistryClient {
     }
 
     @Override
-    public void init() throws Exception {
+    public void init() {
 
     }
 
     @Override
     public List<Microservice> getAllMicroservices() {
-        return null;
+        return emptyList();
     }
 
     @Override

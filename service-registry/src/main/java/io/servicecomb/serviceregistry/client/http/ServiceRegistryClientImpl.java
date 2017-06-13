@@ -24,19 +24,7 @@ import static io.servicecomb.serviceregistry.api.Const.MS_API_PATH;
 import static io.servicecomb.serviceregistry.api.Const.PROPERTIES_PATH;
 import static io.servicecomb.serviceregistry.api.Const.SCHEMA_PATH;
 import static io.servicecomb.serviceregistry.api.Const.WATCHER_PATH;
-
-import java.nio.charset.Charset;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CountDownLatch;
-
-import javax.ws.rs.core.Response.Status;
-import javax.xml.ws.Holder;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import static java.util.Collections.emptyList;
 
 import io.servicecomb.foundation.common.net.IpPort;
 import io.servicecomb.foundation.common.utils.JsonUtils;
@@ -62,10 +50,17 @@ import io.servicecomb.serviceregistry.client.IpPortManager;
 import io.servicecomb.serviceregistry.client.ServiceRegistryClient;
 import io.vertx.core.Handler;
 import io.vertx.core.http.HttpClientResponse;
+import java.nio.charset.Charset;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CountDownLatch;
+import javax.ws.rs.core.Response.Status;
+import javax.xml.ws.Holder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-/**
- * Created by   on 2016/12/5.
- */
 public final class ServiceRegistryClientImpl implements ServiceRegistryClient {
     private static final Logger LOGGER = LoggerFactory.getLogger(ServiceRegistryClientImpl.class);
 
@@ -73,7 +68,7 @@ public final class ServiceRegistryClientImpl implements ServiceRegistryClient {
     private Map<String, Boolean> watchServices = new ConcurrentHashMap<>();
 
     @Override
-    public void init() throws Exception {
+    public void init() {
     }
 
     private static boolean retry(RequestContext requestContext, Handler<RestResponse> responseHandler) {
@@ -135,7 +130,7 @@ public final class ServiceRegistryClientImpl implements ServiceRegistryClient {
         } catch (Exception e) {
             LOGGER.error("query all microservices failed", e);
         }
-        return null;
+        return emptyList();
     }
 
     @Override

@@ -16,28 +16,27 @@
 
 package io.servicecomb.serviceregistry.client.http;
 
-import java.util.concurrent.CountDownLatch;
+import static org.hamcrest.core.Is.is;
 
+import io.servicecomb.foundation.common.utils.BeanUtils;
 import io.servicecomb.serviceregistry.RegistryThread;
+import io.servicecomb.serviceregistry.RegistryUtils;
+import io.servicecomb.serviceregistry.api.registry.Microservice;
 import io.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
 import io.servicecomb.serviceregistry.client.ClientException;
 import io.servicecomb.serviceregistry.client.RegistryClientFactory;
+import io.servicecomb.serviceregistry.config.ServiceRegistryConfig;
+import io.vertx.core.http.HttpClientOptions;
+import io.vertx.core.http.HttpVersion;
+import java.util.concurrent.CountDownLatch;
+import mockit.Deencapsulation;
+import mockit.Mock;
+import mockit.MockUp;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
-
-import io.servicecomb.serviceregistry.RegistryUtils;
-import io.servicecomb.serviceregistry.api.registry.Microservice;
-import io.servicecomb.serviceregistry.config.ServiceRegistryConfig;
-import io.servicecomb.foundation.common.utils.BeanUtils;
-
-import io.vertx.core.http.HttpClientOptions;
-import io.vertx.core.http.HttpVersion;
-import mockit.Deencapsulation;
-import mockit.Mock;
-import mockit.MockUp;
 
 public class TestServiceRegistryClientImpl {
 
@@ -89,11 +88,7 @@ public class TestServiceRegistryClientImpl {
         oThread.start();
         oClient.registerMicroservice(oInstance);
         oClient.registerMicroserviceInstance(RegistryUtils.getMicroserviceInstance());
-        try {
-            oClient.init();
-        } catch (Exception e) {
-            Assert.assertEquals(null, e.getMessage());
-        }
+        oClient.init();
         new MockUp<CountDownLatch>() {
             @Mock
             public void await() throws InterruptedException {
@@ -105,7 +100,7 @@ public class TestServiceRegistryClientImpl {
                 oClient.getMicroserviceId(RegistryUtils.getMicroservice().getAppId(),
                         RegistryUtils.getMicroservice().getServiceName(),
                         RegistryUtils.getMicroservice().getVersion()));
-        Assert.assertEquals(null, oClient.getAllMicroservices());
+        Assert.assertThat(oClient.getAllMicroservices().isEmpty(), is(true));
         Assert.assertEquals(null, oClient.registerMicroservice(RegistryUtils.getMicroservice()));
         Assert.assertEquals(null, oClient.getMicroservice("microserviceId"));
         Assert.assertEquals(null, oClient.getMicroserviceInstance("consumerId", "providerId"));
