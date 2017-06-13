@@ -165,4 +165,74 @@
 			</plugins>
 		</pluginManagement>
 	</build>
+	
+	<profiles>
+		<profile>
+			<id>demo-run-release</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.commonjava.maven.plugins</groupId>
+						<artifactId>directory-maven-plugin</artifactId>
+						<version>0.1</version>
+						<executions>
+							<execution>
+								<id>directoryies</id>
+								<goals>
+									<goal>directory-of</goal>
+								</goals>
+								<phase>initialize</phase>
+								<configuration>
+									<property>root.dir</property>
+									<project>
+										<groupId>io.servicecomb</groupId>
+										<artifactId>java-chassis</artifactId>
+									</project>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+				<pluginManagement>
+					<plugins>
+						<plugin>
+							<groupId>org.apache.maven.plugins</groupId>
+							<artifactId>maven-jar-plugin</artifactId>
+							<version>2.6</version>
+							<configuration>
+								<outputDirectory>${root.dir}/demo-bin/${project.name}</outputDirectory>
+								<archive>
+									<manifest>
+										<addClasspath>true</addClasspath>
+										<classpathPrefix>../lib/</classpathPrefix>
+										<mainClass>${demo.main}</mainClass>
+									</manifest>
+									<manifestEntries>
+										<Class-Path>. ..</Class-Path>
+									</manifestEntries>
+								</archive>
+							</configuration>
+						</plugin>
+						<plugin>
+							<groupId>org.apache.maven.plugins</groupId>
+							<artifactId>maven-dependency-plugin</artifactId>
+							<version>2.10</version>
+							<executions>
+								<execution>
+									<id>copy-dependencies</id>
+									<phase>package</phase>
+									<goals>
+										<goal>copy-dependencies</goal>
+									</goals>
+									<configuration>
+										<outputDirectory>${root.dir}/demo-bin/lib</outputDirectory>
+									</configuration>
+								</execution>
+							</executions>
+						</plugin>
+					</plugins>
+				</pluginManagement>
+			</build>
+		</profile>
+	</profiles>
 </project>
