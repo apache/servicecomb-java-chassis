@@ -6,6 +6,3 @@ cse:
   service:
     registry:
       address: http://127.0.0.1:9980
-  references:
-    springmvc:
-      version-rule: 0.0.1
