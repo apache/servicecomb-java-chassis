@@ -18,11 +18,11 @@ package io.servicecomb.codec.protobuf.jackson;
 
 import java.util.Map;
 
-import io.servicecomb.codec.protobuf.codec.AbstractFieldCodec;
+import io.servicecomb.codec.protobuf.codec.AbstractFieldCodec.ReaderHelpData;
 
 public class ResultDeserializer extends AbstractDeserializer {
 
-    public ResultDeserializer(Map<String, AbstractFieldCodec.ReaderHelpData> readerHelpDataMap) {
+    public ResultDeserializer(Map<String, ReaderHelpData> readerHelpDataMap) {
         super(readerHelpDataMap);
     }
 
@@ -32,7 +32,7 @@ public class ResultDeserializer extends AbstractDeserializer {
     }
 
     @Override
-    protected Object updateResult(Object result, Object value, AbstractFieldCodec.ReaderHelpData helpData) {
+    protected Object updateResult(Object result, Object value, ReaderHelpData helpData) {
         return value;
     }
 }

@@ -33,10 +33,12 @@ import org.springframework.web.bind.annotation.RequestParam;
         consumes = {"a", "b"},
         produces = {"a", "b"})
 public class Echo {
+    @RequestMapping
     public ResponseEntity<List<User>> testResponseEntity() {
         return null;
     }
 
+    @RequestMapping
     public void emptyPath() {
 
     }
@@ -63,6 +65,7 @@ public class Echo {
     public void multiPath(int query) {
     }
 
+    @RequestMapping
     public void inheritHttpMethod(int query) {
     }
 }

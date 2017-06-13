@@ -16,76 +16,102 @@
 
 package io.servicecomb.swagger.invocation.models;
 
+import java.util.Arrays;
 import java.util.List;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.CookieParam;
-import javax.ws.rs.DELETE;
 import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.HeaderParam;
 import javax.ws.rs.POST;
-import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
-import io.swagger.annotations.ApiImplicitParam;
-import io.swagger.annotations.ApiImplicitParams;
+import io.servicecomb.swagger.invocation.context.InvocationContext;
 
 @Path("/JaxrsImpl")
 @Produces(MediaType.APPLICATION_JSON)
 public class JaxrsImpl {
-    @Path("/path")
-    @PUT
-    public String path(@PathParam("name") String name) {
-        return name;
+    @Path("/testTwoSimple")
+    @GET
+    public int testSimple(@PathParam("a") int a, @QueryParam("b") int b, @HeaderParam("c") int c) {
+        return a - b - c;
     }
 
-    @Path("/form")
+    @Path("/testObject")
     @POST
-    public int form(@FormParam("a") int a, @FormParam("b") int b) {
-        return a + b;
-    }
-
-    @Path("/cookie")
-    @POST
-    public int cookie(@CookieParam("a") int a) {
-        return a;
-    }
-
-    @Path("/header")
-    @POST
-    public String header(@HeaderParam("a") String a) {
-        return a;
-    }
-
-    @Path("/query")
-    @DELETE
-    @Produces(MediaType.TEXT_PLAIN)
-    public String query(@QueryParam("s") List<String> s) {
-        return "";
-    }
-
-    @Path("/body")
-    @POST
-    public Person body(Person user) {
+    public Person testObject(Person user) {
+        user.setName("hello " + user.getName());
         return user;
     }
 
-    @Path("/request")
-    @GET
-    @ApiImplicitParams({@ApiImplicitParam(name = "a", dataType = "integer", format = "int32", paramType = "query")})
-    public int request(HttpServletRequest request) {
-        int a = Integer.parseInt(request.getParameter("a"));
-        return a;
+    @Path("/testSimpleAndObject")
+    @POST
+    public String testSimpleAndObject(@CookieParam("prefix") String prefix, Person user) {
+        return prefix + " " + user.getName();
     }
 
-    @Path("/headerAndBody")
+    @Path("/testContext")
     @POST
-    public String headerAndBody(@HeaderParam("a") String a, Person user) {
-        return a + " " + user.getName();
+    public String testContext(InvocationContext context, @FormParam("form") String name) {
+        context.addContext("name", name);
+        return name + " sayhi";
+    }
+
+    @Path("/bytes")
+    @POST
+    public byte[] testBytes(byte[] input) {
+        return input;
+    }
+
+    @Path("/testArrayArray")
+    @POST
+    public String[] testArrayArray(String[] s) {
+        return s;
+    }
+
+    @Path("/testArrayList")
+    @POST
+    public List<String> testArrayList(String[] s) {
+        return Arrays.asList(s);
+    }
+
+    @Path("/testListArray")
+    @POST
+    public String[] testListArray(List<String> s) {
+        return s.toArray(new String[s.size()]);
+    }
+
+    @Path("/testListList")
+    @POST
+    public List<String> testListList(List<String> s) {
+        return s;
+    }
+
+    @Path("/testObjectArrayArray")
+    @POST
+    public Person[] testObjectArrayArray(Person[] s) {
+        return s;
+    }
+
+    @Path("/testObjectArrayList")
+    @POST
+    public List<Person> testObjectArrayList(Person[] s) {
+        return Arrays.asList(s);
+    }
+
+    @Path("/testObjectListArray")
+    @POST
+    public Person[] testObjectListArray(List<Person> s) {
+        return s.toArray(new Person[s.size()]);
+    }
+
+    @Path("/testObjectListList")
+    @POST
+    public List<Person> testObjectListList(List<Person> s) {
+        return s;
     }
 }

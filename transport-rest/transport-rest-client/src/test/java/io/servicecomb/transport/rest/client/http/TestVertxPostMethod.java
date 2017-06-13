@@ -24,10 +24,9 @@ import org.junit.Test;
 import org.mockito.Mockito;
 
 import io.servicecomb.common.rest.definition.RestOperationMeta;
-import io.servicecomb.core.AsyncResponse;
 import io.servicecomb.core.Invocation;
 import io.servicecomb.foundation.common.net.IpPort;
-
+import io.servicecomb.swagger.invocation.AsyncResponse;
 import io.vertx.core.http.HttpClient;
 import io.vertx.core.http.HttpClientRequest;
 

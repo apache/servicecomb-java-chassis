@@ -26,6 +26,9 @@ import javax.servlet.http.HttpServletRequest;
 
 import io.servicecomb.common.rest.codec.RestServerRequestInternal;
 
+/**
+ * 封装HttpServletRequest为具有RestHttpRequest接口的类，统一多种rest transport request
+ */
 public class RestServletHttpRequest implements RestServerRequestInternal {
     private HttpServletRequest request;
 
@@ -46,6 +49,11 @@ public class RestServletHttpRequest implements RestServerRequestInternal {
     @Override
     public String getMethod() {
         return request.getMethod();
+    }
+
+    @Override
+    public String getContentType() {
+        return request.getContentType();
     }
 
     @Override

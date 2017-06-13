@@ -19,7 +19,7 @@ package io.servicecomb.codec.protobuf.jackson;
 import java.util.HashMap;
 import java.util.Map;
 
-import io.servicecomb.codec.protobuf.codec.AbstractFieldCodec;
+import io.servicecomb.codec.protobuf.codec.AbstractFieldCodec.ReaderHelpData;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -29,7 +29,7 @@ public class TestParamDeserializer {
 
     private ParamDeserializer paramDeserializer = null;
 
-    private Map<String, AbstractFieldCodec.ReaderHelpData> readerHelpDataMap = new HashMap<>();
+    private Map<String, ReaderHelpData> readerHelpDataMap = new HashMap<>();
 
     @Before
     public void setUp() throws Exception {
@@ -53,7 +53,7 @@ public class TestParamDeserializer {
         String[] stringArray = new String[1];
         stringArray[0] = "abc";
         Object[] object = new Object[1];
-        Object paramObject = paramDeserializer.updateResult(object, stringArray, new AbstractFieldCodec.ReaderHelpData());
+        Object paramObject = paramDeserializer.updateResult(object, stringArray, new ReaderHelpData());
         Assert.assertNotNull(paramObject);
         Assert.assertEquals(paramObject, object);
     }

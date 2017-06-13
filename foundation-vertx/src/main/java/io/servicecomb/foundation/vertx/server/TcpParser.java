@@ -65,6 +65,9 @@ public class TcpParser implements Handler<Buffer> {
         reset();
     }
 
+    /**
+     * 在解析出错时，通过重新创建parser对象，将整个缓冲区重置
+     */
     protected void reset() {
         parser = RecordParserImpl.newFixed(TCP_HEADER_LENGTH, this::onParse);
         status = ParseStatus.TCP_HEADER;

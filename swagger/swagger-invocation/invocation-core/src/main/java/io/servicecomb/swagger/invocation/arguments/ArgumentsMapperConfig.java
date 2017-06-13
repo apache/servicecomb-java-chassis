@@ -20,31 +20,14 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
-import io.swagger.models.Swagger;
-import io.swagger.models.parameters.Parameter;
-
 public class ArgumentsMapperConfig {
     // input
-    private Swagger swagger;
-
     private Method swaggerMethod;
-
-    private List<Parameter> swaggerParameters;
 
     private Method providerMethod;
 
-    private List<Parameter> providerParameters;
-
     // output
     private List<ArgumentMapper> argumentMapperList = new ArrayList<>();
-
-    public Swagger getSwagger() {
-        return swagger;
-    }
-
-    public void setSwagger(Swagger swagger) {
-        this.swagger = swagger;
-    }
 
     public Method getSwaggerMethod() {
         return swaggerMethod;
@@ -54,28 +37,12 @@ public class ArgumentsMapperConfig {
         this.swaggerMethod = swaggerMethod;
     }
 
-    public List<Parameter> getSwaggerParameters() {
-        return swaggerParameters;
-    }
-
-    public void setSwaggerParameters(List<Parameter> swaggerParameters) {
-        this.swaggerParameters = swaggerParameters;
-    }
-
     public Method getProviderMethod() {
         return providerMethod;
     }
 
     public void setProviderMethod(Method providerMethod) {
         this.providerMethod = providerMethod;
-    }
-
-    public List<Parameter> getProviderParameters() {
-        return providerParameters;
-    }
-
-    public void setProviderParameters(List<Parameter> providerParameters) {
-        this.providerParameters = providerParameters;
     }
 
     public List<ArgumentMapper> getArgumentMapperList() {

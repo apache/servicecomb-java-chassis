@@ -16,9 +16,10 @@
 
 package io.servicecomb.core.handler.impl;
 
-import io.servicecomb.core.AsyncResponse;
 import io.servicecomb.core.Invocation;
 import io.servicecomb.core.definition.OperationMeta;
+import io.servicecomb.swagger.invocation.AsyncResponse;
+
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -33,7 +34,7 @@ public class TestServiceProviderHandler {
 
     AsyncResponse asyncResp = null;
 
-    io.servicecomb.core.definition.OperationMeta OperationMeta = null;
+    OperationMeta OperationMeta = null;
 
     @Before
     public void setUp() throws Exception {

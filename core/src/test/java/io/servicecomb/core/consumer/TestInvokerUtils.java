@@ -18,10 +18,10 @@ package io.servicecomb.core.consumer;
 
 import org.junit.Test;
 
+import io.servicecomb.core.provider.consumer.InvokerUtils;
 import mockit.Mocked;
 
 public class TestInvokerUtils {
-    @SuppressWarnings("deprecation")
     @Test
     public void testInvokerUtils(@Mocked io.servicecomb.core.provider.consumer.InvokerUtils util) {
         // just test for interface compatible

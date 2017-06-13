@@ -29,6 +29,9 @@ import org.springframework.web.client.RestTemplate;
 
 import io.servicecomb.common.rest.RestConst;
 
+/**
+ * 用于同时支持cse调用和非cse调用
+ */
 public class RestTemplateWrapper extends RestTemplate {
     private static RestTemplate cseRestTemplate = new CseRestTemplate();
 

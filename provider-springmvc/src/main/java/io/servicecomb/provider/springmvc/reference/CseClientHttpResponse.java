@@ -25,7 +25,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.client.ClientHttpResponse;
 
-import io.servicecomb.core.Response;
+import io.servicecomb.swagger.invocation.Response;
 import io.servicecomb.swagger.invocation.response.Headers;
 
 /**

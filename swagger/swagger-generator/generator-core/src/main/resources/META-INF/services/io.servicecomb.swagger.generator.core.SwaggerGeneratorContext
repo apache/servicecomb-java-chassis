@@ -14,4 +14,4 @@
 # limitations under the License.
 #
 
-io.servicecomb.swagger.generator.core.DefaultSwaggerGeneratorContext
+io.servicecomb.swagger.generator.pojo.PojoSwaggerGeneratorContext

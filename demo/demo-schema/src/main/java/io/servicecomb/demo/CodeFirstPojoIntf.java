@@ -18,10 +18,18 @@ package io.servicecomb.demo;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import io.servicecomb.demo.compute.Person;
+import io.servicecomb.demo.server.User;
 
 public interface CodeFirstPojoIntf {
+    Map<String, User> testUserMap(Map<String, User> userMap);
+
+    List<User> testUserArray(List<User> users);
+
+    String[] testStrings(String[] input);
+
     byte[] testBytes(byte[] input);
 
     int reduce(int a, int b);

@@ -19,10 +19,15 @@ package io.servicecomb.swagger.generator.core;
 import java.util.Arrays;
 import java.util.Map;
 
-import io.servicecomb.swagger.generator.core.unittest.SwaggerGeneratorForTest;
 import org.junit.Assert;
 import org.junit.Test;
 
+import io.servicecomb.swagger.generator.core.SwaggerConst;
+import io.servicecomb.swagger.generator.core.SwaggerGenerator;
+import io.servicecomb.swagger.generator.core.SwaggerGeneratorContext;
+import io.servicecomb.swagger.generator.core.unittest.SwaggerGeneratorForTest;
+import io.servicecomb.swagger.generator.core.unittest.UnitTestSwaggerUtils;
+import io.servicecomb.swagger.generator.pojo.PojoSwaggerGeneratorContext;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.Extension;
 import io.swagger.annotations.ExtensionProperty;
@@ -37,7 +42,7 @@ import io.swagger.models.properties.MapProperty;
 import io.swagger.models.properties.Property;
 
 public class TestApiOperation {
-    SwaggerGeneratorContext context = new DefaultSwaggerGeneratorContext();
+    SwaggerGeneratorContext context = new PojoSwaggerGeneratorContext();
 
     interface ApiOperationAnnotation {
         @ApiOperation(
@@ -90,17 +95,11 @@ public class TestApiOperation {
 
     @Test
     public void testUnknown() {
-        SwaggerGenerator swaggerGenerator =
-            new SwaggerGeneratorForTest(context, UnknownResponseContainer.class);
-        try {
-            swaggerGenerator.generate();
-        } catch (Throwable e) {
-            Assert.assertEquals("not support responseContainer xxx", e.getMessage());
-            return;
-        }
-
-        // 不允许走到这里
-        Assert.assertFalse(true);
+        UnitTestSwaggerUtils.testException(
+                "generate operation swagger failed, io.servicecomb.swagger.generator.core.TestApiOperation$UnknownResponseContainer:testUnknown",
+                "not support responseContainer xxx",
+                context,
+                UnknownResponseContainer.class);
     }
 
     private void testSet(Path path) {

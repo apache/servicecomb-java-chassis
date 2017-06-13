@@ -16,18 +16,11 @@
 
 package io.servicecomb.core.definition.schema;
 
-import java.lang.reflect.Method;
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import javax.inject.Inject;
 
-import io.servicecomb.core.definition.MicroserviceMeta;
-import io.servicecomb.core.definition.OperationMeta;
-import io.servicecomb.core.provider.consumer.ConsumerOperationMeta;
 import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,26 +28,15 @@ import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
+import io.servicecomb.core.definition.MicroserviceMeta;
 import io.servicecomb.core.definition.SchemaMeta;
 import io.servicecomb.core.definition.SchemaUtils;
 import io.servicecomb.core.definition.loader.SchemaListenerManager;
+import io.servicecomb.foundation.common.config.PaaSResourceUtils;
 import io.servicecomb.serviceregistry.api.registry.Microservice;
 import io.servicecomb.serviceregistry.client.RegistryClientFactory;
 import io.servicecomb.serviceregistry.client.ServiceRegistryClient;
-import io.servicecomb.swagger.generator.core.OperationGenerator;
-import io.servicecomb.swagger.generator.core.SwaggerGenerator;
-import io.servicecomb.swagger.generator.core.utils.ClassUtils;
-import io.servicecomb.swagger.invocation.arguments.ArgumentMapper;
-import io.servicecomb.swagger.invocation.arguments.consumer.ConsumerArgumentSame;
-import io.servicecomb.swagger.invocation.arguments.consumer.ConsumerArgumentsMapper;
-import io.servicecomb.swagger.invocation.arguments.consumer.ConsumerArgumentsMapperFactory;
-import io.servicecomb.swagger.invocation.response.consumer.ConsumerResponseMapper;
-import io.servicecomb.swagger.invocation.response.consumer.ConsumerResponseMapperFactory;
-import io.servicecomb.foundation.common.config.PaaSResourceUtils;
-import io.servicecomb.foundation.common.utils.ReflectUtils;
-
 import io.swagger.models.Swagger;
-import io.swagger.models.parameters.Parameter;
 
 @Component
 public class ConsumerSchemaFactory extends AbstractSchemaFactory<ConsumerSchemaContext> {
@@ -63,13 +45,11 @@ public class ConsumerSchemaFactory extends AbstractSchemaFactory<ConsumerSchemaC
     @Inject
     protected SchemaListenerManager schemaListenerManager;
 
-    @Inject
-    protected ConsumerArgumentsMapperFactory consumerArgsMapperFactory;
-
-    @Inject
-    protected ConsumerResponseMapperFactory responseMapperFactory;
-
     private final Object lock = new Object();
+
+    public void setSchemaListenerManager(SchemaListenerManager schemaListenerManager) {
+        this.schemaListenerManager = schemaListenerManager;
+    }
 
     // 透明rpc场景，因为每次指定schema调用，所以可以懒加载
     // 而rest场景，是根据path反向查找schema，所以必须所有的schema都存在才行
@@ -78,7 +58,7 @@ public class ConsumerSchemaFactory extends AbstractSchemaFactory<ConsumerSchemaC
     // 用于rest consumer注册的场景，此时启动流程已经完成，需要主动通知listener
     // microserviceName可能是本app内的微服务
     // 也可能是appid:name形式的其他app的微服务
-    public MicroserviceMeta getOrCreateConsumer(String microserviceName, String microserviceVersionRule) {
+    public MicroserviceMeta getOrCreateMicroserviceMeta(String microserviceName, String microserviceVersionRule) {
         MicroserviceMeta microserviceMeta = microserviceMetaManager.findValue(microserviceName);
         if (microserviceMeta != null) {
             return microserviceMeta;
@@ -164,84 +144,8 @@ public class ConsumerSchemaFactory extends AbstractSchemaFactory<ConsumerSchemaC
             context.setMicroservice(microservice);
             context.setSchemaId(schemaId);
             context.setProviderClass(null);
-            context.setConsumerOperationMap(null);
 
             getOrCreateSchema(context);
-        }
-    }
-
-    @Override
-    protected void connectToProvider(ConsumerSchemaContext context) {
-        // 什么都不做，由调用者主动调用connectToConsumer
-    }
-
-    public void connectToConsumer(SchemaMeta schemaMeta,
-            Class<?> consumerIntf,
-            Map<String, ConsumerOperationMeta> consumerOperationMap) {
-        MicroserviceMeta microserviceMeta = schemaMeta.getMicroserviceMeta();
-
-        ConsumerSchemaContext context = new ConsumerSchemaContext();
-        context.setMicroserviceMeta(microserviceMeta);
-        context.setSchemaId(schemaMeta.getSchemaId());
-        context.setSchemaMeta(schemaMeta);
-        context.setProviderClass(consumerIntf);
-        context.setConsumerOperationMap(consumerOperationMap);
-
-        if (consumerIntf == null) {
-            consumerIntf = schemaMeta.getSwaggerIntf();
-            context.setProviderClass(consumerIntf);
-        }
-
-        if (consumerIntf.equals(schemaMeta.getSwaggerIntf())) {
-            mapSameIntfParameters(context);
-            return;
-        }
-
-        mapDiffIntfParameters(context);
-    }
-
-    protected void mapSameIntfParameters(ConsumerSchemaContext context) {
-        for (OperationMeta operationMeta : context.getSchemaMeta().getOperations()) {
-            List<ArgumentMapper> consumerArgMapperList = new ArrayList<>();
-            int swaggerParameterCount = operationMeta.getSwaggerOperation().getParameters().size();
-            for (int idx = 0; idx < swaggerParameterCount; idx++) {
-                ConsumerArgumentSame argMapper = new ConsumerArgumentSame(idx, idx);
-                consumerArgMapperList.add(argMapper);
-            }
-            ConsumerArgumentsMapper argsMapper =
-                new ConsumerArgumentsMapper(consumerArgMapperList, swaggerParameterCount);
-            createOperation(context, operationMeta, argsMapper);
-        }
-    }
-
-    protected void mapDiffIntfParameters(ConsumerSchemaContext context) {
-        // 建立契约与consumer之间的参数映射关系
-        Class<?> swaggerIntf = ClassUtils.getJavaInterface(context.getSchemaMeta().getSwagger());
-
-        SwaggerGenerator generator = generateSwagger(context);
-        for (OperationMeta operationMeta : context.getSchemaMeta().getOperations()) {
-            OperationGenerator operationGenerator =
-                generator.getOperationGeneratorMap().get(operationMeta.getOperationId());
-
-            // swagger集合可能大于consumer集合
-            if (operationGenerator == null) {
-                continue;
-            }
-
-            Method swaggerMethod = ReflectUtils.findMethod(swaggerIntf, operationMeta.getOperationId());
-            List<Parameter> swaggerParameters = operationMeta.getSwaggerOperation().getParameters();
-
-            Method consumerMethod = operationGenerator.getProviderMethod();
-            List<Parameter> consumerParameters = operationGenerator.getProviderParameters();
-
-            ConsumerArgumentsMapper argsMapper =
-                consumerArgsMapperFactory.createArgumentsMapper(context.getSchemaMeta().getSwagger(),
-                        swaggerMethod,
-                        swaggerParameters,
-                        consumerMethod,
-                        consumerParameters);
-
-            createOperation(context, operationMeta, argsMapper);
         }
     }
 
@@ -284,18 +188,5 @@ public class ConsumerSchemaFactory extends AbstractSchemaFactory<ConsumerSchemaC
                 String.format("no schema in local, and can not get schema from service center, %s:%s",
                         context.getMicroserviceName(),
                         context.getSchemaId()));
-    }
-
-    protected void createOperation(ConsumerSchemaContext context, OperationMeta operationMeta,
-            ConsumerArgumentsMapper argsMapper) {
-        if (context.getConsumerOperationMap() == null) {
-            return;
-        }
-
-        Method method = ReflectUtils.findMethod(context.getProviderClass(), operationMeta.getMethod().getName());
-        ConsumerResponseMapper responseMapper = responseMapperFactory.createResponseMapper(method.getReturnType());
-        ConsumerOperationMeta consumerOperationMeta =
-            new ConsumerOperationMeta(operationMeta, argsMapper, responseMapper);
-        context.getConsumerOperationMap().put(operationMeta.getMethod().getName(), consumerOperationMeta);
     }
 }

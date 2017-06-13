@@ -37,6 +37,10 @@ public class ConfigMgr {
 
     private Map<String, ConfigLoader> configLoaderMap;
 
+    /**
+     * 扫描所有的*.inc.config.xml
+     * 根据配置初始化所有的loader
+     */
     public void init() throws Exception {
         List<Resource> resArr =
             PaaSResourceUtils.getSortedResources("classpath*:config/config.inc.xml", ".inc.xml");

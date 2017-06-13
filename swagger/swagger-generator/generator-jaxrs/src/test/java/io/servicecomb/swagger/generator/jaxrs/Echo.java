@@ -35,15 +35,18 @@ import io.swagger.annotations.ApiResponse;
 
 @Path(value = "Echo")
 public class Echo {
+    @POST
     @ApiResponse(response = int.class, code = 200, message = "")
     public Response response() {
         return null;
     }
 
+    @GET
     public Response invalidResponse() {
         return null;
     }
 
+    @POST
     @Produces("")
     @Consumes("")
     @ApiOperation(value = "")

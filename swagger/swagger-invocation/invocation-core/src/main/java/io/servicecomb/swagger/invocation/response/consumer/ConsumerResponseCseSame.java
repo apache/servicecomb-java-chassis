@@ -17,7 +17,7 @@ package io.servicecomb.swagger.invocation.response.consumer;
 
 import org.springframework.stereotype.Component;
 
-import io.servicecomb.core.Response;
+import io.servicecomb.swagger.invocation.Response;
 
 @Component
 public class ConsumerResponseCseSame implements ConsumerResponseMapper {

@@ -46,7 +46,7 @@ public class CseServer extends Server {
     public CseServer(Transport transport, CacheEndpoint cacheEndpoint) {
         super(null);
 
-        endpoint = new Endpoint(transport, cacheEndpoint.getEndpoint());
+        endpoint = new Endpoint(transport, cacheEndpoint.getEndpoint(), cacheEndpoint.getInstance());
         instance = cacheEndpoint.getInstance();
 
         this.setAlive(true);

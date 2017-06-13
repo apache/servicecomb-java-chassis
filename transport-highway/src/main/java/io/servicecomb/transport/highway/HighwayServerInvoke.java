@@ -18,7 +18,6 @@ package io.servicecomb.transport.highway;
 
 import java.util.Map;
 
-import io.servicecomb.transport.highway.message.RequestHeader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -27,12 +26,14 @@ import io.servicecomb.codec.protobuf.definition.ProtobufManager;
 import io.servicecomb.codec.protobuf.utils.WrapSchema;
 import io.servicecomb.core.CseContext;
 import io.servicecomb.core.Invocation;
-import io.servicecomb.core.Response;
 import io.servicecomb.core.definition.MicroserviceMeta;
 import io.servicecomb.core.definition.MicroserviceMetaManager;
 import io.servicecomb.core.definition.OperationMeta;
 import io.servicecomb.core.definition.SchemaMeta;
-import io.servicecomb.core.exception.InvocationException;
+import io.servicecomb.swagger.invocation.Response;
+import io.servicecomb.swagger.invocation.exception.InvocationException;
+import io.protostuff.runtime.ProtobufFeature;
+import io.servicecomb.transport.highway.message.RequestHeader;
 import io.servicecomb.transport.highway.message.ResponseHeader;
 
 import io.vertx.core.buffer.Buffer;
@@ -42,6 +43,8 @@ public class HighwayServerInvoke {
     private static final Logger LOGGER = LoggerFactory.getLogger(HighwayServerInvoke.class);
 
     private MicroserviceMetaManager microserviceMetaManager = CseContext.getInstance().getMicroserviceMetaManager();
+
+    private ProtobufFeature protobufFeature;
 
     private RequestHeader header;
 
@@ -54,6 +57,14 @@ public class HighwayServerInvoke {
     private long msgId;
 
     private Buffer bodyBuffer;
+
+    public HighwayServerInvoke() {
+        this(null);
+    }
+
+    public HighwayServerInvoke(ProtobufFeature protobufFeature) {
+        this.protobufFeature = protobufFeature;
+    }
 
     public void setMicroserviceMetaManager(MicroserviceMetaManager microserviceMetaManager) {
         this.microserviceMetaManager = microserviceMetaManager;
@@ -105,7 +116,7 @@ public class HighwayServerInvoke {
     }
 
     private void doRunInExecutor() throws Exception {
-        Invocation invocation = HighwayCodec.decodeRequest(header, operationProtobuf, bodyBuffer);
+        Invocation invocation = HighwayCodec.decodeRequest(header, operationProtobuf, bodyBuffer, protobufFeature);
 
         invocation.next(response -> {
             sendResponse(invocation.getContext(), response);
@@ -126,7 +137,7 @@ public class HighwayServerInvoke {
         }
 
         try {
-            Buffer respBuffer = HighwayCodec.encodeResponse(msgId, header, bodySchema, body);
+            Buffer respBuffer = HighwayCodec.encodeResponse(msgId, header, bodySchema, body, protobufFeature);
             netSocket.write(respBuffer);
         } catch (Exception e) {
             // 没招了，直接打日志

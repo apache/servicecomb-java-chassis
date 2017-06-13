@@ -18,6 +18,9 @@ package io.servicecomb.common.rest.definition.path;
 
 import io.servicecomb.common.rest.definition.RestParam;
 
+/**
+ * 处理动态path
+ */
 public class PathVarParamWriter extends AbstractUrlParamWriter {
     public PathVarParamWriter(RestParam param) {
         this.param = param;

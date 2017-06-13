@@ -130,6 +130,9 @@ public final class VertxUtils {
         return Vertx.vertx(vertxOptions);
     }
 
+    /**
+     * 配置vertx的文件缓存功能，默认关闭
+     */
     protected static void configureVertxFileCaching() {
         if (System.getProperty(FileResolver.DISABLE_CP_RESOLVING_PROP_NAME) == null) {
             System.setProperty(FileResolver.DISABLE_CP_RESOLVING_PROP_NAME, "true");

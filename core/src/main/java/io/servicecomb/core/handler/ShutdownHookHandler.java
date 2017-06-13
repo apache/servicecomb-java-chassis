@@ -19,13 +19,17 @@ package io.servicecomb.core.handler;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 
-import io.servicecomb.core.AsyncResponse;
 import io.servicecomb.core.Invocation;
-import io.servicecomb.core.Response;
 import io.servicecomb.core.handler.impl.AbstractHandler;
+import io.servicecomb.swagger.invocation.AsyncResponse;
+import io.servicecomb.swagger.invocation.Response;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * 实现调用链的优雅停止： 当调用链没有返回的时候，等待返回或者超时
+ */
 public final class ShutdownHookHandler extends AbstractHandler implements Runnable {
     private static final Logger LOG = LoggerFactory.getLogger(ShutdownHookHandler.class);
 

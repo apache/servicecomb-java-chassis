@@ -20,27 +20,30 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.Date;
 
-import io.servicecomb.swagger.generator.core.schema.InvalidResponseHeader;
-import io.servicecomb.swagger.generator.core.schema.Schema;
-import io.servicecomb.swagger.generator.core.unittest.SwaggerGeneratorForTest;
-import io.servicecomb.swagger.generator.core.unittest.UnitTestSwaggerUtils;
-import io.servicecomb.swagger.generator.core.utils.ParamUtils;
 import org.junit.Assert;
 import org.junit.Test;
 
 import com.fasterxml.jackson.databind.JavaType;
-import io.servicecomb.swagger.converter.ConverterMgr;
-import io.servicecomb.swagger.generator.core.schema.RepeatOperation;
-import io.servicecomb.swagger.generator.core.schema.User;
-import io.servicecomb.swagger.generator.core.utils.ClassUtils;
-import io.servicecomb.foundation.common.utils.ReflectUtils;
 
+import io.servicecomb.common.javassist.JavassistUtils;
+import io.servicecomb.foundation.common.utils.ReflectUtils;
+import io.servicecomb.swagger.converter.ConverterMgr;
+import io.servicecomb.swagger.generator.core.schema.Color;
+import io.servicecomb.swagger.generator.core.schema.InvalidResponseHeader;
+import io.servicecomb.swagger.generator.core.schema.RepeatOperation;
+import io.servicecomb.swagger.generator.core.schema.Schema;
+import io.servicecomb.swagger.generator.core.schema.User;
+import io.servicecomb.swagger.generator.core.unittest.SwaggerGeneratorForTest;
+import io.servicecomb.swagger.generator.core.unittest.UnitTestSwaggerUtils;
+import io.servicecomb.swagger.generator.core.utils.ClassUtils;
+import io.servicecomb.swagger.generator.core.utils.ParamUtils;
+import io.servicecomb.swagger.generator.pojo.PojoSwaggerGeneratorContext;
 import io.swagger.models.Model;
 import io.swagger.models.RefModel;
 import io.swagger.models.Swagger;
 
 public class TestSwaggerUtils {
-    SwaggerGeneratorContext context = new DefaultSwaggerGeneratorContext();
+    SwaggerGeneratorContext context = new PojoSwaggerGeneratorContext();
 
     @Test
     public void testConverter() {
@@ -120,7 +123,15 @@ public class TestSwaggerUtils {
 
     @Test
     public void testEnum() {
-        testSchemaMethod("enum", "testEnum");
+        SwaggerGenerator generator = testSchemaMethod("enum", "testEnum");
+        JavassistUtils.detach("gen.cse.ms.ut.SchemaIntf");
+        Class<?> intf = ClassUtils.getOrCreateInterface(generator);
+
+        Method method = ReflectUtils.findMethod(intf, "testEnum");
+        Class<?> bodyCls = method.getParameterTypes()[0];
+        Field[] fields = bodyCls.getFields();
+        Assert.assertEquals(Color.class, fields[0].getType());
+        Assert.assertEquals(fields[0].getType(), fields[1].getType());
     }
 
     @Test
@@ -203,7 +214,9 @@ public class TestSwaggerUtils {
     @Test
     public void testDate() {
         SwaggerGenerator generator = testSchemaMethod("date", "testDate");
+        JavassistUtils.detach("gen.cse.ms.ut.SchemaIntf");
         Class<?> intf = ClassUtils.getOrCreateInterface(generator);
+
         Method method = ReflectUtils.findMethod(intf, "testDate");
         Assert.assertEquals(Date.class, method.getReturnType());
     }
@@ -219,6 +232,7 @@ public class TestSwaggerUtils {
     @Test
     public void testInvalidResponseHeader() {
         UnitTestSwaggerUtils.testException(
+                "generate operation swagger failed, io.servicecomb.swagger.generator.core.schema.InvalidResponseHeader:test",
                 "invalid responseHeader, ResponseHeaderConfig [name=h, ResponseConfigBase [description=, responseReference=null, responseClass=class java.lang.Void, responseContainer=]]",
                 context,
                 InvalidResponseHeader.class,

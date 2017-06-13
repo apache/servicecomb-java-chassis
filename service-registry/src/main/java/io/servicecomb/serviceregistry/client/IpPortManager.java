@@ -16,24 +16,27 @@
 
 package io.servicecomb.serviceregistry.client;
 
+import static io.servicecomb.serviceregistry.api.Const.REGISTRY_APP_ID;
+import static io.servicecomb.serviceregistry.api.Const.REGISTRY_SERVICE_NAME;
+import static io.servicecomb.serviceregistry.api.Const.REGISTRY_VERSION;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import io.servicecomb.serviceregistry.api.Const;
-import io.servicecomb.serviceregistry.cache.InstanceCache;
-import io.servicecomb.serviceregistry.utils.Timer;
-import io.servicecomb.serviceregistry.utils.TimerException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import io.servicecomb.serviceregistry.cache.CacheEndpoint;
-import io.servicecomb.serviceregistry.cache.InstanceCacheManager;
-import io.servicecomb.serviceregistry.config.ServiceRegistryConfig;
 import io.servicecomb.foundation.common.net.IpPort;
 import io.servicecomb.foundation.common.net.URIEndpointObject;
+import io.servicecomb.serviceregistry.cache.CacheEndpoint;
+import io.servicecomb.serviceregistry.cache.InstanceCache;
+import io.servicecomb.serviceregistry.cache.InstanceCacheManager;
+import io.servicecomb.serviceregistry.config.ServiceRegistryConfig;
+import io.servicecomb.serviceregistry.utils.Timer;
+import io.servicecomb.serviceregistry.utils.TimerException;
 
 /**
  * Created by   on 2017/1/9.
@@ -77,23 +80,23 @@ public class IpPortManager {
         // 绑定微服务与SR的依赖，同时建立cache
         Timer timer = Timer.newForeverTimer();
         while (true) {
-            instanceCache = InstanceCacheManager.INSTANCE.getOrCreate(Const.REGISTRY_APP_ID,
-                    Const.REGISTRY_SERVICE_NAME,
-                    Const.REGISTRY_VERSION);
+            instanceCache = InstanceCacheManager.INSTANCE.getOrCreate(REGISTRY_APP_ID,
+                    REGISTRY_SERVICE_NAME,
+                    REGISTRY_VERSION);
             if (instanceCache != null) {
                 break;
             }
             LOGGER.error("create service registry {}/{}/{} instance caches failed",
-                    Const.REGISTRY_APP_ID,
-                    Const.REGISTRY_SERVICE_NAME,
-                    Const.REGISTRY_VERSION);
+                    REGISTRY_APP_ID,
+                    REGISTRY_SERVICE_NAME,
+                    REGISTRY_VERSION);
 
             timer.sleep();
         }
         LOGGER.info("create service registry {}/{}/{} instance caches successfully",
-                Const.REGISTRY_APP_ID,
-                Const.REGISTRY_SERVICE_NAME,
-                Const.REGISTRY_VERSION);
+                REGISTRY_APP_ID,
+                REGISTRY_SERVICE_NAME,
+                REGISTRY_VERSION);
     }
 
     public IpPort getDefaultIpPort() {
@@ -176,9 +179,9 @@ public class IpPortManager {
         if (instanceCache == null) {
             return null;
         }
-        InstanceCache newCache = InstanceCacheManager.INSTANCE.getOrCreate(Const.REGISTRY_APP_ID,
-                Const.REGISTRY_SERVICE_NAME,
-                Const.REGISTRY_VERSION);
+        InstanceCache newCache = InstanceCacheManager.INSTANCE.getOrCreate(REGISTRY_APP_ID,
+                REGISTRY_SERVICE_NAME,
+                REGISTRY_VERSION);
         if (instanceCache == null || instanceCache.cacheChanged(newCache)) {
             synchronized (lockObj) {
                 if (instanceCache == null || instanceCache.cacheChanged(newCache)) {

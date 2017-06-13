@@ -18,6 +18,9 @@ package io.servicecomb.demo.pojo.client;
 
 import java.util.Arrays;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import javax.inject.Inject;
 
@@ -26,6 +29,7 @@ import io.servicecomb.demo.CodeFirstPojoIntf;
 import io.servicecomb.demo.DemoConst;
 import io.servicecomb.demo.TestMgr;
 import io.servicecomb.demo.compute.Person;
+import io.servicecomb.demo.server.User;
 import io.servicecomb.provider.pojo.RpcReference;
 
 public class CodeFirstPojoClient {
@@ -50,19 +54,58 @@ public class CodeFirstPojoClient {
     }
 
     protected void testAll(CodeFirstPojoIntf codeFirst, String transport) {
+        testCodeFirstUserMap(codeFirst);
+        testCodeFirstUserArray(codeFirst);
+        testCodeFirstStrings(codeFirst);
         testCodeFirstBytes(codeFirst);
         testCodeFirstAddDate(codeFirst);
         testCodeFirstAddString(codeFirst);
         testCodeFirstIsTrue(codeFirst);
         testCodeFirstSayHi2(codeFirst);
-        // grpc没处理非200的场景
-        if (!transport.equals("grpc") && !transport.equals("")) {
-            testCodeFirstSayHi(codeFirst);
-        }
+        testCodeFirstSayHi(codeFirst);
         testCodeFirstSaySomething(codeFirst);
         //            testCodeFirstRawJsonString(template, cseUrlPrefix);
         testCodeFirstSayHello(codeFirst);
         testCodeFirstReduce(codeFirst);
+    }
+
+    private void testCodeFirstUserMap(CodeFirstPojoIntf codeFirst) {
+        User user1 = new User();
+        user1.setNames(new String[] {"u1", "u2"});
+
+        User user2 = new User();
+        user2.setNames(new String[] {"u3", "u4"});
+
+        Map<String, User> userMap = new HashMap<>();
+        userMap.put("u1", user1);
+        userMap.put("u2", user2);
+        Map<String, User> result = codeFirst.testUserMap(userMap);
+
+        TestMgr.check("u1", result.get("u1").getNames()[0]);
+        TestMgr.check("u2", result.get("u1").getNames()[1]);
+        TestMgr.check("u3", result.get("u2").getNames()[0]);
+        TestMgr.check("u4", result.get("u2").getNames()[1]);
+    }
+
+    private void testCodeFirstUserArray(CodeFirstPojoIntf codeFirst) {
+        User user1 = new User();
+        user1.setNames(new String[] {"u1", "u2"});
+
+        User user2 = new User();
+        user2.setNames(new String[] {"u3", "u4"});
+
+        User[] users = new User[] {user1, user2};
+        List<User> result = codeFirst.testUserArray(Arrays.asList(users));
+        TestMgr.check("u1", result.get(0).getNames()[0]);
+        TestMgr.check("u2", result.get(0).getNames()[1]);
+        TestMgr.check("u3", result.get(1).getNames()[0]);
+        TestMgr.check("u4", result.get(1).getNames()[1]);
+    }
+
+    private void testCodeFirstStrings(CodeFirstPojoIntf codeFirst) {
+        String[] result = codeFirst.testStrings(new String[] {"a", "b"});
+        TestMgr.check("aa0", result[0]);
+        TestMgr.check("b", result[1]);
     }
 
     private void testCodeFirstBytes(CodeFirstPojoIntf codeFirst) {

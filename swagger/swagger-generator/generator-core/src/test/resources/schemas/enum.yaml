@@ -15,7 +15,7 @@ paths:
       operationId: "testEnum"
       parameters:
       - in: "body"
-        name: "color"
+        name: "testEnumBody"
         required: false
         schema:
           $ref: "#/definitions/testEnumBody"
@@ -31,3 +31,11 @@ definitions:
         enum:
         - "WHITE"
         - "BLACK"
+        x-java-class: "io.servicecomb.swagger.generator.core.schema.Color"
+      color1:
+        type: "string"
+        enum:
+        - "WHITE"
+        - "BLACK"
+        x-java-class: "io.servicecomb.swagger.generator.core.schema.Color"
+    x-java-class: "gen.cse.ms.ut.testEnumBody"

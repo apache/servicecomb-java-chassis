@@ -39,10 +39,6 @@
 		</dependency>
 		<dependency>
 			<groupId>io.servicecomb</groupId>
-			<artifactId>transport-grpc</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>io.servicecomb</groupId>
 			<artifactId>transport-rest-vertx</artifactId>
 		</dependency>
 		<dependency>
@@ -66,7 +62,7 @@
 				<artifactId>maven-jar-plugin</artifactId>
 				<configuration>
 					<excludes>
-						<exclude>config/log4j.demo.eclipse.properties</exclude>
+						<exclude>config/log4j.eclipse.properties</exclude>
 					</excludes>
 				</configuration>
 			</plugin>

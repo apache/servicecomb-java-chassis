@@ -22,6 +22,9 @@ import io.servicecomb.common.rest.definition.RestOperationMeta;
 import io.servicecomb.core.definition.OperationMeta;
 import io.servicecomb.core.provider.consumer.ReferenceConfig;
 
+/**
+ * 封装每一次调用的元数据
+ */
 public class RequestMeta {
     private ReferenceConfig referenceConfig;
 

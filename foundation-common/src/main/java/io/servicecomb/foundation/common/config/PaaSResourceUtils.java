@@ -42,6 +42,9 @@ public class PaaSResourceUtils extends org.springframework.util.ResourceUtils {
 
     private static ResourcePatternResolver resourcePatternResolver = new PathMatchingResourcePatternResolver();
 
+    /**
+     * 失败，则返回空数组
+     */
     public static Resource[] getResources(String locationPattern) {
         try {
             return resourcePatternResolver.getResources(locationPattern);
@@ -50,6 +53,9 @@ public class PaaSResourceUtils extends org.springframework.util.ResourceUtils {
         }
     }
 
+    /**
+     * 失败，则返回空列表
+     */
     public static List<Resource> getResources(String... locationPatterns) {
         List<Resource> ret = new ArrayList<>();
         for (String locationPattern : locationPatterns) {
@@ -60,6 +66,15 @@ public class PaaSResourceUtils extends org.springframework.util.ResourceUtils {
         return ret;
     }
 
+    /**
+     * 文件同名时，jar的优先级比较低
+     * jar: xxx.xml
+     * jar: xxx.model.xml
+     * file:xxx.xml
+     * 调用者保证，所有res的后缀都是suffix
+     * file文件应该只有一个，因为放在目录中的配置文件，应该是最终的部署定制文件
+     * 此时，还分多个，是不合适的
+     */
     public static void sortResources(List<Resource> resList, String suffix) {
         resList.sort(new Comparator<Resource>() {
             @Override

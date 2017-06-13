@@ -58,6 +58,10 @@ public final class NetUtils {
     private NetUtils() {
     }
 
+    /**
+     * docker环境中，有时无法通过InetAddress.getLocalHost()获取 ，会报unknown host Exception， system error
+     * 此时，通过遍历网卡接口的方式规避，出来的数据不一定对
+     */
     private static void doGetIpv4AddressFromNetworkInterface() throws SocketException {
         Enumeration<NetworkInterface> iterNetwork = NetworkInterface.getNetworkInterfaces();
 
@@ -94,6 +98,9 @@ public final class NetUtils {
         return;
     }
 
+    /**
+     * address ip:port格式
+     */
     public static IpPort parseIpPort(String address) {
         if (address == null) {
             return null;
@@ -123,6 +130,12 @@ public final class NetUtils {
         }
     }
 
+    /**
+     * 对于配置为0.0.0.0的地址，let it go
+     * schema, e.g. http
+     * adddress, e.g 0.0.0.0:8080
+     * return 实际监听的地址
+     */
     public static String getRealListenAddress(String schema, String address) {
         if (address == null) {
             return address;

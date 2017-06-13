@@ -16,6 +16,15 @@
 
 package io.servicecomb.serviceregistry.client.http;
 
+import static io.servicecomb.serviceregistry.api.Const.EXISTENCE_PATH;
+import static io.servicecomb.serviceregistry.api.Const.HEARTBEAT_PATH;
+import static io.servicecomb.serviceregistry.api.Const.INSTANCES_PATH;
+import static io.servicecomb.serviceregistry.api.Const.MICROSERVICE_PATH;
+import static io.servicecomb.serviceregistry.api.Const.MS_API_PATH;
+import static io.servicecomb.serviceregistry.api.Const.PROPERTIES_PATH;
+import static io.servicecomb.serviceregistry.api.Const.SCHEMA_PATH;
+import static io.servicecomb.serviceregistry.api.Const.WATCHER_PATH;
+
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
@@ -26,18 +35,18 @@ import java.util.concurrent.CountDownLatch;
 import javax.ws.rs.core.Response.Status;
 import javax.xml.ws.Holder;
 
-import io.servicecomb.serviceregistry.api.Const;
-import io.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
-import io.servicecomb.serviceregistry.api.request.RegisterInstanceRequest;
-import io.servicecomb.serviceregistry.api.request.UpdatePropertiesRequest;
-import io.servicecomb.serviceregistry.client.ClientException;
-import io.servicecomb.serviceregistry.client.IpPortManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import io.servicecomb.foundation.common.net.IpPort;
+import io.servicecomb.foundation.common.utils.JsonUtils;
+import io.servicecomb.foundation.vertx.AsyncResultCallback;
 import io.servicecomb.serviceregistry.api.registry.Microservice;
+import io.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
 import io.servicecomb.serviceregistry.api.request.CreateSchemaRequest;
 import io.servicecomb.serviceregistry.api.request.CreateServiceRequest;
+import io.servicecomb.serviceregistry.api.request.RegisterInstanceRequest;
+import io.servicecomb.serviceregistry.api.request.UpdatePropertiesRequest;
 import io.servicecomb.serviceregistry.api.response.CreateServiceResponse;
 import io.servicecomb.serviceregistry.api.response.FindInstancesResponse;
 import io.servicecomb.serviceregistry.api.response.GetAllServicesResponse;
@@ -48,11 +57,9 @@ import io.servicecomb.serviceregistry.api.response.GetServiceResponse;
 import io.servicecomb.serviceregistry.api.response.HeartbeatResponse;
 import io.servicecomb.serviceregistry.api.response.MicroserviceInstanceChangedEvent;
 import io.servicecomb.serviceregistry.api.response.RegisterInstanceResponse;
+import io.servicecomb.serviceregistry.client.ClientException;
+import io.servicecomb.serviceregistry.client.IpPortManager;
 import io.servicecomb.serviceregistry.client.ServiceRegistryClient;
-import io.servicecomb.foundation.common.net.IpPort;
-import io.servicecomb.foundation.common.utils.JsonUtils;
-import io.servicecomb.foundation.vertx.AsyncResultCallback;
-
 import io.vertx.core.Handler;
 import io.vertx.core.http.HttpClientResponse;
 
@@ -117,7 +124,7 @@ public final class ServiceRegistryClientImpl implements ServiceRegistryClient {
 
         CountDownLatch countDownLatch = new CountDownLatch(1);
         RestUtils.get(ipPort,
-                Const.MS_API_PATH + Const.MICROSERVICE_PATH,
+                MS_API_PATH + MICROSERVICE_PATH,
                 new RequestParam(),
                 syncHandler(countDownLatch, GetAllServicesResponse.class, holder));
         try {
@@ -138,7 +145,7 @@ public final class ServiceRegistryClientImpl implements ServiceRegistryClient {
 
         CountDownLatch countDownLatch = new CountDownLatch(1);
         RestUtils.get(ipPort,
-                Const.MS_API_PATH + Const.EXISTENCE_PATH,
+                MS_API_PATH + EXISTENCE_PATH,
                 new RequestParam().addQueryParam("type", "microservice")
                         .addQueryParam("appId", appId)
                         .addQueryParam("serviceName", microserviceName)
@@ -166,7 +173,7 @@ public final class ServiceRegistryClientImpl implements ServiceRegistryClient {
 
         CountDownLatch countDownLatch = new CountDownLatch(1);
         RestUtils.get(ipPort,
-                Const.MS_API_PATH + Const.EXISTENCE_PATH,
+                MS_API_PATH + EXISTENCE_PATH,
                 new RequestParam().addQueryParam("type", "schema")
                         .addQueryParam("serviceId", microserviceId)
                         .addQueryParam("schemaId", schemaId),
@@ -194,7 +201,7 @@ public final class ServiceRegistryClientImpl implements ServiceRegistryClient {
 
             CountDownLatch countDownLatch = new CountDownLatch(1);
             RestUtils.put(ipPort,
-                    Const.MS_API_PATH + Const.MICROSERVICE_PATH + "/" + microserviceId + Const.SCHEMA_PATH + "/" + schemaId,
+                    MS_API_PATH + MICROSERVICE_PATH + "/" + microserviceId + SCHEMA_PATH + "/" + schemaId,
                     new RequestParam().setBody(body),
                     syncHandler(countDownLatch, HttpClientResponse.class, holder));
             countDownLatch.await();
@@ -226,7 +233,7 @@ public final class ServiceRegistryClientImpl implements ServiceRegistryClient {
 
         CountDownLatch countDownLatch = new CountDownLatch(1);
         RestUtils.get(ipPort,
-                Const.MS_API_PATH + Const.MICROSERVICE_PATH + "/" + microserviceId + Const.SCHEMA_PATH + "/" + schemaId,
+                MS_API_PATH + MICROSERVICE_PATH + "/" + microserviceId + SCHEMA_PATH + "/" + schemaId,
                 new RequestParam(),
                 syncHandler(countDownLatch, GetSchemaResponse.class, holder));
         try {
@@ -259,7 +266,7 @@ public final class ServiceRegistryClientImpl implements ServiceRegistryClient {
 
             CountDownLatch countDownLatch = new CountDownLatch(1);
             RestUtils.post(ipPort,
-                    Const.MS_API_PATH + Const.MICROSERVICE_PATH,
+                    MS_API_PATH + MICROSERVICE_PATH,
                     new RequestParam().setBody(body),
                     syncHandler(countDownLatch, CreateServiceResponse.class, holder));
             countDownLatch.await();
@@ -281,8 +288,8 @@ public final class ServiceRegistryClientImpl implements ServiceRegistryClient {
         Holder<GetServiceResponse> holder = new Holder<>();
         IpPort ipPort = IpPortManager.INSTANCE.get();
 
-        StringBuilder url = new StringBuilder(Const.MS_API_PATH);
-        url.append(Const.MICROSERVICE_PATH).append("/").append(microserviceId);
+        StringBuilder url = new StringBuilder(MS_API_PATH);
+        url.append(MICROSERVICE_PATH).append("/").append(microserviceId);
 
         CountDownLatch countDownLatch = new CountDownLatch(1);
         RestUtils.get(ipPort,
@@ -305,11 +312,11 @@ public final class ServiceRegistryClientImpl implements ServiceRegistryClient {
         Holder<RegisterInstanceResponse> holder = new Holder<>();
         IpPort ipPort = IpPortManager.INSTANCE.get();
 
-        StringBuilder url = new StringBuilder(Const.MS_API_PATH);
-        url.append(Const.MICROSERVICE_PATH)
+        StringBuilder url = new StringBuilder(MS_API_PATH);
+        url.append(MICROSERVICE_PATH)
                 .append("/")
                 .append(instance.getServiceId())
-                .append(Const.INSTANCES_PATH);
+                .append(INSTANCES_PATH);
 
         try {
             RegisterInstanceRequest request = new RegisterInstanceRequest();
@@ -340,11 +347,11 @@ public final class ServiceRegistryClientImpl implements ServiceRegistryClient {
         Holder<GetInstancesResponse> holder = new Holder<>();
         IpPort ipPort = IpPortManager.INSTANCE.get();
 
-        StringBuilder url = new StringBuilder(Const.MS_API_PATH);
-        url.append(Const.MICROSERVICE_PATH)
+        StringBuilder url = new StringBuilder(MS_API_PATH);
+        url.append(MICROSERVICE_PATH)
                 .append("/")
                 .append(providerId)
-                .append(Const.INSTANCES_PATH);
+                .append(INSTANCES_PATH);
 
         CountDownLatch countDownLatch = new CountDownLatch(1);
         RestUtils.get(ipPort,
@@ -368,11 +375,11 @@ public final class ServiceRegistryClientImpl implements ServiceRegistryClient {
         Holder<HttpClientResponse> holder = new Holder<>();
         IpPort ipPort = IpPortManager.INSTANCE.get();
 
-        StringBuilder url = new StringBuilder(Const.MS_API_PATH);
-        url.append(Const.MICROSERVICE_PATH)
+        StringBuilder url = new StringBuilder(MS_API_PATH);
+        url.append(MICROSERVICE_PATH)
                 .append("/")
                 .append(microserviceId)
-                .append(Const.INSTANCES_PATH)
+                .append(INSTANCES_PATH)
                 .append("/")
                 .append(microserviceInstanceId);
 
@@ -403,14 +410,14 @@ public final class ServiceRegistryClientImpl implements ServiceRegistryClient {
         Holder<HttpClientResponse> holder = new Holder<>();
         IpPort ipPort = IpPortManager.INSTANCE.get();
 
-        StringBuilder url = new StringBuilder(Const.MS_API_PATH);
-        url.append(Const.MICROSERVICE_PATH)
+        StringBuilder url = new StringBuilder(MS_API_PATH);
+        url.append(MICROSERVICE_PATH)
                 .append("/")
                 .append(microserviceId)
-                .append(Const.INSTANCES_PATH)
+                .append(INSTANCES_PATH)
                 .append("/")
                 .append(microserviceInstanceId)
-                .append(Const.HEARTBEAT_PATH);
+                .append(HEARTBEAT_PATH);
 
         CountDownLatch countDownLatch = new CountDownLatch(1);
         RestUtils.put(ipPort,
@@ -454,7 +461,7 @@ public final class ServiceRegistryClientImpl implements ServiceRegistryClient {
                 if (alreadyWatch == null) {
                     watchServices.put(selfMicroserviceId, true);
 
-                    String url = Const.MS_API_PATH + Const.MICROSERVICE_PATH + "/" + selfMicroserviceId + Const.WATCHER_PATH;
+                    String url = MS_API_PATH + MICROSERVICE_PATH + "/" + selfMicroserviceId + WATCHER_PATH;
 
                     IpPort ipPort = IpPortManager.INSTANCE.get();
                     if (ipPort == null) {
@@ -529,8 +536,8 @@ public final class ServiceRegistryClientImpl implements ServiceRegistryClient {
         Holder<FindInstancesResponse> holder = new Holder<>();
         IpPort ipPort = IpPortManager.INSTANCE.get();
 
-        StringBuilder url = new StringBuilder(Const.MS_API_PATH);
-        url.append(Const.INSTANCES_PATH);
+        StringBuilder url = new StringBuilder(MS_API_PATH);
+        url.append(INSTANCES_PATH);
 
         CountDownLatch countDownLatch = new CountDownLatch(1);
         RestUtils.get(ipPort,
@@ -572,11 +579,11 @@ public final class ServiceRegistryClientImpl implements ServiceRegistryClient {
         Holder<HttpClientResponse> holder = new Holder<>();
         IpPort ipPort = IpPortManager.INSTANCE.get();
 
-        StringBuilder url = new StringBuilder(Const.MS_API_PATH);
-        url.append(Const.MICROSERVICE_PATH)
+        StringBuilder url = new StringBuilder(MS_API_PATH);
+        url.append(MICROSERVICE_PATH)
                 .append("/")
                 .append(microserviceId)
-                .append(Const.PROPERTIES_PATH);
+                .append(PROPERTIES_PATH);
 
         try {
             UpdatePropertiesRequest request = new UpdatePropertiesRequest();
@@ -614,14 +621,14 @@ public final class ServiceRegistryClientImpl implements ServiceRegistryClient {
         Holder<HttpClientResponse> holder = new Holder<>();
         IpPort ipPort = IpPortManager.INSTANCE.get();
 
-        StringBuilder url = new StringBuilder(Const.MS_API_PATH);
-        url.append(Const.MICROSERVICE_PATH)
+        StringBuilder url = new StringBuilder(MS_API_PATH);
+        url.append(MICROSERVICE_PATH)
                 .append("/")
                 .append(microserviceId)
-                .append(Const.INSTANCES_PATH)
+                .append(INSTANCES_PATH)
                 .append("/")
                 .append(microserviceInstanceId)
-                .append(Const.PROPERTIES_PATH);
+                .append(PROPERTIES_PATH);
 
         try {
             UpdatePropertiesRequest request = new UpdatePropertiesRequest();

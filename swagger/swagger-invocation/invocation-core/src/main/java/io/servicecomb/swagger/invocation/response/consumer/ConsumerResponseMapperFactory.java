@@ -15,38 +15,36 @@
  */
 package io.servicecomb.swagger.invocation.response.consumer;
 
-import java.util.HashMap;
+import java.lang.reflect.Type;
 import java.util.List;
-import java.util.Map;
 
 import javax.inject.Inject;
 
 import org.springframework.stereotype.Component;
 
+import io.servicecomb.swagger.invocation.converter.Converter;
+import io.servicecomb.swagger.invocation.response.ResponseMapperFactory;
+
 @Component
-public class ConsumerResponseMapperFactory {
-    private ConsumerResponseMapper defaultMapper;
-
-    private Map<Class<?>, ConsumerResponseMapper> mappers = new HashMap<>();
-
+public class ConsumerResponseMapperFactory extends ResponseMapperFactory<ConsumerResponseMapper> {
     @Inject
     public void setMapperList(List<ConsumerResponseMapper> mapperList) {
         for (ConsumerResponseMapper mapper : mapperList) {
             if (mapper.getResponseClass() == null) {
-                defaultMapper = mapper;
-                continue;
+                throw new Error("response class must not be null");
             }
 
             mappers.put(mapper.getResponseClass(), mapper);
         }
     }
 
-    public ConsumerResponseMapper createResponseMapper(Class<?> cls) {
-        ConsumerResponseMapper mapper = mappers.get(cls);
-        if (mapper == null) {
-            return defaultMapper;
-        }
+    @Override
+    protected Type choose(Type src, Type target) {
+        return target;
+    }
 
-        return mapper;
+    @Override
+    protected ConsumerResponseMapper doCreateResponseMapper(Converter converter) {
+        return new ConsumerResponseMapperCommon(converter);
     }
 }

@@ -19,7 +19,7 @@ package io.servicecomb.core.provider.consumer;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Executor;
 
-import io.servicecomb.core.Response;
+import io.servicecomb.swagger.invocation.Response;
 
 /**
  * 业务线程在阻塞等待着，不必另起线程

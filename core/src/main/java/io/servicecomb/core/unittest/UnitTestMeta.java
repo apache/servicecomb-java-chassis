@@ -19,23 +19,26 @@ package io.servicecomb.core.unittest;
 import java.util.Collections;
 import java.util.List;
 
-import io.servicecomb.core.handler.ConsumerHandlerManager;
 import org.mockito.Mockito;
 import org.springframework.context.ApplicationContext;
 
+import io.servicecomb.core.CseContext;
 import io.servicecomb.core.Handler;
 import io.servicecomb.core.definition.MicroserviceMeta;
 import io.servicecomb.core.definition.MicroserviceMetaManager;
 import io.servicecomb.core.definition.SchemaMeta;
+import io.servicecomb.core.definition.loader.SchemaListenerManager;
 import io.servicecomb.core.definition.loader.SchemaLoader;
+import io.servicecomb.core.definition.schema.ConsumerSchemaFactory;
+import io.servicecomb.core.handler.ConsumerHandlerManager;
 import io.servicecomb.core.handler.ProducerHandlerManager;
 import io.servicecomb.core.handler.config.Config;
 import io.servicecomb.core.handler.impl.SimpleLoadBalanceHandler;
+import io.servicecomb.core.provider.consumer.ConsumerProviderManager;
+import io.servicecomb.foundation.common.utils.BeanUtils;
 import io.servicecomb.serviceregistry.RegistryUtils;
 import io.servicecomb.serviceregistry.api.registry.Microservice;
 import io.servicecomb.swagger.generator.core.unittest.UnitTestSwaggerUtils;
-import io.servicecomb.foundation.common.utils.BeanUtils;
-
 import io.swagger.models.Swagger;
 import mockit.Mock;
 import mockit.MockUp;
@@ -43,11 +46,31 @@ import mockit.MockUp;
 public class UnitTestMeta {
     private static boolean inited = false;
 
+    private static MicroserviceMetaManager microserviceMetaManager = new MicroserviceMetaManager();
+
+    private static SchemaListenerManager schemaListenerManager = new SchemaListenerManager();
+
     @SuppressWarnings("unchecked")
     public static synchronized void init() {
         if (inited) {
             return;
         }
+
+        ConsumerProviderManager consumerProviderManager = new ConsumerProviderManager();
+
+        ConsumerSchemaFactory consumerSchemaFactory = new ConsumerSchemaFactory() {
+            @Override
+            protected Microservice findMicroservice(MicroserviceMeta microserviceMeta,
+                    String microserviceVersionRule) {
+                return null;
+            }
+        };
+        consumerSchemaFactory.setMicroserviceMetaManager(microserviceMetaManager);
+        consumerSchemaFactory.setSchemaListenerManager(schemaListenerManager);
+
+        CseContext.getInstance().setConsumerProviderManager(consumerProviderManager);
+        CseContext.getInstance().setConsumerSchemaFactory(consumerSchemaFactory);
+        CseContext.getInstance().setSchemaListenerManager(schemaListenerManager);
 
         Config config = new Config();
         Class<?> cls = SimpleLoadBalanceHandler.class;
@@ -56,6 +79,7 @@ public class UnitTestMeta {
         ConsumerHandlerManager.INSTANCE.init(config);
 
         ApplicationContext applicationContext = Mockito.mock(ApplicationContext.class);
+        Mockito.when(applicationContext.getBean(Mockito.anyString())).thenReturn(null);
         BeanUtils.setContext(applicationContext);
         inited = true;
     }
@@ -63,8 +87,6 @@ public class UnitTestMeta {
     static {
         init();
     }
-
-    private MicroserviceMetaManager microserviceMetaManager = new MicroserviceMetaManager();
 
     private SchemaLoader schemaLoader = new SchemaLoader() {
         public void putSelfBasePathIfAbsent(String microserviceName, String basePath) {

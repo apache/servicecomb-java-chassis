@@ -25,9 +25,7 @@
 		<relativePath>parent</relativePath>
 	</parent>
 	
-	<groupId>io.servicecomb</groupId>
 	<artifactId>java-chassis</artifactId>
-	<version>0.1.0-m2-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
 	<dependencyManagement>
@@ -100,8 +98,6 @@
 		<module>common-protobuf</module>
 
 		<module>core</module>
-
-		<module>transport-grpc</module>
 
 		<module>common-rest</module>
 		<module>transport-rest</module>
@@ -196,7 +192,6 @@
 				<artifactId>maven-compiler-plugin</artifactId>
 				<version>3.1</version>
 				<configuration>
-					<compilerArgument>-parameters</compilerArgument>
 					<encoding>UTF-8</encoding>
 					<source>1.8</source>
 					<target>1.8</target>

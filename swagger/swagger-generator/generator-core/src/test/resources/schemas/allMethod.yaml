@@ -289,7 +289,7 @@ paths:
       operationId: "testEnum"
       parameters:
       - in: "body"
-        name: "color"
+        name: "testEnumBody"
         required: false
         schema:
           $ref: "#/definitions/testEnumBody"
@@ -391,112 +391,6 @@ paths:
         200:
           description: "response of 200"
 definitions:
-  testBooleanBody:
-    type: "object"
-    properties:
-      value:
-        type: "boolean"
-  testByteBody:
-    type: "object"
-    properties:
-      value:
-        type: "integer"
-        format: "int8"
-  testShortBody:
-    type: "object"
-    properties:
-      value:
-        type: "integer"
-        format: "int16"
-  testLongBody:
-    type: "object"
-    properties:
-      value:
-        type: "integer"
-        format: "int64"
-  testFloatBody:
-    type: "object"
-    properties:
-      value:
-        type: "number"
-        format: "float"
-  testDoubleBody:
-    type: "object"
-    properties:
-      value:
-        type: "number"
-        format: "double"
-  testEnumBody:
-    type: "object"
-    properties:
-      color:
-        type: "string"
-        enum:
-        - "WHITE"
-        - "BLACK"
-  testCharBody:
-    type: "object"
-    properties:
-      value:
-        type: "string"
-  testBytesBody:
-    type: "object"
-    properties:
-      value:
-        type: "string"
-        format: "byte"
-  testStringBody:
-    type: "object"
-    properties:
-      value:
-        type: "string"
-  User:
-    type: "object"
-    properties:
-      name:
-        type: "string"
-      age:
-        type: "integer"
-        format: "int32"
-    x-java-class: "io.servicecomb.swagger.generator.core.schema.User"
-  testArrayBody:
-    type: "object"
-    properties:
-      value:
-        type: "array"
-        items:
-          type: "string"
-  testSetBody:
-    type: "object"
-    properties:
-      value:
-        type: "array"
-        uniqueItems: true
-        items:
-          type: "string"
-  testListBody:
-    type: "object"
-    properties:
-      value:
-        type: "array"
-        items:
-          $ref: "#/definitions/User"
-  testMapBody:
-    type: "object"
-    properties:
-      value:
-        type: "object"
-        additionalProperties:
-          $ref: "#/definitions/User"
-  testMapListBody:
-    type: "object"
-    properties:
-      value:
-        type: "object"
-        additionalProperties:
-          type: "array"
-          items:
-            $ref: "#/definitions/User"
   AllType:
     type: "object"
     properties:
@@ -543,6 +437,7 @@ definitions:
         enum:
         - "WHITE"
         - "BLACK"
+        x-java-class: "io.servicecomb.swagger.generator.core.schema.Color"
       cValue:
         type: "string"
       cObjectValue:
@@ -566,6 +461,107 @@ definitions:
         additionalProperties:
           $ref: "#/definitions/User"
     x-java-class: "io.servicecomb.swagger.generator.core.schema.AllType"
+  User:
+    type: "object"
+    properties:
+      name:
+        type: "string"
+      age:
+        type: "integer"
+        format: "int32"
+    x-java-class: "io.servicecomb.swagger.generator.core.schema.User"
+  testArrayBody:
+    type: "object"
+    properties:
+      value:
+        type: "array"
+        items:
+          type: "string"
+  testBooleanBody:
+    type: "object"
+    properties:
+      value:
+        type: "boolean"
+  testByteBody:
+    type: "object"
+    properties:
+      value:
+        type: "integer"
+        format: "int8"
+  testBytesBody:
+    type: "object"
+    properties:
+      value:
+        type: "string"
+        format: "byte"
+  testCharBody:
+    type: "object"
+    properties:
+      value:
+        type: "string"
+  testDoubleBody:
+    type: "object"
+    properties:
+      value:
+        type: "number"
+        format: "double"
+  testEnumBody:
+    type: "object"
+    properties:
+      color:
+        type: "string"
+        enum:
+        - "WHITE"
+        - "BLACK"
+        x-java-class: "io.servicecomb.swagger.generator.core.schema.Color"
+      color1:
+        type: "string"
+        enum:
+        - "WHITE"
+        - "BLACK"
+        x-java-class: "io.servicecomb.swagger.generator.core.schema.Color"
+    x-java-class: "gen.cse.ms.ut.testEnumBody"
+  testFloatBody:
+    type: "object"
+    properties:
+      value:
+        type: "number"
+        format: "float"
+  testIntegerBody:
+    type: "object"
+    properties:
+      value:
+        type: "integer"
+        format: "int32"
+  testListBody:
+    type: "object"
+    properties:
+      value:
+        type: "array"
+        items:
+          $ref: "#/definitions/User"
+  testLongBody:
+    type: "object"
+    properties:
+      value:
+        type: "integer"
+        format: "int64"
+  testMapBody:
+    type: "object"
+    properties:
+      value:
+        type: "object"
+        additionalProperties:
+          $ref: "#/definitions/User"
+  testMapListBody:
+    type: "object"
+    properties:
+      value:
+        type: "object"
+        additionalProperties:
+          type: "array"
+          items:
+            $ref: "#/definitions/User"
   testMultiParamBody:
     type: "object"
     properties:
@@ -596,6 +592,7 @@ definitions:
         enum:
         - "WHITE"
         - "BLACK"
+        x-java-class: "io.servicecomb.swagger.generator.core.schema.Color"
       cValue:
         type: "string"
       bytes:
@@ -621,6 +618,25 @@ definitions:
         additionalProperties:
           $ref: "#/definitions/User"
     x-java-class: "gen.cse.ms.ut.testMultiParamBody"
+  testSetBody:
+    type: "object"
+    properties:
+      value:
+        type: "array"
+        uniqueItems: true
+        items:
+          type: "string"
+  testShortBody:
+    type: "object"
+    properties:
+      value:
+        type: "integer"
+        format: "int16"
+  testStringBody:
+    type: "object"
+    properties:
+      value:
+        type: "string"
   testbooleanBody:
     type: "object"
     properties:
@@ -632,19 +648,30 @@ definitions:
       value:
         type: "integer"
         format: "int8"
-  testshortBody:
+  testbytesBody:
     type: "object"
     properties:
       value:
-        type: "integer"
-        format: "int16"
+        type: "string"
+        format: "byte"
+  testcharBody:
+    type: "object"
+    properties:
+      value:
+        type: "string"
+  testdoubleBody:
+    type: "object"
+    properties:
+      value:
+        type: "number"
+        format: "double"
+  testfloatBody:
+    type: "object"
+    properties:
+      value:
+        type: "number"
+        format: "float"
   testintBody:
-    type: "object"
-    properties:
-      value:
-        type: "integer"
-        format: "int32"
-  testIntegerBody:
     type: "object"
     properties:
       value:
@@ -656,26 +683,9 @@ definitions:
       value:
         type: "integer"
         format: "int64"
-  testfloatBody:
+  testshortBody:
     type: "object"
     properties:
       value:
-        type: "number"
-        format: "float"
-  testdoubleBody:
-    type: "object"
-    properties:
-      value:
-        type: "number"
-        format: "double"
-  testcharBody:
-    type: "object"
-    properties:
-      value:
-        type: "string"
-  testbytesBody:
-    type: "object"
-    properties:
-      value:
-        type: "string"
-        format: "byte"
+        type: "integer"
+        format: "int16"

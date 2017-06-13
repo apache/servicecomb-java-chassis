@@ -22,9 +22,18 @@ import org.junit.Test;
 import io.servicecomb.swagger.generator.core.CompositeSwaggerGeneratorContext;
 import io.servicecomb.swagger.generator.core.SwaggerGeneratorContext;
 import io.servicecomb.swagger.generator.core.unittest.UnitTestSwaggerUtils;
+import io.servicecomb.swagger.generator.springmvc.SpringmvcSwaggerGeneratorContext;
 
 public class TestSpringmvc {
     SwaggerGeneratorContext context = new SpringmvcSwaggerGeneratorContext();
+
+    @Test
+    public void testMultiDefaultPath() {
+        UnitTestSwaggerUtils.testException(
+                "Only allowed one default path. io.servicecomb.swagger.generator.springmvc.MultiDefaultPath:p2",
+                context,
+                MultiDefaultPath.class);
+    }
 
     @Test
     public void testResponseEntity() throws Exception {
@@ -52,13 +61,27 @@ public class TestSpringmvc {
     }
 
     @Test
-    public void testEmptyClassAnnotation() throws Exception {
-        UnitTestSwaggerUtils.testSwagger("schemas/emptyClassAnnotation.yaml", context, EmptyClassAnnotation.class);
+    public void testClassMethodNoPath() throws Exception {
+        UnitTestSwaggerUtils.testException(
+                "generate operation swagger failed, io.servicecomb.swagger.generator.springmvc.ClassMethodNoPath:noPath",
+                "Path must not both be empty in class and method",
+                context,
+                ClassMethodNoPath.class);
+    }
+
+    @Test
+    public void testClassMethodNoHttpMetod() throws Exception {
+        UnitTestSwaggerUtils.testException(
+                "generate operation swagger failed, io.servicecomb.swagger.generator.springmvc.ClassMethodNoHttpMethod:noHttpMethod",
+                "HttpMethod must not both be empty in class and method",
+                context,
+                ClassMethodNoHttpMethod.class);
     }
 
     @Test
     public void testMethodMultiHttpMethod() throws Exception {
         UnitTestSwaggerUtils.testException(
+                "generate operation swagger failed, io.servicecomb.swagger.generator.springmvc.Echo:multiHttpMethod",
                 "not allowed multi http method for io.servicecomb.swagger.generator.springmvc.Echo:multiHttpMethod",
                 context,
                 Echo.class,
@@ -76,6 +99,7 @@ public class TestSpringmvc {
     @Test
     public void testMethodMultiPath() throws Exception {
         UnitTestSwaggerUtils.testException(
+                "generate operation swagger failed, io.servicecomb.swagger.generator.springmvc.Echo:multiPath",
                 "not allowed multi path for io.servicecomb.swagger.generator.springmvc.Echo:multiPath",
                 context,
                 Echo.class,

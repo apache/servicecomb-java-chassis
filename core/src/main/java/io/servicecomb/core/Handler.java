@@ -17,7 +17,8 @@
 package io.servicecomb.core;
 
 import io.servicecomb.core.definition.MicroserviceMeta;
-import io.servicecomb.core.invocation.InvocationType;
+import io.servicecomb.swagger.invocation.AsyncResponse;
+import io.servicecomb.swagger.invocation.InvocationType;
 
 // 每个微服务 + invocationType，都对应一个handler实例
 public interface Handler {

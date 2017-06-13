@@ -24,8 +24,10 @@ import org.junit.Test;
 import org.mockito.Mockito;
 
 import io.servicecomb.common.rest.codec.RestServerRequest;
+import io.servicecomb.swagger.generator.core.SwaggerConst;
 import io.servicecomb.foundation.vertx.stream.BufferInputStream;
 
+import io.swagger.models.parameters.BodyParameter;
 import io.vertx.core.buffer.Buffer;
 
 public class TestBodyProcessor {
@@ -42,7 +44,9 @@ public class TestBodyProcessor {
     public void testString() throws Exception {
         BodyProcessorCreator bodyCreator =
             (BodyProcessorCreator) ParamValueProcessorCreatorManager.INSTANCE.getBodyProcessorCreater();
-        bodyProcessor = bodyCreator.create(false, String.class);
+        BodyParameter bp = new BodyParameter();
+        bp.setVendorExtension(SwaggerConst.EXT_RAW_JSON_TYPE, false);
+        bodyProcessor = bodyCreator.create(bp, String.class);
 
         Buffer buffer = Buffer.buffer("\"abc\"");
         when(request.getBody()).thenReturn(new BufferInputStream(buffer.getByteBuf()));
@@ -52,4 +56,3 @@ public class TestBodyProcessor {
     }
 
 }
-

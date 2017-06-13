@@ -21,9 +21,10 @@ import org.junit.Test;
 import org.mockito.Mockito;
 
 import io.servicecomb.core.Invocation;
-import io.servicecomb.core.Response;
 import io.servicecomb.core.definition.OperationMeta;
-import io.servicecomb.core.exception.InvocationException;
+import io.servicecomb.swagger.invocation.Response;
+import io.servicecomb.swagger.invocation.exception.InvocationException;
+
 import com.netflix.hystrix.HystrixCommandProperties;
 import com.netflix.hystrix.HystrixObservableCommand;
 import com.netflix.hystrix.strategy.concurrency.HystrixRequestContext;

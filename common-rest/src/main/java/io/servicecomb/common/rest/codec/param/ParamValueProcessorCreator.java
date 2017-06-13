@@ -18,6 +18,8 @@ package io.servicecomb.common.rest.codec.param;
 
 import java.lang.reflect.Type;
 
+import io.swagger.models.parameters.Parameter;
+
 public interface ParamValueProcessorCreator {
-    ParamValueProcessor create(String paramValue, Type genericParamType);
+    ParamValueProcessor create(Parameter parameter, Type genericParamType);
 }

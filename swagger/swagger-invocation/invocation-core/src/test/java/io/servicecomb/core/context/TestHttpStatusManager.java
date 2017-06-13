@@ -20,6 +20,9 @@ import javax.ws.rs.core.Response.StatusType;
 import org.junit.Assert;
 import org.junit.Test;
 
+import io.servicecomb.swagger.invocation.context.HttpStatus;
+import io.servicecomb.swagger.invocation.context.HttpStatusManager;
+
 public class TestHttpStatusManager {
     @Test
     public void test() {

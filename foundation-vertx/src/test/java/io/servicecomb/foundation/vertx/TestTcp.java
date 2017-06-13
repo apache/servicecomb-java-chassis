@@ -16,22 +16,22 @@
 
 package io.servicecomb.foundation.vertx;
 
-import io.servicecomb.foundation.common.net.URIEndpointObject;
-import io.servicecomb.foundation.vertx.server.TcpParser;
-import io.servicecomb.foundation.vertx.tcp.TcpOutputStream;
 import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.Mockito;
 
-import io.servicecomb.foundation.vertx.client.tcp.TcpClient;
+import io.servicecomb.foundation.common.net.URIEndpointObject;
 import io.servicecomb.foundation.vertx.client.tcp.TcpClientConfig;
-import io.servicecomb.foundation.vertx.client.tcp.TcpClientPool;
+import io.servicecomb.foundation.vertx.client.tcp.TcpClientConnection;
+import io.servicecomb.foundation.vertx.client.tcp.TcpClientConnectionPool;
+import io.servicecomb.foundation.vertx.client.tcp.TcpClientPackage;
 import io.servicecomb.foundation.vertx.client.tcp.TcpClientVerticle;
 import io.servicecomb.foundation.vertx.client.tcp.TcpData;
 import io.servicecomb.foundation.vertx.client.tcp.TcpRequest;
 import io.servicecomb.foundation.vertx.client.tcp.TcpResonseCallback;
+import io.servicecomb.foundation.vertx.server.TcpParser;
 import io.servicecomb.foundation.vertx.server.TcpServer;
-
+import io.servicecomb.foundation.vertx.tcp.TcpOutputStream;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Context;
 import io.vertx.core.Handler;
@@ -75,23 +75,24 @@ public class TestTcp {
 
             }
         };
-        TcpClient oTcpClient =
-            new TcpClient(Mockito.mock(Context.class), oNetClient, "highway://127.2.0.1:8080", new TcpClientConfig());
+        TcpClientConnection oTcpClient =
+            new TcpClientConnection(Mockito.mock(Context.class), oNetClient, "highway://127.2.0.1:8080",
+                    new TcpClientConfig());
         oTcpClient.checkTimeout();
-        oTcpClient.send(new TcpOutputStream(), 123, Mockito.mock(TcpResonseCallback.class));
-        oTcpClient.send(new TcpOutputStream(), 123, Mockito.mock(TcpResonseCallback.class));
+        oTcpClient.send(new TcpClientPackage(null), 123, Mockito.mock(TcpResonseCallback.class));
+        oTcpClient.send(new TcpClientPackage(null), 123, Mockito.mock(TcpResonseCallback.class));
         Assert.assertNotEquals(null, oTcpClient.getContext());
 
-        new MockUp<TcpClientPool>() {
+        new MockUp<TcpClientConnectionPool>() {
             @Mock
             protected void startCheckTimeout(TcpClientConfig clientConfig, Context context) {
             }
         };
         TcpClientConfig config = new TcpClientConfig();
-        TcpClientPool oClientPool =
-            new TcpClientPool(config, Vertx.vertx().getOrCreateContext(), oNetClient);
-        oClientPool.send("highway://152.2.2.3:8080", new TcpOutputStream(), Mockito.mock(TcpResonseCallback.class));
-        oClientPool.send("highway://152.2.2.3:8080", new TcpOutputStream(), Mockito.mock(TcpResonseCallback.class));
+        TcpClientConnectionPool oClientPool =
+            new TcpClientConnectionPool(config, Vertx.vertx().getOrCreateContext(), oNetClient);
+        oClientPool.send(oTcpClient, new TcpClientPackage(null), Mockito.mock(TcpResonseCallback.class));
+        oClientPool.send(oTcpClient, new TcpClientPackage(null), Mockito.mock(TcpResonseCallback.class));
         Assert.assertNotNull(oClientPool);
 
         TcpRequest oTcpRequest = new TcpRequest(1234, Mockito.mock(TcpResonseCallback.class));
@@ -127,7 +128,7 @@ public class TestTcp {
 
     @Test
     public void testTcpOutputStream() {
-        TcpOutputStream oStream = new TcpOutputStream();
+        TcpOutputStream oStream = new TcpOutputStream(0);
         oStream.close();
         Buffer buffer = oStream.getBuffer();
         Assert.assertArrayEquals(TcpParser.TCP_MAGIC, buffer.getBytes(0, TcpParser.TCP_MAGIC.length));

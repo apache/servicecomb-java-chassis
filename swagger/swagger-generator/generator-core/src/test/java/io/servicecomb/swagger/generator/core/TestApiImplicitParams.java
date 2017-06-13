@@ -16,14 +16,17 @@
 
 package io.servicecomb.swagger.generator.core;
 
-import io.servicecomb.swagger.generator.core.unittest.SwaggerGeneratorForTest;
 import org.junit.Assert;
 import org.junit.Test;
 
 import com.fasterxml.jackson.databind.JavaType;
-import io.servicecomb.swagger.converter.ConverterMgr;
-import io.servicecomb.swagger.generator.core.schema.User;
 
+import io.servicecomb.swagger.converter.ConverterMgr;
+import io.servicecomb.swagger.generator.core.SwaggerGenerator;
+import io.servicecomb.swagger.generator.core.SwaggerGeneratorContext;
+import io.servicecomb.swagger.generator.core.schema.User;
+import io.servicecomb.swagger.generator.core.unittest.SwaggerGeneratorForTest;
+import io.servicecomb.swagger.generator.pojo.PojoSwaggerGeneratorContext;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.models.Operation;
@@ -32,7 +35,7 @@ import io.swagger.models.Swagger;
 import io.swagger.models.parameters.Parameter;
 
 public class TestApiImplicitParams {
-    SwaggerGeneratorContext context = new DefaultSwaggerGeneratorContext();
+    SwaggerGeneratorContext context = new PojoSwaggerGeneratorContext();
 
     interface ApiImplicitParamsAnnotation {
         @ApiImplicitParams(

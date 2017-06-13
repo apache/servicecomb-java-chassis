@@ -228,4 +228,37 @@ public final class Configuration {
             return defaultValue;
         }
     }
+
+    // Gray Release
+    public static final String PROP_GRAYRELEASE_ROOT = "cse.grayrelease.";
+
+    public static final String PROP_GRAYRELEASE_POLICYCLASS = "GrayReleaseRuleClassName";
+
+    public static final String RATE_POLICY = "rate.policy";
+
+    public static final String RULE_POLICY = "rule.policy";
+
+    public static final String PROP_GRAYRELEASE_GROUP_POLICY = "group.policy";
+
+    public static final String PROP_GRAYRELEASE_POLICY_RULE =
+        "com.huawei.paas.cse.grayrelease.csefilter.GrayReleaseRulePolicyFilter";
+
+    public static final String PROP_GRAYRELEASE_POLICY_RATE =
+        "com.huawei.paas.cse.grayrelease.csefilter.GrayReleaseRatePolicyFilter";
+
+    public String getGrayreleaseRulePolicy(String microservice, String microserviceQualifiedName) {
+        return getProperty(null,
+                PROP_GRAYRELEASE_ROOT + microserviceQualifiedName + "." + RULE_POLICY,
+                PROP_GRAYRELEASE_ROOT + microservice + "." + RULE_POLICY);
+    }
+
+    public String getGrayreleaseRuleClassName(String microservice, String microserviceQualifiedName) {
+        return getProperty(PROP_GRAYRELEASE_POLICY_RULE,
+                PROP_GRAYRELEASE_ROOT + microserviceQualifiedName + "." + PROP_GRAYRELEASE_POLICYCLASS,
+                PROP_GRAYRELEASE_ROOT + microservice + "." + PROP_GRAYRELEASE_POLICYCLASS);
+    }
+
+    public String getGrayreleaseInstanceGroupRule(String microservice) {
+        return getProperty(null, PROP_GRAYRELEASE_ROOT + microservice + "." + PROP_GRAYRELEASE_GROUP_POLICY);
+    }
 }

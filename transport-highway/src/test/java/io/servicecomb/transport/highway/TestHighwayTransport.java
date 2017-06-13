@@ -24,12 +24,11 @@ import org.mockito.Mockito;
 
 import io.servicecomb.codec.protobuf.definition.OperationProtobuf;
 import io.servicecomb.codec.protobuf.utils.WrapSchema;
-import io.servicecomb.core.AsyncResponse;
 import io.servicecomb.core.Endpoint;
 import io.servicecomb.core.Invocation;
 import io.servicecomb.core.definition.OperationMeta;
 import io.servicecomb.foundation.common.net.URIEndpointObject;
-
+import io.servicecomb.swagger.invocation.AsyncResponse;
 import mockit.Mock;
 import mockit.MockUp;
 

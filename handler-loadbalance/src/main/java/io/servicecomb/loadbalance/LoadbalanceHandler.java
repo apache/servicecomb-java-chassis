@@ -25,14 +25,15 @@ import java.util.concurrent.Executor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import io.servicecomb.core.AsyncResponse;
 import io.servicecomb.core.Invocation;
-import io.servicecomb.core.Response;
 import io.servicecomb.core.exception.ExceptionUtils;
 import io.servicecomb.core.handler.impl.AbstractHandler;
 import io.servicecomb.core.provider.consumer.SyncResponseExecutor;
 import io.servicecomb.loadbalance.filter.IsolationServerListFilter;
 import io.servicecomb.loadbalance.filter.TransactionControlFilter;
+import io.servicecomb.swagger.invocation.AsyncResponse;
+import io.servicecomb.swagger.invocation.Response;
+
 import com.netflix.client.DefaultLoadBalancerRetryHandler;
 import com.netflix.loadbalancer.IRule;
 import com.netflix.loadbalancer.RoundRobinRule;

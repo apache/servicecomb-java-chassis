@@ -19,6 +19,9 @@ package io.servicecomb.common.rest.locator;
 import io.servicecomb.common.rest.definition.RestOperationMeta;
 import io.servicecomb.foundation.common.RegisterManager;
 
+/**
+ * 存放具有相同path，不同httpmethod的operation
+ */
 public class OperationGroup extends RegisterManager<String, RestOperationMeta> {
     private static final String NAME = "operation group manager";
 

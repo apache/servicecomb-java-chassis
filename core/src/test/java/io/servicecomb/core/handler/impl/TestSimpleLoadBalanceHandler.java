@@ -19,7 +19,6 @@ package io.servicecomb.core.handler.impl;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import io.servicecomb.core.AsyncResponse;
 import io.servicecomb.core.Invocation;
 import io.servicecomb.core.definition.MicroserviceMetaManager;
 import org.junit.After;
@@ -31,7 +30,7 @@ import org.mockito.Mockito;
 import io.servicecomb.core.endpoint.EndpointsCache;
 import io.servicecomb.serviceregistry.RegistryUtils;
 import io.servicecomb.serviceregistry.api.registry.Microservice;
-
+import io.servicecomb.swagger.invocation.AsyncResponse;
 import mockit.Deencapsulation;
 import mockit.Mock;
 import mockit.MockUp;

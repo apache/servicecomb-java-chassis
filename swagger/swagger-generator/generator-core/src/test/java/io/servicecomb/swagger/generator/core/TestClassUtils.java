@@ -21,13 +21,13 @@ import java.util.List;
 
 import javax.ws.rs.Path;
 
-import io.servicecomb.swagger.generator.core.unittest.UnitTestSwaggerUtils;
-import io.servicecomb.swagger.generator.core.utils.ClassUtils;
 import org.junit.Assert;
 import org.junit.Test;
 
+import io.servicecomb.swagger.generator.core.SwaggerGenerator;
 import io.servicecomb.swagger.generator.core.schema.User;
-
+import io.servicecomb.swagger.generator.core.unittest.UnitTestSwaggerUtils;
+import io.servicecomb.swagger.generator.core.utils.ClassUtils;
 import io.swagger.annotations.SwaggerDefinition;
 
 @SwaggerDefinition
@@ -57,7 +57,7 @@ public class TestClassUtils {
         Method method = intf.getMethods()[0];
         Assert.assertEquals("getUser", method.getName());
 
-        Assert.assertEquals("gen.swagger.names", method.getGenericParameterTypes()[0].getTypeName());
+        Assert.assertEquals("gen.swagger.getUser.names", method.getGenericParameterTypes()[0].getTypeName());
         Assert.assertEquals("java.util.List<io.servicecomb.swagger.generator.core.schema.User>",
                 method.getGenericReturnType().getTypeName());
     }

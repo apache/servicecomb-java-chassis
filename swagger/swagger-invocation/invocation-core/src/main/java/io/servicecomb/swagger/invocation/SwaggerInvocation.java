@@ -16,13 +16,21 @@
 
 package io.servicecomb.swagger.invocation;
 
-import io.servicecomb.core.invocation.InvocationType;
+import io.servicecomb.swagger.invocation.context.ContextUtils;
+import io.servicecomb.swagger.invocation.context.InvocationContext;
 
-public class SwaggerInvocation extends SwaggerInvocationContext {
+public class SwaggerInvocation extends InvocationContext {
     // 本实例是在consumer端，还是在provider端
     protected InvocationType invocationType;
 
     protected Object[] swaggerArguments;
+
+    public SwaggerInvocation() {
+        InvocationContext context = ContextUtils.getInvocationContext();
+        if (context != null) {
+            addContext(context.getContext());
+        }
+    }
 
     public InvocationType getInvocationType() {
         return invocationType;

@@ -45,10 +45,14 @@ public final class Log4jUtils {
     }
 
     public static void init() throws Exception {
-        init("classpath*:config/log4j.properties");
+        init(Arrays.asList("classpath*:config/base/log4j.properties", "classpath*:config/log4j.properties"));
     }
 
     public static void init(String locationPattern) throws Exception {
+        init(Arrays.asList(locationPattern));
+    }
+
+    public static void init(List<String> locationPatterns) throws Exception {
         if (inited) {
             return;
         }
@@ -58,10 +62,10 @@ public final class Log4jUtils {
                 return;
             }
 
-            PropertiesLoader loader = new PropertiesLoader(Arrays.asList(locationPattern));
+            PropertiesLoader loader = new PropertiesLoader(locationPatterns);
             Properties properties = loader.load();
             if (properties.isEmpty()) {
-                throw new Exception("can not find resource " + locationPattern);
+                throw new Exception("can not find resource " + locationPatterns);
             }
 
             PropertyConfigurator.configure(properties);

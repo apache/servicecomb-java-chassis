@@ -39,7 +39,7 @@ public class OperationProtobuf {
         requestSchema = ProtobufSchemaUtils.getOrCreateArgsSchema(operationMeta);
 
         Method method = operationMeta.getMethod();
-        responseSchema = ProtobufSchemaUtils.getOrCreateSchema(method.getReturnType(), method.getGenericReturnType());
+        responseSchema = ProtobufSchemaUtils.getOrCreateSchema(method.getGenericReturnType());
     }
 
     public OperationMeta getOperationMeta() {

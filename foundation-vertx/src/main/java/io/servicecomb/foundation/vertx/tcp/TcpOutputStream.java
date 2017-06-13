@@ -16,7 +16,6 @@
 
 package io.servicecomb.foundation.vertx.tcp;
 
-import io.servicecomb.foundation.vertx.client.tcp.TcpClient;
 import io.servicecomb.foundation.vertx.server.TcpParser;
 import io.servicecomb.foundation.vertx.stream.BufferOutputStream;
 
@@ -27,14 +26,6 @@ import io.servicecomb.foundation.vertx.stream.BufferOutputStream;
  */
 public class TcpOutputStream extends BufferOutputStream {
     private long msgId;
-
-    public TcpOutputStream() {
-        super();
-
-        msgId = TcpClient.getAndIncRequestId();
-        write(TcpParser.TCP_MAGIC);
-        writeLong(msgId);
-    }
 
     public TcpOutputStream(long msgId) {
         super();

@@ -14,4 +14,7 @@
  * limitations under the License.
  */
 
+/**
+ * 专用于ut场景
+ */
 package io.servicecomb.swagger.generator.core.unittest;

@@ -23,11 +23,14 @@ import java.util.Map;
 import javax.ws.rs.core.Response.Status;
 
 import io.servicecomb.common.rest.definition.RestOperationMeta;
+import io.servicecomb.swagger.invocation.exception.InvocationException;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import io.servicecomb.core.exception.InvocationException;
-
+/**
+ * 从path和http method定位到具体的operation
+ */
 public class OperationLocator {
     private static final Logger LOGGER = LoggerFactory.getLogger(OperationLocator.class);
 
@@ -47,6 +50,7 @@ public class OperationLocator {
         return this.pathVarMap;
     }
 
+    // 先在静态路径operation list中查找；如果找不到，则在动态路径operation list中查找
     public void locate(ServicePathManager servicePathManager, String path, String httpMethod) {
         // 在静态路径中查找
         operation = locateStaticPathOperation(path, httpMethod, servicePathManager.getStaticPathOperationMap());
@@ -106,6 +110,7 @@ public class OperationLocator {
         return false;
     }
 
+    // Path: /a/b/c -> a/b/c/
     public static String getStandardPath(String path) {
         if (path.startsWith(SLASH)) {
             path = path.substring(1);
@@ -115,5 +120,4 @@ public class OperationLocator {
         }
         return path;
     }
-
 }

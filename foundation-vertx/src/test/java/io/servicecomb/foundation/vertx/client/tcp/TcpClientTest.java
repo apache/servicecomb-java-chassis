@@ -18,9 +18,6 @@ package io.servicecomb.foundation.vertx.client.tcp;
 
 import java.net.InetSocketAddress;
 
-import io.servicecomb.foundation.common.net.IpPort;
-import io.servicecomb.foundation.common.net.NetUtils;
-import io.servicecomb.foundation.vertx.tcp.TcpOutputStream;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -28,6 +25,8 @@ import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mockito;
 
+import io.servicecomb.foundation.common.net.IpPort;
+import io.servicecomb.foundation.common.net.NetUtils;
 import io.vertx.core.Context;
 import io.vertx.core.net.NetClient;
 import mockit.Mock;
@@ -35,7 +34,7 @@ import mockit.MockUp;
 
 public class TcpClientTest {
 
-    private TcpClient instance = null;
+    private TcpClientConnection instance = null;
 
     @InjectMocks
     private NetUtils netUtils;
@@ -59,7 +58,7 @@ public class TcpClientTest {
         InetSocketAddress socketAddress = Mockito.mock(InetSocketAddress.class);
         mockTestCases();
         Mockito.when(NetUtils.parseIpPort("sss").getSocketAddress()).thenReturn(socketAddress);
-        instance = new TcpClient(context, netClient, "highway://127.0.0.1:80", new TcpClientConfig());
+        instance = new TcpClientConnection(context, netClient, "highway://127.0.0.1:80", new TcpClientConfig());
     }
 
     @After
@@ -72,7 +71,7 @@ public class TcpClientTest {
         instance.getClass();
         TcpResonseCallback callback = Mockito.mock(TcpResonseCallback.class);
         try {
-            instance.send(new TcpOutputStream(), 1, callback);
+            instance.send(new TcpClientPackage(null), 1, callback);
             Assert.assertNotNull(callback);
         } catch (Exception e) {
             Assert.assertEquals("java.lang.NullPointerException", e.getClass().getName());

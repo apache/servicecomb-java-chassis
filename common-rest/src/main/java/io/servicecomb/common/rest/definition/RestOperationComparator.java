@@ -21,6 +21,9 @@ import java.util.Comparator;
 
 import io.servicecomb.common.rest.definition.path.PathRegExp;
 
+/**
+ * 用于RestOperation的排序
+ */
 public class RestOperationComparator implements Serializable, Comparator<RestOperationMeta> {
 
     private static final long serialVersionUID = -2364909265520813678L;

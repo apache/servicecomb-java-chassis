@@ -10,6 +10,3 @@ cse:
     chain:
       Consumer:
         default: bizkeeper-consumer,loadbalance
-  references:
-    jaxrs:
-      version-rule: 0.0.1

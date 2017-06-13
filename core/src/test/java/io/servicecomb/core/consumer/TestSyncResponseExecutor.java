@@ -17,11 +17,11 @@
 package io.servicecomb.core.consumer;
 
 import io.servicecomb.core.provider.consumer.SyncResponseExecutor;
+import io.servicecomb.swagger.invocation.Response;
+
 import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.Mockito;
-
-import io.servicecomb.core.Response;
 
 public class TestSyncResponseExecutor {
     @Test

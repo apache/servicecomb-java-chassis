@@ -16,12 +16,12 @@
 
 package io.servicecomb.swagger.invocation.arguments.producer;
 
-import java.lang.reflect.Field;
 import java.util.Map;
 import java.util.Map.Entry;
 
 import io.servicecomb.swagger.invocation.SwaggerInvocation;
 import io.servicecomb.swagger.invocation.arguments.ArgumentMapper;
+import io.servicecomb.swagger.invocation.arguments.FieldInfo;
 
 /**
  * 透明RPC的典型场景
@@ -30,24 +30,24 @@ import io.servicecomb.swagger.invocation.arguments.ArgumentMapper;
  * producer在处理时，需要将这些field取出来当作参数使用
  */
 public class SwaggerArgumentToProducerBodyField implements ArgumentMapper {
-    private int swaggerIdx;
-
     // key为producerArgs的下标
-    private Map<Integer, Field> fieldMap;
+    private Map<Integer, FieldInfo> fieldMap;
 
-    public SwaggerArgumentToProducerBodyField(int swaggerIdx, Map<Integer, Field> fieldMap) {
-        this.swaggerIdx = swaggerIdx;
+    public SwaggerArgumentToProducerBodyField(Map<Integer, FieldInfo> fieldMap) {
         this.fieldMap = fieldMap;
     }
 
     @Override
     public void mapArgument(SwaggerInvocation invocation, Object[] producerArguments) {
-        Object body = invocation.getSwaggerArgument(swaggerIdx);
+        Object body = invocation.getSwaggerArgument(0);
 
         try {
-            for (Entry<Integer, Field> entry : fieldMap.entrySet()) {
-                Object fieldValue = entry.getValue().get(body);
-                producerArguments[entry.getKey()] = fieldValue;
+            for (Entry<Integer, FieldInfo> entry : fieldMap.entrySet()) {
+                FieldInfo info = entry.getValue();
+
+                Object fieldValue = info.getField().get(body);
+                Object producerParam = info.getConverter().convert(fieldValue);
+                producerArguments[entry.getKey()] = producerParam;
             }
         } catch (Throwable e) {
             throw new Error(e);

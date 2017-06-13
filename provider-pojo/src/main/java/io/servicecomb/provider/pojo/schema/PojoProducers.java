@@ -41,12 +41,14 @@ public class PojoProducers implements ProviderProcessor {
 
     @Override
     public void processProvider(ApplicationContext applicationContext, String beanName, Object bean) {
-        RpcSchema rpcSchema = bean.getClass().getAnnotation(RpcSchema.class);
+        // aop后，新的实例的父类可能是原class，也可能只是个proxy，父类不是原class
+        // 所以，需要先取出原class，再取标注
+        Class<?> beanCls = BeanUtils.getImplClassFromBean(bean);
+        RpcSchema rpcSchema = beanCls.getAnnotation(RpcSchema.class);
         if (rpcSchema == null) {
             return;
         }
 
-        Class<?> beanCls = BeanUtils.getImplClassFromBean(bean);
         String schemaId = rpcSchema.schemaId();
         if (StringUtils.isEmpty(schemaId)) {
             Class<?>[] intfs = beanCls.getInterfaces();

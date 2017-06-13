@@ -37,7 +37,7 @@
 		<module>demo-springmvc</module>
 		<module>demo-schema</module>
 		<module>demo-crossapp</module>
-		<module>demo-spring-boot</module>
+		<module>demo-spring-boot-provider</module>
 		<module>demo-spring-boot-transport</module>
 	</modules>
 
@@ -113,7 +113,7 @@
 			<artifactId>slf4j-log4j12</artifactId>
 		</dependency>
 	</dependencies>
-
+ 
 	<build>
 		<pluginManagement>
 			<plugins>

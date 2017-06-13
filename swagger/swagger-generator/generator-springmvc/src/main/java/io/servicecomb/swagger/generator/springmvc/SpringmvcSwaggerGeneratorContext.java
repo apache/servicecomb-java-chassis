@@ -16,10 +16,8 @@
 
 package io.servicecomb.swagger.generator.springmvc;
 
-import io.servicecomb.swagger.generator.springmvc.processor.annotation.RequestMappingClassAnnotationProcessor;
-import io.servicecomb.swagger.generator.springmvc.processor.annotation.RequestMappingMethodAnnotationProcessor;
-import io.servicecomb.swagger.generator.springmvc.processor.annotation.RequestParamAnnotationProcessor;
-import org.apache.commons.lang3.StringUtils;
+import java.lang.reflect.Method;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -29,18 +27,20 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import io.servicecomb.swagger.generator.core.DefaultSwaggerGeneratorContext;
-import io.servicecomb.swagger.generator.core.OperationGenerator;
 import io.servicecomb.swagger.generator.core.utils.ClassUtils;
+import io.servicecomb.swagger.generator.rest.RestSwaggerGeneratorContext;
 import io.servicecomb.swagger.generator.springmvc.processor.annotation.CookieValueAnnotationProcessor;
 import io.servicecomb.swagger.generator.springmvc.processor.annotation.PathVariableAnnotationProcessor;
 import io.servicecomb.swagger.generator.springmvc.processor.annotation.RequestAttributeAnnotationProcessor;
 import io.servicecomb.swagger.generator.springmvc.processor.annotation.RequestBodyAnnotationProcessor;
 import io.servicecomb.swagger.generator.springmvc.processor.annotation.RequestHeaderAnnotationProcessor;
+import io.servicecomb.swagger.generator.springmvc.processor.annotation.RequestMappingClassAnnotationProcessor;
+import io.servicecomb.swagger.generator.springmvc.processor.annotation.RequestMappingMethodAnnotationProcessor;
+import io.servicecomb.swagger.generator.springmvc.processor.annotation.RequestParamAnnotationProcessor;
 import io.servicecomb.swagger.generator.springmvc.processor.parameter.SpringmvcDefaultParameterProcessor;
 import io.servicecomb.swagger.generator.springmvc.processor.response.ResponseEntityProcessor;
 
-public class SpringmvcSwaggerGeneratorContext extends DefaultSwaggerGeneratorContext {
+public class SpringmvcSwaggerGeneratorContext extends RestSwaggerGeneratorContext {
     private static final int ORDER = 1000;
 
     @Override
@@ -51,6 +51,11 @@ public class SpringmvcSwaggerGeneratorContext extends DefaultSwaggerGeneratorCon
     @Override
     public boolean canProcess(Class<?> cls) {
         return ClassUtils.hasAnnotation(cls, RequestMapping.class);
+    }
+
+    @Override
+    public boolean canProcess(Method method) {
+        return method.getAnnotation(RequestMapping.class) != null;
     }
 
     @Override
@@ -94,14 +99,5 @@ public class SpringmvcSwaggerGeneratorContext extends DefaultSwaggerGeneratorCon
         super.initResponseTypeProcessorMgr();
 
         responseTypeProcessorMgr.register(ResponseEntity.class, new ResponseEntityProcessor());
-    }
-
-    @Override
-    public void correctPath(OperationGenerator operationGenerator) {
-        String path = operationGenerator.getPath();
-        if (StringUtils.isEmpty(path)) {
-            path = "/";
-        }
-        operationGenerator.setPath(path);
     }
 }

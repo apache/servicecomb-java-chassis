@@ -1,13 +1,11 @@
-APPLICATION_ID: jaxrstest
+﻿APPLICATION_ID: jaxrstest
 service_description:
   name: jaxrs
-  version: 0.0.1
+  version: 0.0.2
 cse:
   service:
     registry:
       address: http://127.0.0.1:9980
-  grpc:
-    address: 0.0.0.0:9090
   rest:
     address: 0.0.0.0:8080
   highway:

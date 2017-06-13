@@ -29,7 +29,7 @@ import io.servicecomb.serviceregistry.notify.NotifyManager;
 import io.servicecomb.serviceregistry.notify.RegistryEvent;
 
 /**
- * Created by   on 2017/2/21.
+ * Created by on 2017/2/21.
  */
 public class InstanceCacheManager {
     public static final InstanceCacheManager INSTANCE = new InstanceCacheManager();
@@ -118,5 +118,12 @@ public class InstanceCacheManager {
         synchronized (lockObj) {
             cacheMap.clear();
         }
+    }
+
+    public void updateInstanceMap(String appId, String microserviceName, String microserviceVersionRule,
+            Map<String, MicroserviceInstance> instanceMap) {
+        InstanceCache cache = new InstanceCache(appId, microserviceName, microserviceVersionRule, instanceMap);
+        String key = getKey(appId, microserviceName);
+        cacheMap.put(key, cache);
     }
 }

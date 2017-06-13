@@ -96,10 +96,6 @@
 		</dependency>
 		<dependency>
 			<groupId>io.servicecomb</groupId>
-			<artifactId>transport-grpc</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>io.servicecomb</groupId>
 			<artifactId>transport-rest-client</artifactId>
 		</dependency>
 		<dependency>

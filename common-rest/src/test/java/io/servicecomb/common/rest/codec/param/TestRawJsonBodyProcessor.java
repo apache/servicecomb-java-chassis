@@ -20,15 +20,16 @@ import static org.mockito.Mockito.when;
 
 import java.util.Map;
 
-import io.servicecomb.common.rest.codec.RestObjectMapper;
-import io.servicecomb.common.rest.codec.RestServerRequest;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 
+import io.servicecomb.common.rest.codec.RestObjectMapper;
+import io.servicecomb.common.rest.codec.RestServerRequest;
 import io.servicecomb.foundation.vertx.stream.BufferInputStream;
-
+import io.servicecomb.swagger.generator.core.SwaggerConst;
+import io.swagger.models.parameters.BodyParameter;
 import io.vertx.core.buffer.Buffer;
 
 public class TestRawJsonBodyProcessor {
@@ -41,7 +42,9 @@ public class TestRawJsonBodyProcessor {
         request = Mockito.mock(RestServerRequest.class);
         BodyProcessorCreator bodyCreator =
             (BodyProcessorCreator) ParamValueProcessorCreatorManager.INSTANCE.getBodyProcessorCreater();
-        bodyProcessor = bodyCreator.create(true, String.class);
+        BodyParameter bp = new BodyParameter();
+        bp.setVendorExtension(SwaggerConst.EXT_RAW_JSON_TYPE, true);
+        bodyProcessor = bodyCreator.create(bp, String.class);
     }
 
     @Test

@@ -15,13 +15,14 @@
  */
 package io.servicecomb.demo.springmvc.client;
 
-import io.servicecomb.demo.server.User;
+import java.util.Date;
+
 import org.springframework.http.ResponseEntity;
 
-import io.servicecomb.core.Response;
+import io.servicecomb.swagger.invocation.Response;
 
 public interface CodeFirstSprigmvcIntf {
-    ResponseEntity<User> responseEntity();
+    ResponseEntity<Date> responseEntity(Date date);
 
     Response cseResponse();
 }

@@ -15,12 +15,8 @@
  */
 package io.servicecomb.core.definition.schema;
 
-import java.util.Arrays;
-
 import javax.xml.ws.Holder;
 
-import io.servicecomb.core.Invocation;
-import io.servicecomb.core.provider.producer.ProducerOperation;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -29,22 +25,28 @@ import org.springframework.context.ApplicationContext;
 
 import io.servicecomb.core.Const;
 import io.servicecomb.core.Endpoint;
-import io.servicecomb.core.Response;
+import io.servicecomb.core.Invocation;
 import io.servicecomb.core.definition.MicroserviceMetaManager;
 import io.servicecomb.core.definition.OperationMeta;
 import io.servicecomb.core.definition.SchemaMeta;
 import io.servicecomb.core.definition.loader.SchemaLoader;
-import io.servicecomb.core.exception.CommonExceptionData;
-import io.servicecomb.core.exception.InvocationException;
 import io.servicecomb.core.unittest.UnitTestMeta;
-import io.servicecomb.swagger.generator.core.CompositeSwaggerGeneratorContext;
-import io.servicecomb.swagger.invocation.arguments.producer.ProducerArgumentsMapperFactory;
-import io.servicecomb.swagger.invocation.response.producer.ProducerResponseMapperFactory;
-import io.servicecomb.swagger.invocation.response.producer.ProducerResponseSame;
 import io.servicecomb.foundation.common.utils.BeanUtils;
 import io.servicecomb.foundation.common.utils.ReflectUtils;
+import io.servicecomb.swagger.engine.SwaggerEnvironment;
+import io.servicecomb.swagger.engine.SwaggerProducerOperation;
+import io.servicecomb.swagger.engine.bootstrap.BootstrapNormal;
+import io.servicecomb.swagger.generator.core.CompositeSwaggerGeneratorContext;
+import io.servicecomb.swagger.invocation.Response;
+import io.servicecomb.swagger.invocation.arguments.producer.ProducerArgumentsMapperFactory;
+import io.servicecomb.swagger.invocation.converter.ConverterMgr;
+import io.servicecomb.swagger.invocation.exception.CommonExceptionData;
+import io.servicecomb.swagger.invocation.exception.InvocationException;
+import io.servicecomb.swagger.invocation.response.producer.ProducerResponseMapperFactory;
 
 public class TestProducerSchemaFactory {
+    private static SwaggerEnvironment swaggerEnv = new BootstrapNormal().boot();
+
     private static ProducerSchemaFactory producerSchemaFactory = new ProducerSchemaFactory();
 
     private static SchemaMeta schemaMeta;
@@ -57,10 +59,13 @@ public class TestProducerSchemaFactory {
 
     @BeforeClass
     public static void init() {
+        ConverterMgr converterMgr = new ConverterMgr();
         ProducerResponseMapperFactory responseMapperFactory = new ProducerResponseMapperFactory();
-        responseMapperFactory.setMapperList(Arrays.asList(new ProducerResponseSame()));
+        responseMapperFactory.setConverterMgr(converterMgr);
 
         ProducerArgumentsMapperFactory producerArgsMapperFactory = new ProducerArgumentsMapperFactory();
+        producerArgsMapperFactory.setConverterMgr(converterMgr);
+
         MicroserviceMetaManager microserviceMetaManager = new MicroserviceMetaManager();
         SchemaLoader schemaLoader = new SchemaLoader() {
             @Override
@@ -69,8 +74,7 @@ public class TestProducerSchemaFactory {
         };
         CompositeSwaggerGeneratorContext compositeSwaggerGeneratorContext = new CompositeSwaggerGeneratorContext();
 
-        ReflectUtils.setField(producerSchemaFactory, "producerArgsMapperFactory", producerArgsMapperFactory);
-        ReflectUtils.setField(producerSchemaFactory, "responseMapperFactory", responseMapperFactory);
+        producerSchemaFactory.setSwaggerEnv(swaggerEnv);
         ReflectUtils.setField(producerSchemaFactory, "microserviceMetaManager", microserviceMetaManager);
         ReflectUtils.setField(producerSchemaFactory, "schemaLoader", schemaLoader);
         ReflectUtils.setField(producerSchemaFactory,
@@ -92,7 +96,7 @@ public class TestProducerSchemaFactory {
         OperationMeta operationMeta = schemaMeta.ensureFindOperation("add");
         Assert.assertEquals("add", operationMeta.getOperationId());
 
-        ProducerOperation producerOperation = operationMeta.getExtData(Const.PRODUCER_OPERATION);
+        SwaggerProducerOperation producerOperation = operationMeta.getExtData(Const.PRODUCER_OPERATION);
 
         Object addBody = Class.forName("cse.gen.app.ms.schema.addBody").newInstance();
         ReflectUtils.setField(addBody, "x", 1);

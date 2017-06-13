@@ -19,13 +19,13 @@ package io.servicecomb.transport.rest.servlet;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
-import io.servicecomb.core.AsyncResponse;
 import io.servicecomb.core.Const;
 import io.servicecomb.core.Invocation;
 import io.servicecomb.core.transport.AbstractTransport;
 import io.servicecomb.transport.rest.client.RestTransportClient;
 import io.servicecomb.transport.rest.client.RestTransportClientManager;
 import io.servicecomb.foundation.common.net.URIEndpointObject;
+import io.servicecomb.swagger.invocation.AsyncResponse;
 
 @Component
 public class ServletRestTransport extends AbstractTransport {

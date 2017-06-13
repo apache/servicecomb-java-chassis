@@ -36,9 +36,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import io.servicecomb.common.rest.codec.RestObjectMapper;
-import io.servicecomb.core.context.ContextUtils;
 import io.servicecomb.demo.compute.Person;
 import io.servicecomb.provider.rest.common.RestSchema;
+import io.servicecomb.swagger.invocation.context.ContextUtils;
 
 @RestSchema(schemaId = "compute")
 @Path("/compute")

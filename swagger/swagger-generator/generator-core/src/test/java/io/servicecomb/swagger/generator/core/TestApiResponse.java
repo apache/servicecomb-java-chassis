@@ -16,12 +16,14 @@
 
 package io.servicecomb.swagger.generator.core;
 
-import io.servicecomb.swagger.generator.core.unittest.SwaggerGeneratorForTest;
 import org.junit.Assert;
 import org.junit.Test;
 
 import io.servicecomb.swagger.converter.ConverterMgr;
-
+import io.servicecomb.swagger.generator.core.SwaggerGenerator;
+import io.servicecomb.swagger.generator.core.SwaggerGeneratorContext;
+import io.servicecomb.swagger.generator.core.unittest.SwaggerGeneratorForTest;
+import io.servicecomb.swagger.generator.pojo.PojoSwaggerGeneratorContext;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import io.swagger.annotations.ResponseHeader;
@@ -32,7 +34,7 @@ import io.swagger.models.Swagger;
 import io.swagger.models.properties.Property;
 
 public class TestApiResponse {
-    SwaggerGeneratorContext context = new DefaultSwaggerGeneratorContext();
+    SwaggerGeneratorContext context = new PojoSwaggerGeneratorContext();
 
     interface ApiResponseAnnotation {
         @ApiResponse(

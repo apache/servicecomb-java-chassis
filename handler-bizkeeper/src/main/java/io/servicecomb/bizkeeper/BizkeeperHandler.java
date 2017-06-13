@@ -19,10 +19,11 @@ package io.servicecomb.bizkeeper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import io.servicecomb.core.AsyncResponse;
 import io.servicecomb.core.Invocation;
-import io.servicecomb.core.Response;
 import io.servicecomb.core.handler.impl.AbstractHandler;
+import io.servicecomb.swagger.invocation.AsyncResponse;
+import io.servicecomb.swagger.invocation.Response;
+
 import com.netflix.hystrix.HystrixCommandProperties;
 import com.netflix.hystrix.HystrixCommandProperties.ExecutionIsolationStrategy;
 import com.netflix.hystrix.HystrixObservable;

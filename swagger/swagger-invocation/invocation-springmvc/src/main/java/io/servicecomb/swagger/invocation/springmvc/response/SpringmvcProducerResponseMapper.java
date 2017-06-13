@@ -20,14 +20,13 @@ import java.util.Map.Entry;
 
 import javax.ws.rs.core.Response.StatusType;
 
+import io.servicecomb.swagger.invocation.Response;
+import io.servicecomb.swagger.invocation.context.HttpStatus;
 import io.servicecomb.swagger.invocation.response.Headers;
 import io.servicecomb.swagger.invocation.response.producer.ProducerResponseMapper;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
-
-import io.servicecomb.core.Response;
-import io.servicecomb.core.context.HttpStatus;
 
 @Component
 public class SpringmvcProducerResponseMapper implements ProducerResponseMapper {

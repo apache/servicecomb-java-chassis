@@ -28,6 +28,9 @@ public final class ConfigurePropertyUtils {
     private ConfigurePropertyUtils() {
     }
 
+    /**
+     * 获取key包含prefix前缀的所有配置项
+     */
     public static Map<String, String> getPropertiesWithPrefix(String prefix) {
         Map<String, String> propertiesMap = new HashMap<>();
 

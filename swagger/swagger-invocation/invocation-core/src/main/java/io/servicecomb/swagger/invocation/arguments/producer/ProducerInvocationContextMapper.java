@@ -17,7 +17,6 @@
 package io.servicecomb.swagger.invocation.arguments.producer;
 
 import io.servicecomb.swagger.invocation.SwaggerInvocation;
-import io.servicecomb.swagger.invocation.SwaggerInvocationContext;
 
 public class ProducerInvocationContextMapper extends AbstractProducerContextArgMapper {
 
@@ -27,6 +26,6 @@ public class ProducerInvocationContextMapper extends AbstractProducerContextArgM
 
     @Override
     public Object createContextArg(SwaggerInvocation invocation) {
-        return new SwaggerInvocationContext(invocation.getContext());
+        return invocation;
     }
 }
