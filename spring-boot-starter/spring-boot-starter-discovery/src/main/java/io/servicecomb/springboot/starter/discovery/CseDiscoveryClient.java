@@ -24,65 +24,62 @@ import org.springframework.cloud.client.DefaultServiceInstance;
 import org.springframework.cloud.client.ServiceInstance;
 import org.springframework.cloud.client.discovery.DiscoveryClient;
 
-import com.netflix.config.DynamicPropertyFactory;
-
-import io.servicecomb.core.provider.consumer.ConsumerProviderManager;
-import io.servicecomb.core.provider.consumer.ReferenceConfig;
-import io.servicecomb.foundation.common.net.URIEndpointObject;
 import io.servicecomb.serviceregistry.api.registry.Microservice;
 import io.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
 import io.servicecomb.serviceregistry.client.RegistryClientFactory;
 import io.servicecomb.serviceregistry.client.ServiceRegistryClient;
+import io.servicecomb.core.provider.consumer.ConsumerProviderManager;
+import io.servicecomb.core.provider.consumer.ReferenceConfig;
+import io.servicecomb.foundation.common.net.URIEndpointObject;
 
-/**
- * Sukesh
- */
+import com.netflix.config.DynamicPropertyFactory;
+
 public class CseDiscoveryClient implements DiscoveryClient {
 
-    @Inject
-    private ConsumerProviderManager consumerProviderManager;
+	@Inject
+	private ConsumerProviderManager consumerProviderManager;
 
-    @Override
-    public String description() {
-        return "Spring Cloud CSE Discovery Client";
-    }
+	@Override
+	public String description() {
+		return "Spring Cloud CSE Discovery Client";
+	}
 
-    @Override
-    public List<ServiceInstance> getInstances(final String serviceId) {
-        List<ServiceInstance> instances = new ArrayList<ServiceInstance>();
-        ServiceRegistryClient client = RegistryClientFactory.getRegistryClient();
-        String appId = DynamicPropertyFactory.getInstance().getStringProperty("APPLICATION_ID", "default").get();
-        ReferenceConfig referenceConfig = consumerProviderManager.getReferenceConfig(serviceId);
-        String versionRule = referenceConfig.getMicroserviceVersionRule();
-        String cseServiceID = client.getMicroserviceId(appId, serviceId, versionRule);
-        List<MicroserviceInstance> cseServices = client.getMicroserviceInstance(cseServiceID, cseServiceID);
-        if (null != cseServices && !cseServices.isEmpty()) {
-            for (MicroserviceInstance instance : cseServices) {
-                List<String> eps = instance.getEndpoints();
-                for (String ep : eps) {
-                    URIEndpointObject uri = new URIEndpointObject(ep);
-                    instances.add(new DefaultServiceInstance(instance.getServiceId(), uri.getHostOrIp(),
-                            uri.getPort(), false));
-                }
-            }
-        }
-        return instances;
-    }
+	@Override
+	public List<ServiceInstance> getInstances(final String serviceId) {
+		List<ServiceInstance> instances = new ArrayList<ServiceInstance>();
+		ServiceRegistryClient client = RegistryClientFactory.getRegistryClient();
+		String appId = DynamicPropertyFactory.getInstance().getStringProperty("APPLICATION_ID", "default").get();
+		ReferenceConfig referenceConfig = consumerProviderManager.getReferenceConfig(serviceId);
+		String versionRule = referenceConfig.getMicroserviceVersionRule();
+		String cseServiceID = client.getMicroserviceId(appId, serviceId, versionRule);
+		List<MicroserviceInstance> cseServices = client.getMicroserviceInstance(cseServiceID, cseServiceID);
+		if (null != cseServices && !cseServices.isEmpty()) {
+			for (MicroserviceInstance instance : cseServices) {
+				List<String> eps = instance.getEndpoints();
+				for (String ep : eps) {
+					URIEndpointObject uri = new URIEndpointObject(ep);
+					instances.add(new DefaultServiceInstance(instance.getServiceId(), uri.getHostOrIp(), uri.getPort(),
+							false));
+				}
+			}
+		}
+		return instances;
+	}
 
-    @Override
-    public ServiceInstance getLocalServiceInstance() {
-        return null;
-    }
+	@Override
+	public ServiceInstance getLocalServiceInstance() {
+		return null;
+	}
 
-    @Override
-    public List<String> getServices() {
-        ServiceRegistryClient client = RegistryClientFactory.getRegistryClient();
-        List<Microservice> services = client.getAllMicroservices();
-        List<String> serviceIDList = new ArrayList<String>();
-        if (null != services && !services.isEmpty())
-            for (Microservice service : services) {
-                serviceIDList.add(service.getServiceName());
-            }
-        return serviceIDList;
-    }
+	@Override
+	public List<String> getServices() {
+		ServiceRegistryClient client = RegistryClientFactory.getRegistryClient();
+		List<Microservice> services = client.getAllMicroservices();
+		List<String> serviceIDList = new ArrayList<String>();
+		if (null != services && !services.isEmpty())
+			for (Microservice service : services) {
+				serviceIDList.add(service.getServiceName());
+			}
+		return serviceIDList;
+	}
 }
