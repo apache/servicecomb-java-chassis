@@ -174,7 +174,6 @@
 					<plugin>
 						<groupId>org.commonjava.maven.plugins</groupId>
 						<artifactId>directory-maven-plugin</artifactId>
-						<version>0.1</version>
 						<executions>
 							<execution>
 								<id>directoryies</id>
@@ -198,9 +197,8 @@
 						<plugin>
 							<groupId>org.apache.maven.plugins</groupId>
 							<artifactId>maven-jar-plugin</artifactId>
-							<version>2.6</version>
 							<configuration>
-								<outputDirectory>${root.dir}/demo-bin/${project.name}</outputDirectory>
+								<outputDirectory>${demo.run.dir}/${project.name}</outputDirectory>
 								<archive>
 									<manifest>
 										<addClasspath>true</addClasspath>
@@ -216,7 +214,6 @@
 						<plugin>
 							<groupId>org.apache.maven.plugins</groupId>
 							<artifactId>maven-dependency-plugin</artifactId>
-							<version>2.10</version>
 							<executions>
 								<execution>
 									<id>copy-dependencies</id>
@@ -225,7 +222,7 @@
 										<goal>copy-dependencies</goal>
 									</goals>
 									<configuration>
-										<outputDirectory>${root.dir}/demo-bin/lib</outputDirectory>
+										<outputDirectory>${demo.run.dir}/lib</outputDirectory>
 									</configuration>
 								</execution>
 							</executions>
@@ -233,6 +230,9 @@
 					</plugins>
 				</pluginManagement>
 			</build>
+			<properties>
+				<demo.run.dir>${root.dir}/demo/target</demo.run.dir>
+			</properties>
 		</profile>
 	</profiles>
 </project>
