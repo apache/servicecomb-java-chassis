@@ -39,6 +39,7 @@
 		<module>demo-crossapp</module>
 		<module>demo-spring-boot-provider</module>
 		<module>demo-spring-boot-transport</module>
+		<module>demo-spring-boot-discovery</module>
 	</modules>
 
 	<properties>
