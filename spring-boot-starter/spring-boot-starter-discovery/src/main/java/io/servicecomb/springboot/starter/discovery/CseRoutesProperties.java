@@ -24,10 +24,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.netflix.zuul.filters.ZuulProperties;
 import org.springframework.cloud.netflix.zuul.filters.ZuulProperties.ZuulRoute;
 
+import com.netflix.config.DynamicPropertyFactory;
+
+import io.servicecomb.core.Const;
 import io.servicecomb.core.provider.consumer.ConsumerProviderManager;
 import io.servicecomb.core.provider.consumer.ReferenceConfig;
-
-import com.netflix.config.DynamicPropertyFactory;
 
 public final class CseRoutesProperties {
 
@@ -59,6 +60,11 @@ public final class CseRoutesProperties {
 	public String getVersionRule(String serviceName) {
 		ReferenceConfig referenceConfig = consumerProviderManager.getReferenceConfig(serviceName);
 		return referenceConfig.getMicroserviceVersionRule();
+	}
+
+	public String getVersionRulefromProp(String serviceName) {
+		return DynamicPropertyFactory.getInstance()
+				.getStringProperty("service_description.version", Const.DEFAULT_VERSION_RULE).get();
 	}
 
 	public String getAppID() {

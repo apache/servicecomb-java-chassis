@@ -4,4 +4,4 @@ spring:
   cloud:
     cse:
       host: 127.0.0.1
-      port: 9980
+      port: 30100

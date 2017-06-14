@@ -34,6 +34,6 @@ public class Controller {
 
 	@RequestMapping(path = "/instances", method = RequestMethod.GET)
 	public URI getInstances() {
-		return discoveryClient.getInstances("springmvc").get(0).getUri();
+		return discoveryClient.getInstances("discovery").get(0).getUri();
 	}
 }

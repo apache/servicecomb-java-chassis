@@ -49,8 +49,18 @@ public class DiscoveryZuulProxy {
 
 	private void testInstances(RestTemplate template) {
 		String port = DynamicPropertyFactory.getInstance().getStringProperty("server.port", "9989").get();
-		String urlPrefix = "http://localhost:" + port + "/springmvctest/controller/add?a=10&b=10";
-		Integer result = template.getForObject(urlPrefix, Integer.class);
-		TestMgr.check(20, result);
+		try {
+			String testService = "http://127.0.0.1:8069/controller/sayhi?name=world";
+			String directesult = template.getForObject(testService, String.class);
+			System.out.println("Response from Micro-Service is  ---> " + directesult);
+		} catch (Exception e) {
+			System.out.println(e);
+			System.out.println("Error in querying Micro-service directly.");
+		}
+
+		String urlPrefix = "http://127.0.0.1:" + port + "/discoverytest/controller/sayhi?name=world";
+		String result = template.getForObject(urlPrefix, String.class);
+		System.out.println("Response from ZuulProxy  is  ---> " + result);
+		TestMgr.check("\"hi world [world]\"", result);
 	}
 }

@@ -44,13 +44,12 @@ public class CseRibbonClientConfiguration {
 		return config;
 	}
 
-    @Bean
-    public ServerList<?> ribbonServerList(IClientConfig config) {
-        String serviceName = config.getClientName();
-        String appID = cseRoutesProperties.getAppID();
-        serviceName = cseRoutesProperties.getServiceName(appID);
-        String versionRule = cseRoutesProperties.getVersionRule(serviceName);
-        return new CseServerListWrapper(appID, serviceName, versionRule, "rest");
-    }
-
+	@Bean
+	public ServerList<?> ribbonServerList(IClientConfig config) {
+		String serviceName = config.getClientName();
+		String appID = cseRoutesProperties.getAppID();
+		serviceName = cseRoutesProperties.getServiceName(appID);
+		String versionRule = cseRoutesProperties.getVersionRulefromProp(serviceName);
+		return new CseServerListWrapper(appID, serviceName, versionRule, "rest");
+	}
 }
