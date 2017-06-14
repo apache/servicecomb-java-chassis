@@ -1,8 +1,8 @@
-APPLICATION_ID: springmvctest
+APPLICATION_ID: discoverytest
 service_description:
-  name: springmvc
-  version: 0.0.1
+  name: discovery
+  version: 0.0.2
 cse:
   service:
     registry:
-      address: http://127.0.0.1:9980
+      address: http://127.0.0.1:30100

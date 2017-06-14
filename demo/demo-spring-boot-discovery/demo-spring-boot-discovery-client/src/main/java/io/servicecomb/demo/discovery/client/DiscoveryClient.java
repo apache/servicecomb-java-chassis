@@ -51,7 +51,7 @@ public class DiscoveryClient {
 		String port = DynamicPropertyFactory.getInstance().getStringProperty("server.port", "9993").get();
 		String urlPrefix = "http://localhost:" + port + "/controller/instances";
 		URI result = template.getForObject(urlPrefix, URI.class);
-		TestMgr.check(8080, result.getPort());
+		TestMgr.check(8069, result.getPort());
 	}
 
 }

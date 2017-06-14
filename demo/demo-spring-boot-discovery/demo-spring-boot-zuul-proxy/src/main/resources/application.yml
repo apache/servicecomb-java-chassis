@@ -4,8 +4,8 @@ spring:
   cloud:
     cse:
       host: 127.0.0.1
-      port: 9980
+      port: 30100
 zuul:
   routes:
-    springmvctest:
-      serviceId: springmvc
+    discoverytest:
+      serviceId: discovery

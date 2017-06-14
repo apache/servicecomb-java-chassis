@@ -35,6 +35,10 @@
         </dependency>
         <dependency>
             <groupId>io.servicecomb</groupId>
+            <artifactId>spring-boot-starter-discovery</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.servicecomb</groupId>
             <artifactId>spring-boot-starter-transport</artifactId>
         </dependency>
         <dependency>

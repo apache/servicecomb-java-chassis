@@ -1,0 +1,32 @@
+APPLICATION_ID: discoverytest
+service_description:
+  name: discovery
+  version: 0.0.2
+cse:
+  service:
+    registry:
+      address: http://127.0.0.1:30100
+  rest:
+    address: 0.0.0.0:8087
+  handler:
+    chain:
+      Provider:
+        default: bizkeeper-provider
+  tracing:
+    enabled: true
+    samplingRate: 0.5
+
+#########SSL options
+ssl.protocols: TLSv1.2
+ssl.authPeer: true
+ssl.checkCN.host: true
+
+#########certificates config
+ssl.trustStore: trust.jks
+ssl.trustStoreType: JKS
+ssl.trustStoreValue: Changeme_123
+ssl.keyStore: server.p12
+ssl.keyStoreType: PKCS12
+ssl.keyStoreValue: Changeme_123
+ssl.crl: revoke.crl
+ssl.sslCustomClass: io.servicecomb.demo.DemoSSLCustom

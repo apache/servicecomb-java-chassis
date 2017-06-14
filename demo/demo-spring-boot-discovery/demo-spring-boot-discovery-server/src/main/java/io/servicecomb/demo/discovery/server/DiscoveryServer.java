@@ -14,28 +14,17 @@
  * limitations under the License.
  */
 
-package io.servicecomb.demo.discovery.zuul;
+package io.servicecomb.demo.discovery.server;
 
-import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertThat;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-import org.junit.Before;
-import org.junit.Test;
+import io.servicecomb.springboot.starter.provider.EnableServiceComb;
 
-import io.servicecomb.demo.TestMgr;
-
-public class DiscoveryZuulProxyIT {
-
-	@Before
-	public void setUp() {
-		TestMgr.errors().clear();
+@SpringBootApplication
+@EnableServiceComb
+public class DiscoveryServer {
+	public static void main(String[] args) throws Exception {
+		SpringApplication.run(DiscoveryServer.class, args);
 	}
-
-	@Test
-	public void clientGetsNoError() throws Exception {
-		DiscoveryZuulProxy.main(new String[0]);
-		System.out.println(TestMgr.errors().toString());
-		assertThat(TestMgr.errors().isEmpty(), is(true));
-	}
-
 }

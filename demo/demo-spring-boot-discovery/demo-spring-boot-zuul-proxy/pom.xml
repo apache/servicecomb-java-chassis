@@ -25,26 +25,64 @@
 		<version>0.1.0-m2-SNAPSHOT</version>
 	</parent>
 	<artifactId>demo-spring-boot-zuul-proxy</artifactId>
-
+	<properties>
+		<demo.main>io.servicecomb.demo.discovery.zuul.DiscoveryZuulProxy</demo.main>
+	</properties>
 	<dependencies>
 		<dependency>
 			<groupId>org.springframework.cloud</groupId>
 			<artifactId>spring-cloud-starter-zuul</artifactId>
-			<version>1.3.0.RELEASE</version>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.cloud</groupId>
 			<artifactId>spring-cloud-starter-ribbon</artifactId>
-			<version>1.3.0.RELEASE</version>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.cloud</groupId>
 			<artifactId>spring-cloud-starter-hystrix</artifactId>
-			<version>1.3.0.RELEASE</version>
 		</dependency>
 		<dependency>
 			<groupId>io.servicecomb.demo</groupId>
-			<artifactId>springmvc-server</artifactId>
+			<artifactId>demo-schema</artifactId>
 		</dependency>
 	</dependencies>
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-dependency-plugin</artifactId>
+			</plugin>
+			<plugin>
+				<groupId>com.github.odavid.maven.plugins</groupId>
+				<artifactId>mixin-maven-plugin</artifactId>
+				<configuration>
+					<mixins>
+						<mixin>
+							<groupId>io.servicecomb.demo</groupId>
+							<artifactId>docker-run-config</artifactId>
+							<version>0.1.0-m2-SNAPSHOT</version>
+						</mixin>
+					</mixins>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+
+	<profiles>
+		<profile>
+			<id>docker</id>
+			<properties>
+				<demo.service.name>demo-spring-boot-discovery-server</demo.service.name>
+				<demo.vm.options>-Dcse.rest.address=0.0.0.0:8069?sslEnabled=false</demo.vm.options>
+			</properties>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>io.fabric8</groupId>
+						<artifactId>docker-maven-plugin</artifactId>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
 </project>
