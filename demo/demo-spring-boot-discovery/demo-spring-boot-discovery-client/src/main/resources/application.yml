@@ -1,7 +1,7 @@
 server:
-  port: 8088
+  port: 9993
 spring:
   cloud:
     cse:
       host: 127.0.0.1
-      port: 9980
+      port: 30100

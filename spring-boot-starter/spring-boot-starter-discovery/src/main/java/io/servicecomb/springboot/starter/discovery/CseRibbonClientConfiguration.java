@@ -16,30 +16,40 @@
 package io.servicecomb.springboot.starter.discovery;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.cloud.netflix.zuul.filters.ZuulProperties;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Bean;
 
+import com.netflix.client.config.DefaultClientConfigImpl;
 import com.netflix.client.config.IClientConfig;
 import com.netflix.loadbalancer.ServerList;
 
-/**
- * Sukesh
- */
 @Configuration
+@ConditionalOnBean(ZuulProperties.class)
 public class CseRibbonClientConfiguration {
 
     @Autowired
     private CseRoutesProperties cseRoutesProperties;
 
-    public CseRibbonClientConfiguration() {
-    }
+	public CseRibbonClientConfiguration() {
+	}
 
-    @Bean
-    public ServerList<?> ribbonServerList(IClientConfig config) {
-        String serviceName = config.getClientName();
-        String appID = cseRoutesProperties.getAppID();
-        String versionRule = cseRoutesProperties.getVersionRule(serviceName);
-        return new CseServerListWrapper(appID, serviceName, versionRule, "rest");
-    }
+	@Bean
+	@ConditionalOnMissingBean
+	public IClientConfig ribbonClientConfig() {
+		DefaultClientConfigImpl config = new DefaultClientConfigImpl();
+		config.loadProperties(this.getClass().getName());
+		return config;
+	}
 
+	@Bean
+	public ServerList<?> ribbonServerList(IClientConfig config) {
+		String serviceName = config.getClientName();
+		String appID = cseRoutesProperties.getAppID();
+		serviceName = cseRoutesProperties.getServiceName(appID);
+		String versionRule = cseRoutesProperties.getVersionRulefromProp(serviceName);
+		return new CseServerListWrapper(appID, serviceName, versionRule, "rest");
+	}
 }

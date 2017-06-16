@@ -16,33 +16,24 @@
 
 package io.servicecomb.demo.discovery.client;
 
-import java.util.List;
-
+import java.net.URI;
 import javax.ws.rs.core.MediaType;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cloud.client.ServiceInstance;
 import org.springframework.cloud.client.discovery.DiscoveryClient;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-/**
- * Sukesh
- */
 @RestController
 @RequestMapping(path = "/controller", produces = MediaType.APPLICATION_JSON)
 public class Controller {
 
-    @Autowired
-    private DiscoveryClient discoveryClient;
+	@Autowired
+	private DiscoveryClient discoveryClient;
 
-    @RequestMapping(path = "/instances", method = RequestMethod.GET)
-    public void getInstances() {
-        List<ServiceInstance> instances = discoveryClient.getInstances("springmvc");
-        for (ServiceInstance si : instances) {
-            System.out.println(si.getUri().toString());
-        }
-        
-    }
+	@RequestMapping(path = "/instances", method = RequestMethod.GET)
+	public URI getInstances() {
+		return discoveryClient.getInstances("discovery").get(0).getUri();
+	}
 }

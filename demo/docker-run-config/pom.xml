@@ -64,6 +64,8 @@
                                         <port>7070:7070</port>
                                         <port>8080:8080</port>
                                         <port>9090:9090</port>
+                                        <port>8069:8069</port>
+                                        <port>8087:8087</port>
                                     </ports>
                                     <dependsOn>
                                         <dependsOn>service-center</dependsOn>
