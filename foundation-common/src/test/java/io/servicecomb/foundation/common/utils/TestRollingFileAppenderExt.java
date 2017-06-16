@@ -53,6 +53,8 @@ public class TestRollingFileAppenderExt {
         ext.subAppend(event);
         Assert.assertTrue(temp.exists());
 
+        ext.close();
         temp.delete();
+        Assert.assertFalse(temp.exists());
     }
 }
