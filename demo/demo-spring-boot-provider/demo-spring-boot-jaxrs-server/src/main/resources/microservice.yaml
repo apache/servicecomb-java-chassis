@@ -1,3 +1,4 @@
+cse-config-order: 1
 APPLICATION_ID: spring-boot-jaxrstest
 service_description:
   name: jaxrs
