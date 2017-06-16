@@ -9,3 +9,11 @@ zuul:
   routes:
     discoverytest:
       serviceId: discoveryServer
+
+hystrix:
+  command:
+    default:
+      execution:
+        isolation:
+          thread:
+            timeoutInMilliseconds: 5000
