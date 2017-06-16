@@ -1,6 +1,6 @@
 APPLICATION_ID: discoverytest
 service_description:
-  name: discovery
+  name: discoveryGateway
   version: 0.0.2
 cse:
   service:

@@ -1,5 +1,5 @@
 server:
-  port: 9989
+  port: 0
 spring:
   cloud:
     cse:
@@ -8,4 +8,4 @@ spring:
 zuul:
   routes:
     discoverytest:
-      serviceId: discovery
+      serviceId: discoveryServer
