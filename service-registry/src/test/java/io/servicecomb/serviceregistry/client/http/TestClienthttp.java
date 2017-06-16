@@ -18,22 +18,21 @@ package io.servicecomb.serviceregistry.client.http;
 
 import java.util.ArrayList;
 
-import io.servicecomb.serviceregistry.RegistryThread;
-import io.servicecomb.serviceregistry.client.RegistryClientFactory;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 
+import io.servicecomb.config.ConfigUtil;
+import io.servicecomb.foundation.common.net.IpPort;
+import io.servicecomb.foundation.vertx.AsyncResultCallback;
+import io.servicecomb.serviceregistry.RegistryThread;
 import io.servicecomb.serviceregistry.RegistryUtils;
 import io.servicecomb.serviceregistry.api.registry.Microservice;
 import io.servicecomb.serviceregistry.client.Endpoints;
 import io.servicecomb.serviceregistry.client.IpPortManager;
-import io.servicecomb.foundation.common.net.IpPort;
-import io.servicecomb.foundation.common.utils.BeanUtils;
-import io.servicecomb.foundation.vertx.AsyncResultCallback;
-
+import io.servicecomb.serviceregistry.client.RegistryClientFactory;
 import mockit.Expectations;
 import mockit.Mocked;
 
@@ -41,7 +40,7 @@ public class TestClienthttp {
 
     @Before
     public void setUp() throws Exception {
-        BeanUtils.init();
+        ConfigUtil.installDynamicConfig();
     }
 
     @After
