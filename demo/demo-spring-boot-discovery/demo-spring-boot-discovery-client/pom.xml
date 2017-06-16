@@ -25,9 +25,6 @@
 		<version>0.1.0-m2-SNAPSHOT</version>
 	</parent>
 	<artifactId>demo-spring-boot-discovery-client</artifactId>
-	<properties>
-		<demo.main>io.servicecomb.demo.discovery.client.DiscoveryClient</demo.main>
-	</properties>
 	<dependencies>
 		<dependency>
 			<groupId>io.servicecomb.demo</groupId>
@@ -61,7 +58,7 @@
 			<id>docker</id>
 			<properties>
 				<demo.service.name>demo-spring-boot-discovery-server</demo.service.name>
-				<demo.vm.options>-Dcse.rest.address=0.0.0.0:8069</demo.vm.options>
+				<demo.vm.options>-Dcse.rest.address=0.0.0.0:8080</demo.vm.options>
 			</properties>
 			<build>
 				<plugins>

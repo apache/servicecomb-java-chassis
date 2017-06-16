@@ -14,26 +14,22 @@
  * limitations under the License.
  */
 
-package io.servicecomb.demo.discovery.client;
+package io.servicecomb.demo.discovery.server;
 
-import java.net.URI;
+import io.servicecomb.provider.rest.common.RestSchema;
 import javax.ws.rs.core.MediaType;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cloud.client.discovery.DiscoveryClient;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.ResponseBody;
 
-@RestController
-@RequestMapping(path = "/controller", produces = MediaType.APPLICATION_JSON)
-public class Controller {
+@RestSchema(schemaId = "greeting")
+@RequestMapping(path = "/greeting", produces = MediaType.TEXT_PLAIN)
+public class GreetingController {
 
-	@Autowired
-	private DiscoveryClient discoveryClient;
-
-	@RequestMapping(path = "/instances", method = RequestMethod.GET)
-	public URI getInstances() {
-		return discoveryClient.getInstances("discovery").get(0).getUri();
-	}
+    @RequestMapping(path = "/sayhello/{name}", method = RequestMethod.GET)
+    @ResponseBody
+    public String sayHello(@PathVariable("name") String name) {
+        return "hello " + name;
+    }
 }

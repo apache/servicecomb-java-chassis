@@ -36,8 +36,7 @@ public class CseDiscoveryClientConfiguration {
 
     @Bean
     public CseDiscoveryClient cseDiscoveryClient() {
-        CseDiscoveryClient discoveryClient = new CseDiscoveryClient();
-        return discoveryClient;
+        return new CseDiscoveryClient();
     }
 
 }
