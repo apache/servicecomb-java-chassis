@@ -1,4 +1,6 @@
-﻿trace:
+﻿cse-config-order: "1"
+
+trace:
   handler:
     enabled: false
     sampler:

@@ -23,14 +23,12 @@ import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import io.servicecomb.foundation.common.utils.BeanUtils;
-import io.servicecomb.foundation.common.utils.Log4jUtils;
+import io.servicecomb.config.ConfigUtil;
 
 public class TestConfigurePropertyUtils {
     @BeforeClass
     public static void beforeClass() throws Exception {
-        Log4jUtils.init();
-        BeanUtils.init();
+        ConfigUtil.installDynamicConfig();
     }
 
     @Test

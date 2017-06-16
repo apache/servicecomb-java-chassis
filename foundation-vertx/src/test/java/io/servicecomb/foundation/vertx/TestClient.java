@@ -17,20 +17,17 @@
 package io.servicecomb.foundation.vertx;
 
 import org.junit.Assert;
-
 import org.junit.Test;
 
 import io.servicecomb.foundation.vertx.client.http.HttpClientVerticle;
 import io.servicecomb.foundation.vertx.client.http.HttpClientWithContext;
-
-import io.vertx.core.Vertx;
 
 public class TestClient {
 
     @Test
     public void testHttpClientVerticle() throws Exception {
         HttpClientVerticle oVerticle = new HttpClientVerticle();
-        oVerticle.init(Vertx.vertx(), null);
+        oVerticle.init(VertxUtils.init(null), null);
         Assert.assertEquals("clientMgr", HttpClientVerticle.CLIENT_MGR);
         Assert.assertEquals("poolCount", HttpClientVerticle.POOL_COUNT);
         Assert.assertEquals("clientOptions", HttpClientVerticle.CLIENT_OPTIONS);
