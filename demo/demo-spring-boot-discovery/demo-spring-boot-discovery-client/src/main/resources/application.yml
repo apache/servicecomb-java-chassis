@@ -1,7 +1,0 @@
-server:
-  port: 9993
-spring:
-  cloud:
-    cse:
-      host: 127.0.0.1
-      port: 30100

@@ -1,11 +1,11 @@
 APPLICATION_ID: discoverytest
 service_description:
-  name: discovery
+  name: discoveryClient
   version: 0.0.2
 cse:
   service:
     registry:
       address: http://127.0.0.1:30100
   references:
-    discovery:
+    discoveryServer:
       version-rule: 0.0.2
