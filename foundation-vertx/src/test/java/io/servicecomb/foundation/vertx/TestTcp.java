@@ -90,7 +90,7 @@ public class TestTcp {
         };
         TcpClientConfig config = new TcpClientConfig();
         TcpClientConnectionPool oClientPool =
-            new TcpClientConnectionPool(config, Vertx.vertx().getOrCreateContext(), oNetClient);
+            new TcpClientConnectionPool(config, VertxUtils.init(null).getOrCreateContext(), oNetClient);
         oClientPool.send(oTcpClient, new TcpClientPackage(null), Mockito.mock(TcpResonseCallback.class));
         oClientPool.send(oTcpClient, new TcpClientPackage(null), Mockito.mock(TcpResonseCallback.class));
         Assert.assertNotNull(oClientPool);
@@ -102,7 +102,8 @@ public class TestTcp {
         Assert.assertNotNull(oTcpRequest);
 
         TcpClientVerticle oTcpClientVerticle = new TcpClientVerticle();
-        oTcpClientVerticle.init(Vertx.vertx(), Vertx.vertx().getOrCreateContext());
+        Vertx vertx = VertxUtils.init(null);
+        oTcpClientVerticle.init(vertx, vertx.getOrCreateContext());
         oTcpClientVerticle.createClientPool();
         oTcpClientVerticle.createClientPool();
         Assert.assertNotNull(oTcpClientVerticle.getVertx());
@@ -139,7 +140,7 @@ public class TestTcp {
     public void testTcpServerStarter() {
         URIEndpointObject endpiont = new URIEndpointObject("highway://127.0.0.1:9900");
         TcpServer oStarter = new TcpServer(endpiont);
-        oStarter.init(Vertx.vertx(), "", null);
+        oStarter.init(VertxUtils.init(null), "", null);
         Assert.assertNotNull(oStarter);
         //TODO Need to find a way to Assert TcpServerStarter as this obbject does not return any values.
     }

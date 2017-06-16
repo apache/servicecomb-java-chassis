@@ -14,14 +14,16 @@
  * limitations under the License.
  */
 
-package io.servicecomb.config.archaius.sources;
+package io.servicecomb.serviceregistry.definition;
 
-// only for unittest
-public class YAMLConfigurationSource extends MicroserviceConfigurationSource {
-    public YAMLConfigurationSource() {
-        MicroserviceConfigLoader loader = new MicroserviceConfigLoader();
-        loader.loadAndSort();
+public interface DefinitionConst {
+    String appIdKey = "APPLICATION_ID";
 
-        setConfigModelList(loader.getConfigModelList());
-    }
+    String serviceDescriptionKey = "service_description";
+
+    String nameKey = "name";
+
+    String qulifiedServiceNameKey = serviceDescriptionKey + "." + nameKey;
+
+    String defaultAppId = "default";
 }

@@ -35,7 +35,6 @@
 		<dependency>
 			<groupId>io.servicecomb</groupId>
 			<artifactId>spring-boot-starter-discovery</artifactId>
-			<version>0.1.0-m2-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>io.servicecomb</groupId>
@@ -88,7 +87,6 @@
 		<dependency>
 			<groupId>com.netflix.hystrix</groupId>
 			<artifactId>hystrix-core</artifactId>
-			<version>1.5.10</version>
 		</dependency>
 	</dependencies>
 </project>
