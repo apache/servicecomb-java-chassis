@@ -16,26 +16,46 @@
 
 package io.servicecomb.demo.discovery.zuul;
 
-import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 
-import org.junit.Before;
+import io.servicecomb.springboot.starter.provider.EnableServiceComb;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.web.client.TestRestTemplate;
+import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
+import org.springframework.cloud.netflix.zuul.EnableZuulProxy;
+import org.springframework.test.context.junit4.SpringRunner;
 
-import io.servicecomb.demo.TestMgr;
-
+@RunWith(SpringRunner.class)
+@SpringBootTest(classes = DiscoveryZuulProxyIT.DiscoveryZuulProxy.class, webEnvironment = RANDOM_PORT)
 public class DiscoveryZuulProxyIT {
 
-	@Before
-	public void setUp() {
-		TestMgr.errors().clear();
+  @Autowired
+	private TestRestTemplate restTemplate;
+
+  @Test
+	public void getsRemoteServiceThroughGateway() throws Exception {
+    String response = restTemplate.getForObject(
+        "/discoverytest/greeting/sayhello/{name}",
+        String.class,
+        "Mike");
+
+    assertThat(response).isEqualTo("hello Mike");
 	}
 
-	@Test
-	public void clientGetsNoError() throws Exception {
-		DiscoveryZuulProxy.main(new String[0]);
-		System.out.println(TestMgr.errors().toString());
-		assertThat(TestMgr.errors().isEmpty(), is(true));
-	}
+  @SpringBootApplication
+  @EnableZuulProxy
+  @EnableDiscoveryClient
+  @EnableServiceComb
+  static class DiscoveryZuulProxy {
 
+    public static void main(String[] args) throws Exception {
+      SpringApplication.run(DiscoveryZuulProxy.class, args);
+    }
+  }
 }

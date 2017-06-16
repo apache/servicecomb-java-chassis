@@ -26,7 +26,7 @@
 	</parent>
 	<artifactId>demo-spring-boot-zuul-proxy</artifactId>
 	<properties>
-		<demo.main>io.servicecomb.demo.discovery.zuul.DiscoveryZuulProxy</demo.main>
+		<demo.main>io.servicecomb.demo.discovery.zuul.DiscoveryZuulProxyIT.DiscoveryZuulProxy</demo.main>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -73,7 +73,7 @@
 			<id>docker</id>
 			<properties>
 				<demo.service.name>demo-spring-boot-discovery-server</demo.service.name>
-				<demo.vm.options>-Dcse.rest.address=0.0.0.0:8069?sslEnabled=false</demo.vm.options>
+				<demo.vm.options>-Dcse.rest.address=0.0.0.0:8080?sslEnabled=false</demo.vm.options>
 			</properties>
 			<build>
 				<plugins>
