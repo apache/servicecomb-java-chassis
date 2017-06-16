@@ -18,21 +18,20 @@ package io.servicecomb.serviceregistry.client.http;
 
 import java.util.concurrent.CountDownLatch;
 
-import io.servicecomb.serviceregistry.RegistryThread;
-import io.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
-import io.servicecomb.serviceregistry.client.ClientException;
-import io.servicecomb.serviceregistry.client.RegistryClientFactory;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 
+import io.servicecomb.config.ConfigUtil;
+import io.servicecomb.serviceregistry.RegistryThread;
 import io.servicecomb.serviceregistry.RegistryUtils;
 import io.servicecomb.serviceregistry.api.registry.Microservice;
+import io.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
+import io.servicecomb.serviceregistry.client.ClientException;
+import io.servicecomb.serviceregistry.client.RegistryClientFactory;
 import io.servicecomb.serviceregistry.config.ServiceRegistryConfig;
-import io.servicecomb.foundation.common.utils.BeanUtils;
-
 import io.vertx.core.http.HttpClientOptions;
 import io.vertx.core.http.HttpVersion;
 import mockit.Deencapsulation;
@@ -45,7 +44,7 @@ public class TestServiceRegistryClientImpl {
 
     @Before
     public void setUp() throws Exception {
-        BeanUtils.init();
+        ConfigUtil.installDynamicConfig();
         oClient = (ServiceRegistryClientImpl) RegistryClientFactory.getRegistryClient();
     }
 

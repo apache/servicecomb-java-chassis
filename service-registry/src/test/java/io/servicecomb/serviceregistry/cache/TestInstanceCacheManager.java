@@ -16,18 +16,17 @@
 
 package io.servicecomb.serviceregistry.cache;
 
-import io.servicecomb.serviceregistry.RegistryUtils;
-import io.servicecomb.serviceregistry.api.registry.WatchAction;
-import io.servicecomb.serviceregistry.api.response.MicroserviceInstanceChangedEvent;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
+import io.servicecomb.config.ConfigUtil;
+import io.servicecomb.serviceregistry.RegistryUtils;
 import io.servicecomb.serviceregistry.api.MicroserviceKey;
 import io.servicecomb.serviceregistry.api.registry.Microservice;
-import io.servicecomb.foundation.common.utils.BeanUtils;
-import io.servicecomb.foundation.common.utils.Log4jUtils;
+import io.servicecomb.serviceregistry.api.registry.WatchAction;
+import io.servicecomb.serviceregistry.api.response.MicroserviceInstanceChangedEvent;
 
 /**
  *
@@ -38,8 +37,7 @@ public class TestInstanceCacheManager {
 
     @Before
     public void setUp() throws Exception {
-        Log4jUtils.init();
-        BeanUtils.init();
+        ConfigUtil.installDynamicConfig();
         RegistryUtils.setSrClient(null);
     }
 

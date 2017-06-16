@@ -21,14 +21,13 @@ import java.util.Arrays;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.MediaType;
 
-import io.servicecomb.demo.controller.Person;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import io.servicecomb.demo.controller.Person;
 import io.servicecomb.provider.rest.common.RestSchema;
 
 @RestSchema(schemaId = "controller")
