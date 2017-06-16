@@ -16,12 +16,11 @@
 
 package io.servicecomb.config;
 
-import org.yaml.snakeyaml.Yaml;
-
 import java.io.InputStream;
-import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.Map;
+
+import org.yaml.snakeyaml.Yaml;
 
 /**
  * Created by   on 2017/1/5.
@@ -39,7 +38,7 @@ public final class YAMLUtil {
     }
 
     @SuppressWarnings("unchecked")
-    private static Map<String, Object> retrieveItems(String prefix, Map<String, Object> propertieMap) {
+    public static Map<String, Object> retrieveItems(String prefix, Map<String, Object> propertieMap) {
         Map<String, Object> result = new LinkedHashMap<String, Object>();
         if (!prefix.isEmpty()) {
             prefix += ".";
@@ -52,12 +51,6 @@ public final class YAMLUtil {
                 result.put(prefix + entry.getKey(), entry.getValue());
             }
         }
-        return result;
-    }
-
-    public static <T> T[] arrayConcat(T[] first, T[] second) {
-        T[] result = Arrays.copyOf(first, first.length + second.length);
-        System.arraycopy(second, 0, result, first.length, second.length);
         return result;
     }
 }

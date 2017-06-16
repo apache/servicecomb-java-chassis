@@ -1,6 +1,8 @@
-  dsf:
-    serializer:
-      kryo:
-        enabled: true
-        referencesRequired: false
-        registrationRequired: false
+cse-config-order: 0
+
+dsf:
+  serializer:
+    kryo:
+      enabled: true
+      referencesRequired: false
+      registrationRequired: false

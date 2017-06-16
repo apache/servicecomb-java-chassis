@@ -13,15 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package io.servicecomb.config;
 
-package io.servicecomb.config.archaius.sources;
+import java.util.List;
+import java.util.Map;
 
-// only for unittest
-public class YAMLConfigurationSource extends MicroserviceConfigurationSource {
-    public YAMLConfigurationSource() {
-        MicroserviceConfigLoader loader = new MicroserviceConfigLoader();
-        loader.loadAndSort();
+import org.junit.Assert;
+import org.junit.Test;
 
-        setConfigModelList(loader.getConfigModelList());
+public class TestConfigurationSpringInitializer {
+    @Test
+    public void testAll() {
+        new ConfigurationSpringInitializer();
+
+        Object o = ConfigUtil.getProperty("zq");
+        @SuppressWarnings("unchecked")
+        List<Map<String, Object>> listO = (List<Map<String, Object>>) o;
+        Assert.assertEquals(3, listO.size());
+        Assert.assertEquals(null, ConfigUtil.getProperty("notExist"));
     }
 }
