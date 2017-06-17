@@ -15,6 +15,7 @@
  */
 package io.servicecomb.springboot.starter.discovery;
 
+import io.servicecomb.core.provider.consumer.ConsumerProviderManager;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.cloud.netflix.zuul.filters.ZuulProperties;
 import org.springframework.context.annotation.Bean;
@@ -30,8 +31,8 @@ public class CseDiscoveryClientConfiguration {
 
     @Bean
     @ConditionalOnBean(ZuulProperties.class)
-    public CseRoutesProperties cseRoutesProperties() {
-        return new CseRoutesProperties();
+    public CseRoutesProperties cseRoutesProperties(ConsumerProviderManager manager) {
+        return new CseRoutesProperties(manager);
     }
 
     @Bean
