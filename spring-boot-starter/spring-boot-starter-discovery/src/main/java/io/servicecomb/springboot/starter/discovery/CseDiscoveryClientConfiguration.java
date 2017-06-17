@@ -15,11 +15,17 @@
  */
 package io.servicecomb.springboot.starter.discovery;
 
+import io.servicecomb.core.provider.consumer.ConsumerProviderManager;
+import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
+import org.springframework.cloud.client.discovery.DiscoveryClient;
+import org.springframework.cloud.client.discovery.noop.NoopDiscoveryClientAutoConfiguration;
 import org.springframework.cloud.netflix.zuul.filters.ZuulProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 
+@AutoConfigureBefore(NoopDiscoveryClientAutoConfiguration.class)
 @Configuration
 public class CseDiscoveryClientConfiguration {
 
@@ -30,12 +36,13 @@ public class CseDiscoveryClientConfiguration {
 
     @Bean
     @ConditionalOnBean(ZuulProperties.class)
-    public CseRoutesProperties cseRoutesProperties() {
-        return new CseRoutesProperties();
+    public CseRoutesProperties cseRoutesProperties(ConsumerProviderManager manager) {
+        return new CseRoutesProperties(manager);
     }
 
     @Bean
-    public CseDiscoveryClient cseDiscoveryClient() {
+    @Primary
+    public DiscoveryClient cseDiscoveryClient() {
         return new CseDiscoveryClient();
     }
 

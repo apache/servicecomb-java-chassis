@@ -13,30 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.servicecomb.springboot.starter.serviceregistry;
 
-import org.springframework.cloud.client.serviceregistry.Registration;
+package io.servicecomb.springboot.starter.discovery;
 
-import io.servicecomb.serviceregistry.api.registry.Microservice;
+public class ServiceCombDiscoveryException extends RuntimeException {
 
-public class CseRegistration implements Registration{
-	
-	private final Microservice oMicroservice;
-	
-	public CseRegistration(Microservice service) {
-		this.oMicroservice = service;
-	}
-
-	public Microservice getService() {
-		return oMicroservice;
-	}
-
-	public String getInstanceId() {
-		return getService().getServiceId();
-	}
-
-	public String getServiceId() {
-		return getService().getServiceName();
-	}
-
+  public ServiceCombDiscoveryException(String message) {
+    super(message);
+  }
 }

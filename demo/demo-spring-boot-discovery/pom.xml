@@ -34,10 +34,6 @@
 	<dependencies>
 		<dependency>
 			<groupId>io.servicecomb</groupId>
-			<artifactId>spring-boot-starter-discovery</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>io.servicecomb</groupId>
 			<artifactId>spring-boot-starter-provider</artifactId>
 		</dependency>
 		<dependency>
@@ -52,46 +48,6 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.cloud</groupId>
-			<artifactId>spring-cloud-commons</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.cloud</groupId>
-			<artifactId>spring-cloud-context</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.cloud</groupId>
-			<artifactId>spring-cloud-netflix-core</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>com.netflix.ribbon</groupId>
-			<artifactId>ribbon</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>com.netflix.ribbon</groupId>
-			<artifactId>ribbon-core</artifactId>
-			<exclusions>
-				<exclusion>
-					<groupId>com.google.code.findbugs</groupId>
-					<artifactId>annotations</artifactId>
-				</exclusion>
-			</exclusions>
-		</dependency>
-		<dependency>
-			<groupId>com.netflix.ribbon</groupId>
-			<artifactId>ribbon-loadbalancer</artifactId>
-			<exclusions>
-				<exclusion>
-					<groupId>com.google.code.findbugs</groupId>
-					<artifactId>annotations</artifactId>
-				</exclusion>
-			</exclusions>
-		</dependency>
-		<dependency>
-			<groupId>com.netflix.hystrix</groupId>
-			<artifactId>hystrix-core</artifactId>
 		</dependency>
 	</dependencies>
 </project>

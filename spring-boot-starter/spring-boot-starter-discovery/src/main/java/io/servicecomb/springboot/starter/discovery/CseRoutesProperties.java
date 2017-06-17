@@ -15,59 +15,26 @@
  */
 package io.servicecomb.springboot.starter.discovery;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import javax.annotation.PostConstruct;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cloud.netflix.zuul.filters.ZuulProperties;
-import org.springframework.cloud.netflix.zuul.filters.ZuulProperties.ZuulRoute;
-
 import com.netflix.config.DynamicPropertyFactory;
-
-import io.servicecomb.core.Const;
 import io.servicecomb.core.provider.consumer.ConsumerProviderManager;
 import io.servicecomb.core.provider.consumer.ReferenceConfig;
+import org.springframework.beans.factory.annotation.Autowired;
 
 public final class CseRoutesProperties {
 
+	private final ConsumerProviderManager consumerProviderManager;
+
 	@Autowired
-	private ConsumerProviderManager consumerProviderManager;
-
-	@Autowired(required = true)
-	private ZuulProperties zuulProperties;
-
-	private final Map<String, String> appServiceMap = new HashMap<String, String>();;
-
-	@PostConstruct
-	private void loadZuulRoutes() {
-		Map<String, ZuulRoute> zuulrouteMap = zuulProperties.getRoutes();
-		for (String key : zuulrouteMap.keySet()) {
-			appServiceMap.put(key, zuulrouteMap.get(key).getServiceId());
-		}
-	};
-
-	public String getServiceName(String appID) {
-		String serviceName = appServiceMap.get(appID);
-		if (null == serviceName || serviceName.trim().isEmpty()) {
-			serviceName = DynamicPropertyFactory.getInstance().getStringProperty("service_description.name", "default")
-					.get();
-		}
-		return serviceName;
+	CseRoutesProperties(ConsumerProviderManager consumerProviderManager) {
+		this.consumerProviderManager = consumerProviderManager;
 	}
 
-	public String getVersionRule(String serviceName) {
+	String getVersionRule(String serviceName) {
 		ReferenceConfig referenceConfig = consumerProviderManager.getReferenceConfig(serviceName);
 		return referenceConfig.getMicroserviceVersionRule();
 	}
 
-	public String getVersionRulefromProp(String serviceName) {
-		return DynamicPropertyFactory.getInstance()
-				.getStringProperty("service_description.version", Const.DEFAULT_VERSION_RULE).get();
-	}
-
-	public String getAppID() {
+	String getAppID() {
 		return DynamicPropertyFactory.getInstance().getStringProperty("APPLICATION_ID", "default").get();
 	}
 

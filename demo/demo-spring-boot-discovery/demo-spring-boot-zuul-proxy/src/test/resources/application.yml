@@ -7,7 +7,7 @@ spring:
       port: 30100
 zuul:
   routes:
-    discoverytest:
+    gateway:
       serviceId: discoveryServer
 
 hystrix:
