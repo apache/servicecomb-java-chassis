@@ -42,6 +42,10 @@
 			<artifactId>spring-cloud-starter-hystrix</artifactId>
 		</dependency>
 		<dependency>
+			<groupId>io.servicecomb</groupId>
+			<artifactId>spring-boot-starter-discovery</artifactId>
+		</dependency>
+		<dependency>
 			<groupId>io.servicecomb.demo</groupId>
 			<artifactId>demo-schema</artifactId>
 		</dependency>
