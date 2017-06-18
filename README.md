@@ -31,8 +31,9 @@ public class HelloWorldConsumer  {
 
 ## Documentation
 
-Project documentation is available on the ServiceComb website.
+Project documentation is available on the [ServiceComb website][servicecomb-website].
 
+[servicecomb-website]: http://servicecomb.io/
 
 ## Building
 
@@ -54,11 +55,7 @@ The first build may take a longer than expected as Maven downloads all the depen
       
 ## Contact
 
-Mailing list: 
-
-Planning/Roadmap: milestones, roadmap
-
-Bugs: issues
+Bugs: [issues](https://github.com/ServiceComb/java-chassis/issues)
 
 ## Contributing
 
