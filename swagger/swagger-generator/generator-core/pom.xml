@@ -20,7 +20,7 @@
 	<parent>
 		<groupId>io.servicecomb</groupId>
 		<artifactId>swagger-generator</artifactId>
-		<version>0.1.0-m2</version>
+		<version>0.1.0-m3-SNAPSHOT</version>
 	</parent>
 	<artifactId>swagger-generator-core</artifactId>
 
