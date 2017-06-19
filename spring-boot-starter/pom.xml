@@ -19,7 +19,7 @@
   <parent>
     <groupId>io.servicecomb</groupId>
     <artifactId>java-chassis</artifactId>
-    <version>0.1.0-m2-SNAPSHOT</version>
+    <version>0.1.0-m2</version>
   </parent>
   <artifactId>sprint-boot-starter-parent</artifactId>
   <packaging>pom</packaging>
