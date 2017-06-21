@@ -20,11 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
-import io.servicecomb.foundation.common.config.impl.IdXmlLoader;
-import io.servicecomb.foundation.common.config.impl.PaaSPropertiesLoaderUtils;
-import io.servicecomb.foundation.common.config.impl.XmlLoader;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.io.Resource;
@@ -32,21 +28,16 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
+import io.servicecomb.foundation.common.config.impl.IdXmlLoader;
+import io.servicecomb.foundation.common.config.impl.PaaSPropertiesLoaderUtils;
+import io.servicecomb.foundation.common.config.impl.XmlLoader;
 import io.servicecomb.foundation.common.utils.BeanUtils;
 import io.servicecomb.foundation.common.utils.Log4jUtils;
 
 public class TestConfig {
-
     private static final int TEST_PROP_LIST_SIZE = 2;
 
     private static ApplicationContext context;
-
-    @Before
-    public void init() throws Exception {
-        Log4jUtils.init();
-        BeanUtils.init();
-
-    }
 
     @Test
     public void loadMergedProperties() throws Exception {
@@ -57,7 +48,9 @@ public class TestConfig {
     }
 
     @Test
-    public void testBean() {
+    public void testBean() throws Exception {
+        Log4jUtils.init();
+        BeanUtils.init();
         BeanProp bp = (BeanProp) BeanUtils.getBean("beanProp");
         Assert.assertEquals("2", bp.getTest());
     }

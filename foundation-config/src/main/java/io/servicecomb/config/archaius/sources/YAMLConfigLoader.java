@@ -16,12 +16,21 @@
 
 package io.servicecomb.config.archaius.sources;
 
-// only for unittest
-public class YAMLConfigurationSource extends MicroserviceConfigurationSource {
-    public YAMLConfigurationSource() {
-        MicroserviceConfigLoader loader = new MicroserviceConfigLoader();
-        loader.loadAndSort();
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
+import java.util.Map;
 
-        setConfigModelList(loader.getConfigModelList());
+import org.yaml.snakeyaml.Yaml;
+
+public class YAMLConfigLoader extends AbstractConfigLoader {
+    @SuppressWarnings("unchecked")
+    @Override
+    protected Map<String, Object> loadData(URL url) throws IOException {
+        Yaml yaml = new Yaml();
+
+        try (InputStream inputStream = url.openStream()) {
+            return yaml.loadAs(inputStream, Map.class);
+        }
     }
 }
