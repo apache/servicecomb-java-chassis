@@ -24,12 +24,11 @@ public class GrayReleaseHandler extends AbstractHandler {
 		String p = Configuration.INSTANCE.getGrayreleaseRuleClassName(invocation.getMicroserviceName(),
 				invocation.getMicroserviceQualifiedName());
 		this.policy = p;
-		if (this.policy == null) {
-			invocation.next(asyncResp);
-		}
-		IGrayReleaseFilter rule = createGrayReleaseFilterRule(invocation);
-		if (rule != null) {
-			rule.filterRule();
+		if (this.policy != null) {
+			IGrayReleaseFilter rule = createGrayReleaseFilterRule(invocation);
+			if (rule != null) {
+				rule.filterRule();
+			}
 		}
 		invocation.next(asyncResp);
     }

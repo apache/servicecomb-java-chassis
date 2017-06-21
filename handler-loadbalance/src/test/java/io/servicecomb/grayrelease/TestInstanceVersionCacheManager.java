@@ -48,12 +48,33 @@ public class TestInstanceVersionCacheManager {
         Mockito.when(ins4.getServiceId()).thenReturn("004");
         Mockito.when(ins4.getInstanceId()).thenReturn("04");
 
+/*    	MicroserviceInstance ins1 = new MicroserviceInstance();
+    	ins1.setServiceId("001");
+    	ins1.setInstanceId("01");
+    	MicroserviceInstance ins2 = new MicroserviceInstance();
+    	ins1.setServiceId("002");
+    	ins1.setInstanceId("02");
+    	MicroserviceInstance ins3 = new MicroserviceInstance();
+    	ins1.setServiceId("003");
+    	ins1.setInstanceId("03");
+    	MicroserviceInstance ins4 = new MicroserviceInstance();
+    	ins1.setServiceId("004");
+    	ins1.setInstanceId("04");   */ 	
         List<MicroserviceInstance> instances = new ArrayList<MicroserviceInstance>();
         instances.add(ins1);
         instances.add(ins2);
         instances.add(ins3);
         instances.add(ins4);
+        List<MicroserviceInstance> instances2 = new ArrayList<MicroserviceInstance>();
+        instances2.add(ins3);
+        instances2.add(ins4);
 
+
+        PowerMockito.mockStatic(RegistryUtils.class);
+        PowerMockito.when(RegistryUtils.findServiceInstance(appId, microserviceName, VERSIONALL))
+                .thenReturn(instances);
+        PowerMockito.when(RegistryUtils.findServiceInstance(appId, microserviceName, "1.0.0.2+"))
+                .thenReturn(instances2);
         Microservice microservice1 = Mockito.mock(Microservice.class);
         Mockito.when(microservice1.getVersion()).thenReturn("1.0.0.1");
         Microservice microservice2 = Mockito.mock(Microservice.class);
@@ -61,17 +82,7 @@ public class TestInstanceVersionCacheManager {
         Microservice microservice3 = Mockito.mock(Microservice.class);
         Mockito.when(microservice3.getVersion()).thenReturn("1.0.0.2");
         Microservice microservice4 = Mockito.mock(Microservice.class);
-        Mockito.when(microservice4.getVersion()).thenReturn("1.0.0.2");
-
-        List<MicroserviceInstance> instances2 = new ArrayList<MicroserviceInstance>();
-        instances2.add(ins3);
-        instances2.add(ins4);
-
-        PowerMockito.mockStatic(RegistryUtils.class);
-        PowerMockito.when(RegistryUtils.findServiceInstance(appId, microserviceName, VERSIONALL))
-                .thenReturn(instances);
-        PowerMockito.when(RegistryUtils.findServiceInstance(appId, microserviceName, "1.0.0.2+"))
-                .thenReturn(instances2);
+        Mockito.when(microservice4.getVersion()).thenReturn("1.0.0.2");        
         PowerMockito.when(RegistryUtils.getMicroservice("001")).thenReturn(microservice1);
         PowerMockito.when(RegistryUtils.getMicroservice("002")).thenReturn(microservice2);
         PowerMockito.when(RegistryUtils.getMicroservice("003")).thenReturn(microservice3);
@@ -93,11 +104,14 @@ public class TestInstanceVersionCacheManager {
         Map<String, MicroserviceInstance> ins = inVs.get("1.0.0.1");
         Assert.assertNotNull(ins.get("01"));
         Assert.assertNotNull(ins.get("02"));
-
-        Assert.assertNotNull(inVs.get("1.0.0.2"));
+        Assert.assertEquals("01",ins.get("01").getInstanceId());
+        Assert.assertEquals("02",ins.get("02").getInstanceId());        
+        
         Map<String, MicroserviceInstance> ins002 = inVs.get("1.0.0.2");
         Assert.assertNotNull(ins002.get("03"));
         Assert.assertNotNull(ins002.get("04"));
+        Assert.assertEquals("03",ins002.get("03").getInstanceId());
+        Assert.assertEquals("04",ins002.get("04").getInstanceId());         
     }
 
     @Test
@@ -108,6 +122,8 @@ public class TestInstanceVersionCacheManager {
         System.out.println(vinstances);
         Assert.assertNotNull(vinstances.get("01"));
         Assert.assertNotNull(vinstances.get("02"));
+        Assert.assertEquals("01",vinstances.get("01").getInstanceId());
+        Assert.assertEquals("02",vinstances.get("02").getInstanceId());          
     }
 
     @Test
@@ -119,6 +135,8 @@ public class TestInstanceVersionCacheManager {
         Assert.assertNotNull(vRuleIns.get("1.0.0.2"));
         Assert.assertNotNull(vRuleIns.get("1.0.0.2").get("03"));
         Assert.assertNotNull(vRuleIns.get("1.0.0.2").get("04"));
+        Assert.assertEquals("03",vRuleIns.get("1.0.0.2").get("03").getInstanceId());
+        Assert.assertEquals("04",vRuleIns.get("1.0.0.2").get("04").getInstanceId());         
     }
 
 }

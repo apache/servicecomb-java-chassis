@@ -116,6 +116,8 @@ public class TestGrayReleaseRulePolicyFilter {
         Assert.assertEquals(true, Deencapsulation.invoke(filter, "compare", "900", LogicSymbol.Smaller, "1000"));
         Assert.assertEquals(true, Deencapsulation.invoke(filter, "compare", "world", LogicSymbol.Equal, "world"));
         Assert.assertEquals(true, Deencapsulation.invoke(filter, "compare", "20", LogicSymbol.Equal, "20"));
+        Assert.assertEquals(false, Deencapsulation.invoke(filter, "compare", "world", LogicSymbol.NotEqual, "world"));
+        Assert.assertEquals(true, Deencapsulation.invoke(filter, "compare", "world", LogicSymbol.NotEqual, "hello"));
         Assert.assertEquals(false, Deencapsulation.invoke(filter, "compare", "world", LogicSymbol.Equal, "hello"));
         Assert.assertEquals(true, Deencapsulation.invoke(filter, "compare", "world", LogicSymbol.Like, "w*"));
         Assert.assertEquals(true, Deencapsulation.invoke(filter, "compare", "world", LogicSymbol.Like, "*"));
