@@ -54,7 +54,7 @@ public class SpringmvcClient {
         try {
             // this test class is intended for rery hang issue JAV-27
             restTemplate.getForObject(prefix + "/controller/sayhi?name=throwexception", String.class);
-            TestMgr.check("true", "true");
+            TestMgr.check("true", "false");
         } catch (Exception e) {
             TestMgr.check("true", "true");
         }
