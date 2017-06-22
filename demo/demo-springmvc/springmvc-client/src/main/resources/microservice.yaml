@@ -13,8 +13,6 @@ cse:
   tracing:
     enabled: true
     samplingRate: 0.5
-  loadbalance:
-    retryEnabled: true
       
 #########SSL options
 ssl.protocols: TLSv1.2

@@ -79,7 +79,6 @@ public final class VertxUtils {
         return options;
     }
 
-    // deploy Verticle and wait for its success. do not call this method in event-loop thread
     public static <VERTICLE extends AbstractVerticle> boolean blockDeploy(Vertx vertx,
             Class<VERTICLE> cls,
             DeploymentOptions options) throws InterruptedException {
