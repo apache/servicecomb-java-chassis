@@ -15,6 +15,8 @@ cse:
     samplingRate: 0.5
   loadbalance:
     retryEnabled: true
+    retryOnSame: 1
+    retryOnNext: 1
       
 #########SSL options
 ssl.protocols: TLSv1.2
