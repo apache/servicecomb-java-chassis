@@ -41,7 +41,6 @@ public class TestNetUtils {
         Assert.assertEquals(8080, NetUtils.parseIpPort("127.0.0.1:8080").getPort());
         Assert.assertEquals(null, NetUtils.parseIpPort(null));
         Assert.assertEquals(null, NetUtils.parseIpPort("127.0.0.18080"));
-        Assert.assertNotEquals(null, JsonUtils.getUTCDate(new Date()));
         Assert.assertEquals(NetUtils.parseIpPortFromURI(null), null);
         Assert.assertEquals(NetUtils.parseIpPortFromURI("ss"), null);
         Assert.assertEquals(NetUtils.parseIpPortFromURI("rest://127.0.0.1:8080").getHostOrIp(), "127.0.0.1");
