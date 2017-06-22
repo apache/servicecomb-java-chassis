@@ -62,7 +62,7 @@ public class LoadbalanceHandler extends AbstractHandler {
 
         @Override
         public Thread newThread(Runnable r) {
-            return new Thread(r, "retry-pool-thread-" + count);
+            return new Thread(r, "retry-pool-thread-" + count.getAndIncrement());
         }
     });
 
