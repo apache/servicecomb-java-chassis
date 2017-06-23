@@ -27,20 +27,20 @@ import io.servicecomb.config.ConfigMapping;
 import io.servicecomb.config.YAMLUtil;
 
 public class MicroserviceConfigurationSource implements PolledConfigurationSource {
-    private List<ConfigModel> configModelList;
+    private final List<ConfigModel> configModels;
 
-    public List<ConfigModel> getConfigModelList() {
-        return configModelList;
+    public MicroserviceConfigurationSource(List<ConfigModel> configModels) {
+        this.configModels = configModels;
     }
 
-    public void setConfigModelList(List<ConfigModel> configModelList) {
-        this.configModelList = configModelList;
+    public List<ConfigModel> getConfigModels() {
+        return configModels;
     }
 
     public PollResult poll(boolean b, Object o) throws Exception {
         Map<String, Object> configurations = new LinkedHashMap<String, Object>();
 
-        for (ConfigModel configModel : configModelList) {
+        for (ConfigModel configModel : configModels) {
             configurations.putAll(YAMLUtil.retrieveItems("", configModel.getConfig()));
         }
 

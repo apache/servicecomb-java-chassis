@@ -22,7 +22,6 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Map;
-
 import org.springframework.util.ResourceUtils;
 
 public abstract class AbstractConfigLoader {
@@ -32,9 +31,9 @@ public abstract class AbstractConfigLoader {
         this.orderKey = orderKey;
     }
 
-    protected List<ConfigModel> configModelList = new ArrayList<>();
+    protected final List<ConfigModel> configModelList = new ArrayList<>();
 
-    public List<ConfigModel> getConfigModelList() {
+    public List<ConfigModel> getConfigModels() {
         return configModelList;
     }
 
@@ -84,10 +83,10 @@ public abstract class AbstractConfigLoader {
         return urlList;
     }
 
-    class ConfigModelWrapper {
-        public ConfigModel model;
+    private class ConfigModelWrapper {
+        ConfigModel model;
 
-        public int addOrder;
+        int addOrder;
     }
 
     // sort rule:
@@ -110,7 +109,7 @@ public abstract class AbstractConfigLoader {
         }
     }
 
-    protected int doSort(ConfigModelWrapper w1, ConfigModelWrapper w2) {
+    private int doSort(ConfigModelWrapper w1, ConfigModelWrapper w2) {
         ConfigModel m1 = w1.model;
         ConfigModel m2 = w2.model;
         boolean isM1Jar = ResourceUtils.isJarURL(m1.getUrl());
@@ -131,7 +130,7 @@ public abstract class AbstractConfigLoader {
         return doFinalSort(w1, w2);
     }
 
-    protected int doFinalSort(ConfigModelWrapper w1, ConfigModelWrapper w2) {
+    private int doFinalSort(ConfigModelWrapper w1, ConfigModelWrapper w2) {
         return w1.addOrder - w2.addOrder;
     }
 }

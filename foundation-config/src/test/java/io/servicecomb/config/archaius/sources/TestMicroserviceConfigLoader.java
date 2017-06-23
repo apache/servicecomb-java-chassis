@@ -16,13 +16,18 @@
 
 package io.servicecomb.config.archaius.sources;
 
+import static org.junit.Assert.assertEquals;
+
 import java.net.MalformedURLException;
 import java.net.URL;
-
-import org.junit.Assert;
+import java.util.List;
+import java.util.stream.Collectors;
 import org.junit.Test;
 
 public class TestMicroserviceConfigLoader {
+
+    private final MicroserviceConfigLoader loader = new MicroserviceConfigLoader();
+
     private ConfigModel createConfigModel(String protocol, int order, String file) throws MalformedURLException {
         ConfigModel configModel = new ConfigModel();
         configModel.setUrl(new URL(protocol, null, file));
@@ -31,24 +36,47 @@ public class TestMicroserviceConfigLoader {
     }
 
     @Test
-    public void testSort() throws MalformedURLException {
-        MicroserviceConfigLoader loader = new MicroserviceConfigLoader();
-
-        loader.getConfigModelList().add(createConfigModel("file", 1, "f1"));
-        loader.getConfigModelList().add(createConfigModel("jar", 1, "j1"));
-        loader.getConfigModelList().add(createConfigModel("file", 0, "f2"));
-        loader.getConfigModelList().add(createConfigModel("file", 0, "f3"));
-        loader.getConfigModelList().add(createConfigModel("jar", 0, "j2"));
-        loader.getConfigModelList().add(createConfigModel("file", 0, "f4"));
-        loader.getConfigModelList().add(createConfigModel("jar", 0, "j3"));
-        loader.getConfigModelList().add(createConfigModel("jar", 0, "j4"));
+    public void configsSortedByInsertionOrder() throws MalformedURLException {
+        loader.getConfigModels().add(createConfigModel("jar", 0, "c"));
+        loader.getConfigModels().add(createConfigModel("jar", 0, "b"));
+        loader.getConfigModels().add(createConfigModel("jar", 0, "a"));
 
         loader.sort();
 
-        StringBuilder sb = new StringBuilder();
-        for (ConfigModel configModel : loader.getConfigModelList()) {
-            sb.append(configModel.getUrl()).append(",");
-        }
-        Assert.assertEquals("jar:j2,jar:j3,jar:j4,jar:j1,file:f2,file:f3,file:f4,file:f1,", sb.toString());
+        assertEquals(urls("jar:c", "jar:b", "jar:a"), urlsOf(loader.getConfigModels()));
     }
+
+    @Test
+    public void configsSortedBySpecifiedOrder() throws MalformedURLException {
+        loader.getConfigModels().add(createConfigModel("jar", 2, "a"));
+        loader.getConfigModels().add(createConfigModel("jar", 1, "b"));
+        loader.getConfigModels().add(createConfigModel("jar", 0, "c"));
+
+        loader.sort();
+
+        assertEquals(urls("jar:c", "jar:b", "jar:a"), urlsOf(loader.getConfigModels()));
+    }
+
+    @Test
+    public void jarsAlwaysHaveHigherPriorityThanFiles() throws MalformedURLException {
+        loader.getConfigModels().add(createConfigModel("file", 0, "f2"));
+        loader.getConfigModels().add(createConfigModel("jar", 1, "j1"));
+        loader.getConfigModels().add(createConfigModel("file", 0, "f1"));
+
+        loader.sort();
+
+        assertEquals(urls("jar:j1", "file:f2", "file:f1"), urlsOf(loader.getConfigModels()));
+    }
+
+    private String urlsOf(List<ConfigModel> configModels) {
+        return String.join(",",
+            configModels
+            .stream()
+            .map(configModel -> configModel.getUrl().toString())
+            .collect(Collectors.toList()));
+    }
+
+  private String urls(String... urls) {
+    return String.join(",", (CharSequence[]) urls);
+  }
 }

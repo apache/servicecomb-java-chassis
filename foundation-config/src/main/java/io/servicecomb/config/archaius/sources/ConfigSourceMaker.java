@@ -16,12 +16,12 @@
 
 package io.servicecomb.config.archaius.sources;
 
-// only for unittest
-public class YAMLConfigurationSource extends MicroserviceConfigurationSource {
-    public YAMLConfigurationSource() {
+public class ConfigSourceMaker {
+
+    public static MicroserviceConfigurationSource yamlConfigSource() {
         MicroserviceConfigLoader loader = new MicroserviceConfigLoader();
         loader.loadAndSort();
 
-        setConfigModelList(loader.getConfigModelList());
+        return new MicroserviceConfigurationSource(loader.getConfigModels());
     }
 }

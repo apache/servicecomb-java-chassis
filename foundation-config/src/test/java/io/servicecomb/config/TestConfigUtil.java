@@ -30,7 +30,7 @@ public class TestConfigUtil {
     public void testCreateDynamicConfig() {
         AbstractConfiguration dynamicConfig = ConfigUtil.createDynamicConfig();
         MicroserviceConfigLoader loader = ConfigUtil.getMicroserviceConfigLoader(dynamicConfig);
-        List<ConfigModel> list = loader.getConfigModelList();
+        List<ConfigModel> list = loader.getConfigModels();
         Assert.assertEquals(loader, ConfigUtil.getMicroserviceConfigLoader(dynamicConfig));
         Assert.assertEquals(1, list.size());
         //        Assert.assertTrue(new File(list.get(0).getRootPath()).exists());

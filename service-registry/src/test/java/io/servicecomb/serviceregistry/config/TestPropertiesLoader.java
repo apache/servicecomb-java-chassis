@@ -16,31 +16,29 @@
 
 package io.servicecomb.serviceregistry.config;
 
+import static io.servicecomb.config.archaius.sources.ConfigSourceMaker.yamlConfigSource;
+
+import com.netflix.config.ConcurrentCompositeConfiguration;
+import com.netflix.config.ConfigurationManager;
+import com.netflix.config.DynamicConfiguration;
+import io.servicecomb.config.archaius.scheduler.NeverStartPollingScheduler;
+import io.servicecomb.serviceregistry.RegistryUtils;
+import io.servicecomb.serviceregistry.api.registry.Microservice;
+import io.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
-
-import io.servicecomb.serviceregistry.RegistryUtils;
-import io.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.springframework.util.ReflectionUtils;
 
-import io.servicecomb.config.archaius.scheduler.NeverStartPollingScheduler;
-import io.servicecomb.config.archaius.sources.YAMLConfigurationSource;
-import io.servicecomb.serviceregistry.api.registry.Microservice;
-import com.netflix.config.ConcurrentCompositeConfiguration;
-import com.netflix.config.ConfigurationManager;
-import com.netflix.config.DynamicConfiguration;
-
 public class TestPropertiesLoader {
     @BeforeClass
     public static void init() {
         ConcurrentCompositeConfiguration finalConfig = new ConcurrentCompositeConfiguration();
-        YAMLConfigurationSource yamlConfigurationSource = new YAMLConfigurationSource();
         DynamicConfiguration configFromYamlFile =
-            new DynamicConfiguration(yamlConfigurationSource, new NeverStartPollingScheduler());
+            new DynamicConfiguration(yamlConfigSource(), new NeverStartPollingScheduler());
         finalConfig.addConfiguration(configFromYamlFile, "configFromYamlFile");
         ConfigurationManager.install(finalConfig);
     }

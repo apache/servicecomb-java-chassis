@@ -16,14 +16,13 @@
 
 package io.servicecomb.config.archaius.sources;
 
+import io.servicecomb.common.exceptions.ServiceCombException;
+import io.servicecomb.config.ConfigUtil;
 import java.io.IOException;
 import java.net.URL;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
-
-import io.servicecomb.config.ConfigUtil;
 
 public class MicroserviceConfigLoader extends YAMLConfigLoader {
     private static final Logger LOGGER = LoggerFactory.getLogger(MicroserviceConfigLoader.class);
@@ -51,18 +50,18 @@ public class MicroserviceConfigLoader extends YAMLConfigLoader {
 
             if (configModelList.isEmpty()) {
                 LOGGER.warn("No URLs will be polled as dynamic configuration sources.");
-                LOGGER.info("To enable URLs as dynamic configuration sources, define System property "
-                        + ADDITIONAL_CONFIG_URL + " or make " + configFileFromClasspath
-                        + " available on classpath.");
+                LOGGER.warn(
+                    "To enable URLs as dynamic configuration sources, define System property {} or make {} available on classpath.",
+                    ADDITIONAL_CONFIG_URL, configFileFromClasspath);
             }
 
             sort();
         } catch (IOException e) {
-            throw new RuntimeException("Failed to load microservice config.", e);
+            throw new ServiceCombException("Failed to load microservice config", e);
         }
     }
 
-    protected void loadAdditionalConfig() throws IOException {
+    private void loadAdditionalConfig() throws IOException {
         String strUrls = System.getProperty(ADDITIONAL_CONFIG_URL);
         if (StringUtils.isEmpty(strUrls)) {
             return;

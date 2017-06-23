@@ -32,13 +32,13 @@ public class TestMicroserviceDefinitionManager {
         MicroserviceConfigLoader loader = new MicroserviceConfigLoader();
         if (configs != null) {
             for (ConfigModel config : configs) {
-                loader.getConfigModelList().add(config);
+                loader.getConfigModels().add(config);
             }
         }
         loader.loadAndSort();
 
         MicroserviceDefinitionManager microserviceDefinitionManager = new MicroserviceDefinitionManager();
-        microserviceDefinitionManager.init(loader.getConfigModelList());
+        microserviceDefinitionManager.init(loader.getConfigModels());
 
         return microserviceDefinitionManager;
     }

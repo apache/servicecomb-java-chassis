@@ -77,7 +77,7 @@ public final class ConfigUtil {
 
     public static boolean isAdditionalConfig(ConfigModel configModel) {
         Object value = configModel.getConfig().get(ADDITIONAL_KEY);
-        return (value != null) ? (boolean) value : false;
+        return (value != null) && (boolean) value;
     }
 
     public static void setMicroserviceConfigLoader(Configuration config, MicroserviceConfigLoader loader) {
@@ -94,11 +94,9 @@ public final class ConfigUtil {
 
     public static DynamicConfiguration createConfigFromYamlFile(List<ConfigModel> configModelList) {
         // configuration from yaml files: default microservice.yaml
-        MicroserviceConfigurationSource yamlConfigurationSource = new MicroserviceConfigurationSource();
-        yamlConfigurationSource.setConfigModelList(configModelList);
-        DynamicConfiguration configFromYamlFile =
-            new DynamicConfiguration(yamlConfigurationSource, new NeverStartPollingScheduler());
-        return configFromYamlFile;
+        return new DynamicConfiguration(
+            new MicroserviceConfigurationSource(configModelList),
+            new NeverStartPollingScheduler());
     }
 
     public static AbstractConfiguration createConfig(List<ConfigModel> configModelList) {
@@ -154,10 +152,10 @@ public final class ConfigUtil {
 
     public static AbstractConfiguration createDynamicConfig(MicroserviceConfigLoader loader) {
         LOGGER.info("create dynamic config:");
-        for (ConfigModel configModel : loader.getConfigModelList()) {
+        for (ConfigModel configModel : loader.getConfigModels()) {
             LOGGER.info(" {}.", configModel.getUrl());
         }
-        DynamicConfiguration configFromYamlFile = ConfigUtil.createConfigFromYamlFile(loader.getConfigModelList());
+        DynamicConfiguration configFromYamlFile = ConfigUtil.createConfigFromYamlFile(loader.getConfigModels());
         DynamicWatchedConfiguration configFromConfigCenter =
             createConfigFromConfigCenter(configFromYamlFile.getSource());
         return ConfigUtil.createConfig(configFromYamlFile, configFromConfigCenter);

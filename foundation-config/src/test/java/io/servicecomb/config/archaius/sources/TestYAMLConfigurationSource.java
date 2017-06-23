@@ -16,6 +16,7 @@
 
 package io.servicecomb.config.archaius.sources;
 
+import static io.servicecomb.config.archaius.sources.ConfigSourceMaker.yamlConfigSource;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
@@ -43,7 +44,7 @@ public class TestYAMLConfigurationSource {
 
     @Test
     public void testPullFromClassPath() throws Exception {
-        YAMLConfigurationSource configSource = new YAMLConfigurationSource();
+        MicroserviceConfigurationSource configSource = yamlConfigSource();
         PollResult result = configSource.poll(true, null);
         Map<String, Object> configMap = result.getComplete();
         assertNotNull(configMap);
@@ -60,14 +61,14 @@ public class TestYAMLConfigurationSource {
         URL test1URL = loader.getResource("test1.yaml");
         URL test2URL = loader.getResource("test2.yaml");
         System.setProperty("cse.configurationSource.additionalUrls", test1URL.toString() + "," + test2URL.toString());
-        YAMLConfigurationSource configSource = new YAMLConfigurationSource();
+        MicroserviceConfigurationSource configSource = yamlConfigSource();
         PollResult result = configSource.poll(true, null);
         Map<String, Object> configMap = result.getComplete();
 
-        assertEquals(3, configSource.getConfigModelList().size());
-        assertEquals(false, ConfigUtil.isAdditionalConfig(configSource.getConfigModelList().get(0)));
-        assertEquals(true, ConfigUtil.isAdditionalConfig(configSource.getConfigModelList().get(1)));
-        assertEquals(true, ConfigUtil.isAdditionalConfig(configSource.getConfigModelList().get(2)));
+        assertEquals(3, configSource.getConfigModels().size());
+        assertEquals(false, ConfigUtil.isAdditionalConfig(configSource.getConfigModels().get(0)));
+        assertEquals(true, ConfigUtil.isAdditionalConfig(configSource.getConfigModels().get(1)));
+        assertEquals(true, ConfigUtil.isAdditionalConfig(configSource.getConfigModels().get(2)));
         assertNotNull(configMap);
         assertEquals(31, configMap.size());
         assertNotNull(configMap.get("trace.handler.sampler.percent"));
@@ -82,9 +83,8 @@ public class TestYAMLConfigurationSource {
         ConcurrentMapConfiguration configFromSystemProperties =
             new ConcurrentMapConfiguration(new SystemConfiguration());
         // configuration from yaml file
-        YAMLConfigurationSource configSource = new YAMLConfigurationSource();
         DynamicConfiguration configFromYamlFile =
-            new DynamicConfiguration(configSource, new NeverStartPollingScheduler());
+            new DynamicConfiguration(yamlConfigSource(), new NeverStartPollingScheduler());
         // create a hierarchy of configuration that makes
         // 1) dynamic configuration source override system properties
         ConcurrentCompositeConfiguration finalConfig = new ConcurrentCompositeConfiguration();
