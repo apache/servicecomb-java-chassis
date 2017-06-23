@@ -1,0 +1,28 @@
+swagger: '2.0'
+info:
+  title: hello
+  version: 1.0.0
+  x-java-interface: io.servicecomb.samples.jaxrs.Hello
+basePath: /pojo/rest/hello
+produces:
+  - application/json
+
+paths:
+  /sayhi:
+    post:
+      operationId: sayHi
+      parameters:
+        - name: name
+          in: body
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: 正确返回
+          schema:
+            type: string
+        default:
+          description: 默认返回
+          schema:
+            type: string

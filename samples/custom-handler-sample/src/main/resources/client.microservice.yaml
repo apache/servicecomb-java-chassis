@@ -1,0 +1,18 @@
+﻿APPLICATION_ID: chstest
+service_description:
+  name: chsClient
+  version: 0.0.1
+cse:
+  service:
+    registry:
+      address: http://127.0.0.1:9980
+  handler:
+    chain:
+      Consumer:
+        default: bizkeeper-consumer,loadbalance, myhandler
+  isolation:
+    Consumer:
+      enabled: false
+  references:
+    chs:
+      version-rule: 0.0.1
