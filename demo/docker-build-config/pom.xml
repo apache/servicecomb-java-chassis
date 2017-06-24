@@ -28,7 +28,6 @@
                                     <ports>
                                         <port>7070</port>
                                         <port>8080</port>
-                                        <port>9090</port>
                                     </ports>
                                     <assembly>
                                         <mode>tar</mode>

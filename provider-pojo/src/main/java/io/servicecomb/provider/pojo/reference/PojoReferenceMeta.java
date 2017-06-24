@@ -16,14 +16,6 @@
 
 package io.servicecomb.provider.pojo.reference;
 
-import java.lang.reflect.Proxy;
-
-import javax.inject.Inject;
-
-import org.springframework.beans.factory.FactoryBean;
-import org.springframework.beans.factory.InitializingBean;
-import org.springframework.util.StringUtils;
-
 import io.servicecomb.core.CseContext;
 import io.servicecomb.core.definition.MicroserviceMeta;
 import io.servicecomb.core.definition.SchemaMeta;
@@ -31,6 +23,11 @@ import io.servicecomb.core.provider.CseBeanPostProcessor.EmptyBeanPostProcessor;
 import io.servicecomb.core.provider.consumer.ReferenceConfig;
 import io.servicecomb.provider.pojo.Invoker;
 import io.servicecomb.swagger.engine.SwaggerConsumer;
+import java.lang.reflect.Proxy;
+import javax.inject.Inject;
+import org.springframework.beans.factory.FactoryBean;
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.util.StringUtils;
 
 public class PojoReferenceMeta implements FactoryBean<Object>, InitializingBean, EmptyBeanPostProcessor {
     // 原始数据
@@ -54,7 +51,7 @@ public class PojoReferenceMeta implements FactoryBean<Object>, InitializingBean,
     // TODO:未实现本地优先(本地场景下，应该跳过handler机制)
     private Object proxy;
 
-    private Invoker invoker = new Invoker();
+    private final Invoker invoker = new Invoker();
 
     private void prepare() {
         referenceConfig = CseContext.getInstance().getConsumerProviderManager().getReferenceConfig(microserviceName);
@@ -95,20 +92,12 @@ public class PojoReferenceMeta implements FactoryBean<Object>, InitializingBean,
         }
     }
 
-    public SwaggerConsumer getSwaggerConsumer() {
-        return swaggerConsumer;
-    }
-
     public ReferenceConfig getReferenceConfig() {
         return referenceConfig;
     }
 
     public Object getProxy() {
         return getObject();
-    }
-
-    public void setProxy(Object proxy) {
-        this.proxy = proxy;
     }
 
     @Override
