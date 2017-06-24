@@ -14,12 +14,16 @@
  * limitations under the License.
  */
 
-package io.servicecomb.config;
+package io.servicecomb.serviceregistry.definition;
 
-import org.springframework.beans.factory.config.PropertyPlaceholderConfigurer;
+public interface DefinitionConst {
+    String appIdKey = "APPLICATION_ID";
 
-public class ConfigurationSpringInitializer extends PropertyPlaceholderConfigurer {
-    public ConfigurationSpringInitializer() {
-        ConfigUtil.installDynamicConfig();
-    }
+    String serviceDescriptionKey = "service_description";
+
+    String nameKey = "name";
+
+    String qulifiedServiceNameKey = serviceDescriptionKey + "." + nameKey;
+
+    String defaultAppId = "default";
 }

@@ -16,12 +16,6 @@
 
 package io.servicecomb.foundation.common.utils;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.util.Calendar;
-import java.util.Date;
-
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerationException;
 import com.fasterxml.jackson.core.JsonParseException;
@@ -29,6 +23,9 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 
 public final class JsonUtils {
     public static final ObjectMapper OBJ_MAPPER;
@@ -81,13 +78,4 @@ public final class JsonUtils {
         OBJ_MAPPER.writeValue(out, value);
     }
 
-    // TODO：移走
-    public static Date getUTCDate(Date date) {
-        Calendar cal = Calendar.getInstance();
-        cal.setTime(new Date());
-        int zoneOffset = cal.get(Calendar.ZONE_OFFSET);
-        int dstOffset = cal.get(Calendar.DST_OFFSET);
-        cal.add(Calendar.MILLISECOND, -(zoneOffset + dstOffset));
-        return new Date(cal.getTimeInMillis());
-    }
 }

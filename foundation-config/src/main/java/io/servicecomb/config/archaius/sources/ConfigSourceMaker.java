@@ -14,12 +14,14 @@
  * limitations under the License.
  */
 
-package io.servicecomb.config;
+package io.servicecomb.config.archaius.sources;
 
-import org.springframework.beans.factory.config.PropertyPlaceholderConfigurer;
+public class ConfigSourceMaker {
 
-public class ConfigurationSpringInitializer extends PropertyPlaceholderConfigurer {
-    public ConfigurationSpringInitializer() {
-        ConfigUtil.installDynamicConfig();
+    public static MicroserviceConfigurationSource yamlConfigSource() {
+        MicroserviceConfigLoader loader = new MicroserviceConfigLoader();
+        loader.loadAndSort();
+
+        return new MicroserviceConfigurationSource(loader.getConfigModels());
     }
 }

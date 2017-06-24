@@ -13,30 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package io.servicecomb.config;
 
-package io.servicecomb.serviceregistry.config;
-
-import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.junit.Assert;
-import org.junit.BeforeClass;
 import org.junit.Test;
 
-import io.servicecomb.config.ConfigUtil;
-
-public class TestConfigurePropertyUtils {
-    @BeforeClass
-    public static void beforeClass() throws Exception {
-        ConfigUtil.installDynamicConfig();
-    }
-
+public class TestConfigurationSpringInitializer {
     @Test
-    public void testGetPropertiesWithPrefix() {
-        String prefix = "service_description.properties";
-        Map<String, String> expectedMap = new HashMap<>();
-        expectedMap.put("key1", "value1");
-        expectedMap.put("key2", "value2");
-        Assert.assertEquals(expectedMap, ConfigurePropertyUtils.getPropertiesWithPrefix(prefix));
+    public void testAll() {
+        new ConfigurationSpringInitializer();
+
+        Object o = ConfigUtil.getProperty("zq");
+        @SuppressWarnings("unchecked")
+        List<Map<String, Object>> listO = (List<Map<String, Object>>) o;
+        Assert.assertEquals(3, listO.size());
+        Assert.assertEquals(null, ConfigUtil.getProperty("notExist"));
     }
 }

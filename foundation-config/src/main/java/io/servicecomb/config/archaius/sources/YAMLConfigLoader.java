@@ -14,12 +14,23 @@
  * limitations under the License.
  */
 
-package io.servicecomb.config;
+package io.servicecomb.config.archaius.sources;
 
-import org.springframework.beans.factory.config.PropertyPlaceholderConfigurer;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
+import java.util.Map;
 
-public class ConfigurationSpringInitializer extends PropertyPlaceholderConfigurer {
-    public ConfigurationSpringInitializer() {
-        ConfigUtil.installDynamicConfig();
+import org.yaml.snakeyaml.Yaml;
+
+public class YAMLConfigLoader extends AbstractConfigLoader {
+    @SuppressWarnings("unchecked")
+    @Override
+    protected Map<String, Object> loadData(URL url) throws IOException {
+        Yaml yaml = new Yaml();
+
+        try (InputStream inputStream = url.openStream()) {
+            return yaml.loadAs(inputStream, Map.class);
+        }
     }
 }

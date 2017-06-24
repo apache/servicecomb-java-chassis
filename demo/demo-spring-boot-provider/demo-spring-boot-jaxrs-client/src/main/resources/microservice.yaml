@@ -1,4 +1,5 @@
-﻿APPLICATION_ID: spring-boot-jaxrstest
+﻿cse-config-order: 1
+APPLICATION_ID: spring-boot-jaxrstest
 service_description:
   name: jaxrsClient
   version: 0.0.1

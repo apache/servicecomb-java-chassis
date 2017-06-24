@@ -22,27 +22,25 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import io.servicecomb.serviceregistry.api.registry.HealthCheck;
-import io.servicecomb.serviceregistry.api.registry.HealthCheckMode;
-import io.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
-import io.servicecomb.serviceregistry.api.response.HeartbeatResponse;
-import io.servicecomb.serviceregistry.api.response.MicroserviceInstanceChangedEvent;
-import io.servicecomb.serviceregistry.notify.RegistryEvent;
-import io.servicecomb.serviceregistry.utils.Timer;
-import io.servicecomb.serviceregistry.utils.TimerException;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import io.servicecomb.config.ConfigUtil;
+import io.servicecomb.serviceregistry.api.registry.HealthCheck;
+import io.servicecomb.serviceregistry.api.registry.HealthCheckMode;
 import io.servicecomb.serviceregistry.api.registry.Microservice;
+import io.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
 import io.servicecomb.serviceregistry.api.registry.MicroserviceInstanceStatus;
 import io.servicecomb.serviceregistry.api.registry.MicroserviceStatus;
+import io.servicecomb.serviceregistry.api.response.HeartbeatResponse;
+import io.servicecomb.serviceregistry.api.response.MicroserviceInstanceChangedEvent;
 import io.servicecomb.serviceregistry.cache.CacheRegistryListener;
 import io.servicecomb.serviceregistry.client.http.ServiceRegistryClientImpl;
 import io.servicecomb.serviceregistry.notify.NotifyManager;
-import io.servicecomb.foundation.common.utils.BeanUtils;
-import io.servicecomb.foundation.common.utils.Log4jUtils;
-
+import io.servicecomb.serviceregistry.notify.RegistryEvent;
+import io.servicecomb.serviceregistry.utils.Timer;
+import io.servicecomb.serviceregistry.utils.TimerException;
 import mockit.Expectations;
 import mockit.Mock;
 import mockit.MockUp;
@@ -52,8 +50,7 @@ public class TestRegistry {
 
     @BeforeClass
     public static void initSetup() throws Exception {
-        Log4jUtils.init();
-        BeanUtils.init();
+        ConfigUtil.installDynamicConfig();
         RegistryUtils.setSrClient(null);
     }
 

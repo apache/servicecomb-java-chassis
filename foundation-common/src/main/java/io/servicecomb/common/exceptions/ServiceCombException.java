@@ -14,12 +14,11 @@
  * limitations under the License.
  */
 
-package io.servicecomb.config;
+package io.servicecomb.common.exceptions;
 
-import org.springframework.beans.factory.config.PropertyPlaceholderConfigurer;
+public class ServiceCombException extends RuntimeException {
 
-public class ConfigurationSpringInitializer extends PropertyPlaceholderConfigurer {
-    public ConfigurationSpringInitializer() {
-        ConfigUtil.installDynamicConfig();
-    }
+  public ServiceCombException(String cause, Throwable throwable) {
+    super(cause, throwable);
+  }
 }
