@@ -16,12 +16,8 @@
 
 package io.servicecomb.foundation.common.net;
 
-import java.util.Date;
-
 import org.junit.Assert;
 import org.junit.Test;
-
-import io.servicecomb.foundation.common.utils.JsonUtils;
 
 public class TestNetUtils {
     @Test

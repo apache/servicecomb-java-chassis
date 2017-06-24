@@ -41,8 +41,7 @@ import mockit.Mock;
 import mockit.MockUp;
 
 public class SSLOptionTest {
-
-    private static final String DIR = System.getProperty("user.dir") + "/src/test/resources";
+    private static final String DIR = Thread.currentThread().getContextClassLoader().getResource("").getPath();
 
     @Test
     public void testSSLOption() {
@@ -221,7 +220,7 @@ public class SSLOptionTest {
         String protocols = option.getProtocols();
         option.setProtocols(protocols);
         Assert.assertEquals("TLSv1.2", protocols);
-        System.getProperties().clear();
+        System.clearProperty("ssl.protocols");
     }
 
     @Test
@@ -314,7 +313,7 @@ public class SSLOptionTest {
         try {
             SSLOption option = SSLOption.build(DIR + "/servers.ssl.properties");
         } catch (IllegalArgumentException e) {
-            Assert.assertEquals("java.lang.IllegalArgumentException", e.getClass().getName());
+            Assert.assertEquals("Bad file name.", e.getMessage());
         }
     }
 

@@ -19,19 +19,12 @@ package io.servicecomb.foundation.common.utils;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
-import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.LinkOption;
-import java.nio.file.Path;
-import java.nio.file.attribute.BasicFileAttributes;
-import mockit.MockUp;
+
 import org.junit.Assert;
 import org.junit.Test;
 
 public class TestFortifyUtils {
-
-    @SuppressWarnings("deprecation")
     @Test
     public void testFortifyUtils() throws IOException {
         Assert.assertEquals("", FortifyUtils.getErrorMsg(null));
@@ -66,19 +59,6 @@ public class TestFortifyUtils {
             Assert.assertTrue(false);
         }
 
-    }
-
-    @Test
-    public void testReadAttributes() {
-
-        Path file = new File("src/test/resources/config/test.1.properties").toPath();
-
-        try {
-            Files.readAttributes(file, BasicFileAttributes.class, LinkOption.NOFOLLOW_LINKS);
-        } catch (IOException e) {
-            // TODO Auto-generated catch block
-            Assert.assertTrue(false);
-        }
     }
 
     @Test

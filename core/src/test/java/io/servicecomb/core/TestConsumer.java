@@ -70,7 +70,6 @@ public class TestConsumer {
 
             @Override
             public void run() {
-                // TODO Auto-generated method stub
                 oExecutor.setResponse(Response.succResp("success"));
 
             }
@@ -159,7 +158,6 @@ public class TestConsumer {
             oInvocation.next(asyncResp);
 
         } catch (Exception e) {
-            // TODO Auto-generated catch block
             validAssert = false;
 
         }

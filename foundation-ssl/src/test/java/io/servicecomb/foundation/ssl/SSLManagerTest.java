@@ -35,7 +35,6 @@ import javax.net.ssl.SSLSocket;
 import javax.net.ssl.SSLSocketFactory;
 
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
 
 import mockit.Expectations;
@@ -44,12 +43,7 @@ import mockit.MockUp;
 import mockit.Mocked;
 
 public class SSLManagerTest {
-    private static final String DIR = System.getProperty("user.dir") + "/src/test/resources";
-
-    @Before
-    public void setUp() {
-
-    }
+    private final String DIR = Thread.currentThread().getContextClassLoader().getResource("").getPath();
 
     @Test
     public void testSSLManagerServerAndClient(final @Mocked NetworkInterface nif) throws Exception {
