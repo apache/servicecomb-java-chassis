@@ -16,6 +16,7 @@
 
 package io.servicecomb.provider.pojo.reference;
 
+import io.servicecomb.common.exceptions.ServiceCombException;
 import io.servicecomb.core.CseContext;
 import io.servicecomb.core.definition.MicroserviceMeta;
 import io.servicecomb.core.definition.SchemaMeta;
@@ -103,7 +104,13 @@ public class PojoReferenceMeta implements FactoryBean<Object>, InitializingBean,
     @Override
     public Object getObject() {
         if (proxy == null) {
-            throw new Error("proxy is null, maybe you need to set interface value of rpc-reference");
+            throw new ServiceCombException(
+                String.format("Rpc reference %s with service name [%s] and schema [%s] is not populated",
+                  consumerIntf == null? "" : consumerIntf,
+                  microserviceName,
+                  schemaId
+                )
+            );
         }
         return proxy;
     }

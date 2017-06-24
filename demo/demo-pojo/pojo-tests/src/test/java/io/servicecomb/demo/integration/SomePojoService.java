@@ -29,7 +29,7 @@ class SomePojoService {
     return expected;
   }
 
-  public String remoteSayHi(String username) {
+  String remoteSayHi(String username) {
     return codeFirstPojo.sayHi(username);
   }
 }

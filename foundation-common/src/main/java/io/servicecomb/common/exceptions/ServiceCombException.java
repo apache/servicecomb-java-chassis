@@ -21,4 +21,8 @@ public class ServiceCombException extends RuntimeException {
   public ServiceCombException(String cause, Throwable throwable) {
     super(cause, throwable);
   }
+
+  public ServiceCombException(String cause) {
+    super(cause);
+  }
 }
