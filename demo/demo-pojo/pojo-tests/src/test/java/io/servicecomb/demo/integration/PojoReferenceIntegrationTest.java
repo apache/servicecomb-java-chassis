@@ -14,15 +14,26 @@
  * limitations under the License.
  */
 
-package io.servicecomb.common.exceptions;
+package io.servicecomb.demo.integration;
 
-public class ServiceCombException extends RuntimeException {
+import static org.hamcrest.core.Is.is;
+import static org.junit.Assert.assertThat;
 
-  public ServiceCombException(String cause, Throwable throwable) {
-    super(cause, throwable);
+import com.seanyinx.github.unit.scaffolding.Randomness;
+import org.junit.BeforeClass;
+import org.junit.Test;
+
+public class PojoReferenceIntegrationTest {
+
+  private final int expected = Randomness.nextInt();
+
+  @BeforeClass
+  public static void setUp() throws Exception {
+    SomePojoTestMain.main(new String[0]);
   }
 
-  public ServiceCombException(String cause) {
-    super(cause);
+  @Test
+  public void startsUpAsUsualWhenRpcReferenceIsNotReachable() {
+    assertThat(SomePojoTestMain.pojoService.localIdentity(expected), is(expected));
   }
 }

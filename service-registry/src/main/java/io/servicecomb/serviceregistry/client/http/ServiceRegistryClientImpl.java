@@ -526,7 +526,7 @@ public final class ServiceRegistryClientImpl implements ServiceRegistryClient {
     }
 
     @Override
-    public List<MicroserviceInstance> findServiceInstance(String selfMicroserviceId, String appId, String serviceName,
+    public List<MicroserviceInstance> findServiceInstance(String consumerId, String appId, String serviceName,
             String versionRule) {
         Holder<FindInstancesResponse> holder = new Holder<>();
         IpPort ipPort = IpPortManager.INSTANCE.get();
@@ -540,7 +540,7 @@ public final class ServiceRegistryClientImpl implements ServiceRegistryClient {
                 new RequestParam().addQueryParam("appId", appId)
                         .addQueryParam("serviceName", serviceName)
                         .addQueryParam("version", versionRule)
-                        .addHeader("X-ConsumerId", selfMicroserviceId),
+                        .addHeader("X-ConsumerId", consumerId),
                 syncHandler(countDownLatch, FindInstancesResponse.class, holder));
         try {
             countDownLatch.await();
