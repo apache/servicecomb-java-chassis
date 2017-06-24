@@ -1,4 +1,11 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!--
+  ~ Creative Commons Google Style Guides by Google is licensed under CC BY 3.0
+  ~ https://github.com/google/styleguide
+  ~
+  ~ CC BY 3.0 license
+  ~ https://creativecommons.org/licenses/by/3.0/
+  -->
 <profiles version="13">
 <profile kind="CodeFormatterProfile" name="GoogleStyle" version="13">
 <setting id="org.eclipse.jdt.core.formatter.comment.insert_new_line_before_root_tags" value="insert"/>

@@ -1,4 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Creative Commons Google Style Guides by Google is licensed under CC BY 3.0
+  ~ https://github.com/google/styleguide
+  ~
+  ~ CC BY 3.0 license
+  ~ https://creativecommons.org/licenses/by/3.0/
+  -->
 <code_scheme name="GoogleStyle">
   <option name="OTHER_INDENT_OPTIONS">
     <value>
