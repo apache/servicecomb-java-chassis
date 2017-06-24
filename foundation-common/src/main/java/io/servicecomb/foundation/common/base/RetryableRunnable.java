@@ -45,6 +45,8 @@ public class RetryableRunnable implements Runnable {
         sleep(sleepInMs);
       }
     } while (!success && !Thread.currentThread().isInterrupted());
+
+    LOGGER.info("Task [{}] completed", runnable.description());
   }
 
   private void sleep(int timeout) {
