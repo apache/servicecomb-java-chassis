@@ -16,6 +16,9 @@
 
 package io.servicecomb.common.rest.locator;
 
+import io.servicecomb.common.rest.definition.RestOperationComparator;
+import io.servicecomb.common.rest.definition.RestOperationMeta;
+import io.servicecomb.core.definition.MicroserviceMeta;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -24,13 +27,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
-
-import io.servicecomb.common.rest.definition.RestOperationComparator;
-import io.servicecomb.common.rest.definition.RestOperationMeta;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import io.servicecomb.core.definition.MicroserviceMeta;
 
 /**
  * 对静态路径和动态路径的operation进行预先处理，加速operation的查询定位
