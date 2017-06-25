@@ -125,6 +125,7 @@
 		<module>demo</module>
 		<module>integration-tests</module>
 		<module>java-chassis-distribution</module>
+		<module>coverage-reports</module>
 	</modules>
 
     <distributionManagement>

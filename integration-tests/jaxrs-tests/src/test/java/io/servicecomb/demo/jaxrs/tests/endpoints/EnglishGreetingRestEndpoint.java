@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package io.servicecomb.demo.jaxrs.tests;
+package io.servicecomb.demo.jaxrs.tests.endpoints;
 
 import static javax.ws.rs.core.MediaType.TEXT_PLAIN;
 

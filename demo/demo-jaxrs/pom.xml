@@ -28,7 +28,6 @@
 	<modules>
 		<module>jaxrs-server</module>
 		<module>jaxrs-client</module>
-    <module>jaxrs-tests</module>
   </modules>
 
 </project>

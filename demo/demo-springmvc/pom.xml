@@ -28,7 +28,6 @@
 	<modules>
 		<module>springmvc-server</module>
 		<module>springmvc-client</module>
-    <module>springmvc-tests</module>
   </modules>
 
 </project>

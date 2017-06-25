@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package io.servicecomb.demo.jaxrs.tests;
+package io.servicecomb.demo.jaxrs.tests.endpoints;
 
 import io.servicecomb.provider.rest.common.RestSchema;
 import javax.ws.rs.GET;
