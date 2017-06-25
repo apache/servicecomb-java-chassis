@@ -16,13 +16,12 @@
 
 package io.servicecomb.demo.jaxrs.tests;
 
-import static org.springframework.http.MediaType.TEXT_PLAIN_VALUE;
-
 import io.servicecomb.provider.rest.common.RestSchema;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.MediaType;
 
 @RestSchema(schemaId = "frenchGreetingRestEndpoint")
 @Path("/french")
@@ -30,7 +29,7 @@ public class FrenchGreetingRestEndpoint {
 
   @GET
   @Path("/bonjour")
-  @Produces(TEXT_PLAIN_VALUE)
+  @Produces(MediaType.TEXT_PLAIN)
   public String bonjour(@QueryParam("name") String name) {
     return "Bonjour " + name;
   }

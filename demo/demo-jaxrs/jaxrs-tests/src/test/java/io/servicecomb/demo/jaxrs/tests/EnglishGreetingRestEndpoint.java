@@ -16,7 +16,7 @@
 
 package io.servicecomb.demo.jaxrs.tests;
 
-import static org.springframework.http.MediaType.TEXT_PLAIN_VALUE;
+import static javax.ws.rs.core.MediaType.TEXT_PLAIN;
 
 import io.servicecomb.provider.rest.common.RestSchema;
 import javax.ws.rs.GET;
@@ -30,14 +30,14 @@ public class EnglishGreetingRestEndpoint {
 
   @GET
   @Path("/sayHi")
-  @Produces(TEXT_PLAIN_VALUE)
+  @Produces(TEXT_PLAIN)
   public String sayHi(@QueryParam("name") String name) {
     return "Hi " + name;
   }
 
   @GET
   @Path("")
-  @Produces(TEXT_PLAIN_VALUE)
+  @Produces(TEXT_PLAIN)
   public String home() {
     return "Welcome home";
   }
