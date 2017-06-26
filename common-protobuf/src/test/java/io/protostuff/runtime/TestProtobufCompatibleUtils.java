@@ -86,6 +86,7 @@ public class TestProtobufCompatibleUtils {
 
         schema.mergeFrom(bai, newModel);
 
+        ProtobufFeatureUtils.removeProtobufFeature();
         Assert.assertEquals("v1", newModel.getContext().get("k1"));
         Assert.assertEquals("v2", newModel.getContext().get("k2"));
         Assert.assertEquals("n1", newModel.getUserMap().get("u1").getName());

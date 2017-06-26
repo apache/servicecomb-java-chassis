@@ -53,7 +53,6 @@ public class TestExecutors {
 
             @Override
             public void run() {
-                // TODO Auto-generated method stub
                 strThreadTest = "thread Ran";
             }
         });

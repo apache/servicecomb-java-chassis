@@ -33,9 +33,7 @@ import mockit.Mock;
 import mockit.MockUp;
 
 public class KeyStoreUtilTest {
-    final String curriedir = System.getProperty("user.dir");
-
-    final String strFilePath = curriedir + "/src/test/resources";
+    final String strFilePath = Thread.currentThread().getContextClassLoader().getResource("").getPath();
 
     @Test
     public void testCreateKeyStoreException() {

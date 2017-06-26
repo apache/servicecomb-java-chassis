@@ -58,21 +58,16 @@ public class TestTcp {
 
             @Override
             public boolean isMetricsEnabled() {
-                // TODO Auto-generated method stub
                 return true;
             }
 
             @Override
             public NetClient connect(int port, String host, Handler<AsyncResult<NetSocket>> connectHandler) {
-                // TODO Auto-generated method stub
-
                 return Mockito.mock(NetClient.class);
             }
 
             @Override
             public void close() {
-                // TODO Auto-generated method stub
-
             }
         };
         TcpClientConnection oTcpClient =
