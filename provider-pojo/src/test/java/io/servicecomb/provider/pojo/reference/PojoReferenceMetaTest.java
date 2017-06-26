@@ -16,10 +16,8 @@
 
 package io.servicecomb.provider.pojo.reference;
 
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import static org.hamcrest.core.IsInstanceOf.instanceOf;
+import static org.junit.Assert.assertThat;
 
 import io.servicecomb.core.CseContext;
 import io.servicecomb.core.definition.MicroserviceMeta;
@@ -30,47 +28,40 @@ import io.servicecomb.provider.pojo.IPerson;
 import io.servicecomb.swagger.engine.bootstrap.BootstrapNormal;
 import mockit.Expectations;
 import mockit.Injectable;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
 
-public class TestPojoReferenceMeta {
+public class PojoReferenceMetaTest {
 
-    PojoReferenceMeta lPojoReferenceMeta = null;
+    private PojoReferenceMeta pojoReferenceMeta = new PojoReferenceMeta();
 
     @Before
     public void setUp() throws Exception {
-        lPojoReferenceMeta = new PojoReferenceMeta();
-    }
-
-    @After
-    public void tearDown() throws Exception {
-        lPojoReferenceMeta = null;
+        pojoReferenceMeta.setMicroserviceName("test");
+        pojoReferenceMeta.setSchemaId("schemaId");
+        pojoReferenceMeta.setConsumerIntf(IPerson.class);
     }
 
     @Test
     public void testGetSchemaMeta() throws Exception {
-        Assert.assertEquals(null, lPojoReferenceMeta.getSchemaMeta());
-    }
-
-    @Test
-    public void testGetObject() throws Exception {
-        lPojoReferenceMeta.setProxy(this);
-        Assert.assertEquals(this, lPojoReferenceMeta.getObject());
+        Assert.assertEquals(null, pojoReferenceMeta.getSchemaMeta());
     }
 
     @Test
     public void testGetObjectType() throws Exception {
-        lPojoReferenceMeta.setConsumerIntf(this.getClass());
-        Assert.assertEquals(this.getClass(), lPojoReferenceMeta.getObjectType());
+        Assert.assertEquals(IPerson.class, pojoReferenceMeta.getObjectType());
     }
 
     @Test
     public void testGetProxy() throws Exception {
-        lPojoReferenceMeta.setProxy(this);
-        Assert.assertEquals(this, lPojoReferenceMeta.getProxy());
+        pojoReferenceMeta.createProxy();
+        assertThat(pojoReferenceMeta.getProxy(), instanceOf(IPerson.class));
     }
 
     @Test
     public void testIsSingleton() throws Exception {
-        Assert.assertEquals(true, lPojoReferenceMeta.isSingleton());
+        Assert.assertEquals(true, pojoReferenceMeta.isSingleton());
     }
 
     @Test
@@ -91,14 +82,10 @@ public class TestPojoReferenceMeta {
         CseContext.getInstance().setConsumerSchemaFactory(factory);
         CseContext.getInstance().setSwaggerEnvironment(new BootstrapNormal().boot());
 
-        PojoReferenceMeta lPojoReferenceMeta = new PojoReferenceMeta();
-        lPojoReferenceMeta.setMicroserviceName("test");
-        lPojoReferenceMeta.setSchemaId("schemaId");
-        lPojoReferenceMeta.setConsumerIntf(IPerson.class);
-        Assert.assertEquals(null, lPojoReferenceMeta.getReferenceConfig());
-        Assert.assertEquals(IPerson.class, lPojoReferenceMeta.getConsumerIntf());
-        lPojoReferenceMeta.createInvoker();
-        lPojoReferenceMeta.afterPropertiesSet();
-        Assert.assertEquals(config, lPojoReferenceMeta.getReferenceConfig());
+        Assert.assertEquals(null, pojoReferenceMeta.getReferenceConfig());
+        Assert.assertEquals(IPerson.class, pojoReferenceMeta.getConsumerIntf());
+        pojoReferenceMeta.createInvoker();
+        pojoReferenceMeta.afterPropertiesSet();
+        Assert.assertEquals(config, pojoReferenceMeta.getReferenceConfig());
     }
 }

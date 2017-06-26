@@ -14,16 +14,22 @@
  * limitations under the License.
  */
 
-package io.servicecomb.common.exceptions;
+package io.servicecomb.demo.integration;
 
-public class ServiceCombException extends RuntimeException {
-    private static final long serialVersionUID = -1085233183289520695L;
+import io.servicecomb.demo.CodeFirstPojoIntf;
+import io.servicecomb.provider.pojo.RpcReference;
+import org.springframework.stereotype.Component;
 
-  public ServiceCombException(String cause, Throwable throwable) {
-    super(cause, throwable);
+@Component
+class SomePojoService {
+  @RpcReference(microserviceName = "pojo", schemaId = "io.servicecomb.demo.CodeFirstPojoIntf")
+  private CodeFirstPojoIntf codeFirstPojo;
+
+  int localIdentity(int expected) {
+    return expected;
   }
 
-  public ServiceCombException(String cause) {
-    super(cause);
+  String remoteSayHi(String username) {
+    return codeFirstPojo.sayHi(username);
   }
 }

@@ -73,7 +73,6 @@
 				<demo.vm.options>
 					-Dcse.highway.address=0.0.0.0:7070
 					-Dcse.rest.address=0.0.0.0:8080?sslEnabled=false
-					-Dcse.grpc.address=0.0.0.0:9090?sslEnabled=false
 				</demo.vm.options>
 			</properties>
 			<build>

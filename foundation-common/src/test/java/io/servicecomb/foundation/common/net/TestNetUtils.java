@@ -16,8 +16,15 @@
 
 package io.servicecomb.foundation.common.net;
 
+import java.net.InetAddress;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.junit.Assert;
 import org.junit.Test;
+import org.mockito.Mockito;
+
+import mockit.Deencapsulation;
 
 public class TestNetUtils {
     @Test
@@ -43,9 +50,38 @@ public class TestNetUtils {
     }
 
     @Test
-    public void TestFullOperation() {
+    public void testFullOperation() {
         Assert.assertNotNull(NetUtils.getHostAddress());
         Assert.assertNotNull(NetUtils.getHostAddress(NetUtils.getHostName()));
         Assert.assertNotNull(NetUtils.getHostName());
+    }
+
+    @Test
+    public void testGetRealListenAddress() {
+        Assert.assertNull(NetUtils.getRealListenAddress("http", null));
+        Assert.assertNull(NetUtils.getRealListenAddress("http:1", "1.1.1.1:8080"));
+        Assert.assertEquals("http://1.1.1.1:8080", NetUtils.getRealListenAddress("http", "1.1.1.1:8080"));
+    }
+
+    @Test
+    public void testNetworkInterface() {
+        Map<String, InetAddress> org = Deencapsulation.getField(NetUtils.class, "allInterfaceAddresses");
+
+        Map<String, InetAddress> newValue = new HashMap<>();
+        InetAddress addr = Mockito.mock(InetAddress.class);
+        newValue.put("eth100", addr);
+        Deencapsulation.setField(NetUtils.class, "allInterfaceAddresses", newValue);
+
+        Assert.assertEquals(addr, NetUtils.getInterfaceAddress("eth100"));
+        Assert.assertEquals(addr, NetUtils.ensureGetInterfaceAddress("eth100"));
+
+        try {
+            NetUtils.ensureGetInterfaceAddress("xxx");
+            Assert.fail("must throw exception");
+        } catch (IllegalArgumentException e) {
+            Assert.assertEquals("Can not find address for interface name: xxx", e.getMessage());
+        }
+
+        Deencapsulation.setField(NetUtils.class, "allInterfaceAddresses", org);
     }
 }

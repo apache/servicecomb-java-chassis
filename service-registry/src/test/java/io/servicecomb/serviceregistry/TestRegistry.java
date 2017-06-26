@@ -16,6 +16,7 @@
 
 package io.servicecomb.serviceregistry;
 
+import java.net.InetAddress;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -25,8 +26,13 @@ import java.util.Map;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.mockito.Mockito;
+
+import com.netflix.config.DynamicPropertyFactory;
+import com.netflix.config.DynamicStringProperty;
 
 import io.servicecomb.config.ConfigUtil;
+import io.servicecomb.foundation.common.net.NetUtils;
 import io.servicecomb.serviceregistry.api.registry.HealthCheck;
 import io.servicecomb.serviceregistry.api.registry.HealthCheckMode;
 import io.servicecomb.serviceregistry.api.registry.Microservice;
@@ -396,27 +402,128 @@ public class TestRegistry {
         Assert.assertTrue(status);
     }
 
-    @Test
-    public void testRegistryUtilGetPublishAddress() {
+    public void testRegistryUtilGetPublishAddress(@Mocked InetAddress ethAddress) {
+        new Expectations(NetUtils.class) {
+            {
+                NetUtils.getHostAddress();
+                result = "1.1.1.1";
+            }
+        };
         String address = RegistryUtils.getPublishAddress();
-        Assert.assertNotNull(address);
-        System.setProperty("cse.service.publishAddress", "{eth0}");
-        address = RegistryUtils.getPublishAddress();
-        Assert.assertNotNull(address);
+        Assert.assertEquals("1.1.1.1", address);
+
+        new Expectations(DynamicPropertyFactory.getInstance()) {
+            {
+                DynamicPropertyFactory.getInstance().getStringProperty(RegistryUtils.PUBLISH_ADDRESS, "");
+                result = new DynamicStringProperty(RegistryUtils.PUBLISH_ADDRESS, "") {
+                    public String get() {
+                        return "127.0.0.1";
+                    };
+                };
+            }
+        };
+        Assert.assertEquals("127.0.0.1", RegistryUtils.getPublishAddress());
+
+        new Expectations(DynamicPropertyFactory.getInstance()) {
+            {
+                ethAddress.getHostAddress();
+                result = "1.1.1.1";
+                NetUtils.ensureGetInterfaceAddress("eth100");
+                result = ethAddress;
+                DynamicPropertyFactory.getInstance().getStringProperty(RegistryUtils.PUBLISH_ADDRESS, "");
+                result = new DynamicStringProperty(RegistryUtils.PUBLISH_ADDRESS, "") {
+                    public String get() {
+                        return "{eth100}";
+                    };
+                };
+            }
+        };
+        Assert.assertEquals("1.1.1.1", RegistryUtils.getPublishAddress());
+
     }
 
     @Test
-    public void testRegistryUtilGetHostName() {
+    public void testRegistryUtilGetHostName(@Mocked InetAddress ethAddress) {
+        new Expectations(NetUtils.class) {
+            {
+                NetUtils.getHostName();
+                result = "testHostName";
+            }
+        };
         String host = RegistryUtils.getPublishHostName();
-        Assert.assertNotNull(host);
+        Assert.assertEquals("testHostName", host);
+
+        new Expectations(DynamicPropertyFactory.getInstance()) {
+            {
+                DynamicPropertyFactory.getInstance().getStringProperty(RegistryUtils.PUBLISH_ADDRESS, "");
+                result = new DynamicStringProperty(RegistryUtils.PUBLISH_ADDRESS, "") {
+                    public String get() {
+                        return "127.0.0.1";
+                    };
+                };
+            }
+        };
+        Assert.assertEquals("127.0.0.1", RegistryUtils.getPublishHostName());
+
+        new Expectations(DynamicPropertyFactory.getInstance()) {
+            {
+                ethAddress.getHostName();
+                result = "testHostName";
+                NetUtils.ensureGetInterfaceAddress("eth100");
+                result = ethAddress;
+                DynamicPropertyFactory.getInstance().getStringProperty(RegistryUtils.PUBLISH_ADDRESS, "");
+                result = new DynamicStringProperty(RegistryUtils.PUBLISH_ADDRESS, "") {
+                    public String get() {
+                        return "{eth100}";
+                    };
+                };
+            }
+        };
+        Assert.assertEquals("testHostName", RegistryUtils.getPublishHostName());
     }
 
     @Test
-    public void testgetRealListenAddress() throws Exception {
-        Assert.assertEquals(RegistryUtils.getPublishAddress("rest", "172.0.0.0:8080"), "rest://172.0.0.0:8080");
-        Assert.assertEquals(RegistryUtils.getPublishAddress("rest", null), null);
+    public void testGetRealListenAddress() throws Exception {
+        new Expectations(NetUtils.class) {
+            {
+                NetUtils.getHostAddress();
+                result = "1.1.1.1";
+            }
+        };
+
+        Assert.assertEquals("rest://172.0.0.0:8080", RegistryUtils.getPublishAddress("rest", "172.0.0.0:8080"));
+        Assert.assertEquals(null, RegistryUtils.getPublishAddress("rest", null));
+
         URI uri = new URI(RegistryUtils.getPublishAddress("rest", "0.0.0.0:8080"));
-        Assert.assertNotEquals(uri.getAuthority(), "0.0.0.0:8080");
+        Assert.assertEquals("1.1.1.1:8080", uri.getAuthority());
+
+        new Expectations(DynamicPropertyFactory.getInstance()) {
+            {
+                DynamicPropertyFactory.getInstance().getStringProperty(RegistryUtils.PUBLISH_ADDRESS, "");
+                result = new DynamicStringProperty(RegistryUtils.PUBLISH_ADDRESS, "") {
+                    public String get() {
+                        return "1.1.1.1";
+                    };
+                };
+            }
+        };
+        Assert.assertEquals("rest://1.1.1.1:8080", RegistryUtils.getPublishAddress("rest", "172.0.0.0:8080"));
+
+        InetAddress ethAddress = Mockito.mock(InetAddress.class);
+        Mockito.when(ethAddress.getHostAddress()).thenReturn("1.1.1.1");
+        new Expectations(DynamicPropertyFactory.getInstance()) {
+            {
+                NetUtils.ensureGetInterfaceAddress("eth20");
+                result = ethAddress;
+                DynamicPropertyFactory.getInstance().getStringProperty(RegistryUtils.PUBLISH_ADDRESS, "");
+                result = new DynamicStringProperty(RegistryUtils.PUBLISH_ADDRESS, "") {
+                    public String get() {
+                        return "{eth20}";
+                    };
+                };
+            }
+        };
+        Assert.assertEquals("rest://1.1.1.1:8080", RegistryUtils.getPublishAddress("rest", "172.0.0.0:8080"));
     }
 
     @Test

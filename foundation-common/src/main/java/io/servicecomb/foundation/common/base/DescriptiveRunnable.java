@@ -14,16 +14,10 @@
  * limitations under the License.
  */
 
-package io.servicecomb.common.exceptions;
+package io.servicecomb.foundation.common.base;
 
-public class ServiceCombException extends RuntimeException {
-    private static final long serialVersionUID = -1085233183289520695L;
+public interface DescriptiveRunnable extends Runnable {
 
-  public ServiceCombException(String cause, Throwable throwable) {
-    super(cause, throwable);
-  }
+  String description();
 
-  public ServiceCombException(String cause) {
-    super(cause);
-  }
 }

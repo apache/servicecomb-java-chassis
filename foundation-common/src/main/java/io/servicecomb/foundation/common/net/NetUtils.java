@@ -31,10 +31,23 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public final class NetUtils {
-
     private static final Logger LOGGER = LoggerFactory.getLogger(NetUtils.class);
 
+    // key is host name
     private static Map<String, String> allHostAddresses = new HashMap<>();
+
+    // one interface can bind to multiple address
+    // we only save one ip for each interface name.
+    // eg:
+    // 1. eth0 -> ip1 ip2
+    //    last data is eth0 -> ip2
+    // 2. eth0 -> ip1
+    //    eth0:0 -> ip2
+    //    eth0:1 -> ip3
+    //    on interface name conflict, all data saved
+
+    // key is network interface name
+    private static Map<String, InetAddress> allInterfaceAddresses = new HashMap<>();
 
     private static String hostName;
 
@@ -91,6 +104,7 @@ public final class NetUtils {
                     LOGGER.info(
                             "add hostName:" + host + ",hostAddress:" + address.getHostAddress());
                     allHostAddresses.put(address.getHostName(), address.getHostAddress());
+                    allInterfaceAddresses.put(network.getName(), address);
                 }
             }
         }
@@ -154,7 +168,6 @@ public final class NetUtils {
         }
     }
 
-
     public static String getHostName() {
         return hostName;
     }
@@ -163,7 +176,19 @@ public final class NetUtils {
         return hostAddress;
     }
 
-    public static String getHostAddress(String interfaceName) {
-        return allHostAddresses.get(interfaceName);
+    public static String getHostAddress(String hostName) {
+        return allHostAddresses.get(hostName);
+    }
+
+    public static InetAddress getInterfaceAddress(String interfaceName) {
+        return allInterfaceAddresses.get(interfaceName);
+    }
+
+    public static InetAddress ensureGetInterfaceAddress(String interfaceName) {
+        InetAddress address = allInterfaceAddresses.get(interfaceName);
+        if (address == null) {
+            throw new IllegalArgumentException("Can not find address for interface name: " + interfaceName);
+        }
+        return address;
     }
 }

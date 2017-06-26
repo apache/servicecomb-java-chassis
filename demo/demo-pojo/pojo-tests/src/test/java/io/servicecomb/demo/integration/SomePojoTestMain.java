@@ -14,16 +14,25 @@
  * limitations under the License.
  */
 
-package io.servicecomb.common.exceptions;
+package io.servicecomb.demo.integration;
 
-public class ServiceCombException extends RuntimeException {
-    private static final long serialVersionUID = -1085233183289520695L;
+import io.servicecomb.foundation.common.utils.BeanUtils;
+import io.servicecomb.foundation.common.utils.Log4jUtils;
+import javax.inject.Inject;
+import org.springframework.stereotype.Component;
 
-  public ServiceCombException(String cause, Throwable throwable) {
-    super(cause, throwable);
+@Component
+class SomePojoTestMain {
+
+  static SomePojoService pojoService;
+
+  public static void main(String[] args) throws Exception {
+    Log4jUtils.init();
+    BeanUtils.init();
   }
 
-  public ServiceCombException(String cause) {
-    super(cause);
+  @Inject
+  public void setPojoService(SomePojoService pojoService) {
+    SomePojoTestMain.pojoService = pojoService;
   }
 }

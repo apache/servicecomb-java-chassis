@@ -16,28 +16,74 @@
 
 package io.servicecomb.provider.pojo;
 
-import javax.inject.Inject;
-
-import io.servicecomb.provider.pojo.reference.PojoConsumers;
-import io.servicecomb.provider.pojo.reference.PojoReferenceMeta;
-import org.springframework.stereotype.Component;
+import static io.servicecomb.provider.pojo.PojoConst.POJO;
 
 import io.servicecomb.core.provider.consumer.AbstractConsumerProvider;
+import io.servicecomb.foundation.common.base.DescriptiveRunnable;
+import io.servicecomb.foundation.common.base.RetryableRunnable;
+import io.servicecomb.provider.pojo.reference.PojoConsumers;
+import io.servicecomb.provider.pojo.reference.PojoReferenceMeta;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import javax.inject.Inject;
+import org.springframework.stereotype.Component;
 
 @Component
 public class PojoConsumerProvider extends AbstractConsumerProvider {
-    @Inject
-    private PojoConsumers pojoConsumers;
+  private static final int DEFAULT_SLEEP_IN_MS = 2000;
 
-    @Override
-    public String getName() {
-        return PojoConst.POJO;
+  private final PojoConsumers pojoConsumers;
+  private final ExecutorService executorService;
+  private final int sleepInMs;
+
+  @Inject
+  PojoConsumerProvider(PojoConsumers pojoConsumers) {
+    this(pojoConsumers, DEFAULT_SLEEP_IN_MS);
+  }
+
+  PojoConsumerProvider(PojoConsumers pojoConsumers, int sleepInMs) {
+    this.pojoConsumers = pojoConsumers;
+    this.executorService = Executors.newSingleThreadScheduledExecutor();
+    this.sleepInMs = sleepInMs;
+  }
+
+  @Override
+  public String getName() {
+    return POJO;
+  }
+
+  @Override
+  public void init() throws Exception {
+    DescriptiveRunnable runnable = new InvocationCreationRunnable(pojoConsumers.getConsumerList());
+
+    executorService.execute(new RetryableRunnable(runnable, sleepInMs));
+  }
+
+  private static class InvocationCreationRunnable implements DescriptiveRunnable {
+
+    private final List<PojoReferenceMeta> consumers;
+
+    private InvocationCreationRunnable(List<PojoReferenceMeta> consumers) {
+      this.consumers = new LinkedList<>(consumers);
     }
 
     @Override
-    public void init() throws Exception {
-        for (PojoReferenceMeta pojoReference : pojoConsumers.getConsumerList()) {
-            pojoReference.createInvoker();
-        }
+    public String description() {
+      return "Pojo consumers invocation creation runnable";
     }
+
+    @Override
+    public void run() {
+      for (
+          Iterator<PojoReferenceMeta> iterator = consumers.iterator();
+          iterator.hasNext();
+          iterator.remove()) {
+
+        iterator.next().createInvoker();
+      }
+    }
+  }
 }

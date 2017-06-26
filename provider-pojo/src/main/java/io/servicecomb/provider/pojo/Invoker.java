@@ -16,9 +16,6 @@
 
 package io.servicecomb.provider.pojo;
 
-import java.lang.reflect.InvocationHandler;
-import java.lang.reflect.Method;
-
 import io.servicecomb.core.Invocation;
 import io.servicecomb.core.definition.SchemaMeta;
 import io.servicecomb.core.invocation.InvocationFactory;
@@ -28,6 +25,8 @@ import io.servicecomb.swagger.engine.SwaggerConsumer;
 import io.servicecomb.swagger.engine.SwaggerConsumerOperation;
 import io.servicecomb.swagger.invocation.Response;
 import io.servicecomb.swagger.invocation.exception.ExceptionFactory;
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.Method;
 
 public class Invoker implements InvocationHandler {
     private SchemaMeta schemaMeta;
@@ -56,6 +55,6 @@ public class Invoker implements InvocationHandler {
             return consumerOperation.getResponseMapper().mapResponse(response);
         }
 
-        throw ExceptionFactory.convertConsumerException((Throwable) response.getResult());
+        throw ExceptionFactory.convertConsumerException(response.getResult());
     }
 }

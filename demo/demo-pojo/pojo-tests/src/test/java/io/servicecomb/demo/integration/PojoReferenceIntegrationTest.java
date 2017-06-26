@@ -14,25 +14,26 @@
  * limitations under the License.
  */
 
-package io.servicecomb.serviceregistry;
+package io.servicecomb.demo.integration;
 
-import java.net.URI;
+import static org.hamcrest.core.Is.is;
+import static org.junit.Assert.assertThat;
 
-import org.junit.Assert;
+import com.seanyinx.github.unit.scaffolding.Randomness;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-public class TestRegistryWithEnvVar {
-    @BeforeClass
-    public static void initSetup() throws Exception {
-        System.setProperty("cse.service.publishAddress", "192.168.1.1");
-        System.setProperty("cse.rest.publishPort", "1234");
-    }
+public class PojoReferenceIntegrationTest {
 
-    @Test
-    public void testGetPublishAddress() {
-        URI uri = URI.create(RegistryUtils.getPublishAddress("rest", "0.0.0.0:8080"));
-        Assert.assertEquals(1234, uri.getPort());
-        Assert.assertEquals("192.168.1.1:1234", uri.getAuthority());
-    }
+  private final int expected = Randomness.nextInt();
+
+  @BeforeClass
+  public static void setUp() throws Exception {
+    SomePojoTestMain.main(new String[0]);
+  }
+
+  @Test
+  public void startsUpAsUsualWhenRpcReferenceIsNotReachable() {
+    assertThat(SomePojoTestMain.pojoService.localIdentity(expected), is(expected));
+  }
 }

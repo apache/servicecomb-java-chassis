@@ -16,23 +16,23 @@
 
 package io.servicecomb.demo.springmvc.client;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.client.RestTemplate;
-
 import io.servicecomb.core.CseContext;
 import io.servicecomb.demo.DemoConst;
 import io.servicecomb.demo.TestMgr;
 import io.servicecomb.demo.controller.Controller;
 import io.servicecomb.demo.controller.Person;
-import io.servicecomb.provider.springmvc.reference.RestTemplateBuilder;
+import io.servicecomb.foundation.common.base.DescriptiveRunnable;
+import io.servicecomb.foundation.common.base.RetryableRunnable;
 import io.servicecomb.foundation.common.utils.BeanUtils;
 import io.servicecomb.foundation.common.utils.Log4jUtils;
+import io.servicecomb.provider.springmvc.reference.RestTemplateBuilder;
+import java.util.HashMap;
+import java.util.Map;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.client.RestTemplate;
 
 public class SpringmvcClient {
     private static RestTemplate restTemplate;
@@ -47,7 +47,17 @@ public class SpringmvcClient {
 
     public static void run() throws Exception {
         restTemplate = RestTemplateBuilder.create();
-        controller = BeanUtils.getBean("controller");
+        new RetryableRunnable(new DescriptiveRunnable() {
+            @Override
+            public String description() {
+                return "controller wiring runnable";
+            }
+
+            @Override
+            public void run() {
+                controller = BeanUtils.getBean("controller");
+            }
+        }, 1000).run();
 
         CodeFirstRestTemplateSpringmvc codeFirstClient =
             BeanUtils.getContext().getBean(CodeFirstRestTemplateSpringmvc.class);

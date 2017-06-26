@@ -28,6 +28,7 @@
 	<modules>
 		<module>pojo-server</module>
 		<module>pojo-client</module>
-	</modules>
+    <module>pojo-tests</module>
+  </modules>
 
 </project>

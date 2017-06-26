@@ -15,20 +15,18 @@
  */
 package io.servicecomb.provider.pojo.reference;
 
+import io.servicecomb.core.provider.CseBeanPostProcessor.ConsumerFieldProcessor;
+import io.servicecomb.provider.pojo.RpcReference;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
-
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ReflectionUtils;
 
-import io.servicecomb.core.provider.CseBeanPostProcessor.ConsumerFieldProcessor;
-import io.servicecomb.provider.pojo.RpcReference;
-
 @Component
 public class PojoConsumers implements ConsumerFieldProcessor {
-    private List<PojoReferenceMeta> consumerList = new ArrayList<>();
+    private final List<PojoReferenceMeta> consumerList = new ArrayList<>();
 
     public void addPojoReferenceMeta(PojoReferenceMeta meta) {
         consumerList.add(meta);
