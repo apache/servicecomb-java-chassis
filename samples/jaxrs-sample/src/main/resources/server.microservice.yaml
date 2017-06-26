@@ -1,0 +1,12 @@
+APPLICATION_ID: jaxrstest
+service_description:
+  name: jaxrs
+  version: 0.0.1
+cse:
+  service:
+    registry:
+      address: http://127.0.0.1:9980
+  rest:
+    address: 0.0.0.0:8080
+  highway:
+    address: 0.0.0.0:7070
