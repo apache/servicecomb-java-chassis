@@ -50,6 +50,7 @@ import mockit.Mock;
 import mockit.MockUp;
 import mockit.Mocked;
 import org.apache.commons.configuration.AbstractConfiguration;
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -74,6 +75,11 @@ public class TestRegistry {
     @Before
     public void setUp() throws Exception {
         inMemoryConfig.clear();
+    }
+
+    @After
+    public void tearDown() throws Exception {
+        RegistryUtils.destory();
     }
 
     @Test
