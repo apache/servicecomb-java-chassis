@@ -51,7 +51,7 @@ public abstract class BizkeeperHandler extends AbstractHandler {
     static {
         try {
             HystrixPlugins.getInstance().registerPropertiesStrategy(HystrixPropertiesStrategyExt.getInstance());
-        } catch (Exception e) {
+        } catch (IllegalStateException e) {
             LOG.warn("Hystrix properties already registerd. Dynamic configuration may not work.");
         }
         try {
@@ -61,7 +61,7 @@ public abstract class BizkeeperHandler extends AbstractHandler {
                     return e; //by default, just pass through
                 }
             });
-        } catch (Exception e) {
+        } catch (IllegalStateException e) {
             LOG.warn("HystrixCommandExecutionHook already registerd. ");
         }
     }
