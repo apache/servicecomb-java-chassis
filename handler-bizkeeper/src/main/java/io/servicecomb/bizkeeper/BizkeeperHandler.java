@@ -26,8 +26,10 @@ import io.servicecomb.swagger.invocation.Response;
 
 import com.netflix.hystrix.HystrixCommandProperties;
 import com.netflix.hystrix.HystrixCommandProperties.ExecutionIsolationStrategy;
+import com.netflix.hystrix.HystrixInvokable;
 import com.netflix.hystrix.HystrixObservable;
 import com.netflix.hystrix.strategy.HystrixPlugins;
+import com.netflix.hystrix.strategy.executionhook.HystrixCommandExecutionHook;
 
 import rx.Observable;
 
@@ -51,6 +53,16 @@ public abstract class BizkeeperHandler extends AbstractHandler {
             HystrixPlugins.getInstance().registerPropertiesStrategy(HystrixPropertiesStrategyExt.getInstance());
         } catch (Exception e) {
             LOG.warn("Hystrix properties already registerd. Dynamic configuration may not work.");
+        }
+        try {
+            HystrixPlugins.getInstance().registerCommandExecutionHook(new HystrixCommandExecutionHook() {
+                public <T> Exception onExecutionError(HystrixInvokable<T> commandInstance, Exception e) {
+                    LOG.warn("bizkeeper execution error", e);
+                    return e; //by default, just pass through
+                }
+            });
+        } catch (Exception e) {
+            LOG.warn("HystrixCommandExecutionHook already registerd. ");
         }
     }
 
