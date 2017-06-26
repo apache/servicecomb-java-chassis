@@ -76,7 +76,8 @@ public final class RegistryUtils {
 
     private static final String DEFAULT_PATH_CHECKSESSION = "false";
 
-    private static final String PUBLISH_ADDRESS = "cse.service.publishAddress";
+    // value is ip or {interface name}
+    public static final String PUBLISH_ADDRESS = "cse.service.publishAddress";
 
     private static final String PUBLISH_PORT = "cse.{transport_name}.publishPort";
 
@@ -500,13 +501,16 @@ public final class RegistryUtils {
         publicAddressSetting = publicAddressSetting.trim();
         if (publicAddressSetting.isEmpty()) {
             return NetUtils.getHostAddress();
-        } else {
-            if (publicAddressSetting.startsWith("{") && publicAddressSetting.endsWith("}")) {
-                return NetUtils.getHostAddress(publicAddressSetting.substring(1, publicAddressSetting.length() - 1));
-            } else {
-                return publicAddressSetting;
-            }
         }
+
+        // placeholder is network interface name
+        if (publicAddressSetting.startsWith("{") && publicAddressSetting.endsWith("}")) {
+            return NetUtils
+                    .ensureGetInterfaceAddress(publicAddressSetting.substring(1, publicAddressSetting.length() - 1))
+                    .getHostAddress();
+        }
+
+        return publicAddressSetting;
     }
 
     public static String getPublishHostName() {
@@ -515,13 +519,15 @@ public final class RegistryUtils {
         publicAddressSetting = publicAddressSetting.trim();
         if (publicAddressSetting.isEmpty()) {
             return NetUtils.getHostName();
-        } else {
-            if (publicAddressSetting.startsWith("{") && publicAddressSetting.endsWith("}")) {
-                return publicAddressSetting.substring(1, publicAddressSetting.length() - 1);
-            } else {
-                return publicAddressSetting;
-            }
         }
+
+        if (publicAddressSetting.startsWith("{") && publicAddressSetting.endsWith("}")) {
+            return NetUtils
+                    .ensureGetInterfaceAddress(publicAddressSetting.substring(1, publicAddressSetting.length() - 1))
+                    .getHostName();
+        }
+
+        return publicAddressSetting;
     }
 
     /**
@@ -566,7 +572,9 @@ public final class RegistryUtils {
 
             if (publicAddressSetting.startsWith("{") && publicAddressSetting.endsWith("}")) {
                 publicAddressSetting = NetUtils
-                        .getHostAddress(publicAddressSetting.substring(1, publicAddressSetting.length() - 1));
+                        .ensureGetInterfaceAddress(
+                                publicAddressSetting.substring(1, publicAddressSetting.length() - 1))
+                        .getHostAddress();
             }
 
             String publishPortKey = PUBLISH_PORT.replace("{transport_name}", originalURI.getScheme());
