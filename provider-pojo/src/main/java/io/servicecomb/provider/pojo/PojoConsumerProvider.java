@@ -26,8 +26,7 @@ import io.servicecomb.provider.pojo.reference.PojoReferenceMeta;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.concurrent.Executor;
 import javax.inject.Inject;
 import org.springframework.stereotype.Component;
 
@@ -36,17 +35,20 @@ public class PojoConsumerProvider extends AbstractConsumerProvider {
   private static final int DEFAULT_SLEEP_IN_MS = 2000;
 
   private final PojoConsumers pojoConsumers;
-  private final ExecutorService executorService;
+  private final Executor executor;
   private final int sleepInMs;
 
   @Inject
-  PojoConsumerProvider(PojoConsumers pojoConsumers) {
-    this(pojoConsumers, DEFAULT_SLEEP_IN_MS);
+  PojoConsumerProvider(PojoConsumers pojoConsumers, Executor executor) {
+    this(pojoConsumers, executor, DEFAULT_SLEEP_IN_MS);
   }
 
-  PojoConsumerProvider(PojoConsumers pojoConsumers, int sleepInMs) {
+  PojoConsumerProvider(
+      PojoConsumers pojoConsumers,
+      Executor executor,
+      int sleepInMs) {
     this.pojoConsumers = pojoConsumers;
-    this.executorService = Executors.newSingleThreadScheduledExecutor();
+    this.executor = executor;
     this.sleepInMs = sleepInMs;
   }
 
@@ -59,7 +61,7 @@ public class PojoConsumerProvider extends AbstractConsumerProvider {
   public void init() throws Exception {
     DescriptiveRunnable runnable = new InvocationCreationRunnable(pojoConsumers.getConsumerList());
 
-    executorService.execute(new RetryableRunnable(runnable, sleepInMs));
+    executor.execute(new RetryableRunnable(runnable, sleepInMs));
   }
 
   private static class InvocationCreationRunnable implements DescriptiveRunnable {

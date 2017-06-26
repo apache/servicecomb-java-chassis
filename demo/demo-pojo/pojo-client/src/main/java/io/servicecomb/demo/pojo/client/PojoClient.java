@@ -26,8 +26,6 @@ import io.servicecomb.demo.server.User;
 import io.servicecomb.demo.smartcare.Application;
 import io.servicecomb.demo.smartcare.Group;
 import io.servicecomb.demo.smartcare.SmartCare;
-import io.servicecomb.foundation.common.base.DescriptiveRunnable;
-import io.servicecomb.foundation.common.base.RetryableRunnable;
 import io.servicecomb.foundation.common.utils.BeanUtils;
 import io.servicecomb.foundation.common.utils.Log4jUtils;
 import io.servicecomb.provider.pojo.RpcReference;
@@ -80,17 +78,7 @@ public class PojoClient {
         Log4jUtils.init();
         BeanUtils.init();
 
-        new RetryableRunnable(new DescriptiveRunnable() {
-            @Override
-            public String description() {
-                return "Smartcare wiring runnable";
-            }
-
-            @Override
-            public void run() {
-                smartcare = BeanUtils.getBean("smartcare");
-            }
-        }, 1000).run();
+        smartcare = BeanUtils.getBean("smartcare");
     }
 
     public static void runTest() throws Exception {

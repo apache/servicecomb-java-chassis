@@ -2,11 +2,11 @@ APPLICATION_ID: pojotest
 service_description:
   name: pojo-test
   version: 0.0.4
-cse:
-  service:
-    registry:
-      address: http://127.0.0.1:9980
   rest:
     address: 0.0.0.0:8080
   highway:
     address: 0.0.0.0:7070
+
+servicecomb:
+  rpcReference:
+    loadingMode: eager
