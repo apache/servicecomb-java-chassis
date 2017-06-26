@@ -16,21 +16,13 @@
 
 package io.servicecomb.serviceregistry;
 
-import java.net.InetAddress;
-import java.net.URI;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import static io.servicecomb.serviceregistry.RegistryUtils.PUBLISH_ADDRESS;
 
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.mockito.Mockito;
-
+import com.netflix.config.ConcurrentCompositeConfiguration;
+import com.netflix.config.ConcurrentMapConfiguration;
+import com.netflix.config.ConfigurationManager;
 import com.netflix.config.DynamicPropertyFactory;
 import com.netflix.config.DynamicStringProperty;
-
 import io.servicecomb.config.ConfigUtil;
 import io.servicecomb.foundation.common.net.NetUtils;
 import io.servicecomb.serviceregistry.api.registry.HealthCheck;
@@ -47,17 +39,41 @@ import io.servicecomb.serviceregistry.notify.NotifyManager;
 import io.servicecomb.serviceregistry.notify.RegistryEvent;
 import io.servicecomb.serviceregistry.utils.Timer;
 import io.servicecomb.serviceregistry.utils.TimerException;
+import java.net.InetAddress;
+import java.net.URI;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import mockit.Expectations;
 import mockit.Mock;
 import mockit.MockUp;
 import mockit.Mocked;
+import org.apache.commons.configuration.AbstractConfiguration;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Test;
+import org.mockito.Mockito;
 
 public class TestRegistry {
 
+    private static final AbstractConfiguration inMemoryConfig = new ConcurrentMapConfiguration();
+
     @BeforeClass
     public static void initSetup() throws Exception {
-        ConfigUtil.installDynamicConfig();
+        AbstractConfiguration dynamicConfig = ConfigUtil.createDynamicConfig();
+        ConcurrentCompositeConfiguration configuration = new ConcurrentCompositeConfiguration();
+        configuration.addConfiguration(dynamicConfig);
+        configuration.addConfiguration(inMemoryConfig);
+
+        ConfigurationManager.install(configuration);
         RegistryUtils.setSrClient(null);
+    }
+
+    @Before
+    public void setUp() throws Exception {
+        inMemoryConfig.clear();
     }
 
     @Test
@@ -414,11 +430,11 @@ public class TestRegistry {
 
         new Expectations(DynamicPropertyFactory.getInstance()) {
             {
-                DynamicPropertyFactory.getInstance().getStringProperty(RegistryUtils.PUBLISH_ADDRESS, "");
-                result = new DynamicStringProperty(RegistryUtils.PUBLISH_ADDRESS, "") {
+                DynamicPropertyFactory.getInstance().getStringProperty(PUBLISH_ADDRESS, "");
+                result = new DynamicStringProperty(PUBLISH_ADDRESS, "") {
                     public String get() {
                         return "127.0.0.1";
-                    };
+                    }
                 };
             }
         };
@@ -430,11 +446,11 @@ public class TestRegistry {
                 result = "1.1.1.1";
                 NetUtils.ensureGetInterfaceAddress("eth100");
                 result = ethAddress;
-                DynamicPropertyFactory.getInstance().getStringProperty(RegistryUtils.PUBLISH_ADDRESS, "");
-                result = new DynamicStringProperty(RegistryUtils.PUBLISH_ADDRESS, "") {
+                DynamicPropertyFactory.getInstance().getStringProperty(PUBLISH_ADDRESS, "");
+                result = new DynamicStringProperty(PUBLISH_ADDRESS, "") {
                     public String get() {
                         return "{eth100}";
-                    };
+                    }
                 };
             }
         };
@@ -444,6 +460,8 @@ public class TestRegistry {
 
     @Test
     public void testRegistryUtilGetHostName(@Mocked InetAddress ethAddress) {
+        inMemoryConfig.addProperty("cse.service.registry.client.timeout.request", 2000);
+
         new Expectations(NetUtils.class) {
             {
                 NetUtils.getHostName();
@@ -453,16 +471,7 @@ public class TestRegistry {
         String host = RegistryUtils.getPublishHostName();
         Assert.assertEquals("testHostName", host);
 
-        new Expectations(DynamicPropertyFactory.getInstance()) {
-            {
-                DynamicPropertyFactory.getInstance().getStringProperty(RegistryUtils.PUBLISH_ADDRESS, "");
-                result = new DynamicStringProperty(RegistryUtils.PUBLISH_ADDRESS, "") {
-                    public String get() {
-                        return "127.0.0.1";
-                    };
-                };
-            }
-        };
+        inMemoryConfig.addProperty(PUBLISH_ADDRESS, "127.0.0.1");
         Assert.assertEquals("127.0.0.1", RegistryUtils.getPublishHostName());
 
         new Expectations(DynamicPropertyFactory.getInstance()) {
@@ -471,14 +480,9 @@ public class TestRegistry {
                 result = "testHostName";
                 NetUtils.ensureGetInterfaceAddress("eth100");
                 result = ethAddress;
-                DynamicPropertyFactory.getInstance().getStringProperty(RegistryUtils.PUBLISH_ADDRESS, "");
-                result = new DynamicStringProperty(RegistryUtils.PUBLISH_ADDRESS, "") {
-                    public String get() {
-                        return "{eth100}";
-                    };
-                };
             }
         };
+        inMemoryConfig.addProperty(PUBLISH_ADDRESS, "{eth100}");
         Assert.assertEquals("testHostName", RegistryUtils.getPublishHostName());
     }
 
@@ -499,11 +503,11 @@ public class TestRegistry {
 
         new Expectations(DynamicPropertyFactory.getInstance()) {
             {
-                DynamicPropertyFactory.getInstance().getStringProperty(RegistryUtils.PUBLISH_ADDRESS, "");
-                result = new DynamicStringProperty(RegistryUtils.PUBLISH_ADDRESS, "") {
+                DynamicPropertyFactory.getInstance().getStringProperty(PUBLISH_ADDRESS, "");
+                result = new DynamicStringProperty(PUBLISH_ADDRESS, "") {
                     public String get() {
                         return "1.1.1.1";
-                    };
+                    }
                 };
             }
         };
@@ -515,11 +519,11 @@ public class TestRegistry {
             {
                 NetUtils.ensureGetInterfaceAddress("eth20");
                 result = ethAddress;
-                DynamicPropertyFactory.getInstance().getStringProperty(RegistryUtils.PUBLISH_ADDRESS, "");
-                result = new DynamicStringProperty(RegistryUtils.PUBLISH_ADDRESS, "") {
+                DynamicPropertyFactory.getInstance().getStringProperty(PUBLISH_ADDRESS, "");
+                result = new DynamicStringProperty(PUBLISH_ADDRESS, "") {
                     public String get() {
                         return "{eth20}";
-                    };
+                    }
                 };
             }
         };
