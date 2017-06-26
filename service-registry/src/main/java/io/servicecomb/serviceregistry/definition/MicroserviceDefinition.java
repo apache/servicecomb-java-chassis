@@ -30,10 +30,11 @@ import io.servicecomb.config.archaius.sources.ConfigModel;
 public class MicroserviceDefinition {
     private static final Logger LOGGER = LoggerFactory.getLogger(MicroserviceDefinition.class);
 
-    // microservice.yaml parent path
+    // microservice.yaml root path
+    // if need to find microservice by root path, then rootPath must not be empty
     private String rootPath;
 
-    private List<ConfigModel> configModelList;
+    private List<ConfigModel> configModels;
 
     private Configuration configuration;
 
@@ -43,14 +44,14 @@ public class MicroserviceDefinition {
         return microserviceName;
     }
 
-    public MicroserviceDefinition(List<ConfigModel> configModelList) {
-        if (configModelList == null || configModelList.isEmpty()) {
-            throw new IllegalArgumentException("configModelList can not be null or empty.");
+    public MicroserviceDefinition(List<ConfigModel> configModels) {
+        if (configModels == null || configModels.isEmpty()) {
+            throw new IllegalArgumentException("configModels can not be null or empty.");
         }
 
-        this.rootPath = configModelList.get(0).getRootPath();
-        this.configModelList = configModelList;
-        this.configuration = ConfigUtil.createConfig(configModelList);
+        this.rootPath = configModels.get(0).getRootPath();
+        this.configModels = configModels;
+        this.configuration = ConfigUtil.createConfig(configModels);
         this.microserviceName = configuration.getString(DefinitionConst.qulifiedServiceNameKey);
 
         // log paths first, even microserviceName is invalid, this can help user to find problems
@@ -58,7 +59,7 @@ public class MicroserviceDefinition {
 
         // the configuration we used
         // when resolve placeholder failed
-        // the result will remain ${var}......
+        // the result will remains ${var}
         if (StringUtils.isEmpty(microserviceName) || microserviceName.indexOf("${") != -1) {
             throw new IllegalArgumentException("MicroserviceName " + microserviceName + " is invalid.");
         }
@@ -67,7 +68,7 @@ public class MicroserviceDefinition {
     // microserviceName maybe null
     public void logConfigPath() {
         List<String> pathList = new ArrayList<>();
-        for (ConfigModel configModel : configModelList) {
+        for (ConfigModel configModel : configModels) {
             pathList.add(configModel.getUrl().toString());
         }
         LOGGER.info("load microservice config, name={}, rootPath={}, paths={}",
@@ -80,8 +81,8 @@ public class MicroserviceDefinition {
         return rootPath;
     }
 
-    public List<ConfigModel> getConfigModelList() {
-        return configModelList;
+    public List<ConfigModel> getConfigModels() {
+        return configModels;
     }
 
     public Configuration getConfiguration() {

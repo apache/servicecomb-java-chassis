@@ -16,6 +16,7 @@
 
 package io.servicecomb.serviceregistry.definition;
 
+import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.HashMap;
@@ -60,8 +61,8 @@ public class TestMicroserviceDefinitionManager {
     public void testDefaultAppId() {
         MicroserviceDefinitionManager microserviceDefinitionManager = createMicroserviceDefinitionManager();
         Assert.assertEquals("default", microserviceDefinitionManager.getAppId());
-        //        Assert.assertEquals(new File(this.getClass().getClassLoader().getResource("").getPath()).getPath(),
-        //                microserviceDefinitionManager.getDefinitionMap().get("default").getRootPath());
+        Assert.assertEquals(new File(this.getClass().getClassLoader().getResource("").getPath()).getPath(),
+                microserviceDefinitionManager.getDefinitionMap().get("default").getRootPath());
     }
 
     @Test
@@ -85,8 +86,7 @@ public class TestMicroserviceDefinitionManager {
             createMicroserviceDefinitionManager(c1, c2);
             Assert.assertEquals(1, 2);
         } catch (Throwable e) {
-            Assert.assertEquals("Not allowed multiple appId in one process, but have app1 and app2.",
-                    e.getMessage());
+            Assert.assertEquals("Not allowed multiple appId in one process, but have app1 and app2.", e.getMessage());
         }
     }
 
@@ -102,8 +102,7 @@ public class TestMicroserviceDefinitionManager {
             createMicroserviceDefinitionManager(c1, c2);
             Assert.fail("should throw exception");
         } catch (IllegalArgumentException e) {
-            Assert.assertEquals("Create from [default, ${ms1}, ${ms2}], but get [default, ms]",
-                    e.getMessage());
+            Assert.assertEquals("Create from [default, ${ms1}, ${ms2}], but get [default, ms]", e.getMessage());
         }
     }
 
@@ -115,8 +114,7 @@ public class TestMicroserviceDefinitionManager {
             createMicroserviceDefinitionManager(c1);
             Assert.assertEquals(1, 2);
         } catch (Throwable e) {
-            Assert.assertEquals("MicroserviceName ${var} is invalid.",
-                    e.getMessage());
+            Assert.assertEquals("MicroserviceName ${var} is invalid.", e.getMessage());
         }
     }
 }
