@@ -70,7 +70,7 @@
                                     <goal>java</goal>
                                 </goals>
                                 <configuration>
-                                    <mainClass>io.servicecomb.samples.cu.server.CHSServer</mainClass>
+                                    <mainClass>io.servicecomb.samples.customerhandler.server.CHSServer</mainClass>
                                     <arguments>
                                         <argument>server.microservice.yaml</argument>
                                     </arguments>
