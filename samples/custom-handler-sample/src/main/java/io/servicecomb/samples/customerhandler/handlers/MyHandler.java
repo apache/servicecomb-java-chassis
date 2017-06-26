@@ -15,7 +15,7 @@
  */
 package io.servicecomb.samples.customerhandler.handlers;
 
-import io.servicecomb.core.AsyncResponse;
+import io.servicecomb.swagger.invocation.AsyncResponse;
 import io.servicecomb.core.Invocation;
 import io.servicecomb.core.handler.impl.AbstractHandler;
 import org.slf4j.Logger;

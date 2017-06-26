@@ -22,7 +22,7 @@
     <groupId>io.servicecomb.samples</groupId>
     <artifactId>samples</artifactId>
     <packaging>pom</packaging>
-    <version>1.0-SNAPSHOT</version>
+    <version>0.1.0-m3-SNAPSHOT</version>
     <modules>
         <module>pojo-sample</module>
         <module>springmvc-sample</module>
@@ -36,7 +36,7 @@
             <dependency>
                 <groupId>io.servicecomb</groupId>
                 <artifactId>java-chassis-dependencies</artifactId>
-                <version>0.1.0-m1</version>
+                <version>0.1.0-m3-SNAPSHOT</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
