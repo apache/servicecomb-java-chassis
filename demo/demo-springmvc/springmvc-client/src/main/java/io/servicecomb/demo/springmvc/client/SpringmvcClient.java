@@ -21,8 +21,6 @@ import io.servicecomb.demo.DemoConst;
 import io.servicecomb.demo.TestMgr;
 import io.servicecomb.demo.controller.Controller;
 import io.servicecomb.demo.controller.Person;
-import io.servicecomb.foundation.common.base.DescriptiveRunnable;
-import io.servicecomb.foundation.common.base.RetryableRunnable;
 import io.servicecomb.foundation.common.utils.BeanUtils;
 import io.servicecomb.foundation.common.utils.Log4jUtils;
 import io.servicecomb.provider.springmvc.reference.RestTemplateBuilder;
@@ -47,17 +45,7 @@ public class SpringmvcClient {
 
     public static void run() throws Exception {
         restTemplate = RestTemplateBuilder.create();
-        new RetryableRunnable(new DescriptiveRunnable() {
-            @Override
-            public String description() {
-                return "controller wiring runnable";
-            }
-
-            @Override
-            public void run() {
-                controller = BeanUtils.getBean("controller");
-            }
-        }, 1000).run();
+        controller = BeanUtils.getBean("controller");
 
         CodeFirstRestTemplateSpringmvc codeFirstClient =
             BeanUtils.getContext().getBean(CodeFirstRestTemplateSpringmvc.class);

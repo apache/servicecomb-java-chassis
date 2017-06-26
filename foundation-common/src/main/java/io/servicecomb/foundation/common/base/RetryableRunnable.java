@@ -39,7 +39,7 @@ public class RetryableRunnable implements Runnable {
         LOGGER.info("Running [{}] task", runnable.description());
         runnable.run();
         success = true;
-      } catch (Exception e) {
+      } catch (Throwable e) {
         success = false;
         LOGGER.error("Failed to run [{}] task", runnable.description(), e);
         sleep(sleepInMs);

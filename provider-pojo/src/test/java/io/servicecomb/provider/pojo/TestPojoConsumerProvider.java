@@ -26,6 +26,7 @@ import static org.mockito.Mockito.verify;
 
 import io.servicecomb.provider.pojo.reference.PojoConsumers;
 import io.servicecomb.provider.pojo.reference.PojoReferenceMeta;
+import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import org.junit.Before;
 import org.junit.Test;
@@ -39,7 +40,11 @@ public class TestPojoConsumerProvider {
 
 
   private final RuntimeException exception = new RuntimeException("oops");
-  private final PojoConsumerProvider pojoConsumerProvider = new PojoConsumerProvider(pojoConsumers, 20);
+  private final PojoConsumerProvider pojoConsumerProvider = new PojoConsumerProvider(
+      pojoConsumers,
+      Executors.newSingleThreadScheduledExecutor(),
+      20
+  );
 
   @Before
   public void setUp() throws Exception {
