@@ -47,6 +47,16 @@ public class SpringmvcClient {
         restTemplate = RestTemplateBuilder.create();
         controller = BeanUtils.getBean("controller");
 
+        String prefix = "cse://springmvc";
+
+        try {
+            // this test class is intended for rery hang issue JAV-27
+            restTemplate.getForObject(prefix + "/controller/sayhi?name=throwexception", String.class);
+            TestMgr.check("true", "false");
+        } catch (Exception e) {
+            TestMgr.check("true", "true");
+        }
+
         CodeFirstRestTemplateSpringmvc codeFirstClient =
             BeanUtils.getContext().getBean(CodeFirstRestTemplateSpringmvc.class);
         codeFirstClient.testCodeFirst(restTemplate, "springmvc", "/codeFirstSpringmvc/");
