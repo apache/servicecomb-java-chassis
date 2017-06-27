@@ -32,6 +32,7 @@ import org.springframework.context.support.AbstractApplicationContext;
 import io.servicecomb.core.BootListener.BootEvent;
 import io.servicecomb.core.BootListener.EventType;
 import io.servicecomb.core.definition.loader.SchemaListenerManager;
+import io.servicecomb.core.endpoint.AbstractEndpointsCache;
 import io.servicecomb.core.handler.HandlerConfigUtils;
 import io.servicecomb.core.provider.consumer.ConsumerProviderManager;
 import io.servicecomb.core.provider.producer.ProducerProviderManager;
@@ -78,6 +79,9 @@ public class CseApplicationListener implements ApplicationListener<ApplicationEv
                     BeanUtils.setContext(applicationContext);
                     bootListenerList = applicationContext.getBeansOfType(BootListener.class).values();
 
+                    RegistryUtils.init();
+                    AbstractEndpointsCache.init(RegistryUtils.getInstanceCacheManager(), transportManager);
+
                     triggerEvent(EventType.BEFORE_HANDLER);
                     HandlerConfigUtils.init();
                     triggerEvent(EventType.AFTER_HANDLER);
@@ -97,7 +101,7 @@ public class CseApplicationListener implements ApplicationListener<ApplicationEv
                     schemaListenerManager.notifySchemaListener();
 
                     triggerEvent(EventType.BEFORE_REGISTRY);
-                    RegistryUtils.init();
+                    RegistryUtils.run();
                     triggerEvent(EventType.AFTER_REGISTRY);
 
                     // 当程序退出时，进行相关清理，注意：kill -9 {pid}下无效

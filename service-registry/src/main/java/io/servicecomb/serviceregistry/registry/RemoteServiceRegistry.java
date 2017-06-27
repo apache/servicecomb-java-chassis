@@ -29,8 +29,7 @@ public class RemoteServiceRegistry extends AbstractServiceRegistry {
     }
 
     protected ServiceRegistryClient createServiceRegistryClient() {
-        //return new ServiceRegistryClientImpl(ipPortManager);
-        return new ServiceRegistryClientImpl();
+        return new ServiceRegistryClientImpl(ipPortManager);
     }
 
     @Override

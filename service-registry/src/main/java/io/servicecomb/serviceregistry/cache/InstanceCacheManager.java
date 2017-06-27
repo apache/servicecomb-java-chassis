@@ -21,23 +21,29 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import io.servicecomb.serviceregistry.RegistryUtils;
+import com.google.common.eventbus.EventBus;
+import com.google.common.eventbus.Subscribe;
+
+import io.servicecomb.serviceregistry.ServiceRegistry;
 import io.servicecomb.serviceregistry.api.Const;
 import io.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
 import io.servicecomb.serviceregistry.api.response.MicroserviceInstanceChangedEvent;
-import io.servicecomb.serviceregistry.notify.NotifyManager;
-import io.servicecomb.serviceregistry.notify.RegistryEvent;
 
 /**
  * Created by on 2017/2/21.
  */
 public class InstanceCacheManager {
-    public static final InstanceCacheManager INSTANCE = new InstanceCacheManager();
+    private ServiceRegistry serviceRegistry;
 
     // key为appId/microserviceName
     protected Map<String, InstanceCache> cacheMap = new ConcurrentHashMap<>();
 
     private final Object lockObj = new Object();
+
+    public InstanceCacheManager(EventBus eventBus, ServiceRegistry serviceRegistry) {
+        this.serviceRegistry = serviceRegistry;
+        eventBus.register(this);
+    }
 
     private static String getKey(String appId, String microserviceName) {
         if (microserviceName.contains(Const.APP_SERVICE_SEPARATOR)) {
@@ -51,7 +57,7 @@ public class InstanceCacheManager {
 
     private InstanceCache create(String appId, String microserviceName, String microserviceVersionRule) {
         List<MicroserviceInstance> instances =
-            RegistryUtils.findServiceInstance(appId, microserviceName, microserviceVersionRule);
+            serviceRegistry.findServiceInstance(appId, microserviceName, microserviceVersionRule);
         if (instances == null) {
             return null;
         }
@@ -81,13 +87,12 @@ public class InstanceCacheManager {
         return cache;
     }
 
+    @Subscribe
     public void onInstanceUpdate(MicroserviceInstanceChangedEvent changedEvent) {
         String appId = changedEvent.getKey().getAppId();
         String microserviceName = changedEvent.getKey().getServiceName();
         String version = changedEvent.getKey().getVersion();
         String key = getKey(appId, microserviceName);
-
-        NotifyManager.INSTANCE.notify(RegistryEvent.INSTANCE_CHANGED, changedEvent);
 
         synchronized (lockObj) {
             InstanceCache instCache = cacheMap.get(key);

@@ -24,15 +24,15 @@ import org.springframework.cloud.client.DefaultServiceInstance;
 import org.springframework.cloud.client.ServiceInstance;
 import org.springframework.cloud.client.discovery.DiscoveryClient;
 
-import io.servicecomb.serviceregistry.api.registry.Microservice;
-import io.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
-import io.servicecomb.serviceregistry.client.RegistryClientFactory;
-import io.servicecomb.serviceregistry.client.ServiceRegistryClient;
+import com.netflix.config.DynamicPropertyFactory;
+
 import io.servicecomb.core.provider.consumer.ConsumerProviderManager;
 import io.servicecomb.core.provider.consumer.ReferenceConfig;
 import io.servicecomb.foundation.common.net.URIEndpointObject;
-
-import com.netflix.config.DynamicPropertyFactory;
+import io.servicecomb.serviceregistry.RegistryUtils;
+import io.servicecomb.serviceregistry.api.registry.Microservice;
+import io.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
+import io.servicecomb.serviceregistry.client.ServiceRegistryClient;
 
 public class CseDiscoveryClient implements DiscoveryClient {
 
@@ -47,7 +47,7 @@ public class CseDiscoveryClient implements DiscoveryClient {
     @Override
     public List<ServiceInstance> getInstances(final String serviceId) {
         List<ServiceInstance> instances = new ArrayList<ServiceInstance>();
-        ServiceRegistryClient client = RegistryClientFactory.getRegistryClient();
+        ServiceRegistryClient client = RegistryUtils.getServiceRegistryClient();
         String appId = DynamicPropertyFactory.getInstance().getStringProperty("APPLICATION_ID", "default").get();
         ReferenceConfig referenceConfig = consumerProviderManager.getReferenceConfig(serviceId);
         String versionRule = referenceConfig.getMicroserviceVersionRule();
@@ -73,7 +73,7 @@ public class CseDiscoveryClient implements DiscoveryClient {
 
     @Override
     public List<String> getServices() {
-        ServiceRegistryClient client = RegistryClientFactory.getRegistryClient();
+        ServiceRegistryClient client = RegistryUtils.getServiceRegistryClient();
         List<Microservice> services = client.getAllMicroservices();
         List<String> serviceIDList = new ArrayList<>();
         if (null != services && !services.isEmpty())

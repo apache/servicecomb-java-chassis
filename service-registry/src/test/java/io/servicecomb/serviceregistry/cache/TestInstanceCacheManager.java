@@ -16,17 +16,15 @@
 
 package io.servicecomb.serviceregistry.cache;
 
-import org.junit.After;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
 
-import io.servicecomb.config.ConfigUtil;
-import io.servicecomb.serviceregistry.RegistryUtils;
+import io.servicecomb.serviceregistry.ServiceRegistry;
 import io.servicecomb.serviceregistry.api.MicroserviceKey;
 import io.servicecomb.serviceregistry.api.registry.Microservice;
 import io.servicecomb.serviceregistry.api.registry.WatchAction;
 import io.servicecomb.serviceregistry.api.response.MicroserviceInstanceChangedEvent;
+import io.servicecomb.serviceregistry.registry.ServiceRegistryFactory;
 
 /**
  *
@@ -34,34 +32,26 @@ import io.servicecomb.serviceregistry.api.response.MicroserviceInstanceChangedEv
  * @see 
  */
 public class TestInstanceCacheManager {
-
-    @Before
-    public void setUp() throws Exception {
-        ConfigUtil.installDynamicConfig();
-        RegistryUtils.setSrClient(null);
-    }
-
-    @After
-    public void tearDown() throws Exception {
-    }
-
     @Test
     public void testInstanceUpdate() {
-        Microservice oInstance = RegistryUtils.getMicroservice();
-        InstanceCacheManager oInstanceCacheManager = new InstanceCacheManager();
+        ServiceRegistry serviceRegistry = ServiceRegistryFactory.createLocal();
+        Microservice microservice = serviceRegistry.getMicroserviceManager().addMicroservice("default", "ms");
+        serviceRegistry.init();
+        InstanceCacheManager oInstanceCacheManager = serviceRegistry.getInstanceCacheManager();
+
         MicroserviceInstanceChangedEvent oChangedEnvent = new MicroserviceInstanceChangedEvent();
         oChangedEnvent.setAction(WatchAction.UPDATE);
         MicroserviceKey oKey = new MicroserviceKey();
-        oKey.setAppId(oInstance.getAppId());
-        oKey.setVersion(oInstance.getVersion());
-        oKey.setServiceName(oInstance.getServiceName());
+        oKey.setAppId(microservice.getAppId());
+        oKey.setVersion(microservice.getVersion());
+        oKey.setServiceName(microservice.getServiceName());
         oChangedEnvent.setKey(oKey);
-        oChangedEnvent.setInstance(RegistryUtils.getMicroserviceInstance());
+        oChangedEnvent.setInstance(microservice.getIntance());
         oInstanceCacheManager.onInstanceUpdate(oChangedEnvent);
         oChangedEnvent.setAction(WatchAction.DELETE);
         oInstanceCacheManager.onInstanceUpdate(oChangedEnvent);
         oChangedEnvent.setAction(WatchAction.CREATE);
         oInstanceCacheManager.onInstanceUpdate(oChangedEnvent);
-        Assert.assertEquals("UP", RegistryUtils.getMicroserviceInstance().getStatus().toString());
+        Assert.assertEquals("UP", microservice.getIntance().getStatus().toString());
     }
 }

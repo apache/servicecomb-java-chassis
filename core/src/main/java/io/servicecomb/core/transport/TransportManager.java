@@ -22,13 +22,12 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
-import io.servicecomb.core.Transport;
-import io.servicecomb.core.endpoint.AbstractEndpointsCache;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import io.servicecomb.core.Endpoint;
+import io.servicecomb.core.Transport;
 import io.servicecomb.serviceregistry.RegistryUtils;
 
 @Component
@@ -41,8 +40,6 @@ public class TransportManager {
     private Map<String, Transport> transportMap = new HashMap<>();
 
     public void init() throws Exception {
-        AbstractEndpointsCache.setTransportManager(this);
-
         for (Transport transport : transportList) {
             transportMap.put(transport.getName(), transport);
 

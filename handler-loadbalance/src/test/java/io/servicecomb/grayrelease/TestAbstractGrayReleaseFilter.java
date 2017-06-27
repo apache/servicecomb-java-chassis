@@ -4,13 +4,16 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 
 import io.servicecomb.core.Invocation;
 import io.servicecomb.core.definition.OperationMeta;
 import io.servicecomb.grayrelease.AbstractGrayReleaseFilter.InstanceScope;
+import io.servicecomb.serviceregistry.RegistryUtils;
 import io.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
+import io.servicecomb.serviceregistry.cache.InstanceCacheManager;
 import io.servicecomb.serviceregistry.cache.InstanceVersionCacheManager;
 import mockit.Deencapsulation;
 import mockit.Mock;
@@ -24,13 +27,13 @@ public class TestAbstractGrayReleaseFilter {
 
     Invocation invocation = Mockito.mock(Invocation.class);
 
-    {
+    @Before
+    public void setup() {
         initInvocation();
         initCache();
     }
 
     public void initCache() {
-
         Map<String, Map<String, MicroserviceInstance>> versionInstanceMap =
             new HashMap<String, Map<String, MicroserviceInstance>>();
         Map<String, MicroserviceInstance> ins01 = new HashMap<String, MicroserviceInstance>();
@@ -54,7 +57,7 @@ public class TestAbstractGrayReleaseFilter {
         ins02.put("04", microserviceInstance04);
         versionInstanceMap.put("1.0.0.2", ins02);
 
-        new MockUp<InstanceVersionCacheManager>() {
+        InstanceVersionCacheManager instanceVersionCacheManager = new MockUp<InstanceVersionCacheManager>() {
             @Mock
             public Map<String, Map<String, MicroserviceInstance>> getOrCreateAllMap(String appId,
                     String microserviceName) {
@@ -68,6 +71,18 @@ public class TestAbstractGrayReleaseFilter {
                 return versionInstanceMap;
             }
 
+        }.getMockInstance();
+
+        new MockUp<RegistryUtils>() {
+            @Mock
+            InstanceVersionCacheManager getInstanceVersionCacheManager() {
+                return instanceVersionCacheManager;
+            }
+
+            @Mock
+            InstanceCacheManager getInstanceCacheManager() {
+                return Mockito.mock(InstanceCacheManager.class);
+            }
         };
 
         //参数tags,version
@@ -151,16 +166,13 @@ public class TestAbstractGrayReleaseFilter {
 
     @Test
     public void testFillInstanceGroup() {
-
-        boolean status = true;
         try {
             Deencapsulation.setField(filter, "instanceScope", InstanceScope.All);
             filter.fillInstanceGroup();
             filter.updateInstanceCache("test001");
         } catch (Exception e) {
-            status = false;
+            Assert.fail(e.getMessage());
         }
-        Assert.assertTrue(status);
     }
 
 }

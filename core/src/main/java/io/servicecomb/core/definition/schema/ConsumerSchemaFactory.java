@@ -33,8 +33,8 @@ import io.servicecomb.core.definition.SchemaMeta;
 import io.servicecomb.core.definition.SchemaUtils;
 import io.servicecomb.core.definition.loader.SchemaListenerManager;
 import io.servicecomb.foundation.common.config.PaaSResourceUtils;
+import io.servicecomb.serviceregistry.RegistryUtils;
 import io.servicecomb.serviceregistry.api.registry.Microservice;
-import io.servicecomb.serviceregistry.client.RegistryClientFactory;
 import io.servicecomb.serviceregistry.client.ServiceRegistryClient;
 import io.swagger.models.Swagger;
 
@@ -110,7 +110,7 @@ public class ConsumerSchemaFactory extends AbstractSchemaFactory<ConsumerSchemaC
     protected Microservice findMicroservice(MicroserviceMeta microserviceMeta, String microserviceVersionRule) {
         String appId = microserviceMeta.getAppId();
         String microserviceName = microserviceMeta.getName();
-        ServiceRegistryClient client = RegistryClientFactory.getRegistryClient();
+        ServiceRegistryClient client = RegistryUtils.getServiceRegistryClient();
         String microserviceId = client.getMicroserviceId(appId,
                 microserviceMeta.getShortName(),
                 microserviceVersionRule);
@@ -172,7 +172,7 @@ public class ConsumerSchemaFactory extends AbstractSchemaFactory<ConsumerSchemaC
                             context.getSchemaId()));
         }
 
-        ServiceRegistryClient client = RegistryClientFactory.getRegistryClient();
+        ServiceRegistryClient client = RegistryUtils.getServiceRegistryClient();
         String schemaContent = client.getSchema(context.getMicroservice().getServiceId(), context.getSchemaId());
         LOGGER.info("load schema from service center, microservice={}:{}:{}, schemaId={}, result={}",
                 context.getMicroservice().getAppId(),
