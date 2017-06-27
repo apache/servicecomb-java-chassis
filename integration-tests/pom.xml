@@ -16,6 +16,7 @@
     <modules>
         <module>jaxrs-tests</module>
         <module>springmvc-tests</module>
+        <module>tracing-tests</module>
     </modules>
 
     <dependencyManagement>
