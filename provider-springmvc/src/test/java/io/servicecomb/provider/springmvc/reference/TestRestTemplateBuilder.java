@@ -16,14 +16,49 @@
 
 package io.servicecomb.provider.springmvc.reference;
 
+import java.net.URI;
+
 import org.junit.Assert;
 import org.junit.Test;
+import org.springframework.web.client.RestClientException;
+import org.springframework.web.client.RestTemplate;
 
 public class TestRestTemplateBuilder {
 
     @Test
     public void testRestTemplateBuilder() {
         Assert.assertEquals(RestTemplateWrapper.class, RestTemplateBuilder.create().getClass());
+    }
+    
+    class MyAcceptableRestTemplate extends AcceptableRestTemplate {
+
+        @Override
+        boolean isAcceptable(String uri) {
+            return uri.startsWith("http");
+        }
+
+        @Override
+        boolean isAcceptable(URI uri) {
+            return uri.getScheme().equals("http");
+        }
+        
+        @Override
+        public void delete(String url, Object... urlVariables) throws RestClientException {
+            throw new RestClientException("test error.");
+        }
+    }
+    
+    @Test
+    public void testRestTemplateBuilderResttemplate() {
+        RestTemplateBuilder.addAcceptableRestTemplate(new MyAcceptableRestTemplate());
+        RestTemplate template = RestTemplateBuilder.create();
+        try {
+            template.delete("http://test");
+            Assert.assertFalse(true);
+        } catch (RestClientException e) {
+            Assert.assertEquals(e.getMessage(), "test error.");
+        }
+        
     }
 
 }
