@@ -31,11 +31,13 @@ import io.servicecomb.core.definition.loader.SchemaListenerManager;
 import io.servicecomb.core.definition.loader.SchemaLoader;
 import io.servicecomb.core.unittest.UnitTestMeta;
 import io.servicecomb.foundation.common.utils.ReflectUtils;
+import io.servicecomb.serviceregistry.RegistryUtils;
 import io.servicecomb.serviceregistry.api.registry.Microservice;
 import io.servicecomb.serviceregistry.client.RegistryClientFactory;
 import io.servicecomb.serviceregistry.client.ServiceRegistryClient;
 import io.servicecomb.swagger.generator.core.CompositeSwaggerGeneratorContext;
 import io.servicecomb.swagger.generator.core.unittest.UnitTestSwaggerUtils;
+import mockit.Deencapsulation;
 
 public class TestConsumerSchemaFactory {
     private static ConsumerSchemaFactory consumerSchemaFactory = new ConsumerSchemaFactory();
@@ -88,8 +90,10 @@ public class TestConsumerSchemaFactory {
         Microservice microservice = new Microservice();
         microservice.setAppId("app");
         microservice.setServiceId("0");
+        microservice.setServiceName("ms");
         microservice.addSchema("schema", content);
         Mockito.when(registryClient.getMicroservice("0")).thenReturn(microservice);
+        Deencapsulation.setField(RegistryUtils.class, "microservice", microservice);
     }
 
     @Test

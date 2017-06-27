@@ -31,15 +31,16 @@ import org.slf4j.LoggerFactory;
 
 import com.netflix.config.DynamicPropertyFactory;
 
+import io.servicecomb.config.ConfigUtil;
+import io.servicecomb.config.archaius.sources.MicroserviceConfigLoader;
 import io.servicecomb.foundation.common.CommonThread;
 import io.servicecomb.foundation.common.net.IpPort;
 import io.servicecomb.foundation.common.net.NetUtils;
 import io.servicecomb.serviceregistry.api.Const;
 import io.servicecomb.serviceregistry.api.registry.BasePath;
-import io.servicecomb.serviceregistry.api.registry.HealthCheck;
-import io.servicecomb.serviceregistry.api.registry.HealthCheckMode;
 import io.servicecomb.serviceregistry.api.registry.Microservice;
 import io.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
+import io.servicecomb.serviceregistry.api.registry.MicroserviceManager;
 import io.servicecomb.serviceregistry.api.response.HeartbeatResponse;
 import io.servicecomb.serviceregistry.api.response.MicroserviceInstanceChangedEvent;
 import io.servicecomb.serviceregistry.cache.CacheRegistryListener;
@@ -48,8 +49,6 @@ import io.servicecomb.serviceregistry.cache.InstanceVersionCacheManager;
 import io.servicecomb.serviceregistry.client.ClientException;
 import io.servicecomb.serviceregistry.client.RegistryClientFactory;
 import io.servicecomb.serviceregistry.client.ServiceRegistryClient;
-import io.servicecomb.serviceregistry.config.InstancePropertiesLoader;
-import io.servicecomb.serviceregistry.config.MicroservicePropertiesLoader;
 import io.servicecomb.serviceregistry.config.ServiceRegistryConfig;
 import io.servicecomb.serviceregistry.notify.NotifyManager;
 import io.servicecomb.serviceregistry.notify.NotifyThread;
@@ -61,6 +60,9 @@ import io.servicecomb.serviceregistry.utils.TimerException;
 public final class RegistryUtils {
     private static final Logger LOGGER = LoggerFactory.getLogger(RegistryUtils.class);
 
+    // temp field
+    private static MicroserviceManager microserviceManager;
+
     // 本进程的描述
     private static Microservice microservice;
 
@@ -69,10 +71,6 @@ public final class RegistryUtils {
     private static ServiceRegistryClient srClient;
 
     private static ServiceRegistryConfig serviceRegistryConfig;
-
-    private static final String DEFAULT_STAGE = "prod";
-
-    private static final String ALLOW_CROSS_APP_KEY = "allowCrossApp";
 
     private static final String DEFAULT_PATH_CHECKSESSION = "false";
 
@@ -88,9 +86,27 @@ public final class RegistryUtils {
     private RegistryUtils() {
     }
 
+    // temp code
+    private static void loadFromConfig() {
+        if (microserviceManager != null) {
+            return;
+        }
+
+        MicroserviceConfigLoader loader = ConfigUtil.getMicroserviceConfigLoader();
+        microserviceManager = new MicroserviceManager();
+        microserviceManager.init(loader);
+        microservice = microserviceManager.getDefaultMicroservice();
+        microserviceInstance = microservice.getIntance();
+    }
+
+    // temp code
+    public static void setMicroserviceManager(MicroserviceManager microserviceManager) {
+        RegistryUtils.microserviceManager = microserviceManager;
+    }
+
     public static Microservice getMicroservice() {
         if (microservice == null) {
-            microservice = createMicroserviceFromDefinition();
+            loadFromConfig();
         }
 
         return microservice;
@@ -98,63 +114,7 @@ public final class RegistryUtils {
 
     public static MicroserviceInstance getMicroserviceInstance() {
         if (microserviceInstance == null) {
-            microserviceInstance = createMicroserviceInstance();
-        }
-
-        return microserviceInstance;
-    }
-
-    private static Microservice createMicroserviceFromDefinition() {
-        Microservice microservice = new Microservice();
-        String name = DynamicPropertyFactory.getInstance().getStringProperty("service_description.name", null).get();
-        if (name == null || name.isEmpty()) {
-            throw new IllegalArgumentException("You must configure service_description.name");
-        }
-        microservice.setServiceName(name);
-        microservice.setAppId(
-                DynamicPropertyFactory.getInstance().getStringProperty("APPLICATION_ID", "default").get());
-        microservice.setVersion(
-                DynamicPropertyFactory.getInstance().getStringProperty("service_description.version", "1.0.0").get());
-        microservice.setDescription(
-                DynamicPropertyFactory.getInstance().getStringProperty("service_description.description", "").get());
-        microservice.setLevel(
-                DynamicPropertyFactory.getInstance().getStringProperty("service_description.role", "FRONT").get());
-
-        Map<String, String> propertiesMap = MicroservicePropertiesLoader.INSTANCE.loadProperties();
-        if (!isEmpty(propertiesMap)) {
-            microservice.setProperties(propertiesMap);
-
-            // 当允许跨app调用时为服务设置一个别名
-            if (allowCrossApp(propertiesMap)) {
-                microservice.setAlias(Microservice.generateAbsoluteMicroserviceName(microservice.getAppId(),
-                        microservice.getServiceName()));
-            }
-        }
-
-        return microservice;
-    }
-
-    private static boolean isEmpty(Map<String, String> map) {
-        return map == null || map.isEmpty();
-    }
-
-    protected static boolean allowCrossApp(Map<String, String> propertiesMap) {
-        return Boolean.valueOf(propertiesMap.get(ALLOW_CROSS_APP_KEY));
-    }
-
-    private static MicroserviceInstance createMicroserviceInstance() {
-        MicroserviceInstance microserviceInstance = new MicroserviceInstance();
-        microserviceInstance.setStage(DEFAULT_STAGE);
-        Map<String, String> propertiesMap = InstancePropertiesLoader.INSTANCE.loadProperties();
-        if (!isEmpty(propertiesMap)) {
-            microserviceInstance.setProperties(propertiesMap);
-        }
-
-        //This is not the local mode for the development so we need to set the healthcheck
-        if (RegistryClientFactory.getLocalModeFile().isEmpty()) {
-            HealthCheck healthCheck = new HealthCheck();
-            healthCheck.setMode(HealthCheckMode.HEARTBEAT);
-            microserviceInstance.setHealthCheck(healthCheck);
+            loadFromConfig();
         }
 
         return microserviceInstance;

@@ -19,10 +19,9 @@ package io.servicecomb.serviceregistry.config;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.configuration.Configuration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.netflix.config.DynamicPropertyFactory;
 
 import io.servicecomb.serviceregistry.api.PropertyExtended;
 
@@ -34,28 +33,27 @@ public abstract class AbstractPropertiesLoader {
 
     protected static final String PROPERTIES = ".properties";
 
+    // TODO:拼写错误
     protected static final String EXTENDED_CLASS = ".propertyExtentedClass";
 
     protected abstract String getConfigOptionPrefix();
 
-    public Map<String, String> loadProperties() {
+    public Map<String, String> loadProperties(Configuration configuration) {
         Map<String, String> propertiesMap = new HashMap<>();
-        loadPropertiesFromConfigMap(propertiesMap);
-        loadPropertiesFromExtendedClass(propertiesMap);
+        loadPropertiesFromConfigMap(configuration, propertiesMap);
+        loadPropertiesFromExtendedClass(configuration, propertiesMap);
 
         return propertiesMap;
     }
 
-    protected void loadPropertiesFromConfigMap(Map<String, String> propertiesMap) {
+    protected void loadPropertiesFromConfigMap(Configuration configuration, Map<String, String> propertiesMap) {
         String configKeyPrefix = mergeStrings(getConfigOptionPrefix(), PROPERTIES);
-        propertiesMap.putAll(ConfigurePropertyUtils.getPropertiesWithPrefix(configKeyPrefix));
+        propertiesMap.putAll(ConfigurePropertyUtils.getPropertiesWithPrefix(configuration, configKeyPrefix));
     }
 
-    protected void loadPropertiesFromExtendedClass(Map<String, String> propertiesMap) {
+    protected void loadPropertiesFromExtendedClass(Configuration configuration, Map<String, String> propertiesMap) {
         String configKey = mergeStrings(getConfigOptionPrefix(), EXTENDED_CLASS);
-        String extendedPropertyClass = DynamicPropertyFactory.getInstance()
-                .getStringProperty(configKey, "")
-                .get();
+        String extendedPropertyClass = configuration.getString(configKey, "");
         if (extendedPropertyClass.isEmpty()) {
             return;
         }

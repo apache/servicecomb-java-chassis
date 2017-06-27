@@ -19,8 +19,6 @@ package io.servicecomb.serviceregistry.definition;
 import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.HashMap;
-import java.util.Map;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -45,15 +43,8 @@ public class TestMicroserviceDefinitionManager {
     }
 
     private ConfigModel createConfigModel(String app, String name) throws MalformedURLException {
-        ConfigModel config = new ConfigModel();
+        ConfigModel config = MicroserviceDefinition.createConfigModel(app, name);
         config.setUrl(new URL(String.format("jar:file:/file.jar!/%s/%s", app, name)));
-        config.setConfig(new HashMap<>());
-        config.getConfig().put(DefinitionConst.appIdKey, app);
-
-        Map<String, Object> map = new HashMap<>();
-        map.put(DefinitionConst.nameKey, name);
-        config.getConfig().put(DefinitionConst.serviceDescriptionKey, map);
-
         return config;
     }
 
@@ -114,7 +105,9 @@ public class TestMicroserviceDefinitionManager {
             createMicroserviceDefinitionManager(c1);
             Assert.assertEquals(1, 2);
         } catch (Throwable e) {
-            Assert.assertEquals("MicroserviceName ${var} is invalid.", e.getMessage());
+            Assert.assertEquals(
+                    "MicroserviceName '${var}' is invalid. you must configure 'service_description.name' or set the placeholder value.",
+                    e.getMessage());
         }
     }
 }

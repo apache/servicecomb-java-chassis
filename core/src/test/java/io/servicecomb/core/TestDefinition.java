@@ -16,54 +16,20 @@
 
 package io.servicecomb.core;
 
-import io.servicecomb.core.definition.CommonService;
-import org.junit.After;
 import org.junit.Assert;
-import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 
+import io.servicecomb.core.definition.CommonService;
 import io.servicecomb.core.definition.MicroserviceMeta;
 import io.servicecomb.core.definition.MicroserviceMetaManager;
-import io.servicecomb.serviceregistry.RegistryUtils;
-import io.servicecomb.serviceregistry.api.registry.Microservice;
 import io.servicecomb.swagger.generator.core.utils.ClassUtils;
-
 import io.swagger.models.Info;
 import io.swagger.models.Swagger;
-import mockit.Mock;
-import mockit.MockUp;
 
 public class TestDefinition {
-
-    CommonService<String> oCommonService = null;
-
-    @BeforeClass
-    public static void setupClass() throws Exception {
-        Microservice microservice = new Microservice();
-        microservice.setAppId("app");
-        microservice.setServiceName("testname");
-
-        new MockUp<RegistryUtils>() {
-            @Mock
-            private Microservice createMicroserviceFromDefinition() {
-                return microservice;
-            }
-        };
-    }
-
-    @Before
-    public void setup() throws Exception {
-        oCommonService = new CommonService<>();
-    }
-
-    @After
-    public void tearDown() throws Exception {
-        oCommonService = null;
-    }
-
     @Test
     public void testCommonService() {
+        CommonService<String> oCommonService = new CommonService<>();
 
         boolean validCreateOperation = true;
         try {
@@ -89,10 +55,11 @@ public class TestDefinition {
 
     @Test
     public void testMicroServiceMeta() {
-        MicroserviceMeta oMicroMeta = new MicroserviceMeta("micro1");
+        MicroserviceMeta oMicroMeta = new MicroserviceMeta("app:micro1");
         Assert.assertEquals(0, oMicroMeta.getSchemaMetas().size());
         Assert.assertEquals(0, oMicroMeta.getOperations().size());
-        Assert.assertEquals("micro1", oMicroMeta.getName());
+        Assert.assertEquals("micro1", oMicroMeta.getShortName());
+        Assert.assertEquals("app:micro1", oMicroMeta.getName());
         try {
             oMicroMeta.putExtData("key1", new String("value1"));
             Assert.assertNotEquals(null, oMicroMeta.getExtData("key1"));
@@ -104,7 +71,7 @@ public class TestDefinition {
     @Test
     public void testMicroserviceMetaManager() throws Exception {
         MicroserviceMetaManager microserviceMetaManager = new MicroserviceMetaManager();
-        microserviceMetaManager.getOrCreateMicroserviceMeta("testname");
+        microserviceMetaManager.getOrCreateMicroserviceMeta("app:testname");
 
         Assert.assertEquals("microservice meta manager", microserviceMetaManager.getName());
         Assert.assertEquals("Not allow regsiter repeat data, name=%s, key=%s",

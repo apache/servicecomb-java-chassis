@@ -40,7 +40,6 @@ public class TestConsumer {
     @SuppressWarnings({"rawtypes", "unchecked"})
     @Test
     public void testConsumerProviderManager() {
-
         ConsumerProviderManager oConsumerProviderManager = new ConsumerProviderManager();
         RegisterManager oRegisterManager = new RegisterManager("cse consumer provider manager");
         oRegisterManager.register("cse.references.cse consumer provider manager",

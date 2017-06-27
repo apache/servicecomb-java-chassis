@@ -18,11 +18,27 @@ package io.servicecomb.serviceregistry;
 
 import static io.servicecomb.serviceregistry.RegistryUtils.PUBLISH_ADDRESS;
 
+import java.net.InetAddress;
+import java.net.URI;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.configuration.AbstractConfiguration;
+import org.junit.After;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Test;
+import org.mockito.Mockito;
+
 import com.netflix.config.ConcurrentCompositeConfiguration;
 import com.netflix.config.ConcurrentMapConfiguration;
 import com.netflix.config.ConfigurationManager;
 import com.netflix.config.DynamicPropertyFactory;
 import com.netflix.config.DynamicStringProperty;
+
 import io.servicecomb.config.ConfigUtil;
 import io.servicecomb.foundation.common.net.NetUtils;
 import io.servicecomb.serviceregistry.api.registry.HealthCheck;
@@ -39,23 +55,10 @@ import io.servicecomb.serviceregistry.notify.NotifyManager;
 import io.servicecomb.serviceregistry.notify.RegistryEvent;
 import io.servicecomb.serviceregistry.utils.Timer;
 import io.servicecomb.serviceregistry.utils.TimerException;
-import java.net.InetAddress;
-import java.net.URI;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import mockit.Expectations;
 import mockit.Mock;
 import mockit.MockUp;
 import mockit.Mocked;
-import org.apache.commons.configuration.AbstractConfiguration;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.mockito.Mockito;
 
 public class TestRegistry {
 
@@ -238,21 +241,6 @@ public class TestRegistry {
         RegistryUtils.init();
         Assert.assertEquals(false, RegistryUtils.heartbeat().isOk());
         Assert.assertEquals(false, RegistryUtils.unregsiterInstance());
-    }
-
-    @Test
-    public void testAllowCrossApp() {
-        Map<String, String> propertiesMap = new HashMap<>();
-        Assert.assertFalse(RegistryUtils.allowCrossApp(propertiesMap));
-
-        propertiesMap.put("allowCrossApp", "true");
-        Assert.assertTrue(RegistryUtils.allowCrossApp(propertiesMap));
-
-        propertiesMap.put("allowCrossApp", "false");
-        Assert.assertFalse(RegistryUtils.allowCrossApp(propertiesMap));
-
-        propertiesMap.put("allowCrossApp", "asfas");
-        Assert.assertFalse(RegistryUtils.allowCrossApp(propertiesMap));
     }
 
     @Test
@@ -548,7 +536,7 @@ public class TestRegistry {
                 return true;
             }
         };
-        Assert.assertEquals(1, instance.getProperties().size());
+        Assert.assertEquals(2, instance.getProperties().size());
         Map<String, String> properties = new HashMap<>();
         properties.put("tag1", "value1");
         RegistryUtils.updateInstanceProperties(properties);

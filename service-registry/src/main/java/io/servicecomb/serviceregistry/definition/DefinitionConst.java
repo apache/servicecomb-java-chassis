@@ -25,5 +25,17 @@ public interface DefinitionConst {
 
     String qulifiedServiceNameKey = serviceDescriptionKey + "." + nameKey;
 
+    String qulifiedServiceVersionKey = serviceDescriptionKey + ".version";
+
+    String qulifiedServiceDescKey = serviceDescriptionKey + ".description";
+
+    String qulifiedServiceRoleKey = serviceDescriptionKey + ".role";
+
+    String allowCrossAppKey = "allowCrossApp";
+
     String defaultAppId = "default";
+
+    String defaultVersion = "1.0.0";
+
+    String defaultStage = "prod";
 }
