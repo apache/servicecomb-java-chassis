@@ -16,8 +16,8 @@
 
 package io.servicecomb.config.archaius.sources;
 
-import io.servicecomb.common.exceptions.ServiceCombException;
 import io.servicecomb.config.ConfigUtil;
+import io.servicecomb.foundation.common.exceptions.ServiceCombException;
 import java.io.IOException;
 import java.net.URL;
 import org.slf4j.Logger;

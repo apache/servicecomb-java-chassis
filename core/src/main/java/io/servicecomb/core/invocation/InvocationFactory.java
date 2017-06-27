@@ -16,6 +16,9 @@
 
 package io.servicecomb.core.invocation;
 
+import static io.servicecomb.foundation.common.base.ServiceCombConstants.CONFIG_SERVICE_NAME;
+
+import com.netflix.config.DynamicPropertyFactory;
 import io.servicecomb.core.Const;
 import io.servicecomb.core.Endpoint;
 import io.servicecomb.core.Invocation;

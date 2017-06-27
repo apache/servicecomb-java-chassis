@@ -16,10 +16,12 @@
 
 package io.servicecomb.serviceregistry.definition;
 
+import static io.servicecomb.foundation.common.base.ServiceCombConstants.CONFIG_SERVICE;
+
 public interface DefinitionConst {
     String appIdKey = "APPLICATION_ID";
 
-    String serviceDescriptionKey = "service_description";
+    String serviceDescriptionKey = CONFIG_SERVICE;
 
     String nameKey = "name";
 

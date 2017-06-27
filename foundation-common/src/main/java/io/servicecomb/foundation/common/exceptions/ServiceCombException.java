@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package io.servicecomb.common.exceptions;
+package io.servicecomb.foundation.common.exceptions;
 
 public class ServiceCombException extends RuntimeException {
     private static final long serialVersionUID = -1085233183289520695L;

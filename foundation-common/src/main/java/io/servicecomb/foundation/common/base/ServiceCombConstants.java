@@ -14,20 +14,15 @@
  * limitations under the License.
  */
 
-package io.servicecomb.serviceregistry.config;
+package io.servicecomb.foundation.common.base;
 
-import static io.servicecomb.foundation.common.base.ServiceCombConstants.CONFIG_SERVICE;
+public class ServiceCombConstants {
 
-public final class MicroservicePropertiesLoader extends AbstractPropertiesLoader {
+  public static final String CONFIG_APPLICATION_ID = "APPLICATION_ID";
 
-    public static final MicroservicePropertiesLoader INSTANCE = new MicroservicePropertiesLoader();
-
-    private MicroservicePropertiesLoader() {
-    }
-
-    @Override
-    protected String getConfigOptionPrefix() {
-        return CONFIG_SERVICE;
-    }
-
+  public static final String CONFIG_SERVICE = "service_description";
+  public static final String CONFIG_SERVICE_NAME = CONFIG_SERVICE + ".name";
+  public static final String CONFIG_SERVICE_VERSION = CONFIG_SERVICE + ".version";
+  public static final String CONFIG_SERVICE_ROLE = CONFIG_SERVICE + ".role";
+  public static final String CONFIG_SERVICE_DESCRIPTION = CONFIG_SERVICE + ".description";
 }
