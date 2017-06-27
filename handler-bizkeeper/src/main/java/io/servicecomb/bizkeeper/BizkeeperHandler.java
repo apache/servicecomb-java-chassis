@@ -16,21 +16,18 @@
 
 package io.servicecomb.bizkeeper;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import io.servicecomb.core.Invocation;
-import io.servicecomb.core.handler.impl.AbstractHandler;
-import io.servicecomb.swagger.invocation.AsyncResponse;
-import io.servicecomb.swagger.invocation.Response;
-
 import com.netflix.hystrix.HystrixCommandProperties;
 import com.netflix.hystrix.HystrixCommandProperties.ExecutionIsolationStrategy;
 import com.netflix.hystrix.HystrixInvokable;
 import com.netflix.hystrix.HystrixObservable;
 import com.netflix.hystrix.strategy.HystrixPlugins;
 import com.netflix.hystrix.strategy.executionhook.HystrixCommandExecutionHook;
-
+import io.servicecomb.core.Invocation;
+import io.servicecomb.core.handler.impl.AbstractHandler;
+import io.servicecomb.swagger.invocation.AsyncResponse;
+import io.servicecomb.swagger.invocation.Response;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import rx.Observable;
 
 /**
@@ -52,7 +49,7 @@ public abstract class BizkeeperHandler extends AbstractHandler {
         try {
             HystrixPlugins.getInstance().registerPropertiesStrategy(HystrixPropertiesStrategyExt.getInstance());
         } catch (IllegalStateException e) {
-            LOG.warn("Hystrix properties already registerd. Dynamic configuration may not work.");
+            LOG.warn("Hystrix properties already registered. Dynamic configuration may not work.", e);
         }
         try {
             HystrixPlugins.getInstance().registerCommandExecutionHook(new HystrixCommandExecutionHook() {
@@ -62,7 +59,7 @@ public abstract class BizkeeperHandler extends AbstractHandler {
                 }
             });
         } catch (IllegalStateException e) {
-            LOG.warn("HystrixCommandExecutionHook already registerd. ");
+            LOG.warn("HystrixCommandExecutionHook already registered.", e);
         }
     }
 
