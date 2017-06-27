@@ -16,21 +16,38 @@
 
 package io.servicecomb.demo.jaxrs.tests.endpoints;
 
-import io.servicecomb.provider.rest.common.RestSchema;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.MediaType;
+import io.servicecomb.demo.compute.Person;
+import io.servicecomb.demo.server.User;
+import java.util.Date;
+import java.util.Map;
 
-@RestSchema(schemaId = "frenchGreetingRestEndpoint")
-@Path("/french")
-public class FrenchGreetingRestEndpoint {
+public interface SchemaFirstJaxrs {
 
-  @GET
-  @Path("/bonjour")
-  @Produces(MediaType.TEXT_PLAIN)
-  public String bonjour(@QueryParam("name") String name) {
-    return "Bonjour " + name;
-  }
+  int add(int a, int b);
+
+  int reduce(int a, int b);
+
+  Person sayHello(Person user);
+
+  String testRawJsonString(String jsonInput);
+
+  String saySomething(String prefix, Person user);
+
+  String sayHi(String name);
+
+  String sayHi2(String name);
+
+  boolean isTrue();
+
+  String addString(String[] s);
+
+  Map<String, User> testUserMap(Map<String, User> userMap);
+
+  String textPlain(String body);
+
+  byte[] bytes(byte[] input);
+
+  Date addDate(Date date, long seconds);
+
+  int defaultPath();
 }
