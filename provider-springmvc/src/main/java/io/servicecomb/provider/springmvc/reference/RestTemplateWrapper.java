@@ -33,14 +33,12 @@ import org.springframework.web.client.RestTemplate;
  * 用于同时支持cse调用和非cse调用
  */
 public class RestTemplateWrapper extends RestTemplate {
-    private static List<AcceptableRestTemplate> acceptableRestTemplates = new ArrayList<>();
+    private List<AcceptableRestTemplate> acceptableRestTemplates = new ArrayList<>();
 
-    public static void addAcceptableRestTemplate(AcceptableRestTemplate restTemplate) {
+    private AcceptableRestTemplate defaultAcceptableRestTemplate = new DefaultAcceptableRestTemplate();
+
+    public void addAcceptableRestTemplate(AcceptableRestTemplate restTemplate) {
         acceptableRestTemplates.add(restTemplate);
-    }
-
-    static {
-        acceptableRestTemplates.add(new CseRestTemplate());
     }
 
     private RestTemplate getRestTemplate(String url) {
@@ -49,7 +47,7 @@ public class RestTemplateWrapper extends RestTemplate {
                 return template;
             }
         }
-        return null;
+        return defaultAcceptableRestTemplate;
     }
 
     private RestTemplate getRestTemplate(URI uri) {
@@ -58,288 +56,152 @@ public class RestTemplateWrapper extends RestTemplate {
                 return template;
             }
         }
-        return null;
+        return defaultAcceptableRestTemplate;
     }
 
     @Override
     public <T> T getForObject(String url, Class<T> responseType, Object... urlVariables) throws RestClientException {
-        RestTemplate restTemplate = getRestTemplate(url);
-        if (restTemplate != null) {
-            return restTemplate.getForObject(url, responseType, urlVariables);
-        }
-
-        return super.getForObject(url, responseType, urlVariables);
+        return getRestTemplate(url).getForObject(url, responseType, urlVariables);
     }
 
     @Override
     public <T> T getForObject(String url, Class<T> responseType,
             Map<String, ?> urlVariables) throws RestClientException {
-        RestTemplate restTemplate = getRestTemplate(url);
-        if (restTemplate != null) {
-            return restTemplate.getForObject(url, responseType, urlVariables);
-        }
-
-        return super.getForObject(url, responseType, urlVariables);
+        return getRestTemplate(url).getForObject(url, responseType, urlVariables);
     }
 
     @Override
     public <T> T getForObject(URI url, Class<T> responseType) throws RestClientException {
-        RestTemplate restTemplate = getRestTemplate(url);
-        if (restTemplate != null) {
-            return restTemplate.getForObject(url, responseType);
-        }
-
-        return super.getForObject(url, responseType);
+        return getRestTemplate(url).getForObject(url, responseType);
     }
 
     @Override
     public <T> ResponseEntity<T> getForEntity(String url, Class<T> responseType,
             Object... urlVariables) throws RestClientException {
-        RestTemplate restTemplate = getRestTemplate(url);
-        if (restTemplate != null) {
-            return restTemplate.getForEntity(url, responseType, urlVariables);
-        }
-
-        return super.getForEntity(url, responseType, urlVariables);
+        return getRestTemplate(url).getForEntity(url, responseType, urlVariables);
     }
 
     @Override
     public <T> ResponseEntity<T> getForEntity(String url, Class<T> responseType,
             Map<String, ?> urlVariables) throws RestClientException {
-        RestTemplate restTemplate = getRestTemplate(url);
-        if (restTemplate != null) {
-            return restTemplate.getForEntity(url, responseType, urlVariables);
-        }
-
-        return super.getForEntity(url, responseType, urlVariables);
+        return getRestTemplate(url).getForEntity(url, responseType, urlVariables);
     }
 
     @Override
     public <T> ResponseEntity<T> getForEntity(URI url, Class<T> responseType) throws RestClientException {
-        RestTemplate restTemplate = getRestTemplate(url);
-        if (restTemplate != null) {
-            return restTemplate.getForEntity(url, responseType);
-        }
-
-        return super.getForEntity(url, responseType);
+        return getRestTemplate(url).getForEntity(url, responseType);
     }
 
     @Override
     public <T> T postForObject(String url, Object request, Class<T> responseType,
             Object... uriVariables) throws RestClientException {
-        RestTemplate restTemplate = getRestTemplate(url);
-        if (restTemplate != null) {
-            return restTemplate.postForObject(url, request, responseType, uriVariables);
-        }
-
-        return super.postForObject(url, request, responseType, uriVariables);
+        return getRestTemplate(url).postForObject(url, request, responseType, uriVariables);
     }
 
     @Override
     public <T> T postForObject(String url, Object request, Class<T> responseType,
             Map<String, ?> uriVariables) throws RestClientException {
-        RestTemplate restTemplate = getRestTemplate(url);
-        if (restTemplate != null) {
-            return restTemplate.postForObject(url, request, responseType, uriVariables);
-        }
-
-        return super.postForObject(url, request, responseType, uriVariables);
+        return getRestTemplate(url).postForObject(url, request, responseType, uriVariables);
     }
 
     @Override
     public <T> T postForObject(URI url, Object request, Class<T> responseType) throws RestClientException {
-        RestTemplate restTemplate = getRestTemplate(url);
-        if (restTemplate != null) {
-            return restTemplate.postForObject(url, request, responseType);
-        }
-
-        return super.postForObject(url, request, responseType);
+        return getRestTemplate(url).postForObject(url, request, responseType);
     }
 
     @Override
     public <T> ResponseEntity<T> postForEntity(String url, Object request, Class<T> responseType,
             Object... uriVariables) throws RestClientException {
-        RestTemplate restTemplate = getRestTemplate(url);
-        if (restTemplate != null) {
-            return restTemplate.postForEntity(url, request, responseType, uriVariables);
-        }
-
-        return super.postForEntity(url, request, responseType, uriVariables);
+        return getRestTemplate(url).postForEntity(url, request, responseType, uriVariables);
     }
 
     @Override
     public <T> ResponseEntity<T> postForEntity(String url, Object request, Class<T> responseType,
             Map<String, ?> uriVariables) throws RestClientException {
-        RestTemplate restTemplate = getRestTemplate(url);
-        if (restTemplate != null) {
-            return restTemplate.postForEntity(url, request, responseType, uriVariables);
-        }
-
-        return super.postForEntity(url, request, responseType, uriVariables);
+        return getRestTemplate(url).postForEntity(url, request, responseType, uriVariables);
     }
 
     @Override
     public <T> ResponseEntity<T> postForEntity(URI url, Object request,
             Class<T> responseType) throws RestClientException {
-        RestTemplate restTemplate = getRestTemplate(url);
-        if (restTemplate != null) {
-            return restTemplate.postForEntity(url, request, responseType);
-        }
-
-        return super.postForEntity(url, request, responseType);
+        return getRestTemplate(url).postForEntity(url, request, responseType);
     }
 
     @Override
     public void put(String url, Object request, Object... urlVariables) throws RestClientException {
-        RestTemplate restTemplate = getRestTemplate(url);
-        if (restTemplate != null) {
-            restTemplate.put(url, request, urlVariables);
-            return;
-        }
-
-        super.put(url, request, urlVariables);
+        getRestTemplate(url).put(url, request, urlVariables);
     }
 
     @Override
     public void put(String url, Object request, Map<String, ?> urlVariables) throws RestClientException {
-        RestTemplate restTemplate = getRestTemplate(url);
-        if (restTemplate != null) {
-            restTemplate.put(url, request, urlVariables);
-            return;
-        }
-
-        super.put(url, request, urlVariables);
+        getRestTemplate(url).put(url, request, urlVariables);
     }
 
     @Override
     public void put(URI url, Object request) throws RestClientException {
-        RestTemplate restTemplate = getRestTemplate(url);
-        if (restTemplate != null) {
-            restTemplate.put(url, request);
-            return;
-        }
-
-        super.put(url, request);
+        getRestTemplate(url).put(url, request);
     }
 
     @Override
     public void delete(String url, Object... urlVariables) throws RestClientException {
-        RestTemplate restTemplate = getRestTemplate(url);
-        if (restTemplate != null) {
-            restTemplate.delete(url, urlVariables);
-            return;
-        }
-
-        super.delete(url, urlVariables);
+        getRestTemplate(url).delete(url, urlVariables);
     }
 
     @Override
     public void delete(String url, Map<String, ?> urlVariables) throws RestClientException {
-        RestTemplate restTemplate = getRestTemplate(url);
-        if (restTemplate != null) {
-            restTemplate.delete(url, urlVariables);
-            return;
-        }
-
-        super.delete(url, urlVariables);
+        getRestTemplate(url).delete(url, urlVariables);
     }
 
     @Override
     public void delete(URI url) throws RestClientException {
-        RestTemplate restTemplate = getRestTemplate(url);
-        if (restTemplate != null) {
-            restTemplate.delete(url);
-            return;
-        }
-
-        super.delete(url);
+        getRestTemplate(url).delete(url);
     }
 
     @Override
     public <T> ResponseEntity<T> exchange(String url, HttpMethod method, HttpEntity<?> requestEntity,
             Class<T> responseType, Object... uriVariables) throws RestClientException {
-        RestTemplate restTemplate = getRestTemplate(url);
-        if (restTemplate != null) {
-            return restTemplate.exchange(url, method, requestEntity, responseType, uriVariables);
-        }
-
-        return super.exchange(url, method, requestEntity, responseType, uriVariables);
+        return getRestTemplate(url).exchange(url, method, requestEntity, responseType, uriVariables);
     }
 
     @Override
     public <T> ResponseEntity<T> exchange(String url, HttpMethod method, HttpEntity<?> requestEntity,
             ParameterizedTypeReference<T> responseType, Map<String, ?> uriVariables) throws RestClientException {
-        RestTemplate restTemplate = getRestTemplate(url);
-        if (restTemplate != null) {
-            return restTemplate.exchange(url, method, requestEntity, responseType, uriVariables);
-        }
-
-        return super.exchange(url, method, requestEntity, responseType, uriVariables);
+        return getRestTemplate(url).exchange(url, method, requestEntity, responseType, uriVariables);
     }
 
     @Override
     public <T> ResponseEntity<T> exchange(String url, HttpMethod method, HttpEntity<?> requestEntity,
             Class<T> responseType, Map<String, ?> uriVariables) throws RestClientException {
-        RestTemplate restTemplate = getRestTemplate(url);
-        if (restTemplate != null) {
-            return restTemplate.exchange(url, method, requestEntity, responseType, uriVariables);
-        }
-
-        return super.exchange(url, method, requestEntity, responseType, uriVariables);
+        return getRestTemplate(url).exchange(url, method, requestEntity, responseType, uriVariables);
     }
 
     @Override
     public <T> ResponseEntity<T> exchange(String url, HttpMethod method, HttpEntity<?> requestEntity,
             ParameterizedTypeReference<T> responseType, Object... uriVariables) throws RestClientException {
-        RestTemplate restTemplate = getRestTemplate(url);
-        if (restTemplate != null) {
-            return restTemplate.exchange(url, method, requestEntity, responseType, uriVariables);
-        }
-
-        return super.exchange(url, method, requestEntity, responseType, uriVariables);
+        return getRestTemplate(url).exchange(url, method, requestEntity, responseType, uriVariables);
     }
 
     @Override
     public <T> ResponseEntity<T> exchange(RequestEntity<?> requestEntity,
             Class<T> responseType) throws RestClientException {
-        RestTemplate restTemplate = getRestTemplate(requestEntity.getUrl());
-        if (restTemplate != null) {
-            return restTemplate.exchange(requestEntity, responseType);
-        }
-
-        return super.exchange(requestEntity, responseType);
+        return getRestTemplate(requestEntity.getUrl()).exchange(requestEntity, responseType);
     }
 
     @Override
     public <T> ResponseEntity<T> exchange(RequestEntity<?> requestEntity,
             ParameterizedTypeReference<T> responseType) throws RestClientException {
-        RestTemplate restTemplate = getRestTemplate(requestEntity.getUrl());
-        if (restTemplate != null) {
-            return restTemplate.exchange(requestEntity, responseType);
-        }
-
-        return super.exchange(requestEntity, responseType);
+        return getRestTemplate(requestEntity.getUrl()).exchange(requestEntity, responseType);
     }
 
     @Override
     public <T> ResponseEntity<T> exchange(URI url, HttpMethod method, HttpEntity<?> requestEntity,
             Class<T> responseType) throws RestClientException {
-        RestTemplate restTemplate = getRestTemplate(url);
-        if (restTemplate != null) {
-            return restTemplate.exchange(url, method, requestEntity, responseType);
-        }
-
-        return super.exchange(url, method, requestEntity, responseType);
+        return getRestTemplate(url).exchange(url, method, requestEntity, responseType);
     }
 
     @Override
     public <T> ResponseEntity<T> exchange(URI url, HttpMethod method, HttpEntity<?> requestEntity,
             ParameterizedTypeReference<T> responseType) throws RestClientException {
-        RestTemplate restTemplate = getRestTemplate(url);
-        if (restTemplate != null) {
-            return restTemplate.exchange(url, method, requestEntity, responseType);
-        }
-
-        return super.exchange(url, method, requestEntity, responseType);
+        return getRestTemplate(url).exchange(url, method, requestEntity, responseType);
     }
 }

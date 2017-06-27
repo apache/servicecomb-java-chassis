@@ -16,19 +16,16 @@
 
 package io.servicecomb.provider.springmvc.reference;
 
-import org.springframework.web.client.RestTemplate;
+import java.net.URI;
 
-public final class RestTemplateBuilder {
-    private static RestTemplateWrapper wrapper = new RestTemplateWrapper();
-
-    private RestTemplateBuilder() {
+public class DefaultAcceptableRestTemplate extends AcceptableRestTemplate {
+    @Override
+    boolean isAcceptable(String uri) {
+        return true;
     }
 
-    public static RestTemplate create() {
-        return wrapper;
-    }
-
-    public static void addAcceptableRestTemplate(AcceptableRestTemplate restTemplate) {
-        wrapper.addAcceptableRestTemplate(restTemplate);
+    @Override
+    boolean isAcceptable(URI uri) {
+        return true;
     }
 }

@@ -17,6 +17,7 @@
 package io.servicecomb.provider.springmvc.reference;
 
 import java.net.URI;
+import java.net.UnknownHostException;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -29,25 +30,25 @@ public class TestRestTemplateBuilder {
     public void testRestTemplateBuilder() {
         Assert.assertEquals(RestTemplateWrapper.class, RestTemplateBuilder.create().getClass());
     }
-    
+
     class MyAcceptableRestTemplate extends AcceptableRestTemplate {
 
         @Override
         boolean isAcceptable(String uri) {
-            return uri.startsWith("http");
+            return uri.startsWith("http://");
         }
 
         @Override
         boolean isAcceptable(URI uri) {
             return uri.getScheme().equals("http");
         }
-        
+
         @Override
         public void delete(String url, Object... urlVariables) throws RestClientException {
             throw new RestClientException("test error.");
         }
     }
-    
+
     @Test
     public void testRestTemplateBuilderResttemplate() {
         RestTemplateBuilder.addAcceptableRestTemplate(new MyAcceptableRestTemplate());
@@ -58,7 +59,13 @@ public class TestRestTemplateBuilder {
         } catch (RestClientException e) {
             Assert.assertEquals(e.getMessage(), "test error.");
         }
-        
+
+        try {
+            template.delete("https://testtesttest");
+            Assert.assertFalse(true);
+        } catch (RestClientException e) {
+            Assert.assertTrue(e.getCause() instanceof UnknownHostException);
+        }
     }
 
 }
