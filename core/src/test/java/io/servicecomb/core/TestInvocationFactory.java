@@ -16,26 +16,26 @@
 
 package io.servicecomb.core;
 
-import io.servicecomb.core.definition.OperationMeta;
-import io.servicecomb.core.definition.SchemaMeta;
-import io.servicecomb.core.invocation.InvocationFactory;
-import io.servicecomb.core.provider.consumer.ReferenceConfig;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import com.netflix.config.DynamicPropertyFactory;
-
+import io.servicecomb.core.definition.OperationMeta;
+import io.servicecomb.core.definition.SchemaMeta;
+import io.servicecomb.core.invocation.InvocationFactory;
+import io.servicecomb.core.provider.consumer.ReferenceConfig;
+import io.servicecomb.serviceregistry.RegistryUtils;
+import io.servicecomb.serviceregistry.ServiceRegistry;
+import io.servicecomb.serviceregistry.registry.ServiceRegistryFactory;
 import mockit.Injectable;
 
 public class TestInvocationFactory {
     @BeforeClass
     public static void setUp() {
-        System.out.println(
-                DynamicPropertyFactory.getInstance().getStringProperty("service_description.name", null).get());
-        Utils.updateProperty("service_description.name", "test");
-        System.out.println(
-                DynamicPropertyFactory.getInstance().getStringProperty("service_description.name", null).get());
+        ServiceRegistry serviceRegistry = ServiceRegistryFactory.createLocal();
+        serviceRegistry.getMicroserviceManager().addMicroservice("pojotest", "test");
+        serviceRegistry.init();
+        RegistryUtils.setServiceRegistry(serviceRegistry);
     }
 
     @Test

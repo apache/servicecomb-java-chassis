@@ -30,15 +30,14 @@ import io.servicecomb.core.Const;
 import io.servicecomb.core.Invocation;
 import io.servicecomb.core.definition.OperationMeta;
 import io.servicecomb.core.transport.AbstractTransport;
+import io.servicecomb.foundation.common.net.IpPort;
+import io.servicecomb.foundation.common.utils.JsonUtils;
+import io.servicecomb.foundation.vertx.client.http.HttpClientWithContext;
 import io.servicecomb.swagger.invocation.AsyncResponse;
 import io.servicecomb.swagger.invocation.Response;
 import io.servicecomb.swagger.invocation.exception.CommonExceptionData;
 import io.servicecomb.swagger.invocation.exception.ExceptionFactory;
 import io.servicecomb.swagger.invocation.response.ResponseMeta;
-import io.servicecomb.foundation.common.net.IpPort;
-import io.servicecomb.foundation.common.utils.JsonUtils;
-import io.servicecomb.foundation.vertx.client.http.HttpClientWithContext;
-
 import io.vertx.core.http.HttpClient;
 import io.vertx.core.http.HttpClientRequest;
 import io.vertx.core.http.HttpClientResponse;
@@ -61,6 +60,7 @@ public abstract class VertxHttpMethod {
                     path,
                     swaggerRestOperation,
                     asyncResp);
+        clientRequest.putHeader(Const.TARGET_MICROSERVICE, invocation.getMicroserviceName());
         RestClientRequestImpl restClientRequest = new RestClientRequestImpl(clientRequest);
         RestCodec.argsToRest(invocation.getArgs(), swaggerRestOperation, restClientRequest);
 

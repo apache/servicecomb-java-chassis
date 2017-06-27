@@ -33,6 +33,9 @@ import io.servicecomb.core.CseContext;
 import io.servicecomb.core.Invocation;
 import io.servicecomb.core.definition.SchemaMeta;
 import io.servicecomb.core.unittest.UnitTestMeta;
+import io.servicecomb.serviceregistry.RegistryUtils;
+import io.servicecomb.serviceregistry.ServiceRegistry;
+import io.servicecomb.serviceregistry.registry.ServiceRegistryFactory;
 import io.servicecomb.swagger.invocation.Response;
 
 public class TestCseClientHttpRequest {
@@ -47,6 +50,11 @@ public class TestCseClientHttpRequest {
 
     @Test
     public void test() throws IOException {
+        ServiceRegistry serviceRegistry = ServiceRegistryFactory.createLocal();
+        serviceRegistry.getMicroserviceManager().addMicroservice("app", "ms");
+        serviceRegistry.init();
+        RegistryUtils.setServiceRegistry(serviceRegistry);
+
         UnitTestMeta meta = new UnitTestMeta();
 
         CseContext.getInstance()

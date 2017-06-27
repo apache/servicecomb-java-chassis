@@ -23,7 +23,7 @@ import io.servicecomb.core.definition.MicroserviceMeta;
 import io.servicecomb.core.definition.OperationMeta;
 import io.servicecomb.core.definition.SchemaMeta;
 import io.servicecomb.core.provider.consumer.ReferenceConfig;
-import com.netflix.config.DynamicPropertyFactory;
+import io.servicecomb.serviceregistry.RegistryUtils;
 
 public final class InvocationFactory {
     private static String microserviceName = getMicroserviceName();
@@ -32,7 +32,7 @@ public final class InvocationFactory {
     }
 
     private static String getMicroserviceName() {
-        return DynamicPropertyFactory.getInstance().getStringProperty("service_description.name", null).get();
+        return RegistryUtils.getMicroserviceManager().getDefaultMicroserviceForce().getServiceName();
     }
 
     public static void setMicroserviceName(String microserviceName) {
@@ -40,7 +40,7 @@ public final class InvocationFactory {
     }
 
     public static Invocation forConsumer(ReferenceConfig referenceConfig, OperationMeta operationMeta,
-                                         Object[] swaggerArguments) {
+            Object[] swaggerArguments) {
         Invocation invocation = new Invocation(referenceConfig,
                 operationMeta,
                 swaggerArguments);
