@@ -57,13 +57,23 @@ public class TestRestTemplateBuilder {
             template.delete("http://test");
             Assert.assertFalse(true);
         } catch (RestClientException e) {
+            //custom
             Assert.assertEquals(e.getMessage(), "test error.");
+        }
+
+        try {
+            template.delete("cse://test/a/b/c");
+            Assert.assertFalse(true);
+        } catch (NullPointerException e) {
+            // cse provider is null
+            Assert.assertTrue(true);
         }
 
         try {
             template.delete("https://testtesttest");
             Assert.assertFalse(true);
         } catch (RestClientException e) {
+            // default resttemplate resove host name
             Assert.assertTrue(e.getCause() instanceof UnknownHostException);
         }
     }

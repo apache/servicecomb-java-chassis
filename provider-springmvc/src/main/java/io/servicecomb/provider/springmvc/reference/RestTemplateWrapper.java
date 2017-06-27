@@ -37,6 +37,10 @@ public class RestTemplateWrapper extends RestTemplate {
 
     private AcceptableRestTemplate defaultAcceptableRestTemplate = new DefaultAcceptableRestTemplate();
 
+    public RestTemplateWrapper() {
+        acceptableRestTemplates.add(new CseRestTemplate());
+    }
+
     public void addAcceptableRestTemplate(AcceptableRestTemplate restTemplate) {
         acceptableRestTemplates.add(restTemplate);
     }
