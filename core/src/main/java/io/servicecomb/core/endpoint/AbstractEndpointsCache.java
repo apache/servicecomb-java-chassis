@@ -22,9 +22,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import io.servicecomb.core.Transport;
 import org.springframework.util.StringUtils;
 
+import io.servicecomb.core.Transport;
 import io.servicecomb.core.transport.TransportManager;
 import io.servicecomb.serviceregistry.cache.CacheEndpoint;
 import io.servicecomb.serviceregistry.cache.InstanceCache;
@@ -35,7 +35,9 @@ import io.servicecomb.serviceregistry.cache.InstanceCacheManager;
  * 所以要将字符串的各种信息转义一下，方便运行时使用
  */
 public abstract class AbstractEndpointsCache<ENDPOINT> {
-    static TransportManager transportManager;
+    protected static InstanceCacheManager instanceCacheManager;
+
+    protected static TransportManager transportManager;
 
     protected List<ENDPOINT> endpoints = new ArrayList<>();
 
@@ -43,7 +45,8 @@ public abstract class AbstractEndpointsCache<ENDPOINT> {
 
     protected InstanceCache instanceCache = null;
 
-    public static void setTransportManager(TransportManager transportManager) {
+    public static void init(InstanceCacheManager instanceCacheManager, TransportManager transportManager) {
+        AbstractEndpointsCache.instanceCacheManager = instanceCacheManager;
         AbstractEndpointsCache.transportManager = transportManager;
     }
 
@@ -57,7 +60,7 @@ public abstract class AbstractEndpointsCache<ENDPOINT> {
     }
 
     public List<ENDPOINT> getLatestEndpoints() {
-        InstanceCache newCache = InstanceCacheManager.INSTANCE.getOrCreate(instanceCache.getAppId(),
+        InstanceCache newCache = instanceCacheManager.getOrCreate(instanceCache.getAppId(),
                 instanceCache.getMicroserviceName(),
                 instanceCache.getMicroserviceVersionRule());
         if (!instanceCache.cacheChanged(newCache)) {

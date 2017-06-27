@@ -133,6 +133,7 @@ public class TestRestOperationMeta {
     }
 
     private static class SomeRestController {
+        @SuppressWarnings("unused")
         public String sayHi() {
             return "Hi";
         }

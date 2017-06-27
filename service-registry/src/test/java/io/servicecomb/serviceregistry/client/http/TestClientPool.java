@@ -16,27 +16,14 @@
 
 package io.servicecomb.serviceregistry.client.http;
 
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 
-import io.servicecomb.config.ConfigUtil;
 import io.servicecomb.serviceregistry.config.ServiceRegistryConfig;
 import io.vertx.core.http.HttpVersion;
 import mockit.Mock;
 import mockit.MockUp;
 
 public class TestClientPool {
-
-    @Before
-    public void setUp() throws Exception {
-        ConfigUtil.installDynamicConfig();
-    }
-
-    @After
-    public void tearDown() throws Exception {
-    }
-
     @Test
     public void testHttpClientPool() {
         new MockUp<ServiceRegistryConfig>() {

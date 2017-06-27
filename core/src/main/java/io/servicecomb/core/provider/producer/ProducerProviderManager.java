@@ -20,14 +20,15 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import io.servicecomb.core.definition.MicroserviceMeta;
-import io.servicecomb.core.definition.MicroserviceMetaManager;
 import org.springframework.stereotype.Component;
 
 import io.servicecomb.core.ProducerProvider;
+import io.servicecomb.core.definition.MicroserviceMeta;
+import io.servicecomb.core.definition.MicroserviceMetaManager;
 import io.servicecomb.core.definition.SchemaMeta;
 import io.servicecomb.core.definition.SchemaUtils;
 import io.servicecomb.serviceregistry.RegistryUtils;
+import io.servicecomb.serviceregistry.api.registry.Microservice;
 
 @Component
 public class ProducerProviderManager {
@@ -42,11 +43,13 @@ public class ProducerProviderManager {
             provider.init();
         }
 
-        MicroserviceMeta microserviceMeta =
-            microserviceMetaManager.getOrCreateMicroserviceMeta(RegistryUtils.getMicroservice().getServiceName());
-        for (SchemaMeta schemaMeta : microserviceMeta.getSchemaMetas()) {
-            String content = SchemaUtils.swaggerToString(schemaMeta.getSwagger());
-            RegistryUtils.getMicroservice().addSchema(schemaMeta.getSchemaId(), content);
+        for (Microservice microservice : RegistryUtils.getMicroserviceManager().getMicroservices()) {
+            MicroserviceMeta microserviceMeta = microserviceMetaManager.getOrCreateMicroserviceMeta(microservice);
+
+            for (SchemaMeta schemaMeta : microserviceMeta.getSchemaMetas()) {
+                String content = SchemaUtils.swaggerToString(schemaMeta.getSwagger());
+                microservice.addSchema(schemaMeta.getSchemaId(), content);
+            }
         }
     }
 }

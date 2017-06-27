@@ -13,25 +13,31 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package io.servicecomb.serviceregistry.client;
 
-import io.servicecomb.serviceregistry.client.http.ServiceRegistryClientImpl;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.junit.Assert;
 import org.junit.Test;
 
-/**
- * Created by   on 2017/3/31.
- */
-public class RegistryClientFactoryTest {
-    @Test
-    public void testGetRemoteRegistryClient() {
-        ServiceRegistryClient client = RegistryClientFactory.getRegistryClient();
-        Assert.assertTrue(client instanceof ServiceRegistryClientImpl);
-        System.setProperty("local.registry.file", "/tmp/test.yaml");
-        RegistryClientFactory.reset();
-        client = RegistryClientFactory.getRegistryClient();
-        Assert.assertTrue(client instanceof LocalServiceRegistryClientImpl);
+import io.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
 
+public class TestEndpoints {
+    @Test
+    public void testAll() {
+        Endpoints ep = new Endpoints();
+
+        List<MicroserviceInstance> instances = new ArrayList<>();
+
+        ep.setAppId("appId");
+        ep.setServiceName("sn");
+        ep.setInstances(instances);
+        ep.setVersion("v1");
+
+        Assert.assertEquals("appId", ep.getAppId());
+        Assert.assertEquals("sn", ep.getServiceName());
+        Assert.assertEquals(instances, ep.getInstances());
+        Assert.assertEquals("v1", ep.getVersion());
     }
 }

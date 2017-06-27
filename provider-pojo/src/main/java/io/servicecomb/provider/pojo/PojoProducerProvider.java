@@ -18,17 +18,18 @@ package io.servicecomb.provider.pojo;
 
 import javax.inject.Inject;
 
-import io.servicecomb.provider.pojo.instance.SpringInstanceFactory;
-import io.servicecomb.provider.pojo.schema.PojoProducerMeta;
-import io.servicecomb.provider.pojo.schema.PojoProducers;
 import org.springframework.stereotype.Component;
 
 import io.servicecomb.core.definition.schema.ProducerSchemaFactory;
 import io.servicecomb.core.provider.producer.AbstractProducerProvider;
-import io.servicecomb.provider.pojo.instance.PojoInstanceFactory;
-import io.servicecomb.serviceregistry.RegistryUtils;
 import io.servicecomb.foundation.common.RegisterManager;
 import io.servicecomb.foundation.common.utils.BeanUtils;
+import io.servicecomb.provider.pojo.instance.PojoInstanceFactory;
+import io.servicecomb.provider.pojo.instance.SpringInstanceFactory;
+import io.servicecomb.provider.pojo.schema.PojoProducerMeta;
+import io.servicecomb.provider.pojo.schema.PojoProducers;
+import io.servicecomb.serviceregistry.RegistryUtils;
+import io.servicecomb.serviceregistry.api.registry.Microservice;
 
 @Component
 public class PojoProducerProvider extends AbstractProducerProvider {
@@ -55,14 +56,22 @@ public class PojoProducerProvider extends AbstractProducerProvider {
         for (PojoProducerMeta pojoProducerMeta : pojoProducers.getProcucers()) {
             initPojoProducerMeta(pojoProducerMeta);
 
+            Microservice microservice = RegistryUtils.getServiceRegistry()
+                    .getMicroserviceManager()
+                    .findMicroservice(pojoProducerMeta.getInstanceClass());
+            if (microservice == null) {
+                throw new IllegalStateException(
+                        "can not find microservice, producer class=" + pojoProducerMeta.getInstanceClass().getName());
+            }
+
             try {
                 producerSchemaFactory.getOrCreateProducerSchema(
-                        RegistryUtils.getMicroservice().getServiceName(),
+                        microservice.getServiceName(),
                         pojoProducerMeta.getSchemaId(),
                         pojoProducerMeta.getInstanceClass(),
                         pojoProducerMeta.getInstance());
             } catch (Throwable e) {
-                throw new Error(
+                throw new IllegalArgumentException(
                         "create producer schema failed, class=" + pojoProducerMeta.getInstanceClass().getName(), e);
             }
         }

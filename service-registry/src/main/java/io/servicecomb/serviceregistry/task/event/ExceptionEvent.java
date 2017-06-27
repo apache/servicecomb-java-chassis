@@ -13,22 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package io.servicecomb.serviceregistry.task.event;
 
-package io.servicecomb.serviceregistry.notify;
+public class ExceptionEvent {
+    private Throwable throwable;
 
-import io.servicecomb.serviceregistry.api.response.MicroserviceInstanceChangedEvent;
+    public ExceptionEvent(Throwable throwable) {
+        this.throwable = throwable;
+    }
 
-/**
- * Created by   on 2017/3/12.
- */
-public interface RegistryListener {
-    void onInitialized();
-
-    void onMicroserviceInstanceChanged(MicroserviceInstanceChangedEvent evt);
-
-    void onHeartbeat();
-
-    void onException(Throwable e);
-
-    void onRecovered();
+    public Throwable getThrowable() {
+        return throwable;
+    }
 }

@@ -13,39 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package io.servicecomb.serviceregistry.task;
 
-package io.servicecomb.serviceregistry.notify;
+import java.util.ArrayList;
+import java.util.List;
 
-/**
- * Created by   on 2017/3/12.
- */
-public class RegistryMessage {
-    private RegistryEvent event;
+public class CompositeTask implements Runnable {
+    private List<Runnable> taskList = new ArrayList<>();
 
-    private Object payload;
-
-    public RegistryMessage() {
-
+    public void addTask(Runnable task) {
+        taskList.add(task);
     }
 
-    public RegistryMessage(RegistryEvent evt, Object payload) {
-        this.event = evt;
-        this.payload = payload;
+    public int getTaskCount() {
+        return taskList.size();
     }
 
-    public RegistryEvent getEvent() {
-        return event;
-    }
-
-    public void setEvent(RegistryEvent event) {
-        this.event = event;
-    }
-
-    public Object getPayload() {
-        return payload;
-    }
-
-    public void setPayload(Object payload) {
-        this.payload = payload;
+    public void run() {
+        for (Runnable task : taskList) {
+            task.run();
+        }
     }
 }

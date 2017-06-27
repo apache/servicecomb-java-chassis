@@ -16,21 +16,19 @@
 
 package io.servicecomb.core;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-import io.servicecomb.core.provider.consumer.ConsumerProviderManager;
-import io.servicecomb.core.provider.producer.ProducerProviderManager;
-import io.servicecomb.core.transport.TransportManager;
 import org.junit.Test;
 import org.springframework.context.event.ContextClosedEvent;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.context.support.AbstractApplicationContext;
 
-import io.servicecomb.serviceregistry.RegistryUtils;
+import io.servicecomb.core.provider.consumer.ConsumerProviderManager;
+import io.servicecomb.core.provider.producer.ProducerProviderManager;
+import io.servicecomb.core.transport.TransportManager;
 import io.servicecomb.foundation.common.utils.ReflectUtils;
-
+import io.servicecomb.serviceregistry.RegistryUtils;
 import mockit.Expectations;
 import mockit.Injectable;
 import mockit.Mocked;
@@ -78,8 +76,6 @@ public class TestCseApplicationListener {
                 result = context;
                 context.getBeansOfType(BootListener.class);
                 result = listeners;
-                producerProviderManager.init();
-                result = new IOException();
             }
         };
         CseApplicationListener cal = new CseApplicationListener();

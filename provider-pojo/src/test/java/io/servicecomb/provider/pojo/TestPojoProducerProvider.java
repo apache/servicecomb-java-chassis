@@ -70,8 +70,6 @@ public class TestPojoProducerProvider {
                 result = null;
                 meta.getImplementation();
                 result = "pojo:io.servicecomb.provider.pojo.Person";
-                RegistryUtils.getMicroservice();
-                result = service;
                 service.getServiceName();
                 result = "test";
             }

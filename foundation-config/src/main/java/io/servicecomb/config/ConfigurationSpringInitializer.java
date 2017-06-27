@@ -16,10 +16,31 @@
 
 package io.servicecomb.config;
 
+import java.io.IOException;
+import java.util.Iterator;
+import java.util.Properties;
+
+import org.apache.commons.configuration.AbstractConfiguration;
 import org.springframework.beans.factory.config.PropertyPlaceholderConfigurer;
+
+import com.netflix.config.ConfigurationManager;
 
 public class ConfigurationSpringInitializer extends PropertyPlaceholderConfigurer {
     public ConfigurationSpringInitializer() {
         ConfigUtil.installDynamicConfig();
+    }
+
+    @Override
+    protected Properties mergeProperties() throws IOException {
+        Properties properties = super.mergeProperties();
+
+        AbstractConfiguration config = ConfigurationManager.getConfigInstance();
+        Iterator<String> iter = config.getKeys();
+        while (iter.hasNext()) {
+            String key = iter.next();
+            Object value = config.getProperty(key);
+            properties.put(key, value);
+        }
+        return properties;
     }
 }

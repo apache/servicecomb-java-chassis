@@ -36,7 +36,6 @@ import io.servicecomb.core.handler.config.Config;
 import io.servicecomb.core.handler.impl.SimpleLoadBalanceHandler;
 import io.servicecomb.core.provider.consumer.ConsumerProviderManager;
 import io.servicecomb.foundation.common.utils.BeanUtils;
-import io.servicecomb.serviceregistry.RegistryUtils;
 import io.servicecomb.serviceregistry.api.registry.Microservice;
 import io.servicecomb.swagger.generator.core.unittest.UnitTestSwaggerUtils;
 import io.swagger.models.Swagger;
@@ -68,6 +67,8 @@ public class UnitTestMeta {
         consumerSchemaFactory.setMicroserviceMetaManager(microserviceMetaManager);
         consumerSchemaFactory.setSchemaListenerManager(schemaListenerManager);
 
+        consumerProviderManager.setConsumerSchemaFactory(consumerSchemaFactory);
+
         CseContext.getInstance().setConsumerProviderManager(consumerProviderManager);
         CseContext.getInstance().setConsumerSchemaFactory(consumerSchemaFactory);
         CseContext.getInstance().setSchemaListenerManager(schemaListenerManager);
@@ -93,17 +94,8 @@ public class UnitTestMeta {
         };
     };
 
-    private Microservice microservice = new Microservice();
 
     public UnitTestMeta() {
-        microservice.setAppId("app");
-        microservice.setServiceName("testname");
-        new MockUp<RegistryUtils>() {
-            @Mock
-            private Microservice createMicroserviceFromDefinition() {
-                return microservice;
-            }
-        };
 
         new MockUp<ConsumerHandlerManager>() {
             @Mock
@@ -121,9 +113,6 @@ public class UnitTestMeta {
         schemaLoader.setMicroserviceMetaManager(microserviceMetaManager);
     }
 
-    public void setMicroservice(Microservice microservice) {
-        this.microservice = microservice;
-    }
 
     public MicroserviceMetaManager getMicroserviceMetaManager() {
         return microserviceMetaManager;

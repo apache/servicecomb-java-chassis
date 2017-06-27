@@ -33,7 +33,7 @@ import io.servicecomb.serviceregistry.definition.DefinitionConst;
 import io.servicecomb.serviceregistry.definition.MicroserviceDefinition;
 
 public class TestPropertiesLoader {
-    private static MicroserviceManager microserviceManager = new MicroserviceManager();;
+    private static MicroserviceManager microserviceManager = new MicroserviceManager();
 
     @BeforeClass
     public static void init() {

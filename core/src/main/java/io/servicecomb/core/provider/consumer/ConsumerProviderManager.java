@@ -24,18 +24,27 @@ import javax.inject.Inject;
 
 import org.springframework.stereotype.Component;
 
-import io.servicecomb.core.Const;
-import io.servicecomb.core.ConsumerProvider;
 import com.netflix.config.DynamicPropertyFactory;
 import com.netflix.config.DynamicStringProperty;
+
+import io.servicecomb.core.Const;
+import io.servicecomb.core.ConsumerProvider;
+import io.servicecomb.core.definition.schema.ConsumerSchemaFactory;
 
 @Component
 public class ConsumerProviderManager {
     @Inject
     private List<ConsumerProvider> consumerProviderList;
 
+    @Inject
+    private ConsumerSchemaFactory consumerSchemaFactory;
+
     // key为微服务名
     private volatile Map<String, ReferenceConfig> referenceConfigMap = new ConcurrentHashMap<>();
+
+    public void setConsumerSchemaFactory(ConsumerSchemaFactory consumerSchemaFactory) {
+        this.consumerSchemaFactory = consumerSchemaFactory;
+    }
 
     public void init() throws Exception {
         for (ConsumerProvider provider : consumerProviderList) {
@@ -56,7 +65,8 @@ public class ConsumerProviderManager {
                         DynamicPropertyFactory.getInstance().getStringProperty(key + ".transport",
                                 Const.ANY_TRANSPORT);
 
-                    config = new ReferenceConfig(microserviceName, versionRule.getValue(), transport.getValue());
+                    config = new ReferenceConfig(consumerSchemaFactory, microserviceName, versionRule.getValue(),
+                            transport.getValue());
                     referenceConfigMap.put(microserviceName, config);
                 }
             }

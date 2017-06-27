@@ -1,3 +1,4 @@
+target.appid: appServer
 APPLICATION_ID: appClient
 service_description:
   name: appClientService

@@ -44,13 +44,12 @@ import io.servicecomb.core.definition.schema.ConsumerSchemaFactory;
 import io.servicecomb.core.provider.consumer.ConsumerProviderManager;
 import io.servicecomb.core.provider.consumer.InvokerUtils;
 import io.servicecomb.core.provider.consumer.ReferenceConfig;
+import io.servicecomb.foundation.common.utils.BeanUtils;
 import io.servicecomb.provider.springmvc.reference.CseClientHttpRequest;
 import io.servicecomb.provider.springmvc.reference.CseClientHttpResponse;
 import io.servicecomb.provider.springmvc.reference.RequestMeta;
 import io.servicecomb.swagger.invocation.Response;
 import io.servicecomb.swagger.invocation.exception.InvocationException;
-import io.servicecomb.foundation.common.utils.BeanUtils;
-
 import io.swagger.models.Operation;
 import io.swagger.models.Swagger;
 import mockit.Mock;
@@ -73,7 +72,8 @@ public class MockUtil {
         ConsumerProviderManager consumerProviderManager = new MockUp<ConsumerProviderManager>() {
             @Mock
             public ReferenceConfig getReferenceConfig(String microserviceName) {
-                return new ReferenceConfig("test", "test", "test");
+                return new ReferenceConfig(CseContext.getInstance().getConsumerSchemaFactory(), "test", "test",
+                        "test");
             }
         }.getMockInstance();
 

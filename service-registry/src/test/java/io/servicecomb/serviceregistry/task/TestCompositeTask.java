@@ -13,12 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package io.servicecomb.serviceregistry.task;
 
-package io.servicecomb.serviceregistry.notify;
+import org.junit.Assert;
+import org.junit.Test;
 
-/**
- * Created by   on 2017/3/12.
- */
-public enum RegistryEvent {
-    INITIALIZED, INSTANCE_CHANGED, HEARTBEAT, EXCEPTION, RECOVERED
+public class TestCompositeTask {
+    private int count;
+
+    @Test
+    public void testRun() {
+        CompositeTask task = new CompositeTask();
+        for (int idx = 0; idx < 3; idx++) {
+            task.addTask(() -> {
+                count++;
+            });
+        }
+
+        task.run();
+
+        Assert.assertEquals(3, count);
+        Assert.assertEquals(3, task.getTaskCount());
+    }
 }

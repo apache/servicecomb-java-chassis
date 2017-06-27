@@ -17,6 +17,7 @@ package io.servicecomb.core.definition.schema;
 
 import java.util.Arrays;
 
+import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -32,8 +33,8 @@ import io.servicecomb.core.definition.loader.SchemaLoader;
 import io.servicecomb.core.unittest.UnitTestMeta;
 import io.servicecomb.foundation.common.utils.ReflectUtils;
 import io.servicecomb.serviceregistry.RegistryUtils;
+import io.servicecomb.serviceregistry.ServiceRegistry;
 import io.servicecomb.serviceregistry.api.registry.Microservice;
-import io.servicecomb.serviceregistry.client.RegistryClientFactory;
 import io.servicecomb.serviceregistry.client.ServiceRegistryClient;
 import io.servicecomb.swagger.generator.core.CompositeSwaggerGeneratorContext;
 import io.servicecomb.swagger.generator.core.unittest.UnitTestSwaggerUtils;
@@ -43,6 +44,8 @@ public class TestConsumerSchemaFactory {
     private static ConsumerSchemaFactory consumerSchemaFactory = new ConsumerSchemaFactory();
 
     private static ServiceRegistryClient registryClient = Mockito.mock(ServiceRegistryClient.class);
+
+    private static ServiceRegistry serviceRegistry = Mockito.mock(ServiceRegistry.class);
 
     private static SchemaListener schemaListener = new SchemaListener() {
 
@@ -65,13 +68,18 @@ public class TestConsumerSchemaFactory {
 
     @BeforeClass
     public static void init() {
-        ReflectUtils.setField(RegistryClientFactory.class, null, "registryClient", registryClient);
+        Deencapsulation.setField(RegistryUtils.class, "serviceRegistry", serviceRegistry);
+        Mockito.when(serviceRegistry.getServiceRegistryClient()).thenReturn(registryClient);
 
         SchemaListenerManager schemaListenerManager = new SchemaListenerManager();
         schemaListenerManager.setSchemaListenerList(Arrays.asList(schemaListener));
 
         MicroserviceMetaManager microserviceMetaManager = new MicroserviceMetaManager();
-        SchemaLoader schemaLoader = new SchemaLoader();
+        SchemaLoader schemaLoader = new SchemaLoader() {
+            @Override
+            public void putSelfBasePathIfAbsent(String microserviceName, String basePath) {
+            }
+        };
         CompositeSwaggerGeneratorContext compositeSwaggerGeneratorContext = new CompositeSwaggerGeneratorContext();
 
         ReflectUtils.setField(consumerSchemaFactory, "schemaListenerManager", schemaListenerManager);
@@ -93,13 +101,17 @@ public class TestConsumerSchemaFactory {
         microservice.setServiceName("ms");
         microservice.addSchema("schema", content);
         Mockito.when(registryClient.getMicroservice("0")).thenReturn(microservice);
-        Deencapsulation.setField(RegistryUtils.class, "microservice", microservice);
+    }
+
+    @AfterClass
+    public static void teardown() {
+        Deencapsulation.setField(RegistryUtils.class, "serviceRegistry", null);
     }
 
     @Test
     public void testGetOrCreateConsumer() {
         MicroserviceMeta microserviceMeta =
-            consumerSchemaFactory.getOrCreateMicroserviceMeta("ms", "latest");
+            consumerSchemaFactory.getOrCreateMicroserviceMeta("app:ms", "latest");
         OperationMeta operationMeta = microserviceMeta.ensureFindOperation("schema.add");
         Assert.assertEquals("add", operationMeta.getOperationId());
     }
