@@ -22,7 +22,10 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Map;
+
 import org.springframework.util.ResourceUtils;
+
+import io.servicecomb.foundation.common.utils.FileUtils;
 
 public abstract class AbstractConfigLoader {
     protected String orderKey = "config-order";
@@ -54,9 +57,9 @@ public abstract class AbstractConfigLoader {
 
         ConfigModel configModel = new ConfigModel();
         configModel.setUrl(url);
-        //        if (resourceName != null) {
-        //            configModel.setRootPath(FileUtils.findRootPath(url, resourceName));
-        //        }
+        if (resourceName != null) {
+            configModel.setRootPath(FileUtils.findRootPath(url, resourceName));
+        }
         configModel.setConfig(config);
         Object objOrder = config.get(orderKey);
         if (objOrder != null) {

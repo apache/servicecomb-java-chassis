@@ -23,10 +23,11 @@ import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import io.servicecomb.serviceregistry.api.Const;
 
 /**
- * Created by   on 2016/12/5.
+ * Created by on 2016/12/5.
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Microservice {
