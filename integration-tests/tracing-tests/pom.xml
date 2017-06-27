@@ -19,23 +19,32 @@
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <parent>
-    <artifactId>java-chassis</artifactId>
-    <groupId>io.servicecomb</groupId>
+    <artifactId>integration-tests</artifactId>
+    <groupId>io.servicecomb.tests</groupId>
     <version>0.1.0-m3-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
 
-  <artifactId>tracing</artifactId>
-  <packaging>pom</packaging>
+  <artifactId>tracing-tests</artifactId>
 
-  <modules>
-    <module>tracing-springmvc</module>
-  </modules>
-
-  <properties>
-    <brave.version>4.4.0</brave.version>
-    <zipkin-reporter.version>0.10.0</zipkin-reporter.version>
-    <log4j.version>2.8.2</log4j.version>
-  </properties>
+  <dependencies>
+    <dependency>
+      <groupId>io.servicecomb</groupId>
+      <artifactId>tracing-springmvc</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>io.servicecomb</groupId>
+      <artifactId>provider-springmvc</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>io.servicecomb.demo</groupId>
+      <artifactId>demo-schema</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.github.tomakehurst</groupId>
+      <artifactId>wiremock-standalone</artifactId>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
 
 </project>

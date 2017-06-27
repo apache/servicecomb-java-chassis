@@ -21,6 +21,7 @@ import java.util.Iterator;
 import java.util.Properties;
 
 import org.apache.commons.configuration.AbstractConfiguration;
+import com.netflix.config.DynamicPropertyFactory;
 import org.springframework.beans.factory.config.PropertyPlaceholderConfigurer;
 
 import com.netflix.config.ConfigurationManager;
@@ -42,5 +43,14 @@ public class ConfigurationSpringInitializer extends PropertyPlaceholderConfigure
             properties.put(key, value);
         }
         return properties;
+    }
+
+    @Override
+    protected String resolvePlaceholder(String placeholder, Properties props) {
+        String propertyValue = super.resolvePlaceholder(placeholder, props);
+        if (propertyValue == null) {
+            return DynamicPropertyFactory.getInstance().getStringProperty(placeholder, null).get();
+        }
+        return propertyValue;
     }
 }

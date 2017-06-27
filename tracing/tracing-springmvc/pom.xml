@@ -30,6 +30,11 @@
   <dependencies>
     <dependency>
       <groupId>io.zipkin.brave</groupId>
+      <artifactId>brave-spring-beans</artifactId>
+      <version>${brave.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>io.zipkin.brave</groupId>
       <artifactId>brave</artifactId>
       <version>${brave.version}</version>
     </dependency>
@@ -41,28 +46,8 @@
 
     <dependency>
       <groupId>io.zipkin.brave</groupId>
-      <artifactId>brave-context-log4j2</artifactId>
+      <artifactId>brave-context-log4j12</artifactId>
       <version>${brave.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.logging.log4j</groupId>
-      <artifactId>log4j-core</artifactId>
-      <version>${log4j.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.logging.log4j</groupId>
-      <artifactId>log4j-jul</artifactId>
-      <version>${log4j.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.logging.log4j</groupId>
-      <artifactId>log4j-jcl</artifactId>
-      <version>${log4j.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.logging.log4j</groupId>
-      <artifactId>log4j-slf4j-impl</artifactId>
-      <version>${log4j.version}</version>
     </dependency>
 
     <dependency>
