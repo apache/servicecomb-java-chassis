@@ -19,14 +19,14 @@ package io.servicecomb.core.handler.impl;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import io.servicecomb.core.Invocation;
-import io.servicecomb.core.definition.MicroserviceMetaManager;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 
+import io.servicecomb.core.Invocation;
+import io.servicecomb.core.definition.MicroserviceMetaManager;
 import io.servicecomb.core.endpoint.EndpointsCache;
 import io.servicecomb.serviceregistry.RegistryUtils;
 import io.servicecomb.serviceregistry.api.registry.Microservice;
@@ -77,13 +77,6 @@ public class TestSimpleLoadBalanceHandler {
         mock();
         Assert.assertNotNull(simpleLoadBalanceHandler);
         try {
-            final Microservice microService = new Microservice();
-            new MockUp<RegistryUtils>() {
-                @Mock
-                private Microservice createMicroserviceFromDefinition() {
-                    return microService;
-                }
-            };
             Mockito.when(invocation.getMicroserviceName()).thenReturn(microserviceMetaManager.getName());
             Mockito.when(invocation.getMicroserviceVersionRule()).thenReturn("MicroserviceVersionRule");
             Mockito.when(invocation.getConfigTransportName()).thenReturn("TransportName");

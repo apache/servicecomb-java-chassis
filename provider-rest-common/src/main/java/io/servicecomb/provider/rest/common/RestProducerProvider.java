@@ -25,6 +25,7 @@ import io.servicecomb.core.definition.schema.ProducerSchemaFactory;
 import io.servicecomb.core.provider.producer.AbstractProducerProvider;
 import io.servicecomb.core.provider.producer.ProducerMeta;
 import io.servicecomb.serviceregistry.RegistryUtils;
+import io.servicecomb.serviceregistry.api.registry.Microservice;
 
 @Component
 public class RestProducerProvider extends AbstractProducerProvider {
@@ -43,8 +44,16 @@ public class RestProducerProvider extends AbstractProducerProvider {
     @Override
     public void init() throws Exception {
         for (ProducerMeta producerMeta : restProducers.getProducerMetaList()) {
+            Microservice microservice = RegistryUtils.getServiceRegistry()
+                    .getMicroserviceManager()
+                    .findMicroservice(producerMeta.getInstanceClass());
+            if (microservice == null) {
+                throw new IllegalStateException(
+                        "can not find microservice, producer class=" + producerMeta.getInstanceClass().getName());
+            }
+
             producerSchemaFactory.getOrCreateProducerSchema(
-                    RegistryUtils.getMicroservice().getServiceName(),
+                    microservice.getServiceName(),
                     producerMeta.getSchemaId(),
                     producerMeta.getInstanceClass(),
                     producerMeta.getInstance());

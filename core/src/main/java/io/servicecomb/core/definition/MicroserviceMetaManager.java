@@ -18,9 +18,11 @@ package io.servicecomb.core.definition;
 
 import java.util.Collection;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
 import io.servicecomb.foundation.common.RegisterManager;
+import io.servicecomb.serviceregistry.api.registry.Microservice;
 
 /**
  * key为microserviceName(app内部)或者appId:microserviceName(跨app)
@@ -43,6 +45,18 @@ public class MicroserviceMetaManager extends RegisterManager<String, Microservic
     public Collection<SchemaMeta> getAllSchemaMeta(String microserviceName) {
         MicroserviceMeta microserviceMeta = ensureFindValue(microserviceName);
         return microserviceMeta.getSchemaMetas();
+    }
+
+    public MicroserviceMeta getOrCreateMicroserviceMeta(Microservice microservice) {
+        String microserviceName = microservice.getServiceName();
+        MicroserviceMeta microserviceMeta = getOrCreateMicroserviceMeta(microserviceName);
+        if (!StringUtils.isEmpty(microservice.getAlias())) {
+            if (findValue(microservice.getAlias()) == null) {
+                register(microservice.getAlias(), microserviceMeta);
+            }
+        }
+
+        return microserviceMeta;
     }
 
     public MicroserviceMeta getOrCreateMicroserviceMeta(String microserviceName) {

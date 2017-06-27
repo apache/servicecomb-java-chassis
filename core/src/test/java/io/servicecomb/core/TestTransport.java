@@ -19,32 +19,14 @@ package io.servicecomb.core;
 import java.util.List;
 
 import org.junit.Assert;
-import org.junit.BeforeClass;
 import org.junit.Test;
 
 import io.servicecomb.core.endpoint.EndpointsCache;
-import io.servicecomb.serviceregistry.RegistryUtils;
 import io.servicecomb.serviceregistry.api.registry.Microservice;
 import io.servicecomb.swagger.invocation.AsyncResponse;
-import mockit.Mock;
-import mockit.MockUp;
 import mockit.Mocked;
 
 public class TestTransport {
-    @BeforeClass
-    public static void setupClass() throws Exception {
-        Microservice microservice = new Microservice();
-        microservice.setAppId("app");
-        microservice.setServiceName("testname");
-
-        new MockUp<RegistryUtils>() {
-            @Mock
-            private Microservice createMicroserviceFromDefinition() {
-                return microservice;
-            }
-        };
-    }
-
     @Test
     public void testEndpoint() throws Exception {
         Endpoint oEndpoint = new Endpoint(new Transport() {

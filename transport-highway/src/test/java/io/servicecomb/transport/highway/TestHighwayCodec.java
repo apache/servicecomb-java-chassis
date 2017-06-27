@@ -41,6 +41,9 @@ import io.servicecomb.core.definition.SchemaMeta;
 import io.servicecomb.foundation.vertx.client.tcp.TcpData;
 import io.servicecomb.foundation.vertx.server.TcpParser;
 import io.servicecomb.foundation.vertx.tcp.TcpOutputStream;
+import io.servicecomb.serviceregistry.RegistryUtils;
+import io.servicecomb.serviceregistry.ServiceRegistry;
+import io.servicecomb.serviceregistry.registry.ServiceRegistryFactory;
 import io.servicecomb.swagger.invocation.Response;
 import io.servicecomb.transport.highway.message.RequestHeader;
 import io.servicecomb.transport.highway.message.ResponseHeader;
@@ -76,6 +79,10 @@ public class TestHighwayCodec {
 
     @Before
     public void setUp() throws Exception {
+        ServiceRegistry serviceRegistry = ServiceRegistryFactory.createLocal();
+        serviceRegistry.getMicroserviceManager().addMicroservice("app", "ms");
+        serviceRegistry.init();
+        RegistryUtils.setServiceRegistry(serviceRegistry);
 
         header = Mockito.mock(RequestHeader.class);
 

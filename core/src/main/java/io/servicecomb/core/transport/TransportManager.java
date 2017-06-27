@@ -29,6 +29,7 @@ import org.springframework.stereotype.Component;
 import io.servicecomb.core.Endpoint;
 import io.servicecomb.core.Transport;
 import io.servicecomb.serviceregistry.RegistryUtils;
+import io.servicecomb.serviceregistry.api.registry.Microservice;
 
 @Component
 public class TransportManager {
@@ -47,7 +48,9 @@ public class TransportManager {
                 Endpoint endpoint = transport.getPublishEndpoint();
                 if (endpoint != null && endpoint.getEndpoint() != null) {
                     LOGGER.info("endpoint to publish: {}", endpoint.getEndpoint());
-                    RegistryUtils.getMicroserviceInstance().getEndpoints().add(endpoint.getEndpoint());
+                    for (Microservice microservice : RegistryUtils.getMicroserviceManager().getMicroservices()) {
+                        microservice.getIntance().getEndpoints().add(endpoint.getEndpoint());
+                    }
                 }
                 continue;
             }
