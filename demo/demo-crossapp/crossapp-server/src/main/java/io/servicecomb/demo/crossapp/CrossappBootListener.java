@@ -27,7 +27,7 @@ public class CrossappBootListener implements BootListener {
     public void onBootEvent(BootEvent event) {
         if (EventType.BEFORE_PRODUCER_PROVIDER.equals(event.getEventType())) {
             // 动态注册schemas目录下面的契约到当前服务
-            DynamicSchemaLoader.INSTANCE.registerSchemas("classpath*:schemas/*.yaml");
+            DynamicSchemaLoader.INSTANCE.registerSchemas("appService", "classpath*:schemas/*.yaml");
         }
     }
 }

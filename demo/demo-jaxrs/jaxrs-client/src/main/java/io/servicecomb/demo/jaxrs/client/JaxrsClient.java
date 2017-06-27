@@ -44,6 +44,8 @@ public class JaxrsClient {
         init();
 
         run();
+
+        TestMgr.summary();
     }
 
     public static void init() throws Exception {
@@ -55,8 +57,6 @@ public class JaxrsClient {
         CodeFirstRestTemplate codeFirstClient = new CodeFirstRestTemplateJaxrs();
         codeFirstClient.testCodeFirst(templateNew, "jaxrs", "/codeFirstJaxrs/");
         testCompute(templateNew);
-
-        TestMgr.summary();
     }
 
     private static void testCompute(RestTemplate template) throws Exception {

@@ -13,29 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-package io.servicecomb.springboot.jaxrs.client;
+package io.servicecomb.demo.multiple.client;
 
 import io.servicecomb.demo.TestMgr;
+import io.servicecomb.demo.crossapp.CrossappClient;
+import io.servicecomb.demo.jaxrs.client.JaxrsClient;
+import io.servicecomb.demo.pojo.client.PojoClient;
+import io.servicecomb.demo.springmvc.client.SpringmvcClient;
+import io.servicecomb.foundation.common.utils.BeanUtils;
 import io.servicecomb.foundation.common.utils.Log4jUtils;
-import io.servicecomb.springboot.starter.provider.EnableServiceComb;
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-/**
- * 
- *
- *
- */
-@SpringBootApplication
-@EnableServiceComb
-public class JaxrsClient {
-
+public class MultipleClient {
     public static void main(String[] args) throws Exception {
         Log4jUtils.init();
-        SpringApplication.run(JaxrsClient.class, args);
+        BeanUtils.init();
 
-        io.servicecomb.demo.jaxrs.client.JaxrsClient.run();
+        PojoClient.run();
+        JaxrsClient.run();
+        SpringmvcClient.run();
+        CrossappClient.run();
+
         TestMgr.summary();
     }
 }

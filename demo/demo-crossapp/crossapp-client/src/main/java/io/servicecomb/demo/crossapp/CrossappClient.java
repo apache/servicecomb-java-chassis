@@ -16,36 +16,49 @@
 
 package io.servicecomb.demo.crossapp;
 
+import javax.inject.Inject;
+
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
 import io.servicecomb.core.provider.consumer.InvokerUtils;
 import io.servicecomb.demo.TestMgr;
-import io.servicecomb.provider.pojo.RpcReference;
-import io.servicecomb.provider.springmvc.reference.RestTemplateBuilder;
 import io.servicecomb.foundation.common.utils.BeanUtils;
 import io.servicecomb.foundation.common.utils.Log4jUtils;
+import io.servicecomb.provider.springmvc.reference.RestTemplateBuilder;
 
 @Component
 public class CrossappClient {
-    @RpcReference(microserviceName = "appServer:appService", schemaId = "helloworld")
     private static HelloWorld helloWorld;
+
+    private static String targetAppId;
+
+    @Inject
+    public void setHelloWorld(HelloWorld helloWorld) {
+        CrossappClient.helloWorld = helloWorld;
+    }
+
+    @Value("${target.appid}")
+    public void setTargetAppId(String targetAppId) {
+        CrossappClient.targetAppId = targetAppId;
+    }
 
     public static void main(String[] args) throws Exception {
         Log4jUtils.init();
         BeanUtils.init();
 
-        test();
+        run();
 
         TestMgr.summary();
     }
 
-    public static void test() {
-        Object result = InvokerUtils.syncInvoke("appServer:appService", "helloworld", "sayHello", null);
+    public static void run() {
+        Object result = InvokerUtils.syncInvoke(targetAppId + ":appService", "helloworld", "sayHello", null);
         TestMgr.check("hello world", result);
 
         RestTemplate restTemplate = RestTemplateBuilder.create();
-        result = restTemplate.getForObject("cse://appServer:appService/helloworld/hello", String.class);
+        result = restTemplate.getForObject("cse://" + targetAppId + ":appService/helloworld/hello", String.class);
         TestMgr.check("hello world", result);
 
         result = helloWorld.sayHello();

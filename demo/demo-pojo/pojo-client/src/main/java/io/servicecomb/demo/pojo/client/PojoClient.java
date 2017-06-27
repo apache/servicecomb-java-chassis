@@ -16,6 +16,16 @@
 
 package io.servicecomb.demo.pojo.client;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+import javax.inject.Inject;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
+
 import io.servicecomb.core.CseContext;
 import io.servicecomb.core.provider.consumer.InvokerUtils;
 import io.servicecomb.demo.DemoConst;
@@ -30,13 +40,6 @@ import io.servicecomb.foundation.common.utils.BeanUtils;
 import io.servicecomb.foundation.common.utils.Log4jUtils;
 import io.servicecomb.provider.pojo.RpcReference;
 import io.servicecomb.swagger.invocation.exception.InvocationException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import javax.inject.Inject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Component;
 
 @Component
 public class PojoClient {
@@ -67,21 +70,17 @@ public class PojoClient {
     }
 
     public static void main(String[] args) throws Exception {
-        init();
+        Log4jUtils.init();
+        BeanUtils.init();
 
-        runTest();
+        run();
 
         TestMgr.summary();
     }
 
-    public static void init() throws Exception {
-        Log4jUtils.init();
-        BeanUtils.init();
-
+    public static void run() throws Exception {
         smartcare = BeanUtils.getBean("smartcare");
-    }
 
-    public static void runTest() throws Exception {
         String microserviceName = "pojo";
         codeFirstPojoClient.testCodeFirst(microserviceName);
 

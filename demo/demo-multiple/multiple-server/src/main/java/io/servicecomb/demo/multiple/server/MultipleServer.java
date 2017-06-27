@@ -13,27 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package io.servicecomb.demo.multiple.server;
 
-package io.servicecomb.demo;
+import io.servicecomb.foundation.common.utils.BeanUtils;
+import io.servicecomb.foundation.common.utils.Log4jUtils;
 
-import java.net.URL;
-
-import io.servicecomb.foundation.ssl.SSLCustom;
-
-public class DemoSSLCustom extends SSLCustom {
-    @Override
-    public char[] decode(char[] encrypted) {
-        return encrypted;
+public class MultipleServer {
+    public static void main(String[] args) throws Exception {
+        Log4jUtils.init();
+        BeanUtils.init();
     }
-
-    @Override
-    public String getFullPath(String filename) {
-        URL url = Thread.currentThread().getContextClassLoader().getResource("certificates/" + filename);
-        if (url == null) {
-            return filename;
-        }
-
-        return url.getPath();
-    }
-
 }

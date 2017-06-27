@@ -29,6 +29,7 @@ import io.servicecomb.demo.CodeFirstRestTemplate;
 import io.servicecomb.demo.TestMgr;
 import io.servicecomb.provider.pojo.RpcReference;
 import io.servicecomb.provider.springmvc.reference.CseHttpEntity;
+import io.servicecomb.serviceregistry.RegistryUtils;
 import io.servicecomb.swagger.invocation.Response;
 
 @Component
@@ -48,17 +49,19 @@ public class CodeFirstRestTemplateSpringmvc extends CodeFirstRestTemplate {
     private void testIntf() {
         Date date = new Date();
 
+        String srcName = RegistryUtils.getMicroserviceManager().getDefaultMicroserviceForce().getServiceName();
+
         ResponseEntity<Date> responseEntity = intf.responseEntity(date);
         TestMgr.check(date, responseEntity.getBody());
-        TestMgr.check("h1v {x-cse-src-microservice=springmvcClient}", responseEntity.getHeaders().getFirst("h1"));
-        TestMgr.check("h2v {x-cse-src-microservice=springmvcClient}", responseEntity.getHeaders().getFirst("h2"));
+        TestMgr.check("h1v {x-cse-src-microservice=" + srcName + "}", responseEntity.getHeaders().getFirst("h1"));
+        TestMgr.check("h2v {x-cse-src-microservice=" + srcName + "}", responseEntity.getHeaders().getFirst("h2"));
 
         checkStatusCode("springmvc", 202, responseEntity.getStatusCode());
 
         Response cseResponse = intf.cseResponse();
         TestMgr.check("User [name=nameA, age=100, index=0]", cseResponse.getResult());
-        TestMgr.check("h1v {x-cse-src-microservice=springmvcClient}", cseResponse.getHeaders().getFirst("h1"));
-        TestMgr.check("h2v {x-cse-src-microservice=springmvcClient}", cseResponse.getHeaders().getFirst("h2"));
+        TestMgr.check("h1v {x-cse-src-microservice=" + srcName + "}", cseResponse.getHeaders().getFirst("h1"));
+        TestMgr.check("h2v {x-cse-src-microservice=" + srcName + "}", cseResponse.getHeaders().getFirst("h2"));
     }
 
     private void testResponseEntity(String microserviceName, RestTemplate template, String cseUrlPrefix) {
@@ -69,12 +72,14 @@ public class CodeFirstRestTemplateSpringmvc extends CodeFirstRestTemplate {
         CseHttpEntity<Map<String, Object>> httpEntity = new CseHttpEntity<>(body);
         httpEntity.addContext("contextKey", "contextValue");
 
+        String srcName = RegistryUtils.getMicroserviceManager().getDefaultMicroserviceForce().getServiceName();
+
         ResponseEntity<Date> responseEntity =
             template.exchange(cseUrlPrefix + "responseEntity", HttpMethod.POST, httpEntity, Date.class);
         TestMgr.check(date, responseEntity.getBody());
-        TestMgr.check("h1v {contextKey=contextValue, x-cse-src-microservice=springmvcClient}",
+        TestMgr.check("h1v {contextKey=contextValue, x-cse-src-microservice=" + srcName + "}",
                 responseEntity.getHeaders().getFirst("h1"));
-        TestMgr.check("h2v {contextKey=contextValue, x-cse-src-microservice=springmvcClient}",
+        TestMgr.check("h2v {contextKey=contextValue, x-cse-src-microservice=" + srcName + "}",
                 responseEntity.getHeaders().getFirst("h2"));
         checkStatusCode(microserviceName, 202, responseEntity.getStatusCode());
     }

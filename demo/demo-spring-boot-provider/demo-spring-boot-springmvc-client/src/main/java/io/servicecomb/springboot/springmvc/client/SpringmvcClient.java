@@ -19,6 +19,7 @@ package io.servicecomb.springboot.springmvc.client;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
+import io.servicecomb.demo.TestMgr;
 import io.servicecomb.foundation.common.utils.Log4jUtils;
 import io.servicecomb.springboot.starter.provider.EnableServiceComb;
 
@@ -36,6 +37,8 @@ public class SpringmvcClient {
         SpringApplication.run(SpringmvcClient.class, args);
 
         io.servicecomb.demo.springmvc.client.SpringmvcClient.run();
+
+        TestMgr.summary();
     }
 
 }
