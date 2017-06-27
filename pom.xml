@@ -186,7 +186,7 @@
 						<exclude>${excludesFile}</exclude>
 					</excludes>
 					<forkCount>2</forkCount>
-					<reuseForks>false</reuseForks>
+					<reuseForks>true</reuseForks>
 				</configuration>
 			</plugin>
 			<plugin>
