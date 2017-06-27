@@ -1,6 +1,6 @@
 springmvctest:
-  - id: 001
-    version: 1.0
+  - id: "001"
+    version: "1.0"
     appid: myapp
     instances:
       - endpoints:

@@ -39,7 +39,7 @@ public class LocalServiceRegistryClientImplTest {
     public void testLoadRegistryFile() {
         LocalServiceRegistryClientImpl registryClient = new LocalServiceRegistryClientImpl(is);
         Assert.assertNotNull(registryClient);
-        Assert.assertThat(registryClient.getAllMicroservices().isEmpty(), Is.is(true));
+        Assert.assertThat(registryClient.getAllMicroservices().size(), Is.is(1));
         List<MicroserviceInstance> m = registryClient.findServiceInstance("","myapp","springmvctest","");
         Assert.assertEquals(1, m.size());
     }
