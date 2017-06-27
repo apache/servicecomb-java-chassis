@@ -16,14 +16,6 @@
 
 package io.servicecomb.common.rest;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.junit.Assert;
-import org.junit.Test;
-import org.mockito.Mockito;
-import org.springframework.context.ApplicationContext;
-
 import io.servicecomb.common.rest.locator.ServicePathManager;
 import io.servicecomb.core.definition.MicroserviceMeta;
 import io.servicecomb.core.definition.SchemaMeta;
@@ -32,11 +24,17 @@ import io.servicecomb.swagger.generator.core.SwaggerGenerator;
 import io.servicecomb.swagger.generator.core.SwaggerGeneratorContext;
 import io.servicecomb.swagger.generator.pojo.PojoSwaggerGeneratorContext;
 import io.swagger.models.Swagger;
+import java.util.ArrayList;
+import java.util.List;
+import org.junit.Assert;
+import org.junit.Test;
+import org.mockito.Mockito;
+import org.springframework.context.ApplicationContext;
 
 public class TestRestEngineSchemaListener {
-    SwaggerGeneratorContext context = new PojoSwaggerGeneratorContext();
+    private final SwaggerGeneratorContext context = new PojoSwaggerGeneratorContext();
 
-    static class Impl {
+    private static class Impl {
         public int add(int x, int y) {
             return 0;
         }
@@ -63,6 +61,6 @@ public class TestRestEngineSchemaListener {
         ServicePathManager spm = ServicePathManager.getServicePathManager(mm);
         Assert.assertEquals(mm, spm.getMicroserviceMeta());
 
-        Assert.assertNotNull(spm.getStaticPathOperationMap().get("Impl/add/"));
+        Assert.assertNotNull(spm.getStaticPathOperationMap().get("/Impl/add/"));
     }
 }

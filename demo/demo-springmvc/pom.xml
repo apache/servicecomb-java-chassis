@@ -28,6 +28,6 @@
 	<modules>
 		<module>springmvc-server</module>
 		<module>springmvc-client</module>
-	</modules>
+  </modules>
 
 </project>

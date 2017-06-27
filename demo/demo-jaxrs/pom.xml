@@ -28,6 +28,6 @@
 	<modules>
 		<module>jaxrs-server</module>
 		<module>jaxrs-client</module>
-	</modules>
+  </modules>
 
 </project>

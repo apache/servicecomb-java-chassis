@@ -16,15 +16,12 @@
 
 package io.servicecomb.common.rest.locator;
 
+import io.servicecomb.common.rest.definition.RestOperationMeta;
+import io.servicecomb.swagger.invocation.exception.InvocationException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-
 import javax.ws.rs.core.Response.Status;
-
-import io.servicecomb.common.rest.definition.RestOperationMeta;
-import io.servicecomb.swagger.invocation.exception.InvocationException;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -104,17 +101,11 @@ public class OperationLocator {
     }
 
     protected boolean checkHttpMethod(RestOperationMeta operation, String httpMethod) {
-        if (operation.getHttpMethod().equals(httpMethod)) {
-            return true;
-        }
-        return false;
+      return operation.getHttpMethod().equals(httpMethod);
     }
 
-    // Path: /a/b/c -> a/b/c/
-    public static String getStandardPath(String path) {
-        if (path.startsWith(SLASH)) {
-            path = path.substring(1);
-        }
+    // Path: /a/b/c -> /a/b/c/
+    static String getStandardPath(String path) {
         if (path.length() > 0 && !path.endsWith(SLASH)) {
             path += SLASH;
         }

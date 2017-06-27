@@ -16,34 +16,37 @@
 
 package io.servicecomb.common.rest.definition;
 
-import javax.ws.rs.core.MediaType;
+import static org.hamcrest.core.Is.is;
+import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import io.servicecomb.common.rest.codec.produce.ProduceProcessorManager;
-import org.junit.After;
+import io.servicecomb.core.definition.OperationMeta;
+import io.servicecomb.core.definition.SchemaMeta;
+import io.swagger.models.Operation;
+import io.swagger.models.Swagger;
+import javax.ws.rs.core.MediaType;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-
-import io.servicecomb.core.definition.OperationMeta;
+import org.mockito.Mockito;
 
 public class TestRestOperationMeta {
 
-    private RestOperationMeta operationMeta;
+    private final Swagger swagger = Mockito.mock(Swagger.class);
+    private final SchemaMeta schemaMeta = Mockito.mock(SchemaMeta.class);
+    private final Operation operation = Mockito.mock(Operation.class);
+    private final OperationMeta meta = mock(OperationMeta.class);
+    private final RestOperationMeta operationMeta = new RestOperationMeta();
 
     @Before
-    public void beforeTest() {
-        operationMeta = new RestOperationMeta() {
-            @Override
-            public void init(OperationMeta operationMeta) {
-            }
-        };
-    }
+    public void setUp() throws Exception {
+        when(meta.getSchemaMeta()).thenReturn(schemaMeta);
+        when(meta.getSwaggerOperation()).thenReturn(operation);
+        when(meta.getMethod()).thenReturn(SomeRestController.class.getMethod("sayHi"));
 
-    @After
-    public void afterTest() {
-
-        operationMeta = null;
-
+        when(schemaMeta.getSwagger()).thenReturn(swagger);
     }
 
     @Test
@@ -77,5 +80,61 @@ public class TestRestOperationMeta {
         Assert.assertEquals(null, operationMeta.getPathBuilder());
         Assert.assertEquals(null, operationMeta.findProduceProcessor("test"));
 
+    }
+
+    @Test
+    public void generatesAbsolutePathWithRootBasePath() {
+        when(swagger.getBasePath()).thenReturn("/");
+        when(meta.getOperationPath()).thenReturn("/sayHi/");
+
+        operationMeta.init(meta);
+
+        assertThat(operationMeta.getAbsolutePath(), is("/sayHi/"));
+    }
+
+    @Test
+    public void generatesAbsolutePathWithNonRootBasePath() {
+        when(swagger.getBasePath()).thenReturn("/rest");
+        when(meta.getOperationPath()).thenReturn("/sayHi");
+
+        operationMeta.init(meta);
+
+        assertThat(operationMeta.getAbsolutePath(), is("/rest/sayHi/"));
+    }
+
+    @Test
+    public void generatesAbsolutePathWithNullPath() {
+        when(swagger.getBasePath()).thenReturn(null);
+        when(meta.getOperationPath()).thenReturn(null);
+
+        operationMeta.init(meta);
+
+        assertThat(operationMeta.getAbsolutePath(), is("/"));
+    }
+
+    @Test
+    public void generatesAbsolutePathWithEmptyPath() {
+        when(swagger.getBasePath()).thenReturn("");
+        when(meta.getOperationPath()).thenReturn("");
+
+        operationMeta.init(meta);
+
+        assertThat(operationMeta.getAbsolutePath(), is("/"));
+    }
+
+    @Test
+    public void consecutiveSlashesAreRemoved() {
+        when(swagger.getBasePath()).thenReturn("//rest//");
+        when(meta.getOperationPath()).thenReturn("//sayHi//");
+
+        operationMeta.init(meta);
+
+        assertThat(operationMeta.getAbsolutePath(), is("/rest/sayHi/"));
+    }
+
+    private static class SomeRestController {
+        public String sayHi() {
+            return "Hi";
+        }
     }
 }
