@@ -16,12 +16,12 @@
 
 package io.servicecomb.provider.pojo.reference;
 
-import io.servicecomb.common.exceptions.ServiceCombException;
 import io.servicecomb.core.CseContext;
 import io.servicecomb.core.definition.MicroserviceMeta;
 import io.servicecomb.core.definition.SchemaMeta;
 import io.servicecomb.core.provider.CseBeanPostProcessor.EmptyBeanPostProcessor;
 import io.servicecomb.core.provider.consumer.ReferenceConfig;
+import io.servicecomb.foundation.common.exceptions.ServiceCombException;
 import io.servicecomb.provider.pojo.Invoker;
 import io.servicecomb.swagger.engine.SwaggerConsumer;
 import java.lang.reflect.Proxy;
