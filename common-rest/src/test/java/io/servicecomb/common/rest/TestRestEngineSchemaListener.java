@@ -35,6 +35,7 @@ public class TestRestEngineSchemaListener {
     private final SwaggerGeneratorContext context = new PojoSwaggerGeneratorContext();
 
     private static class Impl {
+        @SuppressWarnings("unused")
         public int add(int x, int y) {
             return 0;
         }

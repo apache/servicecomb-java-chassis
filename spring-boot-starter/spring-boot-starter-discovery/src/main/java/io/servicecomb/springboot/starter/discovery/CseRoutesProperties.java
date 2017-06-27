@@ -15,27 +15,28 @@
  */
 package io.servicecomb.springboot.starter.discovery;
 
-import com.netflix.config.DynamicPropertyFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+
 import io.servicecomb.core.provider.consumer.ConsumerProviderManager;
 import io.servicecomb.core.provider.consumer.ReferenceConfig;
-import org.springframework.beans.factory.annotation.Autowired;
+import io.servicecomb.serviceregistry.RegistryUtils;
 
 public final class CseRoutesProperties {
 
-	private final ConsumerProviderManager consumerProviderManager;
+    private final ConsumerProviderManager consumerProviderManager;
 
-	@Autowired
-	CseRoutesProperties(ConsumerProviderManager consumerProviderManager) {
-		this.consumerProviderManager = consumerProviderManager;
-	}
+    @Autowired
+    CseRoutesProperties(ConsumerProviderManager consumerProviderManager) {
+        this.consumerProviderManager = consumerProviderManager;
+    }
 
-	String getVersionRule(String serviceName) {
-		ReferenceConfig referenceConfig = consumerProviderManager.getReferenceConfig(serviceName);
-		return referenceConfig.getMicroserviceVersionRule();
-	}
+    String getVersionRule(String serviceName) {
+        ReferenceConfig referenceConfig = consumerProviderManager.getReferenceConfig(serviceName);
+        return referenceConfig.getMicroserviceVersionRule();
+    }
 
-	String getAppID() {
-		return DynamicPropertyFactory.getInstance().getStringProperty("APPLICATION_ID", "default").get();
-	}
+    String getAppID() {
+        return RegistryUtils.getAppId();
+    }
 
 }

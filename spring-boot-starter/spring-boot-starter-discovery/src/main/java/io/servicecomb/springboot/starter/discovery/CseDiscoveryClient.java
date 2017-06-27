@@ -24,8 +24,6 @@ import org.springframework.cloud.client.DefaultServiceInstance;
 import org.springframework.cloud.client.ServiceInstance;
 import org.springframework.cloud.client.discovery.DiscoveryClient;
 
-import com.netflix.config.DynamicPropertyFactory;
-
 import io.servicecomb.core.provider.consumer.ConsumerProviderManager;
 import io.servicecomb.core.provider.consumer.ReferenceConfig;
 import io.servicecomb.foundation.common.net.URIEndpointObject;
@@ -48,7 +46,7 @@ public class CseDiscoveryClient implements DiscoveryClient {
     public List<ServiceInstance> getInstances(final String serviceId) {
         List<ServiceInstance> instances = new ArrayList<ServiceInstance>();
         ServiceRegistryClient client = RegistryUtils.getServiceRegistryClient();
-        String appId = DynamicPropertyFactory.getInstance().getStringProperty("APPLICATION_ID", "default").get();
+        String appId = RegistryUtils.getAppId();
         ReferenceConfig referenceConfig = consumerProviderManager.getReferenceConfig(serviceId);
         String versionRule = referenceConfig.getMicroserviceVersionRule();
         String cseServiceID = client.getMicroserviceId(appId, serviceId, versionRule);
