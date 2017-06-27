@@ -20,7 +20,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-import org.apache.commons.configuration.AbstractConfiguration;
+import org.apache.commons.configuration.Configuration;
 
 import com.netflix.config.DynamicPropertyFactory;
 
@@ -32,16 +32,23 @@ public final class ConfigurePropertyUtils {
      * 获取key包含prefix前缀的所有配置项
      */
     public static Map<String, String> getPropertiesWithPrefix(String prefix) {
+        Object config = DynamicPropertyFactory.getBackingConfigurationSource();
+        if (!Configuration.class.isInstance(config)) {
+            return new HashMap<>();
+        }
+
+        return getPropertiesWithPrefix((Configuration) config, prefix);
+
+    }
+
+    // caller ensure configuration is valid
+    public static Map<String, String> getPropertiesWithPrefix(Configuration configuration, String prefix) {
         Map<String, String> propertiesMap = new HashMap<>();
 
-        Object config = DynamicPropertyFactory.getBackingConfigurationSource();
-        if (null != config && AbstractConfiguration.class.isInstance(config)) {
-            AbstractConfiguration composite = (AbstractConfiguration) config;
-            Iterator<String> keysIterator = composite.getKeys(prefix);
-            while (keysIterator.hasNext()) {
-                String key = keysIterator.next();
-                propertiesMap.put(key.substring(prefix.length() + 1), String.valueOf(composite.getProperty(key)));
-            }
+        Iterator<String> keysIterator = configuration.getKeys(prefix);
+        while (keysIterator.hasNext()) {
+            String key = keysIterator.next();
+            propertiesMap.put(key.substring(prefix.length() + 1), String.valueOf(configuration.getProperty(key)));
         }
         return propertiesMap;
     }

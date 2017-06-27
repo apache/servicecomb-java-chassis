@@ -28,6 +28,9 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class MicroserviceInstance {
+    // even disconnected from service center
+    // instanceId will not be changed
+    // when register to service center again, use the old instanceId.
     private String instanceId;
 
     private String serviceId;

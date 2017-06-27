@@ -8,6 +8,7 @@ service_description:
 instance_description:
   properties:
     key0: value0
+  propertyExtentedClass: io.servicecomb.serviceregistry.MicroServicePropertyExtendedStub
 
 cse:
   service:

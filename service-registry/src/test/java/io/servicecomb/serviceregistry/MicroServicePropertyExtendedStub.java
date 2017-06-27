@@ -16,6 +16,7 @@
 
 package io.servicecomb.serviceregistry;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import io.servicecomb.serviceregistry.api.PropertyExtended;
@@ -32,6 +33,8 @@ public class MicroServicePropertyExtendedStub implements PropertyExtended {
      */
     @Override
     public Map<String, String> getExtendedProperties() {
-        return null;
+        Map<String, String> properties = new HashMap<>();
+        properties.put("ek0", "ev0");
+        return properties;
     }
 }

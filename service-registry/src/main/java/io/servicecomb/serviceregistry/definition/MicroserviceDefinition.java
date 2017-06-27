@@ -17,7 +17,10 @@
 package io.servicecomb.serviceregistry.definition;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.configuration.Configuration;
 import org.slf4j.Logger;
@@ -44,6 +47,24 @@ public class MicroserviceDefinition {
         return microserviceName;
     }
 
+    public static MicroserviceDefinition create(String appId, String microserviceName) {
+        ConfigModel configModel = createConfigModel(appId, microserviceName);
+        return new MicroserviceDefinition(Arrays.asList(configModel));
+    }
+
+    public static ConfigModel createConfigModel(String appId, String microserviceName) {
+        Map<String, Object> descMap = new HashMap<>();
+        descMap.put(DefinitionConst.nameKey, microserviceName);
+
+        Map<String, Object> config = new HashMap<>();
+        config.put(DefinitionConst.appIdKey, appId);
+        config.put(DefinitionConst.serviceDescriptionKey, descMap);
+
+        ConfigModel configModel = new ConfigModel();
+        configModel.setConfig(config);
+        return configModel;
+    }
+
     public MicroserviceDefinition(List<ConfigModel> configModels) {
         if (configModels == null || configModels.isEmpty()) {
             throw new IllegalArgumentException("configModels can not be null or empty.");
@@ -61,7 +82,10 @@ public class MicroserviceDefinition {
         // when resolve placeholder failed
         // the result will remains ${var}
         if (StringUtils.isEmpty(microserviceName) || microserviceName.indexOf("${") != -1) {
-            throw new IllegalArgumentException("MicroserviceName " + microserviceName + " is invalid.");
+            throw new IllegalArgumentException(String.format(
+                    "MicroserviceName '%s' is invalid. you must configure '%s' or set the placeholder value.",
+                    microserviceName,
+                    DefinitionConst.qulifiedServiceNameKey));
         }
     }
 
@@ -69,7 +93,9 @@ public class MicroserviceDefinition {
     public void logConfigPath() {
         List<String> pathList = new ArrayList<>();
         for (ConfigModel configModel : configModels) {
-            pathList.add(configModel.getUrl().toString());
+            if (configModel.getUrl() != null) {
+                pathList.add(configModel.getUrl().toString());
+            }
         }
         LOGGER.info("load microservice config, name={}, rootPath={}, paths={}",
                 microserviceName,
