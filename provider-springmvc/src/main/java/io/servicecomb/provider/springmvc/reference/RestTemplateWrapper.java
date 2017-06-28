@@ -17,6 +17,8 @@
 package io.servicecomb.provider.springmvc.reference;
 
 import java.net.URI;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.core.ParameterizedTypeReference;
@@ -27,275 +29,183 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
-import io.servicecomb.common.rest.RestConst;
-
 /**
  * 用于同时支持cse调用和非cse调用
  */
 public class RestTemplateWrapper extends RestTemplate {
-    private static RestTemplate cseRestTemplate = new CseRestTemplate();
+    private List<AcceptableRestTemplate> acceptableRestTemplates = new ArrayList<>();
 
-    private boolean isCse(String url) {
-        return url.startsWith(RestConst.URI_PREFIX);
+    private AcceptableRestTemplate defaultAcceptableRestTemplate = new DefaultAcceptableRestTemplate();
+
+    public RestTemplateWrapper() {
+        acceptableRestTemplates.add(new CseRestTemplate());
     }
 
-    private boolean isCse(URI uri) {
-        return RestConst.SCHEME.equals(uri.getScheme());
+    public void addAcceptableRestTemplate(AcceptableRestTemplate restTemplate) {
+        acceptableRestTemplates.add(restTemplate);
+    }
+
+    private RestTemplate getRestTemplate(String url) {
+        for (AcceptableRestTemplate template : acceptableRestTemplates) {
+            if (template.isAcceptable(url)) {
+                return template;
+            }
+        }
+        return defaultAcceptableRestTemplate;
+    }
+
+    private RestTemplate getRestTemplate(URI uri) {
+        for (AcceptableRestTemplate template : acceptableRestTemplates) {
+            if (template.isAcceptable(uri)) {
+                return template;
+            }
+        }
+        return defaultAcceptableRestTemplate;
     }
 
     @Override
     public <T> T getForObject(String url, Class<T> responseType, Object... urlVariables) throws RestClientException {
-        if (isCse(url)) {
-            return cseRestTemplate.getForObject(url, responseType, urlVariables);
-        }
-
-        return super.getForObject(url, responseType, urlVariables);
+        return getRestTemplate(url).getForObject(url, responseType, urlVariables);
     }
 
     @Override
     public <T> T getForObject(String url, Class<T> responseType,
             Map<String, ?> urlVariables) throws RestClientException {
-        if (isCse(url)) {
-            return cseRestTemplate.getForObject(url, responseType, urlVariables);
-        }
-
-        return super.getForObject(url, responseType, urlVariables);
+        return getRestTemplate(url).getForObject(url, responseType, urlVariables);
     }
 
     @Override
     public <T> T getForObject(URI url, Class<T> responseType) throws RestClientException {
-        if (isCse(url)) {
-            return cseRestTemplate.getForObject(url, responseType);
-        }
-
-        return super.getForObject(url, responseType);
+        return getRestTemplate(url).getForObject(url, responseType);
     }
 
     @Override
     public <T> ResponseEntity<T> getForEntity(String url, Class<T> responseType,
             Object... urlVariables) throws RestClientException {
-        if (isCse(url)) {
-            return cseRestTemplate.getForEntity(url, responseType, urlVariables);
-        }
-
-        return super.getForEntity(url, responseType, urlVariables);
+        return getRestTemplate(url).getForEntity(url, responseType, urlVariables);
     }
 
     @Override
     public <T> ResponseEntity<T> getForEntity(String url, Class<T> responseType,
             Map<String, ?> urlVariables) throws RestClientException {
-        if (isCse(url)) {
-            return cseRestTemplate.getForEntity(url, responseType, urlVariables);
-        }
-
-        return super.getForEntity(url, responseType, urlVariables);
+        return getRestTemplate(url).getForEntity(url, responseType, urlVariables);
     }
 
     @Override
     public <T> ResponseEntity<T> getForEntity(URI url, Class<T> responseType) throws RestClientException {
-        if (isCse(url)) {
-            return cseRestTemplate.getForEntity(url, responseType);
-        }
-
-        return super.getForEntity(url, responseType);
+        return getRestTemplate(url).getForEntity(url, responseType);
     }
 
     @Override
     public <T> T postForObject(String url, Object request, Class<T> responseType,
             Object... uriVariables) throws RestClientException {
-        if (isCse(url)) {
-            return cseRestTemplate.postForObject(url, request, responseType, uriVariables);
-        }
-
-        return super.postForObject(url, request, responseType, uriVariables);
+        return getRestTemplate(url).postForObject(url, request, responseType, uriVariables);
     }
 
     @Override
     public <T> T postForObject(String url, Object request, Class<T> responseType,
             Map<String, ?> uriVariables) throws RestClientException {
-        if (isCse(url)) {
-            return cseRestTemplate.postForObject(url, request, responseType, uriVariables);
-        }
-
-        return super.postForObject(url, request, responseType, uriVariables);
+        return getRestTemplate(url).postForObject(url, request, responseType, uriVariables);
     }
 
     @Override
     public <T> T postForObject(URI url, Object request, Class<T> responseType) throws RestClientException {
-        if (isCse(url)) {
-            return cseRestTemplate.postForObject(url, request, responseType);
-        }
-
-        return super.postForObject(url, request, responseType);
+        return getRestTemplate(url).postForObject(url, request, responseType);
     }
 
     @Override
     public <T> ResponseEntity<T> postForEntity(String url, Object request, Class<T> responseType,
             Object... uriVariables) throws RestClientException {
-        if (isCse(url)) {
-            return cseRestTemplate.postForEntity(url, request, responseType, uriVariables);
-        }
-
-        return super.postForEntity(url, request, responseType, uriVariables);
+        return getRestTemplate(url).postForEntity(url, request, responseType, uriVariables);
     }
 
     @Override
     public <T> ResponseEntity<T> postForEntity(String url, Object request, Class<T> responseType,
             Map<String, ?> uriVariables) throws RestClientException {
-        if (isCse(url)) {
-            return cseRestTemplate.postForEntity(url, request, responseType, uriVariables);
-        }
-
-        return super.postForEntity(url, request, responseType, uriVariables);
+        return getRestTemplate(url).postForEntity(url, request, responseType, uriVariables);
     }
 
     @Override
     public <T> ResponseEntity<T> postForEntity(URI url, Object request,
             Class<T> responseType) throws RestClientException {
-        if (isCse(url)) {
-            return cseRestTemplate.postForEntity(url, request, responseType);
-        }
-
-        return super.postForEntity(url, request, responseType);
+        return getRestTemplate(url).postForEntity(url, request, responseType);
     }
 
     @Override
     public void put(String url, Object request, Object... urlVariables) throws RestClientException {
-        if (isCse(url)) {
-            cseRestTemplate.put(url, request, urlVariables);
-            return;
-        }
-
-        super.put(url, request, urlVariables);
+        getRestTemplate(url).put(url, request, urlVariables);
     }
 
     @Override
     public void put(String url, Object request, Map<String, ?> urlVariables) throws RestClientException {
-        if (isCse(url)) {
-            cseRestTemplate.put(url, request, urlVariables);
-            return;
-        }
-
-        super.put(url, request, urlVariables);
+        getRestTemplate(url).put(url, request, urlVariables);
     }
 
     @Override
     public void put(URI url, Object request) throws RestClientException {
-        if (isCse(url)) {
-            cseRestTemplate.put(url, request);
-            return;
-        }
-
-        super.put(url, request);
+        getRestTemplate(url).put(url, request);
     }
 
     @Override
     public void delete(String url, Object... urlVariables) throws RestClientException {
-        if (isCse(url)) {
-            cseRestTemplate.delete(url, urlVariables);
-            return;
-        }
-
-        super.delete(url, urlVariables);
+        getRestTemplate(url).delete(url, urlVariables);
     }
 
     @Override
     public void delete(String url, Map<String, ?> urlVariables) throws RestClientException {
-        if (isCse(url)) {
-            cseRestTemplate.delete(url, urlVariables);
-            return;
-        }
-
-        super.delete(url, urlVariables);
+        getRestTemplate(url).delete(url, urlVariables);
     }
 
     @Override
     public void delete(URI url) throws RestClientException {
-        if (isCse(url)) {
-            cseRestTemplate.delete(url);
-            return;
-        }
-
-        super.delete(url);
+        getRestTemplate(url).delete(url);
     }
 
     @Override
     public <T> ResponseEntity<T> exchange(String url, HttpMethod method, HttpEntity<?> requestEntity,
             Class<T> responseType, Object... uriVariables) throws RestClientException {
-        if (isCse(url)) {
-            return cseRestTemplate.exchange(url, method, requestEntity, responseType, uriVariables);
-        }
-
-        return super.exchange(url, method, requestEntity, responseType, uriVariables);
+        return getRestTemplate(url).exchange(url, method, requestEntity, responseType, uriVariables);
     }
 
     @Override
     public <T> ResponseEntity<T> exchange(String url, HttpMethod method, HttpEntity<?> requestEntity,
             ParameterizedTypeReference<T> responseType, Map<String, ?> uriVariables) throws RestClientException {
-        if (isCse(url)) {
-            return cseRestTemplate.exchange(url, method, requestEntity, responseType, uriVariables);
-        }
-
-        return super.exchange(url, method, requestEntity, responseType, uriVariables);
+        return getRestTemplate(url).exchange(url, method, requestEntity, responseType, uriVariables);
     }
 
     @Override
     public <T> ResponseEntity<T> exchange(String url, HttpMethod method, HttpEntity<?> requestEntity,
             Class<T> responseType, Map<String, ?> uriVariables) throws RestClientException {
-        if (isCse(url)) {
-            return cseRestTemplate.exchange(url, method, requestEntity, responseType, uriVariables);
-        }
-
-        return super.exchange(url, method, requestEntity, responseType, uriVariables);
+        return getRestTemplate(url).exchange(url, method, requestEntity, responseType, uriVariables);
     }
 
     @Override
     public <T> ResponseEntity<T> exchange(String url, HttpMethod method, HttpEntity<?> requestEntity,
             ParameterizedTypeReference<T> responseType, Object... uriVariables) throws RestClientException {
-        if (isCse(url)) {
-            return cseRestTemplate.exchange(url, method, requestEntity, responseType, uriVariables);
-        }
-
-        return super.exchange(url, method, requestEntity, responseType, uriVariables);
+        return getRestTemplate(url).exchange(url, method, requestEntity, responseType, uriVariables);
     }
 
     @Override
     public <T> ResponseEntity<T> exchange(RequestEntity<?> requestEntity,
             Class<T> responseType) throws RestClientException {
-        if (isCse(requestEntity.getUrl())) {
-            return cseRestTemplate.exchange(requestEntity, responseType);
-        }
-
-        return super.exchange(requestEntity, responseType);
+        return getRestTemplate(requestEntity.getUrl()).exchange(requestEntity, responseType);
     }
 
     @Override
     public <T> ResponseEntity<T> exchange(RequestEntity<?> requestEntity,
             ParameterizedTypeReference<T> responseType) throws RestClientException {
-        if (isCse(requestEntity.getUrl())) {
-            return cseRestTemplate.exchange(requestEntity, responseType);
-        }
-
-        return super.exchange(requestEntity, responseType);
+        return getRestTemplate(requestEntity.getUrl()).exchange(requestEntity, responseType);
     }
 
     @Override
     public <T> ResponseEntity<T> exchange(URI url, HttpMethod method, HttpEntity<?> requestEntity,
             Class<T> responseType) throws RestClientException {
-        if (isCse(url)) {
-            return cseRestTemplate.exchange(url, method, requestEntity, responseType);
-        }
-
-        return super.exchange(url, method, requestEntity, responseType);
+        return getRestTemplate(url).exchange(url, method, requestEntity, responseType);
     }
 
     @Override
     public <T> ResponseEntity<T> exchange(URI url, HttpMethod method, HttpEntity<?> requestEntity,
             ParameterizedTypeReference<T> responseType) throws RestClientException {
-        if (isCse(url)) {
-            return cseRestTemplate.exchange(url, method, requestEntity, responseType);
-        }
-
-        return super.exchange(url, method, requestEntity, responseType);
+        return getRestTemplate(url).exchange(url, method, requestEntity, responseType);
     }
 }
