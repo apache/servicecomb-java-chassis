@@ -145,7 +145,7 @@ public class MicroserviceMeta extends CommonService<OperationMeta> {
     protected void parseMicroserviceName(String microserviceName) {
         int idxAt = microserviceName.indexOf(Const.APP_SERVICE_SEPARATOR);
         if (idxAt == -1) {
-            appId = RegistryUtils.getMicroservice().getAppId();
+            appId = RegistryUtils.getAppId();
             name = microserviceName;
             shortName = name;
             return;

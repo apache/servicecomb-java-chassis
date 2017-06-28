@@ -50,9 +50,7 @@ import mockit.MockUp;
 import mockit.Mocked;
 
 public class TrustManagerExtTest {
-    final String curriedir = System.getProperty("user.dir");
-
-    final String strFilePath = curriedir + "/src/test/resources";
+    final String strFilePath = Thread.currentThread().getContextClassLoader().getResource("").getPath();
 
     class MyX509ExtendedTrustManager extends X509ExtendedTrustManager {
         public void checkClientTrusted(X509Certificate[] paramArrayOfX509Certificate, String paramString,

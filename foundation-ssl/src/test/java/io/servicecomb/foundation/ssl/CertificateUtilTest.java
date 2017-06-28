@@ -42,10 +42,6 @@ import mockit.Expectations;
 import mockit.Mocked;
 
 public class CertificateUtilTest {
-    final String curriedir = System.getProperty("user.dir");
-
-    final String strFilePath = curriedir + "/src/test/resources";
-
     class MyX509Certificate extends X509Certificate {
         public void checkValidity() throws CertificateExpiredException, CertificateNotYetValidException {
         }

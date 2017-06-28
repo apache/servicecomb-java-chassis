@@ -22,7 +22,7 @@
 	<parent>
 		<groupId>io.servicecomb.demo</groupId>
 		<artifactId>demo-pojo</artifactId>
-		<version>0.1.0-m2-SNAPSHOT</version>
+		<version>0.1.0-m3-SNAPSHOT</version>
 	</parent>
 	<artifactId>pojo-client</artifactId>
 
@@ -54,7 +54,7 @@
 						<mixin>
 							<groupId>io.servicecomb.demo</groupId>
 							<artifactId>docker-run-config</artifactId>
-							<version>0.1.0-m2-SNAPSHOT</version>
+							<version>0.1.0-m3-SNAPSHOT</version>
 						</mixin>
 					</mixins>
 				</configuration>
@@ -69,7 +69,6 @@
 				<demo.vm.options>
 					-Dcse.highway.address=0.0.0.0:7070
 					-Dcse.rest.address=0.0.0.0:8080
-					-Dcse.grpc.address=0.0.0.0:9090
 				</demo.vm.options>
 			</properties>
 			<build>

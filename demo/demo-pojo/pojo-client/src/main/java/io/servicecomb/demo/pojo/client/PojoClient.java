@@ -70,22 +70,17 @@ public class PojoClient {
     }
 
     public static void main(String[] args) throws Exception {
-        init();
+        Log4jUtils.init();
+        BeanUtils.init();
 
-        runTest();
+        run();
 
         TestMgr.summary();
     }
 
-    public static void init() throws Exception {
-        Log4jUtils.init();
-        BeanUtils.init();
-
+    public static void run() throws Exception {
         smartcare = BeanUtils.getBean("smartcare");
 
-    }
-
-    public static void runTest() throws Exception {
         String microserviceName = "pojo";
         codeFirstPojoClient.testCodeFirst(microserviceName);
 

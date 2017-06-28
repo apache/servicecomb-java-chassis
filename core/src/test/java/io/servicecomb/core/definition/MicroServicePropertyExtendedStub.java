@@ -26,12 +26,8 @@ import io.servicecomb.serviceregistry.api.PropertyExtended;
  * @see 
  */
 public class MicroServicePropertyExtendedStub implements PropertyExtended {
-
     @Override
     public Map<String, String> getExtendedProperties() {
-        // TODO Auto-generated method stub
         return null;
     }
-
-
 }

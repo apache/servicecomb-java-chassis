@@ -16,14 +16,15 @@
 
 package io.servicecomb.demo.client.perf;
 
-import io.servicecomb.demo.pojo.client.PojoClient;
+import io.servicecomb.foundation.common.utils.BeanUtils;
+import io.servicecomb.foundation.common.utils.Log4jUtils;
 import io.servicecomb.foundation.vertx.VertxUtils;
-
 import io.vertx.core.Vertx;
 
 public class PerfClient {
     public static void main(String[] args) throws Exception {
-        PojoClient.init();
+        Log4jUtils.init();
+        BeanUtils.init();
 
         System.out.println("mode:" + Config.getMode());
 

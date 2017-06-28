@@ -39,10 +39,10 @@ import io.servicecomb.core.Transport;
 import io.servicecomb.core.definition.MicroserviceMeta;
 import io.servicecomb.core.definition.OperationMeta;
 import io.servicecomb.core.invocation.InvocationFactory;
+import io.servicecomb.foundation.common.utils.JsonUtils;
 import io.servicecomb.serviceregistry.RegistryUtils;
 import io.servicecomb.swagger.invocation.Response;
 import io.servicecomb.swagger.invocation.exception.InvocationException;
-import io.servicecomb.foundation.common.utils.JsonUtils;
 
 public abstract class AbstractRestServer<HTTP_RESPONSE> {
     private static final Logger LOGGER = LoggerFactory.getLogger(AbstractRestServer.class);
@@ -109,9 +109,13 @@ public abstract class AbstractRestServer<HTTP_RESPONSE> {
     }
 
     protected RestOperationMeta findRestOperation(RestServerRequestInternal restRequest) {
-        String selfName = RegistryUtils.getMicroservice().getServiceName();
+        String targetMicroserviceName = restRequest.getHeaderParam(Const.TARGET_MICROSERVICE);
+        if (targetMicroserviceName == null) {
+            // for compatible
+            targetMicroserviceName = RegistryUtils.getMicroservice().getServiceName();
+        }
         MicroserviceMeta selfMicroserviceMeta =
-            CseContext.getInstance().getMicroserviceMetaManager().ensureFindValue(selfName);
+            CseContext.getInstance().getMicroserviceMetaManager().ensureFindValue(targetMicroserviceName);
         ServicePathManager servicePathManager = ServicePathManager.getServicePathManager(selfMicroserviceMeta);
         if (servicePathManager == null) {
             LOGGER.error("No schema in microservice");

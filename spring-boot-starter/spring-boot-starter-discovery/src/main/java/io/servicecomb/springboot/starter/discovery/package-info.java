@@ -13,7 +13,4 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-/**
- * Sukesh
- */
 package io.servicecomb.springboot.starter.discovery;

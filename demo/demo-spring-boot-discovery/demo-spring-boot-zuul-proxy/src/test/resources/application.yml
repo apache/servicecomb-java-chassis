@@ -1,0 +1,19 @@
+server:
+  port: 0
+spring:
+  cloud:
+    cse:
+      host: 127.0.0.1
+      port: 9980
+zuul:
+  routes:
+    gateway:
+      serviceId: discoveryServer
+
+hystrix:
+  command:
+    default:
+      execution:
+        isolation:
+          thread:
+            timeoutInMilliseconds: 5000

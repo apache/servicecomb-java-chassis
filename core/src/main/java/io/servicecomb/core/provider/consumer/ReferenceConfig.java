@@ -17,8 +17,8 @@
 package io.servicecomb.core.provider.consumer;
 
 import io.servicecomb.core.Const;
-import io.servicecomb.core.CseContext;
 import io.servicecomb.core.definition.MicroserviceMeta;
+import io.servicecomb.core.definition.schema.ConsumerSchemaFactory;
 
 public class ReferenceConfig {
     private MicroserviceMeta microserviceMeta;
@@ -30,10 +30,10 @@ public class ReferenceConfig {
     public ReferenceConfig() {
     }
 
-    public ReferenceConfig(String microserviceName, String microserviceVersionRule, String transport) {
-        this.microserviceMeta =
-            CseContext.getInstance().getConsumerSchemaFactory().getOrCreateMicroserviceMeta(microserviceName,
-                    microserviceVersionRule);
+    public ReferenceConfig(ConsumerSchemaFactory consumerSchemaFactory, String microserviceName,
+            String microserviceVersionRule, String transport) {
+        this.microserviceMeta = consumerSchemaFactory.getOrCreateMicroserviceMeta(microserviceName,
+                microserviceVersionRule);
 
         this.microserviceVersionRule = microserviceVersionRule;
         this.transport = transport;

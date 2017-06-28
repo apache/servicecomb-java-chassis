@@ -1,0 +1,55 @@
+swagger: '2.0'
+info:
+  title: hello
+  version: 1.0.0
+  x-java-interface: io.servicecomb.samples.springmvc.Hello
+basePath: /pojo/rest/hello
+produces:
+  - application/json
+
+paths:
+  /sayhi:
+    post:
+      operationId: sayHi
+      parameters:
+        - name: name
+          in: body
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: 正确返回
+          schema:
+            type: string
+        default:
+          description: 默认返回
+          schema:
+            type: string
+  /sayhello:
+     post:
+          operationId: sayHello
+          parameters:
+            - name: person
+              in: body
+              required: true
+              schema:
+                $ref: "#/definitions/Person"
+          responses:
+            200:
+              description: 正确返回
+              schema:
+                type: string
+            default:
+              description: 默认返回
+              schema:
+                type: string
+definitions:
+  Person:
+    type: "object"
+    properties:
+      name:
+        type: "string"
+        description: "person name"
+    xml:
+      name: "Person"

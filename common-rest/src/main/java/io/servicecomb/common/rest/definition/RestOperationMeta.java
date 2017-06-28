@@ -16,6 +16,14 @@
 
 package io.servicecomb.common.rest.definition;
 
+import io.servicecomb.common.rest.codec.produce.ProduceProcessor;
+import io.servicecomb.common.rest.codec.produce.ProduceProcessorManager;
+import io.servicecomb.common.rest.definition.path.PathRegExp;
+import io.servicecomb.common.rest.definition.path.URLPathBuilder;
+import io.servicecomb.core.definition.OperationMeta;
+import io.swagger.models.Operation;
+import io.swagger.models.Swagger;
+import io.swagger.models.parameters.Parameter;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -23,22 +31,10 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-
 import javax.ws.rs.core.MediaType;
-
-import io.servicecomb.common.rest.codec.produce.ProduceProcessor;
-import io.servicecomb.common.rest.codec.produce.ProduceProcessorManager;
-import io.servicecomb.common.rest.definition.path.URLPathBuilder;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import io.servicecomb.common.rest.definition.path.PathRegExp;
-import io.servicecomb.core.definition.OperationMeta;
-
-import io.swagger.models.Operation;
-import io.swagger.models.Swagger;
-import io.swagger.models.parameters.Parameter;
 
 public class RestOperationMeta {
     private static final Logger LOGGER = LoggerFactory.getLogger(RestOperationMeta.class);
@@ -109,31 +105,15 @@ public class RestOperationMeta {
 
     // 输出b/c/形式的url
     private String concatPath(String basePath, String operationPath) {
-        basePath = removeHeadTailSlash(basePath);
-        operationPath = removeHeadTailSlash(operationPath);
-
-        if (StringUtils.isEmpty(operationPath)) {
-            return basePath + "/";
-        }
-
-        return basePath + "/" + operationPath + "/";
+      return ("/" + nonNullify(basePath) + "/" + nonNullify(operationPath) + "/")
+            .replaceAll("/{2,}", "/");
     }
 
-    protected String removeHeadTailSlash(String path) {
-        if (path == null) {
-            path = "";
-        }
-
-        if (path.startsWith("/")) {
-            path = path.substring(1);
-        }
-        if (path.endsWith("/")) {
-            path = path.substring(0, path.length() - 1);
-        }
-        return path;
+  private String nonNullify(String path) {
+        return path == null ? "" : path;
     }
 
-    public String getAbsolutePath() {
+  public String getAbsolutePath() {
         return this.absolutePath;
     }
 
@@ -202,7 +182,7 @@ public class RestOperationMeta {
         return paramList;
     }
 
-    public void addParam(RestParam param) {
+    private void addParam(RestParam param) {
         paramList.add(param);
         paramMap.put(param.getParamName(), param);
     }

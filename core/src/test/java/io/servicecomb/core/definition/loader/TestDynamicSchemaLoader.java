@@ -17,17 +17,17 @@ package io.servicecomb.core.definition.loader;
 
 import java.util.Collections;
 
-import io.servicecomb.core.definition.MicroserviceMetaManager;
-import io.servicecomb.core.unittest.UnitTestMeta;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
 import io.servicecomb.core.CseContext;
+import io.servicecomb.core.definition.MicroserviceMetaManager;
 import io.servicecomb.core.definition.SchemaMeta;
+import io.servicecomb.core.unittest.UnitTestMeta;
 import io.servicecomb.serviceregistry.RegistryUtils;
-import io.servicecomb.serviceregistry.api.registry.Microservice;
-import io.servicecomb.foundation.common.utils.ReflectUtils;
+import io.servicecomb.serviceregistry.ServiceRegistry;
+import io.servicecomb.serviceregistry.registry.ServiceRegistryFactory;
 
 public class TestDynamicSchemaLoader {
     private static MicroserviceMetaManager microserviceMetaManager = new MicroserviceMetaManager();
@@ -46,16 +46,27 @@ public class TestDynamicSchemaLoader {
         context.setSchemaLoader(loader);
         context.setSchemaListenerManager(schemaListenerManager);
 
-        Microservice microservice = new Microservice();
-        microservice.setAppId("app");
-        microservice.setServiceName("ms");
-        ReflectUtils.setField(RegistryUtils.class, null, "microservice", microservice);
+        ServiceRegistry serviceRegistry = ServiceRegistryFactory.createLocal();
+        serviceRegistry.getMicroserviceManager().addMicroservice("pojotest", "ms");
+        serviceRegistry.init();
+
+        RegistryUtils.setServiceRegistry(serviceRegistry);
+    }
+
+    @Test
+    public void testRegisterSchemasFailed() {
+        try {
+            DynamicSchemaLoader.INSTANCE.registerSchemas("classpath*:test/test/schema.yaml");
+            Assert.fail("must throw exception");
+        } catch (IllegalArgumentException e) {
+            Assert.assertEquals("there are multiple microservices, can not use default microservice", e.getMessage());
+        }
     }
 
     @Test
     public void testRegisterSchemas() {
-        DynamicSchemaLoader.INSTANCE.registerSchemas("classpath*:test/test/schema.yaml");
+        DynamicSchemaLoader.INSTANCE.registerSchemas("ms", "classpath*:test/test/schema.yaml");
         SchemaMeta schemaMeta = microserviceMetaManager.ensureFindSchemaMeta("ms", "schema");
-        Assert.assertEquals("cse.gen.app.ms.schema", schemaMeta.getPackageName());
+        Assert.assertEquals("cse.gen.pojotest.ms.schema", schemaMeta.getPackageName());
     }
 }

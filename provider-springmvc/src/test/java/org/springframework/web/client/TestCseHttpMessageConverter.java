@@ -28,33 +28,27 @@ import org.springframework.http.converter.HttpMessageNotWritableException;
 import io.servicecomb.provider.common.MockUtil;
 import io.servicecomb.provider.springmvc.reference.CseClientHttpRequest;
 
-public class TestCseHttpMessageConverter{
+public class TestCseHttpMessageConverter {
 
     @Test
     public void testAll() {
         MockUtil.getInstance().mockReflectionUtils();
         MockUtil.getInstance().mockCseClientHttpRequest();
-        CseHttpMessageConverter lCseHttpMessageConverter=new CseHttpMessageConverter();
-        lCseHttpMessageConverter.canWrite(null,null);
+        CseHttpMessageConverter lCseHttpMessageConverter = new CseHttpMessageConverter();
+        lCseHttpMessageConverter.canWrite(null, null);
         lCseHttpMessageConverter.getSupportedMediaTypes();
         try {
-            lCseHttpMessageConverter.read(this.getClass(),null);
-        }
-        catch (HttpMessageNotReadableException e) {
-            // TODO Auto-generated catch block
-        }
-        catch (IOException e) {
-            // TODO Auto-generated catch block
+            lCseHttpMessageConverter.read(this.getClass(), null);
+        } catch (HttpMessageNotReadableException e) {
+        } catch (IOException e) {
         }
         try {
-            HttpOutputMessage httpOutputMessage=Mockito.mock(CseClientHttpRequest.class);
-            lCseHttpMessageConverter.write(null,null,httpOutputMessage);
+            HttpOutputMessage httpOutputMessage = Mockito.mock(CseClientHttpRequest.class);
+            lCseHttpMessageConverter.write(null, null, httpOutputMessage);
+        } catch (HttpMessageNotWritableException | IOException e) {
         }
-        catch (HttpMessageNotWritableException | IOException e) {
-            // TODO Auto-generated catch block
-        }
-        
-        Assert.assertEquals(true, lCseHttpMessageConverter.canRead(null,null));
+
+        Assert.assertEquals(true, lCseHttpMessageConverter.canRead(null, null));
     }
 
 }

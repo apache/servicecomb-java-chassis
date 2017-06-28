@@ -6,6 +6,7 @@ import java.util.Map;
 import org.apache.commons.configuration.AbstractConfiguration;
 import org.apache.commons.configuration.BaseConfiguration;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 
@@ -18,18 +19,32 @@ import io.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
 import io.servicecomb.serviceregistry.cache.InstanceCache;
 import io.servicecomb.serviceregistry.cache.InstanceCacheManager;
 import io.servicecomb.serviceregistry.cache.InstanceVersionCacheManager;
+import io.servicecomb.serviceregistry.client.ServiceRegistryClient;
+import io.servicecomb.serviceregistry.registry.AbstractServiceRegistry;
+import io.servicecomb.serviceregistry.registry.ServiceRegistryFactory;
 import io.servicecomb.swagger.invocation.AsyncResponse;
 import mockit.Deencapsulation;
 import mockit.Mock;
 import mockit.MockUp;
+import mockit.Mocked;
 
 public class TestGrayReleaseHandler {
+    @Mocked
+    private ServiceRegistryClient srClient;
+
+    private AbstractServiceRegistry serviceRegistry;
 
     GrayReleaseHandler grayReleaseHandler = Mockito.mock(GrayReleaseHandler.class, Mockito.CALLS_REAL_METHODS);
 
     Invocation invocation = Mockito.mock(Invocation.class);
 
-    {
+    @Before
+    public void setup() {
+        serviceRegistry = (AbstractServiceRegistry) ServiceRegistryFactory.createLocal();
+        serviceRegistry.setServiceRegistryClient(srClient);
+        serviceRegistry.getMicroserviceManager().addMicroservice("appId", "ms");
+        serviceRegistry.init();
+
         this.initInvocation();
         this.initInstance();
     }
@@ -155,7 +170,6 @@ public class TestGrayReleaseHandler {
 			isSuccess=false;
 		}
 		Assert.assertTrue(isSuccess);
-
     }
 
     public void changeConfig(String grayReleaseRuleClassName,

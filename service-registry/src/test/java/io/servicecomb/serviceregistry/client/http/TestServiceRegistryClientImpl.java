@@ -16,37 +16,50 @@
 
 package io.servicecomb.serviceregistry.client.http;
 
+import static org.hamcrest.core.Is.is;
+
 import java.util.concurrent.CountDownLatch;
 
-import io.servicecomb.serviceregistry.RegistryThread;
-import io.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
-import io.servicecomb.serviceregistry.client.ClientException;
-import io.servicecomb.serviceregistry.client.RegistryClientFactory;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.Mockito;
 
-import io.servicecomb.serviceregistry.RegistryUtils;
 import io.servicecomb.serviceregistry.api.registry.Microservice;
+import io.servicecomb.serviceregistry.api.registry.MicroserviceManager;
+import io.servicecomb.serviceregistry.client.ClientException;
+import io.servicecomb.serviceregistry.client.IpPortManager;
 import io.servicecomb.serviceregistry.config.ServiceRegistryConfig;
-import io.servicecomb.foundation.common.utils.BeanUtils;
-
+import io.vertx.core.Handler;
 import io.vertx.core.http.HttpClientOptions;
 import io.vertx.core.http.HttpVersion;
 import mockit.Deencapsulation;
 import mockit.Mock;
 import mockit.MockUp;
+import mockit.Mocked;
 
 public class TestServiceRegistryClientImpl {
+    @Mocked
+    private IpPortManager ipPortManager;
 
     private ServiceRegistryClientImpl oClient = null;
 
     @Before
     public void setUp() throws Exception {
-        BeanUtils.init();
-        oClient = (ServiceRegistryClientImpl) RegistryClientFactory.getRegistryClient();
+        oClient = new ServiceRegistryClientImpl(ipPortManager);
+
+        new MockUp<RestUtils>() {
+            @Mock
+            void httpDo(RequestContext requestContext, Handler<RestResponse> responseHandler) {
+            }
+        };
+
+        new MockUp<CountDownLatch>() {
+            @Mock
+            public void await() throws InterruptedException {
+            }
+
+        };
     }
 
     @After
@@ -56,10 +69,10 @@ public class TestServiceRegistryClientImpl {
 
     @Test
     public void testPrivateMehtodCreateHttpClientOptions() {
-
-        Microservice oInstance = RegistryUtils.getMicroservice();
-        oClient.registerMicroservice(oInstance);
-        oClient.registerMicroserviceInstance(RegistryUtils.getMicroserviceInstance());
+        MicroserviceManager microserviceManager = new MicroserviceManager();
+        Microservice microservice = microserviceManager.addMicroservice("app", "ms");
+        oClient.registerMicroservice(microservice);
+        oClient.registerMicroserviceInstance(microservice.getIntance());
         new MockUp<ServiceRegistryConfig>() {
             @Mock
             public HttpVersion getHttpVersion() {
@@ -83,30 +96,17 @@ public class TestServiceRegistryClientImpl {
 
     @Test
     public void testException() {
-
-        Microservice oInstance = RegistryUtils.getMicroservice();
-        RegistryThread oThread = new RegistryThread();
-        oThread.start();
-        oClient.registerMicroservice(oInstance);
-        oClient.registerMicroserviceInstance(RegistryUtils.getMicroserviceInstance());
-        try {
-            oClient.init();
-        } catch (Exception e) {
-            Assert.assertEquals(null, e.getMessage());
-        }
-        new MockUp<CountDownLatch>() {
-            @Mock
-            public void await() throws InterruptedException {
-                throw new InterruptedException();
-            }
-
-        };
+        MicroserviceManager microserviceManager = new MicroserviceManager();
+        Microservice microservice = microserviceManager.addMicroservice("app", "ms");
+        Assert.assertEquals(null, oClient.registerMicroservice(microservice));
+        Assert.assertEquals(null, oClient.registerMicroserviceInstance(microservice.getIntance()));
+        oClient.init();
         Assert.assertEquals(null,
-                oClient.getMicroserviceId(RegistryUtils.getMicroservice().getAppId(),
-                        RegistryUtils.getMicroservice().getServiceName(),
-                        RegistryUtils.getMicroservice().getVersion()));
-        Assert.assertEquals(null, oClient.getAllMicroservices());
-        Assert.assertEquals(null, oClient.registerMicroservice(RegistryUtils.getMicroservice()));
+                oClient.getMicroserviceId(microservice.getAppId(),
+                        microservice.getServiceName(),
+                        microservice.getVersion()));
+        Assert.assertThat(oClient.getAllMicroservices().isEmpty(), is(true));
+        Assert.assertEquals(null, oClient.registerMicroservice(microservice));
         Assert.assertEquals(null, oClient.getMicroservice("microserviceId"));
         Assert.assertEquals(null, oClient.getMicroserviceInstance("consumerId", "providerId"));
         Assert.assertEquals(false,
@@ -114,8 +114,6 @@ public class TestServiceRegistryClientImpl {
         Assert.assertEquals(null, oClient.heartbeat("microserviceId", "microserviceInstanceId"));
         Assert.assertEquals(null,
                 oClient.findServiceInstance("selfMicroserviceId", "appId", "serviceName", "versionRule"));
-        MicroserviceInstance microInstance = Mockito.mock(MicroserviceInstance.class);
-        Assert.assertEquals(null, oClient.registerMicroserviceInstance(microInstance));
 
         Assert.assertEquals("a", new ClientException("a").getMessage());
     }

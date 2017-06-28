@@ -21,17 +21,16 @@ import java.util.concurrent.atomic.AtomicLong;
 
 import javax.xml.ws.Holder;
 
+import org.junit.Assert;
+import org.junit.Test;
+import org.springframework.util.ReflectionUtils;
+
 import io.servicecomb.core.Invocation;
 import io.servicecomb.swagger.invocation.AsyncResponse;
 import io.servicecomb.swagger.invocation.InvocationType;
 import io.servicecomb.swagger.invocation.Response;
 import io.servicecomb.swagger.invocation.exception.CommonExceptionData;
 import io.servicecomb.swagger.invocation.exception.InvocationException;
-
-import org.junit.Assert;
-import org.junit.Test;
-import org.springframework.util.ReflectionUtils;
-
 import mockit.Deencapsulation;
 import mockit.Mock;
 import mockit.MockUp;
@@ -91,8 +90,11 @@ public class TestShutdownHookHandler {
         } catch (Throwable e) {
             Assert.assertEquals(3, requestCounter.get());
             Assert.assertEquals(1, handler.getActiveCount());
-
         }
+
+        AtomicLong responseCounter = Deencapsulation.getField(ShutdownHookHandler.INSTANCE, "responseCounter");
+        responseCounter.incrementAndGet();
+        Assert.assertEquals(0, handler.getActiveCount());
 
         // reply exception
         // TODO: should be fixed

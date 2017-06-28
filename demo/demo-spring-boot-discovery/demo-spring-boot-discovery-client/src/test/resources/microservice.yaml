@@ -1,0 +1,11 @@
+APPLICATION_ID: discoverytest
+service_description:
+  name: discoveryClient
+  version: 0.0.2
+cse:
+  service:
+    registry:
+      address: http://127.0.0.1:9980
+  references:
+    discoveryServer:
+      version-rule: 0.0.2

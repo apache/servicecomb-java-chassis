@@ -21,24 +21,40 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import io.servicecomb.serviceregistry.cache.InstanceCache;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 
+import io.servicecomb.foundation.common.net.IpPort;
 import io.servicecomb.serviceregistry.RegistryUtils;
-import io.servicecomb.serviceregistry.api.registry.Microservice;
 import io.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
 import io.servicecomb.serviceregistry.cache.CacheEndpoint;
-import io.servicecomb.foundation.common.net.IpPort;
-
+import io.servicecomb.serviceregistry.cache.InstanceCache;
+import io.servicecomb.serviceregistry.registry.AbstractServiceRegistry;
+import io.servicecomb.serviceregistry.registry.ServiceRegistryFactory;
 import mockit.Deencapsulation;
+import mockit.Expectations;
 import mockit.Mock;
 import mockit.MockUp;
+import mockit.Mocked;
 
 public class TestIpPortManager {
+    @Mocked
+    ServiceRegistryClient srClient;
 
-    IpPortManager manager = new IpPortManager();
+    AbstractServiceRegistry serviceRegistry;
+
+    IpPortManager manager;
+
+    @Before
+    public void setup() {
+        serviceRegistry = (AbstractServiceRegistry) ServiceRegistryFactory.createLocal();
+        serviceRegistry.setServiceRegistryClient(srClient);
+        serviceRegistry.init();
+
+        manager = serviceRegistry.getIpPortManager();
+    }
 
     InstanceCache instanceCache = null;
 
@@ -46,9 +62,6 @@ public class TestIpPortManager {
 
     @Test
     public void testCreateServiceRegistryCache() {
-
-        boolean validAssert = true;
-
         List<MicroserviceInstance> list = new ArrayList<MicroserviceInstance>();
         MicroserviceInstance e1 = new MicroserviceInstance();
         List<String> endpoints = new ArrayList<>();
@@ -56,21 +69,10 @@ public class TestIpPortManager {
         e1.setEndpoints(endpoints);
         list.add(e1);
 
-        new MockUp<RegistryUtils>() {
-
-            @Mock
-            public List<MicroserviceInstance> findServiceInstance(String appId, String serviceName,
-                    String versionRule) {
-                return list;
-
-            }
-        };
-
-        Microservice microservice = new Microservice();
-        new MockUp<RegistryUtils>() {
-            @Mock
-            private Microservice createMicroserviceFromDefinition() {
-                return microservice;
+        new Expectations() {
+            {
+                srClient.findServiceInstance(anyString, anyString, anyString, anyString);
+                result = list;
             }
         };
 
@@ -79,10 +81,8 @@ public class TestIpPortManager {
             Assert.assertNotNull(manager.get());
             Assert.assertNull(manager.next());
         } catch (Exception e) {
-            validAssert = false;
+            Assert.fail(e.getMessage());
         }
-
-        Assert.assertTrue(validAssert);
     }
 
     @Test
@@ -104,13 +104,6 @@ public class TestIpPortManager {
             }
         };
 
-        Microservice microservice = new Microservice();
-        new MockUp<RegistryUtils>() {
-            @Mock
-            private Microservice createMicroserviceFromDefinition() {
-                return microservice;
-            }
-        };
         try {
             Deencapsulation.setField(manager, "instanceCache", Mockito.mock(InstanceCache.class));
             manager.createServiceRegistryCache();

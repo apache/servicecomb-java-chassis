@@ -20,13 +20,11 @@ import java.io.InputStream;
 import java.util.List;
 
 import io.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
+import org.hamcrest.core.Is;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-/**
- * Created by   on 2017/3/31.
- */
 public class LocalServiceRegistryClientImplTest {
 
     InputStream is;
@@ -41,8 +39,8 @@ public class LocalServiceRegistryClientImplTest {
     public void testLoadRegistryFile() {
         LocalServiceRegistryClientImpl registryClient = new LocalServiceRegistryClientImpl(is);
         Assert.assertNotNull(registryClient);
-        Assert.assertNull(registryClient.getAllMicroservices());
-        List<MicroserviceInstance> m = registryClient.findServiceInstance("","myapp","springmvctest","");
+        Assert.assertThat(registryClient.getAllMicroservices().size(), Is.is(1));
+        List<MicroserviceInstance> m = registryClient.findServiceInstance("", "myapp", "springmvctest", "");
         Assert.assertEquals(1, m.size());
     }
 }

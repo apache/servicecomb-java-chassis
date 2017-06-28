@@ -107,7 +107,8 @@ public class CodeFirstRestTemplate {
 
     private void testCseResponse(String targetMicroserviceName, RestTemplate template,
             String cseUrlPrefix) {
-        String srcMicroserviceName = RegistryUtils.getMicroservice().getServiceName();
+        String srcMicroserviceName =
+            RegistryUtils.getMicroserviceManager().getDefaultMicroserviceForce().getServiceName();
         String context = String.format("{x-cse-src-microservice=%s}", srcMicroserviceName);
 
         ResponseEntity<User> responseEntity =

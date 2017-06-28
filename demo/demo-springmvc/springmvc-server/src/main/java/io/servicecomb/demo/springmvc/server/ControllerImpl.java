@@ -52,6 +52,9 @@ public class ControllerImpl {
     @RequestMapping(path = "/sayhi", method = RequestMethod.GET)
     public String sayHi(HttpServletRequest request) {
         String[] values = request.getParameterValues("name");
+        if (values != null && values.length > 0 && values[0].equals("throwexception")) {
+            throw new RuntimeException();
+        }
         return "hi " + request.getParameter("name") + " " + Arrays.toString(values);
     }
 

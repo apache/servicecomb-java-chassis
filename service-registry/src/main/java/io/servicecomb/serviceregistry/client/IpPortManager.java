@@ -44,7 +44,9 @@ import io.servicecomb.serviceregistry.utils.TimerException;
 public class IpPortManager {
     private static final Logger LOGGER = LoggerFactory.getLogger(IpPortManager.class);
 
-    public static final IpPortManager INSTANCE = new IpPortManager();
+    private ServiceRegistryConfig serviceRegistryConfig;
+
+    private InstanceCacheManager instanceCacheManager;
 
     private String defaultTransport = "rest";
 
@@ -60,12 +62,26 @@ public class IpPortManager {
 
     private final Object lockObj = new Object();
 
+    public IpPortManager(ServiceRegistryConfig serviceRegistryConfig, InstanceCacheManager instanceCacheManager) {
+        this.serviceRegistryConfig = serviceRegistryConfig;
+        this.instanceCacheManager = instanceCacheManager;
+
+        try {
+            // 初始化client发现SR的动态集群扩容能力
+            if (serviceRegistryConfig.isRegistryAutoDiscovery()) {
+                createServiceRegistryCache();
+            }
+        } catch (TimerException e) {
+            // already write log in createServiceRegistryCache
+        }
+    }
+
     public ArrayList<IpPort> getDefaultIpPortList() {
         if (defaultIpPort == null) {
             synchronized (lockObj) {
                 if (defaultIpPort == null) {
-                    defaultTransport = ServiceRegistryConfig.INSTANCE.getTransport();
-                    defaultIpPort = ServiceRegistryConfig.INSTANCE.getIpPort();
+                    defaultTransport = serviceRegistryConfig.getTransport();
+                    defaultIpPort = serviceRegistryConfig.getIpPort();
                 }
             }
         }
@@ -80,7 +96,7 @@ public class IpPortManager {
         // 绑定微服务与SR的依赖，同时建立cache
         Timer timer = Timer.newForeverTimer();
         while (true) {
-            instanceCache = InstanceCacheManager.INSTANCE.getOrCreate(REGISTRY_APP_ID,
+            instanceCache = instanceCacheManager.getOrCreate(REGISTRY_APP_ID,
                     REGISTRY_SERVICE_NAME,
                     REGISTRY_VERSION);
             if (instanceCache != null) {
@@ -179,7 +195,7 @@ public class IpPortManager {
         if (instanceCache == null) {
             return null;
         }
-        InstanceCache newCache = InstanceCacheManager.INSTANCE.getOrCreate(REGISTRY_APP_ID,
+        InstanceCache newCache = instanceCacheManager.getOrCreate(REGISTRY_APP_ID,
                 REGISTRY_SERVICE_NAME,
                 REGISTRY_VERSION);
         if (instanceCache == null || instanceCache.cacheChanged(newCache)) {

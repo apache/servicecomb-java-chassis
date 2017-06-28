@@ -23,12 +23,24 @@
 	<parent>
 		<groupId>io.servicecomb.demo</groupId>
 		<artifactId>demo-spring-boot</artifactId>
-		<version>0.1.0-m2-SNAPSHOT</version>
+		<version>0.1.0-m3-SNAPSHOT</version>
 	</parent>
 	<dependencies>
 		<dependency>
 			<groupId>io.servicecomb.demo</groupId>
 			<artifactId>jaxrs-client</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.cloud</groupId>
+			<artifactId>spring-cloud-commons</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.cloud</groupId>
+			<artifactId>spring-cloud-context</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.cloud</groupId>
+			<artifactId>spring-cloud-netflix-core</artifactId>
 		</dependency>
 	</dependencies>
 
@@ -42,7 +54,7 @@
 						<mixin>
 							<groupId>io.servicecomb.demo</groupId>
 							<artifactId>docker-run-config</artifactId>
-							<version>0.1.0-m2-SNAPSHOT</version>
+							<version>0.1.0-m3-SNAPSHOT</version>
 						</mixin>
 					</mixins>
 				</configuration>
@@ -57,7 +69,6 @@
 				<demo.vm.options>
 					-Dcse.highway.address=0.0.0.0:7070
 					-Dcse.rest.address=0.0.0.0:8080
-					-Dcse.grpc.address=0.0.0.0:9090
 				</demo.vm.options>
 			</properties>
 			<build>

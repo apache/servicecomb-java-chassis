@@ -21,6 +21,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -52,6 +56,15 @@ import rx.Observable;
  */
 public class LoadbalanceHandler extends AbstractHandler {
     private static final Logger LOGGER = LoggerFactory.getLogger(LoadbalanceHandler.class);
+
+    private static final ExecutorService RETRY_POOL = Executors.newCachedThreadPool(new ThreadFactory() {
+        private AtomicInteger count = new AtomicInteger(0);
+
+        @Override
+        public Thread newThread(Runnable r) {
+            return new Thread(r, "retry-pool-thread-" + count.getAndIncrement());
+        }
+    });
 
     // 会给每个Microservice创建一个handler实例，因此这里的key为transportName，保证每个通道使用一个负载均衡策略
     private volatile Map<String, LoadBalancer> loadBalancerMap = new ConcurrentHashMap<>();
@@ -181,7 +194,9 @@ public class LoadbalanceHandler extends AbstractHandler {
             newExecutor = new Executor() {
                 @Override
                 public void execute(Runnable command) {
-                    command.run(); // retry的场景，对于同步调用， 需要在网络线程中进行。同步调用的主线程已经被挂起，无法再主线程中进行重试。
+                    // retry的场景，对于同步调用, 同步调用的主线程已经被挂起，无法再主线程中进行重试;
+                    // 重试也不能在网络线程（event-loop）中进行，未被保护的阻塞操作会导致网络线程挂起
+                    RETRY_POOL.submit(command);
                 }
             };
             invocation.setResponseExecutor(newExecutor);

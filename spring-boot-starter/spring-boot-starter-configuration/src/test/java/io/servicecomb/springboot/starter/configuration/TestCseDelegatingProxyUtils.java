@@ -15,27 +15,36 @@
  */
 package io.servicecomb.springboot.starter.configuration;
 
-
+import org.apache.commons.configuration.AbstractConfiguration;
+import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.Mockito;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.ConfigurableApplicationContext;
+
+import com.netflix.config.ConfigurationManager;
 
 /**
  *
  */
-public class TestCseDelegatingProxyUtils{
+public class TestCseDelegatingProxyUtils {
+
+    @AfterClass
+    public static void tearDown() {
+        AbstractConfiguration config = ConfigurationManager.getConfigInstance();
+        config.clearProperty(ApplicationContext.class.getName());
+    }
 
     @Test
-    public void testGetNamedInstance()
-    {
-    	CseDelegatingProxyUtils.addApplicationContext(Mockito.mock(ConfigurableApplicationContext.class));
-    	Assert.assertNull(CseDelegatingProxyUtils.getNamedInstance(this.getClass(), "TestCseDelegatingProxyUtils"));
+    public void testGetNamedInstance() {
+        CseDelegatingProxyUtils.addApplicationContext(Mockito.mock(ConfigurableApplicationContext.class));
+        Assert.assertNull(CseDelegatingProxyUtils.getNamedInstance(this.getClass(), "TestCseDelegatingProxyUtils"));
     }
-    
+
     @Test
-    public void testGetInstanceWithPrefix()
-    {
-    	Assert.assertNull(CseDelegatingProxyUtils.getInstanceWithPrefix(this.getClass(), "TestCseDelegatingProxyUtils"));
+    public void testGetInstanceWithPrefix() {
+        Assert.assertNull(
+                CseDelegatingProxyUtils.getInstanceWithPrefix(this.getClass(), "TestCseDelegatingProxyUtils"));
     }
 }

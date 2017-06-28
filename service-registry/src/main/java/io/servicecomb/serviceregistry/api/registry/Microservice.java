@@ -23,10 +23,11 @@ import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import io.servicecomb.serviceregistry.api.Const;
 
 /**
- * Created by   on 2016/12/5.
+ * Created by on 2016/12/5.
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Microservice {
@@ -55,7 +56,18 @@ public class Microservice {
 
     private Map<String, String> properties = new HashMap<>();
 
+    @JsonIgnore
+    private MicroserviceInstance intance;
+
     public Microservice() {
+    }
+
+    public MicroserviceInstance getIntance() {
+        return intance;
+    }
+
+    public void setIntance(MicroserviceInstance intance) {
+        this.intance = intance;
     }
 
     public String getServiceId() {

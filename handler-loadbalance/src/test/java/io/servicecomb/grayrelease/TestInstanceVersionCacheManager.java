@@ -5,23 +5,24 @@ import java.util.List;
 import java.util.Map;
 
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mockito.Mockito;
-import org.powermock.api.mockito.PowerMockito;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
 
-import io.servicecomb.serviceregistry.RegistryUtils;
 import io.servicecomb.serviceregistry.api.registry.Microservice;
 import io.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
-import io.servicecomb.serviceregistry.cache.InstanceVersionCacheManager;
+import io.servicecomb.serviceregistry.client.ServiceRegistryClient;
+import io.servicecomb.serviceregistry.registry.AbstractServiceRegistry;
+import io.servicecomb.serviceregistry.registry.ServiceRegistryFactory;
 import mockit.Deencapsulation;
+import mockit.Expectations;
+import mockit.Mocked;
 
-@RunWith(PowerMockRunner.class)
 public class TestInstanceVersionCacheManager {
+    @Mocked
+    private ServiceRegistryClient srClient;
 
-    InstanceVersionCacheManager instanceVersionCacheManager = InstanceVersionCacheManager.INSTANCE;
+    private AbstractServiceRegistry serviceRegistry;
 
     private final String VERSIONALL = "0+";
 
@@ -29,11 +30,20 @@ public class TestInstanceVersionCacheManager {
 
     private String microserviceName = "testMicroserviceName";
 
-    {
-        init();
-    }
+    private Microservice microservice1;
 
-    public void init() {
+    private Microservice microservice2;
+
+    private Microservice microservice3;
+
+    private Microservice microservice4;
+
+    private List<MicroserviceInstance> instances;
+
+    private List<MicroserviceInstance> instances2;
+
+    @Before
+    public void setup() {
         MicroserviceInstance ins1 = Mockito.mock(MicroserviceInstance.class);
         MicroserviceInstance ins2 = Mockito.mock(MicroserviceInstance.class);
         MicroserviceInstance ins3 = Mockito.mock(MicroserviceInstance.class);
@@ -48,54 +58,55 @@ public class TestInstanceVersionCacheManager {
         Mockito.when(ins4.getServiceId()).thenReturn("004");
         Mockito.when(ins4.getInstanceId()).thenReturn("04");
 
-/*    	MicroserviceInstance ins1 = new MicroserviceInstance();
-    	ins1.setServiceId("001");
-    	ins1.setInstanceId("01");
-    	MicroserviceInstance ins2 = new MicroserviceInstance();
-    	ins1.setServiceId("002");
-    	ins1.setInstanceId("02");
-    	MicroserviceInstance ins3 = new MicroserviceInstance();
-    	ins1.setServiceId("003");
-    	ins1.setInstanceId("03");
-    	MicroserviceInstance ins4 = new MicroserviceInstance();
-    	ins1.setServiceId("004");
-    	ins1.setInstanceId("04");   */ 	
-        List<MicroserviceInstance> instances = new ArrayList<MicroserviceInstance>();
+        instances = new ArrayList<MicroserviceInstance>();
+
         instances.add(ins1);
         instances.add(ins2);
         instances.add(ins3);
         instances.add(ins4);
-        List<MicroserviceInstance> instances2 = new ArrayList<MicroserviceInstance>();
+
+
+
+        microservice1 = Mockito.mock(Microservice.class);
+        Mockito.when(microservice1.getVersion()).thenReturn("1.0.0.1");
+        microservice2 = Mockito.mock(Microservice.class);
+        Mockito.when(microservice2.getVersion()).thenReturn("1.0.0.1");
+        microservice3 = Mockito.mock(Microservice.class);
+        Mockito.when(microservice3.getVersion()).thenReturn("1.0.0.2");
+        microservice4 = Mockito.mock(Microservice.class);
+        Mockito.when(microservice4.getVersion()).thenReturn("1.0.0.2");
+
+        instances2 = new ArrayList<MicroserviceInstance>();
         instances2.add(ins3);
         instances2.add(ins4);
 
+        serviceRegistry = (AbstractServiceRegistry) ServiceRegistryFactory.createLocal();
+        serviceRegistry.setServiceRegistryClient(srClient);
+        serviceRegistry.getMicroserviceManager().addMicroservice(appId, "ms");
+        serviceRegistry.init();
 
-        PowerMockito.mockStatic(RegistryUtils.class);
-        PowerMockito.when(RegistryUtils.findServiceInstance(appId, microserviceName, VERSIONALL))
-                .thenReturn(instances);
-        PowerMockito.when(RegistryUtils.findServiceInstance(appId, microserviceName, "1.0.0.2+"))
-                .thenReturn(instances2);
-        Microservice microservice1 = Mockito.mock(Microservice.class);
-        Mockito.when(microservice1.getVersion()).thenReturn("1.0.0.1");
-        Microservice microservice2 = Mockito.mock(Microservice.class);
-        Mockito.when(microservice2.getVersion()).thenReturn("1.0.0.1");
-        Microservice microservice3 = Mockito.mock(Microservice.class);
-        Mockito.when(microservice3.getVersion()).thenReturn("1.0.0.2");
-        Microservice microservice4 = Mockito.mock(Microservice.class);
-        Mockito.when(microservice4.getVersion()).thenReturn("1.0.0.2");        
-        PowerMockito.when(RegistryUtils.getMicroservice("001")).thenReturn(microservice1);
-        PowerMockito.when(RegistryUtils.getMicroservice("002")).thenReturn(microservice2);
-        PowerMockito.when(RegistryUtils.getMicroservice("003")).thenReturn(microservice3);
-        PowerMockito.when(RegistryUtils.getMicroservice("004")).thenReturn(microservice4);
     }
 
     @Test
-    @PrepareForTest(RegistryUtils.class)
     public void testGetOrCreateAllMapAllVersion() {
+        new Expectations() {
+            {
+                srClient.findServiceInstance(anyString, appId, microserviceName, VERSIONALL);
+                result = instances;
+                srClient.getMicroservice("001");
+                result = microservice1;
+                srClient.getMicroservice("002");
+                result = microservice2;
+                srClient.getMicroservice("003");
+                result = microservice3;
+                srClient.getMicroservice("004");
+                result = microservice4;
+            }
+        };
 
-        instanceVersionCacheManager.getOrCreateAllMap(appId, microserviceName);
+        serviceRegistry.getInstanceVersionCacheManager().getOrCreateAllMap(appId, microserviceName);
         Map<String, Map<String, Map<String, MicroserviceInstance>>> cacheAllMap =
-            Deencapsulation.getField(instanceVersionCacheManager, "cacheAllMap");
+            Deencapsulation.getField(serviceRegistry.getInstanceVersionCacheManager(), "cacheAllMap");
         System.out.println(cacheAllMap);
 
         String key = "testAppId/testMicroserviceName";
@@ -115,10 +126,24 @@ public class TestInstanceVersionCacheManager {
     }
 
     @Test
-    @PrepareForTest(RegistryUtils.class)
     public void testGetOrCreateAllMapWithVersion() {
+        new Expectations() {
+            {
+                srClient.findServiceInstance(anyString, appId, microserviceName, VERSIONALL);
+                result = instances;
+                srClient.getMicroservice("001");
+                result = microservice1;
+                srClient.getMicroservice("002");
+                result = microservice2;
+                srClient.getMicroservice("003");
+                result = microservice3;
+                srClient.getMicroservice("004");
+                result = microservice4;
+            }
+        };
+
         Map<String, MicroserviceInstance> vinstances =
-            instanceVersionCacheManager.getOrCreateAllMap(appId, microserviceName, "1.0.0.1");
+            serviceRegistry.getInstanceVersionCacheManager().getOrCreateAllMap(appId, microserviceName, "1.0.0.1");
         System.out.println(vinstances);
         Assert.assertNotNull(vinstances.get("01"));
         Assert.assertNotNull(vinstances.get("02"));
@@ -127,10 +152,20 @@ public class TestInstanceVersionCacheManager {
     }
 
     @Test
-    @PrepareForTest(RegistryUtils.class)
     public void testGetOrCreateVRuleMap() {
+        new Expectations() {
+            {
+                srClient.findServiceInstance(anyString, appId, microserviceName, "1.0.0.2+");
+                result = instances2;
+                srClient.getMicroservice("003");
+                result = microservice3;
+                srClient.getMicroservice("004");
+                result = microservice4;
+            }
+        };
+
         Map<String, Map<String, MicroserviceInstance>> vRuleIns =
-            instanceVersionCacheManager.getOrCreateVRuleMap(appId, microserviceName, "1.0.0.2+");
+            serviceRegistry.getInstanceVersionCacheManager().getOrCreateVRuleMap(appId, microserviceName, "1.0.0.2+");
         System.out.println("VRuleIns:" + vRuleIns);
         Assert.assertNotNull(vRuleIns.get("1.0.0.2"));
         Assert.assertNotNull(vRuleIns.get("1.0.0.2").get("03"));

@@ -19,7 +19,7 @@
   <parent>
     <groupId>io.servicecomb</groupId>
     <artifactId>java-chassis</artifactId>
-    <version>0.1.0-m2-SNAPSHOT</version>
+    <version>0.1.0-m3-SNAPSHOT</version>
   </parent>
   <artifactId>sprint-boot-starter-parent</artifactId>
   <packaging>pom</packaging>
@@ -27,25 +27,7 @@
   	<module>spring-boot-starter-configuration</module>
   	<module>spring-boot-starter-provider</module>
     <module>spring-boot-starter-transport</module>
-    <!--
     <module>spring-boot-starter-discovery</module>
-  -->
   </modules>
-
-  <properties>
-    <spring-boot.version>1.4.5.RELEASE</spring-boot.version>
-  </properties>
-
-  <dependencyManagement>
-    <dependencies>
-      <dependency>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-dependencies</artifactId>
-        <version>${spring-boot.version}</version>
-        <type>pom</type>
-        <scope>import</scope>
-      </dependency>
-    </dependencies>
-  </dependencyManagement>
 
 </project>

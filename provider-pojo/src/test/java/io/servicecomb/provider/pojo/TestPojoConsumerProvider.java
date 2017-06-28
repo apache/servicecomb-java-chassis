@@ -16,51 +16,78 @@
 
 package io.servicecomb.provider.pojo;
 
-import java.util.ArrayList;
-import java.util.List;
+import static io.servicecomb.provider.pojo.PojoConst.POJO;
+import static org.hamcrest.core.Is.is;
+import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
-import io.servicecomb.provider.pojo.reference.PojoReferenceMeta;
-import org.junit.Assert;
-import org.junit.Test;
-
-import io.servicecomb.provider.common.MockUtil;
 import io.servicecomb.provider.pojo.reference.PojoConsumers;
-import io.servicecomb.foundation.common.utils.ReflectUtils;
-
-import mockit.Deencapsulation;
-import mockit.Expectations;
-import mockit.Injectable;
+import io.servicecomb.provider.pojo.reference.PojoReferenceMeta;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
+import org.junit.Before;
+import org.junit.Test;
 
 public class TestPojoConsumerProvider {
 
-    public String fieldTest = "test";
+  private final PojoReferenceMeta meta1 = mock(PojoReferenceMeta.class);
+  private final PojoReferenceMeta meta2 = mock(PojoReferenceMeta.class);
 
-    @Test
-    public void testInit() throws Exception {
-        MockUtil.getInstance().mockMicroserviceMeta();
-        MockUtil.getInstance().mockRegisterManager();
-        MockUtil.getInstance().mockSchemaMeta();
-        MockUtil.getInstance().mockConsumerProviderManager();
+  private final PojoConsumers pojoConsumers = new PojoConsumers();
 
-        PojoConsumerProvider pojoConsumerProvider = new PojoConsumerProvider();
-        ReflectUtils.setField(pojoConsumerProvider, "pojoConsumers", new PojoConsumers());
-        pojoConsumerProvider.init();
-        Assert.assertEquals("pojo", pojoConsumerProvider.getName());
-    }
 
-    @Test
-    public void testpojoConusmersNotNUll(@Injectable PojoConsumers consumser,
-            @Injectable PojoReferenceMeta meta) throws Exception {
-        List<PojoReferenceMeta> metas = new ArrayList<>();
-        metas.add(meta);
-        new Expectations() {
-            {
-                consumser.getConsumerList();
-                result = metas;
-            }
-        };
-        PojoConsumerProvider pojoConsumerProvider = new PojoConsumerProvider();
-        Deencapsulation.setField(pojoConsumerProvider, "pojoConsumers", consumser);
-        pojoConsumerProvider.init();
-    }
+  private final RuntimeException exception = new RuntimeException("oops");
+  private final PojoConsumerProvider pojoConsumerProvider = new PojoConsumerProvider(
+      pojoConsumers,
+      Executors.newSingleThreadScheduledExecutor(),
+      20
+  );
+
+  @Before
+  public void setUp() throws Exception {
+    pojoConsumers.addPojoReferenceMeta(meta1);
+    pojoConsumers.addPojoReferenceMeta(meta2);
+  }
+
+  @Test
+  public void providerNameIsPojo() throws Exception {
+    assertThat(pojoConsumerProvider.getName(), is(POJO));
+  }
+
+  @Test
+  public void pojoConsumersAreCalledOnlyOnce() throws Exception {
+    pojoConsumerProvider.init();
+
+    TimeUnit.MILLISECONDS.sleep(200);
+
+    verify(meta1).createInvoker();
+    verify(meta2).createInvoker();
+  }
+
+  @Test
+  public void createsInvokerUntilSuccess() throws Exception {
+    doThrow(exception).doNothing().when(meta1).createInvoker();
+
+    pojoConsumerProvider.init();
+
+    TimeUnit.MILLISECONDS.sleep(200);
+
+    verify(meta1, times(2)).createInvoker();
+    verify(meta2).createInvoker();
+  }
+
+  @Test
+  public void eachInvokerIsCreatedOnlyOnce() throws Exception {
+    doThrow(exception).doNothing().when(meta2).createInvoker();
+
+    pojoConsumerProvider.init();
+
+    TimeUnit.MILLISECONDS.sleep(200);
+
+    verify(meta1).createInvoker();
+    verify(meta2, times(2)).createInvoker();
+  }
 }

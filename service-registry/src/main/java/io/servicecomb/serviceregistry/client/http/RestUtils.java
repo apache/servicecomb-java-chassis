@@ -16,29 +16,23 @@
 
 package io.servicecomb.serviceregistry.client.http;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.ServiceLoader;
-
 import io.servicecomb.foundation.auth.AuthHeaderProvider;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import io.servicecomb.serviceregistry.config.ServiceRegistryConfig;
 import io.servicecomb.foundation.common.net.IpPort;
 import io.servicecomb.foundation.vertx.client.http.HttpClientWithContext;
-
+import io.servicecomb.serviceregistry.config.ServiceRegistryConfig;
 import io.vertx.core.Handler;
 import io.vertx.core.MultiMap;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.http.CaseInsensitiveHeaders;
 import io.vertx.core.http.HttpClientRequest;
 import io.vertx.core.http.HttpMethod;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.ServiceLoader;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-/**
- * Created by   on 2016/12/25.
- */
-public final class RestUtils {
+final class RestUtils {
     private static final Logger LOGGER = LoggerFactory.getLogger(RestUtils.class);
 
     private static final String HEADER_CONTENT_TYPE = "Content-Type";

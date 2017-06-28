@@ -19,26 +19,24 @@ package io.servicecomb.serviceregistry.config;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.configuration.Configuration;
 import org.junit.Assert;
-import org.junit.BeforeClass;
 import org.junit.Test;
 
-import io.servicecomb.foundation.common.utils.BeanUtils;
-import io.servicecomb.foundation.common.utils.Log4jUtils;
+import io.servicecomb.config.ConfigUtil;
+import io.servicecomb.config.archaius.sources.MicroserviceConfigLoader;
 
 public class TestConfigurePropertyUtils {
-    @BeforeClass
-    public static void beforeClass() throws Exception {
-        Log4jUtils.init();
-        BeanUtils.init();
-    }
-
     @Test
     public void testGetPropertiesWithPrefix() {
+        MicroserviceConfigLoader loader = new MicroserviceConfigLoader();
+        loader.loadAndSort();
+        Configuration configuration = ConfigUtil.createConfig(loader.getConfigModels());
+
         String prefix = "service_description.properties";
         Map<String, String> expectedMap = new HashMap<>();
         expectedMap.put("key1", "value1");
         expectedMap.put("key2", "value2");
-        Assert.assertEquals(expectedMap, ConfigurePropertyUtils.getPropertiesWithPrefix(prefix));
+        Assert.assertEquals(expectedMap, ConfigurePropertyUtils.getPropertiesWithPrefix(configuration, prefix));
     }
 }

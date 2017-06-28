@@ -30,9 +30,9 @@ import io.servicecomb.demo.DemoConst;
 import io.servicecomb.demo.TestMgr;
 import io.servicecomb.demo.controller.Controller;
 import io.servicecomb.demo.controller.Person;
-import io.servicecomb.provider.springmvc.reference.RestTemplateBuilder;
 import io.servicecomb.foundation.common.utils.BeanUtils;
 import io.servicecomb.foundation.common.utils.Log4jUtils;
+import io.servicecomb.provider.springmvc.reference.RestTemplateBuilder;
 
 public class SpringmvcClient {
     private static RestTemplate restTemplate;
@@ -40,29 +40,32 @@ public class SpringmvcClient {
     private static Controller controller;
 
     public static void main(String[] args) throws Exception {
-        init();
+        Log4jUtils.init();
+        BeanUtils.init();
 
         run();
+
+        TestMgr.summary();
     }
 
     public static void run() throws Exception {
         restTemplate = RestTemplateBuilder.create();
         controller = BeanUtils.getBean("controller");
 
+        String prefix = "cse://springmvc";
+
+        try {
+            // this test class is intended for rery hang issue JAV-27
+            restTemplate.getForObject(prefix + "/controller/sayhi?name=throwexception", String.class);
+            TestMgr.check("true", "false");
+        } catch (Exception e) {
+            TestMgr.check("true", "true");
+        }
+
         CodeFirstRestTemplateSpringmvc codeFirstClient =
             BeanUtils.getContext().getBean(CodeFirstRestTemplateSpringmvc.class);
         codeFirstClient.testCodeFirst(restTemplate, "springmvc", "/codeFirstSpringmvc/");
-        runTest();
 
-        TestMgr.summary();
-    }
-
-    public static void init() throws Exception {
-        Log4jUtils.init();
-        BeanUtils.init();
-    }
-
-    public static void runTest() throws Exception {
         String microserviceName = "springmvc";
         for (String transport : DemoConst.transports) {
             CseContext.getInstance().getConsumerProviderManager().setTransport(microserviceName, transport);

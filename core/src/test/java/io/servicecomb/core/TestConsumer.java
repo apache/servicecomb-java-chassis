@@ -40,7 +40,6 @@ public class TestConsumer {
     @SuppressWarnings({"rawtypes", "unchecked"})
     @Test
     public void testConsumerProviderManager() {
-
         ConsumerProviderManager oConsumerProviderManager = new ConsumerProviderManager();
         RegisterManager oRegisterManager = new RegisterManager("cse consumer provider manager");
         oRegisterManager.register("cse.references.cse consumer provider manager",
@@ -70,7 +69,6 @@ public class TestConsumer {
 
             @Override
             public void run() {
-                // TODO Auto-generated method stub
                 oExecutor.setResponse(Response.succResp("success"));
 
             }
@@ -159,7 +157,6 @@ public class TestConsumer {
             oInvocation.next(asyncResp);
 
         } catch (Exception e) {
-            // TODO Auto-generated catch block
             validAssert = false;
 
         }

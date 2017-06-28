@@ -15,7 +15,6 @@
  */
 package io.servicecomb.springboot.starter.configuration;
 
-
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -24,23 +23,22 @@ import org.junit.Test;
 /**
  *
  */
-public class TestCseEndpoint{
+public class TestCseEndpoint {
 
     private CseEndpoint cseEndpoint;
 
     @Before
     public void setUp() throws Exception {
-    	cseEndpoint = new CseEndpoint();
+        cseEndpoint = new CseEndpoint();
     }
 
     @After
     public void tearDown() throws Exception {
-    	cseEndpoint = null;
+        cseEndpoint = null;
     }
 
     @Test
-    public void testInvoke()
-    {
-    	Assert.assertTrue(cseEndpoint.invoke().isEmpty());
+    public void testInvoke() {
+        Assert.assertTrue(cseEndpoint.invoke().isEmpty());
     }
 }

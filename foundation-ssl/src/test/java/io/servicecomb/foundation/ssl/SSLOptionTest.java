@@ -16,6 +16,8 @@
 
 package io.servicecomb.foundation.ssl;
 
+import static io.servicecomb.config.archaius.sources.ConfigSourceMaker.yamlConfigSource;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -28,7 +30,6 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import io.servicecomb.config.archaius.scheduler.NeverStartPollingScheduler;
-import io.servicecomb.config.archaius.sources.YAMLConfigurationSource;
 import com.netflix.config.ConcurrentCompositeConfiguration;
 import com.netflix.config.ConcurrentMapConfiguration;
 import com.netflix.config.ConfigurationManager;
@@ -40,8 +41,7 @@ import mockit.Mock;
 import mockit.MockUp;
 
 public class SSLOptionTest {
-
-    private static final String DIR = System.getProperty("user.dir") + "/src/test/resources";
+    private static final String DIR = Thread.currentThread().getContextClassLoader().getResource("").getPath();
 
     @Test
     public void testSSLOption() {
@@ -118,7 +118,7 @@ public class SSLOptionTest {
     public void testSSLOptionYaml() {
         // configuration from yaml files: default microservice.yaml
         DynamicConfiguration configFromYamlFile =
-            new DynamicConfiguration(new YAMLConfigurationSource(), new FixedDelayPollingScheduler());
+            new DynamicConfiguration(yamlConfigSource(), new FixedDelayPollingScheduler());
         // configuration from system properties
         ConcurrentMapConfiguration configFromSystemProperties =
             new ConcurrentMapConfiguration(new SystemConfiguration());
@@ -206,9 +206,8 @@ public class SSLOptionTest {
     @Test
     public void testSSLOptionYamlOption2() throws Exception {
         System.setProperty("ssl.protocols", "TLSv1.2");
-        YAMLConfigurationSource configSource = new YAMLConfigurationSource();
         DynamicConfiguration configFromYamlFile =
-            new DynamicConfiguration(configSource, new NeverStartPollingScheduler());
+            new DynamicConfiguration(yamlConfigSource(), new NeverStartPollingScheduler());
         // configuration from system properties
         ConcurrentMapConfiguration configFromSystemProperties =
             new ConcurrentMapConfiguration(new SystemConfiguration());
@@ -221,14 +220,13 @@ public class SSLOptionTest {
         String protocols = option.getProtocols();
         option.setProtocols(protocols);
         Assert.assertEquals("TLSv1.2", protocols);
-        System.getProperties().clear();
+        System.clearProperty("ssl.protocols");
     }
 
     @Test
     public void testSSLOptionYamlOption() throws Exception {
-        YAMLConfigurationSource configSource = new YAMLConfigurationSource();
         DynamicConfiguration configFromYamlFile =
-            new DynamicConfiguration(configSource, new NeverStartPollingScheduler());
+            new DynamicConfiguration(yamlConfigSource(), new NeverStartPollingScheduler());
         // configuration from system properties
         ConcurrentMapConfiguration configFromSystemProperties =
             new ConcurrentMapConfiguration(new SystemConfiguration());
@@ -315,7 +313,7 @@ public class SSLOptionTest {
         try {
             SSLOption option = SSLOption.build(DIR + "/servers.ssl.properties");
         } catch (IllegalArgumentException e) {
-            Assert.assertEquals("java.lang.IllegalArgumentException", e.getClass().getName());
+            Assert.assertEquals("Bad file name.", e.getMessage());
         }
     }
 

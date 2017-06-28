@@ -8,9 +8,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import io.servicecomb.core.Invocation;
+import io.servicecomb.serviceregistry.RegistryUtils;
 import io.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
-import io.servicecomb.serviceregistry.cache.InstanceCacheManager;
-import io.servicecomb.serviceregistry.cache.InstanceVersionCacheManager;
 
 public abstract class AbstractGrayReleaseFilter implements IGrayReleaseFilter {
     protected static final Logger LOGGER = LoggerFactory.getLogger(AbstractGrayReleaseFilter.class);
@@ -199,20 +198,21 @@ public abstract class AbstractGrayReleaseFilter implements IGrayReleaseFilter {
         switch (instanceScope) {
 
             case All:
-                instanceMap = InstanceVersionCacheManager.INSTANCE.getOrCreateAllMap(invocation.getAppId(),
+                instanceMap = RegistryUtils.getInstanceVersionCacheManager().getOrCreateAllMap(invocation.getAppId(),
                         invocation.getMicroserviceName());
                 break;
 
             case VersionRule:
-                instanceMap = InstanceVersionCacheManager.INSTANCE.getOrCreateVRuleMap(invocation.getAppId(),
-                        invocation.getMicroserviceName(),
-                        invocation.getMicroserviceVersionRule());
+                instanceMap =
+                    RegistryUtils.getInstanceVersionCacheManager().getOrCreateVRuleMap(invocation.getAppId(),
+                            invocation.getMicroserviceName(),
+                            invocation.getMicroserviceVersionRule());
                 break;
 
             case PartVersion:
 
                 Map<String, Map<String, MicroserviceInstance>> allInstance =
-                    InstanceVersionCacheManager.INSTANCE.getOrCreateAllMap(
+                    RegistryUtils.getInstanceVersionCacheManager().getOrCreateAllMap(
                             invocation.getAppId(), invocation.getMicroserviceName());
                 instanceMap = new HashMap<String, Map<String, MicroserviceInstance>>();
                 for (String version : versions) {
@@ -221,9 +221,10 @@ public abstract class AbstractGrayReleaseFilter implements IGrayReleaseFilter {
                 break;
 
             default:
-                instanceMap = InstanceVersionCacheManager.INSTANCE.getOrCreateVRuleMap(invocation.getAppId(),
-                        invocation.getMicroserviceName(),
-                        invocation.getMicroserviceVersionRule());
+                instanceMap =
+                    RegistryUtils.getInstanceVersionCacheManager().getOrCreateVRuleMap(invocation.getAppId(),
+                            invocation.getMicroserviceName(),
+                            invocation.getMicroserviceVersionRule());
                 break;
 
         }
@@ -263,7 +264,7 @@ public abstract class AbstractGrayReleaseFilter implements IGrayReleaseFilter {
         }
         if (chosenMap == null) {
             Map<String, Map<String, MicroserviceInstance>> defaultInstanceVersionMap =
-                InstanceVersionCacheManager.INSTANCE
+                RegistryUtils.getInstanceVersionCacheManager()
                         .getOrCreateVRuleMap(invocation.getAppId(),
                                 invocation.getMicroserviceName(),
                                 invocation.getMicroserviceVersionRule());
@@ -275,7 +276,8 @@ public abstract class AbstractGrayReleaseFilter implements IGrayReleaseFilter {
             chosenMap = defaultInstanceMap;
         }
 
-        InstanceCacheManager.INSTANCE.updateInstanceMap(invocation.getAppId(),
+        // bug:取消灰度后，无法恢复，已经通知相关人员修改
+        RegistryUtils.getInstanceCacheManager().updateInstanceMap(invocation.getAppId(),
                 invocation.getMicroserviceName(),
                 invocation.getMicroserviceVersionRule(),
                 chosenMap);

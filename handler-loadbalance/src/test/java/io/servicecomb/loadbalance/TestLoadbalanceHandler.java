@@ -24,25 +24,23 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import io.servicecomb.loadbalance.filter.IsolationServerListFilter;
-import io.servicecomb.loadbalance.filter.TransactionControlFilter;
-import io.servicecomb.swagger.invocation.AsyncResponse;
-import io.servicecomb.swagger.invocation.Response;
-
 import org.apache.commons.configuration.AbstractConfiguration;
-import org.apache.commons.configuration.BaseConfiguration;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mockito.Mockito;
 
-import io.servicecomb.core.Invocation;
-import io.servicecomb.core.provider.consumer.SyncResponseExecutor;
-import com.netflix.config.ConfigurationBackedDynamicPropertySupportImpl;
 import com.netflix.config.DynamicPropertyFactory;
 import com.netflix.loadbalancer.IRule;
 import com.netflix.loadbalancer.reactive.ExecutionListener;
 
+import io.servicecomb.config.ConfigUtil;
+import io.servicecomb.core.Invocation;
+import io.servicecomb.core.provider.consumer.SyncResponseExecutor;
+import io.servicecomb.loadbalance.filter.IsolationServerListFilter;
+import io.servicecomb.loadbalance.filter.TransactionControlFilter;
+import io.servicecomb.swagger.invocation.AsyncResponse;
+import io.servicecomb.swagger.invocation.Response;
 import mockit.Deencapsulation;
 import mockit.Mock;
 import mockit.MockUp;
@@ -61,9 +59,9 @@ public class TestLoadbalanceHandler {
 
     @BeforeClass
     public static void beforeCls() {
-        AbstractConfiguration configuration = new BaseConfiguration();
-        DynamicPropertyFactory
-                .initWithConfigurationSource(new ConfigurationBackedDynamicPropertySupportImpl(configuration));
+        ConfigUtil.installDynamicConfig();
+        AbstractConfiguration configuration =
+            (AbstractConfiguration) DynamicPropertyFactory.getBackingConfigurationSource();
         configuration.addProperty("cse.loadbalance.test.transactionControl.policy",
                 "io.servicecomb.loadbalance.filter.SimpleTransactionControlFilter");
         configuration.addProperty("cse.loadbalance.test.transactionControl.options.tag0", "value0");

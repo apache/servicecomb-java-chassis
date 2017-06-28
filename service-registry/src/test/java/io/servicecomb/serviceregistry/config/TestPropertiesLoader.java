@@ -16,33 +16,31 @@
 
 package io.servicecomb.serviceregistry.config;
 
-import java.lang.reflect.Method;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
-import io.servicecomb.serviceregistry.RegistryUtils;
-import io.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.springframework.util.ReflectionUtils;
 
-import io.servicecomb.config.archaius.scheduler.NeverStartPollingScheduler;
-import io.servicecomb.config.archaius.sources.YAMLConfigurationSource;
+import io.servicecomb.config.archaius.sources.ConfigModel;
+import io.servicecomb.config.archaius.sources.MicroserviceConfigLoader;
 import io.servicecomb.serviceregistry.api.registry.Microservice;
-import com.netflix.config.ConcurrentCompositeConfiguration;
-import com.netflix.config.ConfigurationManager;
-import com.netflix.config.DynamicConfiguration;
+import io.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
+import io.servicecomb.serviceregistry.api.registry.MicroserviceManager;
+import io.servicecomb.serviceregistry.definition.DefinitionConst;
+import io.servicecomb.serviceregistry.definition.MicroserviceDefinition;
 
 public class TestPropertiesLoader {
+    private static MicroserviceManager microserviceManager = new MicroserviceManager();
+
     @BeforeClass
     public static void init() {
-        ConcurrentCompositeConfiguration finalConfig = new ConcurrentCompositeConfiguration();
-        YAMLConfigurationSource yamlConfigurationSource = new YAMLConfigurationSource();
-        DynamicConfiguration configFromYamlFile =
-            new DynamicConfiguration(yamlConfigurationSource, new NeverStartPollingScheduler());
-        finalConfig.addConfiguration(configFromYamlFile, "configFromYamlFile");
-        ConfigurationManager.install(finalConfig);
+        MicroserviceConfigLoader loader = new MicroserviceConfigLoader();
+        loader.loadAndSort();
+
+        microserviceManager.init(loader);
     }
 
     @Test
@@ -51,21 +49,63 @@ public class TestPropertiesLoader {
     }
 
     @Test
+    public void testEmptyExtendedClass() {
+        Microservice microservice = microserviceManager.addMicroservice("default", "emptyExtendedClass");
+        Assert.assertEquals(0, microservice.getProperties().size());
+    }
+
+    @Test
+    public void testInvalidExtendedClass() {
+        ConfigModel configModel = MicroserviceDefinition.createConfigModel("default", "invalidExtendedClass");
+        @SuppressWarnings("unchecked")
+        Map<String, Object> desc =
+            (Map<String, Object>) configModel.getConfig().get(DefinitionConst.serviceDescriptionKey);
+        desc.put("propertyExtentedClass", "invalidClass");
+        MicroserviceDefinition microserviceDefinition = new MicroserviceDefinition(Arrays.asList(configModel));
+        try {
+            microserviceManager.addMicroservice(microserviceDefinition);
+            Assert.fail("Must throw exception");
+        } catch (Error e) {
+            Assert.assertEquals(ClassNotFoundException.class, e.getCause().getClass());
+            Assert.assertEquals("invalidClass", e.getCause().getMessage());
+        }
+    }
+
+    @Test
+    public void testCanNotAssignExtendedClass() {
+        ConfigModel configModel = MicroserviceDefinition.createConfigModel("default", "invalidExtendedClass");
+        @SuppressWarnings("unchecked")
+        Map<String, Object> desc =
+            (Map<String, Object>) configModel.getConfig().get(DefinitionConst.serviceDescriptionKey);
+        desc.put("propertyExtentedClass", "java.lang.String");
+        MicroserviceDefinition microserviceDefinition = new MicroserviceDefinition(Arrays.asList(configModel));
+        try {
+            microserviceManager.addMicroservice(microserviceDefinition);
+            Assert.fail("Must throw exception");
+        } catch (Error e) {
+            Assert.assertEquals(
+                    "Define propertyExtentedClass java.lang.String in yaml, but not implement the interface PropertyExtended.",
+                    e.getMessage());
+        }
+    }
+
+    @Test
     public void testMicroservicePropertiesLoader() throws Exception {
-        Method method = ReflectionUtils.findMethod(RegistryUtils.class, "createMicroserviceFromDefinition");
-        ReflectionUtils.makeAccessible(method);
-        Microservice microservice = (Microservice) method.invoke(null);
+        Microservice microservice = microserviceManager.findMicroservice("default");
         Map<String, String> expectedMap = new HashMap<>();
         expectedMap.put("key1", "value1");
         expectedMap.put("key2", "value2");
+        expectedMap.put("ek0", "ev0");
         Assert.assertEquals(expectedMap, microservice.getProperties());
     }
 
     @Test
     public void testInstancePropertiesLoader() {
-        MicroserviceInstance instance = RegistryUtils.getMicroserviceInstance();
+        Microservice microservice = microserviceManager.findMicroservice("default");
+        MicroserviceInstance instance = microservice.getIntance();
         Map<String, String> expectedMap = new HashMap<>();
         expectedMap.put("key0", "value0");
+        expectedMap.put("ek0", "ev0");
         Assert.assertEquals(expectedMap, instance.getProperties());
     }
 

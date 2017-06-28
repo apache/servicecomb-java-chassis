@@ -16,8 +16,7 @@
 
 package io.servicecomb.demo;
 
-import java.io.File;
-import java.io.IOException;
+import java.net.URL;
 
 import io.servicecomb.foundation.ssl.SSLCustom;
 
@@ -29,15 +28,12 @@ public class DemoSSLCustom extends SSLCustom {
 
     @Override
     public String getFullPath(String filename) {
-        try {
-            String currendDir = System.getProperty("user.dir");
-            File cerDir = new File(currendDir, "src/main/resources/certificates");
-            File certFile = new File(cerDir, filename);
-
-            return certFile.getCanonicalPath();
-        } catch (IOException e) {
+        URL url = Thread.currentThread().getContextClassLoader().getResource("certificates/" + filename);
+        if (url == null) {
             return filename;
         }
+
+        return url.getPath();
     }
 
 }

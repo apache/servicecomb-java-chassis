@@ -16,6 +16,7 @@
 
 package io.servicecomb.springboot.jaxrs.client;
 
+import io.servicecomb.demo.TestMgr;
 import io.servicecomb.foundation.common.utils.Log4jUtils;
 import io.servicecomb.springboot.starter.provider.EnableServiceComb;
 import org.springframework.boot.SpringApplication;
@@ -35,5 +36,6 @@ public class JaxrsClient {
         SpringApplication.run(JaxrsClient.class, args);
 
         io.servicecomb.demo.jaxrs.client.JaxrsClient.run();
+        TestMgr.summary();
     }
 }

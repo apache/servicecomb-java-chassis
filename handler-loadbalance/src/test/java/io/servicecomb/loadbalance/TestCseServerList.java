@@ -27,11 +27,8 @@ import org.junit.Before;
 import org.junit.Test;
 
 import io.servicecomb.core.endpoint.AbstractEndpointsCache;
-import io.servicecomb.serviceregistry.RegistryUtils;
-import io.servicecomb.serviceregistry.api.registry.Microservice;
 import io.servicecomb.serviceregistry.cache.InstanceCache;
 import io.servicecomb.serviceregistry.cache.InstanceCacheManager;
-
 import mockit.Mock;
 import mockit.MockUp;
 
@@ -40,20 +37,6 @@ public class TestCseServerList {
     private CseServerList instance = null;
 
     private void mockTestCases() {
-        final Microservice microService = new Microservice();
-        microService.setAppId("appId");
-        new MockUp<RegistryUtils>() {
-            @Mock
-            public Microservice getMicroservice() {
-                return microService;
-            }
-
-            @Mock
-            private Microservice createMicroserviceFromDefinition() {
-                return microService;
-            }
-        };
-
         new MockUp<InstanceCacheManager>() {
             @Mock
             public InstanceCache getOrCreate(String appId, String microserviceName, String microserviceVersionRule) {

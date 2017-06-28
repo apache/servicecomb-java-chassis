@@ -21,13 +21,13 @@
 	<parent>
 		<groupId>io.servicecomb.demo</groupId>
 		<artifactId>demo-parent</artifactId>
-		<version>0.1.0-m2-SNAPSHOT</version>
+		<version>0.1.0-m3-SNAPSHOT</version>
 	</parent>
 	<artifactId>demo-jaxrs</artifactId>
 	<packaging>pom</packaging>
 	<modules>
 		<module>jaxrs-server</module>
 		<module>jaxrs-client</module>
-	</modules>
+  </modules>
 
 </project>

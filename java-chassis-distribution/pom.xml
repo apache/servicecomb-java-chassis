@@ -4,7 +4,7 @@
     <parent>
         <groupId>io.servicecomb</groupId>
         <artifactId>java-chassis</artifactId>
-        <version>0.1.0-m2-SNAPSHOT</version>
+        <version>0.1.0-m3-SNAPSHOT</version>
     </parent>
     <artifactId>java-chassis-distribution</artifactId>
     <packaging>pom</packaging>
@@ -32,6 +32,10 @@
         <dependency>
             <groupId>io.servicecomb</groupId>
             <artifactId>spring-boot-starter-provider</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.servicecomb</groupId>
+            <artifactId>spring-boot-starter-discovery</artifactId>
         </dependency>
         <dependency>
             <groupId>io.servicecomb</groupId>
@@ -131,24 +135,29 @@
         </dependency>
     </dependencies>
 
-    <build>
-        <plugins>
-            <plugin>
-                <artifactId>maven-assembly-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>single</goal>
-                        </goals>
-                        <configuration>
-                            <descriptors>
-                                <descriptor>src/assembly/assembly.xml</descriptor>
-                            </descriptors>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-        </plugins>
-    </build>
+    <profiles>
+        <profile>
+            <id>release</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <artifactId>maven-assembly-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>single</goal>
+                                </goals>
+                                <configuration>
+                                    <descriptors>
+                                        <descriptor>src/assembly/assembly.xml</descriptor>
+                                    </descriptors>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 </project>

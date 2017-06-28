@@ -16,21 +16,16 @@
 
 package io.servicecomb.serviceregistry.client;
 
-import java.util.List;
-import java.util.Map;
-
 import io.servicecomb.foundation.vertx.AsyncResultCallback;
 import io.servicecomb.serviceregistry.api.registry.Microservice;
 import io.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
 import io.servicecomb.serviceregistry.api.response.HeartbeatResponse;
 import io.servicecomb.serviceregistry.api.response.MicroserviceInstanceChangedEvent;
+import java.util.List;
+import java.util.Map;
 
 public interface ServiceRegistryClient {
-    void init() throws Exception;
-
-    /**
-     * meta相关
-     */
+    void init();
 
     /**
      * get all microservices
@@ -125,6 +120,6 @@ public interface ServiceRegistryClient {
      *
      * 按照app+interface+version查询实例endpoints信息
      */
-    List<MicroserviceInstance> findServiceInstance(String selfMicroserviceId, String appId, String serviceName,
+    List<MicroserviceInstance> findServiceInstance(String consumerId, String appId, String serviceName,
             String versionRule);
 }

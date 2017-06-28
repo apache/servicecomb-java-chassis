@@ -17,37 +17,28 @@
 package io.servicecomb.serviceregistry.client.http;
 
 import java.util.ArrayList;
+import java.util.concurrent.CountDownLatch;
 
-import io.servicecomb.serviceregistry.RegistryThread;
-import io.servicecomb.serviceregistry.client.RegistryClientFactory;
-import org.junit.After;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 
-import io.servicecomb.serviceregistry.RegistryUtils;
+import io.servicecomb.foundation.common.net.IpPort;
+import io.servicecomb.foundation.vertx.AsyncResultCallback;
 import io.servicecomb.serviceregistry.api.registry.Microservice;
+import io.servicecomb.serviceregistry.api.registry.MicroserviceManager;
+import io.servicecomb.serviceregistry.cache.InstanceCacheManager;
 import io.servicecomb.serviceregistry.client.Endpoints;
 import io.servicecomb.serviceregistry.client.IpPortManager;
-import io.servicecomb.foundation.common.net.IpPort;
-import io.servicecomb.foundation.common.utils.BeanUtils;
-import io.servicecomb.foundation.vertx.AsyncResultCallback;
-
+import io.servicecomb.serviceregistry.config.ServiceRegistryConfig;
+import io.vertx.core.Handler;
+import io.vertx.core.buffer.Buffer;
 import mockit.Expectations;
+import mockit.Mock;
+import mockit.MockUp;
 import mockit.Mocked;
 
 public class TestClienthttp {
-
-    @Before
-    public void setUp() throws Exception {
-        BeanUtils.init();
-    }
-
-    @After
-    public void tearDown() throws Exception {
-    }
-
     @SuppressWarnings("unchecked")
     @Test
     public void testServiceRegistryClientImpl(@Mocked IpPortManager manager) {
@@ -56,41 +47,55 @@ public class TestClienthttp {
             {
                 manager.get();
                 result = ipPort;
-                manager.next();
-                result = null;
             }
         };
 
-        Microservice oInstance = RegistryUtils.getMicroservice();
-        RegistryThread oThread = new RegistryThread();
-        oThread.start();
-        ServiceRegistryClientImpl oClient = (ServiceRegistryClientImpl) RegistryClientFactory.getRegistryClient();
-        oClient.registerMicroservice(oInstance);
-        oClient.registerMicroserviceInstance(RegistryUtils.getMicroserviceInstance());
-        try {
-            oClient.init();
-        } catch (Exception e) {
-            Assert.assertEquals(null, e.getMessage());
-        }
-        Assert.assertEquals(null, oClient.getMicroservice(RegistryUtils.getMicroservice().getServiceId()));
+        new MockUp<CountDownLatch>() {
+            @Mock
+            public void await() throws InterruptedException {
+            }
+
+        };
+        new MockUp<RestUtils>() {
+            @Mock
+            void httpDo(RequestContext requestContext, Handler<RestResponse> responseHandler) {
+            }
+        };
+
+        new MockUp<WebsocketUtils>() {
+            @Mock
+            void open(IpPort ipPort, String url, Handler<Void> onOpen, Handler<Void> onClose,
+                    Handler<Buffer> onMessage, Handler<Throwable> onException,
+                    Handler<Throwable> onConnectFailed) {
+            }
+        };
+
+        MicroserviceManager microserviceManager = new MicroserviceManager();
+        Microservice microservice = microserviceManager.addMicroservice("app", "ms");
+
+        ServiceRegistryClientImpl oClient = new ServiceRegistryClientImpl(manager);
+        oClient.init();
+        oClient.registerMicroservice(microservice);
+        oClient.registerMicroserviceInstance(microservice.getIntance());
+        Assert.assertEquals(null, oClient.getMicroservice(microservice.getServiceId()));
         Assert.assertEquals(null, oClient.getMicroserviceInstance("testConsumerID", "testproviderID"));
         Assert.assertEquals(null,
-                oClient.findServiceInstance(RegistryUtils.getMicroservice().getServiceId(),
-                        RegistryUtils.getMicroservice().getAppId(),
-                        RegistryUtils.getMicroservice().getServiceName(),
-                        RegistryUtils.getMicroservice().getVersion()));
+                oClient.findServiceInstance(microservice.getServiceId(),
+                        microservice.getAppId(),
+                        microservice.getServiceName(),
+                        microservice.getVersion()));
         Assert.assertEquals(null,
-                oClient.getMicroserviceId(RegistryUtils.getMicroservice().getAppId(),
-                        RegistryUtils.getMicroservice().getServiceName(),
-                        RegistryUtils.getMicroservice().getVersion()));
+                oClient.getMicroserviceId(microservice.getAppId(),
+                        microservice.getServiceName(),
+                        microservice.getVersion()));
         Assert.assertEquals(null,
-                oClient.heartbeat(RegistryUtils.getMicroservice().getServiceId(),
-                        RegistryUtils.getMicroserviceInstance().getInstanceId()));
+                oClient.heartbeat(microservice.getServiceId(),
+                        microservice.getIntance().getInstanceId()));
         oClient.watch("",
                 Mockito.mock(AsyncResultCallback.class));
         Assert.assertEquals(false,
-                oClient.unregisterMicroserviceInstance(RegistryUtils.getMicroservice().getServiceId(),
-                        RegistryUtils.getMicroserviceInstance().getInstanceId()));
+                oClient.unregisterMicroserviceInstance(microservice.getServiceId(),
+                        microservice.getIntance().getInstanceId()));
     }
 
     @Test
@@ -139,8 +144,8 @@ public class TestClienthttp {
     }
 
     @Test
-    public void testIpPortManager() throws Exception {
-        IpPortManager oManager = new IpPortManager();
+    public void testIpPortManager(@Mocked InstanceCacheManager instanceCacheManager) throws Exception {
+        IpPortManager oManager = new IpPortManager(ServiceRegistryConfig.INSTANCE, instanceCacheManager);
         ArrayList<IpPort> oIPPort = oManager.getDefaultIpPortList();
         oManager.next();
         Assert.assertEquals(oIPPort.get(0).getHostOrIp(), oManager.get().getHostOrIp());

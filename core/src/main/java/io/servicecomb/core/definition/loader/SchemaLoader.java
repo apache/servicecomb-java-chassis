@@ -20,10 +20,6 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import io.servicecomb.core.definition.MicroserviceMeta;
-import io.servicecomb.core.definition.MicroserviceMetaManager;
-import io.servicecomb.core.handler.ConsumerHandlerManager;
-import io.servicecomb.core.handler.ProducerHandlerManager;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
@@ -32,12 +28,15 @@ import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Component;
 
 import io.servicecomb.core.Handler;
+import io.servicecomb.core.definition.MicroserviceMeta;
+import io.servicecomb.core.definition.MicroserviceMetaManager;
 import io.servicecomb.core.definition.SchemaMeta;
 import io.servicecomb.core.definition.SchemaUtils;
+import io.servicecomb.core.handler.ConsumerHandlerManager;
+import io.servicecomb.core.handler.ProducerHandlerManager;
 import io.servicecomb.serviceregistry.RegistryUtils;
 import io.servicecomb.serviceregistry.api.registry.BasePath;
 import io.servicecomb.serviceregistry.api.registry.Microservice;
-
 import io.swagger.models.Swagger;
 
 @Component
@@ -108,8 +107,8 @@ public class SchemaLoader {
             return;
         }
 
-        Microservice microservice = RegistryUtils.getMicroservice();
-        if (!microservice.getServiceName().equals(microserviceName)) {
+        Microservice microservice = RegistryUtils.getMicroserviceManager().findMicroservice(microserviceName);
+        if (microservice == null) {
             return;
         }
 

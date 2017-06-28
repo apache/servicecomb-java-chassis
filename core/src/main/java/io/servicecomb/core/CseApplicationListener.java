@@ -28,19 +28,21 @@ import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextClosedEvent;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.context.support.AbstractApplicationContext;
+import org.springframework.core.Ordered;
 
 import io.servicecomb.core.BootListener.BootEvent;
 import io.servicecomb.core.BootListener.EventType;
 import io.servicecomb.core.definition.loader.SchemaListenerManager;
+import io.servicecomb.core.endpoint.AbstractEndpointsCache;
 import io.servicecomb.core.handler.HandlerConfigUtils;
 import io.servicecomb.core.provider.consumer.ConsumerProviderManager;
 import io.servicecomb.core.provider.producer.ProducerProviderManager;
 import io.servicecomb.core.transport.TransportManager;
-import io.servicecomb.serviceregistry.RegistryUtils;
 import io.servicecomb.foundation.common.utils.BeanUtils;
 import io.servicecomb.foundation.common.utils.FortifyUtils;
+import io.servicecomb.serviceregistry.RegistryUtils;
 
-public class CseApplicationListener implements ApplicationListener<ApplicationEvent> {
+public class CseApplicationListener implements ApplicationListener<ApplicationEvent>, Ordered {
     private static final Logger LOGGER = LoggerFactory.getLogger(CseApplicationListener.class);
 
     private static boolean isInit = false;
@@ -58,6 +60,12 @@ public class CseApplicationListener implements ApplicationListener<ApplicationEv
     private SchemaListenerManager schemaListenerManager;
 
     private Collection<BootListener> bootListenerList;
+
+    @Override
+    public int getOrder() {
+        // should run before default listener, eg: ZuulConfiguration
+        return -1000;
+    }
 
     protected void triggerEvent(EventType eventType) {
         BootEvent event = new BootEvent();
@@ -78,6 +86,9 @@ public class CseApplicationListener implements ApplicationListener<ApplicationEv
                     BeanUtils.setContext(applicationContext);
                     bootListenerList = applicationContext.getBeansOfType(BootListener.class).values();
 
+                    RegistryUtils.init();
+                    AbstractEndpointsCache.init(RegistryUtils.getInstanceCacheManager(), transportManager);
+
                     triggerEvent(EventType.BEFORE_HANDLER);
                     HandlerConfigUtils.init();
                     triggerEvent(EventType.AFTER_HANDLER);
@@ -97,7 +108,7 @@ public class CseApplicationListener implements ApplicationListener<ApplicationEv
                     schemaListenerManager.notifySchemaListener();
 
                     triggerEvent(EventType.BEFORE_REGISTRY);
-                    RegistryUtils.init();
+                    RegistryUtils.run();
                     triggerEvent(EventType.AFTER_REGISTRY);
 
                     // 当程序退出时，进行相关清理，注意：kill -9 {pid}下无效

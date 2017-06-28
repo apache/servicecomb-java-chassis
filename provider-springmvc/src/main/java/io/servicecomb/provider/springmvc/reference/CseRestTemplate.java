@@ -17,13 +17,15 @@
 package io.servicecomb.provider.springmvc.reference;
 
 import java.lang.reflect.Type;
+import java.net.URI;
 import java.util.Arrays;
 
 import org.springframework.web.client.CseHttpMessageConverter;
 import org.springframework.web.client.RequestCallback;
-import org.springframework.web.client.RestTemplate;
 
-public class CseRestTemplate extends RestTemplate {
+import io.servicecomb.common.rest.RestConst;
+
+public class CseRestTemplate extends AcceptableRestTemplate {
     public CseRestTemplate() {
         setMessageConverters(Arrays.asList(new CseHttpMessageConverter()));
         setRequestFactory(new CseClientHttpRequestFactory());
@@ -42,5 +44,15 @@ public class CseRestTemplate extends RestTemplate {
         RequestCallback callback = super.httpEntityCallback(requestBody, responseType);
         CseRequestCallback cseCallback = new CseRequestCallback(requestBody, callback);
         return cseCallback;
+    }
+
+    @Override
+    boolean isAcceptable(String uri) {
+        return uri.startsWith(RestConst.URI_PREFIX);
+    }
+
+    @Override
+    boolean isAcceptable(URI uri) {
+        return RestConst.SCHEME.equals(uri.getScheme());
     }
 }
