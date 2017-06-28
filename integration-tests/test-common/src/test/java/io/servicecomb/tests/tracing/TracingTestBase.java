@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package io.servicecomb.tests.tracing.springmvc;
+package io.servicecomb.tests.tracing;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.containing;
@@ -37,21 +37,20 @@ import org.junit.Test;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 
-public class SpringMvcTracingTest {
+public class TracingTestBase {
+
   @ClassRule
   public static final WireMockRule wireMockRule = new WireMockRule(9411);
-
   private final RestTemplate restTemplate = new RestTemplate();
 
   @BeforeClass
-  public static void setUp() throws Exception {
+  public static void setUpClass() throws Exception {
     stubFor(post(urlEqualTo("/api/v1/spans"))
         .withRequestBody(containing("http.path"))
         .willReturn(
             aResponse()
                 .withStatus(SC_OK)));
 
-    TracingTestMain.main(new String[0]);
   }
 
   @Test
