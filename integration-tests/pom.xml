@@ -17,6 +17,7 @@
         <module>jaxrs-tests</module>
         <module>springmvc-tests</module>
         <module>tracing-tests</module>
+        <module>test-common</module>
     </modules>
 
     <dependencyManagement>
@@ -25,6 +26,12 @@
                 <groupId>io.servicecomb.demo</groupId>
                 <artifactId>demo-schema</artifactId>
                 <version>0.1.0-m3-SNAPSHOT</version>
+            </dependency>
+            <dependency>
+                <groupId>io.servicecomb.tests</groupId>
+                <artifactId>test-common</artifactId>
+                <version>0.1.0-m3-SNAPSHOT</version>
+                <type>test-jar</type>
             </dependency>
         </dependencies>
     </dependencyManagement>
@@ -40,10 +47,6 @@
         <dependency>
             <groupId>io.servicecomb</groupId>
             <artifactId>transport-highway</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>io.servicecomb</groupId>
-            <artifactId>transport-rest-vertx</artifactId>
         </dependency>
         <dependency>
             <groupId>javax.servlet</groupId>

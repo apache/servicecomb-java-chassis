@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package io.servicecomb.tests.tracing.springmvc;
+package io.servicecomb.tests.tracing;
 
 import static org.springframework.http.MediaType.TEXT_PLAIN_VALUE;
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
@@ -35,6 +35,7 @@ import org.springframework.web.client.RestTemplate;
 @RequestMapping("/")
 public class SomeTracedController {
   private static final Logger logger = LoggerFactory.getLogger(SomeTracedController.class);
+  private final Random random = new Random();
 
   @Bean
   RestTemplate template() {
@@ -47,7 +48,6 @@ public class SomeTracedController {
   @RequestMapping(value = "/hello", method = GET, produces = TEXT_PLAIN_VALUE)
   public String hello(HttpServletRequest request) throws InterruptedException {
     logger.info("in /hello");
-    Random random = new Random();
     Thread.sleep(random.nextInt(1000));
 
     return "hello " + template.getForObject("http://localhost:8080/world", String.class);
@@ -56,7 +56,6 @@ public class SomeTracedController {
   @RequestMapping(value = "/world", method = GET, produces = TEXT_PLAIN_VALUE)
   public String world() throws InterruptedException {
     logger.info("in /world");
-    Random random = new Random();
     Thread.sleep(random.nextInt(1000));
 
     return "world";

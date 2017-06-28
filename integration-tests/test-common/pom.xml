@@ -25,36 +25,33 @@
   </parent>
   <modelVersion>4.0.0</modelVersion>
 
-  <artifactId>tracing-tests</artifactId>
-  <packaging>pom</packaging>
-
-  <modules>
-    <module>tracing-servlet-tests</module>
-    <module>tracing-vertx-tests</module>
-  </modules>
+  <artifactId>test-common</artifactId>
 
   <dependencies>
     <dependency>
-      <groupId>io.servicecomb.tests</groupId>
-      <artifactId>test-common</artifactId>
-      <type>test-jar</type>
-    </dependency>
-    <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>slf4j-log4j12</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>log4j</groupId>
-      <artifactId>log4j</artifactId>
-    </dependency>
-    <dependency>
       <groupId>io.servicecomb</groupId>
-      <artifactId>tracing-springmvc</artifactId>
+      <artifactId>provider-rest-common</artifactId>
     </dependency>
     <dependency>
-      <groupId>io.servicecomb</groupId>
-      <artifactId>provider-springmvc</artifactId>
+      <groupId>com.github.tomakehurst</groupId>
+      <artifactId>wiremock-standalone</artifactId>
+      <scope>test</scope>
     </dependency>
   </dependencies>
 
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jar-plugin</artifactId>
+        <executions>
+          <execution>
+            <goals>
+              <goal>test-jar</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
 </project>
