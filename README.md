@@ -1,6 +1,5 @@
 # Java Chassis [![Build Status](https://travis-ci.org/ServiceComb/java-chassis.svg?branch=master)](https://travis-ci.org/ServiceComb/java-chassis?branch=master)[![Coverage Status](https://coveralls.io/repos/github/ServiceComb/java-chassis/badge.svg?branch=master)](https://coveralls.io/github/ServiceComb/java-chassis?branch=master)
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/io.servicecomb/java-chassis-distribution/badge.svg)](http://search.maven.org/#search%7Cga%7C1%7Cio.servicecomb)
-[![GitHub release](https://img.shields.io/badge/release-download-orange.svg)](https://service.io/dowloading/releases)
 [![License](https://img.shields.io/badge/license-Apache%202-4EB1BA.svg)](https://www.apache.org/licenses/LICENSE-2.0.html)
 
 ServiceComb Java Chassis is a Software Development Kit (SDK) for rapid development of microservices in Java, providing service registration, service discovery, dynamic routing, and service management features
