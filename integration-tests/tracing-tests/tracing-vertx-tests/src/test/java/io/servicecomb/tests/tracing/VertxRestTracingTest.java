@@ -14,13 +14,14 @@
  * limitations under the License.
  */
 
-package io.servicecomb.tests.tracing.springmvc;
+package io.servicecomb.tests.tracing;
 
-import io.servicecomb.foundation.common.utils.BeanUtils;
+import org.junit.Before;
 
-public class TracingTestMain {
+public class VertxRestTracingTest extends TracingTestBase {
 
-  public static void main(String[] args) {
-    BeanUtils.init();
+  @Before
+  public void setUp() throws Exception {
+    TracingTestMain.main(new String[0]);
   }
 }

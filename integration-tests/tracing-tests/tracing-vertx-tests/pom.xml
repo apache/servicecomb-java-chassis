@@ -19,41 +19,26 @@
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <parent>
-    <artifactId>integration-tests</artifactId>
+    <artifactId>tracing-tests</artifactId>
     <groupId>io.servicecomb.tests</groupId>
     <version>0.1.0-m3-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
 
-  <artifactId>tracing-tests</artifactId>
-  <packaging>pom</packaging>
-
-  <modules>
-    <module>tracing-servlet-tests</module>
-    <module>tracing-vertx-tests</module>
-  </modules>
+  <artifactId>tracing-vertx-tests</artifactId>
 
   <dependencies>
     <dependency>
-      <groupId>io.servicecomb.tests</groupId>
-      <artifactId>test-common</artifactId>
-      <type>test-jar</type>
-    </dependency>
-    <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>slf4j-log4j12</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>log4j</groupId>
-      <artifactId>log4j</artifactId>
+      <groupId>io.servicecomb</groupId>
+      <artifactId>transport-rest-vertx</artifactId>
     </dependency>
     <dependency>
       <groupId>io.servicecomb</groupId>
-      <artifactId>tracing-springmvc</artifactId>
+      <artifactId>transport-highway</artifactId>
     </dependency>
     <dependency>
-      <groupId>io.servicecomb</groupId>
-      <artifactId>provider-springmvc</artifactId>
+      <groupId>com.github.tomakehurst</groupId>
+      <artifactId>wiremock-standalone</artifactId>
     </dependency>
   </dependencies>
 
