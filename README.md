@@ -57,6 +57,9 @@ The first build may take a longer than expected as Maven downloads all the depen
 
 Bugs: [issues](https://github.com/ServiceComb/java-chassis/issues)
 
+mailing lists: [users](https://groups.google.com/forum/#!forum/servicecomb-users) , [developers](https://groups.google.com/forum/#!forum/servicecomb-developers)
+
+
 ## Contributing
 
 See CONTRIBUTING for details on submitting patches and the contribution workflow.
