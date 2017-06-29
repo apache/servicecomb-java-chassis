@@ -24,7 +24,7 @@ paths:
           format: int32
       responses:
         200:
-          description: add numer
+          description: add number
           schema:
             type: integer
             format: int32
