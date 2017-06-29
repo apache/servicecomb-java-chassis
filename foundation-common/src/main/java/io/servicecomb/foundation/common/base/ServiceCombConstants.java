@@ -25,4 +25,9 @@ public class ServiceCombConstants {
   public static final String CONFIG_SERVICE_VERSION = CONFIG_SERVICE + ".version";
   public static final String CONFIG_SERVICE_ROLE = CONFIG_SERVICE + ".role";
   public static final String CONFIG_SERVICE_DESCRIPTION = CONFIG_SERVICE + ".description";
+
+  public static final String DEFAULT_SERVICE_NAME = "anonymous-service";
+
+  public static final String CONFIG_TRACING_COLLECTOR_ADDRESS = "servicecomb.tracing.collector.address";
+  public static final String DEFAULT_TRACING_COLLECTOR_ADDRESS = "http://127.0.0.1:9411/api/v1/spans";
 }

@@ -40,4 +40,14 @@
 		<servlet-name>RestServlet</servlet-name>
 		<url-pattern>/</url-pattern>
 	</servlet-mapping>
+
+	<filter>
+		<filter-name>TracingFilter</filter-name>
+		<filter-class>io.servicecomb.tracing.servlet.ServletContextTracingFilter</filter-class>
+		<async-supported>true</async-supported>
+	</filter>
+	<filter-mapping>
+		<filter-name>TracingFilter</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping>
 </web-app>
