@@ -33,6 +33,10 @@
       <artifactId>transport-rest-servlet</artifactId>
     </dependency>
     <dependency>
+      <groupId>io.servicecomb</groupId>
+      <artifactId>tracing-servlet</artifactId>
+    </dependency>
+    <dependency>
       <groupId>org.eclipse.jetty</groupId>
       <artifactId>jetty-webapp</artifactId>
       <version>9.3.16.v20170120</version>

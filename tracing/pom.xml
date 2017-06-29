@@ -30,6 +30,8 @@
 
   <modules>
     <module>tracing-springmvc</module>
+    <module>tracing-jaxrs</module>
+    <module>tracing-servlet</module>
   </modules>
 
   <properties>

@@ -25,12 +25,17 @@
   </parent>
   <modelVersion>4.0.0</modelVersion>
 
-  <artifactId>tracing-springmvc</artifactId>
+  <artifactId>tracing-servlet</artifactId>
 
   <dependencies>
     <dependency>
-      <groupId>io.zipkin.brave</groupId>
-      <artifactId>brave-spring-beans</artifactId>
+      <groupId>io.servicecomb</groupId>
+      <artifactId>transport-rest-servlet</artifactId>
+    </dependency>
+    <!-- we are using spring rest template in service discovery -->
+    <dependency>
+      <groupId>io.servicecomb</groupId>
+      <artifactId>tracing-springmvc</artifactId>
     </dependency>
     <dependency>
       <groupId>io.zipkin.brave</groupId>
@@ -46,22 +51,12 @@
     </dependency>
     <dependency>
       <groupId>io.zipkin.brave</groupId>
-      <artifactId>brave-instrumentation-spring-web</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.springframework</groupId>
-      <artifactId>spring-web</artifactId>
-      <scope>provided</scope>
+      <artifactId>brave-spring-beans</artifactId>
     </dependency>
 
     <dependency>
       <groupId>io.zipkin.brave</groupId>
-      <artifactId>brave-instrumentation-spring-webmvc</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.springframework</groupId>
-      <artifactId>spring-webmvc</artifactId>
-      <scope>provided</scope>
+      <artifactId>brave-instrumentation-servlet</artifactId>
     </dependency>
     <dependency>
       <groupId>javax.servlet</groupId>
