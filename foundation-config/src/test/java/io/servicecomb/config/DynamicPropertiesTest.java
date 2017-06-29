@@ -23,9 +23,13 @@ import static org.hamcrest.core.Is.is;
 import static org.hamcrest.number.IsCloseTo.closeTo;
 
 import com.netflix.config.ConcurrentMapConfiguration;
+import com.netflix.config.ConfigurationManager;
+import com.netflix.config.DynamicPropertyFactory;
 import com.seanyinx.github.unit.scaffolding.Poller;
 import com.seanyinx.github.unit.scaffolding.Randomness;
 import java.util.Objects;
+import mockit.Deencapsulation;
+import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -62,9 +66,17 @@ public class DynamicPropertiesTest {
 
   @BeforeClass
   public static void setUpClass() throws Exception {
+    tearDown();
     configuration = new ConcurrentMapConfiguration();
     writeInitialConfig();
     dynamicProperties = new DynamicPropertiesImpl(configuration);
+  }
+
+  @AfterClass
+  public static void tearDown() throws Exception {
+    Deencapsulation.setField(ConfigurationManager.class, "instance", null);
+    Deencapsulation.setField(ConfigurationManager.class, "customConfigurationInstalled", false);
+    Deencapsulation.setField(DynamicPropertyFactory.class, "config", null);
   }
 
   private static void writeInitialConfig() throws Exception {
@@ -163,7 +175,7 @@ public class DynamicPropertiesTest {
     );
     assertThat(property, is(booleanOldValue));
 
-    boolean newValue = nextBoolean();
+    boolean newValue = !booleanOldValue;
 
     configuration.setProperty(booleanPropertyName, String.valueOf(newValue));
 
