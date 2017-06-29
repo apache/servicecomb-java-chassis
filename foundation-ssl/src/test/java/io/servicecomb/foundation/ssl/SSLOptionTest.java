@@ -18,30 +18,36 @@ package io.servicecomb.foundation.ssl;
 
 import static io.servicecomb.config.archaius.sources.ConfigSourceMaker.yamlConfigSource;
 
+import com.netflix.config.ConcurrentCompositeConfiguration;
+import com.netflix.config.ConcurrentMapConfiguration;
+import com.netflix.config.ConfigurationManager;
+import com.netflix.config.DynamicConfiguration;
+import com.netflix.config.DynamicPropertyFactory;
+import com.netflix.config.FixedDelayPollingScheduler;
+import io.servicecomb.config.archaius.scheduler.NeverStartPollingScheduler;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
 import java.net.URL;
 import java.util.Properties;
-
-import org.apache.commons.configuration.SystemConfiguration;
-import org.junit.Assert;
-import org.junit.Test;
-
-import io.servicecomb.config.archaius.scheduler.NeverStartPollingScheduler;
-import com.netflix.config.ConcurrentCompositeConfiguration;
-import com.netflix.config.ConcurrentMapConfiguration;
-import com.netflix.config.ConfigurationManager;
-import com.netflix.config.DynamicConfiguration;
-import com.netflix.config.FixedDelayPollingScheduler;
-
 import mockit.Deencapsulation;
 import mockit.Mock;
 import mockit.MockUp;
+import org.apache.commons.configuration.SystemConfiguration;
+import org.junit.AfterClass;
+import org.junit.Assert;
+import org.junit.Test;
 
 public class SSLOptionTest {
     private static final String DIR = Thread.currentThread().getContextClassLoader().getResource("").getPath();
+
+    @AfterClass
+    public static void tearDown() throws Exception {
+        Deencapsulation.setField(ConfigurationManager.class, "instance", null);
+        Deencapsulation.setField(ConfigurationManager.class, "customConfigurationInstalled", false);
+        Deencapsulation.setField(DynamicPropertyFactory.class, "config", null);
+    }
 
     @Test
     public void testSSLOption() {

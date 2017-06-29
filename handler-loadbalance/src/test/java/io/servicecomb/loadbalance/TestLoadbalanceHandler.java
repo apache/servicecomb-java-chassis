@@ -19,22 +19,11 @@
  */
 package io.servicecomb.loadbalance;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-
-import org.apache.commons.configuration.AbstractConfiguration;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.mockito.Mockito;
-
+import com.netflix.config.ConfigurationManager;
 import com.netflix.config.DynamicPropertyFactory;
 import com.netflix.loadbalancer.IRule;
 import com.netflix.loadbalancer.Server;
 import com.netflix.loadbalancer.reactive.ExecutionListener;
-
 import io.servicecomb.config.ConfigUtil;
 import io.servicecomb.core.Invocation;
 import io.servicecomb.core.provider.consumer.SyncResponseExecutor;
@@ -42,12 +31,22 @@ import io.servicecomb.loadbalance.filter.IsolationServerListFilter;
 import io.servicecomb.loadbalance.filter.TransactionControlFilter;
 import io.servicecomb.swagger.invocation.AsyncResponse;
 import io.servicecomb.swagger.invocation.Response;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import mockit.Deencapsulation;
 import mockit.Expectations;
 import mockit.Injectable;
 import mockit.Mock;
 import mockit.MockUp;
 import mockit.Mocked;
+import org.apache.commons.configuration.AbstractConfiguration;
+import org.junit.AfterClass;
+import org.junit.Assert;
+import org.junit.BeforeClass;
+import org.junit.Test;
+import org.mockito.Mockito;
 
 /**
  *
@@ -97,6 +96,13 @@ public class TestLoadbalanceHandler {
         LoadBalancer lb = loadBalancerMap.get("rest");
         Assert.assertEquals(lb.getFilterSize(), 1);
         Assert.assertTrue(lb.containsFilter("a"));
+    }
+
+    @AfterClass
+    public static void tearDown() throws Exception {
+        Deencapsulation.setField(ConfigurationManager.class, "instance", null);
+        Deencapsulation.setField(ConfigurationManager.class, "customConfigurationInstalled", false);
+        Deencapsulation.setField(DynamicPropertyFactory.class, "config", null);
     }
 
     @Test
