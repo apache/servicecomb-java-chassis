@@ -30,142 +30,143 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 public class DynamicPropertiesTest {
-    private static final String stringPropertyName  = uniquify("stringPropertyName");
-    private static final String intPropertyName     = uniquify("intPropertyName");
-    private static final String longPropertyName    = uniquify("longPropertyName");
-    private static final String floatPropertyName   = uniquify("floatPropertyName");
-    private static final String doublePropertyName  = uniquify("doublePropertyName");
-    private static final String booleanPropertyName = uniquify("booleanPropertyName");
 
-    private static final String  stringOldValue  = uniquify("stringPropertyValue");
-    private static final int     intOldValue     = Randomness.nextInt();
-    private static final long    longOldValue    = Randomness.nextLong();
-    private static final double  floatOldValue   = Randomness.nextDouble();
-    private static final double  doubleOldValue  = Randomness.nextDouble();
-    private static final boolean booleanOldValue = nextBoolean();
+  private static final String stringPropertyName = uniquify("stringPropertyName");
+  private static final String intPropertyName = uniquify("intPropertyName");
+  private static final String longPropertyName = uniquify("longPropertyName");
+  private static final String floatPropertyName = uniquify("floatPropertyName");
+  private static final String doublePropertyName = uniquify("doublePropertyName");
+  private static final String booleanPropertyName = uniquify("booleanPropertyName");
 
-    private static final double ERROR = 0.0000001;
+  private static final String stringOldValue = uniquify("stringPropertyValue");
+  private static final int intOldValue = Randomness.nextInt();
+  private static final long longOldValue = Randomness.nextLong();
+  private static final double floatOldValue = Randomness.nextDouble();
+  private static final double doubleOldValue = Randomness.nextDouble();
+  private static final boolean booleanOldValue = nextBoolean();
 
-    private static DynamicProperties dynamicProperties;
-    private static ConcurrentMapConfiguration configuration;
+  private static final double ERROR = 0.0000001;
 
-    private final Poller poller = new Poller(2000, 100);
+  private static DynamicProperties dynamicProperties;
+  private static ConcurrentMapConfiguration configuration;
 
-    private String  stringPropertyValue;
-    private int     intPropertyValue;
-    private long    longPropertyValue;
-    private double  floatPropertyValue;
-    private double  doublePropertyValue;
-    private boolean booleanPropertyValue;
+  private final Poller poller = new Poller(2000, 100);
+
+  private volatile String stringPropertyValue;
+  private volatile int intPropertyValue;
+  private volatile long longPropertyValue;
+  private volatile double floatPropertyValue;
+  private volatile double doublePropertyValue;
+  private volatile boolean booleanPropertyValue;
 
 
-    @BeforeClass
-    public static void setUpClass() throws Exception {
-        configuration = new ConcurrentMapConfiguration();
-        writeInitialConfig();
-        dynamicProperties = new DynamicPropertiesImpl(configuration);
-    }
+  @BeforeClass
+  public static void setUpClass() throws Exception {
+    configuration = new ConcurrentMapConfiguration();
+    writeInitialConfig();
+    dynamicProperties = new DynamicPropertiesImpl(configuration);
+  }
 
-    private static void writeInitialConfig() throws Exception {
-        configuration.setProperty(stringPropertyName, stringOldValue);
-        configuration.setProperty(intPropertyName, String.valueOf(intOldValue));
-        configuration.setProperty(longPropertyName, String.valueOf(longOldValue));
-        configuration.setProperty(floatPropertyName, String.valueOf(floatOldValue));
-        configuration.setProperty(doublePropertyName, String.valueOf(doubleOldValue));
-        configuration.setProperty(booleanPropertyName, String.valueOf(booleanOldValue));
-    }
+  private static void writeInitialConfig() throws Exception {
+    configuration.setProperty(stringPropertyName, stringOldValue);
+    configuration.setProperty(intPropertyName, String.valueOf(intOldValue));
+    configuration.setProperty(longPropertyName, String.valueOf(longOldValue));
+    configuration.setProperty(floatPropertyName, String.valueOf(floatOldValue));
+    configuration.setProperty(doublePropertyName, String.valueOf(doubleOldValue));
+    configuration.setProperty(booleanPropertyName, String.valueOf(booleanOldValue));
+  }
 
-    @Test
-    public void observesSpecifiedStringProperty() throws Exception {
-        String property = dynamicProperties.getStringProperty(stringPropertyName, null);
-        assertThat(property, is(stringOldValue));
+  @Test
+  public void observesSpecifiedStringProperty() throws Exception {
+    String property = dynamicProperties.getStringProperty(stringPropertyName, null);
+    assertThat(property, is(stringOldValue));
 
-        property = dynamicProperties.getStringProperty(stringPropertyName, value -> stringPropertyValue = value, null);
-        assertThat(property, is(stringOldValue));
+    property = dynamicProperties.getStringProperty(stringPropertyName, value -> stringPropertyValue = value, null);
+    assertThat(property, is(stringOldValue));
 
-        String newValue = uniquify("newValue");
+    String newValue = uniquify("newValue");
 
-        configuration.setProperty(stringPropertyName, newValue);
+    configuration.setProperty(stringPropertyName, newValue);
 
-        poller.assertEventually(() -> Objects.equals(stringPropertyValue, newValue));
-    }
+    poller.assertEventually(() -> Objects.equals(stringPropertyValue, newValue));
+  }
 
-    @Test
-    public void observesSpecifiedIntProperty() throws Exception {
-        int property = dynamicProperties.getIntProperty(intPropertyName, 0);
-        assertThat(property, is(intOldValue));
+  @Test
+  public void observesSpecifiedIntProperty() throws Exception {
+    int property = dynamicProperties.getIntProperty(intPropertyName, 0);
+    assertThat(property, is(intOldValue));
 
-        property = dynamicProperties.getIntProperty(intPropertyName, value -> intPropertyValue = value, 0);
-        assertThat(property, is(intOldValue));
+    property = dynamicProperties.getIntProperty(intPropertyName, value -> intPropertyValue = value, 0);
+    assertThat(property, is(intOldValue));
 
-        int newValue = Randomness.nextInt();
+    int newValue = Randomness.nextInt();
 
-        configuration.setProperty(intPropertyName, String.valueOf(newValue));
+    configuration.setProperty(intPropertyName, String.valueOf(newValue));
 
-        poller.assertEventually(() -> intPropertyValue == newValue);
-    }
+    poller.assertEventually(() -> intPropertyValue == newValue);
+  }
 
-    @Test
-    public void observesSpecifiedLongProperty() throws Exception {
-        long property = dynamicProperties.getLongProperty(longPropertyName, 0);
-        assertThat(property, is(longOldValue));
+  @Test
+  public void observesSpecifiedLongProperty() throws Exception {
+    long property = dynamicProperties.getLongProperty(longPropertyName, 0);
+    assertThat(property, is(longOldValue));
 
-        property = dynamicProperties.getLongProperty(longPropertyName, value -> longPropertyValue = value, 0);
-        assertThat(property, is(longOldValue));
+    property = dynamicProperties.getLongProperty(longPropertyName, value -> longPropertyValue = value, 0);
+    assertThat(property, is(longOldValue));
 
-        long newValue = Randomness.nextLong();
+    long newValue = Randomness.nextLong();
 
-        configuration.setProperty(longPropertyName, String.valueOf(newValue));
+    configuration.setProperty(longPropertyName, String.valueOf(newValue));
 
-        poller.assertEventually(() -> longPropertyValue == newValue);
-    }
+    poller.assertEventually(() -> longPropertyValue == newValue);
+  }
 
-    @Test
-    public void observesSpecifiedFloatProperty() throws Exception {
-        double property = dynamicProperties.getFloatProperty(floatPropertyName, 0);
-        assertThat(property, closeTo(floatOldValue, ERROR));
+  @Test
+  public void observesSpecifiedFloatProperty() throws Exception {
+    double property = dynamicProperties.getFloatProperty(floatPropertyName, 0);
+    assertThat(property, closeTo(floatOldValue, ERROR));
 
-        property = dynamicProperties.getFloatProperty(floatPropertyName, value -> floatPropertyValue = value, 0);
-        assertThat(property, closeTo(floatOldValue, ERROR));
+    property = dynamicProperties.getFloatProperty(floatPropertyName, value -> floatPropertyValue = value, 0);
+    assertThat(property, closeTo(floatOldValue, ERROR));
 
-        double newValue = Randomness.nextDouble();
+    double newValue = Randomness.nextDouble();
 
-        configuration.setProperty(floatPropertyName, String.valueOf(newValue));
+    configuration.setProperty(floatPropertyName, String.valueOf(newValue));
 
-        poller.assertEventually(() -> Math.abs(floatPropertyValue - newValue) < ERROR);
-    }
+    poller.assertEventually(() -> Math.abs(floatPropertyValue - newValue) < ERROR);
+  }
 
-    @Test
-    public void observesSpecifiedDoubleProperty() throws Exception {
-        double property = dynamicProperties.getDoubleProperty(doublePropertyName, 0);
-        assertThat(property, closeTo(doubleOldValue, ERROR));
+  @Test
+  public void observesSpecifiedDoubleProperty() throws Exception {
+    double property = dynamicProperties.getDoubleProperty(doublePropertyName, 0);
+    assertThat(property, closeTo(doubleOldValue, ERROR));
 
-        property = dynamicProperties.getDoubleProperty(doublePropertyName, value -> doublePropertyValue = value, 0);
-        assertThat(property, closeTo(doubleOldValue, ERROR));
+    property = dynamicProperties.getDoubleProperty(doublePropertyName, value -> doublePropertyValue = value, 0);
+    assertThat(property, closeTo(doubleOldValue, ERROR));
 
-        double newValue = Randomness.nextDouble();
+    double newValue = Randomness.nextDouble();
 
-        configuration.setProperty(doublePropertyName, String.valueOf(newValue));
+    configuration.setProperty(doublePropertyName, String.valueOf(newValue));
 
-        poller.assertEventually(() -> Math.abs(doublePropertyValue - newValue) < ERROR);
-    }
+    poller.assertEventually(() -> Math.abs(doublePropertyValue - newValue) < ERROR);
+  }
 
-    @Test
-    public void observesSpecifiedBooleanProperty() throws Exception {
-        boolean property = dynamicProperties.getBooleanProperty(booleanPropertyName, false);
-        assertThat(property, is(booleanOldValue));
+  @Test
+  public void observesSpecifiedBooleanProperty() throws Exception {
+    boolean property = dynamicProperties.getBooleanProperty(booleanPropertyName, false);
+    assertThat(property, is(booleanOldValue));
 
-        property = dynamicProperties.getBooleanProperty(
-                booleanPropertyName,
-                value -> booleanPropertyValue = value,
-                false
-        );
-        assertThat(property, is(booleanOldValue));
+    property = dynamicProperties.getBooleanProperty(
+        booleanPropertyName,
+        value -> booleanPropertyValue = value,
+        false
+    );
+    assertThat(property, is(booleanOldValue));
 
-        boolean newValue = nextBoolean();
+    boolean newValue = nextBoolean();
 
-        configuration.setProperty(booleanPropertyName, String.valueOf(newValue));
+    configuration.setProperty(booleanPropertyName, String.valueOf(newValue));
 
-        poller.assertEventually(() -> booleanPropertyValue == newValue);
-    }
+    poller.assertEventually(() -> booleanPropertyValue == newValue);
+  }
 }
