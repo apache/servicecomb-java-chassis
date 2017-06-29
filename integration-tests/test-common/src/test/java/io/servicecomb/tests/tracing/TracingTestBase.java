@@ -26,10 +26,12 @@ import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.verify;
 import static org.apache.http.HttpStatus.SC_OK;
 import static org.hamcrest.core.Is.is;
+import static org.hamcrest.core.IsNot.not;
 import static org.junit.Assert.assertThat;
 import static org.springframework.http.HttpStatus.OK;
 
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
@@ -41,10 +43,12 @@ public class TracingTestBase {
 
   @ClassRule
   public static final WireMockRule wireMockRule = new WireMockRule(9411);
+  private static final EmbeddedAppender appender = new EmbeddedAppender();
   private final RestTemplate restTemplate = new RestTemplate();
 
   @BeforeClass
   public static void setUpClass() throws Exception {
+    Log4jConfig.addAppender(appender);
     stubFor(post(urlEqualTo("/api/v1/spans"))
         .withRequestBody(containing("http.path"))
         .willReturn(
@@ -62,6 +66,28 @@ public class TracingTestBase {
 
     TimeUnit.MILLISECONDS.sleep(1000);
 
+    List<String> tracingMessages = appender.pollLogs(".*\\[\\w+/\\w+\\]\\s+INFO.*");
+    for (int i = 0; i < tracingMessages.size(); i+=2) {
+      // caller is the root of tracing tree and its traceId is the same as spanId
+      String[] ids = tracingIds(tracingMessages.get(i));
+      String parentTraceId = ids[0];
+      String parentSpanId = ids[1];
+
+      assertThat(parentTraceId, is(parentSpanId));
+
+      // callee is called by caller and inherits caller's traceId but has its own spanId
+      ids = tracingIds(tracingMessages.get(i + 1));
+      String childTraceId = ids[0];
+      String childSpanId = ids[1];
+
+      assertThat(childTraceId, is(parentTraceId));
+      assertThat(childSpanId, is(not(parentTraceId)));
+    }
+
     verify(exactly(1), postRequestedFor(urlEqualTo("/api/v1/spans")));
+  }
+
+  private String[] tracingIds(String message) {
+    return message.replaceFirst(".*\\[(\\w+/\\w+)\\].*", "$1").trim().split("/");
   }
 }
