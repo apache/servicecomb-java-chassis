@@ -17,7 +17,9 @@
 package io.servicecomb.tests.tracing;
 
 import org.junit.Before;
+import org.junit.Ignore;
 
+@Ignore
 public class VertxRestTracingTest extends TracingTestBase {
 
   @Before
