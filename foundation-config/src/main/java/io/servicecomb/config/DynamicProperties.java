@@ -22,54 +22,55 @@ import java.util.function.IntConsumer;
 import java.util.function.LongConsumer;
 
 public interface DynamicProperties {
-    DynamicProperties DEFAULT_PROPERTY_OBSERVATION = new DynamicProperties() {
-    };
 
-    default String getStringProperty(String propertyName, Consumer<String> consumer, String defaultValue) {
-        return defaultValue;
-    }
+  DynamicProperties DEFAULT_PROPERTY_OBSERVATION = new DynamicProperties() {
+  };
 
-    default String getStringProperty(String propertyName, String defaultValue) {
-        return defaultValue;
-    }
+  default String getStringProperty(String propertyName, Consumer<String> consumer, String defaultValue) {
+    return defaultValue;
+  }
 
-    default int getIntProperty(String propertyName, IntConsumer consumer, int defaultValue) {
-        return defaultValue;
-    }
+  default String getStringProperty(String propertyName, String defaultValue) {
+    return defaultValue;
+  }
 
-    default int getIntProperty(String propertyName, int defaultValue) {
-        return defaultValue;
-    }
+  default int getIntProperty(String propertyName, IntConsumer consumer, int defaultValue) {
+    return defaultValue;
+  }
 
-    default long getLongProperty(String propertyName, LongConsumer consumer, long defaultValue) {
-        return defaultValue;
-    }
+  default int getIntProperty(String propertyName, int defaultValue) {
+    return defaultValue;
+  }
 
-    default long getLongProperty(String propertyName, long defaultValue) {
-        return defaultValue;
-    }
+  default long getLongProperty(String propertyName, LongConsumer consumer, long defaultValue) {
+    return defaultValue;
+  }
 
-    default float getFloatProperty(String propertyName, DoubleConsumer consumer, float defaultValue) {
-        return defaultValue;
-    }
+  default long getLongProperty(String propertyName, long defaultValue) {
+    return defaultValue;
+  }
 
-    default float getFloatProperty(String propertyName, float defaultValue) {
-        return defaultValue;
-    }
+  default float getFloatProperty(String propertyName, DoubleConsumer consumer, float defaultValue) {
+    return defaultValue;
+  }
 
-    default double getDoubleProperty(String propertyName, DoubleConsumer consumer, double defaultValue) {
-        return defaultValue;
-    }
+  default float getFloatProperty(String propertyName, float defaultValue) {
+    return defaultValue;
+  }
 
-    default double getDoubleProperty(String propertyName, double defaultValue) {
-        return defaultValue;
-    }
+  default double getDoubleProperty(String propertyName, DoubleConsumer consumer, double defaultValue) {
+    return defaultValue;
+  }
 
-    default boolean getBooleanProperty(String propertyName, Consumer<Boolean> consumer, boolean defaultValue) {
-        return defaultValue;
-    }
+  default double getDoubleProperty(String propertyName, double defaultValue) {
+    return defaultValue;
+  }
 
-    default boolean getBooleanProperty(String propertyName, boolean defaultValue) {
-        return defaultValue;
-    }
+  default boolean getBooleanProperty(String propertyName, Consumer<Boolean> consumer, boolean defaultValue) {
+    return defaultValue;
+  }
+
+  default boolean getBooleanProperty(String propertyName, boolean defaultValue) {
+    return defaultValue;
+  }
 }
