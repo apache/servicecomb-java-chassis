@@ -16,30 +16,32 @@
 
 package io.servicecomb.transport.rest.servlet;
 
-import java.util.LinkedHashSet;
-import java.util.Set;
-
-import javax.servlet.ServletContextEvent;
-import javax.servlet.ServletContextListener;
-
-import org.apache.commons.lang3.StringUtils;
+import static java.lang.Boolean.FALSE;
 
 import io.servicecomb.foundation.common.utils.BeanUtils;
 import io.servicecomb.foundation.common.utils.Log4jUtils;
+import java.util.LinkedHashSet;
+import java.util.Set;
+import javax.servlet.ServletContextEvent;
+import javax.servlet.ServletContextListener;
+import org.apache.commons.lang3.StringUtils;
 
 public class RestServletContextListener implements ServletContextListener {
     @Override
     public void contextInitialized(ServletContextEvent sce) {
         try {
-            initLog();
+            initLog(sce);
             initSpring(sce);
         } catch (Exception e) {
             throw new Error(e);
         }
     }
 
-    public void initLog() throws Exception {
+    public void initLog(ServletContextEvent sce) throws Exception {
+      String logMerged = sce.getServletContext().getInitParameter("servicecomb.logging.merged");
+      if (!FALSE.toString().equalsIgnoreCase(logMerged)) {
         Log4jUtils.init();
+      }
     }
 
     public void initSpring(ServletContextEvent sce) {
