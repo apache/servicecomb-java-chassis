@@ -16,16 +16,9 @@
 
 package io.servicecomb.tracing.servlet;
 
-import static io.servicecomb.foundation.common.base.ServiceCombConstants.CONFIG_SERVICE_NAME;
-import static io.servicecomb.foundation.common.base.ServiceCombConstants.CONFIG_TRACING_COLLECTOR_ADDRESS;
-import static io.servicecomb.foundation.common.base.ServiceCombConstants.DEFAULT_SERVICE_NAME;
-import static io.servicecomb.foundation.common.base.ServiceCombConstants.DEFAULT_TRACING_COLLECTOR_ADDRESS;
-
 import brave.Tracing;
-import brave.context.log4j12.MDCCurrentTraceContext;
-import brave.sampler.Sampler;
 import brave.servlet.TracingFilter;
-import com.netflix.config.DynamicPropertyFactory;
+import io.servicecomb.foundation.common.utils.BeanUtils;
 import java.io.IOException;
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -33,8 +26,6 @@ import javax.servlet.FilterConfig;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
-import zipkin.reporter.AsyncReporter;
-import zipkin.reporter.okhttp3.OkHttpSender;
 
 public class ServletContextTracingFilter implements Filter {
 
@@ -52,12 +43,7 @@ public class ServletContextTracingFilter implements Filter {
 
   @Override
   public void init(FilterConfig filterConfig) {
-    Tracing tracing = Tracing.newBuilder()
-        .localServiceName(property(CONFIG_SERVICE_NAME, DEFAULT_SERVICE_NAME))
-        .currentTraceContext(MDCCurrentTraceContext.create())
-        .sampler(Sampler.ALWAYS_SAMPLE)
-        .reporter(AsyncReporter.builder(OkHttpSender.create(tracingCollectorUrl())).build())
-        .build();
+    Tracing tracing = BeanUtils.getContext().getBean(Tracing.class);
 
     filterConfig.getServletContext()
         .setAttribute(TracingFilter.class.getName(), TracingFilter.create(tracing));
@@ -66,11 +52,4 @@ public class ServletContextTracingFilter implements Filter {
   @Override public void destroy() {
   }
 
-  private String tracingCollectorUrl() {
-    return property(CONFIG_TRACING_COLLECTOR_ADDRESS, DEFAULT_TRACING_COLLECTOR_ADDRESS);
-  }
-
-  private String property(String propertyName, String defaultValue) {
-    return DynamicPropertyFactory.getInstance().getStringProperty(propertyName, defaultValue).get();
-  }
 }

@@ -1,6 +1,6 @@
 APPLICATION_ID: tracing-app
 service_description:
-  name: tracing-springmvc
+  name: tracing-service
   version: 0.0.2
 cse:
   service:
