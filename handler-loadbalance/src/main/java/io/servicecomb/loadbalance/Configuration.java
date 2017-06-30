@@ -49,7 +49,16 @@ public final class Configuration {
 
     public static final String SUCCESSIVE_FAILED_TIMES = "SessionStickinessRule.successiveFailedTimes";
 
-    // Filter configurations
+    // Begin: ServerListFilters configurations
+    //Enabled filter lists, e.g cse.loadbalance.serverListFilters=a,b,c
+    public static final String SERVER_LIST_FILTERS = "cse.loadbalance.serverListFilters";
+
+    //Class name of each filter: e.g cse.loadbalance.serverListFilter.a.className=io.servicecomb.MyServerListFilterExt
+    public static final String SERVER_LIST_FILTER_CLASS_HOLDER = "cse.loadbalance.serverListFilter.%s.className";
+
+    //Property of the class: e.g cse.loadbalance.serverListFilter.a.myproperty=sample
+    public static final String SERVER_LIST_FILTER_PROPERTY_HOLDER = "cse.loadbalance.serverListFilter.%s.%s";
+    //End: ServerListFilters configurations
 
     private static final double PERCENT = 100;
 
@@ -74,7 +83,7 @@ public final class Configuration {
     }
 
     public String getPolicy(String microservice) {
-        return getProperty(PROP_POLICY_ROUNDROBIN,
+        return getStringProperty(PROP_POLICY_ROUNDROBIN,
                 PROP_ROOT + microservice + "." + PROP_POLICY,
                 PROP_ROOT_20 + microservice + "." + PROP_POLICY,
                 PROP_ROOT + PROP_POLICY,
@@ -84,7 +93,7 @@ public final class Configuration {
     public int getSessionTimeoutInSeconds() {
         final int defaultValue = 30;
         // do not support MicroService level now
-        String p = getProperty("30",
+        String p = getStringProperty("30",
                 PROP_ROOT + SESSION_TIMEOUT_IN_SECONDS);
         try {
             return Integer.parseInt(p); // can be negative
@@ -96,7 +105,7 @@ public final class Configuration {
     public int getSuccessiveFailedTimes() {
         final int defaultValue = 5;
         // do not support MicroService level now
-        String p = getProperty("5",
+        String p = getStringProperty("5",
                 PROP_ROOT + SUCCESSIVE_FAILED_TIMES);
         try {
             return Integer.parseInt(p); // can be negative
@@ -106,7 +115,7 @@ public final class Configuration {
     }
 
     public boolean isRetryEnabled(String microservice) {
-        String p = getProperty("false",
+        String p = getStringProperty("false",
                 PROP_ROOT + microservice + "." + PROP_RETRY_ENABLED,
                 PROP_ROOT + PROP_RETRY_ENABLED);
         return Boolean.parseBoolean(p);
@@ -114,7 +123,7 @@ public final class Configuration {
 
     public int getRetryOnNext(String microservice) {
         final int defaultValue = 0;
-        String p = getProperty("0",
+        String p = getStringProperty("0",
                 PROP_ROOT + microservice + "." + PROP_RETRY_ONNEXT,
                 PROP_ROOT + PROP_RETRY_ONNEXT);
         try {
@@ -131,7 +140,7 @@ public final class Configuration {
 
     public int getRetryOnSame(String microservice) {
         final int defaultValue = 0;
-        String p = getProperty("0",
+        String p = getStringProperty("0",
                 PROP_ROOT + microservice + "." + PROP_RETRY_ONSAME,
                 PROP_ROOT + PROP_RETRY_ONSAME);
         try {
@@ -147,7 +156,7 @@ public final class Configuration {
     }
 
     public boolean isIsolationFilterOpen(String microservice) {
-        String p = getProperty("false",
+        String p = getStringProperty("false",
                 PROP_ROOT + microservice + "." + FILTER_ISOLATION + FILTER_OPEN,
                 PROP_ROOT + FILTER_ISOLATION + FILTER_OPEN);
         return Boolean.parseBoolean(p);
@@ -155,7 +164,7 @@ public final class Configuration {
 
     public int getErrorThresholdPercentage(String microservice) {
         final int defaultValue = 20;
-        String p = getProperty("20",
+        String p = getStringProperty("20",
                 PROP_ROOT + microservice + "." + FILTER_ISOLATION + FILTER_ERROR_PERCENTAGE,
                 PROP_ROOT + FILTER_ISOLATION + FILTER_ERROR_PERCENTAGE);
         try {
@@ -172,7 +181,7 @@ public final class Configuration {
 
     public int getEnableRequestThreshold(String microservice) {
         final int defaultValue = 20;
-        String p = getProperty("20",
+        String p = getStringProperty("20",
                 PROP_ROOT + microservice + "." + FILTER_ISOLATION + FILTER_ENABLE_REQUEST,
                 PROP_ROOT + FILTER_ISOLATION + FILTER_ENABLE_REQUEST);
         try {
@@ -189,7 +198,7 @@ public final class Configuration {
 
     public int getSingleTestTime(String microservice) {
         final int defaultValue = 10000;
-        String p = getProperty("10000",
+        String p = getStringProperty("10000",
                 PROP_ROOT + microservice + "." + FILTER_ISOLATION + FILTER_SINGLE_TEST,
                 PROP_ROOT + FILTER_ISOLATION + FILTER_SINGLE_TEST);
         try {
@@ -205,7 +214,7 @@ public final class Configuration {
     }
 
     public String getFlowsplitFilterPolicy(String microservice) {
-        return getProperty("", String.format(TRANSACTIONCONTROL_POLICY_KEY_PATTERN, microservice));
+        return getStringProperty("", String.format(TRANSACTIONCONTROL_POLICY_KEY_PATTERN, microservice));
     }
 
     public Map<String, String> getFlowsplitFilterOptions(String microservice) {
@@ -213,7 +222,7 @@ public final class Configuration {
         return ConfigurePropertyUtils.getPropertiesWithPrefix(keyPrefix);
     }
 
-    private String getProperty(String defaultValue, String... keys) {
+    public static String getStringProperty(String defaultValue, String... keys) {
         String property = null;
         for (String key : keys) {
             property = DynamicPropertyFactory.getInstance().getStringProperty(key, null).get();
@@ -227,38 +236,5 @@ public final class Configuration {
         } else {
             return defaultValue;
         }
-    }
-
-    // Gray Release
-    public static final String PROP_GRAYRELEASE_ROOT = "cse.grayrelease.";
-
-    public static final String PROP_GRAYRELEASE_POLICYCLASS = "GrayReleaseRuleClassName";
-
-    public static final String RATE_POLICY = "rate.policy";
-
-    public static final String RULE_POLICY = "rule.policy";
-
-    public static final String PROP_GRAYRELEASE_GROUP_POLICY = "group.policy";
-
-    public static final String PROP_GRAYRELEASE_POLICY_RULE =
-        "com.huawei.paas.cse.grayrelease.csefilter.GrayReleaseRulePolicyFilter";
-
-    public static final String PROP_GRAYRELEASE_POLICY_RATE =
-        "com.huawei.paas.cse.grayrelease.csefilter.GrayReleaseRatePolicyFilter";
-
-    public String getGrayreleaseRulePolicy(String microservice, String microserviceQualifiedName) {
-        return getProperty(null,
-                PROP_GRAYRELEASE_ROOT + microserviceQualifiedName + "." + RULE_POLICY,
-                PROP_GRAYRELEASE_ROOT + microservice + "." + RULE_POLICY);
-    }
-
-    public String getGrayreleaseRuleClassName(String microservice, String microserviceQualifiedName) {
-        return getProperty(PROP_GRAYRELEASE_POLICY_RULE,
-                PROP_GRAYRELEASE_ROOT + microserviceQualifiedName + "." + PROP_GRAYRELEASE_POLICYCLASS,
-                PROP_GRAYRELEASE_ROOT + microservice + "." + PROP_GRAYRELEASE_POLICYCLASS);
-    }
-
-    public String getGrayreleaseInstanceGroupRule(String microservice) {
-        return getProperty(null, PROP_GRAYRELEASE_ROOT + microservice + "." + PROP_GRAYRELEASE_GROUP_POLICY);
     }
 }

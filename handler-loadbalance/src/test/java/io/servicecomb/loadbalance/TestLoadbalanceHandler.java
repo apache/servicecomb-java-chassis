@@ -32,6 +32,7 @@ import org.mockito.Mockito;
 
 import com.netflix.config.DynamicPropertyFactory;
 import com.netflix.loadbalancer.IRule;
+import com.netflix.loadbalancer.Server;
 import com.netflix.loadbalancer.reactive.ExecutionListener;
 
 import io.servicecomb.config.ConfigUtil;
@@ -42,8 +43,11 @@ import io.servicecomb.loadbalance.filter.TransactionControlFilter;
 import io.servicecomb.swagger.invocation.AsyncResponse;
 import io.servicecomb.swagger.invocation.Response;
 import mockit.Deencapsulation;
+import mockit.Expectations;
+import mockit.Injectable;
 import mockit.Mock;
 import mockit.MockUp;
+import mockit.Mocked;
 
 /**
  *
@@ -66,6 +70,33 @@ public class TestLoadbalanceHandler {
                 "io.servicecomb.loadbalance.filter.SimpleTransactionControlFilter");
         configuration.addProperty("cse.loadbalance.test.transactionControl.options.tag0", "value0");
         configuration.addProperty("cse.loadbalance.test.isolation.enabled", "true");
+        configuration.addProperty("cse.loadbalance.serverListFilters", "a");
+        configuration.addProperty("cse.loadbalance.serverListFilter.a.className", "io.servicecomb.loadbalance.MyServerListFilterExt");
+    }
+
+    @Test
+    public void testLoadBalancerWithFilterExtentions(final @Injectable Invocation invocation,
+            final @Injectable AsyncResponse asyncResp,
+            final @Mocked ServerListCache serverListCache) throws Exception {
+        final ArrayList<Server> servers = new ArrayList<Server>();
+        servers.add(new Server("test"));
+        new Expectations() {
+            {
+                invocation.getConfigTransportName();
+                result = "rest";
+                serverListCache.getLatestEndpoints();
+                result = new ArrayList<Server>();
+                invocation.getAppId();
+                result = "test";
+            }
+        };
+        LoadbalanceHandler lh = new LoadbalanceHandler();
+        lh.handle(invocation, asyncResp);
+
+        Map<String, LoadBalancer> loadBalancerMap = Deencapsulation.getField(lh, "loadBalancerMap");
+        LoadBalancer lb = loadBalancerMap.get("rest");
+        Assert.assertEquals(lb.getFilterSize(), 1);
+        Assert.assertTrue(lb.containsFilter("a"));
     }
 
     @Test
