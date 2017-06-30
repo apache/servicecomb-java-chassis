@@ -64,6 +64,11 @@ public class TracingTestBase {
     assertThat(entity.getStatusCode(), is(OK));
     assertThat(entity.getBody(), is("hello world"));
 
+    entity = restTemplate.getForEntity("http://localhost:8080/jaxrs/bonjour", String.class);
+
+    assertThat(entity.getStatusCode(), is(OK));
+    assertThat(entity.getBody(), is("bonjour le monde"));
+
     TimeUnit.MILLISECONDS.sleep(1000);
 
     List<String> tracingMessages = appender.pollLogs(".*\\[\\w+/\\w+\\]\\s+INFO.*");
@@ -84,7 +89,7 @@ public class TracingTestBase {
       assertThat(childSpanId, is(not(parentTraceId)));
     }
 
-    verify(exactly(1), postRequestedFor(urlEqualTo("/api/v1/spans")));
+    verify(exactly(2), postRequestedFor(urlEqualTo("/api/v1/spans")));
   }
 
   private String[] tracingIds(String message) {

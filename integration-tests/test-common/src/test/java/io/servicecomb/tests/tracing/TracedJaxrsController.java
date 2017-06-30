@@ -16,42 +16,46 @@
 
 package io.servicecomb.tests.tracing;
 
-import static org.springframework.http.MediaType.TEXT_PLAIN_VALUE;
-import static org.springframework.web.bind.annotation.RequestMethod.GET;
+import static javax.ws.rs.core.MediaType.TEXT_PLAIN;
 
 import io.servicecomb.provider.rest.common.RestSchema;
 import java.util.Random;
 import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 
-@RestSchema(schemaId = "someTracedRestEndpoint")
-@RestController
-@RequestMapping("/")
-public class SomeTracedController {
-  private static final Logger logger = LoggerFactory.getLogger(SomeTracedController.class);
+@RestSchema(schemaId = "someTracedJaxrsRestEndpoint")
+@Path("/jaxrs")
+public class TracedJaxrsController {
+  private static final Logger logger = LoggerFactory.getLogger(TracedJaxrsController.class);
   private final Random random = new Random();
 
   @Autowired
   private RestTemplate template;
 
-  @RequestMapping(value = "/hello", method = GET, produces = TEXT_PLAIN_VALUE)
-  public String hello(HttpServletRequest request) throws InterruptedException {
-    logger.info("in /hello");
+  @GET
+  @Path("/bonjour")
+  @Produces(TEXT_PLAIN)
+  public String bonjour(HttpServletRequest request) throws InterruptedException {
+    logger.info("in /bonjour");
     Thread.sleep(random.nextInt(1000));
 
-    return "hello " + template.getForObject("http://localhost:8080/world", String.class);
+    request.getRequestURL();
+    return "bonjour le " + template.getForObject("http://localhost:8080/jaxrs/monde", String.class);
   }
 
-  @RequestMapping(value = "/world", method = GET, produces = TEXT_PLAIN_VALUE)
-  public String world() throws InterruptedException {
-    logger.info("in /world");
+  @GET
+  @Path("/monde")
+  @Produces(TEXT_PLAIN)
+  public String monde() throws InterruptedException {
+    logger.info("in /monde");
     Thread.sleep(random.nextInt(1000));
 
-    return "world";
+    return "monde";
   }
 }

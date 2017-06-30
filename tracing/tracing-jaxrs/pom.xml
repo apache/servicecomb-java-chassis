@@ -28,6 +28,11 @@
   <artifactId>tracing-jaxrs</artifactId>
 
   <dependencies>
+    <!-- we are using spring rest template in service discovery -->
+    <dependency>
+      <groupId>io.servicecomb</groupId>
+      <artifactId>tracing-springmvc</artifactId>
+    </dependency>
     <dependency>
       <groupId>io.zipkin.brave</groupId>
       <artifactId>brave-spring-beans</artifactId>
@@ -40,33 +45,13 @@
       <groupId>io.zipkin.reporter</groupId>
       <artifactId>zipkin-sender-okhttp3</artifactId>
     </dependency>
-
     <dependency>
       <groupId>io.zipkin.brave</groupId>
       <artifactId>brave-context-log4j12</artifactId>
     </dependency>
-
     <dependency>
       <groupId>io.zipkin.brave</groupId>
       <artifactId>brave-instrumentation-jaxrs2</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.springframework</groupId>
-      <artifactId>spring-web</artifactId>
-    </dependency>
-
-    <dependency>
-      <groupId>io.zipkin.brave</groupId>
-      <artifactId>brave-instrumentation-spring-webmvc</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.springframework</groupId>
-      <artifactId>spring-webmvc</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>javax.servlet</groupId>
-      <artifactId>javax.servlet-api</artifactId>
-      <scope>provided</scope>
     </dependency>
   </dependencies>
 
