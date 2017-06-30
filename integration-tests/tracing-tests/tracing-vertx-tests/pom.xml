@@ -34,7 +34,7 @@
     </dependency>
     <dependency>
       <groupId>io.servicecomb</groupId>
-      <artifactId>transport-highway</artifactId>
+      <artifactId>provider-jaxrs</artifactId>
     </dependency>
     <dependency>
       <groupId>com.github.tomakehurst</groupId>
