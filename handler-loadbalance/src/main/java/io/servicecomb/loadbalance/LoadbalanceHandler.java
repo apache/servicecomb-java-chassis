@@ -26,17 +26,9 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import io.servicecomb.core.Invocation;
-import io.servicecomb.core.exception.ExceptionUtils;
-import io.servicecomb.core.handler.impl.AbstractHandler;
-import io.servicecomb.core.provider.consumer.SyncResponseExecutor;
-import io.servicecomb.loadbalance.filter.IsolationServerListFilter;
-import io.servicecomb.loadbalance.filter.TransactionControlFilter;
-import io.servicecomb.swagger.invocation.AsyncResponse;
-import io.servicecomb.swagger.invocation.Response;
 
 import com.netflix.client.DefaultLoadBalancerRetryHandler;
 import com.netflix.loadbalancer.IRule;
@@ -48,6 +40,14 @@ import com.netflix.loadbalancer.reactive.ExecutionListener;
 import com.netflix.loadbalancer.reactive.LoadBalancerCommand;
 import com.netflix.loadbalancer.reactive.ServerOperation;
 
+import io.servicecomb.core.Invocation;
+import io.servicecomb.core.exception.ExceptionUtils;
+import io.servicecomb.core.handler.impl.AbstractHandler;
+import io.servicecomb.core.provider.consumer.SyncResponseExecutor;
+import io.servicecomb.loadbalance.filter.IsolationServerListFilter;
+import io.servicecomb.loadbalance.filter.TransactionControlFilter;
+import io.servicecomb.swagger.invocation.AsyncResponse;
+import io.servicecomb.swagger.invocation.Response;
 import rx.Observable;
 
 /**
@@ -101,6 +101,8 @@ public class LoadbalanceHandler extends AbstractHandler {
 
         final LoadBalancer choosenLB = lb;
 
+        loadServerListFilters(choosenLB, invocation);
+        // tow lines below is for compatibility, will remove in future
         setIsolationFilter(choosenLB, invocation);
         setTransactionControlFilter(choosenLB, invocation);
 
@@ -312,5 +314,33 @@ public class LoadbalanceHandler extends AbstractHandler {
         CseServerList serverList = new CseServerList(appId, microserviceName, microserviceVersionRule, transportName);
         LoadBalancer lb = new LoadBalancer(serverList, rule);
         return lb;
+    }
+
+    private void loadServerListFilters(LoadBalancer lb, Invocation invocation) {
+        String filterNames = Configuration.getStringProperty(null, Configuration.SERVER_LIST_FILTERS);
+        if (!StringUtils.isEmpty(filterNames)) {
+            for (String filter : filterNames.split(",")) {
+                loadFilter(filter, lb, invocation);
+            }
+        }
+    }
+
+    private void loadFilter(String filter, LoadBalancer lb, Invocation invocation) {
+        String className = Configuration.getStringProperty(null,
+                String.format(Configuration.SERVER_LIST_FILTER_CLASS_HOLDER, filter));
+        if (!StringUtils.isEmpty(className)) {
+            try {
+                Class<?> filterClass = Class.forName(className, true, Thread.currentThread().getContextClassLoader());
+                if (ServerListFilterExt.class.isAssignableFrom(filterClass)) {
+                    ServerListFilterExt ext = (ServerListFilterExt) filterClass.newInstance();
+                    ext.setName(filter);
+                    ext.setInvocation(invocation);
+                    ext.setLoadBalancer(lb);
+                    lb.putFilter(filter, ext);
+                }
+            } catch (InstantiationException | IllegalAccessException | ClassNotFoundException e) {
+                LOGGER.warn("Unable to load filter class: " + className);
+            }
+        }
     }
 }
