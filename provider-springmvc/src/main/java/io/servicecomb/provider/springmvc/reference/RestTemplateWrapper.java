@@ -20,47 +20,55 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-
+import java.util.Set;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.client.ClientHttpRequestFactory;
+import org.springframework.http.client.ClientHttpRequestInterceptor;
+import org.springframework.http.converter.HttpMessageConverter;
+import org.springframework.web.client.RequestCallback;
+import org.springframework.web.client.ResponseErrorHandler;
+import org.springframework.web.client.ResponseExtractor;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.UriTemplateHandler;
 
 /**
  * 用于同时支持cse调用和非cse调用
  */
-public class RestTemplateWrapper extends RestTemplate {
-    private List<AcceptableRestTemplate> acceptableRestTemplates = new ArrayList<>();
+class RestTemplateWrapper extends RestTemplate {
+    private final List<AcceptableRestTemplate> acceptableRestTemplates = new ArrayList<>();
 
-    private AcceptableRestTemplate defaultAcceptableRestTemplate = new DefaultAcceptableRestTemplate();
+    final RestTemplate defaultRestTemplate = new RestTemplate();
 
-    public RestTemplateWrapper() {
+    RestTemplateWrapper() {
         acceptableRestTemplates.add(new CseRestTemplate());
     }
 
-    public void addAcceptableRestTemplate(AcceptableRestTemplate restTemplate) {
+    void addAcceptableRestTemplate(AcceptableRestTemplate restTemplate) {
         acceptableRestTemplates.add(restTemplate);
     }
 
-    private RestTemplate getRestTemplate(String url) {
+    RestTemplate getRestTemplate(String url) {
         for (AcceptableRestTemplate template : acceptableRestTemplates) {
             if (template.isAcceptable(url)) {
                 return template;
             }
         }
-        return defaultAcceptableRestTemplate;
+        return defaultRestTemplate;
     }
 
-    private RestTemplate getRestTemplate(URI uri) {
+    RestTemplate getRestTemplate(URI uri) {
         for (AcceptableRestTemplate template : acceptableRestTemplates) {
             if (template.isAcceptable(uri)) {
                 return template;
             }
         }
-        return defaultAcceptableRestTemplate;
+        return defaultRestTemplate;
     }
 
     @Override
@@ -207,5 +215,110 @@ public class RestTemplateWrapper extends RestTemplate {
     public <T> ResponseEntity<T> exchange(URI url, HttpMethod method, HttpEntity<?> requestEntity,
             ParameterizedTypeReference<T> responseType) throws RestClientException {
         return getRestTemplate(url).exchange(url, method, requestEntity, responseType);
+    }
+
+    @Override
+    public HttpHeaders headForHeaders(String url, Object... urlVariables) throws RestClientException {
+        return getRestTemplate(url).headForHeaders(url, urlVariables);
+    }
+
+    @Override
+    public HttpHeaders headForHeaders(String url, Map<String, ?> urlVariables) throws RestClientException {
+        return getRestTemplate(url).headForHeaders(url, urlVariables);
+    }
+
+    @Override
+    public HttpHeaders headForHeaders(URI url) throws RestClientException {
+        return getRestTemplate(url).headForHeaders(url);
+    }
+
+    @Override
+    public URI postForLocation(String url, Object request, Object... urlVariables) throws RestClientException {
+        return getRestTemplate(url).postForLocation(url, request, urlVariables);
+    }
+
+    @Override
+    public URI postForLocation(String url, Object request, Map<String, ?> urlVariables) throws RestClientException {
+        return getRestTemplate(url).postForLocation(url, request, urlVariables);
+    }
+
+    @Override
+    public URI postForLocation(URI url, Object request) throws RestClientException {
+        return getRestTemplate(url).postForLocation(url, request);
+    }
+
+    @Override
+    public Set<HttpMethod> optionsForAllow(String url, Object... urlVariables) throws RestClientException {
+        return getRestTemplate(url).optionsForAllow(url, urlVariables);
+    }
+
+    @Override
+    public Set<HttpMethod> optionsForAllow(String url, Map<String, ?> urlVariables) throws RestClientException {
+        return getRestTemplate(url).optionsForAllow(url, urlVariables);
+    }
+
+    @Override
+    public Set<HttpMethod> optionsForAllow(URI url) throws RestClientException {
+        return getRestTemplate(url).optionsForAllow(url);
+    }
+
+    @Override
+    public <T> T execute(String url, HttpMethod method, RequestCallback requestCallback,
+        ResponseExtractor<T> responseExtractor, Object... urlVariables) throws RestClientException {
+        return getRestTemplate(url).execute(url, method, requestCallback, responseExtractor, urlVariables);
+    }
+
+    @Override
+    public <T> T execute(String url, HttpMethod method, RequestCallback requestCallback,
+        ResponseExtractor<T> responseExtractor, Map<String, ?> urlVariables) throws RestClientException {
+        return getRestTemplate(url).execute(url, method, requestCallback, responseExtractor, urlVariables);
+    }
+
+    @Override
+    public <T> T execute(URI url, HttpMethod method, RequestCallback requestCallback,
+        ResponseExtractor<T> responseExtractor) throws RestClientException {
+        return getRestTemplate(url).execute(url, method, requestCallback, responseExtractor);
+    }
+
+    @Override
+    public void setInterceptors(List<ClientHttpRequestInterceptor> interceptors) {
+        super.setInterceptors(interceptors);
+        acceptableRestTemplates.forEach(template -> template.setInterceptors(interceptors));
+        defaultRestTemplate.setInterceptors(interceptors);
+    }
+
+    @Override
+    public void setRequestFactory(ClientHttpRequestFactory requestFactory) {
+        super.setRequestFactory(requestFactory);
+        acceptableRestTemplates.forEach(template -> template.setRequestFactory(requestFactory));
+        defaultRestTemplate.setRequestFactory(requestFactory);
+    }
+
+    @Override
+    public void setErrorHandler(ResponseErrorHandler errorHandler) {
+        super.setErrorHandler(errorHandler);
+        acceptableRestTemplates.forEach(template -> template.setErrorHandler(errorHandler));
+        defaultRestTemplate.setErrorHandler(errorHandler);
+    }
+
+    @Override
+    public void setDefaultUriVariables(Map<String, ?> defaultUriVariables) {
+        super.setDefaultUriVariables(defaultUriVariables);
+        acceptableRestTemplates.forEach(template -> template.setDefaultUriVariables(defaultUriVariables));
+        defaultRestTemplate.setDefaultUriVariables(defaultUriVariables);
+    }
+
+    @Override
+    public void setUriTemplateHandler(UriTemplateHandler handler) {
+        super.setUriTemplateHandler(handler);
+        acceptableRestTemplates.forEach(template -> template.setUriTemplateHandler(handler));
+        defaultRestTemplate.setUriTemplateHandler(handler);
+    }
+
+    @Override
+    public void setMessageConverters(List<HttpMessageConverter<?>> messageConverters) {
+        super.setMessageConverters(messageConverters);
+        acceptableRestTemplates.forEach(template -> template.setMessageConverters(messageConverters));
+        defaultRestTemplate.setMessageConverters(messageConverters);
     }
 }
