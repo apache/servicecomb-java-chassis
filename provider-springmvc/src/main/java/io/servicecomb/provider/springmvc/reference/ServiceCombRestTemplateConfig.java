@@ -14,16 +14,16 @@
  * limitations under the License.
  */
 
-package io.servicecomb.common.exceptions;
+package io.servicecomb.provider.springmvc.reference;
 
-public class ServiceCombException extends RuntimeException {
-    private static final long serialVersionUID = -1085233183289520695L;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.web.client.RestTemplate;
 
-  public ServiceCombException(String cause, Throwable throwable) {
-    super(cause, throwable);
-  }
-
-  public ServiceCombException(String cause) {
-    super(cause);
+@Configuration
+class ServiceCombRestTemplateConfig {
+  @Bean
+  RestTemplate restTemplate() {
+    return RestTemplateBuilder.create();
   }
 }

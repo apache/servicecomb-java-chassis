@@ -48,6 +48,9 @@
 		<narayana.version>5.3.2.Final</narayana.version>
 		<cxf.version>3.1.6</cxf.version>
 		<logback.version>1.1.7</logback.version>
+		<brave.version>4.4.0</brave.version>
+		<zipkin.version>1.24.0</zipkin.version>
+		<zipkin-reporter.version>0.10.0</zipkin-reporter.version>
 	</properties>
 
 	<dependencyManagement>
@@ -744,6 +747,53 @@
 				<scope>import</scope>
 			</dependency>
 
+			<!-- zipkin dependencies -->
+			<dependency>
+				<groupId>io.zipkin.java</groupId>
+				<artifactId>zipkin</artifactId>
+				<version>${zipkin.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>io.zipkin.brave</groupId>
+				<artifactId>brave</artifactId>
+				<version>${brave.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>io.zipkin.brave</groupId>
+				<artifactId>brave-spring-beans</artifactId>
+				<version>${brave.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>io.zipkin.reporter</groupId>
+				<artifactId>zipkin-sender-okhttp3</artifactId>
+				<version>${zipkin-reporter.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>io.zipkin.brave</groupId>
+				<artifactId>brave-context-log4j12</artifactId>
+				<version>${brave.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>io.zipkin.brave</groupId>
+				<artifactId>brave-instrumentation-servlet</artifactId>
+				<version>${brave.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>io.zipkin.brave</groupId>
+				<artifactId>brave-instrumentation-jaxrs2</artifactId>
+				<version>${brave.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>io.zipkin.brave</groupId>
+				<artifactId>brave-instrumentation-spring-webmvc</artifactId>
+				<version>${brave.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>io.zipkin.brave</groupId>
+				<artifactId>brave-instrumentation-spring-web</artifactId>
+				<version>${brave.version}</version>
+			</dependency>
+
 			<dependency>
 				<groupId>io.servicecomb</groupId>
 				<artifactId>foundation-common</artifactId>
@@ -935,7 +985,17 @@
 				<artifactId>spring-boot-starter-transport</artifactId>
 				<version>0.1.0-m3-SNAPSHOT</version>
 			</dependency>
-		</dependencies>
+			<dependency>
+				<groupId>io.servicecomb</groupId>
+				<artifactId>tracing-springmvc</artifactId>
+				<version>0.1.0-m3-SNAPSHOT</version>
+			</dependency>
+      <dependency>
+        <groupId>io.servicecomb</groupId>
+        <artifactId>tracing-servlet</artifactId>
+        <version>0.1.0-m3-SNAPSHOT</version>
+      </dependency>
+    </dependencies>
 
 	</dependencyManagement>
 	<build>

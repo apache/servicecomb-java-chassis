@@ -16,6 +16,8 @@
 
 package io.servicecomb.serviceregistry.config;
 
+import static io.servicecomb.foundation.common.base.ServiceCombConstants.CONFIG_SERVICE;
+
 public final class MicroservicePropertiesLoader extends AbstractPropertiesLoader {
 
     public static final MicroservicePropertiesLoader INSTANCE = new MicroservicePropertiesLoader();
@@ -25,7 +27,7 @@ public final class MicroservicePropertiesLoader extends AbstractPropertiesLoader
 
     @Override
     protected String getConfigOptionPrefix() {
-        return "service_description";
+        return CONFIG_SERVICE;
     }
 
 }

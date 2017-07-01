@@ -14,18 +14,16 @@
  * limitations under the License.
  */
 
-package io.servicecomb.provider.springmvc.reference;
+package io.servicecomb.foundation.common.exceptions;
 
-import java.net.URI;
+public class ServiceCombException extends RuntimeException {
+    private static final long serialVersionUID = -1085233183289520695L;
 
-public class DefaultAcceptableRestTemplate extends AcceptableRestTemplate {
-    @Override
-    boolean isAcceptable(String uri) {
-        return true;
-    }
+  public ServiceCombException(String cause, Throwable throwable) {
+    super(cause, throwable);
+  }
 
-    @Override
-    boolean isAcceptable(URI uri) {
-        return true;
-    }
+  public ServiceCombException(String cause) {
+    super(cause);
+  }
 }
