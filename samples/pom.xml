@@ -24,11 +24,12 @@
     <packaging>pom</packaging>
     <version>0.1.0-m3-SNAPSHOT</version>
     <modules>
-        <module>pojo-sample</module>
-        <module>springmvc-sample</module>
-        <module>jaxrs-sample</module>
         <module>codefirst-sample</module>
         <module>custom-handler-sample</module>
+        <module>jaxrs-sample</module>
+        <module>pojo-sample</module>
+        <module>springmvc-sample</module>
+        <module>commmon-schema</module>
     </modules>
 
     <dependencyManagement>
@@ -39,6 +40,11 @@
                 <version>0.1.0-m3-SNAPSHOT</version>
                 <type>pom</type>
                 <scope>import</scope>
+            </dependency>
+            <dependency>
+                <groupId>io.servicecomb.samples</groupId>
+                <artifactId>commmon-schema</artifactId>
+                <version>0.1.0-m3-SNAPSHOT</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
