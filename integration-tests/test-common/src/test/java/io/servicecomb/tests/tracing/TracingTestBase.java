@@ -24,6 +24,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.postRequestedFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.verify;
+import static io.servicecomb.serviceregistry.client.LocalServiceRegistryClientImpl.LOCAL_REGISTRY_FILE_KEY;
 import static org.apache.http.HttpStatus.SC_OK;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNot.not;
@@ -31,6 +32,7 @@ import static org.junit.Assert.assertThat;
 import static org.springframework.http.HttpStatus.OK;
 
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
+import java.net.URL;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import org.junit.BeforeClass;
@@ -48,6 +50,8 @@ public class TracingTestBase {
 
   @BeforeClass
   public static void setUpClass() throws Exception {
+    setUpLocalRegistry();
+
     Log4jConfig.addAppender(appender);
     stubFor(post(urlEqualTo("/api/v1/spans"))
         .withRequestBody(containing("http.path"))
@@ -55,6 +59,12 @@ public class TracingTestBase {
             aResponse()
                 .withStatus(SC_OK)));
 
+  }
+
+  private static void setUpLocalRegistry() {
+    ClassLoader loader = Thread.currentThread().getContextClassLoader();
+    URL resource = loader.getResource("registry.yaml");
+    System.setProperty(LOCAL_REGISTRY_FILE_KEY, resource.getPath());
   }
 
   @Test
@@ -71,7 +81,7 @@ public class TracingTestBase {
 
     TimeUnit.MILLISECONDS.sleep(1000);
 
-    List<String> tracingMessages = appender.pollLogs(".*\\[\\w+/\\w+\\]\\s+INFO.*");
+    List<String> tracingMessages = appender.pollLogs(".*\\[\\w+/\\w+\\]\\s+INFO.*in /.*");
     for (int i = 0; i < tracingMessages.size(); i+=2) {
       // caller is the root of tracing tree and its traceId is the same as spanId
       String[] ids = tracingIds(tracingMessages.get(i));

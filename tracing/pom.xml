@@ -34,10 +34,4 @@
     <module>tracing-servlet</module>
   </modules>
 
-  <properties>
-    <brave.version>4.4.0</brave.version>
-    <zipkin-reporter.version>0.10.0</zipkin-reporter.version>
-    <log4j.version>2.8.2</log4j.version>
-  </properties>
-
 </project>

@@ -44,7 +44,7 @@ public class SomeTracedController {
     logger.info("in /hello");
     Thread.sleep(random.nextInt(1000));
 
-    return "hello " + template.getForObject("http://localhost:8080/world", String.class);
+    return "hello " + template.getForObject("cse://tracing-service/world", String.class);
   }
 
   @RequestMapping(value = "/world", method = GET, produces = TEXT_PLAIN_VALUE)
