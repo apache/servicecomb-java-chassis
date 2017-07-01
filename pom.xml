@@ -137,6 +137,7 @@
 		<module>integration-tests</module>
 		<module>java-chassis-distribution</module>
     <module>tracing</module>
+    <module>handlers</module>
     <module>coverage-reports</module>
 	</modules>
 

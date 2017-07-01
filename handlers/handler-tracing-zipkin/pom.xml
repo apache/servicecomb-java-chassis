@@ -19,30 +19,46 @@
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <parent>
-    <artifactId>tracing-tests</artifactId>
-    <groupId>io.servicecomb.tests</groupId>
+    <artifactId>tracing</artifactId>
+    <groupId>io.servicecomb</groupId>
     <version>0.1.0-m3-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
 
-  <artifactId>tracing-vertx-tests</artifactId>
+  <artifactId>handler-tracing-zipkin</artifactId>
 
   <dependencies>
     <dependency>
       <groupId>io.servicecomb</groupId>
-      <artifactId>handler-tracing-zipkin</artifactId>
+      <artifactId>foundation-common</artifactId>
     </dependency>
     <dependency>
       <groupId>io.servicecomb</groupId>
-      <artifactId>transport-rest-vertx</artifactId>
+      <artifactId>java-chassis-core</artifactId>
     </dependency>
     <dependency>
       <groupId>io.servicecomb</groupId>
-      <artifactId>provider-jaxrs</artifactId>
+      <artifactId>common-rest</artifactId>
     </dependency>
     <dependency>
-      <groupId>com.github.tomakehurst</groupId>
-      <artifactId>wiremock-standalone</artifactId>
+      <groupId>io.zipkin.brave</groupId>
+      <artifactId>brave-spring-beans</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>io.zipkin.brave</groupId>
+      <artifactId>brave</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>io.zipkin.reporter</groupId>
+      <artifactId>zipkin-sender-okhttp3</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>io.zipkin.brave</groupId>
+      <artifactId>brave-context-log4j12</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.google.code.findbugs</groupId>
+      <artifactId>jsr305</artifactId>
     </dependency>
   </dependencies>
 

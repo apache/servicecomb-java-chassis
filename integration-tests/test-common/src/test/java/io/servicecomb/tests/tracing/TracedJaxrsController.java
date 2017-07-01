@@ -45,8 +45,7 @@ public class TracedJaxrsController {
     logger.info("in /bonjour");
     Thread.sleep(random.nextInt(1000));
 
-    request.getRequestURL();
-    return "bonjour le " + template.getForObject("http://localhost:8080/jaxrs/monde", String.class);
+    return "bonjour le " + template.getForObject("cse://tracing-service/jaxrs/monde", String.class);
   }
 
   @GET

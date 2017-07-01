@@ -995,6 +995,11 @@
         <artifactId>tracing-servlet</artifactId>
         <version>0.1.0-m3-SNAPSHOT</version>
       </dependency>
+      <dependency>
+        <groupId>io.servicecomb</groupId>
+        <artifactId>handler-tracing-zipkin</artifactId>
+        <version>0.1.0-m3-SNAPSHOT</version>
+      </dependency>
     </dependencies>
 
 	</dependencyManagement>
