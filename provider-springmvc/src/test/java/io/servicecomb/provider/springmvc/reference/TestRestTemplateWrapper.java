@@ -23,6 +23,7 @@ import static org.hamcrest.collection.IsIterableContainingInOrder.contains;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -53,7 +54,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.http.client.ClientHttpRequestInterceptor;
 import org.springframework.http.converter.ByteArrayHttpMessageConverter;
-import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.web.client.RequestCallback;
 import org.springframework.web.client.ResponseErrorHandler;
 import org.springframework.web.client.ResponseExtractor;
@@ -357,7 +357,7 @@ public class TestRestTemplateWrapper {
   }
 
   @Test
-  public void setRequestFactoryWithUnderlying() {
+  public void doNotSetRequestFactoryWithUnderlying() {
     ClientHttpRequestFactory requestFactory = mock(ClientHttpRequestFactory.class);
 
     wrapper.setRequestFactory(requestFactory);
@@ -365,7 +365,7 @@ public class TestRestTemplateWrapper {
     assertThat(wrapper.getRequestFactory(), is(requestFactory));
     assertThat(wrapper.defaultRestTemplate.getRequestFactory(), is(requestFactory));
 
-    verify(underlying).setRequestFactory(requestFactory);
+    verify(underlying, never()).setRequestFactory(requestFactory);
   }
 
   @Test
@@ -393,7 +393,7 @@ public class TestRestTemplateWrapper {
   }
 
   @Test
-  public void setUriTemplateHandlerWithUnderlying() {
+  public void dotNotSetUriTemplateHandlerWithUnderlying() {
     UriTemplateHandler uriTemplateHandler = mock(UriTemplateHandler.class);
 
     wrapper.setUriTemplateHandler(uriTemplateHandler);
@@ -401,19 +401,19 @@ public class TestRestTemplateWrapper {
     assertThat(wrapper.getUriTemplateHandler(), is(uriTemplateHandler));
     assertThat(wrapper.defaultRestTemplate.getUriTemplateHandler(), is(uriTemplateHandler));
 
-    verify(underlying).setUriTemplateHandler(uriTemplateHandler);
+    verify(underlying, never()).setUriTemplateHandler(uriTemplateHandler);
   }
 
   @Test
   public void setMessageConvertersWithUnderlying() {
-    List<HttpMessageConverter<?>> messageConverters = singletonList(mock(ByteArrayHttpMessageConverter.class));
+    ByteArrayHttpMessageConverter messageConverter = mock(ByteArrayHttpMessageConverter.class);
 
-    wrapper.setMessageConverters(messageConverters);
+    wrapper.setMessageConverters(singletonList(messageConverter));
 
-    assertThat(wrapper.getMessageConverters(), is(messageConverters));
-    assertThat(wrapper.defaultRestTemplate.getMessageConverters(), is(messageConverters));
+    assertThat(wrapper.getMessageConverters(), contains(messageConverter));
+    assertThat(wrapper.defaultRestTemplate.getMessageConverters(), contains(messageConverter));
 
-    verify(underlying).setMessageConverters(messageConverters);
+    verify(underlying, never()).setMessageConverters(singletonList(messageConverter));
   }
 
   @Test

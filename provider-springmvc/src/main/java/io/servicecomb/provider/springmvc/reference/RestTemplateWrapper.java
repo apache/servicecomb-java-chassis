@@ -40,6 +40,7 @@ import org.springframework.web.util.UriTemplateHandler;
 /**
  * 用于同时支持cse调用和非cse调用
  */
+// TODO: 2017/7/1 what we want to expose is RestOperations instead, since some RestTemplate methods are not to be called by users
 class RestTemplateWrapper extends RestTemplate {
     private final List<AcceptableRestTemplate> acceptableRestTemplates = new ArrayList<>();
 
@@ -290,7 +291,6 @@ class RestTemplateWrapper extends RestTemplate {
     @Override
     public void setRequestFactory(ClientHttpRequestFactory requestFactory) {
         super.setRequestFactory(requestFactory);
-        acceptableRestTemplates.forEach(template -> template.setRequestFactory(requestFactory));
         defaultRestTemplate.setRequestFactory(requestFactory);
     }
 
@@ -311,14 +311,12 @@ class RestTemplateWrapper extends RestTemplate {
     @Override
     public void setUriTemplateHandler(UriTemplateHandler handler) {
         super.setUriTemplateHandler(handler);
-        acceptableRestTemplates.forEach(template -> template.setUriTemplateHandler(handler));
         defaultRestTemplate.setUriTemplateHandler(handler);
     }
 
     @Override
     public void setMessageConverters(List<HttpMessageConverter<?>> messageConverters) {
         super.setMessageConverters(messageConverters);
-        acceptableRestTemplates.forEach(template -> template.setMessageConverters(messageConverters));
         defaultRestTemplate.setMessageConverters(messageConverters);
     }
 }
