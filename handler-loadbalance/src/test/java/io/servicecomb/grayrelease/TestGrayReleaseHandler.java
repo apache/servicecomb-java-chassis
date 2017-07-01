@@ -5,6 +5,7 @@ import java.util.Map;
 
 import org.apache.commons.configuration.AbstractConfiguration;
 import org.apache.commons.configuration.BaseConfiguration;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -72,6 +73,8 @@ public class TestGrayReleaseHandler {
         MicroserviceInstance microserviceInstance02 = Mockito.mock(MicroserviceInstance.class);
         Map<String, String> props001 = new HashMap<String, String>();
         props001.put("tags", "001;002");
+        Mockito.when(microserviceInstance01.getInstanceId()).thenReturn("01");
+        Mockito.when(microserviceInstance02.getInstanceId()).thenReturn("02");        
         Mockito.when(microserviceInstance01.getProperties()).thenReturn(props001);
         Mockito.when(microserviceInstance02.getProperties()).thenReturn(props001);
         ins01.put("01", microserviceInstance01);
@@ -82,6 +85,8 @@ public class TestGrayReleaseHandler {
         MicroserviceInstance microserviceInstance04 = Mockito.mock(MicroserviceInstance.class);
         Map<String, String> props002 = new HashMap<String, String>();
         props002.put("tags", "002");
+        Mockito.when(microserviceInstance03.getInstanceId()).thenReturn("03");
+        Mockito.when(microserviceInstance04.getInstanceId()).thenReturn("04");  
         Mockito.when(microserviceInstance03.getProperties()).thenReturn(props002);
         Mockito.when(microserviceInstance04.getProperties()).thenReturn(props002);
         ins02.put("03", microserviceInstance03);
@@ -103,111 +108,68 @@ public class TestGrayReleaseHandler {
             }
 
         };
-
-        System.out.println();
-        System.out.println("-----------init--------------------------------------------------------");
-        System.out.println(
-                "instanceId:01" + "," + microserviceInstance01.getProperties().toString() + ",version={001;002}");
-        System.out.println(
-                "instanceId:02" + "," + microserviceInstance02.getProperties().toString() + ",version={001;002}");
-        System.out.println(
-                "instanceId:03" + "," + microserviceInstance03.getProperties().toString() + ",version={002}");
-        System.out.println(
-                "instanceId:04" + "," + microserviceInstance04.getProperties().toString() + ",version={002}");
-        System.out.println();
-        System.out.println("分组规则：");
-        System.out.println("groupId:001,tag:001;002&&version:1.0.0.1");
-        System.out.println("groupId:002,tag:002&&version:1.0.0.2");
-        System.out.println("-----------end init--------------------------------------------------------");
-        System.out.println();
-
-        //参数tags,version
     }
 
     @Test
     public void testHandler() {
-        AsyncResponse asyncResp = Mockito.mock(AsyncResponse.class);
-        try {
-            String grayReleaseRuleClassName = "com.huawei.paas.cse.grayrelease.csefilter.GrayReleaseRatePolicyFilter";
-            String rulePolicy = "[{\"group\":\"001\",\"type\":\"rate\",\"policy\":\"50\"}]";
-            String groupPolicy =
-                "[{\"name\":\"001\",\"rule\":\"version=1.0.0.1&&tags=001,002\"},{\"name\":\"002\",\"rule\":\"version=1.0.0.2&&tags=002\"}]";
-            changeConfig(grayReleaseRuleClassName,
-                    rulePolicy,
-                    groupPolicy);
+    	boolean isSuccess=true;
+		AsyncResponse asyncResp = Mockito.mock(AsyncResponse.class);
+		try {
+			String grayReleaseRuleClassName = "io.servicecomb.grayrelease.csefilter.GrayReleaseRatePolicyFilter";
+			String rulePolicy = "[{\"group\":\"001\",\"type\":\"rate\",\"policy\":\"100\"}]";
+			String groupPolicy = "[{\"name\":\"001\",\"rule\":\"version=1.0.0.1&&tags=001,002\"},{\"name\":\"002\",\"rule\":\"version=1.0.0.2&&tags=002\"}]";
+			changeConfig(grayReleaseRuleClassName, rulePolicy, groupPolicy);
 
-            Mockito.doNothing().when(invocation).next(asyncResp);
-            System.out.println("-----------start--------------------------------------------------------");
-            System.out.println();
-            System.out.println("-----------rate方式--------------------------------------------------");
-            System.out.println("规则：001:90,0001:10");
-            System.out.println();
+			Mockito.doNothing().when(invocation).next(asyncResp);
 
-            InstanceCacheManager instanceCacheManager = serviceRegistry.getInstanceCacheManager();
-            for (int i = 1; i < 11; i++) {
-                System.out.println("-----------第" + i + "次-----------------------");
-                System.out.println();
-                grayReleaseHandler.handle(invocation, asyncResp);
-                String key = Deencapsulation.invoke(instanceCacheManager,
-                        "getKey",
-                        invocation.getAppId(),
-                        invocation.getMicroserviceName());
+			for (int i = 1; i < 11; i++) {
+				grayReleaseHandler.handle(invocation, asyncResp);
+				InstanceCacheManager instanceCacheManager = InstanceCacheManager.INSTANCE;
+				String key = Deencapsulation.invoke(instanceCacheManager, "getKey", invocation.getAppId(),
+						invocation.getMicroserviceName());
 
-                Map<String, InstanceCache> cacheMap = Deencapsulation.getField(instanceCacheManager, "cacheMap");
-                InstanceCache tmpInstanceCache = cacheMap.get(key);
+				Map<String, InstanceCache> cacheMap = Deencapsulation.getField(instanceCacheManager, "cacheMap");
+				InstanceCache tmpInstanceCache = cacheMap.get(key);
 
-                Map<String, MicroserviceInstance> tmpInstanceMap = Deencapsulation.getField(tmpInstanceCache,
-                        "instanceMap");
-                for (Map.Entry<String, MicroserviceInstance> instance : tmpInstanceMap.entrySet()) {
-                    StringBuffer sb = new StringBuffer();
-                    sb.append(instance.getKey()).append(":").append(instance.getValue().getProperties().toString());
-                    System.out.println(sb);
-                }
-                System.out.println();
-            }
+				Map<String, MicroserviceInstance> tmpInstanceMap = Deencapsulation.getField(tmpInstanceCache,
+						"instanceMap");
+				Assert.assertNotNull(tmpInstanceMap.get("01"));
+				Assert.assertNotNull(tmpInstanceMap.get("02"));				
+				for (Map.Entry<String, MicroserviceInstance> instance : tmpInstanceMap.entrySet()) {
+					Assert.assertTrue("01".equals(instance.getKey()) || "02".equals(instance.getKey()));
+					Assert.assertTrue("01".equals(instance.getValue().getInstanceId()) || "02".equals(instance.getKey()));
+				}
+			}
 
-            System.out.println();
-            System.out.println("-----------策略方式--------------------------------------------------");
-            System.out.println("规则：{0002:[{keyName:name,operator:like,value:w*d}]}");
+			grayReleaseRuleClassName = "io.servicecomb.grayrelease.csefilter.GrayReleaseRulePolicyFilter";
+			rulePolicy = "[{\"group\":\"001\",\"type\":\"rule\",\"policy\":\"name~w*d\"},"
+					+ "{\"group\":\"002\",\"type\":\"rule\",\"policy\":\"name~user\"}]";
+			groupPolicy = "[{\"name\":\"001\",\"rule\":\"version=1.0.0.1&&tags=001,002\"},{\"name\":\"002\",\"rule\":\"version=1.0.0.2&&tags=002\"}]";
+			changeConfig(grayReleaseRuleClassName, rulePolicy, groupPolicy);
 
-            System.out.println("args:" + invocation.getArgs()[0]);
+			for (int i = 1; i < 4; i++) {
+				grayReleaseHandler.handle(invocation, asyncResp);
+				InstanceCacheManager instanceCacheManager = InstanceCacheManager.INSTANCE;
+				String key = Deencapsulation.invoke(instanceCacheManager, "getKey", invocation.getAppId(),
+						invocation.getMicroserviceName());
 
-            grayReleaseRuleClassName = "com.huawei.paas.cse.grayrelease.csefilter.GrayReleaseRulePolicyFilter";
-            rulePolicy = "[{\"group\":\"001\",\"type\":\"rule\",\"policy\":\"name~w*d\"},"
-                    + "{\"group\":\"002\",\"type\":\"rule\",\"policy\":\"name~user\"}]";
-            groupPolicy =
-                "[{\"name\":\"001\",\"rule\":\"version=1.0.0.1&&tags=001,002\"},{\"name\":\"002\",\"rule\":\"version=1.0.0.2&&tags=002\"}]";
-            changeConfig(grayReleaseRuleClassName,
-                    rulePolicy,
-                    groupPolicy);
+				Map<String, InstanceCache> cacheMap = Deencapsulation.getField(instanceCacheManager, "cacheMap");
+				InstanceCache tmpInstanceCache = cacheMap.get(key);
 
-            System.out.println();
-            for (int i = 1; i < 4; i++) {
-                System.out.println("-----------第" + i + "次-----------------------");
-                System.out.println();
-                grayReleaseHandler.handle(invocation, asyncResp);
-                String key = Deencapsulation.invoke(instanceCacheManager,
-                        "getKey",
-                        invocation.getAppId(),
-                        invocation.getMicroserviceName());
+				Map<String, MicroserviceInstance> tmpInstanceMap = Deencapsulation.getField(tmpInstanceCache,
+						"instanceMap");
+				Assert.assertNotNull(tmpInstanceMap.get("01"));
+				Assert.assertNotNull(tmpInstanceMap.get("02"));						
+				for (Map.Entry<String, MicroserviceInstance> instance : tmpInstanceMap.entrySet()) {
+					Assert.assertTrue("01".equals(instance.getKey()) || "02".equals(instance.getKey()));
+					Assert.assertTrue("01".equals(instance.getValue().getInstanceId()) || "02".equals(instance.getKey()));
+				}
+			}
 
-                Map<String, InstanceCache> cacheMap = Deencapsulation.getField(instanceCacheManager, "cacheMap");
-                InstanceCache tmpInstanceCache = cacheMap.get(key);
-
-                Map<String, MicroserviceInstance> tmpInstanceMap = Deencapsulation.getField(tmpInstanceCache,
-                        "instanceMap");
-                for (Map.Entry<String, MicroserviceInstance> instance : tmpInstanceMap.entrySet()) {
-                    StringBuffer sb = new StringBuffer();
-                    sb.append(instance.getKey()).append(":").append(instance.getValue().getProperties().toString());
-                    System.out.println(sb);
-                }
-                System.out.println();
-            }
-
-        } catch (Exception e) {
-            System.out.println(e);
-        }
-
+		} catch (Exception e) {
+			isSuccess=false;
+		}
+		Assert.assertTrue(isSuccess);
     }
 
     public void changeConfig(String grayReleaseRuleClassName,
