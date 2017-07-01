@@ -238,6 +238,16 @@
       <artifactId>springmvc-tests</artifactId>
       <version>0.1.0-m3-SNAPSHOT</version>
     </dependency>
+    <dependency>
+      <groupId>io.servicecomb.tests</groupId>
+      <artifactId>tracing-servlet-tests</artifactId>
+      <version>0.1.0-m3-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <groupId>io.servicecomb.tests</groupId>
+      <artifactId>tracing-vertx-tests</artifactId>
+      <version>0.1.0-m3-SNAPSHOT</version>
+    </dependency>
   </dependencies>
 
   <profiles>
