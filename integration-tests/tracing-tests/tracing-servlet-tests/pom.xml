@@ -34,7 +34,7 @@
     </dependency>
     <dependency>
       <groupId>io.servicecomb</groupId>
-      <artifactId>tracing-servlet</artifactId>
+      <artifactId>handler-tracing-zipkin</artifactId>
     </dependency>
     <dependency>
       <groupId>org.eclipse.jetty</groupId>

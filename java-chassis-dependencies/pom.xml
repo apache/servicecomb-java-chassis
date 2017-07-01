@@ -985,16 +985,6 @@
 				<artifactId>spring-boot-starter-transport</artifactId>
 				<version>0.1.0-m3-SNAPSHOT</version>
 			</dependency>
-			<dependency>
-				<groupId>io.servicecomb</groupId>
-				<artifactId>tracing-springmvc</artifactId>
-				<version>0.1.0-m3-SNAPSHOT</version>
-			</dependency>
-      <dependency>
-        <groupId>io.servicecomb</groupId>
-        <artifactId>tracing-servlet</artifactId>
-        <version>0.1.0-m3-SNAPSHOT</version>
-      </dependency>
       <dependency>
         <groupId>io.servicecomb</groupId>
         <artifactId>handler-tracing-zipkin</artifactId>
