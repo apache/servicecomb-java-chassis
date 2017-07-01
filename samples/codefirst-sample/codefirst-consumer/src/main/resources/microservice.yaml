@@ -1,0 +1,14 @@
+﻿APPLICATION_ID: codefirsttest
+service_description:
+  name: codefirstClient
+  version: 0.0.1
+cse:
+  service:
+    registry:
+      address: http://127.0.0.1:30100
+  isolation:
+    Consumer:
+      enabled: false
+  references:
+    codefirst:
+      version-rule: 0.0.1
