@@ -26,12 +26,6 @@
   <modelVersion>4.0.0</modelVersion>
 
   <artifactId>tracing-tests</artifactId>
-  <packaging>pom</packaging>
-
-  <modules>
-    <module>tracing-servlet-tests</module>
-    <module>tracing-vertx-tests</module>
-  </modules>
 
   <dependencies>
     <dependency>
@@ -50,6 +44,22 @@
     <dependency>
       <groupId>io.servicecomb</groupId>
       <artifactId>provider-springmvc</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>io.servicecomb</groupId>
+      <artifactId>provider-jaxrs</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>io.servicecomb</groupId>
+      <artifactId>handler-tracing-zipkin</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>io.servicecomb</groupId>
+      <artifactId>transport-rest-vertx</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.github.tomakehurst</groupId>
+      <artifactId>wiremock-standalone</artifactId>
     </dependency>
   </dependencies>
 

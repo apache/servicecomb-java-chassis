@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package io.servicecomb.tests.tracing;
+package io.servicecomb.tests;
 
 import com.seanyinx.github.unit.scaffolding.Poller;
 import java.io.IOException;
@@ -63,7 +63,7 @@ public class EmbeddedAppender extends ConsoleAppender {
     private final Queue<String> events;
     private final OutputStream outputStream;
 
-    public InMemoryOutputStream(Queue<String> events, OutputStream outputStream) {
+    InMemoryOutputStream(Queue<String> events, OutputStream outputStream) {
       this.events = events;
       this.outputStream = outputStream;
     }
