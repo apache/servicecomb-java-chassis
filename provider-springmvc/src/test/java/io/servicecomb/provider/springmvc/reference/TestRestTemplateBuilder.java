@@ -16,66 +16,44 @@
 
 package io.servicecomb.provider.springmvc.reference;
 
-import java.net.URI;
-import java.net.UnknownHostException;
+import static org.hamcrest.core.Is.is;
+import static org.hamcrest.core.IsInstanceOf.instanceOf;
+import static org.junit.Assert.assertThat;
 
-import org.junit.Assert;
+import com.seanyinx.github.unit.scaffolding.Randomness;
+import java.net.URI;
 import org.junit.Test;
-import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 public class TestRestTemplateBuilder {
 
-    @Test
-    public void testRestTemplateBuilder() {
-        Assert.assertEquals(RestTemplateWrapper.class, RestTemplateBuilder.create().getClass());
-    }
+  private final String url = Randomness.uniquify("url");
+  private final AcceptableRestTemplate underlying = new AlwaysAcceptableRestTemplate();
 
-    class MyAcceptableRestTemplate extends AcceptableRestTemplate {
+  private static class AlwaysAcceptableRestTemplate extends AcceptableRestTemplate {
 
         @Override
         boolean isAcceptable(String uri) {
-            return uri.startsWith("http://");
+            return true;
         }
 
         @Override
         boolean isAcceptable(URI uri) {
-            return uri.getScheme().equals("http");
-        }
-
-        @Override
-        public void delete(String url, Object... urlVariables) throws RestClientException {
-            throw new RestClientException("test error.");
+            return true;
         }
     }
 
-    @Test
-    public void testRestTemplateBuilderResttemplate() {
-        RestTemplateBuilder.addAcceptableRestTemplate(new MyAcceptableRestTemplate());
-        RestTemplate template = RestTemplateBuilder.create();
-        try {
-            template.delete("http://test");
-            Assert.assertFalse(true);
-        } catch (RestClientException e) {
-            //custom
-            Assert.assertEquals(e.getMessage(), "test error.");
-        }
+  @Test
+  public void addsRestTemplateToWrapper() {
+    RestTemplateBuilder.addAcceptableRestTemplate(underlying);
 
-        try {
-            template.delete("cse://test/a/b/c");
-            Assert.assertFalse(true);
-        } catch (NullPointerException e) {
-            // cse provider is null
-            Assert.assertTrue(true);
-        }
+    RestTemplate restTemplate = RestTemplateBuilder.create();
 
-        try {
-            template.delete("https://testtesttest");
-            Assert.assertFalse(true);
-        } catch (RestClientException e) {
-            // default resttemplate resove host name
-            Assert.assertTrue(e.getCause() instanceof UnknownHostException);
-        }
-    }
+    assertThat(restTemplate, instanceOf(RestTemplateWrapper.class));
 
+    RestTemplateWrapper wrapper = (RestTemplateWrapper) restTemplate;
+
+    assertThat(wrapper.getRestTemplate(url), is(underlying));
+    assertThat(wrapper.getRestTemplate(URI.create(url)), is(underlying));
+  }
 }
