@@ -18,11 +18,13 @@ package io.servicecomb.tracing.zipkin;
 
 import static io.servicecomb.foundation.common.base.ServiceCombConstants.CONFIG_SERVICE_NAME;
 import static io.servicecomb.foundation.common.base.ServiceCombConstants.CONFIG_TRACING_COLLECTOR_ADDRESS;
+import static io.servicecomb.foundation.common.base.ServiceCombConstants.DEFAULT_SERVICE_NAME;
+import static io.servicecomb.foundation.common.base.ServiceCombConstants.DEFAULT_TRACING_COLLECTOR_ADDRESS;
 
 import brave.Tracing;
 import brave.context.log4j12.MDCCurrentTraceContext;
 import brave.http.HttpTracing;
-import org.springframework.beans.factory.annotation.Value;
+import io.servicecomb.config.DynamicProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import zipkin.Span;
@@ -35,8 +37,11 @@ import zipkin.reporter.okhttp3.OkHttpSender;
 class TracingConfiguration {
 
   @Bean
-  Sender sender(@Value("${" + CONFIG_TRACING_COLLECTOR_ADDRESS + "}") String tracingCollectorAddress) {
-    return OkHttpSender.create(tracingCollectorAddress);
+  Sender sender(DynamicProperties dynamicProperties) {
+    return OkHttpSender.create(
+        dynamicProperties.getStringProperty(
+            CONFIG_TRACING_COLLECTOR_ADDRESS,
+            DEFAULT_TRACING_COLLECTOR_ADDRESS));
   }
 
   @Bean
@@ -45,9 +50,9 @@ class TracingConfiguration {
   }
 
   @Bean
-  Tracing tracing(Reporter<Span> reporter, @Value("${" + CONFIG_SERVICE_NAME + "}") String serviceName) {
+  Tracing tracing(Reporter<Span> reporter, DynamicProperties dynamicProperties) {
     return Tracing.newBuilder()
-        .localServiceName(serviceName)
+        .localServiceName(dynamicProperties.getStringProperty(CONFIG_SERVICE_NAME, DEFAULT_SERVICE_NAME))
         .currentTraceContext(MDCCurrentTraceContext.create()) // puts trace IDs into logs
         .reporter(reporter).build();
   }
