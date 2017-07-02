@@ -32,16 +32,19 @@ import static org.junit.Assert.assertThat;
 import static org.springframework.http.HttpStatus.OK;
 
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
+import io.servicecomb.tests.EmbeddedAppender;
+import io.servicecomb.tests.Log4jConfig;
 import java.net.URL;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 
-public class TracingTestBase {
+public class ZipkinTracingIntegrationTest {
 
   @ClassRule
   public static final WireMockRule wireMockRule = new WireMockRule(9411);
@@ -59,6 +62,11 @@ public class TracingTestBase {
             aResponse()
                 .withStatus(SC_OK)));
 
+  }
+
+  @Before
+  public void setUp() throws Exception {
+    TracingTestMain.main(new String[0]);
   }
 
   private static void setUpLocalRegistry() {

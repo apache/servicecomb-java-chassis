@@ -14,16 +14,18 @@
  * limitations under the License.
  */
 
-package io.servicecomb.tests.tracing;
+package io.servicecomb.tests;
 
-import org.junit.Before;
-import org.junit.Ignore;
+import org.apache.log4j.Appender;
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
 
-@Ignore
-public class VertxRestTracingTest extends TracingTestBase {
+public class Log4jConfig {
 
-  @Before
-  public void setUp() throws Exception {
-    TracingTestMain.main(new String[0]);
+  public static void addAppender(Appender appender) {
+    Logger rootLogger = Logger.getRootLogger();
+    rootLogger.removeAllAppenders();
+    rootLogger.setLevel(Level.INFO);
+    rootLogger.addAppender(appender);
   }
 }
