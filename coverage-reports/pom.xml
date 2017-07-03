@@ -26,7 +26,7 @@
   <modelVersion>4.0.0</modelVersion>
 
   <artifactId>coverage-reports</artifactId>
-  <packaging>pom</packaging>
+  <packaging>jar</packaging>
 
   <dependencies>
     <dependency>
@@ -152,6 +152,10 @@
     <dependency>
       <groupId>io.servicecomb</groupId>
       <artifactId>spring-boot-starter-discovery</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>io.servicecomb</groupId>
+      <artifactId>handler-tracing-zipkin</artifactId>
     </dependency>
     <dependency>
       <groupId>io.servicecomb.demo</groupId>
