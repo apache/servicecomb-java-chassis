@@ -19,34 +19,35 @@
  */
 package io.servicecomb.loadbalance;
 
-import com.netflix.config.ConfigurationManager;
-import com.netflix.config.DynamicPropertyFactory;
-import com.netflix.loadbalancer.IRule;
-import com.netflix.loadbalancer.Server;
-import com.netflix.loadbalancer.reactive.ExecutionListener;
-import io.servicecomb.config.ConfigUtil;
-import io.servicecomb.core.Invocation;
-import io.servicecomb.core.provider.consumer.SyncResponseExecutor;
-import io.servicecomb.loadbalance.filter.IsolationServerListFilter;
-import io.servicecomb.loadbalance.filter.TransactionControlFilter;
-import io.servicecomb.swagger.invocation.AsyncResponse;
-import io.servicecomb.swagger.invocation.Response;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import mockit.Deencapsulation;
-import mockit.Expectations;
-import mockit.Injectable;
-import mockit.Mock;
-import mockit.MockUp;
-import mockit.Mocked;
+
 import org.apache.commons.configuration.AbstractConfiguration;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mockito.Mockito;
+
+import com.netflix.config.ConfigurationManager;
+import com.netflix.config.DynamicPropertyFactory;
+import com.netflix.loadbalancer.IRule;
+import com.netflix.loadbalancer.Server;
+import com.netflix.loadbalancer.reactive.ExecutionListener;
+
+import io.servicecomb.config.ConfigUtil;
+import io.servicecomb.core.Invocation;
+import io.servicecomb.core.provider.consumer.SyncResponseExecutor;
+import io.servicecomb.swagger.invocation.AsyncResponse;
+import io.servicecomb.swagger.invocation.Response;
+import mockit.Deencapsulation;
+import mockit.Expectations;
+import mockit.Injectable;
+import mockit.Mock;
+import mockit.MockUp;
+import mockit.Mocked;
 
 /**
  *
@@ -94,8 +95,7 @@ public class TestLoadbalanceHandler {
 
         Map<String, LoadBalancer> loadBalancerMap = Deencapsulation.getField(lh, "loadBalancerMap");
         LoadBalancer lb = loadBalancerMap.get("rest");
-        Assert.assertEquals(lb.getFilterSize(), 1);
-        Assert.assertTrue(lb.containsFilter("a"));
+        Assert.assertEquals(lb.getFilterSize(), 2);
     }
 
     @AfterClass
@@ -282,15 +282,19 @@ public class TestLoadbalanceHandler {
         Mockito.when(invocation.getMicroserviceName()).thenReturn("test");
         LoadbalanceHandler lbHandler = new LoadbalanceHandler();
         LoadBalancer myLB = new LoadBalancer(serverList, rule);
-        lbHandler.setIsolationFilter(myLB, invocation);
+        lbHandler.setIsolationFilter(myLB, "abc");
         Assert.assertEquals(1, myLB.getFilterSize());
-        Assert.assertTrue(myLB.containsFilter(IsolationServerListFilter.class.getName()));
 
         Mockito.when(invocation.getMicroserviceName()).thenReturn("abc");
         myLB = new LoadBalancer(serverList, rule);
-        lbHandler.setIsolationFilter(myLB, invocation);
-        Assert.assertEquals(0, myLB.getFilterSize());
-        Assert.assertFalse(myLB.containsFilter(IsolationServerListFilter.class.getName()));
+        lbHandler.setIsolationFilter(myLB, "abc");
+        myLB.setInvocation(invocation);
+        
+        Assert.assertEquals(1, myLB.getFilterSize());
+        Map<String, ServerListFilterExt> filters = Deencapsulation.getField(myLB, "filters");
+        List<Server> servers = new ArrayList<>();
+        servers.add(new Server(null));
+        Assert.assertEquals(servers.size(), filters.get("io.servicecomb.loadbalance.filter.IsolationServerListFilter").getFilteredListOfServers(servers).size());
     }
 
     @Test
@@ -299,11 +303,10 @@ public class TestLoadbalanceHandler {
         Mockito.when(invocation.getMicroserviceName()).thenReturn("test");
         LoadbalanceHandler lbHandler = new LoadbalanceHandler();
         LoadBalancer myLB = new LoadBalancer(serverList, rule);
-        lbHandler.setTransactionControlFilter(myLB, invocation);
+        lbHandler.setTransactionControlFilter(myLB, "test");
         Assert.assertEquals(1, myLB.getFilterSize());
-        Assert.assertTrue(myLB.containsFilter(TransactionControlFilter.class.getName()));
 
-        lbHandler.setTransactionControlFilter(myLB, invocation);
+        lbHandler.setTransactionControlFilter(myLB, "test");
         Assert.assertEquals(1, myLB.getFilterSize());
     }
 

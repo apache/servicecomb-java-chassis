@@ -19,13 +19,21 @@ package io.servicecomb.loadbalance.filter;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.configuration.AbstractConfiguration;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
+import org.mockito.Mockito;
 
+import com.netflix.config.DynamicPropertyFactory;
 import com.netflix.loadbalancer.LoadBalancerStats;
 import com.netflix.loadbalancer.Server;
+
+import io.servicecomb.config.ConfigUtil;
+import io.servicecomb.core.Invocation;
+import io.servicecomb.loadbalance.CseServer;
 
 public class TestIsolationServerListFilter {
 
@@ -33,10 +41,24 @@ public class TestIsolationServerListFilter {
 
     LoadBalancerStats loadBalancerStats = null;
 
+    @BeforeClass
+    public static void initConfig() throws Exception {
+        ConfigUtil.installDynamicConfig();
+    }
+
     @Before
     public void setUp() throws Exception {
         IsolationServerListFilter = new IsolationServerListFilter();
         loadBalancerStats = new LoadBalancerStats("loadBalancer");
+
+        AbstractConfiguration configuration =
+            (AbstractConfiguration) DynamicPropertyFactory.getBackingConfigurationSource();
+        configuration.clearProperty("cse.loadbalance.isolation.enabled");
+        configuration.addProperty("cse.loadbalance.isolation.enabled",
+                "true");
+        configuration.clearProperty("cse.loadbalance.isolation.enableRequestThreshold");
+        configuration.addProperty("cse.loadbalance.isolation.enableRequestThreshold",
+                "3");
     }
 
     @After
@@ -61,13 +83,25 @@ public class TestIsolationServerListFilter {
 
     @Test
     public void testGetFilteredListOfServers() {
+        Invocation invocation = Mockito.mock(Invocation.class);
+        CseServer testServer = Mockito.mock(CseServer.class);
+        Mockito.when(invocation.getMicroserviceName()).thenReturn("microserviceName");
+        Mockito.when(testServer.getLastVisitTime()).thenReturn(System.currentTimeMillis());
+        
         List<Server> serverList = new ArrayList<Server>();
-        serverList.add(new Server("localhost", 7001));
+        serverList.add(testServer);
         IsolationServerListFilter.setLoadBalancerStats(loadBalancerStats);
+        IsolationServerListFilter.setInvocation(invocation);
         List<Server> returnedServerList = IsolationServerListFilter.getFilteredListOfServers(serverList);
-        Assert.assertNotNull(returnedServerList);
-        Server server = returnedServerList.get(0);
-        Assert.assertEquals("localhost", server.getHost());
+        Assert.assertEquals(returnedServerList.size(), 1);
+        
+        loadBalancerStats.incrementNumRequests(testServer);
+        loadBalancerStats.incrementNumRequests(testServer);
+        loadBalancerStats.incrementNumRequests(testServer);
+        loadBalancerStats.incrementSuccessiveConnectionFailureCount(testServer);
+        returnedServerList = IsolationServerListFilter.getFilteredListOfServers(serverList);
+        Assert.assertEquals(returnedServerList.size(), 0);
+        
     }
 
 }
