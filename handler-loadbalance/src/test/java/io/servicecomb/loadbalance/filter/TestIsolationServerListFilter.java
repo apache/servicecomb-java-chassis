@@ -23,9 +23,12 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mockito;
 
 import com.netflix.loadbalancer.LoadBalancerStats;
 import com.netflix.loadbalancer.Server;
+
+import io.servicecomb.core.Invocation;
 
 public class TestIsolationServerListFilter {
 
@@ -61,9 +64,11 @@ public class TestIsolationServerListFilter {
 
     @Test
     public void testGetFilteredListOfServers() {
+        Invocation invocation = Mockito.mock(Invocation.class);
         List<Server> serverList = new ArrayList<Server>();
         serverList.add(new Server("localhost", 7001));
         IsolationServerListFilter.setLoadBalancerStats(loadBalancerStats);
+        IsolationServerListFilter.setInvocation(invocation);
         List<Server> returnedServerList = IsolationServerListFilter.getFilteredListOfServers(serverList);
         Assert.assertNotNull(returnedServerList);
         Server server = returnedServerList.get(0);

@@ -94,7 +94,7 @@ public class TestLoadbalanceHandler {
 
         Map<String, LoadBalancer> loadBalancerMap = Deencapsulation.getField(lh, "loadBalancerMap");
         LoadBalancer lb = loadBalancerMap.get("rest");
-        Assert.assertEquals(lb.getFilterSize(), 1);
+        Assert.assertEquals(lb.getFilterSize(), 2);
         Assert.assertTrue(lb.containsFilter("a"));
     }
 
@@ -282,15 +282,21 @@ public class TestLoadbalanceHandler {
         Mockito.when(invocation.getMicroserviceName()).thenReturn("test");
         LoadbalanceHandler lbHandler = new LoadbalanceHandler();
         LoadBalancer myLB = new LoadBalancer(serverList, rule);
-        lbHandler.setIsolationFilter(myLB, invocation);
+        lbHandler.setIsolationFilter(myLB, "abc");
         Assert.assertEquals(1, myLB.getFilterSize());
         Assert.assertTrue(myLB.containsFilter(IsolationServerListFilter.class.getName()));
 
         Mockito.when(invocation.getMicroserviceName()).thenReturn("abc");
         myLB = new LoadBalancer(serverList, rule);
-        lbHandler.setIsolationFilter(myLB, invocation);
-        Assert.assertEquals(0, myLB.getFilterSize());
-        Assert.assertFalse(myLB.containsFilter(IsolationServerListFilter.class.getName()));
+        lbHandler.setIsolationFilter(myLB, "abc");
+        myLB.setInvocation(invocation);
+        
+        Assert.assertEquals(1, myLB.getFilterSize());
+        Assert.assertTrue(myLB.containsFilter(IsolationServerListFilter.class.getName()));
+        Map<String, ServerListFilterExt> filters = Deencapsulation.getField(myLB, "filters");
+        List<Server> servers = new ArrayList<>();
+        servers.add(new Server(null));
+        Assert.assertEquals(servers.size(), filters.get("io.servicecomb.loadbalance.filter.IsolationServerListFilter").getFilteredListOfServers(servers).size());
     }
 
     @Test
@@ -299,11 +305,11 @@ public class TestLoadbalanceHandler {
         Mockito.when(invocation.getMicroserviceName()).thenReturn("test");
         LoadbalanceHandler lbHandler = new LoadbalanceHandler();
         LoadBalancer myLB = new LoadBalancer(serverList, rule);
-        lbHandler.setTransactionControlFilter(myLB, invocation);
+        lbHandler.setTransactionControlFilter(myLB, "test");
         Assert.assertEquals(1, myLB.getFilterSize());
         Assert.assertTrue(myLB.containsFilter(TransactionControlFilter.class.getName()));
 
-        lbHandler.setTransactionControlFilter(myLB, invocation);
+        lbHandler.setTransactionControlFilter(myLB, "test");
         Assert.assertEquals(1, myLB.getFilterSize());
     }
 
