@@ -17,13 +17,14 @@
 package io.servicecomb.loadbalance.filter;
 
 import io.servicecomb.core.Invocation;
-import com.netflix.loadbalancer.LoadBalancerStats;
-import com.netflix.loadbalancer.Server;
-import com.netflix.loadbalancer.ServerListFilter;
+import io.servicecomb.loadbalance.ServerListFilterExt;
 
-public abstract class TransactionControlFilter implements ServerListFilter<Server> {
+import com.netflix.loadbalancer.LoadBalancerStats;
+
+public abstract class TransactionControlFilter implements ServerListFilterExt {
 
     private Invocation invocation;
+
     private LoadBalancerStats stats;
 
     public void setLoadBalancerStats(LoadBalancerStats stats) {
@@ -33,6 +34,7 @@ public abstract class TransactionControlFilter implements ServerListFilter<Serve
     public LoadBalancerStats getLoadBalancerStats() {
         return stats;
     }
+
     public Invocation getInvocation() {
         return invocation;
     }
