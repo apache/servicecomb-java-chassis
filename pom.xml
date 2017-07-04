@@ -99,46 +99,23 @@
 		</dependency>
 	</dependencies>
 
-	<modules>
-		<module>parent</module>
-		<module>java-chassis-dependencies</module>
-
-		<module>foundation-ssl</module>
-		<module>foundation-common</module>
-		<module>foundation-vertx</module>
-		<module>foundation-metrics</module>
-		<module>foundation-config</module>
-
-		<module>common-javassist</module>
-		<module>swagger</module>
-
-		<module>common-protobuf</module>
-
-		<module>core</module>
-
-		<module>common-rest</module>
-		<module>transport-rest</module>
-
-		<module>transport-highway</module>
-
-		<module>handler-loadbalance</module>
-		<module>handler-bizkeeper</module>
-		<module>handler-flowcontrol-qps</module>
-
-		<module>service-registry</module>
-
-		<module>provider-jaxrs</module>
-		<module>provider-pojo</module>
-		<module>provider-springmvc</module>
-		<module>provider-rest-common</module>
-
-		<module>spring-boot-starter</module>
-		<module>demo</module>
-		<module>integration-tests</module>
-		<module>java-chassis-distribution</module>
-    <module>handlers</module>
-    <module>coverage-reports</module>
-	</modules>
+    <modules>
+        <module>parent</module>
+        <module>java-chassis-dependencies</module>
+        <module>common</module>
+        <module>foundations</module>
+        <module>handlers</module>
+        <module>providers</module>
+        <module>transports</module>
+        <module>swagger</module>
+        <module>core</module>
+        <module>service-registry</module>
+        <module>spring-boot-starter</module>
+        <module>demo</module>
+        <module>integration-tests</module>
+        <module>java-chassis-distribution</module>
+        <module>coverage-reports</module>
+    </modules>
 
     <distributionManagement>
         <repository>

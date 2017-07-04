@@ -1,4 +1,3 @@
-<?xml version="1.0" encoding="UTF-8"?>
 <!--
   ~ Copyright 2017 Huawei Technologies Co., Ltd
   ~
@@ -15,24 +14,19 @@
   ~ limitations under the License.
   -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
   <parent>
-    <artifactId>java-chassis</artifactId>
     <groupId>io.servicecomb</groupId>
+    <artifactId>java-chassis</artifactId>
     <version>0.1.0-m3-SNAPSHOT</version>
   </parent>
-  <modelVersion>4.0.0</modelVersion>
-
-  <artifactId>handlers</artifactId>
+  <artifactId>providers</artifactId>
   <packaging>pom</packaging>
-
   <modules>
-    <module>handler-tracing-zipkin</module>
-    <module>handler-bizkeeper</module>
-    <module>handler-flowcontrol-qps</module>
-    <module>handler-loadbalance</module>
+      <module>provider-jaxrs</module>
+      <module>provider-pojo</module>
+      <module>provider-rest-common</module>
+      <module>provider-springmvc</module>
   </modules>
-
 </project>
