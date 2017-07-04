@@ -51,9 +51,9 @@ public class TestPerfStatContext {
     @Test
     public void testIntializedValues() throws InterruptedException {
         initializeObject(); //Initialize the object.
-        TimeUnit.MILLISECONDS.sleep(4);
+        TimeUnit.MILLISECONDS.sleep(10); //测试结果和机器时间精度有关，在测试机器上设置为4的时候，latency为1，没有睡眠4毫秒。修改为10以后正常。
         Assert.assertEquals(10, oPerfStatContext.getMsgCount());
-        Assert.assertTrue(oPerfStatContext.getLatency() > 2);
+        Assert.assertTrue(oPerfStatContext.getLatency() > 9);
     }
 
     private void initializeObject() {
