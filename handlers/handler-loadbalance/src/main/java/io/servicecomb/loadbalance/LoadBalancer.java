@@ -42,8 +42,6 @@ public class LoadBalancer extends AbstractLoadBalancer {
     // 以filter类名为Key
     private Map<String, ServerListFilterExt> filters;
 
-    private Object lock = new Object();
-
     public LoadBalancer(CseServerList serverList, IRule rule) {
         this.serverList = serverList;
         this.rule = rule;
@@ -96,20 +94,6 @@ public class LoadBalancer extends AbstractLoadBalancer {
         return lbStats;
     }
 
-    public boolean containsFilter(String name) {
-        return filters.get(name) != null;
-    }
-
-    public void removeFilter(String name) {
-        if (filters.get(name) != null) {
-            synchronized (lock) {
-                if (filters.get(name) != null) {
-                    filters.remove(name);
-                }
-            }
-        }
-    }
-
     public void setInvocation(Invocation invocation) {
         for (ServerListFilterExt filter : filters.values()) {
             filter.setInvocation(invocation);
@@ -117,13 +101,7 @@ public class LoadBalancer extends AbstractLoadBalancer {
     }
 
     public void putFilter(String name, ServerListFilterExt filter) {
-        if (filters.get(name) == null) {
-            synchronized (lock) {
-                if (filters.get(name) == null) {
-                    filters.put(name, filter);
-                }
-            }
-        }
+        filters.put(name, filter);
     }
 
     public int getFilterSize() {

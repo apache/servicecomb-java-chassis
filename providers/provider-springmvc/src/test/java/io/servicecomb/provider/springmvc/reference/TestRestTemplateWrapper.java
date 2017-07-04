@@ -72,7 +72,6 @@ public class TestRestTemplateWrapper {
   private final String param1 = uniquify("param1");
   private final String param2 = uniquify("param2");
 
-  @SuppressWarnings("serial")
   private final Map<String, String> paramsMap = new HashMap<String, String>() {{
     put(uniquify("key1"), param1);
     put(uniquify("key2"), param2);
@@ -405,7 +404,6 @@ public class TestRestTemplateWrapper {
     verify(underlying, never()).setUriTemplateHandler(uriTemplateHandler);
   }
 
-  @SuppressWarnings("unchecked")
   @Test
   public void setMessageConvertersWithUnderlying() {
     ByteArrayHttpMessageConverter messageConverter = mock(ByteArrayHttpMessageConverter.class);
