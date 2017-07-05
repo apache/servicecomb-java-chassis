@@ -353,7 +353,7 @@ public class TestRestTemplateWrapper {
 
     assertThat(wrapper.getInterceptors(), contains(interceptor1, interceptor2));
     assertThat(wrapper.defaultRestTemplate.getInterceptors(), contains(interceptor1, interceptor2));
-    verify(underlying).setInterceptors(interceptors);
+    verify(underlying, never()).setInterceptors(interceptors);
   }
 
   @Test
