@@ -134,11 +134,6 @@ public class TestLoadBalancer {
         TransactionControlFilter filter = new SimpleTransactionControlFilter();
         loadBalancer.putFilter("test", filter);
         Assert.assertEquals(1, loadBalancer.getFilterSize());
-        Assert.assertTrue(loadBalancer.containsFilter("test"));
-
-        loadBalancer.removeFilter("test");
-        Assert.assertEquals(0, loadBalancer.getFilterSize());
-        Assert.assertFalse(loadBalancer.containsFilter("test"));
     }
 
     @Test

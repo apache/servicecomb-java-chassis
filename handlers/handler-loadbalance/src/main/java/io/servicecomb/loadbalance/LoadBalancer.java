@@ -26,6 +26,8 @@ import com.netflix.loadbalancer.LoadBalancerStats;
 import com.netflix.loadbalancer.Server;
 import com.netflix.loadbalancer.ServerListFilter;
 
+import io.servicecomb.core.Invocation;
+
 /**
  * 实现不包含服务器状态监测的负载均衡器。（这些职责在注册中心客户端实现）
  *
@@ -38,9 +40,7 @@ public class LoadBalancer extends AbstractLoadBalancer {
     private LoadBalancerStats lbStats;
 
     // 以filter类名为Key
-    private Map<String, ServerListFilter<Server>> filters;
-
-    private Object lock = new Object();
+    private Map<String, ServerListFilterExt> filters;
 
     public LoadBalancer(CseServerList serverList, IRule rule) {
         this.serverList = serverList;
@@ -94,28 +94,14 @@ public class LoadBalancer extends AbstractLoadBalancer {
         return lbStats;
     }
 
-    public boolean containsFilter(String name) {
-        return filters.get(name) != null;
-    }
-
-    public void removeFilter(String name) {
-        if (filters.get(name) != null) {
-            synchronized (lock) {
-                if (filters.get(name) != null) {
-                    filters.remove(name);
-                }
-            }
+    public void setInvocation(Invocation invocation) {
+        for (ServerListFilterExt filter : filters.values()) {
+            filter.setInvocation(invocation);
         }
     }
 
-    public void putFilter(String name, ServerListFilter<Server> filter) {
-        if (filters.get(name) == null) {
-            synchronized (lock) {
-                if (filters.get(name) == null) {
-                    filters.put(name, filter);
-                }
-            }
-        }
+    public void putFilter(String name, ServerListFilterExt filter) {
+        filters.put(name, filter);
     }
 
     public int getFilterSize() {

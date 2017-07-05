@@ -20,16 +20,18 @@ import java.util.ArrayList;
 import java.util.List;
 
 import io.servicecomb.loadbalance.CseServer;
+import io.servicecomb.loadbalance.ServerListFilterExt;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import io.servicecomb.core.Invocation;
 import io.servicecomb.loadbalance.Configuration;
 import com.netflix.loadbalancer.LoadBalancerStats;
 import com.netflix.loadbalancer.Server;
-import com.netflix.loadbalancer.ServerListFilter;
 import com.netflix.loadbalancer.ServerStats;
 
-public final class IsolationServerListFilter implements ServerListFilter<Server> {
+public final class IsolationServerListFilter implements ServerListFilterExt {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(IsolationServerListFilter.class);
 
@@ -43,7 +45,13 @@ public final class IsolationServerListFilter implements ServerListFilter<Server>
 
     private long enableRequestThreshold;
 
+    private Invocation invocation;
+
     private LoadBalancerStats stats;
+
+    public void setInvocation(Invocation invocation) {
+        this.invocation = invocation;
+    }
 
     public void setLoadBalancerStats(LoadBalancerStats stats) {
         this.stats = stats;
@@ -63,6 +71,10 @@ public final class IsolationServerListFilter implements ServerListFilter<Server>
 
     @Override
     public List<Server> getFilteredListOfServers(List<Server> servers) {
+        if(!Configuration.INSTANCE.isIsolationFilterOpen(invocation.getMicroserviceName())) {
+            return servers;
+        }
+
         List<Server> filteredServers = new ArrayList<Server>();
         for (Server server : servers) {
             if (allowVisit(server)) {

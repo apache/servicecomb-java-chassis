@@ -90,6 +90,7 @@ public class LoadbalanceHandler extends AbstractHandler {
             synchronized (lock) {
                 lb = loadBalancerMap.get(transportName);
                 if (null == lb) {
+                    // 只能使用微服务级别的属性，因为LoadBalancer实例是按照{微服务+transport}的个数创建的。
                     lb = createLoadBalancer(invocation.getAppId(),
                             invocation.getMicroserviceName(),
                             invocation.getMicroserviceVersionRule(),
@@ -99,12 +100,10 @@ public class LoadbalanceHandler extends AbstractHandler {
             }
         }
 
+        // invocation是请求级别的，因此每次调用都需要设置一次
+        lb.setInvocation(invocation);
         final LoadBalancer choosenLB = lb;
 
-        loadServerListFilters(choosenLB, invocation);
-        // tow lines below is for compatibility, will remove in future
-        setIsolationFilter(choosenLB, invocation);
-        setTransactionControlFilter(choosenLB, invocation);
 
         if (!Configuration.INSTANCE.isRetryEnabled(invocation.getMicroserviceName())) {
             send(invocation, asyncResp, choosenLB);
@@ -113,30 +112,18 @@ public class LoadbalanceHandler extends AbstractHandler {
         }
     }
 
-    protected void setIsolationFilter(LoadBalancer lb, Invocation invocation) {
+    protected void setIsolationFilter(LoadBalancer lb, String microserviceName) {
         final String filterName = IsolationServerListFilter.class.getName();
-        boolean isIsolationOpen = Configuration.INSTANCE.isIsolationFilterOpen(invocation.getMicroserviceName());
-        if (!isIsolationOpen) {
-            lb.removeFilter(filterName);
-            return;
-        }
-        if (lb.containsFilter(filterName)) {
-            return;
-        }
         IsolationServerListFilter isolationListFilter = new IsolationServerListFilter();
-        isolationListFilter.setMicroserviceName(invocation.getMicroserviceName());
+        isolationListFilter.setMicroserviceName(microserviceName);
         isolationListFilter.setLoadBalancerStats(lb.getLoadBalancerStats());
         lb.putFilter(filterName, isolationListFilter);
     }
 
-    protected void setTransactionControlFilter(LoadBalancer lb, Invocation invocation) {
+    protected void setTransactionControlFilter(LoadBalancer lb, String microserviceName) {
         final String filterName = TransactionControlFilter.class.getName();
-        String policyClsName = Configuration.INSTANCE.getFlowsplitFilterPolicy(invocation.getMicroserviceName());
+        String policyClsName = Configuration.INSTANCE.getFlowsplitFilterPolicy(microserviceName);
         if (policyClsName.isEmpty()) {
-            lb.removeFilter(filterName);
-            return;
-        }
-        if (lb.containsFilter(filterName)) {
             return;
         }
         try {
@@ -149,7 +136,6 @@ public class LoadbalanceHandler extends AbstractHandler {
                 throw new Error(errMsg);
             }
             TransactionControlFilter transactionControlFilter = (TransactionControlFilter) policyCls.newInstance();
-            transactionControlFilter.setInvocation(invocation);
             transactionControlFilter.setLoadBalancerStats(lb.getLoadBalancerStats());
             lb.putFilter(filterName, transactionControlFilter);
         } catch (Throwable e) {
@@ -305,27 +291,37 @@ public class LoadbalanceHandler extends AbstractHandler {
         IRule rule;
         try {
             rule = (IRule) Class.forName(policy, true, Thread.currentThread().getContextClassLoader()).newInstance();
-            LOGGER.info("Using loadbalance rule [{}] for service [{},{}].", policy, microserviceName, transportName);
+            LOGGER.info("Using loadbalance rule [{}] for service [{},{}].",
+                    policy,
+                    microserviceName,
+                    microserviceVersionRule);
         } catch (InstantiationException | IllegalAccessException | ClassNotFoundException e) {
             LOGGER.warn("Loadbalance rule [{}] is incorrect, using default RoundRobinRule.", policy);
             rule = new RoundRobinRule();
         }
 
-        CseServerList serverList = new CseServerList(appId, microserviceName, microserviceVersionRule, transportName);
+        CseServerList serverList = new CseServerList(appId, microserviceName,
+                microserviceVersionRule, transportName);
         LoadBalancer lb = new LoadBalancer(serverList, rule);
+
+        loadServerListFilters(lb);
+        // tow lines below is for compatibility, will remove in future
+        setIsolationFilter(lb, microserviceName);
+        setTransactionControlFilter(lb, microserviceName);
+
         return lb;
     }
 
-    private void loadServerListFilters(LoadBalancer lb, Invocation invocation) {
+    private void loadServerListFilters(LoadBalancer lb) {
         String filterNames = Configuration.getStringProperty(null, Configuration.SERVER_LIST_FILTERS);
         if (!StringUtils.isEmpty(filterNames)) {
             for (String filter : filterNames.split(",")) {
-                loadFilter(filter, lb, invocation);
+                loadFilter(filter, lb);
             }
         }
     }
 
-    private void loadFilter(String filter, LoadBalancer lb, Invocation invocation) {
+    private void loadFilter(String filter, LoadBalancer lb) {
         String className = Configuration.getStringProperty(null,
                 String.format(Configuration.SERVER_LIST_FILTER_CLASS_HOLDER, filter));
         if (!StringUtils.isEmpty(className)) {
@@ -334,7 +330,6 @@ public class LoadbalanceHandler extends AbstractHandler {
                 if (ServerListFilterExt.class.isAssignableFrom(filterClass)) {
                     ServerListFilterExt ext = (ServerListFilterExt) filterClass.newInstance();
                     ext.setName(filter);
-                    ext.setInvocation(invocation);
                     ext.setLoadBalancer(lb);
                     lb.putFilter(filter, ext);
                 }
