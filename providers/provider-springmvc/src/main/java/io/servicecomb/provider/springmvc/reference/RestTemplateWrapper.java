@@ -284,7 +284,6 @@ class RestTemplateWrapper extends RestTemplate {
     @Override
     public void setInterceptors(List<ClientHttpRequestInterceptor> interceptors) {
         super.setInterceptors(interceptors);
-        acceptableRestTemplates.forEach(template -> template.setInterceptors(interceptors));
         defaultRestTemplate.setInterceptors(interceptors);
     }
 
