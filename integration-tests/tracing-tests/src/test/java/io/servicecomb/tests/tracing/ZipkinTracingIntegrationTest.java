@@ -32,6 +32,7 @@ import static org.junit.Assert.assertThat;
 import static org.springframework.http.HttpStatus.OK;
 
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
+import com.seanyinx.github.unit.scaffolding.Poller;
 import io.servicecomb.tests.EmbeddedAppender;
 import io.servicecomb.tests.Log4jConfig;
 import java.net.URL;
@@ -49,6 +50,7 @@ public class ZipkinTracingIntegrationTest {
   @ClassRule
   public static final WireMockRule wireMockRule = new WireMockRule(9411);
   private static final EmbeddedAppender appender = new EmbeddedAppender();
+  private static final Poller poller = new Poller(10000, 200);
   private final RestTemplate restTemplate = new RestTemplate();
 
   @BeforeClass
@@ -107,7 +109,15 @@ public class ZipkinTracingIntegrationTest {
       assertThat(childSpanId, is(not(parentTraceId)));
     }
 
-    verify(exactly(2), postRequestedFor(urlEqualTo("/api/v1/spans")));
+    poller.assertEventually(() -> {
+          try {
+            verify(exactly(2), postRequestedFor(urlEqualTo("/api/v1/spans")));
+            return true;
+          } catch (Exception e) {
+            return false;
+          }
+        }
+    );
   }
 
   private String[] tracingIds(String message) {
