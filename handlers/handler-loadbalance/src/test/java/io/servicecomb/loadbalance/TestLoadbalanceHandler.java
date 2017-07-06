@@ -103,13 +103,6 @@ public class TestLoadbalanceHandler {
         Assert.assertEquals(lb.getFilterSize(), 2);
     }
 
-    @AfterClass
-    public static void tearDown() throws Exception {
-        Deencapsulation.setField(ConfigurationManager.class, "instance", null);
-        Deencapsulation.setField(ConfigurationManager.class, "customConfigurationInstalled", false);
-        Deencapsulation.setField(DynamicPropertyFactory.class, "config", null);
-    }
-
     @Test
     public void testLoadbalanceHandlerHandleWithSend() throws Exception {
 
