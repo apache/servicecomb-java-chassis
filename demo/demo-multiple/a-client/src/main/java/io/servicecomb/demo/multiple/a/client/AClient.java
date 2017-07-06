@@ -13,25 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.servicecomb.demo.multiple.client;
+
+package io.servicecomb.demo.multiple.a.client;
+
+import org.springframework.stereotype.Component;
 
 import io.servicecomb.demo.TestMgr;
-import io.servicecomb.demo.multiple.a.client.AClient;
-import io.servicecomb.demo.multiple.b.client.BClient;
-import io.servicecomb.foundation.common.utils.BeanUtils;
-import io.servicecomb.foundation.common.utils.Log4jUtils;
+import io.servicecomb.provider.pojo.RpcReference;
 
-public class MultipleClient {
-    public static void main(String[] args) throws Exception {
-        Log4jUtils.init();
-        BeanUtils.init();
+@Component
+public class AClient {
+    @RpcReference(microserviceName = "${a-server.name}", schemaId = "a-hello")
+    private AIntf intf;
 
-        AClient aClient = BeanUtils.getContext().getBean(AClient.class);
-        BClient bClient = BeanUtils.getContext().getBean(BClient.class);
-
-        aClient.run();
-        bClient.run();
-
-        TestMgr.summary();
+    public void run() {
+        String result = intf.hello("serviceComb");
+        TestMgr.check("a hello serviceComb", result);
     }
 }
