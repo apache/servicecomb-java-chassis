@@ -67,9 +67,6 @@ public class MicroserviceMetaManager extends RegisterManager<String, Microservic
                 if (microserviceMeta == null) {
                     microserviceMeta = new MicroserviceMeta(microserviceName);
                     register(microserviceName, microserviceMeta);
-                    if (!microserviceName.equals(microserviceMeta.getShortName())) {
-                        register(microserviceMeta.getShortName(), microserviceMeta);
-                    }
                 }
             }
         }
