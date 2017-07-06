@@ -1,4 +1,4 @@
-APPLICATION_ID: jaxrstest
+APPLICATION_ID: jaxrstest-it
 service_description:
   name: jaxrs
   version: 0.0.2
