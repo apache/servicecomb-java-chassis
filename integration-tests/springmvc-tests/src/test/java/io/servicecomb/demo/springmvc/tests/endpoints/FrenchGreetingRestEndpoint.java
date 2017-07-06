@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package io.servicecomb.demo.springmvc.tests;
+package io.servicecomb.demo.springmvc.tests.endpoints;
 
 import static org.springframework.http.MediaType.TEXT_PLAIN_VALUE;
 
@@ -24,19 +24,13 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-@RestSchema(schemaId = "englishGreetingRestEndpoint")
-@RequestMapping(path = "/")
-public class EnglishGreetingRestEndpoint {
+@RestSchema(schemaId = "frenchGreetingRestEndpoint")
+@RequestMapping(path = "/french")
+public class FrenchGreetingRestEndpoint {
 
-  @RequestMapping(path = "/sayHi", method = RequestMethod.GET, produces = TEXT_PLAIN_VALUE)
+  @RequestMapping(path = "/bonjour", method = RequestMethod.GET, produces = TEXT_PLAIN_VALUE)
   @ResponseBody
-  public String sayHi(@RequestParam("name") String name) {
-    return "Hi " + name;
-  }
-
-  @RequestMapping(path = "", method = RequestMethod.GET, produces = TEXT_PLAIN_VALUE)
-  @ResponseBody
-  public String home() {
-    return "Welcome home";
+  public String bonjour(@RequestParam("name") String name) {
+    return "Bonjour " + name;
   }
 }
