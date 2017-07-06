@@ -15,18 +15,24 @@
  */
 package io.servicecomb.provider.pojo.reference;
 
-import io.servicecomb.core.provider.CseBeanPostProcessor.ConsumerFieldProcessor;
-import io.servicecomb.provider.pojo.RpcReference;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
+
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.EmbeddedValueResolverAware;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ReflectionUtils;
+import org.springframework.util.StringValueResolver;
+
+import io.servicecomb.core.provider.CseBeanPostProcessor.ConsumerFieldProcessor;
+import io.servicecomb.provider.pojo.RpcReference;
 
 @Component
-public class PojoConsumers implements ConsumerFieldProcessor {
+public class PojoConsumers implements ConsumerFieldProcessor, EmbeddedValueResolverAware {
     private final List<PojoReferenceMeta> consumerList = new ArrayList<>();
+
+    private StringValueResolver resolver;
 
     public void addPojoReferenceMeta(PojoReferenceMeta meta) {
         consumerList.add(meta);
@@ -46,10 +52,18 @@ public class PojoConsumers implements ConsumerFieldProcessor {
         handleReferenceField(bean, field, reference);
     }
 
+    @Override
+    public void setEmbeddedValueResolver(StringValueResolver resolver) {
+        this.resolver = resolver;
+    }
+
     private void handleReferenceField(Object obj, Field field,
             RpcReference reference) {
+        String microserviceName = reference.microserviceName();
+        microserviceName = resolver.resolveStringValue(microserviceName);
+
         PojoReferenceMeta pojoReference = new PojoReferenceMeta();
-        pojoReference.setMicroserviceName(reference.microserviceName());
+        pojoReference.setMicroserviceName(microserviceName);
         pojoReference.setSchemaId(reference.schemaId());
         pojoReference.setConsumerIntf(field.getType());
 
