@@ -27,15 +27,4 @@
 
   <artifactId>springmvc-tests</artifactId>
 
-  <dependencies>
-    <dependency>
-      <groupId>io.servicecomb.demo</groupId>
-      <artifactId>demo-schema</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>io.servicecomb</groupId>
-      <artifactId>provider-springmvc</artifactId>
-    </dependency>
-  </dependencies>
-
 </project>
