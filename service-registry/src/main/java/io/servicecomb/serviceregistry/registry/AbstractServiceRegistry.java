@@ -46,9 +46,9 @@ import io.servicecomb.serviceregistry.task.event.ShutdownEvent;
 public abstract class AbstractServiceRegistry implements ServiceRegistry {
     private static final Logger LOGGER = LoggerFactory.getLogger(AbstractServiceRegistry.class);
 
-    protected EventBus eventBus;
+    private MicroserviceFactory microserviceFactory = new MicroserviceFactory();
 
-    protected MicroserviceManager microserviceManager = new MicroserviceManager();
+    protected EventBus eventBus;
 
     protected InstanceCacheManager instanceCacheManager;
 
@@ -93,9 +93,6 @@ public abstract class AbstractServiceRegistry implements ServiceRegistry {
         eventBus.register(this);
     }
 
-    public MicroserviceManager getMicroserviceManager() {
-        return microserviceManager;
-    }
 
     @Override
     public ServiceRegistryClient getServiceRegistryClient() {
@@ -133,24 +130,19 @@ public abstract class AbstractServiceRegistry implements ServiceRegistry {
 
     private void loadStaticConfiguration() {
         // TODO 如果yaml定义了paths规则属性，替换默认值，现需要DynamicPropertyFactory支持数组获取
-        for (Microservice microservice : microserviceManager.getMicroservices()) {
-            List<BasePath> paths = microservice.getPaths();
-            for (BasePath path : paths) {
-                if (path.getProperty() == null) {
-                    path.setProperty(new HashMap<>());
-                }
-                path.getProperty().put(Const.PATH_CHECKSESSION, "false");
+        List<BasePath> paths = microservice.getPaths();
+        for (BasePath path : paths) {
+            if (path.getProperty() == null) {
+                path.setProperty(new HashMap<>());
             }
+            path.getProperty().put(Const.PATH_CHECKSESSION, "false");
         }
     }
 
     private void createServiceCenterTask() {
-        serviceCenterTask = new ServiceCenterTask(eventBus, serviceRegistryConfig);
-        for (Microservice microservice : microserviceManager.getMicroservices()) {
-            MicroserviceServiceCenterTask task =
-                new MicroserviceServiceCenterTask(eventBus, serviceRegistryConfig, srClient, microservice);
-            serviceCenterTask.addMicroserviceTask(task);
-        }
+        MicroserviceServiceCenterTask task =
+            new MicroserviceServiceCenterTask(eventBus, serviceRegistryConfig, srClient, microservice);
+        serviceCenterTask = new ServiceCenterTask(eventBus, serviceRegistryConfig, task);
     }
 
     @Subscribe
@@ -172,16 +164,7 @@ public abstract class AbstractServiceRegistry implements ServiceRegistry {
     }
 
     public boolean unregsiterInstance() {
-        for (Microservice microservice : microserviceManager.getMicroservices()) {
-            if (!unregsiterInstance(microservice.getIntance())) {
-                return false;
-            }
-        }
-
-        return true;
-    }
-
-    public boolean unregsiterInstance(MicroserviceInstance microserviceInstance) {
+        MicroserviceInstance microserviceInstance = microservice.getIntance();
         boolean result = srClient.unregisterMicroserviceInstance(microserviceInstance.getServiceId(),
                 microserviceInstance.getInstanceId());
         if (!result) {
@@ -198,8 +181,6 @@ public abstract class AbstractServiceRegistry implements ServiceRegistry {
 
     public List<MicroserviceInstance> findServiceInstance(String appId, String serviceName,
             String versionRule) {
-        // TODO:只能任选本进程中的一个微服务，这会导致依赖关系不准确
-        Microservice microservice = microserviceManager.getDefaultMicroserviceForce();
         List<MicroserviceInstance> instances = srClient.findServiceInstance(microservice.getServiceId(),
                 appId,
                 serviceName,
@@ -224,17 +205,6 @@ public abstract class AbstractServiceRegistry implements ServiceRegistry {
 
     @Override
     public boolean updateMicroserviceProperties(Map<String, String> properties) {
-        Microservice microservice = microserviceManager.getDefaultMicroservice();
-        return updateMicroserviceProperties(microservice, properties);
-    }
-
-    @Override
-    public boolean updateMicroserviceProperties(String microserviceName, Map<String, String> properties) {
-        Microservice microservice = microserviceManager.ensureFindMicroservice(microserviceName);
-        return updateMicroserviceProperties(microservice, properties);
-    }
-
-    public boolean updateMicroserviceProperties(Microservice microservice, Map<String, String> properties) {
         boolean success = srClient.updateMicroserviceProperties(microservice.getServiceId(),
                 properties);
         if (success) {
@@ -243,20 +213,7 @@ public abstract class AbstractServiceRegistry implements ServiceRegistry {
         return success;
     }
 
-    // update microservice instance properties
-    // if there are multiple microservice, then throw exception
     public boolean updateInstanceProperties(Map<String, String> instanceProperties) {
-        Microservice microservice = microserviceManager.getDefaultMicroservice();
-        return updateInstanceProperties(microservice, instanceProperties);
-    }
-
-    public boolean updateInstanceProperties(String microserviceName, Map<String, String> instanceProperties) {
-        Microservice microservice = microserviceManager.ensureFindMicroservice(microserviceName);
-        return updateInstanceProperties(microservice, instanceProperties);
-    }
-
-    public boolean updateInstanceProperties(Microservice microservice,
-            Map<String, String> instanceProperties) {
         MicroserviceInstance microserviceInstance = microservice.getIntance();
         boolean success = srClient.updateInstanceProperties(microserviceInstance.getServiceId(),
                 microserviceInstance.getInstanceId(),
@@ -272,11 +229,11 @@ public abstract class AbstractServiceRegistry implements ServiceRegistry {
     }
 
     public Microservice getMicroservice() {
-        return microserviceManager.getDefaultMicroservice();
+        return microservice;
     }
 
     public MicroserviceInstance getMicroserviceInstance() {
-        return microserviceManager.getDefaultMicroserviceInstance();
+        return microservice.getIntance();
     }
 
     public void destory() {

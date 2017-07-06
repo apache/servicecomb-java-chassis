@@ -35,7 +35,7 @@ public class TestInstanceCacheManager {
     @Test
     public void testInstanceUpdate() {
         ServiceRegistry serviceRegistry = ServiceRegistryFactory.createLocal();
-        Microservice microservice = serviceRegistry.getMicroserviceManager().addMicroservice("default", "ms");
+        Microservice microservice = serviceRegistry.getMicroservice();
         serviceRegistry.init();
         InstanceCacheManager oInstanceCacheManager = serviceRegistry.getInstanceCacheManager();
 

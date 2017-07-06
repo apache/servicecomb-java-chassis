@@ -49,7 +49,7 @@ public class CodeFirstRestTemplateSpringmvc extends CodeFirstRestTemplate {
     private void testIntf() {
         Date date = new Date();
 
-        String srcName = RegistryUtils.getMicroserviceManager().getDefaultMicroserviceForce().getServiceName();
+        String srcName = RegistryUtils.getMicroservice().getServiceName();
 
         ResponseEntity<Date> responseEntity = intf.responseEntity(date);
         TestMgr.check(date, responseEntity.getBody());
@@ -72,7 +72,7 @@ public class CodeFirstRestTemplateSpringmvc extends CodeFirstRestTemplate {
         CseHttpEntity<Map<String, Object>> httpEntity = new CseHttpEntity<>(body);
         httpEntity.addContext("contextKey", "contextValue");
 
-        String srcName = RegistryUtils.getMicroserviceManager().getDefaultMicroserviceForce().getServiceName();
+        String srcName = RegistryUtils.getMicroservice().getServiceName();
 
         ResponseEntity<Date> responseEntity =
             template.exchange(cseUrlPrefix + "responseEntity", HttpMethod.POST, httpEntity, Date.class);

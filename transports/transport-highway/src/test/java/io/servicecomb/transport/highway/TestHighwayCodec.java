@@ -80,7 +80,6 @@ public class TestHighwayCodec {
     @Before
     public void setUp() throws Exception {
         ServiceRegistry serviceRegistry = ServiceRegistryFactory.createLocal();
-        serviceRegistry.getMicroserviceManager().addMicroservice("app", "ms");
         serviceRegistry.init();
         RegistryUtils.setServiceRegistry(serviceRegistry);
 

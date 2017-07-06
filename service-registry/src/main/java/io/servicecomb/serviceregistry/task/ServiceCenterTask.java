@@ -15,8 +15,6 @@
  */
 package io.servicecomb.serviceregistry.task;
 
-import java.util.HashSet;
-import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import com.google.common.eventbus.EventBus;
@@ -30,10 +28,9 @@ public class ServiceCenterTask implements Runnable {
 
     private ServiceRegistryConfig serviceRegistryConfig;
 
-    private CompositeTask compositeTask = new CompositeTask();
+    private MicroserviceServiceCenterTask microserviceServiceCenterTask;
 
-    // microservice name
-    private Set<String> registerInstanceSuccessMap = new HashSet<>();
+    private boolean registerInstanceSuccess = false;
 
     private volatile boolean running = true;
 
@@ -44,9 +41,11 @@ public class ServiceCenterTask implements Runnable {
 
     private int interval;
 
-    public ServiceCenterTask(EventBus eventBus, ServiceRegistryConfig serviceRegistryConfig) {
+    public ServiceCenterTask(EventBus eventBus, ServiceRegistryConfig serviceRegistryConfig,
+            MicroserviceServiceCenterTask microserviceServiceCenterTask) {
         this.eventBus = eventBus;
         this.serviceRegistryConfig = serviceRegistryConfig;
+        this.microserviceServiceCenterTask = microserviceServiceCenterTask;
 
         this.eventBus.register(this);
     }
@@ -63,33 +62,24 @@ public class ServiceCenterTask implements Runnable {
     @Subscribe
     public void onHeartbeatEvent(MicroserviceInstanceHeartbeatTask task) {
         if (task.isNeedRegisterInstance()) {
-            registerInstanceSuccessMap.remove(task.getMicroservice().getServiceName());
+            registerInstanceSuccess = false;
             registerRetryCount = 0;
         }
     }
 
     @Subscribe
     public void onInstanceRegisterEvent(MicroserviceInstanceRegisterTask task) {
-        if (task.isRegistered()) {
-            registerInstanceSuccessMap.add(task.getMicroservice().getServiceName());
-        } else {
-            registerInstanceSuccessMap.remove(task.getMicroservice().getServiceName());
-            registerRetryCount = 0;
-        }
-    }
-
-    public void addMicroserviceTask(MicroserviceServiceCenterTask task) {
-        compositeTask.addTask(task);
+        registerInstanceSuccess = task.isRegistered();
     }
 
     public void init() {
-        compositeTask.run();
+        microserviceServiceCenterTask.run();
     }
 
     @Override
     public void run() {
         while (running) {
-            compositeTask.run();
+            microserviceServiceCenterTask.run();
 
             calcSleepInterval();
             try {
@@ -101,7 +91,7 @@ public class ServiceCenterTask implements Runnable {
     }
 
     public void calcSleepInterval() {
-        if (registerInstanceSuccessMap.size() == compositeTask.getTaskCount()) {
+        if (registerInstanceSuccess) {
             interval = serviceRegistryConfig.getHeartbeatInterval();
             return;
         }

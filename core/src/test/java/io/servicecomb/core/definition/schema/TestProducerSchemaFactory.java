@@ -17,6 +17,7 @@ package io.servicecomb.core.definition.schema;
 
 import javax.xml.ws.Holder;
 
+import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -33,6 +34,9 @@ import io.servicecomb.core.definition.loader.SchemaLoader;
 import io.servicecomb.core.unittest.UnitTestMeta;
 import io.servicecomb.foundation.common.utils.BeanUtils;
 import io.servicecomb.foundation.common.utils.ReflectUtils;
+import io.servicecomb.serviceregistry.RegistryUtils;
+import io.servicecomb.serviceregistry.ServiceRegistry;
+import io.servicecomb.serviceregistry.registry.ServiceRegistryFactory;
 import io.servicecomb.swagger.engine.SwaggerEnvironment;
 import io.servicecomb.swagger.engine.SwaggerProducerOperation;
 import io.servicecomb.swagger.engine.bootstrap.BootstrapNormal;
@@ -59,6 +63,9 @@ public class TestProducerSchemaFactory {
 
     @BeforeClass
     public static void init() {
+        ServiceRegistry serviceRegistry = ServiceRegistryFactory.createLocal();
+        RegistryUtils.setServiceRegistry(serviceRegistry);
+
         ConverterMgr converterMgr = new ConverterMgr();
         ProducerResponseMapperFactory responseMapperFactory = new ProducerResponseMapperFactory();
         responseMapperFactory.setConverterMgr(converterMgr);
@@ -89,6 +96,11 @@ public class TestProducerSchemaFactory {
                 "schema",
                 TestProducerSchemaFactoryImpl.class,
                 new TestProducerSchemaFactoryImpl());
+    }
+
+    @AfterClass
+    public static void teardown() {
+        RegistryUtils.setServiceRegistry(null);
     }
 
     @Test

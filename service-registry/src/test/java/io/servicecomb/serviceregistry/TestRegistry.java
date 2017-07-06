@@ -18,24 +18,12 @@ package io.servicecomb.serviceregistry;
 
 import static io.servicecomb.serviceregistry.RegistryUtils.PUBLISH_ADDRESS;
 
-import com.netflix.config.ConcurrentCompositeConfiguration;
-import com.netflix.config.ConcurrentMapConfiguration;
-import com.netflix.config.ConfigurationManager;
-import com.netflix.config.DynamicPropertyFactory;
-import com.netflix.config.DynamicStringProperty;
-import io.servicecomb.config.ConfigUtil;
-import io.servicecomb.foundation.common.net.NetUtils;
-import io.servicecomb.serviceregistry.api.registry.Microservice;
-import io.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
-import io.servicecomb.serviceregistry.registry.ServiceRegistryFactory;
 import java.net.InetAddress;
 import java.net.URI;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import mockit.Deencapsulation;
-import mockit.Expectations;
-import mockit.Mocked;
+
 import org.apache.commons.configuration.AbstractConfiguration;
 import org.junit.AfterClass;
 import org.junit.Assert;
@@ -43,6 +31,21 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mockito.Mockito;
+
+import com.netflix.config.ConcurrentCompositeConfiguration;
+import com.netflix.config.ConcurrentMapConfiguration;
+import com.netflix.config.ConfigurationManager;
+import com.netflix.config.DynamicPropertyFactory;
+import com.netflix.config.DynamicStringProperty;
+
+import io.servicecomb.config.ConfigUtil;
+import io.servicecomb.foundation.common.net.NetUtils;
+import io.servicecomb.serviceregistry.api.registry.Microservice;
+import io.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
+import io.servicecomb.serviceregistry.registry.ServiceRegistryFactory;
+import mockit.Deencapsulation;
+import mockit.Expectations;
+import mockit.Mocked;
 
 public class TestRegistry {
     private static final AbstractConfiguration inMemoryConfig = new ConcurrentMapConfiguration();
@@ -83,7 +86,6 @@ public class TestRegistry {
         Assert.assertEquals(serviceRegistry.getInstanceCacheManager(), RegistryUtils.getInstanceCacheManager());
         Assert.assertEquals(serviceRegistry.getInstanceVersionCacheManager(),
                 RegistryUtils.getInstanceVersionCacheManager());
-        Assert.assertEquals(serviceRegistry.getMicroserviceManager(), RegistryUtils.getMicroserviceManager());
 
         Microservice microservice = RegistryUtils.getMicroservice();
         Assert.assertEquals(serviceRegistry.getMicroservice(), microservice);

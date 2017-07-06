@@ -56,14 +56,7 @@ public class PojoProducerProvider extends AbstractProducerProvider {
         for (PojoProducerMeta pojoProducerMeta : pojoProducers.getProcucers()) {
             initPojoProducerMeta(pojoProducerMeta);
 
-            Microservice microservice = RegistryUtils.getServiceRegistry()
-                    .getMicroserviceManager()
-                    .findMicroservice(pojoProducerMeta.getInstanceClass());
-            if (microservice == null) {
-                throw new IllegalStateException(
-                        "can not find microservice, producer class=" + pojoProducerMeta.getInstanceClass().getName());
-            }
-
+            Microservice microservice = RegistryUtils.getMicroservice();
             try {
                 producerSchemaFactory.getOrCreateProducerSchema(
                         microservice.getServiceName(),

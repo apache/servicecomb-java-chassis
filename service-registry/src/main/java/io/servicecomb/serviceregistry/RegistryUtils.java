@@ -89,12 +89,8 @@ public final class RegistryUtils {
         return serviceRegistry.getInstanceVersionCacheManager();
     }
 
-    public static MicroserviceManager getMicroserviceManager() {
-        return serviceRegistry.getMicroserviceManager();
-    }
-
     public static String getAppId() {
-        return serviceRegistry.getMicroserviceManager().getAppId();
+        return serviceRegistry.getMicroservice().getAppId();
     }
 
     public static Microservice getMicroservice() {
@@ -208,13 +204,8 @@ public final class RegistryUtils {
     }
 
     // update microservice instance properties
-    // if there are multiple microservice, then throw exception
     public static boolean updateInstanceProperties(Map<String, String> instanceProperties) {
         return serviceRegistry.updateInstanceProperties(instanceProperties);
-    }
-
-    public static boolean updateInstanceProperties(String microserviceName, Map<String, String> instanceProperties) {
-        return serviceRegistry.updateInstanceProperties(microserviceName, instanceProperties);
     }
 
     public static Microservice getMicroservice(String microserviceId) {

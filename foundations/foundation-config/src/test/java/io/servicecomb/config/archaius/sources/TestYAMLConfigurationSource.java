@@ -34,7 +34,6 @@ import com.netflix.config.ConcurrentMapConfiguration;
 import com.netflix.config.DynamicConfiguration;
 import com.netflix.config.PollResult;
 
-import io.servicecomb.config.ConfigUtil;
 import io.servicecomb.config.archaius.scheduler.NeverStartPollingScheduler;
 
 /**
@@ -66,11 +65,8 @@ public class TestYAMLConfigurationSource {
         Map<String, Object> configMap = result.getComplete();
 
         assertEquals(3, configSource.getConfigModels().size());
-        assertEquals(false, ConfigUtil.isAdditionalConfig(configSource.getConfigModels().get(0)));
-        assertEquals(true, ConfigUtil.isAdditionalConfig(configSource.getConfigModels().get(1)));
-        assertEquals(true, ConfigUtil.isAdditionalConfig(configSource.getConfigModels().get(2)));
         assertNotNull(configMap);
-        assertEquals(31, configMap.size());
+        assertEquals(30, configMap.size());
         assertNotNull(configMap.get("trace.handler.sampler.percent"));
         assertEquals(0.5, configMap.get("trace.handler.sampler.percent"));
 

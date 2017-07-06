@@ -43,13 +43,11 @@ public class ProducerProviderManager {
             provider.init();
         }
 
-        for (Microservice microservice : RegistryUtils.getMicroserviceManager().getMicroservices()) {
-            MicroserviceMeta microserviceMeta = microserviceMetaManager.getOrCreateMicroserviceMeta(microservice);
-
-            for (SchemaMeta schemaMeta : microserviceMeta.getSchemaMetas()) {
-                String content = SchemaUtils.swaggerToString(schemaMeta.getSwagger());
-                microservice.addSchema(schemaMeta.getSchemaId(), content);
-            }
+        Microservice microservice = RegistryUtils.getMicroservice();
+        MicroserviceMeta microserviceMeta = microserviceMetaManager.getOrCreateMicroserviceMeta(microservice);
+        for (SchemaMeta schemaMeta : microserviceMeta.getSchemaMetas()) {
+            String content = SchemaUtils.swaggerToString(schemaMeta.getSwagger());
+            microservice.addSchema(schemaMeta.getSchemaId(), content);
         }
     }
 }
