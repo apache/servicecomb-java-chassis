@@ -16,10 +16,23 @@
 
 package io.servicecomb.serviceregistry.config;
 
+import org.junit.AfterClass;
 import org.junit.Assert;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
+import io.servicecomb.serviceregistry.ArchaiusUtils;
+
 public class TestServiceRegistryConfig {
+    @BeforeClass
+    public static void initClass() {
+        ArchaiusUtils.resetConfig();
+    }
+
+    @AfterClass
+    public static void teardownClass() {
+        ArchaiusUtils.resetConfig();
+    }
 
     @Test
     public void testServiceRegistryConfig() {

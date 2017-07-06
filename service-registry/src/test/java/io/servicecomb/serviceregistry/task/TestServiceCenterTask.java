@@ -15,11 +15,15 @@
  */
 package io.servicecomb.serviceregistry.task;
 
+import org.junit.AfterClass;
 import org.junit.Assert;
+import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import com.google.common.eventbus.EventBus;
 
+import io.servicecomb.serviceregistry.ArchaiusUtils;
 import io.servicecomb.serviceregistry.api.registry.Microservice;
 import io.servicecomb.serviceregistry.client.ServiceRegistryClient;
 import io.servicecomb.serviceregistry.config.ServiceRegistryConfig;
@@ -35,6 +39,17 @@ public class TestServiceCenterTask {
     private MicroserviceServiceCenterTask microserviceServiceCenterTask;
 
     private ServiceCenterTask serviceCenterTask;
+
+    @BeforeClass
+    public static void initClass() {
+        ArchaiusUtils.resetConfig();
+    }
+
+    @AfterClass
+    public static void teardownClass() {
+        ArchaiusUtils.resetConfig();
+    }
+
     @Before
     public void init() {
         serviceCenterTask =
