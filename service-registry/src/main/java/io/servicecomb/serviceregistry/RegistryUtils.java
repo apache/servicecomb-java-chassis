@@ -34,11 +34,11 @@ import io.servicecomb.foundation.common.net.IpPort;
 import io.servicecomb.foundation.common.net.NetUtils;
 import io.servicecomb.serviceregistry.api.registry.Microservice;
 import io.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
-import io.servicecomb.serviceregistry.api.registry.MicroserviceManager;
 import io.servicecomb.serviceregistry.cache.InstanceCacheManager;
 import io.servicecomb.serviceregistry.cache.InstanceVersionCacheManager;
 import io.servicecomb.serviceregistry.client.ServiceRegistryClient;
 import io.servicecomb.serviceregistry.config.ServiceRegistryConfig;
+import io.servicecomb.serviceregistry.definition.MicroserviceDefinition;
 import io.servicecomb.serviceregistry.registry.ServiceRegistryFactory;
 
 public final class RegistryUtils {
@@ -57,7 +57,9 @@ public final class RegistryUtils {
     public static void init() {
         EventBus eventBus = new EventBus();
         MicroserviceConfigLoader loader = ConfigUtil.getMicroserviceConfigLoader();
-        serviceRegistry = ServiceRegistryFactory.getOrCreate(eventBus, ServiceRegistryConfig.INSTANCE, loader);
+        MicroserviceDefinition microserviceDefinition = new MicroserviceDefinition(loader.getConfigModels());
+        serviceRegistry =
+            ServiceRegistryFactory.getOrCreate(eventBus, ServiceRegistryConfig.INSTANCE, microserviceDefinition);
         serviceRegistry.init();
     }
 

@@ -24,22 +24,24 @@ import org.junit.Test;
 
 import io.servicecomb.config.archaius.sources.MicroserviceConfigLoader;
 import io.servicecomb.serviceregistry.definition.DefinitionConst;
+import io.servicecomb.serviceregistry.definition.MicroserviceDefinition;
+import mockit.Deencapsulation;
 
-public class TestMicroserviceManager {
+public class TestMicroserviceFactory {
     @Test
     public void testAllowCrossApp() {
-        MicroserviceManager mgr = new MicroserviceManager();
+        MicroserviceFactory factory = new MicroserviceFactory();
         Map<String, String> propertiesMap = new HashMap<>();
-        Assert.assertFalse(mgr.allowCrossApp(propertiesMap));
+        Assert.assertFalse(Deencapsulation.invoke(factory, "allowCrossApp", propertiesMap));
 
         propertiesMap.put(DefinitionConst.allowCrossAppKey, "true");
-        Assert.assertTrue(mgr.allowCrossApp(propertiesMap));
+        Assert.assertTrue(Deencapsulation.invoke(factory, "allowCrossApp", propertiesMap));
 
         propertiesMap.put(DefinitionConst.allowCrossAppKey, "false");
-        Assert.assertFalse(mgr.allowCrossApp(propertiesMap));
+        Assert.assertFalse(Deencapsulation.invoke(factory, "allowCrossApp", propertiesMap));
 
         propertiesMap.put(DefinitionConst.allowCrossAppKey, "asfas");
-        Assert.assertFalse(mgr.allowCrossApp(propertiesMap));
+        Assert.assertFalse(Deencapsulation.invoke(factory, "allowCrossApp", propertiesMap));
     }
 
     @Test
@@ -47,14 +49,12 @@ public class TestMicroserviceManager {
         MicroserviceConfigLoader loader = new MicroserviceConfigLoader();
         loader.loadAndSort();
 
-        MicroserviceManager mgr = new MicroserviceManager();
-        mgr.init(loader);
+        MicroserviceDefinition microserviceDefinition = new MicroserviceDefinition(loader.getConfigModels());
+        MicroserviceFactory factory = new MicroserviceFactory();
+        Microservice microservice = factory.create(microserviceDefinition);
 
         String microserviceName = "default";
 
-        Assert.assertEquals(1, mgr.getMicroservices().size());
-        Assert.assertEquals(microserviceName, mgr.getDefaultMicroservice().getServiceName());
-        Assert.assertEquals(microserviceName, mgr.findMicroservice(microserviceName).getServiceName());
-        Assert.assertEquals(DefinitionConst.defaultStage, mgr.getDefaultMicroserviceInstance().getStage());
+        Assert.assertEquals(microserviceName, microservice.getServiceName());
     }
 }

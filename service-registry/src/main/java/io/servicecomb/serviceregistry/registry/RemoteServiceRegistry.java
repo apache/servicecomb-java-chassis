@@ -17,15 +17,15 @@ package io.servicecomb.serviceregistry.registry;
 
 import com.google.common.eventbus.EventBus;
 
-import io.servicecomb.config.archaius.sources.MicroserviceConfigLoader;
 import io.servicecomb.serviceregistry.client.ServiceRegistryClient;
 import io.servicecomb.serviceregistry.client.http.ServiceRegistryClientImpl;
 import io.servicecomb.serviceregistry.config.ServiceRegistryConfig;
+import io.servicecomb.serviceregistry.definition.MicroserviceDefinition;
 
 public class RemoteServiceRegistry extends AbstractServiceRegistry {
     public RemoteServiceRegistry(EventBus eventBus, ServiceRegistryConfig serviceRegistryConfig,
-            MicroserviceConfigLoader loader) {
-        super(eventBus, serviceRegistryConfig, loader);
+            MicroserviceDefinition microserviceDefinition) {
+        super(eventBus, serviceRegistryConfig, microserviceDefinition);
     }
 
     protected ServiceRegistryClient createServiceRegistryClient() {
