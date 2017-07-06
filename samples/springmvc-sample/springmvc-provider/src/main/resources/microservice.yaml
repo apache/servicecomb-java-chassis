@@ -1,4 +1,4 @@
-APPLICATION_ID: springmvctest
+APPLICATION_ID: springmvc-sample
 service_description:
   name: springmvc
   version: 0.0.1
