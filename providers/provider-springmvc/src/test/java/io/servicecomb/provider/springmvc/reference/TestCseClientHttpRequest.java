@@ -66,7 +66,7 @@ public class TestCseClientHttpRequest {
 
         Holder<Invocation> holder = new Holder<>();
         CseClientHttpRequest client =
-            new CseClientHttpRequest(URI.create("cse://test/" + SpringmvcImpl.class.getSimpleName() + "/bytes"),
+            new CseClientHttpRequest(URI.create("cse://app:test/" + SpringmvcImpl.class.getSimpleName() + "/bytes"),
                     HttpMethod.POST) {
 
                 /**

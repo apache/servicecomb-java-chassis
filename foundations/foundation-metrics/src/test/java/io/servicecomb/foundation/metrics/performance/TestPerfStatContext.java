@@ -16,12 +16,13 @@
 
 package io.servicecomb.foundation.metrics.performance;
 
-import java.util.concurrent.TimeUnit;
-
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+
+import mockit.Mock;
+import mockit.MockUp;
 
 /**
  *
@@ -50,15 +51,22 @@ public class TestPerfStatContext {
 
     @Test
     public void testIntializedValues() throws InterruptedException {
-        initializeObject(); //Initialize the object.
-        TimeUnit.MILLISECONDS.sleep(4);
-        Assert.assertEquals(10, oPerfStatContext.getMsgCount());
-        Assert.assertTrue(oPerfStatContext.getLatency() > 2);
-    }
-
-    private void initializeObject() {
+        new MockUp<System>() {
+            int count = 0;
+            
+            @Mock
+            public long currentTimeMillis() {
+                if(count == 0) {
+                    count ++;
+                    return 10;
+                } else {
+                    return 20;
+                }
+            }
+        };
+        PerfStatContext oPerfStatContext = new PerfStatContext();
         oPerfStatContext.setMsgCount(10);
-
+        Assert.assertEquals(10, oPerfStatContext.getMsgCount());
+        Assert.assertEquals(10, oPerfStatContext.getLatency());
     }
-
 }
