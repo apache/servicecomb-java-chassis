@@ -23,20 +23,16 @@ import org.junit.Test;
 
 import com.google.common.eventbus.EventBus;
 
-import io.servicecomb.config.archaius.sources.MicroserviceConfigLoader;
 import io.servicecomb.serviceregistry.ServiceRegistry;
 import io.servicecomb.serviceregistry.api.registry.Microservice;
-import io.servicecomb.serviceregistry.config.ServiceRegistryConfig;
 import io.servicecomb.serviceregistry.task.event.ExceptionEvent;
 import io.servicecomb.serviceregistry.task.event.RecoveryEvent;
 
 public class TestLocalServiceRegistry {
     @Test
     public void testCacheAvaiable() {
-        EventBus eventBus = new EventBus();
-        ServiceRegistryConfig serviceRegistryConfig = ServiceRegistryConfig.INSTANCE;
-        MicroserviceConfigLoader loader = new MicroserviceConfigLoader();
-        AbstractServiceRegistry serviceRegistry = new LocalServiceRegistry(eventBus, serviceRegistryConfig, loader);
+        AbstractServiceRegistry serviceRegistry = (AbstractServiceRegistry) ServiceRegistryFactory.createLocal();
+        EventBus eventBus = serviceRegistry.getEventBus();
         serviceRegistry.init();
 
         Assert.assertEquals(false, serviceRegistry.cacheAvaiable);
@@ -73,30 +69,6 @@ public class TestLocalServiceRegistry {
         properties.put("k", "v");
 
         try {
-            serviceRegistry.updateMicroserviceProperties("notExist", properties);
-            Assert.fail("must throw exception");
-        } catch (IllegalArgumentException e) {
-            Assert.assertEquals("microservice notExist is not exist.", e.getMessage());
-        }
-        try {
-            serviceRegistry.getServiceRegistryClient().updateMicroserviceProperties("notExist", properties);
-            Assert.fail("must throw exception");
-        } catch (IllegalArgumentException e) {
-            Assert.assertEquals("Invalid serviceId, serviceId=notExist", e.getMessage());
-        }
-        try {
-            serviceRegistry.updateInstanceProperties("notExist", properties);
-            Assert.fail("must throw exception");
-        } catch (IllegalArgumentException e) {
-            Assert.assertEquals("microservice notExist is not exist.", e.getMessage());
-        }
-        try {
-            serviceRegistry.getServiceRegistryClient().updateInstanceProperties("notExist", null, properties);
-            Assert.fail("must throw exception");
-        } catch (IllegalArgumentException e) {
-            Assert.assertEquals("Invalid serviceId, serviceId=notExist", e.getMessage());
-        }
-        try {
             serviceRegistry.getServiceRegistryClient().updateInstanceProperties(microservice.getServiceId(),
                     "notExist",
                     properties);
@@ -112,9 +84,9 @@ public class TestLocalServiceRegistry {
         Assert.assertEquals(properties, microservice.getIntance().getProperties());
 
         properties.put("k1", "v1");
-        serviceRegistry.updateMicroserviceProperties("default", properties);
+        serviceRegistry.updateMicroserviceProperties(properties);
         Assert.assertEquals(properties, microservice.getProperties());
-        serviceRegistry.updateInstanceProperties("default", properties);
+        serviceRegistry.updateInstanceProperties(properties);
         Assert.assertEquals(properties, microservice.getIntance().getProperties());
     }
 

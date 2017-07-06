@@ -26,7 +26,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import io.servicecomb.serviceregistry.api.registry.Microservice;
-import io.servicecomb.serviceregistry.api.registry.MicroserviceManager;
+import io.servicecomb.serviceregistry.api.registry.MicroserviceFactory;
 import io.servicecomb.serviceregistry.client.ClientException;
 import io.servicecomb.serviceregistry.client.IpPortManager;
 import io.servicecomb.serviceregistry.config.ServiceRegistryConfig;
@@ -69,8 +69,8 @@ public class TestServiceRegistryClientImpl {
 
     @Test
     public void testPrivateMehtodCreateHttpClientOptions() {
-        MicroserviceManager microserviceManager = new MicroserviceManager();
-        Microservice microservice = microserviceManager.addMicroservice("app", "ms");
+        MicroserviceFactory microserviceFactory = new MicroserviceFactory();
+        Microservice microservice = microserviceFactory.create("app", "ms");
         oClient.registerMicroservice(microservice);
         oClient.registerMicroserviceInstance(microservice.getIntance());
         new MockUp<ServiceRegistryConfig>() {
@@ -96,8 +96,8 @@ public class TestServiceRegistryClientImpl {
 
     @Test
     public void testException() {
-        MicroserviceManager microserviceManager = new MicroserviceManager();
-        Microservice microservice = microserviceManager.addMicroservice("app", "ms");
+        MicroserviceFactory microserviceFactory = new MicroserviceFactory();
+        Microservice microservice = microserviceFactory.create("app", "ms");
         Assert.assertEquals(null, oClient.registerMicroservice(microservice));
         Assert.assertEquals(null, oClient.registerMicroserviceInstance(microservice.getIntance()));
         oClient.init();

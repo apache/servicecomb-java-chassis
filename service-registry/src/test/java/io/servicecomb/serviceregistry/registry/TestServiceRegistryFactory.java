@@ -16,17 +16,19 @@
 
 package io.servicecomb.serviceregistry.registry;
 
+import java.util.Collections;
+
 import org.junit.Assert;
 import org.junit.Test;
 
 import com.google.common.eventbus.EventBus;
 
-import io.servicecomb.config.archaius.sources.MicroserviceConfigLoader;
 import io.servicecomb.serviceregistry.ServiceRegistry;
 import io.servicecomb.serviceregistry.client.LocalServiceRegistryClientImpl;
 import io.servicecomb.serviceregistry.client.ServiceRegistryClient;
 import io.servicecomb.serviceregistry.client.http.ServiceRegistryClientImpl;
 import io.servicecomb.serviceregistry.config.ServiceRegistryConfig;
+import io.servicecomb.serviceregistry.definition.MicroserviceDefinition;
 import mockit.Deencapsulation;
 
 /**
@@ -37,28 +39,30 @@ public class TestServiceRegistryFactory {
     public void testGetRemoteRegistryClient() {
         EventBus eventBus = new EventBus();
         ServiceRegistryConfig serviceRegistryConfig = ServiceRegistryConfig.INSTANCE;
-        MicroserviceConfigLoader loader = new MicroserviceConfigLoader();
+        MicroserviceDefinition microserviceDefinition = new MicroserviceDefinition(Collections.emptyList());
 
-        ServiceRegistry serviceRegistry = ServiceRegistryFactory.create(eventBus, serviceRegistryConfig, loader);
+        ServiceRegistry serviceRegistry =
+            ServiceRegistryFactory.create(eventBus, serviceRegistryConfig, microserviceDefinition);
         serviceRegistry.init();
         ServiceRegistryClient client = serviceRegistry.getServiceRegistryClient();
         Assert.assertTrue(client instanceof ServiceRegistryClientImpl);
+
         serviceRegistry = ServiceRegistryFactory.getOrCreate(eventBus,
                 serviceRegistryConfig,
-                loader);
+                microserviceDefinition);
         Assert.assertTrue(serviceRegistry instanceof RemoteServiceRegistry);
         Assert.assertEquals(serviceRegistry, ServiceRegistryFactory.getServiceRegistry());
 
         Deencapsulation.setField(ServiceRegistryFactory.class, "serviceRegistry", null);
 
         System.setProperty("local.registry.file", "/tmp/test.yaml");
-        serviceRegistry = ServiceRegistryFactory.create(eventBus, serviceRegistryConfig, loader);
+        serviceRegistry = ServiceRegistryFactory.create(eventBus, serviceRegistryConfig, microserviceDefinition);
         serviceRegistry.init();
         client = serviceRegistry.getServiceRegistryClient();
         Assert.assertTrue(client instanceof LocalServiceRegistryClientImpl);
         Assert.assertTrue(ServiceRegistryFactory.getOrCreate(eventBus,
                 serviceRegistryConfig,
-                loader) instanceof LocalServiceRegistry);
+                microserviceDefinition) instanceof LocalServiceRegistry);
         System.clearProperty("local.registry.file");
     }
 }

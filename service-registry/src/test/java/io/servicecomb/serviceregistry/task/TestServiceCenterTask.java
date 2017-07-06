@@ -29,11 +29,20 @@ import mockit.Expectations;
 import mockit.Mocked;
 
 public class TestServiceCenterTask {
+    private EventBus eventBus = new EventBus();
+
+    @Mocked
+    private MicroserviceServiceCenterTask microserviceServiceCenterTask;
+
+    private ServiceCenterTask serviceCenterTask;
+    @Before
+    public void init() {
+        serviceCenterTask =
+            new ServiceCenterTask(eventBus, ServiceRegistryConfig.INSTANCE, microserviceServiceCenterTask);
+    }
+
     @Test
     public void testLifeCycle() {
-        EventBus eventBus = new EventBus();
-
-        ServiceCenterTask serviceCenterTask = new ServiceCenterTask(eventBus, ServiceRegistryConfig.INSTANCE);
         serviceCenterTask.init();
 
         eventBus.post(new ShutdownEvent());
@@ -43,14 +52,7 @@ public class TestServiceCenterTask {
     @Test
     public void testCalcSleepInterval(@Mocked ServiceRegistryClient srClient,
             @Mocked Microservice microservice, @Mocked MicroserviceInstanceHeartbeatTask heartbeatTask,
-            @Mocked MicroserviceInstanceRegisterTask registerTask, @Mocked MicroserviceServiceCenterTask centerTask) {
-        EventBus eventBus = new EventBus();
-
-        ServiceCenterTask serviceCenterTask = new ServiceCenterTask(eventBus, ServiceRegistryConfig.INSTANCE);
-        serviceCenterTask.calcSleepInterval();
-        Assert.assertEquals(30, serviceCenterTask.getInterval());
-
-        serviceCenterTask.addMicroserviceTask(centerTask);
+            @Mocked MicroserviceInstanceRegisterTask registerTask) {
         serviceCenterTask.calcSleepInterval();
         Assert.assertEquals(1, serviceCenterTask.getInterval());
         serviceCenterTask.calcSleepInterval();
@@ -104,11 +106,11 @@ public class TestServiceCenterTask {
 
         new Expectations() {
             {
-                registerTask.isRegistered();
-                result = false;
+                heartbeatTask.isNeedRegisterInstance();
+                result = true;
             }
         };
-        eventBus.post(registerTask);
+        eventBus.post(heartbeatTask);
         serviceCenterTask.calcSleepInterval();
         Assert.assertEquals(1, serviceCenterTask.getInterval());
     }

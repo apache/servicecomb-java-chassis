@@ -26,6 +26,7 @@ import io.servicecomb.config.archaius.sources.MicroserviceConfigLoader;
 import io.servicecomb.serviceregistry.ServiceRegistry;
 import io.servicecomb.serviceregistry.client.LocalServiceRegistryClientImpl;
 import io.servicecomb.serviceregistry.config.ServiceRegistryConfig;
+import io.servicecomb.serviceregistry.definition.MicroserviceDefinition;
 
 /**
  * Created by   on 2017/3/31.
@@ -45,11 +46,11 @@ public final class ServiceRegistryFactory {
     }
 
     public static ServiceRegistry getOrCreate(EventBus eventBus, ServiceRegistryConfig serviceRegistryConfig,
-            MicroserviceConfigLoader loader) {
+            MicroserviceDefinition microserviceDefinition) {
         if (serviceRegistry == null) {
             synchronized (LOCK) {
                 if (serviceRegistry == null) {
-                    serviceRegistry = create(eventBus, serviceRegistryConfig, loader);
+                    serviceRegistry = create(eventBus, serviceRegistryConfig, microserviceDefinition);
                 }
             }
         }
@@ -62,21 +63,22 @@ public final class ServiceRegistryFactory {
         MicroserviceConfigLoader loader = new MicroserviceConfigLoader();
         loader.loadAndSort();
 
-        return new LocalServiceRegistry(eventBus, serviceRegistryConfig, loader);
+        MicroserviceDefinition microserviceDefinition = new MicroserviceDefinition(loader.getConfigModels());
+        return new LocalServiceRegistry(eventBus, serviceRegistryConfig, microserviceDefinition);
     }
 
     public static ServiceRegistry create(EventBus eventBus, ServiceRegistryConfig serviceRegistryConfig,
-            MicroserviceConfigLoader loader) {
+            MicroserviceDefinition microserviceDefinition) {
         String localModeFile = System.getProperty(LocalServiceRegistryClientImpl.LOCAL_REGISTRY_FILE_KEY);
         if (!StringUtils.isEmpty(localModeFile)) {
             LOGGER.info(
                     "It is running in the local development mode, the local file {} is using as the local registry",
                     localModeFile);
 
-            return new LocalServiceRegistry(eventBus, serviceRegistryConfig, loader);
+            return new LocalServiceRegistry(eventBus, serviceRegistryConfig, microserviceDefinition);
         }
 
         LOGGER.info("It is running in the normal mode, a separated service registry is required");
-        return new RemoteServiceRegistry(eventBus, serviceRegistryConfig, loader);
+        return new RemoteServiceRegistry(eventBus, serviceRegistryConfig, microserviceDefinition);
     }
 }

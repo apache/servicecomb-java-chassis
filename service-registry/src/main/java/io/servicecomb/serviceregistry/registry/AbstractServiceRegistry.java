@@ -18,6 +18,7 @@ package io.servicecomb.serviceregistry.registry;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,18 +26,18 @@ import org.slf4j.LoggerFactory;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 
-import io.servicecomb.config.archaius.sources.MicroserviceConfigLoader;
 import io.servicecomb.serviceregistry.ServiceRegistry;
 import io.servicecomb.serviceregistry.api.Const;
 import io.servicecomb.serviceregistry.api.registry.BasePath;
 import io.servicecomb.serviceregistry.api.registry.Microservice;
+import io.servicecomb.serviceregistry.api.registry.MicroserviceFactory;
 import io.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
-import io.servicecomb.serviceregistry.api.registry.MicroserviceManager;
 import io.servicecomb.serviceregistry.cache.InstanceCacheManager;
 import io.servicecomb.serviceregistry.cache.InstanceVersionCacheManager;
 import io.servicecomb.serviceregistry.client.IpPortManager;
 import io.servicecomb.serviceregistry.client.ServiceRegistryClient;
 import io.servicecomb.serviceregistry.config.ServiceRegistryConfig;
+import io.servicecomb.serviceregistry.definition.MicroserviceDefinition;
 import io.servicecomb.serviceregistry.task.MicroserviceServiceCenterTask;
 import io.servicecomb.serviceregistry.task.ServiceCenterTask;
 import io.servicecomb.serviceregistry.task.event.ExceptionEvent;
@@ -49,6 +50,10 @@ public abstract class AbstractServiceRegistry implements ServiceRegistry {
     private MicroserviceFactory microserviceFactory = new MicroserviceFactory();
 
     protected EventBus eventBus;
+
+    protected MicroserviceDefinition microserviceDefinition;
+
+    protected Microservice microservice;
 
     protected InstanceCacheManager instanceCacheManager;
 
@@ -64,19 +69,17 @@ public abstract class AbstractServiceRegistry implements ServiceRegistry {
 
     // any exeption event will set cache not avaiable, but not clear cache
     // any recovery event will clear cache
+    //
+    // TODO: clear cache is not good, maybe cause no cache data can be used
+    //       it's better to replace the old cache by the new cache, if can't get new cache, then always use old cache.
     protected boolean cacheAvaiable;
 
     public AbstractServiceRegistry(EventBus eventBus, ServiceRegistryConfig serviceRegistryConfig,
-            MicroserviceConfigLoader loader) {
+            MicroserviceDefinition microserviceDefinition) {
         this.eventBus = eventBus;
         this.serviceRegistryConfig = serviceRegistryConfig;
-
-        microserviceManager.init(loader);
-
-        // temp compatible
-        //        if (microserviceManager.getMicroservices().size() > 1) {
-        //            throw new IllegalArgumentException("only support one microservice.");
-        //        }
+        this.microserviceDefinition = microserviceDefinition;
+        this.microservice = microserviceFactory.create(microserviceDefinition);
     }
 
     @Override
@@ -93,6 +96,14 @@ public abstract class AbstractServiceRegistry implements ServiceRegistry {
         eventBus.register(this);
     }
 
+    public EventBus getEventBus() {
+        return eventBus;
+    }
+
+    @Override
+    public Set<String> getCombinedMicroserviceNames() {
+        return microserviceDefinition.getCombinedFrom();
+    }
 
     @Override
     public ServiceRegistryClient getServiceRegistryClient() {

@@ -37,6 +37,8 @@ public interface DefinitionConst {
 
     String defaultAppId = "default";
 
+    String defaultMicroserviceName = "defaultMicroservice";
+
     String defaultVersion = "1.0.0";
 
     String defaultStage = "prod";
