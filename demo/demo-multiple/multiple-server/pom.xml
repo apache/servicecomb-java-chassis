@@ -14,7 +14,7 @@
   ~ See the License for the specific language governing permissions and
   ~ limitations under the License.
   -->
-  
+
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
@@ -27,19 +27,11 @@
 	<dependencies>
 		<dependency>
 			<groupId>io.servicecomb.demo</groupId>
-			<artifactId>pojo-server</artifactId>
+			<artifactId>a-server</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>io.servicecomb.demo</groupId>
-			<artifactId>jaxrs-server</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>io.servicecomb.demo</groupId>
-			<artifactId>springmvc-server</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>io.servicecomb.demo</groupId>
-			<artifactId>crossapp-server</artifactId>
+			<artifactId>b-server</artifactId>
 		</dependency>
 	</dependencies>
 
@@ -49,44 +41,38 @@
 	<build>
 		<plugins>
 			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-dependency-plugin</artifactId>
-			</plugin>
-			<plugin>
 				<groupId>com.github.odavid.maven.plugins</groupId>
 				<artifactId>mixin-maven-plugin</artifactId>
 				<configuration>
 					<mixins>
 						<mixin>
 							<groupId>io.servicecomb.demo</groupId>
-							<artifactId>docker-run-config</artifactId>
+							<artifactId>docker-build-config</artifactId>
 							<version>0.1.0-m3-SNAPSHOT</version>
 						</mixin>
 					</mixins>
 				</configuration>
 			</plugin>
+
 		</plugins>
 	</build>
 
 	<profiles>
 		<profile>
 			<id>docker</id>
-			<properties>
-				<demo.service.name>jaxrs-server</demo.service.name>
-				<demo.vm.options>
-					-Dcse.highway.address=0.0.0.0:7070
-					-Dcse.rest.address=0.0.0.0:8080
-					-Dcse.grpc.address=0.0.0.0:9090
-				</demo.vm.options>
-			</properties>
 			<build>
 				<plugins>
 					<plugin>
 						<groupId>io.fabric8</groupId>
 						<artifactId>docker-maven-plugin</artifactId>
 					</plugin>
+					<plugin>
+						<groupId>org.commonjava.maven.plugins</groupId>
+						<artifactId>directory-maven-plugin</artifactId>
+					</plugin>
 				</plugins>
 			</build>
 		</profile>
 	</profiles>
+
 </project>

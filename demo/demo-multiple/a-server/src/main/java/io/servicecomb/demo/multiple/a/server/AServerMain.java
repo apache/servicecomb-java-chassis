@@ -13,25 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.servicecomb.demo.multiple.client;
 
-import io.servicecomb.demo.TestMgr;
-import io.servicecomb.demo.multiple.a.client.AClient;
-import io.servicecomb.demo.multiple.b.client.BClient;
+package io.servicecomb.demo.multiple.a.server;
+
 import io.servicecomb.foundation.common.utils.BeanUtils;
 import io.servicecomb.foundation.common.utils.Log4jUtils;
 
-public class MultipleClient {
+public class AServerMain {
     public static void main(String[] args) throws Exception {
         Log4jUtils.init();
         BeanUtils.init();
-
-        AClient aClient = BeanUtils.getContext().getBean(AClient.class);
-        BClient bClient = BeanUtils.getContext().getBean(BClient.class);
-
-        aClient.run();
-        bClient.run();
-
-        TestMgr.summary();
     }
 }
