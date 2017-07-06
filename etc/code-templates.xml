@@ -19,19 +19,19 @@
   <template autoinsert="false" context="filecomment_context" deleted="false"
     description="Comment for created Java files" enabled="true"
     id="org.eclipse.jdt.ui.text.codetemplates.filecomment" name="filecomment">/*&#13;
-    * Copyright 2017 Huawei Technologies Co., Ltd&#13;
-    *&#13;
-    * Licensed under the Apache License, Version 2.0 (the "License");&#13;
-    * you may not use this file except in compliance with the License.&#13;
-    * You may obtain a copy of the License at&#13;
-    *&#13;
-    * http://www.apache.org/licenses/LICENSE-2.0&#13;
-    *&#13;
-    * Unless required by applicable law or agreed to in writing, software&#13;
-    * distributed under the License is distributed on an "AS IS" BASIS,&#13;
-    * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.&#13;
-    * See the License for the specific language governing permissions and&#13;
-    * limitations under the License.&#13;
-    */
+ * Copyright 2017 Huawei Technologies Co., Ltd&#13;
+ *&#13;
+ * Licensed under the Apache License, Version 2.0 (the "License");&#13;
+ * you may not use this file except in compliance with the License.&#13;
+ * You may obtain a copy of the License at&#13;
+ *&#13;
+ * http://www.apache.org/licenses/LICENSE-2.0&#13;
+ *&#13;
+ * Unless required by applicable law or agreed to in writing, software&#13;
+ * distributed under the License is distributed on an "AS IS" BASIS,&#13;
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.&#13;
+ * See the License for the specific language governing permissions and&#13;
+ * limitations under the License.&#13;
+ */
   </template>
 </templates>
