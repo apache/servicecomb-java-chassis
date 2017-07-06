@@ -22,8 +22,6 @@ import java.util.Map;
 public class ConfigModel {
     private URL url;
 
-    private String rootPath;
-
     private int order;
 
     private Map<String, Object> config;
@@ -34,14 +32,6 @@ public class ConfigModel {
 
     public void setUrl(URL url) {
         this.url = url;
-    }
-
-    public String getRootPath() {
-        return rootPath;
-    }
-
-    public void setRootPath(String rootPath) {
-        this.rootPath = rootPath;
     }
 
     public int getOrder() {

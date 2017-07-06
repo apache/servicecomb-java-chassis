@@ -33,9 +33,6 @@ import io.servicecomb.config.archaius.sources.ConfigModel;
 public class MicroserviceDefinition {
     private static final Logger LOGGER = LoggerFactory.getLogger(MicroserviceDefinition.class);
 
-    // microservice.yaml root path
-    // if need to find microservice by root path, then rootPath must not be empty
-    private String rootPath;
 
     private List<ConfigModel> configModels;
 
@@ -70,7 +67,6 @@ public class MicroserviceDefinition {
             throw new IllegalArgumentException("configModels can not be null or empty.");
         }
 
-        this.rootPath = configModels.get(0).getRootPath();
         this.configModels = configModels;
         this.configuration = ConfigUtil.createConfig(configModels);
         this.microserviceName = configuration.getString(DefinitionConst.qulifiedServiceNameKey);
@@ -97,14 +93,9 @@ public class MicroserviceDefinition {
                 pathList.add(configModel.getUrl().toString());
             }
         }
-        LOGGER.info("load microservice config, name={}, rootPath={}, paths={}",
+        LOGGER.info("load microservice config, name={}, paths={}",
                 microserviceName,
-                rootPath,
                 pathList);
-    }
-
-    public String getRootPath() {
-        return rootPath;
     }
 
     public List<ConfigModel> getConfigModels() {

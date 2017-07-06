@@ -48,9 +48,8 @@ public class TransportManager {
                 Endpoint endpoint = transport.getPublishEndpoint();
                 if (endpoint != null && endpoint.getEndpoint() != null) {
                     LOGGER.info("endpoint to publish: {}", endpoint.getEndpoint());
-                    for (Microservice microservice : RegistryUtils.getMicroserviceManager().getMicroservices()) {
-                        microservice.getIntance().getEndpoints().add(endpoint.getEndpoint());
-                    }
+                    Microservice microservice = RegistryUtils.getMicroservice();
+                    microservice.getIntance().getEndpoints().add(endpoint.getEndpoint());
                 }
                 continue;
             }

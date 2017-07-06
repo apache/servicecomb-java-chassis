@@ -33,7 +33,6 @@ public class TestInvocationFactory {
     @BeforeClass
     public static void setUp() {
         ServiceRegistry serviceRegistry = ServiceRegistryFactory.createLocal();
-        serviceRegistry.getMicroserviceManager().addMicroservice("pojotest", "test");
         serviceRegistry.init();
         RegistryUtils.setServiceRegistry(serviceRegistry);
     }
@@ -43,7 +42,7 @@ public class TestInvocationFactory {
             @Injectable OperationMeta operationMeta) {
         Invocation invocation =
             InvocationFactory.forConsumer(referenceConfig, operationMeta, new String[] {"a", "b"});
-        Assert.assertEquals(invocation.getContext(Const.SRC_MICROSERVICE), "test");
+        Assert.assertEquals("perfClient", invocation.getContext(Const.SRC_MICROSERVICE));
     }
 
     @Test
@@ -51,14 +50,14 @@ public class TestInvocationFactory {
             @Injectable SchemaMeta schemaMeta) {
         Invocation invocation =
             InvocationFactory.forConsumer(referenceConfig, schemaMeta, "test", new String[] {"a", "b"});
-        Assert.assertEquals(invocation.getContext(Const.SRC_MICROSERVICE), "test");
+        Assert.assertEquals("perfClient", invocation.getContext(Const.SRC_MICROSERVICE));
     }
 
     @Test
     public void testInvocationFactoryforConsumer(@Injectable ReferenceConfig referenceConfig) {
         Invocation invocation =
             InvocationFactory.forConsumer(referenceConfig, "test", new String[] {"a", "b"});
-        Assert.assertEquals(invocation.getContext(Const.SRC_MICROSERVICE), "test");
+        Assert.assertEquals("perfClient", invocation.getContext(Const.SRC_MICROSERVICE));
     }
 
     @Test

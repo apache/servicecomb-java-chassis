@@ -36,8 +36,6 @@ public interface ServiceRegistry {
 
     Microservice getMicroservice();
 
-    MicroserviceManager getMicroserviceManager();
-
     MicroserviceInstance getMicroserviceInstance();
 
     InstanceCacheManager getInstanceCacheManager();
@@ -49,11 +47,7 @@ public interface ServiceRegistry {
 
     boolean updateMicroserviceProperties(Map<String, String> properties);
 
-    boolean updateMicroserviceProperties(String microserviceName, Map<String, String> properties);
-
     boolean updateInstanceProperties(Map<String, String> instanceProperties);
-
-    boolean updateInstanceProperties(String microserviceName, Map<String, String> instanceProperties);
 
     Microservice getRemoteMicroservice(String microserviceId);
 }

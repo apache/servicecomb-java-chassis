@@ -25,8 +25,6 @@ import java.util.Map;
 
 import org.springframework.util.ResourceUtils;
 
-import io.servicecomb.foundation.common.utils.FileUtils;
-
 public abstract class AbstractConfigLoader {
     protected String orderKey = "config-order";
 
@@ -34,10 +32,10 @@ public abstract class AbstractConfigLoader {
         this.orderKey = orderKey;
     }
 
-    protected final List<ConfigModel> configModelList = new ArrayList<>();
+    protected final List<ConfigModel> configModels = new ArrayList<>();
 
     public List<ConfigModel> getConfigModels() {
-        return configModelList;
+        return configModels;
     }
 
     public void load(String resourceName) throws IOException {
@@ -47,19 +45,16 @@ public abstract class AbstractConfigLoader {
     protected void loadFromClassPath(String resourceName) throws IOException {
         List<URL> urlList = findURLFromClassPath(resourceName);
         for (URL url : urlList) {
-            ConfigModel configModel = load(url, resourceName);
-            configModelList.add(configModel);
+            ConfigModel configModel = load(url);
+            configModels.add(configModel);
         }
     }
 
-    public ConfigModel load(URL url, String resourceName) throws IOException {
+    public ConfigModel load(URL url) throws IOException {
         Map<String, Object> config = loadData(url);
 
         ConfigModel configModel = new ConfigModel();
         configModel.setUrl(url);
-        if (resourceName != null) {
-            configModel.setRootPath(FileUtils.findRootPath(url, resourceName));
-        }
         configModel.setConfig(config);
         Object objOrder = config.get(orderKey);
         if (objOrder != null) {
@@ -97,18 +92,18 @@ public abstract class AbstractConfigLoader {
     // 2.smaller order
     // 3.add to list earlier
     protected void sort() {
-        List<ConfigModelWrapper> list = new ArrayList<>(configModelList.size());
-        for (int idx = 0; idx < configModelList.size(); idx++) {
+        List<ConfigModelWrapper> list = new ArrayList<>(configModels.size());
+        for (int idx = 0; idx < configModels.size(); idx++) {
             ConfigModelWrapper wrapper = new ConfigModelWrapper();
-            wrapper.model = configModelList.get(idx);;
+            wrapper.model = configModels.get(idx);;
             wrapper.addOrder = idx;
             list.add(wrapper);
         }
 
         list.sort(this::doSort);
 
-        for (int idx = 0; idx < configModelList.size(); idx++) {
-            configModelList.set(idx, list.get(idx).model);
+        for (int idx = 0; idx < configModels.size(); idx++) {
+            configModels.set(idx, list.get(idx).model);
         }
     }
 

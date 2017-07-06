@@ -107,8 +107,8 @@ public class SchemaLoader {
             return;
         }
 
-        Microservice microservice = RegistryUtils.getMicroserviceManager().findMicroservice(microserviceName);
-        if (microservice == null) {
+        Microservice microservice = RegistryUtils.getMicroservice();
+        if (!microservice.getServiceName().equals(microserviceName)) {
             return;
         }
 

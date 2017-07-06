@@ -51,7 +51,6 @@ public class TestCseClientHttpRequest {
     @Test
     public void test() throws IOException {
         ServiceRegistry serviceRegistry = ServiceRegistryFactory.createLocal();
-        serviceRegistry.getMicroserviceManager().addMicroservice("app", "ms");
         serviceRegistry.init();
         RegistryUtils.setServiceRegistry(serviceRegistry);
 

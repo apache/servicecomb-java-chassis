@@ -16,7 +16,6 @@
 
 package io.servicecomb.config;
 
-import java.io.File;
 import java.util.List;
 
 import org.apache.commons.configuration.AbstractConfiguration;
@@ -34,6 +33,5 @@ public class TestConfigUtil {
         List<ConfigModel> list = loader.getConfigModels();
         Assert.assertEquals(loader, ConfigUtil.getMicroserviceConfigLoader(dynamicConfig));
         Assert.assertEquals(1, list.size());
-        Assert.assertTrue(new File(list.get(0).getRootPath()).exists());
     }
 }
