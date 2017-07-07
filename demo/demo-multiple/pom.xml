@@ -26,12 +26,12 @@
 	<artifactId>demo-multiple</artifactId>
 	<packaging>pom</packaging>
 	<modules>
-		<module>multiple-client</module>
-		<module>multiple-server</module>
-		<module>a-client</module>
 		<module>a-server</module>
+		<module>a-client</module>
 		<module>b-server</module>
 		<module>b-client</module>
+		<module>multiple-server</module>
+		<module>multiple-client</module>
 	</modules>
 
 	<dependencyManagement>
