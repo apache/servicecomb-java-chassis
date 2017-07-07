@@ -309,12 +309,11 @@ public class SpringMvcIntegrationTest {
 
   @Test
   public void ensureServerBlowsUp() {
-
     try {
       restTemplate.getForObject(
           controllerUrl + "sayhi?name=throwexception",
           String.class);
-      fail("Exception excepted, but thrown none");
+      fail("Exception expected, but threw nothing");
     } catch (UnknownHttpStatusCodeException e) {
       assertThat(e.getRawStatusCode(), is(590));
     }
@@ -345,7 +344,8 @@ public class SpringMvcIntegrationTest {
     try {
       return RestObjectMapper.INSTANCE.readValue(json, aClass);
     } catch (IOException e) {
-      throw new IllegalStateException("Failed to read JSON from " + json + e);
+      throw new IllegalStateException(
+          "Failed to read JSON from " + json + ", Exception is: " + e);
     }
   }
 }
