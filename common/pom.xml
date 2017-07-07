@@ -19,7 +19,7 @@
   <parent>
     <groupId>io.servicecomb</groupId>
     <artifactId>java-chassis</artifactId>
-    <version>0.1.0-m3-SNAPSHOT</version>
+    <version>0.1.0</version>
   </parent>
   <artifactId>common</artifactId>
   <packaging>pom</packaging>

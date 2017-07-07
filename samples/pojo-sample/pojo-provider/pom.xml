@@ -20,7 +20,7 @@
     <parent>
         <groupId>io.servicecomb.samples</groupId>
         <artifactId>pojo-sample</artifactId>
-        <version>0.1.0-m3-SNAPSHOT</version>
+        <version>0.1.0</version>
     </parent>
     <artifactId>pojo-provider</artifactId>
     <dependencies>

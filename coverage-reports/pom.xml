@@ -21,7 +21,7 @@
   <parent>
     <artifactId>java-chassis</artifactId>
     <groupId>io.servicecomb</groupId>
-    <version>0.1.0-m3-SNAPSHOT</version>
+    <version>0.1.0</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
 
@@ -160,92 +160,92 @@
     <dependency>
       <groupId>io.servicecomb.demo</groupId>
       <artifactId>pojo-client</artifactId>
-      <version>0.1.0-m3-SNAPSHOT</version>
+      <version>0.1.0</version>
     </dependency>
     <dependency>
       <groupId>io.servicecomb.demo</groupId>
       <artifactId>pojo-server</artifactId>
-      <version>0.1.0-m3-SNAPSHOT</version>
+      <version>0.1.0</version>
     </dependency>
     <dependency>
       <groupId>io.servicecomb.demo</groupId>
       <artifactId>jaxrs-client</artifactId>
-      <version>0.1.0-m3-SNAPSHOT</version>
+      <version>0.1.0</version>
     </dependency>
     <dependency>
       <groupId>io.servicecomb.demo</groupId>
       <artifactId>jaxrs-server</artifactId>
-      <version>0.1.0-m3-SNAPSHOT</version>
+      <version>0.1.0</version>
     </dependency>
     <dependency>
       <groupId>io.servicecomb.demo</groupId>
       <artifactId>springmvc-client</artifactId>
-      <version>0.1.0-m3-SNAPSHOT</version>
+      <version>0.1.0</version>
     </dependency>
     <dependency>
       <groupId>io.servicecomb.demo</groupId>
       <artifactId>springmvc-server</artifactId>
-      <version>0.1.0-m3-SNAPSHOT</version>
+      <version>0.1.0</version>
     </dependency>
     <dependency>
       <groupId>io.servicecomb.demo</groupId>
       <artifactId>crossapp-client</artifactId>
-      <version>0.1.0-m3-SNAPSHOT</version>
+      <version>0.1.0</version>
     </dependency>
     <dependency>
       <groupId>io.servicecomb.demo</groupId>
       <artifactId>crossapp-server</artifactId>
-      <version>0.1.0-m3-SNAPSHOT</version>
+      <version>0.1.0</version>
     </dependency>
     <dependency>
       <groupId>io.servicecomb.demo</groupId>
       <artifactId>demo-spring-boot-jaxrs-server</artifactId>
-      <version>0.1.0-m3-SNAPSHOT</version>
+      <version>0.1.0</version>
     </dependency>
     <dependency>
       <groupId>io.servicecomb.demo</groupId>
       <artifactId>demo-spring-boot-jaxrs-client</artifactId>
-      <version>0.1.0-m3-SNAPSHOT</version>
+      <version>0.1.0</version>
     </dependency>
     <dependency>
       <groupId>io.servicecomb.demo</groupId>
       <artifactId>demo-spring-boot-pojo-client</artifactId>
-      <version>0.1.0-m3-SNAPSHOT</version>
+      <version>0.1.0</version>
     </dependency>
     <dependency>
       <groupId>io.servicecomb.demo</groupId>
       <artifactId>demo-spring-boot-pojo-server</artifactId>
-      <version>0.1.0-m3-SNAPSHOT</version>
+      <version>0.1.0</version>
     </dependency>
     <dependency>
       <groupId>io.servicecomb.demo</groupId>
       <artifactId>demo-spring-boot-discovery-server</artifactId>
-      <version>0.1.0-m3-SNAPSHOT</version>
+      <version>0.1.0</version>
     </dependency>
     <dependency>
       <groupId>io.servicecomb.demo</groupId>
       <artifactId>demo-spring-boot-discovery-client</artifactId>
-      <version>0.1.0-m3-SNAPSHOT</version>
+      <version>0.1.0</version>
     </dependency>
     <dependency>
       <groupId>io.servicecomb.demo</groupId>
       <artifactId>demo-spring-boot-zuul-proxy</artifactId>
-      <version>0.1.0-m3-SNAPSHOT</version>
+      <version>0.1.0</version>
     </dependency>
     <dependency>
       <groupId>io.servicecomb.tests</groupId>
       <artifactId>jaxrs-tests</artifactId>
-      <version>0.1.0-m3-SNAPSHOT</version>
+      <version>0.1.0</version>
     </dependency>
     <dependency>
       <groupId>io.servicecomb.tests</groupId>
       <artifactId>springmvc-tests</artifactId>
-      <version>0.1.0-m3-SNAPSHOT</version>
+      <version>0.1.0</version>
     </dependency>
     <dependency>
       <groupId>io.servicecomb.tests</groupId>
       <artifactId>tracing-tests</artifactId>
-      <version>0.1.0-m3-SNAPSHOT</version>
+      <version>0.1.0</version>
     </dependency>
   </dependencies>
 

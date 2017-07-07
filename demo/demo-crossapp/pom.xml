@@ -21,7 +21,7 @@
 	<parent>
 		<groupId>io.servicecomb.demo</groupId>
 		<artifactId>demo-parent</artifactId>
-		<version>0.1.0-m3-SNAPSHOT</version>
+		<version>0.1.0</version>
 	</parent>
 	<artifactId>demo-crossapp</artifactId>
 	<packaging>pom</packaging>
