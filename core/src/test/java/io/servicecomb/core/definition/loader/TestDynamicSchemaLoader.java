@@ -64,4 +64,11 @@ public class TestDynamicSchemaLoader {
         SchemaMeta schemaMeta = microserviceMetaManager.ensureFindSchemaMeta("perfClient", "schema");
         Assert.assertEquals("cse.gen.pojotest.perfClient.schema", schemaMeta.getPackageName());
     }
+    
+    @Test
+    public void testRegisterShemasAcrossApp() {
+        DynamicSchemaLoader.INSTANCE.registerSchemas("CSE:as", "classpath*:test/test/schema.yaml");
+        SchemaMeta schemaMeta = microserviceMetaManager.ensureFindSchemaMeta("CSE:as", "schema");
+        Assert.assertEquals("cse.gen.CSE.as.schema", schemaMeta.getPackageName());
+    }
 }
