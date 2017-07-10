@@ -47,12 +47,12 @@ public class CseRestTemplate extends AcceptableRestTemplate {
     }
 
     @Override
-    boolean isAcceptable(String uri) {
+    public boolean isAcceptable(String uri) {
         return uri.startsWith(RestConst.URI_PREFIX);
     }
 
     @Override
-    boolean isAcceptable(URI uri) {
+    public boolean isAcceptable(URI uri) {
         return RestConst.SCHEME.equals(uri.getScheme());
     }
 }
