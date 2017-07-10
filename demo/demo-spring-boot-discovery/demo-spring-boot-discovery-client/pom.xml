@@ -22,7 +22,7 @@
 	<parent>
 		<groupId>io.servicecomb.demo</groupId>
 		<artifactId>demo-spring-boot-discovery</artifactId>
-		<version>0.1.0</version>
+		<version>0.1.1-SNAPSHOT</version>
 	</parent>
 	<artifactId>demo-spring-boot-discovery-client</artifactId>
 	<dependencies>
@@ -49,7 +49,7 @@
 						<mixin>
 							<groupId>io.servicecomb.demo</groupId>
 							<artifactId>docker-run-config</artifactId>
-							<version>0.1.0</version>
+							<version>0.1.1-SNAPSHOT</version>
 						</mixin>
 					</mixins>
 				</configuration>

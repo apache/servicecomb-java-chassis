@@ -21,7 +21,7 @@
   <parent>
     <artifactId>demo-pojo</artifactId>
     <groupId>io.servicecomb.demo</groupId>
-    <version>0.1.0</version>
+    <version>0.1.1-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
 
