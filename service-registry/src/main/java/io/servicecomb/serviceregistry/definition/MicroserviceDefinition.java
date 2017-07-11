@@ -95,10 +95,8 @@ public class MicroserviceDefinition {
             Configuration conf = ConfigUtil.createConfig(Arrays.asList(model));
             String name =
                 conf.getString(DefinitionConst.qulifiedServiceNameKey, DefinitionConst.defaultMicroserviceName);
-            if (!StringUtils.isEmpty(name)) {
-                checkMicroserviceName(name);
-                combinedFrom.add(name);
-            }
+            checkMicroserviceName(name);
+            combinedFrom.add(name);
         }
 
         combinedFrom.remove(microserviceName);
@@ -108,7 +106,7 @@ public class MicroserviceDefinition {
         // the configuration we used
         // when resolve placeholder failed
         // the result will remains ${var}
-        if (StringUtils.isEmpty(name) || name.indexOf("${") != -1) {
+        if (StringUtils.isEmpty(name) || name.contains("${")) {
             throw new IllegalArgumentException(String.format(
                     "MicroserviceName '%s' is invalid. you must configure '%s' or set the placeholder value.",
                     name,
