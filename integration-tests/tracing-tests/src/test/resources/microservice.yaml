@@ -6,7 +6,6 @@ cse:
   service:
     registry:
       address: http://127.0.0.1:9980
-    publishAddress: 127.0.0.1
   rest:
     address: 0.0.0.0:8080?sslEnabled=false
   highway:
