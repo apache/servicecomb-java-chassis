@@ -52,6 +52,6 @@ public class SomeTracedController {
     logger.info("in /world");
     Thread.sleep(random.nextInt(1000));
 
-    return "world";
+    return "world, " + template.getForObject("cse://tracing-service/jaxrs/bonjour", String.class);
   }
 }

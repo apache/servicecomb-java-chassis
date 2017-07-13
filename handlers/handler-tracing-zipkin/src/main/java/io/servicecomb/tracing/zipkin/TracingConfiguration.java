@@ -24,6 +24,7 @@ import static io.servicecomb.foundation.common.base.ServiceCombConstants.DEFAULT
 import brave.Tracing;
 import brave.context.log4j12.MDCCurrentTraceContext;
 import brave.http.HttpTracing;
+import brave.propagation.CurrentTraceContext;
 import io.servicecomb.config.DynamicProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -45,16 +46,21 @@ class TracingConfiguration {
   }
 
   @Bean
-  Reporter<Span> reporter(Sender sender) {
+  Reporter<Span> zipkinReporter(Sender sender) {
     return AsyncReporter.builder(sender).build();
   }
 
   @Bean
-  Tracing tracing(Reporter<Span> reporter, DynamicProperties dynamicProperties) {
+  Tracing tracing(Reporter<Span> reporter, DynamicProperties dynamicProperties, CurrentTraceContext currentTraceContext) {
     return Tracing.newBuilder()
         .localServiceName(dynamicProperties.getStringProperty(CONFIG_SERVICE_NAME, DEFAULT_SERVICE_NAME))
-        .currentTraceContext(MDCCurrentTraceContext.create()) // puts trace IDs into logs
+        .currentTraceContext(currentTraceContext) // puts trace IDs into logs
         .reporter(reporter).build();
+  }
+
+  @Bean
+  CurrentTraceContext currentTraceContext() {
+    return MDCCurrentTraceContext.create();
   }
 
   @Bean

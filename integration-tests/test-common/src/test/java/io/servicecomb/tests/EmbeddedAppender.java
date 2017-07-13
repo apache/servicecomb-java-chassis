@@ -20,9 +20,10 @@ import com.seanyinx.github.unit.scaffolding.Poller;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.Collection;
+import java.util.LinkedHashSet;
 import java.util.Queue;
+import java.util.Set;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import javax.annotation.Nonnull;
 import org.apache.log4j.ConsoleAppender;
@@ -34,7 +35,7 @@ public class EmbeddedAppender extends ConsoleAppender {
   private final Poller poller = new Poller(5000, 200);
 
   public EmbeddedAppender() {
-    super(new PatternLayout("%d{ABSOLUTE} [%X{traceId}/%X{spanId}] %-5p [%t] %C{2} (%F:%L) - %m%n"));
+    super(new PatternLayout("%d{ABSOLUTE} [%X{traceId}/%X{spanId}/%X{parentId}] %-5p [%t] %C{2} (%F:%L) - %m%n"));
   }
 
   @Override
@@ -43,8 +44,8 @@ public class EmbeddedAppender extends ConsoleAppender {
     return super.createWriter(new InMemoryOutputStream(events, os));
   }
 
-  public List<String> pollLogs(String regex) {
-    final List<String> messages = new LinkedList<>();
+  public Collection<String> pollLogs(String regex) {
+    final Set<String> messages = new LinkedHashSet<>();
 
     poller.assertEventually(() -> {
       for (String event : events) {
