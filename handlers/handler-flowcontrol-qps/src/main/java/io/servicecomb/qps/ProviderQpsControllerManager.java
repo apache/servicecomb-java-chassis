@@ -67,7 +67,7 @@ public class ProviderQpsControllerManager
 
   private QpsController initQpsLimit(String key, Integer qpsLimit) {
     if (qpsLimit == null) {
-      qpsLimit = null;
+      return null;
     }
 
     LOGGER.info("qpsLimit of {} init as {}", key, qpsLimit);
