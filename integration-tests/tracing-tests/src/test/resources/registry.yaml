@@ -4,4 +4,5 @@ tracing-service:
     appid: tracing-app
     instances:
       - endpoints:
-        - rest://127.0.0.1:8080
+        - rest://127.0.0.1:8080?sslEnabled=false
+        - highway://127.0.0.1:7070?login=true
