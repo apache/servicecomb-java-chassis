@@ -18,7 +18,7 @@ package io.servicecomb.tests.tracing;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.containing;
-import static com.github.tomakehurst.wiremock.client.WireMock.moreThan;
+import static com.github.tomakehurst.wiremock.client.WireMock.moreThanOrExactly;
 import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static com.github.tomakehurst.wiremock.client.WireMock.postRequestedFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
@@ -114,7 +114,7 @@ public class ZipkinTracingIntegrationTest {
 
     poller.assertEventually(() -> {
           try {
-            verify(moreThan(1), postRequestedFor(urlEqualTo("/api/v1/spans")));
+            verify(moreThanOrExactly(1), postRequestedFor(urlEqualTo("/api/v1/spans")));
             return true;
           } catch (Exception e) {
             return false;
