@@ -38,6 +38,9 @@ public class TracedJaxrsController {
   @Autowired
   private RestTemplate template;
 
+  @Autowired
+  private TracedPojo tracedPojo;
+
   @GET
   @Path("/bonjour")
   @Produces(TEXT_PLAIN)
@@ -55,6 +58,6 @@ public class TracedJaxrsController {
     logger.info("in /monde");
     Thread.sleep(random.nextInt(1000));
 
-    return "monde";
+    return "monde, " + tracedPojo.pojo();
   }
 }

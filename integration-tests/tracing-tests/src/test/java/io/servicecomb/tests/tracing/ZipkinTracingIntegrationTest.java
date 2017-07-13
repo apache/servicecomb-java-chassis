@@ -83,7 +83,7 @@ public class ZipkinTracingIntegrationTest {
     ResponseEntity<String> entity = restTemplate.getForEntity("http://localhost:8080/hello", String.class);
 
     assertThat(entity.getStatusCode(), is(OK));
-    assertThat(entity.getBody(), is("hello world, bonjour le monde"));
+    assertThat(entity.getBody(), is("hello world, bonjour le monde, hi pojo"));
 
     TimeUnit.MILLISECONDS.sleep(1000);
 

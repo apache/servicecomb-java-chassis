@@ -51,6 +51,10 @@
     </dependency>
     <dependency>
       <groupId>io.servicecomb</groupId>
+      <artifactId>provider-pojo</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>io.servicecomb</groupId>
       <artifactId>handler-tracing-zipkin</artifactId>
     </dependency>
     <dependency>
