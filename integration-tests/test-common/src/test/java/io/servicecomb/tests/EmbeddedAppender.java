@@ -59,6 +59,10 @@ public class EmbeddedAppender extends ConsoleAppender {
     return messages;
   }
 
+  public void clear() {
+    events.clear();
+  }
+
   private static class InMemoryOutputStream extends OutputStream {
 
     private final Queue<String> events;

@@ -28,6 +28,7 @@
   	<module>spring-boot-starter-provider</module>
     <module>spring-boot-starter-transport</module>
     <module>spring-boot-starter-discovery</module>
+    <module>spring-cloud-zuul-zipkin</module>
   </modules>
 
 </project>

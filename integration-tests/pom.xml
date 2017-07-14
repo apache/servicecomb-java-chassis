@@ -21,6 +21,7 @@
       <module>spring-jaxrs-tests</module>
         <module>pojo-test</module>
         <module>spring-springmvc-tests</module>
+        <module>spring-zuul-tracing-tests</module>
     </modules>
 
     <dependencyManagement>

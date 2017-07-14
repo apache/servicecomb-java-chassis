@@ -1,0 +1,7 @@
+dummy:
+  - id: "001"
+    version: "0.0.2"
+    appid: tracing-app
+    instances:
+      - endpoints:
+        - rest://127.0.0.1:8080?sslEnabled=false

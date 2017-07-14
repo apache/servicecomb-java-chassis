@@ -1,0 +1,21 @@
+APPLICATION_ID: tracing-app
+service_description:
+  name: gateway-service
+  version: 0.0.2
+cse:
+  service:
+    registry:
+      address: http://127.0.0.1:9980
+  rest:
+    address: 0.0.0.0:8080
+  handler:
+    chain:
+      Provider:
+        default: tracing-provider,bizkeeper-provider
+      Consumer:
+        default: tracing-consumer,loadbalance,bizkeeper-consumer
+
+servicecomb:
+  tracing:
+    collector:
+      address: http://localhost:9411/api/v1/spans
