@@ -11,15 +11,12 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 
-import io.servicecomb.demo.CodeFirstPojoIntf;
 import io.servicecomb.demo.compute.Person;
-import io.servicecomb.demo.helloworld.greeter.Hello;
 import io.servicecomb.demo.server.TestRequest;
 import io.servicecomb.demo.server.User;
 import io.servicecomb.demo.smartcare.Application;
 import io.servicecomb.demo.smartcare.Group;
 import io.servicecomb.demo.smartcare.Response;
-import io.servicecomb.demo.smartcare.SmartCare;
 import io.servicecomb.swagger.invocation.exception.InvocationException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -31,21 +28,16 @@ import org.junit.Test;
 
 public class PojoIntegrationTestBase {
 
-  private Hello hello = PojoTestMain.hello;
-  private SmartCare smartCare = PojoTestMain.smartCare;
-  private io.servicecomb.demo.server.Test test = PojoTestMain.test;
-  private CodeFirstPojoIntf codeFirst = PojoTestMain.codeFirst;
-
   @Test
   public void remoteHelloPojo_sayHello() {
-    String result = hello.SayHello("whatever");
+    String result = PojoService.hello.SayHello("whatever");
     assertThat(result, is("Hello Message fast"));
   }
 
   @Test
   public void remoteHelloPojo_sayHelloAgain() {
     long startTime = System.currentTimeMillis();
-    String result = hello.SayHelloAgain("whatever");
+    String result = PojoService.hello.SayHelloAgain("whatever");
     long stopTime = System.currentTimeMillis();
     long elapsedTime = stopTime - startTime;
 
@@ -67,14 +59,14 @@ public class PojoIntegrationTestBase {
     groups.add(group);
     application.setGroups(groups);
 
-    Response result = smartCare.addApplication(application);
+    Response result = PojoService.smartCare.addApplication(application);
     assertThat(result.getResultCode(), is(0));
     assertThat(result.getResultMessage(), is("add application app0 success"));
   }
 
   @Test
   public void remoteSmartCarePojo_delApplication() {
-    Response result = smartCare.delApplication("app0");
+    Response result = PojoService.smartCare.delApplication("app0");
 
     assertThat(result.getResultCode(), is(1));
     assertThat(result.getResultMessage(), is("delete application app0 failed"));
@@ -82,44 +74,44 @@ public class PojoIntegrationTestBase {
 
   @Test
   public void remoteTestPojo_testStringArray() {
-    String result = test.testStringArray(new String[]{"a", "b"});
+    String result = PojoService.test.testStringArray(new String[]{"a", "b"});
     assertThat(result, is("arr is '[a, b]'"));
   }
 
   @Test
   public void remoteTestPojo_getTestString() {
     // test empty string
-    String result = test.getTestString("");
+    String result = PojoService.test.getTestString("");
     assertThat(result, is("code is ''"));
 
     // test null
-    result = test.getTestString(null);
+    result = PojoService.test.getTestString(null);
     assertThat(result, is("code is 'null'"));
 
     // test Chinese
-    result = test.getTestString("测试");
+    result = PojoService.test.getTestString("测试");
     assertThat(result, is("code is '测试'"));
 
     // test String with space
-    result = test.getTestString("a b");
+    result = PojoService.test.getTestString("a b");
     assertThat(result, is("code is 'a b'"));
   }
 
   @Test
   public void remoteTestPojo_postTestStatic() {
-    String result = test.postTestStatic(1);
+    String result = PojoService.test.postTestStatic(1);
     assertThat(result, is(nullValue()));
   }
 
   @Test
   public void remoteTestPojo_testException() {
     // when code is 200
-    String result = test.testException(200);
+    String result = PojoService.test.testException(200);
     assertThat(result, is("200"));
 
     // when code is 456
     try {
-      test.testException(456);
+      PojoService.test.testException(456);
       fail("Exception expected, but threw nothing");
     } catch (InvocationException e) {
       assertThat(e.getErrorData(), is("456 error"));
@@ -129,7 +121,7 @@ public class PojoIntegrationTestBase {
 
     // when code is 556
     try {
-      test.testException(556);
+      PojoService.test.testException(556);
       fail("InvocationException expected, but threw nothing");
     } catch (InvocationException e) {
       assertThat(e.getStatusCode(), is(556));
@@ -140,7 +132,7 @@ public class PojoIntegrationTestBase {
 
     // when code is 557
     try {
-      test.testException(557);
+      PojoService.test.testException(557);
       fail("InvocationException expected, but threw nothing");
     } catch (InvocationException e) {
       assertThat(e.getStatusCode(), is(557));
@@ -150,13 +142,13 @@ public class PojoIntegrationTestBase {
     }
 
     // when code is 123(other number, the default case)
-    result = test.testException(123);
+    result = PojoService.test.testException(123);
     assertThat(result, is("not expected"));
   }
 
   @Test
   public void remoteTestPojo_splitParam() {
-    User result = test.splitParam(1, new User());
+    User result = PojoService.test.splitParam(1, new User());
     assertThat(result.toString(),
         is("User [name=nameA,  users count:0, age=100, index=1]"));
   }
@@ -164,7 +156,7 @@ public class PojoIntegrationTestBase {
   @Test
   public void remoteTestPojo_wrapParam() {
     // when request is null
-    User result = test.wrapParam(null);
+    User result = PojoService.test.wrapParam(null);
     assertThat(result, is(nullValue()));
 
     // when request is not null
@@ -177,14 +169,14 @@ public class PojoIntegrationTestBase {
     request.setData(buffer);
     request.getUsers().add(user);
 
-    result = test.wrapParam(request);
+    result = PojoService.test.wrapParam(request);
     assertThat(result.toString(),
         is("User [name=nameA,  users count:1, age=100, index=0]"));
   }
 
   @Test
   public void remoteTestPojo_addString() {
-    String result = test.addString(new String[]{"a", "b"});
+    String result = PojoService.test.addString(new String[]{"a", "b"});
     assertThat(result, is("[a, b]"));
   }
 
@@ -199,7 +191,7 @@ public class PojoIntegrationTestBase {
     Map<String, User> userMap = new HashMap<>();
     userMap.put("u1", user1);
     userMap.put("u2", user2);
-    Map<String, User> result = codeFirst.testUserMap(userMap);
+    Map<String, User> result = PojoService.codeFirst.testUserMap(userMap);
 
     assertThat(result.get("u1").getNames()[0], is("u1"));
     assertThat(result.get("u1").getNames()[1], is("u2"));
@@ -216,7 +208,7 @@ public class PojoIntegrationTestBase {
     user2.setNames(new String[]{"u3", "u4"});
 
     User[] users = new User[]{user1, user2};
-    List<User> result = codeFirst.testUserArray(Arrays.asList(users));
+    List<User> result = PojoService.codeFirst.testUserArray(Arrays.asList(users));
 
     assertThat(result.get(0).getNames()[0], is("u1"));
     assertThat(result.get(0).getNames()[1], is("u2"));
@@ -226,14 +218,14 @@ public class PojoIntegrationTestBase {
 
   @Test
   public void remoteCodeFirstPojo_testStrings() {
-    String[] result = codeFirst.testStrings(new String[]{"a", "b"});
+    String[] result = PojoService.codeFirst.testStrings(new String[]{"a", "b"});
     assertThat(Arrays.asList(result), contains("aa0", "b"));
   }
 
   @Test
   public void remoteCodeFirstPojo_testBytes() {
     byte[] input = new byte[]{0, 1, 2};
-    byte[] result = codeFirst.testBytes(input);
+    byte[] result = PojoService.codeFirst.testBytes(input);
 
     assertEquals(3, result.length);
     assertEquals(1, result[0]);
@@ -243,7 +235,7 @@ public class PojoIntegrationTestBase {
 
   @Test
   public void remoteCodeFirstPojo_reduce() {
-    int result = codeFirst.reduce(5, 3);
+    int result = PojoService.codeFirst.reduce(5, 3);
     assertThat(result, is(2));
   }
 
@@ -251,7 +243,7 @@ public class PojoIntegrationTestBase {
   public void remoteCodeFirstPojo_addDate() {
     Date date = new Date();
     int seconds = 1;
-    Date result = codeFirst.addDate(date, seconds);
+    Date result = PojoService.codeFirst.addDate(date, seconds);
 
     assertThat(result, equalTo(new Date(date.getTime() + seconds * 1000)));
   }
@@ -261,7 +253,7 @@ public class PojoIntegrationTestBase {
     Person input = new Person();
     input.setName("person name");
 
-    Person result = codeFirst.sayHello(input);
+    Person result = PojoService.codeFirst.sayHello(input);
     assertThat(result.getName(), is("hello person name"));
   }
 
@@ -270,31 +262,31 @@ public class PojoIntegrationTestBase {
     Person person = new Person();
     person.setName("person name");
 
-    String result = codeFirst.saySomething("prefix  prefix", person);
+    String result = PojoService.codeFirst.saySomething("prefix  prefix", person);
     assertThat(result, is("prefix  prefix person name"));
   }
 
   @Test
   public void remoteCodeFirstPojo_sayHi() {
-    String result = codeFirst.sayHi("world");
+    String result = PojoService.codeFirst.sayHi("world");
     assertThat(result, is("world sayhi"));
   }
 
   @Test
   public void remoteCodeFirstPojo_sayHi2() {
-    String result = codeFirst.sayHi2("world");
+    String result = PojoService.codeFirst.sayHi2("world");
     assertThat(result, is("world sayhi 2"));
   }
 
   @Test
   public void remoteCodeFirstPojo_isTrue() {
-    boolean result = codeFirst.isTrue();
+    boolean result = PojoService.codeFirst.isTrue();
     assertThat(result, is(true));
   }
 
   @Test
   public void remoteCodeFirstPojo_addString() {
-    String result = codeFirst.addString(Arrays.asList("a", "b"));
+    String result = PojoService.codeFirst.addString(Arrays.asList("a", "b"));
     assertThat(result, is("ab"));
   }
 }
