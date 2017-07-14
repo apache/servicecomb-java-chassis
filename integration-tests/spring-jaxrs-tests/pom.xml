@@ -25,33 +25,46 @@
   </parent>
   <modelVersion>4.0.0</modelVersion>
 
-  <artifactId>jaxrs-tests</artifactId>
+  <artifactId>spring-jaxrs-tests</artifactId>
 
   <dependencies>
     <dependency>
-      <groupId>io.servicecomb.demo</groupId>
-      <artifactId>demo-schema</artifactId>
+      <groupId>io.servicecomb.tests</groupId>
+      <artifactId>jaxrs-tests</artifactId>
+      <version>0.1.1-SNAPSHOT</version>
+      <type>test-jar</type>
     </dependency>
     <dependency>
       <groupId>io.servicecomb</groupId>
       <artifactId>provider-jaxrs</artifactId>
     </dependency>
+    <dependency>
+      <groupId>io.servicecomb</groupId>
+      <artifactId>spring-boot-starter-provider</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-test</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-web</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter</artifactId>
+      <exclusions>
+        <exclusion>
+          <groupId>org.slf4j</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>ch.qos.logback</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
   </dependencies>
 
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-jar-plugin</artifactId>
-        <executions>
-          <execution>
-            <goals>
-              <goal>test-jar</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-    </plugins>
-  </build>
 
 </project>

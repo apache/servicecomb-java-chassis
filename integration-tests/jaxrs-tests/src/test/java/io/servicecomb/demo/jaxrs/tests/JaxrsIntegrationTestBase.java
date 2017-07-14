@@ -38,7 +38,6 @@ import java.time.ZonedDateTime;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
@@ -49,7 +48,7 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
-public class JaxrsIntegrationTest {
+public class JaxrsIntegrationTestBase {
 
   private final String baseUrl = "http://127.0.0.1:8080/";
   private final RestTemplate restTemplate = new RestTemplate();
@@ -57,11 +56,6 @@ public class JaxrsIntegrationTest {
   private final String codeFirstUrl = baseUrl + "codeFirstJaxrs/";
   private final String schemaFirstUrl = baseUrl + "schemaFirstJaxrs/";
   private final String[] urls = {codeFirstUrl, schemaFirstUrl};
-
-  @BeforeClass
-  public static void setUp() throws Exception {
-    JaxrsTestMain.main(new String[0]);
-  }
 
   @Test
   public void ableToQueryAtRootBasePath() {
