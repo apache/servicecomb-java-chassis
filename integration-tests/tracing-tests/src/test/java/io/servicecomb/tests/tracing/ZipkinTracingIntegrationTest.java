@@ -39,6 +39,7 @@ import java.net.URL;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.concurrent.TimeUnit;
+import org.apache.log4j.Level;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
@@ -58,7 +59,7 @@ public class ZipkinTracingIntegrationTest {
   public static void setUpClass() throws Exception {
     setUpLocalRegistry();
 
-    Log4jConfig.addAppender(appender);
+    Log4jConfig.addAppender(appender).setLevel(Level.DEBUG);
     stubFor(post(urlEqualTo("/api/v1/spans"))
         .withRequestBody(containing("http.path"))
         .willReturn(
