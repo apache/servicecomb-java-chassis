@@ -1,0 +1,12 @@
+zuul:
+  routes:
+    dummy:
+      serviceId: dummy
+
+# disable netflix eurkea since it's not used for service discovery
+ribbon:
+  eureka:
+    enabled: false
+
+server:
+  port: 0

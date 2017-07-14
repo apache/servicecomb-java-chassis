@@ -985,6 +985,11 @@
 				<artifactId>spring-boot-starter-transport</artifactId>
 				<version>0.1.1-SNAPSHOT</version>
 			</dependency>
+			<dependency>
+				<groupId>io.servicecomb</groupId>
+				<artifactId>spring-cloud-zuul-zipkin</artifactId>
+				<version>0.1.1-SNAPSHOT</version>
+			</dependency>
       <dependency>
         <groupId>io.servicecomb</groupId>
         <artifactId>handler-tracing-zipkin</artifactId>

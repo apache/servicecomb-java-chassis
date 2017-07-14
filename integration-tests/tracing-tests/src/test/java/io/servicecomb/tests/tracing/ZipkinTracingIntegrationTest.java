@@ -26,6 +26,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.verify;
 import static io.servicecomb.serviceregistry.client.LocalServiceRegistryClientImpl.LOCAL_REGISTRY_FILE_KEY;
 import static org.apache.http.HttpStatus.SC_OK;
+import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNot.not;
 import static org.junit.Assert.assertThat;
@@ -88,7 +89,7 @@ public class ZipkinTracingIntegrationTest {
     TimeUnit.MILLISECONDS.sleep(1000);
 
     Collection<String> tracingMessages = appender.pollLogs(".*\\[\\w+/\\w+/\\w*\\]\\s+INFO.*in /.*");
-    assertThat(tracingMessages.isEmpty(), is(false));
+    assertThat(tracingMessages.size(), greaterThanOrEqualTo(2));
 
     Iterator<String> iterator = tracingMessages.iterator();
     // caller is the root of tracing tree and its traceId is the same as spanId
