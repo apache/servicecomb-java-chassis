@@ -22,10 +22,17 @@ import org.apache.log4j.Logger;
 
 public class Log4jConfig {
 
-  public static void addAppender(Appender appender) {
-    Logger rootLogger = Logger.getRootLogger();
+  private static final Logger rootLogger = Logger.getRootLogger();
+
+  public static Logger addAppender(Appender appender) {
     rootLogger.removeAllAppenders();
     rootLogger.setLevel(Level.INFO);
     rootLogger.addAppender(appender);
+    return rootLogger;
+  }
+
+  public static Logger setLevel(Level level) {
+    rootLogger.setLevel(level);
+    return rootLogger;
   }
 }
