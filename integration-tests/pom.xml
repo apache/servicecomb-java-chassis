@@ -20,6 +20,7 @@
         <module>test-common</module>
         <module>pojo-test</module>
         <module>spring-jaxrs-tests</module>
+      <module>spring-pojo-tests</module>
     </modules>
 
     <dependencyManagement>
