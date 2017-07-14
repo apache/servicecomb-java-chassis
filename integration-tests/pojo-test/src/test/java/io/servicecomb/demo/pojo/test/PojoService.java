@@ -4,42 +4,35 @@ import io.servicecomb.demo.CodeFirstPojoIntf;
 import io.servicecomb.demo.helloworld.greeter.Hello;
 import io.servicecomb.demo.server.Test;
 import io.servicecomb.demo.smartcare.SmartCare;
-import io.servicecomb.provider.pojo.RpcReference;
-import org.springframework.context.annotation.Bean;
+import javax.inject.Inject;
 import org.springframework.stereotype.Component;
 
 @Component
 public class PojoService {
 
-  @RpcReference(microserviceName = "pojo", schemaId = "hello")
-  private Hello hello;
+  static Hello hello;
+  static SmartCare smartCare;
+  static io.servicecomb.demo.server.Test test;
+  static CodeFirstPojoIntf codeFirst;
 
-  @RpcReference(microserviceName = "pojo", schemaId = "smartcare")
-  private SmartCare smartCare;
-
-  @RpcReference(microserviceName = "pojo", schemaId = "server")
-  private Test test;
-
-  @RpcReference(microserviceName = "pojo", schemaId = "codeFirst")
-  private CodeFirstPojoIntf codeFirst;
-
-  @Bean
-  Hello hello() {
-    return hello;
+  @Inject
+  public void setHello(Hello hello) {
+    PojoService.hello = hello;
   }
 
-  @Bean
-  SmartCare smartCare() {
-    return smartCare;
+  @Inject
+  public void setSmartCare(SmartCare smartCare) {
+    PojoService.smartCare = smartCare;
   }
 
-  @Bean
-  Test test() {
-    return test;
+  @Inject
+  public void setTest(Test test) {
+    PojoService.test = test;
   }
 
-  @Bean
-  CodeFirstPojoIntf codeFirst() {
-    return codeFirst;
+  @Inject
+  public void setCodeFirst(CodeFirstPojoIntf codeFirst) {
+    PojoService.codeFirst = codeFirst;
   }
+
 }
