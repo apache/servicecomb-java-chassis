@@ -16,11 +16,6 @@
 
 package io.servicecomb.transport.rest.client;
 
-import io.servicecomb.transport.rest.client.http.HttpMethodFactory;
-import io.servicecomb.transport.rest.client.http.VertxHttpMethod;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import io.servicecomb.common.rest.RestConst;
 import io.servicecomb.common.rest.definition.RestOperationMeta;
 import io.servicecomb.core.Invocation;
@@ -34,9 +29,13 @@ import io.servicecomb.foundation.vertx.client.ClientPoolManager;
 import io.servicecomb.foundation.vertx.client.http.HttpClientVerticle;
 import io.servicecomb.foundation.vertx.client.http.HttpClientWithContext;
 import io.servicecomb.swagger.invocation.AsyncResponse;
+import io.servicecomb.transport.rest.client.http.HttpMethodFactory;
+import io.servicecomb.transport.rest.client.http.VertxHttpMethod;
 import io.vertx.core.DeploymentOptions;
 import io.vertx.core.Vertx;
 import io.vertx.core.http.HttpClientOptions;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public final class RestTransportClient {
     private static final Logger LOGGER = LoggerFactory.getLogger(RestTransportClient.class);
@@ -87,6 +86,7 @@ public final class RestTransportClient {
         String method = swaggerRestOperation.getHttpMethod();
         try {
             VertxHttpMethod httpMethod = HttpMethodFactory.findHttpMethodInstance(method);
+            LOGGER.debug("Calling method {} of {} by rest", method, invocation.getMicroserviceName());
             httpMethod.doMethod(httpClientWithContext, invocation, asyncResp);
         } catch (Exception e) {
             asyncResp.fail(invocation.getInvocationType(), e);
