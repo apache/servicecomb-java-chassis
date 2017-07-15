@@ -48,16 +48,6 @@ public class TracedJaxrsController {
     logger.info("in /bonjour");
     Thread.sleep(random.nextInt(1000));
 
-    return "bonjour le " + template.getForObject("cse://tracing-service/jaxrs/monde", String.class);
-  }
-
-  @GET
-  @Path("/monde")
-  @Produces(TEXT_PLAIN)
-  public String monde() throws InterruptedException {
-    logger.info("in /monde");
-    Thread.sleep(random.nextInt(1000));
-
-    return "monde, " + tracedPojo.pojo();
+    return "bonjour le monde, " + tracedPojo.pojo();
   }
 }
