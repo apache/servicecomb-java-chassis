@@ -44,14 +44,6 @@ public class SomeTracedController {
     logger.info("in /hello");
     Thread.sleep(random.nextInt(1000));
 
-    return "hello " + template.getForObject("cse://tracing-service/world", String.class);
-  }
-
-  @RequestMapping(value = "/world", method = GET, produces = TEXT_PLAIN_VALUE)
-  public String world() throws InterruptedException {
-    logger.info("in /world");
-    Thread.sleep(random.nextInt(1000));
-
-    return "world, " + template.getForObject("cse://tracing-service/jaxrs/bonjour", String.class);
+    return "hello world, " + template.getForObject("cse://tracing-service/jaxrs/bonjour", String.class);
   }
 }
