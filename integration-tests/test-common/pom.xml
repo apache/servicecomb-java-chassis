@@ -45,6 +45,19 @@
       <artifactId>wiremock-standalone</artifactId>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>io.zipkin.java</groupId>
+      <artifactId>zipkin-junit</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.squareup.okhttp3</groupId>
+      <artifactId>okhttp</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>io.zipkin.brave</groupId>
+      <artifactId>brave-context-log4j12</artifactId>
+    </dependency>
   </dependencies>
 
   <build>

@@ -16,23 +16,17 @@
 
 package io.servicecomb.spring.cloud.zuul.tracing;
 
-import static io.servicecomb.serviceregistry.client.LocalServiceRegistryClientImpl.LOCAL_REGISTRY_FILE_KEY;
 import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 import static org.hamcrest.core.Is.is;
-import static org.hamcrest.core.IsNot.not;
 import static org.junit.Assert.assertThat;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 import static org.springframework.http.HttpStatus.OK;
 
-import io.servicecomb.tests.EmbeddedAppender;
-import io.servicecomb.tests.Log4jConfig;
-import java.net.URL;
+import io.servicecomb.tests.tracing.TracingTestBase;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.concurrent.TimeUnit;
 import org.junit.After;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,24 +37,10 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = TracedZuulMain.class, webEnvironment = RANDOM_PORT)
-public class SpringCloudZuulTracingTest {
-  private static final EmbeddedAppender appender = new EmbeddedAppender();
+public class SpringCloudZuulTracingTest extends TracingTestBase {
 
   @Autowired
-  private TestRestTemplate restTemplate;
-
-  @BeforeClass
-  public static void setUpClass() throws Exception {
-    setUpLocalRegistry();
-
-    Log4jConfig.addAppender(appender);
-  }
-
-  private static void setUpLocalRegistry() {
-    ClassLoader loader = Thread.currentThread().getContextClassLoader();
-    URL resource = loader.getResource("registry.yaml");
-    System.setProperty(LOCAL_REGISTRY_FILE_KEY, resource.getPath());
-  }
+  private TestRestTemplate testRestTemplate;
 
   @After
   public void tearDown() throws Exception {
@@ -69,7 +49,7 @@ public class SpringCloudZuulTracingTest {
 
   @Test
   public void tracesCallsReceivedFromZuulToCalledService() throws InterruptedException {
-    ResponseEntity<String> responseEntity = restTemplate.getForEntity("/dummy/rest/blah", String.class);
+    ResponseEntity<String> responseEntity = testRestTemplate.getForEntity("/dummy/rest/blah", String.class);
 
     assertThat(responseEntity.getStatusCode(), is(OK));
     assertThat(responseEntity.getBody(), is("blah"));
@@ -79,29 +59,12 @@ public class SpringCloudZuulTracingTest {
     Collection<String> tracingMessages = appender.pollLogs(".*\\[\\w+/\\w+/\\w*\\]\\s+INFO.*(logged tracing|/blah).*");
     assertThat(tracingMessages.size(), greaterThanOrEqualTo(2));
 
-    Iterator<String> iterator = tracingMessages.iterator();
-    // caller is the root of tracing tree and its traceId is the same as spanId
-    String[] ids = tracingIds(iterator.next());
-    String parentTraceId = ids[0];
-    String parentSpanId = ids[1];
-
-    assertThat(parentTraceId, is(parentSpanId));
-
-    String message = iterator.next();
-    // callee is called by caller and inherits caller's traceId but has its own spanId
-    ids = tracingIds(message);
-    String childTraceId = ids[0];
-    String childSpanId = ids[1];
-    String childParentId = ids[2];
-
-    assertThat(childTraceId, is(parentTraceId));
-    assertThat(childSpanId, is(not(parentTraceId)));
-    assertThat(childParentId, is(parentSpanId));
+    assertThatSpansReceivedByZipkin(tracingMessages, "/dummy/rest/blah", "/blah");
   }
 
   @Test
   public void tracesFailedCallsReceivedByZuul() throws InterruptedException {
-    ResponseEntity<String> responseEntity = restTemplate.getForEntity("/dummy/rest/oops", String.class);
+    ResponseEntity<String> responseEntity = testRestTemplate.getForEntity("/dummy/rest/oops", String.class);
 
     assertThat(responseEntity.getStatusCode(), is(INTERNAL_SERVER_ERROR));
 
@@ -110,27 +73,6 @@ public class SpringCloudZuulTracingTest {
     Collection<String> tracingMessages = appender.pollLogs(".*\\[\\w+/\\w+/\\w*\\]\\s+INFO.*(logged tracing|/oops).*");
     assertThat(tracingMessages.size(), greaterThanOrEqualTo(2));
 
-    Iterator<String> iterator = tracingMessages.iterator();
-    // caller is the root of tracing tree and its traceId is the same as spanId
-    String[] ids = tracingIds(iterator.next());
-    String parentTraceId = ids[0];
-    String parentSpanId = ids[1];
-
-    assertThat(parentTraceId, is(parentSpanId));
-
-    String message = iterator.next();
-    // callee is called by caller and inherits caller's traceId but has its own spanId
-    ids = tracingIds(message);
-    String childTraceId = ids[0];
-    String childSpanId = ids[1];
-    String childParentId = ids[2];
-
-    assertThat(childTraceId, is(parentTraceId));
-    assertThat(childSpanId, is(not(parentTraceId)));
-    assertThat(childParentId, is(parentSpanId));
-  }
-
-  private String[] tracingIds(String message) {
-    return message.replaceFirst(".*\\[(\\w+/\\w+/\\w*)\\].*", "$1").trim().split("/");
+    assertThatSpansReceivedByZipkin(tracingMessages, "/dummy/rest/oops", "500", "/oops", "590");
   }
 }
