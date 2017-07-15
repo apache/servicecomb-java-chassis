@@ -16,21 +16,23 @@
 
 package io.servicecomb.transport.rest.vertx;
 
-import org.springframework.stereotype.Component;
-
 import io.servicecomb.core.Const;
 import io.servicecomb.core.Invocation;
 import io.servicecomb.core.transport.AbstractTransport;
-import io.servicecomb.transport.rest.client.RestTransportClient;
-import io.servicecomb.transport.rest.client.RestTransportClientManager;
 import io.servicecomb.foundation.common.net.URIEndpointObject;
 import io.servicecomb.foundation.vertx.SimpleJsonObject;
 import io.servicecomb.foundation.vertx.VertxUtils;
 import io.servicecomb.swagger.invocation.AsyncResponse;
+import io.servicecomb.transport.rest.client.RestTransportClient;
+import io.servicecomb.transport.rest.client.RestTransportClientManager;
 import io.vertx.core.DeploymentOptions;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 
 @Component
 public class VertxRestTransport extends AbstractTransport {
+    private static final Logger log = LoggerFactory.getLogger(VertxRestTransport.class);
     @Override
     public String getName() {
         return Const.RESTFUL;
@@ -52,6 +54,7 @@ public class VertxRestTransport extends AbstractTransport {
         URIEndpointObject endpoint = (URIEndpointObject) invocation.getEndpoint().getAddress();
         RestTransportClient client =
             RestTransportClientManager.INSTANCE.getRestTransportClient(endpoint.isSslEnabled());
+        log.debug("Sending request by rest to endpoint {}:{}", endpoint.getHostOrIp(), endpoint.getPort());
         client.send(invocation, asyncResp);
     }
 }

@@ -21,7 +21,6 @@ import io.servicecomb.codec.protobuf.definition.ProtobufManager;
 import io.servicecomb.core.Invocation;
 import io.servicecomb.core.definition.OperationMeta;
 import io.servicecomb.core.transport.AbstractTransport;
-
 import io.servicecomb.foundation.ssl.SSLCustom;
 import io.servicecomb.foundation.ssl.SSLOption;
 import io.servicecomb.foundation.ssl.SSLOptionFactory;
@@ -33,8 +32,11 @@ import io.servicecomb.swagger.invocation.AsyncResponse;
 import io.servicecomb.swagger.invocation.Response;
 import io.vertx.core.DeploymentOptions;
 import io.vertx.core.Vertx;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class HighwayClient {
+    private static final Logger log = LoggerFactory.getLogger(HighwayClient.class);
     private static final String SSL_KEY = "highway.consumer";
 
     private ClientPoolManager<HighwayClientConnectionPool> clientMgr = new ClientPoolManager<>();
@@ -83,6 +85,7 @@ public class HighwayClient {
 
         HighwayClientConnection tcpClient = tcpClientPool.findOrCreateClient(invocation.getEndpoint().getEndpoint());
         HighwayClientPackage clientPackage = new HighwayClientPackage(invocation, operationProtobuf, tcpClient);
+        log.debug("Calling method {} of {} by highway", operationMeta.getMethod(), invocation.getMicroserviceName());
         tcpClientPool.send(tcpClient, clientPackage, ar -> {
             // 此时是在网络线程中，转换线程
             invocation.getResponseExecutor().execute(() -> {

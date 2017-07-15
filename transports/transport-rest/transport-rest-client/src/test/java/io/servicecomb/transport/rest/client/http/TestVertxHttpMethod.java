@@ -16,10 +16,7 @@
 
 package io.servicecomb.transport.rest.client.http;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.mockito.Mockito;
+import static org.mockito.Mockito.when;
 
 import io.servicecomb.common.rest.RestConst;
 import io.servicecomb.common.rest.codec.produce.ProduceProcessor;
@@ -39,6 +36,10 @@ import io.vertx.core.http.HttpClientResponse;
 import mockit.Mock;
 import mockit.MockUp;
 import mockit.Mocked;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
+import org.mockito.Mockito;
 
 public class TestVertxHttpMethod extends VertxHttpMethod {
 
@@ -65,14 +66,15 @@ public class TestVertxHttpMethod extends VertxHttpMethod {
         RestOperationMeta swaggerRestOperation = Mockito.mock(RestOperationMeta.class);
 
         Endpoint endpoint = Mockito.mock(Endpoint.class);
-        Mockito.when(invocation.getOperationMeta()).thenReturn(operationMeta);
+        when(invocation.getOperationMeta()).thenReturn(operationMeta);
         URLPathBuilder urlPathBuilder = Mockito.mock(URLPathBuilder.class);
-        Mockito.when(swaggerRestOperation.getPathBuilder()).thenReturn(urlPathBuilder);
+        when(swaggerRestOperation.getPathBuilder()).thenReturn(urlPathBuilder);
         operationMeta.getExtData(RestConst.SWAGGER_REST_OPERATION);
-        Mockito.when(operationMeta.getExtData(RestConst.SWAGGER_REST_OPERATION)).thenReturn(swaggerRestOperation);
-        Mockito.when(invocation.getEndpoint()).thenReturn(endpoint);
+        when(operationMeta.getExtData(RestConst.SWAGGER_REST_OPERATION)).thenReturn(swaggerRestOperation);
+        when(invocation.getEndpoint()).thenReturn(endpoint);
+        when(endpoint.getAddress()).thenReturn(new IpPort());
 
-        Mockito.when(request.exceptionHandler(Mockito.any())).then(answer -> null);
+        when(request.exceptionHandler(Mockito.any())).then(answer -> null);
 
         this.doMethod(httpClientWithContext, invocation, asyncResp);
         Assert.assertTrue(true);
@@ -89,15 +91,15 @@ public class TestVertxHttpMethod extends VertxHttpMethod {
             HttpClientRequest request = Mockito.mock(HttpClientRequest.class);
 
             Endpoint endpoint = Mockito.mock(Endpoint.class);
-            Mockito.when(invocation.getOperationMeta()).thenReturn(operationMeta);
+            when(invocation.getOperationMeta()).thenReturn(operationMeta);
             URLPathBuilder urlPathBuilder = Mockito.mock(URLPathBuilder.class);
-            Mockito.when(swaggerRestOperation.getPathBuilder()).thenReturn(urlPathBuilder);
+            when(swaggerRestOperation.getPathBuilder()).thenReturn(urlPathBuilder);
             operationMeta.getExtData(RestConst.SWAGGER_REST_OPERATION);
-            Mockito.when(operationMeta.getExtData(RestConst.SWAGGER_REST_OPERATION)).thenReturn(swaggerRestOperation);
-            Mockito.when(invocation.getEndpoint()).thenReturn(endpoint);
+            when(operationMeta.getExtData(RestConst.SWAGGER_REST_OPERATION)).thenReturn(swaggerRestOperation);
+            when(invocation.getEndpoint()).thenReturn(endpoint);
             String contentType = httpResponse.getHeader("Content-Type");
             ProduceProcessor produceProcessor = Mockito.mock(ProduceProcessor.class);
-            Mockito.when(swaggerRestOperation.findProduceProcessor(contentType)).thenReturn(produceProcessor);
+            when(swaggerRestOperation.findProduceProcessor(contentType)).thenReturn(produceProcessor);
             this.setCseContext(invocation, request);
         } catch (Exception ex) {
             status = true;
@@ -116,16 +118,16 @@ public class TestVertxHttpMethod extends VertxHttpMethod {
             RestOperationMeta swaggerRestOperation = Mockito.mock(RestOperationMeta.class);
 
             Endpoint endpoint = Mockito.mock(Endpoint.class);
-            Mockito.when(invocation.getOperationMeta()).thenReturn(operationMeta);
+            when(invocation.getOperationMeta()).thenReturn(operationMeta);
             URLPathBuilder urlPathBuilder = Mockito.mock(URLPathBuilder.class);
-            Mockito.when(swaggerRestOperation.getPathBuilder()).thenReturn(urlPathBuilder);
+            when(swaggerRestOperation.getPathBuilder()).thenReturn(urlPathBuilder);
             operationMeta.getExtData(RestConst.SWAGGER_REST_OPERATION);
-            Mockito.when(operationMeta.getExtData(RestConst.SWAGGER_REST_OPERATION)).thenReturn(swaggerRestOperation);
-            Mockito.when(invocation.getEndpoint()).thenReturn(endpoint);
+            when(operationMeta.getExtData(RestConst.SWAGGER_REST_OPERATION)).thenReturn(swaggerRestOperation);
+            when(invocation.getEndpoint()).thenReturn(endpoint);
 
             String contentType = httpResponse.getHeader("Content-Type");
             ProduceProcessor produceProcessor = Mockito.mock(ProduceProcessor.class);
-            Mockito.when(swaggerRestOperation.findProduceProcessor(contentType)).thenReturn(produceProcessor);
+            when(swaggerRestOperation.findProduceProcessor(contentType)).thenReturn(produceProcessor);
             this.handleResponse(invocation, httpResponse, swaggerRestOperation, asyncResp);
         } catch (Exception ex) {
             status = true;
@@ -144,7 +146,7 @@ public class TestVertxHttpMethod extends VertxHttpMethod {
         Invocation invocation = Mockito.mock(Invocation.class);
         RestOperationMeta restOperationMeta = Mockito.mock(RestOperationMeta.class);
         URLPathBuilder urlPathBuilder = Mockito.mock(URLPathBuilder.class);
-        Mockito.when(restOperationMeta.getPathBuilder()).thenReturn(urlPathBuilder);
+        when(restOperationMeta.getPathBuilder()).thenReturn(urlPathBuilder);
         String pathUrl = this.createRequestPath(invocation, restOperationMeta);
         Assert.assertNull(pathUrl);
     }
