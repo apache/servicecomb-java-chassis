@@ -15,11 +15,15 @@
  */
 package io.servicecomb.serviceregistry.task;
 
+import org.junit.AfterClass;
 import org.junit.Assert;
+import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import com.google.common.eventbus.EventBus;
 
+import io.servicecomb.serviceregistry.ArchaiusUtils;
 import io.servicecomb.serviceregistry.api.registry.Microservice;
 import io.servicecomb.serviceregistry.client.ServiceRegistryClient;
 import io.servicecomb.serviceregistry.config.ServiceRegistryConfig;
@@ -29,11 +33,31 @@ import mockit.Expectations;
 import mockit.Mocked;
 
 public class TestServiceCenterTask {
+    private EventBus eventBus = new EventBus();
+
+    @Mocked
+    private MicroserviceServiceCenterTask microserviceServiceCenterTask;
+
+    private ServiceCenterTask serviceCenterTask;
+
+    @BeforeClass
+    public static void initClass() {
+        ArchaiusUtils.resetConfig();
+    }
+
+    @AfterClass
+    public static void teardownClass() {
+        ArchaiusUtils.resetConfig();
+    }
+
+    @Before
+    public void init() {
+        serviceCenterTask =
+            new ServiceCenterTask(eventBus, ServiceRegistryConfig.INSTANCE, microserviceServiceCenterTask);
+    }
+
     @Test
     public void testLifeCycle() {
-        EventBus eventBus = new EventBus();
-
-        ServiceCenterTask serviceCenterTask = new ServiceCenterTask(eventBus, ServiceRegistryConfig.INSTANCE);
         serviceCenterTask.init();
 
         eventBus.post(new ShutdownEvent());
@@ -43,14 +67,7 @@ public class TestServiceCenterTask {
     @Test
     public void testCalcSleepInterval(@Mocked ServiceRegistryClient srClient,
             @Mocked Microservice microservice, @Mocked MicroserviceInstanceHeartbeatTask heartbeatTask,
-            @Mocked MicroserviceInstanceRegisterTask registerTask, @Mocked MicroserviceServiceCenterTask centerTask) {
-        EventBus eventBus = new EventBus();
-
-        ServiceCenterTask serviceCenterTask = new ServiceCenterTask(eventBus, ServiceRegistryConfig.INSTANCE);
-        serviceCenterTask.calcSleepInterval();
-        Assert.assertEquals(30, serviceCenterTask.getInterval());
-
-        serviceCenterTask.addMicroserviceTask(centerTask);
+            @Mocked MicroserviceInstanceRegisterTask registerTask) {
         serviceCenterTask.calcSleepInterval();
         Assert.assertEquals(1, serviceCenterTask.getInterval());
         serviceCenterTask.calcSleepInterval();
@@ -104,11 +121,11 @@ public class TestServiceCenterTask {
 
         new Expectations() {
             {
-                registerTask.isRegistered();
-                result = false;
+                heartbeatTask.isNeedRegisterInstance();
+                result = true;
             }
         };
-        eventBus.post(registerTask);
+        eventBus.post(heartbeatTask);
         serviceCenterTask.calcSleepInterval();
         Assert.assertEquals(1, serviceCenterTask.getInterval());
     }

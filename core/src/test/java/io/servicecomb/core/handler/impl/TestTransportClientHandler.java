@@ -16,52 +16,36 @@
 
 package io.servicecomb.core.handler.impl;
 
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+import io.servicecomb.core.Endpoint;
 import io.servicecomb.core.Invocation;
 import io.servicecomb.core.Transport;
 import io.servicecomb.swagger.invocation.AsyncResponse;
-
-import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.Mockito;
 
 public class TestTransportClientHandler {
-    TransportClientHandler transportClientHandler;
 
-    Invocation invocation = null;
+  private final Endpoint endpoint = mock(Endpoint.class);
+  private final TransportClientHandler transportClientHandler = TransportClientHandler.INSTANCE;
+  private final Invocation invocation = mock(Invocation.class);
+  private final AsyncResponse asyncResp = mock(AsyncResponse.class);
+  private final Transport transport = mock(Transport.class);
 
-    AsyncResponse asyncResp = null;
+  @Before
+  public void setUp() throws Exception {
+    when(transport.getEndpoint()).thenReturn(endpoint);
+    when(endpoint.getEndpoint()).thenReturn("rest://localhost:8080");
+  }
 
-    Transport transport = null;
+  @Test
+  public void test() throws Exception {
+    when(invocation.getTransport()).thenReturn(transport);
+    transportClientHandler.handle(invocation, asyncResp);
 
-    @Before
-    public void setUp() throws Exception {
-        transportClientHandler = TransportClientHandler.INSTANCE;
-        invocation = Mockito.mock(Invocation.class);
-        asyncResp = Mockito.mock(AsyncResponse.class);
-        transport = Mockito.mock(Transport.class);
-    }
-
-    @After
-    public void tearDown() throws Exception {
-        transportClientHandler = null;
-        invocation = null;
-        asyncResp = null;
-        transport = null;
-    }
-
-    @Test
-    public void test() {
-        boolean status = false;
-        try {
-            Assert.assertNotNull(transport);
-            Mockito.when(invocation.getTransport()).thenReturn(transport);
-            transportClientHandler.handle(invocation, asyncResp);
-        } catch (Exception e) {
-            status = true;
-        }
-        Assert.assertFalse(status);
-    }
-
+    verify(transport).send(invocation, asyncResp);
+  }
 }

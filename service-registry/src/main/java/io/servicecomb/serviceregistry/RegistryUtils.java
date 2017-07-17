@@ -34,11 +34,11 @@ import io.servicecomb.foundation.common.net.IpPort;
 import io.servicecomb.foundation.common.net.NetUtils;
 import io.servicecomb.serviceregistry.api.registry.Microservice;
 import io.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
-import io.servicecomb.serviceregistry.api.registry.MicroserviceManager;
 import io.servicecomb.serviceregistry.cache.InstanceCacheManager;
 import io.servicecomb.serviceregistry.cache.InstanceVersionCacheManager;
 import io.servicecomb.serviceregistry.client.ServiceRegistryClient;
 import io.servicecomb.serviceregistry.config.ServiceRegistryConfig;
+import io.servicecomb.serviceregistry.definition.MicroserviceDefinition;
 import io.servicecomb.serviceregistry.registry.ServiceRegistryFactory;
 
 public final class RegistryUtils {
@@ -57,7 +57,9 @@ public final class RegistryUtils {
     public static void init() {
         EventBus eventBus = new EventBus();
         MicroserviceConfigLoader loader = ConfigUtil.getMicroserviceConfigLoader();
-        serviceRegistry = ServiceRegistryFactory.getOrCreate(eventBus, ServiceRegistryConfig.INSTANCE, loader);
+        MicroserviceDefinition microserviceDefinition = new MicroserviceDefinition(loader.getConfigModels());
+        serviceRegistry =
+            ServiceRegistryFactory.getOrCreate(eventBus, ServiceRegistryConfig.INSTANCE, microserviceDefinition);
         serviceRegistry.init();
     }
 
@@ -89,12 +91,8 @@ public final class RegistryUtils {
         return serviceRegistry.getInstanceVersionCacheManager();
     }
 
-    public static MicroserviceManager getMicroserviceManager() {
-        return serviceRegistry.getMicroserviceManager();
-    }
-
     public static String getAppId() {
-        return serviceRegistry.getMicroserviceManager().getAppId();
+        return serviceRegistry.getMicroservice().getAppId();
     }
 
     public static Microservice getMicroservice() {
@@ -208,13 +206,8 @@ public final class RegistryUtils {
     }
 
     // update microservice instance properties
-    // if there are multiple microservice, then throw exception
     public static boolean updateInstanceProperties(Map<String, String> instanceProperties) {
         return serviceRegistry.updateInstanceProperties(instanceProperties);
-    }
-
-    public static boolean updateInstanceProperties(String microserviceName, Map<String, String> instanceProperties) {
-        return serviceRegistry.updateInstanceProperties(microserviceName, instanceProperties);
     }
 
     public static Microservice getMicroservice(String microserviceId) {

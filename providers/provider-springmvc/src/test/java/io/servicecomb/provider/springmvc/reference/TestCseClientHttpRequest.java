@@ -51,7 +51,6 @@ public class TestCseClientHttpRequest {
     @Test
     public void test() throws IOException {
         ServiceRegistry serviceRegistry = ServiceRegistryFactory.createLocal();
-        serviceRegistry.getMicroserviceManager().addMicroservice("app", "ms");
         serviceRegistry.init();
         RegistryUtils.setServiceRegistry(serviceRegistry);
 
@@ -66,7 +65,7 @@ public class TestCseClientHttpRequest {
 
         Holder<Invocation> holder = new Holder<>();
         CseClientHttpRequest client =
-            new CseClientHttpRequest(URI.create("cse://test/" + SpringmvcImpl.class.getSimpleName() + "/bytes"),
+            new CseClientHttpRequest(URI.create("cse://app:test/" + SpringmvcImpl.class.getSimpleName() + "/bytes"),
                     HttpMethod.POST) {
 
                 /**

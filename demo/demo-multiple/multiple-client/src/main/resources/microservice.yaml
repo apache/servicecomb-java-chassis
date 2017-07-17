@@ -1,3 +1,7 @@
 ﻿cse-config-order: 1000
-target.appid: multiple
+a-server.name: merged-server
+b-server.name: merged-server
 APPLICATION_ID: multiple
+service_description:
+  name: merged-client
+  version: 0.0.1

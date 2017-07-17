@@ -30,7 +30,6 @@ import io.servicecomb.swagger.generator.core.CompositeSwaggerGeneratorContext;
 import io.servicecomb.swagger.generator.core.SwaggerGenerator;
 import io.servicecomb.swagger.generator.core.SwaggerGeneratorContext;
 import io.servicecomb.swagger.generator.core.utils.ClassUtils;
-
 import io.swagger.models.Swagger;
 
 /**
@@ -67,7 +66,11 @@ public abstract class AbstractSchemaFactory<CONTEXT extends SchemaContext> {
     protected abstract SchemaMeta createSchema(CONTEXT context);
 
     protected Swagger loadSwagger(CONTEXT context) {
-        String path = generateSchemaPath(context.getMicroserviceName(), context.getSchemaId());
+        return loadSwagger(context.getMicroserviceName(), context.getSchemaId());
+    }
+
+    protected Swagger loadSwagger(String microserviceName, String schemaId) {
+        String path = generateSchemaPath(microserviceName, schemaId);
         URL url = Thread.currentThread().getContextClassLoader().getResource(path);
         if (url == null) {
             return null;

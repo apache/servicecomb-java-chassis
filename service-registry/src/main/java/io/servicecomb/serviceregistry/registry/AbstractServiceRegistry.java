@@ -18,6 +18,7 @@ package io.servicecomb.serviceregistry.registry;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,18 +26,18 @@ import org.slf4j.LoggerFactory;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 
-import io.servicecomb.config.archaius.sources.MicroserviceConfigLoader;
 import io.servicecomb.serviceregistry.ServiceRegistry;
 import io.servicecomb.serviceregistry.api.Const;
 import io.servicecomb.serviceregistry.api.registry.BasePath;
 import io.servicecomb.serviceregistry.api.registry.Microservice;
+import io.servicecomb.serviceregistry.api.registry.MicroserviceFactory;
 import io.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
-import io.servicecomb.serviceregistry.api.registry.MicroserviceManager;
 import io.servicecomb.serviceregistry.cache.InstanceCacheManager;
 import io.servicecomb.serviceregistry.cache.InstanceVersionCacheManager;
 import io.servicecomb.serviceregistry.client.IpPortManager;
 import io.servicecomb.serviceregistry.client.ServiceRegistryClient;
 import io.servicecomb.serviceregistry.config.ServiceRegistryConfig;
+import io.servicecomb.serviceregistry.definition.MicroserviceDefinition;
 import io.servicecomb.serviceregistry.task.MicroserviceServiceCenterTask;
 import io.servicecomb.serviceregistry.task.ServiceCenterTask;
 import io.servicecomb.serviceregistry.task.event.ExceptionEvent;
@@ -46,9 +47,13 @@ import io.servicecomb.serviceregistry.task.event.ShutdownEvent;
 public abstract class AbstractServiceRegistry implements ServiceRegistry {
     private static final Logger LOGGER = LoggerFactory.getLogger(AbstractServiceRegistry.class);
 
+    private MicroserviceFactory microserviceFactory = new MicroserviceFactory();
+
     protected EventBus eventBus;
 
-    protected MicroserviceManager microserviceManager = new MicroserviceManager();
+    protected MicroserviceDefinition microserviceDefinition;
+
+    protected Microservice microservice;
 
     protected InstanceCacheManager instanceCacheManager;
 
@@ -64,19 +69,17 @@ public abstract class AbstractServiceRegistry implements ServiceRegistry {
 
     // any exeption event will set cache not avaiable, but not clear cache
     // any recovery event will clear cache
+    //
+    // TODO: clear cache is not good, maybe cause no cache data can be used
+    //       it's better to replace the old cache by the new cache, if can't get new cache, then always use old cache.
     protected boolean cacheAvaiable;
 
     public AbstractServiceRegistry(EventBus eventBus, ServiceRegistryConfig serviceRegistryConfig,
-            MicroserviceConfigLoader loader) {
+            MicroserviceDefinition microserviceDefinition) {
         this.eventBus = eventBus;
         this.serviceRegistryConfig = serviceRegistryConfig;
-
-        microserviceManager.init(loader);
-
-        // temp compatible
-        //        if (microserviceManager.getMicroservices().size() > 1) {
-        //            throw new IllegalArgumentException("only support one microservice.");
-        //        }
+        this.microserviceDefinition = microserviceDefinition;
+        this.microservice = microserviceFactory.create(microserviceDefinition);
     }
 
     @Override
@@ -93,8 +96,13 @@ public abstract class AbstractServiceRegistry implements ServiceRegistry {
         eventBus.register(this);
     }
 
-    public MicroserviceManager getMicroserviceManager() {
-        return microserviceManager;
+    public EventBus getEventBus() {
+        return eventBus;
+    }
+
+    @Override
+    public Set<String> getCombinedMicroserviceNames() {
+        return microserviceDefinition.getCombinedFrom();
     }
 
     @Override
@@ -133,24 +141,19 @@ public abstract class AbstractServiceRegistry implements ServiceRegistry {
 
     private void loadStaticConfiguration() {
         // TODO 如果yaml定义了paths规则属性，替换默认值，现需要DynamicPropertyFactory支持数组获取
-        for (Microservice microservice : microserviceManager.getMicroservices()) {
-            List<BasePath> paths = microservice.getPaths();
-            for (BasePath path : paths) {
-                if (path.getProperty() == null) {
-                    path.setProperty(new HashMap<>());
-                }
-                path.getProperty().put(Const.PATH_CHECKSESSION, "false");
+        List<BasePath> paths = microservice.getPaths();
+        for (BasePath path : paths) {
+            if (path.getProperty() == null) {
+                path.setProperty(new HashMap<>());
             }
+            path.getProperty().put(Const.PATH_CHECKSESSION, "false");
         }
     }
 
     private void createServiceCenterTask() {
-        serviceCenterTask = new ServiceCenterTask(eventBus, serviceRegistryConfig);
-        for (Microservice microservice : microserviceManager.getMicroservices()) {
-            MicroserviceServiceCenterTask task =
-                new MicroserviceServiceCenterTask(eventBus, serviceRegistryConfig, srClient, microservice);
-            serviceCenterTask.addMicroserviceTask(task);
-        }
+        MicroserviceServiceCenterTask task =
+            new MicroserviceServiceCenterTask(eventBus, serviceRegistryConfig, srClient, microservice);
+        serviceCenterTask = new ServiceCenterTask(eventBus, serviceRegistryConfig, task);
     }
 
     @Subscribe
@@ -172,16 +175,7 @@ public abstract class AbstractServiceRegistry implements ServiceRegistry {
     }
 
     public boolean unregsiterInstance() {
-        for (Microservice microservice : microserviceManager.getMicroservices()) {
-            if (!unregsiterInstance(microservice.getIntance())) {
-                return false;
-            }
-        }
-
-        return true;
-    }
-
-    public boolean unregsiterInstance(MicroserviceInstance microserviceInstance) {
+        MicroserviceInstance microserviceInstance = microservice.getIntance();
         boolean result = srClient.unregisterMicroserviceInstance(microserviceInstance.getServiceId(),
                 microserviceInstance.getInstanceId());
         if (!result) {
@@ -198,8 +192,6 @@ public abstract class AbstractServiceRegistry implements ServiceRegistry {
 
     public List<MicroserviceInstance> findServiceInstance(String appId, String serviceName,
             String versionRule) {
-        // TODO:只能任选本进程中的一个微服务，这会导致依赖关系不准确
-        Microservice microservice = microserviceManager.getDefaultMicroserviceForce();
         List<MicroserviceInstance> instances = srClient.findServiceInstance(microservice.getServiceId(),
                 appId,
                 serviceName,
@@ -224,17 +216,6 @@ public abstract class AbstractServiceRegistry implements ServiceRegistry {
 
     @Override
     public boolean updateMicroserviceProperties(Map<String, String> properties) {
-        Microservice microservice = microserviceManager.getDefaultMicroservice();
-        return updateMicroserviceProperties(microservice, properties);
-    }
-
-    @Override
-    public boolean updateMicroserviceProperties(String microserviceName, Map<String, String> properties) {
-        Microservice microservice = microserviceManager.ensureFindMicroservice(microserviceName);
-        return updateMicroserviceProperties(microservice, properties);
-    }
-
-    public boolean updateMicroserviceProperties(Microservice microservice, Map<String, String> properties) {
         boolean success = srClient.updateMicroserviceProperties(microservice.getServiceId(),
                 properties);
         if (success) {
@@ -243,20 +224,7 @@ public abstract class AbstractServiceRegistry implements ServiceRegistry {
         return success;
     }
 
-    // update microservice instance properties
-    // if there are multiple microservice, then throw exception
     public boolean updateInstanceProperties(Map<String, String> instanceProperties) {
-        Microservice microservice = microserviceManager.getDefaultMicroservice();
-        return updateInstanceProperties(microservice, instanceProperties);
-    }
-
-    public boolean updateInstanceProperties(String microserviceName, Map<String, String> instanceProperties) {
-        Microservice microservice = microserviceManager.ensureFindMicroservice(microserviceName);
-        return updateInstanceProperties(microservice, instanceProperties);
-    }
-
-    public boolean updateInstanceProperties(Microservice microservice,
-            Map<String, String> instanceProperties) {
         MicroserviceInstance microserviceInstance = microservice.getIntance();
         boolean success = srClient.updateInstanceProperties(microserviceInstance.getServiceId(),
                 microserviceInstance.getInstanceId(),
@@ -272,11 +240,11 @@ public abstract class AbstractServiceRegistry implements ServiceRegistry {
     }
 
     public Microservice getMicroservice() {
-        return microserviceManager.getDefaultMicroservice();
+        return microservice;
     }
 
     public MicroserviceInstance getMicroserviceInstance() {
-        return microserviceManager.getDefaultMicroserviceInstance();
+        return microservice.getIntance();
     }
 
     public void destory() {

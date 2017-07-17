@@ -143,7 +143,6 @@ public class ConsumerQpsControllerManager extends AbstractObjectManager<Operatio
 
             objMap.put(operationMeta.getMicroserviceQualifiedName(), qpsController);
         });
-        initQpsLimit(key, property.getInteger());
     }
 
     private Integer getIntegerLimitProperty(DynamicProperty property) {

@@ -5,7 +5,7 @@
     <parent>
         <artifactId>java-chassis</artifactId>
         <groupId>io.servicecomb</groupId>
-        <version>0.1.0-m3-SNAPSHOT</version>
+        <version>0.1.1-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -18,7 +18,7 @@
         <module>springmvc-tests</module>
         <module>tracing-tests</module>
         <module>test-common</module>
-        <module>spring-springmvc-tests</module>
+      <module>spring-jaxrs-tests</module>
     </modules>
 
     <dependencyManagement>
@@ -26,12 +26,12 @@
             <dependency>
                 <groupId>io.servicecomb.demo</groupId>
                 <artifactId>demo-schema</artifactId>
-                <version>0.1.0-m3-SNAPSHOT</version>
+                <version>0.1.1-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>io.servicecomb.tests</groupId>
                 <artifactId>test-common</artifactId>
-                <version>0.1.0-m3-SNAPSHOT</version>
+                <version>0.1.1-SNAPSHOT</version>
                 <type>test-jar</type>
             </dependency>
         </dependencies>

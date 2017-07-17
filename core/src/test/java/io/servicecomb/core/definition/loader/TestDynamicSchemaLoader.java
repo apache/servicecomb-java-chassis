@@ -17,6 +17,7 @@ package io.servicecomb.core.definition.loader;
 
 import java.util.Collections;
 
+import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -47,26 +48,27 @@ public class TestDynamicSchemaLoader {
         context.setSchemaListenerManager(schemaListenerManager);
 
         ServiceRegistry serviceRegistry = ServiceRegistryFactory.createLocal();
-        serviceRegistry.getMicroserviceManager().addMicroservice("pojotest", "ms");
         serviceRegistry.init();
 
         RegistryUtils.setServiceRegistry(serviceRegistry);
     }
 
-    @Test
-    public void testRegisterSchemasFailed() {
-        try {
-            DynamicSchemaLoader.INSTANCE.registerSchemas("classpath*:test/test/schema.yaml");
-            Assert.fail("must throw exception");
-        } catch (IllegalArgumentException e) {
-            Assert.assertEquals("there are multiple microservices, can not use default microservice", e.getMessage());
-        }
+    @AfterClass
+    public static void teardown() {
+        RegistryUtils.setServiceRegistry(null);
     }
 
     @Test
     public void testRegisterSchemas() {
-        DynamicSchemaLoader.INSTANCE.registerSchemas("ms", "classpath*:test/test/schema.yaml");
-        SchemaMeta schemaMeta = microserviceMetaManager.ensureFindSchemaMeta("ms", "schema");
-        Assert.assertEquals("cse.gen.pojotest.ms.schema", schemaMeta.getPackageName());
+        DynamicSchemaLoader.INSTANCE.registerSchemas("classpath*:test/test/schema.yaml");
+        SchemaMeta schemaMeta = microserviceMetaManager.ensureFindSchemaMeta("perfClient", "schema");
+        Assert.assertEquals("cse.gen.pojotest.perfClient.schema", schemaMeta.getPackageName());
+    }
+    
+    @Test
+    public void testRegisterShemasAcrossApp() {
+        DynamicSchemaLoader.INSTANCE.registerSchemas("CSE:as", "classpath*:test/test/schema.yaml");
+        SchemaMeta schemaMeta = microserviceMetaManager.ensureFindSchemaMeta("CSE:as", "schema");
+        Assert.assertEquals("cse.gen.CSE.as.schema", schemaMeta.getPackageName());
     }
 }

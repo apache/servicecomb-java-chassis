@@ -1,0 +1,9 @@
+a-server.name: a-server
+APPLICATION_ID: multiple
+service_description:
+  name: a-client
+  version: 0.0.1
+cse:
+  service:
+    registry:
+      address: http://127.0.0.1:9980

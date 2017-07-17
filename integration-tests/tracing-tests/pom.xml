@@ -21,7 +21,7 @@
   <parent>
     <artifactId>integration-tests</artifactId>
     <groupId>io.servicecomb.tests</groupId>
-    <version>0.1.0-m3-SNAPSHOT</version>
+    <version>0.1.1-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
 
@@ -48,6 +48,10 @@
     <dependency>
       <groupId>io.servicecomb</groupId>
       <artifactId>provider-jaxrs</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>io.servicecomb</groupId>
+      <artifactId>provider-pojo</artifactId>
     </dependency>
     <dependency>
       <groupId>io.servicecomb</groupId>

@@ -16,6 +16,8 @@
 
 package io.servicecomb.core.definition.schema;
 
+import java.util.Set;
+
 import javax.inject.Inject;
 
 import org.slf4j.Logger;
@@ -29,6 +31,7 @@ import io.servicecomb.core.Const;
 import io.servicecomb.core.definition.MicroserviceMeta;
 import io.servicecomb.core.definition.OperationMeta;
 import io.servicecomb.core.definition.SchemaMeta;
+import io.servicecomb.serviceregistry.RegistryUtils;
 import io.servicecomb.swagger.engine.SwaggerEnvironment;
 import io.servicecomb.swagger.engine.SwaggerProducer;
 import io.servicecomb.swagger.engine.SwaggerProducerOperation;
@@ -83,6 +86,15 @@ public class ProducerSchemaFactory extends AbstractSchemaFactory<ProducerSchemaC
     protected SchemaMeta createSchema(ProducerSchemaContext context) {
         // 尝试从规划的目录加载契约
         Swagger swagger = loadSwagger(context);
+        if (swagger == null) {
+            Set<String> combinedNames = RegistryUtils.getServiceRegistry().getCombinedMicroserviceNames();
+            for (String name : combinedNames) {
+                swagger = loadSwagger(name, context.getSchemaId());
+                if (swagger != null) {
+                    break;
+                }
+            }
+        }
 
         // 根据class动态产生契约
         SwaggerGenerator generator = generateSwagger(context);

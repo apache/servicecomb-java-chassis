@@ -44,14 +44,7 @@ public class RestProducerProvider extends AbstractProducerProvider {
     @Override
     public void init() throws Exception {
         for (ProducerMeta producerMeta : restProducers.getProducerMetaList()) {
-            Microservice microservice = RegistryUtils.getServiceRegistry()
-                    .getMicroserviceManager()
-                    .findMicroservice(producerMeta.getInstanceClass());
-            if (microservice == null) {
-                throw new IllegalStateException(
-                        "can not find microservice, producer class=" + producerMeta.getInstanceClass().getName());
-            }
-
+            Microservice microservice = RegistryUtils.getMicroservice();
             producerSchemaFactory.getOrCreateProducerSchema(
                     microservice.getServiceName(),
                     producerMeta.getSchemaId(),

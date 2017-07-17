@@ -1,4 +1,4 @@
-APPLICATION_ID: hellotest
+APPLICATION_ID: pojo-sample
 service_description:
   name: hello
   version: 0.0.1

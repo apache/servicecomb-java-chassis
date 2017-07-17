@@ -21,25 +21,17 @@
 	<parent>
 		<groupId>io.servicecomb.demo</groupId>
 		<artifactId>demo-multiple</artifactId>
-		<version>0.1.0-m3-SNAPSHOT</version>
+		<version>0.1.1-SNAPSHOT</version>
 	</parent>
 	<artifactId>multiple-client</artifactId>
 	<dependencies>
 		<dependency>
 			<groupId>io.servicecomb.demo</groupId>
-			<artifactId>pojo-client</artifactId>
+			<artifactId>a-client</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>io.servicecomb.demo</groupId>
-			<artifactId>jaxrs-client</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>io.servicecomb.demo</groupId>
-			<artifactId>springmvc-client</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>io.servicecomb.demo</groupId>
-			<artifactId>crossapp-client</artifactId>
+			<artifactId>b-client</artifactId>
 		</dependency>
 	</dependencies>
 
@@ -49,10 +41,6 @@
 	<build>
 		<plugins>
 			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-dependency-plugin</artifactId>
-			</plugin>
-			<plugin>
 				<groupId>com.github.odavid.maven.plugins</groupId>
 				<artifactId>mixin-maven-plugin</artifactId>
 				<configuration>
@@ -60,7 +48,7 @@
 						<mixin>
 							<groupId>io.servicecomb.demo</groupId>
 							<artifactId>docker-run-config</artifactId>
-							<version>0.1.0-m3-SNAPSHOT</version>
+							<version>0.1.1-SNAPSHOT</version>
 						</mixin>
 					</mixins>
 				</configuration>
@@ -72,11 +60,10 @@
 		<profile>
 			<id>docker</id>
 			<properties>
-				<demo.service.name>jaxrs-server</demo.service.name>
+				<demo.service.name>multiple-server</demo.service.name>
 				<demo.vm.options>
 					-Dcse.highway.address=0.0.0.0:7070
 					-Dcse.rest.address=0.0.0.0:8080
-					-Dcse.grpc.address=0.0.0.0:9090
 				</demo.vm.options>
 			</properties>
 			<build>

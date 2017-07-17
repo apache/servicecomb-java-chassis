@@ -136,7 +136,7 @@ public class SwaggerEnvironment {
                 // producer未实现契约，非法
                 String msg = String.format("swagger method %s:%s not exist in producer.",
                         swaggerIntf.getClass().getName(),
-                        swaggerIntf.getName());
+                        methodName);
                 throw new Error(msg);
             }
 

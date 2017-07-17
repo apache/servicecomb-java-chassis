@@ -21,27 +21,18 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.junit.Assert;
-import org.junit.BeforeClass;
 import org.junit.Test;
 
 import io.servicecomb.config.archaius.sources.ConfigModel;
-import io.servicecomb.config.archaius.sources.MicroserviceConfigLoader;
 import io.servicecomb.serviceregistry.api.registry.Microservice;
+import io.servicecomb.serviceregistry.api.registry.MicroserviceFactory;
 import io.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
-import io.servicecomb.serviceregistry.api.registry.MicroserviceManager;
 import io.servicecomb.serviceregistry.definition.DefinitionConst;
 import io.servicecomb.serviceregistry.definition.MicroserviceDefinition;
+import io.servicecomb.serviceregistry.registry.ServiceRegistryFactory;
 
 public class TestPropertiesLoader {
-    private static MicroserviceManager microserviceManager = new MicroserviceManager();
-
-    @BeforeClass
-    public static void init() {
-        MicroserviceConfigLoader loader = new MicroserviceConfigLoader();
-        loader.loadAndSort();
-
-        microserviceManager.init(loader);
-    }
+    private static MicroserviceFactory microserviceFactory = new MicroserviceFactory();
 
     @Test
     public void testMergeStrings() {
@@ -50,7 +41,7 @@ public class TestPropertiesLoader {
 
     @Test
     public void testEmptyExtendedClass() {
-        Microservice microservice = microserviceManager.addMicroservice("default", "emptyExtendedClass");
+        Microservice microservice = microserviceFactory.create("default", "emptyExtendedClass");
         Assert.assertEquals(0, microservice.getProperties().size());
     }
 
@@ -63,7 +54,7 @@ public class TestPropertiesLoader {
         desc.put("propertyExtentedClass", "invalidClass");
         MicroserviceDefinition microserviceDefinition = new MicroserviceDefinition(Arrays.asList(configModel));
         try {
-            microserviceManager.addMicroservice(microserviceDefinition);
+            microserviceFactory.create(microserviceDefinition);
             Assert.fail("Must throw exception");
         } catch (Error e) {
             Assert.assertEquals(ClassNotFoundException.class, e.getCause().getClass());
@@ -80,7 +71,7 @@ public class TestPropertiesLoader {
         desc.put("propertyExtentedClass", "java.lang.String");
         MicroserviceDefinition microserviceDefinition = new MicroserviceDefinition(Arrays.asList(configModel));
         try {
-            microserviceManager.addMicroservice(microserviceDefinition);
+            microserviceFactory.create(microserviceDefinition);
             Assert.fail("Must throw exception");
         } catch (Error e) {
             Assert.assertEquals(
@@ -91,7 +82,7 @@ public class TestPropertiesLoader {
 
     @Test
     public void testMicroservicePropertiesLoader() throws Exception {
-        Microservice microservice = microserviceManager.findMicroservice("default");
+        Microservice microservice = ServiceRegistryFactory.createLocal().getMicroservice();
         Map<String, String> expectedMap = new HashMap<>();
         expectedMap.put("key1", "value1");
         expectedMap.put("key2", "value2");
@@ -101,7 +92,7 @@ public class TestPropertiesLoader {
 
     @Test
     public void testInstancePropertiesLoader() {
-        Microservice microservice = microserviceManager.findMicroservice("default");
+        Microservice microservice = ServiceRegistryFactory.createLocal().getMicroservice();
         MicroserviceInstance instance = microservice.getIntance();
         Map<String, String> expectedMap = new HashMap<>();
         expectedMap.put("key0", "value0");

@@ -53,8 +53,6 @@ public final class ConfigUtil {
 
     private static final String MICROSERVICE_CONFIG_LOADER_KEY = "cse-microservice-config-loader";
 
-    private static final String ADDITIONAL_KEY = "cse-config-additional";
-
     private ConfigUtil() {
     }
 
@@ -69,15 +67,6 @@ public final class ConfigUtil {
             return configuration.getProperty(key);
         }
         return null;
-    }
-
-    public static void setToAdditionalConfig(ConfigModel configModel) {
-        configModel.getConfig().put(ADDITIONAL_KEY, true);
-    }
-
-    public static boolean isAdditionalConfig(ConfigModel configModel) {
-        Object value = configModel.getConfig().get(ADDITIONAL_KEY);
-        return (value != null) && (boolean) value;
     }
 
     public static void setMicroserviceConfigLoader(Configuration config, MicroserviceConfigLoader loader) {
@@ -95,8 +84,8 @@ public final class ConfigUtil {
     public static DynamicConfiguration createConfigFromYamlFile(List<ConfigModel> configModelList) {
         // configuration from yaml files: default microservice.yaml
         return new DynamicConfiguration(
-            new MicroserviceConfigurationSource(configModelList),
-            new NeverStartPollingScheduler());
+                new MicroserviceConfigurationSource(configModelList),
+                new NeverStartPollingScheduler());
     }
 
     public static AbstractConfiguration createConfig(List<ConfigModel> configModelList) {

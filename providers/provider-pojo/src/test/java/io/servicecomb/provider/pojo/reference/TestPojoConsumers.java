@@ -16,13 +16,13 @@
 
 package io.servicecomb.provider.pojo.reference;
 
-import io.servicecomb.provider.pojo.IPerson;
-import io.servicecomb.provider.pojo.Person;
-import io.servicecomb.provider.pojo.PersonReference;
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.context.ApplicationContext;
 
+import io.servicecomb.provider.pojo.IPerson;
+import io.servicecomb.provider.pojo.Person;
+import io.servicecomb.provider.pojo.PersonReference;
 import mockit.Injectable;
 
 public class TestPojoConsumers {
@@ -31,6 +31,7 @@ public class TestPojoConsumers {
         PersonReference bean = new PersonReference();
 
         PojoConsumers consumers = new PojoConsumers();
+        consumers.setEmbeddedValueResolver((strVal) -> strVal);
         consumers.processConsumerField(applicationContext, bean, bean.getClass().getField("person"));
         System.out.println(consumers.getConsumerList().get(0));
         Assert.assertEquals(consumers.getConsumerList().get(0).getObject() instanceof IPerson, true);

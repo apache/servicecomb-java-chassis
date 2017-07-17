@@ -18,7 +18,7 @@ package io.servicecomb.tests.tracing;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.containing;
-import static com.github.tomakehurst.wiremock.client.WireMock.exactly;
+import static com.github.tomakehurst.wiremock.client.WireMock.moreThanOrExactly;
 import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static com.github.tomakehurst.wiremock.client.WireMock.postRequestedFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
@@ -36,7 +36,8 @@ import com.seanyinx.github.unit.scaffolding.Poller;
 import io.servicecomb.tests.EmbeddedAppender;
 import io.servicecomb.tests.Log4jConfig;
 import java.net.URL;
-import java.util.List;
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.concurrent.TimeUnit;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -82,36 +83,38 @@ public class ZipkinTracingIntegrationTest {
     ResponseEntity<String> entity = restTemplate.getForEntity("http://localhost:8080/hello", String.class);
 
     assertThat(entity.getStatusCode(), is(OK));
-    assertThat(entity.getBody(), is("hello world"));
-
-    entity = restTemplate.getForEntity("http://localhost:8080/jaxrs/bonjour", String.class);
-
-    assertThat(entity.getStatusCode(), is(OK));
-    assertThat(entity.getBody(), is("bonjour le monde"));
+    assertThat(entity.getBody(), is("hello world, bonjour le monde, hi pojo"));
 
     TimeUnit.MILLISECONDS.sleep(1000);
 
-    List<String> tracingMessages = appender.pollLogs(".*\\[\\w+/\\w+\\]\\s+INFO.*in /.*");
-    for (int i = 0; i < tracingMessages.size(); i+=2) {
-      // caller is the root of tracing tree and its traceId is the same as spanId
-      String[] ids = tracingIds(tracingMessages.get(i));
-      String parentTraceId = ids[0];
-      String parentSpanId = ids[1];
+    Collection<String> tracingMessages = appender.pollLogs(".*\\[\\w+/\\w+/\\w*\\]\\s+INFO.*in /.*");
+    assertThat(tracingMessages.isEmpty(), is(false));
 
-      assertThat(parentTraceId, is(parentSpanId));
+    Iterator<String> iterator = tracingMessages.iterator();
+    // caller is the root of tracing tree and its traceId is the same as spanId
+    String[] ids = tracingIds(iterator.next());
+    String parentTraceId = ids[0];
+    String parentSpanId = ids[1];
 
+    assertThat(parentTraceId, is(parentSpanId));
+    while (iterator.hasNext()) {
+      String message = iterator.next();
       // callee is called by caller and inherits caller's traceId but has its own spanId
-      ids = tracingIds(tracingMessages.get(i + 1));
+      ids = tracingIds(message);
       String childTraceId = ids[0];
       String childSpanId = ids[1];
+      String childParentId = ids[2];
 
       assertThat(childTraceId, is(parentTraceId));
       assertThat(childSpanId, is(not(parentTraceId)));
+      assertThat(childParentId, is(parentSpanId));
+
+      parentSpanId = childSpanId;
     }
 
     poller.assertEventually(() -> {
           try {
-            verify(exactly(2), postRequestedFor(urlEqualTo("/api/v1/spans")));
+            verify(moreThanOrExactly(1), postRequestedFor(urlEqualTo("/api/v1/spans")));
             return true;
           } catch (Exception e) {
             return false;
@@ -121,6 +124,6 @@ public class ZipkinTracingIntegrationTest {
   }
 
   private String[] tracingIds(String message) {
-    return message.replaceFirst(".*\\[(\\w+/\\w+)\\].*", "$1").trim().split("/");
+    return message.replaceFirst(".*\\[(\\w+/\\w+/\\w*)\\].*", "$1").trim().split("/");
   }
 }

@@ -26,7 +26,7 @@ import org.mockito.Mockito;
 import io.servicecomb.foundation.common.net.IpPort;
 import io.servicecomb.foundation.vertx.AsyncResultCallback;
 import io.servicecomb.serviceregistry.api.registry.Microservice;
-import io.servicecomb.serviceregistry.api.registry.MicroserviceManager;
+import io.servicecomb.serviceregistry.api.registry.MicroserviceFactory;
 import io.servicecomb.serviceregistry.cache.InstanceCacheManager;
 import io.servicecomb.serviceregistry.client.Endpoints;
 import io.servicecomb.serviceregistry.client.IpPortManager;
@@ -70,8 +70,8 @@ public class TestClienthttp {
             }
         };
 
-        MicroserviceManager microserviceManager = new MicroserviceManager();
-        Microservice microservice = microserviceManager.addMicroservice("app", "ms");
+        MicroserviceFactory microserviceFactory = new MicroserviceFactory();
+        Microservice microservice = microserviceFactory.create("app", "ms");
 
         ServiceRegistryClientImpl oClient = new ServiceRegistryClientImpl(manager);
         oClient.init();

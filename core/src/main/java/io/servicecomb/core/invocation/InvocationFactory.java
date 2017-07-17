@@ -32,7 +32,7 @@ public final class InvocationFactory {
     }
 
     private static String getMicroserviceName() {
-        return RegistryUtils.getMicroserviceManager().getDefaultMicroserviceForce().getServiceName();
+        return RegistryUtils.getMicroservice().getServiceName();
     }
 
     public static void setMicroserviceName(String microserviceName) {

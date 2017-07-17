@@ -1,2 +1,5 @@
 ﻿cse-config-order: 1000
 APPLICATION_ID: multiple
+service_description:
+  name: merged-server
+  version: 0.0.1

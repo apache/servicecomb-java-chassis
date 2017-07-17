@@ -33,12 +33,12 @@ public class TestRestTemplateBuilder {
   private static class AlwaysAcceptableRestTemplate extends AcceptableRestTemplate {
 
         @Override
-        boolean isAcceptable(String uri) {
+        public boolean isAcceptable(String uri) {
             return true;
         }
 
         @Override
-        boolean isAcceptable(URI uri) {
+        public boolean isAcceptable(URI uri) {
             return true;
         }
     }

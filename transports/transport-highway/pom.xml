@@ -19,8 +19,8 @@
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>io.servicecomb</groupId>
-		<artifactId>java-chassis</artifactId>
-		<version>0.1.0-m3-SNAPSHOT</version>
+		<artifactId>transports</artifactId>
+		<version>0.1.1-SNAPSHOT</version>
 	</parent>
 	<artifactId>transport-highway</artifactId>
 	<dependencies>

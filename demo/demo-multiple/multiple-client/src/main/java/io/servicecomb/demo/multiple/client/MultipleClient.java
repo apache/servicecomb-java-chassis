@@ -16,10 +16,8 @@
 package io.servicecomb.demo.multiple.client;
 
 import io.servicecomb.demo.TestMgr;
-import io.servicecomb.demo.crossapp.CrossappClient;
-import io.servicecomb.demo.jaxrs.client.JaxrsClient;
-import io.servicecomb.demo.pojo.client.PojoClient;
-import io.servicecomb.demo.springmvc.client.SpringmvcClient;
+import io.servicecomb.demo.multiple.a.client.AClient;
+import io.servicecomb.demo.multiple.b.client.BClient;
 import io.servicecomb.foundation.common.utils.BeanUtils;
 import io.servicecomb.foundation.common.utils.Log4jUtils;
 
@@ -28,10 +26,11 @@ public class MultipleClient {
         Log4jUtils.init();
         BeanUtils.init();
 
-        PojoClient.run();
-        JaxrsClient.run();
-        SpringmvcClient.run();
-        CrossappClient.run();
+        AClient aClient = BeanUtils.getContext().getBean(AClient.class);
+        BClient bClient = BeanUtils.getContext().getBean(BClient.class);
+
+        aClient.run();
+        bClient.run();
 
         TestMgr.summary();
     }

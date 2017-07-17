@@ -16,11 +16,6 @@
 
 package io.servicecomb.transport.rest.client.http;
 
-import java.util.List;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import io.servicecomb.common.rest.RestConst;
 import io.servicecomb.common.rest.codec.RestCodec;
 import io.servicecomb.common.rest.codec.param.RestClientRequestImpl;
@@ -41,6 +36,9 @@ import io.servicecomb.swagger.invocation.response.ResponseMeta;
 import io.vertx.core.http.HttpClient;
 import io.vertx.core.http.HttpClientRequest;
 import io.vertx.core.http.HttpClientResponse;
+import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public abstract class VertxHttpMethod {
     private static final Logger LOGGER = LoggerFactory.getLogger(VertxHttpMethod.class);
@@ -68,6 +66,14 @@ public abstract class VertxHttpMethod {
             LOGGER.error(e.toString());
             asyncResp.fail(invocation.getInvocationType(), e);
         });
+
+        LOGGER.debug(
+            "Running HTTP method {} on {} at {}:{}{}",
+            invocation.getOperationMeta().getMethod(),
+            invocation.getMicroserviceName(),
+            ipPort.getHostOrIp(),
+            ipPort.getPort(),
+            path);
 
         // 从业务线程转移到网络线程中去发送
         httpClientWithContext.runOnContext(httpClient -> {

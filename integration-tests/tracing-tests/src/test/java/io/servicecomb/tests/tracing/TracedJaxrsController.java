@@ -38,6 +38,9 @@ public class TracedJaxrsController {
   @Autowired
   private RestTemplate template;
 
+  @Autowired
+  private TracedPojo tracedPojo;
+
   @GET
   @Path("/bonjour")
   @Produces(TEXT_PLAIN)
@@ -45,16 +48,6 @@ public class TracedJaxrsController {
     logger.info("in /bonjour");
     Thread.sleep(random.nextInt(1000));
 
-    return "bonjour le " + template.getForObject("cse://tracing-service/jaxrs/monde", String.class);
-  }
-
-  @GET
-  @Path("/monde")
-  @Produces(TEXT_PLAIN)
-  public String monde() throws InterruptedException {
-    logger.info("in /monde");
-    Thread.sleep(random.nextInt(1000));
-
-    return "monde";
+    return "bonjour le monde, " + tracedPojo.pojo();
   }
 }
