@@ -39,7 +39,6 @@ import java.time.ZonedDateTime;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
@@ -51,18 +50,13 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.client.UnknownHttpStatusCodeException;
 
-public class SpringMvcIntegrationTest {
+public class SpringMvcIntegrationTestBase {
 
   private final String baseUrl = "http://127.0.0.1:8080/";
   private final RestTemplate restTemplate = new RestTemplate();
 
   private final String codeFirstUrl = baseUrl + "codeFirstSpringmvc/";
   private final String controllerUrl = baseUrl + "controller/";
-
-  @BeforeClass
-  public static void setUp() throws Exception {
-    SpringMvcTestMain.main(new String[0]);
-  }
 
   @Test
   public void ableToQueryAtRootBasePath() {
