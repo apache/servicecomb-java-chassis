@@ -1,0 +1,7 @@
+pojo-local-service:
+  - id: "001"
+    version: "0.0.4"
+    appid: pojotest-it
+    instances:
+      - endpoints:
+        - highway:127.0.0.1:7070?login=true
