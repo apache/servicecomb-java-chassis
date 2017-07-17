@@ -18,6 +18,7 @@ package io.servicecomb.tracing.zipkin;
 
 import static io.servicecomb.foundation.common.base.ServiceCombConstants.CONFIG_SERVICE_NAME;
 import static io.servicecomb.foundation.common.base.ServiceCombConstants.CONFIG_TRACING_COLLECTOR_ADDRESS;
+import static io.servicecomb.foundation.common.base.ServiceCombConstants.CONFIG_TRACING_COLLECTOR_PATH;
 import static io.servicecomb.foundation.common.base.ServiceCombConstants.DEFAULT_SERVICE_NAME;
 import static io.servicecomb.foundation.common.base.ServiceCombConstants.DEFAULT_TRACING_COLLECTOR_ADDRESS;
 
@@ -42,7 +43,10 @@ class TracingConfiguration {
     return OkHttpSender.create(
         dynamicProperties.getStringProperty(
             CONFIG_TRACING_COLLECTOR_ADDRESS,
-            DEFAULT_TRACING_COLLECTOR_ADDRESS));
+            DEFAULT_TRACING_COLLECTOR_ADDRESS)
+            .trim()
+            .replaceAll("/+$", "")
+            .concat(CONFIG_TRACING_COLLECTOR_PATH));
   }
 
   @Bean

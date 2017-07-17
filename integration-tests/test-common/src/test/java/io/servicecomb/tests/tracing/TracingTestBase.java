@@ -51,7 +51,7 @@ public class TracingTestBase {
 
   @BeforeClass
   public static void setUpClass() throws Exception {
-    System.setProperty(CONFIG_TRACING_COLLECTOR_ADDRESS, zipkin.httpUrl() + "/api/v1/spans");
+    System.setProperty(CONFIG_TRACING_COLLECTOR_ADDRESS, zipkin.httpUrl());
     setUpLocalRegistry();
 
     Log4jConfig.addAppender(appender);
