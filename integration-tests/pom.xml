@@ -18,7 +18,9 @@
         <module>springmvc-tests</module>
         <module>tracing-tests</module>
         <module>test-common</module>
-      <module>spring-jaxrs-tests</module>
+        <module>pojo-test</module>
+        <module>spring-jaxrs-tests</module>
+      <module>spring-pojo-tests</module>
     </modules>
 
     <dependencyManagement>
