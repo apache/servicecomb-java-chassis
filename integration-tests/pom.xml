@@ -22,6 +22,7 @@
         <module>pojo-test</module>
         <module>spring-springmvc-tests</module>
         <module>spring-zuul-tracing-tests</module>
+        <module>spring-pojo-tests</module>
     </modules>
 
     <dependencyManagement>
