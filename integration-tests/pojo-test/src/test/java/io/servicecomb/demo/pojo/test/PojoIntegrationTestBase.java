@@ -1,5 +1,24 @@
+
+/*
+ *  Copyright 2017 Huawei Technologies Co., Ltd
+ *
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
+ *
+ */
+
 package io.servicecomb.demo.pojo.test;
 
+import static io.servicecomb.serviceregistry.client.LocalServiceRegistryClientImpl.LOCAL_REGISTRY_FILE_KEY;
 import static org.hamcrest.Matchers.both;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.greaterThan;
@@ -18,6 +37,7 @@ import io.servicecomb.demo.smartcare.Application;
 import io.servicecomb.demo.smartcare.Group;
 import io.servicecomb.demo.smartcare.Response;
 import io.servicecomb.swagger.invocation.exception.InvocationException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -27,6 +47,12 @@ import java.util.Map;
 import org.junit.Test;
 
 public class PojoIntegrationTestBase {
+
+  protected static void setUpLocalRegistry() {
+    ClassLoader loader = Thread.currentThread().getContextClassLoader();
+    URL resource = loader.getResource("registry.yaml");
+    System.setProperty(LOCAL_REGISTRY_FILE_KEY, resource.getPath());
+  }
 
   @Test
   public void remoteHelloPojo_sayHello() {

@@ -1,4 +1,4 @@
-APPLICATION_ID: pojotest
+APPLICATION_ID: pojotest-it
 service_description:
   name: pojo
   version: 0.0.4
