@@ -42,4 +42,11 @@ cse:
 
 service_description:
   name: testDemo
+
+
+servicecomb:
+  tracing:
+    collector:
+      address: http://localhost:9411/api/v1/spans
+
       
