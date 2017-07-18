@@ -89,6 +89,10 @@ public class MicroserviceRegisterTask extends AbstractRegisterTask {
 
     private void checkSchemaIdSet() {
         Microservice existMicroservice = srClient.getMicroservice(microservice.getServiceId());
+        if (existMicroservice == null) {
+            LOGGER.error("Error to get microservice from service center when check schema set");
+            return;
+        }
         Set<String> existSchemas = new HashSet<>(existMicroservice.getSchemas());
         Set<String> localSchemas = new HashSet<>(microservice.getSchemas());
         schemaIdSetMatch = existSchemas.equals(localSchemas);
