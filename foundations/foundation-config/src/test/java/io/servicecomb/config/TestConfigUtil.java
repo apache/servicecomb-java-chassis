@@ -24,11 +24,7 @@ import com.netflix.config.ConfigurationManager;
 import com.netflix.config.DynamicPropertyFactory;
 import io.servicecomb.config.archaius.sources.ConfigModel;
 import io.servicecomb.config.archaius.sources.MicroserviceConfigLoader;
-import java.lang.reflect.Field;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import mockit.Deencapsulation;
 import org.apache.commons.configuration.AbstractConfiguration;
 import org.junit.AfterClass;
@@ -50,9 +46,7 @@ public class TestConfigUtil {
   public static void beforeTest() {
     System.setProperty(systemPropertyName, systemExpected);
 
-    Map<String, String> envs = new HashMap<>();
-    envs.put(environmentPropertyName, environmentExpected);
-    setEnv(envs);
+    System.setProperty(environmentPropertyName, environmentExpected);
 
     ConfigUtil.installDynamicConfig();
   }
@@ -172,35 +166,5 @@ public class TestConfigUtil {
     assertThat(DynamicPropertyFactory.getInstance().getStringProperty(injectProperty, null).get(),
         equalTo(null));
 
-  }
-
-  @SuppressWarnings("unchecked")
-  private static void setEnv(Map<String, String> newEnv) {
-    try {
-      Class<?> processEnvironmentClass = Class.forName("java.lang.ProcessEnvironment");
-      Field theEnvironmentField = processEnvironmentClass.getDeclaredField("theEnvironment");
-      theEnvironmentField.setAccessible(true);
-      Map<String, String> env = (Map<String, String>) theEnvironmentField.get(null);
-      env.putAll(newEnv);
-    } catch (NoSuchFieldException e) {
-      try {
-        Class[] classes = Collections.class.getDeclaredClasses();
-        Map<String, String> env = System.getenv();
-        for (Class cl : classes) {
-          if ("java.util.Collections$UnmodifiableMap".equals(cl.getName())) {
-            Field field = cl.getDeclaredField("m");
-            field.setAccessible(true);
-            Object obj = field.get(env);
-            Map<String, String> map = (Map<String, String>) obj;
-            map.clear();
-            map.putAll(newEnv);
-          }
-        }
-      } catch (Exception e2) {
-        throw new IllegalStateException(e2);
-      }
-    } catch (Exception e1) {
-      throw new IllegalStateException(e1);
-    }
   }
 }
