@@ -24,7 +24,10 @@ import com.netflix.config.ConfigurationManager;
 import com.netflix.config.DynamicPropertyFactory;
 import io.servicecomb.config.archaius.sources.ConfigModel;
 import io.servicecomb.config.archaius.sources.MicroserviceConfigLoader;
+import java.lang.reflect.Field;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import mockit.Deencapsulation;
 import org.apache.commons.configuration.AbstractConfiguration;
 import org.junit.AfterClass;
@@ -46,7 +49,11 @@ public class TestConfigUtil {
   public static void beforeTest() {
     System.setProperty(systemPropertyName, systemExpected);
 
-    System.setProperty(environmentPropertyName, environmentExpected);
+    try {
+      setEnv(environmentPropertyName, environmentExpected);
+    } catch (Exception e) {
+      throw new IllegalStateException(e);
+    }
 
     ConfigUtil.installDynamicConfig();
   }
@@ -166,5 +173,20 @@ public class TestConfigUtil {
     assertThat(DynamicPropertyFactory.getInstance().getStringProperty(injectProperty, null).get(),
         equalTo(null));
 
+  }
+
+  @SuppressWarnings("unchecked")
+  private static void setEnv(String key,String value) throws IllegalAccessException, NoSuchFieldException {
+    Class[] classes = Collections.class.getDeclaredClasses();
+    Map<String, String> env = System.getenv();
+    for(Class cl : classes) {
+      if("java.util.Collections$UnmodifiableMap".equals(cl.getName())) {
+        Field field = cl.getDeclaredField("m");
+        field.setAccessible(true);
+        Object obj = field.get(env);
+        Map<String, String> map = (Map<String, String>) obj;
+        map.put(key,value);
+      }
+    }
   }
 }
