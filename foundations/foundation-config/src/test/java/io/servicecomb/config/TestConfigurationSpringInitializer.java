@@ -15,9 +15,13 @@
  */
 package io.servicecomb.config;
 
+import com.netflix.config.ConfigurationManager;
+import com.netflix.config.DynamicPropertyFactory;
 import java.util.List;
 import java.util.Map;
 
+import mockit.Deencapsulation;
+import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -31,5 +35,12 @@ public class TestConfigurationSpringInitializer {
         List<Map<String, Object>> listO = (List<Map<String, Object>>) o;
         Assert.assertEquals(3, listO.size());
         Assert.assertEquals(null, ConfigUtil.getProperty("notExist"));
+    }
+
+    @AfterClass
+    public static void tearDown() throws Exception {
+        Deencapsulation.setField(ConfigurationManager.class, "instance", null);
+        Deencapsulation.setField(ConfigurationManager.class, "customConfigurationInstalled", false);
+        Deencapsulation.setField(DynamicPropertyFactory.class, "config", null);
     }
 }
