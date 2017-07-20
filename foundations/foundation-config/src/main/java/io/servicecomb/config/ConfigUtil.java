@@ -109,13 +109,13 @@ public final class ConfigUtil {
       configFromConfigCenter.getSource().addUpdateListener(new ServiceCombPropertyUpdateListener(injectConfig));
     }
 
-    duplicateServiceCombConfigToCse(config, configFromYamlFile, "configFromYamlFile");
-
     duplicateServiceCombConfigToCse(config, new ConcurrentMapConfiguration(new SystemConfiguration()),
         "configFromSystem");
 
     duplicateServiceCombConfigToCse(config, new ConcurrentMapConfiguration(new EnvironmentConfiguration()),
         "configFromEnvironment");
+
+    duplicateServiceCombConfigToCse(config, configFromYamlFile, "configFromYamlFile");
 
     return config;
   }
@@ -131,7 +131,7 @@ public final class ConfigUtil {
     while (keys.hasNext()) {
       String key = keys.next();
       if (key.startsWith(CONFIG_SERVICECOMB_PREFIX)) {
-        injects.put(key, key.replace(CONFIG_SERVICECOMB_PREFIX, CONFIG_CSE_PREFIX));
+        injects.put(key, CONFIG_CSE_PREFIX + key.substring(key.indexOf(".")));
       }
     }
 
