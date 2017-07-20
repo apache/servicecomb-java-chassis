@@ -45,7 +45,7 @@ public class TestRestTemplateBuilder {
 
   @Test
   public void addsRestTemplateToWrapper() {
-    RestTemplateBuilder.addAcceptableRestTemplate(underlying);
+    RestTemplateBuilder.addAcceptableRestTemplate(1, underlying);
 
     RestTemplate restTemplate = RestTemplateBuilder.create();
 

@@ -89,7 +89,7 @@ public class TestRestTemplateWrapper {
   public void setUp() throws Exception {
     when(underlying.isAcceptable(url)).thenReturn(true);
     when(underlying.isAcceptable(uri)).thenReturn(true);
-    wrapper.addAcceptableRestTemplate(underlying);
+    wrapper.addAcceptableRestTemplate(1, underlying);
   }
 
   @Test

@@ -28,7 +28,7 @@ public final class RestTemplateBuilder {
         return wrapper;
     }
 
-    public static void addAcceptableRestTemplate(AcceptableRestTemplate restTemplate) {
-        wrapper.addAcceptableRestTemplate(restTemplate);
+    public static void addAcceptableRestTemplate(int index, AcceptableRestTemplate restTemplate) {
+        wrapper.addAcceptableRestTemplate(index, restTemplate);
     }
 }

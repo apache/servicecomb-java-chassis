@@ -50,8 +50,8 @@ class RestTemplateWrapper extends RestTemplate {
         acceptableRestTemplates.add(new CseRestTemplate());
     }
 
-    void addAcceptableRestTemplate(AcceptableRestTemplate restTemplate) {
-        acceptableRestTemplates.add(restTemplate);
+    void addAcceptableRestTemplate(int index, AcceptableRestTemplate restTemplate) {
+        acceptableRestTemplates.add(index, restTemplate);
     }
 
     RestTemplate getRestTemplate(String url) {
