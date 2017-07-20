@@ -27,7 +27,6 @@ import javax.ws.rs.Produces;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.client.RestTemplate;
 
 @RestSchema(schemaId = "someTracedJaxrsRestEndpoint")
 @Path("/jaxrs")
@@ -35,8 +34,8 @@ public class TracedJaxrsController {
   private static final Logger logger = LoggerFactory.getLogger(TracedJaxrsController.class);
   private final Random random = new Random();
 
-  @Autowired
-  private RestTemplate template;
+  //@Autowired
+  //private RestTemplate template;
 
   @Autowired
   private TracedPojo tracedPojo;
