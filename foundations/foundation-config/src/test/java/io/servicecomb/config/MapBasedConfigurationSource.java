@@ -33,7 +33,7 @@ public class MapBasedConfigurationSource implements WatchedConfigurationSource {
   private static final Set<WatchedUpdateListener> listeners = new HashSet<>();
 
   static {
-    properties.put("servicecomb.configcenter.setting","xyz");
+    properties.put("servicecomb.abc.key","xyz");
   }
 
   @Override

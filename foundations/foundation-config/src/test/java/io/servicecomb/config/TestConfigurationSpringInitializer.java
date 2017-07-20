@@ -37,10 +37,10 @@ public class TestConfigurationSpringInitializer {
         Assert.assertEquals(null, ConfigUtil.getProperty("notExist"));
     }
 
-    @AfterClass
-    public static void tearDown() throws Exception {
-        Deencapsulation.setField(ConfigurationManager.class, "instance", null);
-        Deencapsulation.setField(ConfigurationManager.class, "customConfigurationInstalled", false);
-        Deencapsulation.setField(DynamicPropertyFactory.class, "config", null);
-    }
+//    @AfterClass
+//    public static void tearDown() throws Exception {
+//        Deencapsulation.setField(ConfigurationManager.class, "instance", null);
+//        Deencapsulation.setField(ConfigurationManager.class, "customConfigurationInstalled", false);
+//        Deencapsulation.setField(DynamicPropertyFactory.class, "config", null);
+//    }
 }
