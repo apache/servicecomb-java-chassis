@@ -16,7 +16,6 @@
 
 package io.servicecomb.demo.client.perf;
 
-import io.servicecomb.core.CseContext;
 import io.servicecomb.demo.pojo.client.PojoClient;
 import io.servicecomb.demo.server.Test;
 import io.servicecomb.demo.server.TestRequest;
@@ -27,9 +26,6 @@ public class ClientThread extends CommonThread {
     @Override
     public void run() {
         Test test = PojoClient.test;
-        CseContext.getInstance().getConsumerProviderManager().setTransport("pojo", Config.getTransport());
-
-        System.out.printf("test %s performance\n", Config.getTransport());
 
         while (isRunning()) {
             int idx = 0;

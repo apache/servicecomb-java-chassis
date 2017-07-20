@@ -16,6 +16,7 @@
 
 package io.servicecomb.demo.client.perf;
 
+import io.servicecomb.core.CseContext;
 import io.servicecomb.foundation.common.utils.BeanUtils;
 import io.servicecomb.foundation.common.utils.Log4jUtils;
 import io.servicecomb.foundation.vertx.VertxUtils;
@@ -27,6 +28,9 @@ public class PerfClient {
         BeanUtils.init();
 
         System.out.println("mode:" + Config.getMode());
+
+        CseContext.getInstance().getConsumerProviderManager().setTransport("pojo", Config.getTransport());
+        System.out.printf("test %s performance\n", Config.getTransport());
 
         if ("reactive".equals(Config.getMode())) {
             Vertx vertx = VertxUtils.getOrCreateVertxByName("perfClient", null);
