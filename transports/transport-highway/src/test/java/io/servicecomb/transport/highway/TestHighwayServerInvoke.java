@@ -20,15 +20,15 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
+import io.netty.buffer.ByteBuf;
 import io.servicecomb.core.definition.OperationMeta;
 import io.servicecomb.core.definition.SchemaMeta;
 import io.servicecomb.core.executor.ReactiveExecutor;
 import io.servicecomb.core.unittest.UnitTestMeta;
+import io.servicecomb.foundation.vertx.tcp.TcpConnection;
 import io.servicecomb.transport.common.MockUtil;
 import io.servicecomb.transport.highway.message.RequestHeader;
-
 import io.vertx.core.buffer.Buffer;
-import io.vertx.core.net.NetSocket;
 import mockit.Mock;
 import mockit.MockUp;
 
@@ -41,18 +41,17 @@ public class TestHighwayServerInvoke {
 
     private UnitTestMeta unitTestMeta;
 
-    private Buffer netSocketBuffer;
+    private ByteBuf netSocketBuffer;
 
-    private NetSocket netSocket;
+    private TcpConnection connection;
 
     @Before
     public void setup() {
         unitTestMeta = new UnitTestMeta();
-        netSocket = new MockUp<NetSocket>() {
+        connection = new MockUp<TcpConnection>() {
             @Mock
-            public NetSocket write(Buffer data) {
+            public void write(ByteBuf data) {
                 netSocketBuffer = data;
-                return netSocket;
             }
         }.getMockInstance();
     }
@@ -72,13 +71,13 @@ public class TestHighwayServerInvoke {
 
         // 初始化失败
         requestHeader.setDestMicroservice(null);
-        Assert.assertFalse(highwayServerInvoke.init(netSocket, 0, null, null));
+        Assert.assertFalse(highwayServerInvoke.init(connection, 0, null, null));
 
         // 初始化成功
         requestHeader.setDestMicroservice(schemaMeta.getMicroserviceName());
         requestHeader.setSchemaId(schemaMeta.getSchemaId());
         requestHeader.setOperationName(operationMeta.getOperationId());
-        Assert.assertTrue(highwayServerInvoke.init(netSocket, 0, requestHeader, null));
+        Assert.assertTrue(highwayServerInvoke.init(connection, 0, requestHeader, null));
 
         // exe成功
         netSocketBuffer = null;
@@ -88,6 +87,6 @@ public class TestHighwayServerInvoke {
         // exe失败
         MockUtil.getInstance().decodeRequestSucc = false;
         highwayServerInvoke.execute();
-        Assert.assertEquals(true, netSocketBuffer.toString().startsWith("CSE.TCP"));
+        Assert.assertEquals(true, Buffer.buffer(netSocketBuffer).toString().startsWith("CSE.TCP"));
     }
 }

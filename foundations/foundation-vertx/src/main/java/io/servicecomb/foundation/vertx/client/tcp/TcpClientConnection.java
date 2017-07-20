@@ -18,11 +18,11 @@ package io.servicecomb.foundation.vertx.client.tcp;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Queue;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.TimeoutException;
 
 import org.slf4j.Logger;
@@ -38,6 +38,7 @@ import io.vertx.core.Context;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.net.NetClient;
 import io.vertx.core.net.NetSocket;
+import io.vertx.core.net.impl.NetSocketImpl;
 
 public class TcpClientConnection extends TcpConnection {
     private static final Logger LOGGER = LoggerFactory.getLogger(TcpClientConnection.class);
@@ -48,9 +49,6 @@ public class TcpClientConnection extends TcpConnection {
         TRY_LOGIN,
         WORKING
     }
-
-    // 是在哪个context中创建的
-    private Context context;
 
     private NetClient netClient;
 
@@ -64,25 +62,21 @@ public class TcpClientConnection extends TcpConnection {
 
     private volatile Status status = Status.DISCONNECTED;
 
-    private NetSocket netSocket;
+    // save msg before login success.
+    // before login, we can not know parameters, like: zip/codec compatibl, and so on
+    // so can only save package, can not save byteBuf
+    private Queue<AbstractTcpClientPackage> packageQueue = new ConcurrentLinkedQueue<>();
 
-    // 连接未建立时，临时保存发送消息的队列
-    private List<AbstractTcpClientPackage> tmpPackageList = new LinkedList<>();
-
-    // 所有的访问，都在锁的保护中，是线程安全的
     private volatile Map<Long, TcpRequest> requestMap = new ConcurrentHashMap<>();
 
     public TcpClientConnection(Context context, NetClient netClient, String endpoint, TcpClientConfig clientConfig) {
-        this.context = context;
+        this.setContext(context);
+
         this.netClient = netClient;
         URIEndpointObject ipPort = new URIEndpointObject(endpoint);
         this.socketAddress = ipPort.getSocketAddress();
         this.remoteSupportLogin = Boolean.parseBoolean(ipPort.getFirst(TcpConst.LOGIN));
         this.clientConfig = clientConfig;
-    }
-
-    public Context getContext() {
-        return context;
     }
 
     public boolean isLocalSupportLogin() {
@@ -101,23 +95,61 @@ public class TcpClientConnection extends TcpConnection {
         return true;
     }
 
-    /**
-     * 回调在tcp client verticle线程执行
-     * send没有锁优化的意义，因为netSocket.write内部本身会加锁
-     */
-    public synchronized void send(AbstractTcpClientPackage tcpClientPackage, long msTimeout,
+    public void send(AbstractTcpClientPackage tcpClientPackage, long msTimeout,
             TcpResonseCallback callback) {
         requestMap.put(tcpClientPackage.getMsgId(), new TcpRequest(msTimeout, callback));
 
-        if (Status.WORKING.equals(status)) {
-            TcpOutputStream os = tcpClientPackage.createStream();
-            netSocket.write(os.getBuffer());
+        if (writeToBufferQueue(tcpClientPackage)) {
             return;
         }
 
-        tmpPackageList.add(tcpClientPackage);
-        if (Status.DISCONNECTED.equals(status)) {
-            connect();
+        // before login success, no optimize, just make sure do not lost data
+        context.runOnContext(v -> {
+            if (!writeToBufferQueue(tcpClientPackage)) {
+                packageQueue.add(tcpClientPackage);
+            }
+
+            // connct must call in eventloop thread
+            // otherwise vertx will create a new eventloop thread for it if count
+            //   of eventloop thread is not up to the limit.
+            if (Status.DISCONNECTED.equals(status)) {
+                connect();
+            }
+        });
+    }
+
+    private boolean writeToBufferQueue(AbstractTcpClientPackage tcpClientPackage) {
+        // read status maybe out of eventloop thread, it's not exact
+        // just optimize for main scenes
+        if (Status.WORKING.equals(status)) {
+            // encode in sender thread
+            try (TcpOutputStream os = tcpClientPackage.createStream()) {
+                write(os.getByteBuf());
+            }
+            return true;
+        }
+
+        return false;
+    }
+
+    @Override
+    protected void writeInContext() {
+        writePackageInContext();
+
+        super.writeInContext();
+    }
+
+    private void writePackageInContext() {
+        for (;;) {
+            AbstractTcpClientPackage pkg = packageQueue.poll();
+            if (pkg == null) {
+                break;
+            }
+
+            try (TcpOutputStream os = pkg.createStream()) {
+                Buffer buf = os.getBuffer();
+                netSocket.write(buf);
+            }
         }
     }
 
@@ -135,9 +167,12 @@ public class TcpClientConnection extends TcpConnection {
         });
     }
 
-    private synchronized void onConnectSuccess(NetSocket socket) {
-        LOGGER.info("connect to address {} success", socketAddress.toString());
-        this.netSocket = socket;
+    private void onConnectSuccess(NetSocket socket) {
+        LOGGER.info("connectd to address {} success in thread {}.",
+                socketAddress.toString(),
+                Thread.currentThread().getName());
+        // currently, socket always be NetSocketImpl
+        this.initNetSocket((NetSocketImpl) socket);
         socket.handler(new TcpParser(this::onReply));
 
         socket.exceptionHandler(this::onException);
@@ -161,7 +196,7 @@ public class TcpClientConnection extends TcpConnection {
                 e.getMessage());
     }
 
-    private synchronized void onDisconnected(Throwable e) {
+    private void onDisconnected(Throwable e) {
         this.status = Status.DISCONNECTED;
         LOGGER.error("{} disconnected from {}, in thread {}, cause {}",
                 netSocket.localAddress().toString(),
@@ -172,7 +207,7 @@ public class TcpClientConnection extends TcpConnection {
         clearCachedRequest(e);
     }
 
-    protected synchronized void tryLogin() {
+    protected void tryLogin() {
         if (!localSupportLogin || !remoteSupportLogin) {
             LOGGER.error(
                     "local or remote not support login, address={}, localSupportLogin={}, remoteSupportLogin={}.",
@@ -193,7 +228,7 @@ public class TcpClientConnection extends TcpConnection {
         }
     }
 
-    private synchronized void onLoginResponse(AsyncResult<TcpData> asyncResult) {
+    private void onLoginResponse(AsyncResult<TcpData> asyncResult) {
         if (asyncResult.failed()) {
             LOGGER.error("login failed, address {}", socketAddress.toString(), asyncResult.cause());
             // 在相应回调中设置状态
@@ -212,22 +247,12 @@ public class TcpClientConnection extends TcpConnection {
         onLoginSuccess();
     }
 
-    private synchronized void onLoginSuccess() {
-        if (!tmpPackageList.isEmpty()) {
-            LOGGER.info("writting cached buffer to address {}", socketAddress.toString());
-            for (AbstractTcpClientPackage tcpClientPackage : tmpPackageList) {
-                TcpOutputStream os = tcpClientPackage.createStream();
-                if (os != null) {
-                    netSocket.write(os.getBuffer());
-                }
-            }
-            tmpPackageList.clear();
-        }
-
+    private void onLoginSuccess() {
         this.status = Status.WORKING;
+        writeInContext();
     }
 
-    private synchronized void onConnectFailed(Throwable cause) {
+    private void onConnectFailed(Throwable cause) {
         // 连接失败
         this.status = Status.DISCONNECTED;
         String msg = String.format("connect to address %s failed.",
@@ -237,7 +262,7 @@ public class TcpClientConnection extends TcpConnection {
         clearCachedRequest(cause);
     }
 
-    protected synchronized void clearCachedRequest(Throwable cause) {
+    protected void clearCachedRequest(Throwable cause) {
         // 在onSendError，用户可能发起一次新的调用，需要避免作多余的清理
         Map<Long, TcpRequest> oldMap = requestMap;
         requestMap = new ConcurrentHashMap<>();
