@@ -23,16 +23,22 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import io.servicecomb.codec.protobuf.utils.ProtobufSchemaUtils;
-import io.servicecomb.codec.protobuf.utils.WrapSchema;
-import io.servicecomb.transport.highway.message.LoginRequest;
-import io.servicecomb.transport.highway.message.RequestHeader;
-import io.servicecomb.foundation.vertx.stream.BufferOutputStream;
-
 import io.protostuff.LinkedBuffer;
 import io.protostuff.ProtobufOutput;
+import io.servicecomb.codec.protobuf.definition.ProtobufManager;
+import io.servicecomb.codec.protobuf.utils.ProtobufSchemaUtils;
+import io.servicecomb.codec.protobuf.utils.WrapSchema;
+import io.servicecomb.core.CseContext;
+import io.servicecomb.core.definition.MicroserviceMeta;
+import io.servicecomb.core.definition.MicroserviceMetaManager;
+import io.servicecomb.core.definition.OperationMeta;
+import io.servicecomb.core.definition.SchemaMeta;
+import io.servicecomb.foundation.vertx.stream.BufferOutputStream;
+import io.servicecomb.transport.highway.message.LoginRequest;
+import io.servicecomb.transport.highway.message.RequestHeader;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.net.NetSocket;
+import io.vertx.core.net.impl.NetSocketImpl;
 import io.vertx.core.net.impl.SocketAddressImpl;
 import mockit.Expectations;
 import mockit.Mock;
@@ -49,13 +55,16 @@ public class TestHighwayServerConnection {
     HighwayServerConnection connection;
 
     @Mocked
-    NetSocket netSocket;
+    MicroserviceMetaManager microserviceMetaManager;
+
+    @Mocked
+    NetSocketImpl netSocket;
 
     RequestHeader header = new RequestHeader();
 
     @Before
     public void init() {
-        new Expectations() {
+        new Expectations(CseContext.getInstance()) {
             {
                 netSocket.remoteAddress();
                 result = new SocketAddressImpl(new InetSocketAddress("127.0.0.1", 80));
@@ -127,11 +136,32 @@ public class TestHighwayServerConnection {
     }
 
     @Test
-    public void testRequestNormal() throws Exception {
+    public void testRequestNormal(@Mocked MicroserviceMeta microserviceMeta, @Mocked OperationMeta operationMeta,
+            @Mocked SchemaMeta schemaMeta) throws Exception {
         header.setMsgType(MsgType.REQUEST);
         Buffer headerBuffer = createBuffer(requestHeaderSchema, header);
 
         Buffer bodyBuffer = Buffer.buffer();
+
+        new Expectations(CseContext.getInstance()) {
+            {
+                CseContext.getInstance().getMicroserviceMetaManager();
+                result = microserviceMetaManager;
+
+                microserviceMetaManager.ensureFindValue(null);
+                result = microserviceMeta;
+
+                microserviceMeta.ensureFindSchemaMeta(header.getSchemaId());
+                result = schemaMeta;
+            }
+        };
+
+        new Expectations(ProtobufManager.class) {
+            {
+                ProtobufManager.getOrCreateOperation(operationMeta);
+                result = null;
+            }
+        };
 
         Holder<Boolean> holder = new Holder<>();
         new MockUp<HighwayServerInvoke>() {

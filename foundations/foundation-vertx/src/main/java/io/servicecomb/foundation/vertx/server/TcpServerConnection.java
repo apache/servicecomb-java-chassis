@@ -19,18 +19,17 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import io.servicecomb.foundation.vertx.tcp.TcpConnection;
-
 import io.vertx.core.net.NetSocket;
+import io.vertx.core.net.impl.NetSocketImpl;
 
 public class TcpServerConnection extends TcpConnection {
     private static final Logger LOGGER = LoggerFactory.getLogger(TcpServerConnection.class);
 
     protected TcpParser splitter;
 
-    protected NetSocket netSocket;
-
     public void init(NetSocket netSocket) {
-        this.netSocket = netSocket;
+        // currently, socket always be NetSocketImpl
+        this.initNetSocket((NetSocketImpl) netSocket);
 
         String remoteAddress = netSocket.remoteAddress().toString();
         LOGGER.info("connect from {}, in thread {}",

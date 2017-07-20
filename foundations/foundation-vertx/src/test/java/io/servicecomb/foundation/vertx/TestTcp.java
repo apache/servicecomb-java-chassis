@@ -39,6 +39,7 @@ import io.vertx.core.Vertx;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.net.NetClient;
 import io.vertx.core.net.NetSocket;
+import io.vertx.core.net.impl.NetSocketImpl;
 import io.vertx.core.net.impl.SocketAddressImpl;
 import mockit.Deencapsulation;
 import mockit.Mock;
@@ -76,7 +77,6 @@ public class TestTcp {
         oTcpClient.checkTimeout();
         oTcpClient.send(new TcpClientPackage(null), 123, Mockito.mock(TcpResonseCallback.class));
         oTcpClient.send(new TcpClientPackage(null), 123, Mockito.mock(TcpResonseCallback.class));
-        Assert.assertNotEquals(null, oTcpClient.getContext());
 
         new MockUp<TcpClientConnectionPool>() {
             @Mock
@@ -103,7 +103,7 @@ public class TestTcp {
         oTcpClientVerticle.createClientPool();
         Assert.assertNotNull(oTcpClientVerticle.getVertx());
 
-        NetSocket socket = Mockito.mock(NetSocket.class);
+        NetSocket socket = Mockito.mock(NetSocketImpl.class);
         Throwable e = Mockito.mock(Throwable.class);
         Buffer hBuffer = Mockito.mock(Buffer.class);
         Buffer bBuffer = Mockito.mock(Buffer.class);

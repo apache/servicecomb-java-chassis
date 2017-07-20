@@ -21,6 +21,7 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import io.protostuff.runtime.ProtobufFeature;
 import io.servicecomb.codec.protobuf.definition.OperationProtobuf;
 import io.servicecomb.codec.protobuf.definition.ProtobufManager;
 import io.servicecomb.codec.protobuf.utils.WrapSchema;
@@ -30,14 +31,12 @@ import io.servicecomb.core.definition.MicroserviceMeta;
 import io.servicecomb.core.definition.MicroserviceMetaManager;
 import io.servicecomb.core.definition.OperationMeta;
 import io.servicecomb.core.definition.SchemaMeta;
+import io.servicecomb.foundation.vertx.tcp.TcpConnection;
 import io.servicecomb.swagger.invocation.Response;
 import io.servicecomb.swagger.invocation.exception.InvocationException;
-import io.protostuff.runtime.ProtobufFeature;
 import io.servicecomb.transport.highway.message.RequestHeader;
 import io.servicecomb.transport.highway.message.ResponseHeader;
-
 import io.vertx.core.buffer.Buffer;
-import io.vertx.core.net.NetSocket;
 
 public class HighwayServerInvoke {
     private static final Logger LOGGER = LoggerFactory.getLogger(HighwayServerInvoke.class);
@@ -52,7 +51,7 @@ public class HighwayServerInvoke {
 
     private OperationProtobuf operationProtobuf;
 
-    private NetSocket netSocket;
+    private TcpConnection connection;
 
     private long msgId;
 
@@ -70,10 +69,10 @@ public class HighwayServerInvoke {
         this.microserviceMetaManager = microserviceMetaManager;
     }
 
-    public boolean init(NetSocket netSocket, long msgId,
+    public boolean init(TcpConnection connection, long msgId,
             RequestHeader header, Buffer bodyBuffer) {
         try {
-            doInit(netSocket, msgId, header, bodyBuffer);
+            doInit(connection, msgId, header, bodyBuffer);
             return true;
         } catch (Throwable e) {
             String microserviceQualifidName = "unknown";
@@ -89,8 +88,9 @@ public class HighwayServerInvoke {
         }
     }
 
-    private void doInit(NetSocket netSocket, long msgId, RequestHeader header, Buffer bodyBuffer) throws Exception {
-        this.netSocket = netSocket;
+    private void doInit(TcpConnection connection, long msgId, RequestHeader header,
+            Buffer bodyBuffer) throws Exception {
+        this.connection = connection;
         this.msgId = msgId;
         this.header = header;
 
@@ -138,7 +138,7 @@ public class HighwayServerInvoke {
 
         try {
             Buffer respBuffer = HighwayCodec.encodeResponse(msgId, header, bodySchema, body, protobufFeature);
-            netSocket.write(respBuffer);
+            connection.write(respBuffer.getByteBuf());
         } catch (Exception e) {
             // 没招了，直接打日志
             String msg = String.format("encode response failed, %s, msgId=%d",

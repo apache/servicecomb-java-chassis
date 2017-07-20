@@ -115,7 +115,7 @@ public class HighwayServerConnection extends TcpServerConnection implements TcpB
 
     protected void onRequest(long msgId, RequestHeader header, Buffer bodyBuffer) {
         HighwayServerInvoke invoke = new HighwayServerInvoke(protobufFeature);
-        if (invoke.init(netSocket, msgId, header, bodyBuffer)) {
+        if (invoke.init(this, msgId, header, bodyBuffer)) {
             invoke.execute();
         }
     }
