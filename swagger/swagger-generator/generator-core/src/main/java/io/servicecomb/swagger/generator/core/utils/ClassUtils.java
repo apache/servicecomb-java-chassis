@@ -18,9 +18,12 @@ package io.servicecomb.swagger.generator.core.utils;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import org.springframework.util.StringUtils;
 
@@ -42,6 +45,66 @@ import io.swagger.models.parameters.Parameter;
 import io.swagger.models.properties.Property;
 
 public final class ClassUtils {
+    // reference: 
+    //  https://docs.oracle.com/javase/tutorial/java/nutsandbolts/_keywords.html
+    //  https://en.wikipedia.org/wiki/List_of_Java_keywords
+    private static final Set<String> JAVA_RESERVED_WORDS = new HashSet<>();
+    static {
+        JAVA_RESERVED_WORDS.addAll(Arrays.asList("true",
+                "false",
+                "null",
+                "abstract",
+                "continue",
+                "for",
+                "new",
+                "switch",
+                "assert",
+                "default",
+                "goto",
+                "package",
+                "synchronized",
+                "boolean",
+                "do",
+                "if",
+                "private",
+                "this",
+                "break",
+                "double",
+                "implements",
+                "protected",
+                "throw",
+                "byte",
+                "else",
+                "import",
+                "public",
+                "throws",
+                "case",
+                "enum",
+                "instanceof",
+                "return",
+                "transient",
+                "catch",
+                "extends",
+                "int",
+                "short",
+                "try",
+                "char",
+                "final",
+                "interface",
+                "static",
+                "void",
+                "class",
+                "finally",
+                "long",
+                "strictfp",
+                "volatile",
+                "const",
+                "float",
+                "native",
+                "super",
+                "while"));
+    }
+
     private ClassUtils() {
     }
 
@@ -217,6 +280,20 @@ public final class ClassUtils {
     }
 
     public static String correctClassName(String name) {
-        return name.replace("-", "_");
+        String parts[] = name.split("\\.", -1);
+        for (int idx = 0; idx < parts.length; idx++) {
+            String part = parts[idx];
+            if (part.isEmpty()) {
+                parts[idx] = "_";
+                continue;
+            }
+
+            part = part.replace('-', '_');
+            if (Character.isDigit(part.charAt(0)) || JAVA_RESERVED_WORDS.contains(part)) {
+                part = "_" + part;
+            }
+            parts[idx] = part;
+        }
+        return String.join(".", parts);
     }
 }
