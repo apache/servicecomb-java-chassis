@@ -37,10 +37,10 @@ import org.junit.Test;
 
 public class TestConfigUtil {
 
-  private static final String systemPropertyName = "servicecomb.system.setting";
+  private static final String systemPropertyName = "servicecomb.cse.servicecomb.system.setting";
   private static final String systemExpected = uniquify("ran");
 
-  private static final String environmentPropertyName = "servicecomb.environment.setting";
+  private static final String environmentPropertyName = "servicecomb.cse.servicecomb.environment.setting";
   private static final String environmentExpected = uniquify("ran");
 
   private final MapBasedConfigurationSource configurationSource = new MapBasedConfigurationSource();
@@ -87,11 +87,11 @@ public class TestConfigUtil {
     String expected = "vaule";
 
     assertThat(DynamicPropertyFactory
-            .getInstance().getStringProperty("servicecomb.whatever.cse.key", null).get(),
+            .getInstance().getStringProperty("servicecomb.cse.servicecomb.file", null).get(),
         equalTo(expected));
 
     assertThat(DynamicPropertyFactory
-            .getInstance().getStringProperty("cse.whatever.cse.key", null).get(),
+            .getInstance().getStringProperty("cse.cse.servicecomb.file", null).get(),
         equalTo(expected));
   }
 
@@ -102,7 +102,7 @@ public class TestConfigUtil {
         equalTo(systemExpected));
 
     assertThat(DynamicPropertyFactory
-            .getInstance().getStringProperty("cse.system.setting", null).get(),
+            .getInstance().getStringProperty("servicecomb.cse.servicecomb.system.setting", null).get(),
         equalTo(systemExpected));
   }
 
@@ -113,38 +113,59 @@ public class TestConfigUtil {
         equalTo(environmentExpected));
 
     assertThat(DynamicPropertyFactory
-            .getInstance().getStringProperty("cse.environment.setting", null).get(),
+            .getInstance().getStringProperty("servicecomb.cse.servicecomb.environment.setting", null).get(),
         equalTo(environmentExpected));
   }
 
   @Test
   public void propertiesAddFromDynamicConfigSourceIsDuplicated() throws Exception {
-    String serviceCombProperty = "servicecomb.whatever.property.add";
-    String cseProperty = "cse.whatever.property.add";
-
     String expected = uniquify("ran");
+    String someProperty = "servicecomb.cse.servicecomb.add";
+    String injectProperty = "cse.cse.servicecomb.add";
 
-    configurationSource.addProperty(serviceCombProperty, expected);
+    configurationSource.addProperty(someProperty, expected);
 
-    assertThat(DynamicPropertyFactory.getInstance().getStringProperty(serviceCombProperty, null).get(),
+    assertThat(DynamicPropertyFactory.getInstance().getStringProperty(someProperty, null).get(),
         equalTo(expected));
-    assertThat(DynamicPropertyFactory.getInstance().getStringProperty(cseProperty, null).get(),
+    assertThat(DynamicPropertyFactory.getInstance().getStringProperty(injectProperty, null).get(),
         equalTo(expected));
 
     String changed = uniquify("changed");
-    configurationSource.addProperty(serviceCombProperty, changed);
+    configurationSource.addProperty(someProperty, changed);
 
-    assertThat(DynamicPropertyFactory.getInstance().getStringProperty(serviceCombProperty, null).get(),
+    assertThat(DynamicPropertyFactory.getInstance().getStringProperty(someProperty, null).get(),
         equalTo(changed));
-    assertThat(DynamicPropertyFactory.getInstance().getStringProperty(cseProperty, null).get(),
+    assertThat(DynamicPropertyFactory.getInstance().getStringProperty(injectProperty, null).get(),
         equalTo(changed));
+
+
+    expected = uniquify("ran");
+    someProperty = "servicecomb.servicecomb.cse.add";
+    injectProperty = "cse.servicecomb.cse.add";
+
+
+    configurationSource.addProperty(someProperty, expected);
+
+    assertThat(DynamicPropertyFactory.getInstance().getStringProperty(someProperty, null).get(),
+        equalTo(expected));
+    assertThat(DynamicPropertyFactory.getInstance().getStringProperty(injectProperty, null).get(),
+        equalTo(expected));
+
+    changed = uniquify("changed");
+    configurationSource.addProperty(someProperty, changed);
+
+    assertThat(DynamicPropertyFactory.getInstance().getStringProperty(someProperty, null).get(),
+        equalTo(changed));
+    assertThat(DynamicPropertyFactory.getInstance().getStringProperty(injectProperty, null).get(),
+        equalTo(changed));
+
   }
 
   @Test
   public void propertiesChangeFromDynamicConfigSourceIsDuplicated() throws Exception {
     String expected = uniquify("ran");
-    String someProperty = "servicecomb.whatever.property.change";
-    String injectProperty = "cse.whatever.property.change";
+    String someProperty = "servicecomb.cse.servicecomb.change";
+    String injectProperty = "cse.cse.servicecomb.change";
     configurationSource.addProperty(someProperty, expected);
 
     assertThat(DynamicPropertyFactory.getInstance().getStringProperty(someProperty, null).get(),
@@ -160,13 +181,30 @@ public class TestConfigUtil {
     assertThat(DynamicPropertyFactory.getInstance().getStringProperty(injectProperty, null).get(),
         equalTo(changed));
 
+    expected = uniquify("ran");
+    someProperty = "servicecomb.servicecomb.cse.change";
+    injectProperty = "cse.servicecomb.cse.change";
+    configurationSource.addProperty(someProperty, expected);
+    assertThat(DynamicPropertyFactory.getInstance().getStringProperty(someProperty, null).get(),
+        equalTo(expected));
+    assertThat(DynamicPropertyFactory.getInstance().getStringProperty(injectProperty, null).get(),
+        equalTo(expected));
+
+    changed = uniquify("changed");
+    configurationSource.setProperty(someProperty, changed);
+
+    assertThat(DynamicPropertyFactory.getInstance().getStringProperty(someProperty, null).get(),
+        equalTo(changed));
+    assertThat(DynamicPropertyFactory.getInstance().getStringProperty(injectProperty, null).get(),
+        equalTo(changed));
+
   }
 
   @Test
   public void propertiesDeleteFromDynamicConfigSourceIsDuplicated() throws Exception {
     String expected = uniquify("ran");
-    String someProperty = "servicecomb.whatever.property.delete";
-    String injectProperty = "cse.whatever.property.delete";
+    String someProperty = "servicecomb.cse.servicecomb.delete";
+    String injectProperty = "cse.cse.servicecomb.delete";
     configurationSource.addProperty(someProperty, expected);
 
     assertThat(DynamicPropertyFactory.getInstance().getStringProperty(someProperty, null).get(),
@@ -181,7 +219,25 @@ public class TestConfigUtil {
     assertThat(DynamicPropertyFactory.getInstance().getStringProperty(injectProperty, null).get(),
         equalTo(null));
 
+
+    expected = uniquify("ran");
+    someProperty = "servicecomb.servicecomb.cse.delete";
+    injectProperty = "cse.servicecomb.cse.delete";
+    configurationSource.addProperty(someProperty, expected);
+
+    assertThat(DynamicPropertyFactory.getInstance().getStringProperty(someProperty, null).get(),
+        equalTo(expected));
+    assertThat(DynamicPropertyFactory.getInstance().getStringProperty(injectProperty, null).get(),
+        equalTo(expected));
+
+    configurationSource.deleteProperty(someProperty);
+
+    assertThat(DynamicPropertyFactory.getInstance().getStringProperty(someProperty, null).get(),
+        equalTo(null));
+    assertThat(DynamicPropertyFactory.getInstance().getStringProperty(injectProperty, null).get(),
+        equalTo(null));
   }
+
 
   @SuppressWarnings("unchecked")
   private static void setEnv(String key,String value) throws IllegalAccessException, NoSuchFieldException {
