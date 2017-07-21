@@ -45,8 +45,7 @@ service_description:
 
 
 servicecomb:
-  whatever:
-    cse:
-      key: vaule
-
+  cse:
+    servicecomb:
+      file: vaule
       

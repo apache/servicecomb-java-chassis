@@ -131,7 +131,7 @@ public final class ConfigUtil {
     while (keys.hasNext()) {
       String key = keys.next();
       if (key.startsWith(CONFIG_SERVICECOMB_PREFIX)) {
-        injects.put(key, CONFIG_CSE_PREFIX + key.substring(key.indexOf(".")));
+        injects.put(key, CONFIG_CSE_PREFIX + key.substring(key.indexOf(".") + 1));
       }
     }
 
@@ -216,7 +216,7 @@ public final class ConfigUtil {
       if (adds != null) {
         for (String add : adds.keySet()) {
           if (add.startsWith(CONFIG_SERVICECOMB_PREFIX)) {
-            String key = add.replace(CONFIG_SERVICECOMB_PREFIX, CONFIG_CSE_PREFIX);
+            String key = CONFIG_CSE_PREFIX + add.substring(add.indexOf(".") + 1);
             injectConfig.addProperty(key, adds.get(add));
           }
         }
@@ -226,7 +226,7 @@ public final class ConfigUtil {
       if (deletes != null) {
         for (String delete : deletes.keySet()) {
           if (delete.startsWith(CONFIG_SERVICECOMB_PREFIX)) {
-            injectConfig.clearProperty(delete.replace(CONFIG_SERVICECOMB_PREFIX, CONFIG_CSE_PREFIX));
+            injectConfig.clearProperty(CONFIG_CSE_PREFIX + delete.substring(delete.indexOf(".") + 1));
           }
         }
       }
@@ -235,7 +235,7 @@ public final class ConfigUtil {
       if (changes != null) {
         for (String change : changes.keySet()) {
           if (change.startsWith(CONFIG_SERVICECOMB_PREFIX)) {
-            String key = change.replace(CONFIG_SERVICECOMB_PREFIX, CONFIG_CSE_PREFIX);
+            String key = CONFIG_CSE_PREFIX + change.substring(change.indexOf(".") + 1);
             injectConfig.setProperty(key, changes.get(change));
           }
         }
