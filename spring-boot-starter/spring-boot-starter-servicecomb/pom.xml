@@ -22,22 +22,54 @@
 		<artifactId>sprint-boot-starter-parent</artifactId>
 		<version>0.1.1-SNAPSHOT</version>
 	</parent>
-
-	<artifactId>spring-boot-starter-transport</artifactId>
+	<artifactId>spring-boot-starter-servicecomb</artifactId>
 
 	<dependencies>
 		<dependency>
-			<groupId>io.servicecomb</groupId>
-			<artifactId>spring-boot-starter-servicecomb</artifactId>
+			<groupId>org.apache.tomcat.embed</groupId>
+			<artifactId>tomcat-embed-logging-juli</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter</artifactId>
+			<exclusions>
+				<exclusion>
+					<groupId>ch.qos.logback</groupId>
+					<artifactId>logback-classic</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.slf4j</groupId>
+					<artifactId>log4j-over-slf4j</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>io.servicecomb</groupId>
-			<artifactId>transport-rest-servlet</artifactId>
+			<artifactId>provider-springmvc</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>javax.servlet</groupId>
-			<artifactId>javax.servlet-api</artifactId>
-			<scope>compile</scope>
+			<groupId>io.servicecomb</groupId>
+			<artifactId>provider-jaxrs</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>io.servicecomb</groupId>
+			<artifactId>provider-pojo</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>io.servicecomb</groupId>
+			<artifactId>handler-bizkeeper</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>io.servicecomb</groupId>
+			<artifactId>handler-loadbalance</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>io.servicecomb</groupId>
+			<artifactId>transport-highway</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>io.servicecomb</groupId>
+			<artifactId>handler-flowcontrol-qps</artifactId>
 		</dependency>
 	</dependencies>
 </project>

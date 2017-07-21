@@ -16,19 +16,11 @@
 
 package io.servicecomb.springboot.pojo.server;
 
+import io.servicecomb.foundation.common.utils.Log4jUtils;
+import io.servicecomb.springboot.starter.provider.EnableServiceComb;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-import com.netflix.config.DynamicPropertyFactory;
-
-import io.servicecomb.foundation.common.utils.Log4jUtils;
-import io.servicecomb.springboot.starter.provider.EnableServiceComb;
-
-/**
- * 
- *
- *
- */
 @SpringBootApplication
 @EnableServiceComb
 public class PojoServer {
@@ -36,9 +28,5 @@ public class PojoServer {
     public static void main(final String[] args) throws Exception {
         Log4jUtils.init();
         SpringApplication.run(PojoServer.class, args);
-        String port = DynamicPropertyFactory.getInstance().getStringProperty("server.port", null).get();
-        System.out.println("port ----------->" + port);
-        String name = DynamicPropertyFactory.getInstance().getStringProperty("cse.servlet.name", null).get();
-        System.out.println("profiles ----------->" + name);
     }
 }
