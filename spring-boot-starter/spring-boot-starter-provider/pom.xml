@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <!--
   ~ Copyright 2017 Huawei Technologies Co., Ltd
   ~
@@ -14,71 +15,27 @@
   ~ limitations under the License.
   -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-	<modelVersion>4.0.0</modelVersion>
-	<parent>
-		<groupId>io.servicecomb</groupId>
-		<artifactId>sprint-boot-starter-parent</artifactId>
-		<version>0.1.1-SNAPSHOT</version>
-	</parent>
-	<artifactId>spring-boot-starter-provider</artifactId>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <parent>
+    <artifactId>sprint-boot-starter-parent</artifactId>
+    <groupId>io.servicecomb</groupId>
+    <version>0.1.1-SNAPSHOT</version>
+  </parent>
+  <modelVersion>4.0.0</modelVersion>
 
-	<dependencies>
-		<dependency>
-			<groupId>org.apache.tomcat.embed</groupId>
-			<artifactId>tomcat-embed-logging-juli</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter</artifactId>
-			<exclusions>
-				<exclusion>
-					<groupId>ch.qos.logback</groupId>
-					<artifactId>logback-classic</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>org.slf4j</groupId>
-					<artifactId>log4j-over-slf4j</artifactId>
-				</exclusion>
-			</exclusions>
-		</dependency>
-		<dependency>
-			<groupId>io.servicecomb</groupId>
-			<artifactId>provider-springmvc</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>io.servicecomb</groupId>
-			<artifactId>provider-jaxrs</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>io.servicecomb</groupId>
-			<artifactId>provider-pojo</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>io.servicecomb</groupId>
-			<artifactId>handler-bizkeeper</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>io.servicecomb</groupId>
-			<artifactId>handler-loadbalance</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>io.servicecomb</groupId>
-			<artifactId>transport-highway</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>io.servicecomb</groupId>
-			<artifactId>transport-rest-vertx</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>javax.servlet</groupId>
-			<artifactId>javax.servlet-api</artifactId>
-			<scope>compile</scope>
-		</dependency>
-		<dependency>
-			<groupId>io.servicecomb</groupId>
-			<artifactId>handler-flowcontrol-qps</artifactId>
-		</dependency>
-	</dependencies>
+  <artifactId>spring-boot-starter-provider</artifactId>
+
+  <dependencies>
+    <dependency>
+      <groupId>io.servicecomb</groupId>
+      <artifactId>spring-boot-starter-servicecomb</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>io.servicecomb</groupId>
+      <artifactId>transport-rest-vertx</artifactId>
+    </dependency>
+  </dependencies>
+
 </project>
