@@ -56,7 +56,9 @@ public class MicroserviceRegisterTask extends AbstractRegisterTask {
                     microservice.getServiceName(),
                     microservice.getVersion());
 
-            checkSchemaIdSet();
+            if(!checkSchemaIdSet()) {
+                return false;
+            }
         } else {
             serviceId = srClient.registerMicroservice(microservice);
             if (StringUtils.isEmpty(serviceId)) {
@@ -87,11 +89,11 @@ public class MicroserviceRegisterTask extends AbstractRegisterTask {
         return registerSchemas();
     }
 
-    private void checkSchemaIdSet() {
+    private boolean checkSchemaIdSet() {
         Microservice existMicroservice = srClient.getMicroservice(microservice.getServiceId());
         if (existMicroservice == null) {
             LOGGER.error("Error to get microservice from service center when check schema set");
-            return;
+            return false;
         }
         Set<String> existSchemas = new HashSet<>(existMicroservice.getSchemas());
         Set<String> localSchemas = new HashSet<>(microservice.getSchemas());
@@ -107,7 +109,7 @@ public class MicroserviceRegisterTask extends AbstractRegisterTask {
                     microservice.getVersion(),
                     localSchemas,
                     existSchemas);
-            return;
+            return true;
         }
 
         LOGGER.info(
@@ -117,6 +119,7 @@ public class MicroserviceRegisterTask extends AbstractRegisterTask {
                 microservice.getServiceName(),
                 microservice.getVersion(),
                 localSchemas);
+        return true;
     }
 
     private boolean registerSchemas() {
