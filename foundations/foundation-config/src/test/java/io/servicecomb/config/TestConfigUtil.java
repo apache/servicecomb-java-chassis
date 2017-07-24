@@ -84,7 +84,7 @@ public class TestConfigUtil {
 
   @Test
   public void propertiesFromFileIsDuplicatedToCse() throws Exception {
-    String expected = "vaule";
+    String expected = "value";
 
     assertThat(DynamicPropertyFactory
             .getInstance().getStringProperty("servicecomb.cse.servicecomb.file", null).get(),
