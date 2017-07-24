@@ -47,5 +47,5 @@ service_description:
 servicecomb:
   cse:
     servicecomb:
-      file: vaule
+      file: value
       
