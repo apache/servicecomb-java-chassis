@@ -16,9 +16,7 @@
 
 package io.servicecomb.config;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.commons.configuration.AbstractConfiguration;
 import org.apache.commons.configuration.Configuration;
@@ -33,8 +31,6 @@ import com.netflix.config.ConfigurationManager;
 import com.netflix.config.DynamicConfiguration;
 import com.netflix.config.DynamicPropertyFactory;
 import com.netflix.config.DynamicWatchedConfiguration;
-import com.netflix.config.PollResult;
-import com.netflix.config.PolledConfigurationSource;
 import com.netflix.config.WatchedConfigurationSource;
 
 import io.servicecomb.config.archaius.scheduler.NeverStartPollingScheduler;
@@ -49,7 +45,7 @@ import io.servicecomb.foundation.common.utils.SPIServiceUtils;
 public final class ConfigUtil {
     private static final Logger LOGGER = LoggerFactory.getLogger(ConfigUtil.class);
 
-    private static final String configCenterUrlKey = "cse.config.client.serverUri";
+    protected static final String configCenterUrlKey = "cse.config.client.serverUri";
 
     private static final String MICROSERVICE_CONFIG_LOADER_KEY = "cse-microservice-config-loader";
 
@@ -81,83 +77,60 @@ public final class ConfigUtil {
         return (MicroserviceConfigLoader) getProperty(config, MICROSERVICE_CONFIG_LOADER_KEY);
     }
 
-    public static DynamicConfiguration createConfigFromYamlFile(List<ConfigModel> configModelList) {
-        // configuration from yaml files: default microservice.yaml
-        return new DynamicConfiguration(
-                new MicroserviceConfigurationSource(configModelList),
-                new NeverStartPollingScheduler());
-    }
+    public static ConcurrentCompositeConfiguration createLocalConfig() {
+        MicroserviceConfigLoader loader = new MicroserviceConfigLoader();
+        loader.loadAndSort();
 
-    public static AbstractConfiguration createConfig(List<ConfigModel> configModelList) {
-        DynamicConfiguration configFromYamlFile = createConfigFromYamlFile(configModelList);
-        return createConfig(configFromYamlFile, null);
-    }
-
-    public static AbstractConfiguration createConfig(DynamicConfiguration configFromYamlFile,
-            DynamicWatchedConfiguration configFromConfigCenter) {
-        // create a hierarchy of configuration that makes
-        // 1) dynamic configuration source override system properties
-        ConcurrentCompositeConfiguration config = new ConcurrentCompositeConfiguration();
-        if (configFromConfigCenter != null) {
-            config.addConfiguration(configFromConfigCenter, "configCenterConfig");
+        LOGGER.info("create local config:");
+        for (ConfigModel configModel : loader.getConfigModels()) {
+            LOGGER.info(" {}.", configModel.getUrl());
         }
+
+        ConcurrentCompositeConfiguration config = ConfigUtil.createLocalConfig(loader.getConfigModels());
+        ConfigUtil.setMicroserviceConfigLoader(config, loader);
+        return config;
+    }
+
+    public static ConcurrentCompositeConfiguration createLocalConfig(List<ConfigModel> configModelList) {
+        ConcurrentCompositeConfiguration config = new ConcurrentCompositeConfiguration();
 
         config.addConfiguration(new ConcurrentMapConfiguration(new SystemConfiguration()), "systemConfig");
         config.addConfiguration(new ConcurrentMapConfiguration(new EnvironmentConfiguration()),
                 "systemEnvConfig");
-        config.addConfiguration(configFromYamlFile, "configFromYamlFile");
+        config.addConfiguration(new DynamicConfiguration(
+                new MicroserviceConfigurationSource(configModelList), new NeverStartPollingScheduler()),
+                "configFromYamlFile");
 
         return config;
     }
 
-    public static DynamicWatchedConfiguration createConfigFromConfigCenter(
-            PolledConfigurationSource polledConfigurationSource) {
-        // configuration from config center
-        // Need to check whether the config center has been defined
-        Map<String, Object> configMap;
-        try {
-            PollResult result = polledConfigurationSource.poll(true, null);
-            configMap = result.getComplete();
-        } catch (Exception e) {
-            configMap = new HashMap<String, Object>();
-        }
-        DynamicWatchedConfiguration configFromConfigCenter = null;
-        if (configMap.get(configCenterUrlKey) != null) {
-            WatchedConfigurationSource configCenterConfigurationSource =
-                SPIServiceUtils.getTargetService(WatchedConfigurationSource.class);
-            if (null != configCenterConfigurationSource) {
-                // configuration from config center
-                configFromConfigCenter =
-                    new DynamicWatchedConfiguration(configCenterConfigurationSource);
-            } else {
-                LOGGER.info(
-                        "config center SPI service can not find, skip to load configuration from config center");
-            }
-        } else {
+    public static DynamicWatchedConfiguration createConfigFromConfigCenter(Configuration localConfiguration) {
+        if (localConfiguration.getProperty(configCenterUrlKey) == null) {
             LOGGER.info("config center URL is missing, skip to load configuration from config center");
+            return null;
         }
-        return configFromConfigCenter;
-    }
 
-    public static AbstractConfiguration createDynamicConfig(MicroserviceConfigLoader loader) {
-        LOGGER.info("create dynamic config:");
-        for (ConfigModel configModel : loader.getConfigModels()) {
-            LOGGER.info(" {}.", configModel.getUrl());
+        WatchedConfigurationSource configCenterConfigurationSource =
+            SPIServiceUtils.getTargetService(WatchedConfigurationSource.class);
+        if (null == configCenterConfigurationSource) {
+            LOGGER.info(
+                    "config center SPI service can not find, skip to load configuration from config center");
+            return null;
         }
-        DynamicConfiguration configFromYamlFile = ConfigUtil.createConfigFromYamlFile(loader.getConfigModels());
-        DynamicWatchedConfiguration configFromConfigCenter =
-            createConfigFromConfigCenter(configFromYamlFile.getSource());
-        return ConfigUtil.createConfig(configFromYamlFile, configFromConfigCenter);
+
+        //        configCenterConfigurationSource.init(localConfiguration);
+        return new DynamicWatchedConfiguration(configCenterConfigurationSource);
     }
 
     public static AbstractConfiguration createDynamicConfig() {
-        MicroserviceConfigLoader loader = new MicroserviceConfigLoader();
-        loader.loadAndSort();
+        LOGGER.info("create dynamic config:");
+        ConcurrentCompositeConfiguration config = ConfigUtil.createLocalConfig();
+        DynamicWatchedConfiguration configFromConfigCenter = createConfigFromConfigCenter(config);
+        if (configFromConfigCenter != null) {
+            config.addConfigurationAtFront(configFromConfigCenter, "configCenterConfig");
+        }
 
-        AbstractConfiguration dynamicConfig = createDynamicConfig(loader);
-        ConfigUtil.setMicroserviceConfigLoader(dynamicConfig, loader);
-
-        return dynamicConfig;
+        return config;
     }
 
     public static void installDynamicConfig() {

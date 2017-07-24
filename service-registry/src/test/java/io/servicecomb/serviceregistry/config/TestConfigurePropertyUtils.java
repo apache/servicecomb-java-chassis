@@ -24,14 +24,11 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import io.servicecomb.config.ConfigUtil;
-import io.servicecomb.config.archaius.sources.MicroserviceConfigLoader;
 
 public class TestConfigurePropertyUtils {
     @Test
     public void testGetPropertiesWithPrefix() {
-        MicroserviceConfigLoader loader = new MicroserviceConfigLoader();
-        loader.loadAndSort();
-        Configuration configuration = ConfigUtil.createConfig(loader.getConfigModels());
+        Configuration configuration = ConfigUtil.createLocalConfig();
 
         String prefix = "service_description.properties";
         Map<String, String> expectedMap = new HashMap<>();

@@ -75,7 +75,7 @@ public class MicroserviceDefinition {
         }
 
         this.configModels = configModels;
-        this.configuration = ConfigUtil.createConfig(configModels);
+        this.configuration = ConfigUtil.createLocalConfig(configModels);
         this.microserviceName =
             configuration.getString(DefinitionConst.qulifiedServiceNameKey, DefinitionConst.defaultMicroserviceName);
 
@@ -92,7 +92,7 @@ public class MicroserviceDefinition {
 
     private void initCombinedFrom(List<ConfigModel> configModels) {
         for (ConfigModel model : configModels) {
-            Configuration conf = ConfigUtil.createConfig(Arrays.asList(model));
+            Configuration conf = ConfigUtil.createLocalConfig(Arrays.asList(model));
             String name =
                 conf.getString(DefinitionConst.qulifiedServiceNameKey, DefinitionConst.defaultMicroserviceName);
             if (!StringUtils.isEmpty(name)) {
