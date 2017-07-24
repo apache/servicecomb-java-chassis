@@ -31,12 +31,12 @@ import com.netflix.config.ConfigurationManager;
 import com.netflix.config.DynamicConfiguration;
 import com.netflix.config.DynamicPropertyFactory;
 import com.netflix.config.DynamicWatchedConfiguration;
-import com.netflix.config.WatchedConfigurationSource;
 
 import io.servicecomb.config.archaius.scheduler.NeverStartPollingScheduler;
 import io.servicecomb.config.archaius.sources.ConfigModel;
 import io.servicecomb.config.archaius.sources.MicroserviceConfigLoader;
 import io.servicecomb.config.archaius.sources.MicroserviceConfigurationSource;
+import io.servicecomb.config.spi.ConfigCenterConfigurationSource;
 import io.servicecomb.foundation.common.utils.SPIServiceUtils;
 
 /**
@@ -110,15 +110,15 @@ public final class ConfigUtil {
             return null;
         }
 
-        WatchedConfigurationSource configCenterConfigurationSource =
-            SPIServiceUtils.getTargetService(WatchedConfigurationSource.class);
+        ConfigCenterConfigurationSource configCenterConfigurationSource =
+            SPIServiceUtils.getTargetService(ConfigCenterConfigurationSource.class);
         if (null == configCenterConfigurationSource) {
             LOGGER.info(
                     "config center SPI service can not find, skip to load configuration from config center");
             return null;
         }
 
-        //        configCenterConfigurationSource.init(localConfiguration);
+        configCenterConfigurationSource.init(localConfiguration);
         return new DynamicWatchedConfiguration(configCenterConfigurationSource);
     }
 

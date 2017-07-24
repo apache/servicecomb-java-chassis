@@ -25,10 +25,10 @@ import org.junit.Test;
 
 import com.netflix.config.ConcurrentCompositeConfiguration;
 import com.netflix.config.DynamicWatchedConfiguration;
-import com.netflix.config.WatchedConfigurationSource;
 
 import io.servicecomb.config.archaius.sources.ConfigModel;
 import io.servicecomb.config.archaius.sources.MicroserviceConfigLoader;
+import io.servicecomb.config.spi.ConfigCenterConfigurationSource;
 import io.servicecomb.foundation.common.utils.SPIServiceUtils;
 import mockit.Expectations;
 import mockit.Mocked;
@@ -54,11 +54,11 @@ public class TestConfigUtil {
 
     @Test
     public void testCreateDynamicConfigHasConfigCenter(
-            @Mocked WatchedConfigurationSource watchedConfigurationSource) {
+            @Mocked ConfigCenterConfigurationSource configCenterConfigurationSource) {
         new Expectations(SPIServiceUtils.class) {
             {
-                SPIServiceUtils.getTargetService(WatchedConfigurationSource.class);
-                result = watchedConfigurationSource;
+                SPIServiceUtils.getTargetService(ConfigCenterConfigurationSource.class);
+                result = configCenterConfigurationSource;
             }
         };
 
