@@ -120,6 +120,8 @@ public class TestTcp {
         Deencapsulation.invoke(oTcpClient, "onReply", l, hBuffer, bBuffer);
         oTcpClient.checkTimeout();
         Assert.assertNotNull(oTcpClient);
+
+        vertx.close();
     }
 
     @Test
@@ -133,11 +135,15 @@ public class TestTcp {
 
     @Test
     public void testTcpServerStarter() {
+        Vertx vertx = VertxUtils.init(null);
+
         URIEndpointObject endpiont = new URIEndpointObject("highway://127.0.0.1:9900");
         TcpServer oStarter = new TcpServer(endpiont);
-        oStarter.init(VertxUtils.init(null), "", null);
+        oStarter.init(vertx, "", null);
         Assert.assertNotNull(oStarter);
         //TODO Need to find a way to Assert TcpServerStarter as this obbject does not return any values.
+
+        vertx.close();
     }
 
     @Test

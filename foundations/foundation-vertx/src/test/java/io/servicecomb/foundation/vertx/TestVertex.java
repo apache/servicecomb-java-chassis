@@ -16,21 +16,49 @@
 
 package io.servicecomb.foundation.vertx;
 
-import org.junit.Assert;
+import java.util.concurrent.CountDownLatch;
 
+import javax.xml.ws.Holder;
+
+import org.junit.Assert;
 import org.junit.Test;
 
+import io.vertx.core.Vertx;
 import io.vertx.core.VertxOptions;
 import io.vertx.core.json.JsonObject;
 
 public class TestVertex {
+    @Test
+    public void testGetOrCreateVertx() throws InterruptedException {
+        Vertx vertx = VertxUtils.getOrCreateVertxByName("ut", null);
+
+        Holder<String> name = new Holder<>();
+        CountDownLatch latch = new CountDownLatch(1);
+        vertx.runOnContext(v -> {
+            name.value = Thread.currentThread().getName();
+            latch.countDown();
+        });
+        latch.await();
+
+        Assert.assertEquals(name.value, "ut-vert.x-eventloop-thread-0");
+        vertx.close();
+    }
 
     @Test
-    public void testVertxUtils() {
-        VertxUtils.init(null);
+    public void testVertxUtilsInitNullOptions() {
+        Vertx vertx = VertxUtils.init(null);
+        Assert.assertNotEquals(null, vertx);
+        vertx.close();
+    }
+
+    @Test
+    public void testVertxUtilsInitWithOptions() {
         VertxOptions oOptions = new VertxOptions();
         oOptions.setClustered(false);
-        Assert.assertNotEquals(null,VertxUtils.init(oOptions));
+
+        Vertx vertx = VertxUtils.init(oOptions);
+        Assert.assertNotEquals(null, vertx);
+        vertx.close();
     }
 
     @Test

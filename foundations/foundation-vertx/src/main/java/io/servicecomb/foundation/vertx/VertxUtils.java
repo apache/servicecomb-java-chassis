@@ -28,13 +28,13 @@ import org.slf4j.LoggerFactory;
 
 import io.servicecomb.foundation.vertx.client.AbstractClientVerticle;
 import io.servicecomb.foundation.vertx.client.ClientPoolManager;
-
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Context;
 import io.vertx.core.DeploymentOptions;
 import io.vertx.core.Vertx;
 import io.vertx.core.VertxOptions;
 import io.vertx.core.impl.FileResolver;
+import io.vertx.core.impl.VertxImplEx;
 import io.vertx.core.logging.SLF4JLogDelegateFactory;
 
 /**
@@ -107,7 +107,7 @@ public final class VertxUtils {
             synchronized (VertxUtils.class) {
                 vertx = getVertxByName(name);
                 if (vertx == null) {
-                    vertx = init(vertxOptions);
+                    vertx = init(name, vertxOptions);
                     vertxMap.put(name, vertx);
                 }
             }
@@ -117,6 +117,10 @@ public final class VertxUtils {
     }
 
     public static Vertx init(VertxOptions vertxOptions) {
+        return init(null, vertxOptions);
+    }
+
+    public static Vertx init(String name, VertxOptions vertxOptions) {
         if (vertxOptions == null) {
             vertxOptions = new VertxOptions();
         }
@@ -128,7 +132,7 @@ public final class VertxUtils {
         }
 
         configureVertxFileCaching();
-        return Vertx.vertx(vertxOptions);
+        return new VertxImplEx(name, vertxOptions);
     }
 
     /**
