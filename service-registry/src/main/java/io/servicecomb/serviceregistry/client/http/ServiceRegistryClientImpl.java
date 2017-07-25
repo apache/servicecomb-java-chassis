@@ -62,6 +62,7 @@ import io.servicecomb.serviceregistry.client.ClientException;
 import io.servicecomb.serviceregistry.client.IpPortManager;
 import io.servicecomb.serviceregistry.client.ServiceRegistryClient;
 import io.vertx.core.Handler;
+import io.vertx.core.buffer.Buffer;
 import io.vertx.core.http.HttpClientResponse;
 
 public final class ServiceRegistryClientImpl implements ServiceRegistryClient {
@@ -119,6 +120,36 @@ public final class ServiceRegistryClientImpl implements ServiceRegistryClient {
                         }
                         countDownLatch.countDown();
                     });
+        };
+    }
+
+    static class ResponseWrapper {
+        HttpClientResponse response;
+
+        Buffer bodyBuffer;
+    }
+
+    // temporary copy from syncHandler
+    // we will use swagger invocation to replace RestUtils later.
+    private Handler<RestResponse> syncHandlerEx(CountDownLatch countDownLatch, Holder<ResponseWrapper> holder) {
+        return restResponse -> {
+            RequestContext requestContext = restResponse.getRequestContext();
+            HttpClientResponse response = restResponse.getResponse();
+            if (response == null) {
+                // invoke failed, call another SC instance
+                if (!retry(requestContext, syncHandlerEx(countDownLatch, holder))) {
+                    countDownLatch.countDown();
+                }
+                return;
+            }
+
+            response.bodyHandler(bodyBuffer -> {
+                ResponseWrapper responseWrapper = new ResponseWrapper();
+                responseWrapper.response = response;
+                responseWrapper.bodyBuffer = bodyBuffer;
+                holder.value = responseWrapper;
+                countDownLatch.countDown();
+            });
         };
     }
 
@@ -196,7 +227,7 @@ public final class ServiceRegistryClientImpl implements ServiceRegistryClient {
 
     @Override
     public boolean registerSchema(String microserviceId, String schemaId, String schemaContent) {
-        Holder<HttpClientResponse> holder = new Holder<>();
+        Holder<ResponseWrapper> holder = new Holder<>();
         IpPort ipPort = ipPortManager.get();
 
         try {
@@ -208,22 +239,30 @@ public final class ServiceRegistryClientImpl implements ServiceRegistryClient {
             RestUtils.put(ipPort,
                     MS_API_PATH + MICROSERVICE_PATH + "/" + microserviceId + SCHEMA_PATH + "/" + schemaId,
                     new RequestParam().setBody(body),
-                    syncHandler(countDownLatch, HttpClientResponse.class, holder));
+                    syncHandlerEx(countDownLatch, holder));
             countDownLatch.await();
 
-            boolean result = false;
-            if (holder.value != null) {
-                result = holder.value.statusCode() == Status.OK.getStatusCode();
+            if (holder.value == null) {
+                LOGGER.error("Register schema {}/{} failed.", microserviceId, schemaId);
+                return false;
             }
 
-            LOGGER.info("register schema {}/{}, result {}",
-                    microserviceId,
-                    schemaId,
-                    result);
+            if (!Status.Family.SUCCESSFUL.equals(Status.Family.familyOf(holder.value.response.statusCode()))) {
+                LOGGER.error("Register schema {}/{} failed, statusCode: {}, statusMessage: {}, description: {}.",
+                        microserviceId,
+                        schemaId,
+                        holder.value.response.statusCode(),
+                        holder.value.response.statusMessage(),
+                        holder.value.bodyBuffer.toString());
+                return false;
+            }
 
-            return result;
+            LOGGER.info("register schema {}/{} success.",
+                    microserviceId,
+                    schemaId);
+            return true;
         } catch (Exception e) {
-            LOGGER.error("register schema {}/{} fail",
+            LOGGER.error("register schema {}/{} fail.",
                     microserviceId,
                     schemaId,
                     e);
