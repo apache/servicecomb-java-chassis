@@ -36,15 +36,16 @@ import io.servicecomb.demo.compute.Person;
 import io.servicecomb.demo.server.User;
 import java.io.IOException;
 import java.time.ZonedDateTime;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
+
 import org.junit.Test;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageConverter;
+import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
@@ -65,6 +66,18 @@ public class SpringMvcIntegrationTestBase {
 
     assertThat(responseEntity.getStatusCode(), is(OK));
     assertThat(responseEntity.getBody(), is("Hi Mike"));
+
+    List<HttpMessageConverter<?>> convertersOld = restTemplate.getMessageConverters();
+    List<HttpMessageConverter<?>> converters = new ArrayList<>();
+    converters.add(new MappingJackson2HttpMessageConverter());
+    restTemplate.setMessageConverters(converters);
+    responseEntity = restTemplate
+            .getForEntity(baseUrl + "sayHi?name={name}", String.class, "小 强");
+
+    assertThat(responseEntity.getStatusCode(), is(OK));
+    assertThat(responseEntity.getBody(), is("Hi 小 强"));
+
+    restTemplate.setMessageConverters(convertersOld);
   }
 
   @Test
@@ -276,6 +289,19 @@ public class SpringMvcIntegrationTestBase {
         "world");
 
     assertThat(jsonOf(result, String.class), is("hello world"));
+
+    List<HttpMessageConverter<?>> convertersOld = restTemplate.getMessageConverters();
+    List<HttpMessageConverter<?>> converters = new ArrayList<>();
+    converters.add(new MappingJackson2HttpMessageConverter());
+    restTemplate.setMessageConverters(converters);
+    result = restTemplate.postForObject(
+            controllerUrl + "sayhello/{name}",
+            null,
+            String.class,
+            "中 国");
+
+    assertThat(result, is("hello 中 国"));
+    restTemplate.setMessageConverters(convertersOld);
   }
 
   @Test
@@ -290,6 +316,22 @@ public class SpringMvcIntegrationTestBase {
         "hello");
 
     assertThat(jsonOf(result, String.class), is("hello world"));
+
+    List<HttpMessageConverter<?>> convertersOld = restTemplate.getMessageConverters();
+    List<HttpMessageConverter<?>> converters = new ArrayList<>();
+    converters.add(new MappingJackson2HttpMessageConverter());
+    restTemplate.setMessageConverters(converters);
+    input = new Person();
+    input.setName("中国");
+
+    result = restTemplate.postForObject(
+            controllerUrl + "saysomething?prefix={prefix}",
+            jsonRequest(input),
+            String.class,
+            "hello");
+
+    assertThat(result, is("hello 中国"));
+    restTemplate.setMessageConverters(convertersOld);
   }
 
   @Test

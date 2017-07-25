@@ -58,7 +58,8 @@ public class BodyProcessorCreator implements ParamValueProcessorCreator {
 
                 String contentType = request.getContentType();
                 if (contentType != null && contentType.startsWith(MediaType.TEXT_PLAIN)) {
-                    return IOUtils.toString(inputStream);
+                    // TODO: we should consider body encoding
+                    return IOUtils.toString(inputStream, "UTF-8");
                 }
                 return RestObjectMapper.INSTANCE.readValue(inputStream, targetType);
             }
@@ -101,7 +102,8 @@ public class BodyProcessorCreator implements ParamValueProcessorCreator {
 
             if (InputStream.class.isInstance(body)) {
                 InputStream inputStream = (InputStream) body;
-                return IOUtils.toString(inputStream);
+                // TODO: we should consider body encoding
+                return IOUtils.toString(inputStream, "UTF-8");
             }
 
             return RestObjectMapper.INSTANCE.convertValue(body, targetType);
