@@ -88,6 +88,10 @@ public class SpringmvcClient {
                 template.getForObject(prefix + "/controller/sayhi?name={name}",
                         String.class,
                         "world1"));
+        TestMgr.check("hi hi 中国 [hi 中国]",
+                template.getForObject(prefix + "/controller/sayhi?name={name}",
+                        String.class,
+                        "hi 中国"));
 
         Map<String, String> params = new HashMap<>();
         params.put("name", "world2");
@@ -101,6 +105,11 @@ public class SpringmvcClient {
                         null,
                         String.class,
                         "world"));
+        TestMgr.check("hello hello 中国",
+                template.postForObject(prefix + "/controller/sayhello/{name}",
+                        null,
+                        String.class,
+                        "hello 中国"));
 
         HttpHeaders headers = new HttpHeaders();
         headers.add("name", "world");

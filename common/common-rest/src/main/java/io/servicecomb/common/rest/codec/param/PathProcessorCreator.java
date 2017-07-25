@@ -17,6 +17,7 @@
 package io.servicecomb.common.rest.codec.param;
 
 import java.lang.reflect.Type;
+import java.net.URLDecoder;
 
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.type.TypeFactory;
@@ -39,7 +40,7 @@ public class PathProcessorCreator implements ParamValueProcessorCreator {
             if (value == null) {
                 return null;
             }
-            return convertValue(value, targetType);
+            return convertValue(URLDecoder.decode(value, "UTF-8"), targetType);
         }
 
         @Override

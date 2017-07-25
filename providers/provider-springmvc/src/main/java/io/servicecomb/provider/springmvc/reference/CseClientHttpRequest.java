@@ -152,7 +152,7 @@ public class CseClientHttpRequest extends OutputStream implements ClientHttpRequ
                     requestMeta.getOperationMeta(),
                     args);
         invocation.getHandlerContext().put(RestConst.REST_CLIENT_REQUEST_PATH,
-                this.uri.getPath() + "?" + this.uri.getQuery());
+                this.uri.getRawPath() + "?" + this.uri.getRawQuery());
 
         if (context != null) {
             invocation.addContext(context);
