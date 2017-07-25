@@ -18,20 +18,31 @@ package io.servicecomb.serviceregistry.client.http;
 
 import static org.hamcrest.core.Is.is;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.CountDownLatch;
 
+import javax.xml.ws.Holder;
+
+import org.apache.log4j.Appender;
+import org.apache.log4j.Logger;
+import org.apache.log4j.spi.LoggingEvent;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mockito;
 
 import io.servicecomb.serviceregistry.api.registry.Microservice;
 import io.servicecomb.serviceregistry.api.registry.MicroserviceFactory;
 import io.servicecomb.serviceregistry.client.ClientException;
 import io.servicecomb.serviceregistry.client.IpPortManager;
+import io.servicecomb.serviceregistry.client.http.ServiceRegistryClientImpl.ResponseWrapper;
 import io.servicecomb.serviceregistry.config.ServiceRegistryConfig;
 import io.vertx.core.Handler;
+import io.vertx.core.buffer.Buffer;
 import io.vertx.core.http.HttpClientOptions;
+import io.vertx.core.http.HttpClientResponse;
 import io.vertx.core.http.HttpVersion;
 import mockit.Deencapsulation;
 import mockit.Mock;
@@ -58,7 +69,6 @@ public class TestServiceRegistryClientImpl {
             @Mock
             public void await() throws InterruptedException {
             }
-
         };
     }
 
@@ -116,5 +126,126 @@ public class TestServiceRegistryClientImpl {
                 oClient.findServiceInstance("selfMicroserviceId", "appId", "serviceName", "versionRule"));
 
         Assert.assertEquals("a", new ClientException("a").getMessage());
+    }
+
+    static abstract class RegisterSchemaTester {
+        void run() {
+            Logger rootLogger = Logger.getRootLogger();
+
+            List<LoggingEvent> events = new ArrayList<>();
+            Appender appender = new MockUp<Appender>() {
+                @Mock
+                public void doAppend(LoggingEvent event) {
+                    events.add(event);
+                }
+            }.getMockInstance();
+            rootLogger.addAppender(appender);
+
+            doRun(events);
+
+            rootLogger.removeAppender(appender);
+        }
+
+        abstract void doRun(List<LoggingEvent> events);
+    }
+
+    @Test
+    public void testRegisterSchemaNoResponse() {
+        new RegisterSchemaTester() {
+            void doRun(java.util.List<LoggingEvent> events) {
+                oClient.registerSchema("msid", "schemaId", "content");
+                Assert.assertEquals("Register schema msid/schemaId failed.", events.get(0).getMessage());
+            };
+        }.run();
+    }
+
+    @Test
+    public void testRegisterSchemaException() {
+        InterruptedException e = new InterruptedException();
+        new MockUp<CountDownLatch>() {
+            @Mock
+            public void await() throws InterruptedException {
+                throw e;
+            }
+        };
+
+        new RegisterSchemaTester() {
+            void doRun(java.util.List<LoggingEvent> events) {
+                oClient.registerSchema("msid", "schemaId", "content");
+                Assert.assertEquals(
+                        "register schema msid/schemaId fail.",
+                        events.get(0).getMessage());
+                Assert.assertEquals(e, events.get(0).getThrowableInformation().getThrowable());
+            };
+        }.run();
+    }
+
+    @Test
+    public void testRegisterSchemaErrorResponse() {
+        new MockUp<ServiceRegistryClientImpl>() {
+            @Mock
+            Handler<RestResponse> syncHandlerEx(CountDownLatch countDownLatch, Holder<ResponseWrapper> holder) {
+                return restResponse -> {
+                    HttpClientResponse response = Mockito.mock(HttpClientResponse.class);
+                    Mockito.when(response.statusCode()).thenReturn(400);
+                    Mockito.when(response.statusMessage()).thenReturn("client error");
+
+                    Buffer bodyBuffer = Buffer.buffer();
+                    bodyBuffer.appendString("too big");
+
+                    ResponseWrapper responseWrapper = new ResponseWrapper();
+                    responseWrapper.response = response;
+                    responseWrapper.bodyBuffer = bodyBuffer;
+                    holder.value = responseWrapper;
+                };
+            }
+        };
+        new MockUp<RestUtils>() {
+            @Mock
+            void httpDo(RequestContext requestContext, Handler<RestResponse> responseHandler) {
+                responseHandler.handle(null);
+            }
+        };
+
+        new RegisterSchemaTester() {
+            void doRun(java.util.List<LoggingEvent> events) {
+                oClient.registerSchema("msid", "schemaId", "content");
+                Assert.assertEquals(
+                        "Register schema msid/schemaId failed, statusCode: 400, statusMessage: client error, description: too big.",
+                        events.get(0).getMessage());
+            };
+        }.run();
+    }
+
+    @Test
+    public void testRegisterSchemaSuccess() {
+        new MockUp<ServiceRegistryClientImpl>() {
+            @Mock
+            Handler<RestResponse> syncHandlerEx(CountDownLatch countDownLatch, Holder<ResponseWrapper> holder) {
+                return restResponse -> {
+                    HttpClientResponse response = Mockito.mock(HttpClientResponse.class);
+                    Mockito.when(response.statusCode()).thenReturn(200);
+
+                    ResponseWrapper responseWrapper = new ResponseWrapper();
+                    responseWrapper.response = response;
+                    holder.value = responseWrapper;
+                };
+            }
+        };
+        new MockUp<RestUtils>() {
+            @Mock
+            void httpDo(RequestContext requestContext, Handler<RestResponse> responseHandler) {
+                responseHandler.handle(null);
+            }
+        };
+
+        new RegisterSchemaTester() {
+            void doRun(java.util.List<LoggingEvent> events) {
+                oClient.registerSchema("msid", "schemaId", "content");
+                Assert.assertEquals(
+                        "register schema msid/schemaId success.",
+                        events.get(0).getMessage());
+            };
+        }.run();
     }
 }
