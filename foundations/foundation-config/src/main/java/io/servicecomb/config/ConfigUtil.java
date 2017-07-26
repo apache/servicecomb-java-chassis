@@ -16,7 +16,12 @@
 
 package io.servicecomb.config;
 
+import static io.servicecomb.foundation.common.base.ServiceCombConstants.CONFIG_CSE_PREFIX;
+import static io.servicecomb.foundation.common.base.ServiceCombConstants.CONFIG_SERVICECOMB_PREFIX;
+
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.configuration.AbstractConfiguration;
 import org.apache.commons.configuration.Configuration;
@@ -31,6 +36,8 @@ import com.netflix.config.ConfigurationManager;
 import com.netflix.config.DynamicConfiguration;
 import com.netflix.config.DynamicPropertyFactory;
 import com.netflix.config.DynamicWatchedConfiguration;
+import com.netflix.config.WatchedUpdateListener;
+import com.netflix.config.WatchedUpdateResult;
 
 import io.servicecomb.config.archaius.scheduler.NeverStartPollingScheduler;
 import io.servicecomb.config.archaius.sources.ConfigModel;
@@ -39,9 +46,6 @@ import io.servicecomb.config.archaius.sources.MicroserviceConfigurationSource;
 import io.servicecomb.config.spi.ConfigCenterConfigurationSource;
 import io.servicecomb.foundation.common.utils.SPIServiceUtils;
 
-/**
- * Created by   on 2017/3/28.
- */
 public final class ConfigUtil {
     private static final Logger LOGGER = LoggerFactory.getLogger(ConfigUtil.class);
 
@@ -65,7 +69,7 @@ public final class ConfigUtil {
         return null;
     }
 
-    public static void setMicroserviceConfigLoader(Configuration config, MicroserviceConfigLoader loader) {
+    private static void setMicroserviceConfigLoader(Configuration config, MicroserviceConfigLoader loader) {
         config.setProperty(MICROSERVICE_CONFIG_LOADER_KEY, loader);
     }
 
@@ -94,14 +98,40 @@ public final class ConfigUtil {
     public static ConcurrentCompositeConfiguration createLocalConfig(List<ConfigModel> configModelList) {
         ConcurrentCompositeConfiguration config = new ConcurrentCompositeConfiguration();
 
-        config.addConfiguration(new ConcurrentMapConfiguration(new SystemConfiguration()), "systemConfig");
-        config.addConfiguration(new ConcurrentMapConfiguration(new EnvironmentConfiguration()),
-                "systemEnvConfig");
-        config.addConfiguration(new DynamicConfiguration(
-                new MicroserviceConfigurationSource(configModelList), new NeverStartPollingScheduler()),
+        duplicateServiceCombConfigToCse(config,
+                new ConcurrentMapConfiguration(new SystemConfiguration()),
+                "configFromSystem");
+        duplicateServiceCombConfigToCse(config,
+                new ConcurrentMapConfiguration(new EnvironmentConfiguration()),
+                "configFromEnvironment");
+        duplicateServiceCombConfigToCse(config,
+                new DynamicConfiguration(
+                        new MicroserviceConfigurationSource(configModelList), new NeverStartPollingScheduler()),
                 "configFromYamlFile");
 
         return config;
+    }
+
+    //inject a copy of cse.xxx for servicecomb.xxx
+    private static void duplicateServiceCombConfigToCse(AbstractConfiguration source) {
+        Iterator<String> keys = source.getKeys();
+        while (keys.hasNext()) {
+            String key = keys.next();
+            if (!key.startsWith(CONFIG_SERVICECOMB_PREFIX)) {
+                continue;
+            }
+
+            String cseKey = CONFIG_CSE_PREFIX + key.substring(key.indexOf(".") + 1);
+            source.addProperty(cseKey, source.getString(key));
+        }
+    }
+
+    private static void duplicateServiceCombConfigToCse(ConcurrentCompositeConfiguration compositeConfiguration,
+            AbstractConfiguration source,
+            String sourceName) {
+        duplicateServiceCombConfigToCse(source);
+
+        compositeConfiguration.addConfiguration(source, sourceName);
     }
 
     public static DynamicWatchedConfiguration createConfigFromConfigCenter(Configuration localConfiguration) {
@@ -127,7 +157,13 @@ public final class ConfigUtil {
         ConcurrentCompositeConfiguration config = ConfigUtil.createLocalConfig();
         DynamicWatchedConfiguration configFromConfigCenter = createConfigFromConfigCenter(config);
         if (configFromConfigCenter != null) {
+            ConcurrentMapConfiguration injectConfig = new ConcurrentMapConfiguration();
+            config.addConfigurationAtFront(injectConfig, "extraInjectConfig");
+
+            duplicateServiceCombConfigToCse(configFromConfigCenter);
             config.addConfigurationAtFront(configFromConfigCenter, "configCenterConfig");
+
+            configFromConfigCenter.getSource().addUpdateListener(new ServiceCombPropertyUpdateListener(injectConfig));
         }
 
         return config;
@@ -141,5 +177,46 @@ public final class ConfigUtil {
 
         AbstractConfiguration dynamicConfig = ConfigUtil.createDynamicConfig();
         ConfigurationManager.install(dynamicConfig);
+    }
+
+    private static class ServiceCombPropertyUpdateListener implements WatchedUpdateListener {
+
+        private final ConcurrentMapConfiguration injectConfig;
+
+        ServiceCombPropertyUpdateListener(ConcurrentMapConfiguration injectConfig) {
+            this.injectConfig = injectConfig;
+        }
+
+        @Override
+        public void updateConfiguration(WatchedUpdateResult watchedUpdateResult) {
+            Map<String, Object> adds = watchedUpdateResult.getAdded();
+            if (adds != null) {
+                for (String add : adds.keySet()) {
+                    if (add.startsWith(CONFIG_SERVICECOMB_PREFIX)) {
+                        String key = CONFIG_CSE_PREFIX + add.substring(add.indexOf(".") + 1);
+                        injectConfig.addProperty(key, adds.get(add));
+                    }
+                }
+            }
+
+            Map<String, Object> deletes = watchedUpdateResult.getDeleted();
+            if (deletes != null) {
+                for (String delete : deletes.keySet()) {
+                    if (delete.startsWith(CONFIG_SERVICECOMB_PREFIX)) {
+                        injectConfig.clearProperty(CONFIG_CSE_PREFIX + delete.substring(delete.indexOf(".") + 1));
+                    }
+                }
+            }
+
+            Map<String, Object> changes = watchedUpdateResult.getChanged();
+            if (changes != null) {
+                for (String change : changes.keySet()) {
+                    if (change.startsWith(CONFIG_SERVICECOMB_PREFIX)) {
+                        String key = CONFIG_CSE_PREFIX + change.substring(change.indexOf(".") + 1);
+                        injectConfig.setProperty(key, changes.get(change));
+                    }
+                }
+            }
+        }
     }
 }

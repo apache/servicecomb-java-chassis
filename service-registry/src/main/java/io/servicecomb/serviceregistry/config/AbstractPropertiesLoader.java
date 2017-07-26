@@ -22,6 +22,7 @@ import java.util.Map;
 import org.apache.commons.configuration.Configuration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.util.StringUtils;
 
 import io.servicecomb.serviceregistry.api.PropertyExtended;
 
@@ -33,8 +34,9 @@ public abstract class AbstractPropertiesLoader {
 
     protected static final String PROPERTIES = ".properties";
 
-    // TODO:拼写错误
-    protected static final String EXTENDED_CLASS = ".propertyExtentedClass";
+    protected static final String EXTENDED_CLASS_FOR_COMPATIBLE = ".propertyExtentedClass";
+
+    protected static final String EXTENDED_CLASS = ".propertyExtendedClass";
 
     protected abstract String getConfigOptionPrefix();
 
@@ -52,16 +54,19 @@ public abstract class AbstractPropertiesLoader {
     }
 
     protected void loadPropertiesFromExtendedClass(Configuration configuration, Map<String, String> propertiesMap) {
-        String configKey = mergeStrings(getConfigOptionPrefix(), EXTENDED_CLASS);
-        String extendedPropertyClass = configuration.getString(configKey, "");
-        if (extendedPropertyClass.isEmpty()) {
-            return;
+        String extendedPropertyClass = readExtendedPropertyClassName(configuration, EXTENDED_CLASS);
+        if (StringUtils.isEmpty(extendedPropertyClass)) {
+            extendedPropertyClass = readExtendedPropertyClassName(configuration, EXTENDED_CLASS_FOR_COMPATIBLE);
+            if (StringUtils.isEmpty(extendedPropertyClass)) {
+                return;
+            }
         }
+
         try {
             Class<?> classExtenalProperty = Class.forName(extendedPropertyClass);
             if (!PropertyExtended.class.isAssignableFrom(classExtenalProperty)) {
                 String errMsg = String.format(
-                        "Define propertyExtentedClass %s in yaml, but not implement the interface PropertyExtended.",
+                        "Define propertyExtendedClass %s in yaml, but not implement the interface PropertyExtended.",
                         extendedPropertyClass);
                 LOGGER.error(errMsg);
                 throw new Error(errMsg);
@@ -79,12 +84,12 @@ public abstract class AbstractPropertiesLoader {
         }
     }
 
-    protected static String mergeStrings(String... strArr) {
-        StringBuilder sb = new StringBuilder();
-        for (String str : strArr) {
-            sb.append(str);
-        }
-        return sb.toString();
+    private String readExtendedPropertyClassName(Configuration configuration, String keyName) {
+        String configKey = mergeStrings(getConfigOptionPrefix(), keyName);
+        return configuration.getString(configKey, "");
     }
 
+    protected static String mergeStrings(String... strArr) {
+        return String.join("", strArr);
+    }
 }

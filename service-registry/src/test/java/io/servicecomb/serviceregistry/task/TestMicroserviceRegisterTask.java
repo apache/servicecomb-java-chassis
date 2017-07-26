@@ -203,4 +203,29 @@ public class TestMicroserviceRegisterTask {
         Assert.assertEquals("serviceId", microservice.getIntance().getServiceId());
         Assert.assertEquals(1, taskList.size());
     }
+    
+    @Test
+    public void testAlreadyRegisteredGetSchemaIdSetFailed(@Mocked ServiceRegistryClient srClient) {
+        Microservice otherMicroservice = new Microservice();
+        otherMicroservice.setAppId(microservice.getAppId());
+        otherMicroservice.setServiceName("ms1");
+        otherMicroservice.addSchema("s1", "");
+
+        new Expectations() {
+            {
+                srClient.getMicroserviceId(anyString, anyString, anyString);
+                result = "serviceId";
+                srClient.getMicroservice(anyString);
+                result = null;
+            }
+        };
+
+        MicroserviceRegisterTask registerTask = new MicroserviceRegisterTask(eventBus, srClient, microservice);
+        registerTask.run();
+
+        Assert.assertEquals(false, registerTask.isRegistered());
+        Assert.assertEquals(false, registerTask.isSchemaIdSetMatch());
+        Assert.assertEquals("serviceId", microservice.getServiceId());
+        Assert.assertEquals(1, taskList.size());
+    }
 }

@@ -31,4 +31,6 @@ public class ServiceCombConstants {
   public static final String CONFIG_TRACING_COLLECTOR_ADDRESS = "servicecomb.tracing.collector.address";
   public static final String CONFIG_TRACING_COLLECTOR_PATH = "/api/v1/spans";
   public static final String DEFAULT_TRACING_COLLECTOR_ADDRESS = "http://127.0.0.1:9411";
+  public static final String CONFIG_SERVICECOMB_PREFIX = "servicecomb.";
+  public static final String CONFIG_CSE_PREFIX = "cse.";
 }

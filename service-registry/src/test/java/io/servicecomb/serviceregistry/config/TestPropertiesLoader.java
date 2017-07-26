@@ -16,12 +16,17 @@
 
 package io.servicecomb.serviceregistry.config;
 
+import static io.servicecomb.foundation.common.base.ServiceCombConstants.CONFIG_SERVICE;
+
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.configuration.Configuration;
 import org.junit.Assert;
 import org.junit.Test;
+
+import com.netflix.config.DynamicConfiguration;
 
 import io.servicecomb.config.archaius.sources.ConfigModel;
 import io.servicecomb.serviceregistry.api.registry.Microservice;
@@ -75,7 +80,7 @@ public class TestPropertiesLoader {
             Assert.fail("Must throw exception");
         } catch (Error e) {
             Assert.assertEquals(
-                    "Define propertyExtentedClass java.lang.String in yaml, but not implement the interface PropertyExtended.",
+                    "Define propertyExtendedClass java.lang.String in yaml, but not implement the interface PropertyExtended.",
                     e.getMessage());
         }
     }
@@ -100,4 +105,18 @@ public class TestPropertiesLoader {
         Assert.assertEquals(expectedMap, instance.getProperties());
     }
 
+    @Test
+    public void testExtendedClassCompatible() {
+        Configuration configuration = new DynamicConfiguration();
+        configuration.setProperty(CONFIG_SERVICE + AbstractPropertiesLoader.EXTENDED_CLASS, "invalidClass");
+
+        AbstractPropertiesLoader loader = MicroservicePropertiesLoader.INSTANCE;
+        try {
+            loader.loadProperties(configuration);
+            Assert.fail("Must throw exception");
+        } catch (Error e) {
+            Assert.assertEquals(ClassNotFoundException.class, e.getCause().getClass());
+            Assert.assertEquals("invalidClass", e.getCause().getMessage());
+        }
+    }
 }

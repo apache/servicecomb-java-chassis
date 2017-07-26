@@ -47,7 +47,7 @@ public class TestYAMLConfigurationSource {
         PollResult result = configSource.poll(true, null);
         Map<String, Object> configMap = result.getComplete();
         assertNotNull(configMap);
-        assertEquals(19, configMap.size());
+        assertEquals(20, configMap.size());
         assertNotNull(configMap.get("trace.handler.sampler.percent"));
         assertEquals(0.5, configMap.get("trace.handler.sampler.percent"));
         assertEquals("http://10.120.169.202:9980/", configMap.get("registry.client.serviceUrl.defaultZone"));
@@ -66,7 +66,7 @@ public class TestYAMLConfigurationSource {
 
         assertEquals(3, configSource.getConfigModels().size());
         assertNotNull(configMap);
-        assertEquals(30, configMap.size());
+        assertEquals(31, configMap.size());
         assertNotNull(configMap.get("trace.handler.sampler.percent"));
         assertEquals(0.5, configMap.get("trace.handler.sampler.percent"));
 

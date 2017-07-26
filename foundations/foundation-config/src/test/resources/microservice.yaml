@@ -42,4 +42,10 @@ cse:
 
 service_description:
   name: testDemo
+
+
+servicecomb:
+  cse:
+    servicecomb:
+      file: value
       
