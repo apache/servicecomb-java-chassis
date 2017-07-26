@@ -18,9 +18,11 @@ package io.servicecomb.config;
 
 import static com.seanyinx.github.unit.scaffolding.Randomness.uniquify;
 import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.assertThat;
 
 import java.lang.reflect.Field;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -33,6 +35,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import com.netflix.config.ConcurrentCompositeConfiguration;
+import com.netflix.config.DynamicConfiguration;
 import com.netflix.config.DynamicPropertyFactory;
 import com.netflix.config.DynamicWatchedConfiguration;
 
@@ -40,6 +43,7 @@ import io.servicecomb.config.archaius.sources.ConfigModel;
 import io.servicecomb.config.archaius.sources.MicroserviceConfigLoader;
 import io.servicecomb.config.spi.ConfigCenterConfigurationSource;
 import io.servicecomb.foundation.common.utils.SPIServiceUtils;
+import mockit.Deencapsulation;
 import mockit.Expectations;
 import mockit.Mocked;
 
@@ -146,6 +150,19 @@ public class TestConfigUtil {
         assertThat(DynamicPropertyFactory
                 .getInstance().getStringProperty("servicecomb.cse.servicecomb.environment.setting", null).get(),
                 equalTo(environmentExpected));
+    }
+
+    @Test
+    public void duplicateServiceCombConfigToCseListValue() throws Exception {
+        List<String> list = Arrays.asList("a", "b");
+
+        AbstractConfiguration config = new DynamicConfiguration();
+        config.addProperty("servicecomb.list", list);
+        Deencapsulation.invoke(ConfigUtil.class, "duplicateServiceCombConfigToCse", config);
+
+        Object result = config.getProperty("cse.list");
+        assertThat(result, instanceOf(List.class));
+        assertThat(result, equalTo(list));
     }
 
     @Test
