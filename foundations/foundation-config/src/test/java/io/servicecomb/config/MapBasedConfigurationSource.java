@@ -18,68 +18,81 @@
 
 package io.servicecomb.config;
 
-import com.netflix.config.WatchedConfigurationSource;
-import com.netflix.config.WatchedUpdateListener;
-import com.netflix.config.WatchedUpdateResult;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class MapBasedConfigurationSource implements WatchedConfigurationSource {
+import org.apache.commons.configuration.Configuration;
 
-  private static final Map<String, Object> properties = new ConcurrentHashMap<>();
-  private static final Set<WatchedUpdateListener> listeners = new HashSet<>();
+import com.netflix.config.WatchedUpdateListener;
+import com.netflix.config.WatchedUpdateResult;
 
-  static {
-    properties.put("servicecomb.abc.key","xyz");
-  }
+import io.servicecomb.config.spi.ConfigCenterConfigurationSource;
 
-  @Override
-  public void addUpdateListener(WatchedUpdateListener listener) {
-    listeners.add(listener);
-  }
+public class MapBasedConfigurationSource implements ConfigCenterConfigurationSource {
 
-  @Override
-  public void removeUpdateListener(WatchedUpdateListener listener) {
-    listeners.remove(listener);
-  }
+    private static final Map<String, Object> properties = new ConcurrentHashMap<>();
 
-  @Override
-  public Map<String, Object> getCurrentData() throws Exception {
-    return properties;
-  }
+    private static final Set<WatchedUpdateListener> listeners = new HashSet<>();
 
-  void addProperty(String property, Object value) {
-    properties.put(property, value);
+    static {
+        properties.put("servicecomb.abc.key", "xyz");
+    }
 
-    Map<String,Object> adds = new HashMap<>();
-    adds.put(property,value);
+    @Override
+    public void init(Configuration localConfiguration) {
 
-    listeners.forEach(listener -> listener.updateConfiguration(WatchedUpdateResult.createIncremental(adds,null,null)));
+    }
 
-  }
+    @Override
+    public void addUpdateListener(WatchedUpdateListener listener) {
+        listeners.add(listener);
+    }
 
-  void setProperty(String property, Object value) {
-    properties.replace(property,value);
+    @Override
+    public void removeUpdateListener(WatchedUpdateListener listener) {
+        listeners.remove(listener);
+    }
 
-    Map<String,Object> changeds = new HashMap<>();
-    changeds.put(property,value);
+    @Override
+    public Map<String, Object> getCurrentData() throws Exception {
+        return properties;
+    }
 
-    listeners.forEach(listener -> listener.updateConfiguration(WatchedUpdateResult.createIncremental(null,changeds,null)));
-  }
+    void addProperty(String property, Object value) {
+        properties.put(property, value);
 
-  void deleteProperty(String property) {
-    properties.remove(property);
+        Map<String, Object> adds = new HashMap<>();
+        adds.put(property, value);
 
-    Map<String,Object> deletes = new HashMap<>();
-    deletes.put(property,null);
+        listeners.forEach(
+                listener -> listener.updateConfiguration(WatchedUpdateResult.createIncremental(adds, null, null)));
 
-    listeners.forEach(listener -> listener.updateConfiguration(WatchedUpdateResult.createIncremental(null,null,deletes)));
-  }
+    }
 
-  public Map<String, Object> getProperties() {
-    return properties;
-  }
+    void setProperty(String property, Object value) {
+        properties.replace(property, value);
+
+        Map<String, Object> changeds = new HashMap<>();
+        changeds.put(property, value);
+
+        listeners.forEach(listener -> listener
+                .updateConfiguration(WatchedUpdateResult.createIncremental(null, changeds, null)));
+    }
+
+    void deleteProperty(String property) {
+        properties.remove(property);
+
+        Map<String, Object> deletes = new HashMap<>();
+        deletes.put(property, null);
+
+        listeners.forEach(
+                listener -> listener.updateConfiguration(WatchedUpdateResult.createIncremental(null, null, deletes)));
+    }
+
+    public Map<String, Object> getProperties() {
+        return properties;
+    }
 }

@@ -15,17 +15,30 @@
  */
 package io.servicecomb.config;
 
-import com.netflix.config.ConfigurationManager;
-import com.netflix.config.DynamicPropertyFactory;
 import java.util.List;
 import java.util.Map;
 
-import mockit.Deencapsulation;
+import org.apache.commons.configuration.Configuration;
 import org.junit.AfterClass;
 import org.junit.Assert;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
+import com.netflix.config.ConfigurationManager;
+
+import io.servicecomb.config.archaius.sources.MicroserviceConfigLoader;
+
 public class TestConfigurationSpringInitializer {
+    @BeforeClass
+    public static void classSetup() {
+        ArchaiusUtils.resetConfig();
+    }
+
+    @AfterClass
+    public static void classTeardown() {
+        ArchaiusUtils.resetConfig();
+    }
+
     @Test
     public void testAll() {
         new ConfigurationSpringInitializer();
@@ -35,5 +48,13 @@ public class TestConfigurationSpringInitializer {
         List<Map<String, Object>> listO = (List<Map<String, Object>>) o;
         Assert.assertEquals(3, listO.size());
         Assert.assertEquals(null, ConfigUtil.getProperty("notExist"));
+
+        MicroserviceConfigLoader loader = ConfigUtil.getMicroserviceConfigLoader();
+        Assert.assertNotNull(loader);
+
+        Configuration instance = ConfigurationManager.getConfigInstance();
+        ConfigUtil.installDynamicConfig();
+        // must not reinstall
+        Assert.assertEquals(instance, ConfigurationManager.getConfigInstance());
     }
 }
