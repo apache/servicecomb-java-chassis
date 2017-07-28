@@ -16,8 +16,6 @@
 package io.servicecomb.serviceregistry.task;
 
 import com.google.common.eventbus.EventBus;
-import com.google.common.eventbus.Subscribe;
-
 import io.servicecomb.serviceregistry.api.registry.Microservice;
 import io.servicecomb.serviceregistry.client.ServiceRegistryClient;
 
@@ -28,25 +26,20 @@ public abstract class AbstractRegisterTask extends AbstractTask {
         super(eventBus, srClient, microservice);
     }
 
-    @Subscribe
-    public void onHeartbeatEvent(MicroserviceInstanceHeartbeatTask task) {
-        if (task.isNeedRegisterInstance() && isSameMicroservice(task.getMicroservice())) {
-            this.registered = false;
-        }
-    }
-
     public boolean isRegistered() {
         return registered;
     }
 
     @Override
-    public void run() {
+    public void doRun() {
         if (registered) {
             return;
         }
 
-        registered = doRegister();
-        eventBus.post(this);
+        if(doRegister()) {
+            registered = true;
+            taskStatus = TaskStatus.FINISHED;
+        }
     }
 
     protected abstract boolean doRegister();

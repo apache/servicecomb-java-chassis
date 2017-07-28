@@ -15,16 +15,14 @@
  */
 package io.servicecomb.serviceregistry.task;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
-
 import io.servicecomb.serviceregistry.api.registry.Microservice;
 import io.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
 import io.servicecomb.serviceregistry.api.response.HeartbeatResponse;
 import io.servicecomb.serviceregistry.client.ServiceRegistryClient;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class MicroserviceInstanceHeartbeatTask extends AbstractTask {
     private static final Logger LOGGER = LoggerFactory.getLogger(MicroserviceInstanceHeartbeatTask.class);
@@ -43,9 +41,9 @@ public class MicroserviceInstanceHeartbeatTask extends AbstractTask {
     }
 
     @Subscribe
-    public void onRegisterInstance(MicroserviceInstanceRegisterTask task) {
-        if (task.isRegistered() && isSameMicroservice(task.getMicroservice())) {
-            instanceRegistered = true;
+    public void onMicroserviceWatchTask(MicroserviceWatchTask task) {
+        if (task.taskStatus == TaskStatus.READY && isSameMicroservice(task.getMicroservice())) {
+            this.taskStatus = TaskStatus.READY;
         }
     }
 
@@ -59,24 +57,18 @@ public class MicroserviceInstanceHeartbeatTask extends AbstractTask {
     }
 
     @Override
-    public void run() {
-        if (!instanceRegistered) {
-            return;
-        }
-
+    public void doRun() {
+        // will always run heartbeat when it is ready
         heartbeatResult = heartbeat();
-        eventBus.post(this);
     }
 
     private HeartbeatResult heartbeat() {
         HeartbeatResponse response =
             srClient.heartbeat(microserviceInstance.getServiceId(), microserviceInstance.getInstanceId());
         if (response == null) {
-            //            if (!needToWatch()) {
-            //                // TODO:不需要watch，为何要抛异常？
-            //                exception(new ClientException("could not connect to service center"));
-            //            }
-
+            LOGGER.error("Disconnected from service center and heartbeat failed for microservice instance={}/{}",
+                    microserviceInstance.getServiceId(),
+                    microserviceInstance.getInstanceId());
             return HeartbeatResult.DISCONNECTED;
         }
 

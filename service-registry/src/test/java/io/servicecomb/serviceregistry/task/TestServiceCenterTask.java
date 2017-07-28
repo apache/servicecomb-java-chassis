@@ -89,43 +89,25 @@ public class TestServiceCenterTask {
         serviceCenterTask.calcSleepInterval();
         Assert.assertEquals(60, serviceCenterTask.getInterval());
 
-        new Expectations() {
-            {
-                heartbeatTask.isNeedRegisterInstance();
-                result = false;
-            }
-        };
         eventBus.post(heartbeatTask);
         serviceCenterTask.calcSleepInterval();
         Assert.assertEquals(60, serviceCenterTask.getInterval());
 
-        new Expectations() {
-            {
-                heartbeatTask.isNeedRegisterInstance();
-                result = true;
-            }
-        };
-        eventBus.post(heartbeatTask);
+        // recover and exception again
+        registerTask.taskStatus = TaskStatus.FINISHED;
+        eventBus.post(registerTask);
+        registerTask.taskStatus = TaskStatus.INIT;
+        eventBus.post(registerTask);
         serviceCenterTask.calcSleepInterval();
         Assert.assertEquals(1, serviceCenterTask.getInterval());
 
-        new Expectations() {
-            {
-                registerTask.isRegistered();
-                result = true;
-            }
-        };
+        registerTask.taskStatus = TaskStatus.FINISHED;
         eventBus.post(registerTask);
         serviceCenterTask.calcSleepInterval();
         Assert.assertEquals(30, serviceCenterTask.getInterval());
 
-        new Expectations() {
-            {
-                heartbeatTask.isNeedRegisterInstance();
-                result = true;
-            }
-        };
-        eventBus.post(heartbeatTask);
+        registerTask.taskStatus = TaskStatus.INIT;
+        eventBus.post(registerTask);
         serviceCenterTask.calcSleepInterval();
         Assert.assertEquals(1, serviceCenterTask.getInterval());
     }

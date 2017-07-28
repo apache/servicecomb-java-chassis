@@ -486,16 +486,11 @@ public final class ServiceRegistryClientImpl implements ServiceRegistryClient {
                                 ipPort.getHostOrIp(),
                                 ipPort.getPort());
                     }, c -> {
-                        LOGGER.warn(
-                                "watching microservice {} connection is closed accidentally",
-                                selfMicroserviceId);
                         watchErrorHandler(new ClientException("connection is closed accidentally"),
                                 selfMicroserviceId,
                                 callback);
-
                         onClose.success(null);
                     }, bodyBuffer -> {
-
                         MicroserviceInstanceChangedEvent response = null;
                         try {
                             response = JsonUtils.readValue(bodyBuffer.getBytes(),
@@ -514,20 +509,9 @@ public final class ServiceRegistryClientImpl implements ServiceRegistryClient {
                                     e);
                         }
                     }, e -> {
-                        LOGGER.error(
-                                "watcher read microservice {} message from service center failed,"
-                                        + " {}",
-                                selfMicroserviceId,
-                                e.getMessage());
+                        watchErrorHandler(e, selfMicroserviceId, callback);
+                        onClose.success(null);
                     }, f -> {
-
-                        if (!watchServices.containsKey(selfMicroserviceId)) {
-                            return;
-                        }
-                        LOGGER.error(
-                                "watcher connect to service center server failed, microservice {}, {}",
-                                selfMicroserviceId,
-                                f.getMessage());
                         watchErrorHandler(f, selfMicroserviceId, callback);
                     });
                 }
@@ -575,6 +559,10 @@ public final class ServiceRegistryClientImpl implements ServiceRegistryClient {
 
     private void watchErrorHandler(Throwable e, String selfMicroserviceId,
             AsyncResultCallback<MicroserviceInstanceChangedEvent> callback) {
+        LOGGER.error(
+                "watcher connect to service center server failed, microservice {}, {}",
+                selfMicroserviceId,
+                e.getMessage());
         callback.fail(e);
         watchServices.remove(selfMicroserviceId);
     }

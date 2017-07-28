@@ -21,6 +21,8 @@ import io.servicecomb.serviceregistry.api.registry.Microservice;
 import io.servicecomb.serviceregistry.client.ServiceRegistryClient;
 
 public abstract class AbstractTask implements Runnable {
+    protected TaskStatus taskStatus = TaskStatus.INIT;
+
     protected EventBus eventBus;
 
     protected ServiceRegistryClient srClient;
@@ -42,6 +44,17 @@ public abstract class AbstractTask implements Runnable {
     public Microservice getMicroservice() {
         return microservice;
     }
+
+    @Override
+    public void run() {
+        if(taskStatus == TaskStatus.READY) {
+            // if this task is actually run, we send a notification
+            doRun();
+            eventBus.post(this);
+        }
+    }
+
+    abstract protected void doRun();
 
     protected boolean isSameMicroservice(Microservice otherMicroservice) {
         return microservice.getServiceName().equals(otherMicroservice.getServiceName());

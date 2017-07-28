@@ -21,9 +21,14 @@ import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 
 import io.servicecomb.serviceregistry.config.ServiceRegistryConfig;
+import io.servicecomb.serviceregistry.task.event.ExceptionEvent;
 import io.servicecomb.serviceregistry.task.event.ShutdownEvent;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class ServiceCenterTask implements Runnable {
+    private static final Logger LOGGER = LoggerFactory.getLogger(ServiceCenterTask.class);
+
     private EventBus eventBus;
 
     private ServiceRegistryConfig serviceRegistryConfig;
@@ -35,14 +40,16 @@ public class ServiceCenterTask implements Runnable {
     private volatile boolean running = true;
 
     // for fast recovery, register interval is different with heartbeat interval
-    private int[] registerIntervalSeconds = new int[] {1, 2, 3, 10, 20, 30, 40, 50, 60};
+    private int[] registerIntervalSeconds = new int[]{1, 2, 3, 10, 20, 30, 40, 50, 60};
 
     private int registerRetryCount;
 
     private int interval;
 
+    private ServiceCenterTaskMonitor serviceCenterTaskMonitor = new ServiceCenterTaskMonitor();
+
     public ServiceCenterTask(EventBus eventBus, ServiceRegistryConfig serviceRegistryConfig,
-            MicroserviceServiceCenterTask microserviceServiceCenterTask) {
+                             MicroserviceServiceCenterTask microserviceServiceCenterTask) {
         this.eventBus = eventBus;
         this.serviceRegistryConfig = serviceRegistryConfig;
         this.microserviceServiceCenterTask = microserviceServiceCenterTask;
@@ -56,20 +63,42 @@ public class ServiceCenterTask implements Runnable {
 
     @Subscribe
     public void onShutdown(ShutdownEvent event) {
+        LOGGER.info("service center task is shutdown.");
         this.running = false;
     }
 
+    // messages given in register error
     @Subscribe
-    public void onHeartbeatEvent(MicroserviceInstanceHeartbeatTask task) {
-        if (task.isNeedRegisterInstance()) {
-            registerInstanceSuccess = false;
-            registerRetryCount = 0;
+    public void onRegisterTask(AbstractRegisterTask task) {
+        LOGGER.info("read {} status is {}", task.getClass().getSimpleName(), task.taskStatus);
+        if (task.taskStatus == TaskStatus.FINISHED) {
+            registerInstanceSuccess = true;
+        } else {
+            onException();
         }
     }
 
+    // messages given in heartbeat
     @Subscribe
-    public void onInstanceRegisterEvent(MicroserviceInstanceRegisterTask task) {
-        registerInstanceSuccess = task.isRegistered();
+    public void onMicroserviceInstanceHeartbeatTask(MicroserviceInstanceHeartbeatTask task) {
+        if (task.getHeartbeatResult() != HeartbeatResult.SUCCESS) {
+            LOGGER.info("read MicroserviceInstanceHeartbeatTask status is {}", task.taskStatus);
+            onException();
+        }
+    }
+
+    // messages given in watch error
+    @Subscribe
+    public void onExceptionEvent(ExceptionEvent event) {
+        LOGGER.info("read exception event, message is :{}", event.getThrowable().getMessage());
+        onException();
+    }
+
+    private void onException() {
+        if (registerInstanceSuccess) {
+            registerInstanceSuccess = false;
+            registerRetryCount = 0;
+        }
     }
 
     public void init() {
@@ -79,12 +108,14 @@ public class ServiceCenterTask implements Runnable {
     @Override
     public void run() {
         while (running) {
-            microserviceServiceCenterTask.run();
-
-            calcSleepInterval();
             try {
+                calcSleepInterval();
                 TimeUnit.SECONDS.sleep(interval);
-            } catch (InterruptedException e) {
+                serviceCenterTaskMonitor.beginCycle(interval);
+                microserviceServiceCenterTask.run();
+                serviceCenterTaskMonitor.endCycle();
+            } catch (Throwable e) {
+                LOGGER.warn("unexpected exception caught from service center task. ", e);
                 continue;
             }
         }

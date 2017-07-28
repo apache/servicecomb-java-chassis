@@ -15,17 +15,17 @@
  */
 package io.servicecomb.serviceregistry.task;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.util.StringUtils;
-
 import com.google.common.eventbus.EventBus;
-
+import com.google.common.eventbus.Subscribe;
 import io.servicecomb.serviceregistry.RegistryUtils;
 import io.servicecomb.serviceregistry.api.registry.Microservice;
 import io.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
 import io.servicecomb.serviceregistry.client.ServiceRegistryClient;
 import io.servicecomb.serviceregistry.config.ServiceRegistryConfig;
+import javafx.concurrent.Task;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.util.StringUtils;
 
 public class MicroserviceInstanceRegisterTask extends AbstractRegisterTask {
     private static final Logger LOGGER = LoggerFactory.getLogger(MicroserviceInstanceRegisterTask.class);
@@ -43,18 +43,19 @@ public class MicroserviceInstanceRegisterTask extends AbstractRegisterTask {
         this.microserviceInstance = microservice.getIntance();
     }
 
-    @Override
-    public void run() {
-        if (StringUtils.isEmpty(microservice.getServiceId())) {
-            // can not register instance now.
-            return;
+    @Subscribe
+    public void onMicroserviceRegisterTask(MicroserviceRegisterTask task) {
+        if (task.taskStatus == TaskStatus.FINISHED && isSameMicroservice(task.getMicroservice())) {
+            this.taskStatus = TaskStatus.READY;
+            this.registered = false;
+        } else {
+            this.taskStatus = TaskStatus.INIT;
         }
-
-        super.run();
     }
 
     @Override
     protected boolean doRegister() {
+        LOGGER.info("running microservice instance register task.");
         String hostName = "";
         if (serviceRegistryConfig.isPreferIpAddress()) {
             hostName = RegistryUtils.getPublishAddress();

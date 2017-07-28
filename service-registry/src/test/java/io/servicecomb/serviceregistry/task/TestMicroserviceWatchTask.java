@@ -15,14 +15,8 @@
  */
 package io.servicecomb.serviceregistry.task;
 
-import javax.xml.ws.Holder;
-
-import org.junit.Assert;
-import org.junit.Test;
-
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
-
 import io.servicecomb.foundation.vertx.AsyncResultCallback;
 import io.servicecomb.serviceregistry.api.MicroserviceKey;
 import io.servicecomb.serviceregistry.api.registry.Microservice;
@@ -36,6 +30,10 @@ import mockit.Expectations;
 import mockit.Mock;
 import mockit.MockUp;
 import mockit.Mocked;
+import org.junit.Assert;
+import org.junit.Test;
+
+import javax.xml.ws.Holder;
 
 public class TestMicroserviceWatchTask {
     EventBus eventBus = new EventBus();
@@ -45,7 +43,7 @@ public class TestMicroserviceWatchTask {
     private void initWatch(ServiceRegistryConfig serviceRegistryConfig,
             ServiceRegistryClient srClient, Microservice microservice) {
         microserviceWatchTask = new MicroserviceWatchTask(eventBus, serviceRegistryConfig, srClient, microservice);
-
+        microserviceWatchTask.taskStatus = TaskStatus.READY;
         new Expectations() {
             {
                 serviceRegistryConfig.isWatch();
@@ -159,6 +157,7 @@ public class TestMicroserviceWatchTask {
 
         MicroserviceWatchTask microserviceWatchTask =
             new MicroserviceWatchTask(eventBus, serviceRegistryConfig, srClient, microservice);
+        microserviceWatchTask.taskStatus = TaskStatus.READY;
 
         new MockUp<ServiceRegistryClient>(srClient) {
             @Mock
@@ -195,7 +194,8 @@ public class TestMicroserviceWatchTask {
         try {
             microserviceWatchTask.run();
         } catch (Throwable e) {
-            Assert.fail("must do not watch");
+            // ready state, service id can not be null , will always watch
+            Assert.assertEquals("called watch", e.getMessage());
         }
 
         new Expectations() {
@@ -210,7 +210,8 @@ public class TestMicroserviceWatchTask {
         try {
             microserviceWatchTask.run();
         } catch (Throwable e) {
-            Assert.fail("must do not watch");
+            // ready state, service id can not be null , will always watch
+            Assert.assertEquals("called watch", e.getMessage());
         }
 
         new Expectations() {
