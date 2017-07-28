@@ -46,6 +46,8 @@ public final class ServiceRegistryConfig {
 
     private static final int DEFAULT_TIMEOUT_IN_MS = 30000;
 
+    private static final int DEFAULT_TIMEOUT_IN_SECONDS = 30;
+
     private static final int DEFAULT_REQUEST_TIMEOUT_IN_MS = 30000;
 
     private static final int DEFAULT_CHECK_INTERVAL_IN_S = 30;
@@ -126,9 +128,9 @@ public final class ServiceRegistryConfig {
     public int getIdleConnectionTimeout() {
         DynamicIntProperty property =
             DynamicPropertyFactory.getInstance()
-                    .getIntProperty("cse.service.registry.client.timeout.idle", DEFAULT_TIMEOUT_IN_MS);
+                    .getIntProperty("cse.service.registry.client.timeout.idle", DEFAULT_TIMEOUT_IN_SECONDS);
         int timeout = property.get();
-        return timeout < TimeUnit.SECONDS.toMillis(1) ? DEFAULT_TIMEOUT_IN_MS : timeout;
+        return timeout < 1 ? DEFAULT_TIMEOUT_IN_SECONDS : timeout;
     }
 
     public int getRequestTimeout() {
