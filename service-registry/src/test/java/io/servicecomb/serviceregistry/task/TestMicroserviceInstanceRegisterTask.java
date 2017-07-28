@@ -104,6 +104,7 @@ public class TestMicroserviceInstanceRegisterTask {
         };
         MicroserviceInstanceRegisterTask registerTask =
             new MicroserviceInstanceRegisterTask(eventBus, serviceRegistryConfig, srClient, microservice);
+        registerTask.taskStatus = TaskStatus.READY;
         registerTask.run();
 
         Assert.assertEquals(true, registerTask.isRegistered());
@@ -133,6 +134,7 @@ public class TestMicroserviceInstanceRegisterTask {
         };
         MicroserviceInstanceRegisterTask registerTask =
             new MicroserviceInstanceRegisterTask(eventBus, serviceRegistryConfig, srClient, microservice);
+        registerTask.taskStatus = TaskStatus.READY;
         registerTask.run();
 
         Assert.assertEquals(true, registerTask.isRegistered());
@@ -162,6 +164,7 @@ public class TestMicroserviceInstanceRegisterTask {
         };
         MicroserviceInstanceRegisterTask registerTask =
             new MicroserviceInstanceRegisterTask(eventBus, serviceRegistryConfig, srClient, microservice);
+        registerTask.taskStatus = TaskStatus.READY;
         registerTask.run();
 
         Assert.assertEquals(false, registerTask.isRegistered());

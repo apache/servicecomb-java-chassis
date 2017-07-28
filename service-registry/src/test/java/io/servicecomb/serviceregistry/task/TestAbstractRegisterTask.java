@@ -68,7 +68,7 @@ public class TestAbstractRegisterTask {
         ReflectUtils.setField(heartbeatTask, "heartbeatResult", HeartbeatResult.INSTANCE_NOT_REGISTERED);
 
         Assert.assertEquals(true, registerTask.isRegistered());
-        eventBus.post(heartbeatTask);;
+        eventBus.post(heartbeatTask);
         Assert.assertEquals(false, registerTask.isRegistered());
     }
 

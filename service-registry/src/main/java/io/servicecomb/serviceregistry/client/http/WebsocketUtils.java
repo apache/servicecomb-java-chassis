@@ -18,14 +18,17 @@ package io.servicecomb.serviceregistry.client.http;
 
 import io.servicecomb.foundation.common.net.IpPort;
 import io.servicecomb.foundation.vertx.client.http.HttpClientWithContext;
-
 import io.vertx.core.Handler;
 import io.vertx.core.buffer.Buffer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Created by on 2017/4/28.
  */
 public final class WebsocketUtils {
+    private static final Logger LOGGER = LoggerFactory.getLogger(WebsocketUtils.class);
+
     private WebsocketUtils() {
     }
 
@@ -41,13 +44,20 @@ public final class WebsocketUtils {
                     ws -> {
                         onOpen.handle(null);
 
-                        ws.exceptionHandler(onException);
-
+                        ws.exceptionHandler(v -> {
+                            onException.handle(v);
+                            try {
+                                ws.close();
+                            } catch (Exception err) {
+                                LOGGER.error("ws close error.", err);
+                            }
+                        });
                         ws.closeHandler(v -> {
                             onClose.handle(v);
                             try {
                                 ws.close();
                             } catch (Exception err) {
+                                LOGGER.error("ws close error.", err);
                             }
                         });
                         ws.handler(onMessage);

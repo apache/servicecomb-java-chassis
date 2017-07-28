@@ -19,6 +19,8 @@ import java.util.HashSet;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import com.google.common.eventbus.Subscribe;
+import javafx.concurrent.Task;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
@@ -35,14 +37,23 @@ public class MicroserviceRegisterTask extends AbstractRegisterTask {
 
     public MicroserviceRegisterTask(EventBus eventBus, ServiceRegistryClient srClient, Microservice microservice) {
         super(eventBus, srClient, microservice);
+        this.taskStatus = TaskStatus.READY;
     }
 
     public boolean isSchemaIdSetMatch() {
         return schemaIdSetMatch;
     }
-
+    @Subscribe
+    public void onMicroserviceInstanceHeartbeatTask(MicroserviceInstanceHeartbeatTask task) {
+        if (task.getHeartbeatResult() != HeartbeatResult.SUCCESS && isSameMicroservice(task.getMicroservice())) {
+            LOGGER.info("read MicroserviceInstanceHeartbeatTask status is {}", task.taskStatus);
+            this.taskStatus = TaskStatus.READY;
+            this.registered = false;
+        }
+    }
     @Override
     protected boolean doRegister() {
+        LOGGER.info("running microservice register task.");
         String serviceId = srClient.getMicroserviceId(microservice.getAppId(),
                 microservice.getServiceName(),
                 microservice.getVersion());

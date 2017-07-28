@@ -15,12 +15,8 @@
  */
 package io.servicecomb.serviceregistry.task;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.util.StringUtils;
-
 import com.google.common.eventbus.EventBus;
-
+import com.google.common.eventbus.Subscribe;
 import io.servicecomb.serviceregistry.api.Const;
 import io.servicecomb.serviceregistry.api.registry.Microservice;
 import io.servicecomb.serviceregistry.api.response.MicroserviceInstanceChangedEvent;
@@ -28,6 +24,8 @@ import io.servicecomb.serviceregistry.client.ServiceRegistryClient;
 import io.servicecomb.serviceregistry.config.ServiceRegistryConfig;
 import io.servicecomb.serviceregistry.task.event.ExceptionEvent;
 import io.servicecomb.serviceregistry.task.event.RecoveryEvent;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class MicroserviceWatchTask extends AbstractTask {
     private static final Logger LOGGER = LoggerFactory.getLogger(MicroserviceWatchTask.class);
@@ -40,13 +38,17 @@ public class MicroserviceWatchTask extends AbstractTask {
         this.serviceRegistryConfig = serviceRegistryConfig;
     }
 
-    public void run() {
-        if (!needToWatch()) {
-            return;
+    @Subscribe
+    public void onMicroserviceInstanceRegisterTask(MicroserviceInstanceRegisterTask task) {
+        if (task.taskStatus == TaskStatus.FINISHED && isSameMicroservice(task.getMicroservice())) {
+            this.taskStatus = TaskStatus.READY;
         }
+    }
 
-        if (StringUtils.isEmpty(microservice.getServiceId())) {
-            // can not watch now.
+    @Override
+    public void doRun() {
+        // will always run watch when it is ready
+        if (!needToWatch()) {
             return;
         }
 

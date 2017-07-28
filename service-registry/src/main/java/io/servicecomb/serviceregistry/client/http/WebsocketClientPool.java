@@ -42,8 +42,8 @@ public final class WebsocketClientPool extends AbstractClientPool {
         HttpClientOptions httpClientOptions = new HttpClientOptions();
         httpClientOptions.setProtocolVersion(ver);
         httpClientOptions.setConnectTimeout(ServiceRegistryConfig.INSTANCE.getConnectionTimeout());
-        // 不能设置IDLE后，会自动断开ws连接
-        // httpClientOptions.setIdleTimeout(ServiceRegistryConfig.INSTANCE.getIdleConnectionTimeout());
+        // idl timeout in seconds. we add 30 seconds for websocket idle timeout.
+        httpClientOptions.setIdleTimeout(ServiceRegistryConfig.INSTANCE.getIdleConnectionTimeout() + 30);
         if (ver == HttpVersion.HTTP_2) {
             LOGGER.debug("service center ws client protocol version is HTTP/2");
             httpClientOptions.setHttp2ClearTextUpgrade(false);
