@@ -88,7 +88,7 @@ public class TracingTestBase {
         .map(span -> span.binaryAnnotations)
         .flatMap(Collection::stream)
         .filter(span -> "http.path".equals(span.key) || "http.status_code".equals(span.key))
-        .filter(span -> span.value != null && !new String(span.value).trim().matches("0?"))
+        .filter(span -> span.value != null)
         .map(annotation -> new String(annotation.value))
         .distinct()
         .collect(Collectors.toList());
