@@ -91,7 +91,7 @@ class SpringTracingConfiguration {
     @Nullable
     @Override
     public Integer statusCode(@Nonnull HttpServletResponse response) {
-      return response.getStatus();
+      return response.getStatus() == 0? 500 : response.getStatus();
     }
   }
 }
