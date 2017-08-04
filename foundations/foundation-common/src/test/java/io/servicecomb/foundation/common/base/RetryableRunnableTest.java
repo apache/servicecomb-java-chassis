@@ -88,8 +88,7 @@ public class RetryableRunnableTest {
 
     retryable.cancel(true);
 
-    while(executorService.awaitTermination(2, TimeUnit.SECONDS))
-
+    // this test have some pitfalls that can't shutdown the execution of retryableRunnable
     assertThat(retryable.isCancelled(), is(true));
 
     verify(blockedRunnable).run();
