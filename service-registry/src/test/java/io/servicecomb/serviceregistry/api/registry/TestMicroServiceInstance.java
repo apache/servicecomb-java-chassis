@@ -18,17 +18,18 @@ package io.servicecomb.serviceregistry.api.registry;
 
 import com.netflix.config.ConcurrentCompositeConfiguration;
 import com.netflix.config.ConfigurationManager;
+import com.netflix.config.DynamicPropertyFactory;
 import io.servicecomb.config.ConfigUtil;
-import org.apache.commons.configuration.AbstractConfiguration;
-import org.apache.commons.configuration.Configuration;
-import org.junit.Assert;
-
+import io.servicecomb.serviceregistry.RegistryUtils;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
+import mockit.Deencapsulation;
+import org.apache.commons.configuration.AbstractConfiguration;
 import org.junit.After;
+import org.junit.AfterClass;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -36,7 +37,7 @@ import org.mockito.Mockito;
 /**
  *
  * @since Mar 13, 2017
- * @see 
+ * @see
  */
 public class TestMicroServiceInstance {
 
@@ -48,6 +49,13 @@ public class TestMicroServiceInstance {
 
     HealthCheck oMockHealthCheck = null;
 
+    @AfterClass
+    public static void classTeardown() {
+        Deencapsulation.setField(ConfigurationManager.class, "instance", null);
+        Deencapsulation.setField(ConfigurationManager.class, "customConfigurationInstalled", false);
+        Deencapsulation.setField(DynamicPropertyFactory.class, "config", null);
+        RegistryUtils.setServiceRegistry(null);
+    }
     @Before
     public void setUp() throws Exception {
         oMicroserviceInstance = new MicroserviceInstance();
