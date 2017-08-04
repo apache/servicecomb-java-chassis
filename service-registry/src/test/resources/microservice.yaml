@@ -26,6 +26,10 @@ cse:
         healthCheck:
           interval: 1
           times: 5
+  datacenter:
+    name: myDC
+    region: my-Region
+    availableZone: my-Zone
 #ssl.keystore.path=
 #ssl.keystore.pass=
 #ssl.truststore.path=

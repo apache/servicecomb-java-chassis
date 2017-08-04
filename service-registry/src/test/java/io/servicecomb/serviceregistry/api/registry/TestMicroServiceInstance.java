@@ -16,6 +16,11 @@
 
 package io.servicecomb.serviceregistry.api.registry;
 
+import com.netflix.config.ConcurrentCompositeConfiguration;
+import com.netflix.config.ConfigurationManager;
+import io.servicecomb.config.ConfigUtil;
+import org.apache.commons.configuration.AbstractConfiguration;
+import org.apache.commons.configuration.Configuration;
 import org.junit.Assert;
 
 import java.util.ArrayList;
@@ -99,4 +104,15 @@ public class TestMicroServiceInstance {
         oMicroserviceInstance.setHealthCheck(oMockHealthCheck);
     }
 
+    @Test
+    public void testCreateMicroserviceInstanceFromFile() {
+        AbstractConfiguration config = ConfigUtil.createDynamicConfig();
+        ConcurrentCompositeConfiguration configuration = new ConcurrentCompositeConfiguration();
+        configuration.addConfiguration(config);
+        ConfigurationManager.install(configuration);
+        MicroserviceInstance instance = MicroserviceInstance.createFromDefinition(config);
+        Assert.assertEquals(instance.getDataCenterInfo().getName(), "myDC");
+        Assert.assertEquals(instance.getDataCenterInfo().getRegion(), "my-Region");
+        Assert.assertEquals(instance.getDataCenterInfo().getAvailableZone(), "my-Zone");
+    }
 }

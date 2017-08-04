@@ -22,6 +22,11 @@ import java.util.List;
 import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.netflix.config.DynamicPropertyFactory;
+import io.servicecomb.serviceregistry.config.InstancePropertiesLoader;
+import io.servicecomb.serviceregistry.definition.DefinitionConst;
+import org.apache.commons.configuration.Configuration;
+import org.apache.commons.lang.StringUtils;
 
 /**
  * Created by   on 2016/12/5.
@@ -46,6 +51,8 @@ public class MicroserviceInstance {
     private HealthCheck healthCheck;
 
     private String stage;
+
+    private DataCenterInfo dataCenterInfo;
 
     public String getInstanceId() {
         return instanceId;
@@ -109,5 +116,45 @@ public class MicroserviceInstance {
 
     public void setStage(String stage) {
         this.stage = stage;
+    }
+
+    public DataCenterInfo getDataCenterInfo() {
+        return dataCenterInfo;
+    }
+
+    public void setDataCenterInfo(DataCenterInfo dataCenterInfo) {
+        this.dataCenterInfo = dataCenterInfo;
+    }
+
+    // Some properties of microservice instance are dynamic changed, not cover them all now.
+    public static MicroserviceInstance createFromDefinition(Configuration configuration) {
+        MicroserviceInstance microserviceInstance = new MicroserviceInstance();
+        // default hard coded values
+        microserviceInstance.setStage(DefinitionConst.defaultStage);
+        HealthCheck healthCheck = new HealthCheck();
+        healthCheck.setMode(HealthCheckMode.HEARTBEAT);
+        microserviceInstance.setHealthCheck(healthCheck);
+
+        // load properties
+        Map<String, String> propertiesMap = InstancePropertiesLoader.INSTANCE.loadProperties(configuration);
+        microserviceInstance.setProperties(propertiesMap);
+
+        // load data center information
+        loadDatacenterInfo(microserviceInstance);
+        return microserviceInstance;
+    }
+
+    private static void loadDatacenterInfo(MicroserviceInstance microserviceInstance) {
+        String dataCenterName = DynamicPropertyFactory.getInstance().getStringProperty("cse.datacenter.name", null)
+            .get();
+        if (StringUtils.isNotEmpty(dataCenterName)) {
+            DataCenterInfo dataCenterInfo = new DataCenterInfo();
+            dataCenterInfo.setName(dataCenterName);
+            dataCenterInfo
+                .setRegion(DynamicPropertyFactory.getInstance().getStringProperty("cse.datacenter.region", null).get());
+            dataCenterInfo.setAvailableZone(
+                DynamicPropertyFactory.getInstance().getStringProperty("cse.datacenter.availableZone", null).get());
+            microserviceInstance.setDataCenterInfo(dataCenterInfo);
+        }
     }
 }

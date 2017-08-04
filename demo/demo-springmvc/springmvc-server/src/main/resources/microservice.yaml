@@ -7,9 +7,9 @@ cse:
     registry:
       address: http://127.0.0.1:9980
   rest:
-    address: 0.0.0.0:8080?sslEnabled=true
+    address: 0.0.0.0:8082?sslEnabled=true
   highway:
-    address: 0.0.0.0:7070?sslEnabled=true
+    address: 0.0.0.0:7072?sslEnabled=true
   handler:
     chain:
       Provider:
@@ -17,7 +17,10 @@ cse:
   tracing:
     enabled: true
     samplingRate: 0.5
-
+  datacenter:
+    name: myDC
+    region: my-Region
+    availableZone: my-Zone
 #########SSL options
 ssl.protocols: TLSv1.2
 ssl.authPeer: true

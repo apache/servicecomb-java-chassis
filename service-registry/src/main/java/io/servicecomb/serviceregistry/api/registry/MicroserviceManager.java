@@ -63,7 +63,7 @@ public class MicroserviceManager {
     public Microservice addMicroservice(MicroserviceDefinition microserviceDefinition) {
         Configuration configuration = microserviceDefinition.getConfiguration();
         Microservice microservice = createMicroserviceFromDefinition(configuration);
-        microservice.setIntance(createMicroserviceInstance(configuration));
+        microservice.setIntance(MicroserviceInstance.createFromDefinition(configuration));
 
         if (appId == null) {
             appId = microservice.getAppId();
@@ -82,19 +82,6 @@ public class MicroserviceManager {
 
         defaultMicroservice = microservice;
         return microservice;
-    }
-
-    private MicroserviceInstance createMicroserviceInstance(Configuration configuration) {
-        MicroserviceInstance microserviceInstance = new MicroserviceInstance();
-        microserviceInstance.setStage(DefinitionConst.defaultStage);
-        Map<String, String> propertiesMap = InstancePropertiesLoader.INSTANCE.loadProperties(configuration);
-        microserviceInstance.setProperties(propertiesMap);
-
-        HealthCheck healthCheck = new HealthCheck();
-        healthCheck.setMode(HealthCheckMode.HEARTBEAT);
-        microserviceInstance.setHealthCheck(healthCheck);
-
-        return microserviceInstance;
     }
 
     private Microservice createMicroserviceFromDefinition(Configuration configuration) {
