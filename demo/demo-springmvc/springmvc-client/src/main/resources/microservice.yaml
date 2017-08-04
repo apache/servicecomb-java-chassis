@@ -17,7 +17,15 @@ cse:
     retryEnabled: true
     retryOnSame: 1
     retryOnNext: 1
-      
+    serverListFilters: zoneaware
+    serverListFilter:
+      zoneaware:
+        className: io.servicecomb.loadbalance.filter.ZoneAwareServerListFilterExt
+  datacenter:
+    name: myDC
+    region: my-Region
+    availableZone: my-Zone
+
 #########SSL options
 ssl.protocols: TLSv1.2
 ssl.authPeer: true

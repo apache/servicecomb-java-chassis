@@ -17,7 +17,10 @@ cse:
   tracing:
     enabled: true
     samplingRate: 0.5
-
+  datacenter:
+    name: myDC
+    region: my-Region
+    availableZone: my-Zone
 #########SSL options
 ssl.protocols: TLSv1.2
 ssl.authPeer: true
