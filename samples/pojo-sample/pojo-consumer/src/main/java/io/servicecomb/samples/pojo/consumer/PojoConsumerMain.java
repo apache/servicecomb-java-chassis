@@ -40,7 +40,7 @@ public class PojoConsumerMain {
         Person person = new Person();
         person.setName("ServiceComb/Java Chassis");
         System.out.println(hello.sayHello(person));
-        System.out.println("a: 1, b=2, result=" + compute.add(1, 2));
+        System.out.println("a=1, b=2, result=" + compute.add(1, 2));
     }
 
     public static void init()
