@@ -52,7 +52,6 @@ public class TestNetUtils {
     @Test
     public void testFullOperation() {
         Assert.assertNotNull(NetUtils.getHostAddress());
-        Assert.assertNotNull(NetUtils.getHostAddress(NetUtils.getHostName()));
         Assert.assertNotNull(NetUtils.getHostName());
     }
 
