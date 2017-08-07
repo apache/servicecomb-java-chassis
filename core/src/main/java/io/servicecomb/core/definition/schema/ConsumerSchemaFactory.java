@@ -77,10 +77,12 @@ public class ConsumerSchemaFactory extends AbstractSchemaFactory<ConsumerSchemaC
             Set<String> schemaIds = findLocalSchemas(microserviceMeta);
             Microservice microservice =
                 findMicroservice(microserviceMeta, microserviceVersionRule);
-            if (microservice != null) {
-                schemaIds.addAll(microservice.getSchemas());
-            }
-
+            if (microservice == null) {
+                throw new Error(
+                        String.format("can not get microservice from service center, name=%s",
+                                microserviceName));
+            }           
+            schemaIds.addAll(microservice.getSchemas());
             getOrCreateConsumerSchema(microserviceMeta, schemaIds, microservice);
 
             microserviceMetaManager.register(microserviceName, microserviceMeta);
@@ -163,13 +165,6 @@ public class ConsumerSchemaFactory extends AbstractSchemaFactory<ConsumerSchemaC
         Swagger swagger = super.loadSwagger(context);
         if (swagger != null) {
             return swagger;
-        }
-
-        if (context.getMicroservice() == null) {
-            throw new Error(
-                    String.format("no schema in local, and can not get microservice from service center, %s:%s",
-                            context.getMicroserviceName(),
-                            context.getSchemaId()));
         }
 
         ServiceRegistryClient client = RegistryUtils.getServiceRegistryClient();
