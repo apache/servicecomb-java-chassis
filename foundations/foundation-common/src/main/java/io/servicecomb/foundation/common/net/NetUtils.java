@@ -33,9 +33,6 @@ import org.slf4j.LoggerFactory;
 public final class NetUtils {
     private static final Logger LOGGER = LoggerFactory.getLogger(NetUtils.class);
 
-    // key is host name
-    private static Map<String, String> allHostAddresses = new HashMap<>();
-
     // one interface can bind to multiple address
     // we only save one ip for each interface name.
     // eg:
@@ -56,16 +53,23 @@ public final class NetUtils {
     static {
         try {
             doGetIpv4AddressFromNetworkInterface();
-            // this will throw exception in some docker image
+            // getLocalHost will throw exception in some docker image and sometimes will do a hostname lookup and time consuming
             hostName = InetAddress.getLocalHost().getHostName();
             hostAddress = InetAddress.getLocalHost().getHostAddress();
-            allHostAddresses.put(hostName, hostAddress);
-            LOGGER.info(
-                    "add hostName:" + hostName + ",hostAddress:" + hostAddress);
-        } catch (Exception e) {
-            LOGGER.error("got exception when trying to get addresses: {}", e);
-        }
 
+            LOGGER.info(
+                "add host name from localhost:" + hostName + ",host address:" + hostAddress);
+        } catch (Exception e) {
+            LOGGER.error("got exception when trying to get addresses:", e);
+            if (allInterfaceAddresses.size() >= 1) {
+                InetAddress entry = allInterfaceAddresses.entrySet().iterator().next().getValue();
+                // get host name will do a reverse name lookup and is time consuming
+                hostName = entry.getHostName();
+                hostAddress = entry.getHostAddress();
+                LOGGER.info(
+                    "add host name from interfaces:" + hostName + ",host address:" + hostAddress);
+            }
+        }
     }
 
     private NetUtils() {
@@ -95,15 +99,8 @@ public final class NetUtils {
                 }
 
                 if (Inet4Address.class.isInstance(address)) {
-                    String host = address.getHostName();
-                    if (host == null) {
-                        host = network.getName();
-                    }
-                    hostName = host;
-                    hostAddress = address.getHostAddress();
                     LOGGER.info(
-                            "add hostName:" + host + ",hostAddress:" + address.getHostAddress());
-                    allHostAddresses.put(address.getHostName(), address.getHostAddress());
+                            "add network interface name:" + network.getName() + ",host address:" + address.getHostAddress());
                     allInterfaceAddresses.put(network.getName(), address);
                 }
             }
@@ -174,10 +171,6 @@ public final class NetUtils {
 
     public static String getHostAddress() {
         return hostAddress;
-    }
-
-    public static String getHostAddress(String hostName) {
-        return allHostAddresses.get(hostName);
     }
 
     public static InetAddress getInterfaceAddress(String interfaceName) {

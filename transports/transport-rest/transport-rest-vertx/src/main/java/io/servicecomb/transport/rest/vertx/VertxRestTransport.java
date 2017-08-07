@@ -46,7 +46,12 @@ public class VertxRestTransport extends AbstractTransport {
         SimpleJsonObject json = new SimpleJsonObject();
         json.put(ENDPOINT_KEY, getEndpoint());
         options.setConfig(json);
-        return VertxUtils.blockDeploy(transportVertx, RestServerVerticle.class, options);
+        return VertxUtils.blockDeploy(transportVertx, RestServerVerticle.class, options) && deployClient();
+    }
+
+    private boolean deployClient() {
+        return RestTransportClientManager.INSTANCE.getRestTransportClient(true) != null &&
+            RestTransportClientManager.INSTANCE.getRestTransportClient(false) != null;
     }
 
     @Override

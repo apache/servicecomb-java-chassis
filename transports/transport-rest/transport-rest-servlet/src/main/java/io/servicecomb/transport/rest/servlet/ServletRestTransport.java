@@ -41,7 +41,12 @@ public class ServletRestTransport extends AbstractTransport {
             setListenAddressWithoutSchema(listenAddress);
         }
 
-        return true;
+        return deployClient();
+    }
+
+    private boolean deployClient() {
+        return RestTransportClientManager.INSTANCE.getRestTransportClient(true) != null &&
+            RestTransportClientManager.INSTANCE.getRestTransportClient(false) != null;
     }
 
     @Override

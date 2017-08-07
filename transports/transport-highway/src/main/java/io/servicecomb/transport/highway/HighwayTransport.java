@@ -48,7 +48,12 @@ public class HighwayTransport extends AbstractTransport {
         SimpleJsonObject json = new SimpleJsonObject();
         json.put(ENDPOINT_KEY, getEndpoint());
         deployOptions.setConfig(json);
-        return VertxUtils.blockDeploy(transportVertx, HighwayServerVerticle.class, deployOptions);
+        return VertxUtils.blockDeploy(transportVertx, HighwayServerVerticle.class, deployOptions) && deployClient();
+    }
+
+    private boolean deployClient() {
+        return HighwayClientManager.INSTANCE.getHighwayClient(true) != null &&
+            HighwayClientManager.INSTANCE.getHighwayClient(false) != null;
     }
 
     @Override
