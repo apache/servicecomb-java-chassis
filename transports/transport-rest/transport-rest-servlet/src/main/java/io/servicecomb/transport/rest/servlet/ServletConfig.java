@@ -24,8 +24,6 @@ public final class ServletConfig {
 
     private static final long DEFAULT_TIMEOUT = 3000;
 
-    private static final String DEFAULT_LISTEN_ADDRESS = "0.0.0.0:8080";
-
     private ServletConfig() {
     }
 
@@ -37,7 +35,7 @@ public final class ServletConfig {
 
     public static String getLocalServerAddress() {
         DynamicStringProperty address =
-            DynamicPropertyFactory.getInstance().getStringProperty("cse.rest.address", DEFAULT_LISTEN_ADDRESS);
+            DynamicPropertyFactory.getInstance().getStringProperty("cse.rest.address", null);
         return address.get();
     }
 }
