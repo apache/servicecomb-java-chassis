@@ -16,17 +16,18 @@
 
 package io.servicecomb.core.transport;
 
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 import org.junit.Assert;
 import org.junit.Test;
 
 import io.servicecomb.core.Endpoint;
 import io.servicecomb.core.Transport;
+import io.servicecomb.foundation.common.exceptions.ServiceCombException;
 import io.servicecomb.serviceregistry.RegistryUtils;
 import io.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
-import mockit.Deencapsulation;
 import mockit.Expectations;
 import mockit.Injectable;
 import mockit.Mocked;
@@ -40,13 +41,14 @@ public class TestTransportManager {
                 result = "test";
                 transport.init();
                 result = false;
+                transport.canInit();
+                result = true;
             }
         };
-        List<Transport> transports = new ArrayList<>();
-        transports.add(transport);
+        List<Transport> transports = Arrays.asList(transport);
 
         TransportManager manager = new TransportManager();
-        Deencapsulation.setField(manager, "transportList", transports);
+        manager.setTransports(transports);
 
         manager.init();
         Assert.assertEquals(manager.findTransport("test"), transport);
@@ -59,19 +61,177 @@ public class TestTransportManager {
             {
                 transport.getName();
                 result = "test";
+                transport.canInit();
+                result = true;
                 transport.init();
                 result = true;
                 transport.getPublishEndpoint();
                 result = endpoint;
             }
         };
-        List<Transport> transports = new ArrayList<>();
-        transports.add(transport);
+        List<Transport> transports = Arrays.asList(transport);
 
         TransportManager manager = new TransportManager();
-        Deencapsulation.setField(manager, "transportList", transports);
+        manager.setTransports(transports);
 
         manager.init();
         Assert.assertEquals(manager.findTransport("test"), transport);
+    }
+
+    @Test
+    public void testGroupByName(@Mocked Transport t1, @Mocked Transport t2_1, @Mocked Transport t2_2) {
+        new Expectations() {
+            {
+                t1.getName();
+                result = "t1";
+
+                t2_1.getName();
+                result = "t2";
+                t2_2.getName();
+                result = "t2";
+            }
+        };
+
+        TransportManager manager = new TransportManager();
+        manager.setTransports(Arrays.asList(t1, t2_1, t2_2));
+
+        Map<String, List<Transport>> groups = manager.groupByName();
+        Assert.assertEquals(2, groups.size());
+        Assert.assertEquals(1, groups.get("t1").size());
+        Assert.assertEquals(t1, groups.get("t1").get(0));
+        Assert.assertEquals(2, groups.get("t2").size());
+        Assert.assertEquals(t2_1, groups.get("t2").get(0));
+        Assert.assertEquals(t2_2, groups.get("t2").get(1));
+    }
+
+    @Test
+    public void testCheckTransportGroupInvalid(@Mocked Transport t1, @Mocked Transport t2) {
+        new Expectations() {
+            {
+                t1.getOrder();
+                result = 1;
+
+                t2.getOrder();
+                result = 1;
+            }
+        };
+
+        TransportManager manager = new TransportManager();
+        List<Transport> group = Arrays.asList(t1, t2);
+
+        try {
+            manager.checkTransportGroup(group);
+            Assert.fail("must throw exception");
+        } catch (ServiceCombException e) {
+            Assert.assertEquals(
+                    "io.servicecomb.core.$Impl_Transport and io.servicecomb.core.$Impl_Transport have the same order 1",
+                    e.getMessage());
+        }
+    }
+
+    @Test
+    public void testCheckTransportGroupValid(@Mocked Transport t1, @Mocked Transport t2) {
+        new Expectations() {
+            {
+                t1.getOrder();
+                result = 1;
+
+                t2.getOrder();
+                result = 2;
+            }
+        };
+
+        TransportManager manager = new TransportManager();
+        List<Transport> group = Arrays.asList(t1, t2);
+
+        try {
+            manager.checkTransportGroup(group);
+        } catch (ServiceCombException e) {
+            Assert.fail("must not throw exception: " + e.getMessage());
+        }
+    }
+
+    @Test
+    public void testChooseOneTransportFirst(@Mocked Transport t1, @Mocked Transport t2) {
+        new Expectations() {
+            {
+                t1.getOrder();
+                result = 1;
+                t1.canInit();
+                result = true;
+
+                t2.getOrder();
+                result = 2;
+            }
+        };
+
+        TransportManager manager = new TransportManager();
+        List<Transport> group = Arrays.asList(t1, t2);
+
+        Assert.assertEquals(t1, manager.chooseOneTransport(group));
+    }
+
+    @Test
+    public void testChooseOneTransportSecond(@Mocked Transport t1, @Mocked Transport t2) {
+        new Expectations() {
+            {
+                t1.getOrder();
+                result = 1;
+                t1.canInit();
+                result = false;
+
+                t2.getOrder();
+                result = 2;
+                t2.canInit();
+                result = true;
+            }
+        };
+
+        TransportManager manager = new TransportManager();
+        List<Transport> group = Arrays.asList(t1, t2);
+
+        Assert.assertEquals(t2, manager.chooseOneTransport(group));
+    }
+
+    @Test
+    public void testChooseOneTransportNone(@Mocked Transport t1, @Mocked Transport t2) {
+        new Expectations() {
+            {
+                t1.getName();
+                result = "t";
+                t1.getOrder();
+                result = 1;
+                t1.canInit();
+                result = false;
+
+                t2.getOrder();
+                result = 2;
+                t2.canInit();
+                result = false;
+            }
+        };
+
+        TransportManager manager = new TransportManager();
+        List<Transport> group = Arrays.asList(t1, t2);
+
+        Assert.assertNull(manager.chooseOneTransport(group));
+    }
+
+    @Test
+    public void testBuildTransportMapChooseNull(@Mocked Transport t1) {
+        new Expectations() {
+            {
+                t1.getName();
+                result = "t1";
+                t1.canInit();
+                result = false;
+            }
+        };
+
+        TransportManager manager = new TransportManager();
+        manager.setTransports(Arrays.asList(t1));
+
+        manager.buildTransportMap();
+        Assert.assertEquals(null, manager.findTransport("t1"));
     }
 }
