@@ -29,19 +29,8 @@
 
 	<dependencies>
 		<dependency>
-			<groupId>io.servicecomb</groupId>
-			<artifactId>transport-rest-servlet</artifactId>
-		</dependency>
-
-		<dependency>
 			<groupId>io.servicecomb.demo</groupId>
 			<artifactId>pojo-server</artifactId>
-			<exclusions>
-				<exclusion>
-					<groupId>io.servicecomb</groupId>
-					<artifactId>transport-rest-vertx</artifactId>
-				</exclusion>
-			</exclusions>
 		</dependency>
 	</dependencies>
 
