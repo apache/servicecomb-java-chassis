@@ -16,10 +16,12 @@
 
 package io.servicecomb.foundation.common.net;
 
+import java.io.IOException;
 import java.net.Inet4Address;
 import java.net.Inet6Address;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
+import java.net.ServerSocket;
 import java.net.SocketException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -183,5 +185,13 @@ public final class NetUtils {
             throw new IllegalArgumentException("Can not find address for interface name: " + interfaceName);
         }
         return address;
+    }
+
+    public static boolean canTcpListen(InetAddress address, int port) {
+        try (ServerSocket ss = new ServerSocket(port, 0, address)) {
+            return true;
+        } catch (IOException e) {
+            return false;
+        }
     }
 }
