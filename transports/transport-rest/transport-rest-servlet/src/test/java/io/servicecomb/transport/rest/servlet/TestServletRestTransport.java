@@ -16,6 +16,9 @@
 
 package io.servicecomb.transport.rest.servlet;
 
+import java.io.IOException;
+import java.net.ServerSocket;
+
 import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -24,20 +27,14 @@ import io.servicecomb.core.Endpoint;
 import io.servicecomb.core.Invocation;
 import io.servicecomb.foundation.common.net.URIEndpointObject;
 import io.servicecomb.swagger.invocation.AsyncResponse;
+import mockit.Expectations;
 
 public class TestServletRestTransport {
     ServletRestTransport transport = new ServletRestTransport();
 
     @Test
     public void testInit() {
-        boolean status = true;
-        try {
-            transport.init();
-        } catch (Exception exce) {
-            Assert.assertNotNull(exce);
-            status = false;
-        }
-        Assert.assertTrue(status);
+        Assert.assertTrue(transport.init());
     }
 
     @Test
@@ -56,5 +53,59 @@ public class TestServletRestTransport {
             status = false;
         }
         Assert.assertFalse(status);
+    }
+
+    @Test
+    public void testGetOrder() {
+        ServletRestTransport transport = new ServletRestTransport();
+        Assert.assertEquals(0, transport.getOrder());
+    }
+
+    @Test
+    public void testCanInitNullAddress() throws IOException {
+        new Expectations(ServletConfig.class) {
+            {
+                ServletConfig.getLocalServerAddress();
+                result = null;
+            }
+        };
+
+        ServletRestTransport transport = new ServletRestTransport();
+        Assert.assertTrue(transport.canInit());
+    }
+
+    @Test
+    public void testCanInitListened() throws IOException {
+        ServerSocket ss = new ServerSocket(0);
+        int port = ss.getLocalPort();
+
+        new Expectations(ServletConfig.class) {
+            {
+                ServletConfig.getLocalServerAddress();
+                result = "0.0.0.0:" + port;
+            }
+        };
+
+        ServletRestTransport transport = new ServletRestTransport();
+        Assert.assertTrue(transport.canInit());
+
+        ss.close();
+    }
+
+    @Test
+    public void testCanInitNotListened() throws IOException {
+        ServerSocket ss = new ServerSocket(0);
+        int port = ss.getLocalPort();
+        ss.close();
+
+        new Expectations(ServletConfig.class) {
+            {
+                ServletConfig.getLocalServerAddress();
+                result = "0.0.0.0:" + port;
+            }
+        };
+
+        ServletRestTransport transport = new ServletRestTransport();
+        Assert.assertFalse(transport.canInit());
     }
 }
