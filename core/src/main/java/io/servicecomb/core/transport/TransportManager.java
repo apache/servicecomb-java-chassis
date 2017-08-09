@@ -51,8 +51,6 @@ public class TransportManager {
         buildTransportMap();
 
         for (Transport transport : transportMap.values()) {
-            transportMap.put(transport.getName(), transport);
-
             if (transport.init()) {
                 Endpoint endpoint = transport.getPublishEndpoint();
                 if (endpoint != null && endpoint.getEndpoint() != null) {
