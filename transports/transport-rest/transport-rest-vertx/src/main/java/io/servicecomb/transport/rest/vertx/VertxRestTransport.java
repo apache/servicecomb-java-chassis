@@ -16,9 +16,14 @@
 
 package io.servicecomb.transport.rest.vertx;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
+
 import io.servicecomb.core.Const;
 import io.servicecomb.core.Invocation;
 import io.servicecomb.core.transport.AbstractTransport;
+import io.servicecomb.foundation.common.net.NetUtils;
 import io.servicecomb.foundation.common.net.URIEndpointObject;
 import io.servicecomb.foundation.vertx.SimpleJsonObject;
 import io.servicecomb.foundation.vertx.VertxUtils;
@@ -26,23 +31,42 @@ import io.servicecomb.swagger.invocation.AsyncResponse;
 import io.servicecomb.transport.rest.client.RestTransportClient;
 import io.servicecomb.transport.rest.client.RestTransportClientManager;
 import io.vertx.core.DeploymentOptions;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Component;
 
 @Component
 public class VertxRestTransport extends AbstractTransport {
     private static final Logger log = LoggerFactory.getLogger(VertxRestTransport.class);
+
     @Override
     public String getName() {
         return Const.RESTFUL;
     }
 
     @Override
+    public int getOrder() {
+        return -1000;
+    }
+
+    @Override
+    public boolean canInit() {
+        setListenAddressWithoutSchema(TransportConfig.getAddress());
+
+        URIEndpointObject ep = (URIEndpointObject) getEndpoint().getAddress();
+        if (ep == null) {
+            return true;
+        }
+
+        if (!NetUtils.canTcpListen(ep.getSocketAddress().getAddress(), ep.getPort())) {
+            log.info("can not listen {}, skip {}.", ep.getSocketAddress(), this.getClass().getName());
+            return false;
+        }
+
+        return true;
+    }
+
+    @Override
     public boolean init() throws Exception {
         // 部署transport server
         DeploymentOptions options = new DeploymentOptions().setInstances(TransportConfig.getThreadCount());
-        setListenAddressWithoutSchema(TransportConfig.getAddress());
         SimpleJsonObject json = new SimpleJsonObject();
         json.put(ENDPOINT_KEY, getEndpoint());
         options.setConfig(json);

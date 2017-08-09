@@ -42,6 +42,10 @@
 			<artifactId>transport-rest-vertx</artifactId>
 		</dependency>
 		<dependency>
+			<groupId>io.servicecomb</groupId>
+			<artifactId>transport-rest-servlet</artifactId>
+		</dependency>
+		<dependency>
 			<groupId>javax.servlet</groupId>
 			<artifactId>javax.servlet-api</artifactId>
 			<scope>compile</scope>

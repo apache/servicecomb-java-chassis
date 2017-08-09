@@ -16,7 +16,9 @@
 
 package io.servicecomb.foundation.common.net;
 
+import java.io.IOException;
 import java.net.InetAddress;
+import java.net.ServerSocket;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -82,5 +84,23 @@ public class TestNetUtils {
         }
 
         Deencapsulation.setField(NetUtils.class, "allInterfaceAddresses", org);
+    }
+
+    @Test
+    public void testCanTcpListenNo() throws IOException {
+        try (ServerSocket ss = new ServerSocket(0)) {
+            InetAddress address = InetAddress.getByName("127.0.0.1");
+            Assert.assertFalse(NetUtils.canTcpListen(address, ss.getLocalPort()));
+        }
+    }
+
+    @Test
+    public void testCanTcpListenYes() throws IOException {
+        ServerSocket ss = new ServerSocket(0);
+        int port = ss.getLocalPort();
+        ss.close();
+
+        InetAddress address = InetAddress.getByName("127.0.0.1");
+        Assert.assertTrue(NetUtils.canTcpListen(address, port));
     }
 }

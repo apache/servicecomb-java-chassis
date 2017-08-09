@@ -16,31 +16,48 @@
 
 package io.servicecomb.transport.rest.servlet;
 
-import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import io.servicecomb.core.Const;
 import io.servicecomb.core.Invocation;
 import io.servicecomb.core.transport.AbstractTransport;
-import io.servicecomb.transport.rest.client.RestTransportClient;
-import io.servicecomb.transport.rest.client.RestTransportClientManager;
+import io.servicecomb.foundation.common.net.NetUtils;
 import io.servicecomb.foundation.common.net.URIEndpointObject;
 import io.servicecomb.swagger.invocation.AsyncResponse;
+import io.servicecomb.transport.rest.client.RestTransportClient;
+import io.servicecomb.transport.rest.client.RestTransportClientManager;
 
 @Component
 public class ServletRestTransport extends AbstractTransport {
+    private static final Logger LOGGER = LoggerFactory.getLogger(ServletRestTransport.class);
+
     @Override
     public String getName() {
         return Const.RESTFUL;
     }
 
     @Override
-    public boolean init() throws Exception {
+    public boolean canInit() {
         String listenAddress = ServletConfig.getLocalServerAddress();
-        if (!StringUtils.isEmpty(listenAddress)) {
-            setListenAddressWithoutSchema(listenAddress);
+        setListenAddressWithoutSchema(listenAddress);
+
+        URIEndpointObject ep = (URIEndpointObject) getEndpoint().getAddress();
+        if (ep == null) {
+            return true;
         }
 
+        if (NetUtils.canTcpListen(ep.getSocketAddress().getAddress(), ep.getPort())) {
+            LOGGER.info("{} is not listened, skip {}.", ep.getSocketAddress(), this.getClass().getName());
+            return false;
+        }
+
+        return true;
+    }
+
+    @Override
+    public boolean init() {
         return deployClient();
     }
 

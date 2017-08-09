@@ -16,6 +16,9 @@
 
 package io.servicecomb.transport.rest.vertx;
 
+import java.io.IOException;
+import java.net.ServerSocket;
+
 import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -29,6 +32,7 @@ import io.vertx.core.AbstractVerticle;
 import io.vertx.core.DeploymentOptions;
 import io.vertx.core.Vertx;
 import io.vertx.core.VertxOptions;
+import mockit.Expectations;
 import mockit.Mock;
 import mockit.MockUp;
 
@@ -90,4 +94,57 @@ public class TestVertxRestTransport {
         Assert.assertFalse(validAssert);
     }
 
+    @Test
+    public void testGetOrder() {
+        VertxRestTransport transport = new VertxRestTransport();
+        Assert.assertEquals(-1000, transport.getOrder());
+    }
+
+    @Test
+    public void testCanInitNullAddress() throws IOException {
+        new Expectations(TransportConfig.class) {
+            {
+                TransportConfig.getAddress();
+                result = null;
+            }
+        };
+
+        VertxRestTransport transport = new VertxRestTransport();
+        Assert.assertTrue(transport.canInit());
+    }
+
+    @Test
+    public void testCanInitListened() throws IOException {
+        ServerSocket ss = new ServerSocket(0);
+        int port = ss.getLocalPort();
+
+        new Expectations(TransportConfig.class) {
+            {
+                TransportConfig.getAddress();
+                result = "0.0.0.0:" + port;
+            }
+        };
+
+        VertxRestTransport transport = new VertxRestTransport();
+        Assert.assertFalse(transport.canInit());
+
+        ss.close();
+    }
+
+    @Test
+    public void testCanInitNotListened() throws IOException {
+        ServerSocket ss = new ServerSocket(0);
+        int port = ss.getLocalPort();
+        ss.close();
+
+        new Expectations(TransportConfig.class) {
+            {
+                TransportConfig.getAddress();
+                result = "0.0.0.0:" + port;
+            }
+        };
+
+        VertxRestTransport transport = new VertxRestTransport();
+        Assert.assertTrue(transport.canInit());
+    }
 }

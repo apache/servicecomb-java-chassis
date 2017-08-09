@@ -814,7 +814,6 @@
         <artifactId>foundation-metrics</artifactId>
         <version>0.1.1-SNAPSHOT</version>
       </dependency>
-
       <dependency>
         <groupId>com.fasterxml.jackson.dataformat</groupId>
         <artifactId>jackson-dataformat-yaml</artifactId>

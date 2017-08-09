@@ -22,7 +22,7 @@ import org.junit.Test;
 public class TestServletConfig {
     @Test
     public void testGetLocalServerAddress() {
-        Assert.assertNotNull(ServletConfig.getLocalServerAddress());
+        Assert.assertNull(ServletConfig.getLocalServerAddress());
     }
 
     @Test

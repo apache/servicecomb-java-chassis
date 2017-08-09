@@ -68,7 +68,7 @@ public abstract class AbstractTransport implements Transport {
     }
 
     @Override
-    public Endpoint getEndpoint() throws Exception {
+    public Endpoint getEndpoint() {
         return endpoint;
     }
 
@@ -99,7 +99,7 @@ public abstract class AbstractTransport implements Transport {
         }
         this.endpoint = new Endpoint(this, NetUtils.getRealListenAddress(getName(), addressWithoutSchema));
         if (this.endpoint.getEndpoint() != null) {
-            this.publishEndpoint = new Endpoint(this, RegistryUtils.getPublishAddress(getName(), 
+            this.publishEndpoint = new Endpoint(this, RegistryUtils.getPublishAddress(getName(),
                     addressWithoutSchema));
         } else {
             this.publishEndpoint = null;
