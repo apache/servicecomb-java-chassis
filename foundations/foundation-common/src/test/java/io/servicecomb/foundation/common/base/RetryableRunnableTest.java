@@ -90,7 +90,8 @@ public class RetryableRunnableTest {
 
     // this test have some pitfalls that can't shutdown the execution of retryableRunnable
     assertThat(retryable.isCancelled(), is(true));
-
+    // Just make sure the blockedRunnable is called in the slower box
+    Thread.sleep(100);
     verify(blockedRunnable).run();
     executorService.shutdownNow();
   }
