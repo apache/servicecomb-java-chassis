@@ -16,14 +16,20 @@
 
 package io.servicecomb.serviceregistry.api.registry;
 
-import org.junit.Assert;
-
+import com.netflix.config.ConcurrentCompositeConfiguration;
+import com.netflix.config.ConfigurationManager;
+import com.netflix.config.DynamicPropertyFactory;
+import io.servicecomb.config.ConfigUtil;
+import io.servicecomb.serviceregistry.RegistryUtils;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
+import mockit.Deencapsulation;
+import org.apache.commons.configuration.AbstractConfiguration;
 import org.junit.After;
+import org.junit.AfterClass;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -31,7 +37,7 @@ import org.mockito.Mockito;
 /**
  *
  * @since Mar 13, 2017
- * @see 
+ * @see
  */
 public class TestMicroServiceInstance {
 
@@ -43,6 +49,13 @@ public class TestMicroServiceInstance {
 
     HealthCheck oMockHealthCheck = null;
 
+    @AfterClass
+    public static void classTeardown() {
+        Deencapsulation.setField(ConfigurationManager.class, "instance", null);
+        Deencapsulation.setField(ConfigurationManager.class, "customConfigurationInstalled", false);
+        Deencapsulation.setField(DynamicPropertyFactory.class, "config", null);
+        RegistryUtils.setServiceRegistry(null);
+    }
     @Before
     public void setUp() throws Exception {
         oMicroserviceInstance = new MicroserviceInstance();
@@ -99,4 +112,15 @@ public class TestMicroServiceInstance {
         oMicroserviceInstance.setHealthCheck(oMockHealthCheck);
     }
 
+    @Test
+    public void testCreateMicroserviceInstanceFromFile() {
+        AbstractConfiguration config = ConfigUtil.createDynamicConfig();
+        ConcurrentCompositeConfiguration configuration = new ConcurrentCompositeConfiguration();
+        configuration.addConfiguration(config);
+        ConfigurationManager.install(configuration);
+        MicroserviceInstance instance = MicroserviceInstance.createFromDefinition(config);
+        Assert.assertEquals(instance.getDataCenterInfo().getName(), "myDC");
+        Assert.assertEquals(instance.getDataCenterInfo().getRegion(), "my-Region");
+        Assert.assertEquals(instance.getDataCenterInfo().getAvailableZone(), "my-Zone");
+    }
 }

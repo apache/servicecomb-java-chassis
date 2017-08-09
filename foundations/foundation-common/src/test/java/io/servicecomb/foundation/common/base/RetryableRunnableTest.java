@@ -24,6 +24,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
@@ -62,20 +63,36 @@ public class RetryableRunnableTest {
   @Test
   public void exitsWhenInterrupted() throws InterruptedException {
     ExecutorService executorService = Executors.newSingleThreadExecutor();
-    doThrow(exception).when(runnable).run();
+    CountDownLatch countDownLatch = new CountDownLatch(1);
+    DescriptiveRunnable runnable = new DescriptiveRunnable() {
+      @Override
+      public String description() {
+        return "runnable";
+      }
+
+      @Override
+      public void run() {
+        if(countDownLatch.getCount() == 1) {
+          countDownLatch.countDown();
+        }
+        throw new RuntimeException("oops");
+      }
+    };
+
+    RetryableRunnable retryableRunnable = new RetryableRunnable(runnable, 50);
 
     Future<?> retryable = executorService.submit(retryableRunnable);
     executorService.submit(blockedRunnable);
 
-    TimeUnit.MILLISECONDS.sleep(100);
+    countDownLatch.await();
 
     retryable.cancel(true);
 
-    TimeUnit.MILLISECONDS.sleep(100);
-
+    // this test have some pitfalls that can't shutdown the execution of retryableRunnable
     assertThat(retryable.isCancelled(), is(true));
-
+    // Just make sure the blockedRunnable is called in the slower box
+    Thread.sleep(100);
     verify(blockedRunnable).run();
-    executorService.shutdown();
+    executorService.shutdownNow();
   }
 }
