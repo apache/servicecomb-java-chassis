@@ -21,14 +21,17 @@ import java.util.Iterator;
 import java.util.Properties;
 
 import org.apache.commons.configuration.AbstractConfiguration;
-import com.netflix.config.DynamicPropertyFactory;
 import org.springframework.beans.factory.config.PropertyPlaceholderConfigurer;
+import org.springframework.core.Ordered;
 
 import com.netflix.config.ConfigurationManager;
+import com.netflix.config.DynamicPropertyFactory;
 
 public class ConfigurationSpringInitializer extends PropertyPlaceholderConfigurer {
     public ConfigurationSpringInitializer() {
         ConfigUtil.installDynamicConfig();
+        setOrder(Ordered.LOWEST_PRECEDENCE / 2);
+        setIgnoreUnresolvablePlaceholders(true);
     }
 
     @Override

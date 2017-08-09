@@ -23,10 +23,12 @@ import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.springframework.core.Ordered;
 
 import com.netflix.config.ConfigurationManager;
 
 import io.servicecomb.config.archaius.sources.MicroserviceConfigLoader;
+import mockit.Deencapsulation;
 
 public class TestConfigurationSpringInitializer {
     @BeforeClass
@@ -41,7 +43,11 @@ public class TestConfigurationSpringInitializer {
 
     @Test
     public void testAll() {
-        new ConfigurationSpringInitializer();
+        ConfigurationSpringInitializer configurationSpringInitializer = new ConfigurationSpringInitializer();
+
+        Assert.assertEquals(Ordered.LOWEST_PRECEDENCE / 2, configurationSpringInitializer.getOrder());
+        Assert.assertEquals(true,
+                Deencapsulation.getField(configurationSpringInitializer, "ignoreUnresolvablePlaceholders"));
 
         Object o = ConfigUtil.getProperty("zq");
         @SuppressWarnings("unchecked")
