@@ -16,11 +16,13 @@
 
 package io.servicecomb.transport.highway;
 
+import io.servicecomb.core.SystemBootListener;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.HashMap;
 import java.util.Map;
 
+import mockit.Deencapsulation;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -75,6 +77,7 @@ public class TestHighwayCodec {
     public static void setupClass() {
         ProtobufCompatibleUtils.init();
         HighwayCodec.setHighwayTransport(new HighwayTransport());
+        Deencapsulation.setField(SystemBootListener.class, "ready", true);
     }
 
     @Before

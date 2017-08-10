@@ -16,7 +16,11 @@
 
 package io.servicecomb.core;
 
+import io.servicecomb.core.BootListener.BootEvent;
+import io.servicecomb.core.BootListener.EventType;
+import mockit.Deencapsulation;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -35,6 +39,7 @@ public class TestInvocationFactory {
         ServiceRegistry serviceRegistry = ServiceRegistryFactory.createLocal();
         serviceRegistry.init();
         RegistryUtils.setServiceRegistry(serviceRegistry);
+        Deencapsulation.setField(SystemBootListener.class, "ready", true);
     }
 
     @Test
