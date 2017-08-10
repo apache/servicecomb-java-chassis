@@ -15,13 +15,16 @@
  */
 package io.servicecomb.provider.springmvc.reference;
 
+import io.servicecomb.core.SystemBootListener;
 import java.io.IOException;
 import java.net.URI;
 import java.util.Arrays;
 
 import javax.xml.ws.Holder;
 
+import mockit.Deencapsulation;
 import org.junit.Assert;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.springframework.http.HttpMethod;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -39,6 +42,11 @@ import io.servicecomb.serviceregistry.registry.ServiceRegistryFactory;
 import io.servicecomb.swagger.invocation.Response;
 
 public class TestCseClientHttpRequest {
+    @BeforeClass
+    public static void setUp() {
+        Deencapsulation.setField(SystemBootListener.class, "ready", true);
+    }
+
     @RequestMapping(path = "SpringmvcImpl")
     static class SpringmvcImpl {
         @RequestMapping(path = "/bytes", method = RequestMethod.POST)
