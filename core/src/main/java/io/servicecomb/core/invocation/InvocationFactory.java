@@ -19,6 +19,7 @@ package io.servicecomb.core.invocation;
 import io.servicecomb.core.Const;
 import io.servicecomb.core.Endpoint;
 import io.servicecomb.core.Invocation;
+import io.servicecomb.core.SystemBootListener;
 import io.servicecomb.core.definition.MicroserviceMeta;
 import io.servicecomb.core.definition.OperationMeta;
 import io.servicecomb.core.definition.SchemaMeta;
@@ -26,25 +27,28 @@ import io.servicecomb.core.provider.consumer.ReferenceConfig;
 import io.servicecomb.serviceregistry.RegistryUtils;
 
 public final class InvocationFactory {
-    private static String microserviceName = getMicroserviceName();
-
     private InvocationFactory() {
+    }
+
+    private static void assertIsReady() {
+        if (!SystemBootListener.isReady()) {
+            throw new IllegalStateException("System is not ready for remote calls. "
+                + "When beans are making remote calls in initialization, it's better to "
+                + "implement io.servicecomb.core.BootListener and do it after EventType.AFTER_REGISTRY.");
+        }
     }
 
     private static String getMicroserviceName() {
         return RegistryUtils.getMicroservice().getServiceName();
     }
 
-    public static void setMicroserviceName(String microserviceName) {
-        InvocationFactory.microserviceName = microserviceName;
-    }
-
     public static Invocation forConsumer(ReferenceConfig referenceConfig, OperationMeta operationMeta,
             Object[] swaggerArguments) {
+        assertIsReady();
         Invocation invocation = new Invocation(referenceConfig,
                 operationMeta,
                 swaggerArguments);
-        invocation.addContext(Const.SRC_MICROSERVICE, microserviceName);
+        invocation.addContext(Const.SRC_MICROSERVICE, getMicroserviceName());
         return invocation;
     }
 
@@ -53,11 +57,12 @@ public final class InvocationFactory {
      */
     public static Invocation forConsumer(ReferenceConfig referenceConfig, SchemaMeta schemaMeta, String operationName,
             Object[] swaggerArguments) {
+        assertIsReady();
         OperationMeta operationMeta = schemaMeta.ensureFindOperation(operationName);
         Invocation invocation = new Invocation(referenceConfig,
                 operationMeta,
                 swaggerArguments);
-        invocation.addContext(Const.SRC_MICROSERVICE, microserviceName);
+        invocation.addContext(Const.SRC_MICROSERVICE, getMicroserviceName());
         return invocation;
     }
 
@@ -66,13 +71,14 @@ public final class InvocationFactory {
      */
     public static Invocation forConsumer(ReferenceConfig referenceConfig, String operationQualifiedName,
             Object[] swaggerArguments) {
+        assertIsReady();
         MicroserviceMeta microserviceMeta = referenceConfig.getMicroserviceMeta();
         OperationMeta operationMeta = microserviceMeta.ensureFindOperation(operationQualifiedName);
 
         Invocation invocation = new Invocation(referenceConfig,
                 operationMeta,
                 swaggerArguments);
-        invocation.addContext(Const.SRC_MICROSERVICE, microserviceName);
+        invocation.addContext(Const.SRC_MICROSERVICE, getMicroserviceName());
         return invocation;
     }
 
@@ -82,6 +88,7 @@ public final class InvocationFactory {
     public static Invocation forProvider(Endpoint endpoint,
             OperationMeta operationMeta,
             Object[] swaggerArguments) {
+        assertIsReady();
         return new Invocation(endpoint,
                 operationMeta,
                 swaggerArguments);

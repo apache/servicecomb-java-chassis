@@ -43,4 +43,7 @@
 	
 	<bean class="io.servicecomb.demo.pojo.client.CodeFirstPojoClient">
 	</bean>
+
+	<bean class="io.servicecomb.demo.pojo.client.BeanRpcTest" init-method="init">
+	</bean>
 </beans>
