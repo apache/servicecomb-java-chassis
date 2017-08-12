@@ -27,17 +27,30 @@
 		</param-value>
 	</context-param>
 
+	<!-- usage 1 equals usage 2 -->
+
+	<!-- usage 1:
+	   RestServletContextListener
+	   servicecomb.rest.servlet.urlPattern in microservice.yaml -->
 	<listener>
 		<listener-class>io.servicecomb.transport.rest.servlet.RestServletContextListener</listener-class>
 	</listener>
-	<servlet>
-		<servlet-name>RestServlet</servlet-name>
-		<servlet-class>io.servicecomb.transport.rest.servlet.RestServlet</servlet-class>
-		<load-on-startup>1</load-on-startup>
-		<async-supported>true</async-supported>
-	</servlet>
-	<servlet-mapping>
-		<servlet-name>RestServlet</servlet-name>
-		<url-pattern>/rest/*</url-pattern>
-	</servlet-mapping>
+
+	<!-- usage 2:
+	   RestServletContextListener
+	   servlet in web.xml -->
+	
+<!-- 	<listener> -->
+<!-- 		<listener-class>io.servicecomb.transport.rest.servlet.RestServletContextListener</listener-class> -->
+<!-- 	</listener> -->
+<!-- 	<servlet> -->
+<!-- 		<servlet-name>RestServlet</servlet-name> -->
+<!-- 		<servlet-class>io.servicecomb.transport.rest.servlet.RestServlet</servlet-class> -->
+<!-- 		<load-on-startup>1</load-on-startup> -->
+<!-- 		<async-supported>true</async-supported> -->
+<!-- 	</servlet> -->
+<!-- 	<servlet-mapping> -->
+<!-- 		<servlet-name>RestServlet</servlet-name> -->
+<!-- 		<url-pattern>/rest/*</url-pattern> -->
+<!-- 	</servlet-mapping> -->
 </web-app>
