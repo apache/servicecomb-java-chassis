@@ -214,24 +214,11 @@ public class TestTransportManager {
         TransportManager manager = new TransportManager();
         List<Transport> group = Arrays.asList(t1, t2);
 
-        Assert.assertNull(manager.chooseOneTransport(group));
-    }
-
-    @Test
-    public void testBuildTransportMapChooseNull(@Mocked Transport t1) {
-        new Expectations() {
-            {
-                t1.getName();
-                result = "t1";
-                t1.canInit();
-                result = false;
-            }
-        };
-
-        TransportManager manager = new TransportManager();
-        manager.setTransports(Arrays.asList(t1));
-
-        manager.buildTransportMap();
-        Assert.assertEquals(null, manager.findTransport("t1"));
+        try {
+            manager.chooseOneTransport(group);
+            Assert.fail("must throw exception");
+        } catch (ServiceCombException e) {
+            Assert.assertEquals("all transport named t refused to init.", e.getMessage());
+        }
     }
 }
