@@ -22,7 +22,6 @@ import javax.servlet.AsyncContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import io.servicecomb.transport.rest.servlet.common.MockUtil;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -32,9 +31,13 @@ import org.mockito.Mockito;
 import io.servicecomb.common.rest.codec.RestServerRequestInternal;
 import io.servicecomb.common.rest.codec.produce.ProduceProcessor;
 import io.servicecomb.common.rest.definition.RestOperationMeta;
+import io.servicecomb.core.CseContext;
 import io.servicecomb.core.Invocation;
 import io.servicecomb.core.definition.OperationMeta;
+import io.servicecomb.core.transport.TransportManager;
 import io.servicecomb.swagger.invocation.Response;
+import io.servicecomb.transport.rest.servlet.common.MockUtil;
+import mockit.Mocked;
 
 public class TestServletRestServer {
 
@@ -70,7 +73,9 @@ public class TestServletRestServer {
     }
 
     @Test
-    public void testServiceException() {
+    public void testServiceException(@Mocked TransportManager transportManager) {
+        CseContext.getInstance().setTransportManager(transportManager);
+
         boolean status = true;
         try {
             MockUtil.getInstance().mockAbstactRestServer();
@@ -80,6 +85,8 @@ public class TestServletRestServer {
             status = false;
         }
         Assert.assertTrue(status);
+
+        CseContext.getInstance().setTransportManager(null);
     }
 
     @Test

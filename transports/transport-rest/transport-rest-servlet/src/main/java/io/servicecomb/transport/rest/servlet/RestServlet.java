@@ -26,25 +26,19 @@ import javax.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import io.servicecomb.core.Const;
-import io.servicecomb.core.CseContext;
-
 /**
- * Rest Servlet Server，通过Tomcat拉起
+ * Rest Servlet Server, load by web container
  */
 public class RestServlet extends HttpServlet {
     private static final long serialVersionUID = 5797523329773923112L;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(RestServlet.class);
 
-    private transient ServletRestServer servletRestServer = new ServletRestServer();
+    private ServletRestServer servletRestServer = new ServletRestServer();
 
     @Override
     public void init() throws ServletException {
         super.init();
-
-        servletRestServer = new ServletRestServer();
-        servletRestServer.setTransport(CseContext.getInstance().getTransportManager().findTransport(Const.RESTFUL));
 
         LOGGER.info("Rest Servlet inited");
     }
