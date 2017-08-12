@@ -66,6 +66,10 @@ public abstract class AbstractRestServer<HTTP_RESPONSE> {
     }
 
     protected void handleRequest(RestServerRequestInternal restRequest, HTTP_RESPONSE httpResponse) {
+        if (transport == null) {
+            transport = CseContext.getInstance().getTransportManager().findTransport(Const.RESTFUL);
+        }
+
         try {
             RestOperationMeta restOperation = findRestOperation(restRequest);
             OperationMeta operationMeta = restOperation.getOperationMeta();
