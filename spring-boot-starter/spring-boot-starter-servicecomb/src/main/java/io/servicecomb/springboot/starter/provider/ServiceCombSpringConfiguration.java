@@ -15,11 +15,20 @@
  */
 package io.servicecomb.springboot.starter.provider;
 
-import io.servicecomb.foundation.common.utils.BeanUtils;
+import javax.inject.Inject;
+
+import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.ImportResource;
+
+import io.servicecomb.core.CseApplicationListener;
+import io.servicecomb.foundation.common.utils.BeanUtils;
 
 @Configuration
 @ImportResource(BeanUtils.DEFAULT_BEAN_RESOURCE)
 class ServiceCombSpringConfiguration {
+    @Inject
+    public void setCseApplicationListener(CseApplicationListener cseApplicationListener) {
+        cseApplicationListener.setInitEventClass(ApplicationReadyEvent.class);
+    }
 }
