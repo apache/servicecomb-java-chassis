@@ -22,7 +22,9 @@ import javax.inject.Inject;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextClosedEvent;
@@ -42,7 +44,8 @@ import io.servicecomb.foundation.common.utils.BeanUtils;
 import io.servicecomb.foundation.common.utils.FortifyUtils;
 import io.servicecomb.serviceregistry.RegistryUtils;
 
-public class CseApplicationListener implements ApplicationListener<ApplicationEvent>, Ordered {
+public class CseApplicationListener
+        implements ApplicationListener<ApplicationEvent>, Ordered, ApplicationContextAware {
     private static final Logger LOGGER = LoggerFactory.getLogger(CseApplicationListener.class);
 
     private static boolean isInit = false;
@@ -61,6 +64,21 @@ public class CseApplicationListener implements ApplicationListener<ApplicationEv
 
     private Collection<BootListener> bootListenerList;
 
+    private Class<?> initEventClass = ContextRefreshedEvent.class;
+
+    private ApplicationContext applicationContext;
+
+    @Override
+    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+        this.applicationContext = applicationContext;
+        BeanUtils.setContext(applicationContext);
+        RegistryUtils.init();
+    }
+
+    public void setInitEventClass(Class<?> initEventClass) {
+        this.initEventClass = initEventClass;
+    }
+
     @Override
     public int getOrder() {
         // should run before default listener, eg: ZuulConfiguration
@@ -78,15 +96,12 @@ public class CseApplicationListener implements ApplicationListener<ApplicationEv
 
     @Override
     public void onApplicationEvent(ApplicationEvent event) {
-        if (event instanceof ContextRefreshedEvent) {
-            ApplicationContext applicationContext = ((ContextRefreshedEvent) event).getApplicationContext();
+        if (initEventClass.isInstance(event)) {
             //TODO to load when webapplication context is used for discovery client, need to check if can use the order and undo this change with proper fix.
             if (!isInit) {
                 try {
-                    BeanUtils.setContext(applicationContext);
                     bootListenerList = applicationContext.getBeansOfType(BootListener.class).values();
 
-                    RegistryUtils.init();
                     AbstractEndpointsCache.init(RegistryUtils.getInstanceCacheManager(), transportManager);
 
                     triggerEvent(EventType.BEFORE_HANDLER);

@@ -47,14 +47,14 @@ public class TestCseApplicationListener {
 
         new Expectations() {
             {
-                event.getApplicationContext();
-                result = context;
                 context.getBeansOfType(BootListener.class);
                 result = listeners;
             }
         };
 
         CseApplicationListener cal = new CseApplicationListener();
+        cal.setInitEventClass(ContextRefreshedEvent.class);
+        cal.setApplicationContext(context);
         ReflectUtils.setField(cal, "producerProviderManager", producerProviderManager);
         ReflectUtils.setField(cal, "consumerProviderManager", consumerProviderManager);
         ReflectUtils.setField(cal, "transportManager", transportManager);
@@ -66,19 +66,19 @@ public class TestCseApplicationListener {
     public void testCseApplicationListenerThrowException(@Injectable ContextRefreshedEvent event,
             @Injectable AbstractApplicationContext context,
             @Injectable BootListener listener,
-            @Injectable ProducerProviderManager producerProviderManager) throws Exception {
+            @Injectable ProducerProviderManager producerProviderManager,
+            @Mocked RegistryUtils ru) throws Exception {
         Map<String, BootListener> listeners = new HashMap<>();
         listeners.put("test", listener);
 
         new Expectations() {
             {
-                event.getApplicationContext();
-                result = context;
                 context.getBeansOfType(BootListener.class);
                 result = listeners;
             }
         };
         CseApplicationListener cal = new CseApplicationListener();
+        cal.setApplicationContext(context);
         ReflectUtils.setField(cal, "producerProviderManager", producerProviderManager);
         cal.onApplicationEvent(event);
     }
@@ -86,15 +86,11 @@ public class TestCseApplicationListener {
     @Test
     public void testCseApplicationListenerParentNotnull(@Injectable ContextRefreshedEvent event,
             @Injectable AbstractApplicationContext context,
-            @Injectable AbstractApplicationContext pContext) throws Exception {
+            @Injectable AbstractApplicationContext pContext,
+            @Mocked RegistryUtils ru) throws Exception {
 
-        new Expectations() {
-            {
-                event.getApplicationContext();
-                result = context;
-            }
-        };
         CseApplicationListener cal = new CseApplicationListener();
+        cal.setApplicationContext(context);
         cal.onApplicationEvent(event);
     }
 
