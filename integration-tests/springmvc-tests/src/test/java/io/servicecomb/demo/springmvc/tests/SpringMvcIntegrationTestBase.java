@@ -38,6 +38,7 @@ import java.io.IOException;
 import java.time.ZonedDateTime;
 import java.util.*;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
@@ -51,6 +52,7 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.client.UnknownHttpStatusCodeException;
 
+@Ignore
 public class SpringMvcIntegrationTestBase {
 
   private final String baseUrl = "http://127.0.0.1:8080/";
