@@ -23,7 +23,6 @@ import org.springframework.stereotype.Component;
 import io.servicecomb.core.Const;
 import io.servicecomb.core.Invocation;
 import io.servicecomb.core.transport.AbstractTransport;
-import io.servicecomb.foundation.common.net.NetUtils;
 import io.servicecomb.foundation.common.net.URIEndpointObject;
 import io.servicecomb.swagger.invocation.AsyncResponse;
 import io.servicecomb.transport.rest.client.RestTransportClient;
@@ -41,15 +40,13 @@ public class ServletRestTransport extends AbstractTransport {
     @Override
     public boolean canInit() {
         String listenAddress = ServletConfig.getLocalServerAddress();
-        setListenAddressWithoutSchema(listenAddress);
-
-        URIEndpointObject ep = (URIEndpointObject) getEndpoint().getAddress();
-        if (ep == null) {
+        if (listenAddress == null) {
+            // not publish, but can init and be RESTful client
             return true;
         }
 
-        if (NetUtils.canTcpListen(ep.getSocketAddress().getAddress(), ep.getPort())) {
-            LOGGER.info("{} is not listened, skip {}.", ep.getSocketAddress(), this.getClass().getName());
+        if (!ServletUtils.canPublishEndpoint(listenAddress)) {
+            LOGGER.info("ignore transport {}.", this.getClass().getName());
             return false;
         }
 
@@ -58,12 +55,15 @@ public class ServletRestTransport extends AbstractTransport {
 
     @Override
     public boolean init() {
+        String listenAddress = ServletConfig.getLocalServerAddress();
+        setListenAddressWithoutSchema(listenAddress);
+
         return deployClient();
     }
 
     private boolean deployClient() {
         return RestTransportClientManager.INSTANCE.getRestTransportClient(true) != null &&
-            RestTransportClientManager.INSTANCE.getRestTransportClient(false) != null;
+                RestTransportClientManager.INSTANCE.getRestTransportClient(false) != null;
     }
 
     @Override
