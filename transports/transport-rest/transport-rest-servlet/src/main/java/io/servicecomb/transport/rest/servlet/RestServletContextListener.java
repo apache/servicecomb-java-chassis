@@ -18,15 +18,16 @@ package io.servicecomb.transport.rest.servlet;
 
 import static java.lang.Boolean.FALSE;
 
-import io.servicecomb.foundation.common.utils.BeanUtils;
-import io.servicecomb.foundation.common.utils.Log4jUtils;
-import java.util.LinkedHashSet;
-import java.util.Set;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
-import org.apache.commons.lang3.StringUtils;
+
+import org.springframework.context.support.AbstractApplicationContext;
+
+import io.servicecomb.foundation.common.utils.Log4jUtils;
 
 public class RestServletContextListener implements ServletContextListener {
+    private AbstractApplicationContext context;
+
     @Override
     public void contextInitialized(ServletContextEvent sce) {
         try {
@@ -38,39 +39,25 @@ public class RestServletContextListener implements ServletContextListener {
     }
 
     public void initLog(ServletContextEvent sce) throws Exception {
-      String logMerged = sce.getServletContext().getInitParameter("servicecomb.logging.merged");
-      if (!FALSE.toString().equalsIgnoreCase(logMerged)) {
-        Log4jUtils.init();
-      }
+        String logMerged = sce.getServletContext().getInitParameter("servicecomb.logging.merged");
+        if (!FALSE.toString().equalsIgnoreCase(logMerged)) {
+            Log4jUtils.init();
+        }
     }
 
-    public void initSpring(ServletContextEvent sce) {
-        String locations = sce.getServletContext().getInitParameter("contextConfigLocation");
-        String[] locationArray = splitLocations(locations);
-        BeanUtils.init(locationArray);
-    }
-
-    public String[] splitLocations(String locations) {
-        if (StringUtils.isEmpty(locations)) {
-            return new String[] {BeanUtils.DEFAULT_BEAN_RESOURCE};
-        }
-
-        Set<String> locationSet = new LinkedHashSet<>();
-        for (String location : locations.split("[\r\n]")) {
-            location = location.trim();
-            if (StringUtils.isEmpty(location)) {
-                continue;
-            }
-
-            locationSet.add(location);
-        }
-        locationSet.add(BeanUtils.DEFAULT_BEAN_RESOURCE);
-
-        return locationSet.toArray(new String[locationSet.size()]);
+    public AbstractApplicationContext initSpring(ServletContextEvent sce) {
+        context = new CseXmlWebApplicationContext(sce.getServletContext());
+        context.refresh();
+        return context;
     }
 
     @Override
     public void contextDestroyed(ServletContextEvent sce) {
-    }
+        if (context == null) {
+            return;
+        }
 
+        context.close();
+        context = null;
+    }
 }

@@ -33,6 +33,10 @@
 		</dependency>
 
 		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-web</artifactId>
+		</dependency>
+		<dependency>
 			<groupId>io.servicecomb</groupId>
 			<artifactId>transport-rest-client</artifactId>
 		</dependency>
@@ -47,6 +51,5 @@
 			<artifactId>log4j</artifactId>
 			<scope>test</scope>
 		</dependency>
-		
 	</dependencies>
 </project>
