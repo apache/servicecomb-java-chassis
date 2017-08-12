@@ -71,9 +71,7 @@ public class TransportManager {
 
             checkTransportGroup(group);
             Transport transport = chooseOneTransport(group);
-            if (transport != null) {
-                transportMap.put(transport.getName(), transport);
-            }
+            transportMap.put(transport.getName(), transport);
         }
     }
 
@@ -89,8 +87,8 @@ public class TransportManager {
             }
         }
 
-        LOGGER.info("all transport named {} refused to init.", group.get(0).getName());
-        return null;
+        throw new ServiceCombException(
+                String.format("all transport named %s refused to init.", group.get(0).getName()));
     }
 
     protected void checkTransportGroup(List<Transport> group) {
