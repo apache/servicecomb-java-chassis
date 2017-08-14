@@ -36,7 +36,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
 
 @Configuration
-class SpringTracingConfiguration {
+public class SpringTracingConfiguration {
 
   @Bean
   FilterRegistrationBean traceWebFilter(HttpTracing httpTracing) {
