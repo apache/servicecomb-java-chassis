@@ -16,21 +16,22 @@
 
 package io.servicecomb.provider.pojo.reference;
 
-import io.servicecomb.core.CseContext;
-import io.servicecomb.core.definition.MicroserviceMeta;
-import io.servicecomb.core.definition.SchemaMeta;
-import io.servicecomb.core.provider.CseBeanPostProcessor.EmptyBeanPostProcessor;
-import io.servicecomb.core.provider.consumer.ReferenceConfig;
-import io.servicecomb.foundation.common.exceptions.ServiceCombException;
-import io.servicecomb.provider.pojo.Invoker;
-import io.servicecomb.swagger.engine.SwaggerConsumer;
 import java.lang.reflect.Proxy;
+
 import javax.inject.Inject;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.util.StringUtils;
+
+import io.servicecomb.core.provider.CseBeanPostProcessor.EmptyBeanPostProcessor;
+import io.servicecomb.foundation.common.exceptions.ServiceCombException;
+import io.servicecomb.provider.pojo.Invoker;
 
 public class PojoReferenceMeta implements FactoryBean<Object>, InitializingBean, EmptyBeanPostProcessor {
+    private static final Logger LOGGER = LoggerFactory.getLogger(PojoReferenceMeta.class);
+
     // 原始数据
     private String microserviceName;
 
@@ -41,60 +42,25 @@ public class PojoReferenceMeta implements FactoryBean<Object>, InitializingBean,
     @Inject
     private PojoConsumers pojoConsumers;
 
-    // 生成的数据
-    private ReferenceConfig referenceConfig;
-
-    private SchemaMeta schemaMeta;
-
-    private SwaggerConsumer swaggerConsumer;
-
     // 根据intf创建出来的动态代理
     // TODO:未实现本地优先(本地场景下，应该跳过handler机制)
     private Object proxy;
 
-    private final Invoker invoker = new Invoker();
-
-    private void prepare() {
-        referenceConfig = CseContext.getInstance().getConsumerProviderManager().getReferenceConfig(microserviceName);
-        MicroserviceMeta microserviceMeta = referenceConfig.getMicroserviceMeta();
-
-        if (StringUtils.isEmpty(schemaId)) {
-            // 未指定schemaId，看看consumer接口是否等于契约接口
-            schemaMeta = microserviceMeta.findSchemaMeta(consumerIntf);
-            if (schemaMeta == null) {
-                // 尝试用consumer接口名作为schemaId
-                schemaId = consumerIntf.getName();
-                schemaMeta = microserviceMeta.ensureFindSchemaMeta(schemaId);
-            }
-        } else {
-            schemaMeta = microserviceMeta.ensureFindSchemaMeta(schemaId);
-        }
-
-        if (consumerIntf == null) {
-            consumerIntf = schemaMeta.getSwaggerIntf();
-        }
-
-        this.swaggerConsumer = CseContext.getInstance().getSwaggerEnvironment().createConsumer(consumerIntf,
-                schemaMeta.getSwaggerIntf());
-    }
+    private Invoker invoker;
 
     public void createInvoker() {
-        prepare();
+        // only consumerIntf is null need to do query contract during boot
+        if (consumerIntf != null) {
+            return;
+        }
 
-        invoker.init(getReferenceConfig(),
-                getSchemaMeta(),
-                swaggerConsumer);
+        invoker.prepare();
+        this.consumerIntf = invoker.getConsumerIntf();
         createProxy();
     }
 
     protected void createProxy() {
-        if (proxy == null) {
-            proxy = Proxy.newProxyInstance(consumerIntf.getClassLoader(), new Class<?>[] {consumerIntf}, invoker);
-        }
-    }
-
-    public ReferenceConfig getReferenceConfig() {
-        return referenceConfig;
+        proxy = Proxy.newProxyInstance(consumerIntf.getClassLoader(), new Class<?>[] {consumerIntf}, invoker);
     }
 
     public Object getProxy() {
@@ -105,22 +71,16 @@ public class PojoReferenceMeta implements FactoryBean<Object>, InitializingBean,
     public Object getObject() {
         if (proxy == null) {
             throw new ServiceCombException(
-                String.format("Rpc reference %s with service name [%s] and schema [%s] is not populated",
-                  consumerIntf == null? "" : consumerIntf,
-                  microserviceName,
-                  schemaId
-                )
-            );
+                    String.format("Rpc reference %s with service name [%s] and schema [%s] is not populated",
+                            consumerIntf == null ? "" : consumerIntf,
+                            microserviceName,
+                            schemaId));
         }
         return proxy;
     }
 
     @Override
     public Class<?> getObjectType() {
-        return consumerIntf;
-    }
-
-    public Class<?> getConsumerIntf() {
         return consumerIntf;
     }
 
@@ -133,10 +93,6 @@ public class PojoReferenceMeta implements FactoryBean<Object>, InitializingBean,
         this.consumerIntf = intf;
     }
 
-    public SchemaMeta getSchemaMeta() {
-        return schemaMeta;
-    }
-
     public void setMicroserviceName(String microserviceName) {
         this.microserviceName = microserviceName;
     }
@@ -147,8 +103,13 @@ public class PojoReferenceMeta implements FactoryBean<Object>, InitializingBean,
 
     @Override
     public void afterPropertiesSet() {
+        invoker = new Invoker(microserviceName, schemaId, consumerIntf);
         if (consumerIntf != null) {
             createProxy();
+        } else {
+            LOGGER.warn("Deprecated usage. xml definition cse:rpc-reference missed \"interface\" property, "
+                    + "to support this, must query schema ids from service center in blocking mode during boot until got it, "
+                    + "if there is loop dependency between microservices, will cause the microservices can not boot.");
         }
 
         if (pojoConsumers != null) {
