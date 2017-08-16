@@ -18,74 +18,14 @@ package io.servicecomb.provider.pojo;
 
 import static io.servicecomb.provider.pojo.PojoConst.POJO;
 
-import io.servicecomb.core.provider.consumer.AbstractConsumerProvider;
-import io.servicecomb.foundation.common.base.DescriptiveRunnable;
-import io.servicecomb.foundation.common.base.RetryableRunnable;
-import io.servicecomb.provider.pojo.reference.PojoConsumers;
-import io.servicecomb.provider.pojo.reference.PojoReferenceMeta;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.concurrent.Executor;
-import javax.inject.Inject;
 import org.springframework.stereotype.Component;
+
+import io.servicecomb.core.provider.consumer.AbstractConsumerProvider;
 
 @Component
 public class PojoConsumerProvider extends AbstractConsumerProvider {
-  private static final int DEFAULT_SLEEP_IN_MS = 2000;
-
-  private final PojoConsumers pojoConsumers;
-  private final Executor executor;
-  private final int sleepInMs;
-
-  @Inject
-  PojoConsumerProvider(PojoConsumers pojoConsumers, Executor executor) {
-    this(pojoConsumers, executor, DEFAULT_SLEEP_IN_MS);
-  }
-
-  PojoConsumerProvider(
-      PojoConsumers pojoConsumers,
-      Executor executor,
-      int sleepInMs) {
-    this.pojoConsumers = pojoConsumers;
-    this.executor = executor;
-    this.sleepInMs = sleepInMs;
-  }
-
-  @Override
-  public String getName() {
-    return POJO;
-  }
-
-  @Override
-  public void init() throws Exception {
-    DescriptiveRunnable runnable = new InvocationCreationRunnable(pojoConsumers.getConsumerList());
-
-    executor.execute(new RetryableRunnable(runnable, sleepInMs));
-  }
-
-  private static class InvocationCreationRunnable implements DescriptiveRunnable {
-
-    private final List<PojoReferenceMeta> consumers;
-
-    private InvocationCreationRunnable(List<PojoReferenceMeta> consumers) {
-      this.consumers = new LinkedList<>(consumers);
-    }
-
     @Override
-    public String description() {
-      return "Pojo consumers invocation creation runnable";
+    public String getName() {
+        return POJO;
     }
-
-    @Override
-    public void run() {
-      for (
-          Iterator<PojoReferenceMeta> iterator = consumers.iterator();
-          iterator.hasNext();
-          iterator.remove()) {
-
-        iterator.next().createInvoker();
-      }
-    }
-  }
 }

@@ -22,17 +22,8 @@ import static org.junit.Assert.assertThat;
 import org.junit.Assert;
 import org.junit.Test;
 
-import io.servicecomb.core.CseContext;
-import io.servicecomb.core.definition.MicroserviceMeta;
-import io.servicecomb.core.definition.SchemaMeta;
-import io.servicecomb.core.definition.schema.ConsumerSchemaFactory;
-import io.servicecomb.core.provider.consumer.ConsumerProviderManager;
-import io.servicecomb.core.provider.consumer.ReferenceConfig;
 import io.servicecomb.foundation.common.exceptions.ServiceCombException;
 import io.servicecomb.provider.pojo.IPerson;
-import io.servicecomb.swagger.engine.bootstrap.BootstrapNormal;
-import mockit.Expectations;
-import mockit.Injectable;
 
 public class PojoReferenceMetaTest {
     @Test
@@ -41,17 +32,11 @@ public class PojoReferenceMetaTest {
         pojoReferenceMeta.setMicroserviceName("test");
         pojoReferenceMeta.setSchemaId("schemaId");
         pojoReferenceMeta.setConsumerIntf(IPerson.class);
-
         pojoReferenceMeta.afterPropertiesSet();
 
         Assert.assertEquals(IPerson.class, pojoReferenceMeta.getObjectType());
-        Object proxy = pojoReferenceMeta.getProxy();
-        assertThat(proxy, instanceOf(IPerson.class));
+        assertThat(pojoReferenceMeta.getProxy(), instanceOf(IPerson.class));
         Assert.assertEquals(true, pojoReferenceMeta.isSingleton());
-
-        // not recreate proxy
-        pojoReferenceMeta.createInvoker();
-        Assert.assertSame(proxy, pojoReferenceMeta.getProxy());
     }
 
     @Test
@@ -60,40 +45,16 @@ public class PojoReferenceMetaTest {
         pojoReferenceMeta.setMicroserviceName("test");
         pojoReferenceMeta.setSchemaId("schemaId");
 
-        pojoReferenceMeta.afterPropertiesSet();
-
         try {
-            pojoReferenceMeta.getProxy();
+            pojoReferenceMeta.afterPropertiesSet();
             Assert.fail("must throw exception");
         } catch (ServiceCombException e) {
             Assert.assertEquals(
-                    "Rpc reference  with service name [test] and schema [schemaId] is not populated",
+                    "microserviceName=test, schemaid=schemaId, "
+                            + "do not support implicit interface anymore, because that need to block boot process, and query schema ids from service center until success, "
+                            + "suggest to use @RpcReference or "
+                            + "<cse:rpc-reference id=\"...\" microservice-name=\"...\" schema-id=\"...\" interface=\"...\"></cse:rpc-reference>.",
                     e.getMessage());
         }
-    }
-
-    @Test
-    public void testNoConsumerInterfaceCreateInvoke(@Injectable ConsumerProviderManager manager,
-            @Injectable ReferenceConfig config,
-            @Injectable MicroserviceMeta microserviceMeta,
-            @Injectable ConsumerSchemaFactory factory,
-            @Injectable SchemaMeta schemaMeta) {
-        new Expectations() {
-            {
-                schemaMeta.getSwaggerIntf();
-                result = IPerson.class;
-            }
-        };
-        CseContext.getInstance().setConsumerProviderManager(manager);
-        CseContext.getInstance().setConsumerSchemaFactory(factory);
-        CseContext.getInstance().setSwaggerEnvironment(new BootstrapNormal().boot());
-
-        PojoReferenceMeta pojoReferenceMeta = new PojoReferenceMeta();
-        pojoReferenceMeta.setMicroserviceName("test");
-        pojoReferenceMeta.setSchemaId("schemaId");
-        pojoReferenceMeta.afterPropertiesSet();
-
-        pojoReferenceMeta.createInvoker();
-        assertThat(pojoReferenceMeta.getProxy(), instanceOf(IPerson.class));
     }
 }

@@ -20,28 +20,33 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.context.ApplicationContext;
 
-import io.servicecomb.provider.pojo.IPerson;
 import io.servicecomb.provider.pojo.Person;
 import io.servicecomb.provider.pojo.PersonReference;
 import mockit.Injectable;
 
-public class TestPojoConsumers {
+public class TestRpcReferenceProcessor {
     @Test
-    public void testPojoConsumers(@Injectable ApplicationContext applicationContext) throws Exception {
+    public void testReference(@Injectable ApplicationContext applicationContext) throws Exception {
         PersonReference bean = new PersonReference();
 
-        PojoConsumers consumers = new PojoConsumers();
+        Assert.assertNull(bean.person);
+
+        RpcReferenceProcessor consumers = new RpcReferenceProcessor();
         consumers.setEmbeddedValueResolver((strVal) -> strVal);
         consumers.processConsumerField(applicationContext, bean, bean.getClass().getField("person"));
-        System.out.println(consumers.getConsumerList().get(0));
-        Assert.assertEquals(consumers.getConsumerList().get(0).getObject() instanceof IPerson, true);
+
+        Assert.assertNotNull(bean.person);
     }
 
     @Test
-    public void testPojoConsumersNoReference(@Injectable ApplicationContext applicationContext) throws Exception {
+    public void testNoReference(@Injectable ApplicationContext applicationContext) throws Exception {
         Person bean = new Person();
-        PojoConsumers consumers = new PojoConsumers();
+
+        Assert.assertNull(bean.name);
+
+        RpcReferenceProcessor consumers = new RpcReferenceProcessor();
         consumers.processConsumerField(applicationContext, bean, bean.getClass().getField("name"));
-        Assert.assertEquals(consumers.getConsumerList().size(), 0);
+
+        Assert.assertNull(bean.name);
     }
 }
