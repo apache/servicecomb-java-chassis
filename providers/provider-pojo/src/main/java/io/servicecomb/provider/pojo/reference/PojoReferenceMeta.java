@@ -73,9 +73,11 @@ public class PojoReferenceMeta implements FactoryBean<Object>, InitializingBean,
         if (consumerIntf == null) {
             throw new ServiceCombException(
                     String.format(
-                            "microserviceName=%s, schemaid=%s, "
-                                    + "do not support implicit interface anymore, "
-                                    + "because that need to block boot process, and query schema ids from service center until success, "
+                            "microserviceName=%s, schemaid=%s, \n"
+                                    + "do not support implicit interface anymore, \n"
+                                    + "because that caused problems:\n"
+                                    + "  1.the startup process relies on other microservices\n"
+                                    + "  2.cyclic dependent microservices can not be deployed\n"
                                     + "suggest to use @RpcReference or "
                                     + "<cse:rpc-reference id=\"...\" microservice-name=\"...\" schema-id=\"...\" interface=\"...\"></cse:rpc-reference>.",
                             microserviceName,
