@@ -24,9 +24,6 @@
 		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd
 		http://www.huawei.com/schema/paas/cse/rpc classpath:META-INF/spring/spring-paas-cse-rpc.xsd">
 
-	<cse:rpc-reference id="helloworld.Greeter"
-		microservice-name="pojo" schema-id="helloworld.Greeter"></cse:rpc-reference>
-
 	<cse:rpc-reference id="server" microservice-name="pojo"
 		schema-id="server" interface="io.servicecomb.demo.server.Test"></cse:rpc-reference>
 		
