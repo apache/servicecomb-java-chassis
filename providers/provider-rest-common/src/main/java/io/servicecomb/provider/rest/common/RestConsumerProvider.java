@@ -27,8 +27,4 @@ public class RestConsumerProvider extends AbstractConsumerProvider {
     public String getName() {
         return RestConst.REST;
     }
-
-    @Override
-    public void init() throws Exception {
-    }
 }

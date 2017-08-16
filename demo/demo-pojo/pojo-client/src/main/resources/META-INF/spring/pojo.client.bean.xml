@@ -27,10 +27,6 @@
 	<cse:rpc-reference id="smartcare" microservice-name="pojo"
 		schema-id="smartcare"></cse:rpc-reference>
 
-
-	<cse:rpc-reference id="helloworld.Greeter"
-		microservice-name="pojo" schema-id="helloworld.Greeter"></cse:rpc-reference>
-
 	<cse:rpc-reference id="server" microservice-name="pojo"
 		schema-id="server" interface="io.servicecomb.demo.server.Test"></cse:rpc-reference>
 		
