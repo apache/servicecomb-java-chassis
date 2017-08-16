@@ -18,8 +18,6 @@ package io.servicecomb.transport.highway;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import io.protostuff.LinkedBuffer;
-import io.protostuff.ProtobufOutput;
 import io.protostuff.runtime.ProtobufFeature;
 import io.servicecomb.foundation.vertx.client.tcp.AbstractTcpClientPackage;
 import io.servicecomb.foundation.vertx.client.tcp.TcpClientConfig;
@@ -50,17 +48,12 @@ public class HighwayClientConnection extends TcpClientConnection {
     @Override
     protected TcpOutputStream createLogin() {
         try {
-            LinkedBuffer linkedBuffer = LinkedBuffer.allocate();
-            ProtobufOutput output = new ProtobufOutput(linkedBuffer);
-
             RequestHeader header = new RequestHeader();
             header.setMsgType(MsgType.LOGIN);
-            header.writeObject(output);
 
             LoginRequest login = new LoginRequest();
             login.setProtocol(HighwayTransport.NAME);
             login.setUseProtobufMapCodec(true);
-            login.writeObject(output);
 
             HighwayOutputStream os = new HighwayOutputStream(AbstractTcpClientPackage.getAndIncRequestId(), null);
             os.write(header, LoginRequest.getLoginRequestSchema(), login);
