@@ -16,15 +16,10 @@
 
 package io.servicecomb.core.definition.schema;
 
-import java.util.HashSet;
-import java.util.Set;
-
 import javax.inject.Inject;
 
-import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
@@ -32,7 +27,6 @@ import io.servicecomb.core.definition.MicroserviceMeta;
 import io.servicecomb.core.definition.SchemaMeta;
 import io.servicecomb.core.definition.SchemaUtils;
 import io.servicecomb.core.definition.loader.SchemaListenerManager;
-import io.servicecomb.foundation.common.config.PaaSResourceUtils;
 import io.servicecomb.serviceregistry.RegistryUtils;
 import io.servicecomb.serviceregistry.api.registry.Microservice;
 import io.servicecomb.serviceregistry.client.ServiceRegistryClient;
@@ -74,39 +68,21 @@ public class ConsumerSchemaFactory extends AbstractSchemaFactory<ConsumerSchemaC
             // 获取指定服务中有哪些schemaId
             // 先取本地，再从服务中心取，如果服务中心取成功了，则将schema id合并处理
             microserviceMeta = new MicroserviceMeta(microserviceName);
-            Set<String> schemaIds = findLocalSchemas(microserviceMeta);
             Microservice microservice =
                 findMicroservice(microserviceMeta, microserviceVersionRule);
             if (microservice == null) {
                 throw new Error(
                         String.format("can not get microservice from service center, name=%s",
                                 microserviceName));
-            }           
-            schemaIds.addAll(microservice.getSchemas());
-            getOrCreateConsumerSchema(microserviceMeta, schemaIds, microservice);
+            }
+
+            getOrCreateConsumerSchema(microserviceMeta, microservice);
 
             microserviceMetaManager.register(microserviceName, microserviceMeta);
             schemaListenerManager.notifySchemaListener(microserviceMeta);
             return microserviceMeta;
         }
 
-    }
-
-    protected Set<String> findLocalSchemas(MicroserviceMeta microserviceMeta) {
-        String resPath = generateSchemaPath(microserviceMeta.getName(), "*");
-        Resource[] resArr = PaaSResourceUtils.getResources("classpath*:" + resPath);
-
-        Set<String> schemaIds = new HashSet<>();
-        for (Resource res : resArr) {
-            String schemaId = FilenameUtils.getBaseName(res.getFilename());
-            schemaIds.add(schemaId);
-        }
-
-        LOGGER.info("Found schema ids local, {}:{}:{}",
-                microserviceMeta.getAppId(),
-                microserviceMeta.getName(),
-                schemaIds);
-        return schemaIds;
     }
 
     protected Microservice findMicroservice(MicroserviceMeta microserviceMeta, String microserviceVersionRule) {
@@ -137,10 +113,8 @@ public class ConsumerSchemaFactory extends AbstractSchemaFactory<ConsumerSchemaC
 
     // 允许consumerIntf与schemaId对应的interface原型不同，用于支持context类型的参数
     // consumerIntf为null，表示原型与契约相同
-    // 如果从远程获取microservice失败，则microservice为null
-    protected void getOrCreateConsumerSchema(MicroserviceMeta microserviceMeta, Set<String> schemaIds,
-            Microservice microservice) {
-        for (String schemaId : schemaIds) {
+    protected void getOrCreateConsumerSchema(MicroserviceMeta microserviceMeta, Microservice microservice) {
+        for (String schemaId : microservice.getSchemas()) {
             ConsumerSchemaContext context = new ConsumerSchemaContext();
             context.setMicroserviceMeta(microserviceMeta);
             context.setMicroservice(microservice);
