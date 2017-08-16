@@ -20,7 +20,7 @@
 
   <groupId>io.servicecomb</groupId>
   <artifactId>java-chassis</artifactId>
-  <version>0.2.0</version>
+  <version>0.2.1-SNAPSHOT</version>
   <packaging>pom</packaging>
 
   <name>ServiceComb Java Chassis</name>
@@ -50,7 +50,7 @@
     <url>https://github.com/ServiceComb/java-chassis</url>
     <connection>scm:git:https://github.com/ServiceComb/java-chassis.git</connection>
     <developerConnection>scm:git:https://github.com/ServiceComb/java-chassis.git</developerConnection>
-    <tag>0.2.0</tag>
+    <tag>v${project.version}</tag>
   </scm>
 
   <modules>

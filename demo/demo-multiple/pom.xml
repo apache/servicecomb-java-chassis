@@ -20,7 +20,7 @@
 	<parent>
 		<groupId>io.servicecomb.demo</groupId>
 		<artifactId>demo-parent</artifactId>
-		<version>0.2.0</version>
+		<version>0.2.1-SNAPSHOT</version>
 	</parent>
 	<artifactId>demo-multiple</artifactId>
 	<packaging>pom</packaging>
@@ -38,22 +38,22 @@
 			<dependency>
 				<groupId>io.servicecomb.demo</groupId>
 				<artifactId>a-server</artifactId>
-				<version>0.2.0</version>
+				<version>0.2.1-SNAPSHOT</version>
 			</dependency>
 			<dependency>
 				<groupId>io.servicecomb.demo</groupId>
 				<artifactId>a-client</artifactId>
-				<version>0.2.0</version>
+				<version>0.2.1-SNAPSHOT</version>
 			</dependency>
 			<dependency>
 				<groupId>io.servicecomb.demo</groupId>
 				<artifactId>b-server</artifactId>
-				<version>0.2.0</version>
+				<version>0.2.1-SNAPSHOT</version>
 			</dependency>
 			<dependency>
 				<groupId>io.servicecomb.demo</groupId>
 				<artifactId>b-client</artifactId>
-				<version>0.2.0</version>
+				<version>0.2.1-SNAPSHOT</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
