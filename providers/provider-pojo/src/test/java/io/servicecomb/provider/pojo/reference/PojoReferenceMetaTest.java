@@ -19,73 +19,81 @@ package io.servicecomb.provider.pojo.reference;
 import static org.hamcrest.core.IsInstanceOf.instanceOf;
 import static org.junit.Assert.assertThat;
 
+import org.junit.Assert;
+import org.junit.Test;
+
 import io.servicecomb.core.CseContext;
 import io.servicecomb.core.definition.MicroserviceMeta;
+import io.servicecomb.core.definition.SchemaMeta;
 import io.servicecomb.core.definition.schema.ConsumerSchemaFactory;
 import io.servicecomb.core.provider.consumer.ConsumerProviderManager;
 import io.servicecomb.core.provider.consumer.ReferenceConfig;
+import io.servicecomb.foundation.common.exceptions.ServiceCombException;
 import io.servicecomb.provider.pojo.IPerson;
 import io.servicecomb.swagger.engine.bootstrap.BootstrapNormal;
 import mockit.Expectations;
 import mockit.Injectable;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
 
 public class PojoReferenceMetaTest {
-
-    private PojoReferenceMeta pojoReferenceMeta = new PojoReferenceMeta();
-
-    @Before
-    public void setUp() throws Exception {
+    @Test
+    public void testHasConsumerInterface() {
+        PojoReferenceMeta pojoReferenceMeta = new PojoReferenceMeta();
         pojoReferenceMeta.setMicroserviceName("test");
         pojoReferenceMeta.setSchemaId("schemaId");
         pojoReferenceMeta.setConsumerIntf(IPerson.class);
-    }
 
-    @Test
-    public void testGetSchemaMeta() throws Exception {
-        Assert.assertEquals(null, pojoReferenceMeta.getSchemaMeta());
-    }
+        pojoReferenceMeta.afterPropertiesSet();
 
-    @Test
-    public void testGetObjectType() throws Exception {
         Assert.assertEquals(IPerson.class, pojoReferenceMeta.getObjectType());
-    }
-
-    @Test
-    public void testGetProxy() throws Exception {
-        pojoReferenceMeta.createProxy();
-        assertThat(pojoReferenceMeta.getProxy(), instanceOf(IPerson.class));
-    }
-
-    @Test
-    public void testIsSingleton() throws Exception {
+        Object proxy = pojoReferenceMeta.getProxy();
+        assertThat(proxy, instanceOf(IPerson.class));
         Assert.assertEquals(true, pojoReferenceMeta.isSingleton());
+
+        // not recreate proxy
+        pojoReferenceMeta.createInvoker();
+        Assert.assertSame(proxy, pojoReferenceMeta.getProxy());
     }
 
     @Test
-    public void test(@Injectable ConsumerProviderManager manager,
+    public void testNoConsumerInterface() {
+        PojoReferenceMeta pojoReferenceMeta = new PojoReferenceMeta();
+        pojoReferenceMeta.setMicroserviceName("test");
+        pojoReferenceMeta.setSchemaId("schemaId");
+
+        pojoReferenceMeta.afterPropertiesSet();
+
+        try {
+            pojoReferenceMeta.getProxy();
+            Assert.fail("must throw exception");
+        } catch (ServiceCombException e) {
+            Assert.assertEquals(
+                    "Rpc reference  with service name [test] and schema [schemaId] is not populated",
+                    e.getMessage());
+        }
+    }
+
+    @Test
+    public void testNoConsumerInterfaceCreateInvoke(@Injectable ConsumerProviderManager manager,
             @Injectable ReferenceConfig config,
             @Injectable MicroserviceMeta microserviceMeta,
-            @Injectable ConsumerSchemaFactory factory) {
+            @Injectable ConsumerSchemaFactory factory,
+            @Injectable SchemaMeta schemaMeta) {
         new Expectations() {
             {
-                manager.getReferenceConfig("test");
-                result = config;
-                config.getMicroserviceMeta();
-                result = microserviceMeta;
-                microserviceMeta.ensureFindSchemaMeta("schemaId");
+                schemaMeta.getSwaggerIntf();
+                result = IPerson.class;
             }
         };
         CseContext.getInstance().setConsumerProviderManager(manager);
         CseContext.getInstance().setConsumerSchemaFactory(factory);
         CseContext.getInstance().setSwaggerEnvironment(new BootstrapNormal().boot());
 
-        Assert.assertEquals(null, pojoReferenceMeta.getReferenceConfig());
-        Assert.assertEquals(IPerson.class, pojoReferenceMeta.getConsumerIntf());
-        pojoReferenceMeta.createInvoker();
+        PojoReferenceMeta pojoReferenceMeta = new PojoReferenceMeta();
+        pojoReferenceMeta.setMicroserviceName("test");
+        pojoReferenceMeta.setSchemaId("schemaId");
         pojoReferenceMeta.afterPropertiesSet();
-        Assert.assertEquals(config, pojoReferenceMeta.getReferenceConfig());
+
+        pojoReferenceMeta.createInvoker();
+        assertThat(pojoReferenceMeta.getProxy(), instanceOf(IPerson.class));
     }
 }
