@@ -85,9 +85,6 @@
   <profiles>
     <profile>
       <id>release</id>
-      <modules>
-        <module>samples</module>
-      </modules>
       <build>
         <plugins>
           <plugin>
