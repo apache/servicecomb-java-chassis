@@ -22,7 +22,6 @@ import io.servicecomb.serviceregistry.api.registry.Microservice;
 import io.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
 import io.servicecomb.serviceregistry.client.ServiceRegistryClient;
 import io.servicecomb.serviceregistry.config.ServiceRegistryConfig;
-import javafx.concurrent.Task;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;

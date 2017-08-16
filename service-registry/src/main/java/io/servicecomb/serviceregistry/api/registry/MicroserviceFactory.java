@@ -19,7 +19,6 @@ import java.util.Map;
 
 import org.apache.commons.configuration.Configuration;
 
-import io.servicecomb.serviceregistry.config.InstancePropertiesLoader;
 import io.servicecomb.serviceregistry.config.MicroservicePropertiesLoader;
 import io.servicecomb.serviceregistry.definition.DefinitionConst;
 import io.servicecomb.serviceregistry.definition.MicroserviceDefinition;

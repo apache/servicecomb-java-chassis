@@ -17,9 +17,6 @@ package io.servicecomb.core;
 
 import io.servicecomb.core.BootListener.BootEvent;
 import io.servicecomb.core.BootListener.EventType;
-import io.servicecomb.serviceregistry.RegistryUtils;
-import io.servicecomb.serviceregistry.ServiceRegistry;
-import io.servicecomb.serviceregistry.registry.ServiceRegistryFactory;
 import mockit.Deencapsulation;
 import org.junit.Assert;
 import org.junit.BeforeClass;
