@@ -18,10 +18,6 @@ package io.servicecomb.provider.pojo.reference;
 
 import java.lang.reflect.Proxy;
 
-import javax.inject.Inject;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.InitializingBean;
 
@@ -30,8 +26,6 @@ import io.servicecomb.foundation.common.exceptions.ServiceCombException;
 import io.servicecomb.provider.pojo.Invoker;
 
 public class PojoReferenceMeta implements FactoryBean<Object>, InitializingBean, EmptyBeanPostProcessor {
-    private static final Logger LOGGER = LoggerFactory.getLogger(PojoReferenceMeta.class);
-
     // 原始数据
     private String microserviceName;
 
@@ -39,29 +33,9 @@ public class PojoReferenceMeta implements FactoryBean<Object>, InitializingBean,
 
     private Class<?> consumerIntf;
 
-    @Inject
-    private PojoConsumers pojoConsumers;
-
     // 根据intf创建出来的动态代理
     // TODO:未实现本地优先(本地场景下，应该跳过handler机制)
     private Object proxy;
-
-    private Invoker invoker;
-
-    public void createInvoker() {
-        // only consumerIntf is null need to do query contract during boot
-        if (consumerIntf != null) {
-            return;
-        }
-
-        invoker.prepare();
-        this.consumerIntf = invoker.getConsumerIntf();
-        createProxy();
-    }
-
-    protected void createProxy() {
-        proxy = Proxy.newProxyInstance(consumerIntf.getClassLoader(), new Class<?>[] {consumerIntf}, invoker);
-    }
 
     public Object getProxy() {
         return getObject();
@@ -69,13 +43,6 @@ public class PojoReferenceMeta implements FactoryBean<Object>, InitializingBean,
 
     @Override
     public Object getObject() {
-        if (proxy == null) {
-            throw new ServiceCombException(
-                    String.format("Rpc reference %s with service name [%s] and schema [%s] is not populated",
-                            consumerIntf == null ? "" : consumerIntf,
-                            microserviceName,
-                            schemaId));
-        }
         return proxy;
     }
 
@@ -103,17 +70,19 @@ public class PojoReferenceMeta implements FactoryBean<Object>, InitializingBean,
 
     @Override
     public void afterPropertiesSet() {
-        invoker = new Invoker(microserviceName, schemaId, consumerIntf);
-        if (consumerIntf != null) {
-            createProxy();
-        } else {
-            LOGGER.warn("Deprecated usage. xml definition cse:rpc-reference missed \"interface\" property, "
-                    + "to support this, must query schema ids from service center in blocking mode during boot until got it, "
-                    + "if there is loop dependency between microservices, will cause the microservices can not boot.");
+        if (consumerIntf == null) {
+            throw new ServiceCombException(
+                    String.format(
+                            "microserviceName=%s, schemaid=%s, "
+                                    + "do not support implicit interface anymore, "
+                                    + "because that need to block boot process, and query schema ids from service center until success, "
+                                    + "suggest to use @RpcReference or "
+                                    + "<cse:rpc-reference id=\"...\" microservice-name=\"...\" schema-id=\"...\" interface=\"...\"></cse:rpc-reference>.",
+                            microserviceName,
+                            schemaId));
         }
 
-        if (pojoConsumers != null) {
-            pojoConsumers.addPojoReferenceMeta(this);
-        }
+        Invoker invoker = new Invoker(microserviceName, schemaId, consumerIntf);
+        proxy = Proxy.newProxyInstance(consumerIntf.getClassLoader(), new Class<?>[] {consumerIntf}, invoker);
     }
 }

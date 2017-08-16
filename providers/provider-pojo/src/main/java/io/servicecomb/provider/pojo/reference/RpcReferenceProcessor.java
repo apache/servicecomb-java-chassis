@@ -16,8 +16,6 @@
 package io.servicecomb.provider.pojo.reference;
 
 import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.List;
 
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.EmbeddedValueResolverAware;
@@ -29,18 +27,8 @@ import io.servicecomb.core.provider.CseBeanPostProcessor.ConsumerFieldProcessor;
 import io.servicecomb.provider.pojo.RpcReference;
 
 @Component
-public class PojoConsumers implements ConsumerFieldProcessor, EmbeddedValueResolverAware {
-    private final List<PojoReferenceMeta> consumerList = new ArrayList<>();
-
+public class RpcReferenceProcessor implements ConsumerFieldProcessor, EmbeddedValueResolverAware {
     private StringValueResolver resolver;
-
-    public void addPojoReferenceMeta(PojoReferenceMeta meta) {
-        consumerList.add(meta);
-    }
-
-    public List<PojoReferenceMeta> getConsumerList() {
-        return consumerList;
-    }
 
     @Override
     public void processConsumerField(ApplicationContext applicationContext, Object bean, Field field) {
@@ -71,7 +59,5 @@ public class PojoConsumers implements ConsumerFieldProcessor, EmbeddedValueResol
 
         ReflectionUtils.makeAccessible(field);
         ReflectionUtils.setField(field, obj, pojoReference.getProxy());
-
-        addPojoReferenceMeta(pojoReference);
     }
 }

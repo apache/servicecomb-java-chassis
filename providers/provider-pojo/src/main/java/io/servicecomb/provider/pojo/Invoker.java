@@ -54,10 +54,6 @@ public class Invoker implements InvocationHandler {
         this.consumerIntf = consumerIntf;
     }
 
-    public Class<?> getConsumerIntf() {
-        return consumerIntf;
-    }
-
     public void prepare() {
         referenceConfig = CseContext.getInstance().getConsumerProviderManager().getReferenceConfig(microserviceName);
         MicroserviceMeta microserviceMeta = referenceConfig.getMicroserviceMeta();
@@ -72,10 +68,6 @@ public class Invoker implements InvocationHandler {
             }
         } else {
             schemaMeta = microserviceMeta.ensureFindSchemaMeta(schemaId);
-        }
-
-        if (consumerIntf == null) {
-            consumerIntf = schemaMeta.getSwaggerIntf();
         }
 
         this.swaggerConsumer = CseContext.getInstance().getSwaggerEnvironment().createConsumer(consumerIntf,

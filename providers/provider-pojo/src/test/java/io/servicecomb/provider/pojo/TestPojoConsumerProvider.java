@@ -19,75 +19,13 @@ package io.servicecomb.provider.pojo;
 import static io.servicecomb.provider.pojo.PojoConst.POJO;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
 
-import io.servicecomb.provider.pojo.reference.PojoConsumers;
-import io.servicecomb.provider.pojo.reference.PojoReferenceMeta;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
-import org.junit.Before;
 import org.junit.Test;
 
 public class TestPojoConsumerProvider {
-
-  private final PojoReferenceMeta meta1 = mock(PojoReferenceMeta.class);
-  private final PojoReferenceMeta meta2 = mock(PojoReferenceMeta.class);
-
-  private final PojoConsumers pojoConsumers = new PojoConsumers();
-
-
-  private final RuntimeException exception = new RuntimeException("oops");
-  private final PojoConsumerProvider pojoConsumerProvider = new PojoConsumerProvider(
-      pojoConsumers,
-      Executors.newSingleThreadScheduledExecutor(),
-      20
-  );
-
-  @Before
-  public void setUp() throws Exception {
-    pojoConsumers.addPojoReferenceMeta(meta1);
-    pojoConsumers.addPojoReferenceMeta(meta2);
-  }
-
-  @Test
-  public void providerNameIsPojo() throws Exception {
-    assertThat(pojoConsumerProvider.getName(), is(POJO));
-  }
-
-  @Test
-  public void pojoConsumersAreCalledOnlyOnce() throws Exception {
-    pojoConsumerProvider.init();
-
-    TimeUnit.MILLISECONDS.sleep(200);
-
-    verify(meta1).createInvoker();
-    verify(meta2).createInvoker();
-  }
-
-  @Test
-  public void createsInvokerUntilSuccess() throws Exception {
-    doThrow(exception).doNothing().when(meta1).createInvoker();
-
-    pojoConsumerProvider.init();
-
-    TimeUnit.MILLISECONDS.sleep(200);
-
-    verify(meta1, times(2)).createInvoker();
-    verify(meta2).createInvoker();
-  }
-
-  @Test
-  public void eachInvokerIsCreatedOnlyOnce() throws Exception {
-    doThrow(exception).doNothing().when(meta2).createInvoker();
-
-    pojoConsumerProvider.init();
-
-    TimeUnit.MILLISECONDS.sleep(200);
-
-    verify(meta1).createInvoker();
-    verify(meta2, times(2)).createInvoker();
-  }
+    @Test
+    public void providerNameIsPojo() throws Exception {
+        PojoConsumerProvider pojoConsumerProvider = new PojoConsumerProvider();
+        assertThat(pojoConsumerProvider.getName(), is(POJO));
+    }
 }
