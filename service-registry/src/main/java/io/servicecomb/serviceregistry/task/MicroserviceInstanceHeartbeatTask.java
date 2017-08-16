@@ -29,9 +29,6 @@ public class MicroserviceInstanceHeartbeatTask extends AbstractTask {
 
     private MicroserviceInstance microserviceInstance;
 
-    // when instance register to service center success, start heartbeat
-    private boolean instanceRegistered;
-
     private HeartbeatResult heartbeatResult;
 
     public MicroserviceInstanceHeartbeatTask(EventBus eventBus, ServiceRegistryClient srClient,

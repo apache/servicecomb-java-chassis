@@ -17,7 +17,6 @@ package io.servicecomb.demo.pojo.client;
 
 import io.servicecomb.demo.server.Test;
 import io.servicecomb.provider.pojo.RpcReference;
-import org.springframework.stereotype.Component;
 
 public class BeanRpcTest {
   @RpcReference(microserviceName = "pojo")

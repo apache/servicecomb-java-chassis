@@ -29,7 +29,6 @@ import io.servicecomb.serviceregistry.client.ServiceRegistryClient;
 import io.servicecomb.serviceregistry.config.ServiceRegistryConfig;
 import io.servicecomb.serviceregistry.task.event.ShutdownEvent;
 import mockit.Deencapsulation;
-import mockit.Expectations;
 import mockit.Mocked;
 
 public class TestServiceCenterTask {
