@@ -20,13 +20,13 @@
     <parent>
         <groupId>io.servicecomb</groupId>
         <artifactId>java-chassis-parent</artifactId>
-        <version>0.2.0</version>
+        <version>0.2.1-SNAPSHOT</version>
         <relativePath>../parent</relativePath>
     </parent>
     <groupId>io.servicecomb.samples</groupId>
     <artifactId>samples</artifactId>
     <packaging>pom</packaging>
-    <version>0.2.0</version>
+    <version>0.2.1-SNAPSHOT</version>
     <modules>
         <module>codefirst-sample</module>
         <module>custom-handler-sample</module>
@@ -41,14 +41,14 @@
             <dependency>
                 <groupId>io.servicecomb</groupId>
                 <artifactId>java-chassis-dependencies</artifactId>
-                <version>0.2.0</version>
+                <version>0.2.1-SNAPSHOT</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
             <dependency>
                 <groupId>io.servicecomb.samples</groupId>
                 <artifactId>commmon-schema</artifactId>
-                <version>0.2.0</version>
+                <version>0.2.1-SNAPSHOT</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
