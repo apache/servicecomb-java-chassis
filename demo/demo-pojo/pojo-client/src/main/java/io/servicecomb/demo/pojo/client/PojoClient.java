@@ -47,6 +47,11 @@ public class PojoClient {
 
     public static CodeFirstPojoClient codeFirstPojoClient;
 
+    // reference a not exist a microservice, and never use it 
+    // this should not cause problems
+    @RpcReference(microserviceName = "notExist")
+    public static Test notExist;
+
     @RpcReference(microserviceName = "pojo")
     public static Test test;
 

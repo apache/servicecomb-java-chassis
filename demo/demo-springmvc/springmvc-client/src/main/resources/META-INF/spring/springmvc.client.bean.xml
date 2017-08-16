@@ -23,6 +23,6 @@
 		http://www.huawei.com/schema/paas/cse/rpc classpath:META-INF/spring/spring-paas-cse-rpc.xsd">
 
 	<cse:rpc-reference id="controller" microservice-name="springmvc"
-		schema-id="controller"></cse:rpc-reference>
+		schema-id="controller" interface="io.servicecomb.demo.controller.Controller"></cse:rpc-reference>
 
 </beans>
