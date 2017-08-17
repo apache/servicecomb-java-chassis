@@ -49,9 +49,6 @@ public class TestException {
         oExeception = ExceptionUtils.operationIdInvalid("cse.double.error", "what path are you talking about");
         Assert.assertEquals("cse.schema.operation.id.invalid", oExeception.getCode());
 
-        oExeception = ExceptionUtils.operationNotExist("cse.double.error", "what path are you talking about");
-        Assert.assertEquals("cse.schema.operation.not.exist", oExeception.getCode());
-
         oExeception = ExceptionUtils.handlerRefNotExist("cse.double.error");
         Assert.assertEquals("cse.handler.ref.not.exist", oExeception.getCode());
 
