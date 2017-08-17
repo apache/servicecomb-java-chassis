@@ -74,6 +74,16 @@ public class TestRestServletInjector {
     }
 
     @Test
+    public void testCheckUrlPatternNotStartWithSlash() {
+        try {
+            injector.checkUrlPattern("abcdef/*");
+            Assert.fail("must throw exception");
+        } catch (ServiceCombException e) {
+            Assert.assertEquals("only support rule like /* or /path/* or /path1/path2/* and so on.", e.getMessage());
+        }
+    }
+
+    @Test
     public void testDefaultInjectEmptyUrlPattern(@Mocked ServletContext servletContext, @Mocked Dynamic dynamic) {
         new Expectations(ServletConfig.class) {
             {
