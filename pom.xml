@@ -159,6 +159,12 @@
       </modules>
     </profile>
     <profile>
+      <id>distribution</id>
+      <modules>
+        <module>java-chassis-distribution</module>
+      </modules>
+    </profile>
+    <profile>
       <id>coverage</id>
       <modules>
         <module>coverage-reports</module>
