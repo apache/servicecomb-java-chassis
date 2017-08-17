@@ -33,7 +33,6 @@ public class RestServletContextListener implements ServletContextListener {
         try {
             initLog(sce);
             initSpring(sce);
-            RestServletInjector.defaultInject(sce.getServletContext());
         } catch (Exception e) {
             throw new Error(e);
         }
