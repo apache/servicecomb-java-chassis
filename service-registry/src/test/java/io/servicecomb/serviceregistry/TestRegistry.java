@@ -20,11 +20,15 @@ import static io.servicecomb.serviceregistry.RegistryUtils.PUBLISH_ADDRESS;
 
 import java.net.InetAddress;
 import java.net.URI;
+import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.configuration.AbstractConfiguration;
+import org.apache.http.client.utils.URLEncodedUtils;
+import org.apache.http.message.BasicNameValuePair;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Before;
@@ -213,6 +217,9 @@ public class TestRegistry {
                 };
             }
         };
-        Assert.assertEquals("rest://1.1.1.1:8080", RegistryUtils.getPublishAddress("rest", "172.0.0.0:8080"));
+        String query = URLEncodedUtils.format(Arrays.asList(new BasicNameValuePair("country", "中 国")),
+                StandardCharsets.UTF_8.name());
+        Assert.assertEquals("rest://1.1.1.1:8080?" + query,
+                RegistryUtils.getPublishAddress("rest", "172.0.0.0:8080?" + query));
     }
 }
