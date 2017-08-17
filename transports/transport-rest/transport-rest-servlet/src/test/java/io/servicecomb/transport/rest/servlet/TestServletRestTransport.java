@@ -23,18 +23,82 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.Mockito;
 
+import io.servicecomb.core.Const;
 import io.servicecomb.core.Endpoint;
 import io.servicecomb.core.Invocation;
 import io.servicecomb.foundation.common.net.URIEndpointObject;
 import io.servicecomb.swagger.invocation.AsyncResponse;
+import io.servicecomb.transport.rest.client.RestTransportClient;
+import io.servicecomb.transport.rest.client.RestTransportClientManager;
 import mockit.Expectations;
+import mockit.Mock;
+import mockit.MockUp;
+import mockit.Mocked;
 
 public class TestServletRestTransport {
     ServletRestTransport transport = new ServletRestTransport();
 
     @Test
-    public void testInit() {
+    public void testInitNotPublish(@Mocked RestTransportClient restTransportClient) {
+        new MockUp<RestTransportClientManager>() {
+            @Mock
+            public RestTransportClient getRestTransportClient(boolean sslEnabled) {
+                return restTransportClient;
+            }
+        };
+
+        new Expectations(ServletConfig.class) {
+            {
+                ServletConfig.getLocalServerAddress();
+                result = null;
+            }
+        };
         Assert.assertTrue(transport.init());
+        Assert.assertNull(transport.getPublishEndpoint());
+    }
+
+    @Test
+    public void testInitPublishNoUrlPrefix(@Mocked RestTransportClient restTransportClient) {
+        new MockUp<RestTransportClientManager>() {
+            @Mock
+            public RestTransportClient getRestTransportClient(boolean sslEnabled) {
+                return restTransportClient;
+            }
+        };
+
+        new Expectations(ServletConfig.class) {
+            {
+                ServletConfig.getLocalServerAddress();
+                result = "1.1.1.1:1234";
+            }
+        };
+        System.clearProperty(Const.URL_PREFIX);
+
+        Assert.assertTrue(transport.init());
+        Assert.assertEquals("rest://1.1.1.1:1234", transport.getPublishEndpoint().getEndpoint());
+    }
+
+    @Test
+    public void testInitPublishWithUrlPrefix(@Mocked RestTransportClient restTransportClient) {
+        new MockUp<RestTransportClientManager>() {
+            @Mock
+            public RestTransportClient getRestTransportClient(boolean sslEnabled) {
+                return restTransportClient;
+            }
+        };
+
+        new Expectations(ServletConfig.class) {
+            {
+                ServletConfig.getLocalServerAddress();
+                result = "1.1.1.1:1234";
+            }
+        };
+        System.setProperty(Const.URL_PREFIX, "/root");
+
+        Assert.assertTrue(transport.init());
+        Assert.assertEquals("rest://1.1.1.1:1234?urlPrefix=/root", transport.getPublishEndpoint().getEndpoint());
+
+        System.clearProperty(Const.URL_PREFIX);
     }
 
     @Test

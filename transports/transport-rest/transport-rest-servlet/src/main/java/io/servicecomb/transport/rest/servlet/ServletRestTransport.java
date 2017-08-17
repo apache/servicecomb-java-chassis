@@ -16,9 +16,13 @@
 
 package io.servicecomb.transport.rest.servlet;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
 import io.servicecomb.core.Const;
 import io.servicecomb.core.Invocation;
@@ -55,8 +59,14 @@ public class ServletRestTransport extends AbstractTransport {
 
     @Override
     public boolean init() {
+        String urlPrefix = System.getProperty(Const.URL_PREFIX);
+        Map<String, String> queryMap = new HashMap<>();
+        if (!StringUtils.isEmpty(urlPrefix)) {
+            queryMap.put(Const.URL_PREFIX, urlPrefix);
+        }
+
         String listenAddress = ServletConfig.getLocalServerAddress();
-        setListenAddressWithoutSchema(listenAddress);
+        setListenAddressWithoutSchema(listenAddress, queryMap);
 
         return deployClient();
     }
