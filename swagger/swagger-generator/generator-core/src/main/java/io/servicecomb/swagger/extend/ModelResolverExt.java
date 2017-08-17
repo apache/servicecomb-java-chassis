@@ -26,6 +26,7 @@ import org.springframework.util.StringUtils;
 
 import com.fasterxml.jackson.databind.JavaType;
 
+import io.servicecomb.foundation.common.exceptions.ServiceCombException;
 import io.servicecomb.swagger.converter.property.StringPropertyConverter;
 import io.servicecomb.swagger.extend.property.ByteProperty;
 import io.servicecomb.swagger.extend.property.ShortProperty;
@@ -81,6 +82,11 @@ public class ModelResolverExt extends ModelResolver {
             return;
         }
 
+        String msg = "Must be a concrete type.";
+        if (type.getRawClass().equals(Object.class)) {
+            throw new ServiceCombException(type.getRawClass().getName() + " not support. " + msg);
+        }
+
         if (type.isMapLikeType()) {
             if (!String.class.equals(type.getKeyType().getRawClass())) {
                 // swagger中map的key只允许为string
@@ -94,11 +100,11 @@ public class ModelResolverExt extends ModelResolver {
         }
 
         if (type.getRawClass().isInterface()) {
-            throw new Error(type.getTypeName() + " is interface.");
+            throw new ServiceCombException(type.getTypeName() + " is interface. " + msg);
         }
 
         if (Modifier.isAbstract(type.getRawClass().getModifiers())) {
-            throw new Error(type.getTypeName() + " is abstract.");
+            throw new ServiceCombException(type.getTypeName() + " is abstract class. " + msg);
         }
     }
 
