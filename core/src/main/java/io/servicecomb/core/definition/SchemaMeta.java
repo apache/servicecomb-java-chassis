@@ -20,17 +20,21 @@ import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Map.Entry;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import io.servicecomb.core.Handler;
 import io.servicecomb.core.exception.ExceptionUtils;
-import io.servicecomb.swagger.generator.core.utils.ClassUtils;
 import io.servicecomb.foundation.common.utils.ReflectUtils;
-
+import io.servicecomb.swagger.generator.core.utils.ClassUtils;
 import io.swagger.models.HttpMethod;
 import io.swagger.models.Operation;
 import io.swagger.models.Path;
 import io.swagger.models.Swagger;
 
 public class SchemaMeta extends CommonService<OperationMeta> {
+    private static final Logger LOGGER = LoggerFactory.getLogger(SchemaMeta.class);
+
     // 如果要生成class，使用这个package
     private String packageName;
 
@@ -80,9 +84,25 @@ public class SchemaMeta extends CommonService<OperationMeta> {
                     throw ExceptionUtils.operationIdInvalid(getSchemaId(), strPath);
                 }
 
+                // io.servicecomb.swagger.engine.SwaggerEnvironment.createConsumer(Class<?>, Class<?>)
+                // io.servicecomb.swagger.engine.SwaggerEnvironment.createProducer(Object, Swagger)
+                // had make sure that consumer/swagger or producer/swagger can work
+                //
+                // in this place, do not throw exception when method not exists
+                // eg:
+                //   swagger interface is a.b.c, and consumer interface is a.b.c too.
+                //   version 1, there are the same
+                //   version 2, producer add a new operation, that means swagger have more operation than consumer interface a.b.c
+                //              interface a.b.c in consumer process is the old interface
+                //              so for swagger, can not do any valid check here
+                //              only need to save found method, that's enough.
                 Method method = ReflectUtils.findMethod(swaggerIntf, operation.getOperationId());
                 if (method == null) {
-                    throw ExceptionUtils.operationNotExist(getSchemaId(), operation.getOperationId());
+                    LOGGER.warn("method {} not found in swagger interface {}, schemaId={}",
+                            operation.getOperationId(),
+                            swaggerIntf.getName(),
+                            getSchemaId());
+                    continue;
                 }
 
                 String httpMethod = operationEntry.getKey().name();
