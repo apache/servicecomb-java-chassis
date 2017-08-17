@@ -70,6 +70,10 @@ public class RestServletInjector {
             throw new ServiceCombException("not support multiple path rule.");
         }
 
+        if (!urlPattern.startsWith("/")) {
+            throw new ServiceCombException("only support rule like /* or /path/* or /path1/path2/* and so on.");
+        }
+
         int idx = urlPattern.indexOf("/*");
         if (idx < 0 || (idx >= 0 && idx != urlPattern.length() - 2)) {
             throw new ServiceCombException("only support rule like /* or /path/* or /path1/path2/* and so on.");
