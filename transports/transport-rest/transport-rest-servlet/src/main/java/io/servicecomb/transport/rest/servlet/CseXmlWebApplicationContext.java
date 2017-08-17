@@ -25,6 +25,7 @@ import javax.servlet.ServletContext;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.web.context.support.XmlWebApplicationContext;
 
 import io.servicecomb.foundation.common.utils.BeanUtils;
@@ -42,6 +43,14 @@ public class CseXmlWebApplicationContext extends XmlWebApplicationContext {
 
     public void setDefaultBeanResource(String defaultBeanResource) {
         this.defaultBeanResource = defaultBeanResource;
+    }
+
+    @Override
+    protected void invokeBeanFactoryPostProcessors(ConfigurableListableBeanFactory beanFactory) {
+        super.invokeBeanFactoryPostProcessors(beanFactory);
+
+        // inject servlet after config installed and before transport init
+        RestServletInjector.defaultInject(getServletContext());
     }
 
     @Override

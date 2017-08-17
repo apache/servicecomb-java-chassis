@@ -17,14 +17,19 @@
 package io.servicecomb.transport.rest.servlet;
 
 import javax.servlet.ServletContext;
+import javax.servlet.ServletRegistration.Dynamic;
+import javax.xml.ws.Holder;
 
 import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 
 import io.servicecomb.foundation.common.utils.BeanUtils;
 import mockit.Expectations;
+import mockit.Mock;
+import mockit.MockUp;
 import mockit.Mocked;
 
 public class TestCseXmlWebApplicationContext {
@@ -98,5 +103,21 @@ public class TestCseXmlWebApplicationContext {
         };
         String[] result = context.getConfigLocations();
         Assert.assertThat(result, Matchers.arrayContaining("a", "b", "c", BeanUtils.DEFAULT_BEAN_RESOURCE));
+    }
+
+    @Test
+    public void testInjectServlet(@Mocked ConfigurableListableBeanFactory beanFactory) {
+        Holder<Boolean> holder = new Holder<>();
+        new MockUp<RestServletInjector>() {
+            @Mock
+            public Dynamic defaultInject(ServletContext servletContext) {
+                holder.value = true;
+                return null;
+            }
+        };
+
+        context.invokeBeanFactoryPostProcessors(beanFactory);
+
+        Assert.assertTrue(holder.value);
     }
 }
