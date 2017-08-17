@@ -29,6 +29,7 @@ import org.springframework.boot.web.servlet.ServletContextInitializer;
 import org.springframework.stereotype.Component;
 
 import io.servicecomb.transport.rest.servlet.RestServletInjector;
+import io.servicecomb.transport.rest.servlet.ServletUtils;
 
 @Component
 // extends from AbstractConfigurableEmbeddedServletContainer, only want to get embed web container's port and address
@@ -50,6 +51,7 @@ public class RestServletInitializer extends AbstractConfigurableEmbeddedServletC
         // so mock to listen, and then close.
         try (ServerSocket ss = new ServerSocket(getPort(), 0, getAddress())) {
             RestServletInjector.defaultInject(servletContext);
+            ServletUtils.saveUrlPrefix(servletContext);
         } catch (IOException e) {
             throw new ServletException(e);
         }

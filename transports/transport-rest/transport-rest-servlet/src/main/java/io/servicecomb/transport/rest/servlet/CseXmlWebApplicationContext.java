@@ -51,6 +51,7 @@ public class CseXmlWebApplicationContext extends XmlWebApplicationContext {
 
         // inject servlet after config installed and before transport init
         RestServletInjector.defaultInject(getServletContext());
+        ServletUtils.saveUrlPrefix(getServletContext());
     }
 
     @Override

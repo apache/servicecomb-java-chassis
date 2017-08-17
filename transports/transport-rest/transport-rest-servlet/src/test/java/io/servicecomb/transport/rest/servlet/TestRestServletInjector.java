@@ -27,62 +27,10 @@ import javax.servlet.ServletRegistration.Dynamic;
 import org.junit.Assert;
 import org.junit.Test;
 
-import io.servicecomb.foundation.common.exceptions.ServiceCombException;
 import mockit.Expectations;
 import mockit.Mocked;
 
 public class TestRestServletInjector {
-    private RestServletInjector injector = new RestServletInjector();
-
-    @Test
-    public void testCheckUrlPatternNormal() {
-        injector.checkUrlPattern("/*");
-        injector.checkUrlPattern("/abc/*");
-        injector.checkUrlPattern("/abc/def/*");
-
-        // normal, must not throw exception, no need to check
-    }
-
-    @Test
-    public void testCheckUrlPatternMultiLine() {
-        try {
-            injector.checkUrlPattern("/abc/*\n\t\t/def/*");
-            Assert.fail("must throw exception");
-        } catch (ServiceCombException e) {
-            Assert.assertEquals("not support multiple path rule.", e.getMessage());
-        }
-    }
-
-    @Test
-    public void testCheckUrlPatternMiddleWideChar() {
-        try {
-            injector.checkUrlPattern("/abc/*def");
-            Assert.fail("must throw exception");
-        } catch (ServiceCombException e) {
-            Assert.assertEquals("only support rule like /* or /path/* or /path1/path2/* and so on.", e.getMessage());
-        }
-    }
-
-    @Test
-    public void testCheckUrlPatternNoWideChar() {
-        try {
-            injector.checkUrlPattern("/abcdef");
-            Assert.fail("must throw exception");
-        } catch (ServiceCombException e) {
-            Assert.assertEquals("only support rule like /* or /path/* or /path1/path2/* and so on.", e.getMessage());
-        }
-    }
-
-    @Test
-    public void testCheckUrlPatternNotStartWithSlash() {
-        try {
-            injector.checkUrlPattern("abcdef/*");
-            Assert.fail("must throw exception");
-        } catch (ServiceCombException e) {
-            Assert.assertEquals("only support rule like /* or /path/* or /path1/path2/* and so on.", e.getMessage());
-        }
-    }
-
     @Test
     public void testDefaultInjectEmptyUrlPattern(@Mocked ServletContext servletContext, @Mocked Dynamic dynamic) {
         new Expectations(ServletConfig.class) {
@@ -123,7 +71,7 @@ public class TestRestServletInjector {
             new Expectations(ServletConfig.class) {
                 {
                     ServletConfig.getServletUrlPattern();
-                    result = "/*";
+                    result = "/rest/*";
                     ServletConfig.getLocalServerAddress();
                     result = "127.0.0.1:" + port;
                 }

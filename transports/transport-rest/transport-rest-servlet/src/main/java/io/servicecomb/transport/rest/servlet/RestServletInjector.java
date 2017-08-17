@@ -16,14 +16,14 @@
 
 package io.servicecomb.transport.rest.servlet;
 
+import java.util.Arrays;
+
 import javax.servlet.ServletContext;
 import javax.servlet.ServletRegistration.Dynamic;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
-
-import io.servicecomb.foundation.common.exceptions.ServiceCombException;
 
 public class RestServletInjector {
     private static final Logger LOGGER = LoggerFactory.getLogger(RestServletInjector.class);
@@ -38,7 +38,8 @@ public class RestServletInjector {
     }
 
     public Dynamic inject(ServletContext servletContext, String urlPattern) {
-        if (StringUtils.isEmpty(urlPattern)) {
+        String[] urlPatterns = splitUrlPattern(urlPattern);
+        if (urlPatterns.length == 0) {
             LOGGER.warn("urlPattern is empty, ignore register {}.", SERVLET_NAME);
             return null;
         }
@@ -49,34 +50,21 @@ public class RestServletInjector {
             return null;
         }
 
-        checkUrlPattern(urlPattern);
-
         // dynamic deploy a servlet to handle serviceComb RESTful request
         Dynamic dynamic = servletContext.addServlet(SERVLET_NAME, RestServlet.class);
         dynamic.setAsyncSupported(true);
-        dynamic.addMapping(urlPattern);
+        dynamic.addMapping(urlPatterns);
         dynamic.setLoadOnStartup(0);
-        LOGGER.info("RESTful servlet url pattern: {}.", urlPattern);
+        LOGGER.info("RESTful servlet url pattern: {}.", Arrays.toString(urlPatterns));
 
         return dynamic;
     }
 
-    // we only support path prefix rule, and only one path, it's what servicecomb RESTful request want.
-    // so only check if sidechar is the last char
-    // eg: *.xxx is a invalid urlPattern
-    // other invalid urlPattern will be check by web container, we do not handle that
-    void checkUrlPattern(String urlPattern) {
-        if (urlPattern.indexOf('\n') > 0) {
-            throw new ServiceCombException("not support multiple path rule.");
+    private String[] splitUrlPattern(String urlPattern) {
+        if (StringUtils.isEmpty(urlPattern)) {
+            return new String[] {};
         }
 
-        if (!urlPattern.startsWith("/")) {
-            throw new ServiceCombException("only support rule like /* or /path/* or /path1/path2/* and so on.");
-        }
-
-        int idx = urlPattern.indexOf("/*");
-        if (idx < 0 || (idx >= 0 && idx != urlPattern.length() - 2)) {
-            throw new ServiceCombException("only support rule like /* or /path/* or /path1/path2/* and so on.");
-        }
+        return ServletUtils.filterUrlPatterns(urlPattern);
     }
 }
