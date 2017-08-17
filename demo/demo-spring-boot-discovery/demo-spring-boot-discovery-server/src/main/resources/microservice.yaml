@@ -12,3 +12,4 @@ cse:
     chain:
       Provider:
         default: bizkeeper-provider
+servicecomb.rest.servlet.urlPattern: /*
