@@ -16,14 +16,15 @@
 
 package io.servicecomb.foundation.common.net;
 
-import java.io.UnsupportedEncodingException;
 import java.net.URI;
-import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+
+import org.apache.http.NameValuePair;
+import org.apache.http.client.utils.URLEncodedUtils;
 
 /**
  * tranport公共的Endpoint Object，当transport使用URI表示的时候，可以转化为这个对象。
@@ -44,37 +45,19 @@ public class URIEndpointObject extends IpPort {
         }
         setPort(uri.getPort());
         querys = splitQuery(uri);
-        if (querys.get(SSL_ENABLED_KEY) != null && querys.get(SSL_ENABLED_KEY).size() > 0) {
-            sslEnabled = Boolean.parseBoolean(querys.get(SSL_ENABLED_KEY).get(0));
-        } else {
-            sslEnabled = false;
-        }
+        sslEnabled = Boolean.parseBoolean(getFirst(SSL_ENABLED_KEY));
     }
 
     public static Map<String, List<String>> splitQuery(URI uri) {
         final Map<String, List<String>> queryPairs = new LinkedHashMap<String, List<String>>();
-        try {
-            String query = uri.getQuery();
-            if (query == null || query.isEmpty()) {
-                return queryPairs;
-            }
-            final String[] pairs = query.split("&");
-            for (String pair : pairs) {
-                final int idx = pair.indexOf("=");
-                final String key =
-                    idx > 0 ? URLDecoder.decode(pair.substring(0, idx), StandardCharsets.UTF_8.name()) : pair;
-                if (!queryPairs.containsKey(key)) {
-                    queryPairs.put(key, new LinkedList<String>());
-                }
-                final String value =
-                    idx > 0 && pair.length() > idx + 1
-                            ? URLDecoder.decode(pair.substring(idx + 1), StandardCharsets.UTF_8.name()) : null;
-                queryPairs.get(key).add(value);
-            }
-            return queryPairs;
-        } catch (UnsupportedEncodingException e) {
-            return queryPairs;
+        List<NameValuePair> pairs = URLEncodedUtils.parse(uri, StandardCharsets.UTF_8.name());
+        for (NameValuePair pair : pairs) {
+            List<String> list = queryPairs.computeIfAbsent(pair.getName(), name -> {
+                return new ArrayList<>();
+            });
+            list.add(pair.getValue());
         }
+        return queryPairs;
     }
 
     public boolean isSslEnabled() {
@@ -87,7 +70,8 @@ public class URIEndpointObject extends IpPort {
 
     public String getFirst(String key) {
         List<String> values = querys.get(key);
-        if (values == null || values.isEmpty()) {
+        // it's impossible that values is not null and size is 0
+        if (values == null) {
             return null;
         }
 
