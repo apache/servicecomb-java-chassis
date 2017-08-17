@@ -22,6 +22,7 @@ import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.http.client.utils.URIBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -147,11 +148,6 @@ public final class RegistryUtils {
         }
 
         try {
-            String publicAddressSetting = DynamicPropertyFactory.getInstance()
-                    .getStringProperty(PUBLISH_ADDRESS, "")
-                    .get();
-            publicAddressSetting = publicAddressSetting.trim();
-
             URI originalURI = new URI(schema + "://" + address);
             IpPort ipPort = NetUtils.parseIpPort(originalURI.getAuthority());
             if (ipPort == null) {
@@ -159,45 +155,49 @@ public final class RegistryUtils {
                 return null;
             }
 
-            InetSocketAddress socketAddress = ipPort.getSocketAddress();
-            String host = socketAddress.getAddress().getHostAddress();
-
-            if (publicAddressSetting.isEmpty()) {
-                if (socketAddress.getAddress().isAnyLocalAddress()) {
-                    host = NetUtils.getHostAddress();
-                    LOGGER.warn("address {}, auto select a host address to publish {}:{}, maybe not the correct one",
-                            address,
-                            host,
-                            socketAddress.getPort());
-                    URI newURI = new URI(originalURI.getScheme(), originalURI.getUserInfo(), host,
-                            originalURI.getPort(), originalURI.getPath(), originalURI.getQuery(),
-                            originalURI.getFragment());
-                    return newURI.toString();
-                } else {
-                    return originalURI.toString();
-                }
-            }
-
-            if (publicAddressSetting.startsWith("{") && publicAddressSetting.endsWith("}")) {
-                publicAddressSetting = NetUtils
-                        .ensureGetInterfaceAddress(
-                                publicAddressSetting.substring(1, publicAddressSetting.length() - 1))
-                        .getHostAddress();
-            }
-
-            String publishPortKey = PUBLISH_PORT.replace("{transport_name}", originalURI.getScheme());
-            int publishPortSetting = DynamicPropertyFactory.getInstance()
-                    .getIntProperty(publishPortKey, 0)
-                    .get();
-            int publishPort = publishPortSetting == 0 ? originalURI.getPort() : publishPortSetting;
-            URI newURI = new URI(originalURI.getScheme(), originalURI.getUserInfo(), publicAddressSetting,
-                    publishPort, originalURI.getPath(), originalURI.getQuery(), originalURI.getFragment());
-            return newURI.toString();
-
+            IpPort publishIpPort = genPublishIpPort(schema, ipPort);
+            URIBuilder builder = new URIBuilder(originalURI);
+            return builder.setHost(publishIpPort.getHostOrIp()).setPort(publishIpPort.getPort()).build().toString();
         } catch (URISyntaxException e) {
             LOGGER.warn("address {} not valid.", address);
             return null;
         }
+    }
+
+    private static IpPort genPublishIpPort(String schema, IpPort ipPort) {
+        String publicAddressSetting = DynamicPropertyFactory.getInstance()
+                .getStringProperty(PUBLISH_ADDRESS, "")
+                .get();
+        publicAddressSetting = publicAddressSetting.trim();
+
+        if (publicAddressSetting.isEmpty()) {
+            InetSocketAddress socketAddress = ipPort.getSocketAddress();
+            String host = socketAddress.getAddress().getHostAddress();
+            if (socketAddress.getAddress().isAnyLocalAddress()) {
+                host = NetUtils.getHostAddress();
+                LOGGER.warn("address {}, auto select a host address to publish {}:{}, maybe not the correct one",
+                        socketAddress,
+                        host,
+                        socketAddress.getPort());
+                return new IpPort(host, ipPort.getPort());
+            }
+
+            return ipPort;
+        }
+
+        if (publicAddressSetting.startsWith("{") && publicAddressSetting.endsWith("}")) {
+            publicAddressSetting = NetUtils
+                    .ensureGetInterfaceAddress(
+                            publicAddressSetting.substring(1, publicAddressSetting.length() - 1))
+                    .getHostAddress();
+        }
+
+        String publishPortKey = PUBLISH_PORT.replace("{transport_name}", schema);
+        int publishPortSetting = DynamicPropertyFactory.getInstance()
+                .getIntProperty(publishPortKey, 0)
+                .get();
+        int publishPort = publishPortSetting == 0 ? ipPort.getPort() : publishPortSetting;
+        return new IpPort(publicAddressSetting, publishPort);
     }
 
     public static List<MicroserviceInstance> findServiceInstance(String appId, String serviceName,
