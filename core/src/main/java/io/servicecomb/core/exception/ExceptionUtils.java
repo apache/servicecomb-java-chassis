@@ -32,8 +32,6 @@ public class ExceptionUtils {
 
     private static final String CSE_SCHEMA_OPERATION_ID_INVALID = "cse.schema.operation.id.invalid";
 
-    private static final String CSE_SCHEMA_OPERATION_NOT_EXIST = "cse.schema.operation.not.exist";
-
     private static final String CSE_HANDLER_REF_NOT_EXIST = "cse.handler.ref.not.exist";
 
     private static final String CSE_PRODUCER_OPERATION_NOT_EXIST = "cse.producer.operation.not.exist";
@@ -43,8 +41,6 @@ public class ExceptionUtils {
     static {
         ERROR_DESC_MGR.register(CSE_HANDLER_REF_NOT_EXIST, "Handler not exist, id=%s");
         ERROR_DESC_MGR.register(CSE_SCHEMA_OPERATION_ID_INVALID, "OperationId is invalid, schemaId=%s, path=%s");
-        ERROR_DESC_MGR.register(CSE_SCHEMA_OPERATION_NOT_EXIST,
-                "Operation not exist in interface, schemaId=%s, operation=%s");
         ERROR_DESC_MGR.register(CSE_PRODUCER_OPERATION_NOT_EXIST,
                 "Producer operation not exist, schemaId=%s, operationName=%s");
         ERROR_DESC_MGR.register(CSE_LB_NO_AVAILABLE_ADDRESS,
@@ -81,12 +77,6 @@ public class ExceptionUtils {
         return createCseException(CSE_SCHEMA_OPERATION_ID_INVALID,
                 schemaId,
                 path);
-    }
-
-    public static CseException operationNotExist(String schemaId, String operationName) {
-        return createCseException(CSE_SCHEMA_OPERATION_NOT_EXIST,
-                schemaId,
-                operationName);
     }
 
     public static CseException handlerRefNotExist(String id) {
