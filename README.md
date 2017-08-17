@@ -49,11 +49,11 @@ The first build may take a longer than expected as Maven downloads all the depen
 
   To build the docker image and run the integration tests with docker, you can use maven docker profile 
   
-      mvn clean install -Pdocker
+      mvn clean install -Pdocker -Pit
       
   If you are using docker machine, please use the following command
   
-      mvn clean install -Pdocker -Pdocker-machine
+      mvn clean install -Pdocker -Pit -Pdocker-machine
       
 ## Contact
 
