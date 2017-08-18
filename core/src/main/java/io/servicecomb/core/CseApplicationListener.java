@@ -38,6 +38,7 @@ import io.servicecomb.core.definition.loader.SchemaListenerManager;
 import io.servicecomb.core.endpoint.AbstractEndpointsCache;
 import io.servicecomb.core.handler.HandlerConfigUtils;
 import io.servicecomb.core.provider.consumer.ConsumerProviderManager;
+import io.servicecomb.core.provider.consumer.ReferenceConfigUtils;
 import io.servicecomb.core.provider.producer.ProducerProviderManager;
 import io.servicecomb.core.transport.TransportManager;
 import io.servicecomb.foundation.common.utils.BeanUtils;
@@ -124,6 +125,7 @@ public class CseApplicationListener
 
                     triggerEvent(EventType.BEFORE_REGISTRY);
                     RegistryUtils.run();
+                    ReferenceConfigUtils.setReady(true);
                     triggerEvent(EventType.AFTER_REGISTRY);
 
                     // 当程序退出时，进行相关清理，注意：kill -9 {pid}下无效
