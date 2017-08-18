@@ -27,6 +27,9 @@ import io.servicecomb.core.Const;
 import io.servicecomb.core.Endpoint;
 import io.servicecomb.core.Invocation;
 import io.servicecomb.foundation.common.net.URIEndpointObject;
+import io.servicecomb.serviceregistry.Features;
+import io.servicecomb.serviceregistry.RegistryUtils;
+import io.servicecomb.serviceregistry.ServiceRegistry;
 import io.servicecomb.swagger.invocation.AsyncResponse;
 import io.servicecomb.transport.rest.client.RestTransportClient;
 import io.servicecomb.transport.rest.client.RestTransportClientManager;
@@ -79,7 +82,18 @@ public class TestServletRestTransport {
     }
 
     @Test
-    public void testInitPublishWithUrlPrefix(@Mocked RestTransportClient restTransportClient) {
+    public void testInitPublishWithUrlPrefix(@Mocked RestTransportClient restTransportClient,
+            @Mocked ServiceRegistry serviceRegistry) {
+        Features features = new Features();
+        new Expectations(RegistryUtils.class) {
+            {
+                RegistryUtils.getServiceRegistry();
+                result = serviceRegistry;
+                serviceRegistry.getFeatures();
+                result = features;
+            }
+        };
+
         new MockUp<RestTransportClientManager>() {
             @Mock
             public RestTransportClient getRestTransportClient(boolean sslEnabled) {
