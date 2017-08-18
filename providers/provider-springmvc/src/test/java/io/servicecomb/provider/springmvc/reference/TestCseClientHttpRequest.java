@@ -21,8 +21,9 @@ import java.util.Arrays;
 
 import javax.xml.ws.Holder;
 
+import org.junit.After;
 import org.junit.Assert;
-import org.junit.BeforeClass;
+import org.junit.Before;
 import org.junit.Test;
 import org.springframework.http.HttpMethod;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -33,6 +34,7 @@ import io.servicecomb.common.rest.RestEngineSchemaListener;
 import io.servicecomb.core.CseContext;
 import io.servicecomb.core.Invocation;
 import io.servicecomb.core.definition.SchemaMeta;
+import io.servicecomb.core.provider.consumer.ReferenceConfigUtils;
 import io.servicecomb.core.unittest.UnitTestMeta;
 import io.servicecomb.serviceregistry.RegistryUtils;
 import io.servicecomb.serviceregistry.ServiceRegistry;
@@ -40,8 +42,14 @@ import io.servicecomb.serviceregistry.registry.ServiceRegistryFactory;
 import io.servicecomb.swagger.invocation.Response;
 
 public class TestCseClientHttpRequest {
-    @BeforeClass
-    public static void setUp() {
+    @Before
+    public void setup() {
+        ReferenceConfigUtils.setReady(true);
+    }
+
+    @After
+    public void teardown() {
+        ReferenceConfigUtils.setReady(false);
     }
 
     @RequestMapping(path = "SpringmvcImpl")
@@ -54,7 +62,27 @@ public class TestCseClientHttpRequest {
     }
 
     @Test
-    public void test() throws IOException {
+    public void testNotReady() throws IOException {
+        String exceptionMessage = "System is not ready for remote calls. "
+                + "When beans are making remote calls in initialization, it's better to "
+                + "implement io.servicecomb.core.BootListener and do it after EventType.AFTER_REGISTRY.";
+
+        ReferenceConfigUtils.setReady(false);
+        CseClientHttpRequest client =
+            new CseClientHttpRequest(URI.create("cse://app:test/"), HttpMethod.POST);
+
+        try {
+            client.execute();
+            Assert.fail("must throw exception");
+        } catch (IllegalStateException e) {
+            Assert.assertEquals(exceptionMessage, e.getMessage());
+        }
+
+        client.close();
+    }
+
+    @Test
+    public void testNormal() throws IOException {
         ServiceRegistry serviceRegistry = ServiceRegistryFactory.createLocal();
         serviceRegistry.init();
         RegistryUtils.setServiceRegistry(serviceRegistry);

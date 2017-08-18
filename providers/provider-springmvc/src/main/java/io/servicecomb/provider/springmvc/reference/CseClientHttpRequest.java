@@ -37,12 +37,12 @@ import io.servicecomb.common.rest.definition.RestOperationMeta;
 import io.servicecomb.common.rest.definition.RestParam;
 import io.servicecomb.common.rest.locator.OperationLocator;
 import io.servicecomb.common.rest.locator.ServicePathManager;
-import io.servicecomb.core.CseContext;
 import io.servicecomb.core.Invocation;
 import io.servicecomb.core.definition.MicroserviceMeta;
 import io.servicecomb.core.invocation.InvocationFactory;
 import io.servicecomb.core.provider.consumer.InvokerUtils;
 import io.servicecomb.core.provider.consumer.ReferenceConfig;
+import io.servicecomb.core.provider.consumer.ReferenceConfigUtils;
 import io.servicecomb.swagger.invocation.Response;
 import io.servicecomb.swagger.invocation.context.InvocationContext;
 import io.servicecomb.swagger.invocation.exception.ExceptionFactory;
@@ -128,8 +128,7 @@ public class CseClientHttpRequest extends OutputStream implements ClientHttpRequ
      */
     private RequestMeta createRequestMeta(String httpMetod, URI uri) {
         String microserviceName = uri.getAuthority();
-        ReferenceConfig referenceConfig =
-            CseContext.getInstance().getConsumerProviderManager().getReferenceConfig(microserviceName);
+        ReferenceConfig referenceConfig = ReferenceConfigUtils.getForInvoke(microserviceName);
 
         MicroserviceMeta microserviceMeta = referenceConfig.getMicroserviceMeta();
         ServicePathManager servicePathManager = ServicePathManager.getServicePathManager(microserviceMeta);
