@@ -16,17 +16,20 @@
 
 package io.servicecomb.core.provider.consumer;
 
-import io.servicecomb.core.Invocation;
-import io.servicecomb.swagger.invocation.AsyncResponse;
-import io.servicecomb.swagger.invocation.Response;
-import io.servicecomb.swagger.invocation.exception.InvocationException;
-
 import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.Mockito;
 
+import io.servicecomb.core.CseContext;
+import io.servicecomb.core.Invocation;
 import io.servicecomb.core.definition.OperationMeta;
-
+import io.servicecomb.core.definition.SchemaMeta;
+import io.servicecomb.core.invocation.InvocationFactory;
+import io.servicecomb.swagger.invocation.AsyncResponse;
+import io.servicecomb.swagger.invocation.Response;
+import io.servicecomb.swagger.invocation.exception.InvocationException;
+import mockit.Expectations;
+import mockit.Injectable;
 import mockit.Mock;
 import mockit.MockUp;
 
@@ -106,5 +109,57 @@ public class TestInvokerUtils {
         Mockito.when(invocation.getArgs()).thenReturn(objectArray);
         Object obj = InvokerUtils.invoke(invocation);
         Assert.assertNull(obj);
+    }
+
+    @Test
+    public void tetSyncInvokeNotReady() {
+        ReferenceConfigUtils.setReady(false);
+
+        try {
+            InvokerUtils.syncInvoke("ms", "schemaId", "opName", null);
+            Assert.fail("must throw exception");
+        } catch (IllegalStateException e) {
+            Assert.assertEquals("System is not ready for remote calls. "
+                    + "When beans are making remote calls in initialization, it's better to "
+                    + "implement io.servicecomb.core.BootListener and do it after EventType.AFTER_REGISTRY.",
+                    e.getMessage());
+        }
+
+        try {
+            InvokerUtils.syncInvoke("ms", "latest", "rest", "schemaId", "opName", null);
+            Assert.fail("must throw exception");
+        } catch (IllegalStateException e) {
+            Assert.assertEquals("System is not ready for remote calls. "
+                    + "When beans are making remote calls in initialization, it's better to "
+                    + "implement io.servicecomb.core.BootListener and do it after EventType.AFTER_REGISTRY.",
+                    e.getMessage());
+        }
+    }
+
+    @Test
+    public void tetSyncInvokeReady(@Injectable ConsumerProviderManager consumerProviderManager,
+            @Injectable Invocation invocation) {
+        ReferenceConfigUtils.setReady(true);
+        CseContext.getInstance().setConsumerProviderManager(consumerProviderManager);
+
+        new Expectations(InvocationFactory.class) {
+            {
+                InvocationFactory.forConsumer((ReferenceConfig) any, (SchemaMeta) any, (String) any, (Object[]) any);
+                result = invocation;
+            }
+        };
+        new Expectations(InvokerUtils.class) {
+            {
+                InvokerUtils.syncInvoke(invocation);
+                result = "ok";
+            }
+        };
+        Object result1 = InvokerUtils.syncInvoke("ms", "schemaId", "opName", null);
+        Assert.assertEquals("ok", result1);
+
+        Object result2 = InvokerUtils.syncInvoke("ms", "latest", "rest", "schemaId", "opName", null);
+        Assert.assertEquals("ok", result2);
+
+        CseContext.getInstance().setConsumerProviderManager(null);
     }
 }

@@ -19,7 +19,6 @@ package io.servicecomb.core.provider.consumer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import io.servicecomb.core.CseContext;
 import io.servicecomb.core.Invocation;
 import io.servicecomb.core.definition.SchemaMeta;
 import io.servicecomb.core.invocation.InvocationFactory;
@@ -35,8 +34,7 @@ public final class InvokerUtils {
     }
 
     public static Object syncInvoke(String microserviceName, String schemaId, String operationName, Object[] args) {
-        ReferenceConfig referenceConfig =
-            CseContext.getInstance().getConsumerProviderManager().getReferenceConfig(microserviceName);
+        ReferenceConfig referenceConfig = ReferenceConfigUtils.getForInvoke(microserviceName);
         SchemaMeta schemaMeta = referenceConfig.getMicroserviceMeta().ensureFindSchemaMeta(schemaId);
         Invocation invocation = InvocationFactory.forConsumer(referenceConfig, schemaMeta, operationName, args);
         return syncInvoke(invocation);
@@ -44,8 +42,8 @@ public final class InvokerUtils {
 
     public static Object syncInvoke(String microserviceName, String microserviceVersion, String transport,
             String schemaId, String operationName, Object[] args) {
-        ReferenceConfig referenceConfig = new ReferenceConfig(CseContext.getInstance().getConsumerSchemaFactory(),
-                microserviceName, microserviceVersion, transport);
+        ReferenceConfig referenceConfig =
+            ReferenceConfigUtils.getForInvoke(microserviceName, microserviceVersion, transport);
         SchemaMeta schemaMeta = referenceConfig.getMicroserviceMeta().ensureFindSchemaMeta(schemaId);
         Invocation invocation = InvocationFactory.forConsumer(referenceConfig, schemaMeta, operationName, args);
         return syncInvoke(invocation);
