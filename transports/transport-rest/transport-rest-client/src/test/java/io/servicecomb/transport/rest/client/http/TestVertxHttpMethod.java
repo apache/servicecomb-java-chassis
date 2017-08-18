@@ -18,14 +18,24 @@ package io.servicecomb.transport.rest.client.http;
 
 import static org.mockito.Mockito.when;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
+import org.mockito.Mockito;
+
 import io.servicecomb.common.rest.RestConst;
 import io.servicecomb.common.rest.codec.produce.ProduceProcessor;
 import io.servicecomb.common.rest.definition.RestOperationMeta;
 import io.servicecomb.common.rest.definition.path.URLPathBuilder;
+import io.servicecomb.core.Const;
 import io.servicecomb.core.Endpoint;
 import io.servicecomb.core.Invocation;
 import io.servicecomb.core.definition.OperationMeta;
 import io.servicecomb.foundation.common.net.IpPort;
+import io.servicecomb.foundation.common.net.URIEndpointObject;
 import io.servicecomb.foundation.vertx.client.http.HttpClientWithContext;
 import io.servicecomb.swagger.invocation.AsyncResponse;
 import io.vertx.core.Context;
@@ -33,13 +43,11 @@ import io.vertx.core.Handler;
 import io.vertx.core.http.HttpClient;
 import io.vertx.core.http.HttpClientRequest;
 import io.vertx.core.http.HttpClientResponse;
+import mockit.Expectations;
+import mockit.Injectable;
 import mockit.Mock;
 import mockit.MockUp;
 import mockit.Mocked;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.mockito.Mockito;
 
 public class TestVertxHttpMethod extends VertxHttpMethod {
 
@@ -51,7 +59,7 @@ public class TestVertxHttpMethod extends VertxHttpMethod {
     }
 
     @Test
-    public void testDoMethod(@Mocked HttpClient httpClient) throws Exception {
+    public void testDoMethod(@Mocked HttpClient httpClient, @Injectable URIEndpointObject address) throws Exception {
         Context context = new MockUp<Context>() {
             @Mock
             public void runOnContext(Handler<Void> action) {
@@ -72,7 +80,7 @@ public class TestVertxHttpMethod extends VertxHttpMethod {
         operationMeta.getExtData(RestConst.SWAGGER_REST_OPERATION);
         when(operationMeta.getExtData(RestConst.SWAGGER_REST_OPERATION)).thenReturn(swaggerRestOperation);
         when(invocation.getEndpoint()).thenReturn(endpoint);
-        when(endpoint.getAddress()).thenReturn(new IpPort());
+        when(endpoint.getAddress()).thenReturn(address);
 
         when(request.exceptionHandler(Mockito.any())).then(answer -> null);
 
@@ -142,12 +150,97 @@ public class TestVertxHttpMethod extends VertxHttpMethod {
     }
 
     @Test
-    public void testCreateRequestPath() throws Exception {
-        Invocation invocation = Mockito.mock(Invocation.class);
-        RestOperationMeta restOperationMeta = Mockito.mock(RestOperationMeta.class);
-        URLPathBuilder urlPathBuilder = Mockito.mock(URLPathBuilder.class);
-        when(restOperationMeta.getPathBuilder()).thenReturn(urlPathBuilder);
-        String pathUrl = this.createRequestPath(invocation, restOperationMeta);
-        Assert.assertNull(pathUrl);
+    public void testCreateRequestPathNoUrlPrefixNoPath(@Injectable Invocation invocation,
+            @Injectable RestOperationMeta swaggerRestOperation, @Injectable Endpoint endpoint,
+            @Injectable URIEndpointObject address, @Injectable URLPathBuilder builder) throws Exception {
+        new Expectations() {
+            {
+                endpoint.getAddress();
+                result = address;
+                builder.createRequestPath((Object[]) any);
+                result = "/path";
+            }
+        };
+        String path = this.createRequestPath(invocation, swaggerRestOperation);
+        Assert.assertEquals("/path", path);
+    }
+
+    @Test
+    public void testCreateRequestPathNoUrlPrefixHavePath(@Injectable Invocation invocation,
+            @Injectable RestOperationMeta swaggerRestOperation, @Injectable Endpoint endpoint,
+            @Injectable URIEndpointObject address, @Injectable URLPathBuilder builder) throws Exception {
+        Map<String, Object> contextMap = new HashMap<>();
+        contextMap.put(RestConst.REST_CLIENT_REQUEST_PATH, "/client/path");
+
+        new Expectations() {
+            {
+                endpoint.getAddress();
+                result = address;
+                invocation.getHandlerContext();
+                result = contextMap;
+            }
+        };
+        String path = this.createRequestPath(invocation, swaggerRestOperation);
+        Assert.assertEquals("/client/path", path);
+    }
+
+    @Test
+    public void testCreateRequestPathHaveUrlPrefixNoPath(@Injectable Invocation invocation,
+            @Injectable RestOperationMeta swaggerRestOperation, @Injectable Endpoint endpoint,
+            @Injectable URIEndpointObject address, @Injectable URLPathBuilder builder) throws Exception {
+        new Expectations() {
+            {
+                endpoint.getAddress();
+                result = address;
+                address.getFirst(Const.URL_PREFIX);
+                result = "/root";
+                builder.createRequestPath((Object[]) any);
+                result = "/path";
+            }
+        };
+        String path = this.createRequestPath(invocation, swaggerRestOperation);
+        Assert.assertEquals("/root/path", path);
+    }
+
+    @Test
+    public void testCreateRequestPathHaveUrlPrefixHavePath(@Injectable Invocation invocation,
+            @Injectable RestOperationMeta swaggerRestOperation, @Injectable Endpoint endpoint,
+            @Injectable URIEndpointObject address, @Injectable URLPathBuilder builder) throws Exception {
+        Map<String, Object> contextMap = new HashMap<>();
+        contextMap.put(RestConst.REST_CLIENT_REQUEST_PATH, "/client/path");
+
+        new Expectations() {
+            {
+                endpoint.getAddress();
+                result = address;
+                address.getFirst(Const.URL_PREFIX);
+                result = "/root";
+                invocation.getHandlerContext();
+                result = contextMap;
+            }
+        };
+        String path = this.createRequestPath(invocation, swaggerRestOperation);
+        Assert.assertEquals("/root/client/path", path);
+    }
+
+    @Test
+    public void testCreateRequestPathHaveUrlPrefixHavePathAndStartWith(@Injectable Invocation invocation,
+            @Injectable RestOperationMeta swaggerRestOperation, @Injectable Endpoint endpoint,
+            @Injectable URIEndpointObject address, @Injectable URLPathBuilder builder) throws Exception {
+        Map<String, Object> contextMap = new HashMap<>();
+        contextMap.put(RestConst.REST_CLIENT_REQUEST_PATH, "/client/path");
+
+        new Expectations() {
+            {
+                endpoint.getAddress();
+                result = address;
+                address.getFirst(Const.URL_PREFIX);
+                result = "/client";
+                invocation.getHandlerContext();
+                result = contextMap;
+            }
+        };
+        String path = this.createRequestPath(invocation, swaggerRestOperation);
+        Assert.assertEquals("/client/path", path);
     }
 }
