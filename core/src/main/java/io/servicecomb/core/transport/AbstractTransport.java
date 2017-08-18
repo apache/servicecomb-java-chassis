@@ -16,20 +16,34 @@
 
 package io.servicecomb.core.transport;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.Map;
-import java.util.Map.Entry;
+import java.util.stream.Collectors;
 
+import org.apache.http.client.utils.URLEncodedUtils;
+import org.apache.http.message.BasicNameValuePair;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.netflix.config.DynamicPropertyFactory;
+
+import io.servicecomb.core.Const;
 import io.servicecomb.core.Endpoint;
 import io.servicecomb.core.Transport;
-import io.servicecomb.serviceregistry.RegistryUtils;
+import io.servicecomb.foundation.common.exceptions.ServiceCombException;
 import io.servicecomb.foundation.common.net.NetUtils;
 import io.servicecomb.foundation.common.net.URIEndpointObject;
 import io.servicecomb.foundation.vertx.VertxUtils;
-import com.netflix.config.DynamicPropertyFactory;
-
+import io.servicecomb.serviceregistry.RegistryUtils;
 import io.vertx.core.Vertx;
 
 public abstract class AbstractTransport implements Transport {
+    private static final Logger LOGGER = LoggerFactory.getLogger(AbstractTransport.class);
+
     /**
      * 用于参数传递：比如向RestServerVerticle传递endpoint地址。
      */
@@ -82,21 +96,8 @@ public abstract class AbstractTransport implements Transport {
      */
     protected void setListenAddressWithoutSchema(String addressWithoutSchema,
             Map<String, String> pairs) {
-        if (addressWithoutSchema != null && pairs != null && !pairs.isEmpty()) {
-            int idx = addressWithoutSchema.indexOf('?');
-            if (idx == -1) {
-                addressWithoutSchema += "?";
-            } else {
-                addressWithoutSchema += "&";
-            }
+        addressWithoutSchema = genAddressWithoutSchema(addressWithoutSchema, pairs);
 
-            StringBuilder sb = new StringBuilder();
-            for (Entry<String, String> entry : pairs.entrySet()) {
-                sb.append(entry.getKey()).append('=').append(entry.getValue()).append('&');
-            }
-            sb.setLength(sb.length() - 1);
-            addressWithoutSchema += sb.toString();
-        }
         this.endpoint = new Endpoint(this, NetUtils.getRealListenAddress(getName(), addressWithoutSchema));
         if (this.endpoint.getEndpoint() != null) {
             this.publishEndpoint = new Endpoint(this, RegistryUtils.getPublishAddress(getName(),
@@ -105,6 +106,56 @@ public abstract class AbstractTransport implements Transport {
             this.publishEndpoint = null;
         }
 
+    }
+
+    private String genAddressWithoutSchema(String addressWithoutSchema, Map<String, String> pairs) {
+        if (addressWithoutSchema == null || pairs == null || pairs.isEmpty()) {
+            return addressWithoutSchema;
+        }
+
+        int idx = addressWithoutSchema.indexOf('?');
+        if (idx == -1) {
+            addressWithoutSchema += "?";
+        } else {
+            addressWithoutSchema += "&";
+        }
+
+        String encodedQuery = URLEncodedUtils.format(pairs.entrySet().stream().map(entry -> {
+            return new BasicNameValuePair(entry.getKey(), entry.getValue());
+        }).collect(Collectors.toList()), StandardCharsets.UTF_8.name());
+
+        if (!RegistryUtils.getServiceRegistry().getFeatures().isCanEncodeEndpoint()) {
+            addressWithoutSchema = genAddressWithoutSchemaForOldSC(addressWithoutSchema, encodedQuery);
+        } else {
+            addressWithoutSchema += encodedQuery;
+        }
+
+        return addressWithoutSchema;
+    }
+
+    private String genAddressWithoutSchemaForOldSC(String addressWithoutSchema, String encodedQuery) {
+        // old service center do not support encodedQuery
+        // sdk must query service center's version, and determine if encode query
+        // traced by JAV-307
+        try {
+            LOGGER.warn("Service center do not support encoded query, so we use unencoded query, "
+                    + "this caused not support chinese/space (and maybe other char) in query value.");
+            String decodedQuery = URLDecoder.decode(encodedQuery, StandardCharsets.UTF_8.name());
+            addressWithoutSchema += decodedQuery;
+        } catch (UnsupportedEncodingException e) {
+            // never happended
+            throw new ServiceCombException("Failed to decode query.", e);
+        }
+
+        try {
+            // make sure consumer can handle this endpoint
+            new URI(Const.RESTFUL + "://" + addressWithoutSchema);
+        } catch (URISyntaxException e) {
+            throw new ServiceCombException(
+                    "current service center not support encoded endpoint, please do not use chinese or space or anything need to be encoded.",
+                    e);
+        }
+        return addressWithoutSchema;
     }
 
     @Override

@@ -16,12 +16,24 @@
 
 package io.servicecomb.core.transport;
 
-import io.servicecomb.core.Invocation;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.util.Collections;
+
+import org.junit.After;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 
+import io.servicecomb.core.Invocation;
+import io.servicecomb.foundation.common.exceptions.ServiceCombException;
 import io.servicecomb.foundation.common.net.IpPort;
+import io.servicecomb.serviceregistry.RegistryUtils;
+import io.servicecomb.serviceregistry.registry.AbstractServiceRegistry;
 import io.servicecomb.swagger.invocation.AsyncResponse;
+import mockit.Expectations;
+import mockit.Injectable;
 import mockit.Mocked;
 
 public class TestAbstractTransport {
@@ -41,19 +53,78 @@ public class TestAbstractTransport {
         }
     }
 
+    @Injectable
+    AbstractServiceRegistry serviceRegistry;
+
+    @Before
+    public void setup() {
+        RegistryUtils.setServiceRegistry(serviceRegistry);
+    }
+
+    @After
+    public void teardown() {
+        RegistryUtils.setServiceRegistry(null);
+    }
+
+    @Test
+    public void testSetListenAddressWithoutSchemaChineseSpaceNewSC() throws UnsupportedEncodingException {
+        new Expectations() {
+            {
+                serviceRegistry.getFeatures().isCanEncodeEndpoint();
+                result = true;
+            }
+        };
+
+        MyAbstractTransport transport = new MyAbstractTransport();
+        transport.setListenAddressWithoutSchema("127.0.0.1:9090", Collections.singletonMap("country", "中 国"));
+        Assert.assertEquals("my://127.0.0.1:9090?country=" + URLEncoder.encode("中 国", StandardCharsets.UTF_8.name()),
+                transport.getEndpoint().getEndpoint());
+    }
+
+    @Test
+    public void testSetListenAddressWithoutSchemaChineseSpaceOldSC() throws UnsupportedEncodingException {
+        MyAbstractTransport transport = new MyAbstractTransport();
+        try {
+            transport.setListenAddressWithoutSchema("127.0.0.1:9090", Collections.singletonMap("country", "中 国"));
+            Assert.fail("must throw exception");
+        } catch (ServiceCombException e) {
+            Assert.assertEquals(
+                    "current service center not support encoded endpoint, please do not use chinese or space or anything need to be encoded.",
+                    e.getMessage());
+            Assert.assertEquals(
+                    "Illegal character in query at index 31: rest://127.0.0.1:9090?country=中 国",
+                    e.getCause().getMessage());
+        }
+    }
+
+    @Test
+    public void testSetListenAddressWithoutSchemaNormalNotEncode() throws UnsupportedEncodingException {
+        MyAbstractTransport transport = new MyAbstractTransport();
+        transport.setListenAddressWithoutSchema("127.0.0.1:9090", Collections.singletonMap("country", "chinese"));
+        Assert.assertEquals("my://127.0.0.1:9090?country=chinese", transport.getEndpoint().getEndpoint());
+    }
+
+    @Test
+    public void testSetListenAddressWithoutSchemaAlreadyHaveQuery() throws UnsupportedEncodingException {
+        MyAbstractTransport transport = new MyAbstractTransport();
+        transport.setListenAddressWithoutSchema("127.0.0.1:9090?a=aValue",
+                Collections.singletonMap("country", "chinese"));
+        Assert.assertEquals("my://127.0.0.1:9090?a=aValue&country=chinese", transport.getEndpoint().getEndpoint());
+    }
+
     @Test
     public void testMyAbstractTransport() throws Exception {
         MyAbstractTransport transport = new MyAbstractTransport();
         transport.setListenAddressWithoutSchema("127.0.0.1:9090");
-        Assert.assertEquals(transport.getName(), "my");
-        Assert.assertEquals(transport.getEndpoint().getEndpoint(), "my://127.0.0.1:9090");
-        Assert.assertEquals(((IpPort) transport.parseAddress("my://127.0.0.1:9090")).getHostOrIp(), "127.0.0.1");
+        Assert.assertEquals("my", transport.getName());
+        Assert.assertEquals("my://127.0.0.1:9090", transport.getEndpoint().getEndpoint());
+        Assert.assertEquals("127.0.0.1", ((IpPort) transport.parseAddress("my://127.0.0.1:9090")).getHostOrIp());
         transport.setListenAddressWithoutSchema("0.0.0.0:9090");
-        Assert.assertNotEquals(transport.getEndpoint().getEndpoint(), "my://127.0.0.1:9090");
+        Assert.assertNotEquals("my://127.0.0.1:9090", transport.getEndpoint().getEndpoint());
         transport.setListenAddressWithoutSchema(null);
-        Assert.assertEquals(transport.getEndpoint().getEndpoint(), null);
-        Assert.assertEquals(transport.parseAddress(null), null);
-        Assert.assertEquals(AbstractTransport.getRequestTimeout(), 30000);
+        Assert.assertNull(transport.getEndpoint().getEndpoint());
+        Assert.assertNull(transport.parseAddress(null));
+        Assert.assertEquals(30000, AbstractTransport.getRequestTimeout());
     }
 
     @Test(expected = NumberFormatException.class)
