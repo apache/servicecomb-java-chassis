@@ -16,6 +16,12 @@
 
 package io.servicecomb.transport.rest.client.http;
 
+import java.util.List;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.util.StringUtils;
+
 import io.servicecomb.common.rest.RestConst;
 import io.servicecomb.common.rest.codec.RestCodec;
 import io.servicecomb.common.rest.codec.param.RestClientRequestImpl;
@@ -26,6 +32,7 @@ import io.servicecomb.core.Invocation;
 import io.servicecomb.core.definition.OperationMeta;
 import io.servicecomb.core.transport.AbstractTransport;
 import io.servicecomb.foundation.common.net.IpPort;
+import io.servicecomb.foundation.common.net.URIEndpointObject;
 import io.servicecomb.foundation.common.utils.JsonUtils;
 import io.servicecomb.foundation.vertx.client.http.HttpClientWithContext;
 import io.servicecomb.swagger.invocation.AsyncResponse;
@@ -36,9 +43,6 @@ import io.servicecomb.swagger.invocation.response.ResponseMeta;
 import io.vertx.core.http.HttpClient;
 import io.vertx.core.http.HttpClientRequest;
 import io.vertx.core.http.HttpClientResponse;
-import java.util.List;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public abstract class VertxHttpMethod {
     private static final Logger LOGGER = LoggerFactory.getLogger(VertxHttpMethod.class);
@@ -68,12 +72,12 @@ public abstract class VertxHttpMethod {
         });
 
         LOGGER.debug(
-            "Running HTTP method {} on {} at {}:{}{}",
-            invocation.getOperationMeta().getMethod(),
-            invocation.getMicroserviceName(),
-            ipPort.getHostOrIp(),
-            ipPort.getPort(),
-            path);
+                "Running HTTP method {} on {} at {}:{}{}",
+                invocation.getOperationMeta().getMethod(),
+                invocation.getMicroserviceName(),
+                ipPort.getHostOrIp(),
+                ipPort.getPort(),
+                path);
 
         // 从业务线程转移到网络线程中去发送
         httpClientWithContext.runOnContext(httpClient -> {
@@ -153,12 +157,18 @@ public abstract class VertxHttpMethod {
 
     protected String createRequestPath(Invocation invocation,
             RestOperationMeta swaggerRestOperation) throws Exception {
-        Object path = invocation.getHandlerContext().get(RestConst.REST_CLIENT_REQUEST_PATH);
-        if (path != null) {
-            return (String) path;
+        URIEndpointObject address = (URIEndpointObject) invocation.getEndpoint().getAddress();
+        String urlPrefix = address.getFirst(Const.URL_PREFIX);
+
+        String path = (String) invocation.getHandlerContext().get(RestConst.REST_CLIENT_REQUEST_PATH);
+        if (path == null) {
+            path = swaggerRestOperation.getPathBuilder().createRequestPath(invocation.getArgs());
         }
 
-        return swaggerRestOperation.getPathBuilder().createRequestPath(invocation.getArgs());
-    }
+        if (StringUtils.isEmpty(urlPrefix) || path.startsWith(urlPrefix)) {
+            return path;
+        }
 
+        return urlPrefix + path;
+    }
 }
