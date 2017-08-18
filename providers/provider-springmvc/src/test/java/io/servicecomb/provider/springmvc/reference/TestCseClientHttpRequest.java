@@ -15,14 +15,12 @@
  */
 package io.servicecomb.provider.springmvc.reference;
 
-import io.servicecomb.core.SystemBootListener;
 import java.io.IOException;
 import java.net.URI;
 import java.util.Arrays;
 
 import javax.xml.ws.Holder;
 
-import mockit.Deencapsulation;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -44,7 +42,6 @@ import io.servicecomb.swagger.invocation.Response;
 public class TestCseClientHttpRequest {
     @BeforeClass
     public static void setUp() {
-        Deencapsulation.setField(SystemBootListener.class, "ready", true);
     }
 
     @RequestMapping(path = "SpringmvcImpl")
