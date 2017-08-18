@@ -28,6 +28,7 @@ import io.servicecomb.core.definition.SchemaMeta;
 import io.servicecomb.core.invocation.InvocationFactory;
 import io.servicecomb.core.provider.consumer.InvokerUtils;
 import io.servicecomb.core.provider.consumer.ReferenceConfig;
+import io.servicecomb.core.provider.consumer.ReferenceConfigUtils;
 import io.servicecomb.swagger.engine.SwaggerConsumer;
 import io.servicecomb.swagger.engine.SwaggerConsumerOperation;
 import io.servicecomb.swagger.invocation.Response;
@@ -54,8 +55,8 @@ public class Invoker implements InvocationHandler {
         this.consumerIntf = consumerIntf;
     }
 
-    public void prepare() {
-        referenceConfig = CseContext.getInstance().getConsumerProviderManager().getReferenceConfig(microserviceName);
+    protected void prepare() {
+        referenceConfig = ReferenceConfigUtils.getForInvoke(microserviceName);
         MicroserviceMeta microserviceMeta = referenceConfig.getMicroserviceMeta();
 
         if (StringUtils.isEmpty(schemaId)) {
