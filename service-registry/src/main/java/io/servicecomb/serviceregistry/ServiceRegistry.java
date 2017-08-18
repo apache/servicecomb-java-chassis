@@ -52,4 +52,6 @@ public interface ServiceRegistry {
     boolean updateInstanceProperties(Map<String, String> instanceProperties);
 
     Microservice getRemoteMicroservice(String microserviceId);
+
+    Features getFeatures();
 }
