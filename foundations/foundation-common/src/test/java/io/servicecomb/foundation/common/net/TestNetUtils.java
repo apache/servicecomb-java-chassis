@@ -88,19 +88,19 @@ public class TestNetUtils {
 
     @Test
     public void testCanTcpListenNo() throws IOException {
-        try (ServerSocket ss = new ServerSocket(0)) {
-            InetAddress address = InetAddress.getByName("127.0.0.1");
+        InetAddress address = InetAddress.getByName("127.0.0.1");
+        try (ServerSocket ss = new ServerSocket(0,0, address)) {
             Assert.assertFalse(NetUtils.canTcpListen(address, ss.getLocalPort()));
         }
     }
 
     @Test
     public void testCanTcpListenYes() throws IOException {
-        ServerSocket ss = new ServerSocket(0);
+        InetAddress address = InetAddress.getByName("127.0.0.1");
+        ServerSocket ss = new ServerSocket(0,0, address);
         int port = ss.getLocalPort();
         ss.close();
 
-        InetAddress address = InetAddress.getByName("127.0.0.1");
         Assert.assertTrue(NetUtils.canTcpListen(address, port));
     }
 }
