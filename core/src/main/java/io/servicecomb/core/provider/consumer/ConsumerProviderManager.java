@@ -52,6 +52,11 @@ public class ConsumerProviderManager {
         }
     }
 
+    public ReferenceConfig createReferenceConfig(String microserviceName, String microserviceVersion,
+            String transport) {
+        return new ReferenceConfig(consumerSchemaFactory, microserviceName, microserviceVersion, transport);
+    }
+
     public ReferenceConfig getReferenceConfig(String microserviceName) {
         ReferenceConfig config = referenceConfigMap.get(microserviceName);
         if (config == null) {
