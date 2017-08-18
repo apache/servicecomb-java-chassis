@@ -27,6 +27,7 @@ import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 
 import io.servicecomb.serviceregistry.ServiceRegistry;
+import io.servicecomb.serviceregistry.Features;
 import io.servicecomb.serviceregistry.api.Const;
 import io.servicecomb.serviceregistry.api.registry.BasePath;
 import io.servicecomb.serviceregistry.api.registry.Microservice;
@@ -46,6 +47,8 @@ import io.servicecomb.serviceregistry.task.event.ShutdownEvent;
 
 public abstract class AbstractServiceRegistry implements ServiceRegistry {
     private static final Logger LOGGER = LoggerFactory.getLogger(AbstractServiceRegistry.class);
+
+    private Features features = new Features();
 
     private MicroserviceFactory microserviceFactory = new MicroserviceFactory();
 
@@ -94,6 +97,11 @@ public abstract class AbstractServiceRegistry implements ServiceRegistry {
         createServiceCenterTask();
 
         eventBus.register(this);
+    }
+
+    @Override
+    public Features getFeatures() {
+        return features;
     }
 
     public EventBus getEventBus() {
