@@ -33,12 +33,12 @@ public class ProduceTextPlainProcessor extends AbstractProduceProcessor {
     }
 
     @Override
-    public void encodeResponse(OutputStream output, Object result) throws Exception {
+    public void doEncodeResponse(OutputStream output, Object result) throws Exception {
         output.write(String.valueOf(result).getBytes(StandardCharsets.UTF_8));
     }
 
     @Override
-    public Object decodeResponse(InputStream input, JavaType type) throws Exception {
+    public Object doDecodeResponse(InputStream input, JavaType type) throws Exception {
         // plainText类型，肯定是返回string的，想不出有其他类型的场景
         return IOUtils.toString(input, StandardCharsets.UTF_8);
         // TODO: 该方法尚需进一步修改
