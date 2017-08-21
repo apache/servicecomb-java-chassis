@@ -72,7 +72,8 @@ public class ConsumerSchemaFactory extends AbstractSchemaFactory<ConsumerSchemaC
                 findMicroservice(microserviceMeta, microserviceVersionRule);
             if (microservice == null) {
                 throw new Error(
-                        String.format("can not get microservice from service center, name=%s",
+                        String.format("can not get microservice from service center, appId=%s, name=%s",
+                                microserviceMeta.getAppId(),
                                 microserviceName));
             }
 
