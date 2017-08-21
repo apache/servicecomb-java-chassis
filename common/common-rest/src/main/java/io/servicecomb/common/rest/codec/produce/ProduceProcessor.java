@@ -20,15 +20,23 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 import com.fasterxml.jackson.databind.JavaType;
+
 import io.servicecomb.foundation.vertx.stream.BufferInputStream;
 import io.servicecomb.foundation.vertx.stream.BufferOutputStream;
-
 import io.vertx.core.buffer.Buffer;
 
 public interface ProduceProcessor {
     String getName();
 
-    void encodeResponse(OutputStream output, Object result) throws Exception;
+    default void encodeResponse(OutputStream output, Object result) throws Exception {
+        if (result == null) {
+            return;
+        }
+
+        doEncodeResponse(output, result);
+    }
+
+    void doEncodeResponse(OutputStream output, Object result) throws Exception;
 
     default Buffer encodeResponse(Object result) throws Exception {
         if (null == result) {
@@ -36,12 +44,20 @@ public interface ProduceProcessor {
         }
 
         try (BufferOutputStream output = new BufferOutputStream()) {
-            encodeResponse(output, result);
+            doEncodeResponse(output, result);
             return output.getBuffer();
         }
     }
 
-    Object decodeResponse(InputStream input, JavaType type) throws Exception;
+    default Object decodeResponse(InputStream input, JavaType type) throws Exception {
+        if (input.available() == 0) {
+            return null;
+        }
+
+        return doDecodeResponse(input, type);
+    }
+
+    Object doDecodeResponse(InputStream input, JavaType type) throws Exception;
 
     default Object decodeResponse(Buffer buffer, JavaType type) throws Exception {
         if (buffer.length() == 0) {
@@ -49,7 +65,7 @@ public interface ProduceProcessor {
         }
 
         try (BufferInputStream input = new BufferInputStream(buffer.getByteBuf())) {
-            return decodeResponse(input, type);
+            return doDecodeResponse(input, type);
         }
     }
 }
