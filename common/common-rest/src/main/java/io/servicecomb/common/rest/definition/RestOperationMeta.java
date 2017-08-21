@@ -16,6 +16,20 @@
 
 package io.servicecomb.common.rest.definition;
 
+import java.lang.reflect.Method;
+import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.ws.rs.core.MediaType;
+
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import io.servicecomb.common.rest.codec.produce.ProduceProcessor;
 import io.servicecomb.common.rest.codec.produce.ProduceProcessorManager;
 import io.servicecomb.common.rest.definition.path.PathRegExp;
@@ -24,17 +38,6 @@ import io.servicecomb.core.definition.OperationMeta;
 import io.swagger.models.Operation;
 import io.swagger.models.Swagger;
 import io.swagger.models.parameters.Parameter;
-import java.lang.reflect.Method;
-import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import javax.ws.rs.core.MediaType;
-import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class RestOperationMeta {
     private static final Logger LOGGER = LoggerFactory.getLogger(RestOperationMeta.class);
@@ -77,8 +80,6 @@ public class RestOperationMeta {
             this.produces = swagger.getProduces();
         }
 
-        setAbsolutePath(concatPath(swagger.getBasePath(), operationMeta.getOperationPath()));
-
         this.createProduceProcessors();
 
         Method method = operationMeta.getMethod();
@@ -96,7 +97,7 @@ public class RestOperationMeta {
             addParam(param);
         }
 
-        this.pathBuilder = new URLPathBuilder(absolutePath, paramMap);
+        setAbsolutePath(concatPath(swagger.getBasePath(), operationMeta.getOperationPath()));
     }
 
     public void setOperationMeta(OperationMeta operationMeta) {
@@ -105,21 +106,22 @@ public class RestOperationMeta {
 
     // 输出b/c/形式的url
     private String concatPath(String basePath, String operationPath) {
-      return ("/" + nonNullify(basePath) + "/" + nonNullify(operationPath) + "/")
-            .replaceAll("/{2,}", "/");
+        return ("/" + nonNullify(basePath) + "/" + nonNullify(operationPath) + "/")
+                .replaceAll("/{2,}", "/");
     }
 
-  private String nonNullify(String path) {
+    private String nonNullify(String path) {
         return path == null ? "" : path;
     }
 
-  public String getAbsolutePath() {
+    public String getAbsolutePath() {
         return this.absolutePath;
     }
 
     public void setAbsolutePath(String absolutePath) {
         this.absolutePath = absolutePath;
         this.absolutePathRegExp = createPathRegExp(absolutePath);
+        this.pathBuilder = new URLPathBuilder(absolutePath, paramMap);
     }
 
     public PathRegExp getAbsolutePathRegExp() {
@@ -261,5 +263,9 @@ public class RestOperationMeta {
 
     public String getHttpMethod() {
         return operationMeta.getHttpMethod();
+    }
+
+    public List<String> getProduces() {
+        return produces;
     }
 }
