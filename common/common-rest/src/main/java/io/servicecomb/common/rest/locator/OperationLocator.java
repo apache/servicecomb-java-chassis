@@ -16,14 +16,17 @@
 
 package io.servicecomb.common.rest.locator;
 
-import io.servicecomb.common.rest.definition.RestOperationMeta;
-import io.servicecomb.swagger.invocation.exception.InvocationException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+
 import javax.ws.rs.core.Response.Status;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import io.servicecomb.common.rest.definition.RestOperationMeta;
+import io.servicecomb.swagger.invocation.exception.InvocationException;
 
 /**
  * 从path和http method定位到具体的operation
@@ -48,16 +51,16 @@ public class OperationLocator {
     }
 
     // 先在静态路径operation list中查找；如果找不到，则在动态路径operation list中查找
-    public void locate(ServicePathManager servicePathManager, String path, String httpMethod) {
+    public void locate(String microserviceName, String path, String httpMethod, MicroservicePaths microservicePaths) {
         // 在静态路径中查找
-        operation = locateStaticPathOperation(path, httpMethod, servicePathManager.getStaticPathOperationMap());
+        operation = locateStaticPathOperation(path, httpMethod, microservicePaths.getStaticPathOperationMap());
         if (operation != null) {
             // 全部定位完成
             return;
         }
 
         // 在动态路径中查找
-        operation = locateDynamicPathOperation(path, servicePathManager.getDynamicPathOperationList(), httpMethod);
+        operation = locateDynamicPathOperation(path, microservicePaths.getDynamicPathOperationList(), httpMethod);
         if (operation != null) {
             return;
         }
@@ -70,7 +73,7 @@ public class OperationLocator {
                 status,
                 httpMethod,
                 path,
-                servicePathManager.getMicroserviceMeta().getName());
+                microserviceName);
         throw new InvocationException(status, status.getReasonPhrase());
     }
 
@@ -101,9 +104,10 @@ public class OperationLocator {
     }
 
     protected boolean checkHttpMethod(RestOperationMeta operation, String httpMethod) {
-      return operation.getHttpMethod().equals(httpMethod);
+        return operation.getHttpMethod().equals(httpMethod);
     }
 
+    // TODO: almost always change path, this make performance lower. 
     // Path: /a/b/c -> /a/b/c/
     static String getStandardPath(String path) {
         if (path.length() > 0 && !path.endsWith(SLASH)) {
