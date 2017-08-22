@@ -138,7 +138,7 @@ public class CseClientHttpRequest extends OutputStream implements ClientHttpRequ
                     microserviceMeta.getName()));
         }
 
-        OperationLocator locator = servicePathManager.locateOperation(uri.getPath(), httpMetod);
+        OperationLocator locator = servicePathManager.consumerLocateOperation(uri.getPath(), httpMetod);
         RestOperationMeta swaggerRestOperation = locator.getOperation();
 
         Map<String, String> pathParams = locator.getPathVarMap();

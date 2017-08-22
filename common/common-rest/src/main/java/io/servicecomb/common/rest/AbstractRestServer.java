@@ -126,7 +126,8 @@ public abstract class AbstractRestServer<HTTP_RESPONSE> {
             throw new InvocationException(Status.NOT_FOUND, Status.NOT_FOUND.getReasonPhrase());
         }
 
-        OperationLocator locator = servicePathManager.locateOperation(restRequest.getPath(), restRequest.getMethod());
+        OperationLocator locator =
+            servicePathManager.producerLocateOperation(restRequest.getPath(), restRequest.getMethod());
         restRequest.setPathParamMap(locator.getPathVarMap());
 
         return locator.getOperation();
