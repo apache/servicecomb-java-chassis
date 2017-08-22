@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -52,6 +53,11 @@ public abstract class AbstractConfigLoader {
 
     public ConfigModel load(URL url) throws IOException {
         Map<String, Object> config = loadData(url);
+        // load a empty or all commented yaml, will get a null map
+        // this is not a error
+        if (config == null) {
+            config = new LinkedHashMap<>();
+        }
 
         ConfigModel configModel = new ConfigModel();
         configModel.setUrl(url);

@@ -18,10 +18,15 @@ package io.servicecomb.config.archaius.sources;
 
 import static org.junit.Assert.assertEquals;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.net.MalformedURLException;
+import java.net.URI;
 import java.net.URL;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import org.junit.Assert;
 import org.junit.Test;
 
 public class TestMicroserviceConfigLoader {
@@ -70,13 +75,30 @@ public class TestMicroserviceConfigLoader {
 
     private String urlsOf(List<ConfigModel> configModels) {
         return String.join(",",
-            configModels
-            .stream()
-            .map(configModel -> configModel.getUrl().toString())
-            .collect(Collectors.toList()));
+                configModels
+                        .stream()
+                        .map(configModel -> configModel.getUrl().toString())
+                        .collect(Collectors.toList()));
     }
 
-  private String urls(String... urls) {
-    return String.join(",", (CharSequence[]) urls);
-  }
+    private String urls(String... urls) {
+        return String.join(",", (CharSequence[]) urls);
+    }
+
+    @Test
+    public void testLoadEmptyYaml() throws IOException {
+        loader.load("empty.yaml");
+        Assert.assertTrue(loader.getConfigModels().get(0).getConfig().isEmpty());
+    }
+
+    @Test
+    public void testLoadNotExistYaml() throws IOException {
+        URL url = URI.create("file:/notExist.yaml").toURL();
+        try {
+            loader.load(url);
+            Assert.fail("must throw exception");
+        } catch (FileNotFoundException e) {
+            Assert.assertTrue(true);
+        }
+    }
 }
