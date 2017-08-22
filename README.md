@@ -1,5 +1,5 @@
-# Java Chassis [![Build Status](https://travis-ci.org/ServiceComb/java-chassis.svg?branch=master)](https://travis-ci.org/ServiceComb/java-chassis?branch=master)[![Coverage Status](https://coveralls.io/repos/github/ServiceComb/java-chassis/badge.svg?branch=master)](https://coveralls.io/github/ServiceComb/java-chassis?branch=master)
-[![Maven Central](https://maven-badges.herokuapp.com/maven-central/io.servicecomb/java-chassis-distribution/badge.svg)](http://search.maven.org/#search%7Cga%7C1%7Cio.servicecomb)
+# Java Chassis [![Build Status](https://travis-ci.org/ServiceComb/ServiceComb-Java-Chassis.svg?branch=master)](https://travis-ci.org/ServiceComb/ServiceComb-Java-Chassis?branch=master)[![Coverage Status](https://coveralls.io/repos/github/ServiceComb/ServiceComb-Java-Chassis/badge.svg?branch=master)](https://coveralls.io/github/ServiceComb/ServiceComb-Java-Chassis?branch=master)
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/io.servicecomb/java-chassis-core/badge.svg)](http://search.maven.org/#search%7Cga%7C1%7Cio.servicecomb)
 [![License](https://img.shields.io/badge/license-Apache%202-4EB1BA.svg)](https://www.apache.org/licenses/LICENSE-2.0.html)
 
 ServiceComb Java Chassis is a Software Development Kit (SDK) for rapid development of microservices in Java, providing service registration, service discovery, dynamic routing, and service management features
@@ -47,14 +47,14 @@ The first build may take a longer than expected as Maven downloads all the depen
 
 ## Automated Testing
 
-  To build the docker image and run the integration tests with docker, you can use maven docker profile 
-  
+  To build the docker image and run the integration tests with docker, you can use maven docker profile
+
       mvn clean install -Pdocker -Pit
-      
+
   If you are using docker machine, please use the following command
-  
+
       mvn clean install -Pdocker -Pit -Pdocker-machine
-      
+
 ## Contact
 
 Bugs: [issues](https://github.com/ServiceComb/java-chassis/issues)
