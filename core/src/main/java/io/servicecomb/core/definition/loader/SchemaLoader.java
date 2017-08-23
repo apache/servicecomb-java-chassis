@@ -26,7 +26,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
+import io.servicecomb.core.Const;
 import io.servicecomb.core.Handler;
 import io.servicecomb.core.definition.MicroserviceMeta;
 import io.servicecomb.core.definition.MicroserviceMetaManager;
@@ -110,6 +112,11 @@ public class SchemaLoader {
         Microservice microservice = RegistryUtils.getMicroservice();
         if (!microservice.getServiceName().equals(microserviceName)) {
             return;
+        }
+
+        String urlPrefix = System.getProperty(Const.URL_PREFIX);
+        if (!StringUtils.isEmpty(urlPrefix) && !basePath.startsWith(urlPrefix)) {
+            basePath = urlPrefix + basePath;
         }
 
         List<BasePath> paths = microservice.getPaths();
