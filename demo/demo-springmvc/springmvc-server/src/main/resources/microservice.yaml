@@ -2,6 +2,13 @@ APPLICATION_ID: springmvctest
 service_description:
   name: springmvc
   version: 0.0.2
+  paths:
+    - path: /test1/testpath
+      property:
+        checksession: false
+    - path: /test2/testpath
+      property:
+        checksession: true
 cse:
   service:
     registry:
