@@ -15,6 +15,7 @@
  */
 package io.servicecomb.serviceregistry.api.registry;
 
+import io.servicecomb.serviceregistry.config.ConfigurePropertyUtils;
 import java.util.Map;
 
 import org.apache.commons.configuration.Configuration;
@@ -45,7 +46,7 @@ public class MicroserviceFactory {
                 DefinitionConst.defaultVersion));
         microservice.setDescription(configuration.getString(DefinitionConst.qulifiedServiceDescKey, ""));
         microservice.setLevel(configuration.getString(DefinitionConst.qulifiedServiceRoleKey, "FRONT"));
-
+        microservice.setPaths(ConfigurePropertyUtils.getMicroservicePaths(configuration));
         Map<String, String> propertiesMap = MicroservicePropertiesLoader.INSTANCE.loadProperties(configuration);
         microservice.setProperties(propertiesMap);
 
