@@ -58,6 +58,7 @@ public final class ConfigurePropertyUtils {
     return propertiesMap;
   }
 
+  @SuppressWarnings("unchecked")
   public static List<BasePath> getMicroservicePaths(Configuration configuration) {
     List<BasePath> basePaths = new ArrayList<>();
     for (Object path : configuration.getList("service_description.paths")) {

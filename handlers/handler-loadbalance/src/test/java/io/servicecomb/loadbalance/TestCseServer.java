@@ -18,6 +18,7 @@ package io.servicecomb.loadbalance;
 
 import static org.junit.Assert.assertNotNull;
 
+import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.Mockito;
 
@@ -45,10 +46,16 @@ public class TestCseServer {
     assertNotNull(cs.getEndpoint());
   }
 
+  @SuppressWarnings("unlikely-arg-type")
   @Test
   public void testEqualsMethod() {
-    cs.equals(getClass());
-    assertNotNull(cs.equals(getClass()));
+    Assert.assertFalse(cs.equals("abcd"));
+
+    CseServer other = new CseServer(transport, new CacheEndpoint("1234", null));
+    Assert.assertFalse(cs.equals(other));
+
+    other = new CseServer(transport, new CacheEndpoint("abcd", null));
+    Assert.assertTrue(cs.equals(other));
   }
 
   @Test
