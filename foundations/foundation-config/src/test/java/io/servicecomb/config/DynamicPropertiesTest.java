@@ -22,45 +22,64 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.number.IsCloseTo.closeTo;
 
+import java.util.Objects;
+
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
+import org.junit.Test;
+
 import com.netflix.config.ConcurrentMapConfiguration;
 import com.netflix.config.ConfigurationManager;
 import com.netflix.config.DynamicPropertyFactory;
 import com.seanyinx.github.unit.scaffolding.Poller;
 import com.seanyinx.github.unit.scaffolding.Randomness;
-import java.util.Objects;
+
 import mockit.Deencapsulation;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
 
 public class DynamicPropertiesTest {
 
   private static final String stringPropertyName = uniquify("stringPropertyName");
+
   private static final String intPropertyName = uniquify("intPropertyName");
+
   private static final String longPropertyName = uniquify("longPropertyName");
+
   private static final String floatPropertyName = uniquify("floatPropertyName");
+
   private static final String doublePropertyName = uniquify("doublePropertyName");
+
   private static final String booleanPropertyName = uniquify("booleanPropertyName");
 
   private static final String stringOldValue = uniquify("stringPropertyValue");
+
   private static final int intOldValue = Randomness.nextInt();
+
   private static final long longOldValue = Randomness.nextLong();
+
   private static final double floatOldValue = Randomness.nextDouble();
+
   private static final double doubleOldValue = Randomness.nextDouble();
+
   private static final boolean booleanOldValue = nextBoolean();
 
   private static final double ERROR = 0.0000001;
 
   private static DynamicProperties dynamicProperties;
+
   private static ConcurrentMapConfiguration configuration;
 
   private final Poller poller = new Poller(2000, 100);
 
   private volatile String stringPropertyValue;
+
   private volatile int intPropertyValue;
+
   private volatile long longPropertyValue;
+
   private volatile double floatPropertyValue;
+
   private volatile double doublePropertyValue;
+
   private volatile boolean booleanPropertyValue;
 
 
@@ -171,8 +190,7 @@ public class DynamicPropertiesTest {
     property = dynamicProperties.getBooleanProperty(
         booleanPropertyName,
         value -> booleanPropertyValue = value,
-        false
-    );
+        false);
     assertThat(property, is(booleanOldValue));
 
     boolean newValue = !booleanOldValue;

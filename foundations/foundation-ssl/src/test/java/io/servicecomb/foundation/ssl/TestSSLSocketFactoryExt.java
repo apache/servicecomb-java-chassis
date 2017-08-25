@@ -26,31 +26,30 @@ import org.mockito.Mockito;
 
 public class TestSSLSocketFactoryExt {
 
-    private SSLSocketFactoryExt instance = null;
+  private SSLSocketFactoryExt instance = null;
 
-    @Before
-    public void setUp() throws Exception {
-        SSLSocketFactory factory = Mockito.mock(SSLSocketFactoryExt.class);
-        String[] ciphers = {"test"};
+  @Before
+  public void setUp() throws Exception {
+    SSLSocketFactory factory = Mockito.mock(SSLSocketFactoryExt.class);
+    String[] ciphers = {"test"};
 
-        String[] protos = {"test"};
-        instance = new SSLSocketFactoryExt(factory, ciphers, protos);
+    String[] protos = {"test"};
+    instance = new SSLSocketFactoryExt(factory, ciphers, protos);
+  }
+
+  @After
+  public void tearDown() throws Exception {
+    instance = null;
+  }
+
+  @Test
+  public void testCreateSocketException() {
+    boolean validAssert = true;
+    try {
+      instance.createSocket("host", 8080);
+    } catch (Exception e) {
+      validAssert = false;
     }
-
-    @After
-    public void tearDown() throws Exception {
-        instance = null;
-    }
-
-    @Test
-    public void testCreateSocketException() {
-        boolean validAssert = true;
-        try {
-            instance.createSocket("host", 8080);
-        } catch (Exception e) {
-            validAssert = false;
-        }
-        Assert.assertFalse(validAssert);
-    }
-
+    Assert.assertFalse(validAssert);
+  }
 }

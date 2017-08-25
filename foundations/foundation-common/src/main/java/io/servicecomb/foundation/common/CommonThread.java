@@ -17,26 +17,26 @@
 package io.servicecomb.foundation.common;
 
 public class CommonThread extends Thread {
-    protected volatile boolean shutdown;
+  protected volatile boolean shutdown;
 
-    public CommonThread() {
-        super();
-    }
+  public CommonThread() {
+    super();
+  }
 
-    public CommonThread(String name, long stackSize) {
-        super(null, null, name, stackSize);
-    }
+  public CommonThread(String name, long stackSize) {
+    super(null, null, name, stackSize);
+  }
 
-    public boolean isShutdown() {
-        return shutdown;
-    }
+  public boolean isShutdown() {
+    return shutdown;
+  }
 
-    public boolean isRunning() {
-        return !shutdown;
-    }
+  public boolean isRunning() {
+    return !shutdown;
+  }
 
-    public void shutdown() {
-        shutdown = true;
-        interrupt();
-    }
+  public void shutdown() {
+    shutdown = true;
+    interrupt();
+  }
 }

@@ -28,44 +28,43 @@ import io.servicecomb.core.definition.OperationMeta;
 import io.servicecomb.core.provider.consumer.ReferenceConfig;
 
 public class TestRequestMeta {
-    ReferenceConfig referenceConfig = Mockito.mock(ReferenceConfig.class);
+  ReferenceConfig referenceConfig = Mockito.mock(ReferenceConfig.class);
 
-    RestOperationMeta swaggerRestOperation = Mockito.mock(RestOperationMeta.class);
+  RestOperationMeta swaggerRestOperation = Mockito.mock(RestOperationMeta.class);
 
-    Map<String, String> pathParams = new HashMap<String, String>();
+  Map<String, String> pathParams = new HashMap<String, String>();
 
-    RequestMeta requestmeta = new RequestMeta(referenceConfig, swaggerRestOperation, pathParams);
+  RequestMeta requestmeta = new RequestMeta(referenceConfig, swaggerRestOperation, pathParams);
 
-    OperationMeta operationMeta = Mockito.mock(OperationMeta.class);
+  OperationMeta operationMeta = Mockito.mock(OperationMeta.class);
 
-    @Test
-    public void testGetReferenceConfig() {
-        ReferenceConfig value = requestmeta.getReferenceConfig();
-        Assert.assertNotNull(value);
-    }
+  @Test
+  public void testGetReferenceConfig() {
+    ReferenceConfig value = requestmeta.getReferenceConfig();
+    Assert.assertNotNull(value);
+  }
 
-    @Test
-    public void testGetPathParams() {
-        Map<String, String> value = requestmeta.getPathParams();
-        Assert.assertNotNull(value);
-    }
+  @Test
+  public void testGetPathParams() {
+    Map<String, String> value = requestmeta.getPathParams();
+    Assert.assertNotNull(value);
+  }
 
-    @Test
-    public void testGetSwaggerRestOperation() {
-        RestOperationMeta value = requestmeta.getSwaggerRestOperation();
-        Assert.assertNotNull(value);
-    }
+  @Test
+  public void testGetSwaggerRestOperation() {
+    RestOperationMeta value = requestmeta.getSwaggerRestOperation();
+    Assert.assertNotNull(value);
+  }
 
-    @Test
-    public void testGetOperationMeta() {
-        Assert.assertNull(requestmeta.getOperationMeta());
-    }
+  @Test
+  public void testGetOperationMeta() {
+    Assert.assertNull(requestmeta.getOperationMeta());
+  }
 
-    @Test
-    public void testGetOperationQualifiedName() {
-        Mockito.when(operationMeta.getSchemaQualifiedName()).thenReturn("value");
-        String qualifiedName = operationMeta.getSchemaQualifiedName();
-        Assert.assertEquals("value", qualifiedName);
-    }
-
+  @Test
+  public void testGetOperationQualifiedName() {
+    Mockito.when(operationMeta.getSchemaQualifiedName()).thenReturn("value");
+    String qualifiedName = operationMeta.getSchemaQualifiedName();
+    Assert.assertEquals("value", qualifiedName);
+  }
 }

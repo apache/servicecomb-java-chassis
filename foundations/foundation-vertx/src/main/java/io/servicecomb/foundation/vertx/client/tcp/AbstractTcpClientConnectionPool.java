@@ -23,52 +23,53 @@ import io.vertx.core.Context;
 import io.vertx.core.net.NetClient;
 
 public abstract class AbstractTcpClientConnectionPool<T extends TcpClientConnection> {
-    // 是在哪个context中创建的
-    protected Context context;
+  // 是在哪个context中创建的
+  protected Context context;
 
-    protected TcpClientConfig clientConfig;
+  protected TcpClientConfig clientConfig;
 
-    protected NetClient netClient;
+  protected NetClient netClient;
 
-    // key为address
-    protected Map<String, T> tcpClientMap = new ConcurrentHashMap<>();
+  // key为address
+  protected Map<String, T> tcpClientMap = new ConcurrentHashMap<>();
 
-    public AbstractTcpClientConnectionPool(TcpClientConfig clientConfig, Context context, NetClient netClient) {
-        this.clientConfig = clientConfig;
-        this.context = context;
-        this.netClient = netClient;
+  public AbstractTcpClientConnectionPool(TcpClientConfig clientConfig, Context context, NetClient netClient) {
+    this.clientConfig = clientConfig;
+    this.context = context;
+    this.netClient = netClient;
 
-        startCheckTimeout(clientConfig, context);
+    startCheckTimeout(clientConfig, context);
+  }
+
+  protected void startCheckTimeout(TcpClientConfig clientConfig, Context context) {
+    context.owner().setPeriodic(clientConfig.getRequestTimeoutMillis(), this::onCheckTimeout);
+  }
+
+  private void onCheckTimeout(Long event) {
+    for (TcpClientConnection client : tcpClientMap.values()) {
+      client.checkTimeout();
     }
+  }
 
-    protected void startCheckTimeout(TcpClientConfig clientConfig, Context context) {
-        context.owner().setPeriodic(clientConfig.getRequestTimeoutMillis(), this::onCheckTimeout);
-    }
+  public void send(TcpClientConnection tcpClient, AbstractTcpClientPackage tcpClientPackage,
+      TcpResonseCallback callback) {
+    tcpClient.send(tcpClientPackage, clientConfig.getRequestTimeoutMillis(), callback);
+  }
 
-    private void onCheckTimeout(Long event) {
-        for (TcpClientConnection client : tcpClientMap.values()) {
-            client.checkTimeout();
-        }
-    }
-
-    public void send(TcpClientConnection tcpClient, AbstractTcpClientPackage tcpClientPackage, TcpResonseCallback callback) {
-        tcpClient.send(tcpClientPackage, clientConfig.getRequestTimeoutMillis(), callback);
-    }
-
-    public T findOrCreateClient(String endpoint) {
-        T tcpClient = tcpClientMap.get(endpoint);
+  public T findOrCreateClient(String endpoint) {
+    T tcpClient = tcpClientMap.get(endpoint);
+    if (tcpClient == null) {
+      synchronized (this) {
+        tcpClient = tcpClientMap.get(endpoint);
         if (tcpClient == null) {
-            synchronized (this) {
-                tcpClient = tcpClientMap.get(endpoint);
-                if (tcpClient == null) {
-                    tcpClient = create(endpoint);
-                    tcpClientMap.put(endpoint, tcpClient);
-                }
-            }
+          tcpClient = create(endpoint);
+          tcpClientMap.put(endpoint, tcpClient);
         }
-
-        return tcpClient;
+      }
     }
 
-    protected abstract T create(String endpoint);
+    return tcpClient;
+  }
+
+  protected abstract T create(String endpoint);
 }

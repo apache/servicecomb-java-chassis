@@ -21,21 +21,21 @@ import java.util.Collection;
 import io.servicecomb.swagger.invocation.converter.Converter;
 
 public class SameElementCollectionToArray implements Converter {
-    private Class<?> elementCls;
+  private Class<?> elementCls;
 
-    public SameElementCollectionToArray(Class<?> elementCls) {
-        this.elementCls = elementCls;
+  public SameElementCollectionToArray(Class<?> elementCls) {
+    this.elementCls = elementCls;
+  }
+
+  @Override
+  public Object convert(Object value) {
+    if (value == null) {
+      return null;
     }
 
-    @Override
-    public Object convert(Object value) {
-        if (value == null) {
-            return null;
-        }
-
-        @SuppressWarnings("unchecked")
-        Collection<Object> collection = (Collection<Object>) value;
-        Object array = Array.newInstance(elementCls, collection.size());
-        return collection.toArray((Object[]) array);
-    }
+    @SuppressWarnings("unchecked")
+    Collection<Object> collection = (Collection<Object>) value;
+    Object array = Array.newInstance(elementCls, collection.size());
+    return collection.toArray((Object[]) array);
+  }
 }

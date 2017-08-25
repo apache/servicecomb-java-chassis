@@ -28,19 +28,19 @@ import io.vertx.core.http.HttpClient;
 import io.vertx.core.http.HttpClientRequest;
 
 public class TestVertxDeleteMethod {
-    @Test
-    public void testCreateRequest() {
+  @Test
+  public void testCreateRequest() {
 
-        HttpClient client = Mockito.mock(HttpClient.class);
-        IpPort ipPort = Mockito.mock(IpPort.class);
-        Mockito.when(ipPort.getPort()).thenReturn(23);
-        Mockito.when(ipPort.getHostOrIp()).thenReturn("test");
-        Invocation invocation = Mockito.mock(Invocation.class);
-        RestOperationMeta operation = Mockito.mock(RestOperationMeta.class);
-        AsyncResponse asyncResp = Mockito.mock(AsyncResponse.class);
-        HttpClientRequest obj = (HttpClientRequest) VertxDeleteMethod.INSTANCE
-                .createRequest(client, invocation, ipPort, "testCall", operation, asyncResp);
+    HttpClient client = Mockito.mock(HttpClient.class);
+    IpPort ipPort = Mockito.mock(IpPort.class);
+    Mockito.when(ipPort.getPort()).thenReturn(23);
+    Mockito.when(ipPort.getHostOrIp()).thenReturn("test");
+    Invocation invocation = Mockito.mock(Invocation.class);
+    RestOperationMeta operation = Mockito.mock(RestOperationMeta.class);
+    AsyncResponse asyncResp = Mockito.mock(AsyncResponse.class);
+    HttpClientRequest obj = (HttpClientRequest) VertxDeleteMethod.INSTANCE
+        .createRequest(client, invocation, ipPort, "testCall", operation, asyncResp);
 
-        Assert.assertNull(obj);
-    }
+    Assert.assertNull(obj);
+  }
 }

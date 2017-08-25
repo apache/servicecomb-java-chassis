@@ -17,44 +17,44 @@ package io.servicecomb.foundation.vertx.server;
 
 import java.io.UnsupportedEncodingException;
 
-import io.servicecomb.foundation.vertx.tcp.TcpOutputStream;
 import org.junit.Assert;
 import org.junit.Test;
 
+import io.servicecomb.foundation.vertx.tcp.TcpOutputStream;
 import io.vertx.core.buffer.Buffer;
 
 public class TestTcpParser {
-    long msgId;
+  long msgId;
 
-    Buffer headerBuffer;
+  Buffer headerBuffer;
 
-    Buffer bodyBuffer;
+  Buffer bodyBuffer;
 
-    @Test
-    public void test() throws UnsupportedEncodingException {
-        TcpBufferHandler output = new TcpBufferHandler() {
-            @Override
-            public void handle(long _msgId, Buffer _headerBuffer, Buffer _bodyBuffer) {
-                msgId = _msgId;
-                headerBuffer = _headerBuffer;
-                bodyBuffer = _bodyBuffer;
-            }
-        };
+  @Test
+  public void test() throws UnsupportedEncodingException {
+    TcpBufferHandler output = new TcpBufferHandler() {
+      @Override
+      public void handle(long _msgId, Buffer _headerBuffer, Buffer _bodyBuffer) {
+        msgId = _msgId;
+        headerBuffer = _headerBuffer;
+        bodyBuffer = _bodyBuffer;
+      }
+    };
 
-        byte[] header = new byte[] {1, 2, 3};
-        byte[] body = new byte[] {1, 2, 3, 4};
-        TcpOutputStream os = new TcpOutputStream(1);
-        os.writeInt(header.length + body.length);
-        os.writeInt(header.length);
-        os.write(header);
-        os.write(body);
+    byte[] header = new byte[] {1, 2, 3};
+    byte[] body = new byte[] {1, 2, 3, 4};
+    TcpOutputStream os = new TcpOutputStream(1);
+    os.writeInt(header.length + body.length);
+    os.writeInt(header.length);
+    os.write(header);
+    os.write(body);
 
-        TcpParser parser = new TcpParser(output);
-        parser.handle(os.getBuffer());
-        os.close();
+    TcpParser parser = new TcpParser(output);
+    parser.handle(os.getBuffer());
+    os.close();
 
-        Assert.assertEquals(1, msgId);
-        Assert.assertArrayEquals(header, headerBuffer.getBytes());
-        Assert.assertArrayEquals(body, bodyBuffer.getBytes());
-    }
+    Assert.assertEquals(1, msgId);
+    Assert.assertArrayEquals(header, headerBuffer.getBytes());
+    Assert.assertArrayEquals(body, bodyBuffer.getBytes());
+  }
 }

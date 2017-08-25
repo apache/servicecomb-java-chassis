@@ -20,19 +20,19 @@ import org.junit.Assert;
 import org.junit.Test;
 
 public class TestHighwayConfig {
-    @Test
-    public void testGetThreadCount() {
-        Assert.assertEquals(HighwayConfig.getServerThreadCount(), 1);
-        Assert.assertEquals(HighwayConfig.getClientThreadCount(), 1);
-    }
+  @Test
+  public void testGetThreadCount() {
+    Assert.assertEquals(HighwayConfig.getServerThreadCount(), 1);
+    Assert.assertEquals(HighwayConfig.getClientThreadCount(), 1);
+  }
 
-    @Test
-    public void testGetAddress() {
-        Assert.assertEquals(HighwayConfig.getAddress(), null);
-    }
+  @Test
+  public void testGetAddress() {
+    Assert.assertEquals(HighwayConfig.getAddress(), null);
+  }
 
-    @Test
-    public void testGetConnectionPoolPerThread() {
-        Assert.assertEquals(HighwayConfig.getClientConnectionPoolPerThread(), 1);
-    }
+  @Test
+  public void testGetConnectionPoolPerThread() {
+    Assert.assertEquals(HighwayConfig.getClientConnectionPoolPerThread(), 1);
+  }
 }

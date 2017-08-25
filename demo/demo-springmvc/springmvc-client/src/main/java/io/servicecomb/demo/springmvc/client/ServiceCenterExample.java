@@ -17,6 +17,7 @@
 package io.servicecomb.demo.springmvc.client;
 
 import java.net.URI;
+
 import org.springframework.http.HttpMethod;
 import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;

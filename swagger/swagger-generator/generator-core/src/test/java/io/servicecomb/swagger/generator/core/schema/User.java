@@ -17,7 +17,7 @@
 package io.servicecomb.swagger.generator.core.schema;
 
 public class User {
-    public String name;
+  public String name;
 
-    public int age;
+  public int age;
 }

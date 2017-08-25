@@ -39,162 +39,160 @@ import mockit.Deencapsulation;
 
 public class TestRestVertxHttpRequest {
 
-    private RestVertxHttpRequest instance = null;
+  private RestVertxHttpRequest instance = null;
 
-    @Before
-    public void init() {
-        instance = new RestVertxHttpRequest(getRoutingContext(), getFutureObject());
+  @Before
+  public void init() {
+    instance = new RestVertxHttpRequest(getRoutingContext(), getFutureObject());
+  }
+
+  @Test
+  public void testRestVertxHttpRequest() {
+    Assert.assertNotNull(instance);
+  }
+
+  @Test
+  public void testGetPath() {
+    Deencapsulation.setField(instance, "request", getHttpServerRequest());
+    Assert.assertNull(instance.getPath());
+  }
+
+  @Test
+  public void testSetPathParamMap() {
+    Map<String, String> pathParamMap = new HashMap<String, String>();
+    pathParamMap.put("key", "value");
+    instance.setPathParamMap(pathParamMap);
+    Assert.assertNotNull(instance.getPathParam("key"));
+  }
+
+  @Test
+  public void testGetQueryParam() {
+    boolean status = true;
+    try {
+
+      HttpServerRequest httpServerRequest = Mockito.mock(HttpServerRequest.class);
+      Deencapsulation.setField(instance, "request", httpServerRequest);
+      MultiMap multiMap = Mockito.mock(MultiMap.class);
+      Mockito.when(httpServerRequest.params()).thenReturn(multiMap);
+      List<String> stringList = new ArrayList<String>();
+      stringList.add("sters");
+      Mockito.when(multiMap.getAll("key")).thenReturn(stringList);
+      String[] str = instance.getQueryParam("key");
+      Assert.assertEquals("sters", str[0]);
+    } catch (Exception ex) {
+      status = false;
     }
+    Assert.assertTrue(status);
+  }
 
-    @Test
-    public void testRestVertxHttpRequest() {
-        Assert.assertNotNull(instance);
+  @Test
+  public void testGetQueryParamisNull() {
+    boolean status = true;
+    try {
 
+      HttpServerRequest httpServerRequest = Mockito.mock(HttpServerRequest.class);
+      Deencapsulation.setField(instance, "request", httpServerRequest);
+      MultiMap multiMap = Mockito.mock(MultiMap.class);
+      Mockito.when(httpServerRequest.params()).thenReturn(multiMap);
+      List<String> stringList = null;
+
+      Mockito.when(multiMap.getAll("key")).thenReturn(stringList);
+      String[] str = instance.getQueryParam("key");
+      Assert.assertNull(str);
+    } catch (Exception ex) {
+      status = false;
     }
+    Assert.assertTrue(status);
+  }
 
-    @Test
-    public void testGetPath() {
-        Deencapsulation.setField(instance, "request", getHttpServerRequest());
-        Assert.assertNull(instance.getPath());
+  @Test
+  public void testGetHeaderParam() {
+    boolean status = false;
+    try {
+      HttpServerRequest httpServerRequest = Mockito.mock(HttpServerRequest.class);
+      Deencapsulation.setField(instance, "request", httpServerRequest);
+      MultiMap multiMap = Mockito.mock(MultiMap.class);
+      Mockito.when(httpServerRequest.headers()).thenReturn(multiMap);
+
+      @SuppressWarnings({"unchecked"})
+      Iterator<Entry<String, String>> iterator = Mockito.mock(Iterator.class);
+      Mockito.when(multiMap.iterator()).thenReturn(iterator);
+      Mockito.when(iterator.hasNext()).thenReturn(true).thenReturn(false);
+      Assert.assertNotNull(instance.getHeaderParam("key"));
+    } catch (Exception ex) {
+      status = true;
     }
+    Assert.assertTrue(status);
+  }
 
-    @Test
-    public void testSetPathParamMap() {
-        Map<String, String> pathParamMap = new HashMap<String, String>();
-        pathParamMap.put("key", "value");
-        instance.setPathParamMap(pathParamMap);
-        Assert.assertNotNull(instance.getPathParam("key"));
+  @Test
+  public void testGetFormParam() {
+    boolean status = false;
+    try {
+      Assert.assertNotNull(instance.getFormParam("key"));
+    } catch (Exception ex) {
+      status = true;
     }
+    Assert.assertTrue(status);
+  }
 
-    @Test
-    public void testGetQueryParam() {
-        boolean status = true;
-        try {
+  @Test
+  public void testGetCookieParam() {
+    Cookie cookie = Mockito.mock(Cookie.class);
+    RoutingContext context = Mockito.mock(RoutingContext.class);
+    Deencapsulation.setField(instance, "context", context);
+    Mockito.when(context.getCookie("key")).thenReturn(cookie);
+    Assert.assertNull(instance.getCookieParam("key"));
+  }
 
-            HttpServerRequest httpServerRequest = Mockito.mock(HttpServerRequest.class);
-            Deencapsulation.setField(instance, "request", httpServerRequest);
-            MultiMap multiMap = Mockito.mock(MultiMap.class);
-            Mockito.when(httpServerRequest.params()).thenReturn(multiMap);
-            List<String> stringList = new ArrayList<String>();
-            stringList.add("sters");
-            Mockito.when(multiMap.getAll("key")).thenReturn(stringList);
-            String[] str = instance.getQueryParam("key");
-            Assert.assertEquals("sters", str[0]);
-        } catch (Exception ex) {
-            status = false;
-        }
-        Assert.assertTrue(status);
+  @Test
+  public void testGetBody() {
+    boolean status = false;
+    try {
+      Assert.assertNull(instance.getBody());
+    } catch (Exception ex) {
+      status = true;
     }
+    Assert.assertTrue(status);
+  }
 
-    @Test
-    public void testGetQueryParamisNull() {
-        boolean status = true;
-        try {
-
-            HttpServerRequest httpServerRequest = Mockito.mock(HttpServerRequest.class);
-            Deencapsulation.setField(instance, "request", httpServerRequest);
-            MultiMap multiMap = Mockito.mock(MultiMap.class);
-            Mockito.when(httpServerRequest.params()).thenReturn(multiMap);
-            List<String> stringList = null;
-
-            Mockito.when(multiMap.getAll("key")).thenReturn(stringList);
-            String[] str = instance.getQueryParam("key");
-            Assert.assertNull(str);
-        } catch (Exception ex) {
-            status = false;
-        }
-        Assert.assertTrue(status);
+  @Test
+  public void testGetQueryParams() {
+    boolean status = true;
+    try {
+      HttpServerRequest httpServerRequest = Mockito.mock(HttpServerRequest.class);
+      Deencapsulation.setField(instance, "request", httpServerRequest);
+      MultiMap multiMap = Mockito.mock(MultiMap.class);
+      Mockito.when(httpServerRequest.params()).thenReturn(multiMap);
+      List<String> stringList = new ArrayList<String>();
+      stringList.add("sters");
+      Set<String> stringSet = new HashSet<String>();
+      stringSet.add("sters");
+      Mockito.when(multiMap.names()).thenReturn(stringSet);
+      Mockito.when(multiMap.getAll("key")).thenReturn(stringList);
+      Assert.assertNotNull(instance.getQueryParams());
+    } catch (Exception ex) {
+      status = false;
     }
+    Assert.assertTrue(status);
+  }
 
-    @Test
-    public void testGetHeaderParam() {
-        boolean status = false;
-        try {
-            HttpServerRequest httpServerRequest = Mockito.mock(HttpServerRequest.class);
-            Deencapsulation.setField(instance, "request", httpServerRequest);
-            MultiMap multiMap = Mockito.mock(MultiMap.class);
-            Mockito.when(httpServerRequest.headers()).thenReturn(multiMap);
+  @Test
+  public void testGetHttpRequest() {
+    init();
+    Assert.assertNull(instance.getHttpRequest());
+  }
 
-            @SuppressWarnings({"unchecked"})
-            Iterator<Entry<String, String>> iterator = Mockito.mock(Iterator.class);
-            Mockito.when(multiMap.iterator()).thenReturn(iterator);
-            Mockito.when(iterator.hasNext()).thenReturn(true).thenReturn(false);
-            Assert.assertNotNull(instance.getHeaderParam("key"));
-        } catch (Exception ex) {
-            status = true;
-        }
-        Assert.assertTrue(status);
-    }
+  private RoutingContext getRoutingContext() {
+    return Mockito.mock(RoutingContext.class);
+  }
 
-    @Test
-    public void testGetFormParam() {
-        boolean status = false;
-        try {
-            Assert.assertNotNull(instance.getFormParam("key"));
-        } catch (Exception ex) {
-            status = true;
-        }
-        Assert.assertTrue(status);
-    }
+  @SuppressWarnings("unchecked")
+  private Future<Object> getFutureObject() {
+    return Mockito.mock(Future.class);
+  }
 
-    @Test
-    public void testGetCookieParam() {
-        Cookie cookie = Mockito.mock(Cookie.class);
-        RoutingContext context = Mockito.mock(RoutingContext.class);
-        Deencapsulation.setField(instance, "context", context);
-        Mockito.when(context.getCookie("key")).thenReturn(cookie);
-        Assert.assertNull(instance.getCookieParam("key"));
-    }
-
-    @Test
-    public void testGetBody() {
-        boolean status = false;
-        try {
-            Assert.assertNull(instance.getBody());
-        } catch (Exception ex) {
-            status = true;
-        }
-        Assert.assertTrue(status);
-    }
-
-    @Test
-    public void testGetQueryParams() {
-        boolean status = true;
-        try {
-            HttpServerRequest httpServerRequest = Mockito.mock(HttpServerRequest.class);
-            Deencapsulation.setField(instance, "request", httpServerRequest);
-            MultiMap multiMap = Mockito.mock(MultiMap.class);
-            Mockito.when(httpServerRequest.params()).thenReturn(multiMap);
-            List<String> stringList = new ArrayList<String>();
-            stringList.add("sters");
-            Set<String> stringSet = new HashSet<String>();
-            stringSet.add("sters");
-            Mockito.when(multiMap.names()).thenReturn(stringSet);
-            Mockito.when(multiMap.getAll("key")).thenReturn(stringList);
-            Assert.assertNotNull(instance.getQueryParams());
-        } catch (Exception ex) {
-            status = false;
-        }
-        Assert.assertTrue(status);
-    }
-
-    @Test
-    public void testGetHttpRequest() {
-        init();
-        Assert.assertNull(instance.getHttpRequest());
-    }
-
-    private RoutingContext getRoutingContext() {
-        return Mockito.mock(RoutingContext.class);
-
-    }
-
-    @SuppressWarnings("unchecked")
-    private Future<Object> getFutureObject() {
-        return Mockito.mock(Future.class);
-    }
-
-    private HttpServerRequest getHttpServerRequest() {
-        return Mockito.mock(HttpServerRequest.class);
-    }
+  private HttpServerRequest getHttpServerRequest() {
+    return Mockito.mock(HttpServerRequest.class);
+  }
 }

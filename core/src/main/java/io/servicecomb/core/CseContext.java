@@ -28,97 +28,97 @@ import io.servicecomb.core.transport.TransportManager;
 import io.servicecomb.swagger.engine.SwaggerEnvironment;
 
 public class CseContext {
-    private static final CseContext INSTANCE = new CseContext();
+  private static final CseContext INSTANCE = new CseContext();
 
-    public static CseContext getInstance() {
-        return INSTANCE;
-    }
+  public static CseContext getInstance() {
+    return INSTANCE;
+  }
 
-    private SchemaListenerManager schemaListenerManager;
+  private SchemaListenerManager schemaListenerManager;
 
-    private SchemaLoader schemaLoader;
+  private SchemaLoader schemaLoader;
 
-    private MicroserviceMetaManager microserviceMetaManager;
+  private MicroserviceMetaManager microserviceMetaManager;
 
-    private ConsumerSchemaFactory consumerSchemaFactory;
+  private ConsumerSchemaFactory consumerSchemaFactory;
 
-    private ConsumerProviderManager consumerProviderManager;
+  private ConsumerProviderManager consumerProviderManager;
 
-    private ProducerProviderManager producerProviderManager;
+  private ProducerProviderManager producerProviderManager;
 
-    private TransportManager transportManager;
+  private TransportManager transportManager;
 
-    private SwaggerEnvironment swaggerEnvironment;
+  private SwaggerEnvironment swaggerEnvironment;
 
-    public SchemaListenerManager getSchemaListenerManager() {
-        return schemaListenerManager;
-    }
+  public SchemaListenerManager getSchemaListenerManager() {
+    return schemaListenerManager;
+  }
 
-    public SchemaLoader getSchemaLoader() {
-        return schemaLoader;
-    }
+  public SchemaLoader getSchemaLoader() {
+    return schemaLoader;
+  }
 
-    public MicroserviceMetaManager getMicroserviceMetaManager() {
-        return microserviceMetaManager;
-    }
+  public MicroserviceMetaManager getMicroserviceMetaManager() {
+    return microserviceMetaManager;
+  }
 
-    public ConsumerSchemaFactory getConsumerSchemaFactory() {
-        return consumerSchemaFactory;
-    }
+  public ConsumerSchemaFactory getConsumerSchemaFactory() {
+    return consumerSchemaFactory;
+  }
 
-    public ConsumerProviderManager getConsumerProviderManager() {
-        return consumerProviderManager;
-    }
+  public ConsumerProviderManager getConsumerProviderManager() {
+    return consumerProviderManager;
+  }
 
-    public ProducerProviderManager getProducerProviderManager() {
-        return producerProviderManager;
-    }
+  public ProducerProviderManager getProducerProviderManager() {
+    return producerProviderManager;
+  }
 
-    public TransportManager getTransportManager() {
-        return transportManager;
-    }
+  public TransportManager getTransportManager() {
+    return transportManager;
+  }
 
-    public SwaggerEnvironment getSwaggerEnvironment() {
-        return swaggerEnvironment;
-    }
+  public SwaggerEnvironment getSwaggerEnvironment() {
+    return swaggerEnvironment;
+  }
 
-    @Inject
-    public void setSwaggerEnvironment(SwaggerEnvironment swaggerEnvironment) {
-        this.swaggerEnvironment = swaggerEnvironment;
-    }
+  @Inject
+  public void setSwaggerEnvironment(SwaggerEnvironment swaggerEnvironment) {
+    this.swaggerEnvironment = swaggerEnvironment;
+  }
 
-    @Inject
-    public void setMicroserviceMetaManager(MicroserviceMetaManager microserviceMetaManager) {
-        this.microserviceMetaManager = microserviceMetaManager;
-    }
+  @Inject
+  public void setMicroserviceMetaManager(MicroserviceMetaManager microserviceMetaManager) {
+    this.microserviceMetaManager = microserviceMetaManager;
+  }
 
-    @Inject
-    public void setSchemaLoader(SchemaLoader schemaLoader) {
-        this.schemaLoader = schemaLoader;
-    }
+  @Inject
+  public void setSchemaLoader(SchemaLoader schemaLoader) {
+    this.schemaLoader = schemaLoader;
+  }
 
-    @Inject
-    public void setConsumerSchemaFactory(ConsumerSchemaFactory consumerSchemaFactory) {
-        this.consumerSchemaFactory = consumerSchemaFactory;
-    }
+  @Inject
+  public void setConsumerSchemaFactory(ConsumerSchemaFactory consumerSchemaFactory) {
+    this.consumerSchemaFactory = consumerSchemaFactory;
+  }
 
-    @Inject
-    public void setConsumerProviderManager(ConsumerProviderManager consumerProviderManager) {
-        this.consumerProviderManager = consumerProviderManager;
-    }
+  @Inject
+  public void setConsumerProviderManager(ConsumerProviderManager consumerProviderManager) {
+    this.consumerProviderManager = consumerProviderManager;
+  }
 
-    @Inject
-    public void setProducerProviderManager(ProducerProviderManager producerProviderManager) {
-        this.producerProviderManager = producerProviderManager;
-    }
+  @Inject
+  public void setProducerProviderManager(ProducerProviderManager producerProviderManager) {
+    this.producerProviderManager = producerProviderManager;
+  }
 
-    @Inject
-    public void setSchemaListenerManager(SchemaListenerManager schemaListenerManager) {
-        this.schemaListenerManager = schemaListenerManager;
-    }
+  @Inject
+  public void setSchemaListenerManager(SchemaListenerManager schemaListenerManager) {
+    this.schemaListenerManager = schemaListenerManager;
+  }
 
-    @Inject
-    public void setTransportManager(TransportManager transportManager) {
-        this.transportManager = transportManager;
-    }
+  @Inject
+  public void setTransportManager(TransportManager transportManager) {
+    this.transportManager = transportManager;
+  }
 }

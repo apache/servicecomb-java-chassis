@@ -23,23 +23,23 @@ import io.servicecomb.foundation.vertx.VertxUtils;
 import io.vertx.core.Vertx;
 
 public class PerfClient {
-    public static void main(String[] args) throws Exception {
-        Log4jUtils.init();
-        BeanUtils.init();
+  public static void main(String[] args) throws Exception {
+    Log4jUtils.init();
+    BeanUtils.init();
 
-        System.out.println("mode:" + Config.getMode());
+    System.out.println("mode:" + Config.getMode());
 
-        CseContext.getInstance().getConsumerProviderManager().setTransport("pojo", Config.getTransport());
-        System.out.printf("test %s performance\n", Config.getTransport());
+    CseContext.getInstance().getConsumerProviderManager().setTransport("pojo", Config.getTransport());
+    System.out.printf("test %s performance\n", Config.getTransport());
 
-        if ("reactive".equals(Config.getMode())) {
-            Vertx vertx = VertxUtils.getOrCreateVertxByName("perfClient", null);
-            VertxUtils.deployVerticle(vertx, ClientVerticle.class, Config.getClientThread());
-            return;
-        }
-
-        for (int idx = 0; idx < Config.getClientThread(); idx++) {
-            new ClientThread().start();
-        }
+    if ("reactive".equals(Config.getMode())) {
+      Vertx vertx = VertxUtils.getOrCreateVertxByName("perfClient", null);
+      VertxUtils.deployVerticle(vertx, ClientVerticle.class, Config.getClientThread());
+      return;
     }
+
+    for (int idx = 0; idx < Config.getClientThread(); idx++) {
+      new ClientThread().start();
+    }
+  }
 }

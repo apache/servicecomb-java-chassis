@@ -20,20 +20,20 @@ import java.lang.reflect.Field;
 import io.servicecomb.swagger.invocation.converter.Converter;
 
 public class FieldInfo {
-    private Field field;
+  private Field field;
 
-    private Converter converter;
+  private Converter converter;
 
-    public FieldInfo(Field field, Converter converter) {
-        this.field = field;
-        this.converter = converter;
-    }
+  public FieldInfo(Field field, Converter converter) {
+    this.field = field;
+    this.converter = converter;
+  }
 
-    public Field getField() {
-        return field;
-    }
+  public Field getField() {
+    return field;
+  }
 
-    public Converter getConverter() {
-        return converter;
-    }
+  public Converter getConverter() {
+    return converter;
+  }
 }

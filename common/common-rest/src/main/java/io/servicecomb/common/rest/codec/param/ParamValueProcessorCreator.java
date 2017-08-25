@@ -21,5 +21,5 @@ import java.lang.reflect.Type;
 import io.swagger.models.parameters.Parameter;
 
 public interface ParamValueProcessorCreator {
-    ParamValueProcessor create(Parameter parameter, Type genericParamType);
+  ParamValueProcessor create(Parameter parameter, Type genericParamType);
 }

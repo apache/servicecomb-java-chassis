@@ -24,13 +24,13 @@ import java.util.Map;
 import org.yaml.snakeyaml.Yaml;
 
 public class YAMLConfigLoader extends AbstractConfigLoader {
-    @SuppressWarnings("unchecked")
-    @Override
-    protected Map<String, Object> loadData(URL url) throws IOException {
-        Yaml yaml = new Yaml();
+  @SuppressWarnings("unchecked")
+  @Override
+  protected Map<String, Object> loadData(URL url) throws IOException {
+    Yaml yaml = new Yaml();
 
-        try (InputStream inputStream = url.openStream()) {
-            return yaml.loadAs(inputStream, Map.class);
-        }
+    try (InputStream inputStream = url.openStream()) {
+      return yaml.loadAs(inputStream, Map.class);
     }
+  }
 }

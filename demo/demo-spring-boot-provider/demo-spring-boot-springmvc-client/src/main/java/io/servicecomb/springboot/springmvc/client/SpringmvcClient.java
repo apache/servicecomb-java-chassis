@@ -32,13 +32,12 @@ import io.servicecomb.springboot.starter.provider.EnableServiceComb;
 @EnableServiceComb
 public class SpringmvcClient {
 
-    public static void main(final String[] args) throws Exception {
-        Log4jUtils.init();
-        SpringApplication.run(SpringmvcClient.class, args);
+  public static void main(final String[] args) throws Exception {
+    Log4jUtils.init();
+    SpringApplication.run(SpringmvcClient.class, args);
 
-        io.servicecomb.demo.springmvc.client.SpringmvcClient.run();
+    io.servicecomb.demo.springmvc.client.SpringmvcClient.run();
 
-        TestMgr.summary();
-    }
-
+    TestMgr.summary();
+  }
 }

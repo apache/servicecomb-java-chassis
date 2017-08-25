@@ -21,30 +21,30 @@ import com.netflix.config.DynamicPropertyFactory;
 import com.netflix.config.DynamicStringProperty;
 
 public final class HighwayConfig {
-    private HighwayConfig() {
-    }
+  private HighwayConfig() {
+  }
 
-    public static String getAddress() {
-        DynamicStringProperty address =
-            DynamicPropertyFactory.getInstance().getStringProperty("cse.highway.address", null);
-        return address.get();
-    }
+  public static String getAddress() {
+    DynamicStringProperty address =
+        DynamicPropertyFactory.getInstance().getStringProperty("cse.highway.address", null);
+    return address.get();
+  }
 
-    public static int getServerThreadCount() {
-        DynamicIntProperty address =
-            DynamicPropertyFactory.getInstance().getIntProperty("cse.highway.server.thread-count", 1);
-        return address.get();
-    }
+  public static int getServerThreadCount() {
+    DynamicIntProperty address =
+        DynamicPropertyFactory.getInstance().getIntProperty("cse.highway.server.thread-count", 1);
+    return address.get();
+  }
 
-    public static int getClientThreadCount() {
-        DynamicIntProperty address =
-            DynamicPropertyFactory.getInstance().getIntProperty("cse.highway.client.thread-count", 1);
-        return address.get();
-    }
+  public static int getClientThreadCount() {
+    DynamicIntProperty address =
+        DynamicPropertyFactory.getInstance().getIntProperty("cse.highway.client.thread-count", 1);
+    return address.get();
+  }
 
-    public static int getClientConnectionPoolPerThread() {
-        DynamicIntProperty address =
-            DynamicPropertyFactory.getInstance().getIntProperty("cse.highway.client.connection-pool-per-thread", 1);
-        return address.get();
-    }
+  public static int getClientConnectionPoolPerThread() {
+    DynamicIntProperty address =
+        DynamicPropertyFactory.getInstance().getIntProperty("cse.highway.client.connection-pool-per-thread", 1);
+    return address.get();
+  }
 }

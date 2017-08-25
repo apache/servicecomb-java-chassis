@@ -26,74 +26,74 @@ import io.servicecomb.common.rest.definition.UnitTestRestUtils;
 import io.servicecomb.swagger.invocation.exception.InvocationException;
 
 public class TestOperationLocator {
-    MicroservicePaths paths = new MicroservicePaths();
+  MicroservicePaths paths = new MicroservicePaths();
 
-    OperationLocator locator = new OperationLocator();
+  OperationLocator locator = new OperationLocator();
 
-    private RestOperationMeta addRestOperationMeta(String httpMethod, String path) {
-        RestOperationMeta rom = UnitTestRestUtils.createRestOperatonMeta(httpMethod, path);
-        paths.addResource(rom);
-        return rom;
+  private RestOperationMeta addRestOperationMeta(String httpMethod, String path) {
+    RestOperationMeta rom = UnitTestRestUtils.createRestOperatonMeta(httpMethod, path);
+    paths.addResource(rom);
+    return rom;
+  }
+
+  @Test
+  public void testLocateNotFound() {
+    try {
+      locator.locate("ms", "/notExist", "GET", paths);
+      Assert.fail("must throw exception");
+    } catch (InvocationException e) {
+      Assert.assertEquals(Status.NOT_FOUND, e.getStatus());
     }
+  }
 
-    @Test
-    public void testLocateNotFound() {
-        try {
-            locator.locate("ms", "/notExist", "GET", paths);
-            Assert.fail("must throw exception");
-        } catch (InvocationException e) {
-            Assert.assertEquals(Status.NOT_FOUND, e.getStatus());
-        }
+  @Test
+  public void testLocateNotFoundDynamicRemained() {
+    addRestOperationMeta("GET", "/dynamic/{id}");
+    try {
+      locator.locate("ms", "/dynamic/1/2", "GET", paths);
+      Assert.fail("must throw exception");
+    } catch (InvocationException e) {
+      Assert.assertEquals(Status.NOT_FOUND, e.getStatus());
     }
+  }
 
-    @Test
-    public void testLocateNotFoundDynamicRemained() {
-        addRestOperationMeta("GET", "/dynamic/{id}");
-        try {
-            locator.locate("ms", "/dynamic/1/2", "GET", paths);
-            Assert.fail("must throw exception");
-        } catch (InvocationException e) {
-            Assert.assertEquals(Status.NOT_FOUND, e.getStatus());
-        }
+  @Test
+  public void testLocateStaticMethodNotAllowed() {
+    addRestOperationMeta("GET", "/static");
+
+    try {
+      locator.locate("ms", "/static", "POST", paths);
+      Assert.fail("must throw exception");
+    } catch (InvocationException e) {
+      Assert.assertEquals(Status.METHOD_NOT_ALLOWED, e.getStatus());
     }
+  }
 
-    @Test
-    public void testLocateStaticMethodNotAllowed() {
-        addRestOperationMeta("GET", "/static");
-
-        try {
-            locator.locate("ms", "/static", "POST", paths);
-            Assert.fail("must throw exception");
-        } catch (InvocationException e) {
-            Assert.assertEquals(Status.METHOD_NOT_ALLOWED, e.getStatus());
-        }
+  @Test
+  public void testLocateDynamicMethodNotAllowed() {
+    addRestOperationMeta("GET", "/dynamic/{id}");
+    try {
+      locator.locate("ms", "/dynamic/1/", "POST", paths);
+      Assert.fail("must throw exception");
+    } catch (InvocationException e) {
+      Assert.assertEquals(Status.METHOD_NOT_ALLOWED, e.getStatus());
     }
+  }
 
-    @Test
-    public void testLocateDynamicMethodNotAllowed() {
-        addRestOperationMeta("GET", "/dynamic/{id}");
-        try {
-            locator.locate("ms", "/dynamic/1/", "POST", paths);
-            Assert.fail("must throw exception");
-        } catch (InvocationException e) {
-            Assert.assertEquals(Status.METHOD_NOT_ALLOWED, e.getStatus());
-        }
-    }
+  @Test
+  public void testLocateStaticFound() {
+    RestOperationMeta rom = addRestOperationMeta("GET", "/static");
+    locator.locate("ms", "/static", "GET", paths);
 
-    @Test
-    public void testLocateStaticFound() {
-        RestOperationMeta rom = addRestOperationMeta("GET", "/static");
-        locator.locate("ms", "/static", "GET", paths);
+    Assert.assertSame(rom, locator.getOperation());
+  }
 
-        Assert.assertSame(rom, locator.getOperation());
-    }
+  @Test
+  public void testLocateDynamicFound() {
+    RestOperationMeta rom = addRestOperationMeta("GET", "/dynamic/{id}");
+    locator.locate("ms", "/dynamic/1/", "GET", paths);
 
-    @Test
-    public void testLocateDynamicFound() {
-        RestOperationMeta rom = addRestOperationMeta("GET", "/dynamic/{id}");
-        locator.locate("ms", "/dynamic/1/", "GET", paths);
-
-        Assert.assertSame(rom, locator.getOperation());
-        Assert.assertEquals("1", locator.getPathVarMap().get("id"));
-    }
+    Assert.assertSame(rom, locator.getOperation());
+    Assert.assertEquals("1", locator.getPathVarMap().get("id"));
+  }
 }

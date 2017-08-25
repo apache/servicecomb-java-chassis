@@ -24,34 +24,33 @@ import io.servicecomb.demo.smartcare.Response;
 import io.servicecomb.demo.smartcare.SmartCare;
 
 public class SmartCareImpl implements SmartCare {
-    private static final Logger LOG = LoggerFactory.getLogger(SmartCareImpl.class);
+  private static final Logger LOG = LoggerFactory.getLogger(SmartCareImpl.class);
 
-    @Override
-    public Response addApplication(Application application) {
-        // TODO: add application
-        LOG.info(application.toString());
+  @Override
+  public Response addApplication(Application application) {
+    // TODO: add application
+    LOG.info(application.toString());
 
-        Response resp = new Response();
-        resp.setResultCode(0);
-        resp.setResultMessage("add application " + application.getName() + " success");
-        return resp;
+    Response resp = new Response();
+    resp.setResultCode(0);
+    resp.setResultMessage("add application " + application.getName() + " success");
+    return resp;
+  }
+
+  @Override
+  public Response delApplication(String appName) {
+    // TODO: delete application
+    LOG.info(appName);
+
+    try {
+      System.out.println(5 / 0);
+    } catch (Exception e) {
+      Response resp = new Response();
+      resp.setResultCode(1);
+      resp.setResultMessage("delete application " + appName + " failed");
+      return resp;
     }
 
-    @Override
-    public Response delApplication(String appName) {
-        // TODO: delete application
-        LOG.info(appName);
-
-        try {
-            System.out.println(5 / 0);
-        } catch (Exception e) {
-            Response resp = new Response();
-            resp.setResultCode(1);
-            resp.setResultMessage("delete application " + appName + " failed");
-            return resp;
-        }
-
-        return null;
-    }
-
+    return null;
+  }
 }

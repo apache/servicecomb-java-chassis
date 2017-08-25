@@ -17,7 +17,6 @@ package io.servicecomb.provider.pojo.schema;
 
 import java.util.Collection;
 
-import io.servicecomb.provider.pojo.RpcSchema;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
@@ -25,45 +24,46 @@ import org.springframework.util.StringUtils;
 import io.servicecomb.core.provider.CseBeanPostProcessor.ProviderProcessor;
 import io.servicecomb.foundation.common.RegisterManager;
 import io.servicecomb.foundation.common.utils.BeanUtils;
+import io.servicecomb.provider.pojo.RpcSchema;
 
 @Component
 public class PojoProducers implements ProviderProcessor {
-    // key为schemaId
-    private RegisterManager<String, PojoProducerMeta> pojoMgr = new RegisterManager<>("pojo service manager");
+  // key为schemaId
+  private RegisterManager<String, PojoProducerMeta> pojoMgr = new RegisterManager<>("pojo service manager");
 
-    public void registerPojoProducer(PojoProducerMeta pojoProducer) {
-        pojoMgr.register(pojoProducer.getSchemaId(), pojoProducer);
+  public void registerPojoProducer(PojoProducerMeta pojoProducer) {
+    pojoMgr.register(pojoProducer.getSchemaId(), pojoProducer);
+  }
+
+  public Collection<PojoProducerMeta> getProcucers() {
+    return pojoMgr.values();
+  }
+
+  @Override
+  public void processProvider(ApplicationContext applicationContext, String beanName, Object bean) {
+    // aop后，新的实例的父类可能是原class，也可能只是个proxy，父类不是原class
+    // 所以，需要先取出原class，再取标注
+    Class<?> beanCls = BeanUtils.getImplClassFromBean(bean);
+    RpcSchema rpcSchema = beanCls.getAnnotation(RpcSchema.class);
+    if (rpcSchema == null) {
+      return;
     }
 
-    public Collection<PojoProducerMeta> getProcucers() {
-        return pojoMgr.values();
+    String schemaId = rpcSchema.schemaId();
+    if (StringUtils.isEmpty(schemaId)) {
+      Class<?>[] intfs = beanCls.getInterfaces();
+      if (intfs.length == 1) {
+        schemaId = intfs[0].getName();
+      } else {
+        throw new Error("Must be schemaId or implements only one interface");
+      }
     }
 
-    @Override
-    public void processProvider(ApplicationContext applicationContext, String beanName, Object bean) {
-        // aop后，新的实例的父类可能是原class，也可能只是个proxy，父类不是原class
-        // 所以，需要先取出原class，再取标注
-        Class<?> beanCls = BeanUtils.getImplClassFromBean(bean);
-        RpcSchema rpcSchema = beanCls.getAnnotation(RpcSchema.class);
-        if (rpcSchema == null) {
-            return;
-        }
+    PojoProducerMeta pojoProducerMeta = new PojoProducerMeta();
+    pojoProducerMeta.setSchemaId(schemaId);
+    pojoProducerMeta.setInstance(bean);
+    pojoProducerMeta.setInstanceClass(beanCls);
 
-        String schemaId = rpcSchema.schemaId();
-        if (StringUtils.isEmpty(schemaId)) {
-            Class<?>[] intfs = beanCls.getInterfaces();
-            if (intfs.length == 1) {
-                schemaId = intfs[0].getName();
-            } else {
-                throw new Error("Must be schemaId or implements only one interface");
-            }
-        }
-
-        PojoProducerMeta pojoProducerMeta = new PojoProducerMeta();
-        pojoProducerMeta.setSchemaId(schemaId);
-        pojoProducerMeta.setInstance(bean);
-        pojoProducerMeta.setInstanceClass(beanCls);
-
-        registerPojoProducer(pojoProducerMeta);
-    }
+    registerPojoProducer(pojoProducerMeta);
+  }
 }

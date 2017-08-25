@@ -15,62 +15,61 @@
  */
 package io.servicecomb.transport.highway.message;
 
-import io.servicecomb.codec.protobuf.utils.ProtobufSchemaUtils;
-import io.servicecomb.codec.protobuf.utils.WrapSchema;
-
 import io.protostuff.ProtobufOutput;
 import io.protostuff.Tag;
+import io.servicecomb.codec.protobuf.utils.ProtobufSchemaUtils;
+import io.servicecomb.codec.protobuf.utils.WrapSchema;
 import io.vertx.core.buffer.Buffer;
 
 public class LoginResponse {
-    private static WrapSchema loginResponseSchema = ProtobufSchemaUtils.getOrCreateSchema(LoginResponse.class);
+  private static WrapSchema loginResponseSchema = ProtobufSchemaUtils.getOrCreateSchema(LoginResponse.class);
 
-    public static WrapSchema getLoginResponseSchema() {
-        return loginResponseSchema;
-    }
+  public static WrapSchema getLoginResponseSchema() {
+    return loginResponseSchema;
+  }
 
-    public static LoginResponse readObject(Buffer bodyBuffer) throws Exception {
-        return loginResponseSchema.readObject(bodyBuffer, null);
-    }
+  public static LoginResponse readObject(Buffer bodyBuffer) throws Exception {
+    return loginResponseSchema.readObject(bodyBuffer, null);
+  }
 
-    @Tag(1)
-    private String protocol;
+  @Tag(1)
+  private String protocol;
 
-    // 压缩算法名字
-    @Tag(2)
-    private String zipName;
+  // 压缩算法名字
+  @Tag(2)
+  private String zipName;
 
-    // 历史版本中的protoStuff实现的protobuf的map编码与标准的protobuf不兼容
-    // 为保持highway的兼容，旧的不兼容编码也要保留
-    // 只有LoginRequest/LoginResponse同时为true时，才使用标准protobuf编码
-    @Tag(3)
-    private boolean useProtobufMapCodec;
+  // 历史版本中的protoStuff实现的protobuf的map编码与标准的protobuf不兼容
+  // 为保持highway的兼容，旧的不兼容编码也要保留
+  // 只有LoginRequest/LoginResponse同时为true时，才使用标准protobuf编码
+  @Tag(3)
+  private boolean useProtobufMapCodec;
 
-    public String getProtocol() {
-        return protocol;
-    }
+  public String getProtocol() {
+    return protocol;
+  }
 
-    public void setProtocol(String protocol) {
-        this.protocol = protocol;
-    }
+  public void setProtocol(String protocol) {
+    this.protocol = protocol;
+  }
 
-    public String getZipName() {
-        return zipName;
-    }
+  public String getZipName() {
+    return zipName;
+  }
 
-    public void setZipName(String zipName) {
-        this.zipName = zipName;
-    }
+  public void setZipName(String zipName) {
+    this.zipName = zipName;
+  }
 
-    public boolean isUseProtobufMapCodec() {
-        return useProtobufMapCodec;
-    }
+  public boolean isUseProtobufMapCodec() {
+    return useProtobufMapCodec;
+  }
 
-    public void setUseProtobufMapCodec(boolean useProtobufMapCodec) {
-        this.useProtobufMapCodec = useProtobufMapCodec;
-    }
+  public void setUseProtobufMapCodec(boolean useProtobufMapCodec) {
+    this.useProtobufMapCodec = useProtobufMapCodec;
+  }
 
-    public void writeObject(ProtobufOutput output) throws Exception {
-        loginResponseSchema.writeObject(output, this);
-    }
+  public void writeObject(ProtobufOutput output) throws Exception {
+    loginResponseSchema.writeObject(output, this);
+  }
 }

@@ -23,46 +23,46 @@ import io.vertx.core.Vertx;
 import io.vertx.core.buffer.Buffer;
 
 public class TcpRequest {
-    private long begin;
+  private long begin;
 
-    private long msTimeout;
+  private long msTimeout;
 
-    private Context callContext;
+  private Context callContext;
 
-    private long threadId;
+  private long threadId;
 
-    private TcpResonseCallback responseCallback;
+  private TcpResonseCallback responseCallback;
 
-    public TcpRequest(long msTimeout, TcpResonseCallback responseCallback) {
-        callContext = Vertx.currentContext();
-        threadId = Thread.currentThread().getId();
-        this.begin = System.currentTimeMillis();
-        this.msTimeout = msTimeout;
-        this.responseCallback = responseCallback;
+  public TcpRequest(long msTimeout, TcpResonseCallback responseCallback) {
+    callContext = Vertx.currentContext();
+    threadId = Thread.currentThread().getId();
+    this.begin = System.currentTimeMillis();
+    this.msTimeout = msTimeout;
+    this.responseCallback = responseCallback;
+  }
+
+  public void onReply(Buffer headerBuffer, Buffer bodyBuffer) {
+    TcpData tcpData = new TcpData(headerBuffer, bodyBuffer);
+
+    if (callContext == null || threadId == Thread.currentThread().getId()) {
+      responseCallback.success(tcpData);
+      return;
     }
 
-    public void onReply(Buffer headerBuffer, Buffer bodyBuffer) {
-        TcpData tcpData = new TcpData(headerBuffer, bodyBuffer);
+    callContext.runOnContext(Void -> {
+      responseCallback.success(tcpData);
+    });
+  }
 
-        if (callContext == null || threadId == Thread.currentThread().getId()) {
-            responseCallback.success(tcpData);
-            return;
-        }
+  public void onSendError(Throwable e) {
+    responseCallback.fail(e);
+  }
 
-        callContext.runOnContext(Void -> {
-            responseCallback.success(tcpData);
-        });
-    }
+  public boolean isTimeout() {
+    return System.currentTimeMillis() - begin >= msTimeout;
+  }
 
-    public void onSendError(Throwable e) {
-        responseCallback.fail(e);
-    }
-
-    public boolean isTimeout() {
-        return System.currentTimeMillis() - begin >= msTimeout;
-    }
-
-    public void onTimeout(TimeoutException e) {
-        responseCallback.fail(e);
-    }
+  public void onTimeout(TimeoutException e) {
+    responseCallback.fail(e);
+  }
 }

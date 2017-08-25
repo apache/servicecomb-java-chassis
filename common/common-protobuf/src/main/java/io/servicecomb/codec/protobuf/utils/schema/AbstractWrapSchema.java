@@ -16,10 +16,9 @@
 
 package io.servicecomb.codec.protobuf.utils.schema;
 
+import io.protostuff.Schema;
 import io.servicecomb.codec.protobuf.utils.WrapSchema;
 
-import io.protostuff.Schema;
-
 public abstract class AbstractWrapSchema implements WrapSchema {
-    protected Schema<Object> schema;
+  protected Schema<Object> schema;
 }

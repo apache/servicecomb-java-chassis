@@ -23,83 +23,83 @@ import io.protostuff.Tag;
 
 public class ModelProtostuff {
 
-    //CHECKSTYLE:OFF: magicnumber
-    @Tag(1)
-    private String destMicroservice;
+  //CHECKSTYLE:OFF: magicnumber
+  @Tag(1)
+  private String destMicroservice;
 
-    @Tag(5)
-    private String schemaId;
+  @Tag(5)
+  private String schemaId;
 
-    @Tag(6)
-    private String operationName;
+  @Tag(6)
+  private String operationName;
 
-    @Tag(7)
-    private Map<String, String> context;
+  @Tag(7)
+  private Map<String, String> context;
 
-    @Tag(8)
-    private Map<String, User> userMap;
+  @Tag(8)
+  private Map<String, User> userMap;
 
-    @Tag(9)
-    private List<String> list = new ArrayList<>();
+  @Tag(9)
+  private List<String> list = new ArrayList<>();
 
-    @Tag(10)
-    private List<User> userList = new ArrayList<>();
+  @Tag(10)
+  private List<User> userList = new ArrayList<>();
 
-    //CHECKSTYLE:ON
+  //CHECKSTYLE:ON
 
-    public String getDestMicroservice() {
-        return destMicroservice;
-    }
+  public String getDestMicroservice() {
+    return destMicroservice;
+  }
 
-    public void setDestMicroservice(String destMicroservice) {
-        this.destMicroservice = destMicroservice;
-    }
+  public void setDestMicroservice(String destMicroservice) {
+    this.destMicroservice = destMicroservice;
+  }
 
-    public String getSchemaId() {
-        return schemaId;
-    }
+  public String getSchemaId() {
+    return schemaId;
+  }
 
-    public void setSchemaId(String schemaId) {
-        this.schemaId = schemaId;
-    }
+  public void setSchemaId(String schemaId) {
+    this.schemaId = schemaId;
+  }
 
-    public String getOperationName() {
-        return operationName;
-    }
+  public String getOperationName() {
+    return operationName;
+  }
 
-    public void setOperationName(String operationName) {
-        this.operationName = operationName;
-    }
+  public void setOperationName(String operationName) {
+    this.operationName = operationName;
+  }
 
-    public Map<String, String> getContext() {
-        return context;
-    }
+  public Map<String, String> getContext() {
+    return context;
+  }
 
-    public void setContext(Map<String, String> context) {
-        this.context = context;
-    }
+  public void setContext(Map<String, String> context) {
+    this.context = context;
+  }
 
-    public List<String> getList() {
-        return list;
-    }
+  public List<String> getList() {
+    return list;
+  }
 
-    public void setList(List<String> list) {
-        this.list = list;
-    }
+  public void setList(List<String> list) {
+    this.list = list;
+  }
 
-    public Map<String, User> getUserMap() {
-        return userMap;
-    }
+  public Map<String, User> getUserMap() {
+    return userMap;
+  }
 
-    public void setUserMap(Map<String, User> userMap) {
-        this.userMap = userMap;
-    }
+  public void setUserMap(Map<String, User> userMap) {
+    this.userMap = userMap;
+  }
 
-    public List<User> getUserList() {
-        return userList;
-    }
+  public List<User> getUserList() {
+    return userList;
+  }
 
-    public void setUserList(List<User> userList) {
-        this.userList = userList;
-    }
+  public void setUserList(List<User> userList) {
+    this.userList = userList;
+  }
 }

@@ -21,29 +21,23 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-/**
- *
- * @since Mar 14, 2017
- * @see 
- */
 public class TestMetricsConfig {
 
-    MetricsConfig oMetricsConfig = null;
+  MetricsConfig oMetricsConfig = null;
 
-    @Before
-    public void setUp() throws Exception {
-        oMetricsConfig = new MetricsConfig();
-    }
+  @Before
+  public void setUp() throws Exception {
+    oMetricsConfig = new MetricsConfig();
+  }
 
-    @After
-    public void tearDown() throws Exception {
-        oMetricsConfig = null;
-    }
+  @After
+  public void tearDown() throws Exception {
+    oMetricsConfig = null;
+  }
 
-    @Test
-    public void test() {
-        Assert.assertEquals(60000, MetricsConfig.getMsCycle());
-        Assert.assertEquals(true, MetricsConfig.isEnable());
-    }
-
+  @Test
+  public void test() {
+    Assert.assertEquals(60000, MetricsConfig.getMsCycle());
+    Assert.assertEquals(true, MetricsConfig.isEnable());
+  }
 }

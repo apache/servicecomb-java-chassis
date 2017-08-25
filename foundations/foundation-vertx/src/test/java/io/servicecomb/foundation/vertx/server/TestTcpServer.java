@@ -18,11 +18,10 @@ package io.servicecomb.foundation.vertx.server;
 
 import java.net.InetSocketAddress;
 
-import io.servicecomb.foundation.vertx.AsyncResultCallback;
 import org.junit.Test;
 
 import io.servicecomb.foundation.common.net.URIEndpointObject;
-
+import io.servicecomb.foundation.vertx.AsyncResultCallback;
 import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
 import io.vertx.core.net.NetServer;
@@ -32,55 +31,55 @@ import mockit.Expectations;
 import mockit.Mocked;
 
 public class TestTcpServer {
-    static class TcpServerForTest extends TcpServer {
-        public TcpServerForTest(URIEndpointObject endpointObject) {
-            super(endpointObject);
-        }
+  static class TcpServerForTest extends TcpServer {
+    public TcpServerForTest(URIEndpointObject endpointObject) {
+      super(endpointObject);
+    }
 
+    @Override
+    protected TcpServerConnection createTcpServerConnection() {
+      return new TcpServerConnection() {
         @Override
-        protected TcpServerConnection createTcpServerConnection() {
-            return new TcpServerConnection() {
-                @Override
-                public void init(NetSocket netSocket) {
-                    super.init(netSocket);
-                }
-            };
+        public void init(NetSocket netSocket) {
+          super.init(netSocket);
         }
+      };
+    }
+  }
+
+  @SuppressWarnings({"rawtypes", "unchecked"})
+  @Test
+  public void testTcpServerNonSSL(@Mocked Vertx vertx, @Mocked AsyncResultCallback<InetSocketAddress> callback,
+      @Mocked NetServer netServer) {
+    new Expectations() {
+      {
+        vertx.createNetServer();
+        result = netServer;
+        netServer.connectHandler((Handler) any);
+        netServer.listen(anyInt, anyString, (Handler) any);
+      }
     };
+    URIEndpointObject endpointObject = new URIEndpointObject("highway://127.0.0.1:6663");
+    TcpServer server = new TcpServerForTest(endpointObject);
+    // assert done in Expectations
+    server.init(vertx, "", callback);
+  }
 
-    @SuppressWarnings({"rawtypes", "unchecked"})
-    @Test
-    public void testTcpServerNonSSL(@Mocked Vertx vertx, @Mocked AsyncResultCallback<InetSocketAddress> callback,
-            @Mocked NetServer netServer) {
-        new Expectations() {
-            {
-                vertx.createNetServer();
-                result = netServer;
-                netServer.connectHandler((Handler) any);
-                netServer.listen(anyInt, anyString, (Handler) any);
-            }
-        };
-        URIEndpointObject endpointObject = new URIEndpointObject("highway://127.0.0.1:6663");
-        TcpServer server = new TcpServerForTest(endpointObject);
-        // assert done in Expectations 
-        server.init(vertx, "", callback);
-    }
-
-    @SuppressWarnings({"rawtypes", "unchecked"})
-    @Test
-    public void testTcpServerSSL(@Mocked Vertx vertx, @Mocked AsyncResultCallback<InetSocketAddress> callback,
-            @Mocked NetServer netServer) {
-        new Expectations() {
-            {
-                vertx.createNetServer((NetServerOptions) any);
-                result = netServer;
-                netServer.connectHandler((Handler) any);
-                netServer.listen(anyInt, anyString, (Handler) any);
-            }
-        };
-        URIEndpointObject endpointObject = new URIEndpointObject("highway://127.0.0.1:6663?sslEnabled=true");
-        TcpServer server = new TcpServerForTest(endpointObject);
-        // assert done in Expectations 
-        server.init(vertx, "", callback);
-    }
+  @SuppressWarnings({"rawtypes", "unchecked"})
+  @Test
+  public void testTcpServerSSL(@Mocked Vertx vertx, @Mocked AsyncResultCallback<InetSocketAddress> callback,
+      @Mocked NetServer netServer) {
+    new Expectations() {
+      {
+        vertx.createNetServer((NetServerOptions) any);
+        result = netServer;
+        netServer.connectHandler((Handler) any);
+        netServer.listen(anyInt, anyString, (Handler) any);
+      }
+    };
+    URIEndpointObject endpointObject = new URIEndpointObject("highway://127.0.0.1:6663?sslEnabled=true");
+    TcpServer server = new TcpServerForTest(endpointObject);
+    // assert done in Expectations
+    server.init(vertx, "", callback);
+  }
 }

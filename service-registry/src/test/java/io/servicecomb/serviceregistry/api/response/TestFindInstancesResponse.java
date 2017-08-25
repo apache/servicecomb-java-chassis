@@ -19,50 +19,45 @@ package io.servicecomb.serviceregistry.api.response;
 import java.util.ArrayList;
 import java.util.List;
 
-import io.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 
-/**
- *
- * @since Mar 14, 2017
- * @see 
- */
+import io.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
+
 public class TestFindInstancesResponse {
 
-    FindInstancesResponse oFindInstancesResponse = null;
+  FindInstancesResponse oFindInstancesResponse = null;
 
-    List<MicroserviceInstance> oListMicroserviceInstance = null;
+  List<MicroserviceInstance> oListMicroserviceInstance = null;
 
-    @Before
-    public void setUp() throws Exception {
-        oFindInstancesResponse = new FindInstancesResponse();
-        oListMicroserviceInstance = new ArrayList<>();
-        oListMicroserviceInstance.add(Mockito.mock(MicroserviceInstance.class));
-    }
+  @Before
+  public void setUp() throws Exception {
+    oFindInstancesResponse = new FindInstancesResponse();
+    oListMicroserviceInstance = new ArrayList<>();
+    oListMicroserviceInstance.add(Mockito.mock(MicroserviceInstance.class));
+  }
 
-    @After
-    public void tearDown() throws Exception {
-        oFindInstancesResponse = null;
-        oListMicroserviceInstance = null;
-    }
+  @After
+  public void tearDown() throws Exception {
+    oFindInstancesResponse = null;
+    oListMicroserviceInstance = null;
+  }
 
-    @Test
-    public void testDefaultValues() {
-        Assert.assertNull(oFindInstancesResponse.getInstances());
-    }
+  @Test
+  public void testDefaultValues() {
+    Assert.assertNull(oFindInstancesResponse.getInstances());
+  }
 
-    @Test
-    public void testIntializedValues() {
-        initFields(); //Initialize the Object
-        Assert.assertEquals(1, oFindInstancesResponse.getInstances().size());
-    }
+  @Test
+  public void testIntializedValues() {
+    initFields(); //Initialize the Object
+    Assert.assertEquals(1, oFindInstancesResponse.getInstances().size());
+  }
 
-    private void initFields() {
-        oFindInstancesResponse.setInstances(oListMicroserviceInstance);
-    }
-
+  private void initFields() {
+    oFindInstancesResponse.setInstances(oListMicroserviceInstance);
+  }
 }

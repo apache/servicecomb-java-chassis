@@ -20,8 +20,8 @@ import javax.ws.rs.Path;
 
 @Path("")
 public class ClassMethodNoPath {
-    @GET
-    public void p1() {
+  @GET
+  public void p1() {
 
-    }
+  }
 }

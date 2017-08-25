@@ -41,61 +41,61 @@ import io.servicecomb.config.archaius.scheduler.NeverStartPollingScheduler;
  */
 public class TestYAMLConfigurationSource {
 
-    @Test
-    public void testPullFromClassPath() throws Exception {
-        MicroserviceConfigurationSource configSource = yamlConfigSource();
-        PollResult result = configSource.poll(true, null);
-        Map<String, Object> configMap = result.getComplete();
-        assertNotNull(configMap);
-        assertEquals(20, configMap.size());
-        assertNotNull(configMap.get("trace.handler.sampler.percent"));
-        assertEquals(0.5, configMap.get("trace.handler.sampler.percent"));
-        assertEquals("http://10.120.169.202:9980/", configMap.get("registry.client.serviceUrl.defaultZone"));
-        assertNull(configMap.get("eureka.client.serviceUrl.defaultZone"));
-    }
+  @Test
+  public void testPullFromClassPath() throws Exception {
+    MicroserviceConfigurationSource configSource = yamlConfigSource();
+    PollResult result = configSource.poll(true, null);
+    Map<String, Object> configMap = result.getComplete();
+    assertNotNull(configMap);
+    assertEquals(20, configMap.size());
+    assertNotNull(configMap.get("trace.handler.sampler.percent"));
+    assertEquals(0.5, configMap.get("trace.handler.sampler.percent"));
+    assertEquals("http://10.120.169.202:9980/", configMap.get("registry.client.serviceUrl.defaultZone"));
+    assertNull(configMap.get("eureka.client.serviceUrl.defaultZone"));
+  }
 
-    @Test
-    public void testPullFroGivenURL() throws Exception {
-        ClassLoader loader = Thread.currentThread().getContextClassLoader();
-        URL test1URL = loader.getResource("test1.yaml");
-        URL test2URL = loader.getResource("test2.yaml");
-        System.setProperty("cse.configurationSource.additionalUrls", test1URL.toString() + "," + test2URL.toString());
-        MicroserviceConfigurationSource configSource = yamlConfigSource();
-        PollResult result = configSource.poll(true, null);
-        Map<String, Object> configMap = result.getComplete();
+  @Test
+  public void testPullFroGivenURL() throws Exception {
+    ClassLoader loader = Thread.currentThread().getContextClassLoader();
+    URL test1URL = loader.getResource("test1.yaml");
+    URL test2URL = loader.getResource("test2.yaml");
+    System.setProperty("cse.configurationSource.additionalUrls", test1URL.toString() + "," + test2URL.toString());
+    MicroserviceConfigurationSource configSource = yamlConfigSource();
+    PollResult result = configSource.poll(true, null);
+    Map<String, Object> configMap = result.getComplete();
 
-        assertEquals(3, configSource.getConfigModels().size());
-        assertNotNull(configMap);
-        assertEquals(31, configMap.size());
-        assertNotNull(configMap.get("trace.handler.sampler.percent"));
-        assertEquals(0.5, configMap.get("trace.handler.sampler.percent"));
+    assertEquals(3, configSource.getConfigModels().size());
+    assertNotNull(configMap);
+    assertEquals(31, configMap.size());
+    assertNotNull(configMap.get("trace.handler.sampler.percent"));
+    assertEquals(0.5, configMap.get("trace.handler.sampler.percent"));
 
-        System.getProperties().remove("cse.configurationSource.additionalUrls");
-    }
+    System.getProperties().remove("cse.configurationSource.additionalUrls");
+  }
 
-    @Test
-    public void testFullOperation() {
-        // configuration from system properties
-        ConcurrentMapConfiguration configFromSystemProperties =
-            new ConcurrentMapConfiguration(new SystemConfiguration());
-        // configuration from yaml file
-        DynamicConfiguration configFromYamlFile =
-            new DynamicConfiguration(yamlConfigSource(), new NeverStartPollingScheduler());
-        // create a hierarchy of configuration that makes
-        // 1) dynamic configuration source override system properties
-        ConcurrentCompositeConfiguration finalConfig = new ConcurrentCompositeConfiguration();
-        finalConfig.addConfiguration(configFromYamlFile, "yamlConfig");
-        finalConfig.addConfiguration(configFromSystemProperties, "systemEnvConfig");
-        Assert.assertEquals(0.5, finalConfig.getDouble("trace.handler.sampler.percent"), 0.5);
-        //        DynamicStringListProperty property = new DynamicStringListProperty("trace.handler.tlist", "|", DynamicStringListProperty.DEFAULT_DELIMITER);
-        //        List<String> ll = property.get();
-        //        for (String s : ll) {
-        //            System.out.println(s);
-        //        }
+  @Test
+  public void testFullOperation() {
+    // configuration from system properties
+    ConcurrentMapConfiguration configFromSystemProperties =
+        new ConcurrentMapConfiguration(new SystemConfiguration());
+    // configuration from yaml file
+    DynamicConfiguration configFromYamlFile =
+        new DynamicConfiguration(yamlConfigSource(), new NeverStartPollingScheduler());
+    // create a hierarchy of configuration that makes
+    // 1) dynamic configuration source override system properties
+    ConcurrentCompositeConfiguration finalConfig = new ConcurrentCompositeConfiguration();
+    finalConfig.addConfiguration(configFromYamlFile, "yamlConfig");
+    finalConfig.addConfiguration(configFromSystemProperties, "systemEnvConfig");
+    Assert.assertEquals(0.5, finalConfig.getDouble("trace.handler.sampler.percent"), 0.5);
+    //        DynamicStringListProperty property = new DynamicStringListProperty("trace.handler.tlist", "|", DynamicStringListProperty.DEFAULT_DELIMITER);
+    //        List<String> ll = property.get();
+    //        for (String s : ll) {
+    //            System.out.println(s);
+    //        }
 
-        Object o = finalConfig.getProperty("zq");
-        @SuppressWarnings("unchecked")
-        List<Map<String, Object>> listO = (List<Map<String, Object>>) o;
-        Assert.assertEquals(3, listO.size());
-    }
+    Object o = finalConfig.getProperty("zq");
+    @SuppressWarnings("unchecked")
+    List<Map<String, Object>> listO = (List<Map<String, Object>>) o;
+    Assert.assertEquals(3, listO.size());
+  }
 }

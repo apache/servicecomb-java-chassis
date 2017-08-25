@@ -17,5 +17,5 @@
 package io.servicecomb.foundation.vertx.client;
 
 public interface ClientPoolFactory<CLIENT_POOL> {
-    CLIENT_POOL createClientPool();
+  CLIENT_POOL createClientPool();
 }

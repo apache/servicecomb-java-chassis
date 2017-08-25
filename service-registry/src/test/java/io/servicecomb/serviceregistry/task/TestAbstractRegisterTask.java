@@ -28,65 +28,65 @@ import io.servicecomb.serviceregistry.client.ServiceRegistryClient;
 import mockit.Mocked;
 
 public class TestAbstractRegisterTask {
-    private EventBus eventBus;
+  private EventBus eventBus;
 
-    private Microservice microservice;
+  private Microservice microservice;
 
-    @Before
-    public void setup() {
-        eventBus = new EventBus();
+  @Before
+  public void setup() {
+    eventBus = new EventBus();
 
-        microservice = new Microservice();
-        microservice.setAppId("app");
-        microservice.setServiceName("ms");
+    microservice = new Microservice();
+    microservice.setAppId("app");
+    microservice.setServiceName("ms");
 
-        microservice.setIntance(new MicroserviceInstance());
-    }
+    microservice.setIntance(new MicroserviceInstance());
+  }
 
-    @Test
-    public void testHeartbeatSuccess(@Mocked ServiceRegistryClient srClient) {
-        MicroserviceRegisterTask registerTask = new MicroserviceRegisterTask(eventBus, srClient, microservice);
-        ReflectUtils.setField(registerTask, "registered", true);
+  @Test
+  public void testHeartbeatSuccess(@Mocked ServiceRegistryClient srClient) {
+    MicroserviceRegisterTask registerTask = new MicroserviceRegisterTask(eventBus, srClient, microservice);
+    ReflectUtils.setField(registerTask, "registered", true);
 
-        MicroserviceInstanceHeartbeatTask heartbeatTask =
-            new MicroserviceInstanceHeartbeatTask(eventBus, srClient, microservice);
-        ReflectUtils.setField(heartbeatTask, "heartbeatResult", HeartbeatResult.SUCCESS);
+    MicroserviceInstanceHeartbeatTask heartbeatTask =
+        new MicroserviceInstanceHeartbeatTask(eventBus, srClient, microservice);
+    ReflectUtils.setField(heartbeatTask, "heartbeatResult", HeartbeatResult.SUCCESS);
 
-        Assert.assertEquals(true, registerTask.isRegistered());
-        eventBus.post(heartbeatTask);;
-        Assert.assertEquals(true, registerTask.isRegistered());
-        Assert.assertEquals(eventBus, registerTask.getEventBus());
-    }
+    Assert.assertEquals(true, registerTask.isRegistered());
+    eventBus.post(heartbeatTask);
+    Assert.assertEquals(true, registerTask.isRegistered());
+    Assert.assertEquals(eventBus, registerTask.getEventBus());
+  }
 
-    @Test
-    public void testHeartbeatFailed(@Mocked ServiceRegistryClient srClient) {
-        MicroserviceRegisterTask registerTask = new MicroserviceRegisterTask(eventBus, srClient, microservice);
-        ReflectUtils.setField(registerTask, "registered", true);
+  @Test
+  public void testHeartbeatFailed(@Mocked ServiceRegistryClient srClient) {
+    MicroserviceRegisterTask registerTask = new MicroserviceRegisterTask(eventBus, srClient, microservice);
+    ReflectUtils.setField(registerTask, "registered", true);
 
-        MicroserviceInstanceHeartbeatTask heartbeatTask =
-            new MicroserviceInstanceHeartbeatTask(eventBus, srClient, microservice);
-        ReflectUtils.setField(heartbeatTask, "heartbeatResult", HeartbeatResult.INSTANCE_NOT_REGISTERED);
+    MicroserviceInstanceHeartbeatTask heartbeatTask =
+        new MicroserviceInstanceHeartbeatTask(eventBus, srClient, microservice);
+    ReflectUtils.setField(heartbeatTask, "heartbeatResult", HeartbeatResult.INSTANCE_NOT_REGISTERED);
 
-        Assert.assertEquals(true, registerTask.isRegistered());
-        eventBus.post(heartbeatTask);
-        Assert.assertEquals(false, registerTask.isRegistered());
-    }
+    Assert.assertEquals(true, registerTask.isRegistered());
+    eventBus.post(heartbeatTask);
+    Assert.assertEquals(false, registerTask.isRegistered());
+  }
 
-    @Test
-    public void testHeartbeatOtherFailed(@Mocked ServiceRegistryClient srClient) {
-        MicroserviceRegisterTask registerTask = new MicroserviceRegisterTask(eventBus, srClient, microservice);
-        ReflectUtils.setField(registerTask, "registered", true);
+  @Test
+  public void testHeartbeatOtherFailed(@Mocked ServiceRegistryClient srClient) {
+    MicroserviceRegisterTask registerTask = new MicroserviceRegisterTask(eventBus, srClient, microservice);
+    ReflectUtils.setField(registerTask, "registered", true);
 
-        Microservice otherMicroservice = new Microservice();
-        otherMicroservice.setAppId(microservice.getAppId());
-        otherMicroservice.setServiceName("ms1");
+    Microservice otherMicroservice = new Microservice();
+    otherMicroservice.setAppId(microservice.getAppId());
+    otherMicroservice.setServiceName("ms1");
 
-        MicroserviceInstanceHeartbeatTask heartbeatTask =
-            new MicroserviceInstanceHeartbeatTask(eventBus, srClient, otherMicroservice);
-        ReflectUtils.setField(heartbeatTask, "heartbeatResult", HeartbeatResult.INSTANCE_NOT_REGISTERED);
+    MicroserviceInstanceHeartbeatTask heartbeatTask =
+        new MicroserviceInstanceHeartbeatTask(eventBus, srClient, otherMicroservice);
+    ReflectUtils.setField(heartbeatTask, "heartbeatResult", HeartbeatResult.INSTANCE_NOT_REGISTERED);
 
-        Assert.assertEquals(true, registerTask.isRegistered());
-        eventBus.post(heartbeatTask);;
-        Assert.assertEquals(true, registerTask.isRegistered());
-    }
+    Assert.assertEquals(true, registerTask.isRegistered());
+    eventBus.post(heartbeatTask);
+    Assert.assertEquals(true, registerTask.isRegistered());
+  }
 }

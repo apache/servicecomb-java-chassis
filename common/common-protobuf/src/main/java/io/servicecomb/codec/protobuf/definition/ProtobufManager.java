@@ -20,57 +20,58 @@ import com.fasterxml.jackson.databind.ObjectReader;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.dataformat.protobuf.ProtobufMapper;
+
 import io.servicecomb.core.definition.OperationMeta;
 
 public final class ProtobufManager {
-    private static ProtobufManager instance = new ProtobufManager();
+  private static ProtobufManager instance = new ProtobufManager();
 
-    private static ProtobufMapper mapper = new ProtobufMapper();
+  private static ProtobufMapper mapper = new ProtobufMapper();
 
-    private static ObjectWriter writer = mapper.writer();
+  private static ObjectWriter writer = mapper.writer();
 
-    private static ObjectReader reader = mapper.reader();
+  private static ObjectReader reader = mapper.reader();
 
-    public static final String EXT_ID = "protobuf";
+  public static final String EXT_ID = "protobuf";
 
-    private static final Object LOCK = new Object();
+  private static final Object LOCK = new Object();
 
-    static {
-        // 支持在idl中定义empty message
-        mapper.disable(SerializationFeature.FAIL_ON_EMPTY_BEANS);
-    }
+  static {
+    // 支持在idl中定义empty message
+    mapper.disable(SerializationFeature.FAIL_ON_EMPTY_BEANS);
+  }
 
-    private ProtobufManager() {
-    }
+  private ProtobufManager() {
+  }
 
-    public static OperationProtobuf getOrCreateOperation(OperationMeta operationMeta) throws Exception {
-        OperationProtobuf operationProtobuf = operationMeta.getExtData(ProtobufManager.EXT_ID);
+  public static OperationProtobuf getOrCreateOperation(OperationMeta operationMeta) throws Exception {
+    OperationProtobuf operationProtobuf = operationMeta.getExtData(ProtobufManager.EXT_ID);
+    if (operationProtobuf == null) {
+      synchronized (LOCK) {
+        operationProtobuf = operationMeta.getExtData(ProtobufManager.EXT_ID);
         if (operationProtobuf == null) {
-            synchronized (LOCK) {
-                operationProtobuf = operationMeta.getExtData(ProtobufManager.EXT_ID);
-                if (operationProtobuf == null) {
-                    operationProtobuf = new OperationProtobuf(operationMeta);
-                    operationMeta.putExtData(EXT_ID, operationProtobuf);
-                }
-            }
+          operationProtobuf = new OperationProtobuf(operationMeta);
+          operationMeta.putExtData(EXT_ID, operationProtobuf);
         }
-
-        return operationProtobuf;
+      }
     }
 
-    public static ProtobufManager getInstance() {
-        return instance;
-    }
+    return operationProtobuf;
+  }
 
-    public static ProtobufMapper getMapper() {
-        return mapper;
-    }
+  public static ProtobufManager getInstance() {
+    return instance;
+  }
 
-    public static ObjectWriter getWriter() {
-        return writer;
-    }
+  public static ProtobufMapper getMapper() {
+    return mapper;
+  }
 
-    public static ObjectReader getReader() {
-        return reader;
-    }
+  public static ObjectWriter getWriter() {
+    return writer;
+  }
+
+  public static ObjectReader getReader() {
+    return reader;
+  }
 }

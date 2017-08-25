@@ -16,28 +16,26 @@
 
 package io.servicecomb.codec.protobuf.utils.schema;
 
+import io.protostuff.Schema;
 import io.servicecomb.codec.protobuf.utils.WrapSchema;
 import io.servicecomb.codec.protobuf.utils.WrapType;
 
-import io.protostuff.Schema;
-
 public final class WrapSchemaFactory {
-    public static WrapSchema createSchema(Schema<?> schema, WrapType type) {
-        switch (type) {
-            case NOT_WRAP:
-                return new NotWrapSchema(schema);
-            case NORMAL_WRAP:
-                return new NormalWrapSchema(schema);
-            case ARGS_NOT_WRAP:
-                return new ArgsNotWrapSchema(schema);
-            case ARGS_WRAP:
-                return new ArgsWrapSchema(schema);
-            default:
-                throw new Error("impossible");
-        }
+  public static WrapSchema createSchema(Schema<?> schema, WrapType type) {
+    switch (type) {
+      case NOT_WRAP:
+        return new NotWrapSchema(schema);
+      case NORMAL_WRAP:
+        return new NormalWrapSchema(schema);
+      case ARGS_NOT_WRAP:
+        return new ArgsNotWrapSchema(schema);
+      case ARGS_WRAP:
+        return new ArgsWrapSchema(schema);
+      default:
+        throw new Error("impossible");
     }
+  }
 
-    private WrapSchemaFactory() {
-    }
-
+  private WrapSchemaFactory() {
+  }
 }

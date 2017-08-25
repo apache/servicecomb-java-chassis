@@ -15,24 +15,26 @@
  */
 package io.servicecomb.samples.customerhandler.handlers;
 
-import io.servicecomb.swagger.invocation.AsyncResponse;
-import io.servicecomb.core.Invocation;
-import io.servicecomb.core.handler.impl.AbstractHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import io.servicecomb.core.Invocation;
+import io.servicecomb.core.handler.impl.AbstractHandler;
+import io.servicecomb.swagger.invocation.AsyncResponse;
+
 public class MyHandler extends AbstractHandler {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(MyHandler.class);
-    @Override
-    public void handle(Invocation invocation, AsyncResponse asyncResponse) throws Exception {
-        //code before
+  private static final Logger LOGGER = LoggerFactory.getLogger(MyHandler.class);
 
-        LOGGER.info("It's my handler! \r\n");
+  @Override
+  public void handle(Invocation invocation, AsyncResponse asyncResponse) throws Exception {
+    //code before
 
-        invocation.next(response -> {
-            // code after
-            asyncResponse.handle(response);
-        });
-    }
+    LOGGER.info("It's my handler! \r\n");
+
+    invocation.next(response -> {
+      // code after
+      asyncResponse.handle(response);
+    });
+  }
 }

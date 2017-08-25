@@ -26,32 +26,32 @@ import io.servicecomb.serviceregistry.cache.InstanceVersionCacheManager;
 import io.servicecomb.serviceregistry.client.ServiceRegistryClient;
 
 public interface ServiceRegistry {
-    void init();
+  void init();
 
-    void run();
+  void run();
 
-    void destory();
+  void destory();
 
-    Set<String> getCombinedMicroserviceNames();
+  Set<String> getCombinedMicroserviceNames();
 
-    Microservice getMicroservice();
+  Microservice getMicroservice();
 
-    MicroserviceInstance getMicroserviceInstance();
+  MicroserviceInstance getMicroserviceInstance();
 
-    ServiceRegistryClient getServiceRegistryClient();
+  ServiceRegistryClient getServiceRegistryClient();
 
-    InstanceCacheManager getInstanceCacheManager();
+  InstanceCacheManager getInstanceCacheManager();
 
-    InstanceVersionCacheManager getInstanceVersionCacheManager();
+  InstanceVersionCacheManager getInstanceVersionCacheManager();
 
-    List<MicroserviceInstance> findServiceInstance(String appId, String microserviceName,
-            String microserviceVersionRule);
+  List<MicroserviceInstance> findServiceInstance(String appId, String microserviceName,
+      String microserviceVersionRule);
 
-    boolean updateMicroserviceProperties(Map<String, String> properties);
+  boolean updateMicroserviceProperties(Map<String, String> properties);
 
-    boolean updateInstanceProperties(Map<String, String> instanceProperties);
+  boolean updateInstanceProperties(Map<String, String> instanceProperties);
 
-    Microservice getRemoteMicroservice(String microserviceId);
+  Microservice getRemoteMicroservice(String microserviceId);
 
-    Features getFeatures();
+  Features getFeatures();
 }

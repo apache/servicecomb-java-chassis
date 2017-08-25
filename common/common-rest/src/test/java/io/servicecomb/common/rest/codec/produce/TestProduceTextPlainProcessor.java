@@ -29,54 +29,54 @@ import com.fasterxml.jackson.databind.type.TypeFactory;
 import io.vertx.core.buffer.Buffer;
 
 public class TestProduceTextPlainProcessor {
-    ProduceProcessor pp = ProduceProcessorManager.PLAIN_PROCESSOR;
+  ProduceProcessor pp = ProduceProcessorManager.PLAIN_PROCESSOR;
 
-    JavaType stringType = TypeFactory.defaultInstance().constructType(String.class);
+  JavaType stringType = TypeFactory.defaultInstance().constructType(String.class);
 
-    @Test
-    public void testEncodeResponseNull() throws Exception {
-        Buffer buffer = pp.encodeResponse(null);
-        Assert.assertNull(buffer);
+  @Test
+  public void testEncodeResponseNull() throws Exception {
+    Buffer buffer = pp.encodeResponse(null);
+    Assert.assertNull(buffer);
 
-        ByteArrayOutputStream os = new ByteArrayOutputStream();
-        pp.encodeResponse(os, null);
-        Assert.assertEquals(0, os.size());
-    }
+    ByteArrayOutputStream os = new ByteArrayOutputStream();
+    pp.encodeResponse(os, null);
+    Assert.assertEquals(0, os.size());
+  }
 
-    @Test
-    public void testdecodeResponseNull() throws Exception {
-        JavaType resultType = TypeFactory.unknownType();
-        Object result = pp.decodeResponse(Buffer.buffer(), resultType);
-        Assert.assertNull(result);
+  @Test
+  public void testdecodeResponseNull() throws Exception {
+    JavaType resultType = TypeFactory.unknownType();
+    Object result = pp.decodeResponse(Buffer.buffer(), resultType);
+    Assert.assertNull(result);
 
-        ByteArrayInputStream is = new ByteArrayInputStream(new byte[] {});
-        result = pp.decodeResponse(is, resultType);
-        Assert.assertNull(result);
-    }
+    ByteArrayInputStream is = new ByteArrayInputStream(new byte[] {});
+    result = pp.decodeResponse(is, resultType);
+    Assert.assertNull(result);
+  }
 
-    @Test
-    public void testBufferNormal() throws Exception {
-        String value = "abc";
-        Buffer buffer = pp.encodeResponse(value);
-        Assert.assertEquals(value, buffer.toString(StandardCharsets.UTF_8));
+  @Test
+  public void testBufferNormal() throws Exception {
+    String value = "abc";
+    Buffer buffer = pp.encodeResponse(value);
+    Assert.assertEquals(value, buffer.toString(StandardCharsets.UTF_8));
 
-        Object result = pp.decodeResponse(buffer, stringType);
-        Assert.assertEquals(value, result);
-    }
+    Object result = pp.decodeResponse(buffer, stringType);
+    Assert.assertEquals(value, result);
+  }
 
-    @Test
-    public void testStreamNormal() throws Exception {
-        String value = "abc";
-        ByteArrayOutputStream os = new ByteArrayOutputStream();
+  @Test
+  public void testStreamNormal() throws Exception {
+    String value = "abc";
+    ByteArrayOutputStream os = new ByteArrayOutputStream();
 
-        pp.encodeResponse(os, value);
-        Assert.assertEquals(value, os.toString(StandardCharsets.UTF_8.name()));
+    pp.encodeResponse(os, value);
+    Assert.assertEquals(value, os.toString(StandardCharsets.UTF_8.name()));
 
-        ByteArrayInputStream is = new ByteArrayInputStream(os.toByteArray());
-        Object result = pp.decodeResponse(is, stringType);
-        Assert.assertEquals(value, result);
+    ByteArrayInputStream is = new ByteArrayInputStream(os.toByteArray());
+    Object result = pp.decodeResponse(is, stringType);
+    Assert.assertEquals(value, result);
 
-        os.close();
-        is.close();
-    }
+    os.close();
+    is.close();
+  }
 }

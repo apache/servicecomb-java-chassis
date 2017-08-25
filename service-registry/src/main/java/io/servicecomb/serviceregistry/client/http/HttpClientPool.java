@@ -20,7 +20,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import io.servicecomb.serviceregistry.config.ServiceRegistryConfig;
-
 import io.vertx.core.http.HttpClientOptions;
 import io.vertx.core.http.HttpVersion;
 
@@ -29,28 +28,28 @@ import io.vertx.core.http.HttpVersion;
  */
 public final class HttpClientPool extends AbstractClientPool {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(HttpClientPool.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(HttpClientPool.class);
 
-    public static final HttpClientPool INSTANCE = new HttpClientPool();
+  public static final HttpClientPool INSTANCE = new HttpClientPool();
 
-    private HttpClientPool() {
+  private HttpClientPool() {
+  }
+
+  @Override
+  public HttpClientOptions createHttpClientOptions() {
+    HttpVersion ver = ServiceRegistryConfig.INSTANCE.getHttpVersion();
+    HttpClientOptions httpClientOptions = new HttpClientOptions();
+    httpClientOptions.setProtocolVersion(ver);
+    httpClientOptions.setConnectTimeout(ServiceRegistryConfig.INSTANCE.getConnectionTimeout());
+    httpClientOptions.setIdleTimeout(ServiceRegistryConfig.INSTANCE.getIdleConnectionTimeout());
+    if (ver == HttpVersion.HTTP_2) {
+      LOGGER.debug("service center client protocol version is HTTP/2");
+      httpClientOptions.setHttp2ClearTextUpgrade(false);
     }
-
-    @Override
-    public HttpClientOptions createHttpClientOptions() {
-        HttpVersion ver = ServiceRegistryConfig.INSTANCE.getHttpVersion();
-        HttpClientOptions httpClientOptions = new HttpClientOptions();
-        httpClientOptions.setProtocolVersion(ver);
-        httpClientOptions.setConnectTimeout(ServiceRegistryConfig.INSTANCE.getConnectionTimeout());
-        httpClientOptions.setIdleTimeout(ServiceRegistryConfig.INSTANCE.getIdleConnectionTimeout());
-        if (ver == HttpVersion.HTTP_2) {
-            LOGGER.debug("service center client protocol version is HTTP/2");
-            httpClientOptions.setHttp2ClearTextUpgrade(false);
-        }
-        if (ServiceRegistryConfig.INSTANCE.isSsl()) {
-            LOGGER.debug("service center client performs requests over TLS");
-            buildSecureClientOptions(httpClientOptions);
-        }
-        return httpClientOptions;
+    if (ServiceRegistryConfig.INSTANCE.isSsl()) {
+      LOGGER.debug("service center client performs requests over TLS");
+      buildSecureClientOptions(httpClientOptions);
     }
+    return httpClientOptions;
+  }
 }

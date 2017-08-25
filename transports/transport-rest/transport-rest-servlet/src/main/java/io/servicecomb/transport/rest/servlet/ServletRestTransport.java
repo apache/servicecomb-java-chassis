@@ -16,6 +16,14 @@
 
 package io.servicecomb.transport.rest.servlet;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
+
 import io.servicecomb.core.Invocation;
 import io.servicecomb.core.transport.AbstractTransport;
 import io.servicecomb.foundation.common.net.URIEndpointObject;
@@ -23,62 +31,56 @@ import io.servicecomb.serviceregistry.api.Const;
 import io.servicecomb.swagger.invocation.AsyncResponse;
 import io.servicecomb.transport.rest.client.RestTransportClient;
 import io.servicecomb.transport.rest.client.RestTransportClientManager;
-import java.util.HashMap;
-import java.util.Map;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
 
 @Component
 public class ServletRestTransport extends AbstractTransport {
-    private static final Logger LOGGER = LoggerFactory.getLogger(ServletRestTransport.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(ServletRestTransport.class);
 
-    @Override
-    public String getName() {
-        return io.servicecomb.core.Const.RESTFUL;
+  @Override
+  public String getName() {
+    return io.servicecomb.core.Const.RESTFUL;
+  }
+
+  @Override
+  public boolean canInit() {
+    String listenAddress = ServletConfig.getLocalServerAddress();
+    if (listenAddress == null) {
+      // not publish, but can init and be RESTful client
+      return true;
     }
 
-    @Override
-    public boolean canInit() {
-        String listenAddress = ServletConfig.getLocalServerAddress();
-        if (listenAddress == null) {
-            // not publish, but can init and be RESTful client
-            return true;
-        }
-
-        if (!ServletUtils.canPublishEndpoint(listenAddress)) {
-            LOGGER.info("ignore transport {}.", this.getClass().getName());
-            return false;
-        }
-
-        return true;
+    if (!ServletUtils.canPublishEndpoint(listenAddress)) {
+      LOGGER.info("ignore transport {}.", this.getClass().getName());
+      return false;
     }
 
-    @Override
-    public boolean init() {
-        String urlPrefix = System.getProperty(Const.URL_PREFIX);
-        Map<String, String> queryMap = new HashMap<>();
-        if (!StringUtils.isEmpty(urlPrefix)) {
-            queryMap.put(Const.URL_PREFIX, urlPrefix);
-        }
+    return true;
+  }
 
-        String listenAddress = ServletConfig.getLocalServerAddress();
-        setListenAddressWithoutSchema(listenAddress, queryMap);
-
-        return deployClient();
+  @Override
+  public boolean init() {
+    String urlPrefix = System.getProperty(Const.URL_PREFIX);
+    Map<String, String> queryMap = new HashMap<>();
+    if (!StringUtils.isEmpty(urlPrefix)) {
+      queryMap.put(Const.URL_PREFIX, urlPrefix);
     }
 
-    private boolean deployClient() {
-        return RestTransportClientManager.INSTANCE.getRestTransportClient(true) != null &&
-                RestTransportClientManager.INSTANCE.getRestTransportClient(false) != null;
-    }
+    String listenAddress = ServletConfig.getLocalServerAddress();
+    setListenAddressWithoutSchema(listenAddress, queryMap);
 
-    @Override
-    public void send(Invocation invocation, AsyncResponse asyncResp) throws Exception {
-        URIEndpointObject endpoint = (URIEndpointObject) invocation.getEndpoint().getAddress();
-        RestTransportClient client =
-            RestTransportClientManager.INSTANCE.getRestTransportClient(endpoint.isSslEnabled());
-        client.send(invocation, asyncResp);
-    }
+    return deployClient();
+  }
+
+  private boolean deployClient() {
+    return RestTransportClientManager.INSTANCE.getRestTransportClient(true) != null &&
+        RestTransportClientManager.INSTANCE.getRestTransportClient(false) != null;
+  }
+
+  @Override
+  public void send(Invocation invocation, AsyncResponse asyncResp) throws Exception {
+    URIEndpointObject endpoint = (URIEndpointObject) invocation.getEndpoint().getAddress();
+    RestTransportClient client =
+        RestTransportClientManager.INSTANCE.getRestTransportClient(endpoint.isSslEnabled());
+    client.send(invocation, asyncResp);
+  }
 }

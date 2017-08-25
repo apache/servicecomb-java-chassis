@@ -30,27 +30,27 @@ import io.servicecomb.swagger.invocation.arguments.FieldInfo;
  * producer在处理时，需要将这些field取出来当作参数使用
  */
 public class SwaggerArgumentToProducerBodyField implements ArgumentMapper {
-    // key为producerArgs的下标
-    private Map<Integer, FieldInfo> fieldMap;
+  // key为producerArgs的下标
+  private Map<Integer, FieldInfo> fieldMap;
 
-    public SwaggerArgumentToProducerBodyField(Map<Integer, FieldInfo> fieldMap) {
-        this.fieldMap = fieldMap;
+  public SwaggerArgumentToProducerBodyField(Map<Integer, FieldInfo> fieldMap) {
+    this.fieldMap = fieldMap;
+  }
+
+  @Override
+  public void mapArgument(SwaggerInvocation invocation, Object[] producerArguments) {
+    Object body = invocation.getSwaggerArgument(0);
+
+    try {
+      for (Entry<Integer, FieldInfo> entry : fieldMap.entrySet()) {
+        FieldInfo info = entry.getValue();
+
+        Object fieldValue = info.getField().get(body);
+        Object producerParam = info.getConverter().convert(fieldValue);
+        producerArguments[entry.getKey()] = producerParam;
+      }
+    } catch (Throwable e) {
+      throw new Error(e);
     }
-
-    @Override
-    public void mapArgument(SwaggerInvocation invocation, Object[] producerArguments) {
-        Object body = invocation.getSwaggerArgument(0);
-
-        try {
-            for (Entry<Integer, FieldInfo> entry : fieldMap.entrySet()) {
-                FieldInfo info = entry.getValue();
-
-                Object fieldValue = info.getField().get(body);
-                Object producerParam = info.getConverter().convert(fieldValue);
-                producerArguments[entry.getKey()] = producerParam;
-            }
-        } catch (Throwable e) {
-            throw new Error(e);
-        }
-    }
+  }
 }

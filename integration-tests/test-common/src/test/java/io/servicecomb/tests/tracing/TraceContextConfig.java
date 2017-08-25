@@ -16,13 +16,14 @@
 
 package io.servicecomb.tests.tracing;
 
-import brave.internal.HexCodec;
-import brave.propagation.CurrentTraceContext;
-import brave.propagation.TraceContext;
 import org.apache.log4j.MDC;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
+
+import brave.internal.HexCodec;
+import brave.propagation.CurrentTraceContext;
+import brave.propagation.TraceContext;
 
 @Configuration
 class TraceContextConfig {
@@ -72,7 +73,8 @@ class TraceContextConfig {
 
       Scope scope = delegate.newScope(currentSpan);
       class MDCCurrentTraceContextScope implements Scope {
-        @Override public void close() {
+        @Override
+        public void close() {
           scope.close();
           if (previousTraceId != null) {
             MDC.put("traceId", previousTraceId);

@@ -25,20 +25,20 @@ import com.netflix.loadbalancer.ServerList;
  * 通过RegistryUtils查询服务器列表。 RegistryUtils本身具备缓存和刷新不可用服务器的功能，因此这里不需要进行列表缓存和状态检测。
  */
 public class CseServerList implements ServerList<Server> {
-    private ServerListCache serverListCache;
+  private ServerListCache serverListCache;
 
-    public CseServerList(String appId, String microserviceName, String microserviceVersionRule,
-            String transportName) {
-        serverListCache = new ServerListCache(appId, microserviceName, microserviceVersionRule, transportName);
-    }
+  public CseServerList(String appId, String microserviceName, String microserviceVersionRule,
+      String transportName) {
+    serverListCache = new ServerListCache(appId, microserviceName, microserviceVersionRule, transportName);
+  }
 
-    @Override
-    public List<Server> getInitialListOfServers() {
-        return serverListCache.getLatestEndpoints();
-    }
+  @Override
+  public List<Server> getInitialListOfServers() {
+    return serverListCache.getLatestEndpoints();
+  }
 
-    @Override
-    public List<Server> getUpdatedListOfServers() {
-        return getInitialListOfServers();
-    }
+  @Override
+  public List<Server> getUpdatedListOfServers() {
+    return getInitialListOfServers();
+  }
 }

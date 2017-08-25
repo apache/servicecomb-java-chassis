@@ -18,16 +18,15 @@ package io.servicecomb.foundation.ssl;
 
 public class MyOptionFactory implements SSLOptionFactory {
 
-    @Override
-    public SSLOption createSSLOption() {
-        SSLOption option = new SSLOption();
-        option.setProtocols("TLSv1.2");
-        option.setCiphers("TLS_RSA_WITH_AES_128_CBC_SHA256");
-        option.setAuthPeer(false);
-        option.setCheckCNHost(false);
-        option.setCheckCNWhite(false);
-        option.setCheckCNWhiteFile("white.list");
-        return option;
-    }
-
+  @Override
+  public SSLOption createSSLOption() {
+    SSLOption option = new SSLOption();
+    option.setProtocols("TLSv1.2");
+    option.setCiphers("TLS_RSA_WITH_AES_128_CBC_SHA256");
+    option.setAuthPeer(false);
+    option.setCheckCNHost(false);
+    option.setCheckCNWhite(false);
+    option.setCheckCNWhiteFile("white.list");
+    return option;
+  }
 }

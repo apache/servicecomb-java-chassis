@@ -16,6 +16,14 @@
 
 package io.servicecomb.config;
 
+import java.util.Arrays;
+import java.util.function.Consumer;
+import java.util.function.DoubleConsumer;
+import java.util.function.IntConsumer;
+import java.util.function.LongConsumer;
+
+import org.apache.commons.configuration.AbstractConfiguration;
+
 import com.netflix.config.ConcurrentCompositeConfiguration;
 import com.netflix.config.ConfigurationManager;
 import com.netflix.config.DynamicBooleanProperty;
@@ -25,12 +33,6 @@ import com.netflix.config.DynamicIntProperty;
 import com.netflix.config.DynamicLongProperty;
 import com.netflix.config.DynamicPropertyFactory;
 import com.netflix.config.DynamicStringProperty;
-import java.util.Arrays;
-import java.util.function.Consumer;
-import java.util.function.DoubleConsumer;
-import java.util.function.IntConsumer;
-import java.util.function.LongConsumer;
-import org.apache.commons.configuration.AbstractConfiguration;
 
 class DynamicPropertiesImpl implements DynamicProperties {
 

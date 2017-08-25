@@ -22,35 +22,34 @@ import java.util.Set;
 
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.type.TypeFactory;
-import io.servicecomb.swagger.converter.ConverterMgr;
 
+import io.servicecomb.swagger.converter.ConverterMgr;
 import io.swagger.models.Swagger;
 import io.swagger.models.properties.ArrayProperty;
 import io.swagger.models.properties.Property;
 
 public class ArrayPropertyConverter extends AbstractPropertyConverter {
-    public static JavaType findJavaType(ClassLoader classLoader, String packageName, Swagger swagger,
-            Property itemProperty,
-            Boolean uniqueItems) {
-        JavaType itemJavaType = ConverterMgr.findJavaType(classLoader, packageName, swagger, itemProperty);
+  public static JavaType findJavaType(ClassLoader classLoader, String packageName, Swagger swagger,
+      Property itemProperty,
+      Boolean uniqueItems) {
+    JavaType itemJavaType = ConverterMgr.findJavaType(classLoader, packageName, swagger, itemProperty);
 
-        @SuppressWarnings("rawtypes")
-        Class<? extends Collection> collectionClass = List.class;
-        if (Boolean.TRUE.equals(uniqueItems)) {
-            collectionClass = Set.class;
-        }
-        return TypeFactory.defaultInstance().constructCollectionType(collectionClass, itemJavaType);
-
+    @SuppressWarnings("rawtypes")
+    Class<? extends Collection> collectionClass = List.class;
+    if (Boolean.TRUE.equals(uniqueItems)) {
+      collectionClass = Set.class;
     }
+    return TypeFactory.defaultInstance().constructCollectionType(collectionClass, itemJavaType);
+  }
 
-    @Override
-    public JavaType doConvert(ClassLoader classLoader, String packageName, Swagger swagger, Object property) {
-        ArrayProperty arrayProperty = (ArrayProperty) property;
+  @Override
+  public JavaType doConvert(ClassLoader classLoader, String packageName, Swagger swagger, Object property) {
+    ArrayProperty arrayProperty = (ArrayProperty) property;
 
-        return findJavaType(classLoader,
-                packageName,
-                swagger,
-                arrayProperty.getItems(),
-                arrayProperty.getUniqueItems());
-    }
+    return findJavaType(classLoader,
+        packageName,
+        swagger,
+        arrayProperty.getItems(),
+        arrayProperty.getUniqueItems());
+  }
 }

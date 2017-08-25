@@ -35,34 +35,34 @@ import mockit.Deencapsulation;
  * Created by   on 2017/3/31.
  */
 public class TestServiceRegistryFactory {
-    @Test
-    public void testGetRemoteRegistryClient() {
-        EventBus eventBus = new EventBus();
-        ServiceRegistryConfig serviceRegistryConfig = ServiceRegistryConfig.INSTANCE;
-        MicroserviceDefinition microserviceDefinition = new MicroserviceDefinition(Collections.emptyList());
+  @Test
+  public void testGetRemoteRegistryClient() {
+    EventBus eventBus = new EventBus();
+    ServiceRegistryConfig serviceRegistryConfig = ServiceRegistryConfig.INSTANCE;
+    MicroserviceDefinition microserviceDefinition = new MicroserviceDefinition(Collections.emptyList());
 
-        ServiceRegistry serviceRegistry =
-            ServiceRegistryFactory.create(eventBus, serviceRegistryConfig, microserviceDefinition);
-        serviceRegistry.init();
-        ServiceRegistryClient client = serviceRegistry.getServiceRegistryClient();
-        Assert.assertTrue(client instanceof ServiceRegistryClientImpl);
+    ServiceRegistry serviceRegistry =
+        ServiceRegistryFactory.create(eventBus, serviceRegistryConfig, microserviceDefinition);
+    serviceRegistry.init();
+    ServiceRegistryClient client = serviceRegistry.getServiceRegistryClient();
+    Assert.assertTrue(client instanceof ServiceRegistryClientImpl);
 
-        serviceRegistry = ServiceRegistryFactory.getOrCreate(eventBus,
-                serviceRegistryConfig,
-                microserviceDefinition);
-        Assert.assertTrue(serviceRegistry instanceof RemoteServiceRegistry);
-        Assert.assertEquals(serviceRegistry, ServiceRegistryFactory.getServiceRegistry());
+    serviceRegistry = ServiceRegistryFactory.getOrCreate(eventBus,
+        serviceRegistryConfig,
+        microserviceDefinition);
+    Assert.assertTrue(serviceRegistry instanceof RemoteServiceRegistry);
+    Assert.assertEquals(serviceRegistry, ServiceRegistryFactory.getServiceRegistry());
 
-        Deencapsulation.setField(ServiceRegistryFactory.class, "serviceRegistry", null);
+    Deencapsulation.setField(ServiceRegistryFactory.class, "serviceRegistry", null);
 
-        System.setProperty("local.registry.file", "/tmp/test.yaml");
-        serviceRegistry = ServiceRegistryFactory.create(eventBus, serviceRegistryConfig, microserviceDefinition);
-        serviceRegistry.init();
-        client = serviceRegistry.getServiceRegistryClient();
-        Assert.assertTrue(client instanceof LocalServiceRegistryClientImpl);
-        Assert.assertTrue(ServiceRegistryFactory.getOrCreate(eventBus,
-                serviceRegistryConfig,
-                microserviceDefinition) instanceof LocalServiceRegistry);
-        System.clearProperty("local.registry.file");
-    }
+    System.setProperty("local.registry.file", "/tmp/test.yaml");
+    serviceRegistry = ServiceRegistryFactory.create(eventBus, serviceRegistryConfig, microserviceDefinition);
+    serviceRegistry.init();
+    client = serviceRegistry.getServiceRegistryClient();
+    Assert.assertTrue(client instanceof LocalServiceRegistryClientImpl);
+    Assert.assertTrue(ServiceRegistryFactory.getOrCreate(eventBus,
+        serviceRegistryConfig,
+        microserviceDefinition) instanceof LocalServiceRegistry);
+    System.clearProperty("local.registry.file");
+  }
 }

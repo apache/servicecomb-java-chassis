@@ -25,25 +25,25 @@ import io.servicecomb.foundation.common.config.PaaSResourceUtils;
 import io.servicecomb.foundation.common.config.impl.XmlLoaderUtils;
 
 public final class HandlerConfigUtils {
-    private HandlerConfigUtils() {
+  private HandlerConfigUtils() {
+  }
+
+  private static Config loadConfig() throws Exception {
+    Config config = new Config();
+
+    List<Resource> resList =
+        PaaSResourceUtils.getSortedResources("classpath*:config/cse.handler.xml", ".handler.xml");
+    for (Resource res : resList) {
+      Config tmpConfig = XmlLoaderUtils.load(res, Config.class);
+      config.mergeFrom(tmpConfig);
     }
 
-    private static Config loadConfig() throws Exception {
-        Config config = new Config();
+    return config;
+  }
 
-        List<Resource> resList =
-            PaaSResourceUtils.getSortedResources("classpath*:config/cse.handler.xml", ".handler.xml");
-        for (Resource res : resList) {
-            Config tmpConfig = XmlLoaderUtils.load(res, Config.class);
-            config.mergeFrom(tmpConfig);
-        }
-
-        return config;
-    }
-
-    public static void init() throws Exception {
-        Config config = loadConfig();
-        ConsumerHandlerManager.INSTANCE.init(config);
-        ProducerHandlerManager.INSTANCE.init(config);
-    }
+  public static void init() throws Exception {
+    Config config = loadConfig();
+    ConsumerHandlerManager.INSTANCE.init(config);
+    ProducerHandlerManager.INSTANCE.init(config);
+  }
 }

@@ -15,62 +15,65 @@
  */
 package io.servicecomb.springboot.starter.discovery;
 
-import com.netflix.client.config.IClientConfig;
-import com.netflix.loadbalancer.AbstractServerList;
 import java.util.List;
 
-import io.servicecomb.loadbalance.ServerListCache;
-import com.netflix.loadbalancer.Server;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.netflix.client.config.IClientConfig;
+import com.netflix.loadbalancer.AbstractServerList;
+import com.netflix.loadbalancer.Server;
+
+import io.servicecomb.loadbalance.ServerListCache;
+
 public class ServiceCombServerList extends AbstractServerList<Server> {
 
-	private static final Logger logger = LoggerFactory.getLogger(ServiceCombServerList.class);
+  private static final Logger logger = LoggerFactory.getLogger(ServiceCombServerList.class);
 
-	private final CseRoutesProperties config;
+  private final CseRoutesProperties config;
 
-	private ServerListCache serverListCache;
-	private String serviceId;
+  private ServerListCache serverListCache;
 
-	public ServiceCombServerList(CseRoutesProperties config) {
-		this.config = config;
-	}
+  private String serviceId;
 
-	@Override
-	public List<Server> getInitialListOfServers() {
-		return servers();
-	}
+  public ServiceCombServerList(CseRoutesProperties config) {
+    this.config = config;
+  }
 
-	@Override
-	public List<Server> getUpdatedListOfServers() {
-		return servers();
-	}
+  @Override
+  public List<Server> getInitialListOfServers() {
+    return servers();
+  }
 
-	private List<Server> servers() {
-		if (serverListCache == null) {
-			throw new ServiceCombDiscoveryException("Service list is not initialized");
-		}
+  @Override
+  public List<Server> getUpdatedListOfServers() {
+    return servers();
+  }
 
-		logger.info("Looking for service with app id: {}, service id: {}, version rule: {}",
-				config.getAppID(),
-				serviceId,
-				config.getVersionRule(serviceId));
+  private List<Server> servers() {
+    if (serverListCache == null) {
+      throw new ServiceCombDiscoveryException("Service list is not initialized");
+    }
 
-		List<Server> endpoints = serverListCache.getLatestEndpoints();
+    logger.info("Looking for service with app id: {}, service id: {}, version rule: {}",
+        config.getAppID(),
+        serviceId,
+        config.getVersionRule(serviceId));
 
-		logger.info("Found service endpoints {}", endpoints);
-		return endpoints;
-	}
+    List<Server> endpoints = serverListCache.getLatestEndpoints();
 
-	@Override
-	public void initWithNiwsConfig(IClientConfig iClientConfig) {
-		serviceId = iClientConfig.getClientName();
+    logger.info("Found service endpoints {}", endpoints);
+    return endpoints;
+  }
 
-		serverListCache = new CseServerListCacheWrapper(
-				config.getAppID(),
-				serviceId,
-				config.getVersionRule(serviceId),
-				"rest");
-	}
+  @Override
+  public void initWithNiwsConfig(IClientConfig iClientConfig) {
+    serviceId = iClientConfig.getClientName();
+
+    serverListCache = new CseServerListCacheWrapper(
+        config.getAppID(),
+        serviceId,
+        config.getVersionRule(serviceId),
+        "rest");
+  }
 }

@@ -31,47 +31,47 @@ import io.vertx.core.buffer.Buffer;
 import io.vertx.core.net.NetClient;
 
 public class HighwayClientConnection extends TcpClientConnection {
-    private static final Logger LOGGER = LoggerFactory.getLogger(HighwayClientConnection.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(HighwayClientConnection.class);
 
-    private ProtobufFeature protobufFeature = new ProtobufFeature();
+  private ProtobufFeature protobufFeature = new ProtobufFeature();
 
-    public HighwayClientConnection(Context context, NetClient netClient, String endpoint,
-            TcpClientConfig clientConfig) {
-        super(context, netClient, endpoint, clientConfig);
-        setLocalSupportLogin(true);
+  public HighwayClientConnection(Context context, NetClient netClient, String endpoint,
+      TcpClientConfig clientConfig) {
+    super(context, netClient, endpoint, clientConfig);
+    setLocalSupportLogin(true);
+  }
+
+  public ProtobufFeature getProtobufFeature() {
+    return protobufFeature;
+  }
+
+  @Override
+  protected TcpOutputStream createLogin() {
+    try {
+      RequestHeader header = new RequestHeader();
+      header.setMsgType(MsgType.LOGIN);
+
+      LoginRequest login = new LoginRequest();
+      login.setProtocol(HighwayTransport.NAME);
+      login.setUseProtobufMapCodec(true);
+
+      HighwayOutputStream os = new HighwayOutputStream(AbstractTcpClientPackage.getAndIncRequestId(), null);
+      os.write(header, LoginRequest.getLoginRequestSchema(), login);
+      return os;
+    } catch (Throwable e) {
+      throw new Error("impossible.", e);
     }
+  }
 
-    public ProtobufFeature getProtobufFeature() {
-        return protobufFeature;
+  @Override
+  protected boolean onLoginResponse(Buffer bodyBuffer) {
+    try {
+      LoginResponse response = LoginResponse.readObject(bodyBuffer);
+      protobufFeature.setUseProtobufMapCodec(response.isUseProtobufMapCodec());
+      return true;
+    } catch (Throwable e) {
+      LOGGER.error("decode login response failed.", e);
+      return false;
     }
-
-    @Override
-    protected TcpOutputStream createLogin() {
-        try {
-            RequestHeader header = new RequestHeader();
-            header.setMsgType(MsgType.LOGIN);
-
-            LoginRequest login = new LoginRequest();
-            login.setProtocol(HighwayTransport.NAME);
-            login.setUseProtobufMapCodec(true);
-
-            HighwayOutputStream os = new HighwayOutputStream(AbstractTcpClientPackage.getAndIncRequestId(), null);
-            os.write(header, LoginRequest.getLoginRequestSchema(), login);
-            return os;
-        } catch (Throwable e) {
-            throw new Error("impossible.", e);
-        }
-    }
-
-    @Override
-    protected boolean onLoginResponse(Buffer bodyBuffer) {
-        try {
-            LoginResponse response = LoginResponse.readObject(bodyBuffer);
-            protobufFeature.setUseProtobufMapCodec(response.isUseProtobufMapCodec());
-            return true;
-        } catch (Throwable e) {
-            LOGGER.error("decode login response failed.", e);
-            return false;
-        }
-    }
+  }
 }

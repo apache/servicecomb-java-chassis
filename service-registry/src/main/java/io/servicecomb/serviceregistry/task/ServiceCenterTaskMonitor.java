@@ -22,28 +22,32 @@ import org.slf4j.LoggerFactory;
  * monitor ServiceCenterTask status and print diagnosis data
  */
 public class ServiceCenterTaskMonitor {
-    private static final Logger LOGGER = LoggerFactory.getLogger(ServiceCenterTaskMonitor.class);
-    private static final long MAX_TIME_TAKEN = 1000;
-    private long beginTime = 0;
-    private long lastEndTime = 0;
-    private int interval = -1;
+  private static final Logger LOGGER = LoggerFactory.getLogger(ServiceCenterTaskMonitor.class);
 
-    public void beginCycle(int interval) {
-        this.beginTime = System.currentTimeMillis();
-        if (this.interval != interval) {
-            LOGGER.warn("sc task interval changed from {} to {}", this.interval, interval);
-            this.interval = interval;
-        } else {
-            if (this.beginTime - this.lastEndTime > interval * 1000 + MAX_TIME_TAKEN) {
-                LOGGER.warn("sc task postponed for {}ms for some reason.", this.beginTime - this.lastEndTime);
-            }
-        }
-    }
+  private static final long MAX_TIME_TAKEN = 1000;
 
-    public void endCycle() {
-        this.lastEndTime = System.currentTimeMillis();
-        if (this.lastEndTime - this.beginTime > MAX_TIME_TAKEN) {
-            LOGGER.warn("sc task taken more than {}ms to execute", this.lastEndTime - this.beginTime);
-        }
+  private long beginTime = 0;
+
+  private long lastEndTime = 0;
+
+  private int interval = -1;
+
+  public void beginCycle(int interval) {
+    this.beginTime = System.currentTimeMillis();
+    if (this.interval != interval) {
+      LOGGER.warn("sc task interval changed from {} to {}", this.interval, interval);
+      this.interval = interval;
+    } else {
+      if (this.beginTime - this.lastEndTime > interval * 1000 + MAX_TIME_TAKEN) {
+        LOGGER.warn("sc task postponed for {}ms for some reason.", this.beginTime - this.lastEndTime);
+      }
     }
+  }
+
+  public void endCycle() {
+    this.lastEndTime = System.currentTimeMillis();
+    if (this.lastEndTime - this.beginTime > MAX_TIME_TAKEN) {
+      LOGGER.warn("sc task taken more than {}ms to execute", this.lastEndTime - this.beginTime);
+    }
+  }
 }

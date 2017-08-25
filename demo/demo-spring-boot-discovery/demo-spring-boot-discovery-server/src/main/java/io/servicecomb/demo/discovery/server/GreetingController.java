@@ -16,20 +16,22 @@
 
 package io.servicecomb.demo.discovery.server;
 
-import io.servicecomb.provider.rest.common.RestSchema;
 import javax.ws.rs.core.MediaType;
+
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import io.servicecomb.provider.rest.common.RestSchema;
+
 @RestSchema(schemaId = "greeting")
 @RequestMapping(path = "/greeting", produces = MediaType.TEXT_PLAIN)
 public class GreetingController {
 
-    @RequestMapping(path = "/sayhello/{name}", method = RequestMethod.GET)
-    @ResponseBody
-    public String sayHello(@PathVariable("name") String name) {
-        return "hello " + name;
-    }
+  @RequestMapping(path = "/sayhello/{name}", method = RequestMethod.GET)
+  @ResponseBody
+  public String sayHello(@PathVariable("name") String name) {
+    return "hello " + name;
+  }
 }

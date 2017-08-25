@@ -16,10 +16,11 @@
 
 package io.servicecomb.demo.jaxrs.tests.endpoints;
 
-import io.servicecomb.demo.compute.Person;
-import io.servicecomb.demo.server.User;
 import java.util.Date;
 import java.util.Map;
+
+import io.servicecomb.demo.compute.Person;
+import io.servicecomb.demo.server.User;
 
 public interface SchemaFirstJaxrs {
 

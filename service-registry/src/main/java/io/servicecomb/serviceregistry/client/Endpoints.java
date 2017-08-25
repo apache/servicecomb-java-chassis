@@ -24,43 +24,43 @@ import io.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
  * Created by   on 2016/12/27.
  */
 public class Endpoints {
-    private String appId;
+  private String appId;
 
-    private String serviceName;
+  private String serviceName;
 
-    private String version;
+  private String version;
 
-    private List<MicroserviceInstance> instances;
+  private List<MicroserviceInstance> instances;
 
-    public String getServiceName() {
-        return serviceName;
-    }
+  public String getServiceName() {
+    return serviceName;
+  }
 
-    public void setServiceName(String serviceName) {
-        this.serviceName = serviceName;
-    }
+  public void setServiceName(String serviceName) {
+    this.serviceName = serviceName;
+  }
 
-    public List<MicroserviceInstance> getInstances() {
-        return instances;
-    }
+  public List<MicroserviceInstance> getInstances() {
+    return instances;
+  }
 
-    public void setInstances(List<MicroserviceInstance> instances) {
-        this.instances = instances;
-    }
+  public void setInstances(List<MicroserviceInstance> instances) {
+    this.instances = instances;
+  }
 
-    public String getVersion() {
-        return version;
-    }
+  public String getVersion() {
+    return version;
+  }
 
-    public void setVersion(String version) {
-        this.version = version;
-    }
+  public void setVersion(String version) {
+    this.version = version;
+  }
 
-    public String getAppId() {
-        return appId;
-    }
+  public String getAppId() {
+    return appId;
+  }
 
-    public void setAppId(String appId) {
-        this.appId = appId;
-    }
+  public void setAppId(String appId) {
+    this.appId = appId;
+  }
 }

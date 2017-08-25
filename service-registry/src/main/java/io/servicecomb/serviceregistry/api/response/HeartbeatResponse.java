@@ -20,23 +20,23 @@ package io.servicecomb.serviceregistry.api.response;
  * Created by   on 2017/3/13.
  */
 public class HeartbeatResponse {
-    private boolean ok;
+  private boolean ok;
 
-    private String message;
+  private String message;
 
-    public boolean isOk() {
-        return ok;
-    }
+  public boolean isOk() {
+    return ok;
+  }
 
-    public void setOk(boolean ok) {
-        this.ok = ok;
-    }
+  public void setOk(boolean ok) {
+    this.ok = ok;
+  }
 
-    public String getMessage() {
-        return message;
-    }
+  public String getMessage() {
+    return message;
+  }
 
-    public void setMessage(String message) {
-        this.message = message;
-    }
+  public void setMessage(String message) {
+    this.message = message;
+  }
 }

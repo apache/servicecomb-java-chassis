@@ -17,6 +17,6 @@
 package io.servicecomb.swagger.invocation;
 
 public enum InvocationType {
-    CONSUMER,
-    PRODUCER
+  CONSUMER,
+  PRODUCER
 }

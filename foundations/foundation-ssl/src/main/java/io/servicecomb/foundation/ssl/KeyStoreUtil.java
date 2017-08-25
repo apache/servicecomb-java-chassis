@@ -33,84 +33,84 @@ import javax.net.ssl.TrustManager;
 import javax.net.ssl.TrustManagerFactory;
 
 public final class KeyStoreUtil {
-    private KeyStoreUtil() {
+  private KeyStoreUtil() {
 
-    }
+  }
 
-    public static KeyStore createKeyStore(String storename, String storetype,
-            char[] storevalue) {
-        InputStream is = null;
+  public static KeyStore createKeyStore(String storename, String storetype,
+      char[] storevalue) {
+    InputStream is = null;
+    try {
+      KeyStore keystore = KeyStore.getInstance(storetype);
+      is = new FileInputStream(storename);
+      keystore.load(is, storevalue);
+      return keystore;
+    } catch (Exception e) {
+      throw new IllegalArgumentException("Bad key store or value."
+          + e.getMessage());
+    } finally {
+      if (is != null) {
         try {
-            KeyStore keystore = KeyStore.getInstance(storetype);
-            is = new FileInputStream(storename);
-            keystore.load(is, storevalue);
-            return keystore;
-        } catch (Exception e) {
-            throw new IllegalArgumentException("Bad key store or value."
-                    + e.getMessage());
-        } finally {
-            if (is != null) {
-                try {
-                    is.close();
-                } catch (IOException e) {
-                    ignore();
-                }
-            }
+          is.close();
+        } catch (IOException e) {
+          ignore();
         }
+      }
     }
+  }
 
-    @SuppressWarnings({"rawtypes", "unchecked"})
-    public static CRL[] createCRL(String crlfile) {
-        InputStream is = null;
+  @SuppressWarnings({"rawtypes", "unchecked"})
+  public static CRL[] createCRL(String crlfile) {
+    InputStream is = null;
+    try {
+      CertificateFactory cf = CertificateFactory.getInstance("X.509");
+      is = new FileInputStream(crlfile);
+      Collection c = cf.generateCRLs(is);
+      CRL[] crls = (CRL[]) c.toArray(new CRL[c.size()]);
+      return crls;
+    } catch (CertificateException e) {
+      throw new IllegalArgumentException("bad cert file.");
+    } catch (FileNotFoundException e) {
+      throw new IllegalArgumentException("crl file not found.");
+    } catch (CRLException e) {
+      throw new IllegalArgumentException("bad crl file.");
+    } finally {
+      if (is != null) {
         try {
-            CertificateFactory cf = CertificateFactory.getInstance("X.509");
-            is = new FileInputStream(crlfile);
-            Collection c = cf.generateCRLs(is);
-            CRL[] crls = (CRL[]) c.toArray(new CRL[c.size()]);
-            return crls;
-        } catch (CertificateException e) {
-            throw new IllegalArgumentException("bad cert file.");
-        } catch (FileNotFoundException e) {
-            throw new IllegalArgumentException("crl file not found.");
-        } catch (CRLException e) {
-            throw new IllegalArgumentException("bad crl file.");
-        } finally {
-            if (is != null) {
-                try {
-                    is.close();
-                } catch (IOException e) {
-                    ignore();
-                }
-            }
+          is.close();
+        } catch (IOException e) {
+          ignore();
         }
+      }
     }
+  }
 
-    public static KeyManager[] createKeyManagers(final KeyStore keystore,
-            char[] keyvalue) {
-        try {
-            KeyManagerFactory kmfactory =
-                KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
-            kmfactory.init(keystore, keyvalue);
-            return kmfactory.getKeyManagers();
-        } catch (Exception e) {
-            throw new IllegalArgumentException("Bad key store."
-                    + e.getMessage());
-        }
+  public static KeyManager[] createKeyManagers(final KeyStore keystore,
+      char[] keyvalue) {
+    try {
+      KeyManagerFactory kmfactory =
+          KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
+      kmfactory.init(keystore, keyvalue);
+      return kmfactory.getKeyManagers();
+    } catch (Exception e) {
+      throw new IllegalArgumentException("Bad key store."
+          + e.getMessage());
     }
+  }
 
-    public static TrustManager[] createTrustManagers(final KeyStore keystore) {
-        try {
-            TrustManagerFactory tmfactory =
-                TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
-            tmfactory.init(keystore);
-            TrustManager[] trustmanagers = tmfactory.getTrustManagers();
-            return trustmanagers;
-        } catch (Exception e) {
-            throw new IllegalArgumentException("Bad trust store."
-                    + e.getMessage());
-        }
+  public static TrustManager[] createTrustManagers(final KeyStore keystore) {
+    try {
+      TrustManagerFactory tmfactory =
+          TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
+      tmfactory.init(keystore);
+      TrustManager[] trustmanagers = tmfactory.getTrustManagers();
+      return trustmanagers;
+    } catch (Exception e) {
+      throw new IllegalArgumentException("Bad trust store."
+          + e.getMessage());
     }
+  }
 
-    private static void ignore() {
-    };
+  private static void ignore() {
+  }
 }

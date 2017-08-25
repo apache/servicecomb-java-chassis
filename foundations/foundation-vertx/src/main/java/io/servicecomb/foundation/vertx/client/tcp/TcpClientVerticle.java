@@ -17,8 +17,8 @@ package io.servicecomb.foundation.vertx.client.tcp;
 
 public class TcpClientVerticle extends AbstractTcpClientVerticle<TcpClientConnection, TcpClientConnectionPool> {
 
-    @Override
-    public TcpClientConnectionPool createClientPool() {
-        return new TcpClientConnectionPool(clientConfig, context, netClient);
-    }
+  @Override
+  public TcpClientConnectionPool createClientPool() {
+    return new TcpClientConnectionPool(clientConfig, context, netClient);
+  }
 }

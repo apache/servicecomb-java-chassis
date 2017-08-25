@@ -32,52 +32,51 @@ import org.springframework.util.ReflectionUtils;
  *
  */
 public final class SPIServiceUtils {
-    private static final Logger LOGGER = LoggerFactory.getLogger(SPIServiceUtils.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(SPIServiceUtils.class);
 
-    private SPIServiceUtils() {
+  private SPIServiceUtils() {
 
+  }
+
+  /**
+   * get target service.if target services are array,only random access to a service.
+   */
+  public static <T> T getTargetService(Class<T> serviceType) {
+    ServiceLoader<T> loader = ServiceLoader.load(serviceType);
+    Iterator<T> targetServices = loader.iterator();
+    while (targetServices.hasNext()) {
+      T service = targetServices.next();
+      LOGGER.info("get the SPI service success, the extend service is: {}", service.getClass());
+      return service;
+    }
+    LOGGER.info("Can not get the SPI service, the interface type is: {}", serviceType.toString());
+    return null;
+  }
+
+  public static <T> List<T> getAllService(Class<T> serviceType) {
+    List<T> list = new ArrayList<>();
+    ServiceLoader.load(serviceType).forEach(service -> {
+      list.add(service);
+    });
+    return list;
+  }
+
+  public static <T> T getPriorityHighestService(Class<T> serviceType) {
+    String methodName = "getOrder";
+    Method getOrder = ReflectionUtils.findMethod(serviceType, methodName);
+    if (getOrder == null) {
+      throw new Error(String.format("method %s not exists in class %s", methodName, serviceType.getName()));
     }
 
-    /**
-     * get target service.if target services are array,only random access to a service.
-     */
-    public static <T> T getTargetService(Class<T> serviceType) {
-        ServiceLoader<T> loader = ServiceLoader.load(serviceType);
-        Iterator<T> targetServices = loader.iterator();
-        while (targetServices.hasNext()) {
-            T service = targetServices.next();
-            LOGGER.info("get the SPI service success, the extend service is: {}", service.getClass());
-            return service;
-        }
-        LOGGER.info("Can not get the SPI service, the interface type is: {}", serviceType.toString());
-        return null;
+    int order = Integer.MAX_VALUE;
+    T highestService = null;
+    for (T service : getAllService(serviceType)) {
+      int serviceOrder = (int) ReflectionUtils.invokeMethod(getOrder, service);
+      if (serviceOrder <= order) {
+        order = serviceOrder;
+        highestService = service;
+      }
     }
-
-    public static <T> List<T> getAllService(Class<T> serviceType) {
-        List<T> list = new ArrayList<>();
-        ServiceLoader.load(serviceType).forEach(service -> {
-            list.add(service);
-        });
-        return list;
-    }
-
-    public static <T> T getPriorityHighestService(Class<T> serviceType) {
-        String methodName = "getOrder";
-        Method getOrder = ReflectionUtils.findMethod(serviceType, methodName);
-        if (getOrder == null) {
-            throw new Error(String.format("method %s not exists in class %s", methodName, serviceType.getName()));
-        }
-
-        int order = Integer.MAX_VALUE;
-        T highestService = null;
-        for (T service : getAllService(serviceType)) {
-            int serviceOrder = (int) ReflectionUtils.invokeMethod(getOrder, service);
-            if (serviceOrder <= order) {
-                order = serviceOrder;
-                highestService = service;
-            }
-        }
-        return highestService;
-    }
-
+    return highestService;
+  }
 }

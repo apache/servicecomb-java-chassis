@@ -19,21 +19,20 @@ package io.servicecomb.swagger.generator.springmvc.processor.parameter;
 import io.servicecomb.swagger.generator.core.DefaultParameterProcessor;
 import io.servicecomb.swagger.generator.core.OperationGenerator;
 import io.servicecomb.swagger.generator.core.utils.ParamUtils;
-
 import io.swagger.models.parameters.QueryParameter;
 
 public class SpringmvcDefaultParameterProcessor implements DefaultParameterProcessor {
 
-    @Override
-    public void process(OperationGenerator operationGenerator, int paramIdx) {
-        String paramName = ParamUtils.getParameterName(operationGenerator.getProviderMethod(), paramIdx);
+  @Override
+  public void process(OperationGenerator operationGenerator, int paramIdx) {
+    String paramName = ParamUtils.getParameterName(operationGenerator.getProviderMethod(), paramIdx);
 
-        QueryParameter queryParameter = new QueryParameter();
-        queryParameter.setName(paramName);
-        ParamUtils.setParameterType(operationGenerator.getSwagger(),
-                operationGenerator.getProviderMethod(),
-                paramIdx,
-                queryParameter);
-        operationGenerator.addProviderParameter(queryParameter);
-    }
+    QueryParameter queryParameter = new QueryParameter();
+    queryParameter.setName(paramName);
+    ParamUtils.setParameterType(operationGenerator.getSwagger(),
+        operationGenerator.getProviderMethod(),
+        paramIdx,
+        queryParameter);
+    operationGenerator.addProviderParameter(queryParameter);
+  }
 }

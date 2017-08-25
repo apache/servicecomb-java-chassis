@@ -18,11 +18,12 @@ package io.servicecomb.demo.springmvc.tests.endpoints;
 
 import static org.springframework.http.MediaType.TEXT_PLAIN_VALUE;
 
-import io.servicecomb.provider.rest.common.RestSchema;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+
+import io.servicecomb.provider.rest.common.RestSchema;
 
 @RestSchema(schemaId = "englishGreetingRestEndpoint")
 @RequestMapping(path = "/")

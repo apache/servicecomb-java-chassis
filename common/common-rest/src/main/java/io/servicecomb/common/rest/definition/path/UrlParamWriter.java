@@ -17,5 +17,5 @@
 package io.servicecomb.common.rest.definition.path;
 
 public interface UrlParamWriter {
-    void write(StringBuilder builder, Object[] args) throws Exception;
+  void write(StringBuilder builder, Object[] args) throws Exception;
 }

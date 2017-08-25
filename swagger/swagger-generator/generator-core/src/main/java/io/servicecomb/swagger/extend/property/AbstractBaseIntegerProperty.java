@@ -27,107 +27,107 @@ import io.swagger.models.properties.BaseIntegerProperty;
  * to avoid so many repeated code.
  */
 public abstract class AbstractBaseIntegerProperty<T> extends BaseIntegerProperty {
-    protected T defaultValue;
+  protected T defaultValue;
 
-    protected List<T> enumNames;
+  protected List<T> enumNames;
 
-    public AbstractBaseIntegerProperty(String format) {
-        super(format);
+  public AbstractBaseIntegerProperty(String format) {
+    super(format);
+  }
+
+  public AbstractBaseIntegerProperty<T> addEnum(T value) {
+    if (this.enumNames == null) {
+      this.enumNames = new ArrayList<T>();
     }
-
-    public AbstractBaseIntegerProperty<T> addEnum(T value) {
-        if (this.enumNames == null) {
-            this.enumNames = new ArrayList<T>();
-        }
-        if (!enumNames.contains(value)) {
-            enumNames.add(value);
-        }
-        return this;
+    if (!enumNames.contains(value)) {
+      enumNames.add(value);
     }
+    return this;
+  }
 
-    public AbstractBaseIntegerProperty<T> replaceEnum(List<T> value) {
-        this.enumNames = value;
-        return this;
+  public AbstractBaseIntegerProperty<T> replaceEnum(List<T> value) {
+    this.enumNames = value;
+    return this;
+  }
+
+  public AbstractBaseIntegerProperty<T> xml(Xml xml) {
+    this.setXml(xml);
+    return this;
+  }
+
+  public AbstractBaseIntegerProperty<T> readOnly() {
+    this.setReadOnly(Boolean.TRUE);
+    return this;
+  }
+
+  protected abstract T parseNumber(String strValue);
+
+  public AbstractBaseIntegerProperty<T> assignDefault(String defaultValue) {
+    if (defaultValue != null) {
+      try {
+        this.defaultValue = parseNumber(defaultValue);
+      } catch (NumberFormatException e) {
+        // continue;
+      }
     }
+    return this;
+  }
 
-    public AbstractBaseIntegerProperty<T> xml(Xml xml) {
-        this.setXml(xml);
-        return this;
+  public AbstractBaseIntegerProperty<T> assignDefault(T defaultValue) {
+    this.setDefault(defaultValue);
+    return this;
+  }
+
+  public AbstractBaseIntegerProperty<T> vendorExtension(String key, Object obj) {
+    this.setVendorExtension(key, obj);
+    return this;
+  }
+
+  public T getDefault() {
+    return defaultValue;
+  }
+
+  public void setDefault(String defaultValue) {
+    this.assignDefault(defaultValue);
+  }
+
+  public void setDefault(T defaultValue) {
+    this.defaultValue = defaultValue;
+  }
+
+  public List<T> getEnum() {
+    return enumNames;
+  }
+
+  public void setEnum(List<T> enums) {
+    this.enumNames = enums;
+  }
+
+  @Override
+  public int hashCode() {
+    final int prime = 31;
+    int result = super.hashCode();
+    result = prime * result + ((defaultValue == null) ? 0 : defaultValue.hashCode());
+    return result;
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    if (!super.equals(obj)) {
+      return false;
     }
-
-    public AbstractBaseIntegerProperty<T> readOnly() {
-        this.setReadOnly(Boolean.TRUE);
-        return this;
+    if (!(obj instanceof AbstractBaseIntegerProperty)) {
+      return false;
     }
-
-    protected abstract T parseNumber(String strValue);
-
-    public AbstractBaseIntegerProperty<T> assignDefault(String defaultValue) {
-        if (defaultValue != null) {
-            try {
-                this.defaultValue = parseNumber(defaultValue);
-            } catch (NumberFormatException e) {
-                // continue;
-            }
-        }
-        return this;
+    @SuppressWarnings("unchecked")
+    AbstractBaseIntegerProperty<T> other = (AbstractBaseIntegerProperty<T>) obj;
+    if (defaultValue == null) {
+      if (other.defaultValue != null) {
+        return false;
+      }
+    } else if (!defaultValue.equals(other.defaultValue)) {
+      return false;
     }
-
-    public AbstractBaseIntegerProperty<T> assignDefault(T defaultValue) {
-        this.setDefault(defaultValue);
-        return this;
-    }
-
-    public AbstractBaseIntegerProperty<T> vendorExtension(String key, Object obj) {
-        this.setVendorExtension(key, obj);
-        return this;
-    }
-
-    public T getDefault() {
-        return defaultValue;
-    }
-
-    public void setDefault(String defaultValue) {
-        this.assignDefault(defaultValue);
-    }
-
-    public void setDefault(T defaultValue) {
-        this.defaultValue = defaultValue;
-    }
-
-    public List<T> getEnum() {
-        return enumNames;
-    }
-
-    public void setEnum(List<T> enums) {
-        this.enumNames = enums;
-    }
-
-    @Override
-    public int hashCode() {
-        final int prime = 31;
-        int result = super.hashCode();
-        result = prime * result + ((defaultValue == null) ? 0 : defaultValue.hashCode());
-        return result;
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (!super.equals(obj)) {
-            return false;
-        }
-        if (!(obj instanceof AbstractBaseIntegerProperty)) {
-            return false;
-        }
-        @SuppressWarnings("unchecked")
-        AbstractBaseIntegerProperty<T> other = (AbstractBaseIntegerProperty<T>) obj;
-        if (defaultValue == null) {
-            if (other.defaultValue != null) {
-                return false;
-            }
-        } else if (!defaultValue.equals(other.defaultValue)) {
-            return false;
-        }
-        return true;
-    }
+    return true;
+  }
 }

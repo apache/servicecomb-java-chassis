@@ -34,106 +34,106 @@ import io.servicecomb.config.ConfigUtil;
 import io.servicecomb.config.archaius.sources.ConfigModel;
 
 public class MicroserviceDefinition {
-    private static final Logger LOGGER = LoggerFactory.getLogger(MicroserviceDefinition.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(MicroserviceDefinition.class);
 
-    // microservice maybe combined from many microservices
-    // if a and b combined to ab, then combinedFrom value is a,b
-    // if not combined, just only one microservice, then combinedFrom is empty
-    private Set<String> combinedFrom = new HashSet<>();
+  // microservice maybe combined from many microservices
+  // if a and b combined to ab, then combinedFrom value is a,b
+  // if not combined, just only one microservice, then combinedFrom is empty
+  private Set<String> combinedFrom = new HashSet<>();
 
-    private List<ConfigModel> configModels;
+  private List<ConfigModel> configModels;
 
-    private Configuration configuration;
+  private Configuration configuration;
 
-    private String microserviceName;
+  private String microserviceName;
 
-    public String getMicroserviceName() {
-        return microserviceName;
+  public String getMicroserviceName() {
+    return microserviceName;
+  }
+
+  public static MicroserviceDefinition create(String appId, String microserviceName) {
+    ConfigModel configModel = createConfigModel(appId, microserviceName);
+    return new MicroserviceDefinition(Arrays.asList(configModel));
+  }
+
+  public static ConfigModel createConfigModel(String appId, String microserviceName) {
+    Map<String, Object> descMap = new HashMap<>();
+    descMap.put(DefinitionConst.nameKey, microserviceName);
+
+    Map<String, Object> config = new HashMap<>();
+    config.put(DefinitionConst.appIdKey, appId);
+    config.put(DefinitionConst.serviceDescriptionKey, descMap);
+
+    ConfigModel configModel = new ConfigModel();
+    configModel.setConfig(config);
+    return configModel;
+  }
+
+  public MicroserviceDefinition(List<ConfigModel> configModels) {
+    if (configModels == null) {
+      configModels = Collections.emptyList();
     }
 
-    public static MicroserviceDefinition create(String appId, String microserviceName) {
-        ConfigModel configModel = createConfigModel(appId, microserviceName);
-        return new MicroserviceDefinition(Arrays.asList(configModel));
+    this.configModels = configModels;
+    this.configuration = ConfigUtil.createLocalConfig(configModels);
+    this.microserviceName =
+        configuration.getString(DefinitionConst.qulifiedServiceNameKey, DefinitionConst.defaultMicroserviceName);
+
+    // log paths first, even microserviceName is invalid, this can help user to find problems
+    logConfigPath();
+    checkMicroserviceName(microserviceName);
+
+    initCombinedFrom(configModels);
+  }
+
+  public Set<String> getCombinedFrom() {
+    return combinedFrom;
+  }
+
+  private void initCombinedFrom(List<ConfigModel> configModels) {
+    for (ConfigModel model : configModels) {
+      Configuration conf = ConfigUtil.createLocalConfig(Arrays.asList(model));
+      String name =
+          conf.getString(DefinitionConst.qulifiedServiceNameKey, DefinitionConst.defaultMicroserviceName);
+      if (!StringUtils.isEmpty(name)) {
+        checkMicroserviceName(name);
+        combinedFrom.add(name);
+      }
     }
 
-    public static ConfigModel createConfigModel(String appId, String microserviceName) {
-        Map<String, Object> descMap = new HashMap<>();
-        descMap.put(DefinitionConst.nameKey, microserviceName);
+    combinedFrom.remove(microserviceName);
+  }
 
-        Map<String, Object> config = new HashMap<>();
-        config.put(DefinitionConst.appIdKey, appId);
-        config.put(DefinitionConst.serviceDescriptionKey, descMap);
-
-        ConfigModel configModel = new ConfigModel();
-        configModel.setConfig(config);
-        return configModel;
+  private void checkMicroserviceName(String name) {
+    // the configuration we used
+    // when resolve placeholder failed
+    // the result will remains ${var}
+    if (StringUtils.isEmpty(name) || name.indexOf("${") != -1) {
+      throw new IllegalArgumentException(String.format(
+          "MicroserviceName '%s' is invalid. you must configure '%s' or set the placeholder value.",
+          name,
+          DefinitionConst.qulifiedServiceNameKey));
     }
+  }
 
-    public MicroserviceDefinition(List<ConfigModel> configModels) {
-        if (configModels == null) {
-            configModels = Collections.emptyList();
-        }
-
-        this.configModels = configModels;
-        this.configuration = ConfigUtil.createLocalConfig(configModels);
-        this.microserviceName =
-            configuration.getString(DefinitionConst.qulifiedServiceNameKey, DefinitionConst.defaultMicroserviceName);
-
-        // log paths first, even microserviceName is invalid, this can help user to find problems
-        logConfigPath();
-        checkMicroserviceName(microserviceName);
-
-        initCombinedFrom(configModels);
+  // microserviceName maybe null
+  public void logConfigPath() {
+    List<String> pathList = new ArrayList<>();
+    for (ConfigModel configModel : configModels) {
+      if (configModel.getUrl() != null) {
+        pathList.add(configModel.getUrl().toString());
+      }
     }
+    LOGGER.info("load microservice config, name={}, paths={}",
+        microserviceName,
+        pathList);
+  }
 
-    public Set<String> getCombinedFrom() {
-        return combinedFrom;
-    }
+  public List<ConfigModel> getConfigModels() {
+    return configModels;
+  }
 
-    private void initCombinedFrom(List<ConfigModel> configModels) {
-        for (ConfigModel model : configModels) {
-            Configuration conf = ConfigUtil.createLocalConfig(Arrays.asList(model));
-            String name =
-                conf.getString(DefinitionConst.qulifiedServiceNameKey, DefinitionConst.defaultMicroserviceName);
-            if (!StringUtils.isEmpty(name)) {
-                checkMicroserviceName(name);
-                combinedFrom.add(name);
-            }
-        }
-
-        combinedFrom.remove(microserviceName);
-    }
-
-    private void checkMicroserviceName(String name) {
-        // the configuration we used
-        // when resolve placeholder failed
-        // the result will remains ${var}
-        if (StringUtils.isEmpty(name) || name.indexOf("${") != -1) {
-            throw new IllegalArgumentException(String.format(
-                    "MicroserviceName '%s' is invalid. you must configure '%s' or set the placeholder value.",
-                    name,
-                    DefinitionConst.qulifiedServiceNameKey));
-        }
-    }
-
-    // microserviceName maybe null
-    public void logConfigPath() {
-        List<String> pathList = new ArrayList<>();
-        for (ConfigModel configModel : configModels) {
-            if (configModel.getUrl() != null) {
-                pathList.add(configModel.getUrl().toString());
-            }
-        }
-        LOGGER.info("load microservice config, name={}, paths={}",
-                microserviceName,
-                pathList);
-    }
-
-    public List<ConfigModel> getConfigModels() {
-        return configModels;
-    }
-
-    public Configuration getConfiguration() {
-        return configuration;
-    }
+  public Configuration getConfiguration() {
+    return configuration;
+  }
 }

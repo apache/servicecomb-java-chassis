@@ -17,11 +17,11 @@
 package io.servicecomb.swagger.extend;
 
 public final class ExtendConst {
-    private ExtendConst() {
+  private ExtendConst() {
 
-    }
+  }
 
-    public static final String EXT_JAVA_INTF = "x-java-interface";
+  public static final String EXT_JAVA_INTF = "x-java-interface";
 
-    public static final String EXT_JAVA_CLASS = "x-java-class";
+  public static final String EXT_JAVA_CLASS = "x-java-class";
 }

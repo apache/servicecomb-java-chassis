@@ -13,7 +13,7 @@
     * See the License for the specific language governing permissions and
     * limitations under the License.
     */
-  
+
 package io.servicecomb.loadbalance;
 
 import com.netflix.loadbalancer.Server;
@@ -26,15 +26,15 @@ import io.servicecomb.core.Invocation;
  *
  */
 public interface ServerListFilterExt extends ServerListFilter<Server> {
-    default void setName(String name) {
+  default void setName(String name) {
 
-    }
+  }
 
-    default void setLoadBalancer(LoadBalancer lb) {
+  default void setLoadBalancer(LoadBalancer lb) {
 
-    }
+  }
 
-    default void setInvocation(Invocation invocation) {
+  default void setInvocation(Invocation invocation) {
 
-    }
+  }
 }

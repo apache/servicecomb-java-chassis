@@ -22,13 +22,12 @@ import io.vertx.core.Vertx;
 
 public class VertxWorkerExecutor implements Executor {
 
-    @Override
-    public void execute(Runnable command) {
-        Vertx.currentContext().owner().executeBlocking(future -> {
-            command.run();
-        },
-                false,
-                null);
-    }
-
+  @Override
+  public void execute(Runnable command) {
+    Vertx.currentContext().owner().executeBlocking(future -> {
+      command.run();
+    },
+        false,
+        null);
+  }
 }

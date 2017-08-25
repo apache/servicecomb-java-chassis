@@ -27,55 +27,55 @@ import io.servicecomb.swagger.invocation.Response;
 import io.servicecomb.swagger.invocation.SwaggerInvocation;
 
 public class LocalProducerInvoker implements InvocationHandler {
-    private Object proxy;
+  private Object proxy;
 
-    private SwaggerConsumer consumer;
+  private SwaggerConsumer consumer;
 
-    private SwaggerProducer producer;
+  private SwaggerProducer producer;
 
-    private SwaggerInvocation invocation;
+  private SwaggerInvocation invocation;
 
-    private Response producerResponse;
+  private Response producerResponse;
 
-    public LocalProducerInvoker(SwaggerConsumer consumer, SwaggerProducer producer) {
-        this.consumer = consumer;
-        this.producer = producer;
+  public LocalProducerInvoker(SwaggerConsumer consumer, SwaggerProducer producer) {
+    this.consumer = consumer;
+    this.producer = producer;
 
-        proxy = Proxy.newProxyInstance(consumer.getConsumerIntf().getClassLoader(),
-                new Class<?>[] {consumer.getConsumerIntf()},
-                this);
-    }
+    proxy = Proxy.newProxyInstance(consumer.getConsumerIntf().getClassLoader(),
+        new Class<?>[] {consumer.getConsumerIntf()},
+        this);
+  }
 
-    @SuppressWarnings("unchecked")
-    public <T> T getProxy() {
-        return (T) proxy;
-    }
+  @SuppressWarnings("unchecked")
+  public <T> T getProxy() {
+    return (T) proxy;
+  }
 
-    public SwaggerInvocation getInvocation() {
-        return invocation;
-    }
+  public SwaggerInvocation getInvocation() {
+    return invocation;
+  }
 
-    public <T> T getSwaggerArgument(int idx) {
-        return invocation.getSwaggerArgument(idx);
-    }
+  public <T> T getSwaggerArgument(int idx) {
+    return invocation.getSwaggerArgument(idx);
+  }
 
-    public <T> T getContext(String key) {
-        return invocation.getContext(key);
-    }
+  public <T> T getContext(String key) {
+    return invocation.getContext(key);
+  }
 
-    public Response getProducerResponse() {
-        return producerResponse;
-    }
+  public Response getProducerResponse() {
+    return producerResponse;
+  }
 
-    @Override
-    public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-        invocation = new SwaggerInvocation();
+  @Override
+  public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+    invocation = new SwaggerInvocation();
 
-        SwaggerConsumerOperation consumerOp = consumer.findOperation(method.getName());
-        SwaggerProducerOperation producerOp = producer.findOperation(method.getName());
+    SwaggerConsumerOperation consumerOp = consumer.findOperation(method.getName());
+    SwaggerProducerOperation producerOp = producer.findOperation(method.getName());
 
-        consumerOp.getArgumentsMapper().toInvocation(args, invocation);
-        producerResponse = producerOp.doInvoke(invocation);
-        return consumerOp.getResponseMapper().mapResponse(producerResponse);
-    }
+    consumerOp.getArgumentsMapper().toInvocation(args, invocation);
+    producerResponse = producerOp.doInvoke(invocation);
+    return consumerOp.getResponseMapper().mapResponse(producerResponse);
+  }
 }

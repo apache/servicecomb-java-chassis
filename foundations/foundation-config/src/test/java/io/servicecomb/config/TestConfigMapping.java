@@ -27,22 +27,20 @@ import org.junit.Test;
  * Created by   on 2017/1/5.
  */
 public class TestConfigMapping {
-    @Test
-    public void testMapping() {
-        String value = ConfigMapping.map("eureka.client.serviceUrl.defaultZone");
-        Map<String, Object> m = ConfigMapping.getMapping();
-        assertEquals(value, "registry.client.serviceUrl.defaultZone");
-        assertNotNull(m);
+  @Test
+  public void testMapping() {
+    String value = ConfigMapping.map("eureka.client.serviceUrl.defaultZone");
+    Map<String, Object> m = ConfigMapping.getMapping();
+    assertEquals(value, "registry.client.serviceUrl.defaultZone");
+    assertNotNull(m);
+  }
 
-    }
-
-    @Test
-    public void testConvertedMap() {
-        String value = ConfigMapping.map("eureka.client.serviceUrl.defaultZone");
-        Map<String, Object> m = ConfigMapping.getMapping();
-        Map<String, Object> m1 = ConfigMapping.getConvertedMap(m);
-        assertEquals(value, "registry.client.serviceUrl.defaultZone");
-        assertNotNull(m1);
-
-    }
+  @Test
+  public void testConvertedMap() {
+    String value = ConfigMapping.map("eureka.client.serviceUrl.defaultZone");
+    Map<String, Object> m = ConfigMapping.getMapping();
+    Map<String, Object> m1 = ConfigMapping.getConvertedMap(m);
+    assertEquals(value, "registry.client.serviceUrl.defaultZone");
+    assertNotNull(m1);
+  }
 }

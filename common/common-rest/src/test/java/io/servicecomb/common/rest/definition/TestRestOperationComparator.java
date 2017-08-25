@@ -22,54 +22,54 @@ import org.junit.Test;
 import io.servicecomb.common.rest.locator.MicroservicePaths;
 
 public class TestRestOperationComparator {
-    @Test
-    public void testStaticCharCount() {
-        RestOperationMeta less = new RestOperationMeta();
-        less.setAbsolutePath("/a/{id}");
+  @Test
+  public void testStaticCharCount() {
+    RestOperationMeta less = new RestOperationMeta();
+    less.setAbsolutePath("/a/{id}");
 
-        RestOperationMeta more = new RestOperationMeta();
-        more.setAbsolutePath("/abc/{id}");
+    RestOperationMeta more = new RestOperationMeta();
+    more.setAbsolutePath("/abc/{id}");
 
-        MicroservicePaths paths = new MicroservicePaths();
-        paths.addResource(less);
-        paths.addResource(more);
-        paths.sortPath();
+    MicroservicePaths paths = new MicroservicePaths();
+    paths.addResource(less);
+    paths.addResource(more);
+    paths.sortPath();
 
-        Assert.assertSame(more, paths.getDynamicPathOperationList().get(0));
-        Assert.assertSame(less, paths.getDynamicPathOperationList().get(1));
-    }
+    Assert.assertSame(more, paths.getDynamicPathOperationList().get(0));
+    Assert.assertSame(less, paths.getDynamicPathOperationList().get(1));
+  }
 
-    @Test
-    public void testVarGroupCount() {
-        RestOperationMeta less = new RestOperationMeta();
-        less.setAbsolutePath("/ab/{id}");
+  @Test
+  public void testVarGroupCount() {
+    RestOperationMeta less = new RestOperationMeta();
+    less.setAbsolutePath("/ab/{id}");
 
-        RestOperationMeta more = new RestOperationMeta();
-        more.setAbsolutePath("/a/{test}/{id}");
+    RestOperationMeta more = new RestOperationMeta();
+    more.setAbsolutePath("/a/{test}/{id}");
 
-        MicroservicePaths paths = new MicroservicePaths();
-        paths.addResource(less);
-        paths.addResource(more);
-        paths.sortPath();
+    MicroservicePaths paths = new MicroservicePaths();
+    paths.addResource(less);
+    paths.addResource(more);
+    paths.sortPath();
 
-        Assert.assertSame(more, paths.getDynamicPathOperationList().get(0));
-        Assert.assertSame(less, paths.getDynamicPathOperationList().get(1));
-    }
+    Assert.assertSame(more, paths.getDynamicPathOperationList().get(0));
+    Assert.assertSame(less, paths.getDynamicPathOperationList().get(1));
+  }
 
-    @Test
-    public void testGroupWithRegExpCount() {
-        RestOperationMeta less = new RestOperationMeta();
-        less.setAbsolutePath("/a/{test}/{id}");
+  @Test
+  public void testGroupWithRegExpCount() {
+    RestOperationMeta less = new RestOperationMeta();
+    less.setAbsolutePath("/a/{test}/{id}");
 
-        RestOperationMeta more = new RestOperationMeta();
-        more.setAbsolutePath("/a/{test : .+}/{id}");
+    RestOperationMeta more = new RestOperationMeta();
+    more.setAbsolutePath("/a/{test : .+}/{id}");
 
-        MicroservicePaths paths = new MicroservicePaths();
-        paths.addResource(less);
-        paths.addResource(more);
-        paths.sortPath();
+    MicroservicePaths paths = new MicroservicePaths();
+    paths.addResource(less);
+    paths.addResource(more);
+    paths.sortPath();
 
-        Assert.assertSame(more, paths.getDynamicPathOperationList().get(0));
-        Assert.assertSame(less, paths.getDynamicPathOperationList().get(1));
-    }
+    Assert.assertSame(more, paths.getDynamicPathOperationList().get(0));
+    Assert.assertSame(less, paths.getDynamicPathOperationList().get(1));
+  }
 }

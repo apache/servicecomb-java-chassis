@@ -19,12 +19,11 @@ package io.servicecomb.bizkeeper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import io.servicecomb.core.Invocation;
-import io.servicecomb.swagger.invocation.Response;
-
 import com.netflix.hystrix.HystrixObservableCommand;
 import com.netflix.hystrix.strategy.concurrency.HystrixRequestContext;
 
+import io.servicecomb.core.Invocation;
+import io.servicecomb.swagger.invocation.Response;
 import rx.Observable;
 
 /**
@@ -32,78 +31,78 @@ import rx.Observable;
  *
  */
 public abstract class BizkeeperCommand extends HystrixObservableCommand<Response> {
-    private static final Logger LOG = LoggerFactory.getLogger(BizkeeperCommand.class);
+  private static final Logger LOG = LoggerFactory.getLogger(BizkeeperCommand.class);
 
-    private final Invocation invocation;
+  private final Invocation invocation;
 
-    private final String type;
+  private final String type;
 
-    protected BizkeeperCommand(String type, Invocation invocation, HystrixObservableCommand.Setter setter) {
-        super(setter);
-        this.type = type;
-        this.invocation = invocation;
+  protected BizkeeperCommand(String type, Invocation invocation, HystrixObservableCommand.Setter setter) {
+    super(setter);
+    this.type = type;
+    this.invocation = invocation;
+  }
+
+  @Override
+  protected String getCacheKey() {
+    if (HystrixRequestContext.isCurrentThreadInitialized()) {
+      StringBuilder sb = new StringBuilder();
+      sb.append(this.getCommandGroup().name());
+      sb.append("-");
+      sb.append(this.getCommandKey().name());
+      return sb.toString();
+    } else {
+      return super.getCacheKey();
     }
+  }
 
-    @Override
-    protected String getCacheKey() {
-        if (HystrixRequestContext.isCurrentThreadInitialized()) {
-            StringBuilder sb = new StringBuilder();
-            sb.append(this.getCommandGroup().name());
-            sb.append("-");
-            sb.append(this.getCommandKey().name());
-            return sb.toString();
+  @Override
+  protected Observable<Response> resumeWithFallback() {
+    Observable<Response> observable = Observable.create(f -> {
+      LOG.info("fallback called.");
+      try {
+        if (Configuration.FALLBACKPOLICY_POLICY_RETURN
+            .equals(Configuration.INSTANCE.getFallbackPolicyPolicy(type,
+                invocation.getMicroserviceName(),
+                invocation.getOperationMeta().getMicroserviceQualifiedName()))) {
+          f.onNext(Response.succResp(null));
         } else {
-            return super.getCacheKey();
+          f.onNext(Response.failResp(invocation.getInvocationType(),
+              BizkeeperExceptionUtils
+                  .createBizkeeperException(BizkeeperExceptionUtils.CSE_HANDLER_BK_FALLBACK,
+                      null,
+                      invocation.getOperationMeta().getMicroserviceQualifiedName())));
         }
+        f.onCompleted();
+      } catch (Exception e) {
+        LOG.warn("fallbacke failed due to:" + e.getMessage());
+        throw e;
+      }
+    });
+    return observable;
+  }
 
-    }
-
-    @Override
-    protected Observable<Response> resumeWithFallback() {
-        Observable<Response> observable = Observable.create(f -> {
-            LOG.info("fallback called.");
-            try {
-                if (Configuration.FALLBACKPOLICY_POLICY_RETURN
-                        .equals(Configuration.INSTANCE.getFallbackPolicyPolicy(type,
-                                invocation.getMicroserviceName(),
-                                invocation.getOperationMeta().getMicroserviceQualifiedName()))) {
-                    f.onNext(Response.succResp(null));
-                } else {
-                    f.onNext(Response.failResp(invocation.getInvocationType(), BizkeeperExceptionUtils
-                            .createBizkeeperException(BizkeeperExceptionUtils.CSE_HANDLER_BK_FALLBACK,
-                                    null,
-                                    invocation.getOperationMeta().getMicroserviceQualifiedName())));
-                }
-                f.onCompleted();
-            } catch (Exception e) {
-                LOG.warn("fallbacke failed due to:" + e.getMessage());
-                throw e;
-            }
+  @Override
+  protected Observable<Response> construct() {
+    Observable<Response> observable = Observable.create(f -> {
+      try {
+        invocation.next(resp -> {
+          if (isFailedResponse(resp)) {
+            // e should implements toString
+            LOG.warn("bizkeeper command failed due to:" + resp.getResult());
+            f.onError(resp.getResult());
+          } else {
+            f.onNext(resp);
+            f.onCompleted();
+          }
         });
-        return observable;
-    }
+      } catch (Exception e) {
+        LOG.warn("bizkeeper command execute failed due to:" + e.getClass().getName());
+        f.onError(e);
+      }
+    });
+    return observable;
+  }
 
-    @Override
-    protected Observable<Response> construct() {
-        Observable<Response> observable = Observable.create(f -> {
-            try {
-                invocation.next(resp -> {
-                    if (isFailedResponse(resp)) {
-                        // e should implements toString
-                        LOG.warn("bizkeeper command failed due to:" + resp.getResult());
-                        f.onError(resp.getResult());
-                    } else {
-                        f.onNext(resp);
-                        f.onCompleted();
-                    }
-                });
-            } catch (Exception e) {
-                LOG.warn("bizkeeper command execute failed due to:" + e.getClass().getName());
-                f.onError(e);
-            }
-        });
-        return observable;
-    }
-
-    protected abstract boolean isFailedResponse(Response resp);
+  protected abstract boolean isFailedResponse(Response resp);
 }

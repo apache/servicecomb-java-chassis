@@ -35,105 +35,105 @@ import io.servicecomb.foundation.common.utils.Log4jUtils;
 import io.servicecomb.provider.springmvc.reference.RestTemplateBuilder;
 
 public class SpringmvcClient {
-    private static RestTemplate restTemplate;
+  private static RestTemplate restTemplate;
 
-    private static Controller controller;
+  private static Controller controller;
 
-    public static void main(String[] args) throws Exception {
-        Log4jUtils.init();
-        BeanUtils.init();
+  public static void main(String[] args) throws Exception {
+    Log4jUtils.init();
+    BeanUtils.init();
 
-        run();
+    run();
 
-        TestMgr.summary();
+    TestMgr.summary();
+  }
+
+  public static void run() throws Exception {
+    restTemplate = RestTemplateBuilder.create();
+    controller = BeanUtils.getBean("controller");
+
+    String prefix = "cse://springmvc";
+
+    try {
+      // this test class is intended for rery hang issue JAV-27
+      restTemplate.getForObject(prefix + "/controller/sayhi?name=throwexception", String.class);
+      TestMgr.check("true", "false");
+    } catch (Exception e) {
+      TestMgr.check("true", "true");
     }
 
-    public static void run() throws Exception {
-        restTemplate = RestTemplateBuilder.create();
-        controller = BeanUtils.getBean("controller");
+    CodeFirstRestTemplateSpringmvc codeFirstClient =
+        BeanUtils.getContext().getBean(CodeFirstRestTemplateSpringmvc.class);
+    codeFirstClient.testCodeFirst(restTemplate, "springmvc", "/codeFirstSpringmvc/");
 
-        String prefix = "cse://springmvc";
+    String microserviceName = "springmvc";
+    for (String transport : DemoConst.transports) {
+      CseContext.getInstance().getConsumerProviderManager().setTransport(microserviceName, transport);
+      TestMgr.setMsg(microserviceName, transport);
 
-        try {
-            // this test class is intended for rery hang issue JAV-27
-            restTemplate.getForObject(prefix + "/controller/sayhi?name=throwexception", String.class);
-            TestMgr.check("true", "false");
-        } catch (Exception e) {
-            TestMgr.check("true", "true");
-        }
+      testController(restTemplate, microserviceName);
 
-        CodeFirstRestTemplateSpringmvc codeFirstClient =
-            BeanUtils.getContext().getBean(CodeFirstRestTemplateSpringmvc.class);
-        codeFirstClient.testCodeFirst(restTemplate, "springmvc", "/codeFirstSpringmvc/");
-
-        String microserviceName = "springmvc";
-        for (String transport : DemoConst.transports) {
-            CseContext.getInstance().getConsumerProviderManager().setTransport(microserviceName, transport);
-            TestMgr.setMsg(microserviceName, transport);
-
-            testController(restTemplate, microserviceName);
-
-            testController();
-        }
+      testController();
     }
+  }
 
-    private static void testController(RestTemplate template, String microserviceName) {
-        String prefix = "cse://" + microserviceName;
+  private static void testController(RestTemplate template, String microserviceName) {
+    String prefix = "cse://" + microserviceName;
 
-        TestMgr.check("hi world [world]",
-                template.getForObject(prefix + "/controller/sayhi?name=world",
-                        String.class));
+    TestMgr.check("hi world [world]",
+        template.getForObject(prefix + "/controller/sayhi?name=world",
+            String.class));
 
-        TestMgr.check("hi world1 [world1]",
-                template.getForObject(prefix + "/controller/sayhi?name={name}",
-                        String.class,
-                        "world1"));
-        TestMgr.check("hi hi 中国 [hi 中国]",
-                template.getForObject(prefix + "/controller/sayhi?name={name}",
-                        String.class,
-                        "hi 中国"));
+    TestMgr.check("hi world1 [world1]",
+        template.getForObject(prefix + "/controller/sayhi?name={name}",
+            String.class,
+            "world1"));
+    TestMgr.check("hi hi 中国 [hi 中国]",
+        template.getForObject(prefix + "/controller/sayhi?name={name}",
+            String.class,
+            "hi 中国"));
 
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "world2");
-        TestMgr.check("hi world2 [world2]",
-                template.getForObject(prefix + "/controller/sayhi?name={name}",
-                        String.class,
-                        params));
+    Map<String, String> params = new HashMap<>();
+    params.put("name", "world2");
+    TestMgr.check("hi world2 [world2]",
+        template.getForObject(prefix + "/controller/sayhi?name={name}",
+            String.class,
+            params));
 
-        TestMgr.check("hello world",
-                template.postForObject(prefix + "/controller/sayhello/{name}",
-                        null,
-                        String.class,
-                        "world"));
-        TestMgr.check("hello hello 中国",
-                template.postForObject(prefix + "/controller/sayhello/{name}",
-                        null,
-                        String.class,
-                        "hello 中国"));
+    TestMgr.check("hello world",
+        template.postForObject(prefix + "/controller/sayhello/{name}",
+            null,
+            String.class,
+            "world"));
+    TestMgr.check("hello hello 中国",
+        template.postForObject(prefix + "/controller/sayhello/{name}",
+            null,
+            String.class,
+            "hello 中国"));
 
-        HttpHeaders headers = new HttpHeaders();
-        headers.add("name", "world");
-        @SuppressWarnings("rawtypes")
-        HttpEntity entity = new HttpEntity<>(null, headers);
-        ResponseEntity<String> response = template.exchange(prefix + "/controller/sayhei",
-                HttpMethod.GET,
-                entity,
-                String.class);
-        TestMgr.check("hei world", response.getBody());
+    HttpHeaders headers = new HttpHeaders();
+    headers.add("name", "world");
+    @SuppressWarnings("rawtypes")
+    HttpEntity entity = new HttpEntity<>(null, headers);
+    ResponseEntity<String> response = template.exchange(prefix + "/controller/sayhei",
+        HttpMethod.GET,
+        entity,
+        String.class);
+    TestMgr.check("hei world", response.getBody());
 
-        Person user = new Person();
-        user.setName("world");
-        TestMgr.check("ha world",
-                template.postForObject(prefix + "/controller/saysomething?prefix={prefix}",
-                        user,
-                        String.class,
-                        "ha"));
-    }
+    Person user = new Person();
+    user.setName("world");
+    TestMgr.check("ha world",
+        template.postForObject(prefix + "/controller/saysomething?prefix={prefix}",
+            user,
+            String.class,
+            "ha"));
+  }
 
-    private static void testController() {
-        TestMgr.check("hi world [world]", controller.sayHi("world"));
-        Person user = new Person();
-        user.setName("world");
-        TestMgr.check("ha world", controller.saySomething("ha", user));
-    }
+  private static void testController() {
+    TestMgr.check("hi world [world]", controller.sayHi("world"));
+    Person user = new Person();
+    user.setName("world");
+    TestMgr.check("ha world", controller.saySomething("ha", user));
+  }
 }

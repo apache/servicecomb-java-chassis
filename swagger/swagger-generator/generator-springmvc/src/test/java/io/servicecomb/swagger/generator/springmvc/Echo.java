@@ -28,44 +28,44 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
 @RequestMapping(
-        path = "Echo",
-        method = {RequestMethod.PUT},
-        consumes = {"a", "b"},
-        produces = {"a", "b"})
+    path = "Echo",
+    method = {RequestMethod.PUT},
+    consumes = {"a", "b"},
+    produces = {"a", "b"})
 public class Echo {
-    @RequestMapping
-    public ResponseEntity<List<User>> testResponseEntity() {
-        return null;
-    }
+  @RequestMapping
+  public ResponseEntity<List<User>> testResponseEntity() {
+    return null;
+  }
 
-    @RequestMapping
-    public void emptyPath() {
+  @RequestMapping
+  public void emptyPath() {
 
-    }
+  }
 
-    @RequestMapping(
-            path = "echo/{targetName}",
-            method = {RequestMethod.POST},
-            consumes = {"text/plain", "application/*"},
-            produces = {"text/plain", "application/*"})
-    public String echo(@RequestBody User srcUser, @RequestHeader String header, @PathVariable String targetName,
-            @RequestParam(name = "word") String word, @RequestAttribute String form) {
-        return String.format("%s %s %s %s %s", srcUser.name, header, targetName, word, form);
-    }
+  @RequestMapping(
+      path = "echo/{targetName}",
+      method = {RequestMethod.POST},
+      consumes = {"text/plain", "application/*"},
+      produces = {"text/plain", "application/*"})
+  public String echo(@RequestBody User srcUser, @RequestHeader String header, @PathVariable String targetName,
+      @RequestParam(name = "word") String word, @RequestAttribute String form) {
+    return String.format("%s %s %s %s %s", srcUser.name, header, targetName, word, form);
+  }
 
-    @RequestMapping(method = {RequestMethod.GET, RequestMethod.POST})
-    public void multiHttpMethod() {
-    }
+  @RequestMapping(method = {RequestMethod.GET, RequestMethod.POST})
+  public void multiHttpMethod() {
+  }
 
-    @RequestMapping(path = "query")
-    public void defaultParam(int query) {
-    }
+  @RequestMapping(path = "query")
+  public void defaultParam(int query) {
+  }
 
-    @RequestMapping(path = {"a", "b"})
-    public void multiPath(int query) {
-    }
+  @RequestMapping(path = {"a", "b"})
+  public void multiPath(int query) {
+  }
 
-    @RequestMapping
-    public void inheritHttpMethod(int query) {
-    }
+  @RequestMapping
+  public void inheritHttpMethod(int query) {
+  }
 }

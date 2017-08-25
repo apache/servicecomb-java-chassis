@@ -23,10 +23,9 @@ import io.servicecomb.foundation.common.RegisterManager;
  * 存放具有相同path，不同httpmethod的operation
  */
 public class OperationGroup extends RegisterManager<String, RestOperationMeta> {
-    private static final String NAME = "operation group manager";
+  private static final String NAME = "operation group manager";
 
-    public OperationGroup() {
-        super(NAME);
-    }
-
+  public OperationGroup() {
+    super(NAME);
+  }
 }

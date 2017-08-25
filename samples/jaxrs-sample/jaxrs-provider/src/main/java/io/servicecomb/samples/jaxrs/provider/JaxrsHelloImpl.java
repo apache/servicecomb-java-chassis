@@ -44,5 +44,4 @@ public class JaxrsHelloImpl implements Hello {
   public String sayHello(Person person) {
     return "Hello person " + person.getName();
   }
-
 }

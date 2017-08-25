@@ -18,22 +18,21 @@ package io.servicecomb.transport.rest.vertx;
 
 import io.servicecomb.swagger.invocation.SwaggerInvocation;
 import io.servicecomb.swagger.invocation.arguments.producer.AbstractProducerContextArgMapper;
-
 import io.vertx.core.http.HttpServerRequest;
 
 /**
  * 使用vertx http request构造其他各种http request
  */
 public class ProducerVertxHttpRequestArgMapper extends AbstractProducerContextArgMapper {
-    private HttpServerRequest httpRequest;
+  private HttpServerRequest httpRequest;
 
-    public ProducerVertxHttpRequestArgMapper(HttpServerRequest httpRequest) {
-        super(-1);
-        this.httpRequest = httpRequest;
-    }
+  public ProducerVertxHttpRequestArgMapper(HttpServerRequest httpRequest) {
+    super(-1);
+    this.httpRequest = httpRequest;
+  }
 
-    @Override
-    public Object createContextArg(SwaggerInvocation invocation) {
-        return new VertxToServletMockRequest(httpRequest);
-    }
+  @Override
+  public Object createContextArg(SwaggerInvocation invocation) {
+    return new VertxToServletMockRequest(httpRequest);
+  }
 }

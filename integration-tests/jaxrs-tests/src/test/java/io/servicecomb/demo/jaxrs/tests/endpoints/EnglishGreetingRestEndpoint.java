@@ -18,11 +18,12 @@ package io.servicecomb.demo.jaxrs.tests.endpoints;
 
 import static javax.ws.rs.core.MediaType.TEXT_PLAIN;
 
-import io.servicecomb.provider.rest.common.RestSchema;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
+
+import io.servicecomb.provider.rest.common.RestSchema;
 
 @RestSchema(schemaId = "englishGreetingRestEndpoint")
 @Path("/")

@@ -21,49 +21,48 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import io.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import io.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
 import io.servicecomb.serviceregistry.api.registry.MicroserviceInstanceStatus;
 
 public class TestInstanceCache {
-    private static InstanceCache instanceCache = null;
+  private static InstanceCache instanceCache = null;
 
-    @BeforeClass
-    public static void beforeClass() {
-        MicroserviceInstance instance = new MicroserviceInstance();
-        instance.setStatus(MicroserviceInstanceStatus.UP);
-        List<String> endpoints = new ArrayList<>();
-        endpoints.add("rest://127.0.0.1:8080");
-        instance.setEndpoints(endpoints);
-        instance.setInstanceId("1");
+  @BeforeClass
+  public static void beforeClass() {
+    MicroserviceInstance instance = new MicroserviceInstance();
+    instance.setStatus(MicroserviceInstanceStatus.UP);
+    List<String> endpoints = new ArrayList<>();
+    endpoints.add("rest://127.0.0.1:8080");
+    instance.setEndpoints(endpoints);
+    instance.setInstanceId("1");
 
-        Map<String, MicroserviceInstance> instMap = new HashMap<>();
-        instMap.put(instance.getInstanceId(), instance);
-        instanceCache = new InstanceCache("testAppID", "testMicroServiceName", "1.0", instMap);
-    }
+    Map<String, MicroserviceInstance> instMap = new HashMap<>();
+    instMap.put(instance.getInstanceId(), instance);
+    instanceCache = new InstanceCache("testAppID", "testMicroServiceName", "1.0", instMap);
+  }
 
-    @Test
-    public void testGetMethod() {
-        Assert.assertEquals("testAppID", instanceCache.getAppId());
-        Assert.assertEquals("testMicroServiceName", instanceCache.getMicroserviceName());
-        Assert.assertEquals("1.0", instanceCache.getMicroserviceVersionRule());
-        Assert.assertNotNull(instanceCache.getInstanceMap());
-    }
+  @Test
+  public void testGetMethod() {
+    Assert.assertEquals("testAppID", instanceCache.getAppId());
+    Assert.assertEquals("testMicroServiceName", instanceCache.getMicroserviceName());
+    Assert.assertEquals("1.0", instanceCache.getMicroserviceVersionRule());
+    Assert.assertNotNull(instanceCache.getInstanceMap());
+  }
 
-    @Test
-    public void testGetOrCreateTransportMap() {
-        Map<String, List<CacheEndpoint>> transportMap = instanceCache.getOrCreateTransportMap();
-        Assert.assertEquals(1, transportMap.size());
-    }
+  @Test
+  public void testGetOrCreateTransportMap() {
+    Map<String, List<CacheEndpoint>> transportMap = instanceCache.getOrCreateTransportMap();
+    Assert.assertEquals(1, transportMap.size());
+  }
 
-    @Test
-    public void testCacheChanged() {
-        InstanceCache newCache =
-            new InstanceCache("testAppID", "testMicroServiceName", "1.0", instanceCache.getInstanceMap());
-        Assert.assertTrue(instanceCache.cacheChanged(newCache));
-    }
-
+  @Test
+  public void testCacheChanged() {
+    InstanceCache newCache =
+        new InstanceCache("testAppID", "testMicroServiceName", "1.0", instanceCache.getInstanceMap());
+    Assert.assertTrue(instanceCache.cacheChanged(newCache));
+  }
 }

@@ -25,33 +25,32 @@ import io.servicecomb.codec.protobuf.utils.schema.NormalWrapSchema;
 import io.servicecomb.core.definition.OperationMeta;
 import io.servicecomb.core.definition.SchemaMeta;
 import io.servicecomb.core.unittest.UnitTestMeta;
-
 import io.swagger.annotations.ApiResponse;
 
 public class TestOperationProtobuf {
-    class Impl {
-        @ApiResponse(code = 300, response = String.class, message = "")
-        public int test(int x) {
-            return 100;
-        }
+  class Impl {
+    @ApiResponse(code = 300, response = String.class, message = "")
+    public int test(int x) {
+      return 100;
     }
+  }
 
-    @Test
-    public void testOperationProtobuf() throws Exception {
-        UnitTestMeta meta = new UnitTestMeta();
-        SchemaMeta schemaMeta = meta.getOrCreateSchemaMeta(Impl.class);
-        OperationMeta operationMeta = schemaMeta.findOperation("test");
+  @Test
+  public void testOperationProtobuf() throws Exception {
+    UnitTestMeta meta = new UnitTestMeta();
+    SchemaMeta schemaMeta = meta.getOrCreateSchemaMeta(Impl.class);
+    OperationMeta operationMeta = schemaMeta.findOperation("test");
 
-        OperationProtobuf operationProtobuf = ProtobufManager.getOrCreateOperation(operationMeta);
-        Assert.assertEquals(operationMeta, operationProtobuf.getOperationMeta());
-        Assert.assertEquals(ArgsNotWrapSchema.class, operationProtobuf.getRequestSchema().getClass());
-        Assert.assertEquals(NormalWrapSchema.class, operationProtobuf.getResponseSchema().getClass());
+    OperationProtobuf operationProtobuf = ProtobufManager.getOrCreateOperation(operationMeta);
+    Assert.assertEquals(operationMeta, operationProtobuf.getOperationMeta());
+    Assert.assertEquals(ArgsNotWrapSchema.class, operationProtobuf.getRequestSchema().getClass());
+    Assert.assertEquals(NormalWrapSchema.class, operationProtobuf.getResponseSchema().getClass());
 
-        WrapSchema responseSchema = operationProtobuf.findResponseSchema(200);
-        Assert.assertEquals(operationProtobuf.getResponseSchema(), responseSchema);
+    WrapSchema responseSchema = operationProtobuf.findResponseSchema(200);
+    Assert.assertEquals(operationProtobuf.getResponseSchema(), responseSchema);
 
-        responseSchema = operationProtobuf.findResponseSchema(300);
-        Assert.assertNotNull(responseSchema);
-        Assert.assertNotEquals(operationProtobuf.getResponseSchema(), responseSchema);
-    }
+    responseSchema = operationProtobuf.findResponseSchema(300);
+    Assert.assertNotNull(responseSchema);
+    Assert.assertNotEquals(operationProtobuf.getResponseSchema(), responseSchema);
+  }
 }

@@ -42,80 +42,80 @@ import io.servicecomb.serviceregistry.registry.ServiceRegistryFactory;
 import io.servicecomb.swagger.invocation.Response;
 
 public class TestCseClientHttpRequest {
-    @Before
-    public void setup() {
-        ReferenceConfigUtils.setReady(true);
+  @Before
+  public void setup() {
+    ReferenceConfigUtils.setReady(true);
+  }
+
+  @After
+  public void teardown() {
+    ReferenceConfigUtils.setReady(false);
+  }
+
+  @RequestMapping(path = "SpringmvcImpl")
+  static class SpringmvcImpl {
+    @RequestMapping(path = "/bytes", method = RequestMethod.POST)
+    public byte[] bytes(@RequestBody byte[] input) {
+      input[0] = (byte) (input[0] + 1);
+      return input;
+    }
+  }
+
+  @Test
+  public void testNotReady() throws IOException {
+    String exceptionMessage = "System is not ready for remote calls. "
+        + "When beans are making remote calls in initialization, it's better to "
+        + "implement io.servicecomb.core.BootListener and do it after EventType.AFTER_REGISTRY.";
+
+    ReferenceConfigUtils.setReady(false);
+    CseClientHttpRequest client =
+        new CseClientHttpRequest(URI.create("cse://app:test/"), HttpMethod.POST);
+
+    try {
+      client.execute();
+      Assert.fail("must throw exception");
+    } catch (IllegalStateException e) {
+      Assert.assertEquals(exceptionMessage, e.getMessage());
     }
 
-    @After
-    public void teardown() {
-        ReferenceConfigUtils.setReady(false);
-    }
+    client.close();
+  }
 
-    @RequestMapping(path = "SpringmvcImpl")
-    static class SpringmvcImpl {
-        @RequestMapping(path = "/bytes", method = RequestMethod.POST)
-        public byte[] bytes(@RequestBody byte[] input) {
-            input[0] = (byte) (input[0] + 1);
-            return input;
-        }
-    }
+  @Test
+  public void testNormal() throws IOException {
+    ServiceRegistry serviceRegistry = ServiceRegistryFactory.createLocal();
+    serviceRegistry.init();
+    RegistryUtils.setServiceRegistry(serviceRegistry);
 
-    @Test
-    public void testNotReady() throws IOException {
-        String exceptionMessage = "System is not ready for remote calls. "
-                + "When beans are making remote calls in initialization, it's better to "
-                + "implement io.servicecomb.core.BootListener and do it after EventType.AFTER_REGISTRY.";
+    UnitTestMeta meta = new UnitTestMeta();
 
-        ReferenceConfigUtils.setReady(false);
-        CseClientHttpRequest client =
-            new CseClientHttpRequest(URI.create("cse://app:test/"), HttpMethod.POST);
+    CseContext.getInstance()
+        .getSchemaListenerManager()
+        .setSchemaListenerList(Arrays.asList(new RestEngineSchemaListener()));
 
-        try {
-            client.execute();
-            Assert.fail("must throw exception");
-        } catch (IllegalStateException e) {
-            Assert.assertEquals(exceptionMessage, e.getMessage());
-        }
+    SchemaMeta schemaMeta = meta.getOrCreateSchemaMeta(SpringmvcImpl.class);
+    CseContext.getInstance().getSchemaListenerManager().notifySchemaListener(schemaMeta);
 
-        client.close();
-    }
+    Holder<Invocation> holder = new Holder<>();
+    CseClientHttpRequest client =
+        new CseClientHttpRequest(URI.create("cse://app:test/" + SpringmvcImpl.class.getSimpleName() + "/bytes"),
+            HttpMethod.POST) {
 
-    @Test
-    public void testNormal() throws IOException {
-        ServiceRegistry serviceRegistry = ServiceRegistryFactory.createLocal();
-        serviceRegistry.init();
-        RegistryUtils.setServiceRegistry(serviceRegistry);
+          /**
+           * {@inheritDoc}
+           */
+          @Override
+          protected Response doInvoke(Invocation invocation) {
+            holder.value = invocation;
+            return Response.ok("result");
+          }
+        };
+    byte[] body = "abc".getBytes();
+    client.setRequestBody(body);
 
-        UnitTestMeta meta = new UnitTestMeta();
+    client.execute();
+    client.close();
 
-        CseContext.getInstance()
-                .getSchemaListenerManager()
-                .setSchemaListenerList(Arrays.asList(new RestEngineSchemaListener()));
-
-        SchemaMeta schemaMeta = meta.getOrCreateSchemaMeta(SpringmvcImpl.class);
-        CseContext.getInstance().getSchemaListenerManager().notifySchemaListener(schemaMeta);
-
-        Holder<Invocation> holder = new Holder<>();
-        CseClientHttpRequest client =
-            new CseClientHttpRequest(URI.create("cse://app:test/" + SpringmvcImpl.class.getSimpleName() + "/bytes"),
-                    HttpMethod.POST) {
-
-                /**
-                 * {@inheritDoc}
-                 */
-                @Override
-                protected Response doInvoke(Invocation invocation) {
-                    holder.value = invocation;
-                    return Response.ok("result");
-                }
-            };
-        byte[] body = "abc".getBytes();
-        client.setRequestBody(body);
-
-        client.execute();
-        client.close();
-
-        Assert.assertArrayEquals(body, holder.value.getSwaggerArgument(0));
-    }
+    Assert.assertArrayEquals(body, holder.value.getSwaggerArgument(0));
+  }
 }

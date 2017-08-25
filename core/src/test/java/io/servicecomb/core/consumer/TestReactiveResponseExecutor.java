@@ -16,23 +16,23 @@
 
 package io.servicecomb.core.consumer;
 
-import io.servicecomb.core.provider.consumer.ReactiveResponseExecutor;
 import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.Mockito;
 
-public class TestReactiveResponseExecutor {
-    @Test
-    public void testReactiveResponseExecutor() {
-        ReactiveResponseExecutor executor = new ReactiveResponseExecutor();
-        Runnable cmd = Mockito.mock(Runnable.class);
-        boolean validAssert = true;
-        try {
-            executor.execute(cmd);
-        } catch (Exception e) {
-            validAssert = false;
-        }
-        Assert.assertTrue(validAssert);
+import io.servicecomb.core.provider.consumer.ReactiveResponseExecutor;
 
+public class TestReactiveResponseExecutor {
+  @Test
+  public void testReactiveResponseExecutor() {
+    ReactiveResponseExecutor executor = new ReactiveResponseExecutor();
+    Runnable cmd = Mockito.mock(Runnable.class);
+    boolean validAssert = true;
+    try {
+      executor.execute(cmd);
+    } catch (Exception e) {
+      validAssert = false;
     }
+    Assert.assertTrue(validAssert);
+  }
 }

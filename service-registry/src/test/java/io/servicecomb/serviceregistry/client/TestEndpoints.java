@@ -24,20 +24,20 @@ import org.junit.Test;
 import io.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
 
 public class TestEndpoints {
-    @Test
-    public void testAll() {
-        Endpoints ep = new Endpoints();
+  @Test
+  public void testAll() {
+    Endpoints ep = new Endpoints();
 
-        List<MicroserviceInstance> instances = new ArrayList<>();
+    List<MicroserviceInstance> instances = new ArrayList<>();
 
-        ep.setAppId("appId");
-        ep.setServiceName("sn");
-        ep.setInstances(instances);
-        ep.setVersion("v1");
+    ep.setAppId("appId");
+    ep.setServiceName("sn");
+    ep.setInstances(instances);
+    ep.setVersion("v1");
 
-        Assert.assertEquals("appId", ep.getAppId());
-        Assert.assertEquals("sn", ep.getServiceName());
-        Assert.assertEquals(instances, ep.getInstances());
-        Assert.assertEquals("v1", ep.getVersion());
-    }
+    Assert.assertEquals("appId", ep.getAppId());
+    Assert.assertEquals("sn", ep.getServiceName());
+    Assert.assertEquals(instances, ep.getInstances());
+    Assert.assertEquals("v1", ep.getVersion());
+  }
 }

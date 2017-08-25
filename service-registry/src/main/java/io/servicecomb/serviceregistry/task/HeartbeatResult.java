@@ -16,7 +16,7 @@
 package io.servicecomb.serviceregistry.task;
 
 public enum HeartbeatResult {
-    DISCONNECTED,
-    SUCCESS,
-    INSTANCE_NOT_REGISTERED
+  DISCONNECTED,
+  SUCCESS,
+  INSTANCE_NOT_REGISTERED
 }

@@ -19,40 +19,38 @@ package io.servicecomb.foundation.vertx;
 import org.junit.Assert;
 import org.junit.Test;
 
+import io.netty.buffer.ByteBuf;
 import io.servicecomb.foundation.vertx.stream.BufferInputStream;
 import io.servicecomb.foundation.vertx.stream.BufferOutputStream;
-
-import io.netty.buffer.ByteBuf;
 import io.vertx.core.buffer.Buffer;
 
 public class TestStream {
 
-    private static final int DIRECT_BUFFER_SIZE = 1024;
+  private static final int DIRECT_BUFFER_SIZE = 1024;
 
-    @Test
-    public void testBufferInputStream() {
-        ByteBuf obuf = Buffer.buffer(DIRECT_BUFFER_SIZE).getByteBuf();
-        obuf.writeBytes(("testss").getBytes());
-        @SuppressWarnings("resource")
-        BufferInputStream oBufferInputStream = new BufferInputStream(obuf);
-        Assert.assertNotEquals(1234, oBufferInputStream.skip(0));
-        Assert.assertNotEquals(obuf.readByte(), oBufferInputStream.readByte());
-        Assert.assertEquals(obuf.readByte() + 1, oBufferInputStream.read());
-        Assert.assertEquals(obuf.readBoolean(), oBufferInputStream.readBoolean());
-        Assert.assertEquals(obuf.readerIndex(), oBufferInputStream.getIndex());
-        Assert.assertEquals(obuf.readableBytes(), oBufferInputStream.available());
-        Assert.assertNotEquals(null, oBufferInputStream.read(("test").getBytes()));
-    }
+  @Test
+  public void testBufferInputStream() {
+    ByteBuf obuf = Buffer.buffer(DIRECT_BUFFER_SIZE).getByteBuf();
+    obuf.writeBytes(("testss").getBytes());
+    @SuppressWarnings("resource")
+    BufferInputStream oBufferInputStream = new BufferInputStream(obuf);
+    Assert.assertNotEquals(1234, oBufferInputStream.skip(0));
+    Assert.assertNotEquals(obuf.readByte(), oBufferInputStream.readByte());
+    Assert.assertEquals(obuf.readByte() + 1, oBufferInputStream.read());
+    Assert.assertEquals(obuf.readBoolean(), oBufferInputStream.readBoolean());
+    Assert.assertEquals(obuf.readerIndex(), oBufferInputStream.getIndex());
+    Assert.assertEquals(obuf.readableBytes(), oBufferInputStream.available());
+    Assert.assertNotEquals(null, oBufferInputStream.read(("test").getBytes()));
+  }
 
-    @Test
-    public void testBufferOutputStream() {
-        @SuppressWarnings({"resource"})
-        BufferOutputStream oBufferOutputStream = new BufferOutputStream();
-        oBufferOutputStream.writeString("test");
-        Assert.assertNotEquals(null, oBufferOutputStream.writerIndex());
-        oBufferOutputStream.write(1);
-        oBufferOutputStream.write(true);
-        Assert.assertEquals(true, (1 < oBufferOutputStream.length()));
-    }
-
+  @Test
+  public void testBufferOutputStream() {
+    @SuppressWarnings({"resource"})
+    BufferOutputStream oBufferOutputStream = new BufferOutputStream();
+    oBufferOutputStream.writeString("test");
+    Assert.assertNotEquals(null, oBufferOutputStream.writerIndex());
+    oBufferOutputStream.write(1);
+    oBufferOutputStream.write(true);
+    Assert.assertEquals(true, (1 < oBufferOutputStream.length()));
+  }
 }

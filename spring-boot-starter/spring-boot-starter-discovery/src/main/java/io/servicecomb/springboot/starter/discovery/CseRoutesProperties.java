@@ -23,20 +23,19 @@ import io.servicecomb.serviceregistry.RegistryUtils;
 
 public final class CseRoutesProperties {
 
-    private final ConsumerProviderManager consumerProviderManager;
+  private final ConsumerProviderManager consumerProviderManager;
 
-    @Autowired
-    CseRoutesProperties(ConsumerProviderManager consumerProviderManager) {
-        this.consumerProviderManager = consumerProviderManager;
-    }
+  @Autowired
+  CseRoutesProperties(ConsumerProviderManager consumerProviderManager) {
+    this.consumerProviderManager = consumerProviderManager;
+  }
 
-    String getVersionRule(String serviceName) {
-        ReferenceConfig referenceConfig = consumerProviderManager.getReferenceConfig(serviceName);
-        return referenceConfig.getMicroserviceVersionRule();
-    }
+  String getVersionRule(String serviceName) {
+    ReferenceConfig referenceConfig = consumerProviderManager.getReferenceConfig(serviceName);
+    return referenceConfig.getMicroserviceVersionRule();
+  }
 
-    String getAppID() {
-        return RegistryUtils.getAppId();
-    }
-
+  String getAppID() {
+    return RegistryUtils.getAppId();
+  }
 }

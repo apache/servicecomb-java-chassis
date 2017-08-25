@@ -22,11 +22,13 @@ import com.netflix.config.AbstractPollingScheduler;
  * Created by   on 2017/3/29.
  */
 public class NeverStartPollingScheduler extends AbstractPollingScheduler {
-    @Override protected void schedule(Runnable runnable) {
-        return;
-    }
+  @Override
+  protected void schedule(Runnable runnable) {
+    return;
+  }
 
-    @Override public void stop() {
-        return;
-    }
+  @Override
+  public void stop() {
+    return;
+  }
 }

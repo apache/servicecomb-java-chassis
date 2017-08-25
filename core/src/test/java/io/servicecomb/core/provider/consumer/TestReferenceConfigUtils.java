@@ -22,34 +22,34 @@ import io.servicecomb.core.CseContext;
 import mockit.Injectable;
 
 public class TestReferenceConfigUtils {
-    @Test
-    public void testNotReady() {
-        String exceptionMessage = "System is not ready for remote calls. "
-                + "When beans are making remote calls in initialization, it's better to "
-                + "implement io.servicecomb.core.BootListener and do it after EventType.AFTER_REGISTRY.";
+  @Test
+  public void testNotReady() {
+    String exceptionMessage = "System is not ready for remote calls. "
+        + "When beans are making remote calls in initialization, it's better to "
+        + "implement io.servicecomb.core.BootListener and do it after EventType.AFTER_REGISTRY.";
 
-        ReferenceConfigUtils.setReady(false);
-        try {
-            ReferenceConfigUtils.getForInvoke("abc");
-            Assert.fail("must throw exception");
-        } catch (IllegalStateException e) {
-            Assert.assertEquals(exceptionMessage, e.getMessage());
-        }
-
-        try {
-            ReferenceConfigUtils.getForInvoke("abc", "v1", "");
-            Assert.fail("must throw exception");
-        } catch (IllegalStateException e) {
-            Assert.assertEquals(exceptionMessage, e.getMessage());
-        }
+    ReferenceConfigUtils.setReady(false);
+    try {
+      ReferenceConfigUtils.getForInvoke("abc");
+      Assert.fail("must throw exception");
+    } catch (IllegalStateException e) {
+      Assert.assertEquals(exceptionMessage, e.getMessage());
     }
 
-    @Test
-    public void testReady(@Injectable ConsumerProviderManager consumerProviderManager) {
-        ReferenceConfigUtils.setReady(true);
-        CseContext.getInstance().setConsumerProviderManager(consumerProviderManager);
-
-        Assert.assertNotNull(ReferenceConfigUtils.getForInvoke("abc"));
-        Assert.assertNotNull(ReferenceConfigUtils.getForInvoke("abc", "v1", ""));
+    try {
+      ReferenceConfigUtils.getForInvoke("abc", "v1", "");
+      Assert.fail("must throw exception");
+    } catch (IllegalStateException e) {
+      Assert.assertEquals(exceptionMessage, e.getMessage());
     }
+  }
+
+  @Test
+  public void testReady(@Injectable ConsumerProviderManager consumerProviderManager) {
+    ReferenceConfigUtils.setReady(true);
+    CseContext.getInstance().setConsumerProviderManager(consumerProviderManager);
+
+    Assert.assertNotNull(ReferenceConfigUtils.getForInvoke("abc"));
+    Assert.assertNotNull(ReferenceConfigUtils.getForInvoke("abc", "v1", ""));
+  }
 }

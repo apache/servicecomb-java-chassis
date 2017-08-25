@@ -24,84 +24,84 @@ import javax.ws.rs.core.HttpHeaders;
 import io.servicecomb.foundation.common.utils.HttpUtils;
 
 public class LocalRestServerRequest implements RestServerRequest {
-    private Map<String, String> pathParams;
+  private Map<String, String> pathParams;
 
-    private Map<String, List<String>> queryParams;
+  private Map<String, List<String>> queryParams;
 
-    private Map<String, List<String>> httpHeaders;
+  private Map<String, List<String>> httpHeaders;
 
-    private Object bodyObject;
+  private Object bodyObject;
 
-    public LocalRestServerRequest(Map<String, String> pathParams, Map<String, List<String>> queryParams,
-            Map<String, List<String>> httpHeaders, Object bodyObject) {
-        this.pathParams = pathParams;
-        this.queryParams = queryParams;
-        this.httpHeaders = httpHeaders;
+  public LocalRestServerRequest(Map<String, String> pathParams, Map<String, List<String>> queryParams,
+      Map<String, List<String>> httpHeaders, Object bodyObject) {
+    this.pathParams = pathParams;
+    this.queryParams = queryParams;
+    this.httpHeaders = httpHeaders;
 
-        this.bodyObject = bodyObject;
+    this.bodyObject = bodyObject;
+  }
+
+  @Override
+  public String getPath() {
+    throw new Error("no need to impl");
+  }
+
+  @Override
+  public String getMethod() {
+    throw new Error("not support");
+  }
+
+  @Override
+  public String getContentType() {
+    return null;
+  }
+
+  @Override
+  public String[] getQueryParam(String key) {
+    List<String> values = queryParams.get(key);
+    if (values == null) {
+      return null;
     }
 
-    @Override
-    public String getPath() {
-        throw new Error("no need to impl");
+    return values.toArray(new String[values.size()]);
+  }
+
+  @Override
+  public String getPathParam(String key) {
+    return pathParams.get(key);
+  }
+
+  @Override
+  public String getHeaderParam(String key) {
+    List<String> headerValues = httpHeaders.get(key);
+    return (headerValues != null ? headerValues.get(0) : null);
+  }
+
+  @Override
+  public Object getFormParam(String key) {
+    if (bodyObject == null) {
+      return null;
     }
 
-    @Override
-    public String getMethod() {
-        throw new Error("not support");
-    }
+    // 走到form这里来，说明bodyObject必然是map
+    @SuppressWarnings("unchecked")
+    Map<String, Object> form = (Map<String, Object>) bodyObject;
+    return form.get(key);
+  }
 
-    @Override
-    public String getContentType() {
-        return null;
-    }
+  @Override
+  public String getCookieParam(String key) {
+    List<String> cookieList = httpHeaders.get(HttpHeaders.COOKIE);
+    return HttpUtils.getCookieParamValue(key, cookieList);
+  }
 
-    @Override
-    public String[] getQueryParam(String key) {
-        List<String> values = queryParams.get(key);
-        if (values == null) {
-            return null;
-        }
+  @Override
+  public Object getBody() throws Exception {
+    return bodyObject;
+  }
 
-        return values.toArray(new String[values.size()]);
-    }
-
-    @Override
-    public String getPathParam(String key) {
-        return pathParams.get(key);
-    }
-
-    @Override
-    public String getHeaderParam(String key) {
-        List<String> headerValues = httpHeaders.get(key);
-        return (headerValues != null ? headerValues.get(0) : null);
-    }
-
-    @Override
-    public Object getFormParam(String key) {
-        if (bodyObject == null) {
-            return null;
-        }
-
-        // 走到form这里来，说明bodyObject必然是map
-        @SuppressWarnings("unchecked")
-        Map<String, Object> form = (Map<String, Object>) bodyObject;
-        return form.get(key);
-    }
-
-    @Override
-    public String getCookieParam(String key) {
-        List<String> cookieList = httpHeaders.get(HttpHeaders.COOKIE);
-        return HttpUtils.getCookieParamValue(key, cookieList);
-    }
-
-    @Override
-    public Object getBody() throws Exception {
-        return bodyObject;
-    }
-
-    @Override
-    public Map<String, String[]> getQueryParams() {
-        throw new Error("no need to impl");
-    }
+  @Override
+  public Map<String, String[]> getQueryParams() {
+    throw new Error("no need to impl");
+  }
 }

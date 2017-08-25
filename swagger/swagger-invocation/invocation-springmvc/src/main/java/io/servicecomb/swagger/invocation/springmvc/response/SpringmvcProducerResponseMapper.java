@@ -20,41 +20,42 @@ import java.util.Map.Entry;
 
 import javax.ws.rs.core.Response.StatusType;
 
-import io.servicecomb.swagger.invocation.Response;
-import io.servicecomb.swagger.invocation.context.HttpStatus;
-import io.servicecomb.swagger.invocation.response.Headers;
-import io.servicecomb.swagger.invocation.response.producer.ProducerResponseMapper;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
+import io.servicecomb.swagger.invocation.Response;
+import io.servicecomb.swagger.invocation.context.HttpStatus;
+import io.servicecomb.swagger.invocation.response.Headers;
+import io.servicecomb.swagger.invocation.response.producer.ProducerResponseMapper;
+
 @Component
 public class SpringmvcProducerResponseMapper implements ProducerResponseMapper {
-    @Override
-    public Class<?> getResponseClass() {
-        return ResponseEntity.class;
+  @Override
+  public Class<?> getResponseClass() {
+    return ResponseEntity.class;
+  }
+
+  @SuppressWarnings("unchecked")
+  @Override
+  public Response mapResponse(StatusType status, Object response) {
+    ResponseEntity<Object> springmvcResponse = (ResponseEntity<Object>) response;
+
+    StatusType responseStatus = new HttpStatus(springmvcResponse.getStatusCode().value(),
+        springmvcResponse.getStatusCode().getReasonPhrase());
+    Response cseResponse = Response.status(responseStatus).entity(springmvcResponse.getBody());
+    HttpHeaders headers = springmvcResponse.getHeaders();
+
+    Headers cseHeaders = cseResponse.getHeaders();
+    for (Entry<String, List<String>> entry : headers.entrySet()) {
+      if (entry.getValue() == null || entry.getValue().isEmpty()) {
+        continue;
+      }
+
+      for (String value : entry.getValue()) {
+        cseHeaders.addHeader(entry.getKey(), value);
+      }
     }
-
-    @SuppressWarnings("unchecked")
-    @Override
-    public Response mapResponse(StatusType status, Object response) {
-        ResponseEntity<Object> springmvcResponse = (ResponseEntity<Object>) response;
-
-        StatusType responseStatus = new HttpStatus(springmvcResponse.getStatusCode().value(),
-                springmvcResponse.getStatusCode().getReasonPhrase());
-        Response cseResponse = Response.status(responseStatus).entity(springmvcResponse.getBody());
-        HttpHeaders headers = springmvcResponse.getHeaders();
-
-        Headers cseHeaders = cseResponse.getHeaders();
-        for (Entry<String, List<String>> entry : headers.entrySet()) {
-            if (entry.getValue() == null || entry.getValue().isEmpty()) {
-                continue;
-            }
-
-            for (String value : entry.getValue()) {
-                cseHeaders.addHeader(entry.getKey(), value);
-            }
-        }
-        return cseResponse;
-    }
+    return cseResponse;
+  }
 }

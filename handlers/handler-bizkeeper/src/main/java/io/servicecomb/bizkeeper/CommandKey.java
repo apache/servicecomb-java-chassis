@@ -16,25 +16,26 @@
 
 package io.servicecomb.bizkeeper;
 
-import io.servicecomb.core.Invocation;
 import com.netflix.hystrix.HystrixCommandGroupKey;
 import com.netflix.hystrix.HystrixCommandKey;
+
+import io.servicecomb.core.Invocation;
 
 /**
  * 创建对应的Key值
  *
  */
 public final class CommandKey {
-    private CommandKey() {
-    }
+  private CommandKey() {
+  }
 
-    public static HystrixCommandGroupKey toHystrixCommandGroupKey(String type, Invocation invocation) {
-        return HystrixCommandGroupKey.Factory
-                .asKey(type + "." + invocation.getOperationMeta().getMicroserviceQualifiedName());
-    }
+  public static HystrixCommandGroupKey toHystrixCommandGroupKey(String type, Invocation invocation) {
+    return HystrixCommandGroupKey.Factory
+        .asKey(type + "." + invocation.getOperationMeta().getMicroserviceQualifiedName());
+  }
 
-    public static HystrixCommandKey toHystrixCommandKey(String type, Invocation invocation) {
-        return HystrixCommandKey.Factory
-                .asKey(type + "." + invocation.getOperationMeta().getMicroserviceQualifiedName());
-    }
+  public static HystrixCommandKey toHystrixCommandKey(String type, Invocation invocation) {
+    return HystrixCommandKey.Factory
+        .asKey(type + "." + invocation.getOperationMeta().getMicroserviceQualifiedName());
+  }
 }

@@ -24,16 +24,16 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectWriter;
 
 public class StandardObjectWriter extends ObjectWriter {
-    private static final long serialVersionUID = -8162644250351645123L;
+  private static final long serialVersionUID = -8162644250351645123L;
 
-    public StandardObjectWriter(ObjectWriter base) {
-        super(base, base.getConfig());
-    }
+  public StandardObjectWriter(ObjectWriter base) {
+    super(base, base.getConfig());
+  }
 
-    @Override
-    public void writeValue(OutputStream out,
-            Object value) throws IOException, JsonGenerationException, JsonMappingException {
-        Object[] values = (Object[]) value;
-        super.writeValue(out, values[0]);
-    }
+  @Override
+  public void writeValue(OutputStream out,
+      Object value) throws IOException, JsonGenerationException, JsonMappingException {
+    Object[] values = (Object[]) value;
+    super.writeValue(out, values[0]);
+  }
 }

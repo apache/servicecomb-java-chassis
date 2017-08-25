@@ -1,4 +1,3 @@
-
 /*
  *  Copyright 2017 Huawei Technologies Co., Ltd
  *
@@ -30,13 +29,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 
-import io.servicecomb.demo.compute.Person;
-import io.servicecomb.demo.server.TestRequest;
-import io.servicecomb.demo.server.User;
-import io.servicecomb.demo.smartcare.Application;
-import io.servicecomb.demo.smartcare.Group;
-import io.servicecomb.demo.smartcare.Response;
-import io.servicecomb.swagger.invocation.exception.InvocationException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -47,6 +39,14 @@ import java.util.Map;
 
 import org.junit.Ignore;
 import org.junit.Test;
+
+import io.servicecomb.demo.compute.Person;
+import io.servicecomb.demo.server.TestRequest;
+import io.servicecomb.demo.server.User;
+import io.servicecomb.demo.smartcare.Application;
+import io.servicecomb.demo.smartcare.Group;
+import io.servicecomb.demo.smartcare.Response;
+import io.servicecomb.swagger.invocation.exception.InvocationException;
 
 @Ignore
 public class PojoIntegrationTestBase {
@@ -103,7 +103,7 @@ public class PojoIntegrationTestBase {
 
   @Test
   public void remoteTestPojo_testStringArray() {
-    String result = PojoService.test.testStringArray(new String[]{"a", "b"});
+    String result = PojoService.test.testStringArray(new String[] {"a", "b"});
     assertThat(result, is("arr is '[a, b]'"));
   }
 
@@ -205,17 +205,17 @@ public class PojoIntegrationTestBase {
 
   @Test
   public void remoteTestPojo_addString() {
-    String result = PojoService.test.addString(new String[]{"a", "b"});
+    String result = PojoService.test.addString(new String[] {"a", "b"});
     assertThat(result, is("[a, b]"));
   }
 
   @Test
   public void remoteCodeFirstPojo_testUserMap() {
     User user1 = new User();
-    user1.setNames(new String[]{"u1", "u2"});
+    user1.setNames(new String[] {"u1", "u2"});
 
     User user2 = new User();
-    user2.setNames(new String[]{"u3", "u4"});
+    user2.setNames(new String[] {"u3", "u4"});
 
     Map<String, User> userMap = new HashMap<>();
     userMap.put("u1", user1);
@@ -231,12 +231,12 @@ public class PojoIntegrationTestBase {
   @Test
   public void remoteCodeFirstPojo_testUserArray() {
     User user1 = new User();
-    user1.setNames(new String[]{"u1", "u2"});
+    user1.setNames(new String[] {"u1", "u2"});
 
     User user2 = new User();
-    user2.setNames(new String[]{"u3", "u4"});
+    user2.setNames(new String[] {"u3", "u4"});
 
-    User[] users = new User[]{user1, user2};
+    User[] users = new User[] {user1, user2};
     List<User> result = PojoService.codeFirst.testUserArray(Arrays.asList(users));
 
     assertThat(result.get(0).getNames()[0], is("u1"));
@@ -247,13 +247,13 @@ public class PojoIntegrationTestBase {
 
   @Test
   public void remoteCodeFirstPojo_testStrings() {
-    String[] result = PojoService.codeFirst.testStrings(new String[]{"a", "b"});
+    String[] result = PojoService.codeFirst.testStrings(new String[] {"a", "b"});
     assertThat(Arrays.asList(result), contains("aa0", "b"));
   }
 
   @Test
   public void remoteCodeFirstPojo_testBytes() {
-    byte[] input = new byte[]{0, 1, 2};
+    byte[] input = new byte[] {0, 1, 2};
     byte[] result = PojoService.codeFirst.testBytes(input);
 
     assertEquals(3, result.length);

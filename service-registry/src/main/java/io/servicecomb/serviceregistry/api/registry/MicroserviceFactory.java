@@ -15,51 +15,51 @@
  */
 package io.servicecomb.serviceregistry.api.registry;
 
-import io.servicecomb.serviceregistry.config.ConfigurePropertyUtils;
 import java.util.Map;
 
 import org.apache.commons.configuration.Configuration;
 
+import io.servicecomb.serviceregistry.config.ConfigurePropertyUtils;
 import io.servicecomb.serviceregistry.config.MicroservicePropertiesLoader;
 import io.servicecomb.serviceregistry.definition.DefinitionConst;
 import io.servicecomb.serviceregistry.definition.MicroserviceDefinition;
 
 public class MicroserviceFactory {
-    public Microservice create(String appId, String microserviceName) {
-        MicroserviceDefinition microserviceDefinition = MicroserviceDefinition.create(appId, microserviceName);
-        return create(microserviceDefinition);
+  public Microservice create(String appId, String microserviceName) {
+    MicroserviceDefinition microserviceDefinition = MicroserviceDefinition.create(appId, microserviceName);
+    return create(microserviceDefinition);
+  }
+
+  public Microservice create(MicroserviceDefinition microserviceDefinition) {
+    Configuration configuration = microserviceDefinition.getConfiguration();
+    Microservice microservice = createMicroserviceFromDefinition(configuration);
+    microservice.setIntance(MicroserviceInstance.createFromDefinition(configuration));
+    return microservice;
+  }
+
+  private Microservice createMicroserviceFromDefinition(Configuration configuration) {
+    Microservice microservice = new Microservice();
+    microservice.setServiceName(configuration.getString(DefinitionConst.qulifiedServiceNameKey,
+        DefinitionConst.defaultMicroserviceName));
+    microservice.setAppId(configuration.getString(DefinitionConst.appIdKey, DefinitionConst.defaultAppId));
+    microservice.setVersion(configuration.getString(DefinitionConst.qulifiedServiceVersionKey,
+        DefinitionConst.defaultVersion));
+    microservice.setDescription(configuration.getString(DefinitionConst.qulifiedServiceDescKey, ""));
+    microservice.setLevel(configuration.getString(DefinitionConst.qulifiedServiceRoleKey, "FRONT"));
+    microservice.setPaths(ConfigurePropertyUtils.getMicroservicePaths(configuration));
+    Map<String, String> propertiesMap = MicroservicePropertiesLoader.INSTANCE.loadProperties(configuration);
+    microservice.setProperties(propertiesMap);
+
+    // set alias name when allow cross app
+    if (allowCrossApp(propertiesMap)) {
+      microservice.setAlias(Microservice.generateAbsoluteMicroserviceName(microservice.getAppId(),
+          microservice.getServiceName()));
     }
 
-    public Microservice create(MicroserviceDefinition microserviceDefinition) {
-        Configuration configuration = microserviceDefinition.getConfiguration();
-        Microservice microservice = createMicroserviceFromDefinition(configuration);
-        microservice.setIntance(MicroserviceInstance.createFromDefinition(configuration));
-        return microservice;
-    }
+    return microservice;
+  }
 
-    private Microservice createMicroserviceFromDefinition(Configuration configuration) {
-        Microservice microservice = new Microservice();
-        microservice.setServiceName(configuration.getString(DefinitionConst.qulifiedServiceNameKey,
-                DefinitionConst.defaultMicroserviceName));
-        microservice.setAppId(configuration.getString(DefinitionConst.appIdKey, DefinitionConst.defaultAppId));
-        microservice.setVersion(configuration.getString(DefinitionConst.qulifiedServiceVersionKey,
-                DefinitionConst.defaultVersion));
-        microservice.setDescription(configuration.getString(DefinitionConst.qulifiedServiceDescKey, ""));
-        microservice.setLevel(configuration.getString(DefinitionConst.qulifiedServiceRoleKey, "FRONT"));
-        microservice.setPaths(ConfigurePropertyUtils.getMicroservicePaths(configuration));
-        Map<String, String> propertiesMap = MicroservicePropertiesLoader.INSTANCE.loadProperties(configuration);
-        microservice.setProperties(propertiesMap);
-
-        // set alias name when allow cross app
-        if (allowCrossApp(propertiesMap)) {
-            microservice.setAlias(Microservice.generateAbsoluteMicroserviceName(microservice.getAppId(),
-                    microservice.getServiceName()));
-        }
-
-        return microservice;
-    }
-
-    private boolean allowCrossApp(Map<String, String> propertiesMap) {
-        return Boolean.valueOf(propertiesMap.get(DefinitionConst.allowCrossAppKey));
-    }
+  private boolean allowCrossApp(Map<String, String> propertiesMap) {
+    return Boolean.valueOf(propertiesMap.get(DefinitionConst.allowCrossAppKey));
+  }
 }

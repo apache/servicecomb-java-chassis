@@ -17,13 +17,13 @@
 package io.servicecomb.demo.controller;
 
 public interface Controller {
-    int add(int a, int b);
+  int add(int a, int b);
 
-    String sayHello(String name);
+  String sayHello(String name);
 
-    String saySomething(String prefix, Person user);
+  String saySomething(String prefix, Person user);
 
-    String sayHi(String name);
+  String sayHi(String name);
 
-    String sayHei(String name);
+  String sayHei(String name);
 }

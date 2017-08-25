@@ -26,38 +26,38 @@ import org.springframework.context.support.AbstractApplicationContext;
 import io.servicecomb.foundation.common.utils.Log4jUtils;
 
 public class RestServletContextListener implements ServletContextListener {
-    private AbstractApplicationContext context;
+  private AbstractApplicationContext context;
 
-    @Override
-    public void contextInitialized(ServletContextEvent sce) {
-        try {
-            initLog(sce);
-            initSpring(sce);
-        } catch (Exception e) {
-            throw new Error(e);
-        }
+  @Override
+  public void contextInitialized(ServletContextEvent sce) {
+    try {
+      initLog(sce);
+      initSpring(sce);
+    } catch (Exception e) {
+      throw new Error(e);
+    }
+  }
+
+  public void initLog(ServletContextEvent sce) throws Exception {
+    String logMerged = sce.getServletContext().getInitParameter("servicecomb.logging.merged");
+    if (!FALSE.toString().equalsIgnoreCase(logMerged)) {
+      Log4jUtils.init();
+    }
+  }
+
+  public AbstractApplicationContext initSpring(ServletContextEvent sce) {
+    context = new CseXmlWebApplicationContext(sce.getServletContext());
+    context.refresh();
+    return context;
+  }
+
+  @Override
+  public void contextDestroyed(ServletContextEvent sce) {
+    if (context == null) {
+      return;
     }
 
-    public void initLog(ServletContextEvent sce) throws Exception {
-        String logMerged = sce.getServletContext().getInitParameter("servicecomb.logging.merged");
-        if (!FALSE.toString().equalsIgnoreCase(logMerged)) {
-            Log4jUtils.init();
-        }
-    }
-
-    public AbstractApplicationContext initSpring(ServletContextEvent sce) {
-        context = new CseXmlWebApplicationContext(sce.getServletContext());
-        context.refresh();
-        return context;
-    }
-
-    @Override
-    public void contextDestroyed(ServletContextEvent sce) {
-        if (context == null) {
-            return;
-        }
-
-        context.close();
-        context = null;
-    }
+    context.close();
+    context = null;
+  }
 }

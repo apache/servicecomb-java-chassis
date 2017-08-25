@@ -20,7 +20,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import io.servicecomb.serviceregistry.config.ServiceRegistryConfig;
-
 import io.vertx.core.http.HttpClientOptions;
 import io.vertx.core.http.HttpVersion;
 
@@ -29,29 +28,29 @@ import io.vertx.core.http.HttpVersion;
  */
 public final class WebsocketClientPool extends AbstractClientPool {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(WebsocketClientPool.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(WebsocketClientPool.class);
 
-    public static final WebsocketClientPool INSTANCE = new WebsocketClientPool();
+  public static final WebsocketClientPool INSTANCE = new WebsocketClientPool();
 
-    private WebsocketClientPool() {
+  private WebsocketClientPool() {
+  }
+
+  @Override
+  public HttpClientOptions createHttpClientOptions() {
+    HttpVersion ver = ServiceRegistryConfig.INSTANCE.getHttpVersion();
+    HttpClientOptions httpClientOptions = new HttpClientOptions();
+    httpClientOptions.setProtocolVersion(ver);
+    httpClientOptions.setConnectTimeout(ServiceRegistryConfig.INSTANCE.getConnectionTimeout());
+    // idl timeout in seconds. we add 30 seconds for websocket idle timeout.
+    httpClientOptions.setIdleTimeout(ServiceRegistryConfig.INSTANCE.getIdleConnectionTimeout() + 30);
+    if (ver == HttpVersion.HTTP_2) {
+      LOGGER.debug("service center ws client protocol version is HTTP/2");
+      httpClientOptions.setHttp2ClearTextUpgrade(false);
     }
-
-    @Override
-    public HttpClientOptions createHttpClientOptions() {
-        HttpVersion ver = ServiceRegistryConfig.INSTANCE.getHttpVersion();
-        HttpClientOptions httpClientOptions = new HttpClientOptions();
-        httpClientOptions.setProtocolVersion(ver);
-        httpClientOptions.setConnectTimeout(ServiceRegistryConfig.INSTANCE.getConnectionTimeout());
-        // idl timeout in seconds. we add 30 seconds for websocket idle timeout.
-        httpClientOptions.setIdleTimeout(ServiceRegistryConfig.INSTANCE.getIdleConnectionTimeout() + 30);
-        if (ver == HttpVersion.HTTP_2) {
-            LOGGER.debug("service center ws client protocol version is HTTP/2");
-            httpClientOptions.setHttp2ClearTextUpgrade(false);
-        }
-        if (ServiceRegistryConfig.INSTANCE.isSsl()) {
-            LOGGER.debug("service center ws client performs requests over TLS");
-            buildSecureClientOptions(httpClientOptions);
-        }
-        return httpClientOptions;
+    if (ServiceRegistryConfig.INSTANCE.isSsl()) {
+      LOGGER.debug("service center ws client performs requests over TLS");
+      buildSecureClientOptions(httpClientOptions);
     }
+    return httpClientOptions;
+  }
 }

@@ -27,13 +27,13 @@ import io.servicecomb.swagger.invocation.context.InvocationContext;
 @Qualifier("consumer")
 public class ConsumerInvocationContextMapperFactory implements ContextArgumentMapperFactory {
 
-    @Override
-    public Class<?> getContextClass() {
-        return InvocationContext.class;
-    }
+  @Override
+  public Class<?> getContextClass() {
+    return InvocationContext.class;
+  }
 
-    @Override
-    public ArgumentMapper create(int consumerArgIdx) {
-        return new ConsumerInvocationContextMapper(consumerArgIdx);
-    }
+  @Override
+  public ArgumentMapper create(int consumerArgIdx) {
+    return new ConsumerInvocationContextMapper(consumerArgIdx);
+  }
 }

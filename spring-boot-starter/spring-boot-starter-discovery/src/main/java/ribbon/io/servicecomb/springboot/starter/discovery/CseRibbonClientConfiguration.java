@@ -15,15 +15,17 @@
  */
 package ribbon.io.servicecomb.springboot.starter.discovery;
 
-import com.netflix.client.config.IClientConfig;
-import com.netflix.loadbalancer.Server;
-import com.netflix.loadbalancer.ServerList;
-import io.servicecomb.springboot.starter.discovery.CseRoutesProperties;
-import io.servicecomb.springboot.starter.discovery.ServiceCombServerList;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.cloud.netflix.zuul.filters.ZuulProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+
+import com.netflix.client.config.IClientConfig;
+import com.netflix.loadbalancer.Server;
+import com.netflix.loadbalancer.ServerList;
+
+import io.servicecomb.springboot.starter.discovery.CseRoutesProperties;
+import io.servicecomb.springboot.starter.discovery.ServiceCombServerList;
 
 /**
  * Custom {@link org.springframework.cloud.netflix.ribbon.RibbonClient} configuration must not be

@@ -28,14 +28,18 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+
 import org.junit.Before;
 import org.junit.Test;
 
 public class RetryableRunnableTest {
 
   private final Runnable blockedRunnable = mock(Runnable.class);
+
   private final DescriptiveRunnable runnable = mock(DescriptiveRunnable.class);
+
   private final RetryableRunnable retryableRunnable = new RetryableRunnable(runnable, 50);
+
   private final RuntimeException exception = new RuntimeException("oops");
 
   @Before
@@ -71,7 +75,7 @@ public class RetryableRunnableTest {
 
       @Override
       public void run() {
-        if(countDownLatch.getCount() == 1) {
+        if (countDownLatch.getCount() == 1) {
           countDownLatch.countDown();
         }
         throw new RuntimeException("oops");

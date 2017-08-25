@@ -20,24 +20,24 @@ import org.junit.Assert;
 import org.junit.Test;
 
 public class TestProviderQpsControllermanager {
-    private static String microserviceName = "pojo";
+  private static String microserviceName = "pojo";
 
-    @Test
-    public void testQpsLimit() {
-        ProviderQpsControllerManager mgr = new ProviderQpsControllerManager();
-        QpsController qpsController = mgr.getOrCreate(microserviceName);
-        Assert.assertEquals(null, qpsController.getQpsLimit());
-        Assert.assertEquals(microserviceName, qpsController.getKey());
+  @Test
+  public void testQpsLimit() {
+    ProviderQpsControllerManager mgr = new ProviderQpsControllerManager();
+    QpsController qpsController = mgr.getOrCreate(microserviceName);
+    Assert.assertEquals(null, qpsController.getQpsLimit());
+    Assert.assertEquals(microserviceName, qpsController.getKey());
 
-        doTestQpsLimit(mgr, microserviceName, 100, microserviceName, 100);
-        doTestQpsLimit(mgr, microserviceName, null, microserviceName, null);
-    }
+    doTestQpsLimit(mgr, microserviceName, 100, microserviceName, 100);
+    doTestQpsLimit(mgr, microserviceName, null, microserviceName, null);
+  }
 
-    private void doTestQpsLimit(ProviderQpsControllerManager mgr, String key, Integer newValue,
-            String expectKey, Integer expectValue) {
-        Utils.updateProperty(Config.PROVIDER_LIMIT_KEY_PREFIX + key, newValue);
-        QpsController qpsController = mgr.getOrCreate(key);
-        Assert.assertEquals(expectValue, qpsController.getQpsLimit());
-        Assert.assertEquals(expectKey, qpsController.getKey());
-    }
+  private void doTestQpsLimit(ProviderQpsControllerManager mgr, String key, Integer newValue,
+      String expectKey, Integer expectValue) {
+    Utils.updateProperty(Config.PROVIDER_LIMIT_KEY_PREFIX + key, newValue);
+    QpsController qpsController = mgr.getOrCreate(key);
+    Assert.assertEquals(expectValue, qpsController.getQpsLimit());
+    Assert.assertEquals(expectKey, qpsController.getKey());
+  }
 }

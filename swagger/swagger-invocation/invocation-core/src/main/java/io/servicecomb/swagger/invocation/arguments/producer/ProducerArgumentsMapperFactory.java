@@ -34,31 +34,31 @@ import io.servicecomb.swagger.invocation.converter.Converter;
 
 @Component
 public class ProducerArgumentsMapperFactory extends ArgumentsMapperFactory {
-    public ProducerArgumentsMapperFactory() {
-        type = InvocationType.PRODUCER;
-    }
+  public ProducerArgumentsMapperFactory() {
+    type = InvocationType.PRODUCER;
+  }
 
-    @Inject
-    @Qualifier("producer")
-    public void setFactoryList(List<ContextArgumentMapperFactory> factoryList) {
-        createFactoryMap(factoryList);
-    }
+  @Inject
+  @Qualifier("producer")
+  public void setFactoryList(List<ContextArgumentMapperFactory> factoryList) {
+    createFactoryMap(factoryList);
+  }
 
-    @SuppressWarnings("unchecked")
-    @Override
-    protected <T> T createArgumentsMapper(ArgumentsMapperConfig config) {
-        return (T) new ProducerArgumentsMapper(config.getArgumentMapperList(),
-                config.getProviderMethod().getParameterCount());
-    }
+  @SuppressWarnings("unchecked")
+  @Override
+  protected <T> T createArgumentsMapper(ArgumentsMapperConfig config) {
+    return (T) new ProducerArgumentsMapper(config.getArgumentMapperList(),
+        config.getProviderMethod().getParameterCount());
+  }
 
-    @Override
-    protected ArgumentMapper createArgumentMapperWithConverter(int swaggerIdx, int producerIdx, Converter converter) {
-        return new ProducerArgumentSame(swaggerIdx, producerIdx, converter);
-    }
+  @Override
+  protected ArgumentMapper createArgumentMapperWithConverter(int swaggerIdx, int producerIdx, Converter converter) {
+    return new ProducerArgumentSame(swaggerIdx, producerIdx, converter);
+  }
 
-    @Override
-    protected ArgumentMapper createBodyFieldArgMapper(ArgumentsMapperConfig config,
-            Map<Integer, FieldInfo> fieldMap) {
-        return new SwaggerArgumentToProducerBodyField(fieldMap);
-    }
+  @Override
+  protected ArgumentMapper createBodyFieldArgMapper(ArgumentsMapperConfig config,
+      Map<Integer, FieldInfo> fieldMap) {
+    return new SwaggerArgumentToProducerBodyField(fieldMap);
+  }
 }

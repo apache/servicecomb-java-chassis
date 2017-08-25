@@ -16,20 +16,20 @@
 
 package io.servicecomb.foundation.metrics;
 
-import io.servicecomb.foundation.metrics.performance.PerfStatSuccFail;
 import org.junit.Assert;
-
 import org.junit.Test;
+
+import io.servicecomb.foundation.metrics.performance.PerfStatSuccFail;
 
 public class TestMetrics {
 
-    @Test
-    public void testOnCycle() throws Exception {
-        PerfStatSuccFail oPerfStatSuccFail = Metrics.getOrCreateLocalPerfStat("test", 1);
-        Metrics.onCycle();
-        Assert.assertEquals(0, Metrics.getMsTick());
-        Assert.assertEquals(1, Metrics.getMonitorPerfStat().size());
-        Assert.assertEquals("test", oPerfStatSuccFail.getName());
-        Assert.assertEquals(2, oPerfStatSuccFail.getPerfStatDataList().size());
-    }
+  @Test
+  public void testOnCycle() throws Exception {
+    PerfStatSuccFail oPerfStatSuccFail = Metrics.getOrCreateLocalPerfStat("test", 1);
+    Metrics.onCycle();
+    Assert.assertEquals(0, Metrics.getMsTick());
+    Assert.assertEquals(1, Metrics.getMonitorPerfStat().size());
+    Assert.assertEquals("test", oPerfStatSuccFail.getName());
+    Assert.assertEquals(2, oPerfStatSuccFail.getPerfStatDataList().size());
+  }
 }

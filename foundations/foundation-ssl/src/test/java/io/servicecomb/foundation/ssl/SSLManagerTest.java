@@ -43,394 +43,395 @@ import mockit.MockUp;
 import mockit.Mocked;
 
 public class SSLManagerTest {
-    private final String DIR = Thread.currentThread().getContextClassLoader().getResource("").getPath();
+  private final String DIR = Thread.currentThread().getContextClassLoader().getResource("").getPath();
 
-    @Test
-    public void testSSLManagerServerAndClient(final @Mocked NetworkInterface nif) throws Exception {
-        final InetAddress ia = Inet4Address.getByName("10.57.65.225");
-        final Enumeration<NetworkInterface> interfaces = new Enumeration<NetworkInterface>() {
-            int count = 1;
+  @Test
+  public void testSSLManagerServerAndClient(final @Mocked NetworkInterface nif) throws Exception {
+    final InetAddress ia = Inet4Address.getByName("10.57.65.225");
+    final Enumeration<NetworkInterface> interfaces = new Enumeration<NetworkInterface>() {
+      int count = 1;
 
-            int cur = 0;
+      int cur = 0;
 
-            @Override
-            public boolean hasMoreElements() {
-                if (cur < count) {
-                    cur++;
-                    return true;
-                }
-                return false;
-            }
+      @Override
+      public boolean hasMoreElements() {
+        if (cur < count) {
+          cur++;
+          return true;
+        }
+        return false;
+      }
 
-            @Override
-            public NetworkInterface nextElement() {
-                return nif;
-            }
-        };
+      @Override
+      public NetworkInterface nextElement() {
+        return nif;
+      }
+    };
 
-        final Enumeration<InetAddress> ias = new Enumeration<InetAddress>() {
-            int count = 1;
+    final Enumeration<InetAddress> ias = new Enumeration<InetAddress>() {
+      int count = 1;
 
-            int cur = 0;
+      int cur = 0;
 
-            @Override
-            public boolean hasMoreElements() {
-                if (cur < count) {
-                    cur++;
-                    return true;
-                }
-                return false;
-            }
+      @Override
+      public boolean hasMoreElements() {
+        if (cur < count) {
+          cur++;
+          return true;
+        }
+        return false;
+      }
 
-            @Override
-            public InetAddress nextElement() {
-                return ia;
-            }
-        };
+      @Override
+      public InetAddress nextElement() {
+        return ia;
+      }
+    };
 
-        new Expectations() {
-            @Mocked
-            NetworkInterface nif;
-            {
-                NetworkInterface.getNetworkInterfaces();
-                result = interfaces;
-            }
-        };
-        new Expectations() {
-            {
-                nif.getInetAddresses();
-                result = ias;
-                ia.getHostAddress();
-                result = "10.57.65.225";
-            }
-        };
+    new Expectations() {
+      @Mocked
+      NetworkInterface nif;
 
-        SSLOption option = SSLOption.build(DIR + "/server.ssl.properties");
-        SSLCustom custom = new SSLCustom() {
-            @Override
-            public String getFullPath(String filename) {
-                return DIR + "/ssl/" + filename;
-            }
+      {
+        NetworkInterface.getNetworkInterfaces();
+        result = interfaces;
+      }
+    };
+    new Expectations() {
+      {
+        nif.getInetAddresses();
+        result = ias;
+        ia.getHostAddress();
+        result = "10.57.65.225";
+      }
+    };
 
-            @Override
-            public char[] decode(char[] encrypted) {
-                return encrypted;
-            }
-        };
-        final SSLServerSocket serverSocket = SSLManager.createSSLServerSocket(option, custom);
-        serverSocket.bind(new InetSocketAddress("127.0.0.1", 8886));
-        String[] protos = serverSocket.getEnabledCipherSuites();
-        String[] protosExpected =
-            "TLS_DHE_RSA_WITH_AES_128_CBC_SHA256,TLS_DHE_DSS_WITH_AES_128_CBC_SHA256,TLS_RSA_WITH_AES_128_CBC_SHA256,TLS_DHE_RSA_WITH_AES_128_CBC_SHA,TLS_DHE_DSS_WITH_AES_128_CBC_SHA,TLS_RSA_WITH_AES_128_CBC_SHA"
-                    .split(",");
-        Assert.assertArrayEquals(protos, protosExpected);
-        String[] ciphers = serverSocket.getEnabledCipherSuites();
-        String[] ciphersExpected =
-            "TLS_DHE_RSA_WITH_AES_128_CBC_SHA256,TLS_DHE_DSS_WITH_AES_128_CBC_SHA256,TLS_RSA_WITH_AES_128_CBC_SHA256,TLS_DHE_RSA_WITH_AES_128_CBC_SHA,TLS_DHE_DSS_WITH_AES_128_CBC_SHA,TLS_RSA_WITH_AES_128_CBC_SHA"
-                    .split(",");
-        Assert.assertArrayEquals(ciphers, ciphersExpected);
-        Assert.assertEquals(serverSocket.getNeedClientAuth(), true);
+    SSLOption option = SSLOption.build(DIR + "/server.ssl.properties");
+    SSLCustom custom = new SSLCustom() {
+      @Override
+      public String getFullPath(String filename) {
+        return DIR + "/ssl/" + filename;
+      }
 
-        SSLOption clientoption = SSLOption.build(DIR + "/client.ssl.properties");
-        SSLSocket clientsocket = SSLManager.createSSLSocket(clientoption, custom);
-        String[] clientprotos = clientsocket.getEnabledCipherSuites();
-        String[] clientprotosExpected =
-            "TLS_DHE_RSA_WITH_AES_128_CBC_SHA256,TLS_DHE_DSS_WITH_AES_128_CBC_SHA256,TLS_RSA_WITH_AES_128_CBC_SHA256,TLS_DHE_RSA_WITH_AES_128_CBC_SHA,TLS_DHE_DSS_WITH_AES_128_CBC_SHA,TLS_RSA_WITH_AES_128_CBC_SHA"
-                    .split(",");
-        Assert.assertArrayEquals(clientprotos, clientprotosExpected);
-        String[] clientciphers = clientsocket.getEnabledCipherSuites();
-        String[] clientciphersExpected =
-            "TLS_DHE_RSA_WITH_AES_128_CBC_SHA256,TLS_DHE_DSS_WITH_AES_128_CBC_SHA256,TLS_RSA_WITH_AES_128_CBC_SHA256,TLS_DHE_RSA_WITH_AES_128_CBC_SHA,TLS_DHE_DSS_WITH_AES_128_CBC_SHA,TLS_RSA_WITH_AES_128_CBC_SHA"
-                    .split(",");
-        Assert.assertArrayEquals(clientciphers, clientciphersExpected);
-        Assert.assertEquals(clientsocket.getNeedClientAuth(), false);
-        boolean validAssert = true;
-        try {
-            clientsocket.connect(new InetSocketAddress("127.0.0.1", 8886));
+      @Override
+      public char[] decode(char[] encrypted) {
+        return encrypted;
+      }
+    };
+    final SSLServerSocket serverSocket = SSLManager.createSSLServerSocket(option, custom);
+    serverSocket.bind(new InetSocketAddress("127.0.0.1", 8886));
+    String[] protos = serverSocket.getEnabledCipherSuites();
+    String[] protosExpected =
+        "TLS_DHE_RSA_WITH_AES_128_CBC_SHA256,TLS_DHE_DSS_WITH_AES_128_CBC_SHA256,TLS_RSA_WITH_AES_128_CBC_SHA256,TLS_DHE_RSA_WITH_AES_128_CBC_SHA,TLS_DHE_DSS_WITH_AES_128_CBC_SHA,TLS_RSA_WITH_AES_128_CBC_SHA"
+            .split(",");
+    Assert.assertArrayEquals(protos, protosExpected);
+    String[] ciphers = serverSocket.getEnabledCipherSuites();
+    String[] ciphersExpected =
+        "TLS_DHE_RSA_WITH_AES_128_CBC_SHA256,TLS_DHE_DSS_WITH_AES_128_CBC_SHA256,TLS_RSA_WITH_AES_128_CBC_SHA256,TLS_DHE_RSA_WITH_AES_128_CBC_SHA,TLS_DHE_DSS_WITH_AES_128_CBC_SHA,TLS_RSA_WITH_AES_128_CBC_SHA"
+            .split(",");
+    Assert.assertArrayEquals(ciphers, ciphersExpected);
+    Assert.assertEquals(serverSocket.getNeedClientAuth(), true);
 
-            new Thread() {
-                public void run() {
+    SSLOption clientoption = SSLOption.build(DIR + "/client.ssl.properties");
+    SSLSocket clientsocket = SSLManager.createSSLSocket(clientoption, custom);
+    String[] clientprotos = clientsocket.getEnabledCipherSuites();
+    String[] clientprotosExpected =
+        "TLS_DHE_RSA_WITH_AES_128_CBC_SHA256,TLS_DHE_DSS_WITH_AES_128_CBC_SHA256,TLS_RSA_WITH_AES_128_CBC_SHA256,TLS_DHE_RSA_WITH_AES_128_CBC_SHA,TLS_DHE_DSS_WITH_AES_128_CBC_SHA,TLS_RSA_WITH_AES_128_CBC_SHA"
+            .split(",");
+    Assert.assertArrayEquals(clientprotos, clientprotosExpected);
+    String[] clientciphers = clientsocket.getEnabledCipherSuites();
+    String[] clientciphersExpected =
+        "TLS_DHE_RSA_WITH_AES_128_CBC_SHA256,TLS_DHE_DSS_WITH_AES_128_CBC_SHA256,TLS_RSA_WITH_AES_128_CBC_SHA256,TLS_DHE_RSA_WITH_AES_128_CBC_SHA,TLS_DHE_DSS_WITH_AES_128_CBC_SHA,TLS_RSA_WITH_AES_128_CBC_SHA"
+            .split(",");
+    Assert.assertArrayEquals(clientciphers, clientciphersExpected);
+    Assert.assertEquals(clientsocket.getNeedClientAuth(), false);
+    boolean validAssert = true;
+    try {
+      clientsocket.connect(new InetSocketAddress("127.0.0.1", 8886));
 
-                    try {
-                        SSLSocket s = (SSLSocket) serverSocket.accept();
-                        s.addHandshakeCompletedListener(new HandshakeCompletedListener() {
+      new Thread() {
+        public void run() {
 
-                            @Override
-                            public void handshakeCompleted(HandshakeCompletedEvent arg0) {
+          try {
+            SSLSocket s = (SSLSocket) serverSocket.accept();
+            s.addHandshakeCompletedListener(new HandshakeCompletedListener() {
 
-                            }
-                        });
-                        s.getOutputStream().write(new byte[] {0, 1});
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                        // this should not happen, do a false assert
-                        Assert.assertEquals(false, true);
-                    }
-                }
-            }.start();
+              @Override
+              public void handshakeCompleted(HandshakeCompletedEvent arg0) {
 
-            clientsocket.startHandshake();
-            clientsocket.close();
-            serverSocket.close();
-
-            // socked successfully opened and closed
-        } catch (Exception e) {
+              }
+            });
+            s.getOutputStream().write(new byte[] {0, 1});
+          } catch (IOException e) {
             e.printStackTrace();
-            validAssert = false;
+            // this should not happen, do a false assert
+            Assert.assertEquals(false, true);
+          }
         }
-        Assert.assertTrue(validAssert);
+      }.start();
+
+      clientsocket.startHandshake();
+      clientsocket.close();
+      serverSocket.close();
+
+      // socked successfully opened and closed
+    } catch (Exception e) {
+      e.printStackTrace();
+      validAssert = false;
     }
+    Assert.assertTrue(validAssert);
+  }
 
-    @Test
-    public void testCreateSSLEngine() {
-        SSLOption option = SSLOption.build(DIR + "/server.ssl.properties");
-        SSLCustom custom = new SSLCustom() {
-            @Override
-            public String getFullPath(String filename) {
-                return DIR + "/ssl/" + filename;
-            }
+  @Test
+  public void testCreateSSLEngine() {
+    SSLOption option = SSLOption.build(DIR + "/server.ssl.properties");
+    SSLCustom custom = new SSLCustom() {
+      @Override
+      public String getFullPath(String filename) {
+        return DIR + "/ssl/" + filename;
+      }
 
-            @Override
-            public char[] decode(char[] encrypted) {
-                return encrypted;
-            }
-        };
+      @Override
+      public char[] decode(char[] encrypted) {
+        return encrypted;
+      }
+    };
 
-        SSLEngine aSSLEngine = SSLManager.createSSLEngine(option, custom);
-        Assert.assertEquals(false, aSSLEngine.getUseClientMode());
-        Assert.assertNotNull(aSSLEngine);
+    SSLEngine aSSLEngine = SSLManager.createSSLEngine(option, custom);
+    Assert.assertEquals(false, aSSLEngine.getUseClientMode());
+    Assert.assertNotNull(aSSLEngine);
+  }
+
+  @Test
+  public void testCreateSSLEnginewithPort() {
+    SSLOption option = SSLOption.build(DIR + "/server.ssl.properties");
+    SSLCustom custom = new SSLCustom() {
+      @Override
+      public String getFullPath(String filename) {
+        return DIR + "/ssl/" + filename;
+      }
+
+      @Override
+      public char[] decode(char[] encrypted) {
+        return encrypted;
+      }
+    };
+
+    int port = 39093;
+    String peerHost = "host1";
+    SSLEngine aSSLEngine = SSLManager.createSSLEngine(option, custom, peerHost, port);
+    Assert.assertNotNull(aSSLEngine);
+    Assert.assertEquals("host1", aSSLEngine.getPeerHost().toString());
+  }
+
+  @Test
+  public void testCreateSSLContextException() {
+    SSLOption option = SSLOption.build(DIR + "/server.ssl.properties");
+
+    SSLCustom custom = new SSLCustom() {
+      @Override
+      public String getFullPath(String filename) {
+        return DIR + "/ssl/" + filename;
+      }
+
+      @Override
+      public char[] decode(char[] encrypted) {
+        return encrypted;
+      }
+    };
+
+    new MockUp<SSLContext>() {
+      @Mock
+      public final SSLContext getInstance(String type) throws NoSuchAlgorithmException {
+        throw new NoSuchAlgorithmException();
+      }
+    };
+
+    try {
+      SSLContext context = SSLManager.createSSLContext(option, custom);
+      Assert.assertNotNull(context);
+    } catch (Exception e) {
+      Assert.assertEquals("java.lang.IllegalArgumentException", e.getClass().getName());
     }
+  }
 
-    @Test
-    public void testCreateSSLEnginewithPort() {
-        SSLOption option = SSLOption.build(DIR + "/server.ssl.properties");
-        SSLCustom custom = new SSLCustom() {
-            @Override
-            public String getFullPath(String filename) {
-                return DIR + "/ssl/" + filename;
-            }
+  @Test
+  public void testCreateSSLContextKeyManagementException() {
+    SSLOption option = SSLOption.build(DIR + "/server.ssl.properties");
 
-            @Override
-            public char[] decode(char[] encrypted) {
-                return encrypted;
-            }
-        };
+    SSLCustom custom = new SSLCustom() {
+      @Override
+      public String getFullPath(String filename) {
+        return DIR + "/ssl/" + filename;
+      }
 
-        int port = 39093;
-        String peerHost = "host1";
-        SSLEngine aSSLEngine = SSLManager.createSSLEngine(option, custom, peerHost, port);
-        Assert.assertNotNull(aSSLEngine);
-        Assert.assertEquals("host1", aSSLEngine.getPeerHost().toString());
+      @Override
+      public char[] decode(char[] encrypted) {
+        return encrypted;
+      }
+    };
+
+    new MockUp<SSLContext>() {
+      @Mock
+      public final SSLContext getInstance(String type) throws KeyManagementException {
+        throw new KeyManagementException();
+      }
+    };
+
+    try {
+      SSLContext context = SSLManager.createSSLContext(option, custom);
+      Assert.assertNotNull(context);
+    } catch (Exception e) {
+      Assert.assertEquals("java.lang.IllegalArgumentException", e.getClass().getName());
     }
+  }
 
-    @Test
-    public void testCreateSSLContextException() {
-        SSLOption option = SSLOption.build(DIR + "/server.ssl.properties");
+  @Test
+  public void testCreateSSLServerSocketException() {
+    SSLOption option = SSLOption.build(DIR + "/server.ssl.properties");
 
-        SSLCustom custom = new SSLCustom() {
-            @Override
-            public String getFullPath(String filename) {
-                return DIR + "/ssl/" + filename;
-            }
+    SSLCustom custom = new SSLCustom() {
+      @Override
+      public String getFullPath(String filename) {
+        return DIR + "/ssl/" + filename;
+      }
 
-            @Override
-            public char[] decode(char[] encrypted) {
-                return encrypted;
-            }
-        };
+      @Override
+      public char[] decode(char[] encrypted) {
+        return encrypted;
+      }
+    };
 
-        new MockUp<SSLContext>() {
-            @Mock
-            public final SSLContext getInstance(String type) throws NoSuchAlgorithmException {
-                throw new NoSuchAlgorithmException();
-            }
-        };
+    new MockUp<SSLContext>() {
+      @Mock
+      public final SSLContext getInstance(String type) throws UnknownHostException {
+        throw new UnknownHostException();
+      }
+    };
 
-        try {
-            SSLContext context = SSLManager.createSSLContext(option, custom);
-            Assert.assertNotNull(context);
-        } catch (Exception e) {
-            Assert.assertEquals("java.lang.IllegalArgumentException", e.getClass().getName());
-        }
+    try {
+      SSLServerSocket context = SSLManager.createSSLServerSocket(option, custom);
+
+      Assert.assertNotNull(context);
+    } catch (Exception e) {
+      Assert.assertEquals("java.lang.IllegalArgumentException", e.getClass().getName());
     }
+  }
 
-    @Test
-    public void testCreateSSLContextKeyManagementException() {
-        SSLOption option = SSLOption.build(DIR + "/server.ssl.properties");
+  @Test
+  public void testCreateSSLServerSocketIOException() {
+    SSLOption option = SSLOption.build(DIR + "/server.ssl.properties");
 
-        SSLCustom custom = new SSLCustom() {
-            @Override
-            public String getFullPath(String filename) {
-                return DIR + "/ssl/" + filename;
-            }
+    SSLCustom custom = new SSLCustom() {
+      @Override
+      public String getFullPath(String filename) {
+        return DIR + "/ssl/" + filename;
+      }
 
-            @Override
-            public char[] decode(char[] encrypted) {
-                return encrypted;
-            }
-        };
+      @Override
+      public char[] decode(char[] encrypted) {
+        return encrypted;
+      }
+    };
 
-        new MockUp<SSLContext>() {
-            @Mock
-            public final SSLContext getInstance(String type) throws KeyManagementException {
-                throw new KeyManagementException();
-            }
-        };
+    new MockUp<SSLContext>() {
+      @Mock
+      public final SSLContext getInstance(String type) throws IOException {
+        throw new IOException();
+      }
+    };
 
-        try {
-            SSLContext context = SSLManager.createSSLContext(option, custom);
-            Assert.assertNotNull(context);
-        } catch (Exception e) {
-            Assert.assertEquals("java.lang.IllegalArgumentException", e.getClass().getName());
-        }
+    try {
+      SSLServerSocket context = SSLManager.createSSLServerSocket(option, custom);
+      Assert.assertNotNull(context);
+    } catch (Exception e) {
+      Assert.assertEquals("java.lang.IllegalArgumentException", e.getClass().getName());
     }
+  }
 
-    @Test
-    public void testCreateSSLServerSocketException() {
-        SSLOption option = SSLOption.build(DIR + "/server.ssl.properties");
+  @Test
+  public void testCreateSSLSocketException() {
+    SSLOption option = SSLOption.build(DIR + "/server.ssl.properties");
 
-        SSLCustom custom = new SSLCustom() {
-            @Override
-            public String getFullPath(String filename) {
-                return DIR + "/ssl/" + filename;
-            }
+    SSLCustom custom = new SSLCustom() {
+      @Override
+      public String getFullPath(String filename) {
+        return DIR + "/ssl/" + filename;
+      }
 
-            @Override
-            public char[] decode(char[] encrypted) {
-                return encrypted;
-            }
-        };
+      @Override
+      public char[] decode(char[] encrypted) {
+        return encrypted;
+      }
+    };
 
-        new MockUp<SSLContext>() {
-            @Mock
-            public final SSLContext getInstance(String type) throws UnknownHostException {
-                throw new UnknownHostException();
-            }
-        };
+    new MockUp<SSLContext>() {
+      @Mock
+      public final SSLContext getInstance(String type) throws UnknownHostException {
+        throw new UnknownHostException();
+      }
+    };
 
-        try {
-            SSLServerSocket context = SSLManager.createSSLServerSocket(option, custom);
-
-            Assert.assertNotNull(context);
-        } catch (Exception e) {
-            Assert.assertEquals("java.lang.IllegalArgumentException", e.getClass().getName());
-        }
+    try {
+      SSLSocket context = SSLManager.createSSLSocket(option, custom);
+      Assert.assertNotNull(context);
+    } catch (Exception e) {
+      Assert.assertEquals("java.lang.IllegalArgumentException", e.getClass().getName());
     }
+  }
 
-    @Test
-    public void testCreateSSLServerSocketIOException() {
-        SSLOption option = SSLOption.build(DIR + "/server.ssl.properties");
+  @Test
+  public void testCreateSSLSocketIOException() {
+    SSLOption option = SSLOption.build(DIR + "/server.ssl.properties");
 
-        SSLCustom custom = new SSLCustom() {
-            @Override
-            public String getFullPath(String filename) {
-                return DIR + "/ssl/" + filename;
-            }
+    SSLCustom custom = new SSLCustom() {
+      @Override
+      public String getFullPath(String filename) {
+        return DIR + "/ssl/" + filename;
+      }
 
-            @Override
-            public char[] decode(char[] encrypted) {
-                return encrypted;
-            }
-        };
+      @Override
+      public char[] decode(char[] encrypted) {
+        return encrypted;
+      }
+    };
 
-        new MockUp<SSLContext>() {
-            @Mock
-            public final SSLContext getInstance(String type) throws IOException {
-                throw new IOException();
-            }
-        };
+    new MockUp<SSLContext>() {
+      @Mock
+      public final SSLContext getInstance(String type) throws IOException {
+        throw new IOException();
+      }
+    };
 
-        try {
-            SSLServerSocket context = SSLManager.createSSLServerSocket(option, custom);
-            Assert.assertNotNull(context);
-        } catch (Exception e) {
-            Assert.assertEquals("java.lang.IllegalArgumentException", e.getClass().getName());
-        }
+    try {
+      SSLSocket context = SSLManager.createSSLSocket(option, custom);
+      Assert.assertNotNull(context);
+    } catch (Exception e) {
+      Assert.assertEquals("java.lang.IllegalArgumentException", e.getClass().getName());
     }
+  }
 
-    @Test
-    public void testCreateSSLSocketException() {
-        SSLOption option = SSLOption.build(DIR + "/server.ssl.properties");
+  @Test
+  public void testCreateSSLSocketFactory() {
+    SSLOption option = SSLOption.build(DIR + "/server.ssl.properties");
+    SSLCustom custom = new SSLCustom() {
+      @Override
+      public String getFullPath(String filename) {
+        return DIR + "/ssl/" + filename;
+      }
 
-        SSLCustom custom = new SSLCustom() {
-            @Override
-            public String getFullPath(String filename) {
-                return DIR + "/ssl/" + filename;
-            }
+      @Override
+      public char[] decode(char[] encrypted) {
+        return encrypted;
+      }
+    };
 
-            @Override
-            public char[] decode(char[] encrypted) {
-                return encrypted;
-            }
-        };
+    SSLSocketFactory aSSLSocketFactory = SSLManager.createSSLSocketFactory(option, custom);
+    Assert.assertNotNull(aSSLSocketFactory.getDefaultCipherSuites()[0]);
+  }
 
-        new MockUp<SSLContext>() {
-            @Mock
-            public final SSLContext getInstance(String type) throws UnknownHostException {
-                throw new UnknownHostException();
-            }
-        };
-
-        try {
-            SSLSocket context = SSLManager.createSSLSocket(option, custom);
-            Assert.assertNotNull(context);
-        } catch (Exception e) {
-            Assert.assertEquals("java.lang.IllegalArgumentException", e.getClass().getName());
-        }
-    }
-
-    @Test
-    public void testCreateSSLSocketIOException() {
-        SSLOption option = SSLOption.build(DIR + "/server.ssl.properties");
-
-        SSLCustom custom = new SSLCustom() {
-            @Override
-            public String getFullPath(String filename) {
-                return DIR + "/ssl/" + filename;
-            }
-
-            @Override
-            public char[] decode(char[] encrypted) {
-                return encrypted;
-            }
-        };
-
-        new MockUp<SSLContext>() {
-            @Mock
-            public final SSLContext getInstance(String type) throws IOException {
-                throw new IOException();
-            }
-        };
-
-        try {
-            SSLSocket context = SSLManager.createSSLSocket(option, custom);
-            Assert.assertNotNull(context);
-        } catch (Exception e) {
-            Assert.assertEquals("java.lang.IllegalArgumentException", e.getClass().getName());
-        }
-    }
-
-    @Test
-    public void testCreateSSLSocketFactory() {
-        SSLOption option = SSLOption.build(DIR + "/server.ssl.properties");
-        SSLCustom custom = new SSLCustom() {
-            @Override
-            public String getFullPath(String filename) {
-                return DIR + "/ssl/" + filename;
-            }
-
-            @Override
-            public char[] decode(char[] encrypted) {
-                return encrypted;
-            }
-        };
-
-        SSLSocketFactory aSSLSocketFactory = SSLManager.createSSLSocketFactory(option, custom);
-        Assert.assertNotNull(aSSLSocketFactory.getDefaultCipherSuites()[0]);
-    }
-
-    public void testGetSupportedCiphers() {
-        String[] ciphers = SSLManager.getEnalbedCiphers("TLS_RSA_WITH_AES_128_GCM_SHA256");
-        Assert.assertEquals(ciphers[0], "TLS_RSA_WITH_AES_128_GCM_SHA256");
-    }
+  public void testGetSupportedCiphers() {
+    String[] ciphers = SSLManager.getEnalbedCiphers("TLS_RSA_WITH_AES_128_GCM_SHA256");
+    Assert.assertEquals(ciphers[0], "TLS_RSA_WITH_AES_128_GCM_SHA256");
+  }
 }

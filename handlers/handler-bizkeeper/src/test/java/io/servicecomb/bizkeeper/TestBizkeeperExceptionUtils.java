@@ -23,13 +23,12 @@ import io.servicecomb.core.exception.CseException;
 
 public class TestBizkeeperExceptionUtils {
 
-    @Test
-    public void testCreateBizkeeperException() {
-        Assert.assertEquals("cse.bizkeeper.fallback", BizkeeperExceptionUtils.CSE_HANDLER_BK_FALLBACK);
-        CseException cseException = BizkeeperExceptionUtils.createBizkeeperException("cse.bizkeeper.fallback",
-                new Throwable(),
-                "ARGS");
-        Assert.assertNotNull(cseException);
-    }
-
+  @Test
+  public void testCreateBizkeeperException() {
+    Assert.assertEquals("cse.bizkeeper.fallback", BizkeeperExceptionUtils.CSE_HANDLER_BK_FALLBACK);
+    CseException cseException = BizkeeperExceptionUtils.createBizkeeperException("cse.bizkeeper.fallback",
+        new Throwable(),
+        "ARGS");
+    Assert.assertNotNull(cseException);
+  }
 }

@@ -24,8 +24,9 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import io.servicecomb.foundation.common.AbstractObjectManager;
 import com.netflix.config.DynamicProperty;
+
+import io.servicecomb.foundation.common.AbstractObjectManager;
 
 public class ProviderQpsControllerManager
     extends AbstractObjectManager<String, String, QpsController> {
@@ -85,7 +86,9 @@ public class ProviderQpsControllerManager
     }
 
     if (qpsController != null) {
-      LOGGER.info("qpsLimit of {} changed from {} to {}", key, qpsController.getQpsLimit(),
+      LOGGER.info("qpsLimit of {} changed from {} to {}",
+          key,
+          qpsController.getQpsLimit(),
           qpsLimit);
 
       qpsController.setQpsLimit(qpsLimit);

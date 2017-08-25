@@ -26,58 +26,58 @@ import io.servicecomb.core.provider.consumer.ReferenceConfig;
 import io.servicecomb.serviceregistry.RegistryUtils;
 
 public final class InvocationFactory {
-    private InvocationFactory() {
-    }
+  private InvocationFactory() {
+  }
 
-    private static String getMicroserviceName() {
-        return RegistryUtils.getMicroservice().getServiceName();
-    }
+  private static String getMicroserviceName() {
+    return RegistryUtils.getMicroservice().getServiceName();
+  }
 
-    public static Invocation forConsumer(ReferenceConfig referenceConfig, OperationMeta operationMeta,
-            Object[] swaggerArguments) {
-        Invocation invocation = new Invocation(referenceConfig,
-                operationMeta,
-                swaggerArguments);
-        invocation.addContext(Const.SRC_MICROSERVICE, getMicroserviceName());
-        return invocation;
-    }
+  public static Invocation forConsumer(ReferenceConfig referenceConfig, OperationMeta operationMeta,
+      Object[] swaggerArguments) {
+    Invocation invocation = new Invocation(referenceConfig,
+        operationMeta,
+        swaggerArguments);
+    invocation.addContext(Const.SRC_MICROSERVICE, getMicroserviceName());
+    return invocation;
+  }
 
-    /**
-     * consumer端使用，schemaMeta级别的缓存，每次调用根据operationName来执行
-     */
-    public static Invocation forConsumer(ReferenceConfig referenceConfig, SchemaMeta schemaMeta, String operationName,
-            Object[] swaggerArguments) {
-        OperationMeta operationMeta = schemaMeta.ensureFindOperation(operationName);
-        Invocation invocation = new Invocation(referenceConfig,
-                operationMeta,
-                swaggerArguments);
-        invocation.addContext(Const.SRC_MICROSERVICE, getMicroserviceName());
-        return invocation;
-    }
+  /**
+   * consumer端使用，schemaMeta级别的缓存，每次调用根据operationName来执行
+   */
+  public static Invocation forConsumer(ReferenceConfig referenceConfig, SchemaMeta schemaMeta, String operationName,
+      Object[] swaggerArguments) {
+    OperationMeta operationMeta = schemaMeta.ensureFindOperation(operationName);
+    Invocation invocation = new Invocation(referenceConfig,
+        operationMeta,
+        swaggerArguments);
+    invocation.addContext(Const.SRC_MICROSERVICE, getMicroserviceName());
+    return invocation;
+  }
 
-    /**
-     * 为tcc场景提供的快捷方式,consumer端使用
-     */
-    public static Invocation forConsumer(ReferenceConfig referenceConfig, String operationQualifiedName,
-            Object[] swaggerArguments) {
-        MicroserviceMeta microserviceMeta = referenceConfig.getMicroserviceMeta();
-        OperationMeta operationMeta = microserviceMeta.ensureFindOperation(operationQualifiedName);
+  /**
+   * 为tcc场景提供的快捷方式,consumer端使用
+   */
+  public static Invocation forConsumer(ReferenceConfig referenceConfig, String operationQualifiedName,
+      Object[] swaggerArguments) {
+    MicroserviceMeta microserviceMeta = referenceConfig.getMicroserviceMeta();
+    OperationMeta operationMeta = microserviceMeta.ensureFindOperation(operationQualifiedName);
 
-        Invocation invocation = new Invocation(referenceConfig,
-                operationMeta,
-                swaggerArguments);
-        invocation.addContext(Const.SRC_MICROSERVICE, getMicroserviceName());
-        return invocation;
-    }
+    Invocation invocation = new Invocation(referenceConfig,
+        operationMeta,
+        swaggerArguments);
+    invocation.addContext(Const.SRC_MICROSERVICE, getMicroserviceName());
+    return invocation;
+  }
 
-    /**
-     * transport server收到请求时，创建invocation
-     */
-    public static Invocation forProvider(Endpoint endpoint,
-            OperationMeta operationMeta,
-            Object[] swaggerArguments) {
-        return new Invocation(endpoint,
-                operationMeta,
-                swaggerArguments);
-    }
+  /**
+   * transport server收到请求时，创建invocation
+   */
+  public static Invocation forProvider(Endpoint endpoint,
+      OperationMeta operationMeta,
+      Object[] swaggerArguments) {
+    return new Invocation(endpoint,
+        operationMeta,
+        swaggerArguments);
+  }
 }

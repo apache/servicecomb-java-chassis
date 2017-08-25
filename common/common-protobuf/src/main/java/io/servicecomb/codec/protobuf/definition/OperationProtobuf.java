@@ -26,40 +26,40 @@ import io.servicecomb.core.definition.OperationMeta;
 import io.servicecomb.swagger.invocation.response.ResponseMeta;
 
 public class OperationProtobuf {
-    private OperationMeta operationMeta;
+  private OperationMeta operationMeta;
 
-    private WrapSchema requestSchema;
+  private WrapSchema requestSchema;
 
-    private WrapSchema responseSchema;
+  private WrapSchema responseSchema;
 
-    public OperationProtobuf(OperationMeta operationMeta)
-        throws Exception {
-        this.operationMeta = operationMeta;
+  public OperationProtobuf(OperationMeta operationMeta)
+      throws Exception {
+    this.operationMeta = operationMeta;
 
-        requestSchema = ProtobufSchemaUtils.getOrCreateArgsSchema(operationMeta);
+    requestSchema = ProtobufSchemaUtils.getOrCreateArgsSchema(operationMeta);
 
-        Method method = operationMeta.getMethod();
-        responseSchema = ProtobufSchemaUtils.getOrCreateSchema(method.getGenericReturnType());
+    Method method = operationMeta.getMethod();
+    responseSchema = ProtobufSchemaUtils.getOrCreateSchema(method.getGenericReturnType());
+  }
+
+  public OperationMeta getOperationMeta() {
+    return operationMeta;
+  }
+
+  public WrapSchema getRequestSchema() {
+    return requestSchema;
+  }
+
+  public WrapSchema getResponseSchema() {
+    return responseSchema;
+  }
+
+  public WrapSchema findResponseSchema(int statusCode) {
+    if (Family.SUCCESSFUL.equals(Family.familyOf(statusCode))) {
+      return responseSchema;
     }
 
-    public OperationMeta getOperationMeta() {
-        return operationMeta;
-    }
-
-    public WrapSchema getRequestSchema() {
-        return requestSchema;
-    }
-
-    public WrapSchema getResponseSchema() {
-        return responseSchema;
-    }
-
-    public WrapSchema findResponseSchema(int statusCode) {
-        if (Family.SUCCESSFUL.equals(Family.familyOf(statusCode))) {
-            return responseSchema;
-        }
-
-        ResponseMeta responseMeta = operationMeta.findResponseMeta(statusCode);
-        return ProtobufSchemaUtils.getOrCreateSchema(responseMeta.getJavaType());
-    }
+    ResponseMeta responseMeta = operationMeta.findResponseMeta(statusCode);
+    return ProtobufSchemaUtils.getOrCreateSchema(responseMeta.getJavaType());
+  }
 }

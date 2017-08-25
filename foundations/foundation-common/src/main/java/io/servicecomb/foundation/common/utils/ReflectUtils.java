@@ -23,42 +23,42 @@ import java.lang.reflect.Modifier;
 import org.springframework.util.ReflectionUtils;
 
 public final class ReflectUtils {
-    private static final Field MODIFIERS_FIELD =
-        ReflectionUtils.findField(Field.class, "modifiers");
+  private static final Field MODIFIERS_FIELD =
+      ReflectionUtils.findField(Field.class, "modifiers");
 
-    static {
-        MODIFIERS_FIELD.setAccessible(true);
+  static {
+    MODIFIERS_FIELD.setAccessible(true);
+  }
+
+  private ReflectUtils() {
+
+  }
+
+  public static void setField(Object instance, String fieldName, Object value) {
+    setField(instance.getClass(), instance, fieldName, value);
+  }
+
+  public static void setField(Class<?> cls, Object instance, String fieldName, Object value) {
+    Field field = ReflectionUtils.findField(cls, fieldName);
+    try {
+      if ((field.getModifiers() & Modifier.FINAL) != 0) {
+        MODIFIERS_FIELD.setInt(field, field.getModifiers() & ~Modifier.FINAL);
+      }
+      field.setAccessible(true);
+      field.set(instance, value);
+    } catch (Exception e) {
+      throw new Error(e);
+    }
+  }
+
+  // 根据方法名，忽略参数查找method，调用此函数的前提是没有重载
+  public static Method findMethod(Class<?> cls, String methodName) {
+    for (Method method : cls.getMethods()) {
+      if (method.getName().equals(methodName)) {
+        return method;
+      }
     }
 
-    private ReflectUtils() {
-
-    }
-
-    public static void setField(Object instance, String fieldName, Object value) {
-        setField(instance.getClass(), instance, fieldName, value);
-    }
-
-    public static void setField(Class<?> cls, Object instance, String fieldName, Object value) {
-        Field field = ReflectionUtils.findField(cls, fieldName);
-        try {
-            if ((field.getModifiers() & Modifier.FINAL) != 0) {
-                MODIFIERS_FIELD.setInt(field, field.getModifiers() & ~Modifier.FINAL);
-            }
-            field.setAccessible(true);
-            field.set(instance, value);
-        } catch (Exception e) {
-            throw new Error(e);
-        }
-    }
-
-    // 根据方法名，忽略参数查找method，调用此函数的前提是没有重载
-    public static Method findMethod(Class<?> cls, String methodName) {
-        for (Method method : cls.getMethods()) {
-            if (method.getName().equals(methodName)) {
-                return method;
-            }
-        }
-
-        return null;
-    }
+    return null;
+  }
 }

@@ -25,20 +25,20 @@ import org.junit.Test;
  */
 public class TestCseEndpoint {
 
-    private CseEndpoint cseEndpoint;
+  private CseEndpoint cseEndpoint;
 
-    @Before
-    public void setUp() throws Exception {
-        cseEndpoint = new CseEndpoint();
-    }
+  @Before
+  public void setUp() throws Exception {
+    cseEndpoint = new CseEndpoint();
+  }
 
-    @After
-    public void tearDown() throws Exception {
-        cseEndpoint = null;
-    }
+  @After
+  public void tearDown() throws Exception {
+    cseEndpoint = null;
+  }
 
-    @Test
-    public void testInvoke() {
-        Assert.assertTrue(cseEndpoint.invoke().isEmpty());
-    }
+  @Test
+  public void testInvoke() {
+    Assert.assertTrue(cseEndpoint.invoke().isEmpty());
+  }
 }

@@ -16,49 +16,49 @@
 package io.servicecomb.swagger.generator.core.processor.annotation.models;
 
 public class ResponseConfigBase {
-    private String description;
+  private String description;
 
-    private String responseReference;
+  private String responseReference;
 
-    private Class<?> responseClass;
+  private Class<?> responseClass;
 
-    private String responseContainer;
+  private String responseContainer;
 
-    public String getDescription() {
-        return description;
-    }
+  public String getDescription() {
+    return description;
+  }
 
-    public void setDescription(String description) {
-        this.description = description;
-    }
+  public void setDescription(String description) {
+    this.description = description;
+  }
 
-    public String getResponseReference() {
-        return responseReference;
-    }
+  public String getResponseReference() {
+    return responseReference;
+  }
 
-    public void setResponseReference(String responseReference) {
-        this.responseReference = responseReference;
-    }
+  public void setResponseReference(String responseReference) {
+    this.responseReference = responseReference;
+  }
 
-    public Class<?> getResponseClass() {
-        return responseClass;
-    }
+  public Class<?> getResponseClass() {
+    return responseClass;
+  }
 
-    public void setResponseClass(Class<?> responseClass) {
-        this.responseClass = responseClass;
-    }
+  public void setResponseClass(Class<?> responseClass) {
+    this.responseClass = responseClass;
+  }
 
-    public String getResponseContainer() {
-        return responseContainer;
-    }
+  public String getResponseContainer() {
+    return responseContainer;
+  }
 
-    public void setResponseContainer(String responseContainer) {
-        this.responseContainer = responseContainer;
-    }
+  public void setResponseContainer(String responseContainer) {
+    this.responseContainer = responseContainer;
+  }
 
-    @Override
-    public String toString() {
-        return "ResponseConfigBase [description=" + description + ", responseReference=" + responseReference
-                + ", responseClass=" + responseClass + ", responseContainer=" + responseContainer + "]";
-    }
+  @Override
+  public String toString() {
+    return "ResponseConfigBase [description=" + description + ", responseReference=" + responseReference
+        + ", responseClass=" + responseClass + ", responseContainer=" + responseContainer + "]";
+  }
 }

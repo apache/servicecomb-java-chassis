@@ -21,35 +21,35 @@ import java.util.Collection;
 import io.servicecomb.foundation.common.RegisterManager;
 
 public class CommonService<OPERATION> {
-    protected String name;
+  protected String name;
 
-    protected RegisterManager<String, OPERATION> operationMgr;
+  protected RegisterManager<String, OPERATION> operationMgr;
 
-    public void createOperationMgr(String operationMgrName) {
-        operationMgr = new RegisterManager<>(operationMgrName);
-    }
+  public void createOperationMgr(String operationMgrName) {
+    operationMgr = new RegisterManager<>(operationMgrName);
+  }
 
-    public void regOperation(String operationName, OPERATION operaton) {
-        operationMgr.register(operationName, operaton);
-    }
+  public void regOperation(String operationName, OPERATION operaton) {
+    operationMgr.register(operationName, operaton);
+  }
 
-    public OPERATION findOperation(String operation) {
-        return operationMgr.findValue(operation);
-    }
+  public OPERATION findOperation(String operation) {
+    return operationMgr.findValue(operation);
+  }
 
-    public OPERATION ensureFindOperation(String operation) {
-        return operationMgr.ensureFindValue(operation);
-    }
+  public OPERATION ensureFindOperation(String operation) {
+    return operationMgr.ensureFindValue(operation);
+  }
 
-    public Collection<OPERATION> getOperations() {
-        return operationMgr.values();
-    }
+  public Collection<OPERATION> getOperations() {
+    return operationMgr.values();
+  }
 
-    public String getName() {
-        return name;
-    }
+  public String getName() {
+    return name;
+  }
 
-    public void setName(String name) {
-        this.name = name;
-    }
+  public void setName(String name) {
+    this.name = name;
+  }
 }

@@ -20,14 +20,14 @@ import org.junit.Assert;
 import org.junit.Test;
 
 public class TestRestTransportClientManager {
-    @Test
-    public void testRestTransportClientManager() {
-        RestTransportClient client1 = RestTransportClientManager.INSTANCE.getRestTransportClient(false);
-        RestTransportClient client2 = RestTransportClientManager.INSTANCE.getRestTransportClient(false);
-        Assert.assertEquals(client1, client2);
-        
-        RestTransportClient client3 = RestTransportClientManager.INSTANCE.getRestTransportClient(true);
-        RestTransportClient client4 = RestTransportClientManager.INSTANCE.getRestTransportClient(true);
-        Assert.assertEquals(client3, client4);
-    }
+  @Test
+  public void testRestTransportClientManager() {
+    RestTransportClient client1 = RestTransportClientManager.INSTANCE.getRestTransportClient(false);
+    RestTransportClient client2 = RestTransportClientManager.INSTANCE.getRestTransportClient(false);
+    Assert.assertEquals(client1, client2);
+
+    RestTransportClient client3 = RestTransportClientManager.INSTANCE.getRestTransportClient(true);
+    RestTransportClient client4 = RestTransportClientManager.INSTANCE.getRestTransportClient(true);
+    Assert.assertEquals(client3, client4);
+  }
 }

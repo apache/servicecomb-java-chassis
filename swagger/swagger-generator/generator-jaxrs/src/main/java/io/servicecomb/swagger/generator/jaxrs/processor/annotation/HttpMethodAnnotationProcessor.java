@@ -24,11 +24,11 @@ import io.servicecomb.swagger.generator.core.MethodAnnotationProcessor;
 import io.servicecomb.swagger.generator.core.OperationGenerator;
 
 public class HttpMethodAnnotationProcessor implements MethodAnnotationProcessor {
-    @Override
-    public void process(Object annotation, OperationGenerator operationGenerator) {
-        Annotation httpMethodAnnotation = (Annotation) annotation;
-        HttpMethod httpMethod = httpMethodAnnotation.annotationType().getAnnotation(HttpMethod.class);
+  @Override
+  public void process(Object annotation, OperationGenerator operationGenerator) {
+    Annotation httpMethodAnnotation = (Annotation) annotation;
+    HttpMethod httpMethod = httpMethodAnnotation.annotationType().getAnnotation(HttpMethod.class);
 
-        operationGenerator.setHttpMethod(httpMethod.value());
-    }
+    operationGenerator.setHttpMethod(httpMethod.value());
+  }
 }

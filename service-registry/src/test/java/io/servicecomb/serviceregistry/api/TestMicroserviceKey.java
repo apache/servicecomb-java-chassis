@@ -21,50 +21,44 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-/**
- *
- * @since Mar 14, 2017
- * @see 
- */
 public class TestMicroserviceKey {
 
-    MicroserviceKey oMicroserviceKey = null;
+  MicroserviceKey oMicroserviceKey = null;
 
-    @Before
-    public void setUp() throws Exception {
-        oMicroserviceKey = new MicroserviceKey();
-    }
+  @Before
+  public void setUp() throws Exception {
+    oMicroserviceKey = new MicroserviceKey();
+  }
 
-    @After
-    public void tearDown() throws Exception {
-        oMicroserviceKey = null;
-    }
+  @After
+  public void tearDown() throws Exception {
+    oMicroserviceKey = null;
+  }
 
-    @Test
-    public void testDefaultValues() {
-        Assert.assertNull(oMicroserviceKey.getAppId());
-        Assert.assertNull(oMicroserviceKey.getTenant());
-        Assert.assertNull(oMicroserviceKey.getServiceName());
-        Assert.assertNull(oMicroserviceKey.getStage());
-        Assert.assertNull(oMicroserviceKey.getVersion());
-    }
+  @Test
+  public void testDefaultValues() {
+    Assert.assertNull(oMicroserviceKey.getAppId());
+    Assert.assertNull(oMicroserviceKey.getTenant());
+    Assert.assertNull(oMicroserviceKey.getServiceName());
+    Assert.assertNull(oMicroserviceKey.getStage());
+    Assert.assertNull(oMicroserviceKey.getVersion());
+  }
 
-    @Test
-    public void testIntializedValues() {
-        initFields(); //Initialize the Object
-        Assert.assertEquals("1", oMicroserviceKey.getVersion());
-        Assert.assertEquals("testServiceName", oMicroserviceKey.getServiceName());
-        Assert.assertEquals("Test", oMicroserviceKey.getStage());
-        Assert.assertEquals("testTenantName", oMicroserviceKey.getTenant());
-        Assert.assertEquals(Const.REGISTRY_APP_ID, oMicroserviceKey.getAppId());
-    }
+  @Test
+  public void testIntializedValues() {
+    initFields(); //Initialize the Object
+    Assert.assertEquals("1", oMicroserviceKey.getVersion());
+    Assert.assertEquals("testServiceName", oMicroserviceKey.getServiceName());
+    Assert.assertEquals("Test", oMicroserviceKey.getStage());
+    Assert.assertEquals("testTenantName", oMicroserviceKey.getTenant());
+    Assert.assertEquals(Const.REGISTRY_APP_ID, oMicroserviceKey.getAppId());
+  }
 
-    private void initFields() {
-        oMicroserviceKey.setAppId(Const.REGISTRY_APP_ID);
-        oMicroserviceKey.setServiceName("testServiceName");
-        oMicroserviceKey.setTenant("testTenantName");
-        oMicroserviceKey.setVersion("1");
-        oMicroserviceKey.setStage("Test");
-    }
-
+  private void initFields() {
+    oMicroserviceKey.setAppId(Const.REGISTRY_APP_ID);
+    oMicroserviceKey.setServiceName("testServiceName");
+    oMicroserviceKey.setTenant("testTenantName");
+    oMicroserviceKey.setVersion("1");
+    oMicroserviceKey.setStage("Test");
+  }
 }

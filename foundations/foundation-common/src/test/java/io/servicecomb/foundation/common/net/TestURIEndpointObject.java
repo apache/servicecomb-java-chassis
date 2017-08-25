@@ -28,41 +28,41 @@ import org.junit.Test;
 import mockit.Deencapsulation;
 
 public class TestURIEndpointObject {
-    @Test
-    public void testRestEndpointObject() {
-        URIEndpointObject obj = new URIEndpointObject("http://127.0.2.0:8080");
-        Assert.assertEquals("127.0.2.0", obj.getHostOrIp());
-        Assert.assertEquals(8080, obj.getPort());
-        Assert.assertFalse(obj.isSslEnabled());
+  @Test
+  public void testRestEndpointObject() {
+    URIEndpointObject obj = new URIEndpointObject("http://127.0.2.0:8080");
+    Assert.assertEquals("127.0.2.0", obj.getHostOrIp());
+    Assert.assertEquals(8080, obj.getPort());
+    Assert.assertFalse(obj.isSslEnabled());
 
-        obj = new URIEndpointObject("http://127.0.2.0:8080?sslEnabled=true");
-        Assert.assertEquals("127.0.2.0", obj.getHostOrIp());
-        Assert.assertEquals(8080, obj.getPort());
-        Assert.assertTrue(obj.isSslEnabled());
-        Assert.assertNull(obj.getFirst("notExist"));
-    }
+    obj = new URIEndpointObject("http://127.0.2.0:8080?sslEnabled=true");
+    Assert.assertEquals("127.0.2.0", obj.getHostOrIp());
+    Assert.assertEquals(8080, obj.getPort());
+    Assert.assertTrue(obj.isSslEnabled());
+    Assert.assertNull(obj.getFirst("notExist"));
+  }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void testRestEndpointObjectException() {
-        new URIEndpointObject("http://127.0.2.0");
-    }
+  @Test(expected = IllegalArgumentException.class)
+  public void testRestEndpointObjectException() {
+    new URIEndpointObject("http://127.0.2.0");
+  }
 
-    @Test
-    public void testQueryChineseAndSpaceAndEmpty() throws UnsupportedEncodingException {
-        String strUri =
-            "cse://1.1.1.1:1234/abc?a=1&b=&country=" + URLEncoder.encode("中 国", StandardCharsets.UTF_8.name());
-        URIEndpointObject ep = new URIEndpointObject(strUri);
+  @Test
+  public void testQueryChineseAndSpaceAndEmpty() throws UnsupportedEncodingException {
+    String strUri =
+        "cse://1.1.1.1:1234/abc?a=1&b=&country=" + URLEncoder.encode("中 国", StandardCharsets.UTF_8.name());
+    URIEndpointObject ep = new URIEndpointObject(strUri);
 
-        Map<String, List<String>> querys = Deencapsulation.getField(ep, "querys");
-        Assert.assertEquals(3, querys.size());
+    Map<String, List<String>> querys = Deencapsulation.getField(ep, "querys");
+    Assert.assertEquals(3, querys.size());
 
-        Assert.assertEquals(1, ep.getQuery("a").size());
-        Assert.assertEquals("1", ep.getFirst("a"));
+    Assert.assertEquals(1, ep.getQuery("a").size());
+    Assert.assertEquals("1", ep.getFirst("a"));
 
-        Assert.assertEquals(1, ep.getQuery("b").size());
-        Assert.assertEquals("", ep.getFirst("b"));
+    Assert.assertEquals(1, ep.getQuery("b").size());
+    Assert.assertEquals("", ep.getFirst("b"));
 
-        Assert.assertEquals(1, ep.getQuery("country").size());
-        Assert.assertEquals("中 国", ep.getFirst("country"));
-    }
+    Assert.assertEquals(1, ep.getQuery("country").size());
+    Assert.assertEquals("中 国", ep.getFirst("country"));
+  }
 }

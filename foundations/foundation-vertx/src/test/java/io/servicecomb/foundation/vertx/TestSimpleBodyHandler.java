@@ -30,48 +30,47 @@ import io.vertx.ext.web.RoutingContext;
 
 public class TestSimpleBodyHandler {
 
-    private SimpleBodyHandler instance;
+  private SimpleBodyHandler instance;
 
-    private RoutingContext context;
+  private RoutingContext context;
 
-    @Before
-    public void setUp() throws Exception {
-        context = Mockito.mock(RoutingContext.class);
-        HttpServerRequest request = Mockito.mock(HttpServerRequest.class);
-        Mockito.when(context.request()).thenReturn(request);
-        HttpServerResponse response = Mockito.mock(HttpServerResponse.class);
-        Mockito.when(response.setStatusCode(Status.UNSUPPORTED_MEDIA_TYPE.getStatusCode())).thenReturn(response);
-        Mockito.when(context.response()).thenReturn(response);
-    }
+  @Before
+  public void setUp() throws Exception {
+    context = Mockito.mock(RoutingContext.class);
+    HttpServerRequest request = Mockito.mock(HttpServerRequest.class);
+    Mockito.when(context.request()).thenReturn(request);
+    HttpServerResponse response = Mockito.mock(HttpServerResponse.class);
+    Mockito.when(response.setStatusCode(Status.UNSUPPORTED_MEDIA_TYPE.getStatusCode())).thenReturn(response);
+    Mockito.when(context.response()).thenReturn(response);
+  }
 
-    @After
-    public void tearDown() throws Exception {
-        instance = null;
-        context = null;
-    }
+  @After
+  public void tearDown() throws Exception {
+    instance = null;
+    context = null;
+  }
 
-    @Test
-    public void testValidContentType() {
-        instance = new SimpleBodyHandler() {
-            @Override
-            protected boolean contentTypeSupported(String contentType) {
-                return true;
-            }
-        };
-        instance.handle(context);
-        Assert.assertTrue(instance.checkContentType(context));
-    }
+  @Test
+  public void testValidContentType() {
+    instance = new SimpleBodyHandler() {
+      @Override
+      protected boolean contentTypeSupported(String contentType) {
+        return true;
+      }
+    };
+    instance.handle(context);
+    Assert.assertTrue(instance.checkContentType(context));
+  }
 
-    @Test
-    public void testInvalidContentType() {
-        instance = new SimpleBodyHandler() {
-            @Override
-            protected boolean contentTypeSupported(String contentType) {
-                return false;
-            }
-        };
-        instance.handle(context);
-        Assert.assertFalse(instance.checkContentType(context));
-    }
-
+  @Test
+  public void testInvalidContentType() {
+    instance = new SimpleBodyHandler() {
+      @Override
+      protected boolean contentTypeSupported(String contentType) {
+        return false;
+      }
+    };
+    instance.handle(context);
+    Assert.assertFalse(instance.checkContentType(context));
+  }
 }

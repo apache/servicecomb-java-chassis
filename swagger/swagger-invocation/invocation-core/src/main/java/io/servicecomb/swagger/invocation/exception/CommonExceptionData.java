@@ -20,26 +20,25 @@ package io.servicecomb.swagger.invocation.exception;
  * 将普通异常转换为InvocationException时，保存message信息
  */
 public class CommonExceptionData {
-    private String message;
+  private String message;
 
-    public CommonExceptionData() {
-    }
+  public CommonExceptionData() {
+  }
 
-    public CommonExceptionData(String message) {
-        this.message = message;
-    }
+  public CommonExceptionData(String message) {
+    this.message = message;
+  }
 
-    public String getMessage() {
-        return message;
-    }
+  public String getMessage() {
+    return message;
+  }
 
-    public void setMessage(String message) {
-        this.message = message;
-    }
+  public void setMessage(String message) {
+    this.message = message;
+  }
 
-    @Override
-    public String toString() {
-        return "CommonExceptionData [message=" + message + "]";
-    }
-
+  @Override
+  public String toString() {
+    return "CommonExceptionData [message=" + message + "]";
+  }
 }

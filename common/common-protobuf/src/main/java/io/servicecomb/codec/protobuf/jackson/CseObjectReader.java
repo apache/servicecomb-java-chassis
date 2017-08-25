@@ -22,13 +22,13 @@ import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.ObjectReader;
 
 public class CseObjectReader extends ObjectReader {
-    private static final long serialVersionUID = -4154834940923475928L;
+  private static final long serialVersionUID = -4154834940923475928L;
 
-    public CseObjectReader(ObjectReader base, FormatSchema schema, JsonDeserializer<Object> rootDeser) {
-        super(base, base.getConfig(), null, rootDeser, null, schema, null, null);
-    }
+  public CseObjectReader(ObjectReader base, FormatSchema schema, JsonDeserializer<Object> rootDeser) {
+    super(base, base.getConfig(), null, rootDeser, null, schema, null, null);
+  }
 
-    public JsonDeserializer<Object> findDeserializer(JavaType valueType) {
-        return _prefetchRootDeserializer(valueType);
-    }
+  public JsonDeserializer<Object> findDeserializer(JavaType valueType) {
+    return _prefetchRootDeserializer(valueType);
+  }
 }

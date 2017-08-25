@@ -17,24 +17,24 @@
 package io.servicecomb.provider.pojo;
 
 public final class PojoConst {
-    private PojoConst() {
-    }
+  private PojoConst() {
+  }
 
-    public static final String FIELD_SCHEMA_ID = "schemaId";
+  public static final String FIELD_SCHEMA_ID = "schemaId";
 
-    public static final String SCHEMA_ID = "schema-id";
+  public static final String SCHEMA_ID = "schema-id";
 
-    public static final String IMPL = "implementation";
+  public static final String IMPL = "implementation";
 
-    public static final String FIELD_MICROSERVICE_NAME = "microserviceName";
+  public static final String FIELD_MICROSERVICE_NAME = "microserviceName";
 
-    public static final String MICROSERVICE_NAME = "microservice-name";
+  public static final String MICROSERVICE_NAME = "microservice-name";
 
-    public static final String FIELD_INTERFACE = "consumerIntf";
+  public static final String FIELD_INTERFACE = "consumerIntf";
 
-    public static final String INTERFACE = "interface";
+  public static final String INTERFACE = "interface";
 
-    public static final String POJO = "pojo";
+  public static final String POJO = "pojo";
 
-    public static final String SPRING = "spring";
+  public static final String SPRING = "spring";
 }

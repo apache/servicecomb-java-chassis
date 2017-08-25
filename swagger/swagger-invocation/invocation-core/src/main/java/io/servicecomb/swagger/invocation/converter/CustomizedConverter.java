@@ -18,7 +18,7 @@ package io.servicecomb.swagger.invocation.converter;
 import java.lang.reflect.Type;
 
 public interface CustomizedConverter extends Converter {
-    Type getSrcType();
+  Type getSrcType();
 
-    Type getTargetType();
+  Type getTargetType();
 }

@@ -43,6 +43,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.core.ParameterizedTypeReference;
@@ -64,24 +65,31 @@ import org.springframework.web.util.UriTemplateHandler;
 public class TestRestTemplateWrapper {
 
   private final AcceptableRestTemplate underlying = mock(AcceptableRestTemplate.class);
+
   private final RestTemplateWrapper wrapper = new RestTemplateWrapper();
 
   private final String url = uniquify("someUrl");
+
   private final URI uri = URI.create(url);
 
   private final String param1 = uniquify("param1");
+
   private final String param2 = uniquify("param2");
 
   @SuppressWarnings("serial")
-  private final Map<String, String> paramsMap = new HashMap<String, String>() {{
-    put(uniquify("key1"), param1);
-    put(uniquify("key2"), param2);
-  }};
+  private final Map<String, String> paramsMap = new HashMap<String, String>() {
+    {
+      put(uniquify("key1"), param1);
+      put(uniquify("key2"), param2);
+    }
+  };
 
   private final HttpEntity<String> requestEntity = new HttpEntity<>(uniquify("requestBody"));
 
   private final String response = uniquify("response");
+
   private final ResponseEntity<List<String>> typedResponse = new ResponseEntity<>(singletonList(response), OK);
+
   private final ResponseEntity<String> responseEntity = new ResponseEntity<>(response, OK);
 
   private final List<HttpMethod> httpMethods = asList(GET, HEAD, POST, PUT, PATCH, DELETE, OPTIONS, TRACE);

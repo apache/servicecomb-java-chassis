@@ -17,7 +17,7 @@
 package io.servicecomb.common.rest.codec.produce;
 
 public abstract class AbstractProduceProcessor implements ProduceProcessor {
-    public AbstractProduceProcessor() {
-        ProduceProcessorManager.INSTANCE.register(getName(), this);
-    }
+  public AbstractProduceProcessor() {
+    ProduceProcessorManager.INSTANCE.register(getName(), this);
+  }
 }

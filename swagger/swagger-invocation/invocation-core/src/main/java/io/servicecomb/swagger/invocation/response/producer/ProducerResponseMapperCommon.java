@@ -21,20 +21,20 @@ import io.servicecomb.swagger.invocation.Response;
 import io.servicecomb.swagger.invocation.converter.Converter;
 
 public class ProducerResponseMapperCommon implements ProducerResponseMapper {
-    private Converter converter;
+  private Converter converter;
 
-    public ProducerResponseMapperCommon(Converter converter) {
-        this.converter = converter;
-    }
+  public ProducerResponseMapperCommon(Converter converter) {
+    this.converter = converter;
+  }
 
-    @Override
-    public Class<?> getResponseClass() {
-        return null;
-    }
+  @Override
+  public Class<?> getResponseClass() {
+    return null;
+  }
 
-    @Override
-    public Response mapResponse(StatusType status, Object response) {
-        Object swaggerResult = converter.convert(response);
-        return Response.create(status, swaggerResult);
-    }
+  @Override
+  public Response mapResponse(StatusType status, Object response) {
+    Object swaggerResult = converter.convert(response);
+    return Response.create(status, swaggerResult);
+  }
 }

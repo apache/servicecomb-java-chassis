@@ -16,53 +16,52 @@
 
 package io.servicecomb.core.handler.impl;
 
-import io.servicecomb.core.Invocation;
-import io.servicecomb.core.definition.OperationMeta;
-import io.servicecomb.swagger.invocation.AsyncResponse;
-
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 
+import io.servicecomb.core.Invocation;
+import io.servicecomb.core.definition.OperationMeta;
+import io.servicecomb.swagger.invocation.AsyncResponse;
+
 public class TestServiceProviderHandler {
 
-    ProducerOperationHandler serviceProviderHandler = null;
+  ProducerOperationHandler serviceProviderHandler = null;
 
-    Invocation invocation = null;
+  Invocation invocation = null;
 
-    AsyncResponse asyncResp = null;
+  AsyncResponse asyncResp = null;
 
-    OperationMeta OperationMeta = null;
+  OperationMeta OperationMeta = null;
 
-    @Before
-    public void setUp() throws Exception {
-        serviceProviderHandler = new ProducerOperationHandler();
-        invocation = Mockito.mock(Invocation.class);
-        asyncResp = Mockito.mock(AsyncResponse.class);
-        OperationMeta = Mockito.mock(OperationMeta.class);
+  @Before
+  public void setUp() throws Exception {
+    serviceProviderHandler = new ProducerOperationHandler();
+    invocation = Mockito.mock(Invocation.class);
+    asyncResp = Mockito.mock(AsyncResponse.class);
+    OperationMeta = Mockito.mock(OperationMeta.class);
+  }
 
+  @After
+  public void tearDown() throws Exception {
+    serviceProviderHandler = null;
+    invocation = null;
+    asyncResp = null;
+    OperationMeta = null;
+  }
+
+  @Test
+  public void testHandle() {
+    boolean status = false;
+    try {
+      Assert.assertNotNull(serviceProviderHandler);
+      Mockito.when(invocation.getOperationMeta()).thenReturn(OperationMeta);
+      serviceProviderHandler.handle(invocation, asyncResp);
+    } catch (Exception e) {
+      status = true;
     }
-
-    @After
-    public void tearDown() throws Exception {
-        serviceProviderHandler = null;
-        invocation = null;
-        asyncResp = null;
-        OperationMeta = null;
-    }
-
-    @Test
-    public void testHandle() {
-        boolean status = false;
-        try {
-            Assert.assertNotNull(serviceProviderHandler);
-            Mockito.when(invocation.getOperationMeta()).thenReturn(OperationMeta);
-            serviceProviderHandler.handle(invocation, asyncResp);
-        } catch (Exception e) {
-            status = true;
-        }
-        Assert.assertFalse(status);
-    }
+    Assert.assertFalse(status);
+  }
 }

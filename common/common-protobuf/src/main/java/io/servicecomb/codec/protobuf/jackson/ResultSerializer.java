@@ -26,16 +26,15 @@ import com.fasterxml.jackson.dataformat.protobuf.ProtobufGenerator;
 import com.fasterxml.jackson.dataformat.protobuf.schema.ProtobufField;
 
 public class ResultSerializer extends JsonSerializer<Object> {
-    @Override
-    public void serialize(Object value, JsonGenerator gen,
-            SerializerProvider serializers) throws IOException, JsonProcessingException {
-        gen.writeStartObject();
+  @Override
+  public void serialize(Object value, JsonGenerator gen,
+      SerializerProvider serializers) throws IOException, JsonProcessingException {
+    gen.writeStartObject();
 
-        ProtobufGenerator protobufGenerator = (ProtobufGenerator) gen;
-        ProtobufField field = protobufGenerator.getSchema().getRootType().firstField();
-        gen.writeObjectField(field.name, value);
+    ProtobufGenerator protobufGenerator = (ProtobufGenerator) gen;
+    ProtobufField field = protobufGenerator.getSchema().getRootType().firstField();
+    gen.writeObjectField(field.name, value);
 
-        gen.writeEndObject();
-    }
-
+    gen.writeEndObject();
+  }
 }

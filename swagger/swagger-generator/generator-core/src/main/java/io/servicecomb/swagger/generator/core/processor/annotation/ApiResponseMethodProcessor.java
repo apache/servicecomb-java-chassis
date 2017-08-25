@@ -17,18 +17,17 @@ package io.servicecomb.swagger.generator.core.processor.annotation;
 
 import io.servicecomb.swagger.generator.core.MethodAnnotationProcessor;
 import io.servicecomb.swagger.generator.core.OperationGenerator;
-
 import io.swagger.annotations.ApiResponse;
 
 public class ApiResponseMethodProcessor implements MethodAnnotationProcessor {
 
-    @Override
-    public void process(Object annotation, OperationGenerator operationGenerator) {
-        // swagger号称不允许独立使用这个标注，不过支持独立使用，也没什么后果
-        ApiResponse apiResponse = (ApiResponse) annotation;
+  @Override
+  public void process(Object annotation, OperationGenerator operationGenerator) {
+    // swagger号称不允许独立使用这个标注，不过支持独立使用，也没什么后果
+    ApiResponse apiResponse = (ApiResponse) annotation;
 
-        AnnotationUtils.addResponse(operationGenerator.getSwagger(),
-                operationGenerator.getOperation(),
-                apiResponse);
-    }
+    AnnotationUtils.addResponse(operationGenerator.getSwagger(),
+        operationGenerator.getOperation(),
+        apiResponse);
+  }
 }

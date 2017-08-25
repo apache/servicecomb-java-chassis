@@ -22,14 +22,14 @@ import io.servicecomb.swagger.generator.core.OperationGenerator;
 import io.servicecomb.swagger.invocation.context.InvocationContext;
 
 public class InvocationContextProcessor implements CommonParameterTypeProcessor {
-    @Override
-    public Class<?> getParameterType() {
-        return InvocationContext.class;
-    }
+  @Override
+  public Class<?> getParameterType() {
+    return InvocationContext.class;
+  }
 
-    @Override
-    public void process(OperationGenerator operationGenerator, int paramIdx) {
-        InvocationContextParameter parameter = new InvocationContextParameter();
-        operationGenerator.addProviderParameter(parameter);
-    }
+  @Override
+  public void process(OperationGenerator operationGenerator, int paramIdx) {
+    InvocationContextParameter parameter = new InvocationContextParameter();
+    operationGenerator.addProviderParameter(parameter);
+  }
 }

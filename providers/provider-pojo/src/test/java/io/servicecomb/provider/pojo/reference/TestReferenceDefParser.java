@@ -26,16 +26,15 @@ import io.servicecomb.provider.pojo.PojoConst;
 
 public class TestReferenceDefParser {
 
-    @Test
-    public void testDoParse()
-        throws Exception {
+  @Test
+  public void testDoParse()
+      throws Exception {
 
-        ReferenceDefParser lReferenceDefParser = new ReferenceDefParser();
-        
-        Element element = Mockito.mock(Element.class);
-        Mockito.when(element.getAttribute(PojoConst.SCHEMA_ID)).thenReturn("abc");
-        lReferenceDefParser.doParse(element, null, Mockito.mock(BeanDefinitionBuilder.class));
-        Assert.assertEquals(PojoReferenceMeta.class, lReferenceDefParser.getBeanClass(null));
-    }
+    ReferenceDefParser lReferenceDefParser = new ReferenceDefParser();
 
+    Element element = Mockito.mock(Element.class);
+    Mockito.when(element.getAttribute(PojoConst.SCHEMA_ID)).thenReturn("abc");
+    lReferenceDefParser.doParse(element, null, Mockito.mock(BeanDefinitionBuilder.class));
+    Assert.assertEquals(PojoReferenceMeta.class, lReferenceDefParser.getBeanClass(null));
+  }
 }

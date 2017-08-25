@@ -30,22 +30,22 @@ import org.slf4j.LoggerFactory;
  * Rest Servlet Server, load by web container
  */
 public class RestServlet extends HttpServlet {
-    private static final long serialVersionUID = 5797523329773923112L;
+  private static final long serialVersionUID = 5797523329773923112L;
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(RestServlet.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(RestServlet.class);
 
-    private ServletRestServer servletRestServer = new ServletRestServer();
+  private ServletRestServer servletRestServer = new ServletRestServer();
 
-    @Override
-    public void init() throws ServletException {
-        super.init();
+  @Override
+  public void init() throws ServletException {
+    super.init();
 
-        LOGGER.info("Rest Servlet inited");
-    }
+    LOGGER.info("Rest Servlet inited");
+  }
 
-    @Override
-    public void service(final HttpServletRequest request,
-            final HttpServletResponse response) throws ServletException, IOException {
-        servletRestServer.service(request, response);
-    }
+  @Override
+  public void service(final HttpServletRequest request,
+      final HttpServletResponse response) throws ServletException, IOException {
+    servletRestServer.service(request, response);
+  }
 }

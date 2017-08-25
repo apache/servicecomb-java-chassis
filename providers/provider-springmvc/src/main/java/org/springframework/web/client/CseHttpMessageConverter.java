@@ -38,44 +38,43 @@ import io.servicecomb.provider.springmvc.reference.CseClientHttpResponse;
  */
 public class CseHttpMessageConverter implements HttpMessageConverter<Object> {
 
-    private static final List<MediaType> ALL_MEDIA_TYPE = Arrays.asList(MediaType.ALL);
+  private static final List<MediaType> ALL_MEDIA_TYPE = Arrays.asList(MediaType.ALL);
 
-    private static final Field RESPONSE_FIELD =
-        ReflectionUtils.findField(MessageBodyClientHttpResponseWrapper.class, "response");
+  private static final Field RESPONSE_FIELD =
+      ReflectionUtils.findField(MessageBodyClientHttpResponseWrapper.class, "response");
 
-    static {
-        RESPONSE_FIELD.setAccessible(true);
-    }
+  static {
+    RESPONSE_FIELD.setAccessible(true);
+  }
 
-    @Override
-    public boolean canRead(Class<?> clazz, MediaType mediaType) {
-        return true;
-    }
+  @Override
+  public boolean canRead(Class<?> clazz, MediaType mediaType) {
+    return true;
+  }
 
-    @Override
-    public boolean canWrite(Class<?> clazz, MediaType mediaType) {
-        return true;
-    }
+  @Override
+  public boolean canWrite(Class<?> clazz, MediaType mediaType) {
+    return true;
+  }
 
-    @Override
-    public List<MediaType> getSupportedMediaTypes() {
-        return ALL_MEDIA_TYPE;
-    }
+  @Override
+  public List<MediaType> getSupportedMediaTypes() {
+    return ALL_MEDIA_TYPE;
+  }
 
-    @Override
-    public Object read(Class<? extends Object> clazz,
-            HttpInputMessage inputMessage) throws IOException, HttpMessageNotReadableException {
-        MessageBodyClientHttpResponseWrapper respWrapper = (MessageBodyClientHttpResponseWrapper) inputMessage;
-        CseClientHttpResponse resp =
-            (CseClientHttpResponse) ReflectionUtils.getField(RESPONSE_FIELD, respWrapper);
-        return resp.getResult();
-    }
+  @Override
+  public Object read(Class<? extends Object> clazz,
+      HttpInputMessage inputMessage) throws IOException, HttpMessageNotReadableException {
+    MessageBodyClientHttpResponseWrapper respWrapper = (MessageBodyClientHttpResponseWrapper) inputMessage;
+    CseClientHttpResponse resp =
+        (CseClientHttpResponse) ReflectionUtils.getField(RESPONSE_FIELD, respWrapper);
+    return resp.getResult();
+  }
 
-    @Override
-    public void write(Object t, MediaType contentType,
-            HttpOutputMessage outputMessage) throws IOException, HttpMessageNotWritableException {
-        CseClientHttpRequest request = (CseClientHttpRequest) outputMessage;
-        request.setRequestBody(t);
-    }
-
+  @Override
+  public void write(Object t, MediaType contentType,
+      HttpOutputMessage outputMessage) throws IOException, HttpMessageNotWritableException {
+    CseClientHttpRequest request = (CseClientHttpRequest) outputMessage;
+    request.setRequestBody(t);
+  }
 }

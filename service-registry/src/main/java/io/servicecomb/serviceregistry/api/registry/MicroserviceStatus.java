@@ -20,5 +20,7 @@ package io.servicecomb.serviceregistry.api.registry;
  * Created by   on 2016/12/5.
  */
 public enum MicroserviceStatus {
-    UNKNOWN, UP, DOWN
+  UNKNOWN,
+  UP,
+  DOWN
 }

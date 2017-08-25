@@ -21,29 +21,29 @@ import java.util.List;
 import io.servicecomb.swagger.invocation.context.InvocationContext;
 
 public interface PojoConsumerIntf {
-    int testSimple(int a, int b, int c);
+  int testSimple(int a, int b, int c);
 
-    Person testObject(Person user);
+  Person testObject(Person user);
 
-    String testSimpleAndObject(String prefix, Person user);
+  String testSimpleAndObject(String prefix, Person user);
 
-    String testContext(InvocationContext context, String name);
+  String testContext(InvocationContext context, String name);
 
-    byte[] testBytes(byte[] bytes);
+  byte[] testBytes(byte[] bytes);
 
-    String[] testArrayArray(String[] s);
+  String[] testArrayArray(String[] s);
 
-    List<String> testArrayList(String[] s);
+  List<String> testArrayList(String[] s);
 
-    String[] testListArray(List<String> s);
+  String[] testListArray(List<String> s);
 
-    List<String> testListList(List<String> s);
+  List<String> testListList(List<String> s);
 
-    Person[] testObjectArrayArray(Person[] s);
+  Person[] testObjectArrayArray(Person[] s);
 
-    List<Person> testObjectArrayList(Person[] s);
+  List<Person> testObjectArrayList(Person[] s);
 
-    Person[] testObjectListArray(List<Person> s);
+  Person[] testObjectListArray(List<Person> s);
 
-    List<Person> testObjectListList(List<Person> s);
+  List<Person> testObjectListList(List<Person> s);
 }

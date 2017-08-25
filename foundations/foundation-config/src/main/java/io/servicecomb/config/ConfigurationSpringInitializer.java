@@ -28,32 +28,32 @@ import com.netflix.config.ConfigurationManager;
 import com.netflix.config.DynamicPropertyFactory;
 
 public class ConfigurationSpringInitializer extends PropertyPlaceholderConfigurer {
-    public ConfigurationSpringInitializer() {
-        ConfigUtil.installDynamicConfig();
-        setOrder(Ordered.LOWEST_PRECEDENCE / 2);
-        setIgnoreUnresolvablePlaceholders(true);
-    }
+  public ConfigurationSpringInitializer() {
+    ConfigUtil.installDynamicConfig();
+    setOrder(Ordered.LOWEST_PRECEDENCE / 2);
+    setIgnoreUnresolvablePlaceholders(true);
+  }
 
-    @Override
-    protected Properties mergeProperties() throws IOException {
-        Properties properties = super.mergeProperties();
+  @Override
+  protected Properties mergeProperties() throws IOException {
+    Properties properties = super.mergeProperties();
 
-        AbstractConfiguration config = ConfigurationManager.getConfigInstance();
-        Iterator<String> iter = config.getKeys();
-        while (iter.hasNext()) {
-            String key = iter.next();
-            Object value = config.getProperty(key);
-            properties.put(key, value);
-        }
-        return properties;
+    AbstractConfiguration config = ConfigurationManager.getConfigInstance();
+    Iterator<String> iter = config.getKeys();
+    while (iter.hasNext()) {
+      String key = iter.next();
+      Object value = config.getProperty(key);
+      properties.put(key, value);
     }
+    return properties;
+  }
 
-    @Override
-    protected String resolvePlaceholder(String placeholder, Properties props) {
-        String propertyValue = super.resolvePlaceholder(placeholder, props);
-        if (propertyValue == null) {
-            return DynamicPropertyFactory.getInstance().getStringProperty(placeholder, null).get();
-        }
-        return propertyValue;
+  @Override
+  protected String resolvePlaceholder(String placeholder, Properties props) {
+    String propertyValue = super.resolvePlaceholder(placeholder, props);
+    if (propertyValue == null) {
+      return DynamicPropertyFactory.getInstance().getStringProperty(placeholder, null).get();
     }
+    return propertyValue;
+  }
 }

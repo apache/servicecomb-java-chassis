@@ -30,43 +30,43 @@ import org.slf4j.LoggerFactory;
 import com.netflix.config.DynamicPropertyFactory;
 
 public class FixedThreadExecutor implements Executor {
-    private static final Logger LOGGER = LoggerFactory.getLogger(FixedThreadExecutor.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(FixedThreadExecutor.class);
 
-    public static final String KEY_GROUP = "servicecomb.executor.default.group";
+  public static final String KEY_GROUP = "servicecomb.executor.default.group";
 
-    public static final String KEY_THREAD = "servicecomb.executor.default.thread-per-group";
+  public static final String KEY_THREAD = "servicecomb.executor.default.thread-per-group";
 
-    // to avoid multiple network thread conflicted when put tasks to executor queue
-    private List<Executor> executorList = new ArrayList<>();
+  // to avoid multiple network thread conflicted when put tasks to executor queue
+  private List<Executor> executorList = new ArrayList<>();
 
-    // for bind network thread to one executor
-    // it's impossible that has too many network thread, so index will not too big that less than 0
-    private AtomicInteger index = new AtomicInteger();
+  // for bind network thread to one executor
+  // it's impossible that has too many network thread, so index will not too big that less than 0
+  private AtomicInteger index = new AtomicInteger();
 
-    private Map<Long, Executor> threadExectorMap = new ConcurrentHashMap<>();
+  private Map<Long, Executor> threadExectorMap = new ConcurrentHashMap<>();
 
-    public FixedThreadExecutor() {
-        int groupCount = DynamicPropertyFactory.getInstance().getIntProperty(KEY_GROUP, 2).get();
-        int threadPerGroup = DynamicPropertyFactory.getInstance()
-                .getIntProperty(KEY_THREAD, Runtime.getRuntime().availableProcessors())
-                .get();
-        LOGGER.info("executor group {}, thread per group {}.", groupCount, threadPerGroup);
+  public FixedThreadExecutor() {
+    int groupCount = DynamicPropertyFactory.getInstance().getIntProperty(KEY_GROUP, 2).get();
+    int threadPerGroup = DynamicPropertyFactory.getInstance()
+        .getIntProperty(KEY_THREAD, Runtime.getRuntime().availableProcessors())
+        .get();
+    LOGGER.info("executor group {}, thread per group {}.", groupCount, threadPerGroup);
 
-        for (int groupIdx = 0; groupIdx < groupCount; groupIdx++) {
-            executorList.add(Executors.newFixedThreadPool(threadPerGroup));
-        }
+    for (int groupIdx = 0; groupIdx < groupCount; groupIdx++) {
+      executorList.add(Executors.newFixedThreadPool(threadPerGroup));
     }
+  }
 
-    @Override
-    public void execute(Runnable command) {
-        long threadId = Thread.currentThread().getId();
-        Executor executor = threadExectorMap.computeIfAbsent(threadId, this::chooseExecutor);
+  @Override
+  public void execute(Runnable command) {
+    long threadId = Thread.currentThread().getId();
+    Executor executor = threadExectorMap.computeIfAbsent(threadId, this::chooseExecutor);
 
-        executor.execute(command);
-    }
+    executor.execute(command);
+  }
 
-    private Executor chooseExecutor(long threadId) {
-        int idx = index.getAndIncrement() % executorList.size();
-        return executorList.get(idx);
-    }
+  private Executor chooseExecutor(long threadId) {
+    int idx = index.getAndIncrement() % executorList.size();
+    return executorList.get(idx);
+  }
 }

@@ -21,59 +21,59 @@ import org.springframework.util.ClassUtils;
 import com.fasterxml.jackson.databind.JavaType;
 
 public class FieldConfig {
-    private String name;
+  private String name;
 
-    // javassist的成员不支持int这样的类型，必须是Integer才行
-    private Class<?> rawType;
+  // javassist的成员不支持int这样的类型，必须是Integer才行
+  private Class<?> rawType;
 
-    private JavaType type;
+  private JavaType type;
 
-    private boolean genGetter;
+  private boolean genGetter;
 
-    private boolean genSetter;
+  private boolean genSetter;
 
-    public String getName() {
-        return name;
+  public String getName() {
+    return name;
+  }
+
+  public void setName(String name) {
+    this.name = name;
+  }
+
+  public Class<?> getRawType() {
+    return rawType;
+  }
+
+  public JavaType getType() {
+    return type;
+  }
+
+  public void setType(JavaType type) {
+    this.rawType = ClassUtils.resolvePrimitiveIfNecessary(type.getRawClass());
+    this.type = type;
+  }
+
+  public boolean isGenGetter() {
+    return genGetter;
+  }
+
+  public void setGenGetter(boolean genGetter) {
+    this.genGetter = genGetter;
+  }
+
+  public boolean isGenSetter() {
+    return genSetter;
+  }
+
+  public void setGenSetter(boolean genSetter) {
+    this.genSetter = genSetter;
+  }
+
+  public String getGenericSignature() {
+    if (type.hasGenericTypes()) {
+      return type.getGenericSignature();
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public Class<?> getRawType() {
-        return rawType;
-    }
-
-    public JavaType getType() {
-        return type;
-    }
-
-    public void setType(JavaType type) {
-        this.rawType = ClassUtils.resolvePrimitiveIfNecessary(type.getRawClass());
-        this.type = type;
-    }
-
-    public boolean isGenGetter() {
-        return genGetter;
-    }
-
-    public void setGenGetter(boolean genGetter) {
-        this.genGetter = genGetter;
-    }
-
-    public boolean isGenSetter() {
-        return genSetter;
-    }
-
-    public void setGenSetter(boolean genSetter) {
-        this.genSetter = genSetter;
-    }
-
-    public String getGenericSignature() {
-        if (type.hasGenericTypes()) {
-            return type.getGenericSignature();
-        }
-
-        return null;
-    }
+    return null;
+  }
 }

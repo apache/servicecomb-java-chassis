@@ -15,19 +15,22 @@
  */
 package io.servicecomb.loadbalance.filter;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.junit.Assert;
+import org.junit.Test;
+
 import com.netflix.loadbalancer.Server;
+
 import io.servicecomb.loadbalance.CseServer;
 import io.servicecomb.serviceregistry.RegistryUtils;
 import io.servicecomb.serviceregistry.api.registry.DataCenterInfo;
 import io.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
-import java.util.ArrayList;
-import java.util.List;
 import mockit.Expectations;
 import mockit.Mock;
 import mockit.MockUp;
 import mockit.Mocked;
-import org.junit.Assert;
-import org.junit.Test;
 
 public class TestZoneAwareServerListFilterExt {
 

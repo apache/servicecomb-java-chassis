@@ -19,7 +19,6 @@ package io.servicecomb.demo.discovery.zuul;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 
-import io.servicecomb.springboot.starter.provider.EnableServiceComb;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,22 +30,24 @@ import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.cloud.netflix.zuul.EnableZuulProxy;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import io.servicecomb.springboot.starter.provider.EnableServiceComb;
+
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = DiscoveryZuulProxyIT.DiscoveryZuulProxy.class, webEnvironment = RANDOM_PORT)
 public class DiscoveryZuulProxyIT {
 
   @Autowired
-	private TestRestTemplate restTemplate;
+  private TestRestTemplate restTemplate;
 
   @Test
-	public void getsRemoteServiceThroughGateway() throws Exception {
+  public void getsRemoteServiceThroughGateway() throws Exception {
     String response = restTemplate.getForObject(
         "/gateway/greeting/sayhello/{name}",
         String.class,
         "Mike");
 
     assertThat(response).isEqualTo("hello Mike");
-	}
+  }
 
   @SpringBootApplication
   @EnableZuulProxy

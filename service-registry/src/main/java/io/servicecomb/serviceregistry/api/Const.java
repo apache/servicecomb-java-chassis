@@ -20,34 +20,34 @@ package io.servicecomb.serviceregistry.api;
  * Created by   on 2017/1/9.
  */
 public final class Const {
-    private Const() {
-    }
+  private Const() {
+  }
 
-    public static final String REGISTRY_APP_ID = "default";
+  public static final String REGISTRY_APP_ID = "default";
 
-    public static final String REGISTRY_SERVICE_NAME = "SERVICECENTER";
+  public static final String REGISTRY_SERVICE_NAME = "SERVICECENTER";
 
-    public static final String REGISTRY_VERSION = "3.0.0";
+  public static final String REGISTRY_VERSION = "3.0.0";
 
-    public static final String MS_API_PATH = "/registry/v3";
+  public static final String MS_API_PATH = "/registry/v3";
 
-    public static final String MICROSERVICE_PATH = "/microservices";
+  public static final String MICROSERVICE_PATH = "/microservices";
 
-    public static final String SCHEMA_PATH = "/schemas";
+  public static final String SCHEMA_PATH = "/schemas";
 
-    public static final String INSTANCES_PATH = "/instances";
+  public static final String INSTANCES_PATH = "/instances";
 
-    public static final String HEARTBEAT_PATH = "/heartbeat";
+  public static final String HEARTBEAT_PATH = "/heartbeat";
 
-    public static final String EXISTENCE_PATH = "/existence";
+  public static final String EXISTENCE_PATH = "/existence";
 
-    public static final String WATCHER_PATH = "/watcher";
+  public static final String WATCHER_PATH = "/watcher";
 
-    public static final String APP_SERVICE_SEPARATOR = ":";
+  public static final String APP_SERVICE_SEPARATOR = ":";
 
-    public static final String PATH_CHECKSESSION = "checksession";
+  public static final String PATH_CHECKSESSION = "checksession";
 
-    public static final String PROPERTIES_PATH = "/properties";
+  public static final String PROPERTIES_PATH = "/properties";
 
-    public static final String URL_PREFIX = "urlPrefix";
+  public static final String URL_PREFIX = "urlPrefix";
 }

@@ -19,17 +19,16 @@ package io.servicecomb.swagger.generator.jaxrs.processor.annotation;
 import javax.ws.rs.FormParam;
 
 import io.servicecomb.swagger.generator.core.processor.parameter.AbstractParameterProcessor;
-
 import io.swagger.models.parameters.FormParameter;
 
 public class FormParamAnnotationProcessor extends AbstractParameterProcessor<FormParameter> {
-    @Override
-    protected String getAnnotationParameterName(Object annotation) {
-        return ((FormParam) annotation).value();
-    }
+  @Override
+  protected String getAnnotationParameterName(Object annotation) {
+    return ((FormParam) annotation).value();
+  }
 
-    @Override
-    protected FormParameter createParameter() {
-        return new FormParameter();
-    }
+  @Override
+  protected FormParameter createParameter() {
+    return new FormParameter();
+  }
 }

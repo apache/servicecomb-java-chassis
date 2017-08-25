@@ -19,25 +19,24 @@ package io.servicecomb.common.rest.codec.param;
 import io.servicecomb.foundation.common.RegisterManager;
 
 public final class ParamValueProcessorCreatorManager extends RegisterManager<String, ParamValueProcessorCreator> {
-    private static final String NAME = "param value processor mgr";
+  private static final String NAME = "param value processor mgr";
 
-    public static final ParamValueProcessorCreatorManager INSTANCE = new ParamValueProcessorCreatorManager();
+  public static final ParamValueProcessorCreatorManager INSTANCE = new ParamValueProcessorCreatorManager();
 
-    static {
-        new PathProcessorCreator();
-        new QueryProcessorCreator();
-        new FormProcessorCreator();
-        new HeaderProcessorCreator();
-        new CookieProcessorCreator();
-        new BodyProcessorCreator();
-    }
+  static {
+    new PathProcessorCreator();
+    new QueryProcessorCreator();
+    new FormProcessorCreator();
+    new HeaderProcessorCreator();
+    new CookieProcessorCreator();
+    new BodyProcessorCreator();
+  }
 
-    private ParamValueProcessorCreatorManager() {
-        super(NAME);
-    }
+  private ParamValueProcessorCreatorManager() {
+    super(NAME);
+  }
 
-    public ParamValueProcessorCreator getBodyProcessorCreater() {
-        return this.ensureFindValue(BodyProcessorCreator.PARAMTYPE);
-    }
-
+  public ParamValueProcessorCreator getBodyProcessorCreater() {
+    return this.ensureFindValue(BodyProcessorCreator.PARAMTYPE);
+  }
 }

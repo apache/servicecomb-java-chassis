@@ -19,6 +19,8 @@ package io.servicecomb.transport.rest.vertx;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.netflix.config.DynamicPropertyFactory;
+
 import io.servicecomb.core.Const;
 import io.servicecomb.core.CseContext;
 import io.servicecomb.core.Endpoint;
@@ -28,8 +30,6 @@ import io.servicecomb.foundation.ssl.SSLCustom;
 import io.servicecomb.foundation.ssl.SSLOption;
 import io.servicecomb.foundation.ssl.SSLOptionFactory;
 import io.servicecomb.foundation.vertx.VertxTLSBuilder;
-import com.netflix.config.DynamicPropertyFactory;
-
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Context;
 import io.vertx.core.Future;
@@ -39,101 +39,101 @@ import io.vertx.core.http.HttpServerOptions;
 import io.vertx.ext.web.Router;
 
 public class RestServerVerticle extends AbstractVerticle {
-    private static final Logger LOGGER = LoggerFactory.getLogger(RestServerVerticle.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(RestServerVerticle.class);
 
-    private static final String SSL_KEY = "rest.provider";
+  private static final String SSL_KEY = "rest.provider";
 
-    private static final int ACCEPT_BACKLOG = 2048;
+  private static final int ACCEPT_BACKLOG = 2048;
 
-    private static final int SEND_BUFFER_SIZE = 4096;
+  private static final int SEND_BUFFER_SIZE = 4096;
 
-    private static final int RECEIVE_BUFFER_SIZE = 4096;
+  private static final int RECEIVE_BUFFER_SIZE = 4096;
 
-    private Endpoint endpoint;
+  private Endpoint endpoint;
 
-    private URIEndpointObject endpointObject;
+  private URIEndpointObject endpointObject;
 
-    private RestBodyHandler bodyHandler = new RestBodyHandler();
+  private RestBodyHandler bodyHandler = new RestBodyHandler();
 
-    @Override
-    public void init(Vertx vertx, Context context) {
-        super.init(vertx, context);
-        this.endpoint = (Endpoint) context.config().getValue(AbstractTransport.ENDPOINT_KEY);
-        this.endpointObject = (URIEndpointObject) endpoint.getAddress();
+  @Override
+  public void init(Vertx vertx, Context context) {
+    super.init(vertx, context);
+    this.endpoint = (Endpoint) context.config().getValue(AbstractTransport.ENDPOINT_KEY);
+    this.endpointObject = (URIEndpointObject) endpoint.getAddress();
 
-        String uploadsDirectory =
-            DynamicPropertyFactory.getInstance().getStringProperty("cse.uploads.directory", null).get();
-        bodyHandler.setUploadsDirectory(uploadsDirectory);
-        bodyHandler.setDeleteUploadedFilesOnEnd(true);
-        LOGGER.info("set uploads directory to " + uploadsDirectory);
+    String uploadsDirectory =
+        DynamicPropertyFactory.getInstance().getStringProperty("cse.uploads.directory", null).get();
+    bodyHandler.setUploadsDirectory(uploadsDirectory);
+    bodyHandler.setDeleteUploadedFilesOnEnd(true);
+    LOGGER.info("set uploads directory to " + uploadsDirectory);
+  }
+
+  @Override
+  public void start(Future<Void> startFuture) throws Exception {
+    super.start();
+
+    // 如果本地未配置地址，则表示不必监听，只需要作为客户端使用即可
+    if (endpointObject == null) {
+      LOGGER.warn("rest listen address is not configured, will not start.");
+      startFuture.complete();
+      return;
     }
 
-    @Override
-    public void start(Future<Void> startFuture) throws Exception {
-        super.start();
+    Router mainRouter = Router.router(vertx);
+    mainRouter.route().handler(bodyHandler);
 
-        // 如果本地未配置地址，则表示不必监听，只需要作为客户端使用即可
-        if (endpointObject == null) {
-            LOGGER.warn("rest listen address is not configured, will not start.");
-            startFuture.complete();
-            return;
-        }
+    VertxRestServer vertxRestServer = new VertxRestServer(mainRouter);
+    vertxRestServer.setTransport(CseContext.getInstance().getTransportManager().findTransport(Const.RESTFUL));
 
-        Router mainRouter = Router.router(vertx);
-        mainRouter.route().handler(bodyHandler);
+    HttpServer httpServer = createHttpServer();
+    httpServer.requestHandler(mainRouter::accept);
 
-        VertxRestServer vertxRestServer = new VertxRestServer(mainRouter);
-        vertxRestServer.setTransport(CseContext.getInstance().getTransportManager().findTransport(Const.RESTFUL));
+    startListen(httpServer, startFuture);
+  }
 
-        HttpServer httpServer = createHttpServer();
-        httpServer.requestHandler(mainRouter::accept);
+  private void startListen(HttpServer server, Future<Void> startFuture) {
+    server.listen(endpointObject.getPort(), endpointObject.getHostOrIp(), ar -> {
+      if (ar.succeeded()) {
+        LOGGER.info("rest listen success. address={}:{}",
+            endpointObject.getHostOrIp(),
+            ar.result().actualPort());
+        startFuture.complete();
+        return;
+      }
 
-        startListen(httpServer, startFuture);
+      String msg = String.format("rest listen failed, address=%s:%d",
+          endpointObject.getHostOrIp(),
+          endpointObject.getPort());
+      LOGGER.error(msg, ar.cause());
+      startFuture.fail(ar.cause());
+    });
+  }
+
+  private HttpServer createHttpServer() {
+    HttpServerOptions serverOptions = createDefaultHttpServerOptions();
+    return vertx.createHttpServer(serverOptions);
+  }
+
+  private HttpServerOptions createDefaultHttpServerOptions() {
+    HttpServerOptions serverOptions = new HttpServerOptions();
+    serverOptions.setAcceptBacklog(ACCEPT_BACKLOG);
+    serverOptions.setSendBufferSize(SEND_BUFFER_SIZE);
+    serverOptions.setReceiveBufferSize(RECEIVE_BUFFER_SIZE);
+    serverOptions.setUsePooledBuffers(true);
+
+    if (endpointObject.isSslEnabled()) {
+      SSLOptionFactory factory =
+          SSLOptionFactory.createSSLOptionFactory(SSL_KEY, null);
+      SSLOption sslOption;
+      if (factory == null) {
+        sslOption = SSLOption.buildFromYaml(SSL_KEY);
+      } else {
+        sslOption = factory.createSSLOption();
+      }
+      SSLCustom sslCustom = SSLCustom.createSSLCustom(sslOption.getSslCustomClass());
+      VertxTLSBuilder.buildNetServerOptions(sslOption, sslCustom, serverOptions);
     }
 
-    private void startListen(HttpServer server, Future<Void> startFuture) {
-        server.listen(endpointObject.getPort(), endpointObject.getHostOrIp(), ar -> {
-            if (ar.succeeded()) {
-                LOGGER.info("rest listen success. address={}:{}",
-                        endpointObject.getHostOrIp(),
-                        ar.result().actualPort());
-                startFuture.complete();
-                return;
-            }
-
-            String msg = String.format("rest listen failed, address=%s:%d",
-                    endpointObject.getHostOrIp(),
-                    endpointObject.getPort());
-            LOGGER.error(msg, ar.cause());
-            startFuture.fail(ar.cause());
-        });
-    }
-
-    private HttpServer createHttpServer() {
-        HttpServerOptions serverOptions = createDefaultHttpServerOptions();
-        return vertx.createHttpServer(serverOptions);
-    }
-
-    private HttpServerOptions createDefaultHttpServerOptions() {
-        HttpServerOptions serverOptions = new HttpServerOptions();
-        serverOptions.setAcceptBacklog(ACCEPT_BACKLOG);
-        serverOptions.setSendBufferSize(SEND_BUFFER_SIZE);
-        serverOptions.setReceiveBufferSize(RECEIVE_BUFFER_SIZE);
-        serverOptions.setUsePooledBuffers(true);
-
-        if (endpointObject.isSslEnabled()) {
-            SSLOptionFactory factory =
-                SSLOptionFactory.createSSLOptionFactory(SSL_KEY, null);
-            SSLOption sslOption;
-            if (factory == null) {
-                sslOption = SSLOption.buildFromYaml(SSL_KEY);
-            } else {
-                sslOption = factory.createSSLOption();
-            }
-            SSLCustom sslCustom = SSLCustom.createSSLCustom(sslOption.getSslCustomClass());
-            VertxTLSBuilder.buildNetServerOptions(sslOption, sslCustom, serverOptions);
-        }
-
-        return serverOptions;
-    }
+    return serverOptions;
+  }
 }

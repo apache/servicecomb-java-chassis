@@ -36,98 +36,97 @@ import io.vertx.core.buffer.Buffer;
 
 public class BodyProcessorCreator implements ParamValueProcessorCreator {
 
-    public static final String PARAMTYPE = "body";
+  public static final String PARAMTYPE = "body";
 
-    public static class BodyProcessor implements ParamValueProcessor {
-        protected JavaType targetType;
+  public static class BodyProcessor implements ParamValueProcessor {
+    protected JavaType targetType;
 
-        public BodyProcessor(JavaType targetType) {
-            this.targetType = targetType;
-        }
-
-        @Override
-        public Object getValue(RestServerRequest request) throws Exception {
-            // 从payload中获取参数
-            Object body = request.getBody();
-            if (body == null) {
-                return null;
-            }
-
-            if (InputStream.class.isInstance(body)) {
-                InputStream inputStream = (InputStream) body;
-
-                String contentType = request.getContentType();
-                if (contentType != null && contentType.startsWith(MediaType.TEXT_PLAIN)) {
-                    // TODO: we should consider body encoding
-                    return IOUtils.toString(inputStream, "UTF-8");
-                }
-                return RestObjectMapper.INSTANCE.readValue(inputStream, targetType);
-            }
-
-            return RestObjectMapper.INSTANCE.convertValue(body, targetType);
-        }
-
-        @Override
-        public void setValue(RestClientRequest clientRequest, Object arg) throws Exception {
-            try (BufferOutputStream output = new BufferOutputStream()) {
-                RestObjectMapper.INSTANCE.writeValue(output, arg);
-                clientRequest.write(output.getBuffer());
-            }
-        }
-
-        @Override
-        public String getParameterPath() {
-            return "";
-        }
-
-        @Override
-        public String getProcessorType() {
-            return PARAMTYPE;
-        }
-    }
-
-    public static class RawJsonBodyProcessor extends BodyProcessor {
-
-        public RawJsonBodyProcessor(JavaType targetType) {
-            super(targetType);
-        }
-
-        @Override
-        public Object getValue(RestServerRequest request) throws Exception {
-            // 从payload中获取参数
-            Object body = request.getBody();
-            if (body == null) {
-                return null;
-            }
-
-            if (InputStream.class.isInstance(body)) {
-                InputStream inputStream = (InputStream) body;
-                // TODO: we should consider body encoding
-                return IOUtils.toString(inputStream, "UTF-8");
-            }
-
-            return RestObjectMapper.INSTANCE.convertValue(body, targetType);
-        }
-
-        @Override
-        public void setValue(RestClientRequest clientRequest, Object arg) throws Exception {
-            clientRequest.write(Buffer.buffer((String) arg));
-        }
-
-    }
-
-    public BodyProcessorCreator() {
-        ParamValueProcessorCreatorManager.INSTANCE.register(PARAMTYPE, this);
+    public BodyProcessor(JavaType targetType) {
+      this.targetType = targetType;
     }
 
     @Override
-    public ParamValueProcessor create(Parameter parameter, Type genericParamType) {
-        JavaType targetType = TypeFactory.defaultInstance().constructType(genericParamType);
-        boolean rawJson = ClassUtils.isRawJsonType(parameter);
-        if (genericParamType.getTypeName().equals(String.class.getTypeName()) && rawJson) {
-            return new RawJsonBodyProcessor(targetType);
-        }
+    public Object getValue(RestServerRequest request) throws Exception {
+      // 从payload中获取参数
+      Object body = request.getBody();
+      if (body == null) {
+        return null;
+      }
 
-        return new BodyProcessor(targetType);
+      if (InputStream.class.isInstance(body)) {
+        InputStream inputStream = (InputStream) body;
+
+        String contentType = request.getContentType();
+        if (contentType != null && contentType.startsWith(MediaType.TEXT_PLAIN)) {
+          // TODO: we should consider body encoding
+          return IOUtils.toString(inputStream, "UTF-8");
+        }
+        return RestObjectMapper.INSTANCE.readValue(inputStream, targetType);
+      }
+
+      return RestObjectMapper.INSTANCE.convertValue(body, targetType);
     }
+
+    @Override
+    public void setValue(RestClientRequest clientRequest, Object arg) throws Exception {
+      try (BufferOutputStream output = new BufferOutputStream()) {
+        RestObjectMapper.INSTANCE.writeValue(output, arg);
+        clientRequest.write(output.getBuffer());
+      }
+    }
+
+    @Override
+    public String getParameterPath() {
+      return "";
+    }
+
+    @Override
+    public String getProcessorType() {
+      return PARAMTYPE;
+    }
+  }
+
+  public static class RawJsonBodyProcessor extends BodyProcessor {
+
+    public RawJsonBodyProcessor(JavaType targetType) {
+      super(targetType);
+    }
+
+    @Override
+    public Object getValue(RestServerRequest request) throws Exception {
+      // 从payload中获取参数
+      Object body = request.getBody();
+      if (body == null) {
+        return null;
+      }
+
+      if (InputStream.class.isInstance(body)) {
+        InputStream inputStream = (InputStream) body;
+        // TODO: we should consider body encoding
+        return IOUtils.toString(inputStream, "UTF-8");
+      }
+
+      return RestObjectMapper.INSTANCE.convertValue(body, targetType);
+    }
+
+    @Override
+    public void setValue(RestClientRequest clientRequest, Object arg) throws Exception {
+      clientRequest.write(Buffer.buffer((String) arg));
+    }
+  }
+
+  public BodyProcessorCreator() {
+    ParamValueProcessorCreatorManager.INSTANCE.register(PARAMTYPE, this);
+  }
+
+  @Override
+  public ParamValueProcessor create(Parameter parameter, Type genericParamType) {
+    JavaType targetType = TypeFactory.defaultInstance().constructType(genericParamType);
+    boolean rawJson = ClassUtils.isRawJsonType(parameter);
+    if (genericParamType.getTypeName().equals(String.class.getTypeName()) && rawJson) {
+      return new RawJsonBodyProcessor(targetType);
+    }
+
+    return new BodyProcessor(targetType);
+  }
 }

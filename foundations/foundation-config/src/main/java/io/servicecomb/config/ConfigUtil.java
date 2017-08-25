@@ -47,176 +47,176 @@ import io.servicecomb.config.spi.ConfigCenterConfigurationSource;
 import io.servicecomb.foundation.common.utils.SPIServiceUtils;
 
 public final class ConfigUtil {
-    private static final Logger LOGGER = LoggerFactory.getLogger(ConfigUtil.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(ConfigUtil.class);
 
-    protected static final String configCenterUrlKey = "cse.config.client.serverUri";
+  protected static final String configCenterUrlKey = "cse.config.client.serverUri";
 
-    private static final String MICROSERVICE_CONFIG_LOADER_KEY = "cse-microservice-config-loader";
+  private static final String MICROSERVICE_CONFIG_LOADER_KEY = "cse-microservice-config-loader";
 
-    private ConfigUtil() {
+  private ConfigUtil() {
+  }
+
+  public static Object getProperty(String key) {
+    Object config = DynamicPropertyFactory.getBackingConfigurationSource();
+    return getProperty(config, key);
+  }
+
+  public static Object getProperty(Object config, String key) {
+    if (null != config && Configuration.class.isInstance(config)) {
+      Configuration configuration = (Configuration) config;
+      return configuration.getProperty(key);
+    }
+    return null;
+  }
+
+  private static void setMicroserviceConfigLoader(Configuration config, MicroserviceConfigLoader loader) {
+    config.setProperty(MICROSERVICE_CONFIG_LOADER_KEY, loader);
+  }
+
+  public static MicroserviceConfigLoader getMicroserviceConfigLoader() {
+    return (MicroserviceConfigLoader) getProperty(MICROSERVICE_CONFIG_LOADER_KEY);
+  }
+
+  public static MicroserviceConfigLoader getMicroserviceConfigLoader(Configuration config) {
+    return (MicroserviceConfigLoader) getProperty(config, MICROSERVICE_CONFIG_LOADER_KEY);
+  }
+
+  public static ConcurrentCompositeConfiguration createLocalConfig() {
+    MicroserviceConfigLoader loader = new MicroserviceConfigLoader();
+    loader.loadAndSort();
+
+    LOGGER.info("create local config:");
+    for (ConfigModel configModel : loader.getConfigModels()) {
+      LOGGER.info(" {}.", configModel.getUrl());
     }
 
-    public static Object getProperty(String key) {
-        Object config = DynamicPropertyFactory.getBackingConfigurationSource();
-        return getProperty(config, key);
+    ConcurrentCompositeConfiguration config = ConfigUtil.createLocalConfig(loader.getConfigModels());
+    ConfigUtil.setMicroserviceConfigLoader(config, loader);
+    return config;
+  }
+
+  public static ConcurrentCompositeConfiguration createLocalConfig(List<ConfigModel> configModelList) {
+    ConcurrentCompositeConfiguration config = new ConcurrentCompositeConfiguration();
+
+    duplicateServiceCombConfigToCse(config,
+        new ConcurrentMapConfiguration(new SystemConfiguration()),
+        "configFromSystem");
+    duplicateServiceCombConfigToCse(config,
+        new ConcurrentMapConfiguration(new EnvironmentConfiguration()),
+        "configFromEnvironment");
+    duplicateServiceCombConfigToCse(config,
+        new DynamicConfiguration(
+            new MicroserviceConfigurationSource(configModelList), new NeverStartPollingScheduler()),
+        "configFromYamlFile");
+
+    return config;
+  }
+
+  //inject a copy of cse.xxx for servicecomb.xxx
+  private static void duplicateServiceCombConfigToCse(AbstractConfiguration source) {
+    Iterator<String> keys = source.getKeys();
+    while (keys.hasNext()) {
+      String key = keys.next();
+      if (!key.startsWith(CONFIG_SERVICECOMB_PREFIX)) {
+        continue;
+      }
+
+      String cseKey = CONFIG_CSE_PREFIX + key.substring(key.indexOf(".") + 1);
+      source.addProperty(cseKey, source.getProperty(key));
+    }
+  }
+
+  private static void duplicateServiceCombConfigToCse(ConcurrentCompositeConfiguration compositeConfiguration,
+      AbstractConfiguration source,
+      String sourceName) {
+    duplicateServiceCombConfigToCse(source);
+
+    compositeConfiguration.addConfiguration(source, sourceName);
+  }
+
+  public static DynamicWatchedConfiguration createConfigFromConfigCenter(Configuration localConfiguration) {
+    if (localConfiguration.getProperty(configCenterUrlKey) == null) {
+      LOGGER.info("config center URL is missing, skip to load configuration from config center");
+      return null;
     }
 
-    public static Object getProperty(Object config, String key) {
-        if (null != config && Configuration.class.isInstance(config)) {
-            Configuration configuration = (Configuration) config;
-            return configuration.getProperty(key);
+    ConfigCenterConfigurationSource configCenterConfigurationSource =
+        SPIServiceUtils.getTargetService(ConfigCenterConfigurationSource.class);
+    if (null == configCenterConfigurationSource) {
+      LOGGER.info(
+          "config center SPI service can not find, skip to load configuration from config center");
+      return null;
+    }
+
+    configCenterConfigurationSource.init(localConfiguration);
+    return new DynamicWatchedConfiguration(configCenterConfigurationSource);
+  }
+
+  public static AbstractConfiguration createDynamicConfig() {
+    LOGGER.info("create dynamic config:");
+    ConcurrentCompositeConfiguration config = ConfigUtil.createLocalConfig();
+    DynamicWatchedConfiguration configFromConfigCenter = createConfigFromConfigCenter(config);
+    if (configFromConfigCenter != null) {
+      ConcurrentMapConfiguration injectConfig = new ConcurrentMapConfiguration();
+      config.addConfigurationAtFront(injectConfig, "extraInjectConfig");
+
+      duplicateServiceCombConfigToCse(configFromConfigCenter);
+      config.addConfigurationAtFront(configFromConfigCenter, "configCenterConfig");
+
+      configFromConfigCenter.getSource().addUpdateListener(new ServiceCombPropertyUpdateListener(injectConfig));
+    }
+
+    return config;
+  }
+
+  public static void installDynamicConfig() {
+    if (ConfigurationManager.isConfigurationInstalled()) {
+      LOGGER.warn("Configuration installed by others, will ignore this configuration.");
+      return;
+    }
+
+    AbstractConfiguration dynamicConfig = ConfigUtil.createDynamicConfig();
+    ConfigurationManager.install(dynamicConfig);
+  }
+
+  private static class ServiceCombPropertyUpdateListener implements WatchedUpdateListener {
+
+    private final ConcurrentMapConfiguration injectConfig;
+
+    ServiceCombPropertyUpdateListener(ConcurrentMapConfiguration injectConfig) {
+      this.injectConfig = injectConfig;
+    }
+
+    @Override
+    public void updateConfiguration(WatchedUpdateResult watchedUpdateResult) {
+      Map<String, Object> adds = watchedUpdateResult.getAdded();
+      if (adds != null) {
+        for (String add : adds.keySet()) {
+          if (add.startsWith(CONFIG_SERVICECOMB_PREFIX)) {
+            String key = CONFIG_CSE_PREFIX + add.substring(add.indexOf(".") + 1);
+            injectConfig.addProperty(key, adds.get(add));
+          }
         }
-        return null;
-    }
+      }
 
-    private static void setMicroserviceConfigLoader(Configuration config, MicroserviceConfigLoader loader) {
-        config.setProperty(MICROSERVICE_CONFIG_LOADER_KEY, loader);
-    }
-
-    public static MicroserviceConfigLoader getMicroserviceConfigLoader() {
-        return (MicroserviceConfigLoader) getProperty(MICROSERVICE_CONFIG_LOADER_KEY);
-    }
-
-    public static MicroserviceConfigLoader getMicroserviceConfigLoader(Configuration config) {
-        return (MicroserviceConfigLoader) getProperty(config, MICROSERVICE_CONFIG_LOADER_KEY);
-    }
-
-    public static ConcurrentCompositeConfiguration createLocalConfig() {
-        MicroserviceConfigLoader loader = new MicroserviceConfigLoader();
-        loader.loadAndSort();
-
-        LOGGER.info("create local config:");
-        for (ConfigModel configModel : loader.getConfigModels()) {
-            LOGGER.info(" {}.", configModel.getUrl());
+      Map<String, Object> deletes = watchedUpdateResult.getDeleted();
+      if (deletes != null) {
+        for (String delete : deletes.keySet()) {
+          if (delete.startsWith(CONFIG_SERVICECOMB_PREFIX)) {
+            injectConfig.clearProperty(CONFIG_CSE_PREFIX + delete.substring(delete.indexOf(".") + 1));
+          }
         }
+      }
 
-        ConcurrentCompositeConfiguration config = ConfigUtil.createLocalConfig(loader.getConfigModels());
-        ConfigUtil.setMicroserviceConfigLoader(config, loader);
-        return config;
-    }
-
-    public static ConcurrentCompositeConfiguration createLocalConfig(List<ConfigModel> configModelList) {
-        ConcurrentCompositeConfiguration config = new ConcurrentCompositeConfiguration();
-
-        duplicateServiceCombConfigToCse(config,
-                new ConcurrentMapConfiguration(new SystemConfiguration()),
-                "configFromSystem");
-        duplicateServiceCombConfigToCse(config,
-                new ConcurrentMapConfiguration(new EnvironmentConfiguration()),
-                "configFromEnvironment");
-        duplicateServiceCombConfigToCse(config,
-                new DynamicConfiguration(
-                        new MicroserviceConfigurationSource(configModelList), new NeverStartPollingScheduler()),
-                "configFromYamlFile");
-
-        return config;
-    }
-
-    //inject a copy of cse.xxx for servicecomb.xxx
-    private static void duplicateServiceCombConfigToCse(AbstractConfiguration source) {
-        Iterator<String> keys = source.getKeys();
-        while (keys.hasNext()) {
-            String key = keys.next();
-            if (!key.startsWith(CONFIG_SERVICECOMB_PREFIX)) {
-                continue;
-            }
-
-            String cseKey = CONFIG_CSE_PREFIX + key.substring(key.indexOf(".") + 1);
-            source.addProperty(cseKey, source.getProperty(key));
+      Map<String, Object> changes = watchedUpdateResult.getChanged();
+      if (changes != null) {
+        for (String change : changes.keySet()) {
+          if (change.startsWith(CONFIG_SERVICECOMB_PREFIX)) {
+            String key = CONFIG_CSE_PREFIX + change.substring(change.indexOf(".") + 1);
+            injectConfig.setProperty(key, changes.get(change));
+          }
         }
+      }
     }
-
-    private static void duplicateServiceCombConfigToCse(ConcurrentCompositeConfiguration compositeConfiguration,
-            AbstractConfiguration source,
-            String sourceName) {
-        duplicateServiceCombConfigToCse(source);
-
-        compositeConfiguration.addConfiguration(source, sourceName);
-    }
-
-    public static DynamicWatchedConfiguration createConfigFromConfigCenter(Configuration localConfiguration) {
-        if (localConfiguration.getProperty(configCenterUrlKey) == null) {
-            LOGGER.info("config center URL is missing, skip to load configuration from config center");
-            return null;
-        }
-
-        ConfigCenterConfigurationSource configCenterConfigurationSource =
-            SPIServiceUtils.getTargetService(ConfigCenterConfigurationSource.class);
-        if (null == configCenterConfigurationSource) {
-            LOGGER.info(
-                    "config center SPI service can not find, skip to load configuration from config center");
-            return null;
-        }
-
-        configCenterConfigurationSource.init(localConfiguration);
-        return new DynamicWatchedConfiguration(configCenterConfigurationSource);
-    }
-
-    public static AbstractConfiguration createDynamicConfig() {
-        LOGGER.info("create dynamic config:");
-        ConcurrentCompositeConfiguration config = ConfigUtil.createLocalConfig();
-        DynamicWatchedConfiguration configFromConfigCenter = createConfigFromConfigCenter(config);
-        if (configFromConfigCenter != null) {
-            ConcurrentMapConfiguration injectConfig = new ConcurrentMapConfiguration();
-            config.addConfigurationAtFront(injectConfig, "extraInjectConfig");
-
-            duplicateServiceCombConfigToCse(configFromConfigCenter);
-            config.addConfigurationAtFront(configFromConfigCenter, "configCenterConfig");
-
-            configFromConfigCenter.getSource().addUpdateListener(new ServiceCombPropertyUpdateListener(injectConfig));
-        }
-
-        return config;
-    }
-
-    public static void installDynamicConfig() {
-        if (ConfigurationManager.isConfigurationInstalled()) {
-            LOGGER.warn("Configuration installed by others, will ignore this configuration.");
-            return;
-        }
-
-        AbstractConfiguration dynamicConfig = ConfigUtil.createDynamicConfig();
-        ConfigurationManager.install(dynamicConfig);
-    }
-
-    private static class ServiceCombPropertyUpdateListener implements WatchedUpdateListener {
-
-        private final ConcurrentMapConfiguration injectConfig;
-
-        ServiceCombPropertyUpdateListener(ConcurrentMapConfiguration injectConfig) {
-            this.injectConfig = injectConfig;
-        }
-
-        @Override
-        public void updateConfiguration(WatchedUpdateResult watchedUpdateResult) {
-            Map<String, Object> adds = watchedUpdateResult.getAdded();
-            if (adds != null) {
-                for (String add : adds.keySet()) {
-                    if (add.startsWith(CONFIG_SERVICECOMB_PREFIX)) {
-                        String key = CONFIG_CSE_PREFIX + add.substring(add.indexOf(".") + 1);
-                        injectConfig.addProperty(key, adds.get(add));
-                    }
-                }
-            }
-
-            Map<String, Object> deletes = watchedUpdateResult.getDeleted();
-            if (deletes != null) {
-                for (String delete : deletes.keySet()) {
-                    if (delete.startsWith(CONFIG_SERVICECOMB_PREFIX)) {
-                        injectConfig.clearProperty(CONFIG_CSE_PREFIX + delete.substring(delete.indexOf(".") + 1));
-                    }
-                }
-            }
-
-            Map<String, Object> changes = watchedUpdateResult.getChanged();
-            if (changes != null) {
-                for (String change : changes.keySet()) {
-                    if (change.startsWith(CONFIG_SERVICECOMB_PREFIX)) {
-                        String key = CONFIG_CSE_PREFIX + change.substring(change.indexOf(".") + 1);
-                        injectConfig.setProperty(key, changes.get(change));
-                    }
-                }
-            }
-        }
-    }
+  }
 }

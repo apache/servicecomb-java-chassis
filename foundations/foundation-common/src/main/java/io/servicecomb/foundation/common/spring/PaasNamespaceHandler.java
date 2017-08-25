@@ -29,37 +29,37 @@ import io.servicecomb.foundation.common.utils.FortifyUtils;
 
 //根据各个jar提供的信息来注册parser
 public class PaasNamespaceHandler extends NamespaceHandlerSupport {
-    private static final Logger LOGGER = LoggerFactory.getLogger(PaasNamespaceHandler.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(PaasNamespaceHandler.class);
 
-    private static final String NAMESPACE_RES = "classpath*:META-INF/spring/namespace.properties";
+  private static final String NAMESPACE_RES = "classpath*:META-INF/spring/namespace.properties";
 
-    // @Override
-    public void init() {
-        Properties properties = null;
+  // @Override
+  public void init() {
+    Properties properties = null;
 
-        try {
-            properties = PaaSResourceUtils.loadMergedProperties(NAMESPACE_RES);
-        } catch (Exception e) {
-            LOGGER.error("Failed to load namespace handler define, {}, {}",
-                    NAMESPACE_RES,
-                    FortifyUtils.getErrorInfo(e));
-            return;
-        }
-
-        for (Entry<Object, Object> entry : properties.entrySet()) {
-            String className = entry.getValue().toString();
-            try {
-                Class<?> clazz = Class.forName(className);
-                Object instance = clazz.newInstance();
-                registerBeanDefinitionParser(entry.getKey().toString(),
-                        (BeanDefinitionParser) instance);
-            } catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
-                // 类找不到，说明没部署相应的jar包，这不一定是错误
-                // 可能是业务就选择不部署相应的jar包
-                // 所以只是打印个info日志
-
-                LOGGER.info("Failed to create BeanDefinitionParser instance of {}", className);
-            }
-        }
+    try {
+      properties = PaaSResourceUtils.loadMergedProperties(NAMESPACE_RES);
+    } catch (Exception e) {
+      LOGGER.error("Failed to load namespace handler define, {}, {}",
+          NAMESPACE_RES,
+          FortifyUtils.getErrorInfo(e));
+      return;
     }
+
+    for (Entry<Object, Object> entry : properties.entrySet()) {
+      String className = entry.getValue().toString();
+      try {
+        Class<?> clazz = Class.forName(className);
+        Object instance = clazz.newInstance();
+        registerBeanDefinitionParser(entry.getKey().toString(),
+            (BeanDefinitionParser) instance);
+      } catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
+        // 类找不到，说明没部署相应的jar包，这不一定是错误
+        // 可能是业务就选择不部署相应的jar包
+        // 所以只是打印个info日志
+
+        LOGGER.info("Failed to create BeanDefinitionParser instance of {}", className);
+      }
+    }
+  }
 }

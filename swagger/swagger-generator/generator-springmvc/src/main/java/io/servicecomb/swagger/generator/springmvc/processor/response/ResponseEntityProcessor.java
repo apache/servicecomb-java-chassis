@@ -21,19 +21,18 @@ import java.lang.reflect.Type;
 import io.servicecomb.swagger.generator.core.OperationGenerator;
 import io.servicecomb.swagger.generator.core.ResponseTypeProcessor;
 import io.servicecomb.swagger.generator.core.utils.ParamUtils;
-
 import io.swagger.converter.ModelConverters;
 import io.swagger.models.properties.Property;
 
 public class ResponseEntityProcessor implements ResponseTypeProcessor {
 
-    @Override
-    public Property process(OperationGenerator operationGenerator) {
-        ParameterizedType type =
-            (ParameterizedType) operationGenerator.getProviderMethod().getGenericReturnType();
+  @Override
+  public Property process(OperationGenerator operationGenerator) {
+    ParameterizedType type =
+        (ParameterizedType) operationGenerator.getProviderMethod().getGenericReturnType();
 
-        Type responseType = type.getActualTypeArguments()[0];
-        ParamUtils.addDefinitions(operationGenerator.getSwagger(), responseType);
-        return ModelConverters.getInstance().readAsProperty(responseType);
-    }
+    Type responseType = type.getActualTypeArguments()[0];
+    ParamUtils.addDefinitions(operationGenerator.getSwagger(), responseType);
+    return ModelConverters.getInstance().readAsProperty(responseType);
+  }
 }

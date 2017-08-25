@@ -45,136 +45,136 @@ import io.servicecomb.swagger.invocation.Response;
 import io.servicecomb.swagger.invocation.exception.InvocationException;
 
 public abstract class AbstractRestServer<HTTP_RESPONSE> {
-    private static final Logger LOGGER = LoggerFactory.getLogger(AbstractRestServer.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(AbstractRestServer.class);
 
-    // 所属的Transport
-    protected Transport transport;
+  // 所属的Transport
+  protected Transport transport;
 
-    public void setTransport(Transport transport) {
-        this.transport = transport;
+  public void setTransport(Transport transport) {
+    this.transport = transport;
+  }
+
+  protected void setContext(Invocation invocation, RestServerRequestInternal restRequest) throws Exception {
+    String strCseContext = restRequest.getHeaderParam(Const.CSE_CONTEXT);
+    if (StringUtils.isEmpty(strCseContext)) {
+      return;
+    }
+    @SuppressWarnings("unchecked")
+    Map<String, String> cseContext =
+        JsonUtils.readValue(strCseContext.getBytes(StandardCharsets.UTF_8), Map.class);
+    invocation.setContext(cseContext);
+  }
+
+  protected void handleRequest(RestServerRequestInternal restRequest, HTTP_RESPONSE httpResponse) {
+    if (transport == null) {
+      transport = CseContext.getInstance().getTransportManager().findTransport(Const.RESTFUL);
     }
 
-    protected void setContext(Invocation invocation, RestServerRequestInternal restRequest) throws Exception {
-        String strCseContext = restRequest.getHeaderParam(Const.CSE_CONTEXT);
-        if (StringUtils.isEmpty(strCseContext)) {
-            return;
-        }
-        @SuppressWarnings("unchecked")
-        Map<String, String> cseContext =
-            JsonUtils.readValue(strCseContext.getBytes(StandardCharsets.UTF_8), Map.class);
-        invocation.setContext(cseContext);
-    }
+    try {
+      RestOperationMeta restOperation = findRestOperation(restRequest);
+      OperationMeta operationMeta = restOperation.getOperationMeta();
 
-    protected void handleRequest(RestServerRequestInternal restRequest, HTTP_RESPONSE httpResponse) {
-        if (transport == null) {
-            transport = CseContext.getInstance().getTransportManager().findTransport(Const.RESTFUL);
-        }
-
+      operationMeta.getExecutor().execute(() -> {
         try {
-            RestOperationMeta restOperation = findRestOperation(restRequest);
-            OperationMeta operationMeta = restOperation.getOperationMeta();
-
-            operationMeta.getExecutor().execute(() -> {
-                try {
-                    runOnExecutor(restRequest, restOperation, httpResponse);
-                } catch (Exception e) {
-                    LOGGER.error("rest server onRequest error", e);
-                    sendFailResponse(restRequest, httpResponse, e);
-                }
-            });
+          runOnExecutor(restRequest, restOperation, httpResponse);
         } catch (Exception e) {
-            LOGGER.error("rest server onRequest error", e);
-            sendFailResponse(restRequest, httpResponse, e);
+          LOGGER.error("rest server onRequest error", e);
+          sendFailResponse(restRequest, httpResponse, e);
         }
+      });
+    } catch (Exception e) {
+      LOGGER.error("rest server onRequest error", e);
+      sendFailResponse(restRequest, httpResponse, e);
+    }
+  }
+
+  protected void runOnExecutor(RestServerRequestInternal restRequest, RestOperationMeta restOperation,
+      HTTP_RESPONSE httpResponse) throws Exception {
+    String acceptType = restRequest.getHeaderParam("Accept");
+    ProduceProcessor produceProcessor =
+        locateProduceProcessor(restRequest, httpResponse, restOperation, acceptType);
+    if (produceProcessor == null) {
+      // locateProduceProcessor内部已经应答了
+      return;
     }
 
-    protected void runOnExecutor(RestServerRequestInternal restRequest, RestOperationMeta restOperation,
-            HTTP_RESPONSE httpResponse) throws Exception {
-        String acceptType = restRequest.getHeaderParam("Accept");
-        ProduceProcessor produceProcessor =
-            locateProduceProcessor(restRequest, httpResponse, restOperation, acceptType);
-        if (produceProcessor == null) {
-            // locateProduceProcessor内部已经应答了
-            return;
-        }
+    Object[] args = RestCodec.restToArgs(restRequest, restOperation);
+    Invocation invocation =
+        InvocationFactory.forProvider(transport.getEndpoint(),
+            restOperation.getOperationMeta(),
+            args);
 
-        Object[] args = RestCodec.restToArgs(restRequest, restOperation);
-        Invocation invocation =
-            InvocationFactory.forProvider(transport.getEndpoint(),
-                    restOperation.getOperationMeta(),
-                    args);
+    this.setContext(invocation, restRequest);
+    this.setHttpRequestContext(invocation, restRequest);
 
-        this.setContext(invocation, restRequest);
-        this.setHttpRequestContext(invocation, restRequest);
+    invocation.next(resp -> {
+      sendResponse(restRequest, httpResponse, produceProcessor, resp);
+    });
+  }
 
-        invocation.next(resp -> {
-            sendResponse(restRequest, httpResponse, produceProcessor, resp);
-        });
+  protected RestOperationMeta findRestOperation(RestServerRequestInternal restRequest) {
+    String targetMicroserviceName = restRequest.getHeaderParam(Const.TARGET_MICROSERVICE);
+    if (targetMicroserviceName == null) {
+      // for compatible
+      targetMicroserviceName = RegistryUtils.getMicroservice().getServiceName();
+    }
+    MicroserviceMeta selfMicroserviceMeta =
+        CseContext.getInstance().getMicroserviceMetaManager().ensureFindValue(targetMicroserviceName);
+    ServicePathManager servicePathManager = ServicePathManager.getServicePathManager(selfMicroserviceMeta);
+    if (servicePathManager == null) {
+      LOGGER.error("No schema in microservice");
+      throw new InvocationException(Status.NOT_FOUND, Status.NOT_FOUND.getReasonPhrase());
     }
 
-    protected RestOperationMeta findRestOperation(RestServerRequestInternal restRequest) {
-        String targetMicroserviceName = restRequest.getHeaderParam(Const.TARGET_MICROSERVICE);
-        if (targetMicroserviceName == null) {
-            // for compatible
-            targetMicroserviceName = RegistryUtils.getMicroservice().getServiceName();
-        }
-        MicroserviceMeta selfMicroserviceMeta =
-            CseContext.getInstance().getMicroserviceMetaManager().ensureFindValue(targetMicroserviceName);
-        ServicePathManager servicePathManager = ServicePathManager.getServicePathManager(selfMicroserviceMeta);
-        if (servicePathManager == null) {
-            LOGGER.error("No schema in microservice");
-            throw new InvocationException(Status.NOT_FOUND, Status.NOT_FOUND.getReasonPhrase());
-        }
+    OperationLocator locator =
+        servicePathManager.producerLocateOperation(restRequest.getPath(), restRequest.getMethod());
+    restRequest.setPathParamMap(locator.getPathVarMap());
 
-        OperationLocator locator =
-            servicePathManager.producerLocateOperation(restRequest.getPath(), restRequest.getMethod());
-        restRequest.setPathParamMap(locator.getPathVarMap());
+    return locator.getOperation();
+  }
 
-        return locator.getOperation();
+  // 找不到processor，则已经完成了应答，外界不必再处理
+  protected ProduceProcessor locateProduceProcessor(RestServerRequestInternal restRequest,
+      HTTP_RESPONSE httpResponse,
+      RestOperationMeta restOperation, String acceptType) {
+    ProduceProcessor produceProcessor = restOperation.ensureFindProduceProcessor(acceptType);
+    if (produceProcessor != null) {
+      return produceProcessor;
     }
 
-    // 找不到processor，则已经完成了应答，外界不必再处理
-    protected ProduceProcessor locateProduceProcessor(RestServerRequestInternal restRequest,
-            HTTP_RESPONSE httpResponse,
-            RestOperationMeta restOperation, String acceptType) {
-        ProduceProcessor produceProcessor = restOperation.ensureFindProduceProcessor(acceptType);
-        if (produceProcessor != null) {
-            return produceProcessor;
-        }
+    String msg = String.format("Accept %s is not supported", acceptType);
+    InvocationException exception = new InvocationException(Status.NOT_ACCEPTABLE, msg);
+    sendFailResponse(restRequest, httpResponse, exception);
+    return null;
+  }
 
-        String msg = String.format("Accept %s is not supported", acceptType);
-        InvocationException exception = new InvocationException(Status.NOT_ACCEPTABLE, msg);
-        sendFailResponse(restRequest, httpResponse, exception);
-        return null;
+  public void sendFailResponse(RestServerRequestInternal restRequest, HTTP_RESPONSE httpResponse,
+      Throwable throwable) {
+    Response response = Response.createProducerFail(throwable);
+    sendResponse(restRequest, httpResponse, ProduceProcessorManager.DEFAULT_PROCESSOR, response);
+  }
+
+  // 成功、失败的统一应答处理，这里不能再出异常了，再出了异常也没办法处理
+  protected void sendResponse(RestServerRequestInternal restRequest, HTTP_RESPONSE httpServerResponse,
+      ProduceProcessor produceProcessor, Response response) {
+    try {
+      doSendResponse(httpServerResponse, produceProcessor, response);
+    } catch (Throwable e) {
+      // 这只能是bug，没有办法再兜底了，只能记录日志
+      // 如果统一处理为500错误，也无法确定swagger中500对应的数据模型
+      // 并且本次调用本身可能就是500进来的
+      LOGGER.error("send response failed.", e);
+    } finally {
+      if (restRequest != null) {
+        restRequest.complete();
+      }
     }
+  }
 
-    public void sendFailResponse(RestServerRequestInternal restRequest, HTTP_RESPONSE httpResponse,
-            Throwable throwable) {
-        Response response = Response.createProducerFail(throwable);
-        sendResponse(restRequest, httpResponse, ProduceProcessorManager.DEFAULT_PROCESSOR, response);
-    }
+  //  成功、失败的统一应答处理
+  protected abstract void doSendResponse(HTTP_RESPONSE httpServerResponse, ProduceProcessor produceProcessor,
+      Response response) throws Exception;
 
-    // 成功、失败的统一应答处理，这里不能再出异常了，再出了异常也没办法处理
-    protected void sendResponse(RestServerRequestInternal restRequest, HTTP_RESPONSE httpServerResponse,
-            ProduceProcessor produceProcessor, Response response) {
-        try {
-            doSendResponse(httpServerResponse, produceProcessor, response);
-        } catch (Throwable e) {
-            // 这只能是bug，没有办法再兜底了，只能记录日志
-            // 如果统一处理为500错误，也无法确定swagger中500对应的数据模型
-            // 并且本次调用本身可能就是500进来的
-            LOGGER.error("send response failed.", e);
-        } finally {
-            if (restRequest != null) {
-                restRequest.complete();
-            }
-        }
-    }
-
-    //  成功、失败的统一应答处理
-    protected abstract void doSendResponse(HTTP_RESPONSE httpServerResponse, ProduceProcessor produceProcessor,
-            Response response) throws Exception;
-
-    // 将http request注入到invocation的handler context
-    protected abstract void setHttpRequestContext(Invocation invocation, RestServerRequestInternal restRequest);
+  // 将http request注入到invocation的handler context
+  protected abstract void setHttpRequestContext(Invocation invocation, RestServerRequestInternal restRequest);
 }

@@ -20,45 +20,45 @@ import java.util.Map;
 import java.util.Set;
 
 public class InvalidType {
-    public static interface InvalidIntf {
+  public static interface InvalidIntf {
 
-    }
+  }
 
-    public static abstract class InvalidClass {
+  public static abstract class InvalidClass {
 
-    }
+  }
 
-    public static class InvalidFieldClass {
-        public Object obj;
-    }
+  public static class InvalidFieldClass {
+    public Object obj;
+  }
 
-    public InvalidIntf testIntf(InvalidIntf input) {
-        return null;
-    }
+  public InvalidIntf testIntf(InvalidIntf input) {
+    return null;
+  }
 
-    public InvalidClass testAbstractClass(InvalidClass input) {
-        return null;
-    }
+  public InvalidClass testAbstractClass(InvalidClass input) {
+    return null;
+  }
 
-    public Object testObject() {
-        return null;
-    }
+  public Object testObject() {
+    return null;
+  }
 
-    @SuppressWarnings("rawtypes")
-    public List testNotClearList() {
-        return null;
-    }
+  @SuppressWarnings("rawtypes")
+  public List testNotClearList() {
+    return null;
+  }
 
-    @SuppressWarnings("rawtypes")
-    public Set testNotClearSet() {
-        return null;
-    }
+  @SuppressWarnings("rawtypes")
+  public Set testNotClearSet() {
+    return null;
+  }
 
-    public Map<String, Object> testNotClearMap() {
-        return null;
-    }
+  public Map<String, Object> testNotClearMap() {
+    return null;
+  }
 
-    public InvalidFieldClass testInvalidFieldClass() {
-        return null;
-    }
+  public InvalidFieldClass testInvalidFieldClass() {
+    return null;
+  }
 }

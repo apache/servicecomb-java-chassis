@@ -21,33 +21,26 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-/**
- *
- * @since Mar 15, 2017
- * @see 
- */
 public class TestMetricsThread {
 
-    MetricsThread oMetricsThread = null;
+  MetricsThread oMetricsThread = null;
 
-    @Before
-    public void setUp() throws Exception {
-        oMetricsThread = new MetricsThread();
-    }
+  @Before
+  public void setUp() throws Exception {
+    oMetricsThread = new MetricsThread();
+  }
 
-    @After
-    public void tearDown() throws Exception {
-        oMetricsThread.shutdown();
-        oMetricsThread = null;
-    }
+  @After
+  public void tearDown() throws Exception {
+    oMetricsThread.shutdown();
+    oMetricsThread = null;
+  }
 
-    @Test
-    public void test() {
-        oMetricsThread.start();
-        Assert.assertEquals(true, oMetricsThread.isRunning());
-        oMetricsThread.shutdown();
-        Assert.assertEquals(false, oMetricsThread.isRunning());
-
-    }
-
+  @Test
+  public void test() {
+    oMetricsThread.start();
+    Assert.assertEquals(true, oMetricsThread.isRunning());
+    oMetricsThread.shutdown();
+    Assert.assertEquals(false, oMetricsThread.isRunning());
+  }
 }

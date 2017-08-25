@@ -28,74 +28,74 @@ import io.servicecomb.swagger.invocation.exception.ExceptionFactory;
 import io.servicecomb.swagger.invocation.exception.InvocationException;
 
 public final class InvokerUtils {
-    private static final Logger LOGGER = LoggerFactory.getLogger(InvokerUtils.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(InvokerUtils.class);
 
-    private InvokerUtils() {
+  private InvokerUtils() {
+  }
+
+  public static Object syncInvoke(String microserviceName, String schemaId, String operationName, Object[] args) {
+    ReferenceConfig referenceConfig = ReferenceConfigUtils.getForInvoke(microserviceName);
+    SchemaMeta schemaMeta = referenceConfig.getMicroserviceMeta().ensureFindSchemaMeta(schemaId);
+    Invocation invocation = InvocationFactory.forConsumer(referenceConfig, schemaMeta, operationName, args);
+    return syncInvoke(invocation);
+  }
+
+  public static Object syncInvoke(String microserviceName, String microserviceVersion, String transport,
+      String schemaId, String operationName, Object[] args) {
+    ReferenceConfig referenceConfig =
+        ReferenceConfigUtils.getForInvoke(microserviceName, microserviceVersion, transport);
+    SchemaMeta schemaMeta = referenceConfig.getMicroserviceMeta().ensureFindSchemaMeta(schemaId);
+    Invocation invocation = InvocationFactory.forConsumer(referenceConfig, schemaMeta, operationName, args);
+    return syncInvoke(invocation);
+  }
+
+  public static Object syncInvoke(Invocation invocation) throws InvocationException {
+    Response response = innerSyncInvoke(invocation);
+    if (response.isSuccessed()) {
+      return response.getResult();
     }
 
-    public static Object syncInvoke(String microserviceName, String schemaId, String operationName, Object[] args) {
-        ReferenceConfig referenceConfig = ReferenceConfigUtils.getForInvoke(microserviceName);
-        SchemaMeta schemaMeta = referenceConfig.getMicroserviceMeta().ensureFindSchemaMeta(schemaId);
-        Invocation invocation = InvocationFactory.forConsumer(referenceConfig, schemaMeta, operationName, args);
-        return syncInvoke(invocation);
+    throw ExceptionFactory.convertConsumerException((Throwable) response.getResult());
+  }
+
+  public static Response innerSyncInvoke(Invocation invocation) {
+    try {
+      SyncResponseExecutor respExecutor = new SyncResponseExecutor();
+      invocation.setResponseExecutor(respExecutor);
+
+      invocation.next(resp -> {
+        respExecutor.setResponse(resp);
+      });
+
+      return respExecutor.waitResponse();
+    } catch (Throwable e) {
+      String msg =
+          String.format("invoke failed, %s", invocation.getOperationMeta().getMicroserviceQualifiedName());
+      LOGGER.debug(msg, e);
+      return Response.createConsumerFail(e);
+    }
+  }
+
+  public static void reactiveInvoke(Invocation invocation, AsyncResponse asyncResp) {
+    try {
+      ReactiveResponseExecutor respExecutor = new ReactiveResponseExecutor();
+      invocation.setResponseExecutor(respExecutor);
+
+      invocation.next(asyncResp);
+    } catch (Throwable e) {
+      LOGGER.error("invoke failed, {}", invocation.getOperationMeta().getMicroserviceQualifiedName());
+      asyncResp.consumerFail(e);
+    }
+  }
+
+  public static Object invoke(Invocation invocation) {
+    if (invocation.getOperationMeta().isSync()) {
+      return syncInvoke(invocation);
     }
 
-    public static Object syncInvoke(String microserviceName, String microserviceVersion, String transport,
-            String schemaId, String operationName, Object[] args) {
-        ReferenceConfig referenceConfig =
-            ReferenceConfigUtils.getForInvoke(microserviceName, microserviceVersion, transport);
-        SchemaMeta schemaMeta = referenceConfig.getMicroserviceMeta().ensureFindSchemaMeta(schemaId);
-        Invocation invocation = InvocationFactory.forConsumer(referenceConfig, schemaMeta, operationName, args);
-        return syncInvoke(invocation);
-    }
-
-    public static Object syncInvoke(Invocation invocation) throws InvocationException {
-        Response response = innerSyncInvoke(invocation);
-        if (response.isSuccessed()) {
-            return response.getResult();
-        }
-
-        throw ExceptionFactory.convertConsumerException((Throwable) response.getResult());
-    }
-
-    public static Response innerSyncInvoke(Invocation invocation) {
-        try {
-            SyncResponseExecutor respExecutor = new SyncResponseExecutor();
-            invocation.setResponseExecutor(respExecutor);
-
-            invocation.next(resp -> {
-                respExecutor.setResponse(resp);
-            });
-
-            return respExecutor.waitResponse();
-        } catch (Throwable e) {
-            String msg =
-                String.format("invoke failed, %s", invocation.getOperationMeta().getMicroserviceQualifiedName());
-            LOGGER.debug(msg, e);
-            return Response.createConsumerFail(e);
-        }
-    }
-
-    public static void reactiveInvoke(Invocation invocation, AsyncResponse asyncResp) {
-        try {
-            ReactiveResponseExecutor respExecutor = new ReactiveResponseExecutor();
-            invocation.setResponseExecutor(respExecutor);
-
-            invocation.next(asyncResp);
-        } catch (Throwable e) {
-            LOGGER.error("invoke failed, {}", invocation.getOperationMeta().getMicroserviceQualifiedName());
-            asyncResp.consumerFail(e);
-        }
-    }
-
-    public static Object invoke(Invocation invocation) {
-        if (invocation.getOperationMeta().isSync()) {
-            return syncInvoke(invocation);
-        }
-
-        Object[] args = invocation.getArgs();
-        AsyncResponse asyncResp = (AsyncResponse) args[args.length - 1];
-        reactiveInvoke(invocation, asyncResp);
-        return null;
-    }
+    Object[] args = invocation.getArgs();
+    AsyncResponse asyncResp = (AsyncResponse) args[args.length - 1];
+    reactiveInvoke(invocation, asyncResp);
+    return null;
+  }
 }

@@ -27,44 +27,38 @@ import org.mockito.Mockito;
 
 import io.servicecomb.serviceregistry.api.registry.Microservice;
 
-/**
- *
- * @since Mar 14, 2017
- * @see 
- */
 public class TestGetAllServicesResponse {
 
-    GetAllServicesResponse oGetAllServicesResponse = null;
+  GetAllServicesResponse oGetAllServicesResponse = null;
 
-    Microservice oMockMicroservice = null;
+  Microservice oMockMicroservice = null;
 
-    @Before
-    public void setUp() throws Exception {
-        oGetAllServicesResponse = new GetAllServicesResponse();
-        oMockMicroservice = Mockito.mock(Microservice.class);
-    }
+  @Before
+  public void setUp() throws Exception {
+    oGetAllServicesResponse = new GetAllServicesResponse();
+    oMockMicroservice = Mockito.mock(Microservice.class);
+  }
 
-    @After
-    public void tearDown() throws Exception {
-        oGetAllServicesResponse = null;
-    }
+  @After
+  public void tearDown() throws Exception {
+    oGetAllServicesResponse = null;
+  }
 
-    @Test
-    public void testDefaultValues() {
-        Assert.assertNull(oGetAllServicesResponse.getServices());
-    }
+  @Test
+  public void testDefaultValues() {
+    Assert.assertNull(oGetAllServicesResponse.getServices());
+  }
 
-    @Test
-    public void testIntializedValues() {
-        initFields(); //Initialize the Object
-        List<Microservice> list = oGetAllServicesResponse.getServices();
-        Assert.assertEquals(oMockMicroservice, list.get(0));
-    }
+  @Test
+  public void testIntializedValues() {
+    initFields(); //Initialize the Object
+    List<Microservice> list = oGetAllServicesResponse.getServices();
+    Assert.assertEquals(oMockMicroservice, list.get(0));
+  }
 
-    private void initFields() {
-        List<Microservice> list = new ArrayList<>();
-        list.add(oMockMicroservice);
-        oGetAllServicesResponse.setServices(list);
-    }
-
+  private void initFields() {
+    List<Microservice> list = new ArrayList<>();
+    list.add(oMockMicroservice);
+    oGetAllServicesResponse.setServices(list);
+  }
 }

@@ -27,7 +27,7 @@ import java.lang.annotation.Target;
 @Retention(RUNTIME)
 @Target(FIELD)
 public @interface RpcReference {
-    String microserviceName();
+  String microserviceName();
 
-    String schemaId() default "";
+  String schemaId() default "";
 }

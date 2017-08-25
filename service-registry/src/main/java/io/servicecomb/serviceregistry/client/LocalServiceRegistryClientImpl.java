@@ -41,247 +41,247 @@ import io.servicecomb.serviceregistry.api.response.MicroserviceInstanceChangedEv
 import io.servicecomb.serviceregistry.definition.DefinitionConst;
 
 public class LocalServiceRegistryClientImpl implements ServiceRegistryClient {
-    private static final Logger LOGGER = LoggerFactory.getLogger(LocalServiceRegistryClientImpl.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(LocalServiceRegistryClientImpl.class);
 
-    public static final String LOCAL_REGISTRY_FILE_KEY = "local.registry.file";
+  public static final String LOCAL_REGISTRY_FILE_KEY = "local.registry.file";
 
-    private final String LOCAL_REGISTRY_FILE = System.getProperty(LOCAL_REGISTRY_FILE_KEY);
+  private final String LOCAL_REGISTRY_FILE = System.getProperty(LOCAL_REGISTRY_FILE_KEY);
 
-    // key is microservice id
-    private Map<String, Microservice> microserviceIdMap = new ConcurrentHashMap<>();
+  // key is microservice id
+  private Map<String, Microservice> microserviceIdMap = new ConcurrentHashMap<>();
 
-    // first key is microservice id
-    // second key is instance id
-    private Map<String, Map<String, MicroserviceInstance>> microserviceInstanceMap = new ConcurrentHashMap<>();
+  // first key is microservice id
+  // second key is instance id
+  private Map<String, Map<String, MicroserviceInstance>> microserviceInstanceMap = new ConcurrentHashMap<>();
 
-    public LocalServiceRegistryClientImpl() {
-        if (StringUtils.isEmpty(LOCAL_REGISTRY_FILE)) {
-            LOGGER.info("create empty local registry.");
-            return;
-        }
-
-        try (InputStream is = new FileInputStream(new File(LOCAL_REGISTRY_FILE))) {
-            initFromData(is);
-        } catch (IOException e) {
-            LOGGER.error("can not load local registry file:" + LOCAL_REGISTRY_FILE, e);
-        }
+  public LocalServiceRegistryClientImpl() {
+    if (StringUtils.isEmpty(LOCAL_REGISTRY_FILE)) {
+      LOGGER.info("create empty local registry.");
+      return;
     }
 
-    public LocalServiceRegistryClientImpl(InputStream is) {
-        initFromData(is);
+    try (InputStream is = new FileInputStream(new File(LOCAL_REGISTRY_FILE))) {
+      initFromData(is);
+    } catch (IOException e) {
+      LOGGER.error("can not load local registry file:" + LOCAL_REGISTRY_FILE, e);
     }
+  }
 
-    public LocalServiceRegistryClientImpl(Map<String, Object> data) {
-        initFromData(data);
-    }
+  public LocalServiceRegistryClientImpl(InputStream is) {
+    initFromData(is);
+  }
 
-    private void initFromData(InputStream is) {
-        Yaml yaml = new Yaml();
+  public LocalServiceRegistryClientImpl(Map<String, Object> data) {
+    initFromData(data);
+  }
+
+  private void initFromData(InputStream is) {
+    Yaml yaml = new Yaml();
+    @SuppressWarnings("unchecked")
+    Map<String, Object> data = yaml.loadAs(is, Map.class);
+    initFromData(data);
+  }
+
+  private void initFromData(Map<String, Object> data) {
+    for (Entry<String, Object> entry : data.entrySet()) {
+      String name = entry.getKey();
+      @SuppressWarnings("unchecked")
+      List<Map<String, Object>> serviceConfigs = (List<Map<String, Object>>) entry.getValue();
+      for (Map<String, Object> serviceConfig : serviceConfigs) {
         @SuppressWarnings("unchecked")
-        Map<String, Object> data = yaml.loadAs(is, Map.class);
-        initFromData(data);
-    }
+        List<Map<String, Object>> instancesConfig =
+            (List<Map<String, Object>>) serviceConfig.get("instances");
 
-    private void initFromData(Map<String, Object> data) {
-        for (Entry<String, Object> entry : data.entrySet()) {
-            String name = entry.getKey();
-            @SuppressWarnings("unchecked")
-            List<Map<String, Object>> serviceConfigs = (List<Map<String, Object>>) entry.getValue();
-            for (Map<String, Object> serviceConfig : serviceConfigs) {
-                @SuppressWarnings("unchecked")
-                List<Map<String, Object>> instancesConfig =
-                    (List<Map<String, Object>>) serviceConfig.get("instances");
+        String appId = (String) serviceConfig.get("appid");
+        String version = (String) serviceConfig.get("version");
+        String serviceId = (String) serviceConfig.get("id");
 
-                String appId = (String) serviceConfig.get("appid");
-                String version = (String) serviceConfig.get("version");
-                String serviceId = (String) serviceConfig.get("id");
+        Microservice microservice = new Microservice();
+        microservice.setAppId(appId == null ? DefinitionConst.defaultAppId : appId);
+        microservice.setServiceName(name);
+        microservice.setVersion(version);
+        microservice.setServiceId(serviceId == null ? UUID.randomUUID().toString() : serviceId);
+        microserviceIdMap.put(microservice.getServiceId(), microservice);
 
-                Microservice microservice = new Microservice();
-                microservice.setAppId(appId == null ? DefinitionConst.defaultAppId : appId);
-                microservice.setServiceName(name);
-                microservice.setVersion(version);
-                microservice.setServiceId(serviceId == null ? UUID.randomUUID().toString() : serviceId);
-                microserviceIdMap.put(microservice.getServiceId(), microservice);
+        Map<String, MicroserviceInstance> instanceMap = new ConcurrentHashMap<>();
+        for (Map<String, Object> instanceConfig : instancesConfig) {
+          @SuppressWarnings("unchecked")
+          List<String> endpoints = (List<String>) instanceConfig.get("endpoints");
 
-                Map<String, MicroserviceInstance> instanceMap = new ConcurrentHashMap<>();
-                for (Map<String, Object> instanceConfig : instancesConfig) {
-                    @SuppressWarnings("unchecked")
-                    List<String> endpoints = (List<String>) instanceConfig.get("endpoints");
+          MicroserviceInstance instance = new MicroserviceInstance();
+          instance.setInstanceId(UUID.randomUUID().toString());
+          instance.setEndpoints(endpoints);
+          instance.setServiceId(microservice.getServiceId());
 
-                    MicroserviceInstance instance = new MicroserviceInstance();
-                    instance.setInstanceId(UUID.randomUUID().toString());
-                    instance.setEndpoints(endpoints);
-                    instance.setServiceId(microservice.getServiceId());
-
-                    instanceMap.put(instance.getInstanceId(), instance);
-                }
-                microserviceInstanceMap.put(microservice.getServiceId(), instanceMap);
-            }
+          instanceMap.put(instance.getInstanceId(), instance);
         }
+        microserviceInstanceMap.put(microservice.getServiceId(), instanceMap);
+      }
+    }
+  }
+
+  @Override
+  public void init() {
+
+  }
+
+  @Override
+  public List<Microservice> getAllMicroservices() {
+    return new ArrayList<>(microserviceIdMap.values());
+  }
+
+  @Override
+  public String getMicroserviceId(String appId, String microserviceName, String version) {
+    for (Entry<String, Microservice> entry : microserviceIdMap.entrySet()) {
+      Microservice microservice = entry.getValue();
+      // ignore version, because local will not use multiple version now.
+      if (microservice.getAppId().equals(appId) && microservice.getServiceName().equals(microserviceName)) {
+        return entry.getKey();
+      }
     }
 
-    @Override
-    public void init() {
+    return null;
+  }
 
+  @Override
+  public String registerMicroservice(Microservice microservice) {
+    String serviceId =
+        microservice.getServiceId() == null ? UUID.randomUUID().toString() : microservice.getServiceId();
+    microserviceIdMap.put(serviceId, microservice);
+
+    Map<String, MicroserviceInstance> instanceMap = microserviceInstanceMap.get(serviceId);
+    if (instanceMap == null) {
+      microserviceInstanceMap.put(serviceId, new ConcurrentHashMap<>());
+    }
+    return serviceId;
+  }
+
+  @Override
+  public Microservice getMicroservice(String microserviceId) {
+    return microserviceIdMap.get(microserviceId);
+  }
+
+  @Override
+  public String registerMicroserviceInstance(MicroserviceInstance instance) {
+    Map<String, MicroserviceInstance> instanceMap = microserviceInstanceMap.get(instance.getServiceId());
+    if (instanceMap == null) {
+      throw new IllegalArgumentException("Invalid serviceId of instance, serviceId=" + instance.getServiceId());
     }
 
-    @Override
-    public List<Microservice> getAllMicroservices() {
-        return new ArrayList<>(microserviceIdMap.values());
+    String instanceId =
+        instance.getInstanceId() == null ? UUID.randomUUID().toString() : instance.getInstanceId();
+    instanceMap.put(instanceId, instance);
+    return instanceId;
+  }
+
+  @Override
+  public List<MicroserviceInstance> getMicroserviceInstance(String consumerId, String providerId) {
+    Map<String, MicroserviceInstance> instanceMap = microserviceInstanceMap.get(providerId);
+    if (instanceMap == null) {
+      throw new IllegalArgumentException("Invalid serviceId, serviceId=" + providerId);
     }
 
-    @Override
-    public String getMicroserviceId(String appId, String microserviceName, String version) {
-        for (Entry<String, Microservice> entry : microserviceIdMap.entrySet()) {
-            Microservice microservice = entry.getValue();
-            // ignore version, because local will not use multiple version now.
-            if (microservice.getAppId().equals(appId) && microservice.getServiceName().equals(microserviceName)) {
-                return entry.getKey();
-            }
-        }
+    return new ArrayList<>(instanceMap.values());
+  }
 
-        return null;
+  @Override
+  public boolean unregisterMicroserviceInstance(String microserviceId, String microserviceInstanceId) {
+    Map<String, MicroserviceInstance> instanceMap = microserviceInstanceMap.get(microserviceId);
+    if (instanceMap != null) {
+      instanceMap.remove(microserviceInstanceId);
+    }
+    return true;
+  }
+
+  @Override
+  public HeartbeatResponse heartbeat(String microserviceId, String microserviceInstanceId) {
+    HeartbeatResponse response = new HeartbeatResponse();
+    response.setMessage("OK");
+    response.setOk(true);
+    return response;
+  }
+
+  @Override
+  public void watch(String selfMicroserviceId, AsyncResultCallback<MicroserviceInstanceChangedEvent> callback) {
+    watch(selfMicroserviceId, callback, v -> {
+    }, v -> {
+    });
+  }
+
+  @Override
+  public void watch(String selfMicroserviceId, AsyncResultCallback<MicroserviceInstanceChangedEvent> callback,
+      AsyncResultCallback<Void> onOpen, AsyncResultCallback<Void> onClose) {
+
+  }
+
+  @Override
+  public List<MicroserviceInstance> findServiceInstance(String selfMicroserviceId, String appId, String serviceName,
+      String versionRule) {
+    String microserviceId = getMicroserviceId(appId, serviceName, versionRule);
+    if (StringUtils.isEmpty(microserviceId)) {
+      return Collections.emptyList();
     }
 
-    @Override
-    public String registerMicroservice(Microservice microservice) {
-        String serviceId =
-            microservice.getServiceId() == null ? UUID.randomUUID().toString() : microservice.getServiceId();
-        microserviceIdMap.put(serviceId, microservice);
+    return new ArrayList<>(microserviceInstanceMap.get(microserviceId).values());
+  }
 
-        Map<String, MicroserviceInstance> instanceMap = microserviceInstanceMap.get(serviceId);
-        if (instanceMap == null) {
-            microserviceInstanceMap.put(serviceId, new ConcurrentHashMap<>());
-        }
-        return serviceId;
+  @Override
+  public boolean isSchemaExist(String microserviceId, String schemaId) {
+    Microservice microservice = microserviceIdMap.get(microserviceId);
+    if (microservice == null) {
+      throw new IllegalArgumentException("Invalid serviceId, serviceId=" + microserviceId);
     }
 
-    @Override
-    public Microservice getMicroservice(String microserviceId) {
-        return microserviceIdMap.get(microserviceId);
+    return microservice.getSchemaMap().containsKey(schemaId);
+  }
+
+  @Override
+  public boolean registerSchema(String microserviceId, String schemaId, String schemaContent) {
+    return true;
+  }
+
+  @Override
+  public String getSchema(String microserviceId, String schemaId) {
+    Microservice microservice = microserviceIdMap.get(microserviceId);
+    if (microservice == null) {
+      throw new IllegalArgumentException("Invalid serviceId, serviceId=" + microserviceId);
     }
 
-    @Override
-    public String registerMicroserviceInstance(MicroserviceInstance instance) {
-        Map<String, MicroserviceInstance> instanceMap = microserviceInstanceMap.get(instance.getServiceId());
-        if (instanceMap == null) {
-            throw new IllegalArgumentException("Invalid serviceId of instance, serviceId=" + instance.getServiceId());
-        }
+    return microservice.getSchemaMap().get(schemaId);
+  }
 
-        String instanceId =
-            instance.getInstanceId() == null ? UUID.randomUUID().toString() : instance.getInstanceId();
-        instanceMap.put(instanceId, instance);
-        return instanceId;
+  @Override
+  public boolean updateMicroserviceProperties(String microserviceId, Map<String, String> serviceProperties) {
+    Microservice microservice = microserviceIdMap.get(microserviceId);
+    if (microservice == null) {
+      throw new IllegalArgumentException("Invalid serviceId, serviceId=" + microserviceId);
     }
 
-    @Override
-    public List<MicroserviceInstance> getMicroserviceInstance(String consumerId, String providerId) {
-        Map<String, MicroserviceInstance> instanceMap = microserviceInstanceMap.get(providerId);
-        if (instanceMap == null) {
-            throw new IllegalArgumentException("Invalid serviceId, serviceId=" + providerId);
-        }
+    if (serviceProperties != null) {
+      microservice.getProperties().putAll(serviceProperties);
+    }
+    return true;
+  }
 
-        return new ArrayList<>(instanceMap.values());
+  @Override
+  public boolean updateInstanceProperties(String microserviceId, String microserviceInstanceId,
+      Map<String, String> instanceProperties) {
+    Map<String, MicroserviceInstance> instanceMap = microserviceInstanceMap.get(microserviceId);
+    if (instanceMap == null) {
+      throw new IllegalArgumentException("Invalid serviceId, serviceId=" + microserviceId);
     }
 
-    @Override
-    public boolean unregisterMicroserviceInstance(String microserviceId, String microserviceInstanceId) {
-        Map<String, MicroserviceInstance> instanceMap = microserviceInstanceMap.get(microserviceId);
-        if (instanceMap != null) {
-            instanceMap.remove(microserviceInstanceId);
-        }
-        return true;
+    MicroserviceInstance microserviceInstance = instanceMap.get(microserviceInstanceId);
+    if (microserviceInstance == null) {
+      throw new IllegalArgumentException(
+          String.format("Invalid argument. microserviceId=%s, microserviceInstanceId=%s.",
+              microserviceId,
+              microserviceInstanceId));
     }
 
-    @Override
-    public HeartbeatResponse heartbeat(String microserviceId, String microserviceInstanceId) {
-        HeartbeatResponse response = new HeartbeatResponse();
-        response.setMessage("OK");
-        response.setOk(true);
-        return response;
+    if (instanceProperties != null) {
+      microserviceInstance.getProperties().putAll(instanceProperties);
     }
-
-    @Override
-    public void watch(String selfMicroserviceId, AsyncResultCallback<MicroserviceInstanceChangedEvent> callback) {
-        watch(selfMicroserviceId, callback, v -> {
-        }, v -> {
-        });
-    }
-
-    @Override
-    public void watch(String selfMicroserviceId, AsyncResultCallback<MicroserviceInstanceChangedEvent> callback,
-            AsyncResultCallback<Void> onOpen, AsyncResultCallback<Void> onClose) {
-
-    }
-
-    @Override
-    public List<MicroserviceInstance> findServiceInstance(String selfMicroserviceId, String appId, String serviceName,
-            String versionRule) {
-        String microserviceId = getMicroserviceId(appId, serviceName, versionRule);
-        if (StringUtils.isEmpty(microserviceId)) {
-            return Collections.emptyList();
-        }
-
-        return new ArrayList<>(microserviceInstanceMap.get(microserviceId).values());
-    }
-
-    @Override
-    public boolean isSchemaExist(String microserviceId, String schemaId) {
-        Microservice microservice = microserviceIdMap.get(microserviceId);
-        if (microservice == null) {
-            throw new IllegalArgumentException("Invalid serviceId, serviceId=" + microserviceId);
-        }
-
-        return microservice.getSchemaMap().containsKey(schemaId);
-    }
-
-    @Override
-    public boolean registerSchema(String microserviceId, String schemaId, String schemaContent) {
-        return true;
-    }
-
-    @Override
-    public String getSchema(String microserviceId, String schemaId) {
-        Microservice microservice = microserviceIdMap.get(microserviceId);
-        if (microservice == null) {
-            throw new IllegalArgumentException("Invalid serviceId, serviceId=" + microserviceId);
-        }
-
-        return microservice.getSchemaMap().get(schemaId);
-    }
-
-    @Override
-    public boolean updateMicroserviceProperties(String microserviceId, Map<String, String> serviceProperties) {
-        Microservice microservice = microserviceIdMap.get(microserviceId);
-        if (microservice == null) {
-            throw new IllegalArgumentException("Invalid serviceId, serviceId=" + microserviceId);
-        }
-
-        if (serviceProperties != null) {
-            microservice.getProperties().putAll(serviceProperties);
-        }
-        return true;
-    }
-
-    @Override
-    public boolean updateInstanceProperties(String microserviceId, String microserviceInstanceId,
-            Map<String, String> instanceProperties) {
-        Map<String, MicroserviceInstance> instanceMap = microserviceInstanceMap.get(microserviceId);
-        if (instanceMap == null) {
-            throw new IllegalArgumentException("Invalid serviceId, serviceId=" + microserviceId);
-        }
-
-        MicroserviceInstance microserviceInstance = instanceMap.get(microserviceInstanceId);
-        if (microserviceInstance == null) {
-            throw new IllegalArgumentException(
-                    String.format("Invalid argument. microserviceId=%s, microserviceInstanceId=%s.",
-                            microserviceId,
-                            microserviceInstanceId));
-        }
-
-        if (instanceProperties != null) {
-            microserviceInstance.getProperties().putAll(instanceProperties);
-        }
-        return true;
-    }
+    return true;
+  }
 }

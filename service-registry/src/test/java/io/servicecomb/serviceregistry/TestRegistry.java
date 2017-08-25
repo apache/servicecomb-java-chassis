@@ -52,174 +52,173 @@ import mockit.Expectations;
 import mockit.Mocked;
 
 public class TestRegistry {
-    private static final AbstractConfiguration inMemoryConfig = new ConcurrentMapConfiguration();
+  private static final AbstractConfiguration inMemoryConfig = new ConcurrentMapConfiguration();
 
-    @BeforeClass
-    public static void initSetup() throws Exception {
-        AbstractConfiguration dynamicConfig = ConfigUtil.createDynamicConfig();
-        ConcurrentCompositeConfiguration configuration = new ConcurrentCompositeConfiguration();
-        configuration.addConfiguration(dynamicConfig);
-        configuration.addConfiguration(inMemoryConfig);
+  @BeforeClass
+  public static void initSetup() throws Exception {
+    AbstractConfiguration dynamicConfig = ConfigUtil.createDynamicConfig();
+    ConcurrentCompositeConfiguration configuration = new ConcurrentCompositeConfiguration();
+    configuration.addConfiguration(dynamicConfig);
+    configuration.addConfiguration(inMemoryConfig);
 
-        ConfigurationManager.install(configuration);
-    }
+    ConfigurationManager.install(configuration);
+  }
 
-    @AfterClass
-    public static void classTeardown() {
-        Deencapsulation.setField(ConfigurationManager.class, "instance", null);
-        Deencapsulation.setField(ConfigurationManager.class, "customConfigurationInstalled", false);
-        Deencapsulation.setField(DynamicPropertyFactory.class, "config", null);
-        RegistryUtils.setServiceRegistry(null);
-    }
+  @AfterClass
+  public static void classTeardown() {
+    Deencapsulation.setField(ConfigurationManager.class, "instance", null);
+    Deencapsulation.setField(ConfigurationManager.class, "customConfigurationInstalled", false);
+    Deencapsulation.setField(DynamicPropertyFactory.class, "config", null);
+    RegistryUtils.setServiceRegistry(null);
+  }
 
-    @Before
-    public void setUp() throws Exception {
-        inMemoryConfig.clear();
-    }
+  @Before
+  public void setUp() throws Exception {
+    inMemoryConfig.clear();
+  }
 
-    @Test
-    public void testDelegate() {
-        ServiceRegistry serviceRegistry = ServiceRegistryFactory.createLocal();
-        serviceRegistry.init();
-        serviceRegistry.run();
+  @Test
+  public void testDelegate() {
+    ServiceRegistry serviceRegistry = ServiceRegistryFactory.createLocal();
+    serviceRegistry.init();
+    serviceRegistry.run();
 
-        RegistryUtils.setServiceRegistry(serviceRegistry);
-        Assert.assertEquals(serviceRegistry, RegistryUtils.getServiceRegistry());
+    RegistryUtils.setServiceRegistry(serviceRegistry);
+    Assert.assertEquals(serviceRegistry, RegistryUtils.getServiceRegistry());
 
-        Assert.assertEquals(serviceRegistry.getServiceRegistryClient(), RegistryUtils.getServiceRegistryClient());
-        Assert.assertEquals(serviceRegistry.getInstanceCacheManager(), RegistryUtils.getInstanceCacheManager());
-        Assert.assertEquals(serviceRegistry.getInstanceVersionCacheManager(),
-                RegistryUtils.getInstanceVersionCacheManager());
+    Assert.assertEquals(serviceRegistry.getServiceRegistryClient(), RegistryUtils.getServiceRegistryClient());
+    Assert.assertEquals(serviceRegistry.getInstanceCacheManager(), RegistryUtils.getInstanceCacheManager());
+    Assert.assertEquals(serviceRegistry.getInstanceVersionCacheManager(),
+        RegistryUtils.getInstanceVersionCacheManager());
 
-        Microservice microservice = RegistryUtils.getMicroservice();
-        Assert.assertEquals(serviceRegistry.getMicroservice(), microservice);
-        Assert.assertEquals(serviceRegistry.getMicroserviceInstance(), RegistryUtils.getMicroserviceInstance());
+    Microservice microservice = RegistryUtils.getMicroservice();
+    Assert.assertEquals(serviceRegistry.getMicroservice(), microservice);
+    Assert.assertEquals(serviceRegistry.getMicroserviceInstance(), RegistryUtils.getMicroserviceInstance());
 
-        List<MicroserviceInstance> instanceList = RegistryUtils.findServiceInstance("default", "default", "0.0.1");
-        Assert.assertEquals(1, instanceList.size());
-        Assert.assertEquals(RegistryUtils.getMicroservice().getServiceId(), instanceList.get(0).getServiceId());
+    List<MicroserviceInstance> instanceList = RegistryUtils.findServiceInstance("default", "default", "0.0.1");
+    Assert.assertEquals(1, instanceList.size());
+    Assert.assertEquals(RegistryUtils.getMicroservice().getServiceId(), instanceList.get(0).getServiceId());
 
-        Map<String, String> properties = new HashMap<>();
-        properties.put("k", "v");
-        RegistryUtils.updateInstanceProperties(properties);
-        Assert.assertEquals(properties, RegistryUtils.getMicroserviceInstance().getProperties());
+    Map<String, String> properties = new HashMap<>();
+    properties.put("k", "v");
+    RegistryUtils.updateInstanceProperties(properties);
+    Assert.assertEquals(properties, RegistryUtils.getMicroserviceInstance().getProperties());
 
-        Assert.assertEquals(microservice, RegistryUtils.getMicroservice(microservice.getServiceId()));
+    Assert.assertEquals(microservice, RegistryUtils.getMicroservice(microservice.getServiceId()));
 
-        Assert.assertEquals("default", RegistryUtils.getAppId());
-    }
+    Assert.assertEquals("default", RegistryUtils.getAppId());
+  }
 
-    @Test
-    public void testRegistryUtilGetPublishAddress(@Mocked InetAddress ethAddress) {
-        new Expectations(NetUtils.class) {
-            {
-                NetUtils.getHostAddress();
-                result = "1.1.1.1";
-            }
+  @Test
+  public void testRegistryUtilGetPublishAddress(@Mocked InetAddress ethAddress) {
+    new Expectations(NetUtils.class) {
+      {
+        NetUtils.getHostAddress();
+        result = "1.1.1.1";
+      }
+    };
+    String address = RegistryUtils.getPublishAddress();
+    Assert.assertEquals("1.1.1.1", address);
+
+    new Expectations(DynamicPropertyFactory.getInstance()) {
+      {
+        DynamicPropertyFactory.getInstance().getStringProperty(PUBLISH_ADDRESS, "");
+        result = new DynamicStringProperty(PUBLISH_ADDRESS, "") {
+          public String get() {
+            return "127.0.0.1";
+          }
         };
-        String address = RegistryUtils.getPublishAddress();
-        Assert.assertEquals("1.1.1.1", address);
+      }
+    };
+    Assert.assertEquals("127.0.0.1", RegistryUtils.getPublishAddress());
 
-        new Expectations(DynamicPropertyFactory.getInstance()) {
-            {
-                DynamicPropertyFactory.getInstance().getStringProperty(PUBLISH_ADDRESS, "");
-                result = new DynamicStringProperty(PUBLISH_ADDRESS, "") {
-                    public String get() {
-                        return "127.0.0.1";
-                    }
-                };
-            }
+    new Expectations(DynamicPropertyFactory.getInstance()) {
+      {
+        ethAddress.getHostAddress();
+        result = "1.1.1.1";
+        NetUtils.ensureGetInterfaceAddress("eth100");
+        result = ethAddress;
+        DynamicPropertyFactory.getInstance().getStringProperty(PUBLISH_ADDRESS, "");
+        result = new DynamicStringProperty(PUBLISH_ADDRESS, "") {
+          public String get() {
+            return "{eth100}";
+          }
         };
-        Assert.assertEquals("127.0.0.1", RegistryUtils.getPublishAddress());
+      }
+    };
+    Assert.assertEquals("1.1.1.1", RegistryUtils.getPublishAddress());
+  }
 
-        new Expectations(DynamicPropertyFactory.getInstance()) {
-            {
-                ethAddress.getHostAddress();
-                result = "1.1.1.1";
-                NetUtils.ensureGetInterfaceAddress("eth100");
-                result = ethAddress;
-                DynamicPropertyFactory.getInstance().getStringProperty(PUBLISH_ADDRESS, "");
-                result = new DynamicStringProperty(PUBLISH_ADDRESS, "") {
-                    public String get() {
-                        return "{eth100}";
-                    }
-                };
-            }
+  @Test
+  public void testRegistryUtilGetHostName(@Mocked InetAddress ethAddress) {
+    new Expectations(NetUtils.class) {
+      {
+        NetUtils.getHostName();
+        result = "testHostName";
+      }
+    };
+    String host = RegistryUtils.getPublishHostName();
+    Assert.assertEquals("testHostName", host);
+
+    inMemoryConfig.addProperty(PUBLISH_ADDRESS, "127.0.0.1");
+    Assert.assertEquals("127.0.0.1", RegistryUtils.getPublishHostName());
+
+    new Expectations(DynamicPropertyFactory.getInstance()) {
+      {
+        ethAddress.getHostName();
+        result = "testHostName";
+        NetUtils.ensureGetInterfaceAddress("eth100");
+        result = ethAddress;
+      }
+    };
+    inMemoryConfig.addProperty(PUBLISH_ADDRESS, "{eth100}");
+    Assert.assertEquals("testHostName", RegistryUtils.getPublishHostName());
+  }
+
+  @Test
+  public void testGetRealListenAddress() throws Exception {
+    new Expectations(NetUtils.class) {
+      {
+        NetUtils.getHostAddress();
+        result = "1.1.1.1";
+      }
+    };
+
+    Assert.assertEquals("rest://172.0.0.0:8080", RegistryUtils.getPublishAddress("rest", "172.0.0.0:8080"));
+    Assert.assertEquals(null, RegistryUtils.getPublishAddress("rest", null));
+
+    URI uri = new URI(RegistryUtils.getPublishAddress("rest", "0.0.0.0:8080"));
+    Assert.assertEquals("1.1.1.1:8080", uri.getAuthority());
+
+    new Expectations(DynamicPropertyFactory.getInstance()) {
+      {
+        DynamicPropertyFactory.getInstance().getStringProperty(PUBLISH_ADDRESS, "");
+        result = new DynamicStringProperty(PUBLISH_ADDRESS, "") {
+          public String get() {
+            return "1.1.1.1";
+          }
         };
-        Assert.assertEquals("1.1.1.1", RegistryUtils.getPublishAddress());
+      }
+    };
+    Assert.assertEquals("rest://1.1.1.1:8080", RegistryUtils.getPublishAddress("rest", "172.0.0.0:8080"));
 
-    }
-
-    @Test
-    public void testRegistryUtilGetHostName(@Mocked InetAddress ethAddress) {
-        new Expectations(NetUtils.class) {
-            {
-                NetUtils.getHostName();
-                result = "testHostName";
-            }
+    InetAddress ethAddress = Mockito.mock(InetAddress.class);
+    Mockito.when(ethAddress.getHostAddress()).thenReturn("1.1.1.1");
+    new Expectations(DynamicPropertyFactory.getInstance()) {
+      {
+        NetUtils.ensureGetInterfaceAddress("eth20");
+        result = ethAddress;
+        DynamicPropertyFactory.getInstance().getStringProperty(PUBLISH_ADDRESS, "");
+        result = new DynamicStringProperty(PUBLISH_ADDRESS, "") {
+          public String get() {
+            return "{eth20}";
+          }
         };
-        String host = RegistryUtils.getPublishHostName();
-        Assert.assertEquals("testHostName", host);
-
-        inMemoryConfig.addProperty(PUBLISH_ADDRESS, "127.0.0.1");
-        Assert.assertEquals("127.0.0.1", RegistryUtils.getPublishHostName());
-
-        new Expectations(DynamicPropertyFactory.getInstance()) {
-            {
-                ethAddress.getHostName();
-                result = "testHostName";
-                NetUtils.ensureGetInterfaceAddress("eth100");
-                result = ethAddress;
-            }
-        };
-        inMemoryConfig.addProperty(PUBLISH_ADDRESS, "{eth100}");
-        Assert.assertEquals("testHostName", RegistryUtils.getPublishHostName());
-    }
-
-    @Test
-    public void testGetRealListenAddress() throws Exception {
-        new Expectations(NetUtils.class) {
-            {
-                NetUtils.getHostAddress();
-                result = "1.1.1.1";
-            }
-        };
-
-        Assert.assertEquals("rest://172.0.0.0:8080", RegistryUtils.getPublishAddress("rest", "172.0.0.0:8080"));
-        Assert.assertEquals(null, RegistryUtils.getPublishAddress("rest", null));
-
-        URI uri = new URI(RegistryUtils.getPublishAddress("rest", "0.0.0.0:8080"));
-        Assert.assertEquals("1.1.1.1:8080", uri.getAuthority());
-
-        new Expectations(DynamicPropertyFactory.getInstance()) {
-            {
-                DynamicPropertyFactory.getInstance().getStringProperty(PUBLISH_ADDRESS, "");
-                result = new DynamicStringProperty(PUBLISH_ADDRESS, "") {
-                    public String get() {
-                        return "1.1.1.1";
-                    }
-                };
-            }
-        };
-        Assert.assertEquals("rest://1.1.1.1:8080", RegistryUtils.getPublishAddress("rest", "172.0.0.0:8080"));
-
-        InetAddress ethAddress = Mockito.mock(InetAddress.class);
-        Mockito.when(ethAddress.getHostAddress()).thenReturn("1.1.1.1");
-        new Expectations(DynamicPropertyFactory.getInstance()) {
-            {
-                NetUtils.ensureGetInterfaceAddress("eth20");
-                result = ethAddress;
-                DynamicPropertyFactory.getInstance().getStringProperty(PUBLISH_ADDRESS, "");
-                result = new DynamicStringProperty(PUBLISH_ADDRESS, "") {
-                    public String get() {
-                        return "{eth20}";
-                    }
-                };
-            }
-        };
-        String query = URLEncodedUtils.format(Arrays.asList(new BasicNameValuePair("country", "中 国")),
-                StandardCharsets.UTF_8.name());
-        Assert.assertEquals("rest://1.1.1.1:8080?" + query,
-                RegistryUtils.getPublishAddress("rest", "172.0.0.0:8080?" + query));
-    }
+      }
+    };
+    String query = URLEncodedUtils.format(Arrays.asList(new BasicNameValuePair("country", "中 国")),
+        StandardCharsets.UTF_8.name());
+    Assert.assertEquals("rest://1.1.1.1:8080?" + query,
+        RegistryUtils.getPublishAddress("rest", "172.0.0.0:8080?" + query));
+  }
 }

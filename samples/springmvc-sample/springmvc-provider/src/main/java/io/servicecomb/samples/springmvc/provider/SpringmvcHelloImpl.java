@@ -43,5 +43,4 @@ public class SpringmvcHelloImpl implements Hello {
   public String sayHello(@RequestBody Person person) {
     return "Hello person " + person.getName();
   }
-
 }

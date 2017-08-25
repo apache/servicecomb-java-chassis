@@ -19,26 +19,25 @@ package io.servicecomb.serviceregistry.cache;
 import io.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
 
 public class CacheEndpoint {
-    // 所属的服务实例
-    private final MicroserviceInstance instance;
+  // 所属的服务实例
+  private final MicroserviceInstance instance;
 
-    private final String endpoint;
+  private final String endpoint;
 
-    public CacheEndpoint(String endpoint, MicroserviceInstance instance) {
-        this.endpoint = endpoint;
-        this.instance = instance;
-    }
+  public CacheEndpoint(String endpoint, MicroserviceInstance instance) {
+    this.endpoint = endpoint;
+    this.instance = instance;
+  }
 
-    public String getEndpoint() {
-        return endpoint;
-    }
+  public String getEndpoint() {
+    return endpoint;
+  }
 
-    public MicroserviceInstance getInstance() {
-        return instance;
-    }
+  public MicroserviceInstance getInstance() {
+    return instance;
+  }
 
-    public String toString() {
-        return endpoint;
-    }
-
+  public String toString() {
+    return endpoint;
+  }
 }

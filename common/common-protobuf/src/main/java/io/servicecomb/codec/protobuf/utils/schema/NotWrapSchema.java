@@ -24,28 +24,28 @@ import io.protostuff.Schema;
 
 public class NotWrapSchema extends AbstractWrapSchema {
 
-    @SuppressWarnings("unchecked")
-    public NotWrapSchema(Schema<?> schema) {
-        this.schema = (Schema<Object>) schema;
+  @SuppressWarnings("unchecked")
+  public NotWrapSchema(Schema<?> schema) {
+    this.schema = (Schema<Object>) schema;
+  }
+
+  @Override
+  public Object readFromEmpty() {
+    return null;
+  }
+
+  public Object readObject(Input input) throws IOException {
+    Object value = schema.newMessage();
+    schema.mergeFrom(input, value);
+
+    return value;
+  }
+
+  public void writeObject(Output output, Object value) throws IOException {
+    if (value == null) {
+      return;
     }
 
-    @Override
-    public Object readFromEmpty() {
-        return null;
-    }
-
-    public Object readObject(Input input) throws IOException {
-        Object value = schema.newMessage();
-        schema.mergeFrom(input, value);
-
-        return value;
-    }
-
-    public void writeObject(Output output, Object value) throws IOException {
-        if (value == null) {
-            return;
-        }
-
-        schema.writeTo(output, value);
-    }
+    schema.writeTo(output, value);
+  }
 }

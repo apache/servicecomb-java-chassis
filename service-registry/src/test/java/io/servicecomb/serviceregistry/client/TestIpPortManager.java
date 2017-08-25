@@ -40,152 +40,147 @@ import mockit.MockUp;
 import mockit.Mocked;
 
 public class TestIpPortManager {
-    @Mocked
-    ServiceRegistryClient srClient;
+  @Mocked
+  ServiceRegistryClient srClient;
 
-    AbstractServiceRegistry serviceRegistry;
+  AbstractServiceRegistry serviceRegistry;
 
-    IpPortManager manager;
+  IpPortManager manager;
 
-    @Before
-    public void setup() {
-        serviceRegistry = (AbstractServiceRegistry) ServiceRegistryFactory.createLocal();
-        serviceRegistry.setServiceRegistryClient(srClient);
-        serviceRegistry.init();
+  @Before
+  public void setup() {
+    serviceRegistry = (AbstractServiceRegistry) ServiceRegistryFactory.createLocal();
+    serviceRegistry.setServiceRegistryClient(srClient);
+    serviceRegistry.init();
 
-        manager = serviceRegistry.getIpPortManager();
+    manager = serviceRegistry.getIpPortManager();
+  }
+
+  InstanceCache instanceCache = null;
+
+  Map<String, List<String>> oListTransportMap = null;
+
+  @Test
+  public void testCreateServiceRegistryCache() {
+    List<MicroserviceInstance> list = new ArrayList<MicroserviceInstance>();
+    MicroserviceInstance e1 = new MicroserviceInstance();
+    List<String> endpoints = new ArrayList<>();
+    endpoints.add("rest://127.0.0.1:8080");
+    e1.setEndpoints(endpoints);
+    list.add(e1);
+
+    new Expectations() {
+      {
+        srClient.findServiceInstance(anyString, anyString, anyString, anyString);
+        result = list;
+      }
+    };
+
+    try {
+      manager.createServiceRegistryCache();
+      Assert.assertNotNull(manager.get());
+      Assert.assertNull(manager.next());
+    } catch (Exception e) {
+      Assert.fail(e.getMessage());
+    }
+  }
+
+  @Test
+  public void testCreateServiceRegistryCacheWithInstanceCache() {
+
+    boolean validAssert = true;
+
+    List<MicroserviceInstance> list = new ArrayList<MicroserviceInstance>();
+    MicroserviceInstance e1 = new MicroserviceInstance();
+    list.add(e1);
+
+    new MockUp<RegistryUtils>() {
+
+      @Mock
+      public List<MicroserviceInstance> findServiceInstance(String appId, String serviceName,
+          String versionRule) {
+        return list;
+      }
+    };
+
+    try {
+      Deencapsulation.setField(manager, "instanceCache", Mockito.mock(InstanceCache.class));
+      manager.createServiceRegistryCache();
+      Assert.assertNotNull(manager.get());
+      Assert.assertNull(manager.next());
+    } catch (Exception e) {
+
+      validAssert = false;
     }
 
-    InstanceCache instanceCache = null;
+    Assert.assertTrue(validAssert);
+  }
 
-    Map<String, List<String>> oListTransportMap = null;
+  @Test
+  public void testGetDefaultIpPortAddressesisNUll() {
+    new MockUp<IpPortManager>() {
+      @Mock
+      public ArrayList<IpPort> getDefaultIpPortList() {
+        return null;
+      }
+    };
+    Assert.assertNull(manager.getDefaultIpPort());
+  }
 
-    @Test
-    public void testCreateServiceRegistryCache() {
-        List<MicroserviceInstance> list = new ArrayList<MicroserviceInstance>();
-        MicroserviceInstance e1 = new MicroserviceInstance();
-        List<String> endpoints = new ArrayList<>();
-        endpoints.add("rest://127.0.0.1:8080");
-        e1.setEndpoints(endpoints);
-        list.add(e1);
+  @Test
+  public void testNextDefaultIpPortAddressesisNUll() {
+    new MockUp<IpPortManager>() {
+      @Mock
+      public ArrayList<IpPort> getDefaultIpPortList() {
+        return null;
+      }
+    };
+    Assert.assertNull(manager.nextDefaultIpPort());
+  }
 
-        new Expectations() {
-            {
-                srClient.findServiceInstance(anyString, anyString, anyString, anyString);
-                result = list;
-            }
-        };
+  @Test
+  public void testNextDefaultIpPortAddressesSize() {
 
-        try {
-            manager.createServiceRegistryCache();
-            Assert.assertNotNull(manager.get());
-            Assert.assertNull(manager.next());
-        } catch (Exception e) {
-            Assert.fail(e.getMessage());
-        }
-    }
+    new MockUp<IpPortManager>() {
+      @Mock
+      public ArrayList<IpPort> getDefaultIpPortList() {
+        List<IpPort> ipPorts = new ArrayList<IpPort>();
+        IpPort ipport1 = new IpPort();
+        ipport1.setHostOrIp("hostOrIp");
+        IpPort ipport2 = new IpPort();
+        ipport2.setHostOrIp("hostOrIp");
+        ipPorts.add(ipport1);
+        ipPorts.add(ipport2);
+        return (ArrayList<IpPort>) ipPorts;
+      }
+    };
+    IpPort ipPort = manager.nextDefaultIpPort();
+    Assert.assertEquals("hostOrIp", ipPort.getHostOrIp());
+  }
 
-    @Test
-    public void testCreateServiceRegistryCacheWithInstanceCache() {
+  @Test
+  public void testNextDefaultIpPortAddresses() {
 
-        boolean validAssert = true;
+    Assert.assertNull(manager.nextDefaultIpPort());
+  }
 
-        List<MicroserviceInstance> list = new ArrayList<MicroserviceInstance>();
-        MicroserviceInstance e1 = new MicroserviceInstance();
-        list.add(e1);
+  @Test
+  public void testNextAddressesSize() {
 
-        new MockUp<RegistryUtils>() {
+    new MockUp<IpPortManager>() {
+      @Mock
+      public List<CacheEndpoint> getAddressCaches() {
+        List<CacheEndpoint> addressCaches = new ArrayList<>();
+        addressCaches.add(new CacheEndpoint("http://127.0.0.3:8080", null));
+        addressCaches.add(new CacheEndpoint("http://127.0.0.3:8080", null));
+        return addressCaches;
+      }
+    };
 
-            @Mock
-            public List<MicroserviceInstance> findServiceInstance(String appId, String serviceName,
-                    String versionRule) {
-                return list;
-
-            }
-        };
-
-        try {
-            Deencapsulation.setField(manager, "instanceCache", Mockito.mock(InstanceCache.class));
-            manager.createServiceRegistryCache();
-            Assert.assertNotNull(manager.get());
-            Assert.assertNull(manager.next());
-        } catch (Exception e) {
-
-            validAssert = false;
-        }
-
-        Assert.assertTrue(validAssert);
-    }
-
-    @Test
-    public void testGetDefaultIpPortAddressesisNUll() {
-        new MockUp<IpPortManager>() {
-            @Mock
-            public ArrayList<IpPort> getDefaultIpPortList() {
-                return null;
-
-            }
-        };
-        Assert.assertNull(manager.getDefaultIpPort());;
-    }
-
-    @Test
-    public void testNextDefaultIpPortAddressesisNUll() {
-        new MockUp<IpPortManager>() {
-            @Mock
-            public ArrayList<IpPort> getDefaultIpPortList() {
-                return null;
-
-            }
-        };
-        Assert.assertNull(manager.nextDefaultIpPort());
-    }
-
-    @Test
-    public void testNextDefaultIpPortAddressesSize() {
-
-        new MockUp<IpPortManager>() {
-            @Mock
-            public ArrayList<IpPort> getDefaultIpPortList() {
-                List<IpPort> ipPorts = new ArrayList<IpPort>();
-                IpPort ipport1 = new IpPort();
-                ipport1.setHostOrIp("hostOrIp");
-                IpPort ipport2 = new IpPort();
-                ipport2.setHostOrIp("hostOrIp");
-                ipPorts.add(ipport1);
-                ipPorts.add(ipport2);
-                return (ArrayList<IpPort>) ipPorts;
-
-            }
-        };
-        IpPort ipPort = manager.nextDefaultIpPort();
-        Assert.assertEquals("hostOrIp", ipPort.getHostOrIp());
-    }
-
-    @Test
-    public void testNextDefaultIpPortAddresses() {
-
-        Assert.assertNull(manager.nextDefaultIpPort());
-    }
-
-    @Test
-    public void testNextAddressesSize() {
-
-        new MockUp<IpPortManager>() {
-            @Mock
-            public List<CacheEndpoint> getAddressCaches() {
-                List<CacheEndpoint> addressCaches = new ArrayList<>();
-                addressCaches.add(new CacheEndpoint("http://127.0.0.3:8080", null));
-                addressCaches.add(new CacheEndpoint("http://127.0.0.3:8080", null));
-                return addressCaches;
-            }
-        };
-
-        Map<Integer, Boolean> addressCanUsed = new HashMap<Integer, Boolean>();
-        addressCanUsed.get(0);
-        addressCanUsed.put(0, true);
-        Deencapsulation.setField(manager, "addressCanUsed", addressCanUsed);
-        Assert.assertEquals(manager.next().getHostOrIp(), "127.0.0.3");
-    }
-
+    Map<Integer, Boolean> addressCanUsed = new HashMap<Integer, Boolean>();
+    addressCanUsed.get(0);
+    addressCanUsed.put(0, true);
+    Deencapsulation.setField(manager, "addressCanUsed", addressCanUsed);
+    Assert.assertEquals(manager.next().getHostOrIp(), "127.0.0.3");
+  }
 }

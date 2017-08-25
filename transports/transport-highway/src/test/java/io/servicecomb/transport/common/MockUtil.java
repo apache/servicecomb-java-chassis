@@ -18,74 +18,71 @@ package io.servicecomb.transport.common;
 
 import org.mockito.Mockito;
 
+import io.protostuff.runtime.ProtobufFeature;
 import io.servicecomb.codec.protobuf.definition.OperationProtobuf;
 import io.servicecomb.codec.protobuf.definition.ProtobufManager;
 import io.servicecomb.core.Invocation;
 import io.servicecomb.core.definition.OperationMeta;
-import io.protostuff.runtime.ProtobufFeature;
 import io.servicecomb.transport.highway.HighwayCodec;
 import io.servicecomb.transport.highway.HighwayConfig;
 import io.servicecomb.transport.highway.message.RequestHeader;
-
 import io.vertx.core.buffer.Buffer;
 import mockit.Mock;
 import mockit.MockUp;
 
 public class MockUtil {
 
-    private static MockUtil instance = new MockUtil();
+  private static MockUtil instance = new MockUtil();
 
-    private MockUtil() {
+  private MockUtil() {
 
-    }
+  }
 
-    public static MockUtil getInstance() {
-        return instance;
-    }
+  public static MockUtil getInstance() {
+    return instance;
+  }
 
-    public void mockHighwayConfig() {
+  public void mockHighwayConfig() {
 
-        new MockUp<HighwayConfig>() {
-            @Mock
-            String getAddress() {
-                return "127.0.0.1";
-            }
+    new MockUp<HighwayConfig>() {
+      @Mock
+      String getAddress() {
+        return "127.0.0.1";
+      }
+    };
+  }
 
-        };
-    }
+  public RequestHeader requestHeader = new RequestHeader();
 
-    public RequestHeader requestHeader = new RequestHeader();
+  public boolean decodeRequestSucc = true;
 
-    public boolean decodeRequestSucc = true;
+  public void mockHighwayCodec() {
 
-    public void mockHighwayCodec() {
+    new MockUp<HighwayCodec>() {
+      @Mock
+      RequestHeader readRequestHeader(Buffer headerBuffer) throws Exception {
+        return requestHeader;
+      }
 
-        new MockUp<HighwayCodec>() {
-            @Mock
-            RequestHeader readRequestHeader(Buffer headerBuffer) throws Exception {
-                return requestHeader;
-            }
+      @Mock
+      public Invocation decodeRequest(RequestHeader header, OperationProtobuf operationProtobuf,
+          Buffer bodyBuffer, ProtobufFeature protobufFeature) throws Exception {
+        if (decodeRequestSucc) {
+          return Mockito.mock(Invocation.class);
+        }
 
-            @Mock
-            public Invocation decodeRequest(RequestHeader header, OperationProtobuf operationProtobuf,
-                    Buffer bodyBuffer, ProtobufFeature protobufFeature) throws Exception {
-                if (decodeRequestSucc) {
-                    return Mockito.mock(Invocation.class);
-                }
+        throw new Error("decode failed");
+      }
+    };
+  }
 
-                throw new Error("decode failed");
-            }
-        };
-    }
+  public void mockProtobufManager() {
 
-    public void mockProtobufManager() {
-
-        new MockUp<ProtobufManager>() {
-            @Mock
-            public OperationProtobuf getOrCreateOperation(OperationMeta operationMeta) throws Exception {
-                return Mockito.mock(OperationProtobuf.class);
-            }
-
-        };
-    }
+    new MockUp<ProtobufManager>() {
+      @Mock
+      public OperationProtobuf getOrCreateOperation(OperationMeta operationMeta) throws Exception {
+        return Mockito.mock(OperationProtobuf.class);
+      }
+    };
+  }
 }

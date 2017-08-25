@@ -24,27 +24,26 @@ import javax.servlet.AsyncListener;
 import javax.servlet.ServletResponse;
 
 public class RestAsyncListener implements AsyncListener {
-    @Override
-    public void onComplete(AsyncEvent event) throws IOException {
-        // 未使用
-    }
+  @Override
+  public void onComplete(AsyncEvent event) throws IOException {
+    // 未使用
+  }
 
-    @Override
-    public void onTimeout(AsyncEvent event) throws IOException {
-        // TODO:超时的处理，要重新考虑
-        ServletResponse response = event.getAsyncContext().getResponse();
-        PrintWriter out = response.getWriter();
-        out.write("TimeOut Error in Processing");
-    }
+  @Override
+  public void onTimeout(AsyncEvent event) throws IOException {
+    // TODO:超时的处理，要重新考虑
+    ServletResponse response = event.getAsyncContext().getResponse();
+    PrintWriter out = response.getWriter();
+    out.write("TimeOut Error in Processing");
+  }
 
-    @Override
-    public void onError(AsyncEvent event) throws IOException {
-        // 未使用
-    }
+  @Override
+  public void onError(AsyncEvent event) throws IOException {
+    // 未使用
+  }
 
-    @Override
-    public void onStartAsync(AsyncEvent event) throws IOException {
-        // 未使用
-    }
-
+  @Override
+  public void onStartAsync(AsyncEvent event) throws IOException {
+    // 未使用
+  }
 }

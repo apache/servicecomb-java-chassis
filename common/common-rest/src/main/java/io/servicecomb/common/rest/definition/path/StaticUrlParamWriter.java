@@ -18,14 +18,14 @@ package io.servicecomb.common.rest.definition.path;
 
 public class StaticUrlParamWriter implements UrlParamWriter {
 
-    private String staticPath;
+  private String staticPath;
 
-    public StaticUrlParamWriter(String staticPath) {
-        this.staticPath = staticPath;
-    }
+  public StaticUrlParamWriter(String staticPath) {
+    this.staticPath = staticPath;
+  }
 
-    @Override
-    public void write(StringBuilder builder, Object[] args) {
-        builder.append(staticPath);
-    }
+  @Override
+  public void write(StringBuilder builder, Object[] args) {
+    builder.append(staticPath);
+  }
 }

@@ -28,27 +28,27 @@ import io.servicecomb.provider.springmvc.reference.RestTemplateBuilder;
 
 @Component
 public class CrossappClient {
-    @RpcReference(microserviceName = "appServer:appService", schemaId = "helloworld")
-    private static HelloWorld helloWorld;
+  @RpcReference(microserviceName = "appServer:appService", schemaId = "helloworld")
+  private static HelloWorld helloWorld;
 
-    public static void main(String[] args) throws Exception {
-        Log4jUtils.init();
-        BeanUtils.init();
+  public static void main(String[] args) throws Exception {
+    Log4jUtils.init();
+    BeanUtils.init();
 
-        run();
+    run();
 
-        TestMgr.summary();
-    }
+    TestMgr.summary();
+  }
 
-    public static void run() {
-        Object result = InvokerUtils.syncInvoke("appServer:appService", "helloworld", "sayHello", null);
-        TestMgr.check("hello world", result);
+  public static void run() {
+    Object result = InvokerUtils.syncInvoke("appServer:appService", "helloworld", "sayHello", null);
+    TestMgr.check("hello world", result);
 
-        RestTemplate restTemplate = RestTemplateBuilder.create();
-        result = restTemplate.getForObject("cse://appServer:appService/helloworld/hello", String.class);
-        TestMgr.check("hello world", result);
+    RestTemplate restTemplate = RestTemplateBuilder.create();
+    result = restTemplate.getForObject("cse://appServer:appService/helloworld/hello", String.class);
+    TestMgr.check("hello world", result);
 
-        result = helloWorld.sayHello();
-        TestMgr.check("hello world", result);
-    }
+    result = helloWorld.sayHello();
+    TestMgr.check("hello world", result);
+  }
 }

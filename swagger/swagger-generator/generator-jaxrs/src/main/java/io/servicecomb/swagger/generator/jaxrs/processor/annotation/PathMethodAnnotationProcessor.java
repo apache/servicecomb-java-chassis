@@ -22,10 +22,10 @@ import io.servicecomb.swagger.generator.core.MethodAnnotationProcessor;
 import io.servicecomb.swagger.generator.core.OperationGenerator;
 
 public class PathMethodAnnotationProcessor implements MethodAnnotationProcessor {
-    @Override
-    public void process(Object annotation, OperationGenerator operationGenerator) {
-        Path path = (Path) annotation;
+  @Override
+  public void process(Object annotation, OperationGenerator operationGenerator) {
+    Path path = (Path) annotation;
 
-        operationGenerator.setPath(path.value());
-    }
+    operationGenerator.setPath(path.value());
+  }
 }

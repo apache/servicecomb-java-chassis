@@ -21,42 +21,35 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-/**
- *
- * @since Mar 14, 2017
- * @see 
- */
 public class TestHeartbeatResponse {
 
-    HeartbeatResponse oHeartbeatResponse = null;
+  HeartbeatResponse oHeartbeatResponse = null;
 
-    @Before
-    public void setUp() throws Exception {
-        oHeartbeatResponse = new HeartbeatResponse();
-    }
+  @Before
+  public void setUp() throws Exception {
+    oHeartbeatResponse = new HeartbeatResponse();
+  }
 
-    @After
-    public void tearDown() throws Exception {
-        oHeartbeatResponse = null;
-    }
+  @After
+  public void tearDown() throws Exception {
+    oHeartbeatResponse = null;
+  }
 
-    @Test
-    public void testDefaultValues() {
-        Assert.assertNull(oHeartbeatResponse.getMessage());
-        Assert.assertEquals(false, oHeartbeatResponse.isOk());
-    }
+  @Test
+  public void testDefaultValues() {
+    Assert.assertNull(oHeartbeatResponse.getMessage());
+    Assert.assertEquals(false, oHeartbeatResponse.isOk());
+  }
 
-    @Test
-    public void testIntializedValues() {
-        initFields(); //Initialize the Object
-        Assert.assertEquals("testMessage", oHeartbeatResponse.getMessage());
-        Assert.assertEquals(true, oHeartbeatResponse.isOk());
-    }
+  @Test
+  public void testIntializedValues() {
+    initFields(); //Initialize the Object
+    Assert.assertEquals("testMessage", oHeartbeatResponse.getMessage());
+    Assert.assertEquals(true, oHeartbeatResponse.isOk());
+  }
 
-    private void initFields() {
-        oHeartbeatResponse.setMessage("testMessage");
-        oHeartbeatResponse.setOk(true);
-
-    }
-
+  private void initFields() {
+    oHeartbeatResponse.setMessage("testMessage");
+    oHeartbeatResponse.setOk(true);
+  }
 }

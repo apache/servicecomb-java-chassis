@@ -24,21 +24,21 @@ import org.springframework.util.StringUtils;
 import io.vertx.core.VertxOptions;
 
 public class VertxImplEx extends VertxImpl {
-    public VertxImplEx(String name, VertxOptions vertxOptions) {
-        super(vertxOptions);
+  public VertxImplEx(String name, VertxOptions vertxOptions) {
+    super(vertxOptions);
 
-        if (StringUtils.isEmpty(name)) {
-            return;
-        }
-
-        Field field = ReflectionUtils.findField(VertxImpl.class, "eventLoopThreadFactory");
-        field.setAccessible(true);
-        VertxThreadFactory eventLoopThreadFactory = (VertxThreadFactory) ReflectionUtils.getField(field, this);
-
-        field = ReflectionUtils.findField(eventLoopThreadFactory.getClass(), "prefix");
-        field.setAccessible(true);
-
-        String prefix = (String) ReflectionUtils.getField(field, eventLoopThreadFactory);
-        ReflectionUtils.setField(field, eventLoopThreadFactory, name + "-" + prefix);
+    if (StringUtils.isEmpty(name)) {
+      return;
     }
+
+    Field field = ReflectionUtils.findField(VertxImpl.class, "eventLoopThreadFactory");
+    field.setAccessible(true);
+    VertxThreadFactory eventLoopThreadFactory = (VertxThreadFactory) ReflectionUtils.getField(field, this);
+
+    field = ReflectionUtils.findField(eventLoopThreadFactory.getClass(), "prefix");
+    field.setAccessible(true);
+
+    String prefix = (String) ReflectionUtils.getField(field, eventLoopThreadFactory);
+    ReflectionUtils.setField(field, eventLoopThreadFactory, name + "-" + prefix);
+  }
 }

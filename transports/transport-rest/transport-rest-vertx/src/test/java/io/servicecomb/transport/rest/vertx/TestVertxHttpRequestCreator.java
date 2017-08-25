@@ -23,28 +23,26 @@ import org.junit.Test;
 
 public class TestVertxHttpRequestCreator {
 
-    private ProducerVertxHttpRequestArgMapper instance = null;
+  private ProducerVertxHttpRequestArgMapper instance = null;
 
-    @Before
-    public void setUp() throws Exception {
-        instance = new ProducerVertxHttpRequestArgMapper(null);
-    }
+  @Before
+  public void setUp() throws Exception {
+    instance = new ProducerVertxHttpRequestArgMapper(null);
+  }
 
-    @After
-    public void tearDown() throws Exception {
-        instance = null;
-    }
+  @After
+  public void tearDown() throws Exception {
+    instance = null;
+  }
 
-    @Test
-    public void testVertxHttpRequestCreator() {
-        Assert.assertNotNull(instance);
+  @Test
+  public void testVertxHttpRequestCreator() {
+    Assert.assertNotNull(instance);
+  }
 
-    }
-
-    @Test
-    public void testCreateMockParam() {
-        Object obj = instance.createContextArg(null);
-        Assert.assertNotNull(obj);
-    }
-
+  @Test
+  public void testCreateMockParam() {
+    Object obj = instance.createContextArg(null);
+    Assert.assertNotNull(obj);
+  }
 }

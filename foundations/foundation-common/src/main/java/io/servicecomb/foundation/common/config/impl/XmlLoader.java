@@ -18,69 +18,70 @@ package io.servicecomb.foundation.common.config.impl;
 
 import java.util.List;
 
-import io.servicecomb.foundation.common.config.PaaSResourceUtils;
 import org.springframework.core.io.Resource;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import io.servicecomb.foundation.common.config.PaaSResourceUtils;
+
 /**
  * 无逻辑append xml
  */
 public class XmlLoader extends AbstractLoader {
 
-    private String suffix;
+  private String suffix;
 
-    public XmlLoader(List<String> locationPatternList) {
-        this(locationPatternList, PaaSResourceUtils.XML_SUFFIX);
-    }
+  public XmlLoader(List<String> locationPatternList) {
+    this(locationPatternList, PaaSResourceUtils.XML_SUFFIX);
+  }
 
-    public XmlLoader(List<String> locationPatternList, String suffix) {
-        super(locationPatternList);
-        this.suffix = suffix;
-    }
+  public XmlLoader(List<String> locationPatternList, String suffix) {
+    super(locationPatternList);
+    this.suffix = suffix;
+  }
 
-    @SuppressWarnings("unchecked")
-    @Override
-    public <T> T load() throws Exception {
-        Document doc = XmlLoaderUtils.newDoc();
-        Element root = null;
-        for (String locationPattern : locationPatternList) {
-            List<Resource> resList = PaaSResourceUtils.getSortedResources(locationPattern, suffix);
-            for (Resource res : resList) {
-                Document tmpDoc = XmlLoaderUtils.load(res);
-                Element tmpRoot = tmpDoc.getDocumentElement();
+  @SuppressWarnings("unchecked")
+  @Override
+  public <T> T load() throws Exception {
+    Document doc = XmlLoaderUtils.newDoc();
+    Element root = null;
+    for (String locationPattern : locationPatternList) {
+      List<Resource> resList = PaaSResourceUtils.getSortedResources(locationPattern, suffix);
+      for (Resource res : resList) {
+        Document tmpDoc = XmlLoaderUtils.load(res);
+        Element tmpRoot = tmpDoc.getDocumentElement();
 
-                if (root == null) {
-                    root = (Element) doc.importNode(tmpRoot, false);
-                    doc.appendChild(root);
-                }
-
-                NodeList nodeList = tmpRoot.getChildNodes();
-                for (int idx = 0; idx < nodeList.getLength(); idx++) {
-                    Node child = nodeList.item(idx);
-
-                    if (!Element.class.isInstance(child)) {
-                        continue;
-                    }
-
-                    Element clone = (Element) doc.importNode(child, true);
-                    Element exist = findAndSetExist((Element) clone);
-                    if (exist == null) {
-                        root.appendChild(clone);
-                        continue;
-                    }
-
-                    // merge attr and children
-                    XmlLoaderUtils.mergeElement(clone, exist);
-                }
-            }
+        if (root == null) {
+          root = (Element) doc.importNode(tmpRoot, false);
+          doc.appendChild(root);
         }
-        return (T) doc;
-    }
 
-    protected Element findAndSetExist(Element ele) {
-        return null;
+        NodeList nodeList = tmpRoot.getChildNodes();
+        for (int idx = 0; idx < nodeList.getLength(); idx++) {
+          Node child = nodeList.item(idx);
+
+          if (!Element.class.isInstance(child)) {
+            continue;
+          }
+
+          Element clone = (Element) doc.importNode(child, true);
+          Element exist = findAndSetExist((Element) clone);
+          if (exist == null) {
+            root.appendChild(clone);
+            continue;
+          }
+
+          // merge attr and children
+          XmlLoaderUtils.mergeElement(clone, exist);
+        }
+      }
     }
+    return (T) doc;
+  }
+
+  protected Element findAndSetExist(Element ele) {
+    return null;
+  }
 }

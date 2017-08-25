@@ -21,13 +21,13 @@ import io.servicecomb.swagger.invocation.Response;
 
 @Component
 public class ConsumerResponseCseSame implements ConsumerResponseMapper {
-    @Override
-    public Class<?> getResponseClass() {
-        return Response.class;
-    }
+  @Override
+  public Class<?> getResponseClass() {
+    return Response.class;
+  }
 
-    @Override
-    public Object mapResponse(Response response) {
-        return response;
-    }
+  @Override
+  public Object mapResponse(Response response) {
+    return response;
+  }
 }

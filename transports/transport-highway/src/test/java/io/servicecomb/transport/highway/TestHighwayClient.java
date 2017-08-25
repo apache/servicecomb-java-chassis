@@ -46,122 +46,117 @@ import mockit.MockUp;
 import mockit.Mocked;
 
 public class TestHighwayClient {
-    private TcpClientConfig options;
+  private TcpClientConfig options;
 
-    HighwayClient client = new HighwayClient(true);
+  HighwayClient client = new HighwayClient(true);
 
-    Invocation invocation = Mockito.mock(Invocation.class);
+  Invocation invocation = Mockito.mock(Invocation.class);
 
-    AsyncResponse asyncResp = Mockito.mock(AsyncResponse.class);
+  AsyncResponse asyncResp = Mockito.mock(AsyncResponse.class);
 
-    OperationProtobuf operationProtobuf = Mockito.mock(OperationProtobuf.class);
+  OperationProtobuf operationProtobuf = Mockito.mock(OperationProtobuf.class);
 
-    OperationMeta operationMeta = Mockito.mock(OperationMeta.class);
+  OperationMeta operationMeta = Mockito.mock(OperationMeta.class);
 
-    Endpoint endpoint = Mockito.mock(Endpoint.class);
+  Endpoint endpoint = Mockito.mock(Endpoint.class);
 
-    Executor excutor = Mockito.mock(Executor.class);
+  Executor excutor = Mockito.mock(Executor.class);
 
-    @Test
-    public void testHighwayClientSSL(@Mocked Vertx vertx) throws Exception {
-        new MockUp<VertxUtils>() {
-            @Mock
-            <CLIENT_POOL, CLIENT_OPTIONS> DeploymentOptions createClientDeployOptions(
-                    ClientPoolManager<CLIENT_POOL> clientMgr,
-                    int instanceCount,
-                    int poolCountPerVerticle, CLIENT_OPTIONS clientOptions) {
-                options = (TcpClientConfig) clientOptions;
-                return null;
-            }
+  @Test
+  public void testHighwayClientSSL(@Mocked Vertx vertx) throws Exception {
+    new MockUp<VertxUtils>() {
+      @Mock
+      <CLIENT_POOL, CLIENT_OPTIONS> DeploymentOptions createClientDeployOptions(
+          ClientPoolManager<CLIENT_POOL> clientMgr,
+          int instanceCount,
+          int poolCountPerVerticle, CLIENT_OPTIONS clientOptions) {
+        options = (TcpClientConfig) clientOptions;
+        return null;
+      }
 
-            @Mock
-            <VERTICLE extends AbstractVerticle> boolean blockDeploy(Vertx vertx,
-                    Class<VERTICLE> cls,
-                    DeploymentOptions options) throws InterruptedException {
-                return true;
-            }
-        };
+      @Mock
+      <VERTICLE extends AbstractVerticle> boolean blockDeploy(Vertx vertx,
+          Class<VERTICLE> cls,
+          DeploymentOptions options) throws InterruptedException {
+        return true;
+      }
+    };
 
-        client.init(vertx);
-        Assert.assertEquals(options.isSsl(), true);
+    client.init(vertx);
+    Assert.assertEquals(options.isSsl(), true);
+  }
+
+  @Test
+  public void testSend() {
+    boolean status = true;
+    mockUps();
+
+    Mockito.when(invocation.getOperationMeta()).thenReturn(operationMeta);
+    Mockito.when(invocation.getEndpoint()).thenReturn(endpoint);
+    Mockito.when(invocation.getEndpoint().getEndpoint()).thenReturn("endpoint");
+    Mockito.when(invocation.getResponseExecutor()).thenReturn(excutor);
+
+    try {
+      client.send(invocation, asyncResp);
+    } catch (Exception e) {
+      status = false;
     }
+    Assert.assertTrue(status);
+  }
 
-    @Test
-    public void testSend() {
-        boolean status = true;
-        mockUps();
+  @Test
+  public void testCreateLogin() throws Exception {
+    ProtobufCompatibleUtils.init();
 
-        Mockito.when(invocation.getOperationMeta()).thenReturn(operationMeta);
-        Mockito.when(invocation.getEndpoint()).thenReturn(endpoint);
-        Mockito.when(invocation.getEndpoint().getEndpoint()).thenReturn("endpoint");
-        Mockito.when(invocation.getResponseExecutor()).thenReturn(excutor);
+    HighwayClientConnection connection =
+        new HighwayClientConnection(null, null, "highway://127.0.0.1:7890", null);
+    TcpOutputStream os = connection.createLogin();
+    ByteBuf buf = os.getBuffer().getByteBuf();
 
-        try {
-            client.send(invocation, asyncResp);
-        } catch (Exception e) {
-            status = false;
-        }
-        Assert.assertTrue(status);
+    byte[] magic = new byte[TcpParser.TCP_MAGIC.length];
+    buf.readBytes(magic);
+    Assert.assertArrayEquals(TcpParser.TCP_MAGIC, magic);
+    Assert.assertEquals(os.getMsgId(), buf.readLong());
 
-    }
+    int start = TcpParser.TCP_HEADER_LENGTH;
+    int totalLen = buf.readInt();
+    int headerLen = buf.readInt();
+    Buffer headerBuffer =
+        os.getBuffer().slice(start, start + headerLen);
+    int end = start + totalLen;
+    start += headerLen;
+    Buffer bodyBuffer = os.getBuffer().slice(start, end);
 
-    @Test
-    public void testCreateLogin() throws Exception {
-        ProtobufCompatibleUtils.init();
+    RequestHeader header = RequestHeader.readObject(headerBuffer, connection.getProtobufFeature());
+    Assert.assertEquals(MsgType.LOGIN, header.getMsgType());
 
-        HighwayClientConnection connection =
-            new HighwayClientConnection(null, null, "highway://127.0.0.1:7890", null);
-        TcpOutputStream os = connection.createLogin();
-        ByteBuf buf = os.getBuffer().getByteBuf();
+    LoginRequest login = LoginRequest.readObject(bodyBuffer);
+    Assert.assertEquals(HighwayTransport.NAME, login.getProtocol());
+  }
 
-        byte[] magic = new byte[TcpParser.TCP_MAGIC.length];
-        buf.readBytes(magic);
-        Assert.assertArrayEquals(TcpParser.TCP_MAGIC, magic);
-        Assert.assertEquals(os.getMsgId(), buf.readLong());
+  private void mockUps() {
 
-        int start = TcpParser.TCP_HEADER_LENGTH;
-        int totalLen = buf.readInt();
-        int headerLen = buf.readInt();
-        Buffer headerBuffer =
-            os.getBuffer().slice(start, start + headerLen);
-        int end = start + totalLen;
-        start += headerLen;
-        Buffer bodyBuffer = os.getBuffer().slice(start, end);
+    new MockUp<ClientPoolManager<HighwayClientConnectionPool>>() {
 
-        RequestHeader header = RequestHeader.readObject(headerBuffer, connection.getProtobufFeature());
-        Assert.assertEquals(MsgType.LOGIN, header.getMsgType());
+      @Mock
+      public HighwayClientConnectionPool findThreadBindClientPool() {
+        return Mockito.mock(HighwayClientConnectionPool.class);
+      }
+    };
 
-        LoginRequest login = LoginRequest.readObject(bodyBuffer);
-        Assert.assertEquals(HighwayTransport.NAME, login.getProtocol());
-    }
+    new MockUp<ProtobufManager>() {
+      @Mock
+      public OperationProtobuf getOrCreateOperation(OperationMeta operationMeta) throws Exception {
+        return operationProtobuf;
+      }
+    };
 
-    private void mockUps() {
-
-        new MockUp<ClientPoolManager<HighwayClientConnectionPool>>() {
-
-            @Mock
-            public HighwayClientConnectionPool findThreadBindClientPool() {
-                return Mockito.mock(HighwayClientConnectionPool.class);
-            }
-
-        };
-
-        new MockUp<ProtobufManager>() {
-            @Mock
-            public OperationProtobuf getOrCreateOperation(OperationMeta operationMeta) throws Exception {
-                return operationProtobuf;
-            }
-
-        };
-
-        new MockUp<HighwayCodec>() {
-            @Mock
-            public Buffer encodeRequest(Invocation invocation, OperationProtobuf operationProtobuf,
-                    long msgId) throws Exception {
-                return null;
-            }
-
-        };
-
-    }
+    new MockUp<HighwayCodec>() {
+      @Mock
+      public Buffer encodeRequest(Invocation invocation, OperationProtobuf operationProtobuf,
+          long msgId) throws Exception {
+        return null;
+      }
+    };
+  }
 }

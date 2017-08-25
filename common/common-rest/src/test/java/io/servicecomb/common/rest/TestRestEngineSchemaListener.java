@@ -34,38 +34,38 @@ import io.servicecomb.swagger.generator.pojo.PojoSwaggerGeneratorContext;
 import io.swagger.models.Swagger;
 
 public class TestRestEngineSchemaListener {
-    private final SwaggerGeneratorContext context = new PojoSwaggerGeneratorContext();
+  private final SwaggerGeneratorContext context = new PojoSwaggerGeneratorContext();
 
-    private static class TestRestEngineSchemaListenerSchemaImpl {
-        @SuppressWarnings("unused")
-        public int add(int x, int y) {
-            return 0;
-        }
+  private static class TestRestEngineSchemaListenerSchemaImpl {
+    @SuppressWarnings("unused")
+    public int add(int x, int y) {
+      return 0;
     }
+  }
 
-    @Test
-    public void test() {
-        BeanUtils.setContext(Mockito.mock(ApplicationContext.class));
+  @Test
+  public void test() {
+    BeanUtils.setContext(Mockito.mock(ApplicationContext.class));
 
-        MicroserviceMeta mm = new MicroserviceMeta("app:ms");
-        List<SchemaMeta> smList = new ArrayList<>();
+    MicroserviceMeta mm = new MicroserviceMeta("app:ms");
+    List<SchemaMeta> smList = new ArrayList<>();
 
-        SwaggerGenerator generator = new SwaggerGenerator(context, TestRestEngineSchemaListenerSchemaImpl.class);
-        Swagger swagger = generator.generate();
-        swagger.setBasePath("");
-        SchemaMeta sm1 = new SchemaMeta(swagger, mm, "sid1");
-        smList.add(sm1);
+    SwaggerGenerator generator = new SwaggerGenerator(context, TestRestEngineSchemaListenerSchemaImpl.class);
+    Swagger swagger = generator.generate();
+    swagger.setBasePath("");
+    SchemaMeta sm1 = new SchemaMeta(swagger, mm, "sid1");
+    smList.add(sm1);
 
-        RestEngineSchemaListener listener = new RestEngineSchemaListener();
-        SchemaMeta[] smArr = smList.toArray(new SchemaMeta[smList.size()]);
-        listener.onSchemaLoaded(smArr);
-        // 重复调用，不应该出异常
-        listener.onSchemaLoaded(smArr);
+    RestEngineSchemaListener listener = new RestEngineSchemaListener();
+    SchemaMeta[] smArr = smList.toArray(new SchemaMeta[smList.size()]);
+    listener.onSchemaLoaded(smArr);
+    // 重复调用，不应该出异常
+    listener.onSchemaLoaded(smArr);
 
-        ServicePathManager spm = ServicePathManager.getServicePathManager(mm);
-        Assert.assertEquals(mm, spm.getMicroserviceMeta());
+    ServicePathManager spm = ServicePathManager.getServicePathManager(mm);
+    Assert.assertEquals(mm, spm.getMicroserviceMeta());
 
-        Assert.assertSame(sm1,
-                spm.consumerLocateOperation("/add/", "POST").getOperation().getOperationMeta().getSchemaMeta());
-    }
+    Assert.assertSame(sm1,
+        spm.consumerLocateOperation("/add/", "POST").getOperation().getOperationMeta().getSchemaMeta());
+  }
 }

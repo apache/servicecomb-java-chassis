@@ -16,5 +16,5 @@
 package io.servicecomb.swagger.invocation.converter;
 
 public interface Converter {
-    Object convert(Object value);
+  Object convert(Object value);
 }

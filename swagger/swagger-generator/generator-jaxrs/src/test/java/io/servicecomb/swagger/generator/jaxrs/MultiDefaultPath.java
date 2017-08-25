@@ -20,13 +20,13 @@ import javax.ws.rs.Path;
 
 @Path("/abc")
 public class MultiDefaultPath {
-    @GET
-    public void p1() {
+  @GET
+  public void p1() {
 
-    }
+  }
 
-    @GET
-    public void p2() {
+  @GET
+  public void p2() {
 
-    }
+  }
 }

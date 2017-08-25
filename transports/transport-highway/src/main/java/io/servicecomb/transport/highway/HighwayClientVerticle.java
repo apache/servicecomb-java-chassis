@@ -18,9 +18,9 @@ package io.servicecomb.transport.highway;
 import io.servicecomb.foundation.vertx.client.tcp.AbstractTcpClientVerticle;
 
 public class HighwayClientVerticle
-        extends AbstractTcpClientVerticle<HighwayClientConnection, HighwayClientConnectionPool> {
-    @Override
-    public HighwayClientConnectionPool createClientPool() {
-        return new HighwayClientConnectionPool(clientConfig, context, netClient);
-    }
+    extends AbstractTcpClientVerticle<HighwayClientConnection, HighwayClientConnectionPool> {
+  @Override
+  public HighwayClientConnectionPool createClientPool() {
+    return new HighwayClientConnectionPool(clientConfig, context, netClient);
+  }
 }

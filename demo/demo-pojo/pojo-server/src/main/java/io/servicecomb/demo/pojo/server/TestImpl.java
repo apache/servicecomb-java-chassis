@@ -27,69 +27,69 @@ import io.servicecomb.swagger.invocation.exception.InvocationException;
 
 @RpcSchema(schemaId = "server")
 public class TestImpl implements Test {
-    @Override
-    public String testStringArray(String[] arr) {
-        return String.format("arr is '%s'", Arrays.toString(arr));
+  @Override
+  public String testStringArray(String[] arr) {
+    return String.format("arr is '%s'", Arrays.toString(arr));
+  }
+
+  @Override
+  public String getTestString(String code) {
+    return String.format("code is '%s'", String.valueOf(code));
+  }
+
+  @Override
+  public String postTestStatic(int code) {
+    return null;
+  }
+
+  private User doTest(int index, User user, List<User> users, byte[] data) {
+    if (user == null) {
+      user = new User();
     }
 
-    @Override
-    public String getTestString(String code) {
-        return String.format("code is '%s'", String.valueOf(code));
+    user.setIndex(index);
+
+    int userCount = (users == null) ? 0 : users.size();
+    user.setName(user.getName() + ",  users count:" + userCount);
+    return user;
+  }
+
+  @Override
+  public String testException(int code) {
+    String strCode = String.valueOf(code);
+    switch (code) {
+      case 200:
+        return strCode;
+      case 456:
+        throw new InvocationException(code, strCode, strCode + " error");
+      case 556:
+        throw new InvocationException(code, strCode, Arrays.asList(strCode + " error"));
+      case 557:
+        throw new InvocationException(code, strCode, Arrays.asList(Arrays.asList(strCode + " error")));
+      default:
+        break;
     }
 
-    @Override
-    public String postTestStatic(int code) {
-        return null;
+    return "not expected";
+  }
+
+  @Override
+  public User splitParam(int index, User user) {
+    return doTest(index, user, null, null);
+  }
+
+  @Override
+  public User wrapParam(TestRequest request) {
+    if (request == null) {
+      return null;
     }
+    return doTest(request.getIndex(), request.getUser(), request.getUsers(), request.getData());
+  }
 
-    private User doTest(int index, User user, List<User> users, byte[] data) {
-        if (user == null) {
-            user = new User();
-        }
-
-        user.setIndex(index);
-
-        int userCount = (users == null) ? 0 : users.size();
-        user.setName(user.getName() + ",  users count:" + userCount);
-        return user;
-    }
-
-    @Override
-    public String testException(int code) {
-        String strCode = String.valueOf(code);
-        switch (code) {
-            case 200:
-                return strCode;
-            case 456:
-                throw new InvocationException(code, strCode, strCode + " error");
-            case 556:
-                throw new InvocationException(code, strCode, Arrays.asList(strCode + " error"));
-            case 557:
-                throw new InvocationException(code, strCode, Arrays.asList(Arrays.asList(strCode + " error")));
-            default:
-                break;
-        }
-
-        return "not expected";
-    }
-
-    @Override
-    public User splitParam(int index, User user) {
-        return doTest(index, user, null, null);
-    }
-
-    @Override
-    public User wrapParam(TestRequest request) {
-        if (request == null) {
-            return null;
-        }
-        return doTest(request.getIndex(), request.getUser(), request.getUsers(), request.getData());
-    }
-
-    @Override
-    public String addString(String[] strArr) {
-        String result = Arrays.toString(strArr);
-        System.out.println("addString: " + result);
-        return result;
-    }
+  @Override
+  public String addString(String[] strArr) {
+    String result = Arrays.toString(strArr);
+    System.out.println("addString: " + result);
+    return result;
+  }
 }

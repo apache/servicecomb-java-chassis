@@ -16,10 +16,10 @@
 package io.servicecomb.transport.highway;
 
 public final class MsgType {
-    public static final byte REQUEST = 0;
+  public static final byte REQUEST = 0;
 
-    public static final byte LOGIN = 1;
+  public static final byte LOGIN = 1;
 
-    private MsgType() {
-    }
+  private MsgType() {
+  }
 }

@@ -28,7 +28,9 @@ import io.servicecomb.swagger.invocation.Response;
 class ZipkinProviderDelegate implements ZipkinTracingDelegate {
 
   private final HttpServerHandler<Invocation, Response> handler;
+
   private final HttpTracing httpTracing;
+
   private final Extractor<Invocation> extractor;
 
   @SuppressWarnings("unchecked")

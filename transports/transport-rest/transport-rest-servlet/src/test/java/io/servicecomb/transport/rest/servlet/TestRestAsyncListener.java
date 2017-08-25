@@ -29,30 +29,29 @@ import org.mockito.Mockito;
 
 public class TestRestAsyncListener {
 
-    @Test
-    public void testOnTimeout() throws IOException {
+  @Test
+  public void testOnTimeout() throws IOException {
 
-        boolean status = true;
-        try {
-            RestAsyncListener restasynclistener = new RestAsyncListener();
-            AsyncEvent event = Mockito.mock(AsyncEvent.class);
-            AsyncContext asynccontext = Mockito.mock(AsyncContext.class);
-            Mockito.when(event.getAsyncContext()).thenReturn(asynccontext);
-            ServletResponse response = Mockito.mock(ServletResponse.class);
-            Mockito.when(asynccontext.getResponse()).thenReturn(response);
+    boolean status = true;
+    try {
+      RestAsyncListener restasynclistener = new RestAsyncListener();
+      AsyncEvent event = Mockito.mock(AsyncEvent.class);
+      AsyncContext asynccontext = Mockito.mock(AsyncContext.class);
+      Mockito.when(event.getAsyncContext()).thenReturn(asynccontext);
+      ServletResponse response = Mockito.mock(ServletResponse.class);
+      Mockito.when(asynccontext.getResponse()).thenReturn(response);
 
-            PrintWriter out = Mockito.mock(PrintWriter.class);
-            Mockito.when(response.getWriter()).thenReturn(out);
-            restasynclistener.onTimeout(event);
-            restasynclistener.onComplete(event);
-            restasynclistener.onError(event);
-            restasynclistener.onStartAsync(event);
-            Assert.assertNotNull(restasynclistener);
-
-        } catch (Exception e) {
-            status = false;
-            Assert.assertNotNull(e);
-        }
-        Assert.assertTrue(status);
+      PrintWriter out = Mockito.mock(PrintWriter.class);
+      Mockito.when(response.getWriter()).thenReturn(out);
+      restasynclistener.onTimeout(event);
+      restasynclistener.onComplete(event);
+      restasynclistener.onError(event);
+      restasynclistener.onStartAsync(event);
+      Assert.assertNotNull(restasynclistener);
+    } catch (Exception e) {
+      status = false;
+      Assert.assertNotNull(e);
     }
+    Assert.assertTrue(status);
+  }
 }

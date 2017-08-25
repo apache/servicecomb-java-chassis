@@ -22,13 +22,13 @@ import io.servicecomb.serviceregistry.cache.CacheEndpoint;
 
 public class EndpointsCache extends AbstractEndpointsCache<Endpoint> {
 
-    public EndpointsCache(String appId, String microserviceName, String microserviceVersionRule,
-            String transportName) {
-        super(appId, microserviceName, microserviceVersionRule, transportName);
-    }
+  public EndpointsCache(String appId, String microserviceName, String microserviceVersionRule,
+      String transportName) {
+    super(appId, microserviceName, microserviceVersionRule, transportName);
+  }
 
-    @Override
-    protected Endpoint createEndpoint(Transport transport, CacheEndpoint cacheEndpoint) {
-        return new Endpoint(transport, cacheEndpoint.getEndpoint(), cacheEndpoint.getInstance());
-    }
+  @Override
+  protected Endpoint createEndpoint(Transport transport, CacheEndpoint cacheEndpoint) {
+    return new Endpoint(transport, cacheEndpoint.getEndpoint(), cacheEndpoint.getInstance());
+  }
 }

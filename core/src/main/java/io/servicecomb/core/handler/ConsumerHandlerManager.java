@@ -20,20 +20,20 @@ import io.servicecomb.core.Handler;
 import io.servicecomb.core.handler.impl.TransportClientHandler;
 
 public class ConsumerHandlerManager extends AbstractHandlerManager {
-    public static final ConsumerHandlerManager INSTANCE = new ConsumerHandlerManager();
+  public static final ConsumerHandlerManager INSTANCE = new ConsumerHandlerManager();
 
-    @Override
-    protected String getName() {
-        return "Consumer";
-    }
+  @Override
+  protected String getName() {
+    return "Consumer";
+  }
 
-    @Override
-    protected String getInnerDefaultChainDef() {
-        return "simpleLB";
-    }
+  @Override
+  protected String getInnerDefaultChainDef() {
+    return "simpleLB";
+  }
 
-    @Override
-    protected Handler getLastHandler() {
-        return TransportClientHandler.INSTANCE;
-    }
+  @Override
+  protected Handler getLastHandler() {
+    return TransportClientHandler.INSTANCE;
+  }
 }

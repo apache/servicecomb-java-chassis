@@ -24,49 +24,48 @@ import org.mockito.Mockito;
 import org.springframework.context.ApplicationContext;
 
 import io.servicecomb.foundation.common.utils.BeanUtils;
-
 import mockit.Mock;
 import mockit.MockUp;
 
 public class MockUtil {
 
-    private static MockUtil instance = new MockUtil();
+  private static MockUtil instance = new MockUtil();
 
-    private MockUtil() {
+  private MockUtil() {
 
-    }
+  }
 
-    public static MockUtil getInstance() {
-        return instance;
-    }
+  public static MockUtil getInstance() {
+    return instance;
+  }
 
-    public void mockBeanUtils() {
+  public void mockBeanUtils() {
 
-        new MockUp<BeanUtils>() {
-            @Mock
-            ApplicationContext getContext() {
-                return Mockito.mock(ApplicationContext.class);
-            }
-        };
-    }
+    new MockUp<BeanUtils>() {
+      @Mock
+      ApplicationContext getContext() {
+        return Mockito.mock(ApplicationContext.class);
+      }
+    };
+  }
 
-    public void mockMethod() {
+  public void mockMethod() {
 
-        new MockUp<Method>() {
-            @Mock
-            public Annotation[][] getParameterAnnotations() {
-                Annotation[][] lAnnotation = new Annotation[1][1];
-                lAnnotation[0][0] = Mockito.mock(Annotation.class);
-                return lAnnotation;
-            }
+    new MockUp<Method>() {
+      @Mock
+      public Annotation[][] getParameterAnnotations() {
+        Annotation[][] lAnnotation = new Annotation[1][1];
+        lAnnotation[0][0] = Mockito.mock(Annotation.class);
+        return lAnnotation;
+      }
 
-            @Mock
-            public Type[] getGenericParameterTypes() {
-                Type[] lType = new Type[1];
-                lType[0] = Mockito.mock(Type.class);
-                Mockito.when(lType[0].getTypeName()).thenReturn("javax.servlet.http.HttpServletRequest");
-                return lType;
-            }
-        };
-    }
+      @Mock
+      public Type[] getGenericParameterTypes() {
+        Type[] lType = new Type[1];
+        lType[0] = Mockito.mock(Type.class);
+        Mockito.when(lType[0].getTypeName()).thenReturn("javax.servlet.http.HttpServletRequest");
+        return lType;
+      }
+    };
+  }
 }

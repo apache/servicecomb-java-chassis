@@ -21,8 +21,6 @@ import static org.junit.Assert.assertNotNull;
 import java.util.ArrayList;
 import java.util.List;
 
-import io.servicecomb.loadbalance.filter.SimpleTransactionControlFilter;
-import io.servicecomb.loadbalance.filter.TransactionControlFilter;
 import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -31,120 +29,117 @@ import com.netflix.loadbalancer.AbstractLoadBalancer.ServerGroup;
 import com.netflix.loadbalancer.IRule;
 import com.netflix.loadbalancer.Server;
 
+import io.servicecomb.loadbalance.filter.SimpleTransactionControlFilter;
+import io.servicecomb.loadbalance.filter.TransactionControlFilter;
+
 public class TestLoadBalancer {
 
-    private CseServerList serverList = Mockito.mock(CseServerList.class);
+  private CseServerList serverList = Mockito.mock(CseServerList.class);
 
-    private IRule rule = Mockito.mock(IRule.class);
+  private IRule rule = Mockito.mock(IRule.class);
 
-    private LoadBalancer loadBalancer = new LoadBalancer(serverList, rule);
+  private LoadBalancer loadBalancer = new LoadBalancer(serverList, rule);
 
-    @Test
-    public void testLoadBalancerFullOperationWithoutException() {
+  @Test
+  public void testLoadBalancerFullOperationWithoutException() {
 
-        List<Server> newServers = new ArrayList<Server>();
-        Server server = Mockito.mock(Server.class);
-        newServers.add(server);
+    List<Server> newServers = new ArrayList<Server>();
+    Server server = Mockito.mock(Server.class);
+    newServers.add(server);
 
-        loadBalancer.chooseServer();
+    loadBalancer.chooseServer();
 
-        Object key = Mockito.mock(Object.class);
+    Object key = Mockito.mock(Object.class);
 
-        loadBalancer.chooseServer(key);
-        loadBalancer.getAllServers();
-        loadBalancer.getLoadBalancerStats();
-        loadBalancer.getReachableServers();
+    loadBalancer.chooseServer(key);
+    loadBalancer.getAllServers();
+    loadBalancer.getLoadBalancerStats();
+    loadBalancer.getReachableServers();
 
-        assertNotNull(loadBalancer.getAllServers());
+    assertNotNull(loadBalancer.getAllServers());
+  }
+
+  @Test
+  public void testAddServerException() {
+    boolean status = true;
+    List<Server> newServers = new ArrayList<Server>();
+    Server server = Mockito.mock(Server.class);
+
+    newServers.add(server);
+
+    try {
+
+      loadBalancer.addServers(newServers);
+    } catch (Exception e) {
+
+      status = false;
+
+      Assert.assertEquals("Not implemented.", e.getMessage());
     }
 
-    @Test
-    public void testAddServerException() {
-        boolean status = true;
-        List<Server> newServers = new ArrayList<Server>();
-        Server server = Mockito.mock(Server.class);
+    Assert.assertFalse(status);
+  }
 
-        newServers.add(server);
+  @Test
+  public void testServerListException() {
+    boolean status = true;
+    List<Server> newServers = new ArrayList<Server>();
+    Server server = Mockito.mock(Server.class);
 
-        try {
+    newServers.add(server);
 
-            loadBalancer.addServers(newServers);
+    try {
 
-        } catch (Exception e) {
+      loadBalancer.getServerList(ServerGroup.ALL);
+    } catch (Exception e) {
 
-            status = false;
+      status = false;
 
-            Assert.assertEquals("Not implemented.", e.getMessage());
-        }
-
-        Assert.assertFalse(status);
-
+      Assert.assertEquals("Not implemented.", e.getMessage());
     }
 
-    @Test
-    public void testServerListException() {
-        boolean status = true;
-        List<Server> newServers = new ArrayList<Server>();
-        Server server = Mockito.mock(Server.class);
+    Assert.assertFalse(status);
+  }
 
-        newServers.add(server);
+  @Test
+  public void testMarkServerDownException() {
+    boolean status = true;
+    List<Server> newServers = new ArrayList<Server>();
+    Server server = Mockito.mock(Server.class);
 
-        try {
+    newServers.add(server);
 
-            loadBalancer.getServerList(ServerGroup.ALL);
+    try {
 
-        } catch (Exception e) {
+      loadBalancer.markServerDown(server);
+    } catch (Exception e) {
 
-            status = false;
+      status = false;
 
-            Assert.assertEquals("Not implemented.", e.getMessage());
-        }
-
-        Assert.assertFalse(status);
-
+      Assert.assertEquals("Not implemented.", e.getMessage());
     }
 
-    @Test
-    public void testMarkServerDownException() {
-        boolean status = true;
-        List<Server> newServers = new ArrayList<Server>();
-        Server server = Mockito.mock(Server.class);
+    Assert.assertFalse(status);
+  }
 
-        newServers.add(server);
+  @Test
+  public void testFilter() {
+    Assert.assertEquals(0, loadBalancer.getFilterSize());
 
-        try {
+    TransactionControlFilter filter = new SimpleTransactionControlFilter();
+    loadBalancer.putFilter("test", filter);
+    Assert.assertEquals(1, loadBalancer.getFilterSize());
+  }
 
-            loadBalancer.markServerDown(server);
+  @Test
+  public void testGetAllServers() {
+    List<Server> servers = new ArrayList<Server>();
+    Server server = Mockito.mock(Server.class);
+    servers.add(server);
+    Mockito.when(serverList.getInitialListOfServers()).thenReturn(servers);
 
-        } catch (Exception e) {
-
-            status = false;
-
-            Assert.assertEquals("Not implemented.", e.getMessage());
-        }
-
-        Assert.assertFalse(status);
-
-    }
-
-    @Test
-    public void testFilter() {
-        Assert.assertEquals(0, loadBalancer.getFilterSize());
-
-        TransactionControlFilter filter = new SimpleTransactionControlFilter();
-        loadBalancer.putFilter("test", filter);
-        Assert.assertEquals(1, loadBalancer.getFilterSize());
-    }
-
-    @Test
-    public void testGetAllServers() {
-        List<Server> servers = new ArrayList<Server>();
-        Server server = Mockito.mock(Server.class);
-        servers.add(server);
-        Mockito.when(serverList.getInitialListOfServers()).thenReturn(servers);
-
-        TransactionControlFilter filter = Mockito.mock(TransactionControlFilter.class);
-        Mockito.when(filter.getFilteredListOfServers(servers)).thenReturn(servers);
-        Assert.assertEquals(servers, loadBalancer.getAllServers());
-    }
+    TransactionControlFilter filter = Mockito.mock(TransactionControlFilter.class);
+    Mockito.when(filter.getFilteredListOfServers(servers)).thenReturn(servers);
+    Assert.assertEquals(servers, loadBalancer.getAllServers());
+  }
 }

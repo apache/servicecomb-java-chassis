@@ -20,27 +20,27 @@ import java.net.HttpCookie;
 import java.util.List;
 
 public final class HttpUtils {
-    private HttpUtils() {
+  private HttpUtils() {
+  }
+
+  public static String getCookieParamValue(String cookieName, List<String> cookieLines) {
+    for (String cookieLine : cookieLines) {
+      String value = getCookieParamValue(cookieName, cookieLine);
+      if (value != null) {
+        return value;
+      }
     }
 
-    public static String getCookieParamValue(String cookieName, List<String> cookieLines) {
-        for (String cookieLine : cookieLines) {
-            String value = getCookieParamValue(cookieName, cookieLine);
-            if (value != null) {
-                return value;
-            }
-        }
+    return null;
+  }
 
-        return null;
+  public static String getCookieParamValue(String cookieName, String cookieLine) {
+    List<HttpCookie> httpCookieList = HttpCookie.parse(cookieLine);
+    for (HttpCookie httpCookie : httpCookieList) {
+      if (cookieName.equals(httpCookie.getName())) {
+        return httpCookie.getValue();
+      }
     }
-
-    public static String getCookieParamValue(String cookieName, String cookieLine) {
-        List<HttpCookie> httpCookieList = HttpCookie.parse(cookieLine);
-        for (HttpCookie httpCookie : httpCookieList) {
-            if (cookieName.equals(httpCookie.getName())) {
-                return httpCookie.getValue();
-            }
-        }
-        return null;
-    }
+    return null;
+  }
 }

@@ -16,6 +16,9 @@
 
 package io.servicecomb.tracing.zipkin;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import brave.Span;
 import brave.Tracer.SpanInScope;
 import brave.Tracing;
@@ -24,13 +27,13 @@ import io.servicecomb.core.Invocation;
 import io.servicecomb.core.definition.MicroserviceMeta;
 import io.servicecomb.swagger.invocation.AsyncResponse;
 import io.servicecomb.swagger.invocation.InvocationType;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 class ZipkinTracingHandler implements Handler {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(ZipkinTracingHandler.class);
+
   private final Tracing tracer;
+
   private final ZipkinTracingDelegate tracingDelegate;
 
   ZipkinTracingHandler(ZipkinTracingDelegate tracingDelegate) {

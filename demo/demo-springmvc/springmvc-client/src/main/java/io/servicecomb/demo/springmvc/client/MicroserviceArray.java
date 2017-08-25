@@ -15,8 +15,9 @@
  */
 package io.servicecomb.demo.springmvc.client;
 
-import io.servicecomb.serviceregistry.api.registry.Microservice;
 import java.util.List;
+
+import io.servicecomb.serviceregistry.api.registry.Microservice;
 
 public class MicroserviceArray {
 

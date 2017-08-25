@@ -26,46 +26,46 @@ import io.servicecomb.foundation.vertx.stream.BufferOutputStream;
 import io.vertx.core.buffer.Buffer;
 
 public interface ProduceProcessor {
-    String getName();
+  String getName();
 
-    default void encodeResponse(OutputStream output, Object result) throws Exception {
-        if (result == null) {
-            return;
-        }
-
-        doEncodeResponse(output, result);
+  default void encodeResponse(OutputStream output, Object result) throws Exception {
+    if (result == null) {
+      return;
     }
 
-    void doEncodeResponse(OutputStream output, Object result) throws Exception;
+    doEncodeResponse(output, result);
+  }
 
-    default Buffer encodeResponse(Object result) throws Exception {
-        if (null == result) {
-            return null;
-        }
+  void doEncodeResponse(OutputStream output, Object result) throws Exception;
 
-        try (BufferOutputStream output = new BufferOutputStream()) {
-            doEncodeResponse(output, result);
-            return output.getBuffer();
-        }
+  default Buffer encodeResponse(Object result) throws Exception {
+    if (null == result) {
+      return null;
     }
 
-    default Object decodeResponse(InputStream input, JavaType type) throws Exception {
-        if (input.available() == 0) {
-            return null;
-        }
+    try (BufferOutputStream output = new BufferOutputStream()) {
+      doEncodeResponse(output, result);
+      return output.getBuffer();
+    }
+  }
 
-        return doDecodeResponse(input, type);
+  default Object decodeResponse(InputStream input, JavaType type) throws Exception {
+    if (input.available() == 0) {
+      return null;
     }
 
-    Object doDecodeResponse(InputStream input, JavaType type) throws Exception;
+    return doDecodeResponse(input, type);
+  }
 
-    default Object decodeResponse(Buffer buffer, JavaType type) throws Exception {
-        if (buffer.length() == 0) {
-            return null;
-        }
+  Object doDecodeResponse(InputStream input, JavaType type) throws Exception;
 
-        try (BufferInputStream input = new BufferInputStream(buffer.getByteBuf())) {
-            return doDecodeResponse(input, type);
-        }
+  default Object decodeResponse(Buffer buffer, JavaType type) throws Exception {
+    if (buffer.length() == 0) {
+      return null;
     }
+
+    try (BufferInputStream input = new BufferInputStream(buffer.getByteBuf())) {
+      return doDecodeResponse(input, type);
+    }
+  }
 }

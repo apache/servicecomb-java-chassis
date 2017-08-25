@@ -26,33 +26,33 @@ import org.springframework.web.client.RequestCallback;
 import io.servicecomb.common.rest.RestConst;
 
 public class CseRestTemplate extends AcceptableRestTemplate {
-    public CseRestTemplate() {
-        setMessageConverters(Arrays.asList(new CseHttpMessageConverter()));
-        setRequestFactory(new CseClientHttpRequestFactory());
-        setUriTemplateHandler(new CseUriTemplateHandler());
-    }
+  public CseRestTemplate() {
+    setMessageConverters(Arrays.asList(new CseHttpMessageConverter()));
+    setRequestFactory(new CseClientHttpRequestFactory());
+    setUriTemplateHandler(new CseUriTemplateHandler());
+  }
 
-    @Override
-    protected <T> RequestCallback httpEntityCallback(Object requestBody) {
-        RequestCallback callback = super.httpEntityCallback(requestBody);
-        CseRequestCallback cseCallback = new CseRequestCallback(requestBody, callback);
-        return cseCallback;
-    }
+  @Override
+  protected <T> RequestCallback httpEntityCallback(Object requestBody) {
+    RequestCallback callback = super.httpEntityCallback(requestBody);
+    CseRequestCallback cseCallback = new CseRequestCallback(requestBody, callback);
+    return cseCallback;
+  }
 
-    @Override
-    protected <T> RequestCallback httpEntityCallback(Object requestBody, Type responseType) {
-        RequestCallback callback = super.httpEntityCallback(requestBody, responseType);
-        CseRequestCallback cseCallback = new CseRequestCallback(requestBody, callback);
-        return cseCallback;
-    }
+  @Override
+  protected <T> RequestCallback httpEntityCallback(Object requestBody, Type responseType) {
+    RequestCallback callback = super.httpEntityCallback(requestBody, responseType);
+    CseRequestCallback cseCallback = new CseRequestCallback(requestBody, callback);
+    return cseCallback;
+  }
 
-    @Override
-    public boolean isAcceptable(String uri) {
-        return uri.startsWith(RestConst.URI_PREFIX);
-    }
+  @Override
+  public boolean isAcceptable(String uri) {
+    return uri.startsWith(RestConst.URI_PREFIX);
+  }
 
-    @Override
-    public boolean isAcceptable(URI uri) {
-        return RestConst.SCHEME.equals(uri.getScheme());
-    }
+  @Override
+  public boolean isAcceptable(URI uri) {
+    return RestConst.SCHEME.equals(uri.getScheme());
+  }
 }

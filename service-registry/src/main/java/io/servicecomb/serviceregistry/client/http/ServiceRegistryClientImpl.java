@@ -66,631 +66,629 @@ import io.vertx.core.buffer.Buffer;
 import io.vertx.core.http.HttpClientResponse;
 
 public final class ServiceRegistryClientImpl implements ServiceRegistryClient {
-    private static final Logger LOGGER = LoggerFactory.getLogger(ServiceRegistryClientImpl.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(ServiceRegistryClientImpl.class);
 
-    private IpPortManager ipPortManager;
+  private IpPortManager ipPortManager;
 
-    // key是本进程的微服务id和服务管理中心的id
-    // extract this, ServiceRegistryClient is better to be no status.
-    private Map<String, Boolean> watchServices = new ConcurrentHashMap<>();
+  // key是本进程的微服务id和服务管理中心的id
+  // extract this, ServiceRegistryClient is better to be no status.
+  private Map<String, Boolean> watchServices = new ConcurrentHashMap<>();
 
-    public ServiceRegistryClientImpl(IpPortManager ipPortManager) {
-        this.ipPortManager = ipPortManager;
+  public ServiceRegistryClientImpl(IpPortManager ipPortManager) {
+    this.ipPortManager = ipPortManager;
+  }
+
+  @Override
+  public void init() {
+  }
+
+  private boolean retry(RequestContext requestContext, Handler<RestResponse> responseHandler) {
+    IpPort ipPort = ipPortManager.next();
+    if (ipPort == null) {
+      return false;
     }
+    requestContext.setIpPort(ipPortManager.get());
+    RestUtils.httpDo(requestContext, responseHandler);
+    return true;
+  }
 
-    @Override
-    public void init() {
-    }
-
-    private boolean retry(RequestContext requestContext, Handler<RestResponse> responseHandler) {
-        IpPort ipPort = ipPortManager.next();
-        if (ipPort == null) {
-            return false;
+  @SuppressWarnings("unchecked")
+  private <T> Handler<RestResponse> syncHandler(CountDownLatch countDownLatch, Class<T> cls,
+      Holder<T> holder) {
+    return restResponse -> {
+      RequestContext requestContext = restResponse.getRequestContext();
+      HttpClientResponse response = restResponse.getResponse();
+      if (response == null) {
+        // 请求失败，触发请求SC的其他实例
+        if (!retry(requestContext, syncHandler(countDownLatch, cls, holder))) {
+          countDownLatch.countDown();
         }
-        requestContext.setIpPort(ipPortManager.get());
-        RestUtils.httpDo(requestContext, responseHandler);
-        return true;
-    }
-
-    @SuppressWarnings("unchecked")
-    private <T> Handler<RestResponse> syncHandler(CountDownLatch countDownLatch, Class<T> cls,
-            Holder<T> holder) {
-        return restResponse -> {
-            RequestContext requestContext = restResponse.getRequestContext();
-            HttpClientResponse response = restResponse.getResponse();
-            if (response == null) {
-                // 请求失败，触发请求SC的其他实例
-                if (!retry(requestContext, syncHandler(countDownLatch, cls, holder))) {
-                    countDownLatch.countDown();
-                }
-                return;
+        return;
+      }
+      response.bodyHandler(
+          bodyBuffer -> {
+            if (cls.getName().equals(HttpClientResponse.class.getName())) {
+              holder.value = (T) response;
+              countDownLatch.countDown();
+              return;
             }
-            response.bodyHandler(
-                    bodyBuffer -> {
-                        if (cls.getName().equals(HttpClientResponse.class.getName())) {
-                            holder.value = (T) response;
-                            countDownLatch.countDown();
-                            return;
-                        }
-                        try {
-                            holder.value =
-                                JsonUtils.readValue(bodyBuffer.getBytes(), cls);
-                        } catch (Exception e) {
-                            LOGGER.warn(bodyBuffer.toString());
-                        }
-                        countDownLatch.countDown();
-                    });
-        };
-    }
-
-    static class ResponseWrapper {
-        HttpClientResponse response;
-
-        Buffer bodyBuffer;
-    }
-
-    // temporary copy from syncHandler
-    // we will use swagger invocation to replace RestUtils later.
-    private Handler<RestResponse> syncHandlerEx(CountDownLatch countDownLatch, Holder<ResponseWrapper> holder) {
-        return restResponse -> {
-            RequestContext requestContext = restResponse.getRequestContext();
-            HttpClientResponse response = restResponse.getResponse();
-            if (response == null) {
-                // invoke failed, call another SC instance
-                if (!retry(requestContext, syncHandlerEx(countDownLatch, holder))) {
-                    countDownLatch.countDown();
-                }
-                return;
+            try {
+              holder.value =
+                  JsonUtils.readValue(bodyBuffer.getBytes(), cls);
+            } catch (Exception e) {
+              LOGGER.warn(bodyBuffer.toString());
             }
+            countDownLatch.countDown();
+          });
+    };
+  }
 
-            response.bodyHandler(bodyBuffer -> {
-                ResponseWrapper responseWrapper = new ResponseWrapper();
-                responseWrapper.response = response;
-                responseWrapper.bodyBuffer = bodyBuffer;
-                holder.value = responseWrapper;
-                countDownLatch.countDown();
-            });
-        };
-    }
+  static class ResponseWrapper {
+    HttpClientResponse response;
 
-    @Override
-    public List<Microservice> getAllMicroservices() {
-        Holder<GetAllServicesResponse> holder = new Holder<>();
-        IpPort ipPort = ipPortManager.get();
+    Buffer bodyBuffer;
+  }
 
-        CountDownLatch countDownLatch = new CountDownLatch(1);
-        RestUtils.get(ipPort,
-                MS_API_PATH + MICROSERVICE_PATH,
-                new RequestParam(),
-                syncHandler(countDownLatch, GetAllServicesResponse.class, holder));
-        try {
-            countDownLatch.await();
-            if (holder.value != null) {
-                return holder.value.getServices();
-            }
-        } catch (Exception e) {
-            LOGGER.error("query all microservices failed", e);
+  // temporary copy from syncHandler
+  // we will use swagger invocation to replace RestUtils later.
+  private Handler<RestResponse> syncHandlerEx(CountDownLatch countDownLatch, Holder<ResponseWrapper> holder) {
+    return restResponse -> {
+      RequestContext requestContext = restResponse.getRequestContext();
+      HttpClientResponse response = restResponse.getResponse();
+      if (response == null) {
+        // invoke failed, call another SC instance
+        if (!retry(requestContext, syncHandlerEx(countDownLatch, holder))) {
+          countDownLatch.countDown();
         }
-        return emptyList();
+        return;
+      }
+
+      response.bodyHandler(bodyBuffer -> {
+        ResponseWrapper responseWrapper = new ResponseWrapper();
+        responseWrapper.response = response;
+        responseWrapper.bodyBuffer = bodyBuffer;
+        holder.value = responseWrapper;
+        countDownLatch.countDown();
+      });
+    };
+  }
+
+  @Override
+  public List<Microservice> getAllMicroservices() {
+    Holder<GetAllServicesResponse> holder = new Holder<>();
+    IpPort ipPort = ipPortManager.get();
+
+    CountDownLatch countDownLatch = new CountDownLatch(1);
+    RestUtils.get(ipPort,
+        MS_API_PATH + MICROSERVICE_PATH,
+        new RequestParam(),
+        syncHandler(countDownLatch, GetAllServicesResponse.class, holder));
+    try {
+      countDownLatch.await();
+      if (holder.value != null) {
+        return holder.value.getServices();
+      }
+    } catch (Exception e) {
+      LOGGER.error("query all microservices failed", e);
     }
+    return emptyList();
+  }
 
-    @Override
-    public String getMicroserviceId(String appId, String microserviceName, String versionRule) {
-        Holder<GetExistenceResponse> holder = new Holder<>();
-        IpPort ipPort = ipPortManager.get();
+  @Override
+  public String getMicroserviceId(String appId, String microserviceName, String versionRule) {
+    Holder<GetExistenceResponse> holder = new Holder<>();
+    IpPort ipPort = ipPortManager.get();
 
-        CountDownLatch countDownLatch = new CountDownLatch(1);
-        RestUtils.get(ipPort,
-                MS_API_PATH + EXISTENCE_PATH,
-                new RequestParam().addQueryParam("type", "microservice")
-                        .addQueryParam("appId", appId)
-                        .addQueryParam("serviceName", microserviceName)
-                        .addQueryParam("version", versionRule),
-                syncHandler(countDownLatch, GetExistenceResponse.class, holder));
-        try {
-            countDownLatch.await();
-            if (holder.value != null) {
-                return holder.value.getServiceId();
-            }
-        } catch (Exception e) {
-            LOGGER.error("query microservice id {}/{}/{} fail",
-                    appId,
-                    microserviceName,
-                    versionRule,
-                    e);
-        }
-        return null;
+    CountDownLatch countDownLatch = new CountDownLatch(1);
+    RestUtils.get(ipPort,
+        MS_API_PATH + EXISTENCE_PATH,
+        new RequestParam().addQueryParam("type", "microservice")
+            .addQueryParam("appId", appId)
+            .addQueryParam("serviceName", microserviceName)
+            .addQueryParam("version", versionRule),
+        syncHandler(countDownLatch, GetExistenceResponse.class, holder));
+    try {
+      countDownLatch.await();
+      if (holder.value != null) {
+        return holder.value.getServiceId();
+      }
+    } catch (Exception e) {
+      LOGGER.error("query microservice id {}/{}/{} fail",
+          appId,
+          microserviceName,
+          versionRule,
+          e);
     }
+    return null;
+  }
 
-    @Override
-    public boolean isSchemaExist(String microserviceId, String schemaId) {
-        Holder<GetExistenceResponse> holder = new Holder<>();
-        IpPort ipPort = ipPortManager.get();
+  @Override
+  public boolean isSchemaExist(String microserviceId, String schemaId) {
+    Holder<GetExistenceResponse> holder = new Holder<>();
+    IpPort ipPort = ipPortManager.get();
 
-        CountDownLatch countDownLatch = new CountDownLatch(1);
-        RestUtils.get(ipPort,
-                MS_API_PATH + EXISTENCE_PATH,
-                new RequestParam().addQueryParam("type", "schema")
-                        .addQueryParam("serviceId", microserviceId)
-                        .addQueryParam("schemaId", schemaId),
-                syncHandler(countDownLatch, GetExistenceResponse.class, holder));
-        try {
-            countDownLatch.await();
-        } catch (Exception e) {
-            LOGGER.error("query schema exist {}/{} fail",
-                    microserviceId,
-                    schemaId,
-                    e);
-        }
-        return holder.value != null;
+    CountDownLatch countDownLatch = new CountDownLatch(1);
+    RestUtils.get(ipPort,
+        MS_API_PATH + EXISTENCE_PATH,
+        new RequestParam().addQueryParam("type", "schema")
+            .addQueryParam("serviceId", microserviceId)
+            .addQueryParam("schemaId", schemaId),
+        syncHandler(countDownLatch, GetExistenceResponse.class, holder));
+    try {
+      countDownLatch.await();
+    } catch (Exception e) {
+      LOGGER.error("query schema exist {}/{} fail",
+          microserviceId,
+          schemaId,
+          e);
     }
+    return holder.value != null;
+  }
 
-    @Override
-    public boolean registerSchema(String microserviceId, String schemaId, String schemaContent) {
-        Holder<ResponseWrapper> holder = new Holder<>();
-        IpPort ipPort = ipPortManager.get();
+  @Override
+  public boolean registerSchema(String microserviceId, String schemaId, String schemaContent) {
+    Holder<ResponseWrapper> holder = new Holder<>();
+    IpPort ipPort = ipPortManager.get();
 
-        try {
-            CreateSchemaRequest request = new CreateSchemaRequest();
-            request.setSchema(schemaContent);
-            byte[] body = JsonUtils.writeValueAsBytes(request);
+    try {
+      CreateSchemaRequest request = new CreateSchemaRequest();
+      request.setSchema(schemaContent);
+      byte[] body = JsonUtils.writeValueAsBytes(request);
 
-            CountDownLatch countDownLatch = new CountDownLatch(1);
-            RestUtils.put(ipPort,
-                    MS_API_PATH + MICROSERVICE_PATH + "/" + microserviceId + SCHEMA_PATH + "/" + schemaId,
-                    new RequestParam().setBody(body),
-                    syncHandlerEx(countDownLatch, holder));
-            countDownLatch.await();
+      CountDownLatch countDownLatch = new CountDownLatch(1);
+      RestUtils.put(ipPort,
+          MS_API_PATH + MICROSERVICE_PATH + "/" + microserviceId + SCHEMA_PATH + "/" + schemaId,
+          new RequestParam().setBody(body),
+          syncHandlerEx(countDownLatch, holder));
+      countDownLatch.await();
 
-            if (holder.value == null) {
-                LOGGER.error("Register schema {}/{} failed.", microserviceId, schemaId);
-                return false;
-            }
-
-            if (!Status.Family.SUCCESSFUL.equals(Status.Family.familyOf(holder.value.response.statusCode()))) {
-                LOGGER.error("Register schema {}/{} failed, statusCode: {}, statusMessage: {}, description: {}.",
-                        microserviceId,
-                        schemaId,
-                        holder.value.response.statusCode(),
-                        holder.value.response.statusMessage(),
-                        holder.value.bodyBuffer.toString());
-                return false;
-            }
-
-            LOGGER.info("register schema {}/{} success.",
-                    microserviceId,
-                    schemaId);
-            return true;
-        } catch (Exception e) {
-            LOGGER.error("register schema {}/{} fail.",
-                    microserviceId,
-                    schemaId,
-                    e);
-        }
+      if (holder.value == null) {
+        LOGGER.error("Register schema {}/{} failed.", microserviceId, schemaId);
         return false;
-    }
+      }
 
-    @Override
-    public String getSchema(String microserviceId, String schemaId) {
-        Holder<GetSchemaResponse> holder = new Holder<>();
-        IpPort ipPort = ipPortManager.get();
-
-        CountDownLatch countDownLatch = new CountDownLatch(1);
-        RestUtils.get(ipPort,
-                MS_API_PATH + MICROSERVICE_PATH + "/" + microserviceId + SCHEMA_PATH + "/" + schemaId,
-                new RequestParam(),
-                syncHandler(countDownLatch, GetSchemaResponse.class, holder));
-        try {
-            countDownLatch.await();
-        } catch (Exception e) {
-            LOGGER.error("query schema exist {}/{} failed",
-                    microserviceId,
-                    schemaId,
-                    e);
-        }
-        if (holder.value != null) {
-            return holder.value.getSchema();
-        }
-
-        return null;
-    }
-
-    @Override
-    public String registerMicroservice(Microservice microservice) {
-        Holder<CreateServiceResponse> holder = new Holder<>();
-        IpPort ipPort = ipPortManager.get();
-        try {
-            CreateServiceRequest request = new CreateServiceRequest();
-            request.setService(microservice);
-            byte[] body = JsonUtils.writeValueAsBytes(request);
-
-            if (LOGGER.isDebugEnabled()) {
-                LOGGER.debug("register microservice: {}", new String(body, Charset.defaultCharset()));
-            }
-
-            CountDownLatch countDownLatch = new CountDownLatch(1);
-            RestUtils.post(ipPort,
-                    MS_API_PATH + MICROSERVICE_PATH,
-                    new RequestParam().setBody(body),
-                    syncHandler(countDownLatch, CreateServiceResponse.class, holder));
-            countDownLatch.await();
-            if (holder.value != null) {
-                return holder.value.getServiceId();
-            }
-        } catch (Exception e) {
-            LOGGER.error("register microservice {}/{}/{} failed",
-                    microservice.getAppId(),
-                    microservice.getServiceName(),
-                    microservice.getVersion(),
-                    e);
-        }
-        return null;
-    }
-
-    @Override
-    public Microservice getMicroservice(String microserviceId) {
-        Holder<GetServiceResponse> holder = new Holder<>();
-        IpPort ipPort = ipPortManager.get();
-
-        StringBuilder url = new StringBuilder(MS_API_PATH);
-        url.append(MICROSERVICE_PATH).append("/").append(microserviceId);
-
-        CountDownLatch countDownLatch = new CountDownLatch(1);
-        RestUtils.get(ipPort,
-                url.toString(),
-                new RequestParam(),
-                syncHandler(countDownLatch, GetServiceResponse.class, holder));
-        try {
-            countDownLatch.await();
-            if (holder.value != null) {
-                return holder.value.getService();
-            }
-        } catch (Exception e) {
-            LOGGER.error("query microservice {} failed", microserviceId, e);
-        }
-        return null;
-    }
-
-    @Override
-    public String registerMicroserviceInstance(MicroserviceInstance instance) {
-        Holder<RegisterInstanceResponse> holder = new Holder<>();
-        IpPort ipPort = ipPortManager.get();
-
-        StringBuilder url = new StringBuilder(MS_API_PATH);
-        url.append(MICROSERVICE_PATH)
-                .append("/")
-                .append(instance.getServiceId())
-                .append(INSTANCES_PATH);
-
-        try {
-            RegisterInstanceRequest request = new RegisterInstanceRequest();
-            request.setInstance(instance);
-            byte[] body = JsonUtils.writeValueAsBytes(request);
-
-            if (LOGGER.isDebugEnabled()) {
-                LOGGER.debug("register microservice: {}", new String(body, Charset.defaultCharset()));
-            }
-
-            CountDownLatch countDownLatch = new CountDownLatch(1);
-            RestUtils.post(ipPort,
-                    url.toString(),
-                    new RequestParam().setBody(body),
-                    syncHandler(countDownLatch, RegisterInstanceResponse.class, holder));
-            countDownLatch.await();
-            if (holder.value != null) {
-                return holder.value.getInstanceId();
-            }
-        } catch (Exception e) {
-            LOGGER.error("register microservice instance {} failed", instance.getServiceId(), e);
-        }
-        return null;
-    }
-
-    @Override
-    public List<MicroserviceInstance> getMicroserviceInstance(String consumerId, String providerId) {
-        Holder<GetInstancesResponse> holder = new Holder<>();
-        IpPort ipPort = ipPortManager.get();
-
-        StringBuilder url = new StringBuilder(MS_API_PATH);
-        url.append(MICROSERVICE_PATH)
-                .append("/")
-                .append(providerId)
-                .append(INSTANCES_PATH);
-
-        CountDownLatch countDownLatch = new CountDownLatch(1);
-        RestUtils.get(ipPort,
-                url.toString(),
-                new RequestParam().addHeader("X-ConsumerId", consumerId),
-                syncHandler(countDownLatch, GetInstancesResponse.class, holder));
-        try {
-            countDownLatch.await();
-            if (holder.value != null) {
-                return holder.value.getInstances();
-            }
-        } catch (Exception e) {
-            LOGGER.error("query microservice instances {} failed", providerId, e);
-
-        }
-        return null;
-    }
-
-    @Override
-    public boolean unregisterMicroserviceInstance(String microserviceId, String microserviceInstanceId) {
-        Holder<HttpClientResponse> holder = new Holder<>();
-        IpPort ipPort = ipPortManager.get();
-
-        StringBuilder url = new StringBuilder(MS_API_PATH);
-        url.append(MICROSERVICE_PATH)
-                .append("/")
-                .append(microserviceId)
-                .append(INSTANCES_PATH)
-                .append("/")
-                .append(microserviceInstanceId);
-
-        CountDownLatch countDownLatch = new CountDownLatch(1);
-        RestUtils.delete(ipPort,
-                url.toString(),
-                new RequestParam(),
-                syncHandler(countDownLatch, HttpClientResponse.class, holder));
-        try {
-            countDownLatch.await();
-            if (holder.value != null) {
-                if (holder.value.statusCode() == Status.OK.getStatusCode()) {
-                    return true;
-                }
-                LOGGER.warn(holder.value.statusMessage());
-            }
-        } catch (Exception e) {
-            LOGGER.error("unregister microservice instance {}/{} failed",
-                    microserviceId,
-                    microserviceInstanceId,
-                    e);
-        }
+      if (!Status.Family.SUCCESSFUL.equals(Status.Family.familyOf(holder.value.response.statusCode()))) {
+        LOGGER.error("Register schema {}/{} failed, statusCode: {}, statusMessage: {}, description: {}.",
+            microserviceId,
+            schemaId,
+            holder.value.response.statusCode(),
+            holder.value.response.statusMessage(),
+            holder.value.bodyBuffer.toString());
         return false;
+      }
+
+      LOGGER.info("register schema {}/{} success.",
+          microserviceId,
+          schemaId);
+      return true;
+    } catch (Exception e) {
+      LOGGER.error("register schema {}/{} fail.",
+          microserviceId,
+          schemaId,
+          e);
+    }
+    return false;
+  }
+
+  @Override
+  public String getSchema(String microserviceId, String schemaId) {
+    Holder<GetSchemaResponse> holder = new Holder<>();
+    IpPort ipPort = ipPortManager.get();
+
+    CountDownLatch countDownLatch = new CountDownLatch(1);
+    RestUtils.get(ipPort,
+        MS_API_PATH + MICROSERVICE_PATH + "/" + microserviceId + SCHEMA_PATH + "/" + schemaId,
+        new RequestParam(),
+        syncHandler(countDownLatch, GetSchemaResponse.class, holder));
+    try {
+      countDownLatch.await();
+    } catch (Exception e) {
+      LOGGER.error("query schema exist {}/{} failed",
+          microserviceId,
+          schemaId,
+          e);
+    }
+    if (holder.value != null) {
+      return holder.value.getSchema();
     }
 
-    @Override
-    public HeartbeatResponse heartbeat(String microserviceId, String microserviceInstanceId) {
-        Holder<HttpClientResponse> holder = new Holder<>();
-        IpPort ipPort = ipPortManager.get();
+    return null;
+  }
 
-        StringBuilder url = new StringBuilder(MS_API_PATH);
-        url.append(MICROSERVICE_PATH)
-                .append("/")
-                .append(microserviceId)
-                .append(INSTANCES_PATH)
-                .append("/")
-                .append(microserviceInstanceId)
-                .append(HEARTBEAT_PATH);
+  @Override
+  public String registerMicroservice(Microservice microservice) {
+    Holder<CreateServiceResponse> holder = new Holder<>();
+    IpPort ipPort = ipPortManager.get();
+    try {
+      CreateServiceRequest request = new CreateServiceRequest();
+      request.setService(microservice);
+      byte[] body = JsonUtils.writeValueAsBytes(request);
 
-        CountDownLatch countDownLatch = new CountDownLatch(1);
-        RestUtils.put(ipPort,
-                url.toString(),
-                new RequestParam(),
-                syncHandler(countDownLatch, HttpClientResponse.class, holder));
+      if (LOGGER.isDebugEnabled()) {
+        LOGGER.debug("register microservice: {}", new String(body, Charset.defaultCharset()));
+      }
 
-        try {
-            countDownLatch.await();
-            if (holder.value != null) {
-                HeartbeatResponse response = new HeartbeatResponse();
-                response.setMessage(holder.value.statusMessage());
-                if (holder.value.statusCode() == Status.OK.getStatusCode()) {
-                    response.setOk(true);
-                    return response;
-                }
-                LOGGER.warn(holder.value.statusMessage());
-                return response;
-            }
-        } catch (Exception e) {
-            LOGGER.error("update microservice instance {}/{} heartbeat failed",
-                    microserviceId,
-                    microserviceInstanceId,
-                    e);
+      CountDownLatch countDownLatch = new CountDownLatch(1);
+      RestUtils.post(ipPort,
+          MS_API_PATH + MICROSERVICE_PATH,
+          new RequestParam().setBody(body),
+          syncHandler(countDownLatch, CreateServiceResponse.class, holder));
+      countDownLatch.await();
+      if (holder.value != null) {
+        return holder.value.getServiceId();
+      }
+    } catch (Exception e) {
+      LOGGER.error("register microservice {}/{}/{} failed",
+          microservice.getAppId(),
+          microservice.getServiceName(),
+          microservice.getVersion(),
+          e);
+    }
+    return null;
+  }
+
+  @Override
+  public Microservice getMicroservice(String microserviceId) {
+    Holder<GetServiceResponse> holder = new Holder<>();
+    IpPort ipPort = ipPortManager.get();
+
+    StringBuilder url = new StringBuilder(MS_API_PATH);
+    url.append(MICROSERVICE_PATH).append("/").append(microserviceId);
+
+    CountDownLatch countDownLatch = new CountDownLatch(1);
+    RestUtils.get(ipPort,
+        url.toString(),
+        new RequestParam(),
+        syncHandler(countDownLatch, GetServiceResponse.class, holder));
+    try {
+      countDownLatch.await();
+      if (holder.value != null) {
+        return holder.value.getService();
+      }
+    } catch (Exception e) {
+      LOGGER.error("query microservice {} failed", microserviceId, e);
+    }
+    return null;
+  }
+
+  @Override
+  public String registerMicroserviceInstance(MicroserviceInstance instance) {
+    Holder<RegisterInstanceResponse> holder = new Holder<>();
+    IpPort ipPort = ipPortManager.get();
+
+    StringBuilder url = new StringBuilder(MS_API_PATH);
+    url.append(MICROSERVICE_PATH)
+        .append("/")
+        .append(instance.getServiceId())
+        .append(INSTANCES_PATH);
+
+    try {
+      RegisterInstanceRequest request = new RegisterInstanceRequest();
+      request.setInstance(instance);
+      byte[] body = JsonUtils.writeValueAsBytes(request);
+
+      if (LOGGER.isDebugEnabled()) {
+        LOGGER.debug("register microservice: {}", new String(body, Charset.defaultCharset()));
+      }
+
+      CountDownLatch countDownLatch = new CountDownLatch(1);
+      RestUtils.post(ipPort,
+          url.toString(),
+          new RequestParam().setBody(body),
+          syncHandler(countDownLatch, RegisterInstanceResponse.class, holder));
+      countDownLatch.await();
+      if (holder.value != null) {
+        return holder.value.getInstanceId();
+      }
+    } catch (Exception e) {
+      LOGGER.error("register microservice instance {} failed", instance.getServiceId(), e);
+    }
+    return null;
+  }
+
+  @Override
+  public List<MicroserviceInstance> getMicroserviceInstance(String consumerId, String providerId) {
+    Holder<GetInstancesResponse> holder = new Holder<>();
+    IpPort ipPort = ipPortManager.get();
+
+    StringBuilder url = new StringBuilder(MS_API_PATH);
+    url.append(MICROSERVICE_PATH)
+        .append("/")
+        .append(providerId)
+        .append(INSTANCES_PATH);
+
+    CountDownLatch countDownLatch = new CountDownLatch(1);
+    RestUtils.get(ipPort,
+        url.toString(),
+        new RequestParam().addHeader("X-ConsumerId", consumerId),
+        syncHandler(countDownLatch, GetInstancesResponse.class, holder));
+    try {
+      countDownLatch.await();
+      if (holder.value != null) {
+        return holder.value.getInstances();
+      }
+    } catch (Exception e) {
+      LOGGER.error("query microservice instances {} failed", providerId, e);
+    }
+    return null;
+  }
+
+  @Override
+  public boolean unregisterMicroserviceInstance(String microserviceId, String microserviceInstanceId) {
+    Holder<HttpClientResponse> holder = new Holder<>();
+    IpPort ipPort = ipPortManager.get();
+
+    StringBuilder url = new StringBuilder(MS_API_PATH);
+    url.append(MICROSERVICE_PATH)
+        .append("/")
+        .append(microserviceId)
+        .append(INSTANCES_PATH)
+        .append("/")
+        .append(microserviceInstanceId);
+
+    CountDownLatch countDownLatch = new CountDownLatch(1);
+    RestUtils.delete(ipPort,
+        url.toString(),
+        new RequestParam(),
+        syncHandler(countDownLatch, HttpClientResponse.class, holder));
+    try {
+      countDownLatch.await();
+      if (holder.value != null) {
+        if (holder.value.statusCode() == Status.OK.getStatusCode()) {
+          return true;
         }
-        return null;
+        LOGGER.warn(holder.value.statusMessage());
+      }
+    } catch (Exception e) {
+      LOGGER.error("unregister microservice instance {}/{} failed",
+          microserviceId,
+          microserviceInstanceId,
+          e);
     }
+    return false;
+  }
 
-    public void watch(String selfMicroserviceId, AsyncResultCallback<MicroserviceInstanceChangedEvent> callback) {
-        watch(selfMicroserviceId, callback, v -> {
-        }, v -> {
-        });
+  @Override
+  public HeartbeatResponse heartbeat(String microserviceId, String microserviceInstanceId) {
+    Holder<HttpClientResponse> holder = new Holder<>();
+    IpPort ipPort = ipPortManager.get();
+
+    StringBuilder url = new StringBuilder(MS_API_PATH);
+    url.append(MICROSERVICE_PATH)
+        .append("/")
+        .append(microserviceId)
+        .append(INSTANCES_PATH)
+        .append("/")
+        .append(microserviceInstanceId)
+        .append(HEARTBEAT_PATH);
+
+    CountDownLatch countDownLatch = new CountDownLatch(1);
+    RestUtils.put(ipPort,
+        url.toString(),
+        new RequestParam(),
+        syncHandler(countDownLatch, HttpClientResponse.class, holder));
+
+    try {
+      countDownLatch.await();
+      if (holder.value != null) {
+        HeartbeatResponse response = new HeartbeatResponse();
+        response.setMessage(holder.value.statusMessage());
+        if (holder.value.statusCode() == Status.OK.getStatusCode()) {
+          response.setOk(true);
+          return response;
+        }
+        LOGGER.warn(holder.value.statusMessage());
+        return response;
+      }
+    } catch (Exception e) {
+      LOGGER.error("update microservice instance {}/{} heartbeat failed",
+          microserviceId,
+          microserviceInstanceId,
+          e);
     }
+    return null;
+  }
 
-    public void watch(String selfMicroserviceId, AsyncResultCallback<MicroserviceInstanceChangedEvent> callback,
-            AsyncResultCallback<Void> onOpen, AsyncResultCallback<Void> onClose) {
-        Boolean alreadyWatch = watchServices.get(selfMicroserviceId);
+  public void watch(String selfMicroserviceId, AsyncResultCallback<MicroserviceInstanceChangedEvent> callback) {
+    watch(selfMicroserviceId, callback, v -> {
+    }, v -> {
+    });
+  }
+
+  public void watch(String selfMicroserviceId, AsyncResultCallback<MicroserviceInstanceChangedEvent> callback,
+      AsyncResultCallback<Void> onOpen, AsyncResultCallback<Void> onClose) {
+    Boolean alreadyWatch = watchServices.get(selfMicroserviceId);
+    if (alreadyWatch == null) {
+      synchronized (ServiceRegistryClientImpl.class) {
+        alreadyWatch = watchServices.get(selfMicroserviceId);
         if (alreadyWatch == null) {
-            synchronized (ServiceRegistryClientImpl.class) {
-                alreadyWatch = watchServices.get(selfMicroserviceId);
-                if (alreadyWatch == null) {
-                    watchServices.put(selfMicroserviceId, true);
+          watchServices.put(selfMicroserviceId, true);
 
-                    String url = MS_API_PATH + MICROSERVICE_PATH + "/" + selfMicroserviceId + WATCHER_PATH;
+          String url = MS_API_PATH + MICROSERVICE_PATH + "/" + selfMicroserviceId + WATCHER_PATH;
 
-                    IpPort ipPort = ipPortManager.get();
-                    if (ipPort == null) {
-                        LOGGER.error("request address is null, watch microservice {}",
-                                selfMicroserviceId);
-                        watchErrorHandler(new Exception("request address is null"),
-                                selfMicroserviceId,
-                                callback);
-                        return;
-                    }
-                    WebsocketUtils.open(ipPort, url, o -> {
-                        onOpen.success(o);
-                        LOGGER.info(
-                                "watching microservice {} successfully, "
-                                        + "the chosen service center address is {}:{}",
-                                selfMicroserviceId,
-                                ipPort.getHostOrIp(),
-                                ipPort.getPort());
-                    }, c -> {
-                        watchErrorHandler(new ClientException("connection is closed accidentally"),
-                                selfMicroserviceId,
-                                callback);
-                        onClose.success(null);
-                    }, bodyBuffer -> {
-                        MicroserviceInstanceChangedEvent response = null;
-                        try {
-                            response = JsonUtils.readValue(bodyBuffer.getBytes(),
-                                    MicroserviceInstanceChangedEvent.class);
-                        } catch (Exception e) {
-                            LOGGER.error("watcher handle microservice {} response failed, {}",
-                                    selfMicroserviceId,
-                                    bodyBuffer.toString());
-                            return;
-                        }
-                        try {
-                            callback.success(response);
-                        } catch (Exception e) {
-                            LOGGER.error("notify watcher failed, microservice {}",
-                                    selfMicroserviceId,
-                                    e);
-                        }
-                    }, e -> {
-                        watchErrorHandler(e, selfMicroserviceId, callback);
-                        onClose.success(null);
-                    }, f -> {
-                        watchErrorHandler(f, selfMicroserviceId, callback);
-                    });
-                }
-            }
-        }
-    }
-
-    @Override
-    public List<MicroserviceInstance> findServiceInstance(String consumerId, String appId, String serviceName,
-            String versionRule) {
-        Holder<FindInstancesResponse> holder = new Holder<>();
-        IpPort ipPort = ipPortManager.get();
-
-        StringBuilder url = new StringBuilder(MS_API_PATH);
-        url.append(INSTANCES_PATH);
-
-        CountDownLatch countDownLatch = new CountDownLatch(1);
-        RestUtils.get(ipPort,
-                url.toString(),
-                new RequestParam().addQueryParam("appId", appId)
-                        .addQueryParam("serviceName", serviceName)
-                        .addQueryParam("version", versionRule)
-                        .addHeader("X-ConsumerId", consumerId),
-                syncHandler(countDownLatch, FindInstancesResponse.class, holder));
-        try {
-            countDownLatch.await();
-            if (holder.value == null) {
-                return null; // error
-
-            }
-            List<MicroserviceInstance> list = holder.value.getInstances();
-            if (list == null) {
-                return new ArrayList<>();
-            }
-            return list;
-        } catch (Exception e) {
-            LOGGER.error("find microservice instance {}/{}/{} failed",
-                    appId,
-                    serviceName,
-                    versionRule,
-                    e);
-        }
-        return null;
-    }
-
-    private void watchErrorHandler(Throwable e, String selfMicroserviceId,
-            AsyncResultCallback<MicroserviceInstanceChangedEvent> callback) {
-        LOGGER.error(
-                "watcher connect to service center server failed, microservice {}, {}",
+          IpPort ipPort = ipPortManager.get();
+          if (ipPort == null) {
+            LOGGER.error("request address is null, watch microservice {}",
+                selfMicroserviceId);
+            watchErrorHandler(new Exception("request address is null"),
                 selfMicroserviceId,
-                e.getMessage());
-        callback.fail(e);
-        watchServices.remove(selfMicroserviceId);
-    }
-
-    @Override
-    public boolean updateMicroserviceProperties(String microserviceId, Map<String, String> serviceProperties) {
-        Holder<HttpClientResponse> holder = new Holder<>();
-        IpPort ipPort = ipPortManager.get();
-
-        StringBuilder url = new StringBuilder(MS_API_PATH);
-        url.append(MICROSERVICE_PATH)
-                .append("/")
-                .append(microserviceId)
-                .append(PROPERTIES_PATH);
-
-        try {
-            UpdatePropertiesRequest request = new UpdatePropertiesRequest();
-            request.setProperties(serviceProperties);
-            byte[] body = JsonUtils.writeValueAsBytes(request);
-
-            if (LOGGER.isDebugEnabled()) {
-                LOGGER.debug("update properties of microservice: {}", new String(body, Charset.defaultCharset()));
+                callback);
+            return;
+          }
+          WebsocketUtils.open(ipPort, url, o -> {
+            onOpen.success(o);
+            LOGGER.info(
+                "watching microservice {} successfully, "
+                    + "the chosen service center address is {}:{}",
+                selfMicroserviceId,
+                ipPort.getHostOrIp(),
+                ipPort.getPort());
+          }, c -> {
+            watchErrorHandler(new ClientException("connection is closed accidentally"),
+                selfMicroserviceId,
+                callback);
+            onClose.success(null);
+          }, bodyBuffer -> {
+            MicroserviceInstanceChangedEvent response = null;
+            try {
+              response = JsonUtils.readValue(bodyBuffer.getBytes(),
+                  MicroserviceInstanceChangedEvent.class);
+            } catch (Exception e) {
+              LOGGER.error("watcher handle microservice {} response failed, {}",
+                  selfMicroserviceId,
+                  bodyBuffer.toString());
+              return;
             }
-
-            CountDownLatch countDownLatch = new CountDownLatch(1);
-            RestUtils.put(ipPort,
-                    url.toString(),
-                    new RequestParam().setBody(body),
-                    syncHandler(countDownLatch, HttpClientResponse.class, holder));
-
-            countDownLatch.await();
-            if (holder.value != null) {
-                if (holder.value.statusCode() == Status.OK.getStatusCode()) {
-                    return true;
-                }
-                LOGGER.warn(holder.value.statusMessage());
+            try {
+              callback.success(response);
+            } catch (Exception e) {
+              LOGGER.error("notify watcher failed, microservice {}",
+                  selfMicroserviceId,
+                  e);
             }
-        } catch (Exception e) {
-            LOGGER.error("update properties of microservice {} failed",
-                    microserviceId,
-                    e);
+          }, e -> {
+            watchErrorHandler(e, selfMicroserviceId, callback);
+            onClose.success(null);
+          }, f -> {
+            watchErrorHandler(f, selfMicroserviceId, callback);
+          });
         }
-        return false;
+      }
     }
+  }
 
-    @Override
-    public boolean updateInstanceProperties(String microserviceId, String microserviceInstanceId,
-            Map<String, String> instanceProperties) {
-        Holder<HttpClientResponse> holder = new Holder<>();
-        IpPort ipPort = ipPortManager.get();
+  @Override
+  public List<MicroserviceInstance> findServiceInstance(String consumerId, String appId, String serviceName,
+      String versionRule) {
+    Holder<FindInstancesResponse> holder = new Holder<>();
+    IpPort ipPort = ipPortManager.get();
 
-        StringBuilder url = new StringBuilder(MS_API_PATH);
-        url.append(MICROSERVICE_PATH)
-                .append("/")
-                .append(microserviceId)
-                .append(INSTANCES_PATH)
-                .append("/")
-                .append(microserviceInstanceId)
-                .append(PROPERTIES_PATH);
+    StringBuilder url = new StringBuilder(MS_API_PATH);
+    url.append(INSTANCES_PATH);
 
-        try {
-            UpdatePropertiesRequest request = new UpdatePropertiesRequest();
-            request.setProperties(instanceProperties);
-            byte[] body = JsonUtils.writeValueAsBytes(request);
+    CountDownLatch countDownLatch = new CountDownLatch(1);
+    RestUtils.get(ipPort,
+        url.toString(),
+        new RequestParam().addQueryParam("appId", appId)
+            .addQueryParam("serviceName", serviceName)
+            .addQueryParam("version", versionRule)
+            .addHeader("X-ConsumerId", consumerId),
+        syncHandler(countDownLatch, FindInstancesResponse.class, holder));
+    try {
+      countDownLatch.await();
+      if (holder.value == null) {
+        return null; // error
+      }
+      List<MicroserviceInstance> list = holder.value.getInstances();
+      if (list == null) {
+        return new ArrayList<>();
+      }
+      return list;
+    } catch (Exception e) {
+      LOGGER.error("find microservice instance {}/{}/{} failed",
+          appId,
+          serviceName,
+          versionRule,
+          e);
+    }
+    return null;
+  }
 
-            if (LOGGER.isDebugEnabled()) {
-                LOGGER.debug("update properties of microservice instance: {}",
-                        new String(body, Charset.defaultCharset()));
-            }
+  private void watchErrorHandler(Throwable e, String selfMicroserviceId,
+      AsyncResultCallback<MicroserviceInstanceChangedEvent> callback) {
+    LOGGER.error(
+        "watcher connect to service center server failed, microservice {}, {}",
+        selfMicroserviceId,
+        e.getMessage());
+    callback.fail(e);
+    watchServices.remove(selfMicroserviceId);
+  }
 
-            CountDownLatch countDownLatch = new CountDownLatch(1);
-            RestUtils.put(ipPort,
-                    url.toString(),
-                    new RequestParam().setBody(body),
-                    syncHandler(countDownLatch, HttpClientResponse.class, holder));
+  @Override
+  public boolean updateMicroserviceProperties(String microserviceId, Map<String, String> serviceProperties) {
+    Holder<HttpClientResponse> holder = new Holder<>();
+    IpPort ipPort = ipPortManager.get();
 
-            countDownLatch.await();
-            if (holder.value != null) {
-                if (holder.value.statusCode() == Status.OK.getStatusCode()) {
-                    return true;
-                }
-                LOGGER.warn(holder.value.statusMessage());
-            }
-        } catch (Exception e) {
-            LOGGER.error("update properties of microservice instance {}/{} failed",
-                    microserviceId,
-                    microserviceInstanceId,
-                    e);
+    StringBuilder url = new StringBuilder(MS_API_PATH);
+    url.append(MICROSERVICE_PATH)
+        .append("/")
+        .append(microserviceId)
+        .append(PROPERTIES_PATH);
+
+    try {
+      UpdatePropertiesRequest request = new UpdatePropertiesRequest();
+      request.setProperties(serviceProperties);
+      byte[] body = JsonUtils.writeValueAsBytes(request);
+
+      if (LOGGER.isDebugEnabled()) {
+        LOGGER.debug("update properties of microservice: {}", new String(body, Charset.defaultCharset()));
+      }
+
+      CountDownLatch countDownLatch = new CountDownLatch(1);
+      RestUtils.put(ipPort,
+          url.toString(),
+          new RequestParam().setBody(body),
+          syncHandler(countDownLatch, HttpClientResponse.class, holder));
+
+      countDownLatch.await();
+      if (holder.value != null) {
+        if (holder.value.statusCode() == Status.OK.getStatusCode()) {
+          return true;
         }
-        return false;
+        LOGGER.warn(holder.value.statusMessage());
+      }
+    } catch (Exception e) {
+      LOGGER.error("update properties of microservice {} failed",
+          microserviceId,
+          e);
     }
+    return false;
+  }
+
+  @Override
+  public boolean updateInstanceProperties(String microserviceId, String microserviceInstanceId,
+      Map<String, String> instanceProperties) {
+    Holder<HttpClientResponse> holder = new Holder<>();
+    IpPort ipPort = ipPortManager.get();
+
+    StringBuilder url = new StringBuilder(MS_API_PATH);
+    url.append(MICROSERVICE_PATH)
+        .append("/")
+        .append(microserviceId)
+        .append(INSTANCES_PATH)
+        .append("/")
+        .append(microserviceInstanceId)
+        .append(PROPERTIES_PATH);
+
+    try {
+      UpdatePropertiesRequest request = new UpdatePropertiesRequest();
+      request.setProperties(instanceProperties);
+      byte[] body = JsonUtils.writeValueAsBytes(request);
+
+      if (LOGGER.isDebugEnabled()) {
+        LOGGER.debug("update properties of microservice instance: {}",
+            new String(body, Charset.defaultCharset()));
+      }
+
+      CountDownLatch countDownLatch = new CountDownLatch(1);
+      RestUtils.put(ipPort,
+          url.toString(),
+          new RequestParam().setBody(body),
+          syncHandler(countDownLatch, HttpClientResponse.class, holder));
+
+      countDownLatch.await();
+      if (holder.value != null) {
+        if (holder.value.statusCode() == Status.OK.getStatusCode()) {
+          return true;
+        }
+        LOGGER.warn(holder.value.statusMessage());
+      }
+    } catch (Exception e) {
+      LOGGER.error("update properties of microservice instance {}/{} failed",
+          microserviceId,
+          microserviceInstanceId,
+          e);
+    }
+    return false;
+  }
 }

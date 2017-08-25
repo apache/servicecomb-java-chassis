@@ -21,69 +21,62 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-/**
- *
- * @since Mar 14, 2017
- * @see 
- */
 public class TestPerfStatData {
 
-    PerfStatData oPerfStatData = null;
+  PerfStatData oPerfStatData = null;
 
-    @Before
-    public void setUp() throws Exception {
-        oPerfStatData = new PerfStatData("testData");
-    }
+  @Before
+  public void setUp() throws Exception {
+    oPerfStatData = new PerfStatData("testData");
+  }
 
-    @After
-    public void tearDown() throws Exception {
-        oPerfStatData = null;
-    }
+  @After
+  public void tearDown() throws Exception {
+    oPerfStatData = null;
+  }
 
-    @Test
-    public void testDefaultValues() {
-        Assert.assertEquals("testData", oPerfStatData.getName());
-        Assert.assertEquals(0, oPerfStatData.getCallCount());
-        Assert.assertEquals(0, oPerfStatData.getMsLatency());
-        Assert.assertNotNull(oPerfStatData.getMsLatencySegments());
-        Assert.assertEquals(0, oPerfStatData.getMsgCount());
-        Assert.assertNotNull(PerfStatData.getStrSegmentDef());
+  @Test
+  public void testDefaultValues() {
+    Assert.assertEquals("testData", oPerfStatData.getName());
+    Assert.assertEquals(0, oPerfStatData.getCallCount());
+    Assert.assertEquals(0, oPerfStatData.getMsLatency());
+    Assert.assertNotNull(oPerfStatData.getMsLatencySegments());
+    Assert.assertEquals(0, oPerfStatData.getMsgCount());
+    Assert.assertNotNull(PerfStatData.getStrSegmentDef());
+  }
 
-    }
+  @Test
+  public void testAdd() {
+    oPerfStatData.add(10, 100);
+    Assert.assertEquals(10, oPerfStatData.getMsgCount());
+    Assert.assertEquals(100, oPerfStatData.getMsLatency());
 
-    @Test
-    public void testAdd() {
-        oPerfStatData.add(10, 100);
-        Assert.assertEquals(10, oPerfStatData.getMsgCount());
-        Assert.assertEquals(100, oPerfStatData.getMsLatency());
+    //Test Add function with PerfStatContext
+    PerfStatContext oPerfStatContext = new PerfStatContext();
+    oPerfStatContext.setMsgCount(30);
+    oPerfStatData.add(oPerfStatContext);
+    Assert.assertEquals(40, oPerfStatData.getMsgCount());
+  }
 
-        //Test Add function with PerfStatContext
-        PerfStatContext oPerfStatContext = new PerfStatContext();
-        oPerfStatContext.setMsgCount(30);
-        oPerfStatData.add(oPerfStatContext);
-        Assert.assertEquals(40, oPerfStatData.getMsgCount());
-    }
+  @Test
+  public void testMergeFrom() {
+    oPerfStatData.mergeFrom(new PerfStatData("anotherData"));
+    Assert.assertEquals(0, oPerfStatData.getMsgCount());
+    Assert.assertEquals(0, oPerfStatData.getCallCount());
+    Assert.assertEquals(0, oPerfStatData.getMsLatency());
+  }
 
-    @Test
-    public void testMergeFrom() {
-        oPerfStatData.mergeFrom(new PerfStatData("anotherData"));
-        Assert.assertEquals(0, oPerfStatData.getMsgCount());
-        Assert.assertEquals(0, oPerfStatData.getCallCount());
-        Assert.assertEquals(0, oPerfStatData.getMsLatency());
-    }
+  @Test
+  public void testCalc() {
+    PerfResult oPerfResult = oPerfStatData.calc(System.currentTimeMillis() + 18989);
+    Assert.assertEquals("  all testData  :", oPerfResult.getName());
+    Assert.assertEquals(0, oPerfResult.getCallCount());
+    Assert.assertEquals(0, oPerfResult.getMsgCount());
 
-    @Test
-    public void testCalc() {
-        PerfResult oPerfResult = oPerfStatData.calc(System.currentTimeMillis() + 18989);
-        Assert.assertEquals("  all testData  :", oPerfResult.getName());
-        Assert.assertEquals(0, oPerfResult.getCallCount());
-        Assert.assertEquals(0, oPerfResult.getMsgCount());
-
-        //test calc with another PerfStatData
-        oPerfResult = oPerfStatData.calc(new PerfStatData("anotherData"), System.currentTimeMillis() + 18989);
-        Assert.assertEquals("  cycle testData:", oPerfResult.getName());
-        Assert.assertEquals(0, oPerfResult.getCallCount());
-        Assert.assertEquals(0, oPerfResult.getMsgCount());
-    }
-
+    //test calc with another PerfStatData
+    oPerfResult = oPerfStatData.calc(new PerfStatData("anotherData"), System.currentTimeMillis() + 18989);
+    Assert.assertEquals("  cycle testData:", oPerfResult.getName());
+    Assert.assertEquals(0, oPerfResult.getCallCount());
+    Assert.assertEquals(0, oPerfResult.getMsgCount());
+  }
 }

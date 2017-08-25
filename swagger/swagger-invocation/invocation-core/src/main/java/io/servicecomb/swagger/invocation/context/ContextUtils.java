@@ -20,28 +20,28 @@ package io.servicecomb.swagger.invocation.context;
  * 传递调用过程的上下文数据
  */
 public final class ContextUtils {
-    private ContextUtils() {
-    }
+  private ContextUtils() {
+  }
 
-    private static ThreadLocal<InvocationContext> contextMgr = new ThreadLocal<>();
+  private static ThreadLocal<InvocationContext> contextMgr = new ThreadLocal<>();
 
-    public static InvocationContext getInvocationContext() {
-        return contextMgr.get();
-    }
+  public static InvocationContext getInvocationContext() {
+    return contextMgr.get();
+  }
 
-    public static InvocationContext getAndRemoveInvocationContext() {
-        InvocationContext context = contextMgr.get();
-        if (context != null) {
-            contextMgr.remove();
-        }
-        return context;
+  public static InvocationContext getAndRemoveInvocationContext() {
+    InvocationContext context = contextMgr.get();
+    if (context != null) {
+      contextMgr.remove();
     }
+    return context;
+  }
 
-    public static void setInvocationContext(InvocationContext invocationContext) {
-        contextMgr.set(invocationContext);
-    }
+  public static void setInvocationContext(InvocationContext invocationContext) {
+    contextMgr.set(invocationContext);
+  }
 
-    public static void removeInvocationContext() {
-        contextMgr.remove();
-    }
+  public static void removeInvocationContext() {
+    contextMgr.remove();
+  }
 }

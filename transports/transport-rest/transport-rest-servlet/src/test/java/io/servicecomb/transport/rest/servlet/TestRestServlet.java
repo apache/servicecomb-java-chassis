@@ -31,41 +31,41 @@ import io.servicecomb.core.transport.TransportManager;
 import io.servicecomb.transport.rest.servlet.common.MockUtil;
 
 public class TestRestServlet {
-    private RestServlet restservlet = null;
+  private RestServlet restservlet = null;
 
-    private HttpServletRequest request = null;
+  private HttpServletRequest request = null;
 
-    private HttpServletResponse response = null;
+  private HttpServletResponse response = null;
 
-    @Before
-    public void setUp() throws Exception {
-        restservlet = new RestServlet();
-        request = Mockito.mock(HttpServletRequest.class);
-        response = Mockito.mock(HttpServletResponse.class);
+  @Before
+  public void setUp() throws Exception {
+    restservlet = new RestServlet();
+    request = Mockito.mock(HttpServletRequest.class);
+    response = Mockito.mock(HttpServletResponse.class);
 
-        CseContext.getInstance().setTransportManager(Mockito.mock(TransportManager.class));
+    CseContext.getInstance().setTransportManager(Mockito.mock(TransportManager.class));
+  }
+
+  @After
+  public void tearDown() throws Exception {
+    restservlet = null;
+  }
+
+  @Test
+  public void testInit() throws ServletException {
+    restservlet.init();
+    Assert.assertTrue(true);
+  }
+
+  @Test
+  public void testService() {
+    boolean status = true;
+    try {
+      MockUtil.getInstance().mockServletRestServer();
+      restservlet.service(request, response);
+    } catch (Exception e) {
+      status = false;
     }
-
-    @After
-    public void tearDown() throws Exception {
-        restservlet = null;
-    }
-
-    @Test
-    public void testInit() throws ServletException {
-        restservlet.init();
-        Assert.assertTrue(true);
-    }
-
-    @Test
-    public void testService() {
-        boolean status = true;
-        try {
-            MockUtil.getInstance().mockServletRestServer();
-            restservlet.service(request, response);
-        } catch (Exception e) {
-            status = false;
-        }
-        Assert.assertTrue(status);
-    }
+    Assert.assertTrue(status);
+  }
 }

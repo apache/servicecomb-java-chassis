@@ -29,48 +29,48 @@ import io.servicecomb.serviceregistry.api.registry.Microservice;
  */
 @Component
 public class MicroserviceMetaManager extends RegisterManager<String, MicroserviceMeta> {
-    private static final String MICROSERVICE_SCHEMA_MGR = "microservice meta manager";
+  private static final String MICROSERVICE_SCHEMA_MGR = "microservice meta manager";
 
-    private final Object lock = new Object();
+  private final Object lock = new Object();
 
-    public MicroserviceMetaManager() {
-        super(MICROSERVICE_SCHEMA_MGR);
+  public MicroserviceMetaManager() {
+    super(MICROSERVICE_SCHEMA_MGR);
+  }
+
+  public SchemaMeta ensureFindSchemaMeta(String microserviceName, String schemaId) {
+    MicroserviceMeta microserviceMeta = ensureFindValue(microserviceName);
+    return microserviceMeta.ensureFindSchemaMeta(schemaId);
+  }
+
+  public Collection<SchemaMeta> getAllSchemaMeta(String microserviceName) {
+    MicroserviceMeta microserviceMeta = ensureFindValue(microserviceName);
+    return microserviceMeta.getSchemaMetas();
+  }
+
+  public MicroserviceMeta getOrCreateMicroserviceMeta(Microservice microservice) {
+    String microserviceName = microservice.getServiceName();
+    MicroserviceMeta microserviceMeta = getOrCreateMicroserviceMeta(microserviceName);
+    if (!StringUtils.isEmpty(microservice.getAlias())) {
+      if (findValue(microservice.getAlias()) == null) {
+        register(microservice.getAlias(), microserviceMeta);
+      }
     }
 
-    public SchemaMeta ensureFindSchemaMeta(String microserviceName, String schemaId) {
-        MicroserviceMeta microserviceMeta = ensureFindValue(microserviceName);
-        return microserviceMeta.ensureFindSchemaMeta(schemaId);
-    }
+    return microserviceMeta;
+  }
 
-    public Collection<SchemaMeta> getAllSchemaMeta(String microserviceName) {
-        MicroserviceMeta microserviceMeta = ensureFindValue(microserviceName);
-        return microserviceMeta.getSchemaMetas();
-    }
-
-    public MicroserviceMeta getOrCreateMicroserviceMeta(Microservice microservice) {
-        String microserviceName = microservice.getServiceName();
-        MicroserviceMeta microserviceMeta = getOrCreateMicroserviceMeta(microserviceName);
-        if (!StringUtils.isEmpty(microservice.getAlias())) {
-            if (findValue(microservice.getAlias()) == null) {
-                register(microservice.getAlias(), microserviceMeta);
-            }
-        }
-
-        return microserviceMeta;
-    }
-
-    public MicroserviceMeta getOrCreateMicroserviceMeta(String microserviceName) {
-        MicroserviceMeta microserviceMeta = findValue(microserviceName);
+  public MicroserviceMeta getOrCreateMicroserviceMeta(String microserviceName) {
+    MicroserviceMeta microserviceMeta = findValue(microserviceName);
+    if (microserviceMeta == null) {
+      synchronized (lock) {
+        microserviceMeta = findValue(microserviceName);
         if (microserviceMeta == null) {
-            synchronized (lock) {
-                microserviceMeta = findValue(microserviceName);
-                if (microserviceMeta == null) {
-                    microserviceMeta = new MicroserviceMeta(microserviceName);
-                    register(microserviceName, microserviceMeta);
-                }
-            }
+          microserviceMeta = new MicroserviceMeta(microserviceName);
+          register(microserviceName, microserviceMeta);
         }
-
-        return microserviceMeta;
+      }
     }
+
+    return microserviceMeta;
+  }
 }

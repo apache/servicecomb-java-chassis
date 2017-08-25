@@ -26,34 +26,33 @@ import io.servicecomb.common.rest.definition.path.PathRegExp;
  */
 public class RestOperationComparator implements Serializable, Comparator<RestOperationMeta> {
 
-    private static final long serialVersionUID = -2364909265520813678L;
+  private static final long serialVersionUID = -2364909265520813678L;
 
-    @Override
-    public int compare(RestOperationMeta r1, RestOperationMeta r2) {
-        // 排序规则:
-        // 1.静态字符多的优先
-        // 2.变量组多的优先
-        // 3.带正则表达式的优先
-        // 如:
-        // /customers/{id}/{name}/address
-        // /customers/{id : .+}/address
-        // /customers/{id}/address
-        // /customers/{id : .+}
+  @Override
+  public int compare(RestOperationMeta r1, RestOperationMeta r2) {
+    // 排序规则:
+    // 1.静态字符多的优先
+    // 2.变量组多的优先
+    // 3.带正则表达式的优先
+    // 如:
+    // /customers/{id}/{name}/address
+    // /customers/{id : .+}/address
+    // /customers/{id}/address
+    // /customers/{id : .+}
 
-        PathRegExp path1 = r1.getAbsolutePathRegExp();
-        PathRegExp path2 = r2.getAbsolutePathRegExp();
+    PathRegExp path1 = r1.getAbsolutePathRegExp();
+    PathRegExp path2 = r2.getAbsolutePathRegExp();
 
-        int staticCompare = path2.getStaticCharCount() - path1.getStaticCharCount();
-        if (staticCompare != 0) {
-            return staticCompare;
-        }
-
-        int groupCompare = path2.getGroupCount() - path1.getGroupCount();
-        if (groupCompare != 0) {
-            return groupCompare;
-        }
-
-        return path2.getGroupWithRegExpCount() - path1.getGroupWithRegExpCount();
+    int staticCompare = path2.getStaticCharCount() - path1.getStaticCharCount();
+    if (staticCompare != 0) {
+      return staticCompare;
     }
 
+    int groupCompare = path2.getGroupCount() - path1.getGroupCount();
+    if (groupCompare != 0) {
+      return groupCompare;
+    }
+
+    return path2.getGroupWithRegExpCount() - path1.getGroupWithRegExpCount();
+  }
 }

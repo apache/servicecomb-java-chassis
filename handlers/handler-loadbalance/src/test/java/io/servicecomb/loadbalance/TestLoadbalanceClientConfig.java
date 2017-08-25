@@ -14,9 +14,6 @@
  * limitations under the License.
  */
 
-/**
- * 
- */
 package io.servicecomb.loadbalance;
 
 import static org.junit.Assert.assertNotNull;
@@ -29,11 +26,11 @@ import org.junit.Test;
  */
 public class TestLoadbalanceClientConfig {
 
-	@Test
-	public void testLoadbalanceConstructor() {
+  @Test
+  public void testLoadbalanceConstructor() {
 
-		LoadbalanceClientConfig lbc = new LoadbalanceClientConfig("test");
+    LoadbalanceClientConfig lbc = new LoadbalanceClientConfig("test");
 
-		assertNotNull(lbc);
-	}
+    assertNotNull(lbc);
+  }
 }

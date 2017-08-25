@@ -23,11 +23,10 @@ import io.servicecomb.common.rest.RestConst;
 
 public class TestRestConsumerProvider {
 
-    @Test
-    public void testInit() throws Exception {
-        RestConsumerProvider instance = new RestConsumerProvider();
-        instance.init();
-        Assert.assertEquals(RestConst.REST, instance.getName());
-    }
-
+  @Test
+  public void testInit() throws Exception {
+    RestConsumerProvider instance = new RestConsumerProvider();
+    instance.init();
+    Assert.assertEquals(RestConst.REST, instance.getName());
+  }
 }

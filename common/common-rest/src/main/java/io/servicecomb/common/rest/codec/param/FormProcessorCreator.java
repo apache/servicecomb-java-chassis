@@ -20,47 +20,47 @@ import java.lang.reflect.Type;
 
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.type.TypeFactory;
+
 import io.servicecomb.common.rest.codec.RestClientRequest;
 import io.servicecomb.common.rest.codec.RestServerRequest;
-
 import io.swagger.models.parameters.Parameter;
 
 public class FormProcessorCreator implements ParamValueProcessorCreator {
-    public static final String PARAMTYPE = "formData";
+  public static final String PARAMTYPE = "formData";
 
-    public static class FormProcessor extends AbstractParamProcessor {
-        public FormProcessor(String paramPath, JavaType targetType) {
-            super(paramPath, targetType);
-        }
-
-        @Override
-        public Object getValue(RestServerRequest request) throws Exception {
-            Object param = request.getFormParam(paramPath);
-            if (param == null) {
-                return null;
-            }
-
-            return convertValue(param, targetType);
-        }
-
-        @Override
-        public void setValue(RestClientRequest clientRequest, Object arg) throws Exception {
-            clientRequest.addForm(paramPath, arg);
-        }
-
-        @Override
-        public String getProcessorType() {
-            return PARAMTYPE;
-        }
-    }
-
-    public FormProcessorCreator() {
-        ParamValueProcessorCreatorManager.INSTANCE.register(PARAMTYPE, this);
+  public static class FormProcessor extends AbstractParamProcessor {
+    public FormProcessor(String paramPath, JavaType targetType) {
+      super(paramPath, targetType);
     }
 
     @Override
-    public ParamValueProcessor create(Parameter parameter, Type genericParamType) {
-        JavaType targetType = TypeFactory.defaultInstance().constructType(genericParamType);
-        return new FormProcessor(parameter.getName(), targetType);
+    public Object getValue(RestServerRequest request) throws Exception {
+      Object param = request.getFormParam(paramPath);
+      if (param == null) {
+        return null;
+      }
+
+      return convertValue(param, targetType);
     }
+
+    @Override
+    public void setValue(RestClientRequest clientRequest, Object arg) throws Exception {
+      clientRequest.addForm(paramPath, arg);
+    }
+
+    @Override
+    public String getProcessorType() {
+      return PARAMTYPE;
+    }
+  }
+
+  public FormProcessorCreator() {
+    ParamValueProcessorCreatorManager.INSTANCE.register(PARAMTYPE, this);
+  }
+
+  @Override
+  public ParamValueProcessor create(Parameter parameter, Type genericParamType) {
+    JavaType targetType = TypeFactory.defaultInstance().constructType(genericParamType);
+    return new FormProcessor(parameter.getName(), targetType);
+  }
 }

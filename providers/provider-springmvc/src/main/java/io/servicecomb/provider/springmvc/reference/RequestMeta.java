@@ -26,39 +26,39 @@ import io.servicecomb.core.provider.consumer.ReferenceConfig;
  * 封装每一次调用的元数据
  */
 public class RequestMeta {
-    private ReferenceConfig referenceConfig;
+  private ReferenceConfig referenceConfig;
 
-    private OperationMeta operationMeta;
+  private OperationMeta operationMeta;
 
-    private RestOperationMeta swaggerRestOperation;
+  private RestOperationMeta swaggerRestOperation;
 
-    private Map<String, String> pathParams;
+  private Map<String, String> pathParams;
 
-    public RequestMeta(ReferenceConfig referenceConfig, RestOperationMeta swaggerRestOperation,
-            Map<String, String> pathParams) {
-        this.referenceConfig = referenceConfig;
-        this.operationMeta = swaggerRestOperation.getOperationMeta();
-        this.swaggerRestOperation = swaggerRestOperation;
-        this.pathParams = pathParams;
-    }
+  public RequestMeta(ReferenceConfig referenceConfig, RestOperationMeta swaggerRestOperation,
+      Map<String, String> pathParams) {
+    this.referenceConfig = referenceConfig;
+    this.operationMeta = swaggerRestOperation.getOperationMeta();
+    this.swaggerRestOperation = swaggerRestOperation;
+    this.pathParams = pathParams;
+  }
 
-    public ReferenceConfig getReferenceConfig() {
-        return referenceConfig;
-    }
+  public ReferenceConfig getReferenceConfig() {
+    return referenceConfig;
+  }
 
-    public Map<String, String> getPathParams() {
-        return pathParams;
-    }
+  public Map<String, String> getPathParams() {
+    return pathParams;
+  }
 
-    public RestOperationMeta getSwaggerRestOperation() {
-        return swaggerRestOperation;
-    }
+  public RestOperationMeta getSwaggerRestOperation() {
+    return swaggerRestOperation;
+  }
 
-    public OperationMeta getOperationMeta() {
-        return operationMeta;
-    }
+  public OperationMeta getOperationMeta() {
+    return operationMeta;
+  }
 
-    public String getOperationQualifiedName() {
-        return operationMeta.getSchemaQualifiedName();
-    }
+  public String getOperationQualifiedName() {
+    return operationMeta.getSchemaQualifiedName();
+  }
 }

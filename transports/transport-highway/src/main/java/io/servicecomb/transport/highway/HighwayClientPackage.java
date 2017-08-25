@@ -21,29 +21,28 @@ import io.servicecomb.foundation.vertx.client.tcp.AbstractTcpClientPackage;
 import io.servicecomb.foundation.vertx.tcp.TcpOutputStream;
 
 public class HighwayClientPackage extends AbstractTcpClientPackage {
-    private Invocation invocation;
+  private Invocation invocation;
 
-    private OperationProtobuf operationProtobuf;
+  private OperationProtobuf operationProtobuf;
 
-    private HighwayClientConnection tcpClient;
+  private HighwayClientConnection tcpClient;
 
-    public HighwayClientPackage(Invocation invocation, OperationProtobuf operationProtobuf,
-            HighwayClientConnection tcpClient) {
-        this.invocation = invocation;
-        this.operationProtobuf = operationProtobuf;
-        this.tcpClient = tcpClient;
+  public HighwayClientPackage(Invocation invocation, OperationProtobuf operationProtobuf,
+      HighwayClientConnection tcpClient) {
+    this.invocation = invocation;
+    this.operationProtobuf = operationProtobuf;
+    this.tcpClient = tcpClient;
+  }
+
+  @Override
+  public TcpOutputStream createStream() {
+    try {
+      return HighwayCodec.encodeRequest(msgId, invocation, operationProtobuf, tcpClient.getProtobufFeature());
+    } catch (Exception e) {
+      String msg = String.format("encode request failed. appid=%s, qualifiedName=%s",
+          invocation.getAppId(),
+          invocation.getOperationMeta().getMicroserviceQualifiedName());
+      throw new Error(msg, e);
     }
-
-    @Override
-    public TcpOutputStream createStream() {
-        try {
-            return HighwayCodec.encodeRequest(msgId, invocation, operationProtobuf, tcpClient.getProtobufFeature());
-        } catch (Exception e) {
-            String msg = String.format("encode request failed. appid=%s, qualifiedName=%s",
-                    invocation.getAppId(),
-                    invocation.getOperationMeta().getMicroserviceQualifiedName());
-            throw new Error(msg, e);
-        }
-    }
-
+  }
 }

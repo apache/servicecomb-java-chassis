@@ -16,18 +16,18 @@
 package io.servicecomb.swagger.generator.core.processor.annotation.models;
 
 public class ResponseHeaderConfig extends ResponseConfigBase {
-    private String name;
+  private String name;
 
-    public String getName() {
-        return name;
-    }
+  public String getName() {
+    return name;
+  }
 
-    public void setName(String name) {
-        this.name = name;
-    }
+  public void setName(String name) {
+    this.name = name;
+  }
 
-    @Override
-    public String toString() {
-        return "ResponseHeaderConfig [name=" + name + ", " + super.toString() + "]";
-    }
+  @Override
+  public String toString() {
+    return "ResponseHeaderConfig [name=" + name + ", " + super.toString() + "]";
+  }
 }

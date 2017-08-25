@@ -29,25 +29,25 @@ import io.servicecomb.swagger.invocation.exception.InvocationException;
  *
  */
 public class ConsumerQpsFlowControlHandler extends AbstractHandler {
-    private ConsumerQpsControllerManager qpsControllerMgr = new ConsumerQpsControllerManager();
+  private ConsumerQpsControllerManager qpsControllerMgr = new ConsumerQpsControllerManager();
 
-    @Override
-    public void handle(Invocation invocation, AsyncResponse asyncResp) throws Exception {
-        if (!Config.INSTANCE.isConsumerEnabled()) {
-            invocation.next(asyncResp);
-            return;
-        }
-
-        OperationMeta operationMeta = invocation.getOperationMeta();
-        QpsController qpsController = qpsControllerMgr.getOrCreate(operationMeta);
-        if (qpsController.isLimitNewRequest()) {
-            // 429
-            CommonExceptionData errorData = new CommonExceptionData("rejected by qps flowcontrol");
-            asyncResp.consumerFail(
-                    new InvocationException(QpsConst.TOO_MANY_REQUESTS_STATUS, errorData));
-            return;
-        }
-
-        invocation.next(asyncResp);
+  @Override
+  public void handle(Invocation invocation, AsyncResponse asyncResp) throws Exception {
+    if (!Config.INSTANCE.isConsumerEnabled()) {
+      invocation.next(asyncResp);
+      return;
     }
+
+    OperationMeta operationMeta = invocation.getOperationMeta();
+    QpsController qpsController = qpsControllerMgr.getOrCreate(operationMeta);
+    if (qpsController.isLimitNewRequest()) {
+      // 429
+      CommonExceptionData errorData = new CommonExceptionData("rejected by qps flowcontrol");
+      asyncResp.consumerFail(
+          new InvocationException(QpsConst.TOO_MANY_REQUESTS_STATUS, errorData));
+      return;
+    }
+
+    invocation.next(asyncResp);
+  }
 }

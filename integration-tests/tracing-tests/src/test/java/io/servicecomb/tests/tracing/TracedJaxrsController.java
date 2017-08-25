@@ -18,20 +18,24 @@ package io.servicecomb.tests.tracing;
 
 import static javax.ws.rs.core.MediaType.TEXT_PLAIN;
 
-import io.servicecomb.provider.rest.common.RestSchema;
 import java.util.Random;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import io.servicecomb.provider.rest.common.RestSchema;
 
 @RestSchema(schemaId = "someTracedJaxrsRestEndpoint")
 @Path("/jaxrs")
 public class TracedJaxrsController {
   private static final Logger logger = LoggerFactory.getLogger(TracedJaxrsController.class);
+
   private final Random random = new Random();
 
   //@Autowired

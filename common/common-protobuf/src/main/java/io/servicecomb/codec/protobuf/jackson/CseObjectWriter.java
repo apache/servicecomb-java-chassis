@@ -28,29 +28,29 @@ import com.fasterxml.jackson.databind.ObjectWriter;
 @SuppressWarnings("unchecked")
 public class CseObjectWriter extends ObjectWriter {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(CseObjectWriter.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(CseObjectWriter.class);
 
-    private static final long serialVersionUID = -6435897284942268001L;
+  private static final long serialVersionUID = -6435897284942268001L;
 
-    private static Constructor<Prefetch> prefetchConstructor;
-    static {
-        prefetchConstructor = (Constructor<Prefetch>) Prefetch.class.getDeclaredConstructors()[0];
-        prefetchConstructor.setAccessible(true);
+  private static Constructor<Prefetch> prefetchConstructor;
+
+  static {
+    prefetchConstructor = (Constructor<Prefetch>) Prefetch.class.getDeclaredConstructors()[0];
+    prefetchConstructor.setAccessible(true);
+  }
+
+  private static Prefetch createPrefetch(JsonSerializer<Object> valueSerializer) {
+    try {
+      return prefetchConstructor.newInstance(null, valueSerializer, null);
+    } catch (Exception e) {
+      LOGGER.error("create prefetch error:", e);
     }
+    return null;
+  }
 
-    private static Prefetch createPrefetch(JsonSerializer<Object> valueSerializer) {
-        try {
-            return prefetchConstructor.newInstance(null, valueSerializer, null);
-        } catch (Exception e) {
-            LOGGER.error("create prefetch error:", e);
-        }
-        return null;
-    }
+  public CseObjectWriter(ObjectWriter base, FormatSchema schema, JsonSerializer<Object> valueSerializer) {
 
-    public CseObjectWriter(ObjectWriter base, FormatSchema schema, JsonSerializer<Object> valueSerializer) {
-
-        super(base, base.getConfig(), new GeneratorSettings(null, schema, null, null),
-                createPrefetch(valueSerializer));
-    }
-
+    super(base, base.getConfig(), new GeneratorSettings(null, schema, null, null),
+        createPrefetch(valueSerializer));
+  }
 }

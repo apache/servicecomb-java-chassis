@@ -43,199 +43,199 @@ import io.swagger.models.RefModel;
 import io.swagger.models.Swagger;
 
 public class TestSwaggerUtils {
-    SwaggerGeneratorContext context = new PojoSwaggerGeneratorContext();
+  SwaggerGeneratorContext context = new PojoSwaggerGeneratorContext();
 
-    @Test
-    public void testConverter() {
-        SwaggerGenerator generator = new SwaggerGeneratorForTest(context, null);
-        Swagger swagger = generator.getSwagger();
-        ParamUtils.addDefinitions(swagger, User.class);
-        Model model = swagger.getDefinitions().get("User");
-        model.getVendorExtensions().clear();
+  @Test
+  public void testConverter() {
+    SwaggerGenerator generator = new SwaggerGeneratorForTest(context, null);
+    Swagger swagger = generator.getSwagger();
+    ParamUtils.addDefinitions(swagger, User.class);
+    Model model = swagger.getDefinitions().get("User");
+    model.getVendorExtensions().clear();
 
-        JavaType javaType = ConverterMgr.findJavaType(generator, model);
-        checkJavaType(swagger, javaType);
+    JavaType javaType = ConverterMgr.findJavaType(generator, model);
+    checkJavaType(swagger, javaType);
 
-        RefModel refModel = new RefModel();
-        refModel.setReference("User");
-        javaType = ConverterMgr.findJavaType(generator, refModel);
-        checkJavaType(swagger, javaType);
-    }
+    RefModel refModel = new RefModel();
+    refModel.setReference("User");
+    javaType = ConverterMgr.findJavaType(generator, refModel);
+    checkJavaType(swagger, javaType);
+  }
 
-    protected void checkJavaType(Swagger swagger, JavaType javaType) {
-        Class<?> cls = javaType.getRawClass();
-        Field[] fields = cls.getFields();
-        Assert.assertEquals("gen.cse.ms.ut.User", cls.getName());
-        Assert.assertEquals("name", fields[0].getName());
-        Assert.assertEquals(String.class, fields[0].getType());
-        Assert.assertEquals("age", fields[1].getName());
-        Assert.assertEquals(Integer.class, fields[1].getType());
-    }
+  protected void checkJavaType(Swagger swagger, JavaType javaType) {
+    Class<?> cls = javaType.getRawClass();
+    Field[] fields = cls.getFields();
+    Assert.assertEquals("gen.cse.ms.ut.User", cls.getName());
+    Assert.assertEquals("name", fields[0].getName());
+    Assert.assertEquals(String.class, fields[0].getType());
+    Assert.assertEquals("age", fields[1].getName());
+    Assert.assertEquals(Integer.class, fields[1].getType());
+  }
 
-    private SwaggerGenerator testSchemaMethod(String resultName, String... methodNames) {
-        return UnitTestSwaggerUtils.testSwagger("schemas/" + resultName + ".yaml",
-                context,
-                Schema.class,
-                methodNames);
-    }
+  private SwaggerGenerator testSchemaMethod(String resultName, String... methodNames) {
+    return UnitTestSwaggerUtils.testSwagger("schemas/" + resultName + ".yaml",
+        context,
+        Schema.class,
+        methodNames);
+  }
 
-    @Test
-    public void testBoolean() {
-        testSchemaMethod("boolean", "testboolean");
-        testSchemaMethod("booleanObject", "testBoolean");
-    }
+  @Test
+  public void testBoolean() {
+    testSchemaMethod("boolean", "testboolean");
+    testSchemaMethod("booleanObject", "testBoolean");
+  }
 
-    @Test
-    public void testByte() {
-        testSchemaMethod("byte", "testbyte");
-        testSchemaMethod("byteObject", "testByte");
-    }
+  @Test
+  public void testByte() {
+    testSchemaMethod("byte", "testbyte");
+    testSchemaMethod("byteObject", "testByte");
+  }
 
-    @Test
-    public void testShort() {
-        testSchemaMethod("short", "testshort");
-        testSchemaMethod("shortObject", "testShort");
-    }
+  @Test
+  public void testShort() {
+    testSchemaMethod("short", "testshort");
+    testSchemaMethod("shortObject", "testShort");
+  }
 
-    @Test
-    public void testInt() {
-        testSchemaMethod("int", "testint");
-        testSchemaMethod("intObject", "testInteger");
-    }
+  @Test
+  public void testInt() {
+    testSchemaMethod("int", "testint");
+    testSchemaMethod("intObject", "testInteger");
+  }
 
-    @Test
-    public void testLong() {
-        testSchemaMethod("long", "testlong");
-        testSchemaMethod("longObject", "testLong");
-    }
+  @Test
+  public void testLong() {
+    testSchemaMethod("long", "testlong");
+    testSchemaMethod("longObject", "testLong");
+  }
 
-    @Test
-    public void testFloat() {
-        testSchemaMethod("float", "testfloat");
-        testSchemaMethod("floatObject", "testFloat");
-    }
+  @Test
+  public void testFloat() {
+    testSchemaMethod("float", "testfloat");
+    testSchemaMethod("floatObject", "testFloat");
+  }
 
-    @Test
-    public void testDouble() {
-        testSchemaMethod("double", "testdouble");
-        testSchemaMethod("doubleObject", "testDouble");
-    }
+  @Test
+  public void testDouble() {
+    testSchemaMethod("double", "testdouble");
+    testSchemaMethod("doubleObject", "testDouble");
+  }
 
-    @Test
-    public void testEnum() {
-        SwaggerGenerator generator = testSchemaMethod("enum", "testEnum");
-        JavassistUtils.detach("gen.cse.ms.ut.SchemaIntf");
-        Class<?> intf = ClassUtils.getOrCreateInterface(generator);
+  @Test
+  public void testEnum() {
+    SwaggerGenerator generator = testSchemaMethod("enum", "testEnum");
+    JavassistUtils.detach("gen.cse.ms.ut.SchemaIntf");
+    Class<?> intf = ClassUtils.getOrCreateInterface(generator);
 
-        Method method = ReflectUtils.findMethod(intf, "testEnum");
-        Class<?> bodyCls = method.getParameterTypes()[0];
-        Field[] fields = bodyCls.getFields();
-        Assert.assertEquals(Color.class, fields[0].getType());
-        Assert.assertEquals(fields[0].getType(), fields[1].getType());
-    }
+    Method method = ReflectUtils.findMethod(intf, "testEnum");
+    Class<?> bodyCls = method.getParameterTypes()[0];
+    Field[] fields = bodyCls.getFields();
+    Assert.assertEquals(Color.class, fields[0].getType());
+    Assert.assertEquals(fields[0].getType(), fields[1].getType());
+  }
 
-    @Test
-    public void testChar() {
-        testSchemaMethod("char", "testchar");
-        testSchemaMethod("charObject", "testChar");
-    }
+  @Test
+  public void testChar() {
+    testSchemaMethod("char", "testchar");
+    testSchemaMethod("charObject", "testChar");
+  }
 
-    @Test
-    public void testBytes() {
-        testSchemaMethod("bytes", "testbytes");
-        testSchemaMethod("bytesObject", "testBytes");
-    }
+  @Test
+  public void testBytes() {
+    testSchemaMethod("bytes", "testbytes");
+    testSchemaMethod("bytesObject", "testBytes");
+  }
 
-    @Test
-    public void testString() {
-        testSchemaMethod("string", "testString");
-    }
+  @Test
+  public void testString() {
+    testSchemaMethod("string", "testString");
+  }
 
-    @Test
-    public void testObject() {
-        testSchemaMethod("object", "testObject");
-    }
+  @Test
+  public void testObject() {
+    testSchemaMethod("object", "testObject");
+  }
 
-    @Test
-    public void testArray() {
-        testSchemaMethod("array", "testArray");
-    }
+  @Test
+  public void testArray() {
+    testSchemaMethod("array", "testArray");
+  }
 
-    @Test
-    public void testSet() {
-        testSchemaMethod("set", "testSet");
-    }
+  @Test
+  public void testSet() {
+    testSchemaMethod("set", "testSet");
+  }
 
-    @Test
-    public void testList() {
-        testSchemaMethod("list", "testList");
-    }
+  @Test
+  public void testList() {
+    testSchemaMethod("list", "testList");
+  }
 
-    @Test
-    public void testMap() {
-        testSchemaMethod("map", "testMap");
-    }
+  @Test
+  public void testMap() {
+    testSchemaMethod("map", "testMap");
+  }
 
-    @Test
-    public void testMapList() {
-        testSchemaMethod("mapList", "testMapList");
-    }
+  @Test
+  public void testMapList() {
+    testSchemaMethod("mapList", "testMapList");
+  }
 
-    @Test
-    public void testAllType() {
-        testSchemaMethod("allType", "testAllType");
-    }
+  @Test
+  public void testAllType() {
+    testSchemaMethod("allType", "testAllType");
+  }
 
-    @Test
-    public void testMultiParam() {
-        testSchemaMethod("multiParam", "testMultiParam");
-    }
+  @Test
+  public void testMultiParam() {
+    testSchemaMethod("multiParam", "testMultiParam");
+  }
 
-    @Test
-    public void testAllMethod() {
-        testSchemaMethod("allMethod");
-    }
+  @Test
+  public void testAllMethod() {
+    testSchemaMethod("allMethod");
+  }
 
-    @Test
-    public void testResponseHeader() {
-        testSchemaMethod("responseHeader", "testResponseHeader");
-    }
+  @Test
+  public void testResponseHeader() {
+    testSchemaMethod("responseHeader", "testResponseHeader");
+  }
 
-    @Test
-    public void testApiResponse() {
-        testSchemaMethod("apiResponse", "testApiResponse");
-    }
+  @Test
+  public void testApiResponse() {
+    testSchemaMethod("apiResponse", "testApiResponse");
+  }
 
-    @Test
-    public void testApiOperation() {
-        testSchemaMethod("apiOperation", "testApiOperation");
-    }
+  @Test
+  public void testApiOperation() {
+    testSchemaMethod("apiOperation", "testApiOperation");
+  }
 
-    @Test
-    public void testDate() {
-        SwaggerGenerator generator = testSchemaMethod("date", "testDate");
-        JavassistUtils.detach("gen.cse.ms.ut.SchemaIntf");
-        Class<?> intf = ClassUtils.getOrCreateInterface(generator);
+  @Test
+  public void testDate() {
+    SwaggerGenerator generator = testSchemaMethod("date", "testDate");
+    JavassistUtils.detach("gen.cse.ms.ut.SchemaIntf");
+    Class<?> intf = ClassUtils.getOrCreateInterface(generator);
 
-        Method method = ReflectUtils.findMethod(intf, "testDate");
-        Assert.assertEquals(Date.class, method.getReturnType());
-    }
+    Method method = ReflectUtils.findMethod(intf, "testDate");
+    Assert.assertEquals(Date.class, method.getReturnType());
+  }
 
-    @Test
-    public void testRepeatOperation() {
-        UnitTestSwaggerUtils.testException(
-                "OperationId must be unique. io.servicecomb.swagger.generator.core.schema.RepeatOperation:add",
-                context,
-                RepeatOperation.class);
-    }
+  @Test
+  public void testRepeatOperation() {
+    UnitTestSwaggerUtils.testException(
+        "OperationId must be unique. io.servicecomb.swagger.generator.core.schema.RepeatOperation:add",
+        context,
+        RepeatOperation.class);
+  }
 
-    @Test
-    public void testInvalidResponseHeader() {
-        UnitTestSwaggerUtils.testException(
-                "generate operation swagger failed, io.servicecomb.swagger.generator.core.schema.InvalidResponseHeader:test",
-                "invalid responseHeader, ResponseHeaderConfig [name=h, ResponseConfigBase [description=, responseReference=null, responseClass=class java.lang.Void, responseContainer=]]",
-                context,
-                InvalidResponseHeader.class,
-                "test");
-    }
+  @Test
+  public void testInvalidResponseHeader() {
+    UnitTestSwaggerUtils.testException(
+        "generate operation swagger failed, io.servicecomb.swagger.generator.core.schema.InvalidResponseHeader:test",
+        "invalid responseHeader, ResponseHeaderConfig [name=h, ResponseConfigBase [description=, responseReference=null, responseClass=class java.lang.Void, responseContainer=]]",
+        context,
+        InvalidResponseHeader.class,
+        "test");
+  }
 }

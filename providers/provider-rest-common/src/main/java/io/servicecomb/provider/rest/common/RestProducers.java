@@ -27,23 +27,23 @@ import io.servicecomb.foundation.common.utils.BeanUtils;
 
 @Component
 public class RestProducers implements ProviderProcessor {
-    private List<ProducerMeta> producerMetaList = new ArrayList<>();
+  private List<ProducerMeta> producerMetaList = new ArrayList<>();
 
-    public List<ProducerMeta> getProducerMetaList() {
-        return producerMetaList;
+  public List<ProducerMeta> getProducerMetaList() {
+    return producerMetaList;
+  }
+
+  @Override
+  public void processProvider(ApplicationContext applicationContext, String beanName, Object bean) {
+    // aop后，新的实例的父类可能是原class，也可能只是个proxy，父类不是原class
+    // 所以，需要先取出原class，再取标注
+    Class<?> beanCls = BeanUtils.getImplClassFromBean(bean);
+    RestSchema restSchema = beanCls.getAnnotation(RestSchema.class);
+    if (restSchema == null) {
+      return;
     }
 
-    @Override
-    public void processProvider(ApplicationContext applicationContext, String beanName, Object bean) {
-        // aop后，新的实例的父类可能是原class，也可能只是个proxy，父类不是原class
-        // 所以，需要先取出原class，再取标注
-        Class<?> beanCls = BeanUtils.getImplClassFromBean(bean);
-        RestSchema restSchema = beanCls.getAnnotation(RestSchema.class);
-        if (restSchema == null) {
-            return;
-        }
-
-        ProducerMeta producerMeta = new ProducerMeta(restSchema.schemaId(), bean, beanCls);
-        producerMetaList.add(producerMeta);
-    }
+    ProducerMeta producerMeta = new ProducerMeta(restSchema.schemaId(), bean, beanCls);
+    producerMetaList.add(producerMeta);
+  }
 }

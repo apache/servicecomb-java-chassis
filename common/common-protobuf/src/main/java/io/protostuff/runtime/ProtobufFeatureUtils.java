@@ -16,25 +16,25 @@
 package io.protostuff.runtime;
 
 public final class ProtobufFeatureUtils {
-    private static ThreadLocal<ProtobufFeature> local = new ThreadLocal<>();
+  private static ThreadLocal<ProtobufFeature> local = new ThreadLocal<>();
 
-    private ProtobufFeatureUtils() {
-    }
+  private ProtobufFeatureUtils() {
+  }
 
-    static boolean isUseProtobufMapCodec() {
-        ProtobufFeature protobufFeature = local.get();
-        return protobufFeature != null && protobufFeature.isUseProtobufMapCodec();
-    }
+  static boolean isUseProtobufMapCodec() {
+    ProtobufFeature protobufFeature = local.get();
+    return protobufFeature != null && protobufFeature.isUseProtobufMapCodec();
+  }
 
-    public static ProtobufFeature getProtobufFeature() {
-        return local.get();
-    }
+  public static ProtobufFeature getProtobufFeature() {
+    return local.get();
+  }
 
-    public static void setProtobufFeature(ProtobufFeature protobufFeature) {
-        local.set(protobufFeature);
-    }
+  public static void setProtobufFeature(ProtobufFeature protobufFeature) {
+    local.set(protobufFeature);
+  }
 
-    public static void removeProtobufFeature() {
-        local.remove();
-    }
+  public static void removeProtobufFeature() {
+    local.remove();
+  }
 }

@@ -22,6 +22,7 @@ import org.springframework.cloud.netflix.ribbon.RibbonAutoConfiguration;
 import org.springframework.cloud.netflix.ribbon.RibbonClients;
 import org.springframework.cloud.netflix.ribbon.SpringClientFactory;
 import org.springframework.context.annotation.Configuration;
+
 import ribbon.io.servicecomb.springboot.starter.discovery.CseRibbonClientConfiguration;
 
 @Configuration

@@ -26,65 +26,65 @@ import io.servicecomb.swagger.invocation.context.HttpStatus;
  * 如果不是本类型的异常，则强制认为是PRODUCER_INNER_STATUS_CODE错误
  */
 public class InvocationException extends RuntimeException {
-    private static final long serialVersionUID = 8027482777502649656L;
+  private static final long serialVersionUID = 8027482777502649656L;
 
-    /**
-     * http header中的statusCode
-     * 不直接使用Status类型，是为了支持业务自定义code
-     */
-    private StatusType status;
+  /**
+   * http header中的statusCode
+   * 不直接使用Status类型，是为了支持业务自定义code
+   */
+  private StatusType status;
 
-    private Object errorData;
+  private Object errorData;
 
-    public InvocationException(StatusType status, Object errorData) {
-        this.status = status;
-        this.errorData = errorData;
-    }
+  public InvocationException(StatusType status, Object errorData) {
+    this.status = status;
+    this.errorData = errorData;
+  }
 
-    public InvocationException(StatusType status, String msg) {
-        this.status = status;
-        this.errorData = new CommonExceptionData(msg);
-    }
+  public InvocationException(StatusType status, String msg) {
+    this.status = status;
+    this.errorData = new CommonExceptionData(msg);
+  }
 
-    public InvocationException(int statusCode, String reasonPhrase, Object errorData, Throwable cause) {
-        super(cause);
-        status = new HttpStatus(statusCode, reasonPhrase);
-        this.errorData = errorData;
-    }
+  public InvocationException(int statusCode, String reasonPhrase, Object errorData, Throwable cause) {
+    super(cause);
+    status = new HttpStatus(statusCode, reasonPhrase);
+    this.errorData = errorData;
+  }
 
-    public InvocationException(int statusCode, String reasonPhrase, Object errorData) {
-        status = new HttpStatus(statusCode, reasonPhrase);
-        this.errorData = errorData;
-    }
+  public InvocationException(int statusCode, String reasonPhrase, Object errorData) {
+    status = new HttpStatus(statusCode, reasonPhrase);
+    this.errorData = errorData;
+  }
 
-    public StatusType getStatus() {
-        return status;
-    }
+  public StatusType getStatus() {
+    return status;
+  }
 
-    public int getStatusCode() {
-        return status.getStatusCode();
-    }
+  public int getStatusCode() {
+    return status.getStatusCode();
+  }
 
-    public String getReasonPhrase() {
-        return status.getReasonPhrase();
-    }
+  public String getReasonPhrase() {
+    return status.getReasonPhrase();
+  }
 
-    public Object getErrorData() {
-        return errorData;
-    }
+  public Object getErrorData() {
+    return errorData;
+  }
 
-    @Override
-    public String getMessage() {
-        return this.toString();
-    }
+  @Override
+  public String getMessage() {
+    return this.toString();
+  }
 
-    @Override
-    public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("InvocationException: code=");
-        sb.append(getStatusCode());
-        sb.append(";msg=");
-        sb.append(getErrorData());
-        return sb.toString();
-    }
+  @Override
+  public String toString() {
+    StringBuilder sb = new StringBuilder();
+    sb.append("InvocationException: code=");
+    sb.append(getStatusCode());
+    sb.append(";msg=");
+    sb.append(getErrorData());
+    return sb.toString();
+  }
 }

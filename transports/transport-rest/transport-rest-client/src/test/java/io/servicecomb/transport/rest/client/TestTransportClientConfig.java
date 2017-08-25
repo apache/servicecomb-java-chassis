@@ -21,13 +21,13 @@ import org.junit.Test;
 
 public class TestTransportClientConfig {
 
-    @Test
-    public void testGetThreadCount() {
-        Assert.assertEquals(1, TransportClientConfig.getThreadCount());
-    }
+  @Test
+  public void testGetThreadCount() {
+    Assert.assertEquals(1, TransportClientConfig.getThreadCount());
+  }
 
-    @Test
-    public void testGetConnectionPoolPerThread() {
-        Assert.assertEquals(1, TransportClientConfig.getConnectionPoolPerThread());
-    }
+  @Test
+  public void testGetConnectionPoolPerThread() {
+    Assert.assertEquals(1, TransportClientConfig.getConnectionPoolPerThread());
+  }
 }

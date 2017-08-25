@@ -17,13 +17,13 @@
 package io.servicecomb.serviceregistry;
 
 public class Features {
-    private boolean canEncodeEndpoint;
+  private boolean canEncodeEndpoint;
 
-    public boolean isCanEncodeEndpoint() {
-        return canEncodeEndpoint;
-    }
+  public boolean isCanEncodeEndpoint() {
+    return canEncodeEndpoint;
+  }
 
-    public void setCanEncodeEndpoint(boolean canEncodeEndpoint) {
-        this.canEncodeEndpoint = canEncodeEndpoint;
-    }
+  public void setCanEncodeEndpoint(boolean canEncodeEndpoint) {
+    this.canEncodeEndpoint = canEncodeEndpoint;
+  }
 }

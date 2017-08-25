@@ -24,14 +24,13 @@ import io.vertx.core.buffer.Buffer;
  */
 public interface RestClientRequest {
 
-    void write(Buffer bodyBuffer);
+  void write(Buffer bodyBuffer);
 
-    void end() throws Exception;
+  void end() throws Exception;
 
-    void addCookie(String name, String value);
+  void addCookie(String name, String value);
 
-    void putHeader(String name, String value);
+  void putHeader(String name, String value);
 
-    void addForm(String name, Object value);
-
+  void addForm(String name, Object value);
 }

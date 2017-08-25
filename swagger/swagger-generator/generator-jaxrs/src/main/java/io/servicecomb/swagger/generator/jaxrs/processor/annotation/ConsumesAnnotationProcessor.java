@@ -24,14 +24,14 @@ import io.servicecomb.swagger.generator.core.MethodAnnotationProcessor;
 import io.servicecomb.swagger.generator.core.OperationGenerator;
 
 public class ConsumesAnnotationProcessor implements MethodAnnotationProcessor {
-    @Override
-    public void process(Object annotation, OperationGenerator operationGenerator) {
-        Consumes consumes = (Consumes) annotation;
+  @Override
+  public void process(Object annotation, OperationGenerator operationGenerator) {
+    Consumes consumes = (Consumes) annotation;
 
-        for (String consume : consumes.value()) {
-            if (!StringUtils.isEmpty(consume)) {
-                operationGenerator.getOperation().addConsumes(consume);
-            }
-        }
+    for (String consume : consumes.value()) {
+      if (!StringUtils.isEmpty(consume)) {
+        operationGenerator.getOperation().addConsumes(consume);
+      }
     }
+  }
 }

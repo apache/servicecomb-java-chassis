@@ -16,13 +16,15 @@
 
 package io.servicecomb.loadbalance.filter;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.netflix.loadbalancer.Server;
+
 import io.servicecomb.loadbalance.CseServer;
 import io.servicecomb.loadbalance.ServerListFilterExt;
 import io.servicecomb.serviceregistry.RegistryUtils;
 import io.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
-import java.util.ArrayList;
-import java.util.List;
 
 public class ZoneAwareServerListFilterExt implements ServerListFilterExt {
 

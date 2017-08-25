@@ -23,11 +23,11 @@ import io.servicecomb.core.definition.loader.DynamicSchemaLoader;
 
 @Component
 public class CrossappBootListener implements BootListener {
-    @Override
-    public void onBootEvent(BootEvent event) {
-        if (EventType.BEFORE_CONSUMER_PROVIDER.equals(event.getEventType())) {
-            // 动态注册schemas目录下面的契约到当前服务
-            DynamicSchemaLoader.INSTANCE.registerSchemas("appServer:appService", "classpath*:schemas/*.yaml");
-        }
+  @Override
+  public void onBootEvent(BootEvent event) {
+    if (EventType.BEFORE_CONSUMER_PROVIDER.equals(event.getEventType())) {
+      // 动态注册schemas目录下面的契约到当前服务
+      DynamicSchemaLoader.INSTANCE.registerSchemas("appServer:appService", "classpath*:schemas/*.yaml");
     }
+  }
 }

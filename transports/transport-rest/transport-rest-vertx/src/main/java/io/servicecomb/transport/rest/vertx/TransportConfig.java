@@ -21,19 +21,18 @@ import com.netflix.config.DynamicPropertyFactory;
 import com.netflix.config.DynamicStringProperty;
 
 public final class TransportConfig {
-    private TransportConfig() {
-    }
+  private TransportConfig() {
+  }
 
-    public static String getAddress() {
-        DynamicStringProperty address =
-            DynamicPropertyFactory.getInstance().getStringProperty("cse.rest.address", null);
-        return address.get();
-    }
+  public static String getAddress() {
+    DynamicStringProperty address =
+        DynamicPropertyFactory.getInstance().getStringProperty("cse.rest.address", null);
+    return address.get();
+  }
 
-    public static int getThreadCount() {
-        DynamicIntProperty address =
-            DynamicPropertyFactory.getInstance().getIntProperty("cse.rest.server.thread-count", 1);
-        return address.get();
-    }
-
+  public static int getThreadCount() {
+    DynamicIntProperty address =
+        DynamicPropertyFactory.getInstance().getIntProperty("cse.rest.server.thread-count", 1);
+    return address.get();
+  }
 }

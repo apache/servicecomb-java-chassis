@@ -21,45 +21,45 @@ import java.util.Map;
 import java.util.Set;
 
 public class AllType {
-    public boolean bValue;
+  public boolean bValue;
 
-    public byte byteValue;
+  public byte byteValue;
 
-    public Byte byteObjectValue;
+  public Byte byteObjectValue;
 
-    public short sValue;
+  public short sValue;
 
-    public Short sObjectValue;
+  public Short sObjectValue;
 
-    public int iValue;
+  public int iValue;
 
-    public Integer iObjectValue;
+  public Integer iObjectValue;
 
-    public long lValue;
+  public long lValue;
 
-    public Long lObjectValue;
+  public Long lObjectValue;
 
-    public float fValue;
+  public float fValue;
 
-    public Float fObjectValue;
+  public Float fObjectValue;
 
-    public double dValue;
+  public double dValue;
 
-    public Double dObjectValue;
+  public Double dObjectValue;
 
-    public Color enumValue;
+  public Color enumValue;
 
-    public char cValue;
+  public char cValue;
 
-    public Character cObjectValue;
+  public Character cObjectValue;
 
-    public byte[] bytes;
+  public byte[] bytes;
 
-    public String strValue;
+  public String strValue;
 
-    public Set<String> set;
+  public Set<String> set;
 
-    public List<User> list;
+  public List<User> list;
 
-    public Map<String, User> map;
+  public Map<String, User> map;
 }

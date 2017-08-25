@@ -24,54 +24,54 @@ import io.servicecomb.swagger.generator.core.SwaggerGenerator;
 import io.servicecomb.swagger.generator.core.SwaggerGeneratorContext;
 
 public class SwaggerGeneratorForTest extends SwaggerGenerator {
-    // 可用于控制一次扫描中有哪些method需要处理
-    // 如果methodNameSet为null，表示全部处理
-    private Set<String> methodNameSet;
+  // 可用于控制一次扫描中有哪些method需要处理
+  // 如果methodNameSet为null，表示全部处理
+  private Set<String> methodNameSet;
 
-    public SwaggerGeneratorForTest(SwaggerGeneratorContext context, Class<?> cls) {
-        super(context, cls);
-        setPackageName("gen.cse.ms.ut");
+  public SwaggerGeneratorForTest(SwaggerGeneratorContext context, Class<?> cls) {
+    super(context, cls);
+    setPackageName("gen.cse.ms.ut");
+  }
+
+  public boolean containsMethod(String methodName) {
+    if (methodNameSet == null) {
+      // 无约束
+      return true;
     }
 
-    public boolean containsMethod(String methodName) {
-        if (methodNameSet == null) {
-            // 无约束
-            return true;
-        }
+    return methodNameSet.contains(methodName);
+  }
 
-        return methodNameSet.contains(methodName);
+  protected void clearMethod() {
+    if (methodNameSet != null) {
+      methodNameSet.clear();
+    }
+    methodNameSet = null;
+  }
+
+  public void replaceMethods(String... methodNames) {
+    clearMethod();
+
+    if (methodNames == null || methodNames.length == 0) {
+      return;
     }
 
-    protected void clearMethod() {
-        if (methodNameSet != null) {
-            methodNameSet.clear();
-        }
-        methodNameSet = null;
+    if (methodNameSet == null) {
+      methodNameSet = new HashSet<>();
     }
 
-    public void replaceMethods(String... methodNames) {
-        clearMethod();
+    for (String methodName : methodNames) {
+      methodNameSet.add(methodName);
+    }
+  }
 
-        if (methodNames == null || methodNames.length == 0) {
-            return;
-        }
-
-        if (methodNameSet == null) {
-            methodNameSet = new HashSet<>();
-        }
-
-        for (String methodName : methodNames) {
-            methodNameSet.add(methodName);
-        }
+  @Override
+  protected boolean isSkipMethod(Method method) {
+    boolean skip = super.isSkipMethod(method);
+    if (skip) {
+      return true;
     }
 
-    @Override
-    protected boolean isSkipMethod(Method method) {
-        boolean skip = super.isSkipMethod(method);
-        if (skip) {
-            return true;
-        }
-
-        return !containsMethod(method.getName());
-    }
+    return !containsMethod(method.getName());
+  }
 }

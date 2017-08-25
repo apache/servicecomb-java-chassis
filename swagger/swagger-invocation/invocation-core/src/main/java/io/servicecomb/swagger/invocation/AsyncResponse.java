@@ -19,29 +19,29 @@ package io.servicecomb.swagger.invocation;
 import javax.ws.rs.core.Response.StatusType;
 
 public interface AsyncResponse {
-    void handle(Response response);
+  void handle(Response response);
 
-    default void success(StatusType status, Object result) {
-        handle(Response.status(status).entity(result));
-    }
+  default void success(StatusType status, Object result) {
+    handle(Response.status(status).entity(result));
+  }
 
-    default void success(Object result) {
-        handle(Response.ok(result));
-    }
+  default void success(Object result) {
+    handle(Response.ok(result));
+  }
 
-    default void consumerFail(Throwable e) {
-        handle(Response.createConsumerFail(e));
-    }
+  default void consumerFail(Throwable e) {
+    handle(Response.createConsumerFail(e));
+  }
 
-    default void producerFail(Throwable e) {
-        handle(Response.createProducerFail(e));
-    }
+  default void producerFail(Throwable e) {
+    handle(Response.createProducerFail(e));
+  }
 
-    default void fail(InvocationType type, Throwable e) {
-        handle(Response.createFail(type, e));
-    }
+  default void fail(InvocationType type, Throwable e) {
+    handle(Response.createFail(type, e));
+  }
 
-    default void complete(Response resp) {
-        handle(resp);
-    }
+  default void complete(Response resp) {
+    handle(resp);
+  }
 }

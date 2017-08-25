@@ -22,18 +22,18 @@ import com.fasterxml.jackson.databind.type.TypeFactory;
 import com.fasterxml.jackson.databind.util.ISO8601DateFormat;
 
 public final class RestObjectMapper extends ObjectMapper {
-    public static final RestObjectMapper INSTANCE = new RestObjectMapper();
+  public static final RestObjectMapper INSTANCE = new RestObjectMapper();
 
-    private static final long serialVersionUID = -8158869347066287575L;
+  private static final long serialVersionUID = -8158869347066287575L;
 
-    private static final JavaType STRING_JAVA_TYPE = TypeFactory.defaultInstance().constructType(String.class);
+  private static final JavaType STRING_JAVA_TYPE = TypeFactory.defaultInstance().constructType(String.class);
 
-    private RestObjectMapper() {
-        // swagger中要求date使用ISO8601格式传递，这里与之做了功能绑定，这在cse中是没有问题的
-        setDateFormat(new ISO8601DateFormat());
-    }
+  private RestObjectMapper() {
+    // swagger中要求date使用ISO8601格式传递，这里与之做了功能绑定，这在cse中是没有问题的
+    setDateFormat(new ISO8601DateFormat());
+  }
 
-    public String convertToString(Object value) throws Exception {
-        return convertValue(value, STRING_JAVA_TYPE);
-    }
+  public String convertToString(Object value) throws Exception {
+    return convertValue(value, STRING_JAVA_TYPE);
+  }
 }

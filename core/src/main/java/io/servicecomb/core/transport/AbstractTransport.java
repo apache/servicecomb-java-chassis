@@ -42,127 +42,126 @@ import io.servicecomb.serviceregistry.RegistryUtils;
 import io.vertx.core.Vertx;
 
 public abstract class AbstractTransport implements Transport {
-    private static final Logger LOGGER = LoggerFactory.getLogger(AbstractTransport.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(AbstractTransport.class);
 
-    /**
-     * 用于参数传递：比如向RestServerVerticle传递endpoint地址。
-     */
-    public static final String ENDPOINT_KEY = "cse.endpoint";
+  /**
+   * 用于参数传递：比如向RestServerVerticle传递endpoint地址。
+   */
+  public static final String ENDPOINT_KEY = "cse.endpoint";
 
-    private static final long DEFAULT_TIMEOUT_MILLIS = 30000;
+  private static final long DEFAULT_TIMEOUT_MILLIS = 30000;
 
-    private static Long msReqeustTimeout = null;
+  private static Long msReqeustTimeout = null;
 
-    public static long getRequestTimeout() {
-        if (msReqeustTimeout != null) {
-            return msReqeustTimeout;
-        }
-
-        long msTimeout = DynamicPropertyFactory.getInstance()
-                .getLongProperty("cse.request.timeout", DEFAULT_TIMEOUT_MILLIS)
-                .get();
-        if (msTimeout <= 0) {
-            msTimeout = DEFAULT_TIMEOUT_MILLIS;
-        }
-
-        msReqeustTimeout = msTimeout;
-        return msReqeustTimeout;
+  public static long getRequestTimeout() {
+    if (msReqeustTimeout != null) {
+      return msReqeustTimeout;
     }
 
-    // 所有transport使用同一个vertx实例，避免创建太多的线程
-    protected Vertx transportVertx = VertxUtils.getOrCreateVertxByName("transport", null);
-
-    protected Endpoint endpoint;
-
-    protected Endpoint publishEndpoint;
-
-    @Override
-    public Endpoint getPublishEndpoint() {
-        return publishEndpoint;
+    long msTimeout = DynamicPropertyFactory.getInstance()
+        .getLongProperty("cse.request.timeout", DEFAULT_TIMEOUT_MILLIS)
+        .get();
+    if (msTimeout <= 0) {
+      msTimeout = DEFAULT_TIMEOUT_MILLIS;
     }
 
-    @Override
-    public Endpoint getEndpoint() {
-        return endpoint;
+    msReqeustTimeout = msTimeout;
+    return msReqeustTimeout;
+  }
+
+  // 所有transport使用同一个vertx实例，避免创建太多的线程
+  protected Vertx transportVertx = VertxUtils.getOrCreateVertxByName("transport", null);
+
+  protected Endpoint endpoint;
+
+  protected Endpoint publishEndpoint;
+
+  @Override
+  public Endpoint getPublishEndpoint() {
+    return publishEndpoint;
+  }
+
+  @Override
+  public Endpoint getEndpoint() {
+    return endpoint;
+  }
+
+  protected void setListenAddressWithoutSchema(String addressWithoutSchema) {
+    setListenAddressWithoutSchema(addressWithoutSchema, null);
+  }
+
+  /**
+   * 将配置的URI转换为endpoint
+   * addressWithoutSchema 配置的URI，没有schema部分
+   */
+  protected void setListenAddressWithoutSchema(String addressWithoutSchema,
+      Map<String, String> pairs) {
+    addressWithoutSchema = genAddressWithoutSchema(addressWithoutSchema, pairs);
+
+    this.endpoint = new Endpoint(this, NetUtils.getRealListenAddress(getName(), addressWithoutSchema));
+    if (this.endpoint.getEndpoint() != null) {
+      this.publishEndpoint = new Endpoint(this, RegistryUtils.getPublishAddress(getName(),
+          addressWithoutSchema));
+    } else {
+      this.publishEndpoint = null;
+    }
+  }
+
+  private String genAddressWithoutSchema(String addressWithoutSchema, Map<String, String> pairs) {
+    if (addressWithoutSchema == null || pairs == null || pairs.isEmpty()) {
+      return addressWithoutSchema;
     }
 
-    protected void setListenAddressWithoutSchema(String addressWithoutSchema) {
-        setListenAddressWithoutSchema(addressWithoutSchema, null);
+    int idx = addressWithoutSchema.indexOf('?');
+    if (idx == -1) {
+      addressWithoutSchema += "?";
+    } else {
+      addressWithoutSchema += "&";
     }
 
-    /**
-     * 将配置的URI转换为endpoint
-     * addressWithoutSchema 配置的URI，没有schema部分
-     */
-    protected void setListenAddressWithoutSchema(String addressWithoutSchema,
-            Map<String, String> pairs) {
-        addressWithoutSchema = genAddressWithoutSchema(addressWithoutSchema, pairs);
+    String encodedQuery = URLEncodedUtils.format(pairs.entrySet().stream().map(entry -> {
+      return new BasicNameValuePair(entry.getKey(), entry.getValue());
+    }).collect(Collectors.toList()), StandardCharsets.UTF_8.name());
 
-        this.endpoint = new Endpoint(this, NetUtils.getRealListenAddress(getName(), addressWithoutSchema));
-        if (this.endpoint.getEndpoint() != null) {
-            this.publishEndpoint = new Endpoint(this, RegistryUtils.getPublishAddress(getName(),
-                    addressWithoutSchema));
-        } else {
-            this.publishEndpoint = null;
-        }
-
+    if (!RegistryUtils.getServiceRegistry().getFeatures().isCanEncodeEndpoint()) {
+      addressWithoutSchema = genAddressWithoutSchemaForOldSC(addressWithoutSchema, encodedQuery);
+    } else {
+      addressWithoutSchema += encodedQuery;
     }
 
-    private String genAddressWithoutSchema(String addressWithoutSchema, Map<String, String> pairs) {
-        if (addressWithoutSchema == null || pairs == null || pairs.isEmpty()) {
-            return addressWithoutSchema;
-        }
+    return addressWithoutSchema;
+  }
 
-        int idx = addressWithoutSchema.indexOf('?');
-        if (idx == -1) {
-            addressWithoutSchema += "?";
-        } else {
-            addressWithoutSchema += "&";
-        }
-
-        String encodedQuery = URLEncodedUtils.format(pairs.entrySet().stream().map(entry -> {
-            return new BasicNameValuePair(entry.getKey(), entry.getValue());
-        }).collect(Collectors.toList()), StandardCharsets.UTF_8.name());
-
-        if (!RegistryUtils.getServiceRegistry().getFeatures().isCanEncodeEndpoint()) {
-            addressWithoutSchema = genAddressWithoutSchemaForOldSC(addressWithoutSchema, encodedQuery);
-        } else {
-            addressWithoutSchema += encodedQuery;
-        }
-
-        return addressWithoutSchema;
+  private String genAddressWithoutSchemaForOldSC(String addressWithoutSchema, String encodedQuery) {
+    // old service center do not support encodedQuery
+    // sdk must query service center's version, and determine if encode query
+    // traced by JAV-307
+    try {
+      LOGGER.warn("Service center do not support encoded query, so we use unencoded query, "
+          + "this caused not support chinese/space (and maybe other char) in query value.");
+      String decodedQuery = URLDecoder.decode(encodedQuery, StandardCharsets.UTF_8.name());
+      addressWithoutSchema += decodedQuery;
+    } catch (UnsupportedEncodingException e) {
+      // never happended
+      throw new ServiceCombException("Failed to decode query.", e);
     }
 
-    private String genAddressWithoutSchemaForOldSC(String addressWithoutSchema, String encodedQuery) {
-        // old service center do not support encodedQuery
-        // sdk must query service center's version, and determine if encode query
-        // traced by JAV-307
-        try {
-            LOGGER.warn("Service center do not support encoded query, so we use unencoded query, "
-                    + "this caused not support chinese/space (and maybe other char) in query value.");
-            String decodedQuery = URLDecoder.decode(encodedQuery, StandardCharsets.UTF_8.name());
-            addressWithoutSchema += decodedQuery;
-        } catch (UnsupportedEncodingException e) {
-            // never happended
-            throw new ServiceCombException("Failed to decode query.", e);
-        }
-
-        try {
-            // make sure consumer can handle this endpoint
-            new URI(Const.RESTFUL + "://" + addressWithoutSchema);
-        } catch (URISyntaxException e) {
-            throw new ServiceCombException(
-                    "current service center not support encoded endpoint, please do not use chinese or space or anything need to be encoded.",
-                    e);
-        }
-        return addressWithoutSchema;
+    try {
+      // make sure consumer can handle this endpoint
+      new URI(Const.RESTFUL + "://" + addressWithoutSchema);
+    } catch (URISyntaxException e) {
+      throw new ServiceCombException(
+          "current service center not support encoded endpoint, please do not use chinese or space or anything need to be encoded.",
+          e);
     }
+    return addressWithoutSchema;
+  }
 
-    @Override
-    public Object parseAddress(String address) {
-        if (address == null) {
-            return null;
-        }
-        return new URIEndpointObject(address);
+  @Override
+  public Object parseAddress(String address) {
+    if (address == null) {
+      return null;
     }
+    return new URIEndpointObject(address);
+  }
 }

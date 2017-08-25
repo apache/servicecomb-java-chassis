@@ -28,29 +28,29 @@ import io.servicecomb.swagger.invocation.response.consumer.ConsumerResponseMappe
 import io.servicecomb.swagger.invocation.response.producer.ProducerResponseMapperFactory;
 
 public class BootstrapNormal implements SwaggerBootstrap {
-    public SwaggerEnvironment boot() {
-        SwaggerEnvironment env = new SwaggerEnvironment();
+  public SwaggerEnvironment boot() {
+    SwaggerEnvironment env = new SwaggerEnvironment();
 
-        ConverterMgr converterMgr = new ConverterMgr();
+    ConverterMgr converterMgr = new ConverterMgr();
 
-        ProducerArgumentsMapperFactory producerArgumentsFactory = new ProducerArgumentsMapperFactory();
-        producerArgumentsFactory.setFactoryList(Arrays.asList(new ProducerInvocationContextMapperFactory()));
-        producerArgumentsFactory.setConverterMgr(converterMgr);
-        env.setProducerArgumentsFactory(producerArgumentsFactory);
+    ProducerArgumentsMapperFactory producerArgumentsFactory = new ProducerArgumentsMapperFactory();
+    producerArgumentsFactory.setFactoryList(Arrays.asList(new ProducerInvocationContextMapperFactory()));
+    producerArgumentsFactory.setConverterMgr(converterMgr);
+    env.setProducerArgumentsFactory(producerArgumentsFactory);
 
-        ProducerResponseMapperFactory producerResponseMapperFactory = new ProducerResponseMapperFactory();
-        producerResponseMapperFactory.setConverterMgr(converterMgr);
-        env.setProducerResponseMapperFactory(producerResponseMapperFactory);
+    ProducerResponseMapperFactory producerResponseMapperFactory = new ProducerResponseMapperFactory();
+    producerResponseMapperFactory.setConverterMgr(converterMgr);
+    env.setProducerResponseMapperFactory(producerResponseMapperFactory);
 
-        ConsumerArgumentsMapperFactory consumerArgumentsFactory = new ConsumerArgumentsMapperFactory();
-        consumerArgumentsFactory.setFactoryList(Arrays.asList(new ConsumerInvocationContextMapperFactory()));
-        consumerArgumentsFactory.setConverterMgr(converterMgr);
-        env.setConsumerArgumentsFactory(consumerArgumentsFactory);
+    ConsumerArgumentsMapperFactory consumerArgumentsFactory = new ConsumerArgumentsMapperFactory();
+    consumerArgumentsFactory.setFactoryList(Arrays.asList(new ConsumerInvocationContextMapperFactory()));
+    consumerArgumentsFactory.setConverterMgr(converterMgr);
+    env.setConsumerArgumentsFactory(consumerArgumentsFactory);
 
-        ConsumerResponseMapperFactory consumerResponseMapperFactory = new ConsumerResponseMapperFactory();
-        consumerResponseMapperFactory.setConverterMgr(converterMgr);
-        env.setConsumerResponseMapperFactory(consumerResponseMapperFactory);
+    ConsumerResponseMapperFactory consumerResponseMapperFactory = new ConsumerResponseMapperFactory();
+    consumerResponseMapperFactory.setConverterMgr(converterMgr);
+    env.setConsumerResponseMapperFactory(consumerResponseMapperFactory);
 
-        return env;
-    }
+    return env;
+  }
 }

@@ -17,5 +17,6 @@
 package io.servicecomb.swagger.generator.core.schema;
 
 public enum Color {
-    WHITE, BLACK
+  WHITE,
+  BLACK
 }

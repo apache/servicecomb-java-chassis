@@ -25,28 +25,28 @@ import io.swagger.converter.ModelConverters;
 import io.swagger.models.properties.Property;
 
 public final class PojoParamUtils {
-    private PojoParamUtils() {
-    }
+  private PojoParamUtils() {
+  }
 
-    public static PendingBodyParameter createPendingBodyParameter(OperationGenerator operationGenerator,
-            int paramIdx) {
-        Method method = operationGenerator.getProviderMethod();
-        String paramName = ParamUtils.getParameterName(method, paramIdx);
-        Type paramType = ParamUtils.getGenericParameterType(method, paramIdx);
-        return createPendingBodyParameter(operationGenerator, paramName, paramType);
-    }
+  public static PendingBodyParameter createPendingBodyParameter(OperationGenerator operationGenerator,
+      int paramIdx) {
+    Method method = operationGenerator.getProviderMethod();
+    String paramName = ParamUtils.getParameterName(method, paramIdx);
+    Type paramType = ParamUtils.getGenericParameterType(method, paramIdx);
+    return createPendingBodyParameter(operationGenerator, paramName, paramType);
+  }
 
-    public static PendingBodyParameter createPendingBodyParameter(OperationGenerator operationGenerator,
-            String paramName, Type paramType) {
-        ParamUtils.addDefinitions(operationGenerator.getSwagger(), paramType);
-        Property property = ModelConverters.getInstance().readAsProperty(paramType);
+  public static PendingBodyParameter createPendingBodyParameter(OperationGenerator operationGenerator,
+      String paramName, Type paramType) {
+    ParamUtils.addDefinitions(operationGenerator.getSwagger(), paramType);
+    Property property = ModelConverters.getInstance().readAsProperty(paramType);
 
-        PendingBodyParameter pendingBodyParameter = new PendingBodyParameter();
-        pendingBodyParameter.setName(paramName);
-        pendingBodyParameter.setProperty(property);
-        pendingBodyParameter.setType(paramType);
-        pendingBodyParameter.setOperationGenerator(operationGenerator);
+    PendingBodyParameter pendingBodyParameter = new PendingBodyParameter();
+    pendingBodyParameter.setName(paramName);
+    pendingBodyParameter.setProperty(property);
+    pendingBodyParameter.setType(paramType);
+    pendingBodyParameter.setOperationGenerator(operationGenerator);
 
-        return pendingBodyParameter;
-    }
+    return pendingBodyParameter;
+  }
 }

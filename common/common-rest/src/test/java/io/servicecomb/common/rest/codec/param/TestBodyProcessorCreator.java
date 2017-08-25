@@ -27,28 +27,27 @@ import io.servicecomb.swagger.generator.core.SwaggerConst;
 import io.swagger.models.parameters.BodyParameter;
 
 public class TestBodyProcessorCreator {
-    private static BodyProcessorCreator bodyCreator;
+  private static BodyProcessorCreator bodyCreator;
 
-    @Before
-    public void beforeTest() {
-        bodyCreator = (BodyProcessorCreator) ParamValueProcessorCreatorManager.INSTANCE.getBodyProcessorCreater();
-    }
+  @Before
+  public void beforeTest() {
+    bodyCreator = (BodyProcessorCreator) ParamValueProcessorCreatorManager.INSTANCE.getBodyProcessorCreater();
+  }
 
-    @Test
-    public void testBodyProcessorCreator() throws Exception {
-        BodyParameter bp = new BodyParameter();
-        bp.setVendorExtension(SwaggerConst.EXT_RAW_JSON_TYPE, true);
+  @Test
+  public void testBodyProcessorCreator() throws Exception {
+    BodyParameter bp = new BodyParameter();
+    bp.setVendorExtension(SwaggerConst.EXT_RAW_JSON_TYPE, true);
 
-        ParamValueProcessor processor = bodyCreator.create(bp, String.class);
-        Assert.assertTrue(RawJsonBodyProcessor.class.isInstance(processor));
+    ParamValueProcessor processor = bodyCreator.create(bp, String.class);
+    Assert.assertTrue(RawJsonBodyProcessor.class.isInstance(processor));
 
-        bp.setVendorExtension(SwaggerConst.EXT_RAW_JSON_TYPE, false);
-        processor = bodyCreator.create(bp, String.class);
-        Assert.assertFalse(RawJsonBodyProcessor.class.isInstance(processor));
+    bp.setVendorExtension(SwaggerConst.EXT_RAW_JSON_TYPE, false);
+    processor = bodyCreator.create(bp, String.class);
+    Assert.assertFalse(RawJsonBodyProcessor.class.isInstance(processor));
 
-        bp.setVendorExtension(SwaggerConst.EXT_RAW_JSON_TYPE, true);
-        processor = bodyCreator.create(bp, List.class);
-        Assert.assertFalse(RawJsonBodyProcessor.class.isInstance(processor));
-    }
-
+    bp.setVendorExtension(SwaggerConst.EXT_RAW_JSON_TYPE, true);
+    processor = bodyCreator.create(bp, List.class);
+    Assert.assertFalse(RawJsonBodyProcessor.class.isInstance(processor));
+  }
 }

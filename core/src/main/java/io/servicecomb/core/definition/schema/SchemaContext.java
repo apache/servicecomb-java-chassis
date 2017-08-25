@@ -20,48 +20,48 @@ import io.servicecomb.core.definition.MicroserviceMeta;
 import io.servicecomb.core.definition.SchemaMeta;
 
 public class SchemaContext {
-    protected MicroserviceMeta microserviceMeta;
+  protected MicroserviceMeta microserviceMeta;
 
-    protected String schemaId;
+  protected String schemaId;
 
-    protected SchemaMeta schemaMeta;
+  protected SchemaMeta schemaMeta;
 
-    // consumer或producer对应的class
-    protected Class<?> providerClass;
+  // consumer或producer对应的class
+  protected Class<?> providerClass;
 
-    public String getMicroserviceName() {
-        return microserviceMeta.getName();
-    }
+  public String getMicroserviceName() {
+    return microserviceMeta.getName();
+  }
 
-    public MicroserviceMeta getMicroserviceMeta() {
-        return microserviceMeta;
-    }
+  public MicroserviceMeta getMicroserviceMeta() {
+    return microserviceMeta;
+  }
 
-    public void setMicroserviceMeta(MicroserviceMeta microserviceMeta) {
-        this.microserviceMeta = microserviceMeta;
-    }
+  public void setMicroserviceMeta(MicroserviceMeta microserviceMeta) {
+    this.microserviceMeta = microserviceMeta;
+  }
 
-    public String getSchemaId() {
-        return schemaId;
-    }
+  public String getSchemaId() {
+    return schemaId;
+  }
 
-    public void setSchemaId(String schemaId) {
-        this.schemaId = schemaId;
-    }
+  public void setSchemaId(String schemaId) {
+    this.schemaId = schemaId;
+  }
 
-    public SchemaMeta getSchemaMeta() {
-        return schemaMeta;
-    }
+  public SchemaMeta getSchemaMeta() {
+    return schemaMeta;
+  }
 
-    public void setSchemaMeta(SchemaMeta schemaMeta) {
-        this.schemaMeta = schemaMeta;
-    }
+  public void setSchemaMeta(SchemaMeta schemaMeta) {
+    this.schemaMeta = schemaMeta;
+  }
 
-    public Class<?> getProviderClass() {
-        return providerClass;
-    }
+  public Class<?> getProviderClass() {
+    return providerClass;
+  }
 
-    public void setProviderClass(Class<?> providerClass) {
-        this.providerClass = providerClass;
-    }
+  public void setProviderClass(Class<?> providerClass) {
+    this.providerClass = providerClass;
+  }
 }

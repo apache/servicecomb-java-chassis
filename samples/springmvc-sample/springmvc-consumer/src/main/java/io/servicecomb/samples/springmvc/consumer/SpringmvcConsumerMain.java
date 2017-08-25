@@ -38,7 +38,6 @@ public class SpringmvcConsumerMain {
     Person person = new Person();
     person.setName("ServiceComb/Java Chassis");
 
-
     // RestTemplate Consumer or POJO Consumer. You can choose whatever you like
     // RestTemplate Consumer
     String sayHiResult =

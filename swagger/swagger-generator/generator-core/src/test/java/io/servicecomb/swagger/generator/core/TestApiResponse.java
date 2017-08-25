@@ -20,8 +20,6 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import io.servicecomb.swagger.converter.ConverterMgr;
-import io.servicecomb.swagger.generator.core.SwaggerGenerator;
-import io.servicecomb.swagger.generator.core.SwaggerGeneratorContext;
 import io.servicecomb.swagger.generator.core.unittest.SwaggerGeneratorForTest;
 import io.servicecomb.swagger.generator.pojo.PojoSwaggerGeneratorContext;
 import io.swagger.annotations.ApiResponse;
@@ -34,93 +32,92 @@ import io.swagger.models.Swagger;
 import io.swagger.models.properties.Property;
 
 public class TestApiResponse {
-    SwaggerGeneratorContext context = new PojoSwaggerGeneratorContext();
+  SwaggerGeneratorContext context = new PojoSwaggerGeneratorContext();
 
-    interface ApiResponseAnnotation {
-        @ApiResponse(
-                responseHeaders = {@ResponseHeader(name = "k1", response = int.class),
-                        @ResponseHeader(name = "k2", response = String.class)},
-                code = 200,
-                message = "")
-        void testApiResponseHeader();
+  interface ApiResponseAnnotation {
+    @ApiResponse(
+        responseHeaders = {@ResponseHeader(name = "k1", response = int.class),
+            @ResponseHeader(name = "k2", response = String.class)},
+        code = 200,
+        message = "")
+    void testApiResponseHeader();
 
-        @ResponseHeader(name = "k1", response = int.class)
-        void testResponseHeader();
+    @ResponseHeader(name = "k1", response = int.class)
+    void testResponseHeader();
 
-        @ApiResponse(
-                code = 200,
-                response = int.class,
-                message = "msg")
-        void testSingle();
+    @ApiResponse(
+        code = 200,
+        response = int.class,
+        message = "msg")
+    void testSingle();
 
-        @ApiResponses({@ApiResponse(code = 200, response = int.class, message = "msg1"),
-                @ApiResponse(code = 301, response = String.class, message = "msg2")})
-        void testMulti();
+    @ApiResponses({@ApiResponse(code = 200, response = int.class, message = "msg1"),
+        @ApiResponse(code = 301, response = String.class, message = "msg2")})
+    void testMulti();
+  }
 
-    }
+  @Test
+  public void testBody() {
+    SwaggerGenerator swaggerGenerator =
+        new SwaggerGeneratorForTest(context, ApiResponseAnnotation.class);
+    swaggerGenerator.generate();
 
-    @Test
-    public void testBody() {
-        SwaggerGenerator swaggerGenerator =
-            new SwaggerGeneratorForTest(context, ApiResponseAnnotation.class);
-        swaggerGenerator.generate();
+    checkApiResponseHeader(swaggerGenerator);
+    checkResponseHeader(swaggerGenerator);
+    checkSingle(swaggerGenerator);
+    checkMulti(swaggerGenerator);
+  }
 
-        checkApiResponseHeader(swaggerGenerator);
-        checkResponseHeader(swaggerGenerator);
-        checkSingle(swaggerGenerator);
-        checkMulti(swaggerGenerator);
-    }
+  private void checkResponseHeader(SwaggerGenerator generator) {
+    Swagger swagger = generator.getSwagger();
 
-    private void checkResponseHeader(SwaggerGenerator generator) {
-        Swagger swagger = generator.getSwagger();
+    Path path = swagger.getPaths().get("/testResponseHeader");
+    Operation operation = path.getOperations().get(0);
+    Assert.assertEquals("testResponseHeader", operation.getOperationId());
 
-        Path path = swagger.getPaths().get("/testResponseHeader");
-        Operation operation = path.getOperations().get(0);
-        Assert.assertEquals("testResponseHeader", operation.getOperationId());
+    Response response = operation.getResponses().get("200");
+    Property property = response.getHeaders().get("k1");
+    Assert.assertEquals(Integer.class, ConverterMgr.findJavaType(generator, property).getRawClass());
+  }
 
-        Response response = operation.getResponses().get("200");
-        Property property = response.getHeaders().get("k1");
-        Assert.assertEquals(Integer.class, ConverterMgr.findJavaType(generator, property).getRawClass());
-    }
+  private void checkApiResponseHeader(SwaggerGenerator generator) {
+    Swagger swagger = generator.getSwagger();
 
-    private void checkApiResponseHeader(SwaggerGenerator generator) {
-        Swagger swagger = generator.getSwagger();
+    Path path = swagger.getPaths().get("/testApiResponseHeader");
+    Operation operation = path.getOperations().get(0);
+    Assert.assertEquals("testApiResponseHeader", operation.getOperationId());
 
-        Path path = swagger.getPaths().get("/testApiResponseHeader");
-        Operation operation = path.getOperations().get(0);
-        Assert.assertEquals("testApiResponseHeader", operation.getOperationId());
+    Response response = operation.getResponses().get("200");
+    Property property = response.getHeaders().get("k1");
+    Assert.assertEquals(Integer.class, ConverterMgr.findJavaType(generator, property).getRawClass());
 
-        Response response = operation.getResponses().get("200");
-        Property property = response.getHeaders().get("k1");
-        Assert.assertEquals(Integer.class, ConverterMgr.findJavaType(generator, property).getRawClass());
+    property = response.getHeaders().get("k2");
+    Assert.assertEquals(String.class, ConverterMgr.findJavaType(generator, property).getRawClass());
+  }
 
-        property = response.getHeaders().get("k2");
-        Assert.assertEquals(String.class, ConverterMgr.findJavaType(generator, property).getRawClass());
-    }
+  public void checkSingle(SwaggerGenerator generator) {
+    Swagger swagger = generator.getSwagger();
 
-    public void checkSingle(SwaggerGenerator generator) {
-        Swagger swagger = generator.getSwagger();
+    Path path = swagger.getPaths().get("/testSingle");
+    Operation operation = path.getOperations().get(0);
+    Assert.assertEquals("testSingle", operation.getOperationId());
 
-        Path path = swagger.getPaths().get("/testSingle");
-        Operation operation = path.getOperations().get(0);
-        Assert.assertEquals("testSingle", operation.getOperationId());
+    Response response = operation.getResponses().get("200");
+    Assert.assertEquals(Integer.class, ConverterMgr.findJavaType(generator, response.getSchema()).getRawClass());
+  }
 
-        Response response = operation.getResponses().get("200");
-        Assert.assertEquals(Integer.class, ConverterMgr.findJavaType(generator, response.getSchema()).getRawClass());
-    }
+  public void checkMulti(SwaggerGenerator generator) {
+    Swagger swagger = generator.getSwagger();
 
-    public void checkMulti(SwaggerGenerator generator) {
-        Swagger swagger = generator.getSwagger();
+    Path path = swagger.getPaths().get("/testMulti");
 
-        Path path = swagger.getPaths().get("/testMulti");
+    Operation operation = path.getOperations().get(0);
+    Assert.assertEquals("testMulti", operation.getOperationId());
 
-        Operation operation = path.getOperations().get(0);
-        Assert.assertEquals("testMulti", operation.getOperationId());
+    Response response = operation.getResponses().get("200");
+    Assert.assertEquals(Integer.class, ConverterMgr.findJavaType(generator, response.getSchema()).getRawClass());
 
-        Response response = operation.getResponses().get("200");
-        Assert.assertEquals(Integer.class, ConverterMgr.findJavaType(generator, response.getSchema()).getRawClass());
-
-        response = operation.getResponses().get("301");
-        Assert.assertEquals(String.class, ConverterMgr.findJavaType(generator, response.getSchema()).getRawClass());
-    }
+    response = operation.getResponses().get("301");
+    Assert.assertEquals(String.class, ConverterMgr.findJavaType(generator, response.getSchema()).getRawClass());
+  }
 }

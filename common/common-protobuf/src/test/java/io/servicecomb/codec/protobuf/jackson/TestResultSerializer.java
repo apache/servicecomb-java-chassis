@@ -34,105 +34,99 @@ import com.fasterxml.jackson.dataformat.protobuf.ProtobufGenerator;
 import com.fasterxml.jackson.dataformat.protobuf.schema.ProtobufField;
 import com.fasterxml.jackson.dataformat.protobuf.schema.ProtobufMessage;
 import com.fasterxml.jackson.dataformat.protobuf.schema.ProtobufSchema;
-import io.servicecomb.foundation.vertx.stream.BufferOutputStream;
 
+import io.servicecomb.foundation.vertx.stream.BufferOutputStream;
 import mockit.Mock;
 import mockit.MockUp;
 
 public class TestResultSerializer {
 
-    private ResultSerializer resultSerializer = null;
+  private ResultSerializer resultSerializer = null;
 
-    OutputStream outputStream = null;
+  OutputStream outputStream = null;
 
-    @Before
-    public void setUp() throws Exception {
-        resultSerializer = new ResultSerializer();
-        outputStream = new BufferOutputStream();
+  @Before
+  public void setUp() throws Exception {
+    resultSerializer = new ResultSerializer();
+    outputStream = new BufferOutputStream();
+  }
+
+  @After
+  public void tearDown() throws Exception {
+    resultSerializer = null;
+    outputStream = null;
+  }
+
+  @Test
+  public void testSerialize() {
+    boolean status = true;
+    Assert.assertNotNull(resultSerializer);
+    String[] stringArray = new String[1];
+    stringArray[0] = "abc";
+
+    ProtobufGenerator obj = null;
+    try {
+      obj = new ProtobufGenerator(Mockito.mock(IOContext.class), 2, Mockito.mock(ObjectCodec.class),
+          outputStream);
+    } catch (IOException exce) {
     }
 
-    @After
-    public void tearDown() throws Exception {
-        resultSerializer = null;
-        outputStream = null;
+    Assert.assertNotNull(obj);
+
+    new MockUp<ProtobufGenerator>() {
+
+      @Mock
+      public void writeStartObject() throws IOException {
+
+      }
+
+      ProtobufSchema protobufSchema = new ProtobufSchema(null, null);
+
+      @Mock
+      public ProtobufSchema getSchema() {
+        return protobufSchema;
+      }
+    };
+    ProtobufMessage protobufMessage = new ProtobufMessage(null, null);
+    new MockUp<ProtobufSchema>() {
+      @Mock
+      public ProtobufMessage getRootType() {
+        return protobufMessage;
+      }
+    };
+
+    new MockUp<ProtobufMessage>() {
+      @Mock
+      public ProtobufField firstField() {
+        return Mockito.mock(ProtobufField.class);
+      }
+    };
+
+    new MockUp<JsonGenerator>() {
+      @Mock
+      public void writeObjectField(String fieldName, Object pojo) throws IOException {
+
+      }
+    };
+
+    new MockUp<ProtobufGenerator>() {
+
+      @Mock
+      public void writeEndObject() throws IOException {
+
+      }
+    };
+
+    try {
+      resultSerializer.serialize(stringArray,
+          obj,
+          Mockito.mock(SerializerProvider.class));
+    } catch (JsonProcessingException e) {
+      status = false;
+    } catch (IOException e) {
+      status = false;
     }
 
-    @Test
-    public void testSerialize() {
-        boolean status = true;
-        Assert.assertNotNull(resultSerializer);
-        String[] stringArray = new String[1];
-        stringArray[0] = "abc";
-
-        ProtobufGenerator obj = null;
-        try {
-            obj = new ProtobufGenerator(Mockito.mock(IOContext.class), 2, Mockito.mock(ObjectCodec.class),
-                    outputStream);
-        } catch (IOException exce) {
-        }
-
-        Assert.assertNotNull(obj);
-
-        new MockUp<ProtobufGenerator>() {
-
-            @Mock
-            public void writeStartObject() throws IOException {
-
-            }
-
-            ProtobufSchema protobufSchema = new ProtobufSchema(null, null);
-
-            @Mock
-            public ProtobufSchema getSchema() {
-                return protobufSchema;
-            }
-
-        };
-        ProtobufMessage protobufMessage = new ProtobufMessage(null, null);
-        new MockUp<ProtobufSchema>() {
-            @Mock
-            public ProtobufMessage getRootType() {
-                return protobufMessage;
-            }
-
-        };
-
-        new MockUp<ProtobufMessage>() {
-            @Mock
-            public ProtobufField firstField() {
-                return Mockito.mock(ProtobufField.class);
-            }
-
-        };
-
-        new MockUp<JsonGenerator>() {
-            @Mock
-            public void writeObjectField(String fieldName, Object pojo) throws IOException {
-
-            }
-
-        };
-
-        new MockUp<ProtobufGenerator>() {
-
-            @Mock
-            public void writeEndObject() throws IOException {
-
-            }
-
-        };
-
-        try {
-            resultSerializer.serialize(stringArray,
-                    obj,
-                    Mockito.mock(SerializerProvider.class));
-        } catch (JsonProcessingException e) {
-            status = false;
-        } catch (IOException e) {
-            status = false;
-        }
-
-        Assert.assertTrue(status);
-    }
-
+    Assert.assertTrue(status);
+  }
 }

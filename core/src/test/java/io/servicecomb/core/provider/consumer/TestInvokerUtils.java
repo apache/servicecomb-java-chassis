@@ -35,131 +35,123 @@ import mockit.MockUp;
 
 public class TestInvokerUtils {
 
-    @Test
-    public void testSyncInvokeInvocationWithException() throws InterruptedException {
-        Invocation invocation = Mockito.mock(Invocation.class);
+  @Test
+  public void testSyncInvokeInvocationWithException() throws InterruptedException {
+    Invocation invocation = Mockito.mock(Invocation.class);
 
-        Response response = Mockito.mock(Response.class);
-        new MockUp<SyncResponseExecutor>() {
-            @Mock
-            public Response waitResponse() throws InterruptedException {
-                return Mockito.mock(Response.class);
-            }
+    Response response = Mockito.mock(Response.class);
+    new MockUp<SyncResponseExecutor>() {
+      @Mock
+      public Response waitResponse() throws InterruptedException {
+        return Mockito.mock(Response.class);
+      }
+    };
+    Mockito.when(response.isSuccessed()).thenReturn(true);
+    OperationMeta operationMeta = Mockito.mock(OperationMeta.class);
+    Mockito.when(invocation.getOperationMeta()).thenReturn(operationMeta);
+    Mockito.when(operationMeta.getMicroserviceQualifiedName()).thenReturn("test");
 
-        };
-        Mockito.when(response.isSuccessed()).thenReturn(true);
-        OperationMeta operationMeta = Mockito.mock(OperationMeta.class);
-        Mockito.when(invocation.getOperationMeta()).thenReturn(operationMeta);
-        Mockito.when(operationMeta.getMicroserviceQualifiedName()).thenReturn("test");
+    try {
+      InvokerUtils.syncInvoke(invocation);
+    } catch (InvocationException e) {
+      Assert.assertEquals(490, e.getStatusCode());
+    }
+  }
 
-        try {
-            InvokerUtils.syncInvoke(invocation);
+  @Test
+  public void testReactiveInvoke() {
+    Invocation invocation = Mockito.mock(Invocation.class);
+    AsyncResponse asyncResp = Mockito.mock(AsyncResponse.class);
+    boolean validAssert;
+    try {
+      InvokerUtils.reactiveInvoke(invocation, asyncResp);
+      validAssert = true;
+    } catch (Exception e) {
+      validAssert = false;
+    }
+    Assert.assertTrue(validAssert);
+  }
 
-        } catch (InvocationException e) {
-            Assert.assertEquals(490, e.getStatusCode());
+  @Test
+  public void testInvokeWithException() {
+    new MockUp<SyncResponseExecutor>() {
+      @Mock
+      public Response waitResponse() throws InterruptedException {
+        return Mockito.mock(Response.class);
+      }
+    };
+    Invocation invocation = Mockito.mock(Invocation.class);
+    OperationMeta operationMeta = Mockito.mock(OperationMeta.class);
+    Mockito.when(invocation.getOperationMeta()).thenReturn(operationMeta);
+    Mockito.when(operationMeta.isSync()).thenReturn(true);
+    try {
+      InvokerUtils.invoke(invocation);
+    } catch (InvocationException e) {
+      Assert.assertEquals(490, e.getStatusCode());
+    }
+  }
 
-        }
+  @Test
+  public void testInvoke() {
+    Object[] objectArray = new Object[2];
+    Invocation invocation = Mockito.mock(Invocation.class);
+    OperationMeta operationMeta = Mockito.mock(OperationMeta.class);
+    Mockito.when(invocation.getOperationMeta()).thenReturn(operationMeta);
+    Mockito.when(operationMeta.isSync()).thenReturn(false);
+    Mockito.when(invocation.getArgs()).thenReturn(objectArray);
+    Object obj = InvokerUtils.invoke(invocation);
+    Assert.assertNull(obj);
+  }
 
+  @Test
+  public void tetSyncInvokeNotReady() {
+    ReferenceConfigUtils.setReady(false);
+
+    try {
+      InvokerUtils.syncInvoke("ms", "schemaId", "opName", null);
+      Assert.fail("must throw exception");
+    } catch (IllegalStateException e) {
+      Assert.assertEquals("System is not ready for remote calls. "
+          + "When beans are making remote calls in initialization, it's better to "
+          + "implement io.servicecomb.core.BootListener and do it after EventType.AFTER_REGISTRY.",
+          e.getMessage());
     }
 
-    @Test
-    public void testReactiveInvoke() {
-        Invocation invocation = Mockito.mock(Invocation.class);
-        AsyncResponse asyncResp = Mockito.mock(AsyncResponse.class);
-        boolean validAssert;
-        try {
-            InvokerUtils.reactiveInvoke(invocation, asyncResp);
-            validAssert = true;
-        } catch (Exception e) {
-            validAssert = false;
-        }
-        Assert.assertTrue(validAssert);
-
+    try {
+      InvokerUtils.syncInvoke("ms", "latest", "rest", "schemaId", "opName", null);
+      Assert.fail("must throw exception");
+    } catch (IllegalStateException e) {
+      Assert.assertEquals("System is not ready for remote calls. "
+          + "When beans are making remote calls in initialization, it's better to "
+          + "implement io.servicecomb.core.BootListener and do it after EventType.AFTER_REGISTRY.",
+          e.getMessage());
     }
+  }
 
-    @Test
-    public void testInvokeWithException() {
-        new MockUp<SyncResponseExecutor>() {
-            @Mock
-            public Response waitResponse() throws InterruptedException {
-                return Mockito.mock(Response.class);
-            }
+  @Test
+  public void tetSyncInvokeReady(@Injectable ConsumerProviderManager consumerProviderManager,
+      @Injectable Invocation invocation) {
+    ReferenceConfigUtils.setReady(true);
+    CseContext.getInstance().setConsumerProviderManager(consumerProviderManager);
 
-        };
-        Invocation invocation = Mockito.mock(Invocation.class);
-        OperationMeta operationMeta = Mockito.mock(OperationMeta.class);
-        Mockito.when(invocation.getOperationMeta()).thenReturn(operationMeta);
-        Mockito.when(operationMeta.isSync()).thenReturn(true);
-        try {
-            InvokerUtils.invoke(invocation);
+    new Expectations(InvocationFactory.class) {
+      {
+        InvocationFactory.forConsumer((ReferenceConfig) any, (SchemaMeta) any, (String) any, (Object[]) any);
+        result = invocation;
+      }
+    };
+    new Expectations(InvokerUtils.class) {
+      {
+        InvokerUtils.syncInvoke(invocation);
+        result = "ok";
+      }
+    };
+    Object result1 = InvokerUtils.syncInvoke("ms", "schemaId", "opName", null);
+    Assert.assertEquals("ok", result1);
 
-        } catch (InvocationException e) {
-            Assert.assertEquals(490, e.getStatusCode());
-        }
+    Object result2 = InvokerUtils.syncInvoke("ms", "latest", "rest", "schemaId", "opName", null);
+    Assert.assertEquals("ok", result2);
 
-    }
-
-    @Test
-    public void testInvoke() {
-        Object[] objectArray = new Object[2];
-        Invocation invocation = Mockito.mock(Invocation.class);
-        OperationMeta operationMeta = Mockito.mock(OperationMeta.class);
-        Mockito.when(invocation.getOperationMeta()).thenReturn(operationMeta);
-        Mockito.when(operationMeta.isSync()).thenReturn(false);
-        Mockito.when(invocation.getArgs()).thenReturn(objectArray);
-        Object obj = InvokerUtils.invoke(invocation);
-        Assert.assertNull(obj);
-    }
-
-    @Test
-    public void tetSyncInvokeNotReady() {
-        ReferenceConfigUtils.setReady(false);
-
-        try {
-            InvokerUtils.syncInvoke("ms", "schemaId", "opName", null);
-            Assert.fail("must throw exception");
-        } catch (IllegalStateException e) {
-            Assert.assertEquals("System is not ready for remote calls. "
-                    + "When beans are making remote calls in initialization, it's better to "
-                    + "implement io.servicecomb.core.BootListener and do it after EventType.AFTER_REGISTRY.",
-                    e.getMessage());
-        }
-
-        try {
-            InvokerUtils.syncInvoke("ms", "latest", "rest", "schemaId", "opName", null);
-            Assert.fail("must throw exception");
-        } catch (IllegalStateException e) {
-            Assert.assertEquals("System is not ready for remote calls. "
-                    + "When beans are making remote calls in initialization, it's better to "
-                    + "implement io.servicecomb.core.BootListener and do it after EventType.AFTER_REGISTRY.",
-                    e.getMessage());
-        }
-    }
-
-    @Test
-    public void tetSyncInvokeReady(@Injectable ConsumerProviderManager consumerProviderManager,
-            @Injectable Invocation invocation) {
-        ReferenceConfigUtils.setReady(true);
-        CseContext.getInstance().setConsumerProviderManager(consumerProviderManager);
-
-        new Expectations(InvocationFactory.class) {
-            {
-                InvocationFactory.forConsumer((ReferenceConfig) any, (SchemaMeta) any, (String) any, (Object[]) any);
-                result = invocation;
-            }
-        };
-        new Expectations(InvokerUtils.class) {
-            {
-                InvokerUtils.syncInvoke(invocation);
-                result = "ok";
-            }
-        };
-        Object result1 = InvokerUtils.syncInvoke("ms", "schemaId", "opName", null);
-        Assert.assertEquals("ok", result1);
-
-        Object result2 = InvokerUtils.syncInvoke("ms", "latest", "rest", "schemaId", "opName", null);
-        Assert.assertEquals("ok", result2);
-
-        CseContext.getInstance().setConsumerProviderManager(null);
-    }
+    CseContext.getInstance().setConsumerProviderManager(null);
+  }
 }

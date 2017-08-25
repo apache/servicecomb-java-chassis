@@ -20,6 +20,7 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+
 import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -34,74 +35,74 @@ import javax.xml.parsers.ParserConfigurationException;
  */
 public final class FortifyUtils {
 
-    private static Method getMessageMethod;
+  private static Method getMessageMethod;
 
-    private static Method printStackTraceMethod;
+  private static Method printStackTraceMethod;
 
-    static {
-        try {
-            getMessageMethod = Throwable.class.getMethod("getMessage");
-            printStackTraceMethod = Throwable.class.getMethod("printStackTrace", PrintWriter.class);
-        } catch (Exception e) {
-            throw new Error(e);
-        }
+  static {
+    try {
+      getMessageMethod = Throwable.class.getMethod("getMessage");
+      printStackTraceMethod = Throwable.class.getMethod("printStackTrace", PrintWriter.class);
+    } catch (Exception e) {
+      throw new Error(e);
+    }
+  }
+
+  private FortifyUtils() {
+  }
+
+  public static String getErrorMsg(Throwable e) {
+    if (e == null) {
+      return "";
     }
 
-    private FortifyUtils() {
+    try {
+      return (String) getMessageMethod.invoke(e);
+    } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
+      return "";
+    }
+  }
+
+  public static String getErrorStack(Throwable e) {
+    if (null == e) {
+      return "";
     }
 
-    public static String getErrorMsg(Throwable e) {
-        if (e == null) {
-            return "";
-        }
-
-        try {
-            return (String) getMessageMethod.invoke(e);
-        } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
-            return "";
-        }
+    try {
+      StringWriter errors = new StringWriter();
+      printStackTraceMethod.invoke(e, new PrintWriter(errors));
+      return errors.toString();
+    } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
+      return "";
     }
+  }
 
-    public static String getErrorStack(Throwable e) {
-        if (null == e) {
-            return "";
-        }
+  public static String getErrorInfo(Throwable e) {
+    return getErrorInfo(e, true);
+  }
 
-        try {
-            StringWriter errors = new StringWriter();
-            printStackTraceMethod.invoke(e, new PrintWriter(errors));
-            return errors.toString();
-        } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
-            return "";
-        }
+  public static String getErrorInfo(Throwable e, boolean isPrintMsg) {
+    StringBuffer error = new StringBuffer(System.lineSeparator());
+    error.append("Exception: ").append(e.getClass().getName()).append("; ");
+
+    if (isPrintMsg) {
+      error.append(getErrorMsg(e)).append(System.lineSeparator());
     }
+    error.append(getErrorStack(e));
 
-    public static String getErrorInfo(Throwable e) {
-        return getErrorInfo(e, true);
-    }
+    return error.toString();
+  }
 
-    public static String getErrorInfo(Throwable e, boolean isPrintMsg) {
-        StringBuffer error = new StringBuffer(System.lineSeparator());
-        error.append("Exception: ").append(e.getClass().getName()).append("; ");
+  public static DocumentBuilderFactory getSecurityXmlDocumentFactory() throws ParserConfigurationException {
+    DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+    factory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+    factory.setXIncludeAware(false);
+    factory.setExpandEntityReferences(false);
+    factory.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
+    factory.setFeature("http://xml.org/sax/features/external-general-entities", false);
+    factory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
+    factory.setValidating(true);
 
-        if (isPrintMsg) {
-            error.append(getErrorMsg(e)).append(System.lineSeparator());
-        }
-        error.append(getErrorStack(e));
-
-        return error.toString();
-    }
-
-    public static DocumentBuilderFactory getSecurityXmlDocumentFactory() throws ParserConfigurationException {
-        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-        factory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
-        factory.setXIncludeAware(false);
-        factory.setExpandEntityReferences(false);
-        factory.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
-        factory.setFeature("http://xml.org/sax/features/external-general-entities", false);
-        factory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
-        factory.setValidating(true);
-
-        return factory;
-    }
+    return factory;
+  }
 }

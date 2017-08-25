@@ -37,63 +37,63 @@ import io.swagger.models.properties.RefProperty;
 // jaxrs、springmvc这种模式，要求符合模式本身的定义场景，不允许随意组合
 //
 public class PendingBodyParameter extends BodyParameter {
-    private OperationGenerator operationGenerator;
+  private OperationGenerator operationGenerator;
 
-    private Property property;
+  private Property property;
 
-    private Type type;
+  private Type type;
 
-    public void setOperationGenerator(OperationGenerator operationGenerator) {
-        this.operationGenerator = operationGenerator;
+  public void setOperationGenerator(OperationGenerator operationGenerator) {
+    this.operationGenerator = operationGenerator;
+  }
+
+  public Property getProperty() {
+    return property;
+  }
+
+  public void setProperty(Property property) {
+    this.property = property;
+  }
+
+  public Type getType() {
+    return type;
+  }
+
+  public void setType(Type type) {
+    this.type = type;
+  }
+
+  public Method getMethod() {
+    return operationGenerator.getProviderMethod();
+  }
+
+  public BodyParameter createBodyParameter(String paramName) {
+    String modelType = ParamUtils.generateBodyParameterName(operationGenerator.getProviderMethod());
+    RefModel model = toRefModel(modelType);
+
+    BodyParameter bodyParameter = new BodyParameter();
+    bodyParameter.setName(paramName);
+    bodyParameter.setSchema(model);
+
+    return bodyParameter;
+  }
+
+  // swagger中的body只能是ref，不能是简单类型
+  private RefModel toRefModel(String modelType) {
+    if (RefProperty.class.isInstance(property)) {
+      return (RefModel) PropertyBuilder.toModel(property);
     }
 
-    public Property getProperty() {
-        return property;
-    }
+    ModelImpl modelImpl = new ModelImpl();
+    modelImpl.setType("object");
+    modelImpl.setName(name);
+    modelImpl.addProperty(name, property);
 
-    public void setProperty(Property property) {
-        this.property = property;
-    }
+    operationGenerator.getSwagger().addDefinition(modelType, modelImpl);
 
-    public Type getType() {
-        return type;
-    }
+    RefModel refModel = new RefModel();
+    refModel.setReference("#/definitions/" + modelType);
 
-    public void setType(Type type) {
-        this.type = type;
-    }
-
-    public Method getMethod() {
-        return operationGenerator.getProviderMethod();
-    }
-
-    public BodyParameter createBodyParameter(String paramName) {
-        String modelType = ParamUtils.generateBodyParameterName(operationGenerator.getProviderMethod());
-        RefModel model = toRefModel(modelType);
-
-        BodyParameter bodyParameter = new BodyParameter();
-        bodyParameter.setName(paramName);
-        bodyParameter.setSchema(model);
-
-        return bodyParameter;
-    }
-
-    // swagger中的body只能是ref，不能是简单类型
-    private RefModel toRefModel(String modelType) {
-        if (RefProperty.class.isInstance(property)) {
-            return (RefModel) PropertyBuilder.toModel(property);
-        }
-
-        ModelImpl modelImpl = new ModelImpl();
-        modelImpl.setType("object");
-        modelImpl.setName(name);
-        modelImpl.addProperty(name, property);
-
-        operationGenerator.getSwagger().addDefinition(modelType, modelImpl);
-
-        RefModel refModel = new RefModel();
-        refModel.setReference("#/definitions/" + modelType);
-
-        return refModel;
-    }
+    return refModel;
+  }
 }

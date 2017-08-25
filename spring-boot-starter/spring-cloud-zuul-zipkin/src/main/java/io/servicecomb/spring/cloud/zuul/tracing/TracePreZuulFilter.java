@@ -18,29 +18,35 @@ package io.servicecomb.spring.cloud.zuul.tracing;
 
 import static io.servicecomb.core.Const.CSE_CONTEXT;
 
+import java.lang.invoke.MethodHandles;
+
+import javax.servlet.http.HttpServletResponse;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.netflix.zuul.ExecutionStatus;
+import com.netflix.zuul.ZuulFilter;
+import com.netflix.zuul.ZuulFilterResult;
+import com.netflix.zuul.context.RequestContext;
+
 import brave.Span;
 import brave.Tracer;
 import brave.Tracer.SpanInScope;
 import brave.http.HttpClientHandler;
 import brave.http.HttpTracing;
 import brave.propagation.TraceContext.Injector;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.netflix.zuul.ExecutionStatus;
-import com.netflix.zuul.ZuulFilter;
-import com.netflix.zuul.ZuulFilterResult;
-import com.netflix.zuul.context.RequestContext;
 import io.servicecomb.foundation.common.utils.JsonUtils;
-import java.lang.invoke.MethodHandles;
-import javax.servlet.http.HttpServletResponse;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 class TracePreZuulFilter extends ZuulFilter {
 
   private static final Logger log = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   private final Tracer tracer;
+
   private final HttpClientHandler<RequestContext, HttpServletResponse> clientHandler;
+
   private final Injector<RequestContext> injector;
 
   TracePreZuulFilter(
@@ -105,5 +111,4 @@ class TracePreZuulFilter extends ZuulFilter {
   public int filterOrder() {
     return Integer.MAX_VALUE;
   }
-
 }

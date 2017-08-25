@@ -17,28 +17,28 @@
 package io.servicecomb.demo.smartcare;
 
 public class Response {
-    private int resultCode;
+  private int resultCode;
 
-    private String resultMessage;
+  private String resultMessage;
 
-    public int getResultCode() {
-        return resultCode;
-    }
+  public int getResultCode() {
+    return resultCode;
+  }
 
-    public void setResultCode(int resultCode) {
-        this.resultCode = resultCode;
-    }
+  public void setResultCode(int resultCode) {
+    this.resultCode = resultCode;
+  }
 
-    public String getResultMessage() {
-        return resultMessage;
-    }
+  public String getResultMessage() {
+    return resultMessage;
+  }
 
-    public void setResultMessage(String resultMessage) {
-        this.resultMessage = resultMessage;
-    }
+  public void setResultMessage(String resultMessage) {
+    this.resultMessage = resultMessage;
+  }
 
-    @Override
-    public String toString() {
-        return "resultCode: " + resultCode + "\n" + "resultMessage: " + resultMessage;
-    }
+  @Override
+  public String toString() {
+    return "resultCode: " + resultCode + "\n" + "resultMessage: " + resultMessage;
+  }
 }

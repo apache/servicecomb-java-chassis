@@ -25,79 +25,79 @@ import com.fasterxml.jackson.databind.type.TypeFactory;
 
 public class ClassConfig {
 
-    private String className;
+  private String className;
 
-    private boolean intf;
+  private boolean intf;
 
-    private List<String> intfList = new ArrayList<>();
+  private List<String> intfList = new ArrayList<>();
 
-    private List<FieldConfig> fieldList = new ArrayList<>();
+  private List<FieldConfig> fieldList = new ArrayList<>();
 
-    private List<MethodConfig> methodList = new ArrayList<>();
+  private List<MethodConfig> methodList = new ArrayList<>();
 
-    public boolean isIntf() {
-        return intf;
-    }
+  public boolean isIntf() {
+    return intf;
+  }
 
-    public void setIntf(boolean intf) {
-        this.intf = intf;
-    }
+  public void setIntf(boolean intf) {
+    this.intf = intf;
+  }
 
-    public String getClassName() {
-        return className;
-    }
+  public String getClassName() {
+    return className;
+  }
 
-    public void setClassName(String className) {
-        this.className = className;
-    }
+  public void setClassName(String className) {
+    this.className = className;
+  }
 
-    public void addInterface(Class<?> intf) {
-        addInterface(intf.getName());
-    }
+  public void addInterface(Class<?> intf) {
+    addInterface(intf.getName());
+  }
 
-    public void addInterface(String intf) {
-        intfList.add(intf);
-    }
+  public void addInterface(String intf) {
+    intfList.add(intf);
+  }
 
-    public List<String> getIntfList() {
-        return intfList;
-    }
+  public List<String> getIntfList() {
+    return intfList;
+  }
 
-    public List<FieldConfig> getFieldList() {
-        return fieldList;
-    }
+  public List<FieldConfig> getFieldList() {
+    return fieldList;
+  }
 
-    public FieldConfig addField(String name, Type genericType) {
-        return addField(name, TypeFactory.defaultInstance().constructType(genericType));
-    }
+  public FieldConfig addField(String name, Type genericType) {
+    return addField(name, TypeFactory.defaultInstance().constructType(genericType));
+  }
 
-    public FieldConfig addField(String name, JavaType javaType) {
-        FieldConfig field = new FieldConfig();
-        field.setName(name);
-        field.setType(javaType);
+  public FieldConfig addField(String name, JavaType javaType) {
+    FieldConfig field = new FieldConfig();
+    field.setName(name);
+    field.setType(javaType);
 
-        fieldList.add(field);
+    fieldList.add(field);
 
-        return field;
-    }
+    return field;
+  }
 
-    public void addMethod(MethodConfig methodConfig) {
-        methodConfig.init();
-        methodList.add(methodConfig);
-    }
+  public void addMethod(MethodConfig methodConfig) {
+    methodConfig.init();
+    methodList.add(methodConfig);
+  }
 
-    public void addMethod(String source) {
-        addMethod(source, null);
-    }
+  public void addMethod(String source) {
+    addMethod(source, null);
+  }
 
-    public void addMethod(String source, String genericSignature) {
-        MethodConfig methodConfig = new MethodConfig();
-        methodConfig.setSource(source);
-        methodConfig.setGenericSignature(genericSignature);
-        addMethod(methodConfig);
-    }
+  public void addMethod(String source, String genericSignature) {
+    MethodConfig methodConfig = new MethodConfig();
+    methodConfig.setSource(source);
+    methodConfig.setGenericSignature(genericSignature);
+    addMethod(methodConfig);
+  }
 
-    public List<MethodConfig> getMethodList() {
-        return methodList;
-    }
+  public List<MethodConfig> getMethodList() {
+    return methodList;
+  }
 }

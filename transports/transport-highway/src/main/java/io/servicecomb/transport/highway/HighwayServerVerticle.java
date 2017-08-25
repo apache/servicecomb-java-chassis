@@ -24,56 +24,55 @@ import org.slf4j.LoggerFactory;
 import io.servicecomb.core.Endpoint;
 import io.servicecomb.core.transport.AbstractTransport;
 import io.servicecomb.foundation.common.net.URIEndpointObject;
-
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Context;
 import io.vertx.core.Future;
 import io.vertx.core.Vertx;
 
 public class HighwayServerVerticle extends AbstractVerticle {
-    private static final Logger LOGGER = LoggerFactory.getLogger(HighwayServerVerticle.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(HighwayServerVerticle.class);
 
-    public static final String SSL_KEY = "highway.provider";
+  public static final String SSL_KEY = "highway.provider";
 
-    private Endpoint endpoint;
+  private Endpoint endpoint;
 
-    private URIEndpointObject endpointObject;
+  private URIEndpointObject endpointObject;
 
-    @Override
-    public void init(Vertx vertx, Context context) {
-        super.init(vertx, context);
-        this.endpoint = (Endpoint) context.config().getValue(AbstractTransport.ENDPOINT_KEY);
-        this.endpointObject = (URIEndpointObject) this.endpoint.getAddress();
+  @Override
+  public void init(Vertx vertx, Context context) {
+    super.init(vertx, context);
+    this.endpoint = (Endpoint) context.config().getValue(AbstractTransport.ENDPOINT_KEY);
+    this.endpointObject = (URIEndpointObject) this.endpoint.getAddress();
+  }
+
+  @Override
+  public void start(Future<Void> startFuture) throws Exception {
+    super.start();
+
+    startListen(startFuture);
+  }
+
+  protected void startListen(Future<Void> startFuture) {
+    // 如果本地未配置地址，则表示不必监听，只需要作为客户端使用即可
+    if (endpointObject == null) {
+      LOGGER.warn("highway listen address is not configured, will not listen.");
+      startFuture.complete();
+      return;
     }
 
-    @Override
-    public void start(Future<Void> startFuture) throws Exception {
-        super.start();
+    HighwayServer server = new HighwayServer(endpointObject);
+    server.init(vertx, SSL_KEY, ar -> {
+      if (ar.succeeded()) {
+        InetSocketAddress socketAddress = ar.result();
+        LOGGER.info("highway listen success. address={}:{}",
+            socketAddress.getHostString(),
+            socketAddress.getPort());
+        startFuture.complete();
+        return;
+      }
 
-        startListen(startFuture);
-    }
-
-    protected void startListen(Future<Void> startFuture) {
-        // 如果本地未配置地址，则表示不必监听，只需要作为客户端使用即可
-        if (endpointObject == null) {
-            LOGGER.warn("highway listen address is not configured, will not listen.");
-            startFuture.complete();
-            return;
-        }
-
-        HighwayServer server = new HighwayServer(endpointObject);
-        server.init(vertx, SSL_KEY, ar -> {
-            if (ar.succeeded()) {
-                InetSocketAddress socketAddress = ar.result();
-                LOGGER.info("highway listen success. address={}:{}",
-                        socketAddress.getHostString(),
-                        socketAddress.getPort());
-                startFuture.complete();
-                return;
-            }
-
-            LOGGER.error(HighwayTransport.NAME, ar.cause());
-            startFuture.fail(ar.cause());
-        });
-    }
+      LOGGER.error(HighwayTransport.NAME, ar.cause());
+      startFuture.fail(ar.cause());
+    });
+  }
 }

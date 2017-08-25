@@ -23,30 +23,30 @@ import io.vertx.core.net.NetSocket;
 import io.vertx.core.net.impl.NetSocketImpl;
 
 public class TcpServerConnection extends TcpConnection {
-    private static final Logger LOGGER = LoggerFactory.getLogger(TcpServerConnection.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(TcpServerConnection.class);
 
-    protected TcpParser splitter;
+  protected TcpParser splitter;
 
-    public void init(NetSocket netSocket) {
-        // currently, socket always be NetSocketImpl
-        this.initNetSocket((NetSocketImpl) netSocket);
+  public void init(NetSocket netSocket) {
+    // currently, socket always be NetSocketImpl
+    this.initNetSocket((NetSocketImpl) netSocket);
 
-        String remoteAddress = netSocket.remoteAddress().toString();
-        LOGGER.info("connect from {}, in thread {}",
-                remoteAddress,
-                Thread.currentThread().getName());
-        netSocket.exceptionHandler(e -> {
-            LOGGER.error("disconected from {}, in thread {}, cause {}",
-                    remoteAddress,
-                    Thread.currentThread().getName(),
-                    e.getMessage());
-        });
-        netSocket.closeHandler(Void -> {
-            LOGGER.error("disconected from {}, in thread {}",
-                    remoteAddress,
-                    Thread.currentThread().getName());
-        });
+    String remoteAddress = netSocket.remoteAddress().toString();
+    LOGGER.info("connect from {}, in thread {}",
+        remoteAddress,
+        Thread.currentThread().getName());
+    netSocket.exceptionHandler(e -> {
+      LOGGER.error("disconected from {}, in thread {}, cause {}",
+          remoteAddress,
+          Thread.currentThread().getName(),
+          e.getMessage());
+    });
+    netSocket.closeHandler(Void -> {
+      LOGGER.error("disconected from {}, in thread {}",
+          remoteAddress,
+          Thread.currentThread().getName());
+    });
 
-        netSocket.handler(splitter);
-    }
+    netSocket.handler(splitter);
+  }
 }

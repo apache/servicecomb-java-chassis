@@ -20,18 +20,18 @@ import com.netflix.config.DynamicIntProperty;
 import com.netflix.config.DynamicPropertyFactory;
 
 public final class TransportClientConfig {
-    private TransportClientConfig() {
-    }
+  private TransportClientConfig() {
+  }
 
-    public static int getThreadCount() {
-        DynamicIntProperty address =
-            DynamicPropertyFactory.getInstance().getIntProperty("cse.rest.client.thread-count", 1);
-        return address.get();
-    }
+  public static int getThreadCount() {
+    DynamicIntProperty address =
+        DynamicPropertyFactory.getInstance().getIntProperty("cse.rest.client.thread-count", 1);
+    return address.get();
+  }
 
-    public static int getConnectionPoolPerThread() {
-        DynamicIntProperty address =
-            DynamicPropertyFactory.getInstance().getIntProperty("cse.rest.client.connection-pool-per-thread", 1);
-        return address.get();
-    }
+  public static int getConnectionPoolPerThread() {
+    DynamicIntProperty address =
+        DynamicPropertyFactory.getInstance().getIntProperty("cse.rest.client.connection-pool-per-thread", 1);
+    return address.get();
+  }
 }

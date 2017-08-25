@@ -21,7 +21,7 @@ import com.fasterxml.jackson.databind.JavaType;
 import io.swagger.models.Swagger;
 
 public interface Converter {
-    // def可能是property或model
-    // def不可能为null
-    JavaType convert(ClassLoader classLoader, String packageName, Swagger swagger, Object def);
+  // def可能是property或model
+  // def不可能为null
+  JavaType convert(ClassLoader classLoader, String packageName, Swagger swagger, Object def);
 }

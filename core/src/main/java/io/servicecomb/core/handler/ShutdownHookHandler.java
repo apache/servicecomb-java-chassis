@@ -19,82 +19,81 @@ package io.servicecomb.core.handler;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import io.servicecomb.core.Invocation;
 import io.servicecomb.core.handler.impl.AbstractHandler;
 import io.servicecomb.swagger.invocation.AsyncResponse;
 import io.servicecomb.swagger.invocation.Response;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 /**
  * 实现调用链的优雅停止： 当调用链没有返回的时候，等待返回或者超时
  */
 public final class ShutdownHookHandler extends AbstractHandler implements Runnable {
-    private static final Logger LOG = LoggerFactory.getLogger(ShutdownHookHandler.class);
+  private static final Logger LOG = LoggerFactory.getLogger(ShutdownHookHandler.class);
 
-    public static final ShutdownHookHandler INSTANCE = new ShutdownHookHandler();
+  public static final ShutdownHookHandler INSTANCE = new ShutdownHookHandler();
 
-    private final AtomicLong requestCounter = new AtomicLong(0);
+  private final AtomicLong requestCounter = new AtomicLong(0);
 
-    private final AtomicLong responseCounter = new AtomicLong(0);
+  private final AtomicLong responseCounter = new AtomicLong(0);
 
-    private final int timeout = 600;
+  private final int timeout = 600;
 
-    private final int period = 10;
+  private final int period = 10;
 
-    private volatile boolean shuttingDown = false;
+  private volatile boolean shuttingDown = false;
 
-    private ShutdownHookHandler() {
-        Runtime.getRuntime().addShutdownHook(new Thread(this));
+  private ShutdownHookHandler() {
+    Runtime.getRuntime().addShutdownHook(new Thread(this));
+  }
+
+  public long getActiveCount() {
+    return requestCounter.get() - responseCounter.get();
+  }
+
+  @Override
+  public void handle(Invocation invocation, AsyncResponse asyncResp) throws Exception {
+    if (shuttingDown) {
+      asyncResp.handle(Response.createFail(invocation.getInvocationType(),
+          "shutting down in progress"));
+      return;
     }
 
-    public long getActiveCount() {
-        return requestCounter.get() - responseCounter.get();
-    }
-
-    @Override
-    public void handle(Invocation invocation, AsyncResponse asyncResp) throws Exception {
-        if (shuttingDown) {
-            asyncResp.handle(Response.createFail(invocation.getInvocationType(),
-                    "shutting down in progress"));
-            return;
-        }
-
-        // TODO:统计功能应该独立出来，在链中统计，会有各种bug
-        //      下面的两次catch，可能会导致一次请求，对应2次应答
-        requestCounter.incrementAndGet();
+    // TODO:统计功能应该独立出来，在链中统计，会有各种bug
+    //      下面的两次catch，可能会导致一次请求，对应2次应答
+    requestCounter.incrementAndGet();
+    try {
+      invocation.next(resp -> {
         try {
-            invocation.next(resp -> {
-                try {
-                    asyncResp.handle(resp);
-                    responseCounter.incrementAndGet();
-                } catch (Throwable e) {
-                    responseCounter.incrementAndGet();
-                    throw e;
-                }
-            });
+          asyncResp.handle(resp);
+          responseCounter.incrementAndGet();
         } catch (Throwable e) {
-            responseCounter.incrementAndGet();
-            throw e;
+          responseCounter.incrementAndGet();
+          throw e;
         }
+      });
+    } catch (Throwable e) {
+      responseCounter.incrementAndGet();
+      throw e;
     }
+  }
 
-    @Override
-    public void run() {
-        shuttingDown = true;
-        LOG.warn("handler chain is shutting down");
-        int time = 0;
-        while (getActiveCount() != 0 && time <= timeout) {
-            try {
-                TimeUnit.SECONDS.sleep(period);
-            } catch (InterruptedException e) {
-                LOG.warn(e.getMessage());
-            }
-            time = time + period;
-            LOG.warn("waiting invocation to finish in seconds " + time);
-        }
-        LOG.warn("handler chain is shut down");
+  @Override
+  public void run() {
+    shuttingDown = true;
+    LOG.warn("handler chain is shutting down");
+    int time = 0;
+    while (getActiveCount() != 0 && time <= timeout) {
+      try {
+        TimeUnit.SECONDS.sleep(period);
+      } catch (InterruptedException e) {
+        LOG.warn(e.getMessage());
+      }
+      time = time + period;
+      LOG.warn("waiting invocation to finish in seconds " + time);
     }
-
+    LOG.warn("handler chain is shut down");
+  }
 }

@@ -25,28 +25,28 @@ import io.servicecomb.provider.pojo.PersonReference;
 import mockit.Injectable;
 
 public class TestRpcReferenceProcessor {
-    @Test
-    public void testReference(@Injectable ApplicationContext applicationContext) throws Exception {
-        PersonReference bean = new PersonReference();
+  @Test
+  public void testReference(@Injectable ApplicationContext applicationContext) throws Exception {
+    PersonReference bean = new PersonReference();
 
-        Assert.assertNull(bean.person);
+    Assert.assertNull(bean.person);
 
-        RpcReferenceProcessor consumers = new RpcReferenceProcessor();
-        consumers.setEmbeddedValueResolver((strVal) -> strVal);
-        consumers.processConsumerField(applicationContext, bean, bean.getClass().getField("person"));
+    RpcReferenceProcessor consumers = new RpcReferenceProcessor();
+    consumers.setEmbeddedValueResolver((strVal) -> strVal);
+    consumers.processConsumerField(applicationContext, bean, bean.getClass().getField("person"));
 
-        Assert.assertNotNull(bean.person);
-    }
+    Assert.assertNotNull(bean.person);
+  }
 
-    @Test
-    public void testNoReference(@Injectable ApplicationContext applicationContext) throws Exception {
-        Person bean = new Person();
+  @Test
+  public void testNoReference(@Injectable ApplicationContext applicationContext) throws Exception {
+    Person bean = new Person();
 
-        Assert.assertNull(bean.name);
+    Assert.assertNull(bean.name);
 
-        RpcReferenceProcessor consumers = new RpcReferenceProcessor();
-        consumers.processConsumerField(applicationContext, bean, bean.getClass().getField("name"));
+    RpcReferenceProcessor consumers = new RpcReferenceProcessor();
+    consumers.processConsumerField(applicationContext, bean, bean.getClass().getField("name"));
 
-        Assert.assertNull(bean.name);
-    }
+    Assert.assertNull(bean.name);
+  }
 }

@@ -22,16 +22,16 @@ import io.servicecomb.foundation.common.utils.BeanUtils;
 import io.servicecomb.foundation.common.utils.Log4jUtils;
 
 public class MultipleClient {
-    public static void main(String[] args) throws Exception {
-        Log4jUtils.init();
-        BeanUtils.init();
+  public static void main(String[] args) throws Exception {
+    Log4jUtils.init();
+    BeanUtils.init();
 
-        AClient aClient = BeanUtils.getContext().getBean(AClient.class);
-        BClient bClient = BeanUtils.getContext().getBean(BClient.class);
+    AClient aClient = BeanUtils.getContext().getBean(AClient.class);
+    BClient bClient = BeanUtils.getContext().getBean(BClient.class);
 
-        aClient.run();
-        bClient.run();
+    aClient.run();
+    bClient.run();
 
-        TestMgr.summary();
-    }
+    TestMgr.summary();
+  }
 }

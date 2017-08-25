@@ -20,43 +20,41 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Executor;
 
-import io.servicecomb.core.executor.ReactiveExecutor;
 import org.junit.Assert;
 import org.junit.Test;
 
 import io.servicecomb.core.executor.FixedThreadExecutor;
-
+import io.servicecomb.core.executor.ReactiveExecutor;
 import mockit.Deencapsulation;
 
 public class TestExecutors {
 
-    String strThreadTest = "default";
+  String strThreadTest = "default";
 
-    @Test
-    public void testFixedThreadExecutor() {
-        FixedThreadExecutor oFixedThreadExecutor = new FixedThreadExecutor();
-        oFixedThreadExecutor.execute(new Runnable() {
+  @Test
+  public void testFixedThreadExecutor() {
+    FixedThreadExecutor oFixedThreadExecutor = new FixedThreadExecutor();
+    oFixedThreadExecutor.execute(new Runnable() {
 
-            @Override
-            public void run() {
+      @Override
+      public void run() {
 
-            }
-        });
-        Map<Long, Executor> threadExectorMap = Deencapsulation.getField(oFixedThreadExecutor, "threadExectorMap");
-        Assert.assertEquals(true, (threadExectorMap.size() > 0));
+      }
+    });
+    Map<Long, Executor> threadExectorMap = Deencapsulation.getField(oFixedThreadExecutor, "threadExectorMap");
+    Assert.assertEquals(true, (threadExectorMap.size() > 0));
 
-        List<Executor> executorList = Deencapsulation.getField(oFixedThreadExecutor, "executorList");
-        Assert.assertEquals(true, (executorList.size() > 1));
+    List<Executor> executorList = Deencapsulation.getField(oFixedThreadExecutor, "executorList");
+    Assert.assertEquals(true, (executorList.size() > 1));
 
-        ReactiveExecutor oReactiveExecutor = new ReactiveExecutor();
-        oReactiveExecutor.execute(new Runnable() {
+    ReactiveExecutor oReactiveExecutor = new ReactiveExecutor();
+    oReactiveExecutor.execute(new Runnable() {
 
-            @Override
-            public void run() {
-                strThreadTest = "thread Ran";
-            }
-        });
-        Assert.assertEquals("thread Ran", strThreadTest);
-
-    }
+      @Override
+      public void run() {
+        strThreadTest = "thread Ran";
+      }
+    });
+    Assert.assertEquals("thread Ran", strThreadTest);
+  }
 }

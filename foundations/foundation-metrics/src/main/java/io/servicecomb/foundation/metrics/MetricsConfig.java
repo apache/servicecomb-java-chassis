@@ -22,25 +22,24 @@ import com.netflix.config.DynamicPropertyFactory;
 
 public class MetricsConfig implements InitializingBean {
 
-    private static final int DEFAULT_METRICS_CYCLE = 60000;
+  private static final int DEFAULT_METRICS_CYCLE = 60000;
 
-    public static int getMsCycle() {
-        return DynamicPropertyFactory.getInstance()
-                .getIntProperty("cse.metrics.cycle.ms", DEFAULT_METRICS_CYCLE)
-                .get();
+  public static int getMsCycle() {
+    return DynamicPropertyFactory.getInstance()
+        .getIntProperty("cse.metrics.cycle.ms", DEFAULT_METRICS_CYCLE)
+        .get();
+  }
+
+  public static boolean isEnable() {
+    return DynamicPropertyFactory.getInstance().getBooleanProperty("cse.metrics.enabled", true).get();
+  }
+
+  @Override
+  public void afterPropertiesSet() throws Exception {
+    if (!isEnable()) {
+      return;
     }
 
-    public static boolean isEnable() {
-        return DynamicPropertyFactory.getInstance().getBooleanProperty("cse.metrics.enabled", true).get();
-    }
-
-    @Override
-    public void afterPropertiesSet() throws Exception {
-        if (!isEnable()) {
-            return;
-        }
-
-        new MetricsThread().start();
-    }
-
+    new MetricsThread().start();
+  }
 }

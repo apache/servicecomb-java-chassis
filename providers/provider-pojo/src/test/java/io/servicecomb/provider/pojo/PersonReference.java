@@ -17,6 +17,6 @@
 package io.servicecomb.provider.pojo;
 
 public class PersonReference {
-    @RpcReference(microserviceName="test", schemaId="test")
-    public IPerson person;
+  @RpcReference(microserviceName = "test", schemaId = "test")
+  public IPerson person;
 }

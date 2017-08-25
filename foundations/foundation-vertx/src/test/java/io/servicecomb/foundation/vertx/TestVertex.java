@@ -28,46 +28,45 @@ import io.vertx.core.VertxOptions;
 import io.vertx.core.json.JsonObject;
 
 public class TestVertex {
-    @Test
-    public void testGetOrCreateVertx() throws InterruptedException {
-        Vertx vertx = VertxUtils.getOrCreateVertxByName("ut", null);
+  @Test
+  public void testGetOrCreateVertx() throws InterruptedException {
+    Vertx vertx = VertxUtils.getOrCreateVertxByName("ut", null);
 
-        Holder<String> name = new Holder<>();
-        CountDownLatch latch = new CountDownLatch(1);
-        vertx.runOnContext(v -> {
-            name.value = Thread.currentThread().getName();
-            latch.countDown();
-        });
-        latch.await();
+    Holder<String> name = new Holder<>();
+    CountDownLatch latch = new CountDownLatch(1);
+    vertx.runOnContext(v -> {
+      name.value = Thread.currentThread().getName();
+      latch.countDown();
+    });
+    latch.await();
 
-        Assert.assertEquals(name.value, "ut-vert.x-eventloop-thread-0");
-        vertx.close();
-    }
+    Assert.assertEquals(name.value, "ut-vert.x-eventloop-thread-0");
+    vertx.close();
+  }
 
-    @Test
-    public void testVertxUtilsInitNullOptions() {
-        Vertx vertx = VertxUtils.init(null);
-        Assert.assertNotEquals(null, vertx);
-        vertx.close();
-    }
+  @Test
+  public void testVertxUtilsInitNullOptions() {
+    Vertx vertx = VertxUtils.init(null);
+    Assert.assertNotEquals(null, vertx);
+    vertx.close();
+  }
 
-    @Test
-    public void testVertxUtilsInitWithOptions() {
-        VertxOptions oOptions = new VertxOptions();
-        oOptions.setClustered(false);
+  @Test
+  public void testVertxUtilsInitWithOptions() {
+    VertxOptions oOptions = new VertxOptions();
+    oOptions.setClustered(false);
 
-        Vertx vertx = VertxUtils.init(oOptions);
-        Assert.assertNotEquals(null, vertx);
-        vertx.close();
-    }
+    Vertx vertx = VertxUtils.init(oOptions);
+    Assert.assertNotEquals(null, vertx);
+    vertx.close();
+  }
 
-    @Test
-    public void testSimpleJsonObject() {
-        SimpleJsonObject oObject = new SimpleJsonObject();
-        JsonObject oJsonObject = oObject.put("testKey", oObject);
-        Assert.assertEquals(true, oJsonObject.containsKey("testKey"));
-        JsonObject oCopyObject = oObject.copy();
-        Assert.assertEquals(true, oCopyObject.containsKey("testKey"));
-    }
-
+  @Test
+  public void testSimpleJsonObject() {
+    SimpleJsonObject oObject = new SimpleJsonObject();
+    JsonObject oJsonObject = oObject.put("testKey", oObject);
+    Assert.assertEquals(true, oJsonObject.containsKey("testKey"));
+    JsonObject oCopyObject = oObject.copy();
+    Assert.assertEquals(true, oCopyObject.containsKey("testKey"));
+  }
 }

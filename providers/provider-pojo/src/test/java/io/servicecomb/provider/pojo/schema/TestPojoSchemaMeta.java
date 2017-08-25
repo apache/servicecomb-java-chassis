@@ -26,42 +26,41 @@ import mockit.Mocked;
 
 public class TestPojoSchemaMeta {
 
-    PojoProducerMeta lPojoSchemaMeta = null;
+  PojoProducerMeta lPojoSchemaMeta = null;
 
-    @Before
-    public void setUp()
-        throws Exception {
-        lPojoSchemaMeta = new PojoProducerMeta();
-    }
+  @Before
+  public void setUp()
+      throws Exception {
+    lPojoSchemaMeta = new PojoProducerMeta();
+  }
 
-    @After
-    public void tearDown()
-        throws Exception {
-        lPojoSchemaMeta = null;
-    }
+  @After
+  public void tearDown()
+      throws Exception {
+    lPojoSchemaMeta = null;
+  }
 
-    @Test
-    public void testGetImplementation(@Mocked PojoProducers producers)
-        throws Exception {
-        lPojoSchemaMeta.setImplementation("implementation");
-        Deencapsulation.setField(lPojoSchemaMeta, "pojoProducers", producers);
-        lPojoSchemaMeta.afterPropertiesSet();
-        Assert.assertEquals("implementation", lPojoSchemaMeta.getImplementation());
-    }
+  @Test
+  public void testGetImplementation(@Mocked PojoProducers producers)
+      throws Exception {
+    lPojoSchemaMeta.setImplementation("implementation");
+    Deencapsulation.setField(lPojoSchemaMeta, "pojoProducers", producers);
+    lPojoSchemaMeta.afterPropertiesSet();
+    Assert.assertEquals("implementation", lPojoSchemaMeta.getImplementation());
+  }
 
-    @Test
-    public void testGetInstance()
-        throws Exception {
-        Object lObject = new Object();
-        lPojoSchemaMeta.setInstance(lObject);
-        Assert.assertEquals(lObject, lPojoSchemaMeta.getInstance());
-    }
+  @Test
+  public void testGetInstance()
+      throws Exception {
+    Object lObject = new Object();
+    lPojoSchemaMeta.setInstance(lObject);
+    Assert.assertEquals(lObject, lPojoSchemaMeta.getInstance());
+  }
 
-    @Test
-    public void testGetSchemaId()
-        throws Exception {
-        lPojoSchemaMeta.setSchemaId("schemaId");
-        Assert.assertEquals("schemaId", lPojoSchemaMeta.getSchemaId());
-    }
-
+  @Test
+  public void testGetSchemaId()
+      throws Exception {
+    lPojoSchemaMeta.setSchemaId("schemaId");
+    Assert.assertEquals("schemaId", lPojoSchemaMeta.getSchemaId());
+  }
 }

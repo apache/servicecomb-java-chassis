@@ -32,91 +32,91 @@ import io.vertx.core.buffer.Buffer;
 import io.vertx.core.net.NetSocket;
 
 public class HighwayServerConnection extends TcpServerConnection implements TcpBufferHandler {
-    private static final Logger LOGGER = LoggerFactory.getLogger(HighwayServerConnection.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(HighwayServerConnection.class);
 
-    private ProtobufFeature protobufFeature = new ProtobufFeature();
+  private ProtobufFeature protobufFeature = new ProtobufFeature();
 
-    @Override
-    public void init(NetSocket netSocket) {
-        splitter = new TcpParser(this);
-        super.init(netSocket);
+  @Override
+  public void init(NetSocket netSocket) {
+    splitter = new TcpParser(this);
+    super.init(netSocket);
+  }
+
+  @Override
+  public void handle(long msgId, Buffer headerBuffer, Buffer bodyBuffer) {
+    RequestHeader requestHeader = decodeRequestHeader(msgId, headerBuffer);
+    if (requestHeader == null) {
+      return;
     }
 
-    @Override
-    public void handle(long msgId, Buffer headerBuffer, Buffer bodyBuffer) {
-        RequestHeader requestHeader = decodeRequestHeader(msgId, headerBuffer);
-        if (requestHeader == null) {
-            return;
-        }
+    switch (requestHeader.getMsgType()) {
+      case MsgType.REQUEST:
+        onRequest(msgId, requestHeader, bodyBuffer);
+        break;
+      case MsgType.LOGIN:
+        onLogin(msgId, requestHeader, bodyBuffer);
+        break;
 
-        switch (requestHeader.getMsgType()) {
-            case MsgType.REQUEST:
-                onRequest(msgId, requestHeader, bodyBuffer);
-                break;
-            case MsgType.LOGIN:
-                onLogin(msgId, requestHeader, bodyBuffer);
-                break;
+      default:
+        throw new Error("Unknown tcp msgType " + requestHeader.getMsgType());
+    }
+  }
 
-            default:
-                throw new Error("Unknown tcp msgType " + requestHeader.getMsgType());
-        }
+  protected RequestHeader decodeRequestHeader(long msgId, Buffer headerBuffer) {
+    RequestHeader requestHeader = null;
+    try {
+      requestHeader = HighwayCodec.readRequestHeader(headerBuffer, protobufFeature);
+    } catch (Exception e) {
+      String msg = String.format("decode request header error, msgId=%d",
+          msgId);
+      LOGGER.error(msg, e);
+
+      netSocket.close();
+      return null;
     }
 
-    protected RequestHeader decodeRequestHeader(long msgId, Buffer headerBuffer) {
-        RequestHeader requestHeader = null;
-        try {
-            requestHeader = HighwayCodec.readRequestHeader(headerBuffer, protobufFeature);
-        } catch (Exception e) {
-            String msg = String.format("decode request header error, msgId=%d",
-                    msgId);
-            LOGGER.error(msg, e);
+    return requestHeader;
+  }
 
-            netSocket.close();
-            return null;
-        }
-
-        return requestHeader;
+  protected void onLogin(long msgId, RequestHeader header, Buffer bodyBuffer) {
+    LoginRequest request = null;
+    try {
+      request = LoginRequest.readObject(bodyBuffer);
+    } catch (Exception e) {
+      String msg = String.format("decode setParameter error, msgId=%d",
+          msgId);
+      LOGGER.error(msg, e);
+      netSocket.close();
+      return;
     }
 
-    protected void onLogin(long msgId, RequestHeader header, Buffer bodyBuffer) {
-        LoginRequest request = null;
-        try {
-            request = LoginRequest.readObject(bodyBuffer);
-        } catch (Exception e) {
-            String msg = String.format("decode setParameter error, msgId=%d",
-                    msgId);
-            LOGGER.error(msg, e);
-            netSocket.close();
-            return;
-        }
-
-        if (request != null) {
-            this.setProtocol(request.getProtocol());
-            this.setZipName(request.getZipName());
-            this.protobufFeature.setUseProtobufMapCodec(request.isUseProtobufMapCodec());
-        }
-
-        try (HighwayOutputStream os = new HighwayOutputStream(msgId, protobufFeature)) {
-            ResponseHeader responseHeader = new ResponseHeader();
-            responseHeader.setStatusCode(Status.OK.getStatusCode());
-
-            LoginResponse response = new LoginResponse();
-            response.setUseProtobufMapCodec(protobufFeature.isUseProtobufMapCodec());
-
-            os.write(ResponseHeader.getResponseHeaderSchema(),
-                    responseHeader,
-                    LoginResponse.getLoginResponseSchema(),
-                    response);
-            netSocket.write(os.getBuffer());
-        } catch (Exception e) {
-            throw new Error("impossible.", e);
-        }
+    if (request != null) {
+      this.setProtocol(request.getProtocol());
+      this.setZipName(request.getZipName());
+      this.protobufFeature.setUseProtobufMapCodec(request.isUseProtobufMapCodec());
     }
 
-    protected void onRequest(long msgId, RequestHeader header, Buffer bodyBuffer) {
-        HighwayServerInvoke invoke = new HighwayServerInvoke(protobufFeature);
-        if (invoke.init(this, msgId, header, bodyBuffer)) {
-            invoke.execute();
-        }
+    try (HighwayOutputStream os = new HighwayOutputStream(msgId, protobufFeature)) {
+      ResponseHeader responseHeader = new ResponseHeader();
+      responseHeader.setStatusCode(Status.OK.getStatusCode());
+
+      LoginResponse response = new LoginResponse();
+      response.setUseProtobufMapCodec(protobufFeature.isUseProtobufMapCodec());
+
+      os.write(ResponseHeader.getResponseHeaderSchema(),
+          responseHeader,
+          LoginResponse.getLoginResponseSchema(),
+          response);
+      netSocket.write(os.getBuffer());
+    } catch (Exception e) {
+      throw new Error("impossible.", e);
     }
+  }
+
+  protected void onRequest(long msgId, RequestHeader header, Buffer bodyBuffer) {
+    HighwayServerInvoke invoke = new HighwayServerInvoke(protobufFeature);
+    if (invoke.init(this, msgId, header, bodyBuffer)) {
+      invoke.execute();
+    }
+  }
 }

@@ -22,22 +22,22 @@ import io.servicecomb.swagger.invocation.exception.ExceptionFactory;
 import io.servicecomb.swagger.invocation.exception.InvocationException;
 
 public class ProviderBizkeeperCommand extends BizkeeperCommand {
-    protected ProviderBizkeeperCommand(String type, Invocation invocation,
-            com.netflix.hystrix.HystrixObservableCommand.Setter setter) {
-        super(type, invocation, setter);
-    }
+  protected ProviderBizkeeperCommand(String type, Invocation invocation,
+      com.netflix.hystrix.HystrixObservableCommand.Setter setter) {
+    super(type, invocation, setter);
+  }
 
-    @Override
-    protected boolean isFailedResponse(Response resp) {
-        if (resp.isFailed()) {
-            if (InvocationException.class.isInstance(resp.getResult())) {
-                InvocationException e = (InvocationException) resp.getResult();
-                return e.getStatusCode() == ExceptionFactory.PRODUCER_INNER_STATUS_CODE;
-            } else {
-                return true;
-            }
-        } else {
-            return false;
-        }
+  @Override
+  protected boolean isFailedResponse(Response resp) {
+    if (resp.isFailed()) {
+      if (InvocationException.class.isInstance(resp.getResult())) {
+        InvocationException e = (InvocationException) resp.getResult();
+        return e.getStatusCode() == ExceptionFactory.PRODUCER_INNER_STATUS_CODE;
+      } else {
+        return true;
+      }
+    } else {
+      return false;
     }
+  }
 }

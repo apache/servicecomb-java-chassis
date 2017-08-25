@@ -27,7 +27,6 @@ import io.servicecomb.core.Transport;
 import io.servicecomb.core.transport.AbstractTransport;
 import io.servicecomb.core.transport.TransportManager;
 import io.servicecomb.foundation.common.net.URIEndpointObject;
-
 import io.vertx.core.Context;
 import io.vertx.core.Future;
 import io.vertx.core.Vertx;
@@ -37,99 +36,99 @@ import mockit.Mocked;
 
 public class TestRestServerVerticle {
 
-    private RestServerVerticle instance = null;
+  private RestServerVerticle instance = null;
 
-    Future<Void> startFuture = null;
+  Future<Void> startFuture = null;
 
-    @Before
-    public void setUp() throws Exception {
-        instance = new RestServerVerticle();
-        startFuture = Future.future();
+  @Before
+  public void setUp() throws Exception {
+    instance = new RestServerVerticle();
+    startFuture = Future.future();
 
-        CseContext.getInstance().setTransportManager(new TransportManager());
+    CseContext.getInstance().setTransportManager(new TransportManager());
+  }
+
+  @After
+  public void tearDown() throws Exception {
+    instance = null;
+    startFuture = null;
+  }
+
+  @Test
+  public void testRestServerVerticleWithRouter(@Mocked Transport transport, @Mocked Vertx vertx,
+      @Mocked Context context,
+      @Mocked JsonObject jsonObject, @Mocked Future<Void> startFuture) throws Exception {
+    URIEndpointObject endpointObject = new URIEndpointObject("http://127.0.0.1:8080");
+    new Expectations() {
+      {
+        transport.parseAddress("http://127.0.0.1:8080");
+        result = endpointObject;
+      }
+    };
+    Endpoint endpiont = new Endpoint(transport, "http://127.0.0.1:8080");
+
+    new Expectations() {
+      {
+        context.config();
+        result = jsonObject;
+        jsonObject.getValue(AbstractTransport.ENDPOINT_KEY);
+        result = endpiont;
+      }
+    };
+    RestServerVerticle server = new RestServerVerticle();
+    // process stuff done by Expectations
+    server.init(vertx, context);
+    server.start(startFuture);
+  }
+
+  @Test
+  public void testRestServerVerticleWithRouterSSL(@Mocked Transport transport, @Mocked Vertx vertx,
+      @Mocked Context context,
+      @Mocked JsonObject jsonObject, @Mocked Future<Void> startFuture) throws Exception {
+    URIEndpointObject endpointObject = new URIEndpointObject("http://127.0.0.1:8080?sslEnabled=true");
+    new Expectations() {
+      {
+        transport.parseAddress("http://127.0.0.1:8080?sslEnabled=true");
+        result = endpointObject;
+      }
+    };
+    Endpoint endpiont = new Endpoint(transport, "http://127.0.0.1:8080?sslEnabled=true");
+
+    new Expectations() {
+      {
+        context.config();
+        result = jsonObject;
+        jsonObject.getValue(AbstractTransport.ENDPOINT_KEY);
+        result = endpiont;
+      }
+    };
+    RestServerVerticle server = new RestServerVerticle();
+    // process stuff done by Expectations
+    server.init(vertx, context);
+    server.start(startFuture);
+  }
+
+  @Test
+  public void testStartFutureAddressEmpty() {
+    boolean status = false;
+    try {
+      instance.start(startFuture);
+    } catch (Exception ex) {
+      status = true;
     }
+    Assert.assertFalse(status);
+  }
 
-    @After
-    public void tearDown() throws Exception {
-        instance = null;
-        startFuture = null;
+  @Test
+  public void testStartFutureAddressNotEmpty() {
+    boolean status = false;
+    MockForRestServerVerticle.getInstance().mockTransportConfig();
+    MockForRestServerVerticle.getInstance().mockRestServerVerticle();
+    try {
+      instance.start(startFuture);
+    } catch (Exception ex) {
+      status = true;
     }
-
-    @Test
-    public void testRestServerVerticleWithRouter(@Mocked Transport transport, @Mocked Vertx vertx,
-            @Mocked Context context,
-            @Mocked JsonObject jsonObject, @Mocked Future<Void> startFuture) throws Exception {
-        URIEndpointObject endpointObject = new URIEndpointObject("http://127.0.0.1:8080");
-        new Expectations() {
-            {
-                transport.parseAddress("http://127.0.0.1:8080");
-                result = endpointObject;
-            }
-        };
-        Endpoint endpiont = new Endpoint(transport, "http://127.0.0.1:8080");
-
-        new Expectations() {
-            {
-                context.config();
-                result = jsonObject;
-                jsonObject.getValue(AbstractTransport.ENDPOINT_KEY);
-                result = endpiont;
-            }
-        };
-        RestServerVerticle server = new RestServerVerticle();
-        // process stuff done by Expectations
-        server.init(vertx, context);
-        server.start(startFuture);
-    }
-
-    @Test
-    public void testRestServerVerticleWithRouterSSL(@Mocked Transport transport, @Mocked Vertx vertx,
-            @Mocked Context context,
-            @Mocked JsonObject jsonObject, @Mocked Future<Void> startFuture) throws Exception {
-        URIEndpointObject endpointObject = new URIEndpointObject("http://127.0.0.1:8080?sslEnabled=true");
-        new Expectations() {
-            {
-                transport.parseAddress("http://127.0.0.1:8080?sslEnabled=true");
-                result = endpointObject;
-            }
-        };
-        Endpoint endpiont = new Endpoint(transport, "http://127.0.0.1:8080?sslEnabled=true");
-
-        new Expectations() {
-            {
-                context.config();
-                result = jsonObject;
-                jsonObject.getValue(AbstractTransport.ENDPOINT_KEY);
-                result = endpiont;
-            }
-        };
-        RestServerVerticle server = new RestServerVerticle();
-        // process stuff done by Expectations
-        server.init(vertx, context);
-        server.start(startFuture);
-    }
-
-    @Test
-    public void testStartFutureAddressEmpty() {
-        boolean status = false;
-        try {
-            instance.start(startFuture);
-        } catch (Exception ex) {
-            status = true;
-        }
-        Assert.assertFalse(status);
-    }
-
-    @Test
-    public void testStartFutureAddressNotEmpty() {
-        boolean status = false;
-        MockForRestServerVerticle.getInstance().mockTransportConfig();
-        MockForRestServerVerticle.getInstance().mockRestServerVerticle();
-        try {
-            instance.start(startFuture);
-        } catch (Exception ex) {
-            status = true;
-        }
-        Assert.assertFalse(status);
-    }
+    Assert.assertFalse(status);
+  }
 }

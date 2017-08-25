@@ -21,21 +21,22 @@ import java.lang.reflect.Type;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.type.TypeFactory;
 import com.fasterxml.jackson.dataformat.protobuf.schema.ProtobufSchema;
+
 import io.servicecomb.codec.protobuf.definition.ProtobufManager;
 import io.servicecomb.codec.protobuf.jackson.StandardObjectReader;
 import io.servicecomb.codec.protobuf.jackson.StandardObjectWriter;
 
 public class StandardParamCodec extends AbstractCodec {
-    @Override
-    public void init(ProtobufSchema schema, Type... types) {
-        writer = ProtobufManager.getMapper().writer(schema);
-        reader = ProtobufManager.getMapper().reader(schema);
+  @Override
+  public void init(ProtobufSchema schema, Type... types) {
+    writer = ProtobufManager.getMapper().writer(schema);
+    reader = ProtobufManager.getMapper().reader(schema);
 
-        // 需要考虑没参数的场景
-        if (types.length == 1) {
-            JavaType javaType = TypeFactory.defaultInstance().constructType(types[0]);
-            writer = new StandardObjectWriter(writer.forType(javaType));
-            reader = new StandardObjectReader(reader.forType(javaType));
-        }
+    // 需要考虑没参数的场景
+    if (types.length == 1) {
+      JavaType javaType = TypeFactory.defaultInstance().constructType(types[0]);
+      writer = new StandardObjectWriter(writer.forType(javaType));
+      reader = new StandardObjectReader(reader.forType(javaType));
     }
+  }
 }

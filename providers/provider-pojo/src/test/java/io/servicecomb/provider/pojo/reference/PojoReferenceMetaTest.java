@@ -26,38 +26,38 @@ import io.servicecomb.foundation.common.exceptions.ServiceCombException;
 import io.servicecomb.provider.pojo.IPerson;
 
 public class PojoReferenceMetaTest {
-    @Test
-    public void testHasConsumerInterface() {
-        PojoReferenceMeta pojoReferenceMeta = new PojoReferenceMeta();
-        pojoReferenceMeta.setMicroserviceName("test");
-        pojoReferenceMeta.setSchemaId("schemaId");
-        pojoReferenceMeta.setConsumerIntf(IPerson.class);
-        pojoReferenceMeta.afterPropertiesSet();
+  @Test
+  public void testHasConsumerInterface() {
+    PojoReferenceMeta pojoReferenceMeta = new PojoReferenceMeta();
+    pojoReferenceMeta.setMicroserviceName("test");
+    pojoReferenceMeta.setSchemaId("schemaId");
+    pojoReferenceMeta.setConsumerIntf(IPerson.class);
+    pojoReferenceMeta.afterPropertiesSet();
 
-        Assert.assertEquals(IPerson.class, pojoReferenceMeta.getObjectType());
-        assertThat(pojoReferenceMeta.getProxy(), instanceOf(IPerson.class));
-        Assert.assertEquals(true, pojoReferenceMeta.isSingleton());
+    Assert.assertEquals(IPerson.class, pojoReferenceMeta.getObjectType());
+    assertThat(pojoReferenceMeta.getProxy(), instanceOf(IPerson.class));
+    Assert.assertEquals(true, pojoReferenceMeta.isSingleton());
+  }
+
+  @Test
+  public void testNoConsumerInterface() {
+    PojoReferenceMeta pojoReferenceMeta = new PojoReferenceMeta();
+    pojoReferenceMeta.setMicroserviceName("test");
+    pojoReferenceMeta.setSchemaId("schemaId");
+
+    try {
+      pojoReferenceMeta.afterPropertiesSet();
+      Assert.fail("must throw exception");
+    } catch (ServiceCombException e) {
+      Assert.assertEquals(
+          "microserviceName=test, schemaid=schemaId, \n"
+              + "do not support implicit interface anymore, \n"
+              + "because that caused problems:\n"
+              + "  1.the startup process relies on other microservices\n"
+              + "  2.cyclic dependent microservices can not be deployed\n"
+              + "suggest to use @RpcReference or "
+              + "<cse:rpc-reference id=\"...\" microservice-name=\"...\" schema-id=\"...\" interface=\"...\"></cse:rpc-reference>.",
+          e.getMessage());
     }
-
-    @Test
-    public void testNoConsumerInterface() {
-        PojoReferenceMeta pojoReferenceMeta = new PojoReferenceMeta();
-        pojoReferenceMeta.setMicroserviceName("test");
-        pojoReferenceMeta.setSchemaId("schemaId");
-
-        try {
-            pojoReferenceMeta.afterPropertiesSet();
-            Assert.fail("must throw exception");
-        } catch (ServiceCombException e) {
-            Assert.assertEquals(
-                    "microserviceName=test, schemaid=schemaId, \n"
-                            + "do not support implicit interface anymore, \n"
-                            + "because that caused problems:\n"
-                            + "  1.the startup process relies on other microservices\n"
-                            + "  2.cyclic dependent microservices can not be deployed\n"
-                            + "suggest to use @RpcReference or "
-                            + "<cse:rpc-reference id=\"...\" microservice-name=\"...\" schema-id=\"...\" interface=\"...\"></cse:rpc-reference>.",
-                    e.getMessage());
-        }
-    }
+  }
 }

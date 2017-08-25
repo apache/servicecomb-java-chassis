@@ -27,153 +27,153 @@ import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ResponseHeader;
 
 public class Schema {
-    @ApiOperation(value = "", hidden = true)
-    public void hidden() {
+  @ApiOperation(value = "", hidden = true)
+  public void hidden() {
 
-    }
+  }
 
-    @ApiResponse(responseHeaders = {@ResponseHeader(name = "h", response = String.class)}, code = 200, message = "")
-    public void testApiResponse() {
+  @ApiResponse(responseHeaders = {@ResponseHeader(name = "h", response = String.class)}, code = 200, message = "")
+  public void testApiResponse() {
 
-    }
+  }
 
-    @ApiOperation(responseHeaders = {@ResponseHeader(name = "h", response = String.class)}, value = "")
-    public void testApiOperation() {
+  @ApiOperation(responseHeaders = {@ResponseHeader(name = "h", response = String.class)}, value = "")
+  public void testApiOperation() {
 
-    }
+  }
 
-    @ResponseHeader(name = "h", response = String.class)
-    public void testResponseHeader() {
+  @ResponseHeader(name = "h", response = String.class)
+  public void testResponseHeader() {
 
-    }
+  }
 
-    public void testboolean(boolean value) {
+  public void testboolean(boolean value) {
 
-    }
+  }
 
-    public void testBoolean(Boolean value) {
+  public void testBoolean(Boolean value) {
 
-    }
+  }
 
-    public void testbyte(byte value) {
+  public void testbyte(byte value) {
 
-    }
+  }
 
-    public void testByte(Byte value) {
+  public void testByte(Byte value) {
 
-    }
+  }
 
-    public void testshort(short value) {
+  public void testshort(short value) {
 
-    }
+  }
 
-    public void testShort(Short value) {
+  public void testShort(Short value) {
 
-    }
+  }
 
-    public void testint(int value) {
+  public void testint(int value) {
 
-    }
+  }
 
-    public void testInteger(Integer value) {
+  public void testInteger(Integer value) {
 
-    }
+  }
 
-    public void testlong(long value) {
+  public void testlong(long value) {
 
-    }
+  }
 
-    public void testLong(Long value) {
+  public void testLong(Long value) {
 
-    }
+  }
 
-    public void testfloat(float value) {
+  public void testfloat(float value) {
 
-    }
+  }
 
-    public void testFloat(Float value) {
+  public void testFloat(Float value) {
 
-    }
+  }
 
-    public void testdouble(double value) {
+  public void testdouble(double value) {
 
-    }
+  }
 
-    public void testDouble(Double value) {
+  public void testDouble(Double value) {
 
-    }
+  }
 
-    public void testEnum(Color color, Color color1) {
+  public void testEnum(Color color, Color color1) {
 
-    }
+  }
 
-    public void testchar(char value) {
+  public void testchar(char value) {
 
-    }
+  }
 
-    public void testChar(Character value) {
+  public void testChar(Character value) {
 
-    }
+  }
 
-    public void testbytes(byte[] value) {
+  public void testbytes(byte[] value) {
 
-    }
+  }
 
-    public void testBytes(Byte[] value) {
+  public void testBytes(Byte[] value) {
 
-    }
+  }
 
-    public void testString(String value) {
+  public void testString(String value) {
 
-    }
+  }
 
-    public void testObject(User user) {
+  public void testObject(User user) {
 
-    }
+  }
 
-    public void testArray(String[] value) {
+  public void testArray(String[] value) {
 
-    }
+  }
 
-    public void testSet(Set<String> value) {
+  public void testSet(Set<String> value) {
 
-    }
+  }
 
-    public void testList(List<User> value) {
+  public void testList(List<User> value) {
 
-    }
+  }
 
-    public void testMap(Map<String, User> value) {
+  public void testMap(Map<String, User> value) {
 
-    }
+  }
 
-    public Date testDate() {
-        return null;
-    }
+  public Date testDate() {
+    return null;
+  }
 
-    public void testMapList(Map<String, List<User>> value) {
+  public void testMapList(Map<String, List<User>> value) {
 
-    }
+  }
 
-    public void testAllType(AllType obj) {
-    }
+  public void testAllType(AllType obj) {
+  }
 
-    public List<String> testMultiParam(AllType obj,
-            boolean bValue,
-            byte byteValue,
-            short sValue,
-            int iValue,
-            long lValue,
-            float fValue,
-            double dValue,
-            Color enumValue,
-            char cValue,
-            byte[] bytes,
-            String strValue,
-            String[] strArray,
-            Set<String> set,
-            List<User> list,
-            Map<String, User> map) {
-        return Collections.emptyList();
-    }
+  public List<String> testMultiParam(AllType obj,
+      boolean bValue,
+      byte byteValue,
+      short sValue,
+      int iValue,
+      long lValue,
+      float fValue,
+      double dValue,
+      Color enumValue,
+      char cValue,
+      byte[] bytes,
+      String strValue,
+      String[] strArray,
+      Set<String> set,
+      List<User> list,
+      Map<String, User> map) {
+    return Collections.emptyList();
+  }
 }

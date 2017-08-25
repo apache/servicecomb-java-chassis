@@ -20,7 +20,7 @@ import io.servicecomb.provider.pojo.RpcSchema;
 
 @RpcSchema(schemaId = "b-hello")
 public class BImpl {
-    public String hello(String name) {
-        return "b hello " + name;
-    }
+  public String hello(String name) {
+    return "b hello " + name;
+  }
 }

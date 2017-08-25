@@ -41,63 +41,63 @@ import io.servicecomb.swagger.generator.springmvc.processor.parameter.SpringmvcD
 import io.servicecomb.swagger.generator.springmvc.processor.response.ResponseEntityProcessor;
 
 public class SpringmvcSwaggerGeneratorContext extends RestSwaggerGeneratorContext {
-    private static final int ORDER = 1000;
+  private static final int ORDER = 1000;
 
-    @Override
-    public int getOrder() {
-        return ORDER;
-    }
+  @Override
+  public int getOrder() {
+    return ORDER;
+  }
 
-    @Override
-    public boolean canProcess(Class<?> cls) {
-        return ClassUtils.hasAnnotation(cls, RequestMapping.class);
-    }
+  @Override
+  public boolean canProcess(Class<?> cls) {
+    return ClassUtils.hasAnnotation(cls, RequestMapping.class);
+  }
 
-    @Override
-    public boolean canProcess(Method method) {
-        return method.getAnnotation(RequestMapping.class) != null;
-    }
+  @Override
+  public boolean canProcess(Method method) {
+    return method.getAnnotation(RequestMapping.class) != null;
+  }
 
-    @Override
-    protected void initClassAnnotationMgr() {
-        super.initClassAnnotationMgr();
+  @Override
+  protected void initClassAnnotationMgr() {
+    super.initClassAnnotationMgr();
 
-        classAnnotationMgr.register(RequestMapping.class, new RequestMappingClassAnnotationProcessor());
-    }
+    classAnnotationMgr.register(RequestMapping.class, new RequestMappingClassAnnotationProcessor());
+  }
 
-    @Override
-    protected void initMethodAnnotationMgr() {
-        super.initMethodAnnotationMgr();
+  @Override
+  protected void initMethodAnnotationMgr() {
+    super.initMethodAnnotationMgr();
 
-        methodAnnotationMgr.register(RequestMapping.class, new RequestMappingMethodAnnotationProcessor());
-    }
+    methodAnnotationMgr.register(RequestMapping.class, new RequestMappingMethodAnnotationProcessor());
+  }
 
-    @Override
-    protected void initParameterAnnotationMgr() {
-        super.initParameterAnnotationMgr();
+  @Override
+  protected void initParameterAnnotationMgr() {
+    super.initParameterAnnotationMgr();
 
-        parameterAnnotationMgr.register(CookieValue.class, new CookieValueAnnotationProcessor());
-        parameterAnnotationMgr.register(PathVariable.class, new PathVariableAnnotationProcessor());
-        parameterAnnotationMgr.register(RequestBody.class, new RequestBodyAnnotationProcessor());
-        parameterAnnotationMgr.register(RequestHeader.class, new RequestHeaderAnnotationProcessor());
-        parameterAnnotationMgr.register(RequestParam.class, new RequestParamAnnotationProcessor());
-        parameterAnnotationMgr.register(RequestAttribute.class, new RequestAttributeAnnotationProcessor());
-    }
+    parameterAnnotationMgr.register(CookieValue.class, new CookieValueAnnotationProcessor());
+    parameterAnnotationMgr.register(PathVariable.class, new PathVariableAnnotationProcessor());
+    parameterAnnotationMgr.register(RequestBody.class, new RequestBodyAnnotationProcessor());
+    parameterAnnotationMgr.register(RequestHeader.class, new RequestHeaderAnnotationProcessor());
+    parameterAnnotationMgr.register(RequestParam.class, new RequestParamAnnotationProcessor());
+    parameterAnnotationMgr.register(RequestAttribute.class, new RequestAttributeAnnotationProcessor());
+  }
 
-    @Override
-    protected void initParameterTypeProcessorMgr() {
-        super.initParameterTypeProcessorMgr();
-    }
+  @Override
+  protected void initParameterTypeProcessorMgr() {
+    super.initParameterTypeProcessorMgr();
+  }
 
-    @Override
-    protected void initDefaultParameterProcessor() {
-        defaultParameterProcessor = new SpringmvcDefaultParameterProcessor();
-    }
+  @Override
+  protected void initDefaultParameterProcessor() {
+    defaultParameterProcessor = new SpringmvcDefaultParameterProcessor();
+  }
 
-    @Override
-    protected void initResponseTypeProcessorMgr() {
-        super.initResponseTypeProcessorMgr();
+  @Override
+  protected void initResponseTypeProcessorMgr() {
+    super.initResponseTypeProcessorMgr();
 
-        responseTypeProcessorMgr.register(ResponseEntity.class, new ResponseEntityProcessor());
-    }
+    responseTypeProcessorMgr.register(ResponseEntity.class, new ResponseEntityProcessor());
+  }
 }

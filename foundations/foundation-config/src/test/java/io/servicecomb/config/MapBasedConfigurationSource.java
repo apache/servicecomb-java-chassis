@@ -33,66 +33,65 @@ import io.servicecomb.config.spi.ConfigCenterConfigurationSource;
 
 public class MapBasedConfigurationSource implements ConfigCenterConfigurationSource {
 
-    private static final Map<String, Object> properties = new ConcurrentHashMap<>();
+  private static final Map<String, Object> properties = new ConcurrentHashMap<>();
 
-    private static final Set<WatchedUpdateListener> listeners = new HashSet<>();
+  private static final Set<WatchedUpdateListener> listeners = new HashSet<>();
 
-    static {
-        properties.put("servicecomb.abc.key", "xyz");
-    }
+  static {
+    properties.put("servicecomb.abc.key", "xyz");
+  }
 
-    @Override
-    public void init(Configuration localConfiguration) {
+  @Override
+  public void init(Configuration localConfiguration) {
 
-    }
+  }
 
-    @Override
-    public void addUpdateListener(WatchedUpdateListener listener) {
-        listeners.add(listener);
-    }
+  @Override
+  public void addUpdateListener(WatchedUpdateListener listener) {
+    listeners.add(listener);
+  }
 
-    @Override
-    public void removeUpdateListener(WatchedUpdateListener listener) {
-        listeners.remove(listener);
-    }
+  @Override
+  public void removeUpdateListener(WatchedUpdateListener listener) {
+    listeners.remove(listener);
+  }
 
-    @Override
-    public Map<String, Object> getCurrentData() throws Exception {
-        return properties;
-    }
+  @Override
+  public Map<String, Object> getCurrentData() throws Exception {
+    return properties;
+  }
 
-    void addProperty(String property, Object value) {
-        properties.put(property, value);
+  void addProperty(String property, Object value) {
+    properties.put(property, value);
 
-        Map<String, Object> adds = new HashMap<>();
-        adds.put(property, value);
+    Map<String, Object> adds = new HashMap<>();
+    adds.put(property, value);
 
-        listeners.forEach(
-                listener -> listener.updateConfiguration(WatchedUpdateResult.createIncremental(adds, null, null)));
+    listeners.forEach(
+        listener -> listener.updateConfiguration(WatchedUpdateResult.createIncremental(adds, null, null)));
+  }
 
-    }
+  void setProperty(String property, Object value) {
+    properties.replace(property, value);
 
-    void setProperty(String property, Object value) {
-        properties.replace(property, value);
+    Map<String, Object> changeds = new HashMap<>();
+    changeds.put(property, value);
 
-        Map<String, Object> changeds = new HashMap<>();
-        changeds.put(property, value);
+    listeners.forEach(listener -> listener
+        .updateConfiguration(WatchedUpdateResult.createIncremental(null, changeds, null)));
+  }
 
-        listeners.forEach(listener -> listener
-                .updateConfiguration(WatchedUpdateResult.createIncremental(null, changeds, null)));
-    }
+  void deleteProperty(String property) {
+    properties.remove(property);
 
-    void deleteProperty(String property) {
-        properties.remove(property);
+    Map<String, Object> deletes = new HashMap<>();
+    deletes.put(property, null);
 
-        Map<String, Object> deletes = new HashMap<>();
-        deletes.put(property, null);
+    listeners.forEach(
+        listener -> listener.updateConfiguration(WatchedUpdateResult.createIncremental(null, null, deletes)));
+  }
 
-        listeners.forEach(
-                listener -> listener.updateConfiguration(WatchedUpdateResult.createIncremental(null, null, deletes)));
-    }
-
-    public Map<String, Object> getProperties() {
-        return properties;
-    }
+  public Map<String, Object> getProperties() {
+    return properties;
+  }
 }

@@ -50,73 +50,73 @@ import io.servicecomb.swagger.generator.jaxrs.processor.response.ResponseProcess
 import io.servicecomb.swagger.generator.rest.RestSwaggerGeneratorContext;
 
 public class JaxrsSwaggerGeneratorContext extends RestSwaggerGeneratorContext {
-    private static final int ORDER = 2000;
+  private static final int ORDER = 2000;
 
-    @Override
-    public int getOrder() {
-        return ORDER;
+  @Override
+  public int getOrder() {
+    return ORDER;
+  }
+
+  @Override
+  public boolean canProcess(Class<?> cls) {
+    return ClassUtils.hasAnnotation(cls, Path.class);
+  }
+
+  @Override
+  public boolean canProcess(Method method) {
+    for (Annotation annotation : method.getAnnotations()) {
+      HttpMethod httpMethod = annotation.annotationType().getAnnotation(HttpMethod.class);
+      if (httpMethod != null) {
+        return true;
+      }
     }
 
-    @Override
-    public boolean canProcess(Class<?> cls) {
-        return ClassUtils.hasAnnotation(cls, Path.class);
-    }
+    return false;
+  }
 
-    @Override
-    public boolean canProcess(Method method) {
-        for (Annotation annotation : method.getAnnotations()) {
-            HttpMethod httpMethod = annotation.annotationType().getAnnotation(HttpMethod.class);
-            if (httpMethod != null) {
-                return true;
-            }
-        }
+  @Override
+  protected void initDefaultParameterProcessor() {
+    defaultParameterProcessor = new JaxrsDefaultParameterProcessor();
+  }
 
-        return false;
-    }
+  @Override
+  protected void initClassAnnotationMgr() {
+    super.initClassAnnotationMgr();
 
-    @Override
-    protected void initDefaultParameterProcessor() {
-        defaultParameterProcessor = new JaxrsDefaultParameterProcessor();
-    }
+    classAnnotationMgr.register(Path.class, new PathClassAnnotationProcessor());
+  }
 
-    @Override
-    protected void initClassAnnotationMgr() {
-        super.initClassAnnotationMgr();
+  @Override
+  protected void initMethodAnnotationMgr() {
+    super.initMethodAnnotationMgr();
 
-        classAnnotationMgr.register(Path.class, new PathClassAnnotationProcessor());
-    }
+    methodAnnotationMgr.register(Path.class, new PathMethodAnnotationProcessor());
+    methodAnnotationMgr.register(Produces.class, new ProducesAnnotationProcessor());
+    methodAnnotationMgr.register(Consumes.class, new ConsumesAnnotationProcessor());
 
-    @Override
-    protected void initMethodAnnotationMgr() {
-        super.initMethodAnnotationMgr();
+    HttpMethodAnnotationProcessor httpMethodProcessor = new HttpMethodAnnotationProcessor();
+    methodAnnotationMgr.register(GET.class, httpMethodProcessor);
+    methodAnnotationMgr.register(POST.class, httpMethodProcessor);
+    methodAnnotationMgr.register(PUT.class, httpMethodProcessor);
+    methodAnnotationMgr.register(DELETE.class, httpMethodProcessor);
+  }
 
-        methodAnnotationMgr.register(Path.class, new PathMethodAnnotationProcessor());
-        methodAnnotationMgr.register(Produces.class, new ProducesAnnotationProcessor());
-        methodAnnotationMgr.register(Consumes.class, new ConsumesAnnotationProcessor());
+  @Override
+  protected void initParameterAnnotationMgr() {
+    super.initParameterAnnotationMgr();
 
-        HttpMethodAnnotationProcessor httpMethodProcessor = new HttpMethodAnnotationProcessor();
-        methodAnnotationMgr.register(GET.class, httpMethodProcessor);
-        methodAnnotationMgr.register(POST.class, httpMethodProcessor);
-        methodAnnotationMgr.register(PUT.class, httpMethodProcessor);
-        methodAnnotationMgr.register(DELETE.class, httpMethodProcessor);
-    }
+    parameterAnnotationMgr.register(PathParam.class, new PathParamAnnotationProcessor());
+    parameterAnnotationMgr.register(FormParam.class, new FormParamAnnotationProcessor());
+    parameterAnnotationMgr.register(CookieParam.class, new CookieParamAnnotationProcessor());
 
-    @Override
-    protected void initParameterAnnotationMgr() {
-        super.initParameterAnnotationMgr();
+    parameterAnnotationMgr.register(HeaderParam.class, new HeaderParamAnnotationProcessor());
+    parameterAnnotationMgr.register(QueryParam.class, new QueryParamAnnotationProcessor());
+  }
 
-        parameterAnnotationMgr.register(PathParam.class, new PathParamAnnotationProcessor());
-        parameterAnnotationMgr.register(FormParam.class, new FormParamAnnotationProcessor());
-        parameterAnnotationMgr.register(CookieParam.class, new CookieParamAnnotationProcessor());
+  @Override
+  protected void initResponseTypeProcessorMgr() {
+    super.initResponseTypeProcessorMgr();
 
-        parameterAnnotationMgr.register(HeaderParam.class, new HeaderParamAnnotationProcessor());
-        parameterAnnotationMgr.register(QueryParam.class, new QueryParamAnnotationProcessor());
-    }
-
-    @Override
-    protected void initResponseTypeProcessorMgr() {
-        super.initResponseTypeProcessorMgr();
-
-        responseTypeProcessorMgr.register(Response.class, new ResponseProcessor());
-    }
+    responseTypeProcessorMgr.register(Response.class, new ResponseProcessor());
+  }
 }

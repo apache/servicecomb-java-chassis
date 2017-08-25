@@ -21,8 +21,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 @RequestMapping
 public class ClassMethodNoPath {
-    @RequestMapping(method = RequestMethod.GET)
-    public void noPath() {
+  @RequestMapping(method = RequestMethod.GET)
+  public void noPath() {
 
-    }
+  }
 }

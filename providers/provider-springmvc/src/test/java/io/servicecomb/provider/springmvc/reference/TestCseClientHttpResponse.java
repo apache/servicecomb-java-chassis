@@ -25,40 +25,40 @@ import org.springframework.http.HttpStatus;
 import io.servicecomb.swagger.invocation.Response;
 
 public class TestCseClientHttpResponse {
-    private Object result;
+  private Object result;
 
-    Response response = Response.ok(result);
+  Response response = Response.ok(result);
 
-    CseClientHttpResponse cseclientrequest = new CseClientHttpResponse(response);
+  CseClientHttpResponse cseclientrequest = new CseClientHttpResponse(response);
 
-    @Test
-    public void testGetResult() {
-        Assert.assertNull(cseclientrequest.getResult());
-    }
+  @Test
+  public void testGetResult() {
+    Assert.assertNull(cseclientrequest.getResult());
+  }
 
-    @Test
-    public void testGetBody() throws IOException {
-        Assert.assertNotNull(cseclientrequest.getBody());
-    }
+  @Test
+  public void testGetBody() throws IOException {
+    Assert.assertNotNull(cseclientrequest.getBody());
+  }
 
-    @Test
-    public void testGetHeaders() {
-        Assert.assertNotNull(cseclientrequest.getHeaders());
-    }
+  @Test
+  public void testGetHeaders() {
+    Assert.assertNotNull(cseclientrequest.getHeaders());
+  }
 
-    @Test
-    public void testGetStatusCode() throws IOException {
-        Assert.assertEquals(HttpStatus.OK, cseclientrequest.getStatusCode());
-    }
+  @Test
+  public void testGetStatusCode() throws IOException {
+    Assert.assertEquals(HttpStatus.OK, cseclientrequest.getStatusCode());
+  }
 
-    @Test
-    public void testGetRawStatusCode() throws IOException {
-        Assert.assertEquals(200, cseclientrequest.getRawStatusCode());
-    }
+  @Test
+  public void testGetRawStatusCode() throws IOException {
+    Assert.assertEquals(200, cseclientrequest.getRawStatusCode());
+  }
 
-    @Test
-    public void testGetStatusText() throws IOException {
-        cseclientrequest.close();
-        Assert.assertEquals(HttpStatus.OK.getReasonPhrase(), cseclientrequest.getStatusText());
-    }
+  @Test
+  public void testGetStatusText() throws IOException {
+    cseclientrequest.close();
+    Assert.assertEquals(HttpStatus.OK.getReasonPhrase(), cseclientrequest.getStatusText());
+  }
 }

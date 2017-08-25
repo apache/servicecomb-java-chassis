@@ -17,5 +17,5 @@
 package io.servicecomb.swagger.generator.core;
 
 public interface MethodAnnotationProcessor {
-    void process(Object annotation, OperationGenerator operationGenerator);
+  void process(Object annotation, OperationGenerator operationGenerator);
 }

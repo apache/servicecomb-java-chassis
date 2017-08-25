@@ -26,31 +26,31 @@ import org.yaml.snakeyaml.Yaml;
  * Created by   on 2017/1/5.
  */
 public final class YAMLUtil {
-    private YAMLUtil() {
+  private YAMLUtil() {
+  }
+
+  @SuppressWarnings("unchecked")
+  public static Map<String, Object> yaml2Properties(InputStream input) {
+    Map<String, Object> configurations = new LinkedHashMap<String, Object>();
+    Yaml yaml = new Yaml();
+    yaml.loadAll(input).forEach(data -> configurations.putAll(retrieveItems("", (Map<String, Object>) data)));
+    return configurations;
+  }
+
+  @SuppressWarnings("unchecked")
+  public static Map<String, Object> retrieveItems(String prefix, Map<String, Object> propertieMap) {
+    Map<String, Object> result = new LinkedHashMap<String, Object>();
+    if (!prefix.isEmpty()) {
+      prefix += ".";
     }
 
-    @SuppressWarnings("unchecked")
-    public static Map<String, Object> yaml2Properties(InputStream input) {
-        Map<String, Object> configurations = new LinkedHashMap<String, Object>();
-        Yaml yaml = new Yaml();
-        yaml.loadAll(input).forEach(data -> configurations.putAll(retrieveItems("", (Map<String, Object>) data)));
-        return configurations;
+    for (Map.Entry<String, Object> entry : propertieMap.entrySet()) {
+      if (entry.getValue() instanceof Map) {
+        result.putAll(retrieveItems(prefix + entry.getKey(), (Map<String, Object>) entry.getValue()));
+      } else {
+        result.put(prefix + entry.getKey(), entry.getValue());
+      }
     }
-
-    @SuppressWarnings("unchecked")
-    public static Map<String, Object> retrieveItems(String prefix, Map<String, Object> propertieMap) {
-        Map<String, Object> result = new LinkedHashMap<String, Object>();
-        if (!prefix.isEmpty()) {
-            prefix += ".";
-        }
-
-        for (Map.Entry<String, Object> entry : propertieMap.entrySet()) {
-            if (entry.getValue() instanceof Map) {
-                result.putAll(retrieveItems(prefix + entry.getKey(), (Map<String, Object>) entry.getValue()));
-            } else {
-                result.put(prefix + entry.getKey(), entry.getValue());
-            }
-        }
-        return result;
-    }
+    return result;
+  }
 }

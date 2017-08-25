@@ -34,48 +34,45 @@ import mockit.MockUp;
 
 public class TcpClientTest {
 
-    private TcpClientConnection instance = null;
+  private TcpClientConnection instance = null;
 
-    @InjectMocks
-    private NetUtils netUtils;
+  @InjectMocks
+  private NetUtils netUtils;
 
-    private void mockTestCases() {
+  private void mockTestCases() {
 
-        new MockUp<NetUtils>() {
-            @Mock
-            public IpPort parseIpPort(String address) {
-                return Mockito.mock(IpPort.class);
-            }
+    new MockUp<NetUtils>() {
+      @Mock
+      public IpPort parseIpPort(String address) {
+        return Mockito.mock(IpPort.class);
+      }
+    };
+  }
 
-        };
+  @Before
+  public void setUp() throws Exception {
+    Context context = Mockito.mock(Context.class);
+    NetClient netClient = Mockito.mock(NetClient.class);
+    InetSocketAddress socketAddress = Mockito.mock(InetSocketAddress.class);
+    mockTestCases();
+    Mockito.when(NetUtils.parseIpPort("sss").getSocketAddress()).thenReturn(socketAddress);
+    instance = new TcpClientConnection(context, netClient, "highway://127.0.0.1:80", new TcpClientConfig());
+  }
 
+  @After
+  public void tearDown() throws Exception {
+    instance = null;
+  }
+
+  @Test
+  public void testCallBack() {
+    instance.getClass();
+    TcpResonseCallback callback = Mockito.mock(TcpResonseCallback.class);
+    try {
+      instance.send(new TcpClientPackage(null), 1, callback);
+      Assert.assertNotNull(callback);
+    } catch (Exception e) {
+      Assert.assertEquals("java.lang.NullPointerException", e.getClass().getName());
     }
-
-    @Before
-    public void setUp() throws Exception {
-        Context context = Mockito.mock(Context.class);
-        NetClient netClient = Mockito.mock(NetClient.class);
-        InetSocketAddress socketAddress = Mockito.mock(InetSocketAddress.class);
-        mockTestCases();
-        Mockito.when(NetUtils.parseIpPort("sss").getSocketAddress()).thenReturn(socketAddress);
-        instance = new TcpClientConnection(context, netClient, "highway://127.0.0.1:80", new TcpClientConfig());
-    }
-
-    @After
-    public void tearDown() throws Exception {
-        instance = null;
-    }
-
-    @Test
-    public void testCallBack() {
-        instance.getClass();
-        TcpResonseCallback callback = Mockito.mock(TcpResonseCallback.class);
-        try {
-            instance.send(new TcpClientPackage(null), 1, callback);
-            Assert.assertNotNull(callback);
-        } catch (Exception e) {
-            Assert.assertEquals("java.lang.NullPointerException", e.getClass().getName());
-        }
-
-    }
+  }
 }

@@ -21,24 +21,24 @@ import io.servicecomb.swagger.generator.core.AbstractSwaggerGeneratorContext;
 import io.servicecomb.swagger.generator.core.OperationGenerator;
 
 public abstract class RestSwaggerGeneratorContext extends AbstractSwaggerGeneratorContext {
-    protected void correctPath(OperationGenerator operationGenerator) {
-        String path = operationGenerator.getPath();
-        if (StringUtils.isEmpty(path)) {
-            path = "/";
-        }
-        operationGenerator.setPath(path);
+  protected void correctPath(OperationGenerator operationGenerator) {
+    String path = operationGenerator.getPath();
+    if (StringUtils.isEmpty(path)) {
+      path = "/";
     }
+    operationGenerator.setPath(path);
+  }
 
-    @Override
-    public void postProcessOperation(OperationGenerator operationGenerator) {
-        checkPath(operationGenerator);
-        correctPath(operationGenerator);
-    }
+  @Override
+  public void postProcessOperation(OperationGenerator operationGenerator) {
+    checkPath(operationGenerator);
+    correctPath(operationGenerator);
+  }
 
-    protected void checkPath(OperationGenerator operationGenerator) {
-        if (StringUtils.isEmpty(operationGenerator.getPath())
-                && StringUtils.isEmpty(operationGenerator.getSwagger().getBasePath())) {
-            throw new Error("Path must not both be empty in class and method");
-        }
+  protected void checkPath(OperationGenerator operationGenerator) {
+    if (StringUtils.isEmpty(operationGenerator.getPath())
+        && StringUtils.isEmpty(operationGenerator.getSwagger().getBasePath())) {
+      throw new Error("Path must not both be empty in class and method");
     }
+  }
 }

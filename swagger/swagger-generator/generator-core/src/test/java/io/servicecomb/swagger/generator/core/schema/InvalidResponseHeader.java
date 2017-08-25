@@ -18,8 +18,8 @@ package io.servicecomb.swagger.generator.core.schema;
 import io.swagger.annotations.ResponseHeader;
 
 public class InvalidResponseHeader {
-    @ResponseHeader(name = "h")
-    public void test() {
+  @ResponseHeader(name = "h")
+  public void test() {
 
-    }
+  }
 }

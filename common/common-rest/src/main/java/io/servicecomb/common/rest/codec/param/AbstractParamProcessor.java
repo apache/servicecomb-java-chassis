@@ -19,17 +19,16 @@ package io.servicecomb.common.rest.codec.param;
 import com.fasterxml.jackson.databind.JavaType;
 
 public abstract class AbstractParamProcessor implements ParamValueProcessor {
-    protected String paramPath;
+  protected String paramPath;
 
-    protected JavaType targetType;
+  protected JavaType targetType;
 
-    public AbstractParamProcessor(String paramPath, JavaType targetType) {
-        this.paramPath = paramPath;
-        this.targetType = targetType;
-    }
+  public AbstractParamProcessor(String paramPath, JavaType targetType) {
+    this.paramPath = paramPath;
+    this.targetType = targetType;
+  }
 
-    public String getParameterPath() {
-        return paramPath;
-    }
-
+  public String getParameterPath() {
+    return paramPath;
+  }
 }

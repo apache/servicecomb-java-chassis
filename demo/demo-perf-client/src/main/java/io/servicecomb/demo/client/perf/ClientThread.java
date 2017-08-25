@@ -23,30 +23,30 @@ import io.servicecomb.demo.server.User;
 import io.servicecomb.foundation.common.CommonThread;
 
 public class ClientThread extends CommonThread {
-    @Override
-    public void run() {
-        Test test = PojoClient.test;
+  @Override
+  public void run() {
+    Test test = PojoClient.test;
 
-        while (isRunning()) {
-            int idx = 0;
-            for (;;) {
-                User user = new User();
+    while (isRunning()) {
+      int idx = 0;
+      for (;;) {
+        User user = new User();
 
-                TestRequest request = new TestRequest();
-                request.setUser(user);
-                request.setIndex(idx);
-                request.setData(PojoClient.buffer);
+        TestRequest request = new TestRequest();
+        request.setUser(user);
+        request.setIndex(idx);
+        request.setData(PojoClient.buffer);
 
-                try {
-                    User result = test.wrapParam(request);
+        try {
+          User result = test.wrapParam(request);
 
-                    if (result.getIndex() != idx) {
-                        System.out.printf("error result:%s, expect idx %d\n", result, idx);
-                    }
-                } catch (Throwable e) {
-                    //                    e.printStackTrace();
-                }
-            }
+          if (result.getIndex() != idx) {
+            System.out.printf("error result:%s, expect idx %d\n", result, idx);
+          }
+        } catch (Throwable e) {
+          //                    e.printStackTrace();
         }
+      }
     }
+  }
 }

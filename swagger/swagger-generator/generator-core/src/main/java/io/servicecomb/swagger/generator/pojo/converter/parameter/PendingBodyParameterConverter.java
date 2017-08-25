@@ -25,10 +25,9 @@ import io.swagger.models.Swagger;
 
 public class PendingBodyParameterConverter implements Converter {
 
-    @Override
-    public JavaType convert(ClassLoader classLoader, String packageName, Swagger swagger, Object def) {
-        PendingBodyParameter param = (PendingBodyParameter) def;
-        return ConverterMgr.findJavaType(classLoader, packageName, swagger, param.getProperty());
-    }
-
+  @Override
+  public JavaType convert(ClassLoader classLoader, String packageName, Swagger swagger, Object def) {
+    PendingBodyParameter param = (PendingBodyParameter) def;
+    return ConverterMgr.findJavaType(classLoader, packageName, swagger, param.getProperty());
+  }
 }

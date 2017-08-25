@@ -16,13 +16,13 @@
 package io.servicecomb.serviceregistry.task.event;
 
 public class ExceptionEvent {
-    private Throwable throwable;
+  private Throwable throwable;
 
-    public ExceptionEvent(Throwable throwable) {
-        this.throwable = throwable;
-    }
+  public ExceptionEvent(Throwable throwable) {
+    this.throwable = throwable;
+  }
 
-    public Throwable getThrowable() {
-        return throwable;
-    }
+  public Throwable getThrowable() {
+    return throwable;
+  }
 }

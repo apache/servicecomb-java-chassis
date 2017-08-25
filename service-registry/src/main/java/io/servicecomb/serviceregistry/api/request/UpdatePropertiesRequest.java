@@ -22,14 +22,13 @@ import java.util.Map;
  * 更新微服务和实例properties的request
  */
 public class UpdatePropertiesRequest {
-    private Map<String, String> properties;
+  private Map<String, String> properties;
 
-    public Map<String, String> getProperties() {
-        return properties;
-    }
+  public Map<String, String> getProperties() {
+    return properties;
+  }
 
-    public void setProperties(Map<String, String> properties) {
-        this.properties = properties;
-    }
-
+  public void setProperties(Map<String, String> properties) {
+    this.properties = properties;
+  }
 }

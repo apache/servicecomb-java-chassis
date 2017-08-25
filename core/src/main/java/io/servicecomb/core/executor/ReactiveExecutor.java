@@ -23,9 +23,8 @@ import java.util.concurrent.Executor;
  */
 public class ReactiveExecutor implements Executor {
 
-    @Override
-    public void execute(Runnable command) {
-        command.run();
-    }
-
+  @Override
+  public void execute(Runnable command) {
+    command.run();
+  }
 }

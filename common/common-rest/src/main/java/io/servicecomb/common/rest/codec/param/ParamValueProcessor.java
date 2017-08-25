@@ -17,21 +17,21 @@
 package io.servicecomb.common.rest.codec.param;
 
 import com.fasterxml.jackson.databind.JavaType;
+
 import io.servicecomb.common.rest.codec.RestClientRequest;
 import io.servicecomb.common.rest.codec.RestObjectMapper;
 import io.servicecomb.common.rest.codec.RestServerRequest;
 
 public interface ParamValueProcessor {
-    Object getValue(RestServerRequest request) throws Exception;
+  Object getValue(RestServerRequest request) throws Exception;
 
-    void setValue(RestClientRequest clientRequest, Object arg) throws Exception;
+  void setValue(RestClientRequest clientRequest, Object arg) throws Exception;
 
-    default Object convertValue(Object value, JavaType targetType) {
-        return RestObjectMapper.INSTANCE.convertValue(value, targetType);
-    }
+  default Object convertValue(Object value, JavaType targetType) {
+    return RestObjectMapper.INSTANCE.convertValue(value, targetType);
+  }
 
-    String getParameterPath();
+  String getParameterPath();
 
-    String getProcessorType();
-
+  String getProcessorType();
 }

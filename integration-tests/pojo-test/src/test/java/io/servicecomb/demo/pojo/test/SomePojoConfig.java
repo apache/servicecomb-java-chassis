@@ -17,13 +17,14 @@
 
 package io.servicecomb.demo.pojo.test;
 
+import org.springframework.context.annotation.Bean;
+import org.springframework.stereotype.Component;
+
 import io.servicecomb.demo.CodeFirstPojoIntf;
 import io.servicecomb.demo.helloworld.greeter.Hello;
 import io.servicecomb.demo.server.Test;
 import io.servicecomb.demo.smartcare.SmartCare;
 import io.servicecomb.provider.pojo.RpcReference;
-import org.springframework.context.annotation.Bean;
-import org.springframework.stereotype.Component;
 
 @Component
 public class SomePojoConfig {

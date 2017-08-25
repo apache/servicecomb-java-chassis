@@ -20,37 +20,37 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class SwaggerProducer {
-    private Class<?> producerCls;
+  private Class<?> producerCls;
 
-    private Class<?> swaggerIntf;
+  private Class<?> swaggerIntf;
 
-    private Map<String, SwaggerProducerOperation> opMap = new HashMap<>();
+  private Map<String, SwaggerProducerOperation> opMap = new HashMap<>();
 
-    public Class<?> getProducerCls() {
-        return producerCls;
-    }
+  public Class<?> getProducerCls() {
+    return producerCls;
+  }
 
-    public void setProducerCls(Class<?> producerCls) {
-        this.producerCls = producerCls;
-    }
+  public void setProducerCls(Class<?> producerCls) {
+    this.producerCls = producerCls;
+  }
 
-    public Class<?> getSwaggerIntf() {
-        return swaggerIntf;
-    }
+  public Class<?> getSwaggerIntf() {
+    return swaggerIntf;
+  }
 
-    public void setSwaggerIntf(Class<?> swaggerIntf) {
-        this.swaggerIntf = swaggerIntf;
-    }
+  public void setSwaggerIntf(Class<?> swaggerIntf) {
+    this.swaggerIntf = swaggerIntf;
+  }
 
-    public void addOperation(SwaggerProducerOperation op) {
-        opMap.put(op.getName(), op);
-    }
+  public void addOperation(SwaggerProducerOperation op) {
+    opMap.put(op.getName(), op);
+  }
 
-    public SwaggerProducerOperation findOperation(String name) {
-        return opMap.get(name);
-    }
+  public SwaggerProducerOperation findOperation(String name) {
+    return opMap.get(name);
+  }
 
-    public Collection<SwaggerProducerOperation> getAllOperations() {
-        return opMap.values();
-    }
+  public Collection<SwaggerProducerOperation> getAllOperations() {
+    return opMap.values();
+  }
 }

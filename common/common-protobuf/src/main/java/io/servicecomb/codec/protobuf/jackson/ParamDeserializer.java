@@ -22,18 +22,18 @@ import io.servicecomb.codec.protobuf.codec.AbstractFieldCodec.ReaderHelpData;
 
 public class ParamDeserializer extends AbstractDeserializer {
 
-    public ParamDeserializer(Map<String, ReaderHelpData> readerHelpDataMap) {
-        super(readerHelpDataMap);
-    }
+  public ParamDeserializer(Map<String, ReaderHelpData> readerHelpDataMap) {
+    super(readerHelpDataMap);
+  }
 
-    @Override
-    protected Object createResult() {
-        return new Object[readerHelpDataMap.size()];
-    }
+  @Override
+  protected Object createResult() {
+    return new Object[readerHelpDataMap.size()];
+  }
 
-    @Override
-    protected Object updateResult(Object result, Object value, ReaderHelpData helpData) {
-        ((Object[]) result)[helpData.getIndex()] = value;
-        return result;
-    }
+  @Override
+  protected Object updateResult(Object result, Object value, ReaderHelpData helpData) {
+    ((Object[]) result)[helpData.getIndex()] = value;
+    return result;
+  }
 }

@@ -24,14 +24,14 @@ import io.servicecomb.foundation.common.utils.JsonUtils;
 import io.servicecomb.swagger.invocation.converter.Converter;
 
 public class ConverterCommon implements Converter {
-    private JavaType targetJavaType;
+  private JavaType targetJavaType;
 
-    public ConverterCommon(Type targetType) {
-        targetJavaType = TypeFactory.defaultInstance().constructType(targetType);
-    }
+  public ConverterCommon(Type targetType) {
+    targetJavaType = TypeFactory.defaultInstance().constructType(targetType);
+  }
 
-    @Override
-    public Object convert(Object value) {
-        return JsonUtils.OBJ_MAPPER.convertValue(value, targetJavaType);
-    }
+  @Override
+  public Object convert(Object value) {
+    return JsonUtils.OBJ_MAPPER.convertValue(value, targetJavaType);
+  }
 }

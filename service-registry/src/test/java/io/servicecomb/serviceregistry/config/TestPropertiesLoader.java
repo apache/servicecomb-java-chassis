@@ -37,86 +37,86 @@ import io.servicecomb.serviceregistry.definition.MicroserviceDefinition;
 import io.servicecomb.serviceregistry.registry.ServiceRegistryFactory;
 
 public class TestPropertiesLoader {
-    private static MicroserviceFactory microserviceFactory = new MicroserviceFactory();
+  private static MicroserviceFactory microserviceFactory = new MicroserviceFactory();
 
-    @Test
-    public void testMergeStrings() {
-        Assert.assertEquals("abc123efg", AbstractPropertiesLoader.mergeStrings("abc", "123", "efg"));
+  @Test
+  public void testMergeStrings() {
+    Assert.assertEquals("abc123efg", AbstractPropertiesLoader.mergeStrings("abc", "123", "efg"));
+  }
+
+  @Test
+  public void testEmptyExtendedClass() {
+    Microservice microservice = microserviceFactory.create("default", "emptyExtendedClass");
+    Assert.assertEquals(0, microservice.getProperties().size());
+  }
+
+  @Test
+  public void testInvalidExtendedClass() {
+    ConfigModel configModel = MicroserviceDefinition.createConfigModel("default", "invalidExtendedClass");
+    @SuppressWarnings("unchecked")
+    Map<String, Object> desc =
+        (Map<String, Object>) configModel.getConfig().get(DefinitionConst.serviceDescriptionKey);
+    desc.put("propertyExtentedClass", "invalidClass");
+    MicroserviceDefinition microserviceDefinition = new MicroserviceDefinition(Arrays.asList(configModel));
+    try {
+      microserviceFactory.create(microserviceDefinition);
+      Assert.fail("Must throw exception");
+    } catch (Error e) {
+      Assert.assertEquals(ClassNotFoundException.class, e.getCause().getClass());
+      Assert.assertEquals("invalidClass", e.getCause().getMessage());
     }
+  }
 
-    @Test
-    public void testEmptyExtendedClass() {
-        Microservice microservice = microserviceFactory.create("default", "emptyExtendedClass");
-        Assert.assertEquals(0, microservice.getProperties().size());
+  @Test
+  public void testCanNotAssignExtendedClass() {
+    ConfigModel configModel = MicroserviceDefinition.createConfigModel("default", "invalidExtendedClass");
+    @SuppressWarnings("unchecked")
+    Map<String, Object> desc =
+        (Map<String, Object>) configModel.getConfig().get(DefinitionConst.serviceDescriptionKey);
+    desc.put("propertyExtentedClass", "java.lang.String");
+    MicroserviceDefinition microserviceDefinition = new MicroserviceDefinition(Arrays.asList(configModel));
+    try {
+      microserviceFactory.create(microserviceDefinition);
+      Assert.fail("Must throw exception");
+    } catch (Error e) {
+      Assert.assertEquals(
+          "Define propertyExtendedClass java.lang.String in yaml, but not implement the interface PropertyExtended.",
+          e.getMessage());
     }
+  }
 
-    @Test
-    public void testInvalidExtendedClass() {
-        ConfigModel configModel = MicroserviceDefinition.createConfigModel("default", "invalidExtendedClass");
-        @SuppressWarnings("unchecked")
-        Map<String, Object> desc =
-            (Map<String, Object>) configModel.getConfig().get(DefinitionConst.serviceDescriptionKey);
-        desc.put("propertyExtentedClass", "invalidClass");
-        MicroserviceDefinition microserviceDefinition = new MicroserviceDefinition(Arrays.asList(configModel));
-        try {
-            microserviceFactory.create(microserviceDefinition);
-            Assert.fail("Must throw exception");
-        } catch (Error e) {
-            Assert.assertEquals(ClassNotFoundException.class, e.getCause().getClass());
-            Assert.assertEquals("invalidClass", e.getCause().getMessage());
-        }
+  @Test
+  public void testMicroservicePropertiesLoader() throws Exception {
+    Microservice microservice = ServiceRegistryFactory.createLocal().getMicroservice();
+    Map<String, String> expectedMap = new HashMap<>();
+    expectedMap.put("key1", "value1");
+    expectedMap.put("key2", "value2");
+    expectedMap.put("ek0", "ev0");
+    Assert.assertEquals(expectedMap, microservice.getProperties());
+  }
+
+  @Test
+  public void testInstancePropertiesLoader() {
+    Microservice microservice = ServiceRegistryFactory.createLocal().getMicroservice();
+    MicroserviceInstance instance = microservice.getIntance();
+    Map<String, String> expectedMap = new HashMap<>();
+    expectedMap.put("key0", "value0");
+    expectedMap.put("ek0", "ev0");
+    Assert.assertEquals(expectedMap, instance.getProperties());
+  }
+
+  @Test
+  public void testExtendedClassCompatible() {
+    Configuration configuration = new DynamicConfiguration();
+    configuration.setProperty(CONFIG_SERVICE + AbstractPropertiesLoader.EXTENDED_CLASS, "invalidClass");
+
+    AbstractPropertiesLoader loader = MicroservicePropertiesLoader.INSTANCE;
+    try {
+      loader.loadProperties(configuration);
+      Assert.fail("Must throw exception");
+    } catch (Error e) {
+      Assert.assertEquals(ClassNotFoundException.class, e.getCause().getClass());
+      Assert.assertEquals("invalidClass", e.getCause().getMessage());
     }
-
-    @Test
-    public void testCanNotAssignExtendedClass() {
-        ConfigModel configModel = MicroserviceDefinition.createConfigModel("default", "invalidExtendedClass");
-        @SuppressWarnings("unchecked")
-        Map<String, Object> desc =
-            (Map<String, Object>) configModel.getConfig().get(DefinitionConst.serviceDescriptionKey);
-        desc.put("propertyExtentedClass", "java.lang.String");
-        MicroserviceDefinition microserviceDefinition = new MicroserviceDefinition(Arrays.asList(configModel));
-        try {
-            microserviceFactory.create(microserviceDefinition);
-            Assert.fail("Must throw exception");
-        } catch (Error e) {
-            Assert.assertEquals(
-                    "Define propertyExtendedClass java.lang.String in yaml, but not implement the interface PropertyExtended.",
-                    e.getMessage());
-        }
-    }
-
-    @Test
-    public void testMicroservicePropertiesLoader() throws Exception {
-        Microservice microservice = ServiceRegistryFactory.createLocal().getMicroservice();
-        Map<String, String> expectedMap = new HashMap<>();
-        expectedMap.put("key1", "value1");
-        expectedMap.put("key2", "value2");
-        expectedMap.put("ek0", "ev0");
-        Assert.assertEquals(expectedMap, microservice.getProperties());
-    }
-
-    @Test
-    public void testInstancePropertiesLoader() {
-        Microservice microservice = ServiceRegistryFactory.createLocal().getMicroservice();
-        MicroserviceInstance instance = microservice.getIntance();
-        Map<String, String> expectedMap = new HashMap<>();
-        expectedMap.put("key0", "value0");
-        expectedMap.put("ek0", "ev0");
-        Assert.assertEquals(expectedMap, instance.getProperties());
-    }
-
-    @Test
-    public void testExtendedClassCompatible() {
-        Configuration configuration = new DynamicConfiguration();
-        configuration.setProperty(CONFIG_SERVICE + AbstractPropertiesLoader.EXTENDED_CLASS, "invalidClass");
-
-        AbstractPropertiesLoader loader = MicroservicePropertiesLoader.INSTANCE;
-        try {
-            loader.loadProperties(configuration);
-            Assert.fail("Must throw exception");
-        } catch (Error e) {
-            Assert.assertEquals(ClassNotFoundException.class, e.getCause().getClass());
-            Assert.assertEquals("invalidClass", e.getCause().getMessage());
-        }
-    }
+  }
 }

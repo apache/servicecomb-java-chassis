@@ -27,57 +27,56 @@ import io.servicecomb.swagger.invocation.AsyncResponse;
 import mockit.Mocked;
 
 public class TestTransport {
-    @Test
-    public void testEndpoint() throws Exception {
-        Endpoint oEndpoint = new Endpoint(new Transport() {
+  @Test
+  public void testEndpoint() throws Exception {
+    Endpoint oEndpoint = new Endpoint(new Transport() {
 
-            @Override
-            public void send(Invocation invocation, AsyncResponse asyncResp) throws Exception {
-            }
+      @Override
+      public void send(Invocation invocation, AsyncResponse asyncResp) throws Exception {
+      }
 
-            @Override
-            public Object parseAddress(String address) {
-                return "127.0.0.1";
-            }
+      @Override
+      public Object parseAddress(String address) {
+        return "127.0.0.1";
+      }
 
-            @Override
-            public boolean init() throws Exception {
-                return true;
-            }
+      @Override
+      public boolean init() throws Exception {
+        return true;
+      }
 
-            @Override
-            public String getName() {
-                return "test";
-            }
+      @Override
+      public String getName() {
+        return "test";
+      }
 
-            @Override
-            public Endpoint getEndpoint() throws Exception {
-                return (new Endpoint(this, "testEndpoint"));
-            }
+      @Override
+      public Endpoint getEndpoint() throws Exception {
+        return (new Endpoint(this, "testEndpoint"));
+      }
 
-            @Override
-            public Endpoint getPublishEndpoint() throws Exception {
-                return (new Endpoint(this, "testEndpoint"));
-            }
-        }, "rest://127.0.0.1:8080");
-        oEndpoint.getTransport().init();
-        Assert.assertEquals("rest://127.0.0.1:8080", oEndpoint.getEndpoint());
-        Assert.assertEquals("127.0.0.1", oEndpoint.getAddress());
-        Assert.assertEquals("test", oEndpoint.getTransport().getName());
-        Assert.assertEquals("rest://127.0.0.1:8080", oEndpoint.getEndpoint().toString());
+      @Override
+      public Endpoint getPublishEndpoint() throws Exception {
+        return (new Endpoint(this, "testEndpoint"));
+      }
+    }, "rest://127.0.0.1:8080");
+    oEndpoint.getTransport().init();
+    Assert.assertEquals("rest://127.0.0.1:8080", oEndpoint.getEndpoint());
+    Assert.assertEquals("127.0.0.1", oEndpoint.getAddress());
+    Assert.assertEquals("test", oEndpoint.getTransport().getName());
+    Assert.assertEquals("rest://127.0.0.1:8080", oEndpoint.getEndpoint().toString());
+  }
+
+  @Test
+  public void testAbstractTransport(@Mocked Microservice microservice) throws Exception {
+
+    EndpointsCache oEndpointsCache = new EndpointsCache("app", "testname", "test", "test");
+
+    try {
+      List<Endpoint> endpoionts = oEndpointsCache.getLatestEndpoints();
+      Assert.assertEquals(endpoionts.size(), 0);
+    } catch (Exception e) {
+      Assert.assertEquals(null, e.getMessage());
     }
-
-    @Test
-    public void testAbstractTransport(@Mocked Microservice microservice) throws Exception {
-
-        EndpointsCache oEndpointsCache = new EndpointsCache("app", "testname", "test", "test");
-
-        try {
-            List<Endpoint> endpoionts = oEndpointsCache.getLatestEndpoints();
-            Assert.assertEquals(endpoionts.size(), 0);
-        } catch (Exception e) {
-            Assert.assertEquals(null, e.getMessage());
-        }
-    }
-
+  }
 }

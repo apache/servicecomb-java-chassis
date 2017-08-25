@@ -20,8 +20,8 @@ import org.junit.Assert;
 import org.junit.Test;
 
 public class TestProduceProcessorManager {
-    @Test
-    public void testDefault() {
-        Assert.assertSame(ProduceProcessorManager.JSON_PROCESSOR, ProduceProcessorManager.DEFAULT_PROCESSOR);
-    }
+  @Test
+  public void testDefault() {
+    Assert.assertSame(ProduceProcessorManager.JSON_PROCESSOR, ProduceProcessorManager.DEFAULT_PROCESSOR);
+  }
 }

@@ -26,20 +26,19 @@ import org.junit.Test;
 import org.mockito.Mockito;
 
 import io.servicecomb.swagger.generator.core.utils.ClassUtils;
-
 import io.swagger.models.parameters.Parameter;
 
 public class TestParamUtils {
-    @Test
-    public void testGetRawJsonType() {
-        Parameter param = Mockito.mock(Parameter.class);
-        Map<String, Object> extensions = new HashMap<>();
-        when(param.getVendorExtensions()).thenReturn(extensions);
+  @Test
+  public void testGetRawJsonType() {
+    Parameter param = Mockito.mock(Parameter.class);
+    Map<String, Object> extensions = new HashMap<>();
+    when(param.getVendorExtensions()).thenReturn(extensions);
 
-        extensions.put(SwaggerConst.EXT_RAW_JSON_TYPE, true);
-        Assert.assertTrue(ClassUtils.isRawJsonType(param));
+    extensions.put(SwaggerConst.EXT_RAW_JSON_TYPE, true);
+    Assert.assertTrue(ClassUtils.isRawJsonType(param));
 
-        extensions.put(SwaggerConst.EXT_RAW_JSON_TYPE, "test");
-        Assert.assertFalse(ClassUtils.isRawJsonType(param));
-    }
+    extensions.put(SwaggerConst.EXT_RAW_JSON_TYPE, "test");
+    Assert.assertFalse(ClassUtils.isRawJsonType(param));
+  }
 }

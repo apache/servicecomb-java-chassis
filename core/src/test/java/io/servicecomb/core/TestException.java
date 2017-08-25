@@ -16,43 +16,43 @@
 
 package io.servicecomb.core;
 
-import io.servicecomb.core.exception.CseException;
 import org.junit.Assert;
 import org.junit.Test;
 
+import io.servicecomb.core.exception.CseException;
 import io.servicecomb.core.exception.ExceptionUtils;
 
 public class TestException {
-    @Test
-    public void testCseException() {
-        CseException oExeception = new CseException("500", "InternalServerError");
-        Assert.assertEquals("500", oExeception.getCode());
-        Assert.assertEquals("ServiceDefinitionException Code:500, Message:InternalServerError",
-                oExeception.toString());
+  @Test
+  public void testCseException() {
+    CseException oExeception = new CseException("500", "InternalServerError");
+    Assert.assertEquals("500", oExeception.getCode());
+    Assert.assertEquals("ServiceDefinitionException Code:500, Message:InternalServerError",
+        oExeception.toString());
 
-        oExeception = new CseException("503", "OwnException", new Throwable());
-        Assert.assertEquals("503", oExeception.getCode());
-    }
+    oExeception = new CseException("503", "OwnException", new Throwable());
+    Assert.assertEquals("503", oExeception.getCode());
+  }
 
-    @Test
-    public void testExceptionUtils() {
-        CseException oExeception = ExceptionUtils.createCseException("cse.handler.ref.not.exist", new String("test"));
-        Assert.assertEquals("cse.handler.ref.not.exist", oExeception.getCode());
+  @Test
+  public void testExceptionUtils() {
+    CseException oExeception = ExceptionUtils.createCseException("cse.handler.ref.not.exist", new String("test"));
+    Assert.assertEquals("cse.handler.ref.not.exist", oExeception.getCode());
 
-        oExeception =
-            ExceptionUtils.createCseException("cse.handler.ref.not.exist", new Throwable(), new String("test"));
-        Assert.assertEquals("cse.handler.ref.not.exist", oExeception.getCode());
+    oExeception =
+        ExceptionUtils.createCseException("cse.handler.ref.not.exist", new Throwable(), new String("test"));
+    Assert.assertEquals("cse.handler.ref.not.exist", oExeception.getCode());
 
-        oExeception = ExceptionUtils.producerOperationNotExist("cse.error", "unit-testing");
-        Assert.assertEquals("cse.producer.operation.not.exist", oExeception.getCode());
+    oExeception = ExceptionUtils.producerOperationNotExist("cse.error", "unit-testing");
+    Assert.assertEquals("cse.producer.operation.not.exist", oExeception.getCode());
 
-        oExeception = ExceptionUtils.operationIdInvalid("cse.double.error", "what path are you talking about");
-        Assert.assertEquals("cse.schema.operation.id.invalid", oExeception.getCode());
+    oExeception = ExceptionUtils.operationIdInvalid("cse.double.error", "what path are you talking about");
+    Assert.assertEquals("cse.schema.operation.id.invalid", oExeception.getCode());
 
-        oExeception = ExceptionUtils.handlerRefNotExist("cse.double.error");
-        Assert.assertEquals("cse.handler.ref.not.exist", oExeception.getCode());
+    oExeception = ExceptionUtils.handlerRefNotExist("cse.double.error");
+    Assert.assertEquals("cse.handler.ref.not.exist", oExeception.getCode());
 
-        oExeception = ExceptionUtils.lbAddressNotFound("microServiceName", "my rule my world", "transportChannel");
-        Assert.assertEquals("cse.lb.no.available.address", oExeception.getCode());
-    }
+    oExeception = ExceptionUtils.lbAddressNotFound("microServiceName", "my rule my world", "transportChannel");
+    Assert.assertEquals("cse.lb.no.available.address", oExeception.getCode());
+  }
 }

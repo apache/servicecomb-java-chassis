@@ -26,60 +26,59 @@ import javax.ws.rs.core.Response.StatusType;
  * 设置特定的Cse Context数据
  */
 public class InvocationContext {
-    private static HttpStatusManager statusMgr = new HttpStatusManager();
+  private static HttpStatusManager statusMgr = new HttpStatusManager();
 
-    protected StatusType httpStatus;
+  protected StatusType httpStatus;
 
-    // value只能是简单类型
-    protected Map<String, String> context = new HashMap<>();
+  // value只能是简单类型
+  protected Map<String, String> context = new HashMap<>();
 
-    public InvocationContext() {
-        httpStatus = Status.OK;
+  public InvocationContext() {
+    httpStatus = Status.OK;
+  }
+
+  public Map<String, String> getContext() {
+    return context;
+  }
+
+  public void setContext(Map<String, String> context) {
+    this.context = context;
+  }
+
+  public void addContext(String key, String value) {
+    context.put(key, value);
+  }
+
+  @SuppressWarnings("unchecked")
+  public <T> T getContext(String key) {
+    return (T) context.get(key);
+  }
+
+  public void addContext(InvocationContext otherContext) {
+    addContext(otherContext.getContext());
+  }
+
+  public void addContext(Map<String, String> otherContext) {
+    if (otherContext == null) {
+      return;
     }
 
-    public Map<String, String> getContext() {
-        return context;
-    }
+    context.putAll(otherContext);
+  }
 
-    public void setContext(Map<String, String> context) {
-        this.context = context;
-    }
+  public StatusType getStatus() {
+    return httpStatus;
+  }
 
-    public void addContext(String key, String value) {
-        context.put(key, value);
-    }
+  public void setStatus(StatusType status) {
+    this.httpStatus = status;
+  }
 
-    @SuppressWarnings("unchecked")
-    public <T> T getContext(String key) {
-        return (T) context.get(key);
-    }
+  public void setStatus(int statusCode, String reason) {
+    httpStatus = new io.servicecomb.swagger.invocation.context.HttpStatus(statusCode, reason);
+  }
 
-    public void addContext(InvocationContext otherContext) {
-        addContext(otherContext.getContext());
-    }
-
-    public void addContext(Map<String, String> otherContext) {
-        if (otherContext == null) {
-            return;
-        }
-
-        context.putAll(otherContext);
-    }
-
-    public StatusType getStatus() {
-        return httpStatus;
-    }
-
-    public void setStatus(StatusType status) {
-        this.httpStatus = status;
-    }
-
-    public void setStatus(int statusCode, String reason) {
-        httpStatus = new io.servicecomb.swagger.invocation.context.HttpStatus(statusCode, reason);
-    }
-
-    public void setStatus(int statusCode) {
-        this.httpStatus = statusMgr.getOrCreateByStatusCode(statusCode);
-    }
-
+  public void setStatus(int statusCode) {
+    this.httpStatus = statusMgr.getOrCreateByStatusCode(statusCode);
+  }
 }

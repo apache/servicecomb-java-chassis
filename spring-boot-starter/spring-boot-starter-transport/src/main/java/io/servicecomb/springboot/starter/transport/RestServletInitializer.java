@@ -36,24 +36,24 @@ import io.servicecomb.transport.rest.servlet.ServletUtils;
 // when org.springframework.web.context.ServletContextAware invoked, ServletContext already rejected to addServlet
 // should implements org.springframework.boot.web.servlet.ServletContextInitializer to inject servlet
 public class RestServletInitializer extends AbstractConfigurableEmbeddedServletContainer
-        implements ServletContextInitializer {
-    private static final Logger LOGGER = LoggerFactory.getLogger(RestServletInitializer.class);
+    implements ServletContextInitializer {
+  private static final Logger LOGGER = LoggerFactory.getLogger(RestServletInitializer.class);
 
-    @Override
-    public void onStartup(ServletContext servletContext) throws ServletException {
-        if (getPort() == 0) {
-            LOGGER.warn(
-                    "spring boot embed web container listen port is 0, serviceComb will not use container's port to handler RESTful request.");
-            return;
-        }
-
-        // web container did not did listen now.
-        // so mock to listen, and then close.
-        try (ServerSocket ss = new ServerSocket(getPort(), 0, getAddress())) {
-            RestServletInjector.defaultInject(servletContext);
-            ServletUtils.saveUrlPrefix(servletContext);
-        } catch (IOException e) {
-            throw new ServletException(e);
-        }
+  @Override
+  public void onStartup(ServletContext servletContext) throws ServletException {
+    if (getPort() == 0) {
+      LOGGER.warn(
+          "spring boot embed web container listen port is 0, serviceComb will not use container's port to handler RESTful request.");
+      return;
     }
+
+    // web container did not did listen now.
+    // so mock to listen, and then close.
+    try (ServerSocket ss = new ServerSocket(getPort(), 0, getAddress())) {
+      RestServletInjector.defaultInject(servletContext);
+      ServletUtils.saveUrlPrefix(servletContext);
+    } catch (IOException e) {
+      throw new ServletException(e);
+    }
+  }
 }

@@ -19,10 +19,10 @@ package io.vertx.core.net.impl;
 import io.vertx.core.Context;
 
 public final class VertxHelper {
-    private VertxHelper() {
-    }
+  private VertxHelper() {
+  }
 
-    public static Context getConnectionContext(ConnectionBase connection) {
-        return connection.getContext();
-    }
+  public static Context getConnectionContext(ConnectionBase connection) {
+    return connection.getContext();
+  }
 }

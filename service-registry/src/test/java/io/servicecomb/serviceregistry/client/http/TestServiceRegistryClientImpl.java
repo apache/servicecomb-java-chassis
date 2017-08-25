@@ -50,202 +50,202 @@ import mockit.MockUp;
 import mockit.Mocked;
 
 public class TestServiceRegistryClientImpl {
-    @Mocked
-    private IpPortManager ipPortManager;
+  @Mocked
+  private IpPortManager ipPortManager;
 
-    private ServiceRegistryClientImpl oClient = null;
+  private ServiceRegistryClientImpl oClient = null;
 
-    @Before
-    public void setUp() throws Exception {
-        oClient = new ServiceRegistryClientImpl(ipPortManager);
+  @Before
+  public void setUp() throws Exception {
+    oClient = new ServiceRegistryClientImpl(ipPortManager);
 
-        new MockUp<RestUtils>() {
-            @Mock
-            void httpDo(RequestContext requestContext, Handler<RestResponse> responseHandler) {
-            }
-        };
+    new MockUp<RestUtils>() {
+      @Mock
+      void httpDo(RequestContext requestContext, Handler<RestResponse> responseHandler) {
+      }
+    };
 
-        new MockUp<CountDownLatch>() {
-            @Mock
-            public void await() throws InterruptedException {
-            }
-        };
+    new MockUp<CountDownLatch>() {
+      @Mock
+      public void await() throws InterruptedException {
+      }
+    };
+  }
+
+  @After
+  public void tearDown() throws Exception {
+    oClient = null;
+  }
+
+  @Test
+  public void testPrivateMehtodCreateHttpClientOptions() {
+    MicroserviceFactory microserviceFactory = new MicroserviceFactory();
+    Microservice microservice = microserviceFactory.create("app", "ms");
+    oClient.registerMicroservice(microservice);
+    oClient.registerMicroserviceInstance(microservice.getIntance());
+    new MockUp<ServiceRegistryConfig>() {
+      @Mock
+      public HttpVersion getHttpVersion() {
+        return HttpVersion.HTTP_2;
+      }
+
+      @Mock
+      public boolean isSsl() {
+        return true;
+      }
+    };
+    try {
+      oClient.init();
+      HttpClientOptions httpClientOptions = Deencapsulation.invoke(oClient, "createHttpClientOptions");
+      Assert.assertNotNull(httpClientOptions);
+      Assert.assertEquals(80, httpClientOptions.getDefaultPort());
+    } catch (Exception e) {
+      Assert.assertNotNull(e);
     }
+  }
 
-    @After
-    public void tearDown() throws Exception {
-        oClient = null;
-    }
+  @Test
+  public void testException() {
+    MicroserviceFactory microserviceFactory = new MicroserviceFactory();
+    Microservice microservice = microserviceFactory.create("app", "ms");
+    Assert.assertEquals(null, oClient.registerMicroservice(microservice));
+    Assert.assertEquals(null, oClient.registerMicroserviceInstance(microservice.getIntance()));
+    oClient.init();
+    Assert.assertEquals(null,
+        oClient.getMicroserviceId(microservice.getAppId(),
+            microservice.getServiceName(),
+            microservice.getVersion()));
+    Assert.assertThat(oClient.getAllMicroservices().isEmpty(), is(true));
+    Assert.assertEquals(null, oClient.registerMicroservice(microservice));
+    Assert.assertEquals(null, oClient.getMicroservice("microserviceId"));
+    Assert.assertEquals(null, oClient.getMicroserviceInstance("consumerId", "providerId"));
+    Assert.assertEquals(false,
+        oClient.unregisterMicroserviceInstance("microserviceId", "microserviceInstanceId"));
+    Assert.assertEquals(null, oClient.heartbeat("microserviceId", "microserviceInstanceId"));
+    Assert.assertEquals(null,
+        oClient.findServiceInstance("selfMicroserviceId", "appId", "serviceName", "versionRule"));
 
-    @Test
-    public void testPrivateMehtodCreateHttpClientOptions() {
-        MicroserviceFactory microserviceFactory = new MicroserviceFactory();
-        Microservice microservice = microserviceFactory.create("app", "ms");
-        oClient.registerMicroservice(microservice);
-        oClient.registerMicroserviceInstance(microservice.getIntance());
-        new MockUp<ServiceRegistryConfig>() {
-            @Mock
-            public HttpVersion getHttpVersion() {
-                return HttpVersion.HTTP_2;
-            }
+    Assert.assertEquals("a", new ClientException("a").getMessage());
+  }
 
-            @Mock
-            public boolean isSsl() {
-                return true;
-            }
-        };
-        try {
-            oClient.init();
-            HttpClientOptions httpClientOptions = Deencapsulation.invoke(oClient, "createHttpClientOptions");
-            Assert.assertNotNull(httpClientOptions);
-            Assert.assertEquals(80, httpClientOptions.getDefaultPort());
-        } catch (Exception e) {
-            Assert.assertNotNull(e);
+  static abstract class RegisterSchemaTester {
+    void run() {
+      Logger rootLogger = Logger.getRootLogger();
+
+      List<LoggingEvent> events = new ArrayList<>();
+      Appender appender = new MockUp<Appender>() {
+        @Mock
+        public void doAppend(LoggingEvent event) {
+          events.add(event);
         }
+      }.getMockInstance();
+      rootLogger.addAppender(appender);
+
+      doRun(events);
+
+      rootLogger.removeAppender(appender);
     }
 
-    @Test
-    public void testException() {
-        MicroserviceFactory microserviceFactory = new MicroserviceFactory();
-        Microservice microservice = microserviceFactory.create("app", "ms");
-        Assert.assertEquals(null, oClient.registerMicroservice(microservice));
-        Assert.assertEquals(null, oClient.registerMicroserviceInstance(microservice.getIntance()));
-        oClient.init();
-        Assert.assertEquals(null,
-                oClient.getMicroserviceId(microservice.getAppId(),
-                        microservice.getServiceName(),
-                        microservice.getVersion()));
-        Assert.assertThat(oClient.getAllMicroservices().isEmpty(), is(true));
-        Assert.assertEquals(null, oClient.registerMicroservice(microservice));
-        Assert.assertEquals(null, oClient.getMicroservice("microserviceId"));
-        Assert.assertEquals(null, oClient.getMicroserviceInstance("consumerId", "providerId"));
-        Assert.assertEquals(false,
-                oClient.unregisterMicroserviceInstance("microserviceId", "microserviceInstanceId"));
-        Assert.assertEquals(null, oClient.heartbeat("microserviceId", "microserviceInstanceId"));
-        Assert.assertEquals(null,
-                oClient.findServiceInstance("selfMicroserviceId", "appId", "serviceName", "versionRule"));
+    abstract void doRun(List<LoggingEvent> events);
+  }
 
-        Assert.assertEquals("a", new ClientException("a").getMessage());
-    }
+  @Test
+  public void testRegisterSchemaNoResponse() {
+    new RegisterSchemaTester() {
+      void doRun(java.util.List<LoggingEvent> events) {
+        oClient.registerSchema("msid", "schemaId", "content");
+        Assert.assertEquals("Register schema msid/schemaId failed.", events.get(0).getMessage());
+      }
+    }.run();
+  }
 
-    static abstract class RegisterSchemaTester {
-        void run() {
-            Logger rootLogger = Logger.getRootLogger();
+  @Test
+  public void testRegisterSchemaException() {
+    InterruptedException e = new InterruptedException();
+    new MockUp<CountDownLatch>() {
+      @Mock
+      public void await() throws InterruptedException {
+        throw e;
+      }
+    };
 
-            List<LoggingEvent> events = new ArrayList<>();
-            Appender appender = new MockUp<Appender>() {
-                @Mock
-                public void doAppend(LoggingEvent event) {
-                    events.add(event);
-                }
-            }.getMockInstance();
-            rootLogger.addAppender(appender);
+    new RegisterSchemaTester() {
+      void doRun(java.util.List<LoggingEvent> events) {
+        oClient.registerSchema("msid", "schemaId", "content");
+        Assert.assertEquals(
+            "register schema msid/schemaId fail.",
+            events.get(0).getMessage());
+        Assert.assertEquals(e, events.get(0).getThrowableInformation().getThrowable());
+      }
+    }.run();
+  }
 
-            doRun(events);
+  @Test
+  public void testRegisterSchemaErrorResponse() {
+    new MockUp<ServiceRegistryClientImpl>() {
+      @Mock
+      Handler<RestResponse> syncHandlerEx(CountDownLatch countDownLatch, Holder<ResponseWrapper> holder) {
+        return restResponse -> {
+          HttpClientResponse response = Mockito.mock(HttpClientResponse.class);
+          Mockito.when(response.statusCode()).thenReturn(400);
+          Mockito.when(response.statusMessage()).thenReturn("client error");
 
-            rootLogger.removeAppender(appender);
-        }
+          Buffer bodyBuffer = Buffer.buffer();
+          bodyBuffer.appendString("too big");
 
-        abstract void doRun(List<LoggingEvent> events);
-    }
-
-    @Test
-    public void testRegisterSchemaNoResponse() {
-        new RegisterSchemaTester() {
-            void doRun(java.util.List<LoggingEvent> events) {
-                oClient.registerSchema("msid", "schemaId", "content");
-                Assert.assertEquals("Register schema msid/schemaId failed.", events.get(0).getMessage());
-            };
-        }.run();
-    }
-
-    @Test
-    public void testRegisterSchemaException() {
-        InterruptedException e = new InterruptedException();
-        new MockUp<CountDownLatch>() {
-            @Mock
-            public void await() throws InterruptedException {
-                throw e;
-            }
+          ResponseWrapper responseWrapper = new ResponseWrapper();
+          responseWrapper.response = response;
+          responseWrapper.bodyBuffer = bodyBuffer;
+          holder.value = responseWrapper;
         };
+      }
+    };
+    new MockUp<RestUtils>() {
+      @Mock
+      void httpDo(RequestContext requestContext, Handler<RestResponse> responseHandler) {
+        responseHandler.handle(null);
+      }
+    };
 
-        new RegisterSchemaTester() {
-            void doRun(java.util.List<LoggingEvent> events) {
-                oClient.registerSchema("msid", "schemaId", "content");
-                Assert.assertEquals(
-                        "register schema msid/schemaId fail.",
-                        events.get(0).getMessage());
-                Assert.assertEquals(e, events.get(0).getThrowableInformation().getThrowable());
-            };
-        }.run();
-    }
+    new RegisterSchemaTester() {
+      void doRun(java.util.List<LoggingEvent> events) {
+        oClient.registerSchema("msid", "schemaId", "content");
+        Assert.assertEquals(
+            "Register schema msid/schemaId failed, statusCode: 400, statusMessage: client error, description: too big.",
+            events.get(0).getMessage());
+      }
+    }.run();
+  }
 
-    @Test
-    public void testRegisterSchemaErrorResponse() {
-        new MockUp<ServiceRegistryClientImpl>() {
-            @Mock
-            Handler<RestResponse> syncHandlerEx(CountDownLatch countDownLatch, Holder<ResponseWrapper> holder) {
-                return restResponse -> {
-                    HttpClientResponse response = Mockito.mock(HttpClientResponse.class);
-                    Mockito.when(response.statusCode()).thenReturn(400);
-                    Mockito.when(response.statusMessage()).thenReturn("client error");
+  @Test
+  public void testRegisterSchemaSuccess() {
+    new MockUp<ServiceRegistryClientImpl>() {
+      @Mock
+      Handler<RestResponse> syncHandlerEx(CountDownLatch countDownLatch, Holder<ResponseWrapper> holder) {
+        return restResponse -> {
+          HttpClientResponse response = Mockito.mock(HttpClientResponse.class);
+          Mockito.when(response.statusCode()).thenReturn(200);
 
-                    Buffer bodyBuffer = Buffer.buffer();
-                    bodyBuffer.appendString("too big");
-
-                    ResponseWrapper responseWrapper = new ResponseWrapper();
-                    responseWrapper.response = response;
-                    responseWrapper.bodyBuffer = bodyBuffer;
-                    holder.value = responseWrapper;
-                };
-            }
+          ResponseWrapper responseWrapper = new ResponseWrapper();
+          responseWrapper.response = response;
+          holder.value = responseWrapper;
         };
-        new MockUp<RestUtils>() {
-            @Mock
-            void httpDo(RequestContext requestContext, Handler<RestResponse> responseHandler) {
-                responseHandler.handle(null);
-            }
-        };
+      }
+    };
+    new MockUp<RestUtils>() {
+      @Mock
+      void httpDo(RequestContext requestContext, Handler<RestResponse> responseHandler) {
+        responseHandler.handle(null);
+      }
+    };
 
-        new RegisterSchemaTester() {
-            void doRun(java.util.List<LoggingEvent> events) {
-                oClient.registerSchema("msid", "schemaId", "content");
-                Assert.assertEquals(
-                        "Register schema msid/schemaId failed, statusCode: 400, statusMessage: client error, description: too big.",
-                        events.get(0).getMessage());
-            };
-        }.run();
-    }
-
-    @Test
-    public void testRegisterSchemaSuccess() {
-        new MockUp<ServiceRegistryClientImpl>() {
-            @Mock
-            Handler<RestResponse> syncHandlerEx(CountDownLatch countDownLatch, Holder<ResponseWrapper> holder) {
-                return restResponse -> {
-                    HttpClientResponse response = Mockito.mock(HttpClientResponse.class);
-                    Mockito.when(response.statusCode()).thenReturn(200);
-
-                    ResponseWrapper responseWrapper = new ResponseWrapper();
-                    responseWrapper.response = response;
-                    holder.value = responseWrapper;
-                };
-            }
-        };
-        new MockUp<RestUtils>() {
-            @Mock
-            void httpDo(RequestContext requestContext, Handler<RestResponse> responseHandler) {
-                responseHandler.handle(null);
-            }
-        };
-
-        new RegisterSchemaTester() {
-            void doRun(java.util.List<LoggingEvent> events) {
-                oClient.registerSchema("msid", "schemaId", "content");
-                Assert.assertEquals(
-                        "register schema msid/schemaId success.",
-                        events.get(0).getMessage());
-            };
-        }.run();
-    }
+    new RegisterSchemaTester() {
+      void doRun(java.util.List<LoggingEvent> events) {
+        oClient.registerSchema("msid", "schemaId", "content");
+        Assert.assertEquals(
+            "register schema msid/schemaId success.",
+            events.get(0).getMessage());
+      }
+    }.run();
+  }
 }

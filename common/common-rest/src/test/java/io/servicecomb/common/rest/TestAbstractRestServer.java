@@ -36,62 +36,62 @@ import io.servicecomb.foundation.common.utils.JsonUtils;
 import io.servicecomb.swagger.invocation.Response;
 
 public class TestAbstractRestServer {
-    private Invocation invocation;
+  private Invocation invocation;
 
-    private RestServerRequestInternal restRequest;
+  private RestServerRequestInternal restRequest;
 
-    private AbstractRestServer<Response> restServer;
+  private AbstractRestServer<Response> restServer;
 
-    @Before
-    public void before() throws Exception {
-        invocation = Mockito.mock(Invocation.class);
-        restRequest = Mockito.mock(RestServerRequestInternal.class);
-        restServer = new AbstractRestServer<Response>() {
-            @Override
-            protected void doSendResponse(Response httpServerResponse, ProduceProcessor produceProcessor,
-                    Response response) throws Exception {
-            }
+  @Before
+  public void before() throws Exception {
+    invocation = Mockito.mock(Invocation.class);
+    restRequest = Mockito.mock(RestServerRequestInternal.class);
+    restServer = new AbstractRestServer<Response>() {
+      @Override
+      protected void doSendResponse(Response httpServerResponse, ProduceProcessor produceProcessor,
+          Response response) throws Exception {
+      }
 
-            @Override
-            protected void setHttpRequestContext(Invocation invocation, RestServerRequestInternal restRequest) {
-            }
-        };
-        restServer.setTransport(Mockito.mock(Transport.class));
+      @Override
+      protected void setHttpRequestContext(Invocation invocation, RestServerRequestInternal restRequest) {
+      }
+    };
+    restServer.setTransport(Mockito.mock(Transport.class));
+  }
+
+  @After
+  public void after() {
+
+    invocation = null;
+    restRequest = null;
+    restServer = null;
+  }
+
+  @Test
+  public void testSetContext() throws Exception {
+    boolean status = true;
+    try {
+      Map<String, String> contextMap = new HashMap<>();
+      contextMap.put("abc", "abc");
+      String strContext = JsonUtils.writeValueAsString(contextMap);
+      when(restRequest.getHeaderParam(Const.CSE_CONTEXT)).thenReturn(strContext);
+      restServer.setContext(invocation, restRequest);
+    } catch (Exception e) {
+      status = false;
     }
+    Assert.assertTrue(status);
+  }
 
-    @After
-    public void after() {
-
-        invocation = null;
-        restRequest = null;
-        restServer = null;
+  @Test
+  public void testFindRestOperationException() {
+    boolean status = true;
+    try {
+      when(restRequest.getPath()).thenReturn("/a/b/c");
+      when(restRequest.getMethod()).thenReturn("POST");
+      restServer.findRestOperation(restRequest);
+    } catch (Throwable e) {
+      status = false;
     }
-
-    @Test
-    public void testSetContext() throws Exception {
-        boolean status = true;
-        try {
-            Map<String, String> contextMap = new HashMap<>();
-            contextMap.put("abc", "abc");
-            String strContext = JsonUtils.writeValueAsString(contextMap);
-            when(restRequest.getHeaderParam(Const.CSE_CONTEXT)).thenReturn(strContext);
-            restServer.setContext(invocation, restRequest);
-        } catch (Exception e) {
-            status = false;
-        }
-        Assert.assertTrue(status);
-    }
-
-    @Test
-    public void testFindRestOperationException() {
-        boolean status = true;
-        try {
-            when(restRequest.getPath()).thenReturn("/a/b/c");
-            when(restRequest.getMethod()).thenReturn("POST");
-            restServer.findRestOperation(restRequest);
-        } catch (Throwable e) {
-            status = false;
-        }
-        Assert.assertFalse(status);
-    }
+    Assert.assertFalse(status);
+  }
 }

@@ -18,14 +18,13 @@ package io.servicecomb.serviceregistry.config;
 
 public final class InstancePropertiesLoader extends AbstractPropertiesLoader {
 
-    public static final InstancePropertiesLoader INSTANCE = new InstancePropertiesLoader();
+  public static final InstancePropertiesLoader INSTANCE = new InstancePropertiesLoader();
 
-    private InstancePropertiesLoader() {
-    }
+  private InstancePropertiesLoader() {
+  }
 
-    @Override
-    protected String getConfigOptionPrefix() {
-        return "instance_description";
-    }
-
+  @Override
+  protected String getConfigOptionPrefix() {
+    return "instance_description";
+  }
 }

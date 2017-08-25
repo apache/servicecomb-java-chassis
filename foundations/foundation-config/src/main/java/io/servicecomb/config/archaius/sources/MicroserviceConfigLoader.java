@@ -26,53 +26,53 @@ import org.springframework.util.StringUtils;
 import io.servicecomb.foundation.common.exceptions.ServiceCombException;
 
 public class MicroserviceConfigLoader extends YAMLConfigLoader {
-    private static final Logger LOGGER = LoggerFactory.getLogger(MicroserviceConfigLoader.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(MicroserviceConfigLoader.class);
 
-    private static final String ADDITIONAL_CONFIG_URL = "cse.configurationSource.additionalUrls";
+  private static final String ADDITIONAL_CONFIG_URL = "cse.configurationSource.additionalUrls";
 
-    /**
-     * Default configuration file name to be used by default constructor. This file should
-     * be on the classpath. The file name can be overridden by the value of system property
-     * <code>configurationSource.defaultFileName</code>
-     */
-    private static final String DEFAULT_CONFIG_FILE_NAME = "microservice.yaml";
+  /**
+   * Default configuration file name to be used by default constructor. This file should
+   * be on the classpath. The file name can be overridden by the value of system property
+   * <code>configurationSource.defaultFileName</code>
+   */
+  private static final String DEFAULT_CONFIG_FILE_NAME = "microservice.yaml";
 
-    public MicroserviceConfigLoader() {
-        setOrderKey("cse-config-order");
+  public MicroserviceConfigLoader() {
+    setOrderKey("cse-config-order");
+  }
+
+  public void loadAndSort() {
+    try {
+      String configFileFromClasspath =
+          System.getProperty("cse.configurationSource.defaultFileName") == null ? DEFAULT_CONFIG_FILE_NAME
+              : System.getProperty("cse.configurationSource.defaultFileName");
+      super.load(configFileFromClasspath);
+      loadAdditionalConfig();
+
+      if (configModels.isEmpty()) {
+        LOGGER.warn("No URLs will be polled as dynamic configuration sources.");
+        LOGGER.warn(
+            "To enable URLs as dynamic configuration sources, define System property {} or make {} available on classpath.",
+            ADDITIONAL_CONFIG_URL,
+            configFileFromClasspath);
+      }
+
+      sort();
+    } catch (IOException e) {
+      throw new ServiceCombException("Failed to load microservice config", e);
+    }
+  }
+
+  private void loadAdditionalConfig() throws IOException {
+    String strUrls = System.getProperty(ADDITIONAL_CONFIG_URL);
+    if (StringUtils.isEmpty(strUrls)) {
+      return;
     }
 
-    public void loadAndSort() {
-        try {
-            String configFileFromClasspath =
-                System.getProperty("cse.configurationSource.defaultFileName") == null ? DEFAULT_CONFIG_FILE_NAME
-                        : System.getProperty("cse.configurationSource.defaultFileName");
-            super.load(configFileFromClasspath);
-            loadAdditionalConfig();
-
-            if (configModels.isEmpty()) {
-                LOGGER.warn("No URLs will be polled as dynamic configuration sources.");
-                LOGGER.warn(
-                        "To enable URLs as dynamic configuration sources, define System property {} or make {} available on classpath.",
-                        ADDITIONAL_CONFIG_URL,
-                        configFileFromClasspath);
-            }
-
-            sort();
-        } catch (IOException e) {
-            throw new ServiceCombException("Failed to load microservice config", e);
-        }
+    for (String strUrl : strUrls.split(",")) {
+      URL url = new URL(strUrl);
+      ConfigModel configModel = load(url);
+      configModels.add(configModel);
     }
-
-    private void loadAdditionalConfig() throws IOException {
-        String strUrls = System.getProperty(ADDITIONAL_CONFIG_URL);
-        if (StringUtils.isEmpty(strUrls)) {
-            return;
-        }
-
-        for (String strUrl : strUrls.split(",")) {
-            URL url = new URL(strUrl);
-            ConfigModel configModel = load(url);
-            configModels.add(configModel);
-        }
-    }
+  }
 }

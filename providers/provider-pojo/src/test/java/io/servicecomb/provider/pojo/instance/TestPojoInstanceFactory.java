@@ -23,25 +23,24 @@ import io.servicecomb.provider.pojo.PojoConst;
 
 public class TestPojoInstanceFactory {
 
-    @Test
-    public void testInitException()
-        throws Exception {
+  @Test
+  public void testInitException()
+      throws Exception {
 
-        PojoInstanceFactory lPojoInstanceFactory = new PojoInstanceFactory();
-        try {
-            lPojoInstanceFactory.create("TestPojoInstanceFactory");
-        } catch (Error e) {
-            Assert.assertEquals("Fail to create instance of class:TestPojoInstanceFactory", e.getMessage());
-        }
+    PojoInstanceFactory lPojoInstanceFactory = new PojoInstanceFactory();
+    try {
+      lPojoInstanceFactory.create("TestPojoInstanceFactory");
+    } catch (Error e) {
+      Assert.assertEquals("Fail to create instance of class:TestPojoInstanceFactory", e.getMessage());
     }
+  }
 
-    @Test
-    public void testInit()
-        throws Exception {
+  @Test
+  public void testInit()
+      throws Exception {
 
-        PojoInstanceFactory lPojoInstanceFactory = new PojoInstanceFactory();
-        lPojoInstanceFactory.create("io.servicecomb.provider.pojo.instance.TestPojoInstanceFactory");
-        Assert.assertEquals(PojoConst.POJO, lPojoInstanceFactory.getImplName());
-    }
-
+    PojoInstanceFactory lPojoInstanceFactory = new PojoInstanceFactory();
+    lPojoInstanceFactory.create("io.servicecomb.provider.pojo.instance.TestPojoInstanceFactory");
+    Assert.assertEquals(PojoConst.POJO, lPojoInstanceFactory.getImplName());
+  }
 }

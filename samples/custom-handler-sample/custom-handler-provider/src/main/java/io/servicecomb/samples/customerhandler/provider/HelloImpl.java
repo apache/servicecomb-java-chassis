@@ -24,14 +24,13 @@ import io.servicecomb.samples.common.schema.models.Person;
 @RpcSchema(schemaId = "hello")
 public class HelloImpl implements Hello {
 
-    @Override
-    public String sayHi(String name) {
-        return "Hello " + name;
-    }
+  @Override
+  public String sayHi(String name) {
+    return "Hello " + name;
+  }
 
-    @Override
-    public String sayHello(Person person) {
-        return "Hello person " + person.getName();
-    }
-
+  @Override
+  public String sayHello(Person person) {
+    return "Hello person " + person.getName();
+  }
 }

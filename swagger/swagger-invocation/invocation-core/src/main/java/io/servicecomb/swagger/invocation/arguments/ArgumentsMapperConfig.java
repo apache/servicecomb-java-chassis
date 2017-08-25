@@ -21,39 +21,39 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ArgumentsMapperConfig {
-    // input
-    private Method swaggerMethod;
+  // input
+  private Method swaggerMethod;
 
-    private Method providerMethod;
+  private Method providerMethod;
 
-    // output
-    private List<ArgumentMapper> argumentMapperList = new ArrayList<>();
+  // output
+  private List<ArgumentMapper> argumentMapperList = new ArrayList<>();
 
-    public Method getSwaggerMethod() {
-        return swaggerMethod;
-    }
+  public Method getSwaggerMethod() {
+    return swaggerMethod;
+  }
 
-    public void setSwaggerMethod(Method swaggerMethod) {
-        this.swaggerMethod = swaggerMethod;
-    }
+  public void setSwaggerMethod(Method swaggerMethod) {
+    this.swaggerMethod = swaggerMethod;
+  }
 
-    public Method getProviderMethod() {
-        return providerMethod;
-    }
+  public Method getProviderMethod() {
+    return providerMethod;
+  }
 
-    public void setProviderMethod(Method providerMethod) {
-        this.providerMethod = providerMethod;
-    }
+  public void setProviderMethod(Method providerMethod) {
+    this.providerMethod = providerMethod;
+  }
 
-    public List<ArgumentMapper> getArgumentMapperList() {
-        return argumentMapperList;
-    }
+  public List<ArgumentMapper> getArgumentMapperList() {
+    return argumentMapperList;
+  }
 
-    public void setArgumentMapperList(List<ArgumentMapper> argumentMapperList) {
-        this.argumentMapperList = argumentMapperList;
-    }
+  public void setArgumentMapperList(List<ArgumentMapper> argumentMapperList) {
+    this.argumentMapperList = argumentMapperList;
+  }
 
-    public void addArgumentMapper(ArgumentMapper argumentMapper) {
-        argumentMapperList.add(argumentMapper);
-    }
+  public void addArgumentMapper(ArgumentMapper argumentMapper) {
+    argumentMapperList.add(argumentMapper);
+  }
 }

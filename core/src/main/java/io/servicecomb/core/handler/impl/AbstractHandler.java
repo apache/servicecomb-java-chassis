@@ -21,8 +21,8 @@ import io.servicecomb.core.definition.MicroserviceMeta;
 import io.servicecomb.swagger.invocation.InvocationType;
 
 public abstract class AbstractHandler implements Handler {
-    @Override
-    public void init(MicroserviceMeta microserviceMeta, InvocationType invocationType) {
+  @Override
+  public void init(MicroserviceMeta microserviceMeta, InvocationType invocationType) {
 
-    }
+  }
 }

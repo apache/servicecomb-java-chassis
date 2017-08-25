@@ -14,9 +14,6 @@
  * limitations under the License.
  */
 
-/**
- * 
- */
 package io.servicecomb.transport.rest.servlet.common;
 
 import java.util.concurrent.Executor;
@@ -24,55 +21,48 @@ import java.util.concurrent.Executor;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-/**
- *
- *
- */
-import io.servicecomb.transport.rest.servlet.ServletRestServer;
 import org.mockito.Mockito;
 
 import io.servicecomb.common.rest.AbstractRestServer;
 import io.servicecomb.common.rest.codec.RestServerRequestInternal;
 import io.servicecomb.common.rest.definition.RestOperationMeta;
 import io.servicecomb.core.definition.OperationMeta;
-
+import io.servicecomb.transport.rest.servlet.ServletRestServer;
 import mockit.Mock;
 import mockit.MockUp;
 
 public final class MockUtil {
-    private static MockUtil instance = new MockUtil();
+  private static MockUtil instance = new MockUtil();
 
-    private MockUtil() {
+  private MockUtil() {
 
-    }
+  }
 
-    public static MockUtil getInstance() {
-        return instance;
-    }
+  public static MockUtil getInstance() {
+    return instance;
+  }
 
-    public void mockAbstactRestServer() {
+  public void mockAbstactRestServer() {
 
-        new MockUp<AbstractRestServer<HttpServletResponse>>() {
-            @Mock
-            protected RestOperationMeta findRestOperation(RestServerRequestInternal restRequest) {
-                RestOperationMeta restOperationMeta = Mockito.mock(RestOperationMeta.class);
-                OperationMeta operationMeta = Mockito.mock(OperationMeta.class);
-                Executor executor = Mockito.mock(Executor.class);
-                operationMeta.setExecutor(executor);
-                return restOperationMeta;
-            }
+    new MockUp<AbstractRestServer<HttpServletResponse>>() {
+      @Mock
+      protected RestOperationMeta findRestOperation(RestServerRequestInternal restRequest) {
+        RestOperationMeta restOperationMeta = Mockito.mock(RestOperationMeta.class);
+        OperationMeta operationMeta = Mockito.mock(OperationMeta.class);
+        Executor executor = Mockito.mock(Executor.class);
+        operationMeta.setExecutor(executor);
+        return restOperationMeta;
+      }
+    };
+  }
 
-        };
-    }
+  public void mockServletRestServer() {
 
-    public void mockServletRestServer() {
+    new MockUp<ServletRestServer>() {
+      @Mock
+      public void service(HttpServletRequest request, HttpServletResponse response) {
 
-        new MockUp<ServletRestServer>() {
-            @Mock
-            public void service(HttpServletRequest request, HttpServletResponse response) {
-
-            }
-
-        };
-    }
+      }
+    };
+  }
 }

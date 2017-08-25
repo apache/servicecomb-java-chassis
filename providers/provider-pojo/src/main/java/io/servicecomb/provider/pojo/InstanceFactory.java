@@ -17,7 +17,7 @@
 package io.servicecomb.provider.pojo;
 
 public interface InstanceFactory {
-    String getImplName();
+  String getImplName();
 
-    Object create(String implValue);
+  Object create(String implValue);
 }

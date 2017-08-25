@@ -33,24 +33,24 @@ import com.netflix.hystrix.strategy.properties.HystrixPropertiesStrategy;
  */
 public final class HystrixPropertiesStrategyExt extends HystrixPropertiesStrategy {
 
-    private static final HystrixPropertiesStrategyExt INSTANCE = new HystrixPropertiesStrategyExt();
+  private static final HystrixPropertiesStrategyExt INSTANCE = new HystrixPropertiesStrategyExt();
 
-    private final Map<String, HystrixCommandProperties> commandPropertiesMap = new ConcurrentHashMap<>();
+  private final Map<String, HystrixCommandProperties> commandPropertiesMap = new ConcurrentHashMap<>();
 
-    private HystrixPropertiesStrategyExt() {
+  private HystrixPropertiesStrategyExt() {
+  }
+
+  public static HystrixPropertiesStrategyExt getInstance() {
+    return INSTANCE;
+  }
+
+  @Override
+  public HystrixCommandProperties getCommandProperties(HystrixCommandKey commandKey, Setter builder) {
+    HystrixCommandProperties commandProperties = commandPropertiesMap.get(commandKey.name());
+    if (commandProperties == null) {
+      commandProperties = new HystrixCommandPropertiesExt(commandKey, builder);
+      commandPropertiesMap.putIfAbsent(commandKey.name(), commandProperties);
     }
-
-    public static HystrixPropertiesStrategyExt getInstance() {
-        return INSTANCE;
-    }
-
-    @Override
-    public HystrixCommandProperties getCommandProperties(HystrixCommandKey commandKey, Setter builder) {
-        HystrixCommandProperties commandProperties = commandPropertiesMap.get(commandKey.name());
-        if (commandProperties == null) {
-            commandProperties = new HystrixCommandPropertiesExt(commandKey, builder);
-            commandPropertiesMap.putIfAbsent(commandKey.name(), commandProperties);
-        }
-        return commandProperties;
-    }
+    return commandProperties;
+  }
 }

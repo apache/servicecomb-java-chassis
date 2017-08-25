@@ -30,380 +30,502 @@ import com.netflix.hystrix.strategy.properties.HystrixProperty;
 
 public class HystrixCommandPropertiesExt extends HystrixCommandProperties {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(HystrixCommandProperties.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(HystrixCommandProperties.class);
 
-    /* defaults */
-    /* package */
-    // default => statisticalWindow: 10000 = 10 seconds (and default of 10
-    // buckets so each bucket is 1 second)
-    static final Integer DEFAULT_METRICSROLLINGSTATISTICALWINDOW = 10000;
-    // default => statisticalWindowBuckets: 10 = 10 buckets in a 10 second
-    // window so each bucket is 1 second
-    private static final Integer DEFAULT_METRICSROLLINGSTATISTICALWINDOWBUCKETS = 10;
-    // default => statisticalWindowVolumeThreshold: 20 requests in 10 seconds
-    // must occur before statistics matter
-    private static final Integer DEFAULT_CIRCUITBREAKERREQUESTVOLUMETHRESHOLD = 20;
-    // default => sleepWindow: 5000 = 5 seconds that we will sleep before trying
-    // again after tripping the circuit
-    private static final Integer DEFAULT_CIRCUITBREAKERSLEEPWINDOWINMILLISECONDS = 5000;
-    // default => errorThresholdPercentage = 50 = if 50%+ of requests in 10
-    // seconds are failures or latent then we will trip the circuit
-    private static final Integer DEFAULT_CIRCUITBREAKERERRORTHRESHOLDPERCENTAGE = 50;
-    // default => forceCircuitOpen = false (we want to allow traffic)
-    private static final Boolean DEFAULT_CIRCUITBREAKERFORCEOPEN = false;
-    /* package */
-    // default => ignoreErrors = false
-    static final Boolean DEFAULT_CIRCUITBREAKERFORCECLOSED = false;
-    // default => executionTimeoutInMilliseconds: 1000 = 1 second
-    private static final Integer DEFAULT_EXECUTIONTIMEOUTINMILLISECONDS = 1000;
-    private static final Boolean DEFAULT_EXECUTIONTIMEOUTENABLED = true;
-    private static final ExecutionIsolationStrategy DEFAULT_ISOLATIONSTRATEGY = ExecutionIsolationStrategy.THREAD;
-    private static final Boolean DEFAULT_EXECUTIONISOLATIONTHREADINTERRUPTONTIMEOUT = true;
-    private static final Boolean DEFAULT_METRICSROLLINGPERCENTILEENABLED = true;
-    private static final Boolean DEFAULT_REQUESTCACHEENABLED = true;
-    private static final Integer DEFAULT_FALLBACKISOLATIONSEMAPHOREMAXCONCURRENTREQUESTS = 10;
-    private static final Boolean DEFAULT_FALLBACKENABLED = true;
-    private static final Integer DEFAULT_EXECUTIONISOLATIONSEMAPHOREMAXCONCURRENTREQUESTS = 10;
-    private static final Boolean DEFAULT_REQUESTLOGENABLED = true;
-    private static final Boolean DEFAULT_CIRCUITBREAKERENABLED = true;
-    // default to 1 minute for RollingPercentile
-    private static final Integer DEFAULT_METRICSROLLINGPERCENTILEWINDOW = 60000;
-    // default to 6 buckets (10 seconds each in 60 second window)
-    private static final Integer DEFAULT_METRICSROLLINGPERCENTILEWINDOWBUCKETS = 6;
-    // default to 100 values max per bucket
-    private static final Integer DEFAULT_METRICSROLLINGPERCENTILEBUCKETSIZE = 100;
-    // default to 500ms as max frequency between allowing snapshots of health
-    // (error percentage etc)
-    private static final Integer DEFAULT_METRICSHEALTHSNAPSHOTINTERVALINMILLISECONDS = 500;
+  /* defaults */
+  /* package */
+  // default => statisticalWindow: 10000 = 10 seconds (and default of 10
+  // buckets so each bucket is 1 second)
+  static final Integer DEFAULT_METRICSROLLINGSTATISTICALWINDOW = 10000;
 
-    private static final int COMMAND_KEY_LENGTH = 3;
+  // default => statisticalWindowBuckets: 10 = 10 buckets in a 10 second
+  // window so each bucket is 1 second
+  private static final Integer DEFAULT_METRICSROLLINGSTATISTICALWINDOWBUCKETS = 10;
 
-    @SuppressWarnings("unused")
-    private final HystrixCommandKey key;
-    // number of requests that must be made within a statisticalWindow before
-    // open/close decisions are made using stats
-    private final HystrixProperty<Integer> circuitBreakerRequestVolumeThreshold;
-    // milliseconds after tripping circuit before allowing retry
-    private final HystrixProperty<Integer> circuitBreakerSleepWindowInMilliseconds;
-    // Whether circuit breaker should be enabled.
-    private final HystrixProperty<Boolean> circuitBreakerEnabled;
-    // % of 'marks' that must be failed to trip the circuit
-    private final HystrixProperty<Integer> circuitBreakerErrorThresholdPercentage;
-    // a property to allow forcing the circuit open (stopping all requests)
-    private final HystrixProperty<Boolean> circuitBreakerForceOpen;
-    // a property to allow ignoring errors and therefore never trip 'open' (ie.
-    // allow all traffic through)
-    private final HystrixProperty<Boolean> circuitBreakerForceClosed;
-    // Whether a command should be executed in a separate thread or not.
-    private final HystrixProperty<ExecutionIsolationStrategy> executionIsolationStrategy;
-    // Timeout value in milliseconds for a command
-    private final HystrixProperty<Integer> executionTimeoutInMilliseconds;
-    // Whether timeout should be triggered
-    private final HystrixProperty<Boolean> executionTimeoutEnabled;
-    // What thread-pool this command should run in (if running on a separate
-    // thread).
-    private final HystrixProperty<String> executionIsolationThreadPoolKeyOverride;
-    // Number of permits for execution semaphore
-    private final HystrixProperty<Integer> executionIsolationSemaphoreMaxConcurrentRequests;
-    // Number of permits for fallback semaphore
-    private final HystrixProperty<Integer> fallbackIsolationSemaphoreMaxConcurrentRequests;
-    // Whether fallback should be attempted.
-    private final HystrixProperty<Boolean> fallbackEnabled;
-    // Whether an underlying Future/Thread (when runInSeparateThread == true)
-    // should be interrupted after a timeout
-    private final HystrixProperty<Boolean> executionIsolationThreadInterruptOnTimeout;
-    // milliseconds back that will be tracked
-    private final HystrixProperty<Integer> metricsRollingStatisticalWindowInMilliseconds;
-    // number of buckets in the statisticalWindow
-    private final HystrixProperty<Integer> metricsRollingStatisticalWindowBuckets;
-    // Whether monitoring should be enabled (SLA and Tracers).
-    private final HystrixProperty<Boolean> metricsRollingPercentileEnabled;
-    // number of milliseconds that will be tracked in RollingPercentile
-    private final HystrixProperty<Integer> metricsRollingPercentileWindowInMilliseconds;
-    // number of buckets percentileWindow will be divided into
-    private final HystrixProperty<Integer> metricsRollingPercentileWindowBuckets;
-    // how many values will be stored in each percentileWindowBucket
-    private final HystrixProperty<Integer> metricsRollingPercentileBucketSize;
-    // time between health snapshots
-    private final HystrixProperty<Integer> metricsHealthSnapshotIntervalInMilliseconds;
-    // whether command request logging is enabled.
-    private final HystrixProperty<Boolean> requestLogEnabled;
-    // Whether request caching is enabled.
-    private final HystrixProperty<Boolean> requestCacheEnabled;
+  // default => statisticalWindowVolumeThreshold: 20 requests in 10 seconds
+  // must occur before statistics matter
+  private static final Integer DEFAULT_CIRCUITBREAKERREQUESTVOLUMETHRESHOLD = 20;
 
-    protected HystrixCommandPropertiesExt(HystrixCommandKey key) {
-        this(key, HystrixCommandProperties.Setter(), "cse");
-    }
+  // default => sleepWindow: 5000 = 5 seconds that we will sleep before trying
+  // again after tripping the circuit
+  private static final Integer DEFAULT_CIRCUITBREAKERSLEEPWINDOWINMILLISECONDS = 5000;
 
-    protected HystrixCommandPropertiesExt(HystrixCommandKey key, HystrixCommandProperties.Setter builder) {
-        this(key, builder, "cse");
-    }
+  // default => errorThresholdPercentage = 50 = if 50%+ of requests in 10
+  // seconds are failures or latent then we will trip the circuit
+  private static final Integer DEFAULT_CIRCUITBREAKERERRORTHRESHOLDPERCENTAGE = 50;
 
-    protected HystrixCommandPropertiesExt(HystrixCommandKey key, HystrixCommandProperties.Setter builder,
-            String propertyPrefix) {
-        super(key, builder, propertyPrefix);
-        this.key = key;
-        this.circuitBreakerEnabled = getProperty(propertyPrefix, "circuitBreaker", key, "enabled",
-                builder.getCircuitBreakerEnabled(), DEFAULT_CIRCUITBREAKERENABLED);
-        this.circuitBreakerRequestVolumeThreshold = getProperty(propertyPrefix, "circuitBreaker", key,
-                "requestVolumeThreshold", builder.getCircuitBreakerRequestVolumeThreshold(),
-                DEFAULT_CIRCUITBREAKERREQUESTVOLUMETHRESHOLD);
-        this.circuitBreakerSleepWindowInMilliseconds = getProperty(propertyPrefix, "circuitBreaker", key,
-                "sleepWindowInMilliseconds", builder.getCircuitBreakerSleepWindowInMilliseconds(),
-                DEFAULT_CIRCUITBREAKERSLEEPWINDOWINMILLISECONDS);
-        this.circuitBreakerErrorThresholdPercentage = getProperty(propertyPrefix, "circuitBreaker", key,
-                "errorThresholdPercentage", builder.getCircuitBreakerErrorThresholdPercentage(),
-                DEFAULT_CIRCUITBREAKERERRORTHRESHOLDPERCENTAGE);
-        this.circuitBreakerForceOpen = getProperty(propertyPrefix, "circuitBreaker", key, "forceOpen",
-                builder.getCircuitBreakerForceOpen(), DEFAULT_CIRCUITBREAKERFORCEOPEN);
-        this.circuitBreakerForceClosed = getProperty(propertyPrefix, "circuitBreaker", key, "forceClosed",
-                builder.getCircuitBreakerForceClosed(), DEFAULT_CIRCUITBREAKERFORCECLOSED);
-        this.executionIsolationStrategy = getProperty(propertyPrefix, "isolation", key, "strategy",
-                builder.getExecutionIsolationStrategy(), DEFAULT_ISOLATIONSTRATEGY);
-        this.executionTimeoutInMilliseconds = getProperty(propertyPrefix, "isolation", key, "timeoutInMilliseconds",
-                builder.getExecutionTimeoutInMilliseconds(), DEFAULT_EXECUTIONTIMEOUTINMILLISECONDS);
-        this.executionTimeoutEnabled = getProperty(propertyPrefix, "isolation", key, "timeout.enabled",
-                builder.getExecutionTimeoutEnabled(), DEFAULT_EXECUTIONTIMEOUTENABLED);
-        this.executionIsolationThreadInterruptOnTimeout = getProperty(propertyPrefix, "isolation", key,
-                "interruptOnTimeout", builder.getExecutionIsolationThreadInterruptOnTimeout(),
-                DEFAULT_EXECUTIONISOLATIONTHREADINTERRUPTONTIMEOUT);
-        this.executionIsolationSemaphoreMaxConcurrentRequests = getProperty(propertyPrefix, "isolation", key,
-                "maxConcurrentRequests", builder.getExecutionIsolationSemaphoreMaxConcurrentRequests(),
-                DEFAULT_EXECUTIONISOLATIONSEMAPHOREMAXCONCURRENTREQUESTS);
-        this.fallbackIsolationSemaphoreMaxConcurrentRequests = getProperty(propertyPrefix, "fallback", key,
-                "maxConcurrentRequests", builder.getFallbackIsolationSemaphoreMaxConcurrentRequests(),
-                DEFAULT_FALLBACKISOLATIONSEMAPHOREMAXCONCURRENTREQUESTS);
-        this.fallbackEnabled = getProperty(propertyPrefix, "fallback", key, "enabled", builder.getFallbackEnabled(),
-                DEFAULT_FALLBACKENABLED);
-        this.metricsRollingStatisticalWindowInMilliseconds = getProperty(propertyPrefix, "metrics", key,
-                "rollingStats.timeInMilliseconds", builder.getMetricsRollingStatisticalWindowInMilliseconds(),
-                DEFAULT_METRICSROLLINGSTATISTICALWINDOW);
-        this.metricsRollingStatisticalWindowBuckets = getProperty(propertyPrefix, "metrics", key,
-                "rollingStats.numBuckets", builder.getMetricsRollingStatisticalWindowBuckets(),
-                DEFAULT_METRICSROLLINGSTATISTICALWINDOWBUCKETS);
-        this.metricsRollingPercentileEnabled = getProperty(propertyPrefix, "metrics", key, "rollingPercentile.enabled",
-                builder.getMetricsRollingPercentileEnabled(), DEFAULT_METRICSROLLINGPERCENTILEENABLED);
-        this.metricsRollingPercentileWindowInMilliseconds = getProperty(propertyPrefix, "metrics", key,
-                "rollingPercentile.timeInMilliseconds", builder.getMetricsRollingPercentileWindowInMilliseconds(),
-                DEFAULT_METRICSROLLINGPERCENTILEWINDOW);
-        this.metricsRollingPercentileWindowBuckets = getProperty(propertyPrefix, "metrics", key,
-                "rollingPercentile.numBuckets", builder.getMetricsRollingPercentileWindowBuckets(),
-                DEFAULT_METRICSROLLINGPERCENTILEWINDOWBUCKETS);
-        this.metricsRollingPercentileBucketSize = getProperty(propertyPrefix, "metrics", key,
-                "rollingPercentile.bucketSize", builder.getMetricsRollingPercentileBucketSize(),
-                DEFAULT_METRICSROLLINGPERCENTILEBUCKETSIZE);
-        this.metricsHealthSnapshotIntervalInMilliseconds = getProperty(propertyPrefix, "metrics", key,
-                "healthSnapshot.intervalInMilliseconds", builder.getMetricsHealthSnapshotIntervalInMilliseconds(),
-                DEFAULT_METRICSHEALTHSNAPSHOTINTERVALINMILLISECONDS);
-        this.requestCacheEnabled = getProperty(propertyPrefix, "requestCache", key, "enabled",
-                builder.getRequestCacheEnabled(), DEFAULT_REQUESTCACHEENABLED);
-        this.requestLogEnabled = getProperty(propertyPrefix, "requestLog", key, "enabled",
-                builder.getRequestLogEnabled(), DEFAULT_REQUESTLOGENABLED);
+  // default => forceCircuitOpen = false (we want to allow traffic)
+  private static final Boolean DEFAULT_CIRCUITBREAKERFORCEOPEN = false;
 
-        // threadpool doesn't have a global override, only instance level makes
-        // sense
-        this.executionIsolationThreadPoolKeyOverride = forString()
-                .add(propertyPrefix + ".command." + key.name() + ".threadPoolKeyOverride", null).build();
-    }
+  /* package */
+  // default => ignoreErrors = false
+  static final Boolean DEFAULT_CIRCUITBREAKERFORCECLOSED = false;
 
-    public HystrixProperty<Boolean> circuitBreakerEnabled() {
-        return circuitBreakerEnabled;
-    }
+  // default => executionTimeoutInMilliseconds: 1000 = 1 second
+  private static final Integer DEFAULT_EXECUTIONTIMEOUTINMILLISECONDS = 1000;
 
-    public HystrixProperty<Integer> circuitBreakerErrorThresholdPercentage() {
-        return circuitBreakerErrorThresholdPercentage;
-    }
+  private static final Boolean DEFAULT_EXECUTIONTIMEOUTENABLED = true;
 
-    public HystrixProperty<Boolean> circuitBreakerForceClosed() {
-        return circuitBreakerForceClosed;
-    }
+  private static final ExecutionIsolationStrategy DEFAULT_ISOLATIONSTRATEGY = ExecutionIsolationStrategy.THREAD;
 
-    public HystrixProperty<Boolean> circuitBreakerForceOpen() {
-        return circuitBreakerForceOpen;
-    }
+  private static final Boolean DEFAULT_EXECUTIONISOLATIONTHREADINTERRUPTONTIMEOUT = true;
 
-    public HystrixProperty<Integer> circuitBreakerRequestVolumeThreshold() {
-        return circuitBreakerRequestVolumeThreshold;
-    }
+  private static final Boolean DEFAULT_METRICSROLLINGPERCENTILEENABLED = true;
 
-    public HystrixProperty<Integer> circuitBreakerSleepWindowInMilliseconds() {
-        return circuitBreakerSleepWindowInMilliseconds;
-    }
+  private static final Boolean DEFAULT_REQUESTCACHEENABLED = true;
 
-    public HystrixProperty<Integer> executionIsolationSemaphoreMaxConcurrentRequests() {
-        return executionIsolationSemaphoreMaxConcurrentRequests;
-    }
+  private static final Integer DEFAULT_FALLBACKISOLATIONSEMAPHOREMAXCONCURRENTREQUESTS = 10;
 
-    public HystrixProperty<ExecutionIsolationStrategy> executionIsolationStrategy() {
-        return executionIsolationStrategy;
-    }
+  private static final Boolean DEFAULT_FALLBACKENABLED = true;
 
-    public HystrixProperty<Boolean> executionIsolationThreadInterruptOnTimeout() {
-        return executionIsolationThreadInterruptOnTimeout;
-    }
+  private static final Integer DEFAULT_EXECUTIONISOLATIONSEMAPHOREMAXCONCURRENTREQUESTS = 10;
 
-    public HystrixProperty<String> executionIsolationThreadPoolKeyOverride() {
-        return executionIsolationThreadPoolKeyOverride;
-    }
+  private static final Boolean DEFAULT_REQUESTLOGENABLED = true;
 
-    @Deprecated // prefer {@link #executionTimeoutInMilliseconds}
-    public HystrixProperty<Integer> executionIsolationThreadTimeoutInMilliseconds() {
-        return executionTimeoutInMilliseconds;
-    }
+  private static final Boolean DEFAULT_CIRCUITBREAKERENABLED = true;
 
-    public HystrixProperty<Integer> executionTimeoutInMilliseconds() {
-        return executionIsolationThreadTimeoutInMilliseconds();
-    }
+  // default to 1 minute for RollingPercentile
+  private static final Integer DEFAULT_METRICSROLLINGPERCENTILEWINDOW = 60000;
 
-    public HystrixProperty<Boolean> executionTimeoutEnabled() {
-        return executionTimeoutEnabled;
-    }
+  // default to 6 buckets (10 seconds each in 60 second window)
+  private static final Integer DEFAULT_METRICSROLLINGPERCENTILEWINDOWBUCKETS = 6;
 
-    public HystrixProperty<Integer> fallbackIsolationSemaphoreMaxConcurrentRequests() {
-        return fallbackIsolationSemaphoreMaxConcurrentRequests;
-    }
+  // default to 100 values max per bucket
+  private static final Integer DEFAULT_METRICSROLLINGPERCENTILEBUCKETSIZE = 100;
 
-    public HystrixProperty<Boolean> fallbackEnabled() {
-        return fallbackEnabled;
-    }
+  // default to 500ms as max frequency between allowing snapshots of health
+  // (error percentage etc)
+  private static final Integer DEFAULT_METRICSHEALTHSNAPSHOTINTERVALINMILLISECONDS = 500;
 
-    public HystrixProperty<Integer> metricsHealthSnapshotIntervalInMilliseconds() {
-        return metricsHealthSnapshotIntervalInMilliseconds;
-    }
+  private static final int COMMAND_KEY_LENGTH = 3;
 
-    public HystrixProperty<Integer> metricsRollingPercentileBucketSize() {
-        return metricsRollingPercentileBucketSize;
-    }
+  @SuppressWarnings("unused")
+  private final HystrixCommandKey key;
 
-    public HystrixProperty<Boolean> metricsRollingPercentileEnabled() {
-        return metricsRollingPercentileEnabled;
-    }
+  // number of requests that must be made within a statisticalWindow before
+  // open/close decisions are made using stats
+  private final HystrixProperty<Integer> circuitBreakerRequestVolumeThreshold;
 
-    public HystrixProperty<Integer> metricsRollingPercentileWindow() {
-        return metricsRollingPercentileWindowInMilliseconds;
-    }
+  // milliseconds after tripping circuit before allowing retry
+  private final HystrixProperty<Integer> circuitBreakerSleepWindowInMilliseconds;
 
-    public HystrixProperty<Integer> metricsRollingPercentileWindowInMilliseconds() {
-        return metricsRollingPercentileWindowInMilliseconds;
-    }
+  // Whether circuit breaker should be enabled.
+  private final HystrixProperty<Boolean> circuitBreakerEnabled;
 
-    public HystrixProperty<Integer> metricsRollingPercentileWindowBuckets() {
-        return metricsRollingPercentileWindowBuckets;
-    }
+  // % of 'marks' that must be failed to trip the circuit
+  private final HystrixProperty<Integer> circuitBreakerErrorThresholdPercentage;
 
-    public HystrixProperty<Integer> metricsRollingStatisticalWindowInMilliseconds() {
-        return metricsRollingStatisticalWindowInMilliseconds;
-    }
+  // a property to allow forcing the circuit open (stopping all requests)
+  private final HystrixProperty<Boolean> circuitBreakerForceOpen;
 
-    public HystrixProperty<Integer> metricsRollingStatisticalWindowBuckets() {
-        return metricsRollingStatisticalWindowBuckets;
-    }
+  // a property to allow ignoring errors and therefore never trip 'open' (ie.
+  // allow all traffic through)
+  private final HystrixProperty<Boolean> circuitBreakerForceClosed;
 
-    public HystrixProperty<Boolean> requestCacheEnabled() {
-        return requestCacheEnabled;
-    }
+  // Whether a command should be executed in a separate thread or not.
+  private final HystrixProperty<ExecutionIsolationStrategy> executionIsolationStrategy;
 
-    public HystrixProperty<Boolean> requestLogEnabled() {
-        return requestLogEnabled;
-    }
+  // Timeout value in milliseconds for a command
+  private final HystrixProperty<Integer> executionTimeoutInMilliseconds;
 
-    private HystrixProperty<ExecutionIsolationStrategy> getProperty(String propertyPrefix, String command,
-            HystrixCommandKey key, String instanceProperty, ExecutionIsolationStrategy builderOverrideValue,
-            ExecutionIsolationStrategy defaultValue) {
-        return new ExecutionIsolationStrategyHystrixProperty(builderOverrideValue, key, propertyPrefix, command,
-                defaultValue, instanceProperty);
-    }
+  // Whether timeout should be triggered
+  private final HystrixProperty<Boolean> executionTimeoutEnabled;
 
-    private static final class ExecutionIsolationStrategyHystrixProperty
-            implements HystrixProperty<ExecutionIsolationStrategy> {
-        private final HystrixDynamicProperty<String> property;
-        private volatile ExecutionIsolationStrategy value;
-        private final ExecutionIsolationStrategy defaultValue;
+  // What thread-pool this command should run in (if running on a separate
+  // thread).
+  private final HystrixProperty<String> executionIsolationThreadPoolKeyOverride;
 
-        private ExecutionIsolationStrategyHystrixProperty(ExecutionIsolationStrategy builderOverrideValue,
-                HystrixCommandKey key, String propertyPrefix, String command, ExecutionIsolationStrategy defaultValue,
-                String instanceProperty) {
-            this.defaultValue = defaultValue;
-            String overrideValue = null;
-            if (builderOverrideValue != null) {
-                overrideValue = builderOverrideValue.name();
-            }
-            property = forString()
-                    .add(propertyPrefix + "." + command + "." + key.name() + "." + instanceProperty, null)
-                    .add(propertyPrefix + "." + command + "." + serviceKey(key.name()) + "." + instanceProperty,
-                            overrideValue)
-                    .add(propertyPrefix + "." + command + "." + typeKey(key.name()) + "." + instanceProperty,
-                            defaultValue.name())
-                    .build();
+  // Number of permits for execution semaphore
+  private final HystrixProperty<Integer> executionIsolationSemaphoreMaxConcurrentRequests;
 
-            // initialize the enum value from the property
-            parseProperty();
+  // Number of permits for fallback semaphore
+  private final HystrixProperty<Integer> fallbackIsolationSemaphoreMaxConcurrentRequests;
 
-            // use a callback to handle changes so we only handle the parse cost
-            // on updates rather than every fetch
-            property.addCallback(new Runnable() {
+  // Whether fallback should be attempted.
+  private final HystrixProperty<Boolean> fallbackEnabled;
 
-                @Override
-                public void run() {
-                    // when the property value changes we'll update the value
-                    parseProperty();
-                }
+  // Whether an underlying Future/Thread (when runInSeparateThread == true)
+  // should be interrupted after a timeout
+  private final HystrixProperty<Boolean> executionIsolationThreadInterruptOnTimeout;
 
-            });
-        }
+  // milliseconds back that will be tracked
+  private final HystrixProperty<Integer> metricsRollingStatisticalWindowInMilliseconds;
+
+  // number of buckets in the statisticalWindow
+  private final HystrixProperty<Integer> metricsRollingStatisticalWindowBuckets;
+
+  // Whether monitoring should be enabled (SLA and Tracers).
+  private final HystrixProperty<Boolean> metricsRollingPercentileEnabled;
+
+  // number of milliseconds that will be tracked in RollingPercentile
+  private final HystrixProperty<Integer> metricsRollingPercentileWindowInMilliseconds;
+
+  // number of buckets percentileWindow will be divided into
+  private final HystrixProperty<Integer> metricsRollingPercentileWindowBuckets;
+
+  // how many values will be stored in each percentileWindowBucket
+  private final HystrixProperty<Integer> metricsRollingPercentileBucketSize;
+
+  // time between health snapshots
+  private final HystrixProperty<Integer> metricsHealthSnapshotIntervalInMilliseconds;
+
+  // whether command request logging is enabled.
+  private final HystrixProperty<Boolean> requestLogEnabled;
+
+  // Whether request caching is enabled.
+  private final HystrixProperty<Boolean> requestCacheEnabled;
+
+  protected HystrixCommandPropertiesExt(HystrixCommandKey key) {
+    this(key, HystrixCommandProperties.Setter(), "cse");
+  }
+
+  protected HystrixCommandPropertiesExt(HystrixCommandKey key, HystrixCommandProperties.Setter builder) {
+    this(key, builder, "cse");
+  }
+
+  protected HystrixCommandPropertiesExt(HystrixCommandKey key, HystrixCommandProperties.Setter builder,
+      String propertyPrefix) {
+    super(key, builder, propertyPrefix);
+    this.key = key;
+    this.circuitBreakerEnabled = getProperty(propertyPrefix,
+        "circuitBreaker",
+        key,
+        "enabled",
+        builder.getCircuitBreakerEnabled(),
+        DEFAULT_CIRCUITBREAKERENABLED);
+    this.circuitBreakerRequestVolumeThreshold = getProperty(propertyPrefix,
+        "circuitBreaker",
+        key,
+        "requestVolumeThreshold",
+        builder.getCircuitBreakerRequestVolumeThreshold(),
+        DEFAULT_CIRCUITBREAKERREQUESTVOLUMETHRESHOLD);
+    this.circuitBreakerSleepWindowInMilliseconds = getProperty(propertyPrefix,
+        "circuitBreaker",
+        key,
+        "sleepWindowInMilliseconds",
+        builder.getCircuitBreakerSleepWindowInMilliseconds(),
+        DEFAULT_CIRCUITBREAKERSLEEPWINDOWINMILLISECONDS);
+    this.circuitBreakerErrorThresholdPercentage = getProperty(propertyPrefix,
+        "circuitBreaker",
+        key,
+        "errorThresholdPercentage",
+        builder.getCircuitBreakerErrorThresholdPercentage(),
+        DEFAULT_CIRCUITBREAKERERRORTHRESHOLDPERCENTAGE);
+    this.circuitBreakerForceOpen = getProperty(propertyPrefix,
+        "circuitBreaker",
+        key,
+        "forceOpen",
+        builder.getCircuitBreakerForceOpen(),
+        DEFAULT_CIRCUITBREAKERFORCEOPEN);
+    this.circuitBreakerForceClosed = getProperty(propertyPrefix,
+        "circuitBreaker",
+        key,
+        "forceClosed",
+        builder.getCircuitBreakerForceClosed(),
+        DEFAULT_CIRCUITBREAKERFORCECLOSED);
+    this.executionIsolationStrategy = getProperty(propertyPrefix,
+        "isolation",
+        key,
+        "strategy",
+        builder.getExecutionIsolationStrategy(),
+        DEFAULT_ISOLATIONSTRATEGY);
+    this.executionTimeoutInMilliseconds = getProperty(propertyPrefix,
+        "isolation",
+        key,
+        "timeoutInMilliseconds",
+        builder.getExecutionTimeoutInMilliseconds(),
+        DEFAULT_EXECUTIONTIMEOUTINMILLISECONDS);
+    this.executionTimeoutEnabled = getProperty(propertyPrefix,
+        "isolation",
+        key,
+        "timeout.enabled",
+        builder.getExecutionTimeoutEnabled(),
+        DEFAULT_EXECUTIONTIMEOUTENABLED);
+    this.executionIsolationThreadInterruptOnTimeout = getProperty(propertyPrefix,
+        "isolation",
+        key,
+        "interruptOnTimeout",
+        builder.getExecutionIsolationThreadInterruptOnTimeout(),
+        DEFAULT_EXECUTIONISOLATIONTHREADINTERRUPTONTIMEOUT);
+    this.executionIsolationSemaphoreMaxConcurrentRequests = getProperty(propertyPrefix,
+        "isolation",
+        key,
+        "maxConcurrentRequests",
+        builder.getExecutionIsolationSemaphoreMaxConcurrentRequests(),
+        DEFAULT_EXECUTIONISOLATIONSEMAPHOREMAXCONCURRENTREQUESTS);
+    this.fallbackIsolationSemaphoreMaxConcurrentRequests = getProperty(propertyPrefix,
+        "fallback",
+        key,
+        "maxConcurrentRequests",
+        builder.getFallbackIsolationSemaphoreMaxConcurrentRequests(),
+        DEFAULT_FALLBACKISOLATIONSEMAPHOREMAXCONCURRENTREQUESTS);
+    this.fallbackEnabled = getProperty(propertyPrefix,
+        "fallback",
+        key,
+        "enabled",
+        builder.getFallbackEnabled(),
+        DEFAULT_FALLBACKENABLED);
+    this.metricsRollingStatisticalWindowInMilliseconds = getProperty(propertyPrefix,
+        "metrics",
+        key,
+        "rollingStats.timeInMilliseconds",
+        builder.getMetricsRollingStatisticalWindowInMilliseconds(),
+        DEFAULT_METRICSROLLINGSTATISTICALWINDOW);
+    this.metricsRollingStatisticalWindowBuckets = getProperty(propertyPrefix,
+        "metrics",
+        key,
+        "rollingStats.numBuckets",
+        builder.getMetricsRollingStatisticalWindowBuckets(),
+        DEFAULT_METRICSROLLINGSTATISTICALWINDOWBUCKETS);
+    this.metricsRollingPercentileEnabled = getProperty(propertyPrefix,
+        "metrics",
+        key,
+        "rollingPercentile.enabled",
+        builder.getMetricsRollingPercentileEnabled(),
+        DEFAULT_METRICSROLLINGPERCENTILEENABLED);
+    this.metricsRollingPercentileWindowInMilliseconds = getProperty(propertyPrefix,
+        "metrics",
+        key,
+        "rollingPercentile.timeInMilliseconds",
+        builder.getMetricsRollingPercentileWindowInMilliseconds(),
+        DEFAULT_METRICSROLLINGPERCENTILEWINDOW);
+    this.metricsRollingPercentileWindowBuckets = getProperty(propertyPrefix,
+        "metrics",
+        key,
+        "rollingPercentile.numBuckets",
+        builder.getMetricsRollingPercentileWindowBuckets(),
+        DEFAULT_METRICSROLLINGPERCENTILEWINDOWBUCKETS);
+    this.metricsRollingPercentileBucketSize = getProperty(propertyPrefix,
+        "metrics",
+        key,
+        "rollingPercentile.bucketSize",
+        builder.getMetricsRollingPercentileBucketSize(),
+        DEFAULT_METRICSROLLINGPERCENTILEBUCKETSIZE);
+    this.metricsHealthSnapshotIntervalInMilliseconds = getProperty(propertyPrefix,
+        "metrics",
+        key,
+        "healthSnapshot.intervalInMilliseconds",
+        builder.getMetricsHealthSnapshotIntervalInMilliseconds(),
+        DEFAULT_METRICSHEALTHSNAPSHOTINTERVALINMILLISECONDS);
+    this.requestCacheEnabled = getProperty(propertyPrefix,
+        "requestCache",
+        key,
+        "enabled",
+        builder.getRequestCacheEnabled(),
+        DEFAULT_REQUESTCACHEENABLED);
+    this.requestLogEnabled = getProperty(propertyPrefix,
+        "requestLog",
+        key,
+        "enabled",
+        builder.getRequestLogEnabled(),
+        DEFAULT_REQUESTLOGENABLED);
+
+    // threadpool doesn't have a global override, only instance level makes
+    // sense
+    this.executionIsolationThreadPoolKeyOverride = forString()
+        .add(propertyPrefix + ".command." + key.name() + ".threadPoolKeyOverride", null)
+        .build();
+  }
+
+  public HystrixProperty<Boolean> circuitBreakerEnabled() {
+    return circuitBreakerEnabled;
+  }
+
+  public HystrixProperty<Integer> circuitBreakerErrorThresholdPercentage() {
+    return circuitBreakerErrorThresholdPercentage;
+  }
+
+  public HystrixProperty<Boolean> circuitBreakerForceClosed() {
+    return circuitBreakerForceClosed;
+  }
+
+  public HystrixProperty<Boolean> circuitBreakerForceOpen() {
+    return circuitBreakerForceOpen;
+  }
+
+  public HystrixProperty<Integer> circuitBreakerRequestVolumeThreshold() {
+    return circuitBreakerRequestVolumeThreshold;
+  }
+
+  public HystrixProperty<Integer> circuitBreakerSleepWindowInMilliseconds() {
+    return circuitBreakerSleepWindowInMilliseconds;
+  }
+
+  public HystrixProperty<Integer> executionIsolationSemaphoreMaxConcurrentRequests() {
+    return executionIsolationSemaphoreMaxConcurrentRequests;
+  }
+
+  public HystrixProperty<ExecutionIsolationStrategy> executionIsolationStrategy() {
+    return executionIsolationStrategy;
+  }
+
+  public HystrixProperty<Boolean> executionIsolationThreadInterruptOnTimeout() {
+    return executionIsolationThreadInterruptOnTimeout;
+  }
+
+  public HystrixProperty<String> executionIsolationThreadPoolKeyOverride() {
+    return executionIsolationThreadPoolKeyOverride;
+  }
+
+  @Deprecated // prefer {@link #executionTimeoutInMilliseconds}
+  public HystrixProperty<Integer> executionIsolationThreadTimeoutInMilliseconds() {
+    return executionTimeoutInMilliseconds;
+  }
+
+  public HystrixProperty<Integer> executionTimeoutInMilliseconds() {
+    return executionIsolationThreadTimeoutInMilliseconds();
+  }
+
+  public HystrixProperty<Boolean> executionTimeoutEnabled() {
+    return executionTimeoutEnabled;
+  }
+
+  public HystrixProperty<Integer> fallbackIsolationSemaphoreMaxConcurrentRequests() {
+    return fallbackIsolationSemaphoreMaxConcurrentRequests;
+  }
+
+  public HystrixProperty<Boolean> fallbackEnabled() {
+    return fallbackEnabled;
+  }
+
+  public HystrixProperty<Integer> metricsHealthSnapshotIntervalInMilliseconds() {
+    return metricsHealthSnapshotIntervalInMilliseconds;
+  }
+
+  public HystrixProperty<Integer> metricsRollingPercentileBucketSize() {
+    return metricsRollingPercentileBucketSize;
+  }
+
+  public HystrixProperty<Boolean> metricsRollingPercentileEnabled() {
+    return metricsRollingPercentileEnabled;
+  }
+
+  public HystrixProperty<Integer> metricsRollingPercentileWindow() {
+    return metricsRollingPercentileWindowInMilliseconds;
+  }
+
+  public HystrixProperty<Integer> metricsRollingPercentileWindowInMilliseconds() {
+    return metricsRollingPercentileWindowInMilliseconds;
+  }
+
+  public HystrixProperty<Integer> metricsRollingPercentileWindowBuckets() {
+    return metricsRollingPercentileWindowBuckets;
+  }
+
+  public HystrixProperty<Integer> metricsRollingStatisticalWindowInMilliseconds() {
+    return metricsRollingStatisticalWindowInMilliseconds;
+  }
+
+  public HystrixProperty<Integer> metricsRollingStatisticalWindowBuckets() {
+    return metricsRollingStatisticalWindowBuckets;
+  }
+
+  public HystrixProperty<Boolean> requestCacheEnabled() {
+    return requestCacheEnabled;
+  }
+
+  public HystrixProperty<Boolean> requestLogEnabled() {
+    return requestLogEnabled;
+  }
+
+  private HystrixProperty<ExecutionIsolationStrategy> getProperty(String propertyPrefix, String command,
+      HystrixCommandKey key, String instanceProperty, ExecutionIsolationStrategy builderOverrideValue,
+      ExecutionIsolationStrategy defaultValue) {
+    return new ExecutionIsolationStrategyHystrixProperty(builderOverrideValue, key, propertyPrefix, command,
+        defaultValue, instanceProperty);
+  }
+
+  private static final class ExecutionIsolationStrategyHystrixProperty
+      implements HystrixProperty<ExecutionIsolationStrategy> {
+    private final HystrixDynamicProperty<String> property;
+
+    private volatile ExecutionIsolationStrategy value;
+
+    private final ExecutionIsolationStrategy defaultValue;
+
+    private ExecutionIsolationStrategyHystrixProperty(ExecutionIsolationStrategy builderOverrideValue,
+        HystrixCommandKey key, String propertyPrefix, String command, ExecutionIsolationStrategy defaultValue,
+        String instanceProperty) {
+      this.defaultValue = defaultValue;
+      String overrideValue = null;
+      if (builderOverrideValue != null) {
+        overrideValue = builderOverrideValue.name();
+      }
+      property = forString()
+          .add(propertyPrefix + "." + command + "." + key.name() + "." + instanceProperty, null)
+          .add(propertyPrefix + "." + command + "." + serviceKey(key.name()) + "." + instanceProperty,
+              overrideValue)
+          .add(propertyPrefix + "." + command + "." + typeKey(key.name()) + "." + instanceProperty,
+              defaultValue.name())
+          .build();
+
+      // initialize the enum value from the property
+      parseProperty();
+
+      // use a callback to handle changes so we only handle the parse cost
+      // on updates rather than every fetch
+      property.addCallback(new Runnable() {
 
         @Override
-        public ExecutionIsolationStrategy get() {
-            return value;
+        public void run() {
+          // when the property value changes we'll update the value
+          parseProperty();
         }
-
-        private void parseProperty() {
-            try {
-                value = ExecutionIsolationStrategy.valueOf(property.get());
-            } catch (Exception e) {
-                LOGGER.error("Unable to derive ExecutionIsolationStrategy from property value: " + property.get(), e);
-                // use the default value
-                value = defaultValue;
-            }
-        }
+      });
     }
 
-    private static String serviceKey(String key) {
-        String[] keyparts = key.split("\\.", COMMAND_KEY_LENGTH);
-        if (keyparts.length == COMMAND_KEY_LENGTH) {
-            return keyparts[0] + "." + keyparts[1];
-        }
-        return key;
+    @Override
+    public ExecutionIsolationStrategy get() {
+      return value;
     }
 
-    private static String typeKey(String key) {
-        int index = key.indexOf(".");
-        if (index > 0) {
-            return key.substring(0, index);
-        }
-        return key;
+    private void parseProperty() {
+      try {
+        value = ExecutionIsolationStrategy.valueOf(property.get());
+      } catch (Exception e) {
+        LOGGER.error("Unable to derive ExecutionIsolationStrategy from property value: " + property.get(), e);
+        // use the default value
+        value = defaultValue;
+      }
     }
+  }
 
-    private HystrixProperty<Integer> getProperty(String propertyPrefix, String command, HystrixCommandKey key,
-            String instanceProperty, Integer builderOverrideValue,
-            Integer defaultValue) {
-        return forInteger()
-                .add(propertyPrefix + "." + command + "." + key.name() + "." + instanceProperty, null)
-                .add(propertyPrefix + "." + command + "." + serviceKey(key.name()) + "." + instanceProperty,
-                        null)
-                .add(propertyPrefix + "." + command + "." + typeKey(key.name()) + "." + instanceProperty,
-                        builderOverrideValue == null ? defaultValue : builderOverrideValue)
-                .build();
+  private static String serviceKey(String key) {
+    String[] keyparts = key.split("\\.", COMMAND_KEY_LENGTH);
+    if (keyparts.length == COMMAND_KEY_LENGTH) {
+      return keyparts[0] + "." + keyparts[1];
     }
+    return key;
+  }
 
-    private HystrixProperty<Boolean> getProperty(String propertyPrefix, String command, HystrixCommandKey key,
-            String instanceProperty, Boolean builderOverrideValue, Boolean defaultValue) {
-        return forBoolean()
-                .add(propertyPrefix + "." + command + "." + key.name() + "." + instanceProperty, null)
-                .add(propertyPrefix + "." + command + "." + serviceKey(key.name()) + "." + instanceProperty,
-                        null)
-                .add(propertyPrefix + "." + command + "." + typeKey(key.name()) + "." + instanceProperty,
-                        builderOverrideValue == null ? defaultValue : builderOverrideValue)
-                .build();
+  private static String typeKey(String key) {
+    int index = key.indexOf(".");
+    if (index > 0) {
+      return key.substring(0, index);
     }
+    return key;
+  }
+
+  private HystrixProperty<Integer> getProperty(String propertyPrefix, String command, HystrixCommandKey key,
+      String instanceProperty, Integer builderOverrideValue,
+      Integer defaultValue) {
+    return forInteger()
+        .add(propertyPrefix + "." + command + "." + key.name() + "." + instanceProperty, null)
+        .add(propertyPrefix + "." + command + "." + serviceKey(key.name()) + "." + instanceProperty,
+            null)
+        .add(propertyPrefix + "." + command + "." + typeKey(key.name()) + "." + instanceProperty,
+            builderOverrideValue == null ? defaultValue : builderOverrideValue)
+        .build();
+  }
+
+  private HystrixProperty<Boolean> getProperty(String propertyPrefix, String command, HystrixCommandKey key,
+      String instanceProperty, Boolean builderOverrideValue, Boolean defaultValue) {
+    return forBoolean()
+        .add(propertyPrefix + "." + command + "." + key.name() + "." + instanceProperty, null)
+        .add(propertyPrefix + "." + command + "." + serviceKey(key.name()) + "." + instanceProperty,
+            null)
+        .add(propertyPrefix + "." + command + "." + typeKey(key.name()) + "." + instanceProperty,
+            builderOverrideValue == null ? defaultValue : builderOverrideValue)
+        .build();
+  }
 }

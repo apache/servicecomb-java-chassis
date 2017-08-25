@@ -16,8 +16,6 @@
 
 package io.servicecomb.serviceregistry.config;
 
-import io.servicecomb.serviceregistry.api.Const;
-import io.servicecomb.serviceregistry.api.registry.BasePath;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -27,27 +25,29 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import io.servicecomb.config.ConfigUtil;
+import io.servicecomb.serviceregistry.api.Const;
+import io.servicecomb.serviceregistry.api.registry.BasePath;
 
 public class TestConfigurePropertyUtils {
-    @Test
-    public void testGetPropertiesWithPrefix() {
-        Configuration configuration = ConfigUtil.createLocalConfig();
+  @Test
+  public void testGetPropertiesWithPrefix() {
+    Configuration configuration = ConfigUtil.createLocalConfig();
 
-        String prefix = "service_description.properties";
-        Map<String, String> expectedMap = new HashMap<>();
-        expectedMap.put("key1", "value1");
-        expectedMap.put("key2", "value2");
-        Assert.assertEquals(expectedMap, ConfigurePropertyUtils.getPropertiesWithPrefix(configuration, prefix));
+    String prefix = "service_description.properties";
+    Map<String, String> expectedMap = new HashMap<>();
+    expectedMap.put("key1", "value1");
+    expectedMap.put("key2", "value2");
+    Assert.assertEquals(expectedMap, ConfigurePropertyUtils.getPropertiesWithPrefix(configuration, prefix));
 
-        List<BasePath> paths = ConfigurePropertyUtils.getMicroservicePaths(configuration);
-        Assert.assertEquals(2, paths.size());
-        Assert.assertEquals(paths.get(0).getPath(), "/test1/testpath");
-        Assert.assertEquals(paths.get(0).getProperty().get("checksession"), false);
+    List<BasePath> paths = ConfigurePropertyUtils.getMicroservicePaths(configuration);
+    Assert.assertEquals(2, paths.size());
+    Assert.assertEquals(paths.get(0).getPath(), "/test1/testpath");
+    Assert.assertEquals(paths.get(0).getProperty().get("checksession"), false);
 
-        System.setProperty(Const.URL_PREFIX, "/webroot");
-        paths = ConfigurePropertyUtils.getMicroservicePaths(configuration);
-        Assert.assertEquals(2, paths.size());
-        Assert.assertEquals(paths.get(0).getPath(), "/webroot/test1/testpath");
-        Assert.assertEquals(paths.get(0).getProperty().get("checksession"), false);
-    }
+    System.setProperty(Const.URL_PREFIX, "/webroot");
+    paths = ConfigurePropertyUtils.getMicroservicePaths(configuration);
+    Assert.assertEquals(2, paths.size());
+    Assert.assertEquals(paths.get(0).getPath(), "/webroot/test1/testpath");
+    Assert.assertEquals(paths.get(0).getProperty().get("checksession"), false);
+  }
 }

@@ -35,63 +35,63 @@ import io.servicecomb.swagger.invocation.Response;
 import io.servicecomb.swagger.invocation.exception.ExceptionFactory;
 
 public class Invoker implements InvocationHandler {
-    // 原始数据
-    private String microserviceName;
+  // 原始数据
+  private String microserviceName;
 
-    private String schemaId;
+  private String schemaId;
 
-    private Class<?> consumerIntf;
+  private Class<?> consumerIntf;
 
-    // 生成的数据
-    private SchemaMeta schemaMeta;
+  // 生成的数据
+  private SchemaMeta schemaMeta;
 
-    private ReferenceConfig referenceConfig;
+  private ReferenceConfig referenceConfig;
 
-    private SwaggerConsumer swaggerConsumer;
+  private SwaggerConsumer swaggerConsumer;
 
-    public Invoker(String microserviceName, String schemaId, Class<?> consumerIntf) {
-        this.microserviceName = microserviceName;
-        this.schemaId = schemaId;
-        this.consumerIntf = consumerIntf;
+  public Invoker(String microserviceName, String schemaId, Class<?> consumerIntf) {
+    this.microserviceName = microserviceName;
+    this.schemaId = schemaId;
+    this.consumerIntf = consumerIntf;
+  }
+
+  protected void prepare() {
+    referenceConfig = ReferenceConfigUtils.getForInvoke(microserviceName);
+    MicroserviceMeta microserviceMeta = referenceConfig.getMicroserviceMeta();
+
+    if (StringUtils.isEmpty(schemaId)) {
+      // 未指定schemaId，看看consumer接口是否等于契约接口
+      schemaMeta = microserviceMeta.findSchemaMeta(consumerIntf);
+      if (schemaMeta == null) {
+        // 尝试用consumer接口名作为schemaId
+        schemaId = consumerIntf.getName();
+        schemaMeta = microserviceMeta.ensureFindSchemaMeta(schemaId);
+      }
+    } else {
+      schemaMeta = microserviceMeta.ensureFindSchemaMeta(schemaId);
     }
 
-    protected void prepare() {
-        referenceConfig = ReferenceConfigUtils.getForInvoke(microserviceName);
-        MicroserviceMeta microserviceMeta = referenceConfig.getMicroserviceMeta();
+    this.swaggerConsumer = CseContext.getInstance().getSwaggerEnvironment().createConsumer(consumerIntf,
+        schemaMeta.getSwaggerIntf());
+  }
 
-        if (StringUtils.isEmpty(schemaId)) {
-            // 未指定schemaId，看看consumer接口是否等于契约接口
-            schemaMeta = microserviceMeta.findSchemaMeta(consumerIntf);
-            if (schemaMeta == null) {
-                // 尝试用consumer接口名作为schemaId
-                schemaId = consumerIntf.getName();
-                schemaMeta = microserviceMeta.ensureFindSchemaMeta(schemaId);
-            }
-        } else {
-            schemaMeta = microserviceMeta.ensureFindSchemaMeta(schemaId);
-        }
-
-        this.swaggerConsumer = CseContext.getInstance().getSwaggerEnvironment().createConsumer(consumerIntf,
-                schemaMeta.getSwaggerIntf());
+  @Override
+  public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+    if (swaggerConsumer == null) {
+      prepare();
     }
 
-    @Override
-    public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-        if (swaggerConsumer == null) {
-            prepare();
-        }
+    Invocation invocation =
+        InvocationFactory.forConsumer(referenceConfig, schemaMeta, method.getName(), null);
 
-        Invocation invocation =
-            InvocationFactory.forConsumer(referenceConfig, schemaMeta, method.getName(), null);
+    SwaggerConsumerOperation consumerOperation = swaggerConsumer.findOperation(method.getName());
+    consumerOperation.getArgumentsMapper().toInvocation(args, invocation);
 
-        SwaggerConsumerOperation consumerOperation = swaggerConsumer.findOperation(method.getName());
-        consumerOperation.getArgumentsMapper().toInvocation(args, invocation);
-
-        Response response = InvokerUtils.innerSyncInvoke(invocation);
-        if (response.isSuccessed()) {
-            return consumerOperation.getResponseMapper().mapResponse(response);
-        }
-
-        throw ExceptionFactory.convertConsumerException(response.getResult());
+    Response response = InvokerUtils.innerSyncInvoke(invocation);
+    if (response.isSuccessed()) {
+      return consumerOperation.getResponseMapper().mapResponse(response);
     }
+
+    throw ExceptionFactory.convertConsumerException(response.getResult());
+  }
 }

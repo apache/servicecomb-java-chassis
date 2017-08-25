@@ -29,5 +29,4 @@ public class PojoSpringIntegrationTest extends PojoIntegrationTestBase {
   public static void setUpClass() {
     setUpLocalRegistry();
   }
-
 }

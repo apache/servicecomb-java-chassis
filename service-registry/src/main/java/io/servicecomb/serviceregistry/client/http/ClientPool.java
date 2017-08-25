@@ -17,16 +17,15 @@
 package io.servicecomb.serviceregistry.client.http;
 
 import io.servicecomb.foundation.vertx.client.http.HttpClientWithContext;
-
 import io.vertx.core.http.HttpClientOptions;
 
 /**
  * Created by on 2017/4/28.
  */
 public interface ClientPool {
-    void create();
+  void create();
 
-    HttpClientOptions createHttpClientOptions();
+  HttpClientOptions createHttpClientOptions();
 
-    HttpClientWithContext getClient();
+  HttpClientWithContext getClient();
 }

@@ -22,16 +22,16 @@ import io.servicecomb.demo.CodeFirstRestTemplate;
 import io.servicecomb.demo.TestMgr;
 
 public class CodeFirstRestTemplateJaxrs extends CodeFirstRestTemplate {
-    @Override
-    protected void testExtend(RestTemplate template, String cseUrlPrefix) {
-        super.testExtend(template, cseUrlPrefix);
+  @Override
+  protected void testExtend(RestTemplate template, String cseUrlPrefix) {
+    super.testExtend(template, cseUrlPrefix);
 
-        testDefaultPath(template, cseUrlPrefix);
-    }
+    testDefaultPath(template, cseUrlPrefix);
+  }
 
-    private void testDefaultPath(RestTemplate template, String cseUrlPrefix) {
-        int result =
-            template.getForObject(cseUrlPrefix.substring(0, cseUrlPrefix.length() - 1), Integer.class);
-        TestMgr.check(100, result);
-    }
+  private void testDefaultPath(RestTemplate template, String cseUrlPrefix) {
+    int result =
+        template.getForObject(cseUrlPrefix.substring(0, cseUrlPrefix.length() - 1), Integer.class);
+    TestMgr.check(100, result);
+  }
 }

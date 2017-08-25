@@ -23,18 +23,18 @@ import mockit.Expectations;
 import mockit.Mocked;
 
 public class TestEndpoint {
-    @Test
-    public void testEndpoint(@Mocked Transport transport) {
-        new Expectations() {
-            {
-                transport.parseAddress("rest://123.6.6.6:8080");
-                result = "rest://123.6.6.6:8080";
-            }
-        };
-        Endpoint endpoint = new Endpoint(transport, "rest://123.6.6.6:8080");
-        Assert.assertEquals(endpoint.getAddress(), "rest://123.6.6.6:8080");
-        Assert.assertEquals(endpoint.getEndpoint(), "rest://123.6.6.6:8080");
-        Assert.assertEquals(endpoint.getTransport(), transport);
-        Assert.assertEquals(endpoint.toString(), "rest://123.6.6.6:8080");
-    }
+  @Test
+  public void testEndpoint(@Mocked Transport transport) {
+    new Expectations() {
+      {
+        transport.parseAddress("rest://123.6.6.6:8080");
+        result = "rest://123.6.6.6:8080";
+      }
+    };
+    Endpoint endpoint = new Endpoint(transport, "rest://123.6.6.6:8080");
+    Assert.assertEquals(endpoint.getAddress(), "rest://123.6.6.6:8080");
+    Assert.assertEquals(endpoint.getEndpoint(), "rest://123.6.6.6:8080");
+    Assert.assertEquals(endpoint.getTransport(), transport);
+    Assert.assertEquals(endpoint.toString(), "rest://123.6.6.6:8080");
+  }
 }

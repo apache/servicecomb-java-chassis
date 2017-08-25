@@ -20,210 +20,209 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.Mockito;
 
-import io.servicecomb.core.Invocation;
-import io.servicecomb.core.definition.OperationMeta;
-import io.servicecomb.swagger.invocation.Response;
-import io.servicecomb.swagger.invocation.exception.InvocationException;
-
 import com.netflix.hystrix.HystrixCommandProperties;
 import com.netflix.hystrix.HystrixObservableCommand;
 import com.netflix.hystrix.strategy.concurrency.HystrixRequestContext;
 
+import io.servicecomb.core.Invocation;
+import io.servicecomb.core.definition.OperationMeta;
+import io.servicecomb.swagger.invocation.Response;
+import io.servicecomb.swagger.invocation.exception.InvocationException;
 import rx.Observable;
 
 public class TestBizkeeperCommand {
 
-    @Test
-    public void testGetCacheKeyProvider() {
+  @Test
+  public void testGetCacheKeyProvider() {
 
-        Invocation invocation = Mockito.mock(Invocation.class);
-        Mockito.when(invocation.getOperationMeta()).thenReturn(Mockito.mock(OperationMeta.class));
-        Mockito.when(invocation.getOperationMeta().getMicroserviceQualifiedName()).thenReturn("test1");
+    Invocation invocation = Mockito.mock(Invocation.class);
+    Mockito.when(invocation.getOperationMeta()).thenReturn(Mockito.mock(OperationMeta.class));
+    Mockito.when(invocation.getOperationMeta().getMicroserviceQualifiedName()).thenReturn("test1");
 
-        HystrixCommandProperties.Setter setter = HystrixCommandProperties.Setter()
-                .withRequestCacheEnabled(true)
-                .withRequestLogEnabled(false);
+    HystrixCommandProperties.Setter setter = HystrixCommandProperties.Setter()
+        .withRequestCacheEnabled(true)
+        .withRequestLogEnabled(false);
 
-        BizkeeperCommand bizkeeperCommand = new ProviderBizkeeperCommand("groupname", invocation,
-                HystrixObservableCommand.Setter
-                        .withGroupKey(CommandKey.toHystrixCommandGroupKey("groupname", invocation))
-                        .andCommandKey(CommandKey.toHystrixCommandKey("groupname", invocation))
-                        .andCommandPropertiesDefaults(setter));
+    BizkeeperCommand bizkeeperCommand = new ProviderBizkeeperCommand("groupname", invocation,
+        HystrixObservableCommand.Setter
+            .withGroupKey(CommandKey.toHystrixCommandGroupKey("groupname", invocation))
+            .andCommandKey(CommandKey.toHystrixCommandKey("groupname", invocation))
+            .andCommandPropertiesDefaults(setter));
 
-        String str = bizkeeperCommand.getCacheKey();
-        Assert.assertNull(str);
+    String str = bizkeeperCommand.getCacheKey();
+    Assert.assertNull(str);
 
-        Response resp = Mockito.mock(Response.class);
-        Mockito.when(resp.isFailed()).thenReturn(false);
-        Assert.assertEquals(false, bizkeeperCommand.isFailedResponse(resp));
-        Mockito.when(resp.isFailed()).thenReturn(true);
-        InvocationException excp = Mockito.mock(InvocationException.class);
-        Mockito.when(resp.getResult()).thenReturn(excp);
-        Mockito.when(excp.getStatusCode()).thenReturn(400);
-        Assert.assertEquals(false, bizkeeperCommand.isFailedResponse(resp));
-        Mockito.when(resp.getResult()).thenReturn(excp);
-        Mockito.when(excp.getStatusCode()).thenReturn(590);
-        Assert.assertEquals(true, bizkeeperCommand.isFailedResponse(resp));
-    }
+    Response resp = Mockito.mock(Response.class);
+    Mockito.when(resp.isFailed()).thenReturn(false);
+    Assert.assertEquals(false, bizkeeperCommand.isFailedResponse(resp));
+    Mockito.when(resp.isFailed()).thenReturn(true);
+    InvocationException excp = Mockito.mock(InvocationException.class);
+    Mockito.when(resp.getResult()).thenReturn(excp);
+    Mockito.when(excp.getStatusCode()).thenReturn(400);
+    Assert.assertEquals(false, bizkeeperCommand.isFailedResponse(resp));
+    Mockito.when(resp.getResult()).thenReturn(excp);
+    Mockito.when(excp.getStatusCode()).thenReturn(590);
+    Assert.assertEquals(true, bizkeeperCommand.isFailedResponse(resp));
+  }
 
-    @Test
-    public void testResumeWithFallbackProvider() {
+  @Test
+  public void testResumeWithFallbackProvider() {
 
-        Invocation invocation = Mockito.mock(Invocation.class);
-        Mockito.when(invocation.getOperationMeta()).thenReturn(Mockito.mock(OperationMeta.class));
-        Mockito.when(invocation.getOperationMeta().getMicroserviceQualifiedName()).thenReturn("test1");
+    Invocation invocation = Mockito.mock(Invocation.class);
+    Mockito.when(invocation.getOperationMeta()).thenReturn(Mockito.mock(OperationMeta.class));
+    Mockito.when(invocation.getOperationMeta().getMicroserviceQualifiedName()).thenReturn("test1");
 
-        HystrixCommandProperties.Setter setter = HystrixCommandProperties.Setter()
-                .withRequestCacheEnabled(true)
-                .withRequestLogEnabled(false);
+    HystrixCommandProperties.Setter setter = HystrixCommandProperties.Setter()
+        .withRequestCacheEnabled(true)
+        .withRequestLogEnabled(false);
 
-        BizkeeperCommand bizkeeperCommand = new ProviderBizkeeperCommand("groupname", invocation,
-                HystrixObservableCommand.Setter
-                        .withGroupKey(CommandKey.toHystrixCommandGroupKey("groupname", invocation))
-                        .andCommandKey(CommandKey.toHystrixCommandKey("groupname", invocation))
-                        .andCommandPropertiesDefaults(setter));
+    BizkeeperCommand bizkeeperCommand = new ProviderBizkeeperCommand("groupname", invocation,
+        HystrixObservableCommand.Setter
+            .withGroupKey(CommandKey.toHystrixCommandGroupKey("groupname", invocation))
+            .andCommandKey(CommandKey.toHystrixCommandKey("groupname", invocation))
+            .andCommandPropertiesDefaults(setter));
 
-        Observable<Response> observe = bizkeeperCommand.resumeWithFallback();
-        Assert.assertNotNull(observe);
-    }
+    Observable<Response> observe = bizkeeperCommand.resumeWithFallback();
+    Assert.assertNotNull(observe);
+  }
 
-    @Test
-    public void testConstructProvider() {
+  @Test
+  public void testConstructProvider() {
 
-        Invocation invocation = Mockito.mock(Invocation.class);
-        Mockito.when(invocation.getOperationMeta()).thenReturn(Mockito.mock(OperationMeta.class));
-        Mockito.when(invocation.getOperationMeta().getMicroserviceQualifiedName()).thenReturn("test1");
+    Invocation invocation = Mockito.mock(Invocation.class);
+    Mockito.when(invocation.getOperationMeta()).thenReturn(Mockito.mock(OperationMeta.class));
+    Mockito.when(invocation.getOperationMeta().getMicroserviceQualifiedName()).thenReturn("test1");
 
-        HystrixCommandProperties.Setter setter = HystrixCommandProperties.Setter()
-                .withRequestCacheEnabled(true)
-                .withRequestLogEnabled(false);
+    HystrixCommandProperties.Setter setter = HystrixCommandProperties.Setter()
+        .withRequestCacheEnabled(true)
+        .withRequestLogEnabled(false);
 
-        BizkeeperCommand bizkeeperCommand = new ProviderBizkeeperCommand("groupname", invocation,
-                HystrixObservableCommand.Setter
-                        .withGroupKey(CommandKey.toHystrixCommandGroupKey("groupname", invocation))
-                        .andCommandKey(CommandKey.toHystrixCommandKey("groupname", invocation))
-                        .andCommandPropertiesDefaults(setter));
+    BizkeeperCommand bizkeeperCommand = new ProviderBizkeeperCommand("groupname", invocation,
+        HystrixObservableCommand.Setter
+            .withGroupKey(CommandKey.toHystrixCommandGroupKey("groupname", invocation))
+            .andCommandKey(CommandKey.toHystrixCommandKey("groupname", invocation))
+            .andCommandPropertiesDefaults(setter));
 
-        Observable<Response> response = bizkeeperCommand.construct();
-        Assert.assertNotNull(response);
-    }
+    Observable<Response> response = bizkeeperCommand.construct();
+    Assert.assertNotNull(response);
+  }
 
-    @Test
-    public void testGetCacheKeyWithContextInitializedProvider() {
+  @Test
+  public void testGetCacheKeyWithContextInitializedProvider() {
 
-        Invocation invocation = Mockito.mock(Invocation.class);
-        Mockito.when(invocation.getOperationMeta()).thenReturn(Mockito.mock(OperationMeta.class));
-        Mockito.when(invocation.getOperationMeta().getMicroserviceQualifiedName()).thenReturn("test1");
+    Invocation invocation = Mockito.mock(Invocation.class);
+    Mockito.when(invocation.getOperationMeta()).thenReturn(Mockito.mock(OperationMeta.class));
+    Mockito.when(invocation.getOperationMeta().getMicroserviceQualifiedName()).thenReturn("test1");
 
-        HystrixCommandProperties.Setter setter = HystrixCommandProperties.Setter()
-                .withRequestCacheEnabled(true)
-                .withRequestLogEnabled(false);
+    HystrixCommandProperties.Setter setter = HystrixCommandProperties.Setter()
+        .withRequestCacheEnabled(true)
+        .withRequestLogEnabled(false);
 
-        BizkeeperCommand bizkeeperCommand = new ProviderBizkeeperCommand("groupname", invocation,
-                HystrixObservableCommand.Setter
-                        .withGroupKey(CommandKey.toHystrixCommandGroupKey("groupname", invocation))
-                        .andCommandKey(CommandKey.toHystrixCommandKey("groupname", invocation))
-                        .andCommandPropertiesDefaults(setter));
+    BizkeeperCommand bizkeeperCommand = new ProviderBizkeeperCommand("groupname", invocation,
+        HystrixObservableCommand.Setter
+            .withGroupKey(CommandKey.toHystrixCommandGroupKey("groupname", invocation))
+            .andCommandKey(CommandKey.toHystrixCommandKey("groupname", invocation))
+            .andCommandPropertiesDefaults(setter));
 
-        HystrixRequestContext.initializeContext();
-        String cacheKey = bizkeeperCommand.getCacheKey();
-        Assert.assertNotNull(cacheKey);
-    }
+    HystrixRequestContext.initializeContext();
+    String cacheKey = bizkeeperCommand.getCacheKey();
+    Assert.assertNotNull(cacheKey);
+  }
 
-    @Test
-    public void testGetCacheKeyConsumer() {
+  @Test
+  public void testGetCacheKeyConsumer() {
 
-        Invocation invocation = Mockito.mock(Invocation.class);
-        Mockito.when(invocation.getOperationMeta()).thenReturn(Mockito.mock(OperationMeta.class));
-        Mockito.when(invocation.getOperationMeta().getMicroserviceQualifiedName()).thenReturn("test1");
+    Invocation invocation = Mockito.mock(Invocation.class);
+    Mockito.when(invocation.getOperationMeta()).thenReturn(Mockito.mock(OperationMeta.class));
+    Mockito.when(invocation.getOperationMeta().getMicroserviceQualifiedName()).thenReturn("test1");
 
-        HystrixCommandProperties.Setter setter = HystrixCommandProperties.Setter()
-                .withRequestCacheEnabled(true)
-                .withRequestLogEnabled(false);
+    HystrixCommandProperties.Setter setter = HystrixCommandProperties.Setter()
+        .withRequestCacheEnabled(true)
+        .withRequestLogEnabled(false);
 
-        BizkeeperCommand bizkeeperCommand = new ConsumerBizkeeperCommand("groupname", invocation,
-                HystrixObservableCommand.Setter
-                        .withGroupKey(CommandKey.toHystrixCommandGroupKey("groupname", invocation))
-                        .andCommandKey(CommandKey.toHystrixCommandKey("groupname", invocation))
-                        .andCommandPropertiesDefaults(setter));
+    BizkeeperCommand bizkeeperCommand = new ConsumerBizkeeperCommand("groupname", invocation,
+        HystrixObservableCommand.Setter
+            .withGroupKey(CommandKey.toHystrixCommandGroupKey("groupname", invocation))
+            .andCommandKey(CommandKey.toHystrixCommandKey("groupname", invocation))
+            .andCommandPropertiesDefaults(setter));
 
-        String str = bizkeeperCommand.getCacheKey();
-        Assert.assertNull(str);
+    String str = bizkeeperCommand.getCacheKey();
+    Assert.assertNull(str);
 
-        Response resp = Mockito.mock(Response.class);
-        Mockito.when(resp.isFailed()).thenReturn(false);
-        Assert.assertEquals(false, bizkeeperCommand.isFailedResponse(resp));
-        Mockito.when(resp.isFailed()).thenReturn(true);
-        InvocationException excp = Mockito.mock(InvocationException.class);
-        Mockito.when(resp.getResult()).thenReturn(excp);
-        Mockito.when(excp.getStatusCode()).thenReturn(400);
-        Assert.assertEquals(false, bizkeeperCommand.isFailedResponse(resp));
-        Mockito.when(resp.getResult()).thenReturn(excp);
-        Mockito.when(excp.getStatusCode()).thenReturn(490);
-        Assert.assertEquals(true, bizkeeperCommand.isFailedResponse(resp));
-    }
+    Response resp = Mockito.mock(Response.class);
+    Mockito.when(resp.isFailed()).thenReturn(false);
+    Assert.assertEquals(false, bizkeeperCommand.isFailedResponse(resp));
+    Mockito.when(resp.isFailed()).thenReturn(true);
+    InvocationException excp = Mockito.mock(InvocationException.class);
+    Mockito.when(resp.getResult()).thenReturn(excp);
+    Mockito.when(excp.getStatusCode()).thenReturn(400);
+    Assert.assertEquals(false, bizkeeperCommand.isFailedResponse(resp));
+    Mockito.when(resp.getResult()).thenReturn(excp);
+    Mockito.when(excp.getStatusCode()).thenReturn(490);
+    Assert.assertEquals(true, bizkeeperCommand.isFailedResponse(resp));
+  }
 
-    @Test
-    public void testResumeWithFallbackConsumer() {
+  @Test
+  public void testResumeWithFallbackConsumer() {
 
-        Invocation invocation = Mockito.mock(Invocation.class);
-        Mockito.when(invocation.getOperationMeta()).thenReturn(Mockito.mock(OperationMeta.class));
-        Mockito.when(invocation.getOperationMeta().getMicroserviceQualifiedName()).thenReturn("test1");
+    Invocation invocation = Mockito.mock(Invocation.class);
+    Mockito.when(invocation.getOperationMeta()).thenReturn(Mockito.mock(OperationMeta.class));
+    Mockito.when(invocation.getOperationMeta().getMicroserviceQualifiedName()).thenReturn("test1");
 
-        HystrixCommandProperties.Setter setter = HystrixCommandProperties.Setter()
-                .withRequestCacheEnabled(true)
-                .withRequestLogEnabled(false);
+    HystrixCommandProperties.Setter setter = HystrixCommandProperties.Setter()
+        .withRequestCacheEnabled(true)
+        .withRequestLogEnabled(false);
 
-        BizkeeperCommand bizkeeperCommand = new ConsumerBizkeeperCommand("groupname", invocation,
-                HystrixObservableCommand.Setter
-                        .withGroupKey(CommandKey.toHystrixCommandGroupKey("groupname", invocation))
-                        .andCommandKey(CommandKey.toHystrixCommandKey("groupname", invocation))
-                        .andCommandPropertiesDefaults(setter));
+    BizkeeperCommand bizkeeperCommand = new ConsumerBizkeeperCommand("groupname", invocation,
+        HystrixObservableCommand.Setter
+            .withGroupKey(CommandKey.toHystrixCommandGroupKey("groupname", invocation))
+            .andCommandKey(CommandKey.toHystrixCommandKey("groupname", invocation))
+            .andCommandPropertiesDefaults(setter));
 
-        Observable<Response> observe = bizkeeperCommand.resumeWithFallback();
-        Assert.assertNotNull(observe);
-    }
+    Observable<Response> observe = bizkeeperCommand.resumeWithFallback();
+    Assert.assertNotNull(observe);
+  }
 
-    @Test
-    public void testConstructConsumer() {
+  @Test
+  public void testConstructConsumer() {
 
-        Invocation invocation = Mockito.mock(Invocation.class);
-        Mockito.when(invocation.getOperationMeta()).thenReturn(Mockito.mock(OperationMeta.class));
-        Mockito.when(invocation.getOperationMeta().getMicroserviceQualifiedName()).thenReturn("test1");
+    Invocation invocation = Mockito.mock(Invocation.class);
+    Mockito.when(invocation.getOperationMeta()).thenReturn(Mockito.mock(OperationMeta.class));
+    Mockito.when(invocation.getOperationMeta().getMicroserviceQualifiedName()).thenReturn("test1");
 
-        HystrixCommandProperties.Setter setter = HystrixCommandProperties.Setter()
-                .withRequestCacheEnabled(true)
-                .withRequestLogEnabled(false);
+    HystrixCommandProperties.Setter setter = HystrixCommandProperties.Setter()
+        .withRequestCacheEnabled(true)
+        .withRequestLogEnabled(false);
 
-        BizkeeperCommand bizkeeperCommand = new ConsumerBizkeeperCommand("groupname", invocation,
-                HystrixObservableCommand.Setter
-                        .withGroupKey(CommandKey.toHystrixCommandGroupKey("groupname", invocation))
-                        .andCommandKey(CommandKey.toHystrixCommandKey("groupname", invocation))
-                        .andCommandPropertiesDefaults(setter));
+    BizkeeperCommand bizkeeperCommand = new ConsumerBizkeeperCommand("groupname", invocation,
+        HystrixObservableCommand.Setter
+            .withGroupKey(CommandKey.toHystrixCommandGroupKey("groupname", invocation))
+            .andCommandKey(CommandKey.toHystrixCommandKey("groupname", invocation))
+            .andCommandPropertiesDefaults(setter));
 
-        Observable<Response> response = bizkeeperCommand.construct();
-        Assert.assertNotNull(response);
-    }
+    Observable<Response> response = bizkeeperCommand.construct();
+    Assert.assertNotNull(response);
+  }
 
-    @Test
-    public void testGetCacheKeyWithContextInitializedConsumer() {
+  @Test
+  public void testGetCacheKeyWithContextInitializedConsumer() {
 
-        Invocation invocation = Mockito.mock(Invocation.class);
-        Mockito.when(invocation.getOperationMeta()).thenReturn(Mockito.mock(OperationMeta.class));
-        Mockito.when(invocation.getOperationMeta().getMicroserviceQualifiedName()).thenReturn("test1");
+    Invocation invocation = Mockito.mock(Invocation.class);
+    Mockito.when(invocation.getOperationMeta()).thenReturn(Mockito.mock(OperationMeta.class));
+    Mockito.when(invocation.getOperationMeta().getMicroserviceQualifiedName()).thenReturn("test1");
 
-        HystrixCommandProperties.Setter setter = HystrixCommandProperties.Setter()
-                .withRequestCacheEnabled(true)
-                .withRequestLogEnabled(false);
+    HystrixCommandProperties.Setter setter = HystrixCommandProperties.Setter()
+        .withRequestCacheEnabled(true)
+        .withRequestLogEnabled(false);
 
-        BizkeeperCommand bizkeeperCommand = new ConsumerBizkeeperCommand("groupname", invocation,
-                HystrixObservableCommand.Setter
-                        .withGroupKey(CommandKey.toHystrixCommandGroupKey("groupname", invocation))
-                        .andCommandKey(CommandKey.toHystrixCommandKey("groupname", invocation))
-                        .andCommandPropertiesDefaults(setter));
+    BizkeeperCommand bizkeeperCommand = new ConsumerBizkeeperCommand("groupname", invocation,
+        HystrixObservableCommand.Setter
+            .withGroupKey(CommandKey.toHystrixCommandGroupKey("groupname", invocation))
+            .andCommandKey(CommandKey.toHystrixCommandKey("groupname", invocation))
+            .andCommandPropertiesDefaults(setter));
 
-        HystrixRequestContext.initializeContext();
-        String cacheKey = bizkeeperCommand.getCacheKey();
-        Assert.assertNotNull(cacheKey);
-    }
+    HystrixRequestContext.initializeContext();
+    String cacheKey = bizkeeperCommand.getCacheKey();
+    Assert.assertNotNull(cacheKey);
+  }
 }

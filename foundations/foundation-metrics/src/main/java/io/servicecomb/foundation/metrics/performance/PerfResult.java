@@ -22,71 +22,71 @@ package io.servicecomb.foundation.metrics.performance;
  *
  */
 public class PerfResult {
-    private String name;
+  private String name;
 
-    private long callCount;
+  private long callCount;
 
-    private long msgCount;
+  private long msgCount;
 
-    private long avgCallCount;
+  private long avgCallCount;
 
-    private double msAvgLatency;
+  private double msAvgLatency;
 
-    private long[] msLatencySegments;
+  private long[] msLatencySegments;
 
-    public String getName() {
-        return name;
+  public String getName() {
+    return name;
+  }
+
+  public void setName(String name) {
+    this.name = name;
+  }
+
+  public long getCallCount() {
+    return callCount;
+  }
+
+  public void setCallCount(long callCount) {
+    this.callCount = callCount;
+  }
+
+  public long getMsgCount() {
+    return msgCount;
+  }
+
+  public void setMsgCount(long msgCount) {
+    this.msgCount = msgCount;
+  }
+
+  public long getAvgCallCount() {
+    return avgCallCount;
+  }
+
+  public void setAvgCallCount(long avgCallCount) {
+    this.avgCallCount = avgCallCount;
+  }
+
+  public double getMsAvgLatency() {
+    return msAvgLatency;
+  }
+
+  public void setMsAvgLatency(double msAvgLatency) {
+    this.msAvgLatency = msAvgLatency;
+  }
+
+  public long[] getMsLatencySegments() {
+    return msLatencySegments;
+  }
+
+  public void setMsLatencySegments(long[] msLatencySegments) {
+    this.msLatencySegments = msLatencySegments;
+  }
+
+  public String segmentsToString(String fmt) {
+    StringBuilder sb = new StringBuilder();
+    for (long segCount : msLatencySegments) {
+      sb.append(String.format(fmt, segCount));
     }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public long getCallCount() {
-        return callCount;
-    }
-
-    public void setCallCount(long callCount) {
-        this.callCount = callCount;
-    }
-
-    public long getMsgCount() {
-        return msgCount;
-    }
-
-    public void setMsgCount(long msgCount) {
-        this.msgCount = msgCount;
-    }
-
-    public long getAvgCallCount() {
-        return avgCallCount;
-    }
-
-    public void setAvgCallCount(long avgCallCount) {
-        this.avgCallCount = avgCallCount;
-    }
-
-    public double getMsAvgLatency() {
-        return msAvgLatency;
-    }
-
-    public void setMsAvgLatency(double msAvgLatency) {
-        this.msAvgLatency = msAvgLatency;
-    }
-
-    public long[] getMsLatencySegments() {
-        return msLatencySegments;
-    }
-
-    public void setMsLatencySegments(long[] msLatencySegments) {
-        this.msLatencySegments = msLatencySegments;
-    }
-
-    public String segmentsToString(String fmt) {
-        StringBuilder sb = new StringBuilder();
-        for (long segCount : msLatencySegments) {
-            sb.append(String.format(fmt, segCount));
-        }
-        return sb.toString();
-    }
+    return sb.toString();
+  }
 }

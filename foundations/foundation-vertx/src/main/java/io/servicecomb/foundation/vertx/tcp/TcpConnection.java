@@ -29,93 +29,93 @@ import io.vertx.core.net.impl.NetSocketImpl;
 import io.vertx.core.net.impl.VertxHelper;
 
 public class TcpConnection {
-    protected String protocol;
+  protected String protocol;
 
-    // 压缩算法名字
-    protected String zipName;
+  // 压缩算法名字
+  protected String zipName;
 
-    protected NetSocket netSocket;
+  protected NetSocket netSocket;
 
-    // context of netSocket
-    protected Context context;
+  // context of netSocket
+  protected Context context;
 
-    // vertx's wrap for netty is ugly: write always lock first
-    // so we save buf in a CAS queue, and notify eventloop thread to do the real write
-    // 
-    // netty:
-    // if write caller is not in network IO thread
-    // always wrap the write as a task, and put it to IO thread queue(MPSC queue)
-    //
-    // so this optimization:
-    // 1.avoid vertx's lock
-    // 2.reduce netty's task schedule
-    private Queue<ByteBuf> writeQueue = new ConcurrentLinkedQueue<>();
+  // vertx's wrap for netty is ugly: write always lock first
+  // so we save buf in a CAS queue, and notify eventloop thread to do the real write
+  //
+  // netty:
+  // if write caller is not in network IO thread
+  // always wrap the write as a task, and put it to IO thread queue(MPSC queue)
+  //
+  // so this optimization:
+  // 1.avoid vertx's lock
+  // 2.reduce netty's task schedule
+  private Queue<ByteBuf> writeQueue = new ConcurrentLinkedQueue<>();
 
-    private AtomicLong writeQueueSize = new AtomicLong();
+  private AtomicLong writeQueueSize = new AtomicLong();
 
-    public String getProtocol() {
-        return protocol;
+  public String getProtocol() {
+    return protocol;
+  }
+
+  public void setProtocol(String protocol) {
+    this.protocol = protocol;
+  }
+
+  public String getZipName() {
+    return zipName;
+  }
+
+  public void setZipName(String zipName) {
+    this.zipName = zipName;
+  }
+
+  public void setContext(Context context) {
+    this.context = context;
+  }
+
+  public NetSocket getNetSocket() {
+    return netSocket;
+  }
+
+  public void initNetSocket(NetSocketImpl netSocket) {
+    this.netSocket = netSocket;
+
+    this.context = VertxHelper.getConnectionContext(netSocket);
+  }
+
+  public void write(ByteBuf buf) {
+    writeQueue.add(buf);
+    long oldSize = writeQueueSize.getAndIncrement();
+    if (oldSize == 0) {
+      scheduleWrite();
     }
+  }
 
-    public void setProtocol(String protocol) {
-        this.protocol = protocol;
+  // notify context thread to write
+  protected void scheduleWrite() {
+    context.runOnContext(v -> {
+      writeInContext();
+    });
+  }
+
+  protected void writeInContext() {
+    CompositeByteBuf cbb = ByteBufAllocator.DEFAULT.compositeBuffer();
+    for (;;) {
+      ByteBuf buf = writeQueue.poll();
+      if (buf == null) {
+        break;
+      }
+
+      writeQueueSize.decrementAndGet();
+      cbb.addComponent(true, buf);
+
+      if (cbb.numComponents() == cbb.maxNumComponents()) {
+        netSocket.write(Buffer.buffer(cbb));
+        cbb = ByteBufAllocator.DEFAULT.compositeBuffer();
+      }
     }
-
-    public String getZipName() {
-        return zipName;
+    if (cbb.isReadable()) {
+      netSocket.write(Buffer.buffer(cbb));
     }
-
-    public void setZipName(String zipName) {
-        this.zipName = zipName;
-    }
-
-    public void setContext(Context context) {
-        this.context = context;
-    }
-
-    public NetSocket getNetSocket() {
-        return netSocket;
-    }
-
-    public void initNetSocket(NetSocketImpl netSocket) {
-        this.netSocket = netSocket;
-
-        this.context = VertxHelper.getConnectionContext(netSocket);
-    }
-
-    public void write(ByteBuf buf) {
-        writeQueue.add(buf);
-        long oldSize = writeQueueSize.getAndIncrement();
-        if (oldSize == 0) {
-            scheduleWrite();
-        }
-    }
-
-    // notify context thread to write
-    protected void scheduleWrite() {
-        context.runOnContext(v -> {
-            writeInContext();
-        });
-    }
-
-    protected void writeInContext() {
-        CompositeByteBuf cbb = ByteBufAllocator.DEFAULT.compositeBuffer();
-        for (;;) {
-            ByteBuf buf = writeQueue.poll();
-            if (buf == null) {
-                break;
-            }
-
-            writeQueueSize.decrementAndGet();
-            cbb.addComponent(true, buf);
-
-            if (cbb.numComponents() == cbb.maxNumComponents()) {
-                netSocket.write(Buffer.buffer(cbb));
-                cbb = ByteBufAllocator.DEFAULT.compositeBuffer();
-            }
-        }
-        if (cbb.isReadable()) {
-            netSocket.write(Buffer.buffer(cbb));
-        }
-    }
+  }
 }

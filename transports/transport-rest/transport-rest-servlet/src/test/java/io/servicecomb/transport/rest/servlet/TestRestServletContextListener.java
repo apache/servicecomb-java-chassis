@@ -24,35 +24,35 @@ import org.junit.Test;
 import org.mockito.Mockito;
 
 public class TestRestServletContextListener {
-    @Test
-    public void testcontextInitializedException() {
-        boolean status = true;
-        RestServletContextListener listener = new RestServletContextListener();
-        ServletContextEvent sce = Mockito.mock(ServletContextEvent.class);
+  @Test
+  public void testcontextInitializedException() {
+    boolean status = true;
+    RestServletContextListener listener = new RestServletContextListener();
+    ServletContextEvent sce = Mockito.mock(ServletContextEvent.class);
 
-        try {
-            listener.contextInitialized(sce);
-        } catch (Exception e) {
-            status = false;
-        } catch (Error e) {
-            status = false;
-        }
-        Assert.assertFalse(status);
+    try {
+      listener.contextInitialized(sce);
+    } catch (Exception e) {
+      status = false;
+    } catch (Error e) {
+      status = false;
     }
+    Assert.assertFalse(status);
+  }
 
-    @Test
-    public void testInitSpring() {
-        boolean status = true;
-        RestServletContextListener listener = new RestServletContextListener();
-        ServletContextEvent sce = Mockito.mock(ServletContextEvent.class);
-        ServletContext context = Mockito.mock(ServletContext.class);
-        Mockito.when(sce.getServletContext()).thenReturn(context);
-        Mockito.when(sce.getServletContext().getInitParameter("contextConfigLocation")).thenReturn("locations");
-        try {
-            listener.initSpring(sce);
-        } catch (Exception e) {
-            status = false;
-        }
-        Assert.assertFalse(status);
+  @Test
+  public void testInitSpring() {
+    boolean status = true;
+    RestServletContextListener listener = new RestServletContextListener();
+    ServletContextEvent sce = Mockito.mock(ServletContextEvent.class);
+    ServletContext context = Mockito.mock(ServletContext.class);
+    Mockito.when(sce.getServletContext()).thenReturn(context);
+    Mockito.when(sce.getServletContext().getInitParameter("contextConfigLocation")).thenReturn("locations");
+    try {
+      listener.initSpring(sce);
+    } catch (Exception e) {
+      status = false;
     }
+    Assert.assertFalse(status);
+  }
 }

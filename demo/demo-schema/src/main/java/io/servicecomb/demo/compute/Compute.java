@@ -18,24 +18,23 @@ package io.servicecomb.demo.compute;
 
 public interface Compute {
 
-    int add(int a, int b);
+  int add(int a, int b);
 
-    int reduce(int a, int b);
+  int reduce(int a, int b);
 
-    Person sayHello(Person user);
+  Person sayHello(Person user);
 
-    String testRawJsonString(String jsonInput);
+  String testRawJsonString(String jsonInput);
 
-    String saySomething(String prefix, Person user);
+  String saySomething(String prefix, Person user);
 
-    void sayHi(String name);
+  void sayHi(String name);
 
-    void sayHi2(String name);
+  void sayHi2(String name);
 
-    void sayHei(String name);
+  void sayHei(String name);
 
-    boolean isTrue();
+  boolean isTrue();
 
-    String addString(String[] s);
-
+  String addString(String[] s);
 }

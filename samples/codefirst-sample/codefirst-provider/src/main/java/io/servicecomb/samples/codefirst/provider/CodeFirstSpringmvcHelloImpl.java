@@ -43,5 +43,4 @@ public class CodeFirstSpringmvcHelloImpl implements Hello {
   public String sayHello(@RequestBody Person person) {
     return "Spring mvc Hello person " + person.getName();
   }
-
 }

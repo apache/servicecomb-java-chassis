@@ -30,104 +30,105 @@ import io.vertx.core.parsetools.impl.RecordParserImpl;
  *
  */
 public class TcpParser implements Handler<Buffer> {
-    public static final byte[] TCP_MAGIC;
+  public static final byte[] TCP_MAGIC;
 
-    public static final int TCP_HEADER_LENGTH = 23;
-    static {
-        try {
-            TCP_MAGIC = "CSE.TCP".getBytes("UTF-8");
-        } catch (UnsupportedEncodingException e) {
-            throw new RuntimeException(e);
+  public static final int TCP_HEADER_LENGTH = 23;
+
+  static {
+    try {
+      TCP_MAGIC = "CSE.TCP".getBytes("UTF-8");
+    } catch (UnsupportedEncodingException e) {
+      throw new RuntimeException(e);
+    }
+  }
+
+  enum ParseStatus {
+    TCP_HEADER,
+    TCP_PAYLOAD
+  }
+
+  private TcpBufferHandler outputHandler;
+
+  private RecordParser parser;
+
+  private ParseStatus status;
+
+  private long msgId;
+
+  // 仅仅是header + body，不包括headerLen本身
+  private int totalLen;
+
+  private int headerLen;
+
+  public TcpParser(TcpBufferHandler output) {
+    this.outputHandler = output;
+
+    reset();
+  }
+
+  /**
+   * 在解析出错时，通过重新创建parser对象，将整个缓冲区重置
+   */
+  protected void reset() {
+    parser = RecordParserImpl.newFixed(TCP_HEADER_LENGTH, this::onParse);
+    status = ParseStatus.TCP_HEADER;
+
+    parser.handle(Buffer.buffer(0));
+  }
+
+  public boolean firstNEqual(byte[] a, byte[] b, int n) {
+    assert a.length >= n && b.length >= n;
+
+    for (int i = 0; i < n; i++) {
+      if (a[i] != b[i]) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  protected void onParse(Buffer buffer) {
+    switch (status) {
+      case TCP_HEADER:
+        ByteBuf buf = buffer.getByteBuf();
+        if (!firstNEqual(TCP_MAGIC, buf.array(), TCP_MAGIC.length)) {
+          reset();
+          return;
         }
-    }
 
-    enum ParseStatus {
-        TCP_HEADER,
-        TCP_PAYLOAD
-    }
+        buf.skipBytes(TCP_MAGIC.length);
+        msgId = buf.readLong();
+        totalLen = buf.readInt();
+        headerLen = buf.readInt();
 
-    private TcpBufferHandler outputHandler;
-
-    private RecordParser parser;
-
-    private ParseStatus status;
-
-    private long msgId;
-
-    // 仅仅是header + body，不包括headerLen本身
-    private int totalLen;
-
-    private int headerLen;
-
-    public TcpParser(TcpBufferHandler output) {
-        this.outputHandler = output;
-
-        reset();
-    }
-
-    /**
-     * 在解析出错时，通过重新创建parser对象，将整个缓冲区重置
-     */
-    protected void reset() {
-        parser = RecordParserImpl.newFixed(TCP_HEADER_LENGTH, this::onParse);
-        status = ParseStatus.TCP_HEADER;
-
-        parser.handle(Buffer.buffer(0));
-    }
-
-    public boolean firstNEqual(byte[] a, byte[] b, int n) {
-        assert a.length >= n && b.length >= n;
-
-        for (int i = 0; i < n; i++) {
-            if (a[i] != b[i]) {
-                return false;
-            }
+        if (totalLen == 0) {
+          onReadOnePackage(null, null);
+          return;
         }
-        return true;
+
+        parser.fixedSizeMode(totalLen);
+        status = ParseStatus.TCP_PAYLOAD;
+        break;
+
+      case TCP_PAYLOAD:
+        Buffer headerBuffer = buffer.slice(0, headerLen);
+        Buffer bodyBuffer = buffer.slice(headerLen, buffer.length());
+        onReadOnePackage(headerBuffer, bodyBuffer);
+        break;
+
+      default:
+        break;
     }
+  }
 
-    protected void onParse(Buffer buffer) {
-        switch (status) {
-            case TCP_HEADER:
-                ByteBuf buf = buffer.getByteBuf();
-                if (!firstNEqual(TCP_MAGIC, buf.array(), TCP_MAGIC.length)) {
-                    reset();
-                    return;
-                }
+  private void onReadOnePackage(Buffer headerBuffer, Buffer bodyBuffer) {
+    outputHandler.handle(msgId, headerBuffer, bodyBuffer);
 
-                buf.skipBytes(TCP_MAGIC.length);
-                msgId = buf.readLong();
-                totalLen = buf.readInt();
-                headerLen = buf.readInt();
+    parser.fixedSizeMode(TCP_HEADER_LENGTH);
+    status = ParseStatus.TCP_HEADER;
+  }
 
-                if (totalLen == 0) {
-                    onReadOnePackage(null, null);
-                    return;
-                }
-
-                parser.fixedSizeMode(totalLen);
-                status = ParseStatus.TCP_PAYLOAD;
-                break;
-
-            case TCP_PAYLOAD:
-                Buffer headerBuffer = buffer.slice(0, headerLen);
-                Buffer bodyBuffer = buffer.slice(headerLen, buffer.length());
-                onReadOnePackage(headerBuffer, bodyBuffer);
-                break;
-
-            default:
-                break;
-        }
-    }
-
-    private void onReadOnePackage(Buffer headerBuffer, Buffer bodyBuffer) {
-        outputHandler.handle(msgId, headerBuffer, bodyBuffer);
-
-        parser.fixedSizeMode(TCP_HEADER_LENGTH);
-        status = ParseStatus.TCP_HEADER;
-    }
-
-    public void handle(Buffer buf) {
-        parser.handle(buf);
-    }
+  public void handle(Buffer buf) {
+    parser.handle(buf);
+  }
 }

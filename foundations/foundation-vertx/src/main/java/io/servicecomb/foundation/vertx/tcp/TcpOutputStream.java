@@ -25,22 +25,22 @@ import io.servicecomb.foundation.vertx.stream.BufferOutputStream;
  *
  */
 public class TcpOutputStream extends BufferOutputStream {
-    private long msgId;
+  private long msgId;
 
-    public TcpOutputStream(long msgId) {
-        super();
+  public TcpOutputStream(long msgId) {
+    super();
 
-        this.msgId = msgId;
-        write(TcpParser.TCP_MAGIC);
-        writeLong(msgId);
-    }
+    this.msgId = msgId;
+    write(TcpParser.TCP_MAGIC);
+    writeLong(msgId);
+  }
 
-    public long getMsgId() {
-        return msgId;
-    }
+  public long getMsgId() {
+    return msgId;
+  }
 
-    public void writeLength(int totalLen, int headerLen) {
-        writeInt(totalLen);
-        writeInt(headerLen);
-    }
+  public void writeLength(int totalLen, int headerLen) {
+    writeInt(totalLen);
+    writeInt(headerLen);
+  }
 }

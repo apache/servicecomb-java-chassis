@@ -33,43 +33,40 @@ import mockit.MockUp;
 
 public class TestServerListCache {
 
-    private ServerListCache instance = null;
+  private ServerListCache instance = null;
 
-    private Transport transport = null;
+  private Transport transport = null;
 
-    private void mockTestCases() {
-        new MockUp<InstanceCacheManager>() {
-            @Mock
-            public InstanceCache getOrCreate(String appId, String microserviceName, String microserviceVersionRule) {
-                return null;
-            }
+  private void mockTestCases() {
+    new MockUp<InstanceCacheManager>() {
+      @Mock
+      public InstanceCache getOrCreate(String appId, String microserviceName, String microserviceVersionRule) {
+        return null;
+      }
+    };
 
-        };
+    transport = Mockito.mock(Transport.class);
+  }
 
-        transport = Mockito.mock(Transport.class);
+  @Before
+  public void setUp() throws Exception {
+    mockTestCases();
+    instance = new ServerListCache("appId", "microserviceName", "microserviceVersionRule", "transportName");
+  }
 
-    }
+  @After
+  public void tearDown() throws Exception {
+    instance = null;
+  }
 
-    @Before
-    public void setUp() throws Exception {
-        mockTestCases();
-        instance = new ServerListCache("appId", "microserviceName", "microserviceVersionRule", "transportName");
-    }
+  @Test
+  public void testServerListCache() {
+    Assert.assertNotNull(instance);
+  }
 
-    @After
-    public void tearDown() throws Exception {
-        instance = null;
-    }
-
-    @Test
-    public void testServerListCache() {
-        Assert.assertNotNull(instance);
-
-    }
-
-    @Test
-    public void testCreateEndpointTransportString() {
-        Server server = instance.createEndpoint(transport, new CacheEndpoint("stringAddress", null));
-        Assert.assertNotNull(server);
-    }
+  @Test
+  public void testCreateEndpointTransportString() {
+    Server server = instance.createEndpoint(transport, new CacheEndpoint("stringAddress", null));
+    Assert.assertNotNull(server);
+  }
 }

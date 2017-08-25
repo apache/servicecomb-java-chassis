@@ -18,42 +18,42 @@ package io.servicecomb.core.executor;
 
 import java.util.concurrent.Executor;
 
-import io.servicecomb.core.definition.OperationMeta;
-import io.servicecomb.foundation.common.utils.BeanUtils;
 import com.netflix.config.DynamicPropertyFactory;
 
+import io.servicecomb.core.definition.OperationMeta;
+import io.servicecomb.foundation.common.utils.BeanUtils;
+
 public final class ExecutorManager {
-    private ExecutorManager() {
+  private ExecutorManager() {
+  }
+
+  // 只会在初始化时执行，一点点重复的查找，没必要做缓存
+  public static Executor findExecutor(OperationMeta operationMeta) {
+    Executor executor = findByKey("cse.executors.Provider." + operationMeta.getSchemaQualifiedName());
+    if (executor != null) {
+      return executor;
     }
 
-    // 只会在初始化时执行，一点点重复的查找，没必要做缓存
-    public static Executor findExecutor(OperationMeta operationMeta) {
-        Executor executor = findByKey("cse.executors.Provider." + operationMeta.getSchemaQualifiedName());
-        if (executor != null) {
-            return executor;
-        }
-
-        // 尝试schema级别
-        executor = findByKey("cse.executors.Provider." + operationMeta.getSchemaMeta().getName());
-        if (executor != null) {
-            return executor;
-        }
-
-        executor = findByKey("cse.executors.default");
-        if (executor != null) {
-            return executor;
-        }
-
-        return BeanUtils.getBean("cse.executor.default");
+    // 尝试schema级别
+    executor = findByKey("cse.executors.Provider." + operationMeta.getSchemaMeta().getName());
+    if (executor != null) {
+      return executor;
     }
 
-    protected static Executor findByKey(String beanIdKey) {
-        String beanId = DynamicPropertyFactory.getInstance().getStringProperty(beanIdKey, null).get();
-        if (beanId != null) {
-            return BeanUtils.getBean(beanId);
-        }
-
-        return null;
+    executor = findByKey("cse.executors.default");
+    if (executor != null) {
+      return executor;
     }
 
+    return BeanUtils.getBean("cse.executor.default");
+  }
+
+  protected static Executor findByKey(String beanIdKey) {
+    String beanId = DynamicPropertyFactory.getInstance().getStringProperty(beanIdKey, null).get();
+    if (beanId != null) {
+      return BeanUtils.getBean(beanId);
+    }
+
+    return null;
+  }
 }

@@ -17,43 +17,43 @@
 package io.servicecomb.core.provider.producer;
 
 public class ProducerMeta {
-    private String schemaId;
+  private String schemaId;
 
-    private Object instance;
+  private Object instance;
 
-    // 因为aop的存在，instance的class不一定等于instanceClass
-    private Class<?> instanceClass;
+  // 因为aop的存在，instance的class不一定等于instanceClass
+  private Class<?> instanceClass;
 
-    public ProducerMeta() {
-    }
+  public ProducerMeta() {
+  }
 
-    public ProducerMeta(String schemaId, Object instance, Class<?> instanceClass) {
-        this.schemaId = schemaId;
-        this.instance = instance;
-        this.instanceClass = instanceClass;
-    }
+  public ProducerMeta(String schemaId, Object instance, Class<?> instanceClass) {
+    this.schemaId = schemaId;
+    this.instance = instance;
+    this.instanceClass = instanceClass;
+  }
 
-    public String getSchemaId() {
-        return schemaId;
-    }
+  public String getSchemaId() {
+    return schemaId;
+  }
 
-    public void setSchemaId(String schemaId) {
-        this.schemaId = schemaId;
-    }
+  public void setSchemaId(String schemaId) {
+    this.schemaId = schemaId;
+  }
 
-    public Object getInstance() {
-        return instance;
-    }
+  public Object getInstance() {
+    return instance;
+  }
 
-    public void setInstance(Object instance) {
-        this.instance = instance;
-    }
+  public void setInstance(Object instance) {
+    this.instance = instance;
+  }
 
-    public Class<?> getInstanceClass() {
-        return instanceClass;
-    }
+  public Class<?> getInstanceClass() {
+    return instanceClass;
+  }
 
-    public void setInstanceClass(Class<?> instanceClass) {
-        this.instanceClass = instanceClass;
-    }
+  public void setInstanceClass(Class<?> instanceClass) {
+    this.instanceClass = instanceClass;
+  }
 }

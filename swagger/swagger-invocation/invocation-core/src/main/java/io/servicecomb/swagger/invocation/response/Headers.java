@@ -21,49 +21,49 @@ import java.util.List;
 import java.util.Map;
 
 public class Headers {
-    private Map<String, List<Object>> headerMap;
+  private Map<String, List<Object>> headerMap;
 
-    public Map<String, List<Object>> getHeaderMap() {
-        return headerMap;
+  public Map<String, List<Object>> getHeaderMap() {
+    return headerMap;
+  }
+
+  public void setHeaderMap(Map<String, List<Object>> headerMap) {
+    this.headerMap = headerMap;
+  }
+
+  public Object getFirst(String name) {
+    if (headerMap == null) {
+      return null;
     }
 
-    public void setHeaderMap(Map<String, List<Object>> headerMap) {
-        this.headerMap = headerMap;
+    List<Object> values = headerMap.get(name);
+    if (values == null || values.isEmpty()) {
+      return null;
     }
 
-    public Object getFirst(String name) {
-        if (headerMap == null) {
-            return null;
-        }
+    return values.get(0);
+  }
 
-        List<Object> values = headerMap.get(name);
-        if (values == null || values.isEmpty()) {
-            return null;
-        }
-
-        return values.get(0);
+  public List<Object> getHeader(String name) {
+    if (headerMap == null) {
+      return null;
     }
 
-    public List<Object> getHeader(String name) {
-        if (headerMap == null) {
-            return null;
-        }
+    return headerMap.get(name);
+  }
 
-        return headerMap.get(name);
+  public Headers addHeader(String name, Object value) {
+    if (headerMap == null) {
+      headerMap = new HashMap<>();
     }
 
-    public Headers addHeader(String name, Object value) {
-        if (headerMap == null) {
-            headerMap = new HashMap<>();
-        }
-
-        List<Object> values = headerMap.get(name);
-        if (values == null) {
-            values = new ArrayList<>();
-            headerMap.put(name, values);
-        }
-        values.add(value);
-
-        return this;
+    List<Object> values = headerMap.get(name);
+    if (values == null) {
+      values = new ArrayList<>();
+      headerMap.put(name, values);
     }
+    values.add(value);
+
+    return this;
+  }
 }

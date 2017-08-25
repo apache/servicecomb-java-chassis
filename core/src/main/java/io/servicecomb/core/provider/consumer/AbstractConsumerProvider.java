@@ -22,10 +22,10 @@ import io.servicecomb.core.ConsumerProvider;
 import io.servicecomb.core.definition.MicroserviceMetaManager;
 
 public abstract class AbstractConsumerProvider implements ConsumerProvider {
-    @Inject
-    protected MicroserviceMetaManager microserviceMetaManager;
+  @Inject
+  protected MicroserviceMetaManager microserviceMetaManager;
 
-    @Override
-    public void init() throws Exception {
-    }
+  @Override
+  public void init() throws Exception {
+  }
 }

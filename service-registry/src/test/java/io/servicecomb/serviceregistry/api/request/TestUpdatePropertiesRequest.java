@@ -22,15 +22,15 @@ import org.junit.Assert;
 import org.junit.Test;
 
 public class TestUpdatePropertiesRequest {
-    @Test
-    public void testProperties() {
-        UpdatePropertiesRequest request = new UpdatePropertiesRequest();
+  @Test
+  public void testProperties() {
+    UpdatePropertiesRequest request = new UpdatePropertiesRequest();
 
-        Assert.assertEquals(null, request.getProperties());
+    Assert.assertEquals(null, request.getProperties());
 
-        Map<String, String> properties = new HashMap<>();
-        properties.put("k", "v");
-        request.setProperties(properties);
-        Assert.assertEquals(properties, request.getProperties());
-    }
+    Map<String, String> properties = new HashMap<>();
+    properties.put("k", "v");
+    request.setProperties(properties);
+    Assert.assertEquals(properties, request.getProperties());
+  }
 }

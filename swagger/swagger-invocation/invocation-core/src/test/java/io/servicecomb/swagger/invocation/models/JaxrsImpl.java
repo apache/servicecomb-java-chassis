@@ -35,83 +35,83 @@ import io.servicecomb.swagger.invocation.context.InvocationContext;
 @Path("/JaxrsImpl")
 @Produces(MediaType.APPLICATION_JSON)
 public class JaxrsImpl {
-    @Path("/testTwoSimple")
-    @GET
-    public int testSimple(@PathParam("a") int a, @QueryParam("b") int b, @HeaderParam("c") int c) {
-        return a - b - c;
-    }
+  @Path("/testTwoSimple")
+  @GET
+  public int testSimple(@PathParam("a") int a, @QueryParam("b") int b, @HeaderParam("c") int c) {
+    return a - b - c;
+  }
 
-    @Path("/testObject")
-    @POST
-    public Person testObject(Person user) {
-        user.setName("hello " + user.getName());
-        return user;
-    }
+  @Path("/testObject")
+  @POST
+  public Person testObject(Person user) {
+    user.setName("hello " + user.getName());
+    return user;
+  }
 
-    @Path("/testSimpleAndObject")
-    @POST
-    public String testSimpleAndObject(@CookieParam("prefix") String prefix, Person user) {
-        return prefix + " " + user.getName();
-    }
+  @Path("/testSimpleAndObject")
+  @POST
+  public String testSimpleAndObject(@CookieParam("prefix") String prefix, Person user) {
+    return prefix + " " + user.getName();
+  }
 
-    @Path("/testContext")
-    @POST
-    public String testContext(InvocationContext context, @FormParam("form") String name) {
-        context.addContext("name", name);
-        return name + " sayhi";
-    }
+  @Path("/testContext")
+  @POST
+  public String testContext(InvocationContext context, @FormParam("form") String name) {
+    context.addContext("name", name);
+    return name + " sayhi";
+  }
 
-    @Path("/bytes")
-    @POST
-    public byte[] testBytes(byte[] input) {
-        return input;
-    }
+  @Path("/bytes")
+  @POST
+  public byte[] testBytes(byte[] input) {
+    return input;
+  }
 
-    @Path("/testArrayArray")
-    @POST
-    public String[] testArrayArray(String[] s) {
-        return s;
-    }
+  @Path("/testArrayArray")
+  @POST
+  public String[] testArrayArray(String[] s) {
+    return s;
+  }
 
-    @Path("/testArrayList")
-    @POST
-    public List<String> testArrayList(String[] s) {
-        return Arrays.asList(s);
-    }
+  @Path("/testArrayList")
+  @POST
+  public List<String> testArrayList(String[] s) {
+    return Arrays.asList(s);
+  }
 
-    @Path("/testListArray")
-    @POST
-    public String[] testListArray(List<String> s) {
-        return s.toArray(new String[s.size()]);
-    }
+  @Path("/testListArray")
+  @POST
+  public String[] testListArray(List<String> s) {
+    return s.toArray(new String[s.size()]);
+  }
 
-    @Path("/testListList")
-    @POST
-    public List<String> testListList(List<String> s) {
-        return s;
-    }
+  @Path("/testListList")
+  @POST
+  public List<String> testListList(List<String> s) {
+    return s;
+  }
 
-    @Path("/testObjectArrayArray")
-    @POST
-    public Person[] testObjectArrayArray(Person[] s) {
-        return s;
-    }
+  @Path("/testObjectArrayArray")
+  @POST
+  public Person[] testObjectArrayArray(Person[] s) {
+    return s;
+  }
 
-    @Path("/testObjectArrayList")
-    @POST
-    public List<Person> testObjectArrayList(Person[] s) {
-        return Arrays.asList(s);
-    }
+  @Path("/testObjectArrayList")
+  @POST
+  public List<Person> testObjectArrayList(Person[] s) {
+    return Arrays.asList(s);
+  }
 
-    @Path("/testObjectListArray")
-    @POST
-    public Person[] testObjectListArray(List<Person> s) {
-        return s.toArray(new Person[s.size()]);
-    }
+  @Path("/testObjectListArray")
+  @POST
+  public Person[] testObjectListArray(List<Person> s) {
+    return s.toArray(new Person[s.size()]);
+  }
 
-    @Path("/testObjectListList")
-    @POST
-    public List<Person> testObjectListList(List<Person> s) {
-        return s;
-    }
+  @Path("/testObjectListList")
+  @POST
+  public List<Person> testObjectListList(List<Person> s) {
+    return s;
+  }
 }

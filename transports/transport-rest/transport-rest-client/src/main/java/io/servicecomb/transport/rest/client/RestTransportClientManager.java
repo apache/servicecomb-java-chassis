@@ -26,50 +26,50 @@ import io.vertx.core.Vertx;
  * REST客户端。只需要两个实例， 一个ssl，一个非ssl.
  */
 public final class RestTransportClientManager {
-    private static final Logger LOGGER = LoggerFactory.getLogger(RestTransportClientManager.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(RestTransportClientManager.class);
 
-    public static final RestTransportClientManager INSTANCE = new RestTransportClientManager();
+  public static final RestTransportClientManager INSTANCE = new RestTransportClientManager();
 
-    // same instance in AbstractTranport. need refactor in future.
-    private final Vertx transportVertx = VertxUtils.getOrCreateVertxByName("transport", null);
+  // same instance in AbstractTranport. need refactor in future.
+  private final Vertx transportVertx = VertxUtils.getOrCreateVertxByName("transport", null);
 
-    private static final Object LOCK = new Object();
+  private static final Object LOCK = new Object();
 
-    private volatile RestTransportClient sslClient = null;
+  private volatile RestTransportClient sslClient = null;
 
-    private volatile RestTransportClient nonSslCient = null;
+  private volatile RestTransportClient nonSslCient = null;
 
-    private RestTransportClientManager() {
-    }
+  private RestTransportClientManager() {
+  }
 
-    public RestTransportClient getRestTransportClient(boolean sslEnabled) {
-        try {
-            if (sslEnabled) {
-                if (sslClient == null) {
-                    synchronized (LOCK) {
-                        if (sslClient == null) {
-                            RestTransportClient client = new RestTransportClient(true);
-                            client.init(transportVertx);
-                            sslClient = client;
-                        }
-                    }
-                }
-                return sslClient;
-            } else {
-                if (nonSslCient == null) {
-                    synchronized (LOCK) {
-                        if (nonSslCient == null) {
-                            RestTransportClient client = new RestTransportClient(false);
-                            client.init(transportVertx);
-                            nonSslCient = client;
-                        }
-                    }
-                }
-                return nonSslCient;
+  public RestTransportClient getRestTransportClient(boolean sslEnabled) {
+    try {
+      if (sslEnabled) {
+        if (sslClient == null) {
+          synchronized (LOCK) {
+            if (sslClient == null) {
+              RestTransportClient client = new RestTransportClient(true);
+              client.init(transportVertx);
+              sslClient = client;
             }
-        } catch (Exception e) {
-            LOGGER.error("");
-            throw new IllegalStateException("init rest client transport failed.");
+          }
         }
+        return sslClient;
+      } else {
+        if (nonSslCient == null) {
+          synchronized (LOCK) {
+            if (nonSslCient == null) {
+              RestTransportClient client = new RestTransportClient(false);
+              client.init(transportVertx);
+              nonSslCient = client;
+            }
+          }
+        }
+        return nonSslCient;
+      }
+    } catch (Exception e) {
+      LOGGER.error("");
+      throw new IllegalStateException("init rest client transport failed.");
     }
+  }
 }

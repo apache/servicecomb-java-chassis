@@ -29,26 +29,26 @@ import io.servicecomb.swagger.invocation.arguments.ArgumentMapper;
  * 除了context参数，剩下的参数，必须与契约中的一一匹配，包括顺序、类型
  */
 public class ConsumerArgumentsMapper {
-    private List<ArgumentMapper> consumerArgMapperList;
+  private List<ArgumentMapper> consumerArgMapperList;
 
-    private int swaggerParameterCount;
+  private int swaggerParameterCount;
 
-    // for test
-    public ArgumentMapper getArgumentMapper(int idx) {
-        return consumerArgMapperList.get(idx);
+  // for test
+  public ArgumentMapper getArgumentMapper(int idx) {
+    return consumerArgMapperList.get(idx);
+  }
+
+  public ConsumerArgumentsMapper(List<ArgumentMapper> consumerArgMapperList, int swaggerParameterCount) {
+    this.consumerArgMapperList = consumerArgMapperList;
+    this.swaggerParameterCount = swaggerParameterCount;
+  }
+
+  public void toInvocation(Object[] consumerArguments, SwaggerInvocation invocation) {
+    Object[] swaggerArguments = new Object[swaggerParameterCount];
+    invocation.setSwaggerArguments(swaggerArguments);
+
+    for (ArgumentMapper argMapper : consumerArgMapperList) {
+      argMapper.mapArgument(invocation, consumerArguments);
     }
-
-    public ConsumerArgumentsMapper(List<ArgumentMapper> consumerArgMapperList, int swaggerParameterCount) {
-        this.consumerArgMapperList = consumerArgMapperList;
-        this.swaggerParameterCount = swaggerParameterCount;
-    }
-
-    public void toInvocation(Object[] consumerArguments, SwaggerInvocation invocation) {
-        Object[] swaggerArguments = new Object[swaggerParameterCount];
-        invocation.setSwaggerArguments(swaggerArguments);
-
-        for (ArgumentMapper argMapper : consumerArgMapperList) {
-            argMapper.mapArgument(invocation, consumerArguments);
-        }
-    }
+  }
 }

@@ -34,50 +34,51 @@ import io.servicecomb.serviceregistry.client.ServiceRegistryClient;
 
 public class CseDiscoveryClient implements DiscoveryClient {
 
-    @Inject
-    private ConsumerProviderManager consumerProviderManager;
+  @Inject
+  private ConsumerProviderManager consumerProviderManager;
 
-    @Override
-    public String description() {
-        return "Spring Cloud CSE Discovery Client";
-    }
+  @Override
+  public String description() {
+    return "Spring Cloud CSE Discovery Client";
+  }
 
-    @Override
-    public List<ServiceInstance> getInstances(final String serviceId) {
-        List<ServiceInstance> instances = new ArrayList<ServiceInstance>();
-        ServiceRegistryClient client = RegistryUtils.getServiceRegistryClient();
-        String appId = RegistryUtils.getAppId();
-        ReferenceConfig referenceConfig = consumerProviderManager.getReferenceConfig(serviceId);
-        String versionRule = referenceConfig.getMicroserviceVersionRule();
-        String cseServiceID = client.getMicroserviceId(appId, serviceId, versionRule);
-        List<MicroserviceInstance> cseServices = client.getMicroserviceInstance(cseServiceID, cseServiceID);
-        if (null != cseServices && !cseServices.isEmpty()) {
-            for (MicroserviceInstance instance : cseServices) {
-                List<String> eps = instance.getEndpoints();
-                for (String ep : eps) {
-                    URIEndpointObject uri = new URIEndpointObject(ep);
-                    instances.add(new DefaultServiceInstance(instance.getServiceId(), uri.getHostOrIp(),
-                            uri.getPort(), false));
-                }
-            }
+  @Override
+  public List<ServiceInstance> getInstances(final String serviceId) {
+    List<ServiceInstance> instances = new ArrayList<ServiceInstance>();
+    ServiceRegistryClient client = RegistryUtils.getServiceRegistryClient();
+    String appId = RegistryUtils.getAppId();
+    ReferenceConfig referenceConfig = consumerProviderManager.getReferenceConfig(serviceId);
+    String versionRule = referenceConfig.getMicroserviceVersionRule();
+    String cseServiceID = client.getMicroserviceId(appId, serviceId, versionRule);
+    List<MicroserviceInstance> cseServices = client.getMicroserviceInstance(cseServiceID, cseServiceID);
+    if (null != cseServices && !cseServices.isEmpty()) {
+      for (MicroserviceInstance instance : cseServices) {
+        List<String> eps = instance.getEndpoints();
+        for (String ep : eps) {
+          URIEndpointObject uri = new URIEndpointObject(ep);
+          instances.add(new DefaultServiceInstance(instance.getServiceId(), uri.getHostOrIp(),
+              uri.getPort(), false));
         }
-        return instances;
+      }
     }
+    return instances;
+  }
 
-    @Override
-    public ServiceInstance getLocalServiceInstance() {
-        return null;
-    }
+  @Override
+  public ServiceInstance getLocalServiceInstance() {
+    return null;
+  }
 
-    @Override
-    public List<String> getServices() {
-        ServiceRegistryClient client = RegistryUtils.getServiceRegistryClient();
-        List<Microservice> services = client.getAllMicroservices();
-        List<String> serviceIDList = new ArrayList<>();
-        if (null != services && !services.isEmpty())
-            for (Microservice service : services) {
-                serviceIDList.add(service.getServiceName());
-            }
-        return serviceIDList;
+  @Override
+  public List<String> getServices() {
+    ServiceRegistryClient client = RegistryUtils.getServiceRegistryClient();
+    List<Microservice> services = client.getAllMicroservices();
+    List<String> serviceIDList = new ArrayList<>();
+    if (null != services && !services.isEmpty()) {
+      for (Microservice service : services) {
+        serviceIDList.add(service.getServiceName());
+      }
     }
+    return serviceIDList;
+  }
 }

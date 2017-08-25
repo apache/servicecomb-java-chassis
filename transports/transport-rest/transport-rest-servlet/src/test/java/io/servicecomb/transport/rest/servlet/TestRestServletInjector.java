@@ -31,53 +31,53 @@ import mockit.Expectations;
 import mockit.Mocked;
 
 public class TestRestServletInjector {
-    @Test
-    public void testDefaultInjectEmptyUrlPattern(@Mocked ServletContext servletContext, @Mocked Dynamic dynamic) {
-        new Expectations(ServletConfig.class) {
-            {
-                ServletConfig.getServletUrlPattern();
-                result = null;
-            }
-        };
+  @Test
+  public void testDefaultInjectEmptyUrlPattern(@Mocked ServletContext servletContext, @Mocked Dynamic dynamic) {
+    new Expectations(ServletConfig.class) {
+      {
+        ServletConfig.getServletUrlPattern();
+        result = null;
+      }
+    };
 
-        Assert.assertEquals(null, RestServletInjector.defaultInject(servletContext));
-    }
+    Assert.assertEquals(null, RestServletInjector.defaultInject(servletContext));
+  }
 
-    @Test
-    public void testDefaultInjectNotListen(@Mocked ServletContext servletContext,
-            @Mocked Dynamic dynamic) throws UnknownHostException, IOException {
-        try (ServerSocket ss = new ServerSocket(0, 0, InetAddress.getByName("127.0.0.1"))) {
-            int port = ss.getLocalPort();
+  @Test
+  public void testDefaultInjectNotListen(@Mocked ServletContext servletContext,
+      @Mocked Dynamic dynamic) throws UnknownHostException, IOException {
+    try (ServerSocket ss = new ServerSocket(0, 0, InetAddress.getByName("127.0.0.1"))) {
+      int port = ss.getLocalPort();
 
-            new Expectations(ServletConfig.class) {
-                {
-                    ServletConfig.getServletUrlPattern();
-                    result = "/*";
-                    ServletConfig.getLocalServerAddress();
-                    result = "127.0.0.1:" + port;
-                }
-            };
+      new Expectations(ServletConfig.class) {
+        {
+          ServletConfig.getServletUrlPattern();
+          result = "/*";
+          ServletConfig.getLocalServerAddress();
+          result = "127.0.0.1:" + port;
         }
-
-        Assert.assertEquals(null, RestServletInjector.defaultInject(servletContext));
+      };
     }
 
-    @Test
-    public void testDefaultInjectListen(@Mocked ServletContext servletContext,
-            @Mocked Dynamic dynamic) throws UnknownHostException, IOException {
-        try (ServerSocket ss = new ServerSocket(0, 0, InetAddress.getByName("127.0.0.1"))) {
-            int port = ss.getLocalPort();
+    Assert.assertEquals(null, RestServletInjector.defaultInject(servletContext));
+  }
 
-            new Expectations(ServletConfig.class) {
-                {
-                    ServletConfig.getServletUrlPattern();
-                    result = "/rest/*";
-                    ServletConfig.getLocalServerAddress();
-                    result = "127.0.0.1:" + port;
-                }
-            };
+  @Test
+  public void testDefaultInjectListen(@Mocked ServletContext servletContext,
+      @Mocked Dynamic dynamic) throws UnknownHostException, IOException {
+    try (ServerSocket ss = new ServerSocket(0, 0, InetAddress.getByName("127.0.0.1"))) {
+      int port = ss.getLocalPort();
 
-            Assert.assertEquals(dynamic, RestServletInjector.defaultInject(servletContext));
+      new Expectations(ServletConfig.class) {
+        {
+          ServletConfig.getServletUrlPattern();
+          result = "/rest/*";
+          ServletConfig.getLocalServerAddress();
+          result = "127.0.0.1:" + port;
         }
+      };
+
+      Assert.assertEquals(dynamic, RestServletInjector.defaultInject(servletContext));
     }
+  }
 }

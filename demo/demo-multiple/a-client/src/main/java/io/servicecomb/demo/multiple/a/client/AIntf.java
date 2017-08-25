@@ -17,5 +17,5 @@
 package io.servicecomb.demo.multiple.a.client;
 
 public interface AIntf {
-    String hello(String name);
+  String hello(String name);
 }

@@ -23,28 +23,28 @@ import io.vertx.core.http.HttpClientResponse;
  */
 public class RestResponse {
 
-    private RequestContext requestContext;
+  private RequestContext requestContext;
 
-    private HttpClientResponse response;
+  private HttpClientResponse response;
 
-    public RestResponse(RequestContext requestContext, HttpClientResponse response) {
-        this.requestContext = requestContext;
-        this.response = response;
-    }
+  public RestResponse(RequestContext requestContext, HttpClientResponse response) {
+    this.requestContext = requestContext;
+    this.response = response;
+  }
 
-    public RequestContext getRequestContext() {
-        return requestContext;
-    }
+  public RequestContext getRequestContext() {
+    return requestContext;
+  }
 
-    public void setRequestContext(RequestContext requestContext) {
-        this.requestContext = requestContext;
-    }
+  public void setRequestContext(RequestContext requestContext) {
+    this.requestContext = requestContext;
+  }
 
-    public HttpClientResponse getResponse() {
-        return response;
-    }
+  public HttpClientResponse getResponse() {
+    return response;
+  }
 
-    public void setResponse(HttpClientResponse response) {
-        this.response = response;
-    }
+  public void setResponse(HttpClientResponse response) {
+    this.response = response;
+  }
 }

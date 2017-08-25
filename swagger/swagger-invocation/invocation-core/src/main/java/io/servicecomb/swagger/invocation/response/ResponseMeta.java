@@ -20,44 +20,44 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import com.fasterxml.jackson.databind.JavaType;
-import io.servicecomb.swagger.converter.ConverterMgr;
 
+import io.servicecomb.swagger.converter.ConverterMgr;
 import io.swagger.models.Response;
 import io.swagger.models.Swagger;
 import io.swagger.models.properties.Property;
 
 public class ResponseMeta {
-    /**
-     * swagger中定义的statusCode与java类型的映射，方便consumer端transport将码流转换为具体的类型
-     */
-    private JavaType javaType;
+  /**
+   * swagger中定义的statusCode与java类型的映射，方便consumer端transport将码流转换为具体的类型
+   */
+  private JavaType javaType;
 
-    private Map<String, JavaType> headers = new HashMap<>();
+  private Map<String, JavaType> headers = new HashMap<>();
 
-    public void init(ClassLoader classLoader, String packageName, Swagger swagger, Response response) {
-        if (javaType == null) {
-            Property property = response.getSchema();
-            javaType = ConverterMgr.findJavaType(classLoader, packageName, swagger, property);
-        }
-
-        if (response.getHeaders() == null) {
-            return;
-        }
-        for (Entry<String, Property> entry : response.getHeaders().entrySet()) {
-            JavaType headerJavaType = ConverterMgr.findJavaType(classLoader, packageName, swagger, entry.getValue());
-            headers.put(entry.getKey(), headerJavaType);
-        }
+  public void init(ClassLoader classLoader, String packageName, Swagger swagger, Response response) {
+    if (javaType == null) {
+      Property property = response.getSchema();
+      javaType = ConverterMgr.findJavaType(classLoader, packageName, swagger, property);
     }
 
-    public JavaType getJavaType() {
-        return javaType;
+    if (response.getHeaders() == null) {
+      return;
     }
+    for (Entry<String, Property> entry : response.getHeaders().entrySet()) {
+      JavaType headerJavaType = ConverterMgr.findJavaType(classLoader, packageName, swagger, entry.getValue());
+      headers.put(entry.getKey(), headerJavaType);
+    }
+  }
 
-    public void setJavaType(JavaType javaType) {
-        this.javaType = javaType;
-    }
+  public JavaType getJavaType() {
+    return javaType;
+  }
 
-    public Map<String, JavaType> getHeaders() {
-        return headers;
-    }
+  public void setJavaType(JavaType javaType) {
+    this.javaType = javaType;
+  }
+
+  public Map<String, JavaType> getHeaders() {
+    return headers;
+  }
 }

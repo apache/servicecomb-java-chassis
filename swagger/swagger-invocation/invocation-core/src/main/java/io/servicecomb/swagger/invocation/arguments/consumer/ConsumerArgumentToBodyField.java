@@ -22,12 +22,11 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import io.servicecomb.swagger.invocation.SwaggerInvocation;
 import io.servicecomb.swagger.invocation.arguments.ArgumentMapper;
 import io.servicecomb.swagger.invocation.arguments.FieldInfo;
-
-import java.util.Set;
 
 /**
  * 透明RPC的典型场景
@@ -35,50 +34,50 @@ import java.util.Set;
  * 所以，所有参数被包装为一个class，每个参数是一个field
  */
 public class ConsumerArgumentToBodyField implements ArgumentMapper {
-    private Class<?> swaggerParamType;
+  private Class<?> swaggerParamType;
 
-    // key为consumerArgs的下标
-    private Map<Integer, FieldInfo> fieldMap;
+  // key为consumerArgs的下标
+  private Map<Integer, FieldInfo> fieldMap;
 
-    public ConsumerArgumentToBodyField(Class<?> swaggerParamType, Map<Integer, FieldInfo> fieldMap) {
-        this.swaggerParamType = correctType(swaggerParamType);
-        this.fieldMap = fieldMap;
+  public ConsumerArgumentToBodyField(Class<?> swaggerParamType, Map<Integer, FieldInfo> fieldMap) {
+    this.swaggerParamType = correctType(swaggerParamType);
+    this.fieldMap = fieldMap;
+  }
+
+  protected Class<?> correctType(Class<?> swaggerParamType) {
+    if (!Modifier.isAbstract(swaggerParamType.getModifiers())) {
+      return swaggerParamType;
     }
 
-    protected Class<?> correctType(Class<?> swaggerParamType) {
-        if (!Modifier.isAbstract(swaggerParamType.getModifiers())) {
-            return swaggerParamType;
-        }
-
-        if (List.class.isAssignableFrom(swaggerParamType)) {
-            return ArrayList.class;
-        }
-
-        if (Set.class.isAssignableFrom(swaggerParamType)) {
-            return HashSet.class;
-        }
-
-        throw new Error("not support " + swaggerParamType.getName());
+    if (List.class.isAssignableFrom(swaggerParamType)) {
+      return ArrayList.class;
     }
 
-    public Class<?> getSwaggerParamType() {
-        return swaggerParamType;
+    if (Set.class.isAssignableFrom(swaggerParamType)) {
+      return HashSet.class;
     }
 
-    @Override
-    public void mapArgument(SwaggerInvocation invocation, Object[] consumerArguments) {
-        try {
-            Object body = swaggerParamType.newInstance();
-            for (Entry<Integer, FieldInfo> entry : fieldMap.entrySet()) {
-                FieldInfo info = entry.getValue();
+    throw new Error("not support " + swaggerParamType.getName());
+  }
 
-                Object consumerParam = consumerArguments[entry.getKey()];
-                Object swaggerParam = info.getConverter().convert(consumerParam);
-                info.getField().set(body, swaggerParam);
-            }
-            invocation.setSwaggerArgument(0, body);
-        } catch (Throwable e) {
-            throw new Error(e);
-        }
+  public Class<?> getSwaggerParamType() {
+    return swaggerParamType;
+  }
+
+  @Override
+  public void mapArgument(SwaggerInvocation invocation, Object[] consumerArguments) {
+    try {
+      Object body = swaggerParamType.newInstance();
+      for (Entry<Integer, FieldInfo> entry : fieldMap.entrySet()) {
+        FieldInfo info = entry.getValue();
+
+        Object consumerParam = consumerArguments[entry.getKey()];
+        Object swaggerParam = info.getConverter().convert(consumerParam);
+        info.getField().set(body, swaggerParam);
+      }
+      invocation.setSwaggerArgument(0, body);
+    } catch (Throwable e) {
+      throw new Error(e);
     }
+  }
 }

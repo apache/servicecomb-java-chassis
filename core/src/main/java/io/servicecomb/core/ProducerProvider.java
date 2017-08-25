@@ -17,7 +17,7 @@
 package io.servicecomb.core;
 
 public interface ProducerProvider {
-    void init() throws Exception;
+  void init() throws Exception;
 
-    String getName();
+  String getName();
 }

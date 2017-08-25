@@ -23,28 +23,28 @@ import javax.ws.rs.HttpMethod;
 
 public final class HttpMethodFactory {
 
-    private static Map<String, VertxHttpMethod> httpMethodMap = new HashMap<>();
+  private static Map<String, VertxHttpMethod> httpMethodMap = new HashMap<>();
 
-    static {
-        addHttpMethod(HttpMethod.GET, VertxGetMethod.INSTANCE);
-        addHttpMethod(HttpMethod.POST, VertxPostMethod.INSTANCE);
-        addHttpMethod(HttpMethod.PUT, VertxPutMethod.INSTANCE);
-        addHttpMethod(HttpMethod.DELETE, VertxDeleteMethod.INSTANCE);
+  static {
+    addHttpMethod(HttpMethod.GET, VertxGetMethod.INSTANCE);
+    addHttpMethod(HttpMethod.POST, VertxPostMethod.INSTANCE);
+    addHttpMethod(HttpMethod.PUT, VertxPutMethod.INSTANCE);
+    addHttpMethod(HttpMethod.DELETE, VertxDeleteMethod.INSTANCE);
+  }
+
+  static void addHttpMethod(String httpMethod, VertxHttpMethod instance) {
+    httpMethodMap.put(httpMethod, instance);
+  }
+
+  private HttpMethodFactory() {
+  }
+
+  public static VertxHttpMethod findHttpMethodInstance(String method) throws Exception {
+    VertxHttpMethod httpMethod = httpMethodMap.get(method);
+    if (httpMethod == null) {
+      throw new Exception(String.format("Http method %s is not supported", method));
     }
 
-    static void addHttpMethod(String httpMethod, VertxHttpMethod instance) {
-        httpMethodMap.put(httpMethod, instance);
-    }
-
-    private HttpMethodFactory() {
-    }
-
-    public static VertxHttpMethod findHttpMethodInstance(String method) throws Exception {
-        VertxHttpMethod httpMethod = httpMethodMap.get(method);
-        if (httpMethod == null) {
-            throw new Exception(String.format("Http method %s is not supported", method));
-        }
-
-        return httpMethod;
-    }
+    return httpMethod;
+  }
 }

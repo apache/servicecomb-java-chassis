@@ -36,126 +36,127 @@ import io.swagger.annotations.SwaggerDefinition;
 
 @SwaggerDefinition
 public class TestClassUtils {
-    // copy from ClassUtils
-    // do not use JAVA_RESERVED_WORDS in ClassUtils directly
-    // because that's the test target.
-    private static final Set<String> JAVA_RESERVED_WORDS = new HashSet<>();
-    static {
-        JAVA_RESERVED_WORDS.addAll(Arrays.asList("true",
-                "false",
-                "null",
-                "abstract",
-                "continue",
-                "for",
-                "new",
-                "switch",
-                "assert",
-                "default",
-                "goto",
-                "package",
-                "synchronized",
-                "boolean",
-                "do",
-                "if",
-                "private",
-                "this",
-                "break",
-                "double",
-                "implements",
-                "protected",
-                "throw",
-                "byte",
-                "else",
-                "import",
-                "public",
-                "throws",
-                "case",
-                "enum",
-                "instanceof",
-                "return",
-                "transient",
-                "catch",
-                "extends",
-                "int",
-                "short",
-                "try",
-                "char",
-                "final",
-                "interface",
-                "static",
-                "void",
-                "class",
-                "finally",
-                "long",
-                "strictfp",
-                "volatile",
-                "const",
-                "float",
-                "native",
-                "super",
-                "while"));
+  // copy from ClassUtils
+  // do not use JAVA_RESERVED_WORDS in ClassUtils directly
+  // because that's the test target.
+  private static final Set<String> JAVA_RESERVED_WORDS = new HashSet<>();
+
+  static {
+    JAVA_RESERVED_WORDS.addAll(Arrays.asList("true",
+        "false",
+        "null",
+        "abstract",
+        "continue",
+        "for",
+        "new",
+        "switch",
+        "assert",
+        "default",
+        "goto",
+        "package",
+        "synchronized",
+        "boolean",
+        "do",
+        "if",
+        "private",
+        "this",
+        "break",
+        "double",
+        "implements",
+        "protected",
+        "throw",
+        "byte",
+        "else",
+        "import",
+        "public",
+        "throws",
+        "case",
+        "enum",
+        "instanceof",
+        "return",
+        "transient",
+        "catch",
+        "extends",
+        "int",
+        "short",
+        "try",
+        "char",
+        "final",
+        "interface",
+        "static",
+        "void",
+        "class",
+        "finally",
+        "long",
+        "strictfp",
+        "volatile",
+        "const",
+        "float",
+        "native",
+        "super",
+        "while"));
+  }
+
+  @Test
+  public void testHasAnnotation() {
+    Assert.assertEquals(true, ClassUtils.hasAnnotation(TestClassUtils.class, SwaggerDefinition.class));
+    Assert.assertEquals(true, ClassUtils.hasAnnotation(TestClassUtils.class, Test.class));
+
+    Assert.assertEquals(false, ClassUtils.hasAnnotation(TestClassUtils.class, Path.class));
+  }
+
+  public static class Impl {
+    public List<User> getUser(List<String> names) {
+      return null;
     }
+  }
 
-    @Test
-    public void testHasAnnotation() {
-        Assert.assertEquals(true, ClassUtils.hasAnnotation(TestClassUtils.class, SwaggerDefinition.class));
-        Assert.assertEquals(true, ClassUtils.hasAnnotation(TestClassUtils.class, Test.class));
+  @Test
+  public void testCreateInterface() {
+    SwaggerGenerator generator = UnitTestSwaggerUtils.generateSwagger(Impl.class);
+    Class<?> intf = ClassUtils.getOrCreateInterface(generator);
 
-        Assert.assertEquals(false, ClassUtils.hasAnnotation(TestClassUtils.class, Path.class));
-    }
+    Assert.assertEquals("gen.swagger.ImplIntf", intf.getName());
+    Assert.assertEquals(1, intf.getMethods().length);
 
-    public static class Impl {
-        public List<User> getUser(List<String> names) {
-            return null;
-        }
-    }
+    Method method = intf.getMethods()[0];
+    Assert.assertEquals("getUser", method.getName());
 
-    @Test
-    public void testCreateInterface() {
-        SwaggerGenerator generator = UnitTestSwaggerUtils.generateSwagger(Impl.class);
-        Class<?> intf = ClassUtils.getOrCreateInterface(generator);
+    Assert.assertEquals("gen.swagger.getUser.names", method.getGenericParameterTypes()[0].getTypeName());
+    Assert.assertEquals("java.util.List<io.servicecomb.swagger.generator.core.schema.User>",
+        method.getGenericReturnType().getTypeName());
+  }
 
-        Assert.assertEquals("gen.swagger.ImplIntf", intf.getName());
-        Assert.assertEquals(1, intf.getMethods().length);
+  @Test
+  public void testCorrectClassNameInTheCrossed() {
+    String result = ClassUtils.correctClassName("a-b");
+    Assert.assertThat(result, is("a_b"));
 
-        Method method = intf.getMethods()[0];
-        Assert.assertEquals("getUser", method.getName());
+    result = ClassUtils.correctClassName("a.a-b");
+    Assert.assertThat(result, is("a.a_b"));
+  }
 
-        Assert.assertEquals("gen.swagger.getUser.names", method.getGenericParameterTypes()[0].getTypeName());
-        Assert.assertEquals("java.util.List<io.servicecomb.swagger.generator.core.schema.User>",
-                method.getGenericReturnType().getTypeName());
-    }
+  @Test
+  public void testCorrectClassNameStartWithNumber() {
+    String result = ClassUtils.correctClassName("100");
+    Assert.assertThat(result, is("_100"));
 
-    @Test
-    public void testCorrectClassNameInTheCrossed() {
-        String result = ClassUtils.correctClassName("a-b");
-        Assert.assertThat(result, is("a_b"));
+    result = ClassUtils.correctClassName("a.100");
+    Assert.assertThat(result, is("a._100"));
+  }
 
-        result = ClassUtils.correctClassName("a.a-b");
-        Assert.assertThat(result, is("a.a_b"));
-    }
+  @Test
+  public void testCorrectClassNameReservedWords() {
+    String name = String.join(".", JAVA_RESERVED_WORDS);
+    String expectResult = "_" + String.join("._", JAVA_RESERVED_WORDS);
 
-    @Test
-    public void testCorrectClassNameStartWithNumber() {
-        String result = ClassUtils.correctClassName("100");
-        Assert.assertThat(result, is("_100"));
+    String result = ClassUtils.correctClassName(name);
+    Assert.assertThat(result, is(expectResult));
+  }
 
-        result = ClassUtils.correctClassName("a.100");
-        Assert.assertThat(result, is("a._100"));
-    }
-
-    @Test
-    public void testCorrectClassNameReservedWords() {
-        String name = String.join(".", JAVA_RESERVED_WORDS);
-        String expectResult = "_" + String.join("._", JAVA_RESERVED_WORDS);
-
-        String result = ClassUtils.correctClassName(name);
-        Assert.assertThat(result, is(expectResult));
-    }
-
-    @Test
-    public void testCorrectClassNameEmptyPart() {
-        String result = ClassUtils.correctClassName("..a..a..");
-        Assert.assertThat(result, is("_._.a._.a._._"));
-    }
+  @Test
+  public void testCorrectClassNameEmptyPart() {
+    String result = ClassUtils.correctClassName("..a..a..");
+    Assert.assertThat(result, is("_._.a._.a._._"));
+  }
 }

@@ -27,44 +27,43 @@ import io.servicecomb.swagger.invocation.exception.ExceptionFactory;
 import io.servicecomb.swagger.invocation.exception.InvocationException;
 
 public class TestException {
-    @Test
-    public void testCommonExceptionData() {
-        CommonExceptionData oData = new CommonExceptionData();
-        oData.setMessage("this is Common exception message");
-        Assert.assertEquals("this is Common exception message", oData.getMessage());
+  @Test
+  public void testCommonExceptionData() {
+    CommonExceptionData oData = new CommonExceptionData();
+    oData.setMessage("this is Common exception message");
+    Assert.assertEquals("this is Common exception message", oData.getMessage());
 
-        oData = new CommonExceptionData("this is a test");
-        Assert.assertEquals("this is a test", oData.getMessage());
-        Assert.assertEquals("CommonExceptionData [message=this is a test]", oData.toString());
-    }
+    oData = new CommonExceptionData("this is a test");
+    Assert.assertEquals("this is a test", oData.getMessage());
+    Assert.assertEquals("CommonExceptionData [message=this is a test]", oData.toString());
+  }
 
-    @Test
-    public void testInvocationException() {
-        InvocationException oExceptionIn = new InvocationException(Status.OK, "I am gone now");
-        oExceptionIn = ExceptionFactory.convertConsumerException(new Throwable());
-        Assert.assertEquals(490, oExceptionIn.getStatusCode());
+  @Test
+  public void testInvocationException() {
+    InvocationException oExceptionIn = new InvocationException(Status.OK, "I am gone now");
+    oExceptionIn = ExceptionFactory.convertConsumerException(new Throwable());
+    Assert.assertEquals(490, oExceptionIn.getStatusCode());
 
-        oExceptionIn = ExceptionFactory.convertConsumerException(new Throwable(), "abc");
-        Assert.assertEquals(490, oExceptionIn.getStatusCode());
-        Assert.assertEquals("abc", ((CommonExceptionData) oExceptionIn.getErrorData()).getMessage());
+    oExceptionIn = ExceptionFactory.convertConsumerException(new Throwable(), "abc");
+    Assert.assertEquals(490, oExceptionIn.getStatusCode());
+    Assert.assertEquals("abc", ((CommonExceptionData) oExceptionIn.getErrorData()).getMessage());
 
-        oExceptionIn = ExceptionFactory.convertProducerException(new Throwable());
-        Assert.assertEquals(590, oExceptionIn.getStatusCode());
+    oExceptionIn = ExceptionFactory.convertProducerException(new Throwable());
+    Assert.assertEquals(590, oExceptionIn.getStatusCode());
 
-        oExceptionIn = ExceptionFactory.convertProducerException(new Throwable(), "abcd");
-        Assert.assertEquals(590, oExceptionIn.getStatusCode());
-        Assert.assertEquals("abcd", ((CommonExceptionData) oExceptionIn.getErrorData()).getMessage());
+    oExceptionIn = ExceptionFactory.convertProducerException(new Throwable(), "abcd");
+    Assert.assertEquals(590, oExceptionIn.getStatusCode());
+    Assert.assertEquals("abcd", ((CommonExceptionData) oExceptionIn.getErrorData()).getMessage());
 
-        oExceptionIn =
-            ExceptionFactory.convertConsumerException(new InvocationException(Status.OK, new String("fake-object")));
-        Assert.assertEquals(200, oExceptionIn.getStatusCode());
+    oExceptionIn =
+        ExceptionFactory.convertConsumerException(new InvocationException(Status.OK, new String("fake-object")));
+    Assert.assertEquals(200, oExceptionIn.getStatusCode());
 
-        oExceptionIn = ExceptionFactory.convertConsumerException(new InvocationTargetException(new Throwable()));
-        Assert.assertNotEquals("java.lang.Throwable", oExceptionIn.getMessage());
+    oExceptionIn = ExceptionFactory.convertConsumerException(new InvocationTargetException(new Throwable()));
+    Assert.assertNotEquals("java.lang.Throwable", oExceptionIn.getMessage());
 
-        InvocationException oTemp = new InvocationException(Status.OK, new CommonExceptionData("testObject"));
-        Assert.assertEquals("OK", oTemp.getReasonPhrase());
-        Assert.assertEquals("CommonExceptionData [message=testObject]", (oTemp.getErrorData().toString()));
-
-    }
+    InvocationException oTemp = new InvocationException(Status.OK, new CommonExceptionData("testObject"));
+    Assert.assertEquals("OK", oTemp.getReasonPhrase());
+    Assert.assertEquals("CommonExceptionData [message=testObject]", (oTemp.getErrorData().toString()));
+  }
 }

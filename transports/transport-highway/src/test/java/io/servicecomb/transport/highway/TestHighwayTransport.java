@@ -34,61 +34,60 @@ import mockit.MockUp;
 
 public class TestHighwayTransport {
 
-    private HighwayTransport transport = new HighwayTransport();
+  private HighwayTransport transport = new HighwayTransport();
 
-    @Test
-    public void testGetInstance() {
-        Assert.assertNotNull(transport);
+  @Test
+  public void testGetInstance() {
+    Assert.assertNotNull(transport);
+  }
+
+  @Test
+  public void testInit() {
+    boolean status = true;
+    try {
+      transport.init();
+    } catch (Exception e) {
+      status = false;
     }
+    Assert.assertTrue(status);
+  }
 
-    @Test
-    public void testInit() {
-        boolean status = true;
-        try {
-            transport.init();
-        } catch (Exception e) {
-            status = false;
-        }
-        Assert.assertTrue(status);
-    }
+  @Test
+  public void testSendException() throws Exception {
+    Invocation invocation = Mockito.mock(Invocation.class);
+    AsyncResponse asyncResp = Mockito.mock(AsyncResponse.class);
+    commonHighwayMock(invocation);
 
-    @Test
-    public void testSendException() throws Exception {
-        Invocation invocation = Mockito.mock(Invocation.class);
-        AsyncResponse asyncResp = Mockito.mock(AsyncResponse.class);
-        commonHighwayMock(invocation);
+    Holder<Boolean> sended = new Holder<Boolean>(false);
+    new MockUp<HighwayClient>() {
+      @Mock
+      public void send(Invocation invocation, AsyncResponse asyncResp) throws Exception {
+        sended.value = true;
+      }
+    };
+    transport.send(invocation, asyncResp);
+    Assert.assertTrue(sended.value);
+  }
 
-        Holder<Boolean> sended = new Holder<Boolean>(false);
-        new MockUp<HighwayClient>() {
-            @Mock
-            public void send(Invocation invocation, AsyncResponse asyncResp) throws Exception {
-                sended.value = true;
-            }
-        };
-        transport.send(invocation, asyncResp);
-        Assert.assertTrue(sended.value);
-    }
+  @Test
+  public void testHighway() {
+    Invocation invocation = Mockito.mock(Invocation.class);
+    commonHighwayMock(invocation);
+    Assert.assertEquals("highway", transport.getName());
+  }
 
-    @Test
-    public void testHighway() {
-        Invocation invocation = Mockito.mock(Invocation.class);
-        commonHighwayMock(invocation);
-        Assert.assertEquals("highway", transport.getName());
-    }
-
-    private void commonHighwayMock(Invocation invocation) {
-        OperationMeta operationMeta = Mockito.mock(OperationMeta.class);
-        Mockito.when(invocation.getOperationMeta()).thenReturn(operationMeta);
-        OperationProtobuf operationProtobuf = Mockito.mock(OperationProtobuf.class);
-        Mockito.when(operationMeta.getExtData("protobuf")).thenReturn(operationProtobuf);
-        Endpoint lEndpoint = Mockito.mock(Endpoint.class);
-        Mockito.when(invocation.getEndpoint()).thenReturn(lEndpoint);
-        WrapSchema lWrapSchema = Mockito.mock(WrapSchema.class);
-        Mockito.when(operationProtobuf.getRequestSchema()).thenReturn(lWrapSchema);
-        URIEndpointObject ep = Mockito.mock(URIEndpointObject.class);
-        Mockito.when(lEndpoint.getAddress()).thenReturn(ep);
-        Mockito.when(ep.getHostOrIp()).thenReturn("127.0.0.1");
-        Mockito.when(ep.getPort()).thenReturn(80);
-    }
-
+  private void commonHighwayMock(Invocation invocation) {
+    OperationMeta operationMeta = Mockito.mock(OperationMeta.class);
+    Mockito.when(invocation.getOperationMeta()).thenReturn(operationMeta);
+    OperationProtobuf operationProtobuf = Mockito.mock(OperationProtobuf.class);
+    Mockito.when(operationMeta.getExtData("protobuf")).thenReturn(operationProtobuf);
+    Endpoint lEndpoint = Mockito.mock(Endpoint.class);
+    Mockito.when(invocation.getEndpoint()).thenReturn(lEndpoint);
+    WrapSchema lWrapSchema = Mockito.mock(WrapSchema.class);
+    Mockito.when(operationProtobuf.getRequestSchema()).thenReturn(lWrapSchema);
+    URIEndpointObject ep = Mockito.mock(URIEndpointObject.class);
+    Mockito.when(lEndpoint.getAddress()).thenReturn(ep);
+    Mockito.when(ep.getHostOrIp()).thenReturn("127.0.0.1");
+    Mockito.when(ep.getPort()).thenReturn(80);
+  }
 }

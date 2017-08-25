@@ -16,14 +16,15 @@
 
 package io.servicecomb.demo.pojo.test.endpoints;
 
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+
 import io.servicecomb.demo.CodeFirstPojoIntf;
 import io.servicecomb.demo.compute.Person;
 import io.servicecomb.demo.server.User;
 import io.servicecomb.provider.pojo.RpcSchema;
 import io.servicecomb.swagger.invocation.context.ContextUtils;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
 
 @RpcSchema(schemaId = "codeFirst")
 public class CodeFirstPojo implements CodeFirstPojoIntf {
@@ -85,5 +86,4 @@ public class CodeFirstPojo implements CodeFirstPojoIntf {
     }
     return result;
   }
-
 }

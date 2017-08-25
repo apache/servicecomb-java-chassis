@@ -16,13 +16,14 @@
 
 package io.servicecomb.demo.pojo.test.endpoints;
 
+import java.util.Arrays;
+import java.util.List;
+
 import io.servicecomb.demo.server.Test;
 import io.servicecomb.demo.server.TestRequest;
 import io.servicecomb.demo.server.User;
 import io.servicecomb.provider.pojo.RpcSchema;
 import io.servicecomb.swagger.invocation.exception.InvocationException;
-import java.util.Arrays;
-import java.util.List;
 
 @RpcSchema(schemaId = "server")
 public class TestImpl implements Test {

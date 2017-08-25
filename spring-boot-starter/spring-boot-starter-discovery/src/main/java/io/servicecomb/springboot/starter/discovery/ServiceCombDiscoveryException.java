@@ -17,9 +17,9 @@
 package io.servicecomb.springboot.starter.discovery;
 
 public class ServiceCombDiscoveryException extends RuntimeException {
-    private static final long serialVersionUID = 3806741463767943277L;
+  private static final long serialVersionUID = 3806741463767943277L;
 
-    public ServiceCombDiscoveryException(String message) {
-        super(message);
-    }
+  public ServiceCombDiscoveryException(String message) {
+    super(message);
+  }
 }

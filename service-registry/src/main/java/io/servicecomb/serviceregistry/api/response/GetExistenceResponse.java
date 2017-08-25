@@ -20,23 +20,23 @@ package io.servicecomb.serviceregistry.api.response;
  * Created by   on 2016/12/8.
  */
 public class GetExistenceResponse {
-    private String serviceId;
+  private String serviceId;
 
-    private String schemaId;
+  private String schemaId;
 
-    public String getServiceId() {
-        return serviceId;
-    }
+  public String getServiceId() {
+    return serviceId;
+  }
 
-    public void setServiceId(String serviceId) {
-        this.serviceId = serviceId;
-    }
+  public void setServiceId(String serviceId) {
+    this.serviceId = serviceId;
+  }
 
-    public String getSchemaId() {
-        return schemaId;
-    }
+  public String getSchemaId() {
+    return schemaId;
+  }
 
-    public void setSchemaId(String schemaId) {
-        this.schemaId = schemaId;
-    }
+  public void setSchemaId(String schemaId) {
+    this.schemaId = schemaId;
+  }
 }

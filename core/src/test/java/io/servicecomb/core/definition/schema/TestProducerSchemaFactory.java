@@ -49,85 +49,84 @@ import io.servicecomb.swagger.invocation.exception.InvocationException;
 import io.servicecomb.swagger.invocation.response.producer.ProducerResponseMapperFactory;
 
 public class TestProducerSchemaFactory {
-    private static SwaggerEnvironment swaggerEnv = new BootstrapNormal().boot();
+  private static SwaggerEnvironment swaggerEnv = new BootstrapNormal().boot();
 
-    private static ProducerSchemaFactory producerSchemaFactory = new ProducerSchemaFactory();
+  private static ProducerSchemaFactory producerSchemaFactory = new ProducerSchemaFactory();
 
-    private static SchemaMeta schemaMeta;
+  private static SchemaMeta schemaMeta;
 
-    public static class TestProducerSchemaFactoryImpl {
-        public int add(int x, int y) {
-            return x + y;
-        }
+  public static class TestProducerSchemaFactoryImpl {
+    public int add(int x, int y) {
+      return x + y;
     }
+  }
 
-    @BeforeClass
-    public static void init() {
-        ServiceRegistry serviceRegistry = ServiceRegistryFactory.createLocal();
-        RegistryUtils.setServiceRegistry(serviceRegistry);
+  @BeforeClass
+  public static void init() {
+    ServiceRegistry serviceRegistry = ServiceRegistryFactory.createLocal();
+    RegistryUtils.setServiceRegistry(serviceRegistry);
 
-        ConverterMgr converterMgr = new ConverterMgr();
-        ProducerResponseMapperFactory responseMapperFactory = new ProducerResponseMapperFactory();
-        responseMapperFactory.setConverterMgr(converterMgr);
+    ConverterMgr converterMgr = new ConverterMgr();
+    ProducerResponseMapperFactory responseMapperFactory = new ProducerResponseMapperFactory();
+    responseMapperFactory.setConverterMgr(converterMgr);
 
-        ProducerArgumentsMapperFactory producerArgsMapperFactory = new ProducerArgumentsMapperFactory();
-        producerArgsMapperFactory.setConverterMgr(converterMgr);
+    ProducerArgumentsMapperFactory producerArgsMapperFactory = new ProducerArgumentsMapperFactory();
+    producerArgsMapperFactory.setConverterMgr(converterMgr);
 
-        MicroserviceMetaManager microserviceMetaManager = new MicroserviceMetaManager();
-        SchemaLoader schemaLoader = new SchemaLoader() {
-            @Override
-            public void putSelfBasePathIfAbsent(String microserviceName, String basePath) {
-            }
-        };
-        CompositeSwaggerGeneratorContext compositeSwaggerGeneratorContext = new CompositeSwaggerGeneratorContext();
+    MicroserviceMetaManager microserviceMetaManager = new MicroserviceMetaManager();
+    SchemaLoader schemaLoader = new SchemaLoader() {
+      @Override
+      public void putSelfBasePathIfAbsent(String microserviceName, String basePath) {
+      }
+    };
+    CompositeSwaggerGeneratorContext compositeSwaggerGeneratorContext = new CompositeSwaggerGeneratorContext();
 
-        producerSchemaFactory.setSwaggerEnv(swaggerEnv);
-        ReflectUtils.setField(producerSchemaFactory, "microserviceMetaManager", microserviceMetaManager);
-        ReflectUtils.setField(producerSchemaFactory, "schemaLoader", schemaLoader);
-        ReflectUtils.setField(producerSchemaFactory,
-                "compositeSwaggerGeneratorContext",
-                compositeSwaggerGeneratorContext);
+    producerSchemaFactory.setSwaggerEnv(swaggerEnv);
+    ReflectUtils.setField(producerSchemaFactory, "microserviceMetaManager", microserviceMetaManager);
+    ReflectUtils.setField(producerSchemaFactory, "schemaLoader", schemaLoader);
+    ReflectUtils.setField(producerSchemaFactory,
+        "compositeSwaggerGeneratorContext",
+        compositeSwaggerGeneratorContext);
 
-        BeanUtils.setContext(Mockito.mock(ApplicationContext.class));
+    BeanUtils.setContext(Mockito.mock(ApplicationContext.class));
 
-        UnitTestMeta.init();
+    UnitTestMeta.init();
 
-        schemaMeta = producerSchemaFactory.getOrCreateProducerSchema("app:ms",
-                "schema",
-                TestProducerSchemaFactoryImpl.class,
-                new TestProducerSchemaFactoryImpl());
-    }
+    schemaMeta = producerSchemaFactory.getOrCreateProducerSchema("app:ms",
+        "schema",
+        TestProducerSchemaFactoryImpl.class,
+        new TestProducerSchemaFactoryImpl());
+  }
 
-    @AfterClass
-    public static void teardown() {
-        RegistryUtils.setServiceRegistry(null);
-    }
+  @AfterClass
+  public static void teardown() {
+    RegistryUtils.setServiceRegistry(null);
+  }
 
-    @Test
-    public void testGetOrCreateProducer() throws Exception {
-        OperationMeta operationMeta = schemaMeta.ensureFindOperation("add");
-        Assert.assertEquals("add", operationMeta.getOperationId());
+  @Test
+  public void testGetOrCreateProducer() throws Exception {
+    OperationMeta operationMeta = schemaMeta.ensureFindOperation("add");
+    Assert.assertEquals("add", operationMeta.getOperationId());
 
-        SwaggerProducerOperation producerOperation = operationMeta.getExtData(Const.PRODUCER_OPERATION);
+    SwaggerProducerOperation producerOperation = operationMeta.getExtData(Const.PRODUCER_OPERATION);
 
-        Object addBody = Class.forName("cse.gen.app.ms.schema.addBody").newInstance();
-        ReflectUtils.setField(addBody, "x", 1);
-        ReflectUtils.setField(addBody, "y", 2);
-        Invocation invocation = new Invocation((Endpoint) null, operationMeta, new Object[] {addBody});
-        Holder<Response> holder = new Holder<>();
-        producerOperation.invoke(invocation, resp -> {
-            holder.value = resp;
-        });
-        Assert.assertEquals(3, (int) holder.value.getResult());
+    Object addBody = Class.forName("cse.gen.app.ms.schema.addBody").newInstance();
+    ReflectUtils.setField(addBody, "x", 1);
+    ReflectUtils.setField(addBody, "y", 2);
+    Invocation invocation = new Invocation((Endpoint) null, operationMeta, new Object[] {addBody});
+    Holder<Response> holder = new Holder<>();
+    producerOperation.invoke(invocation, resp -> {
+      holder.value = resp;
+    });
+    Assert.assertEquals(3, (int) holder.value.getResult());
 
-        invocation = new Invocation((Endpoint) null, operationMeta, new Object[] {1, 2});
-        producerOperation.invoke(invocation, resp -> {
-            holder.value = resp;
-        });
-        Assert.assertEquals(true, holder.value.isFailed());
-        InvocationException exception = (InvocationException) holder.value.getResult();
-        CommonExceptionData data = (CommonExceptionData) exception.getErrorData();
-        Assert.assertEquals("Cse Internal Server Error", data.getMessage());
-
-    }
+    invocation = new Invocation((Endpoint) null, operationMeta, new Object[] {1, 2});
+    producerOperation.invoke(invocation, resp -> {
+      holder.value = resp;
+    });
+    Assert.assertEquals(true, holder.value.isFailed());
+    InvocationException exception = (InvocationException) holder.value.getResult();
+    CommonExceptionData data = (CommonExceptionData) exception.getErrorData();
+    Assert.assertEquals("Cse Internal Server Error", data.getMessage());
+  }
 }

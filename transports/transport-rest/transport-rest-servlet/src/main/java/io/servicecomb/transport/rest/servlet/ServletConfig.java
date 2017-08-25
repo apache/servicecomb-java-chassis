@@ -21,28 +21,28 @@ import com.netflix.config.DynamicPropertyFactory;
 import com.netflix.config.DynamicStringProperty;
 
 public final class ServletConfig {
-    static final long DEFAULT_TIMEOUT = 3000;
+  static final long DEFAULT_TIMEOUT = 3000;
 
-    static final String KEY_SERVLET_URL_PATTERN = "servicecomb.rest.servlet.urlPattern";
+  static final String KEY_SERVLET_URL_PATTERN = "servicecomb.rest.servlet.urlPattern";
 
-    private ServletConfig() {
-    }
+  private ServletConfig() {
+  }
 
-    public static long getServerTimeout() {
-        DynamicLongProperty address =
-            DynamicPropertyFactory.getInstance().getLongProperty("cse.rest.server.timeout", DEFAULT_TIMEOUT);
-        return address.get();
-    }
+  public static long getServerTimeout() {
+    DynamicLongProperty address =
+        DynamicPropertyFactory.getInstance().getLongProperty("cse.rest.server.timeout", DEFAULT_TIMEOUT);
+    return address.get();
+  }
 
-    public static String getLocalServerAddress() {
-        DynamicStringProperty address =
-            DynamicPropertyFactory.getInstance().getStringProperty("cse.rest.address", null);
-        return address.get();
-    }
+  public static String getLocalServerAddress() {
+    DynamicStringProperty address =
+        DynamicPropertyFactory.getInstance().getStringProperty("cse.rest.address", null);
+    return address.get();
+  }
 
-    public static String getServletUrlPattern() {
-        DynamicStringProperty address =
-            DynamicPropertyFactory.getInstance().getStringProperty(KEY_SERVLET_URL_PATTERN, null);
-        return address.get();
-    }
+  public static String getServletUrlPattern() {
+    DynamicStringProperty address =
+        DynamicPropertyFactory.getInstance().getStringProperty(KEY_SERVLET_URL_PATTERN, null);
+    return address.get();
+  }
 }

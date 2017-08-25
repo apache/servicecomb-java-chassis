@@ -21,29 +21,30 @@ import java.util.Map.Entry;
 
 import javax.ws.rs.core.Response.ResponseBuilder;
 
+import org.springframework.stereotype.Component;
+
 import io.servicecomb.swagger.invocation.Response;
 import io.servicecomb.swagger.invocation.response.consumer.ConsumerResponseMapper;
-import org.springframework.stereotype.Component;
 
 @Component
 public class JaxrsConsumerResponseMapper implements ConsumerResponseMapper {
-    @Override
-    public Class<?> getResponseClass() {
-        return javax.ws.rs.core.Response.class;
+  @Override
+  public Class<?> getResponseClass() {
+    return javax.ws.rs.core.Response.class;
+  }
+
+  @Override
+  public Object mapResponse(Response response) {
+    ResponseBuilder responseBuilder =
+        javax.ws.rs.core.Response.status(response.getStatus()).entity(response.getResult());
+
+    Map<String, List<Object>> headers = response.getHeaders().getHeaderMap();
+    if (headers != null) {
+      for (Entry<String, List<Object>> entry : headers.entrySet()) {
+        responseBuilder.header(entry.getKey(), entry.getValue());
+      }
     }
 
-    @Override
-    public Object mapResponse(Response response) {
-        ResponseBuilder responseBuilder =
-            javax.ws.rs.core.Response.status(response.getStatus()).entity(response.getResult());
-
-        Map<String, List<Object>> headers = response.getHeaders().getHeaderMap();
-        if (headers != null) {
-            for (Entry<String, List<Object>> entry : headers.entrySet()) {
-                responseBuilder.header(entry.getKey(), entry.getValue());
-            }
-        }
-
-        return responseBuilder.build();
-    }
+    return responseBuilder.build();
+  }
 }

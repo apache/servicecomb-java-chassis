@@ -26,38 +26,36 @@ import org.springframework.core.env.ConfigurableEnvironment;
 /**
  *
  */
-public class TestConfigurableEnvironmentConfiguration{
+public class TestConfigurableEnvironmentConfiguration {
 
-	private ConfigurableEnvironmentConfiguration configurableEnvironmentConfiguration;
+  private ConfigurableEnvironmentConfiguration configurableEnvironmentConfiguration;
 
-    @Before
-    public void setUp() throws Exception {
-    	configurableEnvironmentConfiguration = new ConfigurableEnvironmentConfiguration(null);
-    }
+  @Before
+  public void setUp() throws Exception {
+    configurableEnvironmentConfiguration = new ConfigurableEnvironmentConfiguration(null);
+  }
 
-    @After
-    public void tearDown() throws Exception {
-    	configurableEnvironmentConfiguration = null;
-    }
+  @After
+  public void tearDown() throws Exception {
+    configurableEnvironmentConfiguration = null;
+  }
 
-    @Test
-    public void testIsEmpty()
-    {
-    	Assert.assertFalse(configurableEnvironmentConfiguration.isEmpty());
-    }
-    
-    @Test
-    public void testContainsKey()
-    {
-    	configurableEnvironmentConfiguration = new ConfigurableEnvironmentConfiguration(Mockito.mock(ConfigurableEnvironment.class));
-    	Assert.assertFalse(configurableEnvironmentConfiguration.containsKey("path.separator"));
-    }
-    
-    @Test
-    public void testGetProperty()
-    {
-    	configurableEnvironmentConfiguration = new ConfigurableEnvironmentConfiguration(Mockito.mock(ConfigurableEnvironment.class));
-    	Assert.assertEquals(null,configurableEnvironmentConfiguration.getProperty("path.separator"));
-    }
-    
+  @Test
+  public void testIsEmpty() {
+    Assert.assertFalse(configurableEnvironmentConfiguration.isEmpty());
+  }
+
+  @Test
+  public void testContainsKey() {
+    configurableEnvironmentConfiguration =
+        new ConfigurableEnvironmentConfiguration(Mockito.mock(ConfigurableEnvironment.class));
+    Assert.assertFalse(configurableEnvironmentConfiguration.containsKey("path.separator"));
+  }
+
+  @Test
+  public void testGetProperty() {
+    configurableEnvironmentConfiguration =
+        new ConfigurableEnvironmentConfiguration(Mockito.mock(ConfigurableEnvironment.class));
+    Assert.assertEquals(null, configurableEnvironmentConfiguration.getProperty("path.separator"));
+  }
 }

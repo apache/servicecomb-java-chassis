@@ -19,20 +19,20 @@ package io.servicecomb.foundation.vertx.client;
 import io.vertx.core.AbstractVerticle;
 
 public abstract class AbstractClientVerticle<CLIENT_POOL> extends AbstractVerticle
-        implements ClientPoolFactory<CLIENT_POOL> {
-    public static final String CLIENT_MGR = "clientMgr";
+    implements ClientPoolFactory<CLIENT_POOL> {
+  public static final String CLIENT_MGR = "clientMgr";
 
-    public static final String POOL_COUNT = "poolCount";
+  public static final String POOL_COUNT = "poolCount";
 
-    public static final String CLIENT_OPTIONS = "clientOptions";
+  public static final String CLIENT_OPTIONS = "clientOptions";
 
-    @SuppressWarnings("unchecked")
-    @Override
-    public void start() throws Exception {
-        ClientPoolManager<CLIENT_POOL> clientMgr = (ClientPoolManager<CLIENT_POOL>) config().getValue(CLIENT_MGR);
-        Integer poolCount = config().getInteger(POOL_COUNT);
+  @SuppressWarnings("unchecked")
+  @Override
+  public void start() throws Exception {
+    ClientPoolManager<CLIENT_POOL> clientMgr = (ClientPoolManager<CLIENT_POOL>) config().getValue(CLIENT_MGR);
+    Integer poolCount = config().getInteger(POOL_COUNT);
 
-        NetThreadData<CLIENT_POOL> netThreadData = new NetThreadData<>(this, poolCount);
-        clientMgr.addNetThread(netThreadData);
-    }
+    NetThreadData<CLIENT_POOL> netThreadData = new NetThreadData<>(this, poolCount);
+    clientMgr.addNetThread(netThreadData);
+  }
 }

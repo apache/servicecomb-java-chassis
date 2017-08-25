@@ -18,10 +18,10 @@ package io.servicecomb.config.archaius.sources;
 
 public class ConfigSourceMaker {
 
-    public static MicroserviceConfigurationSource yamlConfigSource() {
-        MicroserviceConfigLoader loader = new MicroserviceConfigLoader();
-        loader.loadAndSort();
+  public static MicroserviceConfigurationSource yamlConfigSource() {
+    MicroserviceConfigLoader loader = new MicroserviceConfigLoader();
+    loader.loadAndSort();
 
-        return new MicroserviceConfigurationSource(loader.getConfigModels());
-    }
+    return new MicroserviceConfigurationSource(loader.getConfigModels());
+  }
 }

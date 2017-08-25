@@ -22,41 +22,41 @@ import io.servicecomb.swagger.invocation.context.InvocationContext;
 
 public class CseHttpEntity<T> extends HttpEntity<T> {
 
-    private InvocationContext context;
+  private InvocationContext context;
 
-    public CseHttpEntity(T body) {
-        super(body);
+  public CseHttpEntity(T body) {
+    super(body);
+  }
+
+  public CseHttpEntity(MultiValueMap<String, String> headers) {
+    super(headers);
+  }
+
+  public CseHttpEntity(T body, MultiValueMap<String, String> headers) {
+    super(body, headers);
+  }
+
+  /**
+   * 获取context的值
+   * @return 返回 context
+   */
+  public InvocationContext getContext() {
+    return context;
+  }
+
+  /**
+   * 对context进行赋值
+   * @param context context的新值
+   */
+  public void setContext(InvocationContext context) {
+    this.context = context;
+  }
+
+  public void addContext(String key, String value) {
+    if (context == null) {
+      context = new InvocationContext();
     }
 
-    public CseHttpEntity(MultiValueMap<String, String> headers) {
-        super(headers);
-    }
-
-    public CseHttpEntity(T body, MultiValueMap<String, String> headers) {
-        super(body, headers);
-    }
-
-    /**
-     * 获取context的值
-     * @return 返回 context
-     */
-    public InvocationContext getContext() {
-        return context;
-    }
-
-    /**
-     * 对context进行赋值
-     * @param context context的新值
-     */
-    public void setContext(InvocationContext context) {
-        this.context = context;
-    }
-
-    public void addContext(String key, String value) {
-        if (context == null) {
-            context = new InvocationContext();
-        }
-
-        context.addContext(key, value);
-    }
+    context.addContext(key, value);
+  }
 }

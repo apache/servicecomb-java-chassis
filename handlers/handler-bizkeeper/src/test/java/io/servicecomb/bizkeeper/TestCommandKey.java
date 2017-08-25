@@ -14,19 +14,17 @@
  * limitations under the License.
  */
 
-/**
- * 
- */
 package io.servicecomb.bizkeeper;
 
 import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.Mockito;
 
-import io.servicecomb.core.Invocation;
-import io.servicecomb.core.definition.OperationMeta;
 import com.netflix.hystrix.HystrixCommandGroupKey;
 import com.netflix.hystrix.HystrixCommandKey;
+
+import io.servicecomb.core.Invocation;
+import io.servicecomb.core.definition.OperationMeta;
 
 /**
  *
@@ -34,27 +32,26 @@ import com.netflix.hystrix.HystrixCommandKey;
  */
 public class TestCommandKey {
 
-    @Test
-    public void testToHystrixCommandGroupKey() {
-        Invocation invocation = Mockito.mock(Invocation.class);
+  @Test
+  public void testToHystrixCommandGroupKey() {
+    Invocation invocation = Mockito.mock(Invocation.class);
 
-        Mockito.when(invocation.getOperationMeta()).thenReturn(Mockito.mock(OperationMeta.class));
-        Mockito.when(invocation.getOperationMeta().getMicroserviceQualifiedName()).thenReturn("test1");
-        Assert.assertNotNull(invocation);
-        HystrixCommandGroupKey hystrixCommandGroupKey = CommandKey.toHystrixCommandGroupKey("groupname", invocation);
-        Assert.assertNotNull(hystrixCommandGroupKey);
-    }
+    Mockito.when(invocation.getOperationMeta()).thenReturn(Mockito.mock(OperationMeta.class));
+    Mockito.when(invocation.getOperationMeta().getMicroserviceQualifiedName()).thenReturn("test1");
+    Assert.assertNotNull(invocation);
+    HystrixCommandGroupKey hystrixCommandGroupKey = CommandKey.toHystrixCommandGroupKey("groupname", invocation);
+    Assert.assertNotNull(hystrixCommandGroupKey);
+  }
 
-    @Test
-    public void testToHystrixCommandKey() {
+  @Test
+  public void testToHystrixCommandKey() {
 
-        Invocation invocation = Mockito.mock(Invocation.class);
+    Invocation invocation = Mockito.mock(Invocation.class);
 
-        Mockito.when(invocation.getOperationMeta()).thenReturn(Mockito.mock(OperationMeta.class));
-        Mockito.when(invocation.getOperationMeta().getMicroserviceQualifiedName()).thenReturn("test1");
-        Assert.assertNotNull(invocation);
-        HystrixCommandKey hystrixCommandGroupKey = CommandKey.toHystrixCommandKey("groupname", invocation);
-        Assert.assertNotNull(hystrixCommandGroupKey);
-
-    }
+    Mockito.when(invocation.getOperationMeta()).thenReturn(Mockito.mock(OperationMeta.class));
+    Mockito.when(invocation.getOperationMeta().getMicroserviceQualifiedName()).thenReturn("test1");
+    Assert.assertNotNull(invocation);
+    HystrixCommandKey hystrixCommandGroupKey = CommandKey.toHystrixCommandKey("groupname", invocation);
+    Assert.assertNotNull(hystrixCommandGroupKey);
+  }
 }

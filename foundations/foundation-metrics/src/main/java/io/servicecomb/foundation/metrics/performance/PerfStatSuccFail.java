@@ -23,27 +23,27 @@ package io.servicecomb.foundation.metrics.performance;
  */
 public class PerfStatSuccFail extends PerfStatImpl {
 
-    private PerfStatData succ = new PerfStatData("succ");
+  private PerfStatData succ = new PerfStatData("succ");
 
-    private PerfStatData fail = new PerfStatData("fail");
+  private PerfStatData fail = new PerfStatData("fail");
 
-    public PerfStatSuccFail(String name) {
-        super(name);
+  public PerfStatSuccFail(String name) {
+    super(name);
 
-        addPerfStatData(succ);
-        addPerfStatData(fail);
+    addPerfStatData(succ);
+    addPerfStatData(fail);
+  }
+
+  public void add(boolean isSucc, int msgCount, long latency) {
+    PerfStatData statData = succ;
+    if (!isSucc) {
+      msgCount = 0;
+      statData = fail;
     }
+    statData.add(msgCount, latency);
+  }
 
-    public void add(boolean isSucc, int msgCount, long latency) {
-        PerfStatData statData = succ;
-        if (!isSucc) {
-            msgCount = 0;
-            statData = fail;
-        }
-        statData.add(msgCount, latency);
-    }
-
-    public void add(boolean isSucc, PerfStatContext context) {
-        add(isSucc, context.getMsgCount(), context.getLatency());
-    }
+  public void add(boolean isSucc, PerfStatContext context) {
+    add(isSucc, context.getMsgCount(), context.getLatency());
+  }
 }

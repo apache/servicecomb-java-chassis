@@ -29,7 +29,7 @@ public class BeanRpcTest {
   public void init() {
     new Thread() {
       public void run() {
-        while(true) {
+        while (true) {
           try {
             System.out.println("XXXXXXXXXXXXXXXXXXXXXXXX" + test.getTestString(null));
             break;
@@ -45,6 +45,5 @@ public class BeanRpcTest {
         }
       }
     }.start();
-
   }
 }

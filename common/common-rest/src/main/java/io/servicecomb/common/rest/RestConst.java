@@ -17,18 +17,18 @@
 package io.servicecomb.common.rest;
 
 public final class RestConst {
-    private RestConst() {
-    }
+  private RestConst() {
+  }
 
-    public static final String HTTP_REQUEST_CREATOR = "server-http-request-creator";
+  public static final String HTTP_REQUEST_CREATOR = "server-http-request-creator";
 
-    public static final String REST_CLIENT_REQUEST_PATH = "rest-client-request-path";
+  public static final String REST_CLIENT_REQUEST_PATH = "rest-client-request-path";
 
-    public static final String SWAGGER_REST_OPERATION = "swaggerRestOperation";
+  public static final String SWAGGER_REST_OPERATION = "swaggerRestOperation";
 
-    public static final String REST = "rest";
+  public static final String REST = "rest";
 
-    public static final String SCHEME = "cse";
+  public static final String SCHEME = "cse";
 
-    public static final String URI_PREFIX = SCHEME + "://";
+  public static final String URI_PREFIX = SCHEME + "://";
 }

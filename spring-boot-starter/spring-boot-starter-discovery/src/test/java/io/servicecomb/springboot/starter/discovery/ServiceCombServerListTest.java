@@ -22,20 +22,25 @@ import static org.hamcrest.core.Is.is;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import com.seanyinx.github.unit.scaffolding.Randomness;
-import io.servicecomb.core.provider.consumer.ConsumerProviderManager;
-import io.servicecomb.core.provider.consumer.ReferenceConfig;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.seanyinx.github.unit.scaffolding.Randomness;
+
+import io.servicecomb.core.provider.consumer.ConsumerProviderManager;
+import io.servicecomb.core.provider.consumer.ReferenceConfig;
+
 public class ServiceCombServerListTest {
 
   private final ReferenceConfig referenceConfig = mock(ReferenceConfig.class);
+
   private final ConsumerProviderManager manager = mock(ConsumerProviderManager.class);
+
   private final CseRoutesProperties properties = new CseRoutesProperties(manager);
 
   private final ServiceCombServerList serverList = new ServiceCombServerList(properties);
+
   private String serviceId = Randomness.uniquify("serviceId");
 
   @Before

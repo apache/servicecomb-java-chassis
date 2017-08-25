@@ -22,7 +22,7 @@ import org.springframework.http.ResponseEntity;
 import io.servicecomb.swagger.invocation.Response;
 
 public interface CodeFirstSprigmvcIntf {
-    ResponseEntity<Date> responseEntity(Date date);
+  ResponseEntity<Date> responseEntity(Date date);
 
-    Response cseResponse();
+  Response cseResponse();
 }

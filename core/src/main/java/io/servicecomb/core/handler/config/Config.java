@@ -23,26 +23,27 @@ import java.util.Map;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
+
 import io.servicecomb.core.Handler;
 
 @JacksonXmlRootElement
 public class Config {
-    // key为handler id
-    private Map<String, Class<Handler>> handlerClassMap = new HashMap<>();
+  // key为handler id
+  private Map<String, Class<Handler>> handlerClassMap = new HashMap<>();
 
-    public void mergeFrom(Config otherConfig) {
-        handlerClassMap.putAll(otherConfig.handlerClassMap);
-    }
+  public void mergeFrom(Config otherConfig) {
+    handlerClassMap.putAll(otherConfig.handlerClassMap);
+  }
 
-    public Map<String, Class<Handler>> getHandlerClassMap() {
-        return this.handlerClassMap;
-    }
+  public Map<String, Class<Handler>> getHandlerClassMap() {
+    return this.handlerClassMap;
+  }
 
-    @JacksonXmlProperty(localName = "handler")
-    @JacksonXmlElementWrapper(useWrapping = false)
-    public void setHandlerConfigList(List<HandlerConfig> handlerConfigList) {
-        for (HandlerConfig handlerConfig : handlerConfigList) {
-            handlerClassMap.put(handlerConfig.getHandlerId(), handlerConfig.getClazz());
-        }
+  @JacksonXmlProperty(localName = "handler")
+  @JacksonXmlElementWrapper(useWrapping = false)
+  public void setHandlerConfigList(List<HandlerConfig> handlerConfigList) {
+    for (HandlerConfig handlerConfig : handlerConfigList) {
+      handlerClassMap.put(handlerConfig.getHandlerId(), handlerConfig.getClazz());
     }
+  }
 }

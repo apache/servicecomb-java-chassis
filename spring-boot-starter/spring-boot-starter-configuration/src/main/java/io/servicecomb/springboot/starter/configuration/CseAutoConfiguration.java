@@ -60,151 +60,150 @@ import com.netflix.config.DynamicURLConfiguration;
  */
 @Configuration
 @ConditionalOnClass({ConcurrentCompositeConfiguration.class,
-        ConfigurationBuilder.class})
+    ConfigurationBuilder.class})
 public class CseAutoConfiguration {
 
-    private static final AtomicBoolean INITIALIZED = new AtomicBoolean(false);
+  private static final AtomicBoolean INITIALIZED = new AtomicBoolean(false);
 
-    @Autowired
-    private ConfigurableEnvironment env;
+  @Autowired
+  private ConfigurableEnvironment env;
 
-    @Autowired(required = false)
-    private List<AbstractConfiguration> externalConfigurations = new ArrayList<>();
+  @Autowired(required = false)
+  private List<AbstractConfiguration> externalConfigurations = new ArrayList<>();
 
-    @PreDestroy
-    public void close() {
-        setStatic(ConfigurationManager.class, "instance", null);
-        setStatic(ConfigurationManager.class, "customConfigurationInstalled", false);
-        setStatic(DynamicPropertyFactory.class, "config", null);
-        setStatic(DynamicPropertyFactory.class, "initializedWithDefaultConfig", false);
-        setStatic(DynamicProperty.class, "dynamicPropertySupportImpl", null);
-        INITIALIZED.compareAndSet(true, false);
-    }
+  @PreDestroy
+  public void close() {
+    setStatic(ConfigurationManager.class, "instance", null);
+    setStatic(ConfigurationManager.class, "customConfigurationInstalled", false);
+    setStatic(DynamicPropertyFactory.class, "config", null);
+    setStatic(DynamicPropertyFactory.class, "initializedWithDefaultConfig", false);
+    setStatic(DynamicProperty.class, "dynamicPropertySupportImpl", null);
+    INITIALIZED.compareAndSet(true, false);
+  }
 
+  @Bean
+  public ConfigurableEnvironmentConfiguration configurableEnvironmentConfiguration() {
+    ConfigurableEnvironmentConfiguration envConfig = new ConfigurableEnvironmentConfiguration(
+        this.env);
+    configureArchaius(envConfig);
+    return envConfig;
+  }
+
+  @Configuration
+  @ConditionalOnClass(Endpoint.class)
+
+  protected static class ArchaiusEndpointConfiguration {
     @Bean
-    public ConfigurableEnvironmentConfiguration configurableEnvironmentConfiguration() {
-        ConfigurableEnvironmentConfiguration envConfig = new ConfigurableEnvironmentConfiguration(
-                this.env);
-        configureArchaius(envConfig);
-        return envConfig;
+    @ConditionalOnEnabledEndpoint("archaius")
+    protected CseEndpoint archaiusEndpoint() {
+      return new CseEndpoint();
     }
+  }
 
-    @Configuration
-    @ConditionalOnClass(Endpoint.class)
+  @Configuration
+  @ConditionalOnProperty(value = "archaius.propagate.environmentChangedEvent", matchIfMissing = true)
+  @ConditionalOnClass(EnvironmentChangeEvent.class)
+  protected static class PropagateEventsConfiguration
+      implements ApplicationListener<EnvironmentChangeEvent> {
+    @Autowired
+    private Environment env;
 
-    protected static class ArchaiusEndpointConfiguration {
-        @Bean
-        @ConditionalOnEnabledEndpoint("archaius")
-        protected CseEndpoint archaiusEndpoint() {
-            return new CseEndpoint();
+    @Override
+    public void onApplicationEvent(EnvironmentChangeEvent event) {
+      AbstractConfiguration manager = ConfigurationManager.getConfigInstance();
+      for (String key : event.getKeys()) {
+        for (ConfigurationListener listener : manager
+            .getConfigurationListeners()) {
+          Object source = event.getSource();
+          // TODO: Handle add vs set vs delete?
+          int type = AbstractConfiguration.EVENT_SET_PROPERTY;
+          String value = this.env.getProperty(key);
+          boolean beforeUpdate = false;
+          listener.configurationChanged(new ConfigurationEvent(source, type,
+              key, value, beforeUpdate));
         }
+      }
     }
+  }
 
-    @Configuration
-    @ConditionalOnProperty(value = "archaius.propagate.environmentChangedEvent", matchIfMissing = true)
-    @ConditionalOnClass(EnvironmentChangeEvent.class)
-    protected static class PropagateEventsConfiguration
-            implements ApplicationListener<EnvironmentChangeEvent> {
-        @Autowired
-        private Environment env;
+  protected void configureArchaius(ConfigurableEnvironmentConfiguration envConfig) {
+    if (INITIALIZED.compareAndSet(false, true)) {
+      String appName = this.env.getProperty("spring.application.name");
+      if (appName == null) {
+        appName = "application";
+        //log.warn("No spring.application.name found, defaulting to 'application'");
+      }
+      System.setProperty(DeploymentContext.ContextKey.appId.getKey(), appName);
 
-        @Override
-        public void onApplicationEvent(EnvironmentChangeEvent event) {
-            AbstractConfiguration manager = ConfigurationManager.getConfigInstance();
-            for (String key : event.getKeys()) {
-                for (ConfigurationListener listener : manager
-                        .getConfigurationListeners()) {
-                    Object source = event.getSource();
-                    // TODO: Handle add vs set vs delete?
-                    int type = AbstractConfiguration.EVENT_SET_PROPERTY;
-                    String value = this.env.getProperty(key);
-                    boolean beforeUpdate = false;
-                    listener.configurationChanged(new ConfigurationEvent(source, type,
-                            key, value, beforeUpdate));
-                }
-            }
+      ConcurrentCompositeConfiguration config = new ConcurrentCompositeConfiguration();
+
+      // support to add other Configurations (Jdbc, DynamoDb, Zookeeper, jclouds,
+      // etc...)
+      if (this.externalConfigurations != null) {
+        for (AbstractConfiguration externalConfig : this.externalConfigurations) {
+          config.addConfiguration(externalConfig);
         }
+      }
+      config.addConfiguration(envConfig,
+          ConfigurableEnvironmentConfiguration.class.getSimpleName());
+
+      // below come from ConfigurationManager.createDefaultConfigInstance()
+      DynamicURLConfiguration defaultURLConfig = new DynamicURLConfiguration();
+      try {
+        config.addConfiguration(defaultURLConfig, URL_CONFIG_NAME);
+      } catch (Throwable ex) {
+        //log.error("Cannot create config from " + defaultURLConfig, ex);
+      }
+
+      // TODO: sys/env above urls?
+      if (!Boolean.getBoolean(DISABLE_DEFAULT_SYS_CONFIG)) {
+        SystemConfiguration sysConfig = new SystemConfiguration();
+        config.addConfiguration(sysConfig, SYS_CONFIG_NAME);
+      }
+      if (!Boolean.getBoolean(DISABLE_DEFAULT_ENV_CONFIG)) {
+        EnvironmentConfiguration environmentConfiguration = new EnvironmentConfiguration();
+        config.addConfiguration(environmentConfiguration, ENV_CONFIG_NAME);
+      }
+
+      ConcurrentCompositeConfiguration appOverrideConfig = new ConcurrentCompositeConfiguration();
+      config.addConfiguration(appOverrideConfig, APPLICATION_PROPERTIES);
+      config.setContainerConfigurationIndex(
+          config.getIndexOfConfiguration(appOverrideConfig));
+
+      addArchaiusConfiguration(config);
     }
+    //        else {
+    //            // TODO: reinstall ConfigurationManager
+    //            //log.warn(
+    //            //       "Netflix ConfigurationManager has already been installed, unable to re-install");
+    //        }
+  }
 
-    protected void configureArchaius(ConfigurableEnvironmentConfiguration envConfig) {
-        if (INITIALIZED.compareAndSet(false, true)) {
-            String appName = this.env.getProperty("spring.application.name");
-            if (appName == null) {
-                appName = "application";
-                //log.warn("No spring.application.name found, defaulting to 'application'");
-            }
-            System.setProperty(DeploymentContext.ContextKey.appId.getKey(), appName);
-
-            ConcurrentCompositeConfiguration config = new ConcurrentCompositeConfiguration();
-
-            // support to add other Configurations (Jdbc, DynamoDb, Zookeeper, jclouds,
-            // etc...)
-            if (this.externalConfigurations != null) {
-                for (AbstractConfiguration externalConfig : this.externalConfigurations) {
-                    config.addConfiguration(externalConfig);
-                }
-            }
-            config.addConfiguration(envConfig,
-                    ConfigurableEnvironmentConfiguration.class.getSimpleName());
-
-            // below come from ConfigurationManager.createDefaultConfigInstance()
-            DynamicURLConfiguration defaultURLConfig = new DynamicURLConfiguration();
-            try {
-                config.addConfiguration(defaultURLConfig, URL_CONFIG_NAME);
-            } catch (Throwable ex) {
-                //log.error("Cannot create config from " + defaultURLConfig, ex);
-            }
-
-            // TODO: sys/env above urls?
-            if (!Boolean.getBoolean(DISABLE_DEFAULT_SYS_CONFIG)) {
-                SystemConfiguration sysConfig = new SystemConfiguration();
-                config.addConfiguration(sysConfig, SYS_CONFIG_NAME);
-            }
-            if (!Boolean.getBoolean(DISABLE_DEFAULT_ENV_CONFIG)) {
-                EnvironmentConfiguration environmentConfiguration = new EnvironmentConfiguration();
-                config.addConfiguration(environmentConfiguration, ENV_CONFIG_NAME);
-            }
-
-            ConcurrentCompositeConfiguration appOverrideConfig = new ConcurrentCompositeConfiguration();
-            config.addConfiguration(appOverrideConfig, APPLICATION_PROPERTIES);
-            config.setContainerConfigurationIndex(
-                    config.getIndexOfConfiguration(appOverrideConfig));
-
-            addArchaiusConfiguration(config);
-        }
-        //        else {
-        //            // TODO: reinstall ConfigurationManager
-        //            //log.warn(
-        //            //       "Netflix ConfigurationManager has already been installed, unable to re-install");
-        //        }
+  private void addArchaiusConfiguration(ConcurrentCompositeConfiguration config) {
+    if (ConfigurationManager.isConfigurationInstalled()) {
+      AbstractConfiguration installedConfiguration = ConfigurationManager
+          .getConfigInstance();
+      if (installedConfiguration instanceof ConcurrentCompositeConfiguration) {
+        ConcurrentCompositeConfiguration configInstance =
+            (ConcurrentCompositeConfiguration) installedConfiguration;
+        configInstance.addConfiguration(config);
+      } else {
+        installedConfiguration.append(config);
+        //                if (!(installedConfiguration instanceof AggregatedConfiguration)) {
+        //                    //log.warn(
+        //                    //  "Appending a configuration to an existing non-aggregated
+        //                    //installed configuration will have no effect");
+        //                }
+      }
+    } else {
+      ConfigurationManager.install(config);
     }
+  }
 
-    private void addArchaiusConfiguration(ConcurrentCompositeConfiguration config) {
-        if (ConfigurationManager.isConfigurationInstalled()) {
-            AbstractConfiguration installedConfiguration = ConfigurationManager
-                    .getConfigInstance();
-            if (installedConfiguration instanceof ConcurrentCompositeConfiguration) {
-                ConcurrentCompositeConfiguration configInstance =
-                    (ConcurrentCompositeConfiguration) installedConfiguration;
-                configInstance.addConfiguration(config);
-            } else {
-                installedConfiguration.append(config);
-                //                if (!(installedConfiguration instanceof AggregatedConfiguration)) {
-                //                    //log.warn(
-                //                    //  "Appending a configuration to an existing non-aggregated 
-                //                    //installed configuration will have no effect");
-                //                }
-            }
-        } else {
-            ConfigurationManager.install(config);
-        }
-    }
-
-    private static void setStatic(Class<?> type, String name, Object value) {
-        // Hack a private static field
-        Field field = ReflectionUtils.findField(type, name);
-        ReflectionUtils.makeAccessible(field);
-        ReflectionUtils.setField(field, null, value);
-    }
-
+  private static void setStatic(Class<?> type, String name, Object value) {
+    // Hack a private static field
+    Field field = ReflectionUtils.findField(type, name);
+    ReflectionUtils.makeAccessible(field);
+    ReflectionUtils.setField(field, null, value);
+  }
 }

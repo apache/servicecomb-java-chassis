@@ -41,105 +41,105 @@ import io.swagger.models.properties.StringProperty;
 import io.swagger.util.Json;
 
 public class ModelResolverExt extends ModelResolver {
-    private interface PropertyCreator {
-        Property createProperty();
+  private interface PropertyCreator {
+    Property createProperty();
+  }
+
+  private Map<Class<?>, PropertyCreator> creatorMap = new HashMap<>();
+
+  public ModelResolverExt() {
+    super(Json.mapper());
+
+    addCreator(() -> {
+      return new ByteProperty();
+    }, Byte.class, byte.class);
+
+    addCreator(() -> {
+      return new ShortProperty();
+    }, Short.class, short.class);
+
+    addCreator(() -> {
+      return new ByteArrayProperty();
+    }, Byte[].class, byte[].class);
+  }
+
+  private void addCreator(PropertyCreator creator, Class<?>... clsArr) {
+    for (Class<?> cls : clsArr) {
+      creatorMap.put(cls, creator);
+    }
+  }
+
+  private void setType(JavaType type, Map<String, Object> vendorExtensions) {
+    vendorExtensions.put(ExtendConst.EXT_JAVA_CLASS, type.getRawClass().getName());
+  }
+
+  private void checkType(JavaType type) {
+    // 原子类型/string在java中是abstract的
+    if (type.getRawClass().isPrimitive()
+        || byte[].class.equals(type.getRawClass())
+        || Byte[].class.equals(type.getRawClass())
+        || String.class.equals(type.getRawClass())) {
+      return;
     }
 
-    private Map<Class<?>, PropertyCreator> creatorMap = new HashMap<>();
-
-    public ModelResolverExt() {
-        super(Json.mapper());
-
-        addCreator(() -> {
-            return new ByteProperty();
-        }, Byte.class, byte.class);
-
-        addCreator(() -> {
-            return new ShortProperty();
-        }, Short.class, short.class);
-
-        addCreator(() -> {
-            return new ByteArrayProperty();
-        }, Byte[].class, byte[].class);
+    String msg = "Must be a concrete type.";
+    if (type.getRawClass().equals(Object.class)) {
+      throw new ServiceCombException(type.getRawClass().getName() + " not support. " + msg);
     }
 
-    private void addCreator(PropertyCreator creator, Class<?>... clsArr) {
-        for (Class<?> cls : clsArr) {
-            creatorMap.put(cls, creator);
-        }
+    if (type.isMapLikeType()) {
+      if (!String.class.equals(type.getKeyType().getRawClass())) {
+        // swagger中map的key只允许为string
+        throw new Error("Key of map must be string.");
+      }
     }
 
-    private void setType(JavaType type, Map<String, Object> vendorExtensions) {
-        vendorExtensions.put(ExtendConst.EXT_JAVA_CLASS, type.getRawClass().getName());
+    if (type.isContainerType()) {
+      checkType(type.getContentType());
+      return;
     }
 
-    private void checkType(JavaType type) {
-        // 原子类型/string在java中是abstract的
-        if (type.getRawClass().isPrimitive()
-                || byte[].class.equals(type.getRawClass())
-                || Byte[].class.equals(type.getRawClass())
-                || String.class.equals(type.getRawClass())) {
-            return;
-        }
-
-        String msg = "Must be a concrete type.";
-        if (type.getRawClass().equals(Object.class)) {
-            throw new ServiceCombException(type.getRawClass().getName() + " not support. " + msg);
-        }
-
-        if (type.isMapLikeType()) {
-            if (!String.class.equals(type.getKeyType().getRawClass())) {
-                // swagger中map的key只允许为string
-                throw new Error("Key of map must be string.");
-            }
-        }
-
-        if (type.isContainerType()) {
-            checkType(type.getContentType());
-            return;
-        }
-
-        if (type.getRawClass().isInterface()) {
-            throw new ServiceCombException(type.getTypeName() + " is interface. " + msg);
-        }
-
-        if (Modifier.isAbstract(type.getRawClass().getModifiers())) {
-            throw new ServiceCombException(type.getTypeName() + " is abstract class. " + msg);
-        }
+    if (type.getRawClass().isInterface()) {
+      throw new ServiceCombException(type.getTypeName() + " is interface. " + msg);
     }
 
-    @Override
-    public Model resolve(JavaType type, ModelConverterContext context, Iterator<ModelConverter> next) {
-        Model model = super.resolve(type, context, next);
-        if (model == null) {
-            return null;
-        }
+    if (Modifier.isAbstract(type.getRawClass().getModifiers())) {
+      throw new ServiceCombException(type.getTypeName() + " is abstract class. " + msg);
+    }
+  }
 
-        checkType(type);
-
-        // 只有声明model的地方才需要标注类型
-        if (ModelImpl.class.isInstance(model) && !StringUtils.isEmpty(((ModelImpl) model).getName())) {
-            setType(type, model.getVendorExtensions());
-        }
-        return model;
+  @Override
+  public Model resolve(JavaType type, ModelConverterContext context, Iterator<ModelConverter> next) {
+    Model model = super.resolve(type, context, next);
+    if (model == null) {
+      return null;
     }
 
-    @Override
-    public Property resolveProperty(JavaType propType, ModelConverterContext context, Annotation[] annotations,
-            Iterator<ModelConverter> next) {
-        checkType(propType);
+    checkType(type);
 
-        PropertyCreator creator = creatorMap.get(propType.getRawClass());
-        if (creator != null) {
-            return creator.createProperty();
-        }
-
-        Property property = super.resolveProperty(propType, context, annotations, next);
-        if (StringProperty.class.isInstance(property)) {
-            if (StringPropertyConverter.isEnum((StringProperty) property)) {
-                setType(propType, property.getVendorExtensions());
-            }
-        }
-        return property;
+    // 只有声明model的地方才需要标注类型
+    if (ModelImpl.class.isInstance(model) && !StringUtils.isEmpty(((ModelImpl) model).getName())) {
+      setType(type, model.getVendorExtensions());
     }
+    return model;
+  }
+
+  @Override
+  public Property resolveProperty(JavaType propType, ModelConverterContext context, Annotation[] annotations,
+      Iterator<ModelConverter> next) {
+    checkType(propType);
+
+    PropertyCreator creator = creatorMap.get(propType.getRawClass());
+    if (creator != null) {
+      return creator.createProperty();
+    }
+
+    Property property = super.resolveProperty(propType, context, annotations, next);
+    if (StringProperty.class.isInstance(property)) {
+      if (StringPropertyConverter.isEnum((StringProperty) property)) {
+        setType(propType, property.getVendorExtensions());
+      }
+    }
+    return property;
+  }
 }

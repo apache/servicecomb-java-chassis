@@ -26,56 +26,56 @@ import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.type.TypeFactory;
 import com.fasterxml.jackson.dataformat.protobuf.schema.ProtobufField;
 import com.fasterxml.jackson.dataformat.protobuf.schema.ProtobufSchema;
+
 import io.servicecomb.codec.protobuf.jackson.CseObjectReader;
 
 public class AbstractFieldCodec extends AbstractCodec {
-    public static class ReaderHelpData {
-        // 在reader返回的Object[]中的下标
-        private int index;
+  public static class ReaderHelpData {
+    // 在reader返回的Object[]中的下标
+    private int index;
 
-        private JsonDeserializer<Object> deser;
+    private JsonDeserializer<Object> deser;
 
-        public int getIndex() {
-            return index;
-        }
-
-        public void setIndex(int index) {
-            this.index = index;
-        }
-
-        public JsonDeserializer<Object> getDeser() {
-            return deser;
-        }
-
-        public void setDeser(JsonDeserializer<Object> deser) {
-            this.deser = deser;
-        }
+    public int getIndex() {
+      return index;
     }
 
-    // key为field name
-    protected Map<String, ReaderHelpData> readerHelpDataMap = new HashMap<>();
-
-    @Override
-    public void init(ProtobufSchema schema, Type... types) {
-        initFieldMap(schema, types);
-
+    public void setIndex(int index) {
+      this.index = index;
     }
 
-    private void initFieldMap(ProtobufSchema schema, Type[] types) {
-        Iterator<ProtobufField> fieldIter = schema.getRootType().fields().iterator();
-        for (int idx = 0; idx < schema.getRootType().getFieldCount(); idx++) {
-            JavaType type = TypeFactory.defaultInstance().constructType(types[idx]);
-            ProtobufField field = fieldIter.next();
-
-            ReaderHelpData helpData = new ReaderHelpData();
-            helpData.index = idx;
-            helpData.deser = ((CseObjectReader) reader).findDeserializer(type);
-
-            readerHelpDataMap.put(field.name, helpData);
-        }
+    public JsonDeserializer<Object> getDeser() {
+      return deser;
     }
 
-    public ReaderHelpData findInfo(String name) {
-        return readerHelpDataMap.get(name);
+    public void setDeser(JsonDeserializer<Object> deser) {
+      this.deser = deser;
     }
+  }
+
+  // key为field name
+  protected Map<String, ReaderHelpData> readerHelpDataMap = new HashMap<>();
+
+  @Override
+  public void init(ProtobufSchema schema, Type... types) {
+    initFieldMap(schema, types);
+  }
+
+  private void initFieldMap(ProtobufSchema schema, Type[] types) {
+    Iterator<ProtobufField> fieldIter = schema.getRootType().fields().iterator();
+    for (int idx = 0; idx < schema.getRootType().getFieldCount(); idx++) {
+      JavaType type = TypeFactory.defaultInstance().constructType(types[idx]);
+      ProtobufField field = fieldIter.next();
+
+      ReaderHelpData helpData = new ReaderHelpData();
+      helpData.index = idx;
+      helpData.deser = ((CseObjectReader) reader).findDeserializer(type);
+
+      readerHelpDataMap.put(field.name, helpData);
+    }
+  }
+
+  public ReaderHelpData findInfo(String name) {
+    return readerHelpDataMap.get(name);
+  }
 }

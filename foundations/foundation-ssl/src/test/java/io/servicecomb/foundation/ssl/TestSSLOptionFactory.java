@@ -27,34 +27,34 @@ import mockit.MockUp;
 import mockit.Mocked;
 
 public class TestSSLOptionFactory {
-    @Test
-    public void testSSLOptionFactory() {
-        SSLOptionFactory factory = SSLOptionFactory.createSSLOptionFactory("cc", null);
-        Assert.assertEquals(factory, null);
-    }
+  @Test
+  public void testSSLOptionFactory() {
+    SSLOptionFactory factory = SSLOptionFactory.createSSLOptionFactory("cc", null);
+    Assert.assertEquals(factory, null);
+  }
 
-    @Test
-    public void testSSLOptionFactoryWrong(@Mocked SSLOption option) {
-        new Expectations() {
-            {
-                SSLOption.getStringProperty((ConcurrentCompositeConfiguration) any, anyString, (String[]) any);
-                result = "wrong";
-            }
-        };
-        SSLOptionFactory factory = SSLOptionFactory.createSSLOptionFactory("cc", null);
-        Assert.assertEquals(factory, null);
-    }
+  @Test
+  public void testSSLOptionFactoryWrong(@Mocked SSLOption option) {
+    new Expectations() {
+      {
+        SSLOption.getStringProperty((ConcurrentCompositeConfiguration) any, anyString, (String[]) any);
+        result = "wrong";
+      }
+    };
+    SSLOptionFactory factory = SSLOptionFactory.createSSLOptionFactory("cc", null);
+    Assert.assertEquals(factory, null);
+  }
 
-    @Test
-    public void testSSLOptionFactoryCorrent() {
-        new MockUp<SSLOption>() {
-            @Mock
-            public String getStringProperty(ConcurrentCompositeConfiguration configSource, String defaultValue,
-                    String... keys) {
-                return "io.servicecomb.foundation.ssl.MyOptionFactory";
-            }
-        };
-        SSLOptionFactory factory = SSLOptionFactory.createSSLOptionFactory("cc", null);
-        Assert.assertEquals(factory.createSSLOption().getProtocols(), "TLSv1.2");
-    }
+  @Test
+  public void testSSLOptionFactoryCorrent() {
+    new MockUp<SSLOption>() {
+      @Mock
+      public String getStringProperty(ConcurrentCompositeConfiguration configSource, String defaultValue,
+          String... keys) {
+        return "io.servicecomb.foundation.ssl.MyOptionFactory";
+      }
+    };
+    SSLOptionFactory factory = SSLOptionFactory.createSSLOptionFactory("cc", null);
+    Assert.assertEquals(factory.createSSLOption().getProtocols(), "TLSv1.2");
+  }
 }

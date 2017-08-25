@@ -19,15 +19,15 @@ package io.servicecomb.swagger.generator.core;
 import javax.ws.rs.core.Response;
 
 public final class SwaggerConst {
-    private SwaggerConst() {
+  private SwaggerConst() {
 
-    }
+  }
 
-    public static final String SUCCESS_KEY = String.valueOf(Response.Status.OK.getStatusCode());
+  public static final String SUCCESS_KEY = String.valueOf(Response.Status.OK.getStatusCode());
 
-    public static final String EXT_JAVA_INTF = "x-java-interface";
+  public static final String EXT_JAVA_INTF = "x-java-interface";
 
-    public static final String EXT_JAVA_CLASS = "x-java-class";
+  public static final String EXT_JAVA_CLASS = "x-java-class";
 
-    public static final String EXT_RAW_JSON_TYPE = "x-raw-json";
+  public static final String EXT_RAW_JSON_TYPE = "x-raw-json";
 }

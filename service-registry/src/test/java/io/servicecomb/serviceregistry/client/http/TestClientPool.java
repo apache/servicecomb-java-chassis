@@ -24,36 +24,35 @@ import mockit.Mock;
 import mockit.MockUp;
 
 public class TestClientPool {
-    @Test
-    public void testHttpClientPool() {
-        new MockUp<ServiceRegistryConfig>() {
-            @Mock
-            public HttpVersion getHttpVersion() {
-                return HttpVersion.HTTP_2;
-            }
+  @Test
+  public void testHttpClientPool() {
+    new MockUp<ServiceRegistryConfig>() {
+      @Mock
+      public HttpVersion getHttpVersion() {
+        return HttpVersion.HTTP_2;
+      }
 
-            @Mock
-            public boolean isSsl() {
-                return true;
-            }
-        };
-        HttpClientPool.INSTANCE.create();
-    }
+      @Mock
+      public boolean isSsl() {
+        return true;
+      }
+    };
+    HttpClientPool.INSTANCE.create();
+  }
 
-    @Test
-    public void testWebsocketClientPool() {
-        new MockUp<ServiceRegistryConfig>() {
-            @Mock
-            public HttpVersion getHttpVersion() {
-                return HttpVersion.HTTP_2;
-            }
+  @Test
+  public void testWebsocketClientPool() {
+    new MockUp<ServiceRegistryConfig>() {
+      @Mock
+      public HttpVersion getHttpVersion() {
+        return HttpVersion.HTTP_2;
+      }
 
-            @Mock
-            public boolean isSsl() {
-                return true;
-            }
-        };
-        WebsocketClientPool.INSTANCE.create();
-    }
-
+      @Mock
+      public boolean isSsl() {
+        return true;
+      }
+    };
+    WebsocketClientPool.INSTANCE.create();
+  }
 }

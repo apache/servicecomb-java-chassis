@@ -16,10 +16,10 @@
 
 package io.servicecomb.foundation.vertx.client.tcp;
 
-import io.servicecomb.foundation.vertx.client.ClientPoolManager;
 import org.junit.Assert;
 import org.junit.Test;
 
+import io.servicecomb.foundation.vertx.client.ClientPoolManager;
 import io.vertx.core.Context;
 import io.vertx.core.impl.VertxInternal;
 import io.vertx.core.json.JsonObject;
@@ -27,28 +27,28 @@ import mockit.Expectations;
 import mockit.Mocked;
 
 public class TestTcpClientVerticle {
-    private ClientPoolManager<TcpClientConnectionPool> clientMgr = new ClientPoolManager<>();
+  private ClientPoolManager<TcpClientConnectionPool> clientMgr = new ClientPoolManager<>();
 
-    @Test
-    public void testTcpClientVerticle(@Mocked TcpClientConfig config, @Mocked VertxInternal vertx,
-            @Mocked Context context,
-            @Mocked JsonObject json) throws Exception {
+  @Test
+  public void testTcpClientVerticle(@Mocked TcpClientConfig config, @Mocked VertxInternal vertx,
+      @Mocked Context context,
+      @Mocked JsonObject json) throws Exception {
 
-        new Expectations() {
-            {
-                context.config();
-                result = json;
-                json.getValue("clientOptions");
-                result = config;
-                json.getValue("clientMgr");
-                result = clientMgr;
-            }
-        };
+    new Expectations() {
+      {
+        context.config();
+        result = json;
+        json.getValue("clientOptions");
+        result = config;
+        json.getValue("clientMgr");
+        result = clientMgr;
+      }
+    };
 
-        TcpClientVerticle client = new TcpClientVerticle();
-        client.init(vertx, context);
-        client.start();
-        TcpClientConnectionPool pool = client.createClientPool();
-        Assert.assertNotNull(pool);
-    }
+    TcpClientVerticle client = new TcpClientVerticle();
+    client.init(vertx, context);
+    client.start();
+    TcpClientConnectionPool pool = client.createClientPool();
+    Assert.assertNotNull(pool);
+  }
 }

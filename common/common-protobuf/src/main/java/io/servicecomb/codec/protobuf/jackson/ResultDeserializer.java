@@ -22,17 +22,17 @@ import io.servicecomb.codec.protobuf.codec.AbstractFieldCodec.ReaderHelpData;
 
 public class ResultDeserializer extends AbstractDeserializer {
 
-    public ResultDeserializer(Map<String, ReaderHelpData> readerHelpDataMap) {
-        super(readerHelpDataMap);
-    }
+  public ResultDeserializer(Map<String, ReaderHelpData> readerHelpDataMap) {
+    super(readerHelpDataMap);
+  }
 
-    @Override
-    protected Object createResult() {
-        return null;
-    }
+  @Override
+  protected Object createResult() {
+    return null;
+  }
 
-    @Override
-    protected Object updateResult(Object result, Object value, ReaderHelpData helpData) {
-        return value;
-    }
+  @Override
+  protected Object updateResult(Object result, Object value, ReaderHelpData helpData) {
+    return value;
+  }
 }

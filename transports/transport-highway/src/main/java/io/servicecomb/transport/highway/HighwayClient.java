@@ -16,6 +16,9 @@
 
 package io.servicecomb.transport.highway;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import io.servicecomb.codec.protobuf.definition.OperationProtobuf;
 import io.servicecomb.codec.protobuf.definition.ProtobufManager;
 import io.servicecomb.core.Invocation;
@@ -32,81 +35,80 @@ import io.servicecomb.swagger.invocation.AsyncResponse;
 import io.servicecomb.swagger.invocation.Response;
 import io.vertx.core.DeploymentOptions;
 import io.vertx.core.Vertx;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class HighwayClient {
-    private static final Logger log = LoggerFactory.getLogger(HighwayClient.class);
-    private static final String SSL_KEY = "highway.consumer";
+  private static final Logger log = LoggerFactory.getLogger(HighwayClient.class);
 
-    private ClientPoolManager<HighwayClientConnectionPool> clientMgr = new ClientPoolManager<>();
+  private static final String SSL_KEY = "highway.consumer";
 
-    private final boolean sslEnabled;
+  private ClientPoolManager<HighwayClientConnectionPool> clientMgr = new ClientPoolManager<>();
 
-    public HighwayClient(boolean sslEnabled) {
-        this.sslEnabled = sslEnabled;
+  private final boolean sslEnabled;
+
+  public HighwayClient(boolean sslEnabled) {
+    this.sslEnabled = sslEnabled;
+  }
+
+  public void init(Vertx vertx) throws Exception {
+    TcpClientConfig config = createTcpClientConfig();
+
+    DeploymentOptions deployOptions = VertxUtils.createClientDeployOptions(clientMgr,
+        HighwayConfig.getClientThreadCount(),
+        HighwayConfig.getClientConnectionPoolPerThread(),
+        config);
+
+    VertxUtils.blockDeploy(vertx, HighwayClientVerticle.class, deployOptions);
+  }
+
+  private TcpClientConfig createTcpClientConfig() {
+    TcpClientConfig tcpClientConfig = new TcpClientConfig();
+    tcpClientConfig.setRequestTimeoutMillis(AbstractTransport.getRequestTimeout());
+
+    if (this.sslEnabled) {
+      SSLOptionFactory factory =
+          SSLOptionFactory.createSSLOptionFactory(SSL_KEY, null);
+      SSLOption sslOption;
+      if (factory == null) {
+        sslOption = SSLOption.buildFromYaml(SSL_KEY);
+      } else {
+        sslOption = factory.createSSLOption();
+      }
+      SSLCustom sslCustom = SSLCustom.createSSLCustom(sslOption.getSslCustomClass());
+      VertxTLSBuilder.buildClientOptionsBase(sslOption, sslCustom, tcpClientConfig);
     }
+    return tcpClientConfig;
+  }
 
-    public void init(Vertx vertx) throws Exception {
-        TcpClientConfig config = createTcpClientConfig();
+  public void send(Invocation invocation, AsyncResponse asyncResp) throws Exception {
+    HighwayClientConnectionPool tcpClientPool = clientMgr.findThreadBindClientPool();
 
-        DeploymentOptions deployOptions = VertxUtils.createClientDeployOptions(clientMgr,
-                HighwayConfig.getClientThreadCount(),
-                HighwayConfig.getClientConnectionPoolPerThread(),
-                config);
+    OperationMeta operationMeta = invocation.getOperationMeta();
+    OperationProtobuf operationProtobuf = ProtobufManager.getOrCreateOperation(operationMeta);
 
-        VertxUtils.blockDeploy(vertx, HighwayClientVerticle.class, deployOptions);
-    }
-
-    private TcpClientConfig createTcpClientConfig() {
-        TcpClientConfig tcpClientConfig = new TcpClientConfig();
-        tcpClientConfig.setRequestTimeoutMillis(AbstractTransport.getRequestTimeout());
-
-        if (this.sslEnabled) {
-            SSLOptionFactory factory =
-                SSLOptionFactory.createSSLOptionFactory(SSL_KEY, null);
-            SSLOption sslOption;
-            if (factory == null) {
-                sslOption = SSLOption.buildFromYaml(SSL_KEY);
-            } else {
-                sslOption = factory.createSSLOption();
-            }
-            SSLCustom sslCustom = SSLCustom.createSSLCustom(sslOption.getSslCustomClass());
-            VertxTLSBuilder.buildClientOptionsBase(sslOption, sslCustom, tcpClientConfig);
+    HighwayClientConnection tcpClient = tcpClientPool.findOrCreateClient(invocation.getEndpoint().getEndpoint());
+    HighwayClientPackage clientPackage = new HighwayClientPackage(invocation, operationProtobuf, tcpClient);
+    log.debug("Calling method {} of {} by highway", operationMeta.getMethod(), invocation.getMicroserviceName());
+    tcpClientPool.send(tcpClient, clientPackage, ar -> {
+      // 此时是在网络线程中，转换线程
+      invocation.getResponseExecutor().execute(() -> {
+        if (ar.failed()) {
+          // 只会是本地异常
+          asyncResp.consumerFail(ar.cause());
+          return;
         }
-        return tcpClientConfig;
-    }
 
-    public void send(Invocation invocation, AsyncResponse asyncResp) throws Exception {
-        HighwayClientConnectionPool tcpClientPool = clientMgr.findThreadBindClientPool();
-
-        OperationMeta operationMeta = invocation.getOperationMeta();
-        OperationProtobuf operationProtobuf = ProtobufManager.getOrCreateOperation(operationMeta);
-
-        HighwayClientConnection tcpClient = tcpClientPool.findOrCreateClient(invocation.getEndpoint().getEndpoint());
-        HighwayClientPackage clientPackage = new HighwayClientPackage(invocation, operationProtobuf, tcpClient);
-        log.debug("Calling method {} of {} by highway", operationMeta.getMethod(), invocation.getMicroserviceName());
-        tcpClientPool.send(tcpClient, clientPackage, ar -> {
-            // 此时是在网络线程中，转换线程
-            invocation.getResponseExecutor().execute(() -> {
-                if (ar.failed()) {
-                    // 只会是本地异常
-                    asyncResp.consumerFail(ar.cause());
-                    return;
-                }
-
-                // 处理应答
-                try {
-                    Response response =
-                        HighwayCodec.decodeResponse(invocation,
-                                operationProtobuf,
-                                ar.result(),
-                                tcpClient.getProtobufFeature());
-                    asyncResp.complete(response);
-                } catch (Throwable e) {
-                    asyncResp.consumerFail(e);
-                }
-            });
-        });
-    }
+        // 处理应答
+        try {
+          Response response =
+              HighwayCodec.decodeResponse(invocation,
+                  operationProtobuf,
+                  ar.result(),
+                  tcpClient.getProtobufFeature());
+          asyncResp.complete(response);
+        } catch (Throwable e) {
+          asyncResp.consumerFail(e);
+        }
+      });
+    });
+  }
 }

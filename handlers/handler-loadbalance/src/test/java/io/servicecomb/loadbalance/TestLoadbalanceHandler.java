@@ -14,9 +14,6 @@
  * limitations under the License.
  */
 
-/**
- * 
- */
 package io.servicecomb.loadbalance;
 
 import java.util.ArrayList;
@@ -55,257 +52,255 @@ import mockit.Mocked;
  */
 public class TestLoadbalanceHandler {
 
-    private CseServerList serverList = Mockito.mock(CseServerList.class);
+  private CseServerList serverList = Mockito.mock(CseServerList.class);
 
-    private IRule rule = Mockito.mock(IRule.class);
+  private IRule rule = Mockito.mock(IRule.class);
 
-    private LoadBalancer lb = new LoadBalancer(serverList, rule);
-    @AfterClass
-    public static void classTeardown() {
-        Deencapsulation.setField(ConfigurationManager.class, "instance", null);
-        Deencapsulation.setField(ConfigurationManager.class, "customConfigurationInstalled", false);
-        Deencapsulation.setField(DynamicPropertyFactory.class, "config", null);
-    }
-    @BeforeClass
-    public static void beforeCls() {
-        ConfigUtil.installDynamicConfig();
-        AbstractConfiguration configuration =
-            (AbstractConfiguration) DynamicPropertyFactory.getBackingConfigurationSource();
-        configuration.addProperty("cse.loadbalance.test.transactionControl.policy",
-                "io.servicecomb.loadbalance.filter.SimpleTransactionControlFilter");
-        configuration.addProperty("cse.loadbalance.test.transactionControl.options.tag0", "value0");
-        configuration.addProperty("cse.loadbalance.test.isolation.enabled", "true");
-        configuration.addProperty("cse.loadbalance.serverListFilters", "a");
-        configuration.addProperty("cse.loadbalance.serverListFilter.a.className", "io.servicecomb.loadbalance.MyServerListFilterExt");
-    }
+  private LoadBalancer lb = new LoadBalancer(serverList, rule);
 
-    @Test
-    public void testLoadBalancerWithFilterExtentions(final @Injectable Invocation invocation,
-            final @Injectable AsyncResponse asyncResp,
-            final @Mocked ServerListCache serverListCache) throws Exception {
-        final ArrayList<Server> servers = new ArrayList<Server>();
-        servers.add(new Server("test"));
-        new Expectations() {
-            {
-                invocation.getConfigTransportName();
-                result = "rest";
-                serverListCache.getLatestEndpoints();
-                result = new ArrayList<Server>();
-                invocation.getAppId();
-                result = "test";
-            }
-        };
-        LoadbalanceHandler lh = new LoadbalanceHandler();
-        lh.handle(invocation, asyncResp);
+  @AfterClass
+  public static void classTeardown() {
+    Deencapsulation.setField(ConfigurationManager.class, "instance", null);
+    Deencapsulation.setField(ConfigurationManager.class, "customConfigurationInstalled", false);
+    Deencapsulation.setField(DynamicPropertyFactory.class, "config", null);
+  }
 
-        Map<String, LoadBalancer> loadBalancerMap = Deencapsulation.getField(lh, "loadBalancerMap");
-        LoadBalancer lb = loadBalancerMap.get("rest");
-        Assert.assertEquals(lb.getFilterSize(), 2);
-    }
+  @BeforeClass
+  public static void beforeCls() {
+    ConfigUtil.installDynamicConfig();
+    AbstractConfiguration configuration =
+        (AbstractConfiguration) DynamicPropertyFactory.getBackingConfigurationSource();
+    configuration.addProperty("cse.loadbalance.test.transactionControl.policy",
+        "io.servicecomb.loadbalance.filter.SimpleTransactionControlFilter");
+    configuration.addProperty("cse.loadbalance.test.transactionControl.options.tag0", "value0");
+    configuration.addProperty("cse.loadbalance.test.isolation.enabled", "true");
+    configuration.addProperty("cse.loadbalance.serverListFilters", "a");
+    configuration.addProperty("cse.loadbalance.serverListFilter.a.className",
+        "io.servicecomb.loadbalance.MyServerListFilterExt");
+  }
 
-    @Test
-    public void testLoadbalanceHandlerHandleWithSend() throws Exception {
+  @Test
+  public void testLoadBalancerWithFilterExtentions(final @Injectable Invocation invocation,
+      final @Injectable AsyncResponse asyncResp,
+      final @Mocked ServerListCache serverListCache) throws Exception {
+    final ArrayList<Server> servers = new ArrayList<Server>();
+    servers.add(new Server("test"));
+    new Expectations() {
+      {
+        invocation.getConfigTransportName();
+        result = "rest";
+        serverListCache.getLatestEndpoints();
+        result = new ArrayList<Server>();
+        invocation.getAppId();
+        result = "test";
+      }
+    };
+    LoadbalanceHandler lh = new LoadbalanceHandler();
+    lh.handle(invocation, asyncResp);
 
-        boolean status = true;
+    Map<String, LoadBalancer> loadBalancerMap = Deencapsulation.getField(lh, "loadBalancerMap");
+    LoadBalancer lb = loadBalancerMap.get("rest");
+    Assert.assertEquals(lb.getFilterSize(), 2);
+  }
 
-        LoadbalanceHandler lh = new LoadbalanceHandler();
+  @Test
+  public void testLoadbalanceHandlerHandleWithSend() throws Exception {
 
-        Invocation invocation = Mockito.mock(Invocation.class);
+    boolean status = true;
 
-        AsyncResponse asyncResp = Mockito.mock(AsyncResponse.class);
+    LoadbalanceHandler lh = new LoadbalanceHandler();
 
-        Mockito.when(invocation.getConfigTransportName()).thenReturn("baa");
+    Invocation invocation = Mockito.mock(Invocation.class);
 
-        Map<String, LoadBalancer> loadBalancerMap = new ConcurrentHashMap<String, LoadBalancer>();
+    AsyncResponse asyncResp = Mockito.mock(AsyncResponse.class);
 
-        loadBalancerMap.put("baa", lb);
+    Mockito.when(invocation.getConfigTransportName()).thenReturn("baa");
 
-        try {
-            Deencapsulation.setField(lh, "loadBalancerMap", loadBalancerMap);
+    Map<String, LoadBalancer> loadBalancerMap = new ConcurrentHashMap<String, LoadBalancer>();
 
-            Deencapsulation.invoke(lh, "send", invocation, asyncResp, lb);
+    loadBalancerMap.put("baa", lb);
 
-            lh.handle(invocation, asyncResp);
+    try {
+      Deencapsulation.setField(lh, "loadBalancerMap", loadBalancerMap);
 
-        } catch (Exception e) {
+      Deencapsulation.invoke(lh, "send", invocation, asyncResp, lb);
 
-            status = false;
-        }
+      lh.handle(invocation, asyncResp);
+    } catch (Exception e) {
 
-        Assert.assertTrue(status);
-
+      status = false;
     }
 
-    @Test
-    public void testLoadbalanceHandlerHandleWithSendWithRetry() throws Exception {
+    Assert.assertTrue(status);
+  }
 
-        boolean status = true;
+  @Test
+  public void testLoadbalanceHandlerHandleWithSendWithRetry() throws Exception {
 
-        LoadbalanceHandler lh = new LoadbalanceHandler();
+    boolean status = true;
 
-        Invocation invocation = Mockito.mock(Invocation.class);
+    LoadbalanceHandler lh = new LoadbalanceHandler();
 
-        AsyncResponse asyncResp = Mockito.mock(AsyncResponse.class);
+    Invocation invocation = Mockito.mock(Invocation.class);
 
-        Mockito.when(invocation.getConfigTransportName()).thenReturn("baadshah");
+    AsyncResponse asyncResp = Mockito.mock(AsyncResponse.class);
 
-        Map<String, LoadBalancer> loadBalancerMap = new ConcurrentHashMap<String, LoadBalancer>();
+    Mockito.when(invocation.getConfigTransportName()).thenReturn("baadshah");
 
-        loadBalancerMap.put("baadshah", lb);
+    Map<String, LoadBalancer> loadBalancerMap = new ConcurrentHashMap<String, LoadBalancer>();
 
-        try {
+    loadBalancerMap.put("baadshah", lb);
 
-            Deencapsulation.setField(lh, "loadBalancerMap", loadBalancerMap);
+    try {
 
-            Deencapsulation.invoke(lh, "sendWithRetry", invocation, asyncResp, lb);
+      Deencapsulation.setField(lh, "loadBalancerMap", loadBalancerMap);
 
-            lh.handle(invocation, asyncResp);
+      Deencapsulation.invoke(lh, "sendWithRetry", invocation, asyncResp, lb);
 
-        } catch (Exception e) {
+      lh.handle(invocation, asyncResp);
+    } catch (Exception e) {
 
-            status = false;
-        }
-
-        Assert.assertTrue(status);
+      status = false;
     }
 
-    @Test
-    public void testLoadbalanceHandlerHandleWithCseServer() throws Exception {
+    Assert.assertTrue(status);
+  }
 
-        boolean status = true;
+  @Test
+  public void testLoadbalanceHandlerHandleWithCseServer() throws Exception {
 
-        new MockUp<LoadbalanceHandler>() {
+    boolean status = true;
 
-            @Mock
-            private LoadBalancer createLoadBalancer(String appId, String microserviceName,
-                    String microserviceVersionRule, String transportName) {
+    new MockUp<LoadbalanceHandler>() {
 
-                return lb;
+      @Mock
+      private LoadBalancer createLoadBalancer(String appId, String microserviceName,
+          String microserviceVersionRule, String transportName) {
 
-            }
-        };
+        return lb;
+      }
+    };
 
-        LoadbalanceHandler lh = new LoadbalanceHandler();
+    LoadbalanceHandler lh = new LoadbalanceHandler();
 
-        Invocation invocation = Mockito.mock(Invocation.class);
+    Invocation invocation = Mockito.mock(Invocation.class);
 
-        Mockito.when(invocation.getConfigTransportName()).thenReturn("baadshah");
+    Mockito.when(invocation.getConfigTransportName()).thenReturn("baadshah");
 
-        Mockito.when(invocation.getMicroserviceVersionRule()).thenReturn("VERSION_RULE_LATEST");
+    Mockito.when(invocation.getMicroserviceVersionRule()).thenReturn("VERSION_RULE_LATEST");
 
-        AsyncResponse asyncResp = Mockito.mock(AsyncResponse.class);
+    AsyncResponse asyncResp = Mockito.mock(AsyncResponse.class);
 
-        Mockito.when(invocation.getAppId()).thenReturn("test");
+    Mockito.when(invocation.getAppId()).thenReturn("test");
 
-        Mockito.when(invocation.getMicroserviceName()).thenReturn("test");
+    Mockito.when(invocation.getMicroserviceName()).thenReturn("test");
 
-        CseServer server = Mockito.mock(CseServer.class);
+    CseServer server = Mockito.mock(CseServer.class);
 
-        Mockito.when((CseServer) lb.chooseServer()).thenReturn(server);
-        try {
+    Mockito.when((CseServer) lb.chooseServer()).thenReturn(server);
+    try {
 
-            lh.handle(invocation, asyncResp);
+      lh.handle(invocation, asyncResp);
+    } catch (Exception e) {
 
-        } catch (Exception e) {
+      status = false;
+    }
+    Assert.assertTrue(status);
+  }
 
-            status = false;
-        }
-        Assert.assertTrue(status);
+  @Test
+  public void testLoadbalanceHandlerHandleWithLoadBalancerHandler() throws Exception {
+
+    boolean status = true;
+
+    new MockUp<LoadbalanceHandler>() {
+
+      @Mock
+      private LoadBalancer createLoadBalancer(String appId, String microserviceName,
+          String microserviceVersionRule,
+          String transportName) {
+
+        return lb;
+      }
+    };
+
+    LoadbalanceHandler lh = new LoadbalanceHandler();
+
+    Invocation invocation = Mockito.mock(Invocation.class);
+
+    Mockito.when(invocation.getConfigTransportName()).thenReturn("baadshah");
+
+    Mockito.when(invocation.getMicroserviceVersionRule()).thenReturn("VERSION_RULE_LATEST");
+
+    AsyncResponse asyncResp = Mockito.mock(AsyncResponse.class);
+
+    Mockito.when(invocation.getMicroserviceName()).thenReturn("test");
+
+    new MockUp<Configuration>() {
+
+      @Mock
+      public boolean isRetryEnabled(String microservice) {
+        return true;
+      }
+    };
+
+    SyncResponseExecutor orginExecutor = new SyncResponseExecutor();
+
+    Mockito.when(invocation.getResponseExecutor()).thenReturn(orginExecutor);
+
+    List<ExecutionListener<Invocation, Response>> listeners = new ArrayList<>(0);
+
+    @SuppressWarnings("unchecked")
+    ExecutionListener<Invocation, Response> listener = Mockito.mock(ExecutionListener.class);
+
+    ExecutionListener<Invocation, Response> e = null;
+    listeners.add(e);
+    listeners.add(listener);
+
+    try {
+      lh.handle(invocation, asyncResp);
+    } catch (Exception ex) {
+
+      status = false;
     }
 
-    @Test
-    public void testLoadbalanceHandlerHandleWithLoadBalancerHandler() throws Exception {
+    Assert.assertTrue(status);
+  }
 
-        boolean status = true;
+  @Test
+  public void testSetIsolationFilter() {
+    Invocation invocation = Mockito.mock(Invocation.class);
+    Mockito.when(invocation.getMicroserviceName()).thenReturn("test");
+    LoadbalanceHandler lbHandler = new LoadbalanceHandler();
+    LoadBalancer myLB = new LoadBalancer(serverList, rule);
+    lbHandler.setIsolationFilter(myLB, "abc");
+    Assert.assertEquals(1, myLB.getFilterSize());
 
-        new MockUp<LoadbalanceHandler>() {
+    Mockito.when(invocation.getMicroserviceName()).thenReturn("abc");
+    myLB = new LoadBalancer(serverList, rule);
+    lbHandler.setIsolationFilter(myLB, "abc");
+    myLB.setInvocation(invocation);
 
-            @Mock
-            private LoadBalancer createLoadBalancer(String appId, String microserviceName,
-                    String microserviceVersionRule,
-                    String transportName) {
+    Assert.assertEquals(1, myLB.getFilterSize());
+    Map<String, ServerListFilterExt> filters = Deencapsulation.getField(myLB, "filters");
+    List<Server> servers = new ArrayList<>();
+    servers.add(new Server(null));
+    Assert.assertEquals(servers.size(),
+        filters.get("io.servicecomb.loadbalance.filter.IsolationServerListFilter")
+            .getFilteredListOfServers(servers)
+            .size());
+  }
 
-                return lb;
+  @Test
+  public void testSetTransactionControlFilter() {
+    Invocation invocation = Mockito.mock(Invocation.class);
+    Mockito.when(invocation.getMicroserviceName()).thenReturn("test");
+    LoadbalanceHandler lbHandler = new LoadbalanceHandler();
+    LoadBalancer myLB = new LoadBalancer(serverList, rule);
+    lbHandler.setTransactionControlFilter(myLB, "test");
+    Assert.assertEquals(1, myLB.getFilterSize());
 
-            }
-        };
-
-        LoadbalanceHandler lh = new LoadbalanceHandler();
-
-        Invocation invocation = Mockito.mock(Invocation.class);
-
-        Mockito.when(invocation.getConfigTransportName()).thenReturn("baadshah");
-
-        Mockito.when(invocation.getMicroserviceVersionRule()).thenReturn("VERSION_RULE_LATEST");
-
-        AsyncResponse asyncResp = Mockito.mock(AsyncResponse.class);
-
-        Mockito.when(invocation.getMicroserviceName()).thenReturn("test");
-
-        new MockUp<Configuration>() {
-
-            @Mock
-            public boolean isRetryEnabled(String microservice) {
-                return true;
-            }
-        };
-
-        SyncResponseExecutor orginExecutor = new SyncResponseExecutor();
-
-        Mockito.when(invocation.getResponseExecutor()).thenReturn(orginExecutor);
-
-        List<ExecutionListener<Invocation, Response>> listeners = new ArrayList<>(0);
-
-        @SuppressWarnings("unchecked")
-        ExecutionListener<Invocation, Response> listener = Mockito.mock(ExecutionListener.class);
-
-        ExecutionListener<Invocation, Response> e = null;
-        listeners.add(e);
-        listeners.add(listener);
-
-        try {
-            lh.handle(invocation, asyncResp);
-
-        } catch (Exception ex) {
-
-            status = false;
-        }
-
-        Assert.assertTrue(status);
-    }
-
-    @Test
-    public void testSetIsolationFilter() {
-        Invocation invocation = Mockito.mock(Invocation.class);
-        Mockito.when(invocation.getMicroserviceName()).thenReturn("test");
-        LoadbalanceHandler lbHandler = new LoadbalanceHandler();
-        LoadBalancer myLB = new LoadBalancer(serverList, rule);
-        lbHandler.setIsolationFilter(myLB, "abc");
-        Assert.assertEquals(1, myLB.getFilterSize());
-
-        Mockito.when(invocation.getMicroserviceName()).thenReturn("abc");
-        myLB = new LoadBalancer(serverList, rule);
-        lbHandler.setIsolationFilter(myLB, "abc");
-        myLB.setInvocation(invocation);
-        
-        Assert.assertEquals(1, myLB.getFilterSize());
-        Map<String, ServerListFilterExt> filters = Deencapsulation.getField(myLB, "filters");
-        List<Server> servers = new ArrayList<>();
-        servers.add(new Server(null));
-        Assert.assertEquals(servers.size(), filters.get("io.servicecomb.loadbalance.filter.IsolationServerListFilter").getFilteredListOfServers(servers).size());
-    }
-
-    @Test
-    public void testSetTransactionControlFilter() {
-        Invocation invocation = Mockito.mock(Invocation.class);
-        Mockito.when(invocation.getMicroserviceName()).thenReturn("test");
-        LoadbalanceHandler lbHandler = new LoadbalanceHandler();
-        LoadBalancer myLB = new LoadBalancer(serverList, rule);
-        lbHandler.setTransactionControlFilter(myLB, "test");
-        Assert.assertEquals(1, myLB.getFilterSize());
-
-        lbHandler.setTransactionControlFilter(myLB, "test");
-        Assert.assertEquals(1, myLB.getFilterSize());
-    }
-
+    lbHandler.setTransactionControlFilter(myLB, "test");
+    Assert.assertEquals(1, myLB.getFilterSize());
+  }
 }

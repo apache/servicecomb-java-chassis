@@ -27,43 +27,43 @@ import io.servicecomb.foundation.common.config.PaaSResourceUtils;
 
 public class PaaSPropertiesLoaderUtils extends org.springframework.core.io.support.PropertiesLoaderUtils {
 
-    /**
-     * 使用内置规则
-     *  输入：/a/b/abc.properties
-     *  实际：
-     *  1./a/b/abc.properties
-     *   2./a/b/abc.[ext].properties
-     * @param locationPattern locationPattern
-     * @return Properties
-     * @throws IOException Exception
-     */
-    public static Properties loadMergedProperties(String locationPattern) throws IOException {
-        Properties prop = new Properties();
-        return fillMergedProperties(prop, locationPattern);
+  /**
+   * 使用内置规则
+   *  输入：/a/b/abc.properties
+   *  实际：
+   *  1./a/b/abc.properties
+   *   2./a/b/abc.[ext].properties
+   * @param locationPattern locationPattern
+   * @return Properties
+   * @throws IOException Exception
+   */
+  public static Properties loadMergedProperties(String locationPattern) throws IOException {
+    Properties prop = new Properties();
+    return fillMergedProperties(prop, locationPattern);
+  }
+
+  public static Properties fillMergedProperties(Properties prop, String locationPattern) throws IOException {
+    if (StringUtils.isEmpty(locationPattern)) {
+      throw new RuntimeException("Resource path must not be null or empty");
     }
 
-    public static Properties fillMergedProperties(Properties prop, String locationPattern) throws IOException {
-        if (StringUtils.isEmpty(locationPattern)) {
-            throw new RuntimeException("Resource path must not be null or empty");
-        }
-
-        String suffix = PaaSResourceUtils.PROPERTIES_SUFFIX;
-        if (!locationPattern.endsWith(suffix)) {
-            throw new RuntimeException("Resource path must ends with " + suffix);
-        }
-
-        String prefix = locationPattern.substring(0, locationPattern.length() - suffix.length());
-
-        List<Resource> resList = PaaSResourceUtils.getResources(locationPattern, prefix + ".*" + suffix);
-        PaaSResourceUtils.sortProperties(resList);
-        fillAllProperties(prop, resList);
-
-        return prop;
+    String suffix = PaaSResourceUtils.PROPERTIES_SUFFIX;
+    if (!locationPattern.endsWith(suffix)) {
+      throw new RuntimeException("Resource path must ends with " + suffix);
     }
 
-    public static void fillAllProperties(Properties prop, List<Resource> resList) throws IOException {
-        for (Resource res : resList) {
-            PaaSPropertiesLoaderUtils.fillProperties(prop, res);
-        }
+    String prefix = locationPattern.substring(0, locationPattern.length() - suffix.length());
+
+    List<Resource> resList = PaaSResourceUtils.getResources(locationPattern, prefix + ".*" + suffix);
+    PaaSResourceUtils.sortProperties(resList);
+    fillAllProperties(prop, resList);
+
+    return prop;
+  }
+
+  public static void fillAllProperties(Properties prop, List<Resource> resList) throws IOException {
+    for (Resource res : resList) {
+      PaaSPropertiesLoaderUtils.fillProperties(prop, res);
     }
+  }
 }

@@ -27,13 +27,13 @@ import io.servicecomb.swagger.invocation.context.InvocationContext;
 @Qualifier("producer")
 public class ProducerInvocationContextMapperFactory implements ContextArgumentMapperFactory {
 
-    @Override
-    public Class<?> getContextClass() {
-        return InvocationContext.class;
-    }
+  @Override
+  public Class<?> getContextClass() {
+    return InvocationContext.class;
+  }
 
-    @Override
-    public ArgumentMapper create(int producerArgIdx) {
-        return new ProducerInvocationContextMapper(producerArgIdx);
-    }
+  @Override
+  public ArgumentMapper create(int producerArgIdx) {
+    return new ProducerInvocationContextMapper(producerArgIdx);
+  }
 }

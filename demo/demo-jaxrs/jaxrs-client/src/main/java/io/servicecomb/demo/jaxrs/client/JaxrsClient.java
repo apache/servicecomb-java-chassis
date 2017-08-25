@@ -33,119 +33,118 @@ import io.servicecomb.demo.CodeFirstRestTemplate;
 import io.servicecomb.demo.DemoConst;
 import io.servicecomb.demo.TestMgr;
 import io.servicecomb.demo.compute.Person;
-import io.servicecomb.provider.springmvc.reference.RestTemplateBuilder;
 import io.servicecomb.foundation.common.utils.BeanUtils;
 import io.servicecomb.foundation.common.utils.Log4jUtils;
+import io.servicecomb.provider.springmvc.reference.RestTemplateBuilder;
 
 public class JaxrsClient {
-    private static RestTemplate templateNew = RestTemplateBuilder.create();
+  private static RestTemplate templateNew = RestTemplateBuilder.create();
 
-    public static void main(String[] args) throws Exception {
-        init();
+  public static void main(String[] args) throws Exception {
+    init();
 
-        run();
+    run();
 
-        TestMgr.summary();
+    TestMgr.summary();
+  }
+
+  public static void init() throws Exception {
+    Log4jUtils.init();
+    BeanUtils.init();
+  }
+
+  public static void run() throws Exception {
+    CodeFirstRestTemplate codeFirstClient = new CodeFirstRestTemplateJaxrs();
+    codeFirstClient.testCodeFirst(templateNew, "jaxrs", "/codeFirstJaxrs/");
+    testCompute(templateNew);
+  }
+
+  private static void testCompute(RestTemplate template) throws Exception {
+    String microserviceName = "jaxrs";
+    for (String transport : DemoConst.transports) {
+      CseContext.getInstance().getConsumerProviderManager().setTransport(microserviceName, transport);
+      TestMgr.setMsg(microserviceName, transport);
+
+      String cseUrlPrefix = "cse://" + microserviceName;
+
+      testGet(template, cseUrlPrefix);
+      testPost(template, cseUrlPrefix);
+      testPut(template, cseUrlPrefix);
+      testDelete(template, cseUrlPrefix);
+      testExchange(template, cseUrlPrefix);
+      testRawJsonParam(template, cseUrlPrefix);
     }
+  }
 
-    public static void init() throws Exception {
-        Log4jUtils.init();
-        BeanUtils.init();
-    }
+  private static void testGet(RestTemplate template, String cseUrlPrefix) {
+    Map<String, String> params = new HashMap<>();
+    params.put("a", "5");
+    params.put("b", "3");
+    int result =
+        template.getForObject(cseUrlPrefix + "/compute/reduce?a={a}&b={b}", Integer.class, params);
+    TestMgr.check(2, result);
 
-    public static void run() throws Exception {
-        CodeFirstRestTemplate codeFirstClient = new CodeFirstRestTemplateJaxrs();
-        codeFirstClient.testCodeFirst(templateNew, "jaxrs", "/codeFirstJaxrs/");
-        testCompute(templateNew);
-    }
+    result = template.getForObject(cseUrlPrefix + "/compute/reduce?a={a}&b={b}", Integer.class, 5, 4);
+    TestMgr.check(1, result);
 
-    private static void testCompute(RestTemplate template) throws Exception {
-        String microserviceName = "jaxrs";
-        for (String transport : DemoConst.transports) {
-            CseContext.getInstance().getConsumerProviderManager().setTransport(microserviceName, transport);
-            TestMgr.setMsg(microserviceName, transport);
+    result = template.getForObject(cseUrlPrefix + "/compute/reduce?a=5&b=6",
+        Integer.class);
+    TestMgr.check(-1, result);
+  }
 
-            String cseUrlPrefix = "cse://" + microserviceName;
+  private static void testPost(RestTemplate template, String cseUrlPrefix) {
+    Map<String, String> params = new HashMap<>();
+    params.put("a", "5");
+    params.put("b", "3");
+    int result =
+        template.postForObject(cseUrlPrefix + "/compute/add", params, Integer.class);
+    TestMgr.check(8, result);
 
-            testGet(template, cseUrlPrefix);
-            testPost(template, cseUrlPrefix);
-            testPut(template, cseUrlPrefix);
-            testDelete(template, cseUrlPrefix);
-            testExchange(template, cseUrlPrefix);
-            testRawJsonParam(template, cseUrlPrefix);
-        }
-    }
+    Person person = new Person();
+    person.setName("world");
+    Person resultPerson =
+        template.postForObject(cseUrlPrefix + "/compute/sayhello", person, Person.class);
+    TestMgr.check("hello world", resultPerson.getName());
 
-    private static void testGet(RestTemplate template, String cseUrlPrefix) {
-        Map<String, String> params = new HashMap<>();
-        params.put("a", "5");
-        params.put("b", "3");
-        int result =
-            template.getForObject(cseUrlPrefix + "/compute/reduce?a={a}&b={b}", Integer.class, params);
-        TestMgr.check(2, result);
+    HttpHeaders headers = new HttpHeaders();
+    headers.add("prefix", "haha");
+    HttpEntity<Person> reqEntity = new HttpEntity<>(person, headers);
+    TestMgr.check("haha world",
+        template.postForObject(cseUrlPrefix + "/compute/saysomething", reqEntity, String.class));
+  }
 
-        result = template.getForObject(cseUrlPrefix + "/compute/reduce?a={a}&b={b}", Integer.class, 5, 4);
-        TestMgr.check(1, result);
+  private static void testPut(RestTemplate template, String cseUrlPrefix) {
+    template.put(cseUrlPrefix + "/compute/sayhi/{name}", null, "world");
+  }
 
-        result = template.getForObject(cseUrlPrefix + "/compute/reduce?a=5&b=6",
-                Integer.class);
-        TestMgr.check(-1, result);
-    }
+  private static void testDelete(RestTemplate template, String cseUrlPrefix) {
+    Map<String, String> params = new HashMap<>();
+    params.put("name", "world");
+    template.delete(cseUrlPrefix + "/compute/sayhei/?name={name}", params);
+  }
 
-    private static void testPost(RestTemplate template, String cseUrlPrefix) {
-        Map<String, String> params = new HashMap<>();
-        params.put("a", "5");
-        params.put("b", "3");
-        int result =
-            template.postForObject(cseUrlPrefix + "/compute/add", params, Integer.class);
-        TestMgr.check(8, result);
+  private static void testExchange(RestTemplate template, String cseUrlPrefix) {
+    HttpHeaders headers = new HttpHeaders();
+    headers.add("Accept", MediaType.APPLICATION_JSON);
+    Person person = new Person();
+    person.setName("world");
+    HttpEntity<Person> requestEntity = new HttpEntity<>(person, headers);
+    ResponseEntity<Person> resEntity = template.exchange(cseUrlPrefix + "/compute/sayhello",
+        HttpMethod.POST,
+        requestEntity,
+        Person.class);
+    TestMgr.check("hello world", resEntity.getBody());
 
-        Person person = new Person();
-        person.setName("world");
-        Person resultPerson =
-            template.postForObject(cseUrlPrefix + "/compute/sayhello", person, Person.class);
-        TestMgr.check("hello world", resultPerson.getName());
+    ResponseEntity<String> resEntity2 =
+        template.exchange(cseUrlPrefix + "/compute/addstring?s=abc&s=def", HttpMethod.DELETE, null, String.class);
+    TestMgr.check("abcdef", resEntity2.getBody());
+  }
 
-        HttpHeaders headers = new HttpHeaders();
-        headers.add("prefix", "haha");
-        HttpEntity<Person> reqEntity = new HttpEntity<>(person, headers);
-        TestMgr.check("haha world",
-                template.postForObject(cseUrlPrefix + "/compute/saysomething", reqEntity, String.class));
-    }
-
-    private static void testPut(RestTemplate template, String cseUrlPrefix) {
-        template.put(cseUrlPrefix + "/compute/sayhi/{name}", null, "world");
-    }
-
-    private static void testDelete(RestTemplate template, String cseUrlPrefix) {
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "world");
-        template.delete(cseUrlPrefix + "/compute/sayhei/?name={name}", params);
-    }
-
-    private static void testExchange(RestTemplate template, String cseUrlPrefix) {
-        HttpHeaders headers = new HttpHeaders();
-        headers.add("Accept", MediaType.APPLICATION_JSON);
-        Person person = new Person();
-        person.setName("world");
-        HttpEntity<Person> requestEntity = new HttpEntity<>(person, headers);
-        ResponseEntity<Person> resEntity = template.exchange(cseUrlPrefix + "/compute/sayhello",
-                HttpMethod.POST,
-                requestEntity,
-                Person.class);
-        TestMgr.check("hello world", resEntity.getBody());
-
-        ResponseEntity<String> resEntity2 =
-            template.exchange(cseUrlPrefix + "/compute/addstring?s=abc&s=def", HttpMethod.DELETE, null, String.class);
-        TestMgr.check("abcdef", resEntity2.getBody());
-    }
-
-    private static void testRawJsonParam(RestTemplate template, String cseUrlPrefix) throws Exception {
-        Map<String, String> person = new HashMap<>();
-        person.put("name", "Tom");
-        String jsonPerson = RestObjectMapper.INSTANCE.writeValueAsString(person);
-        TestMgr.check("hello Tom",
-                template.postForObject(cseUrlPrefix + "/compute/testrawjson", jsonPerson, String.class));
-    }
-
+  private static void testRawJsonParam(RestTemplate template, String cseUrlPrefix) throws Exception {
+    Map<String, String> person = new HashMap<>();
+    person.put("name", "Tom");
+    String jsonPerson = RestObjectMapper.INSTANCE.writeValueAsString(person);
+    TestMgr.check("hello Tom",
+        template.postForObject(cseUrlPrefix + "/compute/testrawjson", jsonPerson, String.class));
+  }
 }

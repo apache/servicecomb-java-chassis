@@ -20,26 +20,25 @@ import org.springframework.web.bind.annotation.RequestHeader;
 
 import io.servicecomb.swagger.generator.core.OperationGenerator;
 import io.servicecomb.swagger.generator.core.processor.parameter.AbstractParameterProcessor;
-
 import io.swagger.models.parameters.HeaderParameter;
 
 public class RequestHeaderAnnotationProcessor extends AbstractParameterProcessor<HeaderParameter> {
-    @Override
-    protected HeaderParameter createParameter() {
-        return new HeaderParameter();
-    }
+  @Override
+  protected HeaderParameter createParameter() {
+    return new HeaderParameter();
+  }
 
-    @Override
-    protected String getAnnotationParameterName(Object annotation) {
-        return ((RequestHeader) annotation).name();
-    }
+  @Override
+  protected String getAnnotationParameterName(Object annotation) {
+    return ((RequestHeader) annotation).name();
+  }
 
-    @Override
-    protected void fillParameter(Object annotation, OperationGenerator operationGenerator, int paramIdx,
-            HeaderParameter parameter) {
-        super.fillParameter(annotation, operationGenerator, paramIdx, parameter);
+  @Override
+  protected void fillParameter(Object annotation, OperationGenerator operationGenerator, int paramIdx,
+      HeaderParameter parameter) {
+    super.fillParameter(annotation, operationGenerator, paramIdx, parameter);
 
-        RequestHeader requestHeader = (RequestHeader) annotation;
-        parameter.setRequired(requestHeader.required());
-    }
+    RequestHeader requestHeader = (RequestHeader) annotation;
+    parameter.setRequired(requestHeader.required());
+  }
 }

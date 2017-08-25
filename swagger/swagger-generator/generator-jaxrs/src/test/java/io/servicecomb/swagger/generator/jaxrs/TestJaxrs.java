@@ -22,83 +22,82 @@ import org.junit.Test;
 import io.servicecomb.swagger.generator.core.CompositeSwaggerGeneratorContext;
 import io.servicecomb.swagger.generator.core.SwaggerGeneratorContext;
 import io.servicecomb.swagger.generator.core.unittest.UnitTestSwaggerUtils;
-import io.servicecomb.swagger.generator.jaxrs.JaxrsSwaggerGeneratorContext;
 
 public class TestJaxrs {
-    SwaggerGeneratorContext context = new JaxrsSwaggerGeneratorContext();
+  SwaggerGeneratorContext context = new JaxrsSwaggerGeneratorContext();
 
-    @Test
-    public void testMultiDefaultPath() {
-        UnitTestSwaggerUtils.testException(
-                "Only allowed one default path. io.servicecomb.swagger.generator.jaxrs.MultiDefaultPath:p2",
-                context,
-                MultiDefaultPath.class);
-    }
+  @Test
+  public void testMultiDefaultPath() {
+    UnitTestSwaggerUtils.testException(
+        "Only allowed one default path. io.servicecomb.swagger.generator.jaxrs.MultiDefaultPath:p2",
+        context,
+        MultiDefaultPath.class);
+  }
 
-    @Test
-    public void testResponse() throws Exception {
-        UnitTestSwaggerUtils.testSwagger("schemas/response.yaml", context, Echo.class, "response");
-    }
+  @Test
+  public void testResponse() throws Exception {
+    UnitTestSwaggerUtils.testSwagger("schemas/response.yaml", context, Echo.class, "response");
+  }
 
-    @Test
-    public void testInvalidResponse() throws Exception {
-        UnitTestSwaggerUtils.testException(
-                "generate operation swagger failed, io.servicecomb.swagger.generator.jaxrs.Echo:invalidResponse",
-                "Use ApiOperation or ApiResponses to declare response type",
-                context,
-                Echo.class,
-                "invalidResponse");
-    }
+  @Test
+  public void testInvalidResponse() throws Exception {
+    UnitTestSwaggerUtils.testException(
+        "generate operation swagger failed, io.servicecomb.swagger.generator.jaxrs.Echo:invalidResponse",
+        "Use ApiOperation or ApiResponses to declare response type",
+        context,
+        Echo.class,
+        "invalidResponse");
+  }
 
-    @Test
-    public void testEcho() throws Exception {
-        UnitTestSwaggerUtils.testSwagger("schemas/echo.yaml", context, Echo.class, "echo");
-    }
+  @Test
+  public void testEcho() throws Exception {
+    UnitTestSwaggerUtils.testSwagger("schemas/echo.yaml", context, Echo.class, "echo");
+  }
 
-    @Test
-    public void testForm() throws Exception {
-        UnitTestSwaggerUtils.testSwagger("schemas/form.yaml", context, Echo.class, "form");
-    }
+  @Test
+  public void testForm() throws Exception {
+    UnitTestSwaggerUtils.testSwagger("schemas/form.yaml", context, Echo.class, "form");
+  }
 
-    @Test
-    public void testQuery() throws Exception {
-        UnitTestSwaggerUtils.testSwagger("schemas/query.yaml", context, Echo.class, "query");
-    }
+  @Test
+  public void testQuery() throws Exception {
+    UnitTestSwaggerUtils.testSwagger("schemas/query.yaml", context, Echo.class, "query");
+  }
 
-    @Test
-    public void testQueryComplex() throws Exception {
-        UnitTestSwaggerUtils.testException(
-                "generate operation swagger failed, io.servicecomb.swagger.generator.jaxrs.Echo:queryComplex",
-                "not allow complex type for query parameter, method=io.servicecomb.swagger.generator.jaxrs.Echo:queryComplex, paramIdx=0, type=java.util.List<io.servicecomb.swagger.generator.jaxrs.User>",
-                context,
-                Echo.class,
-                "queryComplex");
-    }
+  @Test
+  public void testQueryComplex() throws Exception {
+    UnitTestSwaggerUtils.testException(
+        "generate operation swagger failed, io.servicecomb.swagger.generator.jaxrs.Echo:queryComplex",
+        "not allow complex type for query parameter, method=io.servicecomb.swagger.generator.jaxrs.Echo:queryComplex, paramIdx=0, type=java.util.List<io.servicecomb.swagger.generator.jaxrs.User>",
+        context,
+        Echo.class,
+        "queryComplex");
+  }
 
-    @Test
-    public void testCookie() throws Exception {
-        UnitTestSwaggerUtils.testSwagger("schemas/cookie.yaml", context, Echo.class, "cookie");
-    }
+  @Test
+  public void testCookie() throws Exception {
+    UnitTestSwaggerUtils.testSwagger("schemas/cookie.yaml", context, Echo.class, "cookie");
+  }
 
-    @Test
-    public void testEmptyPath() throws Exception {
-        UnitTestSwaggerUtils.testSwagger("schemas/emptyPath.yaml", context, Echo.class, "emptyPath");
-    }
+  @Test
+  public void testEmptyPath() throws Exception {
+    UnitTestSwaggerUtils.testSwagger("schemas/emptyPath.yaml", context, Echo.class, "emptyPath");
+  }
 
-    @Test
-    public void testClassMethodNoPath() throws Exception {
-        UnitTestSwaggerUtils.testException(
-                "generate operation swagger failed, io.servicecomb.swagger.generator.jaxrs.ClassMethodNoPath:p1",
-                "Path must not both be empty in class and method",
-                context,
-                ClassMethodNoPath.class);
-    }
+  @Test
+  public void testClassMethodNoPath() throws Exception {
+    UnitTestSwaggerUtils.testException(
+        "generate operation swagger failed, io.servicecomb.swagger.generator.jaxrs.ClassMethodNoPath:p1",
+        "Path must not both be empty in class and method",
+        context,
+        ClassMethodNoPath.class);
+  }
 
-    @Test
-    public void testComposite() {
-        CompositeSwaggerGeneratorContext composite = new CompositeSwaggerGeneratorContext();
-        SwaggerGeneratorContext context = composite.selectContext(Echo.class);
+  @Test
+  public void testComposite() {
+    CompositeSwaggerGeneratorContext composite = new CompositeSwaggerGeneratorContext();
+    SwaggerGeneratorContext context = composite.selectContext(Echo.class);
 
-        Assert.assertEquals(JaxrsSwaggerGeneratorContext.class, context.getClass());
-    }
+    Assert.assertEquals(JaxrsSwaggerGeneratorContext.class, context.getClass());
+  }
 }

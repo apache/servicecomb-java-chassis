@@ -25,25 +25,25 @@ import org.junit.Assert;
 import org.junit.Test;
 
 public class TestTrustAllManager {
-    @Test
-    public void testTrustAllManager() throws Exception {
-        TrustAllManager manager = new TrustAllManager();
-        manager.checkClientTrusted((X509Certificate[]) null, (String) null);
-        manager.checkServerTrusted((X509Certificate[]) null, (String) null);
+  @Test
+  public void testTrustAllManager() throws Exception {
+    TrustAllManager manager = new TrustAllManager();
+    manager.checkClientTrusted((X509Certificate[]) null, (String) null);
+    manager.checkServerTrusted((X509Certificate[]) null, (String) null);
 
-        manager.checkClientTrusted((X509Certificate[]) null,
-                (String) null,
-                (Socket) null);
-        manager.checkClientTrusted((X509Certificate[]) null,
-                (String) null,
-                (SSLEngine) null);
+    manager.checkClientTrusted((X509Certificate[]) null,
+        (String) null,
+        (Socket) null);
+    manager.checkClientTrusted((X509Certificate[]) null,
+        (String) null,
+        (SSLEngine) null);
 
-        manager.checkServerTrusted((X509Certificate[]) null,
-                (String) null,
-                (Socket) null);
-        manager.checkServerTrusted((X509Certificate[]) null,
-                (String) null,
-                (SSLEngine) null);
-        Assert.assertEquals(manager.getAcceptedIssuers() == null, true);
-    }
+    manager.checkServerTrusted((X509Certificate[]) null,
+        (String) null,
+        (Socket) null);
+    manager.checkServerTrusted((X509Certificate[]) null,
+        (String) null,
+        (SSLEngine) null);
+    Assert.assertEquals(manager.getAcceptedIssuers() == null, true);
+  }
 }

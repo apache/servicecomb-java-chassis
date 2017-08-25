@@ -14,21 +14,19 @@
  * limitations under the License.
  */
 
-/**
- * 
- */
 package io.servicecomb.foundation.vertx.client.tcp;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
-import io.servicecomb.foundation.vertx.client.ClientPoolFactory;
-import io.servicecomb.foundation.vertx.client.NetThreadData;
-import io.servicecomb.foundation.vertx.client.http.HttpClientWithContext;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
+
+import io.servicecomb.foundation.vertx.client.ClientPoolFactory;
+import io.servicecomb.foundation.vertx.client.NetThreadData;
+import io.servicecomb.foundation.vertx.client.http.HttpClientWithContext;
 
 /**
  *
@@ -36,41 +34,41 @@ import org.mockito.Mockito;
  */
 public class TestNetThreadData {
 
-    private NetThreadData<HttpClientWithContext> instance;
+  private NetThreadData<HttpClientWithContext> instance;
 
-    @Before
-    public void setUp() throws Exception {
-        @SuppressWarnings("unchecked")
-        ClientPoolFactory<HttpClientWithContext> factory = Mockito.mock(ClientPoolFactory.class);
-        instance = new NetThreadData<>(factory, 1);
-        Assert.assertNotNull(instance);
-    }
+  @Before
+  public void setUp() throws Exception {
+    @SuppressWarnings("unchecked")
+    ClientPoolFactory<HttpClientWithContext> factory = Mockito.mock(ClientPoolFactory.class);
+    instance = new NetThreadData<>(factory, 1);
+    Assert.assertNotNull(instance);
+  }
 
-    @After
-    public void tearDown() throws Exception {
-        instance = null;
-    }
+  @After
+  public void tearDown() throws Exception {
+    instance = null;
+  }
 
-    @Test
-    public void testGetFactory() {
-        ClientPoolFactory<HttpClientWithContext> factory = instance.getFactory();
-        Assert.assertNotNull(factory);
-    }
+  @Test
+  public void testGetFactory() {
+    ClientPoolFactory<HttpClientWithContext> factory = instance.getFactory();
+    Assert.assertNotNull(factory);
+  }
 
-    @Test
-    public void testGetPools() {
-        instance.getPools();
-        Assert.assertNotNull(instance.getPools());
-    }
+  @Test
+  public void testGetPools() {
+    instance.getPools();
+    Assert.assertNotNull(instance.getPools());
+  }
 
-    @Test
-    public void testGetBindIndex() {
-        AtomicInteger count = instance.getBindIndex();
-        Assert.assertNotNull(count);
-    }
+  @Test
+  public void testGetBindIndex() {
+    AtomicInteger count = instance.getBindIndex();
+    Assert.assertNotNull(count);
+  }
 
-    @Test
-    public void testSelectClientPool() {
-        Assert.assertNull(instance.selectClientPool());
-    }
+  @Test
+  public void testSelectClientPool() {
+    Assert.assertNull(instance.selectClientPool());
+  }
 }

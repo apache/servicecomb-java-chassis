@@ -35,56 +35,56 @@ import io.swagger.annotations.ApiResponse;
 
 @Path(value = "Echo")
 public class Echo {
-    @POST
-    @ApiResponse(response = int.class, code = 200, message = "")
-    public Response response() {
-        return null;
-    }
+  @POST
+  @ApiResponse(response = int.class, code = 200, message = "")
+  public Response response() {
+    return null;
+  }
 
-    @GET
-    public Response invalidResponse() {
-        return null;
-    }
+  @GET
+  public Response invalidResponse() {
+    return null;
+  }
 
-    @POST
-    @Produces("")
-    @Consumes("")
-    @ApiOperation(value = "")
-    public void emptyPath() {
+  @POST
+  @Produces("")
+  @Consumes("")
+  @ApiOperation(value = "")
+  public void emptyPath() {
 
-    }
+  }
 
-    @Path(value = "echo/{targetName}")
-    @Consumes(value = {"json", "xml"})
-    @Produces(value = {"json", "xml"})
-    @POST
-    public String echo(User srcUser, @HeaderParam(value = "header") String header,
-            @PathParam(value = "targetName") String targetName,
-            @QueryParam(value = "word") String word) {
-        return String.format("%s %s %s %s", srcUser.name, header, targetName, word);
-    }
+  @Path(value = "echo/{targetName}")
+  @Consumes(value = {"json", "xml"})
+  @Produces(value = {"json", "xml"})
+  @POST
+  public String echo(User srcUser, @HeaderParam(value = "header") String header,
+      @PathParam(value = "targetName") String targetName,
+      @QueryParam(value = "word") String word) {
+    return String.format("%s %s %s %s", srcUser.name, header, targetName, word);
+  }
 
-    @Path(value = "cookie")
-    @POST
-    public String cookie(@CookieParam(value = "cookie") String cookie) {
-        return String.format("%s", cookie);
-    }
+  @Path(value = "cookie")
+  @POST
+  public String cookie(@CookieParam(value = "cookie") String cookie) {
+    return String.format("%s", cookie);
+  }
 
-    @Path(value = "form")
-    @POST
-    public String form(@FormParam(value = "form") String form) {
-        return String.format("%s", form);
-    }
+  @Path(value = "form")
+  @POST
+  public String form(@FormParam(value = "form") String form) {
+    return String.format("%s", form);
+  }
 
-    @Path(value = "query")
-    @GET
-    public String query(@QueryParam(value = "query") String query) {
-        return String.format("%s", query);
-    }
+  @Path(value = "query")
+  @GET
+  public String query(@QueryParam(value = "query") String query) {
+    return String.format("%s", query);
+  }
 
-    @Path(value = "query")
-    @GET
-    public String queryComplex(@QueryParam(value = "querys") List<User> querys) {
-        return String.format("%s", querys);
-    }
+  @Path(value = "query")
+  @GET
+  public String queryComplex(@QueryParam(value = "querys") List<User> querys) {
+    return String.format("%s", querys);
+  }
 }

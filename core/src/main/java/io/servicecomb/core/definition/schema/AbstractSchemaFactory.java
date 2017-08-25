@@ -38,71 +38,71 @@ import io.swagger.models.Swagger;
  * 在producer场景中，如果本地没有契约，需要根据实现类动态生成契约
  */
 public abstract class AbstractSchemaFactory<CONTEXT extends SchemaContext> {
-    @Inject
-    protected MicroserviceMetaManager microserviceMetaManager;
+  @Inject
+  protected MicroserviceMetaManager microserviceMetaManager;
 
-    @Inject
-    protected SchemaLoader schemaLoader;
+  @Inject
+  protected SchemaLoader schemaLoader;
 
-    @Inject
-    protected CompositeSwaggerGeneratorContext compositeSwaggerGeneratorContext;
+  @Inject
+  protected CompositeSwaggerGeneratorContext compositeSwaggerGeneratorContext;
 
-    public void setMicroserviceMetaManager(MicroserviceMetaManager microserviceMetaManager) {
-        this.microserviceMetaManager = microserviceMetaManager;
+  public void setMicroserviceMetaManager(MicroserviceMetaManager microserviceMetaManager) {
+    this.microserviceMetaManager = microserviceMetaManager;
+  }
+
+  // 因为aop的存在，schemaInstance的class不一定等于schemaClass
+  protected SchemaMeta getOrCreateSchema(CONTEXT context) {
+    MicroserviceMeta microserviceMeta = context.getMicroserviceMeta();
+    SchemaMeta schemaMeta = microserviceMeta.findSchemaMeta(context.getSchemaId());
+    if (schemaMeta == null) {
+      schemaMeta = createSchema(context);
+    }
+    context.setSchemaMeta(schemaMeta);
+
+    return schemaMeta;
+  }
+
+  protected abstract SchemaMeta createSchema(CONTEXT context);
+
+  protected Swagger loadSwagger(CONTEXT context) {
+    return loadSwagger(context.getMicroserviceName(), context.getSchemaId());
+  }
+
+  protected Swagger loadSwagger(String microserviceName, String schemaId) {
+    String path = generateSchemaPath(microserviceName, schemaId);
+    URL url = Thread.currentThread().getContextClassLoader().getResource(path);
+    if (url == null) {
+      return null;
     }
 
-    // 因为aop的存在，schemaInstance的class不一定等于schemaClass
-    protected SchemaMeta getOrCreateSchema(CONTEXT context) {
-        MicroserviceMeta microserviceMeta = context.getMicroserviceMeta();
-        SchemaMeta schemaMeta = microserviceMeta.findSchemaMeta(context.getSchemaId());
-        if (schemaMeta == null) {
-            schemaMeta = createSchema(context);
-        }
-        context.setSchemaMeta(schemaMeta);
+    return SchemaUtils.parseSwagger(url);
+  }
 
-        return schemaMeta;
+  protected String generateSchemaPath(String microserviceName, String schemaId) {
+    int idxAt = microserviceName.indexOf(Const.APP_SERVICE_SEPARATOR);
+    if (idxAt < 0) {
+      return String.format("microservices/%s/%s.yaml", microserviceName, schemaId);
     }
 
-    protected abstract SchemaMeta createSchema(CONTEXT context);
+    String appId = microserviceName.substring(0, idxAt);
+    String realMicroserviceName = microserviceName.substring(idxAt + 1);
+    return String.format("applications/%s/%s/%s.yaml",
+        appId,
+        realMicroserviceName,
+        schemaId);
+  }
 
-    protected Swagger loadSwagger(CONTEXT context) {
-        return loadSwagger(context.getMicroserviceName(), context.getSchemaId());
-    }
+  protected SwaggerGenerator generateSwagger(CONTEXT context) {
+    SwaggerGeneratorContext generatorContext =
+        compositeSwaggerGeneratorContext.selectContext(context.getProviderClass());
+    SwaggerGenerator generator = new SwaggerGenerator(generatorContext, context.getProviderClass());
+    generator.setPackageName(
+        SchemaUtils.generatePackageName(context.getMicroserviceMeta(), context.getSchemaId()));
+    generator.generate();
 
-    protected Swagger loadSwagger(String microserviceName, String schemaId) {
-        String path = generateSchemaPath(microserviceName, schemaId);
-        URL url = Thread.currentThread().getContextClassLoader().getResource(path);
-        if (url == null) {
-            return null;
-        }
-
-        return SchemaUtils.parseSwagger(url);
-    }
-
-    protected String generateSchemaPath(String microserviceName, String schemaId) {
-        int idxAt = microserviceName.indexOf(Const.APP_SERVICE_SEPARATOR);
-        if (idxAt < 0) {
-            return String.format("microservices/%s/%s.yaml", microserviceName, schemaId);
-        }
-
-        String appId = microserviceName.substring(0, idxAt);
-        String realMicroserviceName = microserviceName.substring(idxAt + 1);
-        return String.format("applications/%s/%s/%s.yaml",
-                appId,
-                realMicroserviceName,
-                schemaId);
-    }
-
-    protected SwaggerGenerator generateSwagger(CONTEXT context) {
-        SwaggerGeneratorContext generatorContext =
-            compositeSwaggerGeneratorContext.selectContext(context.getProviderClass());
-        SwaggerGenerator generator = new SwaggerGenerator(generatorContext, context.getProviderClass());
-        generator.setPackageName(
-                SchemaUtils.generatePackageName(context.getMicroserviceMeta(), context.getSchemaId()));
-        generator.generate();
-
-        // 确保接口是存在的
-        ClassUtils.getOrCreateInterface(generator);
-        return generator;
-    }
+    // 确保接口是存在的
+    ClassUtils.getOrCreateInterface(generator);
+    return generator;
+  }
 }

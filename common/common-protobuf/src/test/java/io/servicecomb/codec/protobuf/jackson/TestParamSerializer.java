@@ -42,97 +42,91 @@ import mockit.MockUp;
 
 public class TestParamSerializer {
 
-    private ParamSerializer paramSerializer = null;
+  private ParamSerializer paramSerializer = null;
 
-    @Before
-    public void setUp() throws Exception {
-        paramSerializer = new ParamSerializer();
+  @Before
+  public void setUp() throws Exception {
+    paramSerializer = new ParamSerializer();
+  }
+
+  @After
+  public void tearDown() throws Exception {
+    paramSerializer = null;
+  }
+
+  @Test
+  public void testSerialize() {
+    boolean status = true;
+    Assert.assertNotNull(paramSerializer);
+    String[] stringArray = new String[1];
+    stringArray[0] = "abc";
+
+    ProtobufGenerator obj = null;
+    try {
+      obj = new ProtobufGenerator(Mockito.mock(IOContext.class), 2, Mockito.mock(ObjectCodec.class),
+          Mockito.mock(OutputStream.class));
+    } catch (IOException exce) {
     }
 
-    @After
-    public void tearDown() throws Exception {
-        paramSerializer = null;
+    Assert.assertNotNull(obj);
+    new MockUp<ProtobufGenerator>() {
+
+      @Mock
+      public void writeStartObject() throws IOException {
+
+      }
+
+      ProtobufSchema protobufSchema = new ProtobufSchema(null, null);
+
+      @Mock
+      public ProtobufSchema getSchema() {
+        return protobufSchema;
+      }
+    };
+
+    ProtobufMessage protobufMessage = new ProtobufMessage(null, null);
+    new MockUp<ProtobufSchema>() {
+      @Mock
+      public ProtobufMessage getRootType() {
+        return protobufMessage;
+      }
+    };
+
+    List<ProtobufField> listProtobufField = new ArrayList<ProtobufField>();
+    listProtobufField.add(Mockito.mock(ProtobufField.class));
+
+    new MockUp<ProtobufMessage>() {
+      @Mock
+      public Iterable<ProtobufField> fields() {
+        return listProtobufField;
+      }
+    };
+
+    new MockUp<JsonGenerator>() {
+      @Mock
+      public void writeObjectField(String fieldName, Object pojo) throws IOException {
+
+      }
+    };
+
+    new MockUp<ProtobufGenerator>() {
+
+      @Mock
+      public void writeEndObject() throws IOException {
+
+      }
+    };
+
+    try {
+      paramSerializer.serialize(stringArray,
+          obj,
+          Mockito.mock(SerializerProvider.class));
+    } catch (JsonProcessingException e) {
+      status = false;
+    } catch (IOException e) {
+      status = false;
     }
 
-    @Test
-    public void testSerialize() {
-        boolean status = true;
-        Assert.assertNotNull(paramSerializer);
-        String[] stringArray = new String[1];
-        stringArray[0] = "abc";
-
-        ProtobufGenerator obj = null;
-        try {
-            obj = new ProtobufGenerator(Mockito.mock(IOContext.class), 2, Mockito.mock(ObjectCodec.class),
-                    Mockito.mock(OutputStream.class));
-        } catch (IOException exce) {
-        }
-
-        Assert.assertNotNull(obj);
-        new MockUp<ProtobufGenerator>() {
-
-            @Mock
-            public void writeStartObject() throws IOException {
-
-            }
-
-            ProtobufSchema protobufSchema = new ProtobufSchema(null, null);
-
-            @Mock
-            public ProtobufSchema getSchema() {
-                return protobufSchema;
-            }
-
-        };
-
-        ProtobufMessage protobufMessage = new ProtobufMessage(null, null);
-        new MockUp<ProtobufSchema>() {
-            @Mock
-            public ProtobufMessage getRootType() {
-                return protobufMessage;
-            }
-
-        };
-
-        List<ProtobufField> listProtobufField = new ArrayList<ProtobufField>();
-        listProtobufField.add(Mockito.mock(ProtobufField.class));
-
-        new MockUp<ProtobufMessage>() {
-            @Mock
-            public Iterable<ProtobufField> fields() {
-                return listProtobufField;
-            }
-
-        };
-
-        new MockUp<JsonGenerator>() {
-            @Mock
-            public void writeObjectField(String fieldName, Object pojo) throws IOException {
-
-            }
-
-        };
-
-        new MockUp<ProtobufGenerator>() {
-
-            @Mock
-            public void writeEndObject() throws IOException {
-
-            }
-
-        };
-
-        try {
-            paramSerializer.serialize(stringArray,
-                    obj,
-                    Mockito.mock(SerializerProvider.class));
-        } catch (JsonProcessingException e) {
-            status = false;
-        } catch (IOException e) {
-            status = false;
-        }
-
-        Assert.assertTrue(status);
-    }
-
+    Assert.assertTrue(status);
+  }
 }

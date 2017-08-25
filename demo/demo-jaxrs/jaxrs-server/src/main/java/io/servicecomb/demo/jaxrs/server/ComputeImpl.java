@@ -44,83 +44,82 @@ import io.servicecomb.swagger.invocation.context.ContextUtils;
 @Path("/compute")
 @Produces(MediaType.APPLICATION_JSON)
 public class ComputeImpl {
-    private static final Logger LOGGER = LoggerFactory.getLogger(ComputeImpl.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(ComputeImpl.class);
 
-    @Path("/add")
-    @POST
-    public int add(@FormParam("a") int a, @FormParam("b") int b) {
-        return a + b;
+  @Path("/add")
+  @POST
+  public int add(@FormParam("a") int a, @FormParam("b") int b) {
+    return a + b;
+  }
+
+  @Path("/reduce")
+  @GET
+  public int reduce(@Context HttpServletRequest request) {
+    int a = Integer.parseInt(request.getParameter("a"));
+    int b = Integer.parseInt(request.getParameter("b"));
+    return a - b;
+  }
+
+  @Path("/sayhello")
+  @POST
+  public Person sayHello(Person user) {
+    user.setName("hello " + user.getName());
+    return user;
+  }
+
+  @SuppressWarnings("unchecked")
+  @Path("/testrawjson")
+  @POST
+  public String testRawJsonString(String jsonInput) {
+    Map<String, String> person;
+    try {
+      person = RestObjectMapper.INSTANCE.readValue(jsonInput.getBytes(), Map.class);
+    } catch (Exception e) {
+      e.printStackTrace();
+      return null;
     }
+    return "hello " + person.get("name");
+  }
 
-    @Path("/reduce")
-    @GET
-    public int reduce(@Context HttpServletRequest request) {
-        int a = Integer.parseInt(request.getParameter("a"));
-        int b = Integer.parseInt(request.getParameter("b"));
-        return a - b;
+  @Path("/saysomething")
+  @POST
+  public String saySomething(@HeaderParam("prefix") String prefix, Person user) {
+    return prefix + " " + user.getName();
+  }
+
+  @Path("/sayhi/{name}")
+  @PUT
+  public void sayHi(@PathParam("name") String name) {
+    LOGGER.info(name + " sayhi");
+    ContextUtils.getInvocationContext().setStatus(202);
+  }
+
+  @Path("/sayhi/{name}/v2")
+  @PUT
+  public void sayHi2(@PathParam("name") String name) {
+    LOGGER.info(name + " sayhi 2");
+  }
+
+  @Path("/sayhei")
+  @DELETE
+  public void sayHei(@QueryParam("name") String name) {
+    LOGGER.info(name + " sayhei");
+  }
+
+  @Path("/istrue")
+  @GET
+  public boolean isTrue() {
+    return true;
+  }
+
+  @Path("/addstring")
+  @DELETE
+  @Produces(MediaType.TEXT_PLAIN)
+  public String addString(@QueryParam("s") String[] s) {
+    String result = "";
+    for (String x : s) {
+      result += x;
     }
-
-    @Path("/sayhello")
-    @POST
-    public Person sayHello(Person user) {
-        user.setName("hello " + user.getName());
-        return user;
-    }
-
-    @SuppressWarnings("unchecked")
-    @Path("/testrawjson")
-    @POST
-    public String testRawJsonString(String jsonInput) {
-        Map<String, String> person;
-        try {
-            person = RestObjectMapper.INSTANCE.readValue(jsonInput.getBytes(), Map.class);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
-        }
-        return "hello " + person.get("name");
-    }
-
-    @Path("/saysomething")
-    @POST
-    public String saySomething(@HeaderParam("prefix") String prefix, Person user) {
-        return prefix + " " + user.getName();
-    }
-
-    @Path("/sayhi/{name}")
-    @PUT
-    public void sayHi(@PathParam("name") String name) {
-        LOGGER.info(name + " sayhi");
-        ContextUtils.getInvocationContext().setStatus(202);
-    }
-
-    @Path("/sayhi/{name}/v2")
-    @PUT
-    public void sayHi2(@PathParam("name") String name) {
-        LOGGER.info(name + " sayhi 2");
-    }
-
-    @Path("/sayhei")
-    @DELETE
-    public void sayHei(@QueryParam("name") String name) {
-        LOGGER.info(name + " sayhei");
-    }
-
-    @Path("/istrue")
-    @GET
-    public boolean isTrue() {
-        return true;
-    }
-
-    @Path("/addstring")
-    @DELETE
-    @Produces(MediaType.TEXT_PLAIN)
-    public String addString(@QueryParam("s") String[] s) {
-        String result = "";
-        for (String x : s) {
-            result += x;
-        }
-        return result;
-    }
-
+    return result;
+  }
 }

@@ -20,11 +20,11 @@ import io.servicecomb.foundation.common.utils.BeanUtils;
 import io.servicecomb.foundation.common.utils.Log4jUtils;
 
 public class DemoLocal {
-    public static void main(String[] args) throws Exception {
-        Log4jUtils.init();
-        BeanUtils.init();
+  public static void main(String[] args) throws Exception {
+    Log4jUtils.init();
+    BeanUtils.init();
 
-        // TODO:当前未实现本地调用
-        //        DemoClient.runTest();
-    }
+    // TODO:当前未实现本地调用
+    //        DemoClient.runTest();
+  }
 }

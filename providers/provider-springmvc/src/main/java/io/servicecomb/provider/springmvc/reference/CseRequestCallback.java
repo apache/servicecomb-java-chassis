@@ -21,28 +21,28 @@ import org.springframework.http.client.ClientHttpRequest;
 import org.springframework.web.client.RequestCallback;
 
 public class CseRequestCallback implements RequestCallback {
-    private Object requestBody;
+  private Object requestBody;
 
-    private RequestCallback orgCallback;
+  private RequestCallback orgCallback;
 
-    public CseRequestCallback(Object requestBody, RequestCallback orgCallback) {
-        this.requestBody = requestBody;
-        this.orgCallback = orgCallback;
+  public CseRequestCallback(Object requestBody, RequestCallback orgCallback) {
+    this.requestBody = requestBody;
+    this.orgCallback = orgCallback;
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public void doWithRequest(ClientHttpRequest request) throws IOException {
+    orgCallback.doWithRequest(request);
+
+    if (!CseHttpEntity.class.isInstance(requestBody)) {
+      return;
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void doWithRequest(ClientHttpRequest request) throws IOException {
-        orgCallback.doWithRequest(request);
-
-        if (!CseHttpEntity.class.isInstance(requestBody)) {
-            return;
-        }
-
-        CseClientHttpRequest req = (CseClientHttpRequest) request;
-        CseHttpEntity<?> entity = (CseHttpEntity<?>) requestBody;
-        req.setContext(entity.getContext());
-    }
+    CseClientHttpRequest req = (CseClientHttpRequest) request;
+    CseHttpEntity<?> entity = (CseHttpEntity<?>) requestBody;
+    req.setContext(entity.getContext());
+  }
 }

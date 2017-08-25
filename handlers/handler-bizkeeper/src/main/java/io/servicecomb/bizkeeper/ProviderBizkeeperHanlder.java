@@ -16,33 +16,34 @@
 
 package io.servicecomb.bizkeeper;
 
-import io.servicecomb.core.Invocation;
 import com.netflix.hystrix.HystrixCommandProperties;
 import com.netflix.hystrix.HystrixObservableCommand;
+
+import io.servicecomb.core.Invocation;
 
 /**
  * 服务端调用链处理流程
  *
  */
 public class ProviderBizkeeperHanlder extends BizkeeperHandler {
-    private static final String COMMAND_GROUP = "Provider";
+  private static final String COMMAND_GROUP = "Provider";
 
-    public ProviderBizkeeperHanlder() {
-        super(COMMAND_GROUP);
-    }
+  public ProviderBizkeeperHanlder() {
+    super(COMMAND_GROUP);
+  }
 
-    @Override
-    protected BizkeeperCommand createBizkeeperCommand(Invocation invocation) {
-        HystrixCommandProperties.Setter setter = HystrixCommandProperties.Setter()
-                .withRequestCacheEnabled(false)
-                .withRequestLogEnabled(false);
-        setCommonProperties(invocation, setter);
+  @Override
+  protected BizkeeperCommand createBizkeeperCommand(Invocation invocation) {
+    HystrixCommandProperties.Setter setter = HystrixCommandProperties.Setter()
+        .withRequestCacheEnabled(false)
+        .withRequestLogEnabled(false);
+    setCommonProperties(invocation, setter);
 
-        BizkeeperCommand command = new ProviderBizkeeperCommand(groupname, invocation,
-                HystrixObservableCommand.Setter
-                        .withGroupKey(CommandKey.toHystrixCommandGroupKey(groupname, invocation))
-                        .andCommandKey(CommandKey.toHystrixCommandKey(groupname, invocation))
-                        .andCommandPropertiesDefaults(setter));
-        return command;
-    }
+    BizkeeperCommand command = new ProviderBizkeeperCommand(groupname, invocation,
+        HystrixObservableCommand.Setter
+            .withGroupKey(CommandKey.toHystrixCommandGroupKey(groupname, invocation))
+            .andCommandKey(CommandKey.toHystrixCommandKey(groupname, invocation))
+            .andCommandPropertiesDefaults(setter));
+    return command;
+  }
 }

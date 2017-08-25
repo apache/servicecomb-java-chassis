@@ -24,25 +24,25 @@ import org.w3c.dom.Element;
 import io.servicecomb.provider.pojo.PojoConst;
 
 public class SchemaDefParser extends AbstractSingleBeanDefinitionParser {
-    @Override
-    protected boolean shouldGenerateId() {
-        return true;
-    }
+  @Override
+  protected boolean shouldGenerateId() {
+    return true;
+  }
 
-    @Override
-    protected boolean shouldParseNameAsAliases() {
-        return false;
-    }
+  @Override
+  protected boolean shouldParseNameAsAliases() {
+    return false;
+  }
 
-    @Override
-    protected Class<?> getBeanClass(Element element) {
-        return PojoProducerMeta.class;
-    }
+  @Override
+  protected Class<?> getBeanClass(Element element) {
+    return PojoProducerMeta.class;
+  }
 
-    @Override
-    protected void doParse(Element element, ParserContext parserContext,
-            BeanDefinitionBuilder builder) {
-        builder.addPropertyValue(PojoConst.FIELD_SCHEMA_ID, element.getAttribute(PojoConst.SCHEMA_ID));
-        builder.addPropertyValue(PojoConst.IMPL, element.getAttribute(PojoConst.IMPL));
-    }
+  @Override
+  protected void doParse(Element element, ParserContext parserContext,
+      BeanDefinitionBuilder builder) {
+    builder.addPropertyValue(PojoConst.FIELD_SCHEMA_ID, element.getAttribute(PojoConst.SCHEMA_ID));
+    builder.addPropertyValue(PojoConst.IMPL, element.getAttribute(PojoConst.IMPL));
+  }
 }

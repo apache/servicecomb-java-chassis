@@ -14,18 +14,16 @@
  * limitations under the License.
  */
 
-/**
- * 
- */
 package io.servicecomb.bizkeeper;
 
 import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.Mockito;
 
+import com.netflix.hystrix.strategy.HystrixPlugins;
+
 import io.servicecomb.core.Invocation;
 import io.servicecomb.core.definition.OperationMeta;
-import com.netflix.hystrix.strategy.HystrixPlugins;
 
 /**
  *
@@ -33,18 +31,18 @@ import com.netflix.hystrix.strategy.HystrixPlugins;
  */
 public class TestProviderBizkeeperHandler {
 
-    @Test
-    public void testCreateBizkeeperCommand() {
-        HystrixPlugins.reset();
-        ProviderBizkeeperHanlder providerBizkeeperHanlder = new ProviderBizkeeperHanlder();
+  @Test
+  public void testCreateBizkeeperCommand() {
+    HystrixPlugins.reset();
+    ProviderBizkeeperHanlder providerBizkeeperHanlder = new ProviderBizkeeperHanlder();
 
-        Invocation invocation = Mockito.mock(Invocation.class);
-        Mockito.when(invocation.getOperationMeta()).thenReturn(Mockito.mock(OperationMeta.class));
-        Mockito.when(invocation.getOperationMeta().getMicroserviceQualifiedName()).thenReturn("test1");
+    Invocation invocation = Mockito.mock(Invocation.class);
+    Mockito.when(invocation.getOperationMeta()).thenReturn(Mockito.mock(OperationMeta.class));
+    Mockito.when(invocation.getOperationMeta().getMicroserviceQualifiedName()).thenReturn("test1");
 
-        CommandKey.toHystrixCommandGroupKey("groupname", invocation);
-        CommandKey.toHystrixCommandKey("groupname", invocation);
-        BizkeeperCommand command = providerBizkeeperHanlder.createBizkeeperCommand(invocation);
-        Assert.assertNotNull(command);
-    }
+    CommandKey.toHystrixCommandGroupKey("groupname", invocation);
+    CommandKey.toHystrixCommandKey("groupname", invocation);
+    BizkeeperCommand command = providerBizkeeperHanlder.createBizkeeperCommand(invocation);
+    Assert.assertNotNull(command);
+  }
 }

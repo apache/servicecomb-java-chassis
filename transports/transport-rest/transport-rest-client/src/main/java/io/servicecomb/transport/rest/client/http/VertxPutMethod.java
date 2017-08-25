@@ -24,20 +24,19 @@ import io.vertx.core.http.HttpClient;
 import io.vertx.core.http.HttpClientRequest;
 
 public final class VertxPutMethod extends VertxHttpMethod {
-    public static final VertxPutMethod INSTANCE = new VertxPutMethod();
+  public static final VertxPutMethod INSTANCE = new VertxPutMethod();
 
-    private VertxPutMethod() {
-    }
+  private VertxPutMethod() {
+  }
 
-    @Override
-    protected HttpClientRequest createRequest(HttpClient client, Invocation invocation, IpPort ipPort, String path,
-            RestOperationMeta operation,
-            AsyncResponse asyncResp) {
-        HttpClientRequest clientRequest =
-            client.put(ipPort.getPort(), ipPort.getHostOrIp(), path, response -> {
-                handleResponse(invocation, response, operation, asyncResp);
-            });
-        return clientRequest;
-    }
-
+  @Override
+  protected HttpClientRequest createRequest(HttpClient client, Invocation invocation, IpPort ipPort, String path,
+      RestOperationMeta operation,
+      AsyncResponse asyncResp) {
+    HttpClientRequest clientRequest =
+        client.put(ipPort.getPort(), ipPort.getHostOrIp(), path, response -> {
+          handleResponse(invocation, response, operation, asyncResp);
+        });
+    return clientRequest;
+  }
 }

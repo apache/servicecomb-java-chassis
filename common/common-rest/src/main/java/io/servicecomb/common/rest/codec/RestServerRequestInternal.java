@@ -19,9 +19,9 @@ package io.servicecomb.common.rest.codec;
 import java.util.Map;
 
 public interface RestServerRequestInternal extends RestServerRequest {
-    void setPathParamMap(Map<String, String> pathParamMap);
+  void setPathParamMap(Map<String, String> pathParamMap);
 
-    void complete();
+  void complete();
 
-    <T> T getHttpRequest();
+  <T> T getHttpRequest();
 }

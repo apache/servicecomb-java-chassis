@@ -22,51 +22,51 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 public abstract class AbstractObjectManager<KEY_OWNER, KEY, VALUE> {
-    protected Map<KEY, VALUE> objMap = new ConcurrentHashMap<>();
+  protected Map<KEY, VALUE> objMap = new ConcurrentHashMap<>();
 
-    protected final Object lockObj = new Object();
+  protected final Object lockObj = new Object();
 
-    public VALUE getOrCreate(KEY_OWNER keyOwner) {
-        KEY key = getKey(keyOwner);
-        VALUE value = objMap.get(key);
+  public VALUE getOrCreate(KEY_OWNER keyOwner) {
+    KEY key = getKey(keyOwner);
+    VALUE value = objMap.get(key);
+    if (value == null) {
+      synchronized (lockObj) {
+        value = objMap.get(key);
         if (value == null) {
-            synchronized (lockObj) {
-                value = objMap.get(key);
-                if (value == null) {
-                    value = create(keyOwner);
-                    if (value == null) {
-                        // 创建失败，下次重新创建
-                        return null;
-                    }
-                    objMap.put(key, value);
-                }
-            }
+          value = create(keyOwner);
+          if (value == null) {
+            // 创建失败，下次重新创建
+            return null;
+          }
+          objMap.put(key, value);
         }
-
-        return value;
+      }
     }
 
-    public VALUE findByKey(KEY key) {
-        return objMap.get(key);
-    }
+    return value;
+  }
 
-    public VALUE findByContainer(KEY_OWNER keyOwner) {
-        KEY key = getKey(keyOwner);
-        return objMap.get(key);
-    }
+  public VALUE findByKey(KEY key) {
+    return objMap.get(key);
+  }
 
-    public Set<KEY> keys() {
-        return objMap.keySet();
-    }
+  public VALUE findByContainer(KEY_OWNER keyOwner) {
+    KEY key = getKey(keyOwner);
+    return objMap.get(key);
+  }
 
-    public Collection<VALUE> values() {
-        return objMap.values();
-    }
+  public Set<KEY> keys() {
+    return objMap.keySet();
+  }
 
-    protected abstract KEY getKey(KEY_OWNER keyOwner);
+  public Collection<VALUE> values() {
+    return objMap.values();
+  }
 
-    /**
-     * 只会在锁的保护下执行
-     */
-    protected abstract VALUE create(KEY_OWNER keyOwner);
+  protected abstract KEY getKey(KEY_OWNER keyOwner);
+
+  /**
+   * 只会在锁的保护下执行
+   */
+  protected abstract VALUE create(KEY_OWNER keyOwner);
 }

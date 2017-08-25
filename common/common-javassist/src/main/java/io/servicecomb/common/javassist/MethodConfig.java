@@ -22,99 +22,99 @@ import java.util.List;
 import com.fasterxml.jackson.databind.JavaType;
 
 public class MethodConfig {
-    private String name;
+  private String name;
 
-    private JavaType result;
+  private JavaType result;
 
-    private List<ParameterConfig> parameterList = new ArrayList<>();
+  private List<ParameterConfig> parameterList = new ArrayList<>();
 
-    // 不包括前后的{}
-    private String bodySource;
+  // 不包括前后的{}
+  private String bodySource;
 
-    // 根据上面的信息，生成下面两个字段
-    // 包括method声明和body
-    // 如果是接口，则只是method声明
-    private String source;
+  // 根据上面的信息，生成下面两个字段
+  // 包括method声明和body
+  // 如果是接口，则只是method声明
+  private String source;
 
-    // 泛型声明，如果method参数及应答中没有泛型类型，则此字段应该为null
-    private String genericSignature;
+  // 泛型声明，如果method参数及应答中没有泛型类型，则此字段应该为null
+  private String genericSignature;
 
-    public String getSource() {
-        return source;
+  public String getSource() {
+    return source;
+  }
+
+  public void setSource(String source) {
+    this.source = source;
+  }
+
+  public String getGenericSignature() {
+    return genericSignature;
+  }
+
+  public void setGenericSignature(String genericSignature) {
+    this.genericSignature = genericSignature;
+  }
+
+  public void setName(String name) {
+    this.name = name;
+  }
+
+  public void setResult(JavaType result) {
+    this.result = result;
+  }
+
+  public void addParameter(String name, JavaType type) {
+    ParameterConfig parameterConfig = new ParameterConfig();
+    parameterConfig.setName(name);
+    parameterConfig.setType(type);
+    parameterList.add(parameterConfig);
+  }
+
+  public void setBodySource(String bodySource) {
+    this.bodySource = bodySource;
+  }
+
+  void init() {
+    if (source != null) {
+      return;
     }
 
-    public void setSource(String source) {
-        this.source = source;
+    StringBuilder sbMethod = new StringBuilder();
+    StringBuilder sbMethodGenericSignature = new StringBuilder();
+
+    sbMethod.append("public ");
+    sbMethod.append(result == null ? "void" : JavassistUtils.getNameForGenerateCode(result));
+    sbMethod.append(" ")
+        .append(name)
+        .append("(");
+    sbMethodGenericSignature.append("(");
+
+    boolean hasGenericSignature = result == null ? false : result.hasGenericTypes();
+    for (ParameterConfig parameter : parameterList) {
+      hasGenericSignature = hasGenericSignature || parameter.getType().hasGenericTypes();
+
+      String paramTypeName = JavassistUtils.getNameForGenerateCode(parameter.getType());
+      String code = String.format("%s %s,", paramTypeName, parameter.getName());
+      sbMethod.append(code);
+      sbMethodGenericSignature.append(parameter.getType().getGenericSignature());
     }
 
-    public String getGenericSignature() {
-        return genericSignature;
+    if (!parameterList.isEmpty()) {
+      sbMethod.setLength(sbMethod.length() - 1);
+    }
+    sbMethod.append(")");
+    sbMethodGenericSignature.append(")");
+    sbMethodGenericSignature.append(result == null ? "V" : result.getGenericSignature());
+
+    if (bodySource != null) {
+      sbMethod.append("{").append(bodySource).append("}");
+    } else {
+      sbMethod.append(";");
     }
 
-    public void setGenericSignature(String genericSignature) {
-        this.genericSignature = genericSignature;
+    source = sbMethod.toString();
+    if (hasGenericSignature) {
+      genericSignature = sbMethodGenericSignature.toString();
     }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public void setResult(JavaType result) {
-        this.result = result;
-    }
-
-    public void addParameter(String name, JavaType type) {
-        ParameterConfig parameterConfig = new ParameterConfig();
-        parameterConfig.setName(name);
-        parameterConfig.setType(type);
-        parameterList.add(parameterConfig);
-    }
-
-    public void setBodySource(String bodySource) {
-        this.bodySource = bodySource;
-    }
-
-    void init() {
-        if (source != null) {
-            return;
-        }
-
-        StringBuilder sbMethod = new StringBuilder();
-        StringBuilder sbMethodGenericSignature = new StringBuilder();
-
-        sbMethod.append("public ");
-        sbMethod.append(result == null ? "void" : JavassistUtils.getNameForGenerateCode(result));
-        sbMethod.append(" ")
-                .append(name)
-                .append("(");
-        sbMethodGenericSignature.append("(");
-
-        boolean hasGenericSignature = result == null ? false : result.hasGenericTypes();
-        for (ParameterConfig parameter : parameterList) {
-            hasGenericSignature = hasGenericSignature || parameter.getType().hasGenericTypes();
-
-            String paramTypeName = JavassistUtils.getNameForGenerateCode(parameter.getType());
-            String code = String.format("%s %s,", paramTypeName, parameter.getName());
-            sbMethod.append(code);
-            sbMethodGenericSignature.append(parameter.getType().getGenericSignature());
-        }
-
-        if (!parameterList.isEmpty()) {
-            sbMethod.setLength(sbMethod.length() - 1);
-        }
-        sbMethod.append(")");
-        sbMethodGenericSignature.append(")");
-        sbMethodGenericSignature.append(result == null ? "V" : result.getGenericSignature());
-
-        if (bodySource != null) {
-            sbMethod.append("{").append(bodySource).append("}");
-        } else {
-            sbMethod.append(";");
-        }
-
-        source = sbMethod.toString();
-        if (hasGenericSignature) {
-            genericSignature = sbMethodGenericSignature.toString();
-        }
-    }
+  }
 }

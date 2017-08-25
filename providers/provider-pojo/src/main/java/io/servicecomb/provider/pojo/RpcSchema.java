@@ -32,5 +32,5 @@ import org.springframework.stereotype.Component;
 @Target(TYPE)
 @Component
 public @interface RpcSchema {
-    String schemaId() default "";
+  String schemaId() default "";
 }
