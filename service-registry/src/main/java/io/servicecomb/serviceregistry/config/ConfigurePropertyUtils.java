@@ -17,6 +17,7 @@
 package io.servicecomb.serviceregistry.config;
 
 import com.netflix.config.DynamicPropertyFactory;
+import io.servicecomb.serviceregistry.api.Const;
 import io.servicecomb.serviceregistry.api.registry.BasePath;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -24,6 +25,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import org.apache.commons.configuration.Configuration;
+import org.apache.commons.lang.StringUtils;
 
 public final class ConfigurePropertyUtils {
     private ConfigurePropertyUtils() {
@@ -59,10 +61,20 @@ public final class ConfigurePropertyUtils {
         for (Object path : configuration.getList("service_description.paths")) {
             BasePath basePath = new BasePath();
             Map<String, ?> pathMap = (Map<String, ?>) path;
-            basePath.setPath((String) pathMap.get("path"));
+            basePath.setPath(buildPath((String) pathMap.get("path")));
             basePath.setProperty((Map<String, String>) pathMap.get("property"));
             basePaths.add(basePath);
         }
         return basePaths;
+    }
+
+    private static String buildPath(String path) {
+        String prefix = System.getProperty(Const.URL_PREFIX);
+        if (StringUtils.isNotEmpty(prefix)) {
+            if (!path.startsWith(prefix)) {
+                path = prefix + path;
+            }
+        }
+        return path;
     }
 }

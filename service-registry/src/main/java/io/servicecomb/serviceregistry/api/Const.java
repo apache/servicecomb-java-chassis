@@ -48,4 +48,6 @@ public final class Const {
     public static final String PATH_CHECKSESSION = "checksession";
 
     public static final String PROPERTIES_PATH = "/properties";
+
+    public static final String URL_PREFIX = "urlPrefix";
 }

@@ -16,6 +16,7 @@
 
 package io.servicecomb.core.definition.loader;
 
+import io.servicecomb.serviceregistry.api.Const;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -28,7 +29,6 @@ import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
-import io.servicecomb.core.Const;
 import io.servicecomb.core.Handler;
 import io.servicecomb.core.definition.MicroserviceMeta;
 import io.servicecomb.core.definition.MicroserviceMetaManager;

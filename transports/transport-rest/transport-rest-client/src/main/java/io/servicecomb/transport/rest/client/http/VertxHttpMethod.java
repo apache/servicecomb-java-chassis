@@ -16,6 +16,7 @@
 
 package io.servicecomb.transport.rest.client.http;
 
+import io.servicecomb.serviceregistry.api.Const;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -27,7 +28,6 @@ import io.servicecomb.common.rest.codec.RestCodec;
 import io.servicecomb.common.rest.codec.param.RestClientRequestImpl;
 import io.servicecomb.common.rest.codec.produce.ProduceProcessor;
 import io.servicecomb.common.rest.definition.RestOperationMeta;
-import io.servicecomb.core.Const;
 import io.servicecomb.core.Invocation;
 import io.servicecomb.core.definition.OperationMeta;
 import io.servicecomb.core.transport.AbstractTransport;
@@ -62,7 +62,7 @@ public abstract class VertxHttpMethod {
                     path,
                     swaggerRestOperation,
                     asyncResp);
-        clientRequest.putHeader(Const.TARGET_MICROSERVICE, invocation.getMicroserviceName());
+        clientRequest.putHeader(io.servicecomb.core.Const.TARGET_MICROSERVICE, invocation.getMicroserviceName());
         RestClientRequestImpl restClientRequest = new RestClientRequestImpl(clientRequest);
         RestCodec.argsToRest(invocation.getArgs(), swaggerRestOperation, restClientRequest);
 
@@ -149,7 +149,7 @@ public abstract class VertxHttpMethod {
     protected void setCseContext(Invocation invocation, HttpClientRequest request) {
         try {
             String cseContext = JsonUtils.writeValueAsString(invocation.getContext());
-            request.putHeader(Const.CSE_CONTEXT, cseContext);
+            request.putHeader(io.servicecomb.core.Const.CSE_CONTEXT, cseContext);
         } catch (Exception e) {
             LOGGER.debug(e.toString());
         }

@@ -16,21 +16,19 @@
 
 package io.servicecomb.transport.rest.servlet;
 
+import io.servicecomb.core.Invocation;
+import io.servicecomb.core.transport.AbstractTransport;
+import io.servicecomb.foundation.common.net.URIEndpointObject;
+import io.servicecomb.serviceregistry.api.Const;
+import io.servicecomb.swagger.invocation.AsyncResponse;
+import io.servicecomb.transport.rest.client.RestTransportClient;
+import io.servicecomb.transport.rest.client.RestTransportClientManager;
 import java.util.HashMap;
 import java.util.Map;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
-
-import io.servicecomb.core.Const;
-import io.servicecomb.core.Invocation;
-import io.servicecomb.core.transport.AbstractTransport;
-import io.servicecomb.foundation.common.net.URIEndpointObject;
-import io.servicecomb.swagger.invocation.AsyncResponse;
-import io.servicecomb.transport.rest.client.RestTransportClient;
-import io.servicecomb.transport.rest.client.RestTransportClientManager;
 
 @Component
 public class ServletRestTransport extends AbstractTransport {
@@ -38,7 +36,7 @@ public class ServletRestTransport extends AbstractTransport {
 
     @Override
     public String getName() {
-        return Const.RESTFUL;
+        return io.servicecomb.core.Const.RESTFUL;
     }
 
     @Override

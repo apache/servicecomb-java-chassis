@@ -16,6 +16,7 @@
 
 package io.servicecomb.common.rest.locator;
 
+import io.servicecomb.serviceregistry.api.Const;
 import java.util.Map;
 
 import org.junit.After;
@@ -24,7 +25,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.springframework.context.ApplicationContext;
 
-import io.servicecomb.core.Const;
 import io.servicecomb.core.definition.MicroserviceMeta;
 import io.servicecomb.core.definition.SchemaMeta;
 import io.servicecomb.foundation.common.utils.BeanUtils;

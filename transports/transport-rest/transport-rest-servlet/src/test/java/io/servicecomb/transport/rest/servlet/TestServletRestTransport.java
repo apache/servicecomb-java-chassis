@@ -16,6 +16,7 @@
 
 package io.servicecomb.transport.rest.servlet;
 
+import io.servicecomb.serviceregistry.api.Const;
 import java.io.IOException;
 import java.net.ServerSocket;
 
@@ -23,7 +24,6 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.Mockito;
 
-import io.servicecomb.core.Const;
 import io.servicecomb.core.Endpoint;
 import io.servicecomb.core.Invocation;
 import io.servicecomb.foundation.common.net.URIEndpointObject;
