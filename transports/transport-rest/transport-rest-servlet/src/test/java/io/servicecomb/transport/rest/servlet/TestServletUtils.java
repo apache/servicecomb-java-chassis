@@ -16,6 +16,7 @@
 
 package io.servicecomb.transport.rest.servlet;
 
+import io.servicecomb.serviceregistry.api.Const;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -29,7 +30,6 @@ import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Test;
 
-import io.servicecomb.core.Const;
 import io.servicecomb.foundation.common.exceptions.ServiceCombException;
 import mockit.Expectations;
 import mockit.Mocked;

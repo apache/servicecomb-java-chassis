@@ -15,6 +15,7 @@
  */
 package io.servicecomb.core.definition.loader;
 
+import io.servicecomb.serviceregistry.api.Const;
 import java.util.ArrayList;
 import java.util.Collections;
 
@@ -24,7 +25,6 @@ import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import io.servicecomb.core.Const;
 import io.servicecomb.core.CseContext;
 import io.servicecomb.core.definition.MicroserviceMetaManager;
 import io.servicecomb.core.definition.SchemaMeta;
