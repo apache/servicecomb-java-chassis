@@ -27,31 +27,30 @@ import com.fasterxml.jackson.dataformat.protobuf.schema.ProtobufSchema;
 
 public class TestAbstractCodec extends AbstractCodec {
 
-    private AbstractCodec abstractCodecTest = null;
+  private AbstractCodec abstractCodecTest = null;
 
-    @Before
-    public void setUp() throws Exception {
-        abstractCodecTest = new TestAbstractCodec();
-    }
+  @Before
+  public void setUp() throws Exception {
+    abstractCodecTest = new TestAbstractCodec();
+  }
 
-    @After
-    public void tearDown() throws Exception {
-        abstractCodecTest = null;
-    }
+  @After
+  public void tearDown() throws Exception {
+    abstractCodecTest = null;
+  }
 
-    @Test
-    public void testGetWriter() {
-        Assert.assertNull(abstractCodecTest.getWriter());
-    }
+  @Test
+  public void testGetWriter() {
+    Assert.assertNull(abstractCodecTest.getWriter());
+  }
 
-    @Test
-    public void testGetReader() {
-        Assert.assertNull(abstractCodecTest.getReader());
-    }
+  @Test
+  public void testGetReader() {
+    Assert.assertNull(abstractCodecTest.getReader());
+  }
 
-    @Override
-    public void init(ProtobufSchema schema, Type... types) {
-        /* Do not worry, overridden method*/
-    }
-
+  @Override
+  public void init(ProtobufSchema schema, Type... types) {
+    /* Do not worry, overridden method*/
+  }
 }

@@ -33,59 +33,58 @@ import io.swagger.models.parameters.BodyParameter;
 import io.vertx.core.buffer.Buffer;
 
 public class TestRawJsonBodyProcessor {
-    private static RestServerRequest request;
+  private static RestServerRequest request;
 
-    private static ParamValueProcessor bodyProcessor;
+  private static ParamValueProcessor bodyProcessor;
 
-    @Before
-    public void beforeTest() {
-        request = Mockito.mock(RestServerRequest.class);
-        BodyProcessorCreator bodyCreator =
-            (BodyProcessorCreator) ParamValueProcessorCreatorManager.INSTANCE.getBodyProcessorCreater();
-        BodyParameter bp = new BodyParameter();
-        bp.setVendorExtension(SwaggerConst.EXT_RAW_JSON_TYPE, true);
-        bodyProcessor = bodyCreator.create(bp, String.class);
-    }
+  @Before
+  public void beforeTest() {
+    request = Mockito.mock(RestServerRequest.class);
+    BodyProcessorCreator bodyCreator =
+        (BodyProcessorCreator) ParamValueProcessorCreatorManager.INSTANCE.getBodyProcessorCreater();
+    BodyParameter bp = new BodyParameter();
+    bp.setVendorExtension(SwaggerConst.EXT_RAW_JSON_TYPE, true);
+    bodyProcessor = bodyCreator.create(bp, String.class);
+  }
 
-    @Test
-    public void testJsonInt() throws Exception {
-        Buffer buffer = Buffer.buffer("123");
-        when(request.getBody()).thenReturn(new BufferInputStream(buffer.getByteBuf()));
+  @Test
+  public void testJsonInt() throws Exception {
+    Buffer buffer = Buffer.buffer("123");
+    when(request.getBody()).thenReturn(new BufferInputStream(buffer.getByteBuf()));
 
-        String result = (String) bodyProcessor.getValue(request);
-        Assert.assertEquals("123", result);
-    }
+    String result = (String) bodyProcessor.getValue(request);
+    Assert.assertEquals("123", result);
+  }
 
-    @Test
-    public void testJsonString() throws Exception {
-        Buffer buffer = Buffer.buffer("\"abc\"");
-        when(request.getBody()).thenReturn(new BufferInputStream(buffer.getByteBuf()));
+  @Test
+  public void testJsonString() throws Exception {
+    Buffer buffer = Buffer.buffer("\"abc\"");
+    when(request.getBody()).thenReturn(new BufferInputStream(buffer.getByteBuf()));
 
-        String result = (String) bodyProcessor.getValue(request);
-        Assert.assertEquals("\"abc\"", result);
-    }
+    String result = (String) bodyProcessor.getValue(request);
+    Assert.assertEquals("\"abc\"", result);
+  }
 
-    @Test
-    public void testJsonMap() throws Exception {
-        Buffer buffer = Buffer.buffer("{\"abc\":\"def\"}");
-        when(request.getBody()).thenReturn(new BufferInputStream(buffer.getByteBuf()));
+  @Test
+  public void testJsonMap() throws Exception {
+    Buffer buffer = Buffer.buffer("{\"abc\":\"def\"}");
+    when(request.getBody()).thenReturn(new BufferInputStream(buffer.getByteBuf()));
 
-        String result = (String) bodyProcessor.getValue(request);
-        Assert.assertEquals("{\"abc\":\"def\"}", result);
+    String result = (String) bodyProcessor.getValue(request);
+    Assert.assertEquals("{\"abc\":\"def\"}", result);
 
-        @SuppressWarnings("unchecked")
-        Map<String, String> resMap = RestObjectMapper.INSTANCE.readValue(result.getBytes(),
-                Map.class);
-        Assert.assertEquals("def", resMap.get("abc"));
-    }
+    @SuppressWarnings("unchecked")
+    Map<String, String> resMap = RestObjectMapper.INSTANCE.readValue(result.getBytes(),
+        Map.class);
+    Assert.assertEquals("def", resMap.get("abc"));
+  }
 
-    @Test
-    public void testJsonList() throws Exception {
-        Buffer buffer = Buffer.buffer("[\"abc\"]");
-        when(request.getBody()).thenReturn(new BufferInputStream(buffer.getByteBuf()));
+  @Test
+  public void testJsonList() throws Exception {
+    Buffer buffer = Buffer.buffer("[\"abc\"]");
+    when(request.getBody()).thenReturn(new BufferInputStream(buffer.getByteBuf()));
 
-        String result = (String) bodyProcessor.getValue(request);
-        Assert.assertEquals("[\"abc\"]", result);
-    }
-
+    String result = (String) bodyProcessor.getValue(request);
+    Assert.assertEquals("[\"abc\"]", result);
+  }
 }

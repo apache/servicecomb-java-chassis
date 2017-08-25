@@ -34,107 +34,107 @@ import mockit.Expectations;
 import mockit.Injectable;
 
 public class TestInvoker {
-    @Before
-    public void setup() {
-        ReferenceConfigUtils.setReady(true);
+  @Before
+  public void setup() {
+    ReferenceConfigUtils.setReady(true);
+  }
+
+  @After
+  public void teardown() {
+    ReferenceConfigUtils.setReady(false);
+  }
+
+  @Test
+  public void testNotReady() throws Throwable {
+    String exceptionMessage = "System is not ready for remote calls. "
+        + "When beans are making remote calls in initialization, it's better to "
+        + "implement io.servicecomb.core.BootListener and do it after EventType.AFTER_REGISTRY.";
+
+    ReferenceConfigUtils.setReady(false);
+    Invoker invoker = new Invoker("test", "schemaId", IPerson.class);
+
+    try {
+      invoker.invoke(null, null, null);
+      Assert.fail("must throw exception");
+    } catch (IllegalStateException e) {
+      Assert.assertEquals(exceptionMessage, e.getMessage());
     }
+  }
 
-    @After
-    public void teardown() {
-        ReferenceConfigUtils.setReady(false);
-    }
+  @Test
+  public void testNormalSchemaId(@Injectable ConsumerProviderManager manager,
+      @Injectable ReferenceConfig config,
+      @Injectable MicroserviceMeta microserviceMeta,
+      @Injectable ConsumerSchemaFactory factory) {
+    new Expectations() {
+      {
+        manager.getReferenceConfig("test");
+        result = config;
+        config.getMicroserviceMeta();
+        result = microserviceMeta;
+        microserviceMeta.ensureFindSchemaMeta("schemaId");
+      }
+    };
+    CseContext.getInstance().setConsumerProviderManager(manager);
+    CseContext.getInstance().setConsumerSchemaFactory(factory);
+    CseContext.getInstance().setSwaggerEnvironment(new BootstrapNormal().boot());
 
-    @Test
-    public void testNotReady() throws Throwable {
-        String exceptionMessage = "System is not ready for remote calls. "
-                + "When beans are making remote calls in initialization, it's better to "
-                + "implement io.servicecomb.core.BootListener and do it after EventType.AFTER_REGISTRY.";
+    Invoker invoker = new Invoker("test", "schemaId", IPerson.class);
+    invoker.prepare();
 
-        ReferenceConfigUtils.setReady(false);
-        Invoker invoker = new Invoker("test", "schemaId", IPerson.class);
+    SwaggerConsumer swaggerConsumer = Deencapsulation.getField(invoker, "swaggerConsumer");
+    Assert.assertEquals(IPerson.class, swaggerConsumer.getConsumerIntf());
+  }
 
-        try {
-            invoker.invoke(null, null, null);
-            Assert.fail("must throw exception");
-        } catch (IllegalStateException e) {
-            Assert.assertEquals(exceptionMessage, e.getMessage());
-        }
-    }
+  @Test
+  public void testFindSchemaByConsumerInterface(@Injectable ConsumerProviderManager manager,
+      @Injectable ReferenceConfig config,
+      @Injectable MicroserviceMeta microserviceMeta,
+      @Injectable ConsumerSchemaFactory factory) {
+    new Expectations() {
+      {
+        manager.getReferenceConfig("test");
+        result = config;
+        config.getMicroserviceMeta();
+        result = microserviceMeta;
+        microserviceMeta.findSchemaMeta(IPerson.class);
+      }
+    };
+    CseContext.getInstance().setConsumerProviderManager(manager);
+    CseContext.getInstance().setConsumerSchemaFactory(factory);
+    CseContext.getInstance().setSwaggerEnvironment(new BootstrapNormal().boot());
 
-    @Test
-    public void testNormalSchemaId(@Injectable ConsumerProviderManager manager,
-            @Injectable ReferenceConfig config,
-            @Injectable MicroserviceMeta microserviceMeta,
-            @Injectable ConsumerSchemaFactory factory) {
-        new Expectations() {
-            {
-                manager.getReferenceConfig("test");
-                result = config;
-                config.getMicroserviceMeta();
-                result = microserviceMeta;
-                microserviceMeta.ensureFindSchemaMeta("schemaId");
-            }
-        };
-        CseContext.getInstance().setConsumerProviderManager(manager);
-        CseContext.getInstance().setConsumerSchemaFactory(factory);
-        CseContext.getInstance().setSwaggerEnvironment(new BootstrapNormal().boot());
+    Invoker invoker = new Invoker("test", null, IPerson.class);
+    invoker.prepare();
 
-        Invoker invoker = new Invoker("test", "schemaId", IPerson.class);
-        invoker.prepare();
+    SwaggerConsumer swaggerConsumer = Deencapsulation.getField(invoker, "swaggerConsumer");
+    Assert.assertEquals(IPerson.class, swaggerConsumer.getConsumerIntf());
+  }
 
-        SwaggerConsumer swaggerConsumer = Deencapsulation.getField(invoker, "swaggerConsumer");
-        Assert.assertEquals(IPerson.class, swaggerConsumer.getConsumerIntf());
-    }
+  @Test
+  public void testConsumerInterfaceAsSchemaId(@Injectable ConsumerProviderManager manager,
+      @Injectable ReferenceConfig config,
+      @Injectable MicroserviceMeta microserviceMeta,
+      @Injectable ConsumerSchemaFactory factory) {
+    new Expectations() {
+      {
+        manager.getReferenceConfig("test");
+        result = config;
+        config.getMicroserviceMeta();
+        result = microserviceMeta;
+        microserviceMeta.findSchemaMeta(IPerson.class);
+        result = null;
+        microserviceMeta.ensureFindSchemaMeta(IPerson.class.getName());
+      }
+    };
+    CseContext.getInstance().setConsumerProviderManager(manager);
+    CseContext.getInstance().setConsumerSchemaFactory(factory);
+    CseContext.getInstance().setSwaggerEnvironment(new BootstrapNormal().boot());
 
-    @Test
-    public void testFindSchemaByConsumerInterface(@Injectable ConsumerProviderManager manager,
-            @Injectable ReferenceConfig config,
-            @Injectable MicroserviceMeta microserviceMeta,
-            @Injectable ConsumerSchemaFactory factory) {
-        new Expectations() {
-            {
-                manager.getReferenceConfig("test");
-                result = config;
-                config.getMicroserviceMeta();
-                result = microserviceMeta;
-                microserviceMeta.findSchemaMeta(IPerson.class);
-            }
-        };
-        CseContext.getInstance().setConsumerProviderManager(manager);
-        CseContext.getInstance().setConsumerSchemaFactory(factory);
-        CseContext.getInstance().setSwaggerEnvironment(new BootstrapNormal().boot());
+    Invoker invoker = new Invoker("test", null, IPerson.class);
+    invoker.prepare();
 
-        Invoker invoker = new Invoker("test", null, IPerson.class);
-        invoker.prepare();
-
-        SwaggerConsumer swaggerConsumer = Deencapsulation.getField(invoker, "swaggerConsumer");
-        Assert.assertEquals(IPerson.class, swaggerConsumer.getConsumerIntf());
-    }
-
-    @Test
-    public void testConsumerInterfaceAsSchemaId(@Injectable ConsumerProviderManager manager,
-            @Injectable ReferenceConfig config,
-            @Injectable MicroserviceMeta microserviceMeta,
-            @Injectable ConsumerSchemaFactory factory) {
-        new Expectations() {
-            {
-                manager.getReferenceConfig("test");
-                result = config;
-                config.getMicroserviceMeta();
-                result = microserviceMeta;
-                microserviceMeta.findSchemaMeta(IPerson.class);
-                result = null;
-                microserviceMeta.ensureFindSchemaMeta(IPerson.class.getName());
-            }
-        };
-        CseContext.getInstance().setConsumerProviderManager(manager);
-        CseContext.getInstance().setConsumerSchemaFactory(factory);
-        CseContext.getInstance().setSwaggerEnvironment(new BootstrapNormal().boot());
-
-        Invoker invoker = new Invoker("test", null, IPerson.class);
-        invoker.prepare();
-
-        SwaggerConsumer swaggerConsumer = Deencapsulation.getField(invoker, "swaggerConsumer");
-        Assert.assertEquals(IPerson.class, swaggerConsumer.getConsumerIntf());
-    }
+    SwaggerConsumer swaggerConsumer = Deencapsulation.getField(invoker, "swaggerConsumer");
+    Assert.assertEquals(IPerson.class, swaggerConsumer.getConsumerIntf());
+  }
 }

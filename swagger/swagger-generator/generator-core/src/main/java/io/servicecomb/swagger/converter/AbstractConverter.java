@@ -20,36 +20,36 @@ import java.util.Map;
 
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.type.TypeFactory;
+
 import io.servicecomb.swagger.generator.core.SwaggerConst;
 import io.servicecomb.swagger.generator.core.utils.ClassUtils;
-
 import io.swagger.models.Swagger;
 
 public abstract class AbstractConverter implements Converter {
 
-    protected abstract Map<String, Object> findVendorExtensions(Object def);
+  protected abstract Map<String, Object> findVendorExtensions(Object def);
 
-    protected abstract JavaType doConvert(ClassLoader classLoader, String packageName, Swagger swagger, Object def);
+  protected abstract JavaType doConvert(ClassLoader classLoader, String packageName, Swagger swagger, Object def);
 
-    @Override
-    public JavaType convert(ClassLoader classLoader, String packageName, Swagger swagger, Object def) {
-        Map<String, Object> vendorExtensions = findVendorExtensions(def);
-        JavaType javaType = getJavaTypeByVendorExtensions(classLoader, vendorExtensions);
-        if (javaType != null) {
-            return javaType;
-        }
-
-        return doConvert(classLoader, packageName, swagger, def);
+  @Override
+  public JavaType convert(ClassLoader classLoader, String packageName, Swagger swagger, Object def) {
+    Map<String, Object> vendorExtensions = findVendorExtensions(def);
+    JavaType javaType = getJavaTypeByVendorExtensions(classLoader, vendorExtensions);
+    if (javaType != null) {
+      return javaType;
     }
 
-    private JavaType getJavaTypeByVendorExtensions(ClassLoader classLoader,
-            Map<String, Object> vendorExtensions) {
-        Class<?> cls =
-            ClassUtils.getClassByVendorExtensions(classLoader, vendorExtensions, SwaggerConst.EXT_JAVA_CLASS);
-        if (cls == null) {
-            return null;
-        }
+    return doConvert(classLoader, packageName, swagger, def);
+  }
 
-        return TypeFactory.defaultInstance().constructType(cls);
+  private JavaType getJavaTypeByVendorExtensions(ClassLoader classLoader,
+      Map<String, Object> vendorExtensions) {
+    Class<?> cls =
+        ClassUtils.getClassByVendorExtensions(classLoader, vendorExtensions, SwaggerConst.EXT_JAVA_CLASS);
+    if (cls == null) {
+      return null;
     }
+
+    return TypeFactory.defaultInstance().constructType(cls);
+  }
 }

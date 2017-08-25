@@ -17,7 +17,7 @@
 package io.servicecomb.common.javassist;
 
 public interface MultiWrapper {
-    void writeFields(Object[] values);
+  void writeFields(Object[] values);
 
-    Object[] readFields();
+  Object[] readFields();
 }

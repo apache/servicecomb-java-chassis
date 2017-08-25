@@ -27,48 +27,46 @@ import io.servicecomb.common.rest.RestConst;
 import io.servicecomb.core.definition.schema.ProducerSchemaFactory;
 import io.servicecomb.foundation.common.utils.BeanUtils;
 import io.servicecomb.foundation.common.utils.ReflectUtils;
-
 import mockit.Mock;
 import mockit.MockUp;
 
 public class TestRestServiceProvider {
 
-    @Test
-    public void testInit() throws Exception {
-        ApplicationContext context = Mockito.mock(ApplicationContext.class);
-        Mockito.when(context.getBeansWithAnnotation(RestSchema.class)).thenReturn(new HashMap<String, Object>());
+  @Test
+  public void testInit() throws Exception {
+    ApplicationContext context = Mockito.mock(ApplicationContext.class);
+    Mockito.when(context.getBeansWithAnnotation(RestSchema.class)).thenReturn(new HashMap<String, Object>());
 
-        new MockUp<BeanUtils>() {
-            @Mock
-            ApplicationContext getContext() {
-                return context;
-            }
-        };
+    new MockUp<BeanUtils>() {
+      @Mock
+      ApplicationContext getContext() {
+        return context;
+      }
+    };
 
-        RestProducerProvider restProducerProvider = new RestProducerProvider();
-        ReflectUtils.setField(restProducerProvider, "producerSchemaFactory", new ProducerSchemaFactory());
-        ReflectUtils.setField(restProducerProvider, "restProducers", new RestProducers());
-        
-        restProducerProvider.init();
-        Assert.assertEquals(RestConst.REST, restProducerProvider.getName());
-    }
+    RestProducerProvider restProducerProvider = new RestProducerProvider();
+    ReflectUtils.setField(restProducerProvider, "producerSchemaFactory", new ProducerSchemaFactory());
+    ReflectUtils.setField(restProducerProvider, "restProducers", new RestProducers());
 
-    @Test
-    public void testInvoke() throws Exception {
-        //        Invocation invocation = Mockito.mock(Invocation.class);
-        //        AsyncResponse asyncResp = Mockito.mock(AsyncResponse.class);
-        //        OperationMeta operationMeta = Mockito.mock(OperationMeta.class);
-        //        Mockito.when(invocation.getOperationMeta()).thenReturn(operationMeta);
-        //        RestProviderOperation restProviderOperationMeta = Mockito.mock(RestProviderOperation.class);
-        //        Mockito.when(operationMeta.getExtData("rest.operation")).thenReturn(restProviderOperationMeta);
-        //        ArgsMapper argsMapper = Mockito.mock(ArgsMapper.class);
-        //        Mockito.when(restProviderOperationMeta.getArgsMapper()).thenReturn(argsMapper);
-        //        try {
-        //            RestProducerProvider.getInstance().invoke(invocation, asyncResp);
-        //        } catch (Exception e) {
-        //            Assert.assertEquals(null, e.getMessage());
-        //        }
-        //        Assert.assertEquals(invocation.getContext(), ContextUtils.getInvocationContext().getContext());
-    }
+    restProducerProvider.init();
+    Assert.assertEquals(RestConst.REST, restProducerProvider.getName());
+  }
 
+  @Test
+  public void testInvoke() throws Exception {
+    //        Invocation invocation = Mockito.mock(Invocation.class);
+    //        AsyncResponse asyncResp = Mockito.mock(AsyncResponse.class);
+    //        OperationMeta operationMeta = Mockito.mock(OperationMeta.class);
+    //        Mockito.when(invocation.getOperationMeta()).thenReturn(operationMeta);
+    //        RestProviderOperation restProviderOperationMeta = Mockito.mock(RestProviderOperation.class);
+    //        Mockito.when(operationMeta.getExtData("rest.operation")).thenReturn(restProviderOperationMeta);
+    //        ArgsMapper argsMapper = Mockito.mock(ArgsMapper.class);
+    //        Mockito.when(restProviderOperationMeta.getArgsMapper()).thenReturn(argsMapper);
+    //        try {
+    //            RestProducerProvider.getInstance().invoke(invocation, asyncResp);
+    //        } catch (Exception e) {
+    //            Assert.assertEquals(null, e.getMessage());
+    //        }
+    //        Assert.assertEquals(invocation.getContext(), ContextUtils.getInvocationContext().getContext());
+  }
 }

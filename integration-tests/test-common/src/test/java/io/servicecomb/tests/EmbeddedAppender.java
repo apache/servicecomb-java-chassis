@@ -16,7 +16,6 @@
 
 package io.servicecomb.tests;
 
-import com.seanyinx.github.unit.scaffolding.Poller;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
@@ -25,13 +24,18 @@ import java.util.LinkedHashSet;
 import java.util.Queue;
 import java.util.Set;
 import java.util.concurrent.ConcurrentLinkedQueue;
+
 import javax.annotation.Nonnull;
+
 import org.apache.log4j.ConsoleAppender;
 import org.apache.log4j.PatternLayout;
+
+import com.seanyinx.github.unit.scaffolding.Poller;
 
 public class EmbeddedAppender extends ConsoleAppender {
 
   private Queue<String> events;
+
   private final Poller poller = new Poller(5000, 200);
 
   public EmbeddedAppender() {
@@ -66,6 +70,7 @@ public class EmbeddedAppender extends ConsoleAppender {
   private static class InMemoryOutputStream extends OutputStream {
 
     private final Queue<String> events;
+
     private final OutputStream outputStream;
 
     InMemoryOutputStream(Queue<String> events, OutputStream outputStream) {

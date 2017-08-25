@@ -28,18 +28,18 @@ import io.servicecomb.core.Invocation;
  *
  */
 public class MyServerListFilterExt implements ServerListFilterExt {
-    private Invocation invocation;
+  private Invocation invocation;
 
-    @Override
-    public List<Server> getFilteredListOfServers(List<Server> serverList) {
-        if (invocation.getAppId().equals("test")) {
-            return new ArrayList<Server>();
-        }
-        return serverList;
+  @Override
+  public List<Server> getFilteredListOfServers(List<Server> serverList) {
+    if (invocation.getAppId().equals("test")) {
+      return new ArrayList<Server>();
     }
+    return serverList;
+  }
 
-    @Override
-    public void setInvocation(Invocation invocation) {
-        this.invocation = invocation;
-    }
+  @Override
+  public void setInvocation(Invocation invocation) {
+    this.invocation = invocation;
+  }
 }

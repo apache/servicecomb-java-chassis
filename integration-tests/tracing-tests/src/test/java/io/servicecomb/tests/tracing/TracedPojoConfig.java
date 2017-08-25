@@ -16,9 +16,10 @@
 
 package io.servicecomb.tests.tracing;
 
-import io.servicecomb.provider.pojo.RpcReference;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+
+import io.servicecomb.provider.pojo.RpcReference;
 
 @Configuration
 class TracedPojoConfig {

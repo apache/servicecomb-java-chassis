@@ -23,42 +23,42 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class TestMgr {
-    private static final Logger LOGGER = LoggerFactory.getLogger(TestMgr.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(TestMgr.class);
 
-    private static final List<Throwable> errorList = new ArrayList<>();
+  private static final List<Throwable> errorList = new ArrayList<>();
 
-    private static String msg = "";
+  private static String msg = "";
 
-    public static void setMsg(String msg) {
-        TestMgr.msg = msg;
+  public static void setMsg(String msg) {
+    TestMgr.msg = msg;
+  }
+
+  public static void setMsg(String microserviceName, String transport) {
+    TestMgr.msg = String.format("microservice=%s, transport=%s", microserviceName, transport);
+  }
+
+  public static void check(Object expect, Object real) {
+    String strExpect = String.valueOf(expect);
+    String strReal = String.valueOf(real);
+
+    if (!strExpect.equals(strReal)) {
+      errorList.add(new Error(msg + " | Expect " + strExpect + ", but " + strReal));
+    }
+  }
+
+  public static void summary() {
+    if (errorList.isEmpty()) {
+      LOGGER.info("............. test finished ............");
+      return;
     }
 
-    public static void setMsg(String microserviceName, String transport) {
-        TestMgr.msg = String.format("microservice=%s, transport=%s", microserviceName, transport);
+    LOGGER.info("............. test not finished ............");
+    for (Throwable e : errorList) {
+      LOGGER.info("", e);
     }
+  }
 
-    public static void check(Object expect, Object real) {
-        String strExpect = String.valueOf(expect);
-        String strReal = String.valueOf(real);
-
-        if (!strExpect.equals(strReal)) {
-            errorList.add(new Error(msg + " | Expect " + strExpect + ", but " + strReal));
-        }
-    }
-
-    public static void summary() {
-        if (errorList.isEmpty()) {
-            LOGGER.info("............. test finished ............");
-            return;
-        }
-
-        LOGGER.info("............. test not finished ............");
-        for (Throwable e : errorList) {
-            LOGGER.info("", e);
-        }
-    }
-
-    public static List<Throwable> errors() {
-        return errorList;
-    }
+  public static List<Throwable> errors() {
+    return errorList;
+  }
 }

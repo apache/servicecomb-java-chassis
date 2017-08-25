@@ -24,41 +24,35 @@ import org.mockito.Mockito;
 
 import io.servicecomb.serviceregistry.api.registry.Microservice;
 
-/**
- *
- * @since Mar 14, 2017
- * @see 
- */
 public class TestGetServiceResponse {
 
-    GetServiceResponse oGetServiceResponse = null;
+  GetServiceResponse oGetServiceResponse = null;
 
-    Microservice oMockMicroservice = null;
+  Microservice oMockMicroservice = null;
 
-    @Before
-    public void setUp() throws Exception {
-        oGetServiceResponse = new GetServiceResponse();
-        oMockMicroservice = Mockito.mock(Microservice.class);
-    }
+  @Before
+  public void setUp() throws Exception {
+    oGetServiceResponse = new GetServiceResponse();
+    oMockMicroservice = Mockito.mock(Microservice.class);
+  }
 
-    @After
-    public void tearDown() throws Exception {
-        oGetServiceResponse = null;
-    }
+  @After
+  public void tearDown() throws Exception {
+    oGetServiceResponse = null;
+  }
 
-    @Test
-    public void testDefaultValues() {
-        Assert.assertNull(oGetServiceResponse.getService());
-    }
+  @Test
+  public void testDefaultValues() {
+    Assert.assertNull(oGetServiceResponse.getService());
+  }
 
-    @Test
-    public void testIntializedValues() {
-        initFields(); //Initialize the Object
-        Assert.assertEquals(oMockMicroservice, oGetServiceResponse.getService());
-    }
+  @Test
+  public void testIntializedValues() {
+    initFields(); //Initialize the Object
+    Assert.assertEquals(oMockMicroservice, oGetServiceResponse.getService());
+  }
 
-    private void initFields() {
-        oGetServiceResponse.setService(oMockMicroservice);
-    }
-
+  private void initFields() {
+    oGetServiceResponse.setService(oMockMicroservice);
+  }
 }

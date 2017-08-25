@@ -18,23 +18,23 @@ package io.servicecomb.common.javassist;
 import com.fasterxml.jackson.databind.JavaType;
 
 public class ParameterConfig {
-    private String name;
+  private String name;
 
-    private JavaType type;
+  private JavaType type;
 
-    public String getName() {
-        return name;
-    }
+  public String getName() {
+    return name;
+  }
 
-    public void setName(String name) {
-        this.name = name;
-    }
+  public void setName(String name) {
+    this.name = name;
+  }
 
-    public JavaType getType() {
-        return type;
-    }
+  public JavaType getType() {
+    return type;
+  }
 
-    public void setType(JavaType type) {
-        this.type = type;
-    }
+  public void setType(JavaType type) {
+    this.type = type;
+  }
 }

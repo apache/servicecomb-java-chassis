@@ -16,14 +16,14 @@
 
 package io.servicecomb.serviceregistry.client.http;
 
-import io.servicecomb.foundation.auth.AuthHeaderProvider;
-
 import java.util.HashMap;
 import java.util.Map;
 
+import io.servicecomb.foundation.auth.AuthHeaderProvider;
+
 public class EmptyAuthHeaderProvider implements AuthHeaderProvider {
-    @Override
-    public Map<String, String> authHeaders() {
-        return new HashMap<>(0);
-    }
+  @Override
+  public Map<String, String> authHeaders() {
+    return new HashMap<>(0);
+  }
 }

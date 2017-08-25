@@ -23,10 +23,10 @@ import io.servicecomb.swagger.generator.pojo.utils.PojoParamUtils;
 
 public class PojoDefaultParameterProcessor implements DefaultParameterProcessor {
 
-    @Override
-    public void process(OperationGenerator operationGenerator, int paramIndex) {
-        PendingBodyParameter pendingBodyParameter =
-            PojoParamUtils.createPendingBodyParameter(operationGenerator, paramIndex);
-        operationGenerator.addProviderParameter(pendingBodyParameter);
-    }
+  @Override
+  public void process(OperationGenerator operationGenerator, int paramIndex) {
+    PendingBodyParameter pendingBodyParameter =
+        PojoParamUtils.createPendingBodyParameter(operationGenerator, paramIndex);
+    operationGenerator.addProviderParameter(pendingBodyParameter);
+  }
 }

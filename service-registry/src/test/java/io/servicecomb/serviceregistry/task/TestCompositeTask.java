@@ -19,20 +19,20 @@ import org.junit.Assert;
 import org.junit.Test;
 
 public class TestCompositeTask {
-    private int count;
+  private int count;
 
-    @Test
-    public void testRun() {
-        CompositeTask task = new CompositeTask();
-        for (int idx = 0; idx < 3; idx++) {
-            task.addTask(() -> {
-                count++;
-            });
-        }
-
-        task.run();
-
-        Assert.assertEquals(3, count);
-        Assert.assertEquals(3, task.getTaskCount());
+  @Test
+  public void testRun() {
+    CompositeTask task = new CompositeTask();
+    for (int idx = 0; idx < 3; idx++) {
+      task.addTask(() -> {
+        count++;
+      });
     }
+
+    task.run();
+
+    Assert.assertEquals(3, count);
+    Assert.assertEquals(3, task.getTaskCount());
+  }
 }

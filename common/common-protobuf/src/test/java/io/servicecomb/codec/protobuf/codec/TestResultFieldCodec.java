@@ -32,42 +32,41 @@ import com.fasterxml.jackson.dataformat.protobuf.schema.ProtobufMessage;
 import com.fasterxml.jackson.dataformat.protobuf.schema.ProtobufSchema;
 
 public class TestResultFieldCodec {
-    private ResultFieldCodec resultFieldCodec = null;
+  private ResultFieldCodec resultFieldCodec = null;
 
-    private ProtobufSchema schema = null;
+  private ProtobufSchema schema = null;
 
-    @Before
-    public void setUp() throws Exception {
-        resultFieldCodec = new ResultFieldCodec();
-        schema = Mockito.mock(ProtobufSchema.class);
-    }
+  @Before
+  public void setUp() throws Exception {
+    resultFieldCodec = new ResultFieldCodec();
+    schema = Mockito.mock(ProtobufSchema.class);
+  }
 
-    @After
-    public void tearDown() throws Exception {
-        resultFieldCodec = null;
-        schema = null;
-    }
+  @After
+  public void tearDown() throws Exception {
+    resultFieldCodec = null;
+    schema = null;
+  }
 
-    @Test
-    public void testInit() {
-        Assert.assertNotNull(resultFieldCodec);
+  @Test
+  public void testInit() {
+    Assert.assertNotNull(resultFieldCodec);
 
-        ProtobufField[] protobufFieldArray = new ProtobufField[5];
-        FieldElement rawType = null;
-        FieldType type = FieldType.STRING;
-        ProtobufField p = new ProtobufField(rawType, type);
-        protobufFieldArray[0] = p;
-        Type[] types = new Type[10];
-        types[0] = Integer.TYPE;
+    ProtobufField[] protobufFieldArray = new ProtobufField[5];
+    FieldElement rawType = null;
+    FieldType type = FieldType.STRING;
+    ProtobufField p = new ProtobufField(rawType, type);
+    protobufFieldArray[0] = p;
+    Type[] types = new Type[10];
+    types[0] = Integer.TYPE;
 
-        Mockito.when(schema.getRootType()).thenReturn(Mockito.mock(ProtobufMessage.class));
-        Mockito.when(schema.getRootType().getFieldCount()).thenReturn(1);
-        Mockito.when(schema.getRootType().fields()).thenReturn(Arrays.asList(protobufFieldArray));
-        Assert.assertNull(resultFieldCodec.reader);
-        Assert.assertNull(resultFieldCodec.writer);
-        resultFieldCodec.init(schema, types);
-        Assert.assertNotNull(resultFieldCodec.reader);
-        Assert.assertNotNull(resultFieldCodec.writer);
-    }
-
+    Mockito.when(schema.getRootType()).thenReturn(Mockito.mock(ProtobufMessage.class));
+    Mockito.when(schema.getRootType().getFieldCount()).thenReturn(1);
+    Mockito.when(schema.getRootType().fields()).thenReturn(Arrays.asList(protobufFieldArray));
+    Assert.assertNull(resultFieldCodec.reader);
+    Assert.assertNull(resultFieldCodec.writer);
+    resultFieldCodec.init(schema, types);
+    Assert.assertNotNull(resultFieldCodec.reader);
+    Assert.assertNotNull(resultFieldCodec.writer);
+  }
 }

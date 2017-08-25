@@ -21,21 +21,21 @@ import io.servicecomb.swagger.invocation.arguments.ArgumentMapper;
 import io.servicecomb.swagger.invocation.converter.Converter;
 
 public final class ConsumerArgumentSame implements ArgumentMapper {
-    private int consumerIdx;
+  private int consumerIdx;
 
-    private int swaggerIdx;
+  private int swaggerIdx;
 
-    private Converter converter;
+  private Converter converter;
 
-    public ConsumerArgumentSame(int consumerIdx, int swaggerIdx, Converter converter) {
-        this.consumerIdx = consumerIdx;
-        this.swaggerIdx = swaggerIdx;
-        this.converter = converter;
-    }
+  public ConsumerArgumentSame(int consumerIdx, int swaggerIdx, Converter converter) {
+    this.consumerIdx = consumerIdx;
+    this.swaggerIdx = swaggerIdx;
+    this.converter = converter;
+  }
 
-    @Override
-    public void mapArgument(SwaggerInvocation invocation, Object[] consumerArguments) {
-        Object swaggerParam = converter.convert(consumerArguments[consumerIdx]);
-        invocation.setSwaggerArgument(swaggerIdx, swaggerParam);
-    }
+  @Override
+  public void mapArgument(SwaggerInvocation invocation, Object[] consumerArguments) {
+    Object swaggerParam = converter.convert(consumerArguments[consumerIdx]);
+    invocation.setSwaggerArgument(swaggerIdx, swaggerParam);
+  }
 }

@@ -24,27 +24,27 @@ import io.servicecomb.demo.compute.Person;
 import io.servicecomb.demo.server.User;
 
 public interface CodeFirstPojoIntf {
-    Map<String, User> testUserMap(Map<String, User> userMap);
+  Map<String, User> testUserMap(Map<String, User> userMap);
 
-    List<User> testUserArray(List<User> users);
+  List<User> testUserArray(List<User> users);
 
-    String[] testStrings(String[] input);
+  String[] testStrings(String[] input);
 
-    byte[] testBytes(byte[] input);
+  byte[] testBytes(byte[] input);
 
-    int reduce(int a, int b);
+  int reduce(int a, int b);
 
-    Date addDate(Date date, long second);
+  Date addDate(Date date, long second);
 
-    Person sayHello(Person user);
+  Person sayHello(Person user);
 
-    String saySomething(String prefix, Person user);
+  String saySomething(String prefix, Person user);
 
-    String sayHi(String name);
+  String sayHi(String name);
 
-    String sayHi2(String name);
+  String sayHi2(String name);
 
-    boolean isTrue();
+  boolean isTrue();
 
-    String addString(List<String> s);
+  String addString(List<String> s);
 }

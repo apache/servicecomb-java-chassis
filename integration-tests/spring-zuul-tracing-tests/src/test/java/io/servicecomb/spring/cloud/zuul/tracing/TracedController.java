@@ -19,11 +19,13 @@ package io.servicecomb.spring.cloud.zuul.tracing;
 import static org.springframework.http.MediaType.TEXT_PLAIN_VALUE;
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
 
-import io.servicecomb.provider.rest.common.RestSchema;
 import java.lang.invoke.MethodHandles;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.RequestMapping;
+
+import io.servicecomb.provider.rest.common.RestSchema;
 
 @RestSchema(schemaId = "tracedController")
 @RequestMapping("/rest")

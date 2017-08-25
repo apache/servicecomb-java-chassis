@@ -21,19 +21,19 @@ import org.junit.Test;
 import io.servicecomb.swagger.invocation.context.InvocationContext;
 
 public class TestCseHttpEntity {
-    @Test
-    public void test() {
-        CseHttpEntity<String> entity = new CseHttpEntity<>(null, null);
-        entity.addContext("c1", "c1v");
+  @Test
+  public void test() {
+    CseHttpEntity<String> entity = new CseHttpEntity<>(null, null);
+    entity.addContext("c1", "c1v");
 
-        Assert.assertEquals(1, entity.getContext().getContext().size());
-        Assert.assertEquals("c1v", entity.getContext().getContext("c1"));
+    Assert.assertEquals(1, entity.getContext().getContext().size());
+    Assert.assertEquals("c1v", entity.getContext().getContext("c1"));
 
-        InvocationContext context = new InvocationContext();
-        context.addContext("c2", "c2v");
-        entity.setContext(context);
+    InvocationContext context = new InvocationContext();
+    context.addContext("c2", "c2v");
+    entity.setContext(context);
 
-        Assert.assertEquals(1, entity.getContext().getContext().size());
-        Assert.assertEquals("c2v", entity.getContext().getContext("c2"));
-    }
+    Assert.assertEquals(1, entity.getContext().getContext().size());
+    Assert.assertEquals("c2v", entity.getContext().getContext("c2"));
+  }
 }

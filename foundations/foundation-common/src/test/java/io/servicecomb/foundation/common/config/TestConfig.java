@@ -35,153 +35,153 @@ import io.servicecomb.foundation.common.utils.BeanUtils;
 import io.servicecomb.foundation.common.utils.Log4jUtils;
 
 public class TestConfig {
-    private static final int TEST_PROP_LIST_SIZE = 2;
+  private static final int TEST_PROP_LIST_SIZE = 2;
 
-    private static ApplicationContext context;
+  private static ApplicationContext context;
 
-    @Test
-    public void loadMergedProperties() throws Exception {
-        Properties prop = ConfigMgr.INSTANCE.getConfig("pTest");
-        Assert.assertEquals("0", prop.get("1"));
-        Assert.assertEquals("1", prop.get("1.1"));
-        Assert.assertEquals("2", prop.get("1.2"));
-    }
+  @Test
+  public void loadMergedProperties() throws Exception {
+    Properties prop = ConfigMgr.INSTANCE.getConfig("pTest");
+    Assert.assertEquals("0", prop.get("1"));
+    Assert.assertEquals("1", prop.get("1.1"));
+    Assert.assertEquals("2", prop.get("1.2"));
+  }
 
-    @Test
-    public void testBean() throws Exception {
-        Log4jUtils.init();
-        BeanUtils.init();
-        BeanProp bp = (BeanProp) BeanUtils.getBean("beanProp");
-        Assert.assertEquals("2", bp.getTest());
-    }
+  @Test
+  public void testBean() throws Exception {
+    Log4jUtils.init();
+    BeanUtils.init();
+    BeanProp bp = (BeanProp) BeanUtils.getBean("beanProp");
+    Assert.assertEquals("2", bp.getTest());
+  }
 
-    @Test
-    public void testBeanContext() {
-        BeanUtils.setContext(context);
-        Assert.assertEquals(context, BeanUtils.getContext());
-    }
+  @Test
+  public void testBeanContext() {
+    BeanUtils.setContext(context);
+    Assert.assertEquals(context, BeanUtils.getContext());
+  }
 
-    @Test
-    public void testConvertProperties() throws Exception {
-        BeanProp bp = PaaSResourceUtils.loadConfigAs("pTest", BeanProp.class);
-        Assert.assertEquals("2", bp.getTest());
-    }
+  @Test
+  public void testConvertProperties() throws Exception {
+    BeanProp bp = PaaSResourceUtils.loadConfigAs("pTest", BeanProp.class);
+    Assert.assertEquals("2", bp.getTest());
+  }
 
-    @Test
-    public void testConvertXml() throws Exception {
-        Object ret = PaaSResourceUtils.loadConfigAs("xTest", BeanProp.class);
-        BeanProp bp = (BeanProp) ret;
-        Assert.assertEquals("test value", bp.getTest());
-    }
+  @Test
+  public void testConvertXml() throws Exception {
+    Object ret = PaaSResourceUtils.loadConfigAs("xTest", BeanProp.class);
+    BeanProp bp = (BeanProp) ret;
+    Assert.assertEquals("test value", bp.getTest());
+  }
 
-    @Test
-    public void testXml() throws Exception {
-        List<String> locationPatternList = new ArrayList<>();
-        locationPatternList.add("classpath*:config/config.test.inc.xml");
-        ConfigLoader loader = new XmlLoader(locationPatternList, ".inc.xml");
-        Document doc = loader.load();
+  @Test
+  public void testXml() throws Exception {
+    List<String> locationPatternList = new ArrayList<>();
+    locationPatternList.add("classpath*:config/config.test.inc.xml");
+    ConfigLoader loader = new XmlLoader(locationPatternList, ".inc.xml");
+    Document doc = loader.load();
 
-        Element root = doc.getDocumentElement();
-        Assert.assertEquals("configs", root.getNodeName());
+    Element root = doc.getDocumentElement();
+    Assert.assertEquals("configs", root.getNodeName());
 
-        {
-            NodeList propList = root.getElementsByTagName("properties");
-            Assert.assertEquals(2, propList.getLength());
+    {
+      NodeList propList = root.getElementsByTagName("properties");
+      Assert.assertEquals(2, propList.getLength());
 
-            {
-                Element prop = (Element) propList.item(0);
-                Assert.assertEquals("pTest", prop.getAttributes().getNamedItem("id").getNodeValue());
-
-                NodeList pathList = prop.getElementsByTagName("path");
-                Assert.assertEquals(1, pathList.getLength());
-                Assert.assertEquals("classpath*:config/test.properties", pathList.item(0).getTextContent());
-            }
-
-            {
-                Element prop = (Element) propList.item(1);
-                Assert.assertEquals("pTest", prop.getAttributes().getNamedItem("id").getNodeValue());
-
-                NodeList pathList = prop.getElementsByTagName("path");
-                Assert.assertEquals(1, pathList.getLength());
-                Assert.assertEquals("classpath*:config/test.ext.properties",
-                        pathList.item(0).getTextContent());
-            }
-        }
-
-        {
-            NodeList xmlList = root.getElementsByTagName("xml");
-            Assert.assertEquals(2, xmlList.getLength());
-
-            {
-                Element xml = (Element) xmlList.item(0);
-                Assert.assertEquals("xTest", xml.getAttributes().getNamedItem("id").getNodeValue());
-
-                NodeList pathList = xml.getElementsByTagName("path");
-                Assert.assertEquals(1, pathList.getLength());
-                Assert.assertEquals("classpath*:config/test.xml", pathList.item(0).getTextContent());
-            }
-
-            {
-                Element xml = (Element) xmlList.item(1);
-                Assert.assertEquals("xTest", xml.getAttributes().getNamedItem("id").getNodeValue());
-
-                NodeList pathList = xml.getElementsByTagName("path");
-                Assert.assertEquals(1, pathList.getLength());
-                Assert.assertEquals("classpath*:config/test.ext.xml", pathList.item(0).getTextContent());
-            }
-        }
-    }
-
-    @Test
-    public void testIdXml() throws Exception {
-        List<String> locationPatternList = new ArrayList<>();
-        locationPatternList.add("classpath*:config/config.test.inc.xml");
-        ConfigLoader loader = new IdXmlLoader(locationPatternList, ".inc.xml");
-        Document doc = loader.load();
-
-        Element root = doc.getDocumentElement();
-        Assert.assertEquals("configs", root.getNodeName());
-
-        NodeList propList = root.getElementsByTagName("properties");
-        Assert.assertEquals(1, propList.getLength());
-
+      {
         Element prop = (Element) propList.item(0);
         Assert.assertEquals("pTest", prop.getAttributes().getNamedItem("id").getNodeValue());
 
-        NodeList pathListProp = prop.getElementsByTagName("path");
-        Assert.assertEquals(TEST_PROP_LIST_SIZE, pathListProp.getLength());
-        Assert.assertEquals("classpath*:config/test.properties", pathListProp.item(0).getTextContent());
-        Assert.assertEquals("classpath*:config/test.ext.properties", pathListProp.item(1).getTextContent());
+        NodeList pathList = prop.getElementsByTagName("path");
+        Assert.assertEquals(1, pathList.getLength());
+        Assert.assertEquals("classpath*:config/test.properties", pathList.item(0).getTextContent());
+      }
 
-        NodeList xmlList = root.getElementsByTagName("xml");
-        Assert.assertEquals(1, xmlList.getLength());
+      {
+        Element prop = (Element) propList.item(1);
+        Assert.assertEquals("pTest", prop.getAttributes().getNamedItem("id").getNodeValue());
 
+        NodeList pathList = prop.getElementsByTagName("path");
+        Assert.assertEquals(1, pathList.getLength());
+        Assert.assertEquals("classpath*:config/test.ext.properties",
+            pathList.item(0).getTextContent());
+      }
+    }
+
+    {
+      NodeList xmlList = root.getElementsByTagName("xml");
+      Assert.assertEquals(2, xmlList.getLength());
+
+      {
         Element xml = (Element) xmlList.item(0);
         Assert.assertEquals("xTest", xml.getAttributes().getNamedItem("id").getNodeValue());
 
-        NodeList pathListXml = xml.getElementsByTagName("path");
-        Assert.assertEquals(TEST_PROP_LIST_SIZE, pathListXml.getLength());
-        Assert.assertEquals("classpath*:config/test.xml", pathListXml.item(0).getTextContent());
-        Assert.assertEquals("classpath*:config/test.ext.xml", pathListXml.item(1).getTextContent());
-    }
+        NodeList pathList = xml.getElementsByTagName("path");
+        Assert.assertEquals(1, pathList.getLength());
+        Assert.assertEquals("classpath*:config/test.xml", pathList.item(0).getTextContent());
+      }
 
-    @Test
-    public void testPaaSResourceUtils() throws Exception {
-        List<Resource> oList = PaaSResourceUtils.getSortedXmls("test.xml");
-        Assert.assertNotEquals(null, oList);
-        Assert.assertNotEquals(null, PaaSResourceUtils.loadMergedProperties("config/test.properties"));
-        PaaSResourceUtils.sortProperties(oList);
-        PaaSResourceUtils.sortXmls(oList);
-        Assert.assertNotEquals(null, PaaSPropertiesLoaderUtils.loadMergedProperties("config/test.properties"));
-        try {
-            PaaSPropertiesLoaderUtils.fillMergedProperties(new Properties(), "");
-        } catch (Exception e) {
-            Assert.assertEquals(true, (e.getMessage()).contains("Resource path must not be null or empty"));
-        }
-        try {
-            PaaSPropertiesLoaderUtils.fillMergedProperties(new Properties(), "tes.kunle");
-        } catch (Exception e) {
-            Assert.assertEquals(true, (e.getMessage()).contains("Resource path must ends with"));
-        }
+      {
+        Element xml = (Element) xmlList.item(1);
+        Assert.assertEquals("xTest", xml.getAttributes().getNamedItem("id").getNodeValue());
+
+        NodeList pathList = xml.getElementsByTagName("path");
+        Assert.assertEquals(1, pathList.getLength());
+        Assert.assertEquals("classpath*:config/test.ext.xml", pathList.item(0).getTextContent());
+      }
     }
+  }
+
+  @Test
+  public void testIdXml() throws Exception {
+    List<String> locationPatternList = new ArrayList<>();
+    locationPatternList.add("classpath*:config/config.test.inc.xml");
+    ConfigLoader loader = new IdXmlLoader(locationPatternList, ".inc.xml");
+    Document doc = loader.load();
+
+    Element root = doc.getDocumentElement();
+    Assert.assertEquals("configs", root.getNodeName());
+
+    NodeList propList = root.getElementsByTagName("properties");
+    Assert.assertEquals(1, propList.getLength());
+
+    Element prop = (Element) propList.item(0);
+    Assert.assertEquals("pTest", prop.getAttributes().getNamedItem("id").getNodeValue());
+
+    NodeList pathListProp = prop.getElementsByTagName("path");
+    Assert.assertEquals(TEST_PROP_LIST_SIZE, pathListProp.getLength());
+    Assert.assertEquals("classpath*:config/test.properties", pathListProp.item(0).getTextContent());
+    Assert.assertEquals("classpath*:config/test.ext.properties", pathListProp.item(1).getTextContent());
+
+    NodeList xmlList = root.getElementsByTagName("xml");
+    Assert.assertEquals(1, xmlList.getLength());
+
+    Element xml = (Element) xmlList.item(0);
+    Assert.assertEquals("xTest", xml.getAttributes().getNamedItem("id").getNodeValue());
+
+    NodeList pathListXml = xml.getElementsByTagName("path");
+    Assert.assertEquals(TEST_PROP_LIST_SIZE, pathListXml.getLength());
+    Assert.assertEquals("classpath*:config/test.xml", pathListXml.item(0).getTextContent());
+    Assert.assertEquals("classpath*:config/test.ext.xml", pathListXml.item(1).getTextContent());
+  }
+
+  @Test
+  public void testPaaSResourceUtils() throws Exception {
+    List<Resource> oList = PaaSResourceUtils.getSortedXmls("test.xml");
+    Assert.assertNotEquals(null, oList);
+    Assert.assertNotEquals(null, PaaSResourceUtils.loadMergedProperties("config/test.properties"));
+    PaaSResourceUtils.sortProperties(oList);
+    PaaSResourceUtils.sortXmls(oList);
+    Assert.assertNotEquals(null, PaaSPropertiesLoaderUtils.loadMergedProperties("config/test.properties"));
+    try {
+      PaaSPropertiesLoaderUtils.fillMergedProperties(new Properties(), "");
+    } catch (Exception e) {
+      Assert.assertEquals(true, (e.getMessage()).contains("Resource path must not be null or empty"));
+    }
+    try {
+      PaaSPropertiesLoaderUtils.fillMergedProperties(new Properties(), "tes.kunle");
+    } catch (Exception e) {
+      Assert.assertEquals(true, (e.getMessage()).contains("Resource path must ends with"));
+    }
+  }
 }

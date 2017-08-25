@@ -26,32 +26,32 @@ import io.servicecomb.provider.pojo.PojoConst;
 import io.servicecomb.swagger.generator.core.utils.ClassUtils;
 
 public class ReferenceDefParser extends AbstractSingleBeanDefinitionParser {
-    @Override
-    protected Class<?> getBeanClass(Element element) {
-        return PojoReferenceMeta.class;
+  @Override
+  protected Class<?> getBeanClass(Element element) {
+    return PojoReferenceMeta.class;
+  }
+
+  @Override
+  protected void doParse(Element element, ParserContext parserContext, BeanDefinitionBuilder builder) {
+    builder.addPropertyValue(PojoConst.FIELD_MICROSERVICE_NAME,
+        element.getAttribute(PojoConst.MICROSERVICE_NAME));
+
+    String schemaId = element.getAttribute(PojoConst.SCHEMA_ID);
+    String intf = element.getAttribute(PojoConst.INTERFACE);
+
+    if (StringUtils.isEmpty(intf) && !StringUtils.isEmpty(schemaId)) {
+      //  尝试将schemaId当作接口名使用
+      Class<?> consumerIntf = ClassUtils.getClassByName(null, schemaId);
+      if (consumerIntf != null) {
+        intf = schemaId;
+      }
     }
 
-    @Override
-    protected void doParse(Element element, ParserContext parserContext, BeanDefinitionBuilder builder) {
-        builder.addPropertyValue(PojoConst.FIELD_MICROSERVICE_NAME,
-                element.getAttribute(PojoConst.MICROSERVICE_NAME));
+    builder.addPropertyValue(PojoConst.FIELD_SCHEMA_ID, schemaId);
+    builder.addPropertyValue(PojoConst.FIELD_INTERFACE, intf);
 
-        String schemaId = element.getAttribute(PojoConst.SCHEMA_ID);
-        String intf = element.getAttribute(PojoConst.INTERFACE);
-
-        if (StringUtils.isEmpty(intf) && !StringUtils.isEmpty(schemaId)) {
-            //  尝试将schemaId当作接口名使用
-            Class<?> consumerIntf = ClassUtils.getClassByName(null, schemaId);
-            if (consumerIntf != null) {
-                intf = schemaId;
-            }
-        }
-
-        builder.addPropertyValue(PojoConst.FIELD_SCHEMA_ID, schemaId);
-        builder.addPropertyValue(PojoConst.FIELD_INTERFACE, intf);
-
-        if (StringUtils.isEmpty(schemaId) && StringUtils.isEmpty(intf)) {
-            throw new Error("schema-id and interface can not both be empty.");
-        }
+    if (StringUtils.isEmpty(schemaId) && StringUtils.isEmpty(intf)) {
+      throw new Error("schema-id and interface can not both be empty.");
     }
+  }
 }

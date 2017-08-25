@@ -16,24 +16,23 @@
 
 package io.servicecomb.provider.pojo.instance;
 
+import io.servicecomb.foundation.common.utils.BeanUtils;
 import io.servicecomb.provider.pojo.InstanceFactory;
 import io.servicecomb.provider.pojo.PojoConst;
-import io.servicecomb.foundation.common.utils.BeanUtils;
 
 public class SpringInstanceFactory implements InstanceFactory {
-    @Override
-    public String getImplName() {
-        return PojoConst.SPRING;
+  @Override
+  public String getImplName() {
+    return PojoConst.SPRING;
+  }
+
+  @Override
+  public Object create(String beanId) {
+    Object instance = BeanUtils.getBean(beanId);
+    if (instance == null) {
+      throw new Error("Fail to find bean:" + beanId);
     }
 
-    @Override
-    public Object create(String beanId) {
-        Object instance = BeanUtils.getBean(beanId);
-        if (instance == null) {
-            throw new Error("Fail to find bean:" + beanId);
-        }
-
-        return instance;
-    }
-
+    return instance;
+  }
 }

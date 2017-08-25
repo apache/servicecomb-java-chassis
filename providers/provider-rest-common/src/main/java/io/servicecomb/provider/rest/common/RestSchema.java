@@ -32,5 +32,5 @@ import org.springframework.stereotype.Component;
 @Target(TYPE)
 @Component
 public @interface RestSchema {
-    String schemaId();
+  String schemaId();
 }

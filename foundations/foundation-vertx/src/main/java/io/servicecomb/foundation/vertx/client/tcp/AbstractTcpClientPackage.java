@@ -20,17 +20,17 @@ import java.util.concurrent.atomic.AtomicLong;
 import io.servicecomb.foundation.vertx.tcp.TcpOutputStream;
 
 public abstract class AbstractTcpClientPackage {
-    private static AtomicLong reqId = new AtomicLong();
+  private static AtomicLong reqId = new AtomicLong();
 
-    public static long getAndIncRequestId() {
-        return reqId.getAndIncrement();
-    }
+  public static long getAndIncRequestId() {
+    return reqId.getAndIncrement();
+  }
 
-    protected long msgId = getAndIncRequestId();
+  protected long msgId = getAndIncRequestId();
 
-    public long getMsgId() {
-        return msgId;
-    }
+  public long getMsgId() {
+    return msgId;
+  }
 
-    public abstract TcpOutputStream createStream();
+  public abstract TcpOutputStream createStream();
 }

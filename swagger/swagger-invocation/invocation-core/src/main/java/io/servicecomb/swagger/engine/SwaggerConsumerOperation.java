@@ -21,53 +21,53 @@ import io.servicecomb.swagger.invocation.arguments.consumer.ConsumerArgumentsMap
 import io.servicecomb.swagger.invocation.response.consumer.ConsumerResponseMapper;
 
 public class SwaggerConsumerOperation {
-    private String name;
+  private String name;
 
-    private Method consumerMethod;
+  private Method consumerMethod;
 
-    private Method swaggerMethod;
+  private Method swaggerMethod;
 
-    private ConsumerArgumentsMapper argumentsMapper;
+  private ConsumerArgumentsMapper argumentsMapper;
 
-    private ConsumerResponseMapper responseMapper;
+  private ConsumerResponseMapper responseMapper;
 
-    public String getName() {
-        return name;
-    }
+  public String getName() {
+    return name;
+  }
 
-    public void setName(String name) {
-        this.name = name;
-    }
+  public void setName(String name) {
+    this.name = name;
+  }
 
-    public Method getConsumerMethod() {
-        return consumerMethod;
-    }
+  public Method getConsumerMethod() {
+    return consumerMethod;
+  }
 
-    public void setConsumerMethod(Method consumerMethod) {
-        this.consumerMethod = consumerMethod;
-    }
+  public void setConsumerMethod(Method consumerMethod) {
+    this.consumerMethod = consumerMethod;
+  }
 
-    public Method getSwaggerMethod() {
-        return swaggerMethod;
-    }
+  public Method getSwaggerMethod() {
+    return swaggerMethod;
+  }
 
-    public void setSwaggerMethod(Method swaggerMethod) {
-        this.swaggerMethod = swaggerMethod;
-    }
+  public void setSwaggerMethod(Method swaggerMethod) {
+    this.swaggerMethod = swaggerMethod;
+  }
 
-    public ConsumerArgumentsMapper getArgumentsMapper() {
-        return argumentsMapper;
-    }
+  public ConsumerArgumentsMapper getArgumentsMapper() {
+    return argumentsMapper;
+  }
 
-    public void setArgumentsMapper(ConsumerArgumentsMapper argumentsMapper) {
-        this.argumentsMapper = argumentsMapper;
-    }
+  public void setArgumentsMapper(ConsumerArgumentsMapper argumentsMapper) {
+    this.argumentsMapper = argumentsMapper;
+  }
 
-    public ConsumerResponseMapper getResponseMapper() {
-        return responseMapper;
-    }
+  public ConsumerResponseMapper getResponseMapper() {
+    return responseMapper;
+  }
 
-    public void setResponseMapper(ConsumerResponseMapper responseMapper) {
-        this.responseMapper = responseMapper;
-    }
+  public void setResponseMapper(ConsumerResponseMapper responseMapper) {
+    this.responseMapper = responseMapper;
+  }
 }

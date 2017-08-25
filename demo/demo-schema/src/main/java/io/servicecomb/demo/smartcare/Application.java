@@ -19,79 +19,79 @@ package io.servicecomb.demo.smartcare;
 import java.util.List;
 
 public class Application {
-    private String name;
+  private String name;
 
-    private String labelEN;
+  private String labelEN;
 
-    private String labelCH;
+  private String labelCH;
 
-    private String defaultGroup;
+  private String defaultGroup;
 
-    private String version;
+  private String version;
 
-    private boolean dynamicFlag;
+  private boolean dynamicFlag;
 
-    private List<Group> groups;
+  private List<Group> groups;
 
-    public String getName() {
-        return name;
-    }
+  public String getName() {
+    return name;
+  }
 
-    public void setName(String name) {
-        this.name = name;
-    }
+  public void setName(String name) {
+    this.name = name;
+  }
 
-    public String getLabelEN() {
-        return labelEN;
-    }
+  public String getLabelEN() {
+    return labelEN;
+  }
 
-    public void setLabelEN(String labelEN) {
-        this.labelEN = labelEN;
-    }
+  public void setLabelEN(String labelEN) {
+    this.labelEN = labelEN;
+  }
 
-    public String getLabelCH() {
-        return labelCH;
-    }
+  public String getLabelCH() {
+    return labelCH;
+  }
 
-    public void setLabelCH(String labelCH) {
-        this.labelCH = labelCH;
-    }
+  public void setLabelCH(String labelCH) {
+    this.labelCH = labelCH;
+  }
 
-    public String getDefaultGroup() {
-        return defaultGroup;
-    }
+  public String getDefaultGroup() {
+    return defaultGroup;
+  }
 
-    public void setDefaultGroup(String defaultGroup) {
-        this.defaultGroup = defaultGroup;
-    }
+  public void setDefaultGroup(String defaultGroup) {
+    this.defaultGroup = defaultGroup;
+  }
 
-    public String getVersion() {
-        return version;
-    }
+  public String getVersion() {
+    return version;
+  }
 
-    public void setVersion(String version) {
-        this.version = version;
-    }
+  public void setVersion(String version) {
+    this.version = version;
+  }
 
-    public boolean isDynamicFlag() {
-        return dynamicFlag;
-    }
+  public boolean isDynamicFlag() {
+    return dynamicFlag;
+  }
 
-    public void setDynamicFlag(boolean dynamicFlag) {
-        this.dynamicFlag = dynamicFlag;
-    }
+  public void setDynamicFlag(boolean dynamicFlag) {
+    this.dynamicFlag = dynamicFlag;
+  }
 
-    public List<Group> getGroups() {
-        return groups;
-    }
+  public List<Group> getGroups() {
+    return groups;
+  }
 
-    public void setGroups(List<Group> groups) {
-        this.groups = groups;
-    }
+  public void setGroups(List<Group> groups) {
+    this.groups = groups;
+  }
 
-    @Override
-    public String toString() {
-        return "name=" + name + "\n"
-                + "version=" + version;
-    }
+  @Override
+  public String toString() {
+    return "name=" + name + "\n"
+        + "version=" + version;
+  }
 }

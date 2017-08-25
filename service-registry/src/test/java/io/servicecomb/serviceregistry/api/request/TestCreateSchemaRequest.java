@@ -19,13 +19,13 @@ import org.junit.Assert;
 import org.junit.Test;
 
 public class TestCreateSchemaRequest {
-    @Test
-    public void testProperties() {
-        CreateSchemaRequest request = new CreateSchemaRequest();
+  @Test
+  public void testProperties() {
+    CreateSchemaRequest request = new CreateSchemaRequest();
 
-        Assert.assertEquals(null, request.getSchema());
+    Assert.assertEquals(null, request.getSchema());
 
-        request.setSchema("schema");
-        Assert.assertEquals("schema", request.getSchema());
-    }
+    request.setSchema("schema");
+    Assert.assertEquals("schema", request.getSchema());
+  }
 }

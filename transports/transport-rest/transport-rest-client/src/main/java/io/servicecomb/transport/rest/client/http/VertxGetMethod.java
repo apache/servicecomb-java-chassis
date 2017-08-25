@@ -24,19 +24,19 @@ import io.vertx.core.http.HttpClient;
 import io.vertx.core.http.HttpClientRequest;
 
 public final class VertxGetMethod extends VertxHttpMethod {
-    public static final VertxGetMethod INSTANCE = new VertxGetMethod();
+  public static final VertxGetMethod INSTANCE = new VertxGetMethod();
 
-    private VertxGetMethod() {
-    }
+  private VertxGetMethod() {
+  }
 
-    @Override
-    protected HttpClientRequest createRequest(HttpClient client, Invocation invocation, IpPort ipPort, String path,
-            RestOperationMeta operation, AsyncResponse asyncResp) {
-        HttpClientRequest clientRequest =
-            client.get(ipPort.getPort(), ipPort.getHostOrIp(), path, response -> {
-                handleResponse(invocation, response, operation, asyncResp);
-            });
+  @Override
+  protected HttpClientRequest createRequest(HttpClient client, Invocation invocation, IpPort ipPort, String path,
+      RestOperationMeta operation, AsyncResponse asyncResp) {
+    HttpClientRequest clientRequest =
+        client.get(ipPort.getPort(), ipPort.getHostOrIp(), path, response -> {
+          handleResponse(invocation, response, operation, asyncResp);
+        });
 
-        return clientRequest;
-    }
+    return clientRequest;
+  }
 }

@@ -34,82 +34,78 @@ import mockit.MockUp;
 
 public class TestCseServerList {
 
-    private CseServerList instance = null;
+  private CseServerList instance = null;
 
-    private void mockTestCases() {
-        new MockUp<InstanceCacheManager>() {
-            @Mock
-            public InstanceCache getOrCreate(String appId, String microserviceName, String microserviceVersionRule) {
-                return null;
-            }
+  private void mockTestCases() {
+    new MockUp<InstanceCacheManager>() {
+      @Mock
+      public InstanceCache getOrCreate(String appId, String microserviceName, String microserviceVersionRule) {
+        return null;
+      }
+    };
+  }
 
-        };
+  @Before
+  public void setUp() throws Exception {
+    mockTestCases();
+    instance = new CseServerList("appId", "microserviceName", "microserviceVersionRule", "transportName");
+  }
 
-    }
+  @After
+  public void tearDown() throws Exception {
+    instance = null;
+  }
 
-    @Before
-    public void setUp() throws Exception {
-        mockTestCases();
-        instance = new CseServerList("appId", "microserviceName", "microserviceVersionRule", "transportName");
-    }
+  @Test
+  public void testCseServerList() {
+    Assert.assertNotNull(instance);
+  }
 
-    @After
-    public void tearDown() throws Exception {
-        instance = null;
-    }
+  @SuppressWarnings("rawtypes")
+  @Test
+  public <ENDPOINT> void testGetInitListServers() {
 
-    @Test
-    public void testCseServerList() {
-        Assert.assertNotNull(instance);
+    @SuppressWarnings("unused")
+    ServerListCache serverListCache = new ServerListCache("test", "test", "test", "test");
 
-    }
+    List<ENDPOINT> endpoints = new ArrayList<>();
 
-    @SuppressWarnings("rawtypes")
-    @Test
-    public <ENDPOINT> void testGetInitListServers() {
+    ENDPOINT e = null;
+    endpoints.add(e);
 
-        @SuppressWarnings("unused")
-        ServerListCache serverListCache = new ServerListCache("test", "test", "test", "test");
+    new MockUp<AbstractEndpointsCache>() {
 
-        List<ENDPOINT> endpoints = new ArrayList<>();
+      @Mock
+      public List<ENDPOINT> getLatestEndpoints() {
+        return endpoints;
+      }
+    };
 
-        ENDPOINT e = null;
-        endpoints.add(e);
+    instance.getInitialListOfServers();
+    assertNotNull(instance.getInitialListOfServers());
+  }
 
-        new MockUp<AbstractEndpointsCache>() {
+  @SuppressWarnings("rawtypes")
+  @Test
+  public <ENDPOINT> void testGetUpdatedListOfServers() {
 
-            @Mock
-            public List<ENDPOINT> getLatestEndpoints() {
-                return endpoints;
-            }
-        };
+    @SuppressWarnings("unused")
+    ServerListCache serverListCache = new ServerListCache("test", "test", "test", "test");
 
-        instance.getInitialListOfServers();
-        assertNotNull(instance.getInitialListOfServers());
+    List<ENDPOINT> endpoints = new ArrayList<>();
 
-    }
+    ENDPOINT e = null;
+    endpoints.add(e);
 
-    @SuppressWarnings("rawtypes")
-    @Test
-    public <ENDPOINT> void testGetUpdatedListOfServers() {
+    new MockUp<AbstractEndpointsCache>() {
 
-        @SuppressWarnings("unused")
-        ServerListCache serverListCache = new ServerListCache("test", "test", "test", "test");
+      @Mock
+      public List<ENDPOINT> getLatestEndpoints() {
+        return endpoints;
+      }
+    };
 
-        List<ENDPOINT> endpoints = new ArrayList<>();
-
-        ENDPOINT e = null;
-        endpoints.add(e);
-
-        new MockUp<AbstractEndpointsCache>() {
-
-            @Mock
-            public List<ENDPOINT> getLatestEndpoints() {
-                return endpoints;
-            }
-        };
-
-        instance.getUpdatedListOfServers();
-        assertNotNull(instance.getUpdatedListOfServers());
-    }
+    instance.getUpdatedListOfServers();
+    assertNotNull(instance.getUpdatedListOfServers());
+  }
 }

@@ -19,66 +19,65 @@ package io.servicecomb.provider.pojo;
 import java.util.ArrayList;
 import java.util.List;
 
-import io.servicecomb.provider.pojo.schema.PojoProducerMeta;
-import io.servicecomb.provider.pojo.schema.PojoProducers;
 import org.junit.Assert;
 import org.junit.Test;
 
 import io.servicecomb.core.definition.schema.ProducerSchemaFactory;
+import io.servicecomb.provider.pojo.schema.PojoProducerMeta;
+import io.servicecomb.provider.pojo.schema.PojoProducers;
 import io.servicecomb.serviceregistry.RegistryUtils;
 import io.servicecomb.serviceregistry.api.registry.Microservice;
-
 import mockit.Deencapsulation;
 import mockit.Expectations;
 import mockit.Injectable;
 import mockit.Mocked;
 
 public class TestPojoProducerProvider {
-    @Test
-    public void testPojoProducerProviderAlreadyInited(@Injectable ProducerSchemaFactory factory,
-                                                      @Injectable PojoProducers producers, @Injectable PojoProducerMeta meta, @Mocked RegistryUtils utils,
-                                                      @Injectable Microservice service) throws Exception {
-        List<PojoProducerMeta> producersMeta = new ArrayList<>();
-        producersMeta.add(meta);
-        Person bean = new Person();
-        new Expectations() {
-            {
-                producers.getProcucers();
-                result = producersMeta;
-                meta.getInstance();
-                result = bean;
-            }
-        };
-        PojoProducerProvider provider = new PojoProducerProvider();
-        Deencapsulation.setField(provider, "producerSchemaFactory", factory);
-        Deencapsulation.setField(provider, "pojoProducers", producers);
-        provider.init();
-        // expectations done in Expectations
-    }
+  @Test
+  public void testPojoProducerProviderAlreadyInited(@Injectable ProducerSchemaFactory factory,
+      @Injectable PojoProducers producers, @Injectable PojoProducerMeta meta, @Mocked RegistryUtils utils,
+      @Injectable Microservice service) throws Exception {
+    List<PojoProducerMeta> producersMeta = new ArrayList<>();
+    producersMeta.add(meta);
+    Person bean = new Person();
+    new Expectations() {
+      {
+        producers.getProcucers();
+        result = producersMeta;
+        meta.getInstance();
+        result = bean;
+      }
+    };
+    PojoProducerProvider provider = new PojoProducerProvider();
+    Deencapsulation.setField(provider, "producerSchemaFactory", factory);
+    Deencapsulation.setField(provider, "pojoProducers", producers);
+    provider.init();
+    // expectations done in Expectations
+  }
 
-    @Test
-    public void testPojoProducerProvider(@Injectable ProducerSchemaFactory factory,
-            @Injectable PojoProducers producers, @Injectable PojoProducerMeta meta, @Mocked RegistryUtils utils,
-            @Injectable Microservice service) throws Exception {
-        List<PojoProducerMeta> producersMeta = new ArrayList<>();
-        producersMeta.add(meta);
-        new Expectations() {
-            {
-                producers.getProcucers();
-                result = producersMeta;
-                meta.getInstance();
-                result = null;
-                meta.getImplementation();
-                result = "pojo:io.servicecomb.provider.pojo.Person";
-                service.getServiceName();
-                result = "test";
-            }
-        };
-        PojoProducerProvider provider = new PojoProducerProvider();
-        Deencapsulation.setField(provider, "producerSchemaFactory", factory);
-        Deencapsulation.setField(provider, "pojoProducers", producers);
-        provider.init();
-        Assert.assertEquals(provider.getName(), "pojo");
-        // expectations done in Expectations
-    }
+  @Test
+  public void testPojoProducerProvider(@Injectable ProducerSchemaFactory factory,
+      @Injectable PojoProducers producers, @Injectable PojoProducerMeta meta, @Mocked RegistryUtils utils,
+      @Injectable Microservice service) throws Exception {
+    List<PojoProducerMeta> producersMeta = new ArrayList<>();
+    producersMeta.add(meta);
+    new Expectations() {
+      {
+        producers.getProcucers();
+        result = producersMeta;
+        meta.getInstance();
+        result = null;
+        meta.getImplementation();
+        result = "pojo:io.servicecomb.provider.pojo.Person";
+        service.getServiceName();
+        result = "test";
+      }
+    };
+    PojoProducerProvider provider = new PojoProducerProvider();
+    Deencapsulation.setField(provider, "producerSchemaFactory", factory);
+    Deencapsulation.setField(provider, "pojoProducers", producers);
+    provider.init();
+    Assert.assertEquals(provider.getName(), "pojo");
+    // expectations done in Expectations
+  }
 }

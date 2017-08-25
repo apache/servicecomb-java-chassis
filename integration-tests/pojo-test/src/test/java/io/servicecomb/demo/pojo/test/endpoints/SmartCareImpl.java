@@ -16,12 +16,13 @@
 
 package io.servicecomb.demo.pojo.test.endpoints;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import io.servicecomb.demo.smartcare.Application;
 import io.servicecomb.demo.smartcare.Response;
 import io.servicecomb.demo.smartcare.SmartCare;
 import io.servicecomb.provider.pojo.RpcSchema;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 @RpcSchema(schemaId = "smartcare")
 public class SmartCareImpl implements SmartCare {
@@ -55,5 +56,4 @@ public class SmartCareImpl implements SmartCare {
 
     return null;
   }
-
 }

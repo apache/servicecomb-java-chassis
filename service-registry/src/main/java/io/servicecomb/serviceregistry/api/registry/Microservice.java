@@ -31,145 +31,145 @@ import io.servicecomb.serviceregistry.api.Const;
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Microservice {
-    private String serviceId;
+  private String serviceId;
 
-    private String appId;
+  private String appId;
 
-    private String serviceName;
+  private String serviceName;
 
-    private String alias;
+  private String alias;
 
-    private String version;
+  private String version;
 
-    private String description;
+  private String description;
 
-    private String level;
+  private String level;
 
-    private List<String> schemas = new ArrayList<>();
+  private List<String> schemas = new ArrayList<>();
 
-    @JsonIgnore
-    private Map<String, String> schemaMap = new HashMap<>();
+  @JsonIgnore
+  private Map<String, String> schemaMap = new HashMap<>();
 
-    private List<BasePath> paths = new ArrayList<>();
+  private List<BasePath> paths = new ArrayList<>();
 
-    private MicroserviceStatus status = MicroserviceStatus.UP;
+  private MicroserviceStatus status = MicroserviceStatus.UP;
 
-    private Map<String, String> properties = new HashMap<>();
+  private Map<String, String> properties = new HashMap<>();
 
-    @JsonIgnore
-    private MicroserviceInstance intance;
+  @JsonIgnore
+  private MicroserviceInstance intance;
 
-    public Microservice() {
-    }
+  public Microservice() {
+  }
 
-    public MicroserviceInstance getIntance() {
-        return intance;
-    }
+  public MicroserviceInstance getIntance() {
+    return intance;
+  }
 
-    public void setIntance(MicroserviceInstance intance) {
-        this.intance = intance;
-    }
+  public void setIntance(MicroserviceInstance intance) {
+    this.intance = intance;
+  }
 
-    public String getServiceId() {
-        return serviceId;
-    }
+  public String getServiceId() {
+    return serviceId;
+  }
 
-    public void setServiceId(String serviceId) {
-        this.serviceId = serviceId;
-    }
+  public void setServiceId(String serviceId) {
+    this.serviceId = serviceId;
+  }
 
-    public String getAppId() {
-        return appId;
-    }
+  public String getAppId() {
+    return appId;
+  }
 
-    public void setAppId(String appId) {
-        this.appId = appId;
-    }
+  public void setAppId(String appId) {
+    this.appId = appId;
+  }
 
-    public String getAlias() {
-        return alias;
-    }
+  public String getAlias() {
+    return alias;
+  }
 
-    public void setAlias(String alias) {
-        this.alias = alias;
-    }
+  public void setAlias(String alias) {
+    this.alias = alias;
+  }
 
-    public String getServiceName() {
-        return serviceName;
-    }
+  public String getServiceName() {
+    return serviceName;
+  }
 
-    public void setServiceName(String serviceName) {
-        this.serviceName = serviceName;
-    }
+  public void setServiceName(String serviceName) {
+    this.serviceName = serviceName;
+  }
 
-    public String getVersion() {
-        return version;
-    }
+  public String getVersion() {
+    return version;
+  }
 
-    public void setVersion(String version) {
-        this.version = version;
-    }
+  public void setVersion(String version) {
+    this.version = version;
+  }
 
-    public String getDescription() {
-        return description;
-    }
+  public String getDescription() {
+    return description;
+  }
 
-    public void setDescription(String description) {
-        this.description = description;
-    }
+  public void setDescription(String description) {
+    this.description = description;
+  }
 
-    public String getLevel() {
-        return level;
-    }
+  public String getLevel() {
+    return level;
+  }
 
-    public void setLevel(String level) {
-        this.level = level;
-    }
+  public void setLevel(String level) {
+    this.level = level;
+  }
 
-    public List<String> getSchemas() {
-        return schemas;
-    }
+  public List<String> getSchemas() {
+    return schemas;
+  }
 
-    public void setSchemas(List<String> schemas) {
-        this.schemas = schemas;
-    }
+  public void setSchemas(List<String> schemas) {
+    this.schemas = schemas;
+  }
 
-    public void addSchema(String schemaId, String content) {
-        this.schemaMap.put(schemaId, content);
-        schemas.add(schemaId);
-    }
+  public void addSchema(String schemaId, String content) {
+    this.schemaMap.put(schemaId, content);
+    schemas.add(schemaId);
+  }
 
-    public Map<String, String> getSchemaMap() {
-        return schemaMap;
-    }
+  public Map<String, String> getSchemaMap() {
+    return schemaMap;
+  }
 
-    public String getStatus() {
-        return status.toString();
-    }
+  public String getStatus() {
+    return status.toString();
+  }
 
-    public void setStatus(String status) {
-        this.status = MicroserviceStatus.valueOf(status);
-    }
+  public void setStatus(String status) {
+    this.status = MicroserviceStatus.valueOf(status);
+  }
 
-    public Map<String, String> getProperties() {
-        return properties;
-    }
+  public Map<String, String> getProperties() {
+    return properties;
+  }
 
-    public void setProperties(Map<String, String> properties) {
-        this.properties = properties;
-    }
+  public void setProperties(Map<String, String> properties) {
+    this.properties = properties;
+  }
 
-    public static String generateAbsoluteMicroserviceName(String appId, String microserviceName) {
-        StringBuilder sb = new StringBuilder(appId.length() + microserviceName.length() + 1);
-        sb.append(appId).append(Const.APP_SERVICE_SEPARATOR).append(microserviceName);
-        return sb.toString();
-    }
+  public static String generateAbsoluteMicroserviceName(String appId, String microserviceName) {
+    StringBuilder sb = new StringBuilder(appId.length() + microserviceName.length() + 1);
+    sb.append(appId).append(Const.APP_SERVICE_SEPARATOR).append(microserviceName);
+    return sb.toString();
+  }
 
-    public List<BasePath> getPaths() {
-        return paths;
-    }
+  public List<BasePath> getPaths() {
+    return paths;
+  }
 
-    public void setPaths(List<BasePath> paths) {
-        this.paths = paths;
-    }
+  public void setPaths(List<BasePath> paths) {
+    this.paths = paths;
+  }
 }

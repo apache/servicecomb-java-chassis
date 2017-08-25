@@ -18,36 +18,37 @@ package io.servicecomb.core.definition.loader;
 
 import java.util.Arrays;
 
-import io.servicecomb.core.definition.MicroserviceMetaManager;
-import io.servicecomb.core.definition.SchemaMeta;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 
+import io.servicecomb.core.definition.MicroserviceMetaManager;
+import io.servicecomb.core.definition.SchemaMeta;
+
 public class TestSchemaListenerManager {
 
-    SchemaMeta schemaMeta = Mockito.mock(SchemaMeta.class);
+  SchemaMeta schemaMeta = Mockito.mock(SchemaMeta.class);
 
-    @Before
-    public void setUp() {
-        Mockito.when(schemaMeta.getSchemaId()).thenReturn("test");
-    }
+  @Before
+  public void setUp() {
+    Mockito.when(schemaMeta.getSchemaId()).thenReturn("test");
+  }
 
-    @Test
-    public void testInitializationListener() {
-        SchemaListener listener = new SchemaListener() {
-            @Override
-            public void onSchemaLoaded(SchemaMeta... schemaMetas) {
-                Assert.assertEquals(1, schemaMetas.length);
-                Assert.assertEquals("test", schemaMetas[0].getSchemaId());
-            }
-        };
+  @Test
+  public void testInitializationListener() {
+    SchemaListener listener = new SchemaListener() {
+      @Override
+      public void onSchemaLoaded(SchemaMeta... schemaMetas) {
+        Assert.assertEquals(1, schemaMetas.length);
+        Assert.assertEquals("test", schemaMetas[0].getSchemaId());
+      }
+    };
 
-        SchemaListenerManager mgr = new SchemaListenerManager();
-        mgr.setSchemaListenerList(Arrays.asList(listener));
-        mgr.setMicroserviceMetaManager(new MicroserviceMetaManager());
+    SchemaListenerManager mgr = new SchemaListenerManager();
+    mgr.setSchemaListenerList(Arrays.asList(listener));
+    mgr.setMicroserviceMetaManager(new MicroserviceMetaManager());
 
-        mgr.notifySchemaListener(schemaMeta);
-    }
+    mgr.notifySchemaListener(schemaMeta);
+  }
 }

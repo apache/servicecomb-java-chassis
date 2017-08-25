@@ -21,16 +21,15 @@ import org.junit.Test;
 
 public class TestHttpMethodFactory {
 
-    @Test
-    public void testHttpMethodFactory() {
-        boolean status = true;
-        try {
-            VertxHttpMethod method = HttpMethodFactory.findHttpMethodInstance("httpMethod");
-            Assert.assertNotNull(method);
-        } catch (Exception e) {
-            status = false;
-        }
-        Assert.assertFalse(status);
-
+  @Test
+  public void testHttpMethodFactory() {
+    boolean status = true;
+    try {
+      VertxHttpMethod method = HttpMethodFactory.findHttpMethodInstance("httpMethod");
+      Assert.assertNotNull(method);
+    } catch (Exception e) {
+      status = false;
     }
+    Assert.assertFalse(status);
+  }
 }

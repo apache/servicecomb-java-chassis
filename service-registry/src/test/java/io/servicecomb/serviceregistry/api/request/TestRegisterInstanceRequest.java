@@ -16,49 +16,44 @@
 
 package io.servicecomb.serviceregistry.api.request;
 
-import io.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 
-/**
- *
- * @since Mar 14, 2017
- * @see 
- */
+import io.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
+
 public class TestRegisterInstanceRequest {
 
-    RegisterInstanceRequest oRegisterInstanceRequest = null;
+  RegisterInstanceRequest oRegisterInstanceRequest = null;
 
-    MicroserviceInstance oMockMicroserviceInstance = null;
+  MicroserviceInstance oMockMicroserviceInstance = null;
 
-    @Before
-    public void setUp() throws Exception {
-        oRegisterInstanceRequest = new RegisterInstanceRequest();
-        oMockMicroserviceInstance = Mockito.mock(MicroserviceInstance.class);
-    }
+  @Before
+  public void setUp() throws Exception {
+    oRegisterInstanceRequest = new RegisterInstanceRequest();
+    oMockMicroserviceInstance = Mockito.mock(MicroserviceInstance.class);
+  }
 
-    @After
-    public void tearDown() throws Exception {
-        oRegisterInstanceRequest = null;
-        oMockMicroserviceInstance = null;
-    }
+  @After
+  public void tearDown() throws Exception {
+    oRegisterInstanceRequest = null;
+    oMockMicroserviceInstance = null;
+  }
 
-    @Test
-    public void testDefaultValues() {
-        Assert.assertNull(oRegisterInstanceRequest.getInstance());
-    }
+  @Test
+  public void testDefaultValues() {
+    Assert.assertNull(oRegisterInstanceRequest.getInstance());
+  }
 
-    @Test
-    public void testIntializedValues() {
-        initRegisterInstanceRequest(); //Initialize the Object
-        Assert.assertEquals(oMockMicroserviceInstance, oRegisterInstanceRequest.getInstance());
-    }
+  @Test
+  public void testIntializedValues() {
+    initRegisterInstanceRequest(); //Initialize the Object
+    Assert.assertEquals(oMockMicroserviceInstance, oRegisterInstanceRequest.getInstance());
+  }
 
-    private void initRegisterInstanceRequest() {
-        oRegisterInstanceRequest.setInstance(oMockMicroserviceInstance);
-    }
-
+  private void initRegisterInstanceRequest() {
+    oRegisterInstanceRequest.setInstance(oMockMicroserviceInstance);
+  }
 }

@@ -28,24 +28,24 @@ import io.servicecomb.swagger.invocation.response.ResponseMapperFactory;
 @Component
 public class ProducerResponseMapperFactory extends ResponseMapperFactory<ProducerResponseMapper> {
 
-    @Inject
-    public void setMapperList(List<ProducerResponseMapper> mapperList) {
-        for (ProducerResponseMapper mapper : mapperList) {
-            if (mapper.getResponseClass() == null) {
-                throw new Error("response class must not be null");
-            }
+  @Inject
+  public void setMapperList(List<ProducerResponseMapper> mapperList) {
+    for (ProducerResponseMapper mapper : mapperList) {
+      if (mapper.getResponseClass() == null) {
+        throw new Error("response class must not be null");
+      }
 
-            mappers.put(mapper.getResponseClass(), mapper);
-        }
+      mappers.put(mapper.getResponseClass(), mapper);
     }
+  }
 
-    @Override
-    protected Type choose(Type src, Type target) {
-        return src;
-    }
+  @Override
+  protected Type choose(Type src, Type target) {
+    return src;
+  }
 
-    @Override
-    protected ProducerResponseMapper doCreateResponseMapper(Converter converter) {
-        return new ProducerResponseMapperCommon(converter);
-    }
+  @Override
+  protected ProducerResponseMapper doCreateResponseMapper(Converter converter) {
+    return new ProducerResponseMapperCommon(converter);
+  }
 }

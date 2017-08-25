@@ -17,33 +17,34 @@
 package io.servicecomb.core.handler.config;
 
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
+
 import io.servicecomb.core.Handler;
 
 public class HandlerConfig {
-    private String handlerId;
+  private String handlerId;
 
-    private Class<Handler> clazz;
+  private Class<Handler> clazz;
 
-    @JacksonXmlProperty(localName = "id", isAttribute = true)
-    public String getHandlerId() {
-        return handlerId;
-    }
+  @JacksonXmlProperty(localName = "id", isAttribute = true)
+  public String getHandlerId() {
+    return handlerId;
+  }
 
-    public void setHandlerId(String handlerId) {
-        this.handlerId = handlerId;
-    }
+  public void setHandlerId(String handlerId) {
+    this.handlerId = handlerId;
+  }
 
-    @JacksonXmlProperty(localName = "class", isAttribute = true)
-    public Class<Handler> getClazz() {
-        return clazz;
-    }
+  @JacksonXmlProperty(localName = "class", isAttribute = true)
+  public Class<Handler> getClazz() {
+    return clazz;
+  }
 
-    public void setClazz(Class<Handler> clazz) {
-        this.clazz = clazz;
-    }
+  public void setClazz(Class<Handler> clazz) {
+    this.clazz = clazz;
+  }
 
-    @SuppressWarnings("unchecked")
-    public void setClazz(String clazz) throws ClassNotFoundException {
-        this.clazz = (Class<Handler>) Class.forName(clazz);
-    }
+  @SuppressWarnings("unchecked")
+  public void setClazz(String clazz) throws ClassNotFoundException {
+    this.clazz = (Class<Handler>) Class.forName(clazz);
+  }
 }

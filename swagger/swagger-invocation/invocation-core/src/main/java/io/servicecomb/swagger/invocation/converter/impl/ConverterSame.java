@@ -18,17 +18,17 @@ package io.servicecomb.swagger.invocation.converter.impl;
 import io.servicecomb.swagger.invocation.converter.Converter;
 
 public final class ConverterSame implements Converter {
-    private static final Converter INSTANCE = new ConverterSame();
+  private static final Converter INSTANCE = new ConverterSame();
 
-    public static Converter getInstance() {
-        return INSTANCE;
-    }
+  public static Converter getInstance() {
+    return INSTANCE;
+  }
 
-    private ConverterSame() {
-    }
+  private ConverterSame() {
+  }
 
-    @Override
-    public Object convert(Object value) {
-        return value;
-    }
+  @Override
+  public Object convert(Object value) {
+    return value;
+  }
 }

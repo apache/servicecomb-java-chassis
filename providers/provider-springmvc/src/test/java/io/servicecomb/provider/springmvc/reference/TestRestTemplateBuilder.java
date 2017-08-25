@@ -20,28 +20,31 @@ import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsInstanceOf.instanceOf;
 import static org.junit.Assert.assertThat;
 
-import com.seanyinx.github.unit.scaffolding.Randomness;
 import java.net.URI;
+
 import org.junit.Test;
 import org.springframework.web.client.RestTemplate;
+
+import com.seanyinx.github.unit.scaffolding.Randomness;
 
 public class TestRestTemplateBuilder {
 
   private final String url = Randomness.uniquify("url");
+
   private final AcceptableRestTemplate underlying = new AlwaysAcceptableRestTemplate();
 
   private static class AlwaysAcceptableRestTemplate extends AcceptableRestTemplate {
 
-        @Override
-        public boolean isAcceptable(String uri) {
-            return true;
-        }
-
-        @Override
-        public boolean isAcceptable(URI uri) {
-            return true;
-        }
+    @Override
+    public boolean isAcceptable(String uri) {
+      return true;
     }
+
+    @Override
+    public boolean isAcceptable(URI uri) {
+      return true;
+    }
+  }
 
   @Test
   public void addsRestTemplateToWrapper() {

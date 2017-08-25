@@ -16,7 +16,7 @@
 package io.servicecomb.serviceregistry.task;
 
 public enum TaskStatus {
-    INIT,
-    READY,
-    FINISHED
+  INIT,
+  READY,
+  FINISHED
 }

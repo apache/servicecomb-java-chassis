@@ -16,11 +16,10 @@
 
 package io.servicecomb.bizkeeper;
 
-import io.servicecomb.core.Invocation;
-import io.servicecomb.swagger.invocation.Response;
-
 import com.netflix.hystrix.HystrixObservable;
 
+import io.servicecomb.core.Invocation;
+import io.servicecomb.swagger.invocation.Response;
 import rx.Observable;
 import rx.Subscription;
 import rx.functions.Action0;
@@ -28,56 +27,56 @@ import rx.subjects.ReplaySubject;
 
 public class BizkeeperHandlerDelegate {
 
-    private BizkeeperHandler handler;
+  private BizkeeperHandler handler;
 
-    public BizkeeperHandlerDelegate(BizkeeperHandler handler) {
-        this.handler = handler;
+  public BizkeeperHandlerDelegate(BizkeeperHandler handler) {
+    this.handler = handler;
+  }
+
+  protected HystrixObservable<Response> createBizkeeperCommand(Invocation invocation) {
+    if (Configuration.INSTANCE.isFallbackForce(handler.groupname,
+        invocation.getMicroserviceName(),
+        invocation.getOperationMeta().getMicroserviceQualifiedName())) {
+      return forceFallbackCommand(invocation);
     }
+    return handler.createBizkeeperCommand(invocation);
+  }
 
-    protected HystrixObservable<Response> createBizkeeperCommand(Invocation invocation) {
-        if (Configuration.INSTANCE.isFallbackForce(handler.groupname,
-                invocation.getMicroserviceName(),
-                invocation.getOperationMeta().getMicroserviceQualifiedName())) {
-            return forceFallbackCommand(invocation);
-        }
-        return handler.createBizkeeperCommand(invocation);
-    }
+  protected HystrixObservable<Response> forceFallbackCommand(Invocation invocation) {
+    return new HystrixObservable<Response>() {
+      @Override
+      public Observable<Response> observe() {
+        ReplaySubject<Response> subject = ReplaySubject.create();
+        final Subscription sourceSubscription = toObservable().subscribe(subject);
+        return subject.doOnUnsubscribe(new Action0() {
+          @Override
+          public void call() {
+            sourceSubscription.unsubscribe();
+          }
+        });
+      }
 
-    protected HystrixObservable<Response> forceFallbackCommand(Invocation invocation) {
-        return new HystrixObservable<Response>() {
-            @Override
-            public Observable<Response> observe() {
-                ReplaySubject<Response> subject = ReplaySubject.create();
-                final Subscription sourceSubscription = toObservable().subscribe(subject);
-                return subject.doOnUnsubscribe(new Action0() {
-                    @Override
-                    public void call() {
-                        sourceSubscription.unsubscribe();
-                    }
-                });
+      @Override
+      public Observable<Response> toObservable() {
+        return Observable.create(f -> {
+          try {
+            if (Configuration.FALLBACKPOLICY_POLICY_RETURN
+                .equals(Configuration.INSTANCE.getFallbackPolicyPolicy(handler.groupname,
+                    invocation.getMicroserviceName(),
+                    invocation.getOperationMeta().getMicroserviceQualifiedName()))) {
+              f.onNext(Response.succResp(null));
+            } else {
+              f.onNext(Response.failResp(invocation.getInvocationType(),
+                  BizkeeperExceptionUtils
+                      .createBizkeeperException(BizkeeperExceptionUtils.CSE_HANDLER_BK_FALLBACK,
+                          null,
+                          invocation.getOperationMeta().getMicroserviceQualifiedName())));
             }
-
-            @Override
-            public Observable<Response> toObservable() {
-                return Observable.create(f -> {
-                    try {
-                        if (Configuration.FALLBACKPOLICY_POLICY_RETURN
-                                .equals(Configuration.INSTANCE.getFallbackPolicyPolicy(handler.groupname,
-                                        invocation.getMicroserviceName(),
-                                        invocation.getOperationMeta().getMicroserviceQualifiedName()))) {
-                            f.onNext(Response.succResp(null));
-                        } else {
-                            f.onNext(Response.failResp(invocation.getInvocationType(), BizkeeperExceptionUtils
-                                    .createBizkeeperException(BizkeeperExceptionUtils.CSE_HANDLER_BK_FALLBACK,
-                                            null,
-                                            invocation.getOperationMeta().getMicroserviceQualifiedName())));
-                        }
-                    } catch (Exception e) {
-                        f.onError(e);
-                    }
-                });
-            };
-        };
-    }
-
+          } catch (Exception e) {
+            f.onError(e);
+          }
+        });
+      }
+    };
+  }
 }

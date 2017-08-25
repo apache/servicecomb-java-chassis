@@ -24,27 +24,27 @@ import org.springframework.beans.factory.config.PropertyPlaceholderConfigurer;
 import io.servicecomb.foundation.common.config.ConfigMgr;
 
 public class ConfigurationSpringInitializer extends PropertyPlaceholderConfigurer {
-    // 以逗号分隔
-    private String configId;
+  // 以逗号分隔
+  private String configId;
 
-    public ConfigurationSpringInitializer() {
-        setIgnoreUnresolvablePlaceholders(true);
-        setOrder(Integer.MAX_VALUE - 1);
-    }
+  public ConfigurationSpringInitializer() {
+    setIgnoreUnresolvablePlaceholders(true);
+    setOrder(Integer.MAX_VALUE - 1);
+  }
 
-    public void setConfigId(String configId) {
-        this.configId = configId;
-    }
+  public void setConfigId(String configId) {
+    this.configId = configId;
+  }
 
-    @Override
-    protected void loadProperties(Properties props) throws IOException {
-        for (String id : configId.split(",")) {
-            try {
-                Properties config = ConfigMgr.INSTANCE.getConfig(id);
-                props.putAll(config);
-            } catch (Exception e) {
-                throw new IOException(e);
-            }
-        }
+  @Override
+  protected void loadProperties(Properties props) throws IOException {
+    for (String id : configId.split(",")) {
+      try {
+        Properties config = ConfigMgr.INSTANCE.getConfig(id);
+        props.putAll(config);
+      } catch (Exception e) {
+        throw new IOException(e);
+      }
     }
+  }
 }

@@ -24,42 +24,43 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.JsonToken;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
+
 import io.servicecomb.codec.protobuf.codec.AbstractFieldCodec.ReaderHelpData;
 
 public abstract class AbstractDeserializer extends JsonDeserializer<Object> {
-    protected Map<String, ReaderHelpData> readerHelpDataMap;
+  protected Map<String, ReaderHelpData> readerHelpDataMap;
 
-    public AbstractDeserializer(Map<String, ReaderHelpData> readerHelpDataMap) {
-        this.readerHelpDataMap = readerHelpDataMap;
+  public AbstractDeserializer(Map<String, ReaderHelpData> readerHelpDataMap) {
+    this.readerHelpDataMap = readerHelpDataMap;
+  }
+
+  @Override
+  public Object deserialize(JsonParser p, DeserializationContext ctxt) throws IOException, JsonProcessingException {
+    Object result = createResult();
+    for (String fieldName = p.nextFieldName(); fieldName != null; fieldName = p.nextFieldName()) {
+      // p实际是ProtobufParser，其内部是可以直接取到proto field的，理论上可以根据id来索引
+      // 可是field默认没暴露出来，所以，直接用name索引了
+      ReaderHelpData helpData = readerHelpDataMap.get(fieldName);
+      if (helpData == null) {
+        continue;
+      }
+
+      JsonToken t = p.nextToken();
+      // Note: must handle null explicitly here; value deserializers won't
+      Object value = null;
+      if (t == JsonToken.VALUE_NULL) {
+        value = helpData.getDeser().getNullValue(ctxt);
+      } else {
+        value = helpData.getDeser().deserialize(p, ctxt);
+      }
+
+      result = updateResult(result, value, helpData);
     }
 
-    @Override
-    public Object deserialize(JsonParser p, DeserializationContext ctxt) throws IOException, JsonProcessingException {
-        Object result = createResult();
-        for (String fieldName = p.nextFieldName(); fieldName != null; fieldName = p.nextFieldName()) {
-            // p实际是ProtobufParser，其内部是可以直接取到proto field的，理论上可以根据id来索引
-            // 可是field默认没暴露出来，所以，直接用name索引了
-            ReaderHelpData helpData = readerHelpDataMap.get(fieldName);
-            if (helpData == null) {
-                continue;
-            }
+    return result;
+  }
 
-            JsonToken t = p.nextToken();
-            // Note: must handle null explicitly here; value deserializers won't
-            Object value = null;
-            if (t == JsonToken.VALUE_NULL) {
-                value = helpData.getDeser().getNullValue(ctxt);
-            } else {
-                value = helpData.getDeser().deserialize(p, ctxt);
-            }
+  protected abstract Object createResult();
 
-            result = updateResult(result, value, helpData);
-        }
-
-        return result;
-    }
-
-    protected abstract Object createResult();
-
-    protected abstract Object updateResult(Object result, Object value, ReaderHelpData helpData);
+  protected abstract Object updateResult(Object result, Object value, ReaderHelpData helpData);
 }

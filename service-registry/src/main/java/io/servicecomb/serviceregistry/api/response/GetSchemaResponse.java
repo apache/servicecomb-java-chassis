@@ -17,13 +17,13 @@
 package io.servicecomb.serviceregistry.api.response;
 
 public class GetSchemaResponse {
-    private String schema;
+  private String schema;
 
-    public String getSchema() {
-        return schema;
-    }
+  public String getSchema() {
+    return schema;
+  }
 
-    public void setSchema(String schema) {
-        this.schema = schema;
-    }
+  public void setSchema(String schema) {
+    this.schema = schema;
+  }
 }

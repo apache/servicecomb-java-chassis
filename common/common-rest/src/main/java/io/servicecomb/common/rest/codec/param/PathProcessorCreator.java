@@ -21,48 +21,46 @@ import java.net.URLDecoder;
 
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.type.TypeFactory;
+
 import io.servicecomb.common.rest.codec.RestClientRequest;
 import io.servicecomb.common.rest.codec.RestServerRequest;
-
 import io.swagger.models.parameters.Parameter;
 
 public class PathProcessorCreator implements ParamValueProcessorCreator {
-    public static final String PARAMTYPE = "path";
+  public static final String PARAMTYPE = "path";
 
-    public static class PathProcessor extends AbstractParamProcessor {
-        public PathProcessor(String paramPath, JavaType targetType) {
-            super(paramPath, targetType);
-        }
-
-        @Override
-        public Object getValue(RestServerRequest request) throws Exception {
-            String value = request.getPathParam(paramPath);
-            if (value == null) {
-                return null;
-            }
-            return convertValue(URLDecoder.decode(value, "UTF-8"), targetType);
-        }
-
-        @Override
-        public void setValue(RestClientRequest clientRequest, Object arg) throws Exception {
-            // path不需要set
-        }
-
-        @Override
-        public String getProcessorType() {
-            return PARAMTYPE;
-        }
-
-    }
-
-    public PathProcessorCreator() {
-        ParamValueProcessorCreatorManager.INSTANCE.register(PARAMTYPE, this);
+  public static class PathProcessor extends AbstractParamProcessor {
+    public PathProcessor(String paramPath, JavaType targetType) {
+      super(paramPath, targetType);
     }
 
     @Override
-    public ParamValueProcessor create(Parameter parameter, Type genericParamType) {
-        JavaType targetType = TypeFactory.defaultInstance().constructType(genericParamType);
-        return new PathProcessor(parameter.getName(), targetType);
+    public Object getValue(RestServerRequest request) throws Exception {
+      String value = request.getPathParam(paramPath);
+      if (value == null) {
+        return null;
+      }
+      return convertValue(URLDecoder.decode(value, "UTF-8"), targetType);
     }
 
+    @Override
+    public void setValue(RestClientRequest clientRequest, Object arg) throws Exception {
+      // path不需要set
+    }
+
+    @Override
+    public String getProcessorType() {
+      return PARAMTYPE;
+    }
+  }
+
+  public PathProcessorCreator() {
+    ParamValueProcessorCreatorManager.INSTANCE.register(PARAMTYPE, this);
+  }
+
+  @Override
+  public ParamValueProcessor create(Parameter parameter, Type genericParamType) {
+    JavaType targetType = TypeFactory.defaultInstance().constructType(genericParamType);
+    return new PathProcessor(parameter.getName(), targetType);
+  }
 }

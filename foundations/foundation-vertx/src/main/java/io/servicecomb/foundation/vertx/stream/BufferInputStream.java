@@ -27,81 +27,81 @@ import io.netty.buffer.ByteBuf;
  *
  */
 public class BufferInputStream extends InputStream {
-    private ByteBuf byteBuf;
+  private ByteBuf byteBuf;
 
-    public BufferInputStream(ByteBuf buffer) {
-        this.byteBuf = buffer;
+  public BufferInputStream(ByteBuf buffer) {
+    this.byteBuf = buffer;
+  }
+
+  @Override
+  public long skip(long len) {
+    int skipLen = Math.min((int) len, available());
+    byteBuf.skipBytes(skipLen);
+    return skipLen;
+  }
+
+  public byte readByte() {
+    return byteBuf.readByte();
+  }
+
+  @Override
+  public int read() {
+    return byteBuf.readByte();
+  }
+
+  public boolean readBoolean() {
+    return byteBuf.readBoolean();
+  }
+
+  public short readShort() {
+    return byteBuf.readShort();
+  }
+
+  public int readInt() {
+    return byteBuf.readInt();
+  }
+
+  public long readLong() {
+    return byteBuf.readLong();
+  }
+
+  public int getIndex() {
+    return byteBuf.readerIndex();
+  }
+
+  public String readString() {
+    int length = readInt();
+    byte[] bytes = new byte[length];
+    byteBuf.readBytes(bytes);
+    return new String(bytes, StandardCharsets.UTF_8);
+  }
+
+  @Override
+  public int read(byte[] b) {
+    return read(b, 0, b.length);
+  }
+
+  @Override
+  public int read(byte[] b, int off, int len) {
+    int avail = available();
+    if (len > avail) {
+      len = avail;
     }
 
-    @Override
-    public long skip(long len) {
-        int skipLen = Math.min((int) len, available());
-        byteBuf.skipBytes(skipLen);
-        return skipLen;
+    if (len == 0) {
+      return -1;
     }
 
-    public byte readByte() {
-        return byteBuf.readByte();
-    }
+    byteBuf.readBytes(b, off, len);
+    return len;
+  }
 
-    @Override
-    public int read() {
-        return byteBuf.readByte();
-    }
+  @Override
+  public int available() {
+    return byteBuf.readableBytes();
+  }
 
-    public boolean readBoolean() {
-        return byteBuf.readBoolean();
-    }
-
-    public short readShort() {
-        return byteBuf.readShort();
-    }
-
-    public int readInt() {
-        return byteBuf.readInt();
-    }
-
-    public long readLong() {
-        return byteBuf.readLong();
-    }
-
-    public int getIndex() {
-        return byteBuf.readerIndex();
-    }
-
-    public String readString() {
-        int length = readInt();
-        byte[] bytes = new byte[length];
-        byteBuf.readBytes(bytes);
-        return new String(bytes, StandardCharsets.UTF_8);
-    }
-
-    @Override
-    public int read(byte[] b) {
-        return read(b, 0, b.length);
-    }
-
-    @Override
-    public int read(byte[] b, int off, int len) {
-        int avail = available();
-        if (len > avail) {
-            len = avail;
-        }
-
-        if (len == 0) {
-            return -1;
-        }
-
-        byteBuf.readBytes(b, off, len);
-        return len;
-    }
-
-    @Override
-    public int available() {
-        return byteBuf.readableBytes();
-    }
-
-    @Override
-    public void close() {
-    }
+  @Override
+  public void close() {
+  }
 }

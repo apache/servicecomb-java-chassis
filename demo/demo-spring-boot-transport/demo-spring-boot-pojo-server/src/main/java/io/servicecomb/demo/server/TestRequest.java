@@ -20,43 +20,43 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class TestRequest {
-    private int index;
+  private int index;
 
-    private User user;
+  private User user;
 
-    private List<User> users = new ArrayList<>();
+  private List<User> users = new ArrayList<>();
 
-    private byte[] data;
+  private byte[] data;
 
-    public int getIndex() {
-        return index;
-    }
+  public int getIndex() {
+    return index;
+  }
 
-    public void setIndex(int index) {
-        this.index = index;
-    }
+  public void setIndex(int index) {
+    this.index = index;
+  }
 
-    public User getUser() {
-        return user;
-    }
+  public User getUser() {
+    return user;
+  }
 
-    public void setUser(User user) {
-        this.user = user;
-    }
+  public void setUser(User user) {
+    this.user = user;
+  }
 
-    public List<User> getUsers() {
-        return users;
-    }
+  public List<User> getUsers() {
+    return users;
+  }
 
-    public void setUsers(List<User> users) {
-        this.users = users;
-    }
+  public void setUsers(List<User> users) {
+    this.users = users;
+  }
 
-    public byte[] getData() {
-        return data;
-    }
+  public byte[] getData() {
+    return data;
+  }
 
-    public void setData(byte[] data) {
-        this.data = data;
-    }
+  public void setData(byte[] data) {
+    this.data = data;
+  }
 }

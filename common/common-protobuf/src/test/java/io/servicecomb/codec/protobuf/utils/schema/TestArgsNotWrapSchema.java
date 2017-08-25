@@ -29,68 +29,66 @@ import io.protostuff.Schema;
 
 public class TestArgsNotWrapSchema {
 
-    private ArgsNotWrapSchema argsNotWrapSchema = null;
+  private ArgsNotWrapSchema argsNotWrapSchema = null;
 
-    @Before
-    public void setUp() throws Exception {
-        argsNotWrapSchema = new ArgsNotWrapSchema(Mockito.mock(Schema.class));
+  @Before
+  public void setUp() throws Exception {
+    argsNotWrapSchema = new ArgsNotWrapSchema(Mockito.mock(Schema.class));
+  }
+
+  @After
+  public void tearDown() throws Exception {
+    argsNotWrapSchema = null;
+  }
+
+  @Test
+  public void testReadFromEmpty() {
+    Assert.assertNotNull(argsNotWrapSchema);
+    Object object = argsNotWrapSchema.readFromEmpty();
+    Assert.assertNotNull(object);
+    // object is created but no values inside to assert
+  }
+
+  @Test
+  public void testReadObject() {
+    boolean status = true;
+    Input input = null;
+    try {
+      Object object = argsNotWrapSchema.readObject(input);
+      Assert.assertNotNull(object);
+      // object is created but no values inside to assert
+    } catch (Exception e) {
+      status = false;
     }
+    Assert.assertTrue(status);
+  }
 
-    @After
-    public void tearDown() throws Exception {
-        argsNotWrapSchema = null;
+  @Test
+  public void testWriteObject() {
+    boolean status = true;
+    LinkedBuffer linkedBuffer = LinkedBuffer.allocate();
+    ProtobufOutput output = new ProtobufOutput(linkedBuffer);
+    String[] stringArray = new String[1];
+    try {
+      argsNotWrapSchema.writeObject(output, stringArray);
+    } catch (Exception e) {
+      status = false;
     }
+    Assert.assertTrue(status);
+  }
 
-    @Test
-    public void testReadFromEmpty() {
-        Assert.assertNotNull(argsNotWrapSchema);
-        Object object = argsNotWrapSchema.readFromEmpty();
-        Assert.assertNotNull(object);
-        // object is created but no values inside to assert
+  @Test
+  public void testWriteObjectToSchema() {
+    boolean status = true;
+    LinkedBuffer linkedBuffer = LinkedBuffer.allocate();
+    ProtobufOutput output = new ProtobufOutput(linkedBuffer);
+    String[] stringArray = new String[1];
+    stringArray[0] = "abc";
+    try {
+      argsNotWrapSchema.writeObject(output, stringArray);
+    } catch (Exception e) {
+      status = false;
     }
-
-    @Test
-    public void testReadObject() {
-        boolean status = true;
-        Input input = null;
-        try {
-            Object object = argsNotWrapSchema.readObject(input);
-            Assert.assertNotNull(object);
-            // object is created but no values inside to assert
-        } catch (Exception e) {
-            status = false;
-        }
-        Assert.assertTrue(status);
-
-    }
-
-    @Test
-    public void testWriteObject() {
-        boolean status = true;
-        LinkedBuffer linkedBuffer = LinkedBuffer.allocate();
-        ProtobufOutput output = new ProtobufOutput(linkedBuffer);
-        String[] stringArray = new String[1];
-        try {
-            argsNotWrapSchema.writeObject(output, stringArray);
-        } catch (Exception e) {
-            status = false;
-        }
-        Assert.assertTrue(status);
-    }
-
-    @Test
-    public void testWriteObjectToSchema() {
-        boolean status = true;
-        LinkedBuffer linkedBuffer = LinkedBuffer.allocate();
-        ProtobufOutput output = new ProtobufOutput(linkedBuffer);
-        String[] stringArray = new String[1];
-        stringArray[0] = "abc";
-        try {
-            argsNotWrapSchema.writeObject(output, stringArray);
-        } catch (Exception e) {
-            status = false;
-        }
-        Assert.assertTrue(status);
-    }
-
+    Assert.assertTrue(status);
+  }
 }

@@ -14,9 +14,6 @@
  * limitations under the License.
  */
 
-/**
- * 
- */
 package io.servicecomb.qps;
 
 import org.junit.Assert;
@@ -24,7 +21,6 @@ import org.junit.Test;
 
 import io.servicecomb.core.definition.OperationMeta;
 import io.servicecomb.core.definition.SchemaMeta;
-
 import mockit.Expectations;
 import mockit.Mocked;
 
@@ -33,46 +29,46 @@ import mockit.Mocked;
  *
  */
 public class TestConsumerQpsControllermanager {
-    private static String microserviceName = "pojo";
+  private static String microserviceName = "pojo";
 
-    private static String schemaQualified = microserviceName + ".server";
+  private static String schemaQualified = microserviceName + ".server";
 
-    private static String operationQualified = schemaQualified + ".test";
+  private static String operationQualified = schemaQualified + ".test";
 
-    @Test
-    public void testQpsLimit(@Mocked SchemaMeta schemaMeta, @Mocked OperationMeta operationMeta) {
-        new Expectations() {
-            {
-                operationMeta.getMicroserviceQualifiedName();
-                result = operationQualified;
+  @Test
+  public void testQpsLimit(@Mocked SchemaMeta schemaMeta, @Mocked OperationMeta operationMeta) {
+    new Expectations() {
+      {
+        operationMeta.getMicroserviceQualifiedName();
+        result = operationQualified;
 
-                schemaMeta.getMicroserviceQualifiedName();
-                result = schemaQualified;
+        schemaMeta.getMicroserviceQualifiedName();
+        result = schemaQualified;
 
-                operationMeta.getMicroserviceName();
-                result = microserviceName;
-            }
-        };
+        operationMeta.getMicroserviceName();
+        result = microserviceName;
+      }
+    };
 
-        ConsumerQpsControllerManager mgr = new ConsumerQpsControllerManager();
-        QpsController qpsController = mgr.getOrCreate(operationMeta);
-        Assert.assertEquals((Integer) Integer.MAX_VALUE, qpsController.getQpsLimit());
-        Assert.assertEquals(microserviceName, qpsController.getKey());
+    ConsumerQpsControllerManager mgr = new ConsumerQpsControllerManager();
+    QpsController qpsController = mgr.getOrCreate(operationMeta);
+    Assert.assertEquals((Integer) Integer.MAX_VALUE, qpsController.getQpsLimit());
+    Assert.assertEquals(microserviceName, qpsController.getKey());
 
-        doTestQpsLimit(mgr, operationMeta, microserviceName, 100, microserviceName, 100);
-        doTestQpsLimit(mgr, operationMeta, schemaQualified, 200, schemaQualified, 200);
-        doTestQpsLimit(mgr, operationMeta, operationQualified, 300, operationQualified, 300);
-        doTestQpsLimit(mgr, operationMeta, operationQualified, null, schemaQualified, 200);
-        doTestQpsLimit(mgr, operationMeta, schemaQualified, null, microserviceName, 100);
-        doTestQpsLimit(mgr, operationMeta, microserviceName, null, microserviceName, Integer.MAX_VALUE);
-    }
+    doTestQpsLimit(mgr, operationMeta, microserviceName, 100, microserviceName, 100);
+    doTestQpsLimit(mgr, operationMeta, schemaQualified, 200, schemaQualified, 200);
+    doTestQpsLimit(mgr, operationMeta, operationQualified, 300, operationQualified, 300);
+    doTestQpsLimit(mgr, operationMeta, operationQualified, null, schemaQualified, 200);
+    doTestQpsLimit(mgr, operationMeta, schemaQualified, null, microserviceName, 100);
+    doTestQpsLimit(mgr, operationMeta, microserviceName, null, microserviceName, Integer.MAX_VALUE);
+  }
 
-    private void doTestQpsLimit(ConsumerQpsControllerManager mgr, OperationMeta operationMeta, String key,
-            Integer newValue,
-            String expectKey, Integer expectValue) {
-        Utils.updateProperty(Config.CONSUMER_LIMIT_KEY_PREFIX + key, newValue);
-        QpsController qpsController = mgr.getOrCreate(operationMeta);
-        Assert.assertEquals(expectValue, qpsController.getQpsLimit());
-        Assert.assertEquals(expectKey, qpsController.getKey());
-    }
+  private void doTestQpsLimit(ConsumerQpsControllerManager mgr, OperationMeta operationMeta, String key,
+      Integer newValue,
+      String expectKey, Integer expectValue) {
+    Utils.updateProperty(Config.CONSUMER_LIMIT_KEY_PREFIX + key, newValue);
+    QpsController qpsController = mgr.getOrCreate(operationMeta);
+    Assert.assertEquals(expectValue, qpsController.getQpsLimit());
+    Assert.assertEquals(expectKey, qpsController.getKey());
+  }
 }

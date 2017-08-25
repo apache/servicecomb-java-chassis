@@ -19,17 +19,16 @@ package io.servicecomb.swagger.generator.jaxrs.processor.annotation;
 import javax.ws.rs.HeaderParam;
 
 import io.servicecomb.swagger.generator.core.processor.parameter.AbstractParameterProcessor;
-
 import io.swagger.models.parameters.HeaderParameter;
 
 public class HeaderParamAnnotationProcessor extends AbstractParameterProcessor<HeaderParameter> {
-    @Override
-    protected HeaderParameter createParameter() {
-        return new HeaderParameter();
-    }
+  @Override
+  protected HeaderParameter createParameter() {
+    return new HeaderParameter();
+  }
 
-    @Override
-    protected String getAnnotationParameterName(Object annotation) {
-        return ((HeaderParam) annotation).value();
-    }
+  @Override
+  protected String getAnnotationParameterName(Object annotation) {
+    return ((HeaderParam) annotation).value();
+  }
 }

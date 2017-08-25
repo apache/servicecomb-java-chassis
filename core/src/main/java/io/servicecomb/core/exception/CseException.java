@@ -18,26 +18,26 @@ package io.servicecomb.core.exception;
 
 public class CseException extends RuntimeException {
 
-    private static final long serialVersionUID = 8027482777502649656L;
+  private static final long serialVersionUID = 8027482777502649656L;
 
-    private final String code;
+  private final String code;
 
-    public CseException(String code, String message) {
-        super(message);
-        this.code = code;
-    }
+  public CseException(String code, String message) {
+    super(message);
+    this.code = code;
+  }
 
-    public CseException(String code, String message, Throwable cause) {
-        super(message, cause);
-        this.code = code;
-    }
+  public CseException(String code, String message, Throwable cause) {
+    super(message, cause);
+    this.code = code;
+  }
 
-    public String getCode() {
-        return code;
-    }
+  public String getCode() {
+    return code;
+  }
 
-    @Override
-    public String toString() {
-        return "ServiceDefinitionException Code:" + code + ", Message:" + getMessage();
-    }
+  @Override
+  public String toString() {
+    return "ServiceDefinitionException Code:" + code + ", Message:" + getMessage();
+  }
 }

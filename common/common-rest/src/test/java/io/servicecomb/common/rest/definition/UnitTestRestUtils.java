@@ -24,14 +24,14 @@ import io.servicecomb.core.definition.OperationMeta;
 import mockit.Deencapsulation;
 
 public class UnitTestRestUtils {
-    public static RestOperationMeta createRestOperatonMeta(String httpMethod, String path) {
-        OperationMeta om = new OperationMeta();
-        om.setHttpMethod(httpMethod);
+  public static RestOperationMeta createRestOperatonMeta(String httpMethod, String path) {
+    OperationMeta om = new OperationMeta();
+    om.setHttpMethod(httpMethod);
 
-        RestOperationMeta rom = new RestOperationMeta();
-        rom.setOperationMeta(om);
-        rom.setAbsolutePath(path);
-        Deencapsulation.setField(rom, "produces", Arrays.asList(MediaType.APPLICATION_JSON));
-        return rom;
-    }
+    RestOperationMeta rom = new RestOperationMeta();
+    rom.setOperationMeta(om);
+    rom.setAbsolutePath(path);
+    Deencapsulation.setField(rom, "produces", Arrays.asList(MediaType.APPLICATION_JSON));
+    return rom;
+  }
 }

@@ -16,16 +16,16 @@
 
 package io.servicecomb.serviceregistry.client.http;
 
-import io.servicecomb.foundation.auth.AuthHeaderProvider;
-
 import java.util.HashMap;
 import java.util.Map;
 
+import io.servicecomb.foundation.auth.AuthHeaderProvider;
+
 public class MockAuthHeaderProvider implements AuthHeaderProvider {
-    @Override
-    public Map<String, String> authHeaders() {
-        HashMap<String, String> headers = new HashMap<>();
-        headers.put("X-Service-AK", "blah...");
-        return headers;
-    }
+  @Override
+  public Map<String, String> authHeaders() {
+    HashMap<String, String> headers = new HashMap<>();
+    headers.put("X-Service-AK", "blah...");
+    return headers;
+  }
 }

@@ -17,6 +17,7 @@
 package io.servicecomb.foundation.common.base;
 
 import java.util.concurrent.TimeUnit;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -24,6 +25,7 @@ public class RetryableRunnable implements Runnable {
   private static final Logger LOGGER = LoggerFactory.getLogger(RetryableRunnable.class);
 
   private final DescriptiveRunnable runnable;
+
   private final int sleepInMs;
 
   public RetryableRunnable(DescriptiveRunnable runnable, int sleepInMs) {

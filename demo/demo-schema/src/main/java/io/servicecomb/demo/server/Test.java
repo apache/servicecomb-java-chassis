@@ -17,17 +17,17 @@
 package io.servicecomb.demo.server;
 
 public interface Test {
-    String testStringArray(String[] arr);
+  String testStringArray(String[] arr);
 
-    String getTestString(String code);
+  String getTestString(String code);
 
-    String postTestStatic(int code);
+  String postTestStatic(int code);
 
-    String testException(int code);
+  String testException(int code);
 
-    User wrapParam(TestRequest request);
+  User wrapParam(TestRequest request);
 
-    User splitParam(int index, User user);
+  User splitParam(int index, User user);
 
-    String addString(String[] strArr);
+  String addString(String[] strArr);
 }

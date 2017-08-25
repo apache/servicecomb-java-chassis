@@ -49,252 +49,261 @@ import mockit.Mocked;
 
 public class TestConfigUtil {
 
-    private static final String systemPropertyName = "servicecomb.cse.servicecomb.system.setting";
+  private static final String systemPropertyName = "servicecomb.cse.servicecomb.system.setting";
 
-    private static final String systemExpected = uniquify("ran");
+  private static final String systemExpected = uniquify("ran");
 
-    private static final String environmentPropertyName = "servicecomb.cse.servicecomb.environment.setting";
+  private static final String environmentPropertyName = "servicecomb.cse.servicecomb.environment.setting";
 
-    private static final String environmentExpected = uniquify("ran");
+  private static final String environmentExpected = uniquify("ran");
 
-    private final MapBasedConfigurationSource configurationSource = new MapBasedConfigurationSource();
+  private final MapBasedConfigurationSource configurationSource = new MapBasedConfigurationSource();
 
-    @BeforeClass
-    public static void beforeTest() {
-        ArchaiusUtils.resetConfig();
+  @BeforeClass
+  public static void beforeTest() {
+    ArchaiusUtils.resetConfig();
 
-        System.setProperty(systemPropertyName, systemExpected);
-        try {
-            setEnv(environmentPropertyName, environmentExpected);
-        } catch (Exception e) {
-            throw new IllegalStateException(e);
-        }
-
-        ConfigUtil.installDynamicConfig();
+    System.setProperty(systemPropertyName, systemExpected);
+    try {
+      setEnv(environmentPropertyName, environmentExpected);
+    } catch (Exception e) {
+      throw new IllegalStateException(e);
     }
 
-    @AfterClass
-    public static void tearDown() throws Exception {
-        ArchaiusUtils.resetConfig();
+    ConfigUtil.installDynamicConfig();
+  }
+
+  @AfterClass
+  public static void tearDown() throws Exception {
+    ArchaiusUtils.resetConfig();
+  }
+
+  @Test
+  public void testCreateConfigFromConfigCenterNoUrl(@Mocked Configuration localConfiguration) {
+    AbstractConfiguration configFromConfigCenter = ConfigUtil.createConfigFromConfigCenter(localConfiguration);
+    Assert.assertNull(configFromConfigCenter);
+  }
+
+  @Test
+  public void testCreateDynamicConfigNoConfigCenterSPI() {
+    new Expectations(SPIServiceUtils.class) {
+      {
+        SPIServiceUtils.getTargetService(ConfigCenterConfigurationSource.class);
+        result = null;
+      }
+    };
+
+    AbstractConfiguration dynamicConfig = ConfigUtil.createDynamicConfig();
+    MicroserviceConfigLoader loader = ConfigUtil.getMicroserviceConfigLoader(dynamicConfig);
+    List<ConfigModel> list = loader.getConfigModels();
+    Assert.assertEquals(loader, ConfigUtil.getMicroserviceConfigLoader(dynamicConfig));
+    Assert.assertEquals(1, list.size());
+    Assert.assertNotEquals(DynamicWatchedConfiguration.class,
+        ((ConcurrentCompositeConfiguration) dynamicConfig).getConfiguration(0).getClass());
+  }
+
+  @Test
+  public void testCreateDynamicConfigHasConfigCenter(
+      @Mocked ConfigCenterConfigurationSource configCenterConfigurationSource) {
+    AbstractConfiguration dynamicConfig = ConfigUtil.createDynamicConfig();
+    Assert.assertEquals(DynamicWatchedConfiguration.class,
+        ((ConcurrentCompositeConfiguration) dynamicConfig).getConfiguration(0).getClass());
+  }
+
+  @Test
+  public void testGetPropertyInvalidConfig() {
+    Assert.assertNull(ConfigUtil.getProperty(null, "any"));
+    Assert.assertNull(ConfigUtil.getProperty(new Object(), "any"));
+  }
+
+  @Test
+  public void propertiesFromFileIsDuplicatedToCse() throws Exception {
+    String expected = "value";
+
+    assertThat(DynamicPropertyFactory
+        .getInstance()
+        .getStringProperty("servicecomb.cse.servicecomb.file", null)
+        .get(),
+        equalTo(expected));
+
+    assertThat(DynamicPropertyFactory
+        .getInstance()
+        .getStringProperty("cse.cse.servicecomb.file", null)
+        .get(),
+        equalTo(expected));
+  }
+
+  @Test
+  public void propertiesFromSystemIsDuplicatedToCse() throws Exception {
+    assertThat(DynamicPropertyFactory
+        .getInstance()
+        .getStringProperty(systemPropertyName, null)
+        .get(),
+        equalTo(systemExpected));
+
+    assertThat(DynamicPropertyFactory
+        .getInstance()
+        .getStringProperty("servicecomb.cse.servicecomb.system.setting", null)
+        .get(),
+        equalTo(systemExpected));
+  }
+
+  @Test
+  public void propertiesFromEnvironmentIsDuplicatedToCse() throws Exception {
+    assertThat(DynamicPropertyFactory
+        .getInstance()
+        .getStringProperty(environmentPropertyName, null)
+        .get(),
+        equalTo(environmentExpected));
+
+    assertThat(DynamicPropertyFactory
+        .getInstance()
+        .getStringProperty("servicecomb.cse.servicecomb.environment.setting", null)
+        .get(),
+        equalTo(environmentExpected));
+  }
+
+  @Test
+  public void duplicateServiceCombConfigToCseListValue() throws Exception {
+    List<String> list = Arrays.asList("a", "b");
+
+    AbstractConfiguration config = new DynamicConfiguration();
+    config.addProperty("servicecomb.list", list);
+    Deencapsulation.invoke(ConfigUtil.class, "duplicateServiceCombConfigToCse", config);
+
+    Object result = config.getProperty("cse.list");
+    assertThat(result, instanceOf(List.class));
+    assertThat(result, equalTo(list));
+  }
+
+  @Test
+  public void propertiesAddFromDynamicConfigSourceIsDuplicated() throws Exception {
+    String expected = uniquify("ran");
+    String someProperty = "servicecomb.cse.servicecomb.add";
+    String injectProperty = "cse.cse.servicecomb.add";
+
+    configurationSource.addProperty(someProperty, expected);
+
+    assertThat(DynamicPropertyFactory.getInstance().getStringProperty(someProperty, null).get(),
+        equalTo(expected));
+    assertThat(DynamicPropertyFactory.getInstance().getStringProperty(injectProperty, null).get(),
+        equalTo(expected));
+
+    String changed = uniquify("changed");
+    configurationSource.addProperty(someProperty, changed);
+
+    assertThat(DynamicPropertyFactory.getInstance().getStringProperty(someProperty, null).get(),
+        equalTo(changed));
+    assertThat(DynamicPropertyFactory.getInstance().getStringProperty(injectProperty, null).get(),
+        equalTo(changed));
+
+    expected = uniquify("ran");
+    someProperty = "servicecomb.servicecomb.cse.add";
+    injectProperty = "cse.servicecomb.cse.add";
+
+    configurationSource.addProperty(someProperty, expected);
+
+    assertThat(DynamicPropertyFactory.getInstance().getStringProperty(someProperty, null).get(),
+        equalTo(expected));
+    assertThat(DynamicPropertyFactory.getInstance().getStringProperty(injectProperty, null).get(),
+        equalTo(expected));
+
+    changed = uniquify("changed");
+    configurationSource.addProperty(someProperty, changed);
+
+    assertThat(DynamicPropertyFactory.getInstance().getStringProperty(someProperty, null).get(),
+        equalTo(changed));
+    assertThat(DynamicPropertyFactory.getInstance().getStringProperty(injectProperty, null).get(),
+        equalTo(changed));
+  }
+
+  @Test
+  public void propertiesChangeFromDynamicConfigSourceIsDuplicated() throws Exception {
+    String expected = uniquify("ran");
+    String someProperty = "servicecomb.cse.servicecomb.change";
+    String injectProperty = "cse.cse.servicecomb.change";
+    configurationSource.addProperty(someProperty, expected);
+
+    assertThat(DynamicPropertyFactory.getInstance().getStringProperty(someProperty, null).get(),
+        equalTo(expected));
+    assertThat(DynamicPropertyFactory.getInstance().getStringProperty(injectProperty, null).get(),
+        equalTo(expected));
+
+    String changed = uniquify("changed");
+    configurationSource.setProperty(someProperty, changed);
+
+    assertThat(DynamicPropertyFactory.getInstance().getStringProperty(someProperty, null).get(),
+        equalTo(changed));
+    assertThat(DynamicPropertyFactory.getInstance().getStringProperty(injectProperty, null).get(),
+        equalTo(changed));
+
+    expected = uniquify("ran");
+    someProperty = "servicecomb.servicecomb.cse.change";
+    injectProperty = "cse.servicecomb.cse.change";
+    configurationSource.addProperty(someProperty, expected);
+    assertThat(DynamicPropertyFactory.getInstance().getStringProperty(someProperty, null).get(),
+        equalTo(expected));
+    assertThat(DynamicPropertyFactory.getInstance().getStringProperty(injectProperty, null).get(),
+        equalTo(expected));
+
+    changed = uniquify("changed");
+    configurationSource.setProperty(someProperty, changed);
+
+    assertThat(DynamicPropertyFactory.getInstance().getStringProperty(someProperty, null).get(),
+        equalTo(changed));
+    assertThat(DynamicPropertyFactory.getInstance().getStringProperty(injectProperty, null).get(),
+        equalTo(changed));
+  }
+
+  @Test
+  public void propertiesDeleteFromDynamicConfigSourceIsDuplicated() throws Exception {
+    String expected = uniquify("ran");
+    String someProperty = "servicecomb.cse.servicecomb.delete";
+    String injectProperty = "cse.cse.servicecomb.delete";
+    configurationSource.addProperty(someProperty, expected);
+
+    assertThat(DynamicPropertyFactory.getInstance().getStringProperty(someProperty, null).get(),
+        equalTo(expected));
+    assertThat(DynamicPropertyFactory.getInstance().getStringProperty(injectProperty, null).get(),
+        equalTo(expected));
+
+    configurationSource.deleteProperty(someProperty);
+
+    assertThat(DynamicPropertyFactory.getInstance().getStringProperty(someProperty, null).get(),
+        equalTo(null));
+    assertThat(DynamicPropertyFactory.getInstance().getStringProperty(injectProperty, null).get(),
+        equalTo(null));
+
+    expected = uniquify("ran");
+    someProperty = "servicecomb.servicecomb.cse.delete";
+    injectProperty = "cse.servicecomb.cse.delete";
+    configurationSource.addProperty(someProperty, expected);
+
+    assertThat(DynamicPropertyFactory.getInstance().getStringProperty(someProperty, null).get(),
+        equalTo(expected));
+    assertThat(DynamicPropertyFactory.getInstance().getStringProperty(injectProperty, null).get(),
+        equalTo(expected));
+
+    configurationSource.deleteProperty(someProperty);
+
+    assertThat(DynamicPropertyFactory.getInstance().getStringProperty(someProperty, null).get(),
+        equalTo(null));
+    assertThat(DynamicPropertyFactory.getInstance().getStringProperty(injectProperty, null).get(),
+        equalTo(null));
+  }
+
+  @SuppressWarnings("unchecked")
+  private static void setEnv(String key, String value) throws IllegalAccessException, NoSuchFieldException {
+    Class<?>[] classes = Collections.class.getDeclaredClasses();
+    Map<String, String> env = System.getenv();
+    for (Class<?> cl : classes) {
+      if ("java.util.Collections$UnmodifiableMap".equals(cl.getName())) {
+        Field field = cl.getDeclaredField("m");
+        field.setAccessible(true);
+        Object obj = field.get(env);
+        Map<String, String> map = (Map<String, String>) obj;
+        map.put(key, value);
+      }
     }
-
-    @Test
-    public void testCreateConfigFromConfigCenterNoUrl(@Mocked Configuration localConfiguration) {
-        AbstractConfiguration configFromConfigCenter = ConfigUtil.createConfigFromConfigCenter(localConfiguration);
-        Assert.assertNull(configFromConfigCenter);
-    }
-
-    @Test
-    public void testCreateDynamicConfigNoConfigCenterSPI() {
-        new Expectations(SPIServiceUtils.class) {
-            {
-                SPIServiceUtils.getTargetService(ConfigCenterConfigurationSource.class);
-                result = null;
-            }
-        };
-
-        AbstractConfiguration dynamicConfig = ConfigUtil.createDynamicConfig();
-        MicroserviceConfigLoader loader = ConfigUtil.getMicroserviceConfigLoader(dynamicConfig);
-        List<ConfigModel> list = loader.getConfigModels();
-        Assert.assertEquals(loader, ConfigUtil.getMicroserviceConfigLoader(dynamicConfig));
-        Assert.assertEquals(1, list.size());
-        Assert.assertNotEquals(DynamicWatchedConfiguration.class,
-                ((ConcurrentCompositeConfiguration) dynamicConfig).getConfiguration(0).getClass());
-
-    }
-
-    @Test
-    public void testCreateDynamicConfigHasConfigCenter(
-            @Mocked ConfigCenterConfigurationSource configCenterConfigurationSource) {
-        AbstractConfiguration dynamicConfig = ConfigUtil.createDynamicConfig();
-        Assert.assertEquals(DynamicWatchedConfiguration.class,
-                ((ConcurrentCompositeConfiguration) dynamicConfig).getConfiguration(0).getClass());
-    }
-
-    @Test
-    public void testGetPropertyInvalidConfig() {
-        Assert.assertNull(ConfigUtil.getProperty(null, "any"));
-        Assert.assertNull(ConfigUtil.getProperty(new Object(), "any"));
-    }
-
-    @Test
-    public void propertiesFromFileIsDuplicatedToCse() throws Exception {
-        String expected = "value";
-
-        assertThat(DynamicPropertyFactory
-                .getInstance().getStringProperty("servicecomb.cse.servicecomb.file", null).get(),
-                equalTo(expected));
-
-        assertThat(DynamicPropertyFactory
-                .getInstance().getStringProperty("cse.cse.servicecomb.file", null).get(),
-                equalTo(expected));
-    }
-
-    @Test
-    public void propertiesFromSystemIsDuplicatedToCse() throws Exception {
-        assertThat(DynamicPropertyFactory
-                .getInstance().getStringProperty(systemPropertyName, null).get(),
-                equalTo(systemExpected));
-
-        assertThat(DynamicPropertyFactory
-                .getInstance().getStringProperty("servicecomb.cse.servicecomb.system.setting", null).get(),
-                equalTo(systemExpected));
-    }
-
-    @Test
-    public void propertiesFromEnvironmentIsDuplicatedToCse() throws Exception {
-        assertThat(DynamicPropertyFactory
-                .getInstance().getStringProperty(environmentPropertyName, null).get(),
-                equalTo(environmentExpected));
-
-        assertThat(DynamicPropertyFactory
-                .getInstance().getStringProperty("servicecomb.cse.servicecomb.environment.setting", null).get(),
-                equalTo(environmentExpected));
-    }
-
-    @Test
-    public void duplicateServiceCombConfigToCseListValue() throws Exception {
-        List<String> list = Arrays.asList("a", "b");
-
-        AbstractConfiguration config = new DynamicConfiguration();
-        config.addProperty("servicecomb.list", list);
-        Deencapsulation.invoke(ConfigUtil.class, "duplicateServiceCombConfigToCse", config);
-
-        Object result = config.getProperty("cse.list");
-        assertThat(result, instanceOf(List.class));
-        assertThat(result, equalTo(list));
-    }
-
-    @Test
-    public void propertiesAddFromDynamicConfigSourceIsDuplicated() throws Exception {
-        String expected = uniquify("ran");
-        String someProperty = "servicecomb.cse.servicecomb.add";
-        String injectProperty = "cse.cse.servicecomb.add";
-
-        configurationSource.addProperty(someProperty, expected);
-
-        assertThat(DynamicPropertyFactory.getInstance().getStringProperty(someProperty, null).get(),
-                equalTo(expected));
-        assertThat(DynamicPropertyFactory.getInstance().getStringProperty(injectProperty, null).get(),
-                equalTo(expected));
-
-        String changed = uniquify("changed");
-        configurationSource.addProperty(someProperty, changed);
-
-        assertThat(DynamicPropertyFactory.getInstance().getStringProperty(someProperty, null).get(),
-                equalTo(changed));
-        assertThat(DynamicPropertyFactory.getInstance().getStringProperty(injectProperty, null).get(),
-                equalTo(changed));
-
-        expected = uniquify("ran");
-        someProperty = "servicecomb.servicecomb.cse.add";
-        injectProperty = "cse.servicecomb.cse.add";
-
-        configurationSource.addProperty(someProperty, expected);
-
-        assertThat(DynamicPropertyFactory.getInstance().getStringProperty(someProperty, null).get(),
-                equalTo(expected));
-        assertThat(DynamicPropertyFactory.getInstance().getStringProperty(injectProperty, null).get(),
-                equalTo(expected));
-
-        changed = uniquify("changed");
-        configurationSource.addProperty(someProperty, changed);
-
-        assertThat(DynamicPropertyFactory.getInstance().getStringProperty(someProperty, null).get(),
-                equalTo(changed));
-        assertThat(DynamicPropertyFactory.getInstance().getStringProperty(injectProperty, null).get(),
-                equalTo(changed));
-
-    }
-
-    @Test
-    public void propertiesChangeFromDynamicConfigSourceIsDuplicated() throws Exception {
-        String expected = uniquify("ran");
-        String someProperty = "servicecomb.cse.servicecomb.change";
-        String injectProperty = "cse.cse.servicecomb.change";
-        configurationSource.addProperty(someProperty, expected);
-
-        assertThat(DynamicPropertyFactory.getInstance().getStringProperty(someProperty, null).get(),
-                equalTo(expected));
-        assertThat(DynamicPropertyFactory.getInstance().getStringProperty(injectProperty, null).get(),
-                equalTo(expected));
-
-        String changed = uniquify("changed");
-        configurationSource.setProperty(someProperty, changed);
-
-        assertThat(DynamicPropertyFactory.getInstance().getStringProperty(someProperty, null).get(),
-                equalTo(changed));
-        assertThat(DynamicPropertyFactory.getInstance().getStringProperty(injectProperty, null).get(),
-                equalTo(changed));
-
-        expected = uniquify("ran");
-        someProperty = "servicecomb.servicecomb.cse.change";
-        injectProperty = "cse.servicecomb.cse.change";
-        configurationSource.addProperty(someProperty, expected);
-        assertThat(DynamicPropertyFactory.getInstance().getStringProperty(someProperty, null).get(),
-                equalTo(expected));
-        assertThat(DynamicPropertyFactory.getInstance().getStringProperty(injectProperty, null).get(),
-                equalTo(expected));
-
-        changed = uniquify("changed");
-        configurationSource.setProperty(someProperty, changed);
-
-        assertThat(DynamicPropertyFactory.getInstance().getStringProperty(someProperty, null).get(),
-                equalTo(changed));
-        assertThat(DynamicPropertyFactory.getInstance().getStringProperty(injectProperty, null).get(),
-                equalTo(changed));
-
-    }
-
-    @Test
-    public void propertiesDeleteFromDynamicConfigSourceIsDuplicated() throws Exception {
-        String expected = uniquify("ran");
-        String someProperty = "servicecomb.cse.servicecomb.delete";
-        String injectProperty = "cse.cse.servicecomb.delete";
-        configurationSource.addProperty(someProperty, expected);
-
-        assertThat(DynamicPropertyFactory.getInstance().getStringProperty(someProperty, null).get(),
-                equalTo(expected));
-        assertThat(DynamicPropertyFactory.getInstance().getStringProperty(injectProperty, null).get(),
-                equalTo(expected));
-
-        configurationSource.deleteProperty(someProperty);
-
-        assertThat(DynamicPropertyFactory.getInstance().getStringProperty(someProperty, null).get(),
-                equalTo(null));
-        assertThat(DynamicPropertyFactory.getInstance().getStringProperty(injectProperty, null).get(),
-                equalTo(null));
-
-        expected = uniquify("ran");
-        someProperty = "servicecomb.servicecomb.cse.delete";
-        injectProperty = "cse.servicecomb.cse.delete";
-        configurationSource.addProperty(someProperty, expected);
-
-        assertThat(DynamicPropertyFactory.getInstance().getStringProperty(someProperty, null).get(),
-                equalTo(expected));
-        assertThat(DynamicPropertyFactory.getInstance().getStringProperty(injectProperty, null).get(),
-                equalTo(expected));
-
-        configurationSource.deleteProperty(someProperty);
-
-        assertThat(DynamicPropertyFactory.getInstance().getStringProperty(someProperty, null).get(),
-                equalTo(null));
-        assertThat(DynamicPropertyFactory.getInstance().getStringProperty(injectProperty, null).get(),
-                equalTo(null));
-    }
-
-    @SuppressWarnings("unchecked")
-    private static void setEnv(String key, String value) throws IllegalAccessException, NoSuchFieldException {
-        Class<?>[] classes = Collections.class.getDeclaredClasses();
-        Map<String, String> env = System.getenv();
-        for (Class<?> cl : classes) {
-            if ("java.util.Collections$UnmodifiableMap".equals(cl.getName())) {
-                Field field = cl.getDeclaredField("m");
-                field.setAccessible(true);
-                Object obj = field.get(env);
-                Map<String, String> map = (Map<String, String>) obj;
-                map.put(key, value);
-            }
-        }
-    }
+  }
 }

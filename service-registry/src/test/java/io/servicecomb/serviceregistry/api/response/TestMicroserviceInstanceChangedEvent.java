@@ -16,71 +16,64 @@
 
 package io.servicecomb.serviceregistry.api.response;
 
-import io.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
-import io.servicecomb.serviceregistry.api.registry.WatchAction;
 import org.junit.After;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 
 import io.servicecomb.serviceregistry.api.MicroserviceKey;
+import io.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
+import io.servicecomb.serviceregistry.api.registry.WatchAction;
 
-import org.junit.Assert;
-
-/**
- *
- * @since Mar 14, 2017
- * @see 
- */
 public class TestMicroserviceInstanceChangedEvent {
 
-    MicroserviceInstanceChangedEvent oMicroserviceInstanceChangedEvent = null;
+  MicroserviceInstanceChangedEvent oMicroserviceInstanceChangedEvent = null;
 
-    MicroserviceKey oMockMicroserviceKey = null;
+  MicroserviceKey oMockMicroserviceKey = null;
 
-    MicroserviceInstance oMockMicroserviceInstance = null;
+  MicroserviceInstance oMockMicroserviceInstance = null;
 
-    @Before
-    public void setUp() throws Exception {
-        oMicroserviceInstanceChangedEvent = new MicroserviceInstanceChangedEvent();
-        oMockMicroserviceKey = Mockito.mock(MicroserviceKey.class);
-        oMockMicroserviceInstance = Mockito.mock(MicroserviceInstance.class);
-    }
+  @Before
+  public void setUp() throws Exception {
+    oMicroserviceInstanceChangedEvent = new MicroserviceInstanceChangedEvent();
+    oMockMicroserviceKey = Mockito.mock(MicroserviceKey.class);
+    oMockMicroserviceInstance = Mockito.mock(MicroserviceInstance.class);
+  }
 
-    @After
-    public void tearDown() throws Exception {
-        oMicroserviceInstanceChangedEvent = null;
-        oMockMicroserviceKey = null;
-        oMockMicroserviceInstance = null;
-    }
+  @After
+  public void tearDown() throws Exception {
+    oMicroserviceInstanceChangedEvent = null;
+    oMockMicroserviceKey = null;
+    oMockMicroserviceInstance = null;
+  }
 
-    @Test
-    public void testDefaultValues() {
-        Assert.assertNull(oMicroserviceInstanceChangedEvent.getAction());
-        Assert.assertNull(oMicroserviceInstanceChangedEvent.getInstance());
-        Assert.assertNull(oMicroserviceInstanceChangedEvent.getKey());
-    }
+  @Test
+  public void testDefaultValues() {
+    Assert.assertNull(oMicroserviceInstanceChangedEvent.getAction());
+    Assert.assertNull(oMicroserviceInstanceChangedEvent.getInstance());
+    Assert.assertNull(oMicroserviceInstanceChangedEvent.getKey());
+  }
 
-    @Test
-    public void testIntializedValues() {
-        initFields(); //Initialize the Object
-        Assert.assertEquals(WatchAction.CREATE, oMicroserviceInstanceChangedEvent.getAction());
-        Assert.assertEquals("CREATE", oMicroserviceInstanceChangedEvent.getAction().getName());
-        Assert.assertEquals(oMockMicroserviceInstance, oMicroserviceInstanceChangedEvent.getInstance());
-        Assert.assertEquals(oMockMicroserviceKey, oMicroserviceInstanceChangedEvent.getKey());
+  @Test
+  public void testIntializedValues() {
+    initFields(); //Initialize the Object
+    Assert.assertEquals(WatchAction.CREATE, oMicroserviceInstanceChangedEvent.getAction());
+    Assert.assertEquals("CREATE", oMicroserviceInstanceChangedEvent.getAction().getName());
+    Assert.assertEquals(oMockMicroserviceInstance, oMicroserviceInstanceChangedEvent.getInstance());
+    Assert.assertEquals(oMockMicroserviceKey, oMicroserviceInstanceChangedEvent.getKey());
 
-        //Test Different Actions
-        oMicroserviceInstanceChangedEvent.setAction(WatchAction.UPDATE);
-        Assert.assertEquals("UPDATE", oMicroserviceInstanceChangedEvent.getAction().getName());
+    //Test Different Actions
+    oMicroserviceInstanceChangedEvent.setAction(WatchAction.UPDATE);
+    Assert.assertEquals("UPDATE", oMicroserviceInstanceChangedEvent.getAction().getName());
 
-        oMicroserviceInstanceChangedEvent.setAction(WatchAction.DELETE);
-        Assert.assertEquals("DELETE", oMicroserviceInstanceChangedEvent.getAction().getName());
-    }
+    oMicroserviceInstanceChangedEvent.setAction(WatchAction.DELETE);
+    Assert.assertEquals("DELETE", oMicroserviceInstanceChangedEvent.getAction().getName());
+  }
 
-    private void initFields() {
-        oMicroserviceInstanceChangedEvent.setInstance(oMockMicroserviceInstance);
-        oMicroserviceInstanceChangedEvent.setKey(oMockMicroserviceKey);
-        oMicroserviceInstanceChangedEvent.setAction(WatchAction.CREATE);
-    }
-
+  private void initFields() {
+    oMicroserviceInstanceChangedEvent.setInstance(oMockMicroserviceInstance);
+    oMicroserviceInstanceChangedEvent.setKey(oMockMicroserviceKey);
+    oMicroserviceInstanceChangedEvent.setAction(WatchAction.CREATE);
+  }
 }

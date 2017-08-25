@@ -19,43 +19,43 @@ package io.servicecomb.codec.protobuf.jackson;
 import java.util.HashMap;
 import java.util.Map;
 
-import io.servicecomb.codec.protobuf.codec.AbstractFieldCodec.ReaderHelpData;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
+import io.servicecomb.codec.protobuf.codec.AbstractFieldCodec.ReaderHelpData;
+
 public class TestParamDeserializer {
 
-    private ParamDeserializer paramDeserializer = null;
+  private ParamDeserializer paramDeserializer = null;
 
-    private Map<String, ReaderHelpData> readerHelpDataMap = new HashMap<>();
+  private Map<String, ReaderHelpData> readerHelpDataMap = new HashMap<>();
 
-    @Before
-    public void setUp() throws Exception {
-        paramDeserializer = new ParamDeserializer(readerHelpDataMap);
-    }
+  @Before
+  public void setUp() throws Exception {
+    paramDeserializer = new ParamDeserializer(readerHelpDataMap);
+  }
 
-    @After
-    public void tearDown() throws Exception {
-        paramDeserializer = null;
-    }
+  @After
+  public void tearDown() throws Exception {
+    paramDeserializer = null;
+  }
 
-    @Test
-    public void testCreateResult() {
-        Object object = paramDeserializer.createResult();
-        Assert.assertNotNull(object);
-        // object is created but no values inside to assert
-    }
+  @Test
+  public void testCreateResult() {
+    Object object = paramDeserializer.createResult();
+    Assert.assertNotNull(object);
+    // object is created but no values inside to assert
+  }
 
-    @Test
-    public void testUpdateResult() {
-        String[] stringArray = new String[1];
-        stringArray[0] = "abc";
-        Object[] object = new Object[1];
-        Object paramObject = paramDeserializer.updateResult(object, stringArray, new ReaderHelpData());
-        Assert.assertNotNull(paramObject);
-        Assert.assertEquals(paramObject, object);
-    }
-
+  @Test
+  public void testUpdateResult() {
+    String[] stringArray = new String[1];
+    stringArray[0] = "abc";
+    Object[] object = new Object[1];
+    Object paramObject = paramDeserializer.updateResult(object, stringArray, new ReaderHelpData());
+    Assert.assertNotNull(paramObject);
+    Assert.assertEquals(paramObject, object);
+  }
 }

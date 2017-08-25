@@ -23,20 +23,20 @@ import org.junit.Assert;
 import org.junit.Test;
 
 public class TestCseUriTemplateHandler {
-    @Test
-    public void testCrossApp() {
-        CseUriTemplateHandler handler = new CseUriTemplateHandler();
-        URI uri = handler.expand("cse://{ap}{p}:ms/{path}?q={query}", "ap", "p", "path", "query");
-        Assert.assertEquals("cse://app:ms/path?q=query", uri.toString());
+  @Test
+  public void testCrossApp() {
+    CseUriTemplateHandler handler = new CseUriTemplateHandler();
+    URI uri = handler.expand("cse://{ap}{p}:ms/{path}?q={query}", "ap", "p", "path", "query");
+    Assert.assertEquals("cse://app:ms/path?q=query", uri.toString());
 
-        Map<String, String> vars = new HashMap<>();
-        vars.put("app", "app");
-        vars.put("path", "path");
-        vars.put("q", "query");
-        uri = handler.expand("cse://{app}:ms/{path}?q={q}", vars);
-        Assert.assertEquals("cse://app:ms/path?q=query", uri.toString());
+    Map<String, String> vars = new HashMap<>();
+    vars.put("app", "app");
+    vars.put("path", "path");
+    vars.put("q", "query");
+    uri = handler.expand("cse://{app}:ms/{path}?q={q}", vars);
+    Assert.assertEquals("cse://app:ms/path?q=query", uri.toString());
 
-        uri = handler.expand("cse://ms/{path}?q={query}", "path", "query");
-        Assert.assertEquals("cse://ms/path?q=query", uri.toString());
-    }
+    uri = handler.expand("cse://ms/{path}?q={query}", "path", "query");
+    Assert.assertEquals("cse://ms/path?q=query", uri.toString());
+  }
 }

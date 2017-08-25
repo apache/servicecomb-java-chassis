@@ -21,11 +21,11 @@ import org.junit.Test;
 
 public class TestRestConst {
 
-    @Test
-    public void testConst() {
-        Assert.assertEquals("server-http-request-creator", RestConst.HTTP_REQUEST_CREATOR);
-        Assert.assertEquals("rest-client-request-path", RestConst.REST_CLIENT_REQUEST_PATH);
-        Assert.assertEquals("swaggerRestOperation", RestConst.SWAGGER_REST_OPERATION);
-        Assert.assertEquals("rest", RestConst.REST);
-    }
+  @Test
+  public void testConst() {
+    Assert.assertEquals("server-http-request-creator", RestConst.HTTP_REQUEST_CREATOR);
+    Assert.assertEquals("rest-client-request-path", RestConst.REST_CLIENT_REQUEST_PATH);
+    Assert.assertEquals("swaggerRestOperation", RestConst.SWAGGER_REST_OPERATION);
+    Assert.assertEquals("rest", RestConst.REST);
+  }
 }

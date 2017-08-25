@@ -16,24 +16,24 @@
 package io.servicecomb.springboot.starter.discovery;
 
 import io.servicecomb.core.Transport;
+import io.servicecomb.foundation.common.net.URIEndpointObject;
 import io.servicecomb.loadbalance.CseServer;
 import io.servicecomb.serviceregistry.cache.CacheEndpoint;
-import io.servicecomb.foundation.common.net.URIEndpointObject;
 
 public class CseServerWrapper extends CseServer {
 
-    public CseServerWrapper(Transport transport, CacheEndpoint cacheEndpoint) {
-        super(transport, cacheEndpoint);
-    }
+  public CseServerWrapper(Transport transport, CacheEndpoint cacheEndpoint) {
+    super(transport, cacheEndpoint);
+  }
 
-    // used in LoadBalancerContext
-    public String getHost() {
-        URIEndpointObject host = (URIEndpointObject) getEndpoint().getAddress();
-        return host.getHostOrIp();
-    }
+  // used in LoadBalancerContext
+  public String getHost() {
+    URIEndpointObject host = (URIEndpointObject) getEndpoint().getAddress();
+    return host.getHostOrIp();
+  }
 
-    public int getPort() {
-        URIEndpointObject host = (URIEndpointObject) getEndpoint().getAddress();
-        return host.getPort();
-    }
+  public int getPort() {
+    URIEndpointObject host = (URIEndpointObject) getEndpoint().getAddress();
+    return host.getPort();
+  }
 }

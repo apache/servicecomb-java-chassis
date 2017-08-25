@@ -32,100 +32,100 @@ import io.swagger.models.Swagger;
 import io.swagger.util.Yaml;
 
 public final class UnitTestSwaggerUtils {
-    private static ObjectWriter writer = Yaml.pretty();
+  private static ObjectWriter writer = Yaml.pretty();
 
-    private static CompositeSwaggerGeneratorContext compositeContext = new CompositeSwaggerGeneratorContext();
+  private static CompositeSwaggerGeneratorContext compositeContext = new CompositeSwaggerGeneratorContext();
 
-    private UnitTestSwaggerUtils() {
+  private UnitTestSwaggerUtils() {
+  }
+
+  public static SwaggerGenerator generateSwagger(Class<?> cls) {
+    SwaggerGeneratorContext context = compositeContext.selectContext(cls);
+    SwaggerGenerator generator = new SwaggerGenerator(context, cls);
+    generator.generate();
+
+    return generator;
+  }
+
+  public static String loadExpect(String resPath) {
+    URL url = Thread.currentThread().getContextClassLoader().getResource(resPath);
+    if (url == null) {
+      return "can not found res " + resPath;
     }
 
-    public static SwaggerGenerator generateSwagger(Class<?> cls) {
-        SwaggerGeneratorContext context = compositeContext.selectContext(cls);
-        SwaggerGenerator generator = new SwaggerGenerator(context, cls);
-        generator.generate();
+    try {
+      return IOUtils.toString(url);
+    } catch (IOException e) {
+      return e.getMessage();
+    }
+  }
 
-        return generator;
+  public static String pretty(Swagger swagger) {
+    try {
+      return writer.writeValueAsString(swagger);
+    } catch (JsonProcessingException e) {
+      throw new Error(e);
+    }
+  }
+
+  public static Swagger parse(String content) {
+    try {
+      return Yaml.mapper().readValue(content, Swagger.class);
+    } catch (Exception e) {
+      return new Swagger();
+      //            throw new Error(e);
+    }
+  }
+
+  public static SwaggerGenerator testSwagger(String resPath, SwaggerGeneratorContext context, Class<?> cls,
+      String... methods) {
+    SwaggerGeneratorForTest generator = new SwaggerGeneratorForTest(context, cls);
+    generator.setClassLoader(new ClassLoader() {
+    });
+    generator.replaceMethods(methods);
+
+    Swagger swagger = generator.generate();
+
+    String expectSchema = loadExpect(resPath);
+    Swagger expectSwagger = parse(expectSchema);
+
+    String schema = pretty(swagger);
+    swagger = parse(schema);
+
+    if (swagger != null && !swagger.equals(expectSwagger)) {
+      Assert.assertEquals(expectSchema, schema);
     }
 
-    public static String loadExpect(String resPath) {
-        URL url = Thread.currentThread().getContextClassLoader().getResource(resPath);
-        if (url == null) {
-            return "can not found res " + resPath;
-        }
+    return generator;
+  }
 
-        try {
-            return IOUtils.toString(url);
-        } catch (IOException e) {
-            return e.getMessage();
-        }
+  public static Throwable getException(SwaggerGeneratorContext context, Class<?> cls,
+      String... methods) {
+    try {
+      SwaggerGeneratorForTest generator = new SwaggerGeneratorForTest(context, cls);
+      generator.replaceMethods(methods);
+
+      generator.generate();
+    } catch (Throwable e) {
+      return e;
     }
 
-    public static String pretty(Swagger swagger) {
-        try {
-            return writer.writeValueAsString(swagger);
-        } catch (JsonProcessingException e) {
-            throw new Error(e);
-        }
-    }
+    // 不允许成功
+    Assert.assertEquals("not allowed run to here", "run to here");
+    return null;
+  }
 
-    public static Swagger parse(String content) {
-        try {
-            return Yaml.mapper().readValue(content, Swagger.class);
-        } catch (Exception e) {
-            return new Swagger();
-            //            throw new Error(e);
-        }
-    }
+  public static void testException(String expectMsgLevel1, String expectMsgLevel2, SwaggerGeneratorContext context,
+      Class<?> cls,
+      String... methods) {
+    Throwable exception = getException(context, cls, methods);
+    Assert.assertEquals(expectMsgLevel1, exception.getMessage());
+    Assert.assertEquals(expectMsgLevel2, exception.getCause().getMessage());
+  }
 
-    public static SwaggerGenerator testSwagger(String resPath, SwaggerGeneratorContext context, Class<?> cls,
-            String... methods) {
-        SwaggerGeneratorForTest generator = new SwaggerGeneratorForTest(context, cls);
-        generator.setClassLoader(new ClassLoader() {
-        });
-        generator.replaceMethods(methods);
-
-        Swagger swagger = generator.generate();
-
-        String expectSchema = loadExpect(resPath);
-        Swagger expectSwagger = parse(expectSchema);
-
-        String schema = pretty(swagger);
-        swagger = parse(schema);
-
-        if (swagger != null && !swagger.equals(expectSwagger)) {
-            Assert.assertEquals(expectSchema, schema);
-        }
-
-        return generator;
-    }
-
-    public static Throwable getException(SwaggerGeneratorContext context, Class<?> cls,
-            String... methods) {
-        try {
-            SwaggerGeneratorForTest generator = new SwaggerGeneratorForTest(context, cls);
-            generator.replaceMethods(methods);
-
-            generator.generate();
-        } catch (Throwable e) {
-            return e;
-        }
-
-        // 不允许成功
-        Assert.assertEquals("not allowed run to here", "run to here");
-        return null;
-    }
-
-    public static void testException(String expectMsgLevel1, String expectMsgLevel2, SwaggerGeneratorContext context,
-            Class<?> cls,
-            String... methods) {
-        Throwable exception = getException(context, cls, methods);
-        Assert.assertEquals(expectMsgLevel1, exception.getMessage());
-        Assert.assertEquals(expectMsgLevel2, exception.getCause().getMessage());
-    }
-
-    public static void testException(String expectMsg, SwaggerGeneratorContext context, Class<?> cls,
-            String... methods) {
-        Throwable exception = getException(context, cls, methods);
-        Assert.assertEquals(expectMsg, exception.getMessage());
-    }
+  public static void testException(String expectMsg, SwaggerGeneratorContext context, Class<?> cls,
+      String... methods) {
+    Throwable exception = getException(context, cls, methods);
+    Assert.assertEquals(expectMsg, exception.getMessage());
+  }
 }

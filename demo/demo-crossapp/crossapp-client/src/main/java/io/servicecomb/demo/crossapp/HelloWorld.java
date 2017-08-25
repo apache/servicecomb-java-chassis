@@ -17,5 +17,5 @@
 package io.servicecomb.demo.crossapp;
 
 public interface HelloWorld {
-    String sayHello();
+  String sayHello();
 }

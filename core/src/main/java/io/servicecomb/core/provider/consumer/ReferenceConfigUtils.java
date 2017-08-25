@@ -22,32 +22,32 @@ import io.servicecomb.core.CseContext;
 
 @Component
 public class ReferenceConfigUtils {
-    private static boolean ready;
+  private static boolean ready;
 
-    public static void setReady(boolean ready) {
-        ReferenceConfigUtils.ready = ready;
+  public static void setReady(boolean ready) {
+    ReferenceConfigUtils.ready = ready;
+  }
+
+  private static void assertIsReady() {
+    if (!ready) {
+      throw new IllegalStateException("System is not ready for remote calls. "
+          + "When beans are making remote calls in initialization, it's better to "
+          + "implement io.servicecomb.core.BootListener and do it after EventType.AFTER_REGISTRY.");
     }
+  }
 
-    private static void assertIsReady() {
-        if (!ready) {
-            throw new IllegalStateException("System is not ready for remote calls. "
-                    + "When beans are making remote calls in initialization, it's better to "
-                    + "implement io.servicecomb.core.BootListener and do it after EventType.AFTER_REGISTRY.");
-        }
-    }
+  public static ReferenceConfig getForInvoke(String microserviceName) {
+    assertIsReady();
 
-    public static ReferenceConfig getForInvoke(String microserviceName) {
-        assertIsReady();
+    return CseContext.getInstance().getConsumerProviderManager().getReferenceConfig(microserviceName);
+  }
 
-        return CseContext.getInstance().getConsumerProviderManager().getReferenceConfig(microserviceName);
-    }
+  public static ReferenceConfig getForInvoke(String microserviceName, String microserviceVersion,
+      String transport) {
+    assertIsReady();
 
-    public static ReferenceConfig getForInvoke(String microserviceName, String microserviceVersion,
-            String transport) {
-        assertIsReady();
-
-        return CseContext.getInstance().getConsumerProviderManager().createReferenceConfig(microserviceName,
-                microserviceVersion,
-                transport);
-    }
+    return CseContext.getInstance().getConsumerProviderManager().createReferenceConfig(microserviceName,
+        microserviceVersion,
+        transport);
+  }
 }

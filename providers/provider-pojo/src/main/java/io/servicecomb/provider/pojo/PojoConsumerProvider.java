@@ -24,8 +24,8 @@ import io.servicecomb.core.provider.consumer.AbstractConsumerProvider;
 
 @Component
 public class PojoConsumerProvider extends AbstractConsumerProvider {
-    @Override
-    public String getName() {
-        return POJO;
-    }
+  @Override
+  public String getName() {
+    return POJO;
+  }
 }

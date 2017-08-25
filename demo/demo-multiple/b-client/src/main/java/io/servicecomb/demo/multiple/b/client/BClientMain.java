@@ -21,13 +21,13 @@ import io.servicecomb.foundation.common.utils.BeanUtils;
 import io.servicecomb.foundation.common.utils.Log4jUtils;
 
 public class BClientMain {
-    public static void main(String[] args) throws Exception {
-        Log4jUtils.init();
-        BeanUtils.init();
+  public static void main(String[] args) throws Exception {
+    Log4jUtils.init();
+    BeanUtils.init();
 
-        BClient client = BeanUtils.getContext().getBean(BClient.class);
-        client.run();
+    BClient client = BeanUtils.getContext().getBean(BClient.class);
+    client.run();
 
-        TestMgr.summary();
-    }
+    TestMgr.summary();
+  }
 }

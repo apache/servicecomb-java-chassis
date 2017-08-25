@@ -20,7 +20,7 @@ import io.servicecomb.demo.server.TestRequest;
 import io.servicecomb.demo.server.User;
 
 public interface TestTcc {
-    User wrapParam(TestRequest request);
+  User wrapParam(TestRequest request);
 
-    User splitParam(int index, User user);
+  User splitParam(int index, User user);
 }

@@ -26,27 +26,27 @@ import com.netflix.config.ConfigurationManager;
  */
 public final class CseDelegatingProxyUtils {
 
-    private static final String APPLICATION_CONTEXT = ApplicationContext.class.getName();
+  private static final String APPLICATION_CONTEXT = ApplicationContext.class.getName();
 
-    private CseDelegatingProxyUtils() {
-    }
+  private CseDelegatingProxyUtils() {
+  }
 
-    public static <T> T getNamedInstance(Class<T> type, String name) {
-        ApplicationContext context = (ApplicationContext) ConfigurationManager
-                .getConfigInstance().getProperty(APPLICATION_CONTEXT);
-        return context != null && context.containsBean(name) ? context
-                .getBean(name, type) : null;
-    }
+  public static <T> T getNamedInstance(Class<T> type, String name) {
+    ApplicationContext context = (ApplicationContext) ConfigurationManager
+        .getConfigInstance()
+        .getProperty(APPLICATION_CONTEXT);
+    return context != null && context.containsBean(name) ? context
+        .getBean(name, type) : null;
+  }
 
-    public static <T> T getInstanceWithPrefix(Class<T> type, String prefix) {
-        String name = prefix + type.getSimpleName();
-        return getNamedInstance(type, name);
-    }
+  public static <T> T getInstanceWithPrefix(Class<T> type, String prefix) {
+    String name = prefix + type.getSimpleName();
+    return getNamedInstance(type, name);
+  }
 
-    public static void addApplicationContext(ConfigurableApplicationContext context) {
-        AbstractConfiguration config = ConfigurationManager.getConfigInstance();
-        config.clearProperty(APPLICATION_CONTEXT);
-        config.setProperty(APPLICATION_CONTEXT, context);
-    }
-
+  public static void addApplicationContext(ConfigurableApplicationContext context) {
+    AbstractConfiguration config = ConfigurationManager.getConfigInstance();
+    config.clearProperty(APPLICATION_CONTEXT);
+    config.setProperty(APPLICATION_CONTEXT, context);
+  }
 }

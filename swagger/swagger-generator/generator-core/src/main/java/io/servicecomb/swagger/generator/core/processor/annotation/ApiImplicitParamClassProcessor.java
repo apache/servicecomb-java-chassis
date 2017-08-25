@@ -18,16 +18,15 @@ package io.servicecomb.swagger.generator.core.processor.annotation;
 
 import io.servicecomb.swagger.generator.core.ClassAnnotationProcessor;
 import io.servicecomb.swagger.generator.core.SwaggerGenerator;
-
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.models.parameters.Parameter;
 
 public class ApiImplicitParamClassProcessor implements ClassAnnotationProcessor {
-    @Override
-    public void process(Object annotation, SwaggerGenerator swaggerGenerator) {
-        ApiImplicitParam paramAnnotation = (ApiImplicitParam) annotation;
+  @Override
+  public void process(Object annotation, SwaggerGenerator swaggerGenerator) {
+    ApiImplicitParam paramAnnotation = (ApiImplicitParam) annotation;
 
-        Parameter parameter = AnnotationUtils.createParameter(swaggerGenerator.getSwagger(), paramAnnotation);
-        swaggerGenerator.getSwagger().addParameter(parameter.getName(), parameter);
-    }
+    Parameter parameter = AnnotationUtils.createParameter(swaggerGenerator.getSwagger(), paramAnnotation);
+    swaggerGenerator.getSwagger().addParameter(parameter.getName(), parameter);
+  }
 }

@@ -16,20 +16,21 @@
 
 package io.servicecomb.loadbalance;
 
+import com.netflix.loadbalancer.Server;
+
 import io.servicecomb.core.Transport;
 import io.servicecomb.core.endpoint.AbstractEndpointsCache;
 import io.servicecomb.serviceregistry.cache.CacheEndpoint;
-import com.netflix.loadbalancer.Server;
 
 public class ServerListCache extends AbstractEndpointsCache<Server> {
 
-    public ServerListCache(String appId, String microserviceName, String microserviceVersionRule,
-            String transportName) {
-        super(appId, microserviceName, microserviceVersionRule, transportName);
-    }
+  public ServerListCache(String appId, String microserviceName, String microserviceVersionRule,
+      String transportName) {
+    super(appId, microserviceName, microserviceVersionRule, transportName);
+  }
 
-    @Override
-    protected Server createEndpoint(Transport transport, CacheEndpoint cacheEndpoint) {
-        return new CseServer(transport, cacheEndpoint);
-    }
+  @Override
+  protected Server createEndpoint(Transport transport, CacheEndpoint cacheEndpoint) {
+    return new CseServer(transport, cacheEndpoint);
+  }
 }

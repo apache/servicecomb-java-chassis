@@ -30,74 +30,73 @@ import io.swagger.annotations.SwaggerDefinition;
 @RpcSchema()
 @SwaggerDefinition(basePath = "/pojo/rest")
 public class CodeFirstPojo implements CodeFirstPojoIntf {
-    @Override
-    public Map<String, User> testUserMap(Map<String, User> userMap) {
-        return userMap;
+  @Override
+  public Map<String, User> testUserMap(Map<String, User> userMap) {
+    return userMap;
+  }
+
+  @Override
+  public List<User> testUserArray(List<User> users) {
+    return users;
+  }
+
+  public String[] testStrings(String[] input) {
+    input[0] += input[0] + "0";
+    return input;
+  }
+
+  public byte[] testBytes(byte[] input) {
+    input[0] = (byte) (input[0] + 1);
+    return input;
+  }
+
+  public int reduce(int a, int b) {
+    return a - b;
+  }
+
+  public Date addDate(Date date, long second) {
+    return new Date(date.getTime() + second * 1000);
+  }
+
+  public Person sayHello(Person user) {
+    user.setName("hello " + user.getName());
+    return user;
+  }
+
+  //    @SuppressWarnings("unchecked")
+  //    public String testRawJsonString(String jsonInput) {
+  //        Map<String, String> person;
+  //        try {
+  //            person = RestObjectMapper.INSTANCE.readValue(jsonInput.getBytes(), Map.class);
+  //        } catch (Exception e) {
+  //            e.printStackTrace();
+  //            return null;
+  //        }
+  //        return "hello " + person.get("name");
+  //    }
+
+  public String saySomething(String prefix, Person user) {
+    return prefix + " " + user.getName();
+  }
+
+  public String sayHi(String name) {
+    ContextUtils.getInvocationContext().setStatus(202);
+    return name + " sayhi";
+  }
+
+  public String sayHi2(String name) {
+    return name + " sayhi 2";
+  }
+
+  public boolean isTrue() {
+    return true;
+  }
+
+  public String addString(List<String> s) {
+    String result = "";
+    for (String x : s) {
+      result += x;
     }
-
-    @Override
-    public List<User> testUserArray(List<User> users) {
-        return users;
-    }
-
-    public String[] testStrings(String[] input) {
-        input[0] += input[0] + "0";
-        return input;
-    }
-
-    public byte[] testBytes(byte[] input) {
-        input[0] = (byte) (input[0] + 1);
-        return input;
-    }
-
-    public int reduce(int a, int b) {
-        return a - b;
-    }
-
-    public Date addDate(Date date, long second) {
-        return new Date(date.getTime() + second * 1000);
-    }
-
-    public Person sayHello(Person user) {
-        user.setName("hello " + user.getName());
-        return user;
-    }
-
-    //    @SuppressWarnings("unchecked")
-    //    public String testRawJsonString(String jsonInput) {
-    //        Map<String, String> person;
-    //        try {
-    //            person = RestObjectMapper.INSTANCE.readValue(jsonInput.getBytes(), Map.class);
-    //        } catch (Exception e) {
-    //            e.printStackTrace();
-    //            return null;
-    //        }
-    //        return "hello " + person.get("name");
-    //    }
-
-    public String saySomething(String prefix, Person user) {
-        return prefix + " " + user.getName();
-    }
-
-    public String sayHi(String name) {
-        ContextUtils.getInvocationContext().setStatus(202);
-        return name + " sayhi";
-    }
-
-    public String sayHi2(String name) {
-        return name + " sayhi 2";
-    }
-
-    public boolean isTrue() {
-        return true;
-    }
-
-    public String addString(List<String> s) {
-        String result = "";
-        for (String x : s) {
-            result += x;
-        }
-        return result;
-    }
-
+    return result;
+  }
 }

@@ -27,25 +27,25 @@ import io.servicecomb.samples.pojo.Compute;
 @Component
 public class PojoConsumerMain {
 
-    @RpcReference(microserviceName = "hello", schemaId = "hello")
-    private static Hello hello;
+  @RpcReference(microserviceName = "hello", schemaId = "hello")
+  private static Hello hello;
 
-    @RpcReference(microserviceName = "hello", schemaId = "codeFirstCompute")
-    public static Compute compute;
+  @RpcReference(microserviceName = "hello", schemaId = "codeFirstCompute")
+  public static Compute compute;
 
-    public static void main(String[] args)
-        throws Exception {
-        init();
-        System.out.println(hello.sayHi("Java Chassis"));
-        Person person = new Person();
-        person.setName("ServiceComb/Java Chassis");
-        System.out.println(hello.sayHello(person));
-        System.out.println("a=1, b=2, result=" + compute.add(1, 2));
-    }
+  public static void main(String[] args)
+      throws Exception {
+    init();
+    System.out.println(hello.sayHi("Java Chassis"));
+    Person person = new Person();
+    person.setName("ServiceComb/Java Chassis");
+    System.out.println(hello.sayHello(person));
+    System.out.println("a=1, b=2, result=" + compute.add(1, 2));
+  }
 
-    public static void init()
-        throws Exception {
-        Log4jUtils.init();
-        BeanUtils.init();
-    }
+  public static void init()
+      throws Exception {
+    Log4jUtils.init();
+    BeanUtils.init();
+  }
 }

@@ -26,5 +26,5 @@ import io.swagger.annotations.ResponseHeader;
 @Target({METHOD})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface ResponseHeaders {
-    ResponseHeader[] value();
+  ResponseHeader[] value();
 }

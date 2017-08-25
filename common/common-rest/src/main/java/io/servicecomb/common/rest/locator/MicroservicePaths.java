@@ -32,79 +32,79 @@ import io.servicecomb.common.rest.definition.RestOperationMeta;
 import io.servicecomb.foundation.common.exceptions.ServiceCombException;
 
 public class MicroservicePaths {
-    private static final Logger LOGGER = LoggerFactory.getLogger(MicroservicePaths.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(MicroservicePaths.class);
 
-    // 运行阶段,静态path,一次直接查找到目标,不必遍历查找
-    // 以path为key
-    protected Map<String, OperationGroup> staticPathOperations = new HashMap<>();
+  // 运行阶段,静态path,一次直接查找到目标,不必遍历查找
+  // 以path为key
+  protected Map<String, OperationGroup> staticPathOperations = new HashMap<>();
 
-    // 运行阶段,以path优先级,从高到低排列的operation列表
-    protected List<RestOperationMeta> dynamicPathOperationsList = new ArrayList<>();
+  // 运行阶段,以path优先级,从高到低排列的operation列表
+  protected List<RestOperationMeta> dynamicPathOperationsList = new ArrayList<>();
 
-    public void cloneTo(MicroservicePaths other) {
-        other.staticPathOperations.putAll(staticPathOperations);
-        other.dynamicPathOperationsList.addAll(dynamicPathOperationsList);
+  public void cloneTo(MicroservicePaths other) {
+    other.staticPathOperations.putAll(staticPathOperations);
+    other.dynamicPathOperationsList.addAll(dynamicPathOperationsList);
+  }
+
+  public void sortPath() {
+    RestOperationComparator comparator = new RestOperationComparator();
+    Collections.sort(this.dynamicPathOperationsList, comparator);
+  }
+
+  public void addResource(RestOperationMeta swaggerRestOperation) {
+    if (swaggerRestOperation.isAbsoluteStaticPath()) {
+      // 静态path
+      addStaticPathResource(swaggerRestOperation);
+      return;
     }
 
-    public void sortPath() {
-        RestOperationComparator comparator = new RestOperationComparator();
-        Collections.sort(this.dynamicPathOperationsList, comparator);
+    dynamicPathOperationsList.add(swaggerRestOperation);
+  }
+
+  protected void addStaticPathResource(RestOperationMeta operation) {
+    String httpMethod = operation.getHttpMethod();
+    String path = operation.getAbsolutePath();
+    OperationGroup group = staticPathOperations.get(path);
+    if (group == null) {
+      group = new OperationGroup();
+      group.register(httpMethod, operation);
+      staticPathOperations.put(path, group);
+      return;
     }
 
-    public void addResource(RestOperationMeta swaggerRestOperation) {
-        if (swaggerRestOperation.isAbsoluteStaticPath()) {
-            // 静态path
-            addStaticPathResource(swaggerRestOperation);
-            return;
-        }
-
-        dynamicPathOperationsList.add(swaggerRestOperation);
+    if (group.findValue(httpMethod) == null) {
+      group.register(httpMethod, operation);
+      return;
     }
 
-    protected void addStaticPathResource(RestOperationMeta operation) {
-        String httpMethod = operation.getHttpMethod();
-        String path = operation.getAbsolutePath();
-        OperationGroup group = staticPathOperations.get(path);
-        if (group == null) {
-            group = new OperationGroup();
-            group.register(httpMethod, operation);
-            staticPathOperations.put(path, group);
-            return;
-        }
+    throw new ServiceCombException(
+        String.format("operation with url %s, method %s is duplicated.", path, httpMethod));
+  }
 
-        if (group.findValue(httpMethod) == null) {
-            group.register(httpMethod, operation);
-            return;
-        }
+  public Map<String, OperationGroup> getStaticPathOperationMap() {
+    return staticPathOperations;
+  }
 
-        throw new ServiceCombException(
-                String.format("operation with url %s, method %s is duplicated.", path, httpMethod));
+  public List<RestOperationMeta> getDynamicPathOperationList() {
+    return dynamicPathOperationsList;
+  }
+
+  public void printPaths() {
+    for (Entry<String, OperationGroup> entry : staticPathOperations.entrySet()) {
+      OperationGroup operationGroup = entry.getValue();
+      printPath(operationGroup.values());
     }
 
-    public Map<String, OperationGroup> getStaticPathOperationMap() {
-        return staticPathOperations;
-    }
+    printPath(getDynamicPathOperationList());
+  }
 
-    public List<RestOperationMeta> getDynamicPathOperationList() {
-        return dynamicPathOperationsList;
+  protected void printPath(Collection<RestOperationMeta> operations) {
+    for (RestOperationMeta operation : operations) {
+      LOGGER.info("Swagger mapped \"{[{}], method=[{}], produces={}}\" onto {}",
+          operation.getAbsolutePath(),
+          operation.getHttpMethod(),
+          operation.getProduces(),
+          operation.getOperationMeta().getMethod());
     }
-
-    public void printPaths() {
-        for (Entry<String, OperationGroup> entry : staticPathOperations.entrySet()) {
-            OperationGroup operationGroup = entry.getValue();
-            printPath(operationGroup.values());
-        }
-
-        printPath(getDynamicPathOperationList());
-    }
-
-    protected void printPath(Collection<RestOperationMeta> operations) {
-        for (RestOperationMeta operation : operations) {
-            LOGGER.info("Swagger mapped \"{[{}], method=[{}], produces={}}\" onto {}",
-                    operation.getAbsolutePath(),
-                    operation.getHttpMethod(),
-                    operation.getProduces(),
-                    operation.getOperationMeta().getMethod());
-        }
-    }
+  }
 }

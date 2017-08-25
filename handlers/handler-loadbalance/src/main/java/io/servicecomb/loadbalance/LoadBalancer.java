@@ -33,78 +33,78 @@ import io.servicecomb.core.Invocation;
  *
  */
 public class LoadBalancer extends AbstractLoadBalancer {
-    private CseServerList serverList;
+  private CseServerList serverList;
 
-    private IRule rule;
+  private IRule rule;
 
-    private LoadBalancerStats lbStats;
+  private LoadBalancerStats lbStats;
 
-    // 以filter类名为Key
-    private Map<String, ServerListFilterExt> filters;
+  // 以filter类名为Key
+  private Map<String, ServerListFilterExt> filters;
 
-    public LoadBalancer(CseServerList serverList, IRule rule) {
-        this.serverList = serverList;
-        this.rule = rule;
-        this.rule.setLoadBalancer(this);
-        this.lbStats = new LoadBalancerStats(null);
-        this.filters = new ConcurrentHashMap<>();
+  public LoadBalancer(CseServerList serverList, IRule rule) {
+    this.serverList = serverList;
+    this.rule = rule;
+    this.rule.setLoadBalancer(this);
+    this.lbStats = new LoadBalancerStats(null);
+    this.filters = new ConcurrentHashMap<>();
+  }
+
+  @Override
+  public void addServers(List<Server> newServers) {
+    throw new UnsupportedOperationException("Not implemented.");
+  }
+
+  @Override
+  public Server chooseServer(Object key) {
+    return rule.choose(key);
+  }
+
+  @Override
+  public void markServerDown(Server server) {
+    throw new UnsupportedOperationException("Not implemented.");
+  }
+
+  @Override
+  public List<Server> getServerList(boolean availableOnly) {
+    return getAllServers();
+  }
+
+  @Override
+  public List<Server> getReachableServers() {
+    return getAllServers();
+  }
+
+  @Override
+  public List<Server> getAllServers() {
+    List<Server> servers = serverList.getInitialListOfServers();
+    for (ServerListFilter<Server> filter : filters.values()) {
+      servers = filter.getFilteredListOfServers(servers);
     }
+    return servers;
+  }
 
-    @Override
-    public void addServers(List<Server> newServers) {
-        throw new UnsupportedOperationException("Not implemented.");
-    }
+  @Override
+  public List<Server> getServerList(ServerGroup serverGroup) {
+    throw new UnsupportedOperationException("Not implemented.");
+  }
 
-    @Override
-    public Server chooseServer(Object key) {
-        return rule.choose(key);
-    }
+  @Override
+  public LoadBalancerStats getLoadBalancerStats() {
+    return lbStats;
+  }
 
-    @Override
-    public void markServerDown(Server server) {
-        throw new UnsupportedOperationException("Not implemented.");
+  public void setInvocation(Invocation invocation) {
+    for (ServerListFilterExt filter : filters.values()) {
+      filter.setInvocation(invocation);
     }
+  }
 
-    @Override
-    public List<Server> getServerList(boolean availableOnly) {
-        return getAllServers();
-    }
+  public void putFilter(String name, ServerListFilterExt filter) {
+    filters.put(name, filter);
+  }
 
-    @Override
-    public List<Server> getReachableServers() {
-        return getAllServers();
-    }
-
-    @Override
-    public List<Server> getAllServers() {
-        List<Server> servers = serverList.getInitialListOfServers();
-        for (ServerListFilter<Server> filter : filters.values()) {
-            servers = filter.getFilteredListOfServers(servers);
-        }
-        return servers;
-    }
-
-    @Override
-    public List<Server> getServerList(ServerGroup serverGroup) {
-        throw new UnsupportedOperationException("Not implemented.");
-    }
-
-    @Override
-    public LoadBalancerStats getLoadBalancerStats() {
-        return lbStats;
-    }
-
-    public void setInvocation(Invocation invocation) {
-        for (ServerListFilterExt filter : filters.values()) {
-            filter.setInvocation(invocation);
-        }
-    }
-
-    public void putFilter(String name, ServerListFilterExt filter) {
-        filters.put(name, filter);
-    }
-
-    public int getFilterSize() {
-        return filters.size();
-    }
+  public int getFilterSize() {
+    return filters.size();
+  }
 }

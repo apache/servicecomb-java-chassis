@@ -35,184 +35,184 @@ import io.servicecomb.swagger.invocation.models.Person;
 import io.servicecomb.swagger.invocation.models.PojoConsumerIntf;
 
 public class TestPojoConsumerEqualSwagger {
-    private static SwaggerEnvironment env;
+  private static SwaggerEnvironment env;
 
-    private static SwaggerProducer producer;
+  private static SwaggerProducer producer;
 
-    private static SwaggerConsumer consumer;
+  private static SwaggerConsumer consumer;
 
-    private static LocalProducerInvoker invoker;
+  private static LocalProducerInvoker invoker;
 
-    private static PojoConsumerIntf proxy;
+  private static PojoConsumerIntf proxy;
 
-    @BeforeClass
-    public static void init() {
-        env = new BootstrapNormal().boot();
-        producer = env.createProducer(new JaxrsImpl());
-        consumer = env.createConsumer(PojoConsumerIntf.class, producer.getSwaggerIntf());
-        invoker = new LocalProducerInvoker(consumer, producer);
-        proxy = invoker.getProxy();
-    }
+  @BeforeClass
+  public static void init() {
+    env = new BootstrapNormal().boot();
+    producer = env.createProducer(new JaxrsImpl());
+    consumer = env.createConsumer(PojoConsumerIntf.class, producer.getSwaggerIntf());
+    invoker = new LocalProducerInvoker(consumer, producer);
+    proxy = invoker.getProxy();
+  }
 
-    @Test
-    public void testSimple() throws Exception {
-        int result = proxy.testSimple(1, 2, 3);
+  @Test
+  public void testSimple() throws Exception {
+    int result = proxy.testSimple(1, 2, 3);
 
-        Assert.assertEquals(1, (int) invoker.getSwaggerArgument(0));
-        Assert.assertEquals(2, (int) invoker.getSwaggerArgument(1));
-        Assert.assertEquals(3, (int) invoker.getSwaggerArgument(2));
+    Assert.assertEquals(1, (int) invoker.getSwaggerArgument(0));
+    Assert.assertEquals(2, (int) invoker.getSwaggerArgument(1));
+    Assert.assertEquals(3, (int) invoker.getSwaggerArgument(2));
 
-        Assert.assertEquals(-4, result);
-    }
+    Assert.assertEquals(-4, result);
+  }
 
-    @Test
-    public void testObject() throws Exception {
-        Person person = new Person();
-        person.setName("abc");
+  @Test
+  public void testObject() throws Exception {
+    Person person = new Person();
+    person.setName("abc");
 
-        Person result = proxy.testObject(person);
+    Person result = proxy.testObject(person);
 
-        Person swaggerPerson = invoker.getSwaggerArgument(0);
-        Assert.assertEquals(person.getName(), swaggerPerson.getName());
+    Person swaggerPerson = invoker.getSwaggerArgument(0);
+    Assert.assertEquals(person.getName(), swaggerPerson.getName());
 
-        Assert.assertEquals("hello abc", result.getName());
-    }
+    Assert.assertEquals("hello abc", result.getName());
+  }
 
-    @Test
-    public void testSimpleAndObject() throws Exception {
-        Person person = new Person();
-        person.setName("abc");
+  @Test
+  public void testSimpleAndObject() throws Exception {
+    Person person = new Person();
+    person.setName("abc");
 
-        String result = proxy.testSimpleAndObject("prefix", person);
+    String result = proxy.testSimpleAndObject("prefix", person);
 
-        Assert.assertEquals("prefix", (String) invoker.getSwaggerArgument(0));
-        Assert.assertEquals(person.getName(), ((Person) invoker.getSwaggerArgument(1)).getName());
+    Assert.assertEquals("prefix", (String) invoker.getSwaggerArgument(0));
+    Assert.assertEquals(person.getName(), ((Person) invoker.getSwaggerArgument(1)).getName());
 
-        Assert.assertEquals("prefix abc", result);
-    }
+    Assert.assertEquals("prefix abc", result);
+  }
 
-    @Test
-    public void testContext() throws Exception {
-        InvocationContext threadContext = new InvocationContext();
-        threadContext.addContext("ta", "tvalue");
-        ContextUtils.setInvocationContext(threadContext);
+  @Test
+  public void testContext() throws Exception {
+    InvocationContext threadContext = new InvocationContext();
+    threadContext.addContext("ta", "tvalue");
+    ContextUtils.setInvocationContext(threadContext);
 
-        InvocationContext context = new InvocationContext();
-        context.addContext("a", "value");
+    InvocationContext context = new InvocationContext();
+    context.addContext("a", "value");
 
-        String result = proxy.testContext(context, "name");
+    String result = proxy.testContext(context, "name");
 
-        Assert.assertEquals(3, invoker.getInvocation().getContext().size());
-        Assert.assertEquals("tvalue", invoker.getContext("ta"));
-        Assert.assertEquals("value", invoker.getContext("a"));
-        Assert.assertEquals("name", invoker.getContext("name"));
-        Assert.assertEquals("name", (String) invoker.getSwaggerArgument(0));
+    Assert.assertEquals(3, invoker.getInvocation().getContext().size());
+    Assert.assertEquals("tvalue", invoker.getContext("ta"));
+    Assert.assertEquals("value", invoker.getContext("a"));
+    Assert.assertEquals("name", invoker.getContext("name"));
+    Assert.assertEquals("name", (String) invoker.getSwaggerArgument(0));
 
-        Assert.assertEquals("name sayhi", result);
-    }
+    Assert.assertEquals("name sayhi", result);
+  }
 
-    @Test
-    public void testBytes() throws Exception {
-        byte[] bytes = new byte[] {1, 2};
+  @Test
+  public void testBytes() throws Exception {
+    byte[] bytes = new byte[] {1, 2};
 
-        byte[] result = proxy.testBytes(bytes);
+    byte[] result = proxy.testBytes(bytes);
 
-        Assert.assertEquals(bytes, invoker.getSwaggerArgument(0));
+    Assert.assertEquals(bytes, invoker.getSwaggerArgument(0));
 
-        Assert.assertArrayEquals(bytes, (byte[]) result);
-    }
+    Assert.assertArrayEquals(bytes, (byte[]) result);
+  }
 
-    @Test
-    public void testArrayArray() throws Exception {
-        String[] array = new String[] {"a", "b"};
-        List<String> list = Arrays.asList(array);
+  @Test
+  public void testArrayArray() throws Exception {
+    String[] array = new String[] {"a", "b"};
+    List<String> list = Arrays.asList(array);
 
-        String[] result = proxy.testArrayArray(array);
+    String[] result = proxy.testArrayArray(array);
 
-        Assert.assertEquals(list, (List<?>) invoker.getSwaggerArgument(0));
+    Assert.assertEquals(list, (List<?>) invoker.getSwaggerArgument(0));
 
-        Assert.assertArrayEquals(array, (String[]) result);
-    }
+    Assert.assertArrayEquals(array, (String[]) result);
+  }
 
-    @Test
-    public void testArrayList() throws Exception {
-        String[] array = new String[] {"a", "b"};
-        List<String> list = Arrays.asList(array);
-        List<String> result = proxy.testArrayList(array);
+  @Test
+  public void testArrayList() throws Exception {
+    String[] array = new String[] {"a", "b"};
+    List<String> list = Arrays.asList(array);
+    List<String> result = proxy.testArrayList(array);
 
-        Assert.assertEquals(list, invoker.getSwaggerArgument(0));
+    Assert.assertEquals(list, invoker.getSwaggerArgument(0));
 
-        Assert.assertEquals(list, result);
-    }
+    Assert.assertEquals(list, result);
+  }
 
-    @Test
-    public void testListArray() throws Exception {
-        String[] array = new String[] {"a", "b"};
-        List<String> list = Arrays.asList(array);
+  @Test
+  public void testListArray() throws Exception {
+    String[] array = new String[] {"a", "b"};
+    List<String> list = Arrays.asList(array);
 
-        String[] result = proxy.testListArray(list);
+    String[] result = proxy.testListArray(list);
 
-        Assert.assertEquals(list, invoker.getSwaggerArgument(0));
+    Assert.assertEquals(list, invoker.getSwaggerArgument(0));
 
-        Assert.assertArrayEquals(array, result);
-    }
+    Assert.assertArrayEquals(array, result);
+  }
 
-    @Test
-    public void testListList() throws Exception {
-        List<String> list = Arrays.asList("a", "b");
+  @Test
+  public void testListList() throws Exception {
+    List<String> list = Arrays.asList("a", "b");
 
-        List<String> result = proxy.testListList(list);
+    List<String> result = proxy.testListList(list);
 
-        Assert.assertEquals(list, invoker.getSwaggerArgument(0));
+    Assert.assertEquals(list, invoker.getSwaggerArgument(0));
 
-        Assert.assertEquals(list, result);
-    }
+    Assert.assertEquals(list, result);
+  }
 
-    @Test
-    public void testObjectArrayArray() throws Exception {
-        Person[] array = new Person[] {new Person("a"), new Person("b")};
-        List<Person> list = Arrays.asList(array);
+  @Test
+  public void testObjectArrayArray() throws Exception {
+    Person[] array = new Person[] {new Person("a"), new Person("b")};
+    List<Person> list = Arrays.asList(array);
 
-        Person[] result = proxy.testObjectArrayArray(array);
+    Person[] result = proxy.testObjectArrayArray(array);
 
-        Assert.assertEquals(list, (List<?>) invoker.getSwaggerArgument(0));
+    Assert.assertEquals(list, (List<?>) invoker.getSwaggerArgument(0));
 
-        Assert.assertArrayEquals(array, (Person[]) result);
-    }
+    Assert.assertArrayEquals(array, (Person[]) result);
+  }
 
-    @Test
-    public void testObjectArrayList() throws Exception {
-        Person[] array = new Person[] {new Person("a"), new Person("b")};
-        List<Person> list = Arrays.asList(array);
-        List<Person> result = proxy.testObjectArrayList(array);
+  @Test
+  public void testObjectArrayList() throws Exception {
+    Person[] array = new Person[] {new Person("a"), new Person("b")};
+    List<Person> list = Arrays.asList(array);
+    List<Person> result = proxy.testObjectArrayList(array);
 
-        Assert.assertEquals(list, invoker.getSwaggerArgument(0));
+    Assert.assertEquals(list, invoker.getSwaggerArgument(0));
 
-        Assert.assertEquals(list, result);
-    }
+    Assert.assertEquals(list, result);
+  }
 
-    @Test
-    public void testObjectListArray() throws Exception {
-        Person[] array = new Person[] {new Person("a"), new Person("b")};
-        List<Person> list = Arrays.asList(array);
+  @Test
+  public void testObjectListArray() throws Exception {
+    Person[] array = new Person[] {new Person("a"), new Person("b")};
+    List<Person> list = Arrays.asList(array);
 
-        Person[] result = proxy.testObjectListArray(list);
+    Person[] result = proxy.testObjectListArray(list);
 
-        Assert.assertEquals(list, invoker.getSwaggerArgument(0));
-        Assert.assertEquals(list, invoker.getProducerResponse().getResult());
+    Assert.assertEquals(list, invoker.getSwaggerArgument(0));
+    Assert.assertEquals(list, invoker.getProducerResponse().getResult());
 
-        Assert.assertArrayEquals(array, result);
-    }
+    Assert.assertArrayEquals(array, result);
+  }
 
-    @Test
-    public void testObjectListList() throws Exception {
-        Person[] array = new Person[] {new Person("a"), new Person("b")};
-        List<Person> list = Arrays.asList(array);
+  @Test
+  public void testObjectListList() throws Exception {
+    Person[] array = new Person[] {new Person("a"), new Person("b")};
+    List<Person> list = Arrays.asList(array);
 
-        List<Person> result = proxy.testObjectListList(list);
+    List<Person> result = proxy.testObjectListList(list);
 
-        Assert.assertEquals(list, invoker.getSwaggerArgument(0));
+    Assert.assertEquals(list, invoker.getSwaggerArgument(0));
 
-        Assert.assertEquals(list, result);
-    }
+    Assert.assertEquals(list, result);
+  }
 }

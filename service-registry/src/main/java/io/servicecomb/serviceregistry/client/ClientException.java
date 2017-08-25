@@ -21,9 +21,9 @@ package io.servicecomb.serviceregistry.client;
  */
 public class ClientException extends Exception {
 
-    private static final long serialVersionUID = 4579811019552389524L;
+  private static final long serialVersionUID = 4579811019552389524L;
 
-    public ClientException(String message) {
-        super(message);
-    }
+  public ClientException(String message) {
+    super(message);
+  }
 }

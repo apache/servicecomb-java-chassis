@@ -28,14 +28,13 @@ import org.springframework.stereotype.Component;
 // this class's purpose: when asked to resolve placeholder, then throw exception directly
 @Component
 public class LastPropertyPlaceholderConfigurer implements BeanFactoryPostProcessor, Ordered {
-    @Override
-    public int getOrder() {
-        return Ordered.LOWEST_PRECEDENCE;
-    }
+  @Override
+  public int getOrder() {
+    return Ordered.LOWEST_PRECEDENCE;
+  }
 
-    @Override
-    public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException {
-        new PropertyPlaceholderConfigurer().postProcessBeanFactory(beanFactory);
-    }
-
+  @Override
+  public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException {
+    new PropertyPlaceholderConfigurer().postProcessBeanFactory(beanFactory);
+  }
 }

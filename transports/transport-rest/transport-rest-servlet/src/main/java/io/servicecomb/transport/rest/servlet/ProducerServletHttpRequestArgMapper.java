@@ -23,16 +23,15 @@ import io.servicecomb.swagger.invocation.arguments.producer.AbstractProducerCont
 
 public class ProducerServletHttpRequestArgMapper extends AbstractProducerContextArgMapper {
 
-    private HttpServletRequest httpRequest;
+  private HttpServletRequest httpRequest;
 
-    public ProducerServletHttpRequestArgMapper(HttpServletRequest httpRequest) {
-        super(-1);
-        this.httpRequest = httpRequest;
-    }
+  public ProducerServletHttpRequestArgMapper(HttpServletRequest httpRequest) {
+    super(-1);
+    this.httpRequest = httpRequest;
+  }
 
-    @Override
-    public Object createContextArg(SwaggerInvocation invocation) {
-        return httpRequest;
-    }
-
+  @Override
+  public Object createContextArg(SwaggerInvocation invocation) {
+    return httpRequest;
+  }
 }

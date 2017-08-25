@@ -23,14 +23,14 @@ import org.springframework.util.ReflectionUtils;
 import com.netflix.config.DynamicProperty;
 
 public class Utils {
-    private static Method updatePropertyMethod =
-        ReflectionUtils.findMethod(DynamicProperty.class, "updateProperty", String.class, Object.class);
+  private static Method updatePropertyMethod =
+      ReflectionUtils.findMethod(DynamicProperty.class, "updateProperty", String.class, Object.class);
 
-    static {
-        updatePropertyMethod.setAccessible(true);
-    }
+  static {
+    updatePropertyMethod.setAccessible(true);
+  }
 
-    public static void updateProperty(String key, Object value) {
-        ReflectionUtils.invokeMethod(updatePropertyMethod, null, key, value);
-    }
+  public static void updateProperty(String key, Object value) {
+    ReflectionUtils.invokeMethod(updatePropertyMethod, null, key, value);
+  }
 }

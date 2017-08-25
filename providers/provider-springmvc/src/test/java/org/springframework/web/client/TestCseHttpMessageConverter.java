@@ -30,25 +30,24 @@ import io.servicecomb.provider.springmvc.reference.CseClientHttpRequest;
 
 public class TestCseHttpMessageConverter {
 
-    @Test
-    public void testAll() {
-        MockUtil.getInstance().mockReflectionUtils();
-        MockUtil.getInstance().mockCseClientHttpRequest();
-        CseHttpMessageConverter lCseHttpMessageConverter = new CseHttpMessageConverter();
-        lCseHttpMessageConverter.canWrite(null, null);
-        lCseHttpMessageConverter.getSupportedMediaTypes();
-        try {
-            lCseHttpMessageConverter.read(this.getClass(), null);
-        } catch (HttpMessageNotReadableException e) {
-        } catch (IOException e) {
-        }
-        try {
-            HttpOutputMessage httpOutputMessage = Mockito.mock(CseClientHttpRequest.class);
-            lCseHttpMessageConverter.write(null, null, httpOutputMessage);
-        } catch (HttpMessageNotWritableException | IOException e) {
-        }
-
-        Assert.assertEquals(true, lCseHttpMessageConverter.canRead(null, null));
+  @Test
+  public void testAll() {
+    MockUtil.getInstance().mockReflectionUtils();
+    MockUtil.getInstance().mockCseClientHttpRequest();
+    CseHttpMessageConverter lCseHttpMessageConverter = new CseHttpMessageConverter();
+    lCseHttpMessageConverter.canWrite(null, null);
+    lCseHttpMessageConverter.getSupportedMediaTypes();
+    try {
+      lCseHttpMessageConverter.read(this.getClass(), null);
+    } catch (HttpMessageNotReadableException e) {
+    } catch (IOException e) {
+    }
+    try {
+      HttpOutputMessage httpOutputMessage = Mockito.mock(CseClientHttpRequest.class);
+      lCseHttpMessageConverter.write(null, null, httpOutputMessage);
+    } catch (HttpMessageNotWritableException | IOException e) {
     }
 
+    Assert.assertEquals(true, lCseHttpMessageConverter.canRead(null, null));
+  }
 }

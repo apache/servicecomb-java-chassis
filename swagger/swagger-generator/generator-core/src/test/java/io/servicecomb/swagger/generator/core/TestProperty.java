@@ -25,30 +25,28 @@ import org.junit.Test;
 import com.fasterxml.jackson.databind.JavaType;
 
 import io.servicecomb.swagger.converter.property.StringPropertyConverter;
-import io.servicecomb.swagger.generator.core.SwaggerGenerator;
-import io.servicecomb.swagger.generator.core.SwaggerGeneratorContext;
 import io.servicecomb.swagger.generator.core.unittest.SwaggerGeneratorForTest;
 import io.servicecomb.swagger.generator.pojo.PojoSwaggerGeneratorContext;
 import io.swagger.converter.ModelConverters;
 import io.swagger.models.properties.StringProperty;
 
 public class TestProperty {
-    SwaggerGeneratorContext context = new PojoSwaggerGeneratorContext();
+  SwaggerGeneratorContext context = new PojoSwaggerGeneratorContext();
 
-    @Test
-    public void testStringProperty() {
-        SwaggerGenerator generator = new SwaggerGeneratorForTest(context, null);
+  @Test
+  public void testStringProperty() {
+    SwaggerGenerator generator = new SwaggerGeneratorForTest(context, null);
 
-        List<String> enums = Arrays.asList("testStringProperty_a", "testStringProperty_b");
+    List<String> enums = Arrays.asList("testStringProperty_a", "testStringProperty_b");
 
-        StringProperty sp = new StringProperty();
-        sp._enum(enums);
+    StringProperty sp = new StringProperty();
+    sp._enum(enums);
 
-        StringPropertyConverter spc = new StringPropertyConverter();
-        JavaType jt =
-            spc.convert(generator.getClassLoader(), generator.ensureGetPackageName(), generator.getSwagger(), sp);
+    StringPropertyConverter spc = new StringPropertyConverter();
+    JavaType jt =
+        spc.convert(generator.getClassLoader(), generator.ensureGetPackageName(), generator.getSwagger(), sp);
 
-        StringProperty spNew = (StringProperty) ModelConverters.getInstance().readAsProperty(jt);
-        Assert.assertEquals(enums, spNew.getEnum());
-    }
+    StringProperty spNew = (StringProperty) ModelConverters.getInstance().readAsProperty(jt);
+    Assert.assertEquals(enums, spNew.getEnum());
+  }
 }

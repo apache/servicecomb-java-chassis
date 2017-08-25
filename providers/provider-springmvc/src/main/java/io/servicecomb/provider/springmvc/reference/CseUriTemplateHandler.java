@@ -33,45 +33,45 @@ import io.servicecomb.common.rest.RestConst;
  * cse://ms/path to cse://ms/path
  */
 public class CseUriTemplateHandler extends DefaultUriTemplateHandler {
-    private Field hostField = ReflectionUtils.findField(UriComponentsBuilder.class, "host");
+  private Field hostField = ReflectionUtils.findField(UriComponentsBuilder.class, "host");
 
-    public CseUriTemplateHandler() {
-        ReflectionUtils.makeAccessible(hostField);
+  public CseUriTemplateHandler() {
+    ReflectionUtils.makeAccessible(hostField);
+  }
+
+  @Override
+  protected URI expandInternal(String uriTemplate, Map<String, ?> uriVariables) {
+    UriComponentsBuilder uriComponentsBuilder = initUriComponentsBuilder(uriTemplate);
+    UriComponents uriComponents = expandAndEncode(uriComponentsBuilder, uriVariables);
+    return createUri(uriTemplate, uriComponentsBuilder, uriComponents);
+  }
+
+  @Override
+  protected URI expandInternal(String uriTemplate, Object... uriVariables) {
+    UriComponentsBuilder uriComponentsBuilder = initUriComponentsBuilder(uriTemplate);
+    UriComponents uriComponents = expandAndEncode(uriComponentsBuilder, uriVariables);
+    return createUri(uriTemplate, uriComponentsBuilder, uriComponents);
+  }
+
+  private URI createUri(String uriTemplate, UriComponentsBuilder builder, UriComponents uriComponents) {
+    String strUri = uriComponents.toUriString();
+
+    if (isCrossApp(uriTemplate, builder)) {
+      int idx = strUri.indexOf('/', RestConst.URI_PREFIX.length());
+      strUri = strUri.substring(0, idx) + ":" + strUri.substring(idx + 1);
     }
 
-    @Override
-    protected URI expandInternal(String uriTemplate, Map<String, ?> uriVariables) {
-        UriComponentsBuilder uriComponentsBuilder = initUriComponentsBuilder(uriTemplate);
-        UriComponents uriComponents = expandAndEncode(uriComponentsBuilder, uriVariables);
-        return createUri(uriTemplate, uriComponentsBuilder, uriComponents);
+    try {
+      // Avoid further encoding (in the case of strictEncoding=true)
+      return new URI(strUri);
+    } catch (URISyntaxException ex) {
+      throw new IllegalStateException("Could not create URI object: " + ex.getMessage(), ex);
     }
+  }
 
-    @Override
-    protected URI expandInternal(String uriTemplate, Object... uriVariables) {
-        UriComponentsBuilder uriComponentsBuilder = initUriComponentsBuilder(uriTemplate);
-        UriComponents uriComponents = expandAndEncode(uriComponentsBuilder, uriVariables);
-        return createUri(uriTemplate, uriComponentsBuilder, uriComponents);
-    }
-
-    private URI createUri(String uriTemplate, UriComponentsBuilder builder, UriComponents uriComponents) {
-        String strUri = uriComponents.toUriString();
-
-        if (isCrossApp(uriTemplate, builder)) {
-            int idx = strUri.indexOf('/', RestConst.URI_PREFIX.length());
-            strUri = strUri.substring(0, idx) + ":" + strUri.substring(idx + 1);
-        }
-
-        try {
-            // Avoid further encoding (in the case of strictEncoding=true)
-            return new URI(strUri);
-        } catch (URISyntaxException ex) {
-            throw new IllegalStateException("Could not create URI object: " + ex.getMessage(), ex);
-        }
-    }
-
-    protected boolean isCrossApp(String uriTemplate, UriComponentsBuilder builder) {
-        String host = (String) ReflectionUtils.getField(hostField, builder);
-        int pos = RestConst.URI_PREFIX.length() + host.length();
-        return uriTemplate.charAt(pos) == ':';
-    }
+  protected boolean isCrossApp(String uriTemplate, UriComponentsBuilder builder) {
+    String host = (String) ReflectionUtils.getField(hostField, builder);
+    int pos = RestConst.URI_PREFIX.length() + host.length();
+    return uriTemplate.charAt(pos) == ':';
+  }
 }

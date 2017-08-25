@@ -22,8 +22,6 @@ import org.junit.Test;
 import com.fasterxml.jackson.databind.JavaType;
 
 import io.servicecomb.swagger.converter.ConverterMgr;
-import io.servicecomb.swagger.generator.core.SwaggerGenerator;
-import io.servicecomb.swagger.generator.core.SwaggerGeneratorContext;
 import io.servicecomb.swagger.generator.core.schema.User;
 import io.servicecomb.swagger.generator.core.unittest.SwaggerGeneratorForTest;
 import io.servicecomb.swagger.generator.pojo.PojoSwaggerGeneratorContext;
@@ -35,29 +33,29 @@ import io.swagger.models.Swagger;
 import io.swagger.models.parameters.Parameter;
 
 public class TestApiImplicitParams {
-    SwaggerGeneratorContext context = new PojoSwaggerGeneratorContext();
+  SwaggerGeneratorContext context = new PojoSwaggerGeneratorContext();
 
-    interface ApiImplicitParamsAnnotation {
-        @ApiImplicitParams(
-                value = {@ApiImplicitParam(
-                        paramType = "body",
-                        name = "body",
-                        dataType = "io.servicecomb.swagger.generator.core.schema.User")})
-        void testBody();
-    }
+  interface ApiImplicitParamsAnnotation {
+    @ApiImplicitParams(
+        value = {@ApiImplicitParam(
+            paramType = "body",
+            name = "body",
+            dataType = "io.servicecomb.swagger.generator.core.schema.User")})
+    void testBody();
+  }
 
-    @Test
-    public void testBody() {
-        SwaggerGenerator swaggerGenerator =
-            new SwaggerGeneratorForTest(context, ApiImplicitParamsAnnotation.class);
-        swaggerGenerator.generate();
+  @Test
+  public void testBody() {
+    SwaggerGenerator swaggerGenerator =
+        new SwaggerGeneratorForTest(context, ApiImplicitParamsAnnotation.class);
+    swaggerGenerator.generate();
 
-        Swagger swagger = swaggerGenerator.getSwagger();
-        Path path = swagger.getPaths().get("/testBody");
-        Operation operation = path.getOperations().get(0);
-        Parameter parameter = operation.getParameters().get(0);
+    Swagger swagger = swaggerGenerator.getSwagger();
+    Path path = swagger.getPaths().get("/testBody");
+    Operation operation = path.getOperations().get(0);
+    Parameter parameter = operation.getParameters().get(0);
 
-        JavaType javaType = ConverterMgr.findJavaType(swaggerGenerator, parameter);
-        Assert.assertEquals(User.class, javaType.getRawClass());
-    }
+    JavaType javaType = ConverterMgr.findJavaType(swaggerGenerator, parameter);
+    Assert.assertEquals(User.class, javaType.getRawClass());
+  }
 }

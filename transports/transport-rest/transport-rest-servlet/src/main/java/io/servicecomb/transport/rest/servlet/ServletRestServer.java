@@ -33,47 +33,47 @@ import io.servicecomb.swagger.invocation.Response;
 import io.servicecomb.swagger.invocation.exception.InvocationException;
 
 public class ServletRestServer extends AbstractRestServer<HttpServletResponse> {
-    protected RestAsyncListener restAsyncListener = new RestAsyncListener();
+  protected RestAsyncListener restAsyncListener = new RestAsyncListener();
 
-    public void service(HttpServletRequest request, HttpServletResponse response) {
-        // 异步场景
-        final AsyncContext asyncCtx = request.startAsync();
-        asyncCtx.addListener(restAsyncListener);
-        asyncCtx.setTimeout(ServletConfig.getServerTimeout());
+  public void service(HttpServletRequest request, HttpServletResponse response) {
+    // 异步场景
+    final AsyncContext asyncCtx = request.startAsync();
+    asyncCtx.addListener(restAsyncListener);
+    asyncCtx.setTimeout(ServletConfig.getServerTimeout());
 
-        RestServerRequestInternal restRequest = new RestServletHttpRequest(request, asyncCtx);
-        handleRequest(restRequest, response);
-    }
+    RestServerRequestInternal restRequest = new RestServletHttpRequest(request, asyncCtx);
+    handleRequest(restRequest, response);
+  }
 
-    @SuppressWarnings("deprecation")
-    @Override
-    protected void doSendResponse(HttpServletResponse httpServerResponse, ProduceProcessor produceProcessor,
-            Response response) throws Exception {
-        httpServerResponse.setStatus(response.getStatusCode(), response.getReasonPhrase());
-        httpServerResponse.setContentType(produceProcessor.getName());
+  @SuppressWarnings("deprecation")
+  @Override
+  protected void doSendResponse(HttpServletResponse httpServerResponse, ProduceProcessor produceProcessor,
+      Response response) throws Exception {
+    httpServerResponse.setStatus(response.getStatusCode(), response.getReasonPhrase());
+    httpServerResponse.setContentType(produceProcessor.getName());
 
-        if (response.getHeaders().getHeaderMap() != null) {
-            for (Entry<String, List<Object>> entry : response.getHeaders().getHeaderMap().entrySet()) {
-                for (Object value : entry.getValue()) {
-                    httpServerResponse.addHeader(entry.getKey(), String.valueOf(value));
-                }
-            }
+    if (response.getHeaders().getHeaderMap() != null) {
+      for (Entry<String, List<Object>> entry : response.getHeaders().getHeaderMap().entrySet()) {
+        for (Object value : entry.getValue()) {
+          httpServerResponse.addHeader(entry.getKey(), String.valueOf(value));
         }
-
-        // 直接写到stream中去，避免重复分配内存，这是chunk模式，不必设置contentLength
-        // TODO:设置buffer大小，这很影响性能
-        Object body = response.getResult();
-        if (response.isFailed()) {
-            body = ((InvocationException) body).getErrorData();
-        }
-        OutputStream output = httpServerResponse.getOutputStream();
-        produceProcessor.encodeResponse(output, body);
-        httpServerResponse.flushBuffer();
+      }
     }
 
-    @Override
-    protected void setHttpRequestContext(Invocation invocation, RestServerRequestInternal restRequest) {
-        invocation.getHandlerContext().put(RestConst.HTTP_REQUEST_CREATOR,
-                new ProducerServletHttpRequestArgMapper(restRequest.getHttpRequest()));
+    // 直接写到stream中去，避免重复分配内存，这是chunk模式，不必设置contentLength
+    // TODO:设置buffer大小，这很影响性能
+    Object body = response.getResult();
+    if (response.isFailed()) {
+      body = ((InvocationException) body).getErrorData();
     }
+    OutputStream output = httpServerResponse.getOutputStream();
+    produceProcessor.encodeResponse(output, body);
+    httpServerResponse.flushBuffer();
+  }
+
+  @Override
+  protected void setHttpRequestContext(Invocation invocation, RestServerRequestInternal restRequest) {
+    invocation.getHandlerContext().put(RestConst.HTTP_REQUEST_CREATOR,
+        new ProducerServletHttpRequestArgMapper(restRequest.getHttpRequest()));
+  }
 }

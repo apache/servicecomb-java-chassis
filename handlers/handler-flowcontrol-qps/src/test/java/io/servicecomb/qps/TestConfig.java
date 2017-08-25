@@ -14,9 +14,6 @@
  * limitations under the License.
  */
 
-/**
- * 
- */
 package io.servicecomb.qps;
 
 import org.junit.Assert;
@@ -27,20 +24,20 @@ import org.junit.Test;
  *
  */
 public class TestConfig {
-    @Test
-    public void testEnabled() {
-        Assert.assertEquals(true, Config.INSTANCE.isProviderEnabled());
-        Utils.updateProperty(Config.PROVIDER_ENABLED, false);
-        Assert.assertEquals(false, Config.INSTANCE.isProviderEnabled());
+  @Test
+  public void testEnabled() {
+    Assert.assertEquals(true, Config.INSTANCE.isProviderEnabled());
+    Utils.updateProperty(Config.PROVIDER_ENABLED, false);
+    Assert.assertEquals(false, Config.INSTANCE.isProviderEnabled());
 
-        Utils.updateProperty(Config.PROVIDER_ENABLED, null);
-        Assert.assertEquals(true,Config.INSTANCE.isProviderEnabled());
-        
-        Assert.assertEquals(true, Config.INSTANCE.isConsumerEnabled());
-        Utils.updateProperty(Config.CONSUMER_ENABLED, false);
-        Assert.assertEquals(false, Config.INSTANCE.isConsumerEnabled());
+    Utils.updateProperty(Config.PROVIDER_ENABLED, null);
+    Assert.assertEquals(true, Config.INSTANCE.isProviderEnabled());
 
-        Utils.updateProperty(Config.CONSUMER_ENABLED, null);
-        Assert.assertEquals(true,Config.INSTANCE.isConsumerEnabled());
-    }
+    Assert.assertEquals(true, Config.INSTANCE.isConsumerEnabled());
+    Utils.updateProperty(Config.CONSUMER_ENABLED, false);
+    Assert.assertEquals(false, Config.INSTANCE.isConsumerEnabled());
+
+    Utils.updateProperty(Config.CONSUMER_ENABLED, null);
+    Assert.assertEquals(true, Config.INSTANCE.isConsumerEnabled());
+  }
 }

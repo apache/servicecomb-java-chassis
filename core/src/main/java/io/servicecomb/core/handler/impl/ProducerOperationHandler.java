@@ -23,19 +23,18 @@ import io.servicecomb.swagger.engine.SwaggerProducerOperation;
 import io.servicecomb.swagger.invocation.AsyncResponse;
 
 public class ProducerOperationHandler extends AbstractHandler {
-    public static final ProducerOperationHandler INSTANCE = new ProducerOperationHandler();
+  public static final ProducerOperationHandler INSTANCE = new ProducerOperationHandler();
 
-    @Override
-    public void handle(Invocation invocation, AsyncResponse asyncResp) throws Exception {
-        SwaggerProducerOperation producerOperation =
-            invocation.getOperationMeta().getExtData(Const.PRODUCER_OPERATION);
-        if (producerOperation == null) {
-            asyncResp.producerFail(
-                    ExceptionUtils.producerOperationNotExist(invocation.getSchemaId(),
-                            invocation.getOperationName()));
-            return;
-        }
-        producerOperation.invoke(invocation, asyncResp);
+  @Override
+  public void handle(Invocation invocation, AsyncResponse asyncResp) throws Exception {
+    SwaggerProducerOperation producerOperation =
+        invocation.getOperationMeta().getExtData(Const.PRODUCER_OPERATION);
+    if (producerOperation == null) {
+      asyncResp.producerFail(
+          ExceptionUtils.producerOperationNotExist(invocation.getSchemaId(),
+              invocation.getOperationName()));
+      return;
     }
-
+    producerOperation.invoke(invocation, asyncResp);
+  }
 }

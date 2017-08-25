@@ -31,159 +31,159 @@ import io.servicecomb.swagger.invocation.response.Headers;
  * 所以，使用一个简单的归一化类
  */
 public class Response {
-    private StatusType status;
+  private StatusType status;
 
-    private Headers headers = new Headers();
+  private Headers headers = new Headers();
 
-    // 失败场景中，result是Throwable
-    private Object result;
+  // 失败场景中，result是Throwable
+  private Object result;
 
-    public boolean isSuccessed() {
-        return HttpStatus.isSuccess(status);
+  public boolean isSuccessed() {
+    return HttpStatus.isSuccess(status);
+  }
+
+  public boolean isFailed() {
+    return !isSuccessed();
+  }
+
+  public int getStatusCode() {
+    return status.getStatusCode();
+  }
+
+  public String getReasonPhrase() {
+    return status.getReasonPhrase();
+  }
+
+  public StatusType getStatus() {
+    return status;
+  }
+
+  public void setStatus(StatusType status) {
+    this.status = status;
+  }
+
+  public Headers getHeaders() {
+    return headers;
+  }
+
+  public void setHeaders(Headers headers) {
+    this.headers = headers;
+  }
+
+  @SuppressWarnings("unchecked")
+  public <T> T getResult() {
+    return (T) result;
+  }
+
+  public void setResult(Object result) {
+    this.result = result;
+  }
+
+  // 如果是成功，body即是result
+  // 如果是失败，body可能是InvocationException，也可能是InvocationException中的errorData
+  public static Response create(int statusCode, String reasonPhrase, Object result) {
+    StatusType status = new HttpStatus(statusCode, reasonPhrase);
+    return create(status, result);
+  }
+
+  public static Response create(StatusType status, Object result) {
+    Response response = Response.status(status);
+    if (response.isFailed()) {
+      result = ExceptionFactory.create(status, result);
+    }
+    return response.entity(result);
+  }
+
+  // 有的场景下，需要返回非200的，其他2xx状态码，所以需要支持指定
+  public static Response createSuccess(StatusType status, Object result) {
+    return Response.status(status).entity(result);
+  }
+
+  public static Response createSuccess(Object result) {
+    return Response.status(Status.OK).entity(result);
+  }
+
+  public static Response createFail(InvocationException exception) {
+    return Response.status(exception.getStatus()).entity(exception);
+  }
+
+  public static Response createFail(InvocationType invocationType, String errorMsg) {
+    CommonExceptionData errorData = new CommonExceptionData(errorMsg);
+    if (InvocationType.CONSUMER.equals(invocationType)) {
+      return createFail(ExceptionFactory.createConsumerException(errorData));
     }
 
-    public boolean isFailed() {
-        return !isSuccessed();
+    return createFail(ExceptionFactory.createProducerException(errorData));
+  }
+
+  public static Response createFail(InvocationType invocationType, Throwable throwable) {
+    if (InvocationType.CONSUMER.equals(invocationType)) {
+      return createConsumerFail(throwable);
     }
 
-    public int getStatusCode() {
-        return status.getStatusCode();
-    }
+    return createProducerFail(throwable);
+  }
 
-    public String getReasonPhrase() {
-        return status.getReasonPhrase();
-    }
+  public static Response createConsumerFail(Throwable throwable) {
+    InvocationException exception = ExceptionFactory.convertConsumerException(throwable);
+    return createFail(exception);
+  }
 
-    public StatusType getStatus() {
-        return status;
-    }
+  public static Response createProducerFail(Throwable throwable) {
+    InvocationException exception = ExceptionFactory.convertProducerException(throwable);
+    return createFail(exception);
+  }
 
-    public void setStatus(StatusType status) {
-        this.status = status;
-    }
+  // 兼容接口
 
-    public Headers getHeaders() {
-        return headers;
-    }
+  public static Response consumerFailResp(Throwable e) {
+    return createConsumerFail(e);
+  }
 
-    public void setHeaders(Headers headers) {
-        this.headers = headers;
-    }
+  public static Response producerFailResp(Throwable e) {
+    return createProducerFail(e);
+  }
 
-    @SuppressWarnings("unchecked")
-    public <T> T getResult() {
-        return (T) result;
-    }
+  public static Response providerFailResp(Throwable e) {
+    return createProducerFail(e);
+  }
 
-    public void setResult(Object result) {
-        this.result = result;
-    }
+  public static Response success(Object result, StatusType status) {
+    return createSuccess(status, result);
+  }
 
-    // 如果是成功，body即是result
-    // 如果是失败，body可能是InvocationException，也可能是InvocationException中的errorData
-    public static Response create(int statusCode, String reasonPhrase, Object result) {
-        StatusType status = new HttpStatus(statusCode, reasonPhrase);
-        return create(status, result);
-    }
+  public static Response succResp(Object result) {
+    return createSuccess(result);
+  }
 
-    public static Response create(StatusType status, Object result) {
-        Response response = Response.status(status);
-        if (response.isFailed()) {
-            result = ExceptionFactory.create(status, result);
-        }
-        return response.entity(result);
-    }
+  public static Response failResp(InvocationException e) {
+    return createFail(e);
+  }
 
-    // 有的场景下，需要返回非200的，其他2xx状态码，所以需要支持指定
-    public static Response createSuccess(StatusType status, Object result) {
-        return Response.status(status).entity(result);
-    }
+  public static Response failResp(InvocationType invocationType, Throwable e) {
+    return createFail(invocationType, e);
+  }
 
-    public static Response createSuccess(Object result) {
-        return Response.status(Status.OK).entity(result);
-    }
+  // 下面是jaxrs Response的一些常见用法，照搬过来
+  public Response entity(Object result) {
+    setResult(result);
+    return this;
+  }
 
-    public static Response createFail(InvocationException exception) {
-        return Response.status(exception.getStatus()).entity(exception);
-    }
+  public Response build() {
+    return this;
+  }
 
-    public static Response createFail(InvocationType invocationType, String errorMsg) {
-        CommonExceptionData errorData = new CommonExceptionData(errorMsg);
-        if (InvocationType.CONSUMER.equals(invocationType)) {
-            return createFail(ExceptionFactory.createConsumerException(errorData));
-        }
+  public static Response status(StatusType status) {
+    Response response = new Response();
+    response.setStatus(status);
+    return response;
+  }
 
-        return createFail(ExceptionFactory.createProducerException(errorData));
-    }
-
-    public static Response createFail(InvocationType invocationType, Throwable throwable) {
-        if (InvocationType.CONSUMER.equals(invocationType)) {
-            return createConsumerFail(throwable);
-        }
-
-        return createProducerFail(throwable);
-    }
-
-    public static Response createConsumerFail(Throwable throwable) {
-        InvocationException exception = ExceptionFactory.convertConsumerException(throwable);
-        return createFail(exception);
-    }
-
-    public static Response createProducerFail(Throwable throwable) {
-        InvocationException exception = ExceptionFactory.convertProducerException(throwable);
-        return createFail(exception);
-    }
-
-    // 兼容接口
-
-    public static Response consumerFailResp(Throwable e) {
-        return createConsumerFail(e);
-    }
-
-    public static Response producerFailResp(Throwable e) {
-        return createProducerFail(e);
-    }
-
-    public static Response providerFailResp(Throwable e) {
-        return createProducerFail(e);
-    }
-
-    public static Response success(Object result, StatusType status) {
-        return createSuccess(status, result);
-    }
-
-    public static Response succResp(Object result) {
-        return createSuccess(result);
-    }
-
-    public static Response failResp(InvocationException e) {
-        return createFail(e);
-    }
-
-    public static Response failResp(InvocationType invocationType, Throwable e) {
-        return createFail(invocationType, e);
-    }
-
-    // 下面是jaxrs Response的一些常见用法，照搬过来
-    public Response entity(Object result) {
-        setResult(result);
-        return this;
-    }
-
-    public Response build() {
-        return this;
-    }
-
-    public static Response status(StatusType status) {
-        Response response = new Response();
-        response.setStatus(status);
-        return response;
-    }
-
-    public static Response ok(Object result) {
-        Response response = new Response();
-        response.setStatus(Status.OK);
-        response.setResult(result);
-        return response;
-    }
+  public static Response ok(Object result) {
+    Response response = new Response();
+    response.setStatus(Status.OK);
+    response.setResult(result);
+    return response;
+  }
 }

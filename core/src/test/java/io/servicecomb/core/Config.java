@@ -17,33 +17,33 @@
 package io.servicecomb.core;
 
 public class Config {
-    private static int clientThread;
+  private static int clientThread;
 
-    private static String transport;
+  private static String transport;
 
-    private static String mode;
+  private static String mode;
 
-    public static String getTransport() {
-        return transport;
-    }
+  public static String getTransport() {
+    return transport;
+  }
 
-    public static void setTransport(String transport) {
-        Config.transport = transport;
-    }
+  public static void setTransport(String transport) {
+    Config.transport = transport;
+  }
 
-    public static int getClientThread() {
-        return clientThread;
-    }
+  public static int getClientThread() {
+    return clientThread;
+  }
 
-    public static void setClientThread(int clientThread) {
-        Config.clientThread = clientThread;
-    }
+  public static void setClientThread(int clientThread) {
+    Config.clientThread = clientThread;
+  }
 
-    public static String getMode() {
-        return mode;
-    }
+  public static String getMode() {
+    return mode;
+  }
 
-    public static void setMode(String mode) {
-        Config.mode = mode;
-    }
+  public static void setMode(String mode) {
+    Config.mode = mode;
+  }
 }

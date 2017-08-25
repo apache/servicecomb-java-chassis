@@ -24,35 +24,35 @@ import javax.ws.rs.core.Response.StatusType;
 import io.servicecomb.foundation.common.utils.SPIServiceUtils;
 
 public class HttpStatusManager {
-    private Map<Integer, StatusType> statusMap = new ConcurrentHashMap<>();
+  private Map<Integer, StatusType> statusMap = new ConcurrentHashMap<>();
 
-    public HttpStatusManager() {
-        for (Status status : Status.values()) {
-            statusMap.put(status.getStatusCode(), status);
-        }
-
-        SPIServiceUtils.getAllService(StatusType.class).forEach(status -> {
-            addStatusType(status);
-        });
+  public HttpStatusManager() {
+    for (Status status : Status.values()) {
+      statusMap.put(status.getStatusCode(), status);
     }
 
-    public void addStatusType(StatusType status) {
-        if (statusMap.containsKey(status.getStatusCode())) {
-            throw new Error("repeated status code: " + status.getStatusCode());
-        }
+    SPIServiceUtils.getAllService(StatusType.class).forEach(status -> {
+      addStatusType(status);
+    });
+  }
 
-        statusMap.put(status.getStatusCode(), status);
+  public void addStatusType(StatusType status) {
+    if (statusMap.containsKey(status.getStatusCode())) {
+      throw new Error("repeated status code: " + status.getStatusCode());
     }
 
-    public StatusType getOrCreateByStatusCode(int code) {
-        StatusType statusType = statusMap.get(code);
-        if (statusType != null) {
-            return statusType;
-        }
+    statusMap.put(status.getStatusCode(), status);
+  }
 
-        statusType = new HttpStatus(code, "");
-        addStatusType(statusType);
-
-        return statusType;
+  public StatusType getOrCreateByStatusCode(int code) {
+    StatusType statusType = statusMap.get(code);
+    if (statusType != null) {
+      return statusType;
     }
+
+    statusType = new HttpStatus(code, "");
+    addStatusType(statusType);
+
+    return statusType;
+  }
 }

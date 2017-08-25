@@ -17,7 +17,7 @@
 package io.servicecomb.common.javassist;
 
 public interface SingleWrapper {
-    void writeField(Object value);
+  void writeField(Object value);
 
-    Object readField();
+  Object readField();
 }

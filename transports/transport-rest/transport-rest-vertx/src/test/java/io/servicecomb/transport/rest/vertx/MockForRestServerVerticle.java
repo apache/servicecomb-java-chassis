@@ -14,62 +14,51 @@
  * limitations under the License.
  */
 
-/**
- * 
- */
 package io.servicecomb.transport.rest.vertx;
 
 import org.mockito.Mockito;
 
 import io.servicecomb.foundation.common.net.IpPort;
-
 import io.vertx.core.Future;
 import io.vertx.core.http.HttpServer;
 import mockit.Mock;
 import mockit.MockUp;
 
-/**
- *
- *
- */
 public class MockForRestServerVerticle {
 
-    private static MockForRestServerVerticle instance = new MockForRestServerVerticle();
+  private static MockForRestServerVerticle instance = new MockForRestServerVerticle();
 
-    private MockForRestServerVerticle() {
-        // private constructor for Singleton
-    }
+  private MockForRestServerVerticle() {
+    // private constructor for Singleton
+  }
 
-    public static MockForRestServerVerticle getInstance() {
-        return instance;
-    }
+  public static MockForRestServerVerticle getInstance() {
+    return instance;
+  }
 
-    public void mockRestServerVerticle() {
-        final HttpServer server = Mockito.mock(HttpServer.class);
-        new MockUp<RestServerVerticle>() {
+  public void mockRestServerVerticle() {
+    final HttpServer server = Mockito.mock(HttpServer.class);
+    new MockUp<RestServerVerticle>() {
 
-            @Mock
-            private void startListen(HttpServer server, IpPort ipPort, Future<Void> startFuture) {
+      @Mock
+      private void startListen(HttpServer server, IpPort ipPort, Future<Void> startFuture) {
 
-            }
+      }
 
-            @Mock
-            private HttpServer createHttpServer(boolean isHttp_2) {
+      @Mock
+      private HttpServer createHttpServer(boolean isHttp_2) {
 
-                return server;
-            }
+        return server;
+      }
+    };
+  }
 
-        };
-    }
-
-    public void mockTransportConfig() {
-        new MockUp<TransportConfig>() {
-            @Mock
-            public String getAddress() {
-                return "Address";
-            }
-        };
-
-    }
-
+  public void mockTransportConfig() {
+    new MockUp<TransportConfig>() {
+      @Mock
+      public String getAddress() {
+        return "Address";
+      }
+    };
+  }
 }

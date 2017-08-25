@@ -24,7 +24,7 @@ import io.servicecomb.springboot.starter.provider.EnableServiceComb;
 @SpringBootApplication
 @EnableServiceComb
 public class DiscoveryServer {
-	public static void main(String[] args) throws Exception {
-		SpringApplication.run(DiscoveryServer.class, args);
-	}
+  public static void main(String[] args) throws Exception {
+    SpringApplication.run(DiscoveryServer.class, args);
+  }
 }

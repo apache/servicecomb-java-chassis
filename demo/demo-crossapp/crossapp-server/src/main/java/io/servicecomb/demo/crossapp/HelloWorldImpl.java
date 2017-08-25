@@ -21,9 +21,8 @@ import io.servicecomb.provider.pojo.RpcSchema;
 @RpcSchema(schemaId = "helloworld")
 public class HelloWorldImpl implements HelloWorld {
 
-    @Override
-    public String sayHello() {
-        return "hello world";
-    }
-
+  @Override
+  public String sayHello() {
+    return "hello world";
+  }
 }

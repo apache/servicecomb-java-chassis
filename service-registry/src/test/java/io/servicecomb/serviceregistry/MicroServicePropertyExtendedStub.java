@@ -21,20 +21,15 @@ import java.util.Map;
 
 import io.servicecomb.serviceregistry.api.PropertyExtended;
 
-/**
- *
- * @since Mar 7, 2017
- * @see 
- */
 public class MicroServicePropertyExtendedStub implements PropertyExtended {
 
-    /* (non-Javadoc)
-     * @see io.servicecomb.serviceregistry.api.PropertyExtended#getExtendedProperties()
-     */
-    @Override
-    public Map<String, String> getExtendedProperties() {
-        Map<String, String> properties = new HashMap<>();
-        properties.put("ek0", "ev0");
-        return properties;
-    }
+  /* (non-Javadoc)
+   * @see io.servicecomb.serviceregistry.api.PropertyExtended#getExtendedProperties()
+   */
+  @Override
+  public Map<String, String> getExtendedProperties() {
+    Map<String, String> properties = new HashMap<>();
+    properties.put("ek0", "ev0");
+    return properties;
+  }
 }

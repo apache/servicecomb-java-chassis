@@ -17,19 +17,18 @@
 package io.servicecomb.swagger.extend.property;
 
 public class ByteProperty extends AbstractBaseIntegerProperty<Byte> {
-    public static final String FORMAT = "int8";
+  public static final String FORMAT = "int8";
 
-    public ByteProperty() {
-        super(FORMAT);
-    }
+  public ByteProperty() {
+    super(FORMAT);
+  }
 
-    public static boolean isType(String type, String format) {
-        return TYPE.equals(type) && FORMAT.equals(format);
-    }
+  public static boolean isType(String type, String format) {
+    return TYPE.equals(type) && FORMAT.equals(format);
+  }
 
-    @Override
-    protected Byte parseNumber(String strValue) {
-        return Byte.parseByte(strValue);
-    }
-
+  @Override
+  protected Byte parseNumber(String strValue) {
+    return Byte.parseByte(strValue);
+  }
 }

@@ -24,20 +24,19 @@ import io.vertx.core.http.HttpClient;
 import io.vertx.core.http.HttpClientRequest;
 
 public final class VertxDeleteMethod extends VertxHttpMethod {
-    public static final VertxDeleteMethod INSTANCE = new VertxDeleteMethod();
+  public static final VertxDeleteMethod INSTANCE = new VertxDeleteMethod();
 
-    private VertxDeleteMethod() {
-    }
+  private VertxDeleteMethod() {
+  }
 
-    @Override
-    protected HttpClientRequest createRequest(HttpClient client, Invocation invocation, IpPort ipPort, String path,
-            RestOperationMeta operation,
-            AsyncResponse asyncResp) {
-        HttpClientRequest clientRequest =
-            client.delete(ipPort.getPort(), ipPort.getHostOrIp(), path, response -> {
-                handleResponse(invocation, response, operation, asyncResp);
-            });
-        return clientRequest;
-    }
-
+  @Override
+  protected HttpClientRequest createRequest(HttpClient client, Invocation invocation, IpPort ipPort, String path,
+      RestOperationMeta operation,
+      AsyncResponse asyncResp) {
+    HttpClientRequest clientRequest =
+        client.delete(ipPort.getPort(), ipPort.getHostOrIp(), path, response -> {
+          handleResponse(invocation, response, operation, asyncResp);
+        });
+    return clientRequest;
+  }
 }

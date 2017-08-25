@@ -50,360 +50,360 @@ import mockit.MockUp;
 import mockit.Mocked;
 
 public class TrustManagerExtTest {
-    final String strFilePath = Thread.currentThread().getContextClassLoader().getResource("").getPath();
+  final String strFilePath = Thread.currentThread().getContextClassLoader().getResource("").getPath();
 
-    class MyX509ExtendedTrustManager extends X509ExtendedTrustManager {
-        public void checkClientTrusted(X509Certificate[] paramArrayOfX509Certificate, String paramString,
-                Socket paramSocket) throws CertificateException {
-        }
-
-        public void checkClientTrusted(X509Certificate[] paramArrayOfX509Certificate,
-                String paramString) throws CertificateException {
-        }
-
-        public void checkServerTrusted(X509Certificate[] paramArrayOfX509Certificate, String paramString,
-                Socket paramSocket) throws CertificateException {
-        }
-
-        public void checkServerTrusted(X509Certificate[] paramArrayOfX509Certificate,
-                String paramString) throws CertificateException {
-        }
-
-        public void checkClientTrusted(X509Certificate[] paramArrayOfX509Certificate, String paramString,
-                SSLEngine paramSSLEngine) throws CertificateException {
-        }
-
-        public void checkServerTrusted(X509Certificate[] paramArrayOfX509Certificate, String paramString,
-                SSLEngine paramSSLEngine) throws CertificateException {
-        }
-
-        public X509Certificate[] getAcceptedIssuers() {
-            return null;
-        }
+  class MyX509ExtendedTrustManager extends X509ExtendedTrustManager {
+    public void checkClientTrusted(X509Certificate[] paramArrayOfX509Certificate, String paramString,
+        Socket paramSocket) throws CertificateException {
     }
 
-    class MyX509Certificate extends X509Certificate {
-        public void checkValidity() throws CertificateExpiredException, CertificateNotYetValidException {
-        }
-
-        @Override
-        public boolean hasUnsupportedCriticalExtension() {
-            return false;
-        }
-
-        @Override
-        public Set<String> getCriticalExtensionOIDs() {
-            return null;
-        }
-
-        @Override
-        public Set<String> getNonCriticalExtensionOIDs() {
-            return null;
-        }
-
-        @Override
-        public byte[] getExtensionValue(String oid) {
-            return null;
-        }
-
-        @Override
-        public void checkValidity(Date date) throws CertificateExpiredException, CertificateNotYetValidException {
-        }
-
-        @Override
-        public int getVersion() {
-            return 0;
-        }
-
-        @Override
-        public BigInteger getSerialNumber() {
-            return null;
-        }
-
-        @Override
-        public Principal getIssuerDN() {
-            return null;
-        }
-
-        @Override
-        public Principal getSubjectDN() {
-            return null;
-        }
-
-        @Override
-        public Date getNotBefore() {
-            return null;
-        }
-
-        @Override
-        public Date getNotAfter() {
-            return null;
-        }
-
-        @Override
-        public byte[] getTBSCertificate() throws CertificateEncodingException {
-            return null;
-        }
-
-        @Override
-        public byte[] getSignature() {
-            return null;
-        }
-
-        @Override
-        public String getSigAlgName() {
-            return null;
-        }
-
-        @Override
-        public String getSigAlgOID() {
-            return null;
-        }
-
-        @Override
-        public byte[] getSigAlgParams() {
-            return null;
-        }
-
-        @Override
-        public boolean[] getIssuerUniqueID() {
-            return null;
-        }
-
-        @Override
-        public boolean[] getSubjectUniqueID() {
-            return null;
-        }
-
-        @Override
-        public boolean[] getKeyUsage() {
-            return null;
-        }
-
-        @Override
-        public int getBasicConstraints() {
-            return 0;
-        }
-
-        @Override
-        public byte[] getEncoded() throws CertificateEncodingException {
-            return null;
-        }
-
-        @Override
-        public void verify(
-                PublicKey key) throws CertificateException, NoSuchAlgorithmException, InvalidKeyException, NoSuchProviderException, SignatureException {
-
-        }
-
-        @Override
-        public void verify(PublicKey key,
-                String sigProvider) throws CertificateException, NoSuchAlgorithmException, InvalidKeyException, NoSuchProviderException, SignatureException {
-        }
-
-        @Override
-        public String toString() {
-            return null;
-        }
-
-        @Override
-        public PublicKey getPublicKey() {
-            return null;
-        }
+    public void checkClientTrusted(X509Certificate[] paramArrayOfX509Certificate,
+        String paramString) throws CertificateException {
     }
 
-    final SSLOption option = SSLOption.build(strFilePath + "/server.ssl.properties");
+    public void checkServerTrusted(X509Certificate[] paramArrayOfX509Certificate, String paramString,
+        Socket paramSocket) throws CertificateException {
+    }
 
-    final SSLCustom custom = new SSLCustom() {
-        @Override
-        public String getFullPath(String filename) {
-            return strFilePath + "/ssl/" + filename;
-        }
+    public void checkServerTrusted(X509Certificate[] paramArrayOfX509Certificate,
+        String paramString) throws CertificateException {
+    }
 
-        @Override
-        public char[] decode(char[] encrypted) {
-            return encrypted;
-        }
+    public void checkClientTrusted(X509Certificate[] paramArrayOfX509Certificate, String paramString,
+        SSLEngine paramSSLEngine) throws CertificateException {
+    }
 
-        @Override
-        public String getHost() {
-            return "10.67.147.115";
-        }
+    public void checkServerTrusted(X509Certificate[] paramArrayOfX509Certificate, String paramString,
+        SSLEngine paramSSLEngine) throws CertificateException {
+    }
+
+    public X509Certificate[] getAcceptedIssuers() {
+      return null;
+    }
+  }
+
+  class MyX509Certificate extends X509Certificate {
+    public void checkValidity() throws CertificateExpiredException, CertificateNotYetValidException {
+    }
+
+    @Override
+    public boolean hasUnsupportedCriticalExtension() {
+      return false;
+    }
+
+    @Override
+    public Set<String> getCriticalExtensionOIDs() {
+      return null;
+    }
+
+    @Override
+    public Set<String> getNonCriticalExtensionOIDs() {
+      return null;
+    }
+
+    @Override
+    public byte[] getExtensionValue(String oid) {
+      return null;
+    }
+
+    @Override
+    public void checkValidity(Date date) throws CertificateExpiredException, CertificateNotYetValidException {
+    }
+
+    @Override
+    public int getVersion() {
+      return 0;
+    }
+
+    @Override
+    public BigInteger getSerialNumber() {
+      return null;
+    }
+
+    @Override
+    public Principal getIssuerDN() {
+      return null;
+    }
+
+    @Override
+    public Principal getSubjectDN() {
+      return null;
+    }
+
+    @Override
+    public Date getNotBefore() {
+      return null;
+    }
+
+    @Override
+    public Date getNotAfter() {
+      return null;
+    }
+
+    @Override
+    public byte[] getTBSCertificate() throws CertificateEncodingException {
+      return null;
+    }
+
+    @Override
+    public byte[] getSignature() {
+      return null;
+    }
+
+    @Override
+    public String getSigAlgName() {
+      return null;
+    }
+
+    @Override
+    public String getSigAlgOID() {
+      return null;
+    }
+
+    @Override
+    public byte[] getSigAlgParams() {
+      return null;
+    }
+
+    @Override
+    public boolean[] getIssuerUniqueID() {
+      return null;
+    }
+
+    @Override
+    public boolean[] getSubjectUniqueID() {
+      return null;
+    }
+
+    @Override
+    public boolean[] getKeyUsage() {
+      return null;
+    }
+
+    @Override
+    public int getBasicConstraints() {
+      return 0;
+    }
+
+    @Override
+    public byte[] getEncoded() throws CertificateEncodingException {
+      return null;
+    }
+
+    @Override
+    public void verify(PublicKey key)
+        throws CertificateException, NoSuchAlgorithmException, InvalidKeyException, NoSuchProviderException,
+        SignatureException {
+
+    }
+
+    @Override
+    public void verify(PublicKey key, String sigProvider)
+        throws CertificateException, NoSuchAlgorithmException, InvalidKeyException, NoSuchProviderException,
+        SignatureException {
+    }
+
+    @Override
+    public String toString() {
+      return null;
+    }
+
+    @Override
+    public PublicKey getPublicKey() {
+      return null;
+    }
+  }
+
+  final SSLOption option = SSLOption.build(strFilePath + "/server.ssl.properties");
+
+  final SSLCustom custom = new SSLCustom() {
+    @Override
+    public String getFullPath(String filename) {
+      return strFilePath + "/ssl/" + filename;
+    }
+
+    @Override
+    public char[] decode(char[] encrypted) {
+      return encrypted;
+    }
+
+    @Override
+    public String getHost() {
+      return "10.67.147.115";
+    }
+  };
+
+  @Before
+  public void setUp() {
+  }
+
+  @After
+  public void tearDown() {
+  }
+
+  @SuppressWarnings("unused")
+  @Test
+  public void testConstructor() {
+    String keyStoreName = custom.getFullPath(option.getKeyStore());
+    char[] keyStoreValue = custom.decode(option.getKeyStoreValue().toCharArray());
+    String trustStoreName = custom.getFullPath(option.getTrustStore());
+    char[] trustStoreValue =
+        custom.decode(option.getTrustStoreValue().toCharArray());
+    KeyStore trustStore =
+        KeyStoreUtil.createKeyStore(trustStoreName,
+            option.getTrustStoreType(),
+            trustStoreValue);
+    TrustManager[] trustManager = KeyStoreUtil.createTrustManagers(trustStore);
+
+    TrustManagerExt trustManagerExt = new TrustManagerExt((X509ExtendedTrustManager) trustManager[0],
+        option, custom);
+    Assert.assertEquals(3, trustManagerExt.getAcceptedIssuers()[0].getVersion());
+    Assert.assertNotNull(trustManagerExt);
+  }
+
+  @SuppressWarnings("static-access")
+  @Test
+  public void testConstructorWithParam(@Mocked CertificateUtil certificateUtil) {
+    MyX509Certificate myX509Certificate1 = new MyX509Certificate();
+    MyX509Certificate myX509Certificate2 = new MyX509Certificate();
+
+    MyX509Certificate[] MyX509CertificateArray = new MyX509Certificate[2];
+    MyX509CertificateArray[0] = myX509Certificate1;
+    MyX509CertificateArray[1] = myX509Certificate2;
+
+    new Expectations() {
+      {
+        certificateUtil.findOwner((X509Certificate[]) any);
+        result = any;
+
+        certificateUtil.getCN((X509Certificate) any);
+        result = "10.67.147.115";
+      }
     };
 
-    @Before
-    public void setUp() {
+    MyX509ExtendedTrustManager myX509ExtendedTrustManager = new MyX509ExtendedTrustManager();
+    TrustManagerExt trustManagerExt = new TrustManagerExt(myX509ExtendedTrustManager, option, custom);
+
+    Assert.assertNotNull(trustManagerExt);
+    boolean validAssert = true;
+    try {
+      trustManagerExt.checkClientTrusted(MyX509CertificateArray, "pks");
+      trustManagerExt.checkServerTrusted(MyX509CertificateArray, "pks");
+      trustManagerExt.getAcceptedIssuers();
+    } catch (Exception e) {
+      validAssert = false;
     }
+    Assert.assertTrue(validAssert);
+  }
 
-    @After
-    public void tearDown() {
+  @Test
+  public void testCheckClientTrusted(@Mocked CertificateUtil certificateUtil) {
+    MyX509Certificate myX509Certificate1 = new MyX509Certificate();
+    MyX509Certificate myX509Certificate2 = new MyX509Certificate();
+
+    MyX509Certificate[] MyX509CertificateArray = new MyX509Certificate[2];
+    MyX509CertificateArray[0] = myX509Certificate1;
+    MyX509CertificateArray[1] = myX509Certificate2;
+
+    new Expectations() {
+      {
+        CertificateUtil.findOwner((X509Certificate[]) any);
+        result = any;
+
+        CertificateUtil.getCN((X509Certificate) any);
+        result = "10.67.147.115";
+      }
+    };
+
+    MyX509ExtendedTrustManager myX509ExtendedTrustManager = new MyX509ExtendedTrustManager();
+    TrustManagerExt trustManagerExt = new TrustManagerExt(myX509ExtendedTrustManager, option, custom);
+
+    Socket socket = null;
+    SSLEngine sslengine = null;
+    boolean validAssert = true;
+    try {
+      trustManagerExt.checkClientTrusted(MyX509CertificateArray, "pks", socket);
+      trustManagerExt.checkClientTrusted(MyX509CertificateArray, "pks", sslengine);
+      trustManagerExt.checkServerTrusted(MyX509CertificateArray, "pks", socket);
+      trustManagerExt.checkServerTrusted(MyX509CertificateArray, "pks", sslengine);
+    } catch (Exception e) {
+      validAssert = false;
     }
+    Assert.assertTrue(validAssert);
+  }
 
-    @SuppressWarnings("unused")
-    @Test
-    public void testConstructor() {
-        String keyStoreName = custom.getFullPath(option.getKeyStore());
-        char[] keyStoreValue = custom.decode(option.getKeyStoreValue().toCharArray());
-        String trustStoreName = custom.getFullPath(option.getTrustStore());
-        char[] trustStoreValue =
-            custom.decode(option.getTrustStoreValue().toCharArray());
-        KeyStore trustStore =
-            KeyStoreUtil.createKeyStore(trustStoreName,
-                    option.getTrustStoreType(),
-                    trustStoreValue);
-        TrustManager[] trustManager = KeyStoreUtil.createTrustManagers(trustStore);
+  @Test
+  public void testCatchException(@Mocked CertificateUtil certificateUtil) {
+    MyX509Certificate myX509Certificate1 = new MyX509Certificate();
+    MyX509Certificate myX509Certificate2 = new MyX509Certificate();
 
-        TrustManagerExt trustManagerExt = new TrustManagerExt((X509ExtendedTrustManager) trustManager[0],
-                option, custom);
-        Assert.assertEquals(3, trustManagerExt.getAcceptedIssuers()[0].getVersion());
-        Assert.assertNotNull(trustManagerExt);
+    MyX509Certificate[] MyX509CertificateArray = new MyX509Certificate[2];
+    MyX509CertificateArray[0] = myX509Certificate1;
+    MyX509CertificateArray[1] = myX509Certificate2;
+
+    new Expectations() {
+      {
+        CertificateUtil.findOwner((X509Certificate[]) any);
+        result = any;
+
+        CertificateUtil.getCN((X509Certificate) any);
+        result = "10.67.147.114";
+      }
+    };
+
+    MyX509ExtendedTrustManager myX509ExtendedTrustManager = new MyX509ExtendedTrustManager();
+    TrustManagerExt trustManagerExt = new TrustManagerExt(myX509ExtendedTrustManager, option, custom);
+    boolean validAssert = true;
+    try {
+      trustManagerExt.checkClientTrusted(MyX509CertificateArray, "pks");
+    } catch (CertificateException e) {
+      Assert.assertEquals("CN does not match IP: e=[10.67.147.114],t=null", e.getMessage());
+      validAssert = false;
     }
+    Assert.assertFalse(validAssert);
+  }
 
-    @SuppressWarnings("static-access")
-    @Test
-    public void testConstructorWithParam(@Mocked CertificateUtil certificateUtil) {
-        MyX509Certificate myX509Certificate1 = new MyX509Certificate();
-        MyX509Certificate myX509Certificate2 = new MyX509Certificate();
+  @Test
+  public void testCheckClientTrustedExecption(@Mocked CertificateUtil certificateUtil) {
+    MyX509Certificate myX509Certificate1 = new MyX509Certificate();
+    MyX509Certificate myX509Certificate2 = new MyX509Certificate();
 
-        MyX509Certificate[] MyX509CertificateArray = new MyX509Certificate[2];
-        MyX509CertificateArray[0] = myX509Certificate1;
-        MyX509CertificateArray[1] = myX509Certificate2;
+    MyX509Certificate[] MyX509CertificateArray = new MyX509Certificate[2];
+    MyX509CertificateArray[0] = myX509Certificate1;
+    MyX509CertificateArray[1] = myX509Certificate2;
 
-        new Expectations() {
-            {
-                certificateUtil.findOwner((X509Certificate[]) any);
-                result = any;
+    new Expectations() {
+      {
+        CertificateUtil.findOwner((X509Certificate[]) any);
+        result = any;
 
-                certificateUtil.getCN((X509Certificate) any);
-                result = "10.67.147.115";
-            }
-        };
+        CertificateUtil.getCN((X509Certificate) any);
+        result = "10.67.147.115";
+      }
+    };
 
-        MyX509ExtendedTrustManager myX509ExtendedTrustManager = new MyX509ExtendedTrustManager();
-        TrustManagerExt trustManagerExt = new TrustManagerExt(myX509ExtendedTrustManager, option, custom);
+    MyX509ExtendedTrustManager myX509ExtendedTrustManager = new MyX509ExtendedTrustManager();
+    TrustManagerExt trustManagerExt = new TrustManagerExt(myX509ExtendedTrustManager, option, custom);
 
-        Assert.assertNotNull(trustManagerExt);
-        boolean validAssert = true;
-        try {
-            trustManagerExt.checkClientTrusted(MyX509CertificateArray, "pks");
-            trustManagerExt.checkServerTrusted(MyX509CertificateArray, "pks");
-            trustManagerExt.getAcceptedIssuers();
-        } catch (Exception e) {
-            validAssert = false;
-        }
-        Assert.assertTrue(validAssert);
+    Socket socket = null;
+    SSLEngine sslengine = null;
 
+    new MockUp<InputStreamReader>() {
+      @Mock
+      public int read(char cbuf[]) throws IOException {
+        throw new IOException();
+      }
+    };
+    boolean validAssert = true;
+    try {
+      trustManagerExt.checkClientTrusted(MyX509CertificateArray, "pks", socket);
+      trustManagerExt.checkClientTrusted(MyX509CertificateArray, "pks", sslengine);
+      trustManagerExt.checkServerTrusted(MyX509CertificateArray, "pks", socket);
+      trustManagerExt.checkServerTrusted(MyX509CertificateArray, "pks", sslengine);
+    } catch (Exception e) {
+      Assert.assertEquals("java.security.cert.CertificateException", e.getClass().getName());
+      validAssert = false;
     }
-
-    @Test
-    public void testCheckClientTrusted(@Mocked CertificateUtil certificateUtil) {
-        MyX509Certificate myX509Certificate1 = new MyX509Certificate();
-        MyX509Certificate myX509Certificate2 = new MyX509Certificate();
-
-        MyX509Certificate[] MyX509CertificateArray = new MyX509Certificate[2];
-        MyX509CertificateArray[0] = myX509Certificate1;
-        MyX509CertificateArray[1] = myX509Certificate2;
-
-        new Expectations() {
-            {
-                CertificateUtil.findOwner((X509Certificate[]) any);
-                result = any;
-
-                CertificateUtil.getCN((X509Certificate) any);
-                result = "10.67.147.115";
-            }
-        };
-
-        MyX509ExtendedTrustManager myX509ExtendedTrustManager = new MyX509ExtendedTrustManager();
-        TrustManagerExt trustManagerExt = new TrustManagerExt(myX509ExtendedTrustManager, option, custom);
-
-        Socket socket = null;
-        SSLEngine sslengine = null;
-        boolean validAssert = true;
-        try {
-            trustManagerExt.checkClientTrusted(MyX509CertificateArray, "pks", socket);
-            trustManagerExt.checkClientTrusted(MyX509CertificateArray, "pks", sslengine);
-            trustManagerExt.checkServerTrusted(MyX509CertificateArray, "pks", socket);
-            trustManagerExt.checkServerTrusted(MyX509CertificateArray, "pks", sslengine);
-        } catch (Exception e) {
-            validAssert = false;
-        }
-        Assert.assertTrue(validAssert);
-    }
-
-    @Test
-    public void testCatchException(@Mocked CertificateUtil certificateUtil) {
-        MyX509Certificate myX509Certificate1 = new MyX509Certificate();
-        MyX509Certificate myX509Certificate2 = new MyX509Certificate();
-
-        MyX509Certificate[] MyX509CertificateArray = new MyX509Certificate[2];
-        MyX509CertificateArray[0] = myX509Certificate1;
-        MyX509CertificateArray[1] = myX509Certificate2;
-
-        new Expectations() {
-            {
-                CertificateUtil.findOwner((X509Certificate[]) any);
-                result = any;
-
-                CertificateUtil.getCN((X509Certificate) any);
-                result = "10.67.147.114";
-            }
-        };
-
-        MyX509ExtendedTrustManager myX509ExtendedTrustManager = new MyX509ExtendedTrustManager();
-        TrustManagerExt trustManagerExt = new TrustManagerExt(myX509ExtendedTrustManager, option, custom);
-        boolean validAssert = true;
-        try {
-            trustManagerExt.checkClientTrusted(MyX509CertificateArray, "pks");
-
-        } catch (CertificateException e) {
-            Assert.assertEquals("CN does not match IP: e=[10.67.147.114],t=null", e.getMessage());
-            validAssert = false;
-        }
-        Assert.assertFalse(validAssert);
-    }
-
-    @Test
-    public void testCheckClientTrustedExecption(@Mocked CertificateUtil certificateUtil) {
-        MyX509Certificate myX509Certificate1 = new MyX509Certificate();
-        MyX509Certificate myX509Certificate2 = new MyX509Certificate();
-
-        MyX509Certificate[] MyX509CertificateArray = new MyX509Certificate[2];
-        MyX509CertificateArray[0] = myX509Certificate1;
-        MyX509CertificateArray[1] = myX509Certificate2;
-
-        new Expectations() {
-            {
-                CertificateUtil.findOwner((X509Certificate[]) any);
-                result = any;
-
-                CertificateUtil.getCN((X509Certificate) any);
-                result = "10.67.147.115";
-            }
-        };
-
-        MyX509ExtendedTrustManager myX509ExtendedTrustManager = new MyX509ExtendedTrustManager();
-        TrustManagerExt trustManagerExt = new TrustManagerExt(myX509ExtendedTrustManager, option, custom);
-
-        Socket socket = null;
-        SSLEngine sslengine = null;
-
-        new MockUp<InputStreamReader>() {
-            @Mock
-            public int read(char cbuf[]) throws IOException {
-                throw new IOException();
-            }
-        };
-        boolean validAssert = true;
-        try {
-            trustManagerExt.checkClientTrusted(MyX509CertificateArray, "pks", socket);
-            trustManagerExt.checkClientTrusted(MyX509CertificateArray, "pks", sslengine);
-            trustManagerExt.checkServerTrusted(MyX509CertificateArray, "pks", socket);
-            trustManagerExt.checkServerTrusted(MyX509CertificateArray, "pks", sslengine);
-        } catch (Exception e) {
-            Assert.assertEquals("java.security.cert.CertificateException", e.getClass().getName());
-            validAssert = false;
-        }
-        Assert.assertFalse(validAssert);
-    }
+    Assert.assertFalse(validAssert);
+  }
 }

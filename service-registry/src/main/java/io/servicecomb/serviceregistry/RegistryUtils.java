@@ -43,174 +43,174 @@ import io.servicecomb.serviceregistry.definition.MicroserviceDefinition;
 import io.servicecomb.serviceregistry.registry.ServiceRegistryFactory;
 
 public final class RegistryUtils {
-    private static final Logger LOGGER = LoggerFactory.getLogger(RegistryUtils.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(RegistryUtils.class);
 
-    private static ServiceRegistry serviceRegistry;
+  private static ServiceRegistry serviceRegistry;
 
-    // value is ip or {interface name}
-    public static final String PUBLISH_ADDRESS = "cse.service.publishAddress";
+  // value is ip or {interface name}
+  public static final String PUBLISH_ADDRESS = "cse.service.publishAddress";
 
-    private static final String PUBLISH_PORT = "cse.{transport_name}.publishPort";
+  private static final String PUBLISH_PORT = "cse.{transport_name}.publishPort";
 
-    private RegistryUtils() {
+  private RegistryUtils() {
+  }
+
+  public static void init() {
+    EventBus eventBus = new EventBus();
+    MicroserviceConfigLoader loader = ConfigUtil.getMicroserviceConfigLoader();
+    MicroserviceDefinition microserviceDefinition = new MicroserviceDefinition(loader.getConfigModels());
+    serviceRegistry =
+        ServiceRegistryFactory.getOrCreate(eventBus, ServiceRegistryConfig.INSTANCE, microserviceDefinition);
+    serviceRegistry.init();
+  }
+
+  public static void run() {
+    serviceRegistry.run();
+  }
+
+  public static void destory() {
+    serviceRegistry.destory();
+  }
+
+  public static ServiceRegistry getServiceRegistry() {
+    return serviceRegistry;
+  }
+
+  public static void setServiceRegistry(ServiceRegistry serviceRegistry) {
+    RegistryUtils.serviceRegistry = serviceRegistry;
+  }
+
+  public static ServiceRegistryClient getServiceRegistryClient() {
+    return serviceRegistry.getServiceRegistryClient();
+  }
+
+  public static InstanceCacheManager getInstanceCacheManager() {
+    return serviceRegistry.getInstanceCacheManager();
+  }
+
+  public static InstanceVersionCacheManager getInstanceVersionCacheManager() {
+    return serviceRegistry.getInstanceVersionCacheManager();
+  }
+
+  public static String getAppId() {
+    return serviceRegistry.getMicroservice().getAppId();
+  }
+
+  public static Microservice getMicroservice() {
+    return serviceRegistry.getMicroservice();
+  }
+
+  public static MicroserviceInstance getMicroserviceInstance() {
+    return serviceRegistry.getMicroserviceInstance();
+  }
+
+  public static String getPublishAddress() {
+    String publicAddressSetting =
+        DynamicPropertyFactory.getInstance().getStringProperty(PUBLISH_ADDRESS, "").get();
+    publicAddressSetting = publicAddressSetting.trim();
+    if (publicAddressSetting.isEmpty()) {
+      return NetUtils.getHostAddress();
     }
 
-    public static void init() {
-        EventBus eventBus = new EventBus();
-        MicroserviceConfigLoader loader = ConfigUtil.getMicroserviceConfigLoader();
-        MicroserviceDefinition microserviceDefinition = new MicroserviceDefinition(loader.getConfigModels());
-        serviceRegistry =
-            ServiceRegistryFactory.getOrCreate(eventBus, ServiceRegistryConfig.INSTANCE, microserviceDefinition);
-        serviceRegistry.init();
+    // placeholder is network interface name
+    if (publicAddressSetting.startsWith("{") && publicAddressSetting.endsWith("}")) {
+      return NetUtils
+          .ensureGetInterfaceAddress(publicAddressSetting.substring(1, publicAddressSetting.length() - 1))
+          .getHostAddress();
     }
 
-    public static void run() {
-        serviceRegistry.run();
+    return publicAddressSetting;
+  }
+
+  public static String getPublishHostName() {
+    String publicAddressSetting =
+        DynamicPropertyFactory.getInstance().getStringProperty(PUBLISH_ADDRESS, "").get();
+    publicAddressSetting = publicAddressSetting.trim();
+    if (publicAddressSetting.isEmpty()) {
+      return NetUtils.getHostName();
     }
 
-    public static void destory() {
-        serviceRegistry.destory();
+    if (publicAddressSetting.startsWith("{") && publicAddressSetting.endsWith("}")) {
+      return NetUtils
+          .ensureGetInterfaceAddress(publicAddressSetting.substring(1, publicAddressSetting.length() - 1))
+          .getHostName();
     }
 
-    public static ServiceRegistry getServiceRegistry() {
-        return serviceRegistry;
+    return publicAddressSetting;
+  }
+
+  /**
+   * 对于配置为0.0.0.0的地址，通过查询网卡地址，转换为实际监听的地址。
+   */
+  public static String getPublishAddress(String schema, String address) {
+    if (address == null) {
+      return address;
     }
 
-    public static void setServiceRegistry(ServiceRegistry serviceRegistry) {
-        RegistryUtils.serviceRegistry = serviceRegistry;
+    try {
+      URI originalURI = new URI(schema + "://" + address);
+      IpPort ipPort = NetUtils.parseIpPort(originalURI.getAuthority());
+      if (ipPort == null) {
+        LOGGER.warn("address {} not valid.", address);
+        return null;
+      }
+
+      IpPort publishIpPort = genPublishIpPort(schema, ipPort);
+      URIBuilder builder = new URIBuilder(originalURI);
+      return builder.setHost(publishIpPort.getHostOrIp()).setPort(publishIpPort.getPort()).build().toString();
+    } catch (URISyntaxException e) {
+      LOGGER.warn("address {} not valid.", address);
+      return null;
+    }
+  }
+
+  private static IpPort genPublishIpPort(String schema, IpPort ipPort) {
+    String publicAddressSetting = DynamicPropertyFactory.getInstance()
+        .getStringProperty(PUBLISH_ADDRESS, "")
+        .get();
+    publicAddressSetting = publicAddressSetting.trim();
+
+    if (publicAddressSetting.isEmpty()) {
+      InetSocketAddress socketAddress = ipPort.getSocketAddress();
+      String host = socketAddress.getAddress().getHostAddress();
+      if (socketAddress.getAddress().isAnyLocalAddress()) {
+        host = NetUtils.getHostAddress();
+        LOGGER.warn("address {}, auto select a host address to publish {}:{}, maybe not the correct one",
+            socketAddress,
+            host,
+            socketAddress.getPort());
+        return new IpPort(host, ipPort.getPort());
+      }
+
+      return ipPort;
     }
 
-    public static ServiceRegistryClient getServiceRegistryClient() {
-        return serviceRegistry.getServiceRegistryClient();
+    if (publicAddressSetting.startsWith("{") && publicAddressSetting.endsWith("}")) {
+      publicAddressSetting = NetUtils
+          .ensureGetInterfaceAddress(
+              publicAddressSetting.substring(1, publicAddressSetting.length() - 1))
+          .getHostAddress();
     }
 
-    public static InstanceCacheManager getInstanceCacheManager() {
-        return serviceRegistry.getInstanceCacheManager();
-    }
+    String publishPortKey = PUBLISH_PORT.replace("{transport_name}", schema);
+    int publishPortSetting = DynamicPropertyFactory.getInstance()
+        .getIntProperty(publishPortKey, 0)
+        .get();
+    int publishPort = publishPortSetting == 0 ? ipPort.getPort() : publishPortSetting;
+    return new IpPort(publicAddressSetting, publishPort);
+  }
 
-    public static InstanceVersionCacheManager getInstanceVersionCacheManager() {
-        return serviceRegistry.getInstanceVersionCacheManager();
-    }
+  public static List<MicroserviceInstance> findServiceInstance(String appId, String serviceName,
+      String versionRule) {
+    return serviceRegistry.findServiceInstance(appId, serviceName, versionRule);
+  }
 
-    public static String getAppId() {
-        return serviceRegistry.getMicroservice().getAppId();
-    }
+  // update microservice instance properties
+  public static boolean updateInstanceProperties(Map<String, String> instanceProperties) {
+    return serviceRegistry.updateInstanceProperties(instanceProperties);
+  }
 
-    public static Microservice getMicroservice() {
-        return serviceRegistry.getMicroservice();
-    }
-
-    public static MicroserviceInstance getMicroserviceInstance() {
-        return serviceRegistry.getMicroserviceInstance();
-    }
-
-    public static String getPublishAddress() {
-        String publicAddressSetting =
-            DynamicPropertyFactory.getInstance().getStringProperty(PUBLISH_ADDRESS, "").get();
-        publicAddressSetting = publicAddressSetting.trim();
-        if (publicAddressSetting.isEmpty()) {
-            return NetUtils.getHostAddress();
-        }
-
-        // placeholder is network interface name
-        if (publicAddressSetting.startsWith("{") && publicAddressSetting.endsWith("}")) {
-            return NetUtils
-                    .ensureGetInterfaceAddress(publicAddressSetting.substring(1, publicAddressSetting.length() - 1))
-                    .getHostAddress();
-        }
-
-        return publicAddressSetting;
-    }
-
-    public static String getPublishHostName() {
-        String publicAddressSetting =
-            DynamicPropertyFactory.getInstance().getStringProperty(PUBLISH_ADDRESS, "").get();
-        publicAddressSetting = publicAddressSetting.trim();
-        if (publicAddressSetting.isEmpty()) {
-            return NetUtils.getHostName();
-        }
-
-        if (publicAddressSetting.startsWith("{") && publicAddressSetting.endsWith("}")) {
-            return NetUtils
-                    .ensureGetInterfaceAddress(publicAddressSetting.substring(1, publicAddressSetting.length() - 1))
-                    .getHostName();
-        }
-
-        return publicAddressSetting;
-    }
-
-    /**
-     * 对于配置为0.0.0.0的地址，通过查询网卡地址，转换为实际监听的地址。
-     */
-    public static String getPublishAddress(String schema, String address) {
-        if (address == null) {
-            return address;
-        }
-
-        try {
-            URI originalURI = new URI(schema + "://" + address);
-            IpPort ipPort = NetUtils.parseIpPort(originalURI.getAuthority());
-            if (ipPort == null) {
-                LOGGER.warn("address {} not valid.", address);
-                return null;
-            }
-
-            IpPort publishIpPort = genPublishIpPort(schema, ipPort);
-            URIBuilder builder = new URIBuilder(originalURI);
-            return builder.setHost(publishIpPort.getHostOrIp()).setPort(publishIpPort.getPort()).build().toString();
-        } catch (URISyntaxException e) {
-            LOGGER.warn("address {} not valid.", address);
-            return null;
-        }
-    }
-
-    private static IpPort genPublishIpPort(String schema, IpPort ipPort) {
-        String publicAddressSetting = DynamicPropertyFactory.getInstance()
-                .getStringProperty(PUBLISH_ADDRESS, "")
-                .get();
-        publicAddressSetting = publicAddressSetting.trim();
-
-        if (publicAddressSetting.isEmpty()) {
-            InetSocketAddress socketAddress = ipPort.getSocketAddress();
-            String host = socketAddress.getAddress().getHostAddress();
-            if (socketAddress.getAddress().isAnyLocalAddress()) {
-                host = NetUtils.getHostAddress();
-                LOGGER.warn("address {}, auto select a host address to publish {}:{}, maybe not the correct one",
-                        socketAddress,
-                        host,
-                        socketAddress.getPort());
-                return new IpPort(host, ipPort.getPort());
-            }
-
-            return ipPort;
-        }
-
-        if (publicAddressSetting.startsWith("{") && publicAddressSetting.endsWith("}")) {
-            publicAddressSetting = NetUtils
-                    .ensureGetInterfaceAddress(
-                            publicAddressSetting.substring(1, publicAddressSetting.length() - 1))
-                    .getHostAddress();
-        }
-
-        String publishPortKey = PUBLISH_PORT.replace("{transport_name}", schema);
-        int publishPortSetting = DynamicPropertyFactory.getInstance()
-                .getIntProperty(publishPortKey, 0)
-                .get();
-        int publishPort = publishPortSetting == 0 ? ipPort.getPort() : publishPortSetting;
-        return new IpPort(publicAddressSetting, publishPort);
-    }
-
-    public static List<MicroserviceInstance> findServiceInstance(String appId, String serviceName,
-            String versionRule) {
-        return serviceRegistry.findServiceInstance(appId, serviceName, versionRule);
-    }
-
-    // update microservice instance properties
-    public static boolean updateInstanceProperties(Map<String, String> instanceProperties) {
-        return serviceRegistry.updateInstanceProperties(instanceProperties);
-    }
-
-    public static Microservice getMicroservice(String microserviceId) {
-        return serviceRegistry.getRemoteMicroservice(microserviceId);
-    }
+  public static Microservice getMicroservice(String microserviceId) {
+    return serviceRegistry.getRemoteMicroservice(microserviceId);
+  }
 }

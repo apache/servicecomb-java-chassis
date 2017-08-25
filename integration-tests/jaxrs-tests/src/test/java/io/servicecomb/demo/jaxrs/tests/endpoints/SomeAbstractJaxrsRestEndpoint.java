@@ -18,12 +18,9 @@ package io.servicecomb.demo.jaxrs.tests.endpoints;
 
 import static javax.ws.rs.core.MediaType.TEXT_PLAIN;
 
-import io.servicecomb.common.rest.codec.RestObjectMapper;
-import io.servicecomb.demo.compute.Person;
-import io.servicecomb.demo.server.User;
-import io.servicecomb.swagger.invocation.context.ContextUtils;
 import java.util.Date;
 import java.util.Map;
+
 import javax.ws.rs.Consumes;
 import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
@@ -35,6 +32,11 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
+
+import io.servicecomb.common.rest.codec.RestObjectMapper;
+import io.servicecomb.demo.compute.Person;
+import io.servicecomb.demo.server.User;
+import io.servicecomb.swagger.invocation.context.ContextUtils;
 
 @Produces(MediaType.APPLICATION_JSON)
 public class SomeAbstractJaxrsRestEndpoint {

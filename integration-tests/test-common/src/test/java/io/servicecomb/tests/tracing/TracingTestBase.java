@@ -23,19 +23,21 @@ import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 import static org.springframework.http.HttpStatus.OK;
 
-import io.servicecomb.tests.EmbeddedAppender;
-import io.servicecomb.tests.Log4jConfig;
 import java.lang.invoke.MethodHandles;
 import java.net.URL;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
+
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
+
+import io.servicecomb.tests.EmbeddedAppender;
+import io.servicecomb.tests.Log4jConfig;
 import zipkin.Codec;
 import zipkin.Span;
 import zipkin.junit.ZipkinRule;
@@ -46,7 +48,9 @@ public class TracingTestBase {
   public static final ZipkinRule zipkin = new ZipkinRule();
 
   private static final Logger log = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+
   protected static final EmbeddedAppender appender = new EmbeddedAppender();
+
   final RestTemplate restTemplate = new RestTemplate();
 
   @BeforeClass

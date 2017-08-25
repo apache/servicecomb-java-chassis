@@ -20,12 +20,12 @@ import io.servicecomb.swagger.invocation.SwaggerInvocation;
 
 public class ProducerInvocationContextMapper extends AbstractProducerContextArgMapper {
 
-    public ProducerInvocationContextMapper(int producerIdx) {
-        super(producerIdx);
-    }
+  public ProducerInvocationContextMapper(int producerIdx) {
+    super(producerIdx);
+  }
 
-    @Override
-    public Object createContextArg(SwaggerInvocation invocation) {
-        return invocation;
-    }
+  @Override
+  public Object createContextArg(SwaggerInvocation invocation) {
+    return invocation;
+  }
 }

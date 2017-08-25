@@ -19,5 +19,5 @@ package io.servicecomb.swagger.invocation.arguments;
 import io.servicecomb.swagger.invocation.SwaggerInvocation;
 
 public interface ArgumentMapper {
-    void mapArgument(SwaggerInvocation invocation, Object[] arguments);
+  void mapArgument(SwaggerInvocation invocation, Object[] arguments);
 }

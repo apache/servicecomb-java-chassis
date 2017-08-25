@@ -22,18 +22,18 @@ import io.vertx.core.net.NetClient;
 import io.vertx.core.net.impl.NetClientImpl;
 
 public abstract class AbstractTcpClientVerticle<T extends TcpClientConnection, P extends AbstractTcpClientConnectionPool<T>>
-        extends AbstractClientVerticle<P> {
-    protected TcpClientConfig clientConfig;
+    extends AbstractClientVerticle<P> {
+  protected TcpClientConfig clientConfig;
 
-    // 每线程一个实例即可
-    protected NetClient netClient;
+  // 每线程一个实例即可
+  protected NetClient netClient;
 
-    @Override
-    public void start() throws Exception {
-        super.start();
-        clientConfig = (TcpClientConfig) config().getValue(CLIENT_OPTIONS);
+  @Override
+  public void start() throws Exception {
+    super.start();
+    clientConfig = (TcpClientConfig) config().getValue(CLIENT_OPTIONS);
 
-        // vertx.createNetClient()创建出来的netClient不支持跨线程调用
-        netClient = new NetClientImpl((VertxInternal) vertx, clientConfig, false);
-    }
+    // vertx.createNetClient()创建出来的netClient不支持跨线程调用
+    netClient = new NetClientImpl((VertxInternal) vertx, clientConfig, false);
+  }
 }

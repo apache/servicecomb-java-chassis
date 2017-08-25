@@ -22,13 +22,13 @@ import io.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
  * Created by   on 2016/12/6.
  */
 public class RegisterInstanceRequest {
-    private MicroserviceInstance instance;
+  private MicroserviceInstance instance;
 
-    public MicroserviceInstance getInstance() {
-        return instance;
-    }
+  public MicroserviceInstance getInstance() {
+    return instance;
+  }
 
-    public void setInstance(MicroserviceInstance instance) {
-        this.instance = instance;
-    }
+  public void setInstance(MicroserviceInstance instance) {
+    this.instance = instance;
+  }
 }

@@ -23,12 +23,12 @@ import io.servicecomb.serviceregistry.config.ServiceRegistryConfig;
 import io.servicecomb.serviceregistry.definition.MicroserviceDefinition;
 
 public class LocalServiceRegistry extends AbstractServiceRegistry {
-    public LocalServiceRegistry(EventBus eventBus, ServiceRegistryConfig serviceRegistryConfig,
-            MicroserviceDefinition microserviceDefinition) {
-        super(eventBus, serviceRegistryConfig, microserviceDefinition);
-    }
+  public LocalServiceRegistry(EventBus eventBus, ServiceRegistryConfig serviceRegistryConfig,
+      MicroserviceDefinition microserviceDefinition) {
+    super(eventBus, serviceRegistryConfig, microserviceDefinition);
+  }
 
-    protected ServiceRegistryClient createServiceRegistryClient() {
-        return new LocalServiceRegistryClientImpl();
-    }
+  protected ServiceRegistryClient createServiceRegistryClient() {
+    return new LocalServiceRegistryClientImpl();
+  }
 }

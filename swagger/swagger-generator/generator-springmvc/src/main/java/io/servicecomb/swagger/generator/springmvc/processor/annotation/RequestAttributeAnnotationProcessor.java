@@ -19,17 +19,16 @@ package io.servicecomb.swagger.generator.springmvc.processor.annotation;
 import org.springframework.web.bind.annotation.RequestAttribute;
 
 import io.servicecomb.swagger.generator.core.processor.parameter.AbstractParameterProcessor;
-
 import io.swagger.models.parameters.FormParameter;
 
 public class RequestAttributeAnnotationProcessor extends AbstractParameterProcessor<FormParameter> {
-    @Override
-    protected FormParameter createParameter() {
-        return new FormParameter();
-    }
+  @Override
+  protected FormParameter createParameter() {
+    return new FormParameter();
+  }
 
-    @Override
-    protected String getAnnotationParameterName(Object annotation) {
-        return ((RequestAttribute) annotation).name();
-    }
+  @Override
+  protected String getAnnotationParameterName(Object annotation) {
+    return ((RequestAttribute) annotation).name();
+  }
 }

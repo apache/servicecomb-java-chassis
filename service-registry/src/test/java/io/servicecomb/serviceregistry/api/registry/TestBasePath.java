@@ -27,33 +27,33 @@ import org.junit.Test;
  * Created by   on 2017/3/29.
  */
 public class TestBasePath {
-    private BasePath oBasePath;
+  private BasePath oBasePath;
 
-    @Before
-    public void setUp() throws Exception {
-        oBasePath = new BasePath();
-    }
+  @Before
+  public void setUp() throws Exception {
+    oBasePath = new BasePath();
+  }
 
-    @After
-    public void tearDown() throws Exception {
-        oBasePath = null;
-    }
+  @After
+  public void tearDown() throws Exception {
+    oBasePath = null;
+  }
 
-    @Test
-    public void testDefaultValues() {
-        Assert.assertNull(oBasePath.getPath());
-        Assert.assertNull(oBasePath.getProperty());
-    }
+  @Test
+  public void testDefaultValues() {
+    Assert.assertNull(oBasePath.getPath());
+    Assert.assertNull(oBasePath.getProperty());
+  }
 
-    @Test
-    public void testIntializedValues() {
-        initBasePath(); //Initialize the Values
-        Assert.assertEquals("a", oBasePath.getPath());
-        Assert.assertNotNull(oBasePath.getProperty());
-    }
+  @Test
+  public void testIntializedValues() {
+    initBasePath(); //Initialize the Values
+    Assert.assertEquals("a", oBasePath.getPath());
+    Assert.assertNotNull(oBasePath.getProperty());
+  }
 
-    private void initBasePath() {
-        oBasePath.setPath("a");
-        oBasePath.setProperty(new HashMap<>());
-    }
+  private void initBasePath() {
+    oBasePath.setPath("a");
+    oBasePath.setProperty(new HashMap<>());
+  }
 }

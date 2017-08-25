@@ -25,67 +25,66 @@ import java.util.List;
  *
  */
 public class PerfStatMonitor {
-    // 各线程内部的统计数据
-    private List<PerfStat> threadStats = new ArrayList<>();
+  // 各线程内部的统计数据
+  private List<PerfStat> threadStats = new ArrayList<>();
 
-    private String name;
+  private String name;
 
-    private int index;
+  private int index;
 
-    // 每周期，对threadStats进行汇总，结果保存在这里
-    private PerfStat sumStat;
+  // 每周期，对threadStats进行汇总，结果保存在这里
+  private PerfStat sumStat;
 
-    // 每周期计算产生的结果
-    private List<PerfResult> perfResultList;
+  // 每周期计算产生的结果
+  private List<PerfResult> perfResultList;
 
-    public PerfStatMonitor(String name, int index) {
-        this.name = name;
-        this.index = index;
+  public PerfStatMonitor(String name, int index) {
+    this.name = name;
+    this.index = index;
+  }
+
+  public String getName() {
+    return name;
+  }
+
+  public int getIndex() {
+    return index;
+  }
+
+  public void addThreadStat(PerfStat threadStat) {
+    threadStats.add(threadStat);
+  }
+
+  public void calcCycle(long msNow, long msCycle) {
+    PerfStat newSumStat = new PerfStatImpl(null);
+    for (PerfStat threadStat : threadStats) {
+      newSumStat.mergeFrom(threadStat);
     }
 
-    public String getName() {
-        return name;
+    perfResultList = new ArrayList<>();
+    newSumStat.calc(msNow, perfResultList);
+    newSumStat.calc(sumStat, msCycle, perfResultList);
+
+    sumStat = newSumStat;
+  }
+
+  public void format(StringBuilder sb, String fmt) {
+    for (PerfResult result : perfResultList) {
+      String msg = String.format(result.getName() + fmt,
+          result.getCallCount(),
+          result.getMsgCount(),
+          result.getAvgCallCount(),
+          result.getMsAvgLatency(),
+          result.segmentsToString("%-10d"));
+      sb.append(msg);
     }
+  }
 
-    public int getIndex() {
-        return index;
-    }
+  public PerfStat getPerfStat() {
+    return sumStat;
+  }
 
-    public void addThreadStat(PerfStat threadStat) {
-        threadStats.add(threadStat);
-    }
-
-    public void calcCycle(long msNow, long msCycle) {
-        PerfStat newSumStat = new PerfStatImpl(null);
-        for (PerfStat threadStat : threadStats) {
-            newSumStat.mergeFrom(threadStat);
-        }
-
-        perfResultList = new ArrayList<>();
-        newSumStat.calc(msNow, perfResultList);
-        newSumStat.calc(sumStat, msCycle, perfResultList);
-
-        sumStat = newSumStat;
-    }
-
-    public void format(StringBuilder sb, String fmt) {
-        for (PerfResult result : perfResultList) {
-            String msg = String.format(result.getName() + fmt,
-                    result.getCallCount(),
-                    result.getMsgCount(),
-                    result.getAvgCallCount(),
-                    result.getMsAvgLatency(),
-                    result.segmentsToString("%-10d"));
-            sb.append(msg);
-        }
-    }
-
-    public PerfStat getPerfStat() {
-        return sumStat;
-    }
-
-    public List<PerfResult> getPerfResultList() {
-        return perfResultList;
-    }
-
+  public List<PerfResult> getPerfResultList() {
+    return perfResultList;
+  }
 }

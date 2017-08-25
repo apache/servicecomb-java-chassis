@@ -34,32 +34,32 @@ import io.servicecomb.swagger.invocation.converter.Converter;
 
 @Component
 public class ConsumerArgumentsMapperFactory extends ArgumentsMapperFactory {
-    public ConsumerArgumentsMapperFactory() {
-        type = InvocationType.CONSUMER;
-    }
+  public ConsumerArgumentsMapperFactory() {
+    type = InvocationType.CONSUMER;
+  }
 
-    @Inject
-    @Qualifier("consumer")
-    public void setFactoryList(List<ContextArgumentMapperFactory> factoryList) {
-        createFactoryMap(factoryList);
-    }
+  @Inject
+  @Qualifier("consumer")
+  public void setFactoryList(List<ContextArgumentMapperFactory> factoryList) {
+    createFactoryMap(factoryList);
+  }
 
-    @SuppressWarnings("unchecked")
-    @Override
-    protected <T> T createArgumentsMapper(ArgumentsMapperConfig config) {
-        return (T) new ConsumerArgumentsMapper(config.getArgumentMapperList(),
-                config.getSwaggerMethod().getParameterCount());
-    }
+  @SuppressWarnings("unchecked")
+  @Override
+  protected <T> T createArgumentsMapper(ArgumentsMapperConfig config) {
+    return (T) new ConsumerArgumentsMapper(config.getArgumentMapperList(),
+        config.getSwaggerMethod().getParameterCount());
+  }
 
-    @Override
-    protected ArgumentMapper createArgumentMapperWithConverter(int swaggerIdx, int consumerIdx, Converter converter) {
-        return new ConsumerArgumentSame(consumerIdx, swaggerIdx, converter);
-    }
+  @Override
+  protected ArgumentMapper createArgumentMapperWithConverter(int swaggerIdx, int consumerIdx, Converter converter) {
+    return new ConsumerArgumentSame(consumerIdx, swaggerIdx, converter);
+  }
 
-    @Override
-    protected ArgumentMapper createBodyFieldArgMapper(ArgumentsMapperConfig config,
-            Map<Integer, FieldInfo> fieldMap) {
-        Class<?> swaggerParamType = config.getSwaggerMethod().getParameterTypes()[0];
-        return new ConsumerArgumentToBodyField(swaggerParamType, fieldMap);
-    }
+  @Override
+  protected ArgumentMapper createBodyFieldArgMapper(ArgumentsMapperConfig config,
+      Map<Integer, FieldInfo> fieldMap) {
+    Class<?> swaggerParamType = config.getSwaggerMethod().getParameterTypes()[0];
+    return new ConsumerArgumentToBodyField(swaggerParamType, fieldMap);
+  }
 }

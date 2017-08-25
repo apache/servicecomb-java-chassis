@@ -25,55 +25,54 @@ import org.junit.Assert;
 import org.junit.Test;
 
 public class TestFortifyUtils {
-    @Test
-    public void testFortifyUtils() throws IOException {
-        Assert.assertEquals("", FortifyUtils.getErrorMsg(null));
-        Assert.assertEquals("", FortifyUtils.getErrorStack(null));
+  @Test
+  public void testFortifyUtils() throws IOException {
+    Assert.assertEquals("", FortifyUtils.getErrorMsg(null));
+    Assert.assertEquals("", FortifyUtils.getErrorStack(null));
+  }
+
+  @Test
+  public void testFilePerm() {
+    Assert.assertEquals(10, (FilePerm.getDefaultAclPerm().size()));
+    Assert.assertEquals(3, (FilePerm.getDefaultPosixPerm().size()));
+    Assert.assertEquals(4, (FilePerm.getPosixPerm(400).size()));
+  }
+
+  @Test
+  public void testGetErrorMsg() {
+
+    Throwable e = new Throwable();
+
+    FortifyUtils.getErrorMsg(e);
+
+    assertNull(FortifyUtils.getErrorMsg(e));
+  }
+
+  @Test
+  public void testGetSecurityXmlDocumentFactory() {
+
+    try {
+      FortifyUtils.getSecurityXmlDocumentFactory();
+      assertNotNull(FortifyUtils.getSecurityXmlDocumentFactory());
+    } catch (Exception e) {
+      /* Do not Worry */
+      Assert.assertTrue(false);
     }
+  }
 
-    @Test
-    public void testFilePerm() {
-        Assert.assertEquals(10, (FilePerm.getDefaultAclPerm().size()));
-        Assert.assertEquals(3, (FilePerm.getDefaultPosixPerm().size()));
-        Assert.assertEquals(4, (FilePerm.getPosixPerm(400).size()));
-    }
+  @Test
+  public void testGetErrorStack() {
 
-    @Test
-    public void testGetErrorMsg() {
+    Throwable e = new Throwable();
+    FortifyUtils.getErrorStack(e);
+    Assert.assertNotEquals(true, FortifyUtils.getErrorStack(e));
+  }
 
-        Throwable e = new Throwable();
+  @Test
+  public void testGetErrorInfo() {
 
-        FortifyUtils.getErrorMsg(e);
-
-        assertNull(FortifyUtils.getErrorMsg(e));
-    }
-
-    @Test
-    public void testGetSecurityXmlDocumentFactory() {
-
-        try {
-            FortifyUtils.getSecurityXmlDocumentFactory();
-            assertNotNull(FortifyUtils.getSecurityXmlDocumentFactory());
-        } catch (Exception e) {
-            /* Do not Worry */
-            Assert.assertTrue(false);
-        }
-
-    }
-
-    @Test
-    public void testGetErrorStack() {
-
-        Throwable e = new Throwable();
-        FortifyUtils.getErrorStack(e);
-        Assert.assertNotEquals(true, FortifyUtils.getErrorStack(e));
-    }
-
-    @Test
-    public void testGetErrorInfo() {
-
-        Throwable e = new Throwable();
-        FortifyUtils.getErrorInfo(e, true);
-        Assert.assertNotEquals(true, FortifyUtils.getErrorInfo(e, true));
-    }
+    Throwable e = new Throwable();
+    FortifyUtils.getErrorInfo(e, true);
+    Assert.assertNotEquals(true, FortifyUtils.getErrorInfo(e, true));
+  }
 }

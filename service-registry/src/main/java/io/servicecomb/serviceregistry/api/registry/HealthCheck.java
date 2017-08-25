@@ -23,50 +23,50 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class HealthCheck {
-    private HealthCheckMode mode;
+  private HealthCheckMode mode;
 
-    private int port;
+  private int port;
 
-    private int interval;
+  private int interval;
 
-    private int times;
+  private int times;
 
-    public int getInterval() {
-        return interval;
+  public int getInterval() {
+    return interval;
+  }
+
+  public void setInterval(int interval) {
+    this.interval = interval;
+  }
+
+  public int getTimes() {
+    return times;
+  }
+
+  public void setTimes(int times) {
+    this.times = times;
+  }
+
+  public HealthCheckMode getMode() {
+    return mode;
+  }
+
+  public void setMode(HealthCheckMode mode) {
+    this.mode = mode;
+  }
+
+  public int getTTL() {
+    if (this.mode != HealthCheckMode.HEARTBEAT) {
+      return 0;
     }
+    return getInterval() * (getTimes() + 1);
+  }
 
-    public void setInterval(int interval) {
-        this.interval = interval;
-    }
+  public int getPort() {
+    return port;
+  }
 
-    public int getTimes() {
-        return times;
-    }
-
-    public void setTimes(int times) {
-        this.times = times;
-    }
-
-    public HealthCheckMode getMode() {
-        return mode;
-    }
-
-    public void setMode(HealthCheckMode mode) {
-        this.mode = mode;
-    }
-
-    public int getTTL() {
-        if (this.mode != HealthCheckMode.HEARTBEAT) {
-            return 0;
-        }
-        return getInterval() * (getTimes() + 1);
-    }
-
-    public int getPort() {
-        return port;
-    }
-
-    public void setPort(int port) {
-        this.port = port;
-    }
+  public void setPort(int port) {
+    this.port = port;
+  }
 }

@@ -24,29 +24,29 @@ import org.springframework.util.StringUtils;
 import org.w3c.dom.Element;
 
 public class IdXmlLoader extends XmlLoader {
-    private Map<String, Element> idMap = new HashMap<>();
+  private Map<String, Element> idMap = new HashMap<>();
 
-    public IdXmlLoader(List<String> locationPatternList) {
-        super(locationPatternList);
+  public IdXmlLoader(List<String> locationPatternList) {
+    super(locationPatternList);
+  }
+
+  public IdXmlLoader(List<String> locationPatternList, String suffix) {
+    super(locationPatternList, suffix);
+  }
+
+  @Override
+  protected Element findAndSetExist(Element ele) {
+    String id = ele.getAttribute("id");
+    if (StringUtils.isEmpty(id)) {
+      throw new RuntimeException("id not allow be empty");
     }
 
-    public IdXmlLoader(List<String> locationPatternList, String suffix) {
-        super(locationPatternList, suffix);
+    Element existEle = idMap.get(id);
+    if (existEle == null) {
+      idMap.put(id, ele);
+      return null;
     }
 
-    @Override
-    protected Element findAndSetExist(Element ele) {
-        String id = ele.getAttribute("id");
-        if (StringUtils.isEmpty(id)) {
-            throw new RuntimeException("id not allow be empty");
-        }
-
-        Element existEle = idMap.get(id);
-        if (existEle == null) {
-            idMap.put(id, ele);
-            return null;
-        }
-
-        return existEle;
-    }
+    return existEle;
+  }
 }

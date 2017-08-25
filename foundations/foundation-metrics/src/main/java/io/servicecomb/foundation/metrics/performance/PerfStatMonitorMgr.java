@@ -32,58 +32,57 @@ import org.slf4j.LoggerFactory;
  *
  */
 public class PerfStatMonitorMgr {
-    private static final Logger LOGGER = LoggerFactory.getLogger(PerfStatMonitorMgr.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(PerfStatMonitorMgr.class);
 
-    private Map<String, PerfStatMonitor> monitorMap = new HashMap<>();
+  private Map<String, PerfStatMonitor> monitorMap = new HashMap<>();
 
-    private List<PerfStatMonitor> monitorList = new ArrayList<>();
+  private List<PerfStatMonitor> monitorList = new ArrayList<>();
 
-    private String header = String.format(
-            "             call count       msg count        avg tps    avg latency(ms) |%s",
-            PerfStatData.getStrSegmentDef());
+  private String header = String.format(
+      "             call count       msg count        avg tps    avg latency(ms) |%s",
+      PerfStatData.getStrSegmentDef());
 
-    private String statFmt = "%-16d %-16d %-10d %-16.3f %s\n";
+  private String statFmt = "%-16d %-16d %-10d %-16.3f %s\n";
 
-    public void registerPerfStat(PerfStat perfStat, int index) {
-        String name = perfStat.getName();
-        PerfStatMonitor monitor = monitorMap.get(name);
-        if (monitor == null) {
-            monitor = new PerfStatMonitor(name, index);
-            monitorMap.put(name, monitor);
+  public void registerPerfStat(PerfStat perfStat, int index) {
+    String name = perfStat.getName();
+    PerfStatMonitor monitor = monitorMap.get(name);
+    if (monitor == null) {
+      monitor = new PerfStatMonitor(name, index);
+      monitorMap.put(name, monitor);
 
-            monitorList.add(monitor);
+      monitorList.add(monitor);
 
-            monitorList.sort(new Comparator<PerfStatMonitor>() {
+      monitorList.sort(new Comparator<PerfStatMonitor>() {
 
-                @Override
-                public int compare(PerfStatMonitor o1, PerfStatMonitor o2) {
-                    return o1.getIndex() - o2.getIndex();
-                }
-            });
+        @Override
+        public int compare(PerfStatMonitor o1, PerfStatMonitor o2) {
+          return o1.getIndex() - o2.getIndex();
         }
-
-        monitor.addThreadStat(perfStat);
+      });
     }
 
-    public void onCycle(long msNow, long msCycle) {
-        StringBuilder sb = new StringBuilder();
-        sb.append("Cycle stat output:\n" + header + "\n");
-        for (PerfStatMonitor monitor : monitorList) {
-            monitor.calcCycle(msNow, msCycle);
+    monitor.addThreadStat(perfStat);
+  }
 
-            sb.append(" " + monitor.getName() + ":\n");
-            monitor.format(sb, statFmt);
-        }
+  public void onCycle(long msNow, long msCycle) {
+    StringBuilder sb = new StringBuilder();
+    sb.append("Cycle stat output:\n" + header + "\n");
+    for (PerfStatMonitor monitor : monitorList) {
+      monitor.calcCycle(msNow, msCycle);
 
-        LOGGER.info(sb.toString());
+      sb.append(" " + monitor.getName() + ":\n");
+      monitor.format(sb, statFmt);
     }
 
-    public Map<String, PerfStat> getMonitorPerfStat() {
-        return monitorList.stream().collect(Collectors.toMap(m -> m.getName(), m -> m.getPerfStat()));
-    }
+    LOGGER.info(sb.toString());
+  }
 
-    public List<PerfStatMonitor> getMonitorList() {
-        return monitorList;
-    }
+  public Map<String, PerfStat> getMonitorPerfStat() {
+    return monitorList.stream().collect(Collectors.toMap(m -> m.getName(), m -> m.getPerfStat()));
+  }
 
+  public List<PerfStatMonitor> getMonitorList() {
+    return monitorList;
+  }
 }

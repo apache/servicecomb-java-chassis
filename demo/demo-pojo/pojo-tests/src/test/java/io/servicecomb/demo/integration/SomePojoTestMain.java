@@ -16,10 +16,12 @@
 
 package io.servicecomb.demo.integration;
 
+import javax.inject.Inject;
+
+import org.springframework.stereotype.Component;
+
 import io.servicecomb.foundation.common.utils.BeanUtils;
 import io.servicecomb.foundation.common.utils.Log4jUtils;
-import javax.inject.Inject;
-import org.springframework.stereotype.Component;
 
 @Component
 class SomePojoTestMain {

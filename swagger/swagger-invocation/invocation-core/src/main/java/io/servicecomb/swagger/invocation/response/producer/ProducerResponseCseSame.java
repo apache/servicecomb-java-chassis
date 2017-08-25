@@ -23,13 +23,13 @@ import io.servicecomb.swagger.invocation.Response;
 
 @Component
 public class ProducerResponseCseSame implements ProducerResponseMapper {
-    @Override
-    public Class<?> getResponseClass() {
-        return Response.class;
-    }
+  @Override
+  public Class<?> getResponseClass() {
+    return Response.class;
+  }
 
-    @Override
-    public Response mapResponse(StatusType status, Object response) {
-        return (Response) response;
-    }
+  @Override
+  public Response mapResponse(StatusType status, Object response) {
+    return (Response) response;
+  }
 }

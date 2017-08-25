@@ -17,6 +17,6 @@
 package io.servicecomb.swagger.generator.core;
 
 public interface ParameterAnnotationProcessor {
-    // 在ApiImplicitParam场景中paramIdx为-1
-    void process(Object annotation, OperationGenerator operationGenerator, int paramIdx);
+  // 在ApiImplicitParam场景中paramIdx为-1
+  void process(Object annotation, OperationGenerator operationGenerator, int paramIdx);
 }

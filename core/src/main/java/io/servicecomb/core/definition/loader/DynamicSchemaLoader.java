@@ -19,14 +19,14 @@ package io.servicecomb.core.definition.loader;
 import java.util.ArrayList;
 import java.util.List;
 
-import io.servicecomb.core.CseContext;
-import io.servicecomb.core.definition.SchemaMeta;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.Resource;
 
-import io.servicecomb.serviceregistry.RegistryUtils;
+import io.servicecomb.core.CseContext;
+import io.servicecomb.core.definition.SchemaMeta;
 import io.servicecomb.foundation.common.config.PaaSResourceUtils;
+import io.servicecomb.serviceregistry.RegistryUtils;
 
 /**
  * 场景：
@@ -40,35 +40,35 @@ import io.servicecomb.foundation.common.config.PaaSResourceUtils;
  *   此时可以在BootListener中进行注册（必须在producer初始化之前注册契约）
  */
 public class DynamicSchemaLoader {
-    private static final Logger LOGGER = LoggerFactory.getLogger(DynamicSchemaLoader.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(DynamicSchemaLoader.class);
 
-    public static final DynamicSchemaLoader INSTANCE = new DynamicSchemaLoader();
+  public static final DynamicSchemaLoader INSTANCE = new DynamicSchemaLoader();
 
-    /**
-     * 动态注册指定目录下的schema契约到当前服务
-     * @param schemaLocation eg. "classpath*:schemas/*.yaml"
-     */
-    public void registerSchemas(String schemaLocation) {
-        registerSchemas(RegistryUtils.getMicroservice().getServiceName(), schemaLocation);
+  /**
+   * 动态注册指定目录下的schema契约到当前服务
+   * @param schemaLocation eg. "classpath*:schemas/*.yaml"
+   */
+  public void registerSchemas(String schemaLocation) {
+    registerSchemas(RegistryUtils.getMicroservice().getServiceName(), schemaLocation);
+  }
+
+  /**
+   * 动态注册指定目录下的schema契约到指定服务
+   * @param microserviceName name of microservice
+   * @param schemaLocation eg. "classpath*:schemas/*.yaml"
+   */
+  public void registerSchemas(String microserviceName, String schemaLocation) {
+    LOGGER.info("dynamic register schemas for {} in {}", microserviceName, schemaLocation);
+
+    List<SchemaMeta> schemaMetaList = new ArrayList<>();
+    Resource[] resArr = PaaSResourceUtils.getResources(schemaLocation);
+    for (Resource resource : resArr) {
+      SchemaMeta schemaMeta =
+          CseContext.getInstance().getSchemaLoader().registerSchema(microserviceName, resource);
+
+      schemaMetaList.add(schemaMeta);
     }
 
-    /**
-     * 动态注册指定目录下的schema契约到指定服务
-     * @param microserviceName name of microservice
-     * @param schemaLocation eg. "classpath*:schemas/*.yaml"
-     */
-    public void registerSchemas(String microserviceName, String schemaLocation) {
-        LOGGER.info("dynamic register schemas for {} in {}", microserviceName, schemaLocation);
-
-        List<SchemaMeta> schemaMetaList = new ArrayList<>();
-        Resource[] resArr = PaaSResourceUtils.getResources(schemaLocation);
-        for (Resource resource : resArr) {
-            SchemaMeta schemaMeta =
-                CseContext.getInstance().getSchemaLoader().registerSchema(microserviceName, resource);
-
-            schemaMetaList.add(schemaMeta);
-        }
-
-        CseContext.getInstance().getSchemaListenerManager().notifySchemaListener(schemaMetaList);
-    }
+    CseContext.getInstance().getSchemaListenerManager().notifySchemaListener(schemaMetaList);
+  }
 }

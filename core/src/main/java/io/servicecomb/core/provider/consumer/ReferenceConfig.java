@@ -21,41 +21,41 @@ import io.servicecomb.core.definition.MicroserviceMeta;
 import io.servicecomb.core.definition.schema.ConsumerSchemaFactory;
 
 public class ReferenceConfig {
-    private MicroserviceMeta microserviceMeta;
+  private MicroserviceMeta microserviceMeta;
 
-    private String microserviceVersionRule = Const.DEFAULT_VERSION_RULE;
+  private String microserviceVersionRule = Const.DEFAULT_VERSION_RULE;
 
-    private String transport = Const.ANY_TRANSPORT;
+  private String transport = Const.ANY_TRANSPORT;
 
-    public ReferenceConfig() {
-    }
+  public ReferenceConfig() {
+  }
 
-    public ReferenceConfig(ConsumerSchemaFactory consumerSchemaFactory, String microserviceName,
-            String microserviceVersionRule, String transport) {
-        this.microserviceMeta = consumerSchemaFactory.getOrCreateMicroserviceMeta(microserviceName,
-                microserviceVersionRule);
+  public ReferenceConfig(ConsumerSchemaFactory consumerSchemaFactory, String microserviceName,
+      String microserviceVersionRule, String transport) {
+    this.microserviceMeta = consumerSchemaFactory.getOrCreateMicroserviceMeta(microserviceName,
+        microserviceVersionRule);
 
-        this.microserviceVersionRule = microserviceVersionRule;
-        this.transport = transport;
-    }
+    this.microserviceVersionRule = microserviceVersionRule;
+    this.transport = transport;
+  }
 
-    public MicroserviceMeta getMicroserviceMeta() {
-        return microserviceMeta;
-    }
+  public MicroserviceMeta getMicroserviceMeta() {
+    return microserviceMeta;
+  }
 
-    public String getMicroserviceVersionRule() {
-        return microserviceVersionRule;
-    }
+  public String getMicroserviceVersionRule() {
+    return microserviceVersionRule;
+  }
 
-    public void setMicroserviceVersionRule(String microserviceVersionRule) {
-        this.microserviceVersionRule = microserviceVersionRule;
-    }
+  public void setMicroserviceVersionRule(String microserviceVersionRule) {
+    this.microserviceVersionRule = microserviceVersionRule;
+  }
 
-    public String getTransport() {
-        return transport;
-    }
+  public String getTransport() {
+    return transport;
+  }
 
-    public void setTransport(String transport) {
-        this.transport = transport;
-    }
+  public void setTransport(String transport) {
+    this.transport = transport;
+  }
 }

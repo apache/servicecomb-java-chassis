@@ -24,56 +24,55 @@ import io.servicecomb.foundation.ssl.SSLOption;
 import io.servicecomb.foundation.ssl.SSLOptionFactory;
 import io.servicecomb.foundation.vertx.AsyncResultCallback;
 import io.servicecomb.foundation.vertx.VertxTLSBuilder;
-
 import io.vertx.core.Vertx;
 import io.vertx.core.net.NetServer;
 import io.vertx.core.net.NetServerOptions;
 
 public class TcpServer {
-    private URIEndpointObject endpointObject;
+  private URIEndpointObject endpointObject;
 
-    public TcpServer(URIEndpointObject endpointObject) {
-        this.endpointObject = endpointObject;
+  public TcpServer(URIEndpointObject endpointObject) {
+    this.endpointObject = endpointObject;
+  }
+
+  public void init(Vertx vertx, String sslKey, AsyncResultCallback<InetSocketAddress> callback) {
+    NetServer netServer;
+    if (endpointObject.isSslEnabled()) {
+      SSLOptionFactory factory =
+          SSLOptionFactory.createSSLOptionFactory(sslKey, null);
+      SSLOption sslOption;
+      if (factory == null) {
+        sslOption = SSLOption.buildFromYaml(sslKey);
+      } else {
+        sslOption = factory.createSSLOption();
+      }
+      SSLCustom sslCustom = SSLCustom.createSSLCustom(sslOption.getSslCustomClass());
+      NetServerOptions serverOptions = new NetServerOptions();
+      VertxTLSBuilder.buildNetServerOptions(sslOption, sslCustom, serverOptions);
+      netServer = vertx.createNetServer(serverOptions);
+    } else {
+      netServer = vertx.createNetServer();
     }
 
-    public void init(Vertx vertx, String sslKey, AsyncResultCallback<InetSocketAddress> callback) {
-        NetServer netServer;
-        if (endpointObject.isSslEnabled()) {
-            SSLOptionFactory factory =
-                SSLOptionFactory.createSSLOptionFactory(sslKey, null);
-            SSLOption sslOption;
-            if (factory == null) {
-                sslOption = SSLOption.buildFromYaml(sslKey);
-            } else {
-                sslOption = factory.createSSLOption();
-            }
-            SSLCustom sslCustom = SSLCustom.createSSLCustom(sslOption.getSslCustomClass());
-            NetServerOptions serverOptions = new NetServerOptions();
-            VertxTLSBuilder.buildNetServerOptions(sslOption, sslCustom, serverOptions);
-            netServer = vertx.createNetServer(serverOptions);
-        } else {
-            netServer = vertx.createNetServer();
-        }
+    netServer.connectHandler(netSocket -> {
+      TcpServerConnection connection = createTcpServerConnection();
+      connection.init(netSocket);
+    });
 
-        netServer.connectHandler(netSocket -> {
-            TcpServerConnection connection = createTcpServerConnection();
-            connection.init(netSocket);
-        });
+    InetSocketAddress socketAddress = endpointObject.getSocketAddress();
+    netServer.listen(socketAddress.getPort(), socketAddress.getHostString(), ar -> {
+      if (ar.succeeded()) {
+        callback.success(socketAddress);
+        return;
+      }
 
-        InetSocketAddress socketAddress = endpointObject.getSocketAddress();
-        netServer.listen(socketAddress.getPort(), socketAddress.getHostString(), ar -> {
-            if (ar.succeeded()) {
-                callback.success(socketAddress);
-                return;
-            }
+      // 监听失败
+      String msg = String.format("listen failed, address=%s", socketAddress.toString());
+      callback.fail(new Exception(msg, ar.cause()));
+    });
+  }
 
-            // 监听失败
-            String msg = String.format("listen failed, address=%s", socketAddress.toString());
-            callback.fail(new Exception(msg, ar.cause()));
-        });
-    }
-
-    protected TcpServerConnection createTcpServerConnection() {
-        return new TcpServerConnection();
-    }
+  protected TcpServerConnection createTcpServerConnection() {
+    return new TcpServerConnection();
+  }
 }

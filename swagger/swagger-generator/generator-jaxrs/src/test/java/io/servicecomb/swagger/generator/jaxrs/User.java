@@ -17,5 +17,5 @@
 package io.servicecomb.swagger.generator.jaxrs;
 
 public class User {
-    public String name;
+  public String name;
 }

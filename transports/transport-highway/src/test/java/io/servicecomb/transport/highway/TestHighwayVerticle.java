@@ -24,9 +24,8 @@ import org.mockito.Mockito;
 
 import io.servicecomb.core.Endpoint;
 import io.servicecomb.core.Transport;
-import io.servicecomb.transport.common.MockUtil;
 import io.servicecomb.foundation.common.net.URIEndpointObject;
-
+import io.servicecomb.transport.common.MockUtil;
 import io.vertx.core.Context;
 import io.vertx.core.Future;
 import io.vertx.core.Vertx;
@@ -36,51 +35,50 @@ import mockit.Mocked;
 
 public class TestHighwayVerticle {
 
-    private HighwayServerVerticle highwayVerticle = null;
+  private HighwayServerVerticle highwayVerticle = null;
 
-    @Before
-    public void setUp() throws Exception {
-        highwayVerticle = new HighwayServerVerticle();
+  @Before
+  public void setUp() throws Exception {
+    highwayVerticle = new HighwayServerVerticle();
+  }
+
+  @After
+  public void tearDown() throws Exception {
+    highwayVerticle = null;
+  }
+
+  @Test
+  public void testHighwayVerticle(@Mocked Transport transport, @Mocked Vertx vertx, @Mocked Context context,
+      @Mocked JsonObject json) {
+    URIEndpointObject endpiontObject = new URIEndpointObject("highway://127.0.0.1:9090");
+    new Expectations() {
+      {
+        transport.parseAddress(anyString);
+        result = endpiontObject;
+      }
+    };
+
+    Endpoint endpoint = new Endpoint(transport, "highway://127.0.0.1:9090");
+
+    new Expectations() {
+      {
+        context.config();
+        result = json;
+        json.getValue(anyString);
+        result = endpoint;
+      }
+    };
+
+    highwayVerticle.init(vertx, context);
+    @SuppressWarnings("unchecked")
+    Future<Void> startFuture = Mockito.mock(Future.class);
+    highwayVerticle.startListen(startFuture);
+    MockUtil.getInstance().mockHighwayConfig();
+    try {
+      highwayVerticle.startListen(startFuture);
+      Assert.assertTrue(true);
+    } catch (Exception e) {
+      Assert.assertTrue(false);
     }
-
-    @After
-    public void tearDown() throws Exception {
-        highwayVerticle = null;
-    }
-
-    @Test
-    public void testHighwayVerticle(@Mocked Transport transport, @Mocked Vertx vertx, @Mocked Context context,
-            @Mocked JsonObject json) {
-        URIEndpointObject endpiontObject = new URIEndpointObject("highway://127.0.0.1:9090");
-        new Expectations() {
-            {
-                transport.parseAddress(anyString);
-                result = endpiontObject;
-            }
-        };
-
-        Endpoint endpoint = new Endpoint(transport, "highway://127.0.0.1:9090");
-
-        new Expectations() {
-            {
-                context.config();
-                result = json;
-                json.getValue(anyString);
-                result = endpoint;
-            }
-        };
-
-        highwayVerticle.init(vertx, context);
-        @SuppressWarnings("unchecked")
-        Future<Void> startFuture = Mockito.mock(Future.class);
-        highwayVerticle.startListen(startFuture);
-        MockUtil.getInstance().mockHighwayConfig();
-        try {
-            highwayVerticle.startListen(startFuture);
-            Assert.assertTrue(true);
-        } catch (Exception e) {
-            Assert.assertTrue(false);
-        }
-    }
-
+  }
 }

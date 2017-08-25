@@ -16,20 +16,21 @@
 
 package io.servicecomb.serviceregistry.client.http;
 
-import io.vertx.core.MultiMap;
-import org.junit.Test;
-
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 
-public class RestUtilsTest {
-    @Test
-    public void defaultHeadersContainServiceRegistryAndAuthentication() throws Exception {
-        MultiMap headers = RestUtils.getDefaultHeaders();
+import org.junit.Test;
 
-        assertThat(headers.get("Content-Type"), is("application/json"));
-        assertThat(headers.get("User-Agent"), is("cse-serviceregistry-client/1.0.0"));
-        assertThat(headers.get("x-domain-name"), is("default"));
-        assertThat(headers.get("X-Service-AK"), is("blah..."));
-    }
+import io.vertx.core.MultiMap;
+
+public class RestUtilsTest {
+  @Test
+  public void defaultHeadersContainServiceRegistryAndAuthentication() throws Exception {
+    MultiMap headers = RestUtils.getDefaultHeaders();
+
+    assertThat(headers.get("Content-Type"), is("application/json"));
+    assertThat(headers.get("User-Agent"), is("cse-serviceregistry-client/1.0.0"));
+    assertThat(headers.get("x-domain-name"), is("default"));
+    assertThat(headers.get("X-Service-AK"), is("blah..."));
+  }
 }

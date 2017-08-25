@@ -33,123 +33,123 @@ import io.swagger.models.Path;
 import io.swagger.models.Swagger;
 
 public class SchemaMeta extends CommonService<OperationMeta> {
-    private static final Logger LOGGER = LoggerFactory.getLogger(SchemaMeta.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(SchemaMeta.class);
 
-    // 如果要生成class，使用这个package
-    private String packageName;
+  // 如果要生成class，使用这个package
+  private String packageName;
 
-    private Swagger swagger;
+  private Swagger swagger;
 
-    private MicroserviceMeta microserviceMeta;
+  private MicroserviceMeta microserviceMeta;
 
-    // microserviceName:schemaId
-    private String microserviceQualifiedName;
+  // microserviceName:schemaId
+  private String microserviceQualifiedName;
 
-    // 契约对应的接口
-    private Class<?> swaggerIntf;
+  // 契约对应的接口
+  private Class<?> swaggerIntf;
 
-    // handlerChain是microservice级别的
-    private List<Handler> consumerHandlerChain;
+  // handlerChain是microservice级别的
+  private List<Handler> consumerHandlerChain;
 
-    private List<Handler> providerHandlerChain;
+  private List<Handler> providerHandlerChain;
 
-    public SchemaMeta(Swagger swagger, MicroserviceMeta microserviceMeta, String schemaId) {
-        this.packageName = SchemaUtils.generatePackageName(microserviceMeta, schemaId);
+  public SchemaMeta(Swagger swagger, MicroserviceMeta microserviceMeta, String schemaId) {
+    this.packageName = SchemaUtils.generatePackageName(microserviceMeta, schemaId);
 
-        this.swagger = swagger;
-        this.name = schemaId;
+    this.swagger = swagger;
+    this.name = schemaId;
 
-        this.microserviceMeta = microserviceMeta;
-        this.microserviceQualifiedName = microserviceMeta.getName() + "." + schemaId;
-        // 确保swagger对应的接口是存在的
-        swaggerIntf = ClassUtils.getOrCreateInterface(swagger, microserviceMeta.getClassLoader(), packageName);
+    this.microserviceMeta = microserviceMeta;
+    this.microserviceQualifiedName = microserviceMeta.getName() + "." + schemaId;
+    // 确保swagger对应的接口是存在的
+    swaggerIntf = ClassUtils.getOrCreateInterface(swagger, microserviceMeta.getClassLoader(), packageName);
 
-        createOperationMgr("schemaMeta " + schemaId + " operation mgr");
-        operationMgr.setRegisterErrorFmt("Operation name repeat, schema=%s, operation=%s");
+    createOperationMgr("schemaMeta " + schemaId + " operation mgr");
+    operationMgr.setRegisterErrorFmt("Operation name repeat, schema=%s, operation=%s");
 
-        initOperations();
-    }
+    initOperations();
+  }
 
-    public String getPackageName() {
-        return packageName;
-    }
+  public String getPackageName() {
+    return packageName;
+  }
 
-    private void initOperations() {
-        for (Entry<String, Path> entry : swagger.getPaths().entrySet()) {
-            String strPath = entry.getKey();
-            Path path = entry.getValue();
-            for (Entry<HttpMethod, Operation> operationEntry : path.getOperationMap().entrySet()) {
-                Operation operation = operationEntry.getValue();
-                if (operation.getOperationId() == null) {
-                    throw ExceptionUtils.operationIdInvalid(getSchemaId(), strPath);
-                }
-
-                // io.servicecomb.swagger.engine.SwaggerEnvironment.createConsumer(Class<?>, Class<?>)
-                // io.servicecomb.swagger.engine.SwaggerEnvironment.createProducer(Object, Swagger)
-                // had make sure that consumer/swagger or producer/swagger can work
-                //
-                // in this place, do not throw exception when method not exists
-                // eg:
-                //   swagger interface is a.b.c, and consumer interface is a.b.c too.
-                //   version 1, there are the same
-                //   version 2, producer add a new operation, that means swagger have more operation than consumer interface a.b.c
-                //              interface a.b.c in consumer process is the old interface
-                //              so for swagger, can not do any valid check here
-                //              only need to save found method, that's enough.
-                Method method = ReflectUtils.findMethod(swaggerIntf, operation.getOperationId());
-                if (method == null) {
-                    LOGGER.warn("method {} not found in swagger interface {}, schemaId={}",
-                            operation.getOperationId(),
-                            swaggerIntf.getName(),
-                            getSchemaId());
-                    continue;
-                }
-
-                String httpMethod = operationEntry.getKey().name();
-                OperationMeta operationMeta = new OperationMeta();
-                operationMeta.init(this, method, strPath, httpMethod, operation);
-                operationMgr.register(method.getName(), operationMeta);
-            }
+  private void initOperations() {
+    for (Entry<String, Path> entry : swagger.getPaths().entrySet()) {
+      String strPath = entry.getKey();
+      Path path = entry.getValue();
+      for (Entry<HttpMethod, Operation> operationEntry : path.getOperationMap().entrySet()) {
+        Operation operation = operationEntry.getValue();
+        if (operation.getOperationId() == null) {
+          throw ExceptionUtils.operationIdInvalid(getSchemaId(), strPath);
         }
-    }
 
-    public Swagger getSwagger() {
-        return swagger;
-    }
+        // io.servicecomb.swagger.engine.SwaggerEnvironment.createConsumer(Class<?>, Class<?>)
+        // io.servicecomb.swagger.engine.SwaggerEnvironment.createProducer(Object, Swagger)
+        // had make sure that consumer/swagger or producer/swagger can work
+        //
+        // in this place, do not throw exception when method not exists
+        // eg:
+        //   swagger interface is a.b.c, and consumer interface is a.b.c too.
+        //   version 1, there are the same
+        //   version 2, producer add a new operation, that means swagger have more operation than consumer interface a.b.c
+        //              interface a.b.c in consumer process is the old interface
+        //              so for swagger, can not do any valid check here
+        //              only need to save found method, that's enough.
+        Method method = ReflectUtils.findMethod(swaggerIntf, operation.getOperationId());
+        if (method == null) {
+          LOGGER.warn("method {} not found in swagger interface {}, schemaId={}",
+              operation.getOperationId(),
+              swaggerIntf.getName(),
+              getSchemaId());
+          continue;
+        }
 
-    public String getSchemaId() {
-        return name;
+        String httpMethod = operationEntry.getKey().name();
+        OperationMeta operationMeta = new OperationMeta();
+        operationMeta.init(this, method, strPath, httpMethod, operation);
+        operationMgr.register(method.getName(), operationMeta);
+      }
     }
+  }
 
-    public String getMicroserviceQualifiedName() {
-        return microserviceQualifiedName;
-    }
+  public Swagger getSwagger() {
+    return swagger;
+  }
 
-    public String getMicroserviceName() {
-        return microserviceMeta.getName();
-    }
+  public String getSchemaId() {
+    return name;
+  }
 
-    public MicroserviceMeta getMicroserviceMeta() {
-        return microserviceMeta;
-    }
+  public String getMicroserviceQualifiedName() {
+    return microserviceQualifiedName;
+  }
 
-    public Class<?> getSwaggerIntf() {
-        return swaggerIntf;
-    }
+  public String getMicroserviceName() {
+    return microserviceMeta.getName();
+  }
 
-    public List<Handler> getConsumerHandlerChain() {
-        return consumerHandlerChain;
-    }
+  public MicroserviceMeta getMicroserviceMeta() {
+    return microserviceMeta;
+  }
 
-    public void setConsumerHandlerChain(List<Handler> consumerHandlerChain) {
-        this.consumerHandlerChain = consumerHandlerChain;
-    }
+  public Class<?> getSwaggerIntf() {
+    return swaggerIntf;
+  }
 
-    public List<Handler> getProviderHandlerChain() {
-        return providerHandlerChain;
-    }
+  public List<Handler> getConsumerHandlerChain() {
+    return consumerHandlerChain;
+  }
 
-    public void setProviderHandlerChain(List<Handler> providerHandlerChain) {
-        this.providerHandlerChain = providerHandlerChain;
-    }
+  public void setConsumerHandlerChain(List<Handler> consumerHandlerChain) {
+    this.consumerHandlerChain = consumerHandlerChain;
+  }
+
+  public List<Handler> getProviderHandlerChain() {
+    return providerHandlerChain;
+  }
+
+  public void setProviderHandlerChain(List<Handler> providerHandlerChain) {
+    this.providerHandlerChain = providerHandlerChain;
+  }
 }

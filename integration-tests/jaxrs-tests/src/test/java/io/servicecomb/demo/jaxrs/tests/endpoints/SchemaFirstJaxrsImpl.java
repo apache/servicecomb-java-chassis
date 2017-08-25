@@ -18,7 +18,6 @@ package io.servicecomb.demo.jaxrs.tests.endpoints;
 
 import static javax.ws.rs.core.MediaType.TEXT_PLAIN;
 
-import io.servicecomb.provider.rest.common.RestSchema;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -26,6 +25,8 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
+
+import io.servicecomb.provider.rest.common.RestSchema;
 
 @RestSchema(schemaId = "schemaFirst")
 @Path("/schemaFirstJaxrs")

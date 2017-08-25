@@ -17,33 +17,33 @@
 package io.servicecomb.demo.smartcare;
 
 public class Group {
-    private String name;
+  private String name;
 
-    private String labelEN;
+  private String labelEN;
 
-    private String labelCH;
+  private String labelCH;
 
-    public String getName() {
-        return name;
-    }
+  public String getName() {
+    return name;
+  }
 
-    public void setName(String name) {
-        this.name = name;
-    }
+  public void setName(String name) {
+    this.name = name;
+  }
 
-    public String getLabelEN() {
-        return labelEN;
-    }
+  public String getLabelEN() {
+    return labelEN;
+  }
 
-    public void setLabelEN(String labelEN) {
-        this.labelEN = labelEN;
-    }
+  public void setLabelEN(String labelEN) {
+    this.labelEN = labelEN;
+  }
 
-    public String getLabelCH() {
-        return labelCH;
-    }
+  public String getLabelCH() {
+    return labelCH;
+  }
 
-    public void setLabelCH(String labelCH) {
-        this.labelCH = labelCH;
-    }
+  public void setLabelCH(String labelCH) {
+    this.labelCH = labelCH;
+  }
 }

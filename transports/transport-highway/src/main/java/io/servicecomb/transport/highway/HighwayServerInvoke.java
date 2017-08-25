@@ -39,116 +39,116 @@ import io.servicecomb.transport.highway.message.ResponseHeader;
 import io.vertx.core.buffer.Buffer;
 
 public class HighwayServerInvoke {
-    private static final Logger LOGGER = LoggerFactory.getLogger(HighwayServerInvoke.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(HighwayServerInvoke.class);
 
-    private MicroserviceMetaManager microserviceMetaManager = CseContext.getInstance().getMicroserviceMetaManager();
+  private MicroserviceMetaManager microserviceMetaManager = CseContext.getInstance().getMicroserviceMetaManager();
 
-    private ProtobufFeature protobufFeature;
+  private ProtobufFeature protobufFeature;
 
-    private RequestHeader header;
+  private RequestHeader header;
 
-    private OperationMeta operationMeta;
+  private OperationMeta operationMeta;
 
-    private OperationProtobuf operationProtobuf;
+  private OperationProtobuf operationProtobuf;
 
-    private TcpConnection connection;
+  private TcpConnection connection;
 
-    private long msgId;
+  private long msgId;
 
-    private Buffer bodyBuffer;
+  private Buffer bodyBuffer;
 
-    public HighwayServerInvoke() {
-        this(null);
+  public HighwayServerInvoke() {
+    this(null);
+  }
+
+  public HighwayServerInvoke(ProtobufFeature protobufFeature) {
+    this.protobufFeature = protobufFeature;
+  }
+
+  public void setMicroserviceMetaManager(MicroserviceMetaManager microserviceMetaManager) {
+    this.microserviceMetaManager = microserviceMetaManager;
+  }
+
+  public boolean init(TcpConnection connection, long msgId,
+      RequestHeader header, Buffer bodyBuffer) {
+    try {
+      doInit(connection, msgId, header, bodyBuffer);
+      return true;
+    } catch (Throwable e) {
+      String microserviceQualifidName = "unknown";
+      if (operationMeta != null) {
+        microserviceQualifidName = operationMeta.getMicroserviceQualifiedName();
+      }
+      String msg = String.format("decode request error, microserviceQualifidName=%s, msgId=%d",
+          microserviceQualifidName,
+          msgId);
+      LOGGER.error(msg, e);
+
+      return false;
+    }
+  }
+
+  private void doInit(TcpConnection connection, long msgId, RequestHeader header,
+      Buffer bodyBuffer) throws Exception {
+    this.connection = connection;
+    this.msgId = msgId;
+    this.header = header;
+
+    MicroserviceMeta microserviceMeta = microserviceMetaManager.ensureFindValue(header.getDestMicroservice());
+    SchemaMeta schemaMeta = microserviceMeta.ensureFindSchemaMeta(header.getSchemaId());
+    this.operationMeta = schemaMeta.ensureFindOperation(header.getOperationName());
+    this.operationProtobuf = ProtobufManager.getOrCreateOperation(operationMeta);
+
+    this.bodyBuffer = bodyBuffer;
+  }
+
+  private void runInExecutor() {
+    try {
+      doRunInExecutor();
+    } catch (Throwable e) {
+      String msg = String.format("handle request error, %s, msgId=%d",
+          operationMeta.getMicroserviceQualifiedName(),
+          msgId);
+      LOGGER.error(msg, e);
+
+      sendResponse(header.getContext(), Response.providerFailResp(e));
+    }
+  }
+
+  private void doRunInExecutor() throws Exception {
+    Invocation invocation = HighwayCodec.decodeRequest(header, operationProtobuf, bodyBuffer, protobufFeature);
+
+    invocation.next(response -> {
+      sendResponse(invocation.getContext(), response);
+    });
+  }
+
+  private void sendResponse(Map<String, String> context, Response response) {
+    ResponseHeader header = new ResponseHeader();
+    header.setStatusCode(response.getStatusCode());
+    header.setReasonPhrase(response.getReasonPhrase());
+    header.setContext(context);
+    header.setHeaders(response.getHeaders());
+
+    WrapSchema bodySchema = operationProtobuf.findResponseSchema(response.getStatusCode());
+    Object body = response.getResult();
+    if (response.isFailed()) {
+      body = ((InvocationException) body).getErrorData();
     }
 
-    public HighwayServerInvoke(ProtobufFeature protobufFeature) {
-        this.protobufFeature = protobufFeature;
+    try {
+      Buffer respBuffer = HighwayCodec.encodeResponse(msgId, header, bodySchema, body, protobufFeature);
+      connection.write(respBuffer.getByteBuf());
+    } catch (Exception e) {
+      // 没招了，直接打日志
+      String msg = String.format("encode response failed, %s, msgId=%d",
+          operationProtobuf.getOperationMeta().getMicroserviceQualifiedName(),
+          msgId);
+      LOGGER.error(msg, e);
     }
+  }
 
-    public void setMicroserviceMetaManager(MicroserviceMetaManager microserviceMetaManager) {
-        this.microserviceMetaManager = microserviceMetaManager;
-    }
-
-    public boolean init(TcpConnection connection, long msgId,
-            RequestHeader header, Buffer bodyBuffer) {
-        try {
-            doInit(connection, msgId, header, bodyBuffer);
-            return true;
-        } catch (Throwable e) {
-            String microserviceQualifidName = "unknown";
-            if (operationMeta != null) {
-                microserviceQualifidName = operationMeta.getMicroserviceQualifiedName();
-            }
-            String msg = String.format("decode request error, microserviceQualifidName=%s, msgId=%d",
-                    microserviceQualifidName,
-                    msgId);
-            LOGGER.error(msg, e);
-
-            return false;
-        }
-    }
-
-    private void doInit(TcpConnection connection, long msgId, RequestHeader header,
-            Buffer bodyBuffer) throws Exception {
-        this.connection = connection;
-        this.msgId = msgId;
-        this.header = header;
-
-        MicroserviceMeta microserviceMeta = microserviceMetaManager.ensureFindValue(header.getDestMicroservice());
-        SchemaMeta schemaMeta = microserviceMeta.ensureFindSchemaMeta(header.getSchemaId());
-        this.operationMeta = schemaMeta.ensureFindOperation(header.getOperationName());
-        this.operationProtobuf = ProtobufManager.getOrCreateOperation(operationMeta);
-
-        this.bodyBuffer = bodyBuffer;
-    }
-
-    private void runInExecutor() {
-        try {
-            doRunInExecutor();
-        } catch (Throwable e) {
-            String msg = String.format("handle request error, %s, msgId=%d",
-                    operationMeta.getMicroserviceQualifiedName(),
-                    msgId);
-            LOGGER.error(msg, e);
-
-            sendResponse(header.getContext(), Response.providerFailResp(e));
-        }
-    }
-
-    private void doRunInExecutor() throws Exception {
-        Invocation invocation = HighwayCodec.decodeRequest(header, operationProtobuf, bodyBuffer, protobufFeature);
-
-        invocation.next(response -> {
-            sendResponse(invocation.getContext(), response);
-        });
-    }
-
-    private void sendResponse(Map<String, String> context, Response response) {
-        ResponseHeader header = new ResponseHeader();
-        header.setStatusCode(response.getStatusCode());
-        header.setReasonPhrase(response.getReasonPhrase());
-        header.setContext(context);
-        header.setHeaders(response.getHeaders());
-
-        WrapSchema bodySchema = operationProtobuf.findResponseSchema(response.getStatusCode());
-        Object body = response.getResult();
-        if (response.isFailed()) {
-            body = ((InvocationException) body).getErrorData();
-        }
-
-        try {
-            Buffer respBuffer = HighwayCodec.encodeResponse(msgId, header, bodySchema, body, protobufFeature);
-            connection.write(respBuffer.getByteBuf());
-        } catch (Exception e) {
-            // 没招了，直接打日志
-            String msg = String.format("encode response failed, %s, msgId=%d",
-                    operationProtobuf.getOperationMeta().getMicroserviceQualifiedName(),
-                    msgId);
-            LOGGER.error(msg, e);
-        }
-    }
-
-    public void execute() {
-        operationMeta.getExecutor().execute(this::runInExecutor);
-    }
+  public void execute() {
+    operationMeta.getExecutor().execute(this::runInExecutor);
+  }
 }

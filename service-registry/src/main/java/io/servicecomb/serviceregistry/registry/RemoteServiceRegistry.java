@@ -23,20 +23,20 @@ import io.servicecomb.serviceregistry.config.ServiceRegistryConfig;
 import io.servicecomb.serviceregistry.definition.MicroserviceDefinition;
 
 public class RemoteServiceRegistry extends AbstractServiceRegistry {
-    public RemoteServiceRegistry(EventBus eventBus, ServiceRegistryConfig serviceRegistryConfig,
-            MicroserviceDefinition microserviceDefinition) {
-        super(eventBus, serviceRegistryConfig, microserviceDefinition);
-    }
+  public RemoteServiceRegistry(EventBus eventBus, ServiceRegistryConfig serviceRegistryConfig,
+      MicroserviceDefinition microserviceDefinition) {
+    super(eventBus, serviceRegistryConfig, microserviceDefinition);
+  }
 
-    protected ServiceRegistryClient createServiceRegistryClient() {
-        return new ServiceRegistryClientImpl(ipPortManager);
-    }
+  protected ServiceRegistryClient createServiceRegistryClient() {
+    return new ServiceRegistryClientImpl(ipPortManager);
+  }
 
-    @Override
-    public void run() {
-        super.run();
+  @Override
+  public void run() {
+    super.run();
 
-        Thread registryThread = new Thread(serviceCenterTask, "RegistryThread");
-        registryThread.start();
-    }
+    Thread registryThread = new Thread(serviceCenterTask, "RegistryThread");
+    registryThread.start();
+  }
 }

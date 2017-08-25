@@ -24,33 +24,33 @@ import io.servicecomb.serviceregistry.api.registry.WatchAction;
  * Created by   on 2016/12/25.
  */
 public class MicroserviceInstanceChangedEvent {
-    private WatchAction action;
+  private WatchAction action;
 
-    private MicroserviceKey key;
+  private MicroserviceKey key;
 
-    private MicroserviceInstance instance;
+  private MicroserviceInstance instance;
 
-    public MicroserviceInstance getInstance() {
-        return instance;
-    }
+  public MicroserviceInstance getInstance() {
+    return instance;
+  }
 
-    public void setInstance(MicroserviceInstance instance) {
-        this.instance = instance;
-    }
+  public void setInstance(MicroserviceInstance instance) {
+    this.instance = instance;
+  }
 
-    public MicroserviceKey getKey() {
-        return key;
-    }
+  public MicroserviceKey getKey() {
+    return key;
+  }
 
-    public void setKey(MicroserviceKey key) {
-        this.key = key;
-    }
+  public void setKey(MicroserviceKey key) {
+    this.key = key;
+  }
 
-    public WatchAction getAction() {
-        return action;
-    }
+  public WatchAction getAction() {
+    return action;
+  }
 
-    public void setAction(WatchAction action) {
-        this.action = action;
-    }
+  public void setAction(WatchAction action) {
+    this.action = action;
+  }
 }

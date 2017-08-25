@@ -25,18 +25,18 @@ import io.vertx.core.Vertx;
 
 public class TestClient {
 
-    @Test
-    public void testHttpClientVerticle() throws Exception {
-        Vertx vertx = VertxUtils.init(null);
+  @Test
+  public void testHttpClientVerticle() throws Exception {
+    Vertx vertx = VertxUtils.init(null);
 
-        HttpClientVerticle oVerticle = new HttpClientVerticle();
-        oVerticle.init(vertx, null);
-        Assert.assertEquals("clientMgr", HttpClientVerticle.CLIENT_MGR);
-        Assert.assertEquals("poolCount", HttpClientVerticle.POOL_COUNT);
-        Assert.assertEquals("clientOptions", HttpClientVerticle.CLIENT_OPTIONS);
-        HttpClientWithContext oContextClient = new HttpClientWithContext(null, null);
-        Assert.assertEquals(null, oContextClient.getHttpClient());
+    HttpClientVerticle oVerticle = new HttpClientVerticle();
+    oVerticle.init(vertx, null);
+    Assert.assertEquals("clientMgr", HttpClientVerticle.CLIENT_MGR);
+    Assert.assertEquals("poolCount", HttpClientVerticle.POOL_COUNT);
+    Assert.assertEquals("clientOptions", HttpClientVerticle.CLIENT_OPTIONS);
+    HttpClientWithContext oContextClient = new HttpClientWithContext(null, null);
+    Assert.assertEquals(null, oContextClient.getHttpClient());
 
-        vertx.close();
-    }
+    vertx.close();
+  }
 }

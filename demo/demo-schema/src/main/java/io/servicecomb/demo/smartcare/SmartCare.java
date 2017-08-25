@@ -18,8 +18,7 @@ package io.servicecomb.demo.smartcare;
 
 public interface SmartCare {
 
-    Response addApplication(Application application);
+  Response addApplication(Application application);
 
-    Response delApplication(String appName);
-
+  Response delApplication(String appName);
 }

@@ -25,15 +25,15 @@ import org.junit.Test;
  *
  */
 public class TestSPIServiceUtils {
-    @Test
-    public void testGetTargetServiceNull() {
-        SPIServiceDef0 service = SPIServiceUtils.getTargetService(SPIServiceDef0.class);
-        Assert.assertNull(service);
-    }
+  @Test
+  public void testGetTargetServiceNull() {
+    SPIServiceDef0 service = SPIServiceUtils.getTargetService(SPIServiceDef0.class);
+    Assert.assertNull(service);
+  }
 
-    @Test
-    public void testGetTargetServiceNotNull() {
-        SPIServiceDef service = SPIServiceUtils.getTargetService(SPIServiceDef.class);
-        Assert.assertTrue(SPIServiceDef.class.isInstance(service));
-    }
+  @Test
+  public void testGetTargetServiceNotNull() {
+    SPIServiceDef service = SPIServiceUtils.getTargetService(SPIServiceDef.class);
+    Assert.assertTrue(SPIServiceDef.class.isInstance(service));
+  }
 }

@@ -20,54 +20,53 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import io.servicecomb.foundation.vertx.VertxUtils;
-
 import io.vertx.core.Vertx;
 
 public final class HighwayClientManager {
-    private static final Logger LOGGER = LoggerFactory.getLogger(HighwayClientManager.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(HighwayClientManager.class);
 
-    public static final HighwayClientManager INSTANCE = new HighwayClientManager();
+  public static final HighwayClientManager INSTANCE = new HighwayClientManager();
 
-    // same instance in AbstractTranport. need refactor in future.
-    private final Vertx transportVertx = VertxUtils.getOrCreateVertxByName("transport", null);
+  // same instance in AbstractTranport. need refactor in future.
+  private final Vertx transportVertx = VertxUtils.getOrCreateVertxByName("transport", null);
 
-    private static final Object LOCK = new Object();
+  private static final Object LOCK = new Object();
 
-    private volatile HighwayClient sslClient = null;
+  private volatile HighwayClient sslClient = null;
 
-    private volatile HighwayClient nonSslCient = null;
+  private volatile HighwayClient nonSslCient = null;
 
-    private HighwayClientManager() {
-    }
+  private HighwayClientManager() {
+  }
 
-    public HighwayClient getHighwayClient(boolean sslEnabled) {
-        try {
-            if (sslEnabled) {
-                if (sslClient == null) {
-                    synchronized (LOCK) {
-                        if (sslClient == null) {
-                            HighwayClient client = new HighwayClient(true);
-                            client.init(transportVertx);
-                            sslClient = client;
-                        }
-                    }
-                }
-                return sslClient;
-            } else {
-                if (nonSslCient == null) {
-                    synchronized (LOCK) {
-                        if (nonSslCient == null) {
-                            HighwayClient client = new HighwayClient(false);
-                            client.init(transportVertx);
-                            nonSslCient = client;
-                        }
-                    }
-                }
-                return nonSslCient;
+  public HighwayClient getHighwayClient(boolean sslEnabled) {
+    try {
+      if (sslEnabled) {
+        if (sslClient == null) {
+          synchronized (LOCK) {
+            if (sslClient == null) {
+              HighwayClient client = new HighwayClient(true);
+              client.init(transportVertx);
+              sslClient = client;
             }
-        } catch (Exception e) {
-            LOGGER.error("");
-            throw new IllegalStateException("init rest client transport failed.");
+          }
         }
+        return sslClient;
+      } else {
+        if (nonSslCient == null) {
+          synchronized (LOCK) {
+            if (nonSslCient == null) {
+              HighwayClient client = new HighwayClient(false);
+              client.init(transportVertx);
+              nonSslCient = client;
+            }
+          }
+        }
+        return nonSslCient;
+      }
+    } catch (Exception e) {
+      LOGGER.error("");
+      throw new IllegalStateException("init rest client transport failed.");
     }
+  }
 }

@@ -19,11 +19,10 @@ package io.servicecomb.swagger.converter.property;
 import java.util.Map;
 
 import io.servicecomb.swagger.converter.AbstractConverter;
-
 import io.swagger.models.properties.Property;
 
 public abstract class AbstractPropertyConverter extends AbstractConverter {
-    protected Map<String, Object> findVendorExtensions(Object def) {
-        return ((Property) def).getVendorExtensions();
-    }
+  protected Map<String, Object> findVendorExtensions(Object def) {
+    return ((Property) def).getVendorExtensions();
+  }
 }

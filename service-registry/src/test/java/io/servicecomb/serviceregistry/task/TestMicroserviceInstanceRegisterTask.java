@@ -36,141 +36,140 @@ import mockit.Expectations;
 import mockit.Mocked;
 
 public class TestMicroserviceInstanceRegisterTask {
-    private EventBus eventBus;
+  private EventBus eventBus;
 
-    private Microservice microservice;
+  private Microservice microservice;
 
-    private List<MicroserviceInstanceRegisterTask> taskList;
+  private List<MicroserviceInstanceRegisterTask> taskList;
 
-    @Mocked
-    private ServiceRegistryConfig serviceRegistryConfig;
+  @Mocked
+  private ServiceRegistryConfig serviceRegistryConfig;
 
-    @Mocked
-    private ServiceRegistryClient srClient;
+  @Mocked
+  private ServiceRegistryClient srClient;
 
-    @Before
-    public void setup() {
-        eventBus = new EventBus();
+  @Before
+  public void setup() {
+    eventBus = new EventBus();
 
-        taskList = new ArrayList<>();
-        eventBus.register(new Object() {
-            @Subscribe
-            public void onEvent(MicroserviceInstanceRegisterTask task) {
-                taskList.add(task);
-            }
-        });
+    taskList = new ArrayList<>();
+    eventBus.register(new Object() {
+      @Subscribe
+      public void onEvent(MicroserviceInstanceRegisterTask task) {
+        taskList.add(task);
+      }
+    });
 
-        microservice = new Microservice();
-        microservice.setAppId("app");
-        microservice.setServiceName("ms");
-        microservice.setServiceId("serviceId");
+    microservice = new Microservice();
+    microservice.setAppId("app");
+    microservice.setServiceName("ms");
+    microservice.setServiceId("serviceId");
 
-        microservice.setIntance(new MicroserviceInstance());
+    microservice.setIntance(new MicroserviceInstance());
 
-        HealthCheck healthCheck = new HealthCheck();
-        healthCheck.setMode(HealthCheckMode.HEARTBEAT);
-        microservice.getIntance().setHealthCheck(healthCheck);
+    HealthCheck healthCheck = new HealthCheck();
+    healthCheck.setMode(HealthCheckMode.HEARTBEAT);
+    microservice.getIntance().setHealthCheck(healthCheck);
+  }
 
-    }
+  @Test
+  public void microserviceNotRegistered() {
+    microservice.setServiceId(null);
 
-    @Test
-    public void microserviceNotRegistered() {
-        microservice.setServiceId(null);
+    MicroserviceInstanceRegisterTask registerTask =
+        new MicroserviceInstanceRegisterTask(eventBus, serviceRegistryConfig, null, microservice);
+    registerTask.run();
 
-        MicroserviceInstanceRegisterTask registerTask =
-            new MicroserviceInstanceRegisterTask(eventBus, serviceRegistryConfig, null, microservice);
-        registerTask.run();
+    Assert.assertEquals(false, registerTask.isRegistered());
+    Assert.assertEquals(0, taskList.size());
+  }
 
-        Assert.assertEquals(false, registerTask.isRegistered());
-        Assert.assertEquals(0, taskList.size());
-    }
+  @Test
+  public void registerIpSuccess() {
+    MicroserviceInstance instance = microservice.getIntance();
+    new Expectations(RegistryUtils.class) {
+      {
+        RegistryUtils.getPublishAddress();
+        result = "127.0.0.1";
+        serviceRegistryConfig.isPreferIpAddress();
+        result = true;
+        serviceRegistryConfig.getHeartbeatInterval();
+        result = 10;
+        serviceRegistryConfig.getResendHeartBeatTimes();
+        result = 20;
+        srClient.registerMicroserviceInstance(instance);
+        result = "instanceId";
+      }
+    };
+    MicroserviceInstanceRegisterTask registerTask =
+        new MicroserviceInstanceRegisterTask(eventBus, serviceRegistryConfig, srClient, microservice);
+    registerTask.taskStatus = TaskStatus.READY;
+    registerTask.run();
 
-    @Test
-    public void registerIpSuccess() {
-        MicroserviceInstance instance = microservice.getIntance();
-        new Expectations(RegistryUtils.class) {
-            {
-                RegistryUtils.getPublishAddress();
-                result = "127.0.0.1";
-                serviceRegistryConfig.isPreferIpAddress();
-                result = true;
-                serviceRegistryConfig.getHeartbeatInterval();
-                result = 10;
-                serviceRegistryConfig.getResendHeartBeatTimes();
-                result = 20;
-                srClient.registerMicroserviceInstance(instance);
-                result = "instanceId";
-            }
-        };
-        MicroserviceInstanceRegisterTask registerTask =
-            new MicroserviceInstanceRegisterTask(eventBus, serviceRegistryConfig, srClient, microservice);
-        registerTask.taskStatus = TaskStatus.READY;
-        registerTask.run();
+    Assert.assertEquals(true, registerTask.isRegistered());
+    Assert.assertEquals("127.0.0.1", instance.getHostName());
+    Assert.assertEquals("instanceId", instance.getInstanceId());
+    Assert.assertEquals(10, instance.getHealthCheck().getInterval());
+    Assert.assertEquals(20, instance.getHealthCheck().getTimes());
+    Assert.assertEquals(1, taskList.size());
+  }
 
-        Assert.assertEquals(true, registerTask.isRegistered());
-        Assert.assertEquals("127.0.0.1", instance.getHostName());
-        Assert.assertEquals("instanceId", instance.getInstanceId());
-        Assert.assertEquals(10, instance.getHealthCheck().getInterval());
-        Assert.assertEquals(20, instance.getHealthCheck().getTimes());
-        Assert.assertEquals(1, taskList.size());
-    }
+  @Test
+  public void registerHostSuccess() {
+    MicroserviceInstance instance = microservice.getIntance();
+    new Expectations(RegistryUtils.class) {
+      {
+        RegistryUtils.getPublishHostName();
+        result = "hostName";
+        serviceRegistryConfig.isPreferIpAddress();
+        result = false;
+        serviceRegistryConfig.getHeartbeatInterval();
+        result = 10;
+        serviceRegistryConfig.getResendHeartBeatTimes();
+        result = 20;
+        srClient.registerMicroserviceInstance(instance);
+        result = "instanceId";
+      }
+    };
+    MicroserviceInstanceRegisterTask registerTask =
+        new MicroserviceInstanceRegisterTask(eventBus, serviceRegistryConfig, srClient, microservice);
+    registerTask.taskStatus = TaskStatus.READY;
+    registerTask.run();
 
-    @Test
-    public void registerHostSuccess() {
-        MicroserviceInstance instance = microservice.getIntance();
-        new Expectations(RegistryUtils.class) {
-            {
-                RegistryUtils.getPublishHostName();
-                result = "hostName";
-                serviceRegistryConfig.isPreferIpAddress();
-                result = false;
-                serviceRegistryConfig.getHeartbeatInterval();
-                result = 10;
-                serviceRegistryConfig.getResendHeartBeatTimes();
-                result = 20;
-                srClient.registerMicroserviceInstance(instance);
-                result = "instanceId";
-            }
-        };
-        MicroserviceInstanceRegisterTask registerTask =
-            new MicroserviceInstanceRegisterTask(eventBus, serviceRegistryConfig, srClient, microservice);
-        registerTask.taskStatus = TaskStatus.READY;
-        registerTask.run();
+    Assert.assertEquals(true, registerTask.isRegistered());
+    Assert.assertEquals("hostName", instance.getHostName());
+    Assert.assertEquals("instanceId", instance.getInstanceId());
+    Assert.assertEquals(10, instance.getHealthCheck().getInterval());
+    Assert.assertEquals(20, instance.getHealthCheck().getTimes());
+    Assert.assertEquals(1, taskList.size());
+  }
 
-        Assert.assertEquals(true, registerTask.isRegistered());
-        Assert.assertEquals("hostName", instance.getHostName());
-        Assert.assertEquals("instanceId", instance.getInstanceId());
-        Assert.assertEquals(10, instance.getHealthCheck().getInterval());
-        Assert.assertEquals(20, instance.getHealthCheck().getTimes());
-        Assert.assertEquals(1, taskList.size());
-    }
+  @Test
+  public void registerIpFailed() {
+    MicroserviceInstance instance = microservice.getIntance();
+    new Expectations(RegistryUtils.class) {
+      {
+        RegistryUtils.getPublishAddress();
+        result = "127.0.0.1";
+        serviceRegistryConfig.isPreferIpAddress();
+        result = true;
+        serviceRegistryConfig.getHeartbeatInterval();
+        result = 10;
+        serviceRegistryConfig.getResendHeartBeatTimes();
+        result = 20;
+        srClient.registerMicroserviceInstance(instance);
+        result = null;
+      }
+    };
+    MicroserviceInstanceRegisterTask registerTask =
+        new MicroserviceInstanceRegisterTask(eventBus, serviceRegistryConfig, srClient, microservice);
+    registerTask.taskStatus = TaskStatus.READY;
+    registerTask.run();
 
-    @Test
-    public void registerIpFailed() {
-        MicroserviceInstance instance = microservice.getIntance();
-        new Expectations(RegistryUtils.class) {
-            {
-                RegistryUtils.getPublishAddress();
-                result = "127.0.0.1";
-                serviceRegistryConfig.isPreferIpAddress();
-                result = true;
-                serviceRegistryConfig.getHeartbeatInterval();
-                result = 10;
-                serviceRegistryConfig.getResendHeartBeatTimes();
-                result = 20;
-                srClient.registerMicroserviceInstance(instance);
-                result = null;
-            }
-        };
-        MicroserviceInstanceRegisterTask registerTask =
-            new MicroserviceInstanceRegisterTask(eventBus, serviceRegistryConfig, srClient, microservice);
-        registerTask.taskStatus = TaskStatus.READY;
-        registerTask.run();
-
-        Assert.assertEquals(false, registerTask.isRegistered());
-        Assert.assertEquals("127.0.0.1", instance.getHostName());
-        Assert.assertEquals(10, instance.getHealthCheck().getInterval());
-        Assert.assertEquals(20, instance.getHealthCheck().getTimes());
-        Assert.assertEquals(1, taskList.size());
-    }
+    Assert.assertEquals(false, registerTask.isRegistered());
+    Assert.assertEquals("127.0.0.1", instance.getHostName());
+    Assert.assertEquals(10, instance.getHealthCheck().getInterval());
+    Assert.assertEquals(20, instance.getHealthCheck().getTimes());
+    Assert.assertEquals(1, taskList.size());
+  }
 }

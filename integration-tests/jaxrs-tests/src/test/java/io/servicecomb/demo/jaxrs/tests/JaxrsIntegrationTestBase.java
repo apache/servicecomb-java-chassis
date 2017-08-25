@@ -30,9 +30,6 @@ import static org.springframework.http.HttpStatus.OK;
 import static org.springframework.http.MediaType.APPLICATION_FORM_URLENCODED_VALUE;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 
-import io.servicecomb.common.rest.codec.RestObjectMapper;
-import io.servicecomb.demo.compute.Person;
-import io.servicecomb.demo.server.User;
 import java.io.IOException;
 import java.time.ZonedDateTime;
 import java.util.Date;
@@ -50,14 +47,21 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
+import io.servicecomb.common.rest.codec.RestObjectMapper;
+import io.servicecomb.demo.compute.Person;
+import io.servicecomb.demo.server.User;
+
 @Ignore
 public class JaxrsIntegrationTestBase {
 
   private final String baseUrl = "http://127.0.0.1:8080/";
+
   private final RestTemplate restTemplate = new RestTemplate();
 
   private final String codeFirstUrl = baseUrl + "codeFirstJaxrs/";
+
   private final String schemaFirstUrl = baseUrl + "schemaFirstJaxrs/";
+
   private final String[] urls = {codeFirstUrl, schemaFirstUrl};
 
   @Test
@@ -95,8 +99,8 @@ public class JaxrsIntegrationTestBase {
       assertThat(responseEntity.getStatusCode(), is(OK));
 
       Map<String, User> body = responseEntity.getBody();
-      assertArrayEquals(body.get("user1").getNames(), new String[]{"name11", "name12"});
-      assertArrayEquals(body.get("user2").getNames(), new String[]{"name21", "name22"});
+      assertArrayEquals(body.get("user1").getNames(), new String[] {"name11", "name12"});
+      assertArrayEquals(body.get("user2").getNames(), new String[] {"name21", "name22"});
     }
   }
 
@@ -122,7 +126,7 @@ public class JaxrsIntegrationTestBase {
 
   @Test
   public void ableToPostBytes() throws IOException {
-    byte[] body = new byte[]{0, 1, 2};
+    byte[] body = new byte[] {0, 1, 2};
 
     for (String url : urls) {
       byte[] result = restTemplate.postForObject(
@@ -141,16 +145,16 @@ public class JaxrsIntegrationTestBase {
 
   @Test
   public void getsJaxrsResponse() {
-//    String srcMicroserviceName = RegistryUtils.getMicroservice().getServiceName();
-//    String context = String.format("{x-cse-src-microservice=%s}", srcMicroserviceName);
+    //    String srcMicroserviceName = RegistryUtils.getMicroservice().getServiceName();
+    //    String context = String.format("{x-cse-src-microservice=%s}", srcMicroserviceName);
 
     ResponseEntity<User> responseEntity = restTemplate
         .getForEntity(codeFirstUrl + "response", User.class);
 
     assertEquals(202, responseEntity.getStatusCode().value());
     assertEquals("User [name=nameA, age=100, index=0]", responseEntity.getBody().toString());
-//      assertEquals("h1v " + context, responseEntity.getHeaders().getFirst("h1"));
-//      assertEquals("h2v " + context, responseEntity.getHeaders().getFirst("h2"));
+    //      assertEquals("h1v " + context, responseEntity.getHeaders().getFirst("h1"));
+    //      assertEquals("h2v " + context, responseEntity.getHeaders().getFirst("h2"));
   }
 
   @Test

@@ -21,9 +21,8 @@ import org.junit.Test;
 
 public class TestCseRestTemplate {
 
-    @Test
-    public void testCseRestTemplate() {
-        Assert.assertEquals(CseRestTemplate.class, new CseRestTemplate().getClass());
-    }
-
+  @Test
+  public void testCseRestTemplate() {
+    Assert.assertEquals(CseRestTemplate.class, new CseRestTemplate().getClass());
+  }
 }

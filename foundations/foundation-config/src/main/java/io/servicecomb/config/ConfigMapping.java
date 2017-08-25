@@ -24,40 +24,40 @@ import java.util.Map;
  * Created by   on 2017/1/5.
  */
 public final class ConfigMapping {
-    private static Map<String, Object> configMap = null;
+  private static Map<String, Object> configMap = null;
 
-    static {
-        ClassLoader loader = Thread.currentThread().getContextClassLoader();
-        InputStream is = loader.getResourceAsStream("mapping.yaml");
-        configMap = YAMLUtil.yaml2Properties(is);
-    }
+  static {
+    ClassLoader loader = Thread.currentThread().getContextClassLoader();
+    InputStream is = loader.getResourceAsStream("mapping.yaml");
+    configMap = YAMLUtil.yaml2Properties(is);
+  }
 
-    private ConfigMapping() {
-    }
+  private ConfigMapping() {
+  }
 
-    public static String map(String key) {
-        return (String) configMap.get(key);
-    }
+  public static String map(String key) {
+    return (String) configMap.get(key);
+  }
 
-    public static Map<String, Object> getMapping() {
-        return configMap;
-    }
+  public static Map<String, Object> getMapping() {
+    return configMap;
+  }
 
-    public static Map<String, Object> getConvertedMap(Map<String, Object> oldMap) {
-        if (configMap == null) {
-            return new LinkedHashMap<>();
-        }
-        Map<String, Object> retMap = new LinkedHashMap<String, Object>();
-        retMap.putAll(oldMap);
-        for (Map.Entry<String, Object> entry : configMap.entrySet()) {
-            String key = entry.getKey();
-            Object configValue = oldMap.get(key);
-            if (configValue != null) {
-                String newKey = (String) entry.getValue();
-                retMap.put(newKey, configValue);
-                retMap.remove(key);
-            }
-        }
-        return retMap;
+  public static Map<String, Object> getConvertedMap(Map<String, Object> oldMap) {
+    if (configMap == null) {
+      return new LinkedHashMap<>();
     }
+    Map<String, Object> retMap = new LinkedHashMap<String, Object>();
+    retMap.putAll(oldMap);
+    for (Map.Entry<String, Object> entry : configMap.entrySet()) {
+      String key = entry.getKey();
+      Object configValue = oldMap.get(key);
+      if (configValue != null) {
+        String newKey = (String) entry.getValue();
+        retMap.put(newKey, configValue);
+        retMap.remove(key);
+      }
+    }
+    return retMap;
+  }
 }

@@ -20,17 +20,17 @@ import io.servicecomb.swagger.invocation.SwaggerInvocation;
 import io.servicecomb.swagger.invocation.arguments.ArgumentMapper;
 
 public abstract class AbstractProducerContextArgMapper implements ArgumentMapper {
-    protected int producerArgIdx;
+  protected int producerArgIdx;
 
-    public AbstractProducerContextArgMapper(int producerArgIdx) {
-        this.producerArgIdx = producerArgIdx;
-    }
+  public AbstractProducerContextArgMapper(int producerArgIdx) {
+    this.producerArgIdx = producerArgIdx;
+  }
 
-    @Override
-    public void mapArgument(SwaggerInvocation invocation, Object[] producerArguments) {
-        Object producerArg = createContextArg(invocation);
-        producerArguments[producerArgIdx] = producerArg;
-    }
+  @Override
+  public void mapArgument(SwaggerInvocation invocation, Object[] producerArguments) {
+    Object producerArg = createContextArg(invocation);
+    producerArguments[producerArgIdx] = producerArg;
+  }
 
-    public abstract Object createContextArg(SwaggerInvocation invocation);
+  public abstract Object createContextArg(SwaggerInvocation invocation);
 }

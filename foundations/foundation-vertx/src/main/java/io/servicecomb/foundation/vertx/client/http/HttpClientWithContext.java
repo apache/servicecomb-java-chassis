@@ -20,26 +20,26 @@ import io.vertx.core.Context;
 import io.vertx.core.http.HttpClient;
 
 public class HttpClientWithContext {
-    public interface RunHandler {
-        void run(HttpClient httpClient);
-    }
+  public interface RunHandler {
+    void run(HttpClient httpClient);
+  }
 
-    private HttpClient httpClient;
+  private HttpClient httpClient;
 
-    private Context context;
+  private Context context;
 
-    public HttpClientWithContext(HttpClient httpClient, Context context) {
-        this.httpClient = httpClient;
-        this.context = context;
-    }
+  public HttpClientWithContext(HttpClient httpClient, Context context) {
+    this.httpClient = httpClient;
+    this.context = context;
+  }
 
-    public HttpClient getHttpClient() {
-        return httpClient;
-    }
+  public HttpClient getHttpClient() {
+    return httpClient;
+  }
 
-    public void runOnContext(RunHandler handler) {
-        context.runOnContext((v) -> {
-            handler.run(httpClient);
-        });
-    }
+  public void runOnContext(RunHandler handler) {
+    context.runOnContext((v) -> {
+      handler.run(httpClient);
+    });
+  }
 }

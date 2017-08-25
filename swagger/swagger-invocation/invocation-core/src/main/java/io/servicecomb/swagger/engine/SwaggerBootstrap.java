@@ -16,5 +16,5 @@
 package io.servicecomb.swagger.engine;
 
 public interface SwaggerBootstrap {
-    SwaggerEnvironment boot();
+  SwaggerEnvironment boot();
 }

@@ -14,9 +14,6 @@
  * limitations under the License.
  */
 
-/**
- * 
- */
 package io.servicecomb.bizkeeper;
 
 import org.junit.Assert;
@@ -28,26 +25,25 @@ import org.junit.Test;
  */
 public class TestBizkeeperRequestContext {
 
-    @Test
-    public void testInitializeContext() {
+  @Test
+  public void testInitializeContext() {
 
-        BizkeeperRequestContext bizkeeperRequestContext = BizkeeperRequestContext.initializeContext();
-        Assert.assertNotNull(bizkeeperRequestContext);
+    BizkeeperRequestContext bizkeeperRequestContext = BizkeeperRequestContext.initializeContext();
+    Assert.assertNotNull(bizkeeperRequestContext);
+  }
+
+  @Test
+  public void testShutdown() {
+    BizkeeperRequestContext bizkeeperRequestContext = BizkeeperRequestContext.initializeContext();
+    boolean validAssert;
+
+    try {
+      bizkeeperRequestContext.shutdown();
+      validAssert = true;
+    } catch (Exception e) {
+      validAssert = false;
     }
 
-    @Test
-    public void testShutdown() {
-        BizkeeperRequestContext bizkeeperRequestContext = BizkeeperRequestContext.initializeContext();
-        boolean validAssert;
-
-        try {
-            bizkeeperRequestContext.shutdown();
-            validAssert = true;
-        } catch (Exception e) {
-            validAssert = false;
-
-        }
-
-        Assert.assertTrue(validAssert);
-    }
+    Assert.assertTrue(validAssert);
+  }
 }

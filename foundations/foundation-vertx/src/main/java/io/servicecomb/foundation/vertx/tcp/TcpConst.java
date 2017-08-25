@@ -16,8 +16,8 @@
 package io.servicecomb.foundation.vertx.tcp;
 
 public final class TcpConst {
-    private TcpConst() {
-    }
+  private TcpConst() {
+  }
 
-    public static final String LOGIN = "login";
+  public static final String LOGIN = "login";
 }

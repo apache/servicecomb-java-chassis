@@ -25,11 +25,11 @@ import mockit.Deencapsulation;
 // copy from other project
 // this utils useful for unit tests, but now there is no project to own it.
 public class ArchaiusUtils {
-    public static void resetConfig() {
-        Deencapsulation.setField(ConfigurationManager.class, "instance", null);
-        Deencapsulation.setField(ConfigurationManager.class, "customConfigurationInstalled", false);
-        Deencapsulation.setField(DynamicPropertyFactory.class, "config", null);
-        Deencapsulation.setField(DynamicPropertyFactory.class, "initializedWithDefaultConfig", false);
-        Deencapsulation.setField(DynamicProperty.class, "dynamicPropertySupportImpl", null);
-    }
+  public static void resetConfig() {
+    Deencapsulation.setField(ConfigurationManager.class, "instance", null);
+    Deencapsulation.setField(ConfigurationManager.class, "customConfigurationInstalled", false);
+    Deencapsulation.setField(DynamicPropertyFactory.class, "config", null);
+    Deencapsulation.setField(DynamicPropertyFactory.class, "initializedWithDefaultConfig", false);
+    Deencapsulation.setField(DynamicProperty.class, "dynamicPropertySupportImpl", null);
+  }
 }

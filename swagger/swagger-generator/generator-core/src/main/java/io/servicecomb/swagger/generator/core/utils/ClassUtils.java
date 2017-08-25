@@ -45,255 +45,256 @@ import io.swagger.models.parameters.Parameter;
 import io.swagger.models.properties.Property;
 
 public final class ClassUtils {
-    // reference: 
-    //  https://docs.oracle.com/javase/tutorial/java/nutsandbolts/_keywords.html
-    //  https://en.wikipedia.org/wiki/List_of_Java_keywords
-    private static final Set<String> JAVA_RESERVED_WORDS = new HashSet<>();
-    static {
-        JAVA_RESERVED_WORDS.addAll(Arrays.asList("true",
-                "false",
-                "null",
-                "abstract",
-                "continue",
-                "for",
-                "new",
-                "switch",
-                "assert",
-                "default",
-                "goto",
-                "package",
-                "synchronized",
-                "boolean",
-                "do",
-                "if",
-                "private",
-                "this",
-                "break",
-                "double",
-                "implements",
-                "protected",
-                "throw",
-                "byte",
-                "else",
-                "import",
-                "public",
-                "throws",
-                "case",
-                "enum",
-                "instanceof",
-                "return",
-                "transient",
-                "catch",
-                "extends",
-                "int",
-                "short",
-                "try",
-                "char",
-                "final",
-                "interface",
-                "static",
-                "void",
-                "class",
-                "finally",
-                "long",
-                "strictfp",
-                "volatile",
-                "const",
-                "float",
-                "native",
-                "super",
-                "while"));
+  // reference:
+  //  https://docs.oracle.com/javase/tutorial/java/nutsandbolts/_keywords.html
+  //  https://en.wikipedia.org/wiki/List_of_Java_keywords
+  private static final Set<String> JAVA_RESERVED_WORDS = new HashSet<>();
+
+  static {
+    JAVA_RESERVED_WORDS.addAll(Arrays.asList("true",
+        "false",
+        "null",
+        "abstract",
+        "continue",
+        "for",
+        "new",
+        "switch",
+        "assert",
+        "default",
+        "goto",
+        "package",
+        "synchronized",
+        "boolean",
+        "do",
+        "if",
+        "private",
+        "this",
+        "break",
+        "double",
+        "implements",
+        "protected",
+        "throw",
+        "byte",
+        "else",
+        "import",
+        "public",
+        "throws",
+        "case",
+        "enum",
+        "instanceof",
+        "return",
+        "transient",
+        "catch",
+        "extends",
+        "int",
+        "short",
+        "try",
+        "char",
+        "final",
+        "interface",
+        "static",
+        "void",
+        "class",
+        "finally",
+        "long",
+        "strictfp",
+        "volatile",
+        "const",
+        "float",
+        "native",
+        "super",
+        "while"));
+  }
+
+  private ClassUtils() {
+  }
+
+  public static Class<?> getClassByName(ClassLoader classLoader, String clsName) {
+    if (classLoader == null) {
+      classLoader = Thread.currentThread().getContextClassLoader();
+    }
+    try {
+      return classLoader.loadClass(clsName);
+    } catch (ClassNotFoundException e) {
+      return null;
+    }
+  }
+
+  // 获取modelImpl对应的class
+  public static Class<?> getOrCreateClass(ClassLoader classLoader, String packageName, Swagger swagger,
+      Map<String, Property> properties,
+      String clsName) {
+    Class<?> cls = getClassByName(classLoader, clsName);
+    if (cls != null) {
+      return cls;
     }
 
-    private ClassUtils() {
+    ClassConfig classConfig = new ClassConfig();
+    classConfig.setClassName(clsName);
+
+    for (Entry<String, Property> entry : properties.entrySet()) {
+      JavaType propertyJavaType =
+          ConverterMgr.findJavaType(classLoader,
+              packageName,
+              swagger,
+              entry.getValue());
+      classConfig.addField(entry.getKey(), propertyJavaType);
     }
 
-    public static Class<?> getClassByName(ClassLoader classLoader, String clsName) {
-        if (classLoader == null) {
-            classLoader = Thread.currentThread().getContextClassLoader();
-        }
-        try {
-            return classLoader.loadClass(clsName);
-        } catch (ClassNotFoundException e) {
-            return null;
-        }
+    cls = JavassistUtils.createClass(classConfig);
+    return cls;
+  }
+
+  // 将一系列body parameter包装成一个class
+  public static Class<?> getOrCreateBodyClass(OperationGenerator operationGenerator,
+      List<BodyParameter> bodyParameters) {
+    SwaggerGenerator swaggerGenerator = operationGenerator.getSwaggerGenerator();
+    Method method = operationGenerator.getProviderMethod();
+    String clsName = swaggerGenerator.ensureGetPackageName() + "." + method.getName() + "Body";
+    Class<?> cls = getClassByName(swaggerGenerator.getClassLoader(), clsName);
+    if (cls != null) {
+      return cls;
     }
 
-    // 获取modelImpl对应的class
-    public static Class<?> getOrCreateClass(ClassLoader classLoader, String packageName, Swagger swagger,
-            Map<String, Property> properties,
-            String clsName) {
-        Class<?> cls = getClassByName(classLoader, clsName);
-        if (cls != null) {
-            return cls;
-        }
+    ClassConfig classConfig = new ClassConfig();
+    classConfig.setClassName(clsName);
 
-        ClassConfig classConfig = new ClassConfig();
-        classConfig.setClassName(clsName);
-
-        for (Entry<String, Property> entry : properties.entrySet()) {
-            JavaType propertyJavaType =
-                ConverterMgr.findJavaType(classLoader,
-                        packageName,
-                        swagger,
-                        entry.getValue());
-            classConfig.addField(entry.getKey(), propertyJavaType);
-        }
-
-        cls = JavassistUtils.createClass(classConfig);
-        return cls;
+    // 1.全是预备body
+    // 2.预备body与明确body混合
+    for (BodyParameter bp : bodyParameters) {
+      JavaType javaType = ConverterMgr.findJavaType(swaggerGenerator.getClassLoader(),
+          swaggerGenerator.ensureGetPackageName(),
+          swaggerGenerator.getSwagger(),
+          bp);
+      classConfig.addField(bp.getName(), javaType);
     }
 
-    // 将一系列body parameter包装成一个class
-    public static Class<?> getOrCreateBodyClass(OperationGenerator operationGenerator,
-            List<BodyParameter> bodyParameters) {
-        SwaggerGenerator swaggerGenerator = operationGenerator.getSwaggerGenerator();
-        Method method = operationGenerator.getProviderMethod();
-        String clsName = swaggerGenerator.ensureGetPackageName() + "." + method.getName() + "Body";
-        Class<?> cls = getClassByName(swaggerGenerator.getClassLoader(), clsName);
-        if (cls != null) {
-            return cls;
-        }
+    return JavassistUtils.createClass(classConfig);
+  }
 
-        ClassConfig classConfig = new ClassConfig();
-        classConfig.setClassName(clsName);
-
-        // 1.全是预备body
-        // 2.预备body与明确body混合
-        for (BodyParameter bp : bodyParameters) {
-            JavaType javaType = ConverterMgr.findJavaType(swaggerGenerator.getClassLoader(),
-                    swaggerGenerator.ensureGetPackageName(),
-                    swaggerGenerator.getSwagger(),
-                    bp);
-            classConfig.addField(bp.getName(), javaType);
-        }
-
-        return JavassistUtils.createClass(classConfig);
+  public static boolean hasAnnotation(Class<?> cls, Class<? extends Annotation> annotation) {
+    if (cls.getAnnotation(annotation) != null) {
+      return true;
     }
 
-    public static boolean hasAnnotation(Class<?> cls, Class<? extends Annotation> annotation) {
-        if (cls.getAnnotation(annotation) != null) {
-            return true;
-        }
-
-        for (Method method : cls.getMethods()) {
-            if (method.getAnnotation(annotation) != null) {
-                return true;
-            }
-        }
-
-        return false;
+    for (Method method : cls.getMethods()) {
+      if (method.getAnnotation(annotation) != null) {
+        return true;
+      }
     }
 
-    public static boolean isRawJsonType(Parameter param) {
-        Object rawJson = param.getVendorExtensions().get(SwaggerConst.EXT_RAW_JSON_TYPE);
-        if (Boolean.class.isInstance(rawJson)) {
-            return (boolean) rawJson;
+    return false;
+  }
+
+  public static boolean isRawJsonType(Parameter param) {
+    Object rawJson = param.getVendorExtensions().get(SwaggerConst.EXT_RAW_JSON_TYPE);
+    if (Boolean.class.isInstance(rawJson)) {
+      return (boolean) rawJson;
+    }
+    return false;
+  }
+
+  public static Class<?> getJavaInterface(Swagger swagger) {
+    return getClassByVendorExtensions(null, swagger.getInfo().getVendorExtensions(), SwaggerConst.EXT_JAVA_INTF);
+  }
+
+  public static Class<?> getClassByVendorExtensions(ClassLoader classLoader, Map<String, Object> vendorExtensions,
+      String clsKey) {
+    if (vendorExtensions == null) {
+      return null;
+    }
+
+    String clsName = (String) vendorExtensions.get(clsKey);
+    if (StringUtils.isEmpty(clsName)) {
+      return null;
+    }
+
+    return getClassByName(classLoader, clsName);
+  }
+
+  public static Class<?> getOrCreateInterface(SwaggerGenerator generator) {
+    return getOrCreateInterface(generator.getSwagger(),
+        generator.getClassLoader(),
+        generator.ensureGetPackageName());
+  }
+
+  public static Class<?> getOrCreateInterface(Swagger swagger, ClassLoader classLoader, String packageName) {
+    String intfName =
+        (String) swagger.getInfo().getVendorExtensions().get(SwaggerConst.EXT_JAVA_INTF);
+    Class<?> intf = getClassByName(classLoader, intfName);
+    if (intf != null) {
+      return intf;
+    }
+
+    if (packageName == null) {
+      int idx = intfName.lastIndexOf(".");
+      if (idx == -1) {
+        packageName = "";
+      } else {
+        packageName = intfName.substring(0, idx);
+      }
+    }
+    return createInterface(swagger, classLoader, packageName, intfName);
+  }
+
+  private static Class<?> createInterface(Swagger swagger, ClassLoader classLoader, String packageName,
+      String intfName) {
+    ClassConfig classConfig = new ClassConfig();
+    classConfig.setClassName(intfName);
+    classConfig.setIntf(true);
+
+    for (Path path : swagger.getPaths().values()) {
+      for (Operation operation : path.getOperations()) {
+        // 参数可能重名，所以packageName必须跟operation相关才能隔离
+        String opPackageName = packageName + "." + operation.getOperationId();
+
+        Response result = operation.getResponses().get(SwaggerConst.SUCCESS_KEY);
+        JavaType resultJavaType = ConverterMgr.findJavaType(classLoader,
+            opPackageName,
+            swagger,
+            result.getSchema());
+
+        MethodConfig methodConfig = new MethodConfig();
+        methodConfig.setName(operation.getOperationId());
+        methodConfig.setResult(resultJavaType);
+
+        for (Parameter parameter : operation.getParameters()) {
+          String paramName = parameter.getName();
+          paramName = correctMethodParameterName(paramName);
+
+          JavaType paramJavaType = ConverterMgr.findJavaType(classLoader,
+              opPackageName,
+              swagger,
+              parameter);
+          methodConfig.addParameter(paramName, paramJavaType);
         }
-        return false;
+
+        classConfig.addMethod(methodConfig);
+      }
     }
 
-    public static Class<?> getJavaInterface(Swagger swagger) {
-        return getClassByVendorExtensions(null, swagger.getInfo().getVendorExtensions(), SwaggerConst.EXT_JAVA_INTF);
+    return JavassistUtils.createClass(classLoader, classConfig);
+  }
+
+  public static String correctMethodParameterName(String name) {
+    return name.replace(".", "_").replace("-", "_");
+  }
+
+  public static String correctClassName(String name) {
+    String parts[] = name.split("\\.", -1);
+    for (int idx = 0; idx < parts.length; idx++) {
+      String part = parts[idx];
+      if (part.isEmpty()) {
+        parts[idx] = "_";
+        continue;
+      }
+
+      part = part.replace('-', '_');
+      if (Character.isDigit(part.charAt(0)) || JAVA_RESERVED_WORDS.contains(part)) {
+        part = "_" + part;
+      }
+      parts[idx] = part;
     }
-
-    public static Class<?> getClassByVendorExtensions(ClassLoader classLoader, Map<String, Object> vendorExtensions,
-            String clsKey) {
-        if (vendorExtensions == null) {
-            return null;
-        }
-
-        String clsName = (String) vendorExtensions.get(clsKey);
-        if (StringUtils.isEmpty(clsName)) {
-            return null;
-        }
-
-        return getClassByName(classLoader, clsName);
-    }
-
-    public static Class<?> getOrCreateInterface(SwaggerGenerator generator) {
-        return getOrCreateInterface(generator.getSwagger(),
-                generator.getClassLoader(),
-                generator.ensureGetPackageName());
-    }
-
-    public static Class<?> getOrCreateInterface(Swagger swagger, ClassLoader classLoader, String packageName) {
-        String intfName =
-            (String) swagger.getInfo().getVendorExtensions().get(SwaggerConst.EXT_JAVA_INTF);
-        Class<?> intf = getClassByName(classLoader, intfName);
-        if (intf != null) {
-            return intf;
-        }
-
-        if (packageName == null) {
-            int idx = intfName.lastIndexOf(".");
-            if (idx == -1) {
-                packageName = "";
-            } else {
-                packageName = intfName.substring(0, idx);
-            }
-        }
-        return createInterface(swagger, classLoader, packageName, intfName);
-    }
-
-    private static Class<?> createInterface(Swagger swagger, ClassLoader classLoader, String packageName,
-            String intfName) {
-        ClassConfig classConfig = new ClassConfig();
-        classConfig.setClassName(intfName);
-        classConfig.setIntf(true);
-
-        for (Path path : swagger.getPaths().values()) {
-            for (Operation operation : path.getOperations()) {
-                // 参数可能重名，所以packageName必须跟operation相关才能隔离
-                String opPackageName = packageName + "." + operation.getOperationId();
-
-                Response result = operation.getResponses().get(SwaggerConst.SUCCESS_KEY);
-                JavaType resultJavaType = ConverterMgr.findJavaType(classLoader,
-                        opPackageName,
-                        swagger,
-                        result.getSchema());
-
-                MethodConfig methodConfig = new MethodConfig();
-                methodConfig.setName(operation.getOperationId());
-                methodConfig.setResult(resultJavaType);
-
-                for (Parameter parameter : operation.getParameters()) {
-                    String paramName = parameter.getName();
-                    paramName = correctMethodParameterName(paramName);
-
-                    JavaType paramJavaType = ConverterMgr.findJavaType(classLoader,
-                            opPackageName,
-                            swagger,
-                            parameter);
-                    methodConfig.addParameter(paramName, paramJavaType);
-                }
-
-                classConfig.addMethod(methodConfig);
-            }
-        }
-
-        return JavassistUtils.createClass(classLoader, classConfig);
-    }
-
-    public static String correctMethodParameterName(String name) {
-        return name.replace(".", "_").replace("-", "_");
-    }
-
-    public static String correctClassName(String name) {
-        String parts[] = name.split("\\.", -1);
-        for (int idx = 0; idx < parts.length; idx++) {
-            String part = parts[idx];
-            if (part.isEmpty()) {
-                parts[idx] = "_";
-                continue;
-            }
-
-            part = part.replace('-', '_');
-            if (Character.isDigit(part.charAt(0)) || JAVA_RESERVED_WORDS.contains(part)) {
-                part = "_" + part;
-            }
-            parts[idx] = part;
-        }
-        return String.join(".", parts);
-    }
+    return String.join(".", parts);
+  }
 }

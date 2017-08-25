@@ -24,21 +24,21 @@ import io.servicecomb.swagger.invocation.context.HttpStatus;
 import io.servicecomb.swagger.invocation.context.HttpStatusManager;
 
 public class TestHttpStatusManager {
-    @Test
-    public void test() {
-        HttpStatusManager mgr = new HttpStatusManager();
+  @Test
+  public void test() {
+    HttpStatusManager mgr = new HttpStatusManager();
 
-        StatusType st = mgr.getOrCreateByStatusCode(200);
-        Assert.assertEquals(200, st.getStatusCode());
+    StatusType st = mgr.getOrCreateByStatusCode(200);
+    Assert.assertEquals(200, st.getStatusCode());
 
-        st = mgr.getOrCreateByStatusCode(250);
-        Assert.assertEquals(250, st.getStatusCode());
+    st = mgr.getOrCreateByStatusCode(250);
+    Assert.assertEquals(250, st.getStatusCode());
 
-        try {
-            mgr.addStatusType(new HttpStatus(250, "250"));
-            throw new Error("not allowed");
-        } catch (Throwable e) {
-            Assert.assertEquals("repeated status code: 250", e.getMessage());
-        }
+    try {
+      mgr.addStatusType(new HttpStatus(250, "250"));
+      throw new Error("not allowed");
+    } catch (Throwable e) {
+      Assert.assertEquals("repeated status code: 250", e.getMessage());
     }
+  }
 }

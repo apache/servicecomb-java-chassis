@@ -23,9 +23,9 @@ import io.swagger.models.parameters.BodyParameter;
 
 public class JaxrsDefaultParameterProcessor implements DefaultParameterProcessor {
 
-    @Override
-    public void process(OperationGenerator operationGenerator, int paramIndex) {
-        BodyParameter bodyParameter = ParamUtils.createBodyParameter(operationGenerator, paramIndex);
-        operationGenerator.addProviderParameter(bodyParameter);
-    }
+  @Override
+  public void process(OperationGenerator operationGenerator, int paramIndex) {
+    BodyParameter bodyParameter = ParamUtils.createBodyParameter(operationGenerator, paramIndex);
+    operationGenerator.addProviderParameter(bodyParameter);
+  }
 }

@@ -37,123 +37,123 @@ import io.servicecomb.common.javassist.JavassistUtils;
 import io.servicecomb.core.definition.OperationMeta;
 
 public final class ProtobufSchemaUtils {
-    private static volatile Map<String, WrapSchema> schemaCache = new ConcurrentHashMap<>();
+  private static volatile Map<String, WrapSchema> schemaCache = new ConcurrentHashMap<>();
 
-    static {
-        ProtobufCompatibleUtils.init();
+  static {
+    ProtobufCompatibleUtils.init();
+  }
+
+  private interface SchemaCreator {
+    WrapSchema create() throws Exception;
+  }
+
+  private ProtobufSchemaUtils() {
+  }
+
+  private static WrapSchema getOrCreateSchema(String className, SchemaCreator creator) {
+    WrapSchema schema = schemaCache.get(className);
+    if (schema != null) {
+      return schema;
     }
 
-    private interface SchemaCreator {
-        WrapSchema create() throws Exception;
+    synchronized (ProtobufSchemaUtils.class) {
+      schema = schemaCache.get(className);
+      if (schema != null) {
+        return schema;
+      }
+
+      try {
+        schema = creator.create();
+      } catch (Exception e) {
+        throw new Error(e);
+      }
+      schemaCache.put(className, schema);
+      return schema;
+    }
+  }
+
+  private static boolean isArgsNeedWrap(Method method) {
+    if (method.getParameterCount() != 1) {
+      return true;
     }
 
-    private ProtobufSchemaUtils() {
-    }
+    // 单参数时，需要根据实际情况判断
+    return isNeedWrap(method.getParameterTypes()[0]);
+  }
 
-    private static WrapSchema getOrCreateSchema(String className, SchemaCreator creator) {
-        WrapSchema schema = schemaCache.get(className);
-        if (schema != null) {
-            return schema;
-        }
+  private static boolean isNeedWrap(Class<?> cls) {
+    // protobuf不支持原子类型、enum、string、数组、collection等等作为msg，只有Object类型才可以
+    return ClassUtils.isPrimitiveOrWrapper(cls) || cls.isArray() || cls.isEnum()
+        || String.class.isAssignableFrom(cls)
+        || Collection.class.isAssignableFrom(cls)
+        || Map.class.isAssignableFrom(cls)
+        || Date.class.isAssignableFrom(cls);
+  }
 
-        synchronized (ProtobufSchemaUtils.class) {
-            schema = schemaCache.get(className);
-            if (schema != null) {
-                return schema;
-            }
+  // 为了支持method args的场景，全部实现ProtobufMessageWrapper接口，有的场景有点浪费，不过无关紧要
+  private static WrapSchema createWrapSchema(WrapClassConfig config) throws Exception {
+    Class<?> cls = JavassistUtils.createClass(config);
+    Schema<?> schema = RuntimeSchema.createFrom(cls);
+    return WrapSchemaFactory.createSchema(schema, config.getType());
+  }
 
-            try {
-                schema = creator.create();
-            } catch (Exception e) {
-                throw new Error(e);
-            }
-            schemaCache.put(className, schema);
-            return schema;
-        }
-    }
+  // 适用于将单个类型包装的场景
+  // 比如return
+  public static WrapSchema getOrCreateSchema(Type type) {
+    JavaType javaType = TypeFactory.defaultInstance().constructType(type);
+    // List<String> -> java.util.List<java.lang.String>
+    // List<List<String>> -> java.util.List<java.util.List<java.lang.String>>
+    String key = javaType.toCanonical();
+    return getOrCreateSchema(key, () -> {
+      if (!isNeedWrap(javaType.getRawClass())) {
+        // 可以直接使用
+        Schema<?> schema = RuntimeSchema.createFrom(javaType.getRawClass());
+        return WrapSchemaFactory.createSchema(schema, WrapType.NOT_WRAP);
+      }
 
-    private static boolean isArgsNeedWrap(Method method) {
-        if (method.getParameterCount() != 1) {
-            return true;
-        }
+      // 需要包装
+      WrapClassConfig config = new WrapClassConfig();
+      config.setType(WrapType.NORMAL_WRAP);
 
-        // 单参数时，需要根据实际情况判断
-        return isNeedWrap(method.getParameterTypes()[0]);
-    }
+      config.setClassName("gen.wrap.protobuf." + key.replaceAll("[<>]", "_").replace("[", "array_"));
+      if (!Void.TYPE.isAssignableFrom(javaType.getRawClass())) {
+        config.addField("field0", javaType);
+      }
 
-    private static boolean isNeedWrap(Class<?> cls) {
-        // protobuf不支持原子类型、enum、string、数组、collection等等作为msg，只有Object类型才可以
-        return ClassUtils.isPrimitiveOrWrapper(cls) || cls.isArray() || cls.isEnum()
-                || String.class.isAssignableFrom(cls)
-                || Collection.class.isAssignableFrom(cls)
-                || Map.class.isAssignableFrom(cls)
-                || Date.class.isAssignableFrom(cls);
-    }
+      JavassistUtils.genSingleWrapperInterface(config);
 
-    // 为了支持method args的场景，全部实现ProtobufMessageWrapper接口，有的场景有点浪费，不过无关紧要
-    private static WrapSchema createWrapSchema(WrapClassConfig config) throws Exception {
-        Class<?> cls = JavassistUtils.createClass(config);
+      return createWrapSchema(config);
+    });
+  }
+
+  public static WrapSchema getOrCreateArgsSchema(OperationMeta operationMeta) {
+    Method method = operationMeta.getMethod();
+    String type = "gen." + method.getDeclaringClass().getName() + "." + method.getName() + ".Args";
+
+    return getOrCreateSchema(type, () -> {
+      if (!isArgsNeedWrap(method)) {
+        // 可以直接使用
+        Class<?> cls = (Class<?>) method.getParameterTypes()[0];
         Schema<?> schema = RuntimeSchema.createFrom(cls);
-        return WrapSchemaFactory.createSchema(schema, config.getType());
-    }
+        return WrapSchemaFactory.createSchema(schema, WrapType.ARGS_NOT_WRAP);
+      }
 
-    // 适用于将单个类型包装的场景
-    // 比如return
-    public static WrapSchema getOrCreateSchema(Type type) {
-        JavaType javaType = TypeFactory.defaultInstance().constructType(type);
-        // List<String> -> java.util.List<java.lang.String>
-        // List<List<String>> -> java.util.List<java.util.List<java.lang.String>>
-        String key = javaType.toCanonical();
-        return getOrCreateSchema(key, () -> {
-            if (!isNeedWrap(javaType.getRawClass())) {
-                // 可以直接使用
-                Schema<?> schema = RuntimeSchema.createFrom(javaType.getRawClass());
-                return WrapSchemaFactory.createSchema(schema, WrapType.NOT_WRAP);
-            }
+      // 需要包装
+      WrapClassConfig config = new WrapClassConfig();
+      config.setType(WrapType.ARGS_WRAP);
+      config.setClassName(type);
 
-            // 需要包装
-            WrapClassConfig config = new WrapClassConfig();
-            config.setType(WrapType.NORMAL_WRAP);
+      Parameter[] params = method.getParameters();
+      for (int idx = 0; idx < params.length; idx++) {
+        Parameter param = params[idx];
+        String paramName = operationMeta.getParamName(idx);
 
-            config.setClassName("gen.wrap.protobuf." + key.replaceAll("[<>]", "_").replace("[", "array_"));
-            if (!Void.TYPE.isAssignableFrom(javaType.getRawClass())) {
-                config.addField("field0", javaType);
-            }
+        config.addField(paramName, param.getParameterizedType());
+      }
 
-            JavassistUtils.genSingleWrapperInterface(config);
+      JavassistUtils.genMultiWrapperInterface(config);
 
-            return createWrapSchema(config);
-        });
-    }
-
-    public static WrapSchema getOrCreateArgsSchema(OperationMeta operationMeta) {
-        Method method = operationMeta.getMethod();
-        String type = "gen." + method.getDeclaringClass().getName() + "." + method.getName() + ".Args";
-
-        return getOrCreateSchema(type, () -> {
-            if (!isArgsNeedWrap(method)) {
-                // 可以直接使用
-                Class<?> cls = (Class<?>) method.getParameterTypes()[0];
-                Schema<?> schema = RuntimeSchema.createFrom(cls);
-                return WrapSchemaFactory.createSchema(schema, WrapType.ARGS_NOT_WRAP);
-            }
-
-            // 需要包装
-            WrapClassConfig config = new WrapClassConfig();
-            config.setType(WrapType.ARGS_WRAP);
-            config.setClassName(type);
-
-            Parameter[] params = method.getParameters();
-            for (int idx = 0; idx < params.length; idx++) {
-                Parameter param = params[idx];
-                String paramName = operationMeta.getParamName(idx);
-
-                config.addField(paramName, param.getParameterizedType());
-            }
-
-            JavassistUtils.genMultiWrapperInterface(config);
-
-            return createWrapSchema(config);
-        });
-    }
+      return createWrapSchema(config);
+    });
+  }
 }

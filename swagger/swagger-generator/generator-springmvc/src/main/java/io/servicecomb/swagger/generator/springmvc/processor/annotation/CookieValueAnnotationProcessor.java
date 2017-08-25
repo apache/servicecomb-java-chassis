@@ -19,17 +19,16 @@ package io.servicecomb.swagger.generator.springmvc.processor.annotation;
 import org.springframework.web.bind.annotation.CookieValue;
 
 import io.servicecomb.swagger.generator.core.processor.parameter.AbstractParameterProcessor;
-
 import io.swagger.models.parameters.CookieParameter;
 
 public class CookieValueAnnotationProcessor extends AbstractParameterProcessor<CookieParameter> {
-    @Override
-    protected String getAnnotationParameterName(Object annotation) {
-        return ((CookieValue) annotation).name();
-    }
+  @Override
+  protected String getAnnotationParameterName(Object annotation) {
+    return ((CookieValue) annotation).name();
+  }
 
-    @Override
-    protected CookieParameter createParameter() {
-        return new CookieParameter();
-    }
+  @Override
+  protected CookieParameter createParameter() {
+    return new CookieParameter();
+  }
 }

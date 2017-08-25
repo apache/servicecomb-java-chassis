@@ -18,6 +18,5 @@ package io.servicecomb.foundation.common.config;
 
 public interface ConfigLoader {
 
-    <T> T load() throws Exception;
-
+  <T> T load() throws Exception;
 }

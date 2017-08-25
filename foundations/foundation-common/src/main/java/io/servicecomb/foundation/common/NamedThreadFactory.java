@@ -25,32 +25,31 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 public class NamedThreadFactory implements ThreadFactory {
 
-    private final AtomicInteger threadNumber = new AtomicInteger();
+  private final AtomicInteger threadNumber = new AtomicInteger();
 
-    private String prefix;
+  private String prefix;
 
-    public NamedThreadFactory() {
-        this("Thread");
-    }
+  public NamedThreadFactory() {
+    this("Thread");
+  }
 
-    public NamedThreadFactory(String prefix) {
-        this.prefix = prefix;
-    }
+  public NamedThreadFactory(String prefix) {
+    this.prefix = prefix;
+  }
 
-    /**
-     * 获取新的名字以prefix为前缀的线程
-     */
-    @Override
-    public Thread newThread(Runnable r) {
-        return new Thread(r, prefix + "-" + threadNumber.getAndIncrement());
-    }
+  /**
+   * 获取新的名字以prefix为前缀的线程
+   */
+  @Override
+  public Thread newThread(Runnable r) {
+    return new Thread(r, prefix + "-" + threadNumber.getAndIncrement());
+  }
 
-    public String getPrefix() {
-        return prefix;
-    }
+  public String getPrefix() {
+    return prefix;
+  }
 
-    public void setPrefix(String prefix) {
-        this.prefix = prefix;
-    }
-
+  public void setPrefix(String prefix) {
+    this.prefix = prefix;
+  }
 }

@@ -31,55 +31,55 @@ import org.springframework.web.context.support.XmlWebApplicationContext;
 import io.servicecomb.foundation.common.utils.BeanUtils;
 
 public class CseXmlWebApplicationContext extends XmlWebApplicationContext {
-    private static final Logger LOGGER = LoggerFactory.getLogger(CseXmlWebApplicationContext.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(CseXmlWebApplicationContext.class);
 
-    static final String KEY_LOCATION = "contextConfigLocation";
+  static final String KEY_LOCATION = "contextConfigLocation";
 
-    private String defaultBeanResource = BeanUtils.DEFAULT_BEAN_RESOURCE;
+  private String defaultBeanResource = BeanUtils.DEFAULT_BEAN_RESOURCE;
 
-    public CseXmlWebApplicationContext(ServletContext servletContext) {
-        setServletContext(servletContext);
-    }
+  public CseXmlWebApplicationContext(ServletContext servletContext) {
+    setServletContext(servletContext);
+  }
 
-    public void setDefaultBeanResource(String defaultBeanResource) {
-        this.defaultBeanResource = defaultBeanResource;
-    }
+  public void setDefaultBeanResource(String defaultBeanResource) {
+    this.defaultBeanResource = defaultBeanResource;
+  }
 
-    @Override
-    protected void invokeBeanFactoryPostProcessors(ConfigurableListableBeanFactory beanFactory) {
-        super.invokeBeanFactoryPostProcessors(beanFactory);
+  @Override
+  protected void invokeBeanFactoryPostProcessors(ConfigurableListableBeanFactory beanFactory) {
+    super.invokeBeanFactoryPostProcessors(beanFactory);
 
-        // inject servlet after config installed and before transport init
-        RestServletInjector.defaultInject(getServletContext());
-        ServletUtils.saveUrlPrefix(getServletContext());
-    }
+    // inject servlet after config installed and before transport init
+    RestServletInjector.defaultInject(getServletContext());
+    ServletUtils.saveUrlPrefix(getServletContext());
+  }
 
-    @Override
-    public String[] getConfigLocations() {
-        String contextConfigLocation = getServletContext().getInitParameter(KEY_LOCATION);
-        String[] locationArray = splitLocations(contextConfigLocation);
+  @Override
+  public String[] getConfigLocations() {
+    String contextConfigLocation = getServletContext().getInitParameter(KEY_LOCATION);
+    String[] locationArray = splitLocations(contextConfigLocation);
 
-        LOGGER.info("init spring context: {}.", Arrays.toString(locationArray));
-        return locationArray;
-    }
+    LOGGER.info("init spring context: {}.", Arrays.toString(locationArray));
+    return locationArray;
+  }
 
-    private String[] splitLocations(String locations) {
-        Set<String> locationSet = new LinkedHashSet<>();
-        if (!StringUtils.isEmpty(locations)) {
-            for (String location : locations.split("[,\n]")) {
-                location = location.trim();
-                if (StringUtils.isEmpty(location)) {
-                    continue;
-                }
-
-                locationSet.add(location);
-            }
+  private String[] splitLocations(String locations) {
+    Set<String> locationSet = new LinkedHashSet<>();
+    if (!StringUtils.isEmpty(locations)) {
+      for (String location : locations.split("[,\n]")) {
+        location = location.trim();
+        if (StringUtils.isEmpty(location)) {
+          continue;
         }
 
-        if (!StringUtils.isEmpty(defaultBeanResource)) {
-            locationSet.add(defaultBeanResource);
-        }
-
-        return locationSet.toArray(new String[locationSet.size()]);
+        locationSet.add(location);
+      }
     }
+
+    if (!StringUtils.isEmpty(defaultBeanResource)) {
+      locationSet.add(defaultBeanResource);
+    }
+
+    return locationSet.toArray(new String[locationSet.size()]);
+  }
 }

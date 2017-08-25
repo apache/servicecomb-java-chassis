@@ -16,110 +16,111 @@
 
 package io.servicecomb.serviceregistry.client;
 
+import java.util.List;
+import java.util.Map;
+
 import io.servicecomb.foundation.vertx.AsyncResultCallback;
 import io.servicecomb.serviceregistry.api.registry.Microservice;
 import io.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
 import io.servicecomb.serviceregistry.api.response.HeartbeatResponse;
 import io.servicecomb.serviceregistry.api.response.MicroserviceInstanceChangedEvent;
-import java.util.List;
-import java.util.Map;
 
 public interface ServiceRegistryClient {
-    void init();
+  void init();
 
-    /**
-     * get all microservices
-     */
-    List<Microservice> getAllMicroservices();
+  /**
+   * get all microservices
+   */
+  List<Microservice> getAllMicroservices();
 
-    /**
-     *
-     * 获取微服务唯一标识
-     */
-    String getMicroserviceId(String appId, String microserviceName, String versionRule);
+  /**
+   *
+   * 获取微服务唯一标识
+   */
+  String getMicroserviceId(String appId, String microserviceName, String versionRule);
 
-    /**
-     *
-     * 注册微服务静态信息
-     */
-    String registerMicroservice(Microservice microservice);
+  /**
+   *
+   * 注册微服务静态信息
+   */
+  String registerMicroservice(Microservice microservice);
 
-    /**
-     *
-     * 根据微服务唯一标识查询微服务静态信息
-     */
-    Microservice getMicroservice(String microserviceId);
+  /**
+   *
+   * 根据微服务唯一标识查询微服务静态信息
+   */
+  Microservice getMicroservice(String microserviceId);
 
-    /**
-     * 更新微服务properties
-     */
-    boolean updateMicroserviceProperties(String microserviceId, Map<String, String> serviceProperties);
+  /**
+   * 更新微服务properties
+   */
+  boolean updateMicroserviceProperties(String microserviceId, Map<String, String> serviceProperties);
 
-    /**
-     *
-     * 判定schema是否已经注册
-     */
-    boolean isSchemaExist(String microserviceId, String schemaId);
+  /**
+   *
+   * 判定schema是否已经注册
+   */
+  boolean isSchemaExist(String microserviceId, String schemaId);
 
-    /**
-     * 
-     * 注册schema
-     */
-    boolean registerSchema(String microserviceId, String schemaId, String schemaContent);
+  /**
+   *
+   * 注册schema
+   */
+  boolean registerSchema(String microserviceId, String schemaId, String schemaContent);
 
-    /**
-     * 
-     * 获取schema内容
-     */
-    String getSchema(String microserviceId, String schemaId);
+  /**
+   *
+   * 获取schema内容
+   */
+  String getSchema(String microserviceId, String schemaId);
 
-    /**
-     *
-     * 注册微服务实例
-     */
-    String registerMicroserviceInstance(MicroserviceInstance instance);
+  /**
+   *
+   * 注册微服务实例
+   */
+  String registerMicroserviceInstance(MicroserviceInstance instance);
 
-    /**
-     *
-     * 根据多个微服务唯一标识查询所有微服务实例信息
-     */
-    List<MicroserviceInstance> getMicroserviceInstance(String consumerId, String providerId);
+  /**
+   *
+   * 根据多个微服务唯一标识查询所有微服务实例信息
+   */
+  List<MicroserviceInstance> getMicroserviceInstance(String consumerId, String providerId);
 
-    /**
-     * 更新微服务实例properties
-     */
-    boolean updateInstanceProperties(String microserviceId, String microserviceInstanceId,
-            Map<String, String> instanceProperties);
+  /**
+   * 更新微服务实例properties
+   */
+  boolean updateInstanceProperties(String microserviceId, String microserviceInstanceId,
+      Map<String, String> instanceProperties);
 
-    /**
-     *
-     * 去注册微服务实例
-     */
-    boolean unregisterMicroserviceInstance(String microserviceId, String microserviceInstanceId);
+  /**
+   *
+   * 去注册微服务实例
+   */
+  boolean unregisterMicroserviceInstance(String microserviceId, String microserviceInstanceId);
 
-    /**
-     *
-     * 服务端返回失败，表示需要重新注册，重新watch
-     */
-    HeartbeatResponse heartbeat(String microserviceId, String microserviceInstanceId);
+  /**
+   *
+   * 服务端返回失败，表示需要重新注册，重新watch
+   */
+  HeartbeatResponse heartbeat(String microserviceId, String microserviceInstanceId);
 
-    /**
-     *
-     * watch实例变化
-     */
-    void watch(String selfMicroserviceId, AsyncResultCallback<MicroserviceInstanceChangedEvent> callback);
+  /**
+   *
+   * watch实例变化
+   */
+  void watch(String selfMicroserviceId, AsyncResultCallback<MicroserviceInstanceChangedEvent> callback);
 
-    /**
-    *
-    * watch实例变化
-    */
-    void watch(String selfMicroserviceId, AsyncResultCallback<MicroserviceInstanceChangedEvent> callback,
-            AsyncResultCallback<Void> onOpen, AsyncResultCallback<Void> onClose);
+  /**
+   *
+   * watch实例变化
+   */
+  void watch(String selfMicroserviceId, AsyncResultCallback<MicroserviceInstanceChangedEvent> callback,
+      AsyncResultCallback<Void> onOpen, AsyncResultCallback<Void> onClose);
 
-    /**
-     *
-     * 按照app+interface+version查询实例endpoints信息
-     */
-    List<MicroserviceInstance> findServiceInstance(String consumerId, String appId, String serviceName,
-            String versionRule);
+  /**
+   *
+   * 按照app+interface+version查询实例endpoints信息
+   */
+  List<MicroserviceInstance> findServiceInstance(String consumerId, String appId, String serviceName,
+      String versionRule);
 }

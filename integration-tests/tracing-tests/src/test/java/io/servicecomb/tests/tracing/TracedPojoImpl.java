@@ -16,9 +16,10 @@
 
 package io.servicecomb.tests.tracing;
 
-import io.servicecomb.provider.pojo.RpcSchema;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import io.servicecomb.provider.pojo.RpcSchema;
 
 @RpcSchema(schemaId = "tracedPojo")
 public class TracedPojoImpl implements TracedPojo {

@@ -21,40 +21,35 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-/**
- *
- * @since Mar 14, 2017
- * @see 
- */
 public class TestPerfStatMonitor {
 
-    PerfStatMonitor oPerfStatMonitor = null;
+  PerfStatMonitor oPerfStatMonitor = null;
 
-    PerfStatSuccFail oPerfStatSuccFail = null;
+  PerfStatSuccFail oPerfStatSuccFail = null;
 
-    @Before
-    public void setUp() throws Exception {
-        oPerfStatMonitor = new PerfStatMonitor("testMonitor", 0);
-        oPerfStatSuccFail = new PerfStatSuccFail("testMergeFrom");
-    }
+  @Before
+  public void setUp() throws Exception {
+    oPerfStatMonitor = new PerfStatMonitor("testMonitor", 0);
+    oPerfStatSuccFail = new PerfStatSuccFail("testMergeFrom");
+  }
 
-    @After
-    public void tearDown() throws Exception {
-        oPerfStatMonitor = null;
-    }
+  @After
+  public void tearDown() throws Exception {
+    oPerfStatMonitor = null;
+  }
 
-    @Test
-    public void testCalcCycle() {
-        Assert.assertEquals("testMonitor", oPerfStatMonitor.getName());
-        Assert.assertEquals(0, oPerfStatMonitor.getIndex());
-        oPerfStatMonitor.addThreadStat(oPerfStatSuccFail);
-        oPerfStatMonitor.calcCycle(System.currentTimeMillis(), 20);
-        Assert.assertEquals("testMergeFrom", oPerfStatMonitor.getPerfStat().getName());
-        Assert.assertEquals(2, oPerfStatMonitor.getPerfResultList().size());
+  @Test
+  public void testCalcCycle() {
+    Assert.assertEquals("testMonitor", oPerfStatMonitor.getName());
+    Assert.assertEquals(0, oPerfStatMonitor.getIndex());
+    oPerfStatMonitor.addThreadStat(oPerfStatSuccFail);
+    oPerfStatMonitor.calcCycle(System.currentTimeMillis(), 20);
+    Assert.assertEquals("testMergeFrom", oPerfStatMonitor.getPerfStat().getName());
+    Assert.assertEquals(2, oPerfStatMonitor.getPerfResultList().size());
 
-        //Test Format
-        StringBuilder oBuilder = new StringBuilder();
-        oPerfStatMonitor.format(oBuilder, "Test");
-        Assert.assertEquals("  all succ  :Test  all fail  :Test", oBuilder.toString());
-    }
+    //Test Format
+    StringBuilder oBuilder = new StringBuilder();
+    oPerfStatMonitor.format(oBuilder, "Test");
+    Assert.assertEquals("  all succ  :Test  all fail  :Test", oBuilder.toString());
+  }
 }

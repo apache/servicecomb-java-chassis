@@ -26,45 +26,45 @@ import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
 
 public class RestServletInjector {
-    private static final Logger LOGGER = LoggerFactory.getLogger(RestServletInjector.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(RestServletInjector.class);
 
-    public static final String SERVLET_NAME = "ServicecombRestServlet";
+  public static final String SERVLET_NAME = "ServicecombRestServlet";
 
-    public static Dynamic defaultInject(ServletContext servletContext) {
-        RestServletInjector injector = new RestServletInjector();
+  public static Dynamic defaultInject(ServletContext servletContext) {
+    RestServletInjector injector = new RestServletInjector();
 
-        String urlPattern = ServletConfig.getServletUrlPattern();
-        return injector.inject(servletContext, urlPattern);
+    String urlPattern = ServletConfig.getServletUrlPattern();
+    return injector.inject(servletContext, urlPattern);
+  }
+
+  public Dynamic inject(ServletContext servletContext, String urlPattern) {
+    String[] urlPatterns = splitUrlPattern(urlPattern);
+    if (urlPatterns.length == 0) {
+      LOGGER.warn("urlPattern is empty, ignore register {}.", SERVLET_NAME);
+      return null;
     }
 
-    public Dynamic inject(ServletContext servletContext, String urlPattern) {
-        String[] urlPatterns = splitUrlPattern(urlPattern);
-        if (urlPatterns.length == 0) {
-            LOGGER.warn("urlPattern is empty, ignore register {}.", SERVLET_NAME);
-            return null;
-        }
-
-        String listenAddress = ServletConfig.getLocalServerAddress();
-        if (!ServletUtils.canPublishEndpoint(listenAddress)) {
-            LOGGER.warn("ignore register {}.", SERVLET_NAME);
-            return null;
-        }
-
-        // dynamic deploy a servlet to handle serviceComb RESTful request
-        Dynamic dynamic = servletContext.addServlet(SERVLET_NAME, RestServlet.class);
-        dynamic.setAsyncSupported(true);
-        dynamic.addMapping(urlPatterns);
-        dynamic.setLoadOnStartup(0);
-        LOGGER.info("RESTful servlet url pattern: {}.", Arrays.toString(urlPatterns));
-
-        return dynamic;
+    String listenAddress = ServletConfig.getLocalServerAddress();
+    if (!ServletUtils.canPublishEndpoint(listenAddress)) {
+      LOGGER.warn("ignore register {}.", SERVLET_NAME);
+      return null;
     }
 
-    private String[] splitUrlPattern(String urlPattern) {
-        if (StringUtils.isEmpty(urlPattern)) {
-            return new String[] {};
-        }
+    // dynamic deploy a servlet to handle serviceComb RESTful request
+    Dynamic dynamic = servletContext.addServlet(SERVLET_NAME, RestServlet.class);
+    dynamic.setAsyncSupported(true);
+    dynamic.addMapping(urlPatterns);
+    dynamic.setLoadOnStartup(0);
+    LOGGER.info("RESTful servlet url pattern: {}.", Arrays.toString(urlPatterns));
 
-        return ServletUtils.filterUrlPatterns(urlPattern);
+    return dynamic;
+  }
+
+  private String[] splitUrlPattern(String urlPattern) {
+    if (StringUtils.isEmpty(urlPattern)) {
+      return new String[] {};
     }
+
+    return ServletUtils.filterUrlPatterns(urlPattern);
+  }
 }

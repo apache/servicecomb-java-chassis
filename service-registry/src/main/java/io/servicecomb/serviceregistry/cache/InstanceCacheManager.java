@@ -33,102 +33,102 @@ import io.servicecomb.serviceregistry.api.response.MicroserviceInstanceChangedEv
  * Created by on 2017/2/21.
  */
 public class InstanceCacheManager {
-    private ServiceRegistry serviceRegistry;
+  private ServiceRegistry serviceRegistry;
 
-    // key为appId/microserviceName
-    protected Map<String, InstanceCache> cacheMap = new ConcurrentHashMap<>();
+  // key为appId/microserviceName
+  protected Map<String, InstanceCache> cacheMap = new ConcurrentHashMap<>();
 
-    private final Object lockObj = new Object();
+  private final Object lockObj = new Object();
 
-    public InstanceCacheManager(EventBus eventBus, ServiceRegistry serviceRegistry) {
-        this.serviceRegistry = serviceRegistry;
-        eventBus.register(this);
+  public InstanceCacheManager(EventBus eventBus, ServiceRegistry serviceRegistry) {
+    this.serviceRegistry = serviceRegistry;
+    eventBus.register(this);
+  }
+
+  private static String getKey(String appId, String microserviceName) {
+    if (microserviceName.contains(Const.APP_SERVICE_SEPARATOR)) {
+      return microserviceName.replace(Const.APP_SERVICE_SEPARATOR, "/");
     }
 
-    private static String getKey(String appId, String microserviceName) {
-        if (microserviceName.contains(Const.APP_SERVICE_SEPARATOR)) {
-            return microserviceName.replace(Const.APP_SERVICE_SEPARATOR, "/");
-        }
+    StringBuilder sb = new StringBuilder(appId.length() + microserviceName.length() + 1);
+    sb.append(appId).append("/").append(microserviceName);
+    return sb.toString();
+  }
 
-        StringBuilder sb = new StringBuilder(appId.length() + microserviceName.length() + 1);
-        sb.append(appId).append("/").append(microserviceName);
-        return sb.toString();
+  private InstanceCache create(String appId, String microserviceName, String microserviceVersionRule) {
+    List<MicroserviceInstance> instances =
+        serviceRegistry.findServiceInstance(appId, microserviceName, microserviceVersionRule);
+    if (instances == null) {
+      return null;
     }
 
-    private InstanceCache create(String appId, String microserviceName, String microserviceVersionRule) {
-        List<MicroserviceInstance> instances =
-            serviceRegistry.findServiceInstance(appId, microserviceName, microserviceVersionRule);
-        if (instances == null) {
-            return null;
-        }
-
-        Map<String, MicroserviceInstance> instMap = new HashMap<>();
-        for (MicroserviceInstance instance : instances) {
-            instMap.put(instance.getInstanceId(), instance);
-        }
-
-        InstanceCache instCache = new InstanceCache(appId, microserviceName, microserviceVersionRule, instMap);
-        String key = getKey(appId, microserviceName);
-        cacheMap.put(key, instCache);
-        return instCache;
+    Map<String, MicroserviceInstance> instMap = new HashMap<>();
+    for (MicroserviceInstance instance : instances) {
+      instMap.put(instance.getInstanceId(), instance);
     }
 
-    public InstanceCache getOrCreate(String appId, String microserviceName, String microserviceVersionRule) {
-        String key = getKey(appId, microserviceName);
-        InstanceCache cache = cacheMap.get(key);
+    InstanceCache instCache = new InstanceCache(appId, microserviceName, microserviceVersionRule, instMap);
+    String key = getKey(appId, microserviceName);
+    cacheMap.put(key, instCache);
+    return instCache;
+  }
+
+  public InstanceCache getOrCreate(String appId, String microserviceName, String microserviceVersionRule) {
+    String key = getKey(appId, microserviceName);
+    InstanceCache cache = cacheMap.get(key);
+    if (cache == null) {
+      synchronized (lockObj) {
+        cache = cacheMap.get(key);
         if (cache == null) {
-            synchronized (lockObj) {
-                cache = cacheMap.get(key);
-                if (cache == null) {
-                    cache = create(appId, microserviceName, microserviceVersionRule);
-                }
-            }
+          cache = create(appId, microserviceName, microserviceVersionRule);
         }
-        return cache;
+      }
     }
+    return cache;
+  }
 
-    @Subscribe
-    public void onInstanceUpdate(MicroserviceInstanceChangedEvent changedEvent) {
-        String appId = changedEvent.getKey().getAppId();
-        String microserviceName = changedEvent.getKey().getServiceName();
-        String version = changedEvent.getKey().getVersion();
-        String key = getKey(appId, microserviceName);
+  @Subscribe
+  public void onInstanceUpdate(MicroserviceInstanceChangedEvent changedEvent) {
+    String appId = changedEvent.getKey().getAppId();
+    String microserviceName = changedEvent.getKey().getServiceName();
+    String version = changedEvent.getKey().getVersion();
+    String key = getKey(appId, microserviceName);
 
-        synchronized (lockObj) {
-            InstanceCache instCache = cacheMap.get(key);
-            if (instCache == null) {
-                // 场景1：当重连成功SC时，缓存会清空
-                // 场景2：运行过程中，外部条件依赖关系
-                // 等下次lb再重新获取最新实例信息
-                return;
-            }
-            Map<String, MicroserviceInstance> instMap = instCache.getInstanceMap();
+    synchronized (lockObj) {
+      InstanceCache instCache = cacheMap.get(key);
+      if (instCache == null) {
+        // 场景1：当重连成功SC时，缓存会清空
+        // 场景2：运行过程中，外部条件依赖关系
+        // 等下次lb再重新获取最新实例信息
+        return;
+      }
+      Map<String, MicroserviceInstance> instMap = instCache.getInstanceMap();
 
-            switch (changedEvent.getAction()) {
-                case CREATE:
-                case UPDATE:
-                    instMap.put(changedEvent.getInstance().getInstanceId(), changedEvent.getInstance());
-                    break;
-                case DELETE:
-                    instMap.remove(changedEvent.getInstance().getInstanceId());
-                    break;
-                default:
-                    return;
-            }
-            cacheMap.put(key, new InstanceCache(appId, microserviceName, version, instMap));
-        }
+      switch (changedEvent.getAction()) {
+        case CREATE:
+        case UPDATE:
+          instMap.put(changedEvent.getInstance().getInstanceId(), changedEvent.getInstance());
+          break;
+        case DELETE:
+          instMap.remove(changedEvent.getInstance().getInstanceId());
+          break;
+        default:
+          return;
+      }
+      cacheMap.put(key, new InstanceCache(appId, microserviceName, version, instMap));
     }
+  }
 
-    public void cleanUp() {
-        synchronized (lockObj) {
-            cacheMap.clear();
-        }
+  public void cleanUp() {
+    synchronized (lockObj) {
+      cacheMap.clear();
     }
+  }
 
-    public void updateInstanceMap(String appId, String microserviceName, String microserviceVersionRule,
-            Map<String, MicroserviceInstance> instanceMap) {
-        InstanceCache cache = new InstanceCache(appId, microserviceName, microserviceVersionRule, instanceMap);
-        String key = getKey(appId, microserviceName);
-        cacheMap.put(key, cache);
-    }
+  public void updateInstanceMap(String appId, String microserviceName, String microserviceVersionRule,
+      Map<String, MicroserviceInstance> instanceMap) {
+    InstanceCache cache = new InstanceCache(appId, microserviceName, microserviceVersionRule, instanceMap);
+    String key = getKey(appId, microserviceName);
+    cacheMap.put(key, cache);
+  }
 }

@@ -15,67 +15,69 @@
  */
 package io.servicecomb.serviceregistry.task;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
+
 import io.servicecomb.serviceregistry.api.registry.Microservice;
 import io.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
 import io.servicecomb.serviceregistry.api.response.HeartbeatResponse;
 import io.servicecomb.serviceregistry.client.ServiceRegistryClient;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class MicroserviceInstanceHeartbeatTask extends AbstractTask {
-    private static final Logger LOGGER = LoggerFactory.getLogger(MicroserviceInstanceHeartbeatTask.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(MicroserviceInstanceHeartbeatTask.class);
 
-    private MicroserviceInstance microserviceInstance;
+  private MicroserviceInstance microserviceInstance;
 
-    private HeartbeatResult heartbeatResult;
+  private HeartbeatResult heartbeatResult;
 
-    public MicroserviceInstanceHeartbeatTask(EventBus eventBus, ServiceRegistryClient srClient,
-            Microservice microservice) {
-        super(eventBus, srClient, microservice);
-        this.microserviceInstance = microservice.getIntance();
+  public MicroserviceInstanceHeartbeatTask(EventBus eventBus, ServiceRegistryClient srClient,
+      Microservice microservice) {
+    super(eventBus, srClient, microservice);
+    this.microserviceInstance = microservice.getIntance();
+  }
+
+  @Subscribe
+  public void onMicroserviceWatchTask(MicroserviceWatchTask task) {
+    if (task.taskStatus == TaskStatus.READY && isSameMicroservice(task.getMicroservice())) {
+      this.taskStatus = TaskStatus.READY;
+    }
+  }
+
+  public HeartbeatResult getHeartbeatResult() {
+    return heartbeatResult;
+  }
+
+  // only got service center response, and result is not ok, means need to register instance again.
+  public boolean isNeedRegisterInstance() {
+    return HeartbeatResult.INSTANCE_NOT_REGISTERED.equals(heartbeatResult);
+  }
+
+  @Override
+  public void doRun() {
+    // will always run heartbeat when it is ready
+    heartbeatResult = heartbeat();
+  }
+
+  private HeartbeatResult heartbeat() {
+    HeartbeatResponse response =
+        srClient.heartbeat(microserviceInstance.getServiceId(), microserviceInstance.getInstanceId());
+    if (response == null) {
+      LOGGER.error("Disconnected from service center and heartbeat failed for microservice instance={}/{}",
+          microserviceInstance.getServiceId(),
+          microserviceInstance.getInstanceId());
+      return HeartbeatResult.DISCONNECTED;
     }
 
-    @Subscribe
-    public void onMicroserviceWatchTask(MicroserviceWatchTask task) {
-        if (task.taskStatus == TaskStatus.READY && isSameMicroservice(task.getMicroservice())) {
-            this.taskStatus = TaskStatus.READY;
-        }
+    if (!response.isOk()) {
+      LOGGER.error("Update heartbeat to service center failed, microservice instance={}/{} does not exist",
+          microserviceInstance.getServiceId(),
+          microserviceInstance.getInstanceId());
+      return HeartbeatResult.INSTANCE_NOT_REGISTERED;
     }
 
-    public HeartbeatResult getHeartbeatResult() {
-        return heartbeatResult;
-    }
-
-    // only got service center response, and result is not ok, means need to register instance again. 
-    public boolean isNeedRegisterInstance() {
-        return HeartbeatResult.INSTANCE_NOT_REGISTERED.equals(heartbeatResult);
-    }
-
-    @Override
-    public void doRun() {
-        // will always run heartbeat when it is ready
-        heartbeatResult = heartbeat();
-    }
-
-    private HeartbeatResult heartbeat() {
-        HeartbeatResponse response =
-            srClient.heartbeat(microserviceInstance.getServiceId(), microserviceInstance.getInstanceId());
-        if (response == null) {
-            LOGGER.error("Disconnected from service center and heartbeat failed for microservice instance={}/{}",
-                    microserviceInstance.getServiceId(),
-                    microserviceInstance.getInstanceId());
-            return HeartbeatResult.DISCONNECTED;
-        }
-
-        if (!response.isOk()) {
-            LOGGER.error("Update heartbeat to service center failed, microservice instance={}/{} does not exist",
-                    microserviceInstance.getServiceId(),
-                    microserviceInstance.getInstanceId());
-            return HeartbeatResult.INSTANCE_NOT_REGISTERED;
-        }
-
-        return HeartbeatResult.SUCCESS;
-    }
+    return HeartbeatResult.SUCCESS;
+  }
 }

@@ -22,5 +22,5 @@ package io.servicecomb.swagger.generator.core;
  * springmvc中处理为requestParam参数
  */
 public interface DefaultParameterProcessor {
-    void process(OperationGenerator operationGenerator, int paramIndex);
+  void process(OperationGenerator operationGenerator, int paramIndex);
 }

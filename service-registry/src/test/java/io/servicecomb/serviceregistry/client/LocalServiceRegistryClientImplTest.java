@@ -19,28 +19,29 @@ package io.servicecomb.serviceregistry.client;
 import java.io.InputStream;
 import java.util.List;
 
-import io.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
 import org.hamcrest.core.Is;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
+import io.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
+
 public class LocalServiceRegistryClientImplTest {
 
-    InputStream is;
+  InputStream is;
 
-    @Before
-    public void loadRegistryFile() {
-        ClassLoader loader = Thread.currentThread().getContextClassLoader();
-        is = loader.getResourceAsStream("registry.yaml");
-    }
+  @Before
+  public void loadRegistryFile() {
+    ClassLoader loader = Thread.currentThread().getContextClassLoader();
+    is = loader.getResourceAsStream("registry.yaml");
+  }
 
-    @Test
-    public void testLoadRegistryFile() {
-        LocalServiceRegistryClientImpl registryClient = new LocalServiceRegistryClientImpl(is);
-        Assert.assertNotNull(registryClient);
-        Assert.assertThat(registryClient.getAllMicroservices().size(), Is.is(1));
-        List<MicroserviceInstance> m = registryClient.findServiceInstance("", "myapp", "springmvctest", "");
-        Assert.assertEquals(1, m.size());
-    }
+  @Test
+  public void testLoadRegistryFile() {
+    LocalServiceRegistryClientImpl registryClient = new LocalServiceRegistryClientImpl(is);
+    Assert.assertNotNull(registryClient);
+    Assert.assertThat(registryClient.getAllMicroservices().size(), Is.is(1));
+    List<MicroserviceInstance> m = registryClient.findServiceInstance("", "myapp", "springmvctest", "");
+    Assert.assertEquals(1, m.size());
+  }
 }

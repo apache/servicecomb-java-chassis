@@ -22,47 +22,47 @@ import org.slf4j.LoggerFactory;
 import io.servicecomb.foundation.common.CommonThread;
 
 public class MetricsThread extends CommonThread {
-    private static final Logger LOGGER = LoggerFactory.getLogger(MetricsThread.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(MetricsThread.class);
 
-    private static final long SECOND_MILLS = 1000;
+  private static final long SECOND_MILLS = 1000;
 
-    // 从进程启动开始，每秒加1000
-    // 这不是一个精确值，用于不关注精度的超时检测
-    private static long msTick = 0;
+  // 从进程启动开始，每秒加1000
+  // 这不是一个精确值，用于不关注精度的超时检测
+  private static long msTick = 0;
 
-    public MetricsThread() {
-        setName("metrics");
+  public MetricsThread() {
+    setName("metrics");
+  }
+
+  @Override
+  public void run() {
+    while (isRunning()) {
+      waitOneCycle();
+
+      try {
+        Metrics.onCycle();
+      } catch (Exception e) {
+        LOGGER.info(e.getMessage());
+      }
     }
+  }
 
-    @Override
-    public void run() {
-        while (isRunning()) {
-            waitOneCycle();
+  private void waitOneCycle() {
+    long msLastCycle = msTick;
+    for (;;) {
+      try {
+        sleep(SECOND_MILLS);
+      } catch (InterruptedException e) {
+      }
+      msTick += SECOND_MILLS;
 
-            try {
-                Metrics.onCycle();
-            } catch (Exception e) {
-                LOGGER.info(e.getMessage());
-            }
-        }
+      if (msTick - msLastCycle >= MetricsConfig.getMsCycle()) {
+        break;
+      }
     }
+  }
 
-    private void waitOneCycle() {
-        long msLastCycle = msTick;
-        for (;;) {
-            try {
-                sleep(SECOND_MILLS);
-            } catch (InterruptedException e) {
-            }
-            msTick += SECOND_MILLS;
-
-            if (msTick - msLastCycle >= MetricsConfig.getMsCycle()) {
-                break;
-            }
-        }
-    }
-
-    public static long getMsTick() {
-        return msTick;
-    }
+  public static long getMsTick() {
+    return msTick;
+  }
 }

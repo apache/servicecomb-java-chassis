@@ -30,86 +30,85 @@ import io.servicecomb.common.rest.codec.RestServerRequestInternal;
  * 封装HttpServletRequest为具有RestHttpRequest接口的类，统一多种rest transport request
  */
 public class RestServletHttpRequest implements RestServerRequestInternal {
-    private HttpServletRequest request;
+  private HttpServletRequest request;
 
-    private AsyncContext asyncCtx;
+  private AsyncContext asyncCtx;
 
-    private Map<String, String> pathParamMap;
+  private Map<String, String> pathParamMap;
 
-    public RestServletHttpRequest(HttpServletRequest request, AsyncContext asyncCtx) {
-        this.request = request;
-        this.asyncCtx = asyncCtx;
+  public RestServletHttpRequest(HttpServletRequest request, AsyncContext asyncCtx) {
+    this.request = request;
+    this.asyncCtx = asyncCtx;
+  }
+
+  @Override
+  public String getPath() {
+    return request.getRequestURI();
+  }
+
+  @Override
+  public String getMethod() {
+    return request.getMethod();
+  }
+
+  @Override
+  public String getContentType() {
+    return request.getContentType();
+  }
+
+  @Override
+  public void setPathParamMap(Map<String, String> pathParamMap) {
+    this.pathParamMap = pathParamMap;
+  }
+
+  @Override
+  public void complete() {
+    asyncCtx.complete();
+  }
+
+  @Override
+  public String[] getQueryParam(String key) {
+    return request.getParameterMap().get(key);
+  }
+
+  @Override
+  public String getPathParam(String key) {
+    return this.pathParamMap.get(key);
+  }
+
+  @Override
+  public String getHeaderParam(String key) {
+    return request.getHeader(key);
+  }
+
+  @Override
+  public Object getFormParam(String key) {
+    return request.getParameter(key);
+  }
+
+  @Override
+  public String getCookieParam(String key) {
+    for (Cookie cookie : request.getCookies()) {
+      if (cookie.getName().equals(key)) {
+        return cookie.getValue();
+      }
     }
+    return null;
+  }
 
-    @Override
-    public String getPath() {
-        return request.getRequestURI();
-    }
+  @Override
+  public InputStream getBody() throws IOException {
+    return request.getInputStream();
+  }
 
-    @Override
-    public String getMethod() {
-        return request.getMethod();
-    }
+  @Override
+  public Map<String, String[]> getQueryParams() {
+    return request.getParameterMap();
+  }
 
-    @Override
-    public String getContentType() {
-        return request.getContentType();
-    }
-
-    @Override
-    public void setPathParamMap(Map<String, String> pathParamMap) {
-        this.pathParamMap = pathParamMap;
-    }
-
-    @Override
-    public void complete() {
-        asyncCtx.complete();
-    }
-
-    @Override
-    public String[] getQueryParam(String key) {
-        return request.getParameterMap().get(key);
-    }
-
-    @Override
-    public String getPathParam(String key) {
-        return this.pathParamMap.get(key);
-    }
-
-    @Override
-    public String getHeaderParam(String key) {
-        return request.getHeader(key);
-    }
-
-    @Override
-    public Object getFormParam(String key) {
-        return request.getParameter(key);
-    }
-
-    @Override
-    public String getCookieParam(String key) {
-        for (Cookie cookie : request.getCookies()) {
-            if (cookie.getName().equals(key)) {
-                return cookie.getValue();
-            }
-        }
-        return null;
-    }
-
-    @Override
-    public InputStream getBody() throws IOException {
-        return request.getInputStream();
-    }
-
-    @Override
-    public Map<String, String[]> getQueryParams() {
-        return request.getParameterMap();
-    }
-
-    @SuppressWarnings("unchecked")
-    @Override
-    public <T> T getHttpRequest() {
-        return (T) request;
-    }
-
+  @SuppressWarnings("unchecked")
+  @Override
+  public <T> T getHttpRequest() {
+    return (T) request;
+  }
 }

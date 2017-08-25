@@ -17,20 +17,19 @@ package io.servicecomb.swagger.generator.core.processor.annotation;
 
 import io.servicecomb.swagger.generator.core.MethodAnnotationProcessor;
 import io.servicecomb.swagger.generator.core.OperationGenerator;
-
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 
 public class ApiResponsesMethodProcessor implements MethodAnnotationProcessor {
 
-    @Override
-    public void process(Object annotation, OperationGenerator operationGenerator) {
-        ApiResponses apiResponses = (ApiResponses) annotation;
+  @Override
+  public void process(Object annotation, OperationGenerator operationGenerator) {
+    ApiResponses apiResponses = (ApiResponses) annotation;
 
-        MethodAnnotationProcessor processor =
-            operationGenerator.getContext().findMethodAnnotationProcessor(ApiResponse.class);
-        for (ApiResponse apiResponse : apiResponses.value()) {
-            processor.process(apiResponse, operationGenerator);
-        }
+    MethodAnnotationProcessor processor =
+        operationGenerator.getContext().findMethodAnnotationProcessor(ApiResponse.class);
+    for (ApiResponse apiResponse : apiResponses.value()) {
+      processor.process(apiResponse, operationGenerator);
     }
+  }
 }

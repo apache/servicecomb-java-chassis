@@ -21,27 +21,26 @@ import java.util.Set;
 import io.servicecomb.swagger.invocation.converter.Converter;
 
 public final class SameElementArrayToSet implements Converter {
-    private static final Converter INSTANCE = new SameElementArrayToSet();
+  private static final Converter INSTANCE = new SameElementArrayToSet();
 
-    public static Converter getInstance() {
-        return INSTANCE;
+  public static Converter getInstance() {
+    return INSTANCE;
+  }
+
+  private SameElementArrayToSet() {
+  }
+
+  @Override
+  public Object convert(Object value) {
+    if (value == null) {
+      return null;
     }
 
-    private SameElementArrayToSet() {
+    Object[] array = (Object[]) value;
+    Set<Object> set = new HashSet<>();
+    for (Object e : array) {
+      set.add(e);
     }
-
-    @Override
-    public Object convert(Object value) {
-        if (value == null) {
-            return null;
-        }
-
-        Object[] array = (Object[]) value;
-        Set<Object> set = new HashSet<>();
-        for (Object e : array) {
-            set.add(e);
-        }
-        return set;
-    }
-
+    return set;
+  }
 }

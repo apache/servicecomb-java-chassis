@@ -21,12 +21,12 @@ import io.vertx.core.Context;
 import io.vertx.core.net.NetClient;
 
 public class HighwayClientConnectionPool extends AbstractTcpClientConnectionPool<HighwayClientConnection> {
-    public HighwayClientConnectionPool(TcpClientConfig clientConfig, Context context, NetClient netClient) {
-        super(clientConfig, context, netClient);
-    }
+  public HighwayClientConnectionPool(TcpClientConfig clientConfig, Context context, NetClient netClient) {
+    super(clientConfig, context, netClient);
+  }
 
-    @Override
-    protected HighwayClientConnection create(String endpoint) {
-        return new HighwayClientConnection(context, netClient, endpoint, clientConfig);
-    }
+  @Override
+  protected HighwayClientConnection create(String endpoint) {
+    return new HighwayClientConnection(context, netClient, endpoint, clientConfig);
+  }
 }

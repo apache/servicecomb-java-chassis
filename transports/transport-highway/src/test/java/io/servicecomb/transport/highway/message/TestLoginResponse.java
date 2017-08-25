@@ -19,13 +19,13 @@ import org.junit.Assert;
 import org.junit.Test;
 
 public class TestLoginResponse {
-    @Test
-    public void test() {
-        LoginResponse resp = new LoginResponse();
-        resp.setProtocol("p");
-        resp.setZipName("z");
+  @Test
+  public void test() {
+    LoginResponse resp = new LoginResponse();
+    resp.setProtocol("p");
+    resp.setZipName("z");
 
-        Assert.assertEquals("p", resp.getProtocol());
-        Assert.assertEquals("z", resp.getZipName());
-    }
+    Assert.assertEquals("p", resp.getProtocol());
+    Assert.assertEquals("z", resp.getZipName());
+  }
 }

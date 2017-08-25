@@ -22,14 +22,14 @@ import io.vertx.core.net.impl.NetSocketImpl;
 import mockit.Mocked;
 
 public class TestTcpServerConnection {
-    @Test
-    public void test(@Mocked NetSocketImpl netSocket) {
-        TcpServerConnection connection = new TcpServerConnection();
-        connection.setProtocol("p");
-        connection.setZipName("z");
+  @Test
+  public void test(@Mocked NetSocketImpl netSocket) {
+    TcpServerConnection connection = new TcpServerConnection();
+    connection.setProtocol("p");
+    connection.setZipName("z");
 
-        connection.init(netSocket);
+    connection.init(netSocket);
 
-        Assert.assertEquals(netSocket, connection.getNetSocket());
-    }
+    Assert.assertEquals(netSocket, connection.getNetSocket());
+  }
 }

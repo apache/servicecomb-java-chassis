@@ -36,87 +36,87 @@ import io.servicecomb.serviceregistry.api.registry.Microservice;
 
 @Component
 public class TransportManager {
-    private static final Logger LOGGER = LoggerFactory.getLogger(TransportManager.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(TransportManager.class);
 
-    @Inject
-    private List<Transport> transports;
+  @Inject
+  private List<Transport> transports;
 
-    private Map<String, Transport> transportMap = new HashMap<>();
+  private Map<String, Transport> transportMap = new HashMap<>();
 
-    public void setTransports(List<Transport> transports) {
-        this.transports = transports;
-    }
+  public void setTransports(List<Transport> transports) {
+    this.transports = transports;
+  }
 
-    public void init() throws Exception {
-        buildTransportMap();
+  public void init() throws Exception {
+    buildTransportMap();
 
-        for (Transport transport : transportMap.values()) {
-            if (transport.init()) {
-                Endpoint endpoint = transport.getPublishEndpoint();
-                if (endpoint != null && endpoint.getEndpoint() != null) {
-                    LOGGER.info("endpoint to publish: {}", endpoint.getEndpoint());
-                    Microservice microservice = RegistryUtils.getMicroservice();
-                    microservice.getIntance().getEndpoints().add(endpoint.getEndpoint());
-                }
-                continue;
-            }
+    for (Transport transport : transportMap.values()) {
+      if (transport.init()) {
+        Endpoint endpoint = transport.getPublishEndpoint();
+        if (endpoint != null && endpoint.getEndpoint() != null) {
+          LOGGER.info("endpoint to publish: {}", endpoint.getEndpoint());
+          Microservice microservice = RegistryUtils.getMicroservice();
+          microservice.getIntance().getEndpoints().add(endpoint.getEndpoint());
         }
+        continue;
+      }
+    }
+  }
+
+  protected void buildTransportMap() {
+    Map<String, List<Transport>> groups = groupByName();
+
+    for (Entry<String, List<Transport>> entry : groups.entrySet()) {
+      List<Transport> group = entry.getValue();
+
+      checkTransportGroup(group);
+      Transport transport = chooseOneTransport(group);
+      transportMap.put(transport.getName(), transport);
+    }
+  }
+
+  protected Transport chooseOneTransport(List<Transport> group) {
+    group.sort((t1, t2) -> {
+      return t1.getOrder() - t2.getOrder();
+    });
+
+    for (Transport transport : group) {
+      if (transport.canInit()) {
+        LOGGER.info("choose {} for {}.", transport.getClass().getName(), transport.getName());
+        return transport;
+      }
     }
 
-    protected void buildTransportMap() {
-        Map<String, List<Transport>> groups = groupByName();
+    throw new ServiceCombException(
+        String.format("all transport named %s refused to init.", group.get(0).getName()));
+  }
 
-        for (Entry<String, List<Transport>> entry : groups.entrySet()) {
-            List<Transport> group = entry.getValue();
-
-            checkTransportGroup(group);
-            Transport transport = chooseOneTransport(group);
-            transportMap.put(transport.getName(), transport);
-        }
+  protected void checkTransportGroup(List<Transport> group) {
+    // order value must be different, otherwise, maybe will choose a random transport
+    Map<Integer, Transport> orderMap = new HashMap<>();
+    for (Transport transport : group) {
+      Transport existTransport = orderMap.putIfAbsent(transport.getOrder(), transport);
+      if (existTransport != null) {
+        throw new ServiceCombException(String.format("%s and %s have the same order %d",
+            existTransport.getClass().getName(),
+            transport.getClass().getName(),
+            transport.getOrder()));
+      }
     }
+  }
 
-    protected Transport chooseOneTransport(List<Transport> group) {
-        group.sort((t1, t2) -> {
-            return t1.getOrder() - t2.getOrder();
-        });
-
-        for (Transport transport : group) {
-            if (transport.canInit()) {
-                LOGGER.info("choose {} for {}.", transport.getClass().getName(), transport.getName());
-                return transport;
-            }
-        }
-
-        throw new ServiceCombException(
-                String.format("all transport named %s refused to init.", group.get(0).getName()));
+  protected Map<String, List<Transport>> groupByName() {
+    Map<String, List<Transport>> groups = new HashMap<>();
+    for (Transport transport : transports) {
+      List<Transport> list = groups.computeIfAbsent(transport.getName(), name -> {
+        return new ArrayList<>();
+      });
+      list.add(transport);
     }
+    return groups;
+  }
 
-    protected void checkTransportGroup(List<Transport> group) {
-        // order value must be different, otherwise, maybe will choose a random transport
-        Map<Integer, Transport> orderMap = new HashMap<>();
-        for (Transport transport : group) {
-            Transport existTransport = orderMap.putIfAbsent(transport.getOrder(), transport);
-            if (existTransport != null) {
-                throw new ServiceCombException(String.format("%s and %s have the same order %d",
-                        existTransport.getClass().getName(),
-                        transport.getClass().getName(),
-                        transport.getOrder()));
-            }
-        }
-    }
-
-    protected Map<String, List<Transport>> groupByName() {
-        Map<String, List<Transport>> groups = new HashMap<>();
-        for (Transport transport : transports) {
-            List<Transport> list = groups.computeIfAbsent(transport.getName(), name -> {
-                return new ArrayList<>();
-            });
-            list.add(transport);
-        }
-        return groups;
-    }
-
-    public Transport findTransport(String transportName) {
-        return transportMap.get(transportName);
-    }
+  public Transport findTransport(String transportName) {
+    return transportMap.get(transportName);
+  }
 }

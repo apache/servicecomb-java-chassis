@@ -17,7 +17,7 @@
 package io.servicecomb.swagger.invocation.arguments;
 
 public interface ContextArgumentMapperFactory {
-    Class<?> getContextClass();
+  Class<?> getContextClass();
 
-    ArgumentMapper create(int argumentIdx);
+  ArgumentMapper create(int argumentIdx);
 }

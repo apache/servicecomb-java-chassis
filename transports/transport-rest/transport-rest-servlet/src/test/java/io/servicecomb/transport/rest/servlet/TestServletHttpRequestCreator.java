@@ -26,18 +26,18 @@ import io.servicecomb.core.Invocation;
 
 public class TestServletHttpRequestCreator {
 
-    @Test
-    public void testCreateMockParam() {
-        boolean status = true;
-        try {
-            HttpServletRequest httpRequest = Mockito.mock(HttpServletRequest.class);
-            ProducerServletHttpRequestArgMapper servletHttpRequestCreator =
-                new ProducerServletHttpRequestArgMapper(httpRequest);
-            Invocation invocation = Mockito.mock(Invocation.class);
-            servletHttpRequestCreator.createContextArg(invocation);
-        } catch (Exception ex) {
-            status = false;
-        }
-        Assert.assertTrue(status);
+  @Test
+  public void testCreateMockParam() {
+    boolean status = true;
+    try {
+      HttpServletRequest httpRequest = Mockito.mock(HttpServletRequest.class);
+      ProducerServletHttpRequestArgMapper servletHttpRequestCreator =
+          new ProducerServletHttpRequestArgMapper(httpRequest);
+      Invocation invocation = Mockito.mock(Invocation.class);
+      servletHttpRequestCreator.createContextArg(invocation);
+    } catch (Exception ex) {
+      status = false;
     }
+    Assert.assertTrue(status);
+  }
 }

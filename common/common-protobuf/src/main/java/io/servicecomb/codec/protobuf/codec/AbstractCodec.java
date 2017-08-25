@@ -23,17 +23,17 @@ import com.fasterxml.jackson.databind.ObjectWriter;
 import com.fasterxml.jackson.dataformat.protobuf.schema.ProtobufSchema;
 
 public abstract class AbstractCodec {
-    protected ObjectWriter writer;
+  protected ObjectWriter writer;
 
-    protected ObjectReader reader;
+  protected ObjectReader reader;
 
-    public ObjectWriter getWriter() {
-        return writer;
-    }
+  public ObjectWriter getWriter() {
+    return writer;
+  }
 
-    public ObjectReader getReader() {
-        return reader;
-    }
+  public ObjectReader getReader() {
+    return reader;
+  }
 
-    public abstract void init(ProtobufSchema schema, Type... types);
+  public abstract void init(ProtobufSchema schema, Type... types);
 }

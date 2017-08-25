@@ -32,82 +32,82 @@ import mockit.Deencapsulation;
 import mockit.Mocked;
 
 public class TestServiceCenterTask {
-    private EventBus eventBus = new EventBus();
+  private EventBus eventBus = new EventBus();
 
-    @Mocked
-    private MicroserviceServiceCenterTask microserviceServiceCenterTask;
+  @Mocked
+  private MicroserviceServiceCenterTask microserviceServiceCenterTask;
 
-    private ServiceCenterTask serviceCenterTask;
+  private ServiceCenterTask serviceCenterTask;
 
-    @BeforeClass
-    public static void initClass() {
-        ArchaiusUtils.resetConfig();
-    }
+  @BeforeClass
+  public static void initClass() {
+    ArchaiusUtils.resetConfig();
+  }
 
-    @AfterClass
-    public static void teardownClass() {
-        ArchaiusUtils.resetConfig();
-    }
+  @AfterClass
+  public static void teardownClass() {
+    ArchaiusUtils.resetConfig();
+  }
 
-    @Before
-    public void init() {
-        serviceCenterTask =
-            new ServiceCenterTask(eventBus, ServiceRegistryConfig.INSTANCE, microserviceServiceCenterTask);
-    }
+  @Before
+  public void init() {
+    serviceCenterTask =
+        new ServiceCenterTask(eventBus, ServiceRegistryConfig.INSTANCE, microserviceServiceCenterTask);
+  }
 
-    @Test
-    public void testLifeCycle() {
-        serviceCenterTask.init();
+  @Test
+  public void testLifeCycle() {
+    serviceCenterTask.init();
 
-        eventBus.post(new ShutdownEvent());
-        Assert.assertFalse(Deencapsulation.getField(serviceCenterTask, "running"));
-    }
+    eventBus.post(new ShutdownEvent());
+    Assert.assertFalse(Deencapsulation.getField(serviceCenterTask, "running"));
+  }
 
-    @Test
-    public void testCalcSleepInterval(@Mocked ServiceRegistryClient srClient,
-            @Mocked Microservice microservice, @Mocked MicroserviceInstanceHeartbeatTask heartbeatTask,
-            @Mocked MicroserviceInstanceRegisterTask registerTask) {
-        serviceCenterTask.calcSleepInterval();
-        Assert.assertEquals(1, serviceCenterTask.getInterval());
-        serviceCenterTask.calcSleepInterval();
-        Assert.assertEquals(2, serviceCenterTask.getInterval());
-        serviceCenterTask.calcSleepInterval();
-        Assert.assertEquals(3, serviceCenterTask.getInterval());
-        serviceCenterTask.calcSleepInterval();
-        Assert.assertEquals(10, serviceCenterTask.getInterval());
-        serviceCenterTask.calcSleepInterval();
-        Assert.assertEquals(20, serviceCenterTask.getInterval());
-        serviceCenterTask.calcSleepInterval();
-        Assert.assertEquals(30, serviceCenterTask.getInterval());
-        serviceCenterTask.calcSleepInterval();
-        Assert.assertEquals(40, serviceCenterTask.getInterval());
-        serviceCenterTask.calcSleepInterval();
-        Assert.assertEquals(50, serviceCenterTask.getInterval());
-        serviceCenterTask.calcSleepInterval();
-        Assert.assertEquals(60, serviceCenterTask.getInterval());
-        serviceCenterTask.calcSleepInterval();
-        Assert.assertEquals(60, serviceCenterTask.getInterval());
+  @Test
+  public void testCalcSleepInterval(@Mocked ServiceRegistryClient srClient,
+      @Mocked Microservice microservice, @Mocked MicroserviceInstanceHeartbeatTask heartbeatTask,
+      @Mocked MicroserviceInstanceRegisterTask registerTask) {
+    serviceCenterTask.calcSleepInterval();
+    Assert.assertEquals(1, serviceCenterTask.getInterval());
+    serviceCenterTask.calcSleepInterval();
+    Assert.assertEquals(2, serviceCenterTask.getInterval());
+    serviceCenterTask.calcSleepInterval();
+    Assert.assertEquals(3, serviceCenterTask.getInterval());
+    serviceCenterTask.calcSleepInterval();
+    Assert.assertEquals(10, serviceCenterTask.getInterval());
+    serviceCenterTask.calcSleepInterval();
+    Assert.assertEquals(20, serviceCenterTask.getInterval());
+    serviceCenterTask.calcSleepInterval();
+    Assert.assertEquals(30, serviceCenterTask.getInterval());
+    serviceCenterTask.calcSleepInterval();
+    Assert.assertEquals(40, serviceCenterTask.getInterval());
+    serviceCenterTask.calcSleepInterval();
+    Assert.assertEquals(50, serviceCenterTask.getInterval());
+    serviceCenterTask.calcSleepInterval();
+    Assert.assertEquals(60, serviceCenterTask.getInterval());
+    serviceCenterTask.calcSleepInterval();
+    Assert.assertEquals(60, serviceCenterTask.getInterval());
 
-        eventBus.post(heartbeatTask);
-        serviceCenterTask.calcSleepInterval();
-        Assert.assertEquals(60, serviceCenterTask.getInterval());
+    eventBus.post(heartbeatTask);
+    serviceCenterTask.calcSleepInterval();
+    Assert.assertEquals(60, serviceCenterTask.getInterval());
 
-        // recover and exception again
-        registerTask.taskStatus = TaskStatus.FINISHED;
-        eventBus.post(registerTask);
-        registerTask.taskStatus = TaskStatus.INIT;
-        eventBus.post(registerTask);
-        serviceCenterTask.calcSleepInterval();
-        Assert.assertEquals(1, serviceCenterTask.getInterval());
+    // recover and exception again
+    registerTask.taskStatus = TaskStatus.FINISHED;
+    eventBus.post(registerTask);
+    registerTask.taskStatus = TaskStatus.INIT;
+    eventBus.post(registerTask);
+    serviceCenterTask.calcSleepInterval();
+    Assert.assertEquals(1, serviceCenterTask.getInterval());
 
-        registerTask.taskStatus = TaskStatus.FINISHED;
-        eventBus.post(registerTask);
-        serviceCenterTask.calcSleepInterval();
-        Assert.assertEquals(30, serviceCenterTask.getInterval());
+    registerTask.taskStatus = TaskStatus.FINISHED;
+    eventBus.post(registerTask);
+    serviceCenterTask.calcSleepInterval();
+    Assert.assertEquals(30, serviceCenterTask.getInterval());
 
-        registerTask.taskStatus = TaskStatus.INIT;
-        eventBus.post(registerTask);
-        serviceCenterTask.calcSleepInterval();
-        Assert.assertEquals(1, serviceCenterTask.getInterval());
-    }
+    registerTask.taskStatus = TaskStatus.INIT;
+    eventBus.post(registerTask);
+    serviceCenterTask.calcSleepInterval();
+    Assert.assertEquals(1, serviceCenterTask.getInterval());
+  }
 }

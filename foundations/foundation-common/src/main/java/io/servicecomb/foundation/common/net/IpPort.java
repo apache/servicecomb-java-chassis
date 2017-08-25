@@ -19,49 +19,49 @@ package io.servicecomb.foundation.common.net;
 import java.net.InetSocketAddress;
 
 public class IpPort {
-    private String hostOrIp;
+  private String hostOrIp;
 
-    private int port;
+  private int port;
 
-    private volatile InetSocketAddress socketAddress;
+  private volatile InetSocketAddress socketAddress;
 
-    private final Object lock = new Object();
+  private final Object lock = new Object();
 
-    public IpPort() {
+  public IpPort() {
 
-    }
+  }
 
-    public IpPort(String hostOrIp, int port) {
-        this.hostOrIp = hostOrIp;
-        this.port = port;
-    }
+  public IpPort(String hostOrIp, int port) {
+    this.hostOrIp = hostOrIp;
+    this.port = port;
+  }
 
-    public String getHostOrIp() {
-        return hostOrIp;
-    }
+  public String getHostOrIp() {
+    return hostOrIp;
+  }
 
-    public void setHostOrIp(String hostOrIp) {
-        this.hostOrIp = hostOrIp;
-    }
+  public void setHostOrIp(String hostOrIp) {
+    this.hostOrIp = hostOrIp;
+  }
 
-    public int getPort() {
-        return port;
-    }
+  public int getPort() {
+    return port;
+  }
 
-    public void setPort(int port) {
-        this.port = port;
-    }
+  public void setPort(int port) {
+    this.port = port;
+  }
 
-    public InetSocketAddress getSocketAddress() {
+  public InetSocketAddress getSocketAddress() {
+    if (socketAddress == null) {
+      synchronized (lock) {
         if (socketAddress == null) {
-            synchronized (lock) {
-                if (socketAddress == null) {
-                    InetSocketAddress tmpSocketAddress = new InetSocketAddress(hostOrIp, port);
-                    socketAddress = tmpSocketAddress;
-                }
-            }
+          InetSocketAddress tmpSocketAddress = new InetSocketAddress(hostOrIp, port);
+          socketAddress = tmpSocketAddress;
         }
-
-        return socketAddress;
+      }
     }
+
+    return socketAddress;
+  }
 }

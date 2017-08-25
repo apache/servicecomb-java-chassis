@@ -19,6 +19,7 @@ package io.servicecomb.codec.protobuf.codec;
 import java.lang.reflect.Type;
 
 import com.fasterxml.jackson.dataformat.protobuf.schema.ProtobufSchema;
+
 import io.servicecomb.codec.protobuf.definition.ProtobufManager;
 import io.servicecomb.codec.protobuf.jackson.CseObjectReader;
 import io.servicecomb.codec.protobuf.jackson.CseObjectWriter;
@@ -26,12 +27,12 @@ import io.servicecomb.codec.protobuf.jackson.ResultDeserializer;
 import io.servicecomb.codec.protobuf.jackson.ResultSerializer;
 
 public class ResultFieldCodec extends AbstractFieldCodec {
-    @Override
-    public void init(ProtobufSchema schema, Type... types) {
-        writer = new CseObjectWriter(ProtobufManager.getWriter(), schema, new ResultSerializer());
-        reader =
-            new CseObjectReader(ProtobufManager.getReader(), schema, new ResultDeserializer(readerHelpDataMap));
+  @Override
+  public void init(ProtobufSchema schema, Type... types) {
+    writer = new CseObjectWriter(ProtobufManager.getWriter(), schema, new ResultSerializer());
+    reader =
+        new CseObjectReader(ProtobufManager.getReader(), schema, new ResultDeserializer(readerHelpDataMap));
 
-        super.init(schema, types);
-    }
+    super.init(schema, types);
+  }
 }

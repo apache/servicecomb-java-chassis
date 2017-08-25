@@ -66,134 +66,133 @@ import io.swagger.models.properties.RefProperty;
 import io.swagger.models.properties.StringProperty;
 
 public final class ConverterMgr {
-    private static final JavaType VOID_JAVA_TYPE = TypeFactory.defaultInstance().constructType(void.class);
+  private static final JavaType VOID_JAVA_TYPE = TypeFactory.defaultInstance().constructType(void.class);
 
-    private static final Map<Class<? extends Property>, JavaType> PROPERTY_MAP = new HashMap<>();
+  private static final Map<Class<? extends Property>, JavaType> PROPERTY_MAP = new HashMap<>();
 
-    // key为swagger中标准数据类型的type.format
-    // value为对应的java class
-    private static final Map<String, JavaType> TYPE_FORMAT_MAP = new HashMap<>();
+  // key为swagger中标准数据类型的type.format
+  // value为对应的java class
+  private static final Map<String, JavaType> TYPE_FORMAT_MAP = new HashMap<>();
 
-    private static Map<Class<?>, Converter> converterMap = new HashMap<>();
+  private static Map<Class<?>, Converter> converterMap = new HashMap<>();
 
-    static {
-        initPropertyMap();
-        initTypeFormatMap();
-        initConverters();
+  static {
+    initPropertyMap();
+    initTypeFormatMap();
+    initConverters();
+  }
+
+  public static String genTypeFormatKey(String type, String format) {
+    return type + ":" + String.valueOf(format);
+  }
+
+  private ConverterMgr() {
+
+  }
+
+  private static void initTypeFormatMap() {
+    try {
+      for (Entry<Class<? extends Property>, JavaType> entry : PROPERTY_MAP.entrySet()) {
+        Property property = entry.getKey().newInstance();
+        String key = genTypeFormatKey(property.getType(), property.getFormat());
+        TYPE_FORMAT_MAP.put(key, entry.getValue());
+      }
+    } catch (Throwable e) {
+      throw new Error(e);
+    }
+  }
+
+  private static void initPropertyMap() {
+    PROPERTY_MAP.put(BooleanProperty.class, SimpleType.constructUnsafe(Boolean.class));
+
+    PROPERTY_MAP.put(FloatProperty.class, SimpleType.constructUnsafe(Float.class));
+    PROPERTY_MAP.put(DoubleProperty.class, SimpleType.constructUnsafe(Double.class));
+    PROPERTY_MAP.put(DecimalProperty.class, SimpleType.constructUnsafe(BigDecimal.class));
+
+    PROPERTY_MAP.put(ByteProperty.class, SimpleType.constructUnsafe(Byte.class));
+    PROPERTY_MAP.put(ShortProperty.class, SimpleType.constructUnsafe(Short.class));
+    PROPERTY_MAP.put(IntegerProperty.class, SimpleType.constructUnsafe(Integer.class));
+    PROPERTY_MAP.put(LongProperty.class, SimpleType.constructUnsafe(Long.class));
+
+    // stringProperty包含了enum的场景，并不一定是转化为string
+    // 但是，如果统一走StringPropertyConverter则可以处理enum的场景
+    PROPERTY_MAP.put(StringProperty.class, SimpleType.constructUnsafe(String.class));
+
+    PROPERTY_MAP.put(DateProperty.class, SimpleType.constructUnsafe(LocalDate.class));
+    PROPERTY_MAP.put(DateTimeProperty.class, SimpleType.constructUnsafe(Date.class));
+
+    PROPERTY_MAP.put(ByteArrayProperty.class, SimpleType.constructUnsafe(byte[].class));
+  }
+
+  private static void initConverters() {
+    // inner converters
+    for (Class<? extends Property> propertyCls : PROPERTY_MAP.keySet()) {
+      addInnerConverter(propertyCls);
     }
 
-    public static String genTypeFormatKey(String type, String format) {
-        return type + ":" + String.valueOf(format);
+    converterMap.put(RefProperty.class, new RefPropertyConverter());
+    converterMap.put(ArrayProperty.class, new ArrayPropertyConverter());
+    converterMap.put(MapProperty.class, new MapPropertyConverter());
+    converterMap.put(StringProperty.class, new StringPropertyConverter());
+
+    converterMap.put(ModelImpl.class, new ModelImplConverter());
+    converterMap.put(RefModel.class, new RefModelConverter());
+    converterMap.put(ArrayModel.class, new ArrayModelConverter());
+
+    converterMap.put(BodyParameter.class, new BodyParameterConverter());
+
+    AbstractSerializableParameterConverter converter = new AbstractSerializableParameterConverter();
+    converterMap.put(QueryParameter.class, converter);
+    converterMap.put(PathParameter.class, converter);
+    converterMap.put(HeaderParameter.class, converter);
+    converterMap.put(FormParameter.class, converter);
+    converterMap.put(CookieParameter.class, converter);
+  }
+
+  private static void addInnerConverter(Class<? extends Property> propertyCls) {
+    JavaType javaType = PROPERTY_MAP.get(propertyCls);
+    if (javaType == null) {
+      throw new Error("not support inner property class: " + propertyCls.getName());
     }
 
-    private ConverterMgr() {
+    converterMap.put(propertyCls, (classLoader, packageName, swagger, def) -> javaType);
+  }
 
+  public static void addConverter(Class<?> cls, Converter converter) {
+    converterMap.put(cls, converter);
+  }
+
+  public static JavaType findJavaType(String type, String format) {
+    String key = genTypeFormatKey(type, format);
+    return TYPE_FORMAT_MAP.get(key);
+  }
+
+  public static JavaType findJavaType(SwaggerGenerator generator, Object def) {
+    return findJavaType(generator.getClassLoader(),
+        generator.ensureGetPackageName(),
+        generator.getSwagger(),
+        def);
+  }
+
+  // def为null是void的场景
+  // def可能是model、property、parameter
+  public static JavaType findJavaType(ClassLoader classLoader, String packageName, Swagger swagger, Object def) {
+    if (def == null) {
+      return VOID_JAVA_TYPE;
+    }
+    Converter converter = converterMap.get(def.getClass());
+    if (converter == null) {
+      throw new Error("not support def type: " + def.getClass());
     }
 
-    private static void initTypeFormatMap() {
-        try {
-            for (Entry<Class<? extends Property>, JavaType> entry : PROPERTY_MAP.entrySet()) {
-                Property property = entry.getKey().newInstance();
-                String key = genTypeFormatKey(property.getType(), property.getFormat());
-                TYPE_FORMAT_MAP.put(key, entry.getValue());
-            }
-        } catch (Throwable e) {
-            throw new Error(e);
-        }
+    return converter.convert(classLoader, packageName, swagger, def);
+  }
+
+  public static JavaType findByRef(ClassLoader classLoader, String packageName, Swagger swagger, String refName) {
+    Model ref = swagger.getDefinitions().get(refName);
+    if (ModelImpl.class.isInstance(ref) && ((ModelImpl) ref).getName() == null) {
+      ((ModelImpl) ref).setName(refName);
     }
-
-    private static void initPropertyMap() {
-        PROPERTY_MAP.put(BooleanProperty.class, SimpleType.constructUnsafe(Boolean.class));
-
-        PROPERTY_MAP.put(FloatProperty.class, SimpleType.constructUnsafe(Float.class));
-        PROPERTY_MAP.put(DoubleProperty.class, SimpleType.constructUnsafe(Double.class));
-        PROPERTY_MAP.put(DecimalProperty.class, SimpleType.constructUnsafe(BigDecimal.class));
-
-        PROPERTY_MAP.put(ByteProperty.class, SimpleType.constructUnsafe(Byte.class));
-        PROPERTY_MAP.put(ShortProperty.class, SimpleType.constructUnsafe(Short.class));
-        PROPERTY_MAP.put(IntegerProperty.class, SimpleType.constructUnsafe(Integer.class));
-        PROPERTY_MAP.put(LongProperty.class, SimpleType.constructUnsafe(Long.class));
-
-        // stringProperty包含了enum的场景，并不一定是转化为string
-        // 但是，如果统一走StringPropertyConverter则可以处理enum的场景
-        PROPERTY_MAP.put(StringProperty.class, SimpleType.constructUnsafe(String.class));
-
-        PROPERTY_MAP.put(DateProperty.class, SimpleType.constructUnsafe(LocalDate.class));
-        PROPERTY_MAP.put(DateTimeProperty.class, SimpleType.constructUnsafe(Date.class));
-
-        PROPERTY_MAP.put(ByteArrayProperty.class, SimpleType.constructUnsafe(byte[].class));
-    }
-
-    private static void initConverters() {
-        // inner converters
-        for (Class<? extends Property> propertyCls : PROPERTY_MAP.keySet()) {
-            addInnerConverter(propertyCls);
-        }
-
-        converterMap.put(RefProperty.class, new RefPropertyConverter());
-        converterMap.put(ArrayProperty.class, new ArrayPropertyConverter());
-        converterMap.put(MapProperty.class, new MapPropertyConverter());
-        converterMap.put(StringProperty.class, new StringPropertyConverter());
-
-        converterMap.put(ModelImpl.class, new ModelImplConverter());
-        converterMap.put(RefModel.class, new RefModelConverter());
-        converterMap.put(ArrayModel.class, new ArrayModelConverter());
-
-        converterMap.put(BodyParameter.class, new BodyParameterConverter());
-
-        AbstractSerializableParameterConverter converter = new AbstractSerializableParameterConverter();
-        converterMap.put(QueryParameter.class, converter);
-        converterMap.put(PathParameter.class, converter);
-        converterMap.put(HeaderParameter.class, converter);
-        converterMap.put(FormParameter.class, converter);
-        converterMap.put(CookieParameter.class, converter);
-    }
-
-    private static void addInnerConverter(Class<? extends Property> propertyCls) {
-        JavaType javaType = PROPERTY_MAP.get(propertyCls);
-        if (javaType == null) {
-            throw new Error("not support inner property class: " + propertyCls.getName());
-        }
-
-        converterMap.put(propertyCls, (classLoader, packageName, swagger, def) -> javaType);
-    }
-
-    public static void addConverter(Class<?> cls, Converter converter) {
-        converterMap.put(cls, converter);
-    }
-
-    public static JavaType findJavaType(String type, String format) {
-        String key = genTypeFormatKey(type, format);
-        return TYPE_FORMAT_MAP.get(key);
-    }
-
-    public static JavaType findJavaType(SwaggerGenerator generator, Object def) {
-        return findJavaType(generator.getClassLoader(),
-                generator.ensureGetPackageName(),
-                generator.getSwagger(),
-                def);
-    }
-
-    // def为null是void的场景
-    // def可能是model、property、parameter
-    public static JavaType findJavaType(ClassLoader classLoader, String packageName, Swagger swagger, Object def) {
-        if (def == null) {
-            return VOID_JAVA_TYPE;
-        }
-        Converter converter = converterMap.get(def.getClass());
-        if (converter == null) {
-            throw new Error("not support def type: " + def.getClass());
-        }
-
-        return converter.convert(classLoader, packageName, swagger, def);
-    }
-
-    public static JavaType findByRef(ClassLoader classLoader, String packageName, Swagger swagger, String refName) {
-        Model ref = swagger.getDefinitions().get(refName);
-        if (ModelImpl.class.isInstance(ref) && ((ModelImpl) ref).getName() == null) {
-            ((ModelImpl) ref).setName(refName);
-        }
-        return findJavaType(classLoader, packageName, swagger, ref);
-    }
-
+    return findJavaType(classLoader, packageName, swagger, ref);
+  }
 }

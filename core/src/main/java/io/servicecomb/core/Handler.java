@@ -22,7 +22,7 @@ import io.servicecomb.swagger.invocation.InvocationType;
 
 // 每个微服务 + invocationType，都对应一个handler实例
 public interface Handler {
-    void init(MicroserviceMeta microserviceMeta, InvocationType invocationType);
+  void init(MicroserviceMeta microserviceMeta, InvocationType invocationType);
 
-    void handle(Invocation invocation, AsyncResponse asyncResp) throws Exception;
+  void handle(Invocation invocation, AsyncResponse asyncResp) throws Exception;
 }

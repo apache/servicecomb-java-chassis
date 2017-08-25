@@ -19,5 +19,5 @@ package io.servicecomb.demo;
 import io.servicecomb.core.Const;
 
 public interface DemoConst {
-    String[] transports = new String[] {"rest", Const.ANY_TRANSPORT};
+  String[] transports = new String[] {"rest", Const.ANY_TRANSPORT};
 }

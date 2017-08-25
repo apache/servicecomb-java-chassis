@@ -34,153 +34,152 @@ import io.servicecomb.swagger.invocation.converter.ConverterMgr;
 import io.servicecomb.swagger.invocation.converter.impl.ConverterCommon;
 
 public abstract class ArgumentsMapperFactory {
-    @Inject
-    protected ConverterMgr converterMgr;
+  @Inject
+  protected ConverterMgr converterMgr;
 
-    protected InvocationType type;
+  protected InvocationType type;
 
-    // key为ContextParameter
-    private Map<Class<?>, ContextArgumentMapperFactory> factoryMap = new HashMap<>();
+  // key为ContextParameter
+  private Map<Class<?>, ContextArgumentMapperFactory> factoryMap = new HashMap<>();
 
-    public void setConverterMgr(ConverterMgr converterMgr) {
-        this.converterMgr = converterMgr;
+  public void setConverterMgr(ConverterMgr converterMgr) {
+    this.converterMgr = converterMgr;
+  }
+
+  protected void createFactoryMap(List<ContextArgumentMapperFactory> factoryList) {
+    factoryList.forEach(factory -> {
+      factoryMap.put(factory.getContextClass(), factory);
+    });
+  }
+
+  protected ContextArgumentMapperFactory findFactory(Type type) {
+    if (type.getClass().equals(Class.class)) {
+      return factoryMap.get((Class<?>) type);
+    }
+    return null;
+  }
+
+  public <T> T createArgumentsMapper(Method swaggerMethod, Method providerMethod) {
+    ArgumentsMapperConfig config = new ArgumentsMapperConfig();
+    config.setSwaggerMethod(swaggerMethod);
+    config.setProviderMethod(providerMethod);
+
+    collectArgumentsMapper(config);
+
+    return createArgumentsMapper(config);
+  }
+
+  protected void collectArgumentsMapper(ArgumentsMapperConfig config) {
+    List<ProviderParameter> providerNormalParams = collectContextArgumentsMapper(config);
+    if (providerNormalParams.isEmpty()) {
+      return;
     }
 
-    protected void createFactoryMap(List<ContextArgumentMapperFactory> factoryList) {
-        factoryList.forEach(factory -> {
-            factoryMap.put(factory.getContextClass(), factory);
-        });
+    if (isSwaggerWrapBody(config, providerNormalParams)) {
+      collectWrapBodyMapper(config, providerNormalParams);
+      return;
     }
 
-    protected ContextArgumentMapperFactory findFactory(Type type) {
-        if (type.getClass().equals(Class.class)) {
-            return factoryMap.get((Class<?>) type);
-        }
-        return null;
+    collectSwaggerArgumentsMapper(config, providerNormalParams);
+  }
+
+  protected boolean isSwaggerWrapBody(ArgumentsMapperConfig config, List<ProviderParameter> providerNormalParams) {
+    Method swaggerMethod = config.getSwaggerMethod();
+    if (swaggerMethod.getParameterCount() != 1) {
+      return false;
     }
 
-    public <T> T createArgumentsMapper(Method swaggerMethod, Method providerMethod) {
-        ArgumentsMapperConfig config = new ArgumentsMapperConfig();
-        config.setSwaggerMethod(swaggerMethod);
-        config.setProviderMethod(providerMethod);
-
-        collectArgumentsMapper(config);
-
-        return createArgumentsMapper(config);
+    Type swaggerType = config.getSwaggerMethod().getGenericParameterTypes()[0];
+    if (!swaggerType.getClass().equals(Class.class)) {
+      return false;
     }
 
-    protected void collectArgumentsMapper(ArgumentsMapperConfig config) {
-        List<ProviderParameter> providerNormalParams = collectContextArgumentsMapper(config);
-        if (providerNormalParams.isEmpty()) {
-            return;
-        }
-
-        if (isSwaggerWrapBody(config, providerNormalParams)) {
-            collectWrapBodyMapper(config, providerNormalParams);
-            return;
-        }
-
-        collectSwaggerArgumentsMapper(config, providerNormalParams);
+    Type firstProviderParam = providerNormalParams.get(0).getType();
+    if (TypeUtils.isAssignable(firstProviderParam, swaggerType)) {
+      return false;
     }
 
-    protected boolean isSwaggerWrapBody(ArgumentsMapperConfig config, List<ProviderParameter> providerNormalParams) {
-        Method swaggerMethod = config.getSwaggerMethod();
-        if (swaggerMethod.getParameterCount() != 1) {
-            return false;
-        }
+    swaggerType = ((Class<?>) swaggerType).getFields()[0].getGenericType();
+    Converter converter = converterMgr.findConverter(type, firstProviderParam, swaggerType);
+    if (ConverterCommon.class.isInstance(converter)) {
+      return false;
+    }
+    // 透明rpc的包装场景
+    return true;
+  }
 
-        Type swaggerType = config.getSwaggerMethod().getGenericParameterTypes()[0];
-        if (!swaggerType.getClass().equals(Class.class)) {
-            return false;
-        }
+  // 处理所有context类型的参数
+  // 剩余的参数返回
+  protected List<ProviderParameter> collectContextArgumentsMapper(ArgumentsMapperConfig config) {
+    List<ProviderParameter> providerNormalParams = new ArrayList<>();
 
-        Type firstProviderParam = providerNormalParams.get(0).getType();
-        if (TypeUtils.isAssignable(firstProviderParam, swaggerType)) {
-            return false;
-        }
+    Type[] providerParameterTypes = config.getProviderMethod().getGenericParameterTypes();
+    for (int providerIdx = 0; providerIdx < providerParameterTypes.length; providerIdx++) {
+      Type parameterType = providerParameterTypes[providerIdx];
+      ContextArgumentMapperFactory factory = findFactory(parameterType);
+      if (factory != null) {
+        ArgumentMapper mapper = factory.create(providerIdx);
+        config.addArgumentMapper(mapper);
+        continue;
+      }
 
-        swaggerType = ((Class<?>) swaggerType).getFields()[0].getGenericType();
-        Converter converter = converterMgr.findConverter(type, firstProviderParam, swaggerType);
-        if (ConverterCommon.class.isInstance(converter)) {
-            return false;
-        }
-        // 透明rpc的包装场景
-        return true;
+      ProviderParameter pp = new ProviderParameter(providerIdx, parameterType);
+      providerNormalParams.add(pp);
     }
 
-    // 处理所有context类型的参数
-    // 剩余的参数返回
-    protected List<ProviderParameter> collectContextArgumentsMapper(ArgumentsMapperConfig config) {
-        List<ProviderParameter> providerNormalParams = new ArrayList<>();
+    return providerNormalParams;
+  }
 
-        Type[] providerParameterTypes = config.getProviderMethod().getGenericParameterTypes();
-        for (int providerIdx = 0; providerIdx < providerParameterTypes.length; providerIdx++) {
-            Type parameterType = providerParameterTypes[providerIdx];
-            ContextArgumentMapperFactory factory = findFactory(parameterType);
-            if (factory != null) {
-                ArgumentMapper mapper = factory.create(providerIdx);
-                config.addArgumentMapper(mapper);
-                continue;
-            }
+  protected void collectSwaggerArgumentsMapper(ArgumentsMapperConfig config,
+      List<ProviderParameter> providerNormalParams) {
+    Method swaggerMethod = config.getSwaggerMethod();
+    Type[] swaggerParams = swaggerMethod.getGenericParameterTypes();
 
-            ProviderParameter pp = new ProviderParameter(providerIdx, parameterType);
-            providerNormalParams.add(pp);
-        }
+    // 普通场景，要求除了provider上的context，其他参数必须按顺序一一对应，provider上的有效参数可以与契约不一致
+    int minParamCount = Math.min(providerNormalParams.size(), swaggerParams.length);
+    for (int swaggerIdx = 0; swaggerIdx < minParamCount; swaggerIdx++) {
+      ProviderParameter providerParameter = providerNormalParams.get(swaggerIdx);
+      Type swaggerParameter = swaggerParams[swaggerIdx];
 
-        return providerNormalParams;
+      Converter converter = converterMgr.findConverter(type, providerParameter.getType(), swaggerParameter);
+      ArgumentMapper mapper =
+          createArgumentMapperWithConverter(swaggerIdx, providerParameter.getIndex(), converter);
+      config.addArgumentMapper(mapper);
+    }
+  }
+
+  protected void collectWrapBodyMapper(ArgumentsMapperConfig config, List<ProviderParameter> providerNormalParams) {
+    // 将provider的参数存入唯一swagger参数的field
+    // 或是将唯一swagger参数的field存入provider参数
+    Method swaggerMethod = config.getSwaggerMethod();
+    Class<?> swaggerParam = swaggerMethod.getParameterTypes()[0];
+    Field[] swaggerParamFields = swaggerParam.getFields();
+
+    // 普通场景，要求除了provider上的context，其他参数必须按顺序一一对应，provider上的有效参数可以与契约不一致
+    int minParamCount = Math.min(providerNormalParams.size(), swaggerParamFields.length);
+
+    Map<Integer, FieldInfo> fieldMap = new HashMap<>();
+    for (int swaggerIdx = 0; swaggerIdx < minParamCount; swaggerIdx++) {
+      ProviderParameter providerParameter = providerNormalParams.get(swaggerIdx);
+      Field swaggerField = swaggerParamFields[swaggerIdx];
+      swaggerField.setAccessible(true);
+
+      Converter converter = converterMgr.findConverter(type,
+          providerParameter.getType(),
+          swaggerField.getGenericType());
+      FieldInfo info = new FieldInfo(swaggerField, converter);
+      fieldMap.put(providerParameter.getIndex(), info);
     }
 
-    protected void collectSwaggerArgumentsMapper(ArgumentsMapperConfig config,
-            List<ProviderParameter> providerNormalParams) {
-        Method swaggerMethod = config.getSwaggerMethod();
-        Type[] swaggerParams = swaggerMethod.getGenericParameterTypes();
+    ArgumentMapper bodyFieldArg = createBodyFieldArgMapper(config, fieldMap);
+    config.addArgumentMapper(bodyFieldArg);
+  }
 
-        // 普通场景，要求除了provider上的context，其他参数必须按顺序一一对应，provider上的有效参数可以与契约不一致
-        int minParamCount = Math.min(providerNormalParams.size(), swaggerParams.length);
-        for (int swaggerIdx = 0; swaggerIdx < minParamCount; swaggerIdx++) {
-            ProviderParameter providerParameter = providerNormalParams.get(swaggerIdx);
-            Type swaggerParameter = swaggerParams[swaggerIdx];
+  protected abstract <T> T createArgumentsMapper(ArgumentsMapperConfig config);
 
-            Converter converter = converterMgr.findConverter(type, providerParameter.getType(), swaggerParameter);
-            ArgumentMapper mapper =
-                createArgumentMapperWithConverter(swaggerIdx, providerParameter.getIndex(), converter);
-            config.addArgumentMapper(mapper);
-        }
-    }
+  protected abstract ArgumentMapper createArgumentMapperWithConverter(int swaggerIdx, int providerIdx,
+      Converter converter);
 
-    protected void collectWrapBodyMapper(ArgumentsMapperConfig config, List<ProviderParameter> providerNormalParams) {
-        // 将provider的参数存入唯一swagger参数的field
-        // 或是将唯一swagger参数的field存入provider参数
-        Method swaggerMethod = config.getSwaggerMethod();
-        Class<?> swaggerParam = swaggerMethod.getParameterTypes()[0];
-        Field[] swaggerParamFields = swaggerParam.getFields();
-
-        // 普通场景，要求除了provider上的context，其他参数必须按顺序一一对应，provider上的有效参数可以与契约不一致
-        int minParamCount = Math.min(providerNormalParams.size(), swaggerParamFields.length);
-
-        Map<Integer, FieldInfo> fieldMap = new HashMap<>();
-        for (int swaggerIdx = 0; swaggerIdx < minParamCount; swaggerIdx++) {
-            ProviderParameter providerParameter = providerNormalParams.get(swaggerIdx);
-            Field swaggerField = swaggerParamFields[swaggerIdx];
-            swaggerField.setAccessible(true);
-
-            Converter converter = converterMgr.findConverter(type,
-                    providerParameter.getType(),
-                    swaggerField.getGenericType());
-            FieldInfo info = new FieldInfo(swaggerField, converter);
-            fieldMap.put(providerParameter.getIndex(), info);
-        }
-
-        ArgumentMapper bodyFieldArg = createBodyFieldArgMapper(config, fieldMap);
-        config.addArgumentMapper(bodyFieldArg);
-    }
-
-    protected abstract <T> T createArgumentsMapper(ArgumentsMapperConfig config);
-
-    protected abstract ArgumentMapper createArgumentMapperWithConverter(int swaggerIdx, int providerIdx,
-            Converter converter);
-
-    protected abstract ArgumentMapper createBodyFieldArgMapper(ArgumentsMapperConfig config,
-            Map<Integer, FieldInfo> fieldMap);
-
+  protected abstract ArgumentMapper createBodyFieldArgMapper(ArgumentsMapperConfig config,
+      Map<Integer, FieldInfo> fieldMap);
 }

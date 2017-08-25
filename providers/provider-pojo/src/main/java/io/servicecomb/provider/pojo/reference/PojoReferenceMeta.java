@@ -26,65 +26,65 @@ import io.servicecomb.foundation.common.exceptions.ServiceCombException;
 import io.servicecomb.provider.pojo.Invoker;
 
 public class PojoReferenceMeta implements FactoryBean<Object>, InitializingBean, EmptyBeanPostProcessor {
-    // 原始数据
-    private String microserviceName;
+  // 原始数据
+  private String microserviceName;
 
-    private String schemaId;
+  private String schemaId;
 
-    private Class<?> consumerIntf;
+  private Class<?> consumerIntf;
 
-    // 根据intf创建出来的动态代理
-    // TODO:未实现本地优先(本地场景下，应该跳过handler机制)
-    private Object proxy;
+  // 根据intf创建出来的动态代理
+  // TODO:未实现本地优先(本地场景下，应该跳过handler机制)
+  private Object proxy;
 
-    public Object getProxy() {
-        return getObject();
+  public Object getProxy() {
+    return getObject();
+  }
+
+  @Override
+  public Object getObject() {
+    return proxy;
+  }
+
+  @Override
+  public Class<?> getObjectType() {
+    return consumerIntf;
+  }
+
+  @Override
+  public boolean isSingleton() {
+    return true;
+  }
+
+  public void setConsumerIntf(Class<?> intf) {
+    this.consumerIntf = intf;
+  }
+
+  public void setMicroserviceName(String microserviceName) {
+    this.microserviceName = microserviceName;
+  }
+
+  public void setSchemaId(String schemaId) {
+    this.schemaId = schemaId;
+  }
+
+  @Override
+  public void afterPropertiesSet() {
+    if (consumerIntf == null) {
+      throw new ServiceCombException(
+          String.format(
+              "microserviceName=%s, schemaid=%s, \n"
+                  + "do not support implicit interface anymore, \n"
+                  + "because that caused problems:\n"
+                  + "  1.the startup process relies on other microservices\n"
+                  + "  2.cyclic dependent microservices can not be deployed\n"
+                  + "suggest to use @RpcReference or "
+                  + "<cse:rpc-reference id=\"...\" microservice-name=\"...\" schema-id=\"...\" interface=\"...\"></cse:rpc-reference>.",
+              microserviceName,
+              schemaId));
     }
 
-    @Override
-    public Object getObject() {
-        return proxy;
-    }
-
-    @Override
-    public Class<?> getObjectType() {
-        return consumerIntf;
-    }
-
-    @Override
-    public boolean isSingleton() {
-        return true;
-    }
-
-    public void setConsumerIntf(Class<?> intf) {
-        this.consumerIntf = intf;
-    }
-
-    public void setMicroserviceName(String microserviceName) {
-        this.microserviceName = microserviceName;
-    }
-
-    public void setSchemaId(String schemaId) {
-        this.schemaId = schemaId;
-    }
-
-    @Override
-    public void afterPropertiesSet() {
-        if (consumerIntf == null) {
-            throw new ServiceCombException(
-                    String.format(
-                            "microserviceName=%s, schemaid=%s, \n"
-                                    + "do not support implicit interface anymore, \n"
-                                    + "because that caused problems:\n"
-                                    + "  1.the startup process relies on other microservices\n"
-                                    + "  2.cyclic dependent microservices can not be deployed\n"
-                                    + "suggest to use @RpcReference or "
-                                    + "<cse:rpc-reference id=\"...\" microservice-name=\"...\" schema-id=\"...\" interface=\"...\"></cse:rpc-reference>.",
-                            microserviceName,
-                            schemaId));
-        }
-
-        Invoker invoker = new Invoker(microserviceName, schemaId, consumerIntf);
-        proxy = Proxy.newProxyInstance(consumerIntf.getClassLoader(), new Class<?>[] {consumerIntf}, invoker);
-    }
+    Invoker invoker = new Invoker(microserviceName, schemaId, consumerIntf);
+    proxy = Proxy.newProxyInstance(consumerIntf.getClassLoader(), new Class<?>[] {consumerIntf}, invoker);
+  }
 }

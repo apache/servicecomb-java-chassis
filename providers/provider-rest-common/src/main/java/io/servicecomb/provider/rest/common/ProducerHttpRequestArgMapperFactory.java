@@ -28,14 +28,13 @@ import io.servicecomb.swagger.invocation.arguments.ContextArgumentMapperFactory;
 @Qualifier("producer")
 public class ProducerHttpRequestArgMapperFactory implements ContextArgumentMapperFactory {
 
-    @Override
-    public Class<?> getContextClass() {
-        return HttpServletRequest.class;
-    }
+  @Override
+  public Class<?> getContextClass() {
+    return HttpServletRequest.class;
+  }
 
-    @Override
-    public ArgumentMapper create(int providerArgIdx) {
-        return new ProducerHttpRequestArgMapper(providerArgIdx);
-    }
-
+  @Override
+  public ArgumentMapper create(int providerArgIdx) {
+    return new ProducerHttpRequestArgMapper(providerArgIdx);
+  }
 }

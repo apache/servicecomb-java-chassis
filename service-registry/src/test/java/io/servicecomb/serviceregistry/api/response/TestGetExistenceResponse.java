@@ -21,41 +21,35 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-/**
- *
- * @since Mar 14, 2017
- * @see 
- */
 public class TestGetExistenceResponse {
 
-    GetExistenceResponse oGetExistenceResponse = null;
+  GetExistenceResponse oGetExistenceResponse = null;
 
-    @Before
-    public void setUp() throws Exception {
-        oGetExistenceResponse = new GetExistenceResponse();
-    }
+  @Before
+  public void setUp() throws Exception {
+    oGetExistenceResponse = new GetExistenceResponse();
+  }
 
-    @After
-    public void tearDown() throws Exception {
-        oGetExistenceResponse = null;
-    }
+  @After
+  public void tearDown() throws Exception {
+    oGetExistenceResponse = null;
+  }
 
-    @Test
-    public void testDefaultValues() {
-        Assert.assertNull(oGetExistenceResponse.getSchemaId());
-        Assert.assertNull(oGetExistenceResponse.getServiceId());
-    }
+  @Test
+  public void testDefaultValues() {
+    Assert.assertNull(oGetExistenceResponse.getSchemaId());
+    Assert.assertNull(oGetExistenceResponse.getServiceId());
+  }
 
-    @Test
-    public void testIntializedValues() {
-        initFields(); //Initialize the Object
-        Assert.assertEquals("testSchemaId", oGetExistenceResponse.getSchemaId());
-        Assert.assertEquals("testServiceId", oGetExistenceResponse.getServiceId());
-    }
+  @Test
+  public void testIntializedValues() {
+    initFields(); //Initialize the Object
+    Assert.assertEquals("testSchemaId", oGetExistenceResponse.getSchemaId());
+    Assert.assertEquals("testServiceId", oGetExistenceResponse.getServiceId());
+  }
 
-    private void initFields() {
-        oGetExistenceResponse.setSchemaId("testSchemaId");
-        oGetExistenceResponse.setServiceId("testServiceId");
-    }
-
+  private void initFields() {
+    oGetExistenceResponse.setSchemaId("testSchemaId");
+    oGetExistenceResponse.setServiceId("testServiceId");
+  }
 }

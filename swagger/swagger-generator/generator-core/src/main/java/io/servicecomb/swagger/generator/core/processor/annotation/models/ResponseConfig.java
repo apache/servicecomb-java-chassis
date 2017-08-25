@@ -27,48 +27,48 @@ import io.swagger.models.Response;
  * 所以将数据提取出来，统一处理
  */
 public class ResponseConfig extends ResponseConfigBase {
-    private int code;
+  private int code;
 
-    private List<ResponseHeaderConfig> responseHeaders;
+  private List<ResponseHeaderConfig> responseHeaders;
 
-    // 根据本config生成的response
-    private Response response;
+  // 根据本config生成的response
+  private Response response;
 
-    public int getCode() {
-        return code;
+  public int getCode() {
+    return code;
+  }
+
+  public void setCode(int code) {
+    this.code = code;
+  }
+
+  public List<ResponseHeaderConfig> getResponseHeaders() {
+    return responseHeaders;
+  }
+
+  public void setResponseHeaders(List<ResponseHeaderConfig> responseHeaders) {
+    this.responseHeaders = responseHeaders;
+  }
+
+  public void setResponseHeaders(ResponseHeader[] responseHeaders) {
+    this.responseHeaders = new ArrayList<>();
+    for (ResponseHeader header : responseHeaders) {
+      ResponseHeaderConfig config = AnnotationUtils.convert(header);
+      if (config != null) {
+        this.responseHeaders.add(config);
+      }
     }
 
-    public void setCode(int code) {
-        this.code = code;
+    if (this.responseHeaders.isEmpty()) {
+      this.responseHeaders = null;
     }
+  }
 
-    public List<ResponseHeaderConfig> getResponseHeaders() {
-        return responseHeaders;
-    }
+  public Response getResponse() {
+    return response;
+  }
 
-    public void setResponseHeaders(List<ResponseHeaderConfig> responseHeaders) {
-        this.responseHeaders = responseHeaders;
-    }
-
-    public void setResponseHeaders(ResponseHeader[] responseHeaders) {
-        this.responseHeaders = new ArrayList<>();
-        for (ResponseHeader header : responseHeaders) {
-            ResponseHeaderConfig config = AnnotationUtils.convert(header);
-            if (config != null) {
-                this.responseHeaders.add(config);
-            }
-        }
-
-        if (this.responseHeaders.isEmpty()) {
-            this.responseHeaders = null;
-        }
-    }
-
-    public Response getResponse() {
-        return response;
-    }
-
-    public void setResponse(Response response) {
-        this.response = response;
-    }
+  public void setResponse(Response response) {
+    this.response = response;
+  }
 }

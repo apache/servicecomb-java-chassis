@@ -22,13 +22,13 @@ import io.servicecomb.serviceregistry.api.registry.Microservice;
  * Created by   on 2016/12/8.
  */
 public class GetServiceResponse {
-    private Microservice service;
+  private Microservice service;
 
-    public Microservice getService() {
-        return service;
-    }
+  public Microservice getService() {
+    return service;
+  }
 
-    public void setService(Microservice service) {
-        this.service = service;
-    }
+  public void setService(Microservice service) {
+    this.service = service;
+  }
 }

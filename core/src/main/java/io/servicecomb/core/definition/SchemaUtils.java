@@ -21,45 +21,45 @@ import java.net.URL;
 import org.apache.commons.io.IOUtils;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import io.servicecomb.swagger.generator.core.utils.ClassUtils;
 
+import io.servicecomb.swagger.generator.core.utils.ClassUtils;
 import io.swagger.models.Swagger;
 import io.swagger.util.Yaml;
 
 public final class SchemaUtils {
 
-    private SchemaUtils() {
-    }
+  private SchemaUtils() {
+  }
 
-    public static String generatePackageName(MicroserviceMeta microserviceMeta, String schemaId) {
-        String name = "cse.gen." + microserviceMeta.getAppId() + "." + microserviceMeta.getShortName() + "."
-                + schemaId;
+  public static String generatePackageName(MicroserviceMeta microserviceMeta, String schemaId) {
+    String name = "cse.gen." + microserviceMeta.getAppId() + "." + microserviceMeta.getShortName() + "."
+        + schemaId;
 
-        return ClassUtils.correctClassName(name);
-    }
+    return ClassUtils.correctClassName(name);
+  }
 
-    public static String swaggerToString(Swagger swagger) {
-        try {
-            return Yaml.mapper().writeValueAsString(swagger);
-        } catch (JsonProcessingException e) {
-            throw new Error(e);
-        }
+  public static String swaggerToString(Swagger swagger) {
+    try {
+      return Yaml.mapper().writeValueAsString(swagger);
+    } catch (JsonProcessingException e) {
+      throw new Error(e);
     }
+  }
 
-    public static Swagger parseSwagger(URL url) {
-        try {
-            String swaggerContext = IOUtils.toString(url);
-            return Yaml.mapper().readValue(swaggerContext, Swagger.class);
-        } catch (Throwable e) {
-            throw new Error(e);
-        }
+  public static Swagger parseSwagger(URL url) {
+    try {
+      String swaggerContext = IOUtils.toString(url);
+      return Yaml.mapper().readValue(swaggerContext, Swagger.class);
+    } catch (Throwable e) {
+      throw new Error(e);
     }
+  }
 
-    public static Swagger parseSwagger(String swaggerContent) {
-        try {
-            return Yaml.mapper().readValue(swaggerContent, Swagger.class);
-        } catch (Throwable e) {
-            throw new Error(e);
-        }
+  public static Swagger parseSwagger(String swaggerContent) {
+    try {
+      return Yaml.mapper().readValue(swaggerContent, Swagger.class);
+    } catch (Throwable e) {
+      throw new Error(e);
     }
+  }
 }

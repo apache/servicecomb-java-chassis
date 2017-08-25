@@ -35,73 +35,73 @@ import mockit.Deencapsulation;
 
 public class TestVertxRestServer {
 
-    private VertxRestServer instance = null;
+  private VertxRestServer instance = null;
 
-    @Before
-    public void setUp() throws Exception {
-        Router mainRouter = Router.router(null);
-        mainRouter.route().handler(BodyHandler.create());
-        instance = new VertxRestServer(mainRouter) {
-            @Override
-            protected RestOperationMeta findRestOperation(RestServerRequestInternal restRequest) {
-                return super.findRestOperation(restRequest);
-            }
+  @Before
+  public void setUp() throws Exception {
+    Router mainRouter = Router.router(null);
+    mainRouter.route().handler(BodyHandler.create());
+    instance = new VertxRestServer(mainRouter) {
+      @Override
+      protected RestOperationMeta findRestOperation(RestServerRequestInternal restRequest) {
+        return super.findRestOperation(restRequest);
+      }
 
-            @Override
-            public void sendFailResponse(RestServerRequestInternal restRequest, HttpServerResponse httpResponse,
-                    Throwable throwable) {
-            }
-        };
+      @Override
+      public void sendFailResponse(RestServerRequestInternal restRequest, HttpServerResponse httpResponse,
+          Throwable throwable) {
+      }
+    };
+  }
+
+  @After
+  public void tearDown() throws Exception {
+    instance = null;
+  }
+
+  @Test
+  public void testSetHttpRequestContext() {
+    boolean status = false;
+    try {
+      Invocation invocation = Mockito.mock(Invocation.class);
+      RestServerRequestInternal restRequest = Mockito.mock(RestServerRequestInternal.class);
+      instance.setHttpRequestContext(invocation, restRequest);
+      Assert.assertNotNull(instance);
+    } catch (Exception e) {
+      status = true;
     }
+    Assert.assertFalse(status);
+  }
 
-    @After
-    public void tearDown() throws Exception {
-        instance = null;
-    }
+  @Test
+  public void testVertxRestServer() {
+    Assert.assertNotNull(instance);
+  }
 
-    @Test
-    public void testSetHttpRequestContext() {
-        boolean status = false;
-        try {
-            Invocation invocation = Mockito.mock(Invocation.class);
-            RestServerRequestInternal restRequest = Mockito.mock(RestServerRequestInternal.class);
-            instance.setHttpRequestContext(invocation, restRequest);
-            Assert.assertNotNull(instance);
-        } catch (Exception e) {
-            status = true;
-        }
-        Assert.assertFalse(status);
+  @Test
+  public void testDoSend() {
+    boolean status = false;
+    try {
+      HttpServerResponse httpServerResponse = Mockito.mock(HttpServerResponse.class);
+      ProduceProcessor produceProcessor = Mockito.mock(ProduceProcessor.class);
+      Response response = Response.create(0, "reasonPhrase", new Object());
+      instance.doSendResponse(httpServerResponse, produceProcessor, response);
+    } catch (Exception e) {
+      status = true;
     }
+    Assert.assertFalse(status);
+  }
 
-    @Test
-    public void testVertxRestServer() {
-        Assert.assertNotNull(instance);
+  @Test
+  public void testFailureHandler() {
+    RoutingContext context = Mockito.mock(RoutingContext.class);
+    Mockito.when(context.response()).thenReturn(Mockito.mock(HttpServerResponse.class));
+    boolean status = false;
+    try {
+      Deencapsulation.invoke(instance, "failureHandler", context);
+    } catch (Exception e) {
+      status = true;
     }
-
-    @Test
-    public void testDoSend() {
-        boolean status = false;
-        try {
-            HttpServerResponse httpServerResponse = Mockito.mock(HttpServerResponse.class);
-            ProduceProcessor produceProcessor = Mockito.mock(ProduceProcessor.class);
-            Response response = Response.create(0, "reasonPhrase", new Object());
-            instance.doSendResponse(httpServerResponse, produceProcessor, response);
-        } catch (Exception e) {
-            status = true;
-        }
-        Assert.assertFalse(status);
-    }
-
-    @Test
-    public void testFailureHandler() {
-        RoutingContext context = Mockito.mock(RoutingContext.class);
-        Mockito.when(context.response()).thenReturn(Mockito.mock(HttpServerResponse.class));
-        boolean status = false;
-        try {
-            Deencapsulation.invoke(instance, "failureHandler", context);
-        } catch (Exception e) {
-            status = true;
-        }
-        Assert.assertFalse(status);
-    }
+    Assert.assertFalse(status);
+  }
 }

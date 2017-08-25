@@ -23,27 +23,26 @@ import org.junit.Test;
 
 public class TestPaasNamespaceHandler {
 
-    PaasNamespaceHandler paasNamespaceHandler = null;
+  PaasNamespaceHandler paasNamespaceHandler = null;
 
-    @Before
-    public void setUp() throws Exception {
-        paasNamespaceHandler = new PaasNamespaceHandler();
+  @Before
+  public void setUp() throws Exception {
+    paasNamespaceHandler = new PaasNamespaceHandler();
+  }
+
+  @After
+  public void tearDown() throws Exception {
+    paasNamespaceHandler = null;
+  }
+
+  @Test
+  public void testInit() {
+    boolean status = false;
+    try {
+      paasNamespaceHandler.init();
+    } catch (Exception e) {
+      status = true;
     }
-
-    @After
-    public void tearDown() throws Exception {
-        paasNamespaceHandler = null;
-    }
-
-    @Test
-    public void testInit() {
-        boolean status = false;
-        try {
-            paasNamespaceHandler.init();
-        } catch (Exception e) {
-            status = true;
-        }
-        Assert.assertFalse(status);
-    }
-
+    Assert.assertFalse(status);
+  }
 }

@@ -20,20 +20,20 @@ import io.servicecomb.core.Handler;
 import io.servicecomb.core.handler.impl.ProducerOperationHandler;
 
 public class ProducerHandlerManager extends AbstractHandlerManager {
-    public static final ProducerHandlerManager INSTANCE = new ProducerHandlerManager();
+  public static final ProducerHandlerManager INSTANCE = new ProducerHandlerManager();
 
-    @Override
-    protected String getName() {
-        return "Provider";
-    }
+  @Override
+  protected String getName() {
+    return "Provider";
+  }
 
-    @Override
-    protected String getInnerDefaultChainDef() {
-        return "";
-    }
+  @Override
+  protected String getInnerDefaultChainDef() {
+    return "";
+  }
 
-    @Override
-    protected Handler getLastHandler() {
-        return ProducerOperationHandler.INSTANCE;
-    }
+  @Override
+  protected Handler getLastHandler() {
+    return ProducerOperationHandler.INSTANCE;
+  }
 }

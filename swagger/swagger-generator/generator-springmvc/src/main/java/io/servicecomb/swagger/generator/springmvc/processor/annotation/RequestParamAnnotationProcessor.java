@@ -19,17 +19,16 @@ package io.servicecomb.swagger.generator.springmvc.processor.annotation;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import io.servicecomb.swagger.generator.core.processor.parameter.AbstractParameterProcessor;
-
 import io.swagger.models.parameters.QueryParameter;
 
 public class RequestParamAnnotationProcessor extends AbstractParameterProcessor<QueryParameter> {
-    @Override
-    protected QueryParameter createParameter() {
-        return new QueryParameter();
-    }
+  @Override
+  protected QueryParameter createParameter() {
+    return new QueryParameter();
+  }
 
-    @Override
-    protected String getAnnotationParameterName(Object annotation) {
-        return ((RequestParam) annotation).name();
-    }
+  @Override
+  protected String getAnnotationParameterName(Object annotation) {
+    return ((RequestParam) annotation).name();
+  }
 }

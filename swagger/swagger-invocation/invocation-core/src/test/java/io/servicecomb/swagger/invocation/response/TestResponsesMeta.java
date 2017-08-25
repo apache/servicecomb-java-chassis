@@ -15,13 +15,12 @@
  */
 package io.servicecomb.swagger.invocation.response;
 
-import io.servicecomb.swagger.generator.core.SwaggerGenerator;
-import io.servicecomb.swagger.generator.core.unittest.UnitTestSwaggerUtils;
-import io.servicecomb.swagger.invocation.exception.CommonExceptionData;
-
 import org.junit.Assert;
 import org.junit.Test;
 
+import io.servicecomb.swagger.generator.core.SwaggerGenerator;
+import io.servicecomb.swagger.generator.core.unittest.UnitTestSwaggerUtils;
+import io.servicecomb.swagger.invocation.exception.CommonExceptionData;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import io.swagger.annotations.ResponseHeader;
@@ -29,43 +28,42 @@ import io.swagger.models.Operation;
 import io.swagger.models.Swagger;
 
 public class TestResponsesMeta {
-    class ResponseMetaImpl {
-        @ApiResponses({@ApiResponse(code = 400, response = String.class, message = ""),
-                @ApiResponse(
-                        code = 401,
-                        response = long.class,
-                        message = "",
-                        responseHeaders = {@ResponseHeader(name = "h1", response = int.class)})
-        })
-        public int add(int x, int y) {
-            return x + y;
-        }
-
+  class ResponseMetaImpl {
+    @ApiResponses({@ApiResponse(code = 400, response = String.class, message = ""),
+        @ApiResponse(
+            code = 401,
+            response = long.class,
+            message = "",
+            responseHeaders = {@ResponseHeader(name = "h1", response = int.class)})
+    })
+    public int add(int x, int y) {
+      return x + y;
     }
+  }
 
-    @Test
-    public void test() {
-        SwaggerGenerator generator = UnitTestSwaggerUtils.generateSwagger(ResponseMetaImpl.class);
-        Swagger swagger = generator.getSwagger();
-        Operation operation = swagger.getPath("/add").getPost();
+  @Test
+  public void test() {
+    SwaggerGenerator generator = UnitTestSwaggerUtils.generateSwagger(ResponseMetaImpl.class);
+    Swagger swagger = generator.getSwagger();
+    Operation operation = swagger.getPath("/add").getPost();
 
-        ResponsesMeta meta = new ResponsesMeta();
-        meta.init(null, "gen", swagger, operation, int.class);
+    ResponsesMeta meta = new ResponsesMeta();
+    meta.init(null, "gen", swagger, operation, int.class);
 
-        ResponseMeta resp = meta.findResponseMeta(200);
-        Assert.assertEquals(int.class, resp.getJavaType().getRawClass());
+    ResponseMeta resp = meta.findResponseMeta(200);
+    Assert.assertEquals(int.class, resp.getJavaType().getRawClass());
 
-        resp = meta.findResponseMeta(201);
-        Assert.assertEquals(int.class, resp.getJavaType().getRawClass());
+    resp = meta.findResponseMeta(201);
+    Assert.assertEquals(int.class, resp.getJavaType().getRawClass());
 
-        resp = meta.findResponseMeta(400);
-        Assert.assertEquals(String.class, resp.getJavaType().getRawClass());
+    resp = meta.findResponseMeta(400);
+    Assert.assertEquals(String.class, resp.getJavaType().getRawClass());
 
-        resp = meta.findResponseMeta(401);
-        Assert.assertEquals(Long.class, resp.getJavaType().getRawClass());
-        Assert.assertEquals(Integer.class, resp.getHeaders().get("h1").getRawClass());
+    resp = meta.findResponseMeta(401);
+    Assert.assertEquals(Long.class, resp.getJavaType().getRawClass());
+    Assert.assertEquals(Integer.class, resp.getHeaders().get("h1").getRawClass());
 
-        resp = meta.findResponseMeta(500);
-        Assert.assertEquals(CommonExceptionData.class, resp.getJavaType().getRawClass());
-    }
+    resp = meta.findResponseMeta(500);
+    Assert.assertEquals(CommonExceptionData.class, resp.getJavaType().getRawClass());
+  }
 }

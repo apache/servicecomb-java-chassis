@@ -19,8 +19,6 @@ package io.servicecomb.codec.protobuf.codec;
 import java.lang.reflect.Type;
 import java.util.Arrays;
 
-import io.servicecomb.codec.protobuf.jackson.CseObjectWriter;
-import io.servicecomb.codec.protobuf.jackson.ParamSerializer;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -35,76 +33,78 @@ import com.fasterxml.jackson.dataformat.protobuf.schema.FieldType;
 import com.fasterxml.jackson.dataformat.protobuf.schema.ProtobufField;
 import com.fasterxml.jackson.dataformat.protobuf.schema.ProtobufMessage;
 import com.fasterxml.jackson.dataformat.protobuf.schema.ProtobufSchema;
+
 import io.servicecomb.codec.protobuf.definition.ProtobufManager;
 import io.servicecomb.codec.protobuf.jackson.CseObjectReader;
+import io.servicecomb.codec.protobuf.jackson.CseObjectWriter;
 import io.servicecomb.codec.protobuf.jackson.ParamDeserializer;
+import io.servicecomb.codec.protobuf.jackson.ParamSerializer;
 
 public class TestAbstractFieldCodec extends AbstractFieldCodec {
 
-    private AbstractFieldCodec abstractFieldCodec = null;
+  private AbstractFieldCodec abstractFieldCodec = null;
 
-    private ProtobufSchema schema = null;
+  private ProtobufSchema schema = null;
 
-    @Before
-    public void setUp() throws Exception {
-        abstractFieldCodec = new TestAbstractFieldCodec();
-        schema = Mockito.mock(ProtobufSchema.class);
-    }
+  @Before
+  public void setUp() throws Exception {
+    abstractFieldCodec = new TestAbstractFieldCodec();
+    schema = Mockito.mock(ProtobufSchema.class);
+  }
 
-    @After
-    public void tearDown() throws Exception {
-        abstractFieldCodec = null;
-        schema = null;
-    }
+  @After
+  public void tearDown() throws Exception {
+    abstractFieldCodec = null;
+    schema = null;
+  }
 
-    @Override
-    public ObjectWriter getWriter() {
-        return writer;
-    }
+  @Override
+  public ObjectWriter getWriter() {
+    return writer;
+  }
 
-    @Override
-    public ObjectReader getReader() {
-        return reader;
-    }
+  @Override
+  public ObjectReader getReader() {
+    return reader;
+  }
 
-    @Test
-    public void testInit() {
-        ProtobufField[] protobufFieldArray = new ProtobufField[5];
-        FieldElement rawType = null;
-        FieldType type = FieldType.STRING;
-        ProtobufField p = new ProtobufField(rawType, type);
-        protobufFieldArray[0] = p;
-        Type[] types = new Type[1];
-        types[0] = Integer.TYPE;
+  @Test
+  public void testInit() {
+    ProtobufField[] protobufFieldArray = new ProtobufField[5];
+    FieldElement rawType = null;
+    FieldType type = FieldType.STRING;
+    ProtobufField p = new ProtobufField(rawType, type);
+    protobufFieldArray[0] = p;
+    Type[] types = new Type[1];
+    types[0] = Integer.TYPE;
 
-        Mockito.when(schema.getRootType()).thenReturn(Mockito.mock(ProtobufMessage.class));
-        Mockito.when(schema.getRootType().getFieldCount()).thenReturn(1);
-        Mockito.when(schema.getRootType().fields()).thenReturn(Arrays.asList(protobufFieldArray));
-        abstractFieldCodec.init(schema, types);
-        Assert.assertNotNull(abstractFieldCodec.readerHelpDataMap.get("UNKNOWN"));
-    }
+    Mockito.when(schema.getRootType()).thenReturn(Mockito.mock(ProtobufMessage.class));
+    Mockito.when(schema.getRootType().getFieldCount()).thenReturn(1);
+    Mockito.when(schema.getRootType().fields()).thenReturn(Arrays.asList(protobufFieldArray));
+    abstractFieldCodec.init(schema, types);
+    Assert.assertNotNull(abstractFieldCodec.readerHelpDataMap.get("UNKNOWN"));
+  }
 
-    @Test
-    public void testFindInfo() {
-        Assert.assertNull(abstractFieldCodec.findInfo("name"));
-    }
+  @Test
+  public void testFindInfo() {
+    Assert.assertNull(abstractFieldCodec.findInfo("name"));
+  }
 
-    @Override
-    public void init(ProtobufSchema schema, Type... types) {
-        writer = new CseObjectWriter(ProtobufManager.getWriter(), schema, new ParamSerializer());
-        reader = new CseObjectReader(ProtobufManager.getReader(), schema, new ParamDeserializer(readerHelpDataMap));
-        super.init(schema, types);
-    }
+  @Override
+  public void init(ProtobufSchema schema, Type... types) {
+    writer = new CseObjectWriter(ProtobufManager.getWriter(), schema, new ParamSerializer());
+    reader = new CseObjectReader(ProtobufManager.getReader(), schema, new ParamDeserializer(readerHelpDataMap));
+    super.init(schema, types);
+  }
 
-    @Test
-    public void testReaderHelpData() {
-        ReaderHelpData ReaderHelpData = new ReaderHelpData();
-        ReaderHelpData.setIndex(10);
-        ReaderHelpData.getDeser();
-        @SuppressWarnings("unchecked")
-        JsonDeserializer<Object> j = Mockito.mock(JsonDeserializer.class);
-        ReaderHelpData.setDeser(j);
-        Assert.assertEquals(10, ReaderHelpData.getIndex());
-    }
-
+  @Test
+  public void testReaderHelpData() {
+    ReaderHelpData ReaderHelpData = new ReaderHelpData();
+    ReaderHelpData.setIndex(10);
+    ReaderHelpData.getDeser();
+    @SuppressWarnings("unchecked")
+    JsonDeserializer<Object> j = Mockito.mock(JsonDeserializer.class);
+    ReaderHelpData.setDeser(j);
+    Assert.assertEquals(10, ReaderHelpData.getIndex());
+  }
 }

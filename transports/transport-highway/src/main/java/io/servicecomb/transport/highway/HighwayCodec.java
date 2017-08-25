@@ -16,12 +16,11 @@
 
 package io.servicecomb.transport.highway;
 
+import io.protostuff.runtime.ProtobufFeature;
 import io.servicecomb.codec.protobuf.definition.OperationProtobuf;
 import io.servicecomb.codec.protobuf.utils.WrapSchema;
 import io.servicecomb.core.Invocation;
 import io.servicecomb.core.invocation.InvocationFactory;
-
-import io.protostuff.runtime.ProtobufFeature;
 import io.servicecomb.foundation.vertx.client.tcp.TcpData;
 import io.servicecomb.foundation.vertx.tcp.TcpOutputStream;
 import io.servicecomb.swagger.invocation.Response;
@@ -30,71 +29,70 @@ import io.servicecomb.transport.highway.message.ResponseHeader;
 import io.vertx.core.buffer.Buffer;
 
 public final class HighwayCodec {
-    private static HighwayTransport highwayTransport;
+  private static HighwayTransport highwayTransport;
 
-    private HighwayCodec() {
+  private HighwayCodec() {
+  }
+
+  public static void setHighwayTransport(HighwayTransport highwayTransport) {
+    HighwayCodec.highwayTransport = highwayTransport;
+  }
+
+  public static TcpOutputStream encodeRequest(long msgId, Invocation invocation,
+      OperationProtobuf operationProtobuf, ProtobufFeature protobufFeature) throws Exception {
+    // 写header
+    RequestHeader header = new RequestHeader();
+    header.setMsgType(MsgType.REQUEST);
+    header.setFlags(0);
+    header.setDestMicroservice(invocation.getMicroserviceName());
+    header.setSchemaId(invocation.getSchemaId());
+    header.setOperationName(invocation.getOperationName());
+    header.setContext(invocation.getContext());
+
+    HighwayOutputStream os = new HighwayOutputStream(msgId, protobufFeature);
+    os.write(header, operationProtobuf.getRequestSchema(), invocation.getArgs());
+    return os;
+  }
+
+  public static Invocation decodeRequest(RequestHeader header, OperationProtobuf operationProtobuf,
+      Buffer bodyBuffer, ProtobufFeature protobufFeature) throws Exception {
+    WrapSchema schema = operationProtobuf.getRequestSchema();
+    Object[] args = schema.readObject(bodyBuffer, protobufFeature);
+
+    Invocation invocation =
+        InvocationFactory.forProvider(highwayTransport.getEndpoint(),
+            operationProtobuf.getOperationMeta(),
+            args);
+    invocation.setContext(header.getContext());
+    return invocation;
+  }
+
+  public static RequestHeader readRequestHeader(Buffer headerBuffer,
+      ProtobufFeature protobufFeature) throws Exception {
+    return RequestHeader.readObject(headerBuffer, protobufFeature);
+  }
+
+  public static Buffer encodeResponse(long msgId, ResponseHeader header, WrapSchema bodySchema,
+      Object body, ProtobufFeature protobufFeature) throws Exception {
+    try (HighwayOutputStream os = new HighwayOutputStream(msgId, protobufFeature)) {
+      os.write(header, bodySchema, body);
+      return os.getBuffer();
+    }
+  }
+
+  public static Response decodeResponse(Invocation invocation, OperationProtobuf operationProtobuf,
+      TcpData tcpData, ProtobufFeature protobufFeature) throws Exception {
+    ResponseHeader header = ResponseHeader.readObject(tcpData.getHeaderBuffer(), protobufFeature);
+    if (header.getContext() != null) {
+      invocation.getContext().putAll(header.getContext());
     }
 
-    public static void setHighwayTransport(HighwayTransport highwayTransport) {
-        HighwayCodec.highwayTransport = highwayTransport;
-    }
+    WrapSchema bodySchema = operationProtobuf.findResponseSchema(header.getStatusCode());
+    Object body = bodySchema.readObject(tcpData.getBodyBuffer(), protobufFeature);
 
-    public static TcpOutputStream encodeRequest(long msgId, Invocation invocation,
-            OperationProtobuf operationProtobuf, ProtobufFeature protobufFeature) throws Exception {
-        // 写header
-        RequestHeader header = new RequestHeader();
-        header.setMsgType(MsgType.REQUEST);
-        header.setFlags(0);
-        header.setDestMicroservice(invocation.getMicroserviceName());
-        header.setSchemaId(invocation.getSchemaId());
-        header.setOperationName(invocation.getOperationName());
-        header.setContext(invocation.getContext());
+    Response response = Response.create(header.getStatusCode(), header.getReasonPhrase(), body);
+    response.setHeaders(header.getHeaders());
 
-        HighwayOutputStream os = new HighwayOutputStream(msgId, protobufFeature);
-        os.write(header, operationProtobuf.getRequestSchema(), invocation.getArgs());
-        return os;
-    }
-
-    public static Invocation decodeRequest(RequestHeader header, OperationProtobuf operationProtobuf,
-            Buffer bodyBuffer, ProtobufFeature protobufFeature) throws Exception {
-        WrapSchema schema = operationProtobuf.getRequestSchema();
-        Object[] args = schema.readObject(bodyBuffer, protobufFeature);
-
-        Invocation invocation =
-            InvocationFactory.forProvider(highwayTransport.getEndpoint(),
-                    operationProtobuf.getOperationMeta(),
-                    args);
-        invocation.setContext(header.getContext());
-        return invocation;
-
-    }
-
-    public static RequestHeader readRequestHeader(Buffer headerBuffer,
-            ProtobufFeature protobufFeature) throws Exception {
-        return RequestHeader.readObject(headerBuffer, protobufFeature);
-    }
-
-    public static Buffer encodeResponse(long msgId, ResponseHeader header, WrapSchema bodySchema,
-            Object body, ProtobufFeature protobufFeature) throws Exception {
-        try (HighwayOutputStream os = new HighwayOutputStream(msgId, protobufFeature)) {
-            os.write(header, bodySchema, body);
-            return os.getBuffer();
-        }
-    }
-
-    public static Response decodeResponse(Invocation invocation, OperationProtobuf operationProtobuf,
-            TcpData tcpData, ProtobufFeature protobufFeature) throws Exception {
-        ResponseHeader header = ResponseHeader.readObject(tcpData.getHeaderBuffer(), protobufFeature);
-        if (header.getContext() != null) {
-            invocation.getContext().putAll(header.getContext());
-        }
-
-        WrapSchema bodySchema = operationProtobuf.findResponseSchema(header.getStatusCode());
-        Object body = bodySchema.readObject(tcpData.getBodyBuffer(), protobufFeature);
-
-        Response response = Response.create(header.getStatusCode(), header.getReasonPhrase(), body);
-        response.setHeaders(header.getHeaders());
-
-        return response;
-    }
+    return response;
+  }
 }

@@ -26,74 +26,69 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-/**
- *
- * @since Mar 13, 2017
- * @see
- */
 public class TestMicroService {
 
-    Microservice oMicroservice = null;
+  Microservice oMicroservice = null;
 
-    Map<String, String> oMapProperties = null;
+  Map<String, String> oMapProperties = null;
 
-    List<String> oListSchemas = null;
+  List<String> oListSchemas = null;
 
-    @Before
-    public void setUp() throws Exception {
-        oMicroservice = new Microservice();
-        oMapProperties = new HashMap<>();
-        oListSchemas = new ArrayList<>();
-    }
+  @Before
+  public void setUp() throws Exception {
+    oMicroservice = new Microservice();
+    oMapProperties = new HashMap<>();
+    oListSchemas = new ArrayList<>();
+  }
 
-    @After
-    public void tearDown() throws Exception {
-        oMicroservice = null;
-        oMapProperties = null;
-        oListSchemas = null;
-    }
+  @After
+  public void tearDown() throws Exception {
+    oMicroservice = null;
+    oMapProperties = null;
+    oListSchemas = null;
+  }
 
-    @Test
-    public void testDefaultValues() {
-        Assert.assertNull(oMicroservice.getAppId());
-        Assert.assertNull(oMicroservice.getDescription());
-        Assert.assertNull(oMicroservice.getLevel());
-        Assert.assertEquals(0, oMicroservice.getProperties().size());
-        Assert.assertEquals(0, oMicroservice.getSchemas().size());
-        Assert.assertNull(oMicroservice.getServiceId());
-        Assert.assertNull(oMicroservice.getServiceName());
-        Assert.assertEquals(MicroserviceInstanceStatus.UP.toString(), oMicroservice.getStatus());
-        Assert.assertNull(oMicroservice.getVersion());
-        Assert.assertEquals(0, oMicroservice.getPaths().size());
-    }
+  @Test
+  public void testDefaultValues() {
+    Assert.assertNull(oMicroservice.getAppId());
+    Assert.assertNull(oMicroservice.getDescription());
+    Assert.assertNull(oMicroservice.getLevel());
+    Assert.assertEquals(0, oMicroservice.getProperties().size());
+    Assert.assertEquals(0, oMicroservice.getSchemas().size());
+    Assert.assertNull(oMicroservice.getServiceId());
+    Assert.assertNull(oMicroservice.getServiceName());
+    Assert.assertEquals(MicroserviceInstanceStatus.UP.toString(), oMicroservice.getStatus());
+    Assert.assertNull(oMicroservice.getVersion());
+    Assert.assertEquals(0, oMicroservice.getPaths().size());
+  }
 
-    @Test
-    public void testIntializedValues() {
-        initMicroservice(); //Initialize the Object
-        Assert.assertEquals("testAppID", oMicroservice.getAppId());
-        Assert.assertEquals("This is the test", oMicroservice.getDescription());
-        Assert.assertEquals("INFO", oMicroservice.getLevel());
-        Assert.assertEquals("testServiceID", oMicroservice.getServiceId());
-        Assert.assertEquals("testServiceName", oMicroservice.getServiceName());
-        Assert.assertEquals(MicroserviceInstanceStatus.DOWN.toString(), oMicroservice.getStatus());
-        Assert.assertEquals("1.0.0", oMicroservice.getVersion());
-        Assert.assertEquals("fakeProxy", oMicroservice.getProperties().get("proxy"));
-        Assert.assertEquals(1, oMicroservice.getSchemas().size());
-        Assert.assertEquals(1, oMicroservice.getPaths().size());
-    }
+  @Test
+  public void testIntializedValues() {
+    initMicroservice(); //Initialize the Object
+    Assert.assertEquals("testAppID", oMicroservice.getAppId());
+    Assert.assertEquals("This is the test", oMicroservice.getDescription());
+    Assert.assertEquals("INFO", oMicroservice.getLevel());
+    Assert.assertEquals("testServiceID", oMicroservice.getServiceId());
+    Assert.assertEquals("testServiceName", oMicroservice.getServiceName());
+    Assert.assertEquals(MicroserviceInstanceStatus.DOWN.toString(), oMicroservice.getStatus());
+    Assert.assertEquals("1.0.0", oMicroservice.getVersion());
+    Assert.assertEquals("fakeProxy", oMicroservice.getProperties().get("proxy"));
+    Assert.assertEquals(1, oMicroservice.getSchemas().size());
+    Assert.assertEquals(1, oMicroservice.getPaths().size());
+  }
 
-    private void initMicroservice() {
-        oMicroservice.setAppId("testAppID");
-        oMicroservice.setDescription("This is the test");
-        oMicroservice.setLevel("INFO");
-        oMicroservice.setServiceId("testServiceID");
-        oMicroservice.setServiceName("testServiceName");
-        oMicroservice.setStatus(MicroserviceInstanceStatus.DOWN.toString());
-        oMicroservice.setVersion("1.0.0");
-        oMapProperties.put("proxy", "fakeProxy");
-        oListSchemas.add("testSchemas");
-        oMicroservice.setProperties(oMapProperties);
-        oMicroservice.setSchemas(oListSchemas);
-        oMicroservice.getPaths().add(new BasePath());
-    }
+  private void initMicroservice() {
+    oMicroservice.setAppId("testAppID");
+    oMicroservice.setDescription("This is the test");
+    oMicroservice.setLevel("INFO");
+    oMicroservice.setServiceId("testServiceID");
+    oMicroservice.setServiceName("testServiceName");
+    oMicroservice.setStatus(MicroserviceInstanceStatus.DOWN.toString());
+    oMicroservice.setVersion("1.0.0");
+    oMapProperties.put("proxy", "fakeProxy");
+    oListSchemas.add("testSchemas");
+    oMicroservice.setProperties(oMapProperties);
+    oMicroservice.setSchemas(oListSchemas);
+    oMicroservice.getPaths().add(new BasePath());
+  }
 }

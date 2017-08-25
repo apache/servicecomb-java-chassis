@@ -28,36 +28,36 @@ import io.servicecomb.provider.pojo.RpcReference;
 
 @Component
 public class RpcReferenceProcessor implements ConsumerFieldProcessor, EmbeddedValueResolverAware {
-    private StringValueResolver resolver;
+  private StringValueResolver resolver;
 
-    @Override
-    public void processConsumerField(ApplicationContext applicationContext, Object bean, Field field) {
-        RpcReference reference = field.getAnnotation(RpcReference.class);
-        if (reference == null) {
-            return;
-        }
-
-        handleReferenceField(bean, field, reference);
+  @Override
+  public void processConsumerField(ApplicationContext applicationContext, Object bean, Field field) {
+    RpcReference reference = field.getAnnotation(RpcReference.class);
+    if (reference == null) {
+      return;
     }
 
-    @Override
-    public void setEmbeddedValueResolver(StringValueResolver resolver) {
-        this.resolver = resolver;
-    }
+    handleReferenceField(bean, field, reference);
+  }
 
-    private void handleReferenceField(Object obj, Field field,
-            RpcReference reference) {
-        String microserviceName = reference.microserviceName();
-        microserviceName = resolver.resolveStringValue(microserviceName);
+  @Override
+  public void setEmbeddedValueResolver(StringValueResolver resolver) {
+    this.resolver = resolver;
+  }
 
-        PojoReferenceMeta pojoReference = new PojoReferenceMeta();
-        pojoReference.setMicroserviceName(microserviceName);
-        pojoReference.setSchemaId(reference.schemaId());
-        pojoReference.setConsumerIntf(field.getType());
+  private void handleReferenceField(Object obj, Field field,
+      RpcReference reference) {
+    String microserviceName = reference.microserviceName();
+    microserviceName = resolver.resolveStringValue(microserviceName);
 
-        pojoReference.afterPropertiesSet();
+    PojoReferenceMeta pojoReference = new PojoReferenceMeta();
+    pojoReference.setMicroserviceName(microserviceName);
+    pojoReference.setSchemaId(reference.schemaId());
+    pojoReference.setConsumerIntf(field.getType());
 
-        ReflectionUtils.makeAccessible(field);
-        ReflectionUtils.setField(field, obj, pojoReference.getProxy());
-    }
+    pojoReference.afterPropertiesSet();
+
+    ReflectionUtils.makeAccessible(field);
+    ReflectionUtils.setField(field, obj, pojoReference.getProxy());
+  }
 }

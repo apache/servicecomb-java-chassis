@@ -17,19 +17,18 @@
 package io.servicecomb.swagger.extend.property;
 
 public class ShortProperty extends AbstractBaseIntegerProperty<Short> {
-    public static final String FORMAT = "int16";
+  public static final String FORMAT = "int16";
 
-    public ShortProperty() {
-        super(FORMAT);
-    }
+  public ShortProperty() {
+    super(FORMAT);
+  }
 
-    public static boolean isType(String type, String format) {
-        return TYPE.equals(type) && FORMAT.equals(format);
-    }
+  public static boolean isType(String type, String format) {
+    return TYPE.equals(type) && FORMAT.equals(format);
+  }
 
-    @Override
-    protected Short parseNumber(String strValue) {
-        return Short.parseShort(strValue);
-    }
-
+  @Override
+  protected Short parseNumber(String strValue) {
+    return Short.parseShort(strValue);
+  }
 }

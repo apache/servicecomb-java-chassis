@@ -17,8 +17,8 @@
 package io.servicecomb.codec.protobuf.utils;
 
 public enum WrapType {
-    NOT_WRAP,
-    NORMAL_WRAP,
-    ARGS_NOT_WRAP,
-    ARGS_WRAP
+  NOT_WRAP,
+  NORMAL_WRAP,
+  ARGS_NOT_WRAP,
+  ARGS_WRAP
 }

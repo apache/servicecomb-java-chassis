@@ -20,7 +20,7 @@ import javax.ws.rs.core.Response.StatusType;
 import io.servicecomb.swagger.invocation.Response;
 
 public interface ProducerResponseMapper {
-    Class<?> getResponseClass();
+  Class<?> getResponseClass();
 
-    Response mapResponse(StatusType status, Object response);
+  Response mapResponse(StatusType status, Object response);
 }

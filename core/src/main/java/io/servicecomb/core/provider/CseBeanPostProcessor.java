@@ -28,62 +28,62 @@ import org.springframework.util.ReflectionUtils;
 
 @Component
 public class CseBeanPostProcessor implements ApplicationContextAware, BeanPostProcessor {
-    private ApplicationContext applicationContext;
+  private ApplicationContext applicationContext;
 
-    public interface EmptyBeanPostProcessor extends BeanPostProcessor {
-        default Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
-            return bean;
+  public interface EmptyBeanPostProcessor extends BeanPostProcessor {
+    default Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
+      return bean;
+    }
+
+    default Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
+      return bean;
+    }
+  }
+
+  public interface ProviderProcessor extends EmptyBeanPostProcessor {
+    void processProvider(ApplicationContext applicationContext, String beanName, Object bean);
+  }
+
+  public interface ConsumerFieldProcessor extends EmptyBeanPostProcessor {
+    <CONSUMER_ANNOTATION> void processConsumerField(ApplicationContext applicationContext, Object bean,
+        Field field);
+  }
+
+  @Autowired(required = false)
+  private List<ProviderProcessor> providerProcessorList;
+
+  @Autowired(required = false)
+  private List<ConsumerFieldProcessor> consumerProcessorList;
+
+  @Override
+  public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+    this.applicationContext = applicationContext;
+  }
+
+  @Override
+  public Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
+    if (consumerProcessorList == null || consumerProcessorList.isEmpty()) {
+      return bean;
+    }
+    // 扫描所有field，处理扩展的field标注
+    ReflectionUtils.doWithFields(bean.getClass(), new ReflectionUtils.FieldCallback() {
+      public void doWith(Field field) throws IllegalArgumentException, IllegalAccessException {
+        for (ConsumerFieldProcessor processor : consumerProcessorList) {
+          processor.processConsumerField(applicationContext, bean, field);
         }
+      }
+    });
+    return bean;
+  }
 
-        default Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
-            return bean;
-        }
+  @Override
+  public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
+    if (providerProcessorList != null && !providerProcessorList.isEmpty()) {
+      for (ProviderProcessor processor : providerProcessorList) {
+        processor.processProvider(applicationContext, beanName, bean);
+      }
     }
 
-    public interface ProviderProcessor extends EmptyBeanPostProcessor {
-        void processProvider(ApplicationContext applicationContext, String beanName, Object bean);
-    }
-
-    public interface ConsumerFieldProcessor extends EmptyBeanPostProcessor {
-        <CONSUMER_ANNOTATION> void processConsumerField(ApplicationContext applicationContext, Object bean,
-                Field field);
-    }
-
-    @Autowired(required = false)
-    private List<ProviderProcessor> providerProcessorList;
-
-    @Autowired(required = false)
-    private List<ConsumerFieldProcessor> consumerProcessorList;
-
-    @Override
-    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-        this.applicationContext = applicationContext;
-    }
-
-    @Override
-    public Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
-        if (consumerProcessorList == null || consumerProcessorList.isEmpty()) {
-            return bean;
-        }
-        // 扫描所有field，处理扩展的field标注
-        ReflectionUtils.doWithFields(bean.getClass(), new ReflectionUtils.FieldCallback() {
-            public void doWith(Field field) throws IllegalArgumentException, IllegalAccessException {
-                for (ConsumerFieldProcessor processor : consumerProcessorList) {
-                    processor.processConsumerField(applicationContext, bean, field);
-                }
-            }
-        });
-        return bean;
-    }
-
-    @Override
-    public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
-        if (providerProcessorList != null && !providerProcessorList.isEmpty()) {
-            for (ProviderProcessor processor : providerProcessorList) {
-                processor.processProvider(applicationContext, beanName, bean);
-            }
-        }
-
-        return bean;
-    }
+    return bean;
+  }
 }

@@ -21,7 +21,7 @@ package io.servicecomb.core;
  * 所以这里只定义consumer对core的接口
  */
 public interface ConsumerProvider {
-    String getName();
+  String getName();
 
-    void init() throws Exception;
+  void init() throws Exception;
 }

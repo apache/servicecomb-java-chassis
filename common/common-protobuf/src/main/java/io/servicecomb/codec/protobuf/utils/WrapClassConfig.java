@@ -19,13 +19,13 @@ package io.servicecomb.codec.protobuf.utils;
 import io.servicecomb.common.javassist.ClassConfig;
 
 public class WrapClassConfig extends ClassConfig {
-    private WrapType type;
+  private WrapType type;
 
-    public WrapType getType() {
-        return type;
-    }
+  public WrapType getType() {
+    return type;
+  }
 
-    public void setType(WrapType type) {
-        this.type = type;
-    }
+  public void setType(WrapType type) {
+    this.type = type;
+  }
 }

@@ -18,7 +18,9 @@ package io.servicecomb.serviceregistry.api.registry;
 public class DataCenterInfo {
 
   private String name;
+
   private String region;
+
   private String availableZone;
 
   public String getName() {

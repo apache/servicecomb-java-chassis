@@ -33,81 +33,81 @@ import io.servicecomb.swagger.invocation.response.Headers;
  * 这里是适配springmvc的机制，让调用者能拿到已经转换好的对象
  */
 public class CseClientHttpResponse implements ClientHttpResponse {
-    // 让springmvc client以为应答有body
-    // mark、reset都是有锁的，这里通过重写取消了锁
-    private static final InputStream BODY_INPUT_STREAM = new InputStream() {
-        public boolean markSupported() {
-            return true;
-        };
+  // 让springmvc client以为应答有body
+  // mark、reset都是有锁的，这里通过重写取消了锁
+  private static final InputStream BODY_INPUT_STREAM = new InputStream() {
+    public boolean markSupported() {
+      return true;
+    }
 
-        @Override
-        public void mark(int readlimit) {
+    @Override
+    public void mark(int readlimit) {
+    }
+
+    @Override
+    public int read() throws IOException {
+      return 0;
+    }
+
+    public void reset() throws IOException {
+    }
+  };
+
+  private Response response;
+
+  private HttpHeaders httpHeaders;
+
+  public CseClientHttpResponse(Response response) {
+    this.response = response;
+  }
+
+  public Object getResult() {
+    return response.getResult();
+  }
+
+  @Override
+  public InputStream getBody() throws IOException {
+    return BODY_INPUT_STREAM;
+  }
+
+  @Override
+  public HttpHeaders getHeaders() {
+    if (httpHeaders == null) {
+      HttpHeaders tmpHeaders = new HttpHeaders();
+      // 让spring mvc有body
+      tmpHeaders.setContentLength(1);
+
+      Headers headers = response.getHeaders();
+      if (headers.getHeaderMap() != null) {
+        for (Entry<String, List<Object>> entry : headers.getHeaderMap().entrySet()) {
+          for (Object value : entry.getValue()) {
+            tmpHeaders.add(entry.getKey(), String.valueOf(value));
+          }
         }
+      }
 
-        @Override
-        public int read() throws IOException {
-            return 0;
-        }
-
-        public void reset() throws IOException {
-        };
-    };
-
-    private Response response;
-
-    private HttpHeaders httpHeaders;
-
-    public CseClientHttpResponse(Response response) {
-        this.response = response;
+      httpHeaders = tmpHeaders;
     }
+    return httpHeaders;
+  }
 
-    public Object getResult() {
-        return response.getResult();
-    }
+  @Override
+  public HttpStatus getStatusCode() throws IOException {
+    // TODO:springmvc不允许自定义http错误码
+    return HttpStatus.valueOf(response.getStatusCode());
+  }
 
-    @Override
-    public InputStream getBody() throws IOException {
-        return BODY_INPUT_STREAM;
-    }
+  @Override
+  public int getRawStatusCode() throws IOException {
+    return response.getStatusCode();
+  }
 
-    @Override
-    public HttpHeaders getHeaders() {
-        if (httpHeaders == null) {
-            HttpHeaders tmpHeaders = new HttpHeaders();
-            // 让spring mvc有body
-            tmpHeaders.setContentLength(1);
+  @Override
+  public String getStatusText() throws IOException {
+    return response.getReasonPhrase();
+  }
 
-            Headers headers = response.getHeaders();
-            if (headers.getHeaderMap() != null) {
-                for (Entry<String, List<Object>> entry : headers.getHeaderMap().entrySet()) {
-                    for (Object value : entry.getValue()) {
-                        tmpHeaders.add(entry.getKey(), String.valueOf(value));
-                    }
-                }
-            }
-
-            httpHeaders = tmpHeaders;
-        }
-        return httpHeaders;
-    }
-
-    @Override
-    public HttpStatus getStatusCode() throws IOException {
-        // TODO:springmvc不允许自定义http错误码
-        return HttpStatus.valueOf(response.getStatusCode());
-    }
-
-    @Override
-    public int getRawStatusCode() throws IOException {
-        return response.getStatusCode();
-    }
-
-    @Override
-    public String getStatusText() throws IOException {
-        return response.getReasonPhrase();
-    }
-
-    @Override
-    public void close() {
-    }
+  @Override
+  public void close() {
+  }
 }

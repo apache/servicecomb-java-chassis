@@ -28,41 +28,41 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringValueResolver;
 
 public class TestLastPropertyPlaceholderConfigurer {
-    @Component
-    static class Bean extends PropertyPlaceholderConfigurer implements EmbeddedValueResolverAware {
-        StringValueResolver resolver;
+  @Component
+  static class Bean extends PropertyPlaceholderConfigurer implements EmbeddedValueResolverAware {
+    StringValueResolver resolver;
 
-        public Bean() {
-            setIgnoreUnresolvablePlaceholders(true);
-        }
-
-        @Override
-        public void setEmbeddedValueResolver(StringValueResolver resolver) {
-            this.resolver = resolver;
-        }
-
-        @Override
-        protected Properties mergeProperties() throws IOException {
-            Properties properties = super.mergeProperties();
-            properties.put("a", "aValue");
-            return properties;
-        }
+    public Bean() {
+      setIgnoreUnresolvablePlaceholders(true);
     }
 
-    @Test
-    public void test() {
-        AnnotationConfigApplicationContext context =
-            new AnnotationConfigApplicationContext(this.getClass().getPackage().getName());
-        Bean bean = context.getBean(Bean.class);
-
-        Assert.assertEquals("aValue", bean.resolver.resolveStringValue("${a}"));
-        try {
-            bean.resolver.resolveStringValue("${b}");
-            Assert.fail("must throw exception");
-        } catch (IllegalArgumentException e) {
-            Assert.assertEquals("Could not resolve placeholder 'b' in string value \"${b}\"", e.getMessage());
-        }
-
-        context.close();
+    @Override
+    public void setEmbeddedValueResolver(StringValueResolver resolver) {
+      this.resolver = resolver;
     }
+
+    @Override
+    protected Properties mergeProperties() throws IOException {
+      Properties properties = super.mergeProperties();
+      properties.put("a", "aValue");
+      return properties;
+    }
+  }
+
+  @Test
+  public void test() {
+    AnnotationConfigApplicationContext context =
+        new AnnotationConfigApplicationContext(this.getClass().getPackage().getName());
+    Bean bean = context.getBean(Bean.class);
+
+    Assert.assertEquals("aValue", bean.resolver.resolveStringValue("${a}"));
+    try {
+      bean.resolver.resolveStringValue("${b}");
+      Assert.fail("must throw exception");
+    } catch (IllegalArgumentException e) {
+      Assert.assertEquals("Could not resolve placeholder 'b' in string value \"${b}\"", e.getMessage());
+    }
+
+    context.close();
+  }
 }

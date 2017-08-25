@@ -21,33 +21,27 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-/**
- *
- * @since Mar 14, 2017
- * @see 
- */
 public class TestPerfStatSuccFail {
 
-    PerfStatSuccFail oPerfStatSuccFail = null;
+  PerfStatSuccFail oPerfStatSuccFail = null;
 
-    @Before
-    public void setUp() throws Exception {
-        oPerfStatSuccFail = new PerfStatSuccFail("testSuccFail");
-    }
+  @Before
+  public void setUp() throws Exception {
+    oPerfStatSuccFail = new PerfStatSuccFail("testSuccFail");
+  }
 
-    @After
-    public void tearDown() throws Exception {
-        oPerfStatSuccFail = null;
-    }
+  @After
+  public void tearDown() throws Exception {
+    oPerfStatSuccFail = null;
+  }
 
-    @Test
-    public void testAdd() {
-        oPerfStatSuccFail.add(true, new PerfStatContext());
-        Assert.assertEquals(2, oPerfStatSuccFail.getPerfStatDataList().size());
+  @Test
+  public void testAdd() {
+    oPerfStatSuccFail.add(true, new PerfStatContext());
+    Assert.assertEquals(2, oPerfStatSuccFail.getPerfStatDataList().size());
 
-        //Test io.servicecomb.foundation.metrics.performance.PerfStatSuccFail.add(boolean, int, long)
-        oPerfStatSuccFail.add(false, 10, 100);;
-        Assert.assertEquals(2, oPerfStatSuccFail.getPerfStatDataList().size());
-    }
-
+    //Test io.servicecomb.foundation.metrics.performance.PerfStatSuccFail.add(boolean, int, long)
+    oPerfStatSuccFail.add(false, 10, 100);
+    Assert.assertEquals(2, oPerfStatSuccFail.getPerfStatDataList().size());
+  }
 }

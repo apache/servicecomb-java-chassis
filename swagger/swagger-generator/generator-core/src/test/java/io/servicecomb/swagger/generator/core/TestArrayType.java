@@ -28,24 +28,24 @@ import javassist.CtClass;
 import javassist.CtMethod;
 
 public class TestArrayType {
-    @Test
-    public void test() throws Exception {
-        SwaggerGenerator generator = UnitTestSwaggerUtils.generateSwagger(ArrayType.class);
-        Class<?> cls = ClassUtils.getOrCreateInterface(generator);
-        Method method = ReflectUtils.findMethod(cls, "testBytes");
+  @Test
+  public void test() throws Exception {
+    SwaggerGenerator generator = UnitTestSwaggerUtils.generateSwagger(ArrayType.class);
+    Class<?> cls = ClassUtils.getOrCreateInterface(generator);
+    Method method = ReflectUtils.findMethod(cls, "testBytes");
 
-        Class<?> param = (Class<?>) method.getParameters()[0].getParameterizedType();
-        Assert.assertEquals(byte[].class, param.getField("value").getType());
-        Assert.assertEquals(byte[].class, method.getReturnType());
+    Class<?> param = (Class<?>) method.getParameters()[0].getParameterizedType();
+    Assert.assertEquals(byte[].class, param.getField("value").getType());
+    Assert.assertEquals(byte[].class, method.getReturnType());
+  }
+
+  public CtMethod findMethod(CtClass cc, String methodName) {
+    for (CtMethod method : cc.getMethods()) {
+      if (methodName.equals(method.getName())) {
+        return method;
+      }
     }
 
-    public CtMethod findMethod(CtClass cc, String methodName) {
-        for (CtMethod method : cc.getMethods()) {
-            if (methodName.equals(method.getName())) {
-                return method;
-            }
-        }
-
-        return null;
-    }
+    return null;
+  }
 }

@@ -24,16 +24,15 @@ import org.w3c.dom.Element;
 
 public class TestSchemaDefParser {
 
-    @Test
-    public void testDoParse()
-        throws Exception {
+  @Test
+  public void testDoParse()
+      throws Exception {
 
-        SchemaDefParser lSchemaDefParser = new SchemaDefParser();
-        lSchemaDefParser.shouldGenerateId();
-        lSchemaDefParser.shouldParseNameAsAliases();
-        lSchemaDefParser.getBeanClass(null);
-        lSchemaDefParser.doParse(Mockito.mock(Element.class), null, Mockito.mock(BeanDefinitionBuilder.class));
-        Assert.assertEquals(true, lSchemaDefParser.shouldGenerateId());
-    }
-
+    SchemaDefParser lSchemaDefParser = new SchemaDefParser();
+    lSchemaDefParser.shouldGenerateId();
+    lSchemaDefParser.shouldParseNameAsAliases();
+    lSchemaDefParser.getBeanClass(null);
+    lSchemaDefParser.doParse(Mockito.mock(Element.class), null, Mockito.mock(BeanDefinitionBuilder.class));
+    Assert.assertEquals(true, lSchemaDefParser.shouldGenerateId());
+  }
 }

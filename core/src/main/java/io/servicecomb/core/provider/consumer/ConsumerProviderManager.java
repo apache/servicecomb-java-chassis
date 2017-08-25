@@ -33,58 +33,58 @@ import io.servicecomb.core.definition.schema.ConsumerSchemaFactory;
 
 @Component
 public class ConsumerProviderManager {
-    @Inject
-    private List<ConsumerProvider> consumerProviderList;
+  @Inject
+  private List<ConsumerProvider> consumerProviderList;
 
-    @Inject
-    private ConsumerSchemaFactory consumerSchemaFactory;
+  @Inject
+  private ConsumerSchemaFactory consumerSchemaFactory;
 
-    // key为微服务名
-    private volatile Map<String, ReferenceConfig> referenceConfigMap = new ConcurrentHashMap<>();
+  // key为微服务名
+  private volatile Map<String, ReferenceConfig> referenceConfigMap = new ConcurrentHashMap<>();
 
-    public void setConsumerSchemaFactory(ConsumerSchemaFactory consumerSchemaFactory) {
-        this.consumerSchemaFactory = consumerSchemaFactory;
+  public void setConsumerSchemaFactory(ConsumerSchemaFactory consumerSchemaFactory) {
+    this.consumerSchemaFactory = consumerSchemaFactory;
+  }
+
+  public void init() throws Exception {
+    for (ConsumerProvider provider : consumerProviderList) {
+      provider.init();
     }
+  }
 
-    public void init() throws Exception {
-        for (ConsumerProvider provider : consumerProviderList) {
-            provider.init();
-        }
-    }
+  public ReferenceConfig createReferenceConfig(String microserviceName, String microserviceVersion,
+      String transport) {
+    return new ReferenceConfig(consumerSchemaFactory, microserviceName, microserviceVersion, transport);
+  }
 
-    public ReferenceConfig createReferenceConfig(String microserviceName, String microserviceVersion,
-            String transport) {
-        return new ReferenceConfig(consumerSchemaFactory, microserviceName, microserviceVersion, transport);
-    }
-
-    public ReferenceConfig getReferenceConfig(String microserviceName) {
-        ReferenceConfig config = referenceConfigMap.get(microserviceName);
+  public ReferenceConfig getReferenceConfig(String microserviceName) {
+    ReferenceConfig config = referenceConfigMap.get(microserviceName);
+    if (config == null) {
+      synchronized (this) {
+        config = referenceConfigMap.get(microserviceName);
         if (config == null) {
-            synchronized (this) {
-                config = referenceConfigMap.get(microserviceName);
-                if (config == null) {
-                    String key = "cse.references." + microserviceName;
-                    DynamicStringProperty versionRule = DynamicPropertyFactory.getInstance()
-                            .getStringProperty(key + ".version-rule", Const.VERSION_RULE_LATEST);
-                    DynamicStringProperty transport =
-                        DynamicPropertyFactory.getInstance().getStringProperty(key + ".transport",
-                                Const.ANY_TRANSPORT);
+          String key = "cse.references." + microserviceName;
+          DynamicStringProperty versionRule = DynamicPropertyFactory.getInstance()
+              .getStringProperty(key + ".version-rule", Const.VERSION_RULE_LATEST);
+          DynamicStringProperty transport =
+              DynamicPropertyFactory.getInstance().getStringProperty(key + ".transport",
+                  Const.ANY_TRANSPORT);
 
-                    config = new ReferenceConfig(consumerSchemaFactory, microserviceName, versionRule.getValue(),
-                            transport.getValue());
-                    referenceConfigMap.put(microserviceName, config);
-                }
-            }
+          config = new ReferenceConfig(consumerSchemaFactory, microserviceName, versionRule.getValue(),
+              transport.getValue());
+          referenceConfigMap.put(microserviceName, config);
         }
-
-        return config;
+      }
     }
 
-    // 只用于测试场景
-    public ReferenceConfig setTransport(String microserviceName, String transport) {
-        ReferenceConfig config = getReferenceConfig(microserviceName);
-        config.setTransport(transport);
+    return config;
+  }
 
-        return config;
-    }
+  // 只用于测试场景
+  public ReferenceConfig setTransport(String microserviceName, String transport) {
+    ReferenceConfig config = getReferenceConfig(microserviceName);
+    config.setTransport(transport);
+
+    return config;
+  }
 }

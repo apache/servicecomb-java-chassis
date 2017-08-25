@@ -32,27 +32,26 @@ import io.servicecomb.loadbalance.CseServer;
  */
 public class SimpleTransactionControlFilter extends TransactionControlFilter {
 
-    @Override
-    public List<Server> getFilteredListOfServers(List<Server> servers) {
-        List<Server> filteredServers = new ArrayList<>();
-        Map<String, String> filterOptions =
-            Configuration.INSTANCE.getFlowsplitFilterOptions(getInvocation().getMicroserviceName());
-        for (Server server : servers) {
-            if (allowVisit((CseServer) server, filterOptions)) {
-                filteredServers.add(server);
-            }
-        }
-        return filteredServers;
+  @Override
+  public List<Server> getFilteredListOfServers(List<Server> servers) {
+    List<Server> filteredServers = new ArrayList<>();
+    Map<String, String> filterOptions =
+        Configuration.INSTANCE.getFlowsplitFilterOptions(getInvocation().getMicroserviceName());
+    for (Server server : servers) {
+      if (allowVisit((CseServer) server, filterOptions)) {
+        filteredServers.add(server);
+      }
     }
+    return filteredServers;
+  }
 
-    protected boolean allowVisit(CseServer server, Map<String, String> filterOptions) {
-        Map<String, String> propertiesMap = server.getInstance().getProperties();
-        for (Entry<String, String> entry : filterOptions.entrySet()) {
-            if (!entry.getValue().equals(propertiesMap.get(entry.getKey()))) {
-                return false;
-            }
-        }
-        return true;
+  protected boolean allowVisit(CseServer server, Map<String, String> filterOptions) {
+    Map<String, String> propertiesMap = server.getInstance().getProperties();
+    for (Entry<String, String> entry : filterOptions.entrySet()) {
+      if (!entry.getValue().equals(propertiesMap.get(entry.getKey()))) {
+        return false;
+      }
     }
-
+    return true;
+  }
 }

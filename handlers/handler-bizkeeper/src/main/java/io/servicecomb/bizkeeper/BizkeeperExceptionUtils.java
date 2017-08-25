@@ -20,17 +20,17 @@ import io.servicecomb.core.exception.CseException;
 import io.servicecomb.core.exception.ExceptionUtils;
 
 public class BizkeeperExceptionUtils extends ExceptionUtils {
-    public static final String CSE_HANDLER_BK_FALLBACK = "cse.bizkeeper.fallback";
+  public static final String CSE_HANDLER_BK_FALLBACK = "cse.bizkeeper.fallback";
 
-    static {
-        ERROR_DESC_MGR.register(CSE_HANDLER_BK_FALLBACK,
-                "This is a fallback call from circuit breaker. "
-                        + "\n You can add fallback logic by catching this exception. " + "\n info: operation=%s.");
-    }
+  static {
+    ERROR_DESC_MGR.register(CSE_HANDLER_BK_FALLBACK,
+        "This is a fallback call from circuit breaker. "
+            + "\n You can add fallback logic by catching this exception. " + "\n info: operation=%s.");
+  }
 
-    public static CseException createBizkeeperException(String code, Throwable cause, Object... args) {
-        String msg = String.format(ERROR_DESC_MGR.ensureFindValue(code), args);
-        CseException exception = new CseException(code, msg, cause);
-        return exception;
-    }
+  public static CseException createBizkeeperException(String code, Throwable cause, Object... args) {
+    String msg = String.format(ERROR_DESC_MGR.ensureFindValue(code), args);
+    CseException exception = new CseException(code, msg, cause);
+    return exception;
+  }
 }

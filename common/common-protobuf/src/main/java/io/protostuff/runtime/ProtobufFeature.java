@@ -16,17 +16,17 @@
 package io.protostuff.runtime;
 
 public class ProtobufFeature {
-    // 历史版本中的protoStuff实现的protobuf的map编码与标准的protobuf不兼容
-    // 为保持highway的兼容，旧的不兼容编码也要保留
-    // 所以这里默认为false
-    // 只有LoginRequest/LoginResponse同时为true时，才使用标准protobuf编码
-    private boolean useProtobufMapCodec = false;
+  // 历史版本中的protoStuff实现的protobuf的map编码与标准的protobuf不兼容
+  // 为保持highway的兼容，旧的不兼容编码也要保留
+  // 所以这里默认为false
+  // 只有LoginRequest/LoginResponse同时为true时，才使用标准protobuf编码
+  private boolean useProtobufMapCodec = false;
 
-    public boolean isUseProtobufMapCodec() {
-        return useProtobufMapCodec;
-    }
+  public boolean isUseProtobufMapCodec() {
+    return useProtobufMapCodec;
+  }
 
-    public void setUseProtobufMapCodec(boolean useProtobufMapCodec) {
-        this.useProtobufMapCodec = useProtobufMapCodec;
-    }
+  public void setUseProtobufMapCodec(boolean useProtobufMapCodec) {
+    this.useProtobufMapCodec = useProtobufMapCodec;
+  }
 }

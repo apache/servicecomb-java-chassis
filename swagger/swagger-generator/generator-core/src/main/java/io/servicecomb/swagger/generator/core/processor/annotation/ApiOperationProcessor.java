@@ -16,104 +16,103 @@
 
 package io.servicecomb.swagger.generator.core.processor.annotation;
 
-import io.servicecomb.swagger.generator.core.OperationGenerator;
 import org.springframework.util.StringUtils;
 
 import io.servicecomb.swagger.generator.core.MethodAnnotationProcessor;
-
+import io.servicecomb.swagger.generator.core.OperationGenerator;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.models.Operation;
 import io.swagger.models.Scheme;
 import io.swagger.util.BaseReaderUtils;
 
 public class ApiOperationProcessor implements MethodAnnotationProcessor {
-    @Override
-    public void process(Object annotation, OperationGenerator operationGenerator) {
-        ApiOperation apiOperationAnnotation = (ApiOperation) annotation;
-        Operation operation = operationGenerator.getOperation();
+  @Override
+  public void process(Object annotation, OperationGenerator operationGenerator) {
+    ApiOperation apiOperationAnnotation = (ApiOperation) annotation;
+    Operation operation = operationGenerator.getOperation();
 
-        operationGenerator.setHttpMethod(apiOperationAnnotation.httpMethod());
+    operationGenerator.setHttpMethod(apiOperationAnnotation.httpMethod());
 
-        if (!StringUtils.isEmpty(apiOperationAnnotation.value())) {
-            operation.setSummary(apiOperationAnnotation.value());
-        }
-
-        if (!StringUtils.isEmpty(apiOperationAnnotation.notes())) {
-            operation.setDescription(apiOperationAnnotation.notes());
-        }
-
-        operation.setOperationId(apiOperationAnnotation.nickname());
-        operation.getVendorExtensions().putAll(BaseReaderUtils.parseExtensions(apiOperationAnnotation.extensions()));
-
-        convertTags(apiOperationAnnotation.tags(), operation);
-        convertProduces(apiOperationAnnotation.produces(), operation);
-        convertConsumes(apiOperationAnnotation.consumes(), operation);
-        convertProtocols(apiOperationAnnotation.protocols(), operation);
-        AnnotationUtils.addResponse(operationGenerator.getSwagger(),
-                operation,
-                apiOperationAnnotation);
-
-        // responseReference未解析
-        // hidden未解析
-        // authorizations未解析
+    if (!StringUtils.isEmpty(apiOperationAnnotation.value())) {
+      operation.setSummary(apiOperationAnnotation.value());
     }
 
-    // protocols以分号为创建，比如：http, https, ws, wss
-    private void convertProtocols(String protocols, Operation operation) {
-        if (protocols == null) {
-            return;
-        }
-
-        for (String protocol : protocols.split(",")) {
-            if (StringUtils.isEmpty(protocol)) {
-                continue;
-            }
-
-            operation.addScheme(Scheme.forValue(protocol));
-        }
+    if (!StringUtils.isEmpty(apiOperationAnnotation.notes())) {
+      operation.setDescription(apiOperationAnnotation.notes());
     }
 
-    // consumes以分号为创建，比如：application/json, application/xml
-    private void convertConsumes(String consumes, Operation operation) {
-        if (StringUtils.isEmpty(consumes)) {
-            return;
-        }
+    operation.setOperationId(apiOperationAnnotation.nickname());
+    operation.getVendorExtensions().putAll(BaseReaderUtils.parseExtensions(apiOperationAnnotation.extensions()));
 
-        for (String consume : consumes.split(",")) {
-            if (StringUtils.isEmpty(consume)) {
-                continue;
-            }
+    convertTags(apiOperationAnnotation.tags(), operation);
+    convertProduces(apiOperationAnnotation.produces(), operation);
+    convertConsumes(apiOperationAnnotation.consumes(), operation);
+    convertProtocols(apiOperationAnnotation.protocols(), operation);
+    AnnotationUtils.addResponse(operationGenerator.getSwagger(),
+        operation,
+        apiOperationAnnotation);
 
-            operation.addConsumes(consume);
-        }
+    // responseReference未解析
+    // hidden未解析
+    // authorizations未解析
+  }
+
+  // protocols以分号为创建，比如：http, https, ws, wss
+  private void convertProtocols(String protocols, Operation operation) {
+    if (protocols == null) {
+      return;
     }
 
-    // produces以分号为创建，比如：application/json, application/xml
-    private void convertProduces(String produces, Operation operation) {
-        if (StringUtils.isEmpty(produces)) {
-            return;
-        }
+    for (String protocol : protocols.split(",")) {
+      if (StringUtils.isEmpty(protocol)) {
+        continue;
+      }
 
-        for (String produce : produces.split(",")) {
-            if (StringUtils.isEmpty(produce)) {
-                continue;
-            }
+      operation.addScheme(Scheme.forValue(protocol));
+    }
+  }
 
-            operation.addProduces(produce);
-        }
+  // consumes以分号为创建，比如：application/json, application/xml
+  private void convertConsumes(String consumes, Operation operation) {
+    if (StringUtils.isEmpty(consumes)) {
+      return;
     }
 
-    private void convertTags(String[] tags, Operation operation) {
-        if (tags == null || tags.length == 0) {
-            return;
-        }
+    for (String consume : consumes.split(",")) {
+      if (StringUtils.isEmpty(consume)) {
+        continue;
+      }
 
-        for (String tag : tags) {
-            if (StringUtils.isEmpty(tag)) {
-                continue;
-            }
-
-            operation.addTag(tag);
-        }
+      operation.addConsumes(consume);
     }
+  }
+
+  // produces以分号为创建，比如：application/json, application/xml
+  private void convertProduces(String produces, Operation operation) {
+    if (StringUtils.isEmpty(produces)) {
+      return;
+    }
+
+    for (String produce : produces.split(",")) {
+      if (StringUtils.isEmpty(produce)) {
+        continue;
+      }
+
+      operation.addProduces(produce);
+    }
+  }
+
+  private void convertTags(String[] tags, Operation operation) {
+    if (tags == null || tags.length == 0) {
+      return;
+    }
+
+    for (String tag : tags) {
+      if (StringUtils.isEmpty(tag)) {
+        continue;
+      }
+
+      operation.addTag(tag);
+    }
+  }
 }

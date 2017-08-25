@@ -20,19 +20,18 @@ import io.servicecomb.demo.helloworld.greeter.Hello;
 
 public class HelloImpl implements Hello {
 
-    @Override
-    public String SayHello(String name) {
-        return "Hello Message fast";
-    }
+  @Override
+  public String SayHello(String name) {
+    return "Hello Message fast";
+  }
 
-    @Override
-    public String SayHelloAgain(String name) {
-        try {
-            Thread.sleep(5000);
-        }
-        catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        return "Hello Message slow";
+  @Override
+  public String SayHelloAgain(String name) {
+    try {
+      Thread.sleep(5000);
+    } catch (InterruptedException e) {
+      e.printStackTrace();
     }
+    return "Hello Message slow";
+  }
 }

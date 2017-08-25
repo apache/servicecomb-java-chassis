@@ -19,28 +19,28 @@ package io.servicecomb.foundation.vertx.client.tcp;
 import io.vertx.core.buffer.Buffer;
 
 public class TcpData {
-    private Buffer headerBuffer;
+  private Buffer headerBuffer;
 
-    private Buffer bodyBuffer;
+  private Buffer bodyBuffer;
 
-    public TcpData(Buffer headerBuffer, Buffer bodyBuffer) {
-        this.headerBuffer = headerBuffer;
-        this.bodyBuffer = bodyBuffer;
-    }
+  public TcpData(Buffer headerBuffer, Buffer bodyBuffer) {
+    this.headerBuffer = headerBuffer;
+    this.bodyBuffer = bodyBuffer;
+  }
 
-    public Buffer getHeaderBuffer() {
-        return headerBuffer;
-    }
+  public Buffer getHeaderBuffer() {
+    return headerBuffer;
+  }
 
-    public void setHeaderBuffer(Buffer headerBuffer) {
-        this.headerBuffer = headerBuffer;
-    }
+  public void setHeaderBuffer(Buffer headerBuffer) {
+    this.headerBuffer = headerBuffer;
+  }
 
-    public Buffer getBodyBuffer() {
-        return bodyBuffer;
-    }
+  public Buffer getBodyBuffer() {
+    return bodyBuffer;
+  }
 
-    public void setBodyBuffer(Buffer bodyBuffer) {
-        this.bodyBuffer = bodyBuffer;
-    }
+  public void setBodyBuffer(Buffer bodyBuffer) {
+    this.bodyBuffer = bodyBuffer;
+  }
 }

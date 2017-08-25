@@ -22,24 +22,24 @@ import java.util.Map;
  * 各种类型的http request接口统一化
  */
 public interface RestServerRequest {
-    String getPath();
+  String getPath();
 
-    String getContentType();
+  String getContentType();
 
-    String getMethod();
+  String getMethod();
 
-    String[] getQueryParam(String key);
+  String[] getQueryParam(String key);
 
-    Map<String, String[]> getQueryParams();
+  Map<String, String[]> getQueryParams();
 
-    String getPathParam(String key);
+  String getPathParam(String key);
 
-    String getHeaderParam(String key);
+  String getHeaderParam(String key);
 
-    Object getFormParam(String key);
+  Object getFormParam(String key);
 
-    String getCookieParam(String key);
+  String getCookieParam(String key);
 
-    // 可能是inputStream，也可能直接就是目标Object
-    Object getBody() throws Exception;
+  // 可能是inputStream，也可能直接就是目标Object
+  Object getBody() throws Exception;
 }

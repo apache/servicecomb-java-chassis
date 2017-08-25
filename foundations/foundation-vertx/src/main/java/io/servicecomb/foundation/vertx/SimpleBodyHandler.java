@@ -29,24 +29,23 @@ import io.vertx.ext.web.handler.impl.BodyHandlerImpl;
  */
 public abstract class SimpleBodyHandler extends BodyHandlerImpl {
 
-    @Override
-    public void handle(RoutingContext context) {
-        if (this.checkContentType(context)) {
-            super.handle(context);
-        }
+  @Override
+  public void handle(RoutingContext context) {
+    if (this.checkContentType(context)) {
+      super.handle(context);
     }
+  }
 
-    protected boolean checkContentType(RoutingContext context) {
-        String contentType = context.request().getHeader(HttpHeaders.CONTENT_TYPE);
-        if (contentTypeSupported(contentType)) {
-            return true;
-        }
-        Status status = Status.UNSUPPORTED_MEDIA_TYPE;
-        context.response().setStatusCode(status.getStatusCode()).setStatusMessage(status.getReasonPhrase());
-        context.response().end(String.format("Content-Type %s is not supported", contentType));
-        return false;
+  protected boolean checkContentType(RoutingContext context) {
+    String contentType = context.request().getHeader(HttpHeaders.CONTENT_TYPE);
+    if (contentTypeSupported(contentType)) {
+      return true;
     }
+    Status status = Status.UNSUPPORTED_MEDIA_TYPE;
+    context.response().setStatusCode(status.getStatusCode()).setStatusMessage(status.getReasonPhrase());
+    context.response().end(String.format("Content-Type %s is not supported", contentType));
+    return false;
+  }
 
-    protected abstract boolean contentTypeSupported(String contentType);
-
+  protected abstract boolean contentTypeSupported(String contentType);
 }

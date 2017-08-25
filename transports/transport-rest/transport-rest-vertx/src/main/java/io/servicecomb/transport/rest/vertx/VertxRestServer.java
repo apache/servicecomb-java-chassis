@@ -22,6 +22,7 @@ import java.util.Map.Entry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import io.netty.handler.codec.http.multipart.HttpPostRequestDecoder.ErrorDataDecoderException;
 import io.servicecomb.common.rest.AbstractRestServer;
 import io.servicecomb.common.rest.RestConst;
 import io.servicecomb.common.rest.codec.RestServerRequestInternal;
@@ -29,7 +30,6 @@ import io.servicecomb.common.rest.codec.produce.ProduceProcessor;
 import io.servicecomb.core.Invocation;
 import io.servicecomb.swagger.invocation.Response;
 import io.servicecomb.swagger.invocation.exception.InvocationException;
-import io.netty.handler.codec.http.multipart.HttpPostRequestDecoder.ErrorDataDecoderException;
 import io.vertx.core.Future;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.http.HttpServerResponse;
@@ -38,72 +38,71 @@ import io.vertx.ext.web.RoutingContext;
 import io.vertx.ext.web.handler.CookieHandler;
 
 public class VertxRestServer extends AbstractRestServer<HttpServerResponse> {
-    private static final Logger LOGGER = LoggerFactory.getLogger(VertxRestServer.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(VertxRestServer.class);
 
-    private static final String REST_REQUEST = "cse.rest.request";
+  private static final String REST_REQUEST = "cse.rest.request";
 
-    public VertxRestServer(Router router) {
-        super();
-        router.route().handler(CookieHandler.create());
-        router.route().failureHandler(this::failureHandler).handler(this::onRequest);
+  public VertxRestServer(Router router) {
+    super();
+    router.route().handler(CookieHandler.create());
+    router.route().failureHandler(this::failureHandler).handler(this::onRequest);
+  }
+
+  private void failureHandler(RoutingContext context) {
+    LOGGER.error("http server failed.", context.failure());
+
+    RestServerRequestInternal restRequest = context.get(REST_REQUEST);
+    Throwable e = context.failure();
+    if (ErrorDataDecoderException.class.isInstance(e)) {
+      Throwable cause = e.getCause();
+      if (InvocationException.class.isInstance(cause)) {
+        e = cause;
+      }
     }
+    sendFailResponse(restRequest, context.response(), e);
 
-    private void failureHandler(RoutingContext context) {
-        LOGGER.error("http server failed.", context.failure());
+    // 走到这里，应该都是不可控制的异常，直接关闭连接
+    context.response().close();
+  }
 
-        RestServerRequestInternal restRequest = context.get(REST_REQUEST);
-        Throwable e = context.failure();
-        if (ErrorDataDecoderException.class.isInstance(e)) {
-            Throwable cause = e.getCause();
-            if (InvocationException.class.isInstance(cause)) {
-                e = cause;
-            }
+  private void onRequest(RoutingContext context) {
+    RestServerRequestInternal restRequest = new RestVertxHttpRequest(context, Future.future());
+    context.put(REST_REQUEST, restRequest);
+    handleRequest(restRequest, context.response());
+  }
+
+  @Override
+  protected void doSendResponse(HttpServerResponse httpServerResponse, ProduceProcessor produceProcessor,
+      Response response) throws Exception {
+    httpServerResponse.setStatusCode(response.getStatusCode());
+    httpServerResponse.setStatusMessage(response.getReasonPhrase());
+    httpServerResponse.putHeader("Content-Type", produceProcessor.getName());
+
+    if (response.getHeaders().getHeaderMap() != null) {
+      for (Entry<String, List<Object>> entry : response.getHeaders().getHeaderMap().entrySet()) {
+        for (Object value : entry.getValue()) {
+          httpServerResponse.putHeader(entry.getKey(), String.valueOf(value));
         }
-        sendFailResponse(restRequest, context.response(), e);
-        
-        // 走到这里，应该都是不可控制的异常，直接关闭连接
-        context.response().close();
+      }
     }
 
-    private void onRequest(RoutingContext context) {
-        RestServerRequestInternal restRequest = new RestVertxHttpRequest(context, Future.future());
-        context.put(REST_REQUEST, restRequest);
-        handleRequest(restRequest, context.response());
+    Object body = response.getResult();
+    if (response.isFailed()) {
+      body = ((InvocationException) body).getErrorData();
     }
+    Buffer buffer = produceProcessor.encodeResponse(body);
 
-    @Override
-    protected void doSendResponse(HttpServerResponse httpServerResponse, ProduceProcessor produceProcessor,
-            Response response) throws Exception {
-        httpServerResponse.setStatusCode(response.getStatusCode());
-        httpServerResponse.setStatusMessage(response.getReasonPhrase());
-        httpServerResponse.putHeader("Content-Type", produceProcessor.getName());
-
-        if (response.getHeaders().getHeaderMap() != null) {
-            for (Entry<String, List<Object>> entry : response.getHeaders().getHeaderMap().entrySet()) {
-                for (Object value : entry.getValue()) {
-                    httpServerResponse.putHeader(entry.getKey(), String.valueOf(value));
-                }
-            }
-        }
-
-        Object body = response.getResult();
-        if (response.isFailed()) {
-            body = ((InvocationException) body).getErrorData();
-        }
-        Buffer buffer = produceProcessor.encodeResponse(body);
-
-        if (null == buffer) {
-            httpServerResponse.end();
-            return;
-        }
-        httpServerResponse.end(buffer);
+    if (null == buffer) {
+      httpServerResponse.end();
+      return;
     }
+    httpServerResponse.end(buffer);
+  }
 
-    @Override
-    protected void setHttpRequestContext(Invocation invocation, RestServerRequestInternal restRequest) {
+  @Override
+  protected void setHttpRequestContext(Invocation invocation, RestServerRequestInternal restRequest) {
 
-        invocation.getHandlerContext().put(RestConst.HTTP_REQUEST_CREATOR,
-                new ProducerVertxHttpRequestArgMapper(restRequest.getHttpRequest()));
-    }
-
+    invocation.getHandlerContext().put(RestConst.HTTP_REQUEST_CREATOR,
+        new ProducerVertxHttpRequestArgMapper(restRequest.getHttpRequest()));
+  }
 }

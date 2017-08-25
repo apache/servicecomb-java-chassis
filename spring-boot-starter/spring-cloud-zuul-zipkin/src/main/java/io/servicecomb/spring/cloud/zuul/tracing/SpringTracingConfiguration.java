@@ -22,18 +22,21 @@ import static javax.servlet.DispatcherType.FORWARD;
 import static javax.servlet.DispatcherType.INCLUDE;
 import static javax.servlet.DispatcherType.REQUEST;
 
-import brave.http.HttpClientAdapter;
-import brave.http.HttpClientHandler;
-import brave.http.HttpTracing;
-import brave.servlet.TracingFilter;
-import com.netflix.zuul.context.RequestContext;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.servlet.http.HttpServletResponse;
+
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
+
+import com.netflix.zuul.context.RequestContext;
+
+import brave.http.HttpClientAdapter;
+import brave.http.HttpClientHandler;
+import brave.http.HttpTracing;
+import brave.servlet.TracingFilter;
 
 @Configuration
 public class SpringTracingConfiguration {
@@ -91,7 +94,7 @@ public class SpringTracingConfiguration {
     @Nullable
     @Override
     public Integer statusCode(@Nonnull HttpServletResponse response) {
-      return response.getStatus() == 0? 500 : response.getStatus();
+      return response.getStatus() == 0 ? 500 : response.getStatus();
     }
   }
 }

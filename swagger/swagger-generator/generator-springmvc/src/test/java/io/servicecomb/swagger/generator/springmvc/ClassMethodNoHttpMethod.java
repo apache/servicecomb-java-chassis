@@ -20,8 +20,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 @RequestMapping(path = "c")
 public class ClassMethodNoHttpMethod {
-    @RequestMapping(path = "m")
-    public void noHttpMethod() {
+  @RequestMapping(path = "m")
+  public void noHttpMethod() {
 
-    }
+  }
 }

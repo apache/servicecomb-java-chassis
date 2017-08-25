@@ -22,68 +22,67 @@ import java.util.Map;
 
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.type.TypeFactory;
+
 import io.servicecomb.common.javassist.JavassistUtils;
 import io.servicecomb.swagger.converter.ConverterMgr;
-
 import io.swagger.models.Swagger;
 import io.swagger.models.properties.StringProperty;
 
 public class StringPropertyConverter extends AbstractPropertyConverter {
-    // 用于生成唯一的enum名称
-    // key为enum names， value为enum cls javaType
-    private static Map<String, JavaType> enumMap = new HashMap<>();
+  // 用于生成唯一的enum名称
+  // key为enum names， value为enum cls javaType
+  private static Map<String, JavaType> enumMap = new HashMap<>();
 
-    private static final Object LOCK = new Object();
+  private static final Object LOCK = new Object();
 
-    // 转换并创建enum是小概率事件，没必要double check
-    private static JavaType getOrCreateEnumByNames(String packageName, List<String> enums) {
-        String strEnums = enums.toString();
+  // 转换并创建enum是小概率事件，没必要double check
+  private static JavaType getOrCreateEnumByNames(String packageName, List<String> enums) {
+    String strEnums = enums.toString();
 
-        synchronized (LOCK) {
-            JavaType javaType = enumMap.get(strEnums);
-            if (javaType != null) {
-                return javaType;
-            }
+    synchronized (LOCK) {
+      JavaType javaType = enumMap.get(strEnums);
+      if (javaType != null) {
+        return javaType;
+      }
 
-            String enumClsName = packageName + ".Enum" + enumMap.size();
-            @SuppressWarnings("rawtypes")
-            Class<? extends Enum> enumCls = JavassistUtils.createEnum(enumClsName, enums);
-            javaType = TypeFactory.defaultInstance().constructType(enumCls);
-            enumMap.put(strEnums, javaType);
+      String enumClsName = packageName + ".Enum" + enumMap.size();
+      @SuppressWarnings("rawtypes")
+      Class<? extends Enum> enumCls = JavassistUtils.createEnum(enumClsName, enums);
+      javaType = TypeFactory.defaultInstance().constructType(enumCls);
+      enumMap.put(strEnums, javaType);
 
-            return javaType;
-        }
+      return javaType;
+    }
+  }
+
+  public static JavaType findJavaType(ClassLoader classLoader, String packageName, Swagger swagger, String type,
+      String format, List<String> enums) {
+    if (!isEnum(enums)) {
+      return ConverterMgr.findJavaType(type, format);
     }
 
-    public static JavaType findJavaType(ClassLoader classLoader, String packageName, Swagger swagger, String type,
-            String format, List<String> enums) {
-        if (!isEnum(enums)) {
-            return ConverterMgr.findJavaType(type, format);
-        }
+    // enum，且需要动态生成class
+    return getOrCreateEnumByNames(packageName, enums);
+  }
 
-        // enum，且需要动态生成class
-        return getOrCreateEnumByNames(packageName, enums);
-    }
+  public static boolean isEnum(StringProperty stringProperty) {
+    return isEnum(stringProperty.getEnum());
+  }
 
-    public static boolean isEnum(StringProperty stringProperty) {
-        return isEnum(stringProperty.getEnum());
-    }
+  public static boolean isEnum(List<String> enums) {
+    return enums != null && !enums.isEmpty();
+  }
 
-    public static boolean isEnum(List<String> enums) {
-        return enums != null && !enums.isEmpty();
-    }
+  @Override
+  public JavaType doConvert(ClassLoader classLoader, String packageName, Swagger swagger, Object property) {
+    StringProperty stringProperty = (StringProperty) property;
 
-    @Override
-    public JavaType doConvert(ClassLoader classLoader, String packageName, Swagger swagger, Object property) {
-        StringProperty stringProperty = (StringProperty) property;
-
-        List<String> enums = stringProperty.getEnum();
-        return findJavaType(classLoader,
-                packageName,
-                swagger,
-                stringProperty.getType(),
-                stringProperty.getFormat(),
-                enums);
-    }
-
+    List<String> enums = stringProperty.getEnum();
+    return findJavaType(classLoader,
+        packageName,
+        swagger,
+        stringProperty.getType(),
+        stringProperty.getFormat(),
+        enums);
+  }
 }

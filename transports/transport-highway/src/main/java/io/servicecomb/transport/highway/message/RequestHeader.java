@@ -18,12 +18,11 @@ package io.servicecomb.transport.highway.message;
 
 import java.util.Map;
 
-import io.servicecomb.codec.protobuf.utils.ProtobufSchemaUtils;
-import io.servicecomb.codec.protobuf.utils.WrapSchema;
-
 import io.protostuff.ProtobufOutput;
 import io.protostuff.Tag;
 import io.protostuff.runtime.ProtobufFeature;
+import io.servicecomb.codec.protobuf.utils.ProtobufSchemaUtils;
+import io.servicecomb.codec.protobuf.utils.WrapSchema;
 import io.vertx.core.buffer.Buffer;
 
 /**
@@ -31,87 +30,87 @@ import io.vertx.core.buffer.Buffer;
  * 1.tag(4)，是历史版本中的压缩算法名，转移到login消息中传递
  */
 public class RequestHeader {
-    private static WrapSchema requestHeaderSchema = ProtobufSchemaUtils.getOrCreateSchema(RequestHeader.class);
+  private static WrapSchema requestHeaderSchema = ProtobufSchemaUtils.getOrCreateSchema(RequestHeader.class);
 
-    public static WrapSchema getRequestHeaderSchema() {
-        return requestHeaderSchema;
-    }
+  public static WrapSchema getRequestHeaderSchema() {
+    return requestHeaderSchema;
+  }
 
-    public static RequestHeader readObject(Buffer bodyBuffer, ProtobufFeature protobufFeature) throws Exception {
-        return requestHeaderSchema.readObject(bodyBuffer, protobufFeature);
-    }
+  public static RequestHeader readObject(Buffer bodyBuffer, ProtobufFeature protobufFeature) throws Exception {
+    return requestHeaderSchema.readObject(bodyBuffer, protobufFeature);
+  }
 
-    //CHECKSTYLE:OFF: magicnumber
-    @Tag(2)
-    private byte msgType;
+  //CHECKSTYLE:OFF: magicnumber
+  @Tag(2)
+  private byte msgType;
 
-    // 运行时必须的数据，比如body是否压缩
-    // 预留特性选项
-    @Tag(3)
-    private int flags;
+  // 运行时必须的数据，比如body是否压缩
+  // 预留特性选项
+  @Tag(3)
+  private int flags;
 
-    @Tag(1)
-    private String destMicroservice;
+  @Tag(1)
+  private String destMicroservice;
 
-    @Tag(5)
-    private String schemaId;
+  @Tag(5)
+  private String schemaId;
 
-    @Tag(6)
-    private String operationName;
+  @Tag(6)
+  private String operationName;
 
-    @Tag(7)
-    private Map<String, String> context;
+  @Tag(7)
+  private Map<String, String> context;
 
-    //CHECKSTYLE:ON
-    public byte getMsgType() {
-        return msgType;
-    }
+  //CHECKSTYLE:ON
+  public byte getMsgType() {
+    return msgType;
+  }
 
-    public void setMsgType(byte msgType) {
-        this.msgType = msgType;
-    }
+  public void setMsgType(byte msgType) {
+    this.msgType = msgType;
+  }
 
-    public String getDestMicroservice() {
-        return destMicroservice;
-    }
+  public String getDestMicroservice() {
+    return destMicroservice;
+  }
 
-    public void setDestMicroservice(String destMicroservice) {
-        this.destMicroservice = destMicroservice;
-    }
+  public void setDestMicroservice(String destMicroservice) {
+    this.destMicroservice = destMicroservice;
+  }
 
-    public int getFlags() {
-        return flags;
-    }
+  public int getFlags() {
+    return flags;
+  }
 
-    public void setFlags(int flags) {
-        this.flags = flags;
-    }
+  public void setFlags(int flags) {
+    this.flags = flags;
+  }
 
-    public String getSchemaId() {
-        return schemaId;
-    }
+  public String getSchemaId() {
+    return schemaId;
+  }
 
-    public void setSchemaId(String schemaId) {
-        this.schemaId = schemaId;
-    }
+  public void setSchemaId(String schemaId) {
+    this.schemaId = schemaId;
+  }
 
-    public String getOperationName() {
-        return operationName;
-    }
+  public String getOperationName() {
+    return operationName;
+  }
 
-    public void setOperationName(String operationName) {
-        this.operationName = operationName;
-    }
+  public void setOperationName(String operationName) {
+    this.operationName = operationName;
+  }
 
-    public Map<String, String> getContext() {
-        return context;
-    }
+  public Map<String, String> getContext() {
+    return context;
+  }
 
-    public void setContext(Map<String, String> context) {
-        this.context = context;
-    }
+  public void setContext(Map<String, String> context) {
+    this.context = context;
+  }
 
-    public void writeObject(ProtobufOutput output) throws Exception {
-        requestHeaderSchema.writeObject(output, this);
-    }
+  public void writeObject(ProtobufOutput output) throws Exception {
+    requestHeaderSchema.writeObject(output, this);
+  }
 }

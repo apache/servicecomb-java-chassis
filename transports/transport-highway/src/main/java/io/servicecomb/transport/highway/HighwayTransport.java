@@ -16,6 +16,12 @@
 
 package io.servicecomb.transport.highway;
 
+import java.util.Collections;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
+
 import io.servicecomb.core.Invocation;
 import io.servicecomb.core.transport.AbstractTransport;
 import io.servicecomb.foundation.common.net.URIEndpointObject;
@@ -24,44 +30,41 @@ import io.servicecomb.foundation.vertx.VertxUtils;
 import io.servicecomb.foundation.vertx.tcp.TcpConst;
 import io.servicecomb.swagger.invocation.AsyncResponse;
 import io.vertx.core.DeploymentOptions;
-import java.util.Collections;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Component;
 
 @Component
 public class HighwayTransport extends AbstractTransport {
 
-    private static final Logger log = LoggerFactory.getLogger(HighwayTransport.class);
-    public static final String NAME = "highway";
+  private static final Logger log = LoggerFactory.getLogger(HighwayTransport.class);
 
-    @Override
-    public String getName() {
-        return NAME;
-    }
+  public static final String NAME = "highway";
 
-    public boolean init() throws Exception {
-        HighwayCodec.setHighwayTransport(this);
+  @Override
+  public String getName() {
+    return NAME;
+  }
 
-        DeploymentOptions deployOptions = new DeploymentOptions().setInstances(HighwayConfig.getServerThreadCount());
-        setListenAddressWithoutSchema(HighwayConfig.getAddress(), Collections.singletonMap(TcpConst.LOGIN, "true"));
-        SimpleJsonObject json = new SimpleJsonObject();
-        json.put(ENDPOINT_KEY, getEndpoint());
-        deployOptions.setConfig(json);
-        return VertxUtils.blockDeploy(transportVertx, HighwayServerVerticle.class, deployOptions) && deployClient();
-    }
+  public boolean init() throws Exception {
+    HighwayCodec.setHighwayTransport(this);
 
-    private boolean deployClient() {
-        return HighwayClientManager.INSTANCE.getHighwayClient(true) != null &&
-            HighwayClientManager.INSTANCE.getHighwayClient(false) != null;
-    }
+    DeploymentOptions deployOptions = new DeploymentOptions().setInstances(HighwayConfig.getServerThreadCount());
+    setListenAddressWithoutSchema(HighwayConfig.getAddress(), Collections.singletonMap(TcpConst.LOGIN, "true"));
+    SimpleJsonObject json = new SimpleJsonObject();
+    json.put(ENDPOINT_KEY, getEndpoint());
+    deployOptions.setConfig(json);
+    return VertxUtils.blockDeploy(transportVertx, HighwayServerVerticle.class, deployOptions) && deployClient();
+  }
 
-    @Override
-    public void send(Invocation invocation, AsyncResponse asyncResp) throws Exception {
-        URIEndpointObject endpoint = (URIEndpointObject) invocation.getEndpoint().getAddress();
-        HighwayClient client =
-            HighwayClientManager.INSTANCE.getHighwayClient(endpoint.isSslEnabled());
-        log.debug("Sending request by highway to endpoint {}:{}", endpoint.getHostOrIp(), endpoint.getPort());
-        client.send(invocation, asyncResp);
-    }
+  private boolean deployClient() {
+    return HighwayClientManager.INSTANCE.getHighwayClient(true) != null &&
+        HighwayClientManager.INSTANCE.getHighwayClient(false) != null;
+  }
+
+  @Override
+  public void send(Invocation invocation, AsyncResponse asyncResp) throws Exception {
+    URIEndpointObject endpoint = (URIEndpointObject) invocation.getEndpoint().getAddress();
+    HighwayClient client =
+        HighwayClientManager.INSTANCE.getHighwayClient(endpoint.isSslEnabled());
+    log.debug("Sending request by highway to endpoint {}:{}", endpoint.getHostOrIp(), endpoint.getPort());
+    client.send(invocation, asyncResp);
+  }
 }

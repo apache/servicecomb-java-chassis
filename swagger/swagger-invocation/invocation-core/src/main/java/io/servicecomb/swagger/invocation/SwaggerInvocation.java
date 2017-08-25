@@ -20,36 +20,36 @@ import io.servicecomb.swagger.invocation.context.ContextUtils;
 import io.servicecomb.swagger.invocation.context.InvocationContext;
 
 public class SwaggerInvocation extends InvocationContext {
-    // 本实例是在consumer端，还是在provider端
-    protected InvocationType invocationType;
+  // 本实例是在consumer端，还是在provider端
+  protected InvocationType invocationType;
 
-    protected Object[] swaggerArguments;
+  protected Object[] swaggerArguments;
 
-    public SwaggerInvocation() {
-        InvocationContext context = ContextUtils.getInvocationContext();
-        if (context != null) {
-            addContext(context.getContext());
-        }
+  public SwaggerInvocation() {
+    InvocationContext context = ContextUtils.getInvocationContext();
+    if (context != null) {
+      addContext(context.getContext());
     }
+  }
 
-    public InvocationType getInvocationType() {
-        return invocationType;
-    }
+  public InvocationType getInvocationType() {
+    return invocationType;
+  }
 
-    public Object[] getSwaggerArguments() {
-        return swaggerArguments;
-    }
+  public Object[] getSwaggerArguments() {
+    return swaggerArguments;
+  }
 
-    @SuppressWarnings("unchecked")
-    public <T> T getSwaggerArgument(int idx) {
-        return (T) swaggerArguments[idx];
-    }
+  @SuppressWarnings("unchecked")
+  public <T> T getSwaggerArgument(int idx) {
+    return (T) swaggerArguments[idx];
+  }
 
-    public void setSwaggerArguments(Object[] swaggerArguments) {
-        this.swaggerArguments = swaggerArguments;
-    }
+  public void setSwaggerArguments(Object[] swaggerArguments) {
+    this.swaggerArguments = swaggerArguments;
+  }
 
-    public void setSwaggerArgument(int idx, Object swaggerArgument) {
-        this.swaggerArguments[idx] = swaggerArgument;
-    }
+  public void setSwaggerArgument(int idx, Object swaggerArgument) {
+    this.swaggerArguments[idx] = swaggerArgument;
+  }
 }

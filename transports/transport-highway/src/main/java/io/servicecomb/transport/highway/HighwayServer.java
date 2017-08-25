@@ -22,12 +22,12 @@ import io.servicecomb.foundation.vertx.server.TcpServerConnection;
 
 public class HighwayServer extends TcpServer {
 
-    public HighwayServer(URIEndpointObject endpointObject) {
-        super(endpointObject);
-    }
+  public HighwayServer(URIEndpointObject endpointObject) {
+    super(endpointObject);
+  }
 
-    @Override
-    protected TcpServerConnection createTcpServerConnection() {
-        return new HighwayServerConnection();
-    }
+  @Override
+  protected TcpServerConnection createTcpServerConnection() {
+    return new HighwayServerConnection();
+  }
 }

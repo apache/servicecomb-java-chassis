@@ -22,30 +22,30 @@ package io.servicecomb.foundation.metrics.performance;
  *
  */
 public class PerfStatContext {
-    // 调用开始时间，用于统计
-    protected long callBegin;
+  // 调用开始时间，用于统计
+  protected long callBegin;
 
-    // 本次统计涉及消息数量
-    private int msgCount;
+  // 本次统计涉及消息数量
+  private int msgCount;
 
-    public PerfStatContext() {
-        reset();
-    }
+  public PerfStatContext() {
+    reset();
+  }
 
-    public long getLatency() {
-        return System.currentTimeMillis() - callBegin;
-    }
+  public long getLatency() {
+    return System.currentTimeMillis() - callBegin;
+  }
 
-    public int getMsgCount() {
-        return msgCount;
-    }
+  public int getMsgCount() {
+    return msgCount;
+  }
 
-    public void setMsgCount(int msgCount) {
-        this.msgCount = msgCount;
-    }
+  public void setMsgCount(int msgCount) {
+    this.msgCount = msgCount;
+  }
 
-    public void reset() {
-        callBegin = System.currentTimeMillis();
-        msgCount = 0;
-    }
+  public void reset() {
+    callBegin = System.currentTimeMillis();
+    msgCount = 0;
+  }
 }

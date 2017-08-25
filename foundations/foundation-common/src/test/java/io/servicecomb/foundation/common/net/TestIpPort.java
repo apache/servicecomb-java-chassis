@@ -20,14 +20,14 @@ import org.junit.Assert;
 import org.junit.Test;
 
 public class TestIpPort {
-    @Test
-    public void testIpPort() {
-        IpPort inst1 = new IpPort();
-        inst1.setHostOrIp("localhost");
-        inst1.setPort(3333);
-        IpPort inst2 = new IpPort("localhost", 3333);
-        Assert.assertEquals(inst1.getHostOrIp(), inst2.getHostOrIp());
-        Assert.assertEquals(inst1.getPort(), inst2.getPort());
-        Assert.assertEquals(inst1.getSocketAddress().getHostName(), inst2.getSocketAddress().getHostName());
-    }
+  @Test
+  public void testIpPort() {
+    IpPort inst1 = new IpPort();
+    inst1.setHostOrIp("localhost");
+    inst1.setPort(3333);
+    IpPort inst2 = new IpPort("localhost", 3333);
+    Assert.assertEquals(inst1.getHostOrIp(), inst2.getHostOrIp());
+    Assert.assertEquals(inst1.getPort(), inst2.getPort());
+    Assert.assertEquals(inst1.getSocketAddress().getHostName(), inst2.getSocketAddress().getHostName());
+  }
 }

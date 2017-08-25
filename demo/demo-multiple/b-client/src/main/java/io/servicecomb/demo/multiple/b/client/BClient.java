@@ -23,11 +23,11 @@ import io.servicecomb.provider.pojo.RpcReference;
 
 @Component
 public class BClient {
-    @RpcReference(microserviceName = "${b-server.name}", schemaId = "b-hello")
-    private BIntf intf;
+  @RpcReference(microserviceName = "${b-server.name}", schemaId = "b-hello")
+  private BIntf intf;
 
-    public void run() {
-        String result = intf.hello("serviceComb");
-        TestMgr.check("b hello serviceComb", result);
-    }
+  public void run() {
+    String result = intf.hello("serviceComb");
+    TestMgr.check("b hello serviceComb", result);
+  }
 }

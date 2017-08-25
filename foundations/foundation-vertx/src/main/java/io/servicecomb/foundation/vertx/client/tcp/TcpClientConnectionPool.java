@@ -19,15 +19,15 @@ import io.vertx.core.Context;
 import io.vertx.core.net.NetClient;
 
 public class TcpClientConnectionPool extends AbstractTcpClientConnectionPool<TcpClientConnection> {
-    public TcpClientConnectionPool(TcpClientConfig clientConfig, Context context, NetClient netClient) {
-        super(clientConfig, context, netClient);
-    }
+  public TcpClientConnectionPool(TcpClientConfig clientConfig, Context context, NetClient netClient) {
+    super(clientConfig, context, netClient);
+  }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected TcpClientConnection create(String endpoint) {
-        return new TcpClientConnection(context, netClient, endpoint, clientConfig);
-    }
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  protected TcpClientConnection create(String endpoint) {
+    return new TcpClientConnection(context, netClient, endpoint, clientConfig);
+  }
 }

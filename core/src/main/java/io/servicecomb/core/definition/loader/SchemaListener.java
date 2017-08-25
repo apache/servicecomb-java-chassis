@@ -19,6 +19,6 @@ package io.servicecomb.core.definition.loader;
 import io.servicecomb.core.definition.SchemaMeta;
 
 public interface SchemaListener {
-    // 不必考虑多线程并发
-    void onSchemaLoaded(SchemaMeta... schemaMetas);
+  // 不必考虑多线程并发
+  void onSchemaLoaded(SchemaMeta... schemaMetas);
 }

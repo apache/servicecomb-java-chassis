@@ -43,94 +43,94 @@ import mockit.Mock;
 import mockit.MockUp;
 
 public class UnitTestMeta {
-    private static boolean inited = false;
+  private static boolean inited = false;
 
-    private static MicroserviceMetaManager microserviceMetaManager = new MicroserviceMetaManager();
+  private static MicroserviceMetaManager microserviceMetaManager = new MicroserviceMetaManager();
 
-    private static SchemaListenerManager schemaListenerManager = new SchemaListenerManager();
+  private static SchemaListenerManager schemaListenerManager = new SchemaListenerManager();
 
-    @SuppressWarnings("unchecked")
-    public static synchronized void init() {
-        if (inited) {
-            return;
-        }
-
-        ConsumerProviderManager consumerProviderManager = new ConsumerProviderManager();
-
-        ConsumerSchemaFactory consumerSchemaFactory = new ConsumerSchemaFactory() {
-            @Override
-            protected Microservice findMicroservice(MicroserviceMeta microserviceMeta,
-                    String microserviceVersionRule) {
-                return null;
-            }
-        };
-        consumerSchemaFactory.setMicroserviceMetaManager(microserviceMetaManager);
-        consumerSchemaFactory.setSchemaListenerManager(schemaListenerManager);
-
-        consumerProviderManager.setConsumerSchemaFactory(consumerSchemaFactory);
-
-        CseContext.getInstance().setConsumerProviderManager(consumerProviderManager);
-        CseContext.getInstance().setConsumerSchemaFactory(consumerSchemaFactory);
-        CseContext.getInstance().setSchemaListenerManager(schemaListenerManager);
-
-        Config config = new Config();
-        Class<?> cls = SimpleLoadBalanceHandler.class;
-        config.getHandlerClassMap().put("simpleLB", (Class<Handler>) cls);
-        ProducerHandlerManager.INSTANCE.init(config);
-        ConsumerHandlerManager.INSTANCE.init(config);
-
-        ApplicationContext applicationContext = Mockito.mock(ApplicationContext.class);
-        Mockito.when(applicationContext.getBean(Mockito.anyString())).thenReturn(null);
-        BeanUtils.setContext(applicationContext);
-        inited = true;
+  @SuppressWarnings("unchecked")
+  public static synchronized void init() {
+    if (inited) {
+      return;
     }
 
-    static {
-        init();
-    }
+    ConsumerProviderManager consumerProviderManager = new ConsumerProviderManager();
 
-    private SchemaLoader schemaLoader = new SchemaLoader() {
-        public void putSelfBasePathIfAbsent(String microserviceName, String basePath) {
-        };
+    ConsumerSchemaFactory consumerSchemaFactory = new ConsumerSchemaFactory() {
+      @Override
+      protected Microservice findMicroservice(MicroserviceMeta microserviceMeta,
+          String microserviceVersionRule) {
+        return null;
+      }
+    };
+    consumerSchemaFactory.setMicroserviceMetaManager(microserviceMetaManager);
+    consumerSchemaFactory.setSchemaListenerManager(schemaListenerManager);
+
+    consumerProviderManager.setConsumerSchemaFactory(consumerSchemaFactory);
+
+    CseContext.getInstance().setConsumerProviderManager(consumerProviderManager);
+    CseContext.getInstance().setConsumerSchemaFactory(consumerSchemaFactory);
+    CseContext.getInstance().setSchemaListenerManager(schemaListenerManager);
+
+    Config config = new Config();
+    Class<?> cls = SimpleLoadBalanceHandler.class;
+    config.getHandlerClassMap().put("simpleLB", (Class<Handler>) cls);
+    ProducerHandlerManager.INSTANCE.init(config);
+    ConsumerHandlerManager.INSTANCE.init(config);
+
+    ApplicationContext applicationContext = Mockito.mock(ApplicationContext.class);
+    Mockito.when(applicationContext.getBean(Mockito.anyString())).thenReturn(null);
+    BeanUtils.setContext(applicationContext);
+    inited = true;
+  }
+
+  static {
+    init();
+  }
+
+  private SchemaLoader schemaLoader = new SchemaLoader() {
+    public void putSelfBasePathIfAbsent(String microserviceName, String basePath) {
+    }
+  };
+
+
+  public UnitTestMeta() {
+
+    new MockUp<ConsumerHandlerManager>() {
+      @Mock
+      public List<Handler> getOrCreate(String name) {
+        return Collections.emptyList();
+      }
+    };
+    new MockUp<ProducerHandlerManager>() {
+      @Mock
+      public List<Handler> getOrCreate(String name) {
+        return Collections.emptyList();
+      }
     };
 
+    schemaLoader.setMicroserviceMetaManager(microserviceMetaManager);
+  }
 
-    public UnitTestMeta() {
 
-        new MockUp<ConsumerHandlerManager>() {
-            @Mock
-            public List<Handler> getOrCreate(String name) {
-                return Collections.emptyList();
-            }
-        };
-        new MockUp<ProducerHandlerManager>() {
-            @Mock
-            public List<Handler> getOrCreate(String name) {
-                return Collections.emptyList();
-            }
-        };
+  public MicroserviceMetaManager getMicroserviceMetaManager() {
+    return microserviceMetaManager;
+  }
 
-        schemaLoader.setMicroserviceMetaManager(microserviceMetaManager);
+  public SchemaMeta getOrCreateSchemaMeta(Class<?> impl) {
+    return getOrCreateSchemaMeta("app", "test", impl.getName(), impl);
+  }
+
+  public SchemaMeta getOrCreateSchemaMeta(String appId, String microserviceName, String schemaId, Class<?> impl) {
+    String longName = appId + ":" + microserviceName;
+    MicroserviceMeta microserviceMeta = microserviceMetaManager.getOrCreateMicroserviceMeta(longName);
+    SchemaMeta schemaMeta = microserviceMeta.findSchemaMeta(schemaId);
+    if (schemaMeta != null) {
+      return schemaMeta;
     }
 
-
-    public MicroserviceMetaManager getMicroserviceMetaManager() {
-        return microserviceMetaManager;
-    }
-
-    public SchemaMeta getOrCreateSchemaMeta(Class<?> impl) {
-        return getOrCreateSchemaMeta("app", "test", impl.getName(), impl);
-    }
-
-    public SchemaMeta getOrCreateSchemaMeta(String appId, String microserviceName, String schemaId, Class<?> impl) {
-        String longName = appId + ":" + microserviceName;
-        MicroserviceMeta microserviceMeta = microserviceMetaManager.getOrCreateMicroserviceMeta(longName);
-        SchemaMeta schemaMeta = microserviceMeta.findSchemaMeta(schemaId);
-        if (schemaMeta != null) {
-            return schemaMeta;
-        }
-
-        Swagger swagger = UnitTestSwaggerUtils.generateSwagger(impl).getSwagger();
-        return schemaLoader.registerSchema(microserviceMeta, schemaId, swagger);
-    }
+    Swagger swagger = UnitTestSwaggerUtils.generateSwagger(impl).getSwagger();
+    return schemaLoader.registerSchema(microserviceMeta, schemaId, swagger);
+  }
 }

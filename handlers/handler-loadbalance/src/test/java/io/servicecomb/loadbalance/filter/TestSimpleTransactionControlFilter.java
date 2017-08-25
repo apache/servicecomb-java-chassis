@@ -21,7 +21,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import io.servicecomb.loadbalance.CseServer;
 import org.apache.commons.configuration.AbstractConfiguration;
 import org.apache.commons.configuration.BaseConfiguration;
 import org.junit.Assert;
@@ -30,61 +29,62 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mockito.Mockito;
 
-import io.servicecomb.core.Invocation;
-import io.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
 import com.netflix.loadbalancer.Server;
+
+import io.servicecomb.core.Invocation;
+import io.servicecomb.loadbalance.CseServer;
+import io.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
 
 public class TestSimpleTransactionControlFilter {
 
-    private SimpleTransactionControlFilter filter;
+  private SimpleTransactionControlFilter filter;
 
-    private CseServer server;
+  private CseServer server;
 
-    @BeforeClass
-    public static void beforeCls() {
-        AbstractConfiguration configuration = new BaseConfiguration();
-        configuration.addProperty("cse.loadbalance.test.flowsplitFilter.policy",
-                "io.servicecomb.loadbalance.filter.SimpleFlowsplitFilter");
-        configuration.addProperty("cse.loadbalance.test.flowsplitFilter.options.tag0", "value0");
-    }
+  @BeforeClass
+  public static void beforeCls() {
+    AbstractConfiguration configuration = new BaseConfiguration();
+    configuration.addProperty("cse.loadbalance.test.flowsplitFilter.policy",
+        "io.servicecomb.loadbalance.filter.SimpleFlowsplitFilter");
+    configuration.addProperty("cse.loadbalance.test.flowsplitFilter.options.tag0", "value0");
+  }
 
-    @Before
-    public void setUp() {
-        filter = new SimpleTransactionControlFilter();
-        Map<String, String> properties = new HashMap<>();
-        properties.put("tag0", "value0");
-        properties.put("tag1", "value1");
-        MicroserviceInstance instance = new MicroserviceInstance();
-        instance.setProperties(properties);
-        server = Mockito.mock(CseServer.class);
-        Mockito.when(server.getInstance()).thenReturn(instance);
-    }
+  @Before
+  public void setUp() {
+    filter = new SimpleTransactionControlFilter();
+    Map<String, String> properties = new HashMap<>();
+    properties.put("tag0", "value0");
+    properties.put("tag1", "value1");
+    MicroserviceInstance instance = new MicroserviceInstance();
+    instance.setProperties(properties);
+    server = Mockito.mock(CseServer.class);
+    Mockito.when(server.getInstance()).thenReturn(instance);
+  }
 
-    @Test
-    public void testAllowVisit() {
-        Map<String, String> filterOptions = new HashMap<>();
-        Assert.assertTrue(filter.allowVisit(server, filterOptions));
+  @Test
+  public void testAllowVisit() {
+    Map<String, String> filterOptions = new HashMap<>();
+    Assert.assertTrue(filter.allowVisit(server, filterOptions));
 
-        filterOptions.put("tag0", "value0");
-        Assert.assertTrue(filter.allowVisit(server, filterOptions));
+    filterOptions.put("tag0", "value0");
+    Assert.assertTrue(filter.allowVisit(server, filterOptions));
 
-        filterOptions.put("tag2", "value2");
-        Assert.assertFalse(filter.allowVisit(server, filterOptions));
+    filterOptions.put("tag2", "value2");
+    Assert.assertFalse(filter.allowVisit(server, filterOptions));
 
-        filterOptions.clear();
-        filterOptions.put("tag0", "value1");
-        Assert.assertFalse(filter.allowVisit(server, filterOptions));
-    }
+    filterOptions.clear();
+    filterOptions.put("tag0", "value1");
+    Assert.assertFalse(filter.allowVisit(server, filterOptions));
+  }
 
-    @Test
-    public void testGetFilteredListOfServers() {
-        Invocation invocation = Mockito.mock(Invocation.class);
-        filter.setInvocation(invocation);
+  @Test
+  public void testGetFilteredListOfServers() {
+    Invocation invocation = Mockito.mock(Invocation.class);
+    filter.setInvocation(invocation);
 
-        List<Server> servers = new ArrayList<>();
-        servers.add(server);
-        List<Server> filteredServers = filter.getFilteredListOfServers(servers);
-        Assert.assertEquals(1, filteredServers.size());
-    }
-
+    List<Server> servers = new ArrayList<>();
+    servers.add(server);
+    List<Server> filteredServers = filter.getFilteredListOfServers(servers);
+    Assert.assertEquals(1, filteredServers.size());
+  }
 }

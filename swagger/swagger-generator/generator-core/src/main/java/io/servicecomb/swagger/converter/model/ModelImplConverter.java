@@ -26,34 +26,33 @@ import io.swagger.models.ModelImpl;
 import io.swagger.models.Swagger;
 
 public class ModelImplConverter extends AbstractModelConverter {
-    @Override
-    public JavaType doConvert(ClassLoader classLoader, String packageName, Swagger swagger, Object model) {
-        ModelImpl modelImpl = (ModelImpl) model;
+  @Override
+  public JavaType doConvert(ClassLoader classLoader, String packageName, Swagger swagger, Object model) {
+    ModelImpl modelImpl = (ModelImpl) model;
 
-        JavaType javaType = ConverterMgr.findJavaType(modelImpl.getType(), modelImpl.getFormat());
-        if (javaType != null) {
-            return javaType;
-        }
-
-        if (modelImpl.getReference() != null) {
-            return ConverterMgr.findByRef(classLoader, packageName, swagger, modelImpl.getReference());
-        }
-
-        if (modelImpl.getAdditionalProperties() != null) {
-            return MapPropertyConverter.findJavaType(classLoader,
-                    packageName,
-                    swagger,
-                    modelImpl.getAdditionalProperties());
-        }
-
-        // 根据name、property动态生成class
-        if (packageName == null) {
-            throw new Error("packageName should not be null");
-        }
-        String clsName = packageName + "." + modelImpl.getName();
-        Class<?> cls =
-            ClassUtils.getOrCreateClass(classLoader, packageName, swagger, modelImpl.getProperties(), clsName);
-        return TypeFactory.defaultInstance().constructType(cls);
+    JavaType javaType = ConverterMgr.findJavaType(modelImpl.getType(), modelImpl.getFormat());
+    if (javaType != null) {
+      return javaType;
     }
 
+    if (modelImpl.getReference() != null) {
+      return ConverterMgr.findByRef(classLoader, packageName, swagger, modelImpl.getReference());
+    }
+
+    if (modelImpl.getAdditionalProperties() != null) {
+      return MapPropertyConverter.findJavaType(classLoader,
+          packageName,
+          swagger,
+          modelImpl.getAdditionalProperties());
+    }
+
+    // 根据name、property动态生成class
+    if (packageName == null) {
+      throw new Error("packageName should not be null");
+    }
+    String clsName = packageName + "." + modelImpl.getName();
+    Class<?> cls =
+        ClassUtils.getOrCreateClass(classLoader, packageName, swagger, modelImpl.getProperties(), clsName);
+    return TypeFactory.defaultInstance().constructType(cls);
+  }
 }

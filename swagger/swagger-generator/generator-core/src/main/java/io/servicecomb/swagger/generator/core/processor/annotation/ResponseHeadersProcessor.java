@@ -18,19 +18,18 @@ package io.servicecomb.swagger.generator.core.processor.annotation;
 import io.servicecomb.swagger.extend.annotations.ResponseHeaders;
 import io.servicecomb.swagger.generator.core.MethodAnnotationProcessor;
 import io.servicecomb.swagger.generator.core.OperationGenerator;
-
 import io.swagger.annotations.ResponseHeader;
 
 public class ResponseHeadersProcessor implements MethodAnnotationProcessor {
 
-    @Override
-    public void process(Object annotation, OperationGenerator operationGenerator) {
-        ResponseHeaders responseHeaders = (ResponseHeaders) annotation;
+  @Override
+  public void process(Object annotation, OperationGenerator operationGenerator) {
+    ResponseHeaders responseHeaders = (ResponseHeaders) annotation;
 
-        MethodAnnotationProcessor processor =
-            operationGenerator.getContext().findMethodAnnotationProcessor(ResponseHeader.class);
-        for (ResponseHeader responseHeader : responseHeaders.value()) {
-            processor.process(responseHeader, operationGenerator);
-        }
+    MethodAnnotationProcessor processor =
+        operationGenerator.getContext().findMethodAnnotationProcessor(ResponseHeader.class);
+    for (ResponseHeader responseHeader : responseHeaders.value()) {
+      processor.process(responseHeader, operationGenerator);
     }
+  }
 }

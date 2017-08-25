@@ -40,311 +40,311 @@ import io.swagger.models.properties.Property;
 import io.swagger.util.ReflectionUtils;
 
 public class OperationGenerator {
-    protected SwaggerGenerator swaggerGenerator;
+  protected SwaggerGenerator swaggerGenerator;
 
-    protected Swagger swagger;
+  protected Swagger swagger;
 
-    protected Operation operation;
+  protected Operation operation;
 
-    // 根据方法上独立的ResponseHeader(s)标注生成的数据
-    // 如果Response中不存在对应的header，则会将这些header补充进去
-    protected Map<String, Property> responseHeaderMap = new HashMap<>();
+  // 根据方法上独立的ResponseHeader(s)标注生成的数据
+  // 如果Response中不存在对应的header，则会将这些header补充进去
+  protected Map<String, Property> responseHeaderMap = new HashMap<>();
 
-    // provider的方法
-    protected Method providerMethod;
+  // provider的方法
+  protected Method providerMethod;
 
-    // 方法annotation所有的参数
-    private List<Parameter> methodAnnotationParameters = new ArrayList<>();
+  // 方法annotation所有的参数
+  private List<Parameter> methodAnnotationParameters = new ArrayList<>();
 
-    // provider所有的参数
-    // 如果相同的参数名在annotationParameters中已经存在
-    // 则从annotationParameters移除，将之转移到providerParameters中来，覆盖在同名位置
-    private List<Parameter> providerParameters = new ArrayList<>();
+  // provider所有的参数
+  // 如果相同的参数名在annotationParameters中已经存在
+  // 则从annotationParameters移除，将之转移到providerParameters中来，覆盖在同名位置
+  private List<Parameter> providerParameters = new ArrayList<>();
 
-    // 生成的契约参数
-    private List<Parameter> swaggerParameters = new ArrayList<>();
+  // 生成的契约参数
+  private List<Parameter> swaggerParameters = new ArrayList<>();
 
-    protected SwaggerGeneratorContext context;
+  protected SwaggerGeneratorContext context;
 
-    protected String path;
+  protected String path;
 
-    protected String httpMethod;
+  protected String httpMethod;
 
-    public OperationGenerator(SwaggerGenerator swaggerGenerator, Method providerMethod) {
-        this.swaggerGenerator = swaggerGenerator;
-        this.swagger = swaggerGenerator.swagger;
-        this.operation = new Operation();
-        this.providerMethod = providerMethod;
-        this.context = swaggerGenerator.context;
+  public OperationGenerator(SwaggerGenerator swaggerGenerator, Method providerMethod) {
+    this.swaggerGenerator = swaggerGenerator;
+    this.swagger = swaggerGenerator.swagger;
+    this.operation = new Operation();
+    this.providerMethod = providerMethod;
+    this.context = swaggerGenerator.context;
 
-        if (swagger.getParameters() != null) {
-            methodAnnotationParameters.addAll(swagger.getParameters().values());
-        }
+    if (swagger.getParameters() != null) {
+      methodAnnotationParameters.addAll(swagger.getParameters().values());
+    }
+  }
+
+  public void addResponseHeader(String name, Property header) {
+    responseHeaderMap.put(name, header);
+  }
+
+  public List<Parameter> getSwaggerParameters() {
+    return swaggerParameters;
+  }
+
+  public SwaggerGeneratorContext getContext() {
+    return context;
+  }
+
+  public SwaggerGenerator getSwaggerGenerator() {
+    return swaggerGenerator;
+  }
+
+  public Swagger getSwagger() {
+    return swagger;
+  }
+
+  public Operation getOperation() {
+    return operation;
+  }
+
+  public String getPath() {
+    return path;
+  }
+
+  public void setPath(String path) {
+    if (!path.startsWith("/")) {
+      path = "/" + path;
+    }
+    this.path = path;
+  }
+
+  public String getHttpMethod() {
+    return httpMethod;
+  }
+
+  public void setHttpMethod(String httpMethod) {
+    if (StringUtils.isEmpty(httpMethod)) {
+      return;
     }
 
-    public void addResponseHeader(String name, Property header) {
-        responseHeaderMap.put(name, header);
+    this.httpMethod = httpMethod.toLowerCase(Locale.US);
+  }
+
+  public void addMethodAnnotationParameter(Parameter parameter) {
+    methodAnnotationParameters.add(parameter);
+  }
+
+  public void addProviderParameter(Parameter parameter) {
+    providerParameters.add(parameter);
+  }
+
+  public List<Parameter> getProviderParameters() {
+    return providerParameters;
+  }
+
+  public void generate() {
+    scanMethodAnnotation();
+    scanMethodParameters();
+    scanResponse();
+
+    checkBodyParameter();
+    copyToSwaggerParameters();
+    operation.setParameters(swaggerParameters);
+
+    correctOperation();
+  }
+
+  protected void copyToSwaggerParameters() {
+    for (Parameter parameter : providerParameters) {
+      if (ContextParameter.class.isInstance(parameter)) {
+        continue;
+      }
+
+      int annotationIdx = ParamUtils.findParameterByName(parameter.getName(), methodAnnotationParameters);
+      if (annotationIdx != -1) {
+        Parameter annotationParameter = methodAnnotationParameters.remove(annotationIdx);
+        swaggerParameters.add(annotationParameter);
+        continue;
+      }
+
+      swaggerParameters.add(parameter);
     }
 
-    public List<Parameter> getSwaggerParameters() {
-        return swaggerParameters;
+    swaggerParameters.addAll(methodAnnotationParameters);
+  }
+
+  protected int countRealBodyParameter(List<Parameter> parameters) {
+    int count = 0;
+    for (Parameter p : parameters) {
+      if (ParamUtils.isRealBodyParameter(p)) {
+        count++;
+      }
     }
 
-    public SwaggerGeneratorContext getContext() {
-        return context;
+    return count;
+  }
+
+  protected void checkBodyParameter() {
+    // annotationParameters中不能有多个body
+    int annotationBodyCount = countRealBodyParameter(methodAnnotationParameters);
+    if (annotationBodyCount > 1) {
+      throw new Error(String.format("too many (%d) body parameter in %s:%s annotation",
+          annotationBodyCount,
+          providerMethod.getDeclaringClass().getName(),
+          providerMethod.getName()));
     }
 
-    public SwaggerGenerator getSwaggerGenerator() {
-        return swaggerGenerator;
+    // providerParameters中不能有多个body
+    int parameterBodyCount = countRealBodyParameter(providerParameters);
+    if (parameterBodyCount > 1) {
+      throw new Error(String.format("too many (%d) body parameter in %s:%s parameters",
+          parameterBodyCount,
+          providerMethod.getDeclaringClass().getName(),
+          providerMethod.getName()));
     }
 
-    public Swagger getSwagger() {
-        return swagger;
+    // annotationParameters和providerParameters不能同时出现body
+    if (annotationBodyCount + parameterBodyCount >= 2) {
+      throw new Error(String.format("not allow both defined body parameter in %s:%s annotation and parameters",
+          providerMethod.getDeclaringClass().getName(),
+          providerMethod.getName()));
+    }
+  }
+
+  protected void scanMethodAnnotation() {
+    for (Annotation annotation : providerMethod.getAnnotations()) {
+      MethodAnnotationProcessor processor = context.findMethodAnnotationProcessor(annotation.annotationType());
+      if (processor == null) {
+        continue;
+      }
+      processor.process(annotation, this);
+    }
+  }
+
+  /**
+   *
+   * 根据method上的数据，综合生成契约参数
+   */
+  protected void scanMethodParameters() {
+    Annotation[][] allAnnotations = providerMethod.getParameterAnnotations();
+    Type[] parameterTypes = providerMethod.getGenericParameterTypes();
+    for (int paramIdx = 0; paramIdx < parameterTypes.length; paramIdx++) {
+      Type type = parameterTypes[paramIdx];
+      // 是否需要根据参数类型处理，目标场景：httpReqest之类
+      if (processByParameterType(type, paramIdx)) {
+        continue;
+      }
+
+      int swaggerParamCount = providerParameters.size();
+
+      // 根据annotation处理
+      Annotation[] paramAnnotations = allAnnotations[paramIdx];
+      processByParameterAnnotation(paramAnnotations, paramIdx);
+
+      if (swaggerParamCount == providerParameters.size()) {
+        // 没有用于描述契约的标注，根据函数原型来反射生成
+        context.getDefaultParamProcessor().process(this, paramIdx);
+      }
+    }
+  }
+
+  protected void processByParameterAnnotation(Annotation[] paramAnnotations, int paramIdx) {
+    for (Annotation annotation : paramAnnotations) {
+      ParameterAnnotationProcessor processor =
+          context.findParameterAnnotationProcessor(annotation.annotationType());
+      if (processor != null) {
+        processor.process(annotation, this, paramIdx);
+      }
+    }
+  }
+
+  protected boolean processByParameterType(Type parameterType, int paramIdx) {
+    ParameterTypeProcessor processor = context.findParameterTypeProcessor(parameterType);
+    if (processor != null) {
+      processor.process(this, paramIdx);
+      return true;
     }
 
-    public Operation getOperation() {
-        return operation;
+    return false;
+  }
+
+  public void correctOperation() {
+    if (StringUtils.isEmpty(operation.getOperationId())) {
+      operation.setOperationId(providerMethod.getName());
     }
 
-    public String getPath() {
-        return path;
-    }
+    context.postProcessOperation(this);
 
-    public void setPath(String path) {
-        if (!path.startsWith("/")) {
-            path = "/" + path;
-        }
-        this.path = path;
-    }
+    correctResponse();
+  }
 
-    public String getHttpMethod() {
-        return httpMethod;
-    }
+  private void correctResponse() {
+    for (Entry<String, Response> responseEntry : operation.getResponses().entrySet()) {
+      Response response = responseEntry.getValue();
+      if (StringUtils.isEmpty(response.getDescription())) {
+        response.setDescription("response of " + responseEntry.getKey());
+      }
 
-    public void setHttpMethod(String httpMethod) {
-        if (StringUtils.isEmpty(httpMethod)) {
-            return;
-        }
-
-        this.httpMethod = httpMethod.toLowerCase(Locale.US);
-    }
-
-    public void addMethodAnnotationParameter(Parameter parameter) {
-        methodAnnotationParameters.add(parameter);
-    }
-
-    public void addProviderParameter(Parameter parameter) {
-        providerParameters.add(parameter);
-    }
-
-    public List<Parameter> getProviderParameters() {
-        return providerParameters;
-    }
-
-    public void generate() {
-        scanMethodAnnotation();
-        scanMethodParameters();
-        scanResponse();
-
-        checkBodyParameter();
-        copyToSwaggerParameters();
-        operation.setParameters(swaggerParameters);
-
-        correctOperation();
-    }
-
-    protected void copyToSwaggerParameters() {
-        for (Parameter parameter : providerParameters) {
-            if (ContextParameter.class.isInstance(parameter)) {
-                continue;
-            }
-
-            int annotationIdx = ParamUtils.findParameterByName(parameter.getName(), methodAnnotationParameters);
-            if (annotationIdx != -1) {
-                Parameter annotationParameter = methodAnnotationParameters.remove(annotationIdx);
-                swaggerParameters.add(annotationParameter);
-                continue;
-            }
-
-            swaggerParameters.add(parameter);
-        }
-
-        swaggerParameters.addAll(methodAnnotationParameters);
-    }
-
-    protected int countRealBodyParameter(List<Parameter> parameters) {
-        int count = 0;
-        for (Parameter p : parameters) {
-            if (ParamUtils.isRealBodyParameter(p)) {
-                count++;
-            }
-        }
-
-        return count;
-    }
-
-    protected void checkBodyParameter() {
-        // annotationParameters中不能有多个body
-        int annotationBodyCount = countRealBodyParameter(methodAnnotationParameters);
-        if (annotationBodyCount > 1) {
-            throw new Error(String.format("too many (%d) body parameter in %s:%s annotation",
-                    annotationBodyCount,
-                    providerMethod.getDeclaringClass().getName(),
-                    providerMethod.getName()));
-        }
-
-        // providerParameters中不能有多个body
-        int parameterBodyCount = countRealBodyParameter(providerParameters);
-        if (parameterBodyCount > 1) {
-            throw new Error(String.format("too many (%d) body parameter in %s:%s parameters",
-                    parameterBodyCount,
-                    providerMethod.getDeclaringClass().getName(),
-                    providerMethod.getName()));
-        }
-
-        // annotationParameters和providerParameters不能同时出现body
-        if (annotationBodyCount + parameterBodyCount >= 2) {
-            throw new Error(String.format("not allow both defined body parameter in %s:%s annotation and parameters",
-                    providerMethod.getDeclaringClass().getName(),
-                    providerMethod.getName()));
-        }
-    }
-
-    protected void scanMethodAnnotation() {
-        for (Annotation annotation : providerMethod.getAnnotations()) {
-            MethodAnnotationProcessor processor = context.findMethodAnnotationProcessor(annotation.annotationType());
-            if (processor == null) {
-                continue;
-            }
-            processor.process(annotation, this);
-        }
-    }
-
-    /**
-     *
-     * 根据method上的数据，综合生成契约参数
-     */
-    protected void scanMethodParameters() {
-        Annotation[][] allAnnotations = providerMethod.getParameterAnnotations();
-        Type[] parameterTypes = providerMethod.getGenericParameterTypes();
-        for (int paramIdx = 0; paramIdx < parameterTypes.length; paramIdx++) {
-            Type type = parameterTypes[paramIdx];
-            // 是否需要根据参数类型处理，目标场景：httpReqest之类
-            if (processByParameterType(type, paramIdx)) {
-                continue;
-            }
-
-            int swaggerParamCount = providerParameters.size();
-
-            // 根据annotation处理
-            Annotation[] paramAnnotations = allAnnotations[paramIdx];
-            processByParameterAnnotation(paramAnnotations, paramIdx);
-
-            if (swaggerParamCount == providerParameters.size()) {
-                // 没有用于描述契约的标注，根据函数原型来反射生成
-                context.getDefaultParamProcessor().process(this, paramIdx);
-            }
-        }
-    }
-
-    protected void processByParameterAnnotation(Annotation[] paramAnnotations, int paramIdx) {
-        for (Annotation annotation : paramAnnotations) {
-            ParameterAnnotationProcessor processor =
-                context.findParameterAnnotationProcessor(annotation.annotationType());
-            if (processor != null) {
-                processor.process(annotation, this, paramIdx);
-            }
-        }
-    }
-
-    protected boolean processByParameterType(Type parameterType, int paramIdx) {
-        ParameterTypeProcessor processor = context.findParameterTypeProcessor(parameterType);
-        if (processor != null) {
-            processor.process(this, paramIdx);
-            return true;
-        }
-
-        return false;
-    }
-
-    public void correctOperation() {
-        if (StringUtils.isEmpty(operation.getOperationId())) {
-            operation.setOperationId(providerMethod.getName());
-        }
-
-        context.postProcessOperation(this);
-
-        correctResponse();
-    }
-
-    private void correctResponse() {
-        for (Entry<String, Response> responseEntry : operation.getResponses().entrySet()) {
-            Response response = responseEntry.getValue();
-            if (StringUtils.isEmpty(response.getDescription())) {
-                response.setDescription("response of " + responseEntry.getKey());
-            }
-
-            for (Entry<String, Property> entry : responseHeaderMap.entrySet()) {
-                if (response.getHeaders() != null && response.getHeaders().containsKey(entry.getKey())) {
-                    continue;
-                }
-
-                response.addHeader(entry.getKey(), entry.getValue());
-            }
-        }
-    }
-
-    public void scanResponse() {
-        if (operation.getResponses() != null) {
-            Response successResponse = operation.getResponses().get(SwaggerConst.SUCCESS_KEY);
-            if (successResponse != null) {
-                if (successResponse.getSchema() == null) {
-                    // 标注已经定义了response，但是是void，这可能是在标注上未定义
-                    // 根据函数原型来处理response
-                    Property property = createResponseProperty();
-                    successResponse.setSchema(property);
-                }
-                return;
-            }
+      for (Entry<String, Property> entry : responseHeaderMap.entrySet()) {
+        if (response.getHeaders() != null && response.getHeaders().containsKey(entry.getKey())) {
+          continue;
         }
 
-        Property property = createResponseProperty();
-        Response response = new Response();
-        response.setSchema(property);
-        operation.addResponse(SwaggerConst.SUCCESS_KEY, response);
+        response.addHeader(entry.getKey(), entry.getValue());
+      }
+    }
+  }
+
+  public void scanResponse() {
+    if (operation.getResponses() != null) {
+      Response successResponse = operation.getResponses().get(SwaggerConst.SUCCESS_KEY);
+      if (successResponse != null) {
+        if (successResponse.getSchema() == null) {
+          // 标注已经定义了response，但是是void，这可能是在标注上未定义
+          // 根据函数原型来处理response
+          Property property = createResponseProperty();
+          successResponse.setSchema(property);
+        }
+        return;
+      }
     }
 
-    protected Property createResponseProperty() {
-        Type responseType = providerMethod.getReturnType();
-        if (ReflectionUtils.isVoid(responseType)) {
-            return null;
-        }
+    Property property = createResponseProperty();
+    Response response = new Response();
+    response.setSchema(property);
+    operation.addResponse(SwaggerConst.SUCCESS_KEY, response);
+  }
 
-        ResponseTypeProcessor processor = context.findResponseTypeProcessor(responseType);
-        return processor.process(this);
+  protected Property createResponseProperty() {
+    Type responseType = providerMethod.getReturnType();
+    if (ReflectionUtils.isVoid(responseType)) {
+      return null;
     }
 
-    public Method getProviderMethod() {
-        return providerMethod;
+    ResponseTypeProcessor processor = context.findResponseTypeProcessor(responseType);
+    return processor.process(this);
+  }
+
+  public Method getProviderMethod() {
+    return providerMethod;
+  }
+
+  protected void addOperationToSwagger() {
+    if (StringUtils.isEmpty(httpMethod)) {
+      return;
     }
 
-    protected void addOperationToSwagger() {
-        if (StringUtils.isEmpty(httpMethod)) {
-            return;
-        }
-
-        Path pathObj = swagger.getPath(path);
-        if (pathObj == null) {
-            pathObj = new Path();
-            swagger.path(path, pathObj);
-        }
-
-        HttpMethod hm = HttpMethod.valueOf(httpMethod.toUpperCase(Locale.US));
-        if (pathObj.getOperationMap().get(hm) != null) {
-            throw new Error(String.format("Only allowed one default path. %s:%s",
-                    swaggerGenerator.getCls().getName(),
-                    providerMethod.getName()));
-        }
-        pathObj.set(httpMethod, operation);
+    Path pathObj = swagger.getPath(path);
+    if (pathObj == null) {
+      pathObj = new Path();
+      swagger.path(path, pathObj);
     }
+
+    HttpMethod hm = HttpMethod.valueOf(httpMethod.toUpperCase(Locale.US));
+    if (pathObj.getOperationMap().get(hm) != null) {
+      throw new Error(String.format("Only allowed one default path. %s:%s",
+          swaggerGenerator.getCls().getName(),
+          providerMethod.getName()));
+    }
+    pathObj.set(httpMethod, operation);
+  }
 }

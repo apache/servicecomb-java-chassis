@@ -29,39 +29,39 @@ import java.util.concurrent.atomic.AtomicInteger;
  * 包装之后，允许使用m个网络线程，每个线程中有n个连接池
  */
 public class ClientPoolManager<CLIENT_POOL> {
-    // 多个网络线程
-    private List<NetThreadData<CLIENT_POOL>> netThreads = new ArrayList<>();
+  // 多个网络线程
+  private List<NetThreadData<CLIENT_POOL>> netThreads = new ArrayList<>();
 
-    private AtomicInteger bindIndex = new AtomicInteger();
+  private AtomicInteger bindIndex = new AtomicInteger();
 
-    // send的调用线程与CLIENT_POOL的绑定关系，不直接用hash，是担心分配不均
-    // key是调用者的线程id
-    // TODO:要不要考虑已经绑定的线程消失了的场景？
-    private Map<Long, CLIENT_POOL> threadBindMap = new ConcurrentHashMap<>();
+  // send的调用线程与CLIENT_POOL的绑定关系，不直接用hash，是担心分配不均
+  // key是调用者的线程id
+  // TODO:要不要考虑已经绑定的线程消失了的场景？
+  private Map<Long, CLIENT_POOL> threadBindMap = new ConcurrentHashMap<>();
 
-    private static final Object LOCK = new Object();
+  private static final Object LOCK = new Object();
 
-    public void addNetThread(NetThreadData<CLIENT_POOL> netThread) {
-        synchronized (LOCK) {
-            netThreads.add(netThread);
-        }
+  public void addNetThread(NetThreadData<CLIENT_POOL> netThread) {
+    synchronized (LOCK) {
+      netThreads.add(netThread);
     }
+  }
 
-    public CLIENT_POOL findThreadBindClientPool() {
-        long threadId = Thread.currentThread().getId();
-        CLIENT_POOL clientPool = threadBindMap.get(threadId);
+  public CLIENT_POOL findThreadBindClientPool() {
+    long threadId = Thread.currentThread().getId();
+    CLIENT_POOL clientPool = threadBindMap.get(threadId);
+    if (clientPool == null) {
+      synchronized (LOCK) {
+        clientPool = threadBindMap.get(threadId);
         if (clientPool == null) {
-            synchronized (LOCK) {
-                clientPool = threadBindMap.get(threadId);
-                if (clientPool == null) {
-                    int idx = bindIndex.getAndIncrement() % netThreads.size();
-                    NetThreadData<CLIENT_POOL> netThread = netThreads.get(idx);
-                    clientPool = netThread.selectClientPool();
-                    threadBindMap.put(threadId, clientPool);
-                }
-            }
+          int idx = bindIndex.getAndIncrement() % netThreads.size();
+          NetThreadData<CLIENT_POOL> netThread = netThreads.get(idx);
+          clientPool = netThread.selectClientPool();
+          threadBindMap.put(threadId, clientPool);
         }
-
-        return clientPool;
+      }
     }
+
+    return clientPool;
+  }
 }

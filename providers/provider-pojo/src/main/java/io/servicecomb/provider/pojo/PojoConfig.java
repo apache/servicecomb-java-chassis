@@ -16,11 +16,13 @@
 
 package io.servicecomb.provider.pojo;
 
-import com.netflix.config.DynamicPropertyFactory;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+
+import com.netflix.config.DynamicPropertyFactory;
 
 @Configuration
 class PojoConfig {
@@ -37,8 +39,10 @@ class PojoConfig {
   }
 
   private String loadingMode() {
-    return DynamicPropertyFactory.getInstance().getStringProperty(
-        "servicecomb.rpcReference.loadingMode",
-        LOADING_MODE_BLOCKING).get();
+    return DynamicPropertyFactory.getInstance()
+        .getStringProperty(
+            "servicecomb.rpcReference.loadingMode",
+            LOADING_MODE_BLOCKING)
+        .get();
   }
 }

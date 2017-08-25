@@ -17,5 +17,5 @@
 package io.servicecomb.demo.multiple.b.client;
 
 public interface BIntf {
-    String hello(String name);
+  String hello(String name);
 }

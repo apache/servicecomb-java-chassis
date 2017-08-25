@@ -17,30 +17,30 @@
 package io.servicecomb.core;
 
 public interface BootListener {
-    enum EventType {
-        BEFORE_HANDLER,
-        AFTER_HANDLER,
-        BEFORE_PRODUCER_PROVIDER,
-        AFTER_PRODUCER_PROVIDER,
-        BEFORE_CONSUMER_PROVIDER,
-        AFTER_CONSUMER_PROVIDER,
-        BEFORE_TRANSPORT,
-        AFTER_TRANSPORT,
-        BEFORE_REGISTRY,
-        AFTER_REGISTRY
+  enum EventType {
+    BEFORE_HANDLER,
+    AFTER_HANDLER,
+    BEFORE_PRODUCER_PROVIDER,
+    AFTER_PRODUCER_PROVIDER,
+    BEFORE_CONSUMER_PROVIDER,
+    AFTER_CONSUMER_PROVIDER,
+    BEFORE_TRANSPORT,
+    AFTER_TRANSPORT,
+    BEFORE_REGISTRY,
+    AFTER_REGISTRY
+  }
+
+  class BootEvent {
+    private EventType eventType;
+
+    public EventType getEventType() {
+      return eventType;
     }
 
-    class BootEvent {
-        private EventType eventType;
-
-        public EventType getEventType() {
-            return eventType;
-        }
-
-        public void setEventType(EventType eventType) {
-            this.eventType = eventType;
-        }
+    public void setEventType(EventType eventType) {
+      this.eventType = eventType;
     }
+  }
 
-    void onBootEvent(BootEvent event);
+  void onBootEvent(BootEvent event);
 }

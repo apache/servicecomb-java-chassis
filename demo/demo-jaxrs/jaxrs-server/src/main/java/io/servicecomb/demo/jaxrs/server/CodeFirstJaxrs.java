@@ -54,125 +54,124 @@ import io.swagger.annotations.ResponseHeader;
 @Path("/codeFirstJaxrs")
 @Produces(MediaType.APPLICATION_JSON)
 public class CodeFirstJaxrs {
-    //    public Response getUserResponse() {
-    //
-    //    }
-    @ApiResponse(code = 200, response = User.class, message = "")
-    @ResponseHeaders({@ResponseHeader(name = "h1", response = String.class),
-            @ResponseHeader(name = "h2", response = String.class)})
-    @Path("/cseResponse")
-    @GET
-    public Response cseResponse(InvocationContext c1) {
-        Response response = Response.createSuccess(Status.ACCEPTED, new User());
-        Headers headers = response.getHeaders();
-        headers.addHeader("h1", "h1v " + c1.getContext().toString());
+  //    public Response getUserResponse() {
+  //
+  //    }
+  @ApiResponse(code = 200, response = User.class, message = "")
+  @ResponseHeaders({@ResponseHeader(name = "h1", response = String.class),
+      @ResponseHeader(name = "h2", response = String.class)})
+  @Path("/cseResponse")
+  @GET
+  public Response cseResponse(InvocationContext c1) {
+    Response response = Response.createSuccess(Status.ACCEPTED, new User());
+    Headers headers = response.getHeaders();
+    headers.addHeader("h1", "h1v " + c1.getContext().toString());
 
-        InvocationContext c2 = ContextUtils.getInvocationContext();
-        headers.addHeader("h2", "h2v " + c2.getContext().toString());
+    InvocationContext c2 = ContextUtils.getInvocationContext();
+    headers.addHeader("h2", "h2v " + c2.getContext().toString());
 
-        return response;
+    return response;
+  }
+
+  @Path("/testUserMap")
+  @POST
+  public Map<String, User> testUserMap(Map<String, User> userMap) {
+    return userMap;
+  }
+
+  @Path("/textPlain")
+  @POST
+  @Consumes(MediaType.TEXT_PLAIN)
+  public String textPlain(String body) {
+    return body;
+  }
+
+  @Path("/bytes")
+  @POST
+  public byte[] bytes(byte[] input) {
+    input[0] = (byte) (input[0] + 1);
+    return input;
+  }
+
+  @Path("/addDate")
+  @POST
+  public Date addDate(@FormParam("date") Date date, @QueryParam("seconds") long seconds) {
+    return new Date(date.getTime() + seconds * 1000);
+  }
+
+  @GET
+  public int defaultPath() {
+    return 100;
+  }
+
+  @Path("/add")
+  @POST
+  public int add(@FormParam("a") int a, @FormParam("b") int b) {
+    return a + b;
+  }
+
+  @Path("/reduce")
+  @GET
+  @ApiImplicitParams({@ApiImplicitParam(name = "a", dataType = "integer", format = "int32", paramType = "query")})
+  public int reduce(HttpServletRequest request, @CookieParam("b") int b) {
+    int a = Integer.parseInt(request.getParameter("a"));
+    return a - b;
+  }
+
+  @Path("/sayhello")
+  @POST
+  public Person sayHello(Person user) {
+    user.setName("hello " + user.getName());
+    return user;
+  }
+
+  @SuppressWarnings("unchecked")
+  @Path("/testrawjson")
+  @POST
+  public String testRawJsonString(String jsonInput) {
+    Map<String, String> person;
+    try {
+      person = RestObjectMapper.INSTANCE.readValue(jsonInput.getBytes(), Map.class);
+    } catch (Exception e) {
+      e.printStackTrace();
+      return null;
     }
+    return "hello " + person.get("name");
+  }
 
-    @Path("/testUserMap")
-    @POST
-    public Map<String, User> testUserMap(Map<String, User> userMap) {
-        return userMap;
+  @Path("/saysomething")
+  @POST
+  public String saySomething(@HeaderParam("prefix") String prefix, Person user) {
+    return prefix + " " + user.getName();
+  }
+
+  @Path("/sayhi/{name}")
+  @PUT
+  public String sayHi(@PathParam("name") String name) {
+    ContextUtils.getInvocationContext().setStatus(202);
+    return name + " sayhi";
+  }
+
+  @Path("/sayhi/{name}/v2")
+  @PUT
+  public String sayHi2(@PathParam("name") String name) {
+    return name + " sayhi 2";
+  }
+
+  @Path("/istrue")
+  @GET
+  public boolean isTrue() {
+    return true;
+  }
+
+  @Path("/addstring")
+  @DELETE
+  @Produces(MediaType.TEXT_PLAIN)
+  public String addString(@QueryParam("s") List<String> s) {
+    String result = "";
+    for (String x : s) {
+      result += x;
     }
-
-    @Path("/textPlain")
-    @POST
-    @Consumes(MediaType.TEXT_PLAIN)
-    public String textPlain(String body) {
-        return body;
-    }
-
-    @Path("/bytes")
-    @POST
-    public byte[] bytes(byte[] input) {
-        input[0] = (byte) (input[0] + 1);
-        return input;
-    }
-
-    @Path("/addDate")
-    @POST
-    public Date addDate(@FormParam("date") Date date, @QueryParam("seconds") long seconds) {
-        return new Date(date.getTime() + seconds * 1000);
-    }
-
-    @GET
-    public int defaultPath() {
-        return 100;
-    }
-
-    @Path("/add")
-    @POST
-    public int add(@FormParam("a") int a, @FormParam("b") int b) {
-        return a + b;
-    }
-
-    @Path("/reduce")
-    @GET
-    @ApiImplicitParams({@ApiImplicitParam(name = "a", dataType = "integer", format = "int32", paramType = "query")})
-    public int reduce(HttpServletRequest request, @CookieParam("b") int b) {
-        int a = Integer.parseInt(request.getParameter("a"));
-        return a - b;
-    }
-
-    @Path("/sayhello")
-    @POST
-    public Person sayHello(Person user) {
-        user.setName("hello " + user.getName());
-        return user;
-    }
-
-    @SuppressWarnings("unchecked")
-    @Path("/testrawjson")
-    @POST
-    public String testRawJsonString(String jsonInput) {
-        Map<String, String> person;
-        try {
-            person = RestObjectMapper.INSTANCE.readValue(jsonInput.getBytes(), Map.class);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
-        }
-        return "hello " + person.get("name");
-    }
-
-    @Path("/saysomething")
-    @POST
-    public String saySomething(@HeaderParam("prefix") String prefix, Person user) {
-        return prefix + " " + user.getName();
-    }
-
-    @Path("/sayhi/{name}")
-    @PUT
-    public String sayHi(@PathParam("name") String name) {
-        ContextUtils.getInvocationContext().setStatus(202);
-        return name + " sayhi";
-    }
-
-    @Path("/sayhi/{name}/v2")
-    @PUT
-    public String sayHi2(@PathParam("name") String name) {
-        return name + " sayhi 2";
-    }
-
-    @Path("/istrue")
-    @GET
-    public boolean isTrue() {
-        return true;
-    }
-
-    @Path("/addstring")
-    @DELETE
-    @Produces(MediaType.TEXT_PLAIN)
-    public String addString(@QueryParam("s") List<String> s) {
-        String result = "";
-        for (String x : s) {
-            result += x;
-        }
-        return result;
-    }
-
+    return result;
+  }
 }

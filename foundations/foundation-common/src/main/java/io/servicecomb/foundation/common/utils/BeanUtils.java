@@ -21,42 +21,42 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 public final class BeanUtils {
-    public static final String DEFAULT_BEAN_RESOURCE = "classpath*:META-INF/spring/*.bean.xml";
+  public static final String DEFAULT_BEAN_RESOURCE = "classpath*:META-INF/spring/*.bean.xml";
 
-    private static ApplicationContext context;
+  private static ApplicationContext context;
 
-    private BeanUtils() {
+  private BeanUtils() {
+  }
+
+  public static void init() {
+    init(DEFAULT_BEAN_RESOURCE);
+  }
+
+  public static void init(String... configLocations) {
+    context = new ClassPathXmlApplicationContext(configLocations);
+  }
+
+  public static ApplicationContext getContext() {
+    return context;
+  }
+
+  public static void setContext(ApplicationContext applicationContext) {
+    context = applicationContext;
+  }
+
+  /**
+   * 不应该在业务流程中频繁调用，因为内部必然会加一个锁做互斥，会影响并发度
+   */
+  @SuppressWarnings("unchecked")
+  public static <T> T getBean(String name) {
+    return (T) context.getBean(name);
+  }
+
+  public static Class<?> getImplClassFromBean(Object bean) {
+    if (TargetClassAware.class.isInstance(bean)) {
+      return ((TargetClassAware) bean).getTargetClass();
     }
 
-    public static void init() {
-        init(DEFAULT_BEAN_RESOURCE);
-    }
-
-    public static void init(String... configLocations) {
-        context = new ClassPathXmlApplicationContext(configLocations);
-    }
-
-    public static ApplicationContext getContext() {
-        return context;
-    }
-
-    public static void setContext(ApplicationContext applicationContext) {
-        context = applicationContext;
-    }
-
-    /**
-     * 不应该在业务流程中频繁调用，因为内部必然会加一个锁做互斥，会影响并发度
-     */
-    @SuppressWarnings("unchecked")
-    public static <T> T getBean(String name) {
-        return (T) context.getBean(name);
-    }
-
-    public static Class<?> getImplClassFromBean(Object bean) {
-        if (TargetClassAware.class.isInstance(bean)) {
-            return ((TargetClassAware) bean).getTargetClass();
-        }
-
-        return bean.getClass();
-    }
+    return bean.getClass();
+  }
 }

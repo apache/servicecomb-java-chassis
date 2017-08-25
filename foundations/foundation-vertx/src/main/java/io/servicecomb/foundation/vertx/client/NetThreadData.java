@@ -19,42 +19,42 @@ package io.servicecomb.foundation.vertx.client;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class NetThreadData<CLIENT_POOL> {
-    // 每个网络线程提供一个factory
-    private ClientPoolFactory<CLIENT_POOL> factory;
+  // 每个网络线程提供一个factory
+  private ClientPoolFactory<CLIENT_POOL> factory;
 
-    // 每个网络线程有多个连接池
-    private CLIENT_POOL[] pools;
+  // 每个网络线程有多个连接池
+  private CLIENT_POOL[] pools;
 
-    private AtomicInteger bindIndex = new AtomicInteger();
+  private AtomicInteger bindIndex = new AtomicInteger();
 
-    @SuppressWarnings("unchecked")
-    public NetThreadData(ClientPoolFactory<CLIENT_POOL> factory, int poolCount) {
-        this.factory = factory;
-        pools = (CLIENT_POOL[]) new Object[poolCount];
+  @SuppressWarnings("unchecked")
+  public NetThreadData(ClientPoolFactory<CLIENT_POOL> factory, int poolCount) {
+    this.factory = factory;
+    pools = (CLIENT_POOL[]) new Object[poolCount];
+  }
+
+  public ClientPoolFactory<CLIENT_POOL> getFactory() {
+    return factory;
+  }
+
+  public CLIENT_POOL[] getPools() {
+    return pools;
+  }
+
+  public AtomicInteger getBindIndex() {
+    return bindIndex;
+  }
+
+  /**
+   * 在ClientPoolManager中被调用，是被锁保护的
+   */
+  public CLIENT_POOL selectClientPool() {
+    int idx = bindIndex.getAndIncrement() % pools.length;
+    CLIENT_POOL clientPool = pools[idx];
+    if (clientPool == null) {
+      clientPool = factory.createClientPool();
+      pools[idx] = clientPool;
     }
-
-    public ClientPoolFactory<CLIENT_POOL> getFactory() {
-        return factory;
-    }
-
-    public CLIENT_POOL[] getPools() {
-        return pools;
-    }
-
-    public AtomicInteger getBindIndex() {
-        return bindIndex;
-    }
-
-    /**
-     * 在ClientPoolManager中被调用，是被锁保护的
-     */
-    public CLIENT_POOL selectClientPool() {
-        int idx = bindIndex.getAndIncrement() % pools.length;
-        CLIENT_POOL clientPool = pools[idx];
-        if (clientPool == null) {
-            clientPool = factory.createClientPool();
-            pools[idx] = clientPool;
-        }
-        return clientPool;
-    }
+    return clientPool;
+  }
 }

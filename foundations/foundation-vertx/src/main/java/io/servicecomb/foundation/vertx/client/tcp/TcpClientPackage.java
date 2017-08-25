@@ -18,14 +18,14 @@ package io.servicecomb.foundation.vertx.client.tcp;
 import io.servicecomb.foundation.vertx.tcp.TcpOutputStream;
 
 public class TcpClientPackage extends AbstractTcpClientPackage {
-    private TcpOutputStream os;
+  private TcpOutputStream os;
 
-    public TcpClientPackage(TcpOutputStream os) {
-        this.os = os;
-    }
+  public TcpClientPackage(TcpOutputStream os) {
+    this.os = os;
+  }
 
-    @Override
-    public TcpOutputStream createStream() {
-        return os;
-    }
+  @Override
+  public TcpOutputStream createStream() {
+    return os;
+  }
 }

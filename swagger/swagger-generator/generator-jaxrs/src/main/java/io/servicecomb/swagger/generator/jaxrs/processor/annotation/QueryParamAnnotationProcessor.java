@@ -19,17 +19,16 @@ package io.servicecomb.swagger.generator.jaxrs.processor.annotation;
 import javax.ws.rs.QueryParam;
 
 import io.servicecomb.swagger.generator.core.processor.parameter.AbstractParameterProcessor;
-
 import io.swagger.models.parameters.QueryParameter;
 
 public class QueryParamAnnotationProcessor extends AbstractParameterProcessor<QueryParameter> {
-    @Override
-    protected QueryParameter createParameter() {
-        return new QueryParameter();
-    }
+  @Override
+  protected QueryParameter createParameter() {
+    return new QueryParameter();
+  }
 
-    @Override
-    protected String getAnnotationParameterName(Object annotation) {
-        return ((QueryParam) annotation).value();
-    }
+  @Override
+  protected String getAnnotationParameterName(Object annotation) {
+    return ((QueryParam) annotation).value();
+  }
 }

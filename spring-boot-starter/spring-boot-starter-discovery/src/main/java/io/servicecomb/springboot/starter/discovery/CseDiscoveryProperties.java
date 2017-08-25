@@ -20,29 +20,28 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @ConfigurationProperties("spring.cloud.cse")
 public class CseDiscoveryProperties {
 
-    /** Hostname to use when accessing server */
-    private String host;
+  /** Hostname to use when accessing server */
+  private String host;
 
-    /** Port to register the service under (defaults to listening port) */
-    private String port;
+  /** Port to register the service under (defaults to listening port) */
+  private String port;
 
-    public CseDiscoveryProperties() {
-    }
+  public CseDiscoveryProperties() {
+  }
 
-    public String getHost() {
-        return host;
-    }
+  public String getHost() {
+    return host;
+  }
 
-    public void setHost(String host) {
-        this.host = host;
-    }
+  public void setHost(String host) {
+    this.host = host;
+  }
 
-    public String getPort() {
-        return port;
-    }
+  public String getPort() {
+    return port;
+  }
 
-    public void setPort(String port) {
-        this.port = port;
-    }
-
+  public void setPort(String port) {
+    this.port = port;
+  }
 }

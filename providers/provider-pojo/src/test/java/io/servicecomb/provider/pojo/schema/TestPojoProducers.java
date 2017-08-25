@@ -23,44 +23,43 @@ import org.springframework.context.ApplicationContext;
 import io.servicecomb.provider.pojo.IPerson;
 import io.servicecomb.provider.pojo.Person;
 import io.servicecomb.provider.pojo.RpcSchema;
-
 import mockit.Expectations;
 import mockit.Injectable;
 
 public class TestPojoProducers {
-    @Test
-    public void testPojoProducers(@Injectable ApplicationContext applicationContext) {
-        Person bean = new Person();
-        PojoProducers producer = new PojoProducers();
-        producer.processProvider(applicationContext, "test", bean);
-        Assert.assertEquals(producer.getProcucers().size(), 1);
-    }
+  @Test
+  public void testPojoProducers(@Injectable ApplicationContext applicationContext) {
+    Person bean = new Person();
+    PojoProducers producer = new PojoProducers();
+    producer.processProvider(applicationContext, "test", bean);
+    Assert.assertEquals(producer.getProcucers().size(), 1);
+  }
 
-    @Test
-    public void testPojoProducersSchemaNull(@Injectable ApplicationContext applicationContext,
-            @Injectable RpcSchema schema) {
-        IPerson bean = new IPerson() {
-        };
-        PojoProducers producer = new PojoProducers();
-        producer.processProvider(applicationContext, "test", bean);
-        Assert.assertEquals(producer.getProcucers().size(), 0);
-    }
+  @Test
+  public void testPojoProducersSchemaNull(@Injectable ApplicationContext applicationContext,
+      @Injectable RpcSchema schema) {
+    IPerson bean = new IPerson() {
+    };
+    PojoProducers producer = new PojoProducers();
+    producer.processProvider(applicationContext, "test", bean);
+    Assert.assertEquals(producer.getProcucers().size(), 0);
+  }
 
-    @RpcSchema
-    static class PersonEmptySchema implements IPerson {
+  @RpcSchema
+  static class PersonEmptySchema implements IPerson {
 
-    }
+  }
 
-    @Test
-    public void testPojoProducersSchemaIdNull(@Injectable ApplicationContext applicationContext,
-            @Injectable RpcSchema schema) {
-        IPerson bean = new PersonEmptySchema();
-        new Expectations() {
-            {
-            }
-        };
-        PojoProducers producer = new PojoProducers();
-        producer.processProvider(applicationContext, "test", bean);
-        Assert.assertEquals(producer.getProcucers().size(), 1);
-    }
+  @Test
+  public void testPojoProducersSchemaIdNull(@Injectable ApplicationContext applicationContext,
+      @Injectable RpcSchema schema) {
+    IPerson bean = new PersonEmptySchema();
+    new Expectations() {
+      {
+      }
+    };
+    PojoProducers producer = new PojoProducers();
+    producer.processProvider(applicationContext, "test", bean);
+    Assert.assertEquals(producer.getProcucers().size(), 1);
+  }
 }

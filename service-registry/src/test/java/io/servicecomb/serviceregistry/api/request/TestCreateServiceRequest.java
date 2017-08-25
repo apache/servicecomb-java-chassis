@@ -16,51 +16,44 @@
 
 package io.servicecomb.serviceregistry.api.request;
 
-import org.junit.Assert;
-
 import org.junit.After;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 
 import io.servicecomb.serviceregistry.api.registry.Microservice;
 
-/**
- *
- * @since Mar 14, 2017
- * @see 
- */
 public class TestCreateServiceRequest {
 
-    CreateServiceRequest oCreateServiceRequest = null;
+  CreateServiceRequest oCreateServiceRequest = null;
 
-    Microservice oMockMicroservice = null;
+  Microservice oMockMicroservice = null;
 
-    @Before
-    public void setUp() throws Exception {
-        oCreateServiceRequest = new CreateServiceRequest();
-        oMockMicroservice = Mockito.mock(Microservice.class);
-    }
+  @Before
+  public void setUp() throws Exception {
+    oCreateServiceRequest = new CreateServiceRequest();
+    oMockMicroservice = Mockito.mock(Microservice.class);
+  }
 
-    @After
-    public void tearDown() throws Exception {
-        oCreateServiceRequest = null;
-        oMockMicroservice = null;
-    }
+  @After
+  public void tearDown() throws Exception {
+    oCreateServiceRequest = null;
+    oMockMicroservice = null;
+  }
 
-    @Test
-    public void testDefaultValues() {
-        Assert.assertNull(oCreateServiceRequest.getService());
-    }
+  @Test
+  public void testDefaultValues() {
+    Assert.assertNull(oCreateServiceRequest.getService());
+  }
 
-    @Test
-    public void testIntializedValues() {
-        initCreateServiceRequest(); //Initialize the Object
-        Assert.assertEquals(oMockMicroservice, oCreateServiceRequest.getService());
-    }
+  @Test
+  public void testIntializedValues() {
+    initCreateServiceRequest(); //Initialize the Object
+    Assert.assertEquals(oMockMicroservice, oCreateServiceRequest.getService());
+  }
 
-    private void initCreateServiceRequest() {
-        oCreateServiceRequest.setService(oMockMicroservice);
-    }
-
+  private void initCreateServiceRequest() {
+    oCreateServiceRequest.setService(oMockMicroservice);
+  }
 }

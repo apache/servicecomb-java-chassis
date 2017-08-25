@@ -17,19 +17,18 @@
 package io.servicecomb.demo.server;
 
 public class TestResponse {
-    private User user;
+  private User user;
 
-    public User getUser() {
-        return user;
-    }
+  public User getUser() {
+    return user;
+  }
 
-    public void setUser(User user) {
-        this.user = user;
-    }
+  public void setUser(User user) {
+    this.user = user;
+  }
 
-    @Override
-    public String toString() {
-        return "TestResponse [user=" + user + "]";
-    }
-
+  @Override
+  public String toString() {
+    return "TestResponse [user=" + user + "]";
+  }
 }

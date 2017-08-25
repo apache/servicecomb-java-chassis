@@ -33,91 +33,91 @@ import mockit.MockUp;
 import mockit.Mocked;
 
 public class TestCseXmlWebApplicationContext {
-    @Mocked
-    ServletContext servletContext;
+  @Mocked
+  ServletContext servletContext;
 
-    CseXmlWebApplicationContext context;
+  CseXmlWebApplicationContext context;
 
-    @Before
-    public void setup() {
-        context = new CseXmlWebApplicationContext(servletContext);
-    }
+  @Before
+  public void setup() {
+    context = new CseXmlWebApplicationContext(servletContext);
+  }
 
-    @Test
-    public void testGetConfigLocationsEmpty() {
-        String[] result = context.getConfigLocations();
-        Assert.assertThat(result, Matchers.arrayContaining(BeanUtils.DEFAULT_BEAN_RESOURCE));
-    }
+  @Test
+  public void testGetConfigLocationsEmpty() {
+    String[] result = context.getConfigLocations();
+    Assert.assertThat(result, Matchers.arrayContaining(BeanUtils.DEFAULT_BEAN_RESOURCE));
+  }
 
-    @Test
-    public void testGetConfigLocationsEmptyAndDefaultEmpty() {
-        context.setDefaultBeanResource("");
-        String[] result = context.getConfigLocations();
-        Assert.assertThat(result.length, Matchers.is(0));
-    }
+  @Test
+  public void testGetConfigLocationsEmptyAndDefaultEmpty() {
+    context.setDefaultBeanResource("");
+    String[] result = context.getConfigLocations();
+    Assert.assertThat(result.length, Matchers.is(0));
+  }
 
-    @Test
-    public void testGetConfigLocationsComma() {
-        new Expectations() {
-            {
-                servletContext.getInitParameter(CseXmlWebApplicationContext.KEY_LOCATION);
-                result = "a,b";
-            }
-        };
+  @Test
+  public void testGetConfigLocationsComma() {
+    new Expectations() {
+      {
+        servletContext.getInitParameter(CseXmlWebApplicationContext.KEY_LOCATION);
+        result = "a,b";
+      }
+    };
 
-        String[] result = context.getConfigLocations();
-        Assert.assertThat(result, Matchers.arrayContaining("a", "b", BeanUtils.DEFAULT_BEAN_RESOURCE));
-    }
+    String[] result = context.getConfigLocations();
+    Assert.assertThat(result, Matchers.arrayContaining("a", "b", BeanUtils.DEFAULT_BEAN_RESOURCE));
+  }
 
-    @Test
-    public void testGetConfigLocationsPartEmpty() {
-        new Expectations() {
-            {
-                servletContext.getInitParameter(CseXmlWebApplicationContext.KEY_LOCATION);
-                result = "a,,b";
-            }
-        };
-        String[] result = context.getConfigLocations();
-        Assert.assertThat(result, Matchers.arrayContaining("a", "b", BeanUtils.DEFAULT_BEAN_RESOURCE));
-    }
+  @Test
+  public void testGetConfigLocationsPartEmpty() {
+    new Expectations() {
+      {
+        servletContext.getInitParameter(CseXmlWebApplicationContext.KEY_LOCATION);
+        result = "a,,b";
+      }
+    };
+    String[] result = context.getConfigLocations();
+    Assert.assertThat(result, Matchers.arrayContaining("a", "b", BeanUtils.DEFAULT_BEAN_RESOURCE));
+  }
 
-    @Test
-    public void testGetConfigLocationsLine() {
-        new Expectations() {
-            {
-                servletContext.getInitParameter(CseXmlWebApplicationContext.KEY_LOCATION);
-                result = "a\r\nb";
-            }
-        };
-        String[] result = context.getConfigLocations();
-        Assert.assertThat(result, Matchers.arrayContaining("a", "b", BeanUtils.DEFAULT_BEAN_RESOURCE));
-    }
+  @Test
+  public void testGetConfigLocationsLine() {
+    new Expectations() {
+      {
+        servletContext.getInitParameter(CseXmlWebApplicationContext.KEY_LOCATION);
+        result = "a\r\nb";
+      }
+    };
+    String[] result = context.getConfigLocations();
+    Assert.assertThat(result, Matchers.arrayContaining("a", "b", BeanUtils.DEFAULT_BEAN_RESOURCE));
+  }
 
-    @Test
-    public void testGetConfigLocationsMix() {
-        new Expectations() {
-            {
-                servletContext.getInitParameter(CseXmlWebApplicationContext.KEY_LOCATION);
-                result = "a\r\nb,,c";
-            }
-        };
-        String[] result = context.getConfigLocations();
-        Assert.assertThat(result, Matchers.arrayContaining("a", "b", "c", BeanUtils.DEFAULT_BEAN_RESOURCE));
-    }
+  @Test
+  public void testGetConfigLocationsMix() {
+    new Expectations() {
+      {
+        servletContext.getInitParameter(CseXmlWebApplicationContext.KEY_LOCATION);
+        result = "a\r\nb,,c";
+      }
+    };
+    String[] result = context.getConfigLocations();
+    Assert.assertThat(result, Matchers.arrayContaining("a", "b", "c", BeanUtils.DEFAULT_BEAN_RESOURCE));
+  }
 
-    @Test
-    public void testInjectServlet(@Mocked ConfigurableListableBeanFactory beanFactory) {
-        Holder<Boolean> holder = new Holder<>();
-        new MockUp<RestServletInjector>() {
-            @Mock
-            public Dynamic defaultInject(ServletContext servletContext) {
-                holder.value = true;
-                return null;
-            }
-        };
+  @Test
+  public void testInjectServlet(@Mocked ConfigurableListableBeanFactory beanFactory) {
+    Holder<Boolean> holder = new Holder<>();
+    new MockUp<RestServletInjector>() {
+      @Mock
+      public Dynamic defaultInject(ServletContext servletContext) {
+        holder.value = true;
+        return null;
+      }
+    };
 
-        context.invokeBeanFactoryPostProcessors(beanFactory);
+    context.invokeBeanFactoryPostProcessors(beanFactory);
 
-        Assert.assertTrue(holder.value);
-    }
+    Assert.assertTrue(holder.value);
+  }
 }

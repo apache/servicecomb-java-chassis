@@ -18,52 +18,52 @@ package io.servicecomb.common.rest.codec;
 
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import io.servicecomb.common.rest.definition.RestOperationMeta;
 import io.servicecomb.common.rest.definition.RestParam;
 import io.servicecomb.swagger.invocation.exception.ExceptionFactory;
 import io.servicecomb.swagger.invocation.exception.InvocationException;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 public final class RestCodec {
-    private static final Logger LOG = LoggerFactory.getLogger(RestCodec.class);
+  private static final Logger LOG = LoggerFactory.getLogger(RestCodec.class);
 
-    private RestCodec() {
+  private RestCodec() {
+  }
+
+  public static void argsToRest(Object[] args, RestOperationMeta restOperation,
+      RestClientRequest clientRequest) throws Exception {
+    int paramSize = restOperation.getParamList().size();
+    if (paramSize == 0) {
+      return;
     }
 
-    public static void argsToRest(Object[] args, RestOperationMeta restOperation,
-            RestClientRequest clientRequest) throws Exception {
-        int paramSize = restOperation.getParamList().size();
-        if (paramSize == 0) {
-            return;
-        }
-
-        if (paramSize != args.length) {
-            throw new Exception("wrong number of arguments");
-        }
-
-        for (int idx = 0; idx < paramSize; idx++) {
-            RestParam param = restOperation.getParamList().get(idx);
-            param.getParamProcessor().setValue(clientRequest, args[idx]);
-        }
+    if (paramSize != args.length) {
+      throw new Exception("wrong number of arguments");
     }
 
-    public static Object[] restToArgs(RestServerRequest request,
-            RestOperationMeta restOperation) throws InvocationException {
-        List<RestParam> paramList = restOperation.getParamList();
-
-        try {
-            Object[] paramValues = new Object[paramList.size()];
-            for (int idx = 0; idx < paramList.size(); idx++) {
-                RestParam param = paramList.get(idx);
-                paramValues[idx] = param.getParamProcessor().getValue(request);
-            }
-
-            return paramValues;
-        } catch (Exception e) {
-            LOG.error("Parameter is not valid, cause " + e.getMessage());
-            throw ExceptionFactory.convertProducerException(e, "Parameter is not valid.");
-        }
+    for (int idx = 0; idx < paramSize; idx++) {
+      RestParam param = restOperation.getParamList().get(idx);
+      param.getParamProcessor().setValue(clientRequest, args[idx]);
     }
+  }
+
+  public static Object[] restToArgs(RestServerRequest request,
+      RestOperationMeta restOperation) throws InvocationException {
+    List<RestParam> paramList = restOperation.getParamList();
+
+    try {
+      Object[] paramValues = new Object[paramList.size()];
+      for (int idx = 0; idx < paramList.size(); idx++) {
+        RestParam param = paramList.get(idx);
+        paramValues[idx] = param.getParamProcessor().getValue(request);
+      }
+
+      return paramValues;
+    } catch (Exception e) {
+      LOG.error("Parameter is not valid, cause " + e.getMessage());
+      throw ExceptionFactory.convertProducerException(e, "Parameter is not valid.");
+    }
+  }
 }

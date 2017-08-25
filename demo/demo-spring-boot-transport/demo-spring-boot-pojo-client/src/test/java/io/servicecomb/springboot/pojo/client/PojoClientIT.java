@@ -11,15 +11,15 @@ import io.servicecomb.demo.TestMgr;
 
 public class PojoClientIT {
 
-    @Before
-    public void setUp() throws Exception {
-        TestMgr.errors().clear();
-    }
+  @Before
+  public void setUp() throws Exception {
+    TestMgr.errors().clear();
+  }
 
-    @Test
-    public void clientGetsNoError() throws Exception {
-        SpringApplication.run(PojoClient.class);
+  @Test
+  public void clientGetsNoError() throws Exception {
+    SpringApplication.run(PojoClient.class);
 
-        assertThat(TestMgr.errors().isEmpty(), is(true));
-    }
+    assertThat(TestMgr.errors().isEmpty(), is(true));
+  }
 }

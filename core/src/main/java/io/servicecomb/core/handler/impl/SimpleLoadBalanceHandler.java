@@ -31,43 +31,42 @@ import io.servicecomb.swagger.invocation.AsyncResponse;
  * 内置轮询lb，方便demo之类的场景，不必去依赖lb包
  */
 public class SimpleLoadBalanceHandler extends AbstractHandler {
-    private AtomicInteger index = new AtomicInteger();
+  private AtomicInteger index = new AtomicInteger();
 
-    // key为transportName
-    private volatile Map<String, EndpointsCache> endpointsCacheMap = new ConcurrentHashMap<>();
+  // key为transportName
+  private volatile Map<String, EndpointsCache> endpointsCacheMap = new ConcurrentHashMap<>();
 
-    @Override
-    public void handle(Invocation invocation, AsyncResponse asyncResp) throws Exception {
-        // 调用者未指定transport时，这里得到的是""，也直接使用，不必特殊处理
-        String transportName = invocation.getConfigTransportName();
+  @Override
+  public void handle(Invocation invocation, AsyncResponse asyncResp) throws Exception {
+    // 调用者未指定transport时，这里得到的是""，也直接使用，不必特殊处理
+    String transportName = invocation.getConfigTransportName();
 
-        EndpointsCache endpointsCache = endpointsCacheMap.get(transportName);
+    EndpointsCache endpointsCache = endpointsCacheMap.get(transportName);
+    if (endpointsCache == null) {
+      synchronized (this) {
+        endpointsCache = endpointsCacheMap.get(invocation.getConfigTransportName());
         if (endpointsCache == null) {
-            synchronized (this) {
-                endpointsCache = endpointsCacheMap.get(invocation.getConfigTransportName());
-                if (endpointsCache == null) {
-                    endpointsCache = new EndpointsCache(invocation.getAppId(), invocation.getMicroserviceName(),
-                            invocation.getMicroserviceVersionRule(), transportName);
-                    endpointsCacheMap.put(transportName, endpointsCache);
-                }
-            }
+          endpointsCache = new EndpointsCache(invocation.getAppId(), invocation.getMicroserviceName(),
+              invocation.getMicroserviceVersionRule(), transportName);
+          endpointsCacheMap.put(transportName, endpointsCache);
         }
-        List<Endpoint> endpoints = endpointsCache.getLatestEndpoints();
+      }
+    }
+    List<Endpoint> endpoints = endpointsCache.getLatestEndpoints();
 
-        if (endpoints == null || endpoints.isEmpty()) {
-            asyncResp.consumerFail(ExceptionUtils.lbAddressNotFound(invocation.getMicroserviceName(),
-                    invocation.getMicroserviceVersionRule(),
-                    transportName));
-            return;
-        }
-
-        int idx = Math.abs(index.getAndIncrement());
-        idx = idx % endpoints.size();
-        Endpoint endpoint = endpoints.get(idx);
-
-        invocation.setEndpoint(endpoint);
-
-        invocation.next(asyncResp);
+    if (endpoints == null || endpoints.isEmpty()) {
+      asyncResp.consumerFail(ExceptionUtils.lbAddressNotFound(invocation.getMicroserviceName(),
+          invocation.getMicroserviceVersionRule(),
+          transportName));
+      return;
     }
 
+    int idx = Math.abs(index.getAndIncrement());
+    idx = idx % endpoints.size();
+    Endpoint endpoint = endpoints.get(idx);
+
+    invocation.setEndpoint(endpoint);
+
+    invocation.next(asyncResp);
+  }
 }

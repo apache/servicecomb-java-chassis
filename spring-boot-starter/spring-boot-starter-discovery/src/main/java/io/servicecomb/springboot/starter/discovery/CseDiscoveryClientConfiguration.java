@@ -15,7 +15,6 @@
  */
 package io.servicecomb.springboot.starter.discovery;
 
-import io.servicecomb.core.provider.consumer.ConsumerProviderManager;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.cloud.client.discovery.DiscoveryClient;
@@ -25,25 +24,26 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 
+import io.servicecomb.core.provider.consumer.ConsumerProviderManager;
+
 @AutoConfigureBefore(NoopDiscoveryClientAutoConfiguration.class)
 @Configuration
 public class CseDiscoveryClientConfiguration {
 
-    @Bean
-    public CseDiscoveryProperties cseDiscoveryProperties() {
-        return new CseDiscoveryProperties();
-    }
+  @Bean
+  public CseDiscoveryProperties cseDiscoveryProperties() {
+    return new CseDiscoveryProperties();
+  }
 
-    @Bean
-    @ConditionalOnBean(ZuulProperties.class)
-    public CseRoutesProperties cseRoutesProperties(ConsumerProviderManager manager) {
-        return new CseRoutesProperties(manager);
-    }
+  @Bean
+  @ConditionalOnBean(ZuulProperties.class)
+  public CseRoutesProperties cseRoutesProperties(ConsumerProviderManager manager) {
+    return new CseRoutesProperties(manager);
+  }
 
-    @Bean
-    @Primary
-    public DiscoveryClient cseDiscoveryClient() {
-        return new CseDiscoveryClient();
-    }
-
+  @Bean
+  @Primary
+  public DiscoveryClient cseDiscoveryClient() {
+    return new CseDiscoveryClient();
+  }
 }

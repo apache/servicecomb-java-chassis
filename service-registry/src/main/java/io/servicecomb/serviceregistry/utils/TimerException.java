@@ -21,6 +21,5 @@ package io.servicecomb.serviceregistry.utils;
  */
 public class TimerException extends Exception {
 
-    private static final long serialVersionUID = 4579811019552389524L;
-
+  private static final long serialVersionUID = 4579811019552389524L;
 }

@@ -21,42 +21,42 @@ import io.servicecomb.serviceregistry.api.registry.Microservice;
 import io.servicecomb.serviceregistry.client.ServiceRegistryClient;
 
 public abstract class AbstractTask implements Runnable {
-    protected TaskStatus taskStatus = TaskStatus.INIT;
+  protected TaskStatus taskStatus = TaskStatus.INIT;
 
-    protected EventBus eventBus;
+  protected EventBus eventBus;
 
-    protected ServiceRegistryClient srClient;
+  protected ServiceRegistryClient srClient;
 
-    protected Microservice microservice;
+  protected Microservice microservice;
 
-    public AbstractTask(EventBus eventBus, ServiceRegistryClient srClient, Microservice microservice) {
-        this.eventBus = eventBus;
-        this.srClient = srClient;
-        this.microservice = microservice;
+  public AbstractTask(EventBus eventBus, ServiceRegistryClient srClient, Microservice microservice) {
+    this.eventBus = eventBus;
+    this.srClient = srClient;
+    this.microservice = microservice;
 
-        this.eventBus.register(this);
+    this.eventBus.register(this);
+  }
+
+  public EventBus getEventBus() {
+    return eventBus;
+  }
+
+  public Microservice getMicroservice() {
+    return microservice;
+  }
+
+  @Override
+  public void run() {
+    if (taskStatus == TaskStatus.READY) {
+      // if this task is actually run, we send a notification
+      doRun();
+      eventBus.post(this);
     }
+  }
 
-    public EventBus getEventBus() {
-        return eventBus;
-    }
+  abstract protected void doRun();
 
-    public Microservice getMicroservice() {
-        return microservice;
-    }
-
-    @Override
-    public void run() {
-        if(taskStatus == TaskStatus.READY) {
-            // if this task is actually run, we send a notification
-            doRun();
-            eventBus.post(this);
-        }
-    }
-
-    abstract protected void doRun();
-
-    protected boolean isSameMicroservice(Microservice otherMicroservice) {
-        return microservice.getServiceName().equals(otherMicroservice.getServiceName());
-    }
+  protected boolean isSameMicroservice(Microservice otherMicroservice) {
+    return microservice.getServiceName().equals(otherMicroservice.getServiceName());
+  }
 }

@@ -16,10 +16,11 @@
 
 package io.servicecomb.tracing.zipkin;
 
+import javax.annotation.Nonnull;
+
 import brave.http.HttpServerAdapter;
 import io.servicecomb.core.Invocation;
 import io.servicecomb.swagger.invocation.Response;
-import javax.annotation.Nonnull;
 import zipkin.internal.Nullable;
 
 class ProviderInvocationAdapter extends HttpServerAdapter<Invocation, Response> {

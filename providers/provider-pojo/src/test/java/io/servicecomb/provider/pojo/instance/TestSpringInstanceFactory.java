@@ -24,28 +24,27 @@ import io.servicecomb.provider.pojo.PojoConst;
 
 public class TestSpringInstanceFactory {
 
-    @Test
-    public void testInitException()
-        throws Exception {
+  @Test
+  public void testInitException()
+      throws Exception {
 
-        SpringInstanceFactory lSpringInstanceFactory = new SpringInstanceFactory();
-        MockUtil.getInstance().mockBeanUtils();
-        try {
-            lSpringInstanceFactory.create("TestSpringInstanceFactory");
-        } catch (Error e) {
-            Assert.assertEquals("Fail to find bean:TestSpringInstanceFactory", e.getMessage());
-        }
+    SpringInstanceFactory lSpringInstanceFactory = new SpringInstanceFactory();
+    MockUtil.getInstance().mockBeanUtils();
+    try {
+      lSpringInstanceFactory.create("TestSpringInstanceFactory");
+    } catch (Error e) {
+      Assert.assertEquals("Fail to find bean:TestSpringInstanceFactory", e.getMessage());
     }
+  }
 
-    @Test
-    public void testInit()
-        throws Exception {
+  @Test
+  public void testInit()
+      throws Exception {
 
-        SpringInstanceFactory lSpringInstanceFactory = new SpringInstanceFactory();
-        MockUtil.getInstance().mockBeanUtils();
-        MockUtil.getInstance().mockBeanUtilsObject();
-        lSpringInstanceFactory.create("io.servicecomb.provider.pojo.instance.TestPojoInstanceFactory");
-        Assert.assertEquals(PojoConst.SPRING, lSpringInstanceFactory.getImplName());
-    }
-
+    SpringInstanceFactory lSpringInstanceFactory = new SpringInstanceFactory();
+    MockUtil.getInstance().mockBeanUtils();
+    MockUtil.getInstance().mockBeanUtilsObject();
+    lSpringInstanceFactory.create("io.servicecomb.provider.pojo.instance.TestPojoInstanceFactory");
+    Assert.assertEquals(PojoConst.SPRING, lSpringInstanceFactory.getImplName());
+  }
 }

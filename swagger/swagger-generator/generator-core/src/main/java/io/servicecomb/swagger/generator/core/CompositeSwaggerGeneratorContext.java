@@ -26,33 +26,33 @@ import io.servicecomb.foundation.common.utils.SPIServiceUtils;
 
 @Component
 public class CompositeSwaggerGeneratorContext {
-    private static final Logger LOGGER = LoggerFactory.getLogger(CompositeSwaggerGeneratorContext.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(CompositeSwaggerGeneratorContext.class);
 
-    private List<SwaggerGeneratorContext> contextList;
+  private List<SwaggerGeneratorContext> contextList;
 
-    public CompositeSwaggerGeneratorContext() {
-        contextList = SPIServiceUtils.getAllService(SwaggerGeneratorContext.class);
+  public CompositeSwaggerGeneratorContext() {
+    contextList = SPIServiceUtils.getAllService(SwaggerGeneratorContext.class);
 
-        contextList.sort((context1, context2) -> {
-            return context1.getOrder() - context2.getOrder();
-        });
+    contextList.sort((context1, context2) -> {
+      return context1.getOrder() - context2.getOrder();
+    });
 
-        for (SwaggerGeneratorContext context : contextList) {
-            LOGGER.info("Found swagger generator context: {}", context.getClass().getName());
-        }
+    for (SwaggerGeneratorContext context : contextList) {
+      LOGGER.info("Found swagger generator context: {}", context.getClass().getName());
+    }
+  }
+
+  public List<SwaggerGeneratorContext> getContextList() {
+    return contextList;
+  }
+
+  public SwaggerGeneratorContext selectContext(Class<?> cls) {
+    for (SwaggerGeneratorContext context : contextList) {
+      if (context.canProcess(cls)) {
+        return context;
+      }
     }
 
-    public List<SwaggerGeneratorContext> getContextList() {
-        return contextList;
-    }
-
-    public SwaggerGeneratorContext selectContext(Class<?> cls) {
-        for (SwaggerGeneratorContext context : contextList) {
-            if (context.canProcess(cls)) {
-                return context;
-            }
-        }
-
-        throw new Error("impossible, must be bug.");
-    }
+    throw new Error("impossible, must be bug.");
+  }
 }

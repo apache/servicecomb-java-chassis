@@ -24,52 +24,46 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-/**
- *
- * @since Mar 14, 2017
- * @see 
- */
 public class TestPerfStatImpl {
 
-    PerfStatImpl oPerfStatImpl = null;
+  PerfStatImpl oPerfStatImpl = null;
 
-    PerfStatSuccFail oPerfStatSuccFail = null;
+  PerfStatSuccFail oPerfStatSuccFail = null;
 
-    @Before
-    public void setUp() throws Exception {
-        oPerfStatImpl = new PerfStatImpl("testData");
-        oPerfStatSuccFail = new PerfStatSuccFail("testMergeFrom");
-    }
+  @Before
+  public void setUp() throws Exception {
+    oPerfStatImpl = new PerfStatImpl("testData");
+    oPerfStatSuccFail = new PerfStatSuccFail("testMergeFrom");
+  }
 
-    @After
-    public void tearDown() throws Exception {
-        oPerfStatImpl = null;
-    }
+  @After
+  public void tearDown() throws Exception {
+    oPerfStatImpl = null;
+  }
 
-    @Test
-    public void testMergeFrom() {
-        oPerfStatImpl.mergeFrom(oPerfStatSuccFail);
-        Assert.assertEquals("testMergeFrom", oPerfStatImpl.getName());
-        Assert.assertEquals(2, oPerfStatImpl.getPerfStatDataList().size());
-    }
+  @Test
+  public void testMergeFrom() {
+    oPerfStatImpl.mergeFrom(oPerfStatSuccFail);
+    Assert.assertEquals("testMergeFrom", oPerfStatImpl.getName());
+    Assert.assertEquals(2, oPerfStatImpl.getPerfStatDataList().size());
+  }
 
-    @Test
-    public void testCalc() {
-        oPerfStatImpl = new PerfStatImpl("testConstructor", new PerfStatData("test"));
-        PerfResult oPerfResult = new PerfResult();
-        oPerfResult.setName("test");
-        List<PerfResult> oPerfResultList = new ArrayList<>();
-        oPerfResultList.add(oPerfResult);
-        oPerfStatImpl.calc(System.currentTimeMillis(), oPerfResultList);
-        Assert.assertEquals(2, oPerfResultList.size());
+  @Test
+  public void testCalc() {
+    oPerfStatImpl = new PerfStatImpl("testConstructor", new PerfStatData("test"));
+    PerfResult oPerfResult = new PerfResult();
+    oPerfResult.setName("test");
+    List<PerfResult> oPerfResultList = new ArrayList<>();
+    oPerfResultList.add(oPerfResult);
+    oPerfStatImpl.calc(System.currentTimeMillis(), oPerfResultList);
+    Assert.assertEquals(2, oPerfResultList.size());
 
-        //Testing Calc with null PerfStat
-        oPerfStatImpl.calc(null, 20, oPerfResultList);
-        Assert.assertEquals(2, oPerfResultList.size()); //The list size does not increase
+    //Testing Calc with null PerfStat
+    oPerfStatImpl.calc(null, 20, oPerfResultList);
+    Assert.assertEquals(2, oPerfResultList.size()); //The list size does not increase
 
-        //Testing Calc with PerfStat
-        oPerfStatImpl.calc(oPerfStatSuccFail, 20, oPerfResultList);
-        Assert.assertEquals(3, oPerfResultList.size());
-
-    }
+    //Testing Calc with PerfStat
+    oPerfStatImpl.calc(oPerfStatSuccFail, 20, oPerfResultList);
+    Assert.assertEquals(3, oPerfResultList.size());
+  }
 }

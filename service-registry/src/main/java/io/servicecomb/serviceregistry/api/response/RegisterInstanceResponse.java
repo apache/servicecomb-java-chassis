@@ -20,13 +20,13 @@ package io.servicecomb.serviceregistry.api.response;
  * Created by   on 2016/12/6.
  */
 public class RegisterInstanceResponse {
-    private String instanceId;
+  private String instanceId;
 
-    public String getInstanceId() {
-        return instanceId;
-    }
+  public String getInstanceId() {
+    return instanceId;
+  }
 
-    public void setInstanceId(String instanceId) {
-        this.instanceId = instanceId;
-    }
+  public void setInstanceId(String instanceId) {
+    this.instanceId = instanceId;
+  }
 }

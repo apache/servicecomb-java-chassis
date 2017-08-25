@@ -21,20 +21,19 @@ import javax.ws.rs.core.MediaType;
 import io.servicecomb.foundation.common.RegisterManager;
 
 public final class ProduceProcessorManager extends RegisterManager<String, ProduceProcessor> {
-    private static final String NAME = "produce processor mgr";
+  private static final String NAME = "produce processor mgr";
 
-    public static final String DEFAULT_TYPE = MediaType.APPLICATION_JSON;
+  public static final String DEFAULT_TYPE = MediaType.APPLICATION_JSON;
 
-    public static final ProduceProcessorManager INSTANCE = new ProduceProcessorManager();
+  public static final ProduceProcessorManager INSTANCE = new ProduceProcessorManager();
 
-    public static final ProduceProcessor JSON_PROCESSOR = new ProduceJsonProcessor();
+  public static final ProduceProcessor JSON_PROCESSOR = new ProduceJsonProcessor();
 
-    public static final ProduceProcessor PLAIN_PROCESSOR = new ProduceTextPlainProcessor();
+  public static final ProduceProcessor PLAIN_PROCESSOR = new ProduceTextPlainProcessor();
 
-    public static final ProduceProcessor DEFAULT_PROCESSOR = JSON_PROCESSOR;
+  public static final ProduceProcessor DEFAULT_PROCESSOR = JSON_PROCESSOR;
 
-    private ProduceProcessorManager() {
-        super(NAME);
-    }
-
+  private ProduceProcessorManager() {
+    super(NAME);
+  }
 }

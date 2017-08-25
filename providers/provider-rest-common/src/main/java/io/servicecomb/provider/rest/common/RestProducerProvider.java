@@ -30,26 +30,26 @@ import io.servicecomb.serviceregistry.api.registry.Microservice;
 @Component
 public class RestProducerProvider extends AbstractProducerProvider {
 
-    @Inject
-    protected ProducerSchemaFactory producerSchemaFactory;
+  @Inject
+  protected ProducerSchemaFactory producerSchemaFactory;
 
-    @Inject
-    protected RestProducers restProducers;
+  @Inject
+  protected RestProducers restProducers;
 
-    @Override
-    public String getName() {
-        return RestConst.REST;
+  @Override
+  public String getName() {
+    return RestConst.REST;
+  }
+
+  @Override
+  public void init() throws Exception {
+    for (ProducerMeta producerMeta : restProducers.getProducerMetaList()) {
+      Microservice microservice = RegistryUtils.getMicroservice();
+      producerSchemaFactory.getOrCreateProducerSchema(
+          microservice.getServiceName(),
+          producerMeta.getSchemaId(),
+          producerMeta.getInstanceClass(),
+          producerMeta.getInstance());
     }
-
-    @Override
-    public void init() throws Exception {
-        for (ProducerMeta producerMeta : restProducers.getProducerMetaList()) {
-            Microservice microservice = RegistryUtils.getMicroservice();
-            producerSchemaFactory.getOrCreateProducerSchema(
-                    microservice.getServiceName(),
-                    producerMeta.getSchemaId(),
-                    producerMeta.getInstanceClass(),
-                    producerMeta.getInstance());
-        }
-    }
+  }
 }

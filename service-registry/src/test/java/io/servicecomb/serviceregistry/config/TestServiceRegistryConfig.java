@@ -24,34 +24,33 @@ import org.junit.Test;
 import io.servicecomb.serviceregistry.ArchaiusUtils;
 
 public class TestServiceRegistryConfig {
-    @BeforeClass
-    public static void initClass() {
-        ArchaiusUtils.resetConfig();
-    }
+  @BeforeClass
+  public static void initClass() {
+    ArchaiusUtils.resetConfig();
+  }
 
-    @AfterClass
-    public static void teardownClass() {
-        ArchaiusUtils.resetConfig();
-    }
+  @AfterClass
+  public static void teardownClass() {
+    ArchaiusUtils.resetConfig();
+  }
 
-    @Test
-    public void testServiceRegistryConfig() {
-        ServiceRegistryConfig oConfig = ServiceRegistryConfig.INSTANCE;
-        Assert.assertEquals(null, oConfig.getAccessKey());
-        Assert.assertEquals(30000, oConfig.getConnectionTimeout());
-        Assert.assertNotEquals(null, oConfig.getHeartbeatInterval());
-        Assert.assertEquals("HTTP_1_1", oConfig.getHttpVersion().name());
-        Assert.assertEquals("rest", oConfig.getTransport());
-        Assert.assertNotEquals(null, oConfig.getIpPort());
-        Assert.assertEquals(1, oConfig.getWorkerPoolSize());
-        Assert.assertEquals(true, oConfig.isSsl());
-        Assert.assertEquals(30000, oConfig.getRequestTimeout());
-        Assert.assertNotEquals(null, oConfig.getResendHeartBeatTimes());
-        Assert.assertEquals(false, oConfig.isPreferIpAddress());
-        Assert.assertEquals(true, oConfig.isWatch());
-        Assert.assertEquals(false, oConfig.isClientAuthEnabled());
-        Assert.assertEquals(ServiceRegistryConfig.NO_TENANT, oConfig.getTenantName());
-        Assert.assertEquals(null, oConfig.getSecretKey());
-    }
-
+  @Test
+  public void testServiceRegistryConfig() {
+    ServiceRegistryConfig oConfig = ServiceRegistryConfig.INSTANCE;
+    Assert.assertEquals(null, oConfig.getAccessKey());
+    Assert.assertEquals(30000, oConfig.getConnectionTimeout());
+    Assert.assertNotEquals(null, oConfig.getHeartbeatInterval());
+    Assert.assertEquals("HTTP_1_1", oConfig.getHttpVersion().name());
+    Assert.assertEquals("rest", oConfig.getTransport());
+    Assert.assertNotEquals(null, oConfig.getIpPort());
+    Assert.assertEquals(1, oConfig.getWorkerPoolSize());
+    Assert.assertEquals(true, oConfig.isSsl());
+    Assert.assertEquals(30000, oConfig.getRequestTimeout());
+    Assert.assertNotEquals(null, oConfig.getResendHeartBeatTimes());
+    Assert.assertEquals(false, oConfig.isPreferIpAddress());
+    Assert.assertEquals(true, oConfig.isWatch());
+    Assert.assertEquals(false, oConfig.isClientAuthEnabled());
+    Assert.assertEquals(ServiceRegistryConfig.NO_TENANT, oConfig.getTenantName());
+    Assert.assertEquals(null, oConfig.getSecretKey());
+  }
 }

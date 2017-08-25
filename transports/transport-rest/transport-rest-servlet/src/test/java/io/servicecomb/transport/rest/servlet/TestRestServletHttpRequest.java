@@ -31,99 +31,97 @@ import org.mockito.Mockito;
 
 public class TestRestServletHttpRequest {
 
-    private RestServletHttpRequest lrequest = null;
+  private RestServletHttpRequest lrequest = null;
 
-    @Before
-    public void setUp() throws Exception {
-        HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
-        AsyncContext asyncCtx = Mockito.mock(AsyncContext.class);
-        lrequest = new RestServletHttpRequest(request, asyncCtx);
+  @Before
+  public void setUp() throws Exception {
+    HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
+    AsyncContext asyncCtx = Mockito.mock(AsyncContext.class);
+    lrequest = new RestServletHttpRequest(request, asyncCtx);
+  }
+
+  @After
+  public void tearDown() throws Exception {
+    lrequest = null;
+  }
+
+  @Test
+  public void testGetPath() {
+    Assert.assertNull(lrequest.getPath());
+  }
+
+  @Test
+  public void testGetMethod() {
+    Assert.assertNull(lrequest.getMethod());
+  }
+
+  @Test
+  public void testComplete() {
+    boolean status = true;
+    try {
+      lrequest.complete();
+    } catch (Exception e) {
+      status = false;
     }
+    Assert.assertTrue(status);
+  }
 
-    @After
-    public void tearDown() throws Exception {
-        lrequest = null;
+  @Test
+  public void testSetPathParamMap() {
+    Map<String, String> pathParamMap = new HashMap<String, String>();
+    boolean status = true;
+    try {
+      lrequest.setPathParamMap(pathParamMap);
+    } catch (Exception e) {
+      status = false;
     }
+    Assert.assertTrue(status);
+  }
 
-    @Test
-    public void testGetPath() {
-        Assert.assertNull(lrequest.getPath());
+  @Test
+  public void testGetQueryParam() {
+    Assert.assertNull(lrequest.getQueryParam("key"));
+  }
+
+  @Test
+  public void testGetPathParam() {
+    boolean status = false;
+    try {
+      Assert.assertNull(lrequest.getPathParam("key"));
+    } catch (Exception ex) {
+      status = true;
     }
+    Assert.assertTrue(status);
+  }
 
-    @Test
-    public void testGetMethod() {
-        Assert.assertNull(lrequest.getMethod());
+  @Test
+  public void testGetHeaderParam() {
+    Assert.assertNull(lrequest.getHeaderParam("key"));
+  }
+
+  @Test
+  public void testGetFormParam() {
+    Assert.assertNull(lrequest.getFormParam("key"));
+  }
+
+  @Test
+  public void testGetBody() {
+    boolean status = true;
+    try {
+      Assert.assertNull(lrequest.getBody());
+    } catch (IOException e) {
+      status = false;
     }
+    Assert.assertTrue(status);
+  }
 
-    @Test
-    public void testComplete() {
-        boolean status = true;
-        try {
-            lrequest.complete();
-        } catch (Exception e) {
-            status = false;
-        }
-        Assert.assertTrue(status);
-    }
+  @Test
+  public void testGetQueryParams() {
+    Assert.assertNotNull(lrequest.getQueryParams());
+  }
 
-    @Test
-    public void testSetPathParamMap() {
-        Map<String, String> pathParamMap = new HashMap<String, String>();
-        boolean status = true;
-        try {
-            lrequest.setPathParamMap(pathParamMap);
-        } catch (Exception e) {
-            status = false;
-        }
-        Assert.assertTrue(status);
-
-    }
-
-    @Test
-    public void testGetQueryParam() {
-        Assert.assertNull(lrequest.getQueryParam("key"));
-    }
-
-    @Test
-    public void testGetPathParam() {
-        boolean status = false;
-        try {
-            Assert.assertNull(lrequest.getPathParam("key"));
-        } catch (Exception ex) {
-            status = true;
-        }
-        Assert.assertTrue(status);
-    }
-
-    @Test
-    public void testGetHeaderParam() {
-        Assert.assertNull(lrequest.getHeaderParam("key"));
-    }
-
-    @Test
-    public void testGetFormParam() {
-        Assert.assertNull(lrequest.getFormParam("key"));
-    }
-
-    @Test
-    public void testGetBody() {
-        boolean status = true;
-        try {
-            Assert.assertNull(lrequest.getBody());
-        } catch (IOException e) {
-            status = false;
-        }
-        Assert.assertTrue(status);
-    }
-
-    @Test
-    public void testGetQueryParams() {
-        Assert.assertNotNull(lrequest.getQueryParams());
-    }
-
-    @Test
-    public void testGetHttpRequest() {
-        Assert.assertNotNull(lrequest.getHttpRequest());
-    }
-
+  @Test
+  public void testGetHttpRequest() {
+    Assert.assertNotNull(lrequest.getHttpRequest());
+  }
 }

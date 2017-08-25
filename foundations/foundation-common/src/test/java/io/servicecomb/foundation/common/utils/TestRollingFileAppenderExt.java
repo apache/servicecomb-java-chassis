@@ -27,34 +27,34 @@ import mockit.Expectations;
 import mockit.Injectable;
 
 public class TestRollingFileAppenderExt {
-    @Test
-    public void testRollingFileAppenderExt(@Injectable LoggingEvent event,
-            @Injectable Layout layout) throws Exception {
-        new Expectations() {
-            {
-                layout.format(event);
-                result = "test";
-            }
-        };
-        File cur = new File(System.getProperty("user.dir"));
-        File temp = new File(cur, "temptestfile.log");
-        if (temp.exists()) {
-            temp.delete();
-        }
-        RollingFileAppenderExt ext = new RollingFileAppenderExt();
-        ext.setLayout(layout);
-        ext.setLogPermission("rw-------");
-        ext.setFile(temp.getAbsolutePath());
-        ext.setFile(temp.getAbsolutePath(), false, false, 300000);
-        Assert.assertEquals(ext.getLogPermission(), "rw-------");
-        Assert.assertTrue(temp.exists());
-
-        temp.delete();
-        ext.subAppend(event);
-        Assert.assertTrue(temp.exists());
-
-        ext.close();
-        temp.delete();
-        Assert.assertFalse(temp.exists());
+  @Test
+  public void testRollingFileAppenderExt(@Injectable LoggingEvent event,
+      @Injectable Layout layout) throws Exception {
+    new Expectations() {
+      {
+        layout.format(event);
+        result = "test";
+      }
+    };
+    File cur = new File(System.getProperty("user.dir"));
+    File temp = new File(cur, "temptestfile.log");
+    if (temp.exists()) {
+      temp.delete();
     }
+    RollingFileAppenderExt ext = new RollingFileAppenderExt();
+    ext.setLayout(layout);
+    ext.setLogPermission("rw-------");
+    ext.setFile(temp.getAbsolutePath());
+    ext.setFile(temp.getAbsolutePath(), false, false, 300000);
+    Assert.assertEquals(ext.getLogPermission(), "rw-------");
+    Assert.assertTrue(temp.exists());
+
+    temp.delete();
+    ext.subAppend(event);
+    Assert.assertTrue(temp.exists());
+
+    ext.close();
+    temp.delete();
+    Assert.assertFalse(temp.exists());
+  }
 }

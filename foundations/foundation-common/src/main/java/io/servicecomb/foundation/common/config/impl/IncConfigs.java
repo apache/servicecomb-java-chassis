@@ -25,65 +25,63 @@ import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
 @JacksonXmlRootElement(localName = "configs")
 public class IncConfigs {
 
-    public static class IncConfig {
-        @JacksonXmlProperty(isAttribute = true)
-        private String id;
+  public static class IncConfig {
+    @JacksonXmlProperty(isAttribute = true)
+    private String id;
 
-        @JacksonXmlProperty(isAttribute = true)
-        private String loader;
+    @JacksonXmlProperty(isAttribute = true)
+    private String loader;
 
-        @JacksonXmlProperty(localName = "path")
-        @JacksonXmlElementWrapper(useWrapping = false)
-        private List<String> pathList;
-
-        public String getId() {
-            return id;
-        }
-
-        public void setId(String id) {
-            this.id = id;
-        }
-
-        public String getLoader() {
-            return loader;
-        }
-
-        public void setLoader(String loader) {
-            this.loader = loader;
-        }
-
-        public List<String> getPathList() {
-            return pathList;
-        }
-
-        public void setPathList(List<String> pathList) {
-            this.pathList = pathList;
-        }
-
-    }
-
-    @JacksonXmlProperty(localName = "properties")
+    @JacksonXmlProperty(localName = "path")
     @JacksonXmlElementWrapper(useWrapping = false)
-    private List<IncConfig> propertiesList;
+    private List<String> pathList;
 
-    @JacksonXmlProperty(localName = "xml")
-    @JacksonXmlElementWrapper(useWrapping = false)
-    private List<IncConfig> xmlList;
-
-    public List<IncConfig> getPropertiesList() {
-        return propertiesList;
+    public String getId() {
+      return id;
     }
 
-    public void setPropertiesList(List<IncConfig> propertiesList) {
-        this.propertiesList = propertiesList;
+    public void setId(String id) {
+      this.id = id;
     }
 
-    public List<IncConfig> getXmlList() {
-        return xmlList;
+    public String getLoader() {
+      return loader;
     }
 
-    public void setXmlList(List<IncConfig> xmlList) {
-        this.xmlList = xmlList;
+    public void setLoader(String loader) {
+      this.loader = loader;
     }
 
+    public List<String> getPathList() {
+      return pathList;
+    }
+
+    public void setPathList(List<String> pathList) {
+      this.pathList = pathList;
+    }
+  }
+
+  @JacksonXmlProperty(localName = "properties")
+  @JacksonXmlElementWrapper(useWrapping = false)
+  private List<IncConfig> propertiesList;
+
+  @JacksonXmlProperty(localName = "xml")
+  @JacksonXmlElementWrapper(useWrapping = false)
+  private List<IncConfig> xmlList;
+
+  public List<IncConfig> getPropertiesList() {
+    return propertiesList;
+  }
+
+  public void setPropertiesList(List<IncConfig> propertiesList) {
+    this.propertiesList = propertiesList;
+  }
+
+  public List<IncConfig> getXmlList() {
+    return xmlList;
+  }
+
+  public void setXmlList(List<IncConfig> xmlList) {
+    this.xmlList = xmlList;
+  }
 }

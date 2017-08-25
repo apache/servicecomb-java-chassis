@@ -31,12 +31,13 @@ import static org.springframework.http.HttpStatus.OK;
 import static org.springframework.http.MediaType.APPLICATION_FORM_URLENCODED_VALUE;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 
-import io.servicecomb.common.rest.codec.RestObjectMapper;
-import io.servicecomb.demo.compute.Person;
-import io.servicecomb.demo.server.User;
 import java.io.IOException;
 import java.time.ZonedDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import org.junit.Ignore;
 import org.junit.Test;
@@ -52,13 +53,19 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.client.UnknownHttpStatusCodeException;
 
+import io.servicecomb.common.rest.codec.RestObjectMapper;
+import io.servicecomb.demo.compute.Person;
+import io.servicecomb.demo.server.User;
+
 @Ignore
 public class SpringMvcIntegrationTestBase {
 
   private final String baseUrl = "http://127.0.0.1:8080/";
+
   private final RestTemplate restTemplate = new RestTemplate();
 
   private final String codeFirstUrl = baseUrl + "codeFirstSpringmvc/";
+
   private final String controllerUrl = baseUrl + "controller/";
 
   @Test
@@ -74,7 +81,7 @@ public class SpringMvcIntegrationTestBase {
     converters.add(new MappingJackson2HttpMessageConverter());
     restTemplate.setMessageConverters(converters);
     responseEntity = restTemplate
-            .getForEntity(baseUrl + "sayHi?name={name}", String.class, "小 强");
+        .getForEntity(baseUrl + "sayHi?name={name}", String.class, "小 强");
 
     assertThat(responseEntity.getStatusCode(), is(OK));
     assertThat(responseEntity.getBody(), is("Hi 小 强"));
@@ -116,8 +123,8 @@ public class SpringMvcIntegrationTestBase {
     assertThat(responseEntity.getStatusCode(), is(OK));
 
     Map<String, User> body = responseEntity.getBody();
-    assertArrayEquals(body.get("user1").getNames(), new String[]{"name11", "name12"});
-    assertArrayEquals(body.get("user2").getNames(), new String[]{"name21", "name22"});
+    assertArrayEquals(body.get("user1").getNames(), new String[] {"name11", "name12"});
+    assertArrayEquals(body.get("user2").getNames(), new String[] {"name21", "name22"});
   }
 
   private User userOfNames(String... names) {
@@ -140,7 +147,7 @@ public class SpringMvcIntegrationTestBase {
 
   @Test
   public void ableToPostBytes() throws IOException {
-    byte[] body = new byte[]{0, 1, 2};
+    byte[] body = new byte[] {0, 1, 2};
 
     byte[] result = restTemplate.postForObject(
         codeFirstUrl + "bytes",
@@ -277,7 +284,8 @@ public class SpringMvcIntegrationTestBase {
     int result = restTemplate.getForObject(
         controllerUrl + "add?a={a}&b={b}",
         Integer.class,
-        3, 4);
+        3,
+        4);
 
     assertThat(result, is(7));
   }
@@ -297,10 +305,10 @@ public class SpringMvcIntegrationTestBase {
     converters.add(new MappingJackson2HttpMessageConverter());
     restTemplate.setMessageConverters(converters);
     result = restTemplate.postForObject(
-            controllerUrl + "sayhello/{name}",
-            null,
-            String.class,
-            "中 国");
+        controllerUrl + "sayhello/{name}",
+        null,
+        String.class,
+        "中 国");
 
     assertThat(result, is("hello 中 国"));
     restTemplate.setMessageConverters(convertersOld);
@@ -327,10 +335,10 @@ public class SpringMvcIntegrationTestBase {
     input.setName("中国");
 
     result = restTemplate.postForObject(
-            controllerUrl + "saysomething?prefix={prefix}",
-            jsonRequest(input),
-            String.class,
-            "hello");
+        controllerUrl + "saysomething?prefix={prefix}",
+        jsonRequest(input),
+        String.class,
+        "hello");
 
     assertThat(result, is("hello 中国"));
     restTemplate.setMessageConverters(convertersOld);

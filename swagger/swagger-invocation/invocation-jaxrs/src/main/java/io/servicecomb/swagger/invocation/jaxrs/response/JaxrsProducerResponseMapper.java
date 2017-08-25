@@ -21,30 +21,31 @@ import java.util.Map.Entry;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response.StatusType;
 
+import org.springframework.stereotype.Component;
+
 import io.servicecomb.swagger.invocation.Response;
 import io.servicecomb.swagger.invocation.response.producer.ProducerResponseMapper;
-import org.springframework.stereotype.Component;
 
 @Component
 public class JaxrsProducerResponseMapper implements ProducerResponseMapper {
-    @Override
-    public Class<?> getResponseClass() {
-        return javax.ws.rs.core.Response.class;
+  @Override
+  public Class<?> getResponseClass() {
+    return javax.ws.rs.core.Response.class;
+  }
+
+  @Override
+  public Response mapResponse(StatusType status, Object response) {
+    javax.ws.rs.core.Response jaxrsResponse = (javax.ws.rs.core.Response) response;
+
+    Response cseResponse = Response.status(jaxrsResponse.getStatusInfo()).entity(jaxrsResponse.getEntity());
+    MultivaluedMap<String, Object> headers = jaxrsResponse.getHeaders();
+    for (Entry<String, List<Object>> entry : headers.entrySet()) {
+      if (entry.getValue() == null || entry.getValue().isEmpty()) {
+        continue;
+      }
+
+      cseResponse.getHeaders().getHeaderMap().put(entry.getKey(), entry.getValue());
     }
-
-    @Override
-    public Response mapResponse(StatusType status, Object response) {
-        javax.ws.rs.core.Response jaxrsResponse = (javax.ws.rs.core.Response) response;
-
-        Response cseResponse = Response.status(jaxrsResponse.getStatusInfo()).entity(jaxrsResponse.getEntity());
-        MultivaluedMap<String, Object> headers = jaxrsResponse.getHeaders();
-        for (Entry<String, List<Object>> entry : headers.entrySet()) {
-            if (entry.getValue() == null || entry.getValue().isEmpty()) {
-                continue;
-            }
-
-            cseResponse.getHeaders().getHeaderMap().put(entry.getKey(), entry.getValue());
-        }
-        return cseResponse;
-    }
+    return cseResponse;
+  }
 }

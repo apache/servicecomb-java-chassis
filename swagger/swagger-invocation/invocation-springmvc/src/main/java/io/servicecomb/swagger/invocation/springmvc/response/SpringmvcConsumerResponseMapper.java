@@ -29,26 +29,26 @@ import io.servicecomb.swagger.invocation.response.consumer.ConsumerResponseMappe
 
 @Component
 public class SpringmvcConsumerResponseMapper implements ConsumerResponseMapper {
-    @Override
-    public Class<?> getResponseClass() {
-        return ResponseEntity.class;
-    }
+  @Override
+  public Class<?> getResponseClass() {
+    return ResponseEntity.class;
+  }
 
-    @Override
-    public Object mapResponse(Response response) {
-        HttpStatus status = HttpStatus.valueOf(response.getStatusCode());
+  @Override
+  public Object mapResponse(Response response) {
+    HttpStatus status = HttpStatus.valueOf(response.getStatusCode());
 
-        HttpHeaders httpHeaders = null;
-        Map<String, List<Object>> headers = response.getHeaders().getHeaderMap();
-        if (headers != null) {
-            httpHeaders = new HttpHeaders();
-            for (Entry<String, List<Object>> entry : headers.entrySet()) {
-                for (Object value : entry.getValue()) {
-                    httpHeaders.add(entry.getKey(), String.valueOf(value));
-                }
-            }
+    HttpHeaders httpHeaders = null;
+    Map<String, List<Object>> headers = response.getHeaders().getHeaderMap();
+    if (headers != null) {
+      httpHeaders = new HttpHeaders();
+      for (Entry<String, List<Object>> entry : headers.entrySet()) {
+        for (Object value : entry.getValue()) {
+          httpHeaders.add(entry.getKey(), String.valueOf(value));
         }
-
-        return new ResponseEntity<Object>(response.getResult(), httpHeaders, status);
+      }
     }
+
+    return new ResponseEntity<Object>(response.getResult(), httpHeaders, status);
+  }
 }

@@ -19,5 +19,4 @@ package io.servicecomb.foundation.common.base;
 public interface DescriptiveRunnable extends Runnable {
 
   String description();
-
 }

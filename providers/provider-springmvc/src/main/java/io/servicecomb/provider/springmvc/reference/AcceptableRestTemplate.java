@@ -21,6 +21,7 @@ import java.net.URI;
 import org.springframework.web.client.RestTemplate;
 
 public abstract class AcceptableRestTemplate extends RestTemplate {
-    public abstract boolean isAcceptable(String uri);
-    public abstract boolean isAcceptable(URI uri);
+  public abstract boolean isAcceptable(String uri);
+
+  public abstract boolean isAcceptable(URI uri);
 }

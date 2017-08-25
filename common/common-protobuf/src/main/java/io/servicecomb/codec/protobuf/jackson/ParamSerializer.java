@@ -27,19 +27,18 @@ import com.fasterxml.jackson.dataformat.protobuf.ProtobufGenerator;
 import com.fasterxml.jackson.dataformat.protobuf.schema.ProtobufField;
 
 public class ParamSerializer extends JsonSerializer<Object> {
-    @Override
-    public void serialize(Object value, JsonGenerator gen,
-            SerializerProvider serializers) throws IOException, JsonProcessingException {
-        gen.writeStartObject();
+  @Override
+  public void serialize(Object value, JsonGenerator gen,
+      SerializerProvider serializers) throws IOException, JsonProcessingException {
+    gen.writeStartObject();
 
-        ProtobufGenerator protobufGenerator = (ProtobufGenerator) gen;
-        Iterator<ProtobufField> iter = protobufGenerator.getSchema().getRootType().fields().iterator();
-        Object[] values = (Object[]) value;
-        for (int idx = 0; idx < values.length; idx++) {
-            gen.writeObjectField(iter.next().name, values[idx]);
-        }
-
-        gen.writeEndObject();
+    ProtobufGenerator protobufGenerator = (ProtobufGenerator) gen;
+    Iterator<ProtobufField> iter = protobufGenerator.getSchema().getRootType().fields().iterator();
+    Object[] values = (Object[]) value;
+    for (int idx = 0; idx < values.length; idx++) {
+      gen.writeObjectField(iter.next().name, values[idx]);
     }
 
+    gen.writeEndObject();
+  }
 }

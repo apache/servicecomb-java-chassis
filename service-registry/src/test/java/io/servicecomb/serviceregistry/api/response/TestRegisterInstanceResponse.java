@@ -21,38 +21,32 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-/**
- *
- * @since Mar 14, 2017
- * @see 
- */
 public class TestRegisterInstanceResponse {
 
-    RegisterInstanceResponse oRegisterInstanceResponse = null;
+  RegisterInstanceResponse oRegisterInstanceResponse = null;
 
-    @Before
-    public void setUp() throws Exception {
-        oRegisterInstanceResponse = new RegisterInstanceResponse();
-    }
+  @Before
+  public void setUp() throws Exception {
+    oRegisterInstanceResponse = new RegisterInstanceResponse();
+  }
 
-    @After
-    public void tearDown() throws Exception {
-        oRegisterInstanceResponse = null;
-    }
+  @After
+  public void tearDown() throws Exception {
+    oRegisterInstanceResponse = null;
+  }
 
-    @Test
-    public void testDefaultValues() {
-        Assert.assertNull(oRegisterInstanceResponse.getInstanceId());
-    }
+  @Test
+  public void testDefaultValues() {
+    Assert.assertNull(oRegisterInstanceResponse.getInstanceId());
+  }
 
-    @Test
-    public void testIntializedValues() {
-        initFields(); //Initialize the Object
-        Assert.assertEquals("testInstanceID", oRegisterInstanceResponse.getInstanceId());
-    }
+  @Test
+  public void testIntializedValues() {
+    initFields(); //Initialize the Object
+    Assert.assertEquals("testInstanceID", oRegisterInstanceResponse.getInstanceId());
+  }
 
-    private void initFields() {
-        oRegisterInstanceResponse.setInstanceId("testInstanceID");
-    }
-
+  private void initFields() {
+    oRegisterInstanceResponse.setInstanceId("testInstanceID");
+  }
 }

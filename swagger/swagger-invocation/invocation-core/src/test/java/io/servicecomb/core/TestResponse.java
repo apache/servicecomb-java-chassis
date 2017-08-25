@@ -17,6 +17,9 @@ package io.servicecomb.core;
 
 import javax.ws.rs.core.Response.Status;
 
+import org.junit.Assert;
+import org.junit.Test;
+
 import io.servicecomb.swagger.invocation.AsyncResponse;
 import io.servicecomb.swagger.invocation.InvocationType;
 import io.servicecomb.swagger.invocation.Response;
@@ -24,106 +27,102 @@ import io.servicecomb.swagger.invocation.exception.CommonExceptionData;
 import io.servicecomb.swagger.invocation.exception.ExceptionFactory;
 import io.servicecomb.swagger.invocation.exception.InvocationException;
 
-import org.junit.Assert;
-import org.junit.Test;
-
 public class TestResponse {
-    Response response;
+  Response response;
 
-    AsyncResponse ar = new AsyncResponse() {
-        @Override
-        public void handle(Response resp) {
-            response = resp;
-        }
-
-    };
-
-    @Test
-    public void testAr() {
-        ar.success(Status.ACCEPTED, 1);
-        Assert.assertEquals(true, response.isSuccessed());
-        Assert.assertEquals(false, response.isFailed());
-        Assert.assertEquals(1, (int) response.getResult());
-        Assert.assertEquals(Status.ACCEPTED.getStatusCode(), response.getStatusCode());
-        Assert.assertEquals(Status.ACCEPTED.getReasonPhrase(), response.getReasonPhrase());
-        Assert.assertEquals(Status.ACCEPTED, response.getStatus());
-
-        ar.success(2);
-        Assert.assertEquals(2, (int) response.getResult());
-        Assert.assertEquals(Status.OK.getStatusCode(), response.getStatusCode());
-
-        Response r = Response.succResp(3);
-        ar.complete(r);
-        Assert.assertEquals(r, response);
-
-        ar.consumerFail(new Error("abc"));
-        CommonExceptionData data = (CommonExceptionData) ((InvocationException) response.getResult()).getErrorData();
-        Assert.assertEquals("Cse Internal Bad Request", data.getMessage());
-        Assert.assertEquals(ExceptionFactory.CONSUMER_INNER_STATUS_CODE, response.getStatusCode());
-
-        ar.fail(InvocationType.CONSUMER, new Error("abc"));
-        data = (CommonExceptionData) ((InvocationException) response.getResult()).getErrorData();
-        Assert.assertEquals("Cse Internal Bad Request", data.getMessage());
-        Assert.assertEquals(ExceptionFactory.CONSUMER_INNER_STATUS_CODE, response.getStatusCode());
-
-        InvocationException consumerException = new InvocationException(300, "abc", "def");
-        ar.consumerFail(consumerException);
-        Assert.assertEquals("def", ((InvocationException) response.getResult()).getErrorData());
-        Assert.assertEquals(300, response.getStatusCode());
-
-        ar.fail(InvocationType.CONSUMER, consumerException);
-        Assert.assertEquals("def", ((InvocationException) response.getResult()).getErrorData());
-        Assert.assertEquals(300, response.getStatusCode());
-
-        ar.producerFail(new Error("abc"));
-        data = (CommonExceptionData) ((InvocationException) response.getResult()).getErrorData();
-        Assert.assertEquals("Cse Internal Server Error", data.getMessage());
-        Assert.assertEquals(ExceptionFactory.PRODUCER_INNER_STATUS_CODE, response.getStatusCode());
-
-        ar.fail(InvocationType.PRODUCER, new Error("abc"));
-        data = (CommonExceptionData) ((InvocationException) response.getResult()).getErrorData();
-        Assert.assertEquals("Cse Internal Server Error", data.getMessage());
-        Assert.assertEquals(ExceptionFactory.PRODUCER_INNER_STATUS_CODE, response.getStatusCode());
-
-        InvocationException producerException = new InvocationException(500, "abc", "def");
-        ar.producerFail(producerException);
-        Assert.assertEquals("def", ((InvocationException) response.getResult()).getErrorData());
-        Assert.assertEquals(500, response.getStatusCode());
-
-        ar.fail(InvocationType.PRODUCER, producerException);
-        Assert.assertEquals("def", ((InvocationException) response.getResult()).getErrorData());
-        Assert.assertEquals(500, response.getStatusCode());
+  AsyncResponse ar = new AsyncResponse() {
+    @Override
+    public void handle(Response resp) {
+      response = resp;
     }
+  };
 
-    @Test
-    public void test() {
-        Response r = Response.create(200, "200", 2);
-        Assert.assertEquals(200, r.getStatusCode());
-        Assert.assertEquals(2, (int) r.getResult());
-        Response r1 = r.build();
-        Assert.assertEquals(r, r1);
+  @Test
+  public void testAr() {
+    ar.success(Status.ACCEPTED, 1);
+    Assert.assertEquals(true, response.isSuccessed());
+    Assert.assertEquals(false, response.isFailed());
+    Assert.assertEquals(1, (int) response.getResult());
+    Assert.assertEquals(Status.ACCEPTED.getStatusCode(), response.getStatusCode());
+    Assert.assertEquals(Status.ACCEPTED.getReasonPhrase(), response.getReasonPhrase());
+    Assert.assertEquals(Status.ACCEPTED, response.getStatus());
 
-        r = Response.create(300, "300", 3);
-        Assert.assertEquals(300, r.getStatusCode());
-        Assert.assertEquals("300", r.getReasonPhrase());
-        Assert.assertEquals(3, ((InvocationException) r.getResult()).getErrorData());
+    ar.success(2);
+    Assert.assertEquals(2, (int) response.getResult());
+    Assert.assertEquals(Status.OK.getStatusCode(), response.getStatusCode());
 
-        r = Response.createSuccess(Status.OK, 2);
-        Assert.assertEquals(200, r.getStatusCode());
-        Assert.assertEquals(2, (int) r.getResult());
-        
-        r = Response.success(2, Status.OK);
-        Assert.assertEquals(200, r.getStatusCode());
-        Assert.assertEquals(2, (int) r.getResult());
+    Response r = Response.succResp(3);
+    ar.complete(r);
+    Assert.assertEquals(r, response);
 
-        r = Response.createFail(InvocationType.CONSUMER, "abc");
-        Assert.assertEquals("CommonExceptionData [message=abc]",
-                ((InvocationException) r.getResult()).getErrorData().toString());
-        Assert.assertEquals(490, r.getStatusCode());
+    ar.consumerFail(new Error("abc"));
+    CommonExceptionData data = (CommonExceptionData) ((InvocationException) response.getResult()).getErrorData();
+    Assert.assertEquals("Cse Internal Bad Request", data.getMessage());
+    Assert.assertEquals(ExceptionFactory.CONSUMER_INNER_STATUS_CODE, response.getStatusCode());
 
-        r = Response.createFail(InvocationType.PRODUCER, "def");
-        Assert.assertEquals("CommonExceptionData [message=def]",
-                ((InvocationException) r.getResult()).getErrorData().toString());
-        Assert.assertEquals(590, r.getStatusCode());
-    }
+    ar.fail(InvocationType.CONSUMER, new Error("abc"));
+    data = (CommonExceptionData) ((InvocationException) response.getResult()).getErrorData();
+    Assert.assertEquals("Cse Internal Bad Request", data.getMessage());
+    Assert.assertEquals(ExceptionFactory.CONSUMER_INNER_STATUS_CODE, response.getStatusCode());
+
+    InvocationException consumerException = new InvocationException(300, "abc", "def");
+    ar.consumerFail(consumerException);
+    Assert.assertEquals("def", ((InvocationException) response.getResult()).getErrorData());
+    Assert.assertEquals(300, response.getStatusCode());
+
+    ar.fail(InvocationType.CONSUMER, consumerException);
+    Assert.assertEquals("def", ((InvocationException) response.getResult()).getErrorData());
+    Assert.assertEquals(300, response.getStatusCode());
+
+    ar.producerFail(new Error("abc"));
+    data = (CommonExceptionData) ((InvocationException) response.getResult()).getErrorData();
+    Assert.assertEquals("Cse Internal Server Error", data.getMessage());
+    Assert.assertEquals(ExceptionFactory.PRODUCER_INNER_STATUS_CODE, response.getStatusCode());
+
+    ar.fail(InvocationType.PRODUCER, new Error("abc"));
+    data = (CommonExceptionData) ((InvocationException) response.getResult()).getErrorData();
+    Assert.assertEquals("Cse Internal Server Error", data.getMessage());
+    Assert.assertEquals(ExceptionFactory.PRODUCER_INNER_STATUS_CODE, response.getStatusCode());
+
+    InvocationException producerException = new InvocationException(500, "abc", "def");
+    ar.producerFail(producerException);
+    Assert.assertEquals("def", ((InvocationException) response.getResult()).getErrorData());
+    Assert.assertEquals(500, response.getStatusCode());
+
+    ar.fail(InvocationType.PRODUCER, producerException);
+    Assert.assertEquals("def", ((InvocationException) response.getResult()).getErrorData());
+    Assert.assertEquals(500, response.getStatusCode());
+  }
+
+  @Test
+  public void test() {
+    Response r = Response.create(200, "200", 2);
+    Assert.assertEquals(200, r.getStatusCode());
+    Assert.assertEquals(2, (int) r.getResult());
+    Response r1 = r.build();
+    Assert.assertEquals(r, r1);
+
+    r = Response.create(300, "300", 3);
+    Assert.assertEquals(300, r.getStatusCode());
+    Assert.assertEquals("300", r.getReasonPhrase());
+    Assert.assertEquals(3, ((InvocationException) r.getResult()).getErrorData());
+
+    r = Response.createSuccess(Status.OK, 2);
+    Assert.assertEquals(200, r.getStatusCode());
+    Assert.assertEquals(2, (int) r.getResult());
+
+    r = Response.success(2, Status.OK);
+    Assert.assertEquals(200, r.getStatusCode());
+    Assert.assertEquals(2, (int) r.getResult());
+
+    r = Response.createFail(InvocationType.CONSUMER, "abc");
+    Assert.assertEquals("CommonExceptionData [message=abc]",
+        ((InvocationException) r.getResult()).getErrorData().toString());
+    Assert.assertEquals(490, r.getStatusCode());
+
+    r = Response.createFail(InvocationType.PRODUCER, "def");
+    Assert.assertEquals("CommonExceptionData [message=def]",
+        ((InvocationException) r.getResult()).getErrorData().toString());
+    Assert.assertEquals(590, r.getStatusCode());
+  }
 }

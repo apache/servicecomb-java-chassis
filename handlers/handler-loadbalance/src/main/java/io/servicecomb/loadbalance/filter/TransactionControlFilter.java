@@ -16,30 +16,30 @@
 
 package io.servicecomb.loadbalance.filter;
 
+import com.netflix.loadbalancer.LoadBalancerStats;
+
 import io.servicecomb.core.Invocation;
 import io.servicecomb.loadbalance.ServerListFilterExt;
 
-import com.netflix.loadbalancer.LoadBalancerStats;
-
 public abstract class TransactionControlFilter implements ServerListFilterExt {
 
-    private Invocation invocation;
+  private Invocation invocation;
 
-    private LoadBalancerStats stats;
+  private LoadBalancerStats stats;
 
-    public void setLoadBalancerStats(LoadBalancerStats stats) {
-        this.stats = stats;
-    }
+  public void setLoadBalancerStats(LoadBalancerStats stats) {
+    this.stats = stats;
+  }
 
-    public LoadBalancerStats getLoadBalancerStats() {
-        return stats;
-    }
+  public LoadBalancerStats getLoadBalancerStats() {
+    return stats;
+  }
 
-    public Invocation getInvocation() {
-        return invocation;
-    }
+  public Invocation getInvocation() {
+    return invocation;
+  }
 
-    public void setInvocation(Invocation invocation) {
-        this.invocation = invocation;
-    }
+  public void setInvocation(Invocation invocation) {
+    this.invocation = invocation;
+  }
 }

@@ -27,54 +27,54 @@ import org.apache.log4j.spi.LoggingEvent;
  * 扩展增加2个功能：1. 设置文件权限；2. 文件删除后重建。
  */
 public class RollingFileAppenderExt extends RollingFileAppender {
-    private File currentFile;
+  private File currentFile;
 
-    private boolean append;
+  private boolean append;
 
-    private String logPermission;
+  private String logPermission;
 
-    public String getLogPermission() {
-        return logPermission;
+  public String getLogPermission() {
+    return logPermission;
+  }
+
+  public void setLogPermission(String logPermission) {
+    this.logPermission = logPermission;
+  }
+
+  @Override
+  public void setFile(String file) {
+    super.setFile(file);
+  }
+
+  @Override
+  public void setFile(String fileName, boolean append, boolean bufferedIO, int bufferSize) throws IOException {
+    this.append = append;
+    currentFile = new File(fileName);
+    createCurrentFile();
+    super.setFile(fileName, append, bufferedIO, bufferSize);
+  }
+
+  @Override
+  protected void subAppend(LoggingEvent event) {
+    // create a new file when file deleted
+    if (!currentFile.exists()) {
+      try {
+        setFile(fileName, append, bufferedIO, bufferSize);
+      } catch (IOException e) {
+        LogLog.error("", e);
+      }
     }
+    super.subAppend(event);
+  }
 
-    public void setLogPermission(String logPermission) {
-        this.logPermission = logPermission;
+  protected void createCurrentFile() throws IOException {
+    if (!currentFile.exists()) {
+      File parent = currentFile.getParentFile();
+      if (parent != null && !parent.exists()) {
+        parent.mkdirs();
+      }
+      currentFile.createNewFile();
     }
-
-    @Override
-    public void setFile(String file) {
-        super.setFile(file);
-    }
-
-    @Override
-    public void setFile(String fileName, boolean append, boolean bufferedIO, int bufferSize) throws IOException {
-        this.append = append;
-        currentFile = new File(fileName);
-        createCurrentFile();
-        super.setFile(fileName, append, bufferedIO, bufferSize);
-    }
-
-    @Override
-    protected void subAppend(LoggingEvent event) {
-        // create a new file when file deleted
-        if (!currentFile.exists()) {
-            try {
-                setFile(fileName, append, bufferedIO, bufferSize);
-            } catch (IOException e) {
-                LogLog.error("", e);
-            }
-        }
-        super.subAppend(event);
-    }
-
-    protected void createCurrentFile() throws IOException {
-        if (!currentFile.exists()) {
-            File parent = currentFile.getParentFile();
-            if (parent != null && !parent.exists()) {
-                parent.mkdirs();
-            }
-            currentFile.createNewFile();
-        }
-        FilePerm.setFilePerm(currentFile, logPermission);
-    }
+    FilePerm.setFilePerm(currentFile, logPermission);
+  }
 }

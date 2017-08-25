@@ -27,18 +27,18 @@ import io.servicecomb.common.rest.codec.RestObjectMapper;
 
 public class ProduceJsonProcessor extends AbstractProduceProcessor {
 
-    @Override
-    public String getName() {
-        return MediaType.APPLICATION_JSON;
-    }
+  @Override
+  public String getName() {
+    return MediaType.APPLICATION_JSON;
+  }
 
-    @Override
-    public void doEncodeResponse(OutputStream output, Object result) throws Exception {
-        RestObjectMapper.INSTANCE.writeValue(output, result);
-    }
+  @Override
+  public void doEncodeResponse(OutputStream output, Object result) throws Exception {
+    RestObjectMapper.INSTANCE.writeValue(output, result);
+  }
 
-    @Override
-    public Object doDecodeResponse(InputStream input, JavaType type) throws Exception {
-        return RestObjectMapper.INSTANCE.readValue(input, type);
-    }
+  @Override
+  public Object doDecodeResponse(InputStream input, JavaType type) throws Exception {
+    return RestObjectMapper.INSTANCE.readValue(input, type);
+  }
 }

@@ -22,16 +22,18 @@ import com.fasterxml.jackson.annotation.JsonValue;
  * Created by   on 2017/1/25.
  */
 public enum HealthCheckMode {
-    UNKNOWN("unknow"), HEARTBEAT("push"), PLATFORM("pull");
+  UNKNOWN("unknow"),
+  HEARTBEAT("push"),
+  PLATFORM("pull");
 
-    private String name;
+  private String name;
 
-    HealthCheckMode(String name) {
-        this.name = name;
-    }
+  HealthCheckMode(String name) {
+    this.name = name;
+  }
 
-    @JsonValue
-    public String getName() {
-        return name;
-    }
+  @JsonValue
+  public String getName() {
+    return name;
+  }
 }

@@ -22,16 +22,18 @@ import com.fasterxml.jackson.annotation.JsonValue;
  * Created by   on 2017/2/21.
  */
 public enum WatchAction {
-    CREATE("CREATE"), UPDATE("UPDATE"), DELETE("DELETE");
+  CREATE("CREATE"),
+  UPDATE("UPDATE"),
+  DELETE("DELETE");
 
-    private String name;
+  private String name;
 
-    WatchAction(String name) {
-        this.name = name;
-    }
+  WatchAction(String name) {
+    this.name = name;
+  }
 
-    @JsonValue
-    public String getName() {
-        return name;
-    }
+  @JsonValue
+  public String getName() {
+    return name;
+  }
 }

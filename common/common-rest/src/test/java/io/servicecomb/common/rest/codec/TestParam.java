@@ -58,181 +58,180 @@ import mockit.MockUp;
 
 public class TestParam {
 
-    private Map<String, String> serverPathParams = new HashMap<>();
+  private Map<String, String> serverPathParams = new HashMap<>();
 
-    private Map<String, List<String>> serverQueryParams = new HashMap<>();
+  private Map<String, List<String>> serverQueryParams = new HashMap<>();
 
-    private Map<String, List<String>> serverHttpHeaders = new HashMap<>();
+  private Map<String, List<String>> serverHttpHeaders = new HashMap<>();
 
-    private RestServerRequest serverRequest =
-        new LocalRestServerRequest(serverPathParams, serverQueryParams, serverHttpHeaders, null);
+  private RestServerRequest serverRequest =
+      new LocalRestServerRequest(serverPathParams, serverQueryParams, serverHttpHeaders, null);
 
-    private Map<String, List<String>> clientHttpHeaders = new HashMap<>();
+  private Map<String, List<String>> clientHttpHeaders = new HashMap<>();
 
-    private Buffer clientBodyBuffer;
+  private Buffer clientBodyBuffer;
 
-    private HttpClientRequest request;
+  private HttpClientRequest request;
 
-    private RestClientRequest clientRequest = new RestClientRequestImpl(request);
+  private RestClientRequest clientRequest = new RestClientRequestImpl(request);
 
-    @Before
-    public void setup() {
-        request = new MockUp<HttpClientRequest>() {
-            @Mock
-            public HttpClientRequest putHeader(CharSequence name, CharSequence value) {
-                this.putHeader(name.toString(), value.toString());
+  @Before
+  public void setup() {
+    request = new MockUp<HttpClientRequest>() {
+      @Mock
+      public HttpClientRequest putHeader(CharSequence name, CharSequence value) {
+        this.putHeader(name.toString(), value.toString());
 
-                return request;
-            }
+        return request;
+      }
 
-            @Mock
-            public HttpClientRequest putHeader(String name, String value) {
-                List<String> list = clientHttpHeaders.get(name);
-                if (list == null) {
-                    list = new ArrayList<>();
-                    clientHttpHeaders.put(name, list);
-                }
-                list.add(value);
-
-                return request;
-            }
-
-            @Mock
-            public void end(Buffer chunk) {
-                clientBodyBuffer = chunk;
-            }
-        }.getMockInstance();
-
-        clientRequest = new RestClientRequestImpl(request);
-    }
-
-    @Test
-    public void testCookie() throws Exception {
-        ParamValueProcessorCreator creator =
-            ParamValueProcessorCreatorManager.INSTANCE.findValue(CookieProcessorCreator.PARAMTYPE);
-        CookieParameter cp = new CookieParameter();
-        cp.setName("c1");
-        ParamValueProcessor processor = creator.create(cp, String.class);
-
-        Date date = new Date();
-        processor.setValue(clientRequest, date);
-        clientRequest.end();
-        List<String> cookies = clientHttpHeaders.get(HttpHeaders.COOKIE.toString());
-        Assert.assertEquals("c1=" + ISO8601Utils.format(date) + "; ", cookies.get(0));
-
-        serverHttpHeaders.put(HttpHeaders.COOKIE.toString(), cookies);
-        Object newDate = processor.getValue(serverRequest);
-        Assert.assertEquals(ISO8601Utils.format(date), newDate);
-    }
-
-    @Test
-    public void testPath() throws Exception {
-        ParamValueProcessorCreator creator =
-            ParamValueProcessorCreatorManager.INSTANCE.findValue(PathProcessorCreator.PARAMTYPE);
-        PathParameter pp = new PathParameter();
-        pp.setName("p1");
-        ParamValueProcessor processor = creator.create(pp, String.class);
-
-        serverPathParams.put("p1", "path");
-        Object value = processor.getValue(serverRequest);
-        Assert.assertEquals("path", value);
-    }
-
-    @Test
-    public void testQuery() throws Exception {
-        ParamValueProcessorCreator creator =
-            ParamValueProcessorCreatorManager.INSTANCE.findValue(QueryProcessorCreator.PARAMTYPE);
-        QueryParameter qp = new QueryParameter();
-        qp.setName("q1");
-
-        ParamValueProcessor processor = creator.create(qp, Date.class);
-        Date value = (Date) processor.getValue(serverRequest);
-        Assert.assertEquals(null, value);
-
-        Date date = new Date();
-        String strDate = ISO8601Utils.format(date);
-        serverQueryParams.put("q1", Arrays.asList(strDate));
-
-        value = (Date) processor.getValue(serverRequest);
-        Assert.assertEquals(date.toString(), value.toString());
-
-        processor = creator.create(qp, Date[].class);
-        Date[] values = (Date[]) processor.getValue(serverRequest);
-        Assert.assertEquals(1, values.length);
-        Assert.assertEquals(date.toString(), values[0].toString());
-    }
-
-    @Test
-    public void testHeader() throws Exception {
-        ParamValueProcessorCreator creator =
-            ParamValueProcessorCreatorManager.INSTANCE.findValue(HeaderProcessorCreator.PARAMTYPE);
-        HeaderParameter hp = new HeaderParameter();
-        hp.setName("h1");
-
-        ParamValueProcessor processor = creator.create(hp, Date.class);
-
-        Date date = new Date();
-        processor.setValue(clientRequest, date);
-        clientRequest.end();
-        List<String> headValues = clientHttpHeaders.get("h1");
-        Assert.assertEquals(ISO8601Utils.format(date), headValues.get(0));
-
-        serverHttpHeaders.put("h1", headValues);
-        Object newDate = processor.getValue(serverRequest);
-        Assert.assertEquals(date.toString(), newDate.toString());
-    }
-
-    @Test
-    public void testForm() throws Exception {
-        ParamValueProcessorCreator creator =
-            ParamValueProcessorCreatorManager.INSTANCE.findValue(FormProcessorCreator.PARAMTYPE);
-        FormParameter fp = new FormParameter();
-        fp.setName("f1");
-        ParamValueProcessor processor = creator.create(fp, Date.class);
-
-        Date date = new Date();
-        processor.setValue(clientRequest, date);
-        clientRequest.end();
-        Assert.assertEquals("f1=" + ISO8601Utils.format(date) + "&", clientBodyBuffer.toString());
-    }
-
-    static class Body {
-        public Date date = new Date();
-    }
-
-    @Test
-    public void testBody() throws Exception {
-        ParamValueProcessorCreator creator =
-            ParamValueProcessorCreatorManager.INSTANCE.findValue(BodyProcessorCreator.PARAMTYPE);
-        BodyParameter bp = new BodyParameter();
-        ParamValueProcessor processor = creator.create(bp, Body.class);
-
-        Body body = new Body();
-        processor.setValue(clientRequest, body);
-        clientRequest.end();
-
-        String expect = RestObjectMapper.INSTANCE.writeValueAsString(body);
-        Assert.assertEquals(expect, clientBodyBuffer.toString());
-
-        ByteArrayInputStream is = new ByteArrayInputStream(expect.getBytes(StandardCharsets.UTF_8));
-        ReflectUtils.setField(serverRequest, "bodyObject", is);
-        is.close();
-        Body result = (Body) processor.getValue(serverRequest);
-        Assert.assertEquals(body.date.toString(), result.date.toString());
-    }
-
-    @Test
-    public void testRestCodec() {
-        boolean status = false;
-        try {
-            RestCodec.argsToRest((new String[] {"test"}),
-                    Mockito.mock(RestOperationMeta.class),
-                    Mockito.mock(RestClientRequest.class));
-            RestCodec.restToArgs(Mockito.mock(RestServerRequest.class), Mockito.mock(RestOperationMeta.class));
-        } catch (Exception e) {
-            status = true;
+      @Mock
+      public HttpClientRequest putHeader(String name, String value) {
+        List<String> list = clientHttpHeaders.get(name);
+        if (list == null) {
+          list = new ArrayList<>();
+          clientHttpHeaders.put(name, list);
         }
-        Assert.assertFalse(status);
-    }
+        list.add(value);
 
+        return request;
+      }
+
+      @Mock
+      public void end(Buffer chunk) {
+        clientBodyBuffer = chunk;
+      }
+    }.getMockInstance();
+
+    clientRequest = new RestClientRequestImpl(request);
+  }
+
+  @Test
+  public void testCookie() throws Exception {
+    ParamValueProcessorCreator creator =
+        ParamValueProcessorCreatorManager.INSTANCE.findValue(CookieProcessorCreator.PARAMTYPE);
+    CookieParameter cp = new CookieParameter();
+    cp.setName("c1");
+    ParamValueProcessor processor = creator.create(cp, String.class);
+
+    Date date = new Date();
+    processor.setValue(clientRequest, date);
+    clientRequest.end();
+    List<String> cookies = clientHttpHeaders.get(HttpHeaders.COOKIE.toString());
+    Assert.assertEquals("c1=" + ISO8601Utils.format(date) + "; ", cookies.get(0));
+
+    serverHttpHeaders.put(HttpHeaders.COOKIE.toString(), cookies);
+    Object newDate = processor.getValue(serverRequest);
+    Assert.assertEquals(ISO8601Utils.format(date), newDate);
+  }
+
+  @Test
+  public void testPath() throws Exception {
+    ParamValueProcessorCreator creator =
+        ParamValueProcessorCreatorManager.INSTANCE.findValue(PathProcessorCreator.PARAMTYPE);
+    PathParameter pp = new PathParameter();
+    pp.setName("p1");
+    ParamValueProcessor processor = creator.create(pp, String.class);
+
+    serverPathParams.put("p1", "path");
+    Object value = processor.getValue(serverRequest);
+    Assert.assertEquals("path", value);
+  }
+
+  @Test
+  public void testQuery() throws Exception {
+    ParamValueProcessorCreator creator =
+        ParamValueProcessorCreatorManager.INSTANCE.findValue(QueryProcessorCreator.PARAMTYPE);
+    QueryParameter qp = new QueryParameter();
+    qp.setName("q1");
+
+    ParamValueProcessor processor = creator.create(qp, Date.class);
+    Date value = (Date) processor.getValue(serverRequest);
+    Assert.assertEquals(null, value);
+
+    Date date = new Date();
+    String strDate = ISO8601Utils.format(date);
+    serverQueryParams.put("q1", Arrays.asList(strDate));
+
+    value = (Date) processor.getValue(serverRequest);
+    Assert.assertEquals(date.toString(), value.toString());
+
+    processor = creator.create(qp, Date[].class);
+    Date[] values = (Date[]) processor.getValue(serverRequest);
+    Assert.assertEquals(1, values.length);
+    Assert.assertEquals(date.toString(), values[0].toString());
+  }
+
+  @Test
+  public void testHeader() throws Exception {
+    ParamValueProcessorCreator creator =
+        ParamValueProcessorCreatorManager.INSTANCE.findValue(HeaderProcessorCreator.PARAMTYPE);
+    HeaderParameter hp = new HeaderParameter();
+    hp.setName("h1");
+
+    ParamValueProcessor processor = creator.create(hp, Date.class);
+
+    Date date = new Date();
+    processor.setValue(clientRequest, date);
+    clientRequest.end();
+    List<String> headValues = clientHttpHeaders.get("h1");
+    Assert.assertEquals(ISO8601Utils.format(date), headValues.get(0));
+
+    serverHttpHeaders.put("h1", headValues);
+    Object newDate = processor.getValue(serverRequest);
+    Assert.assertEquals(date.toString(), newDate.toString());
+  }
+
+  @Test
+  public void testForm() throws Exception {
+    ParamValueProcessorCreator creator =
+        ParamValueProcessorCreatorManager.INSTANCE.findValue(FormProcessorCreator.PARAMTYPE);
+    FormParameter fp = new FormParameter();
+    fp.setName("f1");
+    ParamValueProcessor processor = creator.create(fp, Date.class);
+
+    Date date = new Date();
+    processor.setValue(clientRequest, date);
+    clientRequest.end();
+    Assert.assertEquals("f1=" + ISO8601Utils.format(date) + "&", clientBodyBuffer.toString());
+  }
+
+  static class Body {
+    public Date date = new Date();
+  }
+
+  @Test
+  public void testBody() throws Exception {
+    ParamValueProcessorCreator creator =
+        ParamValueProcessorCreatorManager.INSTANCE.findValue(BodyProcessorCreator.PARAMTYPE);
+    BodyParameter bp = new BodyParameter();
+    ParamValueProcessor processor = creator.create(bp, Body.class);
+
+    Body body = new Body();
+    processor.setValue(clientRequest, body);
+    clientRequest.end();
+
+    String expect = RestObjectMapper.INSTANCE.writeValueAsString(body);
+    Assert.assertEquals(expect, clientBodyBuffer.toString());
+
+    ByteArrayInputStream is = new ByteArrayInputStream(expect.getBytes(StandardCharsets.UTF_8));
+    ReflectUtils.setField(serverRequest, "bodyObject", is);
+    is.close();
+    Body result = (Body) processor.getValue(serverRequest);
+    Assert.assertEquals(body.date.toString(), result.date.toString());
+  }
+
+  @Test
+  public void testRestCodec() {
+    boolean status = false;
+    try {
+      RestCodec.argsToRest((new String[] {"test"}),
+          Mockito.mock(RestOperationMeta.class),
+          Mockito.mock(RestClientRequest.class));
+      RestCodec.restToArgs(Mockito.mock(RestServerRequest.class), Mockito.mock(RestOperationMeta.class));
+    } catch (Exception e) {
+      status = true;
+    }
+    Assert.assertFalse(status);
+  }
 }

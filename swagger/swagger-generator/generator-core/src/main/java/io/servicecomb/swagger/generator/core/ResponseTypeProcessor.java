@@ -18,6 +18,6 @@ package io.servicecomb.swagger.generator.core;
 import io.swagger.models.properties.Property;
 
 public interface ResponseTypeProcessor {
-    // void的场景，不会到processor中来处理
-    Property process(OperationGenerator operationGenerator);
+  // void的场景，不会到processor中来处理
+  Property process(OperationGenerator operationGenerator);
 }

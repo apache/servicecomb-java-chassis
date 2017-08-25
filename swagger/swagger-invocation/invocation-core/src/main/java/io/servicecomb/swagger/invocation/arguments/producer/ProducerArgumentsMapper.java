@@ -27,22 +27,22 @@ import io.servicecomb.swagger.invocation.arguments.ArgumentMapper;
  * 而producer原型是int add(HttpRequest request, int x, int y)
  */
 public class ProducerArgumentsMapper {
-    private List<ArgumentMapper> producerArgMapperList;
+  private List<ArgumentMapper> producerArgMapperList;
 
-    private int producerParameterCount;
+  private int producerParameterCount;
 
-    public ProducerArgumentsMapper(List<ArgumentMapper> producerArgMapperList, int producerParameterCount) {
-        this.producerArgMapperList = producerArgMapperList;
-        this.producerParameterCount = producerParameterCount;
+  public ProducerArgumentsMapper(List<ArgumentMapper> producerArgMapperList, int producerParameterCount) {
+    this.producerArgMapperList = producerArgMapperList;
+    this.producerParameterCount = producerParameterCount;
+  }
+
+  public Object[] toProducerArgs(SwaggerInvocation invocation) {
+    Object[] producerArgs = new Object[producerParameterCount];
+
+    for (ArgumentMapper argMapper : producerArgMapperList) {
+      argMapper.mapArgument(invocation, producerArgs);
     }
 
-    public Object[] toProducerArgs(SwaggerInvocation invocation) {
-        Object[] producerArgs = new Object[producerParameterCount];
-
-        for (ArgumentMapper argMapper : producerArgMapperList) {
-            argMapper.mapArgument(invocation, producerArgs);
-        }
-
-        return producerArgs;
-    }
+    return producerArgs;
+  }
 }

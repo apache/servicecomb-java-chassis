@@ -32,22 +32,22 @@ import io.servicecomb.serviceregistry.api.registry.Microservice;
 
 @Component
 public class ProducerProviderManager {
-    @Inject
-    private List<ProducerProvider> producerProviderList;
+  @Inject
+  private List<ProducerProvider> producerProviderList;
 
-    @Inject
-    private MicroserviceMetaManager microserviceMetaManager;
+  @Inject
+  private MicroserviceMetaManager microserviceMetaManager;
 
-    public void init() throws Exception {
-        for (ProducerProvider provider : producerProviderList) {
-            provider.init();
-        }
-
-        Microservice microservice = RegistryUtils.getMicroservice();
-        MicroserviceMeta microserviceMeta = microserviceMetaManager.getOrCreateMicroserviceMeta(microservice);
-        for (SchemaMeta schemaMeta : microserviceMeta.getSchemaMetas()) {
-            String content = SchemaUtils.swaggerToString(schemaMeta.getSwagger());
-            microservice.addSchema(schemaMeta.getSchemaId(), content);
-        }
+  public void init() throws Exception {
+    for (ProducerProvider provider : producerProviderList) {
+      provider.init();
     }
+
+    Microservice microservice = RegistryUtils.getMicroservice();
+    MicroserviceMeta microserviceMeta = microserviceMetaManager.getOrCreateMicroserviceMeta(microservice);
+    for (SchemaMeta schemaMeta : microserviceMeta.getSchemaMetas()) {
+      String content = SchemaUtils.swaggerToString(schemaMeta.getSwagger());
+      microservice.addSchema(schemaMeta.getSchemaId(), content);
+    }
+  }
 }

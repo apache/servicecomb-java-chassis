@@ -23,17 +23,17 @@ import com.netflix.hystrix.strategy.concurrency.HystrixRequestContext;
  *
  */
 public final class BizkeeperRequestContext {
-    private HystrixRequestContext context;
+  private HystrixRequestContext context;
 
-    private BizkeeperRequestContext(HystrixRequestContext context) {
-        this.context = context;
-    }
+  private BizkeeperRequestContext(HystrixRequestContext context) {
+    this.context = context;
+  }
 
-    public static BizkeeperRequestContext initializeContext() {
-        return new BizkeeperRequestContext(HystrixRequestContext.initializeContext());
-    }
+  public static BizkeeperRequestContext initializeContext() {
+    return new BizkeeperRequestContext(HystrixRequestContext.initializeContext());
+  }
 
-    public void shutdown() {
-        this.context.shutdown();
-    }
+  public void shutdown() {
+    this.context.shutdown();
+  }
 }

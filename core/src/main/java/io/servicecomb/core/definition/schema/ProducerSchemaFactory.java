@@ -41,74 +41,74 @@ import io.swagger.util.Yaml;
 
 @Component
 public class ProducerSchemaFactory extends AbstractSchemaFactory<ProducerSchemaContext> {
-    private static final Logger LOGGER = LoggerFactory.getLogger(ProducerSchemaFactory.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(ProducerSchemaFactory.class);
 
-    @Inject
-    private SwaggerEnvironment swaggerEnv;
+  @Inject
+  private SwaggerEnvironment swaggerEnv;
 
-    private ObjectWriter writer = Yaml.pretty();
+  private ObjectWriter writer = Yaml.pretty();
 
-    private String getSwaggerContent(Swagger swagger) {
-        try {
-            return writer.writeValueAsString(swagger);
-        } catch (JsonProcessingException e) {
-            throw new Error(e);
-        }
+  private String getSwaggerContent(Swagger swagger) {
+    try {
+      return writer.writeValueAsString(swagger);
+    } catch (JsonProcessingException e) {
+      throw new Error(e);
+    }
+  }
+
+  public void setSwaggerEnv(SwaggerEnvironment swaggerEnv) {
+    this.swaggerEnv = swaggerEnv;
+  }
+
+  // 只会在启动流程中调用
+  public SchemaMeta getOrCreateProducerSchema(String microserviceName, String schemaId,
+      Class<?> producerClass,
+      Object producerInstance) {
+    MicroserviceMeta microserviceMeta = microserviceMetaManager.getOrCreateMicroserviceMeta(microserviceName);
+
+    ProducerSchemaContext context = new ProducerSchemaContext();
+    context.setMicroserviceMeta(microserviceMeta);
+    context.setSchemaId(schemaId);
+    context.setProviderClass(producerClass);
+    context.setProducerInstance(producerInstance);
+
+    SchemaMeta schemaMeta = getOrCreateSchema(context);
+
+    SwaggerProducer producer = swaggerEnv.createProducer(producerInstance, schemaMeta.getSwagger());
+    for (OperationMeta operationMeta : schemaMeta.getOperations()) {
+      SwaggerProducerOperation producerOperation = producer.findOperation(operationMeta.getOperationId());
+      operationMeta.putExtData(Const.PRODUCER_OPERATION, producerOperation);
     }
 
-    public void setSwaggerEnv(SwaggerEnvironment swaggerEnv) {
-        this.swaggerEnv = swaggerEnv;
+    return schemaMeta;
+  }
+
+  protected SchemaMeta createSchema(ProducerSchemaContext context) {
+    // 尝试从规划的目录加载契约
+    Swagger swagger = loadSwagger(context);
+    if (swagger == null) {
+      Set<String> combinedNames = RegistryUtils.getServiceRegistry().getCombinedMicroserviceNames();
+      for (String name : combinedNames) {
+        swagger = loadSwagger(name, context.getSchemaId());
+        if (swagger != null) {
+          break;
+        }
+      }
     }
 
-    // 只会在启动流程中调用
-    public SchemaMeta getOrCreateProducerSchema(String microserviceName, String schemaId,
-            Class<?> producerClass,
-            Object producerInstance) {
-        MicroserviceMeta microserviceMeta = microserviceMetaManager.getOrCreateMicroserviceMeta(microserviceName);
-
-        ProducerSchemaContext context = new ProducerSchemaContext();
-        context.setMicroserviceMeta(microserviceMeta);
-        context.setSchemaId(schemaId);
-        context.setProviderClass(producerClass);
-        context.setProducerInstance(producerInstance);
-
-        SchemaMeta schemaMeta = getOrCreateSchema(context);
-
-        SwaggerProducer producer = swaggerEnv.createProducer(producerInstance, schemaMeta.getSwagger());
-        for (OperationMeta operationMeta : schemaMeta.getOperations()) {
-            SwaggerProducerOperation producerOperation = producer.findOperation(operationMeta.getOperationId());
-            operationMeta.putExtData(Const.PRODUCER_OPERATION, producerOperation);
-        }
-
-        return schemaMeta;
+    // 根据class动态产生契约
+    SwaggerGenerator generator = generateSwagger(context);
+    if (swagger == null) {
+      swagger = generator.getSwagger();
+      String swaggerContent = getSwaggerContent(swagger);
+      LOGGER.info("generate swagger for {}/{}/{}, swagger: {}",
+          context.getMicroserviceMeta().getAppId(),
+          context.getMicroserviceName(),
+          context.getSchemaId(),
+          swaggerContent);
     }
 
-    protected SchemaMeta createSchema(ProducerSchemaContext context) {
-        // 尝试从规划的目录加载契约
-        Swagger swagger = loadSwagger(context);
-        if (swagger == null) {
-            Set<String> combinedNames = RegistryUtils.getServiceRegistry().getCombinedMicroserviceNames();
-            for (String name : combinedNames) {
-                swagger = loadSwagger(name, context.getSchemaId());
-                if (swagger != null) {
-                    break;
-                }
-            }
-        }
-
-        // 根据class动态产生契约
-        SwaggerGenerator generator = generateSwagger(context);
-        if (swagger == null) {
-            swagger = generator.getSwagger();
-            String swaggerContent = getSwaggerContent(swagger);
-            LOGGER.info("generate swagger for {}/{}/{}, swagger: {}",
-                    context.getMicroserviceMeta().getAppId(),
-                    context.getMicroserviceName(),
-                    context.getSchemaId(),
-                    swaggerContent);
-        }
-
-        // 注册契约
-        return schemaLoader.registerSchema(context.getMicroserviceMeta(), context.getSchemaId(), swagger);
-    }
+    // 注册契约
+    return schemaLoader.registerSchema(context.getMicroserviceMeta(), context.getSchemaId(), swagger);
+  }
 }

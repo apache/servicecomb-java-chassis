@@ -20,23 +20,22 @@ import java.util.Arrays;
 import io.servicecomb.swagger.invocation.converter.Converter;
 
 public final class SameElementArrayToList implements Converter {
-    private static final Converter INSTANCE = new SameElementArrayToList();
+  private static final Converter INSTANCE = new SameElementArrayToList();
 
-    public static Converter getInstance() {
-        return INSTANCE;
+  public static Converter getInstance() {
+    return INSTANCE;
+  }
+
+  private SameElementArrayToList() {
+  }
+
+  @Override
+  public Object convert(Object value) {
+    if (value == null) {
+      return null;
     }
 
-    private SameElementArrayToList() {
-    }
-
-    @Override
-    public Object convert(Object value) {
-        if (value == null) {
-            return null;
-        }
-
-        Object[] array = (Object[]) value;
-        return Arrays.asList(array);
-    }
-
+    Object[] array = (Object[]) value;
+    return Arrays.asList(array);
+  }
 }

@@ -25,31 +25,31 @@ import org.junit.Test;
 import com.netflix.config.DynamicPropertyFactory;
 
 public class TestServletConfig {
-    @BeforeClass
-    public static void classSetup() {
-        ArchaiusUtils.resetConfig();
-    }
+  @BeforeClass
+  public static void classSetup() {
+    ArchaiusUtils.resetConfig();
+  }
 
-    @AfterClass
-    public static void classTeardown() {
-        ArchaiusUtils.resetConfig();
-    }
+  @AfterClass
+  public static void classTeardown() {
+    ArchaiusUtils.resetConfig();
+  }
 
-    @Test
-    public void testGetLocalServerAddress() {
-        Assert.assertNull(ServletConfig.getLocalServerAddress());
-    }
+  @Test
+  public void testGetLocalServerAddress() {
+    Assert.assertNull(ServletConfig.getLocalServerAddress());
+  }
 
-    @Test
-    public void testGetServerTimeout() {
-        Assert.assertEquals(ServletConfig.DEFAULT_TIMEOUT, ServletConfig.getServerTimeout());
-    }
+  @Test
+  public void testGetServerTimeout() {
+    Assert.assertEquals(ServletConfig.DEFAULT_TIMEOUT, ServletConfig.getServerTimeout());
+  }
 
-    @Test
-    public void testGetServletUrlPattern() {
-        DynamicPropertyFactory.getInstance();
-        Configuration configuration = (Configuration) DynamicPropertyFactory.getBackingConfigurationSource();
-        configuration.setProperty(ServletConfig.KEY_SERVLET_URL_PATTERN, "/*");
-        Assert.assertEquals("/*", ServletConfig.getServletUrlPattern());
-    }
+  @Test
+  public void testGetServletUrlPattern() {
+    DynamicPropertyFactory.getInstance();
+    Configuration configuration = (Configuration) DynamicPropertyFactory.getBackingConfigurationSource();
+    configuration.setProperty(ServletConfig.KEY_SERVLET_URL_PATTERN, "/*");
+    Assert.assertEquals("/*", ServletConfig.getServletUrlPattern());
+  }
 }

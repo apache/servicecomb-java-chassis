@@ -19,13 +19,13 @@ import org.junit.Assert;
 import org.junit.Test;
 
 public class TestLoginRequest {
-    @Test
-    public void test() {
-        LoginRequest req = new LoginRequest();
-        req.setProtocol("p");
-        req.setZipName("z");
+  @Test
+  public void test() {
+    LoginRequest req = new LoginRequest();
+    req.setProtocol("p");
+    req.setZipName("z");
 
-        Assert.assertEquals("p", req.getProtocol());
-        Assert.assertEquals("z", req.getZipName());
-    }
+    Assert.assertEquals("p", req.getProtocol());
+    Assert.assertEquals("z", req.getZipName());
+  }
 }

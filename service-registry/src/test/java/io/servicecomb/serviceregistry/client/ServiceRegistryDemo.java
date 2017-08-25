@@ -16,16 +16,16 @@
 
 package io.servicecomb.serviceregistry.client;
 
-import io.servicecomb.serviceregistry.RegistryUtils;
 import io.servicecomb.foundation.common.utils.BeanUtils;
 import io.servicecomb.foundation.common.utils.Log4jUtils;
+import io.servicecomb.serviceregistry.RegistryUtils;
 
 public class ServiceRegistryDemo {
-    public static void main(String[] args) throws Exception {
-        Log4jUtils.init();
-        BeanUtils.init();
+  public static void main(String[] args) throws Exception {
+    Log4jUtils.init();
+    BeanUtils.init();
 
-        // 1、自注册 2、服务心跳 3、实例变化监听
-        RegistryUtils.init();
-    }
+    // 1、自注册 2、服务心跳 3、实例变化监听
+    RegistryUtils.init();
+  }
 }

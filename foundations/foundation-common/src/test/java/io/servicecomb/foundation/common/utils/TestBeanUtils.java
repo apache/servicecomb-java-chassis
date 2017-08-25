@@ -21,27 +21,27 @@ import org.junit.Test;
 import org.springframework.aop.aspectj.annotation.AspectJProxyFactory;
 
 public class TestBeanUtils {
-    static interface Intf {
+  static interface Intf {
 
-    }
+  }
 
-    static class Impl implements Intf {
+  static class Impl implements Intf {
 
-    }
+  }
 
-    @Aspect
-    static class MyAspect {
-    }
+  @Aspect
+  static class MyAspect {
+  }
 
-    @Test
-    public void test() {
-        Intf target = new Impl();
-        AspectJProxyFactory factory = new AspectJProxyFactory(target);
-        MyAspect aspect = new MyAspect();
-        factory.addAspect(aspect);
-        Intf proxy = factory.getProxy();
+  @Test
+  public void test() {
+    Intf target = new Impl();
+    AspectJProxyFactory factory = new AspectJProxyFactory(target);
+    MyAspect aspect = new MyAspect();
+    factory.addAspect(aspect);
+    Intf proxy = factory.getProxy();
 
-        Assert.assertEquals(Impl.class, BeanUtils.getImplClassFromBean(proxy));
-        Assert.assertEquals(Impl.class, BeanUtils.getImplClassFromBean(new Impl()));
-    }
+    Assert.assertEquals(Impl.class, BeanUtils.getImplClassFromBean(proxy));
+    Assert.assertEquals(Impl.class, BeanUtils.getImplClassFromBean(new Impl()));
+  }
 }

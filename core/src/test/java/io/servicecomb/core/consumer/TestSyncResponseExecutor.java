@@ -16,28 +16,27 @@
 
 package io.servicecomb.core.consumer;
 
-import io.servicecomb.core.provider.consumer.SyncResponseExecutor;
-import io.servicecomb.swagger.invocation.Response;
-
 import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.Mockito;
 
+import io.servicecomb.core.provider.consumer.SyncResponseExecutor;
+import io.servicecomb.swagger.invocation.Response;
+
 public class TestSyncResponseExecutor {
-    @Test
-    public void testSyncResponseExecutor() {
-        SyncResponseExecutor executor = new SyncResponseExecutor();
-        Runnable cmd = Mockito.mock(Runnable.class);
-        Response response = Mockito.mock(Response.class);
-        executor.execute(cmd);
-        executor.setResponse(response);
+  @Test
+  public void testSyncResponseExecutor() {
+    SyncResponseExecutor executor = new SyncResponseExecutor();
+    Runnable cmd = Mockito.mock(Runnable.class);
+    Response response = Mockito.mock(Response.class);
+    executor.execute(cmd);
+    executor.setResponse(response);
 
-        try {
-            Response responseValue = executor.waitResponse();
-            Assert.assertNotNull(responseValue);
-        } catch (Exception e) {
-            Assert.assertNotNull(e);
-        }
-
+    try {
+      Response responseValue = executor.waitResponse();
+      Assert.assertNotNull(responseValue);
+    } catch (Exception e) {
+      Assert.assertNotNull(e);
     }
+  }
 }

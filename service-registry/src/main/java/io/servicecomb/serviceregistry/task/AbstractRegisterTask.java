@@ -16,31 +16,32 @@
 package io.servicecomb.serviceregistry.task;
 
 import com.google.common.eventbus.EventBus;
+
 import io.servicecomb.serviceregistry.api.registry.Microservice;
 import io.servicecomb.serviceregistry.client.ServiceRegistryClient;
 
 public abstract class AbstractRegisterTask extends AbstractTask {
-    protected boolean registered;
+  protected boolean registered;
 
-    public AbstractRegisterTask(EventBus eventBus, ServiceRegistryClient srClient, Microservice microservice) {
-        super(eventBus, srClient, microservice);
+  public AbstractRegisterTask(EventBus eventBus, ServiceRegistryClient srClient, Microservice microservice) {
+    super(eventBus, srClient, microservice);
+  }
+
+  public boolean isRegistered() {
+    return registered;
+  }
+
+  @Override
+  public void doRun() {
+    if (registered) {
+      return;
     }
 
-    public boolean isRegistered() {
-        return registered;
+    if (doRegister()) {
+      registered = true;
+      taskStatus = TaskStatus.FINISHED;
     }
+  }
 
-    @Override
-    public void doRun() {
-        if (registered) {
-            return;
-        }
-
-        if(doRegister()) {
-            registered = true;
-            taskStatus = TaskStatus.FINISHED;
-        }
-    }
-
-    protected abstract boolean doRegister();
+  protected abstract boolean doRegister();
 }

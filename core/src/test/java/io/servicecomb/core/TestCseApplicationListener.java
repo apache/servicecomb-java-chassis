@@ -34,75 +34,75 @@ import mockit.Injectable;
 import mockit.Mocked;
 
 public class TestCseApplicationListener {
-    @Test
-    public void testCseApplicationListenerNormal(@Injectable ContextRefreshedEvent event,
-            @Injectable AbstractApplicationContext context,
-            @Injectable BootListener listener,
-            @Injectable ProducerProviderManager producerProviderManager,
-            @Injectable ConsumerProviderManager consumerProviderManager,
-            @Injectable TransportManager transportManager,
-            @Mocked RegistryUtils ru) throws Exception {
-        Map<String, BootListener> listeners = new HashMap<>();
-        listeners.put("test", listener);
+  @Test
+  public void testCseApplicationListenerNormal(@Injectable ContextRefreshedEvent event,
+      @Injectable AbstractApplicationContext context,
+      @Injectable BootListener listener,
+      @Injectable ProducerProviderManager producerProviderManager,
+      @Injectable ConsumerProviderManager consumerProviderManager,
+      @Injectable TransportManager transportManager,
+      @Mocked RegistryUtils ru) throws Exception {
+    Map<String, BootListener> listeners = new HashMap<>();
+    listeners.put("test", listener);
 
-        new Expectations() {
-            {
-                context.getBeansOfType(BootListener.class);
-                result = listeners;
-            }
-        };
+    new Expectations() {
+      {
+        context.getBeansOfType(BootListener.class);
+        result = listeners;
+      }
+    };
 
-        CseApplicationListener cal = new CseApplicationListener();
-        cal.setInitEventClass(ContextRefreshedEvent.class);
-        cal.setApplicationContext(context);
-        ReflectUtils.setField(cal, "producerProviderManager", producerProviderManager);
-        ReflectUtils.setField(cal, "consumerProviderManager", consumerProviderManager);
-        ReflectUtils.setField(cal, "transportManager", transportManager);
+    CseApplicationListener cal = new CseApplicationListener();
+    cal.setInitEventClass(ContextRefreshedEvent.class);
+    cal.setApplicationContext(context);
+    ReflectUtils.setField(cal, "producerProviderManager", producerProviderManager);
+    ReflectUtils.setField(cal, "consumerProviderManager", consumerProviderManager);
+    ReflectUtils.setField(cal, "transportManager", transportManager);
 
-        cal.onApplicationEvent(event);
-    }
+    cal.onApplicationEvent(event);
+  }
 
-    @Test
-    public void testCseApplicationListenerThrowException(@Injectable ContextRefreshedEvent event,
-            @Injectable AbstractApplicationContext context,
-            @Injectable BootListener listener,
-            @Injectable ProducerProviderManager producerProviderManager,
-            @Mocked RegistryUtils ru) throws Exception {
-        Map<String, BootListener> listeners = new HashMap<>();
-        listeners.put("test", listener);
+  @Test
+  public void testCseApplicationListenerThrowException(@Injectable ContextRefreshedEvent event,
+      @Injectable AbstractApplicationContext context,
+      @Injectable BootListener listener,
+      @Injectable ProducerProviderManager producerProviderManager,
+      @Mocked RegistryUtils ru) throws Exception {
+    Map<String, BootListener> listeners = new HashMap<>();
+    listeners.put("test", listener);
 
-        new Expectations() {
-            {
-                context.getBeansOfType(BootListener.class);
-                result = listeners;
-            }
-        };
-        CseApplicationListener cal = new CseApplicationListener();
-        cal.setApplicationContext(context);
-        ReflectUtils.setField(cal, "producerProviderManager", producerProviderManager);
-        cal.onApplicationEvent(event);
-    }
+    new Expectations() {
+      {
+        context.getBeansOfType(BootListener.class);
+        result = listeners;
+      }
+    };
+    CseApplicationListener cal = new CseApplicationListener();
+    cal.setApplicationContext(context);
+    ReflectUtils.setField(cal, "producerProviderManager", producerProviderManager);
+    cal.onApplicationEvent(event);
+  }
 
-    @Test
-    public void testCseApplicationListenerParentNotnull(@Injectable ContextRefreshedEvent event,
-            @Injectable AbstractApplicationContext context,
-            @Injectable AbstractApplicationContext pContext,
-            @Mocked RegistryUtils ru) throws Exception {
+  @Test
+  public void testCseApplicationListenerParentNotnull(@Injectable ContextRefreshedEvent event,
+      @Injectable AbstractApplicationContext context,
+      @Injectable AbstractApplicationContext pContext,
+      @Mocked RegistryUtils ru) throws Exception {
 
-        CseApplicationListener cal = new CseApplicationListener();
-        cal.setApplicationContext(context);
-        cal.onApplicationEvent(event);
-    }
+    CseApplicationListener cal = new CseApplicationListener();
+    cal.setApplicationContext(context);
+    cal.onApplicationEvent(event);
+  }
 
-    @Test
-    public void testCseApplicationListenerShutdown(@Injectable ContextClosedEvent event,
-            @Mocked RegistryUtils ru) throws Exception {
-        new Expectations() {
-            {
-                RegistryUtils.destory();
-            }
-        };
-        CseApplicationListener cal = new CseApplicationListener();
-        cal.onApplicationEvent(event);
-    }
+  @Test
+  public void testCseApplicationListenerShutdown(@Injectable ContextClosedEvent event,
+      @Mocked RegistryUtils ru) throws Exception {
+    new Expectations() {
+      {
+        RegistryUtils.destory();
+      }
+    };
+    CseApplicationListener cal = new CseApplicationListener();
+    cal.onApplicationEvent(event);
+  }
 }

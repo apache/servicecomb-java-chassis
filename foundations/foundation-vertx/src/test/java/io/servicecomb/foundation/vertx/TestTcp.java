@@ -47,123 +47,124 @@ import mockit.MockUp;
 
 public class TestTcp {
 
-    enum ParseStatus {
-        MSG_ID_AND_LEN, // len: total len/header len
-        HEADER,
-        BODY
-    }
+  enum ParseStatus {
+    MSG_ID_AND_LEN,
+    // len: total len/header len
+    HEADER,
+    BODY
+  }
 
-    @Test
-    public void testTcpClient() throws Exception {
-        NetClient oNetClient = new NetClient() {
+  @Test
+  public void testTcpClient() throws Exception {
+    NetClient oNetClient = new NetClient() {
 
-            @Override
-            public boolean isMetricsEnabled() {
-                return true;
-            }
+      @Override
+      public boolean isMetricsEnabled() {
+        return true;
+      }
 
-            @Override
-            public NetClient connect(int port, String host, Handler<AsyncResult<NetSocket>> connectHandler) {
-                return Mockito.mock(NetClient.class);
-            }
+      @Override
+      public NetClient connect(int port, String host, Handler<AsyncResult<NetSocket>> connectHandler) {
+        return Mockito.mock(NetClient.class);
+      }
 
-            @Override
-            public void close() {
-            }
-        };
-        TcpClientConnection oTcpClient =
-            new TcpClientConnection(Mockito.mock(Context.class), oNetClient, "highway://127.2.0.1:8080",
-                    new TcpClientConfig());
-        oTcpClient.checkTimeout();
-        oTcpClient.send(new TcpClientPackage(null), 123, Mockito.mock(TcpResonseCallback.class));
-        oTcpClient.send(new TcpClientPackage(null), 123, Mockito.mock(TcpResonseCallback.class));
+      @Override
+      public void close() {
+      }
+    };
+    TcpClientConnection oTcpClient =
+        new TcpClientConnection(Mockito.mock(Context.class), oNetClient, "highway://127.2.0.1:8080",
+            new TcpClientConfig());
+    oTcpClient.checkTimeout();
+    oTcpClient.send(new TcpClientPackage(null), 123, Mockito.mock(TcpResonseCallback.class));
+    oTcpClient.send(new TcpClientPackage(null), 123, Mockito.mock(TcpResonseCallback.class));
 
-        new MockUp<TcpClientConnectionPool>() {
-            @Mock
-            protected void startCheckTimeout(TcpClientConfig clientConfig, Context context) {
-            }
-        };
-        Vertx vertx = VertxUtils.init(null);
-        TcpClientConfig config = new TcpClientConfig();
-        TcpClientConnectionPool oClientPool =
-            new TcpClientConnectionPool(config, vertx.getOrCreateContext(), oNetClient);
-        oClientPool.send(oTcpClient, new TcpClientPackage(null), Mockito.mock(TcpResonseCallback.class));
-        oClientPool.send(oTcpClient, new TcpClientPackage(null), Mockito.mock(TcpResonseCallback.class));
-        Assert.assertNotNull(oClientPool);
+    new MockUp<TcpClientConnectionPool>() {
+      @Mock
+      protected void startCheckTimeout(TcpClientConfig clientConfig, Context context) {
+      }
+    };
+    Vertx vertx = VertxUtils.init(null);
+    TcpClientConfig config = new TcpClientConfig();
+    TcpClientConnectionPool oClientPool =
+        new TcpClientConnectionPool(config, vertx.getOrCreateContext(), oNetClient);
+    oClientPool.send(oTcpClient, new TcpClientPackage(null), Mockito.mock(TcpResonseCallback.class));
+    oClientPool.send(oTcpClient, new TcpClientPackage(null), Mockito.mock(TcpResonseCallback.class));
+    Assert.assertNotNull(oClientPool);
 
-        TcpRequest oTcpRequest = new TcpRequest(1234, Mockito.mock(TcpResonseCallback.class));
-        oTcpRequest.isTimeout();
-        oTcpRequest.onReply(Buffer.buffer(), Buffer.buffer(("test").getBytes()));
-        oTcpRequest.onSendError(new Throwable("test Errorsss"));
-        Assert.assertNotNull(oTcpRequest);
+    TcpRequest oTcpRequest = new TcpRequest(1234, Mockito.mock(TcpResonseCallback.class));
+    oTcpRequest.isTimeout();
+    oTcpRequest.onReply(Buffer.buffer(), Buffer.buffer(("test").getBytes()));
+    oTcpRequest.onSendError(new Throwable("test Errorsss"));
+    Assert.assertNotNull(oTcpRequest);
 
-        TcpClientVerticle oTcpClientVerticle = new TcpClientVerticle();
-        oTcpClientVerticle.init(vertx, vertx.getOrCreateContext());
-        oTcpClientVerticle.createClientPool();
-        oTcpClientVerticle.createClientPool();
-        Assert.assertNotNull(oTcpClientVerticle.getVertx());
+    TcpClientVerticle oTcpClientVerticle = new TcpClientVerticle();
+    oTcpClientVerticle.init(vertx, vertx.getOrCreateContext());
+    oTcpClientVerticle.createClientPool();
+    oTcpClientVerticle.createClientPool();
+    Assert.assertNotNull(oTcpClientVerticle.getVertx());
 
-        NetSocket socket = Mockito.mock(NetSocketImpl.class);
-        Throwable e = Mockito.mock(Throwable.class);
-        Buffer hBuffer = Mockito.mock(Buffer.class);
-        Buffer bBuffer = Mockito.mock(Buffer.class);
+    NetSocket socket = Mockito.mock(NetSocketImpl.class);
+    Throwable e = Mockito.mock(Throwable.class);
+    Buffer hBuffer = Mockito.mock(Buffer.class);
+    Buffer bBuffer = Mockito.mock(Buffer.class);
 
-        Deencapsulation.invoke(oTcpClient, "connect");
-        Deencapsulation.invoke(oTcpClient, "onConnectSuccess", socket);
-        Mockito.when(socket.localAddress()).thenReturn(new SocketAddressImpl(0, "127.0.0.1"));
-        Deencapsulation.setField(oTcpClient, "netSocket", socket);
-        Deencapsulation.invoke(oTcpClient, "onDisconnected", e);
-        Deencapsulation.invoke(oTcpClient, "tryLogin");
-        Deencapsulation.invoke(oTcpClient, "onLoginSuccess");
-        Deencapsulation.invoke(oTcpClient, "onConnectFailed", e);
-        long l = 10;
-        Deencapsulation.invoke(oTcpClient, "onReply", l, hBuffer, bBuffer);
-        oTcpClient.checkTimeout();
-        Assert.assertNotNull(oTcpClient);
+    Deencapsulation.invoke(oTcpClient, "connect");
+    Deencapsulation.invoke(oTcpClient, "onConnectSuccess", socket);
+    Mockito.when(socket.localAddress()).thenReturn(new SocketAddressImpl(0, "127.0.0.1"));
+    Deencapsulation.setField(oTcpClient, "netSocket", socket);
+    Deencapsulation.invoke(oTcpClient, "onDisconnected", e);
+    Deencapsulation.invoke(oTcpClient, "tryLogin");
+    Deencapsulation.invoke(oTcpClient, "onLoginSuccess");
+    Deencapsulation.invoke(oTcpClient, "onConnectFailed", e);
+    long l = 10;
+    Deencapsulation.invoke(oTcpClient, "onReply", l, hBuffer, bBuffer);
+    oTcpClient.checkTimeout();
+    Assert.assertNotNull(oTcpClient);
 
-        vertx.close();
-    }
+    vertx.close();
+  }
 
-    @Test
-    public void testTcpOutputStream() {
-        TcpOutputStream oStream = new TcpOutputStream(0);
-        oStream.close();
-        Buffer buffer = oStream.getBuffer();
-        Assert.assertArrayEquals(TcpParser.TCP_MAGIC, buffer.getBytes(0, TcpParser.TCP_MAGIC.length));
-        Assert.assertEquals(oStream.getMsgId(), buffer.getLong(TcpParser.TCP_MAGIC.length));
-    }
+  @Test
+  public void testTcpOutputStream() {
+    TcpOutputStream oStream = new TcpOutputStream(0);
+    oStream.close();
+    Buffer buffer = oStream.getBuffer();
+    Assert.assertArrayEquals(TcpParser.TCP_MAGIC, buffer.getBytes(0, TcpParser.TCP_MAGIC.length));
+    Assert.assertEquals(oStream.getMsgId(), buffer.getLong(TcpParser.TCP_MAGIC.length));
+  }
 
-    @Test
-    public void testTcpServerStarter() {
-        Vertx vertx = VertxUtils.init(null);
+  @Test
+  public void testTcpServerStarter() {
+    Vertx vertx = VertxUtils.init(null);
 
-        URIEndpointObject endpiont = new URIEndpointObject("highway://127.0.0.1:9900");
-        TcpServer oStarter = new TcpServer(endpiont);
-        oStarter.init(vertx, "", null);
-        Assert.assertNotNull(oStarter);
-        //TODO Need to find a way to Assert TcpServerStarter as this obbject does not return any values.
+    URIEndpointObject endpiont = new URIEndpointObject("highway://127.0.0.1:9900");
+    TcpServer oStarter = new TcpServer(endpiont);
+    oStarter.init(vertx, "", null);
+    Assert.assertNotNull(oStarter);
+    //TODO Need to find a way to Assert TcpServerStarter as this obbject does not return any values.
 
-        vertx.close();
-    }
+    vertx.close();
+  }
 
-    @Test
-    public void testTcpClientConfig() {
-        TcpClientConfig tcpClientConfig = new TcpClientConfig();
-        tcpClientConfig.getRequestTimeoutMillis();
-        tcpClientConfig.setRequestTimeoutMillis(1);
-        Assert.assertNotNull(tcpClientConfig);
-    }
+  @Test
+  public void testTcpClientConfig() {
+    TcpClientConfig tcpClientConfig = new TcpClientConfig();
+    tcpClientConfig.getRequestTimeoutMillis();
+    tcpClientConfig.setRequestTimeoutMillis(1);
+    Assert.assertNotNull(tcpClientConfig);
+  }
 
-    @Test
-    public void testTcpData() {
-        Buffer hBuffer = Mockito.mock(Buffer.class);
-        Buffer bBuffer = Mockito.mock(Buffer.class);
-        TcpData tcpData = new TcpData(hBuffer, bBuffer);
-        tcpData.getBodyBuffer();
-        tcpData.setBodyBuffer(bBuffer);
-        tcpData.getHeaderBuffer();
-        tcpData.setBodyBuffer(hBuffer);
-        Assert.assertNotNull(tcpData.getBodyBuffer());
-        Assert.assertNotNull(tcpData.getHeaderBuffer());
-    }
+  @Test
+  public void testTcpData() {
+    Buffer hBuffer = Mockito.mock(Buffer.class);
+    Buffer bBuffer = Mockito.mock(Buffer.class);
+    TcpData tcpData = new TcpData(hBuffer, bBuffer);
+    tcpData.getBodyBuffer();
+    tcpData.setBodyBuffer(bBuffer);
+    tcpData.getHeaderBuffer();
+    tcpData.setBodyBuffer(hBuffer);
+    Assert.assertNotNull(tcpData.getBodyBuffer());
+    Assert.assertNotNull(tcpData.getHeaderBuffer());
+  }
 }

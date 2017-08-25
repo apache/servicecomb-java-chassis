@@ -19,7 +19,6 @@ package io.servicecomb.codec.protobuf.jackson;
 import java.util.HashMap;
 import java.util.Map;
 
-import io.servicecomb.codec.protobuf.codec.AbstractFieldCodec.ReaderHelpData;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -31,75 +30,75 @@ import com.fasterxml.jackson.core.JsonToken;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
 
+import io.servicecomb.codec.protobuf.codec.AbstractFieldCodec.ReaderHelpData;
+
 public class TestAbstractDeserializer extends AbstractDeserializer {
 
-    private AbstractDeserializer abstractDeserializer = null;
+  private AbstractDeserializer abstractDeserializer = null;
 
-    private JsonParser jsonParser = Mockito.mock(JsonParser.class);
+  private JsonParser jsonParser = Mockito.mock(JsonParser.class);
 
-    static ReaderHelpData readerHelpData = Mockito.mock(ReaderHelpData.class);
+  static ReaderHelpData readerHelpData = Mockito.mock(ReaderHelpData.class);
 
-    static Map<String, ReaderHelpData> readerHelpDataMap = new HashMap<String, ReaderHelpData>();
+  static Map<String, ReaderHelpData> readerHelpDataMap = new HashMap<String, ReaderHelpData>();
 
-    public static void setReaderHelpDataMap(Map<String, ReaderHelpData> readerHelpDataMap) {
-        TestAbstractDeserializer.readerHelpDataMap = readerHelpDataMap;
-        readerHelpDataMap.put("abc", readerHelpData);
-        readerHelpDataMap.put("null", readerHelpData);
+  public static void setReaderHelpDataMap(Map<String, ReaderHelpData> readerHelpDataMap) {
+    TestAbstractDeserializer.readerHelpDataMap = readerHelpDataMap;
+    readerHelpDataMap.put("abc", readerHelpData);
+    readerHelpDataMap.put("null", readerHelpData);
+  }
+
+  static {
+    TestAbstractDeserializer.setReaderHelpDataMap(readerHelpDataMap);
+  }
+
+  public TestAbstractDeserializer() {
+    super(readerHelpDataMap);
+  }
+
+  @Before
+  public void setUp() throws Exception {
+    abstractDeserializer = new TestAbstractDeserializer();
+  }
+
+  @After
+  public void tearDown() throws Exception {
+    abstractDeserializer = null;
+    jsonParser = null;
+  }
+
+  @SuppressWarnings("unchecked")
+  @Test
+  public void testDeserialize() {
+    boolean status = false;
+    try {
+      DeserializationContext ctxt = Mockito.mock(DeserializationContext.class);
+      @SuppressWarnings("rawtypes")
+      JsonDeserializer JsonDeserializer = Mockito.mock(JsonDeserializer.class);
+      Object object = null;
+      Mockito.when(jsonParser.nextFieldName()).thenReturn("abc", (String) null);
+      Mockito.when(readerHelpData.getDeser()).thenReturn(JsonDeserializer);
+      Mockito.when(JsonDeserializer.deserialize(jsonParser, ctxt)).thenReturn(object);
+      Object deserializeObject = abstractDeserializer.deserialize(jsonParser, ctxt);
+      Assert.assertNotNull(deserializeObject);
+    } catch (Exception e) {
+      status = true;
     }
+    Assert.assertFalse(status);
+  }
 
-    static {
-        TestAbstractDeserializer.setReaderHelpDataMap(readerHelpDataMap);
+  @Override
+  protected Object createResult() {
+    return null;
+  }
+
+  @Override
+  protected Object updateResult(Object result, Object value, ReaderHelpData helpData) {
+    /* Do not worry, overridden method*/
+    try {
+      Mockito.when(jsonParser.nextToken()).thenReturn(JsonToken.VALUE_NULL);
+    } catch (Exception e) {
     }
-
-    public TestAbstractDeserializer() {
-        super(readerHelpDataMap);
-    }
-
-    @Before
-    public void setUp() throws Exception {
-        abstractDeserializer = new TestAbstractDeserializer();
-    }
-
-    @After
-    public void tearDown() throws Exception {
-        abstractDeserializer = null;
-        jsonParser = null;
-    }
-
-    @SuppressWarnings("unchecked")
-    @Test
-    public void testDeserialize() {
-        boolean status = false;
-        try {
-            DeserializationContext ctxt = Mockito.mock(DeserializationContext.class);
-            @SuppressWarnings("rawtypes")
-            JsonDeserializer JsonDeserializer = Mockito.mock(JsonDeserializer.class);
-            Object object = null;
-            Mockito.when(jsonParser.nextFieldName()).thenReturn("abc", (String) null);
-            Mockito.when(readerHelpData.getDeser()).thenReturn(JsonDeserializer);
-            Mockito.when(JsonDeserializer.deserialize(jsonParser, ctxt)).thenReturn(object);
-            Object deserializeObject = abstractDeserializer.deserialize(jsonParser, ctxt);
-            Assert.assertNotNull(deserializeObject);
-        } catch (Exception e) {
-            status = true;
-        }
-        Assert.assertFalse(status);
-
-    }
-
-    @Override
-    protected Object createResult() {
-        return null;
-    }
-
-    @Override
-    protected Object updateResult(Object result, Object value, ReaderHelpData helpData) {
-        /* Do not worry, overridden method*/
-        try {
-            Mockito.when(jsonParser.nextToken()).thenReturn(JsonToken.VALUE_NULL);
-        } catch (Exception e) {
-        }
-        return new Object();
-    }
-
+    return new Object();
+  }
 }

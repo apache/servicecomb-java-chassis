@@ -24,39 +24,39 @@ import org.slf4j.LoggerFactory;
  *
  */
 public abstract class SSLCustom {
-    private static final Logger LOG = LoggerFactory.getLogger(SSLCustom.class);
+  private static final Logger LOG = LoggerFactory.getLogger(SSLCustom.class);
 
-    public static SSLCustom defaultSSLCustom() {
-        final SSLCustom custom = new SSLCustom() {
-            @Override
-            public char[] decode(char[] encrypted) {
-                return encrypted;
-            }
+  public static SSLCustom defaultSSLCustom() {
+    final SSLCustom custom = new SSLCustom() {
+      @Override
+      public char[] decode(char[] encrypted) {
+        return encrypted;
+      }
 
-            @Override
-            public String getFullPath(String filename) {
-                return filename;
-            }
-        };
-        return custom;
+      @Override
+      public String getFullPath(String filename) {
+        return filename;
+      }
+    };
+    return custom;
+  }
+
+  public static SSLCustom createSSLCustom(String name) {
+    try {
+      if (name != null && !name.isEmpty()) {
+        return (SSLCustom) Class.forName(name).newInstance();
+      }
+    } catch (InstantiationException | IllegalAccessException | ClassNotFoundException e) {
+      LOG.warn("init SSLCustom class failed, name is " + name);
     }
+    return defaultSSLCustom();
+  }
 
-    public static SSLCustom createSSLCustom(String name) {
-        try {
-            if (name != null && !name.isEmpty()) {
-                return (SSLCustom) Class.forName(name).newInstance();
-            }
-        } catch (InstantiationException | IllegalAccessException | ClassNotFoundException e) {
-            LOG.warn("init SSLCustom class failed, name is " + name);
-        }
-        return defaultSSLCustom();
-    }
+  public abstract char[] decode(char[] encrypted);
 
-    public abstract char[] decode(char[] encrypted);
+  public abstract String getFullPath(String filename);
 
-    public abstract String getFullPath(String filename);
-
-    public String getHost() {
-        return null;
-    }
+  public String getHost() {
+    return null;
+  }
 }

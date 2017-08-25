@@ -21,13 +21,13 @@ import java.util.List;
 import io.servicecomb.foundation.common.config.ConfigLoader;
 
 public abstract class AbstractLoader implements ConfigLoader {
-    protected List<String> locationPatternList;
+  protected List<String> locationPatternList;
 
-    public AbstractLoader(List<String> locationPatternList) {
-        this.locationPatternList = locationPatternList;
-    }
+  public AbstractLoader(List<String> locationPatternList) {
+    this.locationPatternList = locationPatternList;
+  }
 
-    public List<String> getLocationPatternList() {
-        return locationPatternList;
-    }
+  public List<String> getLocationPatternList() {
+    return locationPatternList;
+  }
 }

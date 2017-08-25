@@ -23,16 +23,16 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectReader;
 
 public class StandardObjectReader extends ObjectReader {
-    private static final long serialVersionUID = -8162644250351645123L;
+  private static final long serialVersionUID = -8162644250351645123L;
 
-    public StandardObjectReader(ObjectReader base) {
-        super(base, base.getConfig());
-    }
+  public StandardObjectReader(ObjectReader base) {
+    super(base, base.getConfig());
+  }
 
-    @SuppressWarnings("unchecked")
-    @Override
-    public <T> T readValue(InputStream src) throws IOException, JsonProcessingException {
-        T result = super.readValue(src);
-        return (T) new Object[] {result};
-    }
+  @SuppressWarnings("unchecked")
+  @Override
+  public <T> T readValue(InputStream src) throws IOException, JsonProcessingException {
+    T result = super.readValue(src);
+    return (T) new Object[] {result};
+  }
 }

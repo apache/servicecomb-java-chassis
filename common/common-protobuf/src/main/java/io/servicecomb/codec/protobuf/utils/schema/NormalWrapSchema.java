@@ -18,40 +18,39 @@ package io.servicecomb.codec.protobuf.utils.schema;
 
 import java.io.IOException;
 
-import io.servicecomb.common.javassist.SingleWrapper;
-
 import io.protostuff.Input;
 import io.protostuff.Output;
 import io.protostuff.Schema;
+import io.servicecomb.common.javassist.SingleWrapper;
 
 public class NormalWrapSchema extends AbstractWrapSchema {
 
-    @SuppressWarnings("unchecked")
-    public NormalWrapSchema(Schema<?> schema) {
-        this.schema = (Schema<Object>) schema;
+  @SuppressWarnings("unchecked")
+  public NormalWrapSchema(Schema<?> schema) {
+    this.schema = (Schema<Object>) schema;
+  }
+
+  @Override
+  public Object readFromEmpty() {
+    SingleWrapper wrapper = (SingleWrapper) schema.newMessage();
+    return wrapper.readField();
+  }
+
+  public Object readObject(Input input) throws IOException {
+    SingleWrapper wrapper = (SingleWrapper) schema.newMessage();
+    schema.mergeFrom(input, wrapper);
+
+    return wrapper.readField();
+  }
+
+  public void writeObject(Output output, Object value) throws IOException {
+    if (value == null) {
+      return;
     }
 
-    @Override
-    public Object readFromEmpty() {
-        SingleWrapper wrapper = (SingleWrapper) schema.newMessage();
-        return wrapper.readField();
-    }
+    SingleWrapper wrapper = (SingleWrapper) schema.newMessage();
+    wrapper.writeField(value);
 
-    public Object readObject(Input input) throws IOException {
-        SingleWrapper wrapper = (SingleWrapper) schema.newMessage();
-        schema.mergeFrom(input, wrapper);
-
-        return wrapper.readField();
-    }
-
-    public void writeObject(Output output, Object value) throws IOException {
-        if (value == null) {
-            return;
-        }
-
-        SingleWrapper wrapper = (SingleWrapper) schema.newMessage();
-        wrapper.writeField(value);
-
-        schema.writeTo(output, wrapper);
-    }
+    schema.writeTo(output, wrapper);
+  }
 }

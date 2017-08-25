@@ -19,13 +19,13 @@ package io.servicecomb.core.definition.schema;
 import io.servicecomb.serviceregistry.api.registry.Microservice;
 
 public class ConsumerSchemaContext extends SchemaContext {
-    protected Microservice microservice;
+  protected Microservice microservice;
 
-    public Microservice getMicroservice() {
-        return microservice;
-    }
+  public Microservice getMicroservice() {
+    return microservice;
+  }
 
-    public void setMicroservice(Microservice microservice) {
-        this.microservice = microservice;
-    }
+  public void setMicroservice(Microservice microservice) {
+    this.microservice = microservice;
+  }
 }

@@ -21,31 +21,28 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.web.client.RequestCallback;
 
-import io.servicecomb.provider.springmvc.reference.CseClientHttpRequest;
-import io.servicecomb.provider.springmvc.reference.CseHttpEntity;
-import io.servicecomb.provider.springmvc.reference.CseRequestCallback;
 import mockit.Injectable;
 import mockit.Mocked;
 
 public class TestCseRequestCallback {
-    @Test
-    public void testNormal(@Mocked RequestCallback callback) throws IOException {
-        CseClientHttpRequest request = new CseClientHttpRequest();
-        CseRequestCallback cb = new CseRequestCallback(null, callback);
-        cb.doWithRequest(request);
+  @Test
+  public void testNormal(@Mocked RequestCallback callback) throws IOException {
+    CseClientHttpRequest request = new CseClientHttpRequest();
+    CseRequestCallback cb = new CseRequestCallback(null, callback);
+    cb.doWithRequest(request);
 
-        Assert.assertEquals(null, request.getContext());
-    }
+    Assert.assertEquals(null, request.getContext());
+  }
 
-    @Test
-    public void testCseEntity(@Injectable CseHttpEntity<?> entity,
-            @Mocked RequestCallback callback) throws IOException {
-        CseClientHttpRequest request = new CseClientHttpRequest();
+  @Test
+  public void testCseEntity(@Injectable CseHttpEntity<?> entity,
+      @Mocked RequestCallback callback) throws IOException {
+    CseClientHttpRequest request = new CseClientHttpRequest();
 
-        entity.addContext("c1", "c2");
-        CseRequestCallback cb = new CseRequestCallback(entity, callback);
-        cb.doWithRequest(request);
+    entity.addContext("c1", "c2");
+    CseRequestCallback cb = new CseRequestCallback(entity, callback);
+    cb.doWithRequest(request);
 
-        Assert.assertEquals(entity.getContext(), request.getContext());
-    }
+    Assert.assertEquals(entity.getContext(), request.getContext());
+  }
 }

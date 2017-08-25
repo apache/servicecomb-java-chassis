@@ -31,11 +31,10 @@ import io.servicecomb.springboot.starter.provider.EnableServiceComb;
 @EnableServiceComb
 public class PojoClient {
 
-    public static void main(final String[] args) throws Exception {
-        Log4jUtils.init();
-        SpringApplication.run(PojoClient.class, args);
+  public static void main(final String[] args) throws Exception {
+    Log4jUtils.init();
+    SpringApplication.run(PojoClient.class, args);
 
-        io.servicecomb.demo.pojo.client.PojoClientTest.runTest();
-    }
-
+    io.servicecomb.demo.pojo.client.PojoClientTest.runTest();
+  }
 }

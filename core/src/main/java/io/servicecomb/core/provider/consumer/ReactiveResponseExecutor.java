@@ -22,8 +22,8 @@ import java.util.concurrent.Executor;
  * reactive场景，就地执行即可
  */
 public class ReactiveResponseExecutor implements Executor {
-    @Override
-    public void execute(Runnable cmd) {
-        cmd.run();
-    }
+  @Override
+  public void execute(Runnable cmd) {
+    cmd.run();
+  }
 }

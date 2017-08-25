@@ -20,10 +20,10 @@ import java.util.Map;
 import io.protostuff.MapSchema.MapWrapper;
 
 public final class MapSchemaUtils {
-    private MapSchemaUtils() {
-    }
+  private MapSchemaUtils() {
+  }
 
-    public static MapWrapper<Object, Object> createMapWrapper(Map<Object, Object> map) {
-        return new MapWrapper<>(map);
-    }
+  public static MapWrapper<Object, Object> createMapWrapper(Map<Object, Object> map) {
+    return new MapWrapper<>(map);
+  }
 }

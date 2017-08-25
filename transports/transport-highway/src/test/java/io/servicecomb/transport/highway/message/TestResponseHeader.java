@@ -26,26 +26,25 @@ import org.junit.Test;
 
 public class TestResponseHeader {
 
-    private ResponseHeader responseHeader = null;
+  private ResponseHeader responseHeader = null;
 
-    Map<String, String> context = new HashMap<>();
+  Map<String, String> context = new HashMap<>();
 
-    @Before
-    public void setUp() throws Exception {
-        responseHeader = new ResponseHeader();
-    }
+  @Before
+  public void setUp() throws Exception {
+    responseHeader = new ResponseHeader();
+  }
 
-    @After
-    public void tearDown() throws Exception {
-        responseHeader = null;
-    }
+  @After
+  public void tearDown() throws Exception {
+    responseHeader = null;
+  }
 
-    @Test
-    public void testSetContext() {
-        context.put("key1", "v1");
-        responseHeader.setContext(context);
-        Assert.assertNotNull(responseHeader.getContext());
-        Assert.assertEquals("v1", responseHeader.getContext().get("key1"));
-    }
-
+  @Test
+  public void testSetContext() {
+    context.put("key1", "v1");
+    responseHeader.setContext(context);
+    Assert.assertNotNull(responseHeader.getContext());
+    Assert.assertEquals("v1", responseHeader.getContext().get("key1"));
+  }
 }

@@ -16,22 +16,27 @@
 
 package io.servicecomb.spring.cloud.zuul.tracing;
 
+import java.lang.invoke.MethodHandles;
+
+import javax.servlet.http.HttpServletResponse;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.netflix.zuul.ZuulFilter;
+import com.netflix.zuul.context.RequestContext;
+
 import brave.Tracer;
 import brave.Tracer.SpanInScope;
 import brave.http.HttpClientHandler;
 import brave.http.HttpTracing;
-import com.netflix.zuul.ZuulFilter;
-import com.netflix.zuul.context.RequestContext;
-import java.lang.invoke.MethodHandles;
-import javax.servlet.http.HttpServletResponse;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 class TracePostZuulFilter extends ZuulFilter {
 
   private static final Logger log = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   private final Tracer tracer;
+
   private final HttpClientHandler<RequestContext, HttpServletResponse> clientHandler;
 
   TracePostZuulFilter(HttpTracing tracer, HttpClientHandler<RequestContext, HttpServletResponse> clientHandler) {

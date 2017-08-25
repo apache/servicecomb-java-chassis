@@ -20,19 +20,18 @@ import io.servicecomb.provider.pojo.InstanceFactory;
 import io.servicecomb.provider.pojo.PojoConst;
 
 public class PojoInstanceFactory implements InstanceFactory {
-    @Override
-    public String getImplName() {
-        return PojoConst.POJO;
-    }
+  @Override
+  public String getImplName() {
+    return PojoConst.POJO;
+  }
 
-    @Override
-    public Object create(String className) {
-        try {
-            Class<?> clazz = Class.forName(className);
-            return clazz.newInstance();
-        } catch (Exception e) {
-            throw new Error("Fail to create instance of class:" + className, e);
-        }
+  @Override
+  public Object create(String className) {
+    try {
+      Class<?> clazz = Class.forName(className);
+      return clazz.newInstance();
+    } catch (Exception e) {
+      throw new Error("Fail to create instance of class:" + className, e);
     }
-
+  }
 }

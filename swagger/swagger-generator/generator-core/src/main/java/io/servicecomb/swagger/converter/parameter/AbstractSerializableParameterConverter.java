@@ -17,11 +17,11 @@
 package io.servicecomb.swagger.converter.parameter;
 
 import com.fasterxml.jackson.databind.JavaType;
+
 import io.servicecomb.swagger.converter.Converter;
 import io.servicecomb.swagger.converter.ConverterMgr;
 import io.servicecomb.swagger.converter.property.ArrayPropertyConverter;
 import io.servicecomb.swagger.converter.property.StringPropertyConverter;
-
 import io.swagger.models.Swagger;
 import io.swagger.models.parameters.AbstractSerializableParameter;
 import io.swagger.models.properties.ArrayProperty;
@@ -29,26 +29,26 @@ import io.swagger.models.properties.StringProperty;
 
 public class AbstractSerializableParameterConverter implements Converter {
 
-    @Override
-    public JavaType convert(ClassLoader classLoader, String packageName, Swagger swagger, Object def) {
-        AbstractSerializableParameter<?> param = (AbstractSerializableParameter<?>) def;
+  @Override
+  public JavaType convert(ClassLoader classLoader, String packageName, Swagger swagger, Object def) {
+    AbstractSerializableParameter<?> param = (AbstractSerializableParameter<?>) def;
 
-        switch (param.getType()) {
-            case ArrayProperty.TYPE:
-                return ArrayPropertyConverter.findJavaType(classLoader,
-                        packageName,
-                        swagger,
-                        param.getItems(),
-                        param.isUniqueItems());
-            case StringProperty.TYPE:
-                return StringPropertyConverter.findJavaType(classLoader,
-                        packageName,
-                        swagger,
-                        param.getType(),
-                        param.getFormat(),
-                        param.getEnum());
-            default:
-                return ConverterMgr.findJavaType(param.getType(), param.getFormat());
-        }
+    switch (param.getType()) {
+      case ArrayProperty.TYPE:
+        return ArrayPropertyConverter.findJavaType(classLoader,
+            packageName,
+            swagger,
+            param.getItems(),
+            param.isUniqueItems());
+      case StringProperty.TYPE:
+        return StringPropertyConverter.findJavaType(classLoader,
+            packageName,
+            swagger,
+            param.getType(),
+            param.getFormat(),
+            param.getEnum());
+      default:
+        return ConverterMgr.findJavaType(param.getType(), param.getFormat());
     }
+  }
 }

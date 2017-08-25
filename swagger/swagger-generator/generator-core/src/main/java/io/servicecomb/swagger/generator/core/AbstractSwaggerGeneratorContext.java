@@ -48,110 +48,109 @@ import io.swagger.annotations.SwaggerDefinition;
  * 根据class反向生成swagger的上下文对象
  */
 public abstract class AbstractSwaggerGeneratorContext implements SwaggerGeneratorContext {
-    protected AnnotationProcessorManager<ClassAnnotationProcessor> classAnnotationMgr =
-        new AnnotationProcessorManager<>(AnnotationType.CLASS);
+  protected AnnotationProcessorManager<ClassAnnotationProcessor> classAnnotationMgr =
+      new AnnotationProcessorManager<>(AnnotationType.CLASS);
 
-    protected AnnotationProcessorManager<MethodAnnotationProcessor> methodAnnotationMgr =
-        new AnnotationProcessorManager<>(AnnotationType.METHOD);
+  protected AnnotationProcessorManager<MethodAnnotationProcessor> methodAnnotationMgr =
+      new AnnotationProcessorManager<>(AnnotationType.METHOD);
 
-    protected AnnotationProcessorManager<ParameterAnnotationProcessor> parameterAnnotationMgr =
-        new AnnotationProcessorManager<>(AnnotationType.PARAMETER);
+  protected AnnotationProcessorManager<ParameterAnnotationProcessor> parameterAnnotationMgr =
+      new AnnotationProcessorManager<>(AnnotationType.PARAMETER);
 
-    // 管理方法入参的processor，用于支撑httpRequest、Context之类的特殊处理
-    // key为class
-    protected RegisterManager<Type, ParameterTypeProcessor> parameterTypeProcessorMgr =
-        new RegisterManager<>("parameter type processor mgr");
+  // 管理方法入参的processor，用于支撑httpRequest、Context之类的特殊处理
+  // key为class
+  protected RegisterManager<Type, ParameterTypeProcessor> parameterTypeProcessorMgr =
+      new RegisterManager<>("parameter type processor mgr");
 
-    protected DefaultParameterProcessor defaultParameterProcessor;
+  protected DefaultParameterProcessor defaultParameterProcessor;
 
-    protected RegisterManager<Type, ResponseTypeProcessor> responseTypeProcessorMgr =
-        new RegisterManager<>("response type processor mgr");
+  protected RegisterManager<Type, ResponseTypeProcessor> responseTypeProcessorMgr =
+      new RegisterManager<>("response type processor mgr");
 
-    protected ResponseTypeProcessor defaultResponseTypeProcessor = new DefaultResponseTypeProcessor();
+  protected ResponseTypeProcessor defaultResponseTypeProcessor = new DefaultResponseTypeProcessor();
 
-    public AbstractSwaggerGeneratorContext() {
-        initClassAnnotationMgr();
-        initMethodAnnotationMgr();
-        initParameterAnnotationMgr();
+  public AbstractSwaggerGeneratorContext() {
+    initClassAnnotationMgr();
+    initMethodAnnotationMgr();
+    initParameterAnnotationMgr();
 
-        initParameterTypeProcessorMgr();
+    initParameterTypeProcessorMgr();
 
-        initDefaultParameterProcessor();
+    initDefaultParameterProcessor();
 
-        initResponseTypeProcessorMgr();
+    initResponseTypeProcessorMgr();
+  }
+
+  protected void initClassAnnotationMgr() {
+    classAnnotationMgr.register(SwaggerDefinition.class, new SwaggerDefinitionProcessor());
+
+    classAnnotationMgr.register(ApiImplicitParams.class, new ApiImplicitParamsClassProcessor());
+    classAnnotationMgr.register(ApiImplicitParam.class, new ApiImplicitParamClassProcessor());
+
+    classAnnotationMgr.register(ApiResponses.class, new ApiResponsesClassProcessor());
+    classAnnotationMgr.register(ApiResponse.class, new ApiResponseClassProcessor());
+  }
+
+  protected void initMethodAnnotationMgr() {
+    methodAnnotationMgr.register(ApiOperation.class, new ApiOperationProcessor());
+
+    methodAnnotationMgr.register(ApiImplicitParams.class, new ApiImplicitParamsMethodProcessor());
+    methodAnnotationMgr.register(ApiImplicitParam.class, new ApiImplicitParamMethodProcessor());
+
+    methodAnnotationMgr.register(ApiResponses.class, new ApiResponsesMethodProcessor());
+    methodAnnotationMgr.register(ApiResponse.class, new ApiResponseMethodProcessor());
+
+    methodAnnotationMgr.register(ResponseHeaders.class, new ResponseHeadersProcessor());
+    methodAnnotationMgr.register(ResponseHeader.class, new ResponseHeaderProcessor());
+  }
+
+  protected void initParameterAnnotationMgr() {
+  }
+
+  protected void initParameterTypeProcessorMgr() {
+    SPIServiceUtils.getAllService(CommonParameterTypeProcessor.class).forEach(p -> {
+      parameterTypeProcessorMgr.register(p.getParameterType(), p);
+    });
+  }
+
+  protected void initDefaultParameterProcessor() {
+  }
+
+  protected void initResponseTypeProcessorMgr() {
+
+  }
+
+  public void setDefaultParamProcessor(DefaultParameterProcessor defaultParamProcessor) {
+    this.defaultParameterProcessor = defaultParamProcessor;
+  }
+
+  public ClassAnnotationProcessor findClassAnnotationProcessor(Class<? extends Annotation> annotationType) {
+    return classAnnotationMgr.findProcessor(annotationType);
+  }
+
+  public MethodAnnotationProcessor findMethodAnnotationProcessor(Class<? extends Annotation> annotationType) {
+    return methodAnnotationMgr.findProcessor(annotationType);
+  }
+
+  public ParameterAnnotationProcessor findParameterAnnotationProcessor(Class<? extends Annotation> annotationType) {
+    return parameterAnnotationMgr.findProcessor(annotationType);
+  }
+
+  public ParameterTypeProcessor findParameterTypeProcessor(Type type) {
+    return parameterTypeProcessorMgr.findValue(type);
+  }
+
+  public DefaultParameterProcessor getDefaultParamProcessor() {
+    return defaultParameterProcessor;
+  }
+
+  @Override
+  public ResponseTypeProcessor findResponseTypeProcessor(Type responseType) {
+    ResponseTypeProcessor processor = responseTypeProcessorMgr.findValue(responseType);
+    if (processor == null) {
+      processor = defaultResponseTypeProcessor;
     }
 
-    protected void initClassAnnotationMgr() {
-        classAnnotationMgr.register(SwaggerDefinition.class, new SwaggerDefinitionProcessor());
-
-        classAnnotationMgr.register(ApiImplicitParams.class, new ApiImplicitParamsClassProcessor());
-        classAnnotationMgr.register(ApiImplicitParam.class, new ApiImplicitParamClassProcessor());
-
-        classAnnotationMgr.register(ApiResponses.class, new ApiResponsesClassProcessor());
-        classAnnotationMgr.register(ApiResponse.class, new ApiResponseClassProcessor());
-    }
-
-    protected void initMethodAnnotationMgr() {
-        methodAnnotationMgr.register(ApiOperation.class, new ApiOperationProcessor());
-
-        methodAnnotationMgr.register(ApiImplicitParams.class, new ApiImplicitParamsMethodProcessor());
-        methodAnnotationMgr.register(ApiImplicitParam.class, new ApiImplicitParamMethodProcessor());
-
-        methodAnnotationMgr.register(ApiResponses.class, new ApiResponsesMethodProcessor());
-        methodAnnotationMgr.register(ApiResponse.class, new ApiResponseMethodProcessor());
-
-        methodAnnotationMgr.register(ResponseHeaders.class, new ResponseHeadersProcessor());
-        methodAnnotationMgr.register(ResponseHeader.class, new ResponseHeaderProcessor());
-
-    }
-
-    protected void initParameterAnnotationMgr() {
-    }
-
-    protected void initParameterTypeProcessorMgr() {
-        SPIServiceUtils.getAllService(CommonParameterTypeProcessor.class).forEach(p -> {
-            parameterTypeProcessorMgr.register(p.getParameterType(), p);
-        });
-    }
-
-    protected void initDefaultParameterProcessor() {
-    }
-
-    protected void initResponseTypeProcessorMgr() {
-
-    }
-
-    public void setDefaultParamProcessor(DefaultParameterProcessor defaultParamProcessor) {
-        this.defaultParameterProcessor = defaultParamProcessor;
-    }
-
-    public ClassAnnotationProcessor findClassAnnotationProcessor(Class<? extends Annotation> annotationType) {
-        return classAnnotationMgr.findProcessor(annotationType);
-    }
-
-    public MethodAnnotationProcessor findMethodAnnotationProcessor(Class<? extends Annotation> annotationType) {
-        return methodAnnotationMgr.findProcessor(annotationType);
-    }
-
-    public ParameterAnnotationProcessor findParameterAnnotationProcessor(Class<? extends Annotation> annotationType) {
-        return parameterAnnotationMgr.findProcessor(annotationType);
-    }
-
-    public ParameterTypeProcessor findParameterTypeProcessor(Type type) {
-        return parameterTypeProcessorMgr.findValue(type);
-    }
-
-    public DefaultParameterProcessor getDefaultParamProcessor() {
-        return defaultParameterProcessor;
-    }
-
-    @Override
-    public ResponseTypeProcessor findResponseTypeProcessor(Type responseType) {
-        ResponseTypeProcessor processor = responseTypeProcessorMgr.findValue(responseType);
-        if (processor == null) {
-            processor = defaultResponseTypeProcessor;
-        }
-
-        return processor;
-    }
+    return processor;
+  }
 }

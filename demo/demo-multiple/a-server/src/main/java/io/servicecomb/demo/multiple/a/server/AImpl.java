@@ -20,7 +20,7 @@ import io.servicecomb.provider.pojo.RpcSchema;
 
 @RpcSchema(schemaId = "a-hello")
 public class AImpl {
-    public String hello(String name) {
-        return "a hello " + name;
-    }
+  public String hello(String name) {
+    return "a hello " + name;
+  }
 }

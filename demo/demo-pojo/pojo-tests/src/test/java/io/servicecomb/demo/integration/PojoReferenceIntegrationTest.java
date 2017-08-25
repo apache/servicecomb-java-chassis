@@ -19,9 +19,10 @@ package io.servicecomb.demo.integration;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 
-import com.seanyinx.github.unit.scaffolding.Randomness;
 import org.junit.BeforeClass;
 import org.junit.Test;
+
+import com.seanyinx.github.unit.scaffolding.Randomness;
 
 public class PojoReferenceIntegrationTest {
 

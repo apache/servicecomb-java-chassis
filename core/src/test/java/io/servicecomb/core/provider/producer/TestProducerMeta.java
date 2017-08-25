@@ -19,25 +19,25 @@ import org.junit.Assert;
 import org.junit.Test;
 
 public class TestProducerMeta {
-    @Test
-    public void test1() {
-        Object instance = new Object();
-        ProducerMeta meta = new ProducerMeta("id", instance, instance.getClass());
-        Assert.assertEquals("id", meta.getSchemaId());
-        Assert.assertEquals(instance, meta.getInstance());
-        Assert.assertEquals(Object.class, meta.getInstanceClass());
-    }
+  @Test
+  public void test1() {
+    Object instance = new Object();
+    ProducerMeta meta = new ProducerMeta("id", instance, instance.getClass());
+    Assert.assertEquals("id", meta.getSchemaId());
+    Assert.assertEquals(instance, meta.getInstance());
+    Assert.assertEquals(Object.class, meta.getInstanceClass());
+  }
 
-    @Test
-    public void test2() {
-        ProducerMeta meta = new ProducerMeta();
-        meta.setSchemaId("id1");
-        Assert.assertEquals("id1", meta.getSchemaId());
+  @Test
+  public void test2() {
+    ProducerMeta meta = new ProducerMeta();
+    meta.setSchemaId("id1");
+    Assert.assertEquals("id1", meta.getSchemaId());
 
-        meta.setInstance(1);
-        Assert.assertEquals(1, meta.getInstance());
+    meta.setInstance(1);
+    Assert.assertEquals(1, meta.getInstance());
 
-        meta.setInstanceClass(Integer.class);
-        Assert.assertEquals(Integer.class, meta.getInstanceClass());
-    }
+    meta.setInstanceClass(Integer.class);
+    Assert.assertEquals(Integer.class, meta.getInstanceClass());
+  }
 }

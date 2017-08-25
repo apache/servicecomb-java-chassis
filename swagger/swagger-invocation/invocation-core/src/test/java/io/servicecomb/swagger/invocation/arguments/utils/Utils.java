@@ -19,11 +19,11 @@ package io.servicecomb.swagger.invocation.arguments.utils;
 import org.springframework.util.ReflectionUtils;
 
 public class Utils {
-    public static Object getFieldValue(Object instance, String fieldName) {
-        try {
-            return ReflectionUtils.findField(instance.getClass(), fieldName).get(instance);
-        } catch (Exception e) {
-            throw new Error(e);
-        }
+  public static Object getFieldValue(Object instance, String fieldName) {
+    try {
+      return ReflectionUtils.findField(instance.getClass(), fieldName).get(instance);
+    } catch (Exception e) {
+      throw new Error(e);
     }
+  }
 }

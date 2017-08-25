@@ -23,9 +23,9 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 import static org.springframework.http.HttpStatus.OK;
 
-import io.servicecomb.tests.tracing.TracingTestBase;
 import java.util.Collection;
 import java.util.concurrent.TimeUnit;
+
 import org.junit.After;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -34,6 +34,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
+
+import io.servicecomb.tests.tracing.TracingTestBase;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = TracedZuulMain.class, webEnvironment = RANDOM_PORT)

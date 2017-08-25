@@ -30,17 +30,16 @@ import io.servicecomb.provider.rest.common.ProducerHttpRequestArgMapper;
 
 public class TestHttpRequestParamCreator {
 
-    @Test
-    public void testCreateMockParam() throws Exception {
-        ProducerHttpRequestArgMapper lHttpRequestParamCreator = new ProducerHttpRequestArgMapper(0);
-        Invocation invocation = Mockito.mock(Invocation.class);
-        OperationMeta operationMeta = Mockito.mock(OperationMeta.class);
-        Mockito.when(invocation.getOperationMeta()).thenReturn(operationMeta);
-        RestOperationMeta swaggerOperation = Mockito.mock(RestOperationMeta.class);
-        Mockito.when(operationMeta.getExtData(RestConst.SWAGGER_REST_OPERATION)).thenReturn(swaggerOperation);
-        HttpServletRequest lHttpServletRequest =
-            (HttpServletRequest) lHttpRequestParamCreator.createContextArg(invocation);
-        Assert.assertNull(lHttpServletRequest.getMethod());
-    }
-
+  @Test
+  public void testCreateMockParam() throws Exception {
+    ProducerHttpRequestArgMapper lHttpRequestParamCreator = new ProducerHttpRequestArgMapper(0);
+    Invocation invocation = Mockito.mock(Invocation.class);
+    OperationMeta operationMeta = Mockito.mock(OperationMeta.class);
+    Mockito.when(invocation.getOperationMeta()).thenReturn(operationMeta);
+    RestOperationMeta swaggerOperation = Mockito.mock(RestOperationMeta.class);
+    Mockito.when(operationMeta.getExtData(RestConst.SWAGGER_REST_OPERATION)).thenReturn(swaggerOperation);
+    HttpServletRequest lHttpServletRequest =
+        (HttpServletRequest) lHttpRequestParamCreator.createContextArg(invocation);
+    Assert.assertNull(lHttpServletRequest.getMethod());
+  }
 }

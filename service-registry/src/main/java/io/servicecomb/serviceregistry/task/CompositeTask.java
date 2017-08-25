@@ -19,19 +19,19 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class CompositeTask implements Runnable {
-    private List<Runnable> taskList = new ArrayList<>();
+  private List<Runnable> taskList = new ArrayList<>();
 
-    public void addTask(Runnable task) {
-        taskList.add(task);
-    }
+  public void addTask(Runnable task) {
+    taskList.add(task);
+  }
 
-    public int getTaskCount() {
-        return taskList.size();
-    }
+  public int getTaskCount() {
+    return taskList.size();
+  }
 
-    public void run() {
-        for (Runnable task : taskList) {
-            task.run();
-        }
+  public void run() {
+    for (Runnable task : taskList) {
+      task.run();
     }
+  }
 }

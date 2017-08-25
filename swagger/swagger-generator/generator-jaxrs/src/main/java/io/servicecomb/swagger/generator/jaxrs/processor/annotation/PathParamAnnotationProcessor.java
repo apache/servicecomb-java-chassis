@@ -19,17 +19,16 @@ package io.servicecomb.swagger.generator.jaxrs.processor.annotation;
 import javax.ws.rs.PathParam;
 
 import io.servicecomb.swagger.generator.core.processor.parameter.AbstractParameterProcessor;
-
 import io.swagger.models.parameters.PathParameter;
 
 public class PathParamAnnotationProcessor extends AbstractParameterProcessor<PathParameter> {
-    @Override
-    protected PathParameter createParameter() {
-        return new PathParameter();
-    }
+  @Override
+  protected PathParameter createParameter() {
+    return new PathParameter();
+  }
 
-    @Override
-    protected String getAnnotationParameterName(Object annotation) {
-        return ((PathParam) annotation).value();
-    }
+  @Override
+  protected String getAnnotationParameterName(Object annotation) {
+    return ((PathParam) annotation).value();
+  }
 }

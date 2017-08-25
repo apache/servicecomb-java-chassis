@@ -14,9 +14,6 @@
  * limitations under the License.
  */
 
-/**
- * 
- */
 package io.servicecomb.loadbalance.exception;
 
 import static org.junit.Assert.assertEquals;
@@ -32,12 +29,13 @@ import io.servicecomb.core.exception.CseException;
  */
 public class TestLoadbalanceExceptionUtils {
 
-	@Test
-	public void testLoadbalanceExceptionUtils() {
+  @Test
+  public void testLoadbalanceExceptionUtils() {
 
-		assertEquals("cse.handler.lb.wrong.rule", LoadbalanceExceptionUtils.CSE_HANDLER_LB_WRONG_RULE);
-		CseException cseException = LoadbalanceExceptionUtils.createLoadbalanceException("cse.handler.lb.wrong.rule",
-				new Throwable(), "ARGS");
-		Assert.assertNotNull(cseException);
-	}
+    assertEquals("cse.handler.lb.wrong.rule", LoadbalanceExceptionUtils.CSE_HANDLER_LB_WRONG_RULE);
+    CseException cseException = LoadbalanceExceptionUtils.createLoadbalanceException("cse.handler.lb.wrong.rule",
+        new Throwable(),
+        "ARGS");
+    Assert.assertNotNull(cseException);
+  }
 }

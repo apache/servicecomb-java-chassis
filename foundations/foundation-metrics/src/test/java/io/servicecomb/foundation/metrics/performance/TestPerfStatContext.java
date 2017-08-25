@@ -24,49 +24,44 @@ import org.junit.Test;
 import mockit.Mock;
 import mockit.MockUp;
 
-/**
- *
- * @since Mar 14, 2017
- * @see 
- */
 public class TestPerfStatContext {
 
-    PerfStatContext oPerfStatContext = null;
+  PerfStatContext oPerfStatContext = null;
 
-    @Before
-    public void setUp() throws Exception {
-        oPerfStatContext = new PerfStatContext();
-    }
+  @Before
+  public void setUp() throws Exception {
+    oPerfStatContext = new PerfStatContext();
+  }
 
-    @After
-    public void tearDown() throws Exception {
-        oPerfStatContext = null;
-    }
+  @After
+  public void tearDown() throws Exception {
+    oPerfStatContext = null;
+  }
 
-    @Test
-    public void testDefaultValues() {
-        Assert.assertEquals(0, oPerfStatContext.getMsgCount());
-        Assert.assertTrue(oPerfStatContext.getLatency() >= 0);
-    }
+  @Test
+  public void testDefaultValues() {
+    Assert.assertEquals(0, oPerfStatContext.getMsgCount());
+    Assert.assertTrue(oPerfStatContext.getLatency() >= 0);
+  }
 
-    @Test
-    public void testIntializedValues() throws InterruptedException {
-        new MockUp<System>() {
-            int count = 0;
-            
-            @Mock
-            public long currentTimeMillis() {
-                if(count == 0) {
-                    count ++;
-                    return 10;
-                } else {
-                    return 20;
-                }
-            }
-        };
-        PerfStatContext oPerfStatContext = new PerfStatContext();
-        oPerfStatContext.setMsgCount(10);
-        Assert.assertEquals(10, oPerfStatContext.getMsgCount());
-        Assert.assertEquals(10, oPerfStatContext.getLatency());
-    }
+  @Test
+  public void testIntializedValues() throws InterruptedException {
+    new MockUp<System>() {
+      int count = 0;
+
+      @Mock
+      public long currentTimeMillis() {
+        if (count == 0) {
+          count++;
+          return 10;
+        } else {
+          return 20;
+        }
+      }
+    };
+    PerfStatContext oPerfStatContext = new PerfStatContext();
+    oPerfStatContext.setMsgCount(10);
+    Assert.assertEquals(10, oPerfStatContext.getMsgCount());
+    Assert.assertEquals(10, oPerfStatContext.getLatency());
+  }
 }

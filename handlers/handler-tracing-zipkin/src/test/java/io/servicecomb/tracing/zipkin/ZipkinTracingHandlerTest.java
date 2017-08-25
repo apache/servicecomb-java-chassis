@@ -24,24 +24,29 @@ import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import brave.Span;
-import brave.Tracing;
-import io.servicecomb.core.Invocation;
-import io.servicecomb.swagger.invocation.AsyncResponse;
-import io.servicecomb.swagger.invocation.Response;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 
+import brave.Span;
+import brave.Tracing;
+import io.servicecomb.core.Invocation;
+import io.servicecomb.swagger.invocation.AsyncResponse;
+import io.servicecomb.swagger.invocation.Response;
+
 public class ZipkinTracingHandlerTest {
 
   private final Invocation invocation = Mockito.mock(Invocation.class);
+
   private final Response response = Mockito.mock(Response.class);
+
   private final AsyncResponse asyncResponse = Mockito.mock(AsyncResponse.class);
+
   private final ZipkinTracingDelegate delegate = Mockito.mock(ZipkinTracingDelegate.class);
 
   private final Tracing tracing = Tracing.newBuilder().build();
+
   private final Span span = Mockito.mock(Span.class);
 
   private final RuntimeException exception = new RuntimeException("oops");

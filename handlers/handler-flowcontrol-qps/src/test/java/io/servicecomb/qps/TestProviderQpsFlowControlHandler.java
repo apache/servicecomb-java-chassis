@@ -95,7 +95,6 @@ public class TestProviderQpsFlowControlHandler {
       validAssert = false;
     }
     Assert.assertTrue(validAssert);
-
   }
 
   @Test
@@ -110,7 +109,6 @@ public class TestProviderQpsFlowControlHandler {
         public boolean isLimitNewRequest() {
           return true;
         }
-
       };
 
       new MockUp<ProviderQpsControllerManager>() {
@@ -119,14 +117,12 @@ public class TestProviderQpsFlowControlHandler {
         protected QpsController create(String serviceName) {
           return new QpsController(serviceName, 12);
         }
-
       };
       handler.handle(invocation, asyncResp);
     } catch (Exception e) {
       validAssert = false;
     }
     Assert.assertTrue(validAssert);
-
   }
 
   @Test
@@ -141,7 +137,6 @@ public class TestProviderQpsFlowControlHandler {
         public boolean isLimitNewRequest() {
           return false;
         }
-
       };
 
       new MockUp<ProviderQpsControllerManager>() {
@@ -150,7 +145,6 @@ public class TestProviderQpsFlowControlHandler {
         protected QpsController create(String serviceName) {
           return new QpsController(serviceName, 12);
         }
-
       };
       handler.handle(invocation, asyncResp);
     } catch (Exception e) {

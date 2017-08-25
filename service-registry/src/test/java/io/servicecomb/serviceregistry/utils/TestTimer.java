@@ -23,24 +23,24 @@ import org.junit.Test;
  * Created by   on 2017/3/13.
  */
 public class TestTimer {
-    @Test(expected = TimerException.class)
-    public void testTimer() throws TimerException {
-        Timer timer = new Timer();
-        Assert.assertEquals(Timer.DEFAULT_MAX_TIMEOUT, timer.getMax());
-        Assert.assertEquals(Timer.DEFAULT_RETRY_TIMES, timer.getTimes());
-        Assert.assertEquals(0, timer.getCurrent());
-        Assert.assertEquals((timer.getCurrent() + 1) * Timer.DEFAULT_STEP_SIZE, timer.nextTimeout());
-        Assert.assertEquals((timer.getCurrent() + 1) * Timer.DEFAULT_STEP_SIZE, timer.getNextTimeout());
+  @Test(expected = TimerException.class)
+  public void testTimer() throws TimerException {
+    Timer timer = new Timer();
+    Assert.assertEquals(Timer.DEFAULT_MAX_TIMEOUT, timer.getMax());
+    Assert.assertEquals(Timer.DEFAULT_RETRY_TIMES, timer.getTimes());
+    Assert.assertEquals(0, timer.getCurrent());
+    Assert.assertEquals((timer.getCurrent() + 1) * Timer.DEFAULT_STEP_SIZE, timer.nextTimeout());
+    Assert.assertEquals((timer.getCurrent() + 1) * Timer.DEFAULT_STEP_SIZE, timer.getNextTimeout());
 
-        Timer timer1 = new Timer(1, 2, 3, false);
-        Timer timer2 = new Timer(1);
-        timer2.reset();
-        @SuppressWarnings("unused")
-        Timer timer3 = new Timer(1,2);
-        Assert.assertNotNull(Timer.newDefaultTimer());
-        Assert.assertNotNull(Timer.newForeverTimer());
-        Assert.assertEquals(1, timer1.nextTimeout());
-        Assert.assertEquals(1, timer1.nextTimeout());
-        timer1.sleep();
-    }
+    Timer timer1 = new Timer(1, 2, 3, false);
+    Timer timer2 = new Timer(1);
+    timer2.reset();
+    @SuppressWarnings("unused")
+    Timer timer3 = new Timer(1, 2);
+    Assert.assertNotNull(Timer.newDefaultTimer());
+    Assert.assertNotNull(Timer.newForeverTimer());
+    Assert.assertEquals(1, timer1.nextTimeout());
+    Assert.assertEquals(1, timer1.nextTimeout());
+    timer1.sleep();
+  }
 }

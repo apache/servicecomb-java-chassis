@@ -26,140 +26,139 @@ import io.servicecomb.core.executor.ExecutorManager;
 import io.servicecomb.swagger.invocation.AsyncResponse;
 import io.servicecomb.swagger.invocation.response.ResponseMeta;
 import io.servicecomb.swagger.invocation.response.ResponsesMeta;
-
 import io.swagger.models.Operation;
 
 public class OperationMeta {
-    private SchemaMeta schemaMeta;
+  private SchemaMeta schemaMeta;
 
-    // schemaId:operation
-    private String schemaQualifiedName;
+  // schemaId:operation
+  private String schemaQualifiedName;
 
-    // microserviceName:schemaId:operation
-    private String microserviceQualifiedName;
+  // microserviceName:schemaId:operation
+  private String microserviceQualifiedName;
 
-    // 契约对应的method，与consumer、producer的method没有必然关系
-    private Method method;
+  // 契约对应的method，与consumer、producer的method没有必然关系
+  private Method method;
 
-    private boolean sync;
+  private boolean sync;
 
-    private String httpMethod;
+  private String httpMethod;
 
-    private String operationPath;
+  private String operationPath;
 
-    private Operation swaggerOperation;
+  private Operation swaggerOperation;
 
-    // 在哪个executor上执行
-    private Executor executor;
+  // 在哪个executor上执行
+  private Executor executor;
 
-    private ResponsesMeta responsesMeta = new ResponsesMeta();
+  private ResponsesMeta responsesMeta = new ResponsesMeta();
 
-    // transport、provider、consumer端都可能需要扩展数据
-    // 为避免每个地方都做复杂的层次管理，直接在这里保存扩展数据
-    private Map<String, Object> extData = new ConcurrentHashMap<>();
+  // transport、provider、consumer端都可能需要扩展数据
+  // 为避免每个地方都做复杂的层次管理，直接在这里保存扩展数据
+  private Map<String, Object> extData = new ConcurrentHashMap<>();
 
-    public void init(SchemaMeta schemaMeta, Method method, String operationPath, String httpMethod,
-            Operation swaggerOperation) {
-        this.schemaMeta = schemaMeta;
-        schemaQualifiedName = schemaMeta.getSchemaId() + "." + method.getName();
-        microserviceQualifiedName = schemaMeta.getMicroserviceName() + "." + schemaQualifiedName;
-        this.operationPath = operationPath;
-        this.method = method;
-        this.httpMethod = httpMethod.toUpperCase(Locale.US);
-        this.swaggerOperation = swaggerOperation;
-        executor = ExecutorManager.findExecutor(this);
+  public void init(SchemaMeta schemaMeta, Method method, String operationPath, String httpMethod,
+      Operation swaggerOperation) {
+    this.schemaMeta = schemaMeta;
+    schemaQualifiedName = schemaMeta.getSchemaId() + "." + method.getName();
+    microserviceQualifiedName = schemaMeta.getMicroserviceName() + "." + schemaQualifiedName;
+    this.operationPath = operationPath;
+    this.method = method;
+    this.httpMethod = httpMethod.toUpperCase(Locale.US);
+    this.swaggerOperation = swaggerOperation;
+    executor = ExecutorManager.findExecutor(this);
 
-        collectMethodType();
+    collectMethodType();
 
-        responsesMeta.init(schemaMeta.getMicroserviceMeta().getClassLoader(),
-                schemaMeta.getPackageName(),
-                schemaMeta.getSwagger(),
-                swaggerOperation,
-                method.getGenericReturnType());
+    responsesMeta.init(schemaMeta.getMicroserviceMeta().getClassLoader(),
+        schemaMeta.getPackageName(),
+        schemaMeta.getSwagger(),
+        swaggerOperation,
+        method.getGenericReturnType());
+  }
+
+  public String getHttpMethod() {
+    return httpMethod;
+  }
+
+  public void setHttpMethod(String httpMethod) {
+    this.httpMethod = httpMethod;
+  }
+
+  public String getOperationPath() {
+    return operationPath;
+  }
+
+  private void collectMethodType() {
+    Class<?>[] params = method.getParameterTypes();
+    if (params.length == 0) {
+      sync = true;
+      return;
     }
 
-    public String getHttpMethod() {
-        return httpMethod;
-    }
+    Class<?> lastParam = params[params.length - 1];
+    sync = !AsyncResponse.class.isAssignableFrom(lastParam);
+  }
 
-    public void setHttpMethod(String httpMethod) {
-        this.httpMethod = httpMethod;
-    }
+  public Operation getSwaggerOperation() {
+    return swaggerOperation;
+  }
 
-    public String getOperationPath() {
-        return operationPath;
-    }
+  public ResponseMeta findResponseMeta(int statusCode) {
+    return responsesMeta.findResponseMeta(statusCode);
+  }
 
-    private void collectMethodType() {
-        Class<?>[] params = method.getParameterTypes();
-        if (params.length == 0) {
-            sync = true;
-            return;
-        }
+  public SchemaMeta getSchemaMeta() {
+    return schemaMeta;
+  }
 
-        Class<?> lastParam = params[params.length - 1];
-        sync = !AsyncResponse.class.isAssignableFrom(lastParam);
-    }
+  public String getSchemaQualifiedName() {
+    return schemaQualifiedName;
+  }
 
-    public Operation getSwaggerOperation() {
-        return swaggerOperation;
-    }
+  public String getMicroserviceQualifiedName() {
+    return microserviceQualifiedName;
+  }
 
-    public ResponseMeta findResponseMeta(int statusCode) {
-        return responsesMeta.findResponseMeta(statusCode);
-    }
+  public String getMicroserviceName() {
+    return schemaMeta.getMicroserviceName();
+  }
 
-    public SchemaMeta getSchemaMeta() {
-        return schemaMeta;
-    }
+  public Method getMethod() {
+    return method;
+  }
 
-    public String getSchemaQualifiedName() {
-        return schemaQualifiedName;
-    }
+  public String getOperationId() {
+    return swaggerOperation.getOperationId();
+  }
 
-    public String getMicroserviceQualifiedName() {
-        return microserviceQualifiedName;
-    }
+  // 调用者保证参数正确性
+  public String getParamName(int idx) {
+    return swaggerOperation.getParameters().get(idx).getName();
+  }
 
-    public String getMicroserviceName() {
-        return schemaMeta.getMicroserviceName();
-    }
+  public void putExtData(String key, Object data) {
+    extData.put(key, data);
+  }
 
-    public Method getMethod() {
-        return method;
-    }
+  @SuppressWarnings("unchecked")
+  public <T> T getExtData(String key) {
+    return (T) extData.get(key);
+  }
 
-    public String getOperationId() {
-        return swaggerOperation.getOperationId();
-    }
+  public boolean isSync() {
+    return sync;
+  }
 
-    // 调用者保证参数正确性
-    public String getParamName(int idx) {
-        return swaggerOperation.getParameters().get(idx).getName();
-    }
+  public Executor getExecutor() {
+    return executor;
+  }
 
-    public void putExtData(String key, Object data) {
-        extData.put(key, data);
-    }
+  public void setExecutor(Executor executor) {
+    this.executor = executor;
+  }
 
-    @SuppressWarnings("unchecked")
-    public <T> T getExtData(String key) {
-        return (T) extData.get(key);
-    }
-
-    public boolean isSync() {
-        return sync;
-    }
-
-    public Executor getExecutor() {
-        return executor;
-    }
-
-    public void setExecutor(Executor executor) {
-        this.executor = executor;
-    }
-
-    public int getParamSize() {
-        return swaggerOperation.getParameters().size();
-    }
+  public int getParamSize() {
+    return swaggerOperation.getParameters().size();
+  }
 }

@@ -17,13 +17,13 @@
 package io.servicecomb.core.definition.schema;
 
 public class ProducerSchemaContext extends SchemaContext {
-    protected Object producerInstance;
+  protected Object producerInstance;
 
-    public Object getProducerInstance() {
-        return producerInstance;
-    }
+  public Object getProducerInstance() {
+    return producerInstance;
+  }
 
-    public void setProducerInstance(Object producerInstance) {
-        this.producerInstance = producerInstance;
-    }
+  public void setProducerInstance(Object producerInstance) {
+    this.producerInstance = producerInstance;
+  }
 }

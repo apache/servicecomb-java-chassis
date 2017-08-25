@@ -16,11 +16,11 @@
 package io.servicecomb.swagger.generator.core.schema;
 
 public class ArrayType {
-    public byte[] testBytes(byte[] value) {
-        return null;
-    }
+  public byte[] testBytes(byte[] value) {
+    return null;
+  }
 
-    public User[] testUsers(User[] value) {
-        return null;
-    }
+  public User[] testUsers(User[] value) {
+    return null;
+  }
 }

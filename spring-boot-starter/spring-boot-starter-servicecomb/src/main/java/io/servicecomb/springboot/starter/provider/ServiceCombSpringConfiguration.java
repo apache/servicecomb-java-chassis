@@ -27,8 +27,8 @@ import io.servicecomb.foundation.common.utils.BeanUtils;
 @Configuration
 @ImportResource(BeanUtils.DEFAULT_BEAN_RESOURCE)
 class ServiceCombSpringConfiguration {
-    @Inject
-    public void setCseApplicationListener(CseApplicationListener cseApplicationListener) {
-        cseApplicationListener.setInitEventClass(ApplicationReadyEvent.class);
-    }
+  @Inject
+  public void setCseApplicationListener(CseApplicationListener cseApplicationListener) {
+    cseApplicationListener.setInitEventClass(ApplicationReadyEvent.class);
+  }
 }

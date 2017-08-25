@@ -26,5 +26,4 @@ public class RawPojoIntegrationTest extends PojoIntegrationTestBase {
     setUpLocalRegistry();
     PojoTestMain.main(new String[0]);
   }
-
 }

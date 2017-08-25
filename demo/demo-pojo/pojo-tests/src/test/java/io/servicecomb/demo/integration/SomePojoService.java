@@ -16,9 +16,10 @@
 
 package io.servicecomb.demo.integration;
 
+import org.springframework.stereotype.Component;
+
 import io.servicecomb.demo.CodeFirstPojoIntf;
 import io.servicecomb.provider.pojo.RpcReference;
-import org.springframework.stereotype.Component;
 
 @Component
 class SomePojoService {

@@ -17,25 +17,22 @@
 package io.servicecomb.common.rest;
 
 import org.junit.Assert;
-
 import org.junit.Test;
 
 import io.servicecomb.common.rest.definition.path.PathRegExp;
 
 public class TestDefPath {
 
-    @Test
-    public void testPathRegExp() throws Exception {
-        PathRegExp oPathRegExp = new PathRegExp("//{test}//");
-        Assert.assertEquals(1, oPathRegExp.getGroupCount());
-        Assert.assertEquals(0, oPathRegExp.getGroupWithRegExpCount());
-        PathRegExp oSecondPathRegExp = new PathRegExp("{[^/:]+?}");
-        Assert.assertEquals(1, oSecondPathRegExp.getGroupCount());
-        Assert.assertEquals(1, oSecondPathRegExp.getGroupWithRegExpCount());
-        Assert.assertEquals("test/", PathRegExp.ensureEndWithSlash("test/"));
-        Assert.assertEquals("test/", PathRegExp.ensureEndWithSlash("test"));
-        Assert.assertEquals(null, oSecondPathRegExp.match("{test/test}", null));
-
-    }
-
+  @Test
+  public void testPathRegExp() throws Exception {
+    PathRegExp oPathRegExp = new PathRegExp("//{test}//");
+    Assert.assertEquals(1, oPathRegExp.getGroupCount());
+    Assert.assertEquals(0, oPathRegExp.getGroupWithRegExpCount());
+    PathRegExp oSecondPathRegExp = new PathRegExp("{[^/:]+?}");
+    Assert.assertEquals(1, oSecondPathRegExp.getGroupCount());
+    Assert.assertEquals(1, oSecondPathRegExp.getGroupWithRegExpCount());
+    Assert.assertEquals("test/", PathRegExp.ensureEndWithSlash("test/"));
+    Assert.assertEquals("test/", PathRegExp.ensureEndWithSlash("test"));
+    Assert.assertEquals(null, oSecondPathRegExp.match("{test/test}", null));
+  }
 }

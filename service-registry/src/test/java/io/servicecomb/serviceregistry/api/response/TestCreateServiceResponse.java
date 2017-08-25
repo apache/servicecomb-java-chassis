@@ -21,38 +21,32 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-/**
- *
- * @since Mar 14, 2017
- * @see 
- */
 public class TestCreateServiceResponse {
 
-    CreateServiceResponse oCreateServiceResponse = null;
+  CreateServiceResponse oCreateServiceResponse = null;
 
-    @Before
-    public void setUp() throws Exception {
-        oCreateServiceResponse = new CreateServiceResponse();
-    }
+  @Before
+  public void setUp() throws Exception {
+    oCreateServiceResponse = new CreateServiceResponse();
+  }
 
-    @After
-    public void tearDown() throws Exception {
-        oCreateServiceResponse = null;
-    }
+  @After
+  public void tearDown() throws Exception {
+    oCreateServiceResponse = null;
+  }
 
-    @Test
-    public void testDefaultValues() {
-        Assert.assertNull(oCreateServiceResponse.getServiceId());
-    }
+  @Test
+  public void testDefaultValues() {
+    Assert.assertNull(oCreateServiceResponse.getServiceId());
+  }
 
-    @Test
-    public void testIntializedValues() {
-        initFields(); //Initialize the Object
-        Assert.assertEquals("testServiceId", oCreateServiceResponse.getServiceId());
-    }
+  @Test
+  public void testIntializedValues() {
+    initFields(); //Initialize the Object
+    Assert.assertEquals("testServiceId", oCreateServiceResponse.getServiceId());
+  }
 
-    private void initFields() {
-        oCreateServiceResponse.setServiceId("testServiceId");
-    }
-
+  private void initFields() {
+    oCreateServiceResponse.setServiceId("testServiceId");
+  }
 }

@@ -16,18 +16,17 @@
 
 package io.servicecomb.core;
 
-import io.servicecomb.core.handler.ConsumerHandlerManager;
 import org.junit.Assert;
 import org.junit.Test;
 
+import io.servicecomb.core.handler.ConsumerHandlerManager;
 import io.servicecomb.core.handler.HandlerConfigUtils;
 
 public class TestHandler {
 
-    @Test
-    public void testAbstractHandlerManager() throws Exception {
-        HandlerConfigUtils.init();
-        Assert.assertNotEquals(null, ConsumerHandlerManager.INSTANCE.getOrCreate("test"));
-
-    }
+  @Test
+  public void testAbstractHandlerManager() throws Exception {
+    HandlerConfigUtils.init();
+    Assert.assertNotEquals(null, ConsumerHandlerManager.INSTANCE.getOrCreate("test"));
+  }
 }

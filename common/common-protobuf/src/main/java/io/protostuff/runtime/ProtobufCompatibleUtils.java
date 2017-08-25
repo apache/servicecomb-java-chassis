@@ -29,63 +29,63 @@ import io.servicecomb.foundation.common.utils.ReflectUtils;
  * 这里修改map的编码逻辑
  */
 public final class ProtobufCompatibleUtils {
-    private static boolean inited = false;
+  private static boolean inited = false;
 
-    private ProtobufCompatibleUtils() {
+  private ProtobufCompatibleUtils() {
+  }
+
+  public static void init() {
+    if (inited) {
+      return;
     }
 
-    public static void init() {
-        if (inited) {
-            return;
-        }
+    replaceRuntimeFieldFactoryMap();
 
-        replaceRuntimeFieldFactoryMap();
+    inited = true;
+  }
 
-        inited = true;
-    }
+  protected static void replaceRuntimeFieldFactoryMap() {
+    RuntimeFieldFactory<Map<?, ?>> org = RuntimeMapFieldFactory.MAP;
+    RuntimeFieldFactory<Map<?, ?>> map = new RuntimeFieldFactory<Map<?, ?>>(
+        RuntimeFieldFactory.ID_MAP) {
 
-    protected static void replaceRuntimeFieldFactoryMap() {
-        RuntimeFieldFactory<Map<?, ?>> org = RuntimeMapFieldFactory.MAP;
-        RuntimeFieldFactory<Map<?, ?>> map = new RuntimeFieldFactory<Map<?, ?>>(
-                RuntimeFieldFactory.ID_MAP) {
+      @Override
+      public FieldType getFieldType() {
+        return org.getFieldType();
+      }
 
-            @Override
-            public FieldType getFieldType() {
-                return org.getFieldType();
-            }
+      @Override
+      public Map<?, ?> readFrom(Input input) throws IOException {
+        return org.readFrom(input);
+      }
 
-            @Override
-            public Map<?, ?> readFrom(Input input) throws IOException {
-                return org.readFrom(input);
-            }
+      @Override
+      public void writeTo(Output output, int number, Map<?, ?> value,
+          boolean repeated) throws IOException {
+        org.writeTo(output, number, value, repeated);
+      }
 
-            @Override
-            public void writeTo(Output output, int number, Map<?, ?> value,
-                    boolean repeated) throws IOException {
-                org.writeTo(output, number, value, repeated);
-            }
+      @Override
+      public void transfer(Pipe pipe, Input input, Output output, int number,
+          boolean repeated) throws IOException {
+        org.transfer(pipe, input, output, number, repeated);
+      }
 
-            @Override
-            public void transfer(Pipe pipe, Input input, Output output, int number,
-                    boolean repeated) throws IOException {
-                org.transfer(pipe, input, output, number, repeated);
-            }
+      @Override
+      public Class<?> typeClass() {
+        return org.typeClass();
+      }
 
-            @Override
-            public Class<?> typeClass() {
-                return org.typeClass();
-            }
+      @Override
+      public <T> Field<T> create(int number, String name, java.lang.reflect.Field field, IdStrategy strategy) {
+        @SuppressWarnings("unchecked")
+        RuntimeMapField<T, Object, Object> runtimeMapField =
+            (RuntimeMapField<T, Object, Object>) org.create(number, name, field, strategy);
 
-            @Override
-            public <T> Field<T> create(int number, String name, java.lang.reflect.Field field, IdStrategy strategy) {
-                @SuppressWarnings("unchecked")
-                RuntimeMapField<T, Object, Object> runtimeMapField =
-                    (RuntimeMapField<T, Object, Object>) org.create(number, name, field, strategy);
+        return new RuntimeMapFieldProtobuf<T>(runtimeMapField, field);
+      }
+    };
 
-                return new RuntimeMapFieldProtobuf<T>(runtimeMapField, field);
-            }
-        };
-
-        ReflectUtils.setField(RuntimeMapFieldFactory.class, null, "MAP", map);
-    }
+    ReflectUtils.setField(RuntimeMapFieldFactory.class, null, "MAP", map);
+  }
 }

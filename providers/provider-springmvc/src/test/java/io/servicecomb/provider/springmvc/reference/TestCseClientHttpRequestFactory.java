@@ -25,16 +25,15 @@ import org.springframework.http.HttpMethod;
 
 public class TestCseClientHttpRequestFactory {
 
-    @Test
-    public void testCseClientHttpRequestFactory() {
+  @Test
+  public void testCseClientHttpRequestFactory() {
 
-        CseClientHttpRequestFactory lCseClientHttpRequestFactory = new CseClientHttpRequestFactory();
-        try {
-            Assert.assertEquals(HttpMethod.GET,
-                    lCseClientHttpRequestFactory.createRequest(URI.create("/test"), HttpMethod.GET).getMethod());
-        } catch (IOException e) {
-            Assert.assertNotNull(e);
-        }
+    CseClientHttpRequestFactory lCseClientHttpRequestFactory = new CseClientHttpRequestFactory();
+    try {
+      Assert.assertEquals(HttpMethod.GET,
+          lCseClientHttpRequestFactory.createRequest(URI.create("/test"), HttpMethod.GET).getMethod());
+    } catch (IOException e) {
+      Assert.assertNotNull(e);
     }
-
+  }
 }

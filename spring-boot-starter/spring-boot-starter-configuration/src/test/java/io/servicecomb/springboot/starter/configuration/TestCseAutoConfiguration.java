@@ -28,26 +28,27 @@ import mockit.Tested;
 /**
  *
  */
-public class TestCseAutoConfiguration{
+public class TestCseAutoConfiguration {
 
-	@Injectable private ConfigurableEnvironment env;
-	@Tested private CseAutoConfiguration cseAutoConfiguration;
-	
-    @Before
-    public void setUp() throws Exception {
-    	cseAutoConfiguration = new CseAutoConfiguration();
-    }
+  @Injectable
+  private ConfigurableEnvironment env;
 
-    @After
-    public void tearDown() throws Exception {
-    	cseAutoConfiguration.close();
-    	cseAutoConfiguration = null;
-    }
+  @Tested
+  private CseAutoConfiguration cseAutoConfiguration;
 
-    @Test
-    public void testConfigurableEnvironmentConfiguration()
-    {
-    	Assert.assertTrue(cseAutoConfiguration.configurableEnvironmentConfiguration().isEmpty());
-    }
-    
+  @Before
+  public void setUp() throws Exception {
+    cseAutoConfiguration = new CseAutoConfiguration();
+  }
+
+  @After
+  public void tearDown() throws Exception {
+    cseAutoConfiguration.close();
+    cseAutoConfiguration = null;
+  }
+
+  @Test
+  public void testConfigurableEnvironmentConfiguration() {
+    Assert.assertTrue(cseAutoConfiguration.configurableEnvironmentConfiguration().isEmpty());
+  }
 }

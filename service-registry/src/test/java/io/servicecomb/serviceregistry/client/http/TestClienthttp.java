@@ -39,124 +39,121 @@ import mockit.MockUp;
 import mockit.Mocked;
 
 public class TestClienthttp {
-    @SuppressWarnings("unchecked")
-    @Test
-    public void testServiceRegistryClientImpl(@Mocked IpPortManager manager) {
-        IpPort ipPort = new IpPort("127.0.0.1", 8853);
-        new Expectations() {
-            {
-                manager.get();
-                result = ipPort;
-            }
-        };
+  @SuppressWarnings("unchecked")
+  @Test
+  public void testServiceRegistryClientImpl(@Mocked IpPortManager manager) {
+    IpPort ipPort = new IpPort("127.0.0.1", 8853);
+    new Expectations() {
+      {
+        manager.get();
+        result = ipPort;
+      }
+    };
 
-        new MockUp<CountDownLatch>() {
-            @Mock
-            public void await() throws InterruptedException {
-            }
+    new MockUp<CountDownLatch>() {
+      @Mock
+      public void await() throws InterruptedException {
+      }
+    };
+    new MockUp<RestUtils>() {
+      @Mock
+      void httpDo(RequestContext requestContext, Handler<RestResponse> responseHandler) {
+      }
+    };
 
-        };
-        new MockUp<RestUtils>() {
-            @Mock
-            void httpDo(RequestContext requestContext, Handler<RestResponse> responseHandler) {
-            }
-        };
+    new MockUp<WebsocketUtils>() {
+      @Mock
+      void open(IpPort ipPort, String url, Handler<Void> onOpen, Handler<Void> onClose,
+          Handler<Buffer> onMessage, Handler<Throwable> onException,
+          Handler<Throwable> onConnectFailed) {
+      }
+    };
 
-        new MockUp<WebsocketUtils>() {
-            @Mock
-            void open(IpPort ipPort, String url, Handler<Void> onOpen, Handler<Void> onClose,
-                    Handler<Buffer> onMessage, Handler<Throwable> onException,
-                    Handler<Throwable> onConnectFailed) {
-            }
-        };
+    MicroserviceFactory microserviceFactory = new MicroserviceFactory();
+    Microservice microservice = microserviceFactory.create("app", "ms");
 
-        MicroserviceFactory microserviceFactory = new MicroserviceFactory();
-        Microservice microservice = microserviceFactory.create("app", "ms");
+    ServiceRegistryClientImpl oClient = new ServiceRegistryClientImpl(manager);
+    oClient.init();
+    oClient.registerMicroservice(microservice);
+    oClient.registerMicroserviceInstance(microservice.getIntance());
+    Assert.assertEquals(null, oClient.getMicroservice(microservice.getServiceId()));
+    Assert.assertEquals(null, oClient.getMicroserviceInstance("testConsumerID", "testproviderID"));
+    Assert.assertEquals(null,
+        oClient.findServiceInstance(microservice.getServiceId(),
+            microservice.getAppId(),
+            microservice.getServiceName(),
+            microservice.getVersion()));
+    Assert.assertEquals(null,
+        oClient.getMicroserviceId(microservice.getAppId(),
+            microservice.getServiceName(),
+            microservice.getVersion()));
+    Assert.assertEquals(null,
+        oClient.heartbeat(microservice.getServiceId(),
+            microservice.getIntance().getInstanceId()));
+    oClient.watch("",
+        Mockito.mock(AsyncResultCallback.class));
+    Assert.assertEquals(false,
+        oClient.unregisterMicroserviceInstance(microservice.getServiceId(),
+            microservice.getIntance().getInstanceId()));
+  }
 
-        ServiceRegistryClientImpl oClient = new ServiceRegistryClientImpl(manager);
-        oClient.init();
-        oClient.registerMicroservice(microservice);
-        oClient.registerMicroserviceInstance(microservice.getIntance());
-        Assert.assertEquals(null, oClient.getMicroservice(microservice.getServiceId()));
-        Assert.assertEquals(null, oClient.getMicroserviceInstance("testConsumerID", "testproviderID"));
-        Assert.assertEquals(null,
-                oClient.findServiceInstance(microservice.getServiceId(),
-                        microservice.getAppId(),
-                        microservice.getServiceName(),
-                        microservice.getVersion()));
-        Assert.assertEquals(null,
-                oClient.getMicroserviceId(microservice.getAppId(),
-                        microservice.getServiceName(),
-                        microservice.getVersion()));
-        Assert.assertEquals(null,
-                oClient.heartbeat(microservice.getServiceId(),
-                        microservice.getIntance().getInstanceId()));
-        oClient.watch("",
-                Mockito.mock(AsyncResultCallback.class));
-        Assert.assertEquals(false,
-                oClient.unregisterMicroserviceInstance(microservice.getServiceId(),
-                        microservice.getIntance().getInstanceId()));
+  @Test
+  public void testRequestContext() {
+    RequestContext oContext = new RequestContext();
+    oContext.setUri("//test");
+    oContext.setMethod(io.vertx.core.http.HttpMethod.POST);
+    oContext.setIpPort(new IpPort("145.0.0.1", 8080));
+    oContext.setParams(null);
+
+    Assert.assertEquals("//test", oContext.getUri());
+    Assert.assertEquals(io.vertx.core.http.HttpMethod.POST, oContext.getMethod());
+    Assert.assertEquals(8080, oContext.getIpPort().getPort());
+    Assert.assertEquals(null, oContext.getParams());
+
+    RestResponse oResponse = new RestResponse(null, null);
+    oResponse.setRequestContext(oContext);
+    Assert.assertEquals(oContext, oResponse.getRequestContext());
+    Assert.assertEquals(null, oResponse.getResponse());
+  }
+
+  @Test
+  public void testRequestParam() {
+    RequestParam oParam = new RequestParam();
+    oParam.setCookies(null);
+    oParam.setBody(null);
+    oParam.setHeaders(null);
+    oParam.addHeader("testKey", "testValue");
+    oParam.addQueryParam("testParam", "ValueParam");
+    oParam.addQueryParam("testParam1", "ValueParam");
+    Assert.assertEquals(null, oParam.getCookies());
+    Assert.assertEquals(null, oParam.getBody());
+    Assert.assertNotEquals(null, oParam.getHeaders());
+    Assert.assertNotEquals(null, oParam.getQueryParams());
+    oParam.setQueryParams(null);
+    Assert.assertEquals("", oParam.getQueryParams());
+    oParam.setFormFields(null);
+    Assert.assertEquals(null, oParam.getFormFields());
+    Endpoints oEndpoints = new Endpoints();
+    oEndpoints.setInstances(null);
+    oEndpoints.setVersion("1.0");
+    Assert.assertEquals(null, oEndpoints.getInstances());
+    Assert.assertEquals("1.0", oEndpoints.getVersion());
+  }
+
+  @Test
+  public void testIpPortManager(@Mocked InstanceCacheManager instanceCacheManager) throws Exception {
+    IpPortManager oManager = new IpPortManager(ServiceRegistryConfig.INSTANCE, instanceCacheManager);
+    ArrayList<IpPort> oIPPort = oManager.getDefaultIpPortList();
+    oManager.next();
+    Assert.assertEquals(oIPPort.get(0).getHostOrIp(), oManager.get().getHostOrIp());
+
+    try {
+      //This will return Null as the address cache is not able to get the address of the microservice which is registered above.
+      Assert.assertNull(oManager.next());
+    } catch (Exception e) {
+      // TODO: Currently the address cache is failing because of absence of Thread
+      // TODO: Need to find out a way to Assert it properly
+      Assert.assertEquals("/ by zero", e.getMessage());
     }
-
-    @Test
-    public void testRequestContext() {
-        RequestContext oContext = new RequestContext();
-        oContext.setUri("//test");
-        oContext.setMethod(io.vertx.core.http.HttpMethod.POST);
-        oContext.setIpPort(new IpPort("145.0.0.1", 8080));
-        oContext.setParams(null);
-
-        Assert.assertEquals("//test", oContext.getUri());
-        Assert.assertEquals(io.vertx.core.http.HttpMethod.POST, oContext.getMethod());
-        Assert.assertEquals(8080, oContext.getIpPort().getPort());
-        Assert.assertEquals(null, oContext.getParams());
-
-        RestResponse oResponse = new RestResponse(null, null);
-        oResponse.setRequestContext(oContext);
-        Assert.assertEquals(oContext, oResponse.getRequestContext());
-        Assert.assertEquals(null, oResponse.getResponse());
-
-    }
-
-    @Test
-    public void testRequestParam() {
-        RequestParam oParam = new RequestParam();
-        oParam.setCookies(null);
-        oParam.setBody(null);
-        oParam.setHeaders(null);
-        oParam.addHeader("testKey", "testValue");
-        oParam.addQueryParam("testParam", "ValueParam");
-        oParam.addQueryParam("testParam1", "ValueParam");
-        Assert.assertEquals(null, oParam.getCookies());
-        Assert.assertEquals(null, oParam.getBody());
-        Assert.assertNotEquals(null, oParam.getHeaders());
-        Assert.assertNotEquals(null, oParam.getQueryParams());
-        oParam.setQueryParams(null);
-        Assert.assertEquals("", oParam.getQueryParams());
-        oParam.setFormFields(null);
-        Assert.assertEquals(null, oParam.getFormFields());
-        Endpoints oEndpoints = new Endpoints();
-        oEndpoints.setInstances(null);
-        oEndpoints.setVersion("1.0");
-        Assert.assertEquals(null, oEndpoints.getInstances());
-        Assert.assertEquals("1.0", oEndpoints.getVersion());
-
-    }
-
-    @Test
-    public void testIpPortManager(@Mocked InstanceCacheManager instanceCacheManager) throws Exception {
-        IpPortManager oManager = new IpPortManager(ServiceRegistryConfig.INSTANCE, instanceCacheManager);
-        ArrayList<IpPort> oIPPort = oManager.getDefaultIpPortList();
-        oManager.next();
-        Assert.assertEquals(oIPPort.get(0).getHostOrIp(), oManager.get().getHostOrIp());
-
-        try {
-            Assert.assertNull(oManager.next()); //This will return Null as the address cache is not able to get the address of the microservice which is registered above. 
-        } catch (Exception e) {
-            // TODO: Currently the address cache is failing because of absence of Thread
-            // TODO: Need to find out a way to Assert it properly
-            Assert.assertEquals("/ by zero", e.getMessage());
-        }
-    }
-
+  }
 }

@@ -22,11 +22,11 @@ import org.mockito.Mockito;
 
 public class TestMicroserviceMetaManager {
 
-    @Test
-    public void testEnsureFindSchemaMeta() {
-        SchemaMeta meta = Mockito.mock(SchemaMeta.class);
-        MicroserviceMeta microserviceMeta = Mockito.mock(MicroserviceMeta.class);
-        Mockito.when(microserviceMeta.ensureFindSchemaMeta("yhfghj")).thenReturn(meta);
-        Assert.assertEquals(meta, microserviceMeta.ensureFindSchemaMeta("yhfghj"));
-    }
+  @Test
+  public void testEnsureFindSchemaMeta() {
+    SchemaMeta meta = Mockito.mock(SchemaMeta.class);
+    MicroserviceMeta microserviceMeta = Mockito.mock(MicroserviceMeta.class);
+    Mockito.when(microserviceMeta.ensureFindSchemaMeta("yhfghj")).thenReturn(meta);
+    Assert.assertEquals(meta, microserviceMeta.ensureFindSchemaMeta("yhfghj"));
+  }
 }

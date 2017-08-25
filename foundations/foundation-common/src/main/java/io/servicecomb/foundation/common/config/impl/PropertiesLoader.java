@@ -25,26 +25,26 @@ import org.springframework.core.io.Resource;
 import io.servicecomb.foundation.common.config.PaaSResourceUtils;
 
 public class PropertiesLoader extends AbstractLoader {
-    private List<Resource> foundResList = new ArrayList<>();
+  private List<Resource> foundResList = new ArrayList<>();
 
-    public PropertiesLoader(List<String> locationPatternList) {
-        super(locationPatternList);
+  public PropertiesLoader(List<String> locationPatternList) {
+    super(locationPatternList);
+  }
+
+  public List<Resource> getFoundResList() {
+    return foundResList;
+  }
+
+  @SuppressWarnings("unchecked")
+  @Override
+  public <T> T load() throws Exception {
+    Properties props = new Properties();
+    for (String locationPattern : locationPatternList) {
+      List<Resource> resList = PaaSResourceUtils.getSortedPorperties(locationPattern);
+      foundResList.addAll(resList);
+      PaaSPropertiesLoaderUtils.fillAllProperties(props, resList);
     }
 
-    public List<Resource> getFoundResList() {
-        return foundResList;
-    }
-
-    @SuppressWarnings("unchecked")
-    @Override
-    public <T> T load() throws Exception {
-        Properties props = new Properties();
-        for (String locationPattern : locationPatternList) {
-            List<Resource> resList = PaaSResourceUtils.getSortedPorperties(locationPattern);
-            foundResList.addAll(resList);
-            PaaSPropertiesLoaderUtils.fillAllProperties(props, resList);
-        }
-
-        return (T) props;
-    }
+    return (T) props;
+  }
 }

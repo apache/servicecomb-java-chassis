@@ -19,20 +19,20 @@ package io.servicecomb.foundation.vertx;
 import io.vertx.core.json.JsonObject;
 
 public class SimpleJsonObject extends JsonObject {
-    /**
-     * 直接保存进map，规避原来的put不支持Object的问题
-     */
-    @Override
-    public JsonObject put(String key, Object value) {
-        getMap().put(key, value);
-        return this;
-    }
+  /**
+   * 直接保存进map，规避原来的put不支持Object的问题
+   */
+  @Override
+  public JsonObject put(String key, Object value) {
+    getMap().put(key, value);
+    return this;
+  }
 
-    /**
-     * 不必复制，直接使用，规避原来的copy不支持Object的问题
-     */
-    @Override
-    public JsonObject copy() {
-        return this;
-    }
+  /**
+   * 不必复制，直接使用，规避原来的copy不支持Object的问题
+   */
+  @Override
+  public JsonObject copy() {
+    return this;
+  }
 }

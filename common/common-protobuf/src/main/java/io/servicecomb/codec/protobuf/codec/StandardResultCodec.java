@@ -21,19 +21,20 @@ import java.lang.reflect.Type;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.type.TypeFactory;
 import com.fasterxml.jackson.dataformat.protobuf.schema.ProtobufSchema;
+
 import io.servicecomb.codec.protobuf.definition.ProtobufManager;
 
 public class StandardResultCodec extends AbstractCodec {
-    @Override
-    public void init(ProtobufSchema schema, Type... types) {
-        writer = ProtobufManager.getMapper().writer(schema);
-        reader = ProtobufManager.getMapper().reader(schema);
+  @Override
+  public void init(ProtobufSchema schema, Type... types) {
+    writer = ProtobufManager.getMapper().writer(schema);
+    reader = ProtobufManager.getMapper().reader(schema);
 
-        // 需要考虑void场景
-        if (types.length == 1) {
-            JavaType javaType = TypeFactory.defaultInstance().constructType(types[0]);
-            writer = writer.forType(javaType);
-            reader = reader.forType(javaType);
-        }
+    // 需要考虑void场景
+    if (types.length == 1) {
+      JavaType javaType = TypeFactory.defaultInstance().constructType(types[0]);
+      writer = writer.forType(javaType);
+      reader = reader.forType(javaType);
     }
+  }
 }

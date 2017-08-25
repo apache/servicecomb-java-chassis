@@ -19,27 +19,27 @@ package io.servicecomb.serviceregistry.definition;
 import static io.servicecomb.foundation.common.base.ServiceCombConstants.CONFIG_SERVICE;
 
 public interface DefinitionConst {
-    String appIdKey = "APPLICATION_ID";
+  String appIdKey = "APPLICATION_ID";
 
-    String serviceDescriptionKey = CONFIG_SERVICE;
+  String serviceDescriptionKey = CONFIG_SERVICE;
 
-    String nameKey = "name";
+  String nameKey = "name";
 
-    String qulifiedServiceNameKey = serviceDescriptionKey + "." + nameKey;
+  String qulifiedServiceNameKey = serviceDescriptionKey + "." + nameKey;
 
-    String qulifiedServiceVersionKey = serviceDescriptionKey + ".version";
+  String qulifiedServiceVersionKey = serviceDescriptionKey + ".version";
 
-    String qulifiedServiceDescKey = serviceDescriptionKey + ".description";
+  String qulifiedServiceDescKey = serviceDescriptionKey + ".description";
 
-    String qulifiedServiceRoleKey = serviceDescriptionKey + ".role";
+  String qulifiedServiceRoleKey = serviceDescriptionKey + ".role";
 
-    String allowCrossAppKey = "allowCrossApp";
+  String allowCrossAppKey = "allowCrossApp";
 
-    String defaultAppId = "default";
+  String defaultAppId = "default";
 
-    String defaultMicroserviceName = "defaultMicroservice";
+  String defaultMicroserviceName = "defaultMicroservice";
 
-    String defaultVersion = "1.0.0";
+  String defaultVersion = "1.0.0";
 
-    String defaultStage = "prod";
+  String defaultStage = "prod";
 }

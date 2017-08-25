@@ -33,39 +33,38 @@ import com.netflix.config.ConfigurationManager;
  */
 public class CseEndpoint extends AbstractEndpoint<Map<String, Object>> {
 
-    public CseEndpoint() {
-        super("archaius");
-    }
+  public CseEndpoint() {
+    super("archaius");
+  }
 
-    @Override
-    public Map<String, Object> invoke() {
-        Map<String, Object> map = new LinkedHashMap<String, Object>();
-        AbstractConfiguration config = ConfigurationManager.getConfigInstance();
-        if (config instanceof ConcurrentCompositeConfiguration) {
-            ConcurrentCompositeConfiguration composite = (ConcurrentCompositeConfiguration) config;
-            for (Configuration item : composite.getConfigurations()) {
-                append(map, item);
-            }
-        } else {
-            append(map, config);
-        }
-        return map;
+  @Override
+  public Map<String, Object> invoke() {
+    Map<String, Object> map = new LinkedHashMap<String, Object>();
+    AbstractConfiguration config = ConfigurationManager.getConfigInstance();
+    if (config instanceof ConcurrentCompositeConfiguration) {
+      ConcurrentCompositeConfiguration composite = (ConcurrentCompositeConfiguration) config;
+      for (Configuration item : composite.getConfigurations()) {
+        append(map, item);
+      }
+    } else {
+      append(map, config);
     }
+    return map;
+  }
 
-    private void append(Map<String, Object> map, Configuration config) {
-        if (config instanceof ConfigurableEnvironmentConfiguration) {
-            return;
-        }
-        if (config instanceof SystemConfiguration) {
-            return;
-        }
-        if (config instanceof EnvironmentConfiguration) {
-            return;
-        }
-        for (Iterator<String> iter = config.getKeys(); iter.hasNext();) {
-            String key = iter.next();
-            map.put(key, config.getProperty(key));
-        }
+  private void append(Map<String, Object> map, Configuration config) {
+    if (config instanceof ConfigurableEnvironmentConfiguration) {
+      return;
     }
-
+    if (config instanceof SystemConfiguration) {
+      return;
+    }
+    if (config instanceof EnvironmentConfiguration) {
+      return;
+    }
+    for (Iterator<String> iter = config.getKeys(); iter.hasNext();) {
+      String key = iter.next();
+      map.put(key, config.getProperty(key));
+    }
+  }
 }

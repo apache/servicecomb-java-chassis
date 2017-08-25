@@ -21,14 +21,14 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class BeanProp {
-    @JsonProperty(value = "1.2")
-    private String test;
+  @JsonProperty(value = "1.2")
+  private String test;
 
-    public String getTest() {
-        return test;
-    }
+  public String getTest() {
+    return test;
+  }
 
-    public void setTest(String test) {
-        this.test = test;
-    }
+  public void setTest(String test) {
+    this.test = test;
+  }
 }

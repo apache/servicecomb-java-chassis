@@ -20,18 +20,16 @@ import java.lang.reflect.Type;
 import io.servicecomb.swagger.generator.core.OperationGenerator;
 import io.servicecomb.swagger.generator.core.ResponseTypeProcessor;
 import io.servicecomb.swagger.generator.core.utils.ParamUtils;
-
 import io.swagger.converter.ModelConverters;
 import io.swagger.models.properties.Property;
 
 public class DefaultResponseTypeProcessor implements ResponseTypeProcessor {
 
-    @Override
-    public Property process(OperationGenerator operationGenerator) {
-        Type responseType = operationGenerator.getProviderMethod().getGenericReturnType();
+  @Override
+  public Property process(OperationGenerator operationGenerator) {
+    Type responseType = operationGenerator.getProviderMethod().getGenericReturnType();
 
-        ParamUtils.addDefinitions(operationGenerator.getSwagger(), responseType);
-        return ModelConverters.getInstance().readAsProperty(responseType);
-    }
-
+    ParamUtils.addDefinitions(operationGenerator.getSwagger(), responseType);
+    return ModelConverters.getInstance().readAsProperty(responseType);
+  }
 }

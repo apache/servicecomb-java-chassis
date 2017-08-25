@@ -14,15 +14,13 @@
  * limitations under the License.
  */
 
-/**
- * 
- */
 package io.servicecomb.loadbalance;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 import org.junit.Test;
+
 import mockit.Mock;
 import mockit.MockUp;
 
@@ -31,149 +29,139 @@ import mockit.MockUp;
  */
 public class TestConfiguration {
 
-	@Test
-	public void testConstants() {
+  @Test
+  public void testConstants() {
 
-		assertEquals("cse.loadbalance.", Configuration.PROP_ROOT);
-		assertEquals("NFLoadBalancerRuleClassName", Configuration.PROP_POLICY);
-		assertEquals("com.netflix.loadbalancer.RoundRobinRule", Configuration.PROP_POLICY_ROUNDROBIN);
-		assertEquals("ribbon.", Configuration.PROP_ROOT_20);
-		assertEquals("retryEnabled", Configuration.PROP_RETRY_ENABLED);
-		assertEquals("retryOnNext", Configuration.PROP_RETRY_ONNEXT);
-		assertEquals("retryOnSame", Configuration.PROP_RETRY_ONSAME);
-		assertEquals("SessionStickinessRule.successiveFailedTimes", Configuration.SUCCESSIVE_FAILED_TIMES);
+    assertEquals("cse.loadbalance.", Configuration.PROP_ROOT);
+    assertEquals("NFLoadBalancerRuleClassName", Configuration.PROP_POLICY);
+    assertEquals("com.netflix.loadbalancer.RoundRobinRule", Configuration.PROP_POLICY_ROUNDROBIN);
+    assertEquals("ribbon.", Configuration.PROP_ROOT_20);
+    assertEquals("retryEnabled", Configuration.PROP_RETRY_ENABLED);
+    assertEquals("retryOnNext", Configuration.PROP_RETRY_ONNEXT);
+    assertEquals("retryOnSame", Configuration.PROP_RETRY_ONSAME);
+    assertEquals("SessionStickinessRule.successiveFailedTimes", Configuration.SUCCESSIVE_FAILED_TIMES);
 
-		assertNotNull(Configuration.INSTANCE);
-	}
+    assertNotNull(Configuration.INSTANCE);
+  }
 
-	@Test
-	public void testFullConfigurationWithArgsString() {
+  @Test
+  public void testFullConfigurationWithArgsString() {
 
-		Configuration.INSTANCE.getPolicy("test");
-		Configuration.INSTANCE.getRetryOnNext("test");
-		Configuration.INSTANCE.getRetryOnSame("test");
-		Configuration.INSTANCE.isRetryEnabled("test");
-		Configuration.INSTANCE.getSuccessiveFailedTimes();
-		Configuration.INSTANCE.getSessionTimeoutInSeconds();
+    Configuration.INSTANCE.getPolicy("test");
+    Configuration.INSTANCE.getRetryOnNext("test");
+    Configuration.INSTANCE.getRetryOnSame("test");
+    Configuration.INSTANCE.isRetryEnabled("test");
+    Configuration.INSTANCE.getSuccessiveFailedTimes();
+    Configuration.INSTANCE.getSessionTimeoutInSeconds();
 
-		assertNotNull(Configuration.INSTANCE.getPolicy("test"));
-		assertNotNull(Configuration.INSTANCE.getRetryOnNext("test"));
-		assertNotNull(Configuration.INSTANCE.getRetryOnSame("test"));
-		assertNotNull(Configuration.INSTANCE.isRetryEnabled("test"));
-		assertNotNull(Configuration.INSTANCE.getSuccessiveFailedTimes());
-		assertNotNull(Configuration.INSTANCE.getSessionTimeoutInSeconds());
+    assertNotNull(Configuration.INSTANCE.getPolicy("test"));
+    assertNotNull(Configuration.INSTANCE.getRetryOnNext("test"));
+    assertNotNull(Configuration.INSTANCE.getRetryOnSame("test"));
+    assertNotNull(Configuration.INSTANCE.isRetryEnabled("test"));
+    assertNotNull(Configuration.INSTANCE.getSuccessiveFailedTimes());
+    assertNotNull(Configuration.INSTANCE.getSessionTimeoutInSeconds());
+  }
 
-	}
+  @Test
+  public void testConfigurationWithGetpropertyReturnsStringChar() {
 
-	@Test
-	public void testConfigurationWithGetpropertyReturnsStringChar() {
+    new MockUp<Configuration>() {
+      @Mock
+      private String getProperty(String defaultValue, String... keys) {
+        return "tyt";
+      }
+    };
 
-		new MockUp<Configuration>() {
-			@Mock
-			private String getProperty(String defaultValue, String... keys) {
-				return "tyt";
+    Configuration.INSTANCE.getRetryOnNext("test");
 
-			}
-		};
+    assertNotNull(Configuration.INSTANCE.getRetryOnNext("test"));
+  }
 
-		Configuration.INSTANCE.getRetryOnNext("test");
+  @Test
+  public void testConfigurationWithGetpropertyReturnsStringNum() {
 
-		assertNotNull(Configuration.INSTANCE.getRetryOnNext("test"));
+    new MockUp<Configuration>() {
 
-	}
+      @Mock
+      private String getProperty(String defaultValue, String... keys) {
+        return "1234";
+      }
+    };
 
-	@Test
-	public void testConfigurationWithGetpropertyReturnsStringNum() {
+    Configuration.INSTANCE.getRetryOnNext("test");
 
-		new MockUp<Configuration>() {
+    assertNotNull(Configuration.INSTANCE.getRetryOnNext("test"));
+  }
 
-			@Mock
-			private String getProperty(String defaultValue, String... keys) {
-				return "1234";
+  @Test
+  public void testGetRetryOnSameWithGetpropertyReturnsStringChar() {
 
-			}
-		};
+    new MockUp<Configuration>() {
+      @Mock
+      private String getProperty(String defaultValue, String... keys) {
+        return "tyt";
+      }
+    };
 
-		Configuration.INSTANCE.getRetryOnNext("test");
+    Configuration.INSTANCE.getRetryOnSame("test");
+    assertNotNull(Configuration.INSTANCE.getRetryOnSame("test"));
+  }
 
-		assertNotNull(Configuration.INSTANCE.getRetryOnNext("test"));
+  @Test
+  public void testGetRetryOnSameWithGetpropertyReturnsStringNum() {
 
-	}
+    new MockUp<Configuration>() {
 
-	@Test
-	public void testGetRetryOnSameWithGetpropertyReturnsStringChar() {
+      @Mock
+      private String getProperty(String defaultValue, String... keys) {
+        return "1234";
+      }
+    };
 
-		new MockUp<Configuration>() {
-			@Mock
-			private String getProperty(String defaultValue, String... keys) {
-				return "tyt";
+    Configuration.INSTANCE.getRetryOnSame("test");
+    assertNotNull(Configuration.INSTANCE.getRetryOnSame("test"));
+  }
 
-			}
-		};
+  @Test
+  public void testIsRetryEnabledWithGetpropertyReturnsStringChar() {
 
-		Configuration.INSTANCE.getRetryOnSame("test");
-		assertNotNull(Configuration.INSTANCE.getRetryOnSame("test"));
-	}
+    new MockUp<Configuration>() {
+      @Mock
+      private String getProperty(String defaultValue, String... keys) {
+        return "tyt";
+      }
+    };
 
-	@Test
-	public void testGetRetryOnSameWithGetpropertyReturnsStringNum() {
+    Configuration.INSTANCE.isRetryEnabled("test");
+    assertNotNull(Configuration.INSTANCE.isRetryEnabled("test"));
+  }
 
-		new MockUp<Configuration>() {
+  @Test
+  public void testIsRetryEnabledWithGetpropertyReturnsStringNum() {
 
-			@Mock
-			private String getProperty(String defaultValue, String... keys) {
-				return "1234";
+    new MockUp<Configuration>() {
 
-			}
-		};
+      @Mock
+      private String getProperty(String defaultValue, String... keys) {
+        return "1234";
+      }
+    };
 
-		Configuration.INSTANCE.getRetryOnSame("test");
-		assertNotNull(Configuration.INSTANCE.getRetryOnSame("test"));
-	}
+    Configuration.INSTANCE.isRetryEnabled("test");
+    assertNotNull(Configuration.INSTANCE.isRetryEnabled("test"));
+  }
 
-	@Test
-	public void testIsRetryEnabledWithGetpropertyReturnsStringChar() {
+  @Test
+  public void testGetSuccessiveFailedTimes() {
 
-		new MockUp<Configuration>() {
-			@Mock
-			private String getProperty(String defaultValue, String... keys) {
-				return "tyt";
+    Configuration.INSTANCE.getSuccessiveFailedTimes();
+    assertNotNull(Configuration.INSTANCE.getSuccessiveFailedTimes());
+  }
 
-			}
-		};
+  @Test
+  public void testGetSessionTimeoutInSeconds() {
 
-		Configuration.INSTANCE.isRetryEnabled("test");
-		assertNotNull(Configuration.INSTANCE.isRetryEnabled("test"));
-	}
-
-	@Test
-	public void testIsRetryEnabledWithGetpropertyReturnsStringNum() {
-
-		new MockUp<Configuration>() {
-
-			@Mock
-			private String getProperty(String defaultValue, String... keys) {
-				return "1234";
-
-			}
-		};
-
-		Configuration.INSTANCE.isRetryEnabled("test");
-		assertNotNull(Configuration.INSTANCE.isRetryEnabled("test"));
-	}
-
-	@Test
-	public void testGetSuccessiveFailedTimes() {
-
-		Configuration.INSTANCE.getSuccessiveFailedTimes();
-		assertNotNull(Configuration.INSTANCE.getSuccessiveFailedTimes());
-	}
-
-	@Test
-	public void testGetSessionTimeoutInSeconds() {
-
-		Configuration.INSTANCE.getSessionTimeoutInSeconds();
-		assertNotNull(Configuration.INSTANCE.getSessionTimeoutInSeconds());
-
-	}
+    Configuration.INSTANCE.getSessionTimeoutInSeconds();
+    assertNotNull(Configuration.INSTANCE.getSessionTimeoutInSeconds());
+  }
 }

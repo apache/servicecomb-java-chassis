@@ -16,33 +16,34 @@
 
 package io.servicecomb.bizkeeper;
 
-import io.servicecomb.core.Invocation;
 import com.netflix.hystrix.HystrixCommandProperties;
 import com.netflix.hystrix.HystrixObservableCommand;
+
+import io.servicecomb.core.Invocation;
 
 /**
  * 客户端调用链处理流程
  *
  */
 public class ConsumerBizkeeperHandler extends BizkeeperHandler {
-    private static final String COMMAND_GROUP = "Consumer";
+  private static final String COMMAND_GROUP = "Consumer";
 
-    public ConsumerBizkeeperHandler() {
-        super(COMMAND_GROUP);
-    }
+  public ConsumerBizkeeperHandler() {
+    super(COMMAND_GROUP);
+  }
 
-    @Override
-    protected BizkeeperCommand createBizkeeperCommand(Invocation invocation) {
-        HystrixCommandProperties.Setter setter = HystrixCommandProperties.Setter()
-                .withRequestCacheEnabled(true)
-                .withRequestLogEnabled(false);
-        setCommonProperties(invocation, setter);
+  @Override
+  protected BizkeeperCommand createBizkeeperCommand(Invocation invocation) {
+    HystrixCommandProperties.Setter setter = HystrixCommandProperties.Setter()
+        .withRequestCacheEnabled(true)
+        .withRequestLogEnabled(false);
+    setCommonProperties(invocation, setter);
 
-        BizkeeperCommand command = new ConsumerBizkeeperCommand(groupname, invocation,
-                HystrixObservableCommand.Setter
-                        .withGroupKey(CommandKey.toHystrixCommandGroupKey(groupname, invocation))
-                        .andCommandKey(CommandKey.toHystrixCommandKey(groupname, invocation))
-                        .andCommandPropertiesDefaults(setter));
-        return command;
-    }
+    BizkeeperCommand command = new ConsumerBizkeeperCommand(groupname, invocation,
+        HystrixObservableCommand.Setter
+            .withGroupKey(CommandKey.toHystrixCommandGroupKey(groupname, invocation))
+            .andCommandKey(CommandKey.toHystrixCommandKey(groupname, invocation))
+            .andCommandPropertiesDefaults(setter));
+    return command;
+  }
 }

@@ -22,12 +22,12 @@ import io.servicecomb.common.rest.definition.RestParam;
  * 处理动态path
  */
 public class PathVarParamWriter extends AbstractUrlParamWriter {
-    public PathVarParamWriter(RestParam param) {
-        this.param = param;
-    }
+  public PathVarParamWriter(RestParam param) {
+    this.param = param;
+  }
 
-    @Override
-    public void write(StringBuilder builder, Object[] args) throws Exception {
-        builder.append((Object) getParamValue(args));
-    }
+  @Override
+  public void write(StringBuilder builder, Object[] args) throws Exception {
+    builder.append((Object) getParamValue(args));
+  }
 }

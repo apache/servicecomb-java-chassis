@@ -32,21 +32,20 @@ import io.vertx.core.http.HttpClientRequest;
 
 public class TestVertxPutMethod {
 
-    @Test
-    public void testVertxPutMethod() {
+  @Test
+  public void testVertxPutMethod() {
 
-        HttpClient client = Mockito.mock(HttpClient.class);
-        Invocation invocation = Mockito.mock(Invocation.class);
-        IpPort ipPort = Mockito.mock(IpPort.class);
-        RestOperationMeta operation = Mockito.mock(RestOperationMeta.class);
-        AsyncResponse asyncResp = Mockito.mock(AsyncResponse.class);
-        Mockito.when(ipPort.getHostOrIp()).thenReturn("test");
-        assertNotNull("test", ipPort.getHostOrIp());
-        Mockito.when(ipPort.getPort()).thenReturn(13);
-        assertEquals(13, ipPort.getPort());
-        HttpClientRequest obj =
-            VertxPutMethod.INSTANCE.createRequest(client, invocation, ipPort, "testCall", operation, asyncResp);
-        Assert.assertNull(obj);
-
-    }
+    HttpClient client = Mockito.mock(HttpClient.class);
+    Invocation invocation = Mockito.mock(Invocation.class);
+    IpPort ipPort = Mockito.mock(IpPort.class);
+    RestOperationMeta operation = Mockito.mock(RestOperationMeta.class);
+    AsyncResponse asyncResp = Mockito.mock(AsyncResponse.class);
+    Mockito.when(ipPort.getHostOrIp()).thenReturn("test");
+    assertNotNull("test", ipPort.getHostOrIp());
+    Mockito.when(ipPort.getPort()).thenReturn(13);
+    assertEquals(13, ipPort.getPort());
+    HttpClientRequest obj =
+        VertxPutMethod.INSTANCE.createRequest(client, invocation, ipPort, "testCall", operation, asyncResp);
+    Assert.assertNull(obj);
+  }
 }

@@ -8,11 +8,11 @@ import mockit.Deencapsulation;
 
 // copy this everywhere, :(
 public class ArchaiusUtils {
-    public static void resetConfig() {
-        Deencapsulation.setField(ConfigurationManager.class, "instance", null);
-        Deencapsulation.setField(ConfigurationManager.class, "customConfigurationInstalled", false);
-        Deencapsulation.setField(DynamicPropertyFactory.class, "config", null);
-        Deencapsulation.setField(DynamicPropertyFactory.class, "initializedWithDefaultConfig", false);
-        Deencapsulation.setField(DynamicProperty.class, "dynamicPropertySupportImpl", null);
-    }
+  public static void resetConfig() {
+    Deencapsulation.setField(ConfigurationManager.class, "instance", null);
+    Deencapsulation.setField(ConfigurationManager.class, "customConfigurationInstalled", false);
+    Deencapsulation.setField(DynamicPropertyFactory.class, "config", null);
+    Deencapsulation.setField(DynamicPropertyFactory.class, "initializedWithDefaultConfig", false);
+    Deencapsulation.setField(DynamicProperty.class, "dynamicPropertySupportImpl", null);
+  }
 }

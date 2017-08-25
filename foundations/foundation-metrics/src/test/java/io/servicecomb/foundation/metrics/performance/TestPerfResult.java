@@ -21,58 +21,49 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-/**
- *
- * @since Mar 14, 2017
- * @see 
- */
 public class TestPerfResult {
 
-    PerfResult oPerfResult = null;
+  PerfResult oPerfResult = null;
 
-    @Before
-    public void setUp() throws Exception {
-        oPerfResult = new PerfResult();
-    }
+  @Before
+  public void setUp() throws Exception {
+    oPerfResult = new PerfResult();
+  }
 
-    @After
-    public void tearDown() throws Exception {
-        oPerfResult = null;
-    }
+  @After
+  public void tearDown() throws Exception {
+    oPerfResult = null;
+  }
 
-    @Test
-    public void testDefaultValues() {
-        Assert.assertNull(oPerfResult.getName());
-        Assert.assertEquals(0, oPerfResult.getCallCount());
-        Assert.assertEquals(0, oPerfResult.getMsAvgLatency(), 0);
-        Assert.assertEquals(0, oPerfResult.getAvgCallCount());
-        Assert.assertNull(oPerfResult.getMsLatencySegments());
-        Assert.assertEquals(0, oPerfResult.getMsgCount());
+  @Test
+  public void testDefaultValues() {
+    Assert.assertNull(oPerfResult.getName());
+    Assert.assertEquals(0, oPerfResult.getCallCount());
+    Assert.assertEquals(0, oPerfResult.getMsAvgLatency(), 0);
+    Assert.assertEquals(0, oPerfResult.getAvgCallCount());
+    Assert.assertNull(oPerfResult.getMsLatencySegments());
+    Assert.assertEquals(0, oPerfResult.getMsgCount());
+  }
 
-    }
+  @Test
+  public void testIntializedValues() {
+    initializeObject(); //Initialize the object.
+    Assert.assertEquals("testPerf", oPerfResult.getName());
+    Assert.assertEquals(1, oPerfResult.getCallCount());
+    Assert.assertEquals(56, oPerfResult.getMsAvgLatency(), 0);
+    Assert.assertEquals(2, oPerfResult.getAvgCallCount());
+    Assert.assertEquals(2, oPerfResult.getMsLatencySegments().length);
+    Assert.assertEquals(10, oPerfResult.getMsgCount());
+    Assert.assertEquals("testStringtestString", oPerfResult.segmentsToString("testString"));
+  }
 
-    @Test
-    public void testIntializedValues() {
-        initializeObject(); //Initialize the object.
-        Assert.assertEquals("testPerf", oPerfResult.getName());
-        Assert.assertEquals(1, oPerfResult.getCallCount());
-        Assert.assertEquals(56, oPerfResult.getMsAvgLatency(), 0);
-        Assert.assertEquals(2, oPerfResult.getAvgCallCount());
-        Assert.assertEquals(2, oPerfResult.getMsLatencySegments().length);
-        Assert.assertEquals(10, oPerfResult.getMsgCount());
-        Assert.assertEquals("testStringtestString", oPerfResult.segmentsToString("testString"));
-
-    }
-
-    private void initializeObject() {
-        long[] oLongLatencySegment = new long[] {123, 154};
-        oPerfResult.setAvgCallCount(2);
-        oPerfResult.setCallCount(1);
-        oPerfResult.setMsAvgLatency(56);
-        oPerfResult.setMsgCount(10);
-        oPerfResult.setName("testPerf");
-        oPerfResult.setMsLatencySegments(oLongLatencySegment);
-
-    }
-
+  private void initializeObject() {
+    long[] oLongLatencySegment = new long[] {123, 154};
+    oPerfResult.setAvgCallCount(2);
+    oPerfResult.setCallCount(1);
+    oPerfResult.setMsAvgLatency(56);
+    oPerfResult.setMsgCount(10);
+    oPerfResult.setName("testPerf");
+    oPerfResult.setMsLatencySegments(oLongLatencySegment);
+  }
 }

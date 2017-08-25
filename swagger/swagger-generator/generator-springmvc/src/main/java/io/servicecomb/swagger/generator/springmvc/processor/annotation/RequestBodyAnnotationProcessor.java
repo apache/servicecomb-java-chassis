@@ -22,9 +22,9 @@ import io.servicecomb.swagger.generator.core.utils.ParamUtils;
 import io.swagger.models.parameters.BodyParameter;
 
 public class RequestBodyAnnotationProcessor implements ParameterAnnotationProcessor {
-    @Override
-    public void process(Object annotation, OperationGenerator operationGenerator, int paramIdx) {
-        BodyParameter bodyParameter = ParamUtils.createBodyParameter(operationGenerator, paramIdx);
-        operationGenerator.addProviderParameter(bodyParameter);
-    }
+  @Override
+  public void process(Object annotation, OperationGenerator operationGenerator, int paramIdx) {
+    BodyParameter bodyParameter = ParamUtils.createBodyParameter(operationGenerator, paramIdx);
+    operationGenerator.addProviderParameter(bodyParameter);
+  }
 }

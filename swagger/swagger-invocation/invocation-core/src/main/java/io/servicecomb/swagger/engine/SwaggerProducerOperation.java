@@ -30,115 +30,115 @@ import io.servicecomb.swagger.invocation.exception.InvocationException;
 import io.servicecomb.swagger.invocation.response.producer.ProducerResponseMapper;
 
 public class SwaggerProducerOperation {
-    private static final Logger LOGGER = LoggerFactory.getLogger(SwaggerProducerOperation.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(SwaggerProducerOperation.class);
 
-    private String name;
+  private String name;
 
-    // 因为存在aop场景，所以，producerClass不一定等于producerInstance.getClass()
-    private Class<?> producerClass;
+  // 因为存在aop场景，所以，producerClass不一定等于producerInstance.getClass()
+  private Class<?> producerClass;
 
-    private Object producerInstance;
+  private Object producerInstance;
 
-    private Method producerMethod;
+  private Method producerMethod;
 
-    private Method swaggerMethod;
+  private Method swaggerMethod;
 
-    private ProducerArgumentsMapper argumentsMapper;
+  private ProducerArgumentsMapper argumentsMapper;
 
-    private ProducerResponseMapper responseMapper;
+  private ProducerResponseMapper responseMapper;
 
-    public String getName() {
-        return name;
+  public String getName() {
+    return name;
+  }
+
+  public void setName(String name) {
+    this.name = name;
+  }
+
+  public Class<?> getProducerClass() {
+    return producerClass;
+  }
+
+  public void setProducerClass(Class<?> producerClass) {
+    this.producerClass = producerClass;
+  }
+
+  public Object getProducerInstance() {
+    return producerInstance;
+  }
+
+  public void setProducerInstance(Object producerInstance) {
+    this.producerInstance = producerInstance;
+  }
+
+  public Method getProducerMethod() {
+    return producerMethod;
+  }
+
+  public void setProducerMethod(Method producerMethod) {
+    this.producerMethod = producerMethod;
+  }
+
+  public Method getSwaggerMethod() {
+    return swaggerMethod;
+  }
+
+  public void setSwaggerMethod(Method swaggerMethod) {
+    this.swaggerMethod = swaggerMethod;
+  }
+
+  public ProducerArgumentsMapper getArgumentsMapper() {
+    return argumentsMapper;
+  }
+
+  public void setArgumentsMapper(ProducerArgumentsMapper argumentsMapper) {
+    this.argumentsMapper = argumentsMapper;
+  }
+
+  public ProducerResponseMapper getResponseMapper() {
+    return responseMapper;
+  }
+
+  public void setResponseMapper(ProducerResponseMapper responseMapper) {
+    this.responseMapper = responseMapper;
+  }
+
+  public void invoke(SwaggerInvocation invocation, AsyncResponse asyncResp) {
+    ContextUtils.setInvocationContext(invocation);
+
+    Response response = doInvoke(invocation);
+
+    ContextUtils.removeInvocationContext();
+
+    asyncResp.handle(response);
+  }
+
+  public Response doInvoke(SwaggerInvocation invocation) {
+    Response response = null;
+    try {
+      Object[] args = argumentsMapper.toProducerArgs(invocation);
+      Object result = producerMethod.invoke(producerInstance, args);
+      response = responseMapper.mapResponse(invocation.getStatus(), result);
+    } catch (Throwable e) {
+      response = processException(e);
+    }
+    return response;
+  }
+
+  protected Response processException(Throwable e) {
+    if (InvocationTargetException.class.isInstance(e)) {
+      e = ((InvocationTargetException) e).getTargetException();
     }
 
-    public void setName(String name) {
-        this.name = name;
+    if (InvocationException.class.isInstance(e)) {
+      return Response.failResp((InvocationException) e);
     }
 
-    public Class<?> getProducerClass() {
-        return producerClass;
-    }
-
-    public void setProducerClass(Class<?> producerClass) {
-        this.producerClass = producerClass;
-    }
-
-    public Object getProducerInstance() {
-        return producerInstance;
-    }
-
-    public void setProducerInstance(Object producerInstance) {
-        this.producerInstance = producerInstance;
-    }
-
-    public Method getProducerMethod() {
-        return producerMethod;
-    }
-
-    public void setProducerMethod(Method producerMethod) {
-        this.producerMethod = producerMethod;
-    }
-
-    public Method getSwaggerMethod() {
-        return swaggerMethod;
-    }
-
-    public void setSwaggerMethod(Method swaggerMethod) {
-        this.swaggerMethod = swaggerMethod;
-    }
-
-    public ProducerArgumentsMapper getArgumentsMapper() {
-        return argumentsMapper;
-    }
-
-    public void setArgumentsMapper(ProducerArgumentsMapper argumentsMapper) {
-        this.argumentsMapper = argumentsMapper;
-    }
-
-    public ProducerResponseMapper getResponseMapper() {
-        return responseMapper;
-    }
-
-    public void setResponseMapper(ProducerResponseMapper responseMapper) {
-        this.responseMapper = responseMapper;
-    }
-
-    public void invoke(SwaggerInvocation invocation, AsyncResponse asyncResp) {
-        ContextUtils.setInvocationContext(invocation);
-
-        Response response = doInvoke(invocation);
-
-        ContextUtils.removeInvocationContext();
-
-        asyncResp.handle(response);
-    }
-
-    public Response doInvoke(SwaggerInvocation invocation) {
-        Response response = null;
-        try {
-            Object[] args = argumentsMapper.toProducerArgs(invocation);
-            Object result = producerMethod.invoke(producerInstance, args);
-            response = responseMapper.mapResponse(invocation.getStatus(), result);
-        } catch (Throwable e) {
-            response = processException(e);
-        }
-        return response;
-    }
-
-    protected Response processException(Throwable e) {
-        if (InvocationTargetException.class.isInstance(e)) {
-            e = ((InvocationTargetException) e).getTargetException();
-        }
-
-        if (InvocationException.class.isInstance(e)) {
-            return Response.failResp((InvocationException) e);
-        }
-
-        // 未知异常，记录下来方便定位问题
-        Response response = Response.producerFailResp(e);
-        String msg =
-            String.format("Producer invoke failed, %s:%s", producerClass.getName(), producerMethod.getName());
-        LOGGER.error(msg, e);
-        return response;
-    }
+    // 未知异常，记录下来方便定位问题
+    Response response = Response.producerFailResp(e);
+    String msg =
+        String.format("Producer invoke failed, %s:%s", producerClass.getName(), producerMethod.getName());
+    LOGGER.error(msg, e);
+    return response;
+  }
 }

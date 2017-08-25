@@ -21,64 +21,64 @@ import java.util.Collection;
 
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.type.TypeFactory;
+
 import io.servicecomb.common.rest.codec.param.ParamValueProcessor;
 import io.servicecomb.common.rest.codec.param.ParamValueProcessorCreator;
 import io.servicecomb.common.rest.codec.param.ParamValueProcessorCreatorManager;
-
 import io.swagger.models.parameters.Parameter;
 
 public class RestParam {
-    private static final JavaType STRING_ARRAY_TYPE = TypeFactory.defaultInstance().constructArrayType(String.class);
+  private static final JavaType STRING_ARRAY_TYPE = TypeFactory.defaultInstance().constructArrayType(String.class);
 
-    protected ParamValueProcessor paramProcessor;
+  protected ParamValueProcessor paramProcessor;
 
-    protected String paramName;
+  protected String paramName;
 
-    // 在args数组中的下标
-    protected int paramIndex;
+  // 在args数组中的下标
+  protected int paramIndex;
 
-    public RestParam(int paramIndex, Parameter parameter, Type genericParamType) {
-        this.paramIndex = paramIndex;
-        this.paramName = parameter.getName();
+  public RestParam(int paramIndex, Parameter parameter, Type genericParamType) {
+    this.paramIndex = paramIndex;
+    this.paramName = parameter.getName();
 
-        init(parameter, genericParamType);
+    init(parameter, genericParamType);
+  }
+
+  public ParamValueProcessor getParamProcessor() {
+    return this.paramProcessor;
+  }
+
+  public void setParamProcessor(ParamValueProcessor paramProcessor) {
+    this.paramProcessor = paramProcessor;
+  }
+
+  public String getParamName() {
+    return paramName;
+  }
+
+  protected void init(Parameter parameter, Type genericParamType) {
+    String paramType = parameter.getIn();
+    ParamValueProcessorCreator creater =
+        ParamValueProcessorCreatorManager.INSTANCE.ensureFindValue(paramType);
+
+    this.setParamProcessor(creater.create(parameter, genericParamType));
+  }
+
+  @SuppressWarnings("unchecked")
+  public <T> T getValue(Object[] args) {
+    return (T) args[paramIndex];
+  }
+
+  public String[] getValueAsStrings(Object[] args) {
+    Object value = args[paramIndex];
+    if (value == null) {
+      return null;
     }
 
-    public ParamValueProcessor getParamProcessor() {
-        return this.paramProcessor;
+    if (value.getClass().isArray() || Collection.class.isInstance(value)) {
+      return (String[]) paramProcessor.convertValue(value, STRING_ARRAY_TYPE);
     }
 
-    public void setParamProcessor(ParamValueProcessor paramProcessor) {
-        this.paramProcessor = paramProcessor;
-    }
-
-    public String getParamName() {
-        return paramName;
-    }
-
-    protected void init(Parameter parameter, Type genericParamType) {
-        String paramType = parameter.getIn();
-        ParamValueProcessorCreator creater =
-            ParamValueProcessorCreatorManager.INSTANCE.ensureFindValue(paramType);
-
-        this.setParamProcessor(creater.create(parameter, genericParamType));
-    }
-
-    @SuppressWarnings("unchecked")
-    public <T> T getValue(Object[] args) {
-        return (T) args[paramIndex];
-    }
-
-    public String[] getValueAsStrings(Object[] args) {
-        Object value = args[paramIndex];
-        if (value == null) {
-            return null;
-        }
-
-        if (value.getClass().isArray() || Collection.class.isInstance(value)) {
-            return (String[]) paramProcessor.convertValue(value, STRING_ARRAY_TYPE);
-        }
-
-        return new String[] {String.valueOf(value)};
-    }
+    return new String[] {String.valueOf(value)};
+  }
 }

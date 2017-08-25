@@ -23,21 +23,21 @@ import org.springframework.beans.factory.InitializingBean;
 import io.servicecomb.core.provider.producer.ProducerMeta;
 
 public class PojoProducerMeta extends ProducerMeta implements InitializingBean {
-    @Inject
-    protected PojoProducers pojoProducers;
+  @Inject
+  protected PojoProducers pojoProducers;
 
-    private String implementation;
+  private String implementation;
 
-    public String getImplementation() {
-        return implementation;
-    }
+  public String getImplementation() {
+    return implementation;
+  }
 
-    public void setImplementation(String implementation) {
-        this.implementation = implementation;
-    }
+  public void setImplementation(String implementation) {
+    this.implementation = implementation;
+  }
 
-    @Override
-    public void afterPropertiesSet() throws Exception {
-        pojoProducers.registerPojoProducer(this);
-    }
+  @Override
+  public void afterPropertiesSet() throws Exception {
+    pojoProducers.registerPojoProducer(this);
+  }
 }

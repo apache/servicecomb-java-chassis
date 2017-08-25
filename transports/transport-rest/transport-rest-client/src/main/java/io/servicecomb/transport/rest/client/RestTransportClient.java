@@ -16,6 +16,9 @@
 
 package io.servicecomb.transport.rest.client;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import io.servicecomb.common.rest.RestConst;
 import io.servicecomb.common.rest.definition.RestOperationMeta;
 import io.servicecomb.core.Invocation;
@@ -34,64 +37,61 @@ import io.servicecomb.transport.rest.client.http.VertxHttpMethod;
 import io.vertx.core.DeploymentOptions;
 import io.vertx.core.Vertx;
 import io.vertx.core.http.HttpClientOptions;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public final class RestTransportClient {
-    private static final Logger LOGGER = LoggerFactory.getLogger(RestTransportClient.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(RestTransportClient.class);
 
-    private static final String SSL_KEY = "rest.consumer";
+  private static final String SSL_KEY = "rest.consumer";
 
-    private ClientPoolManager<HttpClientWithContext> clientMgr = new ClientPoolManager<>();
+  private ClientPoolManager<HttpClientWithContext> clientMgr = new ClientPoolManager<>();
 
-    private final boolean sslEnabled;
+  private final boolean sslEnabled;
 
-    public RestTransportClient(boolean sslEnabled) {
-        this.sslEnabled = sslEnabled;
+  public RestTransportClient(boolean sslEnabled) {
+    this.sslEnabled = sslEnabled;
+  }
+
+  public void init(Vertx vertx) throws Exception {
+    HttpClientOptions httpClientOptions = createHttpClientOptions();
+    DeploymentOptions deployOptions = VertxUtils.createClientDeployOptions(clientMgr,
+        TransportClientConfig.getThreadCount(),
+        TransportClientConfig.getConnectionPoolPerThread(),
+        httpClientOptions);
+    VertxUtils.blockDeploy(vertx, HttpClientVerticle.class, deployOptions);
+  }
+
+  private HttpClientOptions createHttpClientOptions() {
+    HttpClientOptions httpClientOptions = new HttpClientOptions();
+
+    if (this.sslEnabled) {
+      SSLOptionFactory factory =
+          SSLOptionFactory.createSSLOptionFactory(SSL_KEY,
+              null);
+      SSLOption sslOption;
+      if (factory == null) {
+        sslOption = SSLOption.buildFromYaml(SSL_KEY);
+      } else {
+        sslOption = factory.createSSLOption();
+      }
+      SSLCustom sslCustom = SSLCustom.createSSLCustom(sslOption.getSslCustomClass());
+      VertxTLSBuilder.buildHttpClientOptions(sslOption, sslCustom, httpClientOptions);
     }
+    return httpClientOptions;
+  }
 
-    public void init(Vertx vertx) throws Exception {
-        HttpClientOptions httpClientOptions = createHttpClientOptions();
-        DeploymentOptions deployOptions = VertxUtils.createClientDeployOptions(clientMgr,
-                TransportClientConfig.getThreadCount(),
-                TransportClientConfig.getConnectionPoolPerThread(),
-                httpClientOptions);
-        VertxUtils.blockDeploy(vertx, HttpClientVerticle.class, deployOptions);
+  public void send(Invocation invocation, AsyncResponse asyncResp) throws Exception {
+    HttpClientWithContext httpClientWithContext = clientMgr.findThreadBindClientPool();
+
+    OperationMeta operationMeta = invocation.getOperationMeta();
+    RestOperationMeta swaggerRestOperation = operationMeta.getExtData(RestConst.SWAGGER_REST_OPERATION);
+    String method = swaggerRestOperation.getHttpMethod();
+    try {
+      VertxHttpMethod httpMethod = HttpMethodFactory.findHttpMethodInstance(method);
+      LOGGER.debug("Calling method {} of {} by rest", method, invocation.getMicroserviceName());
+      httpMethod.doMethod(httpClientWithContext, invocation, asyncResp);
+    } catch (Exception e) {
+      asyncResp.fail(invocation.getInvocationType(), e);
+      LOGGER.error("vertx rest transport send error.", e);
     }
-
-    private HttpClientOptions createHttpClientOptions() {
-        HttpClientOptions httpClientOptions = new HttpClientOptions();
-
-        if (this.sslEnabled) {
-            SSLOptionFactory factory =
-                SSLOptionFactory.createSSLOptionFactory(SSL_KEY,
-                        null);
-            SSLOption sslOption;
-            if (factory == null) {
-                sslOption = SSLOption.buildFromYaml(SSL_KEY);
-            } else {
-                sslOption = factory.createSSLOption();
-            }
-            SSLCustom sslCustom = SSLCustom.createSSLCustom(sslOption.getSslCustomClass());
-            VertxTLSBuilder.buildHttpClientOptions(sslOption, sslCustom, httpClientOptions);
-        }
-        return httpClientOptions;
-    }
-
-    public void send(Invocation invocation, AsyncResponse asyncResp) throws Exception {
-        HttpClientWithContext httpClientWithContext = clientMgr.findThreadBindClientPool();
-
-        OperationMeta operationMeta = invocation.getOperationMeta();
-        RestOperationMeta swaggerRestOperation = operationMeta.getExtData(RestConst.SWAGGER_REST_OPERATION);
-        String method = swaggerRestOperation.getHttpMethod();
-        try {
-            VertxHttpMethod httpMethod = HttpMethodFactory.findHttpMethodInstance(method);
-            LOGGER.debug("Calling method {} of {} by rest", method, invocation.getMicroserviceName());
-            httpMethod.doMethod(httpClientWithContext, invocation, asyncResp);
-        } catch (Exception e) {
-            asyncResp.fail(invocation.getInvocationType(), e);
-            LOGGER.error("vertx rest transport send error.", e);
-        }
-    }
-
+  }
 }

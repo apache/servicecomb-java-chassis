@@ -19,5 +19,5 @@ package io.servicecomb.foundation.auth;
 import java.util.Map;
 
 public interface AuthHeaderProvider {
-    Map<String, String> authHeaders();
+  Map<String, String> authHeaders();
 }

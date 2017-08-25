@@ -32,43 +32,43 @@ import io.vertx.core.AbstractVerticle;
 
 public class ClientVerticle extends AbstractVerticle {
 
-    Test test = PojoClient.test;
+  Test test = PojoClient.test;
 
-    ReferenceConfig config =
-        CseContext.getInstance().getConsumerProviderManager().setTransport("pojo", Config.getTransport());
+  ReferenceConfig config =
+      CseContext.getInstance().getConsumerProviderManager().setTransport("pojo", Config.getTransport());
 
-    int idx = 0;
+  int idx = 0;
 
-    @Override
-    public void start() throws Exception {
+  @Override
+  public void start() throws Exception {
 
-        vertx.setTimer(100, this::send);
-    }
+    vertx.setTimer(100, this::send);
+  }
 
-    protected void send(Long event) {
-        User user = new User();
+  protected void send(Long event) {
+    User user = new User();
 
-        TestRequest request = new TestRequest();
-        request.setUser(user);
-        request.setIndex(idx);
-        request.setData(PojoClient.buffer);
+    TestRequest request = new TestRequest();
+    request.setUser(user);
+    request.setIndex(idx);
+    request.setData(PojoClient.buffer);
 
-        SchemaMeta schemaMeta = config.getMicroserviceMeta().ensureFindSchemaMeta("server");
-        Object[] args = new Object[] {request};
-        Invocation invocation = InvocationFactory.forConsumer(config, schemaMeta, "wrapParam", args);
-        InvokerUtils.reactiveInvoke(invocation, ar -> {
-            if (ar.isSuccessed()) {
-                User result = ar.getResult();
-                if (result.getIndex() != idx) {
-                    System.out.printf("error result:%s, expect idx %d\n", result, idx);
-                }
-            } else {
-                CommonExceptionData data =
-                    (CommonExceptionData) ((InvocationException) ar.getResult()).getErrorData();
-                System.out.println(data.getMessage());
-            }
+    SchemaMeta schemaMeta = config.getMicroserviceMeta().ensureFindSchemaMeta("server");
+    Object[] args = new Object[] {request};
+    Invocation invocation = InvocationFactory.forConsumer(config, schemaMeta, "wrapParam", args);
+    InvokerUtils.reactiveInvoke(invocation, ar -> {
+      if (ar.isSuccessed()) {
+        User result = ar.getResult();
+        if (result.getIndex() != idx) {
+          System.out.printf("error result:%s, expect idx %d\n", result, idx);
+        }
+      } else {
+        CommonExceptionData data =
+            (CommonExceptionData) ((InvocationException) ar.getResult()).getErrorData();
+        System.out.println(data.getMessage());
+      }
 
-            send(null);
-        });
-    }
+      send(null);
+    });
+  }
 }

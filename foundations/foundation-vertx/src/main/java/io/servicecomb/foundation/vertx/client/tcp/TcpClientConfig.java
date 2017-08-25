@@ -19,20 +19,20 @@ package io.servicecomb.foundation.vertx.client.tcp;
 import io.vertx.core.net.NetClientOptions;
 
 public class TcpClientConfig extends NetClientOptions {
-    private static final int DEFAULT_TIMEOUT = 30000;
+  private static final int DEFAULT_TIMEOUT = 30000;
 
-    private long msRequestTimeout;
+  private long msRequestTimeout;
 
-    public TcpClientConfig() {
-        // 30 second
-        msRequestTimeout = DEFAULT_TIMEOUT;
-    }
+  public TcpClientConfig() {
+    // 30 second
+    msRequestTimeout = DEFAULT_TIMEOUT;
+  }
 
-    public long getRequestTimeoutMillis() {
-        return msRequestTimeout;
-    }
+  public long getRequestTimeoutMillis() {
+    return msRequestTimeout;
+  }
 
-    public void setRequestTimeoutMillis(long msTimeout) {
-        this.msRequestTimeout = msTimeout;
-    }
+  public void setRequestTimeoutMillis(long msTimeout) {
+    this.msRequestTimeout = msTimeout;
+  }
 }

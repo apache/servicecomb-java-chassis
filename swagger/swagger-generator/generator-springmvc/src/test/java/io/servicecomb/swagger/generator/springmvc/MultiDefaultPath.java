@@ -20,13 +20,13 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 @RequestMapping(path = "abc")
 public class MultiDefaultPath {
-    @RequestMapping(method = RequestMethod.GET)
-    public void p1() {
+  @RequestMapping(method = RequestMethod.GET)
+  public void p1() {
 
-    }
+  }
 
-    @RequestMapping(method = RequestMethod.GET)
-    public void p2() {
+  @RequestMapping(method = RequestMethod.GET)
+  public void p2() {
 
-    }
+  }
 }

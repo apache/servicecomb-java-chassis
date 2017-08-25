@@ -24,8 +24,8 @@ import org.springframework.http.client.ClientHttpRequest;
 import org.springframework.http.client.ClientHttpRequestFactory;
 
 public class CseClientHttpRequestFactory implements ClientHttpRequestFactory {
-    @Override
-    public ClientHttpRequest createRequest(URI uri, HttpMethod httpMethod) throws IOException {
-        return new CseClientHttpRequest(uri, httpMethod);
-    }
+  @Override
+  public ClientHttpRequest createRequest(URI uri, HttpMethod httpMethod) throws IOException {
+    return new CseClientHttpRequest(uri, httpMethod);
+  }
 }

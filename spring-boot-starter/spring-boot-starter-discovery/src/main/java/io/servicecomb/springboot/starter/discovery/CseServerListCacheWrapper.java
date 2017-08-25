@@ -15,20 +15,21 @@
  */
 package io.servicecomb.springboot.starter.discovery;
 
+import com.netflix.loadbalancer.Server;
+
 import io.servicecomb.core.Transport;
 import io.servicecomb.loadbalance.ServerListCache;
 import io.servicecomb.serviceregistry.cache.CacheEndpoint;
-import com.netflix.loadbalancer.Server;
 
 public class CseServerListCacheWrapper extends ServerListCache {
 
-	public CseServerListCacheWrapper(String appId, String microserviceName, String microserviceVersionRule,
-			String transportName) {
-		super(appId, microserviceName, microserviceVersionRule, transportName);
-	}
+  public CseServerListCacheWrapper(String appId, String microserviceName, String microserviceVersionRule,
+      String transportName) {
+    super(appId, microserviceName, microserviceVersionRule, transportName);
+  }
 
-	@Override
-	protected Server createEndpoint(Transport transport, CacheEndpoint cacheEndpoint) {
-		return new CseServerWrapper(transport, cacheEndpoint);
-	}
+  @Override
+  protected Server createEndpoint(Transport transport, CacheEndpoint cacheEndpoint) {
+    return new CseServerWrapper(transport, cacheEndpoint);
+  }
 }

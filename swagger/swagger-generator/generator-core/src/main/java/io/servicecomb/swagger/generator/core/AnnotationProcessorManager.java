@@ -21,23 +21,25 @@ import java.lang.annotation.Annotation;
 import io.servicecomb.foundation.common.RegisterManager;
 
 public class AnnotationProcessorManager<T> extends RegisterManager<String, T> {
-    enum AnnotationType {
-        CLASS, METHOD, PARAMETER
-    }
+  enum AnnotationType {
+    CLASS,
+    METHOD,
+    PARAMETER
+  }
 
-    public AnnotationProcessorManager(AnnotationType annotationType) {
-        super(annotationType + " annotation processor mgr");
-    }
+  public AnnotationProcessorManager(AnnotationType annotationType) {
+    super(annotationType + " annotation processor mgr");
+  }
 
-    public void register(Class<? extends Annotation> annotationCls, T processor) {
-        register(annotationCls.getName(), processor);
-    }
+  public void register(Class<? extends Annotation> annotationCls, T processor) {
+    register(annotationCls.getName(), processor);
+  }
 
-    public T findProcessor(Class<? extends Annotation> annotationCls) {
-        return this.findValue(annotationCls.getName());
-    }
+  public T findProcessor(Class<? extends Annotation> annotationCls) {
+    return this.findValue(annotationCls.getName());
+  }
 
-    public T findProcessor(String annotationName) {
-        return this.findValue(annotationName);
-    }
+  public T findProcessor(String annotationName) {
+    return this.findValue(annotationName);
+  }
 }

@@ -19,5 +19,5 @@ package io.servicecomb.serviceregistry.api;
 import java.util.Map;
 
 public interface PropertyExtended {
-    Map<String, String> getExtendedProperties();
+  Map<String, String> getExtendedProperties();
 }

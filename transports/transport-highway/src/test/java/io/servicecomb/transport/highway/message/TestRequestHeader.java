@@ -25,51 +25,50 @@ import org.junit.Test;
 
 public class TestRequestHeader {
 
-    private RequestHeader requestHeader = null;
+  private RequestHeader requestHeader = null;
 
-    @Before
-    public void setUp() throws Exception {
-        requestHeader = new RequestHeader();
-    }
+  @Before
+  public void setUp() throws Exception {
+    requestHeader = new RequestHeader();
+  }
 
-    @After
-    public void tearDown() throws Exception {
-        requestHeader = null;
-    }
+  @After
+  public void tearDown() throws Exception {
+    requestHeader = null;
+  }
 
-    @Test
-    public void testContext() {
+  @Test
+  public void testContext() {
 
-        Map<String, String> context = null;
-        requestHeader.setContext(context);
-        Assert.assertNull(requestHeader.getContext());
-    }
+    Map<String, String> context = null;
+    requestHeader.setContext(context);
+    Assert.assertNull(requestHeader.getContext());
+  }
 
-    @Test
-    public void testDestMicroservice() {
-        requestHeader.setDestMicroservice("test");
-        Assert.assertEquals("test", requestHeader.getDestMicroservice());
+  @Test
+  public void testDestMicroservice() {
+    requestHeader.setDestMicroservice("test");
+    Assert.assertEquals("test", requestHeader.getDestMicroservice());
+  }
 
-    }
+  @Test
+  public void testFlags() {
 
-    @Test
-    public void testFlags() {
+    requestHeader.setFlags(1);
+    Assert.assertEquals(1, requestHeader.getFlags());
+  }
 
-        requestHeader.setFlags(1);
-        Assert.assertEquals(1, requestHeader.getFlags());
-    }
+  @Test
+  public void testOperationName() {
 
-    @Test
-    public void testOperationName() {
+    requestHeader.setOperationName("cse");
+    Assert.assertEquals("cse", requestHeader.getOperationName());
+  }
 
-        requestHeader.setOperationName("cse");
-        Assert.assertEquals("cse", requestHeader.getOperationName());
-    }
+  @Test
+  public void testSchemaId() {
 
-    @Test
-    public void testSchemaId() {
-
-        requestHeader.setSchemaId("id");
-        Assert.assertEquals("id", requestHeader.getSchemaId());
-    }
+    requestHeader.setSchemaId("id");
+    Assert.assertEquals("id", requestHeader.getSchemaId());
+  }
 }

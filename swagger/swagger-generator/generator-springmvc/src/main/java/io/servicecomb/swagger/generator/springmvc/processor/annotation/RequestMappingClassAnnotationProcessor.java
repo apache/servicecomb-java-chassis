@@ -23,64 +23,63 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 import io.servicecomb.swagger.generator.core.ClassAnnotationProcessor;
 import io.servicecomb.swagger.generator.core.SwaggerGenerator;
-
 import io.swagger.models.Swagger;
 
 public class RequestMappingClassAnnotationProcessor implements ClassAnnotationProcessor {
 
-    @Override
-    public void process(Object annotation, SwaggerGenerator swaggerGenerator) {
-        RequestMapping requestMapping = (RequestMapping) annotation;
-        Swagger swagger = swaggerGenerator.getSwagger();
+  @Override
+  public void process(Object annotation, SwaggerGenerator swaggerGenerator) {
+    RequestMapping requestMapping = (RequestMapping) annotation;
+    Swagger swagger = swaggerGenerator.getSwagger();
 
-        this.processMethod(requestMapping.method(), swaggerGenerator);
+    this.processMethod(requestMapping.method(), swaggerGenerator);
 
-        // path/value是等同的
-        this.processPath(requestMapping.path(), swaggerGenerator);
-        this.processPath(requestMapping.value(), swaggerGenerator);
-        this.processConsumes(requestMapping.consumes(), swagger);
-        this.processProduces(requestMapping.produces(), swagger);
+    // path/value是等同的
+    this.processPath(requestMapping.path(), swaggerGenerator);
+    this.processPath(requestMapping.value(), swaggerGenerator);
+    this.processConsumes(requestMapping.consumes(), swagger);
+    this.processProduces(requestMapping.produces(), swagger);
+  }
+
+  protected void processPath(String[] paths, SwaggerGenerator swaggerGenerator) {
+    if (null == paths || paths.length == 0) {
+      return;
     }
 
-    protected void processPath(String[] paths, SwaggerGenerator swaggerGenerator) {
-        if (null == paths || paths.length == 0) {
-            return;
-        }
-
-        // swagger仅支持配一个basePath
-        if (paths.length > 1) {
-            throw new Error("not support multi path for " + swaggerGenerator.getCls().getName());
-        }
-
-        swaggerGenerator.setBasePath(paths[0]);
+    // swagger仅支持配一个basePath
+    if (paths.length > 1) {
+      throw new Error("not support multi path for " + swaggerGenerator.getCls().getName());
     }
 
-    protected void processMethod(RequestMethod[] requestMethods, SwaggerGenerator swaggerGenerator) {
-        if (null == requestMethods || requestMethods.length == 0) {
-            return;
-        }
+    swaggerGenerator.setBasePath(paths[0]);
+  }
 
-        if (requestMethods.length > 1) {
-            throw new Error(
-                    "not allowed multi http method for " + swaggerGenerator.getCls().getName());
-        }
-
-        swaggerGenerator.setHttpMethod(requestMethods[0].name());
+  protected void processMethod(RequestMethod[] requestMethods, SwaggerGenerator swaggerGenerator) {
+    if (null == requestMethods || requestMethods.length == 0) {
+      return;
     }
 
-    private void processConsumes(String[] consumes, Swagger swagger) {
-        if (null == consumes || consumes.length == 0) {
-            return;
-        }
-
-        swagger.setConsumes(Arrays.asList(consumes));
+    if (requestMethods.length > 1) {
+      throw new Error(
+          "not allowed multi http method for " + swaggerGenerator.getCls().getName());
     }
 
-    protected void processProduces(String[] produces, Swagger swagger) {
-        if (null == produces || produces.length == 0) {
-            return;
-        }
+    swaggerGenerator.setHttpMethod(requestMethods[0].name());
+  }
 
-        swagger.setProduces(Arrays.asList(produces));
+  private void processConsumes(String[] consumes, Swagger swagger) {
+    if (null == consumes || consumes.length == 0) {
+      return;
     }
+
+    swagger.setConsumes(Arrays.asList(consumes));
+  }
+
+  protected void processProduces(String[] produces, Swagger swagger) {
+    if (null == produces || produces.length == 0) {
+      return;
+    }
+
+    swagger.setProduces(Arrays.asList(produces));
+  }
 }

@@ -18,36 +18,35 @@ package io.servicecomb.codec.protobuf.utils.schema;
 
 import java.io.IOException;
 
-import io.servicecomb.common.javassist.MultiWrapper;
-
 import io.protostuff.Input;
 import io.protostuff.Output;
 import io.protostuff.Schema;
+import io.servicecomb.common.javassist.MultiWrapper;
 
 public class ArgsWrapSchema extends AbstractWrapSchema {
 
-    @SuppressWarnings("unchecked")
-    public ArgsWrapSchema(Schema<?> schema) {
-        this.schema = (Schema<Object>) schema;
-    }
+  @SuppressWarnings("unchecked")
+  public ArgsWrapSchema(Schema<?> schema) {
+    this.schema = (Schema<Object>) schema;
+  }
 
-    @Override
-    public Object readFromEmpty() {
-        MultiWrapper wrapper = (MultiWrapper) schema.newMessage();
-        return wrapper.readFields();
-    }
+  @Override
+  public Object readFromEmpty() {
+    MultiWrapper wrapper = (MultiWrapper) schema.newMessage();
+    return wrapper.readFields();
+  }
 
-    public Object readObject(Input input) throws IOException {
-        MultiWrapper wrapper = (MultiWrapper) schema.newMessage();
-        schema.mergeFrom(input, wrapper);
+  public Object readObject(Input input) throws IOException {
+    MultiWrapper wrapper = (MultiWrapper) schema.newMessage();
+    schema.mergeFrom(input, wrapper);
 
-        return wrapper.readFields();
-    }
+    return wrapper.readFields();
+  }
 
-    public void writeObject(Output output, Object value) throws IOException {
-        MultiWrapper wrapper = (MultiWrapper) schema.newMessage();
-        wrapper.writeFields((Object[]) value);
+  public void writeObject(Output output, Object value) throws IOException {
+    MultiWrapper wrapper = (MultiWrapper) schema.newMessage();
+    wrapper.writeFields((Object[]) value);
 
-        schema.writeTo(output, wrapper);
-    }
+    schema.writeTo(output, wrapper);
+  }
 }

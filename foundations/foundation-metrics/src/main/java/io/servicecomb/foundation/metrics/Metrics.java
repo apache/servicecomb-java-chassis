@@ -30,54 +30,53 @@ import io.servicecomb.foundation.metrics.performance.PerfStatSuccFail;
  *
  */
 public class Metrics extends CommonThread {
-    // 每个线程只在本线程内部做统计，不涉及多线程并发
-    // 每个周期，统计线程会对所有线程做一次汇总，并与前一周期结果做对比，得出本周期的统计数据
-    protected static final ThreadLocal<Map<String, PerfStatSuccFail>> LOCAL_PERF_STAT_MAP = new ThreadLocal<>();
+  // 每个线程只在本线程内部做统计，不涉及多线程并发
+  // 每个周期，统计线程会对所有线程做一次汇总，并与前一周期结果做对比，得出本周期的统计数据
+  protected static final ThreadLocal<Map<String, PerfStatSuccFail>> LOCAL_PERF_STAT_MAP = new ThreadLocal<>();
 
-    private static PerfStatMonitorMgr perfMonitorMgr = new PerfStatMonitorMgr();
+  private static PerfStatMonitorMgr perfMonitorMgr = new PerfStatMonitorMgr();
 
-    public static void onCycle() throws Exception {
-        long msNow = System.currentTimeMillis();
+  public static void onCycle() throws Exception {
+    long msNow = System.currentTimeMillis();
 
-        synchronized (perfMonitorMgr) {
-            perfMonitorMgr.onCycle(msNow, MetricsConfig.getMsCycle());
-        }
+    synchronized (perfMonitorMgr) {
+      perfMonitorMgr.onCycle(msNow, MetricsConfig.getMsCycle());
+    }
+  }
+
+  public static long getMsTick() {
+    return MetricsThread.getMsTick();
+  }
+
+  public static void registerPerfStat(PerfStat perfStat, int index) {
+    synchronized (perfMonitorMgr) {
+      perfMonitorMgr.registerPerfStat(perfStat, index);
+    }
+  }
+
+  public static PerfStatSuccFail getOrCreateLocalPerfStat(String name, int index) {
+    Map<String, PerfStatSuccFail> map = LOCAL_PERF_STAT_MAP.get();
+    if (map == null) {
+      map = new HashMap<>();
+      LOCAL_PERF_STAT_MAP.set(map);
     }
 
-    public static long getMsTick() {
-        return MetricsThread.getMsTick();
+    PerfStatSuccFail perfStat = map.get(name);
+    if (perfStat == null) {
+      perfStat = new PerfStatSuccFail(name);
+      // System.out.println(" *************************create stat " +
+      // name);
+      map.put(name, perfStat);
+
+      registerPerfStat(perfStat, index);
     }
 
-    public static void registerPerfStat(PerfStat perfStat, int index) {
-        synchronized (perfMonitorMgr) {
-            perfMonitorMgr.registerPerfStat(perfStat, index);
-        }
+    return perfStat;
+  }
+
+  public static Map<String, PerfStat> getMonitorPerfStat() {
+    synchronized (perfMonitorMgr) {
+      return perfMonitorMgr.getMonitorPerfStat();
     }
-
-    public static PerfStatSuccFail getOrCreateLocalPerfStat(String name, int index) {
-        Map<String, PerfStatSuccFail> map = LOCAL_PERF_STAT_MAP.get();
-        if (map == null) {
-            map = new HashMap<>();
-            LOCAL_PERF_STAT_MAP.set(map);
-        }
-
-        PerfStatSuccFail perfStat = map.get(name);
-        if (perfStat == null) {
-            perfStat = new PerfStatSuccFail(name);
-            // System.out.println(" *************************create stat " +
-            // name);
-            map.put(name, perfStat);
-
-            registerPerfStat(perfStat, index);
-
-        }
-
-        return perfStat;
-    }
-
-    public static Map<String, PerfStat> getMonitorPerfStat() {
-        synchronized (perfMonitorMgr) {
-            return perfMonitorMgr.getMonitorPerfStat();
-        }
-    }
+  }
 }
