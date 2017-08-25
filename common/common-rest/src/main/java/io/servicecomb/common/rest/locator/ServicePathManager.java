@@ -16,6 +16,7 @@
 
 package io.servicecomb.common.rest.locator;
 
+import io.servicecomb.serviceregistry.api.Const;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
@@ -26,7 +27,6 @@ import org.springframework.util.StringUtils;
 
 import io.servicecomb.common.rest.RestConst;
 import io.servicecomb.common.rest.definition.RestOperationMeta;
-import io.servicecomb.core.Const;
 import io.servicecomb.core.definition.MicroserviceMeta;
 import io.servicecomb.core.definition.OperationMeta;
 import io.servicecomb.core.definition.SchemaMeta;

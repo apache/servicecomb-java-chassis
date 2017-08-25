@@ -18,6 +18,7 @@ package io.servicecomb.transport.rest.client.http;
 
 import static org.mockito.Mockito.when;
 
+import io.servicecomb.serviceregistry.api.Const;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -30,7 +31,6 @@ import io.servicecomb.common.rest.RestConst;
 import io.servicecomb.common.rest.codec.produce.ProduceProcessor;
 import io.servicecomb.common.rest.definition.RestOperationMeta;
 import io.servicecomb.common.rest.definition.path.URLPathBuilder;
-import io.servicecomb.core.Const;
 import io.servicecomb.core.Endpoint;
 import io.servicecomb.core.Invocation;
 import io.servicecomb.core.definition.OperationMeta;

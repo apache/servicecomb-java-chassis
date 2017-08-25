@@ -5,6 +5,13 @@ service_description:
     key1: value1
     key2: value2
   propertyExtentedClass: io.servicecomb.serviceregistry.MicroServicePropertyExtendedStub
+  paths:
+    - path: /test1/testpath
+      property:
+        checksession: false
+    - path: /test2/testpath
+      property:
+        checksession: true
 instance_description:
   properties:
     key0: value0

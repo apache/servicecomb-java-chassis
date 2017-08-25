@@ -35,6 +35,4 @@ public final class Const {
     public static final String SRC_MICROSERVICE = "x-cse-src-microservice";
 
     public static final String TARGET_MICROSERVICE = "x-cse-target-microservice";
-
-    public static final String URL_PREFIX = "urlPrefix";
 }

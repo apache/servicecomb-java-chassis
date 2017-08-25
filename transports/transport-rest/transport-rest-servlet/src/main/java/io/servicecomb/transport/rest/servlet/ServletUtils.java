@@ -16,22 +16,19 @@
 
 package io.servicecomb.transport.rest.servlet;
 
+import io.servicecomb.foundation.common.exceptions.ServiceCombException;
+import io.servicecomb.foundation.common.net.IpPort;
+import io.servicecomb.foundation.common.net.NetUtils;
+import io.servicecomb.serviceregistry.api.Const;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
-
 import javax.servlet.ServletContext;
 import javax.servlet.ServletRegistration;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
-
-import io.servicecomb.core.Const;
-import io.servicecomb.foundation.common.exceptions.ServiceCombException;
-import io.servicecomb.foundation.common.net.IpPort;
-import io.servicecomb.foundation.common.net.NetUtils;
 
 public class ServletUtils {
     private static final Logger LOGGER = LoggerFactory.getLogger(ServletUtils.class);
