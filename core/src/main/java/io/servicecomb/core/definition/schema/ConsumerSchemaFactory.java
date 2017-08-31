@@ -16,13 +16,6 @@
 
 package io.servicecomb.core.definition.schema;
 
-import javax.inject.Inject;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
-
 import io.servicecomb.core.definition.MicroserviceMeta;
 import io.servicecomb.core.definition.SchemaMeta;
 import io.servicecomb.core.definition.SchemaUtils;
@@ -31,6 +24,11 @@ import io.servicecomb.serviceregistry.RegistryUtils;
 import io.servicecomb.serviceregistry.api.registry.Microservice;
 import io.servicecomb.serviceregistry.client.ServiceRegistryClient;
 import io.swagger.models.Swagger;
+import javax.inject.Inject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
 @Component
 public class ConsumerSchemaFactory extends AbstractSchemaFactory<ConsumerSchemaContext> {
@@ -71,8 +69,8 @@ public class ConsumerSchemaFactory extends AbstractSchemaFactory<ConsumerSchemaC
       Microservice microservice =
           findMicroservice(microserviceMeta, microserviceVersionRule);
       if (microservice == null) {
-        throw new Error(
-            String.format("can not get microservice from service center, appId=%s, name=%s",
+        throw new IllegalStateException(
+            String.format("Probably invoke a service before it is registered, appId=%s, name=%s",
                 microserviceMeta.getAppId(),
                 microserviceName));
       }

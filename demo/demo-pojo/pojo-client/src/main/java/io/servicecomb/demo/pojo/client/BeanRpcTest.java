@@ -41,6 +41,10 @@ public class BeanRpcTest {
               e1.printStackTrace();
             }
             continue;
+          } catch (Throwable e) {
+            System.out.println("XXXXXXXXXXXXXXXXXXXXXXXX: teset case error");
+            e.printStackTrace();
+            System.exit(0);
           }
         }
       }
