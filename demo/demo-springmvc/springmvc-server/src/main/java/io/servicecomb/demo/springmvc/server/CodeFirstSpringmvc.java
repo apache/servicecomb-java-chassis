@@ -17,6 +17,7 @@
 package io.servicecomb.demo.springmvc.server;
 
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -59,10 +60,19 @@ public class CodeFirstSpringmvc {
   @RequestMapping(path = "/responseEntity", method = RequestMethod.POST)
   public ResponseEntity<Date> responseEntity(InvocationContext c1, @RequestAttribute("date") Date date) {
     HttpHeaders headers = new HttpHeaders();
-    headers.add("h1", "h1v " + c1.getContext().toString());
+    Map<String, String> result = new HashMap<>();
+    result.put("x-cse-src-microservice", c1.getContext().get("x-cse-src-microservice"));
+    if(c1.getContext().get("contextKey")!= null) {
+      result.put("contextKey", c1.getContext().get("contextKey"));
+    }
+    headers.add("h1", "h1v " + result.toString());
 
     InvocationContext c2 = ContextUtils.getInvocationContext();
-    headers.add("h2", "h2v " + c2.getContext().toString());
+    result.put("x-cse-src-microservice", c2.getContext().get("x-cse-src-microservice"));
+    if(c2.getContext().get("contextKey")!= null) {
+      result.put("contextKey", c1.getContext().get("contextKey"));
+    }
+    headers.add("h2", "h2v " + result.toString());
 
     return new ResponseEntity<Date>(date, headers, HttpStatus.ACCEPTED);
   }
@@ -72,12 +82,15 @@ public class CodeFirstSpringmvc {
       @ResponseHeader(name = "h2", response = String.class)})
   @RequestMapping(path = "/cseResponse", method = RequestMethod.GET)
   public Response cseResponse(InvocationContext c1) {
+    Map<String, String> result = new HashMap<>();
+    result.put("x-cse-src-microservice", c1.getContext().get("x-cse-src-microservice"));
     Response response = Response.createSuccess(Status.ACCEPTED, new User());
     Headers headers = response.getHeaders();
-    headers.addHeader("h1", "h1v " + c1.getContext().toString());
+    headers.addHeader("h1", "h1v " + result.toString());
 
     InvocationContext c2 = ContextUtils.getInvocationContext();
-    headers.addHeader("h2", "h2v " + c2.getContext().toString());
+    result.put("x-cse-src-microservice", c2.getContext().get("x-cse-src-microservice"));
+    headers.addHeader("h2", "h2v " + result.toString());
 
     return response;
   }

@@ -17,6 +17,7 @@
 package io.servicecomb.transport.rest.vertx;
 
 import java.io.InputStream;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -99,6 +100,17 @@ public class RestVertxHttpRequest implements RestServerRequestInternal {
       }
     }
     return null;
+  }
+
+  @Override
+  public Map<String, String> getHeaderParams() {
+    Map<String, String> headers = new HashMap<>();
+    Iterator<Entry<String, String>> ite = request.headers().iterator();
+    while (ite.hasNext()) {
+      Entry<String, String> entry = ite.next();
+      headers.put(entry.getKey(), entry.getValue());
+    }
+    return headers;
   }
 
   @Override

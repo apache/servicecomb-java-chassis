@@ -16,15 +16,6 @@
 
 package io.servicecomb.common.rest;
 
-import java.nio.charset.StandardCharsets;
-import java.util.Map;
-
-import javax.ws.rs.core.Response.Status;
-
-import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import io.servicecomb.common.rest.codec.RestCodec;
 import io.servicecomb.common.rest.codec.RestServerRequestInternal;
 import io.servicecomb.common.rest.codec.produce.ProduceProcessor;
@@ -43,6 +34,12 @@ import io.servicecomb.foundation.common.utils.JsonUtils;
 import io.servicecomb.serviceregistry.RegistryUtils;
 import io.servicecomb.swagger.invocation.Response;
 import io.servicecomb.swagger.invocation.exception.InvocationException;
+import java.nio.charset.StandardCharsets;
+import java.util.Map;
+import javax.ws.rs.core.Response.Status;
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public abstract class AbstractRestServer<HTTP_RESPONSE> {
   private static final Logger LOGGER = LoggerFactory.getLogger(AbstractRestServer.class);
@@ -55,14 +52,16 @@ public abstract class AbstractRestServer<HTTP_RESPONSE> {
   }
 
   protected void setContext(Invocation invocation, RestServerRequestInternal restRequest) throws Exception {
+    Map<String, String> context = restRequest.getHeaderParams();
     String strCseContext = restRequest.getHeaderParam(Const.CSE_CONTEXT);
     if (StringUtils.isEmpty(strCseContext)) {
-      return;
+      invocation.setContext(context);
+    } else {
+      Map<String, String> cseContext =
+          JsonUtils.readValue(strCseContext.getBytes(StandardCharsets.UTF_8), Map.class);
+      context.putAll(cseContext);
+      invocation.setContext(context);
     }
-    @SuppressWarnings("unchecked")
-    Map<String, String> cseContext =
-        JsonUtils.readValue(strCseContext.getBytes(StandardCharsets.UTF_8), Map.class);
-    invocation.setContext(cseContext);
   }
 
   protected void handleRequest(RestServerRequestInternal restRequest, HTTP_RESPONSE httpResponse) {
