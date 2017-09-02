@@ -1,0 +1,92 @@
+<!DOCTYPE HTML>
+<!--
+  ~  Copyright 2017 Huawei Technologies Co., Ltd
+  ~
+  ~  Licensed under the Apache License, Version 2.0 (the "License");
+  ~  you may not use this file except in compliance with the License.
+  ~  You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~  Unless required by applicable law or agreed to in writing, software
+  ~  distributed under the License is distributed on an "AS IS" BASIS,
+  ~  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~  See the License for the specific language governing permissions and
+  ~  limitations under the License.
+  -->
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css" integrity="sha384-/Y6pD6FV/Vv2HJnA6t+vslU6fwYXjCFtcEpHbNJ0lyAFsXTsjBbfaDjzALeQsN6M" crossorigin="anonymous">
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js" integrity="sha384-b/U6ypiBEHpOf/4+1nzFpr53nxSS+GLCkfwBdFNTxtclqqenISfwAzpKaMNFNmj4" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/js/bootstrap.min.js" integrity="sha384-h0AbiXch4ZDo7tp9hKZ4TsHbi047NrKGLO3SEJAg45jXxnGIfYzk4Si90RDIqNm1" crossorigin="anonymous"></script>
+  </head>
+  <body>
+    <div class="container">
+
+      <div class="col-md-1"></div>
+      <div class="col-md-10">
+        <h2 align="center">BMI Calculator</h2>
+
+        <div class="form-group">
+          <label for="height" class="col-form-label"><b>Height(cm):</b></label>
+          <input type="number" class="form-control" id="height" name="height" placeholder="Please input your height">
+        </div>
+        <div class="form-group">
+            <label for="weight" class="col-form-label"><b>Weight(kg):</b></label>
+            <input type="number" class="form-control" id="weight" name="weight" placeholder="Please input your weight">
+        </div>
+        <button type="submit" class="btn btn-primary" id="submit">Submit</button>
+
+        <br/>
+        <div class="alert alert-light" role="alert" id="bmi">
+          <h3>Your BMI result is: <span id="bmi_result"></span></h3>
+        </div>
+        <div class="alert alert-secondary" role="alert">
+          <b>Note: </b>Range of healthy weight is between <b>18.5</b> and <b>24.9</b>.
+        </div>
+      </div>
+    </div>
+
+  </body>
+  <script>
+      $("#submit").click(function () {
+        if ( !$("#height").val() || !$("#weight").val() ) {
+          alert("Please input both the height and weight");
+          return;
+        }
+        if ( $("#height").val() <= 0 ) {
+          alert("Please input a value greater than 0");
+          $("#height").val('');
+          return;
+        }
+        if ( $("#weight").val() <= 0 ) {
+          alert("Please input a value greater than 0");
+          $("#weight").val('');
+          return;
+        }
+        var jqxhr = $.get("/calculator/bmi?height=" + $("#height").val() + "&weight=" + $("#weight").val());
+        jqxhr.done(function (data) {
+          $("#bmi_result").text(data);
+          if ( data < 18.5 || (data < 30 && data >= 25) ) {
+            $("#bmi").removeClass();
+            $("#bmi").addClass("alert");
+            $("#bmi").addClass("alert-warning");
+          } else if ( data < 25 && data >= 18.5 ) {
+            $("#bmi").removeClass();
+            $("#bmi").addClass("alert");
+            $("#bmi").addClass("alert-success");
+          } else {
+            $("#bmi").removeClass();
+            $("#bmi").addClass("alert");
+            $("#bmi").addClass("alert-danger");
+          }
+        });
+      });
+    </script>
+
+</html>

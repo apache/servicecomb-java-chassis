@@ -1,0 +1,10 @@
+# all interconnected microservices must belong to an application wth the same ID
+APPLICATION_ID: bmi
+service_description:
+# name of the declaring microservice
+  name: gateway
+  version: 0.0.1
+cse:
+  service:
+    registry:
+      address: http://127.0.0.1:30100
