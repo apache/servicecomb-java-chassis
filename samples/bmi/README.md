@@ -1,9 +1,14 @@
 # Body Mass Index(BMI) Calculator Microservice Demo
+## Architecture of BMI Calculator
+There are two microservices in this demo.
+* Webapp (API Gateway)
+* BMI Calculator (computing service)
+
 ## Prerequisite
 1. [Oracle JDK 1.8+](https://docs.oracle.com/javase/8/docs/technotes/guides/install/install_overview.html)
 2. [Maven 3.x](https://maven.apache.org/install.html)
 
-## Steps(Linux)
+## Quick Start(Linux)
 1. Run the service center
 ```bash
 wget https://github.com/ServiceComb/service-center/releases/download/0.1.1/service-center-0.1.1-linux-amd64.tar.gz

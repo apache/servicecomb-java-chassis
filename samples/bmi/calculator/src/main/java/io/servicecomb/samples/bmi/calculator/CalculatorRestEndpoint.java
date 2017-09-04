@@ -17,10 +17,7 @@
 package io.servicecomb.samples.bmi.calculator;
 
 
-import java.math.BigDecimal;
-import java.math.RoundingMode;
-import java.text.DecimalFormat;
-
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -37,19 +34,17 @@ import io.servicecomb.provider.rest.common.RestSchema;
 @Controller
 public class CalculatorRestEndpoint implements CalculatorEndpoint {
 
+  private final CalculatorService calculatorService;
+
+  @Autowired
+  public CalculatorRestEndpoint(CalculatorService calculatorService) {
+    this.calculatorService = calculatorService;
+  }
+
   @Override
   @RequestMapping(value = "/bmi", method = RequestMethod.GET)
   @ResponseBody
   public double calculate(double height, double weight) {
-    double heightInMeter = height / 100;
-    double bmi = weight / (heightInMeter * heightInMeter);
-    return roundToOnePrecision(bmi);
-  }
-
-  private double roundToOnePrecision(double value) {
-    if (Double.isInfinite(value) || Double.isNaN(value)) {
-      return value;
-    }
-    return new BigDecimal(value).setScale(1, RoundingMode.HALF_UP).doubleValue();
+    return calculatorService.calculate(height, weight);
   }
 }
