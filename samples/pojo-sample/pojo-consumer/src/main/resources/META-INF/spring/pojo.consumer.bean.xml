@@ -25,6 +25,6 @@
 		http://www.huawei.com/schema/paas/cse/rpc classpath:META-INF/spring/spring-paas-cse-rpc.xsd">
 
 	<cse:rpc-reference id="hello" microservice-name="hello"
-		schema-id="hello" ></cse:rpc-reference>
+		schema-id="hello" interface="io.servicecomb.samples.common.schema.Hello"></cse:rpc-reference>
 
 </beans>
