@@ -16,12 +16,9 @@
 
 package io.servicecomb.common.rest.codec;
 
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import java.util.Map.Entry;
 import javax.ws.rs.core.HttpHeaders;
 
 import io.servicecomb.foundation.common.utils.HttpUtils;
@@ -78,15 +75,6 @@ public class LocalRestServerRequest implements RestServerRequest {
   public String getHeaderParam(String key) {
     List<String> headerValues = httpHeaders.get(key);
     return (headerValues != null ? headerValues.get(0) : null);
-  }
-
-  @Override
-  public Map<String, String> getHeaderParams() {
-    Map<String, String> headers = new HashMap<>();
-    for(String key : httpHeaders.keySet()) {
-      headers.put(key, httpHeaders.get(key) != null ? httpHeaders.get(key).get(0) : null);
-    }
-    return headers;
   }
 
   @Override

@@ -18,8 +18,6 @@ package io.servicecomb.transport.rest.servlet;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Enumeration;
-import java.util.HashMap;
 import java.util.Map;
 
 import javax.servlet.AsyncContext;
@@ -81,17 +79,6 @@ public class RestServletHttpRequest implements RestServerRequestInternal {
   @Override
   public String getHeaderParam(String key) {
     return request.getHeader(key);
-  }
-
-  @Override
-  public Map<String, String> getHeaderParams() {
-    Map<String, String> headers = new HashMap<>();
-    Enumeration<String> headerNames = request.getHeaderNames();
-    while (headerNames.hasMoreElements()) {
-      String headerName = headerNames.nextElement();
-      headers.put(headerName, request.getHeader(headerName));
-    }
-    return headers;
   }
 
   @Override

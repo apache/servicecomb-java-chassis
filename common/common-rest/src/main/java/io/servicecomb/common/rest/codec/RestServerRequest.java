@@ -36,8 +36,6 @@ public interface RestServerRequest {
 
   String getHeaderParam(String key);
 
-  Map<String, String> getHeaderParams();
-
   Object getFormParam(String key);
 
   String getCookieParam(String key);
