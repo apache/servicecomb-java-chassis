@@ -17,7 +17,6 @@
 package io.servicecomb.demo.jaxrs.server;
 
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -66,20 +65,10 @@ public class CodeFirstJaxrs {
   public Response cseResponse(InvocationContext c1) {
     Response response = Response.createSuccess(Status.ACCEPTED, new User());
     Headers headers = response.getHeaders();
-
-    Map<String, String> result = new HashMap<>();
-    result.put("x-cse-src-microservice", c1.getContext().get("x-cse-src-microservice"));
-    if(c1.getContext().get("contextKey")!= null) {
-      result.put("contextKey", c1.getContext().get("contextKey"));
-    }
-    headers.addHeader("h1", "h1v " + result.toString());
+    headers.addHeader("h1", "h1v " + c1.getContext().toString());
 
     InvocationContext c2 = ContextUtils.getInvocationContext();
-    result.put("x-cse-src-microservice", c2.getContext().get("x-cse-src-microservice"));
-    if(c2.getContext().get("contextKey")!= null) {
-      result.put("contextKey", c2.getContext().get("contextKey"));
-    }
-    headers.addHeader("h2", "h2v " + result.toString());
+    headers.addHeader("h2", "h2v " + c2.getContext().toString());
 
     return response;
   }
