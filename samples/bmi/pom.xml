@@ -27,7 +27,7 @@
 
   <groupId>io.servicecomb.samples</groupId>
   <artifactId>bmi</artifactId>
-  <version>0.0.1-SNAPSHOT</version>
+  <version>0.3.0-SNAPSHOT</version>
   <packaging>pom</packaging>
 
   <modules>
@@ -42,7 +42,7 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <java.version>1.8</java.version>
-    <java-chassis.version>0.2.0</java-chassis.version>
+    <java-chassis.version>${project.version}</java-chassis.version>
   </properties>
 
   <dependencyManagement>
