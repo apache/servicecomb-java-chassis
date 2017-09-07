@@ -75,7 +75,7 @@ public abstract class BizkeeperCommand extends HystrixObservableCommand<Response
         }
         f.onCompleted();
       } catch (Exception e) {
-        LOG.warn("fallbacke failed due to:" + e.getMessage());
+        LOG.warn("fallback failed due to:" + e.getMessage());
         throw e;
       }
     });
