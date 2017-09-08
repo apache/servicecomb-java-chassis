@@ -19,6 +19,9 @@ package io.servicecomb.swagger.generator.core;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 
+import org.springframework.context.EmbeddedValueResolverAware;
+import org.springframework.util.StringValueResolver;
+
 import io.servicecomb.foundation.common.RegisterManager;
 import io.servicecomb.foundation.common.utils.SPIServiceUtils;
 import io.servicecomb.swagger.extend.annotations.ResponseHeaders;
@@ -47,7 +50,9 @@ import io.swagger.annotations.SwaggerDefinition;
 /**
  * 根据class反向生成swagger的上下文对象
  */
-public abstract class AbstractSwaggerGeneratorContext implements SwaggerGeneratorContext {
+public abstract class AbstractSwaggerGeneratorContext implements SwaggerGeneratorContext, EmbeddedValueResolverAware {
+  protected StringValueResolver stringValueResolver;
+
   protected AnnotationProcessorManager<ClassAnnotationProcessor> classAnnotationMgr =
       new AnnotationProcessorManager<>(AnnotationType.CLASS);
 
@@ -79,6 +84,20 @@ public abstract class AbstractSwaggerGeneratorContext implements SwaggerGenerato
     initDefaultParameterProcessor();
 
     initResponseTypeProcessorMgr();
+  }
+
+  @Override
+  public void setEmbeddedValueResolver(StringValueResolver resolver) {
+    this.stringValueResolver = resolver;
+  }
+
+  @Override
+  public String resolveStringValue(String strVal) {
+    if (stringValueResolver == null) {
+      return strVal;
+    }
+
+    return stringValueResolver.resolveStringValue(strVal);
   }
 
   protected void initClassAnnotationMgr() {

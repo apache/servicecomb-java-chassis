@@ -111,6 +111,7 @@ public class OperationGenerator {
   }
 
   public void setPath(String path) {
+    path = context.resolveStringValue(path);
     if (!path.startsWith("/")) {
       path = "/" + path;
     }

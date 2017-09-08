@@ -253,6 +253,7 @@ public class SwaggerGenerator {
   }
 
   public void setBasePath(String basePath) {
+    basePath = context.resolveStringValue(basePath);
     swagger.setBasePath(basePath);
   }
 
