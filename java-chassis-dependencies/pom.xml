@@ -800,6 +800,12 @@
       </dependency>
       <dependency>
         <groupId>io.servicecomb</groupId>
+        <artifactId>foundation-test-scaffolding</artifactId>
+        <version>0.3.0-SNAPSHOT</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>io.servicecomb</groupId>
         <artifactId>foundation-ssl</artifactId>
         <version>0.3.0-SNAPSHOT</version>
       </dependency>
