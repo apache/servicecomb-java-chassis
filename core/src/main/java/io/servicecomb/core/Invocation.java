@@ -74,6 +74,9 @@ public class Invocation extends SwaggerInvocation {
   }
 
   public Transport getTransport() {
+    if (endpoint == null) {
+      throw new IllegalStateException("Endpoint is empty. Forget to configure \"loadbalance\" in consumer handler chain?");
+    }
     return endpoint.getTransport();
   }
 
