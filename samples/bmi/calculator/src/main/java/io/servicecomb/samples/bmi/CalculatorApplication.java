@@ -14,19 +14,18 @@
  *  limitations under the License.
  */
 
-package io.servicecomb.samples.bmi.webapp;
+package io.servicecomb.samples.bmi;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.cloud.netflix.zuul.EnableZuulProxy;
 
 import io.servicecomb.springboot.starter.provider.EnableServiceComb;
 
 @SpringBootApplication
-@EnableZuulProxy
 @EnableServiceComb
-public class GatewayApplication {
+public class CalculatorApplication {
+
   public static void main(String[] args) {
-    SpringApplication.run(GatewayApplication.class, args);
+    SpringApplication.run(CalculatorApplication.class, args);
   }
 }

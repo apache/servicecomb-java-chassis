@@ -14,15 +14,15 @@
  *  limitations under the License.
  */
 
-package io.servicecomb.samples.bmi.calculator;
+package io.servicecomb.samples.bmi;
 
 /**
- * {@link CalculatorService} provides interface of actual BMI calculation.
+ * {@link CalculatorEndpoint} provides the common interface for different endpoint implementations.
+ * It needs to be declared as public.
  */
-public interface CalculatorService {
-
+public interface CalculatorEndpoint {
   /**
-   * @see CalculatorEndpoint#calculate(double, double)
+   * Calculate the BMI(Body Mass Index).
    */
   double calculate(double height, double weight);
 }

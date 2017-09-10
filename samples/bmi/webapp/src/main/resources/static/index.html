@@ -49,44 +49,46 @@
         <div class="alert alert-secondary" role="alert">
           <b>Note: </b>Range of healthy weight is between <b>18.5</b> and <b>24.9</b>.
         </div>
+        <div id="error" class="alert alert-danger" role="alert"><p id="error_message"></p></div>
       </div>
     </div>
 
-  </body>
-  <script>
+    <script>
+      $("#error").hide();
       $("#submit").click(function () {
         if ( !$("#height").val() || !$("#weight").val() ) {
           alert("Please input both the height and weight");
           return;
         }
-        if ( $("#height").val() <= 0 ) {
-          alert("Please input a value greater than 0");
-          $("#height").val('');
-          return;
-        }
-        if ( $("#weight").val() <= 0 ) {
-          alert("Please input a value greater than 0");
-          $("#weight").val('');
-          return;
-        }
-        var jqxhr = $.get("/calculator/bmi?height=" + $("#height").val() + "&weight=" + $("#weight").val());
-        jqxhr.done(function (data) {
-          $("#bmi_result").text(data);
-          if ( data < 18.5 || (data < 30 && data >= 25) ) {
-            $("#bmi").removeClass();
-            $("#bmi").addClass("alert");
-            $("#bmi").addClass("alert-warning");
-          } else if ( data < 25 && data >= 18.5 ) {
-            $("#bmi").removeClass();
-            $("#bmi").addClass("alert");
-            $("#bmi").addClass("alert-success");
-          } else {
-            $("#bmi").removeClass();
-            $("#bmi").addClass("alert");
-            $("#bmi").addClass("alert-danger");
+        $.ajax({
+          url: "/calculator/bmi?height=" + $("#height").val() + "&weight=" + $("#weight").val(),
+          type: "GET",
+          success: function (data) {
+            $("#error").hide();
+            $("#bmi_result").text(data);
+            if ( data < 18.5 || (data < 30 && data >= 25) ) {
+              $("#bmi").removeClass().addClass("alert").addClass("alert-warning");
+            } else if ( data < 25 && data >= 18.5 ) {
+              $("#bmi").removeClass().addClass("alert").addClass("alert-success");
+            } else {
+              $("#bmi").removeClass().addClass("alert").addClass("alert-danger");
+            }
+          },
+          error: function (xhr) {
+            $("#bmi").removeClass().addClass("alert").addClass("alert-light");
+            $("#bmi_result").text('');
+            if (xhr.responseText.length == 0) {
+              $("#error_message").text("empty fallback called");
+              $("#error").removeClass().addClass("alert").addClass("alert-success").show();
+              return;
+            }
+            var resp = JSON.parse(xhr.responseText);
+            $("#error_message").text(resp.error + ": " + resp.exception)
+            $("#error").removeClass().addClass("alert").addClass("alert-danger").show();
           }
         });
       });
     </script>
+  </body>
 
 </html>
