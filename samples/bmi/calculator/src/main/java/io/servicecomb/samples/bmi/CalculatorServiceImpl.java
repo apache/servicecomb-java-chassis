@@ -14,7 +14,7 @@
  *  limitations under the License.
  */
 
-package io.servicecomb.samples.bmi.calculator;
+package io.servicecomb.samples.bmi;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -29,15 +29,15 @@ public class CalculatorServiceImpl implements CalculatorService {
    */
   @Override
   public double calculate(double height, double weight) {
+    if (height <= 0 || weight <= 0) {
+      throw new IllegalArgumentException("Arguments must be above 0");
+    }
     double heightInMeter = height / 100;
     double bmi = weight / (heightInMeter * heightInMeter);
     return roundToOnePrecision(bmi);
   }
 
   private double roundToOnePrecision(double value) {
-    if (Double.isInfinite(value) || Double.isNaN(value)) {
-      return value;
-    }
     return new BigDecimal(value).setScale(1, RoundingMode.HALF_UP).doubleValue();
   }
 }

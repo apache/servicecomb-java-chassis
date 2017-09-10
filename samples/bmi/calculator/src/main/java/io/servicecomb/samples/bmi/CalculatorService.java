@@ -14,18 +14,15 @@
  *  limitations under the License.
  */
 
-package io.servicecomb.samples.bmi.calculator;
+package io.servicecomb.samples.bmi;
 
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
+/**
+ * {@link CalculatorService} provides interface of actual BMI calculation.
+ */
+public interface CalculatorService {
 
-import io.servicecomb.springboot.starter.provider.EnableServiceComb;
-
-@SpringBootApplication
-@EnableServiceComb
-public class CalculatorApplication {
-
-  public static void main(String[] args) {
-    SpringApplication.run(CalculatorApplication.class, args);
-  }
+  /**
+   * @see CalculatorEndpoint#calculate(double, double)
+   */
+  double calculate(double height, double weight);
 }

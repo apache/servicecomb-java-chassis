@@ -14,7 +14,7 @@
  *  limitations under the License.
  */
 
-package io.servicecomb.samples.bmi.calculator;
+package io.servicecomb.samples.bmi;
 
 
 import org.springframework.beans.factory.annotation.Autowired;
