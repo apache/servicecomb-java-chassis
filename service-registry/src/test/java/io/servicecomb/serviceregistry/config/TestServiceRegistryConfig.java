@@ -21,7 +21,7 @@ import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import io.servicecomb.serviceregistry.ArchaiusUtils;
+import io.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 
 public class TestServiceRegistryConfig {
   @BeforeClass

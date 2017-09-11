@@ -24,6 +24,8 @@ import org.junit.Test;
 
 import com.netflix.config.DynamicPropertyFactory;
 
+import io.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
+
 public class TestServletConfig {
   @BeforeClass
   public static void classSetup() {

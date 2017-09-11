@@ -43,6 +43,7 @@ import io.servicecomb.config.archaius.sources.ConfigModel;
 import io.servicecomb.config.archaius.sources.MicroserviceConfigLoader;
 import io.servicecomb.config.spi.ConfigCenterConfigurationSource;
 import io.servicecomb.foundation.common.utils.SPIServiceUtils;
+import io.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import mockit.Deencapsulation;
 import mockit.Expectations;
 import mockit.Mocked;
