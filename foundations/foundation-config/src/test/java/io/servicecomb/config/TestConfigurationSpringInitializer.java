@@ -28,6 +28,7 @@ import org.springframework.core.Ordered;
 import com.netflix.config.ConfigurationManager;
 
 import io.servicecomb.config.archaius.sources.MicroserviceConfigLoader;
+import io.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import mockit.Deencapsulation;
 
 public class TestConfigurationSpringInitializer {

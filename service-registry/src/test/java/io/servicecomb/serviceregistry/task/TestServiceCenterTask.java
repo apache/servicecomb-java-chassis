@@ -23,7 +23,7 @@ import org.junit.Test;
 
 import com.google.common.eventbus.EventBus;
 
-import io.servicecomb.serviceregistry.ArchaiusUtils;
+import io.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import io.servicecomb.serviceregistry.api.registry.Microservice;
 import io.servicecomb.serviceregistry.client.ServiceRegistryClient;
 import io.servicecomb.serviceregistry.config.ServiceRegistryConfig;
