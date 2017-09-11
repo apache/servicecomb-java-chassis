@@ -72,4 +72,29 @@
       </plugin>
     </plugins>
   </build>
+
+  <profiles>
+    <profile>
+      <id>loadbalance</id>
+      <dependencies>
+        <dependency>
+          <groupId>io.servicecomb</groupId>
+          <artifactId>handler-loadbalance</artifactId>
+        </dependency>
+      </dependencies>
+    </profile>
+    <profile>
+      <id>tracing</id>
+      <dependencies>
+        <dependency>
+          <groupId>io.servicecomb</groupId>
+          <artifactId>handler-tracing-zipkin</artifactId>
+        </dependency>
+        <dependency>
+          <groupId>io.servicecomb</groupId>
+          <artifactId>spring-cloud-zuul-zipkin</artifactId>
+        </dependency>
+      </dependencies>
+    </profile>
+  </profiles>
 </project>
