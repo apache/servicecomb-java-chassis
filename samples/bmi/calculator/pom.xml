@@ -64,4 +64,34 @@
       </plugin>
     </plugins>
   </build>
+
+  <profiles>
+    <profile>
+      <id>flowcontrol</id>
+      <dependencies>
+        <dependency>
+          <groupId>io.servicecomb</groupId>
+          <artifactId>handler-flowcontrol-qps</artifactId>
+        </dependency>
+      </dependencies>
+    </profile>
+    <profile>
+      <id>bizkeeper</id>
+      <dependencies>
+        <dependency>
+          <groupId>io.servicecomb</groupId>
+          <artifactId>handler-bizkeeper</artifactId>
+        </dependency>
+      </dependencies>
+    </profile>
+    <profile>
+      <id>tracing</id>
+      <dependencies>
+        <dependency>
+          <groupId>io.servicecomb</groupId>
+          <artifactId>handler-tracing-zipkin</artifactId>
+        </dependency>
+      </dependencies>
+    </profile>
+  </profiles>
 </project>

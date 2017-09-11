@@ -53,7 +53,8 @@
       </div>
     </div>
 
-    <script>
+  </body>
+  <script>
       $("#error").hide();
       $("#submit").click(function () {
         if ( !$("#height").val() || !$("#weight").val() ) {
@@ -83,12 +84,16 @@
               return;
             }
             var resp = JSON.parse(xhr.responseText);
-            $("#error_message").text(resp.error + ": " + resp.exception)
-            $("#error").removeClass().addClass("alert").addClass("alert-danger").show();
+            if (xhr.status == 429) {
+              $("#error_message").text(resp.message);
+              $("#error").removeClass().addClass("alert").addClass("alert-danger").show();
+            } else {
+              $("#error_message").text(resp.error + ": " + resp.exception)
+              $("#error").removeClass().addClass("alert").addClass("alert-danger").show();
+            }
           }
         });
       });
     </script>
-  </body>
 
 </html>
