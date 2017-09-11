@@ -45,4 +45,6 @@ public interface SwaggerGeneratorContext {
   ResponseTypeProcessor findResponseTypeProcessor(Type responseType);
 
   void postProcessOperation(OperationGenerator operationGenerator);
+
+  String resolveStringValue(String strVal);
 }
