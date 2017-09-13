@@ -22,7 +22,6 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.Mockito;
 
-import io.servicecomb.common.rest.definition.RestOperationMeta;
 import io.servicecomb.core.Invocation;
 import io.servicecomb.foundation.common.net.IpPort;
 import io.servicecomb.swagger.invocation.AsyncResponse;
@@ -41,10 +40,9 @@ public class TestVertxGetMethod {
     assertEquals(10, ipPort.getPort());
     Mockito.when(ipPort.getHostOrIp()).thenReturn("ever");
     assertEquals("ever", ipPort.getHostOrIp());
-    RestOperationMeta operation = Mockito.mock(RestOperationMeta.class);
     AsyncResponse asyncResp = Mockito.mock(AsyncResponse.class);
     HttpClientRequest obj =
-        VertxGetMethod.INSTANCE.createRequest(client, invocation, ipPort, "good", operation, asyncResp);
+        VertxGetMethod.INSTANCE.createRequest(client, invocation, ipPort, "good", asyncResp);
     Assert.assertNull(obj);
   }
 }

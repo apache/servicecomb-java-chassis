@@ -136,7 +136,7 @@ public class TestVertxHttpMethod extends VertxHttpMethod {
       String contentType = httpResponse.getHeader("Content-Type");
       ProduceProcessor produceProcessor = Mockito.mock(ProduceProcessor.class);
       when(swaggerRestOperation.findProduceProcessor(contentType)).thenReturn(produceProcessor);
-      this.handleResponse(invocation, httpResponse, swaggerRestOperation, asyncResp);
+      this.handleResponse(invocation, httpResponse, asyncResp);
     } catch (Exception ex) {
       status = true;
     }
@@ -145,7 +145,7 @@ public class TestVertxHttpMethod extends VertxHttpMethod {
 
   @Override
   protected HttpClientRequest createRequest(HttpClient client, Invocation invocation, IpPort ipPort, String path,
-      RestOperationMeta operation, AsyncResponse asyncResp) {
+      AsyncResponse asyncResp) {
     return request;
   }
 

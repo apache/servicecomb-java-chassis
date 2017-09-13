@@ -63,7 +63,6 @@ public abstract class VertxHttpMethod {
             invocation,
             ipPort,
             path,
-            swaggerRestOperation,
             asyncResp);
     clientRequest.putHeader(io.servicecomb.core.Const.TARGET_MICROSERVICE, invocation.getMicroserviceName());
     RestClientRequestImpl restClientRequest = new RestClientRequestImpl(clientRequest);
@@ -97,11 +96,9 @@ public abstract class VertxHttpMethod {
 
   protected abstract HttpClientRequest createRequest(HttpClient client, Invocation invocation, IpPort ipPort,
       String path,
-      RestOperationMeta operation,
       AsyncResponse asyncResp);
 
   protected void handleResponse(Invocation invocation, HttpClientResponse httpResponse,
-      RestOperationMeta restOperation,
       AsyncResponse asyncResp) {
     httpResponse.bodyHandler(responseBuf -> {
       // 此时是在网络线程中，不应该就地处理，通过dispatcher转移线程
