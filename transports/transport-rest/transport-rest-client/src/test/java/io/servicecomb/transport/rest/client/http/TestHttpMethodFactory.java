@@ -16,8 +16,15 @@
 
 package io.servicecomb.transport.rest.client.http;
 
+import java.util.List;
+
+import javax.ws.rs.HttpMethod;
+
 import org.junit.Assert;
 import org.junit.Test;
+
+import io.servicecomb.common.rest.filter.HttpClientFilter;
+import mockit.Deencapsulation;
 
 public class TestHttpMethodFactory {
 
@@ -31,5 +38,14 @@ public class TestHttpMethodFactory {
       status = false;
     }
     Assert.assertFalse(status);
+  }
+
+  @Test
+  public void testFilter() throws Exception {
+    List<HttpClientFilter> httpClientFilters = Deencapsulation.getField(HttpMethodFactory.class, "httpClientFilters");
+    Assert.assertSame(httpClientFilters, HttpMethodFactory.findHttpMethodInstance(HttpMethod.GET).httpClientFilters);
+    Assert.assertSame(httpClientFilters, HttpMethodFactory.findHttpMethodInstance(HttpMethod.POST).httpClientFilters);
+    Assert.assertSame(httpClientFilters, HttpMethodFactory.findHttpMethodInstance(HttpMethod.PUT).httpClientFilters);
+    Assert.assertSame(httpClientFilters, HttpMethodFactory.findHttpMethodInstance(HttpMethod.DELETE).httpClientFilters);
   }
 }

@@ -17,15 +17,29 @@
 package io.servicecomb.transport.rest.client.http;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.ws.rs.HttpMethod;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import io.servicecomb.common.rest.filter.HttpClientFilter;
+import io.servicecomb.foundation.common.utils.SPIServiceUtils;
+
 public final class HttpMethodFactory {
+  private static final Logger LOGGER = LoggerFactory.getLogger(HttpMethodFactory.class);
 
   private static Map<String, VertxHttpMethod> httpMethodMap = new HashMap<>();
 
+  private static List<HttpClientFilter> httpClientFilters = SPIServiceUtils.getSortedService(HttpClientFilter.class);
+
   static {
+    for (HttpClientFilter filter : httpClientFilters) {
+      LOGGER.info("Found HttpClientFilter: {}.", filter.getClass().getName());
+    }
+
     addHttpMethod(HttpMethod.GET, VertxGetMethod.INSTANCE);
     addHttpMethod(HttpMethod.POST, VertxPostMethod.INSTANCE);
     addHttpMethod(HttpMethod.PUT, VertxPutMethod.INSTANCE);
@@ -33,6 +47,7 @@ public final class HttpMethodFactory {
   }
 
   static void addHttpMethod(String httpMethod, VertxHttpMethod instance) {
+    instance.setHttpClientFilters(httpClientFilters);
     httpMethodMap.put(httpMethod, instance);
   }
 
