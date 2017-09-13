@@ -126,7 +126,7 @@ public abstract class AbstractConfigLoader {
       return 1;
     }
     // min order load first
-    int result = m1.getOrder() - m2.getOrder();
+    int result = Integer.compare(m1.getOrder(), m2.getOrder());
     if (result != 0) {
       return result;
     }
@@ -135,6 +135,6 @@ public abstract class AbstractConfigLoader {
   }
 
   private int doFinalSort(ConfigModelWrapper w1, ConfigModelWrapper w2) {
-    return w1.addOrder - w2.addOrder;
+    return Integer.compare(w1.addOrder, w2.addOrder);
   }
 }
