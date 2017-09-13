@@ -16,8 +16,18 @@
 
 package io.servicecomb.foundation.common.utils;
 
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.ServiceLoader;
+
+import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Test;
+import org.springframework.core.Ordered;
+
+import mockit.Deencapsulation;
+import mockit.Expectations;
+import mockit.Mocked;
 
 /**
  * Test SPIServiceUtils 
@@ -35,5 +45,28 @@ public class TestSPIServiceUtils {
   public void testGetTargetServiceNotNull() {
     SPIServiceDef service = SPIServiceUtils.getTargetService(SPIServiceDef.class);
     Assert.assertTrue(SPIServiceDef.class.isInstance(service));
+  }
+
+  @Test
+  public void testSort(@Mocked Ordered o1, @Mocked Ordered o2) {
+    Map<String, Ordered> map = new LinkedHashMap<>();
+    map.put("a", o1);
+    map.put("b", o2);
+
+    ServiceLoader<Ordered> serviceLoader = ServiceLoader.load(Ordered.class);
+    Deencapsulation.setField(serviceLoader, "providers", map);
+    new Expectations(ServiceLoader.class) {
+      {
+        o1.getOrder();
+        result = -1;
+        o2.getOrder();
+        result = Integer.MAX_VALUE;
+        ServiceLoader.load(Ordered.class);
+        result = serviceLoader;
+      }
+    };
+
+    Assert.assertThat(SPIServiceUtils.getSortedService(Ordered.class), Matchers.contains(o1, o2));
+    Assert.assertThat(SPIServiceUtils.getPriorityHighestService(Ordered.class), Matchers.is(o1));
   }
 }
