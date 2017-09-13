@@ -33,11 +33,7 @@ public class CompositeSwaggerGeneratorContext implements EmbeddedValueResolverAw
   private List<SwaggerGeneratorContext> contextList;
 
   public CompositeSwaggerGeneratorContext() {
-    contextList = SPIServiceUtils.getAllService(SwaggerGeneratorContext.class);
-
-    contextList.sort((context1, context2) -> {
-      return context1.getOrder() - context2.getOrder();
-    });
+    contextList = SPIServiceUtils.getSortedService(SwaggerGeneratorContext.class);
 
     for (SwaggerGeneratorContext context : contextList) {
       LOGGER.info("Found swagger generator context: {}", context.getClass().getName());
