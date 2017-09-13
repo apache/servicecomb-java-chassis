@@ -20,6 +20,7 @@ public final class RestConst {
   private RestConst() {
   }
 
+  public static final String CONFIG_COPY_REQUEST = "servicecomb.rest.copy-request";
   public static final String HTTP_REQUEST_CREATOR = "server-http-request-creator";
 
   public static final String REST_CLIENT_REQUEST_PATH = "rest-client-request-path";

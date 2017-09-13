@@ -21,13 +21,18 @@ import static org.junit.Assert.assertEquals;
 import javax.servlet.AsyncContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.xml.ws.Holder;
 
+import org.apache.commons.configuration.Configuration;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 
+import com.netflix.config.DynamicPropertyFactory;
+
+import io.servicecomb.common.rest.RestConst;
 import io.servicecomb.common.rest.codec.RestServerRequestInternal;
 import io.servicecomb.common.rest.codec.produce.ProduceProcessor;
 import io.servicecomb.common.rest.definition.RestOperationMeta;
@@ -118,5 +123,26 @@ public class TestServletRestServer {
       status = false;
     }
     Assert.assertTrue(status);
+  }
+
+  @Test
+  public void testCopyRequest(@Mocked HttpServletRequest request, @Mocked HttpServletResponse response) {
+    Holder<HttpServletRequest> holder = new Holder<>();
+    ServletRestServer servletRestServer = new ServletRestServer() {
+      @Override
+      protected void handleRequest(RestServerRequestInternal restRequest, HttpServletResponse httpResponse) {
+        holder.value = restRequest.getHttpRequest();
+      }
+    };
+    servletRestServer.service(request, response);
+    Assert.assertSame(request, holder.value);
+
+    Configuration cfg = (Configuration) DynamicPropertyFactory.getBackingConfigurationSource();;
+    cfg.addProperty(RestConst.CONFIG_COPY_REQUEST, true);
+
+    servletRestServer.service(request, response);
+    Assert.assertEquals(CachedHttpServletRequest.class, holder.value.getClass());
+
+    cfg.clearProperty(RestConst.CONFIG_COPY_REQUEST);
   }
 }

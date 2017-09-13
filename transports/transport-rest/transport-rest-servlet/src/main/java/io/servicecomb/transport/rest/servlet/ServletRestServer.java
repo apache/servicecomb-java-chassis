@@ -24,6 +24,9 @@ import javax.servlet.AsyncContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.netflix.config.DynamicBooleanProperty;
+import com.netflix.config.DynamicPropertyFactory;
+
 import io.servicecomb.common.rest.AbstractRestServer;
 import io.servicecomb.common.rest.RestConst;
 import io.servicecomb.common.rest.codec.RestServerRequestInternal;
@@ -35,7 +38,14 @@ import io.servicecomb.swagger.invocation.exception.InvocationException;
 public class ServletRestServer extends AbstractRestServer<HttpServletResponse> {
   protected RestAsyncListener restAsyncListener = new RestAsyncListener();
 
+  protected DynamicBooleanProperty cacheRequest =
+      DynamicPropertyFactory.getInstance().getBooleanProperty(RestConst.CONFIG_COPY_REQUEST, false);
+
   public void service(HttpServletRequest request, HttpServletResponse response) {
+    if (cacheRequest.get()) {
+      request = new CachedHttpServletRequest(request);
+    }
+
     // 异步场景
     final AsyncContext asyncCtx = request.startAsync();
     asyncCtx.addListener(restAsyncListener);
