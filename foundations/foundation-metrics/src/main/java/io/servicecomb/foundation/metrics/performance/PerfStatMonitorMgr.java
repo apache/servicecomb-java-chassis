@@ -57,7 +57,7 @@ public class PerfStatMonitorMgr {
 
         @Override
         public int compare(PerfStatMonitor o1, PerfStatMonitor o2) {
-          return o1.getIndex() - o2.getIndex();
+          return Integer.compare(o1.getIndex(), o2.getIndex());
         }
       });
     }
