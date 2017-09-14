@@ -16,6 +16,9 @@
 
 package io.servicecomb.foundation.vertx;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.concurrent.CountDownLatch;
 
 import javax.xml.ws.Holder;
@@ -23,11 +26,14 @@ import javax.xml.ws.Holder;
 import org.junit.Assert;
 import org.junit.Test;
 
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
+import io.servicecomb.foundation.vertx.stream.BufferInputStream;
 import io.vertx.core.Vertx;
 import io.vertx.core.VertxOptions;
-import io.vertx.core.json.JsonObject;
+import io.vertx.core.buffer.Buffer;
 
-public class TestVertex {
+public class TestVertxUtils {
   @Test
   public void testGetOrCreateVertx() throws InterruptedException {
     Vertx vertx = VertxUtils.getOrCreateVertxByName("ut", null);
@@ -62,11 +68,53 @@ public class TestVertex {
   }
 
   @Test
-  public void testSimpleJsonObject() {
-    SimpleJsonObject oObject = new SimpleJsonObject();
-    JsonObject oJsonObject = oObject.put("testKey", oObject);
-    Assert.assertEquals(true, oJsonObject.containsKey("testKey"));
-    JsonObject oCopyObject = oObject.copy();
-    Assert.assertEquals(true, oCopyObject.containsKey("testKey"));
+  public void testgetBytesFastBufferInputStream() throws IOException {
+    byte[] bytes = new byte[] {1};
+    ByteBuf byteBuf = Unpooled.wrappedBuffer(bytes);
+
+    try (BufferInputStream inputStream = new BufferInputStream(byteBuf)) {
+      byte[] result = VertxUtils.getBytesFast(inputStream);
+      Assert.assertSame(bytes, result);
+    }
+  }
+
+  @Test
+  public void testgetBytesFastNormalInputStream() throws IOException {
+    byte[] bytes = new byte[] {1};
+    
+    try (InputStream inputStream = new ByteArrayInputStream(bytes)) {
+      byte[] result = VertxUtils.getBytesFast(inputStream);
+      Assert.assertEquals(1, result[0]);
+    }
+  }
+
+  @Test
+  public void testgetBytesFastBuffer() {
+    Buffer buffer = Buffer.buffer();
+    buffer.appendByte((byte) 1);
+
+    byte[] result = VertxUtils.getBytesFast(buffer);
+    Assert.assertEquals(1, result[0]);
+  }
+
+  @Test
+  public void testgetBytesFastByteBufHasArray() {
+    byte[] bytes = new byte[] {1};
+    ByteBuf byteBuf = Unpooled.wrappedBuffer(bytes);
+
+    byte[] result = VertxUtils.getBytesFast(byteBuf);
+    Assert.assertSame(bytes, result);
+  }
+
+  @Test
+  public void testgetBytesFastByteBufCopy() {
+    ByteBuf byteBuf = Unpooled.directBuffer();
+    byteBuf.writeByte(1);
+    Assert.assertFalse(byteBuf.hasArray());
+
+    byte[] result = VertxUtils.getBytesFast(byteBuf);
+    Assert.assertEquals(1, result[0]);
+
+    byteBuf.release();
   }
 }
