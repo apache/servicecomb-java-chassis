@@ -16,7 +16,6 @@
 
 package io.servicecomb.transport.rest.servlet;
 
-import java.io.OutputStream;
 import java.util.List;
 import java.util.Map.Entry;
 
@@ -27,11 +26,16 @@ import javax.servlet.http.HttpServletResponse;
 import com.netflix.config.DynamicBooleanProperty;
 import com.netflix.config.DynamicPropertyFactory;
 
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
 import io.servicecomb.common.rest.AbstractRestServer;
 import io.servicecomb.common.rest.RestConst;
 import io.servicecomb.common.rest.codec.RestServerRequestInternal;
 import io.servicecomb.common.rest.codec.produce.ProduceProcessor;
+import io.servicecomb.common.rest.filter.HttpServerFilter;
 import io.servicecomb.core.Invocation;
+import io.servicecomb.foundation.vertx.VertxUtils;
+import io.servicecomb.foundation.vertx.stream.BufferOutputStream;
 import io.servicecomb.swagger.invocation.Response;
 import io.servicecomb.swagger.invocation.exception.InvocationException;
 
@@ -57,7 +61,8 @@ public class ServletRestServer extends AbstractRestServer<HttpServletResponse> {
 
   @SuppressWarnings("deprecation")
   @Override
-  protected void doSendResponse(HttpServletResponse httpServerResponse, ProduceProcessor produceProcessor,
+  protected void doSendResponse(Invocation invocation, HttpServletResponse httpServerResponse,
+      ProduceProcessor produceProcessor,
       Response response) throws Exception {
     httpServerResponse.setStatus(response.getStatusCode(), response.getReasonPhrase());
     httpServerResponse.setContentType(produceProcessor.getName());
@@ -70,15 +75,24 @@ public class ServletRestServer extends AbstractRestServer<HttpServletResponse> {
       }
     }
 
-    // 直接写到stream中去，避免重复分配内存，这是chunk模式，不必设置contentLength
     // TODO:设置buffer大小，这很影响性能
     Object body = response.getResult();
     if (response.isFailed()) {
       body = ((InvocationException) body).getErrorData();
     }
-    OutputStream output = httpServerResponse.getOutputStream();
-    produceProcessor.encodeResponse(output, body);
-    httpServerResponse.flushBuffer();
+
+    try (BufferOutputStream output = new BufferOutputStream(Unpooled.compositeBuffer())) {
+      produceProcessor.encodeResponse(output, body);
+
+      ByteBuf byteBuf = output.getByteBuf();
+      int length = byteBuf.readableBytes();
+      byte[] bodyBytes = VertxUtils.getBytesFast(byteBuf);
+      for (HttpServerFilter filter : httpServerFilters) {
+        filter.beforeSendResponse(invocation, httpServerResponse, bodyBytes, length);
+      }
+      httpServerResponse.getOutputStream().write(bodyBytes, 0, length);
+      httpServerResponse.flushBuffer();
+    }
   }
 
   @Override

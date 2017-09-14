@@ -18,7 +18,10 @@ package io.servicecomb.transport.rest.servlet;
 
 import static org.junit.Assert.assertEquals;
 
+import java.io.IOException;
+
 import javax.servlet.AsyncContext;
+import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.ws.Holder;
@@ -108,16 +111,17 @@ public class TestServletRestServer {
   }
 
   @Test
-  public void testDoSendResponse() {
+  public void testDoSendResponse() throws IOException {
     boolean status = true;
     HttpServletResponse httpServerResponse = Mockito.mock(HttpServletResponse.class);
+    Mockito.when(httpServerResponse.getOutputStream()).thenReturn(Mockito.mock(ServletOutputStream.class));
     ProduceProcessor produceProcessor = Mockito.mock(ProduceProcessor.class);
     Object result = Mockito.mock(Object.class);
     Mockito.when(produceProcessor.getName()).thenReturn("testCall");
     assertEquals("testCall", produceProcessor.getName());
     try {
       Response response = Response.create(12, "gjhghjgk", result);
-      servletRestServer.doSendResponse(httpServerResponse, produceProcessor, response);
+      servletRestServer.doSendResponse(null, httpServerResponse, produceProcessor, response);
     } catch (Exception exce) {
       Assert.assertNotNull(exce);
       status = false;

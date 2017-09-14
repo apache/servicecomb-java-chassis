@@ -59,7 +59,7 @@ public class VertxRestServer extends AbstractRestServer<HttpServerResponse> {
         e = cause;
       }
     }
-    sendFailResponse(restRequest, context.response(), e);
+    sendFailResponse(null, restRequest, context.response(), e);
 
     // 走到这里，应该都是不可控制的异常，直接关闭连接
     context.response().close();
@@ -72,7 +72,8 @@ public class VertxRestServer extends AbstractRestServer<HttpServerResponse> {
   }
 
   @Override
-  protected void doSendResponse(HttpServerResponse httpServerResponse, ProduceProcessor produceProcessor,
+  protected void doSendResponse(Invocation invocation, HttpServerResponse httpServerResponse,
+      ProduceProcessor produceProcessor,
       Response response) throws Exception {
     httpServerResponse.setStatusCode(response.getStatusCode());
     httpServerResponse.setStatusMessage(response.getReasonPhrase());
