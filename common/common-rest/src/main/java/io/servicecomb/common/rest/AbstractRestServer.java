@@ -17,8 +17,10 @@
 package io.servicecomb.common.rest;
 
 import java.nio.charset.StandardCharsets;
+import java.util.List;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.Response.Status;
 
 import org.apache.commons.lang3.StringUtils;
@@ -30,6 +32,7 @@ import io.servicecomb.common.rest.codec.RestServerRequestInternal;
 import io.servicecomb.common.rest.codec.produce.ProduceProcessor;
 import io.servicecomb.common.rest.codec.produce.ProduceProcessorManager;
 import io.servicecomb.common.rest.definition.RestOperationMeta;
+import io.servicecomb.common.rest.filter.HttpServerFilter;
 import io.servicecomb.common.rest.locator.OperationLocator;
 import io.servicecomb.common.rest.locator.ServicePathManager;
 import io.servicecomb.core.Const;
@@ -40,6 +43,7 @@ import io.servicecomb.core.definition.MicroserviceMeta;
 import io.servicecomb.core.definition.OperationMeta;
 import io.servicecomb.core.invocation.InvocationFactory;
 import io.servicecomb.foundation.common.utils.JsonUtils;
+import io.servicecomb.foundation.common.utils.SPIServiceUtils;
 import io.servicecomb.serviceregistry.RegistryUtils;
 import io.servicecomb.swagger.invocation.Response;
 import io.servicecomb.swagger.invocation.exception.InvocationException;
@@ -49,6 +53,14 @@ public abstract class AbstractRestServer<HTTP_RESPONSE> {
 
   // 所属的Transport
   protected Transport transport;
+
+  protected List<HttpServerFilter> httpServerFilters = SPIServiceUtils.getSortedService(HttpServerFilter.class);;
+
+  public AbstractRestServer() {
+    for (HttpServerFilter filter : httpServerFilters) {
+      LOGGER.info("Found HttpServerFilter: {}.", filter.getClass().getName());
+    }
+  }
 
   public void setTransport(Transport transport) {
     this.transport = transport;
@@ -106,6 +118,16 @@ public abstract class AbstractRestServer<HTTP_RESPONSE> {
 
     this.setContext(invocation, restRequest);
     this.setHttpRequestContext(invocation, restRequest);
+
+    if (HttpServletRequest.class.isInstance(restRequest.getHttpRequest())) {
+      for (HttpServerFilter filter : httpServerFilters) {
+        Response response = filter.afterReceiveRequest(invocation, restRequest.getHttpRequest());
+        if (response != null) {
+          sendResponse(restRequest, httpResponse, produceProcessor, response);
+          return;
+        }
+      }
+    }
 
     invocation.next(resp -> {
       sendResponse(restRequest, httpResponse, produceProcessor, resp);
