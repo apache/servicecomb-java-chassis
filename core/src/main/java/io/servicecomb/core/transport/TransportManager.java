@@ -77,7 +77,7 @@ public class TransportManager {
 
   protected Transport chooseOneTransport(List<Transport> group) {
     group.sort((t1, t2) -> {
-      return t1.getOrder() - t2.getOrder();
+      return Integer.compare(t1.getOrder(), t2.getOrder());
     });
 
     for (Transport transport : group) {

@@ -176,21 +176,21 @@ public class TestTransportManager {
     new Expectations() {
       {
         t1.getOrder();
-        result = 1;
+        result = Integer.MAX_VALUE;
         t1.canInit();
-        result = false;
+        result = true;
 
         t2.getOrder();
-        result = 2;
+        result = -1000;
         t2.canInit();
-        result = true;
+        result = false;
       }
     };
 
     TransportManager manager = new TransportManager();
     List<Transport> group = Arrays.asList(t1, t2);
 
-    Assert.assertEquals(t2, manager.chooseOneTransport(group));
+    Assert.assertEquals(t1, manager.chooseOneTransport(group));
   }
 
   @Test

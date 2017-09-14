@@ -53,9 +53,9 @@ public class TestMicroserviceConfigLoader {
 
   @Test
   public void configsSortedBySpecifiedOrder() throws MalformedURLException {
-    loader.getConfigModels().add(createConfigModel("jar", 2, "a"));
     loader.getConfigModels().add(createConfigModel("jar", 1, "b"));
-    loader.getConfigModels().add(createConfigModel("jar", 0, "c"));
+    loader.getConfigModels().add(createConfigModel("jar", -10, "c"));
+    loader.getConfigModels().add(createConfigModel("jar", Integer.MAX_VALUE, "a"));
 
     loader.sort();
 

@@ -16,6 +16,9 @@
 
 package io.servicecomb.foundation.metrics.performance;
 
+import java.util.stream.Collectors;
+
+import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -50,5 +53,15 @@ public class TestPerfStatMonitorMgr {
     oPerfStatMonitorMgr.registerPerfStat(oPerfStatSuccFail, 0);
     oPerfStatMonitorMgr.onCycle(System.currentTimeMillis(), 10);
     Assert.assertEquals(1, oPerfStatMonitorMgr.getMonitorPerfStat().size());
+  }
+
+  @Test
+  public void testSort() {
+    oPerfStatMonitorMgr.registerPerfStat(new PerfStatSuccFail("a"), -1);
+    oPerfStatMonitorMgr.registerPerfStat(new PerfStatSuccFail("b"), Integer.MAX_VALUE);
+
+    Assert.assertThat(
+        oPerfStatMonitorMgr.getMonitorList().stream().map(ps -> ps.getName()).collect(Collectors.toList()),
+        Matchers.contains("a", "b"));
   }
 }
