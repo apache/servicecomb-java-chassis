@@ -49,6 +49,12 @@ public class RestClientRequestImpl implements RestClientRequest {
   }
 
   @Override
+  public Buffer getBodyBuffer() throws Exception {
+    genBodyBuffer();
+    return bodyBuffer;
+  }
+
+  @Override
   public void end() throws Exception {
     writeCookies();
 
@@ -63,8 +69,6 @@ public class RestClientRequestImpl implements RestClientRequest {
   }
 
   private void genBodyBuffer() throws Exception {
-    request.putHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON);
-
     if (bodyBuffer != null) {
       return;
     }

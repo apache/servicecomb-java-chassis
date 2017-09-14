@@ -19,6 +19,7 @@ package io.servicecomb.common.rest.codec.param;
 import java.io.InputStream;
 import java.lang.reflect.Type;
 
+import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 
 import org.apache.commons.io.IOUtils;
@@ -70,6 +71,7 @@ public class BodyProcessorCreator implements ParamValueProcessorCreator {
     @Override
     public void setValue(RestClientRequest clientRequest, Object arg) throws Exception {
       try (BufferOutputStream output = new BufferOutputStream()) {
+        clientRequest.putHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON);
         RestObjectMapper.INSTANCE.writeValue(output, arg);
         clientRequest.write(output.getBuffer());
       }

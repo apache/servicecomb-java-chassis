@@ -16,15 +16,23 @@
 
 package io.servicecomb.common.rest.codec.param;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
+import javax.ws.rs.core.HttpHeaders;
+import javax.ws.rs.core.MediaType;
 
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
+import io.servicecomb.common.rest.codec.RestClientRequest;
 import io.servicecomb.common.rest.codec.param.BodyProcessorCreator.RawJsonBodyProcessor;
 import io.servicecomb.swagger.generator.core.SwaggerConst;
 import io.swagger.models.parameters.BodyParameter;
+import mockit.Mock;
+import mockit.MockUp;
 
 public class TestBodyProcessorCreator {
   private static BodyProcessorCreator bodyCreator;
@@ -49,5 +57,22 @@ public class TestBodyProcessorCreator {
     bp.setVendorExtension(SwaggerConst.EXT_RAW_JSON_TYPE, true);
     processor = bodyCreator.create(bp, List.class);
     Assert.assertFalse(RawJsonBodyProcessor.class.isInstance(processor));
+  }
+
+  @Test
+  public void testSetValue() throws Exception {
+    Map<String, String> header = new HashMap<>();
+    RestClientRequest clientRequest = new MockUp<RestClientRequest>() {
+      @Mock
+      public void putHeader(String name, String value) {
+        header.put(name, value);
+      }
+    }.getMockInstance();
+
+    BodyParameter bp = new BodyParameter();
+    ParamValueProcessor processor = bodyCreator.create(bp, String.class);
+    processor.setValue(clientRequest, "abc");
+
+    Assert.assertEquals(MediaType.APPLICATION_JSON, header.get(HttpHeaders.CONTENT_TYPE));
   }
 }

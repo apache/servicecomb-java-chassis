@@ -23,7 +23,6 @@ import io.vertx.core.buffer.Buffer;
  * 在写cookie参数时，没办法多次添加cookie，所以只能进行接口包装
  */
 public interface RestClientRequest {
-
   void write(Buffer bodyBuffer);
 
   void end() throws Exception;
@@ -33,4 +32,6 @@ public interface RestClientRequest {
   void putHeader(String name, String value);
 
   void addForm(String name, Object value);
+
+  Buffer getBodyBuffer() throws Exception;
 }

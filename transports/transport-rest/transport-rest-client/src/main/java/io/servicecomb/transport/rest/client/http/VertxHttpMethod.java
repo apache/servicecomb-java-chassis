@@ -16,6 +16,7 @@
 
 package io.servicecomb.transport.rest.client.http;
 
+import java.util.Collections;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -37,6 +38,7 @@ import io.servicecomb.foundation.vertx.client.http.HttpClientWithContext;
 import io.servicecomb.serviceregistry.api.Const;
 import io.servicecomb.swagger.invocation.AsyncResponse;
 import io.servicecomb.swagger.invocation.Response;
+import io.vertx.core.buffer.Buffer;
 import io.vertx.core.http.HttpClient;
 import io.vertx.core.http.HttpClientRequest;
 import io.vertx.core.http.HttpClientResponse;
@@ -44,7 +46,7 @@ import io.vertx.core.http.HttpClientResponse;
 public abstract class VertxHttpMethod {
   private static final Logger LOGGER = LoggerFactory.getLogger(VertxHttpMethod.class);
 
-  protected List<HttpClientFilter> httpClientFilters;
+  protected List<HttpClientFilter> httpClientFilters = Collections.emptyList();
 
   public void setHttpClientFilters(List<HttpClientFilter> httpClientFilters) {
     this.httpClientFilters = httpClientFilters;
@@ -67,6 +69,11 @@ public abstract class VertxHttpMethod {
     clientRequest.putHeader(io.servicecomb.core.Const.TARGET_MICROSERVICE, invocation.getMicroserviceName());
     RestClientRequestImpl restClientRequest = new RestClientRequestImpl(clientRequest);
     RestCodec.argsToRest(invocation.getArgs(), swaggerRestOperation, restClientRequest);
+
+    Buffer requestBodyBuffer = restClientRequest.getBodyBuffer();
+    for (HttpClientFilter filter : httpClientFilters) {
+      filter.beforeSendRequest(invocation, clientRequest, requestBodyBuffer);
+    }
 
     clientRequest.exceptionHandler(e -> {
       LOGGER.error(e.toString());
