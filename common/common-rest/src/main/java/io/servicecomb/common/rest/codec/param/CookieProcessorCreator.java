@@ -18,12 +18,14 @@ package io.servicecomb.common.rest.codec.param;
 
 import java.lang.reflect.Type;
 
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.type.TypeFactory;
 
 import io.servicecomb.common.rest.codec.RestClientRequest;
 import io.servicecomb.common.rest.codec.RestObjectMapper;
-import io.servicecomb.common.rest.codec.RestServerRequest;
 import io.swagger.models.parameters.Parameter;
 
 public class CookieProcessorCreator implements ParamValueProcessorCreator {
@@ -35,13 +37,20 @@ public class CookieProcessorCreator implements ParamValueProcessorCreator {
     }
 
     @Override
-    public Object getValue(RestServerRequest request) throws Exception {
-      String param = request.getCookieParam(paramPath);
-      if (param == null) {
+    public Object getValue(HttpServletRequest request) throws Exception {
+      Cookie[] cookies = request.getCookies();
+      if (cookies == null) {
         return null;
       }
 
-      return convertValue(param, targetType);
+      String value = null;
+      for (Cookie cookie : cookies) {
+        if (paramPath.equals(cookie.getName())) {
+          value = cookie.getValue();
+        }
+      }
+
+      return convertValue(value, targetType);
     }
 
     @Override
