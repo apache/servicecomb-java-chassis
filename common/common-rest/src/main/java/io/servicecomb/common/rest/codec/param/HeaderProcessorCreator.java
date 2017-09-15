@@ -17,13 +17,16 @@
 package io.servicecomb.common.rest.codec.param;
 
 import java.lang.reflect.Type;
+import java.util.Collections;
+import java.util.Enumeration;
+
+import javax.servlet.http.HttpServletRequest;
 
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.type.TypeFactory;
 
 import io.servicecomb.common.rest.codec.RestClientRequest;
 import io.servicecomb.common.rest.codec.RestObjectMapper;
-import io.servicecomb.common.rest.codec.RestServerRequest;
 import io.swagger.models.parameters.Parameter;
 
 public class HeaderProcessorCreator implements ParamValueProcessorCreator {
@@ -35,13 +38,20 @@ public class HeaderProcessorCreator implements ParamValueProcessorCreator {
     }
 
     @Override
-    public Object getValue(RestServerRequest request) throws Exception {
-      String param = request.getHeaderParam(paramPath);
-      if (param == null) {
-        return null;
+    public Object getValue(HttpServletRequest request) throws Exception {
+      Object value = null;
+      if (targetType.isContainerType()) {
+        Enumeration<String> headerValues = request.getHeaders(paramPath);
+        if (headerValues == null) {
+          return null;
+        }
+
+        value = Collections.list(headerValues);
+      } else {
+        value = request.getHeader(paramPath);
       }
 
-      return convertValue(param, targetType);
+      return convertValue(value, targetType);
     }
 
     @Override
