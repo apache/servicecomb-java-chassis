@@ -49,6 +49,7 @@ public class TestTransportClientHandler {
   @Test
   public void test() throws Exception {
     when(invocation.getTransport()).thenReturn(transport);
+    when(invocation.getEndpoint()).thenReturn(endpoint);
     transportClientHandler.handle(invocation, asyncResp);
 
     verify(transport).send(invocation, asyncResp);
