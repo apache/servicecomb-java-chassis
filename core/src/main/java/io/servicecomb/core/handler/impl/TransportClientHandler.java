@@ -34,9 +34,9 @@ public class TransportClientHandler extends AbstractHandler {
     Transport transport = invocation.getTransport();
 
     log.debug(
-        "Sending request {} to end point {}",
-        invocation.getOperationName(),
-        transport.getEndpoint().getEndpoint());
+        "Sending request {} to {}",
+        invocation.getMicroserviceQualifiedName(),
+        invocation.getEndpoint().getEndpoint());
 
     transport.send(invocation, asyncResp);
   }
