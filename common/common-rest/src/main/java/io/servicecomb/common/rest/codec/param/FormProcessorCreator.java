@@ -18,11 +18,12 @@ package io.servicecomb.common.rest.codec.param;
 
 import java.lang.reflect.Type;
 
+import javax.servlet.http.HttpServletRequest;
+
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.type.TypeFactory;
 
 import io.servicecomb.common.rest.codec.RestClientRequest;
-import io.servicecomb.common.rest.codec.RestServerRequest;
 import io.swagger.models.parameters.Parameter;
 
 public class FormProcessorCreator implements ParamValueProcessorCreator {
@@ -34,13 +35,15 @@ public class FormProcessorCreator implements ParamValueProcessorCreator {
     }
 
     @Override
-    public Object getValue(RestServerRequest request) throws Exception {
-      Object param = request.getFormParam(paramPath);
-      if (param == null) {
-        return null;
+    public Object getValue(HttpServletRequest request) throws Exception {
+      Object value = null;
+      if (targetType.isContainerType()) {
+        value = request.getParameterValues(paramPath);
+      } else {
+        value = request.getParameter(paramPath);
       }
 
-      return convertValue(param, targetType);
+      return convertValue(value, targetType);
     }
 
     @Override
