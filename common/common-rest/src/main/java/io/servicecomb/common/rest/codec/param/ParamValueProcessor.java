@@ -16,14 +16,15 @@
 
 package io.servicecomb.common.rest.codec.param;
 
+import javax.servlet.http.HttpServletRequest;
+
 import com.fasterxml.jackson.databind.JavaType;
 
 import io.servicecomb.common.rest.codec.RestClientRequest;
 import io.servicecomb.common.rest.codec.RestObjectMapper;
-import io.servicecomb.common.rest.codec.RestServerRequest;
 
 public interface ParamValueProcessor {
-  Object getValue(RestServerRequest request) throws Exception;
+  Object getValue(HttpServletRequest request) throws Exception;
 
   void setValue(RestClientRequest clientRequest, Object arg) throws Exception;
 
