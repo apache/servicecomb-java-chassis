@@ -35,8 +35,4 @@ public final class ParamValueProcessorCreatorManager extends RegisterManager<Str
   private ParamValueProcessorCreatorManager() {
     super(NAME);
   }
-
-  public ParamValueProcessorCreator getBodyProcessorCreater() {
-    return this.ensureFindValue(BodyProcessorCreator.PARAMTYPE);
-  }
 }

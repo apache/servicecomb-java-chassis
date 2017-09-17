@@ -16,41 +16,160 @@
 
 package io.servicecomb.common.rest.codec.param;
 
-import static org.mockito.Mockito.when;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.core.HttpHeaders;
+import javax.ws.rs.core.MediaType;
 
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
-import org.mockito.Mockito;
 
-import io.servicecomb.common.rest.codec.RestServerRequest;
+import com.fasterxml.jackson.databind.type.TypeFactory;
+
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
+import io.servicecomb.common.rest.codec.RestClientRequest;
+import io.servicecomb.common.rest.codec.param.BodyProcessorCreator.BodyProcessor;
+import io.servicecomb.common.rest.codec.param.BodyProcessorCreator.RawJsonBodyProcessor;
 import io.servicecomb.foundation.vertx.stream.BufferInputStream;
-import io.servicecomb.swagger.generator.core.SwaggerConst;
-import io.swagger.models.parameters.BodyParameter;
 import io.vertx.core.buffer.Buffer;
+import mockit.Expectations;
+import mockit.Mock;
+import mockit.MockUp;
+import mockit.Mocked;
 
 public class TestBodyProcessor {
-  private static RestServerRequest request;
+  @Mocked
+  HttpServletRequest request;
 
-  private static ParamValueProcessor bodyProcessor;
+  Map<String, String> headers = new HashMap<>();
 
-  @Before
-  public void beforeTest() {
-    request = Mockito.mock(RestServerRequest.class);
+  RestClientRequest clientRequest;
+
+  ParamValueProcessor processor;
+
+  ByteBuf inputBodyByteBuf = Unpooled.buffer();
+
+  BufferInputStream inputStream = new BufferInputStream(inputBodyByteBuf);
+
+  Buffer outputBodyBuffer;
+
+  private void createProcessor(Class<?> type) {
+    processor = new BodyProcessor(TypeFactory.defaultInstance().constructType(type));
+  }
+
+  private void createRawJsonProcessor() {
+    processor = new RawJsonBodyProcessor(TypeFactory.defaultInstance().constructType(String.class));
+  }
+
+  private void createClientRequest() {
+    clientRequest = new MockUp<RestClientRequest>() {
+      @Mock
+      void putHeader(String name, String value) {
+        headers.put(name, value);
+      }
+
+      @Mock
+      void write(Buffer bodyBuffer) {
+        outputBodyBuffer = bodyBuffer;
+      }
+    }.getMockInstance();
+  }
+
+  private void initInputStream() throws IOException {
+    new Expectations() {
+      {
+        request.getInputStream();
+        result = inputStream;
+      }
+    };
+  }
+
+  private void setupGetValue(Class<?> type) throws IOException {
+    createProcessor(type);
+    initInputStream();
   }
 
   @Test
-  public void testString() throws Exception {
-    BodyProcessorCreator bodyCreator =
-        (BodyProcessorCreator) ParamValueProcessorCreatorManager.INSTANCE.getBodyProcessorCreater();
-    BodyParameter bp = new BodyParameter();
-    bp.setVendorExtension(SwaggerConst.EXT_RAW_JSON_TYPE, false);
-    bodyProcessor = bodyCreator.create(bp, String.class);
+  public void testGetValueTextPlain() throws Exception {
+    setupGetValue(String.class);
+    inputBodyByteBuf.writeCharSequence("abc", StandardCharsets.UTF_8);
 
-    Buffer buffer = Buffer.buffer("\"abc\"");
-    when(request.getBody()).thenReturn(new BufferInputStream(buffer.getByteBuf()));
+    new Expectations() {
+      {
+        request.getContentType();
+        result = MediaType.TEXT_PLAIN;
+      }
+    };
 
-    String result = (String) bodyProcessor.getValue(request);
-    Assert.assertEquals("abc", result);
+    Assert.assertEquals("abc", processor.getValue(request));
+  }
+
+  @Test
+  public void testGetValueContextTypeJson() throws Exception {
+    setupGetValue(Integer.class);
+    inputBodyByteBuf.writeCharSequence("\"1\"", StandardCharsets.UTF_8);
+
+    new Expectations() {
+      {
+        request.getContentType();
+        result = MediaType.APPLICATION_JSON;
+      }
+    };
+
+    Assert.assertEquals(1, processor.getValue(request));
+  }
+
+  @Test
+  public void testGetValueDefaultJson() throws Exception {
+    setupGetValue(Integer.class);
+    inputBodyByteBuf.writeCharSequence("\"1\"", StandardCharsets.UTF_8);
+
+    Assert.assertEquals(1, processor.getValue(request));
+  }
+
+  @Test
+  public void testSetValue() throws Exception {
+    createClientRequest();
+    createProcessor(String.class);
+
+    processor.setValue(clientRequest, "value");
+    Assert.assertEquals(MediaType.APPLICATION_JSON, headers.get(HttpHeaders.CONTENT_TYPE));
+    Assert.assertEquals("\"value\"", outputBodyBuffer.toString());
+  }
+
+  @Test
+  public void testGetParameterPath() {
+    createProcessor(String.class);
+    Assert.assertEquals("", processor.getParameterPath());
+  }
+
+  @Test
+  public void testGetProcessorType() {
+    createProcessor(String.class);
+    Assert.assertEquals("body", processor.getProcessorType());
+  }
+
+  @Test
+  public void testGetValueRawJson() throws Exception {
+    createRawJsonProcessor();
+    initInputStream();
+    inputBodyByteBuf.writeCharSequence("\"1\"", StandardCharsets.UTF_8);
+
+    Assert.assertEquals("\"1\"", processor.getValue(request));
+  }
+
+  @Test
+  public void testSetValueRawJson() throws Exception {
+    createClientRequest();
+    createRawJsonProcessor();
+
+    processor.setValue(clientRequest, "value");
+    Assert.assertEquals(MediaType.APPLICATION_JSON, headers.get(HttpHeaders.CONTENT_TYPE));
+    Assert.assertEquals("value", outputBodyBuffer.toString());
   }
 }
