@@ -18,12 +18,15 @@ package io.servicecomb.common.rest.codec.param;
 
 import java.lang.reflect.Type;
 import java.net.URLDecoder;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
 
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.type.TypeFactory;
 
+import io.servicecomb.common.rest.RestConst;
 import io.servicecomb.common.rest.codec.RestClientRequest;
-import io.servicecomb.common.rest.codec.RestServerRequest;
 import io.swagger.models.parameters.Parameter;
 
 public class PathProcessorCreator implements ParamValueProcessorCreator {
@@ -35,8 +38,14 @@ public class PathProcessorCreator implements ParamValueProcessorCreator {
     }
 
     @Override
-    public Object getValue(RestServerRequest request) throws Exception {
-      String value = request.getPathParam(paramPath);
+    public Object getValue(HttpServletRequest request) throws Exception {
+      @SuppressWarnings("unchecked")
+      Map<String, String> pathVarMap = (Map<String, String>) request.getAttribute(RestConst.PATH_PARAMETERS);
+      if (pathVarMap == null) {
+        return null;
+      }
+
+      String value = pathVarMap.get(paramPath);
       if (value == null) {
         return null;
       }
