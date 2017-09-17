@@ -18,6 +18,8 @@ package io.servicecomb.common.rest.codec;
 
 import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -49,7 +51,7 @@ public final class RestCodec {
     }
   }
 
-  public static Object[] restToArgs(RestServerRequest request,
+  public static Object[] restToArgs(HttpServletRequest request,
       RestOperationMeta restOperation) throws InvocationException {
     List<RestParam> paramList = restOperation.getParamList();
 
@@ -62,7 +64,9 @@ public final class RestCodec {
 
       return paramValues;
     } catch (Exception e) {
-      LOG.error("Parameter is not valid, cause " + e.getMessage());
+      LOG.error("Parameter is not valid for operation {}, cause ",
+          restOperation.getOperationMeta().getMicroserviceQualifiedName(),
+          e.getMessage());
       throw ExceptionFactory.convertProducerException(e, "Parameter is not valid.");
     }
   }

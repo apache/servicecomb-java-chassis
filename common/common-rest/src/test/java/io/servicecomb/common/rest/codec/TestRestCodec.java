@@ -23,6 +23,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.Response.Status;
 
 import org.junit.AfterClass;
@@ -86,7 +87,7 @@ public class TestRestCodec {
   }
 
   @Test
-  public void testRestToArgs(@Mocked RestServerRequest request,
+  public void testRestToArgs(@Mocked HttpServletRequest request,
       @Mocked RestOperationMeta restOperation, @Mocked RestParam restParam,
       @Mocked ParamValueProcessor processer) throws Exception {
     List<RestParam> params = new ArrayList<>();
@@ -109,7 +110,7 @@ public class TestRestCodec {
   }
 
   @Test
-  public void testRestToArgsExcetpion(@Mocked RestServerRequest request,
+  public void testRestToArgsExcetpion(@Mocked HttpServletRequest request,
       @Mocked RestOperationMeta restOperation, @Mocked RestParam restParam,
       @Mocked ParamValueProcessor processer) throws Exception {
     List<RestParam> params = new ArrayList<>();
@@ -138,7 +139,7 @@ public class TestRestCodec {
   }
 
   @Test
-  public void testRestToArgsInstanceExcetpion(@Mocked RestServerRequest request,
+  public void testRestToArgsInstanceExcetpion(@Mocked HttpServletRequest request,
       @Mocked RestOperationMeta restOperation, @Mocked RestParam restParam,
       @Mocked ParamValueProcessor processer) throws Exception {
     List<RestParam> params = new ArrayList<>();
