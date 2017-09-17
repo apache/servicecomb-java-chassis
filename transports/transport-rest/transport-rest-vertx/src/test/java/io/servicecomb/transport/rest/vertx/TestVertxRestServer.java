@@ -16,13 +16,14 @@
 
 package io.servicecomb.transport.rest.vertx;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 
-import io.servicecomb.common.rest.codec.RestServerRequestInternal;
 import io.servicecomb.common.rest.codec.produce.ProduceProcessor;
 import io.servicecomb.common.rest.definition.RestOperationMeta;
 import io.servicecomb.core.Invocation;
@@ -43,12 +44,12 @@ public class TestVertxRestServer {
     mainRouter.route().handler(BodyHandler.create());
     instance = new VertxRestServer(mainRouter) {
       @Override
-      protected RestOperationMeta findRestOperation(RestServerRequestInternal restRequest) {
-        return super.findRestOperation(restRequest);
+      protected RestOperationMeta findRestOperation(HttpServletRequest request) {
+        return super.findRestOperation(request);
       }
 
       @Override
-      public void sendFailResponse(Invocation invocation, RestServerRequestInternal restRequest,
+      public void sendFailResponse(Invocation invocation, HttpServletRequest request,
           HttpServerResponse httpResponse,
           Throwable throwable) {
       }
@@ -65,8 +66,8 @@ public class TestVertxRestServer {
     boolean status = false;
     try {
       Invocation invocation = Mockito.mock(Invocation.class);
-      RestServerRequestInternal restRequest = Mockito.mock(RestServerRequestInternal.class);
-      instance.setHttpRequestContext(invocation, restRequest);
+      HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
+      instance.setHttpRequestContext(invocation, request);
       Assert.assertNotNull(instance);
     } catch (Exception e) {
       status = true;

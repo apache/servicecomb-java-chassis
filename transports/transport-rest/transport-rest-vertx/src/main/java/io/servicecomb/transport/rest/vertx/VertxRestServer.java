@@ -19,18 +19,19 @@ package io.servicecomb.transport.rest.vertx;
 import java.util.List;
 import java.util.Map.Entry;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import io.netty.handler.codec.http.multipart.HttpPostRequestDecoder.ErrorDataDecoderException;
 import io.servicecomb.common.rest.AbstractRestServer;
 import io.servicecomb.common.rest.RestConst;
-import io.servicecomb.common.rest.codec.RestServerRequestInternal;
 import io.servicecomb.common.rest.codec.produce.ProduceProcessor;
 import io.servicecomb.core.Invocation;
+import io.servicecomb.foundation.vertx.http.VertxToHttpServletRequest;
 import io.servicecomb.swagger.invocation.Response;
 import io.servicecomb.swagger.invocation.exception.InvocationException;
-import io.vertx.core.Future;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.http.HttpServerResponse;
 import io.vertx.ext.web.Router;
@@ -39,8 +40,6 @@ import io.vertx.ext.web.handler.CookieHandler;
 
 public class VertxRestServer extends AbstractRestServer<HttpServerResponse> {
   private static final Logger LOGGER = LoggerFactory.getLogger(VertxRestServer.class);
-
-  private static final String REST_REQUEST = "cse.rest.request";
 
   public VertxRestServer(Router router) {
     super();
@@ -51,7 +50,7 @@ public class VertxRestServer extends AbstractRestServer<HttpServerResponse> {
   private void failureHandler(RoutingContext context) {
     LOGGER.error("http server failed.", context.failure());
 
-    RestServerRequestInternal restRequest = context.get(REST_REQUEST);
+    HttpServletRequest request = context.get(RestConst.REST_REQUEST);
     Throwable e = context.failure();
     if (ErrorDataDecoderException.class.isInstance(e)) {
       Throwable cause = e.getCause();
@@ -59,16 +58,16 @@ public class VertxRestServer extends AbstractRestServer<HttpServerResponse> {
         e = cause;
       }
     }
-    sendFailResponse(null, restRequest, context.response(), e);
+    sendFailResponse(null, request, context.response(), e);
 
     // 走到这里，应该都是不可控制的异常，直接关闭连接
     context.response().close();
   }
 
   private void onRequest(RoutingContext context) {
-    RestServerRequestInternal restRequest = new RestVertxHttpRequest(context, Future.future());
-    context.put(REST_REQUEST, restRequest);
-    handleRequest(restRequest, context.response());
+    HttpServletRequest request = new VertxToHttpServletRequest(context);
+    context.put(RestConst.REST_REQUEST, request);
+    handleRequest(request, context.response());
   }
 
   @Override
@@ -101,9 +100,9 @@ public class VertxRestServer extends AbstractRestServer<HttpServerResponse> {
   }
 
   @Override
-  protected void setHttpRequestContext(Invocation invocation, RestServerRequestInternal restRequest) {
+  protected void setHttpRequestContext(Invocation invocation, HttpServletRequest request) {
 
     invocation.getHandlerContext().put(RestConst.HTTP_REQUEST_CREATOR,
-        new ProducerVertxHttpRequestArgMapper(restRequest.getHttpRequest()));
+        new ProducerVertxHttpRequestArgMapper(request));
   }
 }
