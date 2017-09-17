@@ -30,7 +30,6 @@ import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.servicecomb.common.rest.AbstractRestServer;
 import io.servicecomb.common.rest.RestConst;
-import io.servicecomb.common.rest.codec.RestServerRequestInternal;
 import io.servicecomb.common.rest.codec.produce.ProduceProcessor;
 import io.servicecomb.common.rest.filter.HttpServerFilter;
 import io.servicecomb.core.Invocation;
@@ -55,8 +54,7 @@ public class ServletRestServer extends AbstractRestServer<HttpServletResponse> {
     asyncCtx.addListener(restAsyncListener);
     asyncCtx.setTimeout(ServletConfig.getServerTimeout());
 
-    RestServerRequestInternal restRequest = new RestServletHttpRequest(request, asyncCtx);
-    handleRequest(restRequest, response);
+    handleRequest(request, response);
   }
 
   @SuppressWarnings("deprecation")
@@ -96,8 +94,8 @@ public class ServletRestServer extends AbstractRestServer<HttpServletResponse> {
   }
 
   @Override
-  protected void setHttpRequestContext(Invocation invocation, RestServerRequestInternal restRequest) {
+  protected void setHttpRequestContext(Invocation invocation, HttpServletRequest request) {
     invocation.getHandlerContext().put(RestConst.HTTP_REQUEST_CREATOR,
-        new ProducerServletHttpRequestArgMapper(restRequest.getHttpRequest()));
+        new ProducerServletHttpRequestArgMapper(request));
   }
 }
