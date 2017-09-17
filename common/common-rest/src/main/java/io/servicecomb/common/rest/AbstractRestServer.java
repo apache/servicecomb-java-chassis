@@ -28,7 +28,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import io.servicecomb.common.rest.codec.RestCodec;
-import io.servicecomb.common.rest.codec.RestServerRequestInternal;
 import io.servicecomb.common.rest.codec.produce.ProduceProcessor;
 import io.servicecomb.common.rest.codec.produce.ProduceProcessorManager;
 import io.servicecomb.common.rest.definition.RestOperationMeta;
@@ -66,8 +65,8 @@ public abstract class AbstractRestServer<HTTP_RESPONSE> {
     this.transport = transport;
   }
 
-  protected void setContext(Invocation invocation, RestServerRequestInternal restRequest) throws Exception {
-    String strCseContext = restRequest.getHeaderParam(Const.CSE_CONTEXT);
+  protected void setContext(Invocation invocation, HttpServletRequest request) throws Exception {
+    String strCseContext = request.getHeader(Const.CSE_CONTEXT);
     if (StringUtils.isEmpty(strCseContext)) {
       return;
     }
@@ -77,65 +76,63 @@ public abstract class AbstractRestServer<HTTP_RESPONSE> {
     invocation.setContext(cseContext);
   }
 
-  protected void handleRequest(RestServerRequestInternal restRequest, HTTP_RESPONSE httpResponse) {
+  protected void handleRequest(HttpServletRequest request, HTTP_RESPONSE httpResponse) {
     if (transport == null) {
       transport = CseContext.getInstance().getTransportManager().findTransport(Const.RESTFUL);
     }
 
     try {
-      RestOperationMeta restOperation = findRestOperation(restRequest);
+      RestOperationMeta restOperation = findRestOperation(request);
       OperationMeta operationMeta = restOperation.getOperationMeta();
 
       operationMeta.getExecutor().execute(() -> {
         try {
-          runOnExecutor(restRequest, restOperation, httpResponse);
+          runOnExecutor(request, restOperation, httpResponse);
         } catch (Exception e) {
           LOGGER.error("rest server onRequest error", e);
-          sendFailResponse(null, restRequest, httpResponse, e);
+          sendFailResponse(null, request, httpResponse, e);
         }
       });
     } catch (Exception e) {
       LOGGER.error("rest server onRequest error", e);
-      sendFailResponse(null, restRequest, httpResponse, e);
+      sendFailResponse(null, request, httpResponse, e);
     }
   }
 
-  protected void runOnExecutor(RestServerRequestInternal restRequest, RestOperationMeta restOperation,
+  protected void runOnExecutor(HttpServletRequest request, RestOperationMeta restOperation,
       HTTP_RESPONSE httpResponse) throws Exception {
-    String acceptType = restRequest.getHeaderParam("Accept");
+    String acceptType = request.getHeader("Accept");
     ProduceProcessor produceProcessor =
-        locateProduceProcessor(null, restRequest, httpResponse, restOperation, acceptType);
+        locateProduceProcessor(null, request, httpResponse, restOperation, acceptType);
     if (produceProcessor == null) {
       // locateProduceProcessor内部已经应答了
       return;
     }
 
-    Object[] args = RestCodec.restToArgs(restRequest, restOperation);
+    Object[] args = RestCodec.restToArgs(request, restOperation);
     Invocation invocation =
         InvocationFactory.forProvider(transport.getEndpoint(),
             restOperation.getOperationMeta(),
             args);
 
-    this.setContext(invocation, restRequest);
-    this.setHttpRequestContext(invocation, restRequest);
+    this.setContext(invocation, request);
+    this.setHttpRequestContext(invocation, request);
 
-    if (HttpServletRequest.class.isInstance(restRequest.getHttpRequest())) {
-      for (HttpServerFilter filter : httpServerFilters) {
-        Response response = filter.afterReceiveRequest(invocation, restRequest.getHttpRequest());
-        if (response != null) {
-          sendResponse(invocation, restRequest, httpResponse, produceProcessor, response);
-          return;
-        }
+    for (HttpServerFilter filter : httpServerFilters) {
+      Response response = filter.afterReceiveRequest(invocation, request);
+      if (response != null) {
+        sendResponse(invocation, request, httpResponse, produceProcessor, response);
+        return;
       }
     }
 
     invocation.next(resp -> {
-      sendResponse(invocation, restRequest, httpResponse, produceProcessor, resp);
+      sendResponse(invocation, request, httpResponse, produceProcessor, resp);
     });
   }
 
-  protected RestOperationMeta findRestOperation(RestServerRequestInternal restRequest) {
-    String targetMicroserviceName = restRequest.getHeaderParam(Const.TARGET_MICROSERVICE);
+  protected RestOperationMeta findRestOperation(HttpServletRequest request) {
+    String targetMicroserviceName = request.getHeader(Const.TARGET_MICROSERVICE);
     if (targetMicroserviceName == null) {
       // for compatible
       targetMicroserviceName = RegistryUtils.getMicroservice().getServiceName();
@@ -148,15 +145,14 @@ public abstract class AbstractRestServer<HTTP_RESPONSE> {
       throw new InvocationException(Status.NOT_FOUND, Status.NOT_FOUND.getReasonPhrase());
     }
 
-    OperationLocator locator =
-        servicePathManager.producerLocateOperation(restRequest.getPath(), restRequest.getMethod());
-    restRequest.setPathParamMap(locator.getPathVarMap());
+    OperationLocator locator = servicePathManager.producerLocateOperation(request.getRequestURI(), request.getMethod());
+    request.setAttribute(RestConst.PATH_PARAMETERS, locator.getPathVarMap());
 
     return locator.getOperation();
   }
 
   // 找不到processor，则已经完成了应答，外界不必再处理
-  protected ProduceProcessor locateProduceProcessor(Invocation invocation, RestServerRequestInternal restRequest,
+  protected ProduceProcessor locateProduceProcessor(Invocation invocation, HttpServletRequest request,
       HTTP_RESPONSE httpResponse,
       RestOperationMeta restOperation, String acceptType) {
     ProduceProcessor produceProcessor = restOperation.ensureFindProduceProcessor(acceptType);
@@ -166,18 +162,18 @@ public abstract class AbstractRestServer<HTTP_RESPONSE> {
 
     String msg = String.format("Accept %s is not supported", acceptType);
     InvocationException exception = new InvocationException(Status.NOT_ACCEPTABLE, msg);
-    sendFailResponse(invocation, restRequest, httpResponse, exception);
+    sendFailResponse(invocation, request, httpResponse, exception);
     return null;
   }
 
-  public void sendFailResponse(Invocation invocation, RestServerRequestInternal restRequest, HTTP_RESPONSE httpResponse,
+  public void sendFailResponse(Invocation invocation, HttpServletRequest request, HTTP_RESPONSE httpResponse,
       Throwable throwable) {
     Response response = Response.createProducerFail(throwable);
-    sendResponse(invocation, restRequest, httpResponse, ProduceProcessorManager.DEFAULT_PROCESSOR, response);
+    sendResponse(invocation, request, httpResponse, ProduceProcessorManager.DEFAULT_PROCESSOR, response);
   }
 
   // 成功、失败的统一应答处理，这里不能再出异常了，再出了异常也没办法处理
-  protected void sendResponse(Invocation invocation, RestServerRequestInternal restRequest,
+  protected void sendResponse(Invocation invocation, HttpServletRequest request,
       HTTP_RESPONSE httpServerResponse,
       ProduceProcessor produceProcessor, Response response) {
     try {
@@ -188,9 +184,7 @@ public abstract class AbstractRestServer<HTTP_RESPONSE> {
       // 并且本次调用本身可能就是500进来的
       LOGGER.error("send response failed.", e);
     } finally {
-      if (restRequest != null) {
-        restRequest.complete();
-      }
+      request.getAsyncContext().complete();
     }
   }
 
@@ -200,5 +194,5 @@ public abstract class AbstractRestServer<HTTP_RESPONSE> {
       Response response) throws Exception;
 
   // 将http request注入到invocation的handler context
-  protected abstract void setHttpRequestContext(Invocation invocation, RestServerRequestInternal restRequest);
+  protected abstract void setHttpRequestContext(Invocation invocation, HttpServletRequest request);
 }
