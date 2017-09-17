@@ -17,54 +17,38 @@
 package io.servicecomb.common.rest.codec.param;
 
 import java.lang.reflect.Type;
-import java.util.Collection;
+
+import javax.servlet.http.HttpServletRequest;
 
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.type.TypeFactory;
 
 import io.servicecomb.common.rest.codec.RestClientRequest;
-import io.servicecomb.common.rest.codec.RestObjectMapper;
-import io.servicecomb.common.rest.codec.RestServerRequest;
 import io.swagger.models.parameters.Parameter;
 
 public class QueryProcessorCreator implements ParamValueProcessorCreator {
   public static final String PARAMTYPE = "query";
 
   public static class QueryProcessor extends AbstractParamProcessor {
-    // Query参数可能为数组类型
-    protected boolean isArrayOrCollection;
-
-    public QueryProcessor(String paramPath, JavaType targetType, boolean isArrayOrCollection) {
+    public QueryProcessor(String paramPath, JavaType targetType) {
       super(paramPath, targetType);
-      this.isArrayOrCollection = isArrayOrCollection;
     }
 
     @Override
-    public Object getValue(RestServerRequest request) throws Exception {
-      String[] param = request.getQueryParam(paramPath);
-      if (param == null) {
-        return null;
+    public Object getValue(HttpServletRequest request) throws Exception {
+      Object value = null;
+      if (targetType.isContainerType()) {
+        value = request.getParameterValues(paramPath);
+      } else {
+        value = request.getParameter(paramPath);
       }
 
-      // 处理数组类型query参数
-      if (isArrayOrCollection) {
-        return convertValue(param, targetType);
-      }
-
-      if (param.length == 0) {
-        return null;
-      }
-
-      return convertValue(param[0], targetType);
+      return convertValue(value, targetType);
     }
 
     @Override
     public void setValue(RestClientRequest clientRequest, Object arg) throws Exception {
       // query不需要set
-    }
-
-    protected <T> T convertValue(Object arg, Class<T> cls) throws Exception {
-      return RestObjectMapper.INSTANCE.convertValue(arg, cls);
     }
 
     @Override
@@ -80,8 +64,6 @@ public class QueryProcessorCreator implements ParamValueProcessorCreator {
   @Override
   public ParamValueProcessor create(Parameter parameter, Type genericParamType) {
     JavaType targetType = TypeFactory.defaultInstance().constructType(genericParamType);
-    Class<?> rawCls = targetType.getRawClass();
-    boolean isArrayOrCollection = rawCls.isArray() || Collection.class.isAssignableFrom(rawCls);
-    return new QueryProcessor(parameter.getName(), targetType, isArrayOrCollection);
+    return new QueryProcessor(parameter.getName(), targetType);
   }
 }
