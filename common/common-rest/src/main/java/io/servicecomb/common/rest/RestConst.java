@@ -21,6 +21,7 @@ public final class RestConst {
   }
 
   public static final String CONFIG_COPY_REQUEST = "servicecomb.rest.copy-request";
+
   public static final String HTTP_REQUEST_CREATOR = "server-http-request-creator";
 
   public static final String REST_CLIENT_REQUEST_PATH = "rest-client-request-path";
@@ -32,4 +33,7 @@ public final class RestConst {
   public static final String SCHEME = "cse";
 
   public static final String URI_PREFIX = SCHEME + "://";
+
+  // in HttpServletRequest attribute
+  public static final String PATH_PARAMETERS = "servicecomb-paths";
 }
