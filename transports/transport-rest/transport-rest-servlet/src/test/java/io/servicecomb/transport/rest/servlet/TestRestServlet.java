@@ -17,8 +17,6 @@
 package io.servicecomb.transport.rest.servlet;
 
 import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import org.junit.After;
 import org.junit.Assert;
@@ -28,20 +26,13 @@ import org.mockito.Mockito;
 
 import io.servicecomb.core.CseContext;
 import io.servicecomb.core.transport.TransportManager;
-import io.servicecomb.transport.rest.servlet.common.MockUtil;
 
 public class TestRestServlet {
   private RestServlet restservlet = null;
 
-  private HttpServletRequest request = null;
-
-  private HttpServletResponse response = null;
-
   @Before
   public void setUp() throws Exception {
     restservlet = new RestServlet();
-    request = Mockito.mock(HttpServletRequest.class);
-    response = Mockito.mock(HttpServletResponse.class);
 
     CseContext.getInstance().setTransportManager(Mockito.mock(TransportManager.class));
   }
@@ -55,17 +46,5 @@ public class TestRestServlet {
   public void testInit() throws ServletException {
     restservlet.init();
     Assert.assertTrue(true);
-  }
-
-  @Test
-  public void testService() {
-    boolean status = true;
-    try {
-      MockUtil.getInstance().mockServletRestServer();
-      restservlet.service(request, response);
-    } catch (Exception e) {
-      status = false;
-    }
-    Assert.assertTrue(status);
   }
 }

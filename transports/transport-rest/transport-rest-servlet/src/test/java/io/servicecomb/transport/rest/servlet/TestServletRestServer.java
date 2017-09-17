@@ -16,117 +16,186 @@
 
 package io.servicecomb.transport.rest.servlet;
 
-import static org.junit.Assert.assertEquals;
-
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
-import javax.servlet.AsyncContext;
 import javax.servlet.ServletOutputStream;
+import javax.servlet.WriteListener;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.ws.Holder;
 
 import org.apache.commons.configuration.Configuration;
-import org.junit.After;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
-import org.mockito.Mockito;
 
 import com.netflix.config.DynamicPropertyFactory;
 
 import io.servicecomb.common.rest.RestConst;
-import io.servicecomb.common.rest.codec.RestServerRequestInternal;
 import io.servicecomb.common.rest.codec.produce.ProduceProcessor;
-import io.servicecomb.common.rest.definition.RestOperationMeta;
-import io.servicecomb.core.CseContext;
+import io.servicecomb.common.rest.codec.produce.ProduceProcessorManager;
 import io.servicecomb.core.Invocation;
-import io.servicecomb.core.definition.OperationMeta;
-import io.servicecomb.core.transport.TransportManager;
 import io.servicecomb.swagger.invocation.Response;
-import io.servicecomb.transport.rest.servlet.common.MockUtil;
+import io.servicecomb.swagger.invocation.response.Headers;
+import io.vertx.core.buffer.Buffer;
+import mockit.Expectations;
+import mockit.Mock;
+import mockit.MockUp;
 import mockit.Mocked;
 
 public class TestServletRestServer {
+  ServletRestServer server = new ServletRestServer();
 
-  private ServletRestServer servletRestServer = null;
+  HttpServletResponse httpServerResponse;
 
-  private HttpServletRequest request = null;
+  @Mocked
+  Invocation invocation;
 
-  private HttpServletResponse response = null;
+  ProduceProcessor produceProcessor = ProduceProcessorManager.JSON_PROCESSOR;
 
-  private AsyncContext asyncCtx = null;
+  @Mocked
+  Response response;
 
-  private RestOperationMeta restOperation = null;
+  @Test
+  public void testDoSendResponseStatusAndContentType() throws Exception {
+    new Expectations() {
+      {
+        response.getStatusCode();
+        result = 123;
+        response.getReasonPhrase();
+        result = "reason";
+        response.getHeaders();
+        result = new Error("stop");
+      }
+    };
 
-  private OperationMeta operationMeta = null;
+    Map<String, Object> result = new HashMap<>();
+    httpServerResponse = new MockUp<HttpServletResponse>() {
+      @Mock
+      void setStatus(int sc, String sm) {
+        result.put("statusCode", sc);
+        result.put("reasonPhrase", sm);
+      }
 
-  @Before
-  public void setUp() throws Exception {
-    servletRestServer = new ServletRestServer();
-    request = Mockito.mock(HttpServletRequest.class);
-    response = Mockito.mock(HttpServletResponse.class);
+      @Mock
+      void setContentType(String type) {
+        result.put("contentType", type);
+      }
+    }.getMockInstance();
 
-    asyncCtx = Mockito.mock(AsyncContext.class);
-    restOperation = Mockito.mock(RestOperationMeta.class);
-    operationMeta = Mockito.mock(OperationMeta.class);
-    Mockito.when(request.startAsync()).thenReturn(asyncCtx);
-    Mockito.when(restOperation.getOperationMeta()).thenReturn(operationMeta);
-  }
+    Map<String, Object> expected = new HashMap<>();
+    expected.put("statusCode", 123);
+    expected.put("reasonPhrase", "reason");
+    expected.put("contentType", "application/json");
 
-  @After
-  public void tearDown() throws Exception {
-    servletRestServer = null;
+    try {
+      server.doSendResponse(invocation, httpServerResponse, produceProcessor, response);
+      Assert.fail("must throw exception");
+    } catch (Error e) {
+      Assert.assertEquals(expected, result);
+    }
   }
 
   @Test
-  public void testServiceException(@Mocked TransportManager transportManager) {
-    CseContext.getInstance().setTransportManager(transportManager);
+  public void testDoSendResponseHeaderNull() throws Exception {
+    Headers headers = new Headers();
 
-    boolean status = true;
+    new Expectations() {
+      {
+        response.getResult();
+        result = new Error("stop");
+        response.getHeaders();
+        result = headers;
+      }
+    };
+
+    Headers resultHeaders = new Headers();
+    httpServerResponse = new MockUp<HttpServletResponse>() {
+      @Mock
+      void addHeader(String name, String value) {
+        resultHeaders.addHeader(name, value);
+      }
+    }.getMockInstance();
+
     try {
-      MockUtil.getInstance().mockAbstactRestServer();
-      servletRestServer.service(request, response);
-    } catch (Exception exce) {
-      Assert.assertNotNull(exce);
-      status = false;
+      server.doSendResponse(invocation, httpServerResponse, produceProcessor, response);
+      Assert.fail("must throw exception");
+    } catch (Error e) {
+      Assert.assertEquals(null, resultHeaders.getHeaderMap());
     }
-    Assert.assertTrue(status);
-
-    CseContext.getInstance().setTransportManager(null);
   }
 
   @Test
-  public void testSetHttpRequestContext() {
-    boolean status = true;
+  public void testDoSendResponseHeaderNormal() throws Exception {
+    Headers headers = new Headers();
+    headers.addHeader("h1", "h1v1");
+    headers.addHeader("h1", "h1v2");
+    headers.addHeader("h2", "h2v");
+
+    new Expectations() {
+      {
+        response.getResult();
+        result = new Error("stop");
+        response.getHeaders();
+        result = headers;
+      }
+    };
+
+    Headers resultHeaders = new Headers();
+    httpServerResponse = new MockUp<HttpServletResponse>() {
+      @Mock
+      void addHeader(String name, String value) {
+        resultHeaders.addHeader(name, value);
+      }
+    }.getMockInstance();
+
     try {
-      Invocation invocation = Mockito.mock(Invocation.class);
-      RestServerRequestInternal restRequest = Mockito.mock(RestServerRequestInternal.class);
-      servletRestServer.setHttpRequestContext(invocation, restRequest);
-    } catch (Exception exce) {
-      Assert.assertNotNull(exce);
-      status = false;
+      server.doSendResponse(invocation, httpServerResponse, produceProcessor, response);
+      Assert.fail("must throw exception");
+    } catch (Error e) {
+      Assert.assertEquals(headers.getHeaderMap(), resultHeaders.getHeaderMap());
     }
-    Assert.assertTrue(status);
   }
 
   @Test
-  public void testDoSendResponse() throws IOException {
-    boolean status = true;
-    HttpServletResponse httpServerResponse = Mockito.mock(HttpServletResponse.class);
-    Mockito.when(httpServerResponse.getOutputStream()).thenReturn(Mockito.mock(ServletOutputStream.class));
-    ProduceProcessor produceProcessor = Mockito.mock(ProduceProcessor.class);
-    Object result = Mockito.mock(Object.class);
-    Mockito.when(produceProcessor.getName()).thenReturn("testCall");
-    assertEquals("testCall", produceProcessor.getName());
-    try {
-      Response response = Response.create(12, "gjhghjgk", result);
-      servletRestServer.doSendResponse(null, httpServerResponse, produceProcessor, response);
-    } catch (Exception exce) {
-      Assert.assertNotNull(exce);
-      status = false;
-    }
-    Assert.assertTrue(status);
+  public void testDoSendResponseResultOK() throws Exception {
+    new Expectations() {
+      {
+        response.getResult();
+        result = "ok";
+      }
+    };
+
+    Buffer buffer = Buffer.buffer();
+    ServletOutputStream output = new ServletOutputStream() {
+      public void write(byte b[], int off, int len) throws IOException {
+        buffer.appendBytes(b, off, len);
+      }
+
+      @Override
+      public boolean isReady() {
+        return true;
+      }
+
+      @Override
+      public void setWriteListener(WriteListener writeListener) {
+      }
+
+      @Override
+      public void write(int b) throws IOException {
+      }
+    };
+
+    httpServerResponse = new MockUp<HttpServletResponse>() {
+      @Mock
+      ServletOutputStream getOutputStream() throws IOException {
+        return output;
+      }
+    }.getMockInstance();
+
+    server.doSendResponse(invocation, httpServerResponse, produceProcessor, response);
+    Assert.assertEquals("\"ok\"", buffer.toString());
   }
 
   @Test
@@ -134,8 +203,8 @@ public class TestServletRestServer {
     Holder<HttpServletRequest> holder = new Holder<>();
     ServletRestServer servletRestServer = new ServletRestServer() {
       @Override
-      protected void handleRequest(RestServerRequestInternal restRequest, HttpServletResponse httpResponse) {
-        holder.value = restRequest.getHttpRequest();
+      protected void handleRequest(HttpServletRequest request, HttpServletResponse httpResponse) {
+        holder.value = request;
       }
     };
     servletRestServer.service(request, response);
