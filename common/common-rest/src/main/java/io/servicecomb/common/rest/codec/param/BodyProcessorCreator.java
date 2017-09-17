@@ -19,6 +19,7 @@ package io.servicecomb.common.rest.codec.param;
 import java.io.InputStream;
 import java.lang.reflect.Type;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 
@@ -29,7 +30,6 @@ import com.fasterxml.jackson.databind.type.TypeFactory;
 
 import io.servicecomb.common.rest.codec.RestClientRequest;
 import io.servicecomb.common.rest.codec.RestObjectMapper;
-import io.servicecomb.common.rest.codec.RestServerRequest;
 import io.servicecomb.foundation.vertx.stream.BufferOutputStream;
 import io.servicecomb.swagger.generator.core.utils.ClassUtils;
 import io.swagger.models.parameters.Parameter;
@@ -47,25 +47,15 @@ public class BodyProcessorCreator implements ParamValueProcessorCreator {
     }
 
     @Override
-    public Object getValue(RestServerRequest request) throws Exception {
-      // 从payload中获取参数
-      Object body = request.getBody();
-      if (body == null) {
-        return null;
+    public Object getValue(HttpServletRequest request) throws Exception {
+      InputStream inputStream = request.getInputStream();
+
+      String contentType = request.getContentType();
+      if (contentType != null && contentType.startsWith(MediaType.TEXT_PLAIN)) {
+        // TODO: we should consider body encoding
+        return IOUtils.toString(inputStream, "UTF-8");
       }
-
-      if (InputStream.class.isInstance(body)) {
-        InputStream inputStream = (InputStream) body;
-
-        String contentType = request.getContentType();
-        if (contentType != null && contentType.startsWith(MediaType.TEXT_PLAIN)) {
-          // TODO: we should consider body encoding
-          return IOUtils.toString(inputStream, "UTF-8");
-        }
-        return RestObjectMapper.INSTANCE.readValue(inputStream, targetType);
-      }
-
-      return RestObjectMapper.INSTANCE.convertValue(body, targetType);
+      return RestObjectMapper.INSTANCE.readValue(inputStream, targetType);
     }
 
     @Override
@@ -95,24 +85,15 @@ public class BodyProcessorCreator implements ParamValueProcessorCreator {
     }
 
     @Override
-    public Object getValue(RestServerRequest request) throws Exception {
-      // 从payload中获取参数
-      Object body = request.getBody();
-      if (body == null) {
-        return null;
-      }
-
-      if (InputStream.class.isInstance(body)) {
-        InputStream inputStream = (InputStream) body;
-        // TODO: we should consider body encoding
-        return IOUtils.toString(inputStream, "UTF-8");
-      }
-
-      return RestObjectMapper.INSTANCE.convertValue(body, targetType);
+    public Object getValue(HttpServletRequest request) throws Exception {
+      InputStream inputStream = request.getInputStream();
+      // TODO: we should consider body encoding
+      return IOUtils.toString(inputStream, "UTF-8");
     }
 
     @Override
     public void setValue(RestClientRequest clientRequest, Object arg) throws Exception {
+      clientRequest.putHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON);
       clientRequest.write(Buffer.buffer((String) arg));
     }
   }
