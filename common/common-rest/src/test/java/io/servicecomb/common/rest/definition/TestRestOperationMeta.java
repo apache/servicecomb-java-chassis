@@ -21,6 +21,9 @@ import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import java.util.Arrays;
+import java.util.List;
+
 import javax.ws.rs.core.MediaType;
 
 import org.junit.Assert;
@@ -31,8 +34,12 @@ import org.mockito.Mockito;
 import io.servicecomb.common.rest.codec.produce.ProduceProcessorManager;
 import io.servicecomb.core.definition.OperationMeta;
 import io.servicecomb.core.definition.SchemaMeta;
+import io.servicecomb.foundation.common.utils.ReflectUtils;
 import io.swagger.models.Operation;
 import io.swagger.models.Swagger;
+import io.swagger.models.parameters.FormParameter;
+import io.swagger.models.parameters.Parameter;
+import io.swagger.models.parameters.QueryParameter;
 
 public class TestRestOperationMeta {
 
@@ -137,10 +144,39 @@ public class TestRestOperationMeta {
     assertThat(operationMeta.getAbsolutePath(), is("/rest/sayHi/"));
   }
 
+  @Test
+  public void testFormDataFlagTrue() {
+    when(meta.getMethod()).thenReturn(ReflectUtils.findMethod(SomeRestController.class, "form"));
+    when(meta.getSwaggerOperation()).thenReturn(operation);
+    List<Parameter> params = Arrays.asList(new FormParameter());
+    when(operation.getParameters()).thenReturn(params);
+
+    operationMeta.init(meta);
+
+    assertThat(operationMeta.isFormData(), is(true));
+  }
+
+  @Test
+  public void testFormDataFlagFalse() {
+    when(meta.getMethod()).thenReturn(ReflectUtils.findMethod(SomeRestController.class, "form"));
+    when(meta.getSwaggerOperation()).thenReturn(operation);
+    List<Parameter> params = Arrays.asList(new QueryParameter());
+    when(operation.getParameters()).thenReturn(params);
+
+    operationMeta.init(meta);
+
+    assertThat(operationMeta.isFormData(), is(false));
+  }
+
   private static class SomeRestController {
     @SuppressWarnings("unused")
     public String sayHi() {
       return "Hi";
+    }
+
+    @SuppressWarnings("unused")
+    public String form(String param) {
+      return "";
     }
   }
 }

@@ -31,6 +31,7 @@ import org.junit.Test;
 import com.fasterxml.jackson.databind.type.TypeFactory;
 import com.fasterxml.jackson.databind.util.ISO8601Utils;
 
+import io.servicecomb.common.rest.RestConst;
 import io.servicecomb.common.rest.codec.RestClientRequest;
 import io.servicecomb.common.rest.codec.param.FormProcessorCreator.FormProcessor;
 import mockit.Expectations;
@@ -57,6 +58,22 @@ public class TestFormProcessor {
         forms.put(name, value);
       }
     }.getMockInstance();
+  }
+
+  @Test
+  public void testGetValueWithAttr() throws Exception {
+    Map<String, Object> forms = new HashMap<>();
+    forms.put("name", "value");
+    new Expectations() {
+      {
+        request.getAttribute(RestConst.FORM_PARAMETERS);
+        result = forms;
+      }
+    };
+
+    ParamValueProcessor processor = createProcessor("name", String.class);
+    Object value = processor.getValue(request);
+    Assert.assertEquals("value", value);
   }
 
   @Test
