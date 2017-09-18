@@ -48,7 +48,8 @@ public class TestVertxRestServer {
       }
 
       @Override
-      public void sendFailResponse(RestServerRequestInternal restRequest, HttpServerResponse httpResponse,
+      public void sendFailResponse(Invocation invocation, RestServerRequestInternal restRequest,
+          HttpServerResponse httpResponse,
           Throwable throwable) {
       }
     };
@@ -85,7 +86,7 @@ public class TestVertxRestServer {
       HttpServerResponse httpServerResponse = Mockito.mock(HttpServerResponse.class);
       ProduceProcessor produceProcessor = Mockito.mock(ProduceProcessor.class);
       Response response = Response.create(0, "reasonPhrase", new Object());
-      instance.doSendResponse(httpServerResponse, produceProcessor, response);
+      instance.doSendResponse(null, httpServerResponse, produceProcessor, response);
     } catch (Exception e) {
       status = true;
     }

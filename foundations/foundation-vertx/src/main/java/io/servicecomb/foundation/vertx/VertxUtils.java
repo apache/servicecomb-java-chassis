@@ -16,6 +16,8 @@
 
 package io.servicecomb.foundation.vertx;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.lang.management.ManagementFactory;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -23,16 +25,20 @@ import java.util.concurrent.CountDownLatch;
 
 import javax.xml.ws.Holder;
 
+import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import io.netty.buffer.ByteBuf;
 import io.servicecomb.foundation.vertx.client.AbstractClientVerticle;
 import io.servicecomb.foundation.vertx.client.ClientPoolManager;
+import io.servicecomb.foundation.vertx.stream.BufferInputStream;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Context;
 import io.vertx.core.DeploymentOptions;
 import io.vertx.core.Vertx;
 import io.vertx.core.VertxOptions;
+import io.vertx.core.buffer.Buffer;
 import io.vertx.core.impl.FileResolver;
 import io.vertx.core.impl.VertxImplEx;
 import io.vertx.core.logging.SLF4JLogDelegateFactory;
@@ -172,5 +178,30 @@ public final class VertxUtils {
     }
 
     callback.success(result);
+  }
+
+  // try to reference byte[]
+  // otherwise copy byte[]
+  public static byte[] getBytesFast(InputStream inputStream) throws IOException {
+    if (BufferInputStream.class.isInstance(inputStream)) {
+      return getBytesFast(((BufferInputStream) inputStream).getByteBuf());
+    }
+
+    return IOUtils.toByteArray(inputStream);
+  }
+
+  public static byte[] getBytesFast(Buffer buffer) {
+    ByteBuf byteBuf = buffer.getByteBuf();
+    return getBytesFast(byteBuf);
+  }
+
+  public static byte[] getBytesFast(ByteBuf byteBuf) {
+    if (byteBuf.hasArray()) {
+      return byteBuf.array();
+    }
+
+    byte[] arr = new byte[byteBuf.writerIndex()];
+    byteBuf.getBytes(0, arr);
+    return arr;
   }
 }

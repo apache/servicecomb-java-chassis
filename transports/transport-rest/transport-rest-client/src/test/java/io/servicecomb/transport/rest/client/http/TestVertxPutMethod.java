@@ -23,7 +23,6 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.Mockito;
 
-import io.servicecomb.common.rest.definition.RestOperationMeta;
 import io.servicecomb.core.Invocation;
 import io.servicecomb.foundation.common.net.IpPort;
 import io.servicecomb.swagger.invocation.AsyncResponse;
@@ -38,14 +37,13 @@ public class TestVertxPutMethod {
     HttpClient client = Mockito.mock(HttpClient.class);
     Invocation invocation = Mockito.mock(Invocation.class);
     IpPort ipPort = Mockito.mock(IpPort.class);
-    RestOperationMeta operation = Mockito.mock(RestOperationMeta.class);
     AsyncResponse asyncResp = Mockito.mock(AsyncResponse.class);
     Mockito.when(ipPort.getHostOrIp()).thenReturn("test");
     assertNotNull("test", ipPort.getHostOrIp());
     Mockito.when(ipPort.getPort()).thenReturn(13);
     assertEquals(13, ipPort.getPort());
     HttpClientRequest obj =
-        VertxPutMethod.INSTANCE.createRequest(client, invocation, ipPort, "testCall", operation, asyncResp);
+        VertxPutMethod.INSTANCE.createRequest(client, invocation, ipPort, "testCall", asyncResp);
     Assert.assertNull(obj);
   }
 }

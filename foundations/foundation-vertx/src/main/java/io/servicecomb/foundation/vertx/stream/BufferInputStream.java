@@ -16,17 +16,15 @@
 
 package io.servicecomb.foundation.vertx.stream;
 
-import java.io.InputStream;
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+
+import javax.servlet.ReadListener;
+import javax.servlet.ServletInputStream;
 
 import io.netty.buffer.ByteBuf;
 
-/**
- *  本stream不必close
- *
- *
- */
-public class BufferInputStream extends InputStream {
+public class BufferInputStream extends ServletInputStream {
   private ByteBuf byteBuf;
 
   public BufferInputStream(ByteBuf buffer) {
@@ -103,5 +101,29 @@ public class BufferInputStream extends InputStream {
 
   @Override
   public void close() {
+    byteBuf.release();
+  }
+
+  @Override
+  public void reset() throws IOException {
+    byteBuf.resetReaderIndex();
+  }
+
+  public ByteBuf getByteBuf() {
+    return byteBuf;
+  }
+
+  @Override
+  public boolean isFinished() {
+    return !byteBuf.isReadable();
+  }
+
+  @Override
+  public boolean isReady() {
+    return true;
+  }
+
+  @Override
+  public void setReadListener(ReadListener readListener) {
   }
 }

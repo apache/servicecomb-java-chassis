@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <!--
   ~ Copyright 2017 Huawei Technologies Co., Ltd
   ~
@@ -18,37 +19,15 @@
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
-    <groupId>io.servicecomb</groupId>
-    <artifactId>foundations</artifactId>
+    <groupId>io.servicecomb.demo</groupId>
+    <artifactId>demo-parent</artifactId>
     <version>0.3.0-SNAPSHOT</version>
   </parent>
-  <artifactId>foundation-vertx</artifactId>
-
+  <artifactId>demo-signature</artifactId>
   <dependencies>
     <dependency>
-      <groupId>io.vertx</groupId>
-      <artifactId>vertx-core</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>io.vertx</groupId>
-      <artifactId>vertx-web</artifactId>
-    </dependency>
-    <dependency>
       <groupId>io.servicecomb</groupId>
-      <artifactId>foundation-ssl</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>io.servicecomb</groupId>
-      <artifactId>foundation-common</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>javax.servlet</groupId>
-      <artifactId>javax.servlet-api</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>slf4j-log4j12</artifactId>
-      <scope>test</scope>
+      <artifactId>common-rest</artifactId>
     </dependency>
   </dependencies>
 </project>

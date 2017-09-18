@@ -17,8 +17,10 @@
 package io.servicecomb.common.rest;
 
 import java.nio.charset.StandardCharsets;
+import java.util.List;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.Response.Status;
 
 import org.apache.commons.lang3.StringUtils;
@@ -30,6 +32,7 @@ import io.servicecomb.common.rest.codec.RestServerRequestInternal;
 import io.servicecomb.common.rest.codec.produce.ProduceProcessor;
 import io.servicecomb.common.rest.codec.produce.ProduceProcessorManager;
 import io.servicecomb.common.rest.definition.RestOperationMeta;
+import io.servicecomb.common.rest.filter.HttpServerFilter;
 import io.servicecomb.common.rest.locator.OperationLocator;
 import io.servicecomb.common.rest.locator.ServicePathManager;
 import io.servicecomb.core.Const;
@@ -40,6 +43,7 @@ import io.servicecomb.core.definition.MicroserviceMeta;
 import io.servicecomb.core.definition.OperationMeta;
 import io.servicecomb.core.invocation.InvocationFactory;
 import io.servicecomb.foundation.common.utils.JsonUtils;
+import io.servicecomb.foundation.common.utils.SPIServiceUtils;
 import io.servicecomb.serviceregistry.RegistryUtils;
 import io.servicecomb.swagger.invocation.Response;
 import io.servicecomb.swagger.invocation.exception.InvocationException;
@@ -49,6 +53,14 @@ public abstract class AbstractRestServer<HTTP_RESPONSE> {
 
   // 所属的Transport
   protected Transport transport;
+
+  protected List<HttpServerFilter> httpServerFilters = SPIServiceUtils.getSortedService(HttpServerFilter.class);;
+
+  public AbstractRestServer() {
+    for (HttpServerFilter filter : httpServerFilters) {
+      LOGGER.info("Found HttpServerFilter: {}.", filter.getClass().getName());
+    }
+  }
 
   public void setTransport(Transport transport) {
     this.transport = transport;
@@ -79,12 +91,12 @@ public abstract class AbstractRestServer<HTTP_RESPONSE> {
           runOnExecutor(restRequest, restOperation, httpResponse);
         } catch (Exception e) {
           LOGGER.error("rest server onRequest error", e);
-          sendFailResponse(restRequest, httpResponse, e);
+          sendFailResponse(null, restRequest, httpResponse, e);
         }
       });
     } catch (Exception e) {
       LOGGER.error("rest server onRequest error", e);
-      sendFailResponse(restRequest, httpResponse, e);
+      sendFailResponse(null, restRequest, httpResponse, e);
     }
   }
 
@@ -92,7 +104,7 @@ public abstract class AbstractRestServer<HTTP_RESPONSE> {
       HTTP_RESPONSE httpResponse) throws Exception {
     String acceptType = restRequest.getHeaderParam("Accept");
     ProduceProcessor produceProcessor =
-        locateProduceProcessor(restRequest, httpResponse, restOperation, acceptType);
+        locateProduceProcessor(null, restRequest, httpResponse, restOperation, acceptType);
     if (produceProcessor == null) {
       // locateProduceProcessor内部已经应答了
       return;
@@ -107,8 +119,18 @@ public abstract class AbstractRestServer<HTTP_RESPONSE> {
     this.setContext(invocation, restRequest);
     this.setHttpRequestContext(invocation, restRequest);
 
+    if (HttpServletRequest.class.isInstance(restRequest.getHttpRequest())) {
+      for (HttpServerFilter filter : httpServerFilters) {
+        Response response = filter.afterReceiveRequest(invocation, restRequest.getHttpRequest());
+        if (response != null) {
+          sendResponse(invocation, restRequest, httpResponse, produceProcessor, response);
+          return;
+        }
+      }
+    }
+
     invocation.next(resp -> {
-      sendResponse(restRequest, httpResponse, produceProcessor, resp);
+      sendResponse(invocation, restRequest, httpResponse, produceProcessor, resp);
     });
   }
 
@@ -134,7 +156,7 @@ public abstract class AbstractRestServer<HTTP_RESPONSE> {
   }
 
   // 找不到processor，则已经完成了应答，外界不必再处理
-  protected ProduceProcessor locateProduceProcessor(RestServerRequestInternal restRequest,
+  protected ProduceProcessor locateProduceProcessor(Invocation invocation, RestServerRequestInternal restRequest,
       HTTP_RESPONSE httpResponse,
       RestOperationMeta restOperation, String acceptType) {
     ProduceProcessor produceProcessor = restOperation.ensureFindProduceProcessor(acceptType);
@@ -144,21 +166,22 @@ public abstract class AbstractRestServer<HTTP_RESPONSE> {
 
     String msg = String.format("Accept %s is not supported", acceptType);
     InvocationException exception = new InvocationException(Status.NOT_ACCEPTABLE, msg);
-    sendFailResponse(restRequest, httpResponse, exception);
+    sendFailResponse(invocation, restRequest, httpResponse, exception);
     return null;
   }
 
-  public void sendFailResponse(RestServerRequestInternal restRequest, HTTP_RESPONSE httpResponse,
+  public void sendFailResponse(Invocation invocation, RestServerRequestInternal restRequest, HTTP_RESPONSE httpResponse,
       Throwable throwable) {
     Response response = Response.createProducerFail(throwable);
-    sendResponse(restRequest, httpResponse, ProduceProcessorManager.DEFAULT_PROCESSOR, response);
+    sendResponse(invocation, restRequest, httpResponse, ProduceProcessorManager.DEFAULT_PROCESSOR, response);
   }
 
   // 成功、失败的统一应答处理，这里不能再出异常了，再出了异常也没办法处理
-  protected void sendResponse(RestServerRequestInternal restRequest, HTTP_RESPONSE httpServerResponse,
+  protected void sendResponse(Invocation invocation, RestServerRequestInternal restRequest,
+      HTTP_RESPONSE httpServerResponse,
       ProduceProcessor produceProcessor, Response response) {
     try {
-      doSendResponse(httpServerResponse, produceProcessor, response);
+      doSendResponse(invocation, httpServerResponse, produceProcessor, response);
     } catch (Throwable e) {
       // 这只能是bug，没有办法再兜底了，只能记录日志
       // 如果统一处理为500错误，也无法确定swagger中500对应的数据模型
@@ -172,7 +195,8 @@ public abstract class AbstractRestServer<HTTP_RESPONSE> {
   }
 
   //  成功、失败的统一应答处理
-  protected abstract void doSendResponse(HTTP_RESPONSE httpServerResponse, ProduceProcessor produceProcessor,
+  protected abstract void doSendResponse(Invocation invocation, HTTP_RESPONSE httpServerResponse,
+      ProduceProcessor produceProcessor,
       Response response) throws Exception;
 
   // 将http request注入到invocation的handler context

@@ -16,7 +16,6 @@
 
 package io.servicecomb.transport.rest.client.http;
 
-import io.servicecomb.common.rest.definition.RestOperationMeta;
 import io.servicecomb.core.Invocation;
 import io.servicecomb.foundation.common.net.IpPort;
 import io.servicecomb.swagger.invocation.AsyncResponse;
@@ -31,11 +30,10 @@ public final class VertxPostMethod extends VertxHttpMethod {
 
   @Override
   protected HttpClientRequest createRequest(HttpClient client, Invocation invocation, IpPort ipPort, String path,
-      RestOperationMeta operation,
       AsyncResponse asyncResp) {
     HttpClientRequest clientRequest =
         client.post(ipPort.getPort(), ipPort.getHostOrIp(), path, response -> {
-          handleResponse(invocation, response, operation, asyncResp);
+          handleResponse(invocation, response, asyncResp);
         });
     return clientRequest;
   }

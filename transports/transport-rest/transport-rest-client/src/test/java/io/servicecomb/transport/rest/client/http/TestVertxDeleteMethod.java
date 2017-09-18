@@ -20,7 +20,6 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.Mockito;
 
-import io.servicecomb.common.rest.definition.RestOperationMeta;
 import io.servicecomb.core.Invocation;
 import io.servicecomb.foundation.common.net.IpPort;
 import io.servicecomb.swagger.invocation.AsyncResponse;
@@ -36,10 +35,9 @@ public class TestVertxDeleteMethod {
     Mockito.when(ipPort.getPort()).thenReturn(23);
     Mockito.when(ipPort.getHostOrIp()).thenReturn("test");
     Invocation invocation = Mockito.mock(Invocation.class);
-    RestOperationMeta operation = Mockito.mock(RestOperationMeta.class);
     AsyncResponse asyncResp = Mockito.mock(AsyncResponse.class);
     HttpClientRequest obj = (HttpClientRequest) VertxDeleteMethod.INSTANCE
-        .createRequest(client, invocation, ipPort, "testCall", operation, asyncResp);
+        .createRequest(client, invocation, ipPort, "testCall", asyncResp);
 
     Assert.assertNull(obj);
   }

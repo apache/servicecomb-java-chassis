@@ -48,7 +48,8 @@ public class TestAbstractRestServer {
     restRequest = Mockito.mock(RestServerRequestInternal.class);
     restServer = new AbstractRestServer<Response>() {
       @Override
-      protected void doSendResponse(Response httpServerResponse, ProduceProcessor produceProcessor,
+      protected void doSendResponse(Invocation invocation, Response httpServerResponse,
+          ProduceProcessor produceProcessor,
           Response response) throws Exception {
       }
 
