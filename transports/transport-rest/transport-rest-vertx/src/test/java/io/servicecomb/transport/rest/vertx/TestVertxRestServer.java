@@ -62,20 +62,6 @@ public class TestVertxRestServer {
   }
 
   @Test
-  public void testSetHttpRequestContext() {
-    boolean status = false;
-    try {
-      Invocation invocation = Mockito.mock(Invocation.class);
-      HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
-      instance.setHttpRequestContext(invocation, request);
-      Assert.assertNotNull(instance);
-    } catch (Exception e) {
-      status = true;
-    }
-    Assert.assertFalse(status);
-  }
-
-  @Test
   public void testVertxRestServer() {
     Assert.assertNotNull(instance);
   }

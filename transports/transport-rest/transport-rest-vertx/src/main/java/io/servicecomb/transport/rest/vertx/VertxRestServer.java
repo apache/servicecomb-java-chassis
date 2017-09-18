@@ -98,11 +98,4 @@ public class VertxRestServer extends AbstractRestServer<HttpServerResponse> {
     }
     httpServerResponse.end(buffer);
   }
-
-  @Override
-  protected void setHttpRequestContext(Invocation invocation, HttpServletRequest request) {
-
-    invocation.getHandlerContext().put(RestConst.HTTP_REQUEST_CREATOR,
-        new ProducerVertxHttpRequestArgMapper(request));
-  }
 }
