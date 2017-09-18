@@ -77,8 +77,6 @@ public class TestCseClientHttpRequest {
     } catch (IllegalStateException e) {
       Assert.assertEquals(exceptionMessage, e.getMessage());
     }
-
-    client.close();
   }
 
   @Test
@@ -114,7 +112,6 @@ public class TestCseClientHttpRequest {
     client.setRequestBody(body);
 
     client.execute();
-    client.close();
 
     Assert.assertArrayEquals(body, holder.value.getSwaggerArgument(0));
   }
