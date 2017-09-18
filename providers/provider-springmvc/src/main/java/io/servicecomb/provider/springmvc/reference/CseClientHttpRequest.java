@@ -22,8 +22,8 @@ import java.net.URI;
 import java.util.List;
 import java.util.Map;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import javax.servlet.http.HttpServletRequest;
+
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.client.ClientHttpRequest;
@@ -31,10 +31,8 @@ import org.springframework.http.client.ClientHttpResponse;
 
 import io.netty.handler.codec.http.QueryStringDecoder;
 import io.servicecomb.common.rest.RestConst;
-import io.servicecomb.common.rest.codec.LocalRestServerRequest;
-import io.servicecomb.common.rest.codec.RestServerRequest;
+import io.servicecomb.common.rest.codec.RestCodec;
 import io.servicecomb.common.rest.definition.RestOperationMeta;
-import io.servicecomb.common.rest.definition.RestParam;
 import io.servicecomb.common.rest.locator.OperationLocator;
 import io.servicecomb.common.rest.locator.ServicePathManager;
 import io.servicecomb.core.Invocation;
@@ -47,10 +45,7 @@ import io.servicecomb.swagger.invocation.Response;
 import io.servicecomb.swagger.invocation.context.InvocationContext;
 import io.servicecomb.swagger.invocation.exception.ExceptionFactory;
 
-public class CseClientHttpRequest extends OutputStream implements ClientHttpRequest {
-
-  private static final Logger LOGGER = LoggerFactory.getLogger(CseClientHttpRequest.class);
-
+public class CseClientHttpRequest implements ClientHttpRequest {
   private URI uri;
 
   private HttpMethod method;
@@ -60,6 +55,10 @@ public class CseClientHttpRequest extends OutputStream implements ClientHttpRequ
   private InvocationContext context;
 
   private Object requestBody;
+
+  private Map<String, List<String>> queryParams;
+
+  private RequestMeta requestMeta;
 
   public CseClientHttpRequest() {
   }
@@ -75,14 +74,6 @@ public class CseClientHttpRequest extends OutputStream implements ClientHttpRequ
 
   public void setContext(InvocationContext context) {
     this.context = context;
-  }
-
-  /**
-   * 不支持，从outputStream继承，仅仅是为了在CseHttpMessageConverter中，将requestBody保存进来而已
-   */
-  @Override
-  public void write(int b) throws IOException {
-    throw new Error("not support");
   }
 
   public void setRequestBody(Object requestBody) {
@@ -106,20 +97,20 @@ public class CseClientHttpRequest extends OutputStream implements ClientHttpRequ
 
   @Override
   public OutputStream getBody() throws IOException {
-    return this;
+    return null;
   }
 
   @Override
   public ClientHttpResponse execute() throws IOException {
-    RequestMeta requestMeta = createRequestMeta(method.name(), uri);
+    requestMeta = createRequestMeta(method.name(), uri);
 
     QueryStringDecoder queryStringDecoder = new QueryStringDecoder(uri.getRawSchemeSpecificPart());
-    Map<String, List<String>> queryParams = queryStringDecoder.parameters();
+    queryParams = queryStringDecoder.parameters();
 
-    Object[] args = this.collectArguments(requestMeta, queryParams);
+    Object[] args = this.collectArguments();
 
     // 异常流程，直接抛异常出去
-    return this.invoke(requestMeta, args);
+    return this.invoke(args);
   }
 
   /**
@@ -145,7 +136,7 @@ public class CseClientHttpRequest extends OutputStream implements ClientHttpRequ
     return new RequestMeta(referenceConfig, swaggerRestOperation, pathParams);
   }
 
-  private CseClientHttpResponse invoke(RequestMeta requestMeta, Object[] args) {
+  private CseClientHttpResponse invoke(Object[] args) {
     Invocation invocation =
         InvocationFactory.forConsumer(requestMeta.getReferenceConfig(),
             requestMeta.getOperationMeta(),
@@ -170,23 +161,9 @@ public class CseClientHttpRequest extends OutputStream implements ClientHttpRequ
     return InvokerUtils.innerSyncInvoke(invocation);
   }
 
-  private Object[] collectArguments(RequestMeta requestMeta, Map<String, List<String>> queryParams) {
-    RestServerRequest mockRequest =
-        new LocalRestServerRequest(requestMeta.getPathParams(), queryParams, httpHeaders, requestBody);
-    List<RestParam> paramList = requestMeta.getSwaggerRestOperation().getParamList();
-    Object[] args = new Object[paramList.size()];
-    for (int idx = 0; idx < paramList.size(); idx++) {
-      RestParam param = paramList.get(idx);
-      try {
-        args[idx] = param.getParamProcessor().getValue(mockRequest);
-      } catch (Exception e) {
-        LOGGER.error("error arguments for operation "
-            + requestMeta.getOperationMeta().getMicroserviceQualifiedName(),
-            e);
-        throw new Error(e);
-      }
-    }
-
-    return args;
+  private Object[] collectArguments() {
+    HttpServletRequest mockRequest = new ClientToHttpServletRequest(requestMeta.getPathParams(), queryParams,
+        httpHeaders, requestBody, requestMeta.getSwaggerRestOperation().isFormData());
+    return RestCodec.restToArgs(mockRequest, requestMeta.getSwaggerRestOperation());
   }
 }
