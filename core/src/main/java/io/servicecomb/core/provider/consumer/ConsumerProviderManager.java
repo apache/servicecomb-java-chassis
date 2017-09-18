@@ -65,10 +65,12 @@ public class ConsumerProviderManager {
         if (config == null) {
           String key = "cse.references." + microserviceName;
           DynamicStringProperty versionRule = DynamicPropertyFactory.getInstance()
-              .getStringProperty(key + ".version-rule", Const.VERSION_RULE_LATEST);
+              .getStringProperty(key + ".version-rule", DynamicPropertyFactory.getInstance()
+                  .getStringProperty("cse.references.version-rule", Const.VERSION_RULE_LATEST).getValue());
           DynamicStringProperty transport =
               DynamicPropertyFactory.getInstance().getStringProperty(key + ".transport",
-                  Const.ANY_TRANSPORT);
+                  DynamicPropertyFactory.getInstance().getStringProperty("cse.references.transport",
+                      Const.ANY_TRANSPORT).getValue());
 
           config = new ReferenceConfig(consumerSchemaFactory, microserviceName, versionRule.getValue(),
               transport.getValue());

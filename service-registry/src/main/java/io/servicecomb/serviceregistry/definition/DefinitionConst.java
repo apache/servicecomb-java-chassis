@@ -42,4 +42,8 @@ public interface DefinitionConst {
   String defaultVersion = "1.0.0";
 
   String defaultStage = "prod";
+
+  String serviceEnvironmentKey = "instance_description.environment";
+
+  String defaultEnvironment = "production";
 }
