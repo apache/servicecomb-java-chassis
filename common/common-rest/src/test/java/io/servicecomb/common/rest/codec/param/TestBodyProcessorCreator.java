@@ -60,21 +60,4 @@ public class TestBodyProcessorCreator {
 
     Assert.assertEquals(BodyProcessor.class, processor.getClass());
   }
-
-  //  @Test
-  //  public void testSetValue() throws Exception {
-  //    Map<String, String> header = new HashMap<>();
-  //    RestClientRequest clientRequest = new MockUp<RestClientRequest>() {
-  //      @Mock
-  //      public void putHeader(String name, String value) {
-  //        header.put(name, value);
-  //      }
-  //    }.getMockInstance();
-  //
-  //    BodyParameter bp = new BodyParameter();
-  //    ParamValueProcessor processor = bodyCreator.create(bp, String.class);
-  //    processor.setValue(clientRequest, "abc");
-
-  //    Assert.assertEquals(MediaType.APPLICATION_JSON, header.get(HttpHeaders.CONTENT_TYPE));
-  //  }
 }

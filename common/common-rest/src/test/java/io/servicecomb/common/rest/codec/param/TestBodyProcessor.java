@@ -32,6 +32,7 @@ import com.fasterxml.jackson.databind.type.TypeFactory;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
+import io.servicecomb.common.rest.RestConst;
 import io.servicecomb.common.rest.codec.RestClientRequest;
 import io.servicecomb.common.rest.codec.param.BodyProcessorCreator.BodyProcessor;
 import io.servicecomb.common.rest.codec.param.BodyProcessorCreator.RawJsonBodyProcessor;
@@ -92,6 +93,35 @@ public class TestBodyProcessor {
   private void setupGetValue(Class<?> type) throws IOException {
     createProcessor(type);
     initInputStream();
+  }
+
+  @Test
+  public void testGetValueHaveAttr() throws Exception {
+    int body = 10;
+    createProcessor(String.class);
+    new Expectations() {
+      {
+        request.getAttribute(RestConst.BODY_PARAMETER);
+        result = body;
+      }
+    };
+
+    Object result = processor.getValue(request);
+    Assert.assertEquals("10", result);
+  }
+
+  @Test
+  public void testGetValueNoAttrNoStream() throws Exception {
+    createProcessor(String.class);
+    new Expectations() {
+      {
+        request.getInputStream();
+        result = null;
+      }
+    };
+
+    Object result = processor.getValue(request);
+    Assert.assertEquals(null, result);
   }
 
   @Test
@@ -161,6 +191,35 @@ public class TestBodyProcessor {
     inputBodyByteBuf.writeCharSequence("\"1\"", StandardCharsets.UTF_8);
 
     Assert.assertEquals("\"1\"", processor.getValue(request));
+  }
+
+  @Test
+  public void testGetValueRawJsonHaveAttr() throws Exception {
+    int body = 10;
+    createRawJsonProcessor();
+    new Expectations() {
+      {
+        request.getAttribute(RestConst.BODY_PARAMETER);
+        result = body;
+      }
+    };
+
+    Object result = processor.getValue(request);
+    Assert.assertEquals("10", result);
+  }
+
+  @Test
+  public void testGetValueRawJsonNoAttrNoStream() throws Exception {
+    createRawJsonProcessor();
+    new Expectations() {
+      {
+        request.getInputStream();
+        result = null;
+      }
+    };
+
+    Object result = processor.getValue(request);
+    Assert.assertEquals(null, result);
   }
 
   @Test

@@ -52,6 +52,8 @@ public class RestOperationMeta {
 
   protected List<String> produces;
 
+  protected boolean formData;
+
   protected List<RestParam> paramList = new ArrayList<>();
 
   // key为参数名
@@ -93,11 +95,19 @@ public class RestOperationMeta {
       Parameter parameter = operation.getParameters().get(idx);
       Type genericParamType = genericParamTypes[idx];
 
+      if ("formData".equals(parameter.getIn())) {
+        formData = true;
+      }
+
       RestParam param = new RestParam(idx, parameter, genericParamType);
       addParam(param);
     }
 
     setAbsolutePath(concatPath(swagger.getBasePath(), operationMeta.getOperationPath()));
+  }
+
+  public boolean isFormData() {
+    return formData;
   }
 
   public void setOperationMeta(OperationMeta operationMeta) {

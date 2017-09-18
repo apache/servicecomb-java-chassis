@@ -28,6 +28,7 @@ import org.apache.commons.io.IOUtils;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.type.TypeFactory;
 
+import io.servicecomb.common.rest.RestConst;
 import io.servicecomb.common.rest.codec.RestClientRequest;
 import io.servicecomb.common.rest.codec.RestObjectMapper;
 import io.servicecomb.foundation.vertx.stream.BufferOutputStream;
@@ -48,7 +49,18 @@ public class BodyProcessorCreator implements ParamValueProcessorCreator {
 
     @Override
     public Object getValue(HttpServletRequest request) throws Exception {
+      Object body = request.getAttribute(RestConst.BODY_PARAMETER);
+      if (body != null) {
+        return convertValue(body, targetType);
+      }
+
+      // for standard HttpServletRequest, getInputStream will never return null
+      // but for mocked HttpServletRequest, maybe get a null
+      //  like io.servicecomb.provider.springmvc.reference.ClientToHttpServletRequest
       InputStream inputStream = request.getInputStream();
+      if (inputStream == null) {
+        return null;
+      }
 
       String contentType = request.getContentType();
       if (contentType != null && contentType.startsWith(MediaType.TEXT_PLAIN)) {
@@ -86,7 +98,16 @@ public class BodyProcessorCreator implements ParamValueProcessorCreator {
 
     @Override
     public Object getValue(HttpServletRequest request) throws Exception {
+      Object body = request.getAttribute(RestConst.BODY_PARAMETER);
+      if (body != null) {
+        return convertValue(body, targetType);
+      }
+
       InputStream inputStream = request.getInputStream();
+      if (inputStream == null) {
+        return null;
+      }
+
       // TODO: we should consider body encoding
       return IOUtils.toString(inputStream, "UTF-8");
     }

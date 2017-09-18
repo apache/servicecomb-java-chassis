@@ -17,12 +17,14 @@
 package io.servicecomb.common.rest.codec.param;
 
 import java.lang.reflect.Type;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.type.TypeFactory;
 
+import io.servicecomb.common.rest.RestConst;
 import io.servicecomb.common.rest.codec.RestClientRequest;
 import io.swagger.models.parameters.Parameter;
 
@@ -36,14 +38,17 @@ public class FormProcessorCreator implements ParamValueProcessorCreator {
 
     @Override
     public Object getValue(HttpServletRequest request) throws Exception {
-      Object value = null;
-      if (targetType.isContainerType()) {
-        value = request.getParameterValues(paramPath);
-      } else {
-        value = request.getParameter(paramPath);
+      @SuppressWarnings("unchecked")
+      Map<String, Object> forms = (Map<String, Object>) request.getAttribute(RestConst.FORM_PARAMETERS);
+      if (forms != null) {
+        return convertValue(forms.get(paramPath), targetType);
       }
 
-      return convertValue(value, targetType);
+      if (targetType.isContainerType()) {
+        return convertValue(request.getParameterValues(paramPath), targetType);
+      }
+
+      return convertValue(request.getParameter(paramPath), targetType);
     }
 
     @Override
