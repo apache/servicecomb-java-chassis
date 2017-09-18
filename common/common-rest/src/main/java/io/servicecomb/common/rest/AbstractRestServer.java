@@ -192,7 +192,4 @@ public abstract class AbstractRestServer<HTTP_RESPONSE> {
   protected abstract void doSendResponse(Invocation invocation, HTTP_RESPONSE httpServerResponse,
       ProduceProcessor produceProcessor,
       Response response) throws Exception;
-
-  // 将http request注入到invocation的handler context
-  protected abstract void setHttpRequestContext(Invocation invocation, HttpServletRequest request);
 }

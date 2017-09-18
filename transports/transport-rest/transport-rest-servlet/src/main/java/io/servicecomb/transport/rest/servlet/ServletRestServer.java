@@ -92,10 +92,4 @@ public class ServletRestServer extends AbstractRestServer<HttpServletResponse> {
       httpServerResponse.flushBuffer();
     }
   }
-
-  @Override
-  protected void setHttpRequestContext(Invocation invocation, HttpServletRequest request) {
-    invocation.getHandlerContext().put(RestConst.HTTP_REQUEST_CREATOR,
-        new ProducerServletHttpRequestArgMapper(request));
-  }
 }
