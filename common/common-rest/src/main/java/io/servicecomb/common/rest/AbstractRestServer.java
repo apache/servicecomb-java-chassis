@@ -116,7 +116,7 @@ public abstract class AbstractRestServer<HTTP_RESPONSE> {
             args);
 
     this.setContext(invocation, request);
-    this.setHttpRequestContext(invocation, request);
+    invocation.getHandlerContext().put(RestConst.REST_REQUEST, request);
 
     for (HttpServerFilter filter : httpServerFilters) {
       Response response = filter.afterReceiveRequest(invocation, request);

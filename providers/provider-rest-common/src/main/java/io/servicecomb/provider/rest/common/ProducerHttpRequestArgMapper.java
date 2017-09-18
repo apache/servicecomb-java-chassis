@@ -16,6 +16,8 @@
 
 package io.servicecomb.provider.rest.common;
 
+import javax.servlet.http.HttpServletRequest;
+
 import io.servicecomb.common.rest.RestConst;
 import io.servicecomb.core.Invocation;
 import io.servicecomb.swagger.invocation.SwaggerInvocation;
@@ -30,14 +32,12 @@ public class ProducerHttpRequestArgMapper extends AbstractProducerContextArgMapp
   public Object createContextArg(SwaggerInvocation swaggerInvocation) {
     Invocation invocation = (Invocation) swaggerInvocation;
     // 从rest transport来
-    AbstractProducerContextArgMapper httpRequestCreator =
-        (AbstractProducerContextArgMapper) invocation.getHandlerContext()
-            .get(RestConst.HTTP_REQUEST_CREATOR);
-    if (httpRequestCreator != null) {
-      return httpRequestCreator.createContextArg(invocation);
+    HttpServletRequest request = (HttpServletRequest) invocation.getHandlerContext().get(RestConst.REST_REQUEST);
+    if (request != null) {
+      return request;
     }
 
     // 通过args模拟request
-    return new GenericServletMockRequest(invocation);
+    return new InvocationToHttpServletRequest(invocation);
   }
 }
