@@ -18,6 +18,9 @@ package io.servicecomb.demo.signature;
 
 import javax.ws.rs.core.Response.Status;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import io.servicecomb.common.rest.filter.HttpClientFilter;
 import io.servicecomb.core.Invocation;
 import io.servicecomb.swagger.invocation.Response;
@@ -26,6 +29,8 @@ import io.vertx.core.http.HttpClientRequest;
 import io.vertx.core.http.HttpClientResponse;
 
 public class ClientSignature implements HttpClientFilter {
+  private static final Logger LOGGER = LoggerFactory.getLogger(ClientSignature.class);
+
   @Override
   public int getOrder() {
     return 0;
@@ -43,8 +48,12 @@ public class ClientSignature implements HttpClientFilter {
     String signature = SignatureUtils.genSignature(responseBodyBuffer);
     String serverSignature = httpResponse.getHeader("signature");
 
-    if (serverSignature != null && !signature.equals(serverSignature)) {
-      return Response.create(Status.UNAUTHORIZED, "signature failed");
+    if (serverSignature != null) {
+      LOGGER.info("check response signature, client: {}, server: {}.", signature, serverSignature);
+      if (!signature.equals(serverSignature)) {
+        LOGGER.error("check response signature failed");
+        return Response.create(Status.UNAUTHORIZED, "check response signature failed");
+      }
     }
     return null;
   }
