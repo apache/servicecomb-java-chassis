@@ -22,11 +22,17 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.core.Response.Status;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import io.servicecomb.common.rest.filter.HttpServerFilter;
 import io.servicecomb.core.Invocation;
+import io.servicecomb.foundation.vertx.http.VertxToHttpServletRequest;
 import io.servicecomb.swagger.invocation.Response;
 
 public class ServerSignature implements HttpServerFilter {
+  private static final Logger LOGGER = LoggerFactory.getLogger(ServerSignature.class);
+
   public ServerSignature() {
   }
 
@@ -37,11 +43,17 @@ public class ServerSignature implements HttpServerFilter {
 
   @Override
   public Response afterReceiveRequest(Invocation invocation, HttpServletRequest request) {
+    if (request instanceof VertxToHttpServletRequest) {
+      return null;
+    }
+
     try {
       String signature = SignatureUtils.genSignature(request.getRequestURI(), invocation.getContext(), request);
       String clientSignature = invocation.getContext("signature");
+      LOGGER.info("check request signature, client: {}, server: {}.", clientSignature, signature);
       if (!signature.equals(clientSignature)) {
-        return Response.create(Status.UNAUTHORIZED, "signature failed");
+        LOGGER.error("check request signature failed");
+        return Response.create(Status.UNAUTHORIZED, "check request signature failed");
       }
 
     } catch (IOException e) {
@@ -54,6 +66,6 @@ public class ServerSignature implements HttpServerFilter {
   @Override
   public void beforeSendResponse(Invocation invocation, HttpServletResponse response, byte[] bodyBytes, int length) {
     String signature = SignatureUtils.genSignature(bodyBytes, length);
-    response.addHeader("signature", signature + "wjm");
+    response.addHeader("signature", signature);
   }
 }
