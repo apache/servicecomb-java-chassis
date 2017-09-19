@@ -16,7 +16,12 @@
 
 package io.servicecomb.transport.rest.servlet;
 
+import java.io.IOException;
+
 import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.xml.ws.Holder;
 
 import org.junit.After;
 import org.junit.Assert;
@@ -26,6 +31,9 @@ import org.mockito.Mockito;
 
 import io.servicecomb.core.CseContext;
 import io.servicecomb.core.transport.TransportManager;
+import mockit.Deencapsulation;
+import mockit.Mock;
+import mockit.MockUp;
 
 public class TestRestServlet {
   private RestServlet restservlet = null;
@@ -46,5 +54,21 @@ public class TestRestServlet {
   public void testInit() throws ServletException {
     restservlet.init();
     Assert.assertTrue(true);
+  }
+
+  // useless, but for coverage
+  @Test
+  public void testService() throws ServletException, IOException {
+    Holder<Boolean> holder = new Holder<>();
+    ServletRestServer servletRestServer = new MockUp<ServletRestServer>() {
+      @Mock
+      void service(HttpServletRequest request, HttpServletResponse response) {
+        holder.value = true;
+      }
+    }.getMockInstance();
+
+    Deencapsulation.setField(restservlet, "servletRestServer", servletRestServer);
+    restservlet.service(null, null);
+    Assert.assertTrue(holder.value);
   }
 }
