@@ -35,6 +35,10 @@ import io.servicecomb.foundation.common.net.IpPort;
 import io.servicecomb.foundation.common.net.URIEndpointObject;
 import io.servicecomb.foundation.common.utils.JsonUtils;
 import io.servicecomb.foundation.vertx.client.http.HttpClientWithContext;
+import io.servicecomb.foundation.vertx.http.HttpServletRequestEx;
+import io.servicecomb.foundation.vertx.http.HttpServletResponseEx;
+import io.servicecomb.foundation.vertx.http.VertxClientRequestToHttpServletRequest;
+import io.servicecomb.foundation.vertx.http.VertxClientResponseToHttpServletResponse;
 import io.servicecomb.serviceregistry.api.Const;
 import io.servicecomb.swagger.invocation.AsyncResponse;
 import io.servicecomb.swagger.invocation.Response;
@@ -71,8 +75,9 @@ public abstract class VertxHttpMethod {
     RestCodec.argsToRest(invocation.getArgs(), swaggerRestOperation, restClientRequest);
 
     Buffer requestBodyBuffer = restClientRequest.getBodyBuffer();
+    HttpServletRequestEx requestEx = new VertxClientRequestToHttpServletRequest(clientRequest, requestBodyBuffer);
     for (HttpClientFilter filter : httpClientFilters) {
-      filter.beforeSendRequest(invocation, clientRequest, requestBodyBuffer);
+      filter.beforeSendRequest(invocation, requestEx);
     }
 
     clientRequest.exceptionHandler(e -> {
@@ -105,14 +110,16 @@ public abstract class VertxHttpMethod {
       String path,
       AsyncResponse asyncResp);
 
-  protected void handleResponse(Invocation invocation, HttpClientResponse httpResponse,
+  protected void handleResponse(Invocation invocation, HttpClientResponse clientResponse,
       AsyncResponse asyncResp) {
-    httpResponse.bodyHandler(responseBuf -> {
+    clientResponse.bodyHandler(responseBuf -> {
       // 此时是在网络线程中，不应该就地处理，通过dispatcher转移线程
       invocation.getResponseExecutor().execute(() -> {
         try {
+          HttpServletResponseEx responseEx =
+              new VertxClientResponseToHttpServletResponse(clientResponse, responseBuf);
           for (HttpClientFilter filter : httpClientFilters) {
-            Response response = filter.afterReceiveResponse(invocation, httpResponse, responseBuf);
+            Response response = filter.afterReceiveResponse(invocation, responseEx);
             if (response != null) {
               asyncResp.complete(response);
               return;
