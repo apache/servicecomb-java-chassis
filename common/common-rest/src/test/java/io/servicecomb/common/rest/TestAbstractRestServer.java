@@ -21,7 +21,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.Executor;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.Response.Status;
 
 import org.hamcrest.Matchers;
@@ -32,6 +31,7 @@ import org.junit.Test;
 
 import io.servicecomb.common.rest.codec.RestCodec;
 import io.servicecomb.common.rest.codec.produce.ProduceProcessor;
+import io.servicecomb.common.rest.codec.produce.ProduceProcessorManager;
 import io.servicecomb.common.rest.definition.RestOperationMeta;
 import io.servicecomb.common.rest.filter.HttpServerFilter;
 import io.servicecomb.common.rest.locator.OperationLocator;
@@ -49,6 +49,8 @@ import io.servicecomb.core.definition.SchemaMeta;
 import io.servicecomb.core.transport.TransportManager;
 import io.servicecomb.foundation.common.utils.JsonUtils;
 import io.servicecomb.foundation.common.utils.SPIServiceUtils;
+import io.servicecomb.foundation.vertx.http.HttpServletRequestEx;
+import io.servicecomb.foundation.vertx.http.HttpServletResponseEx;
 import io.servicecomb.serviceregistry.RegistryUtils;
 import io.servicecomb.serviceregistry.api.registry.Microservice;
 import io.servicecomb.swagger.invocation.AsyncResponse;
@@ -56,14 +58,17 @@ import io.servicecomb.swagger.invocation.InvocationType;
 import io.servicecomb.swagger.invocation.Response;
 import io.servicecomb.swagger.invocation.exception.CommonExceptionData;
 import io.servicecomb.swagger.invocation.exception.InvocationException;
-import io.vertx.core.http.HttpServerResponse;
+import io.servicecomb.swagger.invocation.response.Headers;
+import io.vertx.core.buffer.Buffer;
 import mockit.Expectations;
+import mockit.Mock;
+import mockit.MockUp;
 import mockit.Mocked;
 
 public class TestAbstractRestServer {
-  private class RestServerForTest extends AbstractRestServer<HttpServerResponse> {
+  private class RestServerForTest extends AbstractRestServer {
     @Override
-    protected void doSendResponse(Invocation invocation, HttpServerResponse httpServerResponse,
+    protected void doSendResponse(Invocation invocation, HttpServletResponseEx responseEx,
         ProduceProcessor produceProcessor,
         Response response) throws Exception {
       invocationResponse = response;
@@ -83,13 +88,13 @@ public class TestAbstractRestServer {
   Object[] swaggerArguments;
 
   @Mocked
-  HttpServletRequest request;
+  HttpServletRequestEx request;
 
   @Mocked
   Transport transport;
 
   @Mocked
-  HttpServerResponse httpResponse;
+  HttpServletResponseEx httpResponse;
 
   @Mocked
   MicroserviceMetaManager microserviceMetaManager;
@@ -100,9 +105,11 @@ public class TestAbstractRestServer {
   @Mocked
   ServicePathManager servicePathManager;
 
+  ProduceProcessor produceProcessor = ProduceProcessorManager.JSON_PROCESSOR;
+
   Invocation invocation;
 
-  RestServerForTest restServer;
+  AbstractRestServer restServer;
 
   Response invocationResponse;
 
@@ -206,13 +213,13 @@ public class TestAbstractRestServer {
   public void testHandleRequestExecutorRunException(@Mocked RestOperationMeta restOperation) {
     restServer = new RestServerForTest() {
       @Override
-      protected RestOperationMeta findRestOperation(HttpServletRequest request) {
+      protected RestOperationMeta findRestOperation(HttpServletRequestEx request) {
         return restOperation;
       }
 
       @Override
-      protected void runOnExecutor(HttpServletRequest request, RestOperationMeta restOperation,
-          HttpServerResponse httpResponse) throws Exception {
+      protected void runOnExecutor(HttpServletRequestEx request, RestOperationMeta restOperation,
+          HttpServletResponseEx httpResponse) throws Exception {
         throw new InvocationException(Status.BAD_REQUEST, "failed in executor.");
       }
     };
@@ -272,7 +279,7 @@ public class TestAbstractRestServer {
 
     restServer = new RestServerForTest() {
       @Override
-      protected RestOperationMeta findRestOperation(HttpServletRequest request) {
+      protected RestOperationMeta findRestOperation(HttpServletRequestEx request) {
         return restOperation;
       }
     };
@@ -336,8 +343,8 @@ public class TestAbstractRestServer {
   public void testRunOnExecutorNoProduceProcessor(@Mocked RestOperationMeta restOperation) throws Exception {
     restServer = new RestServerForTest() {
       @Override
-      protected ProduceProcessor locateProduceProcessor(Invocation invocation, HttpServletRequest request,
-          HttpServerResponse httpResponse, RestOperationMeta restOperation, String acceptType) {
+      protected ProduceProcessor locateProduceProcessor(Invocation invocation, HttpServletRequestEx request,
+          HttpServletResponseEx httpResponse, RestOperationMeta restOperation, String acceptType) {
         return null;
       }
     };
@@ -377,6 +384,132 @@ public class TestAbstractRestServer {
     InvocationException e = invocationResponse.getResult();
     CommonExceptionData data = (CommonExceptionData) e.getErrorData();
     Assert.assertEquals("Accept json is not supported", data.getMessage());
-
   }
+
+  @Test
+  public void testDoSendResponseStatusAndContentType(@Mocked Response response) throws Exception {
+    new Expectations() {
+      {
+        response.getStatusCode();
+        result = 123;
+        response.getReasonPhrase();
+        result = "reason";
+        response.getHeaders();
+        result = new Error("stop");
+      }
+    };
+
+    Map<String, Object> result = new HashMap<>();
+    httpResponse = new MockUp<HttpServletResponseEx>() {
+      @Mock
+      void setStatus(int sc, String sm) {
+        result.put("statusCode", sc);
+        result.put("reasonPhrase", sm);
+      }
+
+      @Mock
+      void setContentType(String type) {
+        result.put("contentType", type);
+      }
+    }.getMockInstance();
+
+    Map<String, Object> expected = new HashMap<>();
+    expected.put("statusCode", 123);
+    expected.put("reasonPhrase", "reason");
+    expected.put("contentType", "application/json");
+
+    restServer = new AbstractRestServer();
+    try {
+      restServer.doSendResponse(invocation, httpResponse, produceProcessor, response);
+      Assert.fail("must throw exception");
+    } catch (Error e) {
+      Assert.assertEquals(expected, result);
+    }
+  }
+
+  @Test
+  public void testDoSendResponseHeaderNull(@Mocked Response response) throws Exception {
+    Headers headers = new Headers();
+
+    new Expectations() {
+      {
+        response.getResult();
+        result = new Error("stop");
+        response.getHeaders();
+        result = headers;
+      }
+    };
+
+    Headers resultHeaders = new Headers();
+    httpResponse = new MockUp<HttpServletResponseEx>() {
+      @Mock
+      void addHeader(String name, String value) {
+        resultHeaders.addHeader(name, value);
+      }
+    }.getMockInstance();
+
+    restServer = new AbstractRestServer();
+    try {
+      restServer.doSendResponse(invocation, httpResponse, produceProcessor, response);
+      Assert.fail("must throw exception");
+    } catch (Error e) {
+      Assert.assertEquals(null, resultHeaders.getHeaderMap());
+    }
+  }
+
+  @Test
+  public void testDoSendResponseHeaderNormal(@Mocked Response response) throws Exception {
+    Headers headers = new Headers();
+    headers.addHeader("h1", "h1v1");
+    headers.addHeader("h1", "h1v2");
+    headers.addHeader("h2", "h2v");
+
+    new Expectations() {
+      {
+        response.getResult();
+        result = new Error("stop");
+        response.getHeaders();
+        result = headers;
+      }
+    };
+
+    Headers resultHeaders = new Headers();
+    httpResponse = new MockUp<HttpServletResponseEx>() {
+      @Mock
+      void addHeader(String name, String value) {
+        resultHeaders.addHeader(name, value);
+      }
+    }.getMockInstance();
+
+    restServer = new AbstractRestServer();
+    try {
+      restServer.doSendResponse(invocation, httpResponse, produceProcessor, response);
+      Assert.fail("must throw exception");
+    } catch (Error e) {
+      Assert.assertEquals(headers.getHeaderMap(), resultHeaders.getHeaderMap());
+    }
+  }
+
+  @Test
+  public void testDoSendResponseResultOK(@Mocked Response response) throws Exception {
+    new Expectations() {
+      {
+        response.getResult();
+        result = "ok";
+      }
+    };
+
+    Buffer buffer = Buffer.buffer();
+    httpResponse = new MockUp<HttpServletResponseEx>() {
+      @Mock
+      void setBodyBuffer(Buffer bodyBuffer) {
+        buffer.appendBuffer(bodyBuffer);
+      }
+    }.getMockInstance();
+
+    restServer = new AbstractRestServer();
+    restServer.doSendResponse(invocation, httpResponse, produceProcessor, response);
+    Assert.assertEquals("\"ok\"", buffer.toString());
+  }
+
 }
