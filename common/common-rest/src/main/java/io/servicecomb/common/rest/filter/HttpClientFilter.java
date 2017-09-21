@@ -28,6 +28,5 @@ public interface HttpClientFilter {
 
   // if finished, then return a none null response
   // if return a null response, then sdk will call next filter.afterReceive
-  Response afterReceiveResponse(Invocation invocation, HttpServletResponseEx responseEx)
-      throws Exception;
+  Response afterReceiveResponse(Invocation invocation, HttpServletResponseEx responseEx);
 }

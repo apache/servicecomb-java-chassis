@@ -16,10 +16,9 @@
 
 package io.servicecomb.common.rest.filter;
 
-import javax.servlet.http.HttpServletRequest;
-
 import io.servicecomb.core.Invocation;
 import io.servicecomb.core.definition.OperationMeta;
+import io.servicecomb.foundation.vertx.http.HttpServletRequestEx;
 import io.servicecomb.foundation.vertx.http.HttpServletResponseEx;
 import io.servicecomb.swagger.invocation.Response;
 
@@ -30,8 +29,9 @@ public interface HttpServerFilter {
     return false;
   }
 
-  //if check failed, then return failed response
-  Response afterReceiveRequest(Invocation invocation, HttpServletRequest request);
+  // if finished, then return a none null response
+  // if return a null response, then sdk will call next filter.afterReceiveRequest
+  Response afterReceiveRequest(Invocation invocation, HttpServletRequestEx requestEx);
 
   // invocation maybe null
   void beforeSendResponse(Invocation invocation, HttpServletResponseEx responseEx);
