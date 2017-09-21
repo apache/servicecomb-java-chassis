@@ -16,7 +16,7 @@
 
 package io.servicecomb.transport.rest.client.http;
 
-import java.util.List;
+import java.util.Collection;
 
 import javax.ws.rs.core.HttpHeaders;
 
@@ -26,13 +26,12 @@ import io.servicecomb.common.rest.definition.RestOperationMeta;
 import io.servicecomb.common.rest.filter.HttpClientFilter;
 import io.servicecomb.core.Invocation;
 import io.servicecomb.core.definition.OperationMeta;
+import io.servicecomb.foundation.vertx.http.HttpServletRequestEx;
+import io.servicecomb.foundation.vertx.http.HttpServletResponseEx;
 import io.servicecomb.swagger.invocation.Response;
 import io.servicecomb.swagger.invocation.exception.CommonExceptionData;
 import io.servicecomb.swagger.invocation.exception.ExceptionFactory;
 import io.servicecomb.swagger.invocation.response.ResponseMeta;
-import io.vertx.core.buffer.Buffer;
-import io.vertx.core.http.HttpClientRequest;
-import io.vertx.core.http.HttpClientResponse;
 
 public class DefaultHttpClientFilter implements HttpClientFilter {
 
@@ -42,13 +41,13 @@ public class DefaultHttpClientFilter implements HttpClientFilter {
   }
 
   @Override
-  public void beforeSendRequest(Invocation invocation, HttpClientRequest clientRequest, Buffer bodyBuffer) {
+  public void beforeSendRequest(Invocation invocation, HttpServletRequestEx requestEx) {
 
   }
 
   protected ProduceProcessor findProduceProcessor(RestOperationMeta restOperation,
-      HttpClientResponse httpResponse) {
-    String contentType = httpResponse.getHeader(HttpHeaders.CONTENT_TYPE);
+      HttpServletResponseEx responseEx) {
+    String contentType = responseEx.getHeader(HttpHeaders.CONTENT_TYPE);
     if (contentType == null) {
       return null;
     }
@@ -62,28 +61,33 @@ public class DefaultHttpClientFilter implements HttpClientFilter {
   }
 
   @Override
-  public Response afterReceiveResponse(Invocation invocation, HttpClientResponse httpResponse, Buffer bodyBuffer)
-      throws Exception {
+  public Response afterReceiveResponse(Invocation invocation, HttpServletResponseEx responseEx) {
     OperationMeta operationMeta = invocation.getOperationMeta();
-    ResponseMeta responseMeta = operationMeta.findResponseMeta(httpResponse.statusCode());
+    ResponseMeta responseMeta = operationMeta.findResponseMeta(responseEx.getStatus());
     RestOperationMeta swaggerRestOperation = operationMeta.getExtData(RestConst.SWAGGER_REST_OPERATION);
-    ProduceProcessor produceProcessor = findProduceProcessor(swaggerRestOperation, httpResponse);
+    ProduceProcessor produceProcessor = findProduceProcessor(swaggerRestOperation, responseEx);
     if (produceProcessor == null) {
       String msg =
           String.format("path %s, statusCode %d, reasonPhrase %s, response content-type %s is not supported",
               swaggerRestOperation.getAbsolutePath(),
-              httpResponse.statusCode(),
-              httpResponse.statusMessage(),
-              httpResponse.getHeader(HttpHeaders.CONTENT_TYPE));
+              responseEx.getStatus(),
+              responseEx.getStatusType().getReasonPhrase(),
+              responseEx.getHeader(HttpHeaders.CONTENT_TYPE));
       Exception exception = ExceptionFactory.createConsumerException(new CommonExceptionData(msg));
       return Response.consumerFailResp(exception);
     }
 
-    Object result = produceProcessor.decodeResponse(bodyBuffer, responseMeta.getJavaType());
+    Object result = null;
+    try {
+      result = produceProcessor.decodeResponse(responseEx.getBodyBuffer(), responseMeta.getJavaType());
+    } catch (Exception e) {
+      return Response.consumerFailResp(e);
+    }
+
     Response response =
-        Response.create(httpResponse.statusCode(), httpResponse.statusMessage(), result);
+        Response.create(responseEx.getStatusType(), result);
     for (String headerName : responseMeta.getHeaders().keySet()) {
-      List<String> headerValues = httpResponse.headers().getAll(headerName);
+      Collection<String> headerValues = responseEx.getHeaders(headerName);
       for (String headerValue : headerValues) {
         response.getHeaders().addHeader(headerName, headerValue);
       }
