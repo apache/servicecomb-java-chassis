@@ -35,7 +35,7 @@ import io.vertx.core.http.HttpServerRequest;
 import io.vertx.ext.web.RoutingContext;
 
 // wrap vertx http request to Servlet http request
-public class VertxToHttpServletRequest extends AbstractHttpServletRequest {
+public class VertxServerRequestToHttpServletRequest extends AbstractHttpServletRequest {
   private static final EmptyAsyncContext EMPTY_ASYNC_CONTEXT = new EmptyAsyncContext();
 
   private RoutingContext context;
@@ -44,9 +44,12 @@ public class VertxToHttpServletRequest extends AbstractHttpServletRequest {
 
   private Cookie[] cookies;
 
-  public VertxToHttpServletRequest(RoutingContext context) {
+  private ServletInputStream inputStream;
+
+  public VertxServerRequestToHttpServletRequest(RoutingContext context) {
     this.context = context;
     this.vertxRequest = context.request();
+    setBodyBuffer(context.getBody());
   }
 
   @Override
@@ -130,6 +133,11 @@ public class VertxToHttpServletRequest extends AbstractHttpServletRequest {
   }
 
   @Override
+  public Enumeration<String> getHeaderNames() {
+    return Collections.enumeration(vertxRequest.headers().names());
+  }
+
+  @Override
   public int getIntHeader(String name) {
     String header = this.vertxRequest.getHeader(name);
     if (header == null) {
@@ -167,7 +175,10 @@ public class VertxToHttpServletRequest extends AbstractHttpServletRequest {
 
   @Override
   public ServletInputStream getInputStream() throws IOException {
-    return new BufferInputStream(context.getBody().getByteBuf());
+    if (inputStream == null) {
+      inputStream = new BufferInputStream(context.getBody().getByteBuf());
+    }
+    return inputStream;
   }
 
   @Override

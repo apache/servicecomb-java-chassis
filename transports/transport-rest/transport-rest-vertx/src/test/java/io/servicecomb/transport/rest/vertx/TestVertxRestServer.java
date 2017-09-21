@@ -32,7 +32,7 @@ import io.servicecomb.common.rest.RestConst;
 import io.servicecomb.common.rest.codec.produce.ProduceProcessor;
 import io.servicecomb.common.rest.definition.RestOperationMeta;
 import io.servicecomb.core.Invocation;
-import io.servicecomb.foundation.vertx.http.VertxToHttpServletRequest;
+import io.servicecomb.foundation.vertx.http.VertxServerRequestToHttpServletRequest;
 import io.servicecomb.swagger.invocation.Response;
 import io.servicecomb.swagger.invocation.exception.InvocationException;
 import io.vertx.core.http.HttpServerResponse;
@@ -174,6 +174,6 @@ public class TestVertxRestServer {
     }.getMockInstance();
     Deencapsulation.invoke(instance, "onRequest", context);
 
-    Assert.assertEquals(VertxToHttpServletRequest.class, map.get(RestConst.REST_REQUEST).getClass());
+    Assert.assertEquals(VertxServerRequestToHttpServletRequest.class, map.get(RestConst.REST_REQUEST).getClass());
   }
 }
