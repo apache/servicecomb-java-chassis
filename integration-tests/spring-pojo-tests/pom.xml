@@ -34,6 +34,12 @@
       <artifactId>pojo-test</artifactId>
       <version>0.3.0-SNAPSHOT</version>
       <type>test-jar</type>
+      <exclusions>
+        <exclusion>
+          <groupId>io.servicecomb.demo</groupId>
+          <artifactId>demo-signature</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.springframework.boot</groupId>

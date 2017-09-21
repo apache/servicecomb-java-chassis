@@ -23,10 +23,9 @@ import org.slf4j.LoggerFactory;
 
 import io.servicecomb.common.rest.filter.HttpClientFilter;
 import io.servicecomb.core.Invocation;
+import io.servicecomb.foundation.vertx.http.HttpServletRequestEx;
+import io.servicecomb.foundation.vertx.http.HttpServletResponseEx;
 import io.servicecomb.swagger.invocation.Response;
-import io.vertx.core.buffer.Buffer;
-import io.vertx.core.http.HttpClientRequest;
-import io.vertx.core.http.HttpClientResponse;
 
 public class ClientSignature implements HttpClientFilter {
   private static final Logger LOGGER = LoggerFactory.getLogger(ClientSignature.class);
@@ -37,16 +36,15 @@ public class ClientSignature implements HttpClientFilter {
   }
 
   @Override
-  public void beforeSendRequest(Invocation invocation, HttpClientRequest clientRequest, Buffer requestBodyBuffer) {
-    String signature = SignatureUtils.genSignature(clientRequest.path(), invocation.getContext(), requestBodyBuffer);
-    invocation.addContext("signature", signature);
+  public void beforeSendRequest(Invocation invocation, HttpServletRequestEx requestEx) {
+    String signature = SignatureUtils.genSignature(requestEx);
+    requestEx.setHeader("signature", signature);
   }
 
   @Override
-  public Response afterReceiveResponse(Invocation invocation, HttpClientResponse httpResponse,
-      Buffer responseBodyBuffer) throws Exception {
-    String signature = SignatureUtils.genSignature(responseBodyBuffer);
-    String serverSignature = httpResponse.getHeader("signature");
+  public Response afterReceiveResponse(Invocation invocation, HttpServletResponseEx responseEx) {
+    String signature = SignatureUtils.genSignature(responseEx);
+    String serverSignature = responseEx.getHeader("signature");
 
     if (serverSignature != null) {
       LOGGER.info("check response signature, client: {}, server: {}.", signature, serverSignature);

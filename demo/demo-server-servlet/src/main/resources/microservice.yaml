@@ -2,4 +2,3 @@ servicecomb:
   rest:
     servlet:
       urlPattern: /rest/*
-    copy-request: true

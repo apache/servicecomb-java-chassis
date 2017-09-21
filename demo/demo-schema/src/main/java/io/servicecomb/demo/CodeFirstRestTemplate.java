@@ -168,6 +168,7 @@ public class CodeFirstRestTemplate {
 
     HttpHeaders headers = new HttpHeaders();
     headers.add("prefix", "prefix  prefix");
+    headers.add("userId", "serviceCombUser");
 
     HttpEntity<Person> requestEntity = new HttpEntity<>(person, headers);
     String result = template.postForObject(cseUrlPrefix + "saysomething", requestEntity, String.class);

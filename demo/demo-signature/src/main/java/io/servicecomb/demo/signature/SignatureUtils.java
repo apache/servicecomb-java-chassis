@@ -16,24 +16,20 @@
 
 package io.servicecomb.demo.signature;
 
-import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.util.Collections;
+import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
-
-import javax.servlet.http.HttpServletRequest;
 
 import com.google.common.hash.Hasher;
 import com.google.common.hash.Hashing;
 import com.netflix.config.DynamicStringListProperty;
 
-import io.servicecomb.foundation.vertx.VertxUtils;
-import io.vertx.core.buffer.Buffer;
+import io.servicecomb.foundation.vertx.http.HttpServletRequestEx;
+import io.servicecomb.foundation.vertx.http.HttpServletResponseEx;
 
 public class SignatureUtils {
   private static final DynamicStringListProperty PARAM_NAMES_PROPERTY =
-      new DynamicStringListProperty("servicecomb.signature.param-names", Collections.emptyList());
+      new DynamicStringListProperty("servicecomb.demo.signature.param-names", Arrays.asList("userId"));
 
   private static List<String> paramNames = PARAM_NAMES_PROPERTY.get();
   static {
@@ -46,56 +42,33 @@ public class SignatureUtils {
     });
   }
 
-  public static String genSignature(String path, Map<String, String> params, Buffer bodyBuffer) {
-    byte[] bodyBytes = null;
-    int length = 0;
-    if (bodyBuffer != null) {
-      bodyBytes = VertxUtils.getBytesFast(bodyBuffer);
-      length = bodyBuffer.length();
-    }
-    return genSignature(path, params, bodyBytes, length);
-  }
-
-  public static String genSignature(String path, Map<String, String> params, HttpServletRequest request)
-      throws IOException {
-    byte[] bodyBytes = VertxUtils.getBytesFast(request.getInputStream());
-    return genSignature(path, params, bodyBytes, bodyBytes.length);
-  }
-
-  public static String genSignature(String path, Map<String, String> params, byte[] bodyBytes, int bodyByteLength) {
+  public static String genSignature(HttpServletRequestEx requestEx) {
     Hasher hasher = Hashing.sha256().newHasher();
-    hasher.putString(path, StandardCharsets.UTF_8);
+    hasher.putString(requestEx.getRequestURI(), StandardCharsets.UTF_8);
     for (String paramName : paramNames) {
-      String paramValue = params.get(paramName);
+      String paramValue = requestEx.getHeader(paramName);
       if (paramValue != null) {
         hasher.putString(paramName, StandardCharsets.UTF_8);
         hasher.putString(paramValue, StandardCharsets.UTF_8);
         System.out.printf("%s %s\n", paramName, paramValue);
       }
     }
-    if (bodyBytes != null) {
-      hasher.putBytes(bodyBytes, 0, bodyByteLength);
+
+    byte[] bytes = requestEx.getBodyBytes();
+    if (bytes != null) {
+      hasher.putBytes(bytes, 0, requestEx.getBodyBytesLength());
     }
 
     return hasher.hash().toString();
   }
 
-  public static String genSignature(Buffer bodyBuffer) {
-    byte[] bodyBytes = null;
-    int bodyByteLength = 0;
-    if (bodyBuffer != null) {
-      bodyBytes = VertxUtils.getBytesFast(bodyBuffer);
-      bodyByteLength = bodyBuffer.length();
-    }
-
-    return genSignature(bodyBytes, bodyByteLength);
-  }
-
-  public static String genSignature(byte[] bodyBytes, int bodyByteLength) {
+  public static String genSignature(HttpServletResponseEx responseEx) {
     Hasher hasher = Hashing.sha256().newHasher();
-    if (bodyBytes != null) {
-      hasher.putBytes(bodyBytes, 0, bodyByteLength);
+    byte[] bytes = responseEx.getBodyBytes();
+    if (bytes != null) {
+      hasher.putBytes(bytes, 0, responseEx.getBodyBytesLength());
     }
+
     return hasher.hash().toString();
   }
 }

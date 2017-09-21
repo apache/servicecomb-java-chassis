@@ -16,10 +16,6 @@
 
 package io.servicecomb.demo.signature;
 
-import java.io.IOException;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.core.Response.Status;
 
 import org.slf4j.Logger;
@@ -27,7 +23,9 @@ import org.slf4j.LoggerFactory;
 
 import io.servicecomb.common.rest.filter.HttpServerFilter;
 import io.servicecomb.core.Invocation;
-import io.servicecomb.foundation.vertx.http.VertxServerRequestToHttpServletRequest;
+import io.servicecomb.core.definition.OperationMeta;
+import io.servicecomb.foundation.vertx.http.HttpServletRequestEx;
+import io.servicecomb.foundation.vertx.http.HttpServletResponseEx;
 import io.servicecomb.swagger.invocation.Response;
 
 public class ServerSignature implements HttpServerFilter {
@@ -42,30 +40,26 @@ public class ServerSignature implements HttpServerFilter {
   }
 
   @Override
-  public Response afterReceiveRequest(Invocation invocation, HttpServletRequest request) {
-    if (request instanceof VertxServerRequestToHttpServletRequest) {
-      return null;
-    }
+  public boolean needCacheRequest(OperationMeta operationMeta) {
+    return true;
+  }
 
-    try {
-      String signature = SignatureUtils.genSignature(request.getRequestURI(), invocation.getContext(), request);
-      String clientSignature = invocation.getContext("signature");
-      LOGGER.info("check request signature, client: {}, server: {}.", clientSignature, signature);
-      if (!signature.equals(clientSignature)) {
-        LOGGER.error("check request signature failed");
-        return Response.create(Status.UNAUTHORIZED, "check request signature failed");
-      }
-
-    } catch (IOException e) {
-      return Response.producerFailResp(e);
+  @Override
+  public Response afterReceiveRequest(Invocation invocation, HttpServletRequestEx requestEx) {
+    String signature = SignatureUtils.genSignature(requestEx);
+    String clientSignature = requestEx.getHeader("signature");
+    LOGGER.info("check request signature, client: {}, server: {}.", clientSignature, signature);
+    if (!signature.equals(clientSignature)) {
+      LOGGER.error("check request signature failed");
+      return Response.create(Status.UNAUTHORIZED, "check request signature failed");
     }
 
     return null;
   }
 
   @Override
-  public void beforeSendResponse(Invocation invocation, HttpServletResponse response, byte[] bodyBytes, int length) {
-    String signature = SignatureUtils.genSignature(bodyBytes, length);
-    response.addHeader("signature", signature);
+  public void beforeSendResponse(Invocation invocation, HttpServletResponseEx responseEx) {
+    String signature = SignatureUtils.genSignature(responseEx);
+    responseEx.addHeader("signature", signature);
   }
 }
