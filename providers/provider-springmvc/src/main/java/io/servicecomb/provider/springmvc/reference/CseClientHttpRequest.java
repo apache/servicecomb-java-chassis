@@ -162,7 +162,7 @@ public class CseClientHttpRequest implements ClientHttpRequest {
   }
 
   private Object[] collectArguments() {
-    HttpServletRequest mockRequest = new ClientToHttpServletRequest(requestMeta.getPathParams(), queryParams,
+    HttpServletRequest mockRequest = new CommonToHttpServletRequest(requestMeta.getPathParams(), queryParams,
         httpHeaders, requestBody, requestMeta.getSwaggerRestOperation().isFormData());
     return RestCodec.restToArgs(mockRequest, requestMeta.getSwaggerRestOperation());
   }
