@@ -19,6 +19,7 @@ package io.servicecomb.provider.springmvc.reference;
 import java.io.IOException;
 import java.net.HttpCookie;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.List;
@@ -32,7 +33,7 @@ import io.servicecomb.common.rest.RestConst;
 import io.servicecomb.foundation.vertx.http.AbstractHttpServletRequest;
 
 // restTemplate convert parameters to invocation args.
-public class ClientToHttpServletRequest extends AbstractHttpServletRequest {
+public class CommonToHttpServletRequest extends AbstractHttpServletRequest {
   private Map<String, List<String>> queryParams;
 
   private Map<String, List<String>> httpHeaders;
@@ -41,7 +42,7 @@ public class ClientToHttpServletRequest extends AbstractHttpServletRequest {
   private Cookie[] cookies;
 
   @SuppressWarnings("unchecked")
-  public ClientToHttpServletRequest(Map<String, String> pathParams, Map<String, List<String>> queryParams,
+  public CommonToHttpServletRequest(Map<String, String> pathParams, Map<String, List<String>> queryParams,
       Map<String, List<String>> httpHeaders, Object bodyObject, boolean isFormData) {
     setAttribute(RestConst.PATH_PARAMETERS, pathParams);
 
@@ -96,10 +97,15 @@ public class ClientToHttpServletRequest extends AbstractHttpServletRequest {
   public Enumeration<String> getHeaders(String name) {
     List<String> headerValues = httpHeaders.get(name);
     if (headerValues == null || headerValues.isEmpty()) {
-      return null;
+      return Collections.emptyEnumeration();
     }
 
     return Collections.enumeration(headerValues);
+  }
+
+  @Override
+  public Enumeration<String> getHeaderNames() {
+    return Collections.enumeration(httpHeaders.keySet());
   }
 
   @Override
@@ -132,5 +138,18 @@ public class ClientToHttpServletRequest extends AbstractHttpServletRequest {
   @Override
   public ServletInputStream getInputStream() throws IOException {
     return null;
+  }
+
+  @Override
+  public void setHeader(String name, String value) {
+    httpHeaders.put(name, Arrays.asList(value));
+  }
+
+  @Override
+  public void addHeader(String name, String value) {
+    List<String> list = httpHeaders.computeIfAbsent(name, key -> {
+      return new ArrayList<>();
+    });
+    list.add(value);
   }
 }
