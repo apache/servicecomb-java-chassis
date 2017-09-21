@@ -148,6 +148,7 @@ public class CseClientHttpRequest implements ClientHttpRequest {
       invocation.addContext(context);
     }
 
+    invocation.getHandlerContext().put(RestConst.CONSUMER_HEADER, httpHeaders);
     Response response = doInvoke(invocation);
 
     if (response.isSuccessed()) {
