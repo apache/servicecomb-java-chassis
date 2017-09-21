@@ -27,7 +27,7 @@ import org.slf4j.LoggerFactory;
 
 import io.servicecomb.common.rest.filter.HttpServerFilter;
 import io.servicecomb.core.Invocation;
-import io.servicecomb.foundation.vertx.http.VertxToHttpServletRequest;
+import io.servicecomb.foundation.vertx.http.VertxServerRequestToHttpServletRequest;
 import io.servicecomb.swagger.invocation.Response;
 
 public class ServerSignature implements HttpServerFilter {
@@ -43,7 +43,7 @@ public class ServerSignature implements HttpServerFilter {
 
   @Override
   public Response afterReceiveRequest(Invocation invocation, HttpServletRequest request) {
-    if (request instanceof VertxToHttpServletRequest) {
+    if (request instanceof VertxServerRequestToHttpServletRequest) {
       return null;
     }
 

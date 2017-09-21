@@ -42,14 +42,14 @@ import mockit.Deencapsulation;
 import mockit.Expectations;
 import mockit.Mocked;
 
-public class TestVertxToHttpServletRequest {
+public class TestVertxServerRequestToHttpServletRequest {
   @Mocked
   RoutingContext context;
 
   @Mocked
   HttpServerRequest vertxRequest;
 
-  VertxToHttpServletRequest request;
+  VertxServerRequestToHttpServletRequest request;
 
   @Before
   public void setup() {
@@ -60,7 +60,7 @@ public class TestVertxToHttpServletRequest {
       }
     };
 
-    request = new VertxToHttpServletRequest(context);
+    request = new VertxServerRequestToHttpServletRequest(context);
   }
 
   @Test
@@ -240,6 +240,21 @@ public class TestVertxToHttpServletRequest {
   }
 
   @Test
+  public void testGetHeaderNames() {
+    MultiMap headers = MultiMap.caseInsensitiveMultiMap();
+    headers.add("name", "value");
+    new Expectations() {
+      {
+        vertxRequest.headers();
+        result = headers;
+      }
+    };
+
+    Assert.assertThat(Collections.list(request.getHeaderNames()), Matchers.contains("name"));
+
+  }
+
+  @Test
   public void testGetIntHeaderNotExist() {
     Assert.assertEquals(-1, request.getIntHeader("key"));
   }
@@ -346,6 +361,7 @@ public class TestVertxToHttpServletRequest {
     };
 
     ServletInputStream is = request.getInputStream();
+    Assert.assertSame(is, request.getInputStream());
     int value = is.read();
     is.close();
     Assert.assertEquals(1, value);
@@ -353,7 +369,8 @@ public class TestVertxToHttpServletRequest {
 
   @Test
   public void testGetAsyncContext() {
-    AsyncContext asyncContext = Deencapsulation.getField(VertxToHttpServletRequest.class, "EMPTY_ASYNC_CONTEXT");
+    AsyncContext asyncContext =
+        Deencapsulation.getField(VertxServerRequestToHttpServletRequest.class, "EMPTY_ASYNC_CONTEXT");
 
     Assert.assertSame(asyncContext, request.getAsyncContext());
   }

@@ -29,7 +29,7 @@ import io.servicecomb.common.rest.AbstractRestServer;
 import io.servicecomb.common.rest.RestConst;
 import io.servicecomb.common.rest.codec.produce.ProduceProcessor;
 import io.servicecomb.core.Invocation;
-import io.servicecomb.foundation.vertx.http.VertxToHttpServletRequest;
+import io.servicecomb.foundation.vertx.http.VertxServerRequestToHttpServletRequest;
 import io.servicecomb.swagger.invocation.Response;
 import io.servicecomb.swagger.invocation.exception.InvocationException;
 import io.vertx.core.buffer.Buffer;
@@ -65,7 +65,7 @@ public class VertxRestServer extends AbstractRestServer<HttpServerResponse> {
   }
 
   private void onRequest(RoutingContext context) {
-    HttpServletRequest request = new VertxToHttpServletRequest(context);
+    HttpServletRequest request = new VertxServerRequestToHttpServletRequest(context);
     context.put(RestConst.REST_REQUEST, request);
     handleRequest(request, context.response());
   }
