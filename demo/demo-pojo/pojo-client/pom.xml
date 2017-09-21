@@ -34,10 +34,6 @@
       <groupId>io.servicecomb</groupId>
       <artifactId>provider-pojo</artifactId>
     </dependency>
-    <dependency>
-      <groupId>io.servicecomb.demo</groupId>
-      <artifactId>demo-signature</artifactId>
-    </dependency>
   </dependencies>
 
   <properties>

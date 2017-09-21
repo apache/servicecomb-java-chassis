@@ -15,6 +15,12 @@
     <dependency>
       <groupId>io.servicecomb.demo</groupId>
       <artifactId>demo-schema</artifactId>
+      <exclusions>
+        <exclusion>
+          <groupId>io.servicecomb.demo</groupId>
+          <artifactId>demo-signature</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>io.servicecomb</groupId>
