@@ -36,13 +36,12 @@ import javax.servlet.ServletInputStream;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import javax.servlet.http.HttpUpgradeHandler;
 import javax.servlet.http.Part;
 
-public abstract class AbstractHttpServletRequest implements HttpServletRequest {
+public abstract class AbstractHttpServletRequest extends BodyBufferSupportImpl implements HttpServletRequestEx {
   private Map<String, Object> attributeMap = new HashMap<>();
 
   @Override
