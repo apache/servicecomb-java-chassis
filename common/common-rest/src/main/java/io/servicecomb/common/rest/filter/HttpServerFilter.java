@@ -19,11 +19,16 @@ package io.servicecomb.common.rest.filter;
 import javax.servlet.http.HttpServletRequest;
 
 import io.servicecomb.core.Invocation;
+import io.servicecomb.core.definition.OperationMeta;
 import io.servicecomb.foundation.vertx.http.HttpServletResponseEx;
 import io.servicecomb.swagger.invocation.Response;
 
 public interface HttpServerFilter {
   int getOrder();
+
+  default boolean needCacheRequest(OperationMeta operationMeta) {
+    return false;
+  }
 
   //if check failed, then return failed response
   Response afterReceiveRequest(Invocation invocation, HttpServletRequest request);

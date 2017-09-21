@@ -38,7 +38,7 @@ public class SignatureUtils {
   private static List<String> paramNames = PARAM_NAMES_PROPERTY.get();
   static {
     PARAM_NAMES_PROPERTY.addCallback(() -> {
-      List<String> tmpNames = PARAM_NAMES_PROPERTY.get();;
+      List<String> tmpNames = PARAM_NAMES_PROPERTY.get();
       tmpNames.sort((n1, n2) -> {
         return n1.compareTo(n2);
       });
