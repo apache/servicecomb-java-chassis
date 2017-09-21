@@ -17,9 +17,9 @@
 package io.servicecomb.common.rest.filter;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import io.servicecomb.core.Invocation;
+import io.servicecomb.foundation.vertx.http.HttpServletResponseEx;
 import io.servicecomb.swagger.invocation.Response;
 
 public interface HttpServerFilter {
@@ -29,5 +29,5 @@ public interface HttpServerFilter {
   Response afterReceiveRequest(Invocation invocation, HttpServletRequest request);
 
   // invocation maybe null
-  void beforeSendResponse(Invocation invocation, HttpServletResponse response, byte[] bodyBytes, int length);
+  void beforeSendResponse(Invocation invocation, HttpServletResponseEx responseEx);
 }
