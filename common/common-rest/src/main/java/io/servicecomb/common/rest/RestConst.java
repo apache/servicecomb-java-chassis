@@ -41,4 +41,6 @@ public final class RestConst {
 
   // in producer invocation handler context
   public static final String REST_REQUEST = "servicecomb-rest-request";
+
+  public static final String REST_RESPONSE = "servicecomb-rest-response";
 }

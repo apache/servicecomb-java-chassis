@@ -16,29 +16,22 @@
 
 package io.servicecomb.transport.rest.vertx;
 
-import java.util.List;
-import java.util.Map.Entry;
-
-import javax.servlet.http.HttpServletRequest;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import io.netty.handler.codec.http.multipart.HttpPostRequestDecoder.ErrorDataDecoderException;
 import io.servicecomb.common.rest.AbstractRestServer;
 import io.servicecomb.common.rest.RestConst;
-import io.servicecomb.common.rest.codec.produce.ProduceProcessor;
-import io.servicecomb.core.Invocation;
+import io.servicecomb.foundation.vertx.http.HttpServletRequestEx;
+import io.servicecomb.foundation.vertx.http.HttpServletResponseEx;
 import io.servicecomb.foundation.vertx.http.VertxServerRequestToHttpServletRequest;
-import io.servicecomb.swagger.invocation.Response;
+import io.servicecomb.foundation.vertx.http.VertxServerResponseToHttpServletResponse;
 import io.servicecomb.swagger.invocation.exception.InvocationException;
-import io.vertx.core.buffer.Buffer;
-import io.vertx.core.http.HttpServerResponse;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.RoutingContext;
 import io.vertx.ext.web.handler.CookieHandler;
 
-public class VertxRestServer extends AbstractRestServer<HttpServerResponse> {
+public class VertxRestServer extends AbstractRestServer {
   private static final Logger LOGGER = LoggerFactory.getLogger(VertxRestServer.class);
 
   public VertxRestServer(Router router) {
@@ -50,7 +43,8 @@ public class VertxRestServer extends AbstractRestServer<HttpServerResponse> {
   private void failureHandler(RoutingContext context) {
     LOGGER.error("http server failed.", context.failure());
 
-    HttpServletRequest request = context.get(RestConst.REST_REQUEST);
+    HttpServletRequestEx requestEx = context.get(RestConst.REST_REQUEST);
+    HttpServletResponseEx responseEx = context.get(RestConst.REST_RESPONSE);
     Throwable e = context.failure();
     if (ErrorDataDecoderException.class.isInstance(e)) {
       Throwable cause = e.getCause();
@@ -58,44 +52,19 @@ public class VertxRestServer extends AbstractRestServer<HttpServerResponse> {
         e = cause;
       }
     }
-    sendFailResponse(null, request, context.response(), e);
+    sendFailResponse(null, requestEx, responseEx, e);
 
     // 走到这里，应该都是不可控制的异常，直接关闭连接
     context.response().close();
   }
 
   private void onRequest(RoutingContext context) {
-    HttpServletRequest request = new VertxServerRequestToHttpServletRequest(context);
-    context.put(RestConst.REST_REQUEST, request);
-    handleRequest(request, context.response());
-  }
+    HttpServletRequestEx requestEx = new VertxServerRequestToHttpServletRequest(context);
+    context.put(RestConst.REST_REQUEST, requestEx);
 
-  @Override
-  protected void doSendResponse(Invocation invocation, HttpServerResponse httpServerResponse,
-      ProduceProcessor produceProcessor,
-      Response response) throws Exception {
-    httpServerResponse.setStatusCode(response.getStatusCode());
-    httpServerResponse.setStatusMessage(response.getReasonPhrase());
-    httpServerResponse.putHeader("Content-Type", produceProcessor.getName());
+    HttpServletResponseEx responseEx = new VertxServerResponseToHttpServletResponse(context.response());
+    context.put(RestConst.REST_RESPONSE, responseEx);
 
-    if (response.getHeaders().getHeaderMap() != null) {
-      for (Entry<String, List<Object>> entry : response.getHeaders().getHeaderMap().entrySet()) {
-        for (Object value : entry.getValue()) {
-          httpServerResponse.putHeader(entry.getKey(), String.valueOf(value));
-        }
-      }
-    }
-
-    Object body = response.getResult();
-    if (response.isFailed()) {
-      body = ((InvocationException) body).getErrorData();
-    }
-    Buffer buffer = produceProcessor.encodeResponse(body);
-
-    if (null == buffer) {
-      httpServerResponse.end();
-      return;
-    }
-    httpServerResponse.end(buffer);
+    handleRequest(requestEx, responseEx);
   }
 }
