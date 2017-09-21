@@ -16,81 +16,49 @@
 
 package io.servicecomb.transport.rest.servlet;
 
-import java.util.List;
-import java.util.Map.Entry;
-
 import javax.servlet.AsyncContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.netflix.config.DynamicBooleanProperty;
-import com.netflix.config.DynamicPropertyFactory;
-
-import io.netty.buffer.ByteBuf;
-import io.netty.buffer.Unpooled;
 import io.servicecomb.common.rest.AbstractRestServer;
-import io.servicecomb.common.rest.RestConst;
-import io.servicecomb.common.rest.codec.produce.ProduceProcessor;
+import io.servicecomb.common.rest.definition.RestOperationMeta;
 import io.servicecomb.common.rest.filter.HttpServerFilter;
-import io.servicecomb.core.Invocation;
-import io.servicecomb.foundation.vertx.VertxUtils;
+import io.servicecomb.core.definition.OperationMeta;
+import io.servicecomb.foundation.vertx.http.HttpServletRequestEx;
+import io.servicecomb.foundation.vertx.http.HttpServletResponseEx;
 import io.servicecomb.foundation.vertx.http.StandardHttpServletRequestEx;
-import io.servicecomb.foundation.vertx.stream.BufferOutputStream;
-import io.servicecomb.swagger.invocation.Response;
-import io.servicecomb.swagger.invocation.exception.InvocationException;
+import io.servicecomb.foundation.vertx.http.StandardHttpServletResponseEx;
 
-public class ServletRestServer extends AbstractRestServer<HttpServletResponse> {
+public class ServletRestServer extends AbstractRestServer {
   protected RestAsyncListener restAsyncListener = new RestAsyncListener();
 
-  protected DynamicBooleanProperty cacheRequest =
-      DynamicPropertyFactory.getInstance().getBooleanProperty(RestConst.CONFIG_COPY_REQUEST, false);
-
   public void service(HttpServletRequest request, HttpServletResponse response) {
-    if (cacheRequest.get()) {
-      request = new StandardHttpServletRequestEx(request);
-    }
-
     // 异步场景
     final AsyncContext asyncCtx = request.startAsync();
     asyncCtx.addListener(restAsyncListener);
     asyncCtx.setTimeout(ServletConfig.getServerTimeout());
 
-    handleRequest(request, response);
+    HttpServletRequestEx requestEx = new StandardHttpServletRequestEx(request);
+    HttpServletResponseEx responseEx = new StandardHttpServletResponseEx(response);
+    handleRequest(requestEx, responseEx);
   }
 
-  @SuppressWarnings("deprecation")
   @Override
-  protected void doSendResponse(Invocation invocation, HttpServletResponse httpServerResponse,
-      ProduceProcessor produceProcessor,
-      Response response) throws Exception {
-    httpServerResponse.setStatus(response.getStatusCode(), response.getReasonPhrase());
-    httpServerResponse.setContentType(produceProcessor.getName());
+  protected RestOperationMeta findRestOperation(HttpServletRequestEx request) {
+    RestOperationMeta restOperationMeta = super.findRestOperation(request);
 
-    if (response.getHeaders().getHeaderMap() != null) {
-      for (Entry<String, List<Object>> entry : response.getHeaders().getHeaderMap().entrySet()) {
-        for (Object value : entry.getValue()) {
-          httpServerResponse.addHeader(entry.getKey(), String.valueOf(value));
-        }
+    boolean cacheRequest = collectCacheRequest(restOperationMeta.getOperationMeta());
+    ((StandardHttpServletRequestEx) request).setCacheRequest(cacheRequest);
+
+    return restOperationMeta;
+  }
+
+  protected boolean collectCacheRequest(OperationMeta operationMeta) {
+    for (HttpServerFilter filter : httpServerFilters) {
+      if (filter.needCacheRequest(operationMeta)) {
+        return true;
       }
     }
-
-    // TODO:设置buffer大小，这很影响性能
-    Object body = response.getResult();
-    if (response.isFailed()) {
-      body = ((InvocationException) body).getErrorData();
-    }
-
-    try (BufferOutputStream output = new BufferOutputStream(Unpooled.compositeBuffer())) {
-      produceProcessor.encodeResponse(output, body);
-
-      ByteBuf byteBuf = output.getByteBuf();
-      int length = byteBuf.readableBytes();
-      byte[] bodyBytes = VertxUtils.getBytesFast(byteBuf);
-      for (HttpServerFilter filter : httpServerFilters) {
-        filter.beforeSendResponse(invocation, httpServerResponse, bodyBytes, length);
-      }
-      httpServerResponse.getOutputStream().write(bodyBytes, 0, length);
-      httpServerResponse.flushBuffer();
-    }
+    return false;
   }
 }

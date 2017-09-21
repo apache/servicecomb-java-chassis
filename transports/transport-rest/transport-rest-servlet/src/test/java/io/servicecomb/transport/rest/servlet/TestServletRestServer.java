@@ -16,207 +16,113 @@
 
 package io.servicecomb.transport.rest.servlet;
 
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.Arrays;
 
-import javax.servlet.ServletOutputStream;
-import javax.servlet.WriteListener;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.ws.Holder;
 
-import org.apache.commons.configuration.Configuration;
 import org.junit.Assert;
 import org.junit.Test;
 
-import com.netflix.config.DynamicPropertyFactory;
-
-import io.servicecomb.common.rest.RestConst;
-import io.servicecomb.common.rest.codec.produce.ProduceProcessor;
-import io.servicecomb.common.rest.codec.produce.ProduceProcessorManager;
-import io.servicecomb.core.Invocation;
+import io.servicecomb.common.rest.filter.HttpServerFilter;
+import io.servicecomb.common.rest.locator.ServicePathManager;
+import io.servicecomb.core.CseContext;
+import io.servicecomb.core.definition.MicroserviceMetaManager;
+import io.servicecomb.core.definition.OperationMeta;
+import io.servicecomb.foundation.common.utils.SPIServiceUtils;
+import io.servicecomb.foundation.vertx.http.HttpServletRequestEx;
+import io.servicecomb.foundation.vertx.http.HttpServletResponseEx;
 import io.servicecomb.foundation.vertx.http.StandardHttpServletRequestEx;
-import io.servicecomb.swagger.invocation.Response;
-import io.servicecomb.swagger.invocation.response.Headers;
-import io.vertx.core.buffer.Buffer;
+import io.servicecomb.serviceregistry.RegistryUtils;
+import io.servicecomb.serviceregistry.api.registry.Microservice;
+import mockit.Deencapsulation;
 import mockit.Expectations;
-import mockit.Mock;
-import mockit.MockUp;
 import mockit.Mocked;
 
 public class TestServletRestServer {
-  ServletRestServer server = new ServletRestServer();
-
-  HttpServletResponse httpServerResponse;
+  ServletRestServer server;
 
   @Mocked
-  Invocation invocation;
-
-  ProduceProcessor produceProcessor = ProduceProcessorManager.JSON_PROCESSOR;
+  HttpServletRequest request;
 
   @Mocked
-  Response response;
+  HttpServletResponse response;
+
+  @Mocked
+  OperationMeta operationMeta;
 
   @Test
-  public void testDoSendResponseStatusAndContentType() throws Exception {
-    new Expectations() {
-      {
-        response.getStatusCode();
-        result = 123;
-        response.getReasonPhrase();
-        result = "reason";
-        response.getHeaders();
-        result = new Error("stop");
-      }
-    };
-
-    Map<String, Object> result = new HashMap<>();
-    httpServerResponse = new MockUp<HttpServletResponse>() {
-      @Mock
-      void setStatus(int sc, String sm) {
-        result.put("statusCode", sc);
-        result.put("reasonPhrase", sm);
-      }
-
-      @Mock
-      void setContentType(String type) {
-        result.put("contentType", type);
-      }
-    }.getMockInstance();
-
-    Map<String, Object> expected = new HashMap<>();
-    expected.put("statusCode", 123);
-    expected.put("reasonPhrase", "reason");
-    expected.put("contentType", "application/json");
-
-    try {
-      server.doSendResponse(invocation, httpServerResponse, produceProcessor, response);
-      Assert.fail("must throw exception");
-    } catch (Error e) {
-      Assert.assertEquals(expected, result);
-    }
-  }
-
-  @Test
-  public void testDoSendResponseHeaderNull() throws Exception {
-    Headers headers = new Headers();
-
-    new Expectations() {
-      {
-        response.getResult();
-        result = new Error("stop");
-        response.getHeaders();
-        result = headers;
-      }
-    };
-
-    Headers resultHeaders = new Headers();
-    httpServerResponse = new MockUp<HttpServletResponse>() {
-      @Mock
-      void addHeader(String name, String value) {
-        resultHeaders.addHeader(name, value);
-      }
-    }.getMockInstance();
-
-    try {
-      server.doSendResponse(invocation, httpServerResponse, produceProcessor, response);
-      Assert.fail("must throw exception");
-    } catch (Error e) {
-      Assert.assertEquals(null, resultHeaders.getHeaderMap());
-    }
-  }
-
-  @Test
-  public void testDoSendResponseHeaderNormal() throws Exception {
-    Headers headers = new Headers();
-    headers.addHeader("h1", "h1v1");
-    headers.addHeader("h1", "h1v2");
-    headers.addHeader("h2", "h2v");
-
-    new Expectations() {
-      {
-        response.getResult();
-        result = new Error("stop");
-        response.getHeaders();
-        result = headers;
-      }
-    };
-
-    Headers resultHeaders = new Headers();
-    httpServerResponse = new MockUp<HttpServletResponse>() {
-      @Mock
-      void addHeader(String name, String value) {
-        resultHeaders.addHeader(name, value);
-      }
-    }.getMockInstance();
-
-    try {
-      server.doSendResponse(invocation, httpServerResponse, produceProcessor, response);
-      Assert.fail("must throw exception");
-    } catch (Error e) {
-      Assert.assertEquals(headers.getHeaderMap(), resultHeaders.getHeaderMap());
-    }
-  }
-
-  @Test
-  public void testDoSendResponseResultOK() throws Exception {
-    new Expectations() {
-      {
-        response.getResult();
-        result = "ok";
-      }
-    };
-
-    Buffer buffer = Buffer.buffer();
-    ServletOutputStream output = new ServletOutputStream() {
-      public void write(byte b[], int off, int len) throws IOException {
-        buffer.appendBytes(b, off, len);
-      }
-
+  public void service() {
+    Holder<Boolean> handled = new Holder<>();
+    server = new ServletRestServer() {
       @Override
-      public boolean isReady() {
+      protected void handleRequest(HttpServletRequestEx requestEx, HttpServletResponseEx responseEx) {
+        handled.value = true;
+      }
+    };
+
+    server.service(request, response);
+
+    Assert.assertTrue(handled.value);
+  }
+
+  @Test
+  public void findRestOperationCacheTrue(@Mocked MicroserviceMetaManager microserviceMetaManager,
+      @Mocked ServicePathManager servicePathManager) {
+    Microservice microservice = new Microservice();
+    microservice.setServiceName("ms");
+    new Expectations(RegistryUtils.class) {
+      {
+        RegistryUtils.getMicroservice();
+        result = microservice;
+      }
+    };
+
+    HttpServletRequestEx requestEx = new StandardHttpServletRequestEx(request);
+    server = new ServletRestServer() {
+      @Override
+      protected boolean collectCacheRequest(OperationMeta operationMeta) {
         return true;
       }
-
-      @Override
-      public void setWriteListener(WriteListener writeListener) {
-      }
-
-      @Override
-      public void write(int b) throws IOException {
-      }
     };
 
-    httpServerResponse = new MockUp<HttpServletResponse>() {
-      @Mock
-      ServletOutputStream getOutputStream() throws IOException {
-        return output;
-      }
-    }.getMockInstance();
+    CseContext.getInstance().setMicroserviceMetaManager(microserviceMetaManager);
 
-    server.doSendResponse(invocation, httpServerResponse, produceProcessor, response);
-    Assert.assertEquals("\"ok\"", buffer.toString());
+    server.findRestOperation(requestEx);
+    Assert.assertTrue(Deencapsulation.getField(requestEx, "cacheRequest"));
+
+    CseContext.getInstance().setMicroserviceMetaManager(null);
   }
 
   @Test
-  public void testCopyRequest(@Mocked HttpServletRequest request, @Mocked HttpServletResponse response) {
-    Holder<HttpServletRequest> holder = new Holder<>();
-    ServletRestServer servletRestServer = new ServletRestServer() {
-      @Override
-      protected void handleRequest(HttpServletRequest request, HttpServletResponse httpResponse) {
-        holder.value = request;
+  public void collectCacheRequestCacheTrue(@Mocked HttpServerFilter f1) {
+    new Expectations(SPIServiceUtils.class) {
+      {
+        f1.needCacheRequest(operationMeta);
+        result = true;
+        SPIServiceUtils.getSortedService(HttpServerFilter.class);
+        result = Arrays.asList(f1);
       }
     };
-    servletRestServer.service(request, response);
-    Assert.assertSame(request, holder.value);
 
-    Configuration cfg = (Configuration) DynamicPropertyFactory.getBackingConfigurationSource();;
-    cfg.addProperty(RestConst.CONFIG_COPY_REQUEST, true);
-
-    servletRestServer.service(request, response);
-    Assert.assertEquals(StandardHttpServletRequestEx.class, holder.value.getClass());
-
-    cfg.clearProperty(RestConst.CONFIG_COPY_REQUEST);
+    server = new ServletRestServer();
+    Assert.assertTrue(server.collectCacheRequest(operationMeta));
   }
+
+  @Test
+  public void collectCacheRequestCacheFalse(@Mocked HttpServerFilter f1) {
+    new Expectations(SPIServiceUtils.class) {
+      {
+        f1.needCacheRequest(operationMeta);
+        result = false;
+        SPIServiceUtils.getSortedService(HttpServerFilter.class);
+        result = Arrays.asList(f1);
+      }
+    };
+
+    server = new ServletRestServer();
+    Assert.assertFalse(server.collectCacheRequest(operationMeta));
+  }
+
 }
