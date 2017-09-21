@@ -17,19 +17,17 @@
 package io.servicecomb.common.rest.filter;
 
 import io.servicecomb.core.Invocation;
+import io.servicecomb.foundation.vertx.http.HttpServletRequestEx;
+import io.servicecomb.foundation.vertx.http.HttpServletResponseEx;
 import io.servicecomb.swagger.invocation.Response;
-import io.vertx.core.buffer.Buffer;
-import io.vertx.core.http.HttpClientRequest;
-import io.vertx.core.http.HttpClientResponse;
 
 public interface HttpClientFilter {
   int getOrder();
 
-  // bodyBytes maybe be null
-  void beforeSendRequest(Invocation invocation, HttpClientRequest clientRequest, Buffer requestBodyBuffer);
+  void beforeSendRequest(Invocation invocation, HttpServletRequestEx requestEx);
 
   // if finished, then return a none null response
   // if return a null response, then sdk will call next filter.afterReceive
-  Response afterReceiveResponse(Invocation invocation, HttpClientResponse httpResponse, Buffer responseBodyBuffer)
+  Response afterReceiveResponse(Invocation invocation, HttpServletResponseEx responseEx)
       throws Exception;
 }
