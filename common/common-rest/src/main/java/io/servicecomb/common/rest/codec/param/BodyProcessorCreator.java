@@ -63,7 +63,7 @@ public class BodyProcessorCreator implements ParamValueProcessorCreator {
       }
 
       String contentType = request.getContentType();
-      if (contentType != null && contentType.startsWith(MediaType.TEXT_PLAIN)) {
+      if (contentType != null && !contentType.startsWith(MediaType.APPLICATION_JSON)) {
         // TODO: we should consider body encoding
         return IOUtils.toString(inputStream, "UTF-8");
       }
