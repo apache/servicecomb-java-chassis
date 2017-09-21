@@ -21,6 +21,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import javax.ws.rs.core.HttpHeaders;
+import javax.ws.rs.core.Response.Status;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -32,6 +33,7 @@ import io.servicecomb.common.rest.codec.produce.ProduceProcessor;
 import io.servicecomb.common.rest.definition.RestOperationMeta;
 import io.servicecomb.core.Invocation;
 import io.servicecomb.core.definition.OperationMeta;
+import io.servicecomb.foundation.vertx.http.HttpServletResponseEx;
 import io.servicecomb.swagger.invocation.Response;
 import io.servicecomb.swagger.invocation.exception.CommonExceptionData;
 import io.servicecomb.swagger.invocation.exception.InvocationException;
@@ -39,7 +41,6 @@ import io.servicecomb.swagger.invocation.response.ResponseMeta;
 import io.vertx.core.MultiMap;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.http.CaseInsensitiveHeaders;
-import io.vertx.core.http.HttpClientResponse;
 import mockit.Expectations;
 import mockit.Mocked;
 
@@ -53,51 +54,50 @@ public class TestDefaultHttpClientFilter {
 
   @Test
   public void testFindProduceProcessorNullContentType(@Mocked RestOperationMeta restOperation,
-      @Mocked HttpClientResponse httpResponse) {
+      @Mocked HttpServletResponseEx responseEx) {
     new Expectations() {
       {
-        httpResponse.getHeader(HttpHeaders.CONTENT_TYPE);
+        responseEx.getHeader(HttpHeaders.CONTENT_TYPE);
         result = null;
       }
     };
 
-    Assert.assertNull(filter.findProduceProcessor(restOperation, httpResponse));
+    Assert.assertNull(filter.findProduceProcessor(restOperation, responseEx));
   }
 
   @Test
   public void testFindProduceProcessorJson(@Mocked RestOperationMeta restOperation,
-      @Mocked HttpClientResponse httpResponse, @Mocked ProduceProcessor produceProcessor) {
+      @Mocked HttpServletResponseEx responseEx, @Mocked ProduceProcessor produceProcessor) {
     new Expectations() {
       {
-        httpResponse.getHeader(HttpHeaders.CONTENT_TYPE);
+        responseEx.getHeader(HttpHeaders.CONTENT_TYPE);
         result = "json";
         restOperation.findProduceProcessor("json");
         result = produceProcessor;
       }
     };
 
-    Assert.assertSame(produceProcessor, filter.findProduceProcessor(restOperation, httpResponse));
+    Assert.assertSame(produceProcessor, filter.findProduceProcessor(restOperation, responseEx));
   }
 
   @Test
   public void testFindProduceProcessorJsonWithCharset(@Mocked RestOperationMeta restOperation,
-      @Mocked HttpClientResponse httpResponse, @Mocked ProduceProcessor produceProcessor) {
+      @Mocked HttpServletResponseEx responseEx, @Mocked ProduceProcessor produceProcessor) {
     new Expectations() {
       {
-        httpResponse.getHeader(HttpHeaders.CONTENT_TYPE);
+        responseEx.getHeader(HttpHeaders.CONTENT_TYPE);
         result = "json; UTF-8";
         restOperation.findProduceProcessor("json");
         result = produceProcessor;
       }
     };
 
-    Assert.assertSame(produceProcessor, filter.findProduceProcessor(restOperation, httpResponse));
+    Assert.assertSame(produceProcessor, filter.findProduceProcessor(restOperation, responseEx));
   }
 
   @Test
   public void testAfterReceiveResponseNullProduceProcessor(@Mocked Invocation invocation,
-      @Mocked HttpClientResponse httpResponse,
-      @Mocked Buffer bodyBuffer,
+      @Mocked HttpServletResponseEx responseEx,
       @Mocked OperationMeta operationMeta,
       @Mocked RestOperationMeta swaggerRestOperation) throws Exception {
     new Expectations() {
@@ -109,7 +109,7 @@ public class TestDefaultHttpClientFilter {
       }
     };
 
-    Response response = filter.afterReceiveResponse(invocation, httpResponse, bodyBuffer);
+    Response response = filter.afterReceiveResponse(invocation, responseEx);
     InvocationException exception = response.getResult();
     CommonExceptionData data = (CommonExceptionData) exception.getErrorData();
     Assert.assertEquals("path null, statusCode 0, reasonPhrase null, response content-type null is not supported",
@@ -118,7 +118,7 @@ public class TestDefaultHttpClientFilter {
 
   @Test
   public void testAfterReceiveResponseNormal(@Mocked Invocation invocation,
-      @Mocked HttpClientResponse httpResponse,
+      @Mocked HttpServletResponseEx responseEx,
       @Mocked Buffer bodyBuffer,
       @Mocked OperationMeta operationMeta,
       @Mocked ResponseMeta responseMeta,
@@ -134,14 +134,12 @@ public class TestDefaultHttpClientFilter {
     Object decodedResult = new Object();
     new Expectations() {
       {
-        operationMeta.findResponseMeta(200);
-        result = responseMeta;
         responseMeta.getHeaders();
         result = headerMeta;
-        httpResponse.getHeader(HttpHeaders.CONTENT_TYPE);
+        responseEx.getHeader(HttpHeaders.CONTENT_TYPE);
         result = "json";
-        httpResponse.headers();
-        result = responseHeader;
+        responseEx.getHeaders("b");
+        result = responseHeader.getAll("b");
         swaggerRestOperation.findProduceProcessor("json");
         result = produceProcessor;
         produceProcessor.decodeResponse(bodyBuffer, responseMeta.getJavaType());
@@ -152,13 +150,12 @@ public class TestDefaultHttpClientFilter {
         operationMeta.getExtData(RestConst.SWAGGER_REST_OPERATION);
         result = swaggerRestOperation;
 
-        httpResponse.statusCode();
-        result = 200;
+        responseEx.getStatusType();
+        result = Status.OK;
       }
     };
 
-    Assert.assertEquals(200, httpResponse.statusCode());
-    Response response = filter.afterReceiveResponse(invocation, httpResponse, bodyBuffer);
+    Response response = filter.afterReceiveResponse(invocation, responseEx);
     Assert.assertSame(decodedResult, response.getResult());
     Assert.assertEquals(1, response.getHeaders().getHeaderMap().size());
     Assert.assertEquals(response.getHeaders().getHeader("b"), Arrays.asList("bValue"));
