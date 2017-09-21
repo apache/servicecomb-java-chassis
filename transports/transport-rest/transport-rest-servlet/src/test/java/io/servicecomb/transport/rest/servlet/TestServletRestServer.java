@@ -36,6 +36,7 @@ import io.servicecomb.common.rest.RestConst;
 import io.servicecomb.common.rest.codec.produce.ProduceProcessor;
 import io.servicecomb.common.rest.codec.produce.ProduceProcessorManager;
 import io.servicecomb.core.Invocation;
+import io.servicecomb.foundation.vertx.http.StandardHttpServletRequestEx;
 import io.servicecomb.swagger.invocation.Response;
 import io.servicecomb.swagger.invocation.response.Headers;
 import io.vertx.core.buffer.Buffer;
@@ -214,7 +215,7 @@ public class TestServletRestServer {
     cfg.addProperty(RestConst.CONFIG_COPY_REQUEST, true);
 
     servletRestServer.service(request, response);
-    Assert.assertEquals(CachedHttpServletRequest.class, holder.value.getClass());
+    Assert.assertEquals(StandardHttpServletRequestEx.class, holder.value.getClass());
 
     cfg.clearProperty(RestConst.CONFIG_COPY_REQUEST);
   }

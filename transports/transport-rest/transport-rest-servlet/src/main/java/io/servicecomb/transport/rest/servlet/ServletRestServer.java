@@ -34,6 +34,7 @@ import io.servicecomb.common.rest.codec.produce.ProduceProcessor;
 import io.servicecomb.common.rest.filter.HttpServerFilter;
 import io.servicecomb.core.Invocation;
 import io.servicecomb.foundation.vertx.VertxUtils;
+import io.servicecomb.foundation.vertx.http.StandardHttpServletRequestEx;
 import io.servicecomb.foundation.vertx.stream.BufferOutputStream;
 import io.servicecomb.swagger.invocation.Response;
 import io.servicecomb.swagger.invocation.exception.InvocationException;
@@ -46,7 +47,7 @@ public class ServletRestServer extends AbstractRestServer<HttpServletResponse> {
 
   public void service(HttpServletRequest request, HttpServletResponse response) {
     if (cacheRequest.get()) {
-      request = new CachedHttpServletRequest(request);
+      request = new StandardHttpServletRequestEx(request);
     }
 
     // 异步场景
