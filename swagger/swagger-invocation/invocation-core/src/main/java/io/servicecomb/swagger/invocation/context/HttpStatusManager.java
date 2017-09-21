@@ -15,44 +15,5 @@
  */
 package io.servicecomb.swagger.invocation.context;
 
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-
-import javax.ws.rs.core.Response.Status;
-import javax.ws.rs.core.Response.StatusType;
-
-import io.servicecomb.foundation.common.utils.SPIServiceUtils;
-
-public class HttpStatusManager {
-  private Map<Integer, StatusType> statusMap = new ConcurrentHashMap<>();
-
-  public HttpStatusManager() {
-    for (Status status : Status.values()) {
-      statusMap.put(status.getStatusCode(), status);
-    }
-
-    SPIServiceUtils.getAllService(StatusType.class).forEach(status -> {
-      addStatusType(status);
-    });
-  }
-
-  public void addStatusType(StatusType status) {
-    if (statusMap.containsKey(status.getStatusCode())) {
-      throw new Error("repeated status code: " + status.getStatusCode());
-    }
-
-    statusMap.put(status.getStatusCode(), status);
-  }
-
-  public StatusType getOrCreateByStatusCode(int code) {
-    StatusType statusType = statusMap.get(code);
-    if (statusType != null) {
-      return statusType;
-    }
-
-    statusType = new HttpStatus(code, "");
-    addStatusType(statusType);
-
-    return statusType;
-  }
+public class HttpStatusManager extends io.servicecomb.foundation.common.http.HttpStatusManager {
 }

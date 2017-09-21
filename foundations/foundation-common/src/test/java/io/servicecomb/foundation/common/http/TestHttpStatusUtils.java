@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *    http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -13,32 +13,42 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.servicecomb.core.context;
+
+package io.servicecomb.foundation.common.http;
 
 import javax.ws.rs.core.Response.StatusType;
 
+import org.hamcrest.Matchers;
 import org.junit.Assert;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 
-import io.servicecomb.swagger.invocation.context.HttpStatus;
-import io.servicecomb.swagger.invocation.context.HttpStatusManager;
+public class TestHttpStatusUtils {
+  HttpStatusManager mgr = new HttpStatusManager();
 
-public class TestHttpStatusManager {
+  StatusType st;
+
+  @Rule
+  public ExpectedException expectedException = ExpectedException.none();
+
   @Test
-  public void test() {
-    HttpStatusManager mgr = new HttpStatusManager();
-
-    StatusType st = mgr.getOrCreateByStatusCode(200);
+  public void testStandard() {
+    st = HttpStatusUtils.getOrCreateByStatusCode(200);
     Assert.assertEquals(200, st.getStatusCode());
+  }
 
+  @Test
+  public void testNotStandard() {
     st = mgr.getOrCreateByStatusCode(250);
     Assert.assertEquals(250, st.getStatusCode());
+  }
 
-    try {
-      mgr.addStatusType(new HttpStatus(250, "250"));
-      throw new Error("not allowed");
-    } catch (Throwable e) {
-      Assert.assertEquals("repeated status code: 250", e.getMessage());
-    }
+  @Test
+  public void testAddRepeat() {
+    expectedException.expect(IllegalStateException.class);
+    expectedException.expectMessage(Matchers.is("repeated status code: 200"));
+
+    mgr.addStatusType(new HttpStatus(200, "ok"));
   }
 }

@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *    http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -13,10 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.servicecomb.swagger.invocation.context;
 
-public class HttpStatus extends io.servicecomb.foundation.common.http.HttpStatus {
-  public HttpStatus(int statusCode, String reasonPhrase) {
-    super(statusCode, reasonPhrase);
+package io.servicecomb.foundation.common.http;
+
+import javax.ws.rs.core.Response.StatusType;
+
+public final class HttpStatusUtils {
+  private static final HttpStatusManager MGR = new HttpStatusManager();
+
+  private HttpStatusUtils() {
+  }
+
+  public static StatusType getOrCreateByStatusCode(int code) {
+    return MGR.getOrCreateByStatusCode(code);
   }
 }
