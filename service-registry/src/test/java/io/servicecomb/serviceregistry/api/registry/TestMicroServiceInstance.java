@@ -71,6 +71,7 @@ public class TestMicroServiceInstance {
     oMockHealthCheck = null;
   }
 
+  @SuppressWarnings("deprecation")
   @Test
   public void testDefaultValues() {
     Assert.assertNull(oMicroserviceInstance.getHostName());
@@ -83,6 +84,7 @@ public class TestMicroServiceInstance {
     Assert.assertEquals(MicroserviceInstanceStatus.UP, oMicroserviceInstance.getStatus());
   }
 
+  @SuppressWarnings("deprecation")
   @Test
   public void testIntializedValues() {
     initMicroserviceInstance(); //Initialize the Object
@@ -96,6 +98,7 @@ public class TestMicroServiceInstance {
     Assert.assertEquals("china", oMicroserviceInstance.getProperties().get("region"));
   }
 
+  @SuppressWarnings("deprecation")
   private void initMicroserviceInstance() {
     oMicroserviceInstance.setHostName("testHostName");
     oMicroserviceInstance.setInstanceId("testInstanceID");
