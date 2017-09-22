@@ -243,35 +243,38 @@ public final class ClassUtils {
     classConfig.setClassName(intfName);
     classConfig.setIntf(true);
 
-    for (Path path : swagger.getPaths().values()) {
-      for (Operation operation : path.getOperations()) {
-        // 参数可能重名，所以packageName必须跟operation相关才能隔离
-        String opPackageName = packageName + "." + operation.getOperationId();
+    if (swagger.getPaths() != null) {
+      for (Path path : swagger.getPaths().values()) {
+        for (Operation operation : path.getOperations()) {
+          // 参数可能重名，所以packageName必须跟operation相关才能隔离
+          String opPackageName = packageName + "." + operation.getOperationId();
 
-        Response result = operation.getResponses().get(SwaggerConst.SUCCESS_KEY);
-        JavaType resultJavaType = ConverterMgr.findJavaType(classLoader,
-            opPackageName,
-            swagger,
-            result.getSchema());
-
-        MethodConfig methodConfig = new MethodConfig();
-        methodConfig.setName(operation.getOperationId());
-        methodConfig.setResult(resultJavaType);
-
-        for (Parameter parameter : operation.getParameters()) {
-          String paramName = parameter.getName();
-          paramName = correctMethodParameterName(paramName);
-
-          JavaType paramJavaType = ConverterMgr.findJavaType(classLoader,
+          Response result = operation.getResponses().get(SwaggerConst.SUCCESS_KEY);
+          JavaType resultJavaType = ConverterMgr.findJavaType(classLoader,
               opPackageName,
               swagger,
-              parameter);
-          methodConfig.addParameter(paramName, paramJavaType);
-        }
+              result.getSchema());
 
-        classConfig.addMethod(methodConfig);
+          MethodConfig methodConfig = new MethodConfig();
+          methodConfig.setName(operation.getOperationId());
+          methodConfig.setResult(resultJavaType);
+
+          for (Parameter parameter : operation.getParameters()) {
+            String paramName = parameter.getName();
+            paramName = correctMethodParameterName(paramName);
+
+            JavaType paramJavaType = ConverterMgr.findJavaType(classLoader,
+                opPackageName,
+                swagger,
+                parameter);
+            methodConfig.addParameter(paramName, paramJavaType);
+          }
+
+          classConfig.addMethod(methodConfig);
+        }
       }
     }
+    
 
     return JavassistUtils.createClass(classLoader, classConfig);
   }
