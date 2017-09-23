@@ -24,6 +24,7 @@ import static org.mockito.Mockito.when;
 import java.util.Arrays;
 import java.util.List;
 
+import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 
 import org.junit.Assert;
@@ -31,15 +32,19 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 
+import io.servicecomb.common.rest.codec.produce.ProduceProcessor;
 import io.servicecomb.common.rest.codec.produce.ProduceProcessorManager;
 import io.servicecomb.core.definition.OperationMeta;
 import io.servicecomb.core.definition.SchemaMeta;
 import io.servicecomb.foundation.common.utils.ReflectUtils;
+import io.servicecomb.foundation.vertx.http.HttpServletRequestEx;
 import io.swagger.models.Operation;
 import io.swagger.models.Swagger;
 import io.swagger.models.parameters.FormParameter;
 import io.swagger.models.parameters.Parameter;
 import io.swagger.models.parameters.QueryParameter;
+import mockit.Expectations;
+import mockit.Mocked;
 
 public class TestRestOperationMeta {
 
@@ -63,35 +68,94 @@ public class TestRestOperationMeta {
   }
 
   @Test
-  public void testSplitAcceptTypes() {
-    String types = "application/json;charset=utf-8,*/*;q=0.9";
-    Assert.assertArrayEquals(new String[] {"application/json", "*/*"}, operationMeta.splitAcceptTypes(types));
-  }
-
-  @Test
-  public void testContainSpecType() {
-    Assert.assertTrue(operationMeta.containSpecType(new String[] {MediaType.WILDCARD}, MediaType.WILDCARD));
-    Assert.assertFalse(
-        operationMeta.containSpecType(new String[] {MediaType.APPLICATION_JSON}, MediaType.TEXT_PLAIN));
-  }
-
-  @Test
-  public void testEnsureFindProduceProcessor() {
-    operationMeta.setDefaultProcessor(ProduceProcessorManager.JSON_PROCESSOR);
-
-    Assert.assertEquals(operationMeta.getDefaultProcessor(), operationMeta.ensureFindProduceProcessor(""));
-
-    Assert.assertEquals(operationMeta.getDefaultProcessor(),
-        operationMeta.ensureFindProduceProcessor(MediaType.WILDCARD));
-
-    operationMeta.ensureFindProduceProcessor("####");
+  public void testCreateProduceProcessorsNull() {
     operationMeta.createProduceProcessors();
-    String types = "application/json;charset=utf-8,text/plain;q=0.8";
-    Assert.assertEquals(ProduceProcessorManager.JSON_PROCESSOR, operationMeta.ensureFindProduceProcessor(types));
 
-    Assert.assertEquals(null, operationMeta.getParamByName("test"));
-    Assert.assertEquals(null, operationMeta.getPathBuilder());
-    Assert.assertEquals(null, operationMeta.findProduceProcessor("test"));
+    Assert.assertSame(ProduceProcessorManager.DEFAULT_PROCESSOR,
+        operationMeta.ensureFindProduceProcessor((String) null));
+    Assert.assertSame(ProduceProcessorManager.DEFAULT_PROCESSOR, operationMeta.ensureFindProduceProcessor("*/*"));
+    Assert.assertSame(ProduceProcessorManager.DEFAULT_PROCESSOR,
+        operationMeta.ensureFindProduceProcessor(ProduceProcessorManager.DEFAULT_TYPE));
+    for (String produce : ProduceProcessorManager.INSTANCE.keys()) {
+      ProduceProcessor expected = ProduceProcessorManager.INSTANCE.findValue(produce);
+      Assert.assertSame(expected, operationMeta.findProduceProcessor(produce));
+    }
+  }
+
+  @Test
+  public void testCreateProduceProcessorsEmpty() {
+    operationMeta.produces = Arrays.asList();
+    operationMeta.createProduceProcessors();
+
+    Assert.assertSame(ProduceProcessorManager.DEFAULT_PROCESSOR,
+        operationMeta.ensureFindProduceProcessor((String) null));
+    Assert.assertSame(ProduceProcessorManager.DEFAULT_PROCESSOR, operationMeta.ensureFindProduceProcessor("*/*"));
+    Assert.assertSame(ProduceProcessorManager.DEFAULT_PROCESSOR,
+        operationMeta.ensureFindProduceProcessor(ProduceProcessorManager.DEFAULT_TYPE));
+    for (String produce : ProduceProcessorManager.INSTANCE.keys()) {
+      ProduceProcessor expected = ProduceProcessorManager.INSTANCE.findValue(produce);
+      Assert.assertSame(expected, operationMeta.findProduceProcessor(produce));
+    }
+  }
+
+  @Test
+  public void testCreateProduceProcessorsNormal() {
+    operationMeta.produces = Arrays.asList(MediaType.APPLICATION_JSON);
+    operationMeta.createProduceProcessors();
+
+    Assert.assertSame(ProduceProcessorManager.DEFAULT_PROCESSOR,
+        operationMeta.ensureFindProduceProcessor((String) null));
+    Assert.assertSame(ProduceProcessorManager.DEFAULT_PROCESSOR, operationMeta.ensureFindProduceProcessor("*/*"));
+    Assert.assertSame(ProduceProcessorManager.DEFAULT_PROCESSOR,
+        operationMeta.ensureFindProduceProcessor(ProduceProcessorManager.DEFAULT_TYPE));
+    Assert.assertSame(ProduceProcessorManager.JSON_PROCESSOR,
+        operationMeta.findProduceProcessor(MediaType.APPLICATION_JSON));
+    Assert.assertNull(operationMeta.findProduceProcessor(MediaType.TEXT_PLAIN));
+  }
+
+  @Test
+  public void testCreateProduceProcessorsNotSupported() {
+    operationMeta.produces = Arrays.asList("notSupport");
+    operationMeta.createProduceProcessors();
+
+    Assert.assertSame(ProduceProcessorManager.DEFAULT_PROCESSOR,
+        operationMeta.ensureFindProduceProcessor((String) null));
+    Assert.assertSame(ProduceProcessorManager.DEFAULT_PROCESSOR, operationMeta.ensureFindProduceProcessor("*/*"));
+    Assert.assertSame(ProduceProcessorManager.DEFAULT_PROCESSOR,
+        operationMeta.ensureFindProduceProcessor(ProduceProcessorManager.DEFAULT_TYPE));
+    Assert.assertSame(ProduceProcessorManager.JSON_PROCESSOR,
+        operationMeta.findProduceProcessor(MediaType.APPLICATION_JSON));
+    Assert.assertNull(operationMeta.findProduceProcessor(MediaType.TEXT_PLAIN));
+  }
+
+  @Test
+  public void testEnsureFindProduceProcessorRequest(@Mocked HttpServletRequestEx requestEx) {
+    new Expectations() {
+      {
+        requestEx.getHeader(HttpHeaders.ACCEPT);
+        result = null;
+      }
+    };
+    operationMeta.createProduceProcessors();
+
+    Assert.assertSame(ProduceProcessorManager.JSON_PROCESSOR, operationMeta.ensureFindProduceProcessor(requestEx));
+  }
+
+  @Test
+  public void testEnsureFindProduceProcessorAcceptFound() {
+    operationMeta.produces = Arrays.asList(MediaType.APPLICATION_JSON, MediaType.TEXT_PLAIN);
+    operationMeta.createProduceProcessors();
+
+    Assert.assertSame(ProduceProcessorManager.JSON_PROCESSOR,
+        operationMeta.ensureFindProduceProcessor("text/plain;q=0.7;charset=utf-8,application/json;q=0.8"));
+  }
+
+  @Test
+  public void testEnsureFindProduceProcessorAcceptNotFound() {
+    operationMeta.produces = Arrays.asList(MediaType.APPLICATION_JSON, MediaType.TEXT_PLAIN);
+    operationMeta.createProduceProcessors();
+
+    Assert.assertNull(operationMeta.ensureFindProduceProcessor("notSupport"));
   }
 
   @Test
