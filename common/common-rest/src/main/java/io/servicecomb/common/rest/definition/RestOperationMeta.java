@@ -24,6 +24,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 
 import org.apache.commons.lang3.StringUtils;
@@ -35,18 +36,14 @@ import io.servicecomb.common.rest.codec.produce.ProduceProcessorManager;
 import io.servicecomb.common.rest.definition.path.PathRegExp;
 import io.servicecomb.common.rest.definition.path.URLPathBuilder;
 import io.servicecomb.core.definition.OperationMeta;
+import io.servicecomb.foundation.vertx.http.HttpServletRequestEx;
 import io.swagger.models.Operation;
 import io.swagger.models.Swagger;
 import io.swagger.models.parameters.Parameter;
+import io.vertx.ext.web.impl.Utils;
 
 public class RestOperationMeta {
   private static final Logger LOGGER = LoggerFactory.getLogger(RestOperationMeta.class);
-
-  private static final String ACCEPT_TYPE_SEPARATER = ",";
-
-  private static final String ACCEPT_TYPE_INNER_SEPARATER = ";";
-
-  private static final String MEDIATYPE_INNER_SLASH = "/";
 
   protected OperationMeta operationMeta;
 
@@ -172,18 +169,20 @@ public class RestOperationMeta {
       for (ProduceProcessor processor : ProduceProcessorManager.INSTANCE.values()) {
         this.produceProcessorMap.put(processor.getName(), processor);
       }
-      return;
-    }
-    for (String produce : produces) {
-      ProduceProcessor processor = ProduceProcessorManager.INSTANCE.findValue(produce);
-      if (processor == null) {
-        LOGGER.error("produce {} is not supported", produce);
-        continue;
+    } else {
+      for (String produce : produces) {
+        ProduceProcessor processor = ProduceProcessorManager.INSTANCE.findValue(produce);
+        if (processor == null) {
+          LOGGER.error("produce {} is not supported", produce);
+          continue;
+        }
+        this.produceProcessorMap.put(produce, processor);
       }
-      this.produceProcessorMap.put(produce, processor);
     }
 
+    produceProcessorMap.putIfAbsent(ProduceProcessorManager.DEFAULT_TYPE, ProduceProcessorManager.DEFAULT_PROCESSOR);
     defaultProcessor = getDefaultOrFirstProcessor();
+    produceProcessorMap.putIfAbsent(MediaType.WILDCARD, defaultProcessor);
   }
 
   public URLPathBuilder getPathBuilder() {
@@ -204,60 +203,25 @@ public class RestOperationMeta {
   }
 
   // 选择与accept匹配的produce processor或者缺省的
-  public ProduceProcessor ensureFindProduceProcessor(String types) {
-    if (StringUtils.isEmpty(types)) {
+  public ProduceProcessor ensureFindProduceProcessor(HttpServletRequestEx requestEx) {
+    String acceptType = requestEx.getHeader(HttpHeaders.ACCEPT);
+    return ensureFindProduceProcessor(acceptType);
+  }
+
+  public ProduceProcessor ensureFindProduceProcessor(String acceptType) {
+    if (StringUtils.isEmpty(acceptType)) {
       return defaultProcessor;
     }
 
-    String[] typeArr = splitAcceptTypes(types);
-    if (containSpecType(typeArr, MediaType.WILDCARD)) {
-      return defaultProcessor;
-    }
-    if (containSpecType(typeArr, ProduceProcessorManager.DEFAULT_TYPE)) {
-      return ProduceProcessorManager.DEFAULT_PROCESSOR;
-    }
-
-    for (String type : typeArr) {
-      ProduceProcessor processor = this.produceProcessorMap.get(type);
+    List<String> mimeTyps = Utils.getSortedAcceptableMimeTypes(acceptType);
+    for (String mime : mimeTyps) {
+      ProduceProcessor processor = this.produceProcessorMap.get(mime);
       if (null != processor) {
         return processor;
       }
     }
+
     return null;
-  }
-
-  // 只提取出media type，忽略charset和q值等
-  protected String[] splitAcceptTypes(String types) {
-    String[] typeArr = types.split(ACCEPT_TYPE_SEPARATER);
-    for (int idxX = 0; idxX < typeArr.length; idxX++) {
-      String[] strItems = typeArr[idxX].split(ACCEPT_TYPE_INNER_SEPARATER);
-      for (int idxY = 0; idxY < strItems.length; idxY++) {
-        if (strItems[idxY].contains(MEDIATYPE_INNER_SLASH)) {
-          typeArr[idxX] = strItems[idxY].trim();
-          break;
-        }
-      }
-    }
-    return typeArr;
-  }
-
-  // 检查是否包含特定的类型
-  protected boolean containSpecType(String[] typeArr, String specType) {
-    for (String type : typeArr) {
-      if (specType.equals(type)) {
-        return true;
-      }
-    }
-    return false;
-  }
-
-  public ProduceProcessor getDefaultProcessor() {
-    return this.defaultProcessor;
-  }
-
-  // 仅用于测试
-  protected void setDefaultProcessor(ProduceProcessor defaultProcessor) {
-    this.defaultProcessor = defaultProcessor;
   }
 
   // 获取缺省的或者第一个processor
