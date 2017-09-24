@@ -17,6 +17,9 @@ package io.servicecomb.swagger.engine;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.concurrent.CompletableFuture;
+import java.util.function.BiConsumer;
+import java.util.function.BiFunction;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -106,21 +109,54 @@ public class SwaggerProducerOperation {
   public void invoke(SwaggerInvocation invocation, AsyncResponse asyncResp) {
     ContextUtils.setInvocationContext(invocation);
 
-    Response response = doInvoke(invocation);
+    Response response = doInvoke(invocation, asyncResp);
 
     ContextUtils.removeInvocationContext();
-
-    asyncResp.handle(response);
+    if (null != response) {
+      asyncResp.handle(response);
+    }
   }
 
   public Response doInvoke(SwaggerInvocation invocation) {
+    return doInvoke(invocation, null);
+  }
+
+  private Response doInvoke(SwaggerInvocation invocation, AsyncResponse asyncResp) {
     Response response = null;
     try {
       Object[] args = argumentsMapper.toProducerArgs(invocation);
       Object result = producerMethod.invoke(producerInstance, args);
-      response = responseMapper.mapResponse(invocation.getStatus(), result);
+      if (result instanceof CompletableFuture) {
+        if (asyncResp != null) {
+          ((CompletableFuture) result).whenCompleteAsync((BiConsumer<Object, Throwable>) (res, err) -> {
+            Response asyncRes = processResult(invocation, res, err);
+            asyncResp.handle(asyncRes);
+          });
+        } else {
+          CompletableFuture<Response> handleResult = ((CompletableFuture) result)
+              .handle((BiFunction<Object, Throwable, Response>) (res, err) -> processResult(invocation, res, err));
+          response = handleResult.get();
+        }
+      } else {
+        response = responseMapper.mapResponse(invocation.getStatus(), result);
+      }
     } catch (Throwable e) {
       response = processException(e);
+    }
+
+    return response;
+  }
+
+  protected Response processResult(SwaggerInvocation invocation, Object result, Throwable err) {
+    Response response;
+    if (result != null) {
+      try {
+        response = responseMapper.mapResponse(invocation.getStatus(), result);
+      } catch (Throwable e) {
+        response = processException(e);
+      }
+    } else {
+      response = processException(err);
     }
     return response;
   }

@@ -23,6 +23,7 @@ import io.servicecomb.foundation.common.utils.Log4jUtils;
 import io.servicecomb.provider.pojo.RpcReference;
 import io.servicecomb.provider.springmvc.reference.RestTemplateBuilder;
 import io.servicecomb.samples.common.schema.Hello;
+import io.servicecomb.samples.common.schema.HelloAsync;
 import io.servicecomb.samples.common.schema.models.Person;
 
 @Component
@@ -32,6 +33,9 @@ public class SpringmvcConsumerMain {
 
   @RpcReference(microserviceName = "springmvc", schemaId = "springmvcHello")
   private static Hello hello;
+
+  @RpcReference(microserviceName = "springmvc", schemaId = "springmvcHelloAsync")
+  private static HelloAsync helloasync;
 
   public static void main(String[] args) throws Exception {
     init();
@@ -50,6 +54,21 @@ public class SpringmvcConsumerMain {
     // POJO Consumer
     System.out.println("POJO consumer sayhi services: " + hello.sayHi("Java Chassis"));
     System.out.println("POJO consumer sayhi services: " + hello.sayHello(person));
+
+
+
+    // RestTemplate Consumer or POJO Consumer. You can choose whatever you like
+    // RestTemplate Consumer
+//    String sayHiResultAsync =
+//        restTemplate.postForObject("cse://springmvc/springmvchelloasync/sayhi?name=Java Chassis", null, String.class);
+//    String sayHelloResultAsync = restTemplate.postForObject("cse://springmvc/springmvchelloasync/sayhello", person, String.class);
+//    System.out.println("RestTemplate Consumer or POJO Consumer.  You can choose whatever you like.");
+//    System.out.println("RestTemplate consumer sayhi services: " + sayHiResult);
+//    System.out.println("RestTemplate consumer sayhello services: " + sayHelloResult);
+
+    // POJO Consumer
+    System.out.println("POJO consumer sayhi services: " + helloasync.sayHi("Java Chassis").get());
+    System.out.println("POJO consumer sayhi services: " + helloasync.sayHello(person).get());
   }
 
   public static void init() throws Exception {
