@@ -51,7 +51,7 @@ public class TestTransport {
       }
 
       @Override
-      public Endpoint getEndpoint() throws Exception {
+      public Endpoint getEndpoint() {
         return (new Endpoint(this, "testEndpoint"));
       }
 

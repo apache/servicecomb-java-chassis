@@ -40,7 +40,7 @@ public interface Transport {
   /**
    * 本tranport的监听地址
    */
-  Endpoint getEndpoint() throws Exception;
+  Endpoint getEndpoint();
 
   /**
    * 用于上报到服务中心，要求是其他节点可访问的地址
