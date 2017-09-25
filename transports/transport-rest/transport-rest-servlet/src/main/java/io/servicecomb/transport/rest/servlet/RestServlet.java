@@ -34,7 +34,7 @@ public class RestServlet extends HttpServlet {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(RestServlet.class);
 
-  private ServletRestServer servletRestServer = new ServletRestServer();
+  private ServletRestDispatcher servletRestServer = new ServletRestDispatcher();
 
   @Override
   public void init() throws ServletException {
