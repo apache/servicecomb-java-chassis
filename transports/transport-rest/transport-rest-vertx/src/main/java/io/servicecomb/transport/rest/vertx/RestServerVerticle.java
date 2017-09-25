@@ -21,8 +21,6 @@ import org.slf4j.LoggerFactory;
 
 import com.netflix.config.DynamicPropertyFactory;
 
-import io.servicecomb.core.Const;
-import io.servicecomb.core.CseContext;
 import io.servicecomb.core.Endpoint;
 import io.servicecomb.core.transport.AbstractTransport;
 import io.servicecomb.foundation.common.net.URIEndpointObject;
@@ -82,8 +80,7 @@ public class RestServerVerticle extends AbstractVerticle {
     Router mainRouter = Router.router(vertx);
     mainRouter.route().handler(bodyHandler);
 
-    VertxRestServer vertxRestServer = new VertxRestServer(mainRouter);
-    vertxRestServer.setTransport(CseContext.getInstance().getTransportManager().findTransport(Const.RESTFUL));
+    new VertxRestDispatcher(mainRouter);
 
     HttpServer httpServer = createHttpServer();
     httpServer.requestHandler(mainRouter::accept);

@@ -16,12 +16,19 @@
 
 package io.servicecomb.transport.rest.vertx;
 
+import java.util.List;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import io.netty.handler.codec.http.multipart.HttpPostRequestDecoder.ErrorDataDecoderException;
-import io.servicecomb.common.rest.AbstractRestServer;
 import io.servicecomb.common.rest.RestConst;
+import io.servicecomb.common.rest.RestProducerInvocation;
+import io.servicecomb.common.rest.filter.HttpServerFilter;
+import io.servicecomb.core.Const;
+import io.servicecomb.core.CseContext;
+import io.servicecomb.core.Transport;
+import io.servicecomb.foundation.common.utils.SPIServiceUtils;
 import io.servicecomb.foundation.vertx.http.HttpServletRequestEx;
 import io.servicecomb.foundation.vertx.http.HttpServletResponseEx;
 import io.servicecomb.foundation.vertx.http.VertxServerRequestToHttpServletRequest;
@@ -31,20 +38,27 @@ import io.vertx.ext.web.Router;
 import io.vertx.ext.web.RoutingContext;
 import io.vertx.ext.web.handler.CookieHandler;
 
-public class VertxRestServer extends AbstractRestServer {
-  private static final Logger LOGGER = LoggerFactory.getLogger(VertxRestServer.class);
+public class VertxRestDispatcher {
+  private static final Logger LOGGER = LoggerFactory.getLogger(VertxRestDispatcher.class);
 
-  public VertxRestServer(Router router) {
+  private Transport transport;
+
+  private List<HttpServerFilter> httpServerFilters = SPIServiceUtils.getSortedService(HttpServerFilter.class);
+
+  public VertxRestDispatcher(Router router) {
     super();
     router.route().handler(CookieHandler.create());
     router.route().failureHandler(this::failureHandler).handler(this::onRequest);
+
+    for (HttpServerFilter filter : httpServerFilters) {
+      LOGGER.info("Found HttpServerFilter: {}.", filter.getClass().getName());
+    }
   }
 
   private void failureHandler(RoutingContext context) {
     LOGGER.error("http server failed.", context.failure());
 
-    HttpServletRequestEx requestEx = context.get(RestConst.REST_REQUEST);
-    HttpServletResponseEx responseEx = context.get(RestConst.REST_RESPONSE);
+    RestProducerInvocation restProducerInvocation = context.get(RestConst.REST_PRODUCER_INVOCATION);
     Throwable e = context.failure();
     if (ErrorDataDecoderException.class.isInstance(e)) {
       Throwable cause = e.getCause();
@@ -52,19 +66,21 @@ public class VertxRestServer extends AbstractRestServer {
         e = cause;
       }
     }
-    sendFailResponse(null, requestEx, responseEx, e);
+    restProducerInvocation.sendFailResponse(e);
 
     // 走到这里，应该都是不可控制的异常，直接关闭连接
     context.response().close();
   }
 
   private void onRequest(RoutingContext context) {
+    if (transport == null) {
+      transport = CseContext.getInstance().getTransportManager().findTransport(Const.RESTFUL);
+    }
     HttpServletRequestEx requestEx = new VertxServerRequestToHttpServletRequest(context);
-    context.put(RestConst.REST_REQUEST, requestEx);
-
     HttpServletResponseEx responseEx = new VertxServerResponseToHttpServletResponse(context.response());
-    context.put(RestConst.REST_RESPONSE, responseEx);
 
-    handleRequest(requestEx, responseEx);
+    RestProducerInvocation restProducerInvocation = new RestProducerInvocation();
+    context.put(RestConst.REST_PRODUCER_INVOCATION, restProducerInvocation);
+    restProducerInvocation.invoke(transport, requestEx, responseEx, httpServerFilters);
   }
 }

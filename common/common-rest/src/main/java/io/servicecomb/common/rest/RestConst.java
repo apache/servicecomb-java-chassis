@@ -39,10 +39,9 @@ public final class RestConst {
   // in HttpServletRequest attribute
   public static final String FORM_PARAMETERS = "servicecomb-forms";
 
-  // in producer invocation handler context
-  public static final String REST_REQUEST = "servicecomb-rest-request";
+  public static final String REST_PRODUCER_INVOCATION = "servicecomb-rest-producer-invocation";
 
-  public static final String REST_RESPONSE = "servicecomb-rest-response";
+  public static final String REST_REQUEST = "servicecomb-rest-request";
 
   public static final String CONSUMER_HEADER = "servicecomb-rest-consumer-header";
 }

@@ -17,119 +17,130 @@
 package io.servicecomb.transport.rest.vertx;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
 import io.netty.handler.codec.http.multipart.HttpPostRequestDecoder.ErrorDataDecoderException;
 import io.servicecomb.common.rest.RestConst;
-import io.servicecomb.core.Invocation;
+import io.servicecomb.common.rest.RestProducerInvocation;
+import io.servicecomb.common.rest.filter.HttpServerFilter;
+import io.servicecomb.core.CseContext;
+import io.servicecomb.core.Transport;
+import io.servicecomb.core.transport.TransportManager;
 import io.servicecomb.foundation.vertx.http.HttpServletRequestEx;
 import io.servicecomb.foundation.vertx.http.HttpServletResponseEx;
-import io.servicecomb.foundation.vertx.http.VertxServerRequestToHttpServletRequest;
-import io.servicecomb.foundation.vertx.http.VertxServerResponseToHttpServletResponse;
 import io.servicecomb.swagger.invocation.exception.InvocationException;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.RoutingContext;
-import io.vertx.ext.web.handler.BodyHandler;
 import mockit.Deencapsulation;
 import mockit.Expectations;
 import mockit.Mock;
 import mockit.MockUp;
 import mockit.Mocked;
 
-public class TestVertxRestServer {
+public class TestVertxRestDispatcher {
+  @Mocked
+  Router mainRouter;
 
-  private VertxRestServer instance = null;
+  @Mocked
+  TransportManager transportManager;
+
+  VertxRestDispatcher dispatcher;
 
   Throwable throwable;
 
+  boolean invoked;
+
   @Before
   public void setUp() throws Exception {
-    Router mainRouter = Router.router(null);
-    mainRouter.route().handler(BodyHandler.create());
-    instance = new VertxRestServer(mainRouter) {
-      @Override
-      public void sendFailResponse(Invocation invocation, HttpServletRequestEx requestEx,
-          HttpServletResponseEx responseEx,
-          Throwable throwable) {
-        TestVertxRestServer.this.throwable = throwable;
+    dispatcher = new VertxRestDispatcher(mainRouter);
+
+    new MockUp<RestProducerInvocation>() {
+      @Mock
+      void sendFailResponse(Throwable throwable) {
+        TestVertxRestDispatcher.this.throwable = throwable;
       }
 
-      @Override
-      protected void handleRequest(HttpServletRequestEx requestEx, HttpServletResponseEx responseEx) {
-
+      @Mock
+      void invoke(Transport transport, HttpServletRequestEx requestEx, HttpServletResponseEx responseEx,
+          List<HttpServerFilter> httpServerFilters) {
+        invoked = true;
       }
     };
+
+    CseContext.getInstance().setTransportManager(transportManager);
+  }
+
+  @After
+  public void teardown() {
+    CseContext.getInstance().setTransportManager(null);
   }
 
   @Test
-  public void testFailureHandler(@Mocked RoutingContext context, @Mocked HttpServletRequestEx request,
-      @Mocked HttpServletResponseEx response) {
+  public void failureHandlerNormal(@Mocked RoutingContext context) {
+    RestProducerInvocation restProducerInvocation = new RestProducerInvocation();
+
     Exception e = new Exception();
     new Expectations() {
       {
-        context.get(RestConst.REST_REQUEST);
-        result = request;
-        context.get(RestConst.REST_RESPONSE);
-        result = response;
+        context.get(RestConst.REST_PRODUCER_INVOCATION);
+        result = restProducerInvocation;
         context.failure();
         returns(e, e);
       }
     };
 
-    Deencapsulation.invoke(instance, "failureHandler", context);
+    Deencapsulation.invoke(dispatcher, "failureHandler", context);
 
     Assert.assertSame(e, this.throwable);
   }
 
   @Test
-  public void testFailureHandlerErrorDataWithInvocation(@Mocked RoutingContext context,
-      @Mocked HttpServletRequestEx request,
-      @Mocked HttpServletResponseEx response, @Mocked InvocationException e) {
+  public void failureHandlerErrorDataWithInvocation(@Mocked RoutingContext context, @Mocked InvocationException e) {
+    RestProducerInvocation restProducerInvocation = new RestProducerInvocation();
+
     ErrorDataDecoderException edde = new ErrorDataDecoderException(e);
     new Expectations() {
       {
-        context.get(RestConst.REST_REQUEST);
-        result = request;
-        context.get(RestConst.REST_RESPONSE);
-        result = response;
+        context.get(RestConst.REST_PRODUCER_INVOCATION);
+        result = restProducerInvocation;
         context.failure();
         returns(edde, edde);
       }
     };
 
-    Deencapsulation.invoke(instance, "failureHandler", context);
+    Deencapsulation.invoke(dispatcher, "failureHandler", context);
 
     Assert.assertSame(e, this.throwable);
   }
 
   @Test
-  public void testFailureHandlerErrorDataWithNormal(@Mocked RoutingContext context,
-      @Mocked HttpServletRequestEx request,
-      @Mocked HttpServletResponseEx response) {
+  public void failureHandlerErrorDataWithNormal(@Mocked RoutingContext context) {
+    RestProducerInvocation restProducerInvocation = new RestProducerInvocation();
+
     Exception e = new Exception();
     ErrorDataDecoderException edde = new ErrorDataDecoderException(e);
     new Expectations() {
       {
-        context.get(RestConst.REST_REQUEST);
-        result = request;
-        context.get(RestConst.REST_RESPONSE);
-        result = response;
+        context.get(RestConst.REST_PRODUCER_INVOCATION);
+        result = restProducerInvocation;
         context.failure();
         returns(edde, edde);
       }
     };
 
-    Deencapsulation.invoke(instance, "failureHandler", context);
+    Deencapsulation.invoke(dispatcher, "failureHandler", context);
 
     Assert.assertSame(edde, this.throwable);
   }
 
   @Test
-  public void testOnRequest() {
+  public void onRequest() {
     Map<String, Object> map = new HashMap<>();
     RoutingContext context = new MockUp<RoutingContext>() {
       @Mock
@@ -138,9 +149,9 @@ public class TestVertxRestServer {
         return null;
       }
     }.getMockInstance();
-    Deencapsulation.invoke(instance, "onRequest", context);
+    Deencapsulation.invoke(dispatcher, "onRequest", context);
 
-    Assert.assertEquals(VertxServerRequestToHttpServletRequest.class, map.get(RestConst.REST_REQUEST).getClass());
-    Assert.assertEquals(VertxServerResponseToHttpServletResponse.class, map.get(RestConst.REST_RESPONSE).getClass());
+    Assert.assertEquals(RestProducerInvocation.class, map.get(RestConst.REST_PRODUCER_INVOCATION).getClass());
+    Assert.assertTrue(invoked);
   }
 }
