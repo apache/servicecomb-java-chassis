@@ -16,23 +16,34 @@
 
 package io.servicecomb.transport.rest.servlet;
 
+import java.util.List;
+
 import javax.servlet.AsyncContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import io.servicecomb.common.rest.AbstractRestServer;
-import io.servicecomb.common.rest.definition.RestOperationMeta;
 import io.servicecomb.common.rest.filter.HttpServerFilter;
-import io.servicecomb.core.definition.OperationMeta;
+import io.servicecomb.core.Const;
+import io.servicecomb.core.CseContext;
+import io.servicecomb.core.Transport;
+import io.servicecomb.foundation.common.utils.SPIServiceUtils;
 import io.servicecomb.foundation.vertx.http.HttpServletRequestEx;
 import io.servicecomb.foundation.vertx.http.HttpServletResponseEx;
 import io.servicecomb.foundation.vertx.http.StandardHttpServletRequestEx;
 import io.servicecomb.foundation.vertx.http.StandardHttpServletResponseEx;
 
-public class ServletRestServer extends AbstractRestServer {
-  protected RestAsyncListener restAsyncListener = new RestAsyncListener();
+public class ServletRestDispatcher {
+  private RestAsyncListener restAsyncListener = new RestAsyncListener();
+
+  private Transport transport;
+
+  private List<HttpServerFilter> httpServerFilters = SPIServiceUtils.getSortedService(HttpServerFilter.class);
 
   public void service(HttpServletRequest request, HttpServletResponse response) {
+    if (transport == null) {
+      transport = CseContext.getInstance().getTransportManager().findTransport(Const.RESTFUL);
+    }
+
     // 异步场景
     final AsyncContext asyncCtx = request.startAsync();
     asyncCtx.addListener(restAsyncListener);
@@ -40,25 +51,8 @@ public class ServletRestServer extends AbstractRestServer {
 
     HttpServletRequestEx requestEx = new StandardHttpServletRequestEx(request);
     HttpServletResponseEx responseEx = new StandardHttpServletResponseEx(response);
-    handleRequest(requestEx, responseEx);
-  }
 
-  @Override
-  protected RestOperationMeta findRestOperation(HttpServletRequestEx request) {
-    RestOperationMeta restOperationMeta = super.findRestOperation(request);
-
-    boolean cacheRequest = collectCacheRequest(restOperationMeta.getOperationMeta());
-    ((StandardHttpServletRequestEx) request).setCacheRequest(cacheRequest);
-
-    return restOperationMeta;
-  }
-
-  protected boolean collectCacheRequest(OperationMeta operationMeta) {
-    for (HttpServerFilter filter : httpServerFilters) {
-      if (filter.needCacheRequest(operationMeta)) {
-        return true;
-      }
-    }
-    return false;
+    RestServletProducerInvocation restProducerInvocation = new RestServletProducerInvocation();
+    restProducerInvocation.invoke(transport, requestEx, responseEx, httpServerFilters);
   }
 }

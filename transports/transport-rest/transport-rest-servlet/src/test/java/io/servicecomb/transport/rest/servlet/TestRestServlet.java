@@ -60,7 +60,7 @@ public class TestRestServlet {
   @Test
   public void testService() throws ServletException, IOException {
     Holder<Boolean> holder = new Holder<>();
-    ServletRestServer servletRestServer = new MockUp<ServletRestServer>() {
+    ServletRestDispatcher servletRestServer = new MockUp<ServletRestDispatcher>() {
       @Mock
       void service(HttpServletRequest request, HttpServletResponse response) {
         holder.value = true;
