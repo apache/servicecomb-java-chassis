@@ -119,13 +119,14 @@ public class InstanceVersionCacheManager {
     synchronized (LOCKOBJECT) {
 
       Map<String, Map<String, MicroserviceInstance>> allCache = cacheAllMap.get(key);
-      String instanceId = changedEvent.getInstance().getInstanceId();
+
       switch (changedEvent.getAction()) {
         case CREATE:
         case UPDATE:
 
-          MicroserviceInstance newIns = changedEvent.getInstance();
           if (allCache != null) {
+            MicroserviceInstance newIns = changedEvent.getInstance();
+            String instanceId = newIns.getInstanceId();
             if (allCache.get(version) == null) {
               Map<String, MicroserviceInstance> newInsMap = new HashMap<String, MicroserviceInstance>();
               newInsMap.put(instanceId, newIns);
@@ -148,6 +149,7 @@ public class InstanceVersionCacheManager {
 
         case DELETE:
           if (allCache != null) {
+            String instanceId = changedEvent.getInstance().getInstanceId();
             if (allCache.get(version) != null) {
               Map<String, MicroserviceInstance> insMap = allCache.get(version);
               insMap.remove(instanceId);

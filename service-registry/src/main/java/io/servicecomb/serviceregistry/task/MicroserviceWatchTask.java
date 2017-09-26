@@ -96,11 +96,10 @@ public class MicroserviceWatchTask extends AbstractTask {
             changedEvent.getInstance().getEndpoints());
         break;
       case EXPIRE:
-        LOGGER.info("microservice {}/{} EXPIRE all instance {}, {}.",
+        LOGGER.info("microservice {}/{} EXPIRE all instance.",
             changedEvent.getKey().getAppId(),
-            changedEvent.getKey().getServiceName(),
-            changedEvent.getInstance().getInstanceId(),
-            changedEvent.getInstance().getEndpoints());
+            changedEvent.getKey().getServiceName());
+        break;
       case UPDATE:
         LOGGER.info("microservice {}/{} UPDATE an instance {} status or metadata, {}.",
             changedEvent.getKey().getAppId(),
