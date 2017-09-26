@@ -15,17 +15,8 @@
  */
 package io.servicecomb.serviceregistry.registry;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
-
 import io.servicecomb.serviceregistry.Features;
 import io.servicecomb.serviceregistry.ServiceRegistry;
 import io.servicecomb.serviceregistry.api.Const;
@@ -34,7 +25,6 @@ import io.servicecomb.serviceregistry.api.registry.Microservice;
 import io.servicecomb.serviceregistry.api.registry.MicroserviceFactory;
 import io.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
 import io.servicecomb.serviceregistry.cache.InstanceCacheManager;
-import io.servicecomb.serviceregistry.cache.InstanceVersionCacheManager;
 import io.servicecomb.serviceregistry.client.IpPortManager;
 import io.servicecomb.serviceregistry.client.ServiceRegistryClient;
 import io.servicecomb.serviceregistry.config.ServiceRegistryConfig;
@@ -44,6 +34,12 @@ import io.servicecomb.serviceregistry.task.ServiceCenterTask;
 import io.servicecomb.serviceregistry.task.event.ExceptionEvent;
 import io.servicecomb.serviceregistry.task.event.RecoveryEvent;
 import io.servicecomb.serviceregistry.task.event.ShutdownEvent;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public abstract class AbstractServiceRegistry implements ServiceRegistry {
   private static final Logger LOGGER = LoggerFactory.getLogger(AbstractServiceRegistry.class);
@@ -61,8 +57,6 @@ public abstract class AbstractServiceRegistry implements ServiceRegistry {
   protected InstanceCacheManager instanceCacheManager;
 
   protected IpPortManager ipPortManager;
-
-  protected InstanceVersionCacheManager instanceVersionCacheManager;
 
   protected ServiceRegistryClient srClient;
 
@@ -89,7 +83,6 @@ public abstract class AbstractServiceRegistry implements ServiceRegistry {
   public void init() {
     instanceCacheManager = new InstanceCacheManager(eventBus, this);
     ipPortManager = new IpPortManager(serviceRegistryConfig, instanceCacheManager);
-    instanceVersionCacheManager = new InstanceVersionCacheManager(eventBus, this);
     if (srClient == null) {
       srClient = createServiceRegistryClient();
     }
@@ -129,11 +122,6 @@ public abstract class AbstractServiceRegistry implements ServiceRegistry {
   @Override
   public InstanceCacheManager getInstanceCacheManager() {
     return instanceCacheManager;
-  }
-
-  @Override
-  public InstanceVersionCacheManager getInstanceVersionCacheManager() {
-    return instanceVersionCacheManager;
   }
 
   protected abstract ServiceRegistryClient createServiceRegistryClient();
@@ -176,7 +164,6 @@ public abstract class AbstractServiceRegistry implements ServiceRegistry {
 
       instanceCacheManager.cleanUp();
       ipPortManager.clearInstanceCache();
-      instanceVersionCacheManager.cleanUp();
       LOGGER.info(
           "Reconnected to service center, clean up the provider's microservice instances cache.");
     }

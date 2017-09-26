@@ -36,7 +36,6 @@ import io.servicecomb.foundation.common.net.NetUtils;
 import io.servicecomb.serviceregistry.api.registry.Microservice;
 import io.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
 import io.servicecomb.serviceregistry.cache.InstanceCacheManager;
-import io.servicecomb.serviceregistry.cache.InstanceVersionCacheManager;
 import io.servicecomb.serviceregistry.client.ServiceRegistryClient;
 import io.servicecomb.serviceregistry.config.ServiceRegistryConfig;
 import io.servicecomb.serviceregistry.definition.MicroserviceDefinition;
@@ -86,10 +85,6 @@ public final class RegistryUtils {
 
   public static InstanceCacheManager getInstanceCacheManager() {
     return serviceRegistry.getInstanceCacheManager();
-  }
-
-  public static InstanceVersionCacheManager getInstanceVersionCacheManager() {
-    return serviceRegistry.getInstanceVersionCacheManager();
   }
 
   public static String getAppId() {
