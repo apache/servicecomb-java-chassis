@@ -24,10 +24,6 @@ public class InstanceVersionCacheManager {
   // but save by real version, eg: 0.0.1/0.0.2/0.0.3......
   protected Map<String, Map<String, Map<String, MicroserviceInstance>>> cacheAllMap = new ConcurrentHashMap<>();
 
-  //versionrule instance缓存
-  // key if versionRule, not real version
-  protected Map<String, Map<String, Map<String, MicroserviceInstance>>> cacheVRuleMap = new ConcurrentHashMap<>();
-
   private static final String ALL_VERSION_RULE = "0+";
 
   private static final String MICROSERVICE_DEFAULT_VERSION = "microservice.default.version";
@@ -113,24 +109,6 @@ public class InstanceVersionCacheManager {
     return cacheVersionMap;
   }
 
-  public Map<String, Map<String, MicroserviceInstance>> getOrCreateVRuleMap(String appId, String microserviceName,
-      String microserviceVersionRule) {
-    String key = getKey(appId, microserviceName);
-    Map<String, Map<String, MicroserviceInstance>> cache = cacheVRuleMap.get(key);
-    if (cache == null) {
-      synchronized (LOCKOBJECT) {
-        cache = cacheVRuleMap.get(key);
-        if (cache == null) {
-          Map<String, MicroserviceInstance> cacheVersionRuleInstance =
-              create(appId, microserviceName, microserviceVersionRule);
-          cache = createCacheVersionMap(cacheVersionRuleInstance);
-          cacheVRuleMap.put(key, cache);
-        }
-      }
-    }
-    return cache;
-  }
-
   @Subscribe
   public void onInstanceUpdate(MicroserviceInstanceChangedEvent changedEvent) {
     String appId = changedEvent.getKey().getAppId();
@@ -141,7 +119,6 @@ public class InstanceVersionCacheManager {
     synchronized (LOCKOBJECT) {
 
       Map<String, Map<String, MicroserviceInstance>> allCache = cacheAllMap.get(key);
-      Map<String, Map<String, MicroserviceInstance>> vRuleCache = cacheAllMap.get(key);
       String instanceId = changedEvent.getInstance().getInstanceId();
       switch (changedEvent.getAction()) {
         case CREATE:
@@ -158,28 +135,12 @@ public class InstanceVersionCacheManager {
               insMap.put(instanceId, newIns);
             }
           }
-          if (vRuleCache != null) {
-            if (vRuleCache.get(version) == null) {
-              Map<String, MicroserviceInstance> newInsMap = new HashMap<String, MicroserviceInstance>();
-              newInsMap.put(instanceId, newIns);
-              vRuleCache.put(version, newInsMap);
-            } else {
-              Map<String, MicroserviceInstance> insMap = vRuleCache.get(version);
-              insMap.put(instanceId, newIns);
-            }
-          }
           break;
 
         case EXPIRE:
           if (allCache != null) {
             if (allCache.get(version) != null) {
               Map<String, MicroserviceInstance> insMap = allCache.get(version);
-              insMap.clear();
-            }
-          }
-          if (vRuleCache != null) {
-            if (vRuleCache.get(version) != null) {
-              Map<String, MicroserviceInstance> insMap = vRuleCache.get(version);
               insMap.clear();
             }
           }
@@ -192,12 +153,6 @@ public class InstanceVersionCacheManager {
               insMap.remove(instanceId);
             }
           }
-          if (vRuleCache != null) {
-            if (vRuleCache.get(version) != null) {
-              Map<String, MicroserviceInstance> insMap = vRuleCache.get(version);
-              insMap.remove(instanceId);
-            }
-          }
           break;
         default:
           return;
@@ -207,7 +162,6 @@ public class InstanceVersionCacheManager {
 
   public void cleanUp() {
     synchronized (LOCKOBJECT) {
-      cacheVRuleMap.clear();
       cacheAllMap.clear();
     }
   }
