@@ -24,6 +24,7 @@ import com.fasterxml.jackson.annotation.JsonValue;
 public enum WatchAction {
   CREATE("CREATE"),
   UPDATE("UPDATE"),
+  EXPIRE("EXPIRE"),
   DELETE("DELETE");
 
   private String name;

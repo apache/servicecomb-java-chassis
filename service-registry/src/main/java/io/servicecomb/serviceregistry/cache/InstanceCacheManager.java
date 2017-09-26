@@ -109,6 +109,9 @@ public class InstanceCacheManager {
         case UPDATE:
           instMap.put(changedEvent.getInstance().getInstanceId(), changedEvent.getInstance());
           break;
+        case EXPIRE:
+          cacheMap.remove(key);
+          break;
         case DELETE:
           instMap.remove(changedEvent.getInstance().getInstanceId());
           break;

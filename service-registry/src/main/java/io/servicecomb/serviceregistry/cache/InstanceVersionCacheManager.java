@@ -170,6 +170,21 @@ public class InstanceVersionCacheManager {
           }
           break;
 
+        case EXPIRE:
+          if (allCache != null) {
+            if (allCache.get(version) != null) {
+              Map<String, MicroserviceInstance> insMap = allCache.get(version);
+              insMap.clear();
+            }
+          }
+          if (vRuleCache != null) {
+            if (vRuleCache.get(version) != null) {
+              Map<String, MicroserviceInstance> insMap = vRuleCache.get(version);
+              insMap.clear();
+            }
+          }
+          break;
+
         case DELETE:
           if (allCache != null) {
             if (allCache.get(version) != null) {
