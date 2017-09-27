@@ -24,6 +24,8 @@ import com.fasterxml.jackson.annotation.JsonValue;
 public enum WatchAction {
   CREATE("CREATE"),
   UPDATE("UPDATE"),
+  // When SC send an EXPIRE action, which means client should clean up all local instance cache and fetch again.
+  // This usually happens when SC adds new WHITE/BLACK rules or changes TAGS of instance
   EXPIRE("EXPIRE"),
   DELETE("DELETE");
 
