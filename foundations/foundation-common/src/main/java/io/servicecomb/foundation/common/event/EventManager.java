@@ -17,31 +17,32 @@
 package io.servicecomb.foundation.common.event;
 
 import com.google.common.eventbus.EventBus;
+
 /**
  * EventManager for chassis events
  *
  */
 public class EventManager {
-    private static EventBus eventBus = new EventBus();
+  public static EventBus eventBus = new EventBus();
 
-    /**
-     * Registering listener.
-     */
-    public static void register(Object listener) {
-        eventBus.register(listener);
-    }
+  /**
+   * Registering listener.
+   */
+  public static void register(Object listener) {
+    eventBus.register(listener);
+  }
 
-    /**
-     * post event.
-     */
-    public static void post(Object event) {
-        eventBus.post(event);
-    }
+  /**
+   * post event.
+   */
+  public static void post(Object event) {
+    eventBus.post(event);
+  }
 
-    /**
-     * Unregistering listener.
-     */
-    public static void unregister(Object listener) {
-        eventBus.unregister(listener);
-    }
+  /**
+   * Unregistering listener.
+   */
+  public static void unregister(Object listener) {
+    eventBus.unregister(listener);
+  }
 }

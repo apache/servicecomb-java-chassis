@@ -13,28 +13,38 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
- 
+
 package io.servicecomb.foundation.common.event;
 
+import org.junit.Assert;
 import org.junit.Test;
 
-import com.google.common.eventbus.EventBus;
+import com.google.common.eventbus.Subscribe;
 
 public class TestEventManager {
-    EventBus eventBus = new EventBus();
 
-    @Test
-    public void testRegister() {
-        eventBus.register(this);
-    }
+  private int i = 0;
 
-    @Test
-    public void testPost() {
-        eventBus.post(this);
-    }
+  @Test
+  public void testRegister() {
+    EventManager.register(this);
+    EventManager.post(this);
+    EventManager.unregister(this);
+    Assert.assertEquals(1, i);
+  }
 
-    @Test
-    public void testUnregister() {
-        eventBus.unregister(this);
-    }
+  @Test
+  public void testUnregister() {
+    EventManager.register(this);
+    EventManager.unregister(this);
+    EventManager.post(this);
+    Assert.assertEquals(0, i);
+  }
+
+  @Subscribe
+  public void eventCallBack(TestEventManager lTestEventManager) {
+    i++;
+  }
+
 }
+

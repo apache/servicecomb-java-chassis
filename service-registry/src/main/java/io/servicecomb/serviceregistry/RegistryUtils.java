@@ -26,11 +26,11 @@ import org.apache.http.client.utils.URIBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.eventbus.EventBus;
 import com.netflix.config.DynamicPropertyFactory;
 
 import io.servicecomb.config.ConfigUtil;
 import io.servicecomb.config.archaius.sources.MicroserviceConfigLoader;
+import io.servicecomb.foundation.common.event.EventManager;
 import io.servicecomb.foundation.common.net.IpPort;
 import io.servicecomb.foundation.common.net.NetUtils;
 import io.servicecomb.serviceregistry.api.registry.Microservice;
@@ -56,11 +56,10 @@ public final class RegistryUtils {
   }
 
   public static void init() {
-    EventBus eventBus = new EventBus();
     MicroserviceConfigLoader loader = ConfigUtil.getMicroserviceConfigLoader();
     MicroserviceDefinition microserviceDefinition = new MicroserviceDefinition(loader.getConfigModels());
     serviceRegistry =
-        ServiceRegistryFactory.getOrCreate(eventBus, ServiceRegistryConfig.INSTANCE, microserviceDefinition);
+        ServiceRegistryFactory.getOrCreate(EventManager.eventBus, ServiceRegistryConfig.INSTANCE, microserviceDefinition);
     serviceRegistry.init();
   }
 

@@ -63,24 +63,24 @@ public class MicroserviceInstanceHeartbeatTask extends AbstractTask {
     heartbeatResult = heartbeat();
   }
 
-    private HeartbeatResult heartbeat() {
-        HeartbeatResponse response =
-            srClient.heartbeat(microserviceInstance.getServiceId(), microserviceInstance.getInstanceId());
-        if (response == null) {
-            LOGGER.error("Disconnected from service center and heartbeat failed for microservice instance={}/{}",
-                    microserviceInstance.getServiceId(),
-                    microserviceInstance.getInstanceId());
-            EventManager.post(new HeartbeatFailEvent());
-            return HeartbeatResult.DISCONNECTED;
-        }
+  private HeartbeatResult heartbeat() {
+    HeartbeatResponse response =
+        srClient.heartbeat(microserviceInstance.getServiceId(), microserviceInstance.getInstanceId());
+    if (response == null) {
+      LOGGER.error("Disconnected from service center and heartbeat failed for microservice instance={}/{}",
+          microserviceInstance.getServiceId(),
+          microserviceInstance.getInstanceId());
+      EventManager.post(new HeartbeatFailEvent());
+      return HeartbeatResult.DISCONNECTED;
+    }
 
-        if (!response.isOk()) {
-            LOGGER.error("Update heartbeat to service center failed, microservice instance={}/{} does not exist",
-                    microserviceInstance.getServiceId(),
-                    microserviceInstance.getInstanceId());
-            EventManager.post(new HeartbeatFailEvent());
-            return HeartbeatResult.INSTANCE_NOT_REGISTERED;
-        }
+    if (!response.isOk()) {
+      LOGGER.error("Update heartbeat to service center failed, microservice instance={}/{} does not exist",
+          microserviceInstance.getServiceId(),
+          microserviceInstance.getInstanceId());
+      EventManager.post(new HeartbeatFailEvent());
+      return HeartbeatResult.INSTANCE_NOT_REGISTERED;
+    }
 
     return HeartbeatResult.SUCCESS;
   }
