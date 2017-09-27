@@ -108,14 +108,18 @@ public class InstanceCacheManager {
         case CREATE:
         case UPDATE:
           instMap.put(changedEvent.getInstance().getInstanceId(), changedEvent.getInstance());
+          cacheMap.put(key, new InstanceCache(appId, microserviceName, version, instMap));
+          break;
+        case EXPIRE:
+          cacheMap.remove(key);
           break;
         case DELETE:
           instMap.remove(changedEvent.getInstance().getInstanceId());
+          cacheMap.put(key, new InstanceCache(appId, microserviceName, version, instMap));
           break;
         default:
           return;
       }
-      cacheMap.put(key, new InstanceCache(appId, microserviceName, version, instMap));
     }
   }
 

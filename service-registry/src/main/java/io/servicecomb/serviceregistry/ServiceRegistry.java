@@ -22,7 +22,6 @@ import java.util.Set;
 import io.servicecomb.serviceregistry.api.registry.Microservice;
 import io.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
 import io.servicecomb.serviceregistry.cache.InstanceCacheManager;
-import io.servicecomb.serviceregistry.cache.InstanceVersionCacheManager;
 import io.servicecomb.serviceregistry.client.ServiceRegistryClient;
 
 public interface ServiceRegistry {
@@ -41,8 +40,6 @@ public interface ServiceRegistry {
   ServiceRegistryClient getServiceRegistryClient();
 
   InstanceCacheManager getInstanceCacheManager();
-
-  InstanceVersionCacheManager getInstanceVersionCacheManager();
 
   List<MicroserviceInstance> findServiceInstance(String appId, String microserviceName,
       String microserviceVersionRule);
