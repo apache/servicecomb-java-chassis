@@ -116,24 +116,6 @@ public class TestServletRestTransport {
   }
 
   @Test
-  public void testSendException() {
-    boolean status = true;
-    Invocation invocation = Mockito.mock(Invocation.class);
-    AsyncResponse asyncResp = Mockito.mock(AsyncResponse.class);
-    URIEndpointObject endpoint = Mockito.mock(URIEndpointObject.class);
-    Endpoint endpoint1 = Mockito.mock(Endpoint.class);
-    Mockito.when(invocation.getEndpoint()).thenReturn(endpoint1);
-    Mockito.when(invocation.getEndpoint().getAddress()).thenReturn(endpoint);
-    try {
-      transport.send(invocation, asyncResp);
-    } catch (Exception exce) {
-      Assert.assertNotNull(exce);
-      status = false;
-    }
-    Assert.assertFalse(status);
-  }
-
-  @Test
   public void testGetOrder() {
     ServletRestTransport transport = new ServletRestTransport();
     Assert.assertEquals(0, transport.getOrder());

@@ -16,9 +16,14 @@
 
 package io.servicecomb.transport.rest.client.http;
 
+import static org.junit.Assert.fail;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.junit.Assert;
@@ -43,6 +48,7 @@ import io.vertx.core.Handler;
 import io.vertx.core.http.HttpClient;
 import io.vertx.core.http.HttpClientRequest;
 import io.vertx.core.http.HttpClientResponse;
+import io.vertx.core.http.HttpMethod;
 import mockit.Expectations;
 import mockit.Injectable;
 import mockit.Mock;
@@ -55,7 +61,27 @@ public class TestVertxHttpMethod extends VertxHttpMethod {
 
   @Before
   public void setup() {
-    request = Mockito.mock(HttpClientRequest.class);
+    request = mock(HttpClientRequest.class);
+  }
+
+  @Test
+  public void testDoMethodNullPointerException(@Mocked HttpClient httpClient) throws Exception {
+    Context context = new MockUp<Context>() {
+      @Mock
+      public void runOnContext(Handler<Void> action) {
+        action.handle(null);
+      }
+    }.getMockInstance();
+    HttpClientWithContext httpClientWithContext = new HttpClientWithContext(httpClient, context);
+
+    Invocation invocation = mock(Invocation.class);
+    AsyncResponse asyncResp = mock(AsyncResponse.class);
+
+    try {
+      this.doMethod(httpClientWithContext, invocation, asyncResp);
+      fail("Expect to throw NullPointerException, but got none");
+    } catch (NullPointerException e) {
+    }
   }
 
   @Test
@@ -68,14 +94,14 @@ public class TestVertxHttpMethod extends VertxHttpMethod {
     }.getMockInstance();
     HttpClientWithContext httpClientWithContext = new HttpClientWithContext(httpClient, context);
 
-    Invocation invocation = Mockito.mock(Invocation.class);
-    AsyncResponse asyncResp = Mockito.mock(AsyncResponse.class);
-    OperationMeta operationMeta = Mockito.mock(OperationMeta.class);
-    RestOperationMeta swaggerRestOperation = Mockito.mock(RestOperationMeta.class);
+    Invocation invocation = mock(Invocation.class);
+    AsyncResponse asyncResp = mock(AsyncResponse.class);
+    OperationMeta operationMeta = mock(OperationMeta.class);
+    RestOperationMeta swaggerRestOperation = mock(RestOperationMeta.class);
 
-    Endpoint endpoint = Mockito.mock(Endpoint.class);
+    Endpoint endpoint = mock(Endpoint.class);
     when(invocation.getOperationMeta()).thenReturn(operationMeta);
-    URLPathBuilder urlPathBuilder = Mockito.mock(URLPathBuilder.class);
+    URLPathBuilder urlPathBuilder = mock(URLPathBuilder.class);
     when(swaggerRestOperation.getPathBuilder()).thenReturn(urlPathBuilder);
     operationMeta.getExtData(RestConst.SWAGGER_REST_OPERATION);
     when(operationMeta.getExtData(RestConst.SWAGGER_REST_OPERATION)).thenReturn(swaggerRestOperation);
@@ -89,24 +115,46 @@ public class TestVertxHttpMethod extends VertxHttpMethod {
   }
 
   @Test
+  public void testCreateRequest() {
+    HttpClient client = mock(HttpClient.class);
+    Invocation invocation = mock(Invocation.class);
+    OperationMeta operationMeta = mock(OperationMeta.class);
+    when(invocation.getOperationMeta()).thenReturn(operationMeta);
+    RestOperationMeta swaggerRestOperation = mock(RestOperationMeta.class);
+    when(operationMeta.getExtData(RestConst.SWAGGER_REST_OPERATION)).thenReturn(swaggerRestOperation);
+    IpPort ipPort = mock(IpPort.class);
+    when(ipPort.getPort()).thenReturn(10);
+    when(ipPort.getHostOrIp()).thenReturn("ever");
+    AsyncResponse asyncResp = mock(AsyncResponse.class);
+    List<HttpMethod> methods = new ArrayList<>(
+        Arrays.asList(HttpMethod.GET, HttpMethod.PUT, HttpMethod.POST, HttpMethod.DELETE));
+    for (HttpMethod method : methods) {
+      when(swaggerRestOperation.getHttpMethod()).thenReturn(method.toString());
+      HttpClientRequest obj =
+          VertxHttpMethod.INSTANCE.createRequest(client, invocation, ipPort, "good", asyncResp);
+      Assert.assertNull(obj);
+    }
+  }
+
+  @Test
   public void testSetCseContext() {
     boolean status = false;
     try {
-      Invocation invocation = Mockito.mock(Invocation.class);
-      HttpClientResponse httpResponse = Mockito.mock(HttpClientResponse.class);
-      OperationMeta operationMeta = Mockito.mock(OperationMeta.class);
-      RestOperationMeta swaggerRestOperation = Mockito.mock(RestOperationMeta.class);
-      HttpClientRequest request = Mockito.mock(HttpClientRequest.class);
+      Invocation invocation = mock(Invocation.class);
+      HttpClientResponse httpResponse = mock(HttpClientResponse.class);
+      OperationMeta operationMeta = mock(OperationMeta.class);
+      RestOperationMeta swaggerRestOperation = mock(RestOperationMeta.class);
+      HttpClientRequest request = mock(HttpClientRequest.class);
 
-      Endpoint endpoint = Mockito.mock(Endpoint.class);
+      Endpoint endpoint = mock(Endpoint.class);
       when(invocation.getOperationMeta()).thenReturn(operationMeta);
-      URLPathBuilder urlPathBuilder = Mockito.mock(URLPathBuilder.class);
+      URLPathBuilder urlPathBuilder = mock(URLPathBuilder.class);
       when(swaggerRestOperation.getPathBuilder()).thenReturn(urlPathBuilder);
       operationMeta.getExtData(RestConst.SWAGGER_REST_OPERATION);
       when(operationMeta.getExtData(RestConst.SWAGGER_REST_OPERATION)).thenReturn(swaggerRestOperation);
       when(invocation.getEndpoint()).thenReturn(endpoint);
       String contentType = httpResponse.getHeader("Content-Type");
-      ProduceProcessor produceProcessor = Mockito.mock(ProduceProcessor.class);
+      ProduceProcessor produceProcessor = mock(ProduceProcessor.class);
       when(swaggerRestOperation.findProduceProcessor(contentType)).thenReturn(produceProcessor);
       this.setCseContext(invocation, request);
     } catch (Exception ex) {
@@ -119,22 +167,22 @@ public class TestVertxHttpMethod extends VertxHttpMethod {
   public void testHandleResponse() {
     boolean status = false;
     try {
-      Invocation invocation = Mockito.mock(Invocation.class);
-      AsyncResponse asyncResp = Mockito.mock(AsyncResponse.class);
-      HttpClientResponse httpResponse = Mockito.mock(HttpClientResponse.class);
-      OperationMeta operationMeta = Mockito.mock(OperationMeta.class);
-      RestOperationMeta swaggerRestOperation = Mockito.mock(RestOperationMeta.class);
+      Invocation invocation = mock(Invocation.class);
+      AsyncResponse asyncResp = mock(AsyncResponse.class);
+      HttpClientResponse httpResponse = mock(HttpClientResponse.class);
+      OperationMeta operationMeta = mock(OperationMeta.class);
+      RestOperationMeta swaggerRestOperation = mock(RestOperationMeta.class);
 
-      Endpoint endpoint = Mockito.mock(Endpoint.class);
+      Endpoint endpoint = mock(Endpoint.class);
       when(invocation.getOperationMeta()).thenReturn(operationMeta);
-      URLPathBuilder urlPathBuilder = Mockito.mock(URLPathBuilder.class);
+      URLPathBuilder urlPathBuilder = mock(URLPathBuilder.class);
       when(swaggerRestOperation.getPathBuilder()).thenReturn(urlPathBuilder);
       operationMeta.getExtData(RestConst.SWAGGER_REST_OPERATION);
       when(operationMeta.getExtData(RestConst.SWAGGER_REST_OPERATION)).thenReturn(swaggerRestOperation);
       when(invocation.getEndpoint()).thenReturn(endpoint);
 
       String contentType = httpResponse.getHeader("Content-Type");
-      ProduceProcessor produceProcessor = Mockito.mock(ProduceProcessor.class);
+      ProduceProcessor produceProcessor = mock(ProduceProcessor.class);
       when(swaggerRestOperation.findProduceProcessor(contentType)).thenReturn(produceProcessor);
       this.handleResponse(invocation, httpResponse, asyncResp);
     } catch (Exception ex) {

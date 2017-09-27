@@ -30,8 +30,6 @@ import io.servicecomb.foundation.vertx.VertxUtils;
 import io.servicecomb.foundation.vertx.client.ClientPoolManager;
 import io.servicecomb.foundation.vertx.client.http.HttpClientWithContext;
 import io.servicecomb.swagger.invocation.AsyncResponse;
-import io.servicecomb.transport.rest.client.http.HttpMethodFactory;
-import io.servicecomb.transport.rest.client.http.VertxHttpMethod;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.DeploymentOptions;
 import io.vertx.core.Vertx;
@@ -124,38 +122,6 @@ public class TestRestTransportClient {
       @Mock
       public HttpClientWithContext findThreadBindClientPool() {
         return new HttpClientWithContext(null, null);
-      }
-    };
-
-    Mockito.when(operationMeta.getExtData(RestConst.SWAGGER_REST_OPERATION)).thenReturn(swaggerRestOperation);
-
-    try {
-      validAssert = true;
-      instance.send(invocation, asyncResp);
-    } catch (Exception e) {
-      validAssert = false;
-    }
-    Assert.assertTrue(validAssert);
-  }
-
-  @Test
-  public void testSendWithVertexMethod() {
-    boolean validAssert;
-    Mockito.when(invocation.getOperationMeta()).thenReturn(operationMeta);
-
-    new MockUp<ClientPoolManager<HttpClientWithContext>>() {
-
-      @Mock
-      public HttpClientWithContext findThreadBindClientPool() {
-        return new HttpClientWithContext(null, null);
-      }
-    };
-
-    new MockUp<HttpMethodFactory>() {
-
-      @Mock
-      public VertxHttpMethod findHttpMethodInstance(String method) throws Exception {
-        return Mockito.mock(VertxHttpMethod.class);
       }
     };
 

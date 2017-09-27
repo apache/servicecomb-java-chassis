@@ -19,10 +19,7 @@ package io.servicecomb.transport.rest.client;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import io.servicecomb.common.rest.RestConst;
-import io.servicecomb.common.rest.definition.RestOperationMeta;
 import io.servicecomb.core.Invocation;
-import io.servicecomb.core.definition.OperationMeta;
 import io.servicecomb.foundation.ssl.SSLCustom;
 import io.servicecomb.foundation.ssl.SSLOption;
 import io.servicecomb.foundation.ssl.SSLOptionFactory;
@@ -32,7 +29,6 @@ import io.servicecomb.foundation.vertx.client.ClientPoolManager;
 import io.servicecomb.foundation.vertx.client.http.HttpClientVerticle;
 import io.servicecomb.foundation.vertx.client.http.HttpClientWithContext;
 import io.servicecomb.swagger.invocation.AsyncResponse;
-import io.servicecomb.transport.rest.client.http.HttpMethodFactory;
 import io.servicecomb.transport.rest.client.http.VertxHttpMethod;
 import io.vertx.core.DeploymentOptions;
 import io.vertx.core.Vertx;
@@ -81,14 +77,8 @@ public final class RestTransportClient {
 
   public void send(Invocation invocation, AsyncResponse asyncResp) throws Exception {
     HttpClientWithContext httpClientWithContext = clientMgr.findThreadBindClientPool();
-
-    OperationMeta operationMeta = invocation.getOperationMeta();
-    RestOperationMeta swaggerRestOperation = operationMeta.getExtData(RestConst.SWAGGER_REST_OPERATION);
-    String method = swaggerRestOperation.getHttpMethod();
     try {
-      VertxHttpMethod httpMethod = HttpMethodFactory.findHttpMethodInstance(method);
-      LOGGER.debug("Calling method {} of {} by rest", method, invocation.getMicroserviceName());
-      httpMethod.doMethod(httpClientWithContext, invocation, asyncResp);
+      VertxHttpMethod.INSTANCE.doMethod(httpClientWithContext, invocation, asyncResp);
     } catch (Exception e) {
       asyncResp.fail(invocation.getInvocationType(), e);
       LOGGER.error("vertx rest transport send error.", e);
