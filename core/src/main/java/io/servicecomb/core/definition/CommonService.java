@@ -29,8 +29,8 @@ public class CommonService<OPERATION> {
     operationMgr = new RegisterManager<>(operationMgrName);
   }
 
-  public void regOperation(String operationName, OPERATION operaton) {
-    operationMgr.register(operationName, operaton);
+  public void regOperation(String operationName, OPERATION operation) {
+    operationMgr.register(operationName, operation);
   }
 
   public OPERATION findOperation(String operation) {
