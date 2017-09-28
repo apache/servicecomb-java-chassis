@@ -31,7 +31,7 @@ public class TestOperationLocator {
   OperationLocator locator = new OperationLocator();
 
   private RestOperationMeta addRestOperationMeta(String httpMethod, String path) {
-    RestOperationMeta rom = UnitTestRestUtils.createRestOperatonMeta(httpMethod, path);
+    RestOperationMeta rom = UnitTestRestUtils.createRestOperationMeta(httpMethod, path);
     paths.addResource(rom);
     return rom;
   }

@@ -32,7 +32,7 @@ import io.servicecomb.foundation.common.exceptions.ServiceCombException;
 public class TestMicroservicePaths {
   @Test
   public void testAddResourceStaticNewGroup() {
-    RestOperationMeta staticRes = UnitTestRestUtils.createRestOperatonMeta("POST", "/static");
+    RestOperationMeta staticRes = UnitTestRestUtils.createRestOperationMeta("POST", "/static");
 
     MicroservicePaths paths = new MicroservicePaths();
     paths.addResource(staticRes);
@@ -42,8 +42,8 @@ public class TestMicroservicePaths {
 
   @Test
   public void testAddResourceStaticAddToGroup() {
-    RestOperationMeta staticResPost = UnitTestRestUtils.createRestOperatonMeta("POST", "/static");
-    RestOperationMeta staticResGet = UnitTestRestUtils.createRestOperatonMeta("GET", "/static");
+    RestOperationMeta staticResPost = UnitTestRestUtils.createRestOperationMeta("POST", "/static");
+    RestOperationMeta staticResGet = UnitTestRestUtils.createRestOperationMeta("GET", "/static");
 
     MicroservicePaths paths = new MicroservicePaths();
     paths.addResource(staticResPost);
@@ -55,7 +55,7 @@ public class TestMicroservicePaths {
 
   @Test
   public void testAddResourceStaticDuplicatedHttpMethod() {
-    RestOperationMeta staticResPost = UnitTestRestUtils.createRestOperatonMeta("POST", "/static");
+    RestOperationMeta staticResPost = UnitTestRestUtils.createRestOperationMeta("POST", "/static");
 
     MicroservicePaths paths = new MicroservicePaths();
     paths.addResource(staticResPost);
@@ -70,7 +70,7 @@ public class TestMicroservicePaths {
 
   @Test
   public void testAddResourceDynamic() {
-    RestOperationMeta dynamicRes = UnitTestRestUtils.createRestOperatonMeta("POST", "/dynamic/{id}");
+    RestOperationMeta dynamicRes = UnitTestRestUtils.createRestOperationMeta("POST", "/dynamic/{id}");
 
     MicroservicePaths paths = new MicroservicePaths();
     paths.addResource(dynamicRes);
@@ -80,8 +80,8 @@ public class TestMicroservicePaths {
 
   @Test
   public void testCloneTo() {
-    RestOperationMeta staticRes = UnitTestRestUtils.createRestOperatonMeta("POST", "/static");
-    RestOperationMeta dynamicRes = UnitTestRestUtils.createRestOperatonMeta("POST", "/dynamic/{id}");
+    RestOperationMeta staticRes = UnitTestRestUtils.createRestOperationMeta("POST", "/static");
+    RestOperationMeta dynamicRes = UnitTestRestUtils.createRestOperationMeta("POST", "/dynamic/{id}");
 
     MicroservicePaths paths = new MicroservicePaths();
     paths.addResource(staticRes);
@@ -98,8 +98,8 @@ public class TestMicroservicePaths {
   public void testSortPath() {
     // only test base rule
     // completely rule test by TestRestOperationComparator
-    RestOperationMeta dynamicResLessStatic = UnitTestRestUtils.createRestOperatonMeta("POST", "/a/{id}");
-    RestOperationMeta dynamicResMoreStatic = UnitTestRestUtils.createRestOperatonMeta("POST", "/abc/{id}");
+    RestOperationMeta dynamicResLessStatic = UnitTestRestUtils.createRestOperationMeta("POST", "/a/{id}");
+    RestOperationMeta dynamicResMoreStatic = UnitTestRestUtils.createRestOperationMeta("POST", "/abc/{id}");
 
     MicroservicePaths paths = new MicroservicePaths();
     paths.addResource(dynamicResLessStatic);
@@ -112,8 +112,8 @@ public class TestMicroservicePaths {
 
   @Test
   public void testPrintPaths() {
-    RestOperationMeta staticRes = UnitTestRestUtils.createRestOperatonMeta("POST", "/static");
-    RestOperationMeta dynamicRes = UnitTestRestUtils.createRestOperatonMeta("POST", "/dynamic/{id}");
+    RestOperationMeta staticRes = UnitTestRestUtils.createRestOperationMeta("POST", "/static");
+    RestOperationMeta dynamicRes = UnitTestRestUtils.createRestOperationMeta("POST", "/dynamic/{id}");
 
     MicroservicePaths paths = new MicroservicePaths();
     paths.addResource(staticRes);

@@ -24,7 +24,7 @@ import io.servicecomb.core.definition.OperationMeta;
 import mockit.Deencapsulation;
 
 public class UnitTestRestUtils {
-  public static RestOperationMeta createRestOperatonMeta(String httpMethod, String path) {
+  public static RestOperationMeta createRestOperationMeta(String httpMethod, String path) {
     OperationMeta om = new OperationMeta();
     om.setHttpMethod(httpMethod);
 
