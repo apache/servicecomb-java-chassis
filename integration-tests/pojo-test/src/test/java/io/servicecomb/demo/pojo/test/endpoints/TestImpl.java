@@ -43,6 +43,11 @@ public class TestImpl implements Test {
     return null;
   }
 
+  @Override
+  public String patchTestStatic(int code) {
+    return null;
+  }
+
   private User doTest(int index, User user, List<User> users, byte[] data) {
     if (user == null) {
       user = new User();

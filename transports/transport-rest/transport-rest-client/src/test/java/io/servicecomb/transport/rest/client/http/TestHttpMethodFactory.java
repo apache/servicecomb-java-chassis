@@ -47,5 +47,6 @@ public class TestHttpMethodFactory {
     Assert.assertSame(httpClientFilters, HttpMethodFactory.findHttpMethodInstance(HttpMethod.POST).httpClientFilters);
     Assert.assertSame(httpClientFilters, HttpMethodFactory.findHttpMethodInstance(HttpMethod.PUT).httpClientFilters);
     Assert.assertSame(httpClientFilters, HttpMethodFactory.findHttpMethodInstance(HttpMethod.DELETE).httpClientFilters);
+    Assert.assertSame(httpClientFilters, HttpMethodFactory.findHttpMethodInstance("PATCH").httpClientFilters);
   }
 }

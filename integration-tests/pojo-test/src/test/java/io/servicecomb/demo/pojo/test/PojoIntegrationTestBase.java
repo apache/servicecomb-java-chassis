@@ -130,6 +130,8 @@ public class PojoIntegrationTestBase {
   public void remoteTestPojo_postTestStatic() {
     String result = PojoService.test.postTestStatic(1);
     assertThat(result, is(nullValue()));
+    result = PojoService.test.patchTestStatic(1);
+    assertThat(result, is(nullValue()));
   }
 
   @Test
