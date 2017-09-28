@@ -21,10 +21,12 @@ import org.slf4j.LoggerFactory;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 
+import io.servicecomb.foundation.common.event.EventManager;
 import io.servicecomb.serviceregistry.api.registry.Microservice;
 import io.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
 import io.servicecomb.serviceregistry.api.response.HeartbeatResponse;
 import io.servicecomb.serviceregistry.client.ServiceRegistryClient;
+import io.servicecomb.serviceregistry.task.event.HeartbeatFailEvent;
 
 public class MicroserviceInstanceHeartbeatTask extends AbstractTask {
   private static final Logger LOGGER = LoggerFactory.getLogger(MicroserviceInstanceHeartbeatTask.class);
@@ -68,6 +70,7 @@ public class MicroserviceInstanceHeartbeatTask extends AbstractTask {
       LOGGER.error("Disconnected from service center and heartbeat failed for microservice instance={}/{}",
           microserviceInstance.getServiceId(),
           microserviceInstance.getInstanceId());
+      EventManager.post(new HeartbeatFailEvent());
       return HeartbeatResult.DISCONNECTED;
     }
 
@@ -75,6 +78,7 @@ public class MicroserviceInstanceHeartbeatTask extends AbstractTask {
       LOGGER.error("Update heartbeat to service center failed, microservice instance={}/{} does not exist",
           microserviceInstance.getServiceId(),
           microserviceInstance.getInstanceId());
+      EventManager.post(new HeartbeatFailEvent());
       return HeartbeatResult.INSTANCE_NOT_REGISTERED;
     }
 
