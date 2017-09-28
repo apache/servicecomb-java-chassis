@@ -16,11 +16,15 @@
 
 package io.servicecomb.tracing.zipkin;
 
+import static com.seanyinx.github.unit.scaffolding.AssertUtils.expectFailing;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.awaitility.Awaitility.await;
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.Matchers.containsInAnyOrder;
+import static org.hamcrest.collection.IsIterableContainingInOrder.contains;
 import static org.junit.Assert.assertThat;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Queue;
 import java.util.concurrent.BrokenBarrierException;
@@ -30,6 +34,7 @@ import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.concurrent.CyclicBarrier;
 import java.util.concurrent.Executors;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 import org.junit.After;
 import org.junit.Test;
@@ -41,10 +46,17 @@ import brave.internal.StrictCurrentTraceContext;
 
 public class ZipkinTracingAdviserTest {
   private static final int nThreads = 10;
+
   private final String spanName = "some span";
+
+  private final String path = this.getClass().getCanonicalName();
+
   private final String expected = "supplied";
 
+  private final RuntimeException error = new RuntimeException("oops");
+
   private final Supplier<String> supplier = () -> expected;
+
   private final Map<Long, Queue<zipkin.Span>> traces = new ConcurrentHashMap<>();
 
   private final Tracing tracing = Tracing.newBuilder()
@@ -61,12 +73,32 @@ public class ZipkinTracingAdviserTest {
 
   @Test
   public void startsNewRootSpan() throws Exception {
-    String result = tracingAdviser.invoke(spanName, supplier);
+    String result = tracingAdviser.invoke(spanName, path, supplier);
 
     assertThat(result, is(expected));
     await().atMost(2, SECONDS).until(() -> !traces.isEmpty());
 
-    assertThat(traces.values().iterator().next().poll().name, is(spanName));
+    zipkin.Span span = traces.values().iterator().next().poll();
+    assertThat(span.name, is(spanName));
+    assertThat(tracedValues(span), contains(this.getClass().getCanonicalName()));
+  }
+
+  @Test
+  public void includesExceptionInTags() throws Exception {
+    try {
+      tracingAdviser.invoke(spanName, path, () -> {
+        throw error;
+      });
+
+      expectFailing(RuntimeException.class);
+    } catch (RuntimeException ignored) {
+    }
+
+    await().atMost(2, SECONDS).until(() -> !traces.isEmpty());
+
+    zipkin.Span span = traces.values().iterator().next().poll();
+    assertThat(span.name, is(spanName));
+    assertThat(tracedValues(span), containsInAnyOrder(this.getClass().getCanonicalName(), "RuntimeException: oops"));
   }
 
   @Test
@@ -81,7 +113,7 @@ public class ZipkinTracingAdviserTest {
         waitTillAllAreReady(cyclicBarrier);
 
         try (SpanInScope spanInScope = tracing.tracer().withSpanInScope(currentSpan)) {
-          assertThat(tracingAdviser.invoke(spanName, supplier), is(expected));
+          assertThat(tracingAdviser.invoke(spanName, path, supplier), is(expected));
         } finally {
           currentSpan.finish();
         }
@@ -99,6 +131,7 @@ public class ZipkinTracingAdviserTest {
       zipkin.Span parent = queue.poll();
       assertThat(child.parentId, is(parent.id));
       assertThat(child.traceId, is(parent.traceId));
+      assertThat(tracedValues(child), contains(this.getClass().getCanonicalName()));
     }
   }
 
@@ -108,5 +141,14 @@ public class ZipkinTracingAdviserTest {
     } catch (InterruptedException | BrokenBarrierException e) {
       throw new RuntimeException(e);
     }
+  }
+
+  private List<String> tracedValues(zipkin.Span spans) {
+    return spans.binaryAnnotations.stream()
+        .filter(span -> "path".equals(span.key) || "error".equals(span.key))
+        .filter(span -> span.value != null)
+        .map(annotation -> new String(annotation.value))
+        .distinct()
+        .collect(Collectors.toList());
   }
 }
