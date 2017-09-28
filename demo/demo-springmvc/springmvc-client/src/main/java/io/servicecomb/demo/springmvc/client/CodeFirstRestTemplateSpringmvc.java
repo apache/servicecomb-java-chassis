@@ -82,5 +82,14 @@ public class CodeFirstRestTemplateSpringmvc extends CodeFirstRestTemplate {
     TestMgr.check("h2v {contextKey=contextValue, x-cse-src-microservice=" + srcName + "}",
         responseEntity.getHeaders().getFirst("h2"));
     checkStatusCode(microserviceName, 202, responseEntity.getStatusCode());
+    
+    responseEntity =
+        template.exchange(cseUrlPrefix + "responseEntity", HttpMethod.PATCH, httpEntity, Date.class);
+    TestMgr.check(date, responseEntity.getBody());
+    TestMgr.check("h1v {contextKey=contextValue, x-cse-src-microservice=" + srcName + "}",
+        responseEntity.getHeaders().getFirst("h1"));
+    TestMgr.check("h2v {contextKey=contextValue, x-cse-src-microservice=" + srcName + "}",
+        responseEntity.getHeaders().getFirst("h2"));
+    checkStatusCode(microserviceName, 202, responseEntity.getStatusCode());
   }
 }

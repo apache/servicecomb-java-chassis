@@ -44,6 +44,7 @@ public final class HttpMethodFactory {
     addHttpMethod(HttpMethod.POST, VertxPostMethod.INSTANCE);
     addHttpMethod(HttpMethod.PUT, VertxPutMethod.INSTANCE);
     addHttpMethod(HttpMethod.DELETE, VertxDeleteMethod.INSTANCE);
+    addHttpMethod("PATCH", VertxPatchMethod.INSTANCE);
   }
 
   static void addHttpMethod(String httpMethod, VertxHttpMethod instance) {
