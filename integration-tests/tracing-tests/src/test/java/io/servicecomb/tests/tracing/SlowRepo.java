@@ -16,26 +16,9 @@
 
 package io.servicecomb.tests.tracing;
 
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
+import io.servicecomb.tracing.Span;
 
-import io.servicecomb.provider.pojo.RpcReference;
-import io.servicecomb.tracing.zipkin.EnableZipkinTracing;
-
-@EnableZipkinTracing
-@Configuration
-class TracedPojoConfig {
-
-  @RpcReference(microserviceName = "tracing-service", schemaId = "tracedPojo")
-  private TracedPojo tracedPojo;
-
-  @Bean
-  TracedPojo tracedPojo() {
-    return tracedPojo;
-  }
-
-  @Bean
-  SlowRepo slowRepo() {
-    return new SlowRepoImpl();
-  }
+public interface SlowRepo {
+  @Span
+  String crawl() throws InterruptedException;
 }

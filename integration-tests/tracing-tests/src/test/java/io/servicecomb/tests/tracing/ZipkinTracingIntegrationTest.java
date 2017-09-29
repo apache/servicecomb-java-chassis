@@ -36,7 +36,7 @@ public class ZipkinTracingIntegrationTest extends TracingTestBase {
   }
 
   @Test
-  public void sendsTracingToConfiguredAddress() throws InterruptedException {
+  public void sendsTracingToConfiguredAddress() throws InterruptedException, NoSuchMethodException {
     ResponseEntity<String> entity = restTemplate.getForEntity("http://localhost:8080/hello", String.class);
 
     assertThat(entity.getStatusCode(), is(OK));
@@ -47,6 +47,6 @@ public class ZipkinTracingIntegrationTest extends TracingTestBase {
     Collection<String> tracingMessages = appender.pollLogs(".*\\[\\w+/\\w+/\\w*\\]\\s+INFO.*in /.*");
     assertThat(tracingMessages.size(), greaterThanOrEqualTo(2));
 
-    assertThatSpansReceivedByZipkin(tracingMessages, "/hello", "/bonjour", "/pojo");
+    assertThatSpansReceivedByZipkin(tracingMessages, "/hello", SlowRepo.class.getMethod("crawl").toString(), "/bonjour", "/pojo");
   }
 }

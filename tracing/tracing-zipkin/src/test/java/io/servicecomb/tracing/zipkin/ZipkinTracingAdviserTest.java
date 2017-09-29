@@ -148,7 +148,7 @@ public class ZipkinTracingAdviserTest {
 
   private List<String> tracedValues(zipkin.Span spans) {
     return spans.binaryAnnotations.stream()
-        .filter(span -> "path".equals(span.key) || "error".equals(span.key))
+        .filter(span -> "call.path".equals(span.key) || "error".equals(span.key))
         .filter(span -> span.value != null)
         .map(annotation -> new String(annotation.value))
         .distinct()

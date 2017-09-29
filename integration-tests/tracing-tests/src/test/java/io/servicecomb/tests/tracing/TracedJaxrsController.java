@@ -49,7 +49,7 @@ public class TracedJaxrsController {
   @Produces(TEXT_PLAIN)
   public String bonjour(HttpServletRequest request) throws InterruptedException {
     logger.info("in /bonjour");
-    Thread.sleep(random.nextInt(1000));
+    Thread.sleep(random.nextInt(100));
 
     return "bonjour le monde, " + tracedPojo.pojo();
   }

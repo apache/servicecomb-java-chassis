@@ -23,6 +23,9 @@ import java.lang.annotation.Target;
 
 import org.springframework.context.annotation.Import;
 
+/**
+ * This annotation enables auto-configuration of Zipkin for auto span generation using annotation {@link io.servicecomb.tracing.Span}.
+ */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
 @Import(ZipkinSpanAspectConfig.class)

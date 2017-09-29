@@ -16,18 +16,22 @@
 
 package io.servicecomb.tracing.zipkin;
 
+import java.lang.invoke.MethodHandles;
 import java.lang.reflect.Method;
 
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.reflect.MethodSignature;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import brave.Tracing;
 import io.servicecomb.tracing.Span;
 
 @Aspect
 class ZipkinSpanAspect {
+  private static final Logger log = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   private final ZipkinTracingAdviser adviser;
 
@@ -38,6 +42,7 @@ class ZipkinSpanAspect {
   @Around("execution(@io.servicecomb.tracing.Span * *(..)) && @annotation(spanAnnotation)")
   public Object advise(ProceedingJoinPoint joinPoint, Span spanAnnotation) throws Throwable {
     Method method = ((MethodSignature) joinPoint.getSignature()).getMethod();
+    log.debug("Generating zipkin span for method {}", method.toString());
     return adviser.invoke(method.getName(), method.toString(), joinPoint::proceed);
   }
 }

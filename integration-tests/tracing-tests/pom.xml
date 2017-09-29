@@ -62,6 +62,14 @@
       <artifactId>transport-rest-vertx</artifactId>
     </dependency>
     <dependency>
+      <groupId>io.servicecomb</groupId>
+      <artifactId>tracing-common</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>io.servicecomb</groupId>
+      <artifactId>tracing-zipkin</artifactId>
+    </dependency>
+    <dependency>
       <groupId>io.zipkin.java</groupId>
       <artifactId>zipkin-junit</artifactId>
     </dependency>
