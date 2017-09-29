@@ -16,6 +16,7 @@
 
 package io.servicecomb.tracing.zipkin;
 
+import static io.servicecomb.tracing.zipkin.ZipkinTracingAdviser.CALL_PATH;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.awaitility.Awaitility.await;
 import static org.hamcrest.CoreMatchers.is;
@@ -38,9 +39,9 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import brave.Tracing;
 import brave.internal.StrictCurrentTraceContext;
+import io.servicecomb.tracing.zipkin.ZipkinSpanAspectTest.TracingConfig;
 import io.servicecomb.tracing.zipkin.app.ZipkinSpanTestApplication;
 import io.servicecomb.tracing.zipkin.app.ZipkinSpanTestApplication.SomeSlowTask;
-import io.servicecomb.tracing.zipkin.ZipkinSpanAspectTest.TracingConfig;
 import zipkin.Span;
 
 @RunWith(SpringRunner.class)
@@ -74,7 +75,7 @@ public class ZipkinSpanAspectTest {
 
   private List<String> tracedValues(zipkin.Span spans) {
     return spans.binaryAnnotations.stream()
-        .filter(span -> "path".equals(span.key) || "error".equals(span.key))
+        .filter(span -> CALL_PATH.equals(span.key) || "error".equals(span.key))
         .filter(span -> span.value != null)
         .map(annotation -> new String(annotation.value))
         .distinct()

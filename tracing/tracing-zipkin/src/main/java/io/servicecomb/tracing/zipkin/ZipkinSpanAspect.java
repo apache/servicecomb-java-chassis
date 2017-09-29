@@ -31,7 +31,7 @@ import io.servicecomb.tracing.Span;
 
 @Aspect
 class ZipkinSpanAspect {
-  private static final Logger log = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+  private static final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   private final ZipkinTracingAdviser adviser;
 
@@ -42,7 +42,7 @@ class ZipkinSpanAspect {
   @Around("execution(@io.servicecomb.tracing.Span * *(..)) && @annotation(spanAnnotation)")
   public Object advise(ProceedingJoinPoint joinPoint, Span spanAnnotation) throws Throwable {
     Method method = ((MethodSignature) joinPoint.getSignature()).getMethod();
-    log.debug("Generating zipkin span for method {}", method.toString());
+    LOG.debug("Generating zipkin span for method {}", method.toString());
     return adviser.invoke(method.getName(), method.toString(), joinPoint::proceed);
   }
 }
