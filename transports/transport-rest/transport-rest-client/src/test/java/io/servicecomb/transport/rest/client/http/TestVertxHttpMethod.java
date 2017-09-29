@@ -127,7 +127,7 @@ public class TestVertxHttpMethod extends VertxHttpMethod {
     when(ipPort.getHostOrIp()).thenReturn("ever");
     AsyncResponse asyncResp = mock(AsyncResponse.class);
     List<HttpMethod> methods = new ArrayList<>(
-        Arrays.asList(HttpMethod.GET, HttpMethod.PUT, HttpMethod.POST, HttpMethod.DELETE));
+        Arrays.asList(HttpMethod.GET, HttpMethod.PUT, HttpMethod.POST, HttpMethod.DELETE, HttpMethod.PATCH));
     for (HttpMethod method : methods) {
       when(swaggerRestOperation.getHttpMethod()).thenReturn(method.toString());
       HttpClientRequest obj =
