@@ -60,6 +60,19 @@ paths:
           description: asdf
           schema: 
             type: string
+    patch:
+      operationId: patchTestStatic
+      parameters:
+        - name: code
+          in: query
+          required: true
+          type: integer
+          format: int32
+      responses:
+        200:
+          description: asdf
+          schema: 
+            type: string
   /testException/{code}:
     get:
       operationId: testException

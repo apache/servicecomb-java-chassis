@@ -23,6 +23,8 @@ public interface Test {
 
   String postTestStatic(int code);
 
+  String patchTestStatic(int code);
+
   String testException(int code);
 
   User wrapParam(TestRequest request);

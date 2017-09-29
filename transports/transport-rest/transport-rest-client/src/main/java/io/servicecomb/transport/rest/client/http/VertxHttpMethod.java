@@ -16,7 +16,6 @@
 
 package io.servicecomb.transport.rest.client.http;
 
-import java.util.Collections;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -34,6 +33,7 @@ import io.servicecomb.core.transport.AbstractTransport;
 import io.servicecomb.foundation.common.net.IpPort;
 import io.servicecomb.foundation.common.net.URIEndpointObject;
 import io.servicecomb.foundation.common.utils.JsonUtils;
+import io.servicecomb.foundation.common.utils.SPIServiceUtils;
 import io.servicecomb.foundation.vertx.client.http.HttpClientWithContext;
 import io.servicecomb.foundation.vertx.http.HttpServletRequestEx;
 import io.servicecomb.foundation.vertx.http.HttpServletResponseEx;
@@ -46,14 +46,18 @@ import io.vertx.core.buffer.Buffer;
 import io.vertx.core.http.HttpClient;
 import io.vertx.core.http.HttpClientRequest;
 import io.vertx.core.http.HttpClientResponse;
+import io.vertx.core.http.HttpMethod;
 
-public abstract class VertxHttpMethod {
+public class VertxHttpMethod {
   private static final Logger LOGGER = LoggerFactory.getLogger(VertxHttpMethod.class);
+  public static final VertxHttpMethod INSTANCE = new VertxHttpMethod();
 
-  protected List<HttpClientFilter> httpClientFilters = Collections.emptyList();
+  static List<HttpClientFilter> httpClientFilters = SPIServiceUtils.getSortedService(HttpClientFilter.class);
 
-  public void setHttpClientFilters(List<HttpClientFilter> httpClientFilters) {
-    this.httpClientFilters = httpClientFilters;
+  static {
+    for (HttpClientFilter filter : httpClientFilters) {
+      LOGGER.info("Found HttpClientFilter: {}.", filter.getClass().getName());
+    }
   }
 
   public void doMethod(HttpClientWithContext httpClientWithContext, Invocation invocation,
@@ -106,11 +110,24 @@ public abstract class VertxHttpMethod {
     });
   }
 
-  protected abstract HttpClientRequest createRequest(HttpClient client, Invocation invocation, IpPort ipPort,
-      String path,
-      AsyncResponse asyncResp);
+  private HttpMethod getMethod(Invocation invocation) {
+    OperationMeta operationMeta = invocation.getOperationMeta();
+    RestOperationMeta swaggerRestOperation = operationMeta.getExtData(RestConst.SWAGGER_REST_OPERATION);
+    String method = swaggerRestOperation.getHttpMethod();
+    return HttpMethod.valueOf(method);
+  }
 
-  protected void handleResponse(Invocation invocation, HttpClientResponse clientResponse,
+  HttpClientRequest createRequest(HttpClient client, Invocation invocation, IpPort ipPort, String path,
+      AsyncResponse asyncResp) {
+    HttpMethod method = getMethod(invocation);
+    LOGGER.debug("Calling method {} of {} by rest", method, invocation.getMicroserviceName());
+    HttpClientRequest request = client.request(method, ipPort.getPort(), ipPort.getHostOrIp(), path, response -> {
+      handleResponse(invocation, response, asyncResp);
+    });
+    return request;
+  }
+
+  void handleResponse(Invocation invocation, HttpClientResponse clientResponse,
       AsyncResponse asyncResp) {
     clientResponse.bodyHandler(responseBuf -> {
       // 此时是在网络线程中，不应该就地处理，通过dispatcher转移线程
