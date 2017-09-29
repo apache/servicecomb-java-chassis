@@ -100,6 +100,11 @@ public class CodeFirstSpringmvc {
     return userMap;
   }
 
+  @RequestMapping(path = "/testUserMapGeneric", method = RequestMethod.POST)
+  public TemplateResponse<String> testUserMapGeneric(@RequestBody Map<String, User> userMap) {
+    return null;
+  }
+
   @RequestMapping(path = "/textPlain", method = RequestMethod.POST, consumes = MediaType.TEXT_PLAIN_VALUE)
   public String textPlain(@RequestBody String body) {
     return body;

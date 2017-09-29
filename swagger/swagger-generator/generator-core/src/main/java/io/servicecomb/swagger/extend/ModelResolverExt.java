@@ -22,6 +22,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
 
 import com.fasterxml.jackson.databind.JavaType;
@@ -41,6 +43,8 @@ import io.swagger.models.properties.StringProperty;
 import io.swagger.util.Json;
 
 public class ModelResolverExt extends ModelResolver {
+  private static final Logger LOGGER = LoggerFactory.getLogger(ModelResolverExt.class);
+  
   private interface PropertyCreator {
     Property createProperty();
   }
@@ -84,7 +88,11 @@ public class ModelResolverExt extends ModelResolver {
 
     String msg = "Must be a concrete type.";
     if (type.getRawClass().equals(Object.class)) {
-      throw new ServiceCombException(type.getRawClass().getName() + " not support. " + msg);
+      LOGGER.warn("***********************");
+      LOGGER.warn(type.getRawClass().getName() + " have some potential problems when working with "
+          + "different platforms and transports. It's recommented to change your service defintion. "
+          + "This feature will be removed without notice in the future.");
+      LOGGER.warn("***********************");
     }
 
     if (type.isMapLikeType()) {

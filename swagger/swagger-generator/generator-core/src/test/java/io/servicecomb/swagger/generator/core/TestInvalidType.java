@@ -15,6 +15,7 @@
  */
 package io.servicecomb.swagger.generator.core;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import io.servicecomb.swagger.generator.core.schema.InvalidType;
@@ -44,6 +45,7 @@ public class TestInvalidType {
         "testAbstractClass");
   }
 
+  @Ignore("need to discuss in JVA-422")
   @Test
   public void testObject() {
     UnitTestSwaggerUtils.testException(
@@ -54,6 +56,7 @@ public class TestInvalidType {
         "testObject");
   }
 
+  @Ignore("need to discuss in JVA-422")
   @Test
   public void testNotClearList() {
     UnitTestSwaggerUtils.testException(
@@ -64,6 +67,7 @@ public class TestInvalidType {
         "testNotClearList");
   }
 
+  @Ignore("need to discuss in JVA-422")
   @Test
   public void testNotClearSet() {
     UnitTestSwaggerUtils.testException(
@@ -74,6 +78,7 @@ public class TestInvalidType {
         "testNotClearSet");
   }
 
+  @Ignore("need to discuss in JVA-422")
   @Test
   public void testNotClearMap() {
     UnitTestSwaggerUtils.testException(
@@ -84,6 +89,7 @@ public class TestInvalidType {
         "testNotClearMap");
   }
 
+  @Ignore("need to discuss in JVA-422")
   @Test
   public void testInvalidFieldClass() {
     UnitTestSwaggerUtils.testException(
