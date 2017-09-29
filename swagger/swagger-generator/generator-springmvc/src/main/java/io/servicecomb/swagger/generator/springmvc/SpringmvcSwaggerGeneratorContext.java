@@ -20,7 +20,12 @@ import java.lang.reflect.Method;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CookieValue;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestAttribute;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -30,7 +35,12 @@ import org.springframework.web.bind.annotation.RequestParam;
 import io.servicecomb.swagger.generator.core.utils.ClassUtils;
 import io.servicecomb.swagger.generator.rest.RestSwaggerGeneratorContext;
 import io.servicecomb.swagger.generator.springmvc.processor.annotation.CookieValueAnnotationProcessor;
+import io.servicecomb.swagger.generator.springmvc.processor.annotation.DeleteMappingMethodAnnotationProcessor;
+import io.servicecomb.swagger.generator.springmvc.processor.annotation.GetMappingMethodAnnotationProcessor;
+import io.servicecomb.swagger.generator.springmvc.processor.annotation.PatchMappingMethodAnnotationProcessor;
 import io.servicecomb.swagger.generator.springmvc.processor.annotation.PathVariableAnnotationProcessor;
+import io.servicecomb.swagger.generator.springmvc.processor.annotation.PostMappingMethodAnnotationProcessor;
+import io.servicecomb.swagger.generator.springmvc.processor.annotation.PutMappingMethodAnnotationProcessor;
 import io.servicecomb.swagger.generator.springmvc.processor.annotation.RequestAttributeAnnotationProcessor;
 import io.servicecomb.swagger.generator.springmvc.processor.annotation.RequestBodyAnnotationProcessor;
 import io.servicecomb.swagger.generator.springmvc.processor.annotation.RequestHeaderAnnotationProcessor;
@@ -55,7 +65,12 @@ public class SpringmvcSwaggerGeneratorContext extends RestSwaggerGeneratorContex
 
   @Override
   public boolean canProcess(Method method) {
-    return method.getAnnotation(RequestMapping.class) != null;
+    return method.getAnnotation(RequestMapping.class) != null ||
+        method.getAnnotation(GetMapping.class) != null ||
+        method.getAnnotation(PutMapping.class) != null ||
+        method.getAnnotation(PostMapping.class) != null ||
+        method.getAnnotation(PatchMapping.class) != null ||
+        method.getAnnotation(DeleteMapping.class) != null;
   }
 
   @Override
@@ -70,6 +85,11 @@ public class SpringmvcSwaggerGeneratorContext extends RestSwaggerGeneratorContex
     super.initMethodAnnotationMgr();
 
     methodAnnotationMgr.register(RequestMapping.class, new RequestMappingMethodAnnotationProcessor());
+    methodAnnotationMgr.register(GetMapping.class, new GetMappingMethodAnnotationProcessor());
+    methodAnnotationMgr.register(PutMapping.class, new PutMappingMethodAnnotationProcessor());
+    methodAnnotationMgr.register(PostMapping.class, new PostMappingMethodAnnotationProcessor());
+    methodAnnotationMgr.register(PatchMapping.class, new PatchMappingMethodAnnotationProcessor());
+    methodAnnotationMgr.register(DeleteMapping.class, new DeleteMappingMethodAnnotationProcessor());
   }
 
   @Override
