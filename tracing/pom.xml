@@ -13,8 +13,15 @@
   <artifactId>tracing</artifactId>
   <packaging>pom</packaging>
   <modules>
+    <module>tracing-common</module>
     <module>tracing-zipkin</module>
   </modules>
 
+  <dependencies>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-aop</artifactId>
+    </dependency>
+  </dependencies>
 
 </project>

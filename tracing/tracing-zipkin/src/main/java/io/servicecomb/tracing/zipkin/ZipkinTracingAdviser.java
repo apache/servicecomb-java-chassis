@@ -1,7 +1,5 @@
 package io.servicecomb.tracing.zipkin;
 
-import java.util.function.Supplier;
-
 import brave.Span;
 import brave.Tracer;
 import brave.Tracer.SpanInScope;
@@ -16,7 +14,7 @@ class ZipkinTracingAdviser {
     this.tracer = tracer;
   }
 
-  <T> T invoke(String spanName, String path, Supplier<T> supplier) {
+  <T> T invoke(String spanName, String path, ThrowableSupplier<T> supplier) throws Throwable {
     Span span = createSpan(spanName, path);
     try (SpanInScope spanInScope = tracer.withSpanInScope(span)) {
       return supplier.get();
@@ -36,4 +34,9 @@ class ZipkinTracingAdviser {
 
     return tracer.newTrace().name(spanName).tag(CALL_PATH, path).start();
   }
+
+  interface ThrowableSupplier<T> {
+    T get() throws Throwable;
+  }
+
 }
