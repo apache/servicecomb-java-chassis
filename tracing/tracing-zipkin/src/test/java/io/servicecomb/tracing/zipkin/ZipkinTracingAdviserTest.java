@@ -23,6 +23,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.collection.IsIterableContainingInOrder.contains;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.fail;
 
 import java.util.List;
 import java.util.Map;
@@ -33,7 +34,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.concurrent.CyclicBarrier;
 import java.util.concurrent.Executors;
-import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import org.junit.After;
@@ -43,6 +43,7 @@ import brave.Span;
 import brave.Tracer.SpanInScope;
 import brave.Tracing;
 import brave.internal.StrictCurrentTraceContext;
+import io.servicecomb.tracing.zipkin.ZipkinTracingAdviser.ThrowableSupplier;
 
 public class ZipkinTracingAdviserTest {
   private static final int nThreads = 10;
@@ -55,7 +56,7 @@ public class ZipkinTracingAdviserTest {
 
   private final RuntimeException error = new RuntimeException("oops");
 
-  private final Supplier<String> supplier = () -> expected;
+  private final ThrowableSupplier<String> supplier = () -> expected;
 
   private final Map<Long, Queue<zipkin.Span>> traces = new ConcurrentHashMap<>();
 
@@ -72,7 +73,7 @@ public class ZipkinTracingAdviserTest {
   }
 
   @Test
-  public void startsNewRootSpan() throws Exception {
+  public void startsNewRootSpan() throws Throwable {
     String result = tracingAdviser.invoke(spanName, path, supplier);
 
     assertThat(result, is(expected));
@@ -84,7 +85,7 @@ public class ZipkinTracingAdviserTest {
   }
 
   @Test
-  public void includesExceptionInTags() throws Exception {
+  public void includesExceptionInTags() throws Throwable {
     try {
       tracingAdviser.invoke(spanName, path, () -> {
         throw error;
@@ -114,6 +115,8 @@ public class ZipkinTracingAdviserTest {
 
         try (SpanInScope spanInScope = tracing.tracer().withSpanInScope(currentSpan)) {
           assertThat(tracingAdviser.invoke(spanName, path, supplier), is(expected));
+        } catch (Throwable throwable) {
+          fail(throwable.getMessage());
         } finally {
           currentSpan.finish();
         }
