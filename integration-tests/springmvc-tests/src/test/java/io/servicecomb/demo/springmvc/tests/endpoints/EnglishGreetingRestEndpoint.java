@@ -16,8 +16,8 @@
 
 package io.servicecomb.demo.springmvc.tests.endpoints;
 
-import static org.springframework.http.MediaType.TEXT_PLAIN_VALUE;
-
+import org.springframework.context.annotation.Profile;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -25,19 +25,21 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import io.servicecomb.provider.rest.common.RestSchema;
 
+@Profile("!SimplifiedMapping")
 @RestSchema(schemaId = "englishGreetingRestEndpoint")
 @RequestMapping(path = "/")
-public class EnglishGreetingRestEndpoint {
-
-  @RequestMapping(path = "/sayHi", method = RequestMethod.GET, produces = TEXT_PLAIN_VALUE)
+public class EnglishGreetingRestEndpoint extends EnglishGreetingRestEndpointBase {
+  @RequestMapping(path = "/sayHi", method = RequestMethod.GET, produces = MediaType.TEXT_PLAIN_VALUE)
   @ResponseBody
+  @Override
   public String sayHi(@RequestParam("name") String name) {
-    return "Hi " + name;
+    return super.sayHi(name);
   }
 
-  @RequestMapping(path = "", method = RequestMethod.GET, produces = TEXT_PLAIN_VALUE)
+  @RequestMapping(path = "", method = RequestMethod.GET, produces = MediaType.TEXT_PLAIN_VALUE)
   @ResponseBody
+  @Override
   public String home() {
-    return "Welcome home";
+    return super.home();
   }
 }

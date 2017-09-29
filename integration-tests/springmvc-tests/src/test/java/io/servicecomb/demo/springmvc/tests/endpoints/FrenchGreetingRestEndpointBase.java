@@ -12,16 +12,12 @@
  *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
- *
  */
 
-package io.servicecomb.demo.springmvc.tests;
+package io.servicecomb.demo.springmvc.tests.endpoints;
 
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-
-import io.servicecomb.springboot.starter.provider.EnableServiceComb;
-
-@SpringBootApplication
-@EnableServiceComb
-class SpringMvcSpringMain {
+public class FrenchGreetingRestEndpointBase {
+  public String bonjour(String name) {
+    return "Bonjour " + name;
+  }
 }

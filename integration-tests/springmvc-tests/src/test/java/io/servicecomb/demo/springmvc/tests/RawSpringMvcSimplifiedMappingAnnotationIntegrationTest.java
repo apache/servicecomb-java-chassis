@@ -12,29 +12,29 @@
  *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
- *
  */
 
 package io.servicecomb.demo.springmvc.tests;
 
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
-import org.junit.runner.RunWith;
-import org.springframework.boot.SpringApplication;
-import org.springframework.context.ConfigurableApplicationContext;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.context.event.ContextClosedEvent;
 
-@RunWith(SpringRunner.class)
-public class SpringMvcSpringIntegrationTest extends SpringMvcIntegrationTestBase {
-  private static ConfigurableApplicationContext context;
+import io.servicecomb.core.CseApplicationListener;
+import io.servicecomb.foundation.common.utils.BeanUtils;
+
+public class RawSpringMvcSimplifiedMappingAnnotationIntegrationTest extends SpringMvcIntegrationTestBase {
 
   @BeforeClass
   public static void init() throws Exception {
-    context = SpringApplication.run(SpringMvcSpringMain.class);
+    System.setProperty("spring.profiles.active", "SimplifiedMapping");
+    SpringMvcTestMain.main(new String[0]);
   }
 
   @AfterClass
   public static void shutdown() throws Exception {
-    context.close();
+    CseApplicationListener cal = BeanUtils.getBean("io.servicecomb.core.CseApplicationListener");
+    ContextClosedEvent event = new ContextClosedEvent(BeanUtils.getContext());
+    cal.onApplicationEvent(event);
   }
 }
