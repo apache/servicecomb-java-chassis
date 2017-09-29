@@ -17,6 +17,7 @@
 package io.servicecomb.tracing.zipkin;
 
 import static com.seanyinx.github.unit.scaffolding.AssertUtils.expectFailing;
+import static io.servicecomb.tracing.zipkin.ZipkinTracingAdviser.CALL_PATH;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.awaitility.Awaitility.await;
 import static org.hamcrest.CoreMatchers.is;
@@ -148,7 +149,7 @@ public class ZipkinTracingAdviserTest {
 
   private List<String> tracedValues(zipkin.Span spans) {
     return spans.binaryAnnotations.stream()
-        .filter(span -> "call.path".equals(span.key) || "error".equals(span.key))
+        .filter(span -> CALL_PATH.equals(span.key) || "error".equals(span.key))
         .filter(span -> span.value != null)
         .map(annotation -> new String(annotation.value))
         .distinct()

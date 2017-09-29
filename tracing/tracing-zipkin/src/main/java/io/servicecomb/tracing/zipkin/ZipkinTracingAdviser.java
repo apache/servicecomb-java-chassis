@@ -6,7 +6,7 @@ import brave.Tracer.SpanInScope;
 
 class ZipkinTracingAdviser {
 
-  private static final String CALL_PATH = "call.path";
+  static final String CALL_PATH = "call.path";
 
   private final Tracer tracer;
 
