@@ -43,11 +43,14 @@ public class SomeTracedController {
   @Autowired
   private RestTemplate template;
 
+  @Autowired
+  private SlowRepo slowRepo;
+
   @RequestMapping(value = "/hello", method = GET, produces = TEXT_PLAIN_VALUE)
   public String hello(HttpServletRequest request) throws InterruptedException {
     logger.info("in /hello");
-    Thread.sleep(random.nextInt(1000));
 
+    slowRepo.crawl();
     return "hello world, " + template.getForObject("cse://tracing-service/jaxrs/bonjour", String.class);
   }
 }

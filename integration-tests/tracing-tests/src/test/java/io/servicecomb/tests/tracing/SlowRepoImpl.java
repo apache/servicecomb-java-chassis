@@ -16,26 +16,23 @@
 
 package io.servicecomb.tests.tracing;
 
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
+import java.util.Random;
 
-import io.servicecomb.provider.pojo.RpcReference;
-import io.servicecomb.tracing.zipkin.EnableZipkinTracing;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-@EnableZipkinTracing
-@Configuration
-class TracedPojoConfig {
+import io.servicecomb.tracing.Span;
 
-  @RpcReference(microserviceName = "tracing-service", schemaId = "tracedPojo")
-  private TracedPojo tracedPojo;
+public class SlowRepoImpl implements SlowRepo {
+  private static final Logger logger = LoggerFactory.getLogger(SlowRepoImpl.class);
 
-  @Bean
-  TracedPojo tracedPojo() {
-    return tracedPojo;
-  }
+  private final Random random = new Random();
 
-  @Bean
-  SlowRepo slowRepo() {
-    return new SlowRepoImpl();
+  @Span
+  @Override
+  public String crawl() throws InterruptedException {
+    logger.info("in /crawl");
+    Thread.sleep(random.nextInt(200));
+    return "crawled";
   }
 }

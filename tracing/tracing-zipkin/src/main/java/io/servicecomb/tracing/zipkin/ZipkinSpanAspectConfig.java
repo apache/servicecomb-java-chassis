@@ -18,10 +18,12 @@ package io.servicecomb.tracing.zipkin;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.EnableAspectJAutoProxy;
 
 import brave.Tracing;
 
 @Configuration
+@EnableAspectJAutoProxy
 class ZipkinSpanAspectConfig {
   @Bean
   ZipkinSpanAspect zipkinSpanAspect(Tracing tracing) {
