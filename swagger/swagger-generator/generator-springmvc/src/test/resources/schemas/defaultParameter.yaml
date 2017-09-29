@@ -1,0 +1,84 @@
+---
+swagger: "2.0"
+info:
+  version: "1.0.0"
+  title: "swagger definition for io.servicecomb.swagger.generator.springmvc.MethodDefaultParameter"
+  x-java-interface: "gen.cse.ms.ut.MethodDefaultParameterIntf"
+basePath: "/MethodDefaultParameter"
+consumes:
+- "application/json"
+produces:
+- "application/json"
+paths:
+  /usingRequestMapping:
+    put:
+      operationId: "usingRequestMapping"
+      parameters:
+      - name: "query"
+        in: "query"
+        required: false
+        type: "integer"
+        format: "int32"
+      responses:
+        200:
+          description: "response of 200"
+  /usingGetMapping:
+    get:
+      operationId: "usingGetMapping"
+      parameters:
+      - name: "query"
+        in: "query"
+        required: false
+        type: "integer"
+        format: "int32"
+      responses:
+        200:
+          description: "response of 200"
+  /usingPutMapping:
+    put:
+      operationId: "usingPutMapping"
+      parameters:
+      - name: "query"
+        in: "query"
+        required: false
+        type: "integer"
+        format: "int32"
+      responses:
+        200:
+          description: "response of 200"
+  /usingPostMapping:
+    post:
+      operationId: "usingPostMapping"
+      parameters:
+      - name: "query"
+        in: "query"
+        required: false
+        type: "integer"
+        format: "int32"
+      responses:
+        200:
+          description: "response of 200"
+  /usingPatchMapping:
+    patch:
+      operationId: "usingPatchMapping"
+      parameters:
+      - name: "query"
+        in: "query"
+        required: false
+        type: "integer"
+        format: "int32"
+      responses:
+        200:
+          description: "response of 200"
+  /usingDeleteMapping:
+    delete:
+      operationId: "usingDeleteMapping"
+      parameters:
+      - name: "query"
+        in: "query"
+        required: false
+        type: "integer"
+        format: "int32"
+      responses:
+        200:
+          description: "response of 200"
