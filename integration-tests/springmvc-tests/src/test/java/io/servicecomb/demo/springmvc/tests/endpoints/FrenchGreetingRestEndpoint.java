@@ -16,8 +16,8 @@
 
 package io.servicecomb.demo.springmvc.tests.endpoints;
 
-import static org.springframework.http.MediaType.TEXT_PLAIN_VALUE;
-
+import org.springframework.context.annotation.Profile;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -25,13 +25,14 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import io.servicecomb.provider.rest.common.RestSchema;
 
+@Profile("!SimplifiedMapping")
 @RestSchema(schemaId = "frenchGreetingRestEndpoint")
 @RequestMapping(path = "/french")
-public class FrenchGreetingRestEndpoint {
-
-  @RequestMapping(path = "/bonjour", method = RequestMethod.GET, produces = TEXT_PLAIN_VALUE)
+public class FrenchGreetingRestEndpoint extends FrenchGreetingRestEndpointBase {
+  @RequestMapping(path = "/bonjour", method = RequestMethod.GET, produces = MediaType.TEXT_PLAIN_VALUE)
   @ResponseBody
+  @Override
   public String bonjour(@RequestParam("name") String name) {
-    return "Bonjour " + name;
+    return super.bonjour(name);
   }
 }

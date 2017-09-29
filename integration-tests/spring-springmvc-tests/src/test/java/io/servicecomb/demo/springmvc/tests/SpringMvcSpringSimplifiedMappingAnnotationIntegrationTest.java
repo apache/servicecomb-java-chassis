@@ -12,7 +12,6 @@
  *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
- *
  */
 
 package io.servicecomb.demo.springmvc.tests;
@@ -25,11 +24,12 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.test.context.junit4.SpringRunner;
 
 @RunWith(SpringRunner.class)
-public class SpringMvcSpringIntegrationTest extends SpringMvcIntegrationTestBase {
+public class SpringMvcSpringSimplifiedMappingAnnotationIntegrationTest extends SpringMvcIntegrationTestBase {
   private static ConfigurableApplicationContext context;
 
   @BeforeClass
   public static void init() throws Exception {
+    System.setProperty("spring.profiles.active", "SimplifiedMapping");
     context = SpringApplication.run(SpringMvcSpringMain.class);
   }
 
