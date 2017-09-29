@@ -29,7 +29,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CookieValue;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestAttribute;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -95,7 +99,7 @@ public class CodeFirstSpringmvc {
     return response;
   }
 
-  @RequestMapping(path = "/testUserMap", method = RequestMethod.POST)
+  @PostMapping(path = "/testUserMap")
   public Map<String, User> testUserMap(@RequestBody Map<String, User> userMap) {
     return userMap;
   }
@@ -126,7 +130,7 @@ public class CodeFirstSpringmvc {
     return a + b;
   }
 
-  @RequestMapping(path = "/reduce", method = RequestMethod.GET)
+  @GetMapping(path = "/reduce")
   @ApiImplicitParams({@ApiImplicitParam(name = "a", dataType = "integer", format = "int32", paramType = "query")})
   public int reduce(HttpServletRequest request, @CookieValue(name = "b") int b) {
     int a = Integer.parseInt(request.getParameter("a"));
@@ -157,7 +161,7 @@ public class CodeFirstSpringmvc {
     return prefix + " " + user.getName();
   }
 
-  @RequestMapping(path = "/sayhi/{name}", method = RequestMethod.PUT)
+  @PutMapping(path = "/sayhi/{name}")
   public String sayHi(@PathVariable(name = "name") String name) {
     ContextUtils.getInvocationContext().setStatus(202);
     return name + " sayhi";
@@ -173,7 +177,7 @@ public class CodeFirstSpringmvc {
     return true;
   }
 
-  @RequestMapping(path = "/addstring", method = RequestMethod.DELETE, produces = MediaType.TEXT_PLAIN_VALUE)
+  @DeleteMapping(path = "/addstring", produces = MediaType.TEXT_PLAIN_VALUE)
   public String addString(@RequestParam(name = "s") List<String> s) {
     String result = "";
     for (String x : s) {

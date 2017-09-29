@@ -21,7 +21,9 @@ import java.util.Arrays;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.MediaType;
 
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -34,12 +36,12 @@ import io.servicecomb.provider.rest.common.RestSchema;
 @RestSchema(schemaId = "controller")
 @RequestMapping(path = "/controller", produces = MediaType.APPLICATION_JSON)
 public class ControllerImpl {
-  @RequestMapping(path = "/add", method = RequestMethod.GET)
+  @GetMapping(path = "/add")
   public int add(@RequestParam("a") int a, @RequestParam("b") int b) {
     return a + b;
   }
 
-  @RequestMapping(path = "/sayhello/{name}", method = RequestMethod.POST)
+  @PostMapping(path = "/sayhello/{name}")
   public String sayHello(@PathVariable("name") String name) {
     return "hello " + name;
   }
