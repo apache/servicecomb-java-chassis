@@ -67,6 +67,19 @@ public class CodeFirstSpringmvc {
     return new ResponseEntity<Date>(date, headers, HttpStatus.ACCEPTED);
   }
 
+  @ResponseHeaders({@ResponseHeader(name = "h1", response = String.class),
+      @ResponseHeader(name = "h2", response = String.class)})
+  @RequestMapping(path = "/responseEntity", method = RequestMethod.PATCH)
+  public ResponseEntity<Date> responseEntityPATCH(InvocationContext c1, @RequestAttribute("date") Date date) {
+    HttpHeaders headers = new HttpHeaders();
+    headers.add("h1", "h1v " + c1.getContext().toString());
+
+    InvocationContext c2 = ContextUtils.getInvocationContext();
+    headers.add("h2", "h2v " + c2.getContext().toString());
+
+    return new ResponseEntity<Date>(date, headers, HttpStatus.ACCEPTED);
+  }
+
   @ApiResponse(code = 200, response = User.class, message = "")
   @ResponseHeaders({@ResponseHeader(name = "h1", response = String.class),
       @ResponseHeader(name = "h2", response = String.class)})
