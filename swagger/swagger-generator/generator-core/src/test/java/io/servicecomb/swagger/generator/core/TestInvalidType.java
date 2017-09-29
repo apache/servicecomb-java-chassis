@@ -43,54 +43,56 @@ public class TestInvalidType {
         InvalidType.class,
         "testAbstractClass");
   }
+//this is an invalid case. need to discuss in JVA-422
+//  @Test
+//  public void testObject() {
+//    UnitTestSwaggerUtils.testException(
+//        "generate operation swagger failed, io.servicecomb.swagger.generator.core.schema.InvalidType:testObject",
+//        "java.lang.Object not support. Must be a concrete type.",
+//        context,
+//        InvalidType.class,
+//        "testObject");
+//  }
 
-  @Test
-  public void testObject() {
-    UnitTestSwaggerUtils.testException(
-        "generate operation swagger failed, io.servicecomb.swagger.generator.core.schema.InvalidType:testObject",
-        "java.lang.Object not support. Must be a concrete type.",
-        context,
-        InvalidType.class,
-        "testObject");
-  }
+// this is an invalid case. need to discuss in JVA-422
+//  @Test
+//  public void testNotClearList() {
+//    UnitTestSwaggerUtils.testException(
+//        "generate operation swagger failed, io.servicecomb.swagger.generator.core.schema.InvalidType:testNotClearList",
+//        "java.lang.Object not support. Must be a concrete type.",
+//        context,
+//        InvalidType.class,
+//        "testNotClearList");
+//  }
 
-  @Test
-  public void testNotClearList() {
-    UnitTestSwaggerUtils.testException(
-        "generate operation swagger failed, io.servicecomb.swagger.generator.core.schema.InvalidType:testNotClearList",
-        "java.lang.Object not support. Must be a concrete type.",
-        context,
-        InvalidType.class,
-        "testNotClearList");
-  }
-
-  @Test
-  public void testNotClearSet() {
-    UnitTestSwaggerUtils.testException(
-        "generate operation swagger failed, io.servicecomb.swagger.generator.core.schema.InvalidType:testNotClearSet",
-        "java.lang.Object not support. Must be a concrete type.",
-        context,
-        InvalidType.class,
-        "testNotClearSet");
-  }
-
-  @Test
-  public void testNotClearMap() {
-    UnitTestSwaggerUtils.testException(
-        "generate operation swagger failed, io.servicecomb.swagger.generator.core.schema.InvalidType:testNotClearMap",
-        "java.lang.Object not support. Must be a concrete type.",
-        context,
-        InvalidType.class,
-        "testNotClearMap");
-  }
-
-  @Test
-  public void testInvalidFieldClass() {
-    UnitTestSwaggerUtils.testException(
-        "generate operation swagger failed, io.servicecomb.swagger.generator.core.schema.InvalidType:testInvalidFieldClass",
-        "java.lang.Object not support. Must be a concrete type.",
-        context,
-        InvalidType.class,
-        "testInvalidFieldClass");
-  }
+//this is an invalid case. need to discuss in JVA-422
+//  @Test
+//  public void testNotClearSet() {
+//    UnitTestSwaggerUtils.testException(
+//        "generate operation swagger failed, io.servicecomb.swagger.generator.core.schema.InvalidType:testNotClearSet",
+//        "java.lang.Object not support. Must be a concrete type.",
+//        context,
+//        InvalidType.class,
+//        "testNotClearSet");
+//  }
+//this is an invalid case. need to discuss in JVA-422
+//  @Test
+//  public void testNotClearMap() {
+//    UnitTestSwaggerUtils.testException(
+//        "generate operation swagger failed, io.servicecomb.swagger.generator.core.schema.InvalidType:testNotClearMap",
+//        "java.lang.Object not support. Must be a concrete type.",
+//        context,
+//        InvalidType.class,
+//        "testNotClearMap");
+//  }
+//this is an invalid case. need to discuss in JVA-422
+//  @Test
+//  public void testInvalidFieldClass() {
+//    UnitTestSwaggerUtils.testException(
+//        "generate operation swagger failed, io.servicecomb.swagger.generator.core.schema.InvalidType:testInvalidFieldClass",
+//        "java.lang.Object not support. Must be a concrete type.",
+//        context,
+//        InvalidType.class,
+//        "testInvalidFieldClass");
+//  }
 }
