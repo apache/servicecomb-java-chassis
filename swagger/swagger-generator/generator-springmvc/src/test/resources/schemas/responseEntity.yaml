@@ -2,19 +2,72 @@
 swagger: "2.0"
 info:
   version: "1.0.0"
-  title: "swagger definition for io.servicecomb.swagger.generator.springmvc.Echo"
-  x-java-interface: "gen.cse.ms.ut.EchoIntf"
-basePath: "/Echo"
+  title: "swagger definition for io.servicecomb.swagger.generator.springmvc.MethodResponseEntity"
+  x-java-interface: "gen.cse.ms.ut.MethodResponseEntityIntf"
+basePath: "/MethodResponseEntity"
 consumes:
-- "a"
-- "b"
+- "application/json"
 produces:
-- "a"
-- "b"
+- "application/json"
 paths:
-  /:
+  /usingRequestMapping:
     put:
-      operationId: "testResponseEntity"
+      operationId: "usingRequestMapping"
+      parameters: []
+      responses:
+        200:
+          description: "response of 200"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/User"
+  /usingGetMapping:
+    get:
+      operationId: "usingGetMapping"
+      parameters: []
+      responses:
+        200:
+          description: "response of 200"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/User"
+  /usingPutMapping:
+    put:
+      operationId: "usingPutMapping"
+      parameters: []
+      responses:
+        200:
+          description: "response of 200"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/User"
+  /usingPostMapping:
+    post:
+      operationId: "usingPostMapping"
+      parameters: []
+      responses:
+        200:
+          description: "response of 200"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/User"
+  /usingPatchMapping:
+    patch:
+      operationId: "usingPatchMapping"
+      parameters: []
+      responses:
+        200:
+          description: "response of 200"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/User"
+  /usingDeleteMapping:
+    delete:
+      operationId: "usingDeleteMapping"
       parameters: []
       responses:
         200:

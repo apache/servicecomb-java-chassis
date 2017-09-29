@@ -1,0 +1,235 @@
+---
+swagger: "2.0"
+info:
+  version: "1.0.0"
+  title: "swagger definition for io.servicecomb.swagger.generator.springmvc.MethodMixupAnnotations"
+  x-java-interface: "gen.cse.ms.ut.MethodMixupAnnotationsIntf"
+basePath: "/MethodMixupAnnotations"
+consumes:
+- "application/json"
+produces:
+- "application/json"
+paths:
+  /usingRequestMapping/{targetName}:
+    post:
+      operationId: "usingRequestMapping"
+      consumes:
+      - "text/plain"
+      - "application/*"
+      produces:
+      - "text/plain"
+      - "application/*"
+      parameters:
+      - in: "body"
+        name: "srcUser"
+        required: false
+        schema:
+          $ref: "#/definitions/User"
+      - name: "header"
+        in: "header"
+        required: true
+        type: "string"
+      - name: "targetName"
+        in: "path"
+        required: true
+        type: "string"
+      - name: "word"
+        in: "query"
+        required: false
+        type: "string"
+      - name: "form"
+        in: "formData"
+        required: false
+        type: "string"
+      responses:
+        200:
+          description: "response of 200"
+          schema:
+            type: "string"
+  /usingGetMapping/{targetName}:
+    get:
+      operationId: "usingGetMapping"
+      consumes:
+      - "text/plain"
+      - "application/*"
+      produces:
+      - "text/plain"
+      - "application/*"
+      parameters:
+      - in: "body"
+        name: "srcUser"
+        required: false
+        schema:
+          $ref: "#/definitions/User"
+      - name: "header"
+        in: "header"
+        required: true
+        type: "string"
+      - name: "targetName"
+        in: "path"
+        required: true
+        type: "string"
+      - name: "word"
+        in: "query"
+        required: false
+        type: "string"
+      - name: "form"
+        in: "formData"
+        required: false
+        type: "string"
+      responses:
+        200:
+          description: "response of 200"
+          schema:
+            type: "string"
+  /usingPutMapping/{targetName}:
+    put:
+      operationId: "usingPutMapping"
+      consumes:
+      - "text/plain"
+      - "application/*"
+      produces:
+      - "text/plain"
+      - "application/*"
+      parameters:
+      - in: "body"
+        name: "srcUser"
+        required: false
+        schema:
+          $ref: "#/definitions/User"
+      - name: "header"
+        in: "header"
+        required: true
+        type: "string"
+      - name: "targetName"
+        in: "path"
+        required: true
+        type: "string"
+      - name: "word"
+        in: "query"
+        required: false
+        type: "string"
+      - name: "form"
+        in: "formData"
+        required: false
+        type: "string"
+      responses:
+        200:
+          description: "response of 200"
+          schema:
+            type: "string"
+  /usingPostMapping/{targetName}:
+    post:
+      operationId: "usingPostMapping"
+      consumes:
+      - "text/plain"
+      - "application/*"
+      produces:
+      - "text/plain"
+      - "application/*"
+      parameters:
+      - in: "body"
+        name: "srcUser"
+        required: false
+        schema:
+          $ref: "#/definitions/User"
+      - name: "header"
+        in: "header"
+        required: true
+        type: "string"
+      - name: "targetName"
+        in: "path"
+        required: true
+        type: "string"
+      - name: "word"
+        in: "query"
+        required: false
+        type: "string"
+      - name: "form"
+        in: "formData"
+        required: false
+        type: "string"
+      responses:
+        200:
+          description: "response of 200"
+          schema:
+            type: "string"
+  /usingPatchMapping/{targetName}:
+    patch:
+      operationId: "usingPatchMapping"
+      consumes:
+      - "text/plain"
+      - "application/*"
+      produces:
+      - "text/plain"
+      - "application/*"
+      parameters:
+      - in: "body"
+        name: "srcUser"
+        required: false
+        schema:
+          $ref: "#/definitions/User"
+      - name: "header"
+        in: "header"
+        required: true
+        type: "string"
+      - name: "targetName"
+        in: "path"
+        required: true
+        type: "string"
+      - name: "word"
+        in: "query"
+        required: false
+        type: "string"
+      - name: "form"
+        in: "formData"
+        required: false
+        type: "string"
+      responses:
+        200:
+          description: "response of 200"
+          schema:
+            type: "string"
+  /usingDeleteMapping/{targetName}:
+    delete:
+      operationId: "usingDeleteMapping"
+      consumes:
+      - "text/plain"
+      - "application/*"
+      produces:
+      - "text/plain"
+      - "application/*"
+      parameters:
+      - in: "body"
+        name: "srcUser"
+        required: false
+        schema:
+          $ref: "#/definitions/User"
+      - name: "header"
+        in: "header"
+        required: true
+        type: "string"
+      - name: "targetName"
+        in: "path"
+        required: true
+        type: "string"
+      - name: "word"
+        in: "query"
+        required: false
+        type: "string"
+      - name: "form"
+        in: "formData"
+        required: false
+        type: "string"
+      responses:
+        200:
+          description: "response of 200"
+          schema:
+            type: "string"
+definitions:
+  User:
+    type: "object"
+    properties:
+      name:
+        type: "string"
+    x-java-class: "io.servicecomb.swagger.generator.springmvc.User"
