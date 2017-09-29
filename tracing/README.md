@@ -10,7 +10,7 @@ interest.
       <artifactId>tracing-zipkin</artifactId>
     </dependency>
 ```
-1. Enable tracing with annotation `@EnableZipkinTracing` on your application entry or configuration
+2. Enable tracing with annotation `@EnableZipkinTracing` on your application entry or configuration
 ```
 @SpringBootApplication
 @EnableZipkinTracing
@@ -20,8 +20,9 @@ public class ZipkinSpanTestApplication {
   }
 }
 ```
-1. Add new span to the point of interest with annotation `@Span`
+3. Add new span to the point of interest with annotation `@Span`
 ```
+@Component
 public class SlowRepoImpl implements SlowRepo {
   private static final Logger logger = LoggerFactory.getLogger(SlowRepoImpl.class);
 

@@ -16,9 +16,6 @@
 
 package io.servicecomb.tests.tracing;
 
-import io.servicecomb.tracing.Span;
-
 public interface SlowRepo {
-  @Span
   String crawl() throws InterruptedException;
 }
