@@ -39,3 +39,20 @@ public class SlowRepoImpl implements SlowRepo {
 ```
 
 That's it!
+
+## Reported Span Data
+Customized tracing span includes two pieces of data:
+* span name - annotated method name
+* call.path - annotated method signature
+
+e.g. the example `SlowRepoImpl` in the previous section reports the following span
+
+| key | value |
+| --- | --- |
+| span name | crawl |
+| call.path	| public abstract java.lang.String io.servicecomb.tests.tracing.SlowRepo.crawl() throws java.lang.InterruptedException |
+
+## Constraints
+* Customized tracing with annotation only supports method calls in the request thread.
+* Classes with `@Span` must be a spring managed bean. If you want to do load-time weaving for non spring beans,
+you have to do it manually according to this [answer](https://stackoverflow.com/questions/41383941/load-time-weaving-for-non-spring-beans-in-a-spring-application).
