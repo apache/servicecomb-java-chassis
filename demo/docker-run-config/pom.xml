@@ -25,7 +25,11 @@
                                 <alias>service-center</alias>
                                 <run>
                                     <wait>
-                                        <log>listen on server</log>
+                                      <tcp>
+                                        <ports>
+                                          <port>30100</port>
+                                        </ports>
+                                      </tcp>
                                         <time>60000</time>
                                     </wait>
                                     <ports>
@@ -53,11 +57,12 @@
                                             refer to https://github.com/fabric8io/docker-maven-plugin/issues/767
                                             this http checking is used as a temporary solution
                                         -->
-                                        <http>
-                                            <url>http://${docker.hostname}:8080</url>
-                                            <method>GET</method>
-                                            <status>404</status>
-                                        </http>
+
+                                      <tcp>
+                                        <ports>
+                                          <port>8080</port>
+                                        </ports>
+                                      </tcp>
                                         <time>120000</time>
                                     </wait>
                                     <ports>
