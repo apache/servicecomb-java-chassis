@@ -49,6 +49,10 @@ public class TestBizkeeperHandler extends BizkeeperHandler {
     bizkeeperHandler = new TestBizkeeperHandler();
     invocation = Mockito.mock(Invocation.class);
     asyncResp = Mockito.mock(AsyncResponse.class);
+
+    FallbackPolicyManager.addPolicy(new ReturnNullFallbackPolicy());
+    FallbackPolicyManager.addPolicy(new ThrowExceptionFallbackPolicy());
+    FallbackPolicyManager.addPolicy(new FromCacheFallbackPolicy());
   }
 
   @After
