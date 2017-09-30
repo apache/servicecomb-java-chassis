@@ -27,9 +27,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 
-import io.servicecomb.bizkeeper.BizkeeperExceptionUtils;
 import io.servicecomb.core.CseContext;
-import io.servicecomb.core.exception.CseException;
 import io.servicecomb.demo.compute.Person;
 import io.servicecomb.demo.server.User;
 import io.servicecomb.serviceregistry.RegistryUtils;
@@ -59,35 +57,7 @@ public class CodeFirstRestTemplate {
       //            testCodeFirstRawJsonString(template, cseUrlPrefix);
       testCodeFirstSayHello(template, cseUrlPrefix);
       testCodeFirstReduce(template, cseUrlPrefix);
-      testFallback(template, cseUrlPrefix);
     }
-  }
-
-  private void testFallback(RestTemplate template, String cseUrlPrefix) {
-    String result = template.getForObject(cseUrlPrefix + "/fallback/returnnull/hello", String.class);
-    TestMgr.check(result, "hello");
-    result = template.getForObject(cseUrlPrefix + "/fallback/returnnull/throwexception", String.class);
-    TestMgr.check(result, null);
-
-    result = template.getForObject(cseUrlPrefix + "/fallback/throwexception/hello", String.class);
-    TestMgr.check(result, "hello");
-    try {
-      result = template.getForObject(cseUrlPrefix + "/fallback/throwexception/throwexception", String.class);
-      TestMgr.check(false, true);
-    } catch (Exception e) {
-      TestMgr.check(((CseException) e.getCause().getCause().getCause()).getMessage(),
-          BizkeeperExceptionUtils.createBizkeeperException(BizkeeperExceptionUtils.CSE_HANDLER_BK_FALLBACK,
-              null,
-              "springmvc.codeFirst.fallbackThrowException").getMessage());
-    }
-
-    result = template.getForObject(cseUrlPrefix + "/fallback/fromcache/hello", String.class);
-    TestMgr.check(result, "hello");
-    result = template.getForObject(cseUrlPrefix + "/fallback/fromcache/throwexception", String.class);
-    TestMgr.check(result, "hello");
-
-    result = template.getForObject(cseUrlPrefix + "/fallback/force/hello", String.class);
-    TestMgr.check(result, "mockedreslut");
   }
 
   private void testCodeFirstUserMap(RestTemplate template, String cseUrlPrefix) {
