@@ -60,18 +60,7 @@ public class BizkeeperHandlerDelegate {
       public Observable<Response> toObservable() {
         return Observable.create(f -> {
           try {
-            if (Configuration.FALLBACKPOLICY_POLICY_RETURN
-                .equals(Configuration.INSTANCE.getFallbackPolicyPolicy(handler.groupname,
-                    invocation.getMicroserviceName(),
-                    invocation.getOperationMeta().getMicroserviceQualifiedName()))) {
-              f.onNext(Response.succResp(null));
-            } else {
-              f.onNext(Response.failResp(invocation.getInvocationType(),
-                  BizkeeperExceptionUtils
-                      .createBizkeeperException(BizkeeperExceptionUtils.CSE_HANDLER_BK_FALLBACK,
-                          null,
-                          invocation.getOperationMeta().getMicroserviceQualifiedName())));
-            }
+            f.onNext(FallbackPolicyManager.getFallbackResponse(handler.groupname, invocation));
           } catch (Exception e) {
             f.onError(e);
           }
