@@ -67,7 +67,7 @@ public class SpringmvcConsumerMain {
     System.out.println("RestTemplate consumer sayhello services: " + sayHelloResultAsync);
 
     // POJO Consumer
-    System.out.println("POJO consumer sayhi services: " + helloasync.sayHi("Java Chassis").get());
+    System.out.println("POJO consumer sayhi services: " + helloasync.sayHi("Java Chassis").get().getName());
     System.out.println("POJO consumer sayhi services: " + helloasync.sayHello(person).get());
   }
 
