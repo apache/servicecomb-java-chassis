@@ -21,7 +21,7 @@ paths:
         200:
           description: 正确返回
           schema:
-            type: string
+            $ref: "#/definitions/Person"
         default:
           description: 默认返回
           schema:

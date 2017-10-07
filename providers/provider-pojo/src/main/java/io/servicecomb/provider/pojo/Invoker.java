@@ -18,6 +18,7 @@ package io.servicecomb.provider.pojo;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
+import java.util.concurrent.CompletableFuture;
 
 import org.springframework.util.StringUtils;
 
@@ -89,6 +90,11 @@ public class Invoker implements InvocationHandler {
 
     Response response = InvokerUtils.innerSyncInvoke(invocation);
     if (response.isSuccessed()) {
+      if (consumerOperation.getConsumerMethod().getReturnType().equals(CompletableFuture.class)) {
+        CompletableFuture future = new CompletableFuture();
+        future.complete(consumerOperation.getResponseMapper().mapResponse(response));
+        return future;
+      }
       return consumerOperation.getResponseMapper().mapResponse(response);
     }
 

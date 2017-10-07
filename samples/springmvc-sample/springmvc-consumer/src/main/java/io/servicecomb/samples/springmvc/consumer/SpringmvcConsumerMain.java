@@ -59,12 +59,12 @@ public class SpringmvcConsumerMain {
 
     // RestTemplate Consumer or POJO Consumer. You can choose whatever you like
     // RestTemplate Consumer
-//    String sayHiResultAsync =
-//        restTemplate.postForObject("cse://springmvc/springmvchelloasync/sayhi?name=Java Chassis", null, String.class);
-//    String sayHelloResultAsync = restTemplate.postForObject("cse://springmvc/springmvchelloasync/sayhello", person, String.class);
-//    System.out.println("RestTemplate Consumer or POJO Consumer.  You can choose whatever you like.");
-//    System.out.println("RestTemplate consumer sayhi services: " + sayHiResult);
-//    System.out.println("RestTemplate consumer sayhello services: " + sayHelloResult);
+    Person sayHiResultAsync =
+        restTemplate.postForObject("cse://springmvc/springmvchelloasync/sayhi?name=Java Chassis", null, Person.class);
+    String sayHelloResultAsync = restTemplate.postForObject("cse://springmvc/springmvchelloasync/sayhello", person, String.class);
+    System.out.println("RestTemplate Consumer or POJO Consumer.  You can choose whatever you like.");
+    System.out.println("RestTemplate consumer sayhi services: " + sayHiResultAsync.getName());
+    System.out.println("RestTemplate consumer sayhello services: " + sayHelloResultAsync);
 
     // POJO Consumer
     System.out.println("POJO consumer sayhi services: " + helloasync.sayHi("Java Chassis").get());

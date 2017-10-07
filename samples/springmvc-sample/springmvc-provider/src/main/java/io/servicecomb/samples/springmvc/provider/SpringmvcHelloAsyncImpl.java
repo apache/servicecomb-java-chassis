@@ -44,9 +44,11 @@ public class SpringmvcHelloAsyncImpl implements HelloAsync {
 
   @Override
   @RequestMapping(path = "/sayhi", method = RequestMethod.POST)
-  public CompletableFuture<String> sayHi(@RequestParam(name = "name") String name) {
-    CompletableFuture<String> result = new CompletableFuture<String>();
-    executorService.schedule(() -> result.complete("Hello" + name), 2000, TimeUnit.MILLISECONDS);
+  public CompletableFuture<Person> sayHi(@RequestParam(name = "name") String name) {
+    Person person = new Person();
+    CompletableFuture<Person> result = new CompletableFuture<Person>();
+    person.setName("Hello" + name);
+    executorService.schedule(() -> result.complete(person), 2000, TimeUnit.MILLISECONDS);
     return result;
   }
 

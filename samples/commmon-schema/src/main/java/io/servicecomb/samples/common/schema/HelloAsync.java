@@ -22,7 +22,7 @@ import io.servicecomb.samples.common.schema.models.Person;
 
 public interface HelloAsync {
 
-  CompletableFuture<String> sayHi(String name);
+  CompletableFuture<Person> sayHi(String name);
 
   CompletableFuture<String> sayHello(Person person);
 }
