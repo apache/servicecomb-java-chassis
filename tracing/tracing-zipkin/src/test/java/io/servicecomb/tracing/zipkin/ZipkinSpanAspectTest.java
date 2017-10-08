@@ -41,6 +41,7 @@ import brave.Tracing;
 import brave.internal.StrictCurrentTraceContext;
 import io.servicecomb.tracing.zipkin.ZipkinSpanAspectTest.TracingConfig;
 import io.servicecomb.tracing.zipkin.app.ZipkinSpanTestApplication;
+import io.servicecomb.tracing.zipkin.app.ZipkinSpanTestApplication.CustomSpanTask;
 import io.servicecomb.tracing.zipkin.app.ZipkinSpanTestApplication.SomeSlowTask;
 import zipkin.Span;
 
@@ -53,6 +54,9 @@ public class ZipkinSpanAspectTest {
 
   @Autowired
   private SomeSlowTask someSlowTask;
+  
+  @Autowired
+  private CustomSpanTask customSpanTask;
 
   @Autowired
   private Tracing tracing;
@@ -71,6 +75,17 @@ public class ZipkinSpanAspectTest {
     zipkin.Span span = spans.poll();
     assertThat(span.name, is("crawl"));
     assertThat(tracedValues(span), contains(SomeSlowTask.class.getMethod("crawl").toString()));
+  }
+  
+  @Test
+  public void reportCustomSpanInfomation() throws Exception {
+    customSpanTask.invoke();
+    await().atMost(2, SECONDS).until(() -> !spans.isEmpty());
+  
+    zipkin.Span span = spans.poll();
+    assertThat(span.name, is("transaction1"));
+    assertThat(tracedValues(span), contains("startA"));
+    
   }
 
   private List<String> tracedValues(zipkin.Span spans) {

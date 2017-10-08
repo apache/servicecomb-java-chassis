@@ -41,8 +41,18 @@ class ZipkinSpanAspect {
 
   @Around("execution(@io.servicecomb.tracing.Span * *(..)) && @annotation(spanAnnotation)")
   public Object advise(ProceedingJoinPoint joinPoint, Span spanAnnotation) throws Throwable {
+    String spanName = spanAnnotation.spanName();
+    String callPath = spanAnnotation.callPath();
     Method method = ((MethodSignature) joinPoint.getSignature()).getMethod();
     LOG.debug("Generating zipkin span for method {}", method.toString());
-    return adviser.invoke(method.getName(), method.toString(), joinPoint::proceed);
+    if ("".equals(spanName)) {
+      spanName = method.getName();
+    }
+    if ("".equals(callPath)) {
+      callPath = method.toString();
+    }
+    
+    return adviser.invoke(spanName, callPath, joinPoint::proceed);
+    
   }
 }
