@@ -34,11 +34,23 @@ public class ZipkinSpanTestApplication {
   SomeSlowTask someSlowTask() {
     return new SomeSlowTask();
   }
+  
+  @Bean
+  CustomSpanTask customSpanTask() {
+    return new CustomSpanTask();
+  }
 
   public static class SomeSlowTask {
     @Span
     public String crawl() {
       return "crawling...";
+    }
+  }
+  
+  public static class CustomSpanTask {
+    @Span(spanName = "transaction1", callPath = "startA")
+    public String invoke() {
+      return "invoke the method";
     }
   }
 }
