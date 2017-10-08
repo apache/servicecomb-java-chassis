@@ -296,67 +296,6 @@
         <version>1.2</version>
       </dependency>
 
-      <!--<narayana dependency> -->
-      <dependency>
-        <groupId>org.jboss.narayana.rts</groupId>
-        <artifactId>restat-util</artifactId>
-        <version>5.2.8.Final</version>
-      </dependency>
-
-      <dependency>
-        <groupId>org.jboss.logging</groupId>
-        <artifactId>jboss-logging</artifactId>
-        <version>3.2.1.Final</version>
-      </dependency>
-      <dependency>
-        <groupId>org.jboss.narayana.rts</groupId>
-        <artifactId>restat-api</artifactId>
-        <version>5.2.8.Final</version>
-      </dependency>
-
-      <dependency>
-        <groupId>org.jboss.narayana.rts</groupId>
-        <artifactId>restat-integration</artifactId>
-        <version>5.2.8.Final</version>
-      </dependency>
-
-      <dependency>
-        <groupId>org.jboss.narayana.rts</groupId>
-        <artifactId>restat-bridge</artifactId>
-        <version>5.2.8.Final</version>
-      </dependency>
-      <dependency>
-        <groupId>org.jboss.narayana.arjunacore</groupId>
-        <artifactId>arjunacore</artifactId>
-        <version>5.2.8.Final</version>
-      </dependency>
-      <dependency>
-        <groupId>org.jboss.resteasy</groupId>
-        <artifactId>resteasy-undertow</artifactId>
-        <version>3.0.11.Final</version>
-      </dependency>
-
-      <dependency>
-        <groupId>org.jboss.narayana.xts</groupId>
-        <artifactId>jbossxts</artifactId>
-        <version>${narayana.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.jboss.narayana</groupId>
-        <artifactId>common</artifactId>
-        <version>${narayana.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.jboss.narayana</groupId>
-        <artifactId>jbosstxbridge</artifactId>
-        <version>${narayana.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.jboss.narayana.jta</groupId>
-        <artifactId>jta</artifactId>
-        <version>${narayana.version}</version>
-      </dependency>
-
       <dependency>
         <groupId>javax.resource</groupId>
         <artifactId>connector-api</artifactId>
@@ -378,6 +317,7 @@
         <version>1.2</version>
       </dependency>
 
+      <!--
       <dependency>
         <groupId>org.jboss.ws.cxf</groupId>
         <artifactId>jbossws-cxf-client</artifactId>
@@ -400,6 +340,7 @@
         <artifactId>jboss-transaction-spi</artifactId>
         <version>7.3.2.Final</version>
       </dependency>
+      -->
       <dependency>
         <groupId>org.apache.commons</groupId>
         <artifactId>commons-lang3</artifactId>
@@ -466,6 +407,7 @@
         <artifactId>kryo-serializers</artifactId>
         <version>0.26</version>
       </dependency>
+      <!--
       <dependency>
         <groupId>de.ruedigermoeller</groupId>
         <artifactId>fst</artifactId>
@@ -481,6 +423,7 @@
         <artifactId>jersey-json</artifactId>
         <version>1.19.1</version>
       </dependency>
+      -->
 
       <dependency>
         <groupId>net.sf.json-lib</groupId>
