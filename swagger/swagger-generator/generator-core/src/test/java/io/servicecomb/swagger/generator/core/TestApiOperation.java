@@ -16,6 +16,10 @@
 
 package io.servicecomb.swagger.generator.core;
 
+import static org.hamcrest.core.Is.is;
+import static org.hamcrest.core.IsNull.nullValue;
+import static org.junit.Assert.assertThat;
+
 import java.util.Arrays;
 import java.util.Map;
 
@@ -69,6 +73,9 @@ public class TestApiOperation {
 
     @ApiOperation(value = "aaa", response = Integer.class, responseContainer = "Set")
     int testSet();
+
+    @ApiOperation(value = "aaa", hidden = true)
+    int testHidden();
   }
 
   interface UnknownResponseContainer {
@@ -88,6 +95,7 @@ public class TestApiOperation {
     testMap(swagger.getPath("/testMap"));
     testList(swagger.getPath("/testList"));
     testSet(swagger.getPath("/testSet"));
+    assertThat(swagger.getPath("/testHidden"), is(nullValue()));
   }
 
   @Test

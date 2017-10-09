@@ -85,6 +85,11 @@ public class TestJaxrs {
   }
 
   @Test
+  public void testNonRestful() throws Exception {
+    UnitTestSwaggerUtils.testSwagger("schemas/emptyContract.yaml", context, Echo.class, "ignoredNonRestful");
+  }
+
+  @Test
   public void testClassMethodNoPath() throws Exception {
     UnitTestSwaggerUtils.testException(
         "generate operation swagger failed, io.servicecomb.swagger.generator.jaxrs.ClassMethodNoPath:p1",

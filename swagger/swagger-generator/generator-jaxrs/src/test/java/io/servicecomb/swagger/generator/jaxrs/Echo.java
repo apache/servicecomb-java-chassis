@@ -87,4 +87,9 @@ public class Echo {
   public String queryComplex(@QueryParam(value = "querys") List<User> querys) {
     return String.format("%s", querys);
   }
+
+  @ApiOperation(value = "")
+  public void ignoredNonRestful() {
+
+  }
 }
