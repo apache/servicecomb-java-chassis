@@ -17,17 +17,17 @@ package io.servicecomb.provider.pojo.schema;
 
 import java.util.Collection;
 
-import org.springframework.context.ApplicationContext;
+import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
-import io.servicecomb.core.provider.CseBeanPostProcessor.ProviderProcessor;
 import io.servicecomb.foundation.common.RegisterManager;
 import io.servicecomb.foundation.common.utils.BeanUtils;
 import io.servicecomb.provider.pojo.RpcSchema;
 
 @Component
-public class PojoProducers implements ProviderProcessor {
+public class PojoProducers implements BeanPostProcessor {
   // key为schemaId
   private RegisterManager<String, PojoProducerMeta> pojoMgr = new RegisterManager<>("pojo service manager");
 
@@ -40,7 +40,18 @@ public class PojoProducers implements ProviderProcessor {
   }
 
   @Override
-  public void processProvider(ApplicationContext applicationContext, String beanName, Object bean) {
+  public Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
+    return bean;
+  }
+
+  @Override
+  public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
+    processProvider(beanName, bean);
+
+    return bean;
+  }
+
+  protected void processProvider(String beanName, Object bean) {
     // aop后，新的实例的父类可能是原class，也可能只是个proxy，父类不是原class
     // 所以，需要先取出原class，再取标注
     Class<?> beanCls = BeanUtils.getImplClassFromBean(bean);

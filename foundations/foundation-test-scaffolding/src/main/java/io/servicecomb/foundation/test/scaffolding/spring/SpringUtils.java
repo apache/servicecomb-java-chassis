@@ -16,9 +16,14 @@
 
 package io.servicecomb.foundation.test.scaffolding.spring;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.util.Map;
 import java.util.UUID;
 
+import javax.inject.Inject;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.MapPropertySource;
 import org.springframework.core.env.StandardEnvironment;
 import org.springframework.util.StringValueResolver;
@@ -35,5 +40,43 @@ public final class SpringUtils {
     return strVal -> {
       return standardEnvironment.resolvePlaceholders(strVal);
     };
+  }
+
+  public static void ensureNoInject(Class<?> cls) {
+    for (Field field : cls.getDeclaredFields()) {
+      if (field.getAnnotation(Inject.class) != null) {
+        throw new IllegalStateException(String
+            .format("field %s:%s has %s annotation",
+                cls.getName(),
+                field.getName(),
+                Inject.class.getName()));
+      }
+
+      if (field.getAnnotation(Autowired.class) != null) {
+        throw new IllegalStateException(String
+            .format("field %s:%s has %s annotation",
+                cls.getName(),
+                field.getName(),
+                Autowired.class.getName()));
+      }
+    }
+
+    for (Method method : cls.getDeclaredMethods()) {
+      if (method.getAnnotation(Inject.class) != null) {
+        throw new IllegalStateException(String
+            .format("method %s:%s has %s annotation",
+                cls.getName(),
+                method.getName(),
+                Inject.class.getName()));
+      }
+
+      if (method.getAnnotation(Autowired.class) != null) {
+        throw new IllegalStateException(String
+            .format("method %s:%s has %s annotation",
+                cls.getName(),
+                method.getName(),
+                Autowired.class.getName()));
+      }
+    }
   }
 }

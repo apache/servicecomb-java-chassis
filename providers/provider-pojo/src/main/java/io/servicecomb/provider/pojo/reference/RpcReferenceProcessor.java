@@ -17,21 +17,37 @@ package io.servicecomb.provider.pojo.reference;
 
 import java.lang.reflect.Field;
 
-import org.springframework.context.ApplicationContext;
+import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.context.EmbeddedValueResolverAware;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ReflectionUtils;
 import org.springframework.util.StringValueResolver;
 
-import io.servicecomb.core.provider.CseBeanPostProcessor.ConsumerFieldProcessor;
 import io.servicecomb.provider.pojo.RpcReference;
 
 @Component
-public class RpcReferenceProcessor implements ConsumerFieldProcessor, EmbeddedValueResolverAware {
+public class RpcReferenceProcessor implements BeanPostProcessor, EmbeddedValueResolverAware {
   private StringValueResolver resolver;
 
   @Override
-  public void processConsumerField(ApplicationContext applicationContext, Object bean, Field field) {
+  public Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
+    // 扫描所有field，处理扩展的field标注
+    ReflectionUtils.doWithFields(bean.getClass(), new ReflectionUtils.FieldCallback() {
+      public void doWith(Field field) throws IllegalArgumentException, IllegalAccessException {
+        processConsumerField(bean, field);
+      }
+    });
+
+    return bean;
+  }
+
+  @Override
+  public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
+    return bean;
+  }
+
+  protected void processConsumerField(Object bean, Field field) {
     RpcReference reference = field.getAnnotation(RpcReference.class);
     if (reference == null) {
       return;

@@ -18,15 +18,15 @@ package io.servicecomb.provider.rest.common;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.springframework.context.ApplicationContext;
+import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.stereotype.Component;
 
-import io.servicecomb.core.provider.CseBeanPostProcessor.ProviderProcessor;
 import io.servicecomb.core.provider.producer.ProducerMeta;
 import io.servicecomb.foundation.common.utils.BeanUtils;
 
 @Component
-public class RestProducers implements ProviderProcessor {
+public class RestProducers implements BeanPostProcessor {
   private List<ProducerMeta> producerMetaList = new ArrayList<>();
 
   public List<ProducerMeta> getProducerMetaList() {
@@ -34,7 +34,18 @@ public class RestProducers implements ProviderProcessor {
   }
 
   @Override
-  public void processProvider(ApplicationContext applicationContext, String beanName, Object bean) {
+  public Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
+    return bean;
+  }
+
+  @Override
+  public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
+    processProvider(beanName, bean);
+
+    return bean;
+  }
+
+  protected void processProvider(String beanName, Object bean) {
     // aop后，新的实例的父类可能是原class，也可能只是个proxy，父类不是原class
     // 所以，需要先取出原class，再取标注
     Class<?> beanCls = BeanUtils.getImplClassFromBean(bean);

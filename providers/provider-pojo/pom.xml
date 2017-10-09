@@ -38,5 +38,9 @@
 			<artifactId>log4j</artifactId>
 			<scope>test</scope>
 		</dependency>
+		<dependency>
+		  <groupId>io.servicecomb</groupId>
+		  <artifactId>foundation-test-scaffolding</artifactId>
+		</dependency>
 	</dependencies>
 </project>

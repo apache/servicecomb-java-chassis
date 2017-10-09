@@ -21,11 +21,10 @@ import java.lang.reflect.Proxy;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.InitializingBean;
 
-import io.servicecomb.core.provider.CseBeanPostProcessor.EmptyBeanPostProcessor;
 import io.servicecomb.foundation.common.exceptions.ServiceCombException;
 import io.servicecomb.provider.pojo.Invoker;
 
-public class PojoReferenceMeta implements FactoryBean<Object>, InitializingBean, EmptyBeanPostProcessor {
+public class PojoReferenceMeta implements FactoryBean<Object>, InitializingBean {
   // 原始数据
   private String microserviceName;
 
