@@ -210,7 +210,7 @@ public class SwaggerGenerator {
     }
 
     ApiOperation apiOperation = method.getAnnotation(ApiOperation.class);
-    if (apiOperation != null) {
+    if (apiOperation != null && apiOperation.hidden()) {
       return apiOperation.hidden();
     }
 
