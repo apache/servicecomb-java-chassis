@@ -16,34 +16,17 @@
 
 package io.servicecomb.serviceregistry.definition;
 
-import static io.servicecomb.foundation.common.base.ServiceCombConstants.CONFIG_SERVICE;
-
 public interface DefinitionConst {
-  String appIdKey = "APPLICATION_ID";
 
-  String serviceDescriptionKey = CONFIG_SERVICE;
+  String CONFIG_QUALIFIED_INSTANCE_ENVIRONMENT_KEY = "instance_description.environment";
 
-  String nameKey = "name";
+  String CONFIG_ALLOW_CROSS_APP_KEY = "allowCrossApp";
 
-  String qualifiedServiceNameKey = serviceDescriptionKey + "." + nameKey;
+  String DEFAULT_APPLICATION_ID = "default";
 
-  String qualifiedServiceVersionKey = serviceDescriptionKey + ".version";
+  String DEFAULT_MICROSERVICE_VERSION = "1.0.0";
 
-  String qualifiedServiceDescKey = serviceDescriptionKey + ".description";
+  String DEFAULT_STAGE = "prod";
 
-  String qualifiedServiceRoleKey = serviceDescriptionKey + ".role";
-
-  String allowCrossAppKey = "allowCrossApp";
-
-  String defaultAppId = "default";
-
-  String defaultMicroserviceName = "defaultMicroservice";
-
-  String defaultVersion = "1.0.0";
-
-  String defaultStage = "prod";
-
-  String serviceEnvironmentKey = "instance_description.environment";
-
-  String defaultEnvironment = "production";
+  String DEFAULT_INSTANCE_ENVIRONMENT = "production";
 }

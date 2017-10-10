@@ -16,6 +16,8 @@
 
 package io.servicecomb.serviceregistry.api.registry;
 
+import static io.servicecomb.serviceregistry.definition.DefinitionConst.CONFIG_ALLOW_CROSS_APP_KEY;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -23,7 +25,6 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import io.servicecomb.config.archaius.sources.MicroserviceConfigLoader;
-import io.servicecomb.serviceregistry.definition.DefinitionConst;
 import io.servicecomb.serviceregistry.definition.MicroserviceDefinition;
 import mockit.Deencapsulation;
 
@@ -34,13 +35,13 @@ public class TestMicroserviceFactory {
     Map<String, String> propertiesMap = new HashMap<>();
     Assert.assertFalse(Deencapsulation.invoke(factory, "allowCrossApp", propertiesMap));
 
-    propertiesMap.put(DefinitionConst.allowCrossAppKey, "true");
+    propertiesMap.put(CONFIG_ALLOW_CROSS_APP_KEY, "true");
     Assert.assertTrue(Deencapsulation.invoke(factory, "allowCrossApp", propertiesMap));
 
-    propertiesMap.put(DefinitionConst.allowCrossAppKey, "false");
+    propertiesMap.put(CONFIG_ALLOW_CROSS_APP_KEY, "false");
     Assert.assertFalse(Deencapsulation.invoke(factory, "allowCrossApp", propertiesMap));
 
-    propertiesMap.put(DefinitionConst.allowCrossAppKey, "asfas");
+    propertiesMap.put(CONFIG_ALLOW_CROSS_APP_KEY, "asfas");
     Assert.assertFalse(Deencapsulation.invoke(factory, "allowCrossApp", propertiesMap));
   }
 

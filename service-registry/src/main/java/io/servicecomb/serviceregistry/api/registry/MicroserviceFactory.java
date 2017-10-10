@@ -15,13 +15,22 @@
  */
 package io.servicecomb.serviceregistry.api.registry;
 
+import static io.servicecomb.foundation.common.base.ServiceCombConstants.CONFIG_APPLICATION_ID_KEY;
+import static io.servicecomb.foundation.common.base.ServiceCombConstants.CONFIG_QUALIFIED_MICROSERVICE_DESCRIPTION_KEY;
+import static io.servicecomb.foundation.common.base.ServiceCombConstants.CONFIG_QUALIFIED_MICROSERVICE_NAME_KEY;
+import static io.servicecomb.foundation.common.base.ServiceCombConstants.CONFIG_QUALIFIED_MICROSERVICE_ROLE_KEY;
+import static io.servicecomb.foundation.common.base.ServiceCombConstants.CONFIG_QUALIFIED_MICROSERVICE_VERSION_KEY;
+import static io.servicecomb.foundation.common.base.ServiceCombConstants.DEFAULT_MICROSERVICE_NAME;
+import static io.servicecomb.serviceregistry.definition.DefinitionConst.CONFIG_ALLOW_CROSS_APP_KEY;
+import static io.servicecomb.serviceregistry.definition.DefinitionConst.DEFAULT_APPLICATION_ID;
+import static io.servicecomb.serviceregistry.definition.DefinitionConst.DEFAULT_MICROSERVICE_VERSION;
+
 import java.util.Map;
 
 import org.apache.commons.configuration.Configuration;
 
 import io.servicecomb.serviceregistry.config.ConfigurePropertyUtils;
 import io.servicecomb.serviceregistry.config.MicroservicePropertiesLoader;
-import io.servicecomb.serviceregistry.definition.DefinitionConst;
 import io.servicecomb.serviceregistry.definition.MicroserviceDefinition;
 
 public class MicroserviceFactory {
@@ -39,13 +48,13 @@ public class MicroserviceFactory {
 
   private Microservice createMicroserviceFromDefinition(Configuration configuration) {
     Microservice microservice = new Microservice();
-    microservice.setServiceName(configuration.getString(DefinitionConst.qualifiedServiceNameKey,
-        DefinitionConst.defaultMicroserviceName));
-    microservice.setAppId(configuration.getString(DefinitionConst.appIdKey, DefinitionConst.defaultAppId));
-    microservice.setVersion(configuration.getString(DefinitionConst.qualifiedServiceVersionKey,
-        DefinitionConst.defaultVersion));
-    microservice.setDescription(configuration.getString(DefinitionConst.qualifiedServiceDescKey, ""));
-    microservice.setLevel(configuration.getString(DefinitionConst.qualifiedServiceRoleKey, "FRONT"));
+    microservice.setServiceName(configuration.getString(CONFIG_QUALIFIED_MICROSERVICE_NAME_KEY,
+        DEFAULT_MICROSERVICE_NAME));
+    microservice.setAppId(configuration.getString(CONFIG_APPLICATION_ID_KEY, DEFAULT_APPLICATION_ID));
+    microservice.setVersion(configuration.getString(CONFIG_QUALIFIED_MICROSERVICE_VERSION_KEY,
+        DEFAULT_MICROSERVICE_VERSION));
+    microservice.setDescription(configuration.getString(CONFIG_QUALIFIED_MICROSERVICE_DESCRIPTION_KEY, ""));
+    microservice.setLevel(configuration.getString(CONFIG_QUALIFIED_MICROSERVICE_ROLE_KEY, "FRONT"));
     microservice.setPaths(ConfigurePropertyUtils.getMicroservicePaths(configuration));
     Map<String, String> propertiesMap = MicroservicePropertiesLoader.INSTANCE.loadProperties(configuration);
     microservice.setProperties(propertiesMap);
@@ -60,6 +69,6 @@ public class MicroserviceFactory {
   }
 
   private boolean allowCrossApp(Map<String, String> propertiesMap) {
-    return Boolean.valueOf(propertiesMap.get(DefinitionConst.allowCrossAppKey));
+    return Boolean.valueOf(propertiesMap.get(CONFIG_ALLOW_CROSS_APP_KEY));
   }
 }
