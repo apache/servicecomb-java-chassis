@@ -16,6 +16,10 @@
 
 package io.servicecomb.serviceregistry.api.registry;
 
+import static io.servicecomb.serviceregistry.definition.DefinitionConst.CONFIG_QUALIFIED_INSTANCE_ENVIRONMENT_KEY;
+import static io.servicecomb.serviceregistry.definition.DefinitionConst.DEFAULT_INSTANCE_ENVIRONMENT;
+import static io.servicecomb.serviceregistry.definition.DefinitionConst.DEFAULT_STAGE;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -28,7 +32,6 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.netflix.config.DynamicPropertyFactory;
 
 import io.servicecomb.serviceregistry.config.InstancePropertiesLoader;
-import io.servicecomb.serviceregistry.definition.DefinitionConst;
 
 /**
  * Created by   on 2016/12/5.
@@ -144,9 +147,9 @@ public class MicroserviceInstance {
   public static MicroserviceInstance createFromDefinition(Configuration configuration) {
     MicroserviceInstance microserviceInstance = new MicroserviceInstance();
     // default hard coded values
-    microserviceInstance.setStage(DefinitionConst.defaultStage);
+    microserviceInstance.setStage(DEFAULT_STAGE);
     microserviceInstance
-        .setEnvironment(configuration.getString(DefinitionConst.serviceEnvironmentKey, DefinitionConst.defaultEnvironment));
+        .setEnvironment(configuration.getString(CONFIG_QUALIFIED_INSTANCE_ENVIRONMENT_KEY, DEFAULT_INSTANCE_ENVIRONMENT));
     HealthCheck healthCheck = new HealthCheck();
     healthCheck.setMode(HealthCheckMode.HEARTBEAT);
     microserviceInstance.setHealthCheck(healthCheck);

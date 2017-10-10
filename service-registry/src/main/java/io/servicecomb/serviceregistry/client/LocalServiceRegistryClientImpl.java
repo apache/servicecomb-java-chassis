@@ -16,6 +16,8 @@
 
 package io.servicecomb.serviceregistry.client;
 
+import static io.servicecomb.serviceregistry.definition.DefinitionConst.DEFAULT_APPLICATION_ID;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -38,7 +40,6 @@ import io.servicecomb.serviceregistry.api.registry.Microservice;
 import io.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
 import io.servicecomb.serviceregistry.api.response.HeartbeatResponse;
 import io.servicecomb.serviceregistry.api.response.MicroserviceInstanceChangedEvent;
-import io.servicecomb.serviceregistry.definition.DefinitionConst;
 
 public class LocalServiceRegistryClientImpl implements ServiceRegistryClient {
   private static final Logger LOGGER = LoggerFactory.getLogger(LocalServiceRegistryClientImpl.class);
@@ -97,7 +98,7 @@ public class LocalServiceRegistryClientImpl implements ServiceRegistryClient {
         String serviceId = (String) serviceConfig.get("id");
 
         Microservice microservice = new Microservice();
-        microservice.setAppId(appId == null ? DefinitionConst.defaultAppId : appId);
+        microservice.setAppId(appId == null ? DEFAULT_APPLICATION_ID : appId);
         microservice.setServiceName(name);
         microservice.setVersion(version);
         microservice.setServiceId(serviceId == null ? UUID.randomUUID().toString() : serviceId);

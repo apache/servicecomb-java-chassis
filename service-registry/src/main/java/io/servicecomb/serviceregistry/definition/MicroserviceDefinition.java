@@ -16,6 +16,12 @@
 
 package io.servicecomb.serviceregistry.definition;
 
+import static io.servicecomb.foundation.common.base.ServiceCombConstants.CONFIG_APPLICATION_ID_KEY;
+import static io.servicecomb.foundation.common.base.ServiceCombConstants.CONFIG_MICROSERVICE_NAME_KEY;
+import static io.servicecomb.foundation.common.base.ServiceCombConstants.CONFIG_QUALIFIED_MICROSERVICE_NAME_KEY;
+import static io.servicecomb.foundation.common.base.ServiceCombConstants.CONFIG_SERVICE_DESCRIPTION_KEY;
+import static io.servicecomb.foundation.common.base.ServiceCombConstants.DEFAULT_MICROSERVICE_NAME;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -58,11 +64,11 @@ public class MicroserviceDefinition {
 
   public static ConfigModel createConfigModel(String appId, String microserviceName) {
     Map<String, Object> descMap = new HashMap<>();
-    descMap.put(DefinitionConst.nameKey, microserviceName);
+    descMap.put(CONFIG_MICROSERVICE_NAME_KEY, microserviceName);
 
     Map<String, Object> config = new HashMap<>();
-    config.put(DefinitionConst.appIdKey, appId);
-    config.put(DefinitionConst.serviceDescriptionKey, descMap);
+    config.put(CONFIG_APPLICATION_ID_KEY, appId);
+    config.put(CONFIG_SERVICE_DESCRIPTION_KEY, descMap);
 
     ConfigModel configModel = new ConfigModel();
     configModel.setConfig(config);
@@ -77,7 +83,7 @@ public class MicroserviceDefinition {
     this.configModels = configModels;
     this.configuration = ConfigUtil.createLocalConfig(configModels);
     this.microserviceName =
-        configuration.getString(DefinitionConst.qualifiedServiceNameKey, DefinitionConst.defaultMicroserviceName);
+        configuration.getString(CONFIG_QUALIFIED_MICROSERVICE_NAME_KEY, DEFAULT_MICROSERVICE_NAME);
 
     // log paths first, even microserviceName is invalid, this can help user to find problems
     logConfigPath();
@@ -94,7 +100,7 @@ public class MicroserviceDefinition {
     for (ConfigModel model : configModels) {
       Configuration conf = ConfigUtil.createLocalConfig(Arrays.asList(model));
       String name =
-          conf.getString(DefinitionConst.qualifiedServiceNameKey, DefinitionConst.defaultMicroserviceName);
+          conf.getString(CONFIG_QUALIFIED_MICROSERVICE_NAME_KEY, DEFAULT_MICROSERVICE_NAME);
       if (!StringUtils.isEmpty(name)) {
         checkMicroserviceName(name);
         combinedFrom.add(name);
@@ -112,7 +118,7 @@ public class MicroserviceDefinition {
       throw new IllegalArgumentException(String.format(
           "MicroserviceName '%s' is invalid. you must configure '%s' or set the placeholder value.",
           name,
-          DefinitionConst.qualifiedServiceNameKey));
+          CONFIG_QUALIFIED_MICROSERVICE_NAME_KEY));
     }
   }
 

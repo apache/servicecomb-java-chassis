@@ -16,7 +16,7 @@
 
 package io.servicecomb.serviceregistry.config;
 
-import static io.servicecomb.foundation.common.base.ServiceCombConstants.CONFIG_SERVICE;
+import static io.servicecomb.foundation.common.base.ServiceCombConstants.CONFIG_SERVICE_DESCRIPTION_KEY;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -55,7 +55,7 @@ public class TestPropertiesLoader {
     ConfigModel configModel = MicroserviceDefinition.createConfigModel("default", "invalidExtendedClass");
     @SuppressWarnings("unchecked")
     Map<String, Object> desc =
-        (Map<String, Object>) configModel.getConfig().get(DefinitionConst.serviceDescriptionKey);
+        (Map<String, Object>) configModel.getConfig().get(CONFIG_SERVICE_DESCRIPTION_KEY);
     desc.put("propertyExtentedClass", "invalidClass");
     MicroserviceDefinition microserviceDefinition = new MicroserviceDefinition(Arrays.asList(configModel));
     try {
@@ -72,7 +72,7 @@ public class TestPropertiesLoader {
     ConfigModel configModel = MicroserviceDefinition.createConfigModel("default", "invalidExtendedClass");
     @SuppressWarnings("unchecked")
     Map<String, Object> desc =
-        (Map<String, Object>) configModel.getConfig().get(DefinitionConst.serviceDescriptionKey);
+        (Map<String, Object>) configModel.getConfig().get(CONFIG_SERVICE_DESCRIPTION_KEY);
     desc.put("propertyExtentedClass", "java.lang.String");
     MicroserviceDefinition microserviceDefinition = new MicroserviceDefinition(Arrays.asList(configModel));
     try {
@@ -108,7 +108,7 @@ public class TestPropertiesLoader {
   @Test
   public void testExtendedClassCompatible() {
     Configuration configuration = new DynamicConfiguration();
-    configuration.setProperty(CONFIG_SERVICE + AbstractPropertiesLoader.EXTENDED_CLASS, "invalidClass");
+    configuration.setProperty(CONFIG_SERVICE_DESCRIPTION_KEY + AbstractPropertiesLoader.EXTENDED_CLASS, "invalidClass");
 
     AbstractPropertiesLoader loader = MicroservicePropertiesLoader.INSTANCE;
     try {
