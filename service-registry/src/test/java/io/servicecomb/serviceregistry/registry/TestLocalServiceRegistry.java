@@ -35,12 +35,12 @@ public class TestLocalServiceRegistry {
     EventBus eventBus = serviceRegistry.getEventBus();
     serviceRegistry.init();
 
-    Assert.assertEquals(false, serviceRegistry.cacheAvaiable);
+    Assert.assertEquals(false, serviceRegistry.cacheAvailable);
     eventBus.post(new RecoveryEvent());
-    Assert.assertEquals(true, serviceRegistry.cacheAvaiable);
+    Assert.assertEquals(true, serviceRegistry.cacheAvailable);
 
     eventBus.post(new ExceptionEvent(null));
-    Assert.assertEquals(false, serviceRegistry.cacheAvaiable);
+    Assert.assertEquals(false, serviceRegistry.cacheAvailable);
   }
 
   @Test
@@ -52,7 +52,7 @@ public class TestLocalServiceRegistry {
     serviceRegistry.run();
     Assert.assertNotNull(serviceRegistry.getMicroserviceInstance().getInstanceId());
 
-    serviceRegistry.destory();
+    serviceRegistry.destroy();
     Assert.assertTrue(serviceRegistry.getServiceRegistryClient()
         .getMicroserviceInstance("", serviceRegistry.getMicroservice().getServiceId())
         .isEmpty());

@@ -21,16 +21,11 @@ import java.net.ServerSocket;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.mockito.Mockito;
 
-import io.servicecomb.core.Endpoint;
-import io.servicecomb.core.Invocation;
-import io.servicecomb.foundation.common.net.URIEndpointObject;
 import io.servicecomb.serviceregistry.Features;
 import io.servicecomb.serviceregistry.RegistryUtils;
 import io.servicecomb.serviceregistry.ServiceRegistry;
 import io.servicecomb.serviceregistry.api.Const;
-import io.servicecomb.swagger.invocation.AsyncResponse;
 import io.servicecomb.transport.rest.client.RestTransportClient;
 import io.servicecomb.transport.rest.client.RestTransportClientManager;
 import mockit.Expectations;

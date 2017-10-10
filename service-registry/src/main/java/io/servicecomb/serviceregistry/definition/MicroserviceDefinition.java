@@ -77,7 +77,7 @@ public class MicroserviceDefinition {
     this.configModels = configModels;
     this.configuration = ConfigUtil.createLocalConfig(configModels);
     this.microserviceName =
-        configuration.getString(DefinitionConst.qulifiedServiceNameKey, DefinitionConst.defaultMicroserviceName);
+        configuration.getString(DefinitionConst.qualifiedServiceNameKey, DefinitionConst.defaultMicroserviceName);
 
     // log paths first, even microserviceName is invalid, this can help user to find problems
     logConfigPath();
@@ -94,7 +94,7 @@ public class MicroserviceDefinition {
     for (ConfigModel model : configModels) {
       Configuration conf = ConfigUtil.createLocalConfig(Arrays.asList(model));
       String name =
-          conf.getString(DefinitionConst.qulifiedServiceNameKey, DefinitionConst.defaultMicroserviceName);
+          conf.getString(DefinitionConst.qualifiedServiceNameKey, DefinitionConst.defaultMicroserviceName);
       if (!StringUtils.isEmpty(name)) {
         checkMicroserviceName(name);
         combinedFrom.add(name);
@@ -108,11 +108,11 @@ public class MicroserviceDefinition {
     // the configuration we used
     // when resolve placeholder failed
     // the result will remains ${var}
-    if (StringUtils.isEmpty(name) || name.indexOf("${") != -1) {
+    if (StringUtils.isEmpty(name) || name.contains("${")) {
       throw new IllegalArgumentException(String.format(
           "MicroserviceName '%s' is invalid. you must configure '%s' or set the placeholder value.",
           name,
-          DefinitionConst.qulifiedServiceNameKey));
+          DefinitionConst.qualifiedServiceNameKey));
     }
   }
 

@@ -16,8 +16,6 @@
 
 package io.servicecomb.demo.springmvc.tests.endpoints;
 
-import java.util.Arrays;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.MediaType;
 

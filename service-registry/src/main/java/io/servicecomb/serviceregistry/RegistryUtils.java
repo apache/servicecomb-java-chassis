@@ -67,7 +67,7 @@ public final class RegistryUtils {
   }
 
   public static void destory() {
-    serviceRegistry.destory();
+    serviceRegistry.destroy();
   }
 
   public static ServiceRegistry getServiceRegistry() {
