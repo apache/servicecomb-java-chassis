@@ -19,6 +19,7 @@ package io.servicecomb.swagger.generator.core;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -220,9 +221,7 @@ public class SwaggerGenerator {
   protected void scanMethods() {
     // 有时方法顺序不同，很不利于测试，所以先排序
     List<Method> methods = Arrays.asList(cls.getMethods());
-    methods.sort((m1, m2) -> {
-      return m1.getName().compareTo(m2.getName());
-    });
+    methods.sort(Comparator.comparing(Method::getName));
     for (Method method : methods) {
       if (isSkipMethod(method)) {
         continue;

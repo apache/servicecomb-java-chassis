@@ -15,8 +15,17 @@
  */
 package io.servicecomb.serviceregistry.registry;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
+
 import io.servicecomb.serviceregistry.Features;
 import io.servicecomb.serviceregistry.ServiceRegistry;
 import io.servicecomb.serviceregistry.api.Const;
@@ -34,12 +43,6 @@ import io.servicecomb.serviceregistry.task.ServiceCenterTask;
 import io.servicecomb.serviceregistry.task.event.ExceptionEvent;
 import io.servicecomb.serviceregistry.task.event.RecoveryEvent;
 import io.servicecomb.serviceregistry.task.event.ShutdownEvent;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public abstract class AbstractServiceRegistry implements ServiceRegistry {
   private static final Logger LOGGER = LoggerFactory.getLogger(AbstractServiceRegistry.class);
@@ -64,12 +67,12 @@ public abstract class AbstractServiceRegistry implements ServiceRegistry {
 
   protected ServiceCenterTask serviceCenterTask;
 
-  // any exeption event will set cache not avaiable, but not clear cache
+  // any exception event will set cache not available, but not clear cache
   // any recovery event will clear cache
   //
   // TODO: clear cache is not good, maybe cause no cache data can be used
   //       it's better to replace the old cache by the new cache, if can't get new cache, then always use old cache.
-  protected boolean cacheAvaiable;
+  protected boolean cacheAvailable;
 
   public AbstractServiceRegistry(EventBus eventBus, ServiceRegistryConfig serviceRegistryConfig,
       MicroserviceDefinition microserviceDefinition) {
@@ -154,13 +157,13 @@ public abstract class AbstractServiceRegistry implements ServiceRegistry {
 
   @Subscribe
   public void onException(ExceptionEvent event) {
-    cacheAvaiable = false;
+    cacheAvailable = false;
   }
 
   @Subscribe
   public void onRecovered(RecoveryEvent event) {
-    if (!cacheAvaiable) {
-      cacheAvaiable = true;
+    if (!cacheAvailable) {
+      cacheAvailable = true;
 
       instanceCacheManager.cleanUp();
       ipPortManager.clearInstanceCache();
@@ -169,7 +172,7 @@ public abstract class AbstractServiceRegistry implements ServiceRegistry {
     }
   }
 
-  public boolean unregsiterInstance() {
+  public boolean unregisterInstance() {
     MicroserviceInstance microserviceInstance = microservice.getIntance();
     boolean result = srClient.unregisterMicroserviceInstance(microserviceInstance.getServiceId(),
         microserviceInstance.getInstanceId());
@@ -242,8 +245,8 @@ public abstract class AbstractServiceRegistry implements ServiceRegistry {
     return microservice.getIntance();
   }
 
-  public void destory() {
+  public void destroy() {
     eventBus.post(new ShutdownEvent());
-    unregsiterInstance();
+    unregisterInstance();
   }
 }

@@ -25,13 +25,13 @@ public interface DefinitionConst {
 
   String nameKey = "name";
 
-  String qulifiedServiceNameKey = serviceDescriptionKey + "." + nameKey;
+  String qualifiedServiceNameKey = serviceDescriptionKey + "." + nameKey;
 
-  String qulifiedServiceVersionKey = serviceDescriptionKey + ".version";
+  String qualifiedServiceVersionKey = serviceDescriptionKey + ".version";
 
-  String qulifiedServiceDescKey = serviceDescriptionKey + ".description";
+  String qualifiedServiceDescKey = serviceDescriptionKey + ".description";
 
-  String qulifiedServiceRoleKey = serviceDescriptionKey + ".role";
+  String qualifiedServiceRoleKey = serviceDescriptionKey + ".role";
 
   String allowCrossAppKey = "allowCrossApp";
 

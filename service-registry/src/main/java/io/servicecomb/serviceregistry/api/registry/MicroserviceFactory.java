@@ -39,13 +39,13 @@ public class MicroserviceFactory {
 
   private Microservice createMicroserviceFromDefinition(Configuration configuration) {
     Microservice microservice = new Microservice();
-    microservice.setServiceName(configuration.getString(DefinitionConst.qulifiedServiceNameKey,
+    microservice.setServiceName(configuration.getString(DefinitionConst.qualifiedServiceNameKey,
         DefinitionConst.defaultMicroserviceName));
     microservice.setAppId(configuration.getString(DefinitionConst.appIdKey, DefinitionConst.defaultAppId));
-    microservice.setVersion(configuration.getString(DefinitionConst.qulifiedServiceVersionKey,
+    microservice.setVersion(configuration.getString(DefinitionConst.qualifiedServiceVersionKey,
         DefinitionConst.defaultVersion));
-    microservice.setDescription(configuration.getString(DefinitionConst.qulifiedServiceDescKey, ""));
-    microservice.setLevel(configuration.getString(DefinitionConst.qulifiedServiceRoleKey, "FRONT"));
+    microservice.setDescription(configuration.getString(DefinitionConst.qualifiedServiceDescKey, ""));
+    microservice.setLevel(configuration.getString(DefinitionConst.qualifiedServiceRoleKey, "FRONT"));
     microservice.setPaths(ConfigurePropertyUtils.getMicroservicePaths(configuration));
     Map<String, String> propertiesMap = MicroservicePropertiesLoader.INSTANCE.loadProperties(configuration);
     microservice.setProperties(propertiesMap);

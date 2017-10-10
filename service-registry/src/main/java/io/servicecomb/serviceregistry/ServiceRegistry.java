@@ -29,7 +29,7 @@ public interface ServiceRegistry {
 
   void run();
 
-  void destory();
+  void destroy();
 
   Set<String> getCombinedMicroserviceNames();
 
