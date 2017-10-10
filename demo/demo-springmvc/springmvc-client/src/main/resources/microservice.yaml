@@ -23,6 +23,24 @@ cse:
     serverListFilter:
       zoneaware:
         className: io.servicecomb.loadbalance.filter.ZoneAwareServerListFilterExt
+  fallbackpolicy:
+    Consumer:
+      springmvc:
+        codeFirst:
+          fallbackFromCache:
+            policy: fromCache
+          fallbackReturnNull:
+            policy: returnNull
+          fallbackThrowException:
+            policy: throwException
+          fallbackForce:
+            policy: mycustom
+  fallback:
+    Consumer:
+      springmvc:
+        codeFirst:
+          fallbackForce:
+            force: true
   datacenter:
     name: myDC
     region: my-Region

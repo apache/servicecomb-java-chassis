@@ -51,6 +51,7 @@ public class TestConfiguration {
     boolean b2 = c.isCircuitBreakerEnabled("groupname", test2, "testqualify");
     assertTrue(b2);
     String str = c.getFallbackPolicyPolicy("groupname", test2, "testqualify");
-    assertEquals("throwexception", str);
+    // no need to give default value now
+    assertEquals(null, str);
   }
 }

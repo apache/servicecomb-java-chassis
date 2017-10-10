@@ -224,15 +224,10 @@ public final class Configuration {
   }
 
   public String getFallbackPolicyPolicy(String type, String microserviceName, String qualifiedOperationName) {
-    String p = getProperty(null,
+    return getProperty(null,
         FALLBACKPOLICY + type + "." + qualifiedOperationName + "." + FALLBACKPOLICY_POLICY,
         FALLBACKPOLICY + type + "." + microserviceName + "." + FALLBACKPOLICY_POLICY,
         FALLBACKPOLICY + type + "." + FALLBACKPOLICY_POLICY);
-    if (FALLBACKPOLICY_POLICY_RETURN.equals(p)) {
-      return FALLBACKPOLICY_POLICY_RETURN;
-    } else {
-      return FALLBACKPOLICY_POLICY_THROW;
-    }
   }
 
   private String getProperty(String defaultValue, String... keys) {

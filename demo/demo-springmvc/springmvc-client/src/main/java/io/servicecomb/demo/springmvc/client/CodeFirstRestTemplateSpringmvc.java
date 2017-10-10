@@ -25,6 +25,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
+import io.servicecomb.bizkeeper.BizkeeperExceptionUtils;
+import io.servicecomb.core.exception.CseException;
 import io.servicecomb.demo.CodeFirstRestTemplate;
 import io.servicecomb.demo.TestMgr;
 import io.servicecomb.provider.pojo.RpcReference;
@@ -44,8 +46,36 @@ public class CodeFirstRestTemplateSpringmvc extends CodeFirstRestTemplate {
 
     testResponseEntity("springmvc", template, cseUrlPrefix);
     testIntf();
+    testFallback(template, cseUrlPrefix);
   }
 
+  private void testFallback(RestTemplate template, String cseUrlPrefix) {
+    String result = template.getForObject(cseUrlPrefix + "/fallback/returnnull/hello", String.class);
+    TestMgr.check(result, "hello");
+    result = template.getForObject(cseUrlPrefix + "/fallback/returnnull/throwexception", String.class);
+    TestMgr.check(result, null);
+
+    result = template.getForObject(cseUrlPrefix + "/fallback/throwexception/hello", String.class);
+    TestMgr.check(result, "hello");
+    try {
+      result = template.getForObject(cseUrlPrefix + "/fallback/throwexception/throwexception", String.class);
+      TestMgr.check(false, true);
+    } catch (Exception e) {
+      TestMgr.check(((CseException) e.getCause().getCause().getCause()).getMessage(),
+          BizkeeperExceptionUtils.createBizkeeperException(BizkeeperExceptionUtils.CSE_HANDLER_BK_FALLBACK,
+              null,
+              "springmvc.codeFirst.fallbackThrowException").getMessage());
+    }
+
+    result = template.getForObject(cseUrlPrefix + "/fallback/fromcache/hello", String.class);
+    TestMgr.check(result, "hello");
+    result = template.getForObject(cseUrlPrefix + "/fallback/fromcache/throwexception", String.class);
+    TestMgr.check(result, "hello");
+
+    result = template.getForObject(cseUrlPrefix + "/fallback/force/hello", String.class);
+    TestMgr.check(result, "mockedreslut");
+  }
+  
   private void testIntf() {
     Date date = new Date();
 

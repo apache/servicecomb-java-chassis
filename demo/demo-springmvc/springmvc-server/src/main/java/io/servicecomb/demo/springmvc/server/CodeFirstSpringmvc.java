@@ -49,10 +49,12 @@ import io.servicecomb.swagger.extend.annotations.ResponseHeaders;
 import io.servicecomb.swagger.invocation.Response;
 import io.servicecomb.swagger.invocation.context.ContextUtils;
 import io.servicecomb.swagger.invocation.context.InvocationContext;
+import io.servicecomb.swagger.invocation.exception.InvocationException;
 import io.servicecomb.swagger.invocation.response.Headers;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
 import io.swagger.annotations.ResponseHeader;
 
 @RestSchema(schemaId = "codeFirst")
@@ -184,5 +186,45 @@ public class CodeFirstSpringmvc {
       result += x;
     }
     return result;
+  }
+
+  @RequestMapping(path = "/fallback/returnnull/{name}", method = RequestMethod.GET)
+  @ApiResponses(value = {@ApiResponse(code = 200, response = String.class, message = "xxx"),
+      @ApiResponse(code = 490, response = String.class, message = "xxx")})
+  public String fallbackReturnNull(@PathVariable(name = "name") String name) {
+    if ("throwexception".equals(name)) {
+      throw new InvocationException(490, "490", "xxx");
+    }
+    return name;
+  }
+
+  @RequestMapping(path = "/fallback/throwexception/{name}", method = RequestMethod.GET)
+  @ApiResponses(value = {@ApiResponse(code = 200, response = String.class, message = "xxx"),
+      @ApiResponse(code = 490, response = String.class, message = "xxx")})
+  public String fallbackThrowException(@PathVariable(name = "name") String name) {
+    if ("throwexception".equals(name)) {
+      throw new InvocationException(490, "490", "xxx");
+    }
+    return name;
+  }
+
+  @RequestMapping(path = "/fallback/fromcache/{name}", method = RequestMethod.GET)
+  @ApiResponses(value = {@ApiResponse(code = 200, response = String.class, message = "xxx"),
+      @ApiResponse(code = 490, response = String.class, message = "xxx")})
+  public String fallbackFromCache(@PathVariable(name = "name") String name) {
+    if ("throwexception".equals(name)) {
+      throw new InvocationException(490, "490", "xxx");
+    }
+    return name;
+  }
+  
+  @RequestMapping(path = "/fallback/force/{name}", method = RequestMethod.GET)
+  @ApiResponses(value = {@ApiResponse(code = 200, response = String.class, message = "xxx"),
+      @ApiResponse(code = 490, response = String.class, message = "xxx")})
+  public String fallbackForce(@PathVariable(name = "name") String name) {
+    if ("throwexception".equals(name)) {
+      throw new InvocationException(490, "490", "xxx");
+    }
+    return name;
   }
 }

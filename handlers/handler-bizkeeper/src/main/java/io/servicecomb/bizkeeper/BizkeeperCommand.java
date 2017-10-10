@@ -61,18 +61,7 @@ public abstract class BizkeeperCommand extends HystrixObservableCommand<Response
     Observable<Response> observable = Observable.create(f -> {
       LOG.info("fallback called.");
       try {
-        if (Configuration.FALLBACKPOLICY_POLICY_RETURN
-            .equals(Configuration.INSTANCE.getFallbackPolicyPolicy(type,
-                invocation.getMicroserviceName(),
-                invocation.getOperationMeta().getMicroserviceQualifiedName()))) {
-          f.onNext(Response.succResp(null));
-        } else {
-          f.onNext(Response.failResp(invocation.getInvocationType(),
-              BizkeeperExceptionUtils
-                  .createBizkeeperException(BizkeeperExceptionUtils.CSE_HANDLER_BK_FALLBACK,
-                      null,
-                      invocation.getOperationMeta().getMicroserviceQualifiedName())));
-        }
+        f.onNext(FallbackPolicyManager.getFallbackResponse(type, invocation));
         f.onCompleted();
       } catch (Exception e) {
         LOG.warn("fallback failed due to:" + e.getMessage());
@@ -91,9 +80,11 @@ public abstract class BizkeeperCommand extends HystrixObservableCommand<Response
             // e should implements toString
             LOG.warn("bizkeeper command failed due to:" + resp.getResult());
             f.onError(resp.getResult());
+            FallbackPolicyManager.record(type, invocation, resp, false);
           } else {
             f.onNext(resp);
             f.onCompleted();
+            FallbackPolicyManager.record(type, invocation, resp, true);
           }
         });
       } catch (Exception e) {
