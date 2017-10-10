@@ -85,10 +85,26 @@
       <id>release</id>
       <build>
         <plugins>
+        <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-deploy-plugin</artifactId>
+        <configuration>
+             <skip>true</skip>
+            </configuration>
+          </plugin>
           <plugin>
             <groupId>org.sonatype.plugins</groupId>
             <artifactId>nexus-staging-maven-plugin</artifactId>
             <version>1.6.7</version>
+	    <executions>
+             <execution>
+               <id>default-deploy</id>
+               <phase>deploy</phase>
+               <goals>
+                 <goal>deploy</goal>
+               </goals>
+             </execution>
+           </executions>
             <extensions>true</extensions>
             <configuration>
               <serverId>ossrh</serverId>
@@ -96,8 +112,8 @@
               <autoReleaseAfterClose>false</autoReleaseAfterClose>
               <skipLocalStaging>true</skipLocalStaging>
             </configuration>
-          </plugin>
-          <plugin>
+          </plugin>  
+	<plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-gpg-plugin</artifactId>
             <version>1.6</version>
