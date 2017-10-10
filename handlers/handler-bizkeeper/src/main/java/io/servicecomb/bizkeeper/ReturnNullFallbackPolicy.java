@@ -22,10 +22,11 @@ import io.servicecomb.swagger.invocation.Response;
 
 @Component
 public class ReturnNullFallbackPolicy implements FallbackPolicy {
+  private static final String POLICY_NAME = "returnNull";
 
   @Override
   public String name() {
-    return "returnnull";
+    return POLICY_NAME;
   }
 
   @Override

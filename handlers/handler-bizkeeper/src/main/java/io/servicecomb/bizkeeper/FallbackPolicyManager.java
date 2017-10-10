@@ -25,31 +25,37 @@ public class FallbackPolicyManager {
   private static final Map<String, FallbackPolicy> POLICIES = new HashMap<>();
 
   public static void addPolicy(FallbackPolicy policy) {
-    POLICIES.put(policy.name(), policy);
+    POLICIES.put(policy.name().toLowerCase(), policy);
   }
 
   public static void record(String type, Invocation invocation, Response response, boolean isSuccess) {
-    FallbackPolicy policy = POLICIES.get(Configuration.INSTANCE.getFallbackPolicyPolicy(type,
-        invocation.getMicroserviceName(),
-        invocation.getOperationMeta().getMicroserviceQualifiedName()));
+    FallbackPolicy policy = getPolicy(type, invocation);
     if (policy != null) {
       policy.record(invocation, response, isSuccess);
     }
   }
 
   public static Response getFallbackResponse(String type, Invocation invocation) {
-    FallbackPolicy policy = POLICIES.get(Configuration.INSTANCE.getFallbackPolicyPolicy(type,
-        invocation.getMicroserviceName(),
-        invocation.getOperationMeta().getMicroserviceQualifiedName()));
+    FallbackPolicy policy = getPolicy(type, invocation);
     if (policy != null) {
       return policy.getFallbackResponse(invocation);
     } else {
       return Response.failResp(invocation.getInvocationType(),
           BizkeeperExceptionUtils
-          .createBizkeeperException(BizkeeperExceptionUtils.CSE_HANDLER_BK_FALLBACK,
-              null,
-              invocation.getOperationMeta().getMicroserviceQualifiedName()));
+              .createBizkeeperException(BizkeeperExceptionUtils.CSE_HANDLER_BK_FALLBACK,
+                  null,
+                  invocation.getOperationMeta().getMicroserviceQualifiedName()));
     }
   }
 
+  private static FallbackPolicy getPolicy(String type, Invocation invocation) {
+    String policyKey = Configuration.INSTANCE.getFallbackPolicyPolicy(type,
+        invocation.getMicroserviceName(),
+        invocation.getOperationMeta().getMicroserviceQualifiedName());
+    FallbackPolicy policy = null;
+    if (policyKey != null) {
+      policy = POLICIES.get(policyKey.toLowerCase());
+    }
+    return policy;
+  }
 }

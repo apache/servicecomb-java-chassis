@@ -25,11 +25,13 @@ import io.servicecomb.swagger.invocation.Response;
 
 @Component
 public class FromCacheFallbackPolicy implements FallbackPolicy {
+  private static final String POLICY_NAME = "fromCache";
+
   private Map<String, Response> cachedResponse = new ConcurrentHashMap<>();
 
   @Override
   public String name() {
-    return "fromcache";
+    return POLICY_NAME;
   }
 
   @Override

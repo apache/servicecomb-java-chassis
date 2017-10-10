@@ -28,11 +28,11 @@ cse:
       springmvc:
         codeFirst:
           fallbackFromCache:
-            policy: fromcache
+            policy: fromCache
           fallbackReturnNull:
-            policy: returnnull
+            policy: returnNull
           fallbackThrowException:
-            policy: throwexception
+            policy: throwException
           fallbackForce:
             policy: mycustom
   fallback:

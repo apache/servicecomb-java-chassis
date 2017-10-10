@@ -22,10 +22,11 @@ import io.servicecomb.swagger.invocation.Response;
 
 @Component
 public class ThrowExceptionFallbackPolicy implements FallbackPolicy {
+  private static final String POLICY_NAME = "throwException";
 
   @Override
   public String name() {
-    return "throwexception";
+    return POLICY_NAME;
   }
 
   @Override
