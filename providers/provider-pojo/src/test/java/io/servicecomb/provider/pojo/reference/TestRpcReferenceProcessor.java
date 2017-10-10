@@ -20,20 +20,28 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.context.ApplicationContext;
 
+import io.servicecomb.foundation.test.scaffolding.spring.SpringUtils;
 import io.servicecomb.provider.pojo.Person;
 import io.servicecomb.provider.pojo.PersonReference;
 import mockit.Injectable;
 
 public class TestRpcReferenceProcessor {
+  RpcReferenceProcessor consumers = new RpcReferenceProcessor();
+
+  @Test
+  public void postProcessAfterInitialization() {
+    Object bean = new Object();
+    Assert.assertSame(bean, consumers.postProcessAfterInitialization(bean, "test"));
+  }
+
   @Test
   public void testReference(@Injectable ApplicationContext applicationContext) throws Exception {
     PersonReference bean = new PersonReference();
 
     Assert.assertNull(bean.person);
 
-    RpcReferenceProcessor consumers = new RpcReferenceProcessor();
     consumers.setEmbeddedValueResolver((strVal) -> strVal);
-    consumers.processConsumerField(applicationContext, bean, bean.getClass().getField("person"));
+    Assert.assertSame(bean, consumers.postProcessBeforeInitialization(bean, "id"));
 
     Assert.assertNotNull(bean.person);
   }
@@ -44,9 +52,13 @@ public class TestRpcReferenceProcessor {
 
     Assert.assertNull(bean.name);
 
-    RpcReferenceProcessor consumers = new RpcReferenceProcessor();
-    consumers.processConsumerField(applicationContext, bean, bean.getClass().getField("name"));
+    Assert.assertSame(bean, consumers.postProcessBeforeInitialization(bean, "id"));
 
     Assert.assertNull(bean.name);
+  }
+
+  @Test
+  public void ensureNoInject() {
+    SpringUtils.ensureNoInject(RpcReferenceProcessor.class);
   }
 }

@@ -18,8 +18,8 @@ package io.servicecomb.provider.pojo.schema;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.springframework.context.ApplicationContext;
 
+import io.servicecomb.foundation.test.scaffolding.spring.SpringUtils;
 import io.servicecomb.provider.pojo.IPerson;
 import io.servicecomb.provider.pojo.Person;
 import io.servicecomb.provider.pojo.RpcSchema;
@@ -27,21 +27,26 @@ import mockit.Expectations;
 import mockit.Injectable;
 
 public class TestPojoProducers {
+  PojoProducers producer = new PojoProducers();
+
   @Test
-  public void testPojoProducers(@Injectable ApplicationContext applicationContext) {
+  public void postProcessBeforeInitialization() {
+    Object bean = new Object();
+    Assert.assertSame(bean, producer.postProcessBeforeInitialization(bean, "test"));
+  }
+
+  @Test
+  public void testPojoProducers() {
     Person bean = new Person();
-    PojoProducers producer = new PojoProducers();
-    producer.processProvider(applicationContext, "test", bean);
+    Assert.assertSame(bean, producer.postProcessAfterInitialization(bean, "test"));
     Assert.assertEquals(producer.getProcucers().size(), 1);
   }
 
   @Test
-  public void testPojoProducersSchemaNull(@Injectable ApplicationContext applicationContext,
-      @Injectable RpcSchema schema) {
+  public void testPojoProducersSchemaNull(@Injectable RpcSchema schema) {
     IPerson bean = new IPerson() {
     };
-    PojoProducers producer = new PojoProducers();
-    producer.processProvider(applicationContext, "test", bean);
+    Assert.assertSame(bean, producer.postProcessAfterInitialization(bean, "test"));
     Assert.assertEquals(producer.getProcucers().size(), 0);
   }
 
@@ -51,15 +56,18 @@ public class TestPojoProducers {
   }
 
   @Test
-  public void testPojoProducersSchemaIdNull(@Injectable ApplicationContext applicationContext,
-      @Injectable RpcSchema schema) {
+  public void testPojoProducersSchemaIdNull(@Injectable RpcSchema schema) {
     IPerson bean = new PersonEmptySchema();
     new Expectations() {
       {
       }
     };
-    PojoProducers producer = new PojoProducers();
-    producer.processProvider(applicationContext, "test", bean);
+    Assert.assertSame(bean, producer.postProcessAfterInitialization(bean, "test"));
     Assert.assertEquals(producer.getProcucers().size(), 1);
+  }
+
+  @Test
+  public void ensureNoInject() {
+    SpringUtils.ensureNoInject(PojoProducers.class);
   }
 }
