@@ -107,8 +107,6 @@ public final class NetUtils {
         }
       }
     }
-
-    return;
   }
 
   /**
@@ -151,7 +149,7 @@ public final class NetUtils {
    */
   public static String getRealListenAddress(String schema, String address) {
     if (address == null) {
-      return address;
+      return null;
     }
     try {
       URI originalURI = new URI(schema + "://" + address);
