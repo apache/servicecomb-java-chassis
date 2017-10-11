@@ -29,6 +29,8 @@ import io.servicecomb.foundation.vertx.tcp.TcpConnection;
 import io.servicecomb.transport.common.MockUtil;
 import io.servicecomb.transport.highway.message.RequestHeader;
 import io.vertx.core.buffer.Buffer;
+import io.vertx.core.net.NetSocket;
+import io.vertx.core.net.SocketAddress;
 import mockit.Mock;
 import mockit.MockUp;
 
@@ -45,13 +47,39 @@ public class TestHighwayServerInvoke {
 
   private TcpConnection connection;
 
+  private NetSocket netSocket;
+
+  private SocketAddress socketAddress;
+
   @Before
   public void setup() {
     unitTestMeta = new UnitTestMeta();
+    socketAddress = new MockUp<SocketAddress>() {
+      @Mock
+      public String host() {
+        return "127.0.0.1";
+      }
+
+      @Mock
+      public int port() {
+        return 8080;
+      }
+    }.getMockInstance();
+    netSocket = new MockUp<NetSocket>() {
+      @Mock
+      public SocketAddress remoteAddress() {
+        return socketAddress;
+      }
+    }.getMockInstance();
     connection = new MockUp<TcpConnection>() {
       @Mock
       public void write(ByteBuf data) {
         netSocketBuffer = data;
+      }
+
+      @Mock
+      public NetSocket getNetSocket() {
+        return netSocket;
       }
     }.getMockInstance();
   }
