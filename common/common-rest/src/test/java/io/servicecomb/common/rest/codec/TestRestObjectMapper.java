@@ -16,14 +16,20 @@
 
 package io.servicecomb.common.rest.codec;
 
+import com.fasterxml.jackson.core.JsonParser.Feature;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import org.junit.Assert;
 import org.junit.Test;
 
-import com.fasterxml.jackson.core.JsonParser.Feature;
-
 public class TestRestObjectMapper {
+
   @Test
   public void testAutoCloseSource() {
     Assert.assertFalse(RestObjectMapper.INSTANCE.getFactory().isEnabled(Feature.AUTO_CLOSE_SOURCE));
+  }
+
+  @Test
+  public void testDeserializationFeature() {
+    Assert.assertFalse(RestObjectMapper.INSTANCE.isEnabled(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES));
   }
 }
