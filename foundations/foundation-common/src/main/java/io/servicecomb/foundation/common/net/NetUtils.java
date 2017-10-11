@@ -107,8 +107,6 @@ public final class NetUtils {
         }
       }
     }
-
-    return;
   }
 
   /**
@@ -151,18 +149,18 @@ public final class NetUtils {
    */
   public static String getRealListenAddress(String schema, String address) {
     if (address == null) {
-      return address;
+      return null;
     }
     try {
       URI originalURI = new URI(schema + "://" + address);
       IpPort ipPort = NetUtils.parseIpPort(originalURI.getAuthority());
       if (ipPort == null) {
-        LOGGER.warn("address {} not valid.", address);
+        LOGGER.error("address {} is not valid.", address);
         return null;
       }
       return originalURI.toString();
     } catch (URISyntaxException e) {
-      LOGGER.warn("address {} not valid.", address);
+      LOGGER.error("address {} is not valid.", address);
       return null;
     }
   }
