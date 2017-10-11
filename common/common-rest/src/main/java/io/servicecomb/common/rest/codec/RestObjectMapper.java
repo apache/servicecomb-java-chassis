@@ -17,6 +17,7 @@
 package io.servicecomb.common.rest.codec;
 
 import com.fasterxml.jackson.core.JsonParser.Feature;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.type.TypeFactory;
@@ -33,6 +34,7 @@ public final class RestObjectMapper extends ObjectMapper {
     // swagger中要求date使用ISO8601格式传递，这里与之做了功能绑定，这在cse中是没有问题的
     setDateFormat(new ISO8601DateFormat());
     getFactory().disable(Feature.AUTO_CLOSE_SOURCE);
+    disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
   }
 
   public String convertToString(Object value) throws Exception {
