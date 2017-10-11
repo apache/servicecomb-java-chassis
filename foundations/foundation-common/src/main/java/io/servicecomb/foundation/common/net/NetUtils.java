@@ -155,12 +155,12 @@ public final class NetUtils {
       URI originalURI = new URI(schema + "://" + address);
       IpPort ipPort = NetUtils.parseIpPort(originalURI.getAuthority());
       if (ipPort == null) {
-        LOGGER.warn("address {} not valid.", address);
+        LOGGER.error("address {} is not valid.", address);
         return null;
       }
       return originalURI.toString();
     } catch (URISyntaxException e) {
-      LOGGER.warn("address {} not valid.", address);
+      LOGGER.error("address {} is not valid.", address);
       return null;
     }
   }
