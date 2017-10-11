@@ -131,8 +131,6 @@ public abstract class AbstractRestInvocation {
 
   @SuppressWarnings("deprecation")
   protected void sendResponse(Response response) throws Exception {
-    responseEx.setStatus(response.getStatusCode(), response.getReasonPhrase());
-    responseEx.setContentType(produceProcessor.getName());
     if (response.getHeaders().getHeaderMap() != null) {
       for (Entry<String, List<Object>> entry : response.getHeaders().getHeaderMap().entrySet()) {
         for (Object value : entry.getValue()) {
@@ -140,6 +138,8 @@ public abstract class AbstractRestInvocation {
         }
       }
     }
+    responseEx.setStatus(response.getStatusCode(), response.getReasonPhrase());
+    responseEx.setContentType(produceProcessor.getName());
 
     Object body = response.getResult();
     if (response.isFailed()) {

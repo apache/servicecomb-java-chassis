@@ -74,9 +74,6 @@ public class CseClientHttpResponse implements ClientHttpResponse {
   public HttpHeaders getHeaders() {
     if (httpHeaders == null) {
       HttpHeaders tmpHeaders = new HttpHeaders();
-      // 让spring mvc有body
-      tmpHeaders.setContentLength(1);
-
       Headers headers = response.getHeaders();
       if (headers.getHeaderMap() != null) {
         for (Entry<String, List<Object>> entry : headers.getHeaderMap().entrySet()) {

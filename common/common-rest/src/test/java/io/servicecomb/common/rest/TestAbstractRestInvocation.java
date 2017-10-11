@@ -359,14 +359,14 @@ public class TestAbstractRestInvocation {
   }
 
   @Test
-  public void sendResponseStatusAndContentType(@Mocked Response response) throws Exception {
+  public void sendResponseStatusAndContentTypeAndHeader(@Mocked Response response) throws Exception {
     new Expectations() {
       {
         response.getStatusCode();
         result = 123;
         response.getReasonPhrase();
         result = "reason";
-        response.getHeaders();
+        response.getResult();
         result = new Error("stop");
       }
     };
