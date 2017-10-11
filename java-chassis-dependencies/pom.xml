@@ -29,7 +29,7 @@
   <packaging>pom</packaging>
 
   <properties>
-    <jackson.version>2.8.1</jackson.version>
+    <jackson.version>2.8.10</jackson.version>
     <vertx.version>3.3.3</vertx.version>
     <tec.zkclient.version>0.8</tec.zkclient.version>
     <spring.version>4.3.5.RELEASE</spring.version>
