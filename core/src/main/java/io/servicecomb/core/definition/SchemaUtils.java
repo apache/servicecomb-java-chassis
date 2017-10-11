@@ -18,13 +18,9 @@ package io.servicecomb.core.definition;
 
 import java.net.URL;
 
-import org.apache.commons.io.IOUtils;
-
-import com.fasterxml.jackson.core.JsonProcessingException;
-
+import io.servicecomb.swagger.SwaggerUtils;
 import io.servicecomb.swagger.generator.core.utils.ClassUtils;
 import io.swagger.models.Swagger;
-import io.swagger.util.Yaml;
 
 public final class SchemaUtils {
 
@@ -39,27 +35,14 @@ public final class SchemaUtils {
   }
 
   public static String swaggerToString(Swagger swagger) {
-    try {
-      return Yaml.mapper().writeValueAsString(swagger);
-    } catch (JsonProcessingException e) {
-      throw new Error(e);
-    }
+    return SwaggerUtils.swaggerToString(swagger);
   }
 
   public static Swagger parseSwagger(URL url) {
-    try {
-      String swaggerContext = IOUtils.toString(url);
-      return Yaml.mapper().readValue(swaggerContext, Swagger.class);
-    } catch (Throwable e) {
-      throw new Error(e);
-    }
+    return SwaggerUtils.parseSwagger(url);
   }
 
   public static Swagger parseSwagger(String swaggerContent) {
-    try {
-      return Yaml.mapper().readValue(swaggerContent, Swagger.class);
-    } catch (Throwable e) {
-      throw new Error(e);
-    }
+    return SwaggerUtils.parseSwagger(swaggerContent);
   }
 }
