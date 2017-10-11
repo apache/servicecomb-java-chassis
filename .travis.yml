@@ -14,7 +14,7 @@ deploy:
   - mvn deploy -DskipTests -Prelease -Ppassphrase --settings .travis.settings.xml
  on:
   tags: true
-  all_branches: true
+  branch: master
  skip_cleanup: true
 
 env:
