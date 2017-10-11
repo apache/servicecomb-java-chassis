@@ -102,6 +102,11 @@ public class VertxServerRequestToHttpServletRequest extends AbstractHttpServletR
   }
 
   @Override
+  public String getRemoteAddr() {
+    return this.vertxRequest.remoteAddress().host();
+  }
+
+  @Override
   public String getRemoteHost() {
     return this.vertxRequest.remoteAddress().host();
   }

@@ -22,18 +22,26 @@ import java.util.Map;
 import io.servicecomb.common.rest.RestConst;
 import io.servicecomb.common.rest.definition.RestOperationMeta;
 import io.servicecomb.common.rest.definition.RestParam;
+import io.servicecomb.core.Const;
 import io.servicecomb.core.Invocation;
 import io.servicecomb.foundation.common.exceptions.ServiceCombException;
 import io.servicecomb.foundation.vertx.http.AbstractHttpServletRequest;
+import io.vertx.core.net.SocketAddress;
 
 public class InvocationToHttpServletRequest extends AbstractHttpServletRequest {
   private RestOperationMeta swaggerOperation;
 
   private Object[] args;
 
+  private SocketAddress sockerAddress;
+
   public InvocationToHttpServletRequest(Invocation invocation) {
     this.swaggerOperation = invocation.getOperationMeta().getExtData(RestConst.SWAGGER_REST_OPERATION);
     this.args = invocation.getArgs();
+    Object remoteAddress = invocation.getHandlerContext().get(Const.REMOTE_ADDRESS);
+    if (remoteAddress != null) {
+      this.sockerAddress = (SocketAddress) remoteAddress;
+    }
   }
 
   @Override
@@ -98,5 +106,20 @@ public class InvocationToHttpServletRequest extends AbstractHttpServletRequest {
     } catch (Exception e) {
       throw new ServiceCombException("Failed to get path info.", e);
     }
+  }
+
+  @Override
+  public String getRemoteAddr() {
+    return this.sockerAddress == null ? "" : this.sockerAddress.host();
+  }
+  
+  @Override
+  public String getRemoteHost() {
+    return this.sockerAddress == null ? "" : this.sockerAddress.host();
+  }
+  
+  @Override
+  public int getRemotePort() {
+    return this.sockerAddress == null ? 0 : this.sockerAddress.port();
   }
 }

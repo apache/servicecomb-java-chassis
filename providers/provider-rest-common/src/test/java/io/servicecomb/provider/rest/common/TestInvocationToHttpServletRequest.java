@@ -17,6 +17,7 @@
 package io.servicecomb.provider.rest.common;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -30,9 +31,11 @@ import io.servicecomb.common.rest.RestConst;
 import io.servicecomb.common.rest.definition.RestOperationMeta;
 import io.servicecomb.common.rest.definition.RestParam;
 import io.servicecomb.common.rest.definition.path.URLPathBuilder;
+import io.servicecomb.core.Const;
 import io.servicecomb.core.Invocation;
 import io.servicecomb.core.definition.OperationMeta;
 import io.servicecomb.foundation.common.exceptions.ServiceCombException;
+import io.vertx.core.net.SocketAddress;
 import mockit.Expectations;
 import mockit.Mocked;
 
@@ -48,11 +51,17 @@ public class TestInvocationToHttpServletRequest {
 
   @Mocked
   Object[] args;
+  
+  @Mocked
+  SocketAddress socketAddress;
+  
+  Map<String, Object> handlerContext = new HashMap<>();
 
   HttpServletRequest request;
 
   @Before
   public void setup() {
+    handlerContext.put(Const.REMOTE_ADDRESS, socketAddress);
     new Expectations() {
       {
         invocation.getOperationMeta();
@@ -61,6 +70,8 @@ public class TestInvocationToHttpServletRequest {
         result = swaggerOperation;
         invocation.getArgs();
         result = args;
+        invocation.getHandlerContext();
+        result = handlerContext;
       }
     };
 
@@ -262,5 +273,47 @@ public class TestInvocationToHttpServletRequest {
       Assert.assertEquals("Failed to get path info.", e.getMessage());
       Assert.assertEquals("error", e.getCause().getMessage());
     }
+  }
+
+  @Test
+  public void testGetRemoteAddress() throws Exception {
+    new Expectations() {
+      {
+        socketAddress.host();
+        result = "127.0.0.2";
+        socketAddress.port();
+        result = 8088;
+      }
+    };
+    String addr = request.getRemoteAddr();
+    String host = request.getRemoteHost();
+    int port = request.getRemotePort();
+    Assert.assertEquals(addr, "127.0.0.2");
+    Assert.assertEquals(host, "127.0.0.2");
+    Assert.assertEquals(port, 8088);
+  }
+
+  @Test
+  public void testGetRemoteAddressEmpty(@Mocked Invocation invocation) throws Exception {
+    handlerContext.remove(Const.REMOTE_ADDRESS);
+    new Expectations() {
+      {
+        invocation.getOperationMeta();
+        result = operationMeta;
+        operationMeta.getExtData(RestConst.SWAGGER_REST_OPERATION);
+        result = swaggerOperation;
+        invocation.getArgs();
+        result = args;
+        invocation.getHandlerContext();
+        result = handlerContext;
+      }
+    };
+    InvocationToHttpServletRequest request = new InvocationToHttpServletRequest(invocation);
+    String addr = request.getRemoteAddr();
+    String host = request.getRemoteHost();
+    int port = request.getRemotePort();
+    Assert.assertEquals(addr, "");
+    Assert.assertEquals(host, "");
+    Assert.assertEquals(port, 0);
   }
 }

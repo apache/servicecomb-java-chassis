@@ -52,7 +52,11 @@ public class ControllerImpl {
   }
 
   @RequestMapping(path = "/sayhi", method = RequestMethod.GET)
-  public String sayHi(HttpServletRequest request) {
+  public String sayHi(HttpServletRequest request) throws Exception {
+    String addr = request.getRemoteAddr();
+    if (addr == null || addr.isEmpty()) {
+      throw new Exception("Can't get remote addr!");
+    }
     String[] values = request.getParameterValues("name");
     if (values != null && values.length > 0 && values[0].equals("throwexception")) {
       throw new RuntimeException();
