@@ -31,8 +31,10 @@ import javax.ws.rs.core.HttpHeaders;
 
 import io.servicecomb.foundation.vertx.stream.BufferInputStream;
 import io.vertx.core.MultiMap;
+import io.vertx.core.buffer.Buffer;
 import io.vertx.core.http.HttpServerRequest;
 import io.vertx.ext.web.RoutingContext;
+import io.vertx.ext.web.impl.HttpServerRequestUtils;
 
 // wrap vertx http request to Servlet http request
 public class VertxServerRequestToHttpServletRequest extends AbstractHttpServletRequest {
@@ -46,10 +48,21 @@ public class VertxServerRequestToHttpServletRequest extends AbstractHttpServletR
 
   private ServletInputStream inputStream;
 
+  public VertxServerRequestToHttpServletRequest(RoutingContext context, String path) {
+    this(context);
+    HttpServerRequestUtils.setPath(vertxRequest, path);
+  }
+
   public VertxServerRequestToHttpServletRequest(RoutingContext context) {
     this.context = context;
     this.vertxRequest = context.request();
-    setBodyBuffer(context.getBody());
+    super.setBodyBuffer(context.getBody());
+  }
+
+  @Override
+  public void setBodyBuffer(Buffer bodyBuffer) {
+    super.setBodyBuffer(bodyBuffer);
+    context.setBody(bodyBuffer);
   }
 
   @Override

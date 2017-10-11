@@ -26,6 +26,7 @@ import javax.servlet.AsyncContext;
 import javax.servlet.ServletInputStream;
 import javax.servlet.http.Cookie;
 import javax.ws.rs.core.HttpHeaders;
+import javax.xml.ws.Holder;
 
 import org.hamcrest.Matchers;
 import org.junit.Assert;
@@ -40,6 +41,8 @@ import io.vertx.core.net.SocketAddress;
 import io.vertx.ext.web.RoutingContext;
 import mockit.Deencapsulation;
 import mockit.Expectations;
+import mockit.Mock;
+import mockit.MockUp;
 import mockit.Mocked;
 
 public class TestVertxServerRequestToHttpServletRequest {
@@ -61,6 +64,29 @@ public class TestVertxServerRequestToHttpServletRequest {
     };
 
     request = new VertxServerRequestToHttpServletRequest(context);
+  }
+
+  @Test
+  public void setBodyBuffer() {
+    Holder<Buffer> bodyHolder = new Holder<>();
+    context = new MockUp<RoutingContext>() {
+      @Mock
+      HttpServerRequest request() {
+        return vertxRequest;
+      }
+
+      @Mock
+      void setBody(Buffer body) {
+        bodyHolder.value = body;
+      }
+    }.getMockInstance();
+    request = new VertxServerRequestToHttpServletRequest(context);
+
+    Buffer bodyBuffer = Buffer.buffer();
+    request.setBodyBuffer(bodyBuffer);
+
+    Assert.assertSame(bodyBuffer, bodyHolder.value);
+    Assert.assertSame(bodyBuffer, request.getBodyBuffer());
   }
 
   @Test

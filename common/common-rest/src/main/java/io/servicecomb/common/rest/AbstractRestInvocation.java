@@ -62,16 +62,12 @@ public abstract class AbstractRestInvocation {
     this.httpServerFilters = httpServerFilters;
   }
 
-  protected boolean initProduceProcessor() {
+  protected void initProduceProcessor() {
     produceProcessor = restOperationMeta.ensureFindProduceProcessor(requestEx);
     if (produceProcessor == null) {
       String msg = String.format("Accept %s is not supported", requestEx.getHeader(HttpHeaders.ACCEPT));
-      InvocationException exception = new InvocationException(Status.NOT_ACCEPTABLE, msg);
-      sendFailResponse(exception);
-      return false;
+      throw new InvocationException(Status.NOT_ACCEPTABLE, msg);
     }
-
-    return true;
   }
 
   protected void setContext() throws Exception {
@@ -86,23 +82,28 @@ public abstract class AbstractRestInvocation {
     invocation.setContext(cseContext);
   }
 
-  protected void invoke() {
+  public void invoke() {
     try {
-      this.initProduceProcessor();
-      this.setContext();
-      invocation.getHandlerContext().put(RestConst.REST_REQUEST, requestEx);
-
-      for (HttpServerFilter filter : httpServerFilters) {
-        Response response = filter.afterReceiveRequest(invocation, requestEx);
-        if (response != null) {
-          sendResponseQuietly(response);
-          return;
-        }
-      }
+      prepareInvoke();
 
       doInvoke();
     } catch (Throwable e) {
       sendFailResponse(e);
+    }
+  }
+
+  protected void prepareInvoke() throws Throwable {
+    this.initProduceProcessor();
+
+    this.setContext();
+    invocation.getHandlerContext().put(RestConst.REST_REQUEST, requestEx);
+
+    for (HttpServerFilter filter : httpServerFilters) {
+      Response response = filter.afterReceiveRequest(invocation, requestEx);
+      if (response != null) {
+        sendResponseQuietly(response);
+        return;
+      }
     }
   }
 
