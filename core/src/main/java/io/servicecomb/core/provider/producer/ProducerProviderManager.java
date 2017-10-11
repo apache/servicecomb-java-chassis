@@ -16,10 +16,12 @@
 
 package io.servicecomb.core.provider.producer;
 
+import java.util.Collections;
 import java.util.List;
 
 import javax.inject.Inject;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import io.servicecomb.core.ProducerProvider;
@@ -32,8 +34,8 @@ import io.servicecomb.serviceregistry.api.registry.Microservice;
 
 @Component
 public class ProducerProviderManager {
-  @Inject
-  private List<ProducerProvider> producerProviderList;
+  @Autowired(required = false)
+  private List<ProducerProvider> producerProviderList = Collections.emptyList();
 
   @Inject
   private MicroserviceMetaManager microserviceMetaManager;
