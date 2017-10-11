@@ -88,11 +88,8 @@
         <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-deploy-plugin</artifactId>
-        <configuration>
-             <skip>true</skip>
-            </configuration>
-          </plugin>
-          <plugin>
+        </plugin>
+        <plugin>
             <groupId>org.sonatype.plugins</groupId>
             <artifactId>nexus-staging-maven-plugin</artifactId>
             <version>1.6.7</version>
@@ -104,7 +101,7 @@
                  <goal>deploy</goal>
                </goals>
              </execution>
-           </executions>
+            </executions>
             <extensions>true</extensions>
             <configuration>
               <serverId>ossrh</serverId>
@@ -112,7 +109,7 @@
               <autoReleaseAfterClose>false</autoReleaseAfterClose>
               <skipLocalStaging>true</skipLocalStaging>
             </configuration>
-          </plugin>  
+        </plugin>  
 	<plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-gpg-plugin</artifactId>
