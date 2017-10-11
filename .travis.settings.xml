@@ -7,14 +7,14 @@
             <password>${env.SONATYPE_PASSWORD}</password>
         </server>
     </servers>
-<profiles>
-    <profile>
-      <id>passphrase</id> <!-- give it the name of your project -->
-      <properties>
-        <gpg.homedir>/home/travis/build/ServiceComb/ServiceComb-Java-Chassis</gpg.homedir>
-        <gpg.keyname>E144B8C3</gpg.keyname>
-        <gpg.passphrase>${MYPASSP}</gpg.passphrase>
-      </properties>
-    </profile>
-</profiles>
+    <profiles>
+        <profile>
+          <id>passphrase</id> <!-- give it the name of your project -->
+          <properties>
+            <gpg.homedir>/home/travis/build/ServiceComb/ServiceComb-Java-Chassis</gpg.homedir>
+            <gpg.keyname>E144B8C3</gpg.keyname>
+            <gpg.passphrase>${MYPASSP}</gpg.passphrase>
+          </properties>
+        </profile>
+    </profiles>          
 </settings>
