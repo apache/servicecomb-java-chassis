@@ -43,6 +43,7 @@
     <module>demo-spring-boot-discovery</module>
     <module>demo-multiple</module>
     <module>demo-signature</module>
+    <module>demo-edge</module>
   </modules>
 
   <dependencyManagement>
