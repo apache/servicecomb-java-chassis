@@ -25,6 +25,7 @@ import io.protostuff.runtime.ProtobufFeature;
 import io.servicecomb.codec.protobuf.definition.OperationProtobuf;
 import io.servicecomb.codec.protobuf.definition.ProtobufManager;
 import io.servicecomb.codec.protobuf.utils.WrapSchema;
+import io.servicecomb.core.Const;
 import io.servicecomb.core.CseContext;
 import io.servicecomb.core.Invocation;
 import io.servicecomb.core.definition.MicroserviceMeta;
@@ -117,7 +118,7 @@ public class HighwayServerInvoke {
 
   private void doRunInExecutor() throws Exception {
     Invocation invocation = HighwayCodec.decodeRequest(header, operationProtobuf, bodyBuffer, protobufFeature);
-
+    invocation.getHandlerContext().put(Const.REMOTE_ADDRESS, this.connection.getNetSocket().remoteAddress());
     invocation.next(response -> {
       sendResponse(invocation.getContext(), response);
     });
