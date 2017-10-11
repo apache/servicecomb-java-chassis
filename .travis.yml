@@ -5,16 +5,17 @@ services:
 script:
 - mvn clean install -Ddocker.showLogs -Pdocker -Pjacoco -Pit -Pcoverage coveralls:report
 after_success:
- script: mvn deploy -DskipTests --settings .travis.settings.xml
- deploy:
-  provider: script
-  script: 
-   - openssl aes-256-cbc -K $encrypted_acbbc88fb3ab_key -iv $encrypted_acbbc88fb3ab_iv -in gpg-sec.tar.enc -out gpg-sec.tar -d
-   - tar xvf gpg-sec.tar
-   - mvn deploy -DskipTests -Prelease -Ppassphrase --settings .travis.settings.xml
-  on:
-   tags: true
-   all_branches: true
+- mvn deploy -DskipTests --settings .travis.settings.xml
+deploy:
+ provider: script
+ script: 
+  - openssl aes-256-cbc -K $encrypted_acbbc88fb3ab_key -iv $encrypted_acbbc88fb3ab_iv -in gpg-sec.tar.enc -out gpg-sec.tar -d
+  - tar xvf gpg-sec.tar
+  - mvn deploy -DskipTests -Prelease -Ppassphrase --settings .travis.settings.xml
+ on:
+  tags: true
+  all_branches: true
+ skip_cleanup: true
 
 env:
   global:
