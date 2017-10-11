@@ -110,7 +110,6 @@ public class CodeFirstSpringmvc extends CodeFirstSpringmvcBase {
     return super.sayHello(user);
   }
 
-  @SuppressWarnings("unchecked")
   @RequestMapping(path = "/testrawjson", method = RequestMethod.POST)
   @Override
   public String testRawJsonString(String jsonInput) {

@@ -113,7 +113,6 @@ public class CodeFirstSpringmvcSimplifiedMappingAnnotation extends CodeFirstSpri
     return super.sayHello(user);
   }
 
-  @SuppressWarnings("unchecked")
   @PostMapping(path = "/testrawjson")
   @Override
   public String testRawJsonString(String jsonInput) {

@@ -107,7 +107,7 @@ public class ZipkinTracingAdviserTest {
   public void startsNewChildSpan() throws Exception {
     CyclicBarrier cyclicBarrier = new CyclicBarrier(nThreads);
 
-    CompletableFuture[] futures = new CompletableFuture[nThreads];
+    CompletableFuture<?>[] futures = new CompletableFuture[nThreads];
     for (int i = 0; i < nThreads; i++) {
       futures[i] = CompletableFuture.runAsync(() -> {
         Span currentSpan = tracing.tracer().newTrace().start();
