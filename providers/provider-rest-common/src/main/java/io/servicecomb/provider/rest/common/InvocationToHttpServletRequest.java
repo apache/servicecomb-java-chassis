@@ -38,10 +38,7 @@ public class InvocationToHttpServletRequest extends AbstractHttpServletRequest {
   public InvocationToHttpServletRequest(Invocation invocation) {
     this.swaggerOperation = invocation.getOperationMeta().getExtData(RestConst.SWAGGER_REST_OPERATION);
     this.args = invocation.getArgs();
-    Object remoteAddress = invocation.getHandlerContext().get(Const.REMOTE_ADDRESS);
-    if (remoteAddress != null) {
-      this.sockerAddress = (SocketAddress) remoteAddress;
-    }
+    this.sockerAddress = (SocketAddress)invocation.getHandlerContext().get(Const.REMOTE_ADDRESS);
   }
 
   @Override
