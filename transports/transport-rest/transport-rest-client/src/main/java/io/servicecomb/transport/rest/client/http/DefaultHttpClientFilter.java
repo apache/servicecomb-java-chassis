@@ -86,7 +86,7 @@ public class DefaultHttpClientFilter implements HttpClientFilter {
 
     Response response =
         Response.create(responseEx.getStatusType(), result);
-    for (String headerName : responseMeta.getHeaders().keySet()) {
+    for (String headerName : responseEx.getHeaderNames()) {
       Collection<String> headerValues = responseEx.getHeaders(headerName);
       for (String headerValue : headerValues) {
         response.getHeaders().addHeader(headerName, headerValue);
