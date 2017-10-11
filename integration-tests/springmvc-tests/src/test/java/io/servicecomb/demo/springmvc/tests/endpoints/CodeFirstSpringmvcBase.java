@@ -88,6 +88,7 @@ public class CodeFirstSpringmvcBase {
     return user;
   }
 
+  @SuppressWarnings("unchecked")
   public String testRawJsonString(String jsonInput) {
     Map<String, String> person;
     try {

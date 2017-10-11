@@ -19,8 +19,6 @@ package io.servicecomb.tests.tracing;
 import static org.springframework.http.MediaType.TEXT_PLAIN_VALUE;
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
 
-import java.util.Random;
-
 import javax.servlet.http.HttpServletRequest;
 
 import org.slf4j.Logger;
@@ -37,8 +35,6 @@ import io.servicecomb.provider.rest.common.RestSchema;
 @RequestMapping("/")
 public class SomeTracedController {
   private static final Logger logger = LoggerFactory.getLogger(SomeTracedController.class);
-
-  private final Random random = new Random();
 
   @Autowired
   private RestTemplate template;
