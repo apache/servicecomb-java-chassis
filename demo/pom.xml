@@ -44,6 +44,7 @@
     <module>demo-multiple</module>
     <module>demo-signature</module>
     <module>demo-model-field-ignore</module>
+    <module>demo-edge</module>
   </modules>
 
   <dependencyManagement>

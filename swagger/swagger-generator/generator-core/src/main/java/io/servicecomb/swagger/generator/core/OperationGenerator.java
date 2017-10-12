@@ -28,6 +28,7 @@ import java.util.Map.Entry;
 
 import org.springframework.util.StringUtils;
 
+import io.servicecomb.swagger.SwaggerUtils;
 import io.servicecomb.swagger.extend.parameter.ContextParameter;
 import io.servicecomb.swagger.generator.core.utils.ParamUtils;
 import io.swagger.models.HttpMethod;
@@ -275,15 +276,13 @@ public class OperationGenerator {
 
     context.postProcessOperation(this);
 
-    correctResponse();
+    SwaggerUtils.correctResponses(operation);
+    addHeaderToResponse();
   }
 
-  private void correctResponse() {
+  private void addHeaderToResponse() {
     for (Entry<String, Response> responseEntry : operation.getResponses().entrySet()) {
       Response response = responseEntry.getValue();
-      if (StringUtils.isEmpty(response.getDescription())) {
-        response.setDescription("response of " + responseEntry.getKey());
-      }
 
       for (Entry<String, Property> entry : responseHeaderMap.entrySet()) {
         if (response.getHeaders() != null && response.getHeaders().containsKey(entry.getKey())) {

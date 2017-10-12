@@ -16,12 +16,14 @@
 
 package io.servicecomb.core.provider.consumer;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import javax.inject.Inject;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.netflix.config.DynamicPropertyFactory;
@@ -33,8 +35,8 @@ import io.servicecomb.core.definition.schema.ConsumerSchemaFactory;
 
 @Component
 public class ConsumerProviderManager {
-  @Inject
-  private List<ConsumerProvider> consumerProviderList;
+  @Autowired(required = false)
+  private List<ConsumerProvider> consumerProviderList = Collections.emptyList();
 
   @Inject
   private ConsumerSchemaFactory consumerSchemaFactory;
@@ -65,12 +67,16 @@ public class ConsumerProviderManager {
         if (config == null) {
           String key = "cse.references." + microserviceName;
           DynamicStringProperty versionRule = DynamicPropertyFactory.getInstance()
-              .getStringProperty(key + ".version-rule", DynamicPropertyFactory.getInstance()
-                  .getStringProperty("cse.references.version-rule", Const.VERSION_RULE_LATEST).getValue());
+              .getStringProperty(key + ".version-rule",
+                  DynamicPropertyFactory.getInstance()
+                      .getStringProperty("cse.references.version-rule", Const.VERSION_RULE_LATEST)
+                      .getValue());
           DynamicStringProperty transport =
               DynamicPropertyFactory.getInstance().getStringProperty(key + ".transport",
-                  DynamicPropertyFactory.getInstance().getStringProperty("cse.references.transport",
-                      Const.ANY_TRANSPORT).getValue());
+                  DynamicPropertyFactory.getInstance()
+                      .getStringProperty("cse.references.transport",
+                          Const.ANY_TRANSPORT)
+                      .getValue());
 
           config = new ReferenceConfig(consumerSchemaFactory, microserviceName, versionRule.getValue(),
               transport.getValue());

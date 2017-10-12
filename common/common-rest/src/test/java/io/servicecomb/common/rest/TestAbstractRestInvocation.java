@@ -41,6 +41,7 @@ import io.servicecomb.foundation.common.utils.JsonUtils;
 import io.servicecomb.foundation.vertx.http.HttpServletRequestEx;
 import io.servicecomb.foundation.vertx.http.HttpServletResponseEx;
 import io.servicecomb.swagger.invocation.Response;
+import io.servicecomb.swagger.invocation.exception.CommonExceptionData;
 import io.servicecomb.swagger.invocation.exception.InvocationException;
 import io.servicecomb.swagger.invocation.response.Headers;
 import io.vertx.core.buffer.Buffer;
@@ -121,7 +122,13 @@ public class TestAbstractRestInvocation {
     };
     initRestInvocation();
 
-    Assert.assertFalse(restInvocation.initProduceProcessor());
+    try {
+      restInvocation.initProduceProcessor();
+      Assert.fail("must throw exception");
+    } catch (InvocationException e) {
+      Assert.assertEquals(Status.NOT_ACCEPTABLE, e.getStatus());
+      Assert.assertEquals("Accept null is not supported", ((CommonExceptionData) e.getErrorData()).getMessage());
+    }
   }
 
   @Test
@@ -133,7 +140,8 @@ public class TestAbstractRestInvocation {
       }
     };
 
-    Assert.assertTrue(restInvocation.initProduceProcessor());
+    // not throw exception
+    restInvocation.initProduceProcessor();
   }
 
   @Test
@@ -359,14 +367,14 @@ public class TestAbstractRestInvocation {
   }
 
   @Test
-  public void sendResponseStatusAndContentType(@Mocked Response response) throws Exception {
+  public void sendResponseStatusAndContentTypeAndHeader(@Mocked Response response) throws Exception {
     new Expectations() {
       {
         response.getStatusCode();
         result = 123;
         response.getReasonPhrase();
         result = "reason";
-        response.getHeaders();
+        response.getResult();
         result = new Error("stop");
       }
     };
