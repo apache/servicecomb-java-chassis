@@ -43,6 +43,7 @@
     <module>demo-spring-boot-discovery</module>
     <module>demo-multiple</module>
     <module>demo-signature</module>
+    <module>demo-model-field-ignore</module>
   </modules>
 
   <dependencyManagement>
@@ -110,6 +111,17 @@
       <dependency>
         <groupId>io.servicecomb.demo</groupId>
         <artifactId>crossapp-client</artifactId>
+        <version>0.4.0-SNAPSHOT</version>
+      </dependency>
+
+      <dependency>
+        <groupId>io.servicecomb.demo</groupId>
+        <artifactId>ignore-server</artifactId>
+        <version>0.4.0-SNAPSHOT</version>
+      </dependency>
+      <dependency>
+        <groupId>io.servicecomb.demo</groupId>
+        <artifactId>ignore-client</artifactId>
         <version>0.4.0-SNAPSHOT</version>
       </dependency>
     </dependencies>

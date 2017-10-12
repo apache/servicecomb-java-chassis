@@ -1,0 +1,13 @@
+APPLICATION_ID: demoIgnore
+service_description:
+  name: testModelIgnoreServer
+  version: 0.0.1
+cse:
+  service:
+    registry:
+      address: http://127.0.0.1:30100
+  rest:
+    address: 0.0.0.0:8080?sslEnabled=false
+# TODO : JAV-394 rpc now unsupported @JsonIgnore
+#  highway:
+#    address: 0.0.0.0:7070
