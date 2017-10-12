@@ -16,19 +16,15 @@
 
 package io.servicecomb.transport.rest.vertx;
 
-import java.util.List;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import io.netty.handler.codec.http.multipart.HttpPostRequestDecoder.ErrorDataDecoderException;
 import io.servicecomb.common.rest.RestConst;
 import io.servicecomb.common.rest.RestProducerInvocation;
-import io.servicecomb.common.rest.filter.HttpServerFilter;
 import io.servicecomb.core.Const;
 import io.servicecomb.core.CseContext;
 import io.servicecomb.core.Transport;
-import io.servicecomb.foundation.common.utils.SPIServiceUtils;
 import io.servicecomb.foundation.vertx.http.HttpServletRequestEx;
 import io.servicecomb.foundation.vertx.http.HttpServletResponseEx;
 import io.servicecomb.foundation.vertx.http.VertxServerRequestToHttpServletRequest;
@@ -38,21 +34,21 @@ import io.vertx.ext.web.Router;
 import io.vertx.ext.web.RoutingContext;
 import io.vertx.ext.web.handler.CookieHandler;
 
-public class VertxRestDispatcher {
+public class VertxRestDispatcher extends AbstractVertxHttpDispatcher {
   private static final Logger LOGGER = LoggerFactory.getLogger(VertxRestDispatcher.class);
 
   private Transport transport;
 
-  private List<HttpServerFilter> httpServerFilters = SPIServiceUtils.getSortedService(HttpServerFilter.class);
+  @Override
+  public int getOrder() {
+    return Integer.MAX_VALUE;
+  }
 
-  public VertxRestDispatcher(Router router) {
-    super();
+  @Override
+  public void init(Router router) {
     router.route().handler(CookieHandler.create());
+    router.route().handler(createBodyHandler());
     router.route().failureHandler(this::failureHandler).handler(this::onRequest);
-
-    for (HttpServerFilter filter : httpServerFilters) {
-      LOGGER.info("Found HttpServerFilter: {}.", filter.getClass().getName());
-    }
   }
 
   private void failureHandler(RoutingContext context) {

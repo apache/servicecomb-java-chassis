@@ -21,7 +21,7 @@ import org.junit.Test;
 
 public class TestSchemaUtils {
   @Test
-  public void testSchemaUtils() {
+  public void generatePackageName() {
     MicroserviceMeta microserviceMeta = new MicroserviceMeta("app:ms");
     Assert.assertEquals("cse.gen.app.ms.schemaId", SchemaUtils.generatePackageName(microserviceMeta, "schemaId"));
   }

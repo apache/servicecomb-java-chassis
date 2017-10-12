@@ -33,5 +33,9 @@
       <groupId>com.netflix.archaius</groupId>
       <artifactId>archaius-core</artifactId>
     </dependency>
+    <dependency>
+      <groupId>io.vertx</groupId>
+      <artifactId>vertx-web</artifactId>
+    </dependency>
   </dependencies>
 </project>

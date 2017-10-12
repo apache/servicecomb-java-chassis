@@ -17,16 +17,12 @@
 package io.servicecomb.transport.rest.client.http;
 
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
 
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Response.Status;
 
 import org.junit.Assert;
 import org.junit.Test;
-
-import com.fasterxml.jackson.databind.JavaType;
 
 import io.servicecomb.common.rest.RestConst;
 import io.servicecomb.common.rest.codec.produce.ProduceProcessor;
@@ -124,20 +120,16 @@ public class TestDefaultHttpClientFilter {
       @Mocked ResponseMeta responseMeta,
       @Mocked RestOperationMeta swaggerRestOperation,
       @Mocked ProduceProcessor produceProcessor) throws Exception {
-    Map<String, JavaType> headerMeta = new HashMap<>();
-    headerMeta.put("a", null);
-    headerMeta.put("b", null);
-
     MultiMap responseHeader = new CaseInsensitiveHeaders();
     responseHeader.add("b", "bValue");
 
     Object decodedResult = new Object();
     new Expectations() {
       {
-        responseMeta.getHeaders();
-        result = headerMeta;
         responseEx.getHeader(HttpHeaders.CONTENT_TYPE);
         result = "json";
+        responseEx.getHeaderNames();
+        result = Arrays.asList("a", "b");
         responseEx.getHeaders("b");
         result = responseHeader.getAll("b");
         swaggerRestOperation.findProduceProcessor("json");

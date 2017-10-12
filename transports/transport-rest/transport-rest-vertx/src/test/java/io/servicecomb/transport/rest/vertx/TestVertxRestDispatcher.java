@@ -58,7 +58,8 @@ public class TestVertxRestDispatcher {
 
   @Before
   public void setUp() throws Exception {
-    dispatcher = new VertxRestDispatcher(mainRouter);
+    dispatcher = new VertxRestDispatcher();
+    dispatcher.init(mainRouter);
 
     new MockUp<RestProducerInvocation>() {
       @Mock
@@ -79,6 +80,11 @@ public class TestVertxRestDispatcher {
   @After
   public void teardown() {
     CseContext.getInstance().setTransportManager(null);
+  }
+
+  @Test
+  public void getOrder() {
+    Assert.assertEquals(Integer.MAX_VALUE, dispatcher.getOrder());
   }
 
   @Test

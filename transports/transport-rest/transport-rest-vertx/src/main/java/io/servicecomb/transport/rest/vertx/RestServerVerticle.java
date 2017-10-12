@@ -16,14 +16,15 @@
 
 package io.servicecomb.transport.rest.vertx;
 
+import java.util.List;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.netflix.config.DynamicPropertyFactory;
 
 import io.servicecomb.core.Endpoint;
 import io.servicecomb.core.transport.AbstractTransport;
 import io.servicecomb.foundation.common.net.URIEndpointObject;
+import io.servicecomb.foundation.common.utils.SPIServiceUtils;
 import io.servicecomb.foundation.ssl.SSLCustom;
 import io.servicecomb.foundation.ssl.SSLOption;
 import io.servicecomb.foundation.ssl.SSLOptionFactory;
@@ -51,19 +52,11 @@ public class RestServerVerticle extends AbstractVerticle {
 
   private URIEndpointObject endpointObject;
 
-  private RestBodyHandler bodyHandler = new RestBodyHandler();
-
   @Override
   public void init(Vertx vertx, Context context) {
     super.init(vertx, context);
     this.endpoint = (Endpoint) context.config().getValue(AbstractTransport.ENDPOINT_KEY);
     this.endpointObject = (URIEndpointObject) endpoint.getAddress();
-
-    String uploadsDirectory =
-        DynamicPropertyFactory.getInstance().getStringProperty("cse.uploads.directory", null).get();
-    bodyHandler.setUploadsDirectory(uploadsDirectory);
-    bodyHandler.setDeleteUploadedFilesOnEnd(true);
-    LOGGER.info("set uploads directory to " + uploadsDirectory);
   }
 
   @Override
@@ -78,14 +71,20 @@ public class RestServerVerticle extends AbstractVerticle {
     }
 
     Router mainRouter = Router.router(vertx);
-    mainRouter.route().handler(bodyHandler);
-
-    new VertxRestDispatcher(mainRouter);
+    initDispatcher(mainRouter);
 
     HttpServer httpServer = createHttpServer();
     httpServer.requestHandler(mainRouter::accept);
 
     startListen(httpServer, startFuture);
+  }
+
+  private void initDispatcher(Router mainRouter) {
+    List<VertxHttpDispatcher> dispatchers = SPIServiceUtils.getSortedService(VertxHttpDispatcher.class);
+    for (VertxHttpDispatcher dispatcher : dispatchers) {
+      LOGGER.info("init vertx http dispatcher {}", dispatcher.getClass().getName());
+      dispatcher.init(mainRouter);
+    }
   }
 
   private void startListen(HttpServer server, Future<Void> startFuture) {

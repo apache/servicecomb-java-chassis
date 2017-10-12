@@ -1,0 +1,8 @@
+APPLICATION_ID: hiboard
+service_description:
+  name: consumer
+  version: 0.0.1
+cse:
+  service:
+    registry:
+      address: http://127.0.0.1:30100
