@@ -88,6 +88,10 @@
         </dependency>
         <dependency>
             <groupId>io.servicecomb</groupId>
+            <artifactId>foundation-test-scaffolding</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.servicecomb</groupId>
             <artifactId>handler-bizkeeper</artifactId>
         </dependency>
         <dependency>
@@ -97,6 +101,10 @@
         <dependency>
             <groupId>io.servicecomb</groupId>
             <artifactId>handler-loadbalance</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.servicecomb</groupId>
+            <artifactId>handler-tracing-zipkin</artifactId>
         </dependency>
         <dependency>
             <groupId>io.servicecomb</groupId>
@@ -133,6 +141,14 @@
         <dependency>
             <groupId>io.servicecomb</groupId>
             <artifactId>transport-rest-vertx</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.servicecomb</groupId>
+            <artifactId>tracing-zipkin</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.servicecomb</groupId>
+            <artifactId>tracing-common</artifactId>
         </dependency>
     </dependencies>
 
