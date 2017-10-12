@@ -1,0 +1,8 @@
+APPLICATION_ID: demoIgnore
+service_description:
+  name: testModelIgnoreClient
+  version: 0.0.1
+cse:
+  service:
+    registry:
+      address: http://127.0.0.1:30100
