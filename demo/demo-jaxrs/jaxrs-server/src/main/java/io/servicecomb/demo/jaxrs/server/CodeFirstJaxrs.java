@@ -38,6 +38,8 @@ import javax.ws.rs.core.Response.Status;
 
 import io.servicecomb.common.rest.codec.RestObjectMapper;
 import io.servicecomb.demo.compute.Person;
+import io.servicecomb.demo.ignore.InputModelForTestIgnore;
+import io.servicecomb.demo.ignore.OutputModelForTestIgnore;
 import io.servicecomb.demo.server.User;
 import io.servicecomb.provider.rest.common.RestSchema;
 import io.servicecomb.swagger.extend.annotations.ResponseHeaders;
@@ -173,5 +175,11 @@ public class CodeFirstJaxrs {
       result += x;
     }
     return result;
+  }
+
+  @Path("/ignore")
+  @POST
+  public OutputModelForTestIgnore testModelWithIgnoreField(InputModelForTestIgnore input) {
+    return new OutputModelForTestIgnore("output_id", input.getInputId(), input.getContent());
   }
 }
