@@ -14,28 +14,8 @@
  * limitations under the License.
  */
 
-package io.servicecomb.demo.compute;
+package io.servicecomb.demo.ignore;
 
-public class Person {
-  private String name;
-
-  public void setName(String name) {
-    this.name = name;
-  }
-
-  public String getName() {
-    return this.name;
-  }
-
-  public Person() {
-  }
-
-  public Person(String name) {
-    this.name = name;
-  }
-
-  @Override
-  public String toString() {
-    return name;
-  }
+public interface IgnoreInterface {
+  void ignoreMethod();
 }

@@ -33,6 +33,7 @@ import io.servicecomb.demo.ignore.InputModelForTestIgnore;
 import io.servicecomb.demo.ignore.OutputModelForTestIgnore;
 import io.servicecomb.demo.server.User;
 import io.servicecomb.serviceregistry.RegistryUtils;
+import io.vertx.core.json.JsonObject;
 
 public class CodeFirstRestTemplate {
   public void testCodeFirst(RestTemplate template, String microserviceName, String basePath) {
@@ -61,7 +62,7 @@ public class CodeFirstRestTemplate {
       testCodeFirstReduce(template, cseUrlPrefix);
 
       // TODO: highway unsupported until JAV-394 completed
-      if(transport.equals("rest")) {
+      if (transport.equals("rest")) {
         testModelFieldIgnore(template, cseUrlPrefix);
       }
     }
@@ -217,13 +218,22 @@ public class CodeFirstRestTemplate {
   }
 
   protected void testModelFieldIgnore(RestTemplate template, String cseUrlPrefix) {
-    InputModelForTestIgnore input = new InputModelForTestIgnore("input_id_rest", "input_id_content");
+    InputModelForTestIgnore input = new InputModelForTestIgnore("input_id_rest", "input_id_content",
+        new Person("inputSomeone"), new JsonObject("{\"InputJsonKey\" : \"InputJsonValue\"}"), () -> {
+    });
     OutputModelForTestIgnore output = template
         .postForObject(cseUrlPrefix + "ignore", input, OutputModelForTestIgnore.class);
 
     TestMgr.check(null, output.getInputId());
     TestMgr.check(input.getContent(), output.getContent());
     TestMgr.check(null, output.getOutputId());
-  }
 
+    TestMgr.check(null, output.getInputIgnoreInterface());
+    TestMgr.check(null, output.getInputJsonObject());
+    TestMgr.check(null, output.getInputObject());
+
+    TestMgr.check(null, output.getOutputIgnoreInterface());
+    TestMgr.check(null, output.getOutputJsonObject());
+    TestMgr.check(null, output.getOutputObject());
+  }
 }
