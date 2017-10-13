@@ -29,6 +29,8 @@ import org.springframework.web.client.RestTemplate;
 
 import io.servicecomb.core.CseContext;
 import io.servicecomb.demo.compute.Person;
+import io.servicecomb.demo.ignore.InputModelForTestIgnore;
+import io.servicecomb.demo.ignore.OutputModelForTestIgnore;
 import io.servicecomb.demo.server.User;
 import io.servicecomb.serviceregistry.RegistryUtils;
 
@@ -57,6 +59,11 @@ public class CodeFirstRestTemplate {
       //            testCodeFirstRawJsonString(template, cseUrlPrefix);
       testCodeFirstSayHello(template, cseUrlPrefix);
       testCodeFirstReduce(template, cseUrlPrefix);
+
+      // TODO: highway unsupported until JAV-394 completed
+      if(transport.equals("rest")) {
+        testModelFieldIgnore(template, cseUrlPrefix);
+      }
     }
   }
 
@@ -208,4 +215,15 @@ public class CodeFirstRestTemplate {
         template.exchange(cseUrlPrefix + "reduce?a={a}", HttpMethod.GET, requestEntity, Integer.class, params);
     TestMgr.check(2, result.getBody());
   }
+
+  protected void testModelFieldIgnore(RestTemplate template, String cseUrlPrefix) {
+    InputModelForTestIgnore input = new InputModelForTestIgnore("input_id_rest", "input_id_content");
+    OutputModelForTestIgnore output = template
+        .postForObject(cseUrlPrefix + "ignore", input, OutputModelForTestIgnore.class);
+
+    TestMgr.check(null, output.getInputId());
+    TestMgr.check(input.getContent(), output.getContent());
+    TestMgr.check(null, output.getOutputId());
+  }
+
 }

@@ -40,9 +40,12 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import io.servicecomb.common.rest.codec.RestObjectMapper;
 import io.servicecomb.demo.compute.Person;
+import io.servicecomb.demo.ignore.InputModelForTestIgnore;
+import io.servicecomb.demo.ignore.OutputModelForTestIgnore;
 import io.servicecomb.demo.server.User;
 import io.servicecomb.provider.rest.common.RestSchema;
 import io.servicecomb.swagger.extend.annotations.ResponseHeaders;
@@ -226,5 +229,16 @@ public class CodeFirstSpringmvc {
       throw new InvocationException(490, "490", "xxx");
     }
     return name;
+  }
+
+  @RequestMapping(path = "/sayhei", method = RequestMethod.GET)
+  public String sayHei(@RequestHeader("name") String name) {
+    return "hei " + name;
+  }
+
+  @RequestMapping(method = RequestMethod.POST, value = "/ignore")
+  @ResponseBody
+  public OutputModelForTestIgnore test(@RequestBody InputModelForTestIgnore input) {
+    return new OutputModelForTestIgnore("output_id", input.getInputId(), input.getContent());
   }
 }
