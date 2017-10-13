@@ -231,14 +231,9 @@ public class CodeFirstSpringmvc {
     return name;
   }
 
-  @RequestMapping(path = "/sayhei", method = RequestMethod.GET)
-  public String sayHei(@RequestHeader("name") String name) {
-    return "hei " + name;
-  }
-
   @RequestMapping(method = RequestMethod.POST, value = "/ignore")
   @ResponseBody
-  public OutputModelForTestIgnore test(@RequestBody InputModelForTestIgnore input) {
+  public OutputModelForTestIgnore testModelWithIgnoreField(@RequestBody InputModelForTestIgnore input) {
     return new OutputModelForTestIgnore("output_id", input.getInputId(), input.getContent());
   }
 }
