@@ -18,11 +18,27 @@ package io.servicecomb.demo.ignore;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import io.vertx.core.json.JsonObject;
+
 public class OutputModelForTestIgnore {
   @JsonIgnore
   private String outputId = null;
   private String inputId = null;
   private String content = null;
+
+  @JsonIgnore
+  private Object inputObject = null;
+  @JsonIgnore
+  private JsonObject inputJsonObject = null;
+  @JsonIgnore
+  private IgnoreInterface inputIgnoreInterface = null;
+
+  @JsonIgnore
+  private Object outputObject = null;
+  @JsonIgnore
+  private JsonObject outputJsonObject = null;
+  @JsonIgnore
+  private IgnoreInterface outputIgnoreInterface = null;
 
   public String getOutputId() {
     return this.outputId;
@@ -48,12 +64,68 @@ public class OutputModelForTestIgnore {
     this.content = content;
   }
 
+  public Object getInputObject() {
+    return inputObject;
+  }
+
+  public void setInputObject(Object inputObject) {
+    this.inputObject = inputObject;
+  }
+
+  public JsonObject getInputJsonObject() {
+    return inputJsonObject;
+  }
+
+  public void setInputJsonObject(JsonObject inputJsonObject) {
+    this.inputJsonObject = inputJsonObject;
+  }
+
+  public IgnoreInterface getInputIgnoreInterface() {
+    return inputIgnoreInterface;
+  }
+
+  public void setInputIgnoreInterface(IgnoreInterface inputIgnoreInterface) {
+    this.inputIgnoreInterface = inputIgnoreInterface;
+  }
+
+  public Object getOutputObject() {
+    return outputObject;
+  }
+
+  public void setOutputObject(Object outputObject) {
+    this.outputObject = outputObject;
+  }
+
+  public JsonObject getOutputJsonObject() {
+    return outputJsonObject;
+  }
+
+  public void setOutputJsonObject(JsonObject outputJsonObject) {
+    this.outputJsonObject = outputJsonObject;
+  }
+
+  public IgnoreInterface getOutputIgnoreInterface() {
+    return outputIgnoreInterface;
+  }
+
+  public void setOutputIgnoreInterface(IgnoreInterface outputIgnoreInterface) {
+    this.outputIgnoreInterface = outputIgnoreInterface;
+  }
+
   public OutputModelForTestIgnore() {
   }
 
-  public OutputModelForTestIgnore(String outputId, String inputId, String content) {
+  public OutputModelForTestIgnore(String outputId, String inputId, String content, Object inputObject,
+      JsonObject inputJsonObject, IgnoreInterface inputIgnoreInterface, Object outputObject,
+      JsonObject outputJsonObject, IgnoreInterface outputIgnoreInterface) {
     this.outputId = outputId;
     this.inputId = inputId;
     this.content = content;
+    this.inputObject = inputObject;
+    this.inputJsonObject = inputJsonObject;
+    this.inputIgnoreInterface = inputIgnoreInterface;
+    this.outputObject = outputObject;
+    this.outputJsonObject = outputJsonObject;
+    this.outputIgnoreInterface = outputIgnoreInterface;
   }
 }

@@ -18,10 +18,19 @@ package io.servicecomb.demo.ignore;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import io.vertx.core.json.JsonObject;
+
 public class InputModelForTestIgnore {
   @JsonIgnore
   private String inputId = null;
   private String content = null;
+
+  @JsonIgnore
+  private Object inputObject = null;
+  @JsonIgnore
+  private JsonObject inputJsonObject = null;
+  @JsonIgnore
+  private IgnoreInterface inputIgnoreInterface = null;
 
   public String getInputId() {
     return this.inputId;
@@ -39,11 +48,39 @@ public class InputModelForTestIgnore {
     this.content = content;
   }
 
+  public Object getInputObject() {
+    return inputObject;
+  }
+
+  public void setInputObject(Object inputObject) {
+    this.inputObject = inputObject;
+  }
+
+  public JsonObject getInputJsonObject() {
+    return inputJsonObject;
+  }
+
+  public void setInputJsonObject(JsonObject inputJsonObject) {
+    this.inputJsonObject = inputJsonObject;
+  }
+
+  public IgnoreInterface getInputIgnoreInterface() {
+    return inputIgnoreInterface;
+  }
+
+  public void setInputIgnoreInterface(IgnoreInterface inputIgnoreInterface) {
+    this.inputIgnoreInterface = inputIgnoreInterface;
+  }
+
   public InputModelForTestIgnore() {
   }
 
-  public InputModelForTestIgnore(String inputId, String content) {
+  public InputModelForTestIgnore(String inputId, String content, Object inputObject,
+      JsonObject inputJsonObject, IgnoreInterface inputIgnoreInterface) {
     this.inputId = inputId;
     this.content = content;
+    this.inputObject = inputObject;
+    this.inputJsonObject = inputJsonObject;
+    this.inputIgnoreInterface = inputIgnoreInterface;
   }
 }

@@ -51,6 +51,7 @@ import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ResponseHeader;
+import io.vertx.core.json.JsonObject;
 
 @RestSchema(schemaId = "codeFirst")
 @Path("/codeFirstJaxrs")
@@ -180,6 +181,9 @@ public class CodeFirstJaxrs {
   @Path("/ignore")
   @POST
   public OutputModelForTestIgnore testModelWithIgnoreField(InputModelForTestIgnore input) {
-    return new OutputModelForTestIgnore("output_id", input.getInputId(), input.getContent());
+    return new OutputModelForTestIgnore("output_id", input.getInputId(), input.getContent(), input.getInputObject(),
+        input.getInputJsonObject(), input.getInputIgnoreInterface(),
+        new Person("outputSomeone"), new JsonObject("{\"OutputJsonKey\" : \"OutputJsonValue\"}"), () -> {
+    });
   }
 }

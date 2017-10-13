@@ -59,6 +59,7 @@ import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import io.swagger.annotations.ResponseHeader;
+import io.vertx.core.json.JsonObject;
 
 @RestSchema(schemaId = "codeFirst")
 @RequestMapping(path = "/codeFirstSpringmvc", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -220,7 +221,7 @@ public class CodeFirstSpringmvc {
     }
     return name;
   }
-  
+
   @RequestMapping(path = "/fallback/force/{name}", method = RequestMethod.GET)
   @ApiResponses(value = {@ApiResponse(code = 200, response = String.class, message = "xxx"),
       @ApiResponse(code = 490, response = String.class, message = "xxx")})
@@ -234,6 +235,9 @@ public class CodeFirstSpringmvc {
   @RequestMapping(method = RequestMethod.POST, value = "/ignore")
   @ResponseBody
   public OutputModelForTestIgnore testModelWithIgnoreField(@RequestBody InputModelForTestIgnore input) {
-    return new OutputModelForTestIgnore("output_id", input.getInputId(), input.getContent());
+    return new OutputModelForTestIgnore("output_id", input.getInputId(), input.getContent(), input.getInputObject(),
+        input.getInputJsonObject(), input.getInputIgnoreInterface(),
+        new Person("outputSomeone"), new JsonObject("{\"OutputJsonKey\" : \"OutputJsonValue\"}"), () -> {
+    });
   }
 }
