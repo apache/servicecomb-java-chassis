@@ -16,6 +16,7 @@
 
 package io.servicecomb.serviceregistry.cache;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -56,6 +57,16 @@ public class InstanceCacheManager {
   }
 
   private InstanceCache create(String appId, String microserviceName, String microserviceVersionRule) {
+    InstanceCache instCache = createInstanceCache(appId, microserviceName, microserviceVersionRule);
+    if(instCache == null) {
+      return null;
+    }
+    String key = getKey(appId, microserviceName);
+    cacheMap.put(key, instCache);
+    return instCache;
+  }
+
+  public InstanceCache createInstanceCache(String appId, String microserviceName, String microserviceVersionRule) {
     List<MicroserviceInstance> instances =
         serviceRegistry.findServiceInstance(appId, microserviceName, microserviceVersionRule);
     if (instances == null) {
@@ -68,8 +79,6 @@ public class InstanceCacheManager {
     }
 
     InstanceCache instCache = new InstanceCache(appId, microserviceName, microserviceVersionRule, instMap);
-    String key = getKey(appId, microserviceName);
-    cacheMap.put(key, instCache);
     return instCache;
   }
 
@@ -129,9 +138,11 @@ public class InstanceCacheManager {
     }
   }
 
-  public void updateInstanceMap(String appId, String microserviceName, String microserviceVersionRule,
-      Map<String, MicroserviceInstance> instanceMap) {
-    InstanceCache cache = new InstanceCache(appId, microserviceName, microserviceVersionRule, instanceMap);
+  public Collection<InstanceCache> getCachedEntries() {
+    return cacheMap.values();
+  }
+
+  public void updateInstanceMap(String appId, String microserviceName, InstanceCache cache) {
     String key = getKey(appId, microserviceName);
     cacheMap.put(key, cache);
   }

@@ -22,8 +22,6 @@ import static io.servicecomb.serviceregistry.api.Const.REGISTRY_VERSION;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.slf4j.Logger;
@@ -35,12 +33,7 @@ import io.servicecomb.serviceregistry.cache.CacheEndpoint;
 import io.servicecomb.serviceregistry.cache.InstanceCache;
 import io.servicecomb.serviceregistry.cache.InstanceCacheManager;
 import io.servicecomb.serviceregistry.config.ServiceRegistryConfig;
-import io.servicecomb.serviceregistry.utils.Timer;
-import io.servicecomb.serviceregistry.utils.TimerException;
 
-/**
- * Created by   on 2017/1/9.
- */
 public class IpPortManager {
   private static final Logger LOGGER = LoggerFactory.getLogger(IpPortManager.class);
 
@@ -50,170 +43,67 @@ public class IpPortManager {
 
   private String defaultTransport = "rest";
 
-  private volatile ArrayList<IpPort> defaultIpPort;
+  private ArrayList<IpPort> defaultIpPort;
 
-  private volatile InstanceCache instanceCache = null;
+  private InstanceCache instanceCache = null;
 
-  private volatile AtomicInteger indexForDefault = new AtomicInteger();
+  private AtomicInteger currentAvailbleIndex = new AtomicInteger(0);
 
-  private AtomicInteger indexForAuto = new AtomicInteger();
-
-  private Map<Integer, Boolean> addressCanUsed = new ConcurrentHashMap<>();
-
-  private final Object lockObj = new Object();
+  private Object lock = new Object();
 
   public IpPortManager(ServiceRegistryConfig serviceRegistryConfig, InstanceCacheManager instanceCacheManager) {
     this.serviceRegistryConfig = serviceRegistryConfig;
     this.instanceCacheManager = instanceCacheManager;
 
-    try {
-      // 初始化client发现SR的动态集群扩容能力
-      if (serviceRegistryConfig.isRegistryAutoDiscovery()) {
-        createServiceRegistryCache();
-      }
-    } catch (TimerException e) {
-      // already write log in createServiceRegistryCache
+    defaultTransport = serviceRegistryConfig.getTransport();
+    defaultIpPort = serviceRegistryConfig.getIpPort();
+    if (defaultIpPort.size() == 0) {
+      throw new IllegalArgumentException("Service center address is required to start the application.");
     }
   }
 
-  public ArrayList<IpPort> getDefaultIpPortList() {
-    if (defaultIpPort == null) {
-      synchronized (lockObj) {
-        if (defaultIpPort == null) {
-          defaultTransport = serviceRegistryConfig.getTransport();
-          defaultIpPort = serviceRegistryConfig.getIpPort();
-        }
-      }
-    }
-    return defaultIpPort;
-  }
-
-  public void createServiceRegistryCache() throws TimerException {
-    if (instanceCache != null) {
-      LOGGER.warn("already cache service registry addresses");
-      return;
-    }
-    // 绑定微服务与SR的依赖，同时建立cache
-    Timer timer = Timer.newForeverTimer();
-    while (true) {
+  // we have to do this operation after the first time setup has already done
+  public void initAutoDiscovery() {
+    if (this.serviceRegistryConfig.isRegistryAutoDiscovery()) {
       instanceCache = instanceCacheManager.getOrCreate(REGISTRY_APP_ID,
           REGISTRY_SERVICE_NAME,
           REGISTRY_VERSION);
-      if (instanceCache != null) {
-        break;
+    }
+  }
+
+  public IpPort getAvailableAddress(boolean invalidate) {
+    // This should be very fast in normal case. It's fine to work slow when need to try another instance.
+    synchronized (lock) {
+      if (invalidate) {
+        currentAvailbleIndex.incrementAndGet();
       }
-      LOGGER.error("create service registry {}/{}/{} instance caches failed",
-          REGISTRY_APP_ID,
-          REGISTRY_SERVICE_NAME,
-          REGISTRY_VERSION);
-
-      timer.sleep();
-    }
-    LOGGER.info("create service registry {}/{}/{} instance caches successfully",
-        REGISTRY_APP_ID,
-        REGISTRY_SERVICE_NAME,
-        REGISTRY_VERSION);
-  }
-
-  public IpPort getDefaultIpPort() {
-    List<IpPort> addresses = getDefaultIpPortList();
-    if (addresses == null || addresses.size() == 0) {
-      LOGGER.warn("not exist any service center address");
-      return null;
-    }
-    int id = indexForDefault.get();
-    return addresses.get(id);
-  }
-
-  public IpPort nextDefaultIpPort() {
-    List<IpPort> addresses = getDefaultIpPortList();
-    if (addresses == null || addresses.size() == 0) {
-      LOGGER.warn("not exist any service center address");
-      return null;
-    }
-    synchronized (lockObj) {
-      //轮询一遍结束，暂不考虑并发场景
-      int id = indexForDefault.get();
-      if (id == addresses.size() - 1) {
-        indexForDefault.set(0);
-        LOGGER.warn("service center has no available instance");
-        return null;
+      if (currentAvailbleIndex.get() < defaultIpPort.size()) {
+        return returnWithLog(invalidate, defaultIpPort.get(currentAvailbleIndex.get()));
       }
-
-      indexForDefault.getAndIncrement();
-      LOGGER.info("service center address {}:{} is unreachable, retry another address {}:{}",
-          addresses.get(id).getHostOrIp(),
-          addresses.get(id).getPort(),
-          addresses.get(indexForDefault.get()).getHostOrIp(),
-          addresses.get(indexForDefault.get()).getPort());
-      return addresses.get(indexForDefault.get());
-    }
-  }
-
-  public IpPort get() {
-    List<CacheEndpoint> addresses = getAddressCaches();
-    if (addresses == null || addresses.size() == 0) {
-      return getDefaultIpPort();
-    }
-
-    synchronized (lockObj) {
-      int id = indexForAuto.get();
-      addressCanUsed.putIfAbsent(id, true);
-      return new URIEndpointObject(addresses.get(id).getEndpoint());
-    }
-  }
-
-  public IpPort next() {
-    List<CacheEndpoint> addresses = getAddressCaches();
-    if ((addresses == null || addresses.size() == 0)) {
-      return nextDefaultIpPort();
-    }
-
-    synchronized (lockObj) {
-      int id = indexForAuto.get();
-      // 重置可用的地址为false
-      if (addressCanUsed.get(id) != null && addressCanUsed.get(id)) {
-        addressCanUsed.put(id, false);
-        if (id == addresses.size() - 1) {
-          indexForAuto.set(0);
-          addressCanUsed.clear(); // 重新轮询
-          LOGGER.warn("service center has no available instance");
-          return null;
-        } else {
-          indexForAuto.getAndIncrement();
-        }
-
-        LOGGER.warn("service center instance {} is unreachable, try another instance {}",
-            addresses.get(id).getEndpoint(),
-            addresses.get(indexForAuto.get()).getEndpoint());
+      List<CacheEndpoint> endpoints = getDiscoveredIpPort();
+      if (currentAvailbleIndex.get() >= defaultIpPort.size() + endpoints.size()) {
+        currentAvailbleIndex.set(0);
+        return returnWithLog(invalidate, defaultIpPort.get(0));
       }
-      return new URIEndpointObject(addresses.get(indexForAuto.get()).getEndpoint());
+      CacheEndpoint nextEndpoint = endpoints.get(currentAvailbleIndex.get() - defaultIpPort.size());
+      return returnWithLog(invalidate, new URIEndpointObject(nextEndpoint.getEndpoint()));
     }
   }
 
-  private List<CacheEndpoint> getAddressCaches() {
+  private IpPort returnWithLog(boolean needLog, IpPort result) {
+    if (needLog) {
+      LOGGER.info("Using next service center address {}:{}.", result.getHostOrIp(), result.getPort());
+    }
+    return result;
+  }
+
+  private List<CacheEndpoint> getDiscoveredIpPort() {
     if (instanceCache == null) {
-      return null;
+      return new ArrayList<>(0);
     }
-    InstanceCache newCache = instanceCacheManager.getOrCreate(REGISTRY_APP_ID,
+    instanceCache = instanceCacheManager.getOrCreate(REGISTRY_APP_ID,
         REGISTRY_SERVICE_NAME,
         REGISTRY_VERSION);
-    if (instanceCache == null || instanceCache.cacheChanged(newCache)) {
-      synchronized (lockObj) {
-        if (instanceCache == null || instanceCache.cacheChanged(newCache)) {
-          indexForAuto.set(0);
-          addressCanUsed.clear();
-          instanceCache = newCache;
-        }
-      }
-    }
-
-    return instanceCache == null ? null : instanceCache.getOrCreateTransportMap().get(defaultTransport);
-  }
-
-  public void clearInstanceCache() {
-    synchronized (lockObj) {
-      instanceCache = null;
-    }
+    return instanceCache.getOrCreateTransportMap().get(defaultTransport);
   }
 }

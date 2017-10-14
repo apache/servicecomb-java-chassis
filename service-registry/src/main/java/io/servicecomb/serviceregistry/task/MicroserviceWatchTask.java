@@ -115,7 +115,7 @@ public class MicroserviceWatchTask extends AbstractTask {
   }
 
   private boolean needToWatch() {
-    return serviceRegistryConfig.isWatch() || serviceRegistryConfig.isRegistryAutoDiscovery();
+    return serviceRegistryConfig.isWatch();
   }
 
   private boolean isProviderInstancesChanged(MicroserviceInstanceChangedEvent changedEvent) {

@@ -40,8 +40,7 @@ public class TestInstanceCacheManager {
     MicroserviceInstance instance = new MicroserviceInstance();
     instance.setInstanceId("88887777");
     instanceMap.put(instance.getInstanceId(), instance);
-    oInstanceCacheManager.cacheMap
-        .put("default/default", new InstanceCache("default", "default", "lastest", instanceMap));
+    oInstanceCacheManager.updateInstanceMap("default", "default",  new InstanceCache("default", "default", "lastest", instanceMap));
 
     MicroserviceInstanceChangedEvent oChangedEnvent = new MicroserviceInstanceChangedEvent();
     oChangedEnvent.setAction(WatchAction.UPDATE);
@@ -61,10 +60,15 @@ public class TestInstanceCacheManager {
     oChangedEnvent.setAction(WatchAction.CREATE);
     oInstanceCacheManager.onInstanceUpdate(oChangedEnvent);
     Assert.assertEquals(1, oInstanceCacheManager.cacheMap.get("default/default").getInstanceMap().size());
+    Assert.assertEquals(1, oInstanceCacheManager.getCachedEntries().size());
 
     Assert.assertEquals("UP", microservice.getIntance().getStatus().toString());
     oChangedEnvent.setAction(WatchAction.EXPIRE);
     oInstanceCacheManager.onInstanceUpdate(oChangedEnvent);
     Assert.assertEquals(oInstanceCacheManager.cacheMap.size(), 0);
+    
+    InstanceCache newServiceCache = oInstanceCacheManager.getOrCreate("defalut", "newService", "1.0.1");
+    Assert.assertNotNull(newServiceCache);
+    Assert.assertEquals(1, oInstanceCacheManager.getCachedEntries().size());
   }
 }

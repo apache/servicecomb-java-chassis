@@ -24,11 +24,9 @@ import org.junit.Test;
 import com.google.common.eventbus.EventBus;
 
 import io.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
-import io.servicecomb.serviceregistry.api.registry.Microservice;
-import io.servicecomb.serviceregistry.client.ServiceRegistryClient;
 import io.servicecomb.serviceregistry.config.ServiceRegistryConfig;
-import io.servicecomb.serviceregistry.task.event.ShutdownEvent;
 import mockit.Deencapsulation;
+import mockit.Expectations;
 import mockit.Mocked;
 
 public class TestServiceCenterTask {
@@ -52,62 +50,43 @@ public class TestServiceCenterTask {
   @Before
   public void init() {
     serviceCenterTask =
-        new ServiceCenterTask(eventBus, ServiceRegistryConfig.INSTANCE, microserviceServiceCenterTask);
+        new ServiceCenterTask(eventBus, ServiceRegistryConfig.INSTANCE.getHeartbeatInterval(), microserviceServiceCenterTask);
   }
 
   @Test
-  public void testLifeCycle() {
+  public void testLifeCycleException(@Mocked MicroserviceInstanceRegisterTask instanceEvent, @Mocked MicroserviceInstanceHeartbeatTask heartBeatEvent) {
+    new Expectations() {
+      {
+        instanceEvent.getTaskStatus();
+        result = TaskStatus.FINISHED;
+        heartBeatEvent.getHeartbeatResult();
+        result = HeartbeatResult.DISCONNECTED;
+      }
+    };
     serviceCenterTask.init();
+    eventBus.post(instanceEvent);
+    Assert.assertTrue(Deencapsulation.getField(serviceCenterTask, "registerInstanceSuccess"));
 
-    eventBus.post(new ShutdownEvent());
-    Assert.assertFalse(Deencapsulation.getField(serviceCenterTask, "running"));
+    eventBus.post(heartBeatEvent);
+    Assert.assertFalse(Deencapsulation.getField(serviceCenterTask, "registerInstanceSuccess"));
   }
 
   @Test
-  public void testCalcSleepInterval(@Mocked ServiceRegistryClient srClient,
-      @Mocked Microservice microservice, @Mocked MicroserviceInstanceHeartbeatTask heartbeatTask,
-      @Mocked MicroserviceInstanceRegisterTask registerTask) {
-    serviceCenterTask.calcSleepInterval();
-    Assert.assertEquals(1, serviceCenterTask.getInterval());
-    serviceCenterTask.calcSleepInterval();
-    Assert.assertEquals(2, serviceCenterTask.getInterval());
-    serviceCenterTask.calcSleepInterval();
-    Assert.assertEquals(3, serviceCenterTask.getInterval());
-    serviceCenterTask.calcSleepInterval();
-    Assert.assertEquals(10, serviceCenterTask.getInterval());
-    serviceCenterTask.calcSleepInterval();
-    Assert.assertEquals(20, serviceCenterTask.getInterval());
-    serviceCenterTask.calcSleepInterval();
-    Assert.assertEquals(30, serviceCenterTask.getInterval());
-    serviceCenterTask.calcSleepInterval();
-    Assert.assertEquals(40, serviceCenterTask.getInterval());
-    serviceCenterTask.calcSleepInterval();
-    Assert.assertEquals(50, serviceCenterTask.getInterval());
-    serviceCenterTask.calcSleepInterval();
-    Assert.assertEquals(60, serviceCenterTask.getInterval());
-    serviceCenterTask.calcSleepInterval();
-    Assert.assertEquals(60, serviceCenterTask.getInterval());
+  public void testLifeCycleSuccess(@Mocked MicroserviceInstanceRegisterTask instanceEvent, @Mocked MicroserviceInstanceHeartbeatTask heartBeatEvent) {
+    new Expectations() {
+      {
+        instanceEvent.getTaskStatus();
+        result = TaskStatus.FINISHED;
+        heartBeatEvent.getHeartbeatResult();
+        result = HeartbeatResult.SUCCESS;
+      }
+    };
+    serviceCenterTask.init();
+    eventBus.post(instanceEvent);
+    Assert.assertTrue(Deencapsulation.getField(serviceCenterTask, "registerInstanceSuccess"));
 
-    eventBus.post(heartbeatTask);
-    serviceCenterTask.calcSleepInterval();
-    Assert.assertEquals(60, serviceCenterTask.getInterval());
-
-    // recover and exception again
-    registerTask.taskStatus = TaskStatus.FINISHED;
-    eventBus.post(registerTask);
-    registerTask.taskStatus = TaskStatus.INIT;
-    eventBus.post(registerTask);
-    serviceCenterTask.calcSleepInterval();
-    Assert.assertEquals(1, serviceCenterTask.getInterval());
-
-    registerTask.taskStatus = TaskStatus.FINISHED;
-    eventBus.post(registerTask);
-    serviceCenterTask.calcSleepInterval();
-    Assert.assertEquals(30, serviceCenterTask.getInterval());
-
-    registerTask.taskStatus = TaskStatus.INIT;
-    eventBus.post(registerTask);
-    serviceCenterTask.calcSleepInterval();
-    Assert.assertEquals(1, serviceCenterTask.getInterval());
+    eventBus.post(heartBeatEvent);
+    Assert.assertTrue(Deencapsulation.getField(serviceCenterTask, "registerInstanceSuccess"));
   }
+  
 }

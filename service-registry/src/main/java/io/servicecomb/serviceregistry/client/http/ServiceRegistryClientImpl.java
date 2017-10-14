@@ -83,11 +83,7 @@ public final class ServiceRegistryClientImpl implements ServiceRegistryClient {
   }
 
   private boolean retry(RequestContext requestContext, Handler<RestResponse> responseHandler) {
-    IpPort ipPort = ipPortManager.next();
-    if (ipPort == null) {
-      return false;
-    }
-    requestContext.setIpPort(ipPortManager.get());
+    requestContext.setIpPort(ipPortManager.getAvailableAddress(true));
     RestUtils.httpDo(requestContext, responseHandler);
     return true;
   }
@@ -156,7 +152,7 @@ public final class ServiceRegistryClientImpl implements ServiceRegistryClient {
   @Override
   public List<Microservice> getAllMicroservices() {
     Holder<GetAllServicesResponse> holder = new Holder<>();
-    IpPort ipPort = ipPortManager.get();
+    IpPort ipPort = ipPortManager.getAvailableAddress(false);
 
     CountDownLatch countDownLatch = new CountDownLatch(1);
     RestUtils.get(ipPort,
@@ -177,7 +173,7 @@ public final class ServiceRegistryClientImpl implements ServiceRegistryClient {
   @Override
   public String getMicroserviceId(String appId, String microserviceName, String versionRule) {
     Holder<GetExistenceResponse> holder = new Holder<>();
-    IpPort ipPort = ipPortManager.get();
+    IpPort ipPort = ipPortManager.getAvailableAddress(false);
 
     CountDownLatch countDownLatch = new CountDownLatch(1);
     RestUtils.get(ipPort,
@@ -205,7 +201,7 @@ public final class ServiceRegistryClientImpl implements ServiceRegistryClient {
   @Override
   public boolean isSchemaExist(String microserviceId, String schemaId) {
     Holder<GetExistenceResponse> holder = new Holder<>();
-    IpPort ipPort = ipPortManager.get();
+    IpPort ipPort = ipPortManager.getAvailableAddress(false);
 
     CountDownLatch countDownLatch = new CountDownLatch(1);
     RestUtils.get(ipPort,
@@ -228,7 +224,7 @@ public final class ServiceRegistryClientImpl implements ServiceRegistryClient {
   @Override
   public boolean registerSchema(String microserviceId, String schemaId, String schemaContent) {
     Holder<ResponseWrapper> holder = new Holder<>();
-    IpPort ipPort = ipPortManager.get();
+    IpPort ipPort = ipPortManager.getAvailableAddress(false);
 
     try {
       CreateSchemaRequest request = new CreateSchemaRequest();
@@ -273,7 +269,7 @@ public final class ServiceRegistryClientImpl implements ServiceRegistryClient {
   @Override
   public String getSchema(String microserviceId, String schemaId) {
     Holder<GetSchemaResponse> holder = new Holder<>();
-    IpPort ipPort = ipPortManager.get();
+    IpPort ipPort = ipPortManager.getAvailableAddress(false);
 
     CountDownLatch countDownLatch = new CountDownLatch(1);
     RestUtils.get(ipPort,
@@ -298,7 +294,7 @@ public final class ServiceRegistryClientImpl implements ServiceRegistryClient {
   @Override
   public String registerMicroservice(Microservice microservice) {
     Holder<CreateServiceResponse> holder = new Holder<>();
-    IpPort ipPort = ipPortManager.get();
+    IpPort ipPort = ipPortManager.getAvailableAddress(false);
     try {
       CreateServiceRequest request = new CreateServiceRequest();
       request.setService(microservice);
@@ -330,7 +326,7 @@ public final class ServiceRegistryClientImpl implements ServiceRegistryClient {
   @Override
   public Microservice getMicroservice(String microserviceId) {
     Holder<GetServiceResponse> holder = new Holder<>();
-    IpPort ipPort = ipPortManager.get();
+    IpPort ipPort = ipPortManager.getAvailableAddress(false);
 
     StringBuilder url = new StringBuilder(MS_API_PATH);
     url.append(MICROSERVICE_PATH).append("/").append(microserviceId);
@@ -354,7 +350,7 @@ public final class ServiceRegistryClientImpl implements ServiceRegistryClient {
   @Override
   public String registerMicroserviceInstance(MicroserviceInstance instance) {
     Holder<RegisterInstanceResponse> holder = new Holder<>();
-    IpPort ipPort = ipPortManager.get();
+    IpPort ipPort = ipPortManager.getAvailableAddress(false);
 
     StringBuilder url = new StringBuilder(MS_API_PATH);
     url.append(MICROSERVICE_PATH)
@@ -389,7 +385,7 @@ public final class ServiceRegistryClientImpl implements ServiceRegistryClient {
   @Override
   public List<MicroserviceInstance> getMicroserviceInstance(String consumerId, String providerId) {
     Holder<GetInstancesResponse> holder = new Holder<>();
-    IpPort ipPort = ipPortManager.get();
+    IpPort ipPort = ipPortManager.getAvailableAddress(false);
 
     StringBuilder url = new StringBuilder(MS_API_PATH);
     url.append(MICROSERVICE_PATH)
@@ -416,7 +412,7 @@ public final class ServiceRegistryClientImpl implements ServiceRegistryClient {
   @Override
   public boolean unregisterMicroserviceInstance(String microserviceId, String microserviceInstanceId) {
     Holder<HttpClientResponse> holder = new Holder<>();
-    IpPort ipPort = ipPortManager.get();
+    IpPort ipPort = ipPortManager.getAvailableAddress(false);
 
     StringBuilder url = new StringBuilder(MS_API_PATH);
     url.append(MICROSERVICE_PATH)
@@ -451,7 +447,7 @@ public final class ServiceRegistryClientImpl implements ServiceRegistryClient {
   @Override
   public HeartbeatResponse heartbeat(String microserviceId, String microserviceInstanceId) {
     Holder<HttpClientResponse> holder = new Holder<>();
-    IpPort ipPort = ipPortManager.get();
+    IpPort ipPort = ipPortManager.getAvailableAddress(false);
 
     StringBuilder url = new StringBuilder(MS_API_PATH);
     url.append(MICROSERVICE_PATH)
@@ -506,15 +502,7 @@ public final class ServiceRegistryClientImpl implements ServiceRegistryClient {
 
           String url = MS_API_PATH + MICROSERVICE_PATH + "/" + selfMicroserviceId + WATCHER_PATH;
 
-          IpPort ipPort = ipPortManager.get();
-          if (ipPort == null) {
-            LOGGER.error("request address is null, watch microservice {}",
-                selfMicroserviceId);
-            watchErrorHandler(new Exception("request address is null"),
-                selfMicroserviceId,
-                callback);
-            return;
-          }
+          IpPort ipPort = ipPortManager.getAvailableAddress(false);
           WebsocketUtils.open(ipPort, url, o -> {
             onOpen.success(o);
             LOGGER.info(
@@ -561,7 +549,7 @@ public final class ServiceRegistryClientImpl implements ServiceRegistryClient {
   public List<MicroserviceInstance> findServiceInstance(String consumerId, String appId, String serviceName,
       String versionRule) {
     Holder<FindInstancesResponse> holder = new Holder<>();
-    IpPort ipPort = ipPortManager.get();
+    IpPort ipPort = ipPortManager.getAvailableAddress(false);
 
     StringBuilder url = new StringBuilder(MS_API_PATH);
     url.append(INSTANCES_PATH);
@@ -607,7 +595,7 @@ public final class ServiceRegistryClientImpl implements ServiceRegistryClient {
   @Override
   public boolean updateMicroserviceProperties(String microserviceId, Map<String, String> serviceProperties) {
     Holder<HttpClientResponse> holder = new Holder<>();
-    IpPort ipPort = ipPortManager.get();
+    IpPort ipPort = ipPortManager.getAvailableAddress(false);
 
     StringBuilder url = new StringBuilder(MS_API_PATH);
     url.append(MICROSERVICE_PATH)
@@ -649,7 +637,7 @@ public final class ServiceRegistryClientImpl implements ServiceRegistryClient {
   public boolean updateInstanceProperties(String microserviceId, String microserviceInstanceId,
       Map<String, String> instanceProperties) {
     Holder<HttpClientResponse> holder = new Holder<>();
-    IpPort ipPort = ipPortManager.get();
+    IpPort ipPort = ipPortManager.getAvailableAddress(false);
 
     StringBuilder url = new StringBuilder(MS_API_PATH);
     url.append(MICROSERVICE_PATH)
