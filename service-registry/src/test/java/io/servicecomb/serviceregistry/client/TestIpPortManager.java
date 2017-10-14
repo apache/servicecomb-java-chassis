@@ -103,6 +103,8 @@ public class TestIpPortManager {
         result = addresses;
       }
     };
+    
+    manager.initAutoDiscovery();
     address = manager.getAvailableAddress(true);
     Assert.assertEquals("127.0.0.1", address.getHostOrIp());
     Assert.assertEquals(9982, address.getPort());

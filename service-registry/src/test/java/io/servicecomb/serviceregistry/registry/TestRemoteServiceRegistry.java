@@ -23,6 +23,7 @@ import org.junit.Test;
 
 import com.google.common.eventbus.EventBus;
 
+import io.servicecomb.config.ConfigUtil;
 import io.servicecomb.foundation.common.net.IpPort;
 import io.servicecomb.serviceregistry.client.LocalServiceRegistryClientImpl;
 import io.servicecomb.serviceregistry.client.ServiceRegistryClient;
@@ -53,6 +54,8 @@ public class TestRemoteServiceRegistry {
 
     new Expectations() {
       {
+        definition.getConfiguration();
+        result = ConfigUtil.createLocalConfig();
         config.getIpPort();
         result = ipPortList;
         config.getTransport();
