@@ -31,6 +31,9 @@ public class RequestContext {
 
   private RequestParam params;
 
+  // we can set max retry policies, now only try it twice
+  private boolean retry;
+
   public IpPort getIpPort() {
     return ipPort;
   }
@@ -61,5 +64,13 @@ public class RequestContext {
 
   public void setParams(RequestParam params) {
     this.params = params;
+  }
+
+  public boolean isRetry() {
+    return retry;
+  }
+
+  public void setRetry(boolean retry) {
+    this.retry = retry;
   }
 }

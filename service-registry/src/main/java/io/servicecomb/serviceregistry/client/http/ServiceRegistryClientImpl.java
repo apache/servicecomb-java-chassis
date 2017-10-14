@@ -82,10 +82,11 @@ public final class ServiceRegistryClientImpl implements ServiceRegistryClient {
   public void init() {
   }
 
-  private boolean retry(RequestContext requestContext, Handler<RestResponse> responseHandler) {
+  private void retry(RequestContext requestContext, Handler<RestResponse> responseHandler) {
+    LOGGER.warn("invoke service [{}] failed, retry.", requestContext.getUri());
     requestContext.setIpPort(ipPortManager.getAvailableAddress(true));
+    requestContext.setRetry(true);
     RestUtils.httpDo(requestContext, responseHandler);
-    return true;
   }
 
   @SuppressWarnings("unchecked")
@@ -96,7 +97,9 @@ public final class ServiceRegistryClientImpl implements ServiceRegistryClient {
       HttpClientResponse response = restResponse.getResponse();
       if (response == null) {
         // 请求失败，触发请求SC的其他实例
-        if (!retry(requestContext, syncHandler(countDownLatch, cls, holder))) {
+        if (!requestContext.isRetry()) {
+          retry(requestContext, syncHandler(countDownLatch, cls, holder));
+        } else {
           countDownLatch.countDown();
         }
         return;
@@ -132,10 +135,13 @@ public final class ServiceRegistryClientImpl implements ServiceRegistryClient {
       RequestContext requestContext = restResponse.getRequestContext();
       HttpClientResponse response = restResponse.getResponse();
       if (response == null) {
-        // invoke failed, call another SC instance
-        if (!retry(requestContext, syncHandlerEx(countDownLatch, holder))) {
+        // 请求失败，触发请求SC的其他实例
+        if (!requestContext.isRetry()) {
+          retry(requestContext, syncHandlerEx(countDownLatch, holder));
+        } else {
           countDownLatch.countDown();
         }
+        
         return;
       }
 
