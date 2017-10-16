@@ -18,7 +18,7 @@ paths:
       parameters:
       - in: "body"
         name: "jsonInput"
-        required: false
+        required: true
         schema:
           type: "string"
         x-raw-json: true
