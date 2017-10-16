@@ -62,6 +62,11 @@ public class TestSpringmvc {
   }
 
   @Test
+  public void testRawJsonStringMethod() throws Exception {
+    UnitTestSwaggerUtils.testSwagger("schemas/rawJsonStringMethod.yaml", context, Echo.class, "rawJsonStringMethod");
+  }
+
+  @Test
   public void testClassMethodNoPath() throws Exception {
     UnitTestSwaggerUtils.testException(
         "generate operation swagger failed, io.servicecomb.swagger.generator.springmvc.ClassMethodNoPath:noPath",

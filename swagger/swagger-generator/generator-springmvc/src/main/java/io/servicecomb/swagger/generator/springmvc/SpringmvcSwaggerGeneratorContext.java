@@ -32,6 +32,7 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import io.servicecomb.swagger.extend.annotations.RawJsonRequestBody;
 import io.servicecomb.swagger.generator.core.utils.ClassUtils;
 import io.servicecomb.swagger.generator.rest.RestSwaggerGeneratorContext;
 import io.servicecomb.swagger.generator.springmvc.processor.annotation.CookieValueAnnotationProcessor;
@@ -41,6 +42,7 @@ import io.servicecomb.swagger.generator.springmvc.processor.annotation.PatchMapp
 import io.servicecomb.swagger.generator.springmvc.processor.annotation.PathVariableAnnotationProcessor;
 import io.servicecomb.swagger.generator.springmvc.processor.annotation.PostMappingMethodAnnotationProcessor;
 import io.servicecomb.swagger.generator.springmvc.processor.annotation.PutMappingMethodAnnotationProcessor;
+import io.servicecomb.swagger.generator.springmvc.processor.annotation.RawJsonRequestBodyAnnotationProcessor;
 import io.servicecomb.swagger.generator.springmvc.processor.annotation.RequestAttributeAnnotationProcessor;
 import io.servicecomb.swagger.generator.springmvc.processor.annotation.RequestBodyAnnotationProcessor;
 import io.servicecomb.swagger.generator.springmvc.processor.annotation.RequestHeaderAnnotationProcessor;
@@ -102,6 +104,7 @@ public class SpringmvcSwaggerGeneratorContext extends RestSwaggerGeneratorContex
     parameterAnnotationMgr.register(RequestHeader.class, new RequestHeaderAnnotationProcessor());
     parameterAnnotationMgr.register(RequestParam.class, new RequestParamAnnotationProcessor());
     parameterAnnotationMgr.register(RequestAttribute.class, new RequestAttributeAnnotationProcessor());
+    parameterAnnotationMgr.register(RawJsonRequestBody.class, new RawJsonRequestBodyAnnotationProcessor());
   }
 
   @Override

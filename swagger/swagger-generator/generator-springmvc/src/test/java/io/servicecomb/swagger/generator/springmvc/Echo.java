@@ -19,6 +19,8 @@ package io.servicecomb.swagger.generator.springmvc;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
+import io.servicecomb.swagger.extend.annotations.RawJsonRequestBody;
+
 @RequestMapping(
     path = "Echo",
     method = {RequestMethod.PUT},
@@ -36,5 +38,9 @@ public class Echo {
 
   @RequestMapping
   public void inheritHttpMethod(int query) {
+  }
+
+  @RequestMapping
+  public void rawJsonStringMethod(@RawJsonRequestBody String jsonInput) {
   }
 }
