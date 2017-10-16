@@ -105,4 +105,9 @@ public class TestJaxrs {
 
     Assert.assertEquals(JaxrsSwaggerGeneratorContext.class, context.getClass());
   }
+
+  @Test
+  public void testRawJsonStringMethod() throws Exception {
+    UnitTestSwaggerUtils.testSwagger("schemas/rawJsonStringMethod.yaml", context, Echo.class, "rawJsonStringMethod");
+  }
 }

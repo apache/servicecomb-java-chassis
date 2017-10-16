@@ -1,0 +1,25 @@
+---
+swagger: "2.0"
+info:
+  version: "1.0.0"
+  title: "swagger definition for io.servicecomb.swagger.generator.jaxrs.Echo"
+  x-java-interface: "gen.cse.ms.ut.EchoIntf"
+basePath: "/Echo"
+consumes:
+- "application/json"
+produces:
+- "application/json"
+paths:
+  /testRawJson:
+    post:
+      operationId: "rawJsonStringMethod"
+      parameters:
+      - in: "body"
+        name: "jsonInput"
+        required: true
+        schema:
+          type: "string"
+        x-raw-json: true
+      responses:
+        200:
+          description: "response of 200"

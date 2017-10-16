@@ -30,6 +30,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response;
 
+import io.servicecomb.swagger.extend.annotations.RawJsonRequestBody;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 
@@ -91,5 +92,10 @@ public class Echo {
   @ApiOperation(value = "")
   public void ignoredNonRestful() {
 
+  }
+
+  @Path(value = "testRawJson")
+  @POST
+  public void rawJsonStringMethod(@RawJsonRequestBody String jsonInput) {
   }
 }
