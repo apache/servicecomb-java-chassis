@@ -24,6 +24,7 @@ import org.springframework.util.StringValueResolver;
 
 import io.servicecomb.foundation.common.RegisterManager;
 import io.servicecomb.foundation.common.utils.SPIServiceUtils;
+import io.servicecomb.swagger.extend.annotations.RawJsonRequestBody;
 import io.servicecomb.swagger.extend.annotations.ResponseHeaders;
 import io.servicecomb.swagger.generator.core.AnnotationProcessorManager.AnnotationType;
 import io.servicecomb.swagger.generator.core.processor.annotation.ApiImplicitParamClassProcessor;
@@ -38,6 +39,7 @@ import io.servicecomb.swagger.generator.core.processor.annotation.ApiResponsesMe
 import io.servicecomb.swagger.generator.core.processor.annotation.ResponseHeaderProcessor;
 import io.servicecomb.swagger.generator.core.processor.annotation.ResponseHeadersProcessor;
 import io.servicecomb.swagger.generator.core.processor.annotation.SwaggerDefinitionProcessor;
+import io.servicecomb.swagger.generator.core.processor.parametertype.RawJsonRequestBodyProcessor;
 import io.servicecomb.swagger.generator.core.processor.response.DefaultResponseTypeProcessor;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -124,6 +126,7 @@ public abstract class AbstractSwaggerGeneratorContext implements SwaggerGenerato
   }
 
   protected void initParameterAnnotationMgr() {
+    parameterAnnotationMgr.register(RawJsonRequestBody.class, new RawJsonRequestBodyProcessor());
   }
 
   protected void initParameterTypeProcessorMgr() {

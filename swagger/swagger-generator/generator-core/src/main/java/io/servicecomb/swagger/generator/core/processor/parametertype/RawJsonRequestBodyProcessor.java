@@ -14,18 +14,17 @@
  * limitations under the License.
  */
 
-package io.servicecomb.swagger.generator.jaxrs.processor.annotation;
+package io.servicecomb.swagger.generator.core.processor.parametertype;
 
 import io.servicecomb.swagger.generator.core.OperationGenerator;
 import io.servicecomb.swagger.generator.core.ParameterAnnotationProcessor;
 import io.servicecomb.swagger.generator.core.utils.ParamUtils;
 import io.swagger.models.parameters.BodyParameter;
 
-public class RawJsonRequestBodyAnnotationProcessor implements ParameterAnnotationProcessor {
-
+public class RawJsonRequestBodyProcessor implements ParameterAnnotationProcessor {
   @Override
-  public void process(Object annotation, OperationGenerator operationGenerator, int paramIndex) {
-    BodyParameter bodyParameter = ParamUtils.createBodyParameter(operationGenerator, paramIndex);
+  public void process(Object annotation, OperationGenerator operationGenerator, int paramIdx) {
+    BodyParameter bodyParameter = ParamUtils.createBodyParameter(operationGenerator, paramIdx);
     bodyParameter.setVendorExtension("x-raw-json", true);
     bodyParameter.setRequired(true);
     operationGenerator.addProviderParameter(bodyParameter);
