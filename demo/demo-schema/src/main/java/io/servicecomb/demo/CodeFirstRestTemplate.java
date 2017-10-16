@@ -65,6 +65,8 @@ public class CodeFirstRestTemplate {
       if (transport.equals("rest")) {
         testModelFieldIgnore(template, cseUrlPrefix);
       }
+
+      testRawJson(template, cseUrlPrefix);
     }
   }
 
@@ -235,5 +237,11 @@ public class CodeFirstRestTemplate {
     TestMgr.check(null, output.getOutputIgnoreInterface());
     TestMgr.check(null, output.getOutputJsonObject());
     TestMgr.check(null, output.getOutputObject());
+  }
+
+  protected void testRawJson(RestTemplate template, String cseUrlPrefix) {
+    String input = "{\"name\" : \"zyy\"}";
+    String output = template.postForObject(cseUrlPrefix + "rawJsonAnnotation", input, String.class);
+    TestMgr.check("hello zyy", output);
   }
 }

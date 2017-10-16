@@ -48,6 +48,7 @@ import io.servicecomb.demo.ignore.InputModelForTestIgnore;
 import io.servicecomb.demo.ignore.OutputModelForTestIgnore;
 import io.servicecomb.demo.server.User;
 import io.servicecomb.provider.rest.common.RestSchema;
+import io.servicecomb.swagger.extend.annotations.RawJsonRequestBody;
 import io.servicecomb.swagger.extend.annotations.ResponseHeaders;
 import io.servicecomb.swagger.invocation.Response;
 import io.servicecomb.swagger.invocation.context.ContextUtils;
@@ -239,5 +240,18 @@ public class CodeFirstSpringmvc {
         input.getInputJsonObject(), input.getInputIgnoreInterface(),
         new Person("outputSomeone"), new JsonObject("{\"OutputJsonKey\" : \"OutputJsonValue\"}"), () -> {
     });
+  }
+
+  @RequestMapping(method = RequestMethod.POST, value = "/rawJsonAnnotation")
+  @ResponseBody
+  public String testRawJsonAnnotation(@RawJsonRequestBody String jsonInput) {
+    Map<String, String> person;
+    try {
+      person = RestObjectMapper.INSTANCE.readValue(jsonInput.getBytes(), Map.class);
+    } catch (Exception e) {
+      e.printStackTrace();
+      return null;
+    }
+    return "hello " + person.get("name");
   }
 }
