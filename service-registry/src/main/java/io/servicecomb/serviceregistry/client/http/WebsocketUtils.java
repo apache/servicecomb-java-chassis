@@ -23,6 +23,7 @@ import io.servicecomb.foundation.common.net.IpPort;
 import io.servicecomb.foundation.vertx.client.http.HttpClientWithContext;
 import io.vertx.core.Handler;
 import io.vertx.core.buffer.Buffer;
+import io.vertx.core.http.CaseInsensitiveHeaders;
 
 /**
  * Created by on 2017/4/28.
@@ -41,7 +42,7 @@ public final class WebsocketUtils {
       client.websocket(ipPort.getPort(),
           ipPort.getHostOrIp(),
           url,
-          RestUtils.getDefaultHeaders(),
+        new CaseInsensitiveHeaders().addAll(RestUtils.getDefaultHeaders()),
           ws -> {
             onOpen.handle(null);
 
