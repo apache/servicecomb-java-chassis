@@ -30,7 +30,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.netflix.client.DefaultLoadBalancerRetryHandler;
 import com.netflix.loadbalancer.IRule;
 import com.netflix.loadbalancer.RoundRobinRule;
 import com.netflix.loadbalancer.Server;
@@ -241,7 +240,7 @@ public class LoadbalanceHandler extends AbstractHandler {
     LoadBalancerCommand<Response> command = LoadBalancerCommand.<Response>builder()
         .withLoadBalancer(chosenLB)
         .withServerLocator(invocation)
-        .withRetryHandler(new DefaultLoadBalancerRetryHandler(
+        .withRetryHandler(new LoadBalanceRetryHandler(
             Configuration.INSTANCE.getRetryOnSame(invocation.getMicroserviceName()),
             Configuration.INSTANCE.getRetryOnNext(invocation.getMicroserviceName()), true))
         .withListeners(listeners)
