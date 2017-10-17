@@ -42,7 +42,7 @@ import brave.servlet.TracingFilter;
 
 @Configuration
 @ConditionalOnProperty(value = CONFIG_TRACING_ENABLED_KEY, havingValue = "true", matchIfMissing = true)
-class SpringTracingConfiguration {
+public class SpringTracingConfiguration {
 
   @Bean
   FilterRegistrationBean traceWebFilter(HttpTracing httpTracing) {
