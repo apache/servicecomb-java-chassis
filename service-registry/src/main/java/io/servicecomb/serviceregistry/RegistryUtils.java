@@ -166,9 +166,8 @@ public final class RegistryUtils {
 
     if (publicAddressSetting.isEmpty()) {
       InetSocketAddress socketAddress = ipPort.getSocketAddress();
-      String host = socketAddress.getAddress().getHostAddress();
       if (socketAddress.getAddress().isAnyLocalAddress()) {
-        host = NetUtils.getHostAddress();
+        String host = NetUtils.getHostAddress();
         LOGGER.warn("address {}, auto select a host address to publish {}:{}, maybe not the correct one",
             socketAddress,
             host,
