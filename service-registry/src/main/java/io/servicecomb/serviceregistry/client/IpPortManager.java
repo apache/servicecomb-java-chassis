@@ -49,8 +49,6 @@ public class IpPortManager {
 
   private AtomicInteger currentAvailbleIndex = new AtomicInteger(0);
 
-  private Object lock = new Object();
-
   public IpPortManager(ServiceRegistryConfig serviceRegistryConfig, InstanceCacheManager instanceCacheManager) {
     this.serviceRegistryConfig = serviceRegistryConfig;
     this.instanceCacheManager = instanceCacheManager;
@@ -72,22 +70,23 @@ public class IpPortManager {
   }
 
   public IpPort getAvailableAddress(boolean invalidate) {
-    // This should be very fast in normal case. It's fine to work slow when need to try another instance.
-    synchronized (lock) {
-      if (invalidate) {
-        currentAvailbleIndex.incrementAndGet();
-      }
-      if (currentAvailbleIndex.get() < defaultIpPort.size()) {
-        return returnWithLog(invalidate, defaultIpPort.get(currentAvailbleIndex.get()));
-      }
-      List<CacheEndpoint> endpoints = getDiscoveredIpPort();
-      if (currentAvailbleIndex.get() >= defaultIpPort.size() + endpoints.size()) {
-        currentAvailbleIndex.set(0);
-        return returnWithLog(invalidate, defaultIpPort.get(0));
-      }
-      CacheEndpoint nextEndpoint = endpoints.get(currentAvailbleIndex.get() - defaultIpPort.size());
-      return returnWithLog(invalidate, new URIEndpointObject(nextEndpoint.getEndpoint()));
+    int index;
+    if (invalidate) {
+      index = currentAvailbleIndex.incrementAndGet();
+    } else {
+      index = currentAvailbleIndex.get();
     }
+
+    if (index < defaultIpPort.size()) {
+      return returnWithLog(invalidate, defaultIpPort.get(index));
+    }
+    List<CacheEndpoint> endpoints = getDiscoveredIpPort();
+    if (index >= defaultIpPort.size() + endpoints.size()) {
+      currentAvailbleIndex.set(0);
+      return returnWithLog(invalidate, defaultIpPort.get(0));
+    }
+    CacheEndpoint nextEndpoint = endpoints.get(index - defaultIpPort.size());
+    return returnWithLog(invalidate, new URIEndpointObject(nextEndpoint.getEndpoint()));
   }
 
   private IpPort returnWithLog(boolean needLog, IpPort result) {
