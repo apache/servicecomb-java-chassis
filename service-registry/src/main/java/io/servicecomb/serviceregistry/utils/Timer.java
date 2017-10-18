@@ -101,7 +101,7 @@ public class Timer {
     }
     try {
       TimeUnit.SECONDS.sleep(nextTimeout());
-    } catch (InterruptedException e) {
+    } catch (InterruptedException ignored) {
     }
   }
 
