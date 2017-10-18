@@ -27,7 +27,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import io.servicecomb.foundation.auth.AuthHeaderProvider;
-import io.servicecomb.foundation.auth.SignAuthRequestProvider;
 import io.servicecomb.foundation.auth.SignRequest;
 import io.servicecomb.foundation.common.net.IpPort;
 import io.servicecomb.foundation.vertx.client.http.HttpClientWithContext;
@@ -49,9 +48,6 @@ final class RestUtils {
   private static final ServiceLoader<AuthHeaderProvider> authHeaderProviders =
       ServiceLoader.load(AuthHeaderProvider.class);
 
-  private static final ServiceLoader<SignAuthRequestProvider> signAuthRequestProviders =
-	      ServiceLoader.load(SignAuthRequestProvider.class);
-  
   private RestUtils() {
   }
 
@@ -97,7 +93,7 @@ final class RestUtils {
       httpClientRequest.headers().addAll(headers);
 
       if (requestParam.getHeaders() != null && requestParam.getHeaders().size() > 0) {
-    	headers.putAll(requestParam.getHeaders());
+        headers.putAll(requestParam.getHeaders());
         for (Map.Entry<String, String> header : requestParam.getHeaders().entrySet()) {
           httpClientRequest.putHeader(header.getKey(), header.getValue());
         }
@@ -119,7 +115,7 @@ final class RestUtils {
       //SignAuth
       SignRequest signReq = createSignRequest(requestContext, url.toString(), headers);
       httpClientRequest.headers().addAll(getSignAuthHeaders(signReq));
-      
+
       // body
       if (httpMethod != HttpMethod.GET && requestParam.getBody() != null && requestParam.getBody().length > 0) {
         httpClientRequest.end(Buffer.buffer(requestParam.getBody()));
@@ -140,42 +136,42 @@ final class RestUtils {
   }
 
   public static SignRequest createSignRequest(RequestContext requestContext, String url, Map<String, String> headers) {
-	    SignRequest signReq = new SignRequest();
-	    StringBuilder endpoint = new StringBuilder("https://" + requestContext.getIpPort().getHostOrIp());
-	    endpoint.append(":" + requestContext.getIpPort().getPort());
-	    endpoint.append(url);
-	    try {
-	        signReq.setEndpoint(new URI(endpoint.toString()));
-	    } catch (URISyntaxException e) {
-	        LOGGER.error("set uri failed, uri is {}, message: {}", endpoint.toString(), e.getMessage());
-	        return null;
-	    }
-	    signReq.setContent((requestContext.getParams().getBody() != null && requestContext.getParams().getBody().length > 0) 
-	            ? new ByteArrayInputStream(requestContext.getParams().getBody()): null);
-	    signReq.setHeaders(headers);
-	    signReq.setHttpMethod(requestContext.getMethod().toString());
-	    signReq.setQueryParams(requestContext.getParams().getQueryParamsMap());
-	    return signReq;
-	  }
+    SignRequest signReq = new SignRequest();
+    StringBuilder endpoint = new StringBuilder("https://" + requestContext.getIpPort().getHostOrIp());
+    endpoint.append(":" + requestContext.getIpPort().getPort());
+    endpoint.append(url);
+    try {
+      signReq.setEndpoint(new URI(endpoint.toString()));
+    } catch (URISyntaxException e) {
+      LOGGER.error("set uri failed, uri is {}, message: {}", endpoint.toString(), e.getMessage());
+      return null;
+    }
+    signReq.setContent((requestContext.getParams().getBody() != null && requestContext.getParams().getBody().length > 0)
+        ? new ByteArrayInputStream(requestContext.getParams().getBody()) : null);
+    signReq.setHeaders(headers);
+    signReq.setHttpMethod(requestContext.getMethod().toString());
+    signReq.setQueryParams(requestContext.getParams().getQueryParamsMap());
+    return signReq;
+  }
 
   public static Map<String, String> getSignAuthHeaders(SignRequest signReq) {
-      Map<String, String> signHeaders = new HashMap<>();
-      signAuthRequestProviders.forEach(provider -> signHeaders.putAll(provider.getSignAuthHeaders(signReq)));
-      return signHeaders;
+    Map<String, String> signHeaders = new HashMap<>();
+    authHeaderProviders.forEach(provider -> signHeaders.putAll(provider.getSignAuthHeaders(signReq)));
+    return signHeaders;
   }
-  
+
   public static void addDefaultHeaders(HttpClientRequest request) {
     request.headers().addAll(getDefaultHeaders());
   }
 
   public static Map<String, String> getDefaultHeaders() {
     // add token header
-	 Map<String, String> headers = new HashMap<String, String>();
-	 headers.put(HEADER_CONTENT_TYPE, "application/json");
-	 headers.put(HEADER_USER_AGENT, "cse-serviceregistry-client/1.0.0");
-	 headers.put(HEADER_TENANT_NAME, ServiceRegistryConfig.INSTANCE.getTenantName());
-	 headers.putAll(authHeaders());
-     return headers;
+    Map<String, String> headers = new HashMap<String, String>();
+    headers.put(HEADER_CONTENT_TYPE, "application/json");
+    headers.put(HEADER_USER_AGENT, "cse-serviceregistry-client/1.0.0");
+    headers.put(HEADER_TENANT_NAME, ServiceRegistryConfig.INSTANCE.getTenantName());
+    headers.putAll(authHeaders());
+    return headers;
   }
 
   public static void get(IpPort ipPort, String uri, RequestParam requestParam,

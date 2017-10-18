@@ -39,17 +39,18 @@ public class RestUtilsTest {
     assertThat(headers.get("x-domain-name"), is("default"));
     assertThat(headers.get("X-Service-AK"), is("blah..."));
   }
-  
+
   @Test
   public void addSignAuthHeaders() throws Exception {
-      RequestContext requestContext = new RequestContext();
-      requestContext.setMethod(HttpMethod.GET);
-      requestContext.setIpPort(new IpPort("127.0.0.1", 443));
-      requestContext.setUri("/test");
-      requestContext.setParams(new RequestParam().addQueryParam("testParam", "test"));
-      
-      Map<String, String> headers = RestUtils.getSignAuthHeaders(RestUtils.createSignRequest(requestContext, "", new HashMap<String, String>()));
-      assertThat(headers.get("X-Sdk-Date"), is("20171016T123456Z..."));
-      assertThat(headers.get("Authorization"), is("SDK-HMAC-SHA256..."));
+    RequestContext requestContext = new RequestContext();
+    requestContext.setMethod(HttpMethod.GET);
+    requestContext.setIpPort(new IpPort("127.0.0.1", 443));
+    requestContext.setUri("/test");
+    requestContext.setParams(new RequestParam().addQueryParam("testParam", "test"));
+
+    Map<String, String> headers =
+        RestUtils.getSignAuthHeaders(RestUtils.createSignRequest(requestContext, "", new HashMap<String, String>()));
+    assertThat(headers.get("X-Sdk-Date"), is("20171016T123456Z..."));
+    assertThat(headers.get("Authorization"), is("SDK-HMAC-SHA256..."));
   }
 }

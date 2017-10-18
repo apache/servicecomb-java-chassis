@@ -42,7 +42,7 @@ public final class WebsocketUtils {
       client.websocket(ipPort.getPort(),
           ipPort.getHostOrIp(),
           url,
-        new CaseInsensitiveHeaders().addAll(RestUtils.getDefaultHeaders()),
+          new CaseInsensitiveHeaders().addAll(RestUtils.getDefaultHeaders()),
           ws -> {
             onOpen.handle(null);
 

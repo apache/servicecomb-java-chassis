@@ -23,175 +23,176 @@ import java.util.Map;
 
 public class SignRequest {
 
-	/**
-	 * the resource path being requested
-	 */
-	private String resourcePath; 
-    /**
-     *  queryParams parameters being sent as part of this request.
-     */
-    private Map<String, String[]> queryParams;
+  /**
+   * the resource path being requested
+   */
+  private String resourcePath;
 
-    /**
-     * Map of the headers included in this request
-     */
-    private Map<String, String> headers = new HashMap<String, String>();
+  /**
+   *  queryParams parameters being sent as part of this request.
+   */
+  private Map<String, String[]> queryParams;
 
-    /**
-     * The service endpoint to which this request should be sent
-     */
-    private URI endpoint;
+  /**
+   * Map of the headers included in this request
+   */
+  private Map<String, String> headers = new HashMap<String, String>();
 
-    /**
-     * The HTTP method to use when sending this request.
-     */
-    private String httpMethod = "GET";
+  /**
+   * The service endpoint to which this request should be sent
+   */
+  private URI endpoint;
 
-    /**
-     * An optional stream from which to read the request payload.
-     */
-    private InputStream content;
+  /**
+   * The HTTP method to use when sending this request.
+   */
+  private String httpMethod = "GET";
 
-    /**
-     * The datetime in milliseconds for which the signature needs to be
-     * computed.
-     */
-    private  long signingDateTimeMilli = System.currentTimeMillis();
+  /**
+   * An optional stream from which to read the request payload.
+   */
+  private InputStream content;
 
-    /**
-     * The scope of the signature.
-     */
-    private  String scope;
+  /**
+   * The datetime in milliseconds for which the signature needs to be
+   * computed.
+   */
+  private long signingDateTimeMilli = System.currentTimeMillis();
 
-    /**
-     * The region to be used for computing the signature.
-     */
-    private  String regionName;
+  /**
+   * The scope of the signature.
+   */
+  private String scope;
 
-    /**
-     * The name of the service.
-     */
-    private  String serviceName;
+  /**
+   * The region to be used for computing the signature.
+   */
+  private String regionName;
 
-    /**
-     * UTC formatted version of the signing time stamp.
-     */
-    private  String formattedSigningDateTime;
+  /**
+   * The name of the service.
+   */
+  private String serviceName;
 
-    /**
-     * UTC Formatted Signing date with time stamp stripped
-     */
-    private  String formattedSigningDate;
+  /**
+   * UTC formatted version of the signing time stamp.
+   */
+  private String formattedSigningDateTime;
 
-    public SignRequest() {
+  /**
+   * UTC Formatted Signing date with time stamp stripped
+   */
+  private String formattedSigningDate;
 
+  public SignRequest() {
+
+  }
+
+  public String getResourcePath() {
+    return resourcePath;
+  }
+
+  public void setResourcePath(String resourcePath) {
+    this.resourcePath = resourcePath;
+  }
+
+
+  public long getSigningDateTimeMilli() {
+    return signingDateTimeMilli;
+  }
+
+  public String getScope() {
+    return scope;
+  }
+
+  public void setScope(String scope) {
+    this.scope = scope;
+  }
+
+  public String getRegionName() {
+    if (regionName == null) {
+      return "";
     }
+    return regionName;
+  }
 
-	public String getResourcePath() {
-		return resourcePath;
-	}
+  public void setRegionName(String regionName) {
+    this.regionName = regionName;
+  }
 
-	public void setResourcePath(String resourcePath) {
-		this.resourcePath = resourcePath;
-	}
-
-
-	public long getSigningDateTimeMilli() {
-        return signingDateTimeMilli;
+  public String getServiceName() {
+    if (serviceName == null) {
+      return "";
     }
+    return serviceName;
+  }
 
-    public String getScope() {
-        return scope;
-    }
+  public void setServiceName(String serviceName) {
+    this.serviceName = serviceName;
+  }
 
-    public void setScope(String scope) {
-        this.scope = scope;
-    }
+  public String getFormattedSigningDateTime() {
+    return formattedSigningDateTime;
+  }
 
-    public String getRegionName() {
-        if (regionName == null) {
-            return "";
-        }
-        return regionName;
-    }
+  public void setFormattedSigningDateTime(String formattedSigningDateTime) {
+    this.formattedSigningDateTime = formattedSigningDateTime;
+  }
 
-    public void setRegionName(String regionName) {
-        this.regionName = regionName;
-    }
+  public String getFormattedSigningDate() {
+    return formattedSigningDate;
+  }
 
-    public String getServiceName() {
-        if (serviceName == null) {
-            return "";
-        }
-        return serviceName;
-    }
+  public void setFormattedSigningDate(String formattedSigningDate) {
+    this.formattedSigningDate = formattedSigningDate;
+  }
 
-    public void setServiceName(String serviceName) {
-        this.serviceName = serviceName;
-    }
+  public Map<String, String> getHeaders() {
+    return headers;
+  }
 
-    public String getFormattedSigningDateTime() {
-        return formattedSigningDateTime;
-    }
-
-    public void setFormattedSigningDateTime(String formattedSigningDateTime) {
-        this.formattedSigningDateTime = formattedSigningDateTime;
-    }
-
-    public String getFormattedSigningDate() {
-        return formattedSigningDate;
-    }
-
-    public void setFormattedSigningDate(String formattedSigningDate) {
-        this.formattedSigningDate = formattedSigningDate;
-    }
-
-    public Map<String, String> getHeaders() {
-        return headers;
-    }
-
-    public String getHttpMethod() {
-        return httpMethod;
-    }
+  public String getHttpMethod() {
+    return httpMethod;
+  }
 
 
-    public void setHttpMethod(String httpMethod) {
-        this.httpMethod = httpMethod;
-    }
+  public void setHttpMethod(String httpMethod) {
+    this.httpMethod = httpMethod;
+  }
 
 
-    public void setEndpoint(URI endpoint) {
-        this.endpoint = endpoint;
-    }
+  public void setEndpoint(URI endpoint) {
+    this.endpoint = endpoint;
+  }
 
 
-    public URI getEndpoint() {
-        return endpoint;
-    }
+  public URI getEndpoint() {
+    return endpoint;
+  }
 
 
-    public InputStream getContent() {
-        return content;
-    }
+  public InputStream getContent() {
+    return content;
+  }
 
 
-    public void setContent(InputStream content) {
-        this.content = content;
-    }
+  public void setContent(InputStream content) {
+    this.content = content;
+  }
 
 
-    public void setHeaders(Map<String, String> headers) {
-        this.headers.clear();
-        this.headers.putAll(headers);
-    }
+  public void setHeaders(Map<String, String> headers) {
+    this.headers.clear();
+    this.headers.putAll(headers);
+  }
 
 
-    public Map<String, String[]> getQueryParams() {
-        return queryParams;
-    }
+  public Map<String, String[]> getQueryParams() {
+    return queryParams;
+  }
 
-    public void setQueryParams(Map<String, String[]> queryParams) {
-        this.queryParams = queryParams;
-    }
-	
+  public void setQueryParams(Map<String, String[]> queryParams) {
+    this.queryParams = queryParams;
+  }
+
 }
