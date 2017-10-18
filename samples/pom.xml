@@ -22,7 +22,7 @@
     <groupId>io.servicecomb.samples</groupId>
     <artifactId>samples</artifactId>
     <packaging>pom</packaging>
-    <version>0.4.0-SNAPSHOT</version>
+    <version>0.4.0</version>
     <modules>
         <module>codefirst-sample</module>
         <module>custom-handler-sample</module>
@@ -37,14 +37,14 @@
             <dependency>
                 <groupId>io.servicecomb</groupId>
                 <artifactId>java-chassis-dependencies</artifactId>
-                <version>0.4.0-SNAPSHOT</version>
+                <version>0.4.0</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
             <dependency>
                 <groupId>io.servicecomb.samples</groupId>
                 <artifactId>commmon-schema</artifactId>
-                <version>0.4.0-SNAPSHOT</version>
+                <version>0.4.0</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

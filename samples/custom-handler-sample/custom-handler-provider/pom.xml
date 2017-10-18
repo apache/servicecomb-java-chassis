@@ -20,7 +20,7 @@
     <parent>
         <groupId>io.servicecomb.samples</groupId>
         <artifactId>custom-handler-sample</artifactId>
-        <version>0.4.0-SNAPSHOT</version>
+        <version>0.4.0</version>
     </parent>
     <artifactId>custom-handler-provider</artifactId>
     <dependencies>
