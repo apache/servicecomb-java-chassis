@@ -29,4 +29,8 @@ public interface DefinitionConst {
   String DEFAULT_STAGE = "prod";
 
   String DEFAULT_INSTANCE_ENVIRONMENT = "production";
+
+  String VERSION_RULE_LATEST = "latest";
+
+  String VERSION_RULE_ALL = "0+";
 }
