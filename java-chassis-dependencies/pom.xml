@@ -22,7 +22,7 @@
   <parent>
     <groupId>io.servicecomb</groupId>
     <artifactId>java-chassis</artifactId>
-    <version>0.4.0-SNAPSHOT</version>
+    <version>0.4.0</version>
   </parent>
 
   <artifactId>java-chassis-dependencies</artifactId>
@@ -682,33 +682,33 @@
       <dependency>
         <groupId>io.servicecomb</groupId>
         <artifactId>foundation-common</artifactId>
-        <version>0.4.0-SNAPSHOT</version>
+        <version>0.4.0</version>
       </dependency>
       <dependency>
         <groupId>io.servicecomb</groupId>
         <artifactId>foundation-test-scaffolding</artifactId>
-        <version>0.4.0-SNAPSHOT</version>
+        <version>0.4.0</version>
         <scope>test</scope>
       </dependency>
       <dependency>
         <groupId>io.servicecomb</groupId>
         <artifactId>foundation-ssl</artifactId>
-        <version>0.4.0-SNAPSHOT</version>
+        <version>0.4.0</version>
       </dependency>
       <dependency>
         <groupId>io.servicecomb</groupId>
         <artifactId>foundation-config</artifactId>
-        <version>0.4.0-SNAPSHOT</version>
+        <version>0.4.0</version>
       </dependency>
       <dependency>
         <groupId>io.servicecomb</groupId>
         <artifactId>foundation-vertx</artifactId>
-        <version>0.4.0-SNAPSHOT</version>
+        <version>0.4.0</version>
       </dependency>
       <dependency>
         <groupId>io.servicecomb</groupId>
         <artifactId>foundation-metrics</artifactId>
-        <version>0.4.0-SNAPSHOT</version>
+        <version>0.4.0</version>
       </dependency>
       <dependency>
         <groupId>com.fasterxml.jackson.dataformat</groupId>
@@ -748,157 +748,157 @@
       <dependency>
         <groupId>io.servicecomb</groupId>
         <artifactId>java-chassis-core</artifactId>
-        <version>0.4.0-SNAPSHOT</version>
+        <version>0.4.0</version>
       </dependency>
       <dependency>
         <groupId>io.servicecomb</groupId>
         <artifactId>handler-bizkeeper</artifactId>
-        <version>0.4.0-SNAPSHOT</version>
+        <version>0.4.0</version>
       </dependency>
       <dependency>
         <groupId>io.servicecomb</groupId>
         <artifactId>handler-loadbalance</artifactId>
-        <version>0.4.0-SNAPSHOT</version>
+        <version>0.4.0</version>
       </dependency>
       <dependency>
         <groupId>io.servicecomb</groupId>
         <artifactId>handler-flowcontrol-qps</artifactId>
-        <version>0.4.0-SNAPSHOT</version>
+        <version>0.4.0</version>
       </dependency>
       <dependency>
         <groupId>io.servicecomb</groupId>
         <artifactId>common-rest</artifactId>
-        <version>0.4.0-SNAPSHOT</version>
+        <version>0.4.0</version>
       </dependency>
       <dependency>
         <groupId>io.servicecomb</groupId>
         <artifactId>transport-rest-client</artifactId>
-        <version>0.4.0-SNAPSHOT</version>
+        <version>0.4.0</version>
       </dependency>
       <dependency>
         <groupId>io.servicecomb</groupId>
         <artifactId>transport-rest-vertx</artifactId>
-        <version>0.4.0-SNAPSHOT</version>
+        <version>0.4.0</version>
       </dependency>
       <dependency>
         <groupId>io.servicecomb</groupId>
         <artifactId>transport-rest-servlet</artifactId>
-        <version>0.4.0-SNAPSHOT</version>
+        <version>0.4.0</version>
       </dependency>
       <dependency>
         <groupId>io.servicecomb</groupId>
         <artifactId>common-protobuf</artifactId>
-        <version>0.4.0-SNAPSHOT</version>
+        <version>0.4.0</version>
       </dependency>
       <dependency>
         <groupId>io.servicecomb</groupId>
         <artifactId>common-javassist</artifactId>
-        <version>0.4.0-SNAPSHOT</version>
+        <version>0.4.0</version>
       </dependency>
       <dependency>
         <groupId>io.servicecomb</groupId>
         <artifactId>swagger-generator-core</artifactId>
-        <version>0.4.0-SNAPSHOT</version>
+        <version>0.4.0</version>
       </dependency>
       <dependency>
         <groupId>io.servicecomb</groupId>
         <artifactId>swagger-generator-jaxrs</artifactId>
-        <version>0.4.0-SNAPSHOT</version>
+        <version>0.4.0</version>
       </dependency>
       <dependency>
         <groupId>io.servicecomb</groupId>
         <artifactId>swagger-generator-springmvc</artifactId>
-        <version>0.4.0-SNAPSHOT</version>
+        <version>0.4.0</version>
       </dependency>
       <dependency>
         <groupId>io.servicecomb</groupId>
         <artifactId>swagger-invocation-core</artifactId>
-        <version>0.4.0-SNAPSHOT</version>
+        <version>0.4.0</version>
       </dependency>
       <dependency>
         <groupId>io.servicecomb</groupId>
         <artifactId>swagger-invocation-jaxrs</artifactId>
-        <version>0.4.0-SNAPSHOT</version>
+        <version>0.4.0</version>
       </dependency>
       <dependency>
         <groupId>io.servicecomb</groupId>
         <artifactId>swagger-invocation-springmvc</artifactId>
-        <version>0.4.0-SNAPSHOT</version>
+        <version>0.4.0</version>
       </dependency>
       <dependency>
         <groupId>io.servicecomb</groupId>
         <artifactId>service-registry</artifactId>
-        <version>0.4.0-SNAPSHOT</version>
+        <version>0.4.0</version>
       </dependency>
       <dependency>
         <groupId>io.servicecomb</groupId>
         <artifactId>provider-pojo</artifactId>
-        <version>0.4.0-SNAPSHOT</version>
+        <version>0.4.0</version>
       </dependency>
       <dependency>
         <groupId>io.servicecomb</groupId>
         <artifactId>provider-rest-common</artifactId>
-        <version>0.4.0-SNAPSHOT</version>
+        <version>0.4.0</version>
       </dependency>
       <dependency>
         <groupId>io.servicecomb</groupId>
         <artifactId>provider-jaxrs</artifactId>
-        <version>0.4.0-SNAPSHOT</version>
+        <version>0.4.0</version>
       </dependency>
       <dependency>
         <groupId>io.servicecomb</groupId>
         <artifactId>provider-springmvc</artifactId>
-        <version>0.4.0-SNAPSHOT</version>
+        <version>0.4.0</version>
       </dependency>
       <dependency>
         <groupId>io.servicecomb</groupId>
         <artifactId>transport-highway</artifactId>
-        <version>0.4.0-SNAPSHOT</version>
+        <version>0.4.0</version>
       </dependency>
       <dependency>
         <groupId>io.servicecomb</groupId>
         <artifactId>spring-boot-starter-configuration</artifactId>
-        <version>0.4.0-SNAPSHOT</version>
+        <version>0.4.0</version>
       </dependency>
       <dependency>
         <groupId>io.servicecomb</groupId>
         <artifactId>spring-boot-starter-servicecomb</artifactId>
-        <version>0.4.0-SNAPSHOT</version>
+        <version>0.4.0</version>
       </dependency>
       <dependency>
         <groupId>io.servicecomb</groupId>
         <artifactId>spring-boot-starter-provider</artifactId>
-        <version>0.4.0-SNAPSHOT</version>
+        <version>0.4.0</version>
       </dependency>
       <dependency>
         <groupId>io.servicecomb</groupId>
         <artifactId>spring-boot-starter-discovery</artifactId>
-        <version>0.4.0-SNAPSHOT</version>
+        <version>0.4.0</version>
       </dependency>
       <dependency>
         <groupId>io.servicecomb</groupId>
         <artifactId>spring-boot-starter-transport</artifactId>
-        <version>0.4.0-SNAPSHOT</version>
+        <version>0.4.0</version>
       </dependency>
       <dependency>
         <groupId>io.servicecomb</groupId>
         <artifactId>spring-cloud-zuul-zipkin</artifactId>
-        <version>0.4.0-SNAPSHOT</version>
+        <version>0.4.0</version>
       </dependency>
       <dependency>
         <groupId>io.servicecomb</groupId>
         <artifactId>handler-tracing-zipkin</artifactId>
-        <version>0.4.0-SNAPSHOT</version>
+        <version>0.4.0</version>
       </dependency>
       <dependency>
         <groupId>io.servicecomb</groupId>
         <artifactId>tracing-common</artifactId>
-        <version>0.4.0-SNAPSHOT</version>
+        <version>0.4.0</version>
       </dependency>
       <dependency>
         <groupId>io.servicecomb</groupId>
         <artifactId>tracing-zipkin</artifactId>
-        <version>0.4.0-SNAPSHOT</version>
+        <version>0.4.0</version>
       </dependency>
     </dependencies>
   </dependencyManagement>

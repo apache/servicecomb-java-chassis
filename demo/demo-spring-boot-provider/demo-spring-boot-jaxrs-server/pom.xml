@@ -23,7 +23,7 @@
 	<parent>
 		<groupId>io.servicecomb.demo</groupId>
 		<artifactId>demo-spring-boot</artifactId>
-		<version>0.4.0-SNAPSHOT</version>
+		<version>0.4.0</version>
 	</parent>
 	<properties>
 		<demo.main>io.servicecomb.springboot.jaxrs.server.JaxrsServer</demo.main>
@@ -56,7 +56,7 @@
 						<mixin>
 							<groupId>io.servicecomb.demo</groupId>
 							<artifactId>docker-build-config</artifactId>
-							<version>0.4.0-SNAPSHOT</version>
+							<version>0.4.0</version>
 						</mixin>
 					</mixins>
 				</configuration>

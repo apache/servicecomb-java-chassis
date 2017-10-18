@@ -21,7 +21,7 @@
   <parent>
     <groupId>io.servicecomb</groupId>
     <artifactId>java-chassis-parent</artifactId>
-    <version>0.4.0-SNAPSHOT</version>
+    <version>0.4.0</version>
     <relativePath>../parent</relativePath>
   </parent>
   <groupId>io.servicecomb.demo</groupId>
@@ -51,67 +51,67 @@
       <dependency>
         <groupId>io.servicecomb.demo</groupId>
         <artifactId>demo-signature</artifactId>
-        <version>0.4.0-SNAPSHOT</version>
+        <version>0.4.0</version>
       </dependency>
       <dependency>
         <groupId>io.servicecomb.demo</groupId>
         <artifactId>demo-schema</artifactId>
-        <version>0.4.0-SNAPSHOT</version>
+        <version>0.4.0</version>
       </dependency>
       <dependency>
         <groupId>io.servicecomb.demo</groupId>
         <artifactId>all-client</artifactId>
-        <version>0.4.0-SNAPSHOT</version>
+        <version>0.4.0</version>
       </dependency>
       <dependency>
         <groupId>io.servicecomb.demo</groupId>
         <artifactId>pojo-server</artifactId>
-        <version>0.4.0-SNAPSHOT</version>
+        <version>0.4.0</version>
       </dependency>
       <dependency>
         <groupId>io.servicecomb.demo</groupId>
         <artifactId>jaxrs-server</artifactId>
-        <version>0.4.0-SNAPSHOT</version>
+        <version>0.4.0</version>
       </dependency>
       <dependency>
         <groupId>io.servicecomb.demo</groupId>
         <artifactId>springmvc-server</artifactId>
-        <version>0.4.0-SNAPSHOT</version>
+        <version>0.4.0</version>
       </dependency>
       <dependency>
         <groupId>io.servicecomb.demo</groupId>
         <artifactId>crossapp-server</artifactId>
-        <version>0.4.0-SNAPSHOT</version>
+        <version>0.4.0</version>
       </dependency>
       <dependency>
         <groupId>io.servicecomb.demo</groupId>
         <artifactId>multiple-server</artifactId>
-        <version>0.4.0-SNAPSHOT</version>
+        <version>0.4.0</version>
       </dependency>
       <dependency>
         <groupId>io.servicecomb.demo</groupId>
         <artifactId>multiple-client</artifactId>
-        <version>0.4.0-SNAPSHOT</version>
+        <version>0.4.0</version>
       </dependency>
       <dependency>
         <groupId>io.servicecomb.demo</groupId>
         <artifactId>pojo-client</artifactId>
-        <version>0.4.0-SNAPSHOT</version>
+        <version>0.4.0</version>
       </dependency>
       <dependency>
         <groupId>io.servicecomb.demo</groupId>
         <artifactId>jaxrs-client</artifactId>
-        <version>0.4.0-SNAPSHOT</version>
+        <version>0.4.0</version>
       </dependency>
       <dependency>
         <groupId>io.servicecomb.demo</groupId>
         <artifactId>springmvc-client</artifactId>
-        <version>0.4.0-SNAPSHOT</version>
+        <version>0.4.0</version>
       </dependency>
       <dependency>
         <groupId>io.servicecomb.demo</groupId>
         <artifactId>crossapp-client</artifactId>
-        <version>0.4.0-SNAPSHOT</version>
+        <version>0.4.0</version>
       </dependency>
     </dependencies>
   </dependencyManagement>
