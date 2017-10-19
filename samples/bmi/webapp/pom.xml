@@ -59,6 +59,10 @@
       <artifactId>spring-boot-starter-discovery</artifactId>
     </dependency>
     <dependency>
+      <groupId>io.servicecomb</groupId>
+      <artifactId>spring-cloud-zuul</artifactId>
+    </dependency>
+    <dependency>
       <groupId>org.hibernate</groupId>
       <artifactId>hibernate-validator</artifactId>
     </dependency>
