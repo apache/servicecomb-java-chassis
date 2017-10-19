@@ -88,7 +88,7 @@ final class RestUtils {
             responseHandler.handle(new RestResponse(requestContext, null));
           });
 
-      // headers
+      //headers
       Map<String, String> headers = getDefaultHeaders();
       httpClientRequest.headers().addAll(headers);
 
@@ -113,7 +113,11 @@ final class RestUtils {
       }
 
       //SignAuth
-      SignRequest signReq = createSignRequest(requestContext, url.toString(), headers);
+      SignRequest signReq = createSignRequest(requestContext.getMethod().toString(),
+          requestContext.getIpPort(),
+          requestContext.getParams(),
+          url.toString(),
+          headers);
       httpClientRequest.headers().addAll(getSignAuthHeaders(signReq));
 
       // body
@@ -135,29 +139,23 @@ final class RestUtils {
     return requestContext;
   }
 
-  public static SignRequest createSignRequest(RequestContext requestContext, String url, Map<String, String> headers) {
+  public static SignRequest createSignRequest(String method, IpPort ipPort, RequestParam requestParam, String url,
+      Map<String, String> headers) {
     SignRequest signReq = new SignRequest();
-    StringBuilder endpoint = new StringBuilder("https://" + requestContext.getIpPort().getHostOrIp());
-    endpoint.append(":" + requestContext.getIpPort().getPort());
+    StringBuilder endpoint = new StringBuilder("https://" + ipPort.getHostOrIp());
+    endpoint.append(":" + ipPort.getPort());
     endpoint.append(url);
     try {
       signReq.setEndpoint(new URI(endpoint.toString()));
     } catch (URISyntaxException e) {
       LOGGER.error("set uri failed, uri is {}, message: {}", endpoint.toString(), e.getMessage());
-      return null;
     }
-    signReq.setContent((requestContext.getParams().getBody() != null && requestContext.getParams().getBody().length > 0)
-        ? new ByteArrayInputStream(requestContext.getParams().getBody()) : null);
+    signReq.setContent((requestParam.getBody() != null && requestParam.getBody().length > 0)
+        ? new ByteArrayInputStream(requestParam.getBody()) : null);
     signReq.setHeaders(headers);
-    signReq.setHttpMethod(requestContext.getMethod().toString());
-    signReq.setQueryParams(requestContext.getParams().getQueryParamsMap());
+    signReq.setHttpMethod(method);
+    signReq.setQueryParams(requestParam.getQueryParamsMap());
     return signReq;
-  }
-
-  public static Map<String, String> getSignAuthHeaders(SignRequest signReq) {
-    Map<String, String> signHeaders = new HashMap<>();
-    authHeaderProviders.forEach(provider -> signHeaders.putAll(provider.getSignAuthHeaders(signReq)));
-    return signHeaders;
   }
 
   public static void addDefaultHeaders(HttpClientRequest request) {
@@ -170,7 +168,6 @@ final class RestUtils {
     headers.put(HEADER_CONTENT_TYPE, "application/json");
     headers.put(HEADER_USER_AGENT, "cse-serviceregistry-client/1.0.0");
     headers.put(HEADER_TENANT_NAME, ServiceRegistryConfig.INSTANCE.getTenantName());
-    headers.putAll(authHeaders());
     return headers;
   }
 
@@ -194,9 +191,9 @@ final class RestUtils {
     httpDo(createRequestContext(HttpMethod.DELETE, ipPort, uri, requestParam), responseHandler);
   }
 
-  private static Map<String, String> authHeaders() {
+  public static Map<String, String> getSignAuthHeaders(SignRequest signReq) {
     Map<String, String> headers = new HashMap<>();
-    authHeaderProviders.forEach(provider -> headers.putAll(provider.authHeaders()));
+    authHeaderProviders.forEach(provider -> headers.putAll(provider.getSignAuthHeaders(signReq)));
     return headers;
   }
 }

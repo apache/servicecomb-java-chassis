@@ -20,7 +20,6 @@ import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 
 import java.util.HashMap;
-import java.util.Map;
 
 import org.junit.Test;
 
@@ -32,25 +31,16 @@ import io.vertx.core.http.HttpMethod;
 public class RestUtilsTest {
   @Test
   public void defaultHeadersContainServiceRegistryAndAuthentication() throws Exception {
+    
     MultiMap headers = new CaseInsensitiveHeaders().addAll(RestUtils.getDefaultHeaders());
-
+    headers.addAll(RestUtils.getSignAuthHeaders(RestUtils.createSignRequest(HttpMethod.GET.toString(),
+        new IpPort("127.0.0.1", 443),
+        new RequestParam().addQueryParam("testParam", "test"),
+        "test",
+        new HashMap<String, String>())));
     assertThat(headers.get("Content-Type"), is("application/json"));
     assertThat(headers.get("User-Agent"), is("cse-serviceregistry-client/1.0.0"));
     assertThat(headers.get("x-domain-name"), is("default"));
     assertThat(headers.get("X-Service-AK"), is("blah..."));
-  }
-
-  @Test
-  public void addSignAuthHeaders() throws Exception {
-    RequestContext requestContext = new RequestContext();
-    requestContext.setMethod(HttpMethod.GET);
-    requestContext.setIpPort(new IpPort("127.0.0.1", 443));
-    requestContext.setUri("/test");
-    requestContext.setParams(new RequestParam().addQueryParam("testParam", "test"));
-
-    Map<String, String> headers =
-        RestUtils.getSignAuthHeaders(RestUtils.createSignRequest(requestContext, "", new HashMap<String, String>()));
-    assertThat(headers.get("X-Sdk-Date"), is("20171016T123456Z..."));
-    assertThat(headers.get("Authorization"), is("SDK-HMAC-SHA256..."));
   }
 }

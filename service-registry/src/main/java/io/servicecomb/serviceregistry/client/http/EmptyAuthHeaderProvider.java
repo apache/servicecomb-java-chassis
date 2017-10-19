@@ -20,10 +20,11 @@ import java.util.HashMap;
 import java.util.Map;
 
 import io.servicecomb.foundation.auth.AuthHeaderProvider;
+import io.servicecomb.foundation.auth.SignRequest;
 
 public class EmptyAuthHeaderProvider implements AuthHeaderProvider {
   @Override
-  public Map<String, String> authHeaders() {
+  public Map<String, String> getSignAuthHeaders(SignRequest request) {
     return new HashMap<>(0);
   }
 }

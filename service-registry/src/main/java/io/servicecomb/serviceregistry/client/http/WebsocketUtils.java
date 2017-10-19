@@ -16,6 +16,8 @@
 
 package io.servicecomb.serviceregistry.client.http;
 
+import java.util.HashMap;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -24,6 +26,7 @@ import io.servicecomb.foundation.vertx.client.http.HttpClientWithContext;
 import io.vertx.core.Handler;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.http.CaseInsensitiveHeaders;
+import io.vertx.core.http.HttpMethod;
 
 /**
  * Created by on 2017/4/28.
@@ -42,7 +45,8 @@ public final class WebsocketUtils {
       client.websocket(ipPort.getPort(),
           ipPort.getHostOrIp(),
           url,
-          new CaseInsensitiveHeaders().addAll(RestUtils.getDefaultHeaders()),
+          new CaseInsensitiveHeaders().addAll(RestUtils.getDefaultHeaders()).addAll(RestUtils
+              .getSignAuthHeaders(RestUtils.createSignRequest(null, ipPort, new RequestParam(), url, new HashMap<>()))),
           ws -> {
             onOpen.handle(null);
 

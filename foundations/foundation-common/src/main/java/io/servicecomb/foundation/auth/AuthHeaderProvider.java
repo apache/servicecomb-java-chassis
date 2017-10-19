@@ -20,9 +20,11 @@ import java.util.HashMap;
 import java.util.Map;
 
 public interface AuthHeaderProvider {
-  Map<String, String> authHeaders();
+  default Map<String, String> authHeaders() {
+    return new HashMap<>(0);
+  }
 
   default Map<String, String> getSignAuthHeaders(SignRequest request) {
-    return new HashMap<>(0);
+    return authHeaders();
   }
 }

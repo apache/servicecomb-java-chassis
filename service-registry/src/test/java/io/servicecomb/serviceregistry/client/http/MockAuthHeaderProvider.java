@@ -24,17 +24,9 @@ import io.servicecomb.foundation.auth.SignRequest;
 
 public class MockAuthHeaderProvider implements AuthHeaderProvider {
   @Override
-  public Map<String, String> authHeaders() {
+  public Map<String, String> getSignAuthHeaders(SignRequest request) {
     HashMap<String, String> headers = new HashMap<>();
     headers.put("X-Service-AK", "blah...");
-    return headers;
-  }
-
-  @Override
-  public Map<String, String> getSignAuthHeaders(SignRequest request) {
-    Map<String, String> headers = new HashMap<String, String>();
-    headers.put("X-Sdk-Date", "20171016T123456Z...");
-    headers.put("Authorization", "SDK-HMAC-SHA256...");
     return headers;
   }
 }
