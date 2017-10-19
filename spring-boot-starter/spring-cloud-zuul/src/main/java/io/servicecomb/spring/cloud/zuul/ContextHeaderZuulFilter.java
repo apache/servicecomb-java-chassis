@@ -32,6 +32,15 @@ import io.servicecomb.serviceregistry.definition.MicroserviceDefinition;
 
 @Component
 public class ContextHeaderZuulFilter extends ZuulFilter {
+
+  private static String microserviceName;
+
+  static {
+    MicroserviceConfigLoader loader = ConfigUtil.getMicroserviceConfigLoader();
+    MicroserviceDefinition microserviceDefinition = new MicroserviceDefinition(loader.getConfigModels());
+    microserviceName = microserviceDefinition.getMicroserviceName();
+  }
+
   @Override
   public String filterType() {
     return "pre";
@@ -50,15 +59,9 @@ public class ContextHeaderZuulFilter extends ZuulFilter {
   @Override
   public Object run() {
     RequestContext ctx = RequestContext.getCurrentContext();
-    ctx.addZuulRequestHeader(SRC_MICROSERVICE, getMicroserviceName());
+    ctx.addZuulRequestHeader(SRC_MICROSERVICE, microserviceName);
     saveHeadersAsInvocationContext(ctx);
     return null;
-  }
-
-  private String getMicroserviceName() {
-    MicroserviceConfigLoader loader = ConfigUtil.getMicroserviceConfigLoader();
-    MicroserviceDefinition microserviceDefinition = new MicroserviceDefinition(loader.getConfigModels());
-    return microserviceDefinition.getMicroserviceName();
   }
 
   private void saveHeadersAsInvocationContext(RequestContext ctx) {
