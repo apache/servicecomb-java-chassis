@@ -25,14 +25,13 @@ import org.junit.Test;
 
 import io.servicecomb.foundation.common.net.IpPort;
 import io.vertx.core.MultiMap;
-import io.vertx.core.http.CaseInsensitiveHeaders;
 import io.vertx.core.http.HttpMethod;
 
 public class RestUtilsTest {
   @Test
   public void defaultHeadersContainServiceRegistryAndAuthentication() throws Exception {
     
-    MultiMap headers = new CaseInsensitiveHeaders().addAll(RestUtils.getDefaultHeaders());
+    MultiMap headers = RestUtils.getDefaultHeaders();
     headers.addAll(RestUtils.getSignAuthHeaders(RestUtils.createSignRequest(HttpMethod.GET.toString(),
         new IpPort("127.0.0.1", 443),
         new RequestParam().addQueryParam("testParam", "test"),

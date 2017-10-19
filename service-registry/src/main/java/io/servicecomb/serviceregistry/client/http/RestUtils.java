@@ -32,7 +32,9 @@ import io.servicecomb.foundation.common.net.IpPort;
 import io.servicecomb.foundation.vertx.client.http.HttpClientWithContext;
 import io.servicecomb.serviceregistry.config.ServiceRegistryConfig;
 import io.vertx.core.Handler;
+import io.vertx.core.MultiMap;
 import io.vertx.core.buffer.Buffer;
+import io.vertx.core.http.CaseInsensitiveHeaders;
 import io.vertx.core.http.HttpClientRequest;
 import io.vertx.core.http.HttpMethod;
 
@@ -89,7 +91,7 @@ final class RestUtils {
           });
 
       //headers
-      Map<String, String> headers = getDefaultHeaders();
+      Map<String, String> headers = defaultHeaders();
       httpClientRequest.headers().addAll(headers);
 
       if (requestParam.getHeaders() != null && requestParam.getHeaders().size() > 0) {
@@ -162,13 +164,16 @@ final class RestUtils {
     request.headers().addAll(getDefaultHeaders());
   }
 
-  public static Map<String, String> getDefaultHeaders() {
-    // add token header
+  private static Map<String, String> defaultHeaders() {
     Map<String, String> headers = new HashMap<String, String>();
     headers.put(HEADER_CONTENT_TYPE, "application/json");
     headers.put(HEADER_USER_AGENT, "cse-serviceregistry-client/1.0.0");
     headers.put(HEADER_TENANT_NAME, ServiceRegistryConfig.INSTANCE.getTenantName());
     return headers;
+  }
+
+  public static MultiMap getDefaultHeaders() {
+    return new CaseInsensitiveHeaders().addAll(defaultHeaders());
   }
 
   public static void get(IpPort ipPort, String uri, RequestParam requestParam,
