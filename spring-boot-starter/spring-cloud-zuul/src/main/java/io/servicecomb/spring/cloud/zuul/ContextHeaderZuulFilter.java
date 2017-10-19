@@ -14,9 +14,10 @@
  *  limitations under the License.
  */
 
-package io.servicecomb.samples.bmi.filters;
+package io.servicecomb.spring.cloud.zuul;
 
 import static io.servicecomb.core.Const.CSE_CONTEXT;
+import static io.servicecomb.core.Const.SRC_MICROSERVICE;
 
 import org.springframework.stereotype.Component;
 
@@ -30,7 +31,7 @@ import io.servicecomb.foundation.common.utils.JsonUtils;
 import io.servicecomb.serviceregistry.definition.MicroserviceDefinition;
 
 @Component
-public class CseHeaderFilter extends ZuulFilter {
+public class ContextHeaderZuulFilter extends ZuulFilter {
   @Override
   public String filterType() {
     return "pre";
@@ -49,15 +50,22 @@ public class CseHeaderFilter extends ZuulFilter {
   @Override
   public Object run() {
     RequestContext ctx = RequestContext.getCurrentContext();
+    ctx.addZuulRequestHeader(SRC_MICROSERVICE, getMicroserviceName());
+    saveHeadersAsInvocationContext(ctx);
+    return null;
+  }
+
+  private String getMicroserviceName() {
     MicroserviceConfigLoader loader = ConfigUtil.getMicroserviceConfigLoader();
     MicroserviceDefinition microserviceDefinition = new MicroserviceDefinition(loader.getConfigModels());
-    ctx.addZuulRequestHeader("x-cse-src-microservice", microserviceDefinition.getMicroserviceName());
+    return microserviceDefinition.getMicroserviceName();
+  }
 
+  private void saveHeadersAsInvocationContext(RequestContext ctx) {
     try {
       ctx.addZuulRequestHeader(CSE_CONTEXT, JsonUtils.writeValueAsString(ctx.getZuulRequestHeaders()));
     } catch (JsonProcessingException e) {
       throw new IllegalStateException("Unable to write request headers as json to " + CSE_CONTEXT, e);
     }
-    return null;
   }
 }
