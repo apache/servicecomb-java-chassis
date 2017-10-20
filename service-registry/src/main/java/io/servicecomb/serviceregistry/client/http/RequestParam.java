@@ -77,6 +77,10 @@ public class RequestParam {
     return this;
   }
 
+  public Map<String, String[]> getQueryParamsMap() {
+    return queryParams;
+  }
+
   public String getQueryParams() {
     if (queryParams == null || queryParams.size() == 0) {
       return "";

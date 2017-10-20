@@ -16,6 +16,9 @@
 
 package io.servicecomb.serviceregistry.client.http;
 
+import java.io.ByteArrayInputStream;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.ServiceLoader;
@@ -24,6 +27,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import io.servicecomb.foundation.auth.AuthHeaderProvider;
+import io.servicecomb.foundation.auth.SignRequest;
 import io.servicecomb.foundation.common.net.IpPort;
 import io.servicecomb.foundation.vertx.client.http.HttpClientWithContext;
 import io.servicecomb.serviceregistry.config.ServiceRegistryConfig;
@@ -86,10 +90,12 @@ final class RestUtils {
             responseHandler.handle(new RestResponse(requestContext, null));
           });
 
-      // headers
-      addDefaultHeaders(httpClientRequest);
+      //headers
+      Map<String, String> headers = defaultHeaders();
+      httpClientRequest.headers().addAll(headers);
 
       if (requestParam.getHeaders() != null && requestParam.getHeaders().size() > 0) {
+        headers.putAll(requestParam.getHeaders());
         for (Map.Entry<String, String> header : requestParam.getHeaders().entrySet()) {
           httpClientRequest.putHeader(header.getKey(), header.getValue());
         }
@@ -105,7 +111,16 @@ final class RestUtils {
               .append("; ");
         }
         httpClientRequest.putHeader("Cookie", stringBuilder.toString());
+        headers.put("Cookie", stringBuilder.toString());
       }
+
+      //SignAuth
+      SignRequest signReq = createSignRequest(requestContext.getMethod().toString(),
+          requestContext.getIpPort(),
+          requestContext.getParams(),
+          url.toString(),
+          headers);
+      httpClientRequest.headers().addAll(getSignAuthHeaders(signReq));
 
       // body
       if (httpMethod != HttpMethod.GET && requestParam.getBody() != null && requestParam.getBody().length > 0) {
@@ -126,16 +141,39 @@ final class RestUtils {
     return requestContext;
   }
 
+  public static SignRequest createSignRequest(String method, IpPort ipPort, RequestParam requestParam, String url,
+      Map<String, String> headers) {
+    SignRequest signReq = new SignRequest();
+    StringBuilder endpoint = new StringBuilder("https://" + ipPort.getHostOrIp());
+    endpoint.append(":" + ipPort.getPort());
+    endpoint.append(url);
+    try {
+      signReq.setEndpoint(new URI(endpoint.toString()));
+    } catch (URISyntaxException e) {
+      LOGGER.error("set uri failed, uri is {}, message: {}", endpoint.toString(), e.getMessage());
+    }
+    signReq.setContent((requestParam.getBody() != null && requestParam.getBody().length > 0)
+        ? new ByteArrayInputStream(requestParam.getBody()) : null);
+    signReq.setHeaders(headers);
+    signReq.setHttpMethod(method);
+    signReq.setQueryParams(requestParam.getQueryParamsMap());
+    return signReq;
+  }
+
   public static void addDefaultHeaders(HttpClientRequest request) {
     request.headers().addAll(getDefaultHeaders());
   }
 
+  private static Map<String, String> defaultHeaders() {
+    Map<String, String> headers = new HashMap<String, String>();
+    headers.put(HEADER_CONTENT_TYPE, "application/json");
+    headers.put(HEADER_USER_AGENT, "cse-serviceregistry-client/1.0.0");
+    headers.put(HEADER_TENANT_NAME, ServiceRegistryConfig.INSTANCE.getTenantName());
+    return headers;
+  }
+
   public static MultiMap getDefaultHeaders() {
-    // add token header
-    return new CaseInsensitiveHeaders().add(HEADER_CONTENT_TYPE, "application/json")
-        .add(HEADER_USER_AGENT, "cse-serviceregistry-client/1.0.0")
-        .add(HEADER_TENANT_NAME, ServiceRegistryConfig.INSTANCE.getTenantName())
-        .addAll(authHeaders());
+    return new CaseInsensitiveHeaders().addAll(defaultHeaders());
   }
 
   public static void get(IpPort ipPort, String uri, RequestParam requestParam,
@@ -158,9 +196,9 @@ final class RestUtils {
     httpDo(createRequestContext(HttpMethod.DELETE, ipPort, uri, requestParam), responseHandler);
   }
 
-  private static Map<String, String> authHeaders() {
+  public static Map<String, String> getSignAuthHeaders(SignRequest signReq) {
     Map<String, String> headers = new HashMap<>();
-    authHeaderProviders.forEach(provider -> headers.putAll(provider.authHeaders()));
+    authHeaderProviders.forEach(provider -> headers.putAll(provider.getSignAuthHeaders(signReq)));
     return headers;
   }
 }

@@ -16,6 +16,8 @@
 
 package io.servicecomb.serviceregistry.client.http;
 
+import java.util.HashMap;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,7 +43,8 @@ public final class WebsocketUtils {
       client.websocket(ipPort.getPort(),
           ipPort.getHostOrIp(),
           url,
-          RestUtils.getDefaultHeaders(),
+          RestUtils.getDefaultHeaders().addAll(RestUtils
+              .getSignAuthHeaders(RestUtils.createSignRequest(null, ipPort, new RequestParam(), url, new HashMap<>()))),
           ws -> {
             onOpen.handle(null);
 
