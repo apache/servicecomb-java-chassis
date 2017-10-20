@@ -125,11 +125,21 @@ public final class ServiceRegistryConfig {
   }
 
   public int getIdleConnectionTimeout() {
+    // connection pool idle timeout based on client heart beat interval. Heart beat default value is 30.
     DynamicIntProperty property =
         DynamicPropertyFactory.getInstance()
-            .getIntProperty("cse.service.registry.client.timeout.idle", DEFAULT_TIMEOUT_IN_SECONDS);
+            .getIntProperty("cse.service.registry.client.timeout.idle", DEFAULT_TIMEOUT_IN_SECONDS * 2);
     int timeout = property.get();
-    return timeout < 1 ? DEFAULT_TIMEOUT_IN_SECONDS : timeout;
+    return timeout < 1 ? DEFAULT_TIMEOUT_IN_SECONDS * 2 : timeout;
+  }
+
+  public int getIdleWatchTimeout() {
+    // watch idle timeout based on SC PING/PONG interval. SC default value is 30.
+    DynamicIntProperty property =
+        DynamicPropertyFactory.getInstance()
+            .getIntProperty("cse.service.registry.client.timeout.watch", DEFAULT_TIMEOUT_IN_SECONDS * 2);
+    int timeout = property.get();
+    return timeout < 1 ? DEFAULT_TIMEOUT_IN_SECONDS * 2: timeout;
   }
 
   public int getRequestTimeout() {
@@ -144,6 +154,15 @@ public final class ServiceRegistryConfig {
     DynamicIntProperty property =
         DynamicPropertyFactory.getInstance()
             .getIntProperty("cse.service.registry.instance.healthCheck.interval",
+                DEFAULT_CHECK_INTERVAL_IN_S);
+    int interval = property.get();
+    return interval < 0 ? DEFAULT_CHECK_INTERVAL_IN_S : interval;
+  }
+
+  public int getInstancePullInterval() {
+    DynamicIntProperty property =
+        DynamicPropertyFactory.getInstance()
+            .getIntProperty("cse.service.registry.instance.pull.interval",
                 DEFAULT_CHECK_INTERVAL_IN_S);
     int interval = property.get();
     return interval < 0 ? DEFAULT_CHECK_INTERVAL_IN_S : interval;

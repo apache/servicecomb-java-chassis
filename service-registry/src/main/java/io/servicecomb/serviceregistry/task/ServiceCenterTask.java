@@ -15,64 +15,41 @@
  */
 package io.servicecomb.serviceregistry.task;
 
-import java.util.concurrent.TimeUnit;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 
-import io.servicecomb.serviceregistry.config.ServiceRegistryConfig;
 import io.servicecomb.serviceregistry.task.event.ExceptionEvent;
-import io.servicecomb.serviceregistry.task.event.ShutdownEvent;
 
 public class ServiceCenterTask implements Runnable {
   private static final Logger LOGGER = LoggerFactory.getLogger(ServiceCenterTask.class);
 
   private EventBus eventBus;
 
-  private ServiceRegistryConfig serviceRegistryConfig;
+  private int interval;
 
   private MicroserviceServiceCenterTask microserviceServiceCenterTask;
 
   private boolean registerInstanceSuccess = false;
 
-  private volatile boolean running = true;
-
-  // for fast recovery, register interval is different with heartbeat interval
-  private int[] registerIntervalSeconds = new int[] {1, 2, 3, 10, 20, 30, 40, 50, 60};
-
-  private int registerRetryCount;
-
-  private int interval;
-
   private ServiceCenterTaskMonitor serviceCenterTaskMonitor = new ServiceCenterTaskMonitor();
 
-  public ServiceCenterTask(EventBus eventBus, ServiceRegistryConfig serviceRegistryConfig,
+  public ServiceCenterTask(EventBus eventBus, int interval,
       MicroserviceServiceCenterTask microserviceServiceCenterTask) {
     this.eventBus = eventBus;
-    this.serviceRegistryConfig = serviceRegistryConfig;
+    this.interval = interval;
     this.microserviceServiceCenterTask = microserviceServiceCenterTask;
 
     this.eventBus.register(this);
-  }
-
-  public int getInterval() {
-    return interval;
-  }
-
-  @Subscribe
-  public void onShutdown(ShutdownEvent event) {
-    LOGGER.info("service center task is shutdown.");
-    this.running = false;
   }
 
   // messages given in register error
   @Subscribe
   public void onRegisterTask(AbstractRegisterTask task) {
     LOGGER.info("read {} status is {}", task.getClass().getSimpleName(), task.taskStatus);
-    if (task.taskStatus == TaskStatus.FINISHED) {
+    if (task.getTaskStatus() == TaskStatus.FINISHED) {
       registerInstanceSuccess = true;
     } else {
       onException();
@@ -98,7 +75,6 @@ public class ServiceCenterTask implements Runnable {
   private void onException() {
     if (registerInstanceSuccess) {
       registerInstanceSuccess = false;
-      registerRetryCount = 0;
     }
   }
 
@@ -108,30 +84,12 @@ public class ServiceCenterTask implements Runnable {
 
   @Override
   public void run() {
-    while (running) {
-      try {
-        calcSleepInterval();
-        TimeUnit.SECONDS.sleep(interval);
-        serviceCenterTaskMonitor.beginCycle(interval);
-        microserviceServiceCenterTask.run();
-        serviceCenterTaskMonitor.endCycle();
-      } catch (Throwable e) {
-        LOGGER.warn("unexpected exception caught from service center task. ", e);
-        continue;
-      }
+    try {
+      serviceCenterTaskMonitor.beginCycle(interval);
+      microserviceServiceCenterTask.run();
+      serviceCenterTaskMonitor.endCycle();
+    } catch (Throwable e) {
+      LOGGER.error("unexpected exception caught from service center task. ", e);
     }
-  }
-
-  public void calcSleepInterval() {
-    if (registerInstanceSuccess) {
-      interval = serviceRegistryConfig.getHeartbeatInterval();
-      return;
-    }
-
-    if (registerRetryCount >= registerIntervalSeconds.length) {
-      registerRetryCount = registerIntervalSeconds.length - 1;
-    }
-    interval = registerIntervalSeconds[registerRetryCount];
-    registerRetryCount++;
   }
 }

@@ -16,7 +16,6 @@
 
 package io.servicecomb.serviceregistry.client.http;
 
-import java.util.ArrayList;
 import java.util.concurrent.CountDownLatch;
 
 import org.junit.Assert;
@@ -45,7 +44,7 @@ public class TestClienthttp {
     IpPort ipPort = new IpPort("127.0.0.1", 8853);
     new Expectations() {
       {
-        manager.get();
+        manager.getAvailableAddress(false);
         result = ipPort;
       }
     };
@@ -143,17 +142,7 @@ public class TestClienthttp {
   @Test
   public void testIpPortManager(@Mocked InstanceCacheManager instanceCacheManager) throws Exception {
     IpPortManager oManager = new IpPortManager(ServiceRegistryConfig.INSTANCE, instanceCacheManager);
-    ArrayList<IpPort> oIPPort = oManager.getDefaultIpPortList();
-    oManager.next();
-    Assert.assertEquals(oIPPort.get(0).getHostOrIp(), oManager.get().getHostOrIp());
-
-    try {
-      //This will return Null as the address cache is not able to get the address of the microservice which is registered above.
-      Assert.assertNull(oManager.next());
-    } catch (Exception e) {
-      // TODO: Currently the address cache is failing because of absence of Thread
-      // TODO: Need to find out a way to Assert it properly
-      Assert.assertEquals("/ by zero", e.getMessage());
-    }
+    IpPort oIPPort = oManager.getAvailableAddress(true);
+    Assert.assertEquals(oIPPort.getHostOrIp(), oManager.getAvailableAddress(false).getHostOrIp());
   }
 }

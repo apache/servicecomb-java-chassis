@@ -173,8 +173,6 @@ public class TestMicroserviceWatchTask {
       {
         serviceRegistryConfig.isWatch();
         result = false;
-        serviceRegistryConfig.isRegistryAutoDiscovery();
-        result = false;
       }
     };
     // no watch
@@ -188,8 +186,6 @@ public class TestMicroserviceWatchTask {
       {
         serviceRegistryConfig.isWatch();
         result = true;
-        serviceRegistryConfig.isRegistryAutoDiscovery();
-        result = false;
       }
     };
     // no watch
@@ -204,8 +200,6 @@ public class TestMicroserviceWatchTask {
       {
         serviceRegistryConfig.isWatch();
         result = false;
-        serviceRegistryConfig.isRegistryAutoDiscovery();
-        result = true;
       }
     };
     // no watch
@@ -219,8 +213,6 @@ public class TestMicroserviceWatchTask {
     new Expectations() {
       {
         serviceRegistryConfig.isWatch();
-        result = false;
-        serviceRegistryConfig.isRegistryAutoDiscovery();
         result = true;
         microservice.getServiceId();
         result = "serviceId";

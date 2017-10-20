@@ -54,6 +54,11 @@ public abstract class AbstractTask implements Runnable {
     }
   }
 
+
+  public TaskStatus getTaskStatus() {
+    return this.taskStatus;
+  }
+
   abstract protected void doRun();
 
   protected boolean isSameMicroservice(Microservice otherMicroservice) {

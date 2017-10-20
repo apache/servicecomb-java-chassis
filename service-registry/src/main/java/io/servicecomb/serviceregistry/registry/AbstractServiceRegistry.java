@@ -152,7 +152,7 @@ public abstract class AbstractServiceRegistry implements ServiceRegistry {
   private void createServiceCenterTask() {
     MicroserviceServiceCenterTask task =
         new MicroserviceServiceCenterTask(eventBus, serviceRegistryConfig, srClient, microservice);
-    serviceCenterTask = new ServiceCenterTask(eventBus, serviceRegistryConfig, task);
+    serviceCenterTask = new ServiceCenterTask(eventBus, serviceRegistryConfig.getHeartbeatInterval(), task);
   }
 
   @Subscribe
@@ -166,7 +166,6 @@ public abstract class AbstractServiceRegistry implements ServiceRegistry {
       cacheAvailable = true;
 
       instanceCacheManager.cleanUp();
-      ipPortManager.clearInstanceCache();
       LOGGER.info(
           "Reconnected to service center, clean up the provider's microservice instances cache.");
     }

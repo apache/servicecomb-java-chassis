@@ -6,6 +6,18 @@ cse:
   service:
     registry:
       address: http://127.0.0.1:30100
+      client:
+        timeout:
+          idle: 60
+          watch: 60
+      instance:
+        healthCheck:
+          interval: 3
+        pull:
+          interval: 10
+        watch: false
+      autodiscovery: true
+
   references:
     version-rule: 0+
   handler:
