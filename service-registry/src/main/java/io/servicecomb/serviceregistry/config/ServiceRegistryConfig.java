@@ -55,13 +55,19 @@ public final class ServiceRegistryConfig {
 
   public static final String AUTH_ENABLED = "cse.auth.enabled";
 
-  public static final String TENANT_NAME = "cse.config.client.tenantName";
-
   public static final String TENANT_ACCESS_KEY = "cse.auth.accessKey";
 
   public static final String TENANT_SECRET_KEY = "cse.auth.secretKey";
 
+  public static final String REGISTRY_API_VERSION = "cse.service.registry.api.version";
+
+  public static final String TENANT_NAME = "cse.config.client.tenantName";
+
+  public static final String DOMAIN_NAME = "cse.config.client.domainName";
+
   public static final String NO_TENANT = "default";
+
+  public static final String NO_DOMAIN = "default";
 
   private boolean ssl = true;
 
@@ -206,9 +212,17 @@ public final class ServiceRegistryConfig {
     return Boolean.parseBoolean(isAuthEnabled);
   }
 
+  public String getRegistryApiVersion() {
+    // will change to v4 in a short period
+    return getProperty("v3", REGISTRY_API_VERSION);
+  }
+
   public String getTenantName() {
-    String tenantName = getProperty(NO_TENANT, TENANT_NAME);
-    return tenantName;
+    return getProperty(NO_TENANT, TENANT_NAME);
+  }
+
+  public String getDomainName() {
+    return getProperty(NO_DOMAIN, DOMAIN_NAME);
   }
 
   public String getAccessKey() {

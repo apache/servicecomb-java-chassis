@@ -242,6 +242,7 @@ public class CodeFirstSpringmvc {
     });
   }
 
+  @SuppressWarnings("unchecked")
   @RequestMapping(method = RequestMethod.POST, value = "/rawJsonAnnotation")
   @ResponseBody
   public String testRawJsonAnnotation(@RawJsonRequestBody String jsonInput) {

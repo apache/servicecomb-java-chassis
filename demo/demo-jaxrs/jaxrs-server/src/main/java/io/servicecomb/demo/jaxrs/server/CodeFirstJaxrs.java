@@ -188,6 +188,7 @@ public class CodeFirstJaxrs {
     });
   }
 
+  @SuppressWarnings("unchecked")
   @Path("/rawJsonAnnotation")
   @POST
   public String testRawJsonAnnotation(@RawJsonRequestBody String jsonInput) {
