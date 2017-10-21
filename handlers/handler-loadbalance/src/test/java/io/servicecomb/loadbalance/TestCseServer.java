@@ -46,7 +46,6 @@ public class TestCseServer {
     assertNotNull(cs.getEndpoint());
   }
 
-  @SuppressWarnings("unlikely-arg-type")
   @Test
   public void testEqualsMethod() {
     Assert.assertFalse(cs.equals("abcd"));
