@@ -88,7 +88,8 @@ public class ServicePathManager {
       addResource(restOperationMeta);
     }
 
-    LOGGER.info("add schema to service paths. {}:{}",
+    LOGGER.info("add schema to service paths. {}:{}:{}.",
+        schemaMeta.getMicroserviceMeta().getAppId(),
         schemaMeta.getMicroserviceName(),
         schemaMeta.getSchemaId());
   }
