@@ -43,7 +43,7 @@ else
 			echo "${green}Snapshot Deployment is Success, please log on to Nexus Repo to see the snapshot release..${reset}"
 		else
 			echo "${red}Snapshot deployment failed.${reset}"
-			exit 1
+			# No need to exit 1 here as the snapshot depoyment will fail for private builds as decryption of password is allowed for ServiceComb repo and not forked repo's.
 		fi
                 
         fi
