@@ -27,9 +27,15 @@ import com.netflix.client.Utils;
 
 public class LoadBalanceRetryHandler implements RetryHandler {
 
-  private final int retrySameServer;
-  private final int retryNextServer;
-  private final boolean retryEnabled;
+  private final static LoadBalanceRetryHandler INSTANCE = new LoadBalanceRetryHandler();
+
+  private int retrySameServer;
+  private int retryNextServer;
+  private boolean retryEnabled;
+
+  public static LoadBalanceRetryHandler getInstance() {
+    return INSTANCE;
+  }
 
   private List<Class<? extends Throwable>> retryOnSameExceptions = Lists
       .newArrayList(new Class[]{SocketTimeoutException.class, ConnectException.class});
@@ -37,13 +43,19 @@ public class LoadBalanceRetryHandler implements RetryHandler {
   private List<Class<? extends Throwable>> circuitRelated = Lists
       .newArrayList(new Class[]{SocketException.class, SocketTimeoutException.class});
 
-  LoadBalanceRetryHandler(int retrySameServer, int retryNextServer, boolean retryEnabled) {
+  private LoadBalanceRetryHandler() {
+    this.retrySameServer = 0;
+    this.retryNextServer = 0;
+    this.retryEnabled = true;
+  }
+
+  public void setRetryRuntimeParams(int retrySameServer, int retryNextServer, boolean retryEnabled) {
     this.retrySameServer = retrySameServer;
     this.retryNextServer = retryNextServer;
     this.retryEnabled = retryEnabled;
   }
 
-  public void setRetryOnSameExceptions(List<Class<? extends Throwable>> retryOnSameExceptions) {
+  public void addRetryOnSameExceptions(List<Class<? extends Throwable>> retryOnSameExceptions) {
     if (retryOnSameExceptions != null && retryOnSameExceptions.size() != 0) {
       this.retryOnSameExceptions.addAll(retryOnSameExceptions);
     }
@@ -58,7 +70,7 @@ public class LoadBalanceRetryHandler implements RetryHandler {
   }
 
   @Override
-    public boolean isRetriableException(Throwable e, boolean sameServer) {
+  public boolean isRetriableException(Throwable e, boolean sameServer) {
     return retryEnabled && (!sameServer || Utils.isPresentAsCause(e, retryOnSameExceptions));
   }
 

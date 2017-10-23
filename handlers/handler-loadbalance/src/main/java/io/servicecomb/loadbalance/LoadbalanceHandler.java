@@ -51,9 +51,9 @@ import rx.Observable;
 
 /**
  * 负载均衡处理链
- *
  */
 public class LoadbalanceHandler extends AbstractHandler {
+
   private static final Logger LOGGER = LoggerFactory.getLogger(LoadbalanceHandler.class);
 
   private static final ExecutorService RETRY_POOL = Executors.newCachedThreadPool(new ThreadFactory() {
@@ -237,12 +237,15 @@ public class LoadbalanceHandler extends AbstractHandler {
     listeners.add(listener);
     ExecutionContext<Invocation> context = new ExecutionContext<>(invocation, null, null, null);
 
+    LoadBalanceRetryHandler.getInstance().setRetryRuntimeParams(
+        Configuration.INSTANCE.getRetryOnSame(invocation.getMicroserviceName()),
+        Configuration.INSTANCE.getRetryOnNext(invocation.getMicroserviceName()),
+        true);
+
     LoadBalancerCommand<Response> command = LoadBalancerCommand.<Response>builder()
         .withLoadBalancer(chosenLB)
         .withServerLocator(invocation)
-        .withRetryHandler(new LoadBalanceRetryHandler(
-            Configuration.INSTANCE.getRetryOnSame(invocation.getMicroserviceName()),
-            Configuration.INSTANCE.getRetryOnNext(invocation.getMicroserviceName()), true))
+        .withRetryHandler(LoadBalanceRetryHandler.getInstance())
         .withListeners(listeners)
         .withExecutionContext(context)
         .build();

@@ -24,6 +24,7 @@ import java.util.List;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.core.IsCollectionContaining.hasItem;
+
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -45,18 +46,21 @@ public class TestLoadBalanceRetryHandler {
     List<Class<? extends Throwable>> appendExceptions = Lists
         .newArrayList(new Class[]{InvocationException.class, IllegalAccessException.class});
 
-    LoadBalanceRetryHandler loadBalanceRetryHandler = new LoadBalanceRetryHandler(1, 2, true);
-    Assert.assertThat(loadBalanceRetryHandler.getMaxRetriesOnSameServer(), is(1));
-    Assert.assertThat(loadBalanceRetryHandler.getMaxRetriesOnNextServer(), is(2));
+    LoadBalanceRetryHandler.getInstance().setRetryRuntimeParams(1, 2, true);
+    Assert.assertThat(LoadBalanceRetryHandler.getInstance().getMaxRetriesOnSameServer(), is(1));
+    Assert.assertThat(LoadBalanceRetryHandler.getInstance().getMaxRetriesOnNextServer(), is(2));
 
-    loadBalanceRetryHandler.setRetryOnSameExceptions(appendExceptions);
-    List<Class<? extends Throwable>> retryOnSameExceptions = loadBalanceRetryHandler.getRetryOnSameExceptions();
+    LoadBalanceRetryHandler.getInstance().addRetryOnSameExceptions(appendExceptions);
+    List<Class<? extends Throwable>> retryOnSameExceptions = LoadBalanceRetryHandler.getInstance()
+        .getRetryOnSameExceptions();
     Assert.assertThat(retryOnSameExceptions, hasItem(InvocationException.class));
     Assert.assertThat(retryOnSameExceptions, hasItem(IllegalAccessException.class));
 
     Assert.assertThat(retryOnSameExceptions.size(), is(4));
-    Assert.assertThat(loadBalanceRetryHandler.removeRetryOnSameException(InvocationException.class), is(true));
-    Assert.assertThat(loadBalanceRetryHandler.removeRetryOnSameException(SocketException.class), is(false));
+    Assert.assertThat(LoadBalanceRetryHandler.getInstance().removeRetryOnSameException(InvocationException.class),
+        is(true));
+    Assert
+        .assertThat(LoadBalanceRetryHandler.getInstance().removeRetryOnSameException(SocketException.class), is(false));
     Assert.assertThat(retryOnSameExceptions.size(), is(3));
     Assert.assertThat(retryOnSameExceptions,
         contains(SocketTimeoutException.class, ConnectException.class, IllegalAccessException.class));
@@ -64,46 +68,45 @@ public class TestLoadBalanceRetryHandler {
 
   @Test
   public void testIsRetriableException() {
-    LoadBalanceRetryHandler loadBalanceRetryHandlerWithRetryEnabled = new LoadBalanceRetryHandler(
-        1, 2, true);
-    LoadBalanceRetryHandler loadBalanceRetryHandler1WithRetryDisabled = new LoadBalanceRetryHandler(
-        1, 2, false);
-
-    Assert.assertThat(loadBalanceRetryHandler1WithRetryDisabled.isRetriableException(new SocketException(), true),
-        is(false));
-
-    Assert.assertThat(loadBalanceRetryHandlerWithRetryEnabled.isRetriableException(new SocketException(), false),
+    LoadBalanceRetryHandler.getInstance().setRetryRuntimeParams(1, 2, true);
+    Assert
+        .assertThat(LoadBalanceRetryHandler.getInstance().isRetriableException(new SocketException(), false), is(true));
+    Assert
+        .assertThat(LoadBalanceRetryHandler.getInstance().isRetriableException(new SocketException(), true), is(false));
+    Assert.assertThat(LoadBalanceRetryHandler.getInstance().isRetriableException(new SocketTimeoutException(), true),
         is(true));
-    Assert.assertThat(loadBalanceRetryHandlerWithRetryEnabled.isRetriableException(new SocketException(), true),
-        is(false));
-    Assert.assertThat(loadBalanceRetryHandlerWithRetryEnabled.isRetriableException(new SocketTimeoutException(), true),
-        is(true));
-    Assert.assertThat(loadBalanceRetryHandlerWithRetryEnabled.isRetriableException(new ConnectException(), true),
-        is(true));
-
-    Assert.assertThat(loadBalanceRetryHandlerWithRetryEnabled
+    Assert
+        .assertThat(LoadBalanceRetryHandler.getInstance().isRetriableException(new ConnectException(), true), is(true));
+    Assert.assertThat(LoadBalanceRetryHandler.getInstance()
         .isRetriableException(new DummyException("connect failed", new ConnectException()), true), is(true));
-    Assert.assertThat(loadBalanceRetryHandlerWithRetryEnabled
+    Assert.assertThat(LoadBalanceRetryHandler.getInstance()
         .isRetriableException(new DummyException("socket timeout", new SocketTimeoutException()), true), is(true));
-    Assert.assertThat(loadBalanceRetryHandlerWithRetryEnabled
+    Assert.assertThat(LoadBalanceRetryHandler.getInstance()
         .isRetriableException(new DummyException("illegal access", new IllegalAccessException()), true), is(false));
+
+    LoadBalanceRetryHandler.getInstance().setRetryRuntimeParams(1, 2, false);
+    Assert
+        .assertThat(LoadBalanceRetryHandler.getInstance().isRetriableException(new SocketException(), true), is(false));
+
   }
 
   @Test
   public void testIsCircuitTrippingException() {
-    LoadBalanceRetryHandler loadBalanceRetryHandler = new LoadBalanceRetryHandler(
-        1, 2, true);
+    LoadBalanceRetryHandler.getInstance().setRetryRuntimeParams(1, 2, true);
 
-    Assert.assertThat(loadBalanceRetryHandler.isCircuitTrippingException(new SocketException()), is(true));
-    Assert.assertThat(loadBalanceRetryHandler.isCircuitTrippingException(new SocketTimeoutException()), is(true));
-    Assert.assertThat(loadBalanceRetryHandler.isCircuitTrippingException(new IllegalAccessException()), is(false));
+    Assert
+        .assertThat(LoadBalanceRetryHandler.getInstance().isCircuitTrippingException(new SocketException()), is(true));
+    Assert.assertThat(LoadBalanceRetryHandler.getInstance().isCircuitTrippingException(new SocketTimeoutException()),
+        is(true));
+    Assert.assertThat(LoadBalanceRetryHandler.getInstance().isCircuitTrippingException(new IllegalAccessException()),
+        is(false));
 
-    Assert.assertThat(loadBalanceRetryHandler
-            .isCircuitTrippingException(new DummyException("socket exception", new SocketException())), is(true));
-    Assert.assertThat(loadBalanceRetryHandler
-            .isCircuitTrippingException(new DummyException("socket timeout", new SocketTimeoutException())), is(true));
+    Assert.assertThat(LoadBalanceRetryHandler.getInstance()
+        .isCircuitTrippingException(new DummyException("socket exception", new SocketException())), is(true));
+    Assert.assertThat(LoadBalanceRetryHandler.getInstance()
+        .isCircuitTrippingException(new DummyException("socket timeout", new SocketTimeoutException())), is(true));
     Assert.assertThat(
-        loadBalanceRetryHandler
+        LoadBalanceRetryHandler.getInstance()
             .isCircuitTrippingException(new DummyException("illegal access", new IllegalAccessException())), is(false));
   }
 
