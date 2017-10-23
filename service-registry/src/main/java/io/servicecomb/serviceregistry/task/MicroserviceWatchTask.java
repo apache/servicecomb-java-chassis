@@ -82,16 +82,18 @@ public class MicroserviceWatchTask extends AbstractTask {
   private void onMicroserviceInstanceChanged(MicroserviceInstanceChangedEvent changedEvent) {
     switch (changedEvent.getAction()) {
       case CREATE:
-        LOGGER.info("microservice {}/{} REGISTERED an instance {}, {}.",
+        LOGGER.info("microservice {}/{}/{} REGISTERED an instance {}, {}.",
             changedEvent.getKey().getAppId(),
             changedEvent.getKey().getServiceName(),
+            changedEvent.getKey().getVersion(),
             changedEvent.getInstance().getInstanceId(),
             changedEvent.getInstance().getEndpoints());
         break;
       case DELETE:
-        LOGGER.info("microservice {}/{} UNREGISTERED an instance {}, {}.",
+        LOGGER.info("microservice {}/{}/{} UNREGISTERED an instance {}, {}.",
             changedEvent.getKey().getAppId(),
             changedEvent.getKey().getServiceName(),
+            changedEvent.getKey().getVersion(),
             changedEvent.getInstance().getInstanceId(),
             changedEvent.getInstance().getEndpoints());
         break;
@@ -101,9 +103,10 @@ public class MicroserviceWatchTask extends AbstractTask {
             changedEvent.getKey().getServiceName());
         break;
       case UPDATE:
-        LOGGER.info("microservice {}/{} UPDATE an instance {} status or metadata, {}.",
+        LOGGER.info("microservice {}/{}/{} UPDATE an instance {} status or metadata, {}.",
             changedEvent.getKey().getAppId(),
             changedEvent.getKey().getServiceName(),
+            changedEvent.getKey().getVersion(),
             changedEvent.getInstance().getInstanceId(),
             changedEvent.getInstance().getEndpoints());
         break;

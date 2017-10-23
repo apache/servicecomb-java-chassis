@@ -194,14 +194,15 @@ public abstract class AbstractServiceRegistry implements ServiceRegistry {
         serviceName,
         versionRule);
     if (instances == null) {
-      LOGGER.error("find empty instances from service center. service={}/{}", appId, serviceName);
+      LOGGER.error("find empty instances from service center. service={}/{}/{}", appId, serviceName, versionRule);
       return null;
     }
 
-    LOGGER.info("find instances[{}] from service center success. service={}/{}",
+    LOGGER.info("find instances[{}] from service center success. service={}/{}/{}",
         instances.size(),
         appId,
-        serviceName);
+        serviceName,
+        versionRule);
     for (MicroserviceInstance instance : instances) {
       LOGGER.info("service id={}, instance id={}, endpoints={}",
           instance.getServiceId(),
