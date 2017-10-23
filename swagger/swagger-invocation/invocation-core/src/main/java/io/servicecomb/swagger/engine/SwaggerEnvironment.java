@@ -16,6 +16,9 @@
 package io.servicecomb.swagger.engine;
 
 import java.lang.reflect.Method;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
+import java.util.concurrent.CompletableFuture;
 
 import javax.inject.Inject;
 
@@ -105,9 +108,14 @@ public class SwaggerEnvironment {
 
       ConsumerArgumentsMapper argsMapper =
           consumerArgumentsFactory.createArgumentsMapper(swaggerMethod, consumerMethod);
+      Type producerMethodReturnType = consumerMethod.getGenericReturnType();
+      if (consumerMethod.getReturnType().equals(CompletableFuture.class)) {
+        ParameterizedType parameterizedType = (ParameterizedType) producerMethodReturnType;
+        producerMethodReturnType = parameterizedType.getActualTypeArguments()[0];
+      }
       ConsumerResponseMapper responseMapper = consumerResponseMapperFactory.createResponseMapper(
           swaggerMethod.getGenericReturnType(),
-          consumerMethod.getGenericReturnType());
+          producerMethodReturnType);
 
       SwaggerConsumerOperation op = new SwaggerConsumerOperation();
       op.setName(methodName);
@@ -143,8 +151,14 @@ public class SwaggerEnvironment {
 
       ProducerArgumentsMapper argsMapper = producerArgumentsFactory.createArgumentsMapper(swaggerMethod,
           producerMethod);
+
+      Type producerMethodReturnType = producerMethod.getGenericReturnType();
+      if (producerMethod.getReturnType().equals(CompletableFuture.class)) {
+        ParameterizedType parameterizedType = (ParameterizedType) producerMethodReturnType;
+        producerMethodReturnType = parameterizedType.getActualTypeArguments()[0];
+      }
       ProducerResponseMapper responseMapper = producerResponseMapperFactory.createResponseMapper(
-          producerMethod.getGenericReturnType(),
+          producerMethodReturnType,
           swaggerMethod.getGenericReturnType());
 
       SwaggerProducerOperation op = new SwaggerProducerOperation();

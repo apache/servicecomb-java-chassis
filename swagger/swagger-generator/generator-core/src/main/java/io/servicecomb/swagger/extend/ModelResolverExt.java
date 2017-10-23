@@ -21,6 +21,7 @@ import java.lang.reflect.Modifier;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -78,6 +79,8 @@ public class ModelResolverExt extends ModelResolver {
   }
 
   private void checkType(JavaType type) {
+    type = checkAsyncType(type);
+
     // 原子类型/string在java中是abstract的
     if (type.getRawClass().isPrimitive()
         || byte[].class.equals(type.getRawClass())
@@ -118,6 +121,8 @@ public class ModelResolverExt extends ModelResolver {
 
   @Override
   public Model resolve(JavaType type, ModelConverterContext context, Iterator<ModelConverter> next) {
+    type = checkAsyncType(type);
+
     Model model = super.resolve(type, context, next);
     if (model == null) {
       return null;
@@ -135,6 +140,7 @@ public class ModelResolverExt extends ModelResolver {
   @Override
   public Property resolveProperty(JavaType propType, ModelConverterContext context, Annotation[] annotations,
       Iterator<ModelConverter> next) {
+    propType = checkAsyncType(propType);
     checkType(propType);
 
     PropertyCreator creator = creatorMap.get(propType.getRawClass());
@@ -149,5 +155,13 @@ public class ModelResolverExt extends ModelResolver {
       }
     }
     return property;
+  }
+
+  private JavaType checkAsyncType(JavaType orgType)  {
+    if (orgType.getRawClass().equals(CompletableFuture.class))
+    {
+      return orgType.getBindings().getBoundType(0);
+    }
+    return orgType;
   }
 }

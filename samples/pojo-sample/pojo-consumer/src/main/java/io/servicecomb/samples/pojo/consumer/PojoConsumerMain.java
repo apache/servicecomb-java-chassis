@@ -21,6 +21,7 @@ import io.servicecomb.foundation.common.utils.BeanUtils;
 import io.servicecomb.foundation.common.utils.Log4jUtils;
 import io.servicecomb.provider.pojo.RpcReference;
 import io.servicecomb.samples.common.schema.Hello;
+import io.servicecomb.samples.common.schema.HelloAsync;
 import io.servicecomb.samples.common.schema.models.Person;
 import io.servicecomb.samples.pojo.Compute;
 
@@ -33,6 +34,9 @@ public class PojoConsumerMain {
   @RpcReference(microserviceName = "hello", schemaId = "codeFirstCompute")
   public static Compute compute;
 
+  @RpcReference(microserviceName = "hello", schemaId = "helloasync")
+  public static HelloAsync helloAsync;
+
   public static void main(String[] args)
       throws Exception {
     init();
@@ -41,6 +45,11 @@ public class PojoConsumerMain {
     person.setName("ServiceComb/Java Chassis");
     System.out.println(hello.sayHello(person));
     System.out.println("a=1, b=2, result=" + compute.add(1, 2));
+
+
+
+    System.out.println(helloAsync.sayHi("Java Chassis").get().getName());
+    System.out.println(helloAsync.sayHello(person).get());
   }
 
   public static void init()
