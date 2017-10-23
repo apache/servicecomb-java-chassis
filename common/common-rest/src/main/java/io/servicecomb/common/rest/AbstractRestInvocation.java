@@ -88,6 +88,7 @@ public abstract class AbstractRestInvocation {
 
       doInvoke();
     } catch (Throwable e) {
+      LOGGER.error("unknown edge exception.", e);
       sendFailResponse(e);
     }
   }
