@@ -31,24 +31,6 @@
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter</artifactId>
-      <exclusions>
-        <exclusion>
-          <groupId>org.springframework.boot</groupId>
-          <artifactId>spring-boot-starter-logging</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-    <dependency>
-      <groupId>org.springframework.cloud</groupId>
-      <artifactId>spring-cloud-starter-zuul</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-log4j2</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.logging.log4j</groupId>
-      <artifactId>log4j-web</artifactId>
     </dependency>
     <dependency>
       <groupId>io.servicecomb</groupId>
@@ -63,8 +45,8 @@
       <artifactId>spring-cloud-zuul</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.hibernate</groupId>
-      <artifactId>hibernate-validator</artifactId>
+      <groupId>io.servicecomb</groupId>
+      <artifactId>spring-cloud-zuul-zipkin</artifactId>
     </dependency>
   </dependencies>
 
@@ -76,29 +58,4 @@
       </plugin>
     </plugins>
   </build>
-
-  <profiles>
-    <profile>
-      <id>loadbalance</id>
-      <dependencies>
-        <dependency>
-          <groupId>io.servicecomb</groupId>
-          <artifactId>handler-loadbalance</artifactId>
-        </dependency>
-      </dependencies>
-    </profile>
-    <profile>
-      <id>tracing</id>
-      <dependencies>
-        <dependency>
-          <groupId>io.servicecomb</groupId>
-          <artifactId>handler-tracing-zipkin</artifactId>
-        </dependency>
-        <dependency>
-          <groupId>io.servicecomb</groupId>
-          <artifactId>spring-cloud-zuul-zipkin</artifactId>
-        </dependency>
-      </dependencies>
-    </profile>
-  </profiles>
 </project>
