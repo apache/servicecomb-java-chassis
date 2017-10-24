@@ -17,6 +17,9 @@
 package io.servicecomb.serviceregistry.consumer;
 
 import java.util.Collections;
+import java.util.Map;
+
+import javax.xml.ws.Holder;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -25,7 +28,12 @@ import com.google.common.eventbus.EventBus;
 
 import io.servicecomb.serviceregistry.RegistryUtils;
 import io.servicecomb.serviceregistry.definition.DefinitionConst;
+import io.servicecomb.serviceregistry.task.event.PeriodicPullEvent;
+import io.servicecomb.serviceregistry.task.event.RecoveryEvent;
+import mockit.Deencapsulation;
 import mockit.Expectations;
+import mockit.Mock;
+import mockit.MockUp;
 
 public class TestMicroserviceManager {
   String appId = "appId";
@@ -53,5 +61,32 @@ public class TestMicroserviceManager {
         microserviceManager.getOrCreateMicroserviceVersionRule(serviceName, versionRule);
     Assert.assertEquals("0.0.0+", microserviceVersionRule.getVersionRule().getVersionRule());
     Assert.assertNull(microserviceVersionRule.getLatestMicroserviceVersion());
+  }
+
+  @Test
+  public void periodicPull() {
+    testPullEvent(new PeriodicPullEvent());
+  }
+
+  @Test
+  public void serviceRegistryRecovery() {
+    testPullEvent(new RecoveryEvent());
+  }
+
+  private void testPullEvent(Object event) {
+    Map<String, MicroserviceVersions> versionsByName = Deencapsulation.getField(microserviceManager, "versionsByName");
+
+    Holder<Integer> count = new Holder<>();
+    count.value = 0;
+    MicroserviceVersions versions = new MockUp<MicroserviceVersions>() {
+      @Mock
+      void submitPull() {
+        count.value++;
+      }
+    }.getMockInstance();
+    versionsByName.put("ms", versions);
+
+    eventBus.post(event);
+    Assert.assertEquals(1, (int) count.value);
   }
 }

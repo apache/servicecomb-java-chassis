@@ -109,7 +109,7 @@ public class MicroserviceVersions {
         // ensure microserviceVersion exists
         versions.computeIfAbsent(instance.getServiceId(), microserviceId -> {
           MicroserviceVersion microserviceVersion =
-              appManager.getMicroserviceVersionFactory().create(microserviceId, microserviceId);
+              appManager.getMicroserviceVersionFactory().create(microserviceName, microserviceId);
           for (MicroserviceVersionRule microserviceVersionRule : versionRules.values()) {
             microserviceVersionRule.addMicroserviceVersion(microserviceVersion);
           }
