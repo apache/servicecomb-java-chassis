@@ -97,6 +97,7 @@ public abstract class AbstractSchemaFactory<CONTEXT extends SchemaContext> {
     SwaggerGeneratorContext generatorContext =
         compositeSwaggerGeneratorContext.selectContext(context.getProviderClass());
     SwaggerGenerator generator = new SwaggerGenerator(generatorContext, context.getProviderClass());
+    generator.setClassLoader(context.getMicroserviceMeta().getClassLoader());
     generator.setPackageName(
         SchemaUtils.generatePackageName(context.getMicroserviceMeta(), context.getSchemaId()));
     generator.generate();

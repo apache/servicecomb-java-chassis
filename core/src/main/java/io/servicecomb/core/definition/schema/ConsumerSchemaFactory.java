@@ -111,7 +111,7 @@ public class ConsumerSchemaFactory extends AbstractSchemaFactory<ConsumerSchemaC
 
   // 允许consumerIntf与schemaId对应的interface原型不同，用于支持context类型的参数
   // consumerIntf为null，表示原型与契约相同
-  protected void getOrCreateConsumerSchema(MicroserviceMeta microserviceMeta, Microservice microservice) {
+  public void getOrCreateConsumerSchema(MicroserviceMeta microserviceMeta, Microservice microservice) {
     for (String schemaId : microservice.getSchemas()) {
       ConsumerSchemaContext context = new ConsumerSchemaContext();
       context.setMicroserviceMeta(microserviceMeta);

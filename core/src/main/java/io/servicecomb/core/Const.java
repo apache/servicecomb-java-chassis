@@ -16,6 +16,8 @@
 
 package io.servicecomb.core;
 
+import io.servicecomb.serviceregistry.definition.DefinitionConst;
+
 public final class Const {
   private Const() {
   }
@@ -26,7 +28,7 @@ public final class Const {
 
   public static final String ANY_TRANSPORT = "";
 
-  public static final String VERSION_RULE_LATEST = "latest";
+  public static final String VERSION_RULE_LATEST = DefinitionConst.VERSION_RULE_LATEST;
 
   public static final String DEFAULT_VERSION_RULE = VERSION_RULE_LATEST;
 
@@ -35,6 +37,6 @@ public final class Const {
   public static final String SRC_MICROSERVICE = "x-cse-src-microservice";
 
   public static final String TARGET_MICROSERVICE = "x-cse-target-microservice";
-  
+
   public static final String REMOTE_ADDRESS = "x-cse-remote-address";
 }
