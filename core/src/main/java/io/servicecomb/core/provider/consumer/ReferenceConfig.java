@@ -43,6 +43,10 @@ public class ReferenceConfig {
     return microserviceMeta;
   }
 
+  public void setMicroserviceMeta(MicroserviceMeta microserviceMeta) {
+    this.microserviceMeta = microserviceMeta;
+  }
+
   public String getMicroserviceVersionRule() {
     return microserviceVersionRule;
   }
