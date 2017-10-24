@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package io.servicecomb.transport.rest.vertx.edge;
+package io.servicecomb.edge.core;
 
 import java.util.HashMap;
 import java.util.Map;
