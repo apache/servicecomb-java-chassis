@@ -67,7 +67,7 @@ public class MicroserviceVersionRule {
     }
 
     versions.put(microserviceVersion.getMicroservice().getServiceId(), microserviceVersion);
-    resetLatest();
+    resetLatestVersion();
 
     LOGGER.info("add microserviceVersion, appId={}, microserviceName={}, version={}, versionRule={}.",
         microserviceVersion.getMicroservice().getAppId(),
@@ -85,7 +85,7 @@ public class MicroserviceVersionRule {
       return;
     }
 
-    resetLatest();
+    resetLatestVersion();
     LOGGER.info("delete microserviceVersion, appId={}, microserviceName={}, version={}, versionRule={}.",
         microserviceVersion.getMicroservice().getAppId(),
         microserviceVersion.getMicroservice().getServiceName(),
@@ -93,7 +93,7 @@ public class MicroserviceVersionRule {
         versionRule.getVersionRule());
   }
 
-  protected void resetLatest() {
+  protected void resetLatestVersion() {
     latestVersion = null;
     if (versions.isEmpty()) {
       return;
@@ -128,16 +128,17 @@ public class MicroserviceVersionRule {
 
     instances = newInstances.stream().filter(instance -> {
       MicroserviceVersion microserviceVersion = versions.get(instance.getServiceId());
-      return microserviceVersion != null
+      boolean isMatch = microserviceVersion != null
           && versionRule.isMatch(microserviceVersion.getVersion(), latestVersion.getVersion());
-    }).filter(instance -> {
-      LOGGER.info("set instances, appId={}, microserviceName={}, versionRule={}, instanceId={}, endpoints={}.",
-          appId,
-          microserviceName,
-          versionRule.getVersionRule(),
-          instance.getInstanceId(),
-          instance.getEndpoints());
-      return true;
+      if (isMatch) {
+        LOGGER.info("set instances, appId={}, microserviceName={}, versionRule={}, instanceId={}, endpoints={}.",
+            appId,
+            microserviceName,
+            versionRule.getVersionRule(),
+            instance.getInstanceId(),
+            instance.getEndpoints());
+      }
+      return isMatch;
     }).collect(Collectors.toMap(MicroserviceInstance::getInstanceId, Function.identity()));
 
     resetInstanceCache();
