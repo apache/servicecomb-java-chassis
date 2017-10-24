@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package io.servicecomb.transport.rest.vertx.edge;
+package io.servicecomb.edge.core;
 
 import javax.ws.rs.core.Response.Status;
 

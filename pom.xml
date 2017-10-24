@@ -67,6 +67,7 @@
     <module>service-registry</module>
     <module>spring-boot-starter</module>
     <module>tracing</module>
+    <module>edge</module>
   </modules>
 
   <distributionManagement>
