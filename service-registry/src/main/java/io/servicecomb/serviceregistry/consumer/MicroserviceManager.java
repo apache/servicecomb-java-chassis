@@ -19,6 +19,11 @@ package io.servicecomb.serviceregistry.consumer;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import com.google.common.eventbus.Subscribe;
+
+import io.servicecomb.serviceregistry.task.event.PeriodicPullEvent;
+import io.servicecomb.serviceregistry.task.event.RecoveryEvent;
+
 public class MicroserviceManager {
   private AppManager appManager;
 
@@ -30,6 +35,8 @@ public class MicroserviceManager {
   public MicroserviceManager(AppManager appManager, String appId) {
     this.appManager = appManager;
     this.appId = appId;
+
+    appManager.getEventBus().register(this);
   }
 
   public MicroserviceVersionRule getOrCreateMicroserviceVersionRule(String microserviceName,
@@ -42,5 +49,21 @@ public class MicroserviceManager {
         });
 
     return microserviceVersions.getOrCreateMicroserviceVersionRule(versionRule);
+  }
+
+  @Subscribe
+  public void periodicPull(PeriodicPullEvent event) {
+    refreshInstances();
+  }
+
+  @Subscribe
+  public void serviceRegistryRecovery(RecoveryEvent event) {
+    refreshInstances();
+  }
+
+  protected void refreshInstances() {
+    for (MicroserviceVersions versions : versionsByName.values()) {
+      versions.submitPull();
+    }
   }
 }

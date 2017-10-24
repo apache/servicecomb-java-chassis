@@ -32,6 +32,7 @@ import io.servicecomb.serviceregistry.client.http.ServiceRegistryClientImpl;
 import io.servicecomb.serviceregistry.config.ServiceRegistryConfig;
 import io.servicecomb.serviceregistry.definition.MicroserviceDefinition;
 import io.servicecomb.serviceregistry.task.InstancePullTask;
+import io.servicecomb.serviceregistry.task.event.PeriodicPullEvent;
 import io.servicecomb.serviceregistry.task.event.PullMicroserviceVersionsInstancesEvent;
 import io.servicecomb.serviceregistry.task.event.ShutdownEvent;
 
@@ -87,6 +88,10 @@ public class RemoteServiceRegistry extends AbstractServiceRegistry {
         TimeUnit.SECONDS);
     if (isNeedPull()) {
       taskPool.scheduleAtFixedRate(pullTask,
+          serviceRegistryConfig.getInstancePullInterval(),
+          serviceRegistryConfig.getInstancePullInterval(),
+          TimeUnit.SECONDS);
+      taskPool.scheduleAtFixedRate(() -> eventBus.post(new PeriodicPullEvent()),
           serviceRegistryConfig.getInstancePullInterval(),
           serviceRegistryConfig.getInstancePullInterval(),
           TimeUnit.SECONDS);
