@@ -18,8 +18,8 @@ package io.servicecomb.demo.edge.service;
 
 import java.util.Map;
 
-import io.servicecomb.transport.rest.vertx.edge.AbstractEdgeDispatcher;
-import io.servicecomb.transport.rest.vertx.edge.EdgeInvocation;
+import io.servicecomb.edge.core.AbstractEdgeDispatcher;
+import io.servicecomb.edge.core.EdgeInvocation;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.RoutingContext;
 import io.vertx.ext.web.handler.CookieHandler;

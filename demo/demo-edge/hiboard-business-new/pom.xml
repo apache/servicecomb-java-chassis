@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <!--
   ~ Copyright 2017 Huawei Technologies Co., Ltd
   ~
@@ -22,16 +23,29 @@
     <artifactId>demo-edge</artifactId>
     <version>0.4.0-SNAPSHOT</version>
   </parent>
-  <artifactId>edge-service</artifactId>
+  <artifactId>hiboard-business-new</artifactId>
 
   <properties>
-    <demo.main>io.servicecomb.demo.edge.service.EdgeMain</demo.main>
+    <demo.main>io.servicecomb.demo.edge.business.BusinessMainNew</demo.main>
   </properties>
 
   <dependencies>
     <dependency>
       <groupId>io.servicecomb</groupId>
-      <artifactId>edge-core</artifactId>
+      <artifactId>provider-springmvc</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>io.servicecomb</groupId>
+      <artifactId>transport-rest-vertx</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>io.servicecomb</groupId>
+      <artifactId>transport-rest-servlet</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>io.servicecomb.demo</groupId>
+      <artifactId>hiboard-model</artifactId>
+      <version>0.4.0-SNAPSHOT</version>
     </dependency>
   </dependencies>
 </project>

@@ -1,0 +1,12 @@
+APPLICATION_ID: hiboard
+service_description:
+  name: business
+  version: 0.0.2
+cse:
+  service:
+    registry:
+      address: http://127.0.0.1:30100
+  rest:
+    address: 127.0.0.1:8090
+    server:
+      thread-count: 1
