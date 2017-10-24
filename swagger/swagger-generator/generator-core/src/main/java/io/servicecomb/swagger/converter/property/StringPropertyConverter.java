@@ -36,7 +36,7 @@ public class StringPropertyConverter extends AbstractPropertyConverter {
   private static final Object LOCK = new Object();
 
   // 转换并创建enum是小概率事件，没必要double check
-  private static JavaType getOrCreateEnumByNames(String packageName, List<String> enums) {
+  private static JavaType getOrCreateEnumByNames(ClassLoader classLoader, String packageName, List<String> enums) {
     String strEnums = enums.toString();
 
     synchronized (LOCK) {
@@ -47,7 +47,7 @@ public class StringPropertyConverter extends AbstractPropertyConverter {
 
       String enumClsName = packageName + ".Enum" + enumMap.size();
       @SuppressWarnings("rawtypes")
-      Class<? extends Enum> enumCls = JavassistUtils.createEnum(enumClsName, enums);
+      Class<? extends Enum> enumCls = JavassistUtils.createEnum(classLoader, enumClsName, enums);
       javaType = TypeFactory.defaultInstance().constructType(enumCls);
       enumMap.put(strEnums, javaType);
 
@@ -62,7 +62,7 @@ public class StringPropertyConverter extends AbstractPropertyConverter {
     }
 
     // enum，且需要动态生成class
-    return getOrCreateEnumByNames(packageName, enums);
+    return getOrCreateEnumByNames(classLoader, packageName, enums);
   }
 
   public static boolean isEnum(StringProperty stringProperty) {
