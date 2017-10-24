@@ -142,6 +142,10 @@ public class MicroserviceMeta extends CommonService<OperationMeta> {
     return classLoader;
   }
 
+  public void setClassLoader(ClassLoader classLoader) {
+    this.classLoader = classLoader;
+  }
+
   protected void parseMicroserviceName(String microserviceName) {
     int idxAt = microserviceName.indexOf(Const.APP_SERVICE_SEPARATOR);
     if (idxAt == -1) {

@@ -21,23 +21,31 @@ import java.util.Collection;
 import org.junit.Assert;
 import org.junit.Test;
 
+import io.servicecomb.core.definition.classloader.MicroserviceClassLoader;
 import mockit.Expectations;
 import mockit.Mocked;
 
 public class TestMicroserviceMeta {
-  MicroserviceMeta microservicemeta = new MicroserviceMeta("app:microservice");
+  MicroserviceMeta microserviceMeta = new MicroserviceMeta("app:microservice");
+
+  @Test
+  public void classloader() {
+    ClassLoader loader = new MicroserviceClassLoader("", "");
+    microserviceMeta.setClassLoader(loader);
+    Assert.assertSame(loader, microserviceMeta.getClassLoader());
+  }
 
   @Test
   public void testGetSchemaMetas() {
-    Collection<SchemaMeta> schemaMetas = microservicemeta.getSchemaMetas();
+    Collection<SchemaMeta> schemaMetas = microserviceMeta.getSchemaMetas();
     Assert.assertNotNull(schemaMetas);
   }
 
   @Test
   public void testGetExtData() {
     Object data = new Object();
-    microservicemeta.putExtData("pruthi", data);
-    Object response = microservicemeta.getExtData("pruthi");
+    microserviceMeta.putExtData("pruthi", data);
+    Object response = microserviceMeta.getExtData("pruthi");
     Assert.assertNotNull(response);
   }
 
@@ -58,22 +66,22 @@ public class TestMicroserviceMeta {
     };
 
     try {
-      microservicemeta.ensureFindSchemaMeta(intf);
+      microserviceMeta.ensureFindSchemaMeta(intf);
       Assert.assertEquals(1, 2);
     } catch (Throwable e) {
       Assert.assertEquals(
           "No schema interface is java.lang.Object.",
           e.getMessage());
     }
-    microservicemeta.regSchemaMeta(sm1);
-    Assert.assertEquals(sm1, microservicemeta.findSchemaMeta(intf));
-    Assert.assertEquals(sm1, microservicemeta.ensureFindSchemaMeta(intf));
+    microserviceMeta.regSchemaMeta(sm1);
+    Assert.assertEquals(sm1, microserviceMeta.findSchemaMeta(intf));
+    Assert.assertEquals(sm1, microserviceMeta.ensureFindSchemaMeta(intf));
 
-    microservicemeta.regSchemaMeta(sm2);
-    Assert.assertEquals(sm1, microservicemeta.ensureFindSchemaMeta("a"));
-    Assert.assertEquals(sm2, microservicemeta.ensureFindSchemaMeta("b"));
+    microserviceMeta.regSchemaMeta(sm2);
+    Assert.assertEquals(sm1, microserviceMeta.ensureFindSchemaMeta("a"));
+    Assert.assertEquals(sm2, microserviceMeta.ensureFindSchemaMeta("b"));
     try {
-      microservicemeta.findSchemaMeta(intf);
+      microserviceMeta.findSchemaMeta(intf);
       Assert.assertEquals(1, 2);
     } catch (Throwable e) {
       Assert.assertEquals(
