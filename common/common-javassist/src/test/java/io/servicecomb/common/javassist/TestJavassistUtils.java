@@ -30,6 +30,8 @@ import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.type.TypeFactory;
 
 import io.servicecomb.foundation.common.utils.ReflectUtils;
+import javassist.ClassPool;
+import mockit.Deencapsulation;
 
 public class TestJavassistUtils {
   @Test
@@ -192,5 +194,21 @@ public class TestJavassistUtils {
     jt = TypeFactory.defaultInstance().constructType(Object[].class);
     name = JavassistUtils.getNameForGenerateCode(jt);
     Assert.assertEquals("java.lang.Object[]", name);
+  }
+
+  @Test
+  public void managerClassPool() {
+    ClassLoader classLoader1 = new ClassLoader() {
+    };
+    ClassLoader classLoader2 = new ClassLoader() {
+    };
+
+    ClassPool p1 = Deencapsulation.invoke(JavassistUtils.class, "getOrCreateClassPool", classLoader1);
+    ClassPool p2 = Deencapsulation.invoke(JavassistUtils.class, "getOrCreateClassPool", classLoader2);
+    Assert.assertNotSame(p1, p2);
+
+    Map<ClassLoader, ClassPool> CLASSPOOLS = Deencapsulation.getField(JavassistUtils.class, "CLASSPOOLS");
+    JavassistUtils.clearByClassLoader(classLoader1);
+    Assert.assertNull(CLASSPOOLS.get(classLoader1));
   }
 }

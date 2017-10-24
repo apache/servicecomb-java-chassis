@@ -141,7 +141,7 @@ public final class ClassUtils {
       classConfig.addField(entry.getKey(), propertyJavaType);
     }
 
-    cls = JavassistUtils.createClass(classConfig);
+    cls = JavassistUtils.createClass(classLoader, classConfig);
     return cls;
   }
 
@@ -169,7 +169,7 @@ public final class ClassUtils {
       classConfig.addField(bp.getName(), javaType);
     }
 
-    return JavassistUtils.createClass(classConfig);
+    return JavassistUtils.createClass(swaggerGenerator.getClassLoader(), classConfig);
   }
 
   public static boolean hasAnnotation(Class<?> cls, Class<? extends Annotation> annotation) {

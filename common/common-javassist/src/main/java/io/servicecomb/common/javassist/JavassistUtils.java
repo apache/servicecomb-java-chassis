@@ -42,26 +42,33 @@ import javassist.NotFoundException;
 public final class JavassistUtils {
   private static final Logger LOGGER = LoggerFactory.getLogger(JavassistUtils.class);
 
-  private static final ClassPool POOL = ClassPool.getDefault();
-
-  // servlet场景下，不添加classpath，则默认是java.lang.Object对应人classpath，找不到web-inf/lib中的jar
-  private static final Map<ClassLoader, ClassLoader> CLASSLOADER_SET = new IdentityHashMap<>();
+  private static final Map<ClassLoader, ClassPool> CLASSPOOLS = new IdentityHashMap<>();
 
   private static final Object LOCK = new Object();
 
-  private JavassistUtils() {
+  private static ClassPool getOrCreateClassPool(ClassLoader classLoader) {
+    ClassPool classPool = CLASSPOOLS.get(classLoader);
+    if (classPool == null) {
+      synchronized (LOCK) {
+        classPool = CLASSPOOLS.get(classLoader);
+        if (classPool == null) {
+          classPool = new ClassPool(null);
+          classPool.appendSystemPath();
+          classPool.appendClassPath(new LoaderClassPath(classLoader));
+
+          CLASSPOOLS.put(classLoader, classPool);
+        }
+      }
+    }
+
+    return classPool;
   }
 
-  private static void appendThreadClassPath() {
-    synchronized (LOCK) {
-      ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
-      if (CLASSLOADER_SET.containsKey(classLoader)) {
-        return;
-      }
+  public static void clearByClassLoader(ClassLoader classLoader) {
+    CLASSPOOLS.remove(classLoader);
+  }
 
-      POOL.appendClassPath(new LoaderClassPath(classLoader));
-      CLASSLOADER_SET.put(classLoader, classLoader);
-    }
+  private JavassistUtils() {
   }
 
   @SuppressWarnings("rawtypes")
@@ -84,13 +91,14 @@ public final class JavassistUtils {
       classLoader = Thread.currentThread().getContextClassLoader();
     }
 
-    CtClass ctClass = POOL.makeClass(clsName);
+    ClassPool classPool = getOrCreateClassPool(classLoader);
+    CtClass ctClass = classPool.makeClass(clsName);
     ctClass.setModifiers(ctClass.getModifiers() | javassist.Modifier.ENUM);
 
     try {
-      ctClass.setSuperclass(POOL.get(Enum.class.getName()));
+      ctClass.setSuperclass(classPool.get(Enum.class.getName()));
 
-      addEnumConstructor(ctClass);
+      addEnumConstructor(classPool, ctClass);
       addEnumValuesMethod(ctClass, values);
 
       return ctClass.toClass(classLoader, null);
@@ -99,10 +107,10 @@ public final class JavassistUtils {
     }
   }
 
-  private static void addEnumConstructor(CtClass ctClass) throws Exception {
+  private static void addEnumConstructor(ClassPool classPool, CtClass ctClass) throws Exception {
     String src = "super($1, $2);";
     CtConstructor ctConstructor = new CtConstructor(
-        POOL.get(new String[] {String.class.getName(), int.class.getName()}), ctClass);
+        classPool.get(new String[] {String.class.getName(), int.class.getName()}), ctClass);
     ctConstructor.setBody(src);
 
     ctClass.addConstructor(ctConstructor);
@@ -133,25 +141,24 @@ public final class JavassistUtils {
       classLoader = Thread.currentThread().getContextClassLoader();
     }
 
-    appendThreadClassPath();
-
-    CtClass ctClass = POOL.getOrNull(config.getClassName());
+    ClassPool classPool = getOrCreateClassPool(classLoader);
+    CtClass ctClass = classPool.getOrNull(config.getClassName());
     if (ctClass == null) {
       if (config.isIntf()) {
-        ctClass = POOL.makeInterface(config.getClassName());
+        ctClass = classPool.makeInterface(config.getClassName());
       } else {
 
-        ctClass = POOL.makeClass(config.getClassName());
+        ctClass = classPool.makeClass(config.getClassName());
       }
     }
 
     try {
       for (String intfName : config.getIntfList()) {
-        ctClass.addInterface(POOL.get(intfName));
+        ctClass.addInterface(classPool.get(intfName));
       }
 
       for (FieldConfig fieldConfig : config.getFieldList()) {
-        CtField field = createCtField(POOL, ctClass, fieldConfig);
+        CtField field = createCtField(classPool, ctClass, fieldConfig);
         ctClass.addField(field);
 
         if (fieldConfig.isGenGetter()) {
@@ -171,9 +178,10 @@ public final class JavassistUtils {
         ctClass.addMethod(ctMethod);
       }
 
+      LOGGER.info("generate {} in classLoader {}.", config.getClassName(), classLoader);
       return ctClass.toClass(classLoader, null);
     } catch (Throwable e) {
-      throw new Error(e);
+      throw new Error("Failed to create " + config.getClassName(), e);
     }
   }
 
@@ -334,7 +342,8 @@ public final class JavassistUtils {
   // for test
   public static void detach(String clsName) {
     try {
-      POOL.getCtClass(clsName).detach();
+      ClassPool classPool = getOrCreateClassPool(Thread.currentThread().getContextClassLoader());
+      classPool.getCtClass(clsName).detach();
     } catch (NotFoundException e) {
       // do nothing.
     }
