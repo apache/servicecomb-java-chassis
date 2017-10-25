@@ -99,10 +99,12 @@ public abstract class ArgumentsMapperFactory {
       return false;
     }
 
-    swaggerType = ((Class<?>) swaggerType).getFields()[0].getGenericType();
-    Converter converter = converterMgr.findConverter(type, firstProviderParam, swaggerType);
-    if (ConverterCommon.class.isInstance(converter)) {
-      return false;
+    if (((Class<?>) swaggerType).getFields().length > 0) {
+      swaggerType = ((Class<?>) swaggerType).getFields()[0].getGenericType();
+      Converter converter = converterMgr.findConverter(type, firstProviderParam, swaggerType);
+      if (ConverterCommon.class.isInstance(converter)) {
+        return false;
+      }
     }
     // 透明rpc的包装场景
     return true;
