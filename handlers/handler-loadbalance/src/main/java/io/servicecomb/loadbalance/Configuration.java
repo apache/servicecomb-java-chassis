@@ -32,13 +32,14 @@ public final class Configuration {
 
   public static final String PROP_POLICY = "NFLoadBalancerRuleClassName";
 
-  // default rule
-  public static final String PROP_POLICY_ROUNDROBIN = "com.netflix.loadbalancer.RoundRobinRule";
+  public static final String PROP_RULE_STRATEGY_NAME = "strategy.name";
 
   // 2.0 configuration items
   public static final String PROP_ROOT_20 = "ribbon.";
 
   // retry configurations
+  public static final String PROP_RETRY_HANDLER = "retryHandler";
+
   public static final String PROP_RETRY_ENABLED = "retryEnabled";
 
   public static final String PROP_RETRY_ONNEXT = "retryOnNext";
@@ -84,11 +85,17 @@ public final class Configuration {
   }
 
   public String getPolicy(String microservice) {
-    return getStringProperty(PROP_POLICY_ROUNDROBIN,
+    return getStringProperty(null,
         PROP_ROOT + microservice + "." + PROP_POLICY,
         PROP_ROOT_20 + microservice + "." + PROP_POLICY,
         PROP_ROOT + PROP_POLICY,
         PROP_ROOT_20 + PROP_POLICY);
+  }
+
+  public String getRuleStrategyName(String microservice) {
+    return getStringProperty(null,
+        PROP_ROOT + microservice + "." + PROP_RULE_STRATEGY_NAME,
+        PROP_ROOT + PROP_RULE_STRATEGY_NAME);
   }
 
   public int getSessionTimeoutInSeconds() {
@@ -113,6 +120,12 @@ public final class Configuration {
     } catch (NumberFormatException e) {
       return defaultValue;
     }
+  }
+
+  public String getRetryHandler(String microservice) {
+    return getStringProperty("default",
+        PROP_ROOT + microservice + "." + PROP_RETRY_HANDLER,
+        PROP_ROOT + PROP_RETRY_HANDLER);
   }
 
   public boolean isRetryEnabled(String microservice) {

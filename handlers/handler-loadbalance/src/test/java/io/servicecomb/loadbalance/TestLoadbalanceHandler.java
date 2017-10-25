@@ -24,6 +24,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.apache.commons.configuration.AbstractConfiguration;
 import org.junit.AfterClass;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -77,6 +78,17 @@ public class TestLoadbalanceHandler {
     configuration.addProperty("cse.loadbalance.serverListFilters", "a");
     configuration.addProperty("cse.loadbalance.serverListFilter.a.className",
         "io.servicecomb.loadbalance.MyServerListFilterExt");
+  }
+  
+  @Before
+  public void setUp() {
+    BeansHolder holder = new BeansHolder();
+    List<ExtensionsFactory> extensionsFactories = new ArrayList<>();
+    extensionsFactories.add(new RuleClassNameExtentionsFactory());
+    extensionsFactories.add(new RuleNameExtentionsFactory());
+    extensionsFactories.add(new DefaultRetryExtensionsFactory());
+    Deencapsulation.setField(holder, "extentionsFactories", extensionsFactories);
+    holder.init();
   }
 
   @Test
@@ -260,7 +272,7 @@ public class TestLoadbalanceHandler {
     try {
       lh.handle(invocation, asyncResp);
     } catch (Exception ex) {
-
+      ex.printStackTrace();
       status = false;
     }
 

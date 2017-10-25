@@ -28,6 +28,7 @@ cse:
     enabled: true
     samplingRate: 0.5
   loadbalance:
+    NFLoadBalancerRuleClassName: com.netflix.loadbalancer.WeightedResponseTimeRule
     retryEnabled: true
     retryOnSame: 1
     retryOnNext: 1

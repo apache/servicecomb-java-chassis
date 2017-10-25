@@ -34,6 +34,10 @@ public interface ServerListFilterExt extends ServerListFilter<Server> {
 
   }
 
+  /**
+   * Server list filter should be stateless. Since invocation has state information, you can't use it for next invocation.
+   * Please implement stateful filters very carefully.
+   */
   default void setInvocation(Invocation invocation) {
 
   }

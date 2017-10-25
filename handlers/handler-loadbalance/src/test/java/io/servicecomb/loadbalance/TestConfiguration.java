@@ -18,6 +18,7 @@ package io.servicecomb.loadbalance;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 import org.junit.Test;
 
@@ -34,7 +35,6 @@ public class TestConfiguration {
 
     assertEquals("cse.loadbalance.", Configuration.PROP_ROOT);
     assertEquals("NFLoadBalancerRuleClassName", Configuration.PROP_POLICY);
-    assertEquals("com.netflix.loadbalancer.RoundRobinRule", Configuration.PROP_POLICY_ROUNDROBIN);
     assertEquals("ribbon.", Configuration.PROP_ROOT_20);
     assertEquals("retryEnabled", Configuration.PROP_RETRY_ENABLED);
     assertEquals("retryOnNext", Configuration.PROP_RETRY_ONNEXT);
@@ -54,7 +54,7 @@ public class TestConfiguration {
     Configuration.INSTANCE.getSuccessiveFailedTimes();
     Configuration.INSTANCE.getSessionTimeoutInSeconds();
 
-    assertNotNull(Configuration.INSTANCE.getPolicy("test"));
+    assertNull(Configuration.INSTANCE.getPolicy("test"));
     assertNotNull(Configuration.INSTANCE.getRetryOnNext("test"));
     assertNotNull(Configuration.INSTANCE.getRetryOnSame("test"));
     assertNotNull(Configuration.INSTANCE.isRetryEnabled("test"));
