@@ -56,5 +56,13 @@
             <groupId>io.servicecomb.samples</groupId>
             <artifactId>commmon-schema</artifactId>
         </dependency>
+        <dependency>
+            <groupId>io.servicecomb</groupId>
+            <artifactId>foundation-advance</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-aop</artifactId>
+        </dependency>
     </dependencies>
 </project>
