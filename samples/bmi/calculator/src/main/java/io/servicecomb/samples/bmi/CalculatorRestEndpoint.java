@@ -18,10 +18,8 @@ package io.servicecomb.samples.bmi;
 
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
 
 import io.servicecomb.provider.rest.common.RestSchema;
 
@@ -30,8 +28,7 @@ import io.servicecomb.provider.rest.common.RestSchema;
  * The rest endpoint is accessed by /bmi?height={value}&width={value} with HTTP GET.
  */
 @RestSchema(schemaId = "calculatorRestEndpoint")
-@RequestMapping("/")
-@Controller
+@RequestMapping(path = "/")
 public class CalculatorRestEndpoint implements CalculatorEndpoint {
 
   private final CalculatorService calculatorService;
@@ -41,9 +38,8 @@ public class CalculatorRestEndpoint implements CalculatorEndpoint {
     this.calculatorService = calculatorService;
   }
 
+  @GetMapping(path = "/bmi")
   @Override
-  @RequestMapping(value = "/bmi", method = RequestMethod.GET)
-  @ResponseBody
   public double calculate(double height, double weight) {
     return calculatorService.calculate(height, weight);
   }
