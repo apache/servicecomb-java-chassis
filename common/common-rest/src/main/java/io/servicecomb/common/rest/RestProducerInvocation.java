@@ -64,7 +64,12 @@ public class RestProducerInvocation extends AbstractRestInvocation {
   protected void scheduleInvocation() {
     OperationMeta operationMeta = restOperationMeta.getOperationMeta();
     operationMeta.getExecutor().execute(() -> {
-      runOnExecutor();
+      try {
+        runOnExecutor();
+      } catch (Exception e) {
+        LOGGER.error("rest server onRequest error", e);
+        sendFailResponse(e);
+      }
     });
   }
 
