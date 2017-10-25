@@ -16,6 +16,10 @@
 
 package io.servicecomb.demo;
 
+import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
+import static org.springframework.http.MediaType.APPLICATION_FORM_URLENCODED_VALUE;
+
+import java.io.IOException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -25,6 +29,10 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.client.ClientHttpResponse;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
+import org.springframework.web.client.ResponseErrorHandler;
 import org.springframework.web.client.RestTemplate;
 
 import io.servicecomb.core.CseContext;
@@ -67,6 +75,10 @@ public class CodeFirstRestTemplate {
       }
 
       testRawJson(template, cseUrlPrefix);
+
+      if (transport.equals("rest")) {
+        testFaultyResource(template, cseUrlPrefix);
+      }
     }
   }
 
@@ -243,5 +255,38 @@ public class CodeFirstRestTemplate {
     String input = "{\"name\" : \"zyy\"}";
     String output = template.postForObject(cseUrlPrefix + "rawJsonAnnotation", input, String.class);
     TestMgr.check("hello zyy", output);
+  }
+
+  protected void testFaultyResource(RestTemplate template, String cseUrlPrefix) {
+    ResponseErrorHandler originalResponseErrorHandler = template.getErrorHandler();
+    template.setErrorHandler(new ResponseErrorHandler() {
+      @Override
+      public boolean hasError(ClientHttpResponse clientHttpResponse) throws IOException {
+        return false;
+      }
+
+      @Override
+      public void handleError(ClientHttpResponse clientHttpResponse) throws IOException {
+      }
+    });
+
+    MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+    params.add("foo", "bar");
+
+    HttpHeaders headers = new HttpHeaders();
+    headers.add(CONTENT_TYPE, APPLICATION_FORM_URLENCODED_VALUE);
+    try {
+      ResponseEntity<String> result = template.postForEntity(
+          cseUrlPrefix + "faultyResource",
+          new HttpEntity<>(params, headers),
+          String.class);
+      TestMgr.check(result.getStatusCodeValue(), 500);
+      TestMgr.check(result.getBody(), "no such resource");
+    } catch (Exception e) {
+      e.printStackTrace();
+      TestMgr.check(true, false);
+    }
+
+    template.setErrorHandler(originalResponseErrorHandler);
   }
 }

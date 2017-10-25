@@ -45,6 +45,7 @@ public class ResponsesMeta {
   public void init(ClassLoader classLoader, String packageName, Swagger swagger, Operation operation,
       Type returnType) {
     initSuccessResponse(returnType);
+    initFailedResponse();
 
     for (Entry<String, Response> entry : operation.getResponses().entrySet()) {
       if ("default".equals(entry.getKey())) {
@@ -75,6 +76,17 @@ public class ResponsesMeta {
     ResponseMeta successResponse = new ResponseMeta();
     successResponse.setJavaType(TypeFactory.defaultInstance().constructType(returnType));
     responseMap.put(Status.OK.getStatusCode(), successResponse);
+  }
+
+  protected void initFailedResponse() {
+    ResponseMeta failedResponse = new ResponseMeta();
+    failedResponse.setJavaType(TypeFactory.defaultInstance().constructType(String.class));
+    responseMap.put(Status.INTERNAL_SERVER_ERROR.getStatusCode(), failedResponse);
+    responseMap.put(Status.NOT_IMPLEMENTED.getStatusCode(), failedResponse);
+    responseMap.put(Status.BAD_GATEWAY.getStatusCode(), failedResponse);
+    responseMap.put(Status.SERVICE_UNAVAILABLE.getStatusCode(), failedResponse);
+    responseMap.put(Status.GATEWAY_TIMEOUT.getStatusCode(), failedResponse);
+    responseMap.put(Status.HTTP_VERSION_NOT_SUPPORTED.getStatusCode(), failedResponse);
   }
 
   public ResponseMeta findResponseMeta(int statusCode) {

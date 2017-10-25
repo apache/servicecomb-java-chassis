@@ -145,4 +145,10 @@ public class CodeFirstSpringmvc extends CodeFirstSpringmvcBase {
   public String addString(@RequestParam(name = "s") List<String> s) {
     return super.addString(s);
   }
+
+  @RequestMapping(value = "/faultyResource", method = RequestMethod.POST, consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
+  @Override
+  public ResponseEntity<String> postFaultyResource(@RequestParam(name = "foo") String foo) {
+    return super.postFaultyResource(foo);
+  }
 }

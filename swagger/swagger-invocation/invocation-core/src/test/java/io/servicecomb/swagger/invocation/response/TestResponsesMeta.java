@@ -64,6 +64,24 @@ public class TestResponsesMeta {
     Assert.assertEquals(Integer.class, resp.getHeaders().get("h1").getRawClass());
 
     resp = meta.findResponseMeta(500);
+    Assert.assertEquals(String.class, resp.getJavaType().getRawClass());
+
+    resp = meta.findResponseMeta(501);
+    Assert.assertEquals(String.class, resp.getJavaType().getRawClass());
+
+    resp = meta.findResponseMeta(502);
+    Assert.assertEquals(String.class, resp.getJavaType().getRawClass());
+
+    resp = meta.findResponseMeta(503);
+    Assert.assertEquals(String.class, resp.getJavaType().getRawClass());
+
+    resp = meta.findResponseMeta(504);
+    Assert.assertEquals(String.class, resp.getJavaType().getRawClass());
+
+    resp = meta.findResponseMeta(505);
+    Assert.assertEquals(String.class, resp.getJavaType().getRawClass());
+
+    resp = meta.findResponseMeta(590);
     Assert.assertEquals(CommonExceptionData.class, resp.getJavaType().getRawClass());
   }
 }

@@ -16,6 +16,7 @@
 package io.servicecomb.swagger.invocation;
 
 import javax.ws.rs.core.Response.Status;
+import javax.ws.rs.core.Response.Status.Family;
 import javax.ws.rs.core.Response.StatusType;
 
 import io.servicecomb.swagger.invocation.context.HttpStatus;
@@ -88,8 +89,9 @@ public class Response {
 
   public static Response create(StatusType status, Object result) {
     Response response = Response.status(status);
-    if (response.isFailed()) {
-      result = ExceptionFactory.create(status, result);
+    if (response.isFailed() &&
+        (!(isValid5xxServerError(response.getStatusCode()) && (result instanceof String)))) {
+        result = ExceptionFactory.create(status, result);
     }
     return response.entity(result);
   }
@@ -185,5 +187,10 @@ public class Response {
     response.setStatus(Status.OK);
     response.setResult(result);
     return response;
+  }
+
+  public static boolean isValid5xxServerError(int statusCode) {
+    return Status.fromStatusCode(statusCode) != null &&
+        Family.SERVER_ERROR.equals(Family.familyOf(statusCode));
   }
 }

@@ -16,6 +16,8 @@
 
 package io.servicecomb.common.rest;
 
+import static io.servicecomb.swagger.invocation.Response.isValid5xxServerError;
+
 import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.List;
@@ -143,7 +145,9 @@ public abstract class AbstractRestInvocation {
     responseEx.setContentType(produceProcessor.getName());
 
     Object body = response.getResult();
-    if (response.isFailed()) {
+    // bypass normal http exception
+    if (response.isFailed() &&
+        (!(isValid5xxServerError(response.getStatusCode()) && (body instanceof String)))) {
       body = ((InvocationException) body).getErrorData();
     }
 

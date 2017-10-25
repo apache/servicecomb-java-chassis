@@ -16,6 +16,9 @@
 
 package io.servicecomb.core;
 
+import static org.hamcrest.core.Is.is;
+import static org.junit.Assert.assertThat;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
@@ -58,7 +61,7 @@ public class TestConfig {
 
   @Test
   public void testHttpResponse() {
-    String objectString = new String("Unit Testing");
+    String objectString = "Unit Testing";
     Response oResponse = Response.success(objectString, Status.OK);
 
     Assert.assertEquals(true, oResponse.isSuccessed());
@@ -93,7 +96,7 @@ public class TestConfig {
     Assert.assertEquals("testObject", invocation.getContext("test1"));
 
     Map<String, String> context = new HashMap<>();
-    context.put("test2", new String("testObject"));
+    context.put("test2", "testObject");
     invocation.setContext(context);
     Assert.assertEquals(context, invocation.getContext());
 
@@ -125,6 +128,15 @@ public class TestConfig {
     response = Response.create(400, "test", "errorData");
     exception = response.getResult();
     Assert.assertEquals("errorData", exception.getErrorData());
+
+    response = Response.create(Status.INTERNAL_SERVER_ERROR, "no such resource");
+    String result = response.getResult();
+    Assert.assertEquals("no such resource", result);
+
+    assertThat(Response.isValid5xxServerError(200), is(false));
+    assertThat(Response.isValid5xxServerError(490), is(false));
+    assertThat(Response.isValid5xxServerError(502), is(true));
+    assertThat(Response.isValid5xxServerError(590), is(false));
   }
 
   @Test

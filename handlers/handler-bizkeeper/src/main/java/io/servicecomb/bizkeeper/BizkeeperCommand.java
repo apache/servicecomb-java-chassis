@@ -16,6 +16,8 @@
 
 package io.servicecomb.bizkeeper;
 
+import static io.servicecomb.swagger.invocation.Response.isValid5xxServerError;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -79,7 +81,15 @@ public abstract class BizkeeperCommand extends HystrixObservableCommand<Response
           if (isFailedResponse(resp)) {
             // e should implements toString
             LOG.warn("bizkeeper command failed due to:" + resp.getResult());
-            f.onError(resp.getResult());
+            Object result = resp.getResult();
+            // bypass normal http server exception
+            if (isValid5xxServerError(resp.getStatusCode()) && (result instanceof String)) {
+              f.onNext(resp);
+              f.onCompleted();
+            } else {
+              // wrap abnormal exception with InvocationException
+              f.onError(resp.getResult());
+            }
             FallbackPolicyManager.record(type, invocation, resp, false);
           } else {
             f.onNext(resp);

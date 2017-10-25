@@ -16,6 +16,8 @@
 
 package io.servicecomb.demo.springmvc.server;
 
+import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
+
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -75,7 +77,7 @@ public class CodeFirstSpringmvc {
     InvocationContext c2 = ContextUtils.getInvocationContext();
     headers.add("h2", "h2v " + c2.getContext().toString());
 
-    return new ResponseEntity<Date>(date, headers, HttpStatus.ACCEPTED);
+    return new ResponseEntity<>(date, headers, HttpStatus.ACCEPTED);
   }
 
   @ResponseHeaders({@ResponseHeader(name = "h1", response = String.class),
@@ -88,7 +90,7 @@ public class CodeFirstSpringmvc {
     InvocationContext c2 = ContextUtils.getInvocationContext();
     headers.add("h2", "h2v " + c2.getContext().toString());
 
-    return new ResponseEntity<Date>(date, headers, HttpStatus.ACCEPTED);
+    return new ResponseEntity<>(date, headers, HttpStatus.ACCEPTED);
   }
 
   @ApiResponse(code = 200, response = User.class, message = "")
@@ -254,5 +256,10 @@ public class CodeFirstSpringmvc {
       return null;
     }
     return "hello " + person.get("name");
+  }
+
+  @PostMapping(value = "/faultyResource", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
+  public ResponseEntity<String> testFaultyResource(@RequestParam(name = "foo") String foo) {
+    return new ResponseEntity<>("no such resource", INTERNAL_SERVER_ERROR);
   }
 }
