@@ -10,3 +10,8 @@ cse:
     chain:
       Consumer:
         default: bizkeeper-consumer,loadbalance
+  loadbalance:
+    strategy:
+      name: mycustomrule
+    retryEnabled: true
+    retryHandler: mycustomhandler

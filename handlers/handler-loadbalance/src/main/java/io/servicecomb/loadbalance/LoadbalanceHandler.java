@@ -30,9 +30,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.netflix.client.DefaultLoadBalancerRetryHandler;
 import com.netflix.loadbalancer.IRule;
-import com.netflix.loadbalancer.RoundRobinRule;
 import com.netflix.loadbalancer.Server;
 import com.netflix.loadbalancer.reactive.ExecutionContext;
 import com.netflix.loadbalancer.reactive.ExecutionInfo;
@@ -241,9 +239,7 @@ public class LoadbalanceHandler extends AbstractHandler {
     LoadBalancerCommand<Response> command = LoadBalancerCommand.<Response>builder()
         .withLoadBalancer(choosenLB)
         .withServerLocator(invocation)
-        .withRetryHandler(new DefaultLoadBalancerRetryHandler(
-            Configuration.INSTANCE.getRetryOnSame(invocation.getMicroserviceName()),
-            Configuration.INSTANCE.getRetryOnNext(invocation.getMicroserviceName()), true))
+        .withRetryHandler(ExtensionsManager.createRetryHandler(invocation.getMicroserviceName()))
         .withListeners(listeners)
         .withExecutionContext(context)
         .build();
@@ -287,22 +283,13 @@ public class LoadbalanceHandler extends AbstractHandler {
 
   private LoadBalancer createLoadBalancer(String appId, String microserviceName, String microserviceVersionRule,
       String transportName) {
-    IRule rule;
-    try {
-      rule = (IRule) Class.forName(policy, true, Thread.currentThread().getContextClassLoader()).newInstance();
-      LOGGER.info("Using loadbalance rule [{}] for service [{},{}].",
-          policy,
-          microserviceName,
-          microserviceVersionRule);
-    } catch (InstantiationException | IllegalAccessException | ClassNotFoundException e) {
-      LOGGER.warn("Loadbalance rule [{}] is incorrect, using default RoundRobinRule.", policy);
-      rule = new RoundRobinRule();
-    }
+    IRule rule = ExtensionsManager.createLoadBalancerRule(microserviceName);
 
     CseServerList serverList = new CseServerList(appId, microserviceName,
         microserviceVersionRule, transportName);
     LoadBalancer lb = new LoadBalancer(serverList, rule);
 
+    // we can change this implementation to ExtensionsManager in the future.
     loadServerListFilters(lb);
     // tow lines below is for compatibility, will remove in future
     setIsolationFilter(lb, microserviceName);

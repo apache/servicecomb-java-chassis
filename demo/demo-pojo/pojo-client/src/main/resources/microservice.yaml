@@ -13,3 +13,6 @@ cse:
   isolation:
     Consumer:
       enabled: false
+  loadbalance:
+    strategy:
+      name: Random
