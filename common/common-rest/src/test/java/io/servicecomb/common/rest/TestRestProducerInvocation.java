@@ -202,6 +202,29 @@ public class TestRestProducerInvocation {
     Assert.assertTrue(invokeNoParam);
     Assert.assertSame(args, restProducerInvocation.invocation.getSwaggerArguments());
   }
+  
+  @Test
+  public void runOnExecutorException() {
+    new Expectations(RestCodec.class) {
+      {
+        RestCodec.restToArgs(requestEx, restOperationMeta);
+        result = new Exception();
+      }
+    };
+    restProducerInvocation = new MockUp<RestProducerInvocation>() {
+      @Mock
+      void invoke() {
+        invokeNoParam = true;
+      }
+    }.getMockInstance();
+    initRestProducerInvocation();
+    try {
+      restProducerInvocation.runOnExecutor();
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+    Assert.assertFalse(invokeNoParam);
+  }
 
   @Test
   public void findRestOperationNameFromRegistry() {

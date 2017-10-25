@@ -233,6 +233,18 @@ public class CodeFirstSpringmvc {
     return name;
   }
 
+  enum NameType {
+    abc,
+    def
+  }
+
+  @RequestMapping(path = "/testenum/{name}", method = RequestMethod.GET)
+  @ApiResponses(value = {@ApiResponse(code = 200, response = String.class, message = "200 normal"),
+      @ApiResponse(code = 490, response = String.class, message = "490 exception")})
+  public String testEnum(@PathVariable(value = "name") NameType nameType) {
+    return nameType.toString();
+  }
+
   @RequestMapping(method = RequestMethod.POST, value = "/ignore")
   @ResponseBody
   public OutputModelForTestIgnore testModelWithIgnoreField(@RequestBody InputModelForTestIgnore input) {
