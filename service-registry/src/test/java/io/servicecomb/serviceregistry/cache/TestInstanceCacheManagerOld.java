@@ -22,13 +22,19 @@ import java.util.Map;
 import org.junit.Assert;
 import org.junit.Test;
 
+import com.google.common.eventbus.EventBus;
+
 import io.servicecomb.serviceregistry.ServiceRegistry;
 import io.servicecomb.serviceregistry.api.MicroserviceKey;
 import io.servicecomb.serviceregistry.api.registry.Microservice;
 import io.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
 import io.servicecomb.serviceregistry.api.registry.WatchAction;
 import io.servicecomb.serviceregistry.api.response.MicroserviceInstanceChangedEvent;
+import io.servicecomb.serviceregistry.config.ServiceRegistryConfig;
 import io.servicecomb.serviceregistry.registry.ServiceRegistryFactory;
+import io.servicecomb.serviceregistry.task.event.ExceptionEvent;
+import io.servicecomb.serviceregistry.task.event.RecoveryEvent;
+import mockit.Mocked;
 
 public class TestInstanceCacheManagerOld {
 
@@ -74,5 +80,20 @@ public class TestInstanceCacheManagerOld {
     InstanceCache newServiceCache = oInstanceCacheManager.getOrCreate("defalut", "newService", "1.0.1");
     Assert.assertNotNull(newServiceCache);
     Assert.assertEquals(1, oInstanceCacheManager.getCachedEntries().size());
+  }
+
+  @Test
+  public void testCacheAvaiable(@Mocked ServiceRegistry serviceRegistry,
+      @Mocked ServiceRegistryConfig serviceRegistryConfig) {
+    EventBus eventBus = new EventBus();
+    InstanceCacheManagerOld instanceCacheManager =
+        new InstanceCacheManagerOld(eventBus, serviceRegistry, serviceRegistryConfig);
+
+    Assert.assertEquals(false, instanceCacheManager.cacheAvailable);
+    eventBus.post(new RecoveryEvent());
+    Assert.assertEquals(true, instanceCacheManager.cacheAvailable);
+
+    eventBus.post(new ExceptionEvent(null));
+    Assert.assertEquals(false, instanceCacheManager.cacheAvailable);
   }
 }
