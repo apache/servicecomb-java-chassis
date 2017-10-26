@@ -20,7 +20,7 @@ public class PrivateMicroserviceClassLoaderFactory implements MicroserviceClassL
   public static final MicroserviceClassLoaderFactory INSTANCE = new PrivateMicroserviceClassLoaderFactory();
 
   @Override
-  public ClassLoader create(String microserviceName, String version) {
-    return new MicroserviceClassLoader(microserviceName, version);
+  public ClassLoader create(String appId, String microserviceName, String version) {
+    return new MicroserviceClassLoader(appId, microserviceName, version);
   }
 }

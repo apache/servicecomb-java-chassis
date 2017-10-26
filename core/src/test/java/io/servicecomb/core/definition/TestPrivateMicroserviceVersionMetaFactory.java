@@ -14,13 +14,19 @@
  * limitations under the License.
  */
 
-package io.servicecomb.core.definition.classloader;
+package io.servicecomb.core.definition;
 
-public class DefaultMicroserviceClassLoaderFactory implements MicroserviceClassLoaderFactory {
-  public static final MicroserviceClassLoaderFactory INSTANCE = new DefaultMicroserviceClassLoaderFactory();
+import org.junit.Assert;
+import org.junit.Test;
 
-  @Override
-  public ClassLoader create(String appId, String microserviceName, String version) {
-    return Thread.currentThread().getContextClassLoader();
+import io.servicecomb.core.definition.classloader.PrivateMicroserviceClassLoaderFactory;
+import mockit.Deencapsulation;
+
+public class TestPrivateMicroserviceVersionMetaFactory {
+  @Test
+  public void construct() {
+    PrivateMicroserviceVersionMetaFactory factory = new PrivateMicroserviceVersionMetaFactory();
+    Assert.assertSame(PrivateMicroserviceClassLoaderFactory.INSTANCE,
+        Deencapsulation.getField(factory, "classLoaderFactory"));
   }
 }

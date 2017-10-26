@@ -30,7 +30,7 @@ public class TestMicroserviceMeta {
 
   @Test
   public void classloader() {
-    ClassLoader loader = new MicroserviceClassLoader("", "");
+    ClassLoader loader = new MicroserviceClassLoader("", "", "");
     microserviceMeta.setClassLoader(loader);
     Assert.assertSame(loader, microserviceMeta.getClassLoader());
   }
