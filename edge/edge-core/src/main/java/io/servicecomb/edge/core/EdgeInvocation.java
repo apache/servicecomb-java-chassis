@@ -27,29 +27,18 @@ import io.servicecomb.common.rest.locator.OperationLocator;
 import io.servicecomb.common.rest.locator.ServicePathManager;
 import io.servicecomb.core.Const;
 import io.servicecomb.core.definition.MicroserviceVersionMeta;
-import io.servicecomb.core.definition.MicroserviceVersionMetaFactory;
-import io.servicecomb.core.definition.classloader.PrivateMicroserviceClassLoaderFactory;
 import io.servicecomb.core.invocation.InvocationFactory;
 import io.servicecomb.core.provider.consumer.ReactiveResponseExecutor;
 import io.servicecomb.core.provider.consumer.ReferenceConfig;
-import io.servicecomb.foundation.common.event.EventManager;
 import io.servicecomb.foundation.common.exceptions.ServiceCombException;
 import io.servicecomb.foundation.vertx.http.VertxServerRequestToHttpServletRequest;
 import io.servicecomb.foundation.vertx.http.VertxServerResponseToHttpServletResponse;
 import io.servicecomb.serviceregistry.RegistryUtils;
-import io.servicecomb.serviceregistry.consumer.AppManager;
 import io.servicecomb.serviceregistry.consumer.MicroserviceVersionRule;
 import io.servicecomb.serviceregistry.definition.DefinitionConst;
 import io.vertx.ext.web.RoutingContext;
 
 public class EdgeInvocation extends AbstractRestInvocation {
-  // temp appManager, we will create a global appManager in the further
-  private static AppManager appManager = new AppManager(EventManager.eventBus);
-  static {
-    appManager.setMicroserviceVersionFactory(
-        new MicroserviceVersionMetaFactory(PrivateMicroserviceClassLoaderFactory.INSTANCE));
-  }
-
   protected String microserviceName;
 
   protected MicroserviceVersionRule microserviceVersionRule;
@@ -94,7 +83,9 @@ public class EdgeInvocation extends AbstractRestInvocation {
       appId = microserviceName.substring(0, idxAt);
     }
 
-    microserviceVersionRule = appManager.getOrCreateMicroserviceVersionRule(appId, microserviceName, versionRule);
+    microserviceVersionRule = RegistryUtils.getServiceRegistry()
+        .getAppManager()
+        .getOrCreateMicroserviceVersionRule(appId, microserviceName, versionRule);
     latestMicroserviceVersionMeta = microserviceVersionRule.getLatestMicroserviceVersion();
 
     if (latestMicroserviceVersionMeta == null) {

@@ -1,0 +1,3 @@
+cse-config-order: -500
+servicecomb:
+  microserviceVersionFactory: io.servicecomb.core.definition.PrivateMicroserviceVersionMetaFactory

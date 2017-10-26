@@ -47,6 +47,7 @@ import io.servicecomb.foundation.common.exceptions.ServiceCombException;
 import io.servicecomb.foundation.vertx.http.HttpServletRequestEx;
 import io.servicecomb.foundation.vertx.http.HttpServletResponseEx;
 import io.servicecomb.serviceregistry.RegistryUtils;
+import io.servicecomb.serviceregistry.ServiceRegistry;
 import io.servicecomb.serviceregistry.api.registry.Microservice;
 import io.servicecomb.serviceregistry.consumer.AppManager;
 import io.servicecomb.serviceregistry.consumer.MicroserviceVersionRule;
@@ -167,10 +168,14 @@ public class TestEdgeInvocation {
 
   @Test
   public void findMicroserviceVersionMetaNullLatestVersion(@Mocked AppManager appManager,
-      @Mocked MicroserviceVersionRule microserviceVersionRule) {
+      @Mocked MicroserviceVersionRule microserviceVersionRule, @Mocked ServiceRegistry serviceRegistry) {
     String versionRule = DefinitionConst.VERSION_RULE_ALL;
     new Expectations(RegistryUtils.class) {
       {
+        RegistryUtils.getServiceRegistry();
+        result = serviceRegistry;
+        serviceRegistry.getAppManager();
+        result = appManager;
         RegistryUtils.getAppId();
         result = "app";
         appManager.getOrCreateMicroserviceVersionRule("app", microserviceName, versionRule);
@@ -179,23 +184,28 @@ public class TestEdgeInvocation {
         result = null;
       }
     };
-    Deencapsulation.setField(edgeInvocation, "appManager", appManager);
 
     expectedException.expect(ServiceCombException.class);
     expectedException.expectMessage(Matchers
-        .is("Failed to find latest MicroserviceVersionMeta, appId=app, microserviceName=ms, versionRule=0+."));
+        .is("Failed to find latest MicroserviceVersionMeta, appId=app, microserviceName=ms, versionRule=0.0.0+."));
+
     edgeInvocation.findMicroserviceVersionMeta();
   }
 
   @Test
   public void findMicroserviceVersionMetaNormal(@Mocked AppManager appManager,
       @Mocked MicroserviceVersionRule microserviceVersionRule,
-      @Mocked MicroserviceVersionMeta latestMicroserviceVersionMeta) {
+      @Mocked MicroserviceVersionMeta latestMicroserviceVersionMeta,
+      @Mocked ServiceRegistry serviceRegistry) {
     String versionRule = DefinitionConst.VERSION_RULE_ALL;
     microserviceName = "app:ms";
     edgeInvocation.microserviceName = microserviceName;
     new Expectations(RegistryUtils.class) {
       {
+        RegistryUtils.getServiceRegistry();
+        result = serviceRegistry;
+        serviceRegistry.getAppManager();
+        result = appManager;
         RegistryUtils.getAppId();
         result = "app";
         appManager.getOrCreateMicroserviceVersionRule("app", microserviceName, versionRule);
@@ -204,7 +214,6 @@ public class TestEdgeInvocation {
         result = latestMicroserviceVersionMeta;
       }
     };
-    Deencapsulation.setField(edgeInvocation, "appManager", appManager);
 
     edgeInvocation.findMicroserviceVersionMeta();
 
