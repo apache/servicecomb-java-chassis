@@ -14,13 +14,12 @@
  * limitations under the License.
  */
 
-package io.servicecomb.core.definition.classloader;
+package io.servicecomb.core.definition;
 
-public class DefaultMicroserviceClassLoaderFactory implements MicroserviceClassLoaderFactory {
-  public static final MicroserviceClassLoaderFactory INSTANCE = new DefaultMicroserviceClassLoaderFactory();
+import io.servicecomb.core.definition.classloader.PrivateMicroserviceClassLoaderFactory;
 
-  @Override
-  public ClassLoader create(String appId, String microserviceName, String version) {
-    return Thread.currentThread().getContextClassLoader();
+public class PrivateMicroserviceVersionMetaFactory extends MicroserviceVersionMetaFactory {
+  public PrivateMicroserviceVersionMetaFactory() {
+    super(PrivateMicroserviceClassLoaderFactory.INSTANCE);
   }
 }

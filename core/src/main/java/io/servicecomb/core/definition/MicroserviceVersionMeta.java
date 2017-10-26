@@ -28,7 +28,8 @@ public class MicroserviceVersionMeta extends MicroserviceVersion {
     super(microserviceId);
 
     this.microserviceMeta = new MicroserviceMeta(microserviceName);
-    this.microserviceMeta.setClassLoader(classLoaderFactory.create(microserviceName, microservice.getVersion()));
+    this.microserviceMeta.setClassLoader(
+        classLoaderFactory.create(microservice.getAppId(), microserviceName, microservice.getVersion()));
     CseContext.getInstance().getConsumerSchemaFactory().getOrCreateConsumerSchema(microserviceMeta, microservice);
     CseContext.getInstance().getSchemaListenerManager().notifySchemaListener(microserviceMeta);
   }
