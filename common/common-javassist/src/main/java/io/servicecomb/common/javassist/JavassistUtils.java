@@ -181,7 +181,7 @@ public final class JavassistUtils {
       LOGGER.info("generate {} in classLoader {}.", config.getClassName(), classLoader);
       return ctClass.toClass(classLoader, null);
     } catch (Throwable e) {
-      throw new Error("Failed to create " + config.getClassName(), e);
+      throw new Error(String.format("Failed to create %s in classLoader %s.", config.getClassName(), classLoader), e);
     }
   }
 
