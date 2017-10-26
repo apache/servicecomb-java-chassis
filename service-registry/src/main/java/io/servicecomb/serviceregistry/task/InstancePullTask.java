@@ -19,16 +19,16 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import io.servicecomb.serviceregistry.cache.InstanceCache;
-import io.servicecomb.serviceregistry.cache.InstanceCacheManager;
+import io.servicecomb.serviceregistry.cache.InstanceCacheManagerOld;
 
 public class InstancePullTask implements Runnable {
   private static final Logger LOGGER = LoggerFactory.getLogger(InstancePullTask.class);
 
   private ServiceCenterTaskMonitor serviceCenterTaskMonitor = new ServiceCenterTaskMonitor();
-  private InstanceCacheManager cacheManager;
+  private InstanceCacheManagerOld cacheManager;
   private int interval;
 
-  public InstancePullTask(int interval, InstanceCacheManager cacheManager) {
+  public InstancePullTask(int interval, InstanceCacheManagerOld cacheManager) {
     this.interval = interval;
     this.cacheManager = cacheManager;
   }
