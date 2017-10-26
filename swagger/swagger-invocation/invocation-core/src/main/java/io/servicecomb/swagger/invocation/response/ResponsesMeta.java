@@ -81,12 +81,9 @@ public class ResponsesMeta {
   protected void initFailedResponse() {
     ResponseMeta failedResponse = new ResponseMeta();
     failedResponse.setJavaType(TypeFactory.defaultInstance().constructType(String.class));
-    responseMap.put(Status.INTERNAL_SERVER_ERROR.getStatusCode(), failedResponse);
-    responseMap.put(Status.NOT_IMPLEMENTED.getStatusCode(), failedResponse);
-    responseMap.put(Status.BAD_GATEWAY.getStatusCode(), failedResponse);
-    responseMap.put(Status.SERVICE_UNAVAILABLE.getStatusCode(), failedResponse);
-    responseMap.put(Status.GATEWAY_TIMEOUT.getStatusCode(), failedResponse);
-    responseMap.put(Status.HTTP_VERSION_NOT_SUPPORTED.getStatusCode(), failedResponse);
+    for (int statusCode = 500; statusCode < 506; statusCode++) {
+      responseMap.put(statusCode, failedResponse);
+    }
   }
 
   public ResponseMeta findResponseMeta(int statusCode) {
