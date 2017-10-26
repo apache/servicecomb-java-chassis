@@ -33,10 +33,13 @@ import io.servicecomb.serviceregistry.api.registry.Microservice;
 import io.servicecomb.serviceregistry.api.registry.MicroserviceFactory;
 import io.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
 import io.servicecomb.serviceregistry.cache.InstanceCacheManager;
+import io.servicecomb.serviceregistry.cache.InstanceCacheManagerNew;
 import io.servicecomb.serviceregistry.cache.InstanceCacheManagerOld;
 import io.servicecomb.serviceregistry.client.IpPortManager;
 import io.servicecomb.serviceregistry.client.ServiceRegistryClient;
 import io.servicecomb.serviceregistry.config.ServiceRegistryConfig;
+import io.servicecomb.serviceregistry.consumer.AppManager;
+import io.servicecomb.serviceregistry.consumer.MicroserviceVersionFactory;
 import io.servicecomb.serviceregistry.definition.MicroserviceDefinition;
 import io.servicecomb.serviceregistry.task.MicroserviceServiceCenterTask;
 import io.servicecomb.serviceregistry.task.ServiceCenterTask;
@@ -54,6 +57,8 @@ public abstract class AbstractServiceRegistry implements ServiceRegistry {
   protected MicroserviceDefinition microserviceDefinition;
 
   protected Microservice microservice;
+
+  protected AppManager appManager;
 
   protected InstanceCacheManager instanceCacheManager;
 
@@ -75,7 +80,14 @@ public abstract class AbstractServiceRegistry implements ServiceRegistry {
 
   @Override
   public void init() {
-    instanceCacheManager = new InstanceCacheManagerOld(eventBus, this, serviceRegistryConfig);
+    try {
+      initAppManager();
+    } catch (InstantiationException | IllegalAccessException | ClassNotFoundException e) {
+      throw new IllegalStateException("Failed to init appManager.", e);
+    }
+
+    initCacheManager();
+
     ipPortManager = new IpPortManager(serviceRegistryConfig, instanceCacheManager);
     if (srClient == null) {
       srClient = createServiceRegistryClient();
@@ -84,6 +96,36 @@ public abstract class AbstractServiceRegistry implements ServiceRegistry {
     createServiceCenterTask();
 
     eventBus.register(this);
+  }
+
+  protected void initAppManager() throws InstantiationException, IllegalAccessException, ClassNotFoundException {
+    appManager = new AppManager(eventBus);
+
+    String microserviceVersionFactoryClass = serviceRegistryConfig.getMicroserviceVersionFactory();
+    if (microserviceVersionFactoryClass == null) {
+      return;
+    }
+
+    MicroserviceVersionFactory microserviceVersionFactory =
+        (MicroserviceVersionFactory) Class.forName(microserviceVersionFactoryClass).newInstance();
+    appManager.setMicroserviceVersionFactory(microserviceVersionFactory);
+    LOGGER.info("microserviceVersionFactory is {}.", microserviceVersionFactoryClass);
+  }
+
+  protected void initCacheManager() {
+    // now only edge use new mechanism
+    String microserviceVersionFactoryClass = serviceRegistryConfig.getMicroserviceVersionFactory();
+    if (microserviceVersionFactoryClass == null) {
+      instanceCacheManager = new InstanceCacheManagerOld(eventBus, this, serviceRegistryConfig);
+      return;
+    }
+
+    instanceCacheManager = new InstanceCacheManagerNew(appManager);
+  }
+
+  @Override
+  public AppManager getAppManager() {
+    return appManager;
   }
 
   @Override

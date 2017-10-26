@@ -69,10 +69,16 @@ public final class ServiceRegistryConfig {
 
   public static final String NO_DOMAIN = "default";
 
+  public static final String MICROSERVICE_VERSION_FACTORY = "servicecomb.microserviceVersionFactory";
+
   private boolean ssl = true;
 
   private ServiceRegistryConfig() {
 
+  }
+
+  public String getMicroserviceVersionFactory() {
+    return DynamicPropertyFactory.getInstance().getStringProperty(MICROSERVICE_VERSION_FACTORY, null).get();
   }
 
   public HttpVersion getHttpVersion() {
@@ -145,7 +151,7 @@ public final class ServiceRegistryConfig {
         DynamicPropertyFactory.getInstance()
             .getIntProperty("cse.service.registry.client.timeout.watch", DEFAULT_TIMEOUT_IN_SECONDS * 2);
     int timeout = property.get();
-    return timeout < 1 ? DEFAULT_TIMEOUT_IN_SECONDS * 2: timeout;
+    return timeout < 1 ? DEFAULT_TIMEOUT_IN_SECONDS * 2 : timeout;
   }
 
   public int getRequestTimeout() {
