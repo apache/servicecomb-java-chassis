@@ -18,7 +18,6 @@ package io.servicecomb.swagger.invocation.context;
 
 import java.util.concurrent.CompletableFuture;
 
-import com.sun.xml.internal.ws.util.CompletedFuture;
 
 /**
  * 传递调用过程的上下文数据
