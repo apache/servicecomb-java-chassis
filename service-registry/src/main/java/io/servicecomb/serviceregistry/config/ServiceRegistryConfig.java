@@ -213,8 +213,7 @@ public final class ServiceRegistryConfig {
   }
 
   public String getRegistryApiVersion() {
-    // will change to v4 in a short period
-    return getProperty("v3", REGISTRY_API_VERSION);
+    return getProperty("v4", REGISTRY_API_VERSION);
   }
 
   public String getTenantName() {
