@@ -34,6 +34,7 @@ import io.servicecomb.serviceregistry.api.registry.Microservice;
 import io.servicecomb.serviceregistry.api.registry.MicroserviceFactory;
 import io.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
 import io.servicecomb.serviceregistry.cache.InstanceCacheManager;
+import io.servicecomb.serviceregistry.cache.InstanceCacheManagerOld;
 import io.servicecomb.serviceregistry.client.IpPortManager;
 import io.servicecomb.serviceregistry.client.ServiceRegistryClient;
 import io.servicecomb.serviceregistry.config.ServiceRegistryConfig;
@@ -57,7 +58,7 @@ public abstract class AbstractServiceRegistry implements ServiceRegistry {
 
   protected Microservice microservice;
 
-  protected InstanceCacheManager instanceCacheManager;
+  protected InstanceCacheManagerOld instanceCacheManager;
 
   protected IpPortManager ipPortManager;
 
@@ -84,7 +85,7 @@ public abstract class AbstractServiceRegistry implements ServiceRegistry {
 
   @Override
   public void init() {
-    instanceCacheManager = new InstanceCacheManager(eventBus, this);
+    instanceCacheManager = new InstanceCacheManagerOld(eventBus, this);
     ipPortManager = new IpPortManager(serviceRegistryConfig, instanceCacheManager);
     if (srClient == null) {
       srClient = createServiceRegistryClient();

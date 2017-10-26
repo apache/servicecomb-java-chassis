@@ -16,6 +16,12 @@
 
 package io.servicecomb.serviceregistry.cache;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import org.junit.Assert;
+import org.junit.Test;
+
 import io.servicecomb.serviceregistry.ServiceRegistry;
 import io.servicecomb.serviceregistry.api.MicroserviceKey;
 import io.servicecomb.serviceregistry.api.registry.Microservice;
@@ -23,24 +29,22 @@ import io.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
 import io.servicecomb.serviceregistry.api.registry.WatchAction;
 import io.servicecomb.serviceregistry.api.response.MicroserviceInstanceChangedEvent;
 import io.servicecomb.serviceregistry.registry.ServiceRegistryFactory;
-import java.util.HashMap;
-import java.util.Map;
-import org.junit.Assert;
-import org.junit.Test;
 
-public class TestInstanceCacheManager {
+public class TestInstanceCacheManagerOld {
 
   @Test
   public void testInstanceUpdate() {
     ServiceRegistry serviceRegistry = ServiceRegistryFactory.createLocal();
     Microservice microservice = serviceRegistry.getMicroservice();
     serviceRegistry.init();
-    InstanceCacheManager oInstanceCacheManager = serviceRegistry.getInstanceCacheManager();
+    InstanceCacheManagerOld oInstanceCacheManager =
+        (InstanceCacheManagerOld) serviceRegistry.getInstanceCacheManager();
     Map<String, MicroserviceInstance> instanceMap = new HashMap<>();
     MicroserviceInstance instance = new MicroserviceInstance();
     instance.setInstanceId("88887777");
     instanceMap.put(instance.getInstanceId(), instance);
-    oInstanceCacheManager.updateInstanceMap("default", "default",  new InstanceCache("default", "default", "lastest", instanceMap));
+    oInstanceCacheManager
+        .updateInstanceMap("default", "default", new InstanceCache("default", "default", "lastest", instanceMap));
 
     MicroserviceInstanceChangedEvent oChangedEnvent = new MicroserviceInstanceChangedEvent();
     oChangedEnvent.setAction(WatchAction.UPDATE);
@@ -66,7 +70,7 @@ public class TestInstanceCacheManager {
     oChangedEnvent.setAction(WatchAction.EXPIRE);
     oInstanceCacheManager.onInstanceUpdate(oChangedEnvent);
     Assert.assertEquals(oInstanceCacheManager.cacheMap.size(), 0);
-    
+
     InstanceCache newServiceCache = oInstanceCacheManager.getOrCreate("defalut", "newService", "1.0.1");
     Assert.assertNotNull(newServiceCache);
     Assert.assertEquals(1, oInstanceCacheManager.getCachedEntries().size());
