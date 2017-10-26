@@ -21,13 +21,13 @@ import java.util.Collection;
 import org.junit.Test;
 
 import io.servicecomb.serviceregistry.cache.InstanceCache;
-import io.servicecomb.serviceregistry.cache.InstanceCacheManager;
+import io.servicecomb.serviceregistry.cache.InstanceCacheManagerOld;
 import mockit.Expectations;
 import mockit.Injectable;
 
 public class TestInstancePullTask {
   @Test
-  public void testCacheChange(@Injectable InstanceCacheManager cacheManager) {
+  public void testCacheChange(@Injectable InstanceCacheManagerOld cacheManager) {
     InstancePullTask task = new InstancePullTask(2, cacheManager);
     InstanceCache serviceCenter = new InstanceCache("sc", "sc", "0.0.1", null);
     InstanceCache otherService = new InstanceCache("other", "other", "0.0.1", null);
@@ -56,7 +56,7 @@ public class TestInstancePullTask {
   }
 
   @Test
-  public void testCacheNotChange(@Injectable InstanceCacheManager cacheManager) {
+  public void testCacheNotChange(@Injectable InstanceCacheManagerOld cacheManager) {
     InstancePullTask task = new InstancePullTask(2, cacheManager);
     InstanceCache serviceCenter = new InstanceCache("sc", "sc", "0.0.1", null);
     InstanceCache otherService = new InstanceCache("other", "other", "0.0.1", null);
@@ -81,7 +81,7 @@ public class TestInstancePullTask {
 
 
   @Test
-  public void testUnexpectedException(@Injectable InstanceCacheManager cacheManager) {
+  public void testUnexpectedException(@Injectable InstanceCacheManagerOld cacheManager) {
     InstancePullTask task = new InstancePullTask(2, cacheManager);
     InstanceCache serviceCenter = new InstanceCache("sc", "sc", "0.0.1", null);
     InstanceCache otherService = new InstanceCache("other", "other", "0.0.1", null);
