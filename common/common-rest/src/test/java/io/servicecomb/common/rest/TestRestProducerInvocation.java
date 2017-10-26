@@ -205,10 +205,12 @@ public class TestRestProducerInvocation {
   
   @Test
   public void runOnExecutorException() {
+    expectedException.expect(Exception.class);
+    expectedException.expectMessage("Param error");
     new Expectations(RestCodec.class) {
       {
         RestCodec.restToArgs(requestEx, restOperationMeta);
-        result = new Exception();
+        result = new Exception("Param error");
       }
     };
     restProducerInvocation = new MockUp<RestProducerInvocation>() {
@@ -218,12 +220,7 @@ public class TestRestProducerInvocation {
       }
     }.getMockInstance();
     initRestProducerInvocation();
-    try {
-      restProducerInvocation.runOnExecutor();
-    } catch (Exception e) {
-      e.printStackTrace();
-    }
-    Assert.assertFalse(invokeNoParam);
+    restProducerInvocation.runOnExecutor();
   }
 
   @Test
