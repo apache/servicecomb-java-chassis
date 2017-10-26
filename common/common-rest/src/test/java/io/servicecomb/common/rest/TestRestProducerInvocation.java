@@ -213,12 +213,10 @@ public class TestRestProducerInvocation {
         result = new Exception("Param error");
       }
     };
+
     restProducerInvocation = new MockUp<RestProducerInvocation>() {
-      @Mock
-      void invoke() {
-        invokeNoParam = true;
-      }
     }.getMockInstance();
+
     initRestProducerInvocation();
     restProducerInvocation.runOnExecutor();
   }
