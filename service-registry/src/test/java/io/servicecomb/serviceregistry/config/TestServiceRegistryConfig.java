@@ -16,10 +16,13 @@
 
 package io.servicecomb.serviceregistry.config;
 
+import org.apache.commons.configuration.Configuration;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
+
+import com.netflix.config.DynamicPropertyFactory;
 
 import io.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 
@@ -52,5 +55,17 @@ public class TestServiceRegistryConfig {
     Assert.assertEquals(false, oConfig.isClientAuthEnabled());
     Assert.assertEquals(ServiceRegistryConfig.NO_TENANT, oConfig.getTenantName());
     Assert.assertEquals(null, oConfig.getSecretKey());
+    Assert.assertNull(ServiceRegistryConfig.INSTANCE.getMicroserviceVersionFactory());
+  }
+
+  @Test
+  public void getMicroserviceVersionFactory() {
+    DynamicPropertyFactory.getInstance();
+    Configuration config = (Configuration) DynamicPropertyFactory.getBackingConfigurationSource();
+    config.addProperty(ServiceRegistryConfig.MICROSERVICE_VERSION_FACTORY, "test");
+
+    Assert.assertEquals("test", ServiceRegistryConfig.INSTANCE.getMicroserviceVersionFactory());
+
+    config.clearProperty(ServiceRegistryConfig.MICROSERVICE_VERSION_FACTORY);
   }
 }

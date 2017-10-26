@@ -23,6 +23,7 @@ import io.servicecomb.serviceregistry.api.registry.Microservice;
 import io.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
 import io.servicecomb.serviceregistry.cache.InstanceCacheManager;
 import io.servicecomb.serviceregistry.client.ServiceRegistryClient;
+import io.servicecomb.serviceregistry.consumer.AppManager;
 
 public interface ServiceRegistry {
   void init();
@@ -38,6 +39,8 @@ public interface ServiceRegistry {
   MicroserviceInstance getMicroserviceInstance();
 
   ServiceRegistryClient getServiceRegistryClient();
+
+  AppManager getAppManager();
 
   InstanceCacheManager getInstanceCacheManager();
 
