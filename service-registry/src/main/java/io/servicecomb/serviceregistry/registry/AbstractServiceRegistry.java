@@ -24,7 +24,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.eventbus.EventBus;
-import com.google.common.eventbus.Subscribe;
 
 import io.servicecomb.serviceregistry.Features;
 import io.servicecomb.serviceregistry.ServiceRegistry;
@@ -41,8 +40,6 @@ import io.servicecomb.serviceregistry.config.ServiceRegistryConfig;
 import io.servicecomb.serviceregistry.definition.MicroserviceDefinition;
 import io.servicecomb.serviceregistry.task.MicroserviceServiceCenterTask;
 import io.servicecomb.serviceregistry.task.ServiceCenterTask;
-import io.servicecomb.serviceregistry.task.event.ExceptionEvent;
-import io.servicecomb.serviceregistry.task.event.RecoveryEvent;
 import io.servicecomb.serviceregistry.task.event.ShutdownEvent;
 
 public abstract class AbstractServiceRegistry implements ServiceRegistry {
@@ -58,7 +55,7 @@ public abstract class AbstractServiceRegistry implements ServiceRegistry {
 
   protected Microservice microservice;
 
-  protected InstanceCacheManagerOld instanceCacheManager;
+  protected InstanceCacheManager instanceCacheManager;
 
   protected IpPortManager ipPortManager;
 
@@ -67,13 +64,6 @@ public abstract class AbstractServiceRegistry implements ServiceRegistry {
   protected ServiceRegistryConfig serviceRegistryConfig;
 
   protected ServiceCenterTask serviceCenterTask;
-
-  // any exception event will set cache not available, but not clear cache
-  // any recovery event will clear cache
-  //
-  // TODO: clear cache is not good, maybe cause no cache data can be used
-  //       it's better to replace the old cache by the new cache, if can't get new cache, then always use old cache.
-  protected boolean cacheAvailable;
 
   public AbstractServiceRegistry(EventBus eventBus, ServiceRegistryConfig serviceRegistryConfig,
       MicroserviceDefinition microserviceDefinition) {
@@ -85,7 +75,7 @@ public abstract class AbstractServiceRegistry implements ServiceRegistry {
 
   @Override
   public void init() {
-    instanceCacheManager = new InstanceCacheManagerOld(eventBus, this);
+    instanceCacheManager = new InstanceCacheManagerOld(eventBus, this, serviceRegistryConfig);
     ipPortManager = new IpPortManager(serviceRegistryConfig, instanceCacheManager);
     if (srClient == null) {
       srClient = createServiceRegistryClient();
@@ -154,22 +144,6 @@ public abstract class AbstractServiceRegistry implements ServiceRegistry {
     MicroserviceServiceCenterTask task =
         new MicroserviceServiceCenterTask(eventBus, serviceRegistryConfig, srClient, microservice);
     serviceCenterTask = new ServiceCenterTask(eventBus, serviceRegistryConfig.getHeartbeatInterval(), task);
-  }
-
-  @Subscribe
-  public void onException(ExceptionEvent event) {
-    cacheAvailable = false;
-  }
-
-  @Subscribe
-  public void onRecovered(RecoveryEvent event) {
-    if (!cacheAvailable) {
-      cacheAvailable = true;
-
-      instanceCacheManager.cleanUp();
-      LOGGER.info(
-          "Reconnected to service center, clean up the provider's microservice instances cache.");
-    }
   }
 
   public boolean unregisterInstance() {

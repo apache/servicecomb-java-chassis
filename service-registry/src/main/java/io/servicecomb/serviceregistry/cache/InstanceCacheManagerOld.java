@@ -22,6 +22,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 
@@ -29,20 +32,39 @@ import io.servicecomb.serviceregistry.ServiceRegistry;
 import io.servicecomb.serviceregistry.api.Const;
 import io.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
 import io.servicecomb.serviceregistry.api.response.MicroserviceInstanceChangedEvent;
+import io.servicecomb.serviceregistry.config.ServiceRegistryConfig;
+import io.servicecomb.serviceregistry.task.InstancePullTask;
+import io.servicecomb.serviceregistry.task.event.ExceptionEvent;
+import io.servicecomb.serviceregistry.task.event.PeriodicPullEvent;
+import io.servicecomb.serviceregistry.task.event.RecoveryEvent;
 
 /**
  * Created by on 2017/2/21.
  */
 public class InstanceCacheManagerOld implements InstanceCacheManager {
+  private static final Logger LOGGER = LoggerFactory.getLogger(InstanceCacheManagerOld.class);
+
   private ServiceRegistry serviceRegistry;
 
   // key为appId/microserviceName
   protected Map<String, InstanceCache> cacheMap = new ConcurrentHashMap<>();
 
+  private InstancePullTask pullTask;
+
+  // any exception event will set cache not available, but not clear cache
+  // any recovery event will clear cache
+  //
+  // TODO: clear cache is not good, maybe cause no cache data can be used
+  //       it's better to replace the old cache by the new cache, if can't get new cache, then always use old cache.
+  protected boolean cacheAvailable;
+
   private final Object lockObj = new Object();
 
-  public InstanceCacheManagerOld(EventBus eventBus, ServiceRegistry serviceRegistry) {
+  public InstanceCacheManagerOld(EventBus eventBus, ServiceRegistry serviceRegistry,
+      ServiceRegistryConfig serviceRegistryConfig) {
     this.serviceRegistry = serviceRegistry;
+    pullTask = new InstancePullTask(serviceRegistryConfig.getInstancePullInterval(), this);
+
     eventBus.register(this);
   }
 
@@ -145,5 +167,26 @@ public class InstanceCacheManagerOld implements InstanceCacheManager {
   public void updateInstanceMap(String appId, String microserviceName, InstanceCache cache) {
     String key = getKey(appId, microserviceName);
     cacheMap.put(key, cache);
+  }
+
+  @Subscribe
+  public void onException(ExceptionEvent event) {
+    cacheAvailable = false;
+  }
+
+  @Subscribe
+  public void onRecovered(RecoveryEvent event) {
+    if (!cacheAvailable) {
+      cacheAvailable = true;
+
+      cleanUp();
+      LOGGER.info(
+          "Reconnected to service center, clean up the provider's microservice instances cache.");
+    }
+  }
+
+  @Subscribe
+  public void periodicPull(PeriodicPullEvent event) {
+    pullTask.run();
   }
 }

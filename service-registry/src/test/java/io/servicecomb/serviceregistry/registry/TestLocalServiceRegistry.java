@@ -21,28 +21,10 @@ import java.util.Map;
 import org.junit.Assert;
 import org.junit.Test;
 
-import com.google.common.eventbus.EventBus;
-
 import io.servicecomb.serviceregistry.ServiceRegistry;
 import io.servicecomb.serviceregistry.api.registry.Microservice;
-import io.servicecomb.serviceregistry.task.event.ExceptionEvent;
-import io.servicecomb.serviceregistry.task.event.RecoveryEvent;
 
 public class TestLocalServiceRegistry {
-  @Test
-  public void testCacheAvaiable() {
-    AbstractServiceRegistry serviceRegistry = (AbstractServiceRegistry) ServiceRegistryFactory.createLocal();
-    EventBus eventBus = serviceRegistry.getEventBus();
-    serviceRegistry.init();
-
-    Assert.assertEquals(false, serviceRegistry.cacheAvailable);
-    eventBus.post(new RecoveryEvent());
-    Assert.assertEquals(true, serviceRegistry.cacheAvailable);
-
-    eventBus.post(new ExceptionEvent(null));
-    Assert.assertEquals(false, serviceRegistry.cacheAvailable);
-  }
-
   @Test
   public void testLifeCycle() {
     ServiceRegistry serviceRegistry = ServiceRegistryFactory.createLocal();
