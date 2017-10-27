@@ -16,6 +16,8 @@
 
 package io.servicecomb.loadbalance;
 
+import static io.servicecomb.swagger.invocation.Response.isValid5xxServerError;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -254,11 +256,19 @@ public class LoadbalanceHandler extends AbstractHandler {
             invocation.setEndpoint(((CseServer) s).getEndpoint());
             invocation.next(resp -> {
               if (resp.isFailed()) {
-                LOGGER.error("service call error, msg is {}, server is {} ",
-                    ((Throwable) resp.getResult()).getMessage(),
-                    s);
                 choosenLB.getLoadBalancerStats().incrementSuccessiveConnectionFailureCount(s);
-                f.onError(resp.getResult());
+                if (isValid5xxServerError(resp.getStatusCode()) && resp.getResult() instanceof String) {
+                  LOGGER.error("service call error, msg is {}, server is {} ",
+                      resp.getResult(),
+                      s);
+                  f.onNext(resp);
+                  f.onCompleted();
+                } else {
+                  LOGGER.error("service call error, msg is {}, server is {} ",
+                      ((Throwable) resp.getResult()).getMessage(),
+                      s);
+                  f.onError(resp.getResult());
+                }
               } else {
                 choosenLB.getLoadBalancerStats().incrementActiveRequestsCount(s);
                 choosenLB.getLoadBalancerStats().noteResponseTime(s,

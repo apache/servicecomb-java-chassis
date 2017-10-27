@@ -16,6 +16,12 @@
 
 package io.servicecomb.common.rest;
 
+import static javax.ws.rs.core.Response.Status.INTERNAL_SERVER_ERROR;
+import static org.hamcrest.Matchers.containsString;
+import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -42,6 +48,7 @@ import io.servicecomb.foundation.vertx.http.HttpServletRequestEx;
 import io.servicecomb.foundation.vertx.http.HttpServletResponseEx;
 import io.servicecomb.swagger.invocation.Response;
 import io.servicecomb.swagger.invocation.exception.CommonExceptionData;
+import io.servicecomb.swagger.invocation.exception.ExceptionFactory;
 import io.servicecomb.swagger.invocation.exception.InvocationException;
 import io.servicecomb.swagger.invocation.response.Headers;
 import io.vertx.core.buffer.Buffer;
@@ -184,8 +191,8 @@ public class TestAbstractRestInvocation {
     };
 
     restInvocation.setContext();
-    Assert.assertThat(invocation.getContext().size(), Matchers.is(1));
-    Assert.assertThat(invocation.getContext(), Matchers.hasEntry("name", "value"));
+    assertThat(invocation.getContext().size(), Matchers.is(1));
+    assertThat(invocation.getContext(), Matchers.hasEntry("name", "value"));
   }
 
   @Test
@@ -482,12 +489,7 @@ public class TestAbstractRestInvocation {
     };
 
     Buffer buffer = Buffer.buffer();
-    responseEx = new MockUp<HttpServletResponseEx>() {
-      @Mock
-      void setBodyBuffer(Buffer bodyBuffer) {
-        buffer.appendBuffer(bodyBuffer);
-      }
-    }.getMockInstance();
+    responseEx = createMockHttpServletResponseExInstance(buffer);
     initRestInvocation();
 
     restInvocation.sendResponse(response);
@@ -495,34 +497,72 @@ public class TestAbstractRestInvocation {
   }
 
   @Test
-  public void testDoSendResponseResultOKFilter(@Mocked Response response)
+  public void testDoSendResponseResultOKFilter()
       throws Exception {
-    new Expectations() {
-      {
-        response.getResult();
-        result = "ok";
-      }
-    };
+    Response response = mock(Response.class);
+    when(response.getHeaders()).thenReturn(new Headers());
+    when(response.isSuccessed()).thenReturn(true);
+    when(response.getResult()).thenReturn("ok");
 
     Buffer buffer = Buffer.buffer();
-    responseEx = new MockUp<HttpServletResponseEx>() {
-      @Mock
-      void setBodyBuffer(Buffer bodyBuffer) {
-        buffer.appendBuffer(bodyBuffer);
-      }
-    }.getMockInstance();
+    responseEx = createMockHttpServletResponseExInstance(buffer);
 
-    HttpServerFilter filter = new MockUp<HttpServerFilter>() {
-      @Mock
-      void beforeSendResponse(Invocation invocation, HttpServletResponseEx responseEx) {
-        buffer.appendString("-filter");
-      }
-    }.getMockInstance();
+    HttpServerFilter filter = createMockHttpServerFilterInstance(buffer);
 
     initRestInvocation();
     restInvocation.setHttpServerFilters(Arrays.asList(filter));
 
     restInvocation.sendResponse(response);
     Assert.assertEquals("\"ok\"-filter", buffer.toString());
+  }
+
+  @Test
+  public void testDoSendResponseWithNormalHttpException() throws Exception {
+    Response response = mock(Response.class);
+    when(response.getHeaders()).thenReturn(new Headers());
+    when(response.isSuccessed()).thenReturn(false);
+    when(response.getResult()).thenReturn("no such resource");
+
+    Buffer buffer = Buffer.buffer();
+    responseEx = createMockHttpServletResponseExInstance(buffer);
+
+    initRestInvocation();
+
+    restInvocation.sendResponse(response);
+    Assert.assertEquals("\"no such resource\"", buffer.toString());
+  }
+
+  @Test
+  public void testDoSendResponseWithAbnormalException() throws Exception {
+    Response response = mock(Response.class);
+    when(response.getHeaders()).thenReturn(new Headers());
+    when(response.isSuccessed()).thenReturn(false);
+    when(response.getResult()).thenReturn(ExceptionFactory.create(INTERNAL_SERVER_ERROR, "Oops"));
+
+    Buffer buffer = Buffer.buffer();
+    responseEx = createMockHttpServletResponseExInstance(buffer);
+
+    initRestInvocation();
+
+    restInvocation.sendResponse(response);
+    assertThat(buffer.toString(), containsString("\"InvocationException: code=500;msg=Oops\""));
+  }
+
+  private HttpServletResponseEx createMockHttpServletResponseExInstance(Buffer buffer) {
+    return new MockUp<HttpServletResponseEx>() {
+      @Mock
+      void setBodyBuffer(Buffer bodyBuffer) {
+        buffer.appendBuffer(bodyBuffer);
+      }
+    }.getMockInstance();
+  }
+
+  private HttpServerFilter createMockHttpServerFilterInstance(Buffer buffer) {
+    return new MockUp<HttpServerFilter>() {
+      @Mock
+      void beforeSendResponse(Invocation invocation, HttpServletResponseEx responseEx) {
+        buffer.appendString("-filter");
+      }
+    }.getMockInstance();
   }
 }

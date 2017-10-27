@@ -46,10 +46,12 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
+import org.springframework.web.client.ResponseErrorHandler;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.client.UnknownHttpStatusCodeException;
 
@@ -378,6 +380,39 @@ public class SpringMvcIntegrationTestBase {
         String.class);
 
     assertThat(jsonOf(result.getBody(), String.class), is("hei world"));
+  }
+
+  @Test
+  public void ableToRecognizeBodyTypeOfNormalHttpException() {
+    ResponseErrorHandler originalResponseErrorHandler = restTemplate.getErrorHandler();
+    restTemplate.setErrorHandler(new ResponseErrorHandler() {
+      @Override
+      public boolean hasError(ClientHttpResponse clientHttpResponse) throws IOException {
+        return false;
+      }
+
+      @Override
+      public void handleError(ClientHttpResponse clientHttpResponse) throws IOException {
+      }
+    });
+
+    MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+    params.add("foo", "bar");
+
+    HttpHeaders headers = new HttpHeaders();
+    headers.add(CONTENT_TYPE, APPLICATION_FORM_URLENCODED_VALUE);
+    try {
+      ResponseEntity<String> result = restTemplate.postForEntity(
+          codeFirstUrl + "faultyResource",
+          new HttpEntity<>(params, headers),
+          String.class);
+      assertThat(result.getStatusCodeValue(), is(500));
+      assertThat(result.getBody(), is("\"no such resource\""));
+    } catch (Exception e) {
+      fail("unexpected exception throw, " + e.getMessage());
+    }
+
+    restTemplate.setErrorHandler(originalResponseErrorHandler);
   }
 
   private <T> HttpEntity<T> jsonRequest(T body) {

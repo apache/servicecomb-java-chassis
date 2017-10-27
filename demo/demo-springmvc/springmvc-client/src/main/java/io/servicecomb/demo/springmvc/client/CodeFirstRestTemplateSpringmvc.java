@@ -16,17 +16,26 @@
 
 package io.servicecomb.demo.springmvc.client;
 
+import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
+import static org.springframework.http.MediaType.APPLICATION_FORM_URLENCODED_VALUE;
+
+import java.io.IOException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.stereotype.Component;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
+import org.springframework.web.client.ResponseErrorHandler;
 import org.springframework.web.client.RestTemplate;
 
 import io.servicecomb.bizkeeper.BizkeeperExceptionUtils;
-import io.servicecomb.core.exception.CseException;
 import io.servicecomb.demo.CodeFirstRestTemplate;
 import io.servicecomb.demo.TestMgr;
 import io.servicecomb.provider.pojo.RpcReference;
@@ -39,6 +48,14 @@ public class CodeFirstRestTemplateSpringmvc extends CodeFirstRestTemplate {
 
   @RpcReference(microserviceName = "springmvc", schemaId = "codeFirst")
   private CodeFirstSprigmvcIntf intf;
+
+  @Override
+  public void testCodeFirst(RestTemplate template, String microserviceName, String basePath) {
+    super.testCodeFirst(template, microserviceName, basePath);
+
+    String cseUrlPrefix = "cse://" + microserviceName + basePath;
+    testFaultyResource(template, cseUrlPrefix);
+  }
 
   @Override
   protected void testExtend(RestTemplate template, String cseUrlPrefix) {
@@ -61,7 +78,7 @@ public class CodeFirstRestTemplateSpringmvc extends CodeFirstRestTemplate {
       result = template.getForObject(cseUrlPrefix + "/fallback/throwexception/throwexception", String.class);
       TestMgr.check(false, true);
     } catch (Exception e) {
-      TestMgr.check(((CseException) e.getCause().getCause().getCause()).getMessage(),
+      TestMgr.check(e.getCause().getCause().getCause().getMessage(),
           BizkeeperExceptionUtils.createBizkeeperException(BizkeeperExceptionUtils.CSE_HANDLER_BK_FALLBACK,
               null,
               "springmvc.codeFirst.fallbackThrowException").getMessage());
@@ -121,5 +138,37 @@ public class CodeFirstRestTemplateSpringmvc extends CodeFirstRestTemplate {
     TestMgr.check("h2v {contextKey=contextValue, x-cse-src-microservice=" + srcName + "}",
         responseEntity.getHeaders().getFirst("h2"));
     checkStatusCode(microserviceName, 202, responseEntity.getStatusCode());
+  }
+
+  private void testFaultyResource(RestTemplate template, String cseUrlPrefix) {
+    ResponseErrorHandler originalResponseErrorHandler = template.getErrorHandler();
+    template.setErrorHandler(new ResponseErrorHandler() {
+      @Override
+      public boolean hasError(ClientHttpResponse clientHttpResponse) throws IOException {
+        return false;
+      }
+
+      @Override
+      public void handleError(ClientHttpResponse clientHttpResponse) throws IOException {
+      }
+    });
+
+    MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+    params.add("foo", "bar");
+
+    HttpHeaders headers = new HttpHeaders();
+    headers.add(CONTENT_TYPE, APPLICATION_FORM_URLENCODED_VALUE);
+    try {
+      ResponseEntity<String> result = template.postForEntity(
+          cseUrlPrefix + "faultyResource",
+          new HttpEntity<>(params, headers),
+          String.class);
+      TestMgr.check(result.getStatusCodeValue(), 500);
+      TestMgr.check(result.getBody(), "no such resource");
+    } catch (Exception e) {
+      TestMgr.check(true, false);
+    }
+
+    template.setErrorHandler(originalResponseErrorHandler);
   }
 }

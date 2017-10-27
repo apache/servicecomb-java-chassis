@@ -45,6 +45,7 @@ public class ResponsesMeta {
   public void init(ClassLoader classLoader, String packageName, Swagger swagger, Operation operation,
       Type returnType) {
     initSuccessResponse(returnType);
+    initFailedResponse();
 
     for (Entry<String, Response> entry : operation.getResponses().entrySet()) {
       if ("default".equals(entry.getKey())) {
@@ -75,6 +76,14 @@ public class ResponsesMeta {
     ResponseMeta successResponse = new ResponseMeta();
     successResponse.setJavaType(TypeFactory.defaultInstance().constructType(returnType));
     responseMap.put(Status.OK.getStatusCode(), successResponse);
+  }
+
+  protected void initFailedResponse() {
+    ResponseMeta failedResponse = new ResponseMeta();
+    failedResponse.setJavaType(TypeFactory.defaultInstance().constructType(String.class));
+    for (int statusCode = 500; statusCode < 506; statusCode++) {
+      responseMap.put(statusCode, failedResponse);
+    }
   }
 
   public ResponseMeta findResponseMeta(int statusCode) {

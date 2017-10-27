@@ -16,6 +16,8 @@
 
 package io.servicecomb.demo.springmvc.tests.endpoints;
 
+import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
+
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -43,7 +45,7 @@ public class CodeFirstSpringmvcBase {
     InvocationContext c2 = ContextUtils.getInvocationContext();
     headers.add("h2", "h2v " + c2.getContext().toString());
 
-    return new ResponseEntity<Date>(date, headers, HttpStatus.ACCEPTED);
+    return new ResponseEntity<>(date, headers, HttpStatus.ACCEPTED);
   }
 
   public Response cseResponse(InvocationContext c1) {
@@ -123,5 +125,9 @@ public class CodeFirstSpringmvcBase {
       result += x;
     }
     return result;
+  }
+
+  public ResponseEntity<String> postFaultyResource(String foo) {
+    return new ResponseEntity<>("no such resource", INTERNAL_SERVER_ERROR);
   }
 }

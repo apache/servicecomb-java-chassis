@@ -16,6 +16,8 @@
 
 package io.servicecomb.provider.springmvc.reference;
 
+import static io.servicecomb.swagger.invocation.Response.isValid5xxServerError;
+
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.URI;
@@ -151,11 +153,12 @@ public class CseClientHttpRequest implements ClientHttpRequest {
     invocation.getHandlerContext().put(RestConst.CONSUMER_HEADER, httpHeaders);
     Response response = doInvoke(invocation);
 
-    if (response.isSuccessed()) {
+    if (response.isSuccessed() ||
+        (isValid5xxServerError(response.getStatusCode()) && (response.getResult() instanceof String))) {
       return new CseClientHttpResponse(response);
     }
 
-    throw ExceptionFactory.convertConsumerException((Throwable) response.getResult());
+    throw ExceptionFactory.convertConsumerException(response.getResult());
   }
 
   protected Response doInvoke(Invocation invocation) {
