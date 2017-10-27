@@ -40,6 +40,7 @@ import io.servicecomb.serviceregistry.RegistryUtils;
 import io.servicecomb.serviceregistry.consumer.AppManager;
 import io.servicecomb.serviceregistry.consumer.MicroserviceVersionRule;
 import io.servicecomb.serviceregistry.definition.DefinitionConst;
+import io.servicecomb.swagger.invocation.Response;
 import io.vertx.ext.web.RoutingContext;
 
 public class EdgeInvocation extends AbstractRestInvocation {
@@ -76,7 +77,11 @@ public class EdgeInvocation extends AbstractRestInvocation {
       // not handle edge unknown exception
       // all unknow exception will be handled by io.servicecomb.edge.core.AbstractEdgeDispatcher.onFailure(RoutingContext)
       prepareEdgeInvoke();
-      prepareInvoke();
+      Response response = prepareInvoke();
+      if (response != null) {
+        sendResponse(response);
+        return;
+      }
       doInvoke();
     } catch (Throwable e) {
       throw new ServiceCombException("unknown edge exception.", e);

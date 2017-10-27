@@ -84,7 +84,11 @@ public abstract class AbstractRestInvocation {
 
   public void invoke() {
     try {
-      prepareInvoke();
+      Response response = prepareInvoke();
+      if (response != null) {
+        sendResponseQuietly(response);
+        return;
+      }
 
       doInvoke();
     } catch (Throwable e) {
@@ -93,7 +97,7 @@ public abstract class AbstractRestInvocation {
     }
   }
 
-  protected void prepareInvoke() throws Throwable {
+  protected Response prepareInvoke() throws Throwable {
     this.initProduceProcessor();
 
     this.setContext();
@@ -102,10 +106,11 @@ public abstract class AbstractRestInvocation {
     for (HttpServerFilter filter : httpServerFilters) {
       Response response = filter.afterReceiveRequest(invocation, requestEx);
       if (response != null) {
-        sendResponseQuietly(response);
-        return;
+        return response;
       }
     }
+
+    return null;
   }
 
   protected abstract void doInvoke() throws Throwable;

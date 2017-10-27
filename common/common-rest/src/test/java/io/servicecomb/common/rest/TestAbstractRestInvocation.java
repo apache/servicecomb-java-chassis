@@ -202,6 +202,7 @@ public class TestAbstractRestInvocation {
     restInvocation = new AbstractRestInvocation() {
       @Override
       protected void doInvoke() throws Throwable {
+        result.value = Response.ok("not run to here");
       }
 
       @Override
