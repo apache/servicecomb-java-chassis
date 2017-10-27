@@ -64,9 +64,9 @@ public final class RestCodec {
 
       return paramValues;
     } catch (Exception e) {
-      LOG.error("Parameter is not valid for operation {}, cause ",
+      LOG.error("Parameter is not valid for operation {}. ",
           restOperation.getOperationMeta().getMicroserviceQualifiedName(),
-          e.getMessage());
+          e);
       throw ExceptionFactory.convertProducerException(e, "Parameter is not valid.");
     }
   }
