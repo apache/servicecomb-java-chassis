@@ -129,6 +129,17 @@ public class TestRestOperationMeta {
   }
 
   @Test
+  public void testCreateProduceProcessorsTextAndWildcard() {
+    operationMeta.produces = Arrays.asList(MediaType.TEXT_PLAIN);
+    operationMeta.createProduceProcessors();
+
+    Assert.assertSame(ProduceProcessorManager.PLAIN_PROCESSOR,
+        operationMeta.ensureFindProduceProcessor(MediaType.WILDCARD));
+    Assert.assertSame(ProduceProcessorManager.PLAIN_PROCESSOR,
+        operationMeta.ensureFindProduceProcessor(MediaType.TEXT_PLAIN));
+  }
+
+  @Test
   public void testEnsureFindProduceProcessorRequest(@Mocked HttpServletRequestEx requestEx) {
     new Expectations() {
       {

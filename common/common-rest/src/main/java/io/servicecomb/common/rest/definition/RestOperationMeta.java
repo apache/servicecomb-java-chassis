@@ -180,9 +180,9 @@ public class RestOperationMeta {
       }
     }
 
-    produceProcessorMap.putIfAbsent(ProduceProcessorManager.DEFAULT_TYPE, ProduceProcessorManager.DEFAULT_PROCESSOR);
     defaultProcessor = getDefaultOrFirstProcessor();
     produceProcessorMap.putIfAbsent(MediaType.WILDCARD, defaultProcessor);
+    produceProcessorMap.putIfAbsent(ProduceProcessorManager.DEFAULT_TYPE, ProduceProcessorManager.DEFAULT_PROCESSOR);
   }
 
   public URLPathBuilder getPathBuilder() {
@@ -231,6 +231,10 @@ public class RestOperationMeta {
       for (ProduceProcessor pp : this.produceProcessorMap.values()) {
         return pp;
       }
+    }
+
+    if (processor == null) {
+      processor = ProduceProcessorManager.JSON_PROCESSOR;
     }
     return processor;
   }
