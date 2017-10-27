@@ -22,7 +22,7 @@
   <parent>
     <groupId>io.servicecomb</groupId>
     <artifactId>java-chassis-dependencies</artifactId>
-    <version>0.4.0-SNAPSHOT</version>
+    <version>0.4.0</version>
     <relativePath>../java-chassis-dependencies</relativePath>
   </parent>
 

@@ -22,7 +22,7 @@
 	<parent>
 		<groupId>io.servicecomb.demo</groupId>
 		<artifactId>demo-crossapp</artifactId>
-		<version>0.4.0-SNAPSHOT</version>
+		<version>0.4.0</version>
 	</parent>
 	<artifactId>crossapp-client</artifactId>
 
@@ -58,7 +58,7 @@
 						<mixin>
 							<groupId>io.servicecomb.demo</groupId>
 							<artifactId>docker-run-config</artifactId>
-							<version>0.4.0-SNAPSHOT</version>
+							<version>0.4.0</version>
 						</mixin>
 					</mixins>
 				</configuration>
