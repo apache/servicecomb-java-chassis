@@ -204,6 +204,24 @@ public class TestRestProducerInvocation {
   }
 
   @Test
+  public void runOnExecutorException() {
+    expectedException.expect(Exception.class);
+    expectedException.expectMessage("Param error");
+    new Expectations(RestCodec.class) {
+      {
+        RestCodec.restToArgs(requestEx, restOperationMeta);
+        result = new Exception("Param error");
+      }
+    };
+
+    restProducerInvocation = new MockUp<RestProducerInvocation>() {
+    }.getMockInstance();
+
+    initRestProducerInvocation();
+    restProducerInvocation.runOnExecutor();
+  }
+
+  @Test
   public void findRestOperationNameFromRegistry() {
     Microservice microservice = new Microservice();
     microservice.setServiceName("ms");
