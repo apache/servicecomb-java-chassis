@@ -9,7 +9,7 @@ It's the samples of Java chassis
 
 ## 1. Start the ServiceComb/Service Center
 
-[how to start the service center](http://servicecomb.io/docs/start-sc/)
+[how to start the service center](http://servicecomb.io/users/setup-environment/#)
 
 ## 2.Start the Microservice server
 
