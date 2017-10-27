@@ -51,6 +51,7 @@ import io.swagger.models.parameters.HeaderParameter;
 import io.swagger.models.parameters.PathParameter;
 import io.swagger.models.parameters.QueryParameter;
 import io.swagger.models.properties.ArrayProperty;
+import io.swagger.models.properties.BaseIntegerProperty;
 import io.swagger.models.properties.BooleanProperty;
 import io.swagger.models.properties.ByteArrayProperty;
 import io.swagger.models.properties.DateProperty;
@@ -112,6 +113,7 @@ public final class ConverterMgr {
     PROPERTY_MAP.put(ByteProperty.class, SimpleType.constructUnsafe(Byte.class));
     PROPERTY_MAP.put(ShortProperty.class, SimpleType.constructUnsafe(Short.class));
     PROPERTY_MAP.put(IntegerProperty.class, SimpleType.constructUnsafe(Integer.class));
+    PROPERTY_MAP.put(BaseIntegerProperty.class, SimpleType.constructUnsafe(Integer.class));
     PROPERTY_MAP.put(LongProperty.class, SimpleType.constructUnsafe(Long.class));
 
     // stringProperty包含了enum的场景，并不一定是转化为string
