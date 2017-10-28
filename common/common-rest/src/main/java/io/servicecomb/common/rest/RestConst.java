@@ -43,5 +43,7 @@ public final class RestConst {
 
   public static final String REST_REQUEST = "servicecomb-rest-request";
 
+  public static final String REST_STATE_EXECUTING = "servicecomb-rest-state-executing";
+
   public static final String CONSUMER_HEADER = "servicecomb-rest-consumer-header";
 }
