@@ -22,6 +22,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.xml.ws.Holder;
+
 import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Before;
@@ -51,6 +53,7 @@ import io.servicecomb.serviceregistry.api.registry.Microservice;
 import io.servicecomb.serviceregistry.consumer.AppManager;
 import io.servicecomb.serviceregistry.consumer.MicroserviceVersionRule;
 import io.servicecomb.serviceregistry.definition.DefinitionConst;
+import io.servicecomb.swagger.invocation.Response;
 import io.vertx.ext.web.RoutingContext;
 import io.vertx.ext.web.impl.HttpServerRequestWrapperForTest;
 import mockit.Deencapsulation;
@@ -233,8 +236,9 @@ public class TestEdgeInvocation {
     }
 
     @Override
-    protected void prepareInvoke() throws Throwable {
+    protected Response prepareInvoke() throws Throwable {
       prepareInvokeClassLoader = Thread.currentThread().getContextClassLoader();
+      return null;
     }
 
     @Override
@@ -272,6 +276,45 @@ public class TestEdgeInvocation {
     Assert.assertSame(microserviceClassLoader, invocation.prepareInvokeClassLoader);
     Assert.assertSame(microserviceClassLoader, invocation.doInvokeClassLoader);
     Assert.assertSame(org, Thread.currentThread().getContextClassLoader());
+  }
+
+  @Test
+  public void invokePrepareHaveResponse(@Mocked MicroserviceVersionMeta latestMicroserviceVersionMeta,
+      @Mocked MicroserviceMeta microserviceMeta, @Mocked Response response) {
+    ClassLoader microserviceClassLoader = new ClassLoader() {
+    };
+
+    new Expectations() {
+      {
+        latestMicroserviceVersionMeta.getMicroserviceMeta();
+        result = microserviceMeta;
+        microserviceMeta.getClassLoader();
+        result = microserviceClassLoader;
+      }
+    };
+
+    Holder<Response> result = new Holder<>();
+    EdgeInvocationForTestClassLoader invocation = new EdgeInvocationForTestClassLoader() {
+      @Override
+      protected Response prepareInvoke() throws Throwable {
+        return response;
+      }
+
+      @Override
+      protected void sendResponse(Response response) throws Exception {
+        result.value = response;
+      }
+
+      @Override
+      protected void doInvoke() throws Throwable {
+        result.value = Response.ok("do not run to here");
+      }
+    };
+    invocation.latestMicroserviceVersionMeta = latestMicroserviceVersionMeta;
+
+    invocation.invoke();
+
+    Assert.assertSame(response, result.value);
   }
 
   @Test
