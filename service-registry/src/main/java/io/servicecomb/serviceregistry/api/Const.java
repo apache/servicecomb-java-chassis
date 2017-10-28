@@ -26,7 +26,7 @@ public final class Const {
   }
 
   public static final class REGISTRY_API {
-    public static final String TENANT_NAME = ServiceRegistryConfig.INSTANCE.getTenantName();
+    public static final String DOMAIN_NAME = ServiceRegistryConfig.INSTANCE.getDomainName();
 
     public static final String CURRENT_VERSION = ServiceRegistryConfig.INSTANCE.getRegistryApiVersion();
 
@@ -35,7 +35,7 @@ public final class Const {
 
     public static final String LASTEST_API_VERSION = "v4";
 
-    public static final String V4_PREFIX = String.format("/v4/%s/registry", TENANT_NAME);
+    public static final String V4_PREFIX = String.format("/v4/%s/registry", DOMAIN_NAME);
 
     public static final String MICROSERVICE_OPERATION_ALL;
     static {

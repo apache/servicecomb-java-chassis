@@ -30,7 +30,6 @@ import io.servicecomb.foundation.auth.AuthHeaderProvider;
 import io.servicecomb.foundation.auth.SignRequest;
 import io.servicecomb.foundation.common.net.IpPort;
 import io.servicecomb.foundation.vertx.client.http.HttpClientWithContext;
-import io.servicecomb.serviceregistry.api.Const;
 import io.servicecomb.serviceregistry.config.ServiceRegistryConfig;
 import io.vertx.core.Handler;
 import io.vertx.core.MultiMap;
@@ -169,11 +168,7 @@ final class RestUtils {
     Map<String, String> headers = new HashMap<String, String>();
     headers.put(HEADER_CONTENT_TYPE, "application/json");
     headers.put(HEADER_USER_AGENT, "cse-serviceregistry-client/1.0.0");
-    if (Const.REGISTRY_API.VERSION_V3.equals(Const.REGISTRY_API.CURRENT_VERSION)) {
-      headers.put(HEADER_TENANT_NAME, ServiceRegistryConfig.INSTANCE.getTenantName());
-    } else {
-      headers.put(HEADER_TENANT_NAME, ServiceRegistryConfig.INSTANCE.getDomainName());
-    }
+    headers.put(HEADER_TENANT_NAME, ServiceRegistryConfig.INSTANCE.getTenantName());
 
     return headers;
   }
