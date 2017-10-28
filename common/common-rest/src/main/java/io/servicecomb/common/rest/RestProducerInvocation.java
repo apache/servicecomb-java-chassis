@@ -50,6 +50,7 @@ public class RestProducerInvocation extends AbstractRestInvocation {
     this.requestEx = requestEx;
     this.responseEx = responseEx;
     this.httpServerFilters = httpServerFilters;
+    requestEx.setAttribute(RestConst.REST_REQUEST, requestEx);
 
     try {
       this.restOperationMeta = findRestOperation();
@@ -64,11 +65,23 @@ public class RestProducerInvocation extends AbstractRestInvocation {
   protected void scheduleInvocation() {
     OperationMeta operationMeta = restOperationMeta.getOperationMeta();
     operationMeta.getExecutor().execute(() -> {
-      try {
-        runOnExecutor();
-      } catch (Exception e) {
-        LOGGER.error("rest server onRequest error", e);
-        sendFailResponse(e);
+      synchronized (this.requestEx) {
+        try {
+          if (requestEx.getAttribute(RestConst.REST_REQUEST) != requestEx) {
+            // already timeout
+            // in this time, request maybe recycled and reused by web container, do not use requestEx
+            LOGGER.error("Rest request already timeout, abandon execute, method {}, operation {}.",
+                operationMeta.getHttpMethod(),
+                operationMeta.getMicroserviceQualifiedName());
+            return;
+          }
+
+          requestEx.setAttribute(RestConst.REST_STATE_EXECUTING, true);
+          runOnExecutor();
+        } catch (Throwable e) {
+          LOGGER.error("rest server onRequest error", e);
+          sendFailResponse(e);
+        }
       }
     });
   }

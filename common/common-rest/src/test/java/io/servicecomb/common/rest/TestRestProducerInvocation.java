@@ -47,6 +47,7 @@ import io.servicecomb.core.definition.MicroserviceMeta;
 import io.servicecomb.core.definition.MicroserviceMetaManager;
 import io.servicecomb.core.definition.OperationMeta;
 import io.servicecomb.core.definition.SchemaMeta;
+import io.servicecomb.core.executor.ReactiveExecutor;
 import io.servicecomb.foundation.vertx.http.AbstractHttpServletRequest;
 import io.servicecomb.foundation.vertx.http.HttpServletRequestEx;
 import io.servicecomb.foundation.vertx.http.HttpServletResponseEx;
@@ -147,17 +148,22 @@ public class TestRestProducerInvocation {
       }
     }.getMockInstance();
 
+    requestEx = new AbstractHttpServletRequest() {
+    };
     restProducerInvocation.invoke(transport, requestEx, responseEx, httpServerFilters);
 
     Assert.assertTrue(scheduleInvocation);
+    Assert.assertSame(requestEx, requestEx.getAttribute(RestConst.REST_REQUEST));
   }
 
   @Test
-  public void scheduleInvocation(@Mocked OperationMeta operationMeta) {
+  public void scheduleInvocationNormal(@Mocked OperationMeta operationMeta) {
     Executor executor = cmd -> {
       cmd.run();
     };
-
+    requestEx = new AbstractHttpServletRequest() {
+    };
+    requestEx.setAttribute(RestConst.REST_REQUEST, requestEx);
     new Expectations() {
       {
         restOperationMeta.getOperationMeta();
@@ -178,6 +184,70 @@ public class TestRestProducerInvocation {
     restProducerInvocation.scheduleInvocation();
 
     Assert.assertTrue(runOnExecutor);
+    Assert.assertTrue((boolean) requestEx.getAttribute(RestConst.REST_STATE_EXECUTING));
+  }
+
+  @Test
+  public void scheduleInvocationTimeout(@Mocked OperationMeta operationMeta) {
+    Executor executor = cmd -> {
+      cmd.run();
+    };
+
+    new Expectations() {
+      {
+        restOperationMeta.getOperationMeta();
+        result = operationMeta;
+        operationMeta.getExecutor();
+        result = executor;
+      }
+    };
+
+    requestEx = new AbstractHttpServletRequest() {
+    };
+
+    restProducerInvocation = new MockUp<RestProducerInvocation>() {
+      @Mock
+      void runOnExecutor() {
+        runOnExecutor = true;
+      }
+    }.getMockInstance();
+    initRestProducerInvocation();
+
+    restProducerInvocation.scheduleInvocation();
+
+    Assert.assertFalse(runOnExecutor);
+    Assert.assertNull(requestEx.getAttribute(RestConst.REST_STATE_EXECUTING));
+  }
+
+  @Test
+  public void scheduleInvocationException(@Mocked OperationMeta operationMeta) {
+    Executor executor = new ReactiveExecutor();
+    Throwable e = new Exception("Param error");
+    new Expectations(RestCodec.class) {
+      {
+        restOperationMeta.getOperationMeta();
+        result = operationMeta;
+        operationMeta.getExecutor();
+        result = executor;
+        requestEx.getAttribute(RestConst.REST_REQUEST);
+        result = requestEx;
+        RestCodec.restToArgs(requestEx, restOperationMeta);
+        result = e;
+      }
+    };
+
+    Holder<Throwable> result = new Holder<>();
+    restProducerInvocation = new MockUp<RestProducerInvocation>() {
+      @Mock
+      void sendFailResponse(Throwable throwable) {
+        result.value = throwable;
+      }
+    }.getMockInstance();
+
+    initRestProducerInvocation();
+    restProducerInvocation.scheduleInvocation();
+
+    Assert.assertSame(e, result.value);
   }
 
   @Test
@@ -201,24 +271,6 @@ public class TestRestProducerInvocation {
 
     Assert.assertTrue(invokeNoParam);
     Assert.assertSame(args, restProducerInvocation.invocation.getSwaggerArguments());
-  }
-
-  @Test
-  public void runOnExecutorException() {
-    expectedException.expect(Exception.class);
-    expectedException.expectMessage("Param error");
-    new Expectations(RestCodec.class) {
-      {
-        RestCodec.restToArgs(requestEx, restOperationMeta);
-        result = new Exception("Param error");
-      }
-    };
-
-    restProducerInvocation = new MockUp<RestProducerInvocation>() {
-    }.getMockInstance();
-
-    initRestProducerInvocation();
-    restProducerInvocation.runOnExecutor();
   }
 
   @Test

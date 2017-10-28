@@ -1,4 +1,5 @@
-﻿APPLICATION_ID: pojotest
+﻿cse-config-order: 100
+APPLICATION_ID: pojotest
 service_description:
   name: perfClient
   version: 0.0.1
