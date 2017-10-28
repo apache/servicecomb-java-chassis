@@ -48,11 +48,7 @@ public final class InvocationFactory {
   public static Invocation forConsumer(ReferenceConfig referenceConfig, SchemaMeta schemaMeta, String operationName,
       Object[] swaggerArguments) {
     OperationMeta operationMeta = schemaMeta.ensureFindOperation(operationName);
-    Invocation invocation = new Invocation(referenceConfig,
-        operationMeta,
-        swaggerArguments);
-    invocation.addContext(Const.SRC_MICROSERVICE, getMicroserviceName());
-    return invocation;
+    return forConsumer(referenceConfig, operationMeta, swaggerArguments);
   }
 
   /**
@@ -62,12 +58,7 @@ public final class InvocationFactory {
       Object[] swaggerArguments) {
     MicroserviceMeta microserviceMeta = referenceConfig.getMicroserviceMeta();
     OperationMeta operationMeta = microserviceMeta.ensureFindOperation(operationQualifiedName);
-
-    Invocation invocation = new Invocation(referenceConfig,
-        operationMeta,
-        swaggerArguments);
-    invocation.addContext(Const.SRC_MICROSERVICE, getMicroserviceName());
-    return invocation;
+    return forConsumer(referenceConfig, operationMeta, swaggerArguments);
   }
 
   /**
