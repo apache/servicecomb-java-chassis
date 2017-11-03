@@ -22,6 +22,8 @@ import java.lang.reflect.Modifier;
 
 import org.springframework.util.ReflectionUtils;
 
+import io.swagger.annotations.ApiOperation;
+
 public final class ReflectUtils {
   private static final Field MODIFIERS_FIELD =
       ReflectionUtils.findField(Field.class, "modifiers");
@@ -55,6 +57,10 @@ public final class ReflectUtils {
   public static Method findMethod(Class<?> cls, String methodName) {
     for (Method method : cls.getMethods()) {
       if (method.getName().equals(methodName)) {
+        if (method.isAnnotationPresent(ApiOperation.class) &&
+            method.getAnnotation(ApiOperation.class).hidden()) {
+            continue;
+        }
         return method;
       }
     }
