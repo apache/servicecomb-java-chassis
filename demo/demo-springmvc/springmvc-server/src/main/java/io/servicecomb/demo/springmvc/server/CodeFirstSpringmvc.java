@@ -57,6 +57,7 @@ import io.servicecomb.swagger.invocation.exception.InvocationException;
 import io.servicecomb.swagger.invocation.response.Headers;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
+import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import io.swagger.annotations.ResponseHeader;
@@ -130,6 +131,12 @@ public class CodeFirstSpringmvc {
   @RequestMapping(path = "/addDate", method = RequestMethod.POST)
   public Date addDate(@RequestAttribute("date") Date date, @QueryParam("seconds") long seconds) {
     return new Date(date.getTime() + seconds * 1000);
+  }
+
+  // this should be ignored as it's hidden
+  @ApiOperation(value = "", hidden = true, httpMethod = "POST")
+  public int add(@RequestParam("a") int a) {
+    return a;
   }
 
   @RequestMapping(path = "/add", method = RequestMethod.POST)
