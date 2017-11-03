@@ -14,11 +14,11 @@
  *  limitations under the License.
  */
 
-package io.servicecomb.foundation.common.utils;
+package io.servicecomb.swagger.invocation.models;
 
 import io.swagger.annotations.ApiOperation;
 
-public class ProducerClass {
+public class ProducerImpl {
   @ApiOperation(value = "", hidden = true)
   public int hiddenMethod(int a) {
     return a;
