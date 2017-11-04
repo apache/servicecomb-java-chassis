@@ -82,7 +82,7 @@ public class EdgeInvocation extends AbstractRestInvocation {
   protected void findMicroserviceVersionMeta() {
     String versionRule = chooseVersionRule();
 
-    String appId = RegistryUtils.getAppId();;
+    String appId = RegistryUtils.getAppId();
     int idxAt = microserviceName.indexOf(io.servicecomb.serviceregistry.api.Const.APP_SERVICE_SEPARATOR);
     if (idxAt != -1) {
       appId = microserviceName.substring(0, idxAt);
