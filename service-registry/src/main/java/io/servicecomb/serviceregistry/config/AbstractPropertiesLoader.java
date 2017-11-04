@@ -63,8 +63,8 @@ public abstract class AbstractPropertiesLoader {
     }
 
     try {
-      Class<?> classExtenalProperty = Class.forName(extendedPropertyClass);
-      if (!PropertyExtended.class.isAssignableFrom(classExtenalProperty)) {
+      Class<?> classExternalProperty = Class.forName(extendedPropertyClass);
+      if (!PropertyExtended.class.isAssignableFrom(classExternalProperty)) {
         String errMsg = String.format(
             "Define propertyExtendedClass %s in yaml, but not implement the interface PropertyExtended.",
             extendedPropertyClass);
@@ -72,7 +72,7 @@ public abstract class AbstractPropertiesLoader {
         throw new Error(errMsg);
       }
 
-      PropertyExtended instance = (PropertyExtended) classExtenalProperty.newInstance();
+      PropertyExtended instance = (PropertyExtended) classExternalProperty.newInstance();
       Map<String, String> extendedPropertiesMap = instance.getExtendedProperties();
       if (extendedPropertiesMap != null && !extendedPropertiesMap.isEmpty()) {
         propertiesMap.putAll(extendedPropertiesMap);
