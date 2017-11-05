@@ -51,11 +51,11 @@ public abstract class AbstractTransport implements Transport {
 
   private static final long DEFAULT_TIMEOUT_MILLIS = 30000;
 
-  private static Long msReqeustTimeout = null;
+  private static Long msRequestTimeout = null;
 
   public static long getRequestTimeout() {
-    if (msReqeustTimeout != null) {
-      return msReqeustTimeout;
+    if (msRequestTimeout != null) {
+      return msRequestTimeout;
     }
 
     long msTimeout = DynamicPropertyFactory.getInstance()
@@ -65,8 +65,8 @@ public abstract class AbstractTransport implements Transport {
       msTimeout = DEFAULT_TIMEOUT_MILLIS;
     }
 
-    msReqeustTimeout = msTimeout;
-    return msReqeustTimeout;
+    msRequestTimeout = msTimeout;
+    return msRequestTimeout;
   }
 
   // 所有transport使用同一个vertx实例，避免创建太多的线程
