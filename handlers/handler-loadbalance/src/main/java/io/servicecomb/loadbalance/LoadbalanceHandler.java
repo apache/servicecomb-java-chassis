@@ -100,12 +100,12 @@ public class LoadbalanceHandler extends AbstractHandler {
 
     // invocation是请求级别的，因此每次调用都需要设置一次
     lb.setInvocation(invocation);
-    final LoadBalancer choosenLB = lb;
+    final LoadBalancer chosenLB = lb;
 
     if (!Configuration.INSTANCE.isRetryEnabled(invocation.getMicroserviceName())) {
-      send(invocation, asyncResp, choosenLB);
+      send(invocation, asyncResp, chosenLB);
     } else {
-      sendWithRetry(invocation, asyncResp, choosenLB);
+      sendWithRetry(invocation, asyncResp, chosenLB);
     }
   }
 
@@ -142,9 +142,9 @@ public class LoadbalanceHandler extends AbstractHandler {
     }
   }
 
-  private void send(Invocation invocation, AsyncResponse asyncResp, final LoadBalancer choosenLB) throws Exception {
+  private void send(Invocation invocation, AsyncResponse asyncResp, final LoadBalancer chosenLB) throws Exception {
     long time = System.currentTimeMillis();
-    CseServer server = (CseServer) choosenLB.chooseServer(invocation);
+    CseServer server = (CseServer) chosenLB.chooseServer(invocation);
     if (null == server) {
       asyncResp.consumerFail(ExceptionUtils.lbAddressNotFound(invocation.getMicroserviceName(),
           invocation.getMicroserviceVersionRule(),
@@ -152,22 +152,22 @@ public class LoadbalanceHandler extends AbstractHandler {
       return;
     }
     server.setLastVisitTime(time);
-    choosenLB.getLoadBalancerStats().incrementNumRequests(server);
+    chosenLB.getLoadBalancerStats().incrementNumRequests(server);
     invocation.setEndpoint(server.getEndpoint());
     invocation.next(resp -> {
       // this stats is for WeightedResponseTimeRule
-      choosenLB.getLoadBalancerStats().noteResponseTime(server, (System.currentTimeMillis() - time));
+      chosenLB.getLoadBalancerStats().noteResponseTime(server, (System.currentTimeMillis() - time));
       if (resp.isFailed()) {
-        choosenLB.getLoadBalancerStats().incrementSuccessiveConnectionFailureCount(server);
+        chosenLB.getLoadBalancerStats().incrementSuccessiveConnectionFailureCount(server);
       } else {
-        choosenLB.getLoadBalancerStats().incrementActiveRequestsCount(server);
+        chosenLB.getLoadBalancerStats().incrementActiveRequestsCount(server);
       }
       asyncResp.handle(resp);
     });
   }
 
   private void sendWithRetry(Invocation invocation, AsyncResponse asyncResp,
-      final LoadBalancer choosenLB) throws Exception {
+      final LoadBalancer chosenLB) throws Exception {
     long time = System.currentTimeMillis();
     // retry in loadbalance, 2.0 feature
     final int currentHandler = invocation.getHandlerIndex();
@@ -237,7 +237,7 @@ public class LoadbalanceHandler extends AbstractHandler {
     ExecutionContext<Invocation> context = new ExecutionContext<>(invocation, null, null, null);
 
     LoadBalancerCommand<Response> command = LoadBalancerCommand.<Response>builder()
-        .withLoadBalancer(choosenLB)
+        .withLoadBalancer(chosenLB)
         .withServerLocator(invocation)
         .withRetryHandler(ExtensionsManager.createRetryHandler(invocation.getMicroserviceName()))
         .withListeners(listeners)
@@ -249,7 +249,7 @@ public class LoadbalanceHandler extends AbstractHandler {
         return Observable.create(f -> {
           try {
             ((CseServer) s).setLastVisitTime(time);
-            choosenLB.getLoadBalancerStats().incrementNumRequests(s);
+            chosenLB.getLoadBalancerStats().incrementNumRequests(s);
             invocation.setHandlerIndex(currentHandler); // for retry
             invocation.setEndpoint(((CseServer) s).getEndpoint());
             invocation.next(resp -> {
@@ -257,11 +257,11 @@ public class LoadbalanceHandler extends AbstractHandler {
                 LOGGER.error("service call error, msg is {}, server is {} ",
                     ((Throwable) resp.getResult()).getMessage(),
                     s);
-                choosenLB.getLoadBalancerStats().incrementSuccessiveConnectionFailureCount(s);
+                chosenLB.getLoadBalancerStats().incrementSuccessiveConnectionFailureCount(s);
                 f.onError(resp.getResult());
               } else {
-                choosenLB.getLoadBalancerStats().incrementActiveRequestsCount(s);
-                choosenLB.getLoadBalancerStats().noteResponseTime(s,
+                chosenLB.getLoadBalancerStats().incrementActiveRequestsCount(s);
+                chosenLB.getLoadBalancerStats().noteResponseTime(s,
                     (System.currentTimeMillis() - time));
                 f.onNext(resp);
                 f.onCompleted();
