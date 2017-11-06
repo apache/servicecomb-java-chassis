@@ -16,6 +16,8 @@
 
 package io.servicecomb.samples.bmi;
 
+import java.util.Map;
+
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 
@@ -24,10 +26,12 @@ import org.springframework.stereotype.Service;
 public class HalfCalculatorServiceImpl extends CalculatorServiceImpl {
 
   /**
-   * calculate half of BMI value
+   * calculate BMI value
    */
   @Override
-  public double calculate(double height, double weight) {
-    return super.calculate(height, weight) / 2;
+  public Map<String, String>  calculate(double height, double weight) {
+
+    CalculatorServiceImpl serviceImpl = new CalculatorServiceImpl();
+    return serviceImpl.calculate(height, weight);
   }
 }

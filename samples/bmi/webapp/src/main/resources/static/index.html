@@ -45,8 +45,8 @@
         <br/>
         <div class="alert alert-light" role="alert" id="bmi">
           <h3>BMI Result: <span id="bmi_result"></span></h3>
-          <h3>BMI Container ID: <span id="bmi_processid"></span></h3>
-          <h3>BMI Called time: <span id="bmi_calltime"></span></h3>
+          <h3>BMI Container ID: <span id="bmi_processId"></span></h3>
+          <h3>BMI Called time: <span id="bmi_callTime"></span></h3>
         </div>
         <div class="alert alert-secondary" role="alert">
           <b>Note: </b>Range of healthy weight is between <b>18.5</b> and <b>24.9</b>.
@@ -69,8 +69,8 @@
           success: function (data) {
             $("#error").hide();
             $("#bmi_result").text(data.result);
-            $("#bmi_processid").text(data.processID);
-            $("#bmi_calltime").text(data.calltime);
+            $("#bmi_processId").text(data.processId);
+            $("#bmi_callTime").text(data.callTime);
             if ( data.result < 18.5 || (data.result < 30 && data.result >= 25) ) {
               $("#bmi").removeClass().addClass("alert").addClass("alert-warning");
             } else if ( data.result < 25 && data.result >= 18.5 ) {
