@@ -33,6 +33,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public final class NetUtils {
+
   private static final Logger LOGGER = LoggerFactory.getLogger(NetUtils.class);
 
   // one interface can bind to multiple address
@@ -56,8 +57,16 @@ public final class NetUtils {
     try {
       doGetIpv4AddressFromNetworkInterface();
       // getLocalHost will throw exception in some docker image and sometimes will do a hostname lookup and time consuming
-      hostName = InetAddress.getLocalHost().getHostName();
-      hostAddress = InetAddress.getLocalHost().getHostAddress();
+      InetAddress localHost = InetAddress.getLocalHost();
+      hostName = localHost.getHostName();
+      if ((localHost.isAnyLocalAddress() || localHost.isLoopbackAddress() || localHost.isMulticastAddress())
+          && !allInterfaceAddresses.isEmpty()) {
+        InetAddress availabelAddress = allInterfaceAddresses.values().iterator().next();
+        hostAddress = availabelAddress.getHostAddress();
+        LOGGER.warn("cannot find a proper host address, choose {}, may not be correct.", hostAddress);
+      } else {
+        hostAddress = localHost.getHostAddress();
+      }
 
       LOGGER.info(
           "add host name from localhost:" + hostName + ",host address:" + hostAddress);
