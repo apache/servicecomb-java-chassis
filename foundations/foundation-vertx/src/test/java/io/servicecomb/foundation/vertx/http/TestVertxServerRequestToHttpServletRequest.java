@@ -67,6 +67,13 @@ public class TestVertxServerRequestToHttpServletRequest {
   }
 
   @Test
+  public void constructWithPath() {
+    request = new VertxServerRequestToHttpServletRequest(context, "/path");
+
+    Assert.assertEquals("/path", request.getRequestURI());
+  }
+
+  @Test
   public void setBodyBuffer() {
     Holder<Buffer> bodyHolder = new Holder<>();
     context = new MockUp<RoutingContext>() {
@@ -181,6 +188,20 @@ public class TestVertxServerRequestToHttpServletRequest {
     };
 
     Assert.assertEquals("abc", request.getScheme());
+  }
+
+  @Test
+  public void testGetRemoteAddr(@Mocked SocketAddress sa) {
+    new Expectations() {
+      {
+        sa.host();
+        result = "host";
+        vertxRequest.remoteAddress();
+        result = sa;
+      }
+    };
+
+    Assert.assertEquals("host", request.getRemoteAddr());
   }
 
   @Test

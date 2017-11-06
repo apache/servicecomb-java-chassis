@@ -43,8 +43,9 @@ public class EdgeDispatcher extends AbstractEdgeDispatcher {
     String microserviceName = pathParams.get("param0");
     String path = "/" + pathParams.get("param1");
 
-    EdgeInvocation invoker = new EdgeInvocation();
-    invoker.init(microserviceName, context, path, httpServerFilters);
-    invoker.invoke();
+    EdgeInvocation edgeInvocation = new EdgeInvocation();
+
+    edgeInvocation.init(microserviceName, context, path, httpServerFilters);
+    edgeInvocation.invoke();
   }
 }
