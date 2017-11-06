@@ -45,27 +45,27 @@ public class CalculatorServiceImpl implements CalculatorService {
     double heightInMeter = height / 100;
     double bmi = weight / (heightInMeter * heightInMeter);
     
-	double result = roundToOnePrecision(bmi);
+    double result = roundToOnePrecision(bmi);
 
-	MicroserviceInstance name = RegistryUtils.getMicroserviceInstance();
-	String processID = name.getInstanceId().substring(0, 12);  
-	
-	Date date=new Date(); 
-	DateFormat format = new SimpleDateFormat("HH:mm:ss");
-	String calltime = format.format(date);
+    MicroserviceInstance instance = RegistryUtils.getMicroserviceInstance();
+    String processId = instance.getInstanceId().substring(0, 12);  
+    
+    Date date = new Date(); 
+    DateFormat format = new SimpleDateFormat("HH:mm:ss");
+    String callTime = format.format(date);
 
-	Map<String, String> map = new HashMap<String, String>();
-	map.put("result", Double.toString(result));
-	map.put("processID", processID);
-	map.put("calltime", calltime);
-	
-	return map;
-	
+    Map<String, String> resultMap = new HashMap<String, String>();
+    resultMap.put("result", Double.toString(result));
+    resultMap.put("processId", processId);
+    resultMap.put("callTime", callTime);
+    
+    return resultMap;
+    
   }
 
   private double roundToOnePrecision(double value) {
-	  
-	  return new BigDecimal(value).setScale(1, RoundingMode.HALF_UP).doubleValue();
-	  
+      
+    return new BigDecimal(value).setScale(1, RoundingMode.HALF_UP).doubleValue();
+      
   }
 }
