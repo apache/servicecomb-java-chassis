@@ -17,6 +17,8 @@
 package io.servicecomb.samples.bmi;
 
 
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -40,7 +42,7 @@ public class CalculatorRestEndpoint implements CalculatorEndpoint {
 
   @GetMapping(path = "/bmi")
   @Override
-  public double calculate(double height, double weight) {
+  public Map<String, String> calculate(double height, double weight) {
     return calculatorService.calculate(height, weight);
   }
 }
