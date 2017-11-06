@@ -141,7 +141,9 @@ public abstract class AbstractRestInvocation {
     if (response.getHeaders().getHeaderMap() != null) {
       for (Entry<String, List<Object>> entry : response.getHeaders().getHeaderMap().entrySet()) {
         for (Object value : entry.getValue()) {
-          responseEx.addHeader(entry.getKey(), String.valueOf(value));
+          if (!entry.getKey().equalsIgnoreCase(HttpHeaders.CONTENT_LENGTH)) {
+            responseEx.addHeader(entry.getKey(), String.valueOf(value));
+          }
         }
       }
     }
