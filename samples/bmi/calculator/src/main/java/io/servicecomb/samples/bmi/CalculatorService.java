@@ -16,8 +16,6 @@
 
 package io.servicecomb.samples.bmi;
 
-import java.util.Map;
-
 /**
  * {@link CalculatorService} provides interface of actual BMI calculation.
  */
@@ -26,5 +24,5 @@ public interface CalculatorService {
   /**
    * @see CalculatorEndpoint#calculate(double, double)
    */
-  Map<String, String> calculate(double height, double weight);
+  BMIViewObject calculate(double height, double weight);
 }

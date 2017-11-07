@@ -16,8 +16,6 @@
 
 package io.servicecomb.samples.bmi;
 
-import java.util.Map;
-
 /**
  * {@link CalculatorEndpoint} provides the common interface for different endpoint implementations.
  * It needs to be declared as public.
@@ -26,5 +24,5 @@ public interface CalculatorEndpoint {
   /**
    * Calculate the BMI(Body Mass Index).
    */
-  Map<String, String> calculate(double height, double weight);
+  BMIViewObject calculate(double height, double weight);
 }
