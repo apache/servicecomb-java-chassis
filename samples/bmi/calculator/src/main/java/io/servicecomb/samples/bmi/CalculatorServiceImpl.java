@@ -21,14 +21,9 @@ import java.math.RoundingMode;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
 
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
-
-import io.servicecomb.serviceregistry.RegistryUtils;
-import io.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
 
 @Profile("!v2")
 @Service
@@ -38,7 +33,7 @@ public class CalculatorServiceImpl implements CalculatorService {
    * {@inheritDoc}
    */
   @Override
-  public Map<String, String> calculate(double height, double weight) {
+  public BMIViewObject calculate(double height, double weight) {
     if (height <= 0 || weight <= 0) {
       throw new IllegalArgumentException("Arguments must be above 0");
     }
@@ -47,25 +42,19 @@ public class CalculatorServiceImpl implements CalculatorService {
     
     double result = roundToOnePrecision(bmi);
 
-    MicroserviceInstance instance = RegistryUtils.getMicroserviceInstance();
-    String processId = instance.getInstanceId().substring(0, 12);  
-    
     Date date = new Date(); 
     DateFormat format = new SimpleDateFormat("HH:mm:ss");
     String callTime = format.format(date);
 
-    Map<String, String> resultMap = new HashMap<String, String>();
-    resultMap.put("result", Double.toString(result));
-    resultMap.put("processId", processId);
-    resultMap.put("callTime", callTime);
+    BMIViewObject bmiViewObject = new BMIViewObject();
+    bmiViewObject.setResult(Double.toString(result));
+    bmiViewObject.setCallTime(callTime);
     
-    return resultMap;
+    return bmiViewObject;
     
   }
 
   private double roundToOnePrecision(double value) {
-      
     return new BigDecimal(value).setScale(1, RoundingMode.HALF_UP).doubleValue();
-      
   }
 }
