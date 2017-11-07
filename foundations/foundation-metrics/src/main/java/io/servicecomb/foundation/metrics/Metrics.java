@@ -64,8 +64,6 @@ public class Metrics extends CommonThread {
     PerfStatSuccFail perfStat = map.get(name);
     if (perfStat == null) {
       perfStat = new PerfStatSuccFail(name);
-      // System.out.println(" *************************create stat " +
-      // name);
       map.put(name, perfStat);
 
       registerPerfStat(perfStat, index);
