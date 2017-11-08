@@ -108,5 +108,7 @@ public class TestMicroserviceVersionRule {
     Assert.assertNotSame(orgCache, microserviceVersionRule.getInstanceCache());
     Assert.assertSame(microserviceVersionRule.getInstances(),
         microserviceVersionRule.getInstanceCache().getInstanceMap());
+    Assert.assertSame(microserviceVersionRule.getInstances(),
+        microserviceVersionRule.getVersionedCache().data());
   }
 }

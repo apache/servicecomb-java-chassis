@@ -19,6 +19,7 @@ package io.servicecomb.serviceregistry.cache;
 import org.junit.Assert;
 import org.junit.Test;
 
+import io.servicecomb.foundation.common.cache.VersionedCache;
 import io.servicecomb.serviceregistry.consumer.AppManager;
 import io.servicecomb.serviceregistry.consumer.MicroserviceVersionRule;
 import io.servicecomb.serviceregistry.definition.DefinitionConst;
@@ -43,5 +44,25 @@ public class TestInstanceCacheManagerNew {
     };
 
     Assert.assertSame(instanceCache, mgr.getOrCreate(appId, microserviceName, versionRule));
+  }
+
+  @Test
+  public void getOrCreateVersionedCache(@Mocked AppManager appManager,
+      @Mocked MicroserviceVersionRule microserviceVersionRule,
+      @Mocked VersionedCache versionedCache) {
+    InstanceCacheManagerNew mgr = new InstanceCacheManagerNew(appManager);
+    String appId = "app";
+    String microserviceName = "ms";
+    String versionRule = DefinitionConst.VERSION_RULE_ALL;
+    new Expectations() {
+      {
+        appManager.getOrCreateMicroserviceVersionRule(appId, microserviceName, versionRule);
+        result = microserviceVersionRule;
+        microserviceVersionRule.getVersionedCache();
+        result = versionedCache;
+      }
+    };
+
+    Assert.assertSame(versionedCache, mgr.getOrCreateVersionedCache(appId, microserviceName, versionRule));
   }
 }
