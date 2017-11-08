@@ -21,46 +21,61 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import io.servicecomb.core.Endpoint;
 import io.servicecomb.core.Invocation;
-import io.servicecomb.core.endpoint.EndpointsCache;
 import io.servicecomb.core.exception.ExceptionUtils;
+import io.servicecomb.core.filter.TransportEndpointDiscoveryFilter;
+import io.servicecomb.foundation.common.cache.VersionedCache;
+import io.servicecomb.serviceregistry.RegistryUtils;
+import io.servicecomb.serviceregistry.filter.DiscoveryFilter;
+import io.servicecomb.serviceregistry.filter.DiscoveryFilterContext;
+import io.servicecomb.serviceregistry.filter.DiscoveryFilterManager;
 import io.servicecomb.swagger.invocation.AsyncResponse;
 
 /**
  * 内置轮询lb，方便demo之类的场景，不必去依赖lb包
  */
 public class SimpleLoadBalanceHandler extends AbstractHandler {
-  private AtomicInteger index = new AtomicInteger();
+  private static final Logger LOGGER = LoggerFactory.getLogger(SimpleLoadBalanceHandler.class);
 
-  // key为transportName
-  private volatile Map<String, EndpointsCache> endpointsCacheMap = new ConcurrentHashMap<>();
+  private DiscoveryFilterManager filterManager = new DiscoveryFilterManager();
+
+  // key为grouping filter qualified name
+  private volatile Map<String, AtomicInteger> indexMap = new ConcurrentHashMap<>();
+
+  public SimpleLoadBalanceHandler() {
+    filterManager.loadFromSPI(DiscoveryFilter.class);
+    filterManager.addFilter(new TransportEndpointDiscoveryFilter());
+    filterManager.sort();
+  }
 
   @Override
   public void handle(Invocation invocation, AsyncResponse asyncResp) throws Exception {
-    // 调用者未指定transport时，这里得到的是""，也直接使用，不必特殊处理
-    String transportName = invocation.getConfigTransportName();
+    VersionedCache instanceVersionedCache = RegistryUtils
+        .getServiceRegistry()
+        .getInstanceCacheManager()
+        .getOrCreateVersionedCache(invocation.getAppId(),
+            invocation.getMicroserviceName(),
+            invocation.getMicroserviceVersionRule());
 
-    EndpointsCache endpointsCache = endpointsCacheMap.get(transportName);
-    if (endpointsCache == null) {
-      synchronized (this) {
-        endpointsCache = endpointsCacheMap.get(invocation.getConfigTransportName());
-        if (endpointsCache == null) {
-          endpointsCache = new EndpointsCache(invocation.getAppId(), invocation.getMicroserviceName(),
-              invocation.getMicroserviceVersionRule(), transportName);
-          endpointsCacheMap.put(transportName, endpointsCache);
-        }
-      }
-    }
-    List<Endpoint> endpoints = endpointsCache.getLatestEndpoints();
-
-    if (endpoints == null || endpoints.isEmpty()) {
+    DiscoveryFilterContext context = new DiscoveryFilterContext();
+    context.setInputParameters(invocation);
+    VersionedCache endpointsVersionedCache = filterManager.filter(context, instanceVersionedCache);
+    if (endpointsVersionedCache.isEmpty()) {
       asyncResp.consumerFail(ExceptionUtils.lbAddressNotFound(invocation.getMicroserviceName(),
           invocation.getMicroserviceVersionRule(),
-          transportName));
+          endpointsVersionedCache.name()));
       return;
     }
 
+    List<Endpoint> endpoints = endpointsVersionedCache.data();
+    AtomicInteger index = indexMap.computeIfAbsent(endpointsVersionedCache.name(), name -> {
+      LOGGER.info("Create loadBalancer for {}.", name);
+      return new AtomicInteger();
+    });
     int idx = Math.abs(index.getAndIncrement());
     idx = idx % endpoints.size();
     Endpoint endpoint = endpoints.get(idx);
