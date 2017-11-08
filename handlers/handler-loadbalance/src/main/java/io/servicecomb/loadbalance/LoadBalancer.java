@@ -16,6 +16,7 @@
 
 package io.servicecomb.loadbalance;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -33,7 +34,9 @@ import io.servicecomb.core.Invocation;
  *
  */
 public class LoadBalancer extends AbstractLoadBalancer {
-  private CseServerList serverList;
+  private String name;
+
+  private List<Server> serverList;
 
   private IRule rule;
 
@@ -42,12 +45,23 @@ public class LoadBalancer extends AbstractLoadBalancer {
   // 以filter类名为Key
   private Map<String, ServerListFilterExt> filters;
 
-  public LoadBalancer(CseServerList serverList, IRule rule) {
-    this.serverList = serverList;
+  public LoadBalancer(String name, IRule rule) {
+    this.name = name;
     this.rule = rule;
     this.rule.setLoadBalancer(this);
     this.lbStats = new LoadBalancerStats(null);
     this.filters = new ConcurrentHashMap<>();
+  }
+
+  public String getName() {
+    return name;
+  }
+
+  // every filter group has a loadBalancer instance
+  // serverList almost not changed for different invocation
+  // so every invocation will call setServerList, this is no problem
+  public void setServerList(List<Server> serverList) {
+    this.serverList = Collections.unmodifiableList(serverList);
   }
 
   @Override
@@ -77,7 +91,7 @@ public class LoadBalancer extends AbstractLoadBalancer {
 
   @Override
   public List<Server> getAllServers() {
-    List<Server> servers = serverList.getInitialListOfServers();
+    List<Server> servers = serverList;
     for (ServerListFilter<Server> filter : filters.values()) {
       servers = filter.getFilteredListOfServers(servers);
     }

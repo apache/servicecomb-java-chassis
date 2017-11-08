@@ -17,27 +17,42 @@
 package io.servicecomb.loadbalance;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
+
+import javax.ws.rs.core.Response.Status;
+import javax.xml.ws.Holder;
 
 import org.apache.commons.configuration.AbstractConfiguration;
+import org.hamcrest.Matchers;
+import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import org.mockito.Mockito;
 
-import com.netflix.config.ConfigurationManager;
 import com.netflix.config.DynamicPropertyFactory;
 import com.netflix.loadbalancer.IRule;
 import com.netflix.loadbalancer.Server;
-import com.netflix.loadbalancer.reactive.ExecutionListener;
 
 import io.servicecomb.config.ConfigUtil;
+import io.servicecomb.core.CseContext;
 import io.servicecomb.core.Invocation;
-import io.servicecomb.core.provider.consumer.SyncResponseExecutor;
+import io.servicecomb.core.Transport;
+import io.servicecomb.core.transport.TransportManager;
+import io.servicecomb.foundation.common.cache.VersionedCache;
+import io.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
+import io.servicecomb.loadbalance.filter.SimpleTransactionControlFilter;
+import io.servicecomb.serviceregistry.RegistryUtils;
+import io.servicecomb.serviceregistry.ServiceRegistry;
+import io.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
+import io.servicecomb.serviceregistry.cache.CacheEndpoint;
+import io.servicecomb.serviceregistry.cache.InstanceCacheManager;
 import io.servicecomb.swagger.invocation.AsyncResponse;
 import io.servicecomb.swagger.invocation.Response;
 import mockit.Deencapsulation;
@@ -52,18 +67,41 @@ import mockit.Mocked;
  *
  */
 public class TestLoadbalanceHandler {
+  String microserviceName = "ms";
 
-  private CseServerList serverList = Mockito.mock(CseServerList.class);
+  IRule rule = Mockito.mock(IRule.class);
 
-  private IRule rule = Mockito.mock(IRule.class);
+  LoadbalanceHandler handler = new LoadbalanceHandler();
 
-  private LoadBalancer lb = new LoadBalancer(serverList, rule);
+  Map<String, LoadBalancer> loadBalancerMap = Deencapsulation.getField(handler, "loadBalancerMap");
+
+  private LoadBalancer loadBalancer = new LoadBalancer("loadBalancerName", rule);
+
+  @Injectable
+  Invocation invocation;
+
+  @Mocked
+  ServiceRegistry serviceRegistry;
+
+  @Mocked
+  InstanceCacheManager instanceCacheManager;
+
+  @Mocked
+  TransportManager transportManager;
+
+  @Mocked
+  Transport restTransport;
+
+  Response sendResponse;
+
+  List<String> results = new ArrayList<>();
+
+  @Rule
+  public ExpectedException expectedException = ExpectedException.none();
 
   @AfterClass
   public static void classTeardown() {
-    Deencapsulation.setField(ConfigurationManager.class, "instance", null);
-    Deencapsulation.setField(ConfigurationManager.class, "customConfigurationInstalled", false);
-    Deencapsulation.setField(DynamicPropertyFactory.class, "config", null);
+    ArchaiusUtils.resetConfig();
   }
 
   @BeforeClass
@@ -79,9 +117,38 @@ public class TestLoadbalanceHandler {
     configuration.addProperty("cse.loadbalance.serverListFilter.a.className",
         "io.servicecomb.loadbalance.MyServerListFilterExt");
   }
-  
+
   @Before
   public void setUp() {
+    new MockUp<Invocation>(invocation) {
+      @Mock
+      String getMicroserviceName() {
+        return microserviceName;
+      }
+
+      @Mock
+      void next(AsyncResponse asyncResp) throws Exception {
+        asyncResp.handle(sendResponse);
+      }
+
+    };
+
+    CseContext.getInstance().setTransportManager(transportManager);
+    new MockUp<TransportManager>(transportManager) {
+      @Mock
+      Transport findTransport(String transportName) {
+        return restTransport;
+      }
+    };
+
+    RegistryUtils.setServiceRegistry(serviceRegistry);
+    new MockUp<ServiceRegistry>(serviceRegistry) {
+      @Mock
+      InstanceCacheManager getInstanceCacheManager() {
+        return instanceCacheManager;
+      }
+    };
+
     BeansHolder holder = new BeansHolder();
     List<ExtensionsFactory> extensionsFactories = new ArrayList<>();
     extensionsFactories.add(new RuleClassNameExtentionsFactory());
@@ -91,192 +158,79 @@ public class TestLoadbalanceHandler {
     holder.init();
   }
 
+  @After
+  public void teardown() {
+    CseContext.getInstance().setTransportManager(null);
+    RegistryUtils.setServiceRegistry(null);
+  }
+
   @Test
-  public void testLoadBalancerWithFilterExtentions(final @Injectable Invocation invocation,
-      final @Injectable AsyncResponse asyncResp,
-      final @Mocked ServerListCache serverListCache) throws Exception {
-    final ArrayList<Server> servers = new ArrayList<Server>();
-    servers.add(new Server("test"));
-    new Expectations() {
-      {
-        invocation.getConfigTransportName();
-        result = "rest";
-        serverListCache.getLatestEndpoints();
-        result = new ArrayList<Server>();
-        invocation.getAppId();
-        result = "test";
+  public void handleClearLoadBalancer() throws Exception {
+    new MockUp<LoadbalanceHandler>(handler) {
+      @Mock
+      LoadBalancer getOrCreateLoadBalancer(Invocation invocation) {
+        return loadBalancer;
       }
-    };
-    LoadbalanceHandler lh = new LoadbalanceHandler();
-    lh.handle(invocation, asyncResp);
-
-    Map<String, LoadBalancer> loadBalancerMap = Deencapsulation.getField(lh, "loadBalancerMap");
-    LoadBalancer lb = loadBalancerMap.get("rest");
-    Assert.assertEquals(lb.getFilterSize(), 2);
-  }
-
-  @Test
-  public void testLoadbalanceHandlerHandleWithSend() throws Exception {
-
-    boolean status = true;
-
-    LoadbalanceHandler lh = new LoadbalanceHandler();
-
-    Invocation invocation = Mockito.mock(Invocation.class);
-
-    AsyncResponse asyncResp = Mockito.mock(AsyncResponse.class);
-
-    Mockito.when(invocation.getConfigTransportName()).thenReturn("baa");
-
-    Map<String, LoadBalancer> loadBalancerMap = new ConcurrentHashMap<String, LoadBalancer>();
-
-    loadBalancerMap.put("baa", lb);
-
-    try {
-      Deencapsulation.setField(lh, "loadBalancerMap", loadBalancerMap);
-
-      Deencapsulation.invoke(lh, "send", invocation, asyncResp, lb);
-
-      lh.handle(invocation, asyncResp);
-    } catch (Exception e) {
-
-      status = false;
-    }
-
-    Assert.assertTrue(status);
-  }
-
-  @Test
-  public void testLoadbalanceHandlerHandleWithSendWithRetry() throws Exception {
-
-    boolean status = true;
-
-    LoadbalanceHandler lh = new LoadbalanceHandler();
-
-    Invocation invocation = Mockito.mock(Invocation.class);
-
-    AsyncResponse asyncResp = Mockito.mock(AsyncResponse.class);
-
-    Mockito.when(invocation.getConfigTransportName()).thenReturn("baadshah");
-
-    Map<String, LoadBalancer> loadBalancerMap = new ConcurrentHashMap<String, LoadBalancer>();
-
-    loadBalancerMap.put("baadshah", lb);
-
-    try {
-
-      Deencapsulation.setField(lh, "loadBalancerMap", loadBalancerMap);
-
-      Deencapsulation.invoke(lh, "sendWithRetry", invocation, asyncResp, lb);
-
-      lh.handle(invocation, asyncResp);
-    } catch (Exception e) {
-
-      status = false;
-    }
-
-    Assert.assertTrue(status);
-  }
-
-  @Test
-  public void testLoadbalanceHandlerHandleWithCseServer() throws Exception {
-
-    boolean status = true;
-
-    new MockUp<LoadbalanceHandler>() {
 
       @Mock
-      private LoadBalancer createLoadBalancer(String appId, String microserviceName,
-          String microserviceVersionRule, String transportName) {
-
-        return lb;
+      void send(Invocation invocation, AsyncResponse asyncResp, final LoadBalancer choosenLB) throws Exception {
       }
     };
 
-    LoadbalanceHandler lh = new LoadbalanceHandler();
+    loadBalancerMap.put("old", loadBalancer);
+    Deencapsulation.setField(handler, "policy", "init");
+    handler.handle(invocation, ar -> {
+    });
 
-    Invocation invocation = Mockito.mock(Invocation.class);
-
-    Mockito.when(invocation.getConfigTransportName()).thenReturn("baadshah");
-
-    Mockito.when(invocation.getMicroserviceVersionRule()).thenReturn("VERSION_RULE_LATEST");
-
-    AsyncResponse asyncResp = Mockito.mock(AsyncResponse.class);
-
-    Mockito.when(invocation.getAppId()).thenReturn("test");
-
-    Mockito.when(invocation.getMicroserviceName()).thenReturn("test");
-
-    CseServer server = Mockito.mock(CseServer.class);
-
-    Mockito.when((CseServer) lb.chooseServer()).thenReturn(server);
-    try {
-
-      lh.handle(invocation, asyncResp);
-    } catch (Exception e) {
-
-      status = false;
-    }
-    Assert.assertTrue(status);
+    Assert.assertThat(loadBalancerMap.values(), Matchers.empty());
   }
 
   @Test
-  public void testLoadbalanceHandlerHandleWithLoadBalancerHandler() throws Exception {
-
-    boolean status = true;
-
-    new MockUp<LoadbalanceHandler>() {
+  public void handleSendNotRetry() throws Exception {
+    new MockUp<LoadbalanceHandler>(handler) {
+      @Mock
+      LoadBalancer getOrCreateLoadBalancer(Invocation invocation) {
+        return loadBalancer;
+      }
 
       @Mock
-      private LoadBalancer createLoadBalancer(String appId, String microserviceName,
-          String microserviceVersionRule,
-          String transportName) {
-
-        return lb;
+      void send(Invocation invocation, AsyncResponse asyncResp, final LoadBalancer choosenLB) throws Exception {
+        results.add("sendNotRetry");
       }
     };
 
-    LoadbalanceHandler lh = new LoadbalanceHandler();
+    handler.handle(invocation, ar -> {
+    });
 
-    Invocation invocation = Mockito.mock(Invocation.class);
+    Assert.assertThat(results, Matchers.contains("sendNotRetry"));
+  }
 
-    Mockito.when(invocation.getConfigTransportName()).thenReturn("baadshah");
-
-    Mockito.when(invocation.getMicroserviceVersionRule()).thenReturn("VERSION_RULE_LATEST");
-
-    AsyncResponse asyncResp = Mockito.mock(AsyncResponse.class);
-
-    Mockito.when(invocation.getMicroserviceName()).thenReturn("test");
-
-    new MockUp<Configuration>() {
+  @Test
+  public void handleSendWithRetry() throws Exception {
+    new MockUp<LoadbalanceHandler>(handler) {
+      @Mock
+      LoadBalancer getOrCreateLoadBalancer(Invocation invocation) {
+        return loadBalancer;
+      }
 
       @Mock
-      public boolean isRetryEnabled(String microservice) {
+      void sendWithRetry(Invocation invocation, AsyncResponse asyncResp, final LoadBalancer choosenLB)
+          throws Exception {
+        results.add("sendWithRetry");
+      }
+    };
+
+    new MockUp<Configuration>(Configuration.INSTANCE) {
+      @Mock
+      boolean isRetryEnabled(String microservice) {
         return true;
       }
     };
 
-    SyncResponseExecutor orginExecutor = new SyncResponseExecutor();
+    handler.handle(invocation, ar -> {
+    });
 
-    Mockito.when(invocation.getResponseExecutor()).thenReturn(orginExecutor);
-
-    List<ExecutionListener<Invocation, Response>> listeners = new ArrayList<>(0);
-
-    @SuppressWarnings("unchecked")
-    ExecutionListener<Invocation, Response> listener = Mockito.mock(ExecutionListener.class);
-
-    ExecutionListener<Invocation, Response> e = null;
-    listeners.add(e);
-    listeners.add(listener);
-
-    try {
-      lh.handle(invocation, asyncResp);
-    } catch (Exception ex) {
-      ex.printStackTrace();
-      status = false;
-    }
-
-    Assert.assertTrue(status);
+    Assert.assertThat(results, Matchers.contains("sendWithRetry"));
   }
 
   @Test
@@ -284,12 +238,12 @@ public class TestLoadbalanceHandler {
     Invocation invocation = Mockito.mock(Invocation.class);
     Mockito.when(invocation.getMicroserviceName()).thenReturn("test");
     LoadbalanceHandler lbHandler = new LoadbalanceHandler();
-    LoadBalancer myLB = new LoadBalancer(serverList, rule);
+    LoadBalancer myLB = new LoadBalancer("loadBalancerName", rule);
     lbHandler.setIsolationFilter(myLB, "abc");
     Assert.assertEquals(1, myLB.getFilterSize());
 
     Mockito.when(invocation.getMicroserviceName()).thenReturn("abc");
-    myLB = new LoadBalancer(serverList, rule);
+    myLB = new LoadBalancer("loadBalancerName", rule);
     lbHandler.setIsolationFilter(myLB, "abc");
     myLB.setInvocation(invocation);
 
@@ -304,15 +258,179 @@ public class TestLoadbalanceHandler {
   }
 
   @Test
-  public void testSetTransactionControlFilter() {
-    Invocation invocation = Mockito.mock(Invocation.class);
-    Mockito.when(invocation.getMicroserviceName()).thenReturn("test");
-    LoadbalanceHandler lbHandler = new LoadbalanceHandler();
-    LoadBalancer myLB = new LoadBalancer(serverList, rule);
-    lbHandler.setTransactionControlFilter(myLB, "test");
-    Assert.assertEquals(1, myLB.getFilterSize());
+  public void setTransactionControlFilter_NoPolicy() {
+    new MockUp<Configuration>(Configuration.INSTANCE) {
+      @Mock
+      String getFlowsplitFilterPolicy(String microservice) {
+        return "";
+      }
+    };
 
-    lbHandler.setTransactionControlFilter(myLB, "test");
-    Assert.assertEquals(1, myLB.getFilterSize());
+    handler.setTransactionControlFilter(loadBalancer, microserviceName);
+    Assert.assertEquals(0, loadBalancer.getFilterSize());
+  }
+
+  @Test
+  public void setTransactionControlFilter_InvalidPolicy() {
+    new MockUp<Configuration>(Configuration.INSTANCE) {
+      @Mock
+      String getFlowsplitFilterPolicy(String microservice) {
+        return "InvalidPolicy";
+      }
+    };
+
+    expectedException.expect(Error.class);
+    expectedException.expectMessage(Matchers.is("Fail to create instance of class: InvalidPolicy"));
+
+    handler.setTransactionControlFilter(loadBalancer, microserviceName);
+    Assert.assertEquals(0, loadBalancer.getFilterSize());
+  }
+
+  @Test
+  public void setTransactionControlFilter_PolicyNotAssignable() {
+    new MockUp<Configuration>(Configuration.INSTANCE) {
+      @Mock
+      String getFlowsplitFilterPolicy(String microservice) {
+        return String.class.getName();
+      }
+    };
+
+    expectedException.expect(Error.class);
+    expectedException.expectMessage(Matchers.is("Fail to create instance of class: java.lang.String"));
+
+    handler.setTransactionControlFilter(loadBalancer, microserviceName);
+    Assert.assertEquals(0, loadBalancer.getFilterSize());
+  }
+
+  @Test
+  public void setTransactionControlFilter_Normal() {
+    new MockUp<Configuration>(Configuration.INSTANCE) {
+      @Mock
+      String getFlowsplitFilterPolicy(String microservice) {
+        return SimpleTransactionControlFilter.class.getName();
+      }
+    };
+
+    handler.setTransactionControlFilter(loadBalancer, microserviceName);
+    Assert.assertEquals(1, loadBalancer.getFilterSize());
+  }
+
+  @Test
+  public void getOrCreateLoadBalancer() throws Exception {
+    MicroserviceInstance instance = new MicroserviceInstance();
+    instance.setInstanceId("id");
+    instance.getEndpoints().add("rest://localhost:8080");
+
+    Map<String, MicroserviceInstance> instanceMap = new HashMap<>();
+    instanceMap.put(instance.getInstanceId(), instance);
+
+    VersionedCache instanceVersionedCache =
+        new VersionedCache().autoCacheVersion().name("instanceCache").data(instanceMap);
+
+    new Expectations() {
+      {
+        invocation.getConfigTransportName();
+        result = "rest";
+        instanceCacheManager.getOrCreateVersionedCache(anyString, anyString, anyString);
+        result = instanceVersionedCache;
+      }
+    };
+
+    LoadBalancer lb = handler.getOrCreateLoadBalancer(invocation);
+
+    Assert.assertEquals(2, lb.getFilterSize());
+    Assert.assertEquals("instanceCache/rest", lb.getName());
+    Assert.assertEquals("[rest://localhost:8080]", Deencapsulation.getField(lb, "serverList").toString());
+  }
+
+  @Test
+  public void send_noEndPoint() {
+    new Expectations(loadBalancer) {
+      {
+        loadBalancer.chooseServer(invocation);
+        result = null;
+      }
+    };
+
+    Holder<Throwable> result = new Holder<>();
+    Deencapsulation.invoke(handler, "send", invocation, (AsyncResponse) resp -> {
+      result.value = (Throwable) resp.getResult();
+    }, loadBalancer);
+
+    Assert.assertEquals("InvocationException: code=490;msg=CommonExceptionData [message=Cse Internal Bad Request]",
+        result.value.getMessage());
+    Assert.assertEquals("No available address found. microserviceName=ms, version=null, transportName=null",
+        result.value.getCause().getMessage());
+  }
+
+  @Test
+  public void send_failed() {
+    CacheEndpoint cacheEndpoint = new CacheEndpoint("rest://localhost:8080", null);
+    CseServer server = new CseServer(restTransport, cacheEndpoint);
+    new MockUp<System>() {
+      @Mock
+      long currentTimeMillis() {
+        return 123;
+      }
+    };
+    new Expectations(loadBalancer) {
+      {
+        loadBalancer.chooseServer(invocation);
+        result = server;
+      }
+    };
+
+    sendResponse = Response.create(Status.BAD_REQUEST, "send failed");
+
+    Holder<Throwable> result = new Holder<>();
+    Deencapsulation.invoke(handler, "send", invocation, (AsyncResponse) resp -> {
+      result.value = (Throwable) resp.getResult();
+    }, loadBalancer);
+
+    Assert.assertEquals(123, server.getLastVisitTime());
+    Assert.assertEquals(1,
+        loadBalancer.getLoadBalancerStats().getSingleServerStat(server).getSuccessiveConnectionFailureCount());
+    Assert.assertEquals("InvocationException: code=400;msg=send failed",
+        result.value.getMessage());
+  }
+
+  @Test
+  public void send_success() {
+    CacheEndpoint cacheEndpoint = new CacheEndpoint("rest://localhost:8080", null);
+    CseServer server = new CseServer(restTransport, cacheEndpoint);
+    new MockUp<System>() {
+      @Mock
+      long currentTimeMillis() {
+        return 123;
+      }
+    };
+    new Expectations(loadBalancer) {
+      {
+        loadBalancer.chooseServer(invocation);
+        result = server;
+      }
+    };
+
+    sendResponse = Response.ok("success");
+
+    Holder<String> result = new Holder<>();
+    Deencapsulation.invoke(handler, "send", invocation, (AsyncResponse) resp -> {
+      result.value = resp.getResult();
+    }, loadBalancer);
+
+    Assert.assertEquals(123, server.getLastVisitTime());
+    Assert.assertEquals(1,
+        loadBalancer.getLoadBalancerStats().getSingleServerStat(server).getActiveRequestsCount());
+    Assert.assertEquals("success", result.value);
+  }
+  
+  @Test
+  public void sendWithRetry() {
+    Holder<String> result = new Holder<>();
+    Deencapsulation.invoke(handler, "sendWithRetry", invocation, (AsyncResponse) resp -> {
+      result.value = resp.getResult();
+    }, loadBalancer);
+    
+    // no exception
   }
 }
