@@ -28,6 +28,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -274,5 +275,18 @@ public class CodeFirstSpringmvc {
       return null;
     }
     return "hello " + person.get("name");
+  }
+
+  @PostMapping(path = "/testform")
+  @ApiImplicitParams({
+      @ApiImplicitParam(name = "form1", dataType = "string", paramType = "form", value = "a required form param",
+          required = true),
+      @ApiImplicitParam(name = "form2", dataType = "string", paramType = "form", value = "an optional form param",
+          required = false)})
+  public String testform(HttpServletRequest request) {
+    String form1 = request.getParameter("form1");
+    String form2 = request.getParameter("form2");
+    Assert.notNull(form1);
+    return form1 + form2;
   }
 }
