@@ -139,11 +139,10 @@ public abstract class AbstractRestInvocation {
   @SuppressWarnings("deprecation")
   protected void sendResponse(Response response) throws Exception {
     if (response.getHeaders().getHeaderMap() != null) {
+      response.getHeaders().getHeaderMap().remove(HttpHeaders.CONTENT_LENGTH);
       for (Entry<String, List<Object>> entry : response.getHeaders().getHeaderMap().entrySet()) {
         for (Object value : entry.getValue()) {
-          if (!entry.getKey().equalsIgnoreCase(HttpHeaders.CONTENT_LENGTH)) {
-            responseEx.addHeader(entry.getKey(), String.valueOf(value));
-          }
+          responseEx.addHeader(entry.getKey(), String.valueOf(value));
         }
       }
     }
