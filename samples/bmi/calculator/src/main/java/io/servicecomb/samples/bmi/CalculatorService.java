@@ -24,5 +24,5 @@ public interface CalculatorService {
   /**
    * @see CalculatorEndpoint#calculate(double, double)
    */
-  BMIViewObject calculate(double height, double weight);
+  double calculate(double height, double weight);
 }

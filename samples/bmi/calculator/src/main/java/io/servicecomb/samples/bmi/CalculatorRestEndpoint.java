@@ -16,7 +16,6 @@
 
 package io.servicecomb.samples.bmi;
 
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -44,9 +43,10 @@ public class CalculatorRestEndpoint implements CalculatorEndpoint {
   @Override
   public BMIViewObject calculate(double height, double weight) {
     
-    BMIViewObject bmiViewObject = calculatorService.calculate(height, weight);
-    bmiViewObject.setProcessId(systemInfoService.getInstanceInfo());
+    BMIViewObject bmiViewObject = systemInfoService.getInstanceInfo();
+    bmiViewObject.setResult(Double.toString(calculatorService.calculate(height, weight)));   
     
     return bmiViewObject;
   }
+  
 }

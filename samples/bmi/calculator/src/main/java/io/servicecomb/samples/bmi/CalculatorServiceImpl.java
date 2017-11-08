@@ -18,9 +18,6 @@ package io.servicecomb.samples.bmi;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
@@ -33,25 +30,13 @@ public class CalculatorServiceImpl implements CalculatorService {
    * {@inheritDoc}
    */
   @Override
-  public BMIViewObject calculate(double height, double weight) {
+  public double calculate(double height, double weight) {
     if (height <= 0 || weight <= 0) {
       throw new IllegalArgumentException("Arguments must be above 0");
     }
     double heightInMeter = height / 100;
     double bmi = weight / (heightInMeter * heightInMeter);
-    
-    double result = roundToOnePrecision(bmi);
-
-    Date date = new Date(); 
-    DateFormat format = new SimpleDateFormat("HH:mm:ss");
-    String callTime = format.format(date);
-
-    BMIViewObject bmiViewObject = new BMIViewObject();
-    bmiViewObject.setResult(Double.toString(result));
-    bmiViewObject.setCallTime(callTime);
-    
-    return bmiViewObject;
-    
+    return roundToOnePrecision(bmi);
   }
 
   private double roundToOnePrecision(double value) {
