@@ -16,6 +16,7 @@
 
 package io.servicecomb.common.rest.codec.param;
 
+import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
@@ -84,6 +85,7 @@ public class RestClientRequestImpl implements RestClientRequest {
         output.write('=');
         if (entry.getValue() != null) {
           String value = RestObjectMapper.INSTANCE.convertToString(entry.getValue());
+          value = URLEncoder.encode(value, StandardCharsets.UTF_8.name());
           output.write(value.getBytes(StandardCharsets.UTF_8));
         }
         output.write('&');
@@ -122,7 +124,9 @@ public class RestClientRequestImpl implements RestClientRequest {
       formMap = new HashMap<>();
     }
 
-    formMap.put(name, value);
+    if (value != null) {
+      formMap.put(name, value);
+    }
   }
 
   @Override
