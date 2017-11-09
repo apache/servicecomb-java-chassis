@@ -23,7 +23,7 @@ public class TestRestClientRequestImpl {
     restClientRequest.addForm("def", "world");
     restClientRequest.addForm("ghi", null);
     Buffer buffer = restClientRequest.getBodyBuffer();
-    Assert.assertEquals(buffer.toString(), "abc=Hello&def=world&");
+    Assert.assertEquals("abc=Hello&def=world&", buffer.toString());
   }
 
   @Test
