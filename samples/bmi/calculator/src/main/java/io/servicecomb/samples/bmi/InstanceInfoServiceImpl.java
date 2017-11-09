@@ -16,39 +16,26 @@
 
 package io.servicecomb.samples.bmi;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-
-import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 
 import io.servicecomb.serviceregistry.RegistryUtils;
 import io.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
 
-@Profile("!v2")
 @Service
-public class SystemInfoServiceImpl implements SystemInfoService {
+public class InstanceInfoServiceImpl implements InstanceInfoService {
 
   /**
    * {@inheritDoc}
    */
   @Override
-  public BMIViewObject getInstanceInfo() {
+  public String getInstanceId() {
 
     MicroserviceInstance instance = RegistryUtils.getMicroserviceInstance();
-    String processId = instance.getInstanceId().substring(0, 12);  
-
-    Date date = new Date(); 
-    DateFormat format = new SimpleDateFormat("HH:mm:ss");
-    String callTime = format.format(date);
-    
-    BMIViewObject bmiViewObject = new BMIViewObject();
-    bmiViewObject.setCallTime(callTime);
-    bmiViewObject.setProcessId(processId);
-    
-    return bmiViewObject;
-    
+    if (instance == null) {
+      throw new IllegalStateException(
+          "unable to find any service instances, maybe there is problem registering in service center?");
+    }
+    return instance.getInstanceId();
   }
   
 }
