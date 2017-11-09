@@ -8,7 +8,6 @@ import io.vertx.core.buffer.Buffer;
 import io.vertx.core.http.CaseInsensitiveHeaders;
 import io.vertx.core.http.HttpClientRequest;
 import io.vertx.core.http.HttpHeaders;
-import mockit.Expectations;
 import mockit.Mock;
 import mockit.MockUp;
 import mockit.Mocked;
@@ -19,10 +18,6 @@ public class TestRestClientRequestImpl {
 
   @Test
   public void testForm() throws Exception {
-    new Expectations() {
-      {
-      }
-    };
     RestClientRequestImpl restClientRequest = new RestClientRequestImpl(request);
     restClientRequest.addForm("abc", "Hello");
     restClientRequest.addForm("def", "world");
@@ -54,8 +49,8 @@ public class TestRestClientRequestImpl {
     restClientRequest.write(Buffer.buffer("I love servicecomb"));
     restClientRequest.end();
     Buffer buffer = restClientRequest.getBodyBuffer();
-    Assert.assertEquals(buffer.toString(), "I love servicecomb");
-    Assert.assertEquals(restClientRequest.request.headers().get(HttpHeaders.COOKIE),
-        "sessionid=abcdefghijklmnopqrstuvwxyz; region=china-north; ");
+    Assert.assertEquals("I love servicecomb", buffer.toString());
+    Assert.assertEquals("sessionid=abcdefghijklmnopqrstuvwxyz; region=china-north; ", 
+        restClientRequest.request.headers().get(HttpHeaders.COOKIE));
   }
 }
