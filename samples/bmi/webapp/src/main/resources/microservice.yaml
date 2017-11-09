@@ -25,6 +25,3 @@ cse:
     registry:
       address: http://127.0.0.1:30100
 
-servicecomb:
-  tracing:
-    enabled: false

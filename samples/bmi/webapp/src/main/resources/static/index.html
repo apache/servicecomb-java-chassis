@@ -45,7 +45,7 @@
         <br/>
         <div class="alert alert-light" role="alert" id="bmi">
           <h3>BMI Result: <span id="bmi_result"></span></h3>
-          <h3>BMI Container ID: <span id="bmi_processId"></span></h3>
+          <h3>BMI Instance ID: <span id="bmi_instanceId"></span></h3>
           <h3>BMI Called Time: <span id="bmi_callTime"></span></h3>
         </div>
         <div class="alert alert-secondary" role="alert">
@@ -69,7 +69,7 @@
           success: function (data) {
             $("#error").hide();
             $("#bmi_result").text(data.result);
-            $("#bmi_processId").text(data.processId);
+            $("#bmi_instanceId").text(data.instanceId);
             $("#bmi_callTime").text(data.callTime);
             if ( data.result < 18.5 || (data.result < 30 && data.result >= 25) ) {
               $("#bmi").removeClass().addClass("alert").addClass("alert-warning");

@@ -17,9 +17,9 @@
 package io.servicecomb.samples.bmi;
 
 /**
- * {@link SystemInfoService} provides interface of container system infomation.
+ * {@link InstanceInfoService} provides interface of instance information.
  */
-public interface SystemInfoService {
+public interface InstanceInfoService {
 
-  BMIViewObject getInstanceInfo();
+  String getInstanceId();
 }
