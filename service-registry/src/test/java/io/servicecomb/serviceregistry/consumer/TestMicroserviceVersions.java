@@ -32,8 +32,8 @@ import io.servicecomb.serviceregistry.RegistryUtils;
 import io.servicecomb.serviceregistry.api.MicroserviceKey;
 import io.servicecomb.serviceregistry.api.registry.Microservice;
 import io.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
+import io.servicecomb.serviceregistry.api.registry.MicroserviceInstanceStatus;
 import io.servicecomb.serviceregistry.api.response.MicroserviceInstanceChangedEvent;
-import io.servicecomb.serviceregistry.definition.DefinitionConst;
 import io.servicecomb.serviceregistry.task.event.PullMicroserviceVersionsInstancesEvent;
 import io.servicecomb.serviceregistry.version.Version;
 import mockit.Deencapsulation;
@@ -84,15 +84,16 @@ public class TestMicroserviceVersions {
     createMicroservice(microserviceId);
     createInstance(microserviceId);
 
-    new Expectations(RegistryUtils.class) {
-      {
-        RegistryUtils.findServiceInstance(appId,
-            microserviceName,
-            DefinitionConst.VERSION_RULE_ALL);
-        result = instances;
+    new MockUp<RegistryUtils>() {
+      @Mock
+      List<MicroserviceInstance> findServiceInstance(String appId, String serviceName,
+          String versionRule) {
+        return instances;
+      }
 
-        RegistryUtils.getMicroservice(microserviceId);
-        result = microservices.get(microserviceId);
+      @Mock
+      Microservice getMicroservice(String microserviceId) {
+        return microservices.get(microserviceId);
       }
     };
   }
@@ -157,6 +158,18 @@ public class TestMicroserviceVersions {
     microserviceVersions.pullInstances();
 
     Assert.assertSame(instances.get(0), microserviceVersionRule.getInstances().get("i1"));
+  }
+
+  @Test
+  public void setInstances_selectUp() {
+    String microserviceId = "1";
+    setup(microserviceId);
+
+    instances.get(0).setStatus(MicroserviceInstanceStatus.DOWN);
+    Deencapsulation.invoke(microserviceVersions, "setInstances", instances);
+
+    List<?> resultInstances = Deencapsulation.getField(microserviceVersions, "instances");
+    Assert.assertTrue(resultInstances.isEmpty());
   }
 
   @Test
