@@ -27,6 +27,7 @@ import com.netflix.config.DynamicPropertyFactory;
 import io.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 
 public class TestServletConfig {
+
   @BeforeClass
   public static void classSetup() {
     ArchaiusUtils.resetConfig();
@@ -51,7 +52,23 @@ public class TestServletConfig {
   public void testGetServletUrlPattern() {
     DynamicPropertyFactory.getInstance();
     Configuration configuration = (Configuration) DynamicPropertyFactory.getBackingConfigurationSource();
-    configuration.setProperty(ServletConfig.KEY_SERVLET_URL_PATTERN, "/*");
+    // to distinguish this case from testGetServletUrlPatternOnUrlPatternIsNotSet
+    String urlPattern = "/urlPattern";
+    configuration.setProperty(ServletConfig.KEY_SERVLET_URL_PATTERN, urlPattern);
+    Assert.assertEquals(urlPattern, ServletConfig.getServletUrlPattern());
+  }
+
+  @Test
+  public void testGetServletUrlPatternOnUrlPatternIsNotSet() {
+    DynamicPropertyFactory.getInstance();
+    Configuration configuration = (Configuration) DynamicPropertyFactory.getBackingConfigurationSource();
+    Object preservedProperty = configuration.getProperty(ServletConfig.KEY_SERVLET_URL_PATTERN);
+    // ensure this property is null
+    configuration.clearProperty(ServletConfig.KEY_SERVLET_URL_PATTERN);
     Assert.assertEquals("/*", ServletConfig.getServletUrlPattern());
+
+    if (null != preservedProperty) {
+      configuration.setProperty(ServletConfig.KEY_SERVLET_URL_PATTERN, preservedProperty);
+    }
   }
 }

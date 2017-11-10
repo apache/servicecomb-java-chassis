@@ -21,9 +21,11 @@ import com.netflix.config.DynamicPropertyFactory;
 import com.netflix.config.DynamicStringProperty;
 
 public final class ServletConfig {
+
   static final long DEFAULT_TIMEOUT = 3000;
 
   static final String KEY_SERVLET_URL_PATTERN = "servicecomb.rest.servlet.urlPattern";
+  static final String DEFAULT_URL_PATTERN = "/*";
 
   private ServletConfig() {
   }
@@ -42,7 +44,7 @@ public final class ServletConfig {
 
   public static String getServletUrlPattern() {
     DynamicStringProperty address =
-        DynamicPropertyFactory.getInstance().getStringProperty(KEY_SERVLET_URL_PATTERN, null);
+        DynamicPropertyFactory.getInstance().getStringProperty(KEY_SERVLET_URL_PATTERN, DEFAULT_URL_PATTERN);
     return address.get();
   }
 }
