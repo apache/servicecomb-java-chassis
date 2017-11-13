@@ -19,11 +19,12 @@ package io.servicecomb.core.handler.impl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import io.servicecomb.core.Handler;
 import io.servicecomb.core.Invocation;
 import io.servicecomb.core.Transport;
 import io.servicecomb.swagger.invocation.AsyncResponse;
 
-public class TransportClientHandler extends AbstractHandler {
+public class TransportClientHandler implements Handler {
 
   private static final Logger log = LoggerFactory.getLogger(TransportClientHandler.class);
 

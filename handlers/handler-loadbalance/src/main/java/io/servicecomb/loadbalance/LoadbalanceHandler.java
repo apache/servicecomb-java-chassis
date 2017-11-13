@@ -38,9 +38,9 @@ import com.netflix.loadbalancer.reactive.ExecutionListener;
 import com.netflix.loadbalancer.reactive.LoadBalancerCommand;
 import com.netflix.loadbalancer.reactive.ServerOperation;
 
+import io.servicecomb.core.Handler;
 import io.servicecomb.core.Invocation;
 import io.servicecomb.core.exception.ExceptionUtils;
-import io.servicecomb.core.handler.impl.AbstractHandler;
 import io.servicecomb.core.provider.consumer.SyncResponseExecutor;
 import io.servicecomb.loadbalance.filter.IsolationServerListFilter;
 import io.servicecomb.loadbalance.filter.TransactionControlFilter;
@@ -52,7 +52,7 @@ import rx.Observable;
  * 负载均衡处理链
  *
  */
-public class LoadbalanceHandler extends AbstractHandler {
+public class LoadbalanceHandler implements Handler {
   private static final Logger LOGGER = LoggerFactory.getLogger(LoadbalanceHandler.class);
 
   private static final ExecutorService RETRY_POOL = Executors.newCachedThreadPool(new ThreadFactory() {
