@@ -46,7 +46,6 @@ public class TestStandardHttpServletRequestEx {
   public void setBodyBuffer() {
     Buffer bodyBuffer = Buffer.buffer();
     bodyBuffer.appendString("abc");
-    System.out.println(bodyBuffer.length());
 
     requestEx.setBodyBuffer(bodyBuffer);
     Assert.assertSame(bodyBuffer, requestEx.getBodyBuffer());

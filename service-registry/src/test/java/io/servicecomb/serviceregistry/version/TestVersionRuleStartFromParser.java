@@ -22,7 +22,7 @@ import org.junit.Test;
 public class TestVersionRuleStartFromParser {
   VersionRuleParser parser = new VersionRuleStartFromParser();
 
-  VersionRule versionRule = parser.parse("1+");;
+  VersionRule versionRule = parser.parse("1+");
 
   @Test
   public void parseInvalid() {
