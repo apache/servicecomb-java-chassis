@@ -42,8 +42,13 @@ import io.servicecomb.core.Handler;
 import io.servicecomb.core.Invocation;
 import io.servicecomb.core.exception.ExceptionUtils;
 import io.servicecomb.core.provider.consumer.SyncResponseExecutor;
+import io.servicecomb.foundation.common.cache.VersionedCache;
+import io.servicecomb.loadbalance.filter.CseServerDiscoveryFilter;
 import io.servicecomb.loadbalance.filter.IsolationServerListFilter;
 import io.servicecomb.loadbalance.filter.TransactionControlFilter;
+import io.servicecomb.serviceregistry.discovery.DiscoveryContext;
+import io.servicecomb.serviceregistry.discovery.DiscoveryFilter;
+import io.servicecomb.serviceregistry.discovery.DiscoveryTree;
 import io.servicecomb.swagger.invocation.AsyncResponse;
 import io.servicecomb.swagger.invocation.Response;
 import rx.Observable;
@@ -64,12 +69,21 @@ public class LoadbalanceHandler implements Handler {
     }
   });
 
-  // 会给每个Microservice创建一个handler实例，因此这里的key为transportName，保证每个通道使用一个负载均衡策略
+  private DiscoveryTree discoveryTree = new DiscoveryTree();
+
+  // key为grouping filter qualified name
   private volatile Map<String, LoadBalancer> loadBalancerMap = new ConcurrentHashMap<>();
 
   private final Object lock = new Object();
 
   private String policy = null;
+
+
+  public LoadbalanceHandler() {
+    discoveryTree.loadFromSPI(DiscoveryFilter.class);
+    discoveryTree.addFilter(new CseServerDiscoveryFilter());
+    discoveryTree.sort();
+  }
 
   @Override
   public void handle(Invocation invocation, AsyncResponse asyncResp) throws Exception {
@@ -82,30 +96,16 @@ public class LoadbalanceHandler implements Handler {
     }
     this.policy = p;
 
-    String transportName = invocation.getConfigTransportName();
-    LoadBalancer lb = loadBalancerMap.get(transportName);
-    if (null == lb) {
-      synchronized (lock) {
-        lb = loadBalancerMap.get(transportName);
-        if (null == lb) {
-          // 只能使用微服务级别的属性，因为LoadBalancer实例是按照{微服务+transport}的个数创建的。
-          lb = createLoadBalancer(invocation.getAppId(),
-              invocation.getMicroserviceName(),
-              invocation.getMicroserviceVersionRule(),
-              transportName);
-          loadBalancerMap.put(transportName, lb);
-        }
-      }
-    }
-
+    LoadBalancer loadBalancer = getOrCreateLoadBalancer(invocation);
+    // TODO: after all old filter moved to new filter
+    // setInvocation method must to be removed
     // invocation是请求级别的，因此每次调用都需要设置一次
-    lb.setInvocation(invocation);
-    final LoadBalancer chosenLB = lb;
+    loadBalancer.setInvocation(invocation);
 
     if (!Configuration.INSTANCE.isRetryEnabled(invocation.getMicroserviceName())) {
-      send(invocation, asyncResp, chosenLB);
+      send(invocation, asyncResp, loadBalancer);
     } else {
-      sendWithRetry(invocation, asyncResp, chosenLB);
+      sendWithRetry(invocation, asyncResp, loadBalancer);
     }
   }
 
@@ -281,13 +281,28 @@ public class LoadbalanceHandler implements Handler {
     });
   }
 
-  private LoadBalancer createLoadBalancer(String appId, String microserviceName, String microserviceVersionRule,
-      String transportName) {
-    IRule rule = ExtensionsManager.createLoadBalancerRule(microserviceName);
+  protected LoadBalancer getOrCreateLoadBalancer(Invocation invocation) {
+    DiscoveryContext context = new DiscoveryContext();
+    context.setInputParameters(invocation);
+    VersionedCache serversVersionedCache = discoveryTree.discovery(context,
+        invocation.getAppId(),
+        invocation.getMicroserviceName(),
+        invocation.getMicroserviceVersionRule());
 
-    CseServerList serverList = new CseServerList(appId, microserviceName,
-        microserviceVersionRule, transportName);
-    LoadBalancer lb = new LoadBalancer(serverList, rule);
+    LoadBalancer loadBalancer = loadBalancerMap.computeIfAbsent(serversVersionedCache.name(), name -> {
+      return createLoadBalancer(invocation.getMicroserviceName(), name);
+    });
+    LOGGER.debug("invocation {} use loadBalancer {}.",
+        invocation.getMicroserviceQualifiedName(),
+        loadBalancer.getName());
+
+    loadBalancer.setServerList(serversVersionedCache.data());
+    return loadBalancer;
+  }
+
+  private LoadBalancer createLoadBalancer(String microserviceName, String loadBalancerName) {
+    IRule rule = ExtensionsManager.createLoadBalancerRule(microserviceName);
+    LoadBalancer lb = new LoadBalancer(loadBalancerName, rule);
 
     // we can change this implementation to ExtensionsManager in the future.
     loadServerListFilters(lb);
@@ -295,6 +310,7 @@ public class LoadbalanceHandler implements Handler {
     setIsolationFilter(lb, microserviceName);
     setTransactionControlFilter(lb, microserviceName);
 
+    LOGGER.info("create loadBalancer, microserviceName={}, loadBalancerName={}.", microserviceName, loadBalancerName);
     return lb;
   }
 
