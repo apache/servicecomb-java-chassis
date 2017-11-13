@@ -24,6 +24,7 @@ import org.junit.Test;
 
 import com.google.common.eventbus.EventBus;
 
+import io.servicecomb.foundation.common.cache.VersionedCache;
 import io.servicecomb.serviceregistry.ServiceRegistry;
 import io.servicecomb.serviceregistry.api.MicroserviceKey;
 import io.servicecomb.serviceregistry.api.registry.Microservice;
@@ -34,6 +35,8 @@ import io.servicecomb.serviceregistry.config.ServiceRegistryConfig;
 import io.servicecomb.serviceregistry.registry.ServiceRegistryFactory;
 import io.servicecomb.serviceregistry.task.event.ExceptionEvent;
 import io.servicecomb.serviceregistry.task.event.RecoveryEvent;
+import mockit.Mock;
+import mockit.MockUp;
 import mockit.Mocked;
 
 public class TestInstanceCacheManagerOld {
@@ -80,6 +83,17 @@ public class TestInstanceCacheManagerOld {
     InstanceCache newServiceCache = oInstanceCacheManager.getOrCreate("defalut", "newService", "1.0.1");
     Assert.assertNotNull(newServiceCache);
     Assert.assertEquals(1, oInstanceCacheManager.getCachedEntries().size());
+
+    oInstanceCacheManager.cacheMap.clear();
+    new MockUp<InstanceCacheManagerOld>(oInstanceCacheManager) {
+      @Mock
+      InstanceCache createInstanceCache(String appId, String microserviceName, String microserviceVersionRule) {
+        return newServiceCache;
+      }
+    };
+    VersionedCache versionedCache = oInstanceCacheManager.getOrCreateVersionedCache("defalut", "newService", "1.0.1");
+    Assert.assertEquals("1.0.1", versionedCache.name());
+    Assert.assertTrue(versionedCache.isEmpty());
   }
 
   @Test

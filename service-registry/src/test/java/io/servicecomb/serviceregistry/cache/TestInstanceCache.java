@@ -25,11 +25,14 @@ import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import io.servicecomb.foundation.common.cache.VersionedCache;
 import io.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
 import io.servicecomb.serviceregistry.api.registry.MicroserviceInstanceStatus;
 
 public class TestInstanceCache {
   private static InstanceCache instanceCache = null;
+
+  static Map<String, MicroserviceInstance> instMap = new HashMap<>();
 
   @BeforeClass
   public static void beforeClass() {
@@ -40,7 +43,6 @@ public class TestInstanceCache {
     instance.setEndpoints(endpoints);
     instance.setInstanceId("1");
 
-    Map<String, MicroserviceInstance> instMap = new HashMap<>();
     instMap.put(instance.getInstanceId(), instance);
     instanceCache = new InstanceCache("testAppID", "testMicroServiceName", "1.0", instMap);
   }
@@ -64,5 +66,12 @@ public class TestInstanceCache {
     InstanceCache newCache =
         new InstanceCache("testAppID", "testMicroServiceName", "1.0", instanceCache.getInstanceMap());
     Assert.assertTrue(instanceCache.cacheChanged(newCache));
+  }
+
+  @Test
+  public void getVersionedCache() {
+    VersionedCache versionedCache = instanceCache.getVersionedCache();
+    Assert.assertEquals("1.0", versionedCache.name());
+    Assert.assertSame(instMap, versionedCache.data());
   }
 }

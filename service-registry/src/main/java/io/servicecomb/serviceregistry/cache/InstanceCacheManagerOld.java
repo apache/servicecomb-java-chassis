@@ -28,6 +28,7 @@ import org.slf4j.LoggerFactory;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 
+import io.servicecomb.foundation.common.cache.VersionedCache;
 import io.servicecomb.serviceregistry.ServiceRegistry;
 import io.servicecomb.serviceregistry.api.Const;
 import io.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
@@ -116,6 +117,16 @@ public class InstanceCacheManagerOld implements InstanceCacheManager {
       }
     }
     return cache;
+  }
+
+  @Override
+  public VersionedCache getOrCreateVersionedCache(String appId, String microserviceName,
+      String microserviceVersionRule) {
+    String key = getKey(appId, microserviceName);
+    InstanceCache cache = cacheMap.computeIfAbsent(key, k -> {
+      return createInstanceCache(appId, microserviceName, microserviceVersionRule);
+    });
+    return cache.getVersionedCache();
   }
 
   @Subscribe

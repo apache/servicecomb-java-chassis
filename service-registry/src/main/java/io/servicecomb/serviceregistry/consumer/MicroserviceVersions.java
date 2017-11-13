@@ -82,6 +82,11 @@ public class MicroserviceVersions {
     return versions;
   }
 
+  @SuppressWarnings("unchecked")
+  public <T extends MicroserviceVersion> T getVersion(String serviceId) {
+    return (T) versions.get(serviceId);
+  }
+
   public void submitPull() {
     pendingPullCount.incrementAndGet();
     pullInstances();
