@@ -16,92 +16,111 @@
 
 package io.servicecomb.core.handler.impl;
 
+import java.util.Collections;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.Mockito;
 
+import io.servicecomb.core.CseContext;
 import io.servicecomb.core.Invocation;
-import io.servicecomb.core.definition.MicroserviceMetaManager;
-import io.servicecomb.core.endpoint.EndpointsCache;
+import io.servicecomb.core.Transport;
+import io.servicecomb.core.transport.TransportManager;
+import io.servicecomb.foundation.common.cache.VersionedCache;
 import io.servicecomb.serviceregistry.RegistryUtils;
-import io.servicecomb.serviceregistry.api.registry.Microservice;
+import io.servicecomb.serviceregistry.ServiceRegistry;
+import io.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
+import io.servicecomb.serviceregistry.cache.InstanceCacheManager;
 import io.servicecomb.swagger.invocation.AsyncResponse;
+import io.servicecomb.swagger.invocation.Response;
 import mockit.Deencapsulation;
-import mockit.Mock;
-import mockit.MockUp;
+import mockit.Expectations;
+import mockit.Mocked;
 
 public class TestSimpleLoadBalanceHandler {
-  MicroserviceMetaManager microserviceMetaManager = new MicroserviceMetaManager();
+  SimpleLoadBalanceHandler handler = new SimpleLoadBalanceHandler();
 
-  SimpleLoadBalanceHandler simpleLoadBalanceHandler = null;
+  Map<String, AtomicInteger> indexMap = Deencapsulation.getField(handler, "indexMap");
 
-  Invocation invocation = null;
+  @Mocked
+  Invocation invocation;
 
-  AsyncResponse asyncResp = null;
+  @Mocked
+  ServiceRegistry serviceRegistry;
 
-  public void mock() {
+  @Mocked
+  InstanceCacheManager instanceCacheManager;
 
-    Microservice microService = new Microservice();
-    microService.setAppId("100");
-    new MockUp<RegistryUtils>() {
-      @Mock
-      public Microservice getMicroservice() {
-        return microService;
+  @Mocked
+  TransportManager transportManager;
+
+  VersionedCache instanceVersionedCache = new VersionedCache().data(Collections.emptyMap()).name("parent");
+
+  Response response;
+
+  AsyncResponse ar = resp -> {
+    response = resp;
+  };
+
+  @Before
+  public void setUp() throws Exception {
+    CseContext.getInstance().setTransportManager(transportManager);
+
+    RegistryUtils.setServiceRegistry(serviceRegistry);
+    new Expectations() {
+      {
+        serviceRegistry.getInstanceCacheManager();
+        result = instanceCacheManager;
+        instanceCacheManager.getOrCreateVersionedCache(anyString, anyString, anyString);
+        result = instanceVersionedCache;
+        invocation.getConfigTransportName();
+        result = "";
       }
     };
   }
 
-  @Before
-  public void setUp() throws Exception {
-    simpleLoadBalanceHandler = new SimpleLoadBalanceHandler();
-    invocation = Mockito.mock(Invocation.class);
-    asyncResp = Mockito.mock(AsyncResponse.class);
-  }
-
   @After
   public void tearDown() throws Exception {
-    simpleLoadBalanceHandler = null;
-    invocation = null;
-    asyncResp = null;
+    CseContext.getInstance().setTransportManager(null);
+    RegistryUtils.setServiceRegistry(null);
   }
 
   @Test
-  public void testHandler() {
-    boolean status = false;
-    mock();
-    Assert.assertNotNull(simpleLoadBalanceHandler);
-    try {
-      Mockito.when(invocation.getMicroserviceName()).thenReturn(microserviceMetaManager.getName());
-      Mockito.when(invocation.getMicroserviceVersionRule()).thenReturn("MicroserviceVersionRule");
-      Mockito.when(invocation.getConfigTransportName()).thenReturn("TransportName");
-      simpleLoadBalanceHandler.handle(invocation, asyncResp);
-    } catch (Exception e) {
-      status = true;
-    }
-    Assert.assertTrue(status);
+  public void handle_emptyEndPoint() throws Exception {
+    handler.handle(invocation, ar);
+
+    Throwable result = response.getResult();
+    Assert.assertEquals("InvocationException: code=490;msg=CommonExceptionData [message=Cse Internal Bad Request]",
+        result.getMessage());
+    Assert.assertEquals("No available address found. microserviceName=null, version=null, discoveryGroupName=parent/",
+        result.getCause().getMessage());
   }
 
   @Test
-  public void testHandlerWithMap() {
-    boolean status = false;
-    mock();
-    Assert.assertNotNull(simpleLoadBalanceHandler);
-    try {
-      Mockito.when(invocation.getMicroserviceName()).thenReturn("MicroserviceName");
-      Mockito.when(invocation.getMicroserviceVersionRule()).thenReturn("MicroserviceVersionRule");
-      Mockito.when(invocation.getConfigTransportName()).thenReturn("TransportName");
-      Map<String, EndpointsCache> endpointsCacheMap = new ConcurrentHashMap<>();
-      endpointsCacheMap.put("TransportName", Mockito.mock(EndpointsCache.class));
-      Deencapsulation.setField(simpleLoadBalanceHandler, "endpointsCacheMap", endpointsCacheMap);
-      simpleLoadBalanceHandler.handle(invocation, asyncResp);
-    } catch (Exception e) {
-      status = true;
-    }
-    Assert.assertFalse(status);
+  public void handle(@Mocked Transport transport) throws Exception {
+    MicroserviceInstance instance = new MicroserviceInstance();
+    instance.setInstanceId("id");
+    instance.getEndpoints().add("rest://localhost:8080");
+    instance.getEndpoints().add("highway://localhost:8081");
+    instanceVersionedCache.data(Collections.singletonMap("id", instance)).autoCacheVersion().name("vr");
+
+    new Expectations() {
+      {
+        transportManager.findTransport(anyString);
+        result = transport;
+        invocation.getConfigTransportName();
+        result = "";
+      }
+    };
+
+    handler.handle(invocation, ar);
+    AtomicInteger idx = indexMap.values().iterator().next();
+    Assert.assertEquals(1, idx.get());
+
+    handler.handle(invocation, ar);
+    Assert.assertEquals(2, idx.get());
   }
 }

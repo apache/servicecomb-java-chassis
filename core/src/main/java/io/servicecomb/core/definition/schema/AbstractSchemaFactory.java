@@ -41,11 +41,15 @@ public abstract class AbstractSchemaFactory<CONTEXT extends SchemaContext> {
   @Inject
   protected MicroserviceMetaManager microserviceMetaManager;
 
-  @Inject
   protected SchemaLoader schemaLoader;
 
   @Inject
   protected CompositeSwaggerGeneratorContext compositeSwaggerGeneratorContext;
+
+  @Inject
+  public void setSchemaLoader(SchemaLoader schemaLoader) {
+    this.schemaLoader = schemaLoader;
+  }
 
   public void setMicroserviceMetaManager(MicroserviceMetaManager microserviceMetaManager) {
     this.microserviceMetaManager = microserviceMetaManager;

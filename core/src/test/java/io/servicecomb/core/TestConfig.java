@@ -136,7 +136,6 @@ public class TestConfig {
     try {
       oConf.test();
     } catch (Exception e) {
-      System.out.println(e.getMessage());
       Assert.assertEquals(e.getMessage().contains("can not find config for testkey:testvalue"), true);
       failed = true;
     }
