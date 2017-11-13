@@ -16,6 +16,7 @@
 
 package io.servicecomb.serviceregistry.cache;
 
+import io.servicecomb.foundation.common.cache.VersionedCache;
 import io.servicecomb.serviceregistry.consumer.AppManager;
 
 public class InstanceCacheManagerNew implements InstanceCacheManager {
@@ -29,5 +30,12 @@ public class InstanceCacheManagerNew implements InstanceCacheManager {
   public InstanceCache getOrCreate(String appId, String microserviceName, String microserviceVersionRule) {
     return appManager.getOrCreateMicroserviceVersionRule(appId, microserviceName, microserviceVersionRule)
         .getInstanceCache();
+  }
+
+  @Override
+  public VersionedCache getOrCreateVersionedCache(String appId, String microserviceName,
+      String microserviceVersionRule) {
+    return appManager.getOrCreateMicroserviceVersionRule(appId, microserviceName, microserviceVersionRule)
+        .getVersionedCache();
   }
 }

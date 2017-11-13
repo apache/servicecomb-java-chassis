@@ -113,6 +113,8 @@ public class TestMicroserviceVersions {
 
     Assert.assertSame(microservices.get(microserviceId),
         microserviceVersions.getVersions().get(microserviceId).getMicroservice());
+    Assert.assertSame(microservices.get(microserviceId),
+        microserviceVersions.getVersion(microserviceId).getMicroservice());
   }
 
   @Test

@@ -55,6 +55,20 @@ public class TestAppManager {
   }
 
   @Test
+  public void getOrCreateMicroserviceVersions() {
+    new Expectations(RegistryUtils.class) {
+      {
+        RegistryUtils.findServiceInstance(appId, serviceName, DefinitionConst.VERSION_RULE_ALL);
+        result = Collections.emptyList();
+      }
+    };
+
+    MicroserviceVersions microserviceVersions = appManager.getOrCreateMicroserviceVersions(appId, serviceName);
+    Assert.assertEquals(appId, microserviceVersions.getAppId());
+    Assert.assertEquals(serviceName, microserviceVersions.getMicroserviceName());
+  }
+
+  @Test
   public void setMicroserviceVersionFactory(@Mocked MicroserviceVersionFactory microserviceVersionFactory) {
     appManager.setMicroserviceVersionFactory(microserviceVersionFactory);
 

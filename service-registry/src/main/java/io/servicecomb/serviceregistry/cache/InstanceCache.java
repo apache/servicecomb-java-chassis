@@ -26,6 +26,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import io.servicecomb.foundation.common.cache.VersionedCache;
 import io.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
 import io.servicecomb.serviceregistry.api.registry.MicroserviceInstanceStatus;
 
@@ -52,6 +53,8 @@ public class InstanceCache {
   // key为instanceId
   private Map<String, MicroserviceInstance> instanceMap;
 
+  private VersionedCache versionedCache;
+
   // 缓存CacheEndpoint
   private volatile Map<String, List<CacheEndpoint>> transportMap;
 
@@ -67,6 +70,14 @@ public class InstanceCache {
     this.microserviceName = microserviceName;
     this.microserviceVersionRule = microserviceVersionRule;
     this.instanceMap = instanceMap;
+    this.versionedCache = new VersionedCache()
+        .name(microserviceVersionRule)
+        .autoCacheVersion()
+        .data(instanceMap);
+  }
+
+  public VersionedCache getVersionedCache() {
+    return versionedCache;
   }
 
   public boolean cacheChanged(InstanceCache newCache) {
