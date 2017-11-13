@@ -20,6 +20,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import io.netty.handler.codec.http.multipart.HttpPostRequestDecoder.ErrorDataDecoderException;
+import io.servicecomb.common.rest.AbstractRestInvocation;
 import io.servicecomb.common.rest.RestConst;
 import io.servicecomb.common.rest.RestProducerInvocation;
 import io.servicecomb.core.Const;
@@ -54,7 +55,7 @@ public class VertxRestDispatcher extends AbstractVertxHttpDispatcher {
   private void failureHandler(RoutingContext context) {
     LOGGER.error("http server failed.", context.failure());
 
-    RestProducerInvocation restProducerInvocation = context.get(RestConst.REST_PRODUCER_INVOCATION);
+    AbstractRestInvocation restProducerInvocation = context.get(RestConst.REST_PRODUCER_INVOCATION);
     Throwable e = context.failure();
     if (ErrorDataDecoderException.class.isInstance(e)) {
       Throwable cause = e.getCause();
