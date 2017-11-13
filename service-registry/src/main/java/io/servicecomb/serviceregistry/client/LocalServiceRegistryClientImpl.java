@@ -23,7 +23,6 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -40,6 +39,10 @@ import io.servicecomb.serviceregistry.api.registry.Microservice;
 import io.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
 import io.servicecomb.serviceregistry.api.response.HeartbeatResponse;
 import io.servicecomb.serviceregistry.api.response.MicroserviceInstanceChangedEvent;
+import io.servicecomb.serviceregistry.version.Version;
+import io.servicecomb.serviceregistry.version.VersionRule;
+import io.servicecomb.serviceregistry.version.VersionRuleUtils;
+import io.servicecomb.serviceregistry.version.VersionUtils;
 
 public class LocalServiceRegistryClientImpl implements ServiceRegistryClient {
   private static final Logger LOGGER = LoggerFactory.getLogger(LocalServiceRegistryClientImpl.class);
@@ -132,16 +135,10 @@ public class LocalServiceRegistryClientImpl implements ServiceRegistryClient {
   }
 
   @Override
-  public String getMicroserviceId(String appId, String microserviceName, String version) {
-    for (Entry<String, Microservice> entry : microserviceIdMap.entrySet()) {
-      Microservice microservice = entry.getValue();
-      // ignore version, because local will not use multiple version now.
-      if (microservice.getAppId().equals(appId) && microservice.getServiceName().equals(microserviceName)) {
-        return entry.getKey();
-      }
-    }
-
-    return null;
+  public String getMicroserviceId(String appId, String microserviceName, String strVersionRule) {
+    VersionRule versionRule = VersionRuleUtils.getOrCreate(strVersionRule);
+    Microservice latest = findLatest(appId, microserviceName, versionRule);
+    return latest != null ? latest.getServiceId() : null;
   }
 
   @Override
@@ -215,15 +212,61 @@ public class LocalServiceRegistryClientImpl implements ServiceRegistryClient {
 
   }
 
-  @Override
-  public List<MicroserviceInstance> findServiceInstance(String selfMicroserviceId, String appId, String serviceName,
-      String versionRule) {
-    String microserviceId = getMicroserviceId(appId, serviceName, versionRule);
-    if (StringUtils.isEmpty(microserviceId)) {
-      return Collections.emptyList();
+  protected boolean isSameMicroservice(Microservice microservice, String appId, String serviceName) {
+    return microservice.getAppId().equals(appId) && microservice.getServiceName().equals(serviceName);
+  }
+
+  protected Microservice findLatest(String appId, String serviceName, VersionRule versionRule) {
+    Version latestVersion = null;
+    Microservice latest = null;
+    for (Entry<String, Microservice> entry : microserviceIdMap.entrySet()) {
+      Microservice microservice = entry.getValue();
+      if (!isSameMicroservice(microservice, appId, serviceName)) {
+        continue;
+      }
+
+      Version version = VersionUtils.getOrCreate(microservice.getVersion());
+      if (!versionRule.isAccept(version)) {
+        continue;
+      }
+
+      if (latestVersion == null || version.compareTo(latestVersion) > 0) {
+        latestVersion = version;
+        latest = microservice;
+      }
     }
 
-    return new ArrayList<>(microserviceInstanceMap.get(microserviceId).values());
+    return latest;
+  }
+
+  @Override
+  public List<MicroserviceInstance> findServiceInstance(String selfMicroserviceId, String appId, String serviceName,
+      String strVersionRule) {
+    List<MicroserviceInstance> allInstances = new ArrayList<>();
+
+    VersionRule versionRule = VersionRuleUtils.getOrCreate(strVersionRule);
+    Microservice latestMicroservice = findLatest(appId, serviceName, versionRule);
+    if (latestMicroservice == null) {
+      return allInstances;
+    }
+
+    Version latestVersion = VersionUtils.getOrCreate(latestMicroservice.getVersion());
+    for (Entry<String, Microservice> entry : microserviceIdMap.entrySet()) {
+      Microservice microservice = entry.getValue();
+      if (!isSameMicroservice(microservice, appId, serviceName)) {
+        continue;
+      }
+
+      Version version = VersionUtils.getOrCreate(entry.getValue().getVersion());
+      if (!versionRule.isMatch(version, latestVersion)) {
+        continue;
+      }
+
+      Map<String, MicroserviceInstance> instances = microserviceInstanceMap.get(entry.getValue().getServiceId());
+      allInstances.addAll(instances.values());
+    }
+
+    return allInstances;
   }
 
   @Override
@@ -238,6 +281,12 @@ public class LocalServiceRegistryClientImpl implements ServiceRegistryClient {
 
   @Override
   public boolean registerSchema(String microserviceId, String schemaId, String schemaContent) {
+    Microservice microservice = microserviceIdMap.get(microserviceId);
+    if (microservice == null) {
+      throw new IllegalArgumentException("Invalid serviceId, serviceId=" + microserviceId);
+    }
+
+    microservice.getSchemaMap().put(schemaId, schemaContent);
     return true;
   }
 
