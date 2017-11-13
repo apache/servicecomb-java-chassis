@@ -29,7 +29,7 @@ import io.servicecomb.samples.common.schema.models.Person;
 @RpcSchema(schemaId = "codeFirstJaxrsHello")
 @Path("/codefirstjaxrshello")
 @Produces(MediaType.APPLICATION_JSON)
-public class CodeFIrstJaxrsHelloImpl implements Hello {
+public class CodeFirstJaxrsHelloImpl implements Hello {
 
   @Path("/sayhi")
   @POST
