@@ -44,7 +44,7 @@ public class ExceptionUtils {
     ERROR_DESC_MGR.register(CSE_PRODUCER_OPERATION_NOT_EXIST,
         "Producer operation not exist, schemaId=%s, operationName=%s");
     ERROR_DESC_MGR.register(CSE_LB_NO_AVAILABLE_ADDRESS,
-        "No available address found. microserviceName=%s, version=%s, transportName=%s");
+        "No available address found. microserviceName=%s, version=%s, discoveryGroupName=%s");
   }
 
   protected ExceptionUtils() {
@@ -84,10 +84,10 @@ public class ExceptionUtils {
   }
 
   public static CseException lbAddressNotFound(String microserviceName, String microserviceVersionRule,
-      String transportName) {
+      String discoveryGroupName) {
     return createCseException(CSE_LB_NO_AVAILABLE_ADDRESS,
         microserviceName,
         microserviceVersionRule,
-        transportName);
+        discoveryGroupName);
   }
 }

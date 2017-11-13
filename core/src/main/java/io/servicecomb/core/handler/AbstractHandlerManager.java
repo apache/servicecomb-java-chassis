@@ -52,9 +52,13 @@ public abstract class AbstractHandlerManager extends AbstractObjectManager<Strin
   }
 
   private List<Class<Handler>> convertToChainClass(String chainDef) {
+    List<Class<Handler>> result = new ArrayList<>();
+    if (StringUtils.isEmpty(chainDef)) {
+      return result;
+    }
+
     String[] handlerIds = chainDef.split(",");
     Map<String, Class<Handler>> handlerMaps = config.getHandlerClassMap();
-    List<Class<Handler>> result = new ArrayList<>();
     for (String handlerId : handlerIds) {
       if (handlerId != null) {
         handlerId = handlerId.trim();
