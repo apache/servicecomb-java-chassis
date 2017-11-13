@@ -26,8 +26,8 @@ import com.netflix.hystrix.HystrixObservable;
 import com.netflix.hystrix.strategy.HystrixPlugins;
 import com.netflix.hystrix.strategy.executionhook.HystrixCommandExecutionHook;
 
+import io.servicecomb.core.Handler;
 import io.servicecomb.core.Invocation;
-import io.servicecomb.core.handler.impl.AbstractHandler;
 import io.servicecomb.swagger.invocation.AsyncResponse;
 import io.servicecomb.swagger.invocation.Response;
 import rx.Observable;
@@ -36,7 +36,7 @@ import rx.Observable;
  * 提供createBizkeeperCommand抽象接口来创建不同的处理链实例。
  *
  */
-public abstract class BizkeeperHandler extends AbstractHandler {
+public abstract class BizkeeperHandler implements Handler {
   private static final Logger LOG = LoggerFactory.getLogger(BizkeeperHandler.class);
 
   protected final String groupname;
