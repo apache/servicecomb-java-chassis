@@ -34,7 +34,6 @@ import io.vertx.core.MultiMap;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.http.HttpServerRequest;
 import io.vertx.ext.web.RoutingContext;
-import io.vertx.ext.web.impl.HttpServerRequestUtils;
 
 // wrap vertx http request to Servlet http request
 public class VertxServerRequestToHttpServletRequest extends AbstractHttpServletRequest {
@@ -48,9 +47,11 @@ public class VertxServerRequestToHttpServletRequest extends AbstractHttpServletR
 
   private ServletInputStream inputStream;
 
+  private String path;
+
   public VertxServerRequestToHttpServletRequest(RoutingContext context, String path) {
     this(context);
-    HttpServerRequestUtils.setPath(vertxRequest, path);
+    this.path = path;
   }
 
   public VertxServerRequestToHttpServletRequest(RoutingContext context) {
@@ -182,7 +183,10 @@ public class VertxServerRequestToHttpServletRequest extends AbstractHttpServletR
 
   @Override
   public String getRequestURI() {
-    return this.vertxRequest.path();
+    if (this.path == null) {
+      this.path = vertxRequest.path();
+    }
+    return this.path;
   }
 
 
