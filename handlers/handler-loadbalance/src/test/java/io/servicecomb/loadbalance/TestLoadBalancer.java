@@ -33,26 +33,30 @@ import io.servicecomb.loadbalance.filter.SimpleTransactionControlFilter;
 import io.servicecomb.loadbalance.filter.TransactionControlFilter;
 
 public class TestLoadBalancer {
-
-  private CseServerList serverList = Mockito.mock(CseServerList.class);
-
   private IRule rule = Mockito.mock(IRule.class);
 
-  private LoadBalancer loadBalancer = new LoadBalancer(serverList, rule);
+  private LoadBalancer loadBalancer = new LoadBalancer("loadBalancerName", rule);
+
+  @Test
+  public void name() {
+    Assert.assertEquals("loadBalancerName", loadBalancer.getName());
+  }
 
   @Test
   public void testLoadBalancerFullOperationWithoutException() {
-
     List<Server> newServers = new ArrayList<Server>();
     Server server = Mockito.mock(Server.class);
     newServers.add(server);
 
+    loadBalancer.setServerList(newServers);
     loadBalancer.chooseServer();
 
     Object key = Mockito.mock(Object.class);
 
     loadBalancer.chooseServer(key);
     loadBalancer.getAllServers();
+    loadBalancer.getServerList(true);
+    loadBalancer.getServerList(false);
     loadBalancer.getLoadBalancerStats();
     loadBalancer.getReachableServers();
 
@@ -136,7 +140,7 @@ public class TestLoadBalancer {
     List<Server> servers = new ArrayList<Server>();
     Server server = Mockito.mock(Server.class);
     servers.add(server);
-    Mockito.when(serverList.getInitialListOfServers()).thenReturn(servers);
+    loadBalancer.setServerList(servers);
 
     TransactionControlFilter filter = Mockito.mock(TransactionControlFilter.class);
     Mockito.when(filter.getFilteredListOfServers(servers)).thenReturn(servers);
