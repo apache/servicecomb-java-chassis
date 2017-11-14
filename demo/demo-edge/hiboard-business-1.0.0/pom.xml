@@ -20,28 +20,32 @@
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>io.servicecomb.demo</groupId>
-    <artifactId>demo-parent</artifactId>
+    <artifactId>demo-edge</artifactId>
     <version>0.4.1-SNAPSHOT</version>
   </parent>
-  <artifactId>demo-edge</artifactId>
-  <packaging>pom</packaging>
-  <modules>
-    <module>edge-service</module>
-    
-    
-    <module>hiboard-model</module>
-    <module>hiboard-consumer</module>
-    <module>hiboard-business-1.0.0</module>
-    <module>hiboard-business-1-1-0</module>
-    <module>hiboard-business-2.0.0</module>
-  </modules>
+  <artifactId>hiboard-business-1-0-0</artifactId>
 
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-dependency-plugin</artifactId>
-      </plugin>
-    </plugins>
-  </build>
+  <properties>
+    <demo.main>io.servicecomb.demo.edge.business.BusinessMain_V1_0_0</demo.main>
+  </properties>
+
+  <dependencies>
+    <dependency>
+      <groupId>io.servicecomb</groupId>
+      <artifactId>provider-springmvc</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>io.servicecomb</groupId>
+      <artifactId>transport-rest-vertx</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>io.servicecomb</groupId>
+      <artifactId>transport-rest-servlet</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>io.servicecomb.demo</groupId>
+      <artifactId>hiboard-model</artifactId>
+      <version>0.4.1-SNAPSHOT</version>
+    </dependency>
+  </dependencies>
 </project>

@@ -14,7 +14,6 @@
   ~ See the License for the specific language governing permissions and
   ~ limitations under the License.
   -->
-
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
@@ -22,11 +21,28 @@
     <artifactId>demo-edge</artifactId>
     <version>0.4.1-SNAPSHOT</version>
   </parent>
-  <artifactId>hiboard-model</artifactId>
+  <artifactId>hiboard-business-1-1-0</artifactId>
+  <properties>
+    <demo.main>io.servicecomb.demo.edge.business.BusinessMain_V1_1_0</demo.main>
+  </properties>
+
   <dependencies>
     <dependency>
       <groupId>io.servicecomb</groupId>
-      <artifactId>service-registry</artifactId>
+      <artifactId>provider-springmvc</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>io.servicecomb</groupId>
+      <artifactId>transport-rest-vertx</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>io.servicecomb</groupId>
+      <artifactId>transport-rest-servlet</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>io.servicecomb.demo</groupId>
+      <artifactId>hiboard-model</artifactId>
+      <version>0.4.1-SNAPSHOT</version>
     </dependency>
   </dependencies>
 </project>
