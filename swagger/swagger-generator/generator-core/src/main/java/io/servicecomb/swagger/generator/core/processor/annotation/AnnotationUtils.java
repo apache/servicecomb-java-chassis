@@ -127,6 +127,7 @@ public final class AnnotationUtils {
 
     Property property = generateResponseProperty(swagger, responseConfig);
     response.setSchema(property);
+    response.setDescription(responseConfig.getDescription());
 
     if (responseConfig.getResponseHeaders() != null) {
       Map<String, Property> headers = generateResponseHeader(swagger, responseConfig.getResponseHeaders());
