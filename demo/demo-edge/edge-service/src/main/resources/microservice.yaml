@@ -9,4 +9,12 @@ cse:
   rest:
     address: 127.0.0.1:18080
     server:
-      thread-count: 1
+      thread-count: 8
+    client:
+      thread-count: 8
+  handler:
+    chain:
+      Consumer:
+        default: auth,loadbalance
+        service:
+          auth: loadbalance

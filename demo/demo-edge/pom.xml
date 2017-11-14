@@ -34,6 +34,7 @@
     <module>hiboard-business-1.0.0</module>
     <module>hiboard-business-1-1-0</module>
     <module>hiboard-business-2.0.0</module>
+    <module>authentication</module>
   </modules>
 
   <build>
