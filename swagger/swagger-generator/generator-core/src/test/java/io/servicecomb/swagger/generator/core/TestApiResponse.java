@@ -62,6 +62,7 @@ public class TestApiResponse {
         new SwaggerGeneratorForTest(context, ApiResponseAnnotation.class);
     swaggerGenerator.generate();
 
+    checkResponseDesc(swaggerGenerator);
     checkApiResponseHeader(swaggerGenerator);
     checkResponseHeader(swaggerGenerator);
     checkSingle(swaggerGenerator);
@@ -78,6 +79,18 @@ public class TestApiResponse {
     Response response = operation.getResponses().get("200");
     Property property = response.getHeaders().get("k1");
     Assert.assertEquals(Integer.class, ConverterMgr.findJavaType(generator, property).getRawClass());
+  }
+
+  private void checkResponseDesc(SwaggerGenerator generator) {
+    Swagger swagger = generator.getSwagger();
+
+    Path path = swagger.getPaths().get("/testMulti");
+    Operation operation = path.getOperations().get(0);
+
+    Response response1 = operation.getResponses().get("200");
+    Response response2 = operation.getResponses().get("301");
+    Assert.assertEquals("msg1", response1.getDescription());
+    Assert.assertEquals("msg2", response2.getDescription());
   }
 
   private void checkApiResponseHeader(SwaggerGenerator generator) {
