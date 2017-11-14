@@ -16,16 +16,24 @@
 
 package io.servicecomb.demo.edge.consumer;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.Assert;
 import org.springframework.web.client.RestTemplate;
 
 import io.servicecomb.core.Endpoint;
 import io.servicecomb.core.endpoint.EndpointsCache;
 import io.servicecomb.demo.edge.model.AppClientDataRsp;
 import io.servicecomb.demo.edge.model.ChannelRequestBase;
+import io.servicecomb.demo.edge.model.ResultWithInstance;
 import io.servicecomb.foundation.common.net.URIEndpointObject;
 import io.servicecomb.provider.springmvc.reference.RestTemplateBuilder;
 import io.servicecomb.serviceregistry.RegistryUtils;
@@ -35,6 +43,16 @@ public class Consumer {
   RestTemplate template = RestTemplateBuilder.create();
 
   ChannelRequestBase request = new ChannelRequestBase();
+
+  String edgePrefix;
+
+  List<ResultWithInstance> addV1Result = new ArrayList<>();
+
+  List<ResultWithInstance> decV1Result = new ArrayList<>();
+
+  List<ResultWithInstance> addV2Result = new ArrayList<>();
+
+  List<ResultWithInstance> decV2Result = new ArrayList<>();
 
   public Consumer() {
     request.setDeviceId("2a5cc42ff60006ac");
@@ -55,17 +73,73 @@ public class Consumer {
   }
 
   public void run() {
+    prepareEdge();
+
+    invoke("/v1/add", 2, 1, addV1Result);
+    invoke("/v1/add", 3, 1, addV1Result);
+    invoke("/v1/add", 4, 1, addV1Result);
+    invoke("/v1/add", 5, 1, addV1Result);
+
+    invoke("/v1/dec", 2, 1, decV1Result);
+    invoke("/v1/dec", 3, 1, decV1Result);
+
+    invoke("/v2/add", 2, 1, addV2Result);
+    invoke("/v2/add", 3, 1, addV2Result);
+
+    invoke("/v2/dec", 2, 1, decV2Result);
+    invoke("/v2/dec", 3, 1, decV2Result);
+
+    printResults("v1/add", addV1Result);
+    printResults("v1/dec", decV1Result);
+    printResults("v2/add", addV2Result);
+    printResults("v2/dec", decV2Result);
+
+    checkResult("v1/add", addV1Result, "1.0.0", "1.1.0");
+    checkResult("v1/dec", decV1Result, "1.1.0");
+    checkResult("v2/add", addV2Result, "2.0.0");
+    checkResult("v2/dec", decV2Result, "2.0.0");
+  }
+
+  private void checkResult(String name, List<ResultWithInstance> results, String... expectedVersions) {
+    Set<String> versions = new HashSet<>();
+    Set<String> remained = new HashSet<>(Arrays.asList(expectedVersions));
+    for (ResultWithInstance result : results) {
+      versions.add(result.getVersion());
+      remained.remove(result.getVersion());
+    }
+
+    Assert.isTrue(remained.isEmpty(),
+        String.format("%s expectedVersions %s, real versions %s.",
+            name,
+            Arrays.deepToString(expectedVersions),
+            versions));
+  }
+
+  protected void printResults(String name, List<ResultWithInstance> results) {
+    System.out.println(name);
+    for (ResultWithInstance result : results) {
+      System.out.println(result);
+    }
+    System.out.println("");
+  }
+
+  protected void invoke(String appendUrl, int x, int y, List<ResultWithInstance> results) {
+    String url = edgePrefix + appendUrl + String.format("?x=%d&y=%d", x, y);
+    ResultWithInstance result = template.getForObject(url, ResultWithInstance.class);
+    results.add(result);
+  }
+
+  private URIEndpointObject prepareEdge() {
     Microservice microservice = RegistryUtils.getMicroservice();
     EndpointsCache endpointsCache = new EndpointsCache(microservice.getAppId(), "edge", "latest", "");
     Endpoint ep = endpointsCache.getLatestEndpoints().get(0);
     URIEndpointObject edgeAddress = (URIEndpointObject) ep.getAddress();
-    invoke(String.format("http://%s:%d/api/business", edgeAddress.getHostOrIp(), edgeAddress.getPort()), request);
-    invoke("cse://business", request);
-
+    edgePrefix = String.format("http://%s:%d/api/business", edgeAddress.getHostOrIp(), edgeAddress.getPort());
+    return edgeAddress;
   }
 
-  private void invoke(String urlPrefix, ChannelRequestBase request) {
-    String url = urlPrefix + "/channel/v2/news/subscribe";
+  protected void invokeBusiness(String urlPrefix, ChannelRequestBase request) {
+    String url = urlPrefix + "/channel/news/subscribe";
 
     HttpHeaders headers = new HttpHeaders();
     headers.setContentType(MediaType.APPLICATION_JSON);
