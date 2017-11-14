@@ -44,5 +44,10 @@
       <groupId>io.servicecomb</groupId>
       <artifactId>foundation-test-scaffolding</artifactId>
     </dependency>
+    <dependency>
+      <groupId>io.servicecomb</groupId>
+      <artifactId>swagger-generator-jaxrs</artifactId>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
 </project>
