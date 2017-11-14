@@ -44,6 +44,7 @@
     <module>demo-multiple</module>
     <module>demo-signature</module>
     <module>demo-edge</module>
+    <module>demo-spring-boot-convert</module>
   </modules>
 
   <dependencyManagement>
