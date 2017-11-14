@@ -39,5 +39,9 @@
 			<artifactId>javax.servlet-api</artifactId>
 			<scope>compile</scope>
 		</dependency>
-	</dependencies>
+    <dependency>
+      <groupId>io.servicecomb</groupId>
+      <artifactId>foundation-test-scaffolding</artifactId>
+    </dependency>
+  </dependencies>
 </project>
