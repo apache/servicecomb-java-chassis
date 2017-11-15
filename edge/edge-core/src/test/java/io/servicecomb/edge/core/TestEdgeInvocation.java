@@ -356,11 +356,11 @@ public class TestEdgeInvocation {
       }
     };
 
-    Throwable doInvokeException = new InvocationException(Status.NOT_FOUND, "Not Found");
+    Throwable doInvocationException = new InvocationException(Status.NOT_FOUND, "Not Found");
 
     EdgeInvocationForTestClassLoader invocation = new EdgeInvocationForTestClassLoader();
     invocation.latestMicroserviceVersionMeta = latestMicroserviceVersionMeta;
-    invocation.doInvokeException = doInvokeException;
+    invocation.doInvocationException = doInvocationException;
 
     invocation.invoke();
 
