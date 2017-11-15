@@ -267,6 +267,11 @@ public class TestEdgeInvocation {
 
       doInvokeClassLoader = Thread.currentThread().getContextClassLoader();
     }
+  
+    @Override
+    public void sendFailResponse(Throwable throwable) {
+      doSendFailResponse = Thread.currentThread().getContextClassLoader();
+    }
   }
 
   @Test
