@@ -16,31 +16,31 @@
 
 package io.servicecomb.serviceregistry.version;
 
+import java.util.concurrent.ConcurrentHashMap;
+
+import org.junit.After;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 
-public class TestVersionRuleStartFromParser {
-  VersionRuleParser parser = new VersionRuleStartFromParser();
+import mockit.Deencapsulation;
 
-  VersionRule versionRule = parser.parse("1+");
+public class TestVersionUtils {
+  @Before
+  public void setup() {
+    Deencapsulation.setField(VersionUtils.class, "versionCache", new ConcurrentHashMap<>());
+  }
 
-  @Test
-  public void parseInvalid() {
-    Assert.assertNull(parser.parse(""));
-    Assert.assertNull(parser.parse("+"));
-    Assert.assertNull(parser.parse("1+1"));
+  @After
+  public void teardown() {
+    Deencapsulation.setField(VersionUtils.class, "versionCache", new ConcurrentHashMap<>());
   }
 
   @Test
-  public void parseNormal() {
-    Assert.assertEquals("1.0.0+", versionRule.getVersionRule());
-  }
+  public void getOrCreate() {
+    Version v = VersionUtils.getOrCreate("1.0.0");
 
-  @Test
-  public void isMatch() {
-    Assert.assertFalse(versionRule.isMatch(VersionConst.v0, null));
-    Assert.assertTrue(versionRule.isMatch(VersionConst.v1, null));
-    Assert.assertTrue(versionRule.isMatch(VersionConst.v1Max, null));
-    Assert.assertTrue(versionRule.isMatch(VersionConst.v2, null));
+    Assert.assertEquals("1.0.0", v.getVersion());
+    Assert.assertSame(v, VersionUtils.getOrCreate("1.0.0"));
   }
 }
