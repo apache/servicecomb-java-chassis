@@ -37,6 +37,7 @@ import io.servicecomb.serviceregistry.RegistryUtils;
 import io.servicecomb.serviceregistry.consumer.MicroserviceVersionRule;
 import io.servicecomb.serviceregistry.definition.DefinitionConst;
 import io.servicecomb.swagger.invocation.Response;
+import io.servicecomb.swagger.invocation.exception.InvocationException;
 import io.vertx.ext.web.RoutingContext;
 
 public class EdgeInvocation extends AbstractRestInvocation {
@@ -72,6 +73,8 @@ public class EdgeInvocation extends AbstractRestInvocation {
         return;
       }
       doInvoke();
+    } catch (InvocationException e) {
+      sendFailResponse(e);
     } catch (Throwable e) {
       throw new ServiceCombException("unknown edge exception.", e);
     } finally {
