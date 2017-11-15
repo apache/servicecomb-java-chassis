@@ -18,3 +18,5 @@ cse:
         default: auth,loadbalance
         service:
           auth: loadbalance
+  executors:
+    default: cse.executor.groupThreadPool
