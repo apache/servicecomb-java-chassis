@@ -74,6 +74,7 @@ public class EdgeInvocation extends AbstractRestInvocation {
         sendResponse(response);
         return;
       }
+
       doInvoke();
     } catch (InvocationException e) {
       sendFailResponse(e);
@@ -153,10 +154,20 @@ public class EdgeInvocation extends AbstractRestInvocation {
   }
 
   @Override
-  protected void doInvoke() throws Throwable {
+  protected void doInvoke() {
     invocation.setResponseExecutor(new ReactiveResponseExecutor());
-    invocation.next(resp -> {
-      sendResponseQuietly(resp);
+    invocation.getOperationMeta().getExecutor().execute(() -> {
+      doInvokeInExecutor();
     });
+  }
+
+  protected void doInvokeInExecutor() {
+    try {
+      invocation.next(resp -> {
+        sendResponseQuietly(resp);
+      });
+    } catch (Throwable e) {
+      sendFailResponse(e);
+    }
   }
 }

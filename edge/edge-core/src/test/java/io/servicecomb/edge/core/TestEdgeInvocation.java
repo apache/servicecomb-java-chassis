@@ -44,6 +44,7 @@ import io.servicecomb.core.definition.MicroserviceMeta;
 import io.servicecomb.core.definition.MicroserviceVersionMeta;
 import io.servicecomb.core.definition.OperationMeta;
 import io.servicecomb.core.definition.SchemaMeta;
+import io.servicecomb.core.executor.ReactiveExecutor;
 import io.servicecomb.core.provider.consumer.ReactiveResponseExecutor;
 import io.servicecomb.core.provider.consumer.ReferenceConfig;
 import io.servicecomb.foundation.common.exceptions.ServiceCombException;
@@ -236,7 +237,7 @@ public class TestEdgeInvocation {
 
     ClassLoader doSendFailResponse;
 
-    Throwable doInvokeException;
+    RuntimeException doInvokeException;
 
     Throwable doInvocationException;
 
@@ -260,14 +261,14 @@ public class TestEdgeInvocation {
     }
 
     @Override
-    protected void doInvoke() throws Throwable {
+    protected void doInvoke() {
       if (doInvokeException != null) {
         throw doInvokeException;
       }
 
       doInvokeClassLoader = Thread.currentThread().getContextClassLoader();
     }
-  
+
     @Override
     public void sendFailResponse(Throwable throwable) {
       doSendFailResponse = Thread.currentThread().getContextClassLoader();
@@ -329,7 +330,7 @@ public class TestEdgeInvocation {
       }
 
       @Override
-      protected void doInvoke() throws Throwable {
+      protected void doInvoke() {
         result.value = Response.ok("do not run to here");
       }
     };
@@ -388,7 +389,7 @@ public class TestEdgeInvocation {
       }
     };
 
-    Throwable doInvokeException = new Error();
+    RuntimeException doInvokeException = new RuntimeException();
 
     EdgeInvocationForTestClassLoader invocation = new EdgeInvocationForTestClassLoader();
     invocation.latestMicroserviceVersionMeta = latestMicroserviceVersionMeta;
@@ -412,6 +413,8 @@ public class TestEdgeInvocation {
       throws Throwable {
     new Expectations() {
       {
+        operationMeta.getExecutor();
+        result = new ReactiveExecutor();
         operationMeta.getSchemaMeta();
         result = schemaMeta;
         schemaMeta.getConsumerHandlerChain();
