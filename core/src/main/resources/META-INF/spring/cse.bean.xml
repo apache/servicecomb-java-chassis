@@ -15,24 +15,25 @@
   ~ limitations under the License.
   -->
 
-<beans xmlns="http://www.springframework.org/schema/beans"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
-	xsi:schemaLocation="
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns:context="http://www.springframework.org/schema/context"
+  xsi:schemaLocation="
 		http://www.springframework.org/schema/beans classpath:org/springframework/beans/factory/xml/spring-beans-3.0.xsd 
 		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd">
-	<context:annotation-config />
+  <context:annotation-config />
 	<!-- <context:spring-configured /> -->
-	<context:component-scan base-package="io.servicecomb" />
+  <context:component-scan base-package="io.servicecomb" />
 
-	<bean class="io.servicecomb.core.config.ConfigurationSpringInitializer">
-		<property name="configId" value="config" />
-	</bean>
+  <bean class="io.servicecomb.core.config.ConfigurationSpringInitializer">
+    <property name="configId" value="config" />
+  </bean>
 
-	<bean class="io.servicecomb.core.CseContext" factory-method="getInstance"></bean>
+  <bean class="io.servicecomb.core.CseContext" factory-method="getInstance"></bean>
 
-	<bean class="io.servicecomb.core.CseApplicationListener">
-	</bean>
+  <bean class="io.servicecomb.core.CseApplicationListener">
+  </bean>
 
-	<bean id="cse.executor.default" class="io.servicecomb.core.executor.FixedThreadExecutor"></bean>
-	<bean id="cse.executor.reactive" class="io.servicecomb.core.executor.ReactiveExecutor"></bean>
+  <bean id="cse.executor.groupThreadPool" class="io.servicecomb.core.executor.FixedThreadExecutor"></bean>
+  <alias name="cse.executor.groupThreadPool" alias="cse.executor.default" />
+  <bean id="cse.executor.reactive" class="io.servicecomb.core.executor.ReactiveExecutor"></bean>
 </beans>
