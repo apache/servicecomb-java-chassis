@@ -43,5 +43,13 @@
 			<artifactId>log4j</artifactId>
 			<scope>test</scope>
 		</dependency>
+		<dependency>
+			<groupId>io.servicecomb</groupId>
+			<artifactId>swagger-invocation-core</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>io.servicecomb</groupId>
+			<artifactId>java-chassis-core</artifactId>
+		</dependency>
 	</dependencies>
 </project>

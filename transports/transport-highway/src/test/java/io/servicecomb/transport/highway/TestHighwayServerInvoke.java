@@ -107,11 +107,6 @@ public class TestHighwayServerInvoke {
     requestHeader.setOperationName(operationMeta.getOperationId());
     Assert.assertTrue(highwayServerInvoke.init(connection, 0, requestHeader, null));
 
-    // exe成功
-    netSocketBuffer = null;
-    highwayServerInvoke.execute();
-    Assert.assertEquals(null, netSocketBuffer);
-
     // exe失败
     MockUtil.getInstance().decodeRequestSucc = false;
     highwayServerInvoke.execute();

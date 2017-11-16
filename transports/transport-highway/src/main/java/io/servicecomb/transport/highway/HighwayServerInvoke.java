@@ -32,6 +32,9 @@ import io.servicecomb.core.definition.MicroserviceMeta;
 import io.servicecomb.core.definition.MicroserviceMetaManager;
 import io.servicecomb.core.definition.OperationMeta;
 import io.servicecomb.core.definition.SchemaMeta;
+import io.servicecomb.foundation.metrics.MetricsServoRegistry;
+import io.servicecomb.foundation.metrics.performance.QueueMetrics;
+import io.servicecomb.foundation.metrics.performance.QueueMetricsData;
 import io.servicecomb.foundation.vertx.tcp.TcpConnection;
 import io.servicecomb.swagger.invocation.Response;
 import io.servicecomb.swagger.invocation.exception.InvocationException;
@@ -103,9 +106,9 @@ public class HighwayServerInvoke {
     this.bodyBuffer = bodyBuffer;
   }
 
-  private void runInExecutor() {
+  private void runInExecutor(QueueMetrics metricsData) {
     try {
-      doRunInExecutor();
+      doRunInExecutor(metricsData);
     } catch (Throwable e) {
       String msg = String.format("handle request error, %s, msgId=%d",
           operationMeta.getMicroserviceQualifiedName(),
@@ -116,11 +119,13 @@ public class HighwayServerInvoke {
     }
   }
 
-  private void doRunInExecutor() throws Exception {
+  private void doRunInExecutor(QueueMetrics metricsData) throws Exception {
     Invocation invocation = HighwayCodec.decodeRequest(header, operationProtobuf, bodyBuffer, protobufFeature);
     invocation.getHandlerContext().put(Const.REMOTE_ADDRESS, this.connection.getNetSocket().remoteAddress());
+    updateMetrics(invocation);
     invocation.next(response -> {
       sendResponse(invocation.getContext(), response);
+      endMetrics(invocation);
     });
   }
 
@@ -149,7 +154,59 @@ public class HighwayServerInvoke {
     }
   }
 
+  /**
+   * start time in queue.
+   */
   public void execute() {
-    operationMeta.getExecutor().execute(this::runInExecutor);
+    QueueMetrics metricsData = initMetrics(operationMeta);
+    operationMeta.getExecutor().execute(() -> runInExecutor(metricsData));
+  }
+
+  /**
+   * Init the metrics. Note down the queue count and start time.
+   * @param operationMeta Operation data
+   * @return QueueMetrics
+   */
+  private QueueMetrics initMetrics(OperationMeta operationMeta) {
+    QueueMetrics metricsData = new QueueMetrics();
+    metricsData.setQueueStartTime(System.currentTimeMillis());
+    metricsData.setOperQualifiedName(operationMeta.getMicroserviceQualifiedName());
+    QueueMetricsData reqQueue = MetricsServoRegistry.getOrCreateLocalMetrics()
+        .getOrCreateQueueMetrics(operationMeta.getMicroserviceQualifiedName());
+    reqQueue.incrementCountInQueue();
+    return metricsData;
+  }
+
+  /**
+   * Update the queue metrics.
+   */
+  private void updateMetrics(Invocation invocation) {
+    QueueMetrics metricsData = (QueueMetrics) invocation.getMetricsData();
+    if (null != metricsData) {
+      metricsData.setQueueEndTime(System.currentTimeMillis());
+      QueueMetricsData reqQueue = MetricsServoRegistry.getOrCreateLocalMetrics()
+          .getOrCreateQueueMetrics(operationMeta.getMicroserviceQualifiedName());
+      reqQueue.incrementTotalCount();
+      Long timeInQueue = metricsData.getQueueEndTime() - metricsData.getQueueStartTime();
+      reqQueue.setTotalTime(reqQueue.getTotalTime() + timeInQueue);
+      reqQueue.setMinLifeTimeInQueue(timeInQueue);
+      reqQueue.setMaxLifeTimeInQueue(timeInQueue);
+      reqQueue.decrementCountInQueue();
+    }
+  }
+
+  /**
+   * Prepare the end time of queue metrics.
+   */
+  private void endMetrics(Invocation invocation) {
+    QueueMetrics metricsData = (QueueMetrics) invocation.getMetricsData();
+    if (null != metricsData) {
+      metricsData.setEndOperTime(System.currentTimeMillis());
+      QueueMetricsData reqQueue = MetricsServoRegistry.getOrCreateLocalMetrics()
+          .getOrCreateQueueMetrics(operationMeta.getMicroserviceQualifiedName());
+      reqQueue.incrementTotalServExecutionCount();
+      reqQueue.setTotalServExecutionTime(
+          reqQueue.getTotalServExecutionTime() + (metricsData.getEndOperTime() - metricsData.getQueueEndTime()));
+    }
   }
 }
