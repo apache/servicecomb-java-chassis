@@ -48,6 +48,7 @@ import io.servicecomb.core.definition.MicroserviceMetaManager;
 import io.servicecomb.core.definition.OperationMeta;
 import io.servicecomb.core.definition.SchemaMeta;
 import io.servicecomb.core.executor.ReactiveExecutor;
+import io.servicecomb.foundation.metrics.performance.QueueMetrics;
 import io.servicecomb.foundation.vertx.http.AbstractHttpServletRequest;
 import io.servicecomb.foundation.vertx.http.HttpServletRequestEx;
 import io.servicecomb.foundation.vertx.http.HttpServletResponseEx;
@@ -170,12 +171,14 @@ public class TestRestProducerInvocation {
         result = operationMeta;
         operationMeta.getExecutor();
         result = executor;
+        operationMeta.getMicroserviceQualifiedName();
+        result = "sayHi";
       }
     };
 
     restProducerInvocation = new MockUp<RestProducerInvocation>() {
       @Mock
-      void runOnExecutor() {
+      void runOnExecutor(QueueMetrics metricsData) {
         runOnExecutor = true;
       }
     }.getMockInstance();
@@ -184,7 +187,7 @@ public class TestRestProducerInvocation {
     restProducerInvocation.scheduleInvocation();
 
     Assert.assertTrue(runOnExecutor);
-    Assert.assertTrue((boolean) requestEx.getAttribute(RestConst.REST_STATE_EXECUTING));
+
   }
 
   @Test
@@ -199,6 +202,8 @@ public class TestRestProducerInvocation {
         result = operationMeta;
         operationMeta.getExecutor();
         result = executor;
+        operationMeta.getMicroserviceQualifiedName();
+        result = "sayHi";
       }
     };
 
@@ -216,7 +221,7 @@ public class TestRestProducerInvocation {
     restProducerInvocation.scheduleInvocation();
 
     Assert.assertFalse(runOnExecutor);
-    Assert.assertNull(requestEx.getAttribute(RestConst.REST_STATE_EXECUTING));
+
   }
 
   @Test
@@ -229,6 +234,8 @@ public class TestRestProducerInvocation {
         result = operationMeta;
         operationMeta.getExecutor();
         result = executor;
+        operationMeta.getMicroserviceQualifiedName();
+        result = "sayHi";
         requestEx.getAttribute(RestConst.REST_REQUEST);
         result = requestEx;
         RestCodec.restToArgs(requestEx, restOperationMeta);
@@ -255,6 +262,8 @@ public class TestRestProducerInvocation {
     Object[] args = new Object[] {};
     new Expectations(RestCodec.class) {
       {
+        restOperationMeta.getOperationMeta().getMicroserviceQualifiedName();
+        result = "sayHi";
         RestCodec.restToArgs(requestEx, restOperationMeta);
         result = args;
       }
@@ -266,9 +275,7 @@ public class TestRestProducerInvocation {
       }
     }.getMockInstance();
     initRestProducerInvocation();
-
-    restProducerInvocation.runOnExecutor();
-
+    restProducerInvocation.runOnExecutor(new QueueMetrics());
     Assert.assertTrue(invokeNoParam);
     Assert.assertSame(args, restProducerInvocation.invocation.getSwaggerArguments());
   }
@@ -376,6 +383,8 @@ public class TestRestProducerInvocation {
         result = schemaMeta;
         schemaMeta.getProviderHandlerChain();
         result = handlerChain;
+        operationMeta.getMicroserviceQualifiedName();
+        result = "sayHi";
       }
     };
 
@@ -388,8 +397,8 @@ public class TestRestProducerInvocation {
       }
     };
     initRestProducerInvocation();
+    invocation.setMetricsData(new QueueMetrics());
     restProducerInvocation.invocation = invocation;
-
     restProducerInvocation.doInvoke();
 
     Assert.assertSame(response, result.value);

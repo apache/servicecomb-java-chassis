@@ -46,5 +46,9 @@
 			<artifactId>log4j</artifactId>
 			<scope>test</scope>
 		</dependency>
+		<dependency>
+			<groupId>io.servicecomb</groupId>
+			<artifactId>foundation-metrics</artifactId>
+		</dependency>
 	</dependencies>
 </project>

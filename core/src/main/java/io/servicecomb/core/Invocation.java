@@ -53,6 +53,17 @@ public class Invocation extends SwaggerInvocation {
   // 同步模式：避免应答在网络线程中处理解码等等业务级逻辑
   private Executor responseExecutor;
 
+  //start,end of queue and opertion time after queue for operation level metrics.
+  private Object metricsData;
+
+  public Object getMetricsData() {
+    return metricsData;
+  }
+
+  public void setMetricsData(Object metricsData) {
+    this.metricsData = metricsData;
+  }
+
   public Invocation(ReferenceConfig referenceConfig, OperationMeta operationMeta, Object[] swaggerArguments) {
     this.invocationType = InvocationType.CONSUMER;
     this.referenceConfig = referenceConfig;
@@ -75,7 +86,8 @@ public class Invocation extends SwaggerInvocation {
 
   public Transport getTransport() {
     if (endpoint == null) {
-      throw new IllegalStateException("Endpoint is empty. Forget to configure \"loadbalance\" in consumer handler chain?");
+      throw new IllegalStateException(
+          "Endpoint is empty. Forget to configure \"loadbalance\" in consumer handler chain?");
     }
     return endpoint.getTransport();
   }
