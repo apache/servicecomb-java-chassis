@@ -111,7 +111,6 @@ public class TestRestAsyncListener {
 
   @Test
   public void onTimeoutExecuting() throws IOException {
-    request.setAttribute(RestConst.REST_STATE_EXECUTING, true);
 
     listener.onTimeout(event);
 
