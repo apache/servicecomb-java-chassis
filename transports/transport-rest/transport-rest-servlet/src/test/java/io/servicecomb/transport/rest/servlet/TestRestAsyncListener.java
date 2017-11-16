@@ -114,7 +114,7 @@ public class TestRestAsyncListener {
 
     listener.onTimeout(event);
 
-    Assert.assertSame(requestEx, request.getAttribute(RestConst.REST_REQUEST));
+    Assert.assertSame(null, request.getAttribute(RestConst.REST_REQUEST));
   }
 
   @Test
