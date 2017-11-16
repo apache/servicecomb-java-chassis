@@ -64,13 +64,13 @@ public class HighwayClient {
 	private TcpClientConfig createTcpClientConfig() {
 		TcpClientConfig tcpClientConfig = new TcpClientConfig();
 		DynamicLongProperty prop = DynamicPropertyFactory.getInstance().getLongProperty("cse.request.timeout", 30000);
-		tcpClientConfig.setRequestTimeoutMillis(AbstractTransport.getRequestTimeout());
 		prop.addCallback(new Runnable() {
 			@Override
 			public void run() {
 				tcpClientConfig.setRequestTimeoutMillis(prop.get());
 			}
 		});
+		tcpClientConfig.setRequestTimeoutMillis(AbstractTransport.getRequestTimeout());
 
 		if (this.sslEnabled) {
 			SSLOptionFactory factory = SSLOptionFactory.createSSLOptionFactory(SSL_KEY, null);
