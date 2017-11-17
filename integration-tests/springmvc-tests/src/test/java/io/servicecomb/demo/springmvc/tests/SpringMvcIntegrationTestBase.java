@@ -66,7 +66,7 @@ public class SpringMvcIntegrationTestBase {
 
   private final String codeFirstUrl = baseUrl + "codeFirstSpringmvc/";
 
-  private final String controllerUrl = baseUrl + "controller/";
+  private final String controllerUrl = baseUrl + "springmvc/controller/";
 
   @Test
   public void ableToQueryAtRootBasePath() {
