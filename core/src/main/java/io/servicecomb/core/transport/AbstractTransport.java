@@ -69,10 +69,8 @@ public abstract class AbstractTransport implements Transport {
     msRequestTimeout = msTimeout;
     return msRequestTimeout;
   }
-
-  public static DynamicLongProperty getRequestTimeoutProperty() {
-    DynamicLongProperty prop =
-        DynamicPropertyFactory.getInstance().getLongProperty("cse.request.timeout", DEFAULT_TIMEOUT_MILLIS);
+  public static DynamicLongProperty getRequestTimeoutProperty(){
+    DynamicLongProperty prop = DynamicPropertyFactory.getInstance().getLongProperty("cse.request.timeout", DEFAULT_TIMEOUT_MILLIS);
     return prop;
   }
 
