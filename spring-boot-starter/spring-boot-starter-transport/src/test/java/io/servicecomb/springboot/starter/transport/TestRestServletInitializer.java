@@ -79,7 +79,8 @@ public class TestRestServletInitializer {
   @Test
   public void testOnStartup() throws Exception {
     Configuration configuration = (Configuration) DynamicPropertyFactory.getBackingConfigurationSource();
-    configuration.setProperty(ServletConfig.KEY_SERVLET_URL_PATTERN, ServletConfig.DEFAULT_URL_PATTERN);
+    String urlPattern = "/rest/*";
+    configuration.setProperty(ServletConfig.KEY_SERVLET_URL_PATTERN, urlPattern);
 
     ServletContext servletContext = mock(ServletContext.class);
     Dynamic dynamic = mock(Dynamic.class);
@@ -90,7 +91,7 @@ public class TestRestServletInitializer {
     restServletInitializer.onStartup(servletContext);
 
     verify(dynamic).setAsyncSupported(true);
-    verify(dynamic).addMapping(ServletConfig.DEFAULT_URL_PATTERN);
+    verify(dynamic).addMapping(urlPattern);
     verify(dynamic).setLoadOnStartup(0);
   }
 
