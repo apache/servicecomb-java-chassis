@@ -62,10 +62,6 @@ public class RestAsyncListener implements AsyncListener {
     // to avoid concurrent, must lock request
     ServletRequest request = event.getSuppliedRequest();
     HttpServletRequestEx requestEx = (HttpServletRequestEx) request.getAttribute(RestConst.REST_REQUEST);
-    if (requestEx.getAttribute(RestConst.REST_STATE_EXECUTING) != null) {
-      // executing or already send response
-      return;
-    }
 
     synchronized (requestEx) {
       ServletResponse response = event.getAsyncContext().getResponse();

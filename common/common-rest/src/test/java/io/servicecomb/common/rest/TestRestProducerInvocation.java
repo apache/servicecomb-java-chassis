@@ -184,7 +184,7 @@ public class TestRestProducerInvocation {
     restProducerInvocation.scheduleInvocation();
 
     Assert.assertTrue(runOnExecutor);
-    Assert.assertTrue((boolean) requestEx.getAttribute(RestConst.REST_STATE_EXECUTING));
+
   }
 
   @Test
@@ -216,7 +216,7 @@ public class TestRestProducerInvocation {
     restProducerInvocation.scheduleInvocation();
 
     Assert.assertFalse(runOnExecutor);
-    Assert.assertNull(requestEx.getAttribute(RestConst.REST_STATE_EXECUTING));
+
   }
 
   @Test

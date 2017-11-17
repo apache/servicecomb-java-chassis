@@ -76,7 +76,6 @@ public class RestProducerInvocation extends AbstractRestInvocation {
             return;
           }
 
-          requestEx.setAttribute(RestConst.REST_STATE_EXECUTING, true);
           runOnExecutor();
         } catch (Throwable e) {
           LOGGER.error("rest server onRequest error", e);
