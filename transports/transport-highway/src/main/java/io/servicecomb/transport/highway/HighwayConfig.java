@@ -23,7 +23,6 @@ import com.netflix.config.DynamicStringProperty;
 public final class HighwayConfig {
   private HighwayConfig() {
   }
-
   public static String getAddress() {
     DynamicStringProperty address =
         DynamicPropertyFactory.getInstance().getStringProperty("cse.highway.address", null);
