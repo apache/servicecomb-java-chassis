@@ -34,7 +34,7 @@ import io.servicecomb.demo.controller.Person;
 import io.servicecomb.provider.rest.common.RestSchema;
 
 @RestSchema(schemaId = "controller")
-@RequestMapping(path = "/controller", produces = MediaType.APPLICATION_JSON)
+@RequestMapping(path = "/springmvc/controller", produces = MediaType.APPLICATION_JSON)
 public class ControllerImpl {
   @GetMapping(path = "/add")
   public int add(@RequestParam("a") int a, @RequestParam("b") int b) {
