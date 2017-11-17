@@ -17,6 +17,8 @@
 package io.servicecomb.edge.core;
 
 import org.apache.commons.configuration.Configuration;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import com.netflix.config.DynamicPropertyFactory;
@@ -26,20 +28,25 @@ import io.servicecomb.core.executor.ExecutorManager;
 
 @Component
 public class EdgeBootListener implements BootListener {
+  private static final Logger LOGGER = LoggerFactory.getLogger(EdgeBootListener.class);
+
   @Override
   public void onBootEvent(BootEvent event) {
     if (!EventType.BEFORE_PRODUCER_PROVIDER.equals(event.getEventType())) {
       return;
     }
 
-    if (DynamicPropertyFactory.getInstance()
+    String defaultExecutor = DynamicPropertyFactory.getInstance()
         .getStringProperty(ExecutorManager.KEY_EXECUTORS_DEFAULT, null)
-        .get() != null) {
+        .get();
+    if (defaultExecutor != null) {
+      LOGGER.info("Edge service default executor is {}.", defaultExecutor);
       return;
     }
 
     // change default to reactive mode
     Configuration configuration = (Configuration) DynamicPropertyFactory.getBackingConfigurationSource();
     configuration.setProperty(ExecutorManager.KEY_EXECUTORS_DEFAULT, ExecutorManager.EXECUTOR_REACTIVE);
+    LOGGER.info("Set ReactiveExecutor to be edge service default executor.");
   }
 }
