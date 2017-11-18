@@ -79,17 +79,33 @@ public class TestIpPortManager {
     };
 
     IpPortManager manager = new IpPortManager(config, cacheManager);
-    IpPort address = manager.getAvailableAddress(false);
-    Assert.assertEquals("127.0.0.1", address.getHostOrIp());
-    Assert.assertEquals(9980, address.getPort());
+    IpPort address1 = manager.getAvailableAddress(false);
 
-    address = manager.getAvailableAddress(true);
-    Assert.assertEquals("127.0.0.1", address.getHostOrIp());
-    Assert.assertEquals(9981, address.getPort());
+    if(address1.getPort() == 9980) {
+      Assert.assertEquals("127.0.0.1", address1.getHostOrIp());
+      Assert.assertEquals(9980, address1.getPort());
+    } else {
+      Assert.assertEquals("127.0.0.1", address1.getHostOrIp());
+      Assert.assertEquals(9981, address1.getPort());
+    }
 
-    address = manager.getAvailableAddress(false);
-    Assert.assertEquals("127.0.0.1", address.getHostOrIp());
-    Assert.assertEquals(9981, address.getPort());
+    IpPort address2 = manager.getAvailableAddress(true);
+    if(address1.getPort() == 9980) {
+      Assert.assertEquals("127.0.0.1", address2.getHostOrIp());
+      Assert.assertEquals(9981, address2.getPort());
+    } else {
+      Assert.assertEquals("127.0.0.1", address2.getHostOrIp());
+      Assert.assertEquals(9980, address2.getPort());
+    }
+
+    IpPort address3 = manager.getAvailableAddress(false);
+    if(address1.getPort() == 9980) {
+      Assert.assertEquals("127.0.0.1", address3.getHostOrIp());
+      Assert.assertEquals(9981, address3.getPort());
+    } else {
+      Assert.assertEquals("127.0.0.1", address3.getHostOrIp());
+      Assert.assertEquals(9980, address3.getPort());
+    }
 
     Map<String, List<CacheEndpoint>> addresses = new HashMap<>();
     List<CacheEndpoint> instances = new ArrayList<>();
@@ -97,7 +113,7 @@ public class TestIpPortManager {
     addresses.put("rest", instances);
     new Expectations() {
       {
-        cacheManager.getOrCreate("default", "SERVICECENTER", "3.0.0");
+        cacheManager.getOrCreate("default", "SERVICECENTER", "0.4.0");
         result = cache;
         cache.getOrCreateTransportMap();
         result = addresses;
@@ -105,13 +121,19 @@ public class TestIpPortManager {
     };
     
     manager.initAutoDiscovery();
-    address = manager.getAvailableAddress(true);
-    Assert.assertEquals("127.0.0.1", address.getHostOrIp());
-    Assert.assertEquals(9982, address.getPort());
+    IpPort address4 = manager.getAvailableAddress(true);
+    if(address1.getPort() == 9980) {
+      Assert.assertEquals("127.0.0.1", address4.getHostOrIp());
+      Assert.assertEquals(9982, address4.getPort());
+    } else {
+      address4 = manager.getAvailableAddress(true);
+      Assert.assertEquals("127.0.0.1", address4.getHostOrIp());
+      Assert.assertEquals(9982, address4.getPort());
+    }
 
-    address = manager.getAvailableAddress(true);
-    Assert.assertEquals("127.0.0.1", address.getHostOrIp());
-    Assert.assertEquals(9980, address.getPort());
+    IpPort address5 = manager.getAvailableAddress(true);
+    Assert.assertEquals("127.0.0.1", address5.getHostOrIp());
+    Assert.assertEquals(9980, address5.getPort());
   }
 
   @Test

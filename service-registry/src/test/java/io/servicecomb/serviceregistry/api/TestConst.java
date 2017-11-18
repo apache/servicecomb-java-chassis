@@ -21,6 +21,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import io.servicecomb.config.ConfigUtil;
+import io.servicecomb.serviceregistry.api.Const.REGISTRY_API;
 
 public class TestConst {
   @Before
@@ -41,6 +42,7 @@ public class TestConst {
 
     // this test case depends on class loading and java property may initialized after class loading, so we make to run in all cases.
     if (Const.REGISTRY_API.CURRENT_VERSION.equals(Const.REGISTRY_API.VERSION_V3)) {
+      Assert.assertEquals("3.0.0", REGISTRY_API.REGISTRY_VERSION);
       Assert.assertEquals("/registry/v3/microservices", Const.REGISTRY_API.MICROSERVICE_OPERATION_ALL);
       Assert.assertEquals("/registry/v3/microservices/%s", Const.REGISTRY_API.MICROSERVICE_OPERATION_ONE);
       Assert.assertEquals("/registry/v3/microservices/%s/instances",
@@ -58,6 +60,7 @@ public class TestConst {
       Assert.assertEquals("/registry/v3/microservices/%s/instances/%s/properties",
           Const.REGISTRY_API.MICROSERVICE_INSTANCE_PROPERTIES);
     } else {
+      Assert.assertEquals("0.4.0", REGISTRY_API.REGISTRY_VERSION);
       String prefix = "/v4/" + Const.REGISTRY_API.DOMAIN_NAME + "/registry/";
       Assert.assertEquals(prefix + "microservices", Const.REGISTRY_API.MICROSERVICE_OPERATION_ALL);
       Assert.assertEquals(prefix + "microservices/%s", Const.REGISTRY_API.MICROSERVICE_OPERATION_ONE);
