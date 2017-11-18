@@ -19,6 +19,9 @@ package io.servicecomb.transport.highway;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.netflix.config.DynamicLongProperty;
+import com.netflix.config.DynamicPropertyFactory;
+
 import io.servicecomb.codec.protobuf.definition.OperationProtobuf;
 import io.servicecomb.codec.protobuf.definition.ProtobufManager;
 import io.servicecomb.core.Invocation;
@@ -62,11 +65,17 @@ public class HighwayClient {
 
   private TcpClientConfig createTcpClientConfig() {
     TcpClientConfig tcpClientConfig = new TcpClientConfig();
-    tcpClientConfig.setRequestTimeoutMillis(AbstractTransport.getRequestTimeout());
+    DynamicLongProperty prop = AbstractTransport.getRequestTimeoutProperty();
+    prop.addCallback(new Runnable() {
+      @Override
+      public void run() {
+        tcpClientConfig.setRequestTimeoutMillis(prop.get());
+      }
+    });
+     tcpClientConfig.setRequestTimeoutMillis(AbstractTransport.getRequestTimeout());
 
     if (this.sslEnabled) {
-      SSLOptionFactory factory =
-          SSLOptionFactory.createSSLOptionFactory(SSL_KEY, null);
+      SSLOptionFactory factory = SSLOptionFactory.createSSLOptionFactory(SSL_KEY, null);
       SSLOption sslOption;
       if (factory == null) {
         sslOption = SSLOption.buildFromYaml(SSL_KEY);
@@ -99,11 +108,10 @@ public class HighwayClient {
 
         // 处理应答
         try {
-          Response response =
-              HighwayCodec.decodeResponse(invocation,
-                  operationProtobuf,
-                  ar.result(),
-                  tcpClient.getProtobufFeature());
+          Response response = HighwayCodec.decodeResponse(invocation,
+              operationProtobuf,
+              ar.result(),
+              tcpClient.getProtobufFeature());
           asyncResp.complete(response);
         } catch (Throwable e) {
           asyncResp.consumerFail(e);
