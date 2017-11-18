@@ -124,7 +124,7 @@ public class TestAbstractTransport {
     transport.setListenAddressWithoutSchema(null);
     Assert.assertNull(transport.getEndpoint().getEndpoint());
     Assert.assertNull(transport.parseAddress(null));
-    Assert.assertEquals(30000, AbstractTransport.getRequestTimeout());
+    Assert.assertEquals(30000, AbstractTransport.getRequestTimeoutProperty().get());
   }
 
   @Test(expected = NumberFormatException.class)
