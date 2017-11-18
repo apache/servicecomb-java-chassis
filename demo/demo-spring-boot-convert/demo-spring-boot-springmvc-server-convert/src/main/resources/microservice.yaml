@@ -1,0 +1,18 @@
+APPLICATION_ID: SpringBootConvertDemo
+service_description:
+  name: springmvcServer
+  version: 0.0.1
+cse:
+  service:
+    registry:
+      address: http://127.0.0.1:30100
+  rest:
+    address: 0.0.0.0:8080
+  handler:
+    chain:
+      Provider:
+        default: myhandler
+servicecomb:
+  rest:
+    servlet:
+      urlPattern: /springmvccompute/*
