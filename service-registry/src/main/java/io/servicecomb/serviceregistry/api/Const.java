@@ -37,6 +37,15 @@ public final class Const {
 
     public static final String V4_PREFIX = String.format("/v4/%s/registry", DOMAIN_NAME);
 
+    public static final String REGISTRY_VERSION;
+    static {
+      if (VERSION_V3.equals(CURRENT_VERSION)) {
+        REGISTRY_VERSION = "0.3.0";
+      } else {
+        REGISTRY_VERSION = "0.4.0";
+      }
+    }
+
     public static final String MICROSERVICE_OPERATION_ALL;
     static {
       if (VERSION_V3.equals(CURRENT_VERSION)) {
@@ -141,8 +150,6 @@ public final class Const {
   public static final String REGISTRY_APP_ID = "default";
 
   public static final String REGISTRY_SERVICE_NAME = "SERVICECENTER";
-
-  public static final String REGISTRY_VERSION = "3.0.0";
 
   public static final String APP_SERVICE_SEPARATOR = ":";
 

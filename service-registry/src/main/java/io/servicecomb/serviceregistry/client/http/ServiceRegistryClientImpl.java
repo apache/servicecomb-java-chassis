@@ -400,7 +400,7 @@ public final class ServiceRegistryClientImpl implements ServiceRegistryClient {
 
     CountDownLatch countDownLatch = new CountDownLatch(1);
     RestUtils.delete(ipPort,
-        String.format(Const.REGISTRY_API.MICROSERVICE_INSTANCE_OPERATION_ALL, microserviceId, microserviceInstanceId),
+        String.format(Const.REGISTRY_API.MICROSERVICE_INSTANCE_OPERATION_ONE, microserviceId, microserviceInstanceId),
         new RequestParam(),
         syncHandler(countDownLatch, HttpClientResponse.class, holder));
     try {
