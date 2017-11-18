@@ -4,6 +4,6 @@ public interface AuthenticationTokenManager {
 
 	public String getToken();
 	
-	public boolean vaild();
+	public boolean vaild(String token);
 	
 }

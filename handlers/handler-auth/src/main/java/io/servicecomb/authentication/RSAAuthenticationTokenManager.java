@@ -10,19 +10,19 @@ import org.springframework.stereotype.Component;
 public class RSAAuthenticationTokenManager implements AuthenticationTokenManager {
 
 	private String privateKey;
-	
+
 	private String publicKey;
-	
+
 	private String token;
-	
+
 	@Override
 	public String getToken() {
 		return token;
 	}
 
 	@Override
-	public boolean vaild() {
-		
+	public boolean vaild(String token) {
+
 		return true;
 	}
 
@@ -41,7 +41,5 @@ public class RSAAuthenticationTokenManager implements AuthenticationTokenManager
 	public void setPublicKey(String publicKey) {
 		this.publicKey = publicKey;
 	}
-	
-	
 
 }
