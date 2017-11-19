@@ -765,6 +765,11 @@
         <artifactId>handler-flowcontrol-qps</artifactId>
         <version>0.4.1-SNAPSHOT</version>
       </dependency>
+       <dependency>
+        <groupId>io.servicecomb</groupId>
+        <artifactId>handler-auth</artifactId>
+        <version>0.4.1-SNAPSHOT</version>
+      </dependency>
       <dependency>
         <groupId>io.servicecomb</groupId>
         <artifactId>common-rest</artifactId>
