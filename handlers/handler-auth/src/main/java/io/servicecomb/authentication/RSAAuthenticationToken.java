@@ -1,5 +1,12 @@
-package io.servicecomb.foundation.token;
+package io.servicecomb.authentication;
 
+
+/**
+ * token 组成部分：
+ * token: instanceId@generateTime@randomCode@sign(instanceId@generateTime@randomCode)
+ * @author Administrator
+ *
+ */
 public class RSAAuthenticationToken {
 	
 	public final static long TOKEN_ACTIVE_TIME = 24 * 60 * 60 *1000;
@@ -19,7 +26,12 @@ public class RSAAuthenticationToken {
 		this.randomCode = randomCode;
 		this.sign = sign;
 	}
-
+	
+	public String plainToken()
+	{
+		return String.format("%s@%s@%s", this.instanceId, this.generateTime, this.randomCode);
+	}
+	
 	
 	public String getInstanceId() {
 		return instanceId;
@@ -37,8 +49,8 @@ public class RSAAuthenticationToken {
 
 
 	public String fromat() {
-		return String.format("%s@%s@%s@%s", instanceId, randomCode,
-				generateTime, sign);
+		return String.format("%s@%s@%s@%s", instanceId, generateTime,
+				randomCode, sign);
 	}
 	
 	public static RSAAuthenticationToken fromStr(String token) {

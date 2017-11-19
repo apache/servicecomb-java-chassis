@@ -2,8 +2,7 @@ package io.servicecomb.authentication;
 
 import io.servicecomb.foundation.common.utils.RSAUtils;
 import io.servicecomb.foundation.token.AuthenticationTokenManager;
-import io.servicecomb.foundation.token.RSAAuthenticationToken;
-import io.servicecomb.serviceregistry.RegistryUtils;
+import io.servicecomb.foundation.token.RSAKeypair4Auth;
 
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
@@ -20,7 +19,7 @@ public class RSAProviderTokenManager implements AuthenticationTokenManager{
         try {
         	RSAAuthenticationToken rsaToken = RSAAuthenticationToken.fromStr(token);
             String sign = rsaToken.getSign();
-            String content = token.substring(0, token.lastIndexOf("@"));
+            String content = rsaToken.plainToken();
             String publicKey =  getPublicKeyByInstanceId(rsaToken.getInstanceId());
             boolean verify = RSAUtils.verify(publicKey, sign, content);
             if (verify)
@@ -42,7 +41,8 @@ public class RSAProviderTokenManager implements AuthenticationTokenManager{
 	}
 
 	private String getPublicKeyByInstanceId(String instanceId) {
-		return "";
+		//TODO get from cache
+		return RSAKeypair4Auth.INSTANCE.getPublicKey();
 	}
 
 }

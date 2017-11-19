@@ -1,9 +1,12 @@
 package io.servicecomb.foundation.token;
 
+/**
+ * 进程级别公私钥对
+ *
+ */
+public class RSAKeypair4Auth {
 
-public class RSAKeypair {
-
-	private RSAKeypair(){};
+	private RSAKeypair4Auth(){};
 	
 	private String privateKey;
 	
@@ -25,5 +28,5 @@ public class RSAKeypair {
 		this.publicKey = publicKey;
 	}
 	
-	public static RSAKeypair INSTANCE = new RSAKeypair();
+	public static RSAKeypair4Auth INSTANCE = new RSAKeypair4Auth();
 }

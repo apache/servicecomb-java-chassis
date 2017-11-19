@@ -24,7 +24,7 @@ import org.springframework.util.StringUtils;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 
-import io.servicecomb.foundation.token.RSAKeypair;
+import io.servicecomb.foundation.token.RSAKeypair4Auth;
 import io.servicecomb.serviceregistry.RegistryUtils;
 import io.servicecomb.serviceregistry.api.Const;
 import io.servicecomb.serviceregistry.api.registry.Microservice;
@@ -71,7 +71,7 @@ public class MicroserviceInstanceRegisterTask extends AbstractRegisterTask {
     microserviceInstance.getHealthCheck().setInterval(serviceRegistryConfig.getHeartbeatInterval());
     microserviceInstance.getHealthCheck().setTimes(serviceRegistryConfig.getResendHeartBeatTimes());
     
-    Optional<String> publicKey = Optional.of(RSAKeypair.INSTANCE.getPublicKey());
+    Optional<String> publicKey = Optional.of(RSAKeypair4Auth.INSTANCE.getPublicKey());
     publicKey.ifPresent(value -> microserviceInstance.getProperties().put(Const.INSTANCE_PUBKEY_PRO, value));
     
     String instanceId = srClient.registerMicroserviceInstance(microserviceInstance);
