@@ -2,7 +2,7 @@ package io.servicecomb.foundation.token;
 
 public interface AuthenticationTokenManager {
 
-	public String getToken();
+	default public String getToken(){return "";};
 	
 	public boolean vaild(String token);
 	

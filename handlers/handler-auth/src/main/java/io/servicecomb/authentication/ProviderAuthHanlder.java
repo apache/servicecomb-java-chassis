@@ -1,6 +1,7 @@
 package io.servicecomb.authentication;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 
 import io.servicecomb.core.Const;
 import io.servicecomb.core.Handler;
@@ -13,6 +14,7 @@ import io.servicecomb.swagger.invocation.exception.InvocationException;
 public class ProviderAuthHanlder implements Handler {
 
 	@Autowired
+	@Qualifier("providerTokenManager")
 	private AuthenticationTokenManager authenticationTokenManager;
 
 	@Override

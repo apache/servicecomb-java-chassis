@@ -2,6 +2,7 @@ package io.servicecomb.authentication;
 
 import org.junit.Assert;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 
 import io.servicecomb.core.Const;
 import io.servicecomb.core.Handler;
@@ -12,6 +13,7 @@ import io.servicecomb.swagger.invocation.AsyncResponse;
 public class ConsumerAuthHandler implements Handler {
 
 	@Autowired
+	@Qualifier("coumserTokenManager")
 	public AuthenticationTokenManager athenticationTokenManager;
 
 	@Override
