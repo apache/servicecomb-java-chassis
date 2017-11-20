@@ -19,7 +19,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>io.servicecomb</groupId>
-		<artifactId>sprint-boot-starter-parent</artifactId>
+		<artifactId>spring-boot-starter-parent</artifactId>
 		<version>0.4.1-SNAPSHOT</version>
 	</parent>
 	<artifactId>spring-boot-starter-discovery</artifactId>
