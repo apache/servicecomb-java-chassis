@@ -16,8 +16,12 @@
 
 package io.servicecomb.transport.highway;
 
+import org.omg.DynamicAny.DynAnyFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.netflix.config.DynamicLongProperty;
+import com.netflix.config.DynamicPropertyFactory;
 
 import io.servicecomb.codec.protobuf.definition.OperationProtobuf;
 import io.servicecomb.codec.protobuf.definition.ProtobufManager;
@@ -62,7 +66,13 @@ public class HighwayClient {
 
   private TcpClientConfig createTcpClientConfig() {
     TcpClientConfig tcpClientConfig = new TcpClientConfig();
-    tcpClientConfig.setRequestTimeoutMillis(AbstractTransport.getRequestTimeout());
+    DynamicLongProperty prop = AbstractTransport.getRequestTimeoutProperty();
+    prop.addCallback(new Runnable(){
+      public void run(){
+        tcpClientConfig.setRequestTimeoutMillis(prop.get());
+      }
+    });
+    tcpClientConfig.setRequestTimeoutMillis(AbstractTransport.getRequestTimeoutProperty().get());
 
     if (this.sslEnabled) {
       SSLOptionFactory factory =
