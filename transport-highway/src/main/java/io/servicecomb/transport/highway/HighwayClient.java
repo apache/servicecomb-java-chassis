@@ -16,6 +16,8 @@
 
 package io.servicecomb.transport.highway;
 
+import com.netflix.config.DynamicLongProperty;
+
 import io.servicecomb.codec.protobuf.definition.OperationProtobuf;
 import io.servicecomb.codec.protobuf.definition.ProtobufManager;
 import io.servicecomb.core.Invocation;
@@ -58,7 +60,13 @@ public class HighwayClient {
 
     private TcpClientConfig createTcpClientConfig() {
         TcpClientConfig tcpClientConfig = new TcpClientConfig();
-        tcpClientConfig.setRequestTimeoutMillis(AbstractTransport.getRequestTimeout());
+        DynamicLongProperty prop = AbstractTransport.getRequestTimeoutProperty();
+        prop.addCallback(new Runnable(){
+          public void run(){
+            tcpClientConfig.setRequestTimeoutMillis(prop.get());
+          }
+        });
+        tcpClientConfig.setRequestTimeoutMillis(prop.get());
 
         if (this.sslEnabled) {
             SSLOptionFactory factory =
