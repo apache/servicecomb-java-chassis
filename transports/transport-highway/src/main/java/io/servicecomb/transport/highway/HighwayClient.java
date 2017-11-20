@@ -67,6 +67,7 @@ public class HighwayClient {
   private TcpClientConfig createTcpClientConfig() {
     TcpClientConfig tcpClientConfig = new TcpClientConfig();
     DynamicLongProperty prop = AbstractTransport.getRequestTimeoutProperty();
+    //support cse.request.timeout dynamic refresh
     prop.addCallback(new Runnable(){
       public void run(){
         tcpClientConfig.setRequestTimeoutMillis(prop.get());
