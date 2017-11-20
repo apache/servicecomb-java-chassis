@@ -19,11 +19,13 @@ package io.servicecomb.core;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.junit.AfterClass;
 import org.junit.Test;
 import org.springframework.context.event.ContextClosedEvent;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.context.support.AbstractApplicationContext;
 
+import io.servicecomb.core.endpoint.AbstractEndpointsCache;
 import io.servicecomb.core.provider.consumer.ConsumerProviderManager;
 import io.servicecomb.core.provider.producer.ProducerProviderManager;
 import io.servicecomb.core.transport.TransportManager;
@@ -34,6 +36,11 @@ import mockit.Injectable;
 import mockit.Mocked;
 
 public class TestCseApplicationListener {
+  @AfterClass
+  public static void teardown() {
+    AbstractEndpointsCache.init(null, null);
+  }
+
   @Test
   public void testCseApplicationListenerNormal(@Injectable ContextRefreshedEvent event,
       @Injectable AbstractApplicationContext context,

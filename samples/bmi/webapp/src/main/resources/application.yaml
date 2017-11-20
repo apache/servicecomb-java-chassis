@@ -16,8 +16,7 @@
 
 zuul:
   routes:
-    calculator:
-      serviceId: calculator
+    calculator: /calculator/**
 
 # disable netflix eurkea since it's not used for service discovery
 ribbon:
@@ -26,3 +25,7 @@ ribbon:
 
 server:
   port: 8888
+
+servicecomb:
+  tracing:
+    enabled: false

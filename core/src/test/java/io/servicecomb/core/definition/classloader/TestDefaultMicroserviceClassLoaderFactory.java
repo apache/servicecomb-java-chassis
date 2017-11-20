@@ -24,6 +24,6 @@ public class TestDefaultMicroserviceClassLoaderFactory {
   public void create() {
     ClassLoader loader = Thread.currentThread().getContextClassLoader();
 
-    Assert.assertSame(loader, DefaultMicroserviceClassLoaderFactory.INSTANCE.create("", ""));
+    Assert.assertSame(loader, DefaultMicroserviceClassLoaderFactory.INSTANCE.create("", "", ""));
   }
 }

@@ -20,7 +20,10 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
@@ -45,6 +48,7 @@ public class CodeFirstRestTemplateSpringmvc extends CodeFirstRestTemplate {
     super.testExtend(template, cseUrlPrefix);
 
     testResponseEntity("springmvc", template, cseUrlPrefix);
+    testCodeFirstTestForm(template, cseUrlPrefix);
     testIntf();
     testFallback(template, cseUrlPrefix);
   }
@@ -75,7 +79,7 @@ public class CodeFirstRestTemplateSpringmvc extends CodeFirstRestTemplate {
     result = template.getForObject(cseUrlPrefix + "/fallback/force/hello", String.class);
     TestMgr.check(result, "mockedreslut");
   }
-  
+
   private void testIntf() {
     Date date = new Date();
 
@@ -112,7 +116,7 @@ public class CodeFirstRestTemplateSpringmvc extends CodeFirstRestTemplate {
     TestMgr.check("h2v {contextKey=contextValue, x-cse-src-microservice=" + srcName + "}",
         responseEntity.getHeaders().getFirst("h2"));
     checkStatusCode(microserviceName, 202, responseEntity.getStatusCode());
-    
+
     responseEntity =
         template.exchange(cseUrlPrefix + "responseEntity", HttpMethod.PATCH, httpEntity, Date.class);
     TestMgr.check(date, responseEntity.getBody());
@@ -121,5 +125,18 @@ public class CodeFirstRestTemplateSpringmvc extends CodeFirstRestTemplate {
     TestMgr.check("h2v {contextKey=contextValue, x-cse-src-microservice=" + srcName + "}",
         responseEntity.getHeaders().getFirst("h2"));
     checkStatusCode(microserviceName, 202, responseEntity.getStatusCode());
+  }
+
+  protected void testCodeFirstTestForm(RestTemplate template, String cseUrlPrefix) {
+    HttpHeaders formHeaders = new HttpHeaders();
+    formHeaders.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+    Map<String, String> map = new HashMap<>();
+    String code = "servicecomb%2bwelcome%40%23%24%25%5e%26*()%3d%3d";
+    map.put("form1", code);
+    HttpEntity<Map<String, String>> formEntiry = new HttpEntity<>(map, formHeaders);
+    TestMgr.check(code + "null",
+        template.postForEntity(cseUrlPrefix + "/testform", formEntiry, String.class).getBody());
+    map.put("form2", "");
+    TestMgr.check(code + "", template.postForEntity(cseUrlPrefix + "/testform", formEntiry, String.class).getBody());
   }
 }

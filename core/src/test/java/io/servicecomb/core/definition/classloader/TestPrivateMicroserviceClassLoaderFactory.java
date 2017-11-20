@@ -22,14 +22,18 @@ import org.junit.Test;
 public class TestPrivateMicroserviceClassLoaderFactory {
   @Test
   public void create() {
+    String appId = "app";
     String microserviceName = "ms";
-    String version = "0+";
+    String version = "1";
 
     MicroserviceClassLoader loader =
-        (MicroserviceClassLoader) PrivateMicroserviceClassLoaderFactory.INSTANCE.create(microserviceName, version);
+        (MicroserviceClassLoader) PrivateMicroserviceClassLoaderFactory.INSTANCE
+            .create(appId, microserviceName, version);
 
+    Assert.assertEquals(appId, loader.getAppId());
     Assert.assertEquals(microserviceName, loader.getMicroserviceName());
     Assert.assertEquals(version, loader.getVersion());
+    Assert.assertEquals("MicroserviceClassLoader app:ms:1", loader.toString());
     Assert.assertSame(Thread.currentThread().getContextClassLoader(), loader.getParent());
   }
 }

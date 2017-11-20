@@ -46,7 +46,11 @@ import io.servicecomb.swagger.invocation.context.InvocationContext;
 import io.servicecomb.swagger.invocation.exception.ExceptionFactory;
 
 public class CseClientHttpRequest implements ClientHttpRequest {
+  // URL format：cse://microserviceName/business url
   private URI uri;
+
+  // business url
+  private String path;
 
   private HttpMethod method;
 
@@ -102,6 +106,7 @@ public class CseClientHttpRequest implements ClientHttpRequest {
 
   @Override
   public ClientHttpResponse execute() throws IOException {
+    path = findUriPath(uri);
     requestMeta = createRequestMeta(method.name(), uri);
 
     QueryStringDecoder queryStringDecoder = new QueryStringDecoder(uri.getRawSchemeSpecificPart());
@@ -113,10 +118,6 @@ public class CseClientHttpRequest implements ClientHttpRequest {
     return this.invoke(args);
   }
 
-  /**
-   * 处理调用URL
-   * URL格式：cse://microserviceName/业务url
-   */
   private RequestMeta createRequestMeta(String httpMetod, URI uri) {
     String microserviceName = uri.getAuthority();
     ReferenceConfig referenceConfig = ReferenceConfigUtils.getForInvoke(microserviceName);
@@ -129,11 +130,15 @@ public class CseClientHttpRequest implements ClientHttpRequest {
           microserviceMeta.getName()));
     }
 
-    OperationLocator locator = servicePathManager.consumerLocateOperation(uri.getPath(), httpMetod);
+    OperationLocator locator = servicePathManager.consumerLocateOperation(path, httpMetod);
     RestOperationMeta swaggerRestOperation = locator.getOperation();
 
     Map<String, String> pathParams = locator.getPathVarMap();
     return new RequestMeta(referenceConfig, swaggerRestOperation, pathParams);
+  }
+
+  protected String findUriPath(URI uri) {
+    return uri.getRawPath();
   }
 
   private CseClientHttpResponse invoke(Object[] args) {
@@ -142,7 +147,7 @@ public class CseClientHttpRequest implements ClientHttpRequest {
             requestMeta.getOperationMeta(),
             args);
     invocation.getHandlerContext().put(RestConst.REST_CLIENT_REQUEST_PATH,
-        this.uri.getRawPath() + "?" + this.uri.getRawQuery());
+        path + "?" + this.uri.getRawQuery());
 
     if (context != null) {
       invocation.addContext(context);

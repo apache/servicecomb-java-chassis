@@ -84,16 +84,20 @@ public abstract class AbstractRestInvocation {
 
   public void invoke() {
     try {
-      prepareInvoke();
+      Response response = prepareInvoke();
+      if (response != null) {
+        sendResponseQuietly(response);
+        return;
+      }
 
       doInvoke();
     } catch (Throwable e) {
-      LOGGER.error("unknown edge exception.", e);
+      LOGGER.error("unknown rest exception.", e);
       sendFailResponse(e);
     }
   }
 
-  protected void prepareInvoke() throws Throwable {
+  protected Response prepareInvoke() throws Throwable {
     this.initProduceProcessor();
 
     this.setContext();
@@ -102,10 +106,11 @@ public abstract class AbstractRestInvocation {
     for (HttpServerFilter filter : httpServerFilters) {
       Response response = filter.afterReceiveRequest(invocation, requestEx);
       if (response != null) {
-        sendResponseQuietly(response);
-        return;
+        return response;
       }
     }
+
+    return null;
   }
 
   protected abstract void doInvoke() throws Throwable;
@@ -136,7 +141,9 @@ public abstract class AbstractRestInvocation {
     if (response.getHeaders().getHeaderMap() != null) {
       for (Entry<String, List<Object>> entry : response.getHeaders().getHeaderMap().entrySet()) {
         for (Object value : entry.getValue()) {
-          responseEx.addHeader(entry.getKey(), String.valueOf(value));
+          if (!entry.getKey().equalsIgnoreCase(HttpHeaders.CONTENT_LENGTH)) {
+            responseEx.addHeader(entry.getKey(), String.valueOf(value));
+          }
         }
       }
     }

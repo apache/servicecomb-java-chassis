@@ -24,6 +24,14 @@ import io.servicecomb.core.definition.OperationMeta;
 import io.servicecomb.foundation.common.utils.BeanUtils;
 
 public final class ExecutorManager {
+  public static final String KEY_EXECUTORS_DEFAULT = "cse.executors.default";
+
+  public static final String EXECUTOR_GROUP_THREADPOOL = "cse.executor.groupThreadPool";
+
+  public static final String EXECUTOR_REACTIVE = "cse.executor.reactive";
+
+  public static final String EXECUTOR_DEFAULT = EXECUTOR_GROUP_THREADPOOL;
+
   private ExecutorManager() {
   }
 
@@ -40,12 +48,12 @@ public final class ExecutorManager {
       return executor;
     }
 
-    executor = findByKey("cse.executors.default");
+    executor = findByKey(KEY_EXECUTORS_DEFAULT);
     if (executor != null) {
       return executor;
     }
 
-    return BeanUtils.getBean("cse.executor.default");
+    return BeanUtils.getBean(EXECUTOR_DEFAULT);
   }
 
   protected static Executor findByKey(String beanIdKey) {

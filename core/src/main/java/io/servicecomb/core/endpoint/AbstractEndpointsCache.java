@@ -69,14 +69,14 @@ public abstract class AbstractEndpointsCache<ENDPOINT> {
 
     // 走到这里，肯定已经是存在"有效"地址了(可能是个空列表，表示没有存活的实例)
     // 先创建，成功了，再走下面的更新逻辑
-    List<ENDPOINT> tmpEndpoints = createEndpints(newCache);
+    List<ENDPOINT> tmpEndpoints = createEndpoints(newCache);
 
     this.instanceCache = newCache;
     this.endpoints = tmpEndpoints;
     return endpoints;
   }
 
-  protected List<ENDPOINT> createEndpints(InstanceCache newCache) {
+  protected List<ENDPOINT> createEndpoints(InstanceCache newCache) {
     Map<String, List<CacheEndpoint>> transportMap = getOrCreateTransportMap(newCache);
 
     return createEndpoints(transportMap);
@@ -95,8 +95,8 @@ public abstract class AbstractEndpointsCache<ENDPOINT> {
         continue;
       }
 
-      for (CacheEndpoint cacheEndpont : endpointList) {
-        ENDPOINT endpoint = createEndpoint(transport, cacheEndpont);
+      for (CacheEndpoint cacheEndpoint : endpointList) {
+        ENDPOINT endpoint = createEndpoint(transport, cacheEndpoint);
         tmpEndpoints.add(endpoint);
       }
     }
@@ -106,7 +106,7 @@ public abstract class AbstractEndpointsCache<ENDPOINT> {
   private Map<String, List<CacheEndpoint>> getOrCreateTransportMap(InstanceCache newCache) {
     Map<String, List<CacheEndpoint>> allTransportMap = newCache.getOrCreateTransportMap();
     if (StringUtils.isEmpty(transportName)) {
-      // 未指定tranport，将所有transport全取出来
+      // 未指定transport，将所有transport全取出来
       return allTransportMap;
     }
 

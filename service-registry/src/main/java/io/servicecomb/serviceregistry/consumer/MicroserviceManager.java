@@ -39,14 +39,17 @@ public class MicroserviceManager {
     appManager.getEventBus().register(this);
   }
 
+  public MicroserviceVersions getOrCreateMicroserviceVersions(String microserviceName) {
+    return versionsByName.computeIfAbsent(microserviceName, name -> {
+      MicroserviceVersions instance = new MicroserviceVersions(appManager, appId, microserviceName);
+      instance.submitPull();
+      return instance;
+    });
+  }
+
   public MicroserviceVersionRule getOrCreateMicroserviceVersionRule(String microserviceName,
       String versionRule) {
-    MicroserviceVersions microserviceVersions =
-        versionsByName.computeIfAbsent(microserviceName, name -> {
-          MicroserviceVersions instance = new MicroserviceVersions(appManager, appId, microserviceName);
-          instance.submitPull();
-          return instance;
-        });
+    MicroserviceVersions microserviceVersions = getOrCreateMicroserviceVersions(microserviceName);
 
     return microserviceVersions.getOrCreateMicroserviceVersionRule(versionRule);
   }

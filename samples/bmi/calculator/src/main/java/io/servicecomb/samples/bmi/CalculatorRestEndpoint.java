@@ -16,6 +16,7 @@
 
 package io.servicecomb.samples.bmi;
 
+import java.util.Date;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -32,15 +33,21 @@ import io.servicecomb.provider.rest.common.RestSchema;
 public class CalculatorRestEndpoint implements CalculatorEndpoint {
 
   private final CalculatorService calculatorService;
+  private final InstanceInfoService instanceInfoService;
 
   @Autowired
-  public CalculatorRestEndpoint(CalculatorService calculatorService) {
+  public CalculatorRestEndpoint(CalculatorService calculatorService, InstanceInfoService instanceInfoService) {
     this.calculatorService = calculatorService;
+    this.instanceInfoService = instanceInfoService;
   }
 
   @GetMapping(path = "/bmi")
   @Override
-  public double calculate(double height, double weight) {
-    return calculatorService.calculate(height, weight);
+  public BMIViewObject calculate(double height, double weight) {
+
+    String instanceId = instanceInfoService.getInstanceId();
+    double bmiResult = calculatorService.calculate(height, weight);
+    return new BMIViewObject(bmiResult, instanceId, new Date());
   }
+  
 }

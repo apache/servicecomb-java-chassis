@@ -48,7 +48,7 @@ public class TestCseServer {
 
   @Test
   public void testEqualsMethod() {
-    Assert.assertFalse(cs.equals("abcd"));
+    Assert.assertFalse(cs.equals((Object)"abcd"));
 
     CseServer other = new CseServer(transport, new CacheEndpoint("1234", null));
     Assert.assertFalse(cs.equals(other));

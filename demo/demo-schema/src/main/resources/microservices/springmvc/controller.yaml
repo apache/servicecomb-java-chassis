@@ -14,7 +14,7 @@ info:
 #  - https
 
 # will be prefixed to all paths
-basePath: /controller
+basePath: /springmvc/controller
 produces:
   - application/json
   

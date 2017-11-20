@@ -16,9 +16,9 @@
 
 package io.servicecomb.qps;
 
+import io.servicecomb.core.Handler;
 import io.servicecomb.core.Invocation;
 import io.servicecomb.core.definition.OperationMeta;
-import io.servicecomb.core.handler.impl.AbstractHandler;
 import io.servicecomb.swagger.invocation.AsyncResponse;
 import io.servicecomb.swagger.invocation.exception.CommonExceptionData;
 import io.servicecomb.swagger.invocation.exception.InvocationException;
@@ -28,7 +28,7 @@ import io.servicecomb.swagger.invocation.exception.InvocationException;
  * 支持microservice、schema、operation三个级别的控制
  *
  */
-public class ConsumerQpsFlowControlHandler extends AbstractHandler {
+public class ConsumerQpsFlowControlHandler implements Handler {
   private ConsumerQpsControllerManager qpsControllerMgr = new ConsumerQpsControllerManager();
 
   @Override

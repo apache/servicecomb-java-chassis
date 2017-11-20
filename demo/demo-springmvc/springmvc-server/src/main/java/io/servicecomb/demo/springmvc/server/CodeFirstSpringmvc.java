@@ -28,6 +28,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -57,6 +58,7 @@ import io.servicecomb.swagger.invocation.exception.InvocationException;
 import io.servicecomb.swagger.invocation.response.Headers;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
+import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import io.swagger.annotations.ResponseHeader;
@@ -130,6 +132,12 @@ public class CodeFirstSpringmvc {
   @RequestMapping(path = "/addDate", method = RequestMethod.POST)
   public Date addDate(@RequestAttribute("date") Date date, @QueryParam("seconds") long seconds) {
     return new Date(date.getTime() + seconds * 1000);
+  }
+
+  // this should be ignored as it's hidden
+  @ApiOperation(value = "", hidden = true, httpMethod = "POST")
+  public int add(@RequestParam("a") int a) {
+    return a;
   }
 
   @RequestMapping(path = "/add", method = RequestMethod.POST)
@@ -233,13 +241,26 @@ public class CodeFirstSpringmvc {
     return name;
   }
 
+  enum NameType {
+    abc,
+    def
+  }
+
+  @RequestMapping(path = "/testenum/{name}", method = RequestMethod.GET)
+  @ApiResponses(value = {@ApiResponse(code = 200, response = String.class, message = "200 normal"),
+      @ApiResponse(code = 490, response = String.class, message = "490 exception")})
+  public String testEnum(@RequestParam(name = "username") String username,
+      @PathVariable(value = "name") NameType nameType) {
+    return nameType.toString();
+  }
+
   @RequestMapping(method = RequestMethod.POST, value = "/ignore")
   @ResponseBody
   public OutputModelForTestIgnore testModelWithIgnoreField(@RequestBody InputModelForTestIgnore input) {
     return new OutputModelForTestIgnore("output_id", input.getInputId(), input.getContent(), input.getInputObject(),
         input.getInputJsonObject(), input.getInputIgnoreInterface(),
         new Person("outputSomeone"), new JsonObject("{\"OutputJsonKey\" : \"OutputJsonValue\"}"), () -> {
-    });
+        });
   }
 
   @SuppressWarnings("unchecked")
@@ -254,5 +275,18 @@ public class CodeFirstSpringmvc {
       return null;
     }
     return "hello " + person.get("name");
+  }
+
+  @PostMapping(path = "/testform")
+  @ApiImplicitParams({
+      @ApiImplicitParam(name = "form1", dataType = "string", paramType = "form", value = "a required form param",
+          required = true),
+      @ApiImplicitParam(name = "form2", dataType = "string", paramType = "form", value = "an optional form param",
+          required = false)})
+  public String testform(HttpServletRequest request) {
+    String form1 = request.getParameter("form1");
+    String form2 = request.getParameter("form2");
+    Assert.notNull(form1);
+    return form1 + form2;
   }
 }

@@ -20,6 +20,7 @@ import io.servicecomb.core.Handler;
 import io.servicecomb.core.definition.MicroserviceMeta;
 import io.servicecomb.swagger.invocation.InvocationType;
 
+@Deprecated
 public abstract class AbstractHandler implements Handler {
   @Override
   public void init(MicroserviceMeta microserviceMeta, InvocationType invocationType) {

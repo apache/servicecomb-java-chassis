@@ -24,7 +24,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.eventbus.EventBus;
-import com.google.common.eventbus.Subscribe;
 
 import io.servicecomb.serviceregistry.Features;
 import io.servicecomb.serviceregistry.ServiceRegistry;
@@ -34,14 +33,16 @@ import io.servicecomb.serviceregistry.api.registry.Microservice;
 import io.servicecomb.serviceregistry.api.registry.MicroserviceFactory;
 import io.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
 import io.servicecomb.serviceregistry.cache.InstanceCacheManager;
+import io.servicecomb.serviceregistry.cache.InstanceCacheManagerNew;
+import io.servicecomb.serviceregistry.cache.InstanceCacheManagerOld;
 import io.servicecomb.serviceregistry.client.IpPortManager;
 import io.servicecomb.serviceregistry.client.ServiceRegistryClient;
 import io.servicecomb.serviceregistry.config.ServiceRegistryConfig;
+import io.servicecomb.serviceregistry.consumer.AppManager;
+import io.servicecomb.serviceregistry.consumer.MicroserviceVersionFactory;
 import io.servicecomb.serviceregistry.definition.MicroserviceDefinition;
 import io.servicecomb.serviceregistry.task.MicroserviceServiceCenterTask;
 import io.servicecomb.serviceregistry.task.ServiceCenterTask;
-import io.servicecomb.serviceregistry.task.event.ExceptionEvent;
-import io.servicecomb.serviceregistry.task.event.RecoveryEvent;
 import io.servicecomb.serviceregistry.task.event.ShutdownEvent;
 
 public abstract class AbstractServiceRegistry implements ServiceRegistry {
@@ -57,6 +58,8 @@ public abstract class AbstractServiceRegistry implements ServiceRegistry {
 
   protected Microservice microservice;
 
+  protected AppManager appManager;
+
   protected InstanceCacheManager instanceCacheManager;
 
   protected IpPortManager ipPortManager;
@@ -66,13 +69,6 @@ public abstract class AbstractServiceRegistry implements ServiceRegistry {
   protected ServiceRegistryConfig serviceRegistryConfig;
 
   protected ServiceCenterTask serviceCenterTask;
-
-  // any exception event will set cache not available, but not clear cache
-  // any recovery event will clear cache
-  //
-  // TODO: clear cache is not good, maybe cause no cache data can be used
-  //       it's better to replace the old cache by the new cache, if can't get new cache, then always use old cache.
-  protected boolean cacheAvailable;
 
   public AbstractServiceRegistry(EventBus eventBus, ServiceRegistryConfig serviceRegistryConfig,
       MicroserviceDefinition microserviceDefinition) {
@@ -84,7 +80,14 @@ public abstract class AbstractServiceRegistry implements ServiceRegistry {
 
   @Override
   public void init() {
-    instanceCacheManager = new InstanceCacheManager(eventBus, this);
+    try {
+      initAppManager();
+    } catch (InstantiationException | IllegalAccessException | ClassNotFoundException e) {
+      throw new IllegalStateException("Failed to init appManager.", e);
+    }
+
+    initCacheManager();
+
     ipPortManager = new IpPortManager(serviceRegistryConfig, instanceCacheManager);
     if (srClient == null) {
       srClient = createServiceRegistryClient();
@@ -93,6 +96,39 @@ public abstract class AbstractServiceRegistry implements ServiceRegistry {
     createServiceCenterTask();
 
     eventBus.register(this);
+  }
+
+  protected void initAppManager() throws InstantiationException, IllegalAccessException, ClassNotFoundException {
+    appManager = new AppManager(eventBus);
+
+    // we did not remove old InstanceCacheManager now
+	// microserviceVersionFactoryClass is null, means use old InstanceCacheManager
+	// must not throw exception
+    String microserviceVersionFactoryClass = serviceRegistryConfig.getMicroserviceVersionFactory();
+    if (microserviceVersionFactoryClass == null) {
+      return;
+    }
+
+    MicroserviceVersionFactory microserviceVersionFactory =
+        (MicroserviceVersionFactory) Class.forName(microserviceVersionFactoryClass).newInstance();
+    appManager.setMicroserviceVersionFactory(microserviceVersionFactory);
+    LOGGER.info("microserviceVersionFactory is {}.", microserviceVersionFactoryClass);
+  }
+
+  protected void initCacheManager() {
+    // now only edge use new mechanism
+    String microserviceVersionFactoryClass = serviceRegistryConfig.getMicroserviceVersionFactory();
+    if (microserviceVersionFactoryClass == null) {
+      instanceCacheManager = new InstanceCacheManagerOld(eventBus, this, serviceRegistryConfig);
+      return;
+    }
+
+    instanceCacheManager = new InstanceCacheManagerNew(appManager);
+  }
+
+  @Override
+  public AppManager getAppManager() {
+    return appManager;
   }
 
   @Override
@@ -153,22 +189,6 @@ public abstract class AbstractServiceRegistry implements ServiceRegistry {
     MicroserviceServiceCenterTask task =
         new MicroserviceServiceCenterTask(eventBus, serviceRegistryConfig, srClient, microservice);
     serviceCenterTask = new ServiceCenterTask(eventBus, serviceRegistryConfig.getHeartbeatInterval(), task);
-  }
-
-  @Subscribe
-  public void onException(ExceptionEvent event) {
-    cacheAvailable = false;
-  }
-
-  @Subscribe
-  public void onRecovered(RecoveryEvent event) {
-    if (!cacheAvailable) {
-      cacheAvailable = true;
-
-      instanceCacheManager.cleanUp();
-      LOGGER.info(
-          "Reconnected to service center, clean up the provider's microservice instances cache.");
-    }
   }
 
   public boolean unregisterInstance() {

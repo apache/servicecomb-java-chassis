@@ -74,6 +74,10 @@ public class CodeFirstSpringmvcBase {
     return new Date(date.getTime() + seconds * 1000);
   }
 
+  public int add(int a) {
+    return a;
+  }
+
   public int add(int a, int b) {
     return a + b;
   }

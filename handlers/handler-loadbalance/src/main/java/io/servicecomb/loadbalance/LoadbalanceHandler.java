@@ -38,12 +38,17 @@ import com.netflix.loadbalancer.reactive.ExecutionListener;
 import com.netflix.loadbalancer.reactive.LoadBalancerCommand;
 import com.netflix.loadbalancer.reactive.ServerOperation;
 
+import io.servicecomb.core.Handler;
 import io.servicecomb.core.Invocation;
 import io.servicecomb.core.exception.ExceptionUtils;
-import io.servicecomb.core.handler.impl.AbstractHandler;
 import io.servicecomb.core.provider.consumer.SyncResponseExecutor;
+import io.servicecomb.foundation.common.cache.VersionedCache;
+import io.servicecomb.loadbalance.filter.CseServerDiscoveryFilter;
 import io.servicecomb.loadbalance.filter.IsolationServerListFilter;
 import io.servicecomb.loadbalance.filter.TransactionControlFilter;
+import io.servicecomb.serviceregistry.discovery.DiscoveryContext;
+import io.servicecomb.serviceregistry.discovery.DiscoveryFilter;
+import io.servicecomb.serviceregistry.discovery.DiscoveryTree;
 import io.servicecomb.swagger.invocation.AsyncResponse;
 import io.servicecomb.swagger.invocation.Response;
 import rx.Observable;
@@ -52,7 +57,7 @@ import rx.Observable;
  * 负载均衡处理链
  *
  */
-public class LoadbalanceHandler extends AbstractHandler {
+public class LoadbalanceHandler implements Handler {
   private static final Logger LOGGER = LoggerFactory.getLogger(LoadbalanceHandler.class);
 
   private static final ExecutorService RETRY_POOL = Executors.newCachedThreadPool(new ThreadFactory() {
@@ -64,48 +69,48 @@ public class LoadbalanceHandler extends AbstractHandler {
     }
   });
 
-  // 会给每个Microservice创建一个handler实例，因此这里的key为transportName，保证每个通道使用一个负载均衡策略
+  private DiscoveryTree discoveryTree = new DiscoveryTree();
+
+  // key为grouping filter qualified name
   private volatile Map<String, LoadBalancer> loadBalancerMap = new ConcurrentHashMap<>();
 
   private final Object lock = new Object();
 
   private String policy = null;
+  private String strategy = null;
+
+
+  public LoadbalanceHandler() {
+    discoveryTree.loadFromSPI(DiscoveryFilter.class);
+    discoveryTree.addFilter(new CseServerDiscoveryFilter());
+    discoveryTree.sort();
+  }
 
   @Override
   public void handle(Invocation invocation, AsyncResponse asyncResp) throws Exception {
     String p = Configuration.INSTANCE.getPolicy(invocation.getMicroserviceName());
-    if (this.policy != null && !this.policy.equals(p)) {
+    String strategy = Configuration.INSTANCE.getRuleStrategyName(invocation.getMicroserviceName());
+    
+    if (this.policy != null && !this.policy.equals(p) ||
+    		(this.strategy != null && !this.strategy.equals(strategy))) {
       //配置变化，需要重新生成所有的lb实例
       synchronized (lock) {
         loadBalancerMap.clear();
       }
     }
     this.policy = p;
+    this.strategy = strategy;
 
-    String transportName = invocation.getConfigTransportName();
-    LoadBalancer lb = loadBalancerMap.get(transportName);
-    if (null == lb) {
-      synchronized (lock) {
-        lb = loadBalancerMap.get(transportName);
-        if (null == lb) {
-          // 只能使用微服务级别的属性，因为LoadBalancer实例是按照{微服务+transport}的个数创建的。
-          lb = createLoadBalancer(invocation.getAppId(),
-              invocation.getMicroserviceName(),
-              invocation.getMicroserviceVersionRule(),
-              transportName);
-          loadBalancerMap.put(transportName, lb);
-        }
-      }
-    }
-
+    LoadBalancer loadBalancer = getOrCreateLoadBalancer(invocation);
+    // TODO: after all old filter moved to new filter
+    // setInvocation method must to be removed
     // invocation是请求级别的，因此每次调用都需要设置一次
-    lb.setInvocation(invocation);
-    final LoadBalancer choosenLB = lb;
+    loadBalancer.setInvocation(invocation);
 
     if (!Configuration.INSTANCE.isRetryEnabled(invocation.getMicroserviceName())) {
-      send(invocation, asyncResp, choosenLB);
+      send(invocation, asyncResp, loadBalancer);
     } else {
-      sendWithRetry(invocation, asyncResp, choosenLB);
+      sendWithRetry(invocation, asyncResp, loadBalancer);
     }
   }
 
@@ -142,9 +147,9 @@ public class LoadbalanceHandler extends AbstractHandler {
     }
   }
 
-  private void send(Invocation invocation, AsyncResponse asyncResp, final LoadBalancer choosenLB) throws Exception {
+  private void send(Invocation invocation, AsyncResponse asyncResp, final LoadBalancer chosenLB) throws Exception {
     long time = System.currentTimeMillis();
-    CseServer server = (CseServer) choosenLB.chooseServer(invocation);
+    CseServer server = (CseServer) chosenLB.chooseServer(invocation);
     if (null == server) {
       asyncResp.consumerFail(ExceptionUtils.lbAddressNotFound(invocation.getMicroserviceName(),
           invocation.getMicroserviceVersionRule(),
@@ -152,22 +157,22 @@ public class LoadbalanceHandler extends AbstractHandler {
       return;
     }
     server.setLastVisitTime(time);
-    choosenLB.getLoadBalancerStats().incrementNumRequests(server);
+    chosenLB.getLoadBalancerStats().incrementNumRequests(server);
     invocation.setEndpoint(server.getEndpoint());
     invocation.next(resp -> {
       // this stats is for WeightedResponseTimeRule
-      choosenLB.getLoadBalancerStats().noteResponseTime(server, (System.currentTimeMillis() - time));
+      chosenLB.getLoadBalancerStats().noteResponseTime(server, (System.currentTimeMillis() - time));
       if (resp.isFailed()) {
-        choosenLB.getLoadBalancerStats().incrementSuccessiveConnectionFailureCount(server);
+        chosenLB.getLoadBalancerStats().incrementSuccessiveConnectionFailureCount(server);
       } else {
-        choosenLB.getLoadBalancerStats().incrementActiveRequestsCount(server);
+        chosenLB.getLoadBalancerStats().incrementActiveRequestsCount(server);
       }
       asyncResp.handle(resp);
     });
   }
 
   private void sendWithRetry(Invocation invocation, AsyncResponse asyncResp,
-      final LoadBalancer choosenLB) throws Exception {
+      final LoadBalancer chosenLB) throws Exception {
     long time = System.currentTimeMillis();
     // retry in loadbalance, 2.0 feature
     final int currentHandler = invocation.getHandlerIndex();
@@ -237,7 +242,7 @@ public class LoadbalanceHandler extends AbstractHandler {
     ExecutionContext<Invocation> context = new ExecutionContext<>(invocation, null, null, null);
 
     LoadBalancerCommand<Response> command = LoadBalancerCommand.<Response>builder()
-        .withLoadBalancer(choosenLB)
+        .withLoadBalancer(chosenLB)
         .withServerLocator(invocation)
         .withRetryHandler(ExtensionsManager.createRetryHandler(invocation.getMicroserviceName()))
         .withListeners(listeners)
@@ -249,7 +254,7 @@ public class LoadbalanceHandler extends AbstractHandler {
         return Observable.create(f -> {
           try {
             ((CseServer) s).setLastVisitTime(time);
-            choosenLB.getLoadBalancerStats().incrementNumRequests(s);
+            chosenLB.getLoadBalancerStats().incrementNumRequests(s);
             invocation.setHandlerIndex(currentHandler); // for retry
             invocation.setEndpoint(((CseServer) s).getEndpoint());
             invocation.next(resp -> {
@@ -257,11 +262,11 @@ public class LoadbalanceHandler extends AbstractHandler {
                 LOGGER.error("service call error, msg is {}, server is {} ",
                     ((Throwable) resp.getResult()).getMessage(),
                     s);
-                choosenLB.getLoadBalancerStats().incrementSuccessiveConnectionFailureCount(s);
+                chosenLB.getLoadBalancerStats().incrementSuccessiveConnectionFailureCount(s);
                 f.onError(resp.getResult());
               } else {
-                choosenLB.getLoadBalancerStats().incrementActiveRequestsCount(s);
-                choosenLB.getLoadBalancerStats().noteResponseTime(s,
+                chosenLB.getLoadBalancerStats().incrementActiveRequestsCount(s);
+                chosenLB.getLoadBalancerStats().noteResponseTime(s,
                     (System.currentTimeMillis() - time));
                 f.onNext(resp);
                 f.onCompleted();
@@ -281,13 +286,28 @@ public class LoadbalanceHandler extends AbstractHandler {
     });
   }
 
-  private LoadBalancer createLoadBalancer(String appId, String microserviceName, String microserviceVersionRule,
-      String transportName) {
-    IRule rule = ExtensionsManager.createLoadBalancerRule(microserviceName);
+  protected LoadBalancer getOrCreateLoadBalancer(Invocation invocation) {
+    DiscoveryContext context = new DiscoveryContext();
+    context.setInputParameters(invocation);
+    VersionedCache serversVersionedCache = discoveryTree.discovery(context,
+        invocation.getAppId(),
+        invocation.getMicroserviceName(),
+        invocation.getMicroserviceVersionRule());
 
-    CseServerList serverList = new CseServerList(appId, microserviceName,
-        microserviceVersionRule, transportName);
-    LoadBalancer lb = new LoadBalancer(serverList, rule);
+    LoadBalancer loadBalancer = loadBalancerMap.computeIfAbsent(serversVersionedCache.name(), name -> {
+      return createLoadBalancer(invocation.getMicroserviceName(), name);
+    });
+    LOGGER.debug("invocation {} use loadBalancer {}.",
+        invocation.getMicroserviceQualifiedName(),
+        loadBalancer.getName());
+
+    loadBalancer.setServerList(serversVersionedCache.data());
+    return loadBalancer;
+  }
+
+  private LoadBalancer createLoadBalancer(String microserviceName, String loadBalancerName) {
+    IRule rule = ExtensionsManager.createLoadBalancerRule(microserviceName);
+    LoadBalancer lb = new LoadBalancer(loadBalancerName, rule);
 
     // we can change this implementation to ExtensionsManager in the future.
     loadServerListFilters(lb);
@@ -295,6 +315,7 @@ public class LoadbalanceHandler extends AbstractHandler {
     setIsolationFilter(lb, microserviceName);
     setTransactionControlFilter(lb, microserviceName);
 
+    LOGGER.info("create loadBalancer, microserviceName={}, loadBalancerName={}.", microserviceName, loadBalancerName);
     return lb;
   }
 

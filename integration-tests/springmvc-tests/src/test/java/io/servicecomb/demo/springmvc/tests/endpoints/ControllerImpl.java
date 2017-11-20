@@ -32,7 +32,7 @@ import io.servicecomb.provider.rest.common.RestSchema;
 
 @Profile("!SimplifiedMapping")
 @RestSchema(schemaId = "controller")
-@RequestMapping(path = "/controller", produces = MediaType.APPLICATION_JSON)
+@RequestMapping(path = "/springmvc/controller", produces = MediaType.APPLICATION_JSON)
 public class ControllerImpl extends ControllerBase {
   @RequestMapping(path = "/add", method = RequestMethod.GET)
   @Override

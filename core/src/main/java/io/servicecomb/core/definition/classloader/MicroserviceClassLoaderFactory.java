@@ -17,5 +17,5 @@
 package io.servicecomb.core.definition.classloader;
 
 public interface MicroserviceClassLoaderFactory {
-  ClassLoader create(String microserviceName, String version);
+  ClassLoader create(String appId, String microserviceName, String version);
 }

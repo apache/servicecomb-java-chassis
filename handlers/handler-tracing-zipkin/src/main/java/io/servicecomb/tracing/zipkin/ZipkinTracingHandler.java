@@ -24,9 +24,7 @@ import brave.Tracer.SpanInScope;
 import brave.Tracing;
 import io.servicecomb.core.Handler;
 import io.servicecomb.core.Invocation;
-import io.servicecomb.core.definition.MicroserviceMeta;
 import io.servicecomb.swagger.invocation.AsyncResponse;
-import io.servicecomb.swagger.invocation.InvocationType;
 
 class ZipkinTracingHandler implements Handler {
 
@@ -39,11 +37,6 @@ class ZipkinTracingHandler implements Handler {
   ZipkinTracingHandler(ZipkinTracingDelegate tracingDelegate) {
     this.tracer = tracingDelegate.tracer();
     this.tracingDelegate = tracingDelegate;
-  }
-
-  @Override
-  public void init(MicroserviceMeta microserviceMeta, InvocationType invocationType) {
-
   }
 
   @Override

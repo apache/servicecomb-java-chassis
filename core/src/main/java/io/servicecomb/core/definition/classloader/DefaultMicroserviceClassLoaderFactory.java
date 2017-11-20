@@ -20,7 +20,7 @@ public class DefaultMicroserviceClassLoaderFactory implements MicroserviceClassL
   public static final MicroserviceClassLoaderFactory INSTANCE = new DefaultMicroserviceClassLoaderFactory();
 
   @Override
-  public ClassLoader create(String microserviceName, String version) {
+  public ClassLoader create(String appId, String microserviceName, String version) {
     return Thread.currentThread().getContextClassLoader();
   }
 }

@@ -32,14 +32,19 @@ import io.servicecomb.demo.controller.Controller;
 import io.servicecomb.demo.controller.Person;
 import io.servicecomb.foundation.common.utils.BeanUtils;
 import io.servicecomb.foundation.common.utils.Log4jUtils;
+import io.servicecomb.provider.springmvc.reference.CseRestTemplate;
 import io.servicecomb.provider.springmvc.reference.RestTemplateBuilder;
+import io.servicecomb.provider.springmvc.reference.UrlWithServiceNameClientHttpRequestFactory;
 
 public class SpringmvcClient {
+  private static RestTemplate templateUrlWithServiceName = new CseRestTemplate();
+
   private static RestTemplate restTemplate;
 
   private static Controller controller;
 
   public static void main(String[] args) throws Exception {
+    templateUrlWithServiceName.setRequestFactory(new UrlWithServiceNameClientHttpRequestFactory());
     Log4jUtils.init();
     BeanUtils.init();
 
@@ -56,7 +61,7 @@ public class SpringmvcClient {
 
     try {
       // this test class is intended for rery hang issue JAV-27
-      restTemplate.getForObject(prefix + "/controller/sayhi?name=throwexception", String.class);
+      templateUrlWithServiceName.getForObject(prefix + "/controller/sayhi?name=throwexception", String.class);
       TestMgr.check("true", "false");
     } catch (Exception e) {
       TestMgr.check("true", "true");
@@ -71,7 +76,7 @@ public class SpringmvcClient {
       CseContext.getInstance().getConsumerProviderManager().setTransport(microserviceName, transport);
       TestMgr.setMsg(microserviceName, transport);
 
-      testController(restTemplate, microserviceName);
+      testController(templateUrlWithServiceName, microserviceName);
 
       testController();
     }

@@ -26,14 +26,14 @@ public class TestConst {
   @Before
   public void setUp() {
     System.setProperty("cse.service.registry.api.version", "v4");
-    System.setProperty("cse.config.client.tenantName", "testtenane");
+    System.setProperty("cse.config.client.domainName", "testtenane");
     ConfigUtil.createLocalConfig();
   }
 
   @After
   public void tearDown() {
     System.getProperties().remove("cse.service.registry.api.version");
-    System.getProperties().remove("cse.config.client.tenantName");
+    System.getProperties().remove("cse.config.client.domainName");
   }
 
   @Test
@@ -58,7 +58,7 @@ public class TestConst {
       Assert.assertEquals("/registry/v3/microservices/%s/instances/%s/properties",
           Const.REGISTRY_API.MICROSERVICE_INSTANCE_PROPERTIES);
     } else {
-      String prefix = "/v4/" + Const.REGISTRY_API.TENANT_NAME + "/registry/";
+      String prefix = "/v4/" + Const.REGISTRY_API.DOMAIN_NAME + "/registry/";
       Assert.assertEquals(prefix + "microservices", Const.REGISTRY_API.MICROSERVICE_OPERATION_ALL);
       Assert.assertEquals(prefix + "microservices/%s", Const.REGISTRY_API.MICROSERVICE_OPERATION_ONE);
       Assert.assertEquals(prefix + "microservices/%s/instances",

@@ -27,29 +27,20 @@ import io.servicecomb.common.rest.locator.OperationLocator;
 import io.servicecomb.common.rest.locator.ServicePathManager;
 import io.servicecomb.core.Const;
 import io.servicecomb.core.definition.MicroserviceVersionMeta;
-import io.servicecomb.core.definition.MicroserviceVersionMetaFactory;
-import io.servicecomb.core.definition.classloader.PrivateMicroserviceClassLoaderFactory;
 import io.servicecomb.core.invocation.InvocationFactory;
 import io.servicecomb.core.provider.consumer.ReactiveResponseExecutor;
 import io.servicecomb.core.provider.consumer.ReferenceConfig;
-import io.servicecomb.foundation.common.event.EventManager;
 import io.servicecomb.foundation.common.exceptions.ServiceCombException;
 import io.servicecomb.foundation.vertx.http.VertxServerRequestToHttpServletRequest;
 import io.servicecomb.foundation.vertx.http.VertxServerResponseToHttpServletResponse;
 import io.servicecomb.serviceregistry.RegistryUtils;
-import io.servicecomb.serviceregistry.consumer.AppManager;
 import io.servicecomb.serviceregistry.consumer.MicroserviceVersionRule;
 import io.servicecomb.serviceregistry.definition.DefinitionConst;
+import io.servicecomb.swagger.invocation.Response;
+import io.servicecomb.swagger.invocation.exception.InvocationException;
 import io.vertx.ext.web.RoutingContext;
 
 public class EdgeInvocation extends AbstractRestInvocation {
-  // temp appManager, we will create a global appManager in the further
-  private static AppManager appManager = new AppManager(EventManager.eventBus);
-  static {
-    appManager.setMicroserviceVersionFactory(
-        new MicroserviceVersionMetaFactory(PrivateMicroserviceClassLoaderFactory.INSTANCE));
-  }
-
   protected String microserviceName;
 
   protected MicroserviceVersionRule microserviceVersionRule;
@@ -57,6 +48,8 @@ public class EdgeInvocation extends AbstractRestInvocation {
   protected MicroserviceVersionMeta latestMicroserviceVersionMeta;
 
   protected ReferenceConfig referenceConfig;
+
+  protected String versionRule = DefinitionConst.VERSION_RULE_ALL;
 
   public void init(String microserviceName, RoutingContext context, String path,
       List<HttpServerFilter> httpServerFilters) {
@@ -76,8 +69,15 @@ public class EdgeInvocation extends AbstractRestInvocation {
       // not handle edge unknown exception
       // all unknow exception will be handled by io.servicecomb.edge.core.AbstractEdgeDispatcher.onFailure(RoutingContext)
       prepareEdgeInvoke();
-      prepareInvoke();
+      Response response = prepareInvoke();
+      if (response != null) {
+        sendResponse(response);
+        return;
+      }
+
       doInvoke();
+    } catch (InvocationException e) {
+      sendFailResponse(e);
     } catch (Throwable e) {
       throw new ServiceCombException("unknown edge exception.", e);
     } finally {
@@ -88,13 +88,15 @@ public class EdgeInvocation extends AbstractRestInvocation {
   protected void findMicroserviceVersionMeta() {
     String versionRule = chooseVersionRule();
 
-    String appId = RegistryUtils.getAppId();;
+    String appId = RegistryUtils.getAppId();
     int idxAt = microserviceName.indexOf(io.servicecomb.serviceregistry.api.Const.APP_SERVICE_SEPARATOR);
     if (idxAt != -1) {
       appId = microserviceName.substring(0, idxAt);
     }
 
-    microserviceVersionRule = appManager.getOrCreateMicroserviceVersionRule(appId, microserviceName, versionRule);
+    microserviceVersionRule = RegistryUtils.getServiceRegistry()
+        .getAppManager()
+        .getOrCreateMicroserviceVersionRule(appId, microserviceName, versionRule);
     latestMicroserviceVersionMeta = microserviceVersionRule.getLatestMicroserviceVersion();
 
     if (latestMicroserviceVersionMeta == null) {
@@ -104,6 +106,10 @@ public class EdgeInvocation extends AbstractRestInvocation {
               microserviceName,
               versionRule));
     }
+  }
+
+  public void setVersionRule(String versionRule) {
+    this.versionRule = versionRule;
   }
 
   // another possible rule:
@@ -117,7 +123,7 @@ public class EdgeInvocation extends AbstractRestInvocation {
   protected String chooseVersionRule() {
     // this will use all instance of the microservice
     // and this required all new version compatible to old version
-    return DefinitionConst.VERSION_RULE_ALL;
+    return versionRule;
   }
 
   protected void prepareEdgeInvoke() throws Throwable {
@@ -148,10 +154,20 @@ public class EdgeInvocation extends AbstractRestInvocation {
   }
 
   @Override
-  protected void doInvoke() throws Throwable {
+  protected void doInvoke() {
     invocation.setResponseExecutor(new ReactiveResponseExecutor());
-    invocation.next(resp -> {
-      sendResponseQuietly(resp);
+    invocation.getOperationMeta().getExecutor().execute(() -> {
+      doInvokeInExecutor();
     });
+  }
+
+  protected void doInvokeInExecutor() {
+    try {
+      invocation.next(resp -> {
+        sendResponseQuietly(resp);
+      });
+    } catch (Throwable e) {
+      sendFailResponse(e);
+    }
   }
 }

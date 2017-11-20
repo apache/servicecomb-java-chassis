@@ -87,11 +87,6 @@ public class TestYAMLConfigurationSource {
     finalConfig.addConfiguration(configFromYamlFile, "yamlConfig");
     finalConfig.addConfiguration(configFromSystemProperties, "systemEnvConfig");
     Assert.assertEquals(0.5, finalConfig.getDouble("trace.handler.sampler.percent"), 0.5);
-    //        DynamicStringListProperty property = new DynamicStringListProperty("trace.handler.tlist", "|", DynamicStringListProperty.DEFAULT_DELIMITER);
-    //        List<String> ll = property.get();
-    //        for (String s : ll) {
-    //            System.out.println(s);
-    //        }
 
     Object o = finalConfig.getProperty("zq");
     @SuppressWarnings("unchecked")

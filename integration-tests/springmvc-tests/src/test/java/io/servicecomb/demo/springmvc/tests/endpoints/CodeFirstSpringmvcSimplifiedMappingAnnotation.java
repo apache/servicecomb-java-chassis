@@ -46,6 +46,7 @@ import io.servicecomb.swagger.invocation.Response;
 import io.servicecomb.swagger.invocation.context.InvocationContext;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
+import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ResponseHeader;
 
@@ -92,6 +93,13 @@ public class CodeFirstSpringmvcSimplifiedMappingAnnotation extends CodeFirstSpri
   @Override
   public Date addDate(@RequestAttribute("date") Date date, @QueryParam("seconds") long seconds) {
     return super.addDate(date, seconds);
+  }
+
+
+  // this should be ignored as it's hidden
+  @ApiOperation(value = "", hidden = true, httpMethod = "POST")
+  public int add(@RequestParam("a") int a) {
+    return a;
   }
 
   @PostMapping(path = "/add")

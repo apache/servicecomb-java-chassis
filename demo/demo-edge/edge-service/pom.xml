@@ -20,7 +20,7 @@
   <parent>
     <groupId>io.servicecomb.demo</groupId>
     <artifactId>demo-edge</artifactId>
-    <version>0.4.0</version>
+    <version>0.4.1-SNAPSHOT</version>
   </parent>
   <artifactId>edge-service</artifactId>
 
@@ -32,6 +32,14 @@
     <dependency>
       <groupId>io.servicecomb</groupId>
       <artifactId>edge-core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>io.servicecomb</groupId>
+      <artifactId>handler-loadbalance</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>io.servicecomb</groupId>
+      <artifactId>provider-pojo</artifactId>
     </dependency>
   </dependencies>
 </project>

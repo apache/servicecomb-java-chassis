@@ -21,6 +21,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,6 +30,7 @@ import com.google.common.eventbus.Subscribe;
 
 import io.servicecomb.serviceregistry.RegistryUtils;
 import io.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
+import io.servicecomb.serviceregistry.api.registry.MicroserviceInstanceStatus;
 import io.servicecomb.serviceregistry.api.response.MicroserviceInstanceChangedEvent;
 import io.servicecomb.serviceregistry.definition.DefinitionConst;
 import io.servicecomb.serviceregistry.task.event.PullMicroserviceVersionsInstancesEvent;
@@ -82,6 +84,11 @@ public class MicroserviceVersions {
     return versions;
   }
 
+  @SuppressWarnings("unchecked")
+  public <T extends MicroserviceVersion> T getVersion(String serviceId) {
+    return (T) versions.get(serviceId);
+  }
+
   public void submitPull() {
     pendingPullCount.incrementAndGet();
     pullInstances();
@@ -104,7 +111,12 @@ public class MicroserviceVersions {
 
   private void setInstances(List<MicroserviceInstance> pulledInstances) {
     synchronized (lock) {
-      instances = pulledInstances;
+      instances = pulledInstances
+          .stream()
+          .filter(instance -> {
+            return MicroserviceInstanceStatus.UP.equals(instance.getStatus());
+          })
+          .collect(Collectors.toList());
       for (MicroserviceInstance instance : instances) {
         // ensure microserviceVersion exists
         versions.computeIfAbsent(instance.getServiceId(), microserviceId -> {

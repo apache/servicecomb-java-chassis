@@ -24,5 +24,5 @@ public interface CalculatorEndpoint {
   /**
    * Calculate the BMI(Body Mass Index).
    */
-  double calculate(double height, double weight);
+  BMIViewObject calculate(double height, double weight);
 }

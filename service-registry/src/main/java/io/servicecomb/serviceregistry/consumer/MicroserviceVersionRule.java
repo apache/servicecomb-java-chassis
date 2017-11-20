@@ -17,6 +17,7 @@
 package io.servicecomb.serviceregistry.consumer;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
@@ -25,6 +26,7 @@ import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import io.servicecomb.foundation.common.cache.VersionedCache;
 import io.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
 import io.servicecomb.serviceregistry.cache.InstanceCache;
 import io.servicecomb.serviceregistry.version.VersionRule;
@@ -45,9 +47,11 @@ public class MicroserviceVersionRule {
   private Map<String, MicroserviceVersion> versions = new ConcurrentHashMap<>();
 
   // key is instanceId
-  private Map<String, MicroserviceInstance> instances = new ConcurrentHashMap<>();
+  private Map<String, MicroserviceInstance> instances = Collections.emptyMap();
 
   private InstanceCache instanceCache;
+
+  private VersionedCache versionedCache;
 
   public MicroserviceVersionRule(String appId, String microserviceName, String strVersionRule) {
     this.appId = appId;
@@ -59,6 +63,10 @@ public class MicroserviceVersionRule {
 
   private void resetInstanceCache() {
     instanceCache = new InstanceCache(appId, microserviceName, versionRule.getVersionRule(), instances);
+    versionedCache = new VersionedCache()
+        .name(versionRule.getVersionRule())
+        .autoCacheVersion()
+        .data(instances);
   }
 
   public void addMicroserviceVersion(MicroserviceVersion microserviceVersion) {
@@ -121,12 +129,16 @@ public class MicroserviceVersionRule {
     return instanceCache;
   }
 
+  public VersionedCache getVersionedCache() {
+    return versionedCache;
+  }
+
   public void setInstances(Collection<MicroserviceInstance> newInstances) {
     if (newInstances == null) {
       return;
     }
 
-    instances = newInstances.stream().filter(instance -> {
+    Map<String, MicroserviceInstance> tmpInstances = newInstances.stream().filter(instance -> {
       MicroserviceVersion microserviceVersion = versions.get(instance.getServiceId());
       boolean isMatch = microserviceVersion != null
           && versionRule.isMatch(microserviceVersion.getVersion(), latestVersion.getVersion());
@@ -140,6 +152,7 @@ public class MicroserviceVersionRule {
       }
       return isMatch;
     }).collect(Collectors.toMap(MicroserviceInstance::getInstanceId, Function.identity()));
+    instances = Collections.unmodifiableMap(tmpInstances);
 
     resetInstanceCache();
   }

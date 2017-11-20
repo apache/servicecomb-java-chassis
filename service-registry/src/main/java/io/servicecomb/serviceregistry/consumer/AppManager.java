@@ -48,10 +48,19 @@ public class AppManager {
   // microserviceName maybe normal name or alias name
   public MicroserviceVersionRule getOrCreateMicroserviceVersionRule(String appId, String microserviceName,
       String versionRule) {
-    MicroserviceManager microserviceManager = apps.computeIfAbsent(appId, id -> {
-      return new MicroserviceManager(this, appId);
-    });
+    MicroserviceManager microserviceManager = getOrCreateMicroserviceManager(appId);
 
     return microserviceManager.getOrCreateMicroserviceVersionRule(microserviceName, versionRule);
+  }
+
+  public MicroserviceManager getOrCreateMicroserviceManager(String appId) {
+    return apps.computeIfAbsent(appId, id -> {
+      return new MicroserviceManager(this, appId);
+    });
+  }
+
+  public MicroserviceVersions getOrCreateMicroserviceVersions(String appId, String microserviceName) {
+    MicroserviceManager microserviceManager = getOrCreateMicroserviceManager(appId);
+    return microserviceManager.getOrCreateMicroserviceVersions(microserviceName);
   }
 }

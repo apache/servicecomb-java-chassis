@@ -17,12 +17,13 @@
 package io.servicecomb.core.handler.impl;
 
 import io.servicecomb.core.Const;
+import io.servicecomb.core.Handler;
 import io.servicecomb.core.Invocation;
 import io.servicecomb.core.exception.ExceptionUtils;
 import io.servicecomb.swagger.engine.SwaggerProducerOperation;
 import io.servicecomb.swagger.invocation.AsyncResponse;
 
-public class ProducerOperationHandler extends AbstractHandler {
+public class ProducerOperationHandler implements Handler {
   public static final ProducerOperationHandler INSTANCE = new ProducerOperationHandler();
 
   @Override

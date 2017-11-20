@@ -16,6 +16,8 @@
 package io.servicecomb.swagger.engine;
 
 import java.lang.reflect.Method;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.inject.Inject;
 
@@ -34,6 +36,7 @@ import io.servicecomb.swagger.invocation.response.consumer.ConsumerResponseMappe
 import io.servicecomb.swagger.invocation.response.consumer.ConsumerResponseMapperFactory;
 import io.servicecomb.swagger.invocation.response.producer.ProducerResponseMapper;
 import io.servicecomb.swagger.invocation.response.producer.ProducerResponseMapperFactory;
+import io.swagger.annotations.ApiOperation;
 import io.swagger.models.Swagger;
 
 @Component
@@ -124,6 +127,7 @@ public class SwaggerEnvironment {
 
   public SwaggerProducer createProducer(Object producerInstance, Swagger swagger) {
     Class<?> producerCls = BeanUtils.getImplClassFromBean(producerInstance);
+    Map<String, Method> visibleProducerMethods = retrieveVisibleMethods(producerCls);
     Class<?> swaggerIntf = ClassUtils.getOrCreateInterface(swagger, null, null);
 
     SwaggerProducer producer = new SwaggerProducer();
@@ -132,7 +136,7 @@ public class SwaggerEnvironment {
     for (Method swaggerMethod : swaggerIntf.getMethods()) {
       String methodName = swaggerMethod.getName();
       // producer参数不一定等于swagger参数
-      Method producerMethod = ReflectUtils.findMethod(producerCls, methodName);
+      Method producerMethod = visibleProducerMethods.getOrDefault(methodName, null);
       if (producerMethod == null) {
         // producer未实现契约，非法
         String msg = String.format("swagger method %s:%s not exist in producer.",
@@ -168,5 +172,17 @@ public class SwaggerEnvironment {
     Swagger swagger = producerGenerator.getSwagger();
 
     return createProducer(producerInstance, swagger);
+  }
+
+  private Map<String, Method> retrieveVisibleMethods(Class<?> clazz) {
+    Map<String, Method> visibleMethods = new HashMap<>();
+    for (Method method : clazz.getMethods()) {
+      if (method.isAnnotationPresent(ApiOperation.class) &&
+          method.getAnnotation(ApiOperation.class).hidden()) {
+        continue;
+      }
+      visibleMethods.put(method.getName(), method);
+    }
+    return visibleMethods;
   }
 }

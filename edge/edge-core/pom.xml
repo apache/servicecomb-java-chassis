@@ -21,7 +21,7 @@
   <parent>
     <groupId>io.servicecomb</groupId>
     <artifactId>edge</artifactId>
-    <version>0.4.0</version>
+    <version>0.4.1-SNAPSHOT</version>
   </parent>
   <artifactId>edge-core</artifactId>
   <dependencies>
@@ -43,6 +43,11 @@
     <dependency>
       <groupId>io.servicecomb</groupId>
       <artifactId>foundation-test-scaffolding</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>io.servicecomb</groupId>
+      <artifactId>swagger-generator-jaxrs</artifactId>
+      <scope>test</scope>
     </dependency>
   </dependencies>
 </project>

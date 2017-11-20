@@ -22,17 +22,25 @@ import org.slf4j.LoggerFactory;
 public class MicroserviceClassLoader extends ClassLoader {
   private static final Logger LOGGER = LoggerFactory.getLogger(MicroserviceClassLoader.class);
 
-  private String microserviceName;
+  private final String appId;
 
-  private String version;
+  private final String microserviceName;
 
-  public MicroserviceClassLoader(String microserviceName, String version) {
+  private final String version;
+
+
+  public MicroserviceClassLoader(String appId, String microserviceName, String version) {
     super(Thread.currentThread().getContextClassLoader());
 
+    this.appId = appId;
     this.microserviceName = microserviceName;
     this.version = version;
 
-    LOGGER.info("create classloader for microservice {}:{}.", microserviceName, version);
+    LOGGER.info("create classloader for microservice {}:{}:{}.", appId, microserviceName, version);
+  }
+
+  public String getAppId() {
+    return appId;
   }
 
   public String getMicroserviceName() {
@@ -41,6 +49,11 @@ public class MicroserviceClassLoader extends ClassLoader {
 
   public String getVersion() {
     return version;
+  }
+
+  @Override
+  public String toString() {
+    return String.format("MicroserviceClassLoader %s:%s:%s", appId, microserviceName, version);
   }
 
   @Override

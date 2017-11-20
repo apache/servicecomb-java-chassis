@@ -18,40 +18,115 @@ package io.servicecomb.transport.rest.servlet;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.io.Writer;
 
 import javax.servlet.AsyncContext;
 import javax.servlet.AsyncEvent;
-import javax.servlet.ServletResponse;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.ws.rs.core.MediaType;
 
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
-import org.mockito.Mockito;
+
+import io.servicecomb.common.rest.RestConst;
+import io.servicecomb.foundation.vertx.http.AbstractHttpServletRequest;
+import io.servicecomb.foundation.vertx.http.HttpServletRequestEx;
+import io.servicecomb.foundation.vertx.http.StandardHttpServletRequestEx;
+import io.servicecomb.swagger.invocation.exception.ExceptionFactory;
+import mockit.Mock;
+import mockit.MockUp;
+import mockit.Mocked;
 
 public class TestRestAsyncListener {
+  HttpServletRequest request = new AbstractHttpServletRequest() {
+    public String getMethod() {
+      return "GET";
+    };
+
+    public String getRequestURI() {
+      return "path";
+    };
+  };
+
+  HttpServletRequestEx requestEx = new StandardHttpServletRequestEx(request);
+
+  boolean committed;
+
+  boolean flushed;
+
+  int statusCode;
+
+  String contentType;
+
+  Writer writer = new StringWriter();
+
+  PrintWriter printWriter = new PrintWriter(writer);
+
+  @Mocked
+  HttpServletResponse response;
+
+  @Mocked
+  AsyncContext context;
+
+  AsyncEvent event;
+
+  RestAsyncListener listener = new RestAsyncListener();
+
+
+  @Before
+  public void setup() {
+    event = new AsyncEvent(context, requestEx, response);
+    requestEx.setAttribute(RestConst.REST_REQUEST, requestEx);
+
+    new MockUp<HttpServletResponse>(response) {
+      @Mock
+      void setContentType(String type) {
+        contentType = type;
+      }
+
+      @Mock
+      void setStatus(int sc) {
+        statusCode = sc;
+      }
+
+      @Mock
+      boolean isCommitted() {
+        return committed;
+      }
+
+      @Mock
+      PrintWriter getWriter() throws IOException {
+        return printWriter;
+      }
+
+      @Mock
+      void flushBuffer() throws IOException {
+        flushed = true;
+      }
+    };
+  }
 
   @Test
-  public void testOnTimeout() throws IOException {
+  public void onTimeoutCommitted() throws IOException {
+    committed = true;
+    listener.onTimeout(event);
 
-    boolean status = true;
-    try {
-      RestAsyncListener restasynclistener = new RestAsyncListener();
-      AsyncEvent event = Mockito.mock(AsyncEvent.class);
-      AsyncContext asynccontext = Mockito.mock(AsyncContext.class);
-      Mockito.when(event.getAsyncContext()).thenReturn(asynccontext);
-      ServletResponse response = Mockito.mock(ServletResponse.class);
-      Mockito.when(asynccontext.getResponse()).thenReturn(response);
+    Assert.assertNull(request.getAttribute(RestConst.REST_REQUEST));
+    Assert.assertFalse(flushed);
+  }
 
-      PrintWriter out = Mockito.mock(PrintWriter.class);
-      Mockito.when(response.getWriter()).thenReturn(out);
-      restasynclistener.onTimeout(event);
-      restasynclistener.onComplete(event);
-      restasynclistener.onError(event);
-      restasynclistener.onStartAsync(event);
-      Assert.assertNotNull(restasynclistener);
-    } catch (Exception e) {
-      status = false;
-      Assert.assertNotNull(e);
-    }
-    Assert.assertTrue(status);
+  @Test
+  public void onTimeoutNotCommitted() throws IOException {
+    committed = false;
+    listener.onTimeout(event);
+
+    Assert.assertNull(request.getAttribute(RestConst.REST_REQUEST));
+    Assert.assertEquals(MediaType.APPLICATION_JSON, contentType);
+    Assert.assertEquals(ExceptionFactory.PRODUCER_INNER_STATUS_CODE, statusCode);
+    Assert.assertTrue(flushed);
+    Assert.assertEquals("{\"message\":\"TimeOut in Processing\"}", writer.toString());
   }
 }
