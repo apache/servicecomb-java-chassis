@@ -196,6 +196,11 @@ public class VertxServerRequestToHttpServletRequest extends AbstractHttpServletR
   }
 
   @Override
+  public String getContextPath() {
+    return "";
+  }
+
+  @Override
   public ServletInputStream getInputStream() throws IOException {
     if (inputStream == null) {
       inputStream = new BufferInputStream(context.getBody().getByteBuf());

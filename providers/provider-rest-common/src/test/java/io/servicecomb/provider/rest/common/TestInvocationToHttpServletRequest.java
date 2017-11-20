@@ -51,10 +51,10 @@ public class TestInvocationToHttpServletRequest {
 
   @Mocked
   Object[] args;
-  
+
   @Mocked
   SocketAddress socketAddress;
-  
+
   Map<String, Object> handlerContext = new HashMap<>();
 
   HttpServletRequest request;
@@ -315,5 +315,11 @@ public class TestInvocationToHttpServletRequest {
     Assert.assertEquals(addr, "");
     Assert.assertEquals(host, "");
     Assert.assertEquals(port, 0);
+  }
+
+  @Test
+  public void testGetContextPath(@Mocked Invocation invocation) throws Exception {
+    InvocationToHttpServletRequest request = new InvocationToHttpServletRequest(invocation);
+    Assert.assertEquals("", request.getContextPath());
   }
 }

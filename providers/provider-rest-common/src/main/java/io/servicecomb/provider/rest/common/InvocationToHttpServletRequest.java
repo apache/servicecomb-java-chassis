@@ -38,7 +38,7 @@ public class InvocationToHttpServletRequest extends AbstractHttpServletRequest {
   public InvocationToHttpServletRequest(Invocation invocation) {
     this.swaggerOperation = invocation.getOperationMeta().getExtData(RestConst.SWAGGER_REST_OPERATION);
     this.args = invocation.getArgs();
-    this.sockerAddress = (SocketAddress)invocation.getHandlerContext().get(Const.REMOTE_ADDRESS);
+    this.sockerAddress = (SocketAddress) invocation.getHandlerContext().get(Const.REMOTE_ADDRESS);
   }
 
   @Override
@@ -109,14 +109,19 @@ public class InvocationToHttpServletRequest extends AbstractHttpServletRequest {
   public String getRemoteAddr() {
     return this.sockerAddress == null ? "" : this.sockerAddress.host();
   }
-  
+
   @Override
   public String getRemoteHost() {
     return this.sockerAddress == null ? "" : this.sockerAddress.host();
   }
-  
+
   @Override
   public int getRemotePort() {
     return this.sockerAddress == null ? 0 : this.sockerAddress.port();
+  }
+
+  @Override
+  public String getContextPath() {
+    return "";
   }
 }
