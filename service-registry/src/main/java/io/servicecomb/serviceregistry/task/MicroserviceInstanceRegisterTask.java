@@ -71,8 +71,11 @@ public class MicroserviceInstanceRegisterTask extends AbstractRegisterTask {
     microserviceInstance.getHealthCheck().setInterval(serviceRegistryConfig.getHeartbeatInterval());
     microserviceInstance.getHealthCheck().setTimes(serviceRegistryConfig.getResendHeartBeatTimes());
     
-    Optional<String> publicKey = Optional.of(RSAKeypair4Auth.INSTANCE.getPublicKey());
-    publicKey.ifPresent(value -> microserviceInstance.getProperties().put(Const.INSTANCE_PUBKEY_PRO, value));
+    String publicKey = RSAKeypair4Auth.INSTANCE.getPublicKey();
+    if (null != publicKey)
+    {
+    	microserviceInstance.getProperties().put(Const.INSTANCE_PUBKEY_PRO, publicKey);
+    }
     
     String instanceId = srClient.registerMicroserviceInstance(microserviceInstance);
     if (StringUtils.isEmpty(instanceId)) {

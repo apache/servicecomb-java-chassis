@@ -1,18 +1,15 @@
-APPLICATION_ID: auth-consumer-sample
+APPLICATION_ID: auth-sample
 service_description:
   name: authConsumer
   version: 0.0.1
 cse:
   service:
     registry:
-      address: http://127.0.0.1:30111
+      address: http://127.0.0.1:30100
   handler:
     chain:
       Consumer:
-        default: auth-consumer
-  isolation:
-    Consumer:
-      enabled: false
+        default: auth-consumer, loadbalance
   references:
-    springmvc:
+    auth-provider:
       version-rule: 0.0.1

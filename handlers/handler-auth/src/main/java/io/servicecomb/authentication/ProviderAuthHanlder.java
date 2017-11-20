@@ -1,8 +1,5 @@
 package io.servicecomb.authentication;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-
 import io.servicecomb.core.Const;
 import io.servicecomb.core.Handler;
 import io.servicecomb.core.Invocation;
@@ -13,9 +10,7 @@ import io.servicecomb.swagger.invocation.exception.InvocationException;
 
 public class ProviderAuthHanlder implements Handler {
 
-	@Autowired
-	@Qualifier("providerTokenManager")
-	private AuthenticationTokenManager authenticationTokenManager;
+	private AuthenticationTokenManager authenticationTokenManager = new RSAProviderTokenManager();
 
 	@Override
 	public void handle(Invocation invocation, AsyncResponse asyncResp) throws Exception {
@@ -29,9 +24,4 @@ public class ProviderAuthHanlder implements Handler {
 		}
 
 	}
-
-	public void setAuthenticationTokenManager(AuthenticationTokenManager authenticationTokenManager) {
-		this.authenticationTokenManager = authenticationTokenManager;
-	}
-
 }

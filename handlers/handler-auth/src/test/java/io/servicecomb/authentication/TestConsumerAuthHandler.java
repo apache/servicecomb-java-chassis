@@ -2,7 +2,6 @@ package io.servicecomb.authentication;
 
 import io.servicecomb.core.Invocation;
 import io.servicecomb.foundation.common.utils.RSAUtils;
-import io.servicecomb.foundation.token.AuthenticationTokenManager;
 import io.servicecomb.foundation.token.RSAKeypair4Auth;
 import io.servicecomb.swagger.invocation.AsyncResponse;
 
@@ -19,9 +18,7 @@ public class TestConsumerAuthHandler {
 	@Test
 	public void testHandler() throws Exception {
 
-		AuthenticationTokenManager tokenManager = new RSACoumserTokenManager();
 		ConsumerAuthHandler consumerAuthHandler = new ConsumerAuthHandler();
-		consumerAuthHandler.setAthenticationTokenManager(tokenManager);
 		consumerAuthHandler.handle(invocation, asyncResp);
 		Assert.assertTrue(true);
 	}

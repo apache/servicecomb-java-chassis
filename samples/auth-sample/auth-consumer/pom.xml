@@ -33,6 +33,10 @@
         </dependency>
         <dependency>
             <groupId>io.servicecomb</groupId>
+            <artifactId>handler-loadbalance</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.servicecomb</groupId>
             <artifactId>provider-springmvc</artifactId>
         </dependency>
         <dependency>

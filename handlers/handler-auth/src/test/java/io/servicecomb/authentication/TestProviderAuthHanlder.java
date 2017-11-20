@@ -3,7 +3,6 @@ package io.servicecomb.authentication;
 import io.servicecomb.core.Const;
 import io.servicecomb.core.Invocation;
 import io.servicecomb.foundation.common.utils.RSAUtils;
-import io.servicecomb.foundation.token.AuthenticationTokenManager;
 import io.servicecomb.foundation.token.RSAKeypair4Auth;
 import io.servicecomb.swagger.invocation.AsyncResponse;
 
@@ -29,9 +28,7 @@ public class TestProviderAuthHanlder {
 	@Test
 	public void testHandle() throws Exception
 	{
-		AuthenticationTokenManager tokenManager = new RSAProviderTokenManager();
 		ProviderAuthHanlder providerAuthHanlder = new ProviderAuthHanlder();
-		providerAuthHanlder.setAuthenticationTokenManager(tokenManager);
 		providerAuthHanlder.handle(invocation, asyncResp);
 		Assert.assertTrue(true);
 	}

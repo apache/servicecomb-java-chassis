@@ -17,9 +17,7 @@ package io.servicecomb.samples.springmvc.consumer;
 
 import io.servicecomb.foundation.common.utils.BeanUtils;
 import io.servicecomb.foundation.common.utils.Log4jUtils;
-import io.servicecomb.provider.pojo.RpcReference;
 import io.servicecomb.provider.springmvc.reference.RestTemplateBuilder;
-import io.servicecomb.samples.common.schema.Hello;
 import io.servicecomb.samples.common.schema.models.Person;
 
 import org.springframework.stereotype.Component;
@@ -30,9 +28,6 @@ public class AuthConsumerMain {
 
   private static RestTemplate restTemplate = RestTemplateBuilder.create();
 
-  @RpcReference(microserviceName = "springmvc", schemaId = "springmvcHello")
-  private static Hello hello;
-
   public static void main(String[] args) throws Exception {
     init();
     Person person = new Person();
@@ -41,15 +36,12 @@ public class AuthConsumerMain {
     // RestTemplate Consumer or POJO Consumer. You can choose whatever you like
     // RestTemplate Consumer
     String sayHiResult =
-        restTemplate.postForObject("cse://springmvc/springmvchello/sayhi?name=Java Chassis", null, String.class);
-    String sayHelloResult = restTemplate.postForObject("cse://springmvc/springmvchello/sayhello", person, String.class);
+        restTemplate.postForObject("cse://auth-provider/springmvchello/sayhi?name=Java Chassis", null, String.class);
+    String sayHelloResult = restTemplate.postForObject("cse://auth-provider/springmvchello/sayhello", person, String.class);
     System.out.println("RestTemplate Consumer or POJO Consumer.  You can choose whatever you like.");
     System.out.println("RestTemplate consumer sayhi services: " + sayHiResult);
     System.out.println("RestTemplate consumer sayhello services: " + sayHelloResult);
 
-    // POJO Consumer
-    System.out.println("POJO consumer sayhi services: " + hello.sayHi("Java Chassis"));
-    System.out.println("POJO consumer sayhi services: " + hello.sayHello(person));
   }
 
   public static void init() throws Exception {

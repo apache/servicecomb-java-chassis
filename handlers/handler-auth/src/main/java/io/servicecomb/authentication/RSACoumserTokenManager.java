@@ -13,11 +13,7 @@ import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import org.apache.commons.lang3.RandomStringUtils;
-import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Service;
 
-@Component
-@Service("coumserTokenManager")
 public class RSACoumserTokenManager implements AuthenticationTokenManager {
 
 	private ReadWriteLock readWriteLock = new ReentrantReadWriteLock();
