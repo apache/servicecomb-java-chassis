@@ -52,10 +52,10 @@ public abstract class AbstractTransport implements Transport {
 
   private static final long DEFAULT_TIMEOUT_MILLIS = 30000;
   
-  private static final String DEFAULT_TIMEOUT_KEY = "cse.request.timeout";
+  private static final String REQUEST_TIMEOUT_KEY = "cse.request.timeout";
 
   public static DynamicLongProperty getRequestTimeoutProperty(){
-    return DynamicPropertyFactory.getInstance().getLongProperty(DEFAULT_TIMEOUT_KEY, DEFAULT_TIMEOUT_MILLIS);
+    return DynamicPropertyFactory.getInstance().getLongProperty(REQUEST_TIMEOUT_KEY, DEFAULT_TIMEOUT_MILLIS);
   }
   
   // 所有transport使用同一个vertx实例，避免创建太多的线程
