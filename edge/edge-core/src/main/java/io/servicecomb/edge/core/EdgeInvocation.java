@@ -49,6 +49,8 @@ public class EdgeInvocation extends AbstractRestInvocation {
 
   protected ReferenceConfig referenceConfig;
 
+  protected String versionRule = DefinitionConst.VERSION_RULE_ALL;
+
   public void init(String microserviceName, RoutingContext context, String path,
       List<HttpServerFilter> httpServerFilters) {
     this.microserviceName = microserviceName;
@@ -72,6 +74,7 @@ public class EdgeInvocation extends AbstractRestInvocation {
         sendResponse(response);
         return;
       }
+
       doInvoke();
     } catch (InvocationException e) {
       sendFailResponse(e);
@@ -105,6 +108,10 @@ public class EdgeInvocation extends AbstractRestInvocation {
     }
   }
 
+  public void setVersionRule(String versionRule) {
+    this.versionRule = versionRule;
+  }
+
   // another possible rule:
   // path is: /msName/version/.....
   // version in path is v1 or v2 and so on
@@ -116,7 +123,7 @@ public class EdgeInvocation extends AbstractRestInvocation {
   protected String chooseVersionRule() {
     // this will use all instance of the microservice
     // and this required all new version compatible to old version
-    return DefinitionConst.VERSION_RULE_ALL;
+    return versionRule;
   }
 
   protected void prepareEdgeInvoke() throws Throwable {
@@ -147,10 +154,20 @@ public class EdgeInvocation extends AbstractRestInvocation {
   }
 
   @Override
-  protected void doInvoke() throws Throwable {
+  protected void doInvoke() {
     invocation.setResponseExecutor(new ReactiveResponseExecutor());
-    invocation.next(resp -> {
-      sendResponseQuietly(resp);
+    invocation.getOperationMeta().getExecutor().execute(() -> {
+      doInvokeInExecutor();
     });
+  }
+
+  protected void doInvokeInExecutor() {
+    try {
+      invocation.next(resp -> {
+        sendResponseQuietly(resp);
+      });
+    } catch (Throwable e) {
+      sendFailResponse(e);
+    }
   }
 }

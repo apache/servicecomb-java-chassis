@@ -110,15 +110,6 @@ public class TestRestAsyncListener {
   }
 
   @Test
-  public void onTimeoutExecuting() throws IOException {
-    request.setAttribute(RestConst.REST_STATE_EXECUTING, true);
-
-    listener.onTimeout(event);
-
-    Assert.assertSame(requestEx, request.getAttribute(RestConst.REST_REQUEST));
-  }
-
-  @Test
   public void onTimeoutCommitted() throws IOException {
     committed = true;
     listener.onTimeout(event);

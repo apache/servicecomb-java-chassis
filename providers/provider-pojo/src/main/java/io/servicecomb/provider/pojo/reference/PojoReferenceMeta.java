@@ -16,8 +16,6 @@
 
 package io.servicecomb.provider.pojo.reference;
 
-import java.lang.reflect.Proxy;
-
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.InitializingBean;
 
@@ -83,7 +81,6 @@ public class PojoReferenceMeta implements FactoryBean<Object>, InitializingBean 
               schemaId));
     }
 
-    Invoker invoker = new Invoker(microserviceName, schemaId, consumerIntf);
-    proxy = Proxy.newProxyInstance(consumerIntf.getClassLoader(), new Class<?>[] {consumerIntf}, invoker);
+    proxy = Invoker.createProxy(microserviceName, schemaId, consumerIntf);
   }
 }
