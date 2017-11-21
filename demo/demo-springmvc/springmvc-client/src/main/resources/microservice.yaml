@@ -5,7 +5,8 @@ service_description:
 cse:
   service:
     registry:
-      address: http://127.0.0.1:30100
+      address: http://127.0.0.1:9980,http://127.0.0.1:30100
+      autodiscovery: true
       client:
         timeout:
           idle: 60
@@ -14,7 +15,7 @@ cse:
         healthCheck:
           interval: 3
         pull:
-          interval: 10
+          interval: 90
         watch: false
       autodiscovery: true
 

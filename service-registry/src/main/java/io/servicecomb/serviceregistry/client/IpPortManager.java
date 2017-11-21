@@ -18,7 +18,7 @@ package io.servicecomb.serviceregistry.client;
 
 import static io.servicecomb.serviceregistry.api.Const.REGISTRY_APP_ID;
 import static io.servicecomb.serviceregistry.api.Const.REGISTRY_SERVICE_NAME;
-import static io.servicecomb.serviceregistry.api.Const.REGISTRY_API.REGISTRY_VERSION;
+import static io.servicecomb.serviceregistry.api.Const.REGISTRY_VERSION;
 
 import java.util.ArrayList;
 import java.util.List;

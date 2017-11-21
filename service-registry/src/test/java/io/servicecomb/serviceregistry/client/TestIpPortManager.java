@@ -113,7 +113,7 @@ public class TestIpPortManager {
     addresses.put("rest", instances);
     new Expectations() {
       {
-        cacheManager.getOrCreate("default", "SERVICECENTER", "0.4.0");
+        cacheManager.getOrCreate("default", "SERVICECENTER", "latest");
         result = cache;
         cache.getOrCreateTransportMap();
         result = addresses;
