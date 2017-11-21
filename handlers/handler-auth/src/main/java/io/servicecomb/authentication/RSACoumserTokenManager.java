@@ -3,6 +3,7 @@ package io.servicecomb.authentication;
 import io.servicecomb.foundation.common.utils.RSAUtils;
 import io.servicecomb.foundation.token.AuthenticationTokenManager;
 import io.servicecomb.foundation.token.RSAKeypair4Auth;
+import io.servicecomb.serviceregistry.RegistryUtils;
 
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
@@ -40,12 +41,12 @@ public class RSACoumserTokenManager implements AuthenticationTokenManager {
 	{
 		String privateKey = RSAKeypair4Auth.INSTANCE.getPrivateKey();
 		readWriteLock.writeLock().lock();
-		//TODO get from cache
-		String instanceId = "lwh";
+		String instanceId = RegistryUtils.getMicroserviceInstance().getInstanceId();
+		String serviceId = RegistryUtils.getMicroservice().getServiceId();
 		String randomCode = RandomStringUtils.randomAlphanumeric(128);
 		long generateTime = System.currentTimeMillis();
 		try {
-			String plain = String.format("%s@%s@%s", instanceId, generateTime, randomCode);
+			String plain = String.format("%s@%s@%s@%s", instanceId, serviceId, generateTime, randomCode);
 			String sign = RSAUtils.sign(plain, privateKey);
 			token = RSAAuthenticationToken.fromStr(String.format("%s@%s", plain, sign));
 			return token.fromat();

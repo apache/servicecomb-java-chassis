@@ -628,4 +628,24 @@ public final class ServiceRegistryClientImpl implements ServiceRegistryClient {
     }
     return false;
   }
+
+	@Override
+	public MicroserviceInstance findServiceInstance(String serviceId, String instanceId) {
+		try {
+			Holder<MicroserviceInstance> holder = new Holder<>();
+			IpPort ipPort = ipPortManager.getAvailableAddress(false);
+			CountDownLatch countDownLatch = new CountDownLatch(1);
+			RestUtils.get(ipPort,
+					String.format(Const.REGISTRY_API.MICROSERVICE_INSTANCE_OPERATION_ONE, serviceId, instanceId),
+					new RequestParam(), syncHandler(countDownLatch, MicroserviceInstance.class, holder));
+			countDownLatch.await();
+			return holder.value;
+		} catch (Exception e) {
+			LOGGER.error("get instance from sc failed");
+			return null;
+		}
+	
+	}
+  
+  
 }

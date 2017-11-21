@@ -8,9 +8,9 @@ cse:
       address: http://127.0.0.1:30100
   handler:
     chain:
-      Consumer:
+      Provider:
         default: auth-provider
   rest:
-    address: 0.0.0.0:8081
+    address: 0.0.0.0:8082
   highway:
     address: 0.0.0.0:7070

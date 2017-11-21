@@ -1,14 +1,19 @@
 package io.servicecomb.authentication;
 
-import io.servicecomb.foundation.common.utils.RSAUtils;
-import io.servicecomb.foundation.token.AuthenticationTokenManager;
-import io.servicecomb.foundation.token.RSAKeypair4Auth;
-
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.SignatureException;
 import java.security.spec.InvalidKeySpecException;
 import java.util.Date;
+import java.util.Map;
+import java.util.Optional;
+import java.util.function.Function;
+
+import io.servicecomb.foundation.common.utils.RSAUtils;
+import io.servicecomb.foundation.token.AuthenticationTokenManager;
+import io.servicecomb.serviceregistry.api.Const;
+import io.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
+import io.servicecomb.serviceregistry.cache.MicroserviceInstanceCache;
 
 public class RSAProviderTokenManager implements AuthenticationTokenManager{
 
@@ -20,7 +25,7 @@ public class RSAProviderTokenManager implements AuthenticationTokenManager{
         	RSAAuthenticationToken rsaToken = RSAAuthenticationToken.fromStr(token);
             String sign = rsaToken.getSign();
             String content = rsaToken.plainToken();
-            String publicKey =  getPublicKeyByInstanceId(rsaToken.getInstanceId());
+            String publicKey =  getPublicKey(rsaToken.getInstanceId(), rsaToken.getServiceId());
             boolean verify = RSAUtils.verify(publicKey, sign, content);
             if (verify)
             {
@@ -40,9 +45,16 @@ public class RSAProviderTokenManager implements AuthenticationTokenManager{
 		return false;
 	}
 
-	private String getPublicKeyByInstanceId(String instanceId) {
-		//TODO get from cache
-		return RSAKeypair4Auth.INSTANCE.getPublicKey();
+	private String getPublicKey(String instanceId, String serviceId) {
+		Optional<MicroserviceInstance> instances = Optional.of(MicroserviceInstanceCache.getOrCreate(serviceId, instanceId));
+		return instances.map(MicroserviceInstance :: getProperties).map(new Function< Map<String, String>, String>() {
+
+			@Override
+			public String apply(Map<String, String> properties) {
+				return properties.get(Const.INSTANCE_PUBKEY_PRO);
+			}
+			
+		}).get();
 	}
 
 }

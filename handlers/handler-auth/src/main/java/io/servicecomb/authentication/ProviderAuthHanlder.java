@@ -20,7 +20,7 @@ public class ProviderAuthHanlder implements Handler {
 			invocation.next(asyncResp);
 		} else {
 			asyncResp.producerFail(
-					new InvocationException(new HttpStatus(401, "UNAUTHORIZED"), "reject by authentication"));
+					new InvocationException(new HttpStatus(401, "UNAUTHORIZED"), "UNAUTHORIZED"));
 		}
 
 	}
