@@ -100,7 +100,7 @@ public class VertxHttpMethod {
     // 从业务线程转移到网络线程中去发送
     httpClientWithContext.runOnContext(httpClient -> {
       this.setCseContext(invocation, clientRequest);
-      clientRequest.setTimeout(AbstractTransport.getRequestTimeout());
+      clientRequest.setTimeout(AbstractTransport.getRequestTimeoutProperty().get());
       try {
         restClientRequest.end();
       } catch (Exception e) {
