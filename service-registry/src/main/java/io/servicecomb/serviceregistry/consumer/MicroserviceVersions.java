@@ -109,25 +109,25 @@ public class MicroserviceVersions {
     setInstances(pulledInstances);
   }
 
-  private void setInstances(List<MicroserviceInstance> pulledInstances) {
-    synchronized (lock) {
-      instances = pulledInstances
-          .stream()
-          .filter(instance -> {
-            return MicroserviceInstanceStatus.UP.equals(instance.getStatus());
-          })
-          .collect(Collectors.toList());
-      for (MicroserviceInstance instance : instances) {
-        // ensure microserviceVersion exists
-        versions.computeIfAbsent(instance.getServiceId(), microserviceId -> {
-          MicroserviceVersion microserviceVersion =
-              appManager.getMicroserviceVersionFactory().create(microserviceName, microserviceId);
-          for (MicroserviceVersionRule microserviceVersionRule : versionRules.values()) {
-            microserviceVersionRule.addMicroserviceVersion(microserviceVersion);
-          }
-          return microserviceVersion;
-        });
-      }
+    private void setInstances(List<MicroserviceInstance> pulledInstances) {
+        synchronized (lock) {
+            instances = pulledInstances
+                    .stream()
+                    .filter(instance -> {
+                        return MicroserviceInstanceStatus.UP.equals(instance.getStatus()) && RegistryUtils.getMicroserviceInstance().getEnvironment().equals(instance.getEnvironment());
+                    })
+                    .collect(Collectors.toList());
+            for (MicroserviceInstance instance : instances) {
+                // ensure microserviceVersion exists
+                versions.computeIfAbsent(instance.getServiceId(), microserviceId -> {
+                    MicroserviceVersion microserviceVersion =
+                            appManager.getMicroserviceVersionFactory().create(microserviceName, microserviceId);
+                    for (MicroserviceVersionRule microserviceVersionRule : versionRules.values()) {
+                        microserviceVersionRule.addMicroserviceVersion(microserviceVersion);
+                    }
+                    return microserviceVersion;
+                });
+            }
 
       for (MicroserviceVersionRule microserviceVersionRule : versionRules.values()) {
         microserviceVersionRule.setInstances(instances);

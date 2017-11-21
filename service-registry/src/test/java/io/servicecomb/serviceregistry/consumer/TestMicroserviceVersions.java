@@ -41,6 +41,7 @@ import mockit.Expectations;
 import mockit.Mock;
 import mockit.MockUp;
 import mockit.Mocked;
+import org.springframework.core.env.Environment;
 
 public class TestMicroserviceVersions {
   EventBus eventBus = new EventBus();
@@ -76,7 +77,7 @@ public class TestMicroserviceVersions {
     MicroserviceInstance instance = new MicroserviceInstance();
     instance.setInstanceId("i" + microserviceId);
     instance.setServiceId(microserviceId);
-
+    instance.setEnvironment("production");
     instances.add(instance);
   }
 
@@ -94,6 +95,16 @@ public class TestMicroserviceVersions {
       @Mock
       Microservice getMicroservice(String microserviceId) {
         return microservices.get(microserviceId);
+      }
+
+      @Mock
+      MicroserviceInstance getMicroserviceInstance(){
+        return instances.get(0);
+      }
+
+      @Mock
+      String getEnvironment(){
+        return "production";
       }
     };
   }
