@@ -22,6 +22,11 @@ import java.net.ServerSocket;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 
+import com.netflix.config.DynamicPropertyFactory;
+
+import io.servicecomb.transport.rest.servlet.ServletConfig;
+
+import org.apache.commons.configuration.Configuration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.context.embedded.AbstractConfigurableEmbeddedServletContainer;
@@ -30,6 +35,8 @@ import org.springframework.stereotype.Component;
 
 import io.servicecomb.transport.rest.servlet.RestServletInjector;
 import io.servicecomb.transport.rest.servlet.ServletUtils;
+
+import org.springframework.util.StringUtils;
 
 @Component
 // extends from AbstractConfigurableEmbeddedServletContainer, only want to get embed web container's port and address
@@ -50,6 +57,11 @@ public class RestServletInitializer extends AbstractConfigurableEmbeddedServletC
     // web container did not did listen now.
     // so mock to listen, and then close.
     try (ServerSocket ss = new ServerSocket(getPort(), 0, getAddress())) {
+      if (StringUtils.isEmpty(ServletConfig.getServletUrlPattern())) {
+        // ensure the servlet will be instantiated
+        Configuration configuration = (Configuration) DynamicPropertyFactory.getBackingConfigurationSource();
+        configuration.setProperty(ServletConfig.KEY_SERVLET_URL_PATTERN, ServletConfig.DEFAULT_URL_PATTERN);
+      }
       RestServletInjector.defaultInject(servletContext);
       ServletUtils.saveUrlPrefix(servletContext);
     } catch (IOException e) {
