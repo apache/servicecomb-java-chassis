@@ -111,13 +111,7 @@ public class MicroserviceVersions {
 
   private void setInstances(List<MicroserviceInstance> pulledInstances) {
     synchronized (lock) {
-      instances = pulledInstances
-          .stream()
-          .filter(instance -> {
-            return MicroserviceInstanceStatus.UP.equals(instance.getStatus());
-          })
-          .collect(Collectors.toList());
-      for (MicroserviceInstance instance : instances) {
+      for (MicroserviceInstance instance : pulledInstances) {
         // ensure microserviceVersion exists
         versions.computeIfAbsent(instance.getServiceId(), microserviceId -> {
           MicroserviceVersion microserviceVersion =
