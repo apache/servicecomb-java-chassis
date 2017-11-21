@@ -16,15 +16,30 @@
 
 package io.servicecomb.demo.pojo.server;
 
-import io.servicecomb.demo.helloworld.greeter.Hello;
+import javax.ws.rs.core.MediaType;
 
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import io.servicecomb.demo.helloworld.greeter.Hello;
+import io.servicecomb.provider.pojo.RpcSchema;
+
+@RpcSchema(schemaId = "helloworld.Greeter")
+@RequestMapping(path="/pojo/rest/helloworld.Greeter",produces = MediaType.APPLICATION_JSON)
 public class HelloImpl implements Hello {
 
   @Override
+  @ResponseBody
+  @RequestMapping(path = "/sayHello",method = RequestMethod.POST)
   public String SayHello(String name) {
     return "Hello Message fast";
   }
 
+  @RequestMapping(path="/sayHelloAgain",method = RequestMethod.POST)
+  @ResponseBody
   @Override
   public String SayHelloAgain(String name) {
     try {
