@@ -29,6 +29,7 @@ import org.apache.http.message.BasicNameValuePair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.netflix.config.DynamicLongProperty;
 import com.netflix.config.DynamicPropertyFactory;
 
 import io.servicecomb.core.Const;
@@ -50,25 +51,13 @@ public abstract class AbstractTransport implements Transport {
   public static final String ENDPOINT_KEY = "cse.endpoint";
 
   private static final long DEFAULT_TIMEOUT_MILLIS = 30000;
+  
+  private static final String REQUEST_TIMEOUT_KEY = "cse.request.timeout";
 
-  private static Long msRequestTimeout = null;
-
-  public static long getRequestTimeout() {
-    if (msRequestTimeout != null) {
-      return msRequestTimeout;
-    }
-
-    long msTimeout = DynamicPropertyFactory.getInstance()
-        .getLongProperty("cse.request.timeout", DEFAULT_TIMEOUT_MILLIS)
-        .get();
-    if (msTimeout <= 0) {
-      msTimeout = DEFAULT_TIMEOUT_MILLIS;
-    }
-
-    msRequestTimeout = msTimeout;
-    return msRequestTimeout;
+  public static DynamicLongProperty getRequestTimeoutProperty(){
+    return DynamicPropertyFactory.getInstance().getLongProperty(REQUEST_TIMEOUT_KEY, DEFAULT_TIMEOUT_MILLIS);
   }
-
+  
   // 所有transport使用同一个vertx实例，避免创建太多的线程
   protected Vertx transportVertx = VertxUtils.getOrCreateVertxByName("transport", null);
 

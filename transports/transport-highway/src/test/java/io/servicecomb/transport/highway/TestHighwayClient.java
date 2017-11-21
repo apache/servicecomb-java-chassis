@@ -18,17 +18,23 @@ package io.servicecomb.transport.highway;
 
 import java.util.concurrent.Executor;
 
+import org.apache.commons.configuration.AbstractConfiguration;
 import org.junit.Assert;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mockito.Mockito;
+
+import com.netflix.config.DynamicPropertyFactory;
 
 import io.netty.buffer.ByteBuf;
 import io.protostuff.runtime.ProtobufCompatibleUtils;
 import io.servicecomb.codec.protobuf.definition.OperationProtobuf;
 import io.servicecomb.codec.protobuf.definition.ProtobufManager;
+import io.servicecomb.config.ConfigUtil;
 import io.servicecomb.core.Endpoint;
 import io.servicecomb.core.Invocation;
 import io.servicecomb.core.definition.OperationMeta;
+import io.servicecomb.core.transport.AbstractTransport;
 import io.servicecomb.foundation.vertx.VertxUtils;
 import io.servicecomb.foundation.vertx.client.ClientPoolManager;
 import io.servicecomb.foundation.vertx.client.tcp.TcpClientConfig;
@@ -61,7 +67,22 @@ public class TestHighwayClient {
   Endpoint endpoint = Mockito.mock(Endpoint.class);
 
   Executor excutor = Mockito.mock(Executor.class);
+  
+  @BeforeClass
+  public static void beforeCls() {
+    ConfigUtil.installDynamicConfig();
+    AbstractConfiguration configuration =
+        (AbstractConfiguration) DynamicPropertyFactory.getBackingConfigurationSource();
+    configuration.addProperty("cse.request.timeout", 2000);
+  }
 
+  @Test
+  public void testRequestTimeout() {
+    Assert.assertEquals(AbstractTransport.getRequestTimeoutProperty().get(), 2000);
+
+  }
+
+  
   @Test
   public void testHighwayClientSSL(@Mocked Vertx vertx) throws Exception {
     new MockUp<VertxUtils>() {
