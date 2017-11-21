@@ -142,8 +142,6 @@ public final class Const {
 
   public static final String REGISTRY_SERVICE_NAME = "SERVICECENTER";
 
-  public static final String REGISTRY_VERSION = "latest";
-
   public static final String APP_SERVICE_SEPARATOR = ":";
 
   public static final String PATH_CHECKSESSION = "checksession";
