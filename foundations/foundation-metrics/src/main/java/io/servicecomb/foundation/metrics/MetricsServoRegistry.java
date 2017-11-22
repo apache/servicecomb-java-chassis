@@ -63,7 +63,7 @@ import rx.functions.Func0;
  */
 public class MetricsServoRegistry implements InitializingBean {
 
-  protected static final ThreadLocal<MetricsDataMonitor> LOCAL_METRICS_MAP = new ThreadLocal<>();
+  protected static ThreadLocal<MetricsDataMonitor> LOCAL_METRICS_MAP = new ThreadLocal<>();
 
   private static final String METRICS_POLL_TIME = "cse.metrics.polltime";
 
@@ -73,7 +73,7 @@ public class MetricsServoRegistry implements InitializingBean {
 
   private MetricsDataMonitor localMetrics = new MetricsDataMonitor();
 
-  private static Vector<MetricsDataMonitor> metricsList = new Vector<>();
+  protected static Vector<MetricsDataMonitor> metricsList = new Vector<>();
 
   /*
    * Added getter for unit test of local metrics.
@@ -500,7 +500,7 @@ public class MetricsServoRegistry implements InitializingBean {
 
   /**
    * Get the total requests and failed requests for instance level.
-   * 
+   *
    * @param metricsName Name of the metrics
    * @param instance  object of latest metrics
    * @param fieldName metric field
@@ -520,7 +520,7 @@ public class MetricsServoRegistry implements InitializingBean {
 
   /**
    * Get the total requests and failed requests for each producer.
-   * 
+   *
    * @param metricsName  Name of the metrics
    * @param instance object of latest metrics
    * @param fieldName metric field
@@ -539,7 +539,7 @@ public class MetricsServoRegistry implements InitializingBean {
 
   /**
    * Get the total requests and failed requests for each producer.
-   * 
+   *
    * @param metricsName Name of the metrics
    * @param instance object of latest metrics
    * @param fieldName metric field
@@ -558,7 +558,7 @@ public class MetricsServoRegistry implements InitializingBean {
 
   /**
    * Prepare the initial metrics.
-   * 
+   *
    * @return List of monitors
    */
   private List<Monitor<?>> getMetricsMonitors() {

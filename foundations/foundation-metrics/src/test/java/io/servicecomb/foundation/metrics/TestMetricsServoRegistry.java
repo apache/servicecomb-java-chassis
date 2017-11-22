@@ -19,8 +19,10 @@ package io.servicecomb.foundation.metrics;
 import java.util.Map;
 
 import org.junit.After;
+import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import com.netflix.servo.publish.PollScheduler;
@@ -34,6 +36,12 @@ public class TestMetricsServoRegistry {
   MetricsDataMonitor localData = null;
 
   MetricsServoRegistry metricsRegistry = null;
+
+  @BeforeClass
+  public static void staticBeforeClean() {
+    MetricsServoRegistry.metricsList.clear();
+    MetricsServoRegistry.LOCAL_METRICS_MAP = new ThreadLocal<>();
+  }
 
   @Before
   public void setUp() throws Exception {
