@@ -26,6 +26,7 @@ public class MetricsControllerTest {
   @Before
   public void setUp() throws Exception {
     metricsRegistry = new MetricsServoRegistry();
+    metricsRegistry.initMetricsPublishing();
     localData = metricsRegistry.getLocalMetrics();
     metricsDataMonitor = MetricsServoRegistry.getOrCreateLocalMetrics();
   }
