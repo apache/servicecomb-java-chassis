@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package io.servicecomb.provider.springmvc.metrics;
+package io.servicecomb.provider.metrics;
 
 import java.util.HashMap;
 import java.util.List;

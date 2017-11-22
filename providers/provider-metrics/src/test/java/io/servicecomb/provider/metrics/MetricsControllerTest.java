@@ -1,4 +1,4 @@
-package io.servicecomb.provider.springmvc.metrics;
+package io.servicecomb.provider.metrics;
 
 import java.util.Map;
 

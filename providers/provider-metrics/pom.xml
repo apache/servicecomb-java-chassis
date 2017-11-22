@@ -19,50 +19,23 @@
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <parent>
-    <artifactId>bmi</artifactId>
-    <groupId>io.servicecomb.samples</groupId>
+    <artifactId>providers</artifactId>
+    <groupId>io.servicecomb</groupId>
     <version>0.4.1-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
 
-  <artifactId>bmi-calculator</artifactId>
+  <artifactId>provider-metrics</artifactId>
 
   <dependencies>
     <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter</artifactId>
+      <groupId>io.servicecomb</groupId>
+      <artifactId>provider-rest-common</artifactId>
     </dependency>
     <dependency>
       <groupId>io.servicecomb</groupId>
-      <artifactId>spring-boot-starter-provider</artifactId>
-    </dependency>
-
-    <dependency>
-      <groupId>io.servicecomb</groupId>
-      <artifactId>handler-flowcontrol-qps</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>io.servicecomb</groupId>
-      <artifactId>handler-bizkeeper</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>io.servicecomb</groupId>
-      <artifactId>handler-tracing-zipkin</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>io.servicecomb</groupId>
-      <artifactId>provider-metrics</artifactId>
-      <version>0.4.1-SNAPSHOT</version>
+      <artifactId>provider-springmvc</artifactId>
     </dependency>
   </dependencies>
-
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-maven-plugin</artifactId>
-      </plugin>
-    </plugins>
-  </build>
 
 </project>
