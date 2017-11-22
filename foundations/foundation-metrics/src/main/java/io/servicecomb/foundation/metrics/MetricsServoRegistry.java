@@ -49,6 +49,7 @@ import com.netflix.servo.monitor.MonitorConfig;
 import com.netflix.servo.publish.BasicMetricFilter;
 import com.netflix.servo.publish.CounterToRateMetricTransform;
 import com.netflix.servo.publish.FileMetricObserver;
+import com.netflix.servo.publish.MemoryMetricObserver;
 import com.netflix.servo.publish.MetricObserver;
 import com.netflix.servo.publish.MonitorRegistryMetricPoller;
 import com.netflix.servo.publish.PollRunnable;
@@ -75,11 +76,17 @@ public class MetricsServoRegistry implements InitializingBean {
 
   protected static Vector<MetricsDataMonitor> metricsList = new Vector<>();
 
+  private MemoryMetricObserver memoryObserver = null;
+
+  public MemoryMetricObserver getMemoryObserver() {
+    return memoryObserver;
+  }
+
   /*
-   * Added getter for unit test of local metrics.
-   * 
-   * @return Local metric reference
-   */
+     * Added getter for unit test of local metrics.
+     *
+     * @return Local metric reference
+     */
   public MetricsDataMonitor getLocalMetrics() {
     return localMetrics;
   }
@@ -117,9 +124,18 @@ public class MetricsServoRegistry implements InitializingBean {
     String fileName = DynamicPropertyFactory.getInstance().getStringProperty(FILENAME, "metrics").get();
     String filePath = DynamicPropertyFactory.getInstance().getStringProperty(FILEPATH, ".").get();
     MetricObserver fileObserver = new FileMetricObserver(fileName, new File(filePath));
-    MetricObserver transform = new CounterToRateMetricTransform(fileObserver, metricPoll, TimeUnit.SECONDS);
-    PollRunnable task = new PollRunnable(new MonitorRegistryMetricPoller(), BasicMetricFilter.MATCH_ALL, transform);
-    scheduler.addPoller(task, metricPoll, TimeUnit.SECONDS);
+    MetricObserver fileTransform = new CounterToRateMetricTransform(fileObserver, metricPoll, TimeUnit.SECONDS);
+
+    this.memoryObserver = new MemoryMetricObserver("default", 1);
+    MetricObserver memoryTransform = new CounterToRateMetricTransform(memoryObserver, metricPoll, TimeUnit.SECONDS);
+
+    PollRunnable fileTask = new PollRunnable(new MonitorRegistryMetricPoller(), BasicMetricFilter.MATCH_ALL,
+        fileTransform);
+    PollRunnable memoryTask = new PollRunnable(new MonitorRegistryMetricPoller(), BasicMetricFilter.MATCH_ALL,
+        memoryTransform);
+
+    scheduler.addPoller(fileTask, metricPoll, TimeUnit.SECONDS);
+    scheduler.addPoller(memoryTask, metricPoll, TimeUnit.SECONDS);
   }
 
   @Override

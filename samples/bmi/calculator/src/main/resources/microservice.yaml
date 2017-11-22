@@ -26,3 +26,9 @@ cse:
       address: http://127.0.0.1:30100
   rest:
     address: 0.0.0.0:7777
+
+#  metrics:
+#    polltime: 5
+#    file:
+#      name: cal_log
+#      path: D:/Temp/
