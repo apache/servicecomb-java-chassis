@@ -3,8 +3,7 @@ package io.servicecomb.authentication;
 
 /**
  * token 组成部分：
- * token: instanceId@generateTime@randomCode@sign(instanceId@generateTime@randomCode)
- * @author Administrator
+ * token: instanceId@@generateTime@randomCode@sign(instanceId@@generateTime@randomCode)
  *
  */
 public class RSAAuthenticationToken {

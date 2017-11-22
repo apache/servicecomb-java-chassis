@@ -20,9 +20,6 @@ public class RSAUtils {
 	private final static String RSA_ALG = "RSA";
 	private final static String SIGN_ALG = "SHA256withRSA";
 	
-	/**
-	 * 加密算法
-	 */
 	private static Base64.Encoder encoder = Base64.getEncoder();
 	private static Base64.Decoder decoder = Base64.getDecoder();
 

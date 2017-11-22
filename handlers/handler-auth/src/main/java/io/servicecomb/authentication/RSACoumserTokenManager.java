@@ -59,7 +59,7 @@ public class RSACoumserTokenManager implements AuthenticationTokenManager {
 	@Override
 	public boolean vaild(String token) {
 		long generateTime = RSAAuthenticationToken.fromStr(token).getGenerateTime();
-		Date expiredDate = new Date(generateTime + RSAAuthenticationToken.TOKEN_ACTIVE_TIME + 15 * 60 * 1000);
+		Date expiredDate = new Date(generateTime + RSAAuthenticationToken.TOKEN_ACTIVE_TIME - 15 * 60 * 1000);
 		Date now = new Date();
 		if (expiredDate.before(now) )
 		{

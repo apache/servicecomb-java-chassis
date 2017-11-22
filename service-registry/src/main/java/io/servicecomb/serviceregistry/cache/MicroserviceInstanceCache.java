@@ -13,6 +13,10 @@ import com.google.common.cache.CacheBuilder;
 import io.servicecomb.serviceregistry.RegistryUtils;
 import io.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
 
+/**
+ * 微服务实例缓存 key为：serviceId@instanceId 缓存limit：1000 缓存老化策略：30分钟没有访问就过期。
+ *
+ */
 public class MicroserviceInstanceCache {
 
 	private static final Logger logger = LoggerFactory.getLogger(MicroserviceInstanceCache.class);
@@ -27,12 +31,13 @@ public class MicroserviceInstanceCache {
 
 				@Override
 				public MicroserviceInstance call() throws Exception {
+					logger.debug("get microservice instance from SC");
 					return getMicroserviceInstanceFromSC(serviceId, instanceId);
 				}
 
 			});
 		} catch (ExecutionException e) {
-			logger.error("get microservice from cache failed:" +  String.format("%s@%s", serviceId, instanceId));
+			logger.error("get microservice from cache failed:" + String.format("%s@%s", serviceId, instanceId));
 			return null;
 		}
 	}
