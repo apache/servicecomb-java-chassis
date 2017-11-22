@@ -32,7 +32,7 @@ public class RSAAuthenticationToken {
 	
 	public String plainToken()
 	{
-		return String.format("%s@%s@%s%s@", this.instanceId, this.serviceId, this.generateTime, this.randomCode);
+		return String.format("%s@%s@%s@%s", this.instanceId, this.serviceId, this.generateTime, this.randomCode);
 	}
 	
 	

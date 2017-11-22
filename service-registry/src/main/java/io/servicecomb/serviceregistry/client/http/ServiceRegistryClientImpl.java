@@ -49,6 +49,7 @@ import io.servicecomb.serviceregistry.api.response.GetInstancesResponse;
 import io.servicecomb.serviceregistry.api.response.GetSchemaResponse;
 import io.servicecomb.serviceregistry.api.response.GetServiceResponse;
 import io.servicecomb.serviceregistry.api.response.HeartbeatResponse;
+import io.servicecomb.serviceregistry.api.response.MicroInstanceResponse;
 import io.servicecomb.serviceregistry.api.response.MicroserviceInstanceChangedEvent;
 import io.servicecomb.serviceregistry.api.response.RegisterInstanceResponse;
 import io.servicecomb.serviceregistry.client.ClientException;
@@ -632,14 +633,18 @@ public final class ServiceRegistryClientImpl implements ServiceRegistryClient {
 	@Override
 	public MicroserviceInstance findServiceInstance(String serviceId, String instanceId) {
 		try {
-			Holder<MicroserviceInstance> holder = new Holder<>();
+			Holder<MicroInstanceResponse> holder = new Holder<>();
 			IpPort ipPort = ipPortManager.getAvailableAddress(false);
 			CountDownLatch countDownLatch = new CountDownLatch(1);
 			RestUtils.get(ipPort,
 					String.format(Const.REGISTRY_API.MICROSERVICE_INSTANCE_OPERATION_ONE, serviceId, instanceId),
-					new RequestParam(), syncHandler(countDownLatch, MicroserviceInstance.class, holder));
+					new RequestParam().addHeader("X-ConsumerId", serviceId), syncHandler(countDownLatch, MicroInstanceResponse.class, holder));
 			countDownLatch.await();
-			return holder.value;
+			if(null != holder.value)
+			{
+				return  holder.value.getInstance();
+			}
+			return null;
 		} catch (Exception e) {
 			LOGGER.error("get instance from sc failed");
 			return null;
