@@ -1,5 +1,6 @@
-package io.servicecomb.authentication;
+package io.servicecomb.authentication.consumer;
 
+import io.servicecomb.authentication.RSAAuthenticationToken;
 import io.servicecomb.foundation.common.utils.RSAUtils;
 import io.servicecomb.foundation.token.AuthenticationTokenManager;
 import io.servicecomb.foundation.token.RSAKeypair4Auth;
@@ -23,16 +24,16 @@ public class RSACoumserTokenManager implements AuthenticationTokenManager {
 
 	@Override
 	public String getToken() {
-		
+		readWriteLock.readLock().lock();
 		if(null != token && vaild(token.fromat()))
 		{
-			readWriteLock.readLock().lock();
 			String tokenStr = token.fromat();
 			readWriteLock.readLock().unlock();
 			return tokenStr;
 		}
 		else
 		{
+			readWriteLock.readLock().unlock();
 			return createToken();
 		}
 	}
@@ -56,6 +57,10 @@ public class RSACoumserTokenManager implements AuthenticationTokenManager {
 				
 	}
 
+	/**
+	 * the TTL of Token is  24 hours
+	 * client token will expired 15 minutes early 
+	 */
 	@Override
 	public boolean vaild(String token) {
 		long generateTime = RSAAuthenticationToken.fromStr(token).getGenerateTime();

@@ -1,4 +1,4 @@
-package io.servicecomb.authentication;
+package io.servicecomb.authentication.provider;
 
 import io.servicecomb.core.Const;
 import io.servicecomb.core.Handler;

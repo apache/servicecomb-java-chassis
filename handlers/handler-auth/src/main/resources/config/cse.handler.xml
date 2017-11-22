@@ -16,7 +16,7 @@
 
 <config>
 	<handler id="auth-consumer"
-		class="io.servicecomb.authentication.ConsumerAuthHandler" />
+		class="io.servicecomb.authentication.consumer.ConsumerAuthHandler" />
 	<handler id="auth-provider"
-		class="io.servicecomb.authentication.ProviderAuthHanlder" />
+		class="io.servicecomb.authentication.provider.ProviderAuthHanlder" />
 </config>

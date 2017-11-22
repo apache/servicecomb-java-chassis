@@ -1,4 +1,11 @@
-package io.servicecomb.authentication;
+package io.servicecomb.authentication.provider;
+
+import io.servicecomb.authentication.RSAAuthenticationToken;
+import io.servicecomb.foundation.common.utils.RSAUtils;
+import io.servicecomb.foundation.token.AuthenticationTokenManager;
+import io.servicecomb.serviceregistry.api.Const;
+import io.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
+import io.servicecomb.serviceregistry.cache.MicroserviceInstanceCache;
 
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
@@ -10,21 +17,19 @@ import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import io.servicecomb.foundation.common.utils.RSAUtils;
-import io.servicecomb.foundation.token.AuthenticationTokenManager;
-import io.servicecomb.serviceregistry.api.Const;
-import io.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
-import io.servicecomb.serviceregistry.cache.MicroserviceInstanceCache;
-
 public class RSAProviderTokenManager implements AuthenticationTokenManager {
 
 	private static Logger logger = LoggerFactory.getLogger(RSAProviderTokenManager.class);
-
+	
 	@Override
 	public boolean vaild(String token) {
-
 		try {
 			RSAAuthenticationToken rsaToken = RSAAuthenticationToken.fromStr(token);
+			if (null == rsaToken)
+			{
+				logger.error("token format is error,maybe attack");
+				return false;
+			}
 			String sign = rsaToken.getSign();
 			String content = rsaToken.plainToken();
 			String publicKey = getPublicKey(rsaToken.getInstanceId(), rsaToken.getServiceId());

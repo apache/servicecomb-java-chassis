@@ -1,5 +1,7 @@
 package io.servicecomb.authentication;
 
+import io.servicecomb.authentication.consumer.RSACoumserTokenManager;
+import io.servicecomb.authentication.provider.ProviderAuthHanlder;
 import io.servicecomb.core.Const;
 import io.servicecomb.core.Invocation;
 import io.servicecomb.foundation.common.utils.RSAUtils;

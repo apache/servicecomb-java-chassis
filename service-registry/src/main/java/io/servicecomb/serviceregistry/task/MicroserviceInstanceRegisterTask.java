@@ -15,6 +15,8 @@
  */
 package io.servicecomb.serviceregistry.task;
 
+import java.util.Optional;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
@@ -69,11 +71,9 @@ public class MicroserviceInstanceRegisterTask extends AbstractRegisterTask {
     microserviceInstance.getHealthCheck().setInterval(serviceRegistryConfig.getHeartbeatInterval());
     microserviceInstance.getHealthCheck().setTimes(serviceRegistryConfig.getResendHeartBeatTimes());
     
-    String publicKey = RSAKeypair4Auth.INSTANCE.getPublicKey();
-    if (null != publicKey)
-    {
-    	microserviceInstance.getProperties().put(Const.INSTANCE_PUBKEY_PRO, publicKey);
-    }
+	Optional.ofNullable(RSAKeypair4Auth.INSTANCE.getPublicKey()).ifPresent(
+				publicKey -> microserviceInstance.getProperties().put(
+						Const.INSTANCE_PUBKEY_PRO, publicKey));
     
     String instanceId = srClient.registerMicroserviceInstance(microserviceInstance);
     if (StringUtils.isEmpty(instanceId)) {

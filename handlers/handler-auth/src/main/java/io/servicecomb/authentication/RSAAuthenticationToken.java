@@ -57,6 +57,9 @@ public class RSAAuthenticationToken {
 	
 	public static RSAAuthenticationToken fromStr(String token) {
 		String[] tokenArr = token.split("@");
+		if (tokenArr.length != 4) {
+			return null;
+		}
 		return new RSAAuthenticationToken(tokenArr[0], tokenArr[1],
 				Long.valueOf(tokenArr[2]), tokenArr[3], tokenArr[4]);
 	}

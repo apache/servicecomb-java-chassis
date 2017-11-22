@@ -1,5 +1,6 @@
 package io.servicecomb.authentication;
 
+import io.servicecomb.authentication.consumer.ConsumerAuthHandler;
 import io.servicecomb.core.Invocation;
 import io.servicecomb.foundation.common.utils.RSAUtils;
 import io.servicecomb.foundation.token.RSAKeypair4Auth;

@@ -6,6 +6,12 @@ import io.servicecomb.foundation.token.RSAKeypair4Auth;
 
 import org.springframework.stereotype.Component;
 
+/**
+ * 
+ * initialize public and private key pair when system boot before registry instance to service center
+ * 
+ *
+ */
 @Component
 public class AuthHandlerBoot implements BootListener {
 	
