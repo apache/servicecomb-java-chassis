@@ -110,7 +110,7 @@ public class PojoClientTest {
 
   private static void testNull(Test test) {
     TestMgr.check("code is 'null'", test.getTestString(null));
-//    TestMgr.check(null, test.wrapParam(null));
+    TestMgr.check(null, test.wrapParam(null));
   }
 
   private static void testChinese(Test test) {

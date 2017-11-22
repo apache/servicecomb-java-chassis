@@ -34,24 +34,17 @@ import io.servicecomb.provider.pojo.RpcSchema;
 import io.servicecomb.swagger.invocation.exception.InvocationException;
 
 @RpcSchema(schemaId = "server")
-@RequestMapping(path = "/pojo/rest", produces = MediaType.APPLICATION_JSON)
 public class TestImpl implements Test {
-  @RequestMapping(path = "/testStringArray", method = RequestMethod.GET)
-  @ResponseBody
   @Override
   public String testStringArray(String[] arr) {
     return String.format("arr is '%s'", Arrays.toString(arr));
   }
 
-  @RequestMapping(path = "/testStatic", method = RequestMethod.GET)
-  @ResponseBody
   @Override
   public String getTestString(String code) {
     return String.format("code is '%s'", String.valueOf(code));
   }
 
-  @RequestMapping(path = "/testStatic", method = RequestMethod.POST)
-  @ResponseBody
   @Override
   public String postTestStatic(int code) {
     return null;
@@ -69,8 +62,6 @@ public class TestImpl implements Test {
     return user;
   }
 
-  @RequestMapping(path = "/testException", method = RequestMethod.GET)
-  @ResponseBody
   @Override
   public String testException(int code) {
     String strCode = String.valueOf(code);
@@ -90,25 +81,19 @@ public class TestImpl implements Test {
     return "not expected";
   }
 
-  @RequestMapping(path = "/splitParam", method = RequestMethod.POST)
-  @ResponseBody
   @Override
-  public User splitParam(@RequestParam(name = "index") int index, @RequestBody User user) {
+  public User splitParam(int index, User user) {
     return doTest(index, user, null, null);
   }
 
-  @RequestMapping(path = "/wrapParam", method = RequestMethod.POST)
-  @ResponseBody
   @Override
-  public User wrapParam(@RequestBody TestRequest request) {
+  public User wrapParam(TestRequest request) {
     if (request == null) {
       return null;
     }
     return doTest(request.getIndex(), request.getUser(), request.getUsers(), request.getData());
   }
 
-  @RequestMapping(path = "/addstring", method = RequestMethod.DELETE)
-  @ResponseBody
   @Override
   public String addString(String[] strArr) {
     String result = Arrays.toString(strArr);

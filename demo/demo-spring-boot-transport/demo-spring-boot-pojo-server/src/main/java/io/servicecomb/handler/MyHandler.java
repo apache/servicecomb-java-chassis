@@ -19,7 +19,7 @@ public class MyHandler implements Handler {
     LOGGER.info("If you see this log, that means this demo project has been converted to ServiceComb framework.");
 
     invocation.next(response -> {
-      if (invocation.getOperationName().equals("splitParam")) {
+      if (invocation.getOperationMeta().getSchemaQualifiedName().equals("server.splitParam")) {
         User user = response.getResult();
         user.setName(user.getName() + SPLITPARAM_RESPONSE_USER_SUFFIX);
         asyncResp.handle(response);
