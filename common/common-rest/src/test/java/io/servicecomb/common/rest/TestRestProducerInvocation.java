@@ -16,14 +16,10 @@
 
 package io.servicecomb.common.rest;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.Executor;
-
-import javax.xml.ws.Holder;
 
 import org.junit.After;
 import org.junit.Assert;
@@ -32,30 +28,20 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
-import io.servicecomb.common.rest.codec.RestCodec;
 import io.servicecomb.common.rest.definition.RestOperationMeta;
 import io.servicecomb.common.rest.filter.HttpServerFilter;
 import io.servicecomb.common.rest.locator.OperationLocator;
 import io.servicecomb.common.rest.locator.ServicePathManager;
 import io.servicecomb.core.Const;
 import io.servicecomb.core.CseContext;
-import io.servicecomb.core.Endpoint;
-import io.servicecomb.core.Handler;
-import io.servicecomb.core.Invocation;
 import io.servicecomb.core.Transport;
 import io.servicecomb.core.definition.MicroserviceMeta;
 import io.servicecomb.core.definition.MicroserviceMetaManager;
-import io.servicecomb.core.definition.OperationMeta;
-import io.servicecomb.core.definition.SchemaMeta;
-import io.servicecomb.core.executor.ReactiveExecutor;
-import io.servicecomb.foundation.metrics.performance.QueueMetrics;
 import io.servicecomb.foundation.vertx.http.AbstractHttpServletRequest;
 import io.servicecomb.foundation.vertx.http.HttpServletRequestEx;
 import io.servicecomb.foundation.vertx.http.HttpServletResponseEx;
 import io.servicecomb.serviceregistry.RegistryUtils;
 import io.servicecomb.serviceregistry.api.registry.Microservice;
-import io.servicecomb.swagger.invocation.AsyncResponse;
-import io.servicecomb.swagger.invocation.Response;
 import io.servicecomb.swagger.invocation.exception.InvocationException;
 import mockit.Expectations;
 import mockit.Mock;
@@ -120,7 +106,7 @@ public class TestRestProducerInvocation {
       }
 
       @Mock
-      RestOperationMeta findRestOperation() {
+      void findRestOperation() {
         throw expected;
       }
 
@@ -139,8 +125,8 @@ public class TestRestProducerInvocation {
   public void invokeNormal() {
     restProducerInvocation = new MockUp<RestProducerInvocation>() {
       @Mock
-      RestOperationMeta findRestOperation() {
-        return restOperationMeta;
+      void findRestOperation() {
+        restProducerInvocation.restOperationMeta = restOperationMeta;
       }
 
       @Mock
@@ -155,129 +141,6 @@ public class TestRestProducerInvocation {
 
     Assert.assertTrue(scheduleInvocation);
     Assert.assertSame(requestEx, requestEx.getAttribute(RestConst.REST_REQUEST));
-  }
-
-  @Test
-  public void scheduleInvocationNormal(@Mocked OperationMeta operationMeta) {
-    Executor executor = cmd -> {
-      cmd.run();
-    };
-    requestEx = new AbstractHttpServletRequest() {
-    };
-    requestEx.setAttribute(RestConst.REST_REQUEST, requestEx);
-    new Expectations() {
-      {
-        restOperationMeta.getOperationMeta();
-        result = operationMeta;
-        operationMeta.getExecutor();
-        result = executor;
-        operationMeta.getMicroserviceQualifiedName();
-        result = "sayHi";
-      }
-    };
-
-    restProducerInvocation = new MockUp<RestProducerInvocation>() {
-      @Mock
-      void runOnExecutor(QueueMetrics metricsData) {
-        runOnExecutor = true;
-      }
-    }.getMockInstance();
-    initRestProducerInvocation();
-
-    restProducerInvocation.scheduleInvocation();
-
-    Assert.assertTrue(runOnExecutor);
-
-  }
-
-  @Test
-  public void scheduleInvocationTimeout(@Mocked OperationMeta operationMeta) {
-    Executor executor = cmd -> {
-      cmd.run();
-    };
-
-    new Expectations() {
-      {
-        restOperationMeta.getOperationMeta();
-        result = operationMeta;
-        operationMeta.getExecutor();
-        result = executor;
-        operationMeta.getMicroserviceQualifiedName();
-        result = "sayHi";
-      }
-    };
-
-    requestEx = new AbstractHttpServletRequest() {
-    };
-
-    restProducerInvocation = new MockUp<RestProducerInvocation>() {
-      @Mock
-      void runOnExecutor() {
-        runOnExecutor = true;
-      }
-    }.getMockInstance();
-    initRestProducerInvocation();
-
-    restProducerInvocation.scheduleInvocation();
-
-    Assert.assertFalse(runOnExecutor);
-
-  }
-
-  @Test
-  public void scheduleInvocationException(@Mocked OperationMeta operationMeta) {
-    Executor executor = new ReactiveExecutor();
-    Throwable e = new Exception("Param error");
-    new Expectations(RestCodec.class) {
-      {
-        restOperationMeta.getOperationMeta();
-        result = operationMeta;
-        operationMeta.getExecutor();
-        result = executor;
-        operationMeta.getMicroserviceQualifiedName();
-        result = "sayHi";
-        requestEx.getAttribute(RestConst.REST_REQUEST);
-        result = requestEx;
-        RestCodec.restToArgs(requestEx, restOperationMeta);
-        result = e;
-      }
-    };
-
-    Holder<Throwable> result = new Holder<>();
-    restProducerInvocation = new MockUp<RestProducerInvocation>() {
-      @Mock
-      void sendFailResponse(Throwable throwable) {
-        result.value = throwable;
-      }
-    }.getMockInstance();
-
-    initRestProducerInvocation();
-    restProducerInvocation.scheduleInvocation();
-
-    Assert.assertSame(e, result.value);
-  }
-
-  @Test
-  public void runOnExecutor() {
-    Object[] args = new Object[] {};
-    new Expectations(RestCodec.class) {
-      {
-        restOperationMeta.getOperationMeta().getMicroserviceQualifiedName();
-        result = "sayHi";
-        RestCodec.restToArgs(requestEx, restOperationMeta);
-        result = args;
-      }
-    };
-    restProducerInvocation = new MockUp<RestProducerInvocation>() {
-      @Mock
-      void invoke() {
-        invokeNoParam = true;
-      }
-    }.getMockInstance();
-    initRestProducerInvocation();
-    restProducerInvocation.runOnExecutor(new QueueMetrics());
-    Assert.assertTrue(invokeNoParam);
-    Assert.assertSame(args, restProducerInvocation.invocation.getSwaggerArguments());
   }
 
   @Test
@@ -301,26 +164,6 @@ public class TestRestProducerInvocation {
 
     expectedException.expect(Exception.class);
     expectedException.expectMessage("stop");
-    restProducerInvocation.findRestOperation();
-  }
-
-  @Test
-  public void findRestOperationServicePathManagerNull(@Mocked MicroserviceMeta microserviceMeta) {
-    new Expectations(ServicePathManager.class) {
-      {
-        requestEx.getHeader(Const.TARGET_MICROSERVICE);
-        result = "ms";
-        microserviceMetaManager.ensureFindValue("ms");
-        result = microserviceMeta;
-        ServicePathManager.getServicePathManager(microserviceMeta);
-        result = null;
-      }
-    };
-    restProducerInvocation = new RestProducerInvocation();
-    initRestProducerInvocation();
-
-    expectedException.expect(InvocationException.class);
-    expectedException.expectMessage("CommonExceptionData [message=Not Found]");
     restProducerInvocation.findRestOperation();
   }
 
@@ -361,46 +204,8 @@ public class TestRestProducerInvocation {
     restProducerInvocation = new RestProducerInvocation();
     initRestProducerInvocation();
 
-    Assert.assertSame(restOperationMeta, restProducerInvocation.findRestOperation());
+    restProducerInvocation.findRestOperation();
+    Assert.assertSame(restOperationMeta, restProducerInvocation.restOperationMeta);
     Assert.assertSame(pathVars, requestEx.getAttribute(RestConst.PATH_PARAMETERS));
-  }
-
-  @Test
-  public void doInvoke(@Mocked Endpoint endpoint, @Mocked OperationMeta operationMeta,
-      @Mocked Object[] swaggerArguments, @Mocked SchemaMeta schemaMeta) throws Throwable {
-    Response response = Response.ok("ok");
-    Handler handler = new MockUp<Handler>() {
-      @Mock
-      void handle(Invocation invocation, AsyncResponse asyncResp) throws Exception {
-        asyncResp.complete(response);
-      }
-    }.getMockInstance();
-    List<Handler> handlerChain = Arrays.asList(handler);
-
-    new Expectations() {
-      {
-        operationMeta.getSchemaMeta();
-        result = schemaMeta;
-        schemaMeta.getProviderHandlerChain();
-        result = handlerChain;
-        operationMeta.getMicroserviceQualifiedName();
-        result = "sayHi";
-      }
-    };
-
-    Invocation invocation = new Invocation(endpoint, operationMeta, swaggerArguments);
-
-    Holder<Response> result = new Holder<>();
-    restProducerInvocation = new RestProducerInvocation() {
-      protected void sendResponseQuietly(Response response) {
-        result.value = response;
-      }
-    };
-    initRestProducerInvocation();
-    invocation.setMetricsData(new QueueMetrics());
-    restProducerInvocation.invocation = invocation;
-    restProducerInvocation.doInvoke();
-
-    Assert.assertSame(response, result.value);
   }
 }

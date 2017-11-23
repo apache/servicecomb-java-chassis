@@ -20,6 +20,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Executor;
 
 import javax.ws.rs.core.Response.Status;
 import javax.xml.ws.Holder;
@@ -27,24 +28,38 @@ import javax.xml.ws.Holder;
 import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 
+import io.servicecomb.common.rest.codec.RestCodec;
 import io.servicecomb.common.rest.codec.produce.ProduceProcessorManager;
 import io.servicecomb.common.rest.definition.RestOperationMeta;
 import io.servicecomb.common.rest.filter.HttpServerFilter;
+import io.servicecomb.common.rest.locator.OperationLocator;
+import io.servicecomb.common.rest.locator.ServicePathManager;
 import io.servicecomb.core.Const;
+import io.servicecomb.core.Endpoint;
+import io.servicecomb.core.Handler;
 import io.servicecomb.core.Invocation;
+import io.servicecomb.core.definition.MicroserviceMeta;
+import io.servicecomb.core.definition.MicroserviceMetaManager;
 import io.servicecomb.core.definition.OperationMeta;
 import io.servicecomb.core.definition.SchemaMeta;
+import io.servicecomb.core.executor.ReactiveExecutor;
 import io.servicecomb.core.provider.consumer.ReferenceConfig;
 import io.servicecomb.foundation.common.utils.JsonUtils;
+import io.servicecomb.foundation.metrics.performance.QueueMetrics;
+import io.servicecomb.foundation.vertx.http.AbstractHttpServletRequest;
 import io.servicecomb.foundation.vertx.http.HttpServletRequestEx;
 import io.servicecomb.foundation.vertx.http.HttpServletResponseEx;
+import io.servicecomb.swagger.invocation.AsyncResponse;
 import io.servicecomb.swagger.invocation.Response;
 import io.servicecomb.swagger.invocation.exception.CommonExceptionData;
 import io.servicecomb.swagger.invocation.exception.InvocationException;
 import io.servicecomb.swagger.invocation.response.Headers;
 import io.vertx.core.buffer.Buffer;
+import mockit.Deencapsulation;
 import mockit.Expectations;
 import mockit.Mock;
 import mockit.MockUp;
@@ -61,6 +76,9 @@ public class TestAbstractRestInvocation {
   ReferenceConfig endpoint;
 
   @Mocked
+  MicroserviceMetaManager microserviceMetaManager;
+
+  @Mocked
   SchemaMeta schemaMeta;
 
   @Mocked
@@ -74,11 +92,22 @@ public class TestAbstractRestInvocation {
 
   Invocation invocation;
 
-  AbstractRestInvocation restInvocation = new AbstractRestInvocation() {
+  @Rule
+  public ExpectedException expectedException = ExpectedException.none();
+
+  class AbstractRestInvocationForTest extends AbstractRestInvocation {
     @Override
-    protected void doInvoke() throws Throwable {
+    protected OperationLocator locateOperation(ServicePathManager servicePathManager) {
+      return null;
     }
-  };
+
+    @Override
+    protected void createInvocation(Object[] args) {
+      this.invocation = TestAbstractRestInvocation.this.invocation;
+    }
+  }
+
+  AbstractRestInvocation restInvocation = new AbstractRestInvocationForTest();
 
   @Before
   public void setup() {
@@ -111,11 +140,7 @@ public class TestAbstractRestInvocation {
       }
     };
 
-    restInvocation = new AbstractRestInvocation() {
-      @Override
-      protected void doInvoke() throws Throwable {
-      }
-
+    restInvocation = new AbstractRestInvocationForTest() {
       @Override
       public void sendFailResponse(Throwable throwable) {
       }
@@ -199,7 +224,7 @@ public class TestAbstractRestInvocation {
     };
 
     Holder<Response> result = new Holder<>();
-    restInvocation = new AbstractRestInvocation() {
+    restInvocation = new AbstractRestInvocationForTest() {
       @Override
       protected void doInvoke() throws Throwable {
         result.value = Response.ok("not run to here");
@@ -228,7 +253,7 @@ public class TestAbstractRestInvocation {
     };
 
     Holder<Boolean> result = new Holder<>();
-    restInvocation = new AbstractRestInvocation() {
+    restInvocation = new AbstractRestInvocationForTest() {
       @Override
       protected void doInvoke() throws Throwable {
         result.value = true;
@@ -253,7 +278,7 @@ public class TestAbstractRestInvocation {
     };
 
     Holder<Throwable> result = new Holder<>();
-    restInvocation = new AbstractRestInvocation() {
+    restInvocation = new AbstractRestInvocationForTest() {
       @Override
       public void sendFailResponse(Throwable throwable) {
         result.value = throwable;
@@ -281,14 +306,13 @@ public class TestAbstractRestInvocation {
       }
     };
 
-    restInvocation = new AbstractRestInvocation() {
+    restInvocation = new AbstractRestInvocationForTest() {
       @Override
       protected void doInvoke() throws Throwable {
       }
 
       @Override
       public void sendFailResponse(Throwable throwable) {
-        throwable.printStackTrace();
         Assert.fail("must not fail");
       }
     };
@@ -309,7 +333,7 @@ public class TestAbstractRestInvocation {
   @Test
   public void sendFailResponseHaveProduceProcessor() {
     Holder<Response> result = new Holder<>();
-    restInvocation = new AbstractRestInvocation() {
+    restInvocation = new AbstractRestInvocationForTest() {
       @Override
       protected void doInvoke() throws Throwable {
       }
@@ -331,7 +355,7 @@ public class TestAbstractRestInvocation {
   @Test
   public void sendResponseQuietlyNormal(@Mocked Response response) {
     Holder<Response> result = new Holder<>();
-    restInvocation = new AbstractRestInvocation() {
+    restInvocation = new AbstractRestInvocationForTest() {
       @Override
       protected void doInvoke() throws Throwable {
       }
@@ -350,7 +374,7 @@ public class TestAbstractRestInvocation {
 
   @Test
   public void sendResponseQuietlyException(@Mocked Response response) {
-    restInvocation = new AbstractRestInvocation() {
+    restInvocation = new AbstractRestInvocationForTest() {
       @Override
       protected void doInvoke() throws Throwable {
       }
@@ -525,5 +549,213 @@ public class TestAbstractRestInvocation {
 
     restInvocation.sendResponse(response);
     Assert.assertEquals("\"ok\"-filter", buffer.toString());
+  }
+
+  @Test
+  public void findRestOperationServicePathManagerNull(@Mocked MicroserviceMeta microserviceMeta) {
+    new Expectations(ServicePathManager.class) {
+      {
+        requestEx.getHeader(Const.TARGET_MICROSERVICE);
+        result = "ms";
+        microserviceMetaManager.ensureFindValue("ms");
+        result = microserviceMeta;
+        ServicePathManager.getServicePathManager(microserviceMeta);
+        result = null;
+      }
+    };
+
+    expectedException.expect(InvocationException.class);
+    expectedException.expectMessage("CommonExceptionData [message=Not Found]");
+    restInvocation.findRestOperation(microserviceMeta);
+  }
+
+  @Test
+  public void findRestOperationNormal(@Mocked MicroserviceMeta microserviceMeta,
+      @Mocked ServicePathManager servicePathManager, @Mocked OperationLocator locator) {
+    restInvocation = new AbstractRestInvocationForTest() {
+      @Override
+      protected OperationLocator locateOperation(ServicePathManager servicePathManager) {
+        return locator;
+      }
+    };
+
+    requestEx = new AbstractHttpServletRequest() {
+    };
+    restInvocation.requestEx = requestEx;
+    Map<String, String> pathVars = new HashMap<>();
+    new Expectations(ServicePathManager.class) {
+      {
+        ServicePathManager.getServicePathManager(microserviceMeta);
+        result = servicePathManager;
+        locator.getPathVarMap();
+        result = pathVars;
+        locator.getOperation();
+        result = restOperation;
+      }
+    };
+
+    restInvocation.findRestOperation(microserviceMeta);
+    Assert.assertSame(restOperation, restInvocation.restOperationMeta);
+    Assert.assertSame(pathVars, requestEx.getAttribute(RestConst.PATH_PARAMETERS));
+  }
+
+  @Test
+  public void scheduleInvocationException(@Mocked OperationMeta operationMeta) {
+    Executor executor = new ReactiveExecutor();
+    requestEx = new AbstractHttpServletRequest() {
+    };
+    requestEx.setAttribute(RestConst.REST_REQUEST, requestEx);
+    new Expectations() {
+      {
+        restOperation.getOperationMeta();
+        result = operationMeta;
+        operationMeta.getExecutor();
+        result = executor;
+        operationMeta.getMicroserviceQualifiedName();
+        result = "sayHi";
+      }
+    };
+
+    Holder<Throwable> result = new Holder<>();
+    Error error = new Error("run on executor");
+    restInvocation = new AbstractRestInvocationForTest() {
+      @Override
+      protected void runOnExecutor(QueueMetrics metricsData) {
+        throw error;
+      }
+
+      @Override
+      public void sendFailResponse(Throwable throwable) {
+        result.value = throwable;
+      }
+    };
+    restInvocation.requestEx = requestEx;
+    restInvocation.restOperationMeta = restOperation;
+
+    restInvocation.scheduleInvocation();
+
+    Assert.assertSame(error, result.value);
+  }
+
+  @Test
+  public void scheduleInvocationTimeout(@Mocked OperationMeta operationMeta) {
+    Executor executor = cmd -> {
+      cmd.run();
+    };
+
+    new Expectations() {
+      {
+        restOperation.getOperationMeta();
+        result = operationMeta;
+        operationMeta.getExecutor();
+        result = executor;
+        operationMeta.getMicroserviceQualifiedName();
+        result = "sayHi";
+      }
+    };
+
+    requestEx = new AbstractHttpServletRequest() {
+    };
+
+    restInvocation = new AbstractRestInvocationForTest() {
+      @Override
+      protected void runOnExecutor(QueueMetrics metricsData) {
+        throw new Error("run on executor");
+      }
+
+      @Override
+      public void sendFailResponse(Throwable throwable) {
+        throw (Error) throwable;
+      }
+    };
+    restInvocation.requestEx = requestEx;
+    restInvocation.restOperationMeta = restOperation;
+
+    // will not throw exception
+    restInvocation.scheduleInvocation();
+  }
+
+  @Test
+  public void scheduleInvocationNormal(@Mocked OperationMeta operationMeta) {
+    Executor executor = new ReactiveExecutor();
+    requestEx = new AbstractHttpServletRequest() {
+    };
+    requestEx.setAttribute(RestConst.REST_REQUEST, requestEx);
+    new Expectations() {
+      {
+        restOperation.getOperationMeta();
+        result = operationMeta;
+        operationMeta.getExecutor();
+        result = executor;
+        operationMeta.getMicroserviceQualifiedName();
+        result = "sayHi";
+      }
+    };
+
+    Holder<Boolean> result = new Holder<>();
+    restInvocation = new AbstractRestInvocationForTest() {
+      @Override
+      protected void runOnExecutor(QueueMetrics metricsData) {
+        result.value = true;
+      }
+    };
+    restInvocation.requestEx = requestEx;
+    restInvocation.restOperationMeta = restOperation;
+
+    restInvocation.scheduleInvocation();
+
+    Assert.assertTrue(result.value);
+  }
+
+  @Test
+  public void runOnExecutor() {
+    new Expectations(RestCodec.class) {
+      {
+        RestCodec.restToArgs(requestEx, restOperation);
+        result = null;
+      }
+    };
+
+    Holder<Boolean> result = new Holder<>();
+    restInvocation = new AbstractRestInvocationForTest() {
+      @Override
+      public void invoke() {
+        result.value = true;
+      }
+    };
+    restInvocation.requestEx = requestEx;
+    restInvocation.restOperationMeta = restOperation;
+
+    restInvocation.runOnExecutor(null);
+    Assert.assertTrue(result.value);
+    Assert.assertSame(invocation, restInvocation.invocation);
+  }
+
+  @Test
+  public void doInvoke(@Mocked Endpoint endpoint, @Mocked OperationMeta operationMeta,
+      @Mocked Object[] swaggerArguments, @Mocked SchemaMeta schemaMeta) throws Throwable {
+    Response response = Response.ok("ok");
+    Handler handler = new Handler() {
+      @Override
+      public void handle(Invocation invocation, AsyncResponse asyncResp) throws Exception {
+        asyncResp.complete(response);
+      }
+    };
+    List<Handler> handlerChain = Arrays.asList(handler);
+    invocation.setMetricsData(null);
+    Deencapsulation.setField(invocation, "handlerList", handlerChain);
+
+    Holder<Response> result = new Holder<>();
+    restInvocation = new AbstractRestInvocationForTest() {
+      @Override
+      protected void sendResponseQuietly(Response response) {
+        result.value = response;
+      }
+    };
+    restInvocation.invocation = invocation;
+    
+    restInvocation.doInvoke();
+
+    Assert.assertSame(response, result.value);
   }
 }
