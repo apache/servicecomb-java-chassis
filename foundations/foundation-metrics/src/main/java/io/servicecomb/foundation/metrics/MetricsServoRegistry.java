@@ -16,7 +16,6 @@
 
 package io.servicecomb.foundation.metrics;
 
-import java.io.File;
 import java.lang.management.ManagementFactory;
 import java.lang.management.MemoryMXBean;
 import java.lang.management.MemoryUsage;
@@ -31,11 +30,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Vector;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.TimeUnit;
 
 import org.springframework.beans.factory.InitializingBean;
 
-import com.netflix.config.DynamicPropertyFactory;
 import com.netflix.hystrix.HystrixCommandMetrics;
 import com.netflix.hystrix.HystrixEventType;
 import com.netflix.servo.DefaultMonitorRegistry;
@@ -46,14 +43,6 @@ import com.netflix.servo.monitor.Gauge;
 import com.netflix.servo.monitor.Informational;
 import com.netflix.servo.monitor.Monitor;
 import com.netflix.servo.monitor.MonitorConfig;
-import com.netflix.servo.publish.BasicMetricFilter;
-import com.netflix.servo.publish.CounterToRateMetricTransform;
-import com.netflix.servo.publish.FileMetricObserver;
-import com.netflix.servo.publish.MemoryMetricObserver;
-import com.netflix.servo.publish.MetricObserver;
-import com.netflix.servo.publish.MonitorRegistryMetricPoller;
-import com.netflix.servo.publish.PollRunnable;
-import com.netflix.servo.publish.PollScheduler;
 
 import io.servicecomb.foundation.metrics.performance.MetricsDataMonitor;
 import io.servicecomb.foundation.metrics.performance.QueueMetricsData;
@@ -66,28 +55,16 @@ public class MetricsServoRegistry implements InitializingBean {
 
   protected static ThreadLocal<MetricsDataMonitor> LOCAL_METRICS_MAP = new ThreadLocal<>();
 
-  private static final String METRICS_POLL_TIME = "cse.metrics.polltime";
-
-  private static final String FILENAME = "cse.metrics.file.name";
-
-  private static final String FILEPATH = "cse.metrics.file.path";
-
   private MetricsDataMonitor localMetrics = new MetricsDataMonitor();
 
   protected static Vector<MetricsDataMonitor> metricsList = new Vector<>();
-
-  private MemoryMetricObserver memoryObserver = null;
-
-  public MemoryMetricObserver getMemoryObserver() {
-    return memoryObserver;
-  }
 
   /*
      * Added getter for unit test of local metrics.
      *
      * @return Local metric reference
      */
-  public MetricsDataMonitor getLocalMetrics() {
+  protected MetricsDataMonitor getLocalMetrics() {
     return localMetrics;
   }
 
@@ -109,33 +86,11 @@ public class MetricsServoRegistry implements InitializingBean {
    * Get the initial metrics and register with servo.
    */
   public void initMetricsPublishing() {
-
     /* list of monitors */
     List<Monitor<?>> monitors = getMetricsMonitors();
     MonitorConfig commandMetricsConfig = MonitorConfig.builder("metrics").build();
     BasicCompositeMonitor commandMetricsMonitor = new BasicCompositeMonitor(commandMetricsConfig, monitors);
     DefaultMonitorRegistry.getInstance().register(commandMetricsMonitor);
-    PollScheduler scheduler = PollScheduler.getInstance();
-    if (!scheduler.isStarted()) {
-      scheduler.start();
-    }
-
-    int metricPoll = DynamicPropertyFactory.getInstance().getIntProperty(METRICS_POLL_TIME, 60).get();
-    String fileName = DynamicPropertyFactory.getInstance().getStringProperty(FILENAME, "metrics").get();
-    String filePath = DynamicPropertyFactory.getInstance().getStringProperty(FILEPATH, ".").get();
-    MetricObserver fileObserver = new FileMetricObserver(fileName, new File(filePath));
-    MetricObserver fileTransform = new CounterToRateMetricTransform(fileObserver, metricPoll, TimeUnit.SECONDS);
-
-    this.memoryObserver = new MemoryMetricObserver("default", 1);
-    MetricObserver memoryTransform = new CounterToRateMetricTransform(memoryObserver, metricPoll, TimeUnit.SECONDS);
-
-    PollRunnable fileTask = new PollRunnable(new MonitorRegistryMetricPoller(), BasicMetricFilter.MATCH_ALL,
-        fileTransform);
-    PollRunnable memoryTask = new PollRunnable(new MonitorRegistryMetricPoller(), BasicMetricFilter.MATCH_ALL,
-        memoryTransform);
-
-    scheduler.addPoller(fileTask, metricPoll, TimeUnit.SECONDS);
-    scheduler.addPoller(memoryTask, metricPoll, TimeUnit.SECONDS);
   }
 
   @Override

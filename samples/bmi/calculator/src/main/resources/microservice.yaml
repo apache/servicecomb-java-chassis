@@ -27,8 +27,13 @@ cse:
   rest:
     address: 0.0.0.0:7777
 
-#  metrics:
-#    polltime: 5
+  metrics:
+    polltime: 5
 #    file:
+#      enabled: false
 #      name: cal_log
 #      path: D:/Temp/
+
+# metrics publish only work when set mem enabled to true ,else it will always return empty data like {}
+    mem:
+      enabled: true

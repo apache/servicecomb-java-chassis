@@ -30,6 +30,5 @@
     <module>provider-pojo</module>
     <module>provider-rest-common</module>
     <module>provider-springmvc</module>
-    <module>provider-metrics</module>
   </modules>
 </project>

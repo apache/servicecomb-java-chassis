@@ -6,11 +6,6 @@ spring:
       host: 127.0.0.1
       port: 9980
 
-#zuul:
-#  routes:
-#    gateway:
-#      serviceId: discoveryServer
-
 zuul:
   routes:
     discoveryServer: /discoveryServer/**

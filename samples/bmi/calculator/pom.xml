@@ -49,10 +49,10 @@
       <groupId>io.servicecomb</groupId>
       <artifactId>handler-tracing-zipkin</artifactId>
     </dependency>
+
     <dependency>
       <groupId>io.servicecomb</groupId>
-      <artifactId>provider-metrics</artifactId>
-      <version>0.4.1-SNAPSHOT</version>
+      <artifactId>foundation-metrics</artifactId>
     </dependency>
   </dependencies>
 
