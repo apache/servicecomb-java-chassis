@@ -53,8 +53,8 @@ public class TestRestServletProducerInvocation {
 
     new MockUp<RestProducerInvocation>() {
       @Mock
-      RestOperationMeta findRestOperation() {
-        return restOperationMeta;
+      void findRestOperation() {
+        Deencapsulation.setField(getMockInstance(), "restOperationMeta", restOperationMeta);
       }
     };
 
