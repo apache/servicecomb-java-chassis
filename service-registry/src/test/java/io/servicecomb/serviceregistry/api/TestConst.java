@@ -21,8 +21,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 import io.servicecomb.config.ConfigUtil;
-import io.servicecomb.serviceregistry.api.Const.REGISTRY_API;
-import io.servicecomb.serviceregistry.definition.DefinitionConst;
 
 public class TestConst {
   @Before
