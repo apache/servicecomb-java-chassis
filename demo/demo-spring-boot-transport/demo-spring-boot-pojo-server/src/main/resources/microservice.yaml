@@ -12,7 +12,3 @@ cse:
     chain:
       Provider:
         default: myhandler
-servicecomb:
-  rest:
-    servlet:
-      urlPattern: /*
