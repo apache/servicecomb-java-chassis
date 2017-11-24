@@ -16,18 +16,17 @@
 
 package io.servicecomb.foundation.metrics.output;
 
-import java.util.HashMap;
 import java.util.Map;
 
 import com.netflix.config.DynamicPropertyFactory;
 
-public abstract class MetricsOutput {
+public abstract class MetricsFileOutput {
 
   public static final String METRICS_POLL_TIME = "servicecomb.metrics.polltime";
   public static final String METRICS_FILE_ENABLED = "servicecomb.metrics.file.enabled";
   public static final String METRICS_FILE_PATH = "servicecomb.metrics.file.file_root_path";
-  public static final String METRICS_FILE_Size = "servicecomb.metrics.file.max_rolling_size";
-  public static final String METRICS_FILE_Count = "servicecomb.metrics.file.max_rolling_count";
+  public static final String METRICS_FILE_SIZE = "servicecomb.metrics.file.max_rolling_size";
+  public static final String METRICS_FILE_COUNT = "servicecomb.metrics.file.max_rolling_count";
 
   private final int metricPoll;
   private final String rollingRootFilePath;
@@ -50,16 +49,16 @@ public abstract class MetricsOutput {
     return maxRollingFileCount;
   }
 
-  public MetricsOutput() {
+  public MetricsFileOutput() {
     rollingRootFilePath = DynamicPropertyFactory.getInstance().getStringProperty(METRICS_FILE_PATH, "").get();
-    maxRollingFileSize = DynamicPropertyFactory.getInstance().getStringProperty(METRICS_FILE_Size, "10MB").get();
-    maxRollingFileCount = DynamicPropertyFactory.getInstance().getIntProperty(METRICS_FILE_Count, 10).get();
+    maxRollingFileSize = DynamicPropertyFactory.getInstance().getStringProperty(METRICS_FILE_SIZE, "10MB").get();
+    maxRollingFileCount = DynamicPropertyFactory.getInstance().getIntProperty(METRICS_FILE_COUNT, 10).get();
     metricPoll = DynamicPropertyFactory.getInstance().getIntProperty(METRICS_POLL_TIME, 30).get();
   }
 
   public abstract void init();
 
-  public abstract void output(Map<String,String> metrics);
+  public abstract void output(Map<String, String> metrics);
 
   public boolean isEnabled() {
     return DynamicPropertyFactory.getInstance().getBooleanProperty(METRICS_FILE_ENABLED, false).get();

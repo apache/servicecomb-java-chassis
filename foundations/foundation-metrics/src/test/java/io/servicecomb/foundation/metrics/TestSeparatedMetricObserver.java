@@ -28,7 +28,7 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 
-import io.servicecomb.foundation.metrics.output.MetricsOutput;
+import io.servicecomb.foundation.metrics.output.MetricsFileOutput;
 import io.servicecomb.foundation.metrics.output.servo.SeparatedMetricObserver;
 
 public class TestSeparatedMetricObserver {
@@ -36,7 +36,7 @@ public class TestSeparatedMetricObserver {
   public void testMetricObserverUpdateImpl() {
 
     MetricsServoRegistry registry = mock(MetricsServoRegistry.class);
-    MetricsOutput output = mock(MetricsOutput.class);
+    MetricsFileOutput output = mock(MetricsFileOutput.class);
 
     Map<String, String> tpsAndLatency = new HashMap<>();
     tpsAndLatency.put("tps", "100");
@@ -49,7 +49,7 @@ public class TestSeparatedMetricObserver {
 
     observer.updateImpl(new ArrayList<>());
 
-    ArgumentCaptor<Object> metrics = ArgumentCaptor.forClass(Object.class);
+    ArgumentCaptor<Map> metrics = ArgumentCaptor.forClass(Map.class);
     verify(output).output(metrics.capture());
 
     HashMap<String, String> outputMetrics = (HashMap<String, String>) metrics.getValue();

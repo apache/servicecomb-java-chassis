@@ -43,14 +43,14 @@ import com.netflix.servo.publish.PollScheduler;
 
 import io.servicecomb.foundation.common.utils.RollingFileAppenderExt;
 import io.servicecomb.foundation.metrics.MetricsServoRegistry;
-import io.servicecomb.foundation.metrics.output.MetricsOutput;
+import io.servicecomb.foundation.metrics.output.MetricsFileOutput;
 import io.servicecomb.serviceregistry.RegistryUtils;
 import io.servicecomb.serviceregistry.api.registry.Microservice;
 
 @Component
-public class MetricsServoFileOutput extends MetricsOutput {
+public class ServoMetricsFileOutput extends MetricsFileOutput {
 
-  private static final Logger logger = LoggerFactory.getLogger(MetricsServoFileOutput.class);
+  private static final Logger logger = LoggerFactory.getLogger(ServoMetricsFileOutput.class);
 
   private final String applicationName;
   private final ObjectMapper mapper = new ObjectMapper();
@@ -60,7 +60,7 @@ public class MetricsServoFileOutput extends MetricsOutput {
 
 
   @Autowired
-  public MetricsServoFileOutput(MetricsServoRegistry registry) {
+  public ServoMetricsFileOutput(MetricsServoRegistry registry) {
     this.metricsAppenders = new HashMap<>();
     this.registry = registry;
     try {

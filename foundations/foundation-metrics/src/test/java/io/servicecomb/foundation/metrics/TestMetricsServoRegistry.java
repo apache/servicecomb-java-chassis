@@ -28,8 +28,8 @@ import org.junit.Test;
 import com.netflix.config.DynamicPropertyFactory;
 import com.netflix.servo.publish.PollScheduler;
 
-import io.servicecomb.foundation.metrics.output.MetricsOutput;
-import io.servicecomb.foundation.metrics.output.servo.MetricsServoFileOutput;
+import io.servicecomb.foundation.metrics.output.MetricsFileOutput;
+import io.servicecomb.foundation.metrics.output.servo.ServoMetricsFileOutput;
 import io.servicecomb.foundation.metrics.performance.MetricsDataMonitor;
 import io.servicecomb.foundation.metrics.performance.QueueMetricsData;
 
@@ -40,16 +40,16 @@ public class TestMetricsServoRegistry {
 
   MetricsServoRegistry metricsRegistry = null;
 
-  MetricsServoFileOutput fileOutput = null;
+  MetricsFileOutput fileOutput = null;
 
   @BeforeClass
   public static void staticBeforeClean() {
     BaseConfiguration configuration = new BaseConfiguration();
-    configuration.setProperty(MetricsOutput.METRICS_POLL_TIME, 1);
-    configuration.setProperty(MetricsOutput.METRICS_FILE_ENABLED, true);
+    configuration.setProperty(MetricsFileOutput.METRICS_POLL_TIME, 1);
+    configuration.setProperty(MetricsFileOutput.METRICS_FILE_ENABLED, true);
 
 //    configuration.setProperty(MetricsFileOutput.METRICS_FILE_PATH, "D:/Temp");
-//    configuration.setProperty(MetricsFileOutput.METRICS_FILE_Size, "1KB");
+//    configuration.setProperty(MetricsFileOutput.METRICS_FILE_SIZE, "1KB");
 
     DynamicPropertyFactory.initWithConfigurationSource(configuration);
     MetricsServoRegistry.metricsList.clear();
@@ -59,7 +59,7 @@ public class TestMetricsServoRegistry {
   @Before
   public void setUp() throws Exception {
     metricsRegistry = new MetricsServoRegistry();
-    fileOutput = new MetricsServoFileOutput(metricsRegistry);
+    fileOutput = new ServoMetricsFileOutput(metricsRegistry);
     localData = metricsRegistry.getLocalMetrics();
     metricsDataMonitor = MetricsServoRegistry.getOrCreateLocalMetrics();
   }

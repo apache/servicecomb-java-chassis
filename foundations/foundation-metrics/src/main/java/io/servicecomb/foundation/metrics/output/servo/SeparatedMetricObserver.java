@@ -25,13 +25,13 @@ import com.netflix.servo.publish.BaseMetricObserver;
 import com.netflix.servo.util.Preconditions;
 
 import io.servicecomb.foundation.metrics.MetricsServoRegistry;
-import io.servicecomb.foundation.metrics.output.MetricsOutput;
+import io.servicecomb.foundation.metrics.output.MetricsFileOutput;
 
 public class SeparatedMetricObserver extends BaseMetricObserver {
   private final MetricsServoRegistry metricsRegistry;
-  private final MetricsOutput metricsOutput;
+  private final MetricsFileOutput metricsOutput;
 
-  public SeparatedMetricObserver(String observerName, MetricsOutput metricsOutput,
+  public SeparatedMetricObserver(String observerName, MetricsFileOutput metricsOutput,
       MetricsServoRegistry metricsRegistry) {
     super(observerName);
     this.metricsRegistry = metricsRegistry;
