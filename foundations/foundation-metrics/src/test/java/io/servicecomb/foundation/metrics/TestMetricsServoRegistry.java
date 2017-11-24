@@ -28,8 +28,8 @@ import org.junit.Test;
 import com.netflix.config.DynamicPropertyFactory;
 import com.netflix.servo.publish.PollScheduler;
 
-import io.servicecomb.foundation.metrics.output.file.MetricsFileOutput;
-import io.servicecomb.foundation.metrics.output.file.servo.SeparatedMetricsFileOutput;
+import io.servicecomb.foundation.metrics.output.MetricsOutput;
+import io.servicecomb.foundation.metrics.output.servo.MetricsServoFileOutput;
 import io.servicecomb.foundation.metrics.performance.MetricsDataMonitor;
 import io.servicecomb.foundation.metrics.performance.QueueMetricsData;
 
@@ -40,13 +40,13 @@ public class TestMetricsServoRegistry {
 
   MetricsServoRegistry metricsRegistry = null;
 
-  MetricsFileOutput fileOutput = null;
+  MetricsServoFileOutput fileOutput = null;
 
   @BeforeClass
   public static void staticBeforeClean() {
     BaseConfiguration configuration = new BaseConfiguration();
-    configuration.setProperty(MetricsFileOutput.METRICS_POLL_TIME, 1);
-    configuration.setProperty(MetricsFileOutput.METRICS_FILE_ENABLED, true);
+    configuration.setProperty(MetricsOutput.METRICS_POLL_TIME, 1);
+    configuration.setProperty(MetricsOutput.METRICS_FILE_ENABLED, true);
 
 //    configuration.setProperty(MetricsFileOutput.METRICS_FILE_PATH, "D:/Temp");
 //    configuration.setProperty(MetricsFileOutput.METRICS_FILE_Size, "1KB");
@@ -59,7 +59,7 @@ public class TestMetricsServoRegistry {
   @Before
   public void setUp() throws Exception {
     metricsRegistry = new MetricsServoRegistry();
-    fileOutput = new SeparatedMetricsFileOutput(metricsRegistry);
+    fileOutput = new MetricsServoFileOutput(metricsRegistry);
     localData = metricsRegistry.getLocalMetrics();
     metricsDataMonitor = MetricsServoRegistry.getOrCreateLocalMetrics();
   }
@@ -190,6 +190,5 @@ public class TestMetricsServoRegistry {
     Assert.assertEquals(100L, reqQueue3.getTotalTime().longValue());
     Assert.assertEquals(5L, reqQueue3.getTotalServExecutionCount().longValue());
     Assert.assertEquals(50L, reqQueue3.getTotalServExecutionTime().longValue());
-
   }
 }
