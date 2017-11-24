@@ -26,3 +26,11 @@ cse:
       address: http://127.0.0.1:30100
   rest:
     address: 0.0.0.0:7777
+
+servicecomb:
+  metrics:
+    polltime: 5
+    file:
+      enabled: true
+      path: D:/Temp
+      size: 10MB
