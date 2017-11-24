@@ -16,7 +16,7 @@ public class ProviderAuthHanlder implements Handler {
 	public void handle(Invocation invocation, AsyncResponse asyncResp) throws Exception {
 
 		String token = invocation.getContext(Const.AUTH_TOKEN);
-		if (null != token && authenticationTokenManager.vaild(token)) {
+		if (null != token && authenticationTokenManager.valid(token)) {
 			invocation.next(asyncResp);
 		} else {
 			asyncResp.producerFail(new InvocationException(new HttpStatus(401, "UNAUTHORIZED"), "UNAUTHORIZED"));

@@ -23,10 +23,10 @@ public class RSAProviderTokenManager implements AuthenticationTokenManager {
 
 	private static Logger logger = LoggerFactory.getLogger(RSAProviderTokenManager.class);
 
-	private Set<RSAAuthenticationToken> vaildateToken = ConcurrentHashMap.newKeySet(1000);
+	private Set<RSAAuthenticationToken> validatedToken = ConcurrentHashMap.newKeySet(1000);
 
 	@Override
-	public boolean vaild(String token) {
+	public boolean valid(String token) {
 		try {
 			RSAAuthenticationToken rsaToken = RSAAuthenticationToken.fromStr(token);
 			if (null == rsaToken) {
@@ -38,7 +38,7 @@ public class RSAProviderTokenManager implements AuthenticationTokenManager {
 				logger.error("token is expired");
 				return false;
 			}
-			if (vaildateToken.contains(rsaToken)) {
+			if (validatedToken.contains(rsaToken)) {
 				logger.info("found vaildate token in vaildate pool");
 				return true;
 			}
@@ -49,7 +49,7 @@ public class RSAProviderTokenManager implements AuthenticationTokenManager {
 				String publicKey = getPublicKey(rsaToken.getInstanceId(), rsaToken.getServiceId());
 				boolean verify = RSAUtils.verify(publicKey, sign, content);
 				if (verify && !tokenExprired(rsaToken)) {
-					vaildateToken.add(rsaToken);
+					validatedToken.add(rsaToken);
 					return true;
 				}
 				else

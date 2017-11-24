@@ -4,6 +4,6 @@ public interface AuthenticationTokenManager {
 
 	default public String getToken(){return "";}
 	
-	public boolean vaild(String token);
+	public boolean valid(String token);
 	
 }

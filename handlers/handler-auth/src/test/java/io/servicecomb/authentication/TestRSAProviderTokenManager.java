@@ -35,7 +35,7 @@ public class TestRSAProviderTokenManager {
 		microserviceInstance.setProperties(properties);
 		properties.put(Const.INSTANCE_PUBKEY_PRO, "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCxKl5TNUTec7fL2degQcCk6vKf3c0wsfNK5V6elKzjWxm0MwbRj/UeR20VSnicBmVIOWrBS9LiERPPvjmmWUOSS2vxwr5XfhBhZ07gCAUNxBOTzgMo5nE45DhhZu5Jzt5qSV6o10Kq7+fCCBlDZ1UoWxZceHkUt5AxcrhEDulFjQIDAQAB");
 		PowerMockito.when(MicroserviceInstanceCache.getOrCreate("c8636e5acf1f11e7b701286ed488fc20", "e8a04b54cf2711e7b701286ed488fc20")).thenReturn(microserviceInstance);
-		Assert.assertFalse(tokenManager.vaild(tokenStr));
+		Assert.assertFalse(tokenManager.valid(tokenStr));
 	}
 	
 	@Test 
@@ -59,14 +59,21 @@ public class TestRSAProviderTokenManager {
 	     PowerMockito.mockStatic(RegistryUtils.class);
 	     PowerMockito.when(RegistryUtils.getMicroservice()).thenReturn(microservice);
 	     PowerMockito.when(RegistryUtils.getMicroserviceInstance()).thenReturn(microserviceInstance);
-	     String token = rsaCoumserTokenManager.createToken();
+	     
+	     //Test Consumer first create token
+	     String token = rsaCoumserTokenManager.getToken(); 
 	     Assert.assertNotNull(token);
+	     // use cache token
+	     Assert.assertEquals(token, rsaCoumserTokenManager.getToken());
+	     
 	     PowerMockito.mockStatic(MicroserviceInstanceCache.class);
 	     PowerMockito.when(MicroserviceInstanceCache.getOrCreate(serviceId, instanceId)).thenReturn(microserviceInstance);
 	     RSAProviderTokenManager rsaProviderTokenManager = new RSAProviderTokenManager();
-	     Assert.assertTrue(rsaProviderTokenManager.vaild(token));
+	     //first validate need to verify use RSA
+	     Assert.assertTrue(rsaProviderTokenManager.valid(token));
+	     // second validate use validated pool
 	     PowerMockito.when(MicroserviceInstanceCache.getOrCreate(serviceId, instanceId)).thenReturn(null);
-	     Assert.assertTrue(rsaProviderTokenManager.vaild(token));
+	     Assert.assertTrue(rsaProviderTokenManager.valid(token));
 	}
 
 }

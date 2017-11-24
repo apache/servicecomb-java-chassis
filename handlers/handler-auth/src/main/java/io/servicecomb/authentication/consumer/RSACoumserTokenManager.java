@@ -25,7 +25,7 @@ public class RSACoumserTokenManager implements AuthenticationTokenManager {
 	@Override
 	public String getToken() {
 		readWriteLock.readLock().lock();
-		if(null != token && vaild(token.fromat()))
+		if(null != token && valid(token.fromat()))
 		{
 			String tokenStr = token.fromat();
 			readWriteLock.readLock().unlock();
@@ -62,7 +62,7 @@ public class RSACoumserTokenManager implements AuthenticationTokenManager {
 	 * client token will expired 15 minutes early 
 	 */
 	@Override
-	public boolean vaild(String token) {
+	public boolean valid(String token) {
 		long generateTime = RSAAuthenticationToken.fromStr(token).getGenerateTime();
 		Date expiredDate = new Date(generateTime + RSAAuthenticationToken.TOKEN_ACTIVE_TIME - 15 * 60 * 1000);
 		Date now = new Date();
