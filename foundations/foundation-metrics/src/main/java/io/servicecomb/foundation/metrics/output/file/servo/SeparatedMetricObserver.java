@@ -42,15 +42,18 @@ public class SeparatedMetricObserver extends BaseMetricObserver {
   private final String filePath;
   private final String maxSize;
   private final MetricsServoRegistry registry;
+  private final String hostName;
   private final Map<String, RollingFileAppenderExt> metricsAppenders;
 
 
-  public SeparatedMetricObserver(String name, String filePath, String maxSize, MetricsServoRegistry registry) {
+  public SeparatedMetricObserver(String name, String filePath, String maxSize,String hostName, MetricsServoRegistry registry) {
     super(name);
     this.filePath = filePath;
     this.maxSize = maxSize;
     this.registry = registry;
+    this.hostName = hostName;
     this.metricsAppenders = new HashMap<>();
+
   }
 
   @Override
@@ -64,14 +67,14 @@ public class SeparatedMetricObserver extends BaseMetricObserver {
     Map<String, SeparatedOutputData> output = new HashMap<>();
 
     output.putAll(queueMetrics.entrySet().stream().collect(Collectors.toMap(Entry::getKey, entry ->
-        new SeparatedOutputData(this.getName(), "host", entry.getKey(), entry.getValue()))));
+        new SeparatedOutputData(this.getName(), hostName, entry.getKey(), entry.getValue()))));
     output.putAll(systemMetrics.entrySet().stream().collect(Collectors.toMap(Entry::getKey, entry ->
-        new SeparatedOutputData(this.getName(), "host", entry.getKey(), entry.getValue()))));
+        new SeparatedOutputData(this.getName(), hostName, entry.getKey(), entry.getValue()))));
     output.putAll(tpsAndLatencyMetrics.entrySet().stream().collect(Collectors.toMap(Entry::getKey, entry ->
-        new SeparatedOutputData(this.getName(), "host", entry.getKey(), entry.getValue()))));
+        new SeparatedOutputData(this.getName(), hostName, entry.getKey(), entry.getValue()))));
     for (Metric metric : metrics) {
       output.put(metric.getConfig().getName(),
-          new SeparatedOutputData(this.getName(), "host", metric.getConfig().getName(), metric.getValue().toString()));
+          new SeparatedOutputData(this.getName(), hostName, metric.getConfig().getName(), metric.getValue().toString()));
     }
 
     for (String metricName : output.keySet()) {

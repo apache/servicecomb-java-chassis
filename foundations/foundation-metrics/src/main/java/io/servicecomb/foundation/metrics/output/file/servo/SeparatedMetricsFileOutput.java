@@ -40,13 +40,12 @@ public class SeparatedMetricsFileOutput extends MetricsFileOutput {
 
   private final String name;
   private MetricsServoRegistry registry;
-
+  private String hostName;
 
 
   @Autowired
   public SeparatedMetricsFileOutput(MetricsServoRegistry registry) {
     this.registry = registry;
-    String hostName;
     try {
       InetAddress localHost = InetAddress.getLocalHost();
       hostName = localHost.getHostName();
@@ -73,7 +72,7 @@ public class SeparatedMetricsFileOutput extends MetricsFileOutput {
     }
 
     if (isEnabled()) {
-      MetricObserver fileObserver = new SeparatedMetricObserver(name, getFilePath(), getFileSize(), registry);
+      MetricObserver fileObserver = new SeparatedMetricObserver(name, getFilePath(), getFileSize(), hostName, registry);
       MetricObserver fileTransform = new CounterToRateMetricTransform(fileObserver, getMetricPoll(), TimeUnit.SECONDS);
       PollRunnable fileTask = new PollRunnable(new MonitorRegistryMetricPoller(), BasicMetricFilter.MATCH_ALL,
           fileTransform);
