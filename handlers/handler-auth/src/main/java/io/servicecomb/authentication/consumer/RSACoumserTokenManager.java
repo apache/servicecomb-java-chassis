@@ -1,11 +1,5 @@
 package io.servicecomb.authentication.consumer;
 
-import io.servicecomb.authentication.RSAAuthenticationToken;
-import io.servicecomb.foundation.common.utils.RSAUtils;
-import io.servicecomb.foundation.token.AuthenticationTokenManager;
-import io.servicecomb.foundation.token.RSAKeypair4Auth;
-import io.servicecomb.serviceregistry.RegistryUtils;
-
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.SignatureException;
@@ -15,6 +9,12 @@ import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import org.apache.commons.lang3.RandomStringUtils;
+
+import io.servicecomb.authentication.RSAAuthenticationToken;
+import io.servicecomb.foundation.common.utils.RSAUtils;
+import io.servicecomb.foundation.token.AuthenticationTokenManager;
+import io.servicecomb.foundation.token.RSAKeypair4Auth;
+import io.servicecomb.serviceregistry.RegistryUtils;
 
 public class RSACoumserTokenManager implements AuthenticationTokenManager {
 
@@ -66,7 +66,7 @@ public class RSACoumserTokenManager implements AuthenticationTokenManager {
 		long generateTime = RSAAuthenticationToken.fromStr(token).getGenerateTime();
 		Date expiredDate = new Date(generateTime + RSAAuthenticationToken.TOKEN_ACTIVE_TIME - 15 * 60 * 1000);
 		Date now = new Date();
-		if (expiredDate.before(now) )
+		if (now.before(expiredDate) )
 		{
 			return true;
 		}

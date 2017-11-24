@@ -22,6 +22,7 @@ import org.apache.log4j.Layout;
 import org.apache.log4j.spi.LoggingEvent;
 import org.junit.Assert;
 import org.junit.Test;
+import org.junit.runners.Parameterized.Parameters;
 
 import mockit.Expectations;
 import mockit.Injectable;

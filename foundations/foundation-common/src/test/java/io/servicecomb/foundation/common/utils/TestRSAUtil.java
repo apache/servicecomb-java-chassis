@@ -22,7 +22,6 @@ public class TestRSAUtil {
 		Assert.assertNotNull(pubKey);
 		String testContent = "instance-id@201711201930@randomstr";
 		String signstr = RSAUtils.sign(testContent, privateKey);
-		System.err.println(signstr);
 		Assert.assertTrue(RSAUtils.verify(pubKey, signstr, testContent));
 		
 	}

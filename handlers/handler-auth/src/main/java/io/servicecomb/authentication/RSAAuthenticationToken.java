@@ -57,7 +57,7 @@ public class RSAAuthenticationToken {
 	
 	public static RSAAuthenticationToken fromStr(String token) {
 		String[] tokenArr = token.split("@");
-		if (tokenArr.length != 4) {
+		if (tokenArr.length != 5) {
 			return null;
 		}
 		return new RSAAuthenticationToken(tokenArr[0], tokenArr[1],
@@ -71,5 +71,28 @@ public class RSAAuthenticationToken {
 	public void setServiceId(String serviceId) {
 		this.serviceId = serviceId;
 	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if(null == obj || !(obj instanceof RSAAuthenticationToken))
+		{
+			return false;
+		}
+		RSAAuthenticationToken token = (RSAAuthenticationToken)obj;
+		if (!token.plainToken().equals(this.plainToken()))
+		{
+			return false;
+		}
+		if (!token.getSign().equals(this.sign))
+		{
+			return false;
+		}
+		return true;
+	}
+
+	public int hashCode() {
+		return this.plainToken().hashCode() + this.sign.hashCode();
+	}
+	
 
 }
