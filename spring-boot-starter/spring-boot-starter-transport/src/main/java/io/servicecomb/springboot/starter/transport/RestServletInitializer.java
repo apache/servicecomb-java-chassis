@@ -22,21 +22,19 @@ import java.net.ServerSocket;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 
-import com.netflix.config.DynamicPropertyFactory;
-
-import io.servicecomb.transport.rest.servlet.ServletConfig;
-
 import org.apache.commons.configuration.Configuration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.context.embedded.AbstractConfigurableEmbeddedServletContainer;
 import org.springframework.boot.web.servlet.ServletContextInitializer;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
+
+import com.netflix.config.DynamicPropertyFactory;
 
 import io.servicecomb.transport.rest.servlet.RestServletInjector;
+import io.servicecomb.transport.rest.servlet.ServletConfig;
 import io.servicecomb.transport.rest.servlet.ServletUtils;
-
-import org.springframework.util.StringUtils;
 
 @Component
 // extends from AbstractConfigurableEmbeddedServletContainer, only want to get embed web container's port and address

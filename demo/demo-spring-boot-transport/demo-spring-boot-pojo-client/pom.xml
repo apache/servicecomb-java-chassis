@@ -46,11 +46,6 @@
 			<groupId>org.springframework.cloud</groupId>
 			<artifactId>spring-cloud-netflix-core</artifactId>
 		</dependency>
-		<dependency>
-			<groupId>io.servicecomb.demo</groupId>
-			<artifactId>demo-spring-boot-pojo-server</artifactId>
-			<version>${parent.version}</version>
-		</dependency>
 	</dependencies>
 	<build>
 		<plugins>

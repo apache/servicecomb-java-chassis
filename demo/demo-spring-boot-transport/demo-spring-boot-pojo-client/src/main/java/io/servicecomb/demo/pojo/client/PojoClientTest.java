@@ -29,7 +29,6 @@ import io.servicecomb.demo.TestMgr;
 import io.servicecomb.demo.server.Test;
 import io.servicecomb.demo.server.TestRequest;
 import io.servicecomb.demo.server.User;
-import io.servicecomb.handler.MyHandler;
 import io.servicecomb.provider.pojo.RpcReference;
 
 @Component
@@ -42,6 +41,8 @@ public class PojoClientTest {
   public static Test testFromXml;
 
   public static final byte buffer[] = new byte[1024];
+
+  public static final String SPLITPARAM_RESPONSE_USER_SUFFIX = "(modified by MyHandler)";
 
   static {
     Arrays.fill(buffer, (byte) 1);
@@ -83,14 +84,14 @@ public class PojoClientTest {
   private static void testSplitParam(Test test) {
     User result = test.splitParam(1, new User());
     LOGGER.info("split param result:{}", result);
-    TestMgr.check("User [name=nameA,  users count:0" + MyHandler.SPLITPARAM_RESPONSE_USER_SUFFIX
+    TestMgr.check("User [name=nameA,  users count:0" + SPLITPARAM_RESPONSE_USER_SUFFIX
             + ", age=100, index=1]",
         result);
   }
 
   private static void testCommonInvoke(String transport) {
     Object result = InvokerUtils.syncInvoke("pojo", "server", "splitParam", new Object[] {2, new User()});
-    TestMgr.check("User [name=nameA,  users count:0" + MyHandler.SPLITPARAM_RESPONSE_USER_SUFFIX
+    TestMgr.check("User [name=nameA,  users count:0" + SPLITPARAM_RESPONSE_USER_SUFFIX
         + ", age=100, index=2]", result);
 
     result =
@@ -100,7 +101,7 @@ public class PojoClientTest {
             "server",
             "splitParam",
             new Object[] {3, new User()});
-    TestMgr.check("User [name=nameA,  users count:0" + MyHandler.SPLITPARAM_RESPONSE_USER_SUFFIX
+    TestMgr.check("User [name=nameA,  users count:0" + SPLITPARAM_RESPONSE_USER_SUFFIX
         + ", age=100, index=3]", result);
   }
 
@@ -119,7 +120,7 @@ public class PojoClientTest {
     User user = new User();
     user.setName("名字");
     User result = test.splitParam(1, user);
-    TestMgr.check("名字,  users count:0" + MyHandler.SPLITPARAM_RESPONSE_USER_SUFFIX, result.getName());
+    TestMgr.check("名字,  users count:0" + SPLITPARAM_RESPONSE_USER_SUFFIX, result.getName());
   }
 
   private static void testStringHaveSpace(Test test) {
