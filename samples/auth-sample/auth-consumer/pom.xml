@@ -45,7 +45,7 @@
         </dependency>
         <dependency>
             <groupId>io.servicecomb</groupId>
-            <artifactId>handler-auth</artifactId>
+            <artifactId>handler-publickey-auth</artifactId>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>

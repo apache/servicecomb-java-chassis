@@ -21,36 +21,35 @@ import io.servicecomb.provider.springmvc.reference.RestTemplateBuilder;
 import io.servicecomb.samples.common.schema.models.Person;
 
 import org.springframework.stereotype.Component;
+import org.springframework.util.Assert;
 import org.springframework.web.client.RestTemplate;
 
 @Component
 public class AuthConsumerMain {
 
-	private static RestTemplate restTemplate = RestTemplateBuilder.create();
+  private static RestTemplate restTemplate = RestTemplateBuilder.create();
 
-	public static void main(String[] args) throws Exception {
-		init();
-		for (int i = 0; i < 2; i++) {
-			Person person = new Person();
-			person.setName("ServiceComb/Authenticate");
-			System.out
-					.println("RestTemplate Consumer or POJO Consumer.  You can choose whatever you like.");
-			String sayHiResult = restTemplate
-					.postForObject(
-							"cse://auth-provider/springmvchello/sayhi?name=Authenticate",
-							null, String.class);
-			String sayHelloResult = restTemplate.postForObject(
-					"cse://auth-provider/springmvchello/sayhello", person,
-					String.class);
-			System.out.println("RestTemplate consumer sayhi services: "
-					+ sayHiResult);
-			System.out.println("RestTemplate consumer sayhello services: "
-					+ sayHelloResult);
-		}
-	}
+  public static void main(String[] args) throws Exception {
+    init();
+    Person person = new Person();
+    person.setName("ServiceComb/Authenticate");
+    System.out
+        .println("RestTemplate Consumer or POJO Consumer.  You can choose whatever you like.");
+    String sayHiResult = restTemplate
+        .postForObject(
+            "cse://auth-provider/springmvchello/sayhi?name=Authenticate",
+            null,
+            String.class);
+    String sayHelloResult = restTemplate.postForObject(
+        "cse://auth-provider/springmvchello/sayhello",
+        person,
+        String.class);
+    Assert.isTrue("Hello Authenticate".equals(sayHiResult));
+    Assert.isTrue("Hello person ServiceComb/Authenticate".equals(sayHelloResult));
+  }
 
-	public static void init() throws Exception {
-		Log4jUtils.init();
-		BeanUtils.init();
-	}
+  public static void init() throws Exception {
+    Log4jUtils.init();
+    BeanUtils.init();
+  }
 }
