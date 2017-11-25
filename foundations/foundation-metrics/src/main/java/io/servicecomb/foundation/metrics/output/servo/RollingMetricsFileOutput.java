@@ -19,22 +19,14 @@ package io.servicecomb.foundation.metrics.output.servo;
 import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PatternLayout;
 import org.apache.log4j.spi.LoggingEvent;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.netflix.servo.publish.BasicMetricFilter;
-import com.netflix.servo.publish.CounterToRateMetricTransform;
-import com.netflix.servo.publish.MetricObserver;
-import com.netflix.servo.publish.MonitorRegistryMetricPoller;
-import com.netflix.servo.publish.PollRunnable;
-import com.netflix.servo.publish.PollScheduler;
-
+import io.servicecomb.foundation.common.exceptions.ServiceCombException;
 import io.servicecomb.foundation.common.utils.RollingFileAppenderExt;
 import io.servicecomb.foundation.metrics.output.MetricsFileOutput;
 import io.servicecomb.serviceregistry.RegistryUtils;
@@ -43,45 +35,14 @@ import io.servicecomb.serviceregistry.api.registry.Microservice;
 @Component
 public class RollingMetricsFileOutput extends MetricsFileOutput {
   private final Map<String, RollingFileAppenderExt> metricsAppenders = new HashMap<>();
-  private final MetricsContentConvertor convertor;
-  private final MetricsContentFormatter formatter;
   private final String fileNameHeader;
 
-  //auto init when as spring bean
-  @Autowired
-  public RollingMetricsFileOutput(MetricsContentConvertor convertor, MetricsContentFormatter formatter) {
-    this(convertor, formatter, true);
-  }
-
-  public RollingMetricsFileOutput(MetricsContentConvertor convertor, MetricsContentFormatter formatter,
-      boolean autoInit) {
-    if (RegistryUtils.getServiceRegistry() != null) {
+  public RollingMetricsFileOutput() {
+    try {
       Microservice microservice = RegistryUtils.getMicroservice();
       fileNameHeader = String.join(".", microservice.getAppId(), microservice.getServiceName());
-    } else {
-      fileNameHeader = String.join(".", "local", "test");
-    }
-
-    this.convertor = convertor;
-    this.formatter = formatter;
-    if (autoInit) {
-      this.init();
-    }
-  }
-
-  @Override
-  public void init() {
-    PollScheduler scheduler = PollScheduler.getInstance();
-    if (!scheduler.isStarted()) {
-      scheduler.start();
-    }
-
-    if (isEnabled()) {
-      MetricObserver fileObserver = new FileOutputMetricObserver("fileOutputObserver", this, convertor, formatter);
-      MetricObserver fileTransform = new CounterToRateMetricTransform(fileObserver, getMetricPoll(), TimeUnit.SECONDS);
-      PollRunnable fileTask = new PollRunnable(new MonitorRegistryMetricPoller(), BasicMetricFilter.MATCH_ALL,
-          fileTransform);
-      scheduler.addPoller(fileTask, getMetricPoll(), TimeUnit.SECONDS);
+    } catch (Exception e) {
+      throw new ServiceCombException("can't get microservice from RegistryUtils",e);
     }
   }
 

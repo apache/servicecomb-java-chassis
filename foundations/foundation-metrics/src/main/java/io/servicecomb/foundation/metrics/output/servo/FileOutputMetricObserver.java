@@ -30,9 +30,9 @@ public class FileOutputMetricObserver extends BaseMetricObserver {
   private final MetricsContentConvertor convertor;
   private final MetricsContentFormatter formatter;
 
-  public FileOutputMetricObserver(String observerName, MetricsFileOutput metricsOutput,
+  public FileOutputMetricObserver(MetricsFileOutput metricsOutput,
       MetricsContentConvertor convertor, MetricsContentFormatter formatter) {
-    super(observerName);
+    super("fileOutputObserver");
     this.metricsOutput = metricsOutput;
     this.convertor = convertor;
     this.formatter = formatter;

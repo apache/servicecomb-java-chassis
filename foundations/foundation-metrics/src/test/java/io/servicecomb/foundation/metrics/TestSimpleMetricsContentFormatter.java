@@ -23,11 +23,26 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import io.servicecomb.foundation.metrics.output.servo.SimpleMetricsContentFormatter;
+import io.servicecomb.serviceregistry.RegistryUtils;
+import io.servicecomb.serviceregistry.api.registry.Microservice;
+import mockit.Expectations;
 
 public class TestSimpleMetricsContentFormatter {
 
   @Test
   public void testFormatter(){
+    Microservice microservice = new Microservice();
+    microservice.setVersion("1.0.0");
+    microservice.setServiceName("serviceName");
+    microservice.setAppId("appId");
+
+    new Expectations(RegistryUtils.class) {
+      {
+        RegistryUtils.getMicroservice();
+        result = microservice;
+      }
+    };
+
     SimpleMetricsContentFormatter formatter = new SimpleMetricsContentFormatter();
 
     Map<String,String> input = new HashMap<>();

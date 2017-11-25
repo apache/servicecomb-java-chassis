@@ -29,6 +29,7 @@ import org.springframework.util.StringUtils;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import io.servicecomb.foundation.common.exceptions.ServiceCombException;
 import io.servicecomb.foundation.common.net.NetUtils;
 import io.servicecomb.serviceregistry.RegistryUtils;
 import io.servicecomb.serviceregistry.api.registry.Microservice;
@@ -47,31 +48,30 @@ public class SimpleMetricsContentFormatter implements MetricsContentFormatter {
       hostName = NetUtils.getHostAddress();
     }
 
-    if (RegistryUtils.getServiceRegistry() != null) {
+    try {
       Microservice microservice = RegistryUtils.getMicroservice();
       applicationName = String.join(".", microservice.getAppId(), microservice.getServiceName());
-    } else {
-      applicationName = String.join(".", hostName, "metrics");
+    } catch (Exception e) {
+      throw new ServiceCombException("can't get microservice from RegistryUtils",e);
     }
   }
 
   @Override
   public Map<String, String> format(Map<String, String> input) {
-    Map<String, String> formattedMetrics = input.entrySet().stream()
+    return input.entrySet().stream()
         .collect(Collectors.toMap(Entry::getKey, entry -> {
           try {
             return mapper
                 .writeValueAsString(
-                    new SeparatedOutputData(applicationName, hostName, entry.getKey(), entry.getValue()));
+                    new OutputJsonObject(applicationName, hostName, entry.getKey(), entry.getValue()));
           } catch (JsonProcessingException e) {
-            logger.error("error convert metrics data to json convert");
+            logger.error("error convert metrics data to json convert", e);
             return "";
           }
         }));
-    return formattedMetrics;
   }
 
-  class SeparatedOutputData {
+  class OutputJsonObject {
     private String plugin_id;
     private Map<String, Object> metric;
 
@@ -83,10 +83,10 @@ public class SimpleMetricsContentFormatter implements MetricsContentFormatter {
       return metric;
     }
 
-    public SeparatedOutputData() {
+    public OutputJsonObject() {
     }
 
-    public SeparatedOutputData(String plugin_id, String hostName, String metricName, String metricValue) {
+    public OutputJsonObject(String plugin_id, String hostName, String metricName, String metricValue) {
       this();
       this.plugin_id = plugin_id;
       this.metric = new HashMap<>();

@@ -72,7 +72,7 @@ public class TestFileOutputMetricObserverAndContentConvertor {
     metrics.add(new Metric(MonitorConfig.builder("CPU and Memory").build(), System.currentTimeMillis(),
         "{heapUsed=146120664, nonHeapUsed=55146864, cpuRunningThreads=36, heapMax=3786407936, heapCommit=472907776, nonHeapInit=2555904, nonHeapMax=-1, cpuLoad=-1.0, heapInit=266338304, nonHeapCommit=56623104}"));
 
-    FileOutputMetricObserver observer = new FileOutputMetricObserver("test", output, convertor, formatter);
+    FileOutputMetricObserver observer = new FileOutputMetricObserver(output, convertor, formatter);
     observer.updateImpl(metrics);
 
     ArgumentCaptor<Map> outputMetrics = ArgumentCaptor.forClass(Map.class);

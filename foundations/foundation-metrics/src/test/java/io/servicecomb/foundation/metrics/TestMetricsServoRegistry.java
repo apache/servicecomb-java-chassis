@@ -29,32 +29,35 @@ import com.netflix.config.DynamicPropertyFactory;
 import com.netflix.servo.publish.PollScheduler;
 
 import io.servicecomb.foundation.metrics.output.MetricsFileOutput;
-import io.servicecomb.foundation.metrics.output.servo.SimpleMetricsContentFormatter;
 import io.servicecomb.foundation.metrics.output.servo.MetricsContentConvertor;
-import io.servicecomb.foundation.metrics.output.servo.SimpleMetricsContentConvertor;
 import io.servicecomb.foundation.metrics.output.servo.MetricsContentFormatter;
 import io.servicecomb.foundation.metrics.output.servo.RollingMetricsFileOutput;
+import io.servicecomb.foundation.metrics.output.servo.SimpleMetricsContentConvertor;
+import io.servicecomb.foundation.metrics.output.servo.SimpleMetricsContentFormatter;
 import io.servicecomb.foundation.metrics.performance.MetricsDataMonitor;
 import io.servicecomb.foundation.metrics.performance.QueueMetricsData;
+import io.servicecomb.serviceregistry.RegistryUtils;
+import io.servicecomb.serviceregistry.api.registry.Microservice;
+import io.servicecomb.serviceregistry.registry.LocalServiceRegistry;
+import mockit.Expectations;
 
 public class TestMetricsServoRegistry {
   MetricsDataMonitor metricsDataMonitor = null;
-
   MetricsDataMonitor localData = null;
-
   MetricsServoRegistry metricsRegistry = null;
 
   MetricsFileOutput fileOutput = null;
-
   MetricsContentConvertor convertor = null;
-
   MetricsContentFormatter formatter = null;
+  MetricsServoObserverManager observerManager = null;
+
+  Microservice microservice = null;
 
   @BeforeClass
   public static void staticBeforeClean() {
     BaseConfiguration configuration = new BaseConfiguration();
-    configuration.setProperty(MetricsFileOutput.METRICS_FILE_ENABLED, true);
-
+    configuration.setProperty(MetricsServoObserverManager.METRICS_FILE_ENABLED, true);
+    configuration.setProperty(MetricsServoObserverManager.METRICS_POLL_TIME, 1);
     DynamicPropertyFactory.initWithConfigurationSource(configuration);
     MetricsServoRegistry.metricsList.clear();
     MetricsServoRegistry.LOCAL_METRICS_MAP = new ThreadLocal<>();
@@ -62,12 +65,26 @@ public class TestMetricsServoRegistry {
 
   @Before
   public void setUp() throws Exception {
+    microservice = new Microservice();
+    microservice.setVersion("1.0.0");
+    microservice.setServiceName("serviceName");
+    microservice.setAppId("appId");
+
+    new Expectations(RegistryUtils.class) {
+      {
+        RegistryUtils.getMicroservice();
+        result = microservice;
+      }
+    };
+
     metricsRegistry = new MetricsServoRegistry();
     convertor = new SimpleMetricsContentConvertor();
     formatter = new SimpleMetricsContentFormatter();
-    fileOutput = new RollingMetricsFileOutput(convertor,formatter,false);
+    fileOutput = new RollingMetricsFileOutput();
+    observerManager = new MetricsServoObserverManager(fileOutput, convertor, formatter, false);
     localData = metricsRegistry.getLocalMetrics();
     metricsDataMonitor = MetricsServoRegistry.getOrCreateLocalMetrics();
+
   }
 
   @After
@@ -75,6 +92,8 @@ public class TestMetricsServoRegistry {
     PollScheduler.getInstance().stop();
     metricsRegistry = null;
     convertor = null;
+    formatter = null;
+    observerManager = null;
     fileOutput = null;
     localData = null;
     metricsDataMonitor = null;
@@ -82,6 +101,7 @@ public class TestMetricsServoRegistry {
 
   @Test
   public void testAllRegistryMetrics() throws Exception {
+
     metricsDataMonitor.incrementTotalReqProvider();
     metricsDataMonitor.incrementTotalFailReqProvider();
     metricsDataMonitor.incrementTotalReqConsumer();
@@ -93,7 +113,7 @@ public class TestMetricsServoRegistry {
     localData.setOperMetTotalFailReq("sayHi", 10L);
 
     metricsRegistry.afterPropertiesSet();
-    fileOutput.init();
+    observerManager.init();
     Thread.sleep(1000);
     // get the metrics from local data and compare
     localData = metricsRegistry.getLocalMetrics();
@@ -117,7 +137,7 @@ public class TestMetricsServoRegistry {
     localData = metricsRegistry.getLocalMetrics();
 
     metricsRegistry.afterPropertiesSet();
-    fileOutput.init();
+    observerManager.init();
     Thread.sleep(1000);
     // get the metrics from local data and compare
     localData = metricsRegistry.getLocalMetrics();
@@ -146,7 +166,7 @@ public class TestMetricsServoRegistry {
     metricsDataMonitor.setQueueMetrics("/sayBye", reqQueue1);
 
     metricsRegistry.afterPropertiesSet();
-    fileOutput.init();
+    observerManager.init();
     Thread.sleep(1000);
     // get the metrics from local data and compare
     Map<String, QueueMetricsData> localMap = localData.getQueueMetrics();
@@ -184,7 +204,7 @@ public class TestMetricsServoRegistry {
     metricsDataMonitor.setQueueMetrics("/sayBye", reqQueue2);
 
     metricsRegistry.afterPropertiesSet();
-    fileOutput.init();
+    observerManager.init();
     Thread.sleep(1000);
     // get the metrics from local data and compare
     Map<String, QueueMetricsData> localMap = localData.getQueueMetrics();
