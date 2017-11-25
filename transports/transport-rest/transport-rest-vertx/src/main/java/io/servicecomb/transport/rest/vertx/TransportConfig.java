@@ -35,4 +35,8 @@ public final class TransportConfig {
         DynamicPropertyFactory.getInstance().getIntProperty("cse.rest.server.thread-count", 1);
     return address.get();
   }
+
+  public static int getConnectionIdleTimeoutInSeconds() {
+    return DynamicPropertyFactory.getInstance().getIntProperty("cse.rest.server.connection.idleTimeoutInSeconds", 60).get();
+  }
 }
