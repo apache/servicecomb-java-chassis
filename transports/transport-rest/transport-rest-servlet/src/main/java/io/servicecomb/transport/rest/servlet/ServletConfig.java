@@ -23,7 +23,11 @@ import com.netflix.config.DynamicStringProperty;
 public final class ServletConfig {
   static final long DEFAULT_TIMEOUT = 3000;
 
-  static final String KEY_SERVLET_URL_PATTERN = "servicecomb.rest.servlet.urlPattern";
+  public static final String KEY_SERVLET_URL_PATTERN = "servicecomb.rest.servlet.urlPattern";
+
+  public static final String KEY_CSE_REST_ADDRESS = "cse.rest.address";
+
+  public static final String DEFAULT_URL_PATTERN = "/*";
 
   private ServletConfig() {
   }
@@ -36,7 +40,7 @@ public final class ServletConfig {
 
   public static String getLocalServerAddress() {
     DynamicStringProperty address =
-        DynamicPropertyFactory.getInstance().getStringProperty("cse.rest.address", null);
+        DynamicPropertyFactory.getInstance().getStringProperty(KEY_CSE_REST_ADDRESS, null);
     return address.get();
   }
 
