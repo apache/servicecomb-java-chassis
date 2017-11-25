@@ -39,7 +39,7 @@ public class RollingMetricsFileOutput extends MetricsFileOutput {
   @Autowired
   public RollingMetricsFileOutput(MicroserviceLoader loader) {
     Microservice microservice = loader.load();
-    fileNameHeader = String.join(".", microservice.getServiceId(), microservice.getServiceName());
+    fileNameHeader = String.join(".", microservice.getAppId(), microservice.getServiceName());
   }
 
   @Override

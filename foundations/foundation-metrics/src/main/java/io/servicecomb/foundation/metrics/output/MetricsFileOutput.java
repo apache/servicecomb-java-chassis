@@ -42,7 +42,7 @@ public abstract class MetricsFileOutput {
   }
 
   public MetricsFileOutput() {
-    rollingRootFilePath = DynamicPropertyFactory.getInstance().getStringProperty(METRICS_FILE_ROOT_PATH, "").get();
+    rollingRootFilePath = DynamicPropertyFactory.getInstance().getStringProperty(METRICS_FILE_ROOT_PATH, "target").get();
     maxRollingFileSize = DynamicPropertyFactory.getInstance().getStringProperty(METRICS_FILE_MAX_ROLLING_SIZE, "10MB").get();
     maxRollingFileCount = DynamicPropertyFactory.getInstance().getIntProperty(METRICS_FILE_MAX_ROLLING_COUNT, 10).get();
   }

@@ -49,7 +49,7 @@ public class SimpleMetricsContentFormatter implements MetricsContentFormatter {
     }
 
     Microservice microservice = loader.load();
-    applicationName = String.join(".", microservice.getServiceId(), microservice.getServiceName());
+    applicationName = String.join(".", microservice.getAppId(), microservice.getServiceName());
   }
 
   @Override
