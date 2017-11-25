@@ -75,6 +75,10 @@ public class TestIsolationServerListFilter {
   public void tearDown() throws Exception {
     IsolationServerListFilter = null;
     loadBalancerStats = null;
+
+    AbstractConfiguration configuration =
+        (AbstractConfiguration) DynamicPropertyFactory.getBackingConfigurationSource();
+    configuration.clearProperty("cse.loadbalance.isolation.continuousFailureThreshold");
   }
 
   @Test
@@ -111,5 +115,51 @@ public class TestIsolationServerListFilter {
     loadBalancerStats.incrementSuccessiveConnectionFailureCount(testServer);
     returnedServerList = IsolationServerListFilter.getFilteredListOfServers(serverList);
     Assert.assertEquals(returnedServerList.size(), 0);
+  }
+
+  @Test
+  public void testGetFilteredListOfServersOnContinuousFailureReachesThreshold() {
+    ((AbstractConfiguration) DynamicPropertyFactory.getBackingConfigurationSource())
+        .addProperty("cse.loadbalance.isolation.continuousFailureThreshold",
+            "3");
+    Invocation invocation = Mockito.mock(Invocation.class);
+    CseServer testServer = Mockito.mock(CseServer.class);
+    Mockito.when(invocation.getMicroserviceName()).thenReturn("microserviceName");
+    Mockito.when(testServer.getCountinuousFailureCount()).thenReturn(3);
+    Mockito.when(testServer.getLastVisitTime()).thenReturn(System.currentTimeMillis());
+
+    for (int i = 0; i < 3; ++i) {
+      loadBalancerStats.incrementNumRequests(testServer);
+    }
+
+    List<Server> serverList = new ArrayList<Server>();
+    serverList.add(testServer);
+    IsolationServerListFilter.setLoadBalancerStats(loadBalancerStats);
+    IsolationServerListFilter.setInvocation(invocation);
+    List<Server> returnedServerList = IsolationServerListFilter.getFilteredListOfServers(serverList);
+    Assert.assertEquals(0, returnedServerList.size());
+  }
+
+  @Test
+  public void testGetFilteredListOfServersOnContinuousFailureIsBelowThreshold() {
+    ((AbstractConfiguration) DynamicPropertyFactory.getBackingConfigurationSource())
+        .addProperty("cse.loadbalance.isolation.continuousFailureThreshold",
+            "3");
+    Invocation invocation = Mockito.mock(Invocation.class);
+    CseServer testServer = Mockito.mock(CseServer.class);
+    Mockito.when(invocation.getMicroserviceName()).thenReturn("microserviceName");
+    Mockito.when(testServer.getCountinuousFailureCount()).thenReturn(2);
+    Mockito.when(testServer.getLastVisitTime()).thenReturn(System.currentTimeMillis());
+
+    for (int i = 0; i < 3; ++i) {
+      loadBalancerStats.incrementNumRequests(testServer);
+    }
+
+    List<Server> serverList = new ArrayList<Server>();
+    serverList.add(testServer);
+    IsolationServerListFilter.setLoadBalancerStats(loadBalancerStats);
+    IsolationServerListFilter.setInvocation(invocation);
+    List<Server> returnedServerList = IsolationServerListFilter.getFilteredListOfServers(serverList);
+    Assert.assertEquals(1, returnedServerList.size());
   }
 }
