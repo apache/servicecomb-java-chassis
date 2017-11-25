@@ -39,4 +39,6 @@ public final class Const {
   public static final String TARGET_MICROSERVICE = "x-cse-target-microservice";
 
   public static final String REMOTE_ADDRESS = "x-cse-remote-address";
+  
+  public static final String AUTH_TOKEN = "x-cse-auth-rsatoken";
 }
