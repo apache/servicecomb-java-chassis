@@ -36,155 +36,157 @@ import io.servicecomb.serviceregistry.definition.DefinitionConst;
 import io.servicecomb.serviceregistry.task.event.PullMicroserviceVersionsInstancesEvent;
 
 public class MicroserviceVersions {
-  private static final Logger LOGGER = LoggerFactory.getLogger(MicroserviceVersions.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(MicroserviceVersions.class);
 
-  private AppManager appManager;
+    private AppManager appManager;
 
-  private String appId;
+    private String appId;
 
-  private String microserviceName;
+    private String microserviceName;
 
-  private List<MicroserviceInstance> instances;
+    private List<MicroserviceInstance> instances;
 
-  // key is service id
-  private Map<String, MicroserviceVersion> versions = new ConcurrentHashMap<>();
+    // key is service id
+    private Map<String, MicroserviceVersion> versions = new ConcurrentHashMap<>();
 
-  // key is version rule
-  private Map<String, MicroserviceVersionRule> versionRules = new ConcurrentHashMap<>();
+    // key is version rule
+    private Map<String, MicroserviceVersionRule> versionRules = new ConcurrentHashMap<>();
 
-  // process pulled instances and create versionRule must be protected by lock
-  // otherwise maybe lost instance or version in verisonRule
-  private final Object lock = new Object();
+    // process pulled instances and create versionRule must be protected by lock
+    // otherwise maybe lost instance or version in verisonRule
+    private final Object lock = new Object();
 
-  // to avoid pull too many time
-  // only pendingPullCount is 0, then do a real pull 
-  private AtomicInteger pendingPullCount = new AtomicInteger();
+    // to avoid pull too many time
+    // only pendingPullCount is 0, then do a real pull
+    private AtomicInteger pendingPullCount = new AtomicInteger();
 
-  public MicroserviceVersions(AppManager appManager, String appId, String microserviceName) {
-    this.appManager = appManager;
-    this.appId = appId;
-    this.microserviceName = microserviceName;
+    public MicroserviceVersions(AppManager appManager, String appId, String microserviceName) {
+        this.appManager = appManager;
+        this.appId = appId;
+        this.microserviceName = microserviceName;
 
-    LOGGER.info("create MicroserviceVersions, appId={}, microserviceName={}.",
-        appId,
-        microserviceName);
+        LOGGER.info("create MicroserviceVersions, appId={}, microserviceName={}.",
+                appId,
+                microserviceName);
 
-    appManager.getEventBus().register(this);
-  }
-
-  public String getAppId() {
-    return appId;
-  }
-
-  public String getMicroserviceName() {
-    return microserviceName;
-  }
-
-  public Map<String, MicroserviceVersion> getVersions() {
-    return versions;
-  }
-
-  @SuppressWarnings("unchecked")
-  public <T extends MicroserviceVersion> T getVersion(String serviceId) {
-    return (T) versions.get(serviceId);
-  }
-
-  public void submitPull() {
-    pendingPullCount.incrementAndGet();
-    pullInstances();
-  }
-
-  public void pullInstances() {
-    if (pendingPullCount.decrementAndGet() != 0) {
-      return;
+        appManager.getEventBus().register(this);
     }
 
-    List<MicroserviceInstance> pulledInstances = RegistryUtils.findServiceInstance(appId,
-        microserviceName,
-        DefinitionConst.VERSION_RULE_ALL);
-    if (pulledInstances == null) {
-      return;
+    public String getAppId() {
+        return appId;
     }
 
-    setInstances(pulledInstances);
-  }
-
-  private void setInstances(List<MicroserviceInstance> pulledInstances) {
-    synchronized (lock) {
-      instances = pulledInstances
-          .stream()
-          .filter(instance -> {
-            return MicroserviceInstanceStatus.UP.equals(instance.getStatus());
-          })
-          .collect(Collectors.toList());
-      for (MicroserviceInstance instance : instances) {
-        // ensure microserviceVersion exists
-        versions.computeIfAbsent(instance.getServiceId(), microserviceId -> {
-          MicroserviceVersion microserviceVersion =
-              appManager.getMicroserviceVersionFactory().create(microserviceName, microserviceId);
-          for (MicroserviceVersionRule microserviceVersionRule : versionRules.values()) {
-            microserviceVersionRule.addMicroserviceVersion(microserviceVersion);
-          }
-          return microserviceVersion;
-        });
-      }
-
-      for (MicroserviceVersionRule microserviceVersionRule : versionRules.values()) {
-        microserviceVersionRule.setInstances(instances);
-      }
+    public String getMicroserviceName() {
+        return microserviceName;
     }
-  }
 
-  public MicroserviceVersionRule getOrCreateMicroserviceVersionRule(String versionRule) {
-    // do not use computeIfAbsent
-    MicroserviceVersionRule microserviceVersionRule = versionRules.get(versionRule);
-    if (microserviceVersionRule == null) {
-      synchronized (lock) {
-        microserviceVersionRule = versionRules.get(versionRule);
-        if (microserviceVersionRule == null) {
-          microserviceVersionRule = createAndInitMicroserviceVersionRule(versionRule);
-          versionRules.put(versionRule, microserviceVersionRule);
+    public Map<String, MicroserviceVersion> getVersions() {
+        return versions;
+    }
+
+    @SuppressWarnings("unchecked")
+    public <T extends MicroserviceVersion> T getVersion(String serviceId) {
+        return (T) versions.get(serviceId);
+    }
+
+    public void submitPull() {
+        pendingPullCount.incrementAndGet();
+        pullInstances();
+    }
+
+    public void pullInstances() {
+        if (pendingPullCount.decrementAndGet() != 0) {
+            return;
         }
-      }
+
+        List<MicroserviceInstance> pulledInstances = RegistryUtils.findServiceInstance(appId,
+                microserviceName,
+                DefinitionConst.VERSION_RULE_ALL);
+        if (pulledInstances == null) {
+            return;
+        }
+
+        setInstances(pulledInstances);
     }
 
-    return microserviceVersionRule;
-  }
+    private void setInstances(List<MicroserviceInstance> pulledInstances) {
+        synchronized (lock) {
+//            instances = pulledInstances
+//                    .stream()
+//                    .filter(instance -> {
+////                        return MicroserviceInstanceStatus.UP.equals(instance.getStatus()) && RegistryUtils.getMicroserviceInstance().getEnvironment().equals(instance.getEnvironment());
+//                      return MicroserviceInstanceStatus.UP.equals(instance.getStatus());
+//                    })
+//                    .collect(Collectors.toList());
+            instances = pulledInstances;
+            for (MicroserviceInstance instance : instances) {
+                // ensure microserviceVersion exists
+                versions.computeIfAbsent(instance.getServiceId(), microserviceId -> {
+                    MicroserviceVersion microserviceVersion =
+                            appManager.getMicroserviceVersionFactory().create(microserviceName, microserviceId);
+                    for (MicroserviceVersionRule microserviceVersionRule : versionRules.values()) {
+                        microserviceVersionRule.addMicroserviceVersion(microserviceVersion);
+                    }
+                    return microserviceVersion;
+                });
+            }
 
-  protected MicroserviceVersionRule createAndInitMicroserviceVersionRule(String strVersionRule) {
-    LOGGER.info("create MicroserviceVersionRule, appId={}, microserviceName={}, versionRule={}.",
-        appId,
-        microserviceName,
-        strVersionRule);
-
-    MicroserviceVersionRule microserviceVersionRule =
-        new MicroserviceVersionRule(appId, microserviceName, strVersionRule);
-    for (MicroserviceVersion microserviceVersion : versions.values()) {
-      microserviceVersionRule.addMicroserviceVersion(microserviceVersion);
+            for (MicroserviceVersionRule microserviceVersionRule : versionRules.values()) {
+                microserviceVersionRule.setInstances(instances);
+            }
+        }
     }
-    microserviceVersionRule.setInstances(instances);
-    return microserviceVersionRule;
-  }
 
-  @Subscribe
-  public void onMicroserviceInstanceChanged(MicroserviceInstanceChangedEvent changedEvent) {
-    if (!appId.equals(changedEvent.getKey().getAppId()) ||
-        !microserviceName.equals(changedEvent.getKey().getServiceName())) {
-      return;
+    public MicroserviceVersionRule getOrCreateMicroserviceVersionRule(String versionRule) {
+        // do not use computeIfAbsent
+        MicroserviceVersionRule microserviceVersionRule = versionRules.get(versionRule);
+        if (microserviceVersionRule == null) {
+            synchronized (lock) {
+                microserviceVersionRule = versionRules.get(versionRule);
+                if (microserviceVersionRule == null) {
+                    microserviceVersionRule = createAndInitMicroserviceVersionRule(versionRule);
+                    versionRules.put(versionRule, microserviceVersionRule);
+                }
+            }
+        }
+
+        return microserviceVersionRule;
     }
 
-    // pull instances always replace old instances, not append
-    //
-    // pull result and watch event sequence is not defined even inside SC.
-    // it's not safe to trust the event, so we just send a new pull request
-    //
-    // CREATE/UPDATE:
-    //   if pull 1/2/3, and then add 4, but "add 4" received before pull result, will lost 4.
-    // DELETE:
-    //   if pull 1/2/3, and then delete 3, but "delete 3" received before pull result, will have wrong 3.
-    // EXPIRE::
-    //   black/white config in SC changed, we must refresh all data from sc.
-    pendingPullCount.incrementAndGet();
-    appManager.getEventBus().post(new PullMicroserviceVersionsInstancesEvent(this, TimeUnit.SECONDS.toMillis(1)));
-  }
+    protected MicroserviceVersionRule createAndInitMicroserviceVersionRule(String strVersionRule) {
+        LOGGER.info("create MicroserviceVersionRule, appId={}, microserviceName={}, versionRule={}.",
+                appId,
+                microserviceName,
+                strVersionRule);
+
+        MicroserviceVersionRule microserviceVersionRule =
+                new MicroserviceVersionRule(appId, microserviceName, strVersionRule);
+        for (MicroserviceVersion microserviceVersion : versions.values()) {
+            microserviceVersionRule.addMicroserviceVersion(microserviceVersion);
+        }
+        microserviceVersionRule.setInstances(instances);
+        return microserviceVersionRule;
+    }
+
+    @Subscribe
+    public void onMicroserviceInstanceChanged(MicroserviceInstanceChangedEvent changedEvent) {
+        if (!appId.equals(changedEvent.getKey().getAppId()) ||
+                !microserviceName.equals(changedEvent.getKey().getServiceName())) {
+            return;
+        }
+
+        // pull instances always replace old instances, not append
+        //
+        // pull result and watch event sequence is not defined even inside SC.
+        // it's not safe to trust the event, so we just send a new pull request
+        //
+        // CREATE/UPDATE:
+        //   if pull 1/2/3, and then add 4, but "add 4" received before pull result, will lost 4.
+        // DELETE:
+        //   if pull 1/2/3, and then delete 3, but "delete 3" received before pull result, will have wrong 3.
+        // EXPIRE::
+        //   black/white config in SC changed, we must refresh all data from sc.
+        pendingPullCount.incrementAndGet();
+        appManager.getEventBus().post(new PullMicroserviceVersionsInstancesEvent(this, TimeUnit.SECONDS.toMillis(1)));
+    }
 }
