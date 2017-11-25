@@ -16,24 +16,18 @@
 
 package io.servicecomb.foundation.metrics.output.servo;
 
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.log4j.Category;
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
 import org.apache.log4j.PatternLayout;
-import org.apache.log4j.Priority;
 import org.apache.log4j.spi.LoggingEvent;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.netflix.servo.publish.BasicMetricFilter;
 import com.netflix.servo.publish.CounterToRateMetricTransform;
 import com.netflix.servo.publish.MetricObserver;
@@ -42,43 +36,37 @@ import com.netflix.servo.publish.PollRunnable;
 import com.netflix.servo.publish.PollScheduler;
 
 import io.servicecomb.foundation.common.utils.RollingFileAppenderExt;
-import io.servicecomb.foundation.metrics.MetricsServoRegistry;
 import io.servicecomb.foundation.metrics.output.MetricsFileOutput;
 import io.servicecomb.serviceregistry.RegistryUtils;
 import io.servicecomb.serviceregistry.api.registry.Microservice;
 
 @Component
-public class ServoMetricsFileOutput extends MetricsFileOutput {
+public class RollingMetricsFileOutput extends MetricsFileOutput {
+  private final Map<String, RollingFileAppenderExt> metricsAppenders = new HashMap<>();
+  private final MetricsContentConvertor convertor;
+  private final MetricsContentFormatter formatter;
+  private final String fileNameHeader;
 
-  private static final Logger logger = LoggerFactory.getLogger(ServoMetricsFileOutput.class);
-
-  private final String applicationName;
-  private final ObjectMapper mapper = new ObjectMapper();
-  private final Map<String, RollingFileAppenderExt> metricsAppenders;
-  private final MetricsServoRegistry registry;
-  private String hostName;
-
-
+  //auto init when as spring bean
   @Autowired
-  public ServoMetricsFileOutput(MetricsServoRegistry registry) {
-    this.metricsAppenders = new HashMap<>();
-    this.registry = registry;
-    try {
-      InetAddress localHost = InetAddress.getLocalHost();
-      hostName = localHost.getHostName();
-    } catch (UnknownHostException e) {
-      e.printStackTrace();
-      hostName = "UnknownHost";
-    }
+  public RollingMetricsFileOutput(MetricsContentConvertor convertor, MetricsContentFormatter formatter) {
+    this(convertor, formatter, true);
+  }
 
+  public RollingMetricsFileOutput(MetricsContentConvertor convertor, MetricsContentFormatter formatter,
+      boolean autoInit) {
     if (RegistryUtils.getServiceRegistry() != null) {
       Microservice microservice = RegistryUtils.getMicroservice();
-      applicationName = String.join(".", microservice.getAppId(), microservice.getServiceName());
+      fileNameHeader = String.join(".", microservice.getAppId(), microservice.getServiceName());
     } else {
-      applicationName = String.join(".", hostName, "test");
+      fileNameHeader = String.join(".", "local", "test");
     }
 
-    this.init();
+    this.convertor = convertor;
+    this.formatter = formatter;
+    if (autoInit) {
+      this.init();
+    }
   }
 
   @Override
@@ -89,7 +77,7 @@ public class ServoMetricsFileOutput extends MetricsFileOutput {
     }
 
     if (isEnabled()) {
-      MetricObserver fileObserver = new SeparatedMetricObserver(applicationName, this, registry);
+      MetricObserver fileObserver = new FileOutputMetricObserver("fileOutputObserver", this, convertor, formatter);
       MetricObserver fileTransform = new CounterToRateMetricTransform(fileObserver, getMetricPoll(), TimeUnit.SECONDS);
       PollRunnable fileTask = new PollRunnable(new MonitorRegistryMetricPoller(), BasicMetricFilter.MATCH_ALL,
           fileTransform);
@@ -99,16 +87,14 @@ public class ServoMetricsFileOutput extends MetricsFileOutput {
 
   @Override
   public void output(Map<String, String> metrics) {
-
     for (String metricName : metrics.keySet()) {
-      final String fileName = String.join(".", this.applicationName, metricName, "dat");
+      final String fileName = String.join(".", this.fileNameHeader, metricName, "dat");
       RollingFileAppenderExt appender = metricsAppenders.computeIfAbsent(metricName, (key) -> {
         String finalPath = Paths.get(getRollingRootFilePath(), fileName).toString();
         RollingFileAppenderExt fileAppender = new RollingFileAppenderExt();
         fileAppender.setLogPermission("rw-------");
         fileAppender.setFile(finalPath);
         fileAppender.setLayout(new PatternLayout("%m%n"));
-        fileAppender.setThreshold(Priority.FATAL);
         fileAppender.setAppend(true);
         fileAppender.setMaxFileSize(getMaxRollingFileSize());
         fileAppender.setMaxBackupIndex(getMaxRollingFileCount());
@@ -116,39 +102,9 @@ public class ServoMetricsFileOutput extends MetricsFileOutput {
         return fileAppender;
       });
 
-      LoggingEvent event = null;
-      try {
-        SeparatedOutputData outputData = new SeparatedOutputData(this.applicationName, hostName, metricName,
-            metrics.get(metricName));
-        event = new LoggingEvent(fileName, Category.getInstance(fileName), Priority.FATAL,
-            mapper.writeValueAsString(outputData), null);
-      } catch (JsonProcessingException e) {
-        logger.error("parse metric data error");
-      }
+      LoggingEvent event = new LoggingEvent(fileName, Logger.getLogger(fileName), Level.ALL,
+          metrics.get(metricName), null);
       appender.append(event);
-    }
-  }
-
-  class SeparatedOutputData {
-    private String plugin_id = null;
-    private Map<String, Object> metric = null;
-
-    public String getPlugin_id() {
-      return plugin_id;
-    }
-
-    public Map<String, Object> getMetric() {
-      return metric;
-    }
-
-    public SeparatedOutputData(String plugin_id, String hostName, String metricName, String metricValue) {
-      this.plugin_id = plugin_id;
-      this.metric = new HashMap<>();
-      this.metric.put("node", hostName);
-      this.metric.put("scope_name", "");
-      this.metric.put("timestamp", System.currentTimeMillis());
-      this.metric.put("inface_name", "");
-      this.metric.put(metricName, metricValue);
     }
   }
 }

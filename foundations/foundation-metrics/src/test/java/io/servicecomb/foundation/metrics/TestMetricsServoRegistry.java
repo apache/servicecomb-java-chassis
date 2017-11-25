@@ -29,7 +29,11 @@ import com.netflix.config.DynamicPropertyFactory;
 import com.netflix.servo.publish.PollScheduler;
 
 import io.servicecomb.foundation.metrics.output.MetricsFileOutput;
-import io.servicecomb.foundation.metrics.output.servo.ServoMetricsFileOutput;
+import io.servicecomb.foundation.metrics.output.servo.SimpleMetricsContentFormatter;
+import io.servicecomb.foundation.metrics.output.servo.MetricsContentConvertor;
+import io.servicecomb.foundation.metrics.output.servo.SimpleMetricsContentConvertor;
+import io.servicecomb.foundation.metrics.output.servo.MetricsContentFormatter;
+import io.servicecomb.foundation.metrics.output.servo.RollingMetricsFileOutput;
 import io.servicecomb.foundation.metrics.performance.MetricsDataMonitor;
 import io.servicecomb.foundation.metrics.performance.QueueMetricsData;
 
@@ -42,14 +46,14 @@ public class TestMetricsServoRegistry {
 
   MetricsFileOutput fileOutput = null;
 
+  MetricsContentConvertor convertor = null;
+
+  MetricsContentFormatter formatter = null;
+
   @BeforeClass
   public static void staticBeforeClean() {
     BaseConfiguration configuration = new BaseConfiguration();
-    configuration.setProperty(MetricsFileOutput.METRICS_POLL_TIME, 1);
     configuration.setProperty(MetricsFileOutput.METRICS_FILE_ENABLED, true);
-
-//    configuration.setProperty(MetricsFileOutput.METRICS_FILE_PATH, "D:/Temp");
-//    configuration.setProperty(MetricsFileOutput.METRICS_FILE_SIZE, "1KB");
 
     DynamicPropertyFactory.initWithConfigurationSource(configuration);
     MetricsServoRegistry.metricsList.clear();
@@ -59,7 +63,9 @@ public class TestMetricsServoRegistry {
   @Before
   public void setUp() throws Exception {
     metricsRegistry = new MetricsServoRegistry();
-    fileOutput = new ServoMetricsFileOutput(metricsRegistry);
+    convertor = new SimpleMetricsContentConvertor();
+    formatter = new SimpleMetricsContentFormatter();
+    fileOutput = new RollingMetricsFileOutput(convertor,formatter,false);
     localData = metricsRegistry.getLocalMetrics();
     metricsDataMonitor = MetricsServoRegistry.getOrCreateLocalMetrics();
   }
@@ -68,6 +74,7 @@ public class TestMetricsServoRegistry {
   public void tearDown() throws Exception {
     PollScheduler.getInstance().stop();
     metricsRegistry = null;
+    convertor = null;
     fileOutput = null;
     localData = null;
     metricsDataMonitor = null;
@@ -94,12 +101,12 @@ public class TestMetricsServoRegistry {
     Assert.assertEquals(1, localData.getTotalFailReqProvider());
     Assert.assertEquals(1, localData.getTotalReqConsumer());
     Assert.assertEquals(1, localData.getTotalFailReqConsumer());
-//    Assert.assertEquals(20L, localData.getOperMetTotalReq("sayHi").longValue());
-//    Assert.assertEquals(20L, localData.getOperMetTotalFailReq("sayHi").longValue());
+    Assert.assertEquals(20L, localData.getOperMetTotalReq("sayHi").longValue());
+    Assert.assertEquals(20L, localData.getOperMetTotalFailReq("sayHi").longValue());
 
     MetricsDataMonitor localData1 = metricsRegistry.getLocalMetrics();
-//    Assert.assertEquals(20L, localData1.getOperMetTotalReq("sayHi").longValue());
-//    Assert.assertEquals(20L, localData1.getOperMetTotalFailReq("sayHi").longValue());
+    Assert.assertEquals(20L, localData1.getOperMetTotalReq("sayHi").longValue());
+    Assert.assertEquals(20L, localData1.getOperMetTotalFailReq("sayHi").longValue());
   }
 
   @Test
@@ -118,12 +125,12 @@ public class TestMetricsServoRegistry {
     Assert.assertEquals(1, localData.getTotalFailReqProvider());
     Assert.assertEquals(1, localData.getTotalReqConsumer());
     Assert.assertEquals(1, localData.getTotalFailReqConsumer());
-//    Assert.assertEquals(20L, localData.getOperMetTotalReq("sayHi").longValue());
-//    Assert.assertEquals(20L, localData.getOperMetTotalFailReq("sayHi").longValue());
+    Assert.assertEquals(20L, localData.getOperMetTotalReq("sayHi").longValue());
+    Assert.assertEquals(20L, localData.getOperMetTotalFailReq("sayHi").longValue());
 
     MetricsDataMonitor localData1 = metricsRegistry.getLocalMetrics();
-//    Assert.assertEquals(20L, localData1.getOperMetTotalReq("sayHi").longValue());
-//    Assert.assertEquals(20L, localData1.getOperMetTotalFailReq("sayHi").longValue());
+    Assert.assertEquals(20L, localData1.getOperMetTotalReq("sayHi").longValue());
+    Assert.assertEquals(20L, localData1.getOperMetTotalFailReq("sayHi").longValue());
   }
 
   @Test

@@ -39,7 +39,11 @@ import com.netflix.servo.DefaultMonitorRegistry;
 import com.netflix.servo.annotations.DataSourceType;
 import com.netflix.servo.monitor.AbstractMonitor;
 import com.netflix.servo.monitor.BasicCompositeMonitor;
+import com.netflix.servo.monitor.BasicGauge;
+import com.netflix.servo.monitor.DoubleGauge;
 import com.netflix.servo.monitor.Gauge;
+import com.netflix.servo.monitor.Informational;
+import com.netflix.servo.monitor.LongGauge;
 import com.netflix.servo.monitor.Monitor;
 import com.netflix.servo.monitor.MonitorConfig;
 
@@ -66,6 +70,7 @@ public class MetricsServoRegistry implements InitializingBean {
   public MetricsDataMonitor getLocalMetrics() {
     return localMetrics;
   }
+
 
   /**
    * Get or create local metrics.
@@ -162,202 +167,275 @@ public class MetricsServoRegistry implements InitializingBean {
   };
 
   /**
+   * Get operational level total request and total failed requests by comparing the
+   * last saved data.
+   */
+  protected final Func0<String> getTotalReqProdOperLevel = new Func0<String>() {
+    @Override
+    public String call() {
+      Map<String, Long> totalMap = new HashMap<String, Long>();
+      Map<String, Long> oldMap = localMetrics.operMetricsTotalReq;
+      Map<String, Long> metricMap = new HashMap<String, Long>();
+      for (MetricsDataMonitor metricsDataMonitor : metricsList) {
+        Collection<String> keySet = metricsDataMonitor.operMetricsTotalReq.keySet();
+        for (String key : keySet) {
+          Long value = totalMap.get(key);
+          if (null == value) {
+            totalMap.put(key, metricsDataMonitor.getOperMetTotalReq(key));
+          } else {
+            totalMap.put(key, metricsDataMonitor.getOperMetTotalReq(key) + value);
+          }
+        }
+      }
+      Collection<String> keySet = totalMap.keySet();
+      for (String key : keySet) {
+        if (oldMap.containsKey(key)) {
+          metricMap.put(key, totalMap.get(key) - oldMap.get(key));
+        } else {
+          metricMap.put(key, totalMap.get(key));
+        }
+      }
+      localMetrics.operMetricsTotalReq.putAll(totalMap);
+      return metricMap.toString();
+    }
+  };
+
+  /**
+   * Get operational level total request and total failed requets by comparing the
+   * last saved data.
+   */
+  protected final Func0<String> getTotalReqFailProdOperLevel = new Func0<String>() {
+    @Override
+    public String call() {
+      Map<String, Long> totalMap = new HashMap<String, Long>();
+      Map<String, Long> oldMap = localMetrics.operMetricsTotalFailReq;
+      Map<String, Long> metricMap = new HashMap<String, Long>();
+      for (MetricsDataMonitor metricsDataMonitor : metricsList) {
+        Collection<String> keySet = metricsDataMonitor.operMetricsTotalFailReq.keySet();
+        for (String key : keySet) {
+          Long value = totalMap.get(key);
+          if (null == value) {
+            totalMap.put(key, metricsDataMonitor.getOperMetTotalFailReq(key));
+          } else {
+            totalMap.put(key, metricsDataMonitor.getOperMetTotalFailReq(key) + value);
+          }
+        }
+      }
+      Collection<String> keySet = totalMap.keySet();
+      for (String key : keySet) {
+        if (oldMap.containsKey(key)) {
+          metricMap.put(key, totalMap.get(key) - oldMap.get(key));
+        } else {
+          metricMap.put(key, totalMap.get(key));
+        }
+      }
+      localMetrics.operMetricsTotalFailReq.putAll(totalMap);
+      return metricMap.toString();
+    }
+  };
+
+  /**
    * Get operational level/instance level queue related metrics by comparing the
    * last saved data.
    */
-  public Map<String, String> calculateQueueMetrics() {
+  protected final Func0<String> getQueueMetrics = new Func0<String>() {
+    @Override
+    public String call() {
+      Map<String, QueueMetricsData> totalMap = new HashMap<String, QueueMetricsData>();
 
-    Map<String, QueueMetricsData> totalMap = new HashMap<String, QueueMetricsData>();
-
-    for (MetricsDataMonitor metricsDataMonitor : metricsList) {
-      Collection<String> keySet = metricsDataMonitor.getQueueMetrics().keySet();
-      for (String key : keySet) {
-        QueueMetricsData value = totalMap.get(key);
-        if (null == value) {
-          totalMap.put(key, metricsDataMonitor.getQueueMetrics().get(key));
-        } else {
-          QueueMetricsData newValue = metricsDataMonitor.getQueueMetrics().get(key);
-          QueueMetricsData totalValue = new QueueMetricsData();
-          totalValue.setCountInQueue(newValue.getCountInQueue() + value.getCountInQueue());
-          totalValue.setTotalTime(newValue.getTotalTime() + value.getTotalTime());
-          totalValue.setTotalCount(newValue.getTotalCount() + value.getTotalCount());
-          totalValue
-              .setTotalServExecutionTime(newValue.getTotalServExecutionTime() + value.getTotalServExecutionTime());
-          totalValue
-              .setTotalServExecutionCount(newValue.getTotalServExecutionCount() + value.getTotalServExecutionCount());
-          if ((value.getMinLifeTimeInQueue() <= 0)
-              || (newValue.getMinLifeTimeInQueue() < value.getMinLifeTimeInQueue())) {
-            totalValue.setMinLifeTimeInQueue(newValue.getMinLifeTimeInQueue());
+      for (MetricsDataMonitor metricsDataMonitor : metricsList) {
+        Collection<String> keySet = metricsDataMonitor.getQueueMetrics().keySet();
+        for (String key : keySet) {
+          QueueMetricsData value = totalMap.get(key);
+          if (null == value) {
+            totalMap.put(key, metricsDataMonitor.getQueueMetrics().get(key));
+          } else {
+            QueueMetricsData newValue = metricsDataMonitor.getQueueMetrics().get(key);
+            QueueMetricsData totalValue = new QueueMetricsData();
+            totalValue.setCountInQueue(newValue.getCountInQueue() + value.getCountInQueue());
+            totalValue.setTotalTime(newValue.getTotalTime() + value.getTotalTime());
+            totalValue.setTotalCount(newValue.getTotalCount() + value.getTotalCount());
+            totalValue
+                .setTotalServExecutionTime(newValue.getTotalServExecutionTime() + value.getTotalServExecutionTime());
+            totalValue
+                .setTotalServExecutionCount(newValue.getTotalServExecutionCount() + value.getTotalServExecutionCount());
+            if ((value.getMinLifeTimeInQueue() <= 0)
+                || (newValue.getMinLifeTimeInQueue() < value.getMinLifeTimeInQueue())) {
+              totalValue.setMinLifeTimeInQueue(newValue.getMinLifeTimeInQueue());
+            }
+            newValue.resetMinLifeTimeInQueue();
+            if ((value.getMaxLifeTimeInQueue() <= 0)
+                || (newValue.getMaxLifeTimeInQueue() > value.getMaxLifeTimeInQueue())) {
+              totalValue.setMaxLifeTimeInQueue(newValue.getMaxLifeTimeInQueue());
+            }
+            newValue.resetMaxLifeTimeInQueue();
+            totalMap.put(key, totalValue);
           }
-          newValue.resetMinLifeTimeInQueue();
-          if ((value.getMaxLifeTimeInQueue() <= 0)
-              || (newValue.getMaxLifeTimeInQueue() > value.getMaxLifeTimeInQueue())) {
-            totalValue.setMaxLifeTimeInQueue(newValue.getMaxLifeTimeInQueue());
-          }
-          newValue.resetMaxLifeTimeInQueue();
-          totalMap.put(key, totalValue);
         }
       }
+
+      Map<String, QueueMetricsData> oldMap = localMetrics.getQueueMetrics();
+      Map<String, QueueMetricsData> metricMap = new HashMap<String, QueueMetricsData>();
+      Map<String, String> result = new HashMap<>();
+      Map<String, String> resultInstancePublishMap = new HashMap<>();
+
+      QueueMetricsData totalValueInstance = new QueueMetricsData();
+
+      Collection<String> keySet = totalMap.keySet();
+      Map<String, String> resultMap;
+
+      for (String key : keySet) {
+        resultMap = new HashMap<>();
+        if (oldMap.containsKey(key)) {
+          QueueMetricsData newValue = new QueueMetricsData();
+          QueueMetricsData totalValue = totalMap.get(key);
+          QueueMetricsData oldValue = oldMap.get(key);
+          newValue.setCountInQueue(totalValue.getCountInQueue());
+          newValue.setTotalTime(totalValue.getTotalTime() - oldValue.getTotalTime());
+          newValue.setTotalCount(totalValue.getTotalCount() - oldValue.getTotalCount());
+          newValue
+              .setTotalServExecutionTime(totalValue.getTotalServExecutionTime() - oldValue.getTotalServExecutionTime());
+          newValue.setTotalServExecutionCount(
+              totalValue.getTotalServExecutionCount() - oldValue.getTotalServExecutionCount());
+          newValue.setMinLifeTimeInQueue(totalValue.getMinLifeTimeInQueue());
+          newValue.setMaxLifeTimeInQueue(totalValue.getMaxLifeTimeInQueue());
+          metricMap.put(key, newValue);
+        } else {
+          metricMap.put(key, totalMap.get(key));
+        }
+
+        resultMap.put("countInQueue", metricMap.get(key).getCountInQueue().toString());
+
+        long count = metricMap.get(key).getTotalCount();
+        double avgTimeInQueue = 0;
+        if (count > 0) {
+          avgTimeInQueue = metricMap.get(key).getTotalTime() / count;
+        }
+        resultMap.put("AverageTimeInQueue", String.valueOf(avgTimeInQueue));
+        long countService = metricMap.get(key).getTotalServExecutionCount();
+        double avgServiceTimeInQueue = 0;
+        if (countService > 0) {
+          avgServiceTimeInQueue = metricMap.get(key).getTotalServExecutionTime() / countService;
+        }
+        resultMap.put("AverageServiceExecutionTime", String.valueOf(avgServiceTimeInQueue));
+        resultMap.put("MinLifeTimeInQueue", metricMap.get(key).getMinLifeTimeInQueue().toString());
+        resultMap.put("MaxLifeTimeInQueue", metricMap.get(key).getMaxLifeTimeInQueue().toString());
+
+        result.put(key, resultMap.toString());
+
+        //get the all values for instance level.
+        totalValueInstance.setCountInQueue(metricMap.get(key).getCountInQueue());
+        totalValueInstance.setTotalTime(totalValueInstance.getTotalTime() + metricMap.get(key).getTotalTime());
+        totalValueInstance.setTotalCount(totalValueInstance.getTotalCount() + metricMap.get(key).getTotalCount());
+        totalValueInstance
+            .setTotalServExecutionTime(
+                totalValueInstance.getTotalServExecutionTime() + metricMap.get(key).getTotalServExecutionTime());
+        totalValueInstance
+            .setTotalServExecutionCount(
+                totalValueInstance.getTotalServExecutionCount() + metricMap.get(key).getTotalServExecutionCount());
+
+        if (totalValueInstance.getMinLifeTimeInQueue() <= 0
+            || metricMap.get(key).getMinLifeTimeInQueue() < totalValueInstance.getMinLifeTimeInQueue()) {
+          totalValueInstance.setMinLifeTimeInQueue(metricMap.get(key).getMinLifeTimeInQueue());
+        }
+        if (totalValueInstance.getMaxLifeTimeInQueue() <= 0
+            || totalMap.get(key).getMaxLifeTimeInQueue() > totalValueInstance.getMaxLifeTimeInQueue()) {
+          totalValueInstance.setMaxLifeTimeInQueue(metricMap.get(key).getMaxLifeTimeInQueue());
+        }
+
+        localMetrics.setQueueMetrics(new ConcurrentHashMap<>(totalMap));
+      }
+
+      //prepare the result map for instance level.
+      resultInstancePublishMap.put("countInQueue", totalValueInstance.getCountInQueue().toString());
+      long countInst = totalValueInstance.getTotalCount();
+      double avgTimeInQueueIns = 0;
+      if (countInst > 0) {
+        avgTimeInQueueIns = totalValueInstance.getTotalTime() / countInst;
+      }
+      resultInstancePublishMap.put("averageTimeInQueue", String.valueOf(avgTimeInQueueIns));
+      long countServiceInst = totalValueInstance.getTotalServExecutionCount();
+      double avgServiceTimeInQueueInst = 0;
+      if (countServiceInst > 0) {
+        avgServiceTimeInQueueInst = totalValueInstance.getTotalServExecutionTime() / countServiceInst;
+      }
+      resultInstancePublishMap.put("averageServiceExecutionTime", String.valueOf(avgServiceTimeInQueueInst));
+      resultInstancePublishMap.put("minLifeTimeInQueue", totalValueInstance.getMinLifeTimeInQueue().toString());
+      resultInstancePublishMap.put("maxLifeTimeInQueue", totalValueInstance.getMaxLifeTimeInQueue().toString());
+      result.put("InstanceLevel", resultInstancePublishMap.toString());
+
+      return result.toString();
     }
-
-    Map<String, QueueMetricsData> oldMap = localMetrics.getQueueMetrics();
-    Map<String, QueueMetricsData> metricMap = new HashMap<String, QueueMetricsData>();
-    Map<String, String> result = new HashMap<>();
-    Map<String, String> resultInstancePublishMap = new HashMap<>();
-
-    QueueMetricsData totalValueInstance = new QueueMetricsData();
-
-    Collection<String> keySet = totalMap.keySet();
-    Map<String, String> resultMap;
-
-    for (String key : keySet) {
-      resultMap = new HashMap<>();
-      if (oldMap.containsKey(key)) {
-        QueueMetricsData newValue = new QueueMetricsData();
-        QueueMetricsData totalValue = totalMap.get(key);
-        QueueMetricsData oldValue = oldMap.get(key);
-        newValue.setCountInQueue(totalValue.getCountInQueue());
-        newValue.setTotalTime(totalValue.getTotalTime() - oldValue.getTotalTime());
-        newValue.setTotalCount(totalValue.getTotalCount() - oldValue.getTotalCount());
-        newValue
-            .setTotalServExecutionTime(totalValue.getTotalServExecutionTime() - oldValue.getTotalServExecutionTime());
-        newValue.setTotalServExecutionCount(
-            totalValue.getTotalServExecutionCount() - oldValue.getTotalServExecutionCount());
-        newValue.setMinLifeTimeInQueue(totalValue.getMinLifeTimeInQueue());
-        newValue.setMaxLifeTimeInQueue(totalValue.getMaxLifeTimeInQueue());
-        metricMap.put(key, newValue);
-      } else {
-        metricMap.put(key, totalMap.get(key));
-      }
-
-      resultMap.put("countInQueue", metricMap.get(key).getCountInQueue().toString());
-
-      long count = metricMap.get(key).getTotalCount();
-      double avgTimeInQueue = 0;
-      if (count > 0) {
-        avgTimeInQueue = metricMap.get(key).getTotalTime() / count;
-      }
-      resultMap.put("AverageTimeInQueue", String.valueOf(avgTimeInQueue));
-      long countService = metricMap.get(key).getTotalServExecutionCount();
-      double avgServiceTimeInQueue = 0;
-      if (countService > 0) {
-        avgServiceTimeInQueue = metricMap.get(key).getTotalServExecutionTime() / countService;
-      }
-      resultMap.put("AverageServiceExecutionTime", String.valueOf(avgServiceTimeInQueue));
-      resultMap.put("MinLifeTimeInQueue", metricMap.get(key).getMinLifeTimeInQueue().toString());
-      resultMap.put("MaxLifeTimeInQueue", metricMap.get(key).getMaxLifeTimeInQueue().toString());
-
-      result.put(key, resultMap.toString());
-
-      //get the all values for instance level.
-      totalValueInstance.setCountInQueue(metricMap.get(key).getCountInQueue());
-      totalValueInstance.setTotalTime(totalValueInstance.getTotalTime() + metricMap.get(key).getTotalTime());
-      totalValueInstance.setTotalCount(totalValueInstance.getTotalCount() + metricMap.get(key).getTotalCount());
-      totalValueInstance
-          .setTotalServExecutionTime(
-              totalValueInstance.getTotalServExecutionTime() + metricMap.get(key).getTotalServExecutionTime());
-      totalValueInstance
-          .setTotalServExecutionCount(
-              totalValueInstance.getTotalServExecutionCount() + metricMap.get(key).getTotalServExecutionCount());
-
-      if (totalValueInstance.getMinLifeTimeInQueue() <= 0
-          || metricMap.get(key).getMinLifeTimeInQueue() < totalValueInstance.getMinLifeTimeInQueue()) {
-        totalValueInstance.setMinLifeTimeInQueue(metricMap.get(key).getMinLifeTimeInQueue());
-      }
-      if (totalValueInstance.getMaxLifeTimeInQueue() <= 0
-          || totalMap.get(key).getMaxLifeTimeInQueue() > totalValueInstance.getMaxLifeTimeInQueue()) {
-        totalValueInstance.setMaxLifeTimeInQueue(metricMap.get(key).getMaxLifeTimeInQueue());
-      }
-
-      localMetrics.setQueueMetrics(new ConcurrentHashMap<>(totalMap));
-    }
-
-    //prepare the result map for instance level.
-    resultInstancePublishMap.put("countInQueue", totalValueInstance.getCountInQueue().toString());
-    long countInst = totalValueInstance.getTotalCount();
-    double avgTimeInQueueIns = 0;
-    if (countInst > 0) {
-      avgTimeInQueueIns = totalValueInstance.getTotalTime() / countInst;
-    }
-    resultInstancePublishMap.put("averageTimeInQueue", String.valueOf(avgTimeInQueueIns));
-    long countServiceInst = totalValueInstance.getTotalServExecutionCount();
-    double avgServiceTimeInQueueInst = 0;
-    if (countServiceInst > 0) {
-      avgServiceTimeInQueueInst = totalValueInstance.getTotalServExecutionTime() / countServiceInst;
-    }
-    resultInstancePublishMap.put("averageServiceExecutionTime", String.valueOf(avgServiceTimeInQueueInst));
-    resultInstancePublishMap.put("minLifeTimeInQueue", totalValueInstance.getMinLifeTimeInQueue().toString());
-    resultInstancePublishMap.put("maxLifeTimeInQueue", totalValueInstance.getMaxLifeTimeInQueue().toString());
-    result.put("InstanceLevel", resultInstancePublishMap.toString());
-
-    //only return instance level data
-    return resultInstancePublishMap;
-  }
-
+  };
 
   /**
    * Get CPU and memory information metrics.
    */
-  public Map<String, String> getSystemMetrics() {
+  protected final Func0<String> getCpuAndMemory = new Func0<String>() {
+    @Override
+    public String call() {
+      Map<String, String> memoryMap = new HashMap<>();
+      OperatingSystemMXBean osMxBean = ManagementFactory.getOperatingSystemMXBean();
+      double cpu = osMxBean.getSystemLoadAverage();
+      memoryMap.put("cpuLoad", String.valueOf(cpu));
 
-    Map<String, String> system = new HashMap<>();
+      ThreadMXBean threadmxBean = ManagementFactory.getThreadMXBean();
+      int threadCount = threadmxBean.getThreadCount();
+      memoryMap.put("cpuRunningThreads", String.valueOf(threadCount));
 
-    OperatingSystemMXBean osMxBean = ManagementFactory.getOperatingSystemMXBean();
-    system.put("cpuLoad", String.valueOf(osMxBean.getSystemLoadAverage()));
-
-    ThreadMXBean threadmxBean = ManagementFactory.getThreadMXBean();
-    system.put("cpuRunningThreads", String.valueOf(threadmxBean.getThreadCount()));
-
-    MemoryMXBean memBean = ManagementFactory.getMemoryMXBean();
-    MemoryUsage memHeapUsage = memBean.getHeapMemoryUsage();
-    MemoryUsage nonHeapUsage = memBean.getNonHeapMemoryUsage();
-    system.put("heapInit", String.valueOf(memHeapUsage.getInit()));
-    system.put("heapMax", String.valueOf(memHeapUsage.getMax()));
-    system.put("heapCommit", String.valueOf(memHeapUsage.getCommitted()));
-    system.put("heapUsed", String.valueOf(memHeapUsage.getUsed()));
-    system.put("nonHeapInit", String.valueOf(nonHeapUsage.getInit()));
-    system.put("nonHeapMax", String.valueOf(nonHeapUsage.getMax()));
-    system.put("nonHeapCommit", String.valueOf(nonHeapUsage.getCommitted()));
-    system.put("nonHeapUsed", String.valueOf(nonHeapUsage.getUsed()));
-    return system;
-  }
+      MemoryMXBean memBean = ManagementFactory.getMemoryMXBean();
+      MemoryUsage memHeapUsage = memBean.getHeapMemoryUsage();
+      MemoryUsage nonHeapUsage = memBean.getNonHeapMemoryUsage();
+      memoryMap.put("heapInit", String.valueOf(memHeapUsage.getInit()));
+      memoryMap.put("heapMax", String.valueOf(memHeapUsage.getMax()));
+      memoryMap.put("heapCommit", String.valueOf(memHeapUsage.getCommitted()));
+      memoryMap.put("heapUsed", String.valueOf(memHeapUsage.getUsed()));
+      memoryMap.put("nonHeapInit", String.valueOf(nonHeapUsage.getInit()));
+      memoryMap.put("nonHeapMax", String.valueOf(nonHeapUsage.getMax()));
+      memoryMap.put("nonHeapCommit", String.valueOf(nonHeapUsage.getCommitted()));
+      memoryMap.put("nonHeapUsed", String.valueOf(nonHeapUsage.getUsed()));
+      return memoryMap.toString();
+    }
+  };
 
   /**
    * Get TPS and latency for operational and instance level from hystrix.
    */
-  public Map<String, String> calculateTPSAndLatencyMetrics() {
-    Map<String, String> tpsAndLatencyMap = new HashMap<>();
-    Collection<HystrixCommandMetrics> instances = HystrixCommandMetrics.getInstances();
+  protected final Func0<String> getTpsAndLatency = new Func0<String>() {
+    @Override
+    public String call() {
+      Map<String, String> tpsAndLatencyMap = new HashMap<>();
+      Collection<HystrixCommandMetrics> instances = HystrixCommandMetrics.getInstances();
 
-    long insTotalTps = 0;
-    long insTotalLatency = 0;
-    long cumulativeTotalCount = 0;
+      long insTotalTps = 0;
+      long insTotalLatency = 0;
+      long cumulativeTotalCount = 0;
 
-    for (HystrixCommandMetrics instance : instances) {
-      long successCount = instance.getRollingCount(HystrixEventType.SUCCESS);
-      long failureCount = instance.getRollingCount(HystrixEventType.FAILURE);
-      int operLatency = instance.getExecutionTimeMean();
-      long totalCallCount = successCount + failureCount;
-      cumulativeTotalCount += totalCallCount;
-      int windowTime = instance.getProperties().metricsRollingStatisticalWindowInMilliseconds().get() / 1000;
-      double qpsVal = (double) (totalCallCount) / windowTime;
-      BigDecimal bigDecimal = new BigDecimal(qpsVal);
-      BigDecimal bigDecimalVal = bigDecimal.setScale(1, RoundingMode.HALF_DOWN);
-      Double tpsOper = bigDecimalVal.doubleValue();
-      //only return instance level data
-//      tpsAndLatencyMap.put("TPS-" + instance.getCommandKey().name(), String.valueOf(tpsOper));
-//      tpsAndLatencyMap.put("Latency-" + instance.getCommandKey().name(), String.valueOf(operLatency));
-      insTotalTps += tpsOper;
-      insTotalLatency += operLatency;
+      for (HystrixCommandMetrics instance : instances) {
+        long successCount = instance.getRollingCount(HystrixEventType.SUCCESS);
+        long failureCount = instance.getRollingCount(HystrixEventType.FAILURE);
+        int operLatency = instance.getExecutionTimeMean();
+        long totalCallCount = successCount + failureCount;
+        cumulativeTotalCount += totalCallCount;
+        int windowTime = instance.getProperties().metricsRollingStatisticalWindowInMilliseconds().get() / 1000;
+        double qpsVal = (double) (totalCallCount) / windowTime;
+        BigDecimal bigDecimal = new BigDecimal(qpsVal);
+        BigDecimal bigDecimalVal = bigDecimal.setScale(1, RoundingMode.HALF_DOWN);
+        Double tpsOper = bigDecimalVal.doubleValue();
+        //tpsAndLatencyMap.put("TPS-" + instance.getCommandKey().name(), String.valueOf(tpsOper));
+        //tpsAndLatencyMap.put("Latency-" + instance.getCommandKey().name(), String.valueOf(operLatency));
+        insTotalTps += tpsOper;
+        insTotalLatency += operLatency;
+      }
+
+      double instanceLatency = (double) (insTotalLatency) / cumulativeTotalCount;
+
+      tpsAndLatencyMap.put("tps", String.valueOf(insTotalTps));
+      tpsAndLatencyMap.put("latency", String.valueOf(instanceLatency));
+
+      return tpsAndLatencyMap.toString();
     }
-
-    double instanceLatency = (double) (insTotalLatency) / cumulativeTotalCount;
-
-    tpsAndLatencyMap.put("tps", String.valueOf(insTotalTps));
-    tpsAndLatencyMap.put("latency", String.valueOf(instanceLatency));
-
-    return tpsAndLatencyMap;
-  }
+  };
 
   /**
    * Implementation of request metrics with using servo guage metric type.
@@ -378,6 +456,24 @@ public class MetricsServoRegistry implements InitializingBean {
   }
 
   /**
+   * Implementation of queue average metrics with using servo information metric
+   * type.
+   */
+  protected abstract class InformationalMetric extends AbstractMonitor<String> implements Informational {
+    public InformationalMetric(MonitorConfig config) {
+      super(config.withAdditionalTag(DataSourceType.INFORMATIONAL));
+    }
+
+    @Override
+    public String getValue(int n) {
+      return getValue();
+    }
+
+    @Override
+    public abstract String getValue();
+  }
+
+  /**
    * Get the total requests and failed requests for instance level.
    *
    * @param metricsName Name of the metrics
@@ -395,6 +491,39 @@ public class MetricsServoRegistry implements InitializingBean {
     };
   }
 
+  /**
+   * Get the total requests and failed requests for each producer.
+   *
+   * @param metricsName  Name of the metrics
+   * @param metricToEvaluate observable method to be called for preparation of metrics.
+   * @return Guage metrics
+   */
+  protected Monitor<String> getInfoMetricsOperationLevel(final String metricsName,
+      final Func0<String> metricToEvaluate) {
+    return new InformationalMetric(MonitorConfig.builder(metricsName).build()) {
+      @Override
+      public String getValue() {
+        return metricToEvaluate.call();
+      }
+    };
+  }
+
+  /**
+   * Get the total requests and failed requests for each producer.
+   *
+   * @param name Name of the metrics
+   * @param metricToEvaluate observable method to be called for preparation of metrics.
+   * @return Guage metrics
+   */
+  protected Monitor<String> getInfoMetricsOperationalAndInstance(final String name,
+      final Func0<String> metricToEvaluate) {
+    return new InformationalMetric(MonitorConfig.builder(name).build()) {
+      @Override
+      public String getValue() {
+        return metricToEvaluate.call();
+      }
+    };
+  }
 
   /**
    * Prepare the initial metrics.
@@ -404,17 +533,30 @@ public class MetricsServoRegistry implements InitializingBean {
   private List<Monitor<?>> getMetricsMonitors() {
 
     List<Monitor<?>> monitors = new ArrayList<Monitor<?>>();
-    monitors.add(getRequestValuesGaugeMonitor("TotalRequestsPerProvider",
+    monitors.add(getRequestValuesGaugeMonitor("totalRequestsPerProvider INSTANCE_LEVEL",
         getTotalReqProvider));
 
-    monitors.add(getRequestValuesGaugeMonitor("TotalFailedRequestsPerProvider",
+    monitors.add(getRequestValuesGaugeMonitor("totalFailedRequestsPerProvider INSTANCE_LEVEL",
         getTotalFailedReqProvider));
 
-    monitors.add(getRequestValuesGaugeMonitor("TotalRequestsPerConsumer",
+    monitors.add(getRequestValuesGaugeMonitor("totalRequestsPerConsumer INSTANCE_LEVEL",
         getTotalReqConsumer));
 
-    monitors.add(getRequestValuesGaugeMonitor("TotalFailRequestsPerConsumer",
+    monitors.add(getRequestValuesGaugeMonitor("totalFailRequestsPerConsumer INSTANCE_LEVEL",
         getFailedTotalReqConsumer));
+
+    monitors.add(getInfoMetricsOperationLevel("totalRequestProvider OPERATIONAL_LEVEL",
+        getTotalReqProdOperLevel));
+
+    monitors.add(getInfoMetricsOperationLevel("totalFailedRequestProvider OPERATIONAL_LEVEL",
+        getTotalReqFailProdOperLevel));
+
+    monitors.add(getInfoMetricsOperationalAndInstance("RequestQueueRelated", getQueueMetrics));
+
+    monitors.add(getInfoMetricsOperationalAndInstance("TPS and Latency", getTpsAndLatency));
+
+    monitors.add(getInfoMetricsOperationalAndInstance("CPU and Memory", getCpuAndMemory));
+
     return monitors;
   }
 }

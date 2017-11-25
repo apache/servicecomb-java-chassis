@@ -16,7 +16,6 @@
 
 package io.servicecomb.foundation.metrics.output.servo;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -24,37 +23,30 @@ import com.netflix.servo.Metric;
 import com.netflix.servo.publish.BaseMetricObserver;
 import com.netflix.servo.util.Preconditions;
 
-import io.servicecomb.foundation.metrics.MetricsServoRegistry;
 import io.servicecomb.foundation.metrics.output.MetricsFileOutput;
 
-public class SeparatedMetricObserver extends BaseMetricObserver {
-  private final MetricsServoRegistry metricsRegistry;
+public class FileOutputMetricObserver extends BaseMetricObserver {
   private final MetricsFileOutput metricsOutput;
+  private final MetricsContentConvertor convertor;
+  private final MetricsContentFormatter formatter;
 
-  public SeparatedMetricObserver(String observerName, MetricsFileOutput metricsOutput,
-      MetricsServoRegistry metricsRegistry) {
+  public FileOutputMetricObserver(String observerName, MetricsFileOutput metricsOutput,
+      MetricsContentConvertor convertor, MetricsContentFormatter formatter) {
     super(observerName);
-    this.metricsRegistry = metricsRegistry;
     this.metricsOutput = metricsOutput;
+    this.convertor = convertor;
+    this.formatter = formatter;
   }
 
   @Override
   public void updateImpl(List<Metric> metrics) {
     Preconditions.checkNotNull(metrics, "metrics");
-    //这些参数是一次一起计算的，所以不需要将它们转化为独立的Metric，直接取值输出
-    Map<String, String> queueMetrics = metricsRegistry.calculateQueueMetrics();
-    Map<String, String> systemMetrics = metricsRegistry.getSystemMetrics();
-    Map<String, String> tpsAndLatencyMetrics = metricsRegistry.calculateTPSAndLatencyMetrics();
-
-    Map<String, String> totalMetrics = new HashMap<>();
-    totalMetrics.putAll(queueMetrics);
-    totalMetrics.putAll(systemMetrics);
-    totalMetrics.putAll(tpsAndLatencyMetrics);
-    for (Metric metric : metrics) {
-      totalMetrics.put(metric.getConfig().getName(), metric.getValue().toString());
-    }
-
-    metricsOutput.output(totalMetrics);
+    //first convert metrics to Map<String,String>
+    Map<String, String> convertedMetrics = convertor.convert(metrics);
+    //second format output content style
+    Map<String, String> formattedMetrics = formatter.format(convertedMetrics);
+    //finally output to file
+    metricsOutput.output(formattedMetrics);
   }
 }
 
