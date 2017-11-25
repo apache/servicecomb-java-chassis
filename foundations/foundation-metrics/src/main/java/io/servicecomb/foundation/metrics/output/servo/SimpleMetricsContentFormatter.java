@@ -23,15 +23,14 @@ import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import io.servicecomb.foundation.common.exceptions.ServiceCombException;
 import io.servicecomb.foundation.common.net.NetUtils;
-import io.servicecomb.serviceregistry.RegistryUtils;
 import io.servicecomb.serviceregistry.api.registry.Microservice;
 
 @Component
@@ -42,18 +41,15 @@ public class SimpleMetricsContentFormatter implements MetricsContentFormatter {
   private final ObjectMapper mapper = new ObjectMapper();
   private String hostName;
 
-  public SimpleMetricsContentFormatter() {
+  @Autowired
+  public SimpleMetricsContentFormatter(MicroserviceLoader loader) {
     hostName = NetUtils.getHostName();
     if (StringUtils.isEmpty(hostName)) {
       hostName = NetUtils.getHostAddress();
     }
 
-    try {
-      Microservice microservice = RegistryUtils.getMicroservice();
-      applicationName = String.join(".", microservice.getAppId(), microservice.getServiceName());
-    } catch (Exception e) {
-      throw new ServiceCombException("can't get microservice from RegistryUtils",e);
-    }
+    Microservice microservice = loader.load();
+    applicationName = String.join(".", microservice.getServiceId(), microservice.getServiceName());
   }
 
   @Override

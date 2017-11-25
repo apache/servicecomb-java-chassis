@@ -24,12 +24,11 @@ import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PatternLayout;
 import org.apache.log4j.spi.LoggingEvent;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import io.servicecomb.foundation.common.exceptions.ServiceCombException;
 import io.servicecomb.foundation.common.utils.RollingFileAppenderExt;
 import io.servicecomb.foundation.metrics.output.MetricsFileOutput;
-import io.servicecomb.serviceregistry.RegistryUtils;
 import io.servicecomb.serviceregistry.api.registry.Microservice;
 
 @Component
@@ -37,13 +36,10 @@ public class RollingMetricsFileOutput extends MetricsFileOutput {
   private final Map<String, RollingFileAppenderExt> metricsAppenders = new HashMap<>();
   private final String fileNameHeader;
 
-  public RollingMetricsFileOutput() {
-    try {
-      Microservice microservice = RegistryUtils.getMicroservice();
-      fileNameHeader = String.join(".", microservice.getAppId(), microservice.getServiceName());
-    } catch (Exception e) {
-      throw new ServiceCombException("can't get microservice from RegistryUtils",e);
-    }
+  @Autowired
+  public RollingMetricsFileOutput(MicroserviceLoader loader) {
+    Microservice microservice = loader.load();
+    fileNameHeader = String.join(".", microservice.getServiceId(), microservice.getServiceName());
   }
 
   @Override

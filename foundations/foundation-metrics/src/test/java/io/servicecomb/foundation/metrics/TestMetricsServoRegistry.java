@@ -16,6 +16,9 @@
 
 package io.servicecomb.foundation.metrics;
 
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
 import java.util.Map;
 
 import org.apache.commons.configuration.BaseConfiguration;
@@ -31,15 +34,13 @@ import com.netflix.servo.publish.PollScheduler;
 import io.servicecomb.foundation.metrics.output.MetricsFileOutput;
 import io.servicecomb.foundation.metrics.output.servo.MetricsContentConvertor;
 import io.servicecomb.foundation.metrics.output.servo.MetricsContentFormatter;
+import io.servicecomb.foundation.metrics.output.servo.MicroserviceLoader;
 import io.servicecomb.foundation.metrics.output.servo.RollingMetricsFileOutput;
 import io.servicecomb.foundation.metrics.output.servo.SimpleMetricsContentConvertor;
 import io.servicecomb.foundation.metrics.output.servo.SimpleMetricsContentFormatter;
 import io.servicecomb.foundation.metrics.performance.MetricsDataMonitor;
 import io.servicecomb.foundation.metrics.performance.QueueMetricsData;
-import io.servicecomb.serviceregistry.RegistryUtils;
 import io.servicecomb.serviceregistry.api.registry.Microservice;
-import io.servicecomb.serviceregistry.registry.LocalServiceRegistry;
-import mockit.Expectations;
 
 public class TestMetricsServoRegistry {
   MetricsDataMonitor metricsDataMonitor = null;
@@ -50,8 +51,6 @@ public class TestMetricsServoRegistry {
   MetricsContentConvertor convertor = null;
   MetricsContentFormatter formatter = null;
   MetricsServoObserverManager observerManager = null;
-
-  Microservice microservice = null;
 
   @BeforeClass
   public static void staticBeforeClean() {
@@ -65,26 +64,18 @@ public class TestMetricsServoRegistry {
 
   @Before
   public void setUp() throws Exception {
-    microservice = new Microservice();
-    microservice.setVersion("1.0.0");
-    microservice.setServiceName("serviceName");
+    MicroserviceLoader loader = mock(MicroserviceLoader.class);
+    Microservice microservice = new Microservice();
     microservice.setAppId("appId");
-
-    new Expectations(RegistryUtils.class) {
-      {
-        RegistryUtils.getMicroservice();
-        result = microservice;
-      }
-    };
-
+    microservice.setServiceName("serviceName");
+    when(loader.load()).thenReturn(microservice);
     metricsRegistry = new MetricsServoRegistry();
     convertor = new SimpleMetricsContentConvertor();
-    formatter = new SimpleMetricsContentFormatter();
-    fileOutput = new RollingMetricsFileOutput();
+    formatter = new SimpleMetricsContentFormatter(loader);
+    fileOutput = new RollingMetricsFileOutput(loader);
     observerManager = new MetricsServoObserverManager(fileOutput, convertor, formatter, false);
     localData = metricsRegistry.getLocalMetrics();
     metricsDataMonitor = MetricsServoRegistry.getOrCreateLocalMetrics();
-
   }
 
   @After

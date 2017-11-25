@@ -34,6 +34,8 @@ public interface ServiceCombConstants {
 
   String DEFAULT_MICROSERVICE_NAME = "defaultMicroservice";
 
+  String DEFAULT_APPLICATION_ID = "defaultApplicationId";
+
   String CONFIG_TRACING_COLLECTOR_ADDRESS = "servicecomb.tracing.collector.address";
 
   String CONFIG_TRACING_ENABLED_KEY = "servicecomb.tracing.enabled";

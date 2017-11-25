@@ -16,42 +16,38 @@
 
 package io.servicecomb.foundation.metrics;
 
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
 import java.util.HashMap;
 import java.util.Map;
 
 import org.junit.Assert;
 import org.junit.Test;
 
+import io.servicecomb.foundation.metrics.output.servo.MicroserviceLoader;
 import io.servicecomb.foundation.metrics.output.servo.SimpleMetricsContentFormatter;
-import io.servicecomb.serviceregistry.RegistryUtils;
 import io.servicecomb.serviceregistry.api.registry.Microservice;
-import mockit.Expectations;
 
 public class TestSimpleMetricsContentFormatter {
 
   @Test
-  public void testFormatter(){
+  public void testFormatter() {
+
+    MicroserviceLoader loader = mock(MicroserviceLoader.class);
     Microservice microservice = new Microservice();
-    microservice.setVersion("1.0.0");
-    microservice.setServiceName("serviceName");
     microservice.setAppId("appId");
+    microservice.setServiceName("serviceName");
+    when(loader.load()).thenReturn(microservice);
 
-    new Expectations(RegistryUtils.class) {
-      {
-        RegistryUtils.getMicroservice();
-        result = microservice;
-      }
-    };
+    SimpleMetricsContentFormatter formatter = new SimpleMetricsContentFormatter(loader);
 
-    SimpleMetricsContentFormatter formatter = new SimpleMetricsContentFormatter();
+    Map<String, String> input = new HashMap<>();
+    input.put("key", "value");
 
-    Map<String,String> input = new HashMap<>();
-    input.put("key","value");
-
-    Map<String,String> output = formatter.format(input);
+    Map<String, String> output = formatter.format(input);
 
     Assert.assertTrue(output.containsKey("key"));
     Assert.assertTrue(output.get("key").contains("\"key\":\"value\""));
-
   }
 }

@@ -20,6 +20,7 @@ import static io.servicecomb.foundation.common.base.ServiceCombConstants.CONFIG_
 import static io.servicecomb.foundation.common.base.ServiceCombConstants.CONFIG_MICROSERVICE_NAME_KEY;
 import static io.servicecomb.foundation.common.base.ServiceCombConstants.CONFIG_QUALIFIED_MICROSERVICE_NAME_KEY;
 import static io.servicecomb.foundation.common.base.ServiceCombConstants.CONFIG_SERVICE_DESCRIPTION_KEY;
+import static io.servicecomb.foundation.common.base.ServiceCombConstants.DEFAULT_APPLICATION_ID;
 import static io.servicecomb.foundation.common.base.ServiceCombConstants.DEFAULT_MICROSERVICE_NAME;
 
 import java.util.ArrayList;
@@ -53,8 +54,14 @@ public class MicroserviceDefinition {
 
   private String microserviceName;
 
+  private String applicationId;
+
   public String getMicroserviceName() {
     return microserviceName;
+  }
+
+  public String getApplicationId() {
+    return applicationId;
   }
 
   public static MicroserviceDefinition create(String appId, String microserviceName) {
@@ -84,6 +91,8 @@ public class MicroserviceDefinition {
     this.configuration = ConfigUtil.createLocalConfig(configModels);
     this.microserviceName =
         configuration.getString(CONFIG_QUALIFIED_MICROSERVICE_NAME_KEY, DEFAULT_MICROSERVICE_NAME);
+
+    this.applicationId = configuration.getString(CONFIG_APPLICATION_ID_KEY, DEFAULT_APPLICATION_ID);
 
     // log paths first, even microserviceName is invalid, this can help user to find problems
     logConfigPath();
