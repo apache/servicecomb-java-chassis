@@ -407,8 +407,8 @@ public class MetricsServoRegistry implements InitializingBean {
       Map<String, String> tpsAndLatencyMap = new HashMap<>();
       Collection<HystrixCommandMetrics> instances = HystrixCommandMetrics.getInstances();
 
-      long insTotalTps = 0;
-      long insTotalLatency = 0;
+      double insTotalTps = 0;
+      double insTotalLatency = 0;
       long cumulativeTotalCount = 0;
 
       for (HystrixCommandMetrics instance : instances) {
@@ -417,7 +417,7 @@ public class MetricsServoRegistry implements InitializingBean {
         int operLatency = instance.getExecutionTimeMean();
         long totalCallCount = successCount + failureCount;
         cumulativeTotalCount += totalCallCount;
-        int windowTime = instance.getProperties().metricsRollingStatisticalWindowInMilliseconds().get() / 1000;
+        double windowTime = (double)instance.getProperties().metricsRollingStatisticalWindowInMilliseconds().get() / (double)1000;
         double qpsVal = (double) (totalCallCount) / windowTime;
         BigDecimal bigDecimal = new BigDecimal(qpsVal);
         BigDecimal bigDecimalVal = bigDecimal.setScale(1, RoundingMode.HALF_DOWN);
@@ -428,7 +428,7 @@ public class MetricsServoRegistry implements InitializingBean {
         insTotalLatency += operLatency;
       }
 
-      double instanceLatency = (double) (insTotalLatency) / cumulativeTotalCount;
+      double instanceLatency = insTotalLatency / cumulativeTotalCount;
 
       tpsAndLatencyMap.put("tps", String.valueOf(insTotalTps));
       tpsAndLatencyMap.put("latency", String.valueOf(instanceLatency));
