@@ -40,7 +40,7 @@
                                 <alias>service-center</alias>
                                 <run>
                                     <wait>
-                                      <log>listen on server</log>
+                                      <log>server is ready</log>
                                       <tcp>
                                         <ports>
                                           <port>30100</port>
