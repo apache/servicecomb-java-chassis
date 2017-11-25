@@ -19,6 +19,8 @@ public class RSAUtils {
   private final static String RSA_ALG = "RSA";
 
   private final static String SIGN_ALG = "SHA256withRSA";
+  
+  private final static int KEY_SIZE = 2048;
 
   private static Base64.Encoder encoder = Base64.getEncoder();
 
@@ -27,7 +29,7 @@ public class RSAUtils {
   public static RSAKeyPairEntry getRSAKeyPair() {
     try {
       KeyPairGenerator keyGenerator = KeyPairGenerator.getInstance(RSA_ALG);
-      keyGenerator.initialize(1024, new SecureRandom());
+      keyGenerator.initialize(KEY_SIZE, new SecureRandom());
       KeyPair keyPair = keyGenerator.generateKeyPair();
       PublicKey pubKey = keyPair.getPublic();
       PrivateKey privKey = keyPair.getPrivate();
