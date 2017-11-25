@@ -16,7 +16,6 @@
 
 package io.servicecomb.transport.rest.client;
 
-import com.netflix.config.DynamicIntProperty;
 import com.netflix.config.DynamicPropertyFactory;
 
 public final class TransportClientConfig {
@@ -24,14 +23,28 @@ public final class TransportClientConfig {
   }
 
   public static int getThreadCount() {
-    DynamicIntProperty address =
-        DynamicPropertyFactory.getInstance().getIntProperty("cse.rest.client.thread-count", 1);
-    return address.get();
+    return DynamicPropertyFactory.getInstance().
+        getIntProperty("cse.rest.client.thread-count", 1).get();
   }
 
   public static int getConnectionPoolPerThread() {
-    DynamicIntProperty address =
-        DynamicPropertyFactory.getInstance().getIntProperty("cse.rest.client.connection-pool-per-thread", 1);
-    return address.get();
+    return DynamicPropertyFactory.getInstance().
+        getIntProperty("cse.rest.client.connection-pool-per-thread", 1).get();
+  }
+
+  public static int getConnectionMaxPoolSize() {
+    return DynamicPropertyFactory.getInstance().
+        getIntProperty("cse.rest.client.connection.maxPoolSize", 5).get();
+  }
+
+  public static int getConnectionIdleTimeoutInSeconds() {
+    return DynamicPropertyFactory.getInstance().
+        getIntProperty("cse.rest.client.connection.idleTimeoutInSeconds", 30)
+        .get();
+  }
+
+  public static boolean getConnectionKeepAlive() {
+    return DynamicPropertyFactory.getInstance().
+        getBooleanProperty("cse.rest.client.connection.keepAlive", true).get();
   }
 }

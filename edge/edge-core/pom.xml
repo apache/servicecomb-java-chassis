@@ -43,6 +43,7 @@
     <dependency>
       <groupId>io.servicecomb</groupId>
       <artifactId>foundation-test-scaffolding</artifactId>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>io.servicecomb</groupId>

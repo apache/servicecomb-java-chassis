@@ -17,7 +17,9 @@
 package io.servicecomb.demo.pojo.server;
 
 import io.servicecomb.demo.helloworld.greeter.Hello;
+import io.servicecomb.provider.pojo.RpcSchema;
 
+@RpcSchema(schemaId = "helloworld.Greeter")
 public class HelloImpl implements Hello {
 
   @Override

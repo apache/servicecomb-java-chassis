@@ -116,6 +116,7 @@ public class RestServerVerticle extends AbstractVerticle {
     serverOptions.setSendBufferSize(SEND_BUFFER_SIZE);
     serverOptions.setReceiveBufferSize(RECEIVE_BUFFER_SIZE);
     serverOptions.setUsePooledBuffers(true);
+    serverOptions.setIdleTimeout(TransportConfig.getConnectionIdleTimeoutInSeconds());
 
     if (endpointObject.isSslEnabled()) {
       SSLOptionFactory factory =

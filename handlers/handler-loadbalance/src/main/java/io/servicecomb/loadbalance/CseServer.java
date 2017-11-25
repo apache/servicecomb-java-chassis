@@ -16,6 +16,8 @@
 
 package io.servicecomb.loadbalance;
 
+import java.util.concurrent.atomic.AtomicInteger;
+
 import com.netflix.loadbalancer.Server;
 
 import io.servicecomb.core.Endpoint;
@@ -35,6 +37,11 @@ public class CseServer extends Server {
   private final MicroserviceInstance instance;
 
   private long lastVisitTime = System.currentTimeMillis();
+
+  /**
+   * Count the continuous invocation failure. Once invocation successes, set this to zero.
+   */
+  private AtomicInteger continuousFailureCount = new AtomicInteger(0);
 
   public long getLastVisitTime() {
     return lastVisitTime;
@@ -69,6 +76,20 @@ public class CseServer extends Server {
   // used in LoadBalancerContext
   public String getHost() {
     return endpoint.getEndpoint();
+  }
+
+  public void clearContinuousFailure() {
+    continuousFailureCount.set(0);
+  }
+
+  public void incrementContinuousFailureCount() {
+    if (continuousFailureCount.get() < Integer.MAX_VALUE) {
+      continuousFailureCount.incrementAndGet();
+    }
+  }
+
+  public int getCountinuousFailureCount() {
+    return continuousFailureCount.get();
   }
 
   public boolean equals(Object o) {

@@ -58,7 +58,9 @@ public final class RestTransportClient {
 
   private HttpClientOptions createHttpClientOptions() {
     HttpClientOptions httpClientOptions = new HttpClientOptions();
-
+    httpClientOptions.setMaxPoolSize(TransportClientConfig.getConnectionMaxPoolSize());
+    httpClientOptions.setIdleTimeout(TransportClientConfig.getConnectionIdleTimeoutInSeconds());
+    httpClientOptions.setKeepAlive(TransportClientConfig.getConnectionKeepAlive());
     if (this.sslEnabled) {
       SSLOptionFactory factory =
           SSLOptionFactory.createSSLOptionFactory(SSL_KEY,

@@ -138,4 +138,9 @@ public class TestVertxClientRequestToHttpServletRequest {
     request.addHeader("name", "v2");
     Assert.assertThat(headers.getAll("name"), Matchers.contains("v1", "v2"));
   }
+
+  @Test
+  public void testGetContextPath() {
+    Assert.assertEquals("", request.getContextPath());
+  }
 }

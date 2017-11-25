@@ -18,13 +18,6 @@ package io.servicecomb.common.rest;
 
 import java.util.List;
 
-import javax.ws.rs.core.Response.Status;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import io.servicecomb.common.rest.codec.RestCodec;
-import io.servicecomb.common.rest.definition.RestOperationMeta;
 import io.servicecomb.common.rest.filter.HttpServerFilter;
 import io.servicecomb.common.rest.locator.OperationLocator;
 import io.servicecomb.common.rest.locator.ServicePathManager;
@@ -32,7 +25,6 @@ import io.servicecomb.core.Const;
 import io.servicecomb.core.CseContext;
 import io.servicecomb.core.Transport;
 import io.servicecomb.core.definition.MicroserviceMeta;
-import io.servicecomb.core.definition.OperationMeta;
 import io.servicecomb.core.invocation.InvocationFactory;
 import io.servicecomb.foundation.vertx.http.HttpServletRequestEx;
 import io.servicecomb.foundation.vertx.http.HttpServletResponseEx;
@@ -40,8 +32,6 @@ import io.servicecomb.serviceregistry.RegistryUtils;
 import io.servicecomb.swagger.invocation.exception.InvocationException;
 
 public class RestProducerInvocation extends AbstractRestInvocation {
-  private static final Logger LOGGER = LoggerFactory.getLogger(RestProducerInvocation.class);
-
   protected Transport transport;
 
   public void invoke(Transport transport, HttpServletRequestEx requestEx, HttpServletResponseEx responseEx,
@@ -53,7 +43,7 @@ public class RestProducerInvocation extends AbstractRestInvocation {
     requestEx.setAttribute(RestConst.REST_REQUEST, requestEx);
 
     try {
-      this.restOperationMeta = findRestOperation();
+      findRestOperation();
     } catch (InvocationException e) {
       sendFailResponse(e);
       return;
@@ -62,38 +52,7 @@ public class RestProducerInvocation extends AbstractRestInvocation {
     scheduleInvocation();
   }
 
-  protected void scheduleInvocation() {
-    OperationMeta operationMeta = restOperationMeta.getOperationMeta();
-    operationMeta.getExecutor().execute(() -> {
-      synchronized (this.requestEx) {
-        try {
-          if (requestEx.getAttribute(RestConst.REST_REQUEST) != requestEx) {
-            // already timeout
-            // in this time, request maybe recycled and reused by web container, do not use requestEx
-            LOGGER.error("Rest request already timeout, abandon execute, method {}, operation {}.",
-                operationMeta.getHttpMethod(),
-                operationMeta.getMicroserviceQualifiedName());
-            return;
-          }
-
-          runOnExecutor();
-        } catch (Throwable e) {
-          LOGGER.error("rest server onRequest error", e);
-          sendFailResponse(e);
-        }
-      }
-    });
-  }
-
-  protected void runOnExecutor() {
-    Object[] args = RestCodec.restToArgs(requestEx, restOperationMeta);
-    this.invocation = InvocationFactory.forProvider(transport.getEndpoint(),
-        restOperationMeta.getOperationMeta(),
-        args);
-    invoke();
-  }
-
-  protected RestOperationMeta findRestOperation() {
+  protected void findRestOperation() {
     String targetMicroserviceName = requestEx.getHeader(Const.TARGET_MICROSERVICE);
     if (targetMicroserviceName == null) {
       // for compatible
@@ -101,23 +60,18 @@ public class RestProducerInvocation extends AbstractRestInvocation {
     }
     MicroserviceMeta selfMicroserviceMeta =
         CseContext.getInstance().getMicroserviceMetaManager().ensureFindValue(targetMicroserviceName);
-    ServicePathManager servicePathManager = ServicePathManager.getServicePathManager(selfMicroserviceMeta);
-    if (servicePathManager == null) {
-      LOGGER.error("No schema in microservice");
-      throw new InvocationException(Status.NOT_FOUND, Status.NOT_FOUND.getReasonPhrase());
-    }
-
-    OperationLocator locator =
-        servicePathManager.producerLocateOperation(requestEx.getRequestURI(), requestEx.getMethod());
-    requestEx.setAttribute(RestConst.PATH_PARAMETERS, locator.getPathVarMap());
-
-    return locator.getOperation();
+    findRestOperation(selfMicroserviceMeta);
   }
 
   @Override
-  protected void doInvoke() throws Throwable {
-    invocation.next(resp -> {
-      sendResponseQuietly(resp);
-    });
+  protected OperationLocator locateOperation(ServicePathManager servicePathManager) {
+    return servicePathManager.producerLocateOperation(requestEx.getRequestURI(), requestEx.getMethod());
+  }
+
+  @Override
+  protected void createInvocation(Object[] args) {
+    this.invocation = InvocationFactory.forProvider(transport.getEndpoint(),
+        restOperationMeta.getOperationMeta(),
+        args);
   }
 }

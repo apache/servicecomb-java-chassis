@@ -42,6 +42,14 @@
 			<groupId>org.springframework.cloud</groupId>
 			<artifactId>spring-cloud-netflix-core</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>javax.ws.rs</groupId>
+			<artifactId>javax.ws.rs-api</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>io.servicecomb</groupId>
+			<artifactId>spring-boot-starter-transport</artifactId>
+		</dependency>
 	</dependencies>
 	<build>
 		<plugins>

@@ -45,6 +45,8 @@ public final class IsolationServerListFilter implements ServerListFilterExt {
 
   private long enableRequestThreshold;
 
+  private int continuousFailureThreshold;
+
   private Invocation invocation;
 
   private LoadBalancerStats stats;
@@ -88,6 +90,7 @@ public final class IsolationServerListFilter implements ServerListFilterExt {
     errorThresholdPercentage = Configuration.INSTANCE.getErrorThresholdPercentage(microserviceName);
     singleTestTime = Configuration.INSTANCE.getSingleTestTime(microserviceName);
     enableRequestThreshold = Configuration.INSTANCE.getEnableRequestThreshold(microserviceName);
+    continuousFailureThreshold = Configuration.INSTANCE.getContinuousFailureThreshold(microserviceName);
   }
 
   private boolean allowVisit(Server server) {
@@ -100,15 +103,25 @@ public final class IsolationServerListFilter implements ServerListFilterExt {
       return true;
     }
 
-    if ((failureRequest / (double) totalRequest) * PERCENT < errorThresholdPercentage) {
-      return true;
+    if (continuousFailureThreshold > 0) {
+      // continuousFailureThreshold has higher priority to decide the result
+      if (((CseServer) server).getCountinuousFailureCount() < continuousFailureThreshold) {
+        return true;
+      }
+    } else {
+      // if continuousFailureThreshold, then check error percentage
+      if ((failureRequest / (double) totalRequest) * PERCENT < errorThresholdPercentage) {
+        return true;
+      }
     }
+
     if ((System.currentTimeMillis() - ((CseServer) server).getLastVisitTime()) > singleTestTime) {
       LOGGER.info("The Service {}'s instance {} has been break, will give a single test opportunity.",
           microserviceName,
           server);
       return true;
     }
+
     LOGGER.warn("The Service {}'s instance {} has been break!", microserviceName, server);
     return false;
   }

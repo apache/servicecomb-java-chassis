@@ -29,4 +29,4 @@ cd ServiceComb-Java-Chassis/samples
 ```bash
 (cd bmi/webapp; mvn spring-boot:run)
 ```
-4. Visit the services via **<a>http://127.0.0.1:8888</a>**.
+4. Visit the services via **<a>http://127.0.0.1:8889</a>**.
