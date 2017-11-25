@@ -90,6 +90,9 @@ public class TestRestTransportClient {
     RestTransportClient client = new RestTransportClient(true);
     client.init(vertx);
     Assert.assertEquals(options.isSsl(), true);
+    Assert.assertEquals(options.getIdleTimeout(), 30);
+    Assert.assertEquals(options.isKeepAlive(), true);
+    Assert.assertEquals(options.getMaxPoolSize(), 5);
   }
 
   @Test
