@@ -13,16 +13,14 @@ public class TestRSAUtil {
 	@Test
 	public void testSignVerify() throws InvalidKeyException, NoSuchAlgorithmException, InvalidKeySpecException, SignatureException
 	{
-		String []keypair = RSAUtils.getEncodedKeyPair();
+		RSAKeyPairEntry rsaKeyPairEntry = RSAUtils.getRSAKeyPair();
 		
-		String privateKey = keypair[0];
-		String pubKey = keypair[1];
-		
-		Assert.assertNotNull(privateKey);
-		Assert.assertNotNull(pubKey);
+		Assert.assertNotNull(rsaKeyPairEntry.getPublicKeyEncoded());
+		Assert.assertNotNull(rsaKeyPairEntry.getPrivateKey());
+		Assert.assertNotNull(rsaKeyPairEntry.getPublicKey());
 		String testContent = "instance-id@201711201930@randomstr";
-		String signstr = RSAUtils.sign(testContent, privateKey);
-		Assert.assertTrue(RSAUtils.verify(pubKey, signstr, testContent));
+		String signstr = RSAUtils.sign(testContent, rsaKeyPairEntry.getPrivateKey());
+		Assert.assertTrue(RSAUtils.verify(rsaKeyPairEntry.getPublicKeyEncoded(), signstr, testContent));
 		
 	}
 	

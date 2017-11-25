@@ -49,7 +49,7 @@ import io.servicecomb.serviceregistry.api.response.GetInstancesResponse;
 import io.servicecomb.serviceregistry.api.response.GetSchemaResponse;
 import io.servicecomb.serviceregistry.api.response.GetServiceResponse;
 import io.servicecomb.serviceregistry.api.response.HeartbeatResponse;
-import io.servicecomb.serviceregistry.api.response.MicroInstanceResponse;
+import io.servicecomb.serviceregistry.api.response.MicroserviceInstanceResponse;
 import io.servicecomb.serviceregistry.api.response.MicroserviceInstanceChangedEvent;
 import io.servicecomb.serviceregistry.api.response.RegisterInstanceResponse;
 import io.servicecomb.serviceregistry.client.ClientException;
@@ -633,12 +633,12 @@ public final class ServiceRegistryClientImpl implements ServiceRegistryClient {
 	@Override
 	public MicroserviceInstance findServiceInstance(String serviceId, String instanceId) {
 		try {
-			Holder<MicroInstanceResponse> holder = new Holder<>();
+			Holder<MicroserviceInstanceResponse> holder = new Holder<>();
 			IpPort ipPort = ipPortManager.getAvailableAddress(false);
 			CountDownLatch countDownLatch = new CountDownLatch(1);
 			RestUtils.get(ipPort,
 					String.format(Const.REGISTRY_API.MICROSERVICE_INSTANCE_OPERATION_ONE, serviceId, instanceId),
-					new RequestParam().addHeader("X-ConsumerId", serviceId), syncHandler(countDownLatch, MicroInstanceResponse.class, holder));
+					new RequestParam().addHeader("X-ConsumerId", serviceId), syncHandler(countDownLatch, MicroserviceInstanceResponse.class, holder));
 			countDownLatch.await();
 			if(null != holder.value)
 			{
