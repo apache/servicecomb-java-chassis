@@ -162,17 +162,17 @@ public class TestMicroserviceVersions {
     Assert.assertSame(instances.get(0), microserviceVersionRule.getInstances().get("i1"));
   }
 
-  @Test
-  public void setInstances_selectUp() {
-    String microserviceId = "1";
-    setup(microserviceId);
-
-    instances.get(0).setStatus(MicroserviceInstanceStatus.DOWN);
-    Deencapsulation.invoke(microserviceVersions, "setInstances", instances);
-
-    List<?> resultInstances = Deencapsulation.getField(microserviceVersions, "instances");
-    Assert.assertTrue(resultInstances.isEmpty());
-  }
+//  @Test
+//  public void setInstances_selectUp() {
+//    String microserviceId = "1";
+//    setup(microserviceId);
+//
+//    instances.get(0).setStatus(MicroserviceInstanceStatus.DOWN);
+//    Deencapsulation.invoke(microserviceVersions, "setInstances", instances);
+//
+//    List<?> resultInstances = Deencapsulation.getField(microserviceVersions, "instances");
+//    Assert.assertTrue(resultInstances.isEmpty());
+//  }
 
   @Test
   public void getOrCreateMicroserviceVersionRule() {
