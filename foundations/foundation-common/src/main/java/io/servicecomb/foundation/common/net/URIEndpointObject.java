@@ -27,7 +27,7 @@ import org.apache.http.NameValuePair;
 import org.apache.http.client.utils.URLEncodedUtils;
 
 /**
- * tranport公共的Endpoint Object，当transport使用URI表示的时候，可以转化为这个对象。
+ * transport公共的Endpoint Object，当transport使用URI表示的时候，可以转化为这个对象。
  */
 public class URIEndpointObject extends IpPort {
   private static final String SSL_ENABLED_KEY = "sslEnabled";

@@ -41,8 +41,8 @@ public class TestExecutors {
 
       }
     });
-    Map<Long, Executor> threadExectorMap = Deencapsulation.getField(oFixedThreadExecutor, "threadExectorMap");
-    Assert.assertEquals(true, (threadExectorMap.size() > 0));
+    Map<Long, Executor> threadExecutorMap = Deencapsulation.getField(oFixedThreadExecutor, "threadExecutorMap");
+    Assert.assertEquals(true, (threadExecutorMap.size() > 0));
 
     List<Executor> executorList = Deencapsulation.getField(oFixedThreadExecutor, "executorList");
     Assert.assertEquals(true, (executorList.size() > 1));

@@ -43,7 +43,7 @@ public class FixedThreadExecutor implements Executor {
   // it's impossible that has too many network thread, so index will not too big that less than 0
   private AtomicInteger index = new AtomicInteger();
 
-  private Map<Long, Executor> threadExectorMap = new ConcurrentHashMap<>();
+  private Map<Long, Executor> threadExecutorMap = new ConcurrentHashMap<>();
 
   public FixedThreadExecutor() {
     int groupCount = DynamicPropertyFactory.getInstance().getIntProperty(KEY_GROUP, 2).get();
@@ -60,7 +60,7 @@ public class FixedThreadExecutor implements Executor {
   @Override
   public void execute(Runnable command) {
     long threadId = Thread.currentThread().getId();
-    Executor executor = threadExectorMap.computeIfAbsent(threadId, this::chooseExecutor);
+    Executor executor = threadExecutorMap.computeIfAbsent(threadId, this::chooseExecutor);
 
     executor.execute(command);
   }
