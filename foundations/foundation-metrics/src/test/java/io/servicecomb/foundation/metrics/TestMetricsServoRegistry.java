@@ -16,9 +16,6 @@
 
 package io.servicecomb.foundation.metrics;
 
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-
 import java.util.Map;
 
 import org.apache.commons.configuration.BaseConfiguration;
@@ -34,7 +31,7 @@ import com.netflix.servo.publish.PollScheduler;
 import io.servicecomb.foundation.metrics.output.MetricsFileOutput;
 import io.servicecomb.foundation.metrics.output.servo.MetricsContentConvertor;
 import io.servicecomb.foundation.metrics.output.servo.MetricsContentFormatter;
-import io.servicecomb.foundation.metrics.output.servo.MicroserviceLoader;
+import io.servicecomb.foundation.metrics.output.servo.MetricsObserverInitializer;
 import io.servicecomb.foundation.metrics.output.servo.RollingMetricsFileOutput;
 import io.servicecomb.foundation.metrics.output.servo.SimpleMetricsContentConvertor;
 import io.servicecomb.foundation.metrics.output.servo.SimpleMetricsContentFormatter;
@@ -43,19 +40,24 @@ import io.servicecomb.foundation.metrics.performance.QueueMetricsData;
 
 public class TestMetricsServoRegistry {
   MetricsDataMonitor metricsDataMonitor = null;
+
   MetricsDataMonitor localData = null;
+
   MetricsServoRegistry metricsRegistry = null;
 
   MetricsFileOutput fileOutput = null;
+
   MetricsContentConvertor convertor = null;
+
   MetricsContentFormatter formatter = null;
-  MetricsServoObserverManager observerManager = null;
+
+  MetricsObserverInitializer observerManager = null;
 
   @BeforeClass
   public static void staticBeforeClean() {
     BaseConfiguration configuration = new BaseConfiguration();
-    configuration.setProperty(MetricsServoObserverManager.METRICS_FILE_ENABLED, true);
-    configuration.setProperty(MetricsServoObserverManager.METRICS_POLL_TIME, 1);
+    configuration.setProperty(MetricsObserverInitializer.METRICS_FILE_ENABLED, true);
+    configuration.setProperty(MetricsObserverInitializer.METRICS_POLL_TIME, 1);
     DynamicPropertyFactory.initWithConfigurationSource(configuration);
     MetricsServoRegistry.metricsList.clear();
     MetricsServoRegistry.LOCAL_METRICS_MAP = new ThreadLocal<>();
@@ -63,13 +65,11 @@ public class TestMetricsServoRegistry {
 
   @Before
   public void setUp() throws Exception {
-    MicroserviceLoader loader = mock(MicroserviceLoader.class);
-    when(loader.getAppIdAndServiceNameJoinString()).thenReturn("appId.serviceName");
     metricsRegistry = new MetricsServoRegistry();
     convertor = new SimpleMetricsContentConvertor();
-    formatter = new SimpleMetricsContentFormatter(loader);
-    fileOutput = new RollingMetricsFileOutput(loader);
-    observerManager = new MetricsServoObserverManager(fileOutput, convertor, formatter, false);
+    formatter = new SimpleMetricsContentFormatter();
+    fileOutput = new RollingMetricsFileOutput();
+    observerManager = new MetricsObserverInitializer(fileOutput, convertor, formatter, false);
     localData = metricsRegistry.getLocalMetrics();
     metricsDataMonitor = MetricsServoRegistry.getOrCreateLocalMetrics();
   }

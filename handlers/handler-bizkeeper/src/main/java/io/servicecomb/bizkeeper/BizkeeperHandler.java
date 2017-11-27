@@ -80,7 +80,9 @@ public abstract class BizkeeperHandler implements Handler {
     HystrixObservable<Response> command = delegate.createBizkeeperCommand(invocation);
 
     //Notedown all request for provider and consumer.
-    new MetricsDataMonitorUtil().setAllReqProviderAndConsumer(invocation.getOperationMeta().getMicroserviceQualifiedName(),invocation.getInvocationType());
+    new MetricsDataMonitorUtil()
+        .setAllReqProviderAndConsumer(invocation.getOperationMeta().getMicroserviceQualifiedName(),
+            String.valueOf(invocation.getInvocationType()));
 
     Observable<Response> observable = command.toObservable();
     observable.subscribe(response -> {
@@ -89,7 +91,9 @@ public abstract class BizkeeperHandler implements Handler {
       LOG.warn("catch error in bizkeeper:" + error.getMessage());
       asyncResp.fail(invocation.getInvocationType(), error);
       //Notedown all failed request for provider and consumer.
-      new MetricsDataMonitorUtil().setAllFailReqProviderAndConsumer(invocation.getOperationMeta().getMicroserviceQualifiedName(),invocation.getInvocationType());
+      new MetricsDataMonitorUtil()
+          .setAllFailReqProviderAndConsumer(invocation.getOperationMeta().getMicroserviceQualifiedName(),
+              String.valueOf(invocation.getInvocationType()));
     }, () -> {
 
     });

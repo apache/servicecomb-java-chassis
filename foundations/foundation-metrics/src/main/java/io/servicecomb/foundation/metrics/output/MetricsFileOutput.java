@@ -21,13 +21,22 @@ import java.util.Map;
 import com.netflix.config.DynamicPropertyFactory;
 
 public abstract class MetricsFileOutput {
-  public static final String METRICS_FILE_ROOT_PATH = "servicecomb.metrics.file.file_root_path";
+  public static final String METRICS_FILE_ROOT_PATH = "servicecomb.metrics.file.root_path";
+
+  public static final String METRICS_FILE_NAME_PREFIX = "servicecomb.metrics.file.name_prefix";
+
   public static final String METRICS_FILE_MAX_ROLLING_SIZE = "servicecomb.metrics.file.max_rolling_size";
+
   public static final String METRICS_FILE_MAX_ROLLING_COUNT = "servicecomb.metrics.file.max_rolling_count";
 
+
   private final String rollingRootFilePath;
+
   private final String maxRollingFileSize;
+
   private final int maxRollingFileCount;
+
+  private final String namePrefix;
 
   public String getRollingRootFilePath() {
     return rollingRootFilePath;
@@ -41,11 +50,18 @@ public abstract class MetricsFileOutput {
     return maxRollingFileCount;
   }
 
+  public String getNamePrefix() {
+    return namePrefix;
+  }
+
   public MetricsFileOutput() {
-    rollingRootFilePath = DynamicPropertyFactory.getInstance().getStringProperty(METRICS_FILE_ROOT_PATH, "target").get();
-    maxRollingFileSize = DynamicPropertyFactory.getInstance().getStringProperty(METRICS_FILE_MAX_ROLLING_SIZE, "10MB").get();
+    rollingRootFilePath = DynamicPropertyFactory.getInstance().getStringProperty(METRICS_FILE_ROOT_PATH, "target")
+        .get();
+    namePrefix = DynamicPropertyFactory.getInstance().getStringProperty(METRICS_FILE_NAME_PREFIX, "metrics").get();
+    maxRollingFileSize = DynamicPropertyFactory.getInstance().getStringProperty(METRICS_FILE_MAX_ROLLING_SIZE, "10MB")
+        .get();
     maxRollingFileCount = DynamicPropertyFactory.getInstance().getIntProperty(METRICS_FILE_MAX_ROLLING_COUNT, 10).get();
   }
 
-  public abstract void output(Map<String,String> metrics);
+  public abstract void output(Map<String, String> metrics);
 }

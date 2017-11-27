@@ -17,7 +17,6 @@
 package io.servicecomb.foundation.metrics.performance;
 
 import io.servicecomb.foundation.metrics.MetricsServoRegistry;
-import io.servicecomb.swagger.invocation.InvocationType;
 
 /**
  * Implementation of metric util functions such as preparing average queue times
@@ -28,9 +27,9 @@ public final class MetricsDataMonitorUtil {
   /**
    * Sets the total requests per provider and consumer.
    */
-  public void setAllReqProviderAndConsumer(String operationPath,InvocationType invocationType) {
+  public void setAllReqProviderAndConsumer(String operationPath, String invocationType) {
     MetricsDataMonitor metricsRef = MetricsServoRegistry.getOrCreateLocalMetrics();
-    if (InvocationType.CONSUMER.equals(invocationType)) {
+    if ("CONSUMER".equals(invocationType)) {
       metricsRef.incrementTotalReqConsumer();
     } else {
       metricsRef.incrementTotalReqProvider();
@@ -43,9 +42,9 @@ public final class MetricsDataMonitorUtil {
   /**
    * Sets the total failed requests per provider and consumer.
    */
-  public void setAllFailReqProviderAndConsumer(String operationPath,InvocationType invocationType) {
+  public void setAllFailReqProviderAndConsumer(String operationPath, String invocationType) {
     MetricsDataMonitor metricsRef = MetricsServoRegistry.getOrCreateLocalMetrics();
-    if (InvocationType.CONSUMER.equals(invocationType)) {
+    if ("CONSUMER".equals(invocationType)) {
       metricsRef.incrementTotalFailReqConsumer();
     } else {
       metricsRef.incrementTotalFailReqProvider();

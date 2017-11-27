@@ -33,17 +33,15 @@ import io.servicecomb.foundation.metrics.output.MetricsFileOutput;
 @Component
 public class RollingMetricsFileOutput extends MetricsFileOutput {
   private final Map<String, RollingFileAppenderExt> metricsAppenders = new HashMap<>();
-  private final String fileNameHeader;
 
   @Autowired
-  public RollingMetricsFileOutput(MicroserviceLoader loader) {
-    fileNameHeader = loader.getAppIdAndServiceNameJoinString();
+  public RollingMetricsFileOutput() {
   }
 
   @Override
   public void output(Map<String, String> metrics) {
     for (String metricName : metrics.keySet()) {
-      final String fileName = String.join(".", this.fileNameHeader, metricName, "dat");
+      final String fileName = String.join(".", getNamePrefix(), metricName, "dat");
       RollingFileAppenderExt appender = metricsAppenders.computeIfAbsent(metricName, (key) -> {
         String finalPath = Paths.get(getRollingRootFilePath(), fileName).toString();
         RollingFileAppenderExt fileAppender = new RollingFileAppenderExt();

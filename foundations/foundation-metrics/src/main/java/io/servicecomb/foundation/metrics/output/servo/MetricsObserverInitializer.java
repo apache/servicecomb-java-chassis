@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package io.servicecomb.foundation.metrics;
+package io.servicecomb.foundation.metrics.output.servo;
 
 import java.util.concurrent.TimeUnit;
 
@@ -30,13 +30,10 @@ import com.netflix.servo.publish.PollRunnable;
 import com.netflix.servo.publish.PollScheduler;
 
 import io.servicecomb.foundation.metrics.output.MetricsFileOutput;
-import io.servicecomb.foundation.metrics.output.servo.FileOutputMetricObserver;
-import io.servicecomb.foundation.metrics.output.servo.MetricsContentConvertor;
-import io.servicecomb.foundation.metrics.output.servo.MetricsContentFormatter;
 
 //manage and init ServoObservers
 @Component
-public class MetricsServoObserverManager {
+public class MetricsObserverInitializer {
 
   public static final String METRICS_POLL_TIME = "servicecomb.metrics.polltime";
   public static final String METRICS_FILE_ENABLED = "servicecomb.metrics.file.enabled";
@@ -47,12 +44,12 @@ public class MetricsServoObserverManager {
   private final MetricsContentFormatter formatter;
 
   @Autowired
-  public MetricsServoObserverManager(MetricsFileOutput fileOutput, MetricsContentConvertor convertor,
+  public MetricsObserverInitializer(MetricsFileOutput fileOutput, MetricsContentConvertor convertor,
       MetricsContentFormatter formatter) {
     this(fileOutput, convertor, formatter, true);
   }
 
-  public MetricsServoObserverManager(MetricsFileOutput fileOutput, MetricsContentConvertor convertor,
+  public MetricsObserverInitializer(MetricsFileOutput fileOutput, MetricsContentConvertor convertor,
       MetricsContentFormatter formatter, boolean autoInit) {
     metricPoll = DynamicPropertyFactory.getInstance().getIntProperty(METRICS_POLL_TIME, 30).get();
     this.fileOutput = fileOutput;

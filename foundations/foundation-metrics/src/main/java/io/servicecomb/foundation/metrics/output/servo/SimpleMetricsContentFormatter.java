@@ -28,6 +28,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.netflix.config.DynamicPropertyFactory;
 
 import io.servicecomb.foundation.common.net.NetUtils;
 import io.servicecomb.foundation.common.utils.JsonUtils;
@@ -35,18 +36,22 @@ import io.servicecomb.foundation.common.utils.JsonUtils;
 @Component
 public class SimpleMetricsContentFormatter implements MetricsContentFormatter {
 
+  public static final String METRICS_FILE_NAME_PREFIX = "servicecomb.metrics.file.name_prefix";
+
   private static final Logger logger = LoggerFactory.getLogger(SimpleMetricsContentFormatter.class);
+
   private final String applicationName;
+
   private String hostName;
 
   @Autowired
-  public SimpleMetricsContentFormatter(MicroserviceLoader loader) {
+  public SimpleMetricsContentFormatter() {
     hostName = NetUtils.getHostName();
     if (StringUtils.isEmpty(hostName)) {
       hostName = NetUtils.getHostAddress();
     }
 
-    applicationName = loader.getAppIdAndServiceNameJoinString();
+    applicationName = DynamicPropertyFactory.getInstance().getStringProperty(METRICS_FILE_NAME_PREFIX, "metrics").get();
   }
 
   @Override
@@ -65,6 +70,7 @@ public class SimpleMetricsContentFormatter implements MetricsContentFormatter {
 
   class OutputJsonObject {
     private String plugin_id;
+
     private Map<String, Object> metric;
 
     public String getPlugin_id() {

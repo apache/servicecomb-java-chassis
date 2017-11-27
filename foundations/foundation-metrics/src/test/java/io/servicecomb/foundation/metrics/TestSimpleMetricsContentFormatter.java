@@ -16,27 +16,19 @@
 
 package io.servicecomb.foundation.metrics;
 
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-
 import java.util.HashMap;
 import java.util.Map;
 
 import org.junit.Assert;
 import org.junit.Test;
 
-import io.servicecomb.foundation.metrics.output.servo.MicroserviceLoader;
 import io.servicecomb.foundation.metrics.output.servo.SimpleMetricsContentFormatter;
 
 public class TestSimpleMetricsContentFormatter {
 
   @Test
   public void testFormatter() {
-
-    MicroserviceLoader loader = mock(MicroserviceLoader.class);
-    when(loader.getAppIdAndServiceNameJoinString()).thenReturn("appId.serviceName");
-
-    SimpleMetricsContentFormatter formatter = new SimpleMetricsContentFormatter(loader);
+    SimpleMetricsContentFormatter formatter = new SimpleMetricsContentFormatter();
 
     Map<String, String> input = new HashMap<>();
     input.put("key", "value");

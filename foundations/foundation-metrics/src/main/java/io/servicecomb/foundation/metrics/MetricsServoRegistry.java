@@ -33,17 +33,15 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.springframework.beans.factory.InitializingBean;
 
+import com.netflix.config.DynamicPropertyFactory;
 import com.netflix.hystrix.HystrixCommandMetrics;
 import com.netflix.hystrix.HystrixEventType;
 import com.netflix.servo.DefaultMonitorRegistry;
 import com.netflix.servo.annotations.DataSourceType;
 import com.netflix.servo.monitor.AbstractMonitor;
 import com.netflix.servo.monitor.BasicCompositeMonitor;
-import com.netflix.servo.monitor.BasicGauge;
-import com.netflix.servo.monitor.DoubleGauge;
 import com.netflix.servo.monitor.Gauge;
 import com.netflix.servo.monitor.Informational;
-import com.netflix.servo.monitor.LongGauge;
 import com.netflix.servo.monitor.Monitor;
 import com.netflix.servo.monitor.MonitorConfig;
 
@@ -56,11 +54,19 @@ import rx.functions.Func0;
  */
 public class MetricsServoRegistry implements InitializingBean {
 
+  public static final String METRICS_ROUND_PLACES = "servicecomb.metrics.round_places";
+
   protected static ThreadLocal<MetricsDataMonitor> LOCAL_METRICS_MAP = new ThreadLocal<>();
 
   private MetricsDataMonitor localMetrics = new MetricsDataMonitor();
 
   protected static Vector<MetricsDataMonitor> metricsList = new Vector<>();
+
+  private final int doubleRoundPlaces;
+
+  public MetricsServoRegistry() {
+    doubleRoundPlaces = DynamicPropertyFactory.getInstance().getIntProperty(METRICS_ROUND_PLACES, 1).get();
+  }
 
   /*
    * Added getter for unit test of local metrics.
@@ -417,7 +423,8 @@ public class MetricsServoRegistry implements InitializingBean {
         int operLatency = instance.getExecutionTimeMean();
         long totalCallCount = successCount + failureCount;
         cumulativeTotalCount += totalCallCount;
-        double windowTime = (double)instance.getProperties().metricsRollingStatisticalWindowInMilliseconds().get() / (double)1000;
+        double windowTime =
+            (double) instance.getProperties().metricsRollingStatisticalWindowInMilliseconds().get() / (double) 1000;
         double qpsVal = (double) (totalCallCount) / windowTime;
         BigDecimal bigDecimal = new BigDecimal(qpsVal);
         BigDecimal bigDecimalVal = bigDecimal.setScale(1, RoundingMode.HALF_DOWN);
@@ -430,8 +437,8 @@ public class MetricsServoRegistry implements InitializingBean {
 
       double instanceLatency = insTotalLatency / cumulativeTotalCount;
 
-      tpsAndLatencyMap.put("tps", String.valueOf(insTotalTps));
-      tpsAndLatencyMap.put("latency", String.valueOf(instanceLatency));
+      tpsAndLatencyMap.put("tps", String.valueOf(round(insTotalTps, doubleRoundPlaces)));
+      tpsAndLatencyMap.put("latency", String.valueOf(round(instanceLatency, doubleRoundPlaces)));
 
       return tpsAndLatencyMap.toString();
     }
@@ -558,5 +565,14 @@ public class MetricsServoRegistry implements InitializingBean {
     monitors.add(getInfoMetricsOperationalAndInstance("CPU and Memory", getCpuAndMemory));
 
     return monitors;
+  }
+
+  private double round(double value, int places) {
+    if (!Double.isNaN(value) && !Double.isInfinite(value)) {
+      BigDecimal decimal = new BigDecimal(value);
+      return decimal.setScale(places, RoundingMode.HALF_UP).doubleValue();
+    } else {
+      return 0;
+    }
   }
 }

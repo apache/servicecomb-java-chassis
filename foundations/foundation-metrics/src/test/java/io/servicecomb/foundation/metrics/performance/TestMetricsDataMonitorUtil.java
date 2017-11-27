@@ -20,10 +20,8 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.Mockito;
 
 import io.servicecomb.foundation.metrics.MetricsServoRegistry;
-import io.servicecomb.swagger.invocation.InvocationType;
 
 public class TestMetricsDataMonitorUtil {
   MetricsDataMonitor metricsDataMonitor = null;
@@ -43,21 +41,21 @@ public class TestMetricsDataMonitorUtil {
 
   @Test
   public void testAllReqConsumer() {
-    metricsDataMonitorUtil.setAllReqProviderAndConsumer("/sayHi",InvocationType.CONSUMER);
+    metricsDataMonitorUtil.setAllReqProviderAndConsumer("/sayHi", "CONSUMER");
     Assert.assertNotEquals(0L, metricsDataMonitor.getTotalReqConsumer());
-    metricsDataMonitorUtil.setAllFailReqProviderAndConsumer("/sayHi",InvocationType.CONSUMER);
+    metricsDataMonitorUtil.setAllFailReqProviderAndConsumer("/sayHi", "CONSUMER");
     Assert.assertNotEquals(0L, metricsDataMonitor.getTotalFailReqConsumer());
   }
 
   @Test
   public void testAllReqProvider() {
-    metricsDataMonitorUtil.setAllReqProviderAndConsumer("/sayBye",InvocationType.PRODUCER);
+    metricsDataMonitorUtil.setAllReqProviderAndConsumer("/sayBye", "PRODUCER");
     Assert.assertNotEquals(0L, metricsDataMonitor.getTotalReqProvider());
-    metricsDataMonitorUtil.setAllReqProviderAndConsumer("/sayBye",InvocationType.PRODUCER);
+    metricsDataMonitorUtil.setAllReqProviderAndConsumer("/sayBye", "PRODUCER");
     Assert.assertNotEquals(0L, metricsDataMonitor.getTotalReqProvider());
-    metricsDataMonitorUtil.setAllFailReqProviderAndConsumer("/sayBye",InvocationType.PRODUCER);
+    metricsDataMonitorUtil.setAllFailReqProviderAndConsumer("/sayBye", "PRODUCER");
     Assert.assertNotEquals(0L, metricsDataMonitor.getTotalFailReqProvider());
-    metricsDataMonitorUtil.setAllFailReqProviderAndConsumer("/sayBye",InvocationType.PRODUCER);
+    metricsDataMonitorUtil.setAllFailReqProviderAndConsumer("/sayBye", "PRODUCER");
     Assert.assertNotEquals(0L, metricsDataMonitor.getTotalFailReqProvider());
   }
 }
