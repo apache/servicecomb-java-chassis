@@ -4,15 +4,14 @@ import java.security.PrivateKey;
 import java.security.PublicKey;
 
 public final class RSAKeyPairEntry {
-  
+
   private PrivateKey privateKey;
 
   private PublicKey publicKey;
-  
+
   private String publicKeyEncoded;
-  
-  public RSAKeyPairEntry(PrivateKey privateKey, PublicKey publicKey, String publicKeyEncoded)
-  {
+
+  public RSAKeyPairEntry(PrivateKey privateKey, PublicKey publicKey, String publicKeyEncoded) {
     this.privateKey = privateKey;
     this.publicKey = publicKey;
     this.publicKeyEncoded = publicKeyEncoded;
