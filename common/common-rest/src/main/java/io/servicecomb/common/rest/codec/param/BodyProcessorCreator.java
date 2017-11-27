@@ -18,6 +18,7 @@ package io.servicecomb.common.rest.codec.param;
 
 import java.io.InputStream;
 import java.lang.reflect.Type;
+import java.util.Locale;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.HttpHeaders;
@@ -63,7 +64,7 @@ public class BodyProcessorCreator implements ParamValueProcessorCreator {
       }
 
       String contentType = request.getContentType();
-      if (contentType != null && !contentType.startsWith(MediaType.APPLICATION_JSON)) {
+      if (contentType != null && !contentType.toLowerCase(Locale.US).startsWith(MediaType.APPLICATION_JSON)) {
         // TODO: we should consider body encoding
         return IOUtils.toString(inputStream, "UTF-8");
       }

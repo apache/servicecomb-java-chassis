@@ -18,11 +18,7 @@ package io.servicecomb.common.rest.definition;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
@@ -205,7 +201,7 @@ public class RestOperationMeta {
   // 选择与accept匹配的produce processor或者缺省的
   public ProduceProcessor ensureFindProduceProcessor(HttpServletRequestEx requestEx) {
     String acceptType = requestEx.getHeader(HttpHeaders.ACCEPT);
-    return ensureFindProduceProcessor(acceptType);
+    return ensureFindProduceProcessor(acceptType.toLowerCase(Locale.US));
   }
 
   public ProduceProcessor ensureFindProduceProcessor(String acceptType) {
