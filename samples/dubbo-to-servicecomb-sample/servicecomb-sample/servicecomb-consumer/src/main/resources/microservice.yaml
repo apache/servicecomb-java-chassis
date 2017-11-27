@@ -1,0 +1,8 @@
+APPLICATION_ID: my-application
+service_description:
+  name: service-consumer
+  version: 0.0.1
+cse:
+  service:
+    registry:
+      address: http://127.0.0.1:30100
