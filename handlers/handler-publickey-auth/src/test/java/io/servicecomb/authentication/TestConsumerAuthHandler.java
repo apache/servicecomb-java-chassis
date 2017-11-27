@@ -20,11 +20,23 @@ public class TestConsumerAuthHandler {
 
   @Test
   public void testHandler() throws Exception {
-
+    tokenManager = Mockito.mock(RSACoumserTokenManager.class);
+    Mockito.when(tokenManager.getToken()).thenReturn("testtoken");
     ConsumerAuthHandler consumerAuthHandler = new ConsumerAuthHandler();
     consumerAuthHandler.setAuthenticationTokenManager(tokenManager);
     consumerAuthHandler.handle(invocation, asyncResp);
     Assert.assertTrue(true);
+  }
+  
+  
+  @Test
+  public void testHandlerException() throws Exception {
+    tokenManager = Mockito.mock(RSACoumserTokenManager.class);
+    Mockito.when(tokenManager.getToken()).thenReturn(null);
+    ConsumerAuthHandler consumerAuthHandler = new ConsumerAuthHandler();
+    consumerAuthHandler.setAuthenticationTokenManager(tokenManager);
+    consumerAuthHandler.handle(invocation, asyncResp);
+    
   }
 
   @Before
@@ -32,7 +44,6 @@ public class TestConsumerAuthHandler {
     invocation = Mockito.mock(Invocation.class);
     asyncResp = Mockito.mock(AsyncResponse.class);
 
-    tokenManager = Mockito.mock(RSACoumserTokenManager.class);
-    Mockito.when(tokenManager.getToken()).thenReturn("testtoken");
+   
   }
 }

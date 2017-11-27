@@ -25,6 +25,7 @@ public class ConsumerAuthHandler implements Handler {
     {
       asyncResp.consumerFail(
           new IllegalStateException("rejected by consumer authentication handler"));
+      return ;
     }
     invocation.addContext(Const.AUTH_TOKEN, token.get());
     invocation.next(asyncResp);
