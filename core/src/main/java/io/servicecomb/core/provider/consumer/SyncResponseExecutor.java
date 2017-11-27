@@ -42,7 +42,7 @@ public class SyncResponseExecutor implements Executor {
 
     // one network thread, many connections, then this notify will be performance bottlenecks
     // if save to a queue, and other thread(s) to invoke countDown, will get good performance
-    // but if have multile network thread, this "optimization" will reduce performance
+    // but if have multiple network thread, this "optimization" will reduce performance
     // now not change this.
     latch.countDown();
   }
