@@ -22,7 +22,6 @@ import io.servicecomb.core.Invocation;
 import io.servicecomb.swagger.invocation.Response;
 import rx.Observable;
 import rx.Subscription;
-import rx.functions.Action0;
 import rx.subjects.ReplaySubject;
 
 public class BizkeeperHandlerDelegate {
@@ -48,12 +47,7 @@ public class BizkeeperHandlerDelegate {
       public Observable<Response> observe() {
         ReplaySubject<Response> subject = ReplaySubject.create();
         final Subscription sourceSubscription = toObservable().subscribe(subject);
-        return subject.doOnUnsubscribe(new Action0() {
-          @Override
-          public void call() {
-            sourceSubscription.unsubscribe();
-          }
-        });
+        return subject.doOnUnsubscribe(sourceSubscription::unsubscribe);
       }
 
       @Override
