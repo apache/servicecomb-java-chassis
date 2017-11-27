@@ -159,7 +159,7 @@ public class MicroserviceInstance {
     microserviceInstance.setProperties(propertiesMap);
 
     // load data center information
-    loadDatacenterInfo(microserviceInstance);
+    loadDataCenterInfo(microserviceInstance);
     return microserviceInstance;
   }
 
