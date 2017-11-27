@@ -163,7 +163,7 @@ public class MicroserviceInstance {
     return microserviceInstance;
   }
 
-  private static void loadDatacenterInfo(MicroserviceInstance microserviceInstance) {
+  private static void loadDataCenterInfo(MicroserviceInstance microserviceInstance) {
     String dataCenterName = DynamicPropertyFactory.getInstance()
         .getStringProperty("cse.datacenter.name", null)
         .get();
