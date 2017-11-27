@@ -28,7 +28,7 @@ import io.servicecomb.foundation.vertx.client.tcp.TcpClientPackage;
 import io.servicecomb.foundation.vertx.client.tcp.TcpClientVerticle;
 import io.servicecomb.foundation.vertx.client.tcp.TcpData;
 import io.servicecomb.foundation.vertx.client.tcp.TcpRequest;
-import io.servicecomb.foundation.vertx.client.tcp.TcpResonseCallback;
+import io.servicecomb.foundation.vertx.client.tcp.TcpResponseCallback;
 import io.servicecomb.foundation.vertx.server.TcpParser;
 import io.servicecomb.foundation.vertx.server.TcpServer;
 import io.servicecomb.foundation.vertx.tcp.TcpOutputStream;
@@ -76,8 +76,8 @@ public class TestTcp {
         new TcpClientConnection(Mockito.mock(Context.class), oNetClient, "highway://127.2.0.1:8080",
             new TcpClientConfig());
     oTcpClient.checkTimeout();
-    oTcpClient.send(new TcpClientPackage(null), 123, Mockito.mock(TcpResonseCallback.class));
-    oTcpClient.send(new TcpClientPackage(null), 123, Mockito.mock(TcpResonseCallback.class));
+    oTcpClient.send(new TcpClientPackage(null), 123, Mockito.mock(TcpResponseCallback.class));
+    oTcpClient.send(new TcpClientPackage(null), 123, Mockito.mock(TcpResponseCallback.class));
 
     new MockUp<TcpClientConnectionPool>() {
       @Mock
@@ -88,11 +88,11 @@ public class TestTcp {
     TcpClientConfig config = new TcpClientConfig();
     TcpClientConnectionPool oClientPool =
         new TcpClientConnectionPool(config, vertx.getOrCreateContext(), oNetClient);
-    oClientPool.send(oTcpClient, new TcpClientPackage(null), Mockito.mock(TcpResonseCallback.class));
-    oClientPool.send(oTcpClient, new TcpClientPackage(null), Mockito.mock(TcpResonseCallback.class));
+    oClientPool.send(oTcpClient, new TcpClientPackage(null), Mockito.mock(TcpResponseCallback.class));
+    oClientPool.send(oTcpClient, new TcpClientPackage(null), Mockito.mock(TcpResponseCallback.class));
     Assert.assertNotNull(oClientPool);
 
-    TcpRequest oTcpRequest = new TcpRequest(1234, Mockito.mock(TcpResonseCallback.class));
+    TcpRequest oTcpRequest = new TcpRequest(1234, Mockito.mock(TcpResponseCallback.class));
     oTcpRequest.isTimeout();
     oTcpRequest.onReply(Buffer.buffer(), Buffer.buffer(("test").getBytes()));
     oTcpRequest.onSendError(new Throwable("test Errorsss"));

@@ -96,7 +96,7 @@ public class TcpClientConnection extends TcpConnection {
   }
 
   public void send(AbstractTcpClientPackage tcpClientPackage, long msTimeout,
-      TcpResonseCallback callback) {
+      TcpResponseCallback callback) {
     requestMap.put(tcpClientPackage.getMsgId(), new TcpRequest(msTimeout, callback));
 
     if (writeToBufferQueue(tcpClientPackage)) {
