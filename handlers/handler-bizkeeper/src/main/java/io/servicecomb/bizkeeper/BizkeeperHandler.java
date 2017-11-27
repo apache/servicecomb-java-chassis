@@ -40,7 +40,7 @@ import rx.Observable;
 public abstract class BizkeeperHandler implements Handler {
   private static final Logger LOG = LoggerFactory.getLogger(BizkeeperHandler.class);
 
-  protected final String groupName;
+  protected final String groupname;
 
   private static final int WINDOW_IN_MILLISECONDS = 10000;
 
