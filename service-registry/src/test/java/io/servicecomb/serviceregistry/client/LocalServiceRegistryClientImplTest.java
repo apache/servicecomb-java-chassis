@@ -145,4 +145,14 @@ public class LocalServiceRegistryClientImplTest {
 
     Assert.assertTrue(registryClient.registerSchema(v1.getServiceId(), "sid", "content"));
   }
+  
+  @Test
+  public void testFindServiceInstance()
+  {
+    Microservice microservice = mockRegisterMicroservice(appId, microserviceName, "1.0.0");
+    MicroserviceInstance instance = new MicroserviceInstance();
+    instance.setServiceId(microservice.getServiceId());
+    String instanceId = registryClient.registerMicroserviceInstance(instance);
+    Assert.assertNotNull(registryClient.findServiceInstance(microservice.getServiceId(), instanceId));
+  }
 }
