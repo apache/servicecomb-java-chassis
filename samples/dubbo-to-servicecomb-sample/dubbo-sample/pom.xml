@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <parent>
+    <artifactId>dubbo-to-servicecomb-sample</artifactId>
+    <groupId>io.servicecomb.samples</groupId>
+    <version>0.4.1-SNAPSHOT</version>
+  </parent>
+  <modelVersion>4.0.0</modelVersion>
+
+  <artifactId>dubbo-sample</artifactId>
+  <packaging>pom</packaging>
+  <modules>
+    <module>dubbo-provider</module>
+    <module>dubbo-api</module>
+    <module>dubbo-consumer</module>
+  </modules>
+
+  <properties>
+    <dubbo.version>2.8.4</dubbo.version>
+  </properties>
+
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>io.servicecomb.samples</groupId>
+        <artifactId>dubbo-api</artifactId>
+        <version>0.4.1-SNAPSHOT</version>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
+
+  <dependencies>
+    <dependency>
+      <groupId>com.alibaba</groupId>
+      <artifactId>dubbo</artifactId>
+      <version>${dubbo.version}</version>
+    </dependency>
+  </dependencies>
+
+</project>

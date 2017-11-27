@@ -184,6 +184,12 @@
         <module>coverage-reports</module>
       </modules>
     </profile>
+    <profile>
+      <id>samples</id>
+      <modules>
+        <module>samples</module>
+      </modules>
+    </profile>
   </profiles>
 
   <build>
