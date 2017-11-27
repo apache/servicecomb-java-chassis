@@ -30,6 +30,10 @@
       <artifactId>foundation-common</artifactId>
     </dependency>
     <dependency>
+      <groupId>io.servicecomb</groupId>
+      <artifactId>foundation-config</artifactId>
+    </dependency>
+    <dependency>
       <groupId>com.netflix.servo</groupId>
       <artifactId>servo-core</artifactId>
     </dependency>
@@ -42,13 +46,13 @@
       <artifactId>archaius-core</artifactId>
     </dependency>
     <dependency>
+      <groupId>io.servicecomb</groupId>
+      <artifactId>swagger-invocation-core</artifactId>
+    </dependency>
+    <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-log4j12</artifactId>
       <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>io.servicecomb</groupId>
-      <artifactId>java-chassis-core</artifactId>
     </dependency>
   </dependencies>
 </project>
