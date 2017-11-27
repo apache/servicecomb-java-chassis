@@ -18,6 +18,6 @@ package io.servicecomb.foundation.vertx.client.tcp;
 
 import io.servicecomb.foundation.vertx.AsyncResultCallback;
 
-public interface TcpResonseCallback extends AsyncResultCallback<TcpData> {
+public interface TcpResponseCallback extends AsyncResultCallback<TcpData> {
 
 }
