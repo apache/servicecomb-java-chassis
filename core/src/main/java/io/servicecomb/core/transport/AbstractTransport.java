@@ -136,7 +136,7 @@ public abstract class AbstractTransport implements Transport {
       String decodedQuery = URLDecoder.decode(encodedQuery, StandardCharsets.UTF_8.name());
       addressWithoutSchema += decodedQuery;
     } catch (UnsupportedEncodingException e) {
-      // never happended
+      // never happened
       throw new ServiceCombException("Failed to decode query.", e);
     }
 

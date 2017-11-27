@@ -34,7 +34,7 @@ public class Invocation extends SwaggerInvocation {
   // 本次调用对应的schemaMeta
   private SchemaMeta schemaMeta;
 
-  // 本次调用对应的operatoinMeta
+  // 本次调用对应的operationMeta
   private OperationMeta operationMeta;
 
   // loadbalance查询得到的地址，由transport client使用
