@@ -18,11 +18,7 @@ package io.servicecomb.common.rest.definition;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
@@ -213,7 +209,7 @@ public class RestOperationMeta {
       return defaultProcessor;
     }
 
-    List<String> mimeTyps = Utils.getSortedAcceptableMimeTypes(acceptType);
+    List<String> mimeTyps = Utils.getSortedAcceptableMimeTypes(acceptType.toLowerCase(Locale.US));
     for (String mime : mimeTyps) {
       ProduceProcessor processor = this.produceProcessorMap.get(mime);
       if (null != processor) {
