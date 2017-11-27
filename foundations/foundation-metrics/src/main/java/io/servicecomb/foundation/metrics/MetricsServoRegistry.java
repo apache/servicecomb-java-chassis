@@ -30,6 +30,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Vector;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.InitializingBean;
 
@@ -315,13 +316,13 @@ public class MetricsServoRegistry implements InitializingBean {
         long count = metricMap.get(key).getTotalCount();
         double avgTimeInQueue = 0;
         if (count > 0) {
-          avgTimeInQueue = metricMap.get(key).getTotalTime() / count;
+          avgTimeInQueue = (double) metricMap.get(key).getTotalTime() / (double) count;
         }
         resultMap.put("AverageTimeInQueue", String.valueOf(avgTimeInQueue));
         long countService = metricMap.get(key).getTotalServExecutionCount();
         double avgServiceTimeInQueue = 0;
         if (countService > 0) {
-          avgServiceTimeInQueue = metricMap.get(key).getTotalServExecutionTime() / countService;
+          avgServiceTimeInQueue = (double) metricMap.get(key).getTotalServExecutionTime() / (double) countService;
         }
         resultMap.put("AverageServiceExecutionTime", String.valueOf(avgServiceTimeInQueue));
         resultMap.put("MinLifeTimeInQueue", metricMap.get(key).getMinLifeTimeInQueue().toString());
@@ -357,13 +358,13 @@ public class MetricsServoRegistry implements InitializingBean {
       long countInst = totalValueInstance.getTotalCount();
       double avgTimeInQueueIns = 0;
       if (countInst > 0) {
-        avgTimeInQueueIns = totalValueInstance.getTotalTime() / countInst;
+        avgTimeInQueueIns = (double) totalValueInstance.getTotalTime() / (double) countInst;
       }
       resultInstancePublishMap.put("averageTimeInQueue", String.valueOf(avgTimeInQueueIns));
       long countServiceInst = totalValueInstance.getTotalServExecutionCount();
       double avgServiceTimeInQueueInst = 0;
       if (countServiceInst > 0) {
-        avgServiceTimeInQueueInst = totalValueInstance.getTotalServExecutionTime() / countServiceInst;
+        avgServiceTimeInQueueInst = (double) totalValueInstance.getTotalServExecutionTime() / (double) countServiceInst;
       }
       resultInstancePublishMap.put("averageServiceExecutionTime", String.valueOf(avgServiceTimeInQueueInst));
       resultInstancePublishMap.put("minLifeTimeInQueue", totalValueInstance.getMinLifeTimeInQueue().toString());
@@ -410,39 +411,39 @@ public class MetricsServoRegistry implements InitializingBean {
   protected final Func0<String> getTpsAndLatency = new Func0<String>() {
     @Override
     public String call() {
-      Map<String, String> tpsAndLatencyMap = new HashMap<>();
       Collection<HystrixCommandMetrics> instances = HystrixCommandMetrics.getInstances();
-
-      double insTotalTps = 0;
-      double insTotalLatency = 0;
-      long cumulativeTotalCount = 0;
-
-      for (HystrixCommandMetrics instance : instances) {
-        long successCount = instance.getRollingCount(HystrixEventType.SUCCESS);
-        long failureCount = instance.getRollingCount(HystrixEventType.FAILURE);
-        int operLatency = instance.getExecutionTimeMean();
-        long totalCallCount = successCount + failureCount;
-        cumulativeTotalCount += totalCallCount;
-        double windowTime =
-            (double) instance.getProperties().metricsRollingStatisticalWindowInMilliseconds().get() / (double) 1000;
-        double qpsVal = (double) (totalCallCount) / windowTime;
-        BigDecimal bigDecimal = new BigDecimal(qpsVal);
-        BigDecimal bigDecimalVal = bigDecimal.setScale(1, RoundingMode.HALF_DOWN);
-        Double tpsOper = bigDecimalVal.doubleValue();
-        //tpsAndLatencyMap.put("TPS-" + instance.getCommandKey().name(), String.valueOf(tpsOper));
-        //tpsAndLatencyMap.put("Latency-" + instance.getCommandKey().name(), String.valueOf(operLatency));
-        insTotalTps += tpsOper;
-        insTotalLatency += operLatency;
-      }
-
-      double instanceLatency = insTotalLatency / cumulativeTotalCount;
-
-      tpsAndLatencyMap.put("tps", String.valueOf(round(insTotalTps, doubleRoundPlaces)));
-      tpsAndLatencyMap.put("latency", String.valueOf(round(instanceLatency, doubleRoundPlaces)));
-
-      return tpsAndLatencyMap.toString();
+      List<TpsAndLatencyData> tpsAndLatencyData = HystrixCommandMetrics.getInstances().stream().map(instance ->
+          new TpsAndLatencyData(instance.getRollingCount(HystrixEventType.SUCCESS),
+              instance.getRollingCount(HystrixEventType.FAILURE)
+              , instance.getExecutionTimeMean(),
+              instance.getProperties().metricsRollingStatisticalWindowInMilliseconds().get()))
+          .collect(Collectors.toList());
+      return calculateTpsAndLatency(tpsAndLatencyData);
     }
   };
+
+  protected String calculateTpsAndLatency(List<TpsAndLatencyData> tpsAndLatencyData) {
+    Map<String, String> tpsAndLatencyMap = new HashMap<>();
+    double insTotalTps = 0;
+    double insTotalLatency = 0;
+    long cumulativeTotalCount = 0;
+    for (TpsAndLatencyData data : tpsAndLatencyData) {
+      long totalCallCount = data.getSuccessCount() + data.getFailureCount();
+      cumulativeTotalCount += totalCallCount;
+      double windowTime =
+          (double) data.getWindowInMilliseconds() / (double) 1000;
+      double qpsVal = (double) (totalCallCount) / windowTime;
+      BigDecimal bigDecimal = new BigDecimal(qpsVal);
+      BigDecimal bigDecimalVal = bigDecimal.setScale(1, RoundingMode.HALF_UP);
+      insTotalTps += bigDecimalVal.doubleValue();
+      insTotalLatency += data.getOperationLatency() * totalCallCount;
+    }
+
+    double instanceLatency = insTotalLatency / (double) cumulativeTotalCount;
+    tpsAndLatencyMap.put("tps", String.valueOf(round(insTotalTps, doubleRoundPlaces)));
+    tpsAndLatencyMap.put("latency", String.valueOf(round(instanceLatency, doubleRoundPlaces)));
+    return tpsAndLatencyMap.toString();
+  }
 
   /**
    * Implementation of request metrics with using servo guage metric type.

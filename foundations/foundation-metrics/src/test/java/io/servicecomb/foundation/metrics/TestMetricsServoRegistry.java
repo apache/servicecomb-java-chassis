@@ -16,6 +16,8 @@
 
 package io.servicecomb.foundation.metrics;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.configuration.BaseConfiguration;
@@ -204,5 +206,15 @@ public class TestMetricsServoRegistry {
     Assert.assertEquals(100L, reqQueue3.getTotalTime().longValue());
     Assert.assertEquals(5L, reqQueue3.getTotalServExecutionCount().longValue());
     Assert.assertEquals(50L, reqQueue3.getTotalServExecutionTime().longValue());
+  }
+
+  @Test
+  public void testCalculateTps() {
+    observerManager.init();
+    List<TpsAndLatencyData> tpsAndLatencyData = new ArrayList<>();
+    tpsAndLatencyData.add(new TpsAndLatencyData(1, 1, 100, 100));
+    tpsAndLatencyData.add(new TpsAndLatencyData(2, 2, 200, 200));
+    String results = metricsRegistry.calculateTpsAndLatency(tpsAndLatencyData);
+    Assert.assertTrue("{tps=40.0, latency=166.7}".equals(results));
   }
 }
