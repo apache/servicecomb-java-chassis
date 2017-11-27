@@ -48,10 +48,6 @@
     </dependency>
     <dependency>
       <groupId>io.servicecomb</groupId>
-      <artifactId>swagger-invocation-core</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>io.servicecomb</groupId>
       <artifactId>java-chassis-core</artifactId>
     </dependency>
   </dependencies>

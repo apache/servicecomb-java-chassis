@@ -27,7 +27,6 @@ import org.junit.Test;
 
 import io.servicecomb.foundation.metrics.output.servo.MicroserviceLoader;
 import io.servicecomb.foundation.metrics.output.servo.SimpleMetricsContentFormatter;
-import io.servicecomb.serviceregistry.api.registry.Microservice;
 
 public class TestSimpleMetricsContentFormatter {
 
@@ -35,10 +34,7 @@ public class TestSimpleMetricsContentFormatter {
   public void testFormatter() {
 
     MicroserviceLoader loader = mock(MicroserviceLoader.class);
-    Microservice microservice = new Microservice();
-    microservice.setAppId("appId");
-    microservice.setServiceName("serviceName");
-    when(loader.load()).thenReturn(microservice);
+    when(loader.getAppIdAndServiceNameJoinString()).thenReturn("appId.serviceName");
 
     SimpleMetricsContentFormatter formatter = new SimpleMetricsContentFormatter(loader);
 

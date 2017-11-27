@@ -29,7 +29,6 @@ import org.springframework.stereotype.Component;
 
 import io.servicecomb.foundation.common.utils.RollingFileAppenderExt;
 import io.servicecomb.foundation.metrics.output.MetricsFileOutput;
-import io.servicecomb.serviceregistry.api.registry.Microservice;
 
 @Component
 public class RollingMetricsFileOutput extends MetricsFileOutput {
@@ -38,8 +37,7 @@ public class RollingMetricsFileOutput extends MetricsFileOutput {
 
   @Autowired
   public RollingMetricsFileOutput(MicroserviceLoader loader) {
-    Microservice microservice = loader.load();
-    fileNameHeader = String.join(".", microservice.getAppId(), microservice.getServiceName());
+    fileNameHeader = loader.getAppIdAndServiceNameJoinString();
   }
 
   @Override

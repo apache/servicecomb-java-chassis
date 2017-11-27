@@ -40,7 +40,6 @@ import io.servicecomb.foundation.metrics.output.servo.SimpleMetricsContentConver
 import io.servicecomb.foundation.metrics.output.servo.SimpleMetricsContentFormatter;
 import io.servicecomb.foundation.metrics.performance.MetricsDataMonitor;
 import io.servicecomb.foundation.metrics.performance.QueueMetricsData;
-import io.servicecomb.serviceregistry.api.registry.Microservice;
 
 public class TestMetricsServoRegistry {
   MetricsDataMonitor metricsDataMonitor = null;
@@ -65,10 +64,7 @@ public class TestMetricsServoRegistry {
   @Before
   public void setUp() throws Exception {
     MicroserviceLoader loader = mock(MicroserviceLoader.class);
-    Microservice microservice = new Microservice();
-    microservice.setAppId("appId");
-    microservice.setServiceName("serviceName");
-    when(loader.load()).thenReturn(microservice);
+    when(loader.getAppIdAndServiceNameJoinString()).thenReturn("appId.serviceName");
     metricsRegistry = new MetricsServoRegistry();
     convertor = new SimpleMetricsContentConvertor();
     formatter = new SimpleMetricsContentFormatter(loader);

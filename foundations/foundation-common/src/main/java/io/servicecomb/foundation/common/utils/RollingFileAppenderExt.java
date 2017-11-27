@@ -67,10 +67,6 @@ public class RollingFileAppenderExt extends RollingFileAppender {
     super.subAppend(event);
   }
 
-  public void setMaxBackupIndex(int maxBackups) {
-    super.setMaxBackupIndex(maxBackups);
-  }
-
   protected void createCurrentFile() throws IOException {
     if (!currentFile.exists()) {
       File parent = currentFile.getParentFile();

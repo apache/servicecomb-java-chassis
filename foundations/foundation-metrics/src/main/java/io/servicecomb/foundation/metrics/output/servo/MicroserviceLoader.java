@@ -16,28 +16,26 @@
 
 package io.servicecomb.foundation.metrics.output.servo;
 
+import java.util.Map;
+
 import org.springframework.stereotype.Component;
 
-import io.servicecomb.config.ConfigUtil;
 import io.servicecomb.config.archaius.sources.MicroserviceConfigLoader;
 import io.servicecomb.foundation.common.exceptions.ServiceCombException;
-import io.servicecomb.serviceregistry.api.registry.Microservice;
-import io.servicecomb.serviceregistry.definition.MicroserviceDefinition;
 
 @Component
 public class MicroserviceLoader {
 
-  public Microservice load() {
-    try {
-      //TODO: has any better way get appId and microserviceName ? new MicroserviceDefinition may heavy cost
-      MicroserviceConfigLoader loader = ConfigUtil.getMicroserviceConfigLoader();
-      MicroserviceDefinition definition = new MicroserviceDefinition(loader.getConfigModels());
-      Microservice microservice = new Microservice();
-      microservice.setServiceName(definition.getMicroserviceName());
-      microservice.setAppId(definition.getApplicationId());
-      return microservice;
-    } catch (Exception e) {
-      throw new ServiceCombException("can't get microservice from RegistryUtils", e);
+  //use MicroserviceConfigLoader in foundation-config load microservice.yaml
+  public String getAppIdAndServiceNameJoinString() {
+    MicroserviceConfigLoader loader = new MicroserviceConfigLoader();
+    loader.loadAndSort();
+    if (loader.getConfigModels().size() != 0) {
+      Map<String, Object> configs = loader.getConfigModels().get(0).getConfig();
+      Map<String, Object> serviceConfigs = (Map<String, Object>) configs.get("service_description");
+      return String.join(".", configs.get("APPLICATION_ID").toString(), serviceConfigs.get("name").toString());
+    } else {
+      throw new ServiceCombException("can't load microservice.yaml");
     }
   }
 }

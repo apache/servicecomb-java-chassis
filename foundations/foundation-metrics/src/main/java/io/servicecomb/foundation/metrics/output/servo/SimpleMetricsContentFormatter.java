@@ -28,17 +28,15 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import io.servicecomb.foundation.common.net.NetUtils;
-import io.servicecomb.serviceregistry.api.registry.Microservice;
+import io.servicecomb.foundation.common.utils.JsonUtils;
 
 @Component
 public class SimpleMetricsContentFormatter implements MetricsContentFormatter {
 
   private static final Logger logger = LoggerFactory.getLogger(SimpleMetricsContentFormatter.class);
   private final String applicationName;
-  private final ObjectMapper mapper = new ObjectMapper();
   private String hostName;
 
   @Autowired
@@ -48,8 +46,7 @@ public class SimpleMetricsContentFormatter implements MetricsContentFormatter {
       hostName = NetUtils.getHostAddress();
     }
 
-    Microservice microservice = loader.load();
-    applicationName = String.join(".", microservice.getAppId(), microservice.getServiceName());
+    applicationName = loader.getAppIdAndServiceNameJoinString();
   }
 
   @Override
@@ -57,9 +54,8 @@ public class SimpleMetricsContentFormatter implements MetricsContentFormatter {
     return input.entrySet().stream()
         .collect(Collectors.toMap(Entry::getKey, entry -> {
           try {
-            return mapper
-                .writeValueAsString(
-                    new OutputJsonObject(applicationName, hostName, entry.getKey(), entry.getValue()));
+            return JsonUtils
+                .writeValueAsString(new OutputJsonObject(applicationName, hostName, entry.getKey(), entry.getValue()));
           } catch (JsonProcessingException e) {
             logger.error("error convert metrics data to json convert", e);
             return "";
