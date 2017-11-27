@@ -1,0 +1,16 @@
+APPLICATION_ID: auth-sample
+service_description:
+  name: auth-provider
+  version: 0.0.1
+cse:
+  service:
+    registry:
+      address: http://127.0.0.1:30100
+  handler:
+    chain:
+      Provider:
+        default: auth-provider
+  rest:
+    address: 0.0.0.0:8082
+  highway:
+    address: 0.0.0.0:7070

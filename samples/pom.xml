@@ -30,6 +30,8 @@
         <module>pojo-sample</module>
         <module>springmvc-sample</module>
         <module>commmon-schema</module>
+        <module>auth-sample</module>
+
     </modules>
 
     <dependencyManagement>
