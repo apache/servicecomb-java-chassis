@@ -68,10 +68,8 @@ public final class ShutdownHookHandler implements Handler, Runnable {
       invocation.next(resp -> {
         try {
           asyncResp.handle(resp);
+        } finally {
           responseCounter.incrementAndGet();
-        } catch (Throwable e) {
-          responseCounter.incrementAndGet();
-          throw e;
         }
       });
     } catch (Throwable e) {
