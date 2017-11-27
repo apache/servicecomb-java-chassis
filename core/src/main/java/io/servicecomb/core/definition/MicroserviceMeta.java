@@ -70,11 +70,7 @@ public class MicroserviceMeta extends CommonService<OperationMeta> {
   private void regSchemaAndInterface(SchemaMeta schemaMeta) {
     Class<?> intf = schemaMeta.getSwaggerIntf();
     synchronized (intfSchemaLock) {
-      List<SchemaMeta> schemaList = intfSchemaMetaMgr.get(intf);
-      if (schemaList == null) {
-        schemaList = new ArrayList<>();
-        intfSchemaMetaMgr.put(intf, schemaList);
-      }
+      List<SchemaMeta> schemaList = intfSchemaMetaMgr.computeIfAbsent(intf, k -> new ArrayList<>());
 
       schemaList.add(schemaMeta);
     }

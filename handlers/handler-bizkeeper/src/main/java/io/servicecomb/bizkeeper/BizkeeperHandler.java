@@ -83,9 +83,7 @@ public abstract class BizkeeperHandler implements Handler {
     new MetricsDataMonitorUtil().setAllReqProviderAndConsumer(invocation);
 
     Observable<Response> observable = command.toObservable();
-    observable.subscribe(response -> {
-      asyncResp.complete(response);
-    }, error -> {
+    observable.subscribe(asyncResp::complete, error -> {
       LOG.warn("catch error in bizkeeper:" + error.getMessage());
       asyncResp.fail(invocation.getInvocationType(), error);
       //Notedown all failed request for provider and consumer.

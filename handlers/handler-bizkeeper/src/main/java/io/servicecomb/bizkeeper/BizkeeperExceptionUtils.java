@@ -30,7 +30,6 @@ public class BizkeeperExceptionUtils extends ExceptionUtils {
 
   public static CseException createBizkeeperException(String code, Throwable cause, Object... args) {
     String msg = String.format(ERROR_DESC_MGR.ensureFindValue(code), args);
-    CseException exception = new CseException(code, msg, cause);
-    return exception;
+    return new CseException(code, msg, cause);
   }
 }
