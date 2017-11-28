@@ -123,4 +123,12 @@ public interface ServiceRegistryClient {
    */
   List<MicroserviceInstance> findServiceInstance(String consumerId, String appId, String serviceName,
       String versionRule);
+  
+  /**
+   * 通过serviceid， instanceid 获取instance对象。
+   * @param serviceId
+   * @param instanceId
+   * @return MicroserviceInstance
+   */
+  MicroserviceInstance findServiceInstance(String serviceId, String instanceId);
 }

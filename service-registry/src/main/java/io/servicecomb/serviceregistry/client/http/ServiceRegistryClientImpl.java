@@ -49,6 +49,7 @@ import io.servicecomb.serviceregistry.api.response.GetInstancesResponse;
 import io.servicecomb.serviceregistry.api.response.GetSchemaResponse;
 import io.servicecomb.serviceregistry.api.response.GetServiceResponse;
 import io.servicecomb.serviceregistry.api.response.HeartbeatResponse;
+import io.servicecomb.serviceregistry.api.response.MicroserviceInstanceResponse;
 import io.servicecomb.serviceregistry.api.response.MicroserviceInstanceChangedEvent;
 import io.servicecomb.serviceregistry.api.response.RegisterInstanceResponse;
 import io.servicecomb.serviceregistry.client.ClientException;
@@ -628,4 +629,28 @@ public final class ServiceRegistryClientImpl implements ServiceRegistryClient {
     }
     return false;
   }
+
+	@Override
+	public MicroserviceInstance findServiceInstance(String serviceId, String instanceId) {
+		try {
+			Holder<MicroserviceInstanceResponse> holder = new Holder<>();
+			IpPort ipPort = ipPortManager.getAvailableAddress(false);
+			CountDownLatch countDownLatch = new CountDownLatch(1);
+			RestUtils.get(ipPort,
+					String.format(Const.REGISTRY_API.MICROSERVICE_INSTANCE_OPERATION_ONE, serviceId, instanceId),
+					new RequestParam().addHeader("X-ConsumerId", serviceId), syncHandler(countDownLatch, MicroserviceInstanceResponse.class, holder));
+			countDownLatch.await();
+			if(null != holder.value)
+			{
+				return  holder.value.getInstance();
+			}
+			return null;
+		} catch (Exception e) {
+			LOGGER.error("get instance from sc failed");
+			return null;
+		}
+	
+	}
+  
+  
 }
