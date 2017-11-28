@@ -65,8 +65,11 @@ public class MetricsServoRegistry implements InitializingBean {
 
   private final int doubleRoundPlaces;
 
+  private final String doubleStringFormatter;
+
   public MetricsServoRegistry() {
     doubleRoundPlaces = DynamicPropertyFactory.getInstance().getIntProperty(METRICS_ROUND_PLACES, 1).get();
+    doubleStringFormatter = "%." + String.valueOf(doubleRoundPlaces) + "f";
   }
 
   /*
@@ -360,13 +363,15 @@ public class MetricsServoRegistry implements InitializingBean {
       if (countInst > 0) {
         avgTimeInQueueIns = (double) totalValueInstance.getTotalTime() / (double) countInst;
       }
-      resultInstancePublishMap.put("averageTimeInQueue", String.valueOf(avgTimeInQueueIns));
+      resultInstancePublishMap.put("averageTimeInQueue", String.format(
+          doubleStringFormatter, round(avgTimeInQueueIns, doubleRoundPlaces)));
       long countServiceInst = totalValueInstance.getTotalServExecutionCount();
       double avgServiceTimeInQueueInst = 0;
       if (countServiceInst > 0) {
         avgServiceTimeInQueueInst = (double) totalValueInstance.getTotalServExecutionTime() / (double) countServiceInst;
       }
-      resultInstancePublishMap.put("averageServiceExecutionTime", String.valueOf(avgServiceTimeInQueueInst));
+      resultInstancePublishMap.put("averageServiceExecutionTime", String.format(
+          doubleStringFormatter, round(avgServiceTimeInQueueInst, doubleRoundPlaces)));
       resultInstancePublishMap.put("minLifeTimeInQueue", totalValueInstance.getMinLifeTimeInQueue().toString());
       resultInstancePublishMap.put("maxLifeTimeInQueue", totalValueInstance.getMaxLifeTimeInQueue().toString());
       result.put("InstanceLevel", resultInstancePublishMap.toString());
@@ -384,7 +389,7 @@ public class MetricsServoRegistry implements InitializingBean {
       Map<String, String> memoryMap = new HashMap<>();
       OperatingSystemMXBean osMxBean = ManagementFactory.getOperatingSystemMXBean();
       double cpu = osMxBean.getSystemLoadAverage();
-      memoryMap.put("cpuLoad", String.valueOf(cpu));
+      memoryMap.put("cpuLoad", String.format(doubleStringFormatter, round(cpu, doubleRoundPlaces)));
 
       ThreadMXBean threadmxBean = ManagementFactory.getThreadMXBean();
       int threadCount = threadmxBean.getThreadCount();
@@ -433,15 +438,14 @@ public class MetricsServoRegistry implements InitializingBean {
       double windowTime =
           (double) data.getWindowInMilliseconds() / (double) 1000;
       double qpsVal = (double) (totalCallCount) / windowTime;
-      BigDecimal bigDecimal = new BigDecimal(qpsVal);
-      BigDecimal bigDecimalVal = bigDecimal.setScale(1, RoundingMode.HALF_UP);
-      insTotalTps += bigDecimalVal.doubleValue();
+      insTotalTps += qpsVal;
       insTotalLatency += data.getOperationLatency() * totalCallCount;
     }
 
     double instanceLatency = insTotalLatency / (double) cumulativeTotalCount;
-    tpsAndLatencyMap.put("tps", String.valueOf(round(insTotalTps, doubleRoundPlaces)));
-    tpsAndLatencyMap.put("latency", String.valueOf(round(instanceLatency, doubleRoundPlaces)));
+    tpsAndLatencyMap.put("tps", String.format(doubleStringFormatter, round(insTotalTps, doubleRoundPlaces)));
+    tpsAndLatencyMap
+        .put("latency", String.format(doubleStringFormatter, round(instanceLatency, doubleRoundPlaces)));
     return tpsAndLatencyMap.toString();
   }
 
