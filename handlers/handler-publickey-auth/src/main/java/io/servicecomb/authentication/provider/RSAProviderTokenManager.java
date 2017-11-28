@@ -19,7 +19,6 @@ import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.SignatureException;
 import java.security.spec.InvalidKeySpecException;
-import java.util.Date;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -75,12 +74,9 @@ public class RSAProviderTokenManager  {
 
   private boolean tokenExprired(RSAAuthenticationToken rsaToken) {
     long generateTime = rsaToken.getGenerateTime();
-    Date expiredDate = new Date(generateTime + RSAAuthenticationToken.TOKEN_ACTIVE_TIME + 15 * 60 * 1000);
-    Date now = new Date();
-    if (now.before(expiredDate)) {
-      return false;
-    }
-    return true;
+    long expired = generateTime + RSAAuthenticationToken.TOKEN_ACTIVE_TIME + 15 * 60 * 1000;
+    long now = System.currentTimeMillis();
+    return now > expired;
   }
 
   private String getPublicKey(String instanceId, String serviceId) {

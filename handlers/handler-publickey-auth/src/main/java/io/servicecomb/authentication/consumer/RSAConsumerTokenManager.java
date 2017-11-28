@@ -20,7 +20,6 @@ import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
 import java.security.SignatureException;
 import java.security.spec.InvalidKeySpecException;
-import java.util.Date;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
@@ -85,9 +84,9 @@ public class RSAConsumerTokenManager {
       return true;
     }
     long generateTime = token.getGenerateTime();
-    Date expiredDate = new Date(generateTime + RSAAuthenticationToken.TOKEN_ACTIVE_TIME - 15 * 60 * 1000);
-    Date now = new Date();
-    return expiredDate.before(now);
+    long expiredDate = generateTime + RSAAuthenticationToken.TOKEN_ACTIVE_TIME - 15 * 60 * 1000;
+    long now = System.currentTimeMillis();
+    return now > expiredDate;
   }
 
 

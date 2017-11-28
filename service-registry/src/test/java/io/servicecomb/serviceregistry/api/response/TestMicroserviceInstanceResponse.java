@@ -16,19 +16,20 @@
 
 package io.servicecomb.serviceregistry.api.response;
 
+import org.junit.Assert;
+import org.junit.Test;
+
 import io.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
 
-public class MicroserviceInstanceResponse {
+public class TestMicroserviceInstanceResponse {
 
-	private MicroserviceInstance instance;
-
-	public MicroserviceInstance getInstance() {
-		return instance;
-	}
-
-	public void setInstance(MicroserviceInstance instance) {
-		this.instance = instance;
-	}
-	
-	
+  
+  @Test
+  public void testMicroserviceInstanceResponse()
+  {
+    MicroserviceInstance microserviceInstance = new MicroserviceInstance();
+    MicroserviceInstanceResponse microserviceInstanceResponse = new MicroserviceInstanceResponse();
+    microserviceInstanceResponse.setInstance(microserviceInstance);
+    Assert.assertNotNull(microserviceInstanceResponse.getInstance());
+  }
 }
