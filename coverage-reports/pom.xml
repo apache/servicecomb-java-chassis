@@ -64,6 +64,10 @@
     </dependency>
     <dependency>
       <groupId>io.servicecomb</groupId>
+      <artifactId>handler-publickey-auth</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>io.servicecomb</groupId>
       <artifactId>handler-flowcontrol-qps</artifactId>
     </dependency>
     <dependency>
