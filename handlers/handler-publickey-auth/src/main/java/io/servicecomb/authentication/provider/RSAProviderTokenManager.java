@@ -1,3 +1,18 @@
+/*
+ * Copyright 2017 Huawei Technologies Co., Ltd
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package io.servicecomb.authentication.provider;
 
 import java.security.InvalidKeyException;
@@ -20,7 +35,7 @@ import io.servicecomb.serviceregistry.cache.MicroserviceInstanceCache;
 
 public class RSAProviderTokenManager  {
 
-  private static Logger logger = LoggerFactory.getLogger(RSAProviderTokenManager.class);
+  private final static Logger LOGGER = LoggerFactory.getLogger(RSAProviderTokenManager.class);
 
   private Set<RSAAuthenticationToken> validatedToken = ConcurrentHashMap.newKeySet(1000);
 
@@ -28,32 +43,32 @@ public class RSAProviderTokenManager  {
     try {
       RSAAuthenticationToken rsaToken = RSAAuthenticationToken.fromStr(token);
       if (null == rsaToken) {
-        logger.error("token format is error, perhaps you need to set auth handler at consumer");
+        LOGGER.error("token format is error, perhaps you need to set auth handler at consumer");
         return false;
       }
       if (tokenExprired(rsaToken)) {
-        logger.error("token is expired");
+        LOGGER.error("token is expired");
         return false;
       }
       if (validatedToken.contains(rsaToken)) {
-        logger.info("found vaildate token in vaildate pool");
+        LOGGER.info("found vaildate token in vaildate pool");
         return true;
-      } else {
-        String sign = rsaToken.getSign();
-        String content = rsaToken.plainToken();
-        String publicKey = getPublicKey(rsaToken.getInstanceId(), rsaToken.getServiceId());
-        boolean verify = RSAUtils.verify(publicKey, sign, content);
-        if (verify && !tokenExprired(rsaToken)) {
-          validatedToken.add(rsaToken);
-          return true;
-        } else {
-          logger.error("token verify error");
-          return false;
-        }
       }
+      
+      String sign = rsaToken.getSign();
+      String content = rsaToken.plainToken();
+      String publicKey = getPublicKey(rsaToken.getInstanceId(), rsaToken.getServiceId());
+      boolean verify = RSAUtils.verify(publicKey, sign, content);
+      if (verify && !tokenExprired(rsaToken)) {
+        validatedToken.add(rsaToken);
+        return true;
+      }
+      
+      LOGGER.error("token verify error");
+      return false;
 
     } catch (InvalidKeyException | NoSuchAlgorithmException | InvalidKeySpecException | SignatureException e) {
-      logger.error("verfiy error", e);
+      LOGGER.error("verfiy error", e);
       return false;
     }
   }
@@ -76,7 +91,7 @@ public class RSAProviderTokenManager  {
           .map(properties -> properties.get(Const.INSTANCE_PUBKEY_PRO))
           .get();
     } else {
-      logger.error("not instance found {}-{}, maybe attack", instanceId, serviceId);
+      LOGGER.error("not instance found {}-{}, maybe attack", instanceId, serviceId);
       return "";
     }
   }

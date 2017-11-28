@@ -1,3 +1,18 @@
+/*
+ * Copyright 2017 Huawei Technologies Co., Ltd
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package io.servicecomb.authentication.consumer;
 
 import java.security.InvalidKeyException;
@@ -18,9 +33,9 @@ import io.servicecomb.foundation.common.utils.RSAUtils;
 import io.servicecomb.foundation.token.RSAKeypair4Auth;
 import io.servicecomb.serviceregistry.RegistryUtils;
 
-public class RSACoumserTokenManager {
+public class RSAConsumerTokenManager {
 
-  private static final Logger logger = LoggerFactory.getLogger(RSACoumserTokenManager.class);
+  private static final Logger logger = LoggerFactory.getLogger(RSAConsumerTokenManager.class);
 
   private ReadWriteLock readWriteLock = new ReentrantReadWriteLock();
 
@@ -28,7 +43,7 @@ public class RSACoumserTokenManager {
 
   public String getToken() {
     readWriteLock.readLock().lock();
-    if (isvalid(token)) {
+    if (!isExpired(token)) {
       String tokenStr = token.format();
       readWriteLock.readLock().unlock();
       return tokenStr;
@@ -41,7 +56,7 @@ public class RSACoumserTokenManager {
   public String createToken() {
     PrivateKey privateKey = RSAKeypair4Auth.INSTANCE.getPrivateKey();
     readWriteLock.writeLock().lock();
-    if (isvalid(token)) {
+    if (!isExpired(token)) {
       logger.debug("Token had been recreated by another thread");
       return token.format();
     }
@@ -55,6 +70,7 @@ public class RSACoumserTokenManager {
       token = RSAAuthenticationToken.fromStr(String.format("%s@%s", plain, sign));
       return token.format();
     } catch (InvalidKeyException | NoSuchAlgorithmException | InvalidKeySpecException | SignatureException e) {
+      logger.error("create token error", e);
       throw new Error("create token error");
     }
 
@@ -64,17 +80,14 @@ public class RSACoumserTokenManager {
    * the TTL of Token is  24 hours
    * client token will expired 15 minutes early 
    */
-  public boolean isvalid(RSAAuthenticationToken token) {
+  public boolean isExpired(RSAAuthenticationToken token) {
     if (null == token) {
-      return false;
+      return true;
     }
     long generateTime = token.getGenerateTime();
     Date expiredDate = new Date(generateTime + RSAAuthenticationToken.TOKEN_ACTIVE_TIME - 15 * 60 * 1000);
     Date now = new Date();
-    if (now.before(expiredDate)) {
-      return true;
-    }
-    return false;
+    return expiredDate.before(now);
   }
 
 

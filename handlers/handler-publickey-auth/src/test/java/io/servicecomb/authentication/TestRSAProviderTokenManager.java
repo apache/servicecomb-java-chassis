@@ -1,6 +1,21 @@
+/*
+ * Copyright 2017 Huawei Technologies Co., Ltd
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package io.servicecomb.authentication;
 
-import io.servicecomb.authentication.consumer.RSACoumserTokenManager;
+import io.servicecomb.authentication.consumer.RSAConsumerTokenManager;
 import io.servicecomb.authentication.provider.RSAProviderTokenManager;
 import io.servicecomb.foundation.common.utils.RSAKeyPairEntry;
 import io.servicecomb.foundation.common.utils.RSAUtils;
@@ -37,13 +52,13 @@ public class TestRSAProviderTokenManager {
 
   @Test
   public void testTokenFromVaidatePool() {
-    RSAKeyPairEntry rsaKeyPairEntry = RSAUtils.getRSAKeyPair();
+    RSAKeyPairEntry rsaKeyPairEntry = RSAUtils.generateRSAKeyPair();
     RSAKeypair4Auth.INSTANCE.setPrivateKey(rsaKeyPairEntry.getPrivateKey());
     RSAKeypair4Auth.INSTANCE.setPublicKey(rsaKeyPairEntry.getPublicKey());
     RSAKeypair4Auth.INSTANCE.setPublicKeyEncoded(rsaKeyPairEntry.getPublicKeyEncoded());
     String serviceId = "c8636e5acf1f11e7b701286ed488fc20";
     String instanceId = "e8a04b54cf2711e7b701286ed488fc20";
-    RSACoumserTokenManager rsaCoumserTokenManager = new RSACoumserTokenManager();
+    RSAConsumerTokenManager rsaCoumserTokenManager = new RSAConsumerTokenManager();
     MicroserviceInstance microserviceInstance = new MicroserviceInstance();
     microserviceInstance.setInstanceId(instanceId);
     Map<String, String> properties = new HashMap<String, String>();
@@ -51,15 +66,14 @@ public class TestRSAProviderTokenManager {
     properties.put(Const.INSTANCE_PUBKEY_PRO, rsaKeyPairEntry.getPublicKeyEncoded());
     Microservice microservice = new Microservice();
     microservice.setServiceId(serviceId);
-    new Expectations(RegistryUtils.class)
-    {
-        {
-        	RegistryUtils.getMicroservice();
-            result = microservice;
-            RegistryUtils.getMicroserviceInstance();
-            result = microserviceInstance;
-            
-        }
+    new Expectations(RegistryUtils.class) {
+      {
+        RegistryUtils.getMicroservice();
+        result = microservice;
+        RegistryUtils.getMicroserviceInstance();
+        result = microserviceInstance;
+
+      }
     };
 
     //Test Consumer first create token
@@ -67,13 +81,12 @@ public class TestRSAProviderTokenManager {
     Assert.assertNotNull(token);
     // use cache token
     Assert.assertEquals(token, rsaCoumserTokenManager.getToken());
-    new Expectations(MicroserviceInstanceCache.class)
-    {
-        {
-        	MicroserviceInstanceCache.getOrCreate(serviceId, instanceId);
-            result = microserviceInstance;
-            
-        }
+    new Expectations(MicroserviceInstanceCache.class) {
+      {
+        MicroserviceInstanceCache.getOrCreate(serviceId, instanceId);
+        result = microserviceInstance;
+
+      }
     };
     RSAProviderTokenManager rsaProviderTokenManager = new RSAProviderTokenManager();
     //first validate need to verify use RSA
