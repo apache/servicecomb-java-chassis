@@ -18,6 +18,7 @@ package io.servicecomb.provider.pojo;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
 
 import org.springframework.util.StringUtils;
 
@@ -48,6 +49,12 @@ public class Invoker implements InvocationHandler {
   private ReferenceConfig referenceConfig;
 
   private SwaggerConsumer swaggerConsumer;
+
+  @SuppressWarnings("unchecked")
+  public static <T> T createProxy(String microserviceName, String schemaId, Class<?> consumerIntf) {
+    Invoker invoker = new Invoker(microserviceName, schemaId, consumerIntf);
+    return (T) Proxy.newProxyInstance(consumerIntf.getClassLoader(), new Class<?>[] {consumerIntf}, invoker);
+  }
 
   public Invoker(String microserviceName, String schemaId, Class<?> consumerIntf) {
     this.microserviceName = microserviceName;

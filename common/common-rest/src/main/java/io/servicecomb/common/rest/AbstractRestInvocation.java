@@ -30,13 +30,21 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import io.netty.buffer.Unpooled;
+import io.servicecomb.common.rest.codec.RestCodec;
 import io.servicecomb.common.rest.codec.produce.ProduceProcessor;
 import io.servicecomb.common.rest.codec.produce.ProduceProcessorManager;
 import io.servicecomb.common.rest.definition.RestOperationMeta;
 import io.servicecomb.common.rest.filter.HttpServerFilter;
+import io.servicecomb.common.rest.locator.OperationLocator;
+import io.servicecomb.common.rest.locator.ServicePathManager;
 import io.servicecomb.core.Const;
 import io.servicecomb.core.Invocation;
+import io.servicecomb.core.definition.MicroserviceMeta;
+import io.servicecomb.core.definition.OperationMeta;
 import io.servicecomb.foundation.common.utils.JsonUtils;
+import io.servicecomb.foundation.metrics.MetricsServoRegistry;
+import io.servicecomb.foundation.metrics.performance.QueueMetrics;
+import io.servicecomb.foundation.metrics.performance.QueueMetricsData;
 import io.servicecomb.foundation.vertx.http.HttpServletRequestEx;
 import io.servicecomb.foundation.vertx.http.HttpServletResponseEx;
 import io.servicecomb.foundation.vertx.stream.BufferOutputStream;
@@ -62,6 +70,18 @@ public abstract class AbstractRestInvocation {
     this.httpServerFilters = httpServerFilters;
   }
 
+  protected void findRestOperation(MicroserviceMeta microserviceMeta) {
+    ServicePathManager servicePathManager = ServicePathManager.getServicePathManager(microserviceMeta);
+    if (servicePathManager == null) {
+      LOGGER.error("No schema defined for {}:{}.", microserviceMeta.getAppId(), microserviceMeta.getName());
+      throw new InvocationException(Status.NOT_FOUND, Status.NOT_FOUND.getReasonPhrase());
+    }
+
+    OperationLocator locator = locateOperation(servicePathManager);
+    requestEx.setAttribute(RestConst.PATH_PARAMETERS, locator.getPathVarMap());
+    this.restOperationMeta = locator.getOperation();
+  }
+
   protected void initProduceProcessor() {
     produceProcessor = restOperationMeta.ensureFindProduceProcessor(requestEx);
     if (produceProcessor == null) {
@@ -81,6 +101,44 @@ public abstract class AbstractRestInvocation {
         JsonUtils.readValue(strCseContext.getBytes(StandardCharsets.UTF_8), Map.class);
     invocation.setContext(cseContext);
   }
+
+  protected void scheduleInvocation() {
+    OperationMeta operationMeta = restOperationMeta.getOperationMeta();
+    QueueMetrics metricsData = initMetrics(operationMeta);
+    operationMeta.getExecutor().execute(() -> {
+      synchronized (this.requestEx) {
+        try {
+          if (requestEx.getAttribute(RestConst.REST_REQUEST) != requestEx) {
+            // already timeout
+            // in this time, request maybe recycled and reused by web container, do not use requestEx
+            LOGGER.error("Rest request already timeout, abandon execute, method {}, operation {}.",
+                operationMeta.getHttpMethod(),
+                operationMeta.getMicroserviceQualifiedName());
+            return;
+          }
+
+          runOnExecutor(metricsData);
+        } catch (Throwable e) {
+          LOGGER.error("rest server onRequest error", e);
+          sendFailResponse(e);
+        }
+      }
+    });
+  }
+
+  protected void runOnExecutor(QueueMetrics metricsData) {
+    Object[] args = RestCodec.restToArgs(requestEx, restOperationMeta);
+    createInvocation(args);
+
+    this.invocation.setMetricsData(metricsData);
+    updateMetrics();
+
+    invoke();
+  }
+
+  protected abstract OperationLocator locateOperation(ServicePathManager servicePathManager);
+
+  protected abstract void createInvocation(Object[] args);
 
   public void invoke() {
     try {
@@ -113,7 +171,12 @@ public abstract class AbstractRestInvocation {
     return null;
   }
 
-  protected abstract void doInvoke() throws Throwable;
+  protected void doInvoke() throws Throwable {
+    invocation.next(resp -> {
+      sendResponseQuietly(resp);
+      endMetrics();
+    });
+  }
 
   public void sendFailResponse(Throwable throwable) {
     if (produceProcessor == null) {
@@ -164,6 +227,54 @@ public abstract class AbstractRestInvocation {
       }
 
       responseEx.flushBuffer();
+    }
+  }
+
+  /**
+   * Init the metrics. Note down the queue count and start time.
+   * @param operationMeta Operation data
+   * @return QueueMetrics
+   */
+  private QueueMetrics initMetrics(OperationMeta operationMeta) {
+    QueueMetrics metricsData = new QueueMetrics();
+    metricsData.setQueueStartTime(System.currentTimeMillis());
+    metricsData.setOperQualifiedName(operationMeta.getMicroserviceQualifiedName());
+    QueueMetricsData reqQueue = MetricsServoRegistry.getOrCreateLocalMetrics()
+        .getOrCreateQueueMetrics(operationMeta.getMicroserviceQualifiedName());
+    reqQueue.incrementCountInQueue();
+    return metricsData;
+  }
+
+  /**
+   * Update the queue metrics.
+   */
+  private void updateMetrics() {
+    QueueMetrics metricsData = (QueueMetrics) this.invocation.getMetricsData();
+    if (null != metricsData) {
+      metricsData.setQueueEndTime(System.currentTimeMillis());
+      QueueMetricsData reqQueue = MetricsServoRegistry.getOrCreateLocalMetrics()
+          .getOrCreateQueueMetrics(restOperationMeta.getOperationMeta().getMicroserviceQualifiedName());
+      reqQueue.incrementTotalCount();
+      Long timeInQueue = metricsData.getQueueEndTime() - metricsData.getQueueStartTime();
+      reqQueue.setTotalTime(reqQueue.getTotalTime() + timeInQueue);
+      reqQueue.setMinLifeTimeInQueue(timeInQueue);
+      reqQueue.setMaxLifeTimeInQueue(timeInQueue);
+      reqQueue.decrementCountInQueue();
+    }
+  }
+
+  /**
+   * Prepare the end time of queue metrics.
+   */
+  private void endMetrics() {
+    QueueMetrics metricsData = (QueueMetrics) this.invocation.getMetricsData();
+    if (null != metricsData) {
+      metricsData.setEndOperTime(System.currentTimeMillis());
+      QueueMetricsData reqQueue = MetricsServoRegistry.getOrCreateLocalMetrics()
+          .getOrCreateQueueMetrics(restOperationMeta.getOperationMeta().getMicroserviceQualifiedName());
+      reqQueue.incrementTotalServExecutionCount();
+      reqQueue.setTotalServExecutionTime(
+          reqQueue.getTotalServExecutionTime() + (metricsData.getEndOperTime() - metricsData.getQueueEndTime()));
     }
   }
 }

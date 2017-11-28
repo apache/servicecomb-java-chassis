@@ -38,7 +38,7 @@ public interface Transport {
   Object parseAddress(String endpoint);
 
   /**
-   * 本tranport的监听地址
+   * 本transport的监听地址
    */
   Endpoint getEndpoint();
 

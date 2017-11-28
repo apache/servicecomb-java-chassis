@@ -1,0 +1,10 @@
+APPLICATION_ID: my-application
+service_description:
+  name: service-provider
+  version: 0.0.1
+cse:
+  service:
+    registry:
+      address: http://127.0.0.1:30100 # 服务注册中心地址
+  rest:
+    address: 0.0.0.0:8080 # 服务REST端口

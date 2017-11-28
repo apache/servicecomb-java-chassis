@@ -74,6 +74,8 @@ public final class Configuration {
 
   public static final String FILTER_SINGLE_TEST = "singleTestTime";
 
+  public static final String FILTER_CONTINUOUS_FAILURE_THRESHOLD = "continuousFailureThreshold";
+
   public static final String TRANSACTIONCONTROL_OPTIONS_PREFIX_PATTERN =
       "cse.loadbalance.%s.transactionControl.options";
 
@@ -248,6 +250,23 @@ public final class Configuration {
     if (property != null) {
       return property;
     } else {
+      return defaultValue;
+    }
+  }
+
+  public int getContinuousFailureThreshold(String microservice) {
+    final int defaultValue = 0;
+    String p = getStringProperty("0",
+        PROP_ROOT + microservice + "." + FILTER_ISOLATION + FILTER_CONTINUOUS_FAILURE_THRESHOLD,
+        PROP_ROOT + FILTER_ISOLATION + FILTER_CONTINUOUS_FAILURE_THRESHOLD);
+    try {
+      int result = Integer.parseInt(p);
+      if (result > 0) {
+        return result;
+      } else {
+        return defaultValue;
+      }
+    } catch (NumberFormatException e) {
       return defaultValue;
     }
   }

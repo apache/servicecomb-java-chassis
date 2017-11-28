@@ -396,6 +396,11 @@ public class TestVertxServerRequestToHttpServletRequest {
   }
 
   @Test
+  public void testGetContextPath() {
+    Assert.assertEquals("", request.getContextPath());
+  }
+
+  @Test
   public void testGetInputStream() throws IOException {
     Buffer body = Buffer.buffer();
     body.appendByte((byte) 1);

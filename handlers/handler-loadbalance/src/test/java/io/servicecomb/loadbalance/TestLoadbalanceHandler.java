@@ -130,7 +130,6 @@ public class TestLoadbalanceHandler {
       void next(AsyncResponse asyncResp) throws Exception {
         asyncResp.handle(sendResponse);
       }
-
     };
 
     CseContext.getInstance().setTransportManager(transportManager);
@@ -379,6 +378,7 @@ public class TestLoadbalanceHandler {
         result = server;
       }
     };
+    int continuousFailureCount = server.getCountinuousFailureCount();
 
     sendResponse = Response.create(Status.BAD_REQUEST, "send failed");
 
@@ -392,6 +392,7 @@ public class TestLoadbalanceHandler {
         loadBalancer.getLoadBalancerStats().getSingleServerStat(server).getSuccessiveConnectionFailureCount());
     Assert.assertEquals("InvocationException: code=400;msg=send failed",
         result.value.getMessage());
+    Assert.assertEquals(continuousFailureCount + 1, server.getCountinuousFailureCount());
   }
 
   @Test
@@ -410,6 +411,7 @@ public class TestLoadbalanceHandler {
         result = server;
       }
     };
+    server.incrementContinuousFailureCount();
 
     sendResponse = Response.ok("success");
 
@@ -422,15 +424,16 @@ public class TestLoadbalanceHandler {
     Assert.assertEquals(1,
         loadBalancer.getLoadBalancerStats().getSingleServerStat(server).getActiveRequestsCount());
     Assert.assertEquals("success", result.value);
+    Assert.assertEquals(0, server.getCountinuousFailureCount());
   }
-  
+
   @Test
   public void sendWithRetry() {
     Holder<String> result = new Holder<>();
     Deencapsulation.invoke(handler, "sendWithRetry", invocation, (AsyncResponse) resp -> {
       result.value = resp.getResult();
     }, loadBalancer);
-    
+
     // no exception
   }
 }

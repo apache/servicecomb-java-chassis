@@ -43,7 +43,7 @@ public class TestSessionSticknessRule {
 
     LoadBalancer mockedLb = mock(LoadBalancer.class);
     Transport transport = mock(Transport.class);
-    CseServer mockedServer = new CseServer(transport, new CacheEndpoint("rest:127.0.0.1:8888", null));
+    CseServer mockedServer = new CseServer(transport, new CacheEndpoint("rest:127.0.0.1:8889", null));
     Object key = Mockito.mock(Object.class);
     LoadBalancerStats stats = mock(LoadBalancerStats.class);
     Mockito.when(mockedLb.getLoadBalancerStats()).thenReturn(stats);

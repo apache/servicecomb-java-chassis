@@ -19,12 +19,15 @@ package io.servicecomb.demo.edge.service;
 import java.util.Map;
 
 import io.servicecomb.edge.core.AbstractEdgeDispatcher;
+import io.servicecomb.edge.core.CompatiblePathVersionMapper;
 import io.servicecomb.edge.core.EdgeInvocation;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.RoutingContext;
 import io.vertx.ext.web.handler.CookieHandler;
 
 public class EdgeDispatcher extends AbstractEdgeDispatcher {
+  private CompatiblePathVersionMapper versionMapper = new CompatiblePathVersionMapper();
+
   @Override
   public int getOrder() {
     return 10000;
@@ -32,7 +35,7 @@ public class EdgeDispatcher extends AbstractEdgeDispatcher {
 
   @Override
   public void init(Router router) {
-    String regex = "/api/([^\\/]+)/(.*)";
+    String regex = "/api/([^\\\\/]+)/([^\\\\/]+)/(.*)";
     router.routeWithRegex(regex).handler(CookieHandler.create());
     router.routeWithRegex(regex).handler(createBodyHandler());
     router.routeWithRegex(regex).failureHandler(this::onFailure).handler(this::onRequest);
@@ -41,10 +44,13 @@ public class EdgeDispatcher extends AbstractEdgeDispatcher {
   protected void onRequest(RoutingContext context) {
     Map<String, String> pathParams = context.pathParams();
     String microserviceName = pathParams.get("param0");
-    String path = "/" + pathParams.get("param1");
+    String pathVersion = pathParams.get("param1");
+    String path = context.request().path().substring(4);
 
-    EdgeInvocation invoker = new EdgeInvocation();
-    invoker.init(microserviceName, context, path, httpServerFilters);
-    invoker.invoke();
+    EdgeInvocation edgeInvocation = new EdgeInvocation();
+    edgeInvocation.setVersionRule(versionMapper.getOrCreate(pathVersion).getVersionRule());
+
+    edgeInvocation.init(microserviceName, context, path, httpServerFilters);
+    edgeInvocation.edgeInvoke();
   }
 }

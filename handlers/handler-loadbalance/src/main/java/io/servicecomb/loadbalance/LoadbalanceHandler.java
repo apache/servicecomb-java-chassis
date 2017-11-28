@@ -78,6 +78,8 @@ public class LoadbalanceHandler implements Handler {
 
   private String policy = null;
 
+  private String strategy = null;
+
 
   public LoadbalanceHandler() {
     discoveryTree.loadFromSPI(DiscoveryFilter.class);
@@ -88,13 +90,17 @@ public class LoadbalanceHandler implements Handler {
   @Override
   public void handle(Invocation invocation, AsyncResponse asyncResp) throws Exception {
     String p = Configuration.INSTANCE.getPolicy(invocation.getMicroserviceName());
-    if (this.policy != null && !this.policy.equals(p)) {
+    String strategy = Configuration.INSTANCE.getRuleStrategyName(invocation.getMicroserviceName());
+
+    if (this.policy != null && !this.policy.equals(p)
+        || (this.strategy != null && !this.strategy.equals(strategy))) {
       //配置变化，需要重新生成所有的lb实例
       synchronized (lock) {
         loadBalancerMap.clear();
       }
     }
     this.policy = p;
+    this.strategy = strategy;
 
     LoadBalancer loadBalancer = getOrCreateLoadBalancer(invocation);
     // TODO: after all old filter moved to new filter
@@ -159,8 +165,10 @@ public class LoadbalanceHandler implements Handler {
       chosenLB.getLoadBalancerStats().noteResponseTime(server, (System.currentTimeMillis() - time));
       if (resp.isFailed()) {
         chosenLB.getLoadBalancerStats().incrementSuccessiveConnectionFailureCount(server);
+        server.incrementContinuousFailureCount();
       } else {
         chosenLB.getLoadBalancerStats().incrementActiveRequestsCount(server);
+        server.clearContinuousFailure();
       }
       asyncResp.handle(resp);
     });
@@ -258,9 +266,11 @@ public class LoadbalanceHandler implements Handler {
                     ((Throwable) resp.getResult()).getMessage(),
                     s);
                 chosenLB.getLoadBalancerStats().incrementSuccessiveConnectionFailureCount(s);
+                ((CseServer) s).incrementContinuousFailureCount();
                 f.onError(resp.getResult());
               } else {
                 chosenLB.getLoadBalancerStats().incrementActiveRequestsCount(s);
+                ((CseServer) s).clearContinuousFailure();
                 chosenLB.getLoadBalancerStats().noteResponseTime(s,
                     (System.currentTimeMillis() - time));
                 f.onNext(resp);

@@ -22,7 +22,7 @@
     <version>0.4.1-SNAPSHOT</version>
     <relativePath>../parent</relativePath>
   </parent>
-  <artifactId>sprint-boot-starter-parent</artifactId>
+  <artifactId>spring-boot-starter-parent</artifactId>
   <packaging>pom</packaging>
   <modules>
   	<module>spring-boot-starter-configuration</module>

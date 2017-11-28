@@ -17,20 +17,17 @@
 package io.servicecomb.transport.rest.servlet;
 
 import io.servicecomb.common.rest.RestProducerInvocation;
-import io.servicecomb.common.rest.definition.RestOperationMeta;
 import io.servicecomb.common.rest.filter.HttpServerFilter;
 import io.servicecomb.core.definition.OperationMeta;
 import io.servicecomb.foundation.vertx.http.StandardHttpServletRequestEx;
 
 public class RestServletProducerInvocation extends RestProducerInvocation {
   @Override
-  protected RestOperationMeta findRestOperation() {
-    RestOperationMeta restOperationMeta = super.findRestOperation();
+  protected void findRestOperation() {
+    super.findRestOperation();
 
     boolean cacheRequest = collectCacheRequest(restOperationMeta.getOperationMeta());
     ((StandardHttpServletRequestEx) requestEx).setCacheRequest(cacheRequest);
-
-    return restOperationMeta;
   }
 
   protected boolean collectCacheRequest(OperationMeta operationMeta) {

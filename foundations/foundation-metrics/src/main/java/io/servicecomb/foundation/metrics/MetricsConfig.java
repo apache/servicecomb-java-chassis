@@ -31,7 +31,7 @@ public class MetricsConfig implements InitializingBean {
   }
 
   public static boolean isEnable() {
-    return DynamicPropertyFactory.getInstance().getBooleanProperty("cse.metrics.enabled", true).get();
+    return DynamicPropertyFactory.getInstance().getBooleanProperty("cse.metrics.enabled", false).get();
   }
 
   @Override

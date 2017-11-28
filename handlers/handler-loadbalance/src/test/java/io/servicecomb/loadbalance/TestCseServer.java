@@ -16,6 +16,7 @@
 
 package io.servicecomb.loadbalance;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 import org.junit.Assert;
@@ -48,7 +49,7 @@ public class TestCseServer {
 
   @Test
   public void testEqualsMethod() {
-    Assert.assertFalse(cs.equals((Object)"abcd"));
+    Assert.assertFalse(cs.equals((Object) "abcd"));
 
     CseServer other = new CseServer(transport, new CacheEndpoint("1234", null));
     Assert.assertFalse(cs.equals(other));
@@ -73,5 +74,20 @@ public class TestCseServer {
   public void testHashCodeMethod() {
     cs.hashCode();
     assertNotNull(cs.hashCode());
+  }
+
+  @Test
+  public void testIncrementContinuousFailureCount() {
+    int countBefore = cs.getCountinuousFailureCount();
+    cs.incrementContinuousFailureCount();
+    int countAfter = cs.getCountinuousFailureCount();
+    assertEquals(countBefore + 1, countAfter);
+  }
+
+  @Test
+  public void testClearContinuousFailure() {
+    cs.incrementContinuousFailureCount();
+    cs.clearContinuousFailure();
+    assertEquals(0, cs.getCountinuousFailureCount());
   }
 }

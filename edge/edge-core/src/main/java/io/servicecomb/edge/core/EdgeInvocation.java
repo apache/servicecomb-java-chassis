@@ -17,11 +17,9 @@
 package io.servicecomb.edge.core;
 
 import java.util.List;
-import java.util.Map;
 
 import io.servicecomb.common.rest.AbstractRestInvocation;
 import io.servicecomb.common.rest.RestConst;
-import io.servicecomb.common.rest.codec.RestCodec;
 import io.servicecomb.common.rest.filter.HttpServerFilter;
 import io.servicecomb.common.rest.locator.OperationLocator;
 import io.servicecomb.common.rest.locator.ServicePathManager;
@@ -36,8 +34,6 @@ import io.servicecomb.foundation.vertx.http.VertxServerResponseToHttpServletResp
 import io.servicecomb.serviceregistry.RegistryUtils;
 import io.servicecomb.serviceregistry.consumer.MicroserviceVersionRule;
 import io.servicecomb.serviceregistry.definition.DefinitionConst;
-import io.servicecomb.swagger.invocation.Response;
-import io.servicecomb.swagger.invocation.exception.InvocationException;
 import io.vertx.ext.web.RoutingContext;
 
 public class EdgeInvocation extends AbstractRestInvocation {
@@ -49,37 +45,22 @@ public class EdgeInvocation extends AbstractRestInvocation {
 
   protected ReferenceConfig referenceConfig;
 
+  protected String versionRule = DefinitionConst.VERSION_RULE_ALL;
+
   public void init(String microserviceName, RoutingContext context, String path,
       List<HttpServerFilter> httpServerFilters) {
     this.microserviceName = microserviceName;
     this.requestEx = new VertxServerRequestToHttpServletRequest(context, path);
     this.responseEx = new VertxServerResponseToHttpServletResponse(context.response());
     this.httpServerFilters = httpServerFilters;
+    requestEx.setAttribute(RestConst.REST_REQUEST, requestEx);
   }
 
-  @Override
-  public void invoke() {
+  public void edgeInvoke() {
     findMicroserviceVersionMeta();
+    findRestOperation(latestMicroserviceVersionMeta.getMicroserviceMeta());
 
-    ClassLoader orgClassLoader = Thread.currentThread().getContextClassLoader();
-    Thread.currentThread().setContextClassLoader(latestMicroserviceVersionMeta.getMicroserviceMeta().getClassLoader());
-    try {
-      // not handle edge unknown exception
-      // all unknow exception will be handled by io.servicecomb.edge.core.AbstractEdgeDispatcher.onFailure(RoutingContext)
-      prepareEdgeInvoke();
-      Response response = prepareInvoke();
-      if (response != null) {
-        sendResponse(response);
-        return;
-      }
-      doInvoke();
-    } catch (InvocationException e) {
-      sendFailResponse(e);
-    } catch (Throwable e) {
-      throw new ServiceCombException("unknown edge exception.", e);
-    } finally {
-      Thread.currentThread().setContextClassLoader(orgClassLoader);
-    }
+    scheduleInvocation();
   }
 
   protected void findMicroserviceVersionMeta() {
@@ -105,6 +86,10 @@ public class EdgeInvocation extends AbstractRestInvocation {
     }
   }
 
+  public void setVersionRule(String versionRule) {
+    this.versionRule = versionRule;
+  }
+
   // another possible rule:
   // path is: /msName/version/.....
   // version in path is v1 or v2 and so on
@@ -116,41 +101,24 @@ public class EdgeInvocation extends AbstractRestInvocation {
   protected String chooseVersionRule() {
     // this will use all instance of the microservice
     // and this required all new version compatible to old version
-    return DefinitionConst.VERSION_RULE_ALL;
+    return versionRule;
   }
 
-  protected void prepareEdgeInvoke() throws Throwable {
+  @Override
+  protected OperationLocator locateOperation(ServicePathManager servicePathManager) {
+    return servicePathManager.consumerLocateOperation(requestEx.getRequestURI(), requestEx.getMethod());
+  }
+
+  @Override
+  protected void createInvocation(Object[] args) {
     ReferenceConfig referenceConfig = new ReferenceConfig();
     referenceConfig.setMicroserviceMeta(latestMicroserviceVersionMeta.getMicroserviceMeta());
     referenceConfig.setMicroserviceVersionRule(microserviceVersionRule.getVersionRule().getVersionRule());
     referenceConfig.setTransport(Const.ANY_TRANSPORT);
 
-    ServicePathManager servicePathManager =
-        ServicePathManager.getServicePathManager(latestMicroserviceVersionMeta.getMicroserviceMeta());
-    if (servicePathManager == null) {
-      throw new ServiceCombException(String.format("no schema defined for %s:%s",
-          latestMicroserviceVersionMeta.getMicroserviceMeta().getAppId(),
-          latestMicroserviceVersionMeta.getMicroserviceMeta().getName()));
-    }
-
-    OperationLocator locator =
-        servicePathManager.consumerLocateOperation(requestEx.getRequestURI(), requestEx.getMethod());
-    this.restOperationMeta = locator.getOperation();
-
-    Map<String, String> pathParams = locator.getPathVarMap();
-    requestEx.setAttribute(RestConst.PATH_PARAMETERS, pathParams);
-
-    Object args[] = RestCodec.restToArgs(requestEx, restOperationMeta);
     this.invocation = InvocationFactory.forConsumer(referenceConfig,
         restOperationMeta.getOperationMeta(),
         args);
-  }
-
-  @Override
-  protected void doInvoke() throws Throwable {
-    invocation.setResponseExecutor(new ReactiveResponseExecutor());
-    invocation.next(resp -> {
-      sendResponseQuietly(resp);
-    });
+    this.invocation.setResponseExecutor(new ReactiveResponseExecutor());
   }
 }

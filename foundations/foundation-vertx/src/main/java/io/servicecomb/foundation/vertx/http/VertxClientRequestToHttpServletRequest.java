@@ -64,4 +64,9 @@ public class VertxClientRequestToHttpServletRequest extends AbstractHttpServletR
   public void addHeader(String name, String value) {
     clientRequest.headers().add(name, value);
   }
+
+  @Override
+  public String getContextPath() {
+    return "";
+  }
 }

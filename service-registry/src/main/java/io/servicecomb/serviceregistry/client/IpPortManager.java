@@ -18,10 +18,9 @@ package io.servicecomb.serviceregistry.client;
 
 import static io.servicecomb.serviceregistry.api.Const.REGISTRY_APP_ID;
 import static io.servicecomb.serviceregistry.api.Const.REGISTRY_SERVICE_NAME;
-import static io.servicecomb.serviceregistry.api.Const.REGISTRY_VERSION;
-
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.slf4j.Logger;
@@ -33,6 +32,7 @@ import io.servicecomb.serviceregistry.cache.CacheEndpoint;
 import io.servicecomb.serviceregistry.cache.InstanceCache;
 import io.servicecomb.serviceregistry.cache.InstanceCacheManager;
 import io.servicecomb.serviceregistry.config.ServiceRegistryConfig;
+import io.servicecomb.serviceregistry.definition.DefinitionConst;
 
 public class IpPortManager {
   private static final Logger LOGGER = LoggerFactory.getLogger(IpPortManager.class);
@@ -47,7 +47,7 @@ public class IpPortManager {
 
   private InstanceCache instanceCache = null;
 
-  private AtomicInteger currentAvailbleIndex = new AtomicInteger(0);
+  private AtomicInteger currentAvailbleIndex;
 
   public IpPortManager(ServiceRegistryConfig serviceRegistryConfig, InstanceCacheManager instanceCacheManager) {
     this.serviceRegistryConfig = serviceRegistryConfig;
@@ -58,6 +58,8 @@ public class IpPortManager {
     if (defaultIpPort.size() == 0) {
       throw new IllegalArgumentException("Service center address is required to start the application.");
     }
+    int initialIndex = new Random().nextInt(defaultIpPort.size());
+    currentAvailbleIndex = new AtomicInteger(initialIndex);
   }
 
   // we have to do this operation after the first time setup has already done
@@ -65,7 +67,7 @@ public class IpPortManager {
     if (this.serviceRegistryConfig.isRegistryAutoDiscovery()) {
       instanceCache = instanceCacheManager.getOrCreate(REGISTRY_APP_ID,
           REGISTRY_SERVICE_NAME,
-          REGISTRY_VERSION);
+          DefinitionConst.VERSION_RULE_LATEST);
     }
   }
 
@@ -102,7 +104,7 @@ public class IpPortManager {
     }
     instanceCache = instanceCacheManager.getOrCreate(REGISTRY_APP_ID,
         REGISTRY_SERVICE_NAME,
-        REGISTRY_VERSION);
+        DefinitionConst.VERSION_RULE_LATEST);
     return instanceCache.getOrCreateTransportMap().get(defaultTransport);
   }
 }

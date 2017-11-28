@@ -31,6 +31,8 @@
         <module>springmvc-sample</module>
         <module>commmon-schema</module>
         <module>auth-sample</module>
+        <module>bmi</module>
+        <module>dubbo-to-servicecomb-sample</module>
 
     </modules>
 

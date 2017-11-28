@@ -16,14 +16,10 @@
 
 package io.servicecomb.edge.core;
 
-import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-
-import javax.ws.rs.core.Response.Status;
-import javax.xml.ws.Holder;
 
 import org.hamcrest.Matchers;
 import org.junit.Assert;
@@ -32,18 +28,13 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
-import io.servicecomb.common.rest.RestConst;
-import io.servicecomb.common.rest.codec.RestCodec;
 import io.servicecomb.common.rest.definition.RestOperationMeta;
 import io.servicecomb.common.rest.filter.HttpServerFilter;
 import io.servicecomb.common.rest.locator.OperationLocator;
 import io.servicecomb.common.rest.locator.ServicePathManager;
-import io.servicecomb.core.Handler;
 import io.servicecomb.core.Invocation;
 import io.servicecomb.core.definition.MicroserviceMeta;
 import io.servicecomb.core.definition.MicroserviceVersionMeta;
-import io.servicecomb.core.definition.OperationMeta;
-import io.servicecomb.core.definition.SchemaMeta;
 import io.servicecomb.core.provider.consumer.ReactiveResponseExecutor;
 import io.servicecomb.core.provider.consumer.ReferenceConfig;
 import io.servicecomb.foundation.common.exceptions.ServiceCombException;
@@ -55,8 +46,6 @@ import io.servicecomb.serviceregistry.api.registry.Microservice;
 import io.servicecomb.serviceregistry.consumer.AppManager;
 import io.servicecomb.serviceregistry.consumer.MicroserviceVersionRule;
 import io.servicecomb.serviceregistry.definition.DefinitionConst;
-import io.servicecomb.swagger.invocation.Response;
-import io.servicecomb.swagger.invocation.exception.InvocationException;
 import io.vertx.ext.web.RoutingContext;
 import io.vertx.ext.web.impl.HttpServerRequestWrapperForTest;
 import mockit.Deencapsulation;
@@ -100,75 +89,31 @@ public class TestEdgeInvocation {
   }
 
   @Test
-  public void prepareEdgeInvokeNoPath(@Mocked MicroserviceVersionMeta microserviceVersionMeta) throws Throwable {
+  public void edgeInvoke(@Mocked MicroserviceVersionMeta microserviceVersionMeta) {
+    Map<String, Boolean> result = new LinkedHashMap<>();
+    edgeInvocation = new EdgeInvocation() {
+      @Override
+      protected void findMicroserviceVersionMeta() {
+        result.put("findMicroserviceVersionMeta", true);
+      }
+
+      @Override
+      protected void findRestOperation(MicroserviceMeta microserviceMeta) {
+        result.put("findRestOperation", true);
+      }
+
+      @Override
+      protected void scheduleInvocation() {
+        result.put("scheduleInvocation", true);
+      }
+    };
     edgeInvocation.latestMicroserviceVersionMeta = microserviceVersionMeta;
-    edgeInvocation.microserviceVersionRule = new MicroserviceVersionRule("app", "ms", "1.0.0");
 
-    new Expectations(ServicePathManager.class) {
-      {
-        microserviceVersionMeta.getMicroserviceMeta();
-        result = microserviceMeta;
-        ServicePathManager.getServicePathManager(microserviceMeta);
-        result = null;
-      }
-    };
+    edgeInvocation.edgeInvoke();
 
-    expectedException.expect(ServiceCombException.class);
-    expectedException.expectMessage("no schema defined for app:app:ms");
-
-    edgeInvocation.prepareEdgeInvoke();
-  }
-
-  @Test
-  public void prepareEdgeInvokeNormal(@Mocked MicroserviceVersionMeta microserviceVersionMeta,
-      @Mocked ServicePathManager servicePathManager, @Mocked OperationLocator locator,
-      @Mocked RestOperationMeta restOperationMeta) throws Throwable {
-    edgeInvocation.latestMicroserviceVersionMeta = microserviceVersionMeta;
-    edgeInvocation.microserviceVersionRule = new MicroserviceVersionRule("app", "ms", "1.0.0");
-
-    Microservice microservice = new Microservice();
-    microservice.setServiceName(microserviceName);
-    new Expectations(RegistryUtils.class) {
-      {
-        microserviceVersionMeta.getMicroserviceMeta();
-        result = microserviceMeta;
-        RegistryUtils.getMicroservice();
-        result = microservice;
-      }
-    };
-
-    Object args[] = new Object[0];
-    new Expectations(RestCodec.class) {
-      {
-        RestCodec.restToArgs(requestEx, restOperationMeta);
-        result = args;
-      }
-    };
-
-    Map<String, String> pathParams = new HashMap<>();
-    new Expectations(ServicePathManager.class) {
-      {
-        ServicePathManager.getServicePathManager(microserviceMeta);
-        result = servicePathManager;
-        servicePathManager.consumerLocateOperation(requestEx.getRequestURI(), requestEx.getMethod());
-        result = locator;
-        locator.getOperation();
-        result = restOperationMeta;
-        locator.getPathVarMap();
-        result = pathParams;
-      }
-    };
-
-    edgeInvocation.prepareEdgeInvoke();
-
-    Assert.assertSame(pathParams, requestEx.getAttribute(RestConst.PATH_PARAMETERS));
-    Invocation invocation = Deencapsulation.getField(edgeInvocation, "invocation");
-    Assert.assertSame(args, invocation.getSwaggerArguments());
-  }
-
-  @Test
-  public void chooseVersionRule() {
-    Assert.assertEquals(DefinitionConst.VERSION_RULE_ALL, edgeInvocation.chooseVersionRule());
+    Assert.assertTrue(result.get("findMicroserviceVersionMeta"));
+    Assert.assertTrue(result.get("findRestOperation"));
+    Assert.assertTrue(result.get("scheduleInvocation"));
   }
 
   @Test
@@ -225,205 +170,50 @@ public class TestEdgeInvocation {
     Assert.assertSame(latestMicroserviceVersionMeta, edgeInvocation.latestMicroserviceVersionMeta);
   }
 
-  class EdgeInvocationForTestClassLoader extends EdgeInvocation {
-    ClassLoader findMicroserviceVersionMetaClassLoader;
-
-    ClassLoader prepareEdgeInvokeClassLoader;
-
-    ClassLoader prepareInvokeClassLoader;
-
-    ClassLoader doInvokeClassLoader;
-
-    ClassLoader doSendFailResponse;
-
-    Throwable doInvokeException;
-
-    Throwable doInvocationException;
-
-    @Override
-    protected void findMicroserviceVersionMeta() {
-      findMicroserviceVersionMetaClassLoader = Thread.currentThread().getContextClassLoader();
-    }
-
-    @Override
-    protected void prepareEdgeInvoke() throws Throwable {
-      prepareEdgeInvokeClassLoader = Thread.currentThread().getContextClassLoader();
-      if (doInvocationException != null) {
-        throw doInvocationException;
-      }
-    }
-
-    @Override
-    protected Response prepareInvoke() throws Throwable {
-      prepareInvokeClassLoader = Thread.currentThread().getContextClassLoader();
-      return null;
-    }
-
-    @Override
-    protected void doInvoke() throws Throwable {
-      if (doInvokeException != null) {
-        throw doInvokeException;
-      }
-
-      doInvokeClassLoader = Thread.currentThread().getContextClassLoader();
-    }
-  
-    @Override
-    public void sendFailResponse(Throwable throwable) {
-      doSendFailResponse = Thread.currentThread().getContextClassLoader();
-    }
+  @Test
+  public void chooseVersionRule_default() {
+    Assert.assertEquals(DefinitionConst.VERSION_RULE_ALL, edgeInvocation.chooseVersionRule());
   }
 
   @Test
-  public void invokeNormal(@Mocked MicroserviceVersionMeta latestMicroserviceVersionMeta,
-      @Mocked MicroserviceMeta microserviceMeta) {
-    ClassLoader org = Thread.currentThread().getContextClassLoader();
-    ClassLoader microserviceClassLoader = new ClassLoader() {
-    };
+  public void chooseVersionRule_set() {
+    String versionRule = "1.0.0";
+    edgeInvocation.setVersionRule(versionRule);
 
-    new Expectations() {
-      {
-        latestMicroserviceVersionMeta.getMicroserviceMeta();
-        result = microserviceMeta;
-        microserviceMeta.getClassLoader();
-        result = microserviceClassLoader;
-      }
-    };
-    EdgeInvocationForTestClassLoader invocation = new EdgeInvocationForTestClassLoader();
-    invocation.latestMicroserviceVersionMeta = latestMicroserviceVersionMeta;
-
-    invocation.invoke();
-
-    Assert.assertSame(org, invocation.findMicroserviceVersionMetaClassLoader);
-    Assert.assertSame(microserviceClassLoader, invocation.prepareEdgeInvokeClassLoader);
-    Assert.assertSame(microserviceClassLoader, invocation.prepareInvokeClassLoader);
-    Assert.assertSame(microserviceClassLoader, invocation.doInvokeClassLoader);
-    Assert.assertSame(org, Thread.currentThread().getContextClassLoader());
+    Assert.assertEquals(versionRule, edgeInvocation.chooseVersionRule());
   }
 
   @Test
-  public void invokePrepareHaveResponse(@Mocked MicroserviceVersionMeta latestMicroserviceVersionMeta,
-      @Mocked MicroserviceMeta microserviceMeta, @Mocked Response response) {
-    ClassLoader microserviceClassLoader = new ClassLoader() {
-    };
-
+  public void locateOperation(@Mocked ServicePathManager servicePathManager,
+      @Mocked OperationLocator operationLocator) {
     new Expectations() {
       {
-        latestMicroserviceVersionMeta.getMicroserviceMeta();
-        result = microserviceMeta;
-        microserviceMeta.getClassLoader();
-        result = microserviceClassLoader;
+        servicePathManager.consumerLocateOperation(anyString, anyString);
+        result = operationLocator;
       }
     };
 
-    Holder<Response> result = new Holder<>();
-    EdgeInvocationForTestClassLoader invocation = new EdgeInvocationForTestClassLoader() {
-      @Override
-      protected Response prepareInvoke() throws Throwable {
-        return response;
-      }
-
-      @Override
-      protected void sendResponse(Response response) throws Exception {
-        result.value = response;
-      }
-
-      @Override
-      protected void doInvoke() throws Throwable {
-        result.value = Response.ok("do not run to here");
-      }
-    };
-    invocation.latestMicroserviceVersionMeta = latestMicroserviceVersionMeta;
-
-    invocation.invoke();
-
-    Assert.assertSame(response, result.value);
+    Assert.assertSame(operationLocator, edgeInvocation.locateOperation(servicePathManager));
   }
 
   @Test
-  public void invocationException(@Mocked MicroserviceVersionMeta latestMicroserviceVersionMeta,
-      @Mocked MicroserviceMeta microserviceMeta) {
-    ClassLoader org = Thread.currentThread().getContextClassLoader();
-    ClassLoader microserviceClassLoader = new ClassLoader() {
-    };
+  public void createInvocation(@Mocked MicroserviceVersionMeta microserviceVersionMeta,
+      @Mocked MicroserviceVersionRule microserviceVersionRule, @Mocked RestOperationMeta restOperationMeta,
+      @Mocked Microservice microservice) {
+    edgeInvocation.latestMicroserviceVersionMeta = microserviceVersionMeta;
+    edgeInvocation.microserviceVersionRule = microserviceVersionRule;
+    Deencapsulation.setField(edgeInvocation, "restOperationMeta", restOperationMeta);
 
-    new Expectations() {
+    Object[] args = new Object[] {};
+    new Expectations(RegistryUtils.class) {
       {
-        latestMicroserviceVersionMeta.getMicroserviceMeta();
-        result = microserviceMeta;
-        microserviceMeta.getClassLoader();
-        result = microserviceClassLoader;
+        RegistryUtils.getMicroservice();
+        result = microservice;
       }
     };
 
-    Throwable doInvocationException = new InvocationException(Status.NOT_FOUND, "Not Found");
-
-    EdgeInvocationForTestClassLoader invocation = new EdgeInvocationForTestClassLoader();
-    invocation.latestMicroserviceVersionMeta = latestMicroserviceVersionMeta;
-    invocation.doInvocationException = doInvocationException;
-
-    invocation.invoke();
-
-    Assert.assertSame(org, invocation.findMicroserviceVersionMetaClassLoader);
-    Assert.assertSame(microserviceClassLoader, invocation.prepareEdgeInvokeClassLoader);
-    Assert.assertSame(microserviceClassLoader, invocation.doSendFailResponse);
-    Assert.assertSame(null, invocation.prepareInvokeClassLoader);
-    Assert.assertSame(null, invocation.doInvokeClassLoader);
-    Assert.assertSame(org, Thread.currentThread().getContextClassLoader());
-  }
-
-  @Test
-  public void invokeException(@Mocked MicroserviceVersionMeta latestMicroserviceVersionMeta,
-      @Mocked MicroserviceMeta microserviceMeta) {
-    ClassLoader org = Thread.currentThread().getContextClassLoader();
-    ClassLoader microserviceClassLoader = new ClassLoader() {
-    };
-
-    new Expectations() {
-      {
-        latestMicroserviceVersionMeta.getMicroserviceMeta();
-        result = microserviceMeta;
-        microserviceMeta.getClassLoader();
-        result = microserviceClassLoader;
-      }
-    };
-
-    Throwable doInvokeException = new Error();
-
-    EdgeInvocationForTestClassLoader invocation = new EdgeInvocationForTestClassLoader();
-    invocation.latestMicroserviceVersionMeta = latestMicroserviceVersionMeta;
-    invocation.doInvokeException = doInvokeException;
-
-    expectedException.expect(ServiceCombException.class);
-    expectedException.expectMessage(Matchers.is("unknown edge exception."));
-    expectedException.expectCause(Matchers.sameInstance(doInvokeException));
-
-    invocation.invoke();
-
-    Assert.assertSame(org, invocation.findMicroserviceVersionMetaClassLoader);
-    Assert.assertSame(microserviceClassLoader, invocation.prepareEdgeInvokeClassLoader);
-    Assert.assertSame(microserviceClassLoader, invocation.prepareInvokeClassLoader);
-    Assert.assertSame(microserviceClassLoader, invocation.doInvokeClassLoader);
-    Assert.assertSame(org, Thread.currentThread().getContextClassLoader());
-  }
-
-  @Test
-  public void doInvoke(@Mocked SchemaMeta schemaMeta, @Mocked OperationMeta operationMeta, @Mocked Handler handler)
-      throws Throwable {
-    new Expectations() {
-      {
-        operationMeta.getSchemaMeta();
-        result = schemaMeta;
-        schemaMeta.getConsumerHandlerChain();
-        result = Arrays.asList(handler);
-      }
-    };
-
-    Invocation invocation = new Invocation(referenceConfig, operationMeta, null);
-    Deencapsulation.setField(edgeInvocation, "invocation", invocation);
-
-    edgeInvocation.doInvoke();
-
+    edgeInvocation.createInvocation(args);
+    Invocation invocation = Deencapsulation.getField(edgeInvocation, "invocation");
     Assert.assertThat(invocation.getResponseExecutor(), Matchers.instanceOf(ReactiveResponseExecutor.class));
   }
 }
