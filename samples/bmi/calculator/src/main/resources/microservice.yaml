@@ -26,3 +26,14 @@ cse:
       address: http://127.0.0.1:30100
   rest:
     address: 0.0.0.0:7777
+
+  metrics:
+    polltime: 5
+#    file:
+#      enabled: false
+#      name: cal_log
+#      path: D:/Temp/
+
+# metrics publish only work when set mem enabled to true ,else it will always return empty data like {}
+    mem:
+      enabled: true

@@ -1,0 +1,22 @@
+swagger: "2.0"
+info:
+  version: "1.0.0"
+  title: "metricsService"
+  x-java-interface: "io.servicecomb.foundation.metrics.MetricsProvider"
+basePath: "/"
+consumes:
+- "application/json"
+produces:
+- "application/json"
+paths:
+  /metrics:
+    get:
+      operationId: "metrics"
+      parameters: []
+      responses:
+        200:
+          description: "response of 200"
+          schema:
+            type: "object"
+            additionalProperties:
+              type: "string"

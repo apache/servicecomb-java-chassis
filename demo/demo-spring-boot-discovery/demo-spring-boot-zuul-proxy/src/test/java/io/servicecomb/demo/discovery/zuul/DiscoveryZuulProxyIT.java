@@ -42,7 +42,7 @@ public class DiscoveryZuulProxyIT {
   @Test
   public void getsRemoteServiceThroughGateway() throws Exception {
     String response = restTemplate.getForObject(
-        "/gateway/greeting/sayhello/{name}",
+        "/discoveryServer/greeting/sayhello/{name}",
         String.class,
         "Mike");
 

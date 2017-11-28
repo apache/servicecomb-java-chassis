@@ -49,6 +49,11 @@
       <groupId>io.servicecomb</groupId>
       <artifactId>handler-tracing-zipkin</artifactId>
     </dependency>
+
+    <dependency>
+      <groupId>io.servicecomb</groupId>
+      <artifactId>foundation-metrics</artifactId>
+    </dependency>
   </dependencies>
 
   <build>
