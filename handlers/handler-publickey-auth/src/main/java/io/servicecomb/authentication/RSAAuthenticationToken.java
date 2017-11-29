@@ -95,7 +95,7 @@ public class RSAAuthenticationToken {
 
   @Override
   public boolean equals(Object obj) {
-    if (null == obj || !(obj instanceof RSAAuthenticationToken)) {
+    if (!(obj instanceof RSAAuthenticationToken)) {
       return false;
     }
     RSAAuthenticationToken token = (RSAAuthenticationToken) obj;

@@ -19,7 +19,6 @@ import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.SignatureException;
 import java.security.spec.InvalidKeySpecException;
-import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -80,12 +79,9 @@ public class RSAProviderTokenManager  {
   }
 
   private String getPublicKey(String instanceId, String serviceId) {
-    Optional<MicroserviceInstance> instances = Optional
-        .ofNullable(MicroserviceInstanceCache.getOrCreate(serviceId, instanceId));
-    if (instances.isPresent()) {
-      return instances.map(MicroserviceInstance::getProperties)
-          .map(properties -> properties.get(Const.INSTANCE_PUBKEY_PRO))
-          .get();
+    MicroserviceInstance instances = MicroserviceInstanceCache.getOrCreate(serviceId, instanceId);
+    if (instances != null) {
+      return instances.getProperties().get(Const.INSTANCE_PUBKEY_PRO);
     } else {
       LOGGER.error("not instance found {}-{}, maybe attack", instanceId, serviceId);
       return "";

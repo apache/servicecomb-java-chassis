@@ -57,6 +57,7 @@ public class RSAConsumerTokenManager {
     readWriteLock.writeLock().lock();
     if (!isExpired(token)) {
       logger.debug("Token had been recreated by another thread");
+      readWriteLock.writeLock().unlock();
       return token.format();
     }
     String instanceId = RegistryUtils.getMicroserviceInstance().getInstanceId();
@@ -71,6 +72,8 @@ public class RSAConsumerTokenManager {
     } catch (InvalidKeyException | NoSuchAlgorithmException | InvalidKeySpecException | SignatureException e) {
       logger.error("create token error", e);
       throw new Error("create token error");
+    } finally {
+      readWriteLock.writeLock().unlock();
     }
 
   }

@@ -35,31 +35,33 @@ import io.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
  */
 public class MicroserviceInstanceCache {
 
-	private static final Logger logger = LoggerFactory.getLogger(MicroserviceInstanceCache.class);
+  private static final Logger logger = LoggerFactory.getLogger(MicroserviceInstanceCache.class);
 
-	private static Cache<String, MicroserviceInstance> instances = CacheBuilder.newBuilder().maximumSize(1000)
-			.expireAfterAccess(30, TimeUnit.MINUTES).build();
+  private static Cache<String, MicroserviceInstance> instances = CacheBuilder.newBuilder()
+      .maximumSize(1000)
+      .expireAfterAccess(30, TimeUnit.MINUTES)
+      .build();
 
-	public static MicroserviceInstance getOrCreate(String serviceId, String instanceId) {
-		try {
-			String key = String.format("%s@%s", serviceId, instanceId);
-			return instances.get(key, new Callable<MicroserviceInstance>() {
+  public static MicroserviceInstance getOrCreate(String serviceId, String instanceId) {
+    try {
+      String key = String.format("%s@%s", serviceId, instanceId);
+      return instances.get(key, new Callable<MicroserviceInstance>() {
 
-				@Override
-				public MicroserviceInstance call() throws Exception {
-					logger.debug("get microservice instance from SC");
-					return getMicroserviceInstanceFromSC(serviceId, instanceId);
-				}
+        @Override
+        public MicroserviceInstance call() throws Exception {
+          logger.debug("get microservice instance from SC");
+          return getMicroserviceInstanceFromSC(serviceId, instanceId);
+        }
 
-			});
-		} catch (ExecutionException e) {
-			logger.error("get microservice from cache failed:" + String.format("%s@%s", serviceId, instanceId));
-			return null;
-		}
-	}
+      });
+    } catch (ExecutionException e) {
+      logger.error("get microservice from cache failed:" + String.format("%s@%s", serviceId, instanceId));
+      return null;
+    }
+  }
 
-	private static MicroserviceInstance getMicroserviceInstanceFromSC(String serviceId, String instanceId) {
-		return RegistryUtils.getServiceRegistryClient().findServiceInstance(serviceId, instanceId);
-	}
+  private static MicroserviceInstance getMicroserviceInstanceFromSC(String serviceId, String instanceId) {
+    return RegistryUtils.getServiceRegistryClient().findServiceInstance(serviceId, instanceId);
+  }
 
 }

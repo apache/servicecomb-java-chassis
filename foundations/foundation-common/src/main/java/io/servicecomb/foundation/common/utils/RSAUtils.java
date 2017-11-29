@@ -49,12 +49,10 @@ public class RSAUtils {
   private static KeyFactory kf = null;
   
   static {
-    
-    try
-    {
+
+    try {
       kf = KeyFactory.getInstance(RSA_ALG);
-    }catch(NoSuchAlgorithmException e)
-    {
+    } catch (NoSuchAlgorithmException e) {
       LOGGER.error("init keyfactory error");
     }
   }
