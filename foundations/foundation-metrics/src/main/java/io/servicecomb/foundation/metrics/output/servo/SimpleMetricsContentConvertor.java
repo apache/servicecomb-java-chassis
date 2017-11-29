@@ -20,19 +20,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.netflix.servo.Metric;
 
 @Component
 public class SimpleMetricsContentConvertor implements MetricsContentConvertor {
-
-  private static final Logger logger = LoggerFactory.getLogger(SimpleMetricsContentConvertor.class);
-  private final ObjectMapper mapper = new ObjectMapper();
-
   @Override
   public Map<String, String> convert(List<Metric> metrics) {
     Map<String, String> pickedMetrics = new HashMap<>();
@@ -40,7 +33,8 @@ public class SimpleMetricsContentConvertor implements MetricsContentConvertor {
       if (isTotalRequestInstanceLevelMetric(metric.getConfig().getName())) {
         pickedMetrics.put(metric.getConfig().getName().replace(" INSTANCE_LEVEL", ""), metric.getValue().toString());
       } else if ("RequestQueueRelated".equals(metric.getConfig().getName())) {
-        String instanceContent = metric.getValue().toString()
+        String instanceContent = metric.getValue()
+            .toString()
             .substring(metric.getValue().toString().indexOf("InstanceLevel={") + "InstanceLevel={".length());
         instanceContent = instanceContent.substring(0, instanceContent.indexOf('}'));
         String[] keyAndValueStrings = instanceContent.split(",");

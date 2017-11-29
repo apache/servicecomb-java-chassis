@@ -416,7 +416,6 @@ public class MetricsServoRegistry implements InitializingBean {
   protected final Func0<String> getTpsAndLatency = new Func0<String>() {
     @Override
     public String call() {
-      Collection<HystrixCommandMetrics> instances = HystrixCommandMetrics.getInstances();
       List<TpsAndLatencyData> tpsAndLatencyData = HystrixCommandMetrics.getInstances().stream().map(instance ->
           new TpsAndLatencyData(instance.getRollingCount(HystrixEventType.SUCCESS),
               instance.getRollingCount(HystrixEventType.FAILURE)
