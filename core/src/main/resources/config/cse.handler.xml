@@ -17,4 +17,6 @@
 <config>
 	<handler id="simpleLB"
 		class="io.servicecomb.core.handler.impl.SimpleLoadBalanceHandler" />
+	<handler id="access-log"
+		class="io.servicecomb.core.handler.impl.AccessLogHandler" />
 </config>

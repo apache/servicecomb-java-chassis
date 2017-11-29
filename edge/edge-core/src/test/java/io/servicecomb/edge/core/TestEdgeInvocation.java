@@ -32,6 +32,7 @@ import io.servicecomb.common.rest.definition.RestOperationMeta;
 import io.servicecomb.common.rest.filter.HttpServerFilter;
 import io.servicecomb.common.rest.locator.OperationLocator;
 import io.servicecomb.common.rest.locator.ServicePathManager;
+import io.servicecomb.core.Const;
 import io.servicecomb.core.Invocation;
 import io.servicecomb.core.definition.MicroserviceMeta;
 import io.servicecomb.core.definition.MicroserviceVersionMeta;
@@ -43,6 +44,7 @@ import io.servicecomb.foundation.vertx.http.HttpServletResponseEx;
 import io.servicecomb.serviceregistry.RegistryUtils;
 import io.servicecomb.serviceregistry.ServiceRegistry;
 import io.servicecomb.serviceregistry.api.registry.Microservice;
+import io.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
 import io.servicecomb.serviceregistry.consumer.AppManager;
 import io.servicecomb.serviceregistry.consumer.MicroserviceVersionRule;
 import io.servicecomb.serviceregistry.definition.DefinitionConst;
@@ -53,6 +55,11 @@ import mockit.Expectations;
 import mockit.Mocked;
 
 public class TestEdgeInvocation {
+
+  public static final String TEST_SERVICE_NAME = "testServiceName";
+
+  public static final String TEST_INSTANCE_ID = "testInstanceId";
+
   String microserviceName = "ms";
 
   @Mocked
@@ -199,7 +206,7 @@ public class TestEdgeInvocation {
   @Test
   public void createInvocation(@Mocked MicroserviceVersionMeta microserviceVersionMeta,
       @Mocked MicroserviceVersionRule microserviceVersionRule, @Mocked RestOperationMeta restOperationMeta,
-      @Mocked Microservice microservice) {
+      @Mocked Microservice microservice, @Mocked MicroserviceInstance instance) {
     edgeInvocation.latestMicroserviceVersionMeta = microserviceVersionMeta;
     edgeInvocation.microserviceVersionRule = microserviceVersionRule;
     Deencapsulation.setField(edgeInvocation, "restOperationMeta", restOperationMeta);
@@ -209,11 +216,19 @@ public class TestEdgeInvocation {
       {
         RegistryUtils.getMicroservice();
         result = microservice;
+        RegistryUtils.getMicroserviceInstance();
+        result = instance;
+        microservice.getServiceName();
+        result = TEST_SERVICE_NAME;
+        instance.getInstanceId();
+        result = TEST_INSTANCE_ID;
       }
     };
 
     edgeInvocation.createInvocation(args);
     Invocation invocation = Deencapsulation.getField(edgeInvocation, "invocation");
     Assert.assertThat(invocation.getResponseExecutor(), Matchers.instanceOf(ReactiveResponseExecutor.class));
+    Assert.assertThat(invocation.getContext(Const.SRC_MICROSERVICE), Matchers.equalTo(TEST_SERVICE_NAME));
+    Assert.assertThat(invocation.getContext(Const.SRC_INSTANCE), Matchers.equalTo(TEST_INSTANCE_ID));
   }
 }
