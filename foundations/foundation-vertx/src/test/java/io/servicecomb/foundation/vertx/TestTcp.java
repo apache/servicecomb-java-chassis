@@ -39,6 +39,7 @@ import io.vertx.core.Vertx;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.net.NetClient;
 import io.vertx.core.net.NetSocket;
+import io.vertx.core.net.SocketAddress;
 import io.vertx.core.net.impl.NetSocketImpl;
 import io.vertx.core.net.impl.SocketAddressImpl;
 import mockit.Deencapsulation;
@@ -70,6 +71,23 @@ public class TestTcp {
 
       @Override
       public void close() {
+      }
+
+      @Override
+      public NetClient connect(int port, String host, String serverName,
+          Handler<AsyncResult<NetSocket>> connectHandler) {
+        return null;
+      }
+
+      @Override
+      public NetClient connect(SocketAddress remoteAddress, Handler<AsyncResult<NetSocket>> connectHandler) {
+        return null;
+      }
+
+      @Override
+      public NetClient connect(SocketAddress remoteAddress, String serverName,
+          Handler<AsyncResult<NetSocket>> connectHandler) {
+        return null;
       }
     };
     TcpClientConnection oTcpClient =

@@ -22,7 +22,6 @@ import io.netty.buffer.ByteBuf;
 import io.vertx.core.Handler;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.parsetools.RecordParser;
-import io.vertx.core.parsetools.impl.RecordParserImpl;
 
 /**
  * TcpParser
@@ -70,7 +69,7 @@ public class TcpParser implements Handler<Buffer> {
    * 在解析出错时，通过重新创建parser对象，将整个缓冲区重置
    */
   protected void reset() {
-    parser = RecordParserImpl.newFixed(TCP_HEADER_LENGTH, this::onParse);
+    parser = RecordParser.newFixed(TCP_HEADER_LENGTH, this::onParse);
     status = ParseStatus.TCP_HEADER;
 
     parser.handle(Buffer.buffer(0));

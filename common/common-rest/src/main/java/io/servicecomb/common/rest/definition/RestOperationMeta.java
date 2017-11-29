@@ -36,7 +36,7 @@ import io.servicecomb.foundation.vertx.http.HttpServletRequestEx;
 import io.swagger.models.Operation;
 import io.swagger.models.Swagger;
 import io.swagger.models.parameters.Parameter;
-import io.vertx.ext.web.impl.Utils;
+import io.vertx.ext.web.impl.MimeTypesUtils;
 
 public class RestOperationMeta {
   private static final Logger LOGGER = LoggerFactory.getLogger(RestOperationMeta.class);
@@ -209,7 +209,7 @@ public class RestOperationMeta {
       return defaultProcessor;
     }
 
-    List<String> mimeTyps = Utils.getSortedAcceptableMimeTypes(acceptType.toLowerCase(Locale.US));
+    List<String> mimeTyps = MimeTypesUtils.getSortedAcceptableMimeTypes(acceptType.toLowerCase(Locale.US));
     for (String mime : mimeTyps) {
       ProduceProcessor processor = this.produceProcessorMap.get(mime);
       if (null != processor) {
