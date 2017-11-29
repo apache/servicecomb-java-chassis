@@ -16,14 +16,26 @@
 
 package io.servicecomb.foundation.metrics;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.junit.Assert;
 import org.junit.Test;
 
-public class TestMetricsConfig {
+import io.servicecomb.foundation.metrics.output.servo.SimpleMetricsContentFormatter;
+
+public class TestSimpleMetricsContentFormatter {
 
   @Test
-  public void test() {
-    Assert.assertEquals(60000, MetricsConfig.getMsCycle());
-    Assert.assertEquals(false, MetricsConfig.isEnable());
+  public void testFormatter() {
+    SimpleMetricsContentFormatter formatter = new SimpleMetricsContentFormatter();
+
+    Map<String, String> input = new HashMap<>();
+    input.put("key", "value");
+
+    Map<String, String> output = formatter.format(input);
+
+    Assert.assertTrue(output.containsKey("key"));
+    Assert.assertTrue(output.get("key").contains("\"key\":\"value\""));
   }
 }

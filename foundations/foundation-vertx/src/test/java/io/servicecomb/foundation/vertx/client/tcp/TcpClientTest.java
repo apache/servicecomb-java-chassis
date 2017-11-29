@@ -67,7 +67,7 @@ public class TcpClientTest {
   @Test
   public void testCallBack() {
     instance.getClass();
-    TcpResonseCallback callback = Mockito.mock(TcpResonseCallback.class);
+    TcpResponseCallback callback = Mockito.mock(TcpResponseCallback.class);
     try {
       instance.send(new TcpClientPackage(null), 1, callback);
       Assert.assertNotNull(callback);

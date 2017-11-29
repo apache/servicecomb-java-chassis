@@ -16,9 +16,7 @@
 
 package io.servicecomb.foundation.metrics.performance;
 
-import io.servicecomb.core.Invocation;
 import io.servicecomb.foundation.metrics.MetricsServoRegistry;
-import io.servicecomb.swagger.invocation.InvocationType;
 
 /**
  * Implementation of metric util functions such as preparing average queue times
@@ -28,37 +26,31 @@ public final class MetricsDataMonitorUtil {
 
   /**
    * Sets the total requests per provider and consumer.
-   * @param invocation invocation of request
    */
-  public void setAllReqProviderAndConsumer(Invocation invocation) {
+  public void setAllReqProviderAndConsumer(String operationPath, String invocationType) {
     MetricsDataMonitor metricsRef = MetricsServoRegistry.getOrCreateLocalMetrics();
-    String operPath = invocation.getOperationMeta().getMicroserviceQualifiedName();
-
-    if (InvocationType.CONSUMER.equals(invocation.getInvocationType())) {
+    if ("CONSUMER".equals(invocationType)) {
       metricsRef.incrementTotalReqConsumer();
     } else {
       metricsRef.incrementTotalReqProvider();
       // note down metrics for operational level.
-      metricsRef.setOperMetTotalReq(operPath,
-          metricsRef.getOperMetTotalReq(operPath) == null ? 1L : metricsRef.getOperMetTotalReq(operPath) + 1);
+      metricsRef.setOperMetTotalReq(operationPath,
+          metricsRef.getOperMetTotalReq(operationPath) == null ? 1L : metricsRef.getOperMetTotalReq(operationPath) + 1);
     }
   }
 
   /**
    * Sets the total failed requests per provider and consumer.
-   * @param invocation invocation of request
    */
-  public void setAllFailReqProviderAndConsumer(Invocation invocation) {
+  public void setAllFailReqProviderAndConsumer(String operationPath, String invocationType) {
     MetricsDataMonitor metricsRef = MetricsServoRegistry.getOrCreateLocalMetrics();
-    String operPath = invocation.getOperationMeta().getMicroserviceQualifiedName();
-
-    if (InvocationType.CONSUMER.equals(invocation.getInvocationType())) {
+    if ("CONSUMER".equals(invocationType)) {
       metricsRef.incrementTotalFailReqConsumer();
     } else {
       metricsRef.incrementTotalFailReqProvider();
       // note down metrics for operational level.
-      metricsRef.setOperMetTotalReq(operPath,
-          metricsRef.getOperMetTotalReq(operPath) == null ? 1L : metricsRef.getOperMetTotalReq(operPath) + 1);
+      metricsRef.setOperMetTotalReq(operationPath,
+          metricsRef.getOperMetTotalReq(operationPath) == null ? 1L : metricsRef.getOperMetTotalReq(operationPath) + 1);
     }
   }
 }

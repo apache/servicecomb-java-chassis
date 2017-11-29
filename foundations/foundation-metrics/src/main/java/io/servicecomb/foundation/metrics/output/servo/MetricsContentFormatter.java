@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-package io.servicecomb.foundation.vertx.client.tcp;
+package io.servicecomb.foundation.metrics.output.servo;
 
-import io.servicecomb.foundation.vertx.AsyncResultCallback;
+import java.util.Map;
 
-public interface TcpResonseCallback extends AsyncResultCallback<TcpData> {
-
+public interface MetricsContentFormatter {
+  Map<String, String> format(Map<String, String> input);
 }
