@@ -38,6 +38,6 @@ public class TestMetricsConfig {
   @Test
   public void test() {
     Assert.assertEquals(60000, MetricsConfig.getMsCycle());
-    Assert.assertEquals(false, MetricsConfig.isEnable());
+    Assert.assertEquals(true, MetricsConfig.isEnable());
   }
 }
