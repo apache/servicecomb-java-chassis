@@ -16,10 +16,11 @@
 
 package io.servicecomb.foundation.vertx;
 
-import io.vertx.core.AsyncResultHandler;
+import io.vertx.core.AsyncResult;
 import io.vertx.core.Future;
+import io.vertx.core.Handler;
 
-public interface AsyncResultCallback<T> extends AsyncResultHandler<T> {
+public interface AsyncResultCallback<T> extends Handler<AsyncResult<T>> {
   default void success(T data) {
     handle(Future.succeededFuture(data));
   }

@@ -30,7 +30,7 @@
 
   <properties>
     <jackson.version>2.8.10</jackson.version>
-    <vertx.version>3.3.3</vertx.version>
+    <vertx.version>3.5.0</vertx.version>
     <tec.zkclient.version>0.8</tec.zkclient.version>
     <spring.version>4.3.5.RELEASE</spring.version>
     <slf4j.version>1.7.7</slf4j.version>
@@ -765,7 +765,7 @@
         <artifactId>handler-flowcontrol-qps</artifactId>
         <version>0.4.1-SNAPSHOT</version>
       </dependency>
-       <dependency>
+      <dependency>
         <groupId>io.servicecomb</groupId>
         <artifactId>handler-publickey-auth</artifactId>
         <version>0.4.1-SNAPSHOT</version>
