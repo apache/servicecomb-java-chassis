@@ -37,6 +37,7 @@ import io.servicecomb.foundation.metrics.output.servo.SimpleMetricsContentConver
 import io.servicecomb.foundation.metrics.output.servo.MetricsContentFormatter;
 
 public class TestFileOutputMetricObserverAndContentConvertor {
+  @SuppressWarnings("unchecked")
   @Test
   public void testMetricObserverUpdateImpl() {
 
@@ -75,6 +76,7 @@ public class TestFileOutputMetricObserverAndContentConvertor {
     FileOutputMetricObserver observer = new FileOutputMetricObserver(output, convertor, formatter);
     observer.updateImpl(metrics);
 
+    @SuppressWarnings("rawtypes")
     ArgumentCaptor<Map> outputMetrics = ArgumentCaptor.forClass(Map.class);
     verify(output).output(outputMetrics.capture());
 
