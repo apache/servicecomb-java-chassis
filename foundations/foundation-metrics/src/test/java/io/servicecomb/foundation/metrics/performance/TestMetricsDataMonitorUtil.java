@@ -20,12 +20,8 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.Mockito;
 
-import io.servicecomb.core.Invocation;
-import io.servicecomb.core.definition.OperationMeta;
 import io.servicecomb.foundation.metrics.MetricsServoRegistry;
-import io.servicecomb.swagger.invocation.InvocationType;
 
 public class TestMetricsDataMonitorUtil {
   MetricsDataMonitor metricsDataMonitor = null;
@@ -45,37 +41,21 @@ public class TestMetricsDataMonitorUtil {
 
   @Test
   public void testAllReqConsumer() {
-
-    Invocation invocation = Mockito.mock(Invocation.class);
-    OperationMeta operationMetaData = Mockito.mock(OperationMeta.class);
-    Mockito.when(invocation.getOperationMeta()).thenReturn(operationMetaData);
-    Mockito.when(operationMetaData.getMicroserviceQualifiedName()).thenReturn("/sayHi");
-    Mockito.when(invocation.getMicroserviceQualifiedName()).thenReturn("/sayHi");
-    Mockito.when(invocation.getInvocationType()).thenReturn(InvocationType.CONSUMER);
-
-    metricsDataMonitorUtil.setAllReqProviderAndConsumer(invocation);
+    metricsDataMonitorUtil.setAllReqProviderAndConsumer("/sayHi", "CONSUMER");
     Assert.assertNotEquals(0L, metricsDataMonitor.getTotalReqConsumer());
-    metricsDataMonitorUtil.setAllFailReqProviderAndConsumer(invocation);
+    metricsDataMonitorUtil.setAllFailReqProviderAndConsumer("/sayHi", "CONSUMER");
     Assert.assertNotEquals(0L, metricsDataMonitor.getTotalFailReqConsumer());
   }
 
   @Test
   public void testAllReqProvider() {
-
-    Invocation invocation = Mockito.mock(Invocation.class);
-    OperationMeta operationMetaData = Mockito.mock(OperationMeta.class);
-    Mockito.when(invocation.getOperationMeta()).thenReturn(operationMetaData);
-    Mockito.when(operationMetaData.getMicroserviceQualifiedName()).thenReturn("/sayBye");
-    Mockito.when(invocation.getMicroserviceQualifiedName()).thenReturn("sayBye");
-    Mockito.when(invocation.getInvocationType()).thenReturn(InvocationType.PRODUCER);
-
-    metricsDataMonitorUtil.setAllReqProviderAndConsumer(invocation);
+    metricsDataMonitorUtil.setAllReqProviderAndConsumer("/sayBye", "PRODUCER");
     Assert.assertNotEquals(0L, metricsDataMonitor.getTotalReqProvider());
-    metricsDataMonitorUtil.setAllReqProviderAndConsumer(invocation);
+    metricsDataMonitorUtil.setAllReqProviderAndConsumer("/sayBye", "PRODUCER");
     Assert.assertNotEquals(0L, metricsDataMonitor.getTotalReqProvider());
-    metricsDataMonitorUtil.setAllFailReqProviderAndConsumer(invocation);
+    metricsDataMonitorUtil.setAllFailReqProviderAndConsumer("/sayBye", "PRODUCER");
     Assert.assertNotEquals(0L, metricsDataMonitor.getTotalFailReqProvider());
-    metricsDataMonitorUtil.setAllFailReqProviderAndConsumer(invocation);
+    metricsDataMonitorUtil.setAllFailReqProviderAndConsumer("/sayBye", "PRODUCER");
     Assert.assertNotEquals(0L, metricsDataMonitor.getTotalFailReqProvider());
   }
 }

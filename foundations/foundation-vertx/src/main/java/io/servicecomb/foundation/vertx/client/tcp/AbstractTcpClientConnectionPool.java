@@ -52,7 +52,7 @@ public abstract class AbstractTcpClientConnectionPool<T extends TcpClientConnect
   }
 
   public void send(TcpClientConnection tcpClient, AbstractTcpClientPackage tcpClientPackage,
-      TcpResonseCallback callback) {
+      TcpResponseCallback callback) {
     tcpClient.send(tcpClientPackage, clientConfig.getRequestTimeoutMillis(), callback);
   }
 

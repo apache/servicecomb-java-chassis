@@ -14,16 +14,10 @@
  * limitations under the License.
  */
 
-package io.servicecomb.foundation.metrics;
+package io.servicecomb.foundation.vertx.client.tcp;
 
-import org.junit.Assert;
-import org.junit.Test;
+import io.servicecomb.foundation.vertx.AsyncResultCallback;
 
-public class TestMetricsConfig {
+public interface TcpResponseCallback extends AsyncResultCallback<TcpData> {
 
-  @Test
-  public void test() {
-    Assert.assertEquals(60000, MetricsConfig.getMsCycle());
-    Assert.assertEquals(true, MetricsConfig.isEnable());
-  }
 }

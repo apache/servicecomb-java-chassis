@@ -16,16 +16,27 @@
 
 package io.servicecomb.foundation.metrics;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.configuration.BaseConfiguration;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import com.netflix.config.DynamicPropertyFactory;
 import com.netflix.servo.publish.PollScheduler;
 
+import io.servicecomb.foundation.metrics.output.MetricsFileOutput;
+import io.servicecomb.foundation.metrics.output.servo.MetricsContentConvertor;
+import io.servicecomb.foundation.metrics.output.servo.MetricsContentFormatter;
+import io.servicecomb.foundation.metrics.output.servo.MetricsObserverInitializer;
+import io.servicecomb.foundation.metrics.output.servo.RollingMetricsFileOutput;
+import io.servicecomb.foundation.metrics.output.servo.SimpleMetricsContentConvertor;
+import io.servicecomb.foundation.metrics.output.servo.SimpleMetricsContentFormatter;
 import io.servicecomb.foundation.metrics.performance.MetricsDataMonitor;
 import io.servicecomb.foundation.metrics.performance.QueueMetricsData;
 
@@ -36,8 +47,20 @@ public class TestMetricsServoRegistry {
 
   MetricsServoRegistry metricsRegistry = null;
 
+  MetricsFileOutput fileOutput = null;
+
+  MetricsContentConvertor convertor = null;
+
+  MetricsContentFormatter formatter = null;
+
+  MetricsObserverInitializer observerManager = null;
+
   @BeforeClass
   public static void staticBeforeClean() {
+    BaseConfiguration configuration = new BaseConfiguration();
+    configuration.setProperty(MetricsObserverInitializer.METRICS_FILE_ENABLED, true);
+    configuration.setProperty(MetricsObserverInitializer.METRICS_POLL_TIME, 1);
+    DynamicPropertyFactory.initWithConfigurationSource(configuration);
     MetricsServoRegistry.metricsList.clear();
     MetricsServoRegistry.LOCAL_METRICS_MAP = new ThreadLocal<>();
   }
@@ -45,6 +68,10 @@ public class TestMetricsServoRegistry {
   @Before
   public void setUp() throws Exception {
     metricsRegistry = new MetricsServoRegistry();
+    convertor = new SimpleMetricsContentConvertor();
+    formatter = new SimpleMetricsContentFormatter();
+    fileOutput = new RollingMetricsFileOutput();
+    observerManager = new MetricsObserverInitializer(fileOutput, convertor, formatter, false);
     localData = metricsRegistry.getLocalMetrics();
     metricsDataMonitor = MetricsServoRegistry.getOrCreateLocalMetrics();
   }
@@ -53,12 +80,17 @@ public class TestMetricsServoRegistry {
   public void tearDown() throws Exception {
     PollScheduler.getInstance().stop();
     metricsRegistry = null;
+    convertor = null;
+    formatter = null;
+    observerManager = null;
+    fileOutput = null;
     localData = null;
     metricsDataMonitor = null;
   }
 
   @Test
   public void testAllRegistryMetrics() throws Exception {
+
     metricsDataMonitor.incrementTotalReqProvider();
     metricsDataMonitor.incrementTotalFailReqProvider();
     metricsDataMonitor.incrementTotalReqConsumer();
@@ -70,6 +102,7 @@ public class TestMetricsServoRegistry {
     localData.setOperMetTotalFailReq("sayHi", 10L);
 
     metricsRegistry.afterPropertiesSet();
+    observerManager.init();
     Thread.sleep(1000);
     // get the metrics from local data and compare
     localData = metricsRegistry.getLocalMetrics();
@@ -93,6 +126,7 @@ public class TestMetricsServoRegistry {
     localData = metricsRegistry.getLocalMetrics();
 
     metricsRegistry.afterPropertiesSet();
+    observerManager.init();
     Thread.sleep(1000);
     // get the metrics from local data and compare
     localData = metricsRegistry.getLocalMetrics();
@@ -121,6 +155,7 @@ public class TestMetricsServoRegistry {
     metricsDataMonitor.setQueueMetrics("/sayBye", reqQueue1);
 
     metricsRegistry.afterPropertiesSet();
+    observerManager.init();
     Thread.sleep(1000);
     // get the metrics from local data and compare
     Map<String, QueueMetricsData> localMap = localData.getQueueMetrics();
@@ -158,6 +193,7 @@ public class TestMetricsServoRegistry {
     metricsDataMonitor.setQueueMetrics("/sayBye", reqQueue2);
 
     metricsRegistry.afterPropertiesSet();
+    observerManager.init();
     Thread.sleep(1000);
     // get the metrics from local data and compare
     Map<String, QueueMetricsData> localMap = localData.getQueueMetrics();
@@ -170,6 +206,15 @@ public class TestMetricsServoRegistry {
     Assert.assertEquals(100L, reqQueue3.getTotalTime().longValue());
     Assert.assertEquals(5L, reqQueue3.getTotalServExecutionCount().longValue());
     Assert.assertEquals(50L, reqQueue3.getTotalServExecutionTime().longValue());
+  }
 
+  @Test
+  public void testCalculateTps() {
+    observerManager.init();
+    List<TpsAndLatencyData> tpsAndLatencyData = new ArrayList<>();
+    tpsAndLatencyData.add(new TpsAndLatencyData(1, 1, 100, 100));
+    tpsAndLatencyData.add(new TpsAndLatencyData(2, 2, 200, 200));
+    String results = metricsRegistry.calculateTpsAndLatency(tpsAndLatencyData);
+    Assert.assertTrue("{tps=40.0, latency=166.7}".equals(results));
   }
 }

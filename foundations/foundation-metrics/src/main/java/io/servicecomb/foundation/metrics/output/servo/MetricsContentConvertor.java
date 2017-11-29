@@ -14,16 +14,14 @@
  * limitations under the License.
  */
 
-package io.servicecomb.foundation.metrics;
+package io.servicecomb.foundation.metrics.output.servo;
 
-import org.junit.Assert;
-import org.junit.Test;
+import java.util.List;
+import java.util.Map;
 
-public class TestMetricsConfig {
+import com.netflix.servo.Metric;
 
-  @Test
-  public void test() {
-    Assert.assertEquals(60000, MetricsConfig.getMsCycle());
-    Assert.assertEquals(true, MetricsConfig.isEnable());
-  }
+//convert metrics to output content
+public interface MetricsContentConvertor {
+  Map<String, String> convert(List<Metric> metrics);
 }

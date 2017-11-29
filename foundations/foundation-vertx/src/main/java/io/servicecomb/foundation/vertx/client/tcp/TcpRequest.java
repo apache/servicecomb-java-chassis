@@ -31,9 +31,9 @@ public class TcpRequest {
 
   private long threadId;
 
-  private TcpResonseCallback responseCallback;
+  private TcpResponseCallback responseCallback;
 
-  public TcpRequest(long msTimeout, TcpResonseCallback responseCallback) {
+  public TcpRequest(long msTimeout, TcpResponseCallback responseCallback) {
     callContext = Vertx.currentContext();
     threadId = Thread.currentThread().getId();
     this.begin = System.currentTimeMillis();

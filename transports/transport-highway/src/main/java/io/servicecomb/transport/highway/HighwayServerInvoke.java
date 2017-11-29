@@ -79,12 +79,12 @@ public class HighwayServerInvoke {
       doInit(connection, msgId, header, bodyBuffer);
       return true;
     } catch (Throwable e) {
-      String microserviceQualifidName = "unknown";
+      String microserviceQualifiedName = "unknown";
       if (operationMeta != null) {
-        microserviceQualifidName = operationMeta.getMicroserviceQualifiedName();
+        microserviceQualifiedName = operationMeta.getMicroserviceQualifiedName();
       }
-      String msg = String.format("decode request error, microserviceQualifidName=%s, msgId=%d",
-          microserviceQualifidName,
+      String msg = String.format("decode request error, microserviceQualifiedName=%s, msgId=%d",
+          microserviceQualifiedName,
           msgId);
       LOGGER.error(msg, e);
 
