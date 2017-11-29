@@ -26,3 +26,21 @@ cse:
       address: http://127.0.0.1:30100
   rest:
     address: 0.0.0.0:7777
+  handler:
+    chain:
+      Provider:
+        default: bizkeeper-provider
+
+servicecomb:
+  metrics:
+    #polltime,unit is second
+    polltime: 5
+    #metrics double value round places,default value is 1
+    round_places: 1
+    file:
+      enabled: true
+      root_path: D:/Temp
+      #metrics file name prefix setting,default value is "metrics"
+      name_prefix: bmi.calculator
+      max_rolling_size: 10MB
+      max_rolling_count: 10

@@ -16,7 +16,6 @@
 
 package io.servicecomb.foundation.metrics;
 
-import java.io.File;
 import java.lang.management.ManagementFactory;
 import java.lang.management.MemoryMXBean;
 import java.lang.management.MemoryUsage;
@@ -31,7 +30,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Vector;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.InitializingBean;
 
@@ -46,13 +45,6 @@ import com.netflix.servo.monitor.Gauge;
 import com.netflix.servo.monitor.Informational;
 import com.netflix.servo.monitor.Monitor;
 import com.netflix.servo.monitor.MonitorConfig;
-import com.netflix.servo.publish.BasicMetricFilter;
-import com.netflix.servo.publish.CounterToRateMetricTransform;
-import com.netflix.servo.publish.FileMetricObserver;
-import com.netflix.servo.publish.MetricObserver;
-import com.netflix.servo.publish.MonitorRegistryMetricPoller;
-import com.netflix.servo.publish.PollRunnable;
-import com.netflix.servo.publish.PollScheduler;
 
 import io.servicecomb.foundation.metrics.performance.MetricsDataMonitor;
 import io.servicecomb.foundation.metrics.performance.QueueMetricsData;
@@ -63,17 +55,22 @@ import rx.functions.Func0;
  */
 public class MetricsServoRegistry implements InitializingBean {
 
+  public static final String METRICS_ROUND_PLACES = "servicecomb.metrics.round_places";
+
   protected static ThreadLocal<MetricsDataMonitor> LOCAL_METRICS_MAP = new ThreadLocal<>();
-
-  private static final String METRICS_POLL_TIME = "cse.metrics.polltime";
-
-  private static final String FILENAME = "cse.metrics.file.name";
-
-  private static final String FILEPATH = "cse.metrics.file.path";
 
   private MetricsDataMonitor localMetrics = new MetricsDataMonitor();
 
   protected static Vector<MetricsDataMonitor> metricsList = new Vector<>();
+
+  private final int doubleRoundPlaces;
+
+  private final String doubleStringFormatter;
+
+  public MetricsServoRegistry() {
+    doubleRoundPlaces = DynamicPropertyFactory.getInstance().getIntProperty(METRICS_ROUND_PLACES, 1).get();
+    doubleStringFormatter = "%." + String.valueOf(doubleRoundPlaces) + "f";
+  }
 
   /*
    * Added getter for unit test of local metrics.
@@ -83,6 +80,7 @@ public class MetricsServoRegistry implements InitializingBean {
   public MetricsDataMonitor getLocalMetrics() {
     return localMetrics;
   }
+
 
   /**
    * Get or create local metrics.
@@ -102,24 +100,11 @@ public class MetricsServoRegistry implements InitializingBean {
    * Get the initial metrics and register with servo.
    */
   public void initMetricsPublishing() {
-
     /* list of monitors */
     List<Monitor<?>> monitors = getMetricsMonitors();
     MonitorConfig commandMetricsConfig = MonitorConfig.builder("metrics").build();
     BasicCompositeMonitor commandMetricsMonitor = new BasicCompositeMonitor(commandMetricsConfig, monitors);
     DefaultMonitorRegistry.getInstance().register(commandMetricsMonitor);
-    PollScheduler scheduler = PollScheduler.getInstance();
-    if (!scheduler.isStarted()) {
-      scheduler.start();
-    }
-
-    int metricPoll = DynamicPropertyFactory.getInstance().getIntProperty(METRICS_POLL_TIME, 60).get();
-    String fileName = DynamicPropertyFactory.getInstance().getStringProperty(FILENAME, "metrics").get();
-    String filePath = DynamicPropertyFactory.getInstance().getStringProperty(FILEPATH, ".").get();
-    MetricObserver fileObserver = new FileMetricObserver(fileName, new File(filePath));
-    MetricObserver transform = new CounterToRateMetricTransform(fileObserver, metricPoll, TimeUnit.SECONDS);
-    PollRunnable task = new PollRunnable(new MonitorRegistryMetricPoller(), BasicMetricFilter.MATCH_ALL, transform);
-    scheduler.addPoller(task, metricPoll, TimeUnit.SECONDS);
   }
 
   @Override
@@ -334,13 +319,13 @@ public class MetricsServoRegistry implements InitializingBean {
         long count = metricMap.get(key).getTotalCount();
         double avgTimeInQueue = 0;
         if (count > 0) {
-          avgTimeInQueue = metricMap.get(key).getTotalTime() / count;
+          avgTimeInQueue = (double) metricMap.get(key).getTotalTime() / (double) count;
         }
         resultMap.put("AverageTimeInQueue", String.valueOf(avgTimeInQueue));
         long countService = metricMap.get(key).getTotalServExecutionCount();
         double avgServiceTimeInQueue = 0;
         if (countService > 0) {
-          avgServiceTimeInQueue = metricMap.get(key).getTotalServExecutionTime() / countService;
+          avgServiceTimeInQueue = (double) metricMap.get(key).getTotalServExecutionTime() / (double) countService;
         }
         resultMap.put("AverageServiceExecutionTime", String.valueOf(avgServiceTimeInQueue));
         resultMap.put("MinLifeTimeInQueue", metricMap.get(key).getMinLifeTimeInQueue().toString());
@@ -376,17 +361,19 @@ public class MetricsServoRegistry implements InitializingBean {
       long countInst = totalValueInstance.getTotalCount();
       double avgTimeInQueueIns = 0;
       if (countInst > 0) {
-        avgTimeInQueueIns = totalValueInstance.getTotalTime() / countInst;
+        avgTimeInQueueIns = (double) totalValueInstance.getTotalTime() / (double) countInst;
       }
-      resultInstancePublishMap.put("AverageTimeInQueue", String.valueOf(avgTimeInQueueIns));
+      resultInstancePublishMap.put("averageTimeInQueue", String.format(
+          doubleStringFormatter, round(avgTimeInQueueIns, doubleRoundPlaces)));
       long countServiceInst = totalValueInstance.getTotalServExecutionCount();
       double avgServiceTimeInQueueInst = 0;
       if (countServiceInst > 0) {
-        avgServiceTimeInQueueInst = totalValueInstance.getTotalServExecutionTime() / countServiceInst;
+        avgServiceTimeInQueueInst = (double) totalValueInstance.getTotalServExecutionTime() / (double) countServiceInst;
       }
-      resultInstancePublishMap.put("AverageServiceExecutionTime", String.valueOf(avgServiceTimeInQueueInst));
-      resultInstancePublishMap.put("MinLifeTimeInQueue", totalValueInstance.getMinLifeTimeInQueue().toString());
-      resultInstancePublishMap.put("MaxLifeTimeInQueue", totalValueInstance.getMaxLifeTimeInQueue().toString());
+      resultInstancePublishMap.put("averageServiceExecutionTime", String.format(
+          doubleStringFormatter, round(avgServiceTimeInQueueInst, doubleRoundPlaces)));
+      resultInstancePublishMap.put("minLifeTimeInQueue", totalValueInstance.getMinLifeTimeInQueue().toString());
+      resultInstancePublishMap.put("maxLifeTimeInQueue", totalValueInstance.getMaxLifeTimeInQueue().toString());
       result.put("InstanceLevel", resultInstancePublishMap.toString());
 
       return result.toString();
@@ -402,11 +389,11 @@ public class MetricsServoRegistry implements InitializingBean {
       Map<String, String> memoryMap = new HashMap<>();
       OperatingSystemMXBean osMxBean = ManagementFactory.getOperatingSystemMXBean();
       double cpu = osMxBean.getSystemLoadAverage();
-      memoryMap.put("CPU System Load", String.valueOf(cpu));
+      memoryMap.put("cpuLoad", String.format(doubleStringFormatter, round(cpu, doubleRoundPlaces)));
 
       ThreadMXBean threadmxBean = ManagementFactory.getThreadMXBean();
       int threadCount = threadmxBean.getThreadCount();
-      memoryMap.put("CPU Current Running Threads", String.valueOf(threadCount));
+      memoryMap.put("cpuRunningThreads", String.valueOf(threadCount));
 
       MemoryMXBean memBean = ManagementFactory.getMemoryMXBean();
       MemoryUsage memHeapUsage = memBean.getHeapMemoryUsage();
@@ -429,38 +416,38 @@ public class MetricsServoRegistry implements InitializingBean {
   protected final Func0<String> getTpsAndLatency = new Func0<String>() {
     @Override
     public String call() {
-      Map<String, String> tpsAndLatencyMap = new HashMap<>();
       Collection<HystrixCommandMetrics> instances = HystrixCommandMetrics.getInstances();
-
-      long insTotalTps = 0;
-      long insTotalLatency = 0;
-      long cumulativeTotalCount = 0;
-
-      for (HystrixCommandMetrics instance : instances) {
-        long successCount = instance.getRollingCount(HystrixEventType.SUCCESS);
-        long failureCount = instance.getRollingCount(HystrixEventType.FAILURE);
-        int operLatency = instance.getExecutionTimeMean();
-        long totalCallCount = successCount + failureCount;
-        cumulativeTotalCount += totalCallCount;
-        int windowTime = instance.getProperties().metricsRollingStatisticalWindowInMilliseconds().get() / 1000;
-        double qpsVal = (double) (totalCallCount) / windowTime;
-        BigDecimal bigDecimal = new BigDecimal(qpsVal);
-        BigDecimal bigDecimalVal = bigDecimal.setScale(1, RoundingMode.HALF_DOWN);
-        Double tpsOper = bigDecimalVal.doubleValue();
-        tpsAndLatencyMap.put("TPS-" + instance.getCommandKey().name(), String.valueOf(tpsOper));
-        tpsAndLatencyMap.put("Latency-" + instance.getCommandKey().name(), String.valueOf(operLatency));
-        insTotalTps += tpsOper;
-        insTotalLatency += operLatency;
-      }
-
-      double instanceLatency = (double) (insTotalLatency) / cumulativeTotalCount;
-
-      tpsAndLatencyMap.put("TPS Instance_Level", String.valueOf(insTotalTps));
-      tpsAndLatencyMap.put("Latency Instance_Level", String.valueOf(instanceLatency));
-
-      return tpsAndLatencyMap.toString();
+      List<TpsAndLatencyData> tpsAndLatencyData = HystrixCommandMetrics.getInstances().stream().map(instance ->
+          new TpsAndLatencyData(instance.getRollingCount(HystrixEventType.SUCCESS),
+              instance.getRollingCount(HystrixEventType.FAILURE)
+              , instance.getExecutionTimeMean(),
+              instance.getProperties().metricsRollingStatisticalWindowInMilliseconds().get()))
+          .collect(Collectors.toList());
+      return calculateTpsAndLatency(tpsAndLatencyData);
     }
   };
+
+  protected String calculateTpsAndLatency(List<TpsAndLatencyData> tpsAndLatencyData) {
+    Map<String, String> tpsAndLatencyMap = new HashMap<>();
+    double insTotalTps = 0;
+    double insTotalLatency = 0;
+    long cumulativeTotalCount = 0;
+    for (TpsAndLatencyData data : tpsAndLatencyData) {
+      long totalCallCount = data.getSuccessCount() + data.getFailureCount();
+      cumulativeTotalCount += totalCallCount;
+      double windowTime =
+          (double) data.getWindowInMilliseconds() / (double) 1000;
+      double qpsVal = (double) (totalCallCount) / windowTime;
+      insTotalTps += qpsVal;
+      insTotalLatency += data.getOperationLatency() * totalCallCount;
+    }
+
+    double instanceLatency = insTotalLatency / (double) cumulativeTotalCount;
+    tpsAndLatencyMap.put("tps", String.format(doubleStringFormatter, round(insTotalTps, doubleRoundPlaces)));
+    tpsAndLatencyMap
+        .put("latency", String.format(doubleStringFormatter, round(instanceLatency, doubleRoundPlaces)));
+    return tpsAndLatencyMap.toString();
+  }
 
   /**
    * Implementation of request metrics with using servo guage metric type.
@@ -502,8 +489,6 @@ public class MetricsServoRegistry implements InitializingBean {
    * Get the total requests and failed requests for instance level.
    *
    * @param metricsName Name of the metrics
-   * @param instance  object of latest metrics
-   * @param fieldName metric field
    * @param metricToEvaluate observable method to be called for preparation of metrics.
    * @return Guage metrics
    */
@@ -522,8 +507,6 @@ public class MetricsServoRegistry implements InitializingBean {
    * Get the total requests and failed requests for each producer.
    *
    * @param metricsName  Name of the metrics
-   * @param instance object of latest metrics
-   * @param fieldName metric field
    * @param metricToEvaluate observable method to be called for preparation of metrics.
    * @return Guage metrics
    */
@@ -540,9 +523,7 @@ public class MetricsServoRegistry implements InitializingBean {
   /**
    * Get the total requests and failed requests for each producer.
    *
-   * @param metricsName Name of the metrics
-   * @param instance object of latest metrics
-   * @param fieldName metric field
+   * @param name Name of the metrics
    * @param metricToEvaluate observable method to be called for preparation of metrics.
    * @return Guage metrics
    */
@@ -564,22 +545,22 @@ public class MetricsServoRegistry implements InitializingBean {
   private List<Monitor<?>> getMetricsMonitors() {
 
     List<Monitor<?>> monitors = new ArrayList<Monitor<?>>();
-    monitors.add(getRequestValuesGaugeMonitor("TotalRequestsPerProvider INSTANCE_LEVEL",
+    monitors.add(getRequestValuesGaugeMonitor("totalRequestsPerProvider INSTANCE_LEVEL",
         getTotalReqProvider));
 
-    monitors.add(getRequestValuesGaugeMonitor("TotalFailedRequestsPerProvider INSTANCE_LEVEL",
+    monitors.add(getRequestValuesGaugeMonitor("totalFailedRequestsPerProvider INSTANCE_LEVEL",
         getTotalFailedReqProvider));
 
-    monitors.add(getRequestValuesGaugeMonitor("TotalRequestsPerConsumer INSTANCE_LEVEL",
+    monitors.add(getRequestValuesGaugeMonitor("totalRequestsPerConsumer INSTANCE_LEVEL",
         getTotalReqConsumer));
 
-    monitors.add(getRequestValuesGaugeMonitor("TotalFailRequestsPerConsumer INSTANCE_LEVEL",
+    monitors.add(getRequestValuesGaugeMonitor("totalFailRequestsPerConsumer INSTANCE_LEVEL",
         getFailedTotalReqConsumer));
 
-    monitors.add(getInfoMetricsOperationLevel("TotalRequestProvider OPERATIONAL_LEVEL",
+    monitors.add(getInfoMetricsOperationLevel("totalRequestProvider OPERATIONAL_LEVEL",
         getTotalReqProdOperLevel));
 
-    monitors.add(getInfoMetricsOperationLevel("TotalFailedRequestProvider OPERATIONAL_LEVEL",
+    monitors.add(getInfoMetricsOperationLevel("totalFailedRequestProvider OPERATIONAL_LEVEL",
         getTotalReqFailProdOperLevel));
 
     monitors.add(getInfoMetricsOperationalAndInstance("RequestQueueRelated", getQueueMetrics));
@@ -589,5 +570,14 @@ public class MetricsServoRegistry implements InitializingBean {
     monitors.add(getInfoMetricsOperationalAndInstance("CPU and Memory", getCpuAndMemory));
 
     return monitors;
+  }
+
+  private double round(double value, int places) {
+    if (!Double.isNaN(value) && !Double.isInfinite(value)) {
+      BigDecimal decimal = new BigDecimal(value);
+      return decimal.setScale(places, RoundingMode.HALF_UP).doubleValue();
+    } else {
+      return 0;
+    }
   }
 }
