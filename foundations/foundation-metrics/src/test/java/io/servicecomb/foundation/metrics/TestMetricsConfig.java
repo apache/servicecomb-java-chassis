@@ -16,28 +16,14 @@
 
 package io.servicecomb.foundation.metrics;
 
-import org.junit.After;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
 
 public class TestMetricsConfig {
 
-  MetricsConfig oMetricsConfig = null;
-
-  @Before
-  public void setUp() throws Exception {
-    oMetricsConfig = new MetricsConfig();
-  }
-
-  @After
-  public void tearDown() throws Exception {
-    oMetricsConfig = null;
-  }
-
   @Test
   public void test() {
     Assert.assertEquals(60000, MetricsConfig.getMsCycle());
-    Assert.assertEquals(true, MetricsConfig.isEnable());
+    Assert.assertEquals( false, MetricsConfig.isEnable());
   }
 }
