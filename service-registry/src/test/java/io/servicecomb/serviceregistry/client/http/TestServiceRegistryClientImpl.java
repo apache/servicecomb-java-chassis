@@ -248,4 +248,11 @@ public class TestServiceRegistryClientImpl {
       }
     }.run();
   }
+  
+  
+  @Test
+  public void testFindServiceInstance()
+  {
+    Assert.assertNull(oClient.findServiceInstance("aaa","bbb"));
+  }
 }
