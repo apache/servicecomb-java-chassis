@@ -22,14 +22,14 @@ public final class Configuration {
   //isolation
   private static final String ISOLATION = "cse.isolation.";
 
-  private static final String ISOLATION_TIMEOUTINMILLISECONDS = "timeoutInMilliseconds";
+  private static final String ISOLATION_TIMEOUT_IN_MILLISECONDS = "timeoutInMilliseconds";
 
-  private static final String ISOLATION_TIMEOUTINMILLISECONDS_OLD =
+  private static final String ISOLATION_TIMEOUT_IN_MILLISECONDS_OLD =
       ".businessKeeper.command.execution.isolation.thread.timeoutInMilliseconds";
 
-  private static final String ISOLATION_TIMEOUTENABLED = "timeout.enabled";
+  private static final String ISOLATION_TIMEOUT_ENABLED = "timeout.enabled";
 
-  private static final String ISOLATION_MAXCONCURRENTREQUESTS = "maxConcurrentRequests";
+  private static final String ISOLATION_MAX_CONCURRENT_REQUESTS = "maxConcurrentRequests";
 
   //circuit breaker
   private static final String CIRCUIT_BREAKER = "cse.circuitBreaker.";
@@ -40,11 +40,11 @@ public final class Configuration {
 
   private static final String CIRCUIT_BREAKER_FORCECLOSED = "forceClosed";
 
-  private static final String CIRCUIT_BREAKER_SLEEPWINDOWINMILLISECONDS = "sleepWindowInMilliseconds";
+  private static final String CIRCUIT_BREAKER_SLEEP_WINDOW_IN_MILLISECONDS = "sleepWindowInMilliseconds";
 
-  private static final String CIRCUIT_BREAKER_REQUESTVOLUMETHRESHOLD = "requestVolumeThreshold";
+  private static final String CIRCUIT_BREAKER_REQUEST_VOLUME_THRESHOLD = "requestVolumeThreshold";
 
-  private static final String CIRCUIT_BREAKER_ERRORTHRESHOLDPERCENTAGE = "errorThresholdPercentage";
+  private static final String CIRCUIT_BREAKER_ERROR_THRESHOLD_PERCENTAGE = "errorThresholdPercentage";
 
   // fallback
   // following items only supports consumer
@@ -54,7 +54,7 @@ public final class Configuration {
 
   private static final String FALLBACK_FORCE = "force";
 
-  private static final String FALLBACK_MAXCONCURRENTREQUESTS = "maxConcurrentRequests";
+  private static final String FALLBACK_MAX_CONCURRENT_REQUESTS = "maxConcurrentRequests";
 
   // fallbackpolicy
   private static final String FALLBACKPOLICY = "cse.fallbackpolicy.";
@@ -85,12 +85,12 @@ public final class Configuration {
       String qualifiedOperationName) {
     int timeout;
     String p = getProperty("30000",
-        ISOLATION + type + "." + qualifiedOperationName + "." + ISOLATION_TIMEOUTINMILLISECONDS,
-        ISOLATION + type + "." + microserviceName + "." + ISOLATION_TIMEOUTINMILLISECONDS,
-        ISOLATION + type + "." + ISOLATION_TIMEOUTINMILLISECONDS,
+        ISOLATION + type + "." + qualifiedOperationName + "." + ISOLATION_TIMEOUT_IN_MILLISECONDS,
+        ISOLATION + type + "." + microserviceName + "." + ISOLATION_TIMEOUT_IN_MILLISECONDS,
+        ISOLATION + type + "." + ISOLATION_TIMEOUT_IN_MILLISECONDS,
         // 2.0 compatible
-        type + "." + microserviceName + ISOLATION_TIMEOUTINMILLISECONDS_OLD,
-        type + ".default" + ISOLATION_TIMEOUTINMILLISECONDS_OLD);
+        type + "." + microserviceName + ISOLATION_TIMEOUT_IN_MILLISECONDS_OLD,
+        type + ".default" + ISOLATION_TIMEOUT_IN_MILLISECONDS_OLD);
     try {
       timeout = Integer.parseInt(p);
     } catch (NumberFormatException e) {
@@ -105,9 +105,9 @@ public final class Configuration {
   public boolean getIsolationTimeoutEnabled(String type, String microserviceName,
       String qualifiedOperationName) {
     String p = getProperty("false",
-        ISOLATION + type + "." + qualifiedOperationName + "." + ISOLATION_TIMEOUTENABLED,
-        ISOLATION + type + "." + microserviceName + "." + ISOLATION_TIMEOUTENABLED,
-        ISOLATION + type + "." + ISOLATION_TIMEOUTENABLED);
+        ISOLATION + type + "." + qualifiedOperationName + "." + ISOLATION_TIMEOUT_ENABLED,
+        ISOLATION + type + "." + microserviceName + "." + ISOLATION_TIMEOUT_ENABLED,
+        ISOLATION + type + "." + ISOLATION_TIMEOUT_ENABLED);
     return Boolean.parseBoolean(p);
   }
 
@@ -115,9 +115,9 @@ public final class Configuration {
       String qualifiedOperationName) {
     int concurrentRequests;
     String p = getProperty("10",
-        ISOLATION + type + "." + qualifiedOperationName + "." + ISOLATION_MAXCONCURRENTREQUESTS,
-        ISOLATION + type + "." + microserviceName + "." + ISOLATION_MAXCONCURRENTREQUESTS,
-        ISOLATION + type + "." + ISOLATION_MAXCONCURRENTREQUESTS);
+        ISOLATION + type + "." + qualifiedOperationName + "." + ISOLATION_MAX_CONCURRENT_REQUESTS,
+        ISOLATION + type + "." + microserviceName + "." + ISOLATION_MAX_CONCURRENT_REQUESTS,
+        ISOLATION + type + "." + ISOLATION_MAX_CONCURRENT_REQUESTS);
     try {
       concurrentRequests = Integer.parseInt(p);
     } catch (NumberFormatException e) {
@@ -157,9 +157,9 @@ public final class Configuration {
       String qualifiedOperationName) {
     String p = getProperty("15000",
         CIRCUIT_BREAKER + type + "." + qualifiedOperationName + "."
-            + CIRCUIT_BREAKER_SLEEPWINDOWINMILLISECONDS,
-        CIRCUIT_BREAKER + type + "." + microserviceName + "." + CIRCUIT_BREAKER_SLEEPWINDOWINMILLISECONDS,
-        CIRCUIT_BREAKER + type + "." + CIRCUIT_BREAKER_SLEEPWINDOWINMILLISECONDS);
+            + CIRCUIT_BREAKER_SLEEP_WINDOW_IN_MILLISECONDS,
+        CIRCUIT_BREAKER + type + "." + microserviceName + "." + CIRCUIT_BREAKER_SLEEP_WINDOW_IN_MILLISECONDS,
+        CIRCUIT_BREAKER + type + "." + CIRCUIT_BREAKER_SLEEP_WINDOW_IN_MILLISECONDS);
     try {
       return Integer.parseInt(p);
     } catch (NumberFormatException e) {
@@ -171,9 +171,9 @@ public final class Configuration {
       String qualifiedOperationName) {
     String p = getProperty("20",
         CIRCUIT_BREAKER + type + "." + qualifiedOperationName + "."
-            + CIRCUIT_BREAKER_REQUESTVOLUMETHRESHOLD,
-        CIRCUIT_BREAKER + type + "." + microserviceName + "." + CIRCUIT_BREAKER_REQUESTVOLUMETHRESHOLD,
-        CIRCUIT_BREAKER + type + "." + CIRCUIT_BREAKER_REQUESTVOLUMETHRESHOLD);
+            + CIRCUIT_BREAKER_REQUEST_VOLUME_THRESHOLD,
+        CIRCUIT_BREAKER + type + "." + microserviceName + "." + CIRCUIT_BREAKER_REQUEST_VOLUME_THRESHOLD,
+        CIRCUIT_BREAKER + type + "." + CIRCUIT_BREAKER_REQUEST_VOLUME_THRESHOLD);
     try {
       return Integer.parseInt(p);
     } catch (NumberFormatException e) {
@@ -185,9 +185,9 @@ public final class Configuration {
       String qualifiedOperationName) {
     String p = getProperty("50",
         CIRCUIT_BREAKER + type + "." + qualifiedOperationName + "."
-            + CIRCUIT_BREAKER_ERRORTHRESHOLDPERCENTAGE,
-        CIRCUIT_BREAKER + type + "." + microserviceName + "." + CIRCUIT_BREAKER_ERRORTHRESHOLDPERCENTAGE,
-        CIRCUIT_BREAKER + type + "." + CIRCUIT_BREAKER_ERRORTHRESHOLDPERCENTAGE);
+            + CIRCUIT_BREAKER_ERROR_THRESHOLD_PERCENTAGE,
+        CIRCUIT_BREAKER + type + "." + microserviceName + "." + CIRCUIT_BREAKER_ERROR_THRESHOLD_PERCENTAGE,
+        CIRCUIT_BREAKER + type + "." + CIRCUIT_BREAKER_ERROR_THRESHOLD_PERCENTAGE);
     try {
       return Integer.parseInt(p);
     } catch (NumberFormatException e) {
@@ -213,9 +213,9 @@ public final class Configuration {
 
   public int getFallbackMaxConcurrentRequests(String type, String microserviceName, String qualifiedOperationName) {
     String p = getProperty("10",
-        FALLBACK + type + "." + qualifiedOperationName + "." + FALLBACK_MAXCONCURRENTREQUESTS,
-        FALLBACK + type + "." + microserviceName + "." + FALLBACK_MAXCONCURRENTREQUESTS,
-        FALLBACK + type + "." + FALLBACK_MAXCONCURRENTREQUESTS);
+        FALLBACK + type + "." + qualifiedOperationName + "." + FALLBACK_MAX_CONCURRENT_REQUESTS,
+        FALLBACK + type + "." + microserviceName + "." + FALLBACK_MAX_CONCURRENT_REQUESTS,
+        FALLBACK + type + "." + FALLBACK_MAX_CONCURRENT_REQUESTS);
     try {
       return Integer.parseInt(p);
     } catch (NumberFormatException e) {
