@@ -27,12 +27,12 @@ import com.netflix.servo.monitor.DoubleGauge;
 import com.netflix.servo.monitor.LongGauge;
 import com.netflix.servo.monitor.MonitorConfig;
 
-import io.servicecomb.metrics.core.registry.BasicTimerMetric;
-import io.servicecomb.metrics.core.registry.CounterMetric;
+import io.servicecomb.metrics.core.metric.BasicTimerMetric;
+import io.servicecomb.metrics.core.metric.CounterMetric;
 import io.servicecomb.metrics.core.registry.DefaultMetricsRegistry;
-import io.servicecomb.metrics.core.registry.DoubleGaugeMetric;
-import io.servicecomb.metrics.core.registry.LongGaugeMetric;
-import io.servicecomb.metrics.core.registry.Metric;
+import io.servicecomb.metrics.core.metric.DoubleGaugeMetric;
+import io.servicecomb.metrics.core.metric.LongGaugeMetric;
+import io.servicecomb.metrics.core.metric.Metric;
 import io.servicecomb.metrics.core.registry.MetricsRegistry;
 
 public class TestDefaultMetricsRegistry {

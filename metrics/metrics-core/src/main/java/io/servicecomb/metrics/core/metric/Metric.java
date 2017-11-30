@@ -14,26 +14,16 @@
  * limitations under the License.
  */
 
-package io.servicecomb.metrics.core.registry;
+package io.servicecomb.metrics.core.metric;
 
-import com.netflix.servo.monitor.DoubleGauge;
+import java.util.Map;
 
-public class DoubleGaugeMetric extends AbstractMetric {
+public interface Metric {
+  String getName();
 
-  private final DoubleGauge gauge;
+  void update(Number num);
 
-  public DoubleGaugeMetric(DoubleGauge gauge) {
-    super(gauge.getConfig().getName());
-    this.gauge = gauge;
-  }
+  Number get(String tag);
 
-  @Override
-  public void update(Number num) {
-    gauge.set(num.doubleValue());
-  }
-
-  @Override
-  public Number get(String tag) {
-    return gauge.getValue();
-  }
+  Map<String, Number> getAll();
 }

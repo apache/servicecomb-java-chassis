@@ -14,28 +14,22 @@
  * limitations under the License.
  */
 
-package io.servicecomb.metrics.core.registry;
+package io.servicecomb.metrics.core.provider;
 
-import java.util.HashMap;
 import java.util.Map;
 
-public abstract class AbstractMetric implements Metric {
+import io.servicecomb.metrics.core.registry.MetricsRegistry;
 
-  private final String name;
+public class DefaultMetricsPublisher implements MetricsPublisher {
 
-  @Override
-  public String getName() {
-    return name;
-  }
+  private final MetricsRegistry registry;
 
-  public AbstractMetric(String name) {
-    this.name = name;
+  public DefaultMetricsPublisher(MetricsRegistry registry) {
+    this.registry = registry;
   }
 
   @Override
-  public Map<String, Number> getAll() {
-    Map<String, Number> values = new HashMap<>(1);
-    values.put(name, get(null));
-    return values;
+  public Map<String, Number> metrics() {
+    return registry.getAllMetricsValue();
   }
 }

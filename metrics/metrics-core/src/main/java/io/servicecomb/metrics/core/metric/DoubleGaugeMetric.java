@@ -14,19 +14,26 @@
  * limitations under the License.
  */
 
-package io.servicecomb.metrics.core.registry;
+package io.servicecomb.metrics.core.metric;
 
-import java.util.List;
-import java.util.Map;
+import com.netflix.servo.monitor.DoubleGauge;
 
-import io.servicecomb.metrics.core.metric.Metric;
+public class DoubleGaugeMetric extends AbstractMetric {
 
-public interface MetricsRegistry {
-  void registerMetric(Metric metric);
+  private final DoubleGauge gauge;
 
-  List<Long> getPollingIntervals();
+  public DoubleGaugeMetric(DoubleGauge gauge) {
+    super(gauge.getConfig().getName());
+    this.gauge = gauge;
+  }
 
-  Number getMetricsValue(String name, String tag);
+  @Override
+  public void update(Number num) {
+    gauge.set(num.doubleValue());
+  }
 
-  Map<String, Number> getAllMetricsValue();
+  @Override
+  public Number get(String tag) {
+    return gauge.getValue();
+  }
 }

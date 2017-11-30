@@ -14,26 +14,26 @@
  * limitations under the License.
  */
 
-package io.servicecomb.metrics.core.registry;
+package io.servicecomb.metrics.core.metric;
 
-import com.netflix.servo.monitor.Counter;
+import com.netflix.servo.monitor.LongGauge;
 
-public class CounterMetric extends AbstractMetric {
+public class LongGaugeMetric extends AbstractMetric {
 
-  private final Counter counter;
+  private final LongGauge gauge;
 
-  public CounterMetric(Counter counter) {
-    super(counter.getConfig().getName());
-    this.counter = counter;
+  public LongGaugeMetric(LongGauge gauge) {
+    super(gauge.getConfig().getName());
+    this.gauge = gauge;
   }
 
   @Override
   public void update(Number num) {
-    counter.increment(num.longValue());
+    gauge.set(num.longValue());
   }
 
   @Override
   public Number get(String tag) {
-    return counter.getValue();
+    return gauge.getValue();
   }
 }

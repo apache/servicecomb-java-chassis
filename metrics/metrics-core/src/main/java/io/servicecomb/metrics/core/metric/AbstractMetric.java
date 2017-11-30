@@ -14,26 +14,28 @@
  * limitations under the License.
  */
 
-package io.servicecomb.metrics.core.registry;
+package io.servicecomb.metrics.core.metric;
 
-import com.netflix.servo.monitor.LongGauge;
+import java.util.HashMap;
+import java.util.Map;
 
-public class LongGaugeMetric extends AbstractMetric {
+public abstract class AbstractMetric implements Metric {
 
-  private final LongGauge gauge;
+  private final String name;
 
-  public LongGaugeMetric(LongGauge gauge) {
-    super(gauge.getConfig().getName());
-    this.gauge = gauge;
+  @Override
+  public String getName() {
+    return name;
+  }
+
+  public AbstractMetric(String name) {
+    this.name = name;
   }
 
   @Override
-  public void update(Number num) {
-    gauge.set(num.longValue());
-  }
-
-  @Override
-  public Number get(String tag) {
-    return gauge.getValue();
+  public Map<String, Number> getAll() {
+    Map<String, Number> values = new HashMap<>(1);
+    values.put(name, get(null));
+    return values;
   }
 }

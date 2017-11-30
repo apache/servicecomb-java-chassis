@@ -14,19 +14,26 @@
  * limitations under the License.
  */
 
-package io.servicecomb.metrics.core.registry;
+package io.servicecomb.metrics.core.metric;
 
-import java.util.List;
-import java.util.Map;
+import com.netflix.servo.monitor.Counter;
 
-import io.servicecomb.metrics.core.metric.Metric;
+public class CounterMetric extends AbstractMetric {
 
-public interface MetricsRegistry {
-  void registerMetric(Metric metric);
+  private final Counter counter;
 
-  List<Long> getPollingIntervals();
+  public CounterMetric(Counter counter) {
+    super(counter.getConfig().getName());
+    this.counter = counter;
+  }
 
-  Number getMetricsValue(String name, String tag);
+  @Override
+  public void update(Number num) {
+    counter.increment(num.longValue());
+  }
 
-  Map<String, Number> getAllMetricsValue();
+  @Override
+  public Number get(String tag) {
+    return counter.getValue();
+  }
 }

@@ -14,16 +14,10 @@
  * limitations under the License.
  */
 
-package io.servicecomb.metrics.core.registry;
+package io.servicecomb.metrics.core.provider;
 
 import java.util.Map;
 
-public interface Metric {
-  String getName();
-
-  void update(Number num);
-
-  Number get(String tag);
-
-  Map<String, Number> getAll();
+public interface MetricsPublisher {
+  Map<String, Number> metrics();
 }

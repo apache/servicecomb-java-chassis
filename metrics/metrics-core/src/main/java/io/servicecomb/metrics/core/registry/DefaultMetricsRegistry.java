@@ -22,13 +22,23 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 
+import com.netflix.config.DynamicPropertyFactory;
 import com.netflix.servo.monitor.Pollers;
 
 import io.servicecomb.foundation.common.exceptions.ServiceCombException;
+import io.servicecomb.metrics.core.metric.Metric;
 
 public class DefaultMetricsRegistry implements MetricsRegistry {
 
+  private static final String METRICS_POLLING_TIME = "servicecomb.metrics.polling.millisecond";
+
   private final Map<String, Metric> allRegisteredMetrics;
+
+  public DefaultMetricsRegistry() {
+    int pollingTime = DynamicPropertyFactory.getInstance().getIntProperty(METRICS_POLLING_TIME, 5000).get();
+    this.allRegisteredMetrics = new ConcurrentHashMap<>();
+    System.getProperties().setProperty("servo.pollers", String.valueOf(pollingTime));
+  }
 
   public DefaultMetricsRegistry(String pollingInterval) {
     this.allRegisteredMetrics = new ConcurrentHashMap<>();
