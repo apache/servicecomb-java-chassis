@@ -80,7 +80,6 @@ public class TestJavassistUtils {
     String intfName = "cse.ut.TestAddParameter";
     classConfig.setClassName(intfName);
 
-    // List<String> method(Map<String, String> map, Set<String> set)
     MethodConfig methodConfig = new MethodConfig();
     methodConfig.setName("method");
     methodConfig.setResult(TypeFactory.defaultInstance().constructCollectionType(List.class, String.class));
@@ -192,10 +191,8 @@ public class TestJavassistUtils {
 
   @Test
   public void managerClassPool() {
-    ClassLoader classLoader1 = new ClassLoader() {
-    };
-    ClassLoader classLoader2 = new ClassLoader() {
-    };
+    ClassLoader classLoader1 = new ClassLoader() { };
+    ClassLoader classLoader2 = new ClassLoader() { };
 
     ClassPool p1 = Deencapsulation.invoke(JavassistUtils.class, "getOrCreateClassPool", classLoader1);
     ClassPool p2 = Deencapsulation.invoke(JavassistUtils.class, "getOrCreateClassPool", classLoader2);
