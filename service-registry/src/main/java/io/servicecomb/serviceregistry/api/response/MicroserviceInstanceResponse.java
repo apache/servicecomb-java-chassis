@@ -20,15 +20,15 @@ import io.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
 
 public class MicroserviceInstanceResponse {
 
-	private MicroserviceInstance instance;
+  private MicroserviceInstance instance;
 
-	public MicroserviceInstance getInstance() {
-		return instance;
-	}
+  public MicroserviceInstance getInstance() {
+    return instance;
+  }
 
-	public void setInstance(MicroserviceInstance instance) {
-		this.instance = instance;
-	}
-	
-	
+  public void setInstance(MicroserviceInstance instance) {
+    this.instance = instance;
+  }
+
+
 }

@@ -630,27 +630,27 @@ public final class ServiceRegistryClientImpl implements ServiceRegistryClient {
     return false;
   }
 
-	@Override
-	public MicroserviceInstance findServiceInstance(String serviceId, String instanceId) {
-		try {
-			Holder<MicroserviceInstanceResponse> holder = new Holder<>();
-			IpPort ipPort = ipPortManager.getAvailableAddress(false);
-			CountDownLatch countDownLatch = new CountDownLatch(1);
-			RestUtils.get(ipPort,
-					String.format(Const.REGISTRY_API.MICROSERVICE_INSTANCE_OPERATION_ONE, serviceId, instanceId),
-					new RequestParam().addHeader("X-ConsumerId", serviceId), syncHandler(countDownLatch, MicroserviceInstanceResponse.class, holder));
-			countDownLatch.await();
-			if(null != holder.value)
-			{
-				return  holder.value.getInstance();
-			}
-			return null;
-		} catch (Exception e) {
-			LOGGER.error("get instance from sc failed");
-			return null;
-		}
-	
-	}
+  @Override
+  public MicroserviceInstance findServiceInstance(String serviceId, String instanceId) {
+    try {
+      Holder<MicroserviceInstanceResponse> holder = new Holder<>();
+      IpPort ipPort = ipPortManager.getAvailableAddress(false);
+      CountDownLatch countDownLatch = new CountDownLatch(1);
+      RestUtils.get(ipPort,
+          String.format(Const.REGISTRY_API.MICROSERVICE_INSTANCE_OPERATION_ONE, serviceId, instanceId),
+          new RequestParam().addHeader("X-ConsumerId", serviceId),
+          syncHandler(countDownLatch, MicroserviceInstanceResponse.class, holder));
+      countDownLatch.await();
+      if (null != holder.value) {
+        return holder.value.getInstance();
+      }
+      return null;
+    } catch (Exception e) {
+      LOGGER.error("get instance from sc failed");
+      return null;
+    }
+
+  }
   
   
 }

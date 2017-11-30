@@ -335,11 +335,11 @@ public class LocalServiceRegistryClientImpl implements ServiceRegistryClient {
     return true;
   }
 
-@Override
-public MicroserviceInstance findServiceInstance(String serviceId, String instanceId) {
-	Map<String, MicroserviceInstance> instances = microserviceInstanceMap.get(serviceId);
-	return instances.get(instanceId);
-}
+  @Override
+  public MicroserviceInstance findServiceInstance(String serviceId, String instanceId) {
+    Map<String, MicroserviceInstance> instances = microserviceInstanceMap.get(serviceId);
+    return instances.get(instanceId);
+  }
   
   
 }
