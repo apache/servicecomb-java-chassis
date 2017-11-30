@@ -54,29 +54,23 @@ public class TestJavassistUtils {
 
     Class<?> cls = JavassistUtils.createClass(classConfig);
 
-    // intField
     Field field = cls.getField("intField");
     Assert.assertEquals(Integer.class, field.getType());
 
     Method method = cls.getMethod("getIntField");
     Assert.assertEquals(Integer.class, method.getReturnType());
-    method = cls.getMethod("setIntField", Integer.class);
 
-    // intArrayField
     field = cls.getField("intArrayField");
     Assert.assertEquals(int[].class, field.getType());
 
     method = cls.getMethod("getIntArrayField");
     Assert.assertEquals(int[].class, method.getReturnType());
-    method = cls.getMethod("setIntArrayField", int[].class);
 
-    // listStringField
     field = cls.getField("listStringField");
     Assert.assertEquals("java.util.List<java.lang.String>", field.getGenericType().getTypeName());
 
     method = cls.getMethod("getListStringField");
     Assert.assertEquals("java.util.List<java.lang.String>", method.getGenericReturnType().getTypeName());
-    method = cls.getMethod("setListStringField", List.class);
   }
 
   @Test
@@ -86,7 +80,6 @@ public class TestJavassistUtils {
     String intfName = "cse.ut.TestAddParameter";
     classConfig.setClassName(intfName);
 
-    // List<String> method(Map<String, String> map, Set<String> set)
     MethodConfig methodConfig = new MethodConfig();
     methodConfig.setName("method");
     methodConfig.setResult(TypeFactory.defaultInstance().constructCollectionType(List.class, String.class));
@@ -198,10 +191,8 @@ public class TestJavassistUtils {
 
   @Test
   public void managerClassPool() {
-    ClassLoader classLoader1 = new ClassLoader() {
-    };
-    ClassLoader classLoader2 = new ClassLoader() {
-    };
+    ClassLoader classLoader1 = new ClassLoader() { };
+    ClassLoader classLoader2 = new ClassLoader() { };
 
     ClassPool p1 = Deencapsulation.invoke(JavassistUtils.class, "getOrCreateClassPool", classLoader1);
     ClassPool p2 = Deencapsulation.invoke(JavassistUtils.class, "getOrCreateClassPool", classLoader2);
