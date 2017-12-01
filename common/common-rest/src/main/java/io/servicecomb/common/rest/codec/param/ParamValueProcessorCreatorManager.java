@@ -30,6 +30,7 @@ public final class ParamValueProcessorCreatorManager extends RegisterManager<Str
     new HeaderProcessorCreator();
     new CookieProcessorCreator();
     new BodyProcessorCreator();
+    new PartProcessorCreator();
   }
 
   private ParamValueProcessorCreatorManager() {

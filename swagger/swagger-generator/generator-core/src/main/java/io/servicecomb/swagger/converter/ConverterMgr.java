@@ -23,6 +23,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import javax.servlet.http.HttpServletRequest;
+
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.type.SimpleType;
 import com.fasterxml.jackson.databind.type.TypeFactory;
@@ -39,6 +41,7 @@ import io.servicecomb.swagger.converter.property.StringPropertyConverter;
 import io.servicecomb.swagger.extend.property.ByteProperty;
 import io.servicecomb.swagger.extend.property.ShortProperty;
 import io.servicecomb.swagger.generator.core.SwaggerGenerator;
+import io.servicecomb.swagger.generator.parameters.PartParameter;
 import io.swagger.models.ArrayModel;
 import io.swagger.models.Model;
 import io.swagger.models.ModelImpl;
@@ -58,6 +61,7 @@ import io.swagger.models.properties.DateProperty;
 import io.swagger.models.properties.DateTimeProperty;
 import io.swagger.models.properties.DecimalProperty;
 import io.swagger.models.properties.DoubleProperty;
+import io.swagger.models.properties.FileProperty;
 import io.swagger.models.properties.FloatProperty;
 import io.swagger.models.properties.IntegerProperty;
 import io.swagger.models.properties.LongProperty;
@@ -124,6 +128,8 @@ public final class ConverterMgr {
     PROPERTY_MAP.put(DateTimeProperty.class, SimpleType.constructUnsafe(Date.class));
 
     PROPERTY_MAP.put(ByteArrayProperty.class, SimpleType.constructUnsafe(byte[].class));
+
+    PROPERTY_MAP.put(FileProperty.class, SimpleType.constructUnsafe(HttpServletRequest.class));
   }
 
   private static void initConverters() {
@@ -149,6 +155,7 @@ public final class ConverterMgr {
     converterMap.put(HeaderParameter.class, converter);
     converterMap.put(FormParameter.class, converter);
     converterMap.put(CookieParameter.class, converter);
+    converterMap.put(PartParameter.class, converter);
   }
 
   private static void addInnerConverter(Class<? extends Property> propertyCls) {

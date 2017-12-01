@@ -16,6 +16,8 @@
 
 package io.servicecomb.transport.rest.vertx;
 
+import static io.vertx.ext.web.handler.BodyHandler.DEFAULT_UPLOADS_DIRECTORY;
+
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -42,7 +44,7 @@ public abstract class AbstractVertxHttpDispatcher implements VertxHttpDispatcher
     RestBodyHandler bodyHandler = new RestBodyHandler();
 
     String uploadsDirectory =
-        DynamicPropertyFactory.getInstance().getStringProperty("cse.uploads.directory", null).get();
+        DynamicPropertyFactory.getInstance().getStringProperty("cse.uploads.directory", DEFAULT_UPLOADS_DIRECTORY).get();
     bodyHandler.setUploadsDirectory(uploadsDirectory);
     bodyHandler.setDeleteUploadedFilesOnEnd(true);
     LOGGER.info("set uploads directory to {}.", uploadsDirectory);
