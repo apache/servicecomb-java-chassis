@@ -90,8 +90,9 @@ public class CodeFirstSpringmvc extends CodeFirstSpringmvcBase {
 
   @RequestMapping(path = "/upload", method = RequestMethod.POST, produces = MediaType.TEXT_PLAIN_VALUE)
   @Override
-  public String singleFileUpload(@RequestPart(name = "file") MultipartFile file) {
-    return super.singleFileUpload(file);
+  public String fileUpload(@RequestPart(name = "file1") MultipartFile file1,
+      @RequestPart(name = "file2") MultipartFile file2) {
+    return super.fileUpload(file1, file2);
   }
 
   @RequestMapping(path = "/addDate", method = RequestMethod.POST)
