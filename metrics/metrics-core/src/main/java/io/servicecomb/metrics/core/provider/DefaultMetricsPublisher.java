@@ -33,8 +33,9 @@ public class DefaultMetricsPublisher implements MetricsPublisher {
 
   @Override
   public Map<String, Number> metrics() {
-    Map<String, Number> output = formatMetricsName(registry.getAllMetricsValue());
+    Map<String, Number> output = registry.getAllMetricsValue();
     removeUselessMetrics(output);
+    output = formatMetricsName(output);
     return output;
   }
 
@@ -42,19 +43,28 @@ public class DefaultMetricsPublisher implements MetricsPublisher {
     Map<String, Number> output = new HashMap<>();
 
     for (Entry<String, Number> entry : input.entrySet()) {
-      String name = entry.getKey();
+      String newName = entry.getKey();
       if (entry.getKey().startsWith(EmbeddedMetricsName.INSTANCE_QUEUE_EXECUTIONTIME)) {
-        String newName = EmbeddedMetricsName.INSTANCE_QUEUE + entry.getKey().substring(entry.getKey().lastIndexOf("."))
+        newName = EmbeddedMetricsName.INSTANCE_QUEUE + entry.getKey().substring(entry.getKey().lastIndexOf("."))
             + "ExecutionTime";
       } else if (entry.getKey().startsWith(EmbeddedMetricsName.INSTANCE_QUEUE_LIFETIMEINQUEUE)) {
-        String newName = EmbeddedMetricsName.INSTANCE_QUEUE + entry.getKey().substring(entry.getKey().lastIndexOf("."))
+        newName = EmbeddedMetricsName.INSTANCE_QUEUE + entry.getKey().substring(entry.getKey().lastIndexOf("."))
             + "LifeTimeInQueue";
       }
+
+      output.put(newName, entry.getValue());
     }
 
     return output;
   }
 
   private void removeUselessMetrics(Map<String, Number> input) {
+    //remove useless metrics for queue
+    input.remove(EmbeddedMetricsName.INSTANCE_QUEUE_EXECUTIONTIME);
+    input.remove(EmbeddedMetricsName.INSTANCE_QUEUE_EXECUTIONTIME + ".count");
+    input.remove(EmbeddedMetricsName.INSTANCE_QUEUE_EXECUTIONTIME + ".totalTime");
+    input.remove(EmbeddedMetricsName.INSTANCE_QUEUE_LIFETIMEINQUEUE);
+    input.remove(EmbeddedMetricsName.INSTANCE_QUEUE_LIFETIMEINQUEUE + ".count");
+    input.remove(EmbeddedMetricsName.INSTANCE_QUEUE_LIFETIMEINQUEUE + ".totalTime");
   }
 }
