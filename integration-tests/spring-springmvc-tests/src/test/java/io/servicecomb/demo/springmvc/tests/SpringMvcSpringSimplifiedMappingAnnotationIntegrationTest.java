@@ -30,6 +30,7 @@ public class SpringMvcSpringSimplifiedMappingAnnotationIntegrationTest extends S
   @BeforeClass
   public static void init() throws Exception {
     System.setProperty("spring.profiles.active", "SimplifiedMapping");
+    System.setProperty("cse.uploads.directory", "/tmp");
     context = SpringApplication.run(SpringMvcSpringMain.class);
   }
 

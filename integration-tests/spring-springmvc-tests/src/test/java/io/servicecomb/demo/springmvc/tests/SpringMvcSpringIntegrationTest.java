@@ -30,6 +30,7 @@ public class SpringMvcSpringIntegrationTest extends SpringMvcIntegrationTestBase
 
   @BeforeClass
   public static void init() throws Exception {
+    System.setProperty("cse.uploads.directory", "/tmp");
     context = SpringApplication.run(SpringMvcSpringMain.class);
   }
 
