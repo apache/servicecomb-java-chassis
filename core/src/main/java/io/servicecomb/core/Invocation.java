@@ -54,6 +54,7 @@ public class Invocation extends SwaggerInvocation {
   private Executor responseExecutor;
 
   //start,end of queue and opertion time after queue for operation level metrics.
+  //TODO:it will be delete (zhengyangyong)
   private Object metricsData;
 
   public Object getMetricsData() {
@@ -62,6 +63,17 @@ public class Invocation extends SwaggerInvocation {
 
   public void setMetricsData(Object metricsData) {
     this.metricsData = metricsData;
+  }
+
+
+  private long startProcessingTime;
+
+  public long getStartProcessingTime() {
+    return startProcessingTime;
+  }
+
+  public void setStartProcessingTime(long time) {
+    this.startProcessingTime = time;
   }
 
   public Invocation(ReferenceConfig referenceConfig, OperationMeta operationMeta, Object[] swaggerArguments) {

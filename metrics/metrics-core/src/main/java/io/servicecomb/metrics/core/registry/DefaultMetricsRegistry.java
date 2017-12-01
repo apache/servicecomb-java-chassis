@@ -23,26 +23,34 @@ import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 
 import com.netflix.config.DynamicPropertyFactory;
+import com.netflix.servo.monitor.LongGauge;
+import com.netflix.servo.monitor.MonitorConfig;
 import com.netflix.servo.monitor.Pollers;
 
 import io.servicecomb.foundation.common.exceptions.ServiceCombException;
+import io.servicecomb.metrics.core.EmbeddedMetricsName;
+import io.servicecomb.metrics.core.metric.BasicTimerMetric;
+import io.servicecomb.metrics.core.metric.LongGaugeMetric;
 import io.servicecomb.metrics.core.metric.Metric;
 
 public class DefaultMetricsRegistry implements MetricsRegistry {
 
   private static final String METRICS_POLLING_TIME = "servicecomb.metrics.polling.millisecond";
 
-  private final Map<String, Metric> allRegisteredMetrics;
+  private final Map<String, Metric> allRegisteredMetrics = new ConcurrentHashMap<>();
 
   public DefaultMetricsRegistry() {
     int pollingTime = DynamicPropertyFactory.getInstance().getIntProperty(METRICS_POLLING_TIME, 5000).get();
-    this.allRegisteredMetrics = new ConcurrentHashMap<>();
-    System.getProperties().setProperty("servo.pollers", String.valueOf(pollingTime));
+    this.init(String.valueOf(pollingTime));
   }
 
   public DefaultMetricsRegistry(String pollingInterval) {
-    this.allRegisteredMetrics = new ConcurrentHashMap<>();
+    this.init(pollingInterval);
+  }
+
+  private void init(String pollingInterval) {
     System.getProperties().setProperty("servo.pollers", pollingInterval);
+    initDefaultSupportedMetrics();
   }
 
   @Override
@@ -71,6 +79,14 @@ public class DefaultMetricsRegistry implements MetricsRegistry {
       metricValues.putAll(entry.getValue().getAll());
     }
     return metricValues;
+  }
+
+  private void initDefaultSupportedMetrics() {
+    //prepare for queue
+    this.registerMetric(new LongGaugeMetric(
+        new LongGauge(MonitorConfig.builder(EmbeddedMetricsName.INSTANCE_QUEUE_COUNTINQUEUE).build())));
+    this.registerMetric(new BasicTimerMetric(EmbeddedMetricsName.INSTANCE_QUEUE_EXECUTIONTIME));
+    this.registerMetric(new BasicTimerMetric(EmbeddedMetricsName.INSTANCE_QUEUE_LIFETIMEINQUEUE));
   }
 }
 

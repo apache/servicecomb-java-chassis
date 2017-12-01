@@ -33,6 +33,10 @@
       <artifactId>java-chassis-core</artifactId>
     </dependency>
     <dependency>
+      <groupId>io.servicecomb</groupId>
+      <artifactId>foundation-metrics</artifactId>
+    </dependency>
+    <dependency>
       <groupId>com.netflix.servo</groupId>
       <artifactId>servo-core</artifactId>
     </dependency>

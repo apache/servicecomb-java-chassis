@@ -16,8 +16,11 @@
 
 package io.servicecomb.metrics.core.provider;
 
+import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 
+import io.servicecomb.metrics.core.EmbeddedMetricsName;
 import io.servicecomb.metrics.core.registry.MetricsRegistry;
 
 public class DefaultMetricsPublisher implements MetricsPublisher {
@@ -30,6 +33,28 @@ public class DefaultMetricsPublisher implements MetricsPublisher {
 
   @Override
   public Map<String, Number> metrics() {
-    return registry.getAllMetricsValue();
+    Map<String, Number> output = formatMetricsName(registry.getAllMetricsValue());
+    removeUselessMetrics(output);
+    return output;
+  }
+
+  private Map<String, Number> formatMetricsName(Map<String, Number> input) {
+    Map<String, Number> output = new HashMap<>();
+
+    for (Entry<String, Number> entry : input.entrySet()) {
+      String name = entry.getKey();
+      if (entry.getKey().startsWith(EmbeddedMetricsName.INSTANCE_QUEUE_EXECUTIONTIME)) {
+        String newName = EmbeddedMetricsName.INSTANCE_QUEUE + entry.getKey().substring(entry.getKey().lastIndexOf("."))
+            + "ExecutionTime";
+      } else if (entry.getKey().startsWith(EmbeddedMetricsName.INSTANCE_QUEUE_LIFETIMEINQUEUE)) {
+        String newName = EmbeddedMetricsName.INSTANCE_QUEUE + entry.getKey().substring(entry.getKey().lastIndexOf("."))
+            + "LifeTimeInQueue";
+      }
+    }
+
+    return output;
+  }
+
+  private void removeUselessMetrics(Map<String, Number> input) {
   }
 }

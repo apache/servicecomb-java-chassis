@@ -42,9 +42,12 @@ import io.servicecomb.core.Invocation;
 import io.servicecomb.core.definition.MicroserviceMeta;
 import io.servicecomb.core.definition.OperationMeta;
 import io.servicecomb.foundation.common.utils.JsonUtils;
-import io.servicecomb.foundation.metrics.MetricsServoRegistry;
-import io.servicecomb.foundation.metrics.performance.QueueMetrics;
-import io.servicecomb.foundation.metrics.performance.QueueMetricsData;
+import io.servicecomb.foundation.metrics.event.MetricsEvent;
+import io.servicecomb.foundation.metrics.event.MetricsEventManager;
+import io.servicecomb.foundation.metrics.event.MetricsEventType;
+import io.servicecomb.foundation.metrics.event.data.InvocationFinishedData;
+import io.servicecomb.foundation.metrics.event.data.InvocationStartProcessingData;
+import io.servicecomb.foundation.metrics.event.data.InvocationStartedData;
 import io.servicecomb.foundation.vertx.http.HttpServletRequestEx;
 import io.servicecomb.foundation.vertx.http.HttpServletResponseEx;
 import io.servicecomb.foundation.vertx.stream.BufferOutputStream;
@@ -104,7 +107,9 @@ public abstract class AbstractRestInvocation {
 
   protected void scheduleInvocation() {
     OperationMeta operationMeta = restOperationMeta.getOperationMeta();
-    QueueMetrics metricsData = initMetrics(operationMeta);
+    InvocationStartedData startedData = new InvocationStartedData(operationMeta.getMicroserviceQualifiedName(),
+        System.nanoTime());
+    MetricsEventManager.triggerEvent(new MetricsEvent(MetricsEventType.InvocationStarted, startedData));
     operationMeta.getExecutor().execute(() -> {
       synchronized (this.requestEx) {
         try {
@@ -117,7 +122,7 @@ public abstract class AbstractRestInvocation {
             return;
           }
 
-          runOnExecutor(metricsData);
+          runOnExecutor(startedData);
         } catch (Throwable e) {
           LOGGER.error("rest server onRequest error", e);
           sendFailResponse(e);
@@ -126,12 +131,15 @@ public abstract class AbstractRestInvocation {
     });
   }
 
-  protected void runOnExecutor(QueueMetrics metricsData) {
+  protected void runOnExecutor(InvocationStartedData startedData) {
     Object[] args = RestCodec.restToArgs(requestEx, restOperationMeta);
     createInvocation(args);
 
-    this.invocation.setMetricsData(metricsData);
-    updateMetrics();
+    long startProcessingTime = System.nanoTime();
+    this.invocation.setStartProcessingTime(startProcessingTime);
+    InvocationStartProcessingData startProcessingData = new InvocationStartProcessingData(
+        startedData.getOperationName(), startProcessingTime, startProcessingTime - startedData.getStartedTime());
+    MetricsEventManager.triggerEvent(new MetricsEvent(MetricsEventType.InvocationStartProcessing, startProcessingData));
 
     invoke();
   }
@@ -174,7 +182,12 @@ public abstract class AbstractRestInvocation {
   protected void doInvoke() throws Throwable {
     invocation.next(resp -> {
       sendResponseQuietly(resp);
-      endMetrics();
+
+      long finishedTime = System.nanoTime();
+      InvocationFinishedData finishedData = new InvocationFinishedData(
+          invocation.getMicroserviceQualifiedName(), finishedTime,
+          finishedTime - invocation.getStartProcessingTime());
+      MetricsEventManager.triggerEvent(new MetricsEvent(MetricsEventType.InvocationFinished, finishedData));
     });
   }
 
@@ -227,54 +240,6 @@ public abstract class AbstractRestInvocation {
       }
 
       responseEx.flushBuffer();
-    }
-  }
-
-  /**
-   * Init the metrics. Note down the queue count and start time.
-   * @param operationMeta Operation data
-   * @return QueueMetrics
-   */
-  private QueueMetrics initMetrics(OperationMeta operationMeta) {
-    QueueMetrics metricsData = new QueueMetrics();
-    metricsData.setQueueStartTime(System.currentTimeMillis());
-    metricsData.setOperQualifiedName(operationMeta.getMicroserviceQualifiedName());
-    QueueMetricsData reqQueue = MetricsServoRegistry.getOrCreateLocalMetrics()
-        .getOrCreateQueueMetrics(operationMeta.getMicroserviceQualifiedName());
-    reqQueue.incrementCountInQueue();
-    return metricsData;
-  }
-
-  /**
-   * Update the queue metrics.
-   */
-  private void updateMetrics() {
-    QueueMetrics metricsData = (QueueMetrics) this.invocation.getMetricsData();
-    if (null != metricsData) {
-      metricsData.setQueueEndTime(System.currentTimeMillis());
-      QueueMetricsData reqQueue = MetricsServoRegistry.getOrCreateLocalMetrics()
-          .getOrCreateQueueMetrics(restOperationMeta.getOperationMeta().getMicroserviceQualifiedName());
-      reqQueue.incrementTotalCount();
-      Long timeInQueue = metricsData.getQueueEndTime() - metricsData.getQueueStartTime();
-      reqQueue.setTotalTime(reqQueue.getTotalTime() + timeInQueue);
-      reqQueue.setMinLifeTimeInQueue(timeInQueue);
-      reqQueue.setMaxLifeTimeInQueue(timeInQueue);
-      reqQueue.decrementCountInQueue();
-    }
-  }
-
-  /**
-   * Prepare the end time of queue metrics.
-   */
-  private void endMetrics() {
-    QueueMetrics metricsData = (QueueMetrics) this.invocation.getMetricsData();
-    if (null != metricsData) {
-      metricsData.setEndOperTime(System.currentTimeMillis());
-      QueueMetricsData reqQueue = MetricsServoRegistry.getOrCreateLocalMetrics()
-          .getOrCreateQueueMetrics(restOperationMeta.getOperationMeta().getMicroserviceQualifiedName());
-      reqQueue.incrementTotalServExecutionCount();
-      reqQueue.setTotalServExecutionTime(
-          reqQueue.getTotalServExecutionTime() + (metricsData.getEndOperTime() - metricsData.getQueueEndTime()));
     }
   }
 }

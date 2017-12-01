@@ -101,7 +101,7 @@ public class BasicTimerMetric extends AbstractMetric {
 
   @Override
   public Map<String, Number> getAll() {
-    Map<String, Number> values = new HashMap<>(1);
+    Map<String, Number> values = new HashMap<>(6);
     values.put(getName(), get(null));
     for (String tag : ALL_TAG) {
       values.put(String.join(".", getName(), tag), get(tag));
