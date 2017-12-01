@@ -173,15 +173,12 @@ public class SpringMvcIntegrationTestBase {
 
   @Test
   public void ableToUploadFile() throws IOException {
-    String fileContent = "hello world";
-    File file = folder.newFile();
-
-    try (FileOutputStream output = new FileOutputStream(file)) {
-      IOUtils.write(fileContent, output);
-    }
+    String file1Content = "hello world";
+    String file2Content = "bonjour";
 
     MultiValueMap<String, Object> map = new LinkedMultiValueMap<>();
-    map.add("file", new FileSystemResource(file.getAbsolutePath()));
+    map.add("file1", new FileSystemResource(newFile(file1Content).getAbsolutePath()));
+    map.add("file2", new FileSystemResource(newFile(file2Content).getAbsolutePath()));
 
     HttpHeaders headers = new HttpHeaders();
     headers.setContentType(MediaType.MULTIPART_FORM_DATA);
@@ -190,7 +187,7 @@ public class SpringMvcIntegrationTestBase {
         new HttpEntity<>(map, headers),
         String.class);
 
-    assertThat(result, is(fileContent));
+    assertThat(result, is(file1Content + file2Content));
   }
 
   @Test
@@ -424,5 +421,13 @@ public class SpringMvcIntegrationTestBase {
       throw new IllegalStateException(
           "Failed to read JSON from " + json + ", Exception is: " + e);
     }
+  }
+
+  private File newFile(String fileContent) throws IOException {
+    File file = folder.newFile();
+    try (FileOutputStream output = new FileOutputStream(file)) {
+      IOUtils.write(fileContent, output);
+    }
+    return file;
   }
 }

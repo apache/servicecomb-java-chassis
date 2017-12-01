@@ -93,8 +93,9 @@ public class CodeFirstSpringmvcSimplifiedMappingAnnotation extends CodeFirstSpri
 
   @PostMapping(path = "/upload", produces = MediaType.TEXT_PLAIN_VALUE)
   @Override
-  public String singleFileUpload(@RequestPart("file") MultipartFile file) {
-    return super.singleFileUpload(file);
+  public String fileUpload(@RequestPart("file1") MultipartFile file1,
+      @RequestPart(name = "file2") MultipartFile file2) {
+    return super.fileUpload(file1, file2);
   }
 
   @PostMapping(path = "/addDate")
