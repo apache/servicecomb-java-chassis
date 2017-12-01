@@ -19,21 +19,25 @@ package io.servicecomb.samples.springmvc.provider;
 
 import javax.ws.rs.core.MediaType;
 
+import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import io.servicecomb.foundation.advance.async.AsyncMethod;
 import io.servicecomb.provider.rest.common.RestSchema;
 import io.servicecomb.samples.common.schema.Hello;
 import io.servicecomb.samples.common.schema.models.Person;
 
 @RestSchema(schemaId = "springmvcHello")
 @RequestMapping(path = "/springmvchello", produces = MediaType.APPLICATION_JSON)
+@Component
 public class SpringmvcHelloImpl implements Hello {
 
   @Override
   @RequestMapping(path = "/sayhi", method = RequestMethod.POST)
+  @AsyncMethod
   public String sayHi(@RequestParam(name = "name") String name) {
     return "Hello " + name;
   }

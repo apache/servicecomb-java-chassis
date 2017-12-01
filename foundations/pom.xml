@@ -31,5 +31,6 @@
       <module>foundation-metrics</module>
       <module>foundation-ssl</module>
       <module>foundation-test-scaffolding</module>
+      <module>foundation-advance</module>
   </modules>
 </project>

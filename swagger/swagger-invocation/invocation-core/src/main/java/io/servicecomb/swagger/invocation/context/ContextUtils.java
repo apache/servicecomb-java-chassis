@@ -16,6 +16,9 @@
 
 package io.servicecomb.swagger.invocation.context;
 
+import java.util.concurrent.CompletableFuture;
+
+
 /**
  * 传递调用过程的上下文数据
  */
@@ -24,6 +27,8 @@ public final class ContextUtils {
   }
 
   private static ThreadLocal<InvocationContext> contextMgr = new ThreadLocal<>();
+
+  private static ThreadLocal<CompletableFuture> asyncFuture = new ThreadLocal<>();
 
   public static InvocationContext getInvocationContext() {
     return contextMgr.get();
@@ -37,8 +42,20 @@ public final class ContextUtils {
     return context;
   }
 
+  public static CompletableFuture getAndRemoveAsyncFuture() {
+    CompletableFuture future = asyncFuture.get();
+    if (future != null) {
+      asyncFuture.remove();
+    }
+    return future;
+  }
+
   public static void setInvocationContext(InvocationContext invocationContext) {
     contextMgr.set(invocationContext);
+  }
+
+  public static void setAsyncFuture(CompletableFuture future) {
+    asyncFuture.set(future);
   }
 
   public static void removeInvocationContext() {

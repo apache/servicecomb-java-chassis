@@ -17,6 +17,7 @@ package io.servicecomb.swagger.engine;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.concurrent.CompletableFuture;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,6 +27,7 @@ import io.servicecomb.swagger.invocation.Response;
 import io.servicecomb.swagger.invocation.SwaggerInvocation;
 import io.servicecomb.swagger.invocation.arguments.producer.ProducerArgumentsMapper;
 import io.servicecomb.swagger.invocation.context.ContextUtils;
+import io.servicecomb.swagger.invocation.exception.ExceptionFactory;
 import io.servicecomb.swagger.invocation.exception.InvocationException;
 import io.servicecomb.swagger.invocation.response.producer.ProducerResponseMapper;
 
@@ -61,6 +63,7 @@ public class SwaggerProducerOperation {
 
   public void setProducerClass(Class<?> producerClass) {
     this.producerClass = producerClass;
+    checkProxyMethod();
   }
 
   public Object getProducerInstance() {
@@ -69,6 +72,7 @@ public class SwaggerProducerOperation {
 
   public void setProducerInstance(Object producerInstance) {
     this.producerInstance = producerInstance;
+    checkProxyMethod();
   }
 
   public Method getProducerMethod() {
@@ -77,6 +81,7 @@ public class SwaggerProducerOperation {
 
   public void setProducerMethod(Method producerMethod) {
     this.producerMethod = producerMethod;
+    checkProxyMethod();
   }
 
   public Method getSwaggerMethod() {
@@ -106,21 +111,66 @@ public class SwaggerProducerOperation {
   public void invoke(SwaggerInvocation invocation, AsyncResponse asyncResp) {
     ContextUtils.setInvocationContext(invocation);
 
-    Response response = doInvoke(invocation);
+    Response response = doInvoke(invocation, asyncResp);
 
     ContextUtils.removeInvocationContext();
 
-    asyncResp.handle(response);
+    if (null != response) {
+      asyncResp.handle(response);
+    }
   }
 
   public Response doInvoke(SwaggerInvocation invocation) {
+    return doInvoke(invocation, null);
+  }
+
+  protected Response doInvoke(final SwaggerInvocation invocation, final AsyncResponse asyncResp) {
     Response response = null;
     try {
       Object[] args = argumentsMapper.toProducerArgs(invocation);
       Object result = producerMethod.invoke(producerInstance, args);
-      response = responseMapper.mapResponse(invocation.getStatus(), result);
+      CompletableFuture future = ContextUtils.getAndRemoveAsyncFuture();
+      if (null != future) {
+        // when application use async feature
+        if (null != asyncResp) {
+          future.whenComplete((res, err) -> asyncResp.handle(processResponse(invocation, res, (Throwable) err)));
+        } else {
+          response = responseMapper.mapResponse(invocation.getStatus(), future.get());
+        }
+      } else {
+        response = responseMapper.mapResponse(invocation.getStatus(), result);
+      }
     } catch (Throwable e) {
       response = processException(e);
+    }
+    return response;
+  }
+
+  protected void checkProxyMethod() {
+    if (null != this.producerMethod && null != this.producerClass && null != this.producerInstance) {
+      if (this.producerInstance.getClass() != this.producerClass) {
+        try {
+          this.producerMethod = this.producerInstance.getClass()
+              .getDeclaredMethod(this.producerMethod.getName(), this.producerMethod.getParameterTypes());
+        } catch (NoSuchMethodException e) {
+          throw ExceptionFactory.createProducerException(e);
+        }
+      }
+    }
+  }
+
+  protected Response processResponse(SwaggerInvocation invocation, Object result, Throwable e) {
+    Response response;
+    try {
+      if (null != result) {
+        response = responseMapper.mapResponse(invocation.getStatus(), result);
+      } else if (null != e) {
+        response = processException(e);
+      } else {
+        response = processException(new IllegalStateException());
+      }
+    } catch (Throwable throwable) {
+      response = processException(throwable);
     }
     return response;
   }
