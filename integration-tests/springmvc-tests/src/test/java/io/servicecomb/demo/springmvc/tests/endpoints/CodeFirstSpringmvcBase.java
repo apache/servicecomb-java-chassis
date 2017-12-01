@@ -16,6 +16,7 @@
 
 package io.servicecomb.demo.springmvc.tests.endpoints;
 
+import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -23,9 +24,11 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.Response.Status;
 
+import org.apache.commons.io.IOUtils;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.multipart.MultipartFile;
 
 import io.servicecomb.common.rest.codec.RestObjectMapper;
 import io.servicecomb.demo.controller.Person;
@@ -68,6 +71,14 @@ public class CodeFirstSpringmvcBase {
   public byte[] bytes(byte[] input) {
     input[0] = (byte) (input[0] + 1);
     return input;
+  }
+
+  public String singleFileUpload(MultipartFile file) {
+    try {
+      return IOUtils.toString(file.getInputStream());
+    } catch (IOException e) {
+      throw new IllegalArgumentException(e);
+    }
   }
 
   public Date addDate(Date date, long seconds) {

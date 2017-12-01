@@ -34,6 +34,8 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
+import org.springframework.web.multipart.MultipartFile;
 
 import io.servicecomb.demo.controller.Person;
 import io.servicecomb.demo.server.User;
@@ -84,6 +86,12 @@ public class CodeFirstSpringmvc extends CodeFirstSpringmvcBase {
   @Override
   public byte[] bytes(@RequestBody byte[] input) {
     return super.bytes(input);
+  }
+
+  @RequestMapping(path = "/upload", method = RequestMethod.POST, produces = MediaType.TEXT_PLAIN_VALUE)
+  @Override
+  public String singleFileUpload(@RequestPart(name = "file") MultipartFile file) {
+    return super.singleFileUpload(file);
   }
 
   @RequestMapping(path = "/addDate", method = RequestMethod.POST)

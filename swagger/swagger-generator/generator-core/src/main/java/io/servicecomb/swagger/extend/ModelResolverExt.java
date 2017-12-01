@@ -29,48 +29,46 @@ import org.springframework.util.StringUtils;
 import com.fasterxml.jackson.databind.JavaType;
 
 import io.servicecomb.foundation.common.exceptions.ServiceCombException;
+import io.servicecomb.foundation.common.utils.SPIServiceUtils;
 import io.servicecomb.swagger.converter.property.StringPropertyConverter;
-import io.servicecomb.swagger.extend.property.ByteProperty;
-import io.servicecomb.swagger.extend.property.ShortProperty;
+import io.servicecomb.swagger.extend.property.creator.ByteArrayPropertyCreator;
+import io.servicecomb.swagger.extend.property.creator.BytePropertyCreator;
+import io.servicecomb.swagger.extend.property.creator.InputStreamPropertyCreator;
+import io.servicecomb.swagger.extend.property.creator.PropertyCreator;
+import io.servicecomb.swagger.extend.property.creator.ShortPropertyCreator;
 import io.swagger.converter.ModelConverter;
 import io.swagger.converter.ModelConverterContext;
 import io.swagger.jackson.ModelResolver;
 import io.swagger.models.Model;
 import io.swagger.models.ModelImpl;
-import io.swagger.models.properties.ByteArrayProperty;
 import io.swagger.models.properties.Property;
 import io.swagger.models.properties.StringProperty;
 import io.swagger.util.Json;
 
 public class ModelResolverExt extends ModelResolver {
   private static final Logger LOGGER = LoggerFactory.getLogger(ModelResolverExt.class);
-  
-  private interface PropertyCreator {
-    Property createProperty();
-  }
 
   private Map<Class<?>, PropertyCreator> creatorMap = new HashMap<>();
 
   public ModelResolverExt() {
     super(Json.mapper());
 
-    addCreator(() -> {
-      return new ByteProperty();
-    }, Byte.class, byte.class);
-
-    addCreator(() -> {
-      return new ShortProperty();
-    }, Short.class, short.class);
-
-    addCreator(() -> {
-      return new ByteArrayProperty();
-    }, Byte[].class, byte[].class);
+    addCreator(new BytePropertyCreator());
+    addCreator(new ShortPropertyCreator());
+    addCreator(new ByteArrayPropertyCreator());
+    addCreator(new InputStreamPropertyCreator());
+    loadPropertyCreators();
   }
 
-  private void addCreator(PropertyCreator creator, Class<?>... clsArr) {
-    for (Class<?> cls : clsArr) {
+  private void addCreator(PropertyCreator creator) {
+    for (Class<?> cls : creator.classes()) {
       creatorMap.put(cls, creator);
     }
+  }
+
+  private void loadPropertyCreators() {
+    SPIServiceUtils.getAllService(PropertyCreator.class)
+        .forEach(this::addCreator);
   }
 
   private void setType(JavaType type, Map<String, Object> vendorExtensions) {
@@ -80,9 +78,7 @@ public class ModelResolverExt extends ModelResolver {
   private void checkType(JavaType type) {
     // 原子类型/string在java中是abstract的
     if (type.getRawClass().isPrimitive()
-        || byte[].class.equals(type.getRawClass())
-        || Byte[].class.equals(type.getRawClass())
-        || String.class.equals(type.getRawClass())) {
+        || creatorMap.containsKey(type.getRawClass())) {
       return;
     }
 

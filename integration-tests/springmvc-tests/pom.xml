@@ -41,6 +41,10 @@
       <groupId>io.servicecomb</groupId>
       <artifactId>provider-rest-common</artifactId>
     </dependency>
+    <dependency>
+      <groupId>io.servicecomb</groupId>
+      <artifactId>provider-springmvc</artifactId>
+    </dependency>
   </dependencies>
 
   <build>

@@ -31,6 +31,8 @@ import static org.springframework.http.HttpStatus.OK;
 import static org.springframework.http.MediaType.APPLICATION_FORM_URLENCODED_VALUE;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
@@ -39,12 +41,17 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.io.IOUtils;
+import org.junit.ClassRule;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.core.io.FileSystemResource;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
@@ -59,6 +66,8 @@ import io.servicecomb.demo.server.User;
 
 @Ignore
 public class SpringMvcIntegrationTestBase {
+  @ClassRule
+  public static final TemporaryFolder folder = new TemporaryFolder();
 
   private final String baseUrl = "http://127.0.0.1:8080/";
 
@@ -160,6 +169,28 @@ public class SpringMvcIntegrationTestBase {
     assertEquals(1, result[1]);
     assertEquals(2, result[2]);
     assertEquals(3, result.length);
+  }
+
+  @Test
+  public void ableToUploadFile() throws IOException {
+    String fileContent = "hello world";
+    File file = folder.newFile();
+
+    try (FileOutputStream output = new FileOutputStream(file)) {
+      IOUtils.write(fileContent, output);
+    }
+
+    MultiValueMap<String, Object> map = new LinkedMultiValueMap<>();
+    map.add("file", new FileSystemResource(file.getAbsolutePath()));
+
+    HttpHeaders headers = new HttpHeaders();
+    headers.setContentType(MediaType.MULTIPART_FORM_DATA);
+    String result = restTemplate.postForObject(
+        codeFirstUrl + "upload",
+        new HttpEntity<>(map, headers),
+        String.class);
+
+    assertThat(result, is(fileContent));
   }
 
   @Test

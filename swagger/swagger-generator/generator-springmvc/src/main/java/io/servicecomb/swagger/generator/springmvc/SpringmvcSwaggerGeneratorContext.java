@@ -31,6 +31,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
 
 import io.servicecomb.swagger.generator.core.utils.ClassUtils;
 import io.servicecomb.swagger.generator.rest.RestSwaggerGeneratorContext;
@@ -47,6 +48,7 @@ import io.servicecomb.swagger.generator.springmvc.processor.annotation.RequestHe
 import io.servicecomb.swagger.generator.springmvc.processor.annotation.RequestMappingClassAnnotationProcessor;
 import io.servicecomb.swagger.generator.springmvc.processor.annotation.RequestMappingMethodAnnotationProcessor;
 import io.servicecomb.swagger.generator.springmvc.processor.annotation.RequestParamAnnotationProcessor;
+import io.servicecomb.swagger.generator.springmvc.processor.annotation.RequestPartAnnotationProcessor;
 import io.servicecomb.swagger.generator.springmvc.processor.parameter.SpringmvcDefaultParameterProcessor;
 import io.servicecomb.swagger.generator.springmvc.processor.response.ResponseEntityProcessor;
 
@@ -102,6 +104,7 @@ public class SpringmvcSwaggerGeneratorContext extends RestSwaggerGeneratorContex
     parameterAnnotationMgr.register(RequestHeader.class, new RequestHeaderAnnotationProcessor());
     parameterAnnotationMgr.register(RequestParam.class, new RequestParamAnnotationProcessor());
     parameterAnnotationMgr.register(RequestAttribute.class, new RequestAttributeAnnotationProcessor());
+    parameterAnnotationMgr.register(RequestPart.class, new RequestPartAnnotationProcessor());
   }
 
   @Override
