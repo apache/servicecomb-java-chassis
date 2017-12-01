@@ -37,6 +37,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.multipart.MultipartFile;
 
 import io.servicecomb.demo.controller.Person;
@@ -92,7 +93,7 @@ public class CodeFirstSpringmvcSimplifiedMappingAnnotation extends CodeFirstSpri
 
   @PostMapping(path = "/upload", produces = MediaType.TEXT_PLAIN_VALUE)
   @Override
-  public String singleFileUpload(MultipartFile file) {
+  public String singleFileUpload(@RequestPart("file") MultipartFile file) {
     return super.singleFileUpload(file);
   }
 
