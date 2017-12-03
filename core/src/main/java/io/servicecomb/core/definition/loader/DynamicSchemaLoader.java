@@ -44,6 +44,8 @@ public class DynamicSchemaLoader {
 
   public static final DynamicSchemaLoader INSTANCE = new DynamicSchemaLoader();
 
+  private DynamicSchemaLoader() {}
+
   /**
    * 动态注册指定目录下的schema契约到当前服务
    * @param schemaLocation eg. "classpath*:schemas/*.yaml"

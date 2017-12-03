@@ -17,7 +17,10 @@
 package io.servicecomb.core.definition.classloader;
 
 public class PrivateMicroserviceClassLoaderFactory implements MicroserviceClassLoaderFactory {
+
   public static final MicroserviceClassLoaderFactory INSTANCE = new PrivateMicroserviceClassLoaderFactory();
+
+  private PrivateMicroserviceClassLoaderFactory() {}
 
   @Override
   public ClassLoader create(String appId, String microserviceName, String version) {
