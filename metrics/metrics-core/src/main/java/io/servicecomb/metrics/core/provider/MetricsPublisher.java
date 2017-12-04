@@ -20,4 +20,8 @@ import java.util.Map;
 
 public interface MetricsPublisher {
   Map<String, Number> metrics();
+
+  Map<String, Number> metrics(String operationName);
+
+  Map<String, Number> metrics(String operationName, String catalog);
 }

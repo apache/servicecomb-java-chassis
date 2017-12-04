@@ -16,19 +16,15 @@
 
 package io.servicecomb.metrics.core.registry;
 
-import java.util.List;
 import java.util.Map;
 
-import io.servicecomb.metrics.core.metric.Metric;
+import io.servicecomb.metrics.core.health.HealthCheckResult;
+import io.servicecomb.metrics.core.health.HealthChecker;
 
-public interface MetricsRegistry {
-  void registerMetric(Metric metric);
+public interface HealthCheckRegistry {
+  void registerHealthChecker(HealthChecker checker);
 
-  List<Long> getPollingIntervals();
+  HealthCheckResult checkStatus(String name);
 
-  Map<String, Number> getAllMetricsValue();
-
-  Map<String, Number> getMetricsValues(String operationName);
-
-  Map<String, Number> getMetricsValues(String operationName, String catalog);
+  Map<String, HealthCheckResult> checkAllStatus();
 }

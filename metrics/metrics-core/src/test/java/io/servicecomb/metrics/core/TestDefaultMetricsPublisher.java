@@ -29,12 +29,13 @@ import io.servicecomb.metrics.core.metric.BasicTimerMetric;
 import io.servicecomb.metrics.core.provider.DefaultMetricsPublisher;
 import io.servicecomb.metrics.core.provider.MetricsPublisher;
 import io.servicecomb.metrics.core.registry.DefaultMetricsRegistry;
+import io.servicecomb.metrics.core.registry.MetricsRegistry;
 
 public class TestDefaultMetricsPublisher {
 
   @Test
   public void testPublisher() {
-    DefaultMetricsRegistry registry = mock(DefaultMetricsRegistry.class);
+    MetricsRegistry registry = mock(MetricsRegistry.class);
 
     Map<String, Number> allMetrics = new HashMap<>();
     allMetrics.put(EmbeddedMetricsName.INSTANCE_QUEUE_COUNTINQUEUE, 1);

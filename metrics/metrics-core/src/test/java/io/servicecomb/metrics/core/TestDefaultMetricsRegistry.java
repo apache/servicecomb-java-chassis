@@ -115,5 +115,16 @@ public class TestDefaultMetricsRegistry {
     Assert.assertTrue(results.get(String.join(".", "timer", BasicTimerMetric.MAX)).doubleValue() == 3);
     Assert.assertTrue(results.get(String.join(".", "timer", BasicTimerMetric.COUNT)).doubleValue() == 2);
     Assert.assertTrue(results.get(String.join(".", "timer", BasicTimerMetric.AVERAGE)).doubleValue() == 2);
+
+    //test filtered metrics
+    results = registry.getMetricsValues("instance");
+    for(String key : results.keySet()) {
+      Assert.assertTrue(key.startsWith("servicecomb.instance"));
+    }
+
+    results = registry.getMetricsValues("instance",MetricsCatalog.QUEUE);
+    for(String key : results.keySet()) {
+      Assert.assertTrue(key.startsWith("servicecomb.instance.queue"));
+    }
   }
 }

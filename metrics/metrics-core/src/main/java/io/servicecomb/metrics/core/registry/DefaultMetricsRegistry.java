@@ -21,13 +21,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 import com.netflix.config.DynamicPropertyFactory;
 import com.netflix.servo.monitor.LongGauge;
 import com.netflix.servo.monitor.MonitorConfig;
 import com.netflix.servo.monitor.Pollers;
 
-import io.servicecomb.foundation.common.exceptions.ServiceCombException;
 import io.servicecomb.metrics.core.EmbeddedMetricsName;
 import io.servicecomb.metrics.core.metric.BasicTimerMetric;
 import io.servicecomb.metrics.core.metric.LongGaugeMetric;
@@ -64,18 +64,29 @@ public class DefaultMetricsRegistry implements MetricsRegistry {
   }
 
   @Override
-  public Number getMetricsValue(String name, String tag) {
-    if (allRegisteredMetrics.containsKey(name)) {
-      return allRegisteredMetrics.get(name).get(tag);
-    } else {
-      throw new ServiceCombException("can't find metric " + name + " in registry");
-    }
+  public Map<String, Number> getAllMetricsValue() {
+    return getgMetricsValues(allRegisteredMetrics);
   }
 
   @Override
-  public Map<String, Number> getAllMetricsValue() {
+  public Map<String, Number> getMetricsValues(String operationName) {
+    Map<String, Metric> filteredMetrics = allRegisteredMetrics.entrySet().stream()
+        .filter(entry -> entry.getKey().startsWith("servicecomb." + operationName))
+        .collect(Collectors.toMap(Entry::getKey, Entry::getValue));
+    return getgMetricsValues(filteredMetrics);
+  }
+
+  @Override
+  public Map<String, Number> getMetricsValues(String operationName, String catalog) {
+    Map<String, Metric> filteredMetrics = allRegisteredMetrics.entrySet().stream()
+        .filter(entry -> entry.getKey().startsWith(String.join(".", "servicecomb", operationName, catalog)))
+        .collect(Collectors.toMap(Entry::getKey, Entry::getValue));
+    return getgMetricsValues(filteredMetrics);
+  }
+
+  private Map<String, Number> getgMetricsValues(Map<String, Metric> metrics) {
     Map<String, Number> metricValues = new HashMap<>();
-    for (Entry<String, Metric> entry : allRegisteredMetrics.entrySet()) {
+    for (Entry<String, Metric> entry : metrics.entrySet()) {
       metricValues.putAll(entry.getValue().getAll());
     }
     return metricValues;

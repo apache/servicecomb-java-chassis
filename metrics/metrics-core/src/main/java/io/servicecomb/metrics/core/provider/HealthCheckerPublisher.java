@@ -14,21 +14,12 @@
  * limitations under the License.
  */
 
-package io.servicecomb.metrics.core.registry;
+package io.servicecomb.metrics.core.provider;
 
-import java.util.List;
 import java.util.Map;
 
-import io.servicecomb.metrics.core.metric.Metric;
+public interface HealthCheckerPublisher {
+  Map<String, String> health();
 
-public interface MetricsRegistry {
-  void registerMetric(Metric metric);
-
-  List<Long> getPollingIntervals();
-
-  Map<String, Number> getAllMetricsValue();
-
-  Map<String, Number> getMetricsValues(String operationName);
-
-  Map<String, Number> getMetricsValues(String operationName, String catalog);
+  String health(String name);
 }

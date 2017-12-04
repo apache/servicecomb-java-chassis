@@ -14,21 +14,16 @@
  * limitations under the License.
  */
 
-package io.servicecomb.metrics.core.registry;
+package io.servicecomb.metrics.core;
 
-import java.util.List;
-import java.util.Map;
+public class MetricsCatalog {
+  public static final String SYSTEM = "system";
 
-import io.servicecomb.metrics.core.metric.Metric;
+  public static final String QUEUE = "queue";
 
-public interface MetricsRegistry {
-  void registerMetric(Metric metric);
+  public static final String TPS = "tps";
 
-  List<Long> getPollingIntervals();
+  public static final String LATENCY = "latency";
 
-  Map<String, Number> getAllMetricsValue();
-
-  Map<String, Number> getMetricsValues(String operationName);
-
-  Map<String, Number> getMetricsValues(String operationName, String catalog);
+  public static final String GENERAL = "general";
 }

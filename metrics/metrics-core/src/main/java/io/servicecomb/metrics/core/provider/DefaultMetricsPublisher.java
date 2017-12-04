@@ -33,7 +33,20 @@ public class DefaultMetricsPublisher implements MetricsPublisher {
 
   @Override
   public Map<String, Number> metrics() {
-    Map<String, Number> output = registry.getAllMetricsValue();
+    return processMetrics(registry.getAllMetricsValue());
+  }
+
+  @Override
+  public Map<String, Number> metrics(String operationName) {
+    return processMetrics(registry.getMetricsValues(operationName));
+  }
+
+  @Override
+  public Map<String, Number> metrics(String operationName, String catalog) {
+    return processMetrics(registry.getMetricsValues(operationName, catalog));
+  }
+
+  private Map<String, Number> processMetrics(Map<String, Number> output) {
     removeUselessMetrics(output);
     output = formatMetricsName(output);
     return output;
