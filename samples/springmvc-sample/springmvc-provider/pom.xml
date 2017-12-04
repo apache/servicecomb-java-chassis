@@ -20,7 +20,7 @@
     <parent>
         <groupId>io.servicecomb.samples</groupId>
         <artifactId>springmvc-sample</artifactId>
-        <version>0.5.0</version>
+        <version>0.6.0-SNAPSHOT</version>
     </parent>
     <artifactId>springmvc-provider</artifactId>
     <dependencies>
