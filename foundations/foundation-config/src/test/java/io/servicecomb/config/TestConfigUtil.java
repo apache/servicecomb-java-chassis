@@ -293,6 +293,16 @@ public class TestConfigUtil {
         equalTo(null));
   }
 
+  @Test
+  public void testConvertEnvVariable() {
+    String someProperty = "cse_service_registry_address";
+    AbstractConfiguration config = new DynamicConfiguration();
+    config.addProperty(someProperty, "testing");
+    AbstractConfiguration result = ConfigUtil.convertEnvVariable(config);
+    assertThat(result.getString("cse.service.registry.address"), equalTo("testing"));
+    assertThat(result.getString("cse_service_registry_address"), equalTo("testing"));
+  }
+
   @SuppressWarnings("unchecked")
   private static void setEnv(String key, String value) throws IllegalAccessException, NoSuchFieldException {
     Class<?>[] classes = Collections.class.getDeclaredClasses();
