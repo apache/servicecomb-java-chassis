@@ -18,17 +18,18 @@ package io.servicecomb.metrics.core.provider;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Map.Entry;
 
-import io.servicecomb.metrics.core.EmbeddedMetricsName;
 import io.servicecomb.metrics.core.registry.MetricsRegistry;
 
 public class DefaultMetricsPublisher implements MetricsPublisher {
 
   private final MetricsRegistry registry;
 
+  private final Map<String, String> queueMetricsReplace;
+
   public DefaultMetricsPublisher(MetricsRegistry registry) {
     this.registry = registry;
+    queueMetricsReplace = new HashMap<>();
   }
 
   @Override
@@ -52,32 +53,22 @@ public class DefaultMetricsPublisher implements MetricsPublisher {
     return output;
   }
 
-  private Map<String, Number> formatMetricsName(Map<String, Number> input) {
-    Map<String, Number> output = new HashMap<>();
-
-    for (Entry<String, Number> entry : input.entrySet()) {
-      String newName = entry.getKey();
-      if (entry.getKey().startsWith(EmbeddedMetricsName.INSTANCE_QUEUE_EXECUTIONTIME)) {
-        newName = EmbeddedMetricsName.INSTANCE_QUEUE + entry.getKey().substring(entry.getKey().lastIndexOf("."))
-            + "ExecutionTime";
-      } else if (entry.getKey().startsWith(EmbeddedMetricsName.INSTANCE_QUEUE_LIFETIMEINQUEUE)) {
-        newName = EmbeddedMetricsName.INSTANCE_QUEUE + entry.getKey().substring(entry.getKey().lastIndexOf("."))
-            + "LifeTimeInQueue";
+  private void removeUselessMetrics(Map<String, Number> input) {
+    for (String key : input.keySet().toArray(new String[0])) {
+      if (needRemove(key)) {
+        input.remove(key);
       }
-
-      output.put(newName, entry.getValue());
     }
-
-    return output;
   }
 
-  private void removeUselessMetrics(Map<String, Number> input) {
+  private boolean needRemove(String key) {
     //remove useless metrics for queue
-    input.remove(EmbeddedMetricsName.INSTANCE_QUEUE_EXECUTIONTIME);
-    input.remove(EmbeddedMetricsName.INSTANCE_QUEUE_EXECUTIONTIME + ".count");
-    input.remove(EmbeddedMetricsName.INSTANCE_QUEUE_EXECUTIONTIME + ".totalTime");
-    input.remove(EmbeddedMetricsName.INSTANCE_QUEUE_LIFETIMEINQUEUE);
-    input.remove(EmbeddedMetricsName.INSTANCE_QUEUE_LIFETIMEINQUEUE + ".count");
-    input.remove(EmbeddedMetricsName.INSTANCE_QUEUE_LIFETIMEINQUEUE + ".totalTime");
+    return key.endsWith(".executionTime") || key.endsWith("lifeTimeInQueue") ||
+        key.endsWith(".executionTime.totalTime") || key.endsWith(".lifeTimeInQueue.totalTime") ||
+        key.endsWith(".executionTime.count") || key.endsWith(".lifeTimeInQueue.count");
+  }
+
+  private Map<String, Number> formatMetricsName(Map<String, Number> input) {
+    return input;
   }
 }

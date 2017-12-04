@@ -24,14 +24,11 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 import com.netflix.config.DynamicPropertyFactory;
-import com.netflix.servo.monitor.LongGauge;
-import com.netflix.servo.monitor.MonitorConfig;
 import com.netflix.servo.monitor.Pollers;
 
 import io.servicecomb.metrics.core.EmbeddedMetricsName;
-import io.servicecomb.metrics.core.metric.BasicTimerMetric;
-import io.servicecomb.metrics.core.metric.LongGaugeMetric;
 import io.servicecomb.metrics.core.metric.Metric;
+import io.servicecomb.metrics.core.metric.MetricFactory;
 
 public class DefaultMetricsRegistry implements MetricsRegistry {
 
@@ -39,12 +36,16 @@ public class DefaultMetricsRegistry implements MetricsRegistry {
 
   private final Map<String, Metric> allRegisteredMetrics = new ConcurrentHashMap<>();
 
-  public DefaultMetricsRegistry() {
+  private final MetricFactory factory;
+
+  public DefaultMetricsRegistry(MetricFactory factory) {
     int pollingTime = DynamicPropertyFactory.getInstance().getIntProperty(METRICS_POLLING_TIME, 5000).get();
+    this.factory = factory;
     this.init(String.valueOf(pollingTime));
   }
 
-  public DefaultMetricsRegistry(String pollingInterval) {
+  public DefaultMetricsRegistry(MetricFactory factory, String pollingInterval) {
+    this.factory = factory;
     this.init(pollingInterval);
   }
 
@@ -59,13 +60,27 @@ public class DefaultMetricsRegistry implements MetricsRegistry {
   }
 
   @Override
+  public Metric getMetric(String name) {
+    return allRegisteredMetrics.getOrDefault(name, null);
+  }
+
+  @Override
+  public Metric getOrCreateMetric(Metric metric) {
+    Metric metricReturn = allRegisteredMetrics.putIfAbsent(metric.getName(), metric);
+    if (metricReturn == null) {
+      metricReturn = allRegisteredMetrics.get(metric.getName());
+    }
+    return metricReturn;
+  }
+
+  @Override
   public List<Long> getPollingIntervals() {
     return Pollers.getPollingIntervals();
   }
 
   @Override
   public Map<String, Number> getAllMetricsValue() {
-    return getgMetricsValues(allRegisteredMetrics);
+    return getMetricsValues(allRegisteredMetrics);
   }
 
   @Override
@@ -73,7 +88,7 @@ public class DefaultMetricsRegistry implements MetricsRegistry {
     Map<String, Metric> filteredMetrics = allRegisteredMetrics.entrySet().stream()
         .filter(entry -> entry.getKey().startsWith("servicecomb." + operationName))
         .collect(Collectors.toMap(Entry::getKey, Entry::getValue));
-    return getgMetricsValues(filteredMetrics);
+    return getMetricsValues(filteredMetrics);
   }
 
   @Override
@@ -81,10 +96,10 @@ public class DefaultMetricsRegistry implements MetricsRegistry {
     Map<String, Metric> filteredMetrics = allRegisteredMetrics.entrySet().stream()
         .filter(entry -> entry.getKey().startsWith(String.join(".", "servicecomb", operationName, catalog)))
         .collect(Collectors.toMap(Entry::getKey, Entry::getValue));
-    return getgMetricsValues(filteredMetrics);
+    return getMetricsValues(filteredMetrics);
   }
 
-  private Map<String, Number> getgMetricsValues(Map<String, Metric> metrics) {
+  private Map<String, Number> getMetricsValues(Map<String, Metric> metrics) {
     Map<String, Number> metricValues = new HashMap<>();
     for (Entry<String, Metric> entry : metrics.entrySet()) {
       metricValues.putAll(entry.getValue().getAll());
@@ -94,10 +109,17 @@ public class DefaultMetricsRegistry implements MetricsRegistry {
 
   private void initDefaultSupportedMetrics() {
     //prepare for queue
-    this.registerMetric(new LongGaugeMetric(
-        new LongGauge(MonitorConfig.builder(EmbeddedMetricsName.INSTANCE_QUEUE_COUNTINQUEUE).build())));
-    this.registerMetric(new BasicTimerMetric(EmbeddedMetricsName.INSTANCE_QUEUE_EXECUTIONTIME));
-    this.registerMetric(new BasicTimerMetric(EmbeddedMetricsName.INSTANCE_QUEUE_LIFETIMEINQUEUE));
+    String instanceCountInQueueName = String
+        .format(EmbeddedMetricsName.QUEUE_COUNT_IN_QUEUE, "instance");
+    this.registerMetric(factory.createCounter(instanceCountInQueueName));
+
+    String instanceExecutionTime = String
+        .format(EmbeddedMetricsName.QUEUE_EXECUTION_TIME, "instance");
+    this.registerMetric(factory.createTimer(instanceExecutionTime));
+
+    String lifeTimeInQueueTime = String
+        .format(EmbeddedMetricsName.QUEUE_LIFE_TIME_IN_QUEUE, "instance");
+    this.registerMetric(factory.createTimer(lifeTimeInQueueTime));
   }
 }
 

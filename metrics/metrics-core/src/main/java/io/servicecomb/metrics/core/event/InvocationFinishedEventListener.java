@@ -19,8 +19,23 @@ package io.servicecomb.metrics.core.event;
 import io.servicecomb.foundation.metrics.event.InvocationFinishedEvent;
 import io.servicecomb.foundation.metrics.event.MetricsEvent;
 import io.servicecomb.foundation.metrics.event.MetricsEventListener;
+import io.servicecomb.metrics.core.EmbeddedMetricsName;
+import io.servicecomb.metrics.core.metric.Metric;
+import io.servicecomb.metrics.core.metric.MetricFactory;
+import io.servicecomb.metrics.core.registry.MetricsRegistry;
 
 public class InvocationFinishedEventListener implements MetricsEventListener {
+
+  private final MetricsRegistry registry;
+
+  private final MetricFactory factory;
+
+  public InvocationFinishedEventListener(MetricsRegistry registry,
+      MetricFactory factory) {
+    this.registry = registry;
+    this.factory = factory;
+  }
+
   @Override
   public Class<? extends MetricsEvent> getConcernedEvent() {
     return InvocationFinishedEvent.class;
@@ -29,6 +44,16 @@ public class InvocationFinishedEventListener implements MetricsEventListener {
   @Override
   public void process(MetricsEvent data) {
     InvocationFinishedEvent event = (InvocationFinishedEvent) data;
-    //to do metrics counter
+
+    String executionTimeName = String.format(EmbeddedMetricsName.QUEUE_EXECUTION_TIME, event.getOperationName());
+    Metric metric = registry.getMetric(executionTimeName);
+    if (metric == null) {
+      metric = registry.getOrCreateMetric(factory.createTimer(executionTimeName));
+    }
+    String instanceExecutionTimeName = String.format(EmbeddedMetricsName.QUEUE_EXECUTION_TIME, "instance");
+    Metric instanceMetric = registry.getMetric(instanceExecutionTimeName);
+
+    metric.update(event.getTimeProcess());
+    instanceMetric.update(event.getTimeProcess());
   }
 }

@@ -21,8 +21,15 @@
         http://www.springframework.org/schema/beans
         http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
 
-  <bean class="io.servicecomb.metrics.core.registry.DefaultMetricsRegistry">
+  <bean id="defaultMetricsRegistry" class="io.servicecomb.metrics.core.registry.DefaultMetricsRegistry">
+    <constructor-arg ref="defaultMetricFactory"/>
+  </bean>
+  <bean id="defaultMetricFactory" class="io.servicecomb.metrics.core.metric.DefaultMetricFactory">
   </bean>
   <bean class="io.servicecomb.metrics.core.registry.DefaultHealthCheckRegistry">
+  </bean>
+  <bean class="io.servicecomb.metrics.core.event.MetricsEventObserver">
+    <constructor-arg index="0" ref="defaultMetricsRegistry"/>
+    <constructor-arg index="1" ref="defaultMetricFactory"/>
   </bean>
 </beans>

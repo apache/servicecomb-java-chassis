@@ -28,7 +28,6 @@ import org.junit.Test;
 import io.servicecomb.metrics.core.metric.BasicTimerMetric;
 import io.servicecomb.metrics.core.provider.DefaultMetricsPublisher;
 import io.servicecomb.metrics.core.provider.MetricsPublisher;
-import io.servicecomb.metrics.core.registry.DefaultMetricsRegistry;
 import io.servicecomb.metrics.core.registry.MetricsRegistry;
 
 public class TestDefaultMetricsPublisher {
@@ -38,41 +37,46 @@ public class TestDefaultMetricsPublisher {
     MetricsRegistry registry = mock(MetricsRegistry.class);
 
     Map<String, Number> allMetrics = new HashMap<>();
-    allMetrics.put(EmbeddedMetricsName.INSTANCE_QUEUE_COUNTINQUEUE, 1);
-    allMetrics.put(EmbeddedMetricsName.INSTANCE_QUEUE_EXECUTIONTIME + "." + BasicTimerMetric.AVERAGE, 10);
-    allMetrics.put(EmbeddedMetricsName.INSTANCE_QUEUE_EXECUTIONTIME + "." + BasicTimerMetric.COUNT, 11);
-    allMetrics.put(EmbeddedMetricsName.INSTANCE_QUEUE_EXECUTIONTIME + "." + BasicTimerMetric.MAX, 12);
-    allMetrics.put(EmbeddedMetricsName.INSTANCE_QUEUE_EXECUTIONTIME + "." + BasicTimerMetric.MIN, 13);
-    allMetrics.put(EmbeddedMetricsName.INSTANCE_QUEUE_EXECUTIONTIME + "." + BasicTimerMetric.TOTAL, 14);
-    allMetrics.put(EmbeddedMetricsName.INSTANCE_QUEUE_LIFETIMEINQUEUE + "." + BasicTimerMetric.AVERAGE, 20);
-    allMetrics.put(EmbeddedMetricsName.INSTANCE_QUEUE_LIFETIMEINQUEUE + "." + BasicTimerMetric.COUNT, 21);
-    allMetrics.put(EmbeddedMetricsName.INSTANCE_QUEUE_LIFETIMEINQUEUE + "." + BasicTimerMetric.MAX, 22);
-    allMetrics.put(EmbeddedMetricsName.INSTANCE_QUEUE_LIFETIMEINQUEUE + "." + BasicTimerMetric.MIN, 23);
-    allMetrics.put(EmbeddedMetricsName.INSTANCE_QUEUE_LIFETIMEINQUEUE + "." + BasicTimerMetric.TOTAL, 24);
+
+    String instanceCountInQueueName = String.format(EmbeddedMetricsName.QUEUE_COUNT_IN_QUEUE, "instance");
+    String instanceExecutionTimeName = String.format(EmbeddedMetricsName.QUEUE_EXECUTION_TIME, "instance");
+    String instanceLifeTimeInQueueName = String.format(EmbeddedMetricsName.QUEUE_LIFE_TIME_IN_QUEUE, "instance");
+
+    allMetrics.put(instanceCountInQueueName, 1);
+    allMetrics.put(instanceExecutionTimeName + "." + BasicTimerMetric.AVERAGE, 10);
+    allMetrics.put(instanceExecutionTimeName + "." + BasicTimerMetric.COUNT, 11);
+    allMetrics.put(instanceExecutionTimeName + "." + BasicTimerMetric.MAX, 12);
+    allMetrics.put(instanceExecutionTimeName + "." + BasicTimerMetric.MIN, 13);
+    allMetrics.put(instanceExecutionTimeName + "." + BasicTimerMetric.TOTAL, 14);
+    allMetrics.put(instanceLifeTimeInQueueName + "." + BasicTimerMetric.AVERAGE, 20);
+    allMetrics.put(instanceLifeTimeInQueueName + "." + BasicTimerMetric.COUNT, 21);
+    allMetrics.put(instanceLifeTimeInQueueName + "." + BasicTimerMetric.MAX, 22);
+    allMetrics.put(instanceLifeTimeInQueueName + "." + BasicTimerMetric.MIN, 23);
+    allMetrics.put(instanceLifeTimeInQueueName + "." + BasicTimerMetric.TOTAL, 24);
 
     when(registry.getAllMetricsValue()).thenReturn(allMetrics);
 
     MetricsPublisher publisher = new DefaultMetricsPublisher(registry);
     Map<String, Number> output = publisher.metrics();
 
-    Assert.assertTrue(output.get(EmbeddedMetricsName.INSTANCE_QUEUE_COUNTINQUEUE).longValue() == 1);
+    Assert.assertTrue(output.get(instanceCountInQueueName).longValue() == 1);
     Assert.assertTrue(
-        output.get(EmbeddedMetricsName.INSTANCE_QUEUE + "." + BasicTimerMetric.AVERAGE + "ExecutionTime").doubleValue()
+        output.get(instanceExecutionTimeName + "." + BasicTimerMetric.AVERAGE).doubleValue()
             == 10);
     Assert.assertTrue(
-        output.get(EmbeddedMetricsName.INSTANCE_QUEUE + "." + BasicTimerMetric.MIN + "ExecutionTime").doubleValue()
+        output.get(instanceExecutionTimeName + "." + BasicTimerMetric.MIN).doubleValue()
             == 13);
     Assert.assertTrue(
-        output.get(EmbeddedMetricsName.INSTANCE_QUEUE + "." + BasicTimerMetric.MAX + "ExecutionTime").doubleValue()
+        output.get(instanceExecutionTimeName + "." + BasicTimerMetric.MAX).doubleValue()
             == 12);
     Assert.assertTrue(
-        output.get(EmbeddedMetricsName.INSTANCE_QUEUE + "." + BasicTimerMetric.AVERAGE + "LifeTimeInQueue")
+        output.get(instanceLifeTimeInQueueName + "." + BasicTimerMetric.AVERAGE)
             .doubleValue() == 20);
     Assert.assertTrue(
-        output.get(EmbeddedMetricsName.INSTANCE_QUEUE + "." + BasicTimerMetric.MIN + "LifeTimeInQueue").doubleValue()
+        output.get(instanceLifeTimeInQueueName + "." + BasicTimerMetric.MIN).doubleValue()
             == 23);
     Assert.assertTrue(
-        output.get(EmbeddedMetricsName.INSTANCE_QUEUE + "." + BasicTimerMetric.MAX + "LifeTimeInQueue").doubleValue()
+        output.get(instanceLifeTimeInQueueName + "." + BasicTimerMetric.MAX).doubleValue()
             == 22);
   }
 }

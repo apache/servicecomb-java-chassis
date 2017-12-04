@@ -19,8 +19,23 @@ package io.servicecomb.metrics.core.event;
 import io.servicecomb.foundation.metrics.event.BizkeeperProcessingRequestFailedEvent;
 import io.servicecomb.foundation.metrics.event.MetricsEvent;
 import io.servicecomb.foundation.metrics.event.MetricsEventListener;
+import io.servicecomb.metrics.core.EmbeddedMetricsName;
+import io.servicecomb.metrics.core.metric.Metric;
+import io.servicecomb.metrics.core.metric.MetricFactory;
+import io.servicecomb.metrics.core.registry.MetricsRegistry;
+import io.servicecomb.swagger.invocation.InvocationType;
 
 public class BizkeeperProcessingRequestFailedEventListener implements MetricsEventListener {
+  private final MetricsRegistry registry;
+
+  private final MetricFactory factory;
+
+  public BizkeeperProcessingRequestFailedEventListener(MetricsRegistry registry,
+      MetricFactory factory) {
+    this.registry = registry;
+    this.factory = factory;
+  }
+
   @Override
   public Class<? extends MetricsEvent> getConcernedEvent() {
     return BizkeeperProcessingRequestFailedEvent.class;
@@ -29,6 +44,18 @@ public class BizkeeperProcessingRequestFailedEventListener implements MetricsEve
   @Override
   public void process(MetricsEvent data) {
     BizkeeperProcessingRequestFailedEvent event = (BizkeeperProcessingRequestFailedEvent) data;
-    //to do metrics counter
+
+    String totalName;
+    if (event.getInvocationType().equals(String.valueOf(InvocationType.CONSUMER))) {
+      totalName = String.format(EmbeddedMetricsName.GENERAL_FAILED_REQUEST_COUNT_PER_CONSUMER, event.getOperationName());
+    } else {
+      totalName = String.format(EmbeddedMetricsName.GENERAL_FAILED_REQUEST_COUNT_PER_PROVIDER, event.getOperationName());
+    }
+
+    Metric metric = registry.getMetric(totalName);
+    if (metric == null) {
+      metric = registry.getOrCreateMetric(factory.createCounter(totalName));
+    }
+    metric.update(1);
   }
 }

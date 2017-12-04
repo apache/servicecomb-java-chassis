@@ -29,17 +29,18 @@ import com.netflix.servo.monitor.MonitorConfig;
 
 import io.servicecomb.metrics.core.metric.BasicTimerMetric;
 import io.servicecomb.metrics.core.metric.CounterMetric;
-import io.servicecomb.metrics.core.registry.DefaultMetricsRegistry;
+import io.servicecomb.metrics.core.metric.DefaultMetricFactory;
 import io.servicecomb.metrics.core.metric.DoubleGaugeMetric;
 import io.servicecomb.metrics.core.metric.LongGaugeMetric;
 import io.servicecomb.metrics.core.metric.Metric;
+import io.servicecomb.metrics.core.registry.DefaultMetricsRegistry;
 import io.servicecomb.metrics.core.registry.MetricsRegistry;
 
 public class TestDefaultMetricsRegistry {
 
   @Test
   public void testRegistry() throws InterruptedException {
-    MetricsRegistry registry = new DefaultMetricsRegistry("1000");
+    MetricsRegistry registry = new DefaultMetricsRegistry(new DefaultMetricFactory(), "1000");
 
     Metric timer = new BasicTimerMetric("timer");
     Metric counter = new CounterMetric(new BasicCounter(MonitorConfig.builder("counter").build()));
@@ -118,12 +119,12 @@ public class TestDefaultMetricsRegistry {
 
     //test filtered metrics
     results = registry.getMetricsValues("instance");
-    for(String key : results.keySet()) {
+    for (String key : results.keySet()) {
       Assert.assertTrue(key.startsWith("servicecomb.instance"));
     }
 
-    results = registry.getMetricsValues("instance",MetricsCatalog.QUEUE);
-    for(String key : results.keySet()) {
+    results = registry.getMetricsValues("instance", MetricsCatalog.QUEUE);
+    for (String key : results.keySet()) {
       Assert.assertTrue(key.startsWith("servicecomb.instance.queue"));
     }
   }

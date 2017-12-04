@@ -14,25 +14,14 @@
  * limitations under the License.
  */
 
-package io.servicecomb.metrics.core.registry;
+package io.servicecomb.metrics.core.metric;
 
-import java.util.List;
-import java.util.Map;
+public interface MetricFactory {
+  Metric createCounter(String name);
 
-import io.servicecomb.metrics.core.metric.Metric;
+  Metric createDoubleGauge(String name);
 
-public interface MetricsRegistry {
-  void registerMetric(Metric metric);
+  Metric createLongGauge(String name);
 
-  Metric getMetric(String name);
-
-  Metric getOrCreateMetric(Metric metric);
-
-  List<Long> getPollingIntervals();
-
-  Map<String, Number> getAllMetricsValue();
-
-  Map<String, Number> getMetricsValues(String operationName);
-
-  Map<String, Number> getMetricsValues(String operationName, String catalog);
+  Metric createTimer(String name);
 }

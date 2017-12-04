@@ -19,8 +19,23 @@ package io.servicecomb.metrics.core.event;
 import io.servicecomb.foundation.metrics.event.InvocationStartedEvent;
 import io.servicecomb.foundation.metrics.event.MetricsEvent;
 import io.servicecomb.foundation.metrics.event.MetricsEventListener;
+import io.servicecomb.metrics.core.EmbeddedMetricsName;
+import io.servicecomb.metrics.core.metric.Metric;
+import io.servicecomb.metrics.core.metric.MetricFactory;
+import io.servicecomb.metrics.core.registry.MetricsRegistry;
 
 public class InvocationStartedEventListener implements MetricsEventListener {
+
+  private final MetricsRegistry registry;
+
+  private final MetricFactory factory;
+
+  public InvocationStartedEventListener(MetricsRegistry registry,
+      MetricFactory factory) {
+    this.registry = registry;
+    this.factory = factory;
+  }
+
   @Override
   public Class<? extends MetricsEvent> getConcernedEvent() {
     return InvocationStartedEvent.class;
@@ -29,6 +44,16 @@ public class InvocationStartedEventListener implements MetricsEventListener {
   @Override
   public void process(MetricsEvent data) {
     InvocationStartedEvent event = (InvocationStartedEvent) data;
-    //to do metrics counter
+
+    String countInQueueName = String.format(EmbeddedMetricsName.QUEUE_COUNT_IN_QUEUE, event.getOperationName());
+    Metric metric = registry.getMetric(countInQueueName);
+    if (metric == null) {
+      metric = registry.getOrCreateMetric(factory.createCounter(countInQueueName));
+    }
+    String instanceCountInQueueName = String.format(EmbeddedMetricsName.QUEUE_COUNT_IN_QUEUE, "instance");
+    Metric instanceMetric = registry.getMetric(instanceCountInQueueName);
+
+    metric.update(1);
+    instanceMetric.update(1);
   }
 }
