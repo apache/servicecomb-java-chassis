@@ -16,24 +16,19 @@
 
 package io.servicecomb.metrics.core.event;
 
-import org.springframework.stereotype.Component;
-
+import io.servicecomb.foundation.metrics.event.BizkeeperProcessingRequestEvent;
+import io.servicecomb.foundation.metrics.event.MetricsEvent;
 import io.servicecomb.foundation.metrics.event.MetricsEventListener;
-import io.servicecomb.foundation.metrics.event.MetricsEventManager;
 
-@Component
-public class MetricsEventObserver implements EventObserver {
-
-  public MetricsEventObserver() {
-    this.registerEventListener(new InvocationStartedEventListener());
-    this.registerEventListener(new InvocationStartProcessingEventListener());
-    this.registerEventListener(new InvocationFinishedEventListener());
-    this.registerEventListener(new BizkeeperProcessingRequestEventListener());
-    this.registerEventListener(new BizkeeperProcessingRequestFailedEventListener());
+public class BizkeeperProcessingRequestEventListener implements MetricsEventListener {
+  @Override
+  public Class<? extends MetricsEvent> getConcernedEvent() {
+    return BizkeeperProcessingRequestEvent.class;
   }
 
   @Override
-  public void registerEventListener(MetricsEventListener listener) {
-    MetricsEventManager.registerEventListener(listener);
+  public void process(MetricsEvent data) {
+    BizkeeperProcessingRequestEvent event = (BizkeeperProcessingRequestEvent) data;
+    //to do metrics counter
   }
 }
