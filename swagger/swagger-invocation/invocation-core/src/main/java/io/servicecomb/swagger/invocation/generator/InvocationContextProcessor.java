@@ -28,8 +28,9 @@ public class InvocationContextProcessor implements CommonParameterTypeProcessor 
   }
 
   @Override
-  public void process(OperationGenerator operationGenerator, int paramIdx) {
+  public boolean process(OperationGenerator operationGenerator, int paramIdx) {
     InvocationContextParameter parameter = new InvocationContextParameter();
     operationGenerator.addProviderParameter(parameter);
+    return true;
   }
 }

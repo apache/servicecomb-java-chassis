@@ -261,12 +261,7 @@ public class OperationGenerator {
 
   protected boolean processByParameterType(Type parameterType, int paramIdx) {
     ParameterTypeProcessor processor = context.findParameterTypeProcessor(parameterType);
-    if (processor != null) {
-      processor.process(this, paramIdx);
-      return true;
-    }
-
-    return false;
+    return processor != null && processor.process(this, paramIdx);
   }
 
   public void correctOperation() {
