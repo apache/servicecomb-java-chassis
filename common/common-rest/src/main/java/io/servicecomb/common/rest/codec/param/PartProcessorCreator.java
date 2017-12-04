@@ -27,7 +27,7 @@ import io.servicecomb.common.rest.codec.RestClientRequest;
 import io.swagger.models.parameters.Parameter;
 
 public class PartProcessorCreator implements ParamValueProcessorCreator {
-  public static final String PARAMTYPE = "part";
+  public static final String PARAMTYPE = "formdata";
 
   public static class PartProcessor extends AbstractParamProcessor {
     PartProcessor(String paramPath, JavaType targetType) {

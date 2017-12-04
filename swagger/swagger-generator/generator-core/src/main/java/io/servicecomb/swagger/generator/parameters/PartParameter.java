@@ -17,9 +17,11 @@
 package io.servicecomb.swagger.generator.parameters;
 
 import io.swagger.models.parameters.AbstractSerializableParameter;
+import io.swagger.models.properties.FileProperty;
 
 public class PartParameter extends AbstractSerializableParameter<PartParameter> {
   public PartParameter() {
-    super.setIn("part");
+    super.setIn("formdata");
+    super.setType(new FileProperty().getType());
   }
 }

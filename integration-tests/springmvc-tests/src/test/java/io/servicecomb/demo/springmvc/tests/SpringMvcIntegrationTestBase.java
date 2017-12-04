@@ -16,6 +16,7 @@
 
 package io.servicecomb.demo.springmvc.tests;
 
+import static com.seanyinx.github.unit.scaffolding.AssertUtils.expectFailing;
 import static java.time.temporal.ChronoUnit.SECONDS;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertArrayEquals;
@@ -57,6 +58,7 @@ import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.client.UnknownHttpStatusCodeException;
 
@@ -178,7 +180,7 @@ public class SpringMvcIntegrationTestBase {
 
     MultiValueMap<String, Object> map = new LinkedMultiValueMap<>();
     map.add("file1", new FileSystemResource(newFile(file1Content).getAbsolutePath()));
-    map.add("file2", new FileSystemResource(newFile(file2Content).getAbsolutePath()));
+    map.add("someFile", new FileSystemResource(newFile(file2Content).getAbsolutePath()));
 
     HttpHeaders headers = new HttpHeaders();
     headers.setContentType(MediaType.MULTIPART_FORM_DATA);
@@ -188,6 +190,47 @@ public class SpringMvcIntegrationTestBase {
         String.class);
 
     assertThat(result, is(file1Content + file2Content));
+  }
+
+  @Test
+  public void ableToUploadFileWithoutAnnotation() throws IOException {
+    String file1Content = "hello world";
+    String file2Content = "bonjour";
+
+    MultiValueMap<String, Object> map = new LinkedMultiValueMap<>();
+    map.add("file1", new FileSystemResource(newFile(file1Content).getAbsolutePath()));
+    map.add("file2", new FileSystemResource(newFile(file2Content).getAbsolutePath()));
+
+    HttpHeaders headers = new HttpHeaders();
+    headers.setContentType(MediaType.MULTIPART_FORM_DATA);
+    String result = restTemplate.postForObject(
+        codeFirstUrl + "uploadWithoutAnnotation",
+        new HttpEntity<>(map, headers),
+        String.class);
+
+    assertThat(result, is(file1Content + file2Content));
+  }
+
+  @Test
+  public void blowsUpWhenFileNameDoesNotMatch() throws IOException {
+    String file1Content = "hello world";
+    String file2Content = "bonjour";
+
+    MultiValueMap<String, Object> map = new LinkedMultiValueMap<>();
+    map.add("file1", new FileSystemResource(newFile(file1Content).getAbsolutePath()));
+    map.add("unmatched name", new FileSystemResource(newFile(file2Content).getAbsolutePath()));
+
+    HttpHeaders headers = new HttpHeaders();
+    headers.setContentType(MediaType.MULTIPART_FORM_DATA);
+
+    try {
+      restTemplate.postForObject(
+          codeFirstUrl + "uploadWithoutAnnotation",
+          new HttpEntity<>(map, headers),
+          String.class);
+      expectFailing(UnknownHttpStatusCodeException.class);
+    } catch (RestClientException ignored) {
+    }
   }
 
   @Test
