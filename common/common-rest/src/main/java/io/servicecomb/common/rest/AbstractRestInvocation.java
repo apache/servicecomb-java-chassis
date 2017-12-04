@@ -42,12 +42,10 @@ import io.servicecomb.core.Invocation;
 import io.servicecomb.core.definition.MicroserviceMeta;
 import io.servicecomb.core.definition.OperationMeta;
 import io.servicecomb.foundation.common.utils.JsonUtils;
-import io.servicecomb.foundation.metrics.event.MetricsEvent;
+import io.servicecomb.foundation.metrics.event.InvocationFinishedEvent;
+import io.servicecomb.foundation.metrics.event.InvocationStartProcessingEvent;
+import io.servicecomb.foundation.metrics.event.InvocationStartedEvent;
 import io.servicecomb.foundation.metrics.event.MetricsEventManager;
-import io.servicecomb.foundation.metrics.event.MetricsEventType;
-import io.servicecomb.foundation.metrics.event.data.InvocationFinishedData;
-import io.servicecomb.foundation.metrics.event.data.InvocationStartProcessingData;
-import io.servicecomb.foundation.metrics.event.data.InvocationStartedData;
 import io.servicecomb.foundation.vertx.http.HttpServletRequestEx;
 import io.servicecomb.foundation.vertx.http.HttpServletResponseEx;
 import io.servicecomb.foundation.vertx.stream.BufferOutputStream;
@@ -107,9 +105,9 @@ public abstract class AbstractRestInvocation {
 
   protected void scheduleInvocation() {
     OperationMeta operationMeta = restOperationMeta.getOperationMeta();
-    InvocationStartedData startedData = new InvocationStartedData(operationMeta.getMicroserviceQualifiedName(),
+    InvocationStartedEvent startedEvent = new InvocationStartedEvent(operationMeta.getMicroserviceQualifiedName(),
         System.nanoTime());
-    MetricsEventManager.triggerEvent(new MetricsEvent(MetricsEventType.InvocationStarted, startedData));
+    MetricsEventManager.triggerEvent(startedEvent);
     operationMeta.getExecutor().execute(() -> {
       synchronized (this.requestEx) {
         try {
@@ -122,7 +120,7 @@ public abstract class AbstractRestInvocation {
             return;
           }
 
-          runOnExecutor(startedData);
+          runOnExecutor(startedEvent);
         } catch (Throwable e) {
           LOGGER.error("rest server onRequest error", e);
           sendFailResponse(e);
@@ -131,15 +129,15 @@ public abstract class AbstractRestInvocation {
     });
   }
 
-  protected void runOnExecutor(InvocationStartedData startedData) {
+  protected void runOnExecutor(InvocationStartedEvent startedEvent) {
     Object[] args = RestCodec.restToArgs(requestEx, restOperationMeta);
     createInvocation(args);
 
     long startProcessingTime = System.nanoTime();
     this.invocation.setStartProcessingTime(startProcessingTime);
-    InvocationStartProcessingData startProcessingData = new InvocationStartProcessingData(
-        startedData.getOperationName(), startProcessingTime, startProcessingTime - startedData.getStartedTime());
-    MetricsEventManager.triggerEvent(new MetricsEvent(MetricsEventType.InvocationStartProcessing, startProcessingData));
+    InvocationStartProcessingEvent processingEvent = new InvocationStartProcessingEvent(
+        startedEvent.getOperationName(), startProcessingTime, startProcessingTime - startedEvent.getStartedTime());
+    MetricsEventManager.triggerEvent(processingEvent);
 
     invoke();
   }
@@ -184,10 +182,10 @@ public abstract class AbstractRestInvocation {
       sendResponseQuietly(resp);
 
       long finishedTime = System.nanoTime();
-      InvocationFinishedData finishedData = new InvocationFinishedData(
+      InvocationFinishedEvent finishedEvent = new InvocationFinishedEvent(
           invocation.getMicroserviceQualifiedName(), finishedTime,
           finishedTime - invocation.getStartProcessingTime());
-      MetricsEventManager.triggerEvent(new MetricsEvent(MetricsEventType.InvocationFinished, finishedData));
+      MetricsEventManager.triggerEvent(finishedEvent);
     });
   }
 

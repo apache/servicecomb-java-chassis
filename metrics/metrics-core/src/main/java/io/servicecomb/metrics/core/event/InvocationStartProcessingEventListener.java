@@ -16,20 +16,19 @@
 
 package io.servicecomb.metrics.core.event;
 
+import io.servicecomb.foundation.metrics.event.InvocationStartProcessingEvent;
+import io.servicecomb.foundation.metrics.event.MetricsEvent;
 import io.servicecomb.foundation.metrics.event.MetricsEventListener;
-import io.servicecomb.foundation.metrics.event.MetricsEventType;
-import io.servicecomb.foundation.metrics.event.data.InvocationStartProcessingData;
 
 public class InvocationStartProcessingEventListener implements MetricsEventListener {
   @Override
-  public MetricsEventType getConcernedType() {
-    return MetricsEventType.InvocationStartProcessing;
+  public Class<? extends MetricsEvent> getConcernedEvent() {
+    return InvocationStartProcessingEvent.class;
   }
 
   @Override
-  public void process(Object data) {
-    InvocationStartProcessingData startProcessingData = (InvocationStartProcessingData) data;
-
+  public void process(MetricsEvent data) {
+    InvocationStartProcessingEvent event = (InvocationStartProcessingEvent) data;
     //to do metrics counter
   }
 }

@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-package io.servicecomb.foundation.metrics.event.data;
+package io.servicecomb.foundation.metrics.event;
 
-public class InvocationStartProcessingData {
+public class InvocationStartProcessingEvent implements MetricsEvent {
   private final String operationName;
 
   private final long startProcessingTime;
@@ -35,7 +35,7 @@ public class InvocationStartProcessingData {
     return timeInQueue;
   }
 
-  public InvocationStartProcessingData(String operationName, long startProcessingTime, long timeInQueue) {
+  public InvocationStartProcessingEvent(String operationName, long startProcessingTime, long timeInQueue) {
     this.operationName = operationName;
     this.startProcessingTime = startProcessingTime;
     this.timeInQueue = timeInQueue;

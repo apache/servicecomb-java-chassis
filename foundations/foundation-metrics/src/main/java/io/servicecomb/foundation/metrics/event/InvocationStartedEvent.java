@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-package io.servicecomb.foundation.metrics.event.data;
+package io.servicecomb.foundation.metrics.event;
 
-public class InvocationStartedData {
+public class InvocationStartedEvent implements MetricsEvent {
   private final String operationName;
 
   private final long startedTime;
@@ -29,7 +29,7 @@ public class InvocationStartedData {
     return startedTime;
   }
 
-  public InvocationStartedData(String operationName, long startedTime) {
+  public InvocationStartedEvent(String operationName, long startedTime) {
     this.operationName = operationName;
     this.startedTime = startedTime;
   }

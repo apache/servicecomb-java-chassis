@@ -22,19 +22,18 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class MetricsEventManager {
-  private static final Map<MetricsEventType, List<MetricsEventListener>> allEvents = new ConcurrentHashMap<>();
+  private static final Map<Class<? extends MetricsEvent>, List<MetricsEventListener>> allEvents = new ConcurrentHashMap<>();
 
   public static void registerEventListener(MetricsEventListener eventListener) {
-    List<MetricsEventListener> eventListeners = allEvents
-        .putIfAbsent(eventListener.getConcernedType(), new ArrayList<>());
-    eventListeners.add(eventListener);
+    allEvents.putIfAbsent(eventListener.getConcernedEvent(), new ArrayList<>());
+    allEvents.get(eventListener.getConcernedEvent()).add(eventListener);
   }
 
   public static void triggerEvent(MetricsEvent event) {
-    List<MetricsEventListener> eventListeners = allEvents.getOrDefault(event.getType(), null);
+    List<MetricsEventListener> eventListeners = allEvents.getOrDefault(event.getClass(), null);
     if (eventListeners != null) {
       for (MetricsEventListener eventListener : eventListeners) {
-        eventListener.process(event.getData());
+        eventListener.process(event);
       }
     }
   }

@@ -16,8 +16,28 @@
 
 package io.servicecomb.foundation.metrics.event;
 
-public enum MetricsEventType {
-  InvocationStarted,
-  InvocationStartProcessing,
-  InvocationFinished,
+public class InvocationFinishedEvent implements MetricsEvent {
+  private final String operationName;
+
+  private final long startProcessingTime;
+
+  private final long timeProcess;
+
+  public String getOperationName() {
+    return operationName;
+  }
+
+  public long getStartProcessingTime() {
+    return startProcessingTime;
+  }
+
+  public long getTimeProcess() {
+    return timeProcess;
+  }
+
+  public InvocationFinishedEvent(String operationName, long startProcessingTime, long timeProcess) {
+    this.operationName = operationName;
+    this.startProcessingTime = startProcessingTime;
+    this.timeProcess = timeProcess;
+  }
 }

@@ -17,7 +17,7 @@
 package io.servicecomb.foundation.metrics.event;
 
 public interface MetricsEventListener {
-  MetricsEventType getConcernedType();
+  Class<? extends MetricsEvent> getConcernedEvent();
 
-  void process(Object data);
+  void process(MetricsEvent data);
 }

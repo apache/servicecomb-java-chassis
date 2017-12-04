@@ -49,7 +49,7 @@ import io.servicecomb.core.definition.SchemaMeta;
 import io.servicecomb.core.executor.ReactiveExecutor;
 import io.servicecomb.core.provider.consumer.ReferenceConfig;
 import io.servicecomb.foundation.common.utils.JsonUtils;
-import io.servicecomb.foundation.metrics.event.data.InvocationStartedData;
+import io.servicecomb.foundation.metrics.event.InvocationStartedEvent;
 import io.servicecomb.foundation.vertx.http.AbstractHttpServletRequest;
 import io.servicecomb.foundation.vertx.http.HttpServletRequestEx;
 import io.servicecomb.foundation.vertx.http.HttpServletResponseEx;
@@ -620,7 +620,7 @@ public class TestAbstractRestInvocation {
     Error error = new Error("run on executor");
     restInvocation = new AbstractRestInvocationForTest() {
       @Override
-      protected void runOnExecutor(InvocationStartedData startedData) {
+      protected void runOnExecutor(InvocationStartedEvent startedEvent) {
         throw error;
       }
 
@@ -659,7 +659,7 @@ public class TestAbstractRestInvocation {
 
     restInvocation = new AbstractRestInvocationForTest() {
       @Override
-      protected void runOnExecutor(InvocationStartedData startedData) {
+      protected void runOnExecutor(InvocationStartedEvent startedEvent) {
         throw new Error("run on executor");
       }
 
@@ -695,7 +695,7 @@ public class TestAbstractRestInvocation {
     Holder<Boolean> result = new Holder<>();
     restInvocation = new AbstractRestInvocationForTest() {
       @Override
-      protected void runOnExecutor(InvocationStartedData startedData) {
+      protected void runOnExecutor(InvocationStartedEvent startedEvent) {
         result.value = true;
       }
     };
@@ -726,7 +726,7 @@ public class TestAbstractRestInvocation {
     restInvocation.requestEx = requestEx;
     restInvocation.restOperationMeta = restOperation;
 
-    restInvocation.runOnExecutor(new InvocationStartedData("test", System.nanoTime()));
+    restInvocation.runOnExecutor(new InvocationStartedEvent("test", System.nanoTime()));
     Assert.assertTrue(result.value);
     Assert.assertSame(invocation, restInvocation.invocation);
   }

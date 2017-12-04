@@ -16,21 +16,5 @@
 
 package io.servicecomb.foundation.metrics.event;
 
-public class MetricsEvent {
-  private final MetricsEventType type;
-
-  private final Object data;
-
-  public MetricsEventType getType() {
-    return type;
-  }
-
-  public Object getData() {
-    return data;
-  }
-
-  public MetricsEvent(MetricsEventType type, Object data) {
-    this.type = type;
-    this.data = data;
-  }
+public interface MetricsEvent {
 }
