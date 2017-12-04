@@ -76,6 +76,7 @@ public class TestRSAProviderTokenManager {
       }
     };
 
+    Assert.assertEquals(rsaCoumserTokenManager.createToken(), rsaCoumserTokenManager.createToken());
     //Test Consumer first create token
     String token = rsaCoumserTokenManager.getToken();
     Assert.assertNotNull(token);
@@ -93,6 +94,9 @@ public class TestRSAProviderTokenManager {
     Assert.assertTrue(rsaProviderTokenManager.valid(token));
     // second validate use validated pool
     Assert.assertTrue(rsaProviderTokenManager.valid(token));
+    
   }
+  
+  
 
 }

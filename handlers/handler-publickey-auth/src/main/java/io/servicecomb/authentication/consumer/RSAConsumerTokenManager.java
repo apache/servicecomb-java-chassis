@@ -53,29 +53,30 @@ public class RSAConsumerTokenManager {
   }
 
   public String createToken() {
-    PrivateKey privateKey = RSAKeypair4Auth.INSTANCE.getPrivateKey();
-    readWriteLock.writeLock().lock();
-    if (!isExpired(token)) {
-      logger.debug("Token had been recreated by another thread");
-      readWriteLock.writeLock().unlock();
-      return token.format();
+    if (isExpired(token)) {
+      PrivateKey privateKey = RSAKeypair4Auth.INSTANCE.getPrivateKey();
+      readWriteLock.writeLock().lock();
+      if (isExpired(token)) {
+        String instanceId = RegistryUtils.getMicroserviceInstance().getInstanceId();
+        String serviceId = RegistryUtils.getMicroservice().getServiceId();
+        String randomCode = RandomStringUtils.randomAlphanumeric(128);
+        long generateTime = System.currentTimeMillis();
+        try {
+          String plain = String.format("%s@%s@%s@%s", instanceId, serviceId, generateTime, randomCode);
+          String sign = RSAUtils.sign(plain, privateKey);
+          token = RSAAuthenticationToken.fromStr(String.format("%s@%s", plain, sign));
+        } catch (InvalidKeyException | NoSuchAlgorithmException | InvalidKeySpecException | SignatureException e) {
+          logger.error("create token error", e);
+          throw new IllegalStateException("create token error");
+        } finally {
+          readWriteLock.writeLock().unlock();
+        }
+      } else {
+        readWriteLock.writeLock().unlock();
+      }
     }
-    String instanceId = RegistryUtils.getMicroserviceInstance().getInstanceId();
-    String serviceId = RegistryUtils.getMicroservice().getServiceId();
-    String randomCode = RandomStringUtils.randomAlphanumeric(128);
-    long generateTime = System.currentTimeMillis();
-    try {
-      String plain = String.format("%s@%s@%s@%s", instanceId, serviceId, generateTime, randomCode);
-      String sign = RSAUtils.sign(plain, privateKey);
-      token = RSAAuthenticationToken.fromStr(String.format("%s@%s", plain, sign));
-      return token.format();
-    } catch (InvalidKeyException | NoSuchAlgorithmException | InvalidKeySpecException | SignatureException e) {
-      logger.error("create token error", e);
-      throw new Error("create token error");
-    } finally {
-      readWriteLock.writeLock().unlock();
-    }
-
+    logger.debug("Token had been recreated by another thread");
+    return token.format();
   }
 
   /**
