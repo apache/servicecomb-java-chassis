@@ -76,7 +76,6 @@ public class TestRSAProviderTokenManager {
       }
     };
 
-    Assert.assertEquals(rsaCoumserTokenManager.createToken(), rsaCoumserTokenManager.createToken());
     //Test Consumer first create token
     String token = rsaCoumserTokenManager.getToken();
     Assert.assertNotNull(token);

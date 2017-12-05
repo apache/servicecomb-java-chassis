@@ -20,8 +20,6 @@ import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
 import java.security.SignatureException;
 import java.security.spec.InvalidKeySpecException;
-import java.util.concurrent.locks.ReadWriteLock;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import org.apache.commons.lang3.RandomStringUtils;
 import org.slf4j.Logger;
@@ -36,46 +34,37 @@ public class RSAConsumerTokenManager {
 
   private static final Logger logger = LoggerFactory.getLogger(RSAConsumerTokenManager.class);
 
-  private ReadWriteLock readWriteLock = new ReentrantReadWriteLock();
+  private Object lock = new Object();
 
   private RSAAuthenticationToken token;
 
   public String getToken() {
-    readWriteLock.readLock().lock();
-    if (!isExpired(token)) {
-      String tokenStr = token.format();
-      readWriteLock.readLock().unlock();
-      return tokenStr;
-    } else {
-      readWriteLock.readLock().unlock();
-      return createToken();
+
+    if (isExpired(token)) {
+      synchronized (lock) {
+        if (isExpired(token)) {
+          return createToken();
+        }
+      }
     }
+    return token.format();
+
   }
 
   public String createToken() {
-    if (isExpired(token)) {
-      PrivateKey privateKey = RSAKeypair4Auth.INSTANCE.getPrivateKey();
-      readWriteLock.writeLock().lock();
-      if (isExpired(token)) {
-        String instanceId = RegistryUtils.getMicroserviceInstance().getInstanceId();
-        String serviceId = RegistryUtils.getMicroservice().getServiceId();
-        String randomCode = RandomStringUtils.randomAlphanumeric(128);
-        long generateTime = System.currentTimeMillis();
-        try {
-          String plain = String.format("%s@%s@%s@%s", instanceId, serviceId, generateTime, randomCode);
-          String sign = RSAUtils.sign(plain, privateKey);
-          token = RSAAuthenticationToken.fromStr(String.format("%s@%s", plain, sign));
-        } catch (InvalidKeyException | NoSuchAlgorithmException | InvalidKeySpecException | SignatureException e) {
-          logger.error("create token error", e);
-          throw new IllegalStateException("create token error");
-        } finally {
-          readWriteLock.writeLock().unlock();
-        }
-      } else {
-        readWriteLock.writeLock().unlock();
-      }
+    PrivateKey privateKey = RSAKeypair4Auth.INSTANCE.getPrivateKey();
+    String instanceId = RegistryUtils.getMicroserviceInstance().getInstanceId();
+    String serviceId = RegistryUtils.getMicroservice().getServiceId();
+    String randomCode = RandomStringUtils.randomAlphanumeric(128);
+    long generateTime = System.currentTimeMillis();
+    try {
+      String plain = String.format("%s@%s@%s@%s", instanceId, serviceId, generateTime, randomCode);
+      String sign = RSAUtils.sign(plain, privateKey);
+      token = RSAAuthenticationToken.fromStr(String.format("%s@%s", plain, sign));
+    } catch (InvalidKeyException | NoSuchAlgorithmException | InvalidKeySpecException | SignatureException e) {
+      logger.error("create token error", e);
+      throw new IllegalStateException("create token error");
     }
-    logger.debug("Token had been recreated by another thread");
     return token.format();
   }
 
