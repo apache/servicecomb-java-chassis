@@ -21,5 +21,5 @@ import java.util.Map;
 public interface HealthCheckerPublisher {
   Map<String, String> health();
 
-  String health(String name);
+  String healthFilterWithName(String name);
 }

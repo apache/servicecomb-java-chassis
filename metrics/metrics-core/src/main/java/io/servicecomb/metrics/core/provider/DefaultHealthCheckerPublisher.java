@@ -49,7 +49,7 @@ public class DefaultHealthCheckerPublisher implements HealthCheckerPublisher {
   }
 
   @Override
-  public String health(String name) {
+  public String healthFilterWithName(String name) {
     try {
       return JsonUtils.writeValueAsString(registry.checkStatus(name));
     } catch (JsonProcessingException e) {

@@ -2,7 +2,7 @@ swagger: "2.0"
 info:
   version: "1.0.0"
   title: "metricsService"
-  x-java-interface: "io.servicecomb.foundation.metrics.MetricsProvider"
+  x-java-interface: "io.servicecomb.metrics.core.provider.MetricsPublisher"
 basePath: "/metrics"
 consumes:
 - "application/json"

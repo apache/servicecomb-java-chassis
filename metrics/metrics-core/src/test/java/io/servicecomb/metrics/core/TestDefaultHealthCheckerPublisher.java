@@ -50,7 +50,7 @@ public class TestDefaultHealthCheckerPublisher {
     Map<String, String> content = publisher.health();
     Assert.assertTrue(content.get("default").equals(JsonUtils.writeValueAsString(result)));
 
-    String content2 = publisher.health("default");
+    String content2 = publisher.healthFilterWithName("default");
     Assert.assertTrue(content2.equals(JsonUtils.writeValueAsString(result)));
   }
 }
