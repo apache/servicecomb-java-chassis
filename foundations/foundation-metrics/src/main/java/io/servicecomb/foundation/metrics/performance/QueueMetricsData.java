@@ -199,16 +199,14 @@ public class QueueMetricsData {
   }
 
   /** 
-   * Sets minimum lifetime in queue.
-   * @param maxLifeTimeInQueue maximum lifetime
+   * Resets minimum lifetime in queue.
    */
   public void resetMinLifeTimeInQueue() {
     this.minLifeTimeInQueue = 0L;
   }
 
   /** 
-   * resets maximum lifetime in queue.
-   * @param maxLifeTimeInQueue maximum lifetime
+   * Resets maximum lifetime in queue.
    */
   public void resetMaxLifeTimeInQueue() {
     this.maxLifeTimeInQueue = 0L;
