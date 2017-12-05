@@ -24,7 +24,7 @@ import io.servicecomb.foundation.metrics.MetricsServoRegistry;
  */
 public final class MetricsDataMonitorUtil {
 
-  /**
+  /*
    * Sets the total requests per provider and consumer.
    */
   public void setAllReqProviderAndConsumer(String operationPath, String invocationType) {
@@ -39,7 +39,7 @@ public final class MetricsDataMonitorUtil {
     }
   }
 
-  /**
+  /*
    * Sets the total failed requests per provider and consumer.
    */
   public void setAllFailReqProviderAndConsumer(String operationPath, String invocationType) {
