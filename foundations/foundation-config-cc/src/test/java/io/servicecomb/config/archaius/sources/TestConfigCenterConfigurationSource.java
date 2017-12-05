@@ -33,62 +33,62 @@ import mockit.Deencapsulation;
  * Created by on 2017/1/12.
  */
 public class TestConfigCenterConfigurationSource {
-    @Test
-    public void testCreate() throws Exception {
+  @Test
+  public void testCreate() throws Exception {
 
-        ConfigCenterConfigurationSourceImpl configCenterSource = new ConfigCenterConfigurationSourceImpl();
-        configCenterSource.addUpdateListener(new WatchedUpdateListener() {
-            @Override
-            public void updateConfiguration(WatchedUpdateResult result) {
-                Assert.assertTrue(!result.getAdded().isEmpty());
-            }
-        });
-        UpdateHandler udateHandler = Deencapsulation.getField(configCenterSource, UpdateHandler.class);
-        Map<String, Object> addedItems = new HashMap<>();
-        addedItems.put("testKey", "testValue");
-        udateHandler.handle("create", addedItems);
-    }
+    ConfigCenterConfigurationSourceImpl configCenterSource = new ConfigCenterConfigurationSourceImpl();
+    configCenterSource.addUpdateListener(new WatchedUpdateListener() {
+      @Override
+      public void updateConfiguration(WatchedUpdateResult result) {
+        Assert.assertTrue(!result.getAdded().isEmpty());
+      }
+    });
+    UpdateHandler udateHandler = Deencapsulation.getField(configCenterSource, UpdateHandler.class);
+    Map<String, Object> addedItems = new HashMap<>();
+    addedItems.put("testKey", "testValue");
+    udateHandler.handle("create", addedItems);
+  }
 
-    @Test
-    public void testUpdate() throws Exception {
+  @Test
+  public void testUpdate() throws Exception {
 
-        ConfigCenterConfigurationSourceImpl configCenterSource = new ConfigCenterConfigurationSourceImpl();
-        configCenterSource.addUpdateListener(new WatchedUpdateListener() {
-            @Override
-            public void updateConfiguration(WatchedUpdateResult result) {
-                Assert.assertTrue(!result.getChanged().isEmpty());
-            }
-        });
-        UpdateHandler udateHandler = Deencapsulation.getField(configCenterSource, UpdateHandler.class);
-        Map<String, Object> addedItems = new HashMap<>();
-        addedItems.put("testKey", "testValue");
-        udateHandler.handle("set", addedItems);
-    }
+    ConfigCenterConfigurationSourceImpl configCenterSource = new ConfigCenterConfigurationSourceImpl();
+    configCenterSource.addUpdateListener(new WatchedUpdateListener() {
+      @Override
+      public void updateConfiguration(WatchedUpdateResult result) {
+        Assert.assertTrue(!result.getChanged().isEmpty());
+      }
+    });
+    UpdateHandler udateHandler = Deencapsulation.getField(configCenterSource, UpdateHandler.class);
+    Map<String, Object> addedItems = new HashMap<>();
+    addedItems.put("testKey", "testValue");
+    udateHandler.handle("set", addedItems);
+  }
 
-    @Test
-    public void testDelete() throws Exception {
-        ConfigCenterConfigurationSourceImpl configCenterSource = new ConfigCenterConfigurationSourceImpl();
-        configCenterSource.addUpdateListener(new WatchedUpdateListener() {
-            @Override
-            public void updateConfiguration(WatchedUpdateResult result) {
-                Assert.assertTrue(!result.getDeleted().isEmpty());
-            }
-        });
-        UpdateHandler udateHandler = Deencapsulation.getField(configCenterSource, UpdateHandler.class);
-        Map<String, Object> addedItems = new HashMap<>();
-        addedItems.put("testKey", "testValue");
+  @Test
+  public void testDelete() throws Exception {
+    ConfigCenterConfigurationSourceImpl configCenterSource = new ConfigCenterConfigurationSourceImpl();
+    configCenterSource.addUpdateListener(new WatchedUpdateListener() {
+      @Override
+      public void updateConfiguration(WatchedUpdateResult result) {
+        Assert.assertTrue(!result.getDeleted().isEmpty());
+      }
+    });
+    UpdateHandler udateHandler = Deencapsulation.getField(configCenterSource, UpdateHandler.class);
+    Map<String, Object> addedItems = new HashMap<>();
+    addedItems.put("testKey", "testValue");
 
-        configCenterSource.getCurrentData().put("testKey", "testValue");
-        udateHandler.handle("delete", addedItems);
-        Assert.assertTrue(configCenterSource.getCurrentData().isEmpty());
-    }
+    configCenterSource.getCurrentData().put("testKey", "testValue");
+    udateHandler.handle("delete", addedItems);
+    Assert.assertTrue(configCenterSource.getCurrentData().isEmpty());
+  }
 
-    @Test
-    public void testRemoveUpdateListener() {
-        ConfigCenterConfigurationSourceImpl configCenterSource = new ConfigCenterConfigurationSourceImpl();
-        WatchedUpdateListener watchedUpdateListener = Mockito.mock(WatchedUpdateListener.class);
-        configCenterSource.addUpdateListener(watchedUpdateListener);
-        configCenterSource.removeUpdateListener(watchedUpdateListener);
-        Assert.assertTrue(configCenterSource.getCurrentListeners().isEmpty());
-    }
+  @Test
+  public void testRemoveUpdateListener() {
+    ConfigCenterConfigurationSourceImpl configCenterSource = new ConfigCenterConfigurationSourceImpl();
+    WatchedUpdateListener watchedUpdateListener = Mockito.mock(WatchedUpdateListener.class);
+    configCenterSource.addUpdateListener(watchedUpdateListener);
+    configCenterSource.removeUpdateListener(watchedUpdateListener);
+    Assert.assertTrue(configCenterSource.getCurrentListeners().isEmpty());
+  }
 }

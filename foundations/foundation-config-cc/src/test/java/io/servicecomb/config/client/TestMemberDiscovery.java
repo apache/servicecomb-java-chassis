@@ -28,31 +28,30 @@ import io.servicecomb.config.client.MemberDiscovery;
 import io.vertx.core.json.JsonObject;
 
 public class TestMemberDiscovery {
-    @BeforeClass
-    public static void setUpClass() {
-        ConfigCenterConfig.setConcurrentCompositeConfiguration(ConfigUtil.createLocalConfig());
-    }
+  @BeforeClass
+  public static void setUpClass() {
+    ConfigCenterConfig.setConcurrentCompositeConfiguration(ConfigUtil.createLocalConfig());
+  }
 
-    @Test
-    public void testGetConfigServerURIs() {
-        MemberDiscovery dc = new MemberDiscovery(ConfigCenterConfig.INSTANCE.getServerUri());
-        assertNotNull(dc.getConfigServer());
-    }
+  @Test
+  public void testGetConfigServerURIs() {
+    MemberDiscovery dc = new MemberDiscovery(ConfigCenterConfig.INSTANCE.getServerUri());
+    assertNotNull(dc.getConfigServer());
+  }
 
-    @Test
-    public void testDiscoverywithHttp() {
-        MemberDiscovery discoveryClient1 = new MemberDiscovery(null);
-        discoveryClient1.refreshMembers(new JsonObject(
-                "{\"instances\":[{\"status\":\"UP\",\"endpoints\":[\"rest://0.0.0.0:30103\"],\"hostName\":\"125292-0.0.0.0\",\"serviceName\":\"configServer\",\"isHttps\":false}]}"));
-        Assert.assertEquals("http://0.0.0.0:30103", discoveryClient1.getConfigServer());
-    }
+  @Test
+  public void testDiscoverywithHttp() {
+    MemberDiscovery discoveryClient1 = new MemberDiscovery(null);
+    discoveryClient1.refreshMembers(new JsonObject(
+        "{\"instances\":[{\"status\":\"UP\",\"endpoints\":[\"rest://0.0.0.0:30103\"],\"hostName\":\"125292-0.0.0.0\",\"serviceName\":\"configServer\",\"isHttps\":false}]}"));
+    Assert.assertEquals("http://0.0.0.0:30103", discoveryClient1.getConfigServer());
+  }
 
-    @Test
-    public void testDiscoverywithHttps() {
-        MemberDiscovery discoveryClient1 = new MemberDiscovery(null);
-        discoveryClient1.refreshMembers(new JsonObject(
-                "{\"instances\":[{\"status\":\"UP\",\"endpoints\":[\"rest://0.0.0.0:30103\"],\"hostName\":\"125292-0.0.0.0\",\"serviceName\":\"configServer\",\"isHttps\":true}]}"));
-        Assert.assertEquals("https://0.0.0.0:30103", discoveryClient1.getConfigServer());
-    }
-
+  @Test
+  public void testDiscoverywithHttps() {
+    MemberDiscovery discoveryClient1 = new MemberDiscovery(null);
+    discoveryClient1.refreshMembers(new JsonObject(
+        "{\"instances\":[{\"status\":\"UP\",\"endpoints\":[\"rest://0.0.0.0:30103\"],\"hostName\":\"125292-0.0.0.0\",\"serviceName\":\"configServer\",\"isHttps\":true}]}"));
+    Assert.assertEquals("https://0.0.0.0:30103", discoveryClient1.getConfigServer());
+  }
 }

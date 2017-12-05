@@ -30,36 +30,35 @@ import io.vertx.core.json.JsonObject;
  */
 public class MemberDiscovery {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(MemberDiscovery.class);
-    private static final String SCHEMA_SEPRATOR = "://";
+  private static final Logger LOGGER = LoggerFactory.getLogger(MemberDiscovery.class);
 
-    private List<String> configServerAddresses = new ArrayList<>();
+  private static final String SCHEMA_SEPRATOR = "://";
 
-    public MemberDiscovery(List<String> configCenterUri) {
-        if (configCenterUri != null && !configCenterUri.isEmpty()) {
-            configServerAddresses.addAll(configCenterUri);
-        }
-        Collections.shuffle(configServerAddresses);
+  private List<String> configServerAddresses = new ArrayList<>();
+
+  public MemberDiscovery(List<String> configCenterUri) {
+    if (configCenterUri != null && !configCenterUri.isEmpty()) {
+      configServerAddresses.addAll(configCenterUri);
     }
+    Collections.shuffle(configServerAddresses);
+  }
 
-    public String getConfigServer() {
-        return configServerAddresses.get(0);
+  public String getConfigServer() {
+    return configServerAddresses.get(0);
+  }
 
-    }
-
-    public void refreshMembers(JsonObject members) {
-        configServerAddresses.clear();
-        members.getJsonArray("instances").forEach(m -> {
-            JsonObject instance = (JsonObject) m;
-            if ("UP".equals(instance.getString("status", "UP"))) {
-                String endpoint = instance.getJsonArray("endpoints").getString(0);
-                String scheme = instance.getBoolean("isHttps", false) ? "https" : "http";
-                configServerAddresses.add(scheme + SCHEMA_SEPRATOR
-                        + endpoint.substring(endpoint.indexOf(SCHEMA_SEPRATOR) + SCHEMA_SEPRATOR.length()));
-            }
-        });
-        Collections.shuffle(configServerAddresses);
-        LOGGER.info("config center members: {}", configServerAddresses);
-    }
-
+  public void refreshMembers(JsonObject members) {
+    configServerAddresses.clear();
+    members.getJsonArray("instances").forEach(m -> {
+      JsonObject instance = (JsonObject) m;
+      if ("UP".equals(instance.getString("status", "UP"))) {
+        String endpoint = instance.getJsonArray("endpoints").getString(0);
+        String scheme = instance.getBoolean("isHttps", false) ? "https" : "http";
+        configServerAddresses.add(scheme + SCHEMA_SEPRATOR
+            + endpoint.substring(endpoint.indexOf(SCHEMA_SEPRATOR) + SCHEMA_SEPRATOR.length()));
+      }
+    });
+    Collections.shuffle(configServerAddresses);
+    LOGGER.info("config center members: {}", configServerAddresses);
+  }
 }

@@ -41,87 +41,87 @@ import io.servicecomb.config.spi.ConfigCenterConfigurationSource;
  * Created by on 2017/1/9.
  */
 public class ConfigCenterConfigurationSourceImpl implements ConfigCenterConfigurationSource {
-    private static final Logger LOGGER = LoggerFactory.getLogger(ConfigCenterConfigurationSourceImpl.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(ConfigCenterConfigurationSourceImpl.class);
 
-    private final Map<String, Object> valueCache = Maps.newConcurrentMap();
+  private final Map<String, Object> valueCache = Maps.newConcurrentMap();
 
-    private final List<WatchedUpdateListener> listeners = new CopyOnWriteArrayList<WatchedUpdateListener>();
+  private final List<WatchedUpdateListener> listeners = new CopyOnWriteArrayList<WatchedUpdateListener>();
 
-    private UpdateHandler updateHandler = new UpdateHandler();
+  private UpdateHandler updateHandler = new UpdateHandler();
 
-    public ConfigCenterConfigurationSourceImpl() {
+  public ConfigCenterConfigurationSourceImpl() {
+  }
+
+  private void init() {
+    ConfigCenterClient configCenterClient = new ConfigCenterClient(updateHandler);
+    configCenterClient.connectServer();
+  }
+
+  @Override
+  public void init(Configuration localConfiguration) {
+    ConfigCenterConfig.setConcurrentCompositeConfiguration((ConcurrentCompositeConfiguration) localConfiguration);
+    init();
+  }
+
+  public void addUpdateListener(WatchedUpdateListener watchedUpdateListener) {
+    if (watchedUpdateListener != null) {
+      listeners.add(watchedUpdateListener);
     }
+  }
 
-    private void init() {
-        ConfigCenterClient configCenterClient = new ConfigCenterClient(updateHandler);
-        configCenterClient.connectServer();
+  public void removeUpdateListener(WatchedUpdateListener watchedUpdateListener) {
+    if (watchedUpdateListener != null) {
+      listeners.remove(watchedUpdateListener);
     }
+  }
 
-    @Override
-    public void init(Configuration localConfiguration) {
-        ConfigCenterConfig.setConcurrentCompositeConfiguration((ConcurrentCompositeConfiguration)localConfiguration);
-        init();
+  private void updateConfiguration(WatchedUpdateResult result) {
+    for (WatchedUpdateListener l : listeners) {
+      try {
+        l.updateConfiguration(result);
+      } catch (Throwable ex) {
+        LOGGER.error("Error in invoking WatchedUpdateListener", ex);
+      }
     }
+  }
 
-    public void addUpdateListener(WatchedUpdateListener watchedUpdateListener) {
-        if (watchedUpdateListener != null) {
-            listeners.add(watchedUpdateListener);
+  public Map<String, Object> getCurrentData()
+      throws Exception {
+    return valueCache;
+  }
+
+  public List<WatchedUpdateListener> getCurrentListeners() {
+    return listeners;
+  }
+
+  public class UpdateHandler {
+
+    public void handle(String action, Map<String, Object> parseConfigs) {
+      if (parseConfigs == null || parseConfigs.isEmpty()) {
+        return;
+      }
+      Map<String, Object> configuration = ConfigMapping.getConvertedMap(parseConfigs);
+      if ("create".equals(action)) {
+        valueCache.putAll(configuration);
+        updateConfiguration(createIncremental(ImmutableMap.<String, Object>copyOf(configuration),
+            null,
+            null));
+      } else if ("set".equals(action)) {
+        valueCache.putAll(configuration);
+        updateConfiguration(createIncremental(null, ImmutableMap.<String, Object>copyOf(configuration),
+            null));
+      } else if ("delete".equals(action)) {
+        for (String itemKey : configuration.keySet()) {
+          valueCache.remove(itemKey);
         }
+        updateConfiguration(createIncremental(null,
+            null,
+            ImmutableMap.<String, Object>copyOf(configuration)));
+      } else {
+        LOGGER.error("action: {} is invalid.", action);
+        return;
+      }
+      LOGGER.warn("Config value cache changed: action:{}; item:{}", action, configuration.keySet());
     }
-
-    public void removeUpdateListener(WatchedUpdateListener watchedUpdateListener) {
-        if (watchedUpdateListener != null) {
-            listeners.remove(watchedUpdateListener);
-        }
-    }
-
-    private void updateConfiguration(WatchedUpdateResult result) {
-        for (WatchedUpdateListener l : listeners) {
-            try {
-                l.updateConfiguration(result);
-            } catch (Throwable ex) {
-                LOGGER.error("Error in invoking WatchedUpdateListener", ex);
-            }
-        }
-    }
-
-    public Map<String, Object> getCurrentData()
-            throws Exception {
-        return valueCache;
-    }
-
-    public List<WatchedUpdateListener> getCurrentListeners() {
-        return listeners;
-    }
-
-    public class UpdateHandler {
-
-        public void handle(String action, Map<String, Object> parseConfigs) {
-            if (parseConfigs == null || parseConfigs.isEmpty()) {
-                return;
-            }
-            Map<String, Object> configuration = ConfigMapping.getConvertedMap(parseConfigs);
-            if ("create".equals(action)) {
-                valueCache.putAll(configuration);
-                updateConfiguration(createIncremental(ImmutableMap.<String, Object>copyOf(configuration),
-                        null,
-                        null));
-            } else if ("set".equals(action)) {
-                valueCache.putAll(configuration);
-                updateConfiguration(createIncremental(null, ImmutableMap.<String, Object>copyOf(configuration),
-                        null));
-            } else if ("delete".equals(action)) {
-                for (String itemKey : configuration.keySet()) {
-                    valueCache.remove(itemKey);
-                }
-                updateConfiguration(createIncremental(null,
-                        null,
-                        ImmutableMap.<String, Object>copyOf(configuration)));
-            } else {
-                LOGGER.error("action: {} is invalid.", action);
-                return;
-            }
-            LOGGER.warn("Config value cache changed: action:{}; item:{}", action, configuration.keySet());
-        }
-    }
+  }
 }

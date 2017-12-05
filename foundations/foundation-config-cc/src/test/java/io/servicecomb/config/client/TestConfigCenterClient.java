@@ -48,123 +48,123 @@ import mockit.Mock;
 import mockit.MockUp;
 
 public class TestConfigCenterClient {
-    @BeforeClass
-    public static void setUpClass() {
-        ConfigCenterConfig.setConcurrentCompositeConfiguration(ConfigUtil.createLocalConfig());
-    }
+  @BeforeClass
+  public static void setUpClass() {
+    ConfigCenterConfig.setConcurrentCompositeConfiguration(ConfigUtil.createLocalConfig());
+  }
 
-    @SuppressWarnings("unchecked")
-    @Test
-    public void testConnectServer() {
-        HttpClientRequest request = Mockito.mock(HttpClientRequest.class);
-        Mockito.when(request.method()).thenReturn(HttpMethod.GET);
-        Mockito.when(request.headers()).thenReturn(MultiMap.caseInsensitiveMultiMap());
-        Buffer rsp = Mockito.mock(Buffer.class);
-        Mockito.when(rsp.toJsonObject()).thenReturn(new JsonObject(
-                "{\"instances\":[{\"status\":\"UP\",\"endpoints\":[\"rest:0.0.0.0:30103\"],\"hostName\":\"125292-0.0.0.0\",\"serviceName\":\"configServer\",\"https\":false}]}"));
-        HttpClientResponse event = Mockito.mock(HttpClientResponse.class);
-        Mockito.when(event.bodyHandler(Mockito.any(Handler.class))).then(invocation -> {
-            Handler<Buffer> handler = invocation.getArgumentAt(0, Handler.class);
-            handler.handle(rsp);
-            return null;
+  @SuppressWarnings("unchecked")
+  @Test
+  public void testConnectServer() {
+    HttpClientRequest request = Mockito.mock(HttpClientRequest.class);
+    Mockito.when(request.method()).thenReturn(HttpMethod.GET);
+    Mockito.when(request.headers()).thenReturn(MultiMap.caseInsensitiveMultiMap());
+    Buffer rsp = Mockito.mock(Buffer.class);
+    Mockito.when(rsp.toJsonObject()).thenReturn(new JsonObject(
+        "{\"instances\":[{\"status\":\"UP\",\"endpoints\":[\"rest:0.0.0.0:30103\"],\"hostName\":\"125292-0.0.0.0\",\"serviceName\":\"configServer\",\"https\":false}]}"));
+    HttpClientResponse event = Mockito.mock(HttpClientResponse.class);
+    Mockito.when(event.bodyHandler(Mockito.any(Handler.class))).then(invocation -> {
+      Handler<Buffer> handler = invocation.getArgumentAt(0, Handler.class);
+      handler.handle(rsp);
+      return null;
+    });
+    Mockito.when(event.statusCode()).thenReturn(200);
+    HttpClient httpClient = Mockito.mock(HttpClient.class);
+    Mockito.when(
+        httpClient.get(Mockito.anyInt(), Mockito.anyString(), Mockito.anyString(), Mockito.any(Handler.class)))
+        .then(invocation -> {
+          Handler<HttpClientResponse> handler = invocation.getArgumentAt(3, Handler.class);
+          handler.handle(event);
+          return request;
         });
-        Mockito.when(event.statusCode()).thenReturn(200);
-        HttpClient httpClient = Mockito.mock(HttpClient.class);
-        Mockito.when(
-                httpClient.get(Mockito.anyInt(), Mockito.anyString(), Mockito.anyString(), Mockito.any(Handler.class)))
-                .then(invocation -> {
-                    Handler<HttpClientResponse> handler = invocation.getArgumentAt(3, Handler.class);
-                    handler.handle(event);
-                    return request;
-                });
-        new MockUp<HttpClientWithContext>() {
-            @Mock
-            public void runOnContext(RunHandler handler) {
-                handler.run(httpClient);
-            }
-        };
-        new MockUp<MemberDiscovery>() {
-            @Mock
-            public void refreshMembers(JsonObject members) {
-                Assert.assertTrue(members.size() == 1);
-            }
-        };
-        UpdateHandler updateHandler = new ConfigCenterConfigurationSourceImpl().new UpdateHandler();
-        ConfigCenterClient cc = new ConfigCenterClient(updateHandler);
-        cc.connectServer();
+    new MockUp<HttpClientWithContext>() {
+      @Mock
+      public void runOnContext(RunHandler handler) {
+        handler.run(httpClient);
+      }
+    };
+    new MockUp<MemberDiscovery>() {
+      @Mock
+      public void refreshMembers(JsonObject members) {
+        Assert.assertTrue(members.size() == 1);
+      }
+    };
+    UpdateHandler updateHandler = new ConfigCenterConfigurationSourceImpl().new UpdateHandler();
+    ConfigCenterClient cc = new ConfigCenterClient(updateHandler);
+    cc.connectServer();
+  }
+
+  @Test
+  public void testConnectRefreshModeTwo() {
+    ConfigCenterClient cc2 = new ConfigCenterClient(null);
+    boolean status = false;
+    try {
+      Deencapsulation.setField(cc2, "refreshMode", 2);
+      cc2.connectServer();
+    } catch (Exception e) {
+      status = true;
     }
+    Assert.assertFalse(status);
+  }
 
-    @Test
-    public void testConnectRefreshModeTwo() {
-        ConfigCenterClient cc2 = new ConfigCenterClient(null);
-        boolean status = false;
-        try {
-            Deencapsulation.setField(cc2, "refreshMode", 2);
-            cc2.connectServer();
-        } catch (Exception e) {
-            status = true;
-        }
-        Assert.assertFalse(status);
-    }
+  @SuppressWarnings("unchecked")
+  @Test
+  public void testConfigRefresh() {
+    ConfigCenterConfigurationSourceImpl impl = new ConfigCenterConfigurationSourceImpl();
+    impl.init(ConfigUtil.createLocalConfig());
+    UpdateHandler updateHandler = impl.new UpdateHandler();
+    HttpClientRequest request = Mockito.mock(HttpClientRequest.class);
+    Mockito.when(request.headers()).thenReturn(MultiMap.caseInsensitiveMultiMap());
+    Buffer rsp = Mockito.mock(Buffer.class);
+    Mockito.when(rsp.toString())
+        .thenReturn("{\"application\":{\"2\":\"2\",\"aa\":\"1\"},\"vmalledge\":{\"aa\":\"3\"}}");
 
-    @SuppressWarnings("unchecked")
-    @Test
-    public void testConfigRefresh() {
-        ConfigCenterConfigurationSourceImpl impl = new ConfigCenterConfigurationSourceImpl();
-        impl.init(ConfigUtil.createLocalConfig());
-        UpdateHandler updateHandler = impl.new UpdateHandler();
-        HttpClientRequest request = Mockito.mock(HttpClientRequest.class);
-        Mockito.when(request.headers()).thenReturn(MultiMap.caseInsensitiveMultiMap());
-        Buffer rsp = Mockito.mock(Buffer.class);
-        Mockito.when(rsp.toString())
-                .thenReturn("{\"application\":{\"2\":\"2\",\"aa\":\"1\"},\"vmalledge\":{\"aa\":\"3\"}}");
+    HttpClientResponse event = Mockito.mock(HttpClientResponse.class);
+    Mockito.when(event.bodyHandler(Mockito.any(Handler.class))).then(invocation -> {
+      Handler<Buffer> handler = invocation.getArgumentAt(0, Handler.class);
+      handler.handle(rsp);
+      return null;
+    });
+    Mockito.when(event.statusCode()).thenReturn(200);
 
-        HttpClientResponse event = Mockito.mock(HttpClientResponse.class);
-        Mockito.when(event.bodyHandler(Mockito.any(Handler.class))).then(invocation -> {
-            Handler<Buffer> handler = invocation.getArgumentAt(0, Handler.class);
-            handler.handle(rsp);
-            return null;
+    Buffer buf = Mockito.mock(Buffer.class);
+    Mockito.when(buf.toJsonObject()).thenReturn(new JsonObject(
+        "{\"action\":\"UPDATE\",\"key\":\"vmalledge\",\"value\":\"{\\\"aa\\\":\\\"3\\\"}\"}"));
+    WebSocket websocket = Mockito.mock(WebSocket.class);
+    Mockito.when(websocket.handler(Mockito.any(Handler.class))).then(invocation -> {
+      Handler<Buffer> handler = invocation.getArgumentAt(0, Handler.class);
+      handler.handle(buf);
+      return websocket;
+    });
+    HttpClient httpClient = Mockito.mock(HttpClient.class);
+    Mockito.when(
+        httpClient.get(Mockito.anyInt(), Mockito.anyString(), Mockito.anyString(), Mockito.any(Handler.class)))
+        .then(invocation -> {
+          Handler<HttpClientResponse> handler = invocation.getArgumentAt(3, Handler.class);
+          handler.handle(event);
+          return request;
         });
-        Mockito.when(event.statusCode()).thenReturn(200);
-
-        Buffer buf = Mockito.mock(Buffer.class);
-        Mockito.when(buf.toJsonObject()).thenReturn(new JsonObject(
-                "{\"action\":\"UPDATE\",\"key\":\"vmalledge\",\"value\":\"{\\\"aa\\\":\\\"3\\\"}\"}"));
-        WebSocket websocket = Mockito.mock(WebSocket.class);
-        Mockito.when(websocket.handler(Mockito.any(Handler.class))).then(invocation -> {
-            Handler<Buffer> handler = invocation.getArgumentAt(0, Handler.class);
-            handler.handle(buf);
-            return websocket;
+    Mockito.when(httpClient.websocket(Mockito.anyInt(), Mockito.anyString(), Mockito.anyString(),
+        Mockito.any(MultiMap.class), Mockito.any(Handler.class), Mockito.any(Handler.class)))
+        .then(invocation -> {
+          Handler<WebSocket> handler = invocation.getArgumentAt(4, Handler.class);
+          handler.handle(websocket);
+          return null;
         });
-        HttpClient httpClient = Mockito.mock(HttpClient.class);
-        Mockito.when(
-                httpClient.get(Mockito.anyInt(), Mockito.anyString(), Mockito.anyString(), Mockito.any(Handler.class)))
-                .then(invocation -> {
-                    Handler<HttpClientResponse> handler = invocation.getArgumentAt(3, Handler.class);
-                    handler.handle(event);
-                    return request;
-                });
-        Mockito.when(httpClient.websocket(Mockito.anyInt(), Mockito.anyString(), Mockito.anyString(),
-                Mockito.any(MultiMap.class), Mockito.any(Handler.class), Mockito.any(Handler.class)))
-                .then(invocation -> {
-                    Handler<WebSocket> handler = invocation.getArgumentAt(4, Handler.class);
-                    handler.handle(websocket);
-                    return null;
-                });
-        new MockUp<HttpClientWithContext>() {
-            @Mock
-            public void runOnContext(RunHandler handler) {
-                handler.run(httpClient);
-            }
-        };
-        ConfigCenterClient cc = new ConfigCenterClient(updateHandler);
-        ParseConfigUtils parseConfigUtils = new ParseConfigUtils(updateHandler);
-        MemberDiscovery memberdis = new MemberDiscovery(Arrays.asList("http://configcentertest:30103"));
-        ConfigRefresh refresh = cc.new ConfigRefresh(parseConfigUtils, memberdis);
-        refresh.run();
-        Map<String, Object> flatItems = Deencapsulation.getField(parseConfigUtils, "flatItems");
-        Assert.assertEquals(2, flatItems.size());
-        Deencapsulation.setField(cc, "refreshMode", 0);
-        refresh.run();
-    }
+    new MockUp<HttpClientWithContext>() {
+      @Mock
+      public void runOnContext(RunHandler handler) {
+        handler.run(httpClient);
+      }
+    };
+    ConfigCenterClient cc = new ConfigCenterClient(updateHandler);
+    ParseConfigUtils parseConfigUtils = new ParseConfigUtils(updateHandler);
+    MemberDiscovery memberdis = new MemberDiscovery(Arrays.asList("http://configcentertest:30103"));
+    ConfigRefresh refresh = cc.new ConfigRefresh(parseConfigUtils, memberdis);
+    refresh.run();
+    Map<String, Object> flatItems = Deencapsulation.getField(parseConfigUtils, "flatItems");
+    Assert.assertEquals(2, flatItems.size());
+    Deencapsulation.setField(cc, "refreshMode", 0);
+    refresh.run();
+  }
 }

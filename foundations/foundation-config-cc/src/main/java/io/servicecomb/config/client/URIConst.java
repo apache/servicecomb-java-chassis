@@ -17,38 +17,41 @@
 package io.servicecomb.config.client;
 
 public class URIConst {
-    public static final String DOMAIN_NAME = ConfigCenterConfig.INSTANCE.getDomainName();
+  public static final String DOMAIN_NAME = ConfigCenterConfig.INSTANCE.getDomainName();
 
-    public static final String CURRENT_VERSION = ConfigCenterConfig.INSTANCE.getApiVersion();
+  public static final String CURRENT_VERSION = ConfigCenterConfig.INSTANCE.getApiVersion();
 
-    public static final String VERSION_V2 = "v2";
+  public static final String VERSION_V2 = "v2";
 
-    public static final String PREFIX_V3 = String.format("/v3/%s/configuration", DOMAIN_NAME);
+  public static final String PREFIX_V3 = String.format("/v3/%s/configuration", DOMAIN_NAME);
 
-    public static final String MEMBERS;
-    static {
-        if (VERSION_V2.equals(CURRENT_VERSION)) {
-            MEMBERS = "/members";
-        } else {
-            MEMBERS = PREFIX_V3 + "/members";
-        }
+  public static final String MEMBERS;
+
+  static {
+    if (VERSION_V2.equals(CURRENT_VERSION)) {
+      MEMBERS = "/members";
+    } else {
+      MEMBERS = PREFIX_V3 + "/members";
     }
+  }
 
-    public static final String REFRESH_ITEMS;
-    static {
-        if (VERSION_V2.equals(CURRENT_VERSION)) {
-            REFRESH_ITEMS = "/configuration/v2/refresh/items";
-        } else {
-            REFRESH_ITEMS = PREFIX_V3 + "/refresh/items";
-        }
-    }
+  public static final String REFRESH_ITEMS;
 
-    public static final String ITEMS;
-    static {
-        if (VERSION_V2.equals(CURRENT_VERSION)) {
-            ITEMS = "/configuration/v2/items";
-        } else {
-            ITEMS = PREFIX_V3 + "/items";
-        }
+  static {
+    if (VERSION_V2.equals(CURRENT_VERSION)) {
+      REFRESH_ITEMS = "/configuration/v2/refresh/items";
+    } else {
+      REFRESH_ITEMS = PREFIX_V3 + "/refresh/items";
     }
+  }
+
+  public static final String ITEMS;
+
+  static {
+    if (VERSION_V2.equals(CURRENT_VERSION)) {
+      ITEMS = "/configuration/v2/items";
+    } else {
+      ITEMS = PREFIX_V3 + "/items";
+    }
+  }
 }

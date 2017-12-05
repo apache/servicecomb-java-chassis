@@ -32,52 +32,52 @@ import mockit.Deencapsulation;
  */
 public class TestParseConfigUtils {
 
-    private ConfigCenterConfigurationSourceImpl configCenterSource = new ConfigCenterConfigurationSourceImpl();
+  private ConfigCenterConfigurationSourceImpl configCenterSource = new ConfigCenterConfigurationSourceImpl();
 
-    private UpdateHandler uh = configCenterSource.new UpdateHandler();
+  private UpdateHandler uh = configCenterSource.new UpdateHandler();
 
-    private ParseConfigUtils pc = new ParseConfigUtils(uh);
+  private ParseConfigUtils pc = new ParseConfigUtils(uh);
 
-    @Test
-    public void testNotifyItemsChangedNeedRefresh() {
+  @Test
+  public void testNotifyItemsChangedNeedRefresh() {
 
-        boolean status = true;
-        Map<String, Object> before = new HashMap<String, Object>();
-        Map<String, Object> after = new HashMap<String, Object>();
-        try {
-            Deencapsulation.invoke(pc, "notifyItemsChangedNeedRefresh", before, after);
-        } catch (Exception e) {
-            status = false;
-        }
-        Assert.assertTrue(status);
-
-        // Check with valid before object
-        status = true;
-        before.put("test", "testValue");
-        try {
-            Deencapsulation.invoke(pc, "notifyItemsChangedNeedRefresh", before, after);
-        } catch (Exception e) {
-            status = false;
-        }
-        Assert.assertTrue(status);
-
-        // Check with valid after object
-        status = true;
-        after.put("test", "testValue2");
-        try {
-            Deencapsulation.invoke(pc, "notifyItemsChangedNeedRefresh", before, after);
-        } catch (Exception e) {
-            status = false;
-        }
-        Assert.assertTrue(status);
-
-        // Check with valid localItems object
-        status = true;
-        try {
-            Deencapsulation.invoke(pc, "notifyItemsChangedNeedRefresh", before, after);
-        } catch (Exception e) {
-            status = false;
-        }
-        Assert.assertTrue(status);
+    boolean status = true;
+    Map<String, Object> before = new HashMap<String, Object>();
+    Map<String, Object> after = new HashMap<String, Object>();
+    try {
+      Deencapsulation.invoke(pc, "notifyItemsChangedNeedRefresh", before, after);
+    } catch (Exception e) {
+      status = false;
     }
+    Assert.assertTrue(status);
+
+    // Check with valid before object
+    status = true;
+    before.put("test", "testValue");
+    try {
+      Deencapsulation.invoke(pc, "notifyItemsChangedNeedRefresh", before, after);
+    } catch (Exception e) {
+      status = false;
+    }
+    Assert.assertTrue(status);
+
+    // Check with valid after object
+    status = true;
+    after.put("test", "testValue2");
+    try {
+      Deencapsulation.invoke(pc, "notifyItemsChangedNeedRefresh", before, after);
+    } catch (Exception e) {
+      status = false;
+    }
+    Assert.assertTrue(status);
+
+    // Check with valid localItems object
+    status = true;
+    try {
+      Deencapsulation.invoke(pc, "notifyItemsChangedNeedRefresh", before, after);
+    } catch (Exception e) {
+      status = false;
+    }
+    Assert.assertTrue(status);
+  }
 }
