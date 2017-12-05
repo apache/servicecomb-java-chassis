@@ -29,14 +29,15 @@ import io.servicecomb.config.client.ConfigCenterConfig;
  * Created by l00168639 on 2017/8/31.
  */
 public class TestConfigCenterConfig {
-    @BeforeClass
-    public static void setUpClass() {
-        ConfigCenterConfig.setConcurrentCompositeConfiguration(ConfigUtil.createLocalConfig());
-    }
-    @Test
-    public void getServerUri() {
-        List<String> servers = ConfigCenterConfig.INSTANCE.getServerUri();
-        Assert.assertEquals("https://10.22.87.59:30103", servers.get(0));
-        Assert.assertEquals("https://10.22.87.59:30103", servers.get(1));
-    }
+  @BeforeClass
+  public static void setUpClass() {
+    ConfigCenterConfig.setConcurrentCompositeConfiguration(ConfigUtil.createLocalConfig());
+  }
+
+  @Test
+  public void getServerUri() {
+    List<String> servers = ConfigCenterConfig.INSTANCE.getServerUri();
+    Assert.assertEquals("https://10.22.87.59:30103", servers.get(0));
+    Assert.assertEquals("https://10.22.87.59:30103", servers.get(1));
+  }
 }

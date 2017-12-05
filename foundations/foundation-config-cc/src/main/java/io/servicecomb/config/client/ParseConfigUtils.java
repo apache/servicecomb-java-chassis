@@ -34,82 +34,82 @@ import io.servicecomb.foundation.common.utils.JsonUtils;
  */
 public class ParseConfigUtils {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(ParseConfigUtils.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(ParseConfigUtils.class);
 
-    private static LinkedHashMap<String, Map<String, Object>> multiDimensionItems = new LinkedHashMap<>();
+  private static LinkedHashMap<String, Map<String, Object>> multiDimensionItems = new LinkedHashMap<>();
 
-    public static final Map<String, Object> flatItems = new HashMap<>();
+  public static final Map<String, Object> flatItems = new HashMap<>();
 
-    private UpdateHandler updateHandler;
+  private UpdateHandler updateHandler;
 
-    public ParseConfigUtils(UpdateHandler updateHandler) {
-        this.updateHandler = updateHandler;
+  public ParseConfigUtils(UpdateHandler updateHandler) {
+    this.updateHandler = updateHandler;
+  }
+
+  public void refreshConfigItems(Map<String, Map<String, Object>> remoteItems) {
+    multiDimensionItems.clear();
+    multiDimensionItems.putAll(remoteItems);
+    doRefreshItems();
+    LOGGER.debug("refresh config success");
+  }
+
+  public void refreshConfigItemsIncremental(Map<String, Object> action) {
+    if ("UPDATE".equals(action.get("action"))) {
+      try {
+        multiDimensionItems.put((String) action.get("key"), JsonUtils.OBJ_MAPPER
+            .readValue(action.get("value").toString(), new TypeReference<Map<String, Object>>() {
+            }));
+      } catch (IOException e) {
+        LOGGER.error("parse config change action fail");
+      }
+      doRefreshItems();
+    } else if ("DELETE".equals(action.get("action"))) {
+      multiDimensionItems.remove(action.get("key"));
+      doRefreshItems();
     }
+  }
 
-    public void refreshConfigItems(Map<String, Map<String, Object>> remoteItems) {
-        multiDimensionItems.clear();
-        multiDimensionItems.putAll(remoteItems);
-        doRefreshItems();
-        LOGGER.debug("refresh config success");
-    }
+  private void doRefreshItems() {
+    Map<String, Object> freshFlatItems = mergeDimensionItems(multiDimensionItems);
+    notifyItemsChangedNeedRefresh(flatItems, freshFlatItems);
+    flatItems.clear();
+    flatItems.putAll(freshFlatItems);
+  }
 
-    public void refreshConfigItemsIncremental(Map<String, Object> action) {
-        if ("UPDATE".equals(action.get("action"))) {
-            try {
-                multiDimensionItems.put((String) action.get("key"), JsonUtils.OBJ_MAPPER
-                        .readValue(action.get("value").toString(), new TypeReference<Map<String, Object>>() {
-                        }));
-            } catch (IOException e) {
-                LOGGER.error("parse config change action fail");
-            }
-            doRefreshItems();
-        } else if ("DELETE".equals(action.get("action"))) {
-            multiDimensionItems.remove(action.get("key"));
-            doRefreshItems();
-        }
-    }
+  private Map<String, Object> mergeDimensionItems(Map<String, Map<String, Object>> items) {
+    Map<String, Object> flatMap = new HashMap<>();
+    return items.values().stream().reduce(flatMap, (result, item) -> {
+      result.putAll(item);
+      return result;
+    });
+  }
 
-    private void doRefreshItems() {
-        Map<String, Object> freshFlatItems = mergeDimensionItems(multiDimensionItems);
-        notifyItemsChangedNeedRefresh(flatItems, freshFlatItems);
-        flatItems.clear();
-        flatItems.putAll(freshFlatItems);
+  private void notifyItemsChangedNeedRefresh(Map<String, Object> before, Map<String, Object> after) {
+    Map<String, Object> itemsCreated = new HashMap<>();
+    Map<String, Object> itemsDeleted = new HashMap<>();
+    Map<String, Object> itemsModified = new HashMap<>();
+    if (before == null || before.isEmpty()) {
+      updateHandler.handle("create", after);
+      return;
     }
-
-    private Map<String, Object> mergeDimensionItems(Map<String, Map<String, Object>> items) {
-        Map<String, Object> flatMap = new HashMap<>();
-        return items.values().stream().reduce(flatMap, (result, item) -> {
-            result.putAll(item);
-            return result;
-        });
+    if (after == null || after.isEmpty()) {
+      updateHandler.handle("delete", before);
+      return;
     }
-
-    private void notifyItemsChangedNeedRefresh(Map<String, Object> before, Map<String, Object> after) {
-        Map<String, Object> itemsCreated = new HashMap<>();
-        Map<String, Object> itemsDeleted = new HashMap<>();
-        Map<String, Object> itemsModified = new HashMap<>();
-        if (before == null || before.isEmpty()) {
-            updateHandler.handle("create", after);
-            return;
-        }
-        if (after == null || after.isEmpty()) {
-            updateHandler.handle("delete", before);
-            return;
-        }
-        for (String itemKey : after.keySet()) {
-            if (!before.containsKey(itemKey)) {
-                itemsCreated.put(itemKey, after.get(itemKey));
-            } else if (!after.get(itemKey).equals(before.get(itemKey))) {
-                itemsModified.put(itemKey, after.get(itemKey));
-            }
-        }
-        for (String itemKey : before.keySet()) {
-            if (!after.containsKey(itemKey)) {
-                itemsDeleted.put(itemKey, "");
-            }
-        }
-        updateHandler.handle("create", itemsCreated);
-        updateHandler.handle("set", itemsModified);
-        updateHandler.handle("delete", itemsDeleted);
+    for (String itemKey : after.keySet()) {
+      if (!before.containsKey(itemKey)) {
+        itemsCreated.put(itemKey, after.get(itemKey));
+      } else if (!after.get(itemKey).equals(before.get(itemKey))) {
+        itemsModified.put(itemKey, after.get(itemKey));
+      }
     }
+    for (String itemKey : before.keySet()) {
+      if (!after.containsKey(itemKey)) {
+        itemsDeleted.put(itemKey, "");
+      }
+    }
+    updateHandler.handle("create", itemsCreated);
+    updateHandler.handle("set", itemsModified);
+    updateHandler.handle("delete", itemsDeleted);
+  }
 }
