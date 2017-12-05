@@ -16,6 +16,8 @@
 
 package io.servicecomb.transport.rest.vertx;
 
+import static io.vertx.ext.web.handler.BodyHandler.DEFAULT_BODY_LIMIT;
+
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -45,6 +47,8 @@ public abstract class AbstractVertxHttpDispatcher implements VertxHttpDispatcher
         DynamicPropertyFactory.getInstance().getStringProperty("cse.uploads.directory", null).get();
     bodyHandler.setUploadsDirectory(uploadsDirectory);
     bodyHandler.setDeleteUploadedFilesOnEnd(true);
+    bodyHandler.setBodyLimit(
+        DynamicPropertyFactory.getInstance().getLongProperty("cse.uploads.maxSize", DEFAULT_BODY_LIMIT).get());
     LOGGER.info("set uploads directory to {}.", uploadsDirectory);
 
     return bodyHandler;

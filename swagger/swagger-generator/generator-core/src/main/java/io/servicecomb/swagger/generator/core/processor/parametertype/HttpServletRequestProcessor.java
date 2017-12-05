@@ -29,9 +29,8 @@ public class HttpServletRequestProcessor implements CommonParameterTypeProcessor
   }
 
   @Override
-  public boolean process(OperationGenerator operationGenerator, int paramIdx) {
+  public void process(OperationGenerator operationGenerator, int paramIdx) {
     HttpRequestParameter parameter = new HttpRequestParameter();
     operationGenerator.addProviderParameter(parameter);
-    return true;
   }
 }

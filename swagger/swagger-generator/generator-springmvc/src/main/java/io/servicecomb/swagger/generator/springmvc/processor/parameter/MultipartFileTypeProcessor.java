@@ -16,9 +16,6 @@
 
 package io.servicecomb.swagger.generator.springmvc.processor.parameter;
 
-import java.lang.annotation.Annotation;
-
-import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.multipart.MultipartFile;
 
 import io.servicecomb.swagger.generator.core.CommonParameterTypeProcessor;
@@ -33,22 +30,9 @@ public class MultipartFileTypeProcessor implements CommonParameterTypeProcessor 
   }
 
   @Override
-  public boolean process(OperationGenerator operationGenerator, int paramIdx) {
-    if (!hasRequestPartAnnotation(operationGenerator, paramIdx)) {
-      PartParameter parameter = new PartParameter();
-      parameter.setName(ParamUtils.getParameterName(operationGenerator.getProviderMethod(), paramIdx));
-      operationGenerator.addProviderParameter(parameter);
-      return true;
-    }
-    return false;
-  }
-
-  private boolean hasRequestPartAnnotation(OperationGenerator operationGenerator, int paramIdx) {
-    for (Annotation annotation : operationGenerator.getProviderMethod().getParameterAnnotations()[paramIdx]) {
-      if (annotation.annotationType().equals(RequestPart.class)) {
-        return true;
-      }
-    }
-    return false;
+  public void process(OperationGenerator operationGenerator, int paramIdx) {
+    PartParameter parameter = new PartParameter();
+    parameter.setName(ParamUtils.getParameterName(operationGenerator.getProviderMethod(), paramIdx));
+    operationGenerator.addProviderParameter(parameter);
   }
 }

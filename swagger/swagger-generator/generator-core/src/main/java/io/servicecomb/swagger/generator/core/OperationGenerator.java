@@ -230,23 +230,27 @@ public class OperationGenerator {
     Annotation[][] allAnnotations = providerMethod.getParameterAnnotations();
     Type[] parameterTypes = providerMethod.getGenericParameterTypes();
     for (int paramIdx = 0; paramIdx < parameterTypes.length; paramIdx++) {
-      Type type = parameterTypes[paramIdx];
-      // 是否需要根据参数类型处理，目标场景：httpRequest之类
-      if (processByParameterType(type, paramIdx)) {
-        continue;
-      }
-
       int swaggerParamCount = providerParameters.size();
 
       // 根据annotation处理
       Annotation[] paramAnnotations = allAnnotations[paramIdx];
       processByParameterAnnotation(paramAnnotations, paramIdx);
 
-      if (swaggerParamCount == providerParameters.size()) {
+      if (isArgumentNotProcessed(swaggerParamCount)) {
+        Type type = parameterTypes[paramIdx];
+        // 是否需要根据参数类型处理，目标场景：httpRequest之类
+        processByParameterType(type, paramIdx);
+      }
+
+      if (isArgumentNotProcessed(swaggerParamCount)) {
         // 没有用于描述契约的标注，根据函数原型来反射生成
         context.getDefaultParamProcessor().process(this, paramIdx);
       }
     }
+  }
+
+  private boolean isArgumentNotProcessed(int swaggerParamCount) {
+    return swaggerParamCount == providerParameters.size();
   }
 
   protected void processByParameterAnnotation(Annotation[] paramAnnotations, int paramIdx) {
@@ -259,9 +263,11 @@ public class OperationGenerator {
     }
   }
 
-  protected boolean processByParameterType(Type parameterType, int paramIdx) {
+  protected void processByParameterType(Type parameterType, int paramIdx) {
     ParameterTypeProcessor processor = context.findParameterTypeProcessor(parameterType);
-    return processor != null && processor.process(this, paramIdx);
+    if (processor != null) {
+      processor.process(this, paramIdx);
+    }
   }
 
   public void correctOperation() {
