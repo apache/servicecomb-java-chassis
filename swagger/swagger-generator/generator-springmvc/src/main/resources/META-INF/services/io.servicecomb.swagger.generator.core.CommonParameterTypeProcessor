@@ -14,4 +14,4 @@
 # limitations under the License.
 #
 
-io.servicecomb.swagger.generator.core.MultipartFileTypeProcessor
+io.servicecomb.swagger.generator.springmvc.processor.parameter.MultipartFileTypeProcessor
