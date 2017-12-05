@@ -28,7 +28,7 @@ public class RegisterManager<KEY, VALUE> {
 
   private String name;
 
-  private String registerErrorFmt = "Not allow regsiter repeat data, name=%s, key=%s";
+  private String registerErrorFmt = "Not allow register repeat data, name=%s, key=%s";
 
   private Map<KEY, VALUE> objMap = new ConcurrentHashMap<>();
 

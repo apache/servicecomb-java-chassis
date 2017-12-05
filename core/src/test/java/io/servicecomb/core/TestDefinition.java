@@ -74,7 +74,7 @@ public class TestDefinition {
     microserviceMetaManager.getOrCreateMicroserviceMeta("app:testname");
 
     Assert.assertEquals("microservice meta manager", microserviceMetaManager.getName());
-    Assert.assertEquals("Not allow regsiter repeat data, name=%s, key=%s",
+    Assert.assertEquals("Not allow register repeat data, name=%s, key=%s",
         microserviceMetaManager.getRegisterErrorFmt());
     Assert.assertEquals(0, microserviceMetaManager.getAllSchemaMeta("app:testname").size());
 

@@ -42,7 +42,7 @@ public class TestPojoProducerProvider {
     Person bean = new Person();
     new Expectations() {
       {
-        producers.getProcucers();
+        producers.getProducers();
         result = producersMeta;
         meta.getInstance();
         result = bean;
@@ -63,7 +63,7 @@ public class TestPojoProducerProvider {
     producersMeta.add(meta);
     new Expectations() {
       {
-        producers.getProcucers();
+        producers.getProducers();
         result = producersMeta;
         meta.getInstance();
         result = null;

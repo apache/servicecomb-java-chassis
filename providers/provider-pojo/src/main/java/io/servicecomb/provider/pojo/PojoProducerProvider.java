@@ -42,18 +42,18 @@ public class PojoProducerProvider extends AbstractProducerProvider {
   @Inject
   private PojoProducers pojoProducers;
 
-  public void regsiterInstanceFactory(InstanceFactory instanceFactory) {
+  public void registerInstanceFactory(InstanceFactory instanceFactory) {
     instanceFactoryMgr.register(instanceFactory.getImplName(), instanceFactory);
   }
 
   public PojoProducerProvider() {
-    regsiterInstanceFactory(new PojoInstanceFactory());
-    regsiterInstanceFactory(new SpringInstanceFactory());
+    registerInstanceFactory(new PojoInstanceFactory());
+    registerInstanceFactory(new SpringInstanceFactory());
   }
 
   @Override
   public void init() throws Exception {
-    for (PojoProducerMeta pojoProducerMeta : pojoProducers.getProcucers()) {
+    for (PojoProducerMeta pojoProducerMeta : pojoProducers.getProducers()) {
       initPojoProducerMeta(pojoProducerMeta);
 
       Microservice microservice = RegistryUtils.getMicroservice();

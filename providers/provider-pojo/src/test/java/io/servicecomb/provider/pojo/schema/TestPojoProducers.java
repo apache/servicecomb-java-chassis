@@ -39,7 +39,7 @@ public class TestPojoProducers {
   public void testPojoProducers() {
     Person bean = new Person();
     Assert.assertSame(bean, producer.postProcessAfterInitialization(bean, "test"));
-    Assert.assertEquals(producer.getProcucers().size(), 1);
+    Assert.assertEquals(producer.getProducers().size(), 1);
   }
 
   @Test
@@ -47,7 +47,7 @@ public class TestPojoProducers {
     IPerson bean = new IPerson() {
     };
     Assert.assertSame(bean, producer.postProcessAfterInitialization(bean, "test"));
-    Assert.assertEquals(producer.getProcucers().size(), 0);
+    Assert.assertEquals(producer.getProducers().size(), 0);
   }
 
   @RpcSchema
@@ -63,7 +63,7 @@ public class TestPojoProducers {
       }
     };
     Assert.assertSame(bean, producer.postProcessAfterInitialization(bean, "test"));
-    Assert.assertEquals(producer.getProcucers().size(), 1);
+    Assert.assertEquals(producer.getProducers().size(), 1);
   }
 
   @Test
