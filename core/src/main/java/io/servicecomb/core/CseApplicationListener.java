@@ -31,6 +31,9 @@ import org.springframework.context.event.ContextClosedEvent;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.core.Ordered;
+import org.springframework.util.StringUtils;
+
+import com.google.common.eventbus.Subscribe;
 
 import io.servicecomb.core.BootListener.BootEvent;
 import io.servicecomb.core.BootListener.EventType;
@@ -41,9 +44,11 @@ import io.servicecomb.core.provider.consumer.ConsumerProviderManager;
 import io.servicecomb.core.provider.consumer.ReferenceConfigUtils;
 import io.servicecomb.core.provider.producer.ProducerProviderManager;
 import io.servicecomb.core.transport.TransportManager;
+import io.servicecomb.foundation.common.event.EventManager;
 import io.servicecomb.foundation.common.utils.BeanUtils;
 import io.servicecomb.foundation.common.utils.FortifyUtils;
 import io.servicecomb.serviceregistry.RegistryUtils;
+import io.servicecomb.serviceregistry.task.MicroserviceInstanceRegisterTask;
 
 public class CseApplicationListener
     implements ApplicationListener<ApplicationEvent>, Ordered, ApplicationContextAware {
@@ -124,9 +129,10 @@ public class CseApplicationListener
           schemaListenerManager.notifySchemaListener();
 
           triggerEvent(EventType.BEFORE_REGISTRY);
+
+          triggerAfterRegistryEvent();
+
           RegistryUtils.run();
-          ReferenceConfigUtils.setReady(true);
-          triggerEvent(EventType.AFTER_REGISTRY);
 
           // 当程序退出时，进行相关清理，注意：kill -9 {pid}下无效
           // 1. 去注册实例信息
@@ -144,5 +150,31 @@ public class CseApplicationListener
       RegistryUtils.destory();
       isInit = false;
     }
+  }
+
+  /**
+   * <p>As the process of instance registry is asynchronous, the {@code AFTER_REGISTRY}
+   * event should not be sent immediately after {@link RegistryUtils#run()} is invoked.
+   * When the instance registry succeeds, {@link MicroserviceInstanceRegisterTask} will be posted in {@link EventManager},
+   * register a subscriber to watch this event and send {@code AFTER_REGISTRY}.</p>
+   *
+   * <p>This method should be called before {@link RegistryUtils#run()} to avoid that the registry process is too quick
+   * that the event is not watched by this subscriber.</p>
+   *
+   * <p>Check if {@code InstanceId} is null to judge whether the instance registry has succeeded.</p>
+   */
+  private void triggerAfterRegistryEvent() {
+    EventManager.register(new Object() {
+      @Subscribe
+      public void afterRegistryInstance(MicroserviceInstanceRegisterTask microserviceInstanceRegisterTask) {
+        LOGGER.info("receive MicroserviceInstanceRegisterTask event, check instance Id...");
+        if (!StringUtils.isEmpty(RegistryUtils.getMicroserviceInstance().getInstanceId())) {
+          LOGGER.info("instance registry succeeds for the first time, will send AFTER_REGISTRY event.");
+          ReferenceConfigUtils.setReady(true);
+          triggerEvent(EventType.AFTER_REGISTRY);
+          EventManager.unregister(this);
+        }
+      }
+    });
   }
 }
