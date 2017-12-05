@@ -129,25 +129,9 @@ public class CseApplicationListener
           schemaListenerManager.notifySchemaListener();
 
           triggerEvent(EventType.BEFORE_REGISTRY);
-          /*
-           * 由于注册实例是异步过程，所以后续的AFTER_REGISTRY消息不能立即发送，必须等到实例第一次注册成功时才能发送。
-           * 将监听器的注册逻辑放在RegistryUtils.run()之前，以防止MicroserviceInstanceRegisterTask消息在监听器注册之前就被post而漏过。
-           * 实例注册操作完成时，会在EventManager中post一次MicroserviceInstanceRegisterTask，监听此消息以触发后续操作。
-           * 判断实例是否注册成功的标准是InstanceId是否为空。
-           * 操作完成后将此监听器从EventManager中去除。
-           */
-          EventManager.register(new Object() {
-            @Subscribe
-            public void afterRegistryInstance(MicroserviceInstanceRegisterTask microserviceInstanceRegisterTask) {
-              LOGGER.info("receive MicroserviceInstanceRegisterTask event, check instance Id...");
-              if (!StringUtils.isEmpty(RegistryUtils.getMicroserviceInstance().getInstanceId())) {
-                LOGGER.info("instance registry succeeds for the first time, will send AFTER_REGISTRY event.");
-                ReferenceConfigUtils.setReady(true);
-                triggerEvent(EventType.AFTER_REGISTRY);
-                EventManager.unregister(this);
-              }
-            }
-          });
+
+          triggerAfterRegistryEvent();
+
           RegistryUtils.run();
 
           // 当程序退出时，进行相关清理，注意：kill -9 {pid}下无效
@@ -166,5 +150,31 @@ public class CseApplicationListener
       RegistryUtils.destory();
       isInit = false;
     }
+  }
+
+  /**
+   * <p>As the process of instance registry is asynchronous, the {@code AFTER_REGISTRY}
+   * event should not be sent immediately after {@link RegistryUtils#run()} is invoked.
+   * When the instance registry succeeds, {@link MicroserviceInstanceRegisterTask} will be posted in {@link EventManager},
+   * register a subscriber to watch this event and send {@code AFTER_REGISTRY}.</p>
+   *
+   * <p>This method should be called before {@link RegistryUtils#run()} to avoid that the registry process is too quick
+   * that the event is not watched by this subscriber.</p>
+   *
+   * <p>Check if {@code InstanceId} is null to judge whether the instance registry has succeeded.</p>
+   */
+  private void triggerAfterRegistryEvent() {
+    EventManager.register(new Object() {
+      @Subscribe
+      public void afterRegistryInstance(MicroserviceInstanceRegisterTask microserviceInstanceRegisterTask) {
+        LOGGER.info("receive MicroserviceInstanceRegisterTask event, check instance Id...");
+        if (!StringUtils.isEmpty(RegistryUtils.getMicroserviceInstance().getInstanceId())) {
+          LOGGER.info("instance registry succeeds for the first time, will send AFTER_REGISTRY event.");
+          ReferenceConfigUtils.setReady(true);
+          triggerEvent(EventType.AFTER_REGISTRY);
+          EventManager.unregister(this);
+        }
+      }
+    });
   }
 }

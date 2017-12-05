@@ -16,13 +16,18 @@
 
 package io.servicecomb.core;
 
+import static org.junit.Assert.fail;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.junit.After;
 import org.junit.AfterClass;
+import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.springframework.context.event.ContextClosedEvent;
@@ -33,6 +38,7 @@ import io.servicecomb.core.BootListener.BootEvent;
 import io.servicecomb.core.definition.loader.SchemaListenerManager;
 import io.servicecomb.core.endpoint.AbstractEndpointsCache;
 import io.servicecomb.core.provider.consumer.ConsumerProviderManager;
+import io.servicecomb.core.provider.consumer.ReferenceConfigUtils;
 import io.servicecomb.core.provider.producer.ProducerProviderManager;
 import io.servicecomb.core.transport.TransportManager;
 import io.servicecomb.foundation.common.event.EventManager;
@@ -51,13 +57,18 @@ public class TestCseApplicationListener {
     AbstractEndpointsCache.init(null, null);
   }
 
+  @After
+  public void cleanup() {
+    Deencapsulation.setField(ReferenceConfigUtils.class, "ready", false);
+  }
+
   @Test
   public void testCseApplicationListenerNormal(@Injectable ContextRefreshedEvent event,
       @Injectable AbstractApplicationContext context,
       @Injectable ProducerProviderManager producerProviderManager,
       @Injectable ConsumerProviderManager consumerProviderManager,
       @Injectable TransportManager transportManager,
-      @Mocked RegistryUtils ru) throws Exception {
+      @Mocked RegistryUtils ru) {
     Map<String, BootListener> listeners = new HashMap<>();
     BootListener listener = Mockito.mock(BootListener.class);
     listeners.put("test", listener);
@@ -102,7 +113,7 @@ public class TestCseApplicationListener {
       @Injectable AbstractApplicationContext context,
       @Injectable BootListener listener,
       @Injectable ProducerProviderManager producerProviderManager,
-      @Mocked RegistryUtils ru) throws Exception {
+      @Mocked RegistryUtils ru) {
     Map<String, BootListener> listeners = new HashMap<>();
     listeners.put("test", listener);
 
@@ -116,7 +127,7 @@ public class TestCseApplicationListener {
   public void testCseApplicationListenerParentNotnull(@Injectable ContextRefreshedEvent event,
       @Injectable AbstractApplicationContext context,
       @Injectable AbstractApplicationContext pContext,
-      @Mocked RegistryUtils ru) throws Exception {
+      @Mocked RegistryUtils ru) {
 
     CseApplicationListener cal = new CseApplicationListener();
     cal.setApplicationContext(context);
@@ -125,7 +136,7 @@ public class TestCseApplicationListener {
 
   @Test
   public void testCseApplicationListenerShutdown(@Injectable ContextClosedEvent event,
-      @Mocked RegistryUtils ru) throws Exception {
+      @Mocked RegistryUtils ru) {
     new Expectations() {
       {
         RegistryUtils.destory();
@@ -133,5 +144,70 @@ public class TestCseApplicationListener {
     };
     CseApplicationListener cal = new CseApplicationListener();
     cal.onApplicationEvent(event);
+  }
+
+  @Test
+  public void testTriggerAfterRegistryEvent() {
+    CseApplicationListener cal = new CseApplicationListener();
+
+    Collection<BootListener> listeners = new ArrayList<>(1);
+    BootListener listener = Mockito.mock(BootListener.class);
+    listeners.add(listener);
+    Deencapsulation.setField(cal, "bootListenerList", listeners);
+
+    MicroserviceInstance microserviceInstance = Mockito.mock(MicroserviceInstance.class);
+    new Expectations(RegistryUtils.class) {
+      {
+        RegistryUtils.getMicroserviceInstance();
+        result = microserviceInstance;
+      }
+    };
+    Mockito.when(microserviceInstance.getInstanceId()).thenReturn("testInstanceId");
+
+    Deencapsulation.invoke(cal, "triggerAfterRegistryEvent");
+
+    EventManager.post(Mockito.mock(MicroserviceInstanceRegisterTask.class));
+
+    Deencapsulation.invoke(ReferenceConfigUtils.class, "assertIsReady");
+
+    // AFTER_REGISTRY event should only be sent at the first time of registry success.
+    EventManager.post(Mockito.mock(MicroserviceInstanceRegisterTask.class));
+    verify(listener, times(1)).onBootEvent(Mockito.any(BootEvent.class));
+  }
+
+  @Test
+  public void testTriggerAfterRegistryEventOnInstanceIdIsNull() {
+    CseApplicationListener cal = new CseApplicationListener();
+
+    Collection<BootListener> listeners = new ArrayList<>(1);
+    BootListener listener = Mockito.mock(BootListener.class);
+    listeners.add(listener);
+    Deencapsulation.setField(cal, "bootListenerList", listeners);
+
+    MicroserviceInstance microserviceInstance = Mockito.mock(MicroserviceInstance.class);
+    new Expectations(RegistryUtils.class) {
+      {
+        RegistryUtils.getMicroserviceInstance();
+        result = microserviceInstance;
+      }
+    };
+    Mockito.when(microserviceInstance.getInstanceId()).thenReturn(null).thenReturn("testInstanceId");
+
+    Deencapsulation.invoke(cal, "triggerAfterRegistryEvent");
+
+    EventManager.post(Mockito.mock(MicroserviceInstanceRegisterTask.class));
+
+    try {
+      Deencapsulation.invoke(ReferenceConfigUtils.class, "assertIsReady");
+      fail("an exception is expected.");
+    } catch (Exception e) {
+      Assert.assertEquals(IllegalStateException.class, e.getClass());
+    }
+    verify(listener, times(0)).onBootEvent(Mockito.any(BootEvent.class));
+
+    // AFTER_REGISTRY event should only be sent at the first time of registry success.
+    EventManager.post(Mockito.mock(MicroserviceInstanceRegisterTask.class));
+    Deencapsulation.invoke(ReferenceConfigUtils.class, "assertIsReady");
+    verify(listener, times(1)).onBootEvent(Mockito.any(BootEvent.class));
   }
 }
