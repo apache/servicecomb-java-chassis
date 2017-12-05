@@ -231,7 +231,7 @@ public class OperationGenerator {
     Type[] parameterTypes = providerMethod.getGenericParameterTypes();
     for (int paramIdx = 0; paramIdx < parameterTypes.length; paramIdx++) {
       Type type = parameterTypes[paramIdx];
-      // 是否需要根据参数类型处理，目标场景：httpReqest之类
+      // 是否需要根据参数类型处理，目标场景：httpRequest之类
       if (processByParameterType(type, paramIdx)) {
         continue;
       }

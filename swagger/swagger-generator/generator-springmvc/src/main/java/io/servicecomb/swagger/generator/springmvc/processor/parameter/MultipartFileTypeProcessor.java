@@ -14,13 +14,15 @@
  * limitations under the License.
  */
 
-package io.servicecomb.swagger.generator.core;
+package io.servicecomb.swagger.generator.springmvc.processor.parameter;
 
 import java.lang.annotation.Annotation;
 
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.multipart.MultipartFile;
 
+import io.servicecomb.swagger.generator.core.CommonParameterTypeProcessor;
+import io.servicecomb.swagger.generator.core.OperationGenerator;
 import io.servicecomb.swagger.generator.core.utils.ParamUtils;
 import io.servicecomb.swagger.generator.parameters.PartParameter;
 

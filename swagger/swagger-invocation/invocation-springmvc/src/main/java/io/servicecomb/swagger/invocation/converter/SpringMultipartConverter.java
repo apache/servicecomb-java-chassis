@@ -26,9 +26,11 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.Part;
 
 import org.apache.commons.io.IOUtils;
+import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
-public class SpringMultipartConverter implements CustomizedConverter {
+@Component
+class SpringMultipartConverter implements CustomizedConverter {
   @Override
   public Type getSrcType() {
     return HttpServletRequest.class;

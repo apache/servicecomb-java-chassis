@@ -41,7 +41,6 @@ public class PartProcessorCreator implements ParamValueProcessorCreator {
 
     @Override
     public void setValue(RestClientRequest clientRequest, Object arg) throws Exception {
-      // query不需要set
     }
 
     @Override
