@@ -69,9 +69,8 @@ public class MetricsDataMonitor {
    * @return QueueMetrics object based on key
    */
   public QueueMetricsData getOrCreateQueueMetrics(String pathId) {
-    return queueMetrics.computeIfAbsent(pathId, p -> {
-      return new QueueMetricsData();
-    });
+    return queueMetrics.computeIfAbsent(pathId, p -> new QueueMetricsData()
+    );
   }
 
   /**
@@ -86,10 +85,10 @@ public class MetricsDataMonitor {
   /**
    * Returns the map of average values for both instance and operational level.
    * 
-   * @return queue metrics map
+   * @param newMap the new map which passed to queue metrics
    */
-  public Map<String, QueueMetricsData> setQueueMetrics(Map<String, QueueMetricsData> newMap) {
-    return queueMetrics = newMap;
+  public void setQueueMetrics(Map<String, QueueMetricsData> newMap) {
+    queueMetrics = newMap;
   }
 
   /**
@@ -120,6 +119,7 @@ public class MetricsDataMonitor {
 
   /**
    * Sets the total requests per provider.
+   * @param totalReqProvider the total requests per provider
    */
   public void setTotalReqProvider(Long totalReqProvider) {
     this.totalReqProvider = totalReqProvider;
@@ -143,6 +143,7 @@ public class MetricsDataMonitor {
 
   /**
    * Sets the total failed requests per provider.
+   * @param totalFailedReqProvider the total failed requests per provider
    */
   public void setTotalFailReqProvider(Long totalFailedReqProvider) {
     this.totalFailReqProvider = totalFailedReqProvider;
@@ -166,6 +167,7 @@ public class MetricsDataMonitor {
 
   /**
    * Sets the total failed requests per consumer.
+   * @param totalReqConsumer the total requests per consumer
    */
   public void setTotalReqConsumer(Long totalReqConsumer) {
     this.totalReqConsumer = totalReqConsumer;
@@ -189,6 +191,7 @@ public class MetricsDataMonitor {
 
   /**
    * Sets the total failed requests per consumer.
+   * @param totalFailedReqConsumer the total failed requests per consumer
    */
   public void setTotalFailReqConsumer(Long totalFailedReqConsumer) {
     this.totalFailReqConsumer = totalFailedReqConsumer;
