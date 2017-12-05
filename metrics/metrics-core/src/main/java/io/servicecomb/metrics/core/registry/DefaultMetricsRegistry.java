@@ -16,11 +16,11 @@
 
 package io.servicecomb.metrics.core.registry;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 import com.netflix.config.DynamicPropertyFactory;
@@ -29,6 +29,7 @@ import com.netflix.servo.monitor.Pollers;
 import io.servicecomb.metrics.core.EmbeddedMetricsName;
 import io.servicecomb.metrics.core.extra.HystrixCollector;
 import io.servicecomb.metrics.core.extra.SystemResource;
+import io.servicecomb.metrics.core.metric.BackgroundMetric;
 import io.servicecomb.metrics.core.metric.Metric;
 import io.servicecomb.metrics.core.metric.MetricFactory;
 
@@ -36,7 +37,9 @@ public class DefaultMetricsRegistry implements MetricsRegistry {
 
   private static final String METRICS_POLLING_TIME = "servicecomb.metrics.polling.millisecond";
 
-  private final Map<String, Metric> allRegisteredMetrics = new ConcurrentHashMap<>();
+  private final Map<String, Metric> allRegisteredMetrics = new HashMap<>();
+
+  private final List<BackgroundMetric> allRegisteredBackgroundMetrics = new ArrayList<>();
 
   private final MetricFactory factory;
 
@@ -69,6 +72,9 @@ public class DefaultMetricsRegistry implements MetricsRegistry {
   @Override
   public void registerMetric(Metric metric) {
     allRegisteredMetrics.put(metric.getName(), metric);
+    if (metric instanceof BackgroundMetric) {
+      allRegisteredBackgroundMetrics.add((BackgroundMetric) metric);
+    }
   }
 
   @Override
@@ -97,18 +103,23 @@ public class DefaultMetricsRegistry implements MetricsRegistry {
 
   @Override
   public Map<String, Number> getMetricsValues(String operationName) {
-    Map<String, Metric> filteredMetrics = allRegisteredMetrics.entrySet().stream()
-        .filter(entry -> entry.getKey().startsWith("servicecomb." + operationName))
-        .collect(Collectors.toMap(Entry::getKey, Entry::getValue));
-    return getMetricsValues(filteredMetrics);
+    String prefix = "servicecomb." + operationName;
+    return getMetricsValuesWithPrefix(prefix);
   }
 
   @Override
   public Map<String, Number> getMetricsValues(String operationName, String catalog) {
+    String prefix = String.join(".", "servicecomb", operationName, catalog);
+    return getMetricsValuesWithPrefix(prefix);
+  }
+
+  private Map<String, Number> getMetricsValuesWithPrefix(String prefix) {
     Map<String, Metric> filteredMetrics = allRegisteredMetrics.entrySet().stream()
-        .filter(entry -> entry.getKey().startsWith(String.join(".", "servicecomb", operationName, catalog)))
+        .filter(entry -> entry.getKey().startsWith(prefix))
         .collect(Collectors.toMap(Entry::getKey, Entry::getValue));
-    return getMetricsValues(filteredMetrics);
+    Map<String, Number> results = getMetricsValues(filteredMetrics);
+    results = getMetricsValuesFromBackground(results, prefix);
+    return results;
   }
 
   private Map<String, Number> getMetricsValues(Map<String, Metric> metrics) {
@@ -117,6 +128,13 @@ public class DefaultMetricsRegistry implements MetricsRegistry {
       metricValues.putAll(entry.getValue().getAll());
     }
     return metricValues;
+  }
+
+  private Map<String, Number> getMetricsValuesFromBackground(Map<String, Number> input, String prefix) {
+    for (BackgroundMetric metric : allRegisteredBackgroundMetrics) {
+      input.putAll(metric.getAllWithFilter(prefix));
+    }
+    return input;
   }
 
   private void initDefaultSupportedMetrics() {

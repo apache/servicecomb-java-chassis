@@ -33,7 +33,7 @@ import io.servicecomb.serviceregistry.api.registry.Microservice;
 
 @Component
 public class MetricsBootListener implements BootListener {
-  private static final String MEM_ENABLED = "servicecomb.metrics.publish.enabled";
+  private static final String PUBLISH_ENABLED = "servicecomb.metrics.publish.enabled";
 
   private final ProducerSchemaFactory schemaFactory;
 
@@ -54,9 +54,10 @@ public class MetricsBootListener implements BootListener {
     //inject metrics provider before ProducerProviderManager init
     if (EventType.BEFORE_PRODUCER_PROVIDER.equals(event.getEventType())) {
 
-      boolean memoryObserverEnabled = DynamicPropertyFactory.getInstance().getBooleanProperty(MEM_ENABLED, false).get();
+      boolean memoryObserverEnabled = DynamicPropertyFactory.getInstance().getBooleanProperty(PUBLISH_ENABLED, false)
+          .get();
       if (memoryObserverEnabled) {
-        Resource[] resources = PaaSResourceUtils.getResources("metrics.yaml");
+        Resource[] resources = PaaSResourceUtils.getResources("servicecomb_internal_metrics_contract_definition.yaml");
         if (resources.length != 0) {
           Microservice microservice = RegistryUtils.getMicroservice();
           SchemaMeta meta = schemaLoader.registerSchema(microservice.getServiceName(), resources[0]);

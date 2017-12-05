@@ -1,0 +1,59 @@
+swagger: "2.0"
+info:
+  version: "1.0.0"
+  title: "metricsService"
+  x-java-interface: "io.servicecomb.foundation.metrics.MetricsProvider"
+basePath: "/metrics"
+consumes:
+- "application/json"
+produces:
+- "application/json"
+paths:
+  /{operationName}/{catalog}:
+    get:
+      operationId: "metricsFilterWithOperationNameAndCatalog"
+      parameters:
+      - name: "operationName"
+        in: "path"
+        required: true
+        type: "string"
+      - name: "catalog"
+        in: "path"
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "response of 200"
+          schema:
+            type: "object"
+            additionalProperties:
+              type: "number"
+              format: "double"
+  /{operationName}:
+    get:
+      operationId: "metricsFilterWithOperationName"
+      parameters:
+      - name: "operationName"
+        in: "path"
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "response of 200"
+          schema:
+            type: "object"
+            additionalProperties:
+              type: "number"
+              format: "double"
+  /:
+    get:
+      operationId: "metrics"
+      parameters: []
+      responses:
+        200:
+          description: "response of 200"
+          schema:
+            type: "object"
+            additionalProperties:
+              type: "number"
+              format: "double"

@@ -38,12 +38,12 @@ public class DefaultMetricsPublisher implements MetricsPublisher {
   }
 
   @Override
-  public Map<String, Number> metrics(String operationName) {
+  public Map<String, Number> metricsFilterWithOperationName(String operationName) {
     return processMetrics(registry.getMetricsValues(operationName));
   }
 
   @Override
-  public Map<String, Number> metrics(String operationName, String catalog) {
+  public Map<String, Number> metricsFilterWithOperationNameAndCatalog(String operationName, String catalog) {
     return processMetrics(registry.getMetricsValues(operationName, catalog));
   }
 

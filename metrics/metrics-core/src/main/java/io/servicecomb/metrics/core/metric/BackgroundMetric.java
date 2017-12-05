@@ -16,52 +16,8 @@
 
 package io.servicecomb.metrics.core.metric;
 
-import static java.util.concurrent.TimeUnit.MILLISECONDS;
-
-import java.util.Date;
-import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.Executors;
 
-import io.servicecomb.foundation.common.exceptions.ServiceCombException;
-import rx.functions.Func0;
-
-public class BackgroundMetric extends AbstractMetric {
-
-  private final Func0<Map<String, Number>> getCallback;
-
-  private Map<String, Number> lastUpdateValues = new HashMap<>();
-
-  private Date lastUpdateTime;
-
-  public BackgroundMetric(String name, Func0<Map<String, Number>> getCallback, long reloadInterval) {
-    super(name);
-    this.getCallback = getCallback;
-
-    final Runnable executor = () ->
-    {
-      lastUpdateValues = getCallback.call();
-      lastUpdateTime = new Date();
-    };
-    Executors.newScheduledThreadPool(1).scheduleWithFixedDelay(executor, 0, reloadInterval, MILLISECONDS);
-  }
-
-  @Override
-  public void update(Number num) {
-    throw new ServiceCombException("unable update custom metric");
-  }
-
-  @Override
-  public Number get(String tag) {
-    if (lastUpdateValues.containsKey(tag)) {
-      return lastUpdateValues.get(tag);
-    } else {
-      throw new ServiceCombException("can't find tag in " + getName() + " metric");
-    }
-  }
-
-  @Override
-  public Map<String, Number> getAll() {
-    return lastUpdateValues;
-  }
+public interface BackgroundMetric {
+  Map<String, Number> getAllWithFilter(String prefix);
 }

@@ -58,6 +58,6 @@ public class DefaultMetricFactory implements MetricFactory {
 
   @Override
   public Metric createBackground(String name, Func0<Map<String, Number>> getCallback, long reloadInterval) {
-    return new BackgroundMetric(name, getCallback, reloadInterval);
+    return new DefaultBackgroundMetric(name, getCallback, reloadInterval);
   }
 }

@@ -25,13 +25,11 @@
     <relativePath>../parent</relativePath>
   </parent>
   <modelVersion>4.0.0</modelVersion>
+  <artifactId>metrics</artifactId>
   <packaging>pom</packaging>
   <modules>
     <module>metrics-core</module>
     <module>metrics-example</module>
   </modules>
-
-  <artifactId>metrics</artifactId>
-
 
 </project>
