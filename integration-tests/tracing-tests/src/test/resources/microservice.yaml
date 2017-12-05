@@ -7,9 +7,9 @@ cse:
     registry:
       address: http://127.0.0.1:30100
   rest:
-    address: 0.0.0.0:8080?sslEnabled=false
+    address: 127.0.0.1:8080?sslEnabled=false
   highway:
-    address: 0.0.0.0:7070
+    address: 127.0.0.1:7070
   handler:
     chain:
       Provider:
