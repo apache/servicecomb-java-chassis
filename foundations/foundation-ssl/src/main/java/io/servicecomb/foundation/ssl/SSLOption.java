@@ -275,7 +275,7 @@ public final class SSLOption {
     for (String key : keys) {
       if (configSource != null) {
         if (configSource.getProperty(key) != null) {
-          return (Boolean) configSource.getProperty(key);
+          return configSource.getBoolean(key);
         }
       } else {
         property = DynamicPropertyFactory.getInstance().getStringProperty(key, null).get();

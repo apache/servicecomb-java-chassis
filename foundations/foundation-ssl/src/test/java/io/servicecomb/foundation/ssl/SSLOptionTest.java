@@ -231,6 +231,46 @@ public class SSLOptionTest {
   }
 
   @Test
+  public void testSSLOptionYamlOptionWithProperyFalse() throws Exception {
+    System.setProperty("ssl.authPeer", "false");
+    DynamicConfiguration configFromYamlFile =
+        new DynamicConfiguration(yamlConfigSource(), new NeverStartPollingScheduler());
+    // configuration from system properties
+    ConcurrentMapConfiguration configFromSystemProperties =
+        new ConcurrentMapConfiguration(new SystemConfiguration());
+    ConcurrentCompositeConfiguration finalConfig = new ConcurrentCompositeConfiguration();
+    finalConfig.addConfiguration(configFromSystemProperties, "systemEnvConfig");
+    finalConfig.addConfiguration(configFromYamlFile, "configFromYamlFile");
+
+    SSLOption option = SSLOption.buildFromYaml("server", finalConfig);
+
+    boolean authPeer = option.isAuthPeer();
+    option.setAuthPeer(authPeer);
+    Assert.assertEquals(false, authPeer);
+    System.getProperties().remove("ssl.authPeer");
+  }
+
+  @Test
+  public void testSSLOptionYamlOptionWithProperyTrue() throws Exception {
+    System.setProperty("ssl.authPeer", "true");
+    DynamicConfiguration configFromYamlFile =
+        new DynamicConfiguration(yamlConfigSource(), new NeverStartPollingScheduler());
+    // configuration from system properties
+    ConcurrentMapConfiguration configFromSystemProperties =
+        new ConcurrentMapConfiguration(new SystemConfiguration());
+    ConcurrentCompositeConfiguration finalConfig = new ConcurrentCompositeConfiguration();
+    finalConfig.addConfiguration(configFromSystemProperties, "systemEnvConfig");
+    finalConfig.addConfiguration(configFromYamlFile, "configFromYamlFile");
+
+    SSLOption option = SSLOption.buildFromYaml("server", finalConfig);
+
+    boolean authPeer = option.isAuthPeer();
+    option.setAuthPeer(authPeer);
+    Assert.assertEquals(true, authPeer);
+    System.getProperties().remove("ssl.authPeer");
+  }
+
+  @Test
   public void testSSLOptionYamlOption() throws Exception {
     DynamicConfiguration configFromYamlFile =
         new DynamicConfiguration(yamlConfigSource(), new NeverStartPollingScheduler());
