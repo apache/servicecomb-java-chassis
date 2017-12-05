@@ -63,7 +63,7 @@ public class TcpClientConnection extends TcpConnection {
   private volatile Status status = Status.DISCONNECTED;
 
   // save msg before login success.
-  // before login, we can not know parameters, like: zip/codec compatibl, and so on
+  // before login, we can not know parameters, like: zip/codec compatible, and so on
   // so can only save package, can not save byteBuf
   private Queue<AbstractTcpClientPackage> packageQueue = new ConcurrentLinkedQueue<>();
 
@@ -109,7 +109,7 @@ public class TcpClientConnection extends TcpConnection {
         packageQueue.add(tcpClientPackage);
       }
 
-      // connct must call in eventloop thread
+      // connect must call in eventloop thread
       // otherwise vertx will create a new eventloop thread for it if count
       //   of eventloop thread is not up to the limit.
       if (Status.DISCONNECTED.equals(status)) {
@@ -168,7 +168,7 @@ public class TcpClientConnection extends TcpConnection {
   }
 
   private void onConnectSuccess(NetSocket socket) {
-    LOGGER.info("connectd to address {} success in thread {}.",
+    LOGGER.info("connected to address {} success in thread {}.",
         socketAddress.toString(),
         Thread.currentThread().getName());
     // currently, socket always be NetSocketImpl

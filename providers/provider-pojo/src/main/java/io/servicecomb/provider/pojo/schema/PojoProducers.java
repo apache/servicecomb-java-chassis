@@ -35,7 +35,7 @@ public class PojoProducers implements BeanPostProcessor {
     pojoMgr.register(pojoProducer.getSchemaId(), pojoProducer);
   }
 
-  public Collection<PojoProducerMeta> getProcucers() {
+  public Collection<PojoProducerMeta> getProducers() {
     return pojoMgr.values();
   }
 
