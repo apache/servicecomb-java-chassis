@@ -2,12 +2,15 @@ sudo: required
 language: java
 services:
 - docker
-script:
-- scripts/travis.sh install
-after_success:
-- scripts/travis.sh deploy
 
 install: true
+
+jobs:
+  include:
+    - stage: Compilation and Installation
+      script: scripts/travis.sh install
+    - stage: Deployment
+      script: scripts/travis.sh deploy
 
 env:
   global:
