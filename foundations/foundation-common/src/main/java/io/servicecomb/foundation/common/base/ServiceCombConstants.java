@@ -47,4 +47,6 @@ public interface ServiceCombConstants {
   String CONFIG_SERVICECOMB_PREFIX = "servicecomb.";
 
   String CONFIG_CSE_PREFIX = "cse.";
+
+  String CONFIG_KEY_SPLITER = "_";
 }

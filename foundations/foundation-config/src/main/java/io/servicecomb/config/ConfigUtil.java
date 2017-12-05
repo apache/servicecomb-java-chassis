@@ -17,6 +17,7 @@
 package io.servicecomb.config;
 
 import static io.servicecomb.foundation.common.base.ServiceCombConstants.CONFIG_CSE_PREFIX;
+import static io.servicecomb.foundation.common.base.ServiceCombConstants.CONFIG_KEY_SPLITER;
 import static io.servicecomb.foundation.common.base.ServiceCombConstants.CONFIG_SERVICECOMB_PREFIX;
 
 import java.util.Iterator;
@@ -102,7 +103,7 @@ public final class ConfigUtil {
         new ConcurrentMapConfiguration(new SystemConfiguration()),
         "configFromSystem");
     duplicateServiceCombConfigToCse(config,
-        new ConcurrentMapConfiguration(new EnvironmentConfiguration()),
+            convertEnvVariable(new ConcurrentMapConfiguration(new EnvironmentConfiguration())),
         "configFromEnvironment");
     duplicateServiceCombConfigToCse(config,
         new DynamicConfiguration(
@@ -110,6 +111,20 @@ public final class ConfigUtil {
         "configFromYamlFile");
 
     return config;
+  }
+
+  public static AbstractConfiguration convertEnvVariable(AbstractConfiguration source) {
+    Iterator<String> keys = source.getKeys();
+    while (keys.hasNext()) {
+      String key = keys.next();
+      String[] separatedKey = key.split(CONFIG_KEY_SPLITER);
+      if (separatedKey.length == 1) {
+        continue;
+      }
+      String newKey = String.join(".", separatedKey);
+      source.addProperty(newKey, source.getProperty(key));
+    }
+    return source;
   }
 
   //inject a copy of cse.xxx for servicecomb.xxx
