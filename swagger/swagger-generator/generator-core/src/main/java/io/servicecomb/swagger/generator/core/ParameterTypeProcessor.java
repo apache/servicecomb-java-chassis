@@ -17,5 +17,5 @@
 package io.servicecomb.swagger.generator.core;
 
 public interface ParameterTypeProcessor {
-  boolean process(OperationGenerator operationGenerator, int paramIdx);
+  void process(OperationGenerator operationGenerator, int paramIdx);
 }

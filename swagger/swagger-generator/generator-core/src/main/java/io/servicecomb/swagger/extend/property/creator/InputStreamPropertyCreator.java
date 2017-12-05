@@ -23,7 +23,7 @@ import io.swagger.models.properties.Property;
 
 public class InputStreamPropertyCreator implements PropertyCreator {
 
-  private final Class[] classes = {InputStream.class};
+  private final Class<?>[] classes = {InputStream.class};
 
   @Override
   public Property createProperty() {
