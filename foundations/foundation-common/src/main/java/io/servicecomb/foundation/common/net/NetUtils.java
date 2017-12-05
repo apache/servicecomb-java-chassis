@@ -25,6 +25,7 @@ import java.net.ServerSocket;
 import java.net.SocketException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.UnknownHostException;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
@@ -35,6 +36,8 @@ import org.slf4j.LoggerFactory;
 public final class NetUtils {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(NetUtils.class);
+
+  private static final String COLON = ":";
 
   // one interface can bind to multiple address
   // we only save one ip for each interface name.
@@ -151,12 +154,17 @@ public final class NetUtils {
   }
 
   /**
-   * 对于配置为0.0.0.0的地址，let it go
-   * schema, e.g. http
-   * adddress, e.g 0.0.0.0:8080
-   * return 实际监听的地址
+   * if address is 0.0.0.0, replace it with {@link #hostAddress}
+   *
+   * @param schema e.g. http
+   * @param address e.g 0.0.0.0:8080
+   * @return the address actually to be bound to
    */
   public static String getRealListenAddress(String schema, String address) {
+    if (address == null) {
+      return null;
+    }
+    address = checkAddress(address);
     if (address == null) {
       return null;
     }
@@ -164,12 +172,12 @@ public final class NetUtils {
       URI originalURI = new URI(schema + "://" + address);
       IpPort ipPort = NetUtils.parseIpPort(originalURI.getAuthority());
       if (ipPort == null) {
-        LOGGER.error("address {} is not valid.", address);
+        LOGGER.error("schema {} or address {} is not valid.", schema, address);
         return null;
       }
       return originalURI.toString();
     } catch (URISyntaxException e) {
-      LOGGER.error("address {} is not valid.", address);
+      LOGGER.error("schema {} or address {} is not valid.", schema, address);
       return null;
     }
   }
@@ -200,5 +208,34 @@ public final class NetUtils {
     } catch (IOException e) {
       return false;
     }
+  }
+
+  /**
+   * For security reason, 0.0.0.0 is not allowed to be bound to,
+   * and should be replaced with {@link #hostAddress}
+   *
+   * @param address address in configuration
+   * @return if host is 0.0.0.0, replace it with {@link #hostAddress};
+   * otherwise, return as it is.
+   */
+  private static String checkAddress(String address) {
+    if (!address.contains(COLON)) {
+      LOGGER.error("unexpected address format");
+      return null;
+    }
+    String ip = address.substring(0, address.indexOf(COLON));
+    InetAddress inetAddress = null;
+    try {
+      inetAddress = InetAddress.getByName(ip);
+    } catch (UnknownHostException e) {
+      LOGGER.error("host {} is unknown.", ip);
+      return null;
+    }
+    if (inetAddress.isAnyLocalAddress()) {
+      LOGGER.warn("address {} is not allowed to be bound to, choose {} as alternate, may not be correct.",
+          ip, NetUtils.getHostAddress());
+      address = NetUtils.getHostAddress() + address.substring(address.indexOf(COLON));
+    }
+    return address;
   }
 }
