@@ -29,6 +29,8 @@ import io.servicecomb.foundation.metrics.event.InvocationStartProcessingEvent;
 import io.servicecomb.foundation.metrics.event.InvocationStartedEvent;
 import io.servicecomb.foundation.metrics.event.MetricsEventManager;
 import io.servicecomb.metrics.core.event.MetricsEventObserver;
+import io.servicecomb.metrics.core.extra.DefaultHystrixCollector;
+import io.servicecomb.metrics.core.extra.DefaultSystemResource;
 import io.servicecomb.metrics.core.metric.DefaultMetricFactory;
 import io.servicecomb.metrics.core.metric.MetricFactory;
 import io.servicecomb.metrics.core.provider.DefaultMetricsPublisher;
@@ -43,7 +45,8 @@ public class TestMetricsEventObserver {
   public void testObserver() throws InterruptedException {
 
     MetricFactory factory = new DefaultMetricFactory();
-    MetricsRegistry registry = new DefaultMetricsRegistry(factory, "1000");
+    MetricsRegistry registry = new DefaultMetricsRegistry(factory, new DefaultSystemResource(),
+        new DefaultHystrixCollector(), "1000");
     MetricsEventObserver observer = new MetricsEventObserver(registry, factory);
     MetricsPublisher publisher = new DefaultMetricsPublisher(registry);
 

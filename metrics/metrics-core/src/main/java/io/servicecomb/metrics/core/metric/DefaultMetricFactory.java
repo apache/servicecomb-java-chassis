@@ -16,10 +16,14 @@
 
 package io.servicecomb.metrics.core.metric;
 
+import java.util.Map;
+
 import com.netflix.servo.monitor.BasicCounter;
 import com.netflix.servo.monitor.DoubleGauge;
 import com.netflix.servo.monitor.LongGauge;
 import com.netflix.servo.monitor.MonitorConfig;
+
+import rx.functions.Func0;
 
 public class DefaultMetricFactory implements MetricFactory {
   @Override
@@ -40,5 +44,20 @@ public class DefaultMetricFactory implements MetricFactory {
   @Override
   public Metric createTimer(String name) {
     return new BasicTimerMetric(name);
+  }
+
+  @Override
+  public Metric createCustom(String name, Func0<Number> getCallback) {
+    return new CustomMetric(name, getCallback);
+  }
+
+  @Override
+  public Metric createCustomMulti(String name, Func0<Map<String, Number>> getCallback) {
+    return new CustomMultiMetric(name, getCallback);
+  }
+
+  @Override
+  public Metric createBackground(String name, Func0<Map<String, Number>> getCallback, long reloadInterval) {
+    return new BackgroundMetric(name, getCallback, reloadInterval);
   }
 }

@@ -16,22 +16,25 @@
 
 package io.servicecomb.metrics.core.metric;
 
-import java.util.Map;
-
+import io.servicecomb.foundation.common.exceptions.ServiceCombException;
 import rx.functions.Func0;
 
-public interface MetricFactory {
-  Metric createCounter(String name);
+public class CustomMetric extends AbstractMetric {
 
-  Metric createDoubleGauge(String name);
+  private final Func0<Number> getCallback;
 
-  Metric createLongGauge(String name);
+  public CustomMetric(String name, Func0<Number> getCallback) {
+    super(name);
+    this.getCallback = getCallback;
+  }
 
-  Metric createTimer(String name);
+  @Override
+  public void update(Number num) {
+    throw new ServiceCombException("unable update custom metric");
+  }
 
-  Metric createCustom(String name, Func0<Number> getCallback);
-
-  Metric createCustomMulti(String name, Func0<Map<String, Number>> getCallback);
-
-  Metric createBackground(String name, Func0<Map<String, Number>> getCallback, long reloadInterval);
+  @Override
+  public Number get(String tag) {
+    return getCallback.call();
+  }
 }

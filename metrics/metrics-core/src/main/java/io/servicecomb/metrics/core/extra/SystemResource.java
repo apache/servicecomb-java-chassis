@@ -14,24 +14,26 @@
  * limitations under the License.
  */
 
-package io.servicecomb.metrics.core.metric;
+package io.servicecomb.metrics.core.extra;
 
-import java.util.Map;
+public interface SystemResource {
+  double getCpuLoad();
 
-import rx.functions.Func0;
+  int getCpuRunningThreads();
 
-public interface MetricFactory {
-  Metric createCounter(String name);
+  long getHeapInit();
 
-  Metric createDoubleGauge(String name);
+  long getHeapMax();
 
-  Metric createLongGauge(String name);
+  long getHeapCommit();
 
-  Metric createTimer(String name);
+  long getHeapUsed();
 
-  Metric createCustom(String name, Func0<Number> getCallback);
+  long getNonHeapInit();
 
-  Metric createCustomMulti(String name, Func0<Map<String, Number>> getCallback);
+  long getNonHeapMax();
 
-  Metric createBackground(String name, Func0<Map<String, Number>> getCallback, long reloadInterval);
+  long getNonHeapCommit();
+
+  long getNonHeapUsed();
 }

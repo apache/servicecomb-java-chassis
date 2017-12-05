@@ -17,7 +17,7 @@
 package io.servicecomb.metrics.core;
 
 public class EmbeddedMetricsName {
-  public static final String GENERAL_HEADER_FORMAT = "servicecomb.%s.general";
+  private static final String GENERAL_HEADER_FORMAT = "servicecomb.%s.general";
 
   public static final String GENERAL_TOTAL_REQUEST_COUNT_PER_CONSUMER =
       GENERAL_HEADER_FORMAT + ".requestCountPerConsumer.total";
@@ -31,7 +31,7 @@ public class EmbeddedMetricsName {
   public static final String GENERAL_FAILED_REQUEST_COUNT_PER_PROVIDER =
       GENERAL_HEADER_FORMAT + ".requestCountPerProvider.failed";
 
-  public static final String QUEUE_HEADER_FORMAT = "servicecomb.%s.queue";
+  private static final String QUEUE_HEADER_FORMAT = "servicecomb.%s.queue";
 
   public static final String QUEUE_EXECUTION_TIME = QUEUE_HEADER_FORMAT + ".executionTime";
 

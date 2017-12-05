@@ -27,6 +27,8 @@ import com.netflix.servo.monitor.DoubleGauge;
 import com.netflix.servo.monitor.LongGauge;
 import com.netflix.servo.monitor.MonitorConfig;
 
+import io.servicecomb.metrics.core.extra.DefaultHystrixCollector;
+import io.servicecomb.metrics.core.extra.DefaultSystemResource;
 import io.servicecomb.metrics.core.metric.BasicTimerMetric;
 import io.servicecomb.metrics.core.metric.CounterMetric;
 import io.servicecomb.metrics.core.metric.DefaultMetricFactory;
@@ -40,7 +42,8 @@ public class TestDefaultMetricsRegistry {
 
   @Test
   public void testRegistry() throws InterruptedException {
-    MetricsRegistry registry = new DefaultMetricsRegistry(new DefaultMetricFactory(), "1000");
+    MetricsRegistry registry = new DefaultMetricsRegistry(new DefaultMetricFactory(), new DefaultSystemResource(),
+        new DefaultHystrixCollector(), "1000");
 
     Metric timer = new BasicTimerMetric("timer");
     Metric counter = new CounterMetric(new BasicCounter(MonitorConfig.builder("counter").build()));

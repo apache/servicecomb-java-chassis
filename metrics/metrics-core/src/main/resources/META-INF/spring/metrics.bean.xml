@@ -21,8 +21,14 @@
         http://www.springframework.org/schema/beans
         http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
 
+  <bean id="defaultSystemResource" class="io.servicecomb.metrics.core.extra.DefaultSystemResource">
+  </bean>
+  <bean id="defaultHystrixCollector" class="io.servicecomb.metrics.core.extra.DefaultHystrixCollector">
+  </bean>
   <bean id="defaultMetricsRegistry" class="io.servicecomb.metrics.core.registry.DefaultMetricsRegistry">
-    <constructor-arg ref="defaultMetricFactory"/>
+    <constructor-arg index="0" ref="defaultMetricFactory"/>
+    <constructor-arg index="1" ref="defaultSystemResource"/>
+    <constructor-arg index="2" ref="defaultHystrixCollector"/>
   </bean>
   <bean id="defaultMetricFactory" class="io.servicecomb.metrics.core.metric.DefaultMetricFactory">
   </bean>

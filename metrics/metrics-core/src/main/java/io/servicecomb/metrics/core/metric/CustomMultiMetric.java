@@ -18,20 +18,31 @@ package io.servicecomb.metrics.core.metric;
 
 import java.util.Map;
 
+import io.servicecomb.foundation.common.exceptions.ServiceCombException;
 import rx.functions.Func0;
 
-public interface MetricFactory {
-  Metric createCounter(String name);
+public class CustomMultiMetric extends AbstractMetric {
 
-  Metric createDoubleGauge(String name);
+  private final Func0<Map<String, Number>> getCallback;
 
-  Metric createLongGauge(String name);
+  public CustomMultiMetric(String name, Func0<Map<String, Number>> getCallback) {
+    super(name);
+    this.getCallback = getCallback;
+  }
 
-  Metric createTimer(String name);
+  @Override
+  public void update(Number num) {
+    throw new ServiceCombException("unable update custom metric");
+  }
 
-  Metric createCustom(String name, Func0<Number> getCallback);
+  @Override
+  public Number get(String tag) {
+    Map<String, Number> values = getCallback.call();
+    return values.get(tag);
+  }
 
-  Metric createCustomMulti(String name, Func0<Map<String, Number>> getCallback);
-
-  Metric createBackground(String name, Func0<Map<String, Number>> getCallback, long reloadInterval);
+  @Override
+  public Map<String, Number> getAll() {
+    return getCallback.call();
+  }
 }

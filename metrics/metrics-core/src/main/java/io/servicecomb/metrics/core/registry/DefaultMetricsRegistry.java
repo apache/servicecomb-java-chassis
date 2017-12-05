@@ -27,6 +27,8 @@ import com.netflix.config.DynamicPropertyFactory;
 import com.netflix.servo.monitor.Pollers;
 
 import io.servicecomb.metrics.core.EmbeddedMetricsName;
+import io.servicecomb.metrics.core.extra.HystrixCollector;
+import io.servicecomb.metrics.core.extra.SystemResource;
 import io.servicecomb.metrics.core.metric.Metric;
 import io.servicecomb.metrics.core.metric.MetricFactory;
 
@@ -38,14 +40,24 @@ public class DefaultMetricsRegistry implements MetricsRegistry {
 
   private final MetricFactory factory;
 
-  public DefaultMetricsRegistry(MetricFactory factory) {
+  private final SystemResource systemResource;
+
+  private final HystrixCollector hystrixCollector;
+
+  public DefaultMetricsRegistry(MetricFactory factory, SystemResource systemResource,
+      HystrixCollector hystrixCollector) {
     int pollingTime = DynamicPropertyFactory.getInstance().getIntProperty(METRICS_POLLING_TIME, 5000).get();
     this.factory = factory;
+    this.systemResource = systemResource;
+    this.hystrixCollector = hystrixCollector;
     this.init(String.valueOf(pollingTime));
   }
 
-  public DefaultMetricsRegistry(MetricFactory factory, String pollingInterval) {
+  public DefaultMetricsRegistry(MetricFactory factory, SystemResource systemResource, HystrixCollector hystrixCollector,
+      String pollingInterval) {
     this.factory = factory;
+    this.systemResource = systemResource;
+    this.hystrixCollector = hystrixCollector;
     this.init(pollingInterval);
   }
 
@@ -120,6 +132,27 @@ public class DefaultMetricsRegistry implements MetricsRegistry {
     String lifeTimeInQueueTime = String
         .format(EmbeddedMetricsName.QUEUE_LIFE_TIME_IN_QUEUE, "instance");
     this.registerMetric(factory.createTimer(lifeTimeInQueueTime));
+
+    //prepare for system
+    this.registerMetric(factory.createCustom("servicecomb.instance.system.cpu.load", systemResource::getCpuLoad));
+    this.registerMetric(
+        factory.createCustom("servicecomb.instance.system.cpu.runningThreads", systemResource::getCpuRunningThreads));
+    this.registerMetric(factory.createCustom("servicecomb.instance.system.heap.init", systemResource::getHeapInit));
+    this.registerMetric(factory.createCustom("servicecomb.instance.system.heap.max", systemResource::getHeapMax));
+    this.registerMetric(factory.createCustom("servicecomb.instance.system.heap.commit", systemResource::getHeapCommit));
+    this.registerMetric(factory.createCustom("servicecomb.instance.system.heap.used", systemResource::getHeapUsed));
+    this.registerMetric(
+        factory.createCustom("servicecomb.instance.system.nonHeap.init", systemResource::getNonHeapInit));
+    this.registerMetric(factory.createCustom("servicecomb.instance.system.nonHeap.max", systemResource::getNonHeapMax));
+    this.registerMetric(
+        factory.createCustom("servicecomb.instance.system.nonHeap.commit", systemResource::getNonHeapCommit));
+    this.registerMetric(
+        factory.createCustom("servicecomb.instance.system.nonHeap.used", systemResource::getNonHeapUsed));
+
+    //prepare for hystrix (tps and latency)
+    this.registerMetric(
+        factory.createBackground("servicecomb.<internal>.tps_latency", hystrixCollector::collect,
+            getPollingIntervals().get(0)));
   }
 }
 
