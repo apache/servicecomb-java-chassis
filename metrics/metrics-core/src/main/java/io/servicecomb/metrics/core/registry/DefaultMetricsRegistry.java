@@ -35,7 +35,7 @@ import io.servicecomb.metrics.core.metric.MetricFactory;
 
 public class DefaultMetricsRegistry implements MetricsRegistry {
 
-  private static final String METRICS_POLLING_TIME = "servicecomb.metrics.polling.millisecond";
+  private static final String METRICS_POLLING_TIME = "servicecomb.metrics.polling_millisecond";
 
   private final Map<String, Metric> allRegisteredMetrics = new HashMap<>();
 

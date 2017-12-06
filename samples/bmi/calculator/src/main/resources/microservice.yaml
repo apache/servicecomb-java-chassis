@@ -33,6 +33,7 @@ cse:
 
 servicecomb:
   metrics:
+    polling_millisecond: 3000
     publish:
       enabled: true
   health:
