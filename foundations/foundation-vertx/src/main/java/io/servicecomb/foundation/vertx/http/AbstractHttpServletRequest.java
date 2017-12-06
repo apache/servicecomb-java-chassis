@@ -17,13 +17,17 @@
 package io.servicecomb.foundation.vertx.http;
 
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.security.Principal;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.Locale;
 import java.util.Map;
 
@@ -40,6 +44,9 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import javax.servlet.http.HttpUpgradeHandler;
 import javax.servlet.http.Part;
+import javax.ws.rs.core.MediaType;
+
+import org.springframework.core.io.FileSystemResource;
 
 public abstract class AbstractHttpServletRequest extends BodyBufferSupportImpl implements HttpServletRequestEx {
   private Map<String, Object> attributeMap = new HashMap<>();
@@ -382,7 +389,57 @@ public abstract class AbstractHttpServletRequest extends BodyBufferSupportImpl i
 
   @Override
   public Part getPart(String name) throws IOException, ServletException {
-    throw new Error("not supported method");
+    return new Part() {
+      @Override
+      public InputStream getInputStream() throws IOException {
+        return ((Map<String, LinkedList<FileSystemResource>>) attributeMap.get("servicecomb-body")).get(name).getFirst().getInputStream();
+      }
+
+      @Override
+      public String getContentType() {
+        return MediaType.MULTIPART_FORM_DATA;
+      }
+
+      @Override
+      public String getName() {
+        return name;
+      }
+
+      @Override
+      public String getSubmittedFileName() {
+        return ((Map<String, LinkedList<FileSystemResource>>) attributeMap.get("servicecomb-body")).get(name).getFirst().getPath();
+      }
+
+      @Override
+      public long getSize() {
+        return 0;
+      }
+
+      @Override
+      public void write(String fileName) throws IOException {
+
+      }
+
+      @Override
+      public void delete() throws IOException {
+
+      }
+
+      @Override
+      public String getHeader(String name) {
+        return null;
+      }
+
+      @Override
+      public Collection<String> getHeaders(String name) {
+        return null;
+      }
+
+      @Override
+      public Collection<String> getHeaderNames() {
+        return null;
+      }
+    };
   }
 
   @Override

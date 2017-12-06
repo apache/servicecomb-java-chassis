@@ -34,4 +34,6 @@ public interface RestClientRequest {
   void addForm(String name, Object value);
 
   Buffer getBodyBuffer() throws Exception;
+
+  void attach(String name, String filename);
 }
