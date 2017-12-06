@@ -19,6 +19,7 @@ package io.servicecomb.common.rest.codec.param;
 import java.lang.reflect.Type;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.Part;
 
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.type.TypeFactory;
@@ -41,6 +42,8 @@ public class PartProcessorCreator implements ParamValueProcessorCreator {
 
     @Override
     public void setValue(RestClientRequest clientRequest, Object arg) throws Exception {
+      Part part = (Part) arg;
+      clientRequest.attach(paramPath, part.getSubmittedFileName());
     }
 
     @Override

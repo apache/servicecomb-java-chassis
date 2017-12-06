@@ -83,9 +83,7 @@ class SpringMultipartConverter implements CustomizedConverter {
 
       @Override
       public void transferTo(File dest) throws IOException, IllegalStateException {
-        try (FileOutputStream output = new FileOutputStream(dest)) {
-          IOUtils.copy(part.getInputStream(), output);
-        }
+        part.write(dest.getPath());
       }
     };
   }

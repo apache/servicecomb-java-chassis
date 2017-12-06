@@ -16,11 +16,18 @@
 
 package io.servicecomb.common.rest.codec.param;
 
+import static javax.ws.rs.core.HttpHeaders.CONTENT_TYPE;
+import static javax.ws.rs.core.MediaType.MULTIPART_FORM_DATA;
+
+import java.io.IOException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.UUID;
 
 import javax.ws.rs.core.MediaType;
 
@@ -32,6 +39,7 @@ import io.vertx.core.http.HttpClientRequest;
 import io.vertx.core.http.HttpHeaders;
 
 public class RestClientRequestImpl implements RestClientRequest {
+  private final Map<String, String> uploads = new HashMap<>();
   protected HttpClientRequest request;
 
   protected Map<String, String> cookieMap;
@@ -56,10 +64,66 @@ public class RestClientRequestImpl implements RestClientRequest {
   }
 
   @Override
+  public void attach(String name, String filename) {
+    uploads.put(name, filename);
+  }
+
+  @Override
   public void end() throws Exception {
     writeCookies();
 
+    attachFiles();
     genBodyBuffer();
+
+//    final long[] totalSize = {0L};
+//    request.headers().forEach(entry -> {
+//      if (!entry.getKey().startsWith("sc-uploads-")) {
+//        return;
+//      }
+//
+//      try {
+//        totalSize[0] += Files.size(Paths.get(entry.getValue()));
+//      } catch (IOException e) {
+//        throw new IllegalStateException("No such file: " + entry.getValue(), e);
+//      }
+//    });
+//    request.headers().set("Content-Length", String.valueOf(totalSize[0]));
+//
+//    List<CompletableFuture<Void>> futures = new LinkedList<>();
+//    request.headers().forEach(entry -> {
+//      if (!entry.getKey().startsWith("sc-uploads-")) {
+//        return;
+//      }
+//
+//      CompletableFuture<Void> future = new CompletableFuture<>();
+//      futures.add(future);
+//      OpenOptions openOptions = new OpenOptions();
+//      openOptions.setCreate(false);
+//      openOptions.setWrite(false);
+//
+//      VertxUtils.getOrCreateVertxByName("transport", null)
+//          .fileSystem()
+//          .open(entry.getValue(), openOptions, result -> {
+//            AsyncFile file = result.result();
+//            Pump pump = Pump.pump(file, request);
+//            pump.start();
+//
+//            file.endHandler(new VoidHandler() {
+//              public void handle() {
+//
+//                file.close(ar -> {
+//                  if (ar.succeeded()) {
+//                    future.complete(null);
+////                    request.end();
+//                    System.err.println("Sent request");
+//                  } else {
+//                    ar.cause().printStackTrace(System.err);
+//                  }
+//                });
+//              }
+//            });
+//          });
+//    });
 
     if (bodyBuffer == null) {
       request.end();
@@ -67,6 +131,34 @@ public class RestClientRequestImpl implements RestClientRequest {
     }
 
     request.end(bodyBuffer);
+  }
+
+  private void attachFiles() {
+    if (!uploads.isEmpty()) {
+      String boundary = "fileUploadBoundary" + UUID.randomUUID().toString();
+      putHeader(CONTENT_TYPE, MULTIPART_FORM_DATA + "; boundary=" + boundary);
+      Buffer buffer = Buffer.buffer();
+
+      uploads.forEach((name, filename) -> fileToBuffer(buffer, name, filename, boundary));
+
+      buffer.appendString("--" + boundary + "--\r\n");
+      write(buffer);
+    }
+  }
+
+  private Buffer fileToBuffer(Buffer buffer, String name, String filename, String boundary) {
+    buffer.appendString("--" + boundary + "\r\n");
+    buffer.appendString("Content-Disposition: form-data; name=\"" + name + "\"; filename=\"" + filename + "\"\r\n");
+    buffer.appendString("Content-Type: multipart/form-data\r\n");
+    buffer.appendString("Content-Transfer-Encoding: binary\r\n");
+    buffer.appendString("\r\n");
+    try {
+      buffer.appendBytes(Files.readAllBytes(Paths.get(filename)));
+      buffer.appendString("\r\n");
+    } catch (IOException e) {
+      throw new IllegalArgumentException("Failed to read file: " + filename, e);
+    }
+    return buffer;
   }
 
   private void genBodyBuffer() throws Exception {

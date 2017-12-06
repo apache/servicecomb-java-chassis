@@ -17,6 +17,7 @@
 package io.servicecomb.demo.springmvc.tests;
 
 import static com.seanyinx.github.unit.scaffolding.AssertUtils.expectFailing;
+import static io.servicecomb.serviceregistry.client.LocalServiceRegistryClientImpl.LOCAL_REGISTRY_FILE_KEY;
 import static java.time.temporal.ChronoUnit.SECONDS;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertArrayEquals;
@@ -35,6 +36,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.net.URL;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Date;
@@ -65,6 +67,7 @@ import org.springframework.web.client.UnknownHttpStatusCodeException;
 import io.servicecomb.common.rest.codec.RestObjectMapper;
 import io.servicecomb.demo.compute.Person;
 import io.servicecomb.demo.server.User;
+import io.servicecomb.provider.springmvc.reference.RestTemplateBuilder;
 
 @Ignore
 public class SpringMvcIntegrationTestBase {
@@ -79,7 +82,13 @@ public class SpringMvcIntegrationTestBase {
 
   private final String controllerUrl = baseUrl + "springmvc/controller/";
 
-  @Test
+  static void setUpLocalRegistry() {
+    ClassLoader loader = Thread.currentThread().getContextClassLoader();
+    URL resource = loader.getResource("registry.yaml");
+    System.setProperty(LOCAL_REGISTRY_FILE_KEY, resource.getPath());
+  }
+
+    @Test
   public void ableToQueryAtRootBasePath() {
     ResponseEntity<String> responseEntity = restTemplate
         .getForEntity(baseUrl + "sayHi?name=Mike", String.class);
@@ -186,6 +195,25 @@ public class SpringMvcIntegrationTestBase {
     headers.setContentType(MediaType.MULTIPART_FORM_DATA);
     String result = restTemplate.postForObject(
         codeFirstUrl + "upload",
+        new HttpEntity<>(map, headers),
+        String.class);
+
+    assertThat(result, is(file1Content + file2Content));
+  }
+
+  @Test
+  public void ableToUploadFileFromConsumer() throws IOException {
+    String file1Content = "hello world";
+    String file2Content = "bonjour";
+
+    MultiValueMap<String, Object> map = new LinkedMultiValueMap<>();
+    map.add("file1", new FileSystemResource(newFile(file1Content).getAbsolutePath()));
+    map.add("someFile", new FileSystemResource(newFile(file2Content).getAbsolutePath()));
+
+    HttpHeaders headers = new HttpHeaders();
+    headers.setContentType(MediaType.MULTIPART_FORM_DATA);
+    String result = RestTemplateBuilder.create().postForObject(
+        "cse://springmvc/codeFirstSpringmvc/upload",
         new HttpEntity<>(map, headers),
         String.class);
 
