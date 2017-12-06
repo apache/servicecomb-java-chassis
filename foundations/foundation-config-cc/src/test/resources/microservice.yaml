@@ -1,4 +1,4 @@
-host.name: 10.22.87.59
+host.name: 172.16.8.7
 trace:
   handler:
     enabled: false
@@ -24,12 +24,12 @@ eureka:
     leaseExpirationDurationInSeconds: 5
   client:
     serviceUrl:
-      defaultZone: http://10.120.169.202:9980/
+      defaultZone: http://172.16.8.8:30100/
 cse:
   config:
     client:
       serviceName: testDemo
-      serverUri: https://10.22.87.59:30103,https://${host.name}:30103
+      serverUri: https://172.16.8.7:30103,https://${host.name}:30103
       tenantName: csetest
       refreshMode: 1
       refresh_interval: 10000
