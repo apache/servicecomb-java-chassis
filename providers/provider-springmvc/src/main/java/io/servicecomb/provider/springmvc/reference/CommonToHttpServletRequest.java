@@ -17,17 +17,24 @@
 package io.servicecomb.provider.springmvc.reference;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.HttpCookie;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.ServletException;
 import javax.servlet.ServletInputStream;
 import javax.servlet.http.Cookie;
+import javax.servlet.http.Part;
 import javax.ws.rs.core.HttpHeaders;
+import javax.ws.rs.core.MediaType;
+
+import org.springframework.core.io.FileSystemResource;
 
 import io.servicecomb.common.rest.RestConst;
 import io.servicecomb.foundation.vertx.http.AbstractHttpServletRequest;
@@ -151,5 +158,64 @@ public class CommonToHttpServletRequest extends AbstractHttpServletRequest {
       return new ArrayList<>();
     });
     list.add(value);
+  }
+
+  @Override
+  public Part getPart(String name) throws IOException, ServletException {
+    return new Part() {
+      @Override
+      public InputStream getInputStream() throws IOException {
+        throw new Error("not supported method");
+      }
+
+      @Override
+      public String getContentType() {
+        return MediaType.MULTIPART_FORM_DATA;
+      }
+
+      @Override
+      public String getName() {
+        return name;
+      }
+
+      @SuppressWarnings("unchecked")
+      @Override
+      public String getSubmittedFileName() {
+        return ((Map<String, List<FileSystemResource>>) getAttribute(RestConst.BODY_PARAMETER)).get(name)
+            .get(0)
+            .getPath();
+      }
+
+      @Override
+      public long getSize() {
+        return 0;
+      }
+
+      @Override
+      public void write(String fileName) throws IOException {
+        throw new Error("not supported method");
+      }
+
+      @Override
+      public void delete() throws IOException {
+        throw new Error("not supported method");
+      }
+
+      @Override
+      public String getHeader(String name) {
+        throw new Error("not supported method");
+      }
+
+      @Override
+      public Collection<String> getHeaders(String name) {
+        throw new Error("not supported method");
+      }
+
+      @Override
+      public Collection<String> getHeaderNames() {
+        throw new Error("not supported method");
+      }
+    };
+
   }
 }
