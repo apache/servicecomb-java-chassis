@@ -21,7 +21,9 @@ import java.util.Map;
 public interface MetricsPublisher {
   Map<String, Number> metrics();
 
-  Map<String, Number> metricsFilterWithOperationName(String operationName);
+  Map<String, Number> metricsFilterWithGroup(String group);
 
-  Map<String, Number> metricsFilterWithOperationNameAndCatalog(String operationName, String catalog);
+  Map<String, Number> metricsFilterWithGroupAndLevel(String group, String level);
+
+  Map<String, Number> metricsFilterWithGroupAndLevelAndCatalog(String group, String level, String catalog);
 }

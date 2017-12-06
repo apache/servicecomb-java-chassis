@@ -47,7 +47,7 @@ public class EwfInitializer {
   private final MetricsPublisher publisher;
 
   @Autowired
-  public EwfInitializer(MetricsPublisher publisher,MetricsFileOutput fileOutput, MetricsContentConvertor convertor,
+  public EwfInitializer(MetricsPublisher publisher, MetricsFileOutput fileOutput, MetricsContentConvertor convertor,
       MetricsContentFormatter formatter) {
     this.writeInterval = DynamicPropertyFactory.getInstance().getIntProperty(METRICS_FILE_WRITE_INTERVAL, 5000).get();
     this.publisher = publisher;
@@ -67,7 +67,7 @@ public class EwfInitializer {
 
   private void doOutput() {
     //only filter instance level
-    Map<String,Number> metrics = publisher.metricsFilterWithOperationName("instance");
+    Map<String, Number> metrics = publisher.metricsFilterWithGroupAndLevel("servicecomb","instance");
     //first convert metrics to Map<String,String>
     Map<String, String> convertedMetrics = convertor.convert(metrics);
     //second format output content style

@@ -26,15 +26,15 @@ import com.netflix.hystrix.HystrixEventType;
 
 public class DefaultHystrixCollector implements HystrixCollector {
 
-  private static final String TPS_TOTAL_FORMAT = "servicecomb.%s.tps.total";
+  private static final String TPS_TOTAL_FORMAT = "servicecomb.%s.application.tps.total";
 
-  private static final String TPS_FAILED_FORMAT = "servicecomb.%s.tps.failed";
+  private static final String TPS_FAILED_FORMAT = "servicecomb.%s.application.tps.failed";
 
   private static final String TPS_INSTANCE_TOTAL = String.format(TPS_TOTAL_FORMAT, "instance");
 
   private static final String TPS_INSTANCE_FAILED = String.format(TPS_FAILED_FORMAT, "instance");
 
-  private static final String LATENCY_AVERAGE_FORMAT = "servicecomb.%s.latency.average";
+  private static final String LATENCY_AVERAGE_FORMAT = "servicecomb.%s.application.latency.average";
 
   private static final String LATENCY_INSTANCE_AVERAGE = String.format(LATENCY_AVERAGE_FORMAT, "instance");
 

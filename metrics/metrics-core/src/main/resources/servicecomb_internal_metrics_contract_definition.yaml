@@ -9,11 +9,15 @@ consumes:
 produces:
 - "application/json"
 paths:
-  /{operationName}/{catalog}:
+  /{group}/{level}/{catalog}:
     get:
-      operationId: "metricsFilterWithOperationNameAndCatalog"
+      operationId: "metricsFilterWithGroupAndLevelAndCatalog"
       parameters:
-      - name: "operationName"
+      - name: "group"
+        in: "path"
+        required: true
+        type: "string"
+      - name: "level"
         in: "path"
         required: true
         type: "string"
@@ -29,11 +33,31 @@ paths:
             additionalProperties:
               type: "number"
               format: "double"
-  /{operationName}:
+  /{group}/{level}:
     get:
-      operationId: "metricsFilterWithOperationName"
+      operationId: "metricsFilterWithGroupAndLevel"
       parameters:
-      - name: "operationName"
+      - name: "group"
+        in: "path"
+        required: true
+        type: "string"
+      - name: "level"
+        in: "path"
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "response of 200"
+          schema:
+            type: "object"
+            additionalProperties:
+              type: "number"
+              format: "double"
+  /{group}:
+    get:
+      operationId: "metricsFilterWithGroup"
+      parameters:
+      - name: "group"
         in: "path"
         required: true
         type: "string"

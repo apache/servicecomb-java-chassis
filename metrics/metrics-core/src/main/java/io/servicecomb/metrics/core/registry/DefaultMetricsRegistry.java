@@ -102,14 +102,20 @@ public class DefaultMetricsRegistry implements MetricsRegistry {
   }
 
   @Override
-  public Map<String, Number> getMetricsValues(String operationName) {
-    String prefix = "servicecomb." + operationName;
+  public Map<String, Number> getMetricsValues(String group) {
+    String prefix = group;
     return getMetricsValuesWithPrefix(prefix);
   }
 
   @Override
-  public Map<String, Number> getMetricsValues(String operationName, String catalog) {
-    String prefix = String.join(".", "servicecomb", operationName, catalog);
+  public Map<String, Number> getMetricsValues(String group, String level) {
+    String prefix = String.join(".", group, level);
+    return getMetricsValuesWithPrefix(prefix);
+  }
+
+  @Override
+  public Map<String, Number> getMetricsValues(String group, String level, String catalog) {
+    String prefix = String.join(".", group, level, catalog);
     return getMetricsValuesWithPrefix(prefix);
   }
 

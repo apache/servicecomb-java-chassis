@@ -46,9 +46,11 @@ public class BizkeeperProcessingRequestEventListener implements MetricsEventList
 
     String totalName;
     if (event.getInvocationType().equals(String.valueOf(InvocationType.CONSUMER))) {
-      totalName = String.format(EmbeddedMetricsName.GENERAL_TOTAL_REQUEST_COUNT_PER_CONSUMER, event.getOperationName());
+      totalName = String
+          .format(EmbeddedMetricsName.APPLICATION_TOTAL_REQUEST_COUNT_PER_CONSUMER, event.getOperationName());
     } else {
-      totalName = String.format(EmbeddedMetricsName.GENERAL_TOTAL_REQUEST_COUNT_PER_PROVIDER, event.getOperationName());
+      totalName = String
+          .format(EmbeddedMetricsName.APPLICATION_TOTAL_REQUEST_COUNT_PER_PROVIDER, event.getOperationName());
     }
 
     Metric metric = registry.getMetric(totalName);

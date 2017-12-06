@@ -106,18 +106,18 @@ public class TestMetricsEventObserver {
     Assert.assertTrue(results.get(name + ".min").doubleValue() == 100);
     Assert.assertTrue(results.get(name + ".average").doubleValue() == 250);
 
-    name = String.format(EmbeddedMetricsName.GENERAL_TOTAL_REQUEST_COUNT_PER_CONSUMER, "fun2");
+    name = String.format(EmbeddedMetricsName.APPLICATION_TOTAL_REQUEST_COUNT_PER_CONSUMER, "fun2");
     Assert.assertTrue(results.get(name).longValue() == 2);
-    name = String.format(EmbeddedMetricsName.GENERAL_TOTAL_REQUEST_COUNT_PER_CONSUMER, "fun3");
+    name = String.format(EmbeddedMetricsName.APPLICATION_TOTAL_REQUEST_COUNT_PER_CONSUMER, "fun3");
     Assert.assertTrue(results.get(name).longValue() == 1);
-    name = String.format(EmbeddedMetricsName.GENERAL_FAILED_REQUEST_COUNT_PER_CONSUMER, "fun3");
+    name = String.format(EmbeddedMetricsName.APPLICATION_FAILED_REQUEST_COUNT_PER_CONSUMER, "fun3");
     Assert.assertTrue(results.get(name).longValue() == 1);
 
-    name = String.format(EmbeddedMetricsName.GENERAL_TOTAL_REQUEST_COUNT_PER_PROVIDER, "fun4");
+    name = String.format(EmbeddedMetricsName.APPLICATION_TOTAL_REQUEST_COUNT_PER_PROVIDER, "fun4");
     Assert.assertTrue(results.get(name).longValue() == 1);
-    name = String.format(EmbeddedMetricsName.GENERAL_TOTAL_REQUEST_COUNT_PER_PROVIDER, "fun5");
+    name = String.format(EmbeddedMetricsName.APPLICATION_TOTAL_REQUEST_COUNT_PER_PROVIDER, "fun5");
     Assert.assertTrue(results.get(name).longValue() == 2);
-    name = String.format(EmbeddedMetricsName.GENERAL_FAILED_REQUEST_COUNT_PER_PROVIDER, "fun5");
+    name = String.format(EmbeddedMetricsName.APPLICATION_FAILED_REQUEST_COUNT_PER_PROVIDER, "fun5");
     Assert.assertTrue(results.get(name).longValue() == 1);
   }
 }

@@ -32,7 +32,9 @@ public interface MetricsRegistry {
 
   Map<String, Number> getAllMetricsValue();
 
-  Map<String, Number> getMetricsValues(String operationName);
+  Map<String, Number> getMetricsValues(String group);
 
-  Map<String, Number> getMetricsValues(String operationName, String catalog);
+  Map<String, Number> getMetricsValues(String group, String level);
+
+  Map<String, Number> getMetricsValues(String group, String level, String catalog);
 }
