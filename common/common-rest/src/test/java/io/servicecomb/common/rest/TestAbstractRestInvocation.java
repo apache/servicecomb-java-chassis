@@ -742,7 +742,6 @@ public class TestAbstractRestInvocation {
       }
     };
     List<Handler> handlerChain = Arrays.asList(handler);
-    invocation.setMetricsData(null);
     Deencapsulation.setField(invocation, "handlerList", handlerChain);
 
     Holder<Response> result = new Holder<>();

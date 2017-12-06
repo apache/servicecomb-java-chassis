@@ -60,7 +60,7 @@ public class InvocationStartProcessingEventListener implements MetricsEventListe
     if (metric == null) {
       metric = registry.getOrCreateMetric(factory.createTimer(lifeTimeInQueueName));
     }
-    String instanceLifeTimeInQueueName = String.format(EmbeddedMetricsName.QUEUE_EXECUTION_TIME, "instance");
+    String instanceLifeTimeInQueueName = String.format(EmbeddedMetricsName.QUEUE_LIFE_TIME_IN_QUEUE, "instance");
     instanceMetric = registry.getMetric(instanceLifeTimeInQueueName);
 
     metric.update(event.getTimeInQueue());

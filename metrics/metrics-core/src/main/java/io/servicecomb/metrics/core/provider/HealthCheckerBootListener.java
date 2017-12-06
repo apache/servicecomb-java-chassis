@@ -16,6 +16,9 @@
 
 package io.servicecomb.metrics.core.provider;
 
+import java.io.IOException;
+
+import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Component;
@@ -27,6 +30,7 @@ import io.servicecomb.core.definition.SchemaMeta;
 import io.servicecomb.core.definition.loader.SchemaLoader;
 import io.servicecomb.core.definition.schema.ProducerSchemaFactory;
 import io.servicecomb.foundation.common.config.PaaSResourceUtils;
+import io.servicecomb.foundation.common.exceptions.ServiceCombException;
 import io.servicecomb.metrics.core.registry.HealthCheckRegistry;
 import io.servicecomb.serviceregistry.RegistryUtils;
 import io.servicecomb.serviceregistry.api.registry.Microservice;
@@ -54,17 +58,23 @@ public class HealthCheckerBootListener implements BootListener {
     //inject health provider before ProducerProviderManager init
     if (EventType.BEFORE_PRODUCER_PROVIDER.equals(event.getEventType())) {
 
-      boolean memoryObserverEnabled = DynamicPropertyFactory.getInstance().getBooleanProperty(PUBLISH_ENABLED, false)
+      boolean memoryObserverEnabled = DynamicPropertyFactory.getInstance().getBooleanProperty(PUBLISH_ENABLED, true)
           .get();
       if (memoryObserverEnabled) {
         Resource[] resources = PaaSResourceUtils.getResources("servicecomb_internal_health_contract_definition.yaml");
         if (resources.length != 0) {
           Microservice microservice = RegistryUtils.getMicroservice();
-          SchemaMeta meta = schemaLoader.registerSchema(microservice.getServiceName(), resources[0]);
-          schemaFactory
-              .getOrCreateProducerSchema(microservice.getServiceName(), meta.getSchemaId(),
-                  DefaultHealthCheckerPublisher.class,
-                  new DefaultHealthCheckerPublisher(registry));
+          try {
+            String swaggerContent = IOUtils.toString(resources[0].getURL());
+            SchemaMeta meta = schemaLoader
+                .registerSchema(microservice.getServiceName(), "healthCheckEndpoint", swaggerContent);
+            schemaFactory
+                .getOrCreateProducerSchema(microservice.getServiceName(), meta.getSchemaId(),
+                    DefaultHealthCheckerPublisher.class,
+                    new DefaultHealthCheckerPublisher(registry));
+          } catch (IOException e) {
+            throw new ServiceCombException("unable load servicecomb_internal_health_contract_definition.yaml", e);
+          }
         }
       }
     }

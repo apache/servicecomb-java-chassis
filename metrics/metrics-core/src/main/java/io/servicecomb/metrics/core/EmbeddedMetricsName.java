@@ -38,4 +38,10 @@ public class EmbeddedMetricsName {
   public static final String QUEUE_EXECUTION_TIME = QUEUE_HEADER_FORMAT + ".executionTime";
 
   public static final String QUEUE_LIFE_TIME_IN_QUEUE = QUEUE_HEADER_FORMAT + ".lifeTimeInQueue";
+
+  public static final String TPS_TOTAL_FORMAT = "servicecomb.%s.application.tps.total";
+
+  public static final String TPS_FAILED_FORMAT = "servicecomb.%s.application.tps.failed";
+
+  public static final String LATENCY_AVERAGE_FORMAT = "servicecomb.%s.application.latency.average";
 }

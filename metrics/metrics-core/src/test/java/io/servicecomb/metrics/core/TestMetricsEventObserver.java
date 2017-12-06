@@ -62,6 +62,12 @@ public class TestMetricsEventObserver {
     MetricsEventManager
         .triggerEvent(new InvocationFinishedEvent("fun1", System.nanoTime(), TimeUnit.MILLISECONDS.toNanos(400)));
 
+    MetricsEventManager.triggerEvent(new InvocationStartedEvent("fun12", System.nanoTime()));
+    MetricsEventManager.triggerEvent(
+        new InvocationStartProcessingEvent("fun12", System.nanoTime(), TimeUnit.MILLISECONDS.toNanos(500)));
+    MetricsEventManager
+        .triggerEvent(new InvocationFinishedEvent("fun12", System.nanoTime(), TimeUnit.MILLISECONDS.toNanos(600)));
+
     MetricsEventManager.triggerEvent(new InvocationStartedEvent("fun11", System.nanoTime()));
 
     MetricsEventManager
@@ -94,17 +100,22 @@ public class TestMetricsEventObserver {
     Assert.assertTrue(results.get(name).longValue() == 1);
 
     name = String.format(EmbeddedMetricsName.QUEUE_LIFE_TIME_IN_QUEUE, "fun1");
-    Assert.assertTrue(results.get(name + ".max").doubleValue() == 300);
     Assert.assertTrue(results.get(name + ".min").doubleValue() == 100);
+    Assert.assertTrue(results.get(name + ".max").doubleValue() == 300);
     Assert.assertTrue(results.get(name + ".average").doubleValue() == 200);
+    name = String.format(EmbeddedMetricsName.QUEUE_LIFE_TIME_IN_QUEUE, "instance");
+    Assert.assertTrue(results.get(name + ".min").doubleValue() == 100);
+    Assert.assertTrue(results.get(name + ".max").doubleValue() == 500);
+    Assert.assertTrue(results.get(name + ".average").doubleValue() == 300);
+
     name = String.format(EmbeddedMetricsName.QUEUE_EXECUTION_TIME, "fun1");
-    Assert.assertTrue(results.get(name + ".max").doubleValue() == 400);
     Assert.assertTrue(results.get(name + ".min").doubleValue() == 200);
+    Assert.assertTrue(results.get(name + ".max").doubleValue() == 400);
     Assert.assertTrue(results.get(name + ".average").doubleValue() == 300);
     name = String.format(EmbeddedMetricsName.QUEUE_EXECUTION_TIME, "instance");
-    Assert.assertTrue(results.get(name + ".max").doubleValue() == 400);
-    Assert.assertTrue(results.get(name + ".min").doubleValue() == 100);
-    Assert.assertTrue(results.get(name + ".average").doubleValue() == 250);
+    Assert.assertTrue(results.get(name + ".min").doubleValue() == 200);
+    Assert.assertTrue(results.get(name + ".max").doubleValue() == 600);
+    Assert.assertTrue(results.get(name + ".average").doubleValue() == 400);
 
     name = String.format(EmbeddedMetricsName.APPLICATION_TOTAL_REQUEST_COUNT_PER_CONSUMER, "fun2");
     Assert.assertTrue(results.get(name).longValue() == 2);

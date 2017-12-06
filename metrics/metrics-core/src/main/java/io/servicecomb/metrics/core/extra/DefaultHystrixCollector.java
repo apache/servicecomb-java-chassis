@@ -24,26 +24,23 @@ import java.util.stream.Collectors;
 import com.netflix.hystrix.HystrixCommandMetrics;
 import com.netflix.hystrix.HystrixEventType;
 
+import io.servicecomb.metrics.core.EmbeddedMetricsName;
+
 public class DefaultHystrixCollector implements HystrixCollector {
 
-  private static final String TPS_TOTAL_FORMAT = "servicecomb.%s.application.tps.total";
+  private static final String TPS_INSTANCE_TOTAL = String.format(EmbeddedMetricsName.TPS_TOTAL_FORMAT, "instance");
 
-  private static final String TPS_FAILED_FORMAT = "servicecomb.%s.application.tps.failed";
+  private static final String TPS_INSTANCE_FAILED = String.format(EmbeddedMetricsName.TPS_FAILED_FORMAT, "instance");
 
-  private static final String TPS_INSTANCE_TOTAL = String.format(TPS_TOTAL_FORMAT, "instance");
-
-  private static final String TPS_INSTANCE_FAILED = String.format(TPS_FAILED_FORMAT, "instance");
-
-  private static final String LATENCY_AVERAGE_FORMAT = "servicecomb.%s.application.latency.average";
-
-  private static final String LATENCY_INSTANCE_AVERAGE = String.format(LATENCY_AVERAGE_FORMAT, "instance");
+  private static final String LATENCY_INSTANCE_AVERAGE = String
+      .format(EmbeddedMetricsName.LATENCY_AVERAGE_FORMAT, "instance");
 
   @Override
   public Map<String, Number> collect() {
     return calculateData(getData());
   }
 
-  private List<HystrixTpsAndLatencyData> getData() {
+  public List<HystrixTpsAndLatencyData> getData() {
     return HystrixCommandMetrics.getInstances().stream().map(instance ->
         new HystrixTpsAndLatencyData(
             instance.getCommandKey().name(),
@@ -54,7 +51,7 @@ public class DefaultHystrixCollector implements HystrixCollector {
         .collect(Collectors.toList());
   }
 
-  protected Map<String, Number> calculateData(List<HystrixTpsAndLatencyData> tpsAndLatencyData) {
+  public Map<String, Number> calculateData(List<HystrixTpsAndLatencyData> tpsAndLatencyData) {
     Map<String, Number> tpsAndLatency = new HashMap<>();
     double totalInstanceLatency = 0;
     long totalInstanceCount = 0;
@@ -71,12 +68,15 @@ public class DefaultHystrixCollector implements HystrixCollector {
       totalInstanceTps += totalTps;
       totalFailedTps += failedTps;
 
-      tpsAndLatency.put(String.format(TPS_TOTAL_FORMAT, data.getOperationName()), totalTps);
-      tpsAndLatency.put(String.format(TPS_FAILED_FORMAT, data.getOperationName()), failedTps);
-      tpsAndLatency.put(String.format(LATENCY_AVERAGE_FORMAT, data.getOperationName()), data.getOperationLatency());
+      tpsAndLatency.put(String.format(EmbeddedMetricsName.TPS_TOTAL_FORMAT, data.getOperationName()), totalTps);
+      tpsAndLatency.put(String.format(EmbeddedMetricsName.TPS_FAILED_FORMAT, data.getOperationName()), failedTps);
+      tpsAndLatency.put(String.format(EmbeddedMetricsName.LATENCY_AVERAGE_FORMAT, data.getOperationName()),
+          data.getOperationLatency());
     }
 
-    tpsAndLatency.put(LATENCY_INSTANCE_AVERAGE, totalInstanceLatency / (double) totalInstanceCount);
+    tpsAndLatency.put(LATENCY_INSTANCE_AVERAGE,
+        totalInstanceCount == 0 ? 0 : totalInstanceLatency / (double) totalInstanceCount);
+
     tpsAndLatency.put(TPS_INSTANCE_TOTAL, totalInstanceTps);
     tpsAndLatency.put(TPS_INSTANCE_FAILED, totalFailedTps);
     return tpsAndLatency;

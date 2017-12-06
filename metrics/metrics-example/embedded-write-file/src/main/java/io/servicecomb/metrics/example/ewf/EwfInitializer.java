@@ -66,8 +66,8 @@ public class EwfInitializer {
   }
 
   private void doOutput() {
-    //only filter instance level
-    Map<String, Number> metrics = publisher.metricsFilterWithGroupAndLevel("servicecomb","instance");
+    //only filter servicecomb instance level
+    Map<String, Number> metrics = publisher.metricsFilterWithGroupAndLevel("servicecomb", "instance");
     //first convert metrics to Map<String,String>
     Map<String, String> convertedMetrics = convertor.convert(metrics);
     //second format output content style

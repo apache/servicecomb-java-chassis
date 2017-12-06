@@ -49,11 +49,8 @@ public class DefaultMetricsRegistry implements MetricsRegistry {
 
   public DefaultMetricsRegistry(MetricFactory factory, SystemResource systemResource,
       HystrixCollector hystrixCollector) {
-    int pollingTime = DynamicPropertyFactory.getInstance().getIntProperty(METRICS_POLLING_TIME, 5000).get();
-    this.factory = factory;
-    this.systemResource = systemResource;
-    this.hystrixCollector = hystrixCollector;
-    this.init(String.valueOf(pollingTime));
+    this(factory, systemResource, hystrixCollector,
+        String.valueOf(DynamicPropertyFactory.getInstance().getIntProperty(METRICS_POLLING_TIME, 5000).get()));
   }
 
   public DefaultMetricsRegistry(MetricFactory factory, SystemResource systemResource, HystrixCollector hystrixCollector,
@@ -61,10 +58,6 @@ public class DefaultMetricsRegistry implements MetricsRegistry {
     this.factory = factory;
     this.systemResource = systemResource;
     this.hystrixCollector = hystrixCollector;
-    this.init(pollingInterval);
-  }
-
-  private void init(String pollingInterval) {
     System.getProperties().setProperty("servo.pollers", pollingInterval);
     initDefaultSupportedMetrics();
   }
