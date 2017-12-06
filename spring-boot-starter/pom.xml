@@ -29,6 +29,7 @@
     <module>spring-boot-starter-provider</module>
     <module>spring-boot-starter-transport</module>
     <module>spring-boot-starter-discovery</module>
+    <module>spring-boot-starter-registry</module>
     <module>spring-cloud-zuul</module>
     <module>spring-cloud-zuul-zipkin</module>
     <module>spring-boot-starter-servicecomb</module>
