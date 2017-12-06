@@ -7,7 +7,7 @@ cse:
     registry:
       address: http://127.0.0.1:30100
   rest:
-    address: 0.0.0.0:8080
+    address: 127.0.0.1:8080
   handler:
     chain:
       Provider:

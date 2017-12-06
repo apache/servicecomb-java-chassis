@@ -64,6 +64,16 @@ public class TestNetUtils {
   }
 
   @Test
+  public void testGetRealListenAddressOnConfiguredAddressIsAll0() {
+    String hostAddressFieldName = "hostAddress";
+    String preservedHost = Deencapsulation.getField(NetUtils.class, hostAddressFieldName);
+    Deencapsulation.setField(NetUtils.class, hostAddressFieldName, "12.12.12.12");
+    Assert.assertEquals("http://12.12.12.12:8080", NetUtils.getRealListenAddress("http", "0.0.0.0:8080"));
+
+    Deencapsulation.setField(NetUtils.class, hostAddressFieldName, preservedHost);
+  }
+
+  @Test
   public void testNetworkInterface() {
     Map<String, InetAddress> org = Deencapsulation.getField(NetUtils.class, "allInterfaceAddresses");
 

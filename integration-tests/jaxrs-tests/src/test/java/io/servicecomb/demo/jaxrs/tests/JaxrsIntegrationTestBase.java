@@ -50,11 +50,11 @@ import org.springframework.web.client.RestTemplate;
 import io.servicecomb.common.rest.codec.RestObjectMapper;
 import io.servicecomb.demo.compute.Person;
 import io.servicecomb.demo.server.User;
+import io.servicecomb.foundation.common.net.NetUtils;
 
 @Ignore
 public class JaxrsIntegrationTestBase {
-
-  private final String baseUrl = "http://127.0.0.1:8080/";
+  private final String baseUrl = "http://" + NetUtils.getHostAddress() + ":8080/";
 
   private final RestTemplate restTemplate = new RestTemplate();
 
