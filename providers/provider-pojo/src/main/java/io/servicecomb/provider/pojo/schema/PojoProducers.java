@@ -39,6 +39,14 @@ public class PojoProducers implements BeanPostProcessor {
     return pojoMgr.values();
   }
 
+  /**
+   * @deprecated  Replaced by {@link #getProducers()}
+   */
+  @Deprecated
+  public Collection<PojoProducerMeta> getProcucers() {
+    return getProducers();
+  }
+
   @Override
   public Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
     return bean;
