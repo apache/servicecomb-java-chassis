@@ -110,21 +110,30 @@ public class RestClientRequestImpl implements RestClientRequest {
 
       List<CompletableFuture<Void>> fileCloseFutures = new ArrayList<>(uploads.size());
 
-      final CompletableFuture<?>[] fileOpenFuture = {CompletableFuture.completedFuture(null)};
+      CompletableFuture<?> fileOpenFuture = CompletableFuture.completedFuture(null);
 
-      uploads.forEach((name, filename) -> {
+      for (Entry<String, String> entry : uploads.entrySet()) {
+        String name = entry.getKey();
+        String filename = entry.getValue();
+
         CompletableFuture<Void> fileCloseFuture = new CompletableFuture<>();
         fileCloseFutures.add(fileCloseFuture);
 
-        Buffer buffer = fileBoundaryInfo(boundary, name, filename);
+        fileOpenFuture = fileOpenFuture.thenRunAsync(() -> {
+          vertx.fileSystem()
+              .open(filename, readOnlyOption(), result -> {
+                AsyncFile file = result.result();
 
-        vertx.fileSystem()
-            .open(filename, readOnlyOption(), result -> {
-              AsyncFile file = result.result();
-              fileOpenFuture[0] = appendFileAsync(fileOpenFuture[0], fileCloseFuture, buffer, file);
-              file.endHandler(closeFileHandler(name, filename, file, fileCloseFuture));
-            });
-      });
+                Buffer fileHeader = fileBoundaryInfo(boundary, name, filename);
+                Pump.pump(embeddedReadStream(fileHeader), request).start();
+                Pump.pump(file, request).start();
+                file.endHandler(closeFileHandler(name, filename, file, fileCloseFuture));
+              });
+
+          // ensure file sent completely, before proceeding to the next file
+          fileCloseFuture.join();
+        });
+      }
 
       CompletableFuture.allOf(fileCloseFutures.toArray(new CompletableFuture<?>[fileCloseFutures.size()]))
           .thenRunAsync(() -> {
@@ -151,21 +160,6 @@ public class RestClientRequestImpl implements RestClientRequest {
         });
       }
     };
-  }
-
-  private CompletableFuture<Void> appendFileAsync(
-      CompletableFuture<?> fileOpenFuture,
-      CompletableFuture<Void> fileCloseFuture,
-      Buffer fileHeader,
-      AsyncFile file) {
-
-    return fileOpenFuture.thenRunAsync(() -> {
-      Pump.pump(embeddedReadStream(fileHeader), request).start();
-      Pump.pump(file, request).start();
-
-      // ensure file sent completely, before proceeding to the next file
-      fileCloseFuture.join();
-    });
   }
 
   private OpenOptions readOnlyOption() {
