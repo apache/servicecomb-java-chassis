@@ -14,14 +14,23 @@
  * limitations under the License.
  */
 
-package io.servicecomb.swagger.generator.parameters;
+package io.servicecomb.provider.springmvc.rest.codec;
 
-import io.swagger.models.parameters.AbstractSerializableParameter;
-import io.swagger.models.properties.FileProperty;
+import javax.annotation.PostConstruct;
 
-public class PartParameter extends AbstractSerializableParameter<PartParameter> {
-  public PartParameter() {
-    super.setIn("formdata");
-    super.setType(new FileProperty().getType());
+import org.springframework.context.annotation.Configuration;
+import org.springframework.core.io.FileSystemResource;
+
+import com.fasterxml.jackson.databind.module.SimpleModule;
+
+import io.servicecomb.common.rest.codec.RestObjectMapper;
+
+@Configuration
+class FileSystemResourceSerializerConfig {
+  @PostConstruct
+  void init() {
+    SimpleModule module = new SimpleModule();
+    module.addSerializer(FileSystemResource.class, new FileSystemResourceSerializer());
+    RestObjectMapper.INSTANCE.registerModule(module);
   }
 }

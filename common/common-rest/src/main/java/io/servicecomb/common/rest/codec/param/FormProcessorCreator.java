@@ -26,7 +26,9 @@ import com.fasterxml.jackson.databind.type.TypeFactory;
 
 import io.servicecomb.common.rest.RestConst;
 import io.servicecomb.common.rest.codec.RestClientRequest;
+import io.swagger.models.parameters.FormParameter;
 import io.swagger.models.parameters.Parameter;
+import io.swagger.models.properties.FileProperty;
 
 public class FormProcessorCreator implements ParamValueProcessorCreator {
   public static final String PARAMTYPE = "formData";
@@ -69,6 +71,44 @@ public class FormProcessorCreator implements ParamValueProcessorCreator {
   @Override
   public ParamValueProcessor create(Parameter parameter, Type genericParamType) {
     JavaType targetType = TypeFactory.defaultInstance().constructType(genericParamType);
+
+    if (isPart(parameter)) {
+      return new PartProcessor(parameter.getName(), targetType);
+    }
     return new FormProcessor(parameter.getName(), targetType);
+  }
+
+  private boolean isPart(Parameter parameter) {
+    return new FileProperty().getType().equals(((FormParameter) parameter).getType());
+  }
+
+  private static class PartProcessor extends AbstractParamProcessor {
+    PartProcessor(String paramPath, JavaType targetType) {
+      super(paramPath, targetType);
+    }
+
+    @Override
+    public Object getValue(HttpServletRequest request) throws Exception {
+      @SuppressWarnings("unchecked")
+      Map<String, Object> forms = (Map<String, Object>) request.getAttribute(RestConst.FORM_PARAMETERS);
+      if (forms != null) {
+        return convertValue(forms.get(paramPath), targetType);
+      }
+
+      return request.getPart(paramPath);
+    }
+
+    @Override
+    public void setValue(RestClientRequest clientRequest, Object arg) throws Exception {
+      String[] filenames = (String[]) arg;
+      for (String filename : filenames) {
+        clientRequest.attach(paramPath, filename);
+      }
+    }
+
+    @Override
+    public String getProcessorType() {
+      return PARAMTYPE;
+    }
   }
 }

@@ -19,12 +19,15 @@ package io.servicecomb.swagger.generator.springmvc.processor.annotation;
 import org.springframework.web.bind.annotation.RequestPart;
 
 import io.servicecomb.swagger.generator.core.processor.parameter.AbstractParameterProcessor;
-import io.servicecomb.swagger.generator.parameters.PartParameter;
+import io.swagger.models.parameters.FormParameter;
+import io.swagger.models.properties.FileProperty;
 
-public class RequestPartAnnotationProcessor extends AbstractParameterProcessor<PartParameter> {
+public class RequestPartAnnotationProcessor extends AbstractParameterProcessor<FormParameter> {
   @Override
-  protected PartParameter createParameter() {
-    return new PartParameter();
+  protected FormParameter createParameter() {
+    FormParameter parameter = new FormParameter();
+    parameter.setType(new FileProperty().getType());
+    return parameter;
   }
 
   @Override

@@ -23,8 +23,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import javax.servlet.http.HttpServletRequest;
-
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.type.SimpleType;
 import com.fasterxml.jackson.databind.type.TypeFactory;
@@ -41,7 +39,6 @@ import io.servicecomb.swagger.converter.property.StringPropertyConverter;
 import io.servicecomb.swagger.extend.property.ByteProperty;
 import io.servicecomb.swagger.extend.property.ShortProperty;
 import io.servicecomb.swagger.generator.core.SwaggerGenerator;
-import io.servicecomb.swagger.generator.parameters.PartParameter;
 import io.swagger.models.ArrayModel;
 import io.swagger.models.Model;
 import io.swagger.models.ModelImpl;
@@ -129,7 +126,7 @@ public final class ConverterMgr {
 
     PROPERTY_MAP.put(ByteArrayProperty.class, SimpleType.constructUnsafe(byte[].class));
 
-    PROPERTY_MAP.put(FileProperty.class, SimpleType.constructUnsafe(HttpServletRequest.class));
+    PROPERTY_MAP.put(FileProperty.class, SimpleType.constructUnsafe(String[].class));
   }
 
   private static void initConverters() {
@@ -155,7 +152,6 @@ public final class ConverterMgr {
     converterMap.put(HeaderParameter.class, converter);
     converterMap.put(FormParameter.class, converter);
     converterMap.put(CookieParameter.class, converter);
-    converterMap.put(PartParameter.class, converter);
   }
 
   private static void addInnerConverter(Class<? extends Property> propertyCls) {
