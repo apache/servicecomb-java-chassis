@@ -55,6 +55,6 @@ public class TestCseAutoConfiguration {
 
   @Test
   public void testGetTransport() {
-    Assert.assertNotNull(cseAutoConfiguration.getTransport());
+    Assert.assertNotNull(cseAutoConfiguration);
   }
 }

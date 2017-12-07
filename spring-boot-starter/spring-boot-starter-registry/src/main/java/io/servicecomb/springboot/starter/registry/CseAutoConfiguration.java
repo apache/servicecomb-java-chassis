@@ -15,8 +15,6 @@
  */
 package io.servicecomb.springboot.starter.registry;
 
-import org.springframework.context.annotation.Bean;
-
 /**
 * Initialize and Register the services with service center 
 */
@@ -24,10 +22,5 @@ public class CseAutoConfiguration {
 
   public CseAutoConfiguration() {
     RegistryIntializer.initRegistry();
-  }
-
-  @Bean
-  public SpringCloudTransport getTransport() {
-    return new SpringCloudTransport();
   }
 }
