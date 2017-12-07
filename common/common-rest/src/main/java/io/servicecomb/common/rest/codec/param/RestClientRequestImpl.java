@@ -39,7 +39,6 @@ import io.servicecomb.common.rest.codec.RestObjectMapper;
 import io.servicecomb.foundation.vertx.stream.BufferOutputStream;
 import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
-import io.vertx.core.VoidHandler;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.file.AsyncFile;
 import io.vertx.core.file.OpenOptions;
@@ -143,23 +142,19 @@ public class RestClientRequestImpl implements RestClientRequest {
     }
   }
 
-  private VoidHandler closeFileHandler(String name,
+  private Handler<Void> closeFileHandler(String name,
       String filename,
       AsyncFile file,
       CompletableFuture<Void> fileCloseFuture) {
-    return new VoidHandler() {
-      public void handle() {
-        file.close(ar -> {
-          if (ar.succeeded()) {
-            fileCloseFuture.complete(null);
-            LOGGER.debug("Sent file [{}:{}] successfully", name, filename);
-          } else {
-            fileCloseFuture.completeExceptionally(ar.cause());
-            LOGGER.error("Failed to send file [{}:{}]", name, filename, ar.cause());
-          }
-        });
+    return e -> file.close(ar -> {
+      if (ar.succeeded()) {
+        fileCloseFuture.complete(null);
+        LOGGER.debug("Sent file [{}:{}] successfully", name, filename);
+      } else {
+        fileCloseFuture.completeExceptionally(ar.cause());
+        LOGGER.error("Failed to send file [{}:{}]", name, filename, ar.cause());
       }
-    };
+    });
   }
 
   private OpenOptions readOnlyOption() {
