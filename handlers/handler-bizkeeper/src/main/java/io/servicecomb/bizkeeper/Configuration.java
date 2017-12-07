@@ -67,7 +67,7 @@ public final class Configuration {
 
   private static final int DEFAULT_ISOLATION_TIMEOUT = 30000;
 
-  private static final int DEFAULT_MAX_CONCURRENT_REQUESTS = 10;
+  private static final int DEFAULT_MAX_CONCURRENT_REQUESTS = 1000;
 
   private static final int DEFAULT_SLEEP_WINDOW = 15000;
 
@@ -114,7 +114,7 @@ public final class Configuration {
   public int getIsolationMaxConcurrentRequests(String type, String microserviceName,
       String qualifiedOperationName) {
     int concurrentRequests;
-    String p = getProperty("10",
+    String p = getProperty("1000",
         ISOLATION + type + "." + qualifiedOperationName + "." + ISOLATION_MAX_CONCURRENT_REQUESTS,
         ISOLATION + type + "." + microserviceName + "." + ISOLATION_MAX_CONCURRENT_REQUESTS,
         ISOLATION + type + "." + ISOLATION_MAX_CONCURRENT_REQUESTS);

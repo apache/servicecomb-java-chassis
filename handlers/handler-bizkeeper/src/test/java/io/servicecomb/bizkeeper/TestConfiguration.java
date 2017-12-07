@@ -47,7 +47,7 @@ public class TestConfiguration {
     boolean b1 = c.getIsolationTimeoutEnabled("groupname", test2, "testqualify");
     assertFalse(b1);
     int res1 = c.getIsolationMaxConcurrentRequests("groupname", test2, "testqualify");
-    assertEquals(10, res1);
+    assertEquals(1000, res1);
     boolean b2 = c.isCircuitBreakerEnabled("groupname", test2, "testqualify");
     assertTrue(b2);
     String str = c.getFallbackPolicyPolicy("groupname", test2, "testqualify");
