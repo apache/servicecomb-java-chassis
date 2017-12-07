@@ -1,0 +1,35 @@
+swagger: "2.0"
+info:
+  version: "1.0.0"
+  title: "healthService"
+  x-java-interface: "io.servicecomb.metrics.core.provider.HealthCheckerPublisher"
+basePath: "/health"
+consumes:
+- "application/json"
+produces:
+- "application/json"
+paths:
+  /{name}:
+    get:
+      operationId: "healthFilterWithName"
+      parameters:
+      - name: "name"
+        in: "path"
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "response of 200"
+          schema:
+            type: "string"
+  /:
+    get:
+      operationId: "health"
+      parameters: []
+      responses:
+        200:
+          description: "response of 200"
+          schema:
+            type: "object"
+            additionalProperties:
+              type: "string"

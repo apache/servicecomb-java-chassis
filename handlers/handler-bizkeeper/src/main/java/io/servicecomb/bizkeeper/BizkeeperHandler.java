@@ -28,7 +28,9 @@ import com.netflix.hystrix.strategy.executionhook.HystrixCommandExecutionHook;
 
 import io.servicecomb.core.Handler;
 import io.servicecomb.core.Invocation;
-import io.servicecomb.foundation.metrics.performance.MetricsDataMonitorUtil;
+import io.servicecomb.foundation.metrics.event.BizkeeperProcessingRequestEvent;
+import io.servicecomb.foundation.metrics.event.BizkeeperProcessingRequestFailedEvent;
+import io.servicecomb.foundation.metrics.event.MetricsEventManager;
 import io.servicecomb.swagger.invocation.AsyncResponse;
 import io.servicecomb.swagger.invocation.Response;
 import rx.Observable;
@@ -80,18 +82,19 @@ public abstract class BizkeeperHandler implements Handler {
     HystrixObservable<Response> command = delegate.createBizkeeperCommand(invocation);
 
     //Notedown all request for provider and consumer.
-    new MetricsDataMonitorUtil()
-        .setAllReqProviderAndConsumer(invocation.getOperationMeta().getMicroserviceQualifiedName(),
-            String.valueOf(invocation.getInvocationType()));
+    MetricsEventManager
+        .triggerEvent(new BizkeeperProcessingRequestEvent(invocation.getOperationMeta().getMicroserviceQualifiedName(),
+            String.valueOf(invocation.getInvocationType())));
 
     Observable<Response> observable = command.toObservable();
     observable.subscribe(asyncResp::complete, error -> {
       LOG.warn("catch error in bizkeeper:" + error.getMessage());
       asyncResp.fail(invocation.getInvocationType(), error);
       //Notedown all failed request for provider and consumer.
-      new MetricsDataMonitorUtil()
-          .setAllFailReqProviderAndConsumer(invocation.getOperationMeta().getMicroserviceQualifiedName(),
-              String.valueOf(invocation.getInvocationType()));
+      MetricsEventManager
+          .triggerEvent(
+              new BizkeeperProcessingRequestFailedEvent(invocation.getOperationMeta().getMicroserviceQualifiedName(),
+                  String.valueOf(invocation.getInvocationType())));
     }, () -> {
 
     });

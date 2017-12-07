@@ -1,0 +1,83 @@
+swagger: "2.0"
+info:
+  version: "1.0.0"
+  title: "metricsService"
+  x-java-interface: "io.servicecomb.metrics.core.provider.MetricsPublisher"
+basePath: "/metrics"
+consumes:
+- "application/json"
+produces:
+- "application/json"
+paths:
+  /{group}/{level}/{catalog}:
+    get:
+      operationId: "metricsFilterWithGroupAndLevelAndCatalog"
+      parameters:
+      - name: "group"
+        in: "path"
+        required: true
+        type: "string"
+      - name: "level"
+        in: "path"
+        required: true
+        type: "string"
+      - name: "catalog"
+        in: "path"
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "response of 200"
+          schema:
+            type: "object"
+            additionalProperties:
+              type: "number"
+              format: "double"
+  /{group}/{level}:
+    get:
+      operationId: "metricsFilterWithGroupAndLevel"
+      parameters:
+      - name: "group"
+        in: "path"
+        required: true
+        type: "string"
+      - name: "level"
+        in: "path"
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "response of 200"
+          schema:
+            type: "object"
+            additionalProperties:
+              type: "number"
+              format: "double"
+  /{group}:
+    get:
+      operationId: "metricsFilterWithGroup"
+      parameters:
+      - name: "group"
+        in: "path"
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "response of 200"
+          schema:
+            type: "object"
+            additionalProperties:
+              type: "number"
+              format: "double"
+  /:
+    get:
+      operationId: "metrics"
+      parameters: []
+      responses:
+        200:
+          description: "response of 200"
+          schema:
+            type: "object"
+            additionalProperties:
+              type: "number"
+              format: "double"
