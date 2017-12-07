@@ -16,25 +16,25 @@
 
 package io.servicecomb.foundation.metrics.event;
 
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class MetricsEventManager {
   private static final Map<Class<? extends MetricsEvent>, List<MetricsEventListener>> allEvents = new ConcurrentHashMap<>();
 
   public static void registerEventListener(MetricsEventListener eventListener) {
-    allEvents.putIfAbsent(eventListener.getConcernedEvent(), new ArrayList<>());
-    allEvents.get(eventListener.getConcernedEvent()).add(eventListener);
+    List<MetricsEventListener> eventListeners = allEvents
+        .computeIfAbsent(eventListener.getConcernedEvent(), f -> new CopyOnWriteArrayList<>());
+    eventListeners.add(eventListener);
   }
 
   public static void triggerEvent(MetricsEvent event) {
-    List<MetricsEventListener> eventListeners = allEvents.getOrDefault(event.getClass(), null);
-    if (eventListeners != null) {
-      for (MetricsEventListener eventListener : eventListeners) {
-        eventListener.process(event);
-      }
+    List<MetricsEventListener> eventListeners = allEvents.getOrDefault(event.getClass(), Collections.emptyList());
+    for (MetricsEventListener eventListener : eventListeners) {
+      eventListener.process(event);
     }
   }
 }

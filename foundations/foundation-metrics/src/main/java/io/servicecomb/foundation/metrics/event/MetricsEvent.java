@@ -16,5 +16,6 @@
 
 package io.servicecomb.foundation.metrics.event;
 
+//Common event interface for metrics event extension
 public interface MetricsEvent {
 }

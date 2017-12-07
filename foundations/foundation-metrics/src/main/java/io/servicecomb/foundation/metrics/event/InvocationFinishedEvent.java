@@ -21,7 +21,7 @@ public class InvocationFinishedEvent implements MetricsEvent {
 
   private final long startProcessingTime;
 
-  private final long timeProcess;
+  private final long processElapsedTime;
 
   public String getOperationName() {
     return operationName;
@@ -31,13 +31,13 @@ public class InvocationFinishedEvent implements MetricsEvent {
     return startProcessingTime;
   }
 
-  public long getTimeProcess() {
-    return timeProcess;
+  public long getProcessElapsedTime() {
+    return processElapsedTime;
   }
 
   public InvocationFinishedEvent(String operationName, long startProcessingTime, long timeProcess) {
     this.operationName = operationName;
     this.startProcessingTime = startProcessingTime;
-    this.timeProcess = timeProcess;
+    this.processElapsedTime = timeProcess;
   }
 }
