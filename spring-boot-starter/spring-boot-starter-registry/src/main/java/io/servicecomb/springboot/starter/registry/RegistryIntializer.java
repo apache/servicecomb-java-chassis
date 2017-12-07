@@ -37,8 +37,8 @@ public class RegistryIntializer {
     if (null != address) {
       try {
         RegistryUtils.init();
-        RegistryUtils.run();
         RegistryUtils.getMicroserviceInstance().getEndpoints().add(RegistryUtils.getPublishAddress("rest", address));
+        RegistryUtils.run();
       } catch (Exception e) {
         LOG.error("init registry error.", e);
       }
