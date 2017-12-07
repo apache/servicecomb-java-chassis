@@ -9,9 +9,12 @@ jobs:
   include:
     - stage: Compilation and Installation
       script: scripts/travis.sh install
-    - stage: Deployment
-      if: [branch = master] AND [type IN (push)]
-      script: scripts/travis.sh deploy
+
+deploy:
+  provider: script
+  script: scripts/travis.sh deploy
+  on:
+    branch: master    
 
 env:
   global:
