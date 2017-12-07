@@ -90,7 +90,7 @@ public class ModelResolverExt extends ModelResolver {
     if (type.getRawClass().equals(Object.class)) {
       LOGGER.warn("***********************");
       LOGGER.warn(type.getRawClass().getName() + " have some potential problems when working with "
-          + "different platforms and transports. It's recommented to change your service defintion. "
+          + "different platforms and transports. It's recommended to change your service definition. "
           + "This feature will be removed without notice in the future.");
       LOGGER.warn("***********************");
     }
