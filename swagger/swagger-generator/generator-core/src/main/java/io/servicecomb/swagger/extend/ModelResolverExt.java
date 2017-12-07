@@ -96,9 +96,10 @@ public class ModelResolverExt extends ModelResolver {
     }
 
     if (type.isMapLikeType()) {
-      if (!String.class.equals(type.getKeyType().getRawClass())) {
+      Class<?> keyTypeClass = type.getKeyType().getRawClass();
+      if (!String.class.equals(keyTypeClass)) {
         // swagger中map的key只允许为string
-        throw new Error("Key of map must be string.");
+        throw new Error("Type of key in map must be string, but got " + keyTypeClass.getName());
       }
     }
 
