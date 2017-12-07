@@ -42,4 +42,8 @@ public class HttpClientWithContext {
       handler.run(httpClient);
     });
   }
+
+  public Context context() {
+    return context;
+  }
 }
