@@ -17,12 +17,10 @@
 package io.servicecomb.swagger.invocation.converter;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Type;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.Part;
 
 import org.apache.commons.io.IOUtils;
@@ -33,7 +31,7 @@ import org.springframework.web.multipart.MultipartFile;
 class SpringMultipartConverter implements CustomizedConverter {
   @Override
   public Type getSrcType() {
-    return HttpServletRequest.class;
+    return String[].class;
   }
 
   @Override

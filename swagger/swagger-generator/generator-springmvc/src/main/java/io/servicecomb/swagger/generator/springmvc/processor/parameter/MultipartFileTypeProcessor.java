@@ -21,7 +21,8 @@ import org.springframework.web.multipart.MultipartFile;
 import io.servicecomb.swagger.generator.core.CommonParameterTypeProcessor;
 import io.servicecomb.swagger.generator.core.OperationGenerator;
 import io.servicecomb.swagger.generator.core.utils.ParamUtils;
-import io.servicecomb.swagger.generator.parameters.PartParameter;
+import io.swagger.models.parameters.FormParameter;
+import io.swagger.models.properties.FileProperty;
 
 public class MultipartFileTypeProcessor implements CommonParameterTypeProcessor {
   @Override
@@ -31,7 +32,8 @@ public class MultipartFileTypeProcessor implements CommonParameterTypeProcessor 
 
   @Override
   public void process(OperationGenerator operationGenerator, int paramIdx) {
-    PartParameter parameter = new PartParameter();
+    FormParameter parameter = new FormParameter();
+    parameter.setType(new FileProperty().getType());
     parameter.setName(ParamUtils.getParameterName(operationGenerator.getProviderMethod(), paramIdx));
     operationGenerator.addProviderParameter(parameter);
   }
