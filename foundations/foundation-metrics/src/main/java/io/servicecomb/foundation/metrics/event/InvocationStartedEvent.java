@@ -14,16 +14,23 @@
  * limitations under the License.
  */
 
-package io.servicecomb.foundation.metrics;
+package io.servicecomb.foundation.metrics.event;
 
-import org.junit.Assert;
-import org.junit.Test;
+public class InvocationStartedEvent implements MetricsEvent {
+  private final String operationName;
 
-public class TestMetricsConfig {
+  private final long startedTime;
 
-  @Test
-  public void test() {
-    Assert.assertEquals(60000, MetricsConfig.getMsCycle());
-    Assert.assertEquals(false, MetricsConfig.isEnable());
+  public String getOperationName() {
+    return operationName;
+  }
+
+  public long getStartedTime() {
+    return startedTime;
+  }
+
+  public InvocationStartedEvent(String operationName, long startedTime) {
+    this.operationName = operationName;
+    this.startedTime = startedTime;
   }
 }

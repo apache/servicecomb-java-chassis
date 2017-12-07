@@ -14,10 +14,22 @@
  * limitations under the License.
  */
 
-package io.servicecomb.foundation.metrics.output.servo;
+package io.servicecomb.foundation.metrics.event;
 
-import java.util.Map;
+public class BizkeeperProcessingRequestFailedEvent implements MetricsEvent {
+  private final String operationName;
+  private final String invocationType;
 
-public interface MetricsContentFormatter {
-  Map<String, String> format(Map<String, String> input);
+  public String getOperationName() {
+    return operationName;
+  }
+
+  public String getInvocationType() {
+    return invocationType;
+  }
+
+  public BizkeeperProcessingRequestFailedEvent(String operationName, String invocationType) {
+    this.operationName = operationName;
+    this.invocationType = invocationType;
+  }
 }

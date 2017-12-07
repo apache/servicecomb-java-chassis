@@ -14,14 +14,10 @@
  * limitations under the License.
  */
 
-package io.servicecomb.foundation.metrics.output.servo;
+package io.servicecomb.foundation.metrics.event;
 
-import java.util.List;
-import java.util.Map;
+public interface MetricsEventListener {
+  Class<? extends MetricsEvent> getConcernedEvent();
 
-import com.netflix.servo.Metric;
-
-//convert metrics to output content
-public interface MetricsContentConvertor {
-  Map<String, String> convert(List<Metric> metrics);
+  void process(MetricsEvent data);
 }

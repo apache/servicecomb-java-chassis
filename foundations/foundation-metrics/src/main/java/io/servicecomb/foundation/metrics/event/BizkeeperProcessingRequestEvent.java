@@ -14,23 +14,22 @@
  * limitations under the License.
  */
 
-package io.servicecomb.foundation.metrics.performance;
+package io.servicecomb.foundation.metrics.event;
 
-import java.util.List;
+public class BizkeeperProcessingRequestEvent implements MetricsEvent {
+  private final String operationName;
+  private final String invocationType;
 
-/**
- * PerfStat
- *
- *
- */
-public interface PerfStat {
-  String getName();
+  public String getOperationName() {
+    return operationName;
+  }
 
-  List<PerfStatData> getPerfStatDataList();
+  public String getInvocationType() {
+    return invocationType;
+  }
 
-  void mergeFrom(PerfStat otherPerfStat);
-
-  void calc(long msNow, List<PerfResult> perfResultList);
-
-  void calc(PerfStat lastCycle, long msCycle, List<PerfResult> perfResultList);
+  public BizkeeperProcessingRequestEvent(String operationName, String invocationType) {
+    this.operationName = operationName;
+    this.invocationType = invocationType;
+  }
 }
