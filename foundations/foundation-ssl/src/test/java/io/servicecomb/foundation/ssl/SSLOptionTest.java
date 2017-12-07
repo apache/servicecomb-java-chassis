@@ -37,6 +37,7 @@ import com.netflix.config.DynamicConfiguration;
 import com.netflix.config.DynamicPropertyFactory;
 import com.netflix.config.FixedDelayPollingScheduler;
 
+import io.servicecomb.config.ConfigUtil;
 import io.servicecomb.config.archaius.scheduler.NeverStartPollingScheduler;
 import mockit.Deencapsulation;
 import mockit.Mock;
@@ -213,14 +214,7 @@ public class SSLOptionTest {
   @Test
   public void testSSLOptionYamlOption2() throws Exception {
     System.setProperty("ssl.protocols", "TLSv1.2");
-    DynamicConfiguration configFromYamlFile =
-        new DynamicConfiguration(yamlConfigSource(), new NeverStartPollingScheduler());
-    // configuration from system properties
-    ConcurrentMapConfiguration configFromSystemProperties =
-        new ConcurrentMapConfiguration(new SystemConfiguration());
-    ConcurrentCompositeConfiguration finalConfig = new ConcurrentCompositeConfiguration();
-    finalConfig.addConfiguration(configFromSystemProperties, "systemEnvConfig");
-    finalConfig.addConfiguration(configFromYamlFile, "configFromYamlFile");
+    ConcurrentCompositeConfiguration finalConfig = ConfigUtil.createLocalConfig();
 
     SSLOption option = SSLOption.buildFromYaml("server", finalConfig);
 
@@ -233,14 +227,7 @@ public class SSLOptionTest {
   @Test
   public void testSSLOptionYamlOptionWithProperyFalse() throws Exception {
     System.setProperty("ssl.authPeer", "false");
-    DynamicConfiguration configFromYamlFile =
-        new DynamicConfiguration(yamlConfigSource(), new NeverStartPollingScheduler());
-    // configuration from system properties
-    ConcurrentMapConfiguration configFromSystemProperties =
-        new ConcurrentMapConfiguration(new SystemConfiguration());
-    ConcurrentCompositeConfiguration finalConfig = new ConcurrentCompositeConfiguration();
-    finalConfig.addConfiguration(configFromSystemProperties, "systemEnvConfig");
-    finalConfig.addConfiguration(configFromYamlFile, "configFromYamlFile");
+    ConcurrentCompositeConfiguration finalConfig = ConfigUtil.createLocalConfig();
 
     SSLOption option = SSLOption.buildFromYaml("server", finalConfig);
 
@@ -253,14 +240,7 @@ public class SSLOptionTest {
   @Test
   public void testSSLOptionYamlOptionWithProperyTrue() throws Exception {
     System.setProperty("ssl.authPeer", "true");
-    DynamicConfiguration configFromYamlFile =
-        new DynamicConfiguration(yamlConfigSource(), new NeverStartPollingScheduler());
-    // configuration from system properties
-    ConcurrentMapConfiguration configFromSystemProperties =
-        new ConcurrentMapConfiguration(new SystemConfiguration());
-    ConcurrentCompositeConfiguration finalConfig = new ConcurrentCompositeConfiguration();
-    finalConfig.addConfiguration(configFromSystemProperties, "systemEnvConfig");
-    finalConfig.addConfiguration(configFromYamlFile, "configFromYamlFile");
+    ConcurrentCompositeConfiguration finalConfig = ConfigUtil.createLocalConfig();
 
     SSLOption option = SSLOption.buildFromYaml("server", finalConfig);
 
@@ -272,14 +252,7 @@ public class SSLOptionTest {
 
   @Test
   public void testSSLOptionYamlOption() throws Exception {
-    DynamicConfiguration configFromYamlFile =
-        new DynamicConfiguration(yamlConfigSource(), new NeverStartPollingScheduler());
-    // configuration from system properties
-    ConcurrentMapConfiguration configFromSystemProperties =
-        new ConcurrentMapConfiguration(new SystemConfiguration());
-    ConcurrentCompositeConfiguration finalConfig = new ConcurrentCompositeConfiguration();
-    finalConfig.addConfiguration(configFromSystemProperties, "systemEnvConfig");
-    finalConfig.addConfiguration(configFromYamlFile, "configFromYamlFile");
+    ConcurrentCompositeConfiguration finalConfig = ConfigUtil.createLocalConfig();
 
     SSLOption option = SSLOption.buildFromYaml("server", finalConfig);
 
