@@ -39,7 +39,6 @@ public class TestMetricsEventManager {
   public void testManager() {
     AtomicBoolean bizkeeperProcessingRequestEventReceived = new AtomicBoolean(false);
     AtomicBoolean bizkeeperProcessingRequestFailedEventReceived = new AtomicBoolean(false);
-
     AtomicBoolean invocationStartedEventReceived = new AtomicBoolean(false);
     AtomicBoolean invocationStartProcessingEventReceived = new AtomicBoolean(false);
     AtomicBoolean invocationFinishedEventReceived = new AtomicBoolean(false);
