@@ -19,11 +19,8 @@ package io.servicecomb.common.rest.codec.param;
 import static javax.ws.rs.core.HttpHeaders.CONTENT_TYPE;
 import static javax.ws.rs.core.MediaType.MULTIPART_FORM_DATA;
 
-import java.io.IOException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -33,6 +30,9 @@ import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
 import javax.ws.rs.core.MediaType;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import io.servicecomb.common.rest.codec.RestClientRequest;
 import io.servicecomb.common.rest.codec.RestObjectMapper;
@@ -45,10 +45,6 @@ import io.vertx.core.file.AsyncFile;
 import io.vertx.core.file.OpenOptions;
 import io.vertx.core.http.HttpClientRequest;
 import io.vertx.core.http.HttpHeaders;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import io.vertx.core.streams.Pump;
 import io.vertx.core.streams.ReadStream;
 
@@ -107,12 +103,13 @@ public class RestClientRequestImpl implements RestClientRequest {
 
   private void attachFiles() {
     if (!uploads.isEmpty()) {
+      request.setChunked(true);
+
       String boundary = "fileUploadBoundary" + UUID.randomUUID().toString();
       putHeader(CONTENT_TYPE, MULTIPART_FORM_DATA + "; boundary=" + boundary);
 
       List<CompletableFuture<Void>> fileCloseFutures = new ArrayList<>(uploads.size());
 
-      final long[] totalSize = {0L};
       final CompletableFuture<?>[] fileOpenFuture = {CompletableFuture.completedFuture(null)};
 
       uploads.forEach((name, filename) -> {
@@ -120,7 +117,6 @@ public class RestClientRequestImpl implements RestClientRequest {
         fileCloseFutures.add(fileCloseFuture);
 
         Buffer buffer = fileBoundaryInfo(boundary, name, filename);
-        totalSize[0] += combinedFileSize(filename, buffer);
 
         vertx.fileSystem()
             .open(filename, readOnlyOption(), result -> {
@@ -129,9 +125,6 @@ public class RestClientRequestImpl implements RestClientRequest {
               file.endHandler(closeFileHandler(name, filename, file, fileCloseFuture));
             });
       });
-
-      request.headers()
-          .set("Content-Length", String.valueOf(totalSize[0] + ("--" + boundary + "--\r\n").getBytes().length));
 
       CompletableFuture.allOf(fileCloseFutures.toArray(new CompletableFuture<?>[fileCloseFutures.size()]))
           .thenRunAsync(() -> {
@@ -173,16 +166,6 @@ public class RestClientRequestImpl implements RestClientRequest {
       // ensure file sent completely, before proceeding to the next file
       fileCloseFuture.join();
     });
-  }
-
-  private long combinedFileSize(String filename, Buffer buffer) {
-    long size;
-    try {
-      size = Files.size(Paths.get(filename)) + buffer.length();
-    } catch (IOException e) {
-      throw new IllegalStateException("No such file: " + filename, e);
-    }
-    return size;
   }
 
   private OpenOptions readOnlyOption() {
