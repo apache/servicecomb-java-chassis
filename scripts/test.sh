@@ -7,8 +7,8 @@ if [ "$TAGGEDCOMMIT" == "" ]; then
 else
         TAGGEDCOMMIT=true
 fi
-echo $TAGGEDCOMMIT
-echo $TRAVIS_PULL_REQUEST
+echo "TAGGEDCOMMIT:$TAGGEDCOMMIT"
+echo "TRAVIS_PULL_REQUEST:$TRAVIS_PULL_REQUEST"
 
         if [ "$TAGGEDCOMMIT" == "true" ]; then
               	echo "Skipping the installation as it is tagged commit"
