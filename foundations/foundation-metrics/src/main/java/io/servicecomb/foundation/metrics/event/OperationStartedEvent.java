@@ -16,20 +16,21 @@
 
 package io.servicecomb.foundation.metrics.event;
 
-public class BizkeeperProcessingRequestFailedEvent implements MetricsEvent {
+public class OperationStartedEvent implements MetricsEvent {
   private final String operationName;
-  private final String invocationType;
+
+  private final long startedTime;
 
   public String getOperationName() {
     return operationName;
   }
 
-  public String getInvocationType() {
-    return invocationType;
+  public long getStartedTime() {
+    return startedTime;
   }
 
-  public BizkeeperProcessingRequestFailedEvent(String operationName, String invocationType) {
+  public OperationStartedEvent(String operationName, long startedTime) {
     this.operationName = operationName;
-    this.invocationType = invocationType;
+    this.startedTime = startedTime;
   }
 }

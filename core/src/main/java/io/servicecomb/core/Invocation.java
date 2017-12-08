@@ -24,6 +24,10 @@ import java.util.concurrent.Executor;
 import io.servicecomb.core.definition.OperationMeta;
 import io.servicecomb.core.definition.SchemaMeta;
 import io.servicecomb.core.provider.consumer.ReferenceConfig;
+import io.servicecomb.foundation.metrics.event.MetricsEventManager;
+import io.servicecomb.foundation.metrics.event.OperationFinishedEvent;
+import io.servicecomb.foundation.metrics.event.OperationStartProcessingEvent;
+import io.servicecomb.foundation.metrics.event.OperationStartedEvent;
 import io.servicecomb.swagger.invocation.AsyncResponse;
 import io.servicecomb.swagger.invocation.InvocationType;
 import io.servicecomb.swagger.invocation.SwaggerInvocation;
@@ -53,15 +57,12 @@ public class Invocation extends SwaggerInvocation {
   // 同步模式：避免应答在网络线程中处理解码等等业务级逻辑
   private Executor responseExecutor;
 
+  private long startTime;
+
   private long startProcessingTime;
 
-  public long getStartProcessingTime() {
-    return startProcessingTime;
-  }
-
-  //record start process time for calculator invocation processing elapsed later
-  public void setStartProcessingTime(long time) {
-    this.startProcessingTime = time;
+  public void setStartTime(long startTime) {
+    this.startTime = startTime;
   }
 
   public Invocation(ReferenceConfig referenceConfig, OperationMeta operationMeta, Object[] swaggerArguments) {
@@ -179,5 +180,20 @@ public class Invocation extends SwaggerInvocation {
 
   public String getMicroserviceQualifiedName() {
     return operationMeta.getMicroserviceQualifiedName();
+  }
+
+  public void triggerStartProcessingEvent() {
+    this.startProcessingTime = System.nanoTime();
+    MetricsEventManager.triggerEvent(new OperationStartProcessingEvent(
+        operationMeta.getMicroserviceQualifiedName(), startProcessingTime, startProcessingTime - startTime));
+  }
+
+  public void triggerFinishedEvent() {
+    long finishedTime = System.nanoTime();
+    MetricsEventManager
+        .triggerEvent(new OperationFinishedEvent(operationMeta.getMicroserviceQualifiedName(),
+            String.valueOf(this.invocationType), finishedTime,
+            finishedTime - startProcessingTime,
+            finishedTime - startTime));
   }
 }

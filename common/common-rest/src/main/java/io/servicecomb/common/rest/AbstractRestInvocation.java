@@ -42,10 +42,8 @@ import io.servicecomb.core.Invocation;
 import io.servicecomb.core.definition.MicroserviceMeta;
 import io.servicecomb.core.definition.OperationMeta;
 import io.servicecomb.foundation.common.utils.JsonUtils;
-import io.servicecomb.foundation.metrics.event.InvocationFinishedEvent;
-import io.servicecomb.foundation.metrics.event.InvocationStartProcessingEvent;
-import io.servicecomb.foundation.metrics.event.InvocationStartedEvent;
 import io.servicecomb.foundation.metrics.event.MetricsEventManager;
+import io.servicecomb.foundation.metrics.event.OperationStartedEvent;
 import io.servicecomb.foundation.vertx.http.HttpServletRequestEx;
 import io.servicecomb.foundation.vertx.http.HttpServletResponseEx;
 import io.servicecomb.foundation.vertx.stream.BufferOutputStream;
@@ -105,9 +103,11 @@ public abstract class AbstractRestInvocation {
 
   protected void scheduleInvocation() {
     OperationMeta operationMeta = restOperationMeta.getOperationMeta();
-    InvocationStartedEvent startedEvent = new InvocationStartedEvent(operationMeta.getMicroserviceQualifiedName(),
+
+    OperationStartedEvent startedEvent = new OperationStartedEvent(operationMeta.getMicroserviceQualifiedName(),
         System.nanoTime());
     MetricsEventManager.triggerEvent(startedEvent);
+
     operationMeta.getExecutor().execute(() -> {
       synchronized (this.requestEx) {
         try {
@@ -129,15 +129,13 @@ public abstract class AbstractRestInvocation {
     });
   }
 
-  protected void runOnExecutor(InvocationStartedEvent startedEvent) {
+  protected void runOnExecutor(OperationStartedEvent startedEvent) {
     Object[] args = RestCodec.restToArgs(requestEx, restOperationMeta);
     createInvocation(args);
 
-    long startProcessingTime = System.nanoTime();
-    this.invocation.setStartProcessingTime(startProcessingTime);
-    InvocationStartProcessingEvent processingEvent = new InvocationStartProcessingEvent(
-        startedEvent.getOperationName(), startProcessingTime, startProcessingTime - startedEvent.getStartedTime());
-    MetricsEventManager.triggerEvent(processingEvent);
+    //立刻设置开始时间，否则Finished时无法计算TotalTime
+    invocation.setStartTime(startedEvent.getStartedTime());
+    invocation.triggerStartProcessingEvent();
 
     invoke();
   }
@@ -181,11 +179,7 @@ public abstract class AbstractRestInvocation {
     invocation.next(resp -> {
       sendResponseQuietly(resp);
 
-      long finishedTime = System.nanoTime();
-      InvocationFinishedEvent finishedEvent = new InvocationFinishedEvent(
-          invocation.getMicroserviceQualifiedName(), finishedTime,
-          finishedTime - invocation.getStartProcessingTime());
-      MetricsEventManager.triggerEvent(finishedEvent);
+      invocation.triggerFinishedEvent();
     });
   }
 

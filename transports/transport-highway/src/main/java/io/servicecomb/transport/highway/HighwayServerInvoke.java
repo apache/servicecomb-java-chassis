@@ -32,10 +32,8 @@ import io.servicecomb.core.definition.MicroserviceMeta;
 import io.servicecomb.core.definition.MicroserviceMetaManager;
 import io.servicecomb.core.definition.OperationMeta;
 import io.servicecomb.core.definition.SchemaMeta;
-import io.servicecomb.foundation.metrics.event.InvocationFinishedEvent;
-import io.servicecomb.foundation.metrics.event.InvocationStartProcessingEvent;
-import io.servicecomb.foundation.metrics.event.InvocationStartedEvent;
 import io.servicecomb.foundation.metrics.event.MetricsEventManager;
+import io.servicecomb.foundation.metrics.event.OperationStartedEvent;
 import io.servicecomb.foundation.vertx.tcp.TcpConnection;
 import io.servicecomb.swagger.invocation.Response;
 import io.servicecomb.swagger.invocation.exception.InvocationException;
@@ -107,7 +105,7 @@ public class HighwayServerInvoke {
     this.bodyBuffer = bodyBuffer;
   }
 
-  private void runInExecutor(InvocationStartedEvent startedEvent) {
+  private void runInExecutor(OperationStartedEvent startedEvent) {
     try {
       doRunInExecutor(startedEvent);
     } catch (Throwable e) {
@@ -120,24 +118,18 @@ public class HighwayServerInvoke {
     }
   }
 
-  private void doRunInExecutor(InvocationStartedEvent startedEvent) throws Exception {
+  private void doRunInExecutor(OperationStartedEvent startedEvent) throws Exception {
     Invocation invocation = HighwayCodec.decodeRequest(header, operationProtobuf, bodyBuffer, protobufFeature);
     invocation.getHandlerContext().put(Const.REMOTE_ADDRESS, this.connection.getNetSocket().remoteAddress());
 
-    long startProcessingTime = System.nanoTime();
-    invocation.setStartProcessingTime(startProcessingTime);
-    InvocationStartProcessingEvent processingEvent = new InvocationStartProcessingEvent(
-        startedEvent.getOperationName(), startProcessingTime, startProcessingTime - startedEvent.getStartedTime());
-    MetricsEventManager.triggerEvent(processingEvent);
+    //立刻设置开始时间，否则Finished时无法计算TotalTime
+    invocation.setStartTime(startedEvent.getStartedTime());
+    invocation.triggerStartProcessingEvent();
 
     invocation.next(response -> {
       sendResponse(invocation.getContext(), response);
 
-      long finishedTime = System.nanoTime();
-      InvocationFinishedEvent finishedEvent = new InvocationFinishedEvent(
-          invocation.getMicroserviceQualifiedName(), finishedTime,
-          finishedTime - invocation.getStartProcessingTime());
-      MetricsEventManager.triggerEvent(finishedEvent);
+      invocation.triggerFinishedEvent();
     });
   }
 
@@ -170,10 +162,10 @@ public class HighwayServerInvoke {
    * start time in queue.
    */
   public void execute() {
-    //QueueMetrics metricsData = initMetrics(operationMeta);
-    InvocationStartedEvent startedEvent = new InvocationStartedEvent(operationMeta.getMicroserviceQualifiedName(),
+    OperationStartedEvent startedEvent = new OperationStartedEvent(operationMeta.getMicroserviceQualifiedName(),
         System.nanoTime());
     MetricsEventManager.triggerEvent(startedEvent);
+
     operationMeta.getExecutor().execute(() -> runInExecutor(startedEvent));
   }
 }
