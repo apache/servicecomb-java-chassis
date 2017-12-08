@@ -8,7 +8,7 @@ install: true
 jobs:
   include:
     - stage: Compilation and Installation
-      script: scripts/travis.sh install
+      script: scripts/test.sh install
     - stage: Deployment
       script: scripts/travis.sh deploy
 
