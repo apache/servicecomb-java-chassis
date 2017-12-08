@@ -28,12 +28,12 @@ import io.servicecomb.codec.protobuf.utils.WrapSchema;
 import io.servicecomb.core.Const;
 import io.servicecomb.core.CseContext;
 import io.servicecomb.core.Invocation;
+import io.servicecomb.core.metrics.InvocationStartedEvent;
 import io.servicecomb.core.definition.MicroserviceMeta;
 import io.servicecomb.core.definition.MicroserviceMetaManager;
 import io.servicecomb.core.definition.OperationMeta;
 import io.servicecomb.core.definition.SchemaMeta;
 import io.servicecomb.foundation.metrics.event.MetricsEventManager;
-import io.servicecomb.foundation.metrics.event.OperationStartedEvent;
 import io.servicecomb.foundation.vertx.tcp.TcpConnection;
 import io.servicecomb.swagger.invocation.Response;
 import io.servicecomb.swagger.invocation.exception.InvocationException;
@@ -105,7 +105,7 @@ public class HighwayServerInvoke {
     this.bodyBuffer = bodyBuffer;
   }
 
-  private void runInExecutor(OperationStartedEvent startedEvent) {
+  private void runInExecutor(InvocationStartedEvent startedEvent) {
     try {
       doRunInExecutor(startedEvent);
     } catch (Throwable e) {
@@ -118,7 +118,7 @@ public class HighwayServerInvoke {
     }
   }
 
-  private void doRunInExecutor(OperationStartedEvent startedEvent) throws Exception {
+  private void doRunInExecutor(InvocationStartedEvent startedEvent) throws Exception {
     Invocation invocation = HighwayCodec.decodeRequest(header, operationProtobuf, bodyBuffer, protobufFeature);
     invocation.getHandlerContext().put(Const.REMOTE_ADDRESS, this.connection.getNetSocket().remoteAddress());
 
@@ -162,7 +162,7 @@ public class HighwayServerInvoke {
    * start time in queue.
    */
   public void execute() {
-    OperationStartedEvent startedEvent = new OperationStartedEvent(operationMeta.getMicroserviceQualifiedName(),
+    InvocationStartedEvent startedEvent = new InvocationStartedEvent(operationMeta.getMicroserviceQualifiedName(),
         System.nanoTime());
     MetricsEventManager.triggerEvent(startedEvent);
 

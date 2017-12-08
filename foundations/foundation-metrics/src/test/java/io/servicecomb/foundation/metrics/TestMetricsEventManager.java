@@ -27,64 +27,33 @@ import org.junit.Test;
 import io.servicecomb.foundation.metrics.event.MetricsEvent;
 import io.servicecomb.foundation.metrics.event.MetricsEventListener;
 import io.servicecomb.foundation.metrics.event.MetricsEventManager;
-import io.servicecomb.foundation.metrics.event.OperationFinishedEvent;
-import io.servicecomb.foundation.metrics.event.OperationStartProcessingEvent;
-import io.servicecomb.foundation.metrics.event.OperationStartedEvent;
 
 public class TestMetricsEventManager {
 
   @Test
   public void testManager() {
-    AtomicBoolean invocationStartedEventReceived = new AtomicBoolean(false);
-    AtomicBoolean invocationStartProcessingEventReceived = new AtomicBoolean(false);
-    AtomicBoolean invocationFinishedEventReceived = new AtomicBoolean(false);
+    AtomicBoolean eventReceived = new AtomicBoolean(false);
 
     MetricsEventManager.registerEventListener(new MetricsEventListener() {
       @Override
       public Class<? extends MetricsEvent> getConcernedEvent() {
-        return OperationStartedEvent.class;
+        return TestMetricsEvent.class;
       }
 
       @Override
       public void process(MetricsEvent data) {
-        invocationStartedEventReceived.set(true);
+        eventReceived.set(true);
       }
     });
 
-    MetricsEventManager.registerEventListener(new MetricsEventListener() {
-      @Override
-      public Class<? extends MetricsEvent> getConcernedEvent() {
-        return OperationStartProcessingEvent.class;
-      }
-
-      @Override
-      public void process(MetricsEvent data) {
-        invocationStartProcessingEventReceived.set(true);
-      }
-    });
-
-    MetricsEventManager.registerEventListener(new MetricsEventListener() {
-      @Override
-      public Class<? extends MetricsEvent> getConcernedEvent() {
-        return OperationFinishedEvent.class;
-      }
-
-      @Override
-      public void process(MetricsEvent data) {
-        invocationFinishedEventReceived.set(true);
-      }
-    });
-
-    MetricsEventManager.triggerEvent(new OperationStartedEvent("", System.nanoTime()));
-    MetricsEventManager.triggerEvent(new OperationStartProcessingEvent("", System.nanoTime(), 100));
-    MetricsEventManager.triggerEvent(new OperationFinishedEvent("", "",
-        System.nanoTime(), 100, 200));
+    MetricsEventManager.triggerEvent(new TestMetricsEvent());
 
     await().atMost(1, TimeUnit.SECONDS)
-        .until(invocationFinishedEventReceived::get);
+        .until(eventReceived::get);
 
-    Assert.assertTrue(invocationFinishedEventReceived.get());
-    Assert.assertTrue(invocationStartedEventReceived.get());
-    Assert.assertTrue(invocationStartProcessingEventReceived.get());
+    Assert.assertTrue(eventReceived.get());
+  }
+
+  private class TestMetricsEvent implements MetricsEvent {
   }
 }

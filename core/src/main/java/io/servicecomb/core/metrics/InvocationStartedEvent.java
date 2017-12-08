@@ -14,29 +14,25 @@
  * limitations under the License.
  */
 
-package io.servicecomb.foundation.metrics.event;
+package io.servicecomb.core.metrics;
 
-public class OperationFinishedEvent implements MetricsEvent {
+import io.servicecomb.foundation.metrics.event.MetricsEvent;
+
+public class InvocationStartedEvent implements MetricsEvent {
   private final String operationName;
 
-  private final long finishedTime;
-
-  private final long processElapsedTime;
-
-  private final long totalElapsedTime;
-
-  private final String operationType;
+  private final long startedTime;
 
   public String getOperationName() {
     return operationName;
   }
 
-  public OperationFinishedEvent(String operationName, String operationType, long finishedTime, long processElapsedTime,
-      long totalElapsedTime) {
+  public long getStartedTime() {
+    return startedTime;
+  }
+
+  public InvocationStartedEvent(String operationName, long startedTime) {
     this.operationName = operationName;
-    this.operationType = operationType;
-    this.finishedTime = finishedTime;
-    this.processElapsedTime = processElapsedTime;
-    this.totalElapsedTime = totalElapsedTime;
+    this.startedTime = startedTime;
   }
 }
