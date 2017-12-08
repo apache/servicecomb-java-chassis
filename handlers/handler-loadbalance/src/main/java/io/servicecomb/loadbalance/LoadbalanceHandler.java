@@ -92,8 +92,8 @@ public class LoadbalanceHandler implements Handler {
     String p = Configuration.INSTANCE.getPolicy(invocation.getMicroserviceName());
     String strategy = Configuration.INSTANCE.getRuleStrategyName(invocation.getMicroserviceName());
 
-    if (this.policy != null && !this.policy.equals(p)
-        || (this.strategy != null && !this.strategy.equals(strategy))) {
+    if (!isNotChanged(p, strategy)) {
+
       //配置变化，需要重新生成所有的lb实例
       synchronized (lock) {
         loadBalancerMap.clear();
@@ -348,6 +348,18 @@ public class LoadbalanceHandler implements Handler {
       } catch (InstantiationException | IllegalAccessException | ClassNotFoundException e) {
         LOGGER.warn("Unable to load filter class: " + className);
       }
+    }
+  }
+
+  private boolean isNotChanged(String p, String s) {
+    if (p == null && s == null) {
+      return this.policy == null && this.strategy == null;
+    } else if (p == null) {
+      return this.policy == null && s.equals(this.strategy);
+    } else if (s == null) {
+      return this.strategy == null && p.equals(policy);
+    } else {
+      return p.equals(policy) && s.contentEquals(strategy);
     }
   }
 }
