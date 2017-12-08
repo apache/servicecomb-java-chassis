@@ -19,7 +19,7 @@ package io.servicecomb.core;
 import io.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
 
 /**
- * Endpoint : 表示一个Endpoint。Tranport识别其内部格式.
+ * Endpoint : 表示一个Endpoint。Transport识别其内部格式.
  */
 public class Endpoint {
   // 格式：rest://192.168.1.1:8080

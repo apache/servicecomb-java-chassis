@@ -104,7 +104,7 @@ public class VertxHttpMethod {
       try {
         restClientRequest.end();
       } catch (Exception e) {
-        LOGGER.error("send http reqeust failed,", e);
+        LOGGER.error("send http request failed,", e);
         asyncResp.fail(invocation.getInvocationType(), e);
       }
     });
