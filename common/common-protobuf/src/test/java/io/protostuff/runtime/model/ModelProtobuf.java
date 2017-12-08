@@ -1097,7 +1097,7 @@ public final class ModelProtobuf {
       }
       java.util.Map<java.lang.String, java.lang.String> map =
           internalGetCseContext().getMap();
-      return map.containsKey(key) ? map.get(key) : defaultValue;
+      return map.getOrDefault(key, defaultValue);
     }
 
     /**
@@ -1183,7 +1183,7 @@ public final class ModelProtobuf {
       }
       java.util.Map<java.lang.String, io.protostuff.runtime.model.ModelProtobuf.User> map =
           internalGetUserMap().getMap();
-      return map.containsKey(key) ? map.get(key) : defaultValue;
+      return map.getOrDefault(key, defaultValue);
     }
 
     /**
@@ -2170,7 +2170,7 @@ public final class ModelProtobuf {
         }
         java.util.Map<java.lang.String, java.lang.String> map =
             internalGetCseContext().getMap();
-        return map.containsKey(key) ? map.get(key) : defaultValue;
+        return map.getOrDefault(key, defaultValue);
       }
 
       /**
@@ -2312,7 +2312,7 @@ public final class ModelProtobuf {
         }
         java.util.Map<java.lang.String, io.protostuff.runtime.model.ModelProtobuf.User> map =
             internalGetUserMap().getMap();
-        return map.containsKey(key) ? map.get(key) : defaultValue;
+        return map.getOrDefault(key, defaultValue);
       }
 
       /**

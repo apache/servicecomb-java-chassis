@@ -140,11 +140,7 @@ public class MicroserviceVersions {
     MicroserviceVersionRule microserviceVersionRule = versionRules.get(versionRule);
     if (microserviceVersionRule == null) {
       synchronized (lock) {
-        microserviceVersionRule = versionRules.get(versionRule);
-        if (microserviceVersionRule == null) {
-          microserviceVersionRule = createAndInitMicroserviceVersionRule(versionRule);
-          versionRules.put(versionRule, microserviceVersionRule);
-        }
+        microserviceVersionRule = versionRules.computeIfAbsent(versionRule, this::createAndInitMicroserviceVersionRule);
       }
     }
 

@@ -60,11 +60,7 @@ public abstract class AbstractTcpClientConnectionPool<T extends TcpClientConnect
     T tcpClient = tcpClientMap.get(endpoint);
     if (tcpClient == null) {
       synchronized (this) {
-        tcpClient = tcpClientMap.get(endpoint);
-        if (tcpClient == null) {
-          tcpClient = create(endpoint);
-          tcpClientMap.put(endpoint, tcpClient);
-        }
+        tcpClient = tcpClientMap.computeIfAbsent(endpoint, this::create);
       }
     }
 

@@ -57,11 +57,7 @@ public class Headers {
       headerMap = new HashMap<>();
     }
 
-    List<Object> values = headerMap.get(name);
-    if (values == null) {
-      values = new ArrayList<>();
-      headerMap.put(name, values);
-    }
+    List<Object> values = headerMap.computeIfAbsent(name, k -> new ArrayList<>());
     values.add(value);
 
     return this;

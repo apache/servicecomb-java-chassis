@@ -189,12 +189,7 @@ public class MetricsServoRegistry implements InitializingBean {
       for (MetricsDataMonitor metricsDataMonitor : metricsList) {
         Collection<String> keySet = metricsDataMonitor.operMetricsTotalReq.keySet();
         for (String key : keySet) {
-          Long value = totalMap.get(key);
-          if (null == value) {
-            totalMap.put(key, metricsDataMonitor.getOperMetTotalReq(key));
-          } else {
-            totalMap.put(key, metricsDataMonitor.getOperMetTotalReq(key) + value);
-          }
+          totalMap.merge(key, metricsDataMonitor.getOperMetTotalReq(key), (a, b) -> b + a);
         }
       }
       Collection<String> keySet = totalMap.keySet();
@@ -223,12 +218,7 @@ public class MetricsServoRegistry implements InitializingBean {
       for (MetricsDataMonitor metricsDataMonitor : metricsList) {
         Collection<String> keySet = metricsDataMonitor.operMetricsTotalFailReq.keySet();
         for (String key : keySet) {
-          Long value = totalMap.get(key);
-          if (null == value) {
-            totalMap.put(key, metricsDataMonitor.getOperMetTotalFailReq(key));
-          } else {
-            totalMap.put(key, metricsDataMonitor.getOperMetTotalFailReq(key) + value);
-          }
+          totalMap.merge(key, metricsDataMonitor.getOperMetTotalFailReq(key), (a, b) -> b + a);
         }
       }
       Collection<String> keySet = totalMap.keySet();
