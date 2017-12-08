@@ -54,11 +54,7 @@ public class ResponsesMeta {
       }
 
       Integer statusCode = Integer.parseInt(entry.getKey());
-      ResponseMeta responseMeta = responseMap.get(statusCode);
-      if (responseMeta == null) {
-        responseMeta = new ResponseMeta();
-        responseMap.put(statusCode, responseMeta);
-      }
+      ResponseMeta responseMeta = responseMap.computeIfAbsent(statusCode, k -> new ResponseMeta());
       responseMeta.init(classLoader, packageName, swagger, entry.getValue());
     }
 

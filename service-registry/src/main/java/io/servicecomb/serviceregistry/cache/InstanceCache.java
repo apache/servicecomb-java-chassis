@@ -109,11 +109,7 @@ public class InstanceCache {
           URI uri = URI.create(endpoint);
           String transportName = uri.getScheme();
 
-          List<CacheEndpoint> cacheEndpointList = transportMap.get(transportName);
-          if (cacheEndpointList == null) {
-            cacheEndpointList = new ArrayList<>();
-            transportMap.put(transportName, cacheEndpointList);
-          }
+          List<CacheEndpoint> cacheEndpointList = transportMap.computeIfAbsent(transportName, k -> new ArrayList<>());
           cacheEndpointList.add(new CacheEndpoint(endpoint, instance));
         } catch (Exception e) {
           LOGGER.warn("unrecognized address find, ignore " + endpoint);

@@ -61,11 +61,7 @@ public class ConverterMgr {
   @Autowired(required = false)
   public void setCustomizedConverters(List<CustomizedConverter> converters) {
     for (CustomizedConverter converter : converters) {
-      Map<Type, Converter> map = srcTargetMap.get(converter.getSrcType());
-      if (map == null) {
-        map = new HashMap<>();
-        srcTargetMap.put(converter.getSrcType(), map);
-      }
+      Map<Type, Converter> map = srcTargetMap.computeIfAbsent(converter.getSrcType(), k -> new HashMap<>());
       map.put(converter.getTargetType(), converter);
     }
   }
@@ -159,11 +155,8 @@ public class ConverterMgr {
 
       if (Collection.class.isAssignableFrom(srcCls) && targetCls.isArray()
           && srcType.getActualTypeArguments()[0].equals(targetCls.getComponentType())) {
-        Converter converter = collectionToArrayMap.get(target);
-        if (converter == null) {
-          converter = new SameElementCollectionToArray(targetCls.getComponentType());
-          collectionToArrayMap.put(target, converter);
-        }
+        Converter converter = collectionToArrayMap
+            .computeIfAbsent(target, k -> new SameElementCollectionToArray(targetCls.getComponentType()));
         return converter;
       }
     }
