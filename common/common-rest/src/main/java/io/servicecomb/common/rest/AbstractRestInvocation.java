@@ -39,11 +39,11 @@ import io.servicecomb.common.rest.locator.OperationLocator;
 import io.servicecomb.common.rest.locator.ServicePathManager;
 import io.servicecomb.core.Const;
 import io.servicecomb.core.Invocation;
+import io.servicecomb.core.metrics.InvocationStartedEvent;
 import io.servicecomb.core.definition.MicroserviceMeta;
 import io.servicecomb.core.definition.OperationMeta;
 import io.servicecomb.foundation.common.utils.JsonUtils;
 import io.servicecomb.foundation.metrics.event.MetricsEventManager;
-import io.servicecomb.foundation.metrics.event.OperationStartedEvent;
 import io.servicecomb.foundation.vertx.http.HttpServletRequestEx;
 import io.servicecomb.foundation.vertx.http.HttpServletResponseEx;
 import io.servicecomb.foundation.vertx.stream.BufferOutputStream;
@@ -104,7 +104,7 @@ public abstract class AbstractRestInvocation {
   protected void scheduleInvocation() {
     OperationMeta operationMeta = restOperationMeta.getOperationMeta();
 
-    OperationStartedEvent startedEvent = new OperationStartedEvent(operationMeta.getMicroserviceQualifiedName(),
+    InvocationStartedEvent startedEvent = new InvocationStartedEvent(operationMeta.getMicroserviceQualifiedName(),
         System.nanoTime());
     MetricsEventManager.triggerEvent(startedEvent);
 
@@ -129,7 +129,7 @@ public abstract class AbstractRestInvocation {
     });
   }
 
-  protected void runOnExecutor(OperationStartedEvent startedEvent) {
+  protected void runOnExecutor(InvocationStartedEvent startedEvent) {
     Object[] args = RestCodec.restToArgs(requestEx, restOperationMeta);
     createInvocation(args);
 

@@ -42,6 +42,7 @@ import io.servicecomb.core.Const;
 import io.servicecomb.core.Endpoint;
 import io.servicecomb.core.Handler;
 import io.servicecomb.core.Invocation;
+import io.servicecomb.core.metrics.InvocationStartedEvent;
 import io.servicecomb.core.definition.MicroserviceMeta;
 import io.servicecomb.core.definition.MicroserviceMetaManager;
 import io.servicecomb.core.definition.OperationMeta;
@@ -49,7 +50,6 @@ import io.servicecomb.core.definition.SchemaMeta;
 import io.servicecomb.core.executor.ReactiveExecutor;
 import io.servicecomb.core.provider.consumer.ReferenceConfig;
 import io.servicecomb.foundation.common.utils.JsonUtils;
-import io.servicecomb.foundation.metrics.event.OperationStartedEvent;
 import io.servicecomb.foundation.vertx.http.AbstractHttpServletRequest;
 import io.servicecomb.foundation.vertx.http.HttpServletRequestEx;
 import io.servicecomb.foundation.vertx.http.HttpServletResponseEx;
@@ -620,7 +620,7 @@ public class TestAbstractRestInvocation {
     Error error = new Error("run on executor");
     restInvocation = new AbstractRestInvocationForTest() {
       @Override
-      protected void runOnExecutor(OperationStartedEvent startedEvent) {
+      protected void runOnExecutor(InvocationStartedEvent startedEvent) {
         throw error;
       }
 
@@ -659,7 +659,7 @@ public class TestAbstractRestInvocation {
 
     restInvocation = new AbstractRestInvocationForTest() {
       @Override
-      protected void runOnExecutor(OperationStartedEvent startedEvent) {
+      protected void runOnExecutor(InvocationStartedEvent startedEvent) {
         throw new Error("run on executor");
       }
 
@@ -695,7 +695,7 @@ public class TestAbstractRestInvocation {
     Holder<Boolean> result = new Holder<>();
     restInvocation = new AbstractRestInvocationForTest() {
       @Override
-      protected void runOnExecutor(OperationStartedEvent startedEvent) {
+      protected void runOnExecutor(InvocationStartedEvent startedEvent) {
         result.value = true;
       }
     };
@@ -726,7 +726,7 @@ public class TestAbstractRestInvocation {
     restInvocation.requestEx = requestEx;
     restInvocation.restOperationMeta = restOperation;
 
-    restInvocation.runOnExecutor(new OperationStartedEvent("", System.nanoTime()));
+    restInvocation.runOnExecutor(new InvocationStartedEvent("", System.nanoTime()));
     Assert.assertTrue(result.value);
     Assert.assertSame(invocation, restInvocation.invocation);
   }
