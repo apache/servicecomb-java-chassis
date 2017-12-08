@@ -16,28 +16,20 @@
 
 package io.servicecomb.foundation.metrics.event;
 
-public class InvocationFinishedEvent implements MetricsEvent {
+public class OperationStartProcessingEvent implements MetricsEvent {
   private final String operationName;
 
   private final long startProcessingTime;
 
-  private final long processElapsedTime;
+  private final long timeInQueue;
 
   public String getOperationName() {
     return operationName;
   }
 
-  public long getStartProcessingTime() {
-    return startProcessingTime;
-  }
-
-  public long getProcessElapsedTime() {
-    return processElapsedTime;
-  }
-
-  public InvocationFinishedEvent(String operationName, long startProcessingTime, long timeProcess) {
+  public OperationStartProcessingEvent(String operationName, long startProcessingTime, long timeInQueue) {
     this.operationName = operationName;
     this.startProcessingTime = startProcessingTime;
-    this.processElapsedTime = timeProcess;
+    this.timeInQueue = timeInQueue;
   }
 }

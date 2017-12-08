@@ -24,21 +24,17 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import org.junit.Assert;
 import org.junit.Test;
 
-import io.servicecomb.foundation.metrics.event.BizkeeperProcessingRequestEvent;
-import io.servicecomb.foundation.metrics.event.BizkeeperProcessingRequestFailedEvent;
-import io.servicecomb.foundation.metrics.event.InvocationFinishedEvent;
-import io.servicecomb.foundation.metrics.event.InvocationStartProcessingEvent;
-import io.servicecomb.foundation.metrics.event.InvocationStartedEvent;
 import io.servicecomb.foundation.metrics.event.MetricsEvent;
 import io.servicecomb.foundation.metrics.event.MetricsEventListener;
 import io.servicecomb.foundation.metrics.event.MetricsEventManager;
+import io.servicecomb.foundation.metrics.event.OperationFinishedEvent;
+import io.servicecomb.foundation.metrics.event.OperationStartProcessingEvent;
+import io.servicecomb.foundation.metrics.event.OperationStartedEvent;
 
 public class TestMetricsEventManager {
 
   @Test
   public void testManager() {
-    AtomicBoolean bizkeeperProcessingRequestEventReceived = new AtomicBoolean(false);
-    AtomicBoolean bizkeeperProcessingRequestFailedEventReceived = new AtomicBoolean(false);
     AtomicBoolean invocationStartedEventReceived = new AtomicBoolean(false);
     AtomicBoolean invocationStartProcessingEventReceived = new AtomicBoolean(false);
     AtomicBoolean invocationFinishedEventReceived = new AtomicBoolean(false);
@@ -46,31 +42,7 @@ public class TestMetricsEventManager {
     MetricsEventManager.registerEventListener(new MetricsEventListener() {
       @Override
       public Class<? extends MetricsEvent> getConcernedEvent() {
-        return BizkeeperProcessingRequestEvent.class;
-      }
-
-      @Override
-      public void process(MetricsEvent data) {
-        bizkeeperProcessingRequestEventReceived.set(true);
-      }
-    });
-
-    MetricsEventManager.registerEventListener(new MetricsEventListener() {
-      @Override
-      public Class<? extends MetricsEvent> getConcernedEvent() {
-        return BizkeeperProcessingRequestFailedEvent.class;
-      }
-
-      @Override
-      public void process(MetricsEvent data) {
-        bizkeeperProcessingRequestFailedEventReceived.set(true);
-      }
-    });
-
-    MetricsEventManager.registerEventListener(new MetricsEventListener() {
-      @Override
-      public Class<? extends MetricsEvent> getConcernedEvent() {
-        return InvocationStartedEvent.class;
+        return OperationStartedEvent.class;
       }
 
       @Override
@@ -82,7 +54,7 @@ public class TestMetricsEventManager {
     MetricsEventManager.registerEventListener(new MetricsEventListener() {
       @Override
       public Class<? extends MetricsEvent> getConcernedEvent() {
-        return InvocationStartProcessingEvent.class;
+        return OperationStartProcessingEvent.class;
       }
 
       @Override
@@ -94,7 +66,7 @@ public class TestMetricsEventManager {
     MetricsEventManager.registerEventListener(new MetricsEventListener() {
       @Override
       public Class<? extends MetricsEvent> getConcernedEvent() {
-        return InvocationFinishedEvent.class;
+        return OperationFinishedEvent.class;
       }
 
       @Override
@@ -103,17 +75,14 @@ public class TestMetricsEventManager {
       }
     });
 
-    MetricsEventManager.triggerEvent(new BizkeeperProcessingRequestEvent("",""));
-    MetricsEventManager.triggerEvent(new BizkeeperProcessingRequestFailedEvent("",""));
-    MetricsEventManager.triggerEvent(new InvocationStartedEvent("",System.nanoTime()));
-    MetricsEventManager.triggerEvent(new InvocationStartProcessingEvent("",System.nanoTime(),100));
-    MetricsEventManager.triggerEvent(new InvocationFinishedEvent("",System.nanoTime(),200));
+    MetricsEventManager.triggerEvent(new OperationStartedEvent("", System.nanoTime()));
+    MetricsEventManager.triggerEvent(new OperationStartProcessingEvent("", System.nanoTime(), 100));
+    MetricsEventManager.triggerEvent(new OperationFinishedEvent("", "",
+        System.nanoTime(), 100, 200));
 
     await().atMost(1, TimeUnit.SECONDS)
         .until(invocationFinishedEventReceived::get);
 
-    Assert.assertTrue(bizkeeperProcessingRequestEventReceived.get());
-    Assert.assertTrue(bizkeeperProcessingRequestFailedEventReceived.get());
     Assert.assertTrue(invocationFinishedEventReceived.get());
     Assert.assertTrue(invocationStartedEventReceived.get());
     Assert.assertTrue(invocationStartProcessingEventReceived.get());
