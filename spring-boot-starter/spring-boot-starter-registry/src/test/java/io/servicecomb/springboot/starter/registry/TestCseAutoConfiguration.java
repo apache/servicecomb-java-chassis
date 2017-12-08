@@ -29,11 +29,20 @@ import mockit.Tested;
 
 public class TestCseAutoConfiguration {
 
-  @Tested
+  /* @Tested
   private CseAutoConfiguration cseAutoConfiguration;
-
+  
   @Before
   public void setUp() throws Exception {
+  }
+  
+  @After
+  public void tearDown() throws Exception {
+    cseAutoConfiguration = null;
+  }*/
+
+  @Test
+  public void testInitRegistry() {
     MicroserviceInstance microserviceInstance = Mockito.mock(MicroserviceInstance.class);
     new Expectations(RegistryUtils.class) {
       {
@@ -45,16 +54,20 @@ public class TestCseAutoConfiguration {
       }
     };
     System.setProperty("cse.rest.address", "127.0.0.1:8081");
-    cseAutoConfiguration = new CseAutoConfiguration();
-  }
-
-  @After
-  public void tearDown() throws Exception {
-    cseAutoConfiguration = null;
+    new CseAutoConfiguration();
+    Assert.assertEquals("rest://127.0.0.1:8081", RegistryUtils.getPublishAddress("rest", "127.0.0.1:8081"));
   }
 
   @Test
-  public void testGetTransport() {
-    Assert.assertNotNull(cseAutoConfiguration);
+  public void testInitRegistryException() {
+    MicroserviceInstance microserviceInstance = Mockito.mock(MicroserviceInstance.class);
+    new Expectations(RegistryUtils.class) {
+      {
+        RegistryUtils.getMicroserviceInstance();
+        result = microserviceInstance;
+      }
+    };
+    RegistryIntializer.initRegistry();
+    Assert.assertEquals(0, RegistryUtils.getMicroserviceInstance().getEndpoints().size());
   }
 }
