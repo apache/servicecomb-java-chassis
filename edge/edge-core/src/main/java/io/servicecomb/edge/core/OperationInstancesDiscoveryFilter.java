@@ -16,6 +16,7 @@
 
 package io.servicecomb.edge.core;
 
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.IdentityHashMap;
 import java.util.Map;
@@ -29,6 +30,7 @@ import io.servicecomb.core.definition.OperationMeta;
 import io.servicecomb.serviceregistry.RegistryUtils;
 import io.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
 import io.servicecomb.serviceregistry.consumer.AppManager;
+import io.servicecomb.serviceregistry.consumer.MicroserviceVersion;
 import io.servicecomb.serviceregistry.consumer.MicroserviceVersions;
 import io.servicecomb.serviceregistry.discovery.AbstractDiscoveryFilter;
 import io.servicecomb.serviceregistry.discovery.DiscoveryContext;
@@ -84,7 +86,7 @@ public class OperationInstancesDiscoveryFilter extends AbstractDiscoveryFilter {
     versionMap
         .keySet()
         .stream()
-        .sorted((meta1, meta2) -> meta1.getVersion().compareTo(meta2.getVersion()))
+        .sorted(Comparator.comparing(MicroserviceVersion::getVersion))
         .forEach(meta -> {
           for (OperationMeta operationMeta : meta.getMicroserviceMeta().getOperations()) {
             tmpChildren.computeIfAbsent(operationMeta.getMicroserviceQualifiedName(), qualifiedName -> {

@@ -17,12 +17,9 @@
 package io.servicecomb.foundation.common.utils;
 
 import java.lang.reflect.Method;
+import java.util.*;
 import java.util.AbstractMap.SimpleEntry;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
 import java.util.Map.Entry;
-import java.util.ServiceLoader;
 import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
@@ -80,9 +77,7 @@ public final class SPIServiceUtils {
     });
 
     return serviceEntries.stream()
-        .sorted((e1, e2) -> {
-          return Integer.compare(e1.getKey(), e2.getKey());
-        })
+        .sorted(Comparator.comparingInt(Entry::getKey))
         .map(e -> e.getValue())
         .collect(Collectors.toList());
   }
