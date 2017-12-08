@@ -48,27 +48,27 @@ import io.swagger.util.Json;
 public class ModelResolverExt extends ModelResolver {
   private static final Logger LOGGER = LoggerFactory.getLogger(ModelResolverExt.class);
 
-  private Map<Class<?>, PropertyCreator> creatorMap = new HashMap<>();
+  private Map<Class<?>, PropertyCreator> propertyCreatorMap = new HashMap<>();
 
   public ModelResolverExt() {
     super(Json.mapper());
 
-    addCreator(new BytePropertyCreator());
-    addCreator(new ShortPropertyCreator());
-    addCreator(new ByteArrayPropertyCreator());
-    addCreator(new InputStreamPropertyCreator());
+    addPropertyCreator(new BytePropertyCreator());
+    addPropertyCreator(new ShortPropertyCreator());
+    addPropertyCreator(new ByteArrayPropertyCreator());
+    addPropertyCreator(new InputStreamPropertyCreator());
     loadPropertyCreators();
   }
 
-  private void addCreator(PropertyCreator creator) {
+  private void addPropertyCreator(PropertyCreator creator) {
     for (Class<?> cls : creator.classes()) {
-      creatorMap.put(cls, creator);
+      propertyCreatorMap.put(cls, creator);
     }
   }
 
   private void loadPropertyCreators() {
     SPIServiceUtils.getAllService(PropertyCreator.class)
-        .forEach(this::addCreator);
+        .forEach(this::addPropertyCreator);
   }
 
   private void setType(JavaType type, Map<String, Object> vendorExtensions) {
@@ -78,7 +78,7 @@ public class ModelResolverExt extends ModelResolver {
   private void checkType(JavaType type) {
     // 原子类型/string在java中是abstract的
     if (type.getRawClass().isPrimitive()
-        || creatorMap.containsKey(type.getRawClass())
+        || propertyCreatorMap.containsKey(type.getRawClass())
         || String.class.equals(type.getRawClass())) {
       return;
     }
@@ -116,6 +116,11 @@ public class ModelResolverExt extends ModelResolver {
 
   @Override
   public Model resolve(JavaType type, ModelConverterContext context, Iterator<ModelConverter> next) {
+    // property is not a model
+    if (propertyCreatorMap.containsKey(type.getRawClass())) {
+      return null;
+    }
+
     Model model = super.resolve(type, context, next);
     if (model == null) {
       return null;
@@ -135,7 +140,7 @@ public class ModelResolverExt extends ModelResolver {
       Iterator<ModelConverter> next) {
     checkType(propType);
 
-    PropertyCreator creator = creatorMap.get(propType.getRawClass());
+    PropertyCreator creator = propertyCreatorMap.get(propType.getRawClass());
     if (creator != null) {
       return creator.createProperty();
     }
