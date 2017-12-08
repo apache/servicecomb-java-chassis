@@ -23,6 +23,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import javax.servlet.http.HttpServletRequest;
+
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.type.SimpleType;
 import com.fasterxml.jackson.databind.type.TypeFactory;
@@ -126,7 +128,7 @@ public final class ConverterMgr {
 
     PROPERTY_MAP.put(ByteArrayProperty.class, SimpleType.constructUnsafe(byte[].class));
 
-    PROPERTY_MAP.put(FileProperty.class, SimpleType.constructUnsafe(String[].class));
+    PROPERTY_MAP.put(FileProperty.class, SimpleType.constructUnsafe(HttpServletRequest.class));
   }
 
   private static void initConverters() {
