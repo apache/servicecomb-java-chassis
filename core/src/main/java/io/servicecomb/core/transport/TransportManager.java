@@ -16,10 +16,7 @@
 
 package io.servicecomb.core.transport;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
 
 import javax.inject.Inject;
@@ -76,9 +73,7 @@ public class TransportManager {
   }
 
   protected Transport chooseOneTransport(List<Transport> group) {
-    group.sort((t1, t2) -> {
-      return Integer.compare(t1.getOrder(), t2.getOrder());
-    });
+    group.sort(Comparator.comparingInt(Transport::getOrder));
 
     for (Transport transport : group) {
       if (transport.canInit()) {

@@ -17,6 +17,7 @@
 package io.servicecomb.serviceregistry.discovery;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -47,9 +48,7 @@ public class DiscoveryTree {
   // group name are qualifiedName
   // all leaf group will create a loadbalancer instance, groupName is loadBalancer key
   public void sort() {
-    filters.sort((f1, f2) -> {
-      return Integer.compare(f1.getOrder(), f2.getOrder());
-    });
+    filters.sort(Comparator.comparingInt(DiscoveryFilter::getOrder));
 
     LOGGER.info("found DiscoveryFilter:");
     for (DiscoveryFilter filter : filters) {

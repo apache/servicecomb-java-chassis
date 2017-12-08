@@ -17,6 +17,7 @@
 package io.servicecomb.demo.signature;
 
 import java.nio.charset.StandardCharsets;
+import java.util.Comparator;
 import java.util.Arrays;
 import java.util.List;
 
@@ -35,9 +36,7 @@ public class SignatureUtils {
   static {
     PARAM_NAMES_PROPERTY.addCallback(() -> {
       List<String> tmpNames = PARAM_NAMES_PROPERTY.get();
-      tmpNames.sort((n1, n2) -> {
-        return n1.compareTo(n2);
-      });
+      tmpNames.sort(Comparator.naturalOrder());
       paramNames = tmpNames;
     });
   }
