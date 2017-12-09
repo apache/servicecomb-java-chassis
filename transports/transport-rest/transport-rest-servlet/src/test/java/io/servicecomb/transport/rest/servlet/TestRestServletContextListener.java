@@ -32,9 +32,7 @@ public class TestRestServletContextListener {
 
     try {
       listener.contextInitialized(sce);
-    } catch (Exception e) {
-      status = false;
-    } catch (Error e) {
+    } catch (Exception | Error e) {
       status = false;
     }
     Assert.assertFalse(status);

@@ -26,7 +26,6 @@ import org.junit.Test;
 import org.mockito.Mockito;
 
 import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.ObjectCodec;
 import com.fasterxml.jackson.core.io.IOContext;
 import com.fasterxml.jackson.databind.SerializerProvider;
@@ -121,8 +120,6 @@ public class TestResultSerializer {
       resultSerializer.serialize(stringArray,
           obj,
           Mockito.mock(SerializerProvider.class));
-    } catch (JsonProcessingException e) {
-      status = false;
     } catch (IOException e) {
       status = false;
     }

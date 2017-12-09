@@ -47,9 +47,6 @@ public class TestConsumer {
     boolean validAssert = true;
     try {
       oConsumerProviderManager.getReferenceConfig("consumer provider manager");
-    } catch (Exception e) {
-      Assert.assertNotEquals(null, e);
-      validAssert = false;
     } catch (Throwable ee) {
       Assert.assertNotEquals(null, ee);
       validAssert = false;
