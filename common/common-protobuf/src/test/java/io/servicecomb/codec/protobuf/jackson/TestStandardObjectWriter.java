@@ -67,10 +67,6 @@ public class TestStandardObjectWriter {
     try {
       StandardObjectWriter.writeValue(outputStream,
           stringArray);
-    } catch (JsonGenerationException e) {
-      status = false;
-    } catch (JsonMappingException e) {
-      status = false;
     } catch (IOException e) {
       status = false;
     }
