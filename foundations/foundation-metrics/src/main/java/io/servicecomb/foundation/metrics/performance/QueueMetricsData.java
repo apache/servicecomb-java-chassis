@@ -22,30 +22,30 @@ package io.servicecomb.foundation.metrics.performance;
 public class QueueMetricsData {
 
   // after invocation polled from queue
-  private Long totalTime = new Long(0);
+  private Long totalTime = 0L;
 
   // succ and fail
   // after invocation polled from queue
-  private Long totalCount = new Long(0);
+  private Long totalCount = 0L;
 
   // after invocation finished
-  private Long totalServExecutionTime = new Long(0);
+  private Long totalServExecutionTime = 0L;
 
   // after invocation finished
-  private Long totalServExecutionCount = new Long(0);
+  private Long totalServExecutionCount = 0L;
 
   // inc and dec
   // addToQueue inc
   // pollFromQueue inc
   // pollFromQueue - addToQueue = countInQueue
   // after invocation polled from queue
-  private Long countInQueue = new Long(0);
+  private Long countInQueue = 0L;
 
   // after invocation polled from queue
-  private Long minLifeTimeInQueue = new Long(0);
+  private Long minLifeTimeInQueue = 0L;
 
   // after invocation polled from queue
-  private Long maxLifeTimeInQueue = new Long(0);
+  private Long maxLifeTimeInQueue = 0L;
 
   /**
    * Sets total count in queue.
