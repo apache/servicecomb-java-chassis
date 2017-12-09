@@ -19,39 +19,42 @@ package io.servicecomb.common.rest.codec.param;
 import static javax.ws.rs.core.HttpHeaders.CONTENT_TYPE;
 import static javax.ws.rs.core.MediaType.MULTIPART_FORM_DATA;
 
+import java.io.IOException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.UUID;
-import java.util.concurrent.CompletableFuture;
 
+import javax.servlet.http.Part;
 import javax.ws.rs.core.MediaType;
 
+import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import io.servicecomb.common.rest.codec.RestClientRequest;
 import io.servicecomb.common.rest.codec.RestObjectMapper;
 import io.servicecomb.foundation.vertx.stream.BufferOutputStream;
-import io.vertx.core.Handler;
+import io.servicecomb.foundation.vertx.stream.InputStreamToReadStream;
+import io.servicecomb.swagger.invocation.AsyncResponse;
 import io.vertx.core.Vertx;
 import io.vertx.core.buffer.Buffer;
-import io.vertx.core.file.AsyncFile;
-import io.vertx.core.file.OpenOptions;
 import io.vertx.core.http.HttpClientRequest;
 import io.vertx.core.http.HttpHeaders;
 import io.vertx.core.streams.Pump;
-import io.vertx.core.streams.ReadStream;
 
 public class RestClientRequestImpl implements RestClientRequest {
   private static final Logger LOGGER = LoggerFactory.getLogger(RestClientRequestImpl.class);
 
-  private final Map<String, String> uploads = new HashMap<>();
-  private final Vertx vertx;
+  protected Vertx vertx;
+
+  protected AsyncResponse asyncResp;
+
+  private final Map<String, Part> uploads = new HashMap<>();
+
   protected HttpClientRequest request;
 
   protected Map<String, String> cookieMap;
@@ -60,9 +63,10 @@ public class RestClientRequestImpl implements RestClientRequest {
 
   protected Buffer bodyBuffer;
 
-  public RestClientRequestImpl(HttpClientRequest request, Vertx vertx) {
-    this.request = request;
+  public RestClientRequestImpl(HttpClientRequest request, Vertx vertx, AsyncResponse asyncResp) {
     this.vertx = vertx;
+    this.asyncResp = asyncResp;
+    this.request = request;
   }
 
   @Override
@@ -77,20 +81,49 @@ public class RestClientRequestImpl implements RestClientRequest {
   }
 
   @Override
-  public void attach(String name, String filename) {
-    uploads.put(name, filename);
+  public void attach(String name, Part part) {
+    uploads.put(name, part);
   }
 
   @Override
-  public void end() throws Exception {
+  public void end() {
     writeCookies();
 
     if (!uploads.isEmpty()) {
-      attachFiles();
+      doEndWithUpload();
       return;
     }
 
-    genBodyBuffer();
+    doEndNormal();
+  }
+
+  protected void doEndWithUpload() {
+    request.setChunked(true);
+
+    String boundary = "boundary" + UUID.randomUUID().toString();
+    putHeader(CONTENT_TYPE, MULTIPART_FORM_DATA + "; boundary=" + boundary);
+
+    //    for (Entry<String, Object> entry : formMap.entrySet()) {
+    //      output.write(entry.getKey().getBytes(StandardCharsets.UTF_8));
+    //      output.write('=');
+    //      if (entry.getValue() != null) {
+    //        String value = RestObjectMapper.INSTANCE.convertToString(entry.getValue());
+    //        value = URLEncoder.encode(value, StandardCharsets.UTF_8.name());
+    //        output.write(value.getBytes(StandardCharsets.UTF_8));
+    //      }
+    //      output.write('&');
+    //    }
+
+    attachFiles(boundary);
+  }
+
+  protected void doEndNormal() {
+    try {
+      genBodyBuffer();
+    } catch (Exception e) {
+      asyncResp.consumerFail(e);
+      return;
+    }
 
     if (bodyBuffer == null) {
       request.end();
@@ -100,103 +133,54 @@ public class RestClientRequestImpl implements RestClientRequest {
     request.end(bodyBuffer);
   }
 
-  private void attachFiles() {
-    if (!uploads.isEmpty()) {
-      request.setChunked(true);
+  private void attachFiles(String boundary) {
+    Iterator<Part> uploadsIterator = uploads.values().iterator();
+    attachFile(boundary, uploadsIterator);
+  }
 
-      String boundary = "fileUploadBoundary" + UUID.randomUUID().toString();
-      putHeader(CONTENT_TYPE, MULTIPART_FORM_DATA + "; boundary=" + boundary);
-
-      List<CompletableFuture<Void>> fileCloseFutures = new ArrayList<>(uploads.size());
-
-      CompletableFuture<?> fileOpenFuture = CompletableFuture.completedFuture(null);
-
-      for (Entry<String, String> entry : uploads.entrySet()) {
-        String name = entry.getKey();
-        String filename = entry.getValue();
-
-        CompletableFuture<Void> fileCloseFuture = new CompletableFuture<>();
-        fileCloseFutures.add(fileCloseFuture);
-
-        fileOpenFuture = fileOpenFuture.thenRunAsync(() -> {
-          vertx.fileSystem()
-              .open(filename, readOnlyOption(), result -> {
-                AsyncFile file = result.result();
-
-                Buffer fileHeader = fileBoundaryInfo(boundary, name, filename);
-                Pump.pump(embeddedReadStream(fileHeader), request).start();
-                Pump.pump(file, request).start();
-                file.endHandler(closeFileHandler(name, filename, file, fileCloseFuture));
-              });
-
-          // ensure file sent completely, before proceeding to the next file
-          fileCloseFuture.join();
-        });
-      }
-
-      CompletableFuture.allOf(fileCloseFutures.toArray(new CompletableFuture<?>[fileCloseFutures.size()]))
-          .thenRunAsync(() -> {
-            Pump.pump(embeddedReadStream(boundaryEndInfo(boundary)), request).start();
-            request.end();
-          });
+  private void attachFile(String boundary, Iterator<Part> uploadsIterator) {
+    if (!uploadsIterator.hasNext()) {
+      request.write(boundaryEndInfo(boundary));
+      request.end();
+      return;
     }
-  }
 
-  private Handler<Void> closeFileHandler(String name,
-      String filename,
-      AsyncFile file,
-      CompletableFuture<Void> fileCloseFuture) {
-    return e -> file.close(ar -> {
-      if (ar.succeeded()) {
-        fileCloseFuture.complete(null);
-        LOGGER.debug("Sent file [{}:{}] successfully", name, filename);
-      } else {
-        fileCloseFuture.completeExceptionally(ar.cause());
-        LOGGER.error("Failed to send file [{}:{}]", name, filename, ar.cause());
-      }
+    // maybe it's a memory file, now we do not support this
+    // not easy to wrapping inputstream to readStream
+    Part part = uploadsIterator.next();
+    String name = part.getName();
+    String filename = part.getSubmittedFileName();
+
+    InputStreamToReadStream fileStream = null;
+    try {
+      fileStream = new InputStreamToReadStream(vertx, part.getInputStream());
+    } catch (IOException e) {
+      asyncResp.consumerFail(e);
+      return;
+    }
+
+    InputStreamToReadStream finalFileStream = fileStream;
+    fileStream.exceptionHandler(e -> {
+      LOGGER.debug("Failed to sending file [{}:{}].", name, filename, e);
+      IOUtils.closeQuietly(finalFileStream.getInputStream());
+      asyncResp.consumerFail(e);
     });
-  }
+    fileStream.endHandler(V -> {
+      LOGGER.debug("finish sending file [{}:{}].", name, filename);
+      IOUtils.closeQuietly(finalFileStream.getInputStream());
 
-  private OpenOptions readOnlyOption() {
-    return new OpenOptions()
-        .setCreate(false)
-        .setWrite(false);
+      attachFile(boundary, uploadsIterator);
+    });
+
+    Buffer fileHeader = fileBoundaryInfo(boundary, name, filename);
+    request.write(fileHeader);
+    Pump.pump(fileStream, request).start();
   }
 
   private Buffer boundaryEndInfo(String boundary) {
     return Buffer.buffer()
         .appendString("\r\n")
         .appendString("--" + boundary + "--\r\n");
-  }
-
-  private static ReadStream<Buffer> embeddedReadStream(final Buffer buffer) {
-    return new ReadStream<Buffer>() {
-      @Override
-      public ReadStream<Buffer> exceptionHandler(Handler<Throwable> handler) {
-        return this;
-      }
-
-      @Override
-      public ReadStream<Buffer> handler(Handler<Buffer> handler) {
-        handler.handle(buffer);
-        return this;
-      }
-
-      @Override
-      public ReadStream<Buffer> pause() {
-        return this;
-      }
-
-      @Override
-      public ReadStream<Buffer> resume() {
-        return this;
-      }
-
-      @Override
-      public ReadStream<Buffer> endHandler(Handler<Void> handler) {
-        return this;
-      }
-    };
   }
 
   private Buffer fileBoundaryInfo(String boundary, String name, String filename) {
