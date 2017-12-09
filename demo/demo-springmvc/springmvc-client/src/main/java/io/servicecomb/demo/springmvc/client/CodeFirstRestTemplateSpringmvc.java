@@ -16,16 +16,22 @@
 
 package io.servicecomb.demo.springmvc.client;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.io.FileUtils;
+import org.springframework.core.io.FileSystemResource;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
 import io.servicecomb.bizkeeper.BizkeeperExceptionUtils;
@@ -44,6 +50,17 @@ public class CodeFirstRestTemplateSpringmvc extends CodeFirstRestTemplate {
   private CodeFirstSprigmvcIntf intf;
 
   @Override
+  protected void testOnlyRest(RestTemplate template, String cseUrlPrefix) {
+    try {
+      testUpload(template, cseUrlPrefix);
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+
+    super.testOnlyRest(template, cseUrlPrefix);
+  }
+
+  @Override
   protected void testExtend(RestTemplate template, String cseUrlPrefix) {
     super.testExtend(template, cseUrlPrefix);
 
@@ -51,6 +68,38 @@ public class CodeFirstRestTemplateSpringmvc extends CodeFirstRestTemplate {
     testCodeFirstTestForm(template, cseUrlPrefix);
     testIntf();
     testFallback(template, cseUrlPrefix);
+  }
+
+  private void testUpload(RestTemplate template, String cseUrlPrefix) throws IOException {
+    String file1Content = "hello world";
+    File file1 = File.createTempFile("upload1", ".txt");
+    FileUtils.writeStringToFile(file1, file1Content);
+
+    String file2Content = " bonjour";
+    File someFile = File.createTempFile("upload2", ".txt");
+    FileUtils.writeStringToFile(someFile, file2Content);
+
+    String templateResult = testRestTemplateUpload(template, cseUrlPrefix, file1, someFile);
+    TestMgr.check(file1Content + file2Content, templateResult);
+
+    String intfResult = intfUpload(file1, someFile);
+    TestMgr.check(file1Content + file2Content, intfResult);
+  }
+
+  private String intfUpload(File file1, File someFile) {
+    return "";
+//    return intf.fileUpload(file1, someFile);
+  }
+
+  private String testRestTemplateUpload(RestTemplate template, String cseUrlPrefix, File file1, File someFile) {
+    MultiValueMap<String, Object> map = new LinkedMultiValueMap<>();
+    map.add("file1", new FileSystemResource(file1));
+    map.add("someFile", new FileSystemResource(someFile));
+
+    return template.postForObject(
+        cseUrlPrefix + "/upload",
+        new HttpEntity<>(map),
+        String.class);
   }
 
   private void testFallback(RestTemplate template, String cseUrlPrefix) {

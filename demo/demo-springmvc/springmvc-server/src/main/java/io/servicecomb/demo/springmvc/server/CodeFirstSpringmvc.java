@@ -16,6 +16,8 @@
 
 package io.servicecomb.demo.springmvc.server;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -24,6 +26,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response.Status;
 
+import org.apache.commons.io.IOUtils;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -41,7 +44,9 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartFile;
 
 import io.servicecomb.common.rest.codec.RestObjectMapper;
 import io.servicecomb.demo.compute.Person;
@@ -67,6 +72,22 @@ import io.vertx.core.json.JsonObject;
 @RestSchema(schemaId = "codeFirst")
 @RequestMapping(path = "/codeFirstSpringmvc", produces = MediaType.APPLICATION_JSON_VALUE)
 public class CodeFirstSpringmvc {
+  private String _fileUpload(MultipartFile file1, MultipartFile file2) {
+    try (InputStream is1 = file1.getInputStream(); InputStream is2 = file2.getInputStream()) {
+      String content1 = IOUtils.toString(is1);
+      String content2 = IOUtils.toString(is2);
+      return content1 + content2;
+    } catch (IOException e) {
+      throw new IllegalArgumentException(e);
+    }
+  }
+
+  @PostMapping(path = "/upload", produces = MediaType.TEXT_PLAIN_VALUE)
+  public String fileUpload(@RequestPart(name = "file1") MultipartFile file1,
+      @RequestPart(name = "someFile") MultipartFile file2) {
+    return _fileUpload(file1, file2);
+  }
+
   @ResponseHeaders({@ResponseHeader(name = "h1", response = String.class),
       @ResponseHeader(name = "h2", response = String.class)})
   @RequestMapping(path = "/responseEntity", method = RequestMethod.POST)

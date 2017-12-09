@@ -63,11 +63,15 @@ public class CodeFirstRestTemplate {
 
       // TODO: highway unsupported until JAV-394 completed
       if (transport.equals("rest")) {
-        testModelFieldIgnore(template, cseUrlPrefix);
+        testOnlyRest(template, cseUrlPrefix);
       }
 
       testRawJson(template, cseUrlPrefix);
     }
+  }
+
+  protected void testOnlyRest(RestTemplate template, String cseUrlPrefix) {
+    testModelFieldIgnore(template, cseUrlPrefix);
   }
 
   private void testCodeFirstUserMap(RestTemplate template, String cseUrlPrefix) {
@@ -222,7 +226,7 @@ public class CodeFirstRestTemplate {
   protected void testModelFieldIgnore(RestTemplate template, String cseUrlPrefix) {
     InputModelForTestIgnore input = new InputModelForTestIgnore("input_id_rest", "input_id_content",
         new Person("inputSomeone"), new JsonObject("{\"InputJsonKey\" : \"InputJsonValue\"}"), () -> {
-    });
+        });
     OutputModelForTestIgnore output = template
         .postForObject(cseUrlPrefix + "ignore", input, OutputModelForTestIgnore.class);
 

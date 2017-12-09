@@ -9,6 +9,7 @@ service_description:
     - path: /test2/testpath
       property:
         checksession: true
+cse.uploads.directory: .
 cse:
   service:
     registry:

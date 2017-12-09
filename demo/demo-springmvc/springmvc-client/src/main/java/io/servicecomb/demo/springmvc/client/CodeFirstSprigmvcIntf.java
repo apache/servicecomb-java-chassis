@@ -15,6 +15,7 @@
  */
 package io.servicecomb.demo.springmvc.client;
 
+import java.io.File;
 import java.util.Date;
 
 import org.springframework.http.ResponseEntity;
@@ -25,4 +26,6 @@ public interface CodeFirstSprigmvcIntf {
   ResponseEntity<Date> responseEntity(Date date);
 
   Response cseResponse();
+
+  String fileUpload(File file1, File someFile);
 }
