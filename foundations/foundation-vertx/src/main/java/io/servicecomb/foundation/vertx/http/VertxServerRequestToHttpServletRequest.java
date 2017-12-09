@@ -16,11 +16,7 @@
 
 package io.servicecomb.foundation.vertx.http;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -36,10 +32,10 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.Part;
 import javax.ws.rs.core.HttpHeaders;
 
-import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import io.servicecomb.foundation.vertx.part.FilePart;
 import io.servicecomb.foundation.vertx.stream.BufferInputStream;
 import io.vertx.core.MultiMap;
 import io.vertx.core.buffer.Buffer;
@@ -228,71 +224,17 @@ public class VertxServerRequestToHttpServletRequest extends AbstractHttpServletR
 
   @Override
   public Part getPart(String name) throws IOException, ServletException {
-    Optional<FileUpload> upload = context.fileUploads().stream().filter(fileUpload -> fileUpload.name().equals(name))
+    Optional<FileUpload> upload = context.fileUploads()
+        .stream()
+        .filter(fileUpload -> fileUpload.name().equals(name))
         .findFirst();
     if (!upload.isPresent()) {
-      LOGGER.error("No such file with name: {}", name);
+      LOGGER.error("No such file with name: {}.", name);
       return null;
     }
 
-    return new VertxPart(upload.get());
-  }
-
-  private static class VertxPart implements Part {
-    private final FileUpload fileUpload;
-
-    private VertxPart(FileUpload fileUpload) {
-      this.fileUpload = fileUpload;
-    }
-
-    @Override
-    public InputStream getInputStream() throws IOException {
-      return new FileInputStream(fileUpload.uploadedFileName());
-    }
-
-    @Override
-    public String getContentType() {
-      return fileUpload.contentType();
-    }
-
-    @Override
-    public String getName() {
-      return fileUpload.name();
-    }
-
-    @Override
-    public String getSubmittedFileName() {
-      return fileUpload.uploadedFileName();
-    }
-
-    @Override
-    public long getSize() {
-      return fileUpload.size();
-    }
-
-    @Override
-    public void write(String fileName) throws IOException {
-      FileUtils.copyFile(new File(fileUpload.uploadedFileName()), new File(fileName));
-    }
-
-    @Override
-    public void delete() throws IOException {
-
-    }
-
-    @Override
-    public String getHeader(String name) {
-      return null;
-    }
-
-    @Override
-    public Collection<String> getHeaders(String name) {
-      return Collections.emptyList();
-    }
-
-    @Override
-    public Collection<String> getHeaderNames() {
-      return Collections.emptyList();
-    }
+    final FileUpload fileUpload = upload.get();
+    return new FilePart(name, fileUpload.uploadedFileName())
+        .contentType(fileUpload.contentType());
   }
 }
