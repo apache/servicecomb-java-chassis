@@ -50,6 +50,7 @@ import io.vertx.core.http.HttpMethod;
 
 public class VertxHttpMethod {
   private static final Logger LOGGER = LoggerFactory.getLogger(VertxHttpMethod.class);
+
   public static final VertxHttpMethod INSTANCE = new VertxHttpMethod();
 
   static List<HttpClientFilter> httpClientFilters = SPIServiceUtils.getSortedService(HttpClientFilter.class);
@@ -75,7 +76,8 @@ public class VertxHttpMethod {
             path,
             asyncResp);
     clientRequest.putHeader(io.servicecomb.core.Const.TARGET_MICROSERVICE, invocation.getMicroserviceName());
-    RestClientRequestImpl restClientRequest = new RestClientRequestImpl(clientRequest, httpClientWithContext.context().owner());
+    RestClientRequestImpl restClientRequest =
+        new RestClientRequestImpl(clientRequest, httpClientWithContext.context().owner(), asyncResp);
     RestCodec.argsToRest(invocation.getArgs(), swaggerRestOperation, restClientRequest);
 
     Buffer requestBodyBuffer = restClientRequest.getBodyBuffer();
@@ -103,7 +105,7 @@ public class VertxHttpMethod {
       clientRequest.setTimeout(AbstractTransport.getRequestTimeoutProperty().get());
       try {
         restClientRequest.end();
-      } catch (Exception e) {
+      } catch (Throwable e) {
         LOGGER.error("send http request failed,", e);
         asyncResp.fail(invocation.getInvocationType(), e);
       }
