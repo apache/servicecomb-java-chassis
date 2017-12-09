@@ -45,7 +45,7 @@ public class ConfigCenterConfigurationSourceImpl implements ConfigCenterConfigur
 
   private final Map<String, Object> valueCache = Maps.newConcurrentMap();
 
-  private final List<WatchedUpdateListener> listeners = new CopyOnWriteArrayList<WatchedUpdateListener>();
+  private final List<WatchedUpdateListener> listeners = new CopyOnWriteArrayList<>();
 
   private UpdateHandler updateHandler = new UpdateHandler();
 

@@ -62,7 +62,7 @@ public class TestRemoteServiceRegistry {
 
   @Test
   public void testLifeCycle(@Injectable ServiceRegistryConfig config, @Injectable MicroserviceDefinition definition) {
-    ArrayList<IpPort> ipPortList = new ArrayList<IpPort>();
+    ArrayList<IpPort> ipPortList = new ArrayList<>();
     ipPortList.add(new IpPort("127.0.0.1", 9980));
     ipPortList.add(new IpPort("127.0.0.1", 9981));
 

@@ -58,7 +58,7 @@ public class TestHighwayTransport {
     AsyncResponse asyncResp = Mockito.mock(AsyncResponse.class);
     commonHighwayMock(invocation);
 
-    Holder<Boolean> sended = new Holder<Boolean>(false);
+    Holder<Boolean> sended = new Holder<>(false);
     new MockUp<HighwayClient>() {
       @Mock
       public void send(Invocation invocation, AsyncResponse asyncResp) throws Exception {

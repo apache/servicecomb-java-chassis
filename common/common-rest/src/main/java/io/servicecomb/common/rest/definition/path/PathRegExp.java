@@ -54,7 +54,7 @@ public class PathRegExp {
 
   protected final Pattern pattern;
 
-  protected final List<String> varNames = new ArrayList<String>();
+  protected final List<String> varNames = new ArrayList<>();
 
   public static String ensureEndWithSlash(String path) {
     if (path.endsWith(SLASH)) {
