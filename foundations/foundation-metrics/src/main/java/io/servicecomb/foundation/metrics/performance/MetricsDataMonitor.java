@@ -28,19 +28,19 @@ public class MetricsDataMonitor {
   // inc
   // invocation start
   // succ + fail
-  public Long totalReqProvider = new Long(0);
+  public Long totalReqProvider = 0L;
 
   // inc
   // after invocation finished
-  public Long totalFailReqProvider = new Long(0);
+  public Long totalFailReqProvider = 0L;
 
   // inc
   // after invocation start
-  public Long totalReqConsumer = new Long(0);
+  public Long totalReqConsumer = 0L;
 
   // inc
   // after invocation finished
-  public Long totalFailReqConsumer = new Long(0);
+  public Long totalFailReqConsumer = 0L;
 
   // key is operQualifiedName
   // inc
