@@ -16,10 +16,13 @@
 
 package io.servicecomb.provider.springmvc.reference;
 
+import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.HttpCookie;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.List;
@@ -31,8 +34,13 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.Part;
 import javax.ws.rs.core.HttpHeaders;
 
+import org.springframework.core.io.Resource;
+
 import io.servicecomb.common.rest.RestConst;
 import io.servicecomb.foundation.vertx.http.AbstractHttpServletRequest;
+import io.servicecomb.foundation.vertx.part.FilePart;
+import io.servicecomb.foundation.vertx.part.InputStreamPart;
+import io.servicecomb.foundation.vertx.part.ResourcePart;
 
 // restTemplate convert parameters to invocation args.
 public class CommonToHttpServletRequest extends AbstractHttpServletRequest {
@@ -157,6 +165,53 @@ public class CommonToHttpServletRequest extends AbstractHttpServletRequest {
 
   @Override
   public Part getPart(String name) throws IOException, ServletException {
-    throw new Error("not supported method");
+    Object value = findPartInputValue(name);
+    if (value == null) {
+      return null;
+    }
+
+    if (Part.class.isInstance(value)) {
+      return (Part) value;
+    }
+
+    if (InputStream.class.isInstance(value)) {
+      return new InputStreamPart(name, (InputStream) value);
+    }
+
+    if (Resource.class.isInstance(value)) {
+      return new ResourcePart(name, (Resource) value);
+    }
+
+    if (File.class.isInstance(value)) {
+      return new FilePart(name, (File) value);
+    }
+
+    throw new IllegalStateException(
+        String.format("File input parameter of %s could be %s / %s / %s or %s, but got %s.",
+            name,
+            Part.class.getName(),
+            InputStream.class.getName(),
+            Resource.class.getName(),
+            File.class.getName(),
+            value.getClass().getName()));
+  }
+
+  protected Object findPartInputValue(String name) {
+    @SuppressWarnings("unchecked")
+    Map<String, Object> form = (Map<String, Object>) getAttribute(RestConst.FORM_PARAMETERS);
+    Object value = form.get(name);
+    if (value == null) {
+      return null;
+    }
+
+    if (Collection.class.isInstance(value)) {
+      Collection<?> collection = (Collection<?>) value;
+      if (collection.isEmpty()) {
+        return null;
+      }
+
+      value = collection.iterator().next();
+    }
+    return value;
   }
 }
