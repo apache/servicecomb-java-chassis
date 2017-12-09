@@ -16,6 +16,8 @@
 
 package io.servicecomb.common.rest.codec;
 
+import javax.servlet.http.Part;
+
 import io.vertx.core.buffer.Buffer;
 
 /**
@@ -25,7 +27,7 @@ import io.vertx.core.buffer.Buffer;
 public interface RestClientRequest {
   void write(Buffer bodyBuffer);
 
-  void end() throws Exception;
+  void end();
 
   void addCookie(String name, String value);
 
@@ -35,5 +37,5 @@ public interface RestClientRequest {
 
   Buffer getBodyBuffer() throws Exception;
 
-  void attach(String name, String filename);
+  void attach(String name, Part part);
 }

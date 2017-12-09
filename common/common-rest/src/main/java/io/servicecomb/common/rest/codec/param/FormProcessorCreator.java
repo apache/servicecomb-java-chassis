@@ -16,13 +16,10 @@
 
 package io.servicecomb.common.rest.codec.param;
 
-import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.Map;
 
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletRequestWrapper;
 import javax.servlet.http.Part;
 
 import com.fasterxml.jackson.databind.JavaType;
@@ -87,36 +84,18 @@ public class FormProcessorCreator implements ParamValueProcessorCreator {
   }
 
   private static class PartProcessor extends AbstractParamProcessor {
-
-    private static final String UPLOADS = "x-cse-uploads-";
-
     PartProcessor(String paramPath, JavaType targetType) {
       super(paramPath, targetType);
     }
 
     @Override
     public Object getValue(HttpServletRequest request) throws Exception {
-      @SuppressWarnings("unchecked")
-      Map<String, Object> forms = (Map<String, Object>) request.getAttribute(RestConst.FORM_PARAMETERS);
-      if (forms != null) {
-        request.setAttribute(UPLOADS + paramPath, convertValue(forms.get(paramPath), targetType));
-        return request;
-      }
-
-      return new HttpServletRequestWrapper(request) {
-        @Override
-        public Part getPart(String name) throws IOException, ServletException {
-          return super.getPart(paramPath);
-        }
-      };
+      return request.getPart(paramPath);
     }
 
     @Override
     public void setValue(RestClientRequest clientRequest, Object arg) throws Exception {
-      String[] filenames = (String[]) ((HttpServletRequest) arg).getAttribute(UPLOADS + paramPath);
-      for (String filename : filenames) {
-        clientRequest.attach(paramPath, filename);
-      }
+      clientRequest.attach(paramPath, (Part) arg);
     }
 
     @Override
