@@ -17,6 +17,7 @@
 package io.servicecomb.config.client;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import com.google.common.base.Joiner;
@@ -138,9 +139,7 @@ public final class ConfigCenterConfig {
   public List<String> getServerUri() {
     String[] result = finalConfig.getStringArray(SERVER_URL_KEY);
     List<String> configCenterUris = new ArrayList<>(result.length);
-    for (int i = 0; i < result.length; i++) {
-      configCenterUris.add(result[i]);
-    }
+    configCenterUris.addAll(Arrays.asList(result));
     return configCenterUris;
   }
 

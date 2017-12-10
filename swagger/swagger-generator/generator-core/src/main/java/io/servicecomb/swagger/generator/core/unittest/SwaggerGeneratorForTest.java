@@ -17,6 +17,7 @@
 package io.servicecomb.swagger.generator.core.unittest;
 
 import java.lang.reflect.Method;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -60,9 +61,7 @@ public class SwaggerGeneratorForTest extends SwaggerGenerator {
       methodNameSet = new HashSet<>();
     }
 
-    for (String methodName : methodNames) {
-      methodNameSet.add(methodName);
-    }
+    methodNameSet.addAll(Arrays.asList(methodNames));
   }
 
   @Override
