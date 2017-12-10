@@ -37,6 +37,7 @@ import io.servicecomb.serviceregistry.cache.InstanceCacheManagerNew;
 import io.servicecomb.serviceregistry.cache.InstanceCacheManagerOld;
 import io.servicecomb.serviceregistry.client.IpPortManager;
 import io.servicecomb.serviceregistry.client.ServiceRegistryClient;
+import io.servicecomb.serviceregistry.client.http.MicroserviceInstanceRefresh;
 import io.servicecomb.serviceregistry.config.ServiceRegistryConfig;
 import io.servicecomb.serviceregistry.consumer.AppManager;
 import io.servicecomb.serviceregistry.consumer.MicroserviceVersionFactory;
@@ -207,17 +208,22 @@ public abstract class AbstractServiceRegistry implements ServiceRegistry {
     return true;
   }
 
-  public List<MicroserviceInstance> findServiceInstance(String appId, String serviceName,
-      String versionRule) {
-    List<MicroserviceInstance> instances = srClient.findServiceInstance(microservice.getServiceId(),
+  public MicroserviceInstanceRefresh findServiceInstance(String appId, String serviceName,
+      String versionRule, String revision) {
+    MicroserviceInstanceRefresh microserviceInstanceRefresh = srClient.findServiceInstance(microservice.getServiceId(),
         appId,
         serviceName,
-        versionRule);
-    if (instances == null) {
+        versionRule,
+        revision);
+    if (microserviceInstanceRefresh == null) {
       LOGGER.error("find empty instances from service center. service={}/{}/{}", appId, serviceName, versionRule);
       return null;
     }
-
+    if (!microserviceInstanceRefresh.isNeedRefresh()) {
+      LOGGER.info("Instances revision is not changed.");
+      return microserviceInstanceRefresh;
+    }
+    List<MicroserviceInstance> instances = microserviceInstanceRefresh.getInstances();
     LOGGER.info("find instances[{}] from service center success. service={}/{}/{}",
         instances.size(),
         appId,
@@ -229,7 +235,7 @@ public abstract class AbstractServiceRegistry implements ServiceRegistry {
           instance.getInstanceId(),
           instance.getEndpoints());
     }
-    return instances;
+    return microserviceInstanceRefresh;
   }
 
   @Override

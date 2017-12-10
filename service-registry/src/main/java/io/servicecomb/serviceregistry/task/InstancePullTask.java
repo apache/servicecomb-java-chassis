@@ -38,9 +38,7 @@ public class InstancePullTask implements Runnable {
     try {
       serviceCenterTaskMonitor.beginCycle(interval);
       for (InstanceCache cache : this.cacheManager.getCachedEntries()) {
-        InstanceCache newCache = cacheManager.createInstanceCache(cache.getAppId(),
-            cache.getMicroserviceName(),
-            cache.getMicroserviceVersionRule());
+        InstanceCache newCache = cacheManager.createInstanceCache(cache);
         if (newCache != null) {
           cacheManager.updateInstanceMap(cache.getAppId(), cache.getMicroserviceName(), newCache);
         }

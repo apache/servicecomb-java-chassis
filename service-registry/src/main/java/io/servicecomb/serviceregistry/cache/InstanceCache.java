@@ -60,6 +60,9 @@ public class InstanceCache {
 
   private Object lockObj = new Object();
 
+  //cached Revision in the header
+  private String revision = "0";
+
   /**
    * 用于初始化场景
    */
@@ -134,4 +137,13 @@ public class InstanceCache {
   public String getAppId() {
     return appId;
   }
+
+  public String getRevision() {
+    return revision;
+  }
+
+  public void setRevision(String revision) {
+    this.revision = revision;
+  }
+
 }

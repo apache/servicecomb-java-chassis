@@ -39,6 +39,7 @@ import io.servicecomb.serviceregistry.api.registry.Microservice;
 import io.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
 import io.servicecomb.serviceregistry.api.response.HeartbeatResponse;
 import io.servicecomb.serviceregistry.api.response.MicroserviceInstanceChangedEvent;
+import io.servicecomb.serviceregistry.client.http.MicroserviceInstanceRefresh;
 import io.servicecomb.serviceregistry.version.Version;
 import io.servicecomb.serviceregistry.version.VersionRule;
 import io.servicecomb.serviceregistry.version.VersionRuleUtils;
@@ -237,14 +238,17 @@ public class LocalServiceRegistryClientImpl implements ServiceRegistryClient {
   }
 
   @Override
-  public List<MicroserviceInstance> findServiceInstance(String selfMicroserviceId, String appId, String serviceName,
-      String strVersionRule) {
+  public MicroserviceInstanceRefresh findServiceInstance(String selfMicroserviceId, String appId, String serviceName,
+      String strVersionRule, String revision) {
     List<MicroserviceInstance> allInstances = new ArrayList<>();
+    MicroserviceInstanceRefresh microserviceInstanceRefresh = new MicroserviceInstanceRefresh();
 
     VersionRule versionRule = VersionRuleUtils.getOrCreate(strVersionRule);
     Microservice latestMicroservice = findLatest(appId, serviceName, versionRule);
     if (latestMicroservice == null) {
-      return allInstances;
+      microserviceInstanceRefresh.setInstances(allInstances);
+      microserviceInstanceRefresh.setRevision("0");
+      return microserviceInstanceRefresh;
     }
 
     Version latestVersion = VersionUtils.getOrCreate(latestMicroservice.getVersion());
@@ -262,8 +266,8 @@ public class LocalServiceRegistryClientImpl implements ServiceRegistryClient {
       Map<String, MicroserviceInstance> instances = microserviceInstanceMap.get(entry.getValue().getServiceId());
       allInstances.addAll(instances.values());
     }
-
-    return allInstances;
+    microserviceInstanceRefresh.setInstances(allInstances);
+    return microserviceInstanceRefresh;
   }
 
   @Override

@@ -42,6 +42,8 @@ public class TestMicroserviceManager {
 
   String versionRule = "0+";
 
+  String revision = "0";
+
   EventBus eventBus = new EventBus();
 
   AppManager appManager = new AppManager(eventBus);
@@ -52,7 +54,7 @@ public class TestMicroserviceManager {
   public void getOrCreateMicroserviceVersionRule() {
     new Expectations(RegistryUtils.class) {
       {
-        RegistryUtils.findServiceInstance(appId, serviceName, DefinitionConst.VERSION_RULE_ALL);
+        RegistryUtils.findServiceInstance(appId, serviceName, DefinitionConst.VERSION_RULE_ALL, revision);
         result = Collections.emptyList();
       }
     };

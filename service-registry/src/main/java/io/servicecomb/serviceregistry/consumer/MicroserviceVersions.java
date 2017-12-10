@@ -32,6 +32,7 @@ import io.servicecomb.serviceregistry.RegistryUtils;
 import io.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
 import io.servicecomb.serviceregistry.api.registry.MicroserviceInstanceStatus;
 import io.servicecomb.serviceregistry.api.response.MicroserviceInstanceChangedEvent;
+import io.servicecomb.serviceregistry.client.http.MicroserviceInstanceRefresh;
 import io.servicecomb.serviceregistry.definition.DefinitionConst;
 import io.servicecomb.serviceregistry.task.event.PullMicroserviceVersionsInstancesEvent;
 
@@ -45,6 +46,8 @@ public class MicroserviceVersions {
   private String microserviceName;
 
   private List<MicroserviceInstance> instances;
+
+  private String revision = "0";
 
   // key is service id
   private Map<String, MicroserviceVersion> versions = new ConcurrentHashMap<>();
@@ -89,6 +92,14 @@ public class MicroserviceVersions {
     return (T) versions.get(serviceId);
   }
 
+  public String getRevision() {
+    return revision;
+  }
+
+  public void setRevision(String revision) {
+    this.revision = revision;
+  }
+
   public void submitPull() {
     pendingPullCount.incrementAndGet();
     pullInstances();
@@ -99,17 +110,26 @@ public class MicroserviceVersions {
       return;
     }
 
-    List<MicroserviceInstance> pulledInstances = RegistryUtils.findServiceInstance(appId,
+    MicroserviceInstanceRefresh microserviceInstanceRefresh = RegistryUtils.findServiceInstance(appId,
         microserviceName,
-        DefinitionConst.VERSION_RULE_ALL);
-    if (pulledInstances == null) {
+        DefinitionConst.VERSION_RULE_ALL,
+        revision);
+    if (microserviceInstanceRefresh == null) {
       return;
     }
-
-    setInstances(pulledInstances);
+    boolean needRefresh = microserviceInstanceRefresh.isNeedRefresh();
+    if (!needRefresh) {
+      return;
+    }
+    String rev = microserviceInstanceRefresh.getRevision();
+    if (Integer.valueOf(revision) - Integer.valueOf(rev) >= 0) {
+      return;
+    }
+    List<MicroserviceInstance> pulledInstances = microserviceInstanceRefresh.getInstances();
+    setInstances(pulledInstances, rev);
   }
 
-  private void setInstances(List<MicroserviceInstance> pulledInstances) {
+  private void setInstances(List<MicroserviceInstance> pulledInstances, String rev) {
     synchronized (lock) {
       instances = pulledInstances
           .stream()
@@ -132,6 +152,7 @@ public class MicroserviceVersions {
       for (MicroserviceVersionRule microserviceVersionRule : versionRules.values()) {
         microserviceVersionRule.setInstances(instances);
       }
+      revision = rev;
     }
   }
 

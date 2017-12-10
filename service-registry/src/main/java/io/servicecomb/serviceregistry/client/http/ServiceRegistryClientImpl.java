@@ -109,7 +109,7 @@ public final class ServiceRegistryClientImpl implements ServiceRegistryClient {
               holder.value =
                   JsonUtils.readValue(bodyBuffer.getBytes(), cls);
             } catch (Exception e) {
-              LOGGER.warn(bodyBuffer.toString());
+              LOGGER.warn(bodyBuffer.toString(), e);
             }
             countDownLatch.countDown();
           });
@@ -514,10 +514,11 @@ public final class ServiceRegistryClientImpl implements ServiceRegistryClient {
   }
 
   @Override
-  public List<MicroserviceInstance> findServiceInstance(String consumerId, String appId, String serviceName,
-      String versionRule) {
+  public MicroserviceInstanceRefresh findServiceInstance(String consumerId, String appId, String serviceName,
+      String versionRule, String revision) {
     Holder<FindInstancesResponse> holder = new Holder<>();
     IpPort ipPort = ipPortManager.getAvailableAddress(false);
+    MicroserviceInstanceRefresh microserviceInstanceRefresh = new MicroserviceInstanceRefresh();
 
     CountDownLatch countDownLatch = new CountDownLatch(1);
     RestUtils.get(ipPort,
@@ -525,18 +526,44 @@ public final class ServiceRegistryClientImpl implements ServiceRegistryClient {
         new RequestParam().addQueryParam("appId", appId)
             .addQueryParam("serviceName", serviceName)
             .addQueryParam("version", versionRule)
+            .addQueryParam("rev", revision)
             .addHeader("X-ConsumerId", consumerId),
-        syncHandler(countDownLatch, FindInstancesResponse.class, holder));
+        new Handler<RestResponse>() {
+          @Override
+          public void handle(RestResponse restResponse) {
+            HttpClientResponse response = restResponse.getResponse();
+            response.bodyHandler(
+              bodyBuffer -> {
+                try {
+                  microserviceInstanceRefresh.setRevision(response.getHeader("X-Resource-Revision"));
+                  if (304 == response.statusCode()) {
+                    microserviceInstanceRefresh.setNeedRefresh(false);
+                  } else {
+                    holder.value =
+                        JsonUtils.readValue(bodyBuffer.getBytes(), FindInstancesResponse.class);
+                  }
+                } catch (Exception e) {
+                  LOGGER.warn(bodyBuffer.toString(), e);
+                }
+                countDownLatch.countDown();
+              });
+          }
+        });
     try {
       countDownLatch.await();
+      if (!microserviceInstanceRefresh.isNeedRefresh()) {
+        return microserviceInstanceRefresh;
+      }
       if (holder.value == null) {
         return null; // error
       }
       List<MicroserviceInstance> list = holder.value.getInstances();
       if (list == null) {
-        return new ArrayList<>();
+        microserviceInstanceRefresh.setInstances(new ArrayList<>());
+        return microserviceInstanceRefresh;
       }
-      return list;
+      microserviceInstanceRefresh.setInstances(holder.value.getInstances());
+      return microserviceInstanceRefresh;
     } catch (Exception e) {
       LOGGER.error("find microservice instance {}/{}/{} failed",
           appId,

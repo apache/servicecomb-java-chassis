@@ -33,7 +33,9 @@ import io.servicecomb.serviceregistry.ServiceRegistry;
 import io.servicecomb.serviceregistry.api.Const;
 import io.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
 import io.servicecomb.serviceregistry.api.response.MicroserviceInstanceChangedEvent;
+import io.servicecomb.serviceregistry.client.http.MicroserviceInstanceRefresh;
 import io.servicecomb.serviceregistry.config.ServiceRegistryConfig;
+import io.servicecomb.serviceregistry.definition.DefinitionConst;
 import io.servicecomb.serviceregistry.task.InstancePullTask;
 import io.servicecomb.serviceregistry.task.event.ExceptionEvent;
 import io.servicecomb.serviceregistry.task.event.PeriodicPullEvent;
@@ -80,7 +82,9 @@ public class InstanceCacheManagerOld implements InstanceCacheManager {
   }
 
   private InstanceCache create(String appId, String microserviceName, String microserviceVersionRule) {
-    InstanceCache instCache = createInstanceCache(appId, microserviceName, microserviceVersionRule);
+    InstanceCache cache = new InstanceCache(appId, microserviceName, microserviceVersionRule, new HashMap<String, MicroserviceInstance>());
+    cache.setRevision(DefinitionConst.DEFAULT_REVISION);
+    InstanceCache instCache = createInstanceCache(cache);
     if (instCache == null) {
       return null;
     }
@@ -89,12 +93,24 @@ public class InstanceCacheManagerOld implements InstanceCacheManager {
     return instCache;
   }
 
-  public InstanceCache createInstanceCache(String appId, String microserviceName, String microserviceVersionRule) {
-    List<MicroserviceInstance> instances =
-        serviceRegistry.findServiceInstance(appId, microserviceName, microserviceVersionRule);
-    if (instances == null) {
+  public InstanceCache createInstanceCache(InstanceCache instanceCache) {
+    String appId = instanceCache.getAppId();
+    String microserviceName = instanceCache.getMicroserviceName();
+    String microserviceVersionRule = instanceCache.getMicroserviceVersionRule();
+    MicroserviceInstanceRefresh microerviceInstanceRefresh =
+        serviceRegistry.findServiceInstance(appId, microserviceName, microserviceVersionRule, instanceCache.getRevision());
+    if (microerviceInstanceRefresh == null) {
       return null;
     }
+    if (!microerviceInstanceRefresh.isNeedRefresh()) {
+      return instanceCache;
+    }
+    String revision = microerviceInstanceRefresh.getRevision();
+    String rev = instanceCache.getRevision();
+    if (Integer.valueOf(rev) - Integer.valueOf(revision) >= 0) {
+      return instanceCache;
+    }
+ List<MicroserviceInstance> instances = microerviceInstanceRefresh.getInstances();
 
     Map<String, MicroserviceInstance> instMap = new HashMap<>();
     for (MicroserviceInstance instance : instances) {
@@ -102,6 +118,7 @@ public class InstanceCacheManagerOld implements InstanceCacheManager {
     }
 
     InstanceCache instCache = new InstanceCache(appId, microserviceName, microserviceVersionRule, instMap);
+    instCache.setRevision(revision);
     return instCache;
   }
 
@@ -122,9 +139,11 @@ public class InstanceCacheManagerOld implements InstanceCacheManager {
   @Override
   public VersionedCache getOrCreateVersionedCache(String appId, String microserviceName,
       String microserviceVersionRule) {
+    InstanceCache instanceCache = new InstanceCache(appId, microserviceName, microserviceVersionRule, new HashMap<String, MicroserviceInstance>());
+    instanceCache.setRevision(DefinitionConst.DEFAULT_REVISION);
     String key = getKey(appId, microserviceName);
     InstanceCache cache = cacheMap.computeIfAbsent(key, k -> {
-      return createInstanceCache(appId, microserviceName, microserviceVersionRule);
+      return createInstanceCache(instanceCache);
     });
     return cache.getVersionedCache();
   }
