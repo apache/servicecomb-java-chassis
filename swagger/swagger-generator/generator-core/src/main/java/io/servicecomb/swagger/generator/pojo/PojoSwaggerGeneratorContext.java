@@ -109,9 +109,7 @@ public class PojoSwaggerGeneratorContext extends AbstractSwaggerGeneratorContext
   protected void mergeBodyBasedParameters(OperationGenerator operationGenerator,
       List<BodyParameter> bodyParameters) {
     List<Parameter> swaggerParameters = operationGenerator.getSwaggerParameters();
-    for (Parameter parameter : bodyParameters) {
-      swaggerParameters.remove(parameter);
-    }
+    swaggerParameters.removeAll(bodyParameters);
 
     // 将这些body包装为一个class，整体做为一个body参数
     String bodyParamName = ParamUtils.generateBodyParameterName(operationGenerator.getProviderMethod());

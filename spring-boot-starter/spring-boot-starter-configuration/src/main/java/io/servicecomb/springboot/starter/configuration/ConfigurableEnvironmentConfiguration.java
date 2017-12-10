@@ -17,6 +17,7 @@
 package io.servicecomb.springboot.starter.configuration;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -68,9 +69,7 @@ public class ConfigurableEnvironmentConfiguration extends AbstractConfiguration 
       PropertySource<?> source = entry.getValue();
       if (source instanceof EnumerablePropertySource) {
         EnumerablePropertySource<?> enumerable = (EnumerablePropertySource<?>) source;
-        for (String name : enumerable.getPropertyNames()) {
-          result.add(name);
-        }
+        result.addAll(Arrays.asList(enumerable.getPropertyNames()));
       }
     }
     return result.iterator();

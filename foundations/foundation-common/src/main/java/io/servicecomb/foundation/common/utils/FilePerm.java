@@ -25,6 +25,7 @@ import java.nio.file.attribute.AclEntryPermission;
 import java.nio.file.attribute.PosixFileAttributes;
 import java.nio.file.attribute.PosixFilePermission;
 import java.nio.file.attribute.PosixFilePermissions;
+import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.Set;
 
@@ -127,9 +128,7 @@ public final class FilePerm {
   public static Set<AclEntryPermission> getDefaultAclPerm() {
 
     Set<AclEntryPermission> perms = EnumSet.noneOf(AclEntryPermission.class);
-    for (AclEntryPermission aclPerm : permList) {
-      perms.add(aclPerm);
-    }
+    perms.addAll(Arrays.asList(permList));
 
     return perms;
   }

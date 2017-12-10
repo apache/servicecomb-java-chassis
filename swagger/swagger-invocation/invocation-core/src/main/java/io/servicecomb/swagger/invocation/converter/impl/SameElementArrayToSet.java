@@ -15,6 +15,7 @@
  */
 package io.servicecomb.swagger.invocation.converter.impl;
 
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -38,9 +39,7 @@ public final class SameElementArrayToSet implements Converter {
 
     Object[] array = (Object[]) value;
     Set<Object> set = new HashSet<>();
-    for (Object e : array) {
-      set.add(e);
-    }
+    set.addAll(Arrays.asList(array));
     return set;
   }
 }
