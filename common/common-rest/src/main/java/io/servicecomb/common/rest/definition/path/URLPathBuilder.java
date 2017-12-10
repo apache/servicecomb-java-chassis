@@ -66,26 +66,26 @@ public class URLPathBuilder {
       rawPath = SLASH + rawPath;
     }
 
-    String tmpPath = "";
+    StringBuilder tmpPath = new StringBuilder();
     for (int idx = 0; idx < rawPath.length(); idx++) {
       char currentChar = rawPath.charAt(idx);
       if (currentChar == '{') {
         if (tmpPath.length() != 0) {
-          this.pathParamWriterList.add(new StaticUrlParamWriter(tmpPath));
-          tmpPath = "";
+          this.pathParamWriterList.add(new StaticUrlParamWriter(tmpPath.toString()));
+          tmpPath = tmpPath.delete(0, tmpPath.length());
         }
       } else if (currentChar == '}') {
         if (tmpPath.length() != 0) {
-          RestParam param = paramMap.get(tmpPath);
+          RestParam param = paramMap.get(tmpPath.toString());
           this.pathParamWriterList.add(new PathVarParamWriter(param));
-          tmpPath = "";
+          tmpPath = tmpPath.delete(0, tmpPath.length());
         }
       } else {
-        tmpPath += currentChar;
+        tmpPath.append(currentChar);
       }
     }
     if (tmpPath.length() != 0) {
-      this.pathParamWriterList.add(new StaticUrlParamWriter(tmpPath));
+      this.pathParamWriterList.add(new StaticUrlParamWriter(tmpPath.toString()));
     }
   }
 
