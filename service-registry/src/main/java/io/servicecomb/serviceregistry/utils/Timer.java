@@ -79,17 +79,18 @@ public class Timer {
   }
 
   public int getNextTimeout() {
-    if (this.increase) {
-      int timeout = (this.current.get() + 1) * this.stepSize;
-      return (timeout > this.max ? this.max : timeout);
-    }
-    return (this.stepSize > this.max ? this.max : this.stepSize);
+    int next = this.current.get() + 1;
+    return getTimeout(next);
   }
 
   public int nextTimeout() {
     int current = this.current.incrementAndGet();
+    return getTimeout(current);
+  }
+
+  private int getTimeout(int counter) {
     if (this.increase) {
-      int timeout = current * this.stepSize;
+      int timeout = counter * this.stepSize;
       return (timeout > this.max ? this.max : timeout);
     }
     return (this.stepSize > this.max ? this.max : this.stepSize);
