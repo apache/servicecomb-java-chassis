@@ -40,7 +40,7 @@ public class TestAbstractDeserializer extends AbstractDeserializer {
 
   static ReaderHelpData readerHelpData = Mockito.mock(ReaderHelpData.class);
 
-  static Map<String, ReaderHelpData> readerHelpDataMap = new HashMap<String, ReaderHelpData>();
+  static Map<String, ReaderHelpData> readerHelpDataMap = new HashMap<>();
 
   public static void setReaderHelpDataMap(Map<String, ReaderHelpData> readerHelpDataMap) {
     TestAbstractDeserializer.readerHelpDataMap = readerHelpDataMap;

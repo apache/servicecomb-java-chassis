@@ -338,7 +338,7 @@ public class ConfigCenterClient {
           if (!queryParams.containsKey(key)) {
             queryParams.put(key, new String[] {value});
           } else {
-            List<String> vals = new ArrayList<String>(Arrays.asList(queryParams.get(key)));
+            List<String> vals = new ArrayList<>(Arrays.asList(queryParams.get(key)));
             vals.add(value);
             queryParams.put(key, vals.toArray(new String[vals.size()]));
           }

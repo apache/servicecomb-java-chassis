@@ -63,7 +63,7 @@ public class TestIpPortManager {
   public void testGetAvailableAddress(@Injectable ServiceRegistryConfig config,
       @Injectable InstanceCacheManager cacheManager,
       @Injectable InstanceCache cache) {
-    ArrayList<IpPort> ipPortList = new ArrayList<IpPort>();
+    ArrayList<IpPort> ipPortList = new ArrayList<>();
     ipPortList.add(new IpPort("127.0.0.1", 9980));
     ipPortList.add(new IpPort("127.0.0.1", 9981));
 
@@ -139,7 +139,7 @@ public class TestIpPortManager {
   @Test
   public void testCreateServiceRegistryCacheWithInstanceCache() {
 
-    List<MicroserviceInstance> list = new ArrayList<MicroserviceInstance>();
+    List<MicroserviceInstance> list = new ArrayList<>();
     MicroserviceInstance e1 = new MicroserviceInstance();
     list.add(e1);
 

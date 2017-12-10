@@ -82,7 +82,7 @@ public final class ProtobufCompatibleUtils {
         RuntimeMapField<T, Object, Object> runtimeMapField =
             (RuntimeMapField<T, Object, Object>) org.create(number, name, field, strategy);
 
-        return new RuntimeMapFieldProtobuf<T>(runtimeMapField, field);
+        return new RuntimeMapFieldProtobuf<>(runtimeMapField, field);
       }
     };
 

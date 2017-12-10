@@ -44,7 +44,7 @@ public class TestLoadBalancer {
 
   @Test
   public void testLoadBalancerFullOperationWithoutException() {
-    List<Server> newServers = new ArrayList<Server>();
+    List<Server> newServers = new ArrayList<>();
     Server server = Mockito.mock(Server.class);
     newServers.add(server);
 
@@ -66,7 +66,7 @@ public class TestLoadBalancer {
   @Test
   public void testAddServerException() {
     boolean status = true;
-    List<Server> newServers = new ArrayList<Server>();
+    List<Server> newServers = new ArrayList<>();
     Server server = Mockito.mock(Server.class);
 
     newServers.add(server);
@@ -87,7 +87,7 @@ public class TestLoadBalancer {
   @Test
   public void testServerListException() {
     boolean status = true;
-    List<Server> newServers = new ArrayList<Server>();
+    List<Server> newServers = new ArrayList<>();
     Server server = Mockito.mock(Server.class);
 
     newServers.add(server);
@@ -108,7 +108,7 @@ public class TestLoadBalancer {
   @Test
   public void testMarkServerDownException() {
     boolean status = true;
-    List<Server> newServers = new ArrayList<Server>();
+    List<Server> newServers = new ArrayList<>();
     Server server = Mockito.mock(Server.class);
 
     newServers.add(server);
@@ -137,7 +137,7 @@ public class TestLoadBalancer {
 
   @Test
   public void testGetAllServers() {
-    List<Server> servers = new ArrayList<Server>();
+    List<Server> servers = new ArrayList<>();
     Server server = Mockito.mock(Server.class);
     servers.add(server);
     loadBalancer.setServerList(servers);
