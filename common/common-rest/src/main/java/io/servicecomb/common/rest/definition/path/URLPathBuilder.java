@@ -66,28 +66,29 @@ public class URLPathBuilder {
       rawPath = SLASH + rawPath;
     }
 
-    String tmpPath = "";
+    StringBuilder tmpPath = new StringBuilder();
     for (int idx = 0; idx < rawPath.length(); idx++) {
       char currentChar = rawPath.charAt(idx);
       if (currentChar == '{') {
         if (tmpPath.length() != 0) {
-          this.pathParamWriterList.add(new StaticUrlParamWriter(tmpPath));
-          tmpPath = "";
+          this.pathParamWriterList.add(new StaticUrlParamWriter(tmpPath.toString()));
+          tmpPath.setLength(0);
         }
       } else if (currentChar == '}') {
         if (tmpPath.length() != 0) {
-          RestParam param = paramMap.get(tmpPath);
+          RestParam param = paramMap.get(tmpPath.toString());
           this.pathParamWriterList.add(new PathVarParamWriter(param));
-          tmpPath = "";
+          tmpPath.setLength(0);
         }
       } else {
-        tmpPath += currentChar;
+        tmpPath.append(currentChar);
       }
     }
     if (tmpPath.length() != 0) {
-      this.pathParamWriterList.add(new StaticUrlParamWriter(tmpPath));
+      this.pathParamWriterList.add(new StaticUrlParamWriter(tmpPath.toString()));
     }
   }
+
 
   public String createRequestPath(Object[] args) throws Exception {
     StringBuilder builder = new StringBuilder();
