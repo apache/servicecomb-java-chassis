@@ -17,17 +17,17 @@
 
 <configuration status="error" monitorInterval="300">
   <Properties>
+    <!--metrics文件Rolling单文件最大大小(KB,MB,GB)-->
     <Property name="maxFileSize">10MB</Property>
+    <!--metrics文件Rolling保存数量-->
     <Property name="maxFileCount">10</Property>
-    <Property name="filePath">D:/Temp/</Property>
+    <!--metrics文件存储目录-->
+    <Property name="filePath">target</Property>
+    <!--metrics文件名前缀-->
     <Property name="filePrefix">bmi.calculator</Property>
   </Properties>
 
   <Appenders>
-
-    <Console name="Console" target="SYSTEM_OUT">
-      <PatternLayout pattern="%m%n"/>
-    </Console>
     <RollingFile name="averageServiceExecutionTime" fileName="${filePath}${filePrefix}.averageServiceExecutionTime.dat"
       filePattern="${filePath}${filePrefix}.averageServiceExecutionTime-%i.dat">
       <PatternLayout pattern="%m%n"/>
@@ -159,10 +159,6 @@
   </Appenders>
 
   <Loggers>
-    <Root level="error">
-      <Appender-ref ref="Console"/>
-    </Root>
-
     <Logger name="averageServiceExecutionTime" level="error" additivity="false">
       <AppenderRef ref="averageServiceExecutionTime"/>
     </Logger>
