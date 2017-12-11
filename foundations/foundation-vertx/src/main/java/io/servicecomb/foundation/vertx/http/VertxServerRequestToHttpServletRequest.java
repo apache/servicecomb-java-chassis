@@ -16,8 +16,9 @@
 
 package io.servicecomb.foundation.vertx.http;
 
-import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collection;
@@ -28,7 +29,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import java.util.concurrent.CompletableFuture;
 
 import javax.servlet.AsyncContext;
 import javax.servlet.ServletException;
@@ -37,10 +37,11 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.Part;
 import javax.ws.rs.core.HttpHeaders;
 
-import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import io.servicecomb.foundation.vertx.stream.BufferInputStream;
-import io.vertx.core.AsyncResult;
 import io.vertx.core.MultiMap;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.http.HttpServerRequest;
@@ -49,6 +50,7 @@ import io.vertx.ext.web.RoutingContext;
 
 // wrap vertx http request to Servlet http request
 public class VertxServerRequestToHttpServletRequest extends AbstractHttpServletRequest {
+  private static final Logger LOGGER = LoggerFactory.getLogger(VertxServerRequestToHttpServletRequest.class);
   private static final EmptyAsyncContext EMPTY_ASYNC_CONTEXT = new EmptyAsyncContext();
 
   private RoutingContext context;
@@ -230,37 +232,28 @@ public class VertxServerRequestToHttpServletRequest extends AbstractHttpServletR
     Optional<FileUpload> upload = context.fileUploads().stream().filter(fileUpload -> fileUpload.name().equals(name))
         .findFirst();
     if (!upload.isPresent()) {
-      throw new IOException("No such file with name: " + name);
+      LOGGER.error("No such file with name: {}", name);
+      return null;
     }
 
-    CompletableFuture<Part> future = new CompletableFuture<>();
-    final FileUpload fileUpload = upload.get();
-    context.vertx().fileSystem().readFile(
-        fileUpload.uploadedFileName(),
-        fileHandler -> future.complete(new VertxPart(context, fileHandler, fileUpload)));
-    return future.join();
+    return new VertxPart(upload.get());
   }
 
   private static class VertxPart implements Part {
-
-    private final AsyncResult<Buffer> fileHandler;
     private final FileUpload fileUpload;
-    private RoutingContext context;
 
-    private VertxPart(RoutingContext context, AsyncResult<Buffer> fileHandler, FileUpload fileUpload) {
-      this.fileHandler = fileHandler;
+    private VertxPart(FileUpload fileUpload) {
       this.fileUpload = fileUpload;
-      this.context = context;
     }
 
     @Override
     public InputStream getInputStream() throws IOException {
-      return new ByteArrayInputStream(fileHandler.result().getBytes());
+      return new FileInputStream(fileUpload.uploadedFileName());
     }
 
     @Override
     public String getContentType() {
-      return context.getAcceptableContentType();
+      return fileUpload.contentType();
     }
 
     @Override
@@ -275,12 +268,15 @@ public class VertxServerRequestToHttpServletRequest extends AbstractHttpServletR
 
     @Override
     public long getSize() {
-      return fileHandler.result().length();
+      return fileUpload.size();
     }
 
     @Override
     public void write(String fileName) throws IOException {
-      FileUtils.write(new File(fileName), fileHandler.result().toString());
+      try (FileInputStream in = new FileInputStream(new File(fileUpload.uploadedFileName()));
+          FileOutputStream out = new FileOutputStream(new File(fileName))) {
+        IOUtils.copy(in, out);
+      }
     }
 
     @Override

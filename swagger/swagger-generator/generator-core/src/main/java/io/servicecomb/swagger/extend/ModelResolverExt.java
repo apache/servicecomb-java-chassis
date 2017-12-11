@@ -78,7 +78,8 @@ public class ModelResolverExt extends ModelResolver {
   private void checkType(JavaType type) {
     // 原子类型/string在java中是abstract的
     if (type.getRawClass().isPrimitive()
-        || creatorMap.containsKey(type.getRawClass())) {
+        || creatorMap.containsKey(type.getRawClass())
+        || String.class.equals(type.getRawClass())) {
       return;
     }
 
