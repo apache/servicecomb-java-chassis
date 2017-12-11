@@ -113,7 +113,6 @@ public class FormProcessorCreator implements ParamValueProcessorCreator {
 
     @Override
     public void setValue(RestClientRequest clientRequest, Object arg) throws Exception {
-      @SuppressWarnings("unchecked")
       String[] filenames = (String[]) ((HttpServletRequest) arg).getAttribute(UPLOADS + paramPath);
       for (String filename : filenames) {
         clientRequest.attach(paramPath, filename);
