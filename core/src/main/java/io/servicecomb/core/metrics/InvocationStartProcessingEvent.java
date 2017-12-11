@@ -25,6 +25,10 @@ public class InvocationStartProcessingEvent implements Event {
 
   private final long inQueueNanoTime;
 
+  public long getInQueueNanoTime() {
+    return inQueueNanoTime;
+  }
+
   public String getOperationName() {
     return operationName;
   }

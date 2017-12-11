@@ -29,6 +29,18 @@ public class InvocationFinishedEvent implements Event {
 
   private final String operationType;
 
+  public long getProcessElapsedNanoTime() {
+    return processElapsedNanoTime;
+  }
+
+  public long getTotalElapsedNanoTime() {
+    return totalElapsedNanoTime;
+  }
+
+  public String getOperationType() {
+    return operationType;
+  }
+
   public String getOperationName() {
     return operationName;
   }
