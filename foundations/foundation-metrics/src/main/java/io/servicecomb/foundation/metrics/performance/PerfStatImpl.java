@@ -58,10 +58,7 @@ public class PerfStatImpl implements PerfStat {
     name = otherPerfStat.getName();
     List<PerfStatData> otherDataList = otherPerfStat.getPerfStatDataList();
     if (dataList.isEmpty()) {
-      for (int idx = 0; idx < otherDataList.size(); idx++) {
-        PerfStatData otherData = otherDataList.get(idx);
-        dataList.add(new PerfStatData(otherData.getName()));
-      }
+      otherDataList.forEach(otherData -> dataList.add(new PerfStatData(otherData.getName())));
     }
 
     for (int idx = 0; idx < otherDataList.size(); idx++) {

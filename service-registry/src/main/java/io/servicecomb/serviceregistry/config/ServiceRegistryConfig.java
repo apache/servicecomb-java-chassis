@@ -110,17 +110,17 @@ public final class ServiceRegistryConfig {
             .getStringProperty("cse.service.registry.address", "https://127.0.0.1:30100");
     List<String> uriLsit = Arrays.asList(property.get().split(","));
     ArrayList<IpPort> ipPortList = new ArrayList<IpPort>();
-    for (int i = 0; i < uriLsit.size(); i++) {
+    uriLsit.forEach(anUriList -> {
       try {
-        URI uri = new URI(uriLsit.get(i));
+        URI uri = new URI(anUriList);
         StringBuilder sb = new StringBuilder(uri.getHost());
         sb.append(':').append(uri.getPort() < 0 ? PROTOCOL_HTTP_PORT : uri.getPort());
         this.ssl = uri.getScheme().startsWith("https");
         ipPortList.add(NetUtils.parseIpPort(sb.toString()));
       } catch (Exception e) {
-        LOGGER.error("cse.service.registry.address invalid : {}", uriLsit.get(i), e);
+        LOGGER.error("cse.service.registry.address invalid : {}", anUriList, e);
       }
-    }
+    });
     return ipPortList;
   }
 
