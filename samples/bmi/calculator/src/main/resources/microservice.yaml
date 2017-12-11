@@ -39,8 +39,9 @@ servicecomb:
     round_places: 1
     file:
       enabled: true
-      root_path: D:/Temp
-      #metrics file name prefix setting,default value is "metrics"
-      name_prefix: bmi.calculator
-      max_rolling_size: 10MB
-      max_rolling_count: 10
+# no use anymore , see etc/metrics.log4j2.xml
+#      root_path: D:/Temp
+#      #metrics file name prefix setting,default value is "metrics"
+#      name_prefix: bmi.calculator
+#      max_rolling_size: 10MB
+#      max_rolling_count: 10
