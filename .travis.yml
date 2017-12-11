@@ -9,12 +9,8 @@ jobs:
   include:
     - stage: Compilation and Installation
       script: scripts/travis.sh install
-
-deploy:
-  provider: script
-  script: scripts/travis.sh deploy
-  on:
-    branch: master    
+    - stage: Deploy on
+      script: if [ "$TRAVIS_PULL_REQUEST" != "true" ]; then bash scripts/travis.sh deploy; fi
 
 env:
   global:
