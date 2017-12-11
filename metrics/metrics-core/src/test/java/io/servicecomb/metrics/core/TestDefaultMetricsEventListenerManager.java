@@ -46,21 +46,21 @@ public class TestDefaultMetricsEventListenerManager {
     MetricsEventManager.triggerEvent(
         new InvocationStartProcessingEvent("fun1", System.nanoTime(), TimeUnit.MILLISECONDS.toNanos(100)));
     MetricsEventManager
-        .triggerEvent(new InvocationFinishedEvent("fun1", String.valueOf(InvocationType.CONSUMER), System.nanoTime(),
+        .triggerEvent(new InvocationFinishedEvent("fun1", InvocationType.CONSUMER, System.nanoTime(),
             TimeUnit.MILLISECONDS.toNanos(200), TimeUnit.MILLISECONDS.toNanos(300)));
 
     MetricsEventManager.triggerEvent(new InvocationStartedEvent("fun1", System.nanoTime()));
     MetricsEventManager.triggerEvent(
         new InvocationStartProcessingEvent("fun1", System.nanoTime(), TimeUnit.MILLISECONDS.toNanos(300)));
     MetricsEventManager
-        .triggerEvent(new InvocationFinishedEvent("fun1", String.valueOf(InvocationType.CONSUMER), System.nanoTime(),
+        .triggerEvent(new InvocationFinishedEvent("fun1", InvocationType.CONSUMER, System.nanoTime(),
             TimeUnit.MILLISECONDS.toNanos(400), TimeUnit.MILLISECONDS.toNanos(700)));
 
     MetricsEventManager.triggerEvent(new InvocationStartedEvent("fun12", System.nanoTime()));
     MetricsEventManager.triggerEvent(
         new InvocationStartProcessingEvent("fun12", System.nanoTime(), TimeUnit.MILLISECONDS.toNanos(500)));
     MetricsEventManager
-        .triggerEvent(new InvocationFinishedEvent("fun12", String.valueOf(InvocationType.CONSUMER), System.nanoTime(),
+        .triggerEvent(new InvocationFinishedEvent("fun12", InvocationType.CONSUMER, System.nanoTime(),
             TimeUnit.MILLISECONDS.toNanos(600), TimeUnit.MILLISECONDS.toNanos(1100)));
 
     MetricsEventManager.triggerEvent(new InvocationStartedEvent("fun11", System.nanoTime()));

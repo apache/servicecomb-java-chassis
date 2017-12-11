@@ -191,8 +191,7 @@ public class Invocation extends SwaggerInvocation {
     long finishedTime = System.nanoTime();
     EventUtils
         .triggerEvent(new InvocationFinishedEvent(operationMeta.getMicroserviceQualifiedName(),
-            String.valueOf(this.invocationType), finishedTime,
-            finishedTime - startProcessingTime,
+            this.invocationType, finishedTime, finishedTime - startProcessingTime,
             finishedTime - startTime));
   }
 }
