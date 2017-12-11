@@ -16,30 +16,15 @@
  */
 package io.servicecomb.springboot.starter.registry;
 
-import org.junit.After;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 
 import io.servicecomb.serviceregistry.RegistryUtils;
 import io.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
 import mockit.Expectations;
-import mockit.Tested;
 
 public class TestCseAutoConfiguration {
-
-  /* @Tested
-  private CseAutoConfiguration cseAutoConfiguration;
-  
-  @Before
-  public void setUp() throws Exception {
-  }
-  
-  @After
-  public void tearDown() throws Exception {
-    cseAutoConfiguration = null;
-  }*/
 
   @Test
   public void testInitRegistry() {

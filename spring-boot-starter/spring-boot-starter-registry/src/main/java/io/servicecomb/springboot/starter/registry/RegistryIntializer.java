@@ -42,6 +42,8 @@ public class RegistryIntializer {
       } catch (Exception e) {
         LOG.error("init registry error.", e);
       }
+    } else {
+      LOG.info("rest address is null.Service is not registered to service center");
     }
   }
 }
