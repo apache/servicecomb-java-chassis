@@ -69,27 +69,27 @@ public class TestDefaultMetricsEventListenerManager {
 
     Map<String, Number> results = registry.getAllMetricsValue();
 
-    String name = String.format(EmbeddedMetricsName.QUEUE_COUNT_IN_QUEUE, "fun1");
+    String name = String.format(EmbeddedMetricTemplates.COUNT_IN_QUEUE_TEMPLATE, "fun1");
     Assert.assertTrue(results.get(name).longValue() == 0);
-    name = String.format(EmbeddedMetricsName.QUEUE_COUNT_IN_QUEUE, "fun11");
+    name = String.format(EmbeddedMetricTemplates.COUNT_IN_QUEUE_TEMPLATE, "fun11");
     Assert.assertTrue(results.get(name).longValue() == 1);
-    name = String.format(EmbeddedMetricsName.QUEUE_COUNT_IN_QUEUE, "instance");
+    name = String.format(EmbeddedMetricTemplates.COUNT_IN_QUEUE_TEMPLATE, "instance");
     Assert.assertTrue(results.get(name).longValue() == 1);
 
-    name = String.format(EmbeddedMetricsName.QUEUE_LIFE_TIME_IN_QUEUE, "fun1");
+    name = String.format(EmbeddedMetricTemplates.LIFE_TIME_IN_QUEUE_TEMPLATE, "fun1");
     Assert.assertTrue(results.get(name + ".min").doubleValue() == 100);
     Assert.assertTrue(results.get(name + ".max").doubleValue() == 300);
     Assert.assertTrue(results.get(name + ".average").doubleValue() == 200);
-    name = String.format(EmbeddedMetricsName.QUEUE_LIFE_TIME_IN_QUEUE, "instance");
+    name = String.format(EmbeddedMetricTemplates.LIFE_TIME_IN_QUEUE_TEMPLATE, "instance");
     Assert.assertTrue(results.get(name + ".min").doubleValue() == 100);
     Assert.assertTrue(results.get(name + ".max").doubleValue() == 500);
     Assert.assertTrue(results.get(name + ".average").doubleValue() == 300);
 
-    name = String.format(EmbeddedMetricsName.QUEUE_EXECUTION_TIME, "fun1");
+    name = String.format(EmbeddedMetricTemplates.EXECUTION_TIME_TEMPLATE, "fun1");
     Assert.assertTrue(results.get(name + ".min").doubleValue() == 200);
     Assert.assertTrue(results.get(name + ".max").doubleValue() == 400);
     Assert.assertTrue(results.get(name + ".average").doubleValue() == 300);
-    name = String.format(EmbeddedMetricsName.QUEUE_EXECUTION_TIME, "instance");
+    name = String.format(EmbeddedMetricTemplates.EXECUTION_TIME_TEMPLATE, "instance");
     Assert.assertTrue(results.get(name + ".min").doubleValue() == 200);
     Assert.assertTrue(results.get(name + ".max").doubleValue() == 600);
     Assert.assertTrue(results.get(name + ".average").doubleValue() == 400);

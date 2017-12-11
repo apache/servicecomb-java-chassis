@@ -16,19 +16,10 @@
 
 package io.servicecomb.metrics.core.metric;
 
-import rx.functions.Func0;
+public interface WritableMetric extends Metric {
+  void update(Number num);
 
-public class CustomMetric extends AbstractMetric {
+  void increment();
 
-  private final Func0<Number> getCallback;
-
-  public CustomMetric(String name, Func0<Number> getCallback) {
-    super(name);
-    this.getCallback = getCallback;
-  }
-
-  @Override
-  public Number get(String tag) {
-    return getCallback.call();
-  }
+  void decrement();
 }

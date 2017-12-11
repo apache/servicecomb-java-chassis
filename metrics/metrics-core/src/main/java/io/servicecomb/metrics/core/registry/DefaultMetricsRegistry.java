@@ -26,7 +26,7 @@ import java.util.stream.Collectors;
 import com.netflix.config.DynamicPropertyFactory;
 import com.netflix.servo.monitor.Pollers;
 
-import io.servicecomb.metrics.core.EmbeddedMetricsName;
+import io.servicecomb.metrics.core.EmbeddedMetricTemplates;
 import io.servicecomb.metrics.core.metric.BackgroundMetric;
 import io.servicecomb.metrics.core.metric.Metric;
 import io.servicecomb.metrics.core.metric.MetricFactory;
@@ -128,15 +128,15 @@ public class DefaultMetricsRegistry implements MetricsRegistry {
   private void initDefaultSupportedMetrics() {
     //prepare for queue
     String instanceCountInQueueName = String
-        .format(EmbeddedMetricsName.QUEUE_COUNT_IN_QUEUE, "instance");
+        .format(EmbeddedMetricTemplates.COUNT_IN_QUEUE_TEMPLATE, "instance");
     this.registerMetric(factory.createCounter(instanceCountInQueueName));
 
     String instanceExecutionTime = String
-        .format(EmbeddedMetricsName.QUEUE_EXECUTION_TIME, "instance");
+        .format(EmbeddedMetricTemplates.EXECUTION_TIME_TEMPLATE, "instance");
     this.registerMetric(factory.createTimer(instanceExecutionTime));
 
     String lifeTimeInQueueTime = String
-        .format(EmbeddedMetricsName.QUEUE_LIFE_TIME_IN_QUEUE, "instance");
+        .format(EmbeddedMetricTemplates.LIFE_TIME_IN_QUEUE_TEMPLATE, "instance");
     this.registerMetric(factory.createTimer(lifeTimeInQueueTime));
   }
 }

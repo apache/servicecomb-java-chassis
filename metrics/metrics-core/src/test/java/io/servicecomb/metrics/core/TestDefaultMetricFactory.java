@@ -5,15 +5,13 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import org.junit.Assert;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 
-import io.servicecomb.foundation.common.exceptions.ServiceCombException;
 import io.servicecomb.metrics.core.metric.BackgroundMetric;
 import io.servicecomb.metrics.core.metric.BasicTimerMetric;
 import io.servicecomb.metrics.core.metric.DefaultMetricFactory;
 import io.servicecomb.metrics.core.metric.Metric;
+import io.servicecomb.metrics.core.metric.WritableMetric;
 import io.servicecomb.metrics.core.metric.MetricFactory;
 
 public class TestDefaultMetricFactory {
@@ -29,12 +27,12 @@ public class TestDefaultMetricFactory {
     backgroundData.put("A", 100);
     backgroundData.put("B", 200);
 
-    Metric counter = factory.createCounter("counter");
-    Metric timer = factory.createTimer("timer");
+    WritableMetric counter = factory.createCounter("counter");
+    WritableMetric timer = factory.createTimer("timer");
     Metric background = factory.createBackground("counter", () -> backgroundData, 100);
     Metric custom = factory.createCustom("custom", () -> 1000);
-    Metric doubleGauge = factory.createDoubleGauge("double");
-    Metric longGauge = factory.createLongGauge("long");
+    WritableMetric doubleGauge = factory.createDoubleGauge("double");
+    WritableMetric longGauge = factory.createLongGauge("long");
 
     counter.update(1);
     doubleGauge.update(2);
@@ -59,6 +57,17 @@ public class TestDefaultMetricFactory {
 
     Assert.assertTrue(background.get("A").longValue() == 100);
     Assert.assertTrue(((BackgroundMetric)background).getAllWithFilter("A").get("A").longValue() == 100);
+
+    counter.increment();
+    counter.decrement();
+    doubleGauge.increment();
+    doubleGauge.decrement();
+    longGauge.increment();
+    longGauge.decrement();
+
+    Assert.assertTrue(counter.getAll().get("counter").longValue() == 1);
+    Assert.assertTrue(doubleGauge.getAll().get("double").doubleValue() == 2);
+    Assert.assertTrue(longGauge.getAll().get("long").longValue() == 3);
 
   }
 }

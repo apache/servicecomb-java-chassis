@@ -20,9 +20,7 @@ import java.util.Map;
 
 public interface Metric {
   String getName();
-
-  void update(Number num);
-
+  
   Number get(String tag);
 
   Map<String, Number> getAll();

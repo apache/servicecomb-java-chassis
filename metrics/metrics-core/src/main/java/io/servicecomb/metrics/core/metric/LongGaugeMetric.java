@@ -18,7 +18,7 @@ package io.servicecomb.metrics.core.metric;
 
 import com.netflix.servo.monitor.LongGauge;
 
-public class LongGaugeMetric extends AbstractMetric {
+public class LongGaugeMetric extends AbstractMetric implements WritableMetric{
 
   private final LongGauge gauge;
 
@@ -30,6 +30,16 @@ public class LongGaugeMetric extends AbstractMetric {
   @Override
   public void update(Number num) {
     gauge.set(num.longValue());
+  }
+
+  @Override
+  public void increment() {
+    gauge.getNumber().incrementAndGet();
+  }
+
+  @Override
+  public void decrement() {
+    gauge.getNumber().decrementAndGet();
   }
 
   @Override

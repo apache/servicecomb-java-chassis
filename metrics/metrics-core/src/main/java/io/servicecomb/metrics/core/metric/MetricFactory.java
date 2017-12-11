@@ -21,13 +21,13 @@ import java.util.Map;
 import rx.functions.Func0;
 
 public interface MetricFactory {
-  Metric createCounter(String name);
+  WritableMetric createCounter(String name);
 
-  Metric createDoubleGauge(String name);
+  WritableMetric createDoubleGauge(String name);
 
-  Metric createLongGauge(String name);
+  WritableMetric createLongGauge(String name);
 
-  Metric createTimer(String name);
+  WritableMetric createTimer(String name);
 
   Metric createCustom(String name, Func0<Number> getCallback);
 

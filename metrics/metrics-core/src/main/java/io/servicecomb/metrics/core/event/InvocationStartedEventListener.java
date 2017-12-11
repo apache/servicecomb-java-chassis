@@ -19,9 +19,9 @@ package io.servicecomb.metrics.core.event;
 import io.servicecomb.core.metrics.InvocationStartedEvent;
 import io.servicecomb.foundation.metrics.event.MetricsEvent;
 import io.servicecomb.foundation.metrics.event.MetricsEventListener;
-import io.servicecomb.metrics.core.EmbeddedMetricsName;
-import io.servicecomb.metrics.core.metric.Metric;
+import io.servicecomb.metrics.core.EmbeddedMetricTemplates;
 import io.servicecomb.metrics.core.metric.MetricFactory;
+import io.servicecomb.metrics.core.metric.WritableMetric;
 import io.servicecomb.metrics.core.registry.MetricsRegistry;
 
 public class InvocationStartedEventListener implements MetricsEventListener {
@@ -45,15 +45,15 @@ public class InvocationStartedEventListener implements MetricsEventListener {
   public void process(MetricsEvent data) {
     InvocationStartedEvent event = (InvocationStartedEvent) data;
 
-    String countInQueueName = String.format(EmbeddedMetricsName.QUEUE_COUNT_IN_QUEUE, event.getOperationName());
-    Metric metric = registry.getMetric(countInQueueName);
+    String countInQueueName = String.format(EmbeddedMetricTemplates.COUNT_IN_QUEUE_TEMPLATE, event.getOperationName());
+    WritableMetric metric = (WritableMetric) registry.getMetric(countInQueueName);
     if (metric == null) {
-      metric = registry.getOrCreateMetric(factory.createCounter(countInQueueName));
+      metric = (WritableMetric) registry.getOrCreateMetric(factory.createCounter(countInQueueName));
     }
-    String instanceCountInQueueName = String.format(EmbeddedMetricsName.QUEUE_COUNT_IN_QUEUE, "instance");
-    Metric instanceMetric = registry.getMetric(instanceCountInQueueName);
+    String instanceCountInQueueName = String.format(EmbeddedMetricTemplates.COUNT_IN_QUEUE_TEMPLATE, "instance");
+    WritableMetric instanceMetric = (WritableMetric) registry.getMetric(instanceCountInQueueName);
 
-    metric.update(1);
-    instanceMetric.update(1);
+    metric.increment();
+    instanceMetric.increment();
   }
 }

@@ -34,7 +34,7 @@ public abstract class AbstractMetric implements Metric {
 
   @Override
   public Map<String, Number> getAll() {
-    Map<String, Number> values = new HashMap<>(1);
+    Map<String, Number> values = new HashMap<>();
     values.put(name, get(null));
     return values;
   }
