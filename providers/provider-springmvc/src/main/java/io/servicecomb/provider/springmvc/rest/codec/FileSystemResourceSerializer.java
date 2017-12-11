@@ -25,6 +25,7 @@ import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 
 class FileSystemResourceSerializer extends StdSerializer<FileSystemResource> {
+  private static final long serialVersionUID = 5167703179451606699L;
 
   FileSystemResourceSerializer() {
     super(FileSystemResource.class);
