@@ -21,7 +21,6 @@ import org.junit.Test;
 
 import io.servicecomb.config.client.ConfigCenterConfig;
 import io.servicecomb.config.client.URIConst;
-import mockit.Expectations;
 import mockit.Mocked;
 
 public class TestURIConst {
