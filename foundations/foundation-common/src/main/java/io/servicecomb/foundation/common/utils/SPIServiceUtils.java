@@ -43,9 +43,7 @@ public final class SPIServiceUtils {
    */
   public static <T> T getTargetService(Class<T> serviceType) {
     ServiceLoader<T> loader = ServiceLoader.load(serviceType);
-    Iterator<T> targetServices = loader.iterator();
-    while (targetServices.hasNext()) {
-      T service = targetServices.next();
+    for (T service : loader) {
       LOGGER.info("get the SPI service success, the extend service is: {}", service.getClass());
       return service;
     }

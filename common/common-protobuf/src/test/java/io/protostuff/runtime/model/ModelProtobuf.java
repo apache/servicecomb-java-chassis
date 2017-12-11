@@ -3,6 +3,8 @@
 
 package io.protostuff.runtime.model;
 
+import com.google.protobuf.CodedOutputStream;
+
 public final class ModelProtobuf {
   private ModelProtobuf() {
   }
@@ -1321,8 +1323,8 @@ public final class ModelProtobuf {
       for (int i = 0; i < list_.size(); i++) {
         com.google.protobuf.GeneratedMessageV3.writeString(output, 9, list_.getRaw(i));
       }
-      for (int i = 0; i < userList_.size(); i++) {
-        output.writeMessage(10, userList_.get(i));
+      for (User anUserList_ : userList_) {
+        output.writeMessage(10, anUserList_);
       }
     }
 
@@ -1379,10 +1381,8 @@ public final class ModelProtobuf {
         size += dataSize;
         size += 1 * getListList().size();
       }
-      for (int i = 0; i < userList_.size(); i++) {
-        size += com.google.protobuf.CodedOutputStream
-            .computeMessageSize(10, userList_.get(i));
-      }
+      size += userList_.stream().mapToInt(anUserList_ -> CodedOutputStream
+          .computeMessageSize(10, anUserList_)).sum();
       memoizedSize = size;
       return size;
     }
