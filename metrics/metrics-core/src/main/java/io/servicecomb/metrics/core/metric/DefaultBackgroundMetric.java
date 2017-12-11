@@ -29,21 +29,12 @@ import rx.functions.Func0;
 
 public class DefaultBackgroundMetric extends AbstractMetric implements BackgroundMetric {
 
-  private final Func0<Map<String, Number>> getCallback;
-
   private Map<String, Number> lastUpdateValues = new HashMap<>();
 
   public DefaultBackgroundMetric(String name, Func0<Map<String, Number>> getCallback, long reloadInterval) {
     super(name);
-    this.getCallback = getCallback;
-
     final Runnable executor = () -> lastUpdateValues = getCallback.call();
     Executors.newScheduledThreadPool(1).scheduleWithFixedDelay(executor, 0, reloadInterval, MILLISECONDS);
-  }
-
-  @Override
-  public void update(Number num) {
-    throw new ServiceCombException("unable update metric");
   }
 
   @Override

@@ -30,7 +30,6 @@ import com.netflix.servo.monitor.DoubleGauge;
 import com.netflix.servo.monitor.LongGauge;
 import com.netflix.servo.monitor.MonitorConfig;
 
-import io.servicecomb.foundation.metrics.output.servo.MetricsObserverInitializer;
 import io.servicecomb.metrics.core.metric.BasicTimerMetric;
 import io.servicecomb.metrics.core.metric.CounterMetric;
 import io.servicecomb.metrics.core.metric.DefaultBackgroundMetric;
@@ -38,9 +37,9 @@ import io.servicecomb.metrics.core.metric.DefaultMetricFactory;
 import io.servicecomb.metrics.core.metric.DoubleGaugeMetric;
 import io.servicecomb.metrics.core.metric.LongGaugeMetric;
 import io.servicecomb.metrics.core.metric.Metric;
+import io.servicecomb.metrics.core.metric.WritableMetric;
 import io.servicecomb.metrics.core.registry.DefaultMetricsRegistry;
 import io.servicecomb.metrics.core.registry.MetricsRegistry;
-import rx.functions.Func0;
 
 public class TestDefaultMetricsRegistry {
 
@@ -60,10 +59,10 @@ public class TestDefaultMetricsRegistry {
     backgroundValues.put("B",200);
     backgroundValues.put("C",300);
 
-    Metric timer = new BasicTimerMetric("timer");
-    Metric counter = new CounterMetric(new BasicCounter(MonitorConfig.builder("counter").build()));
-    Metric longGauge = new LongGaugeMetric(new LongGauge(MonitorConfig.builder("longGauge").build()));
-    Metric doubleGauge = new DoubleGaugeMetric(new DoubleGauge(MonitorConfig.builder("doubleGauge").build()));
+    WritableMetric timer = new BasicTimerMetric("timer");
+    WritableMetric counter = new CounterMetric(new BasicCounter(MonitorConfig.builder("counter").build()));
+    WritableMetric longGauge = new LongGaugeMetric(new LongGauge(MonitorConfig.builder("longGauge").build()));
+    WritableMetric doubleGauge = new DoubleGaugeMetric(new DoubleGauge(MonitorConfig.builder("doubleGauge").build()));
     Metric backgroundMetric = new DefaultBackgroundMetric("background", () -> backgroundValues, 1000);
     registry.registerMetric(timer);
     registry.registerMetric(counter);

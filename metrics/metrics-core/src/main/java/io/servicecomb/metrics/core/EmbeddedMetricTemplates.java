@@ -16,13 +16,13 @@
 
 package io.servicecomb.metrics.core;
 
-public class EmbeddedMetricsName {
+public class EmbeddedMetricTemplates {
 
   private static final String QUEUE_HEADER_FORMAT = "servicecomb.%s.queue";
 
-  public static final String QUEUE_COUNT_IN_QUEUE = QUEUE_HEADER_FORMAT + ".waitInQueue.count";
+  public static final String COUNT_IN_QUEUE_TEMPLATE = QUEUE_HEADER_FORMAT + ".waitInQueue.count";
 
-  public static final String QUEUE_EXECUTION_TIME = QUEUE_HEADER_FORMAT + ".executionTime";
+  public static final String EXECUTION_TIME_TEMPLATE = QUEUE_HEADER_FORMAT + ".executionTime";
 
-  public static final String QUEUE_LIFE_TIME_IN_QUEUE = QUEUE_HEADER_FORMAT + ".lifeTimeInQueue";
+  public static final String LIFE_TIME_IN_QUEUE_TEMPLATE = QUEUE_HEADER_FORMAT + ".lifeTimeInQueue";
 }

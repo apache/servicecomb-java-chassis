@@ -19,9 +19,9 @@ package io.servicecomb.metrics.core.event;
 import io.servicecomb.core.metrics.InvocationFinishedEvent;
 import io.servicecomb.foundation.metrics.event.MetricsEvent;
 import io.servicecomb.foundation.metrics.event.MetricsEventListener;
-import io.servicecomb.metrics.core.EmbeddedMetricsName;
-import io.servicecomb.metrics.core.metric.Metric;
+import io.servicecomb.metrics.core.EmbeddedMetricTemplates;
 import io.servicecomb.metrics.core.metric.MetricFactory;
+import io.servicecomb.metrics.core.metric.WritableMetric;
 import io.servicecomb.metrics.core.registry.MetricsRegistry;
 
 public class InvocationFinishedEventListener implements MetricsEventListener {
@@ -45,13 +45,13 @@ public class InvocationFinishedEventListener implements MetricsEventListener {
   public void process(MetricsEvent data) {
     InvocationFinishedEvent event = (InvocationFinishedEvent) data;
 
-    String executionTimeName = String.format(EmbeddedMetricsName.QUEUE_EXECUTION_TIME, event.getOperationName());
-    Metric metric = registry.getMetric(executionTimeName);
+    String executionTimeName = String.format(EmbeddedMetricTemplates.EXECUTION_TIME_TEMPLATE, event.getOperationName());
+    WritableMetric metric = (WritableMetric) registry.getMetric(executionTimeName);
     if (metric == null) {
-      metric = registry.getOrCreateMetric(factory.createTimer(executionTimeName));
+      metric = (WritableMetric) registry.getOrCreateMetric(factory.createTimer(executionTimeName));
     }
-    String instanceExecutionTimeName = String.format(EmbeddedMetricsName.QUEUE_EXECUTION_TIME, "instance");
-    Metric instanceMetric = registry.getMetric(instanceExecutionTimeName);
+    String instanceExecutionTimeName = String.format(EmbeddedMetricTemplates.EXECUTION_TIME_TEMPLATE, "instance");
+    WritableMetric instanceMetric = (WritableMetric) registry.getMetric(instanceExecutionTimeName);
 
     metric.update(event.getProcessElapsedNanoTime());
     instanceMetric.update(event.getProcessElapsedNanoTime());

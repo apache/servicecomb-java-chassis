@@ -27,7 +27,7 @@ import com.netflix.servo.util.Strings;
 
 import io.servicecomb.foundation.common.exceptions.ServiceCombException;
 
-public class BasicTimerMetric extends AbstractMetric {
+public class BasicTimerMetric extends AbstractMetric implements WritableMetric {
 
   //it is a StepCounter and div by second
   public static final String TOTAL = "totalTime";
@@ -41,7 +41,7 @@ public class BasicTimerMetric extends AbstractMetric {
 
   public static final String AVERAGE = "average";
 
-  public static final String[] ALL_TAG = new String[] {TOTAL, MAX, MIN, COUNT, AVERAGE};
+  private static final String[] ALL_TAG = new String[] {TOTAL, MAX, MIN, COUNT, AVERAGE};
 
   private final Map<String, Monitor> extraTagMetrics;
 
@@ -61,10 +61,9 @@ public class BasicTimerMetric extends AbstractMetric {
       public Object getValue() {
         double count = get("count").doubleValue();
         if (count != 0) {
-          return get("totalTime").doubleValue() / get("count").doubleValue();
-        } else {
-          return 0;
+          return get("totalTime").doubleValue() / count;
         }
+        return 0;
       }
 
       @Override
@@ -87,6 +86,16 @@ public class BasicTimerMetric extends AbstractMetric {
   }
 
   @Override
+  public void increment() {
+    throw new ServiceCombException("please use update,increment is not supported");
+  }
+
+  @Override
+  public void decrement() {
+    throw new ServiceCombException("please use update,decrement is not supported");
+  }
+
+  @Override
   public Number get(String tag) {
     if (Strings.isNullOrEmpty(tag)) {
       return timer.getValue(0);
@@ -101,7 +110,7 @@ public class BasicTimerMetric extends AbstractMetric {
 
   @Override
   public Map<String, Number> getAll() {
-    Map<String, Number> values = new HashMap<>(6);
+    Map<String, Number> values = new HashMap<>();
     values.put(getName(), get(null));
     for (String tag : ALL_TAG) {
       values.put(String.join(".", getName(), tag), get(tag));

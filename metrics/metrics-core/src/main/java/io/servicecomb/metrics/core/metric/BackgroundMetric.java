@@ -18,6 +18,6 @@ package io.servicecomb.metrics.core.metric;
 
 import java.util.Map;
 
-public interface BackgroundMetric {
+public interface BackgroundMetric extends Metric {
   Map<String, Number> getAllWithFilter(String prefix);
 }

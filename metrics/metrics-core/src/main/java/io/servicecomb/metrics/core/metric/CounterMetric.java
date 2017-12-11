@@ -18,7 +18,7 @@ package io.servicecomb.metrics.core.metric;
 
 import com.netflix.servo.monitor.Counter;
 
-public class CounterMetric extends AbstractMetric {
+public class CounterMetric extends AbstractMetric implements WritableMetric {
 
   private final Counter counter;
 
@@ -30,6 +30,16 @@ public class CounterMetric extends AbstractMetric {
   @Override
   public void update(Number num) {
     counter.increment(num.longValue());
+  }
+
+  @Override
+  public void increment() {
+    counter.increment();
+  }
+
+  @Override
+  public void decrement() {
+    counter.increment(-1);
   }
 
   @Override

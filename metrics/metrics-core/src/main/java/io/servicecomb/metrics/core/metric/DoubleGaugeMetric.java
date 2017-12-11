@@ -18,7 +18,7 @@ package io.servicecomb.metrics.core.metric;
 
 import com.netflix.servo.monitor.DoubleGauge;
 
-public class DoubleGaugeMetric extends AbstractMetric {
+public class DoubleGaugeMetric extends AbstractMetric implements WritableMetric {
 
   private final DoubleGauge gauge;
 
@@ -30,6 +30,16 @@ public class DoubleGaugeMetric extends AbstractMetric {
   @Override
   public void update(Number num) {
     gauge.set(num.doubleValue());
+  }
+
+  @Override
+  public void increment() {
+    gauge.getNumber().addAndGet(1);
+  }
+
+  @Override
+  public void decrement() {
+    gauge.getNumber().addAndGet(-1);
   }
 
   @Override

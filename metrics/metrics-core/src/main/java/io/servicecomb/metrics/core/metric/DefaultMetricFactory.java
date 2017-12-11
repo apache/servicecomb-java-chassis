@@ -27,22 +27,22 @@ import rx.functions.Func0;
 
 public class DefaultMetricFactory implements MetricFactory {
   @Override
-  public Metric createCounter(String name) {
+  public WritableMetric createCounter(String name) {
     return new CounterMetric(new BasicCounter(MonitorConfig.builder(name).build()));
   }
 
   @Override
-  public Metric createDoubleGauge(String name) {
+  public WritableMetric createDoubleGauge(String name) {
     return new DoubleGaugeMetric(new DoubleGauge(MonitorConfig.builder(name).build()));
   }
 
   @Override
-  public Metric createLongGauge(String name) {
+  public WritableMetric createLongGauge(String name) {
     return new LongGaugeMetric(new LongGauge(MonitorConfig.builder(name).build()));
   }
 
   @Override
-  public Metric createTimer(String name) {
+  public WritableMetric createTimer(String name) {
     return new BasicTimerMetric(name);
   }
 

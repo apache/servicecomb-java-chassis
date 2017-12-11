@@ -19,9 +19,9 @@ package io.servicecomb.metrics.core.event;
 import io.servicecomb.core.metrics.InvocationStartProcessingEvent;
 import io.servicecomb.foundation.metrics.event.MetricsEvent;
 import io.servicecomb.foundation.metrics.event.MetricsEventListener;
-import io.servicecomb.metrics.core.EmbeddedMetricsName;
-import io.servicecomb.metrics.core.metric.Metric;
+import io.servicecomb.metrics.core.EmbeddedMetricTemplates;
 import io.servicecomb.metrics.core.metric.MetricFactory;
+import io.servicecomb.metrics.core.metric.WritableMetric;
 import io.servicecomb.metrics.core.registry.MetricsRegistry;
 
 public class InvocationStartProcessingEventListener implements MetricsEventListener {
@@ -44,24 +44,25 @@ public class InvocationStartProcessingEventListener implements MetricsEventListe
   public void process(MetricsEvent data) {
     InvocationStartProcessingEvent event = (InvocationStartProcessingEvent) data;
 
-    String countInQueueName = String.format(EmbeddedMetricsName.QUEUE_COUNT_IN_QUEUE, event.getOperationName());
-    String lifeTimeInQueueName = String.format(EmbeddedMetricsName.QUEUE_LIFE_TIME_IN_QUEUE, event.getOperationName());
+    String countInQueueName = String.format(EmbeddedMetricTemplates.COUNT_IN_QUEUE_TEMPLATE, event.getOperationName());
+    String lifeTimeInQueueName = String
+        .format(EmbeddedMetricTemplates.LIFE_TIME_IN_QUEUE_TEMPLATE, event.getOperationName());
 
-    Metric metric = registry.getMetric(countInQueueName);
+    WritableMetric metric = (WritableMetric) registry.getMetric(countInQueueName);
     if (metric == null) {
-      metric = registry.getOrCreateMetric(factory.createCounter(countInQueueName));
+      metric = (WritableMetric) registry.getOrCreateMetric(factory.createCounter(countInQueueName));
     }
-    String instanceCountInQueueName = String.format(EmbeddedMetricsName.QUEUE_COUNT_IN_QUEUE, "instance");
-    Metric instanceMetric = registry.getMetric(instanceCountInQueueName);
-    metric.update(-1);
-    instanceMetric.update(-1);
+    String instanceCountInQueueName = String.format(EmbeddedMetricTemplates.COUNT_IN_QUEUE_TEMPLATE, "instance");
+    WritableMetric instanceMetric = (WritableMetric) registry.getMetric(instanceCountInQueueName);
+    metric.decrement();
+    instanceMetric.decrement();
 
-    metric = registry.getMetric(lifeTimeInQueueName);
+    metric = (WritableMetric) registry.getMetric(lifeTimeInQueueName);
     if (metric == null) {
-      metric = registry.getOrCreateMetric(factory.createTimer(lifeTimeInQueueName));
+      metric = (WritableMetric) registry.getOrCreateMetric(factory.createTimer(lifeTimeInQueueName));
     }
-    String instanceLifeTimeInQueueName = String.format(EmbeddedMetricsName.QUEUE_LIFE_TIME_IN_QUEUE, "instance");
-    instanceMetric = registry.getMetric(instanceLifeTimeInQueueName);
+    String instanceLifeTimeInQueueName = String.format(EmbeddedMetricTemplates.LIFE_TIME_IN_QUEUE_TEMPLATE, "instance");
+    instanceMetric = (WritableMetric) registry.getMetric(instanceLifeTimeInQueueName);
 
     metric.update(event.getInQueueNanoTime());
     instanceMetric.update(event.getInQueueNanoTime());
