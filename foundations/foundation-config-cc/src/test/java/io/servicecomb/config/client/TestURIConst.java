@@ -16,21 +16,19 @@
 
 package io.servicecomb.config.client;
 
+import io.servicecomb.config.ConfigUtil;
 import org.junit.Assert;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
-import mockit.Expectations;
-import mockit.Mocked;
-
 public class TestURIConst {
+  @BeforeClass
+  public static void setUpClass() {
+    ConfigCenterConfig.setConcurrentCompositeConfiguration(ConfigUtil.createLocalConfig());
+  }
+  
   @Test
-  public void testURIV3(final @Mocked ConfigCenterConfig config) {
-    // just reset the config
-    new Expectations() {{
-      config.getDomainName();
-      result = "default";
-    }};
-    
+  public void testURIV3() {
     Assert.assertEquals(URIConst.MEMBERS, "/v3/default/configuration/members");
     Assert.assertEquals(URIConst.REFRESH_ITEMS, "/v3/default/configuration/refresh/items");
     Assert.assertEquals(URIConst.ITEMS, "/v3/default/configuration/items");
