@@ -33,7 +33,7 @@ public class TestRestClientRequestImpl {
 
   @Test
   public void testForm() throws Exception {
-    RestClientRequestImpl restClientRequest = new RestClientRequestImpl(request, null);
+    RestClientRequestImpl restClientRequest = new RestClientRequestImpl(request, null, null);
     restClientRequest.addForm("abc", "Hello");
     restClientRequest.addForm("def", "world");
     restClientRequest.addForm("ghi", null);
@@ -58,7 +58,7 @@ public class TestRestClientRequestImpl {
         return map;
       }
     }.getMockInstance();
-    RestClientRequestImpl restClientRequest = new RestClientRequestImpl(request, null);
+    RestClientRequestImpl restClientRequest = new RestClientRequestImpl(request, null, null);
     restClientRequest.addCookie("sessionid", "abcdefghijklmnopqrstuvwxyz");
     restClientRequest.addCookie("region", "china-north");
     restClientRequest.write(Buffer.buffer("I love servicecomb"));

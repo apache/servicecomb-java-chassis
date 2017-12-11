@@ -49,7 +49,7 @@ public class TestRestCodec {
 
   private static Map<String, String> header = new HashMap<>();
 
-  private static RestClientRequest clientRequest = new RestClientRequestImpl(null, null) {
+  private static RestClientRequest clientRequest = new RestClientRequestImpl(null, null, null) {
     public void putHeader(String name, String value) {
       header.put(name, value);
     }
