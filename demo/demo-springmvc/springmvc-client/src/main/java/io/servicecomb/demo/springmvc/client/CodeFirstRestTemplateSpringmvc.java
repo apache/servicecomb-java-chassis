@@ -81,14 +81,6 @@ public class CodeFirstRestTemplateSpringmvc extends CodeFirstRestTemplate {
 
     String templateResult = testRestTemplateUpload(template, cseUrlPrefix, file1, someFile);
     TestMgr.check(file1Content + file2Content, templateResult);
-
-    String intfResult = intfUpload(file1, someFile);
-    TestMgr.check(file1Content + file2Content, intfResult);
-  }
-
-  private String intfUpload(File file1, File someFile) {
-    return "";
-//    return intf.fileUpload(file1, someFile);
   }
 
   private String testRestTemplateUpload(RestTemplate template, String cseUrlPrefix, File file1, File someFile) {
