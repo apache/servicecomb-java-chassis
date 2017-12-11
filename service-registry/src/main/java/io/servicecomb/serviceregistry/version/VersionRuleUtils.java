@@ -23,15 +23,15 @@ import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 
 public final class VersionRuleUtils {
-  private static List<VersionRuleParser> parses = new ArrayList<>();
+  private static List<VersionRuleParser> parsers = new ArrayList<>();
 
   private static Map<String, VersionRule> versionRuleCache = new ConcurrentHashMap<>();
 
   static {
-    parses.add(new VersionRuleLatestParser());
-    parses.add(new VersionRuleStartFromParser());
-    parses.add(new VersionRuleRangeParser());
-    parses.add(new VersionRuleFixedParser());
+    parsers.add(new VersionRuleLatestParser());
+    parsers.add(new VersionRuleStartFromParser());
+    parsers.add(new VersionRuleRangeParser());
+    parsers.add(new VersionRuleFixedParser());
   }
 
   //1.0
@@ -46,7 +46,7 @@ public final class VersionRuleUtils {
 
   public static VersionRule create(String strVersionRule) {
     strVersionRule = strVersionRule.trim();
-    for (VersionRuleParser parser : parses) {
+    for (VersionRuleParser parser : parsers) {
       VersionRule versionRule = parser.parse(strVersionRule);
       if (versionRule != null) {
         return versionRule;

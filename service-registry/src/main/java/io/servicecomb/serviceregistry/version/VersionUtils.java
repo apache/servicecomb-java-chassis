@@ -26,6 +26,6 @@ public final class VersionUtils {
   public static Version getOrCreate(String strVersion) {
     Objects.requireNonNull(strVersion);
 
-    return versionCache.computeIfAbsent(strVersion, ver -> new Version(strVersion));
+    return versionCache.computeIfAbsent(strVersion, Version::new);
   }
 }
