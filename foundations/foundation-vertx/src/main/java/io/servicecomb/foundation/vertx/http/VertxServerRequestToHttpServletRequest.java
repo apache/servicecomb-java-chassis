@@ -18,7 +18,6 @@ package io.servicecomb.foundation.vertx.http;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collection;
@@ -37,7 +36,7 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.Part;
 import javax.ws.rs.core.HttpHeaders;
 
-import org.apache.commons.io.IOUtils;
+import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -273,10 +272,7 @@ public class VertxServerRequestToHttpServletRequest extends AbstractHttpServletR
 
     @Override
     public void write(String fileName) throws IOException {
-      try (FileInputStream in = new FileInputStream(new File(fileUpload.uploadedFileName()));
-          FileOutputStream out = new FileOutputStream(new File(fileName))) {
-        IOUtils.copy(in, out);
-      }
+      FileUtils.copyFile(new File(fileUpload.uploadedFileName()), new File(fileName));
     }
 
     @Override
