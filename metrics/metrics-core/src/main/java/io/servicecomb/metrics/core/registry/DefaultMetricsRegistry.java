@@ -21,6 +21,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 import com.netflix.config.DynamicPropertyFactory;
@@ -35,7 +36,7 @@ public class DefaultMetricsRegistry implements MetricsRegistry {
 
   public static final String METRICS_POLLING_TIME = "servicecomb.metrics.polling_millisecond";
 
-  private final Map<String, Metric> allRegisteredMetrics = new HashMap<>();
+  private final Map<String, Metric> allRegisteredMetrics = new ConcurrentHashMap<>();
 
   private final List<BackgroundMetric> allRegisteredBackgroundMetrics = new ArrayList<>();
 
@@ -67,11 +68,7 @@ public class DefaultMetricsRegistry implements MetricsRegistry {
 
   @Override
   public Metric getOrCreateMetric(Metric metric) {
-    Metric metricReturn = allRegisteredMetrics.putIfAbsent(metric.getName(), metric);
-    if (metricReturn == null) {
-      metricReturn = allRegisteredMetrics.get(metric.getName());
-    }
-    return metricReturn;
+    return allRegisteredMetrics.computeIfAbsent(metric.getName(), m -> metric);
   }
 
   @Override
