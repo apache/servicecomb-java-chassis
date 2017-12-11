@@ -25,9 +25,6 @@ import org.junit.Test;
 import io.servicecomb.config.ConfigUtil;
 import io.servicecomb.config.client.ConfigCenterConfig;
 
-/**
- * Created by l00168639 on 2017/8/31.
- */
 public class TestConfigCenterConfig {
   @BeforeClass
   public static void setUpClass() {
