@@ -16,9 +16,10 @@
 
 package io.servicecomb.core.metrics;
 
-import io.servicecomb.foundation.common.event.Event;
+import io.servicecomb.foundation.metrics.event.MetricsEvent;
+import io.servicecomb.swagger.invocation.InvocationType;
 
-public class InvocationFinishedEvent implements Event {
+public class InvocationFinishedEvent implements MetricsEvent {
   private final String operationName;
 
   private final long finishedTime;
@@ -27,7 +28,7 @@ public class InvocationFinishedEvent implements Event {
 
   private final long totalElapsedNanoTime;
 
-  private final String operationType;
+  private final InvocationType invocationType;
 
   public long getProcessElapsedNanoTime() {
     return processElapsedNanoTime;
@@ -37,19 +38,19 @@ public class InvocationFinishedEvent implements Event {
     return totalElapsedNanoTime;
   }
 
-  public String getOperationType() {
-    return operationType;
+  public InvocationType getInvocationType() {
+    return invocationType;
   }
 
   public String getOperationName() {
     return operationName;
   }
 
-  public InvocationFinishedEvent(String operationName, String operationType, long finishedTime,
+  public InvocationFinishedEvent(String operationName, InvocationType invocationType, long finishedTime,
       long processElapsedNanoTime,
       long totalElapsedNanoTime) {
     this.operationName = operationName;
-    this.operationType = operationType;
+    this.invocationType = invocationType;
     this.finishedTime = finishedTime;
     this.processElapsedNanoTime = processElapsedNanoTime;
     this.totalElapsedNanoTime = totalElapsedNanoTime;
