@@ -59,9 +59,11 @@ public abstract class AbstractPropertiesLoader {
       extendedPropertyClass = readExtendedPropertyClassName(configuration, EXTENDED_CLASS_FOR_COMPATIBLE);
       if (StringUtils.isEmpty(extendedPropertyClass)) {
         return;
+      } else {
+        LOGGER.warn("The property `{}` is deprecated and will be removed soon, please use the new property `{}`.",
+            EXTENDED_CLASS_FOR_COMPATIBLE, EXTENDED_CLASS);
       }
     }
-
     try {
       Class<?> classExternalProperty = Class.forName(extendedPropertyClass);
       if (!PropertyExtended.class.isAssignableFrom(classExternalProperty)) {
