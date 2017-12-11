@@ -50,8 +50,7 @@ public final class CertificateUtil {
 
     for (int i = 1; i < chain.length; i++) {
       X509Certificate parent = chain[i - 1];
-      for (int j = 0; j < cerChain.length; j++) {
-        X509Certificate child = cerChain[j];
+      for (X509Certificate child : cerChain) {
         String parentDN = parent.getSubjectX500Principal().getName();
         String childDN = child.getSubjectX500Principal().getName();
         if (parentDN.equals(childDN)) {

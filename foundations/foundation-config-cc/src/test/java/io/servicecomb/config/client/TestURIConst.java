@@ -16,25 +16,22 @@
 
 package io.servicecomb.config.client;
 
+import io.servicecomb.config.ConfigUtil;
 import org.junit.Assert;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
-import io.servicecomb.config.client.ConfigCenterConfig;
-import io.servicecomb.config.client.URIConst;
-import mockit.Mocked;
-
 public class TestURIConst {
-  // must run in a different JVM or will conflict with TestURIConstV3
-  @Test
-  public void testURI(final @Mocked ConfigCenterConfig config) {
-    if (URIConst.VERSION_V2.equals(URIConst.CURRENT_VERSION)) {
-      Assert.assertEquals(URIConst.MEMBERS, "/members");
-      Assert.assertEquals(URIConst.REFRESH_ITEMS, "/configuration/v2/refresh/items");
-      Assert.assertEquals(URIConst.ITEMS, "/configuration/v2/items");
-    } else {
-      Assert.assertEquals(URIConst.MEMBERS, "/v3/default/configuration/members");
-      Assert.assertEquals(URIConst.REFRESH_ITEMS, "/v3/default/configuration/refresh/items");
-      Assert.assertEquals(URIConst.ITEMS, "/v3/default/configuration/items");
-    }
+  @BeforeClass
+  public static void setUpClass() {
+    ConfigCenterConfig.setConcurrentCompositeConfiguration(ConfigUtil.createLocalConfig());
   }
+  
+  @Test
+  public void testURIV3() {
+    Assert.assertEquals(URIConst.MEMBERS, "/v3/default/configuration/members");
+    Assert.assertEquals(URIConst.REFRESH_ITEMS, "/v3/default/configuration/refresh/items");
+    Assert.assertEquals(URIConst.ITEMS, "/v3/default/configuration/items");
+  }
+  
 }

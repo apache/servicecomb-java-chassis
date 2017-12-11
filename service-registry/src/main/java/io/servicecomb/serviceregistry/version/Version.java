@@ -22,7 +22,7 @@ import org.apache.commons.lang.ArrayUtils;
 
 // short version is enough
 public class Version implements Comparable<Version> {
-  private final String[] ZERO = new String[] {"0", "0", "0"};
+  private static final String[] ZERO = new String[] {"0", "0", "0"};
 
   private final short major;
 

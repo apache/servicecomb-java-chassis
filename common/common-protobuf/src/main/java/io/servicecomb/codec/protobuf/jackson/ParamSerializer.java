@@ -35,8 +35,8 @@ public class ParamSerializer extends JsonSerializer<Object> {
     ProtobufGenerator protobufGenerator = (ProtobufGenerator) gen;
     Iterator<ProtobufField> iter = protobufGenerator.getSchema().getRootType().fields().iterator();
     Object[] values = (Object[]) value;
-    for (int idx = 0; idx < values.length; idx++) {
-      gen.writeObjectField(iter.next().name, values[idx]);
+    for (Object value1 : values) {
+      gen.writeObjectField(iter.next().name, value1);
     }
 
     gen.writeEndObject();
