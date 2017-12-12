@@ -103,18 +103,28 @@ public class RestClientRequestImpl implements RestClientRequest {
     String boundary = "boundary" + UUID.randomUUID().toString();
     putHeader(CONTENT_TYPE, MULTIPART_FORM_DATA + "; boundary=" + boundary);
 
-    //    for (Entry<String, Object> entry : formMap.entrySet()) {
-    //      output.write(entry.getKey().getBytes(StandardCharsets.UTF_8));
-    //      output.write('=');
-    //      if (entry.getValue() != null) {
-    //        String value = RestObjectMapper.INSTANCE.convertToString(entry.getValue());
-    //        value = URLEncoder.encode(value, StandardCharsets.UTF_8.name());
-    //        output.write(value.getBytes(StandardCharsets.UTF_8));
-    //      }
-    //      output.write('&');
-    //    }
+    genBodyForm(boundary);
 
     attachFiles(boundary);
+  }
+
+  private void genBodyForm(String boundary) {
+    try {
+      try (BufferOutputStream output = new BufferOutputStream()) {
+        for (Entry<String, Object> entry : formMap.entrySet()) {
+          output.write("\r\n".getBytes());
+          output.write(("--" + boundary + "\r\n").getBytes());
+          output.write(("Content-Disposition: form-data; name=\"" + entry.getKey() + "\"\r\n\r\n").getBytes());
+          if (entry.getValue() != null) {
+            String value = RestObjectMapper.INSTANCE.convertToString(entry.getValue());
+            output.write(value.getBytes(StandardCharsets.UTF_8));
+          }
+        }
+        request.write(output.getBuffer());
+      }
+    } catch (Exception e) {
+      asyncResp.consumerFail(e);
+    }
   }
 
   protected void doEndNormal() {
