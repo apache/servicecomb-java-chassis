@@ -162,6 +162,14 @@ public class TestHeaderProcessor {
   }
 
   @Test
+  public void testSetValueNull() throws Exception {
+    createClientRequest();
+    HeaderProcessor processor = createProcessor("h1", String.class);
+    processor.setValue(clientRequest, null);
+    Assert.assertEquals(0, headers.size());
+  }
+
+  @Test
   public void testSetValueDate() throws Exception {
     Date date = new Date();
     String strDate = ISO8601Utils.format(date);

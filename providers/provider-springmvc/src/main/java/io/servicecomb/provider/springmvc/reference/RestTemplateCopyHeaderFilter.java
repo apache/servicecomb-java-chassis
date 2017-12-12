@@ -40,6 +40,10 @@ public class RestTemplateCopyHeaderFilter implements HttpClientFilter {
 
     httpHeaders.forEach((key, values) -> {
       for (String value : values) {
+        // null args should not be set to requestEx to avoid NullPointerException in Netty.
+        if (null == value) {
+          continue;
+        }
         requestEx.addHeader(key, value);
       }
     });

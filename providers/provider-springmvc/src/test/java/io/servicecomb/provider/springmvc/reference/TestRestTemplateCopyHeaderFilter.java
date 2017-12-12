@@ -55,6 +55,28 @@ public class TestRestTemplateCopyHeaderFilter {
   }
 
   @Test
+  public void beforeSendRequestWithNullHeader(@Mocked Invocation invocation) {
+    Map<String, Object> context = new HashMap<>(1);
+    HttpHeaders httpHeaders = new HttpHeaders();
+    context.put(RestConst.CONSUMER_HEADER, httpHeaders);
+    httpHeaders.add("headerName0", "headerValue0");
+    httpHeaders.add("headerName1", null);
+    httpHeaders.add("headerName2", "headerValue2");
+    new Expectations() {
+      {
+        invocation.getHandlerContext();
+        result = context;
+      }
+    };
+
+    HttpServletRequestEx requestEx = new CommonToHttpServletRequest(null, null, new HttpHeaders(), null, false);
+    filter.beforeSendRequest(invocation, requestEx);
+    Assert.assertEquals("headerValue0", requestEx.getHeader("headerName0"));
+    Assert.assertEquals("headerValue2", requestEx.getHeader("headerName2"));
+    Assert.assertNull(requestEx.getHeader("headerName1"));
+  }
+
+  @Test
   public void beforeSendRequestHaveHeader(@Mocked Invocation invocation) {
     HttpHeaders httpHeaders = new HttpHeaders();
     httpHeaders.add("name", "value");
