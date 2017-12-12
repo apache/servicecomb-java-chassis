@@ -37,9 +37,7 @@ public final class SpringUtils {
     standardEnvironment.getPropertySources().addFirst(
         new MapPropertySource(UUID.randomUUID().toString(), map));
 
-    return strVal -> {
-      return standardEnvironment.resolvePlaceholders(strVal);
-    };
+    return standardEnvironment::resolvePlaceholders;
   }
 
   public static void ensureNoInject(Class<?> cls) {

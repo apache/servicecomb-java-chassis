@@ -31,9 +31,7 @@ public class HttpStatusManager {
       statusMap.put(status.getStatusCode(), status);
     }
 
-    SPIServiceUtils.getAllService(StatusType.class).forEach(status -> {
-      addStatusType(status);
-    });
+    SPIServiceUtils.getAllService(StatusType.class).forEach(this::addStatusType);
   }
 
   public void addStatusType(StatusType status) {

@@ -639,9 +639,7 @@ public class TestAbstractRestInvocation {
 
   @Test
   public void scheduleInvocationTimeout(@Mocked OperationMeta operationMeta) {
-    Executor executor = cmd -> {
-      cmd.run();
-    };
+    Executor executor = Runnable::run;
 
     new Expectations() {
       {
