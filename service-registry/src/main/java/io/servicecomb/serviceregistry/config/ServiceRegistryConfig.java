@@ -89,12 +89,16 @@ public final class ServiceRegistryConfig {
   }
 
   public int getWorkerPoolSize() {
+    String workerPoolSizeKey = "cse.service.registry.client.workerPoolSize";
     DynamicIntProperty property =
         DynamicPropertyFactory.getInstance()
-            .getIntProperty("cse.service.registry.client.workerPoolSize", 1);
+            .getIntProperty(workerPoolSizeKey, 1);
     int workerPoolSize = property.get();
     if (workerPoolSize <= 0) {
-      return Runtime.getRuntime().availableProcessors();
+      int nAvailableProcessors = Runtime.getRuntime().availableProcessors();
+      LOGGER.warn("The property `{}` must be positive integer, fallback to use number of available processors: {}",
+          workerPoolSizeKey, nAvailableProcessors);
+      return nAvailableProcessors;
     }
     return workerPoolSize;
   }
@@ -108,9 +112,9 @@ public final class ServiceRegistryConfig {
     DynamicStringProperty property =
         DynamicPropertyFactory.getInstance()
             .getStringProperty("cse.service.registry.address", "https://127.0.0.1:30100");
-    List<String> uriLsit = Arrays.asList(property.get().split(","));
-    ArrayList<IpPort> ipPortList = new ArrayList<IpPort>();
-    uriLsit.forEach(anUriList -> {
+    List<String> uriList = Arrays.asList(property.get().split(","));
+    ArrayList<IpPort> ipPortList = new ArrayList<>();
+    uriList.forEach(anUriList -> {
       try {
         URI uri = new URI(anUriList);
         StringBuilder sb = new StringBuilder(uri.getHost());
