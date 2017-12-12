@@ -85,6 +85,7 @@ public class LoadbalanceHandler extends AbstractHandler {
                 }
             }
         }
+        
 
         final LoadBalancer choosenLB = lb;
 
