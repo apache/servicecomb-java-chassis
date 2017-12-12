@@ -74,7 +74,7 @@ public class FormProcessorCreator implements ParamValueProcessorCreator {
     JavaType targetType = TypeFactory.defaultInstance().constructType(genericParamType);
 
     if (isPart(parameter)) {
-      return new PartProcessor(parameter.getName(), TypeFactory.defaultInstance().constructType(String[].class));
+      return new PartProcessor(parameter.getName(), targetType);
     }
     return new FormProcessor(parameter.getName(), targetType);
   }

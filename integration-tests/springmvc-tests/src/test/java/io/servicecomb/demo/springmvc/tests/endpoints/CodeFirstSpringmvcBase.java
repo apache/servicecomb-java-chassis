@@ -73,9 +73,9 @@ public class CodeFirstSpringmvcBase {
     return input;
   }
 
-  public String fileUpload(MultipartFile file1, MultipartFile file2) {
+  public String fileUpload(MultipartFile file1, MultipartFile file2, String name) {
     try {
-      return IOUtils.toString(file1.getInputStream()) + IOUtils.toString(file2.getInputStream());
+      return IOUtils.toString(file1.getInputStream()) + IOUtils.toString(file2.getInputStream()) + name;
     } catch (IOException e) {
       throw new IllegalArgumentException(e);
     }

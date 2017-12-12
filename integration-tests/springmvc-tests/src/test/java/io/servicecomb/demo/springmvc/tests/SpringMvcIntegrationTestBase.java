@@ -186,10 +186,12 @@ public class SpringMvcIntegrationTestBase {
   public void ableToUploadFile() throws IOException {
     String file1Content = "hello world";
     String file2Content = "bonjour";
+    String username = "mike";
 
     MultiValueMap<String, Object> map = new LinkedMultiValueMap<>();
     map.add("file1", new FileSystemResource(newFile(file1Content).getAbsolutePath()));
     map.add("someFile", new FileSystemResource(newFile(file2Content).getAbsolutePath()));
+    map.add("name", username);
 
     HttpHeaders headers = new HttpHeaders();
     headers.setContentType(MediaType.MULTIPART_FORM_DATA);
@@ -198,17 +200,19 @@ public class SpringMvcIntegrationTestBase {
         new HttpEntity<>(map, headers),
         String.class);
 
-    assertThat(result, is(file1Content + file2Content));
+    assertThat(result, is(file1Content + file2Content + username));
   }
 
   @Test
   public void ableToUploadFileFromConsumer() throws IOException {
     String file1Content = "hello world";
     String file2Content = "bonjour";
+    String username = "mike";
 
-    MultiValueMap<String, Object> map = new LinkedMultiValueMap<>();
-    map.add("file1", new FileSystemResource(newFile(file1Content).getAbsolutePath()));
-    map.add("someFile", new FileSystemResource(newFile(file2Content).getAbsolutePath()));
+    Map<String, Object> map = new HashMap<>();
+    map.put("file1", new FileSystemResource(newFile(file1Content).getAbsolutePath()));
+    map.put("someFile", new FileSystemResource(newFile(file2Content).getAbsolutePath()));
+    map.put("name", username);
 
     HttpHeaders headers = new HttpHeaders();
     headers.setContentType(MediaType.MULTIPART_FORM_DATA);
@@ -217,17 +221,19 @@ public class SpringMvcIntegrationTestBase {
         new HttpEntity<>(map, headers),
         String.class);
 
-    assertThat(result, is(file1Content + file2Content));
+    assertThat(result, is(file1Content + file2Content + username));
   }
 
   @Test
   public void ableToUploadFileWithoutAnnotation() throws IOException {
     String file1Content = "hello world";
     String file2Content = "bonjour";
+    String username = "mike";
 
     MultiValueMap<String, Object> map = new LinkedMultiValueMap<>();
     map.add("file1", new FileSystemResource(newFile(file1Content).getAbsolutePath()));
     map.add("file2", new FileSystemResource(newFile(file2Content).getAbsolutePath()));
+    map.add("name", username);
 
     HttpHeaders headers = new HttpHeaders();
     headers.setContentType(MediaType.MULTIPART_FORM_DATA);
@@ -236,7 +242,7 @@ public class SpringMvcIntegrationTestBase {
         new HttpEntity<>(map, headers),
         String.class);
 
-    assertThat(result, is(file1Content + file2Content));
+    assertThat(result, is(file1Content + file2Content + username));
   }
 
   @Test
