@@ -38,7 +38,6 @@ import com.netflix.config.DynamicPropertyFactory;
 import com.netflix.config.FixedDelayPollingScheduler;
 
 import io.servicecomb.config.ConfigUtil;
-import io.servicecomb.config.archaius.scheduler.NeverStartPollingScheduler;
 import mockit.Deencapsulation;
 import mockit.Mock;
 import mockit.MockUp;
