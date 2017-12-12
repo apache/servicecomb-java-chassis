@@ -89,17 +89,16 @@ public class LoadbalanceHandler implements Handler {
 
   @Override
   public void handle(Invocation invocation, AsyncResponse asyncResp) throws Exception {
-    String p = Configuration.INSTANCE.getPolicy(invocation.getMicroserviceName());
+    String policy = Configuration.INSTANCE.getPolicy(invocation.getMicroserviceName());
     String strategy = Configuration.INSTANCE.getRuleStrategyName(invocation.getMicroserviceName());
 
-    if (this.policy != null && !this.policy.equals(p)
-        || (this.strategy != null && !this.strategy.equals(strategy))) {
+    if (isNotChanged(policy,strategy)){
       //配置变化，需要重新生成所有的lb实例
       synchronized (lock) {
         loadBalancerMap.clear();
       }
     }
-    this.policy = p;
+    this.policy = policy;
     this.strategy = strategy;
 
     LoadBalancer loadBalancer = getOrCreateLoadBalancer(invocation);
@@ -350,4 +349,16 @@ public class LoadbalanceHandler implements Handler {
       }
     }
   }
+  
+  public boolean isNotChanged(String loadbalancePolicy, String loadbalanceStrategy) {
+    //不考虑policy和strategy混合使用的情况(policy和strategy都不为null)
+    if (loadbalancePolicy == null && loadbalanceStrategy == null) {
+      return this.policy == null && this.strategy == null;
+    }
+    if (loadbalancePolicy != null && loadbalanceStrategy == null) {
+      return loadbalancePolicy.equals(this.policy) && this.strategy == null;
+    }
+    return loadbalanceStrategy.equals(this.strategy) && this.policy == null;
+  }
+
 }

@@ -436,4 +436,15 @@ public class TestLoadbalanceHandler {
 
     // no exception
   }
+//  @Test
+//  public void testIsNotChanged() {
+//    boolean nullResult = handler.isNotChanged(null, null);
+//    Assert.assertEquals(true, nullResult);
+//   
+//    boolean strategyNullResult = handler.isNotChanged("com.netflix.loadbalancer.RandomRule", null);
+//    Assert.assertEquals(false, strategyNullResult);
+//    
+//    boolean policyNullResult = handler.isNotChanged(null, "Random");
+//    Assert.assertEquals(false, policyNullResult);
+//  }
 }
