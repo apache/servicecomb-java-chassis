@@ -217,7 +217,7 @@ public class SpringMvcIntegrationTestBase {
     HttpHeaders headers = new HttpHeaders();
     headers.setContentType(MediaType.MULTIPART_FORM_DATA);
     String result = RestTemplateBuilder.create().postForObject(
-        "cse://springmvc/codeFirstSpringmvc/upload",
+        "cse://springmvc-tests/codeFirstSpringmvc/upload",
         new HttpEntity<>(map, headers),
         String.class);
 

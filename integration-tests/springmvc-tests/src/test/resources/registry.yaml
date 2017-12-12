@@ -1,7 +1,7 @@
-springmvc:
+springmvc-tests:
   - id: "001"
-    version: "0.0.4"
-    appid: springmvc-it
+    version: "0.0.2"
+    appid: springmvctest-it
     instances:
       - endpoints:
-        - rest:127.0.0.1:8080
+        - rest://127.0.0.1:8080
