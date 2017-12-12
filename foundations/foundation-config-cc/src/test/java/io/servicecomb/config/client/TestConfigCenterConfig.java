@@ -23,7 +23,6 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import io.servicecomb.config.ConfigUtil;
-import io.servicecomb.config.client.ConfigCenterConfig;
 
 public class TestConfigCenterConfig {
   @BeforeClass

@@ -23,8 +23,6 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import io.servicecomb.config.ConfigUtil;
-import io.servicecomb.config.client.ConfigCenterConfig;
-import io.servicecomb.config.client.MemberDiscovery;
 import io.vertx.core.json.JsonObject;
 
 public class TestMemberDiscovery {
