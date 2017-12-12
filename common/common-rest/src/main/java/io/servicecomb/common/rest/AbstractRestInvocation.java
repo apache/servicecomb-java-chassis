@@ -42,7 +42,7 @@ import io.servicecomb.core.Invocation;
 import io.servicecomb.core.definition.MicroserviceMeta;
 import io.servicecomb.core.definition.OperationMeta;
 import io.servicecomb.core.metrics.InvocationStartedEvent;
-import io.servicecomb.foundation.common.event.EventUtils;
+import io.servicecomb.foundation.common.utils.EventUtils;
 import io.servicecomb.foundation.common.utils.JsonUtils;
 import io.servicecomb.foundation.vertx.http.HttpServletRequestEx;
 import io.servicecomb.foundation.vertx.http.HttpServletResponseEx;

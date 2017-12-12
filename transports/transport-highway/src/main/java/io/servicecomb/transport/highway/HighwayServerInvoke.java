@@ -33,7 +33,7 @@ import io.servicecomb.core.definition.MicroserviceMetaManager;
 import io.servicecomb.core.definition.OperationMeta;
 import io.servicecomb.core.definition.SchemaMeta;
 import io.servicecomb.core.metrics.InvocationStartedEvent;
-import io.servicecomb.foundation.common.event.EventUtils;
+import io.servicecomb.foundation.common.utils.EventUtils;
 import io.servicecomb.foundation.vertx.tcp.TcpConnection;
 import io.servicecomb.swagger.invocation.Response;
 import io.servicecomb.swagger.invocation.exception.InvocationException;

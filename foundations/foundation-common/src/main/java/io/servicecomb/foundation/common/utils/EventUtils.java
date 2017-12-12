@@ -14,7 +14,11 @@
  * limitations under the License.
  */
 
-package io.servicecomb.foundation.common.event;
+package io.servicecomb.foundation.common.utils;
+
+import io.servicecomb.foundation.common.event.Event;
+import io.servicecomb.foundation.common.event.EventBus;
+import io.servicecomb.foundation.common.event.EventListener;
 
 public final class EventUtils {
   private static final EventBus eventBus = new EventBus();
