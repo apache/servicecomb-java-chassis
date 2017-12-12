@@ -1,6 +1,6 @@
 APPLICATION_ID: springmvctest-it
 service_description:
-  name: springmvc
+  name: springmvc-tests
   version: 0.0.2
 cse:
   service:

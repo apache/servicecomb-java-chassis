@@ -109,12 +109,16 @@ public class RestClientRequestImpl implements RestClientRequest {
   }
 
   private void genBodyForm(String boundary) {
+    if (formMap == null) {
+      return;
+    }
+
     try {
       try (BufferOutputStream output = new BufferOutputStream()) {
         for (Entry<String, Object> entry : formMap.entrySet()) {
-          output.write("\r\n".getBytes());
-          output.write(("--" + boundary + "\r\n").getBytes());
-          output.write(("Content-Disposition: form-data; name=\"" + entry.getKey() + "\"\r\n\r\n").getBytes());
+          output.write(bytesOf("\r\n"));
+          output.write(bytesOf("--" + boundary + "\r\n"));
+          output.write(bytesOf("Content-Disposition: form-data; name=\"" + entry.getKey() + "\"\r\n\r\n"));
           if (entry.getValue() != null) {
             String value = RestObjectMapper.INSTANCE.convertToString(entry.getValue());
             output.write(value.getBytes(StandardCharsets.UTF_8));
@@ -125,6 +129,10 @@ public class RestClientRequestImpl implements RestClientRequest {
     } catch (Exception e) {
       asyncResp.consumerFail(e);
     }
+  }
+
+  private byte[] bytesOf(String string) {
+    return string.getBytes(StandardCharsets.UTF_8);
   }
 
   protected void doEndNormal() {
