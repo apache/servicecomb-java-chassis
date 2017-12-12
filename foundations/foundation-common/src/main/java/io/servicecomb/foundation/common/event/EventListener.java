@@ -14,8 +14,14 @@
  * limitations under the License.
  */
 
-package io.servicecomb.foundation.metrics.event;
+package io.servicecomb.foundation.common.event;
 
-//Common event interface for metrics event extension
-public interface MetricsEvent {
+//Common event listener interface,java chassis component can trigger event let high level component perceive data change.
+public interface EventListener {
+
+  //what is type event this listener concerned
+  Class<? extends Event> getConcernedEvent();
+
+  //process metric data
+  void process(Event data);
 }

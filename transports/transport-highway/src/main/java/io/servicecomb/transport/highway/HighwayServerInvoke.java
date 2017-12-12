@@ -28,12 +28,12 @@ import io.servicecomb.codec.protobuf.utils.WrapSchema;
 import io.servicecomb.core.Const;
 import io.servicecomb.core.CseContext;
 import io.servicecomb.core.Invocation;
-import io.servicecomb.core.metrics.InvocationStartedEvent;
 import io.servicecomb.core.definition.MicroserviceMeta;
 import io.servicecomb.core.definition.MicroserviceMetaManager;
 import io.servicecomb.core.definition.OperationMeta;
 import io.servicecomb.core.definition.SchemaMeta;
-import io.servicecomb.foundation.metrics.event.MetricsEventManager;
+import io.servicecomb.core.metrics.InvocationStartedEvent;
+import io.servicecomb.foundation.common.event.EventUtils;
 import io.servicecomb.foundation.vertx.tcp.TcpConnection;
 import io.servicecomb.swagger.invocation.Response;
 import io.servicecomb.swagger.invocation.exception.InvocationException;
@@ -164,7 +164,7 @@ public class HighwayServerInvoke {
   public void execute() {
     InvocationStartedEvent startedEvent = new InvocationStartedEvent(operationMeta.getMicroserviceQualifiedName(),
         System.nanoTime());
-    MetricsEventManager.triggerEvent(startedEvent);
+    EventUtils.triggerEvent(startedEvent);
 
     operationMeta.getExecutor().execute(() -> runInExecutor(startedEvent));
   }

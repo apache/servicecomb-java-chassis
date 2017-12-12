@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package io.servicecomb.foundation.metrics.event;
+package io.servicecomb.foundation.common.event;
 
 import java.util.Collections;
 import java.util.List;
@@ -22,18 +22,26 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-public class MetricsEventManager {
-  private static final Map<Class<? extends MetricsEvent>, List<MetricsEventListener>> allEvents = new ConcurrentHashMap<>();
+public class EventBus {
+  private final Map<Class<? extends Event>, List<EventListener>> allEventListeners = new ConcurrentHashMap<>();
 
-  public static void registerEventListener(MetricsEventListener eventListener) {
-    List<MetricsEventListener> eventListeners = allEvents
+  public void registerEventListener(EventListener eventListener) {
+    List<EventListener> eventListeners = allEventListeners
         .computeIfAbsent(eventListener.getConcernedEvent(), f -> new CopyOnWriteArrayList<>());
     eventListeners.add(eventListener);
   }
 
-  public static void triggerEvent(MetricsEvent event) {
-    List<MetricsEventListener> eventListeners = allEvents.getOrDefault(event.getClass(), Collections.emptyList());
-    for (MetricsEventListener eventListener : eventListeners) {
+  public void unregisterEventListener(EventListener eventListener) {
+    List<EventListener> eventListeners = allEventListeners
+        .computeIfAbsent(eventListener.getConcernedEvent(), f -> new CopyOnWriteArrayList<>());
+    if (eventListeners.contains(eventListener)) {
+      eventListeners.remove(eventListener);
+    }
+  }
+
+  public void triggerEvent(Event event) {
+    List<EventListener> eventListeners = allEventListeners.getOrDefault(event.getClass(), Collections.emptyList());
+    for (EventListener eventListener : eventListeners) {
       eventListener.process(event);
     }
   }

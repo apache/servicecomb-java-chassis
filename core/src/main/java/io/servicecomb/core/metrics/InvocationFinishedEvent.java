@@ -16,9 +16,9 @@
 
 package io.servicecomb.core.metrics;
 
-import io.servicecomb.foundation.metrics.event.MetricsEvent;
+import io.servicecomb.foundation.common.event.Event;
 
-public class InvocationFinishedEvent implements MetricsEvent {
+public class InvocationFinishedEvent implements Event {
   private final String operationName;
 
   private final long finishedTime;

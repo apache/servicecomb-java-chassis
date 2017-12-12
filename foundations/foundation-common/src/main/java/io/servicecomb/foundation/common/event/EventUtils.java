@@ -14,24 +14,20 @@
  * limitations under the License.
  */
 
-package io.servicecomb.core.metrics;
+package io.servicecomb.foundation.common.event;
 
-import io.servicecomb.foundation.common.event.Event;
+public final class EventUtils {
+  private static final EventBus eventBus = new EventBus();
 
-public class InvocationStartProcessingEvent implements Event {
-  private final String operationName;
-
-  private final long startProcessingTime;
-
-  private final long inQueueNanoTime;
-
-  public String getOperationName() {
-    return operationName;
+  public static void registerEventListener(EventListener eventListener) {
+    eventBus.registerEventListener(eventListener);
   }
 
-  public InvocationStartProcessingEvent(String operationName, long startProcessingTime, long inQueueNanoTime) {
-    this.operationName = operationName;
-    this.startProcessingTime = startProcessingTime;
-    this.inQueueNanoTime = inQueueNanoTime;
+  public static void unregisterEventListener(EventListener eventListener) {
+    eventBus.unregisterEventListener(eventListener);
+  }
+
+  public static void triggerEvent(Event event) {
+    eventBus.triggerEvent(event);
   }
 }

@@ -26,7 +26,7 @@ import io.servicecomb.core.definition.SchemaMeta;
 import io.servicecomb.core.metrics.InvocationFinishedEvent;
 import io.servicecomb.core.metrics.InvocationStartProcessingEvent;
 import io.servicecomb.core.provider.consumer.ReferenceConfig;
-import io.servicecomb.foundation.metrics.event.MetricsEventManager;
+import io.servicecomb.foundation.common.event.EventUtils;
 import io.servicecomb.swagger.invocation.AsyncResponse;
 import io.servicecomb.swagger.invocation.InvocationType;
 import io.servicecomb.swagger.invocation.SwaggerInvocation;
@@ -183,13 +183,13 @@ public class Invocation extends SwaggerInvocation {
 
   public void triggerStartProcessingEvent() {
     this.startProcessingTime = System.nanoTime();
-    MetricsEventManager.triggerEvent(new InvocationStartProcessingEvent(
+    EventUtils.triggerEvent(new InvocationStartProcessingEvent(
         operationMeta.getMicroserviceQualifiedName(), startProcessingTime, startProcessingTime - startTime));
   }
 
   public void triggerFinishedEvent() {
     long finishedTime = System.nanoTime();
-    MetricsEventManager
+    EventUtils
         .triggerEvent(new InvocationFinishedEvent(operationMeta.getMicroserviceQualifiedName(),
             String.valueOf(this.invocationType), finishedTime,
             finishedTime - startProcessingTime,
