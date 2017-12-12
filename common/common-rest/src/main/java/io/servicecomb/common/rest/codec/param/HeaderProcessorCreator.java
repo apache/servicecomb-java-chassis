@@ -56,6 +56,10 @@ public class HeaderProcessorCreator implements ParamValueProcessorCreator {
 
     @Override
     public void setValue(RestClientRequest clientRequest, Object arg) throws Exception {
+      if (null == arg) {
+        // null header should not be set to clientRequest to avoid NullPointerException in Netty.
+        return;
+      }
       clientRequest.putHeader(paramPath, RestObjectMapper.INSTANCE.convertToString(arg));
     }
 
