@@ -25,7 +25,6 @@ import org.mockito.Mockito;
 import com.netflix.config.WatchedUpdateListener;
 import com.netflix.config.WatchedUpdateResult;
 
-import io.servicecomb.config.archaius.sources.ConfigCenterConfigurationSourceImpl;
 import io.servicecomb.config.archaius.sources.ConfigCenterConfigurationSourceImpl.UpdateHandler;
 import mockit.Deencapsulation;
 

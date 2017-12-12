@@ -24,7 +24,6 @@ import org.junit.Test;
 
 import io.servicecomb.config.archaius.sources.ConfigCenterConfigurationSourceImpl;
 import io.servicecomb.config.archaius.sources.ConfigCenterConfigurationSourceImpl.UpdateHandler;
-import io.servicecomb.config.client.ParseConfigUtils;
 import mockit.Deencapsulation;
 
 /**
