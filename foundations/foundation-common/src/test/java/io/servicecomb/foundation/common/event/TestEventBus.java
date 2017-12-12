@@ -24,6 +24,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import org.junit.Assert;
 import org.junit.Test;
 
+import io.servicecomb.foundation.common.utils.EventUtils;
+
 public class TestEventBus {
 
   @Test
