@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package io.servicecomb.foundation.metrics;
+package io.servicecomb.foundation.common.event;
 
 import static org.awaitility.Awaitility.await;
 
@@ -24,36 +24,38 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import org.junit.Assert;
 import org.junit.Test;
 
-import io.servicecomb.foundation.metrics.event.MetricsEvent;
-import io.servicecomb.foundation.metrics.event.MetricsEventListener;
-import io.servicecomb.foundation.metrics.event.MetricsEventManager;
-
-public class TestMetricsEventManager {
+public class TestEventBus {
 
   @Test
-  public void testManager() {
+  public void test() throws InterruptedException {
     AtomicBoolean eventReceived = new AtomicBoolean(false);
 
-    MetricsEventManager.registerEventListener(new MetricsEventListener() {
+    EventListener listener = new EventListener() {
       @Override
-      public Class<? extends MetricsEvent> getConcernedEvent() {
-        return TestMetricsEvent.class;
+      public Class<? extends Event> getConcernedEvent() {
+        return TestEvent.class;
       }
 
       @Override
-      public void process(MetricsEvent data) {
+      public void process(Event data) {
         eventReceived.set(true);
       }
-    });
+    };
 
-    MetricsEventManager.triggerEvent(new TestMetricsEvent());
-
+    EventUtils.registerEventListener(listener);
+    EventUtils.triggerEvent(new TestEvent());
     await().atMost(1, TimeUnit.SECONDS)
         .until(eventReceived::get);
-
     Assert.assertTrue(eventReceived.get());
+
+    eventReceived.set(false);
+
+    EventUtils.unregisterEventListener(listener);
+    EventUtils.triggerEvent(new TestEvent());
+    Thread.sleep(1000);
+    Assert.assertFalse(eventReceived.get());
   }
 
-  private class TestMetricsEvent implements MetricsEvent {
+  private class TestEvent implements Event {
   }
 }
