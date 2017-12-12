@@ -22,6 +22,6 @@ public interface EventListener {
   //what is type event this listener concerned
   Class<? extends Event> getConcernedEvent();
 
-  //process metric data
+  //process event data
   void process(Event data);
 }
