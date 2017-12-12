@@ -60,7 +60,7 @@ public class SpringmvcClient {
     String prefix = "cse://springmvc";
 
     try {
-      // this test class is intended for rery hang issue JAV-27
+      // this test class is intended for retry hanging issue JAV-127
       templateUrlWithServiceName.getForObject(prefix + "/controller/sayhi?name=throwexception", String.class);
       TestMgr.check("true", "false");
     } catch (Exception e) {
