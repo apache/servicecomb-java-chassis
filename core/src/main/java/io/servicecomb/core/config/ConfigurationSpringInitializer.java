@@ -16,35 +16,13 @@
 
 package io.servicecomb.core.config;
 
-import java.io.IOException;
-import java.util.Properties;
+import io.servicecomb.foundation.common.config.PaaSPropertyPlaceholderConfigurer;
 
-import org.springframework.beans.factory.config.PropertyPlaceholderConfigurer;
-
-import io.servicecomb.foundation.common.config.ConfigMgr;
-
-public class ConfigurationSpringInitializer extends PropertyPlaceholderConfigurer {
-  // 以逗号分隔
-  private String configId;
+public class ConfigurationSpringInitializer extends PaaSPropertyPlaceholderConfigurer {
 
   public ConfigurationSpringInitializer() {
     setIgnoreUnresolvablePlaceholders(true);
     setOrder(Integer.MAX_VALUE - 1);
   }
 
-  public void setConfigId(String configId) {
-    this.configId = configId;
-  }
-
-  @Override
-  protected void loadProperties(Properties props) throws IOException {
-    for (String id : configId.split(",")) {
-      try {
-        Properties config = ConfigMgr.INSTANCE.getConfig(id);
-        props.putAll(config);
-      } catch (Exception e) {
-        throw new IOException(e);
-      }
-    }
-  }
 }

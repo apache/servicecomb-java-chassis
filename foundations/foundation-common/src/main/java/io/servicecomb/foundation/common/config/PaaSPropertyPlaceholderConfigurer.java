@@ -19,8 +19,9 @@ package io.servicecomb.foundation.common.config;
 import java.io.IOException;
 import java.util.Properties;
 
-public class PaaSPropertyPlaceholderConfigurer
-    extends org.springframework.beans.factory.config.PropertyPlaceholderConfigurer {
+import org.springframework.beans.factory.config.PropertyPlaceholderConfigurer;
+
+public class PaaSPropertyPlaceholderConfigurer extends PropertyPlaceholderConfigurer {
 
   // 以逗号分隔
   private String configId;
