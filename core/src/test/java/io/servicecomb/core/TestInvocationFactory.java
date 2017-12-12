@@ -30,11 +30,15 @@ import io.servicecomb.serviceregistry.registry.ServiceRegistryFactory;
 import mockit.Injectable;
 
 public class TestInvocationFactory {
+
+  public static final String TEST_INSTANCE_ID = "testInstanceId";
+
   @BeforeClass
   public static void setUp() {
     ServiceRegistry serviceRegistry = ServiceRegistryFactory.createLocal();
     serviceRegistry.init();
     RegistryUtils.setServiceRegistry(serviceRegistry);
+    RegistryUtils.getMicroservice().getIntance().setInstanceId(TEST_INSTANCE_ID);
   }
 
   @Test
@@ -43,6 +47,7 @@ public class TestInvocationFactory {
     Invocation invocation =
         InvocationFactory.forConsumer(referenceConfig, operationMeta, new String[] {"a", "b"});
     Assert.assertEquals("perfClient", invocation.getContext(Const.SRC_MICROSERVICE));
+    Assert.assertEquals(TEST_INSTANCE_ID, invocation.getContext(Const.SRC_INSTANCE));
   }
 
   @Test
@@ -51,6 +56,7 @@ public class TestInvocationFactory {
     Invocation invocation =
         InvocationFactory.forConsumer(referenceConfig, schemaMeta, "test", new String[] {"a", "b"});
     Assert.assertEquals("perfClient", invocation.getContext(Const.SRC_MICROSERVICE));
+    Assert.assertEquals(TEST_INSTANCE_ID, invocation.getContext(Const.SRC_INSTANCE));
   }
 
   @Test
@@ -58,6 +64,7 @@ public class TestInvocationFactory {
     Invocation invocation =
         InvocationFactory.forConsumer(referenceConfig, "test", new String[] {"a", "b"});
     Assert.assertEquals("perfClient", invocation.getContext(Const.SRC_MICROSERVICE));
+    Assert.assertEquals(TEST_INSTANCE_ID, invocation.getContext(Const.SRC_INSTANCE));
   }
 
   @Test

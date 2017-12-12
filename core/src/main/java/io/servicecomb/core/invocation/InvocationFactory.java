@@ -39,6 +39,7 @@ public final class InvocationFactory {
         operationMeta,
         swaggerArguments);
     invocation.addContext(Const.SRC_MICROSERVICE, getMicroserviceName());
+    invocation.addContext(Const.SRC_INSTANCE, getInstanceId());
     return invocation;
   }
 
@@ -70,5 +71,9 @@ public final class InvocationFactory {
     return new Invocation(endpoint,
         operationMeta,
         swaggerArguments);
+  }
+
+  private static String getInstanceId() {
+    return RegistryUtils.getMicroserviceInstance().getInstanceId();
   }
 }

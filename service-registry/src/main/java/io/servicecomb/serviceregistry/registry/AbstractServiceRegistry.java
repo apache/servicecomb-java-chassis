@@ -102,8 +102,8 @@ public abstract class AbstractServiceRegistry implements ServiceRegistry {
     appManager = new AppManager(eventBus);
 
     // we did not remove old InstanceCacheManager now
-	// microserviceVersionFactoryClass is null, means use old InstanceCacheManager
-	// must not throw exception
+    // microserviceVersionFactoryClass is null, means use old InstanceCacheManager
+    // must not throw exception
     String microserviceVersionFactoryClass = serviceRegistryConfig.getMicroserviceVersionFactory();
     if (microserviceVersionFactoryClass == null) {
       return;
