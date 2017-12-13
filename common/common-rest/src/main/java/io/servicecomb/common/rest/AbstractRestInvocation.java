@@ -216,7 +216,7 @@ public abstract class AbstractRestInvocation {
       }
     }
     responseEx.setStatus(response.getStatusCode(), response.getReasonPhrase());
-    responseEx.setContentType(produceProcessor.getName());
+    responseEx.setContentType(produceProcessor.getName()+"; charset=utf-8");
 
     Object body = response.getResult();
     if (response.isFailed()) {
