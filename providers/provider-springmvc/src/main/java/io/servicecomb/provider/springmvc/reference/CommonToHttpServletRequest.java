@@ -38,10 +38,10 @@ import javax.ws.rs.core.HttpHeaders;
 import org.springframework.core.io.Resource;
 
 import io.servicecomb.common.rest.RestConst;
+import io.servicecomb.foundation.common.part.FilePart;
+import io.servicecomb.foundation.common.part.InputStreamPart;
+import io.servicecomb.foundation.common.part.ResourcePart;
 import io.servicecomb.foundation.vertx.http.AbstractHttpServletRequest;
-import io.servicecomb.foundation.vertx.part.FilePart;
-import io.servicecomb.foundation.vertx.part.InputStreamPart;
-import io.servicecomb.foundation.vertx.part.ResourcePart;
 
 // restTemplate convert parameters to invocation args.
 public class CommonToHttpServletRequest extends AbstractHttpServletRequest {
