@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package io.servicecomb.foundation.vertx.part;
+package io.servicecomb.foundation.common.part;
 
 import java.io.InputStream;
 

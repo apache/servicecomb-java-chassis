@@ -15,40 +15,35 @@
  * limitations under the License.
  */
 
-package io.servicecomb.foundation.vertx.part;
+package io.servicecomb.foundation.common.part;
 
-import java.io.File;
-import java.io.FileInputStream;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
+import org.junit.Assert;
+import org.junit.Test;
 
-public class FilePart extends AbstractPart {
-  private File file;
+public class TestInputStreamPart {
+  String name = "paramName";
 
-  public FilePart(String name, String file) {
-    this(name, new File(file));
+  byte[] bytes = new byte[] {1, 2, 3};
+
+  InputStream is = new ByteArrayInputStream(bytes);
+
+  InputStreamPart part = new InputStreamPart(name, is);
+
+  @Test
+  public void getName() {
+    Assert.assertEquals(name, part.getName());
   }
 
-  public FilePart(String name, File file) {
-    this.name = name;
-    this.file = file;
-    this.submittedFileName = this.file.getName();
-  }
-
-  @Override
-  public InputStream getInputStream() throws IOException {
-    return new FileInputStream(file);
-  }
-
-  @Override
-  public long getSize() {
-    return file.length();
-  }
-
-  @Override
-  public void write(String fileName) throws IOException {
-    FileUtils.copyFile(file, new File(fileName));
+  @Test
+  public void test() throws IOException {
+    try (InputStream is = part.getInputStream()) {
+      byte[] content = IOUtils.toByteArray(is);
+      Assert.assertArrayEquals(bytes, content);
+    }
   }
 }

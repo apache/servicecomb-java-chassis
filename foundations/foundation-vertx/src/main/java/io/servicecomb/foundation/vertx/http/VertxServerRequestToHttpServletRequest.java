@@ -36,7 +36,7 @@ import javax.ws.rs.core.HttpHeaders;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import io.servicecomb.foundation.vertx.part.FilePart;
+import io.servicecomb.foundation.common.part.FilePart;
 import io.servicecomb.foundation.vertx.stream.BufferInputStream;
 import io.vertx.core.MultiMap;
 import io.vertx.core.buffer.Buffer;
@@ -47,6 +47,7 @@ import io.vertx.ext.web.RoutingContext;
 // wrap vertx http request to Servlet http request
 public class VertxServerRequestToHttpServletRequest extends AbstractHttpServletRequest {
   private static final Logger LOGGER = LoggerFactory.getLogger(VertxServerRequestToHttpServletRequest.class);
+
   private static final EmptyAsyncContext EMPTY_ASYNC_CONTEXT = new EmptyAsyncContext();
 
   private RoutingContext context;
