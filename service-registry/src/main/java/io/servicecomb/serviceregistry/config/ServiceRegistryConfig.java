@@ -72,6 +72,13 @@ public final class ServiceRegistryConfig {
   public static final String MICROSERVICE_VERSION_FACTORY = "servicecomb.microserviceVersionFactory";
 
   private boolean ssl = true;
+  
+  public static final String PROXY_PRE_NAME = "cse.proxy.";
+  public static final String PROXY_ENABLE = PROXY_PRE_NAME + "enable";
+  public static final String PROXY_HOST = PROXY_PRE_NAME + "host";
+  public static final String PROXY_PORT = PROXY_PRE_NAME + "port";
+  public static final String PROXY_USERNAME = PROXY_PRE_NAME + "username";
+  public static final String PROXY_PASSWD = PROXY_PRE_NAME + "passwd";
 
   private ServiceRegistryConfig() {
 
@@ -242,6 +249,31 @@ public final class ServiceRegistryConfig {
   public String getSecretKey() {
     String tenantName = getProperty(null, TENANT_SECRET_KEY);
     return tenantName;
+  }
+  
+  public Boolean isProxyEnable() {
+    String enable = getProperty("false", PROXY_ENABLE);
+    return Boolean.parseBoolean(enable);
+  }
+
+  public String getProxyHost() {
+    String host = getProperty("127.0.0.1", PROXY_HOST);
+    return host;
+  }
+
+  public int getProxyPort() {
+    String port = getProperty("8080", PROXY_PORT);
+    return Integer.parseInt(port);
+  }
+
+  public String getProxyUsername() {
+    String username = getProperty("user", PROXY_USERNAME);
+    return username;
+  }
+
+  public String getProxyPasswd() {
+    String passwd = getProperty("passwd", PROXY_PASSWD);
+    return passwd;
   }
 
   private String getProperty(String defaultValue, String... keys) {
