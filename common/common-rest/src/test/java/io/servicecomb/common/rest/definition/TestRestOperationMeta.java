@@ -138,6 +138,10 @@ public class TestRestOperationMeta {
         operationMeta.ensureFindProduceProcessor(MediaType.WILDCARD));
     Assert.assertSame(ProduceProcessorManager.PLAIN_PROCESSOR,
         operationMeta.ensureFindProduceProcessor(MediaType.TEXT_PLAIN));
+    Assert.assertNull(operationMeta.ensureFindProduceProcessor(MediaType.APPLICATION_JSON));
+    Assert.assertSame(ProduceProcessorManager.PLAIN_PROCESSOR,
+        operationMeta.ensureFindProduceProcessor(
+            MediaType.APPLICATION_JSON + "," + MediaType.APPLICATION_XML + "," + MediaType.WILDCARD));
   }
 
   @Test
