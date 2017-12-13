@@ -18,7 +18,11 @@ package io.servicecomb.common.rest.definition;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
@@ -53,7 +57,7 @@ public class RestOperationMeta {
   protected Map<String, RestParam> paramMap = new LinkedHashMap<>();
 
   // key为数据类型，比如json之类
-  private Map<String, ProduceProcessor> produceProcessorMap = new HashMap<>();
+  private Map<String, ProduceProcessor> produceProcessorMap = new LinkedHashMap<>();
 
   // 不一定等于mgr中的default，因为本operation可能不支持mgr中的default
   private ProduceProcessor defaultProcessor;
@@ -174,11 +178,14 @@ public class RestOperationMeta {
         }
         this.produceProcessorMap.put(produce, processor);
       }
+
+      if (produceProcessorMap.isEmpty()) {
+        produceProcessorMap.put(ProduceProcessorManager.DEFAULT_TYPE, ProduceProcessorManager.DEFAULT_PROCESSOR);
+      }
     }
 
-    defaultProcessor = getDefaultOrFirstProcessor();
+    defaultProcessor = produceProcessorMap.values().stream().findFirst().get();
     produceProcessorMap.putIfAbsent(MediaType.WILDCARD, defaultProcessor);
-    produceProcessorMap.putIfAbsent(ProduceProcessorManager.DEFAULT_TYPE, ProduceProcessorManager.DEFAULT_PROCESSOR);
   }
 
   public URLPathBuilder getPathBuilder() {
@@ -218,21 +225,6 @@ public class RestOperationMeta {
     }
 
     return null;
-  }
-
-  // 获取缺省的或者第一个processor
-  private ProduceProcessor getDefaultOrFirstProcessor() {
-    ProduceProcessor processor = this.produceProcessorMap.get(ProduceProcessorManager.DEFAULT_TYPE);
-    if (null == processor) {
-      for (ProduceProcessor pp : this.produceProcessorMap.values()) {
-        return pp;
-      }
-    }
-
-    if (processor == null) {
-      processor = ProduceProcessorManager.JSON_PROCESSOR;
-    }
-    return processor;
   }
 
   public String getHttpMethod() {
