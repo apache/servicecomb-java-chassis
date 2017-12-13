@@ -31,7 +31,7 @@
     <dependencies>
         <dependency>
             <groupId>io.servicecomb.samples</groupId>
-            <artifactId>commmon-schema</artifactId>
+            <artifactId>common-schema</artifactId>
         </dependency>
         <dependency>
             <groupId>io.servicecomb</groupId>
