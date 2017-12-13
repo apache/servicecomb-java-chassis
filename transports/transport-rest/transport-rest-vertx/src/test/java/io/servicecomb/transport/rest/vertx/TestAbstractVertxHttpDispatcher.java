@@ -45,7 +45,7 @@ public class TestAbstractVertxHttpDispatcher {
     @Override
     public void init(Router router) {
     }
-  };
+  }
 
   Configuration config = (Configuration) DynamicPropertyFactory.getBackingConfigurationSource();
 
