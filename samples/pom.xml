@@ -47,7 +47,7 @@
             </dependency>
             <dependency>
                 <groupId>io.servicecomb.samples</groupId>
-                <artifactId>commmon-schema</artifactId>
+                <artifactId>common-schema</artifactId>
                 <version>0.6.0-SNAPSHOT</version>
             </dependency>
         </dependencies>

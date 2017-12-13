@@ -52,7 +52,7 @@
         </dependency>
         <dependency>
             <groupId>io.servicecomb.samples</groupId>
-            <artifactId>commmon-schema</artifactId>
+            <artifactId>common-schema</artifactId>
         </dependency>
     </dependencies>
 </project>
