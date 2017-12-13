@@ -97,17 +97,11 @@ public class SpringMvcIntegrationTestBase {
     assertThat(responseEntity.getStatusCode(), is(OK));
     assertThat(responseEntity.getBody(), is("Hi Mike"));
 
-    List<HttpMessageConverter<?>> convertersOld = restTemplate.getMessageConverters();
-    List<HttpMessageConverter<?>> converters = new ArrayList<>();
-    converters.add(new MappingJackson2HttpMessageConverter());
-    restTemplate.setMessageConverters(converters);
     responseEntity = restTemplate
         .getForEntity(baseUrl + "sayHi?name={name}", String.class, "小 强");
 
     assertThat(responseEntity.getStatusCode(), is(OK));
     assertThat(responseEntity.getBody(), is("Hi 小 强"));
-
-    restTemplate.setMessageConverters(convertersOld);
   }
 
   @Test

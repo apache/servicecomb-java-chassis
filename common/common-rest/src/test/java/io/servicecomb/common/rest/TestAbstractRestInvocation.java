@@ -422,7 +422,7 @@ public class TestAbstractRestInvocation {
     Map<String, Object> expected = new HashMap<>();
     expected.put("statusCode", 123);
     expected.put("reasonPhrase", "reason");
-    expected.put("contentType", "application/json");
+    expected.put("contentType", "application/json; charset=utf-8");
 
     initRestInvocation();
 
