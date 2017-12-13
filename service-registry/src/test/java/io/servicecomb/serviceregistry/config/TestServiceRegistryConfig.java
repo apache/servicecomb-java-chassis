@@ -41,7 +41,7 @@ public class TestServiceRegistryConfig {
   public void testServiceRegistryConfig() {
     ServiceRegistryConfig oConfig = ServiceRegistryConfig.INSTANCE;
     Assert.assertEquals(null, oConfig.getAccessKey());
-    Assert.assertEquals(30000, oConfig.getConnectionTimeout());
+    Assert.assertEquals(1000, oConfig.getConnectionTimeout());
     Assert.assertNotEquals(null, oConfig.getHeartbeatInterval());
     Assert.assertEquals("HTTP_1_1", oConfig.getHttpVersion().name());
     Assert.assertEquals("rest", oConfig.getTransport());
