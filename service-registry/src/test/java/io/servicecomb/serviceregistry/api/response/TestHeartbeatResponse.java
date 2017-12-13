@@ -42,7 +42,7 @@ public class TestHeartbeatResponse {
   }
 
   @Test
-  public void testIntializedValues() {
+  public void testInitializedValues() {
     initFields(); //Initialize the Object
     Assert.assertEquals("testMessage", oHeartbeatResponse.getMessage());
     Assert.assertEquals(true, oHeartbeatResponse.isOk());

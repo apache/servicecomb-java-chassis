@@ -41,7 +41,7 @@ public class MicroserviceInstanceRegisterTask extends AbstractRegisterTask {
     super(eventBus, srClient, microservice);
 
     this.serviceRegistryConfig = serviceRegistryConfig;
-    this.microserviceInstance = microservice.getIntance();
+    this.microserviceInstance = microservice.getInstance();
   }
 
   @Subscribe

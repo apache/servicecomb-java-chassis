@@ -37,7 +37,7 @@ import mockit.Mock;
 import mockit.MockUp;
 import mockit.Mocked;
 
-public class TestClienthttp {
+public class TestClientHttp {
   @SuppressWarnings("unchecked")
   @Test
   public void testServiceRegistryClientImpl(@Mocked IpPortManager manager) {
@@ -74,7 +74,7 @@ public class TestClienthttp {
     ServiceRegistryClientImpl oClient = new ServiceRegistryClientImpl(manager);
     oClient.init();
     oClient.registerMicroservice(microservice);
-    oClient.registerMicroserviceInstance(microservice.getIntance());
+    oClient.registerMicroserviceInstance(microservice.getInstance());
     Assert.assertEquals(null, oClient.getMicroservice(microservice.getServiceId()));
     Assert.assertEquals(null, oClient.getMicroserviceInstance("testConsumerID", "testproviderID"));
     Assert.assertEquals(null,
@@ -88,12 +88,12 @@ public class TestClienthttp {
             microservice.getVersion()));
     Assert.assertEquals(null,
         oClient.heartbeat(microservice.getServiceId(),
-            microservice.getIntance().getInstanceId()));
+            microservice.getInstance().getInstanceId()));
     oClient.watch("",
         Mockito.mock(AsyncResultCallback.class));
     Assert.assertEquals(false,
         oClient.unregisterMicroserviceInstance(microservice.getServiceId(),
-            microservice.getIntance().getInstanceId()));
+            microservice.getInstance().getInstanceId()));
   }
 
   @Test

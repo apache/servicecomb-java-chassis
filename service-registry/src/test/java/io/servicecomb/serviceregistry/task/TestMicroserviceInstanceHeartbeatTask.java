@@ -57,8 +57,8 @@ public class TestMicroserviceInstanceHeartbeatTask {
     microservice.setServiceName("ms");
     microservice.setServiceId("serviceId");
 
-    microservice.setIntance(new MicroserviceInstance());
-    microservice.getIntance().setInstanceId("instanceId");
+    microservice.setInstance(new MicroserviceInstance());
+    microservice.getInstance().setInstanceId("instanceId");
   }
 
   @Test

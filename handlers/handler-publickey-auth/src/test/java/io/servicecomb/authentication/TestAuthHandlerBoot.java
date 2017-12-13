@@ -34,7 +34,7 @@ public class TestAuthHandlerBoot {
   public void testGenerateRSAKey() {
     MicroserviceInstance microserviceInstance = new MicroserviceInstance();
     Microservice microservice = new Microservice();
-    microservice.setIntance(microserviceInstance);
+    microservice.setInstance(microserviceInstance);
     new Expectations(RegistryUtils.class) {
       {
 

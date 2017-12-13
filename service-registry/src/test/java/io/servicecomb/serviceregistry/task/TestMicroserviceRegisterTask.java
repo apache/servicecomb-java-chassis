@@ -54,7 +54,7 @@ public class TestMicroserviceRegisterTask {
     microservice.setAppId("app");
     microservice.setServiceName("ms");
 
-    microservice.setIntance(new MicroserviceInstance());
+    microservice.setInstance(new MicroserviceInstance());
   }
 
   @Test
@@ -94,7 +94,7 @@ public class TestMicroserviceRegisterTask {
     Assert.assertEquals(true, registerTask.isRegistered());
     Assert.assertEquals(true, registerTask.isSchemaIdSetMatch());
     Assert.assertEquals("serviceId", microservice.getServiceId());
-    Assert.assertEquals("serviceId", microservice.getIntance().getServiceId());
+    Assert.assertEquals("serviceId", microservice.getInstance().getServiceId());
     Assert.assertEquals(1, taskList.size());
 
     registerTask.run();
@@ -126,7 +126,7 @@ public class TestMicroserviceRegisterTask {
     Assert.assertEquals(false, registerTask.isRegistered());
     Assert.assertEquals(true, registerTask.isSchemaIdSetMatch());
     Assert.assertEquals("serviceId", microservice.getServiceId());
-    Assert.assertEquals("serviceId", microservice.getIntance().getServiceId());
+    Assert.assertEquals("serviceId", microservice.getInstance().getServiceId());
     Assert.assertEquals(1, taskList.size());
   }
 
@@ -152,7 +152,7 @@ public class TestMicroserviceRegisterTask {
     Assert.assertEquals(true, registerTask.isRegistered());
     Assert.assertEquals(true, registerTask.isSchemaIdSetMatch());
     Assert.assertEquals("serviceId", microservice.getServiceId());
-    Assert.assertEquals("serviceId", microservice.getIntance().getServiceId());
+    Assert.assertEquals("serviceId", microservice.getInstance().getServiceId());
     Assert.assertEquals(1, taskList.size());
   }
 
@@ -173,7 +173,7 @@ public class TestMicroserviceRegisterTask {
     Assert.assertEquals(true, registerTask.isRegistered());
     Assert.assertEquals(true, registerTask.isSchemaIdSetMatch());
     Assert.assertEquals("serviceId", microservice.getServiceId());
-    Assert.assertEquals("serviceId", microservice.getIntance().getServiceId());
+    Assert.assertEquals("serviceId", microservice.getInstance().getServiceId());
     Assert.assertEquals(true, registerTask.isSchemaIdSetMatch());
     Assert.assertEquals(1, taskList.size());
   }
@@ -200,7 +200,7 @@ public class TestMicroserviceRegisterTask {
     Assert.assertEquals(true, registerTask.isRegistered());
     Assert.assertEquals(false, registerTask.isSchemaIdSetMatch());
     Assert.assertEquals("serviceId", microservice.getServiceId());
-    Assert.assertEquals("serviceId", microservice.getIntance().getServiceId());
+    Assert.assertEquals("serviceId", microservice.getInstance().getServiceId());
     Assert.assertEquals(1, taskList.size());
   }
 

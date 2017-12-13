@@ -42,7 +42,7 @@ public class MicroserviceFactory {
   public Microservice create(MicroserviceDefinition microserviceDefinition) {
     Configuration configuration = microserviceDefinition.getConfiguration();
     Microservice microservice = createMicroserviceFromDefinition(configuration);
-    microservice.setIntance(MicroserviceInstance.createFromDefinition(configuration));
+    microservice.setInstance(MicroserviceInstance.createFromDefinition(configuration));
     return microservice;
   }
 

@@ -66,7 +66,7 @@ public final class RegistryUtils {
     serviceRegistry.run();
   }
 
-  public static void destory() {
+  public static void destroy() {
     serviceRegistry.destroy();
   }
 

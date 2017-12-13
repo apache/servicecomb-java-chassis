@@ -40,7 +40,7 @@ public class TestAbstractRegisterTask {
     microservice.setAppId("app");
     microservice.setServiceName("ms");
 
-    microservice.setIntance(new MicroserviceInstance());
+    microservice.setInstance(new MicroserviceInstance());
   }
 
   @Test

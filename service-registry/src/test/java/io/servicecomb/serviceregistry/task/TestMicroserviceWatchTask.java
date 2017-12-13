@@ -120,7 +120,7 @@ public class TestMicroserviceWatchTask {
     key.setVersion(microservice.getVersion());
     key.setServiceName(microservice.getServiceName());
     changedEvent.setKey(key);
-    changedEvent.setInstance(microservice.getIntance());
+    changedEvent.setInstance(microservice.getInstance());
 
     new MockUp<ServiceRegistryClient>(srClient) {
       @Mock

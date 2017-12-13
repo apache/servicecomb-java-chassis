@@ -78,11 +78,11 @@ public class TestServiceRegistryClientImpl {
   }
 
   @Test
-  public void testPrivateMehtodCreateHttpClientOptions() {
+  public void testPrivateMethodCreateHttpClientOptions() {
     MicroserviceFactory microserviceFactory = new MicroserviceFactory();
     Microservice microservice = microserviceFactory.create("app", "ms");
     oClient.registerMicroservice(microservice);
-    oClient.registerMicroserviceInstance(microservice.getIntance());
+    oClient.registerMicroserviceInstance(microservice.getInstance());
     new MockUp<ServiceRegistryConfig>() {
       @Mock
       public HttpVersion getHttpVersion() {
@@ -109,7 +109,7 @@ public class TestServiceRegistryClientImpl {
     MicroserviceFactory microserviceFactory = new MicroserviceFactory();
     Microservice microservice = microserviceFactory.create("app", "ms");
     Assert.assertEquals(null, oClient.registerMicroservice(microservice));
-    Assert.assertEquals(null, oClient.registerMicroserviceInstance(microservice.getIntance()));
+    Assert.assertEquals(null, oClient.registerMicroserviceInstance(microservice.getInstance()));
     oClient.init();
     Assert.assertEquals(null,
         oClient.getMicroserviceId(microservice.getAppId(),
