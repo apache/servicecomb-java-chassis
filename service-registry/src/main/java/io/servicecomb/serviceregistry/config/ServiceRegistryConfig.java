@@ -43,7 +43,7 @@ public final class ServiceRegistryConfig {
 
   private static final int PROTOCOL_HTTP_PORT = 80;
 
-  private static final int DEFAULT_TIMEOUT_IN_MS = 30000;
+  private static final int DEFAULT_TIMEOUT_IN_MS = 1000;
 
   private static final int DEFAULT_TIMEOUT_IN_SECONDS = 30;
 
