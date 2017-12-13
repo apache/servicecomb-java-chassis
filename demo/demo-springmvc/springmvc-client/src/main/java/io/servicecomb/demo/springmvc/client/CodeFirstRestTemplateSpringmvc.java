@@ -17,14 +17,21 @@
 
 package io.servicecomb.demo.springmvc.client;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.servlet.http.Part;
+
 import org.apache.commons.io.FileUtils;
 import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.io.PathResource;
+import org.springframework.core.io.Resource;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -39,6 +46,8 @@ import io.servicecomb.bizkeeper.BizkeeperExceptionUtils;
 import io.servicecomb.core.exception.CseException;
 import io.servicecomb.demo.CodeFirstRestTemplate;
 import io.servicecomb.demo.TestMgr;
+import io.servicecomb.foundation.common.part.FilePart;
+import io.servicecomb.provider.pojo.Invoker;
 import io.servicecomb.provider.pojo.RpcReference;
 import io.servicecomb.provider.springmvc.reference.CseHttpEntity;
 import io.servicecomb.serviceregistry.RegistryUtils;
@@ -46,6 +55,17 @@ import io.servicecomb.swagger.invocation.Response;
 
 @Component
 public class CodeFirstRestTemplateSpringmvc extends CodeFirstRestTemplate {
+  interface UploadPartAndFile {
+    String fileUpload(Part file1, File file2);
+  }
+  interface UploadStreamAndResource {
+    String fileUpload(InputStream file1, Resource file2);
+  }
+
+  private UploadPartAndFile uploadPartAndFile = Invoker.createProxy("springmvc", "codeFirst", UploadPartAndFile.class);
+
+  private UploadStreamAndResource uploadStreamAndResource =
+      Invoker.createProxy("springmvc", "codeFirst", UploadStreamAndResource.class);
 
   @RpcReference(microserviceName = "springmvc", schemaId = "codeFirst")
   private CodeFirstSprigmvcIntf intf;
@@ -55,7 +75,7 @@ public class CodeFirstRestTemplateSpringmvc extends CodeFirstRestTemplate {
     try {
       testUpload(template, cseUrlPrefix);
     } catch (IOException e) {
-      e.printStackTrace();
+      throw new IllegalStateException(e);
     }
 
     super.testOnlyRest(template, cseUrlPrefix);
@@ -80,8 +100,16 @@ public class CodeFirstRestTemplateSpringmvc extends CodeFirstRestTemplate {
     File someFile = File.createTempFile("upload2", ".txt");
     FileUtils.writeStringToFile(someFile, file2Content);
 
-    String templateResult = testRestTemplateUpload(template, cseUrlPrefix, file1, someFile);
-    TestMgr.check(file1Content + file2Content, templateResult);
+    String result = testRestTemplateUpload(template, cseUrlPrefix, file1, someFile);
+    TestMgr.check(file1Content + file2Content, result);
+
+    result = uploadPartAndFile.fileUpload(new FilePart(null, file1), someFile);
+    TestMgr.check(file1Content + file2Content, result);
+
+    result = uploadStreamAndResource
+        .fileUpload(new ByteArrayInputStream(file1Content.getBytes(StandardCharsets.UTF_8)),
+            new PathResource(someFile.getAbsolutePath()));
+    TestMgr.check(file1Content + file2Content, result);
   }
 
   private String testRestTemplateUpload(RestTemplate template, String cseUrlPrefix, File file1, File someFile) {
