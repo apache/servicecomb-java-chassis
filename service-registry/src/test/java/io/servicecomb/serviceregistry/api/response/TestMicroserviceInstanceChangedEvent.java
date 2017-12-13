@@ -57,7 +57,7 @@ public class TestMicroserviceInstanceChangedEvent {
   }
 
   @Test
-  public void testIntializedValues() {
+  public void testInitializedValues() {
     initFields(); //Initialize the Object
     Assert.assertEquals(WatchAction.CREATE, oMicroserviceInstanceChangedEvent.getAction());
     Assert.assertEquals("CREATE", oMicroserviceInstanceChangedEvent.getAction().getName());

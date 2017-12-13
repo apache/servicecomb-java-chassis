@@ -46,7 +46,7 @@ public class TestHealthCheck {
   }
 
   @Test
-  public void testIntializedValues() {
+  public void testInitializedValues() {
     initHealthCheck(); //Initialize the Values
     Assert.assertEquals(10, oHealthCheck.getInterval());
     Assert.assertEquals(8080, oHealthCheck.getPort());
@@ -64,7 +64,7 @@ public class TestHealthCheck {
     oHealthCheck.setMode(HealthCheckMode.UNKNOWN);
     Assert.assertEquals(HealthCheckMode.UNKNOWN, oHealthCheck.getMode());
     Assert.assertEquals(0, oHealthCheck.getTTL()); //TTL Values will changes based on the Mode
-    Assert.assertEquals("unknow", oHealthCheck.getMode().getName());
+    Assert.assertEquals("unknown", oHealthCheck.getMode().getName());
   }
 
   private void initHealthCheck() {

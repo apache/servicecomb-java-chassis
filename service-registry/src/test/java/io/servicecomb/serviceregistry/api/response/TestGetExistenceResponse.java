@@ -43,7 +43,7 @@ public class TestGetExistenceResponse {
   }
 
   @Test
-  public void testIntializedValues() {
+  public void testInitializedValues() {
     initFields(); //Initialize the Object
     Assert.assertEquals("testSchemaId", oGetExistenceResponse.getSchemaId());
     Assert.assertEquals("testServiceId", oGetExistenceResponse.getServiceId());

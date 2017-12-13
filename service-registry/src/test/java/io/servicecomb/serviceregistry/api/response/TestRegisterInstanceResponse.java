@@ -42,7 +42,7 @@ public class TestRegisterInstanceResponse {
   }
 
   @Test
-  public void testIntializedValues() {
+  public void testInitializedValues() {
     initFields(); //Initialize the Object
     Assert.assertEquals("testInstanceID", oRegisterInstanceResponse.getInstanceId());
   }

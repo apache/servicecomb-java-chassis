@@ -66,11 +66,11 @@ public class TestMicroserviceInstanceRegisterTask {
     microservice.setServiceName("ms");
     microservice.setServiceId("serviceId");
 
-    microservice.setIntance(new MicroserviceInstance());
+    microservice.setInstance(new MicroserviceInstance());
 
     HealthCheck healthCheck = new HealthCheck();
     healthCheck.setMode(HealthCheckMode.HEARTBEAT);
-    microservice.getIntance().setHealthCheck(healthCheck);
+    microservice.getInstance().setHealthCheck(healthCheck);
   }
 
   @Test
@@ -87,7 +87,7 @@ public class TestMicroserviceInstanceRegisterTask {
 
   @Test
   public void registerIpSuccess() {
-    MicroserviceInstance instance = microservice.getIntance();
+    MicroserviceInstance instance = microservice.getInstance();
     new Expectations(RegistryUtils.class) {
       {
         RegistryUtils.getPublishAddress();
@@ -117,7 +117,7 @@ public class TestMicroserviceInstanceRegisterTask {
 
   @Test
   public void registerHostSuccess() {
-    MicroserviceInstance instance = microservice.getIntance();
+    MicroserviceInstance instance = microservice.getInstance();
     new Expectations(RegistryUtils.class) {
       {
         RegistryUtils.getPublishHostName();
@@ -147,7 +147,7 @@ public class TestMicroserviceInstanceRegisterTask {
 
   @Test
   public void registerIpFailed() {
-    MicroserviceInstance instance = microservice.getIntance();
+    MicroserviceInstance instance = microservice.getInstance();
     new Expectations(RegistryUtils.class) {
       {
         RegistryUtils.getPublishAddress();

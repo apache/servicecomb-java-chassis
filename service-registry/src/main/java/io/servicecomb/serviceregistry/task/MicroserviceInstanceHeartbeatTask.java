@@ -39,7 +39,7 @@ public class MicroserviceInstanceHeartbeatTask extends AbstractTask {
   public MicroserviceInstanceHeartbeatTask(EventBus eventBus, ServiceRegistryClient srClient,
       Microservice microservice) {
     super(eventBus, srClient, microservice);
-    this.microserviceInstance = microservice.getIntance();
+    this.microserviceInstance = microservice.getInstance();
   }
 
   @Subscribe

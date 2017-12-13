@@ -54,7 +54,7 @@ public class MicroserviceVersions {
   private Map<String, MicroserviceVersionRule> versionRules = new ConcurrentHashMap<>();
 
   // process pulled instances and create versionRule must be protected by lock
-  // otherwise maybe lost instance or version in verisonRule
+  // otherwise maybe lost instance or version in versionRule
   private final Object lock = new Object();
 
   // to avoid pull too many time

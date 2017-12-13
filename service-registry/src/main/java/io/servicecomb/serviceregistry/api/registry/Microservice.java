@@ -58,17 +58,17 @@ public class Microservice {
   private Map<String, String> properties = new HashMap<>();
 
   @JsonIgnore
-  private MicroserviceInstance intance;
+  private MicroserviceInstance instance;
 
   public Microservice() {
   }
 
-  public MicroserviceInstance getIntance() {
-    return intance;
+  public MicroserviceInstance getInstance() {
+    return instance;
   }
 
-  public void setIntance(MicroserviceInstance intance) {
-    this.intance = intance;
+  public void setInstance(MicroserviceInstance instance) {
+    this.instance = instance;
   }
 
   public String getServiceId() {

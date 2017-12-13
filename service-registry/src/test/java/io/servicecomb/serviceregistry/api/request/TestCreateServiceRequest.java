@@ -49,7 +49,7 @@ public class TestCreateServiceRequest {
   }
 
   @Test
-  public void testIntializedValues() {
+  public void testInitializedValues() {
     initCreateServiceRequest(); //Initialize the Object
     Assert.assertEquals(oMockMicroservice, oCreateServiceRequest.getService());
   }

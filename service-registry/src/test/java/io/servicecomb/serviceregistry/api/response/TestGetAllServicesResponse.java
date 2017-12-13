@@ -51,7 +51,7 @@ public class TestGetAllServicesResponse {
   }
 
   @Test
-  public void testIntializedValues() {
+  public void testInitializedValues() {
     initFields(); //Initialize the Object
     List<Microservice> list = oGetAllServicesResponse.getServices();
     Assert.assertEquals(oMockMicroservice, list.get(0));

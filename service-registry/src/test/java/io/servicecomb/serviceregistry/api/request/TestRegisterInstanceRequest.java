@@ -49,7 +49,7 @@ public class TestRegisterInstanceRequest {
   }
 
   @Test
-  public void testIntializedValues() {
+  public void testInitializedValues() {
     initRegisterInstanceRequest(); //Initialize the Object
     Assert.assertEquals(oMockMicroserviceInstance, oRegisterInstanceRequest.getInstance());
   }

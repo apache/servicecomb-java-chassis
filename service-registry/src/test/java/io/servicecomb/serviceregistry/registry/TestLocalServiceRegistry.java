@@ -65,13 +65,13 @@ public class TestLocalServiceRegistry {
     serviceRegistry.updateMicroserviceProperties(properties);
     Assert.assertEquals(properties, microservice.getProperties());
     serviceRegistry.updateInstanceProperties(properties);
-    Assert.assertEquals(properties, microservice.getIntance().getProperties());
+    Assert.assertEquals(properties, microservice.getInstance().getProperties());
 
     properties.put("k1", "v1");
     serviceRegistry.updateMicroserviceProperties(properties);
     Assert.assertEquals(properties, microservice.getProperties());
     serviceRegistry.updateInstanceProperties(properties);
-    Assert.assertEquals(properties, microservice.getIntance().getProperties());
+    Assert.assertEquals(properties, microservice.getInstance().getProperties());
   }
 
   @Test

@@ -34,7 +34,7 @@ public final class Const {
     // 2017-10-21 add new implementations for v4. We can remove v3 support after a period. 
     public static final String VERSION_V3 = "v3";
 
-    public static final String LASTEST_API_VERSION = "v4";
+    public static final String LATEST_API_VERSION = "v4";
 
     public static final String V4_PREFIX = String.format("/v4/%s/registry", DOMAIN_NAME);
 

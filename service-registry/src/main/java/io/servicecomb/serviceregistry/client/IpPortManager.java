@@ -48,7 +48,7 @@ public class IpPortManager {
 
   private InstanceCache instanceCache = null;
 
-  private AtomicInteger currentAvailbleIndex;
+  private AtomicInteger currentAvailableIndex;
 
   public IpPortManager(ServiceRegistryConfig serviceRegistryConfig, InstanceCacheManager instanceCacheManager) {
     this.serviceRegistryConfig = serviceRegistryConfig;
@@ -60,7 +60,7 @@ public class IpPortManager {
       throw new IllegalArgumentException("Service center address is required to start the application.");
     }
     int initialIndex = new Random().nextInt(defaultIpPort.size());
-    currentAvailbleIndex = new AtomicInteger(initialIndex);
+    currentAvailableIndex = new AtomicInteger(initialIndex);
   }
 
   // we have to do this operation after the first time setup has already done
@@ -75,9 +75,9 @@ public class IpPortManager {
   public IpPort getAvailableAddress(boolean invalidate) {
     int index;
     if (invalidate) {
-      index = currentAvailbleIndex.incrementAndGet();
+      index = currentAvailableIndex.incrementAndGet();
     } else {
-      index = currentAvailbleIndex.get();
+      index = currentAvailableIndex.get();
     }
 
     if (index < defaultIpPort.size()) {
@@ -85,7 +85,7 @@ public class IpPortManager {
     }
     List<CacheEndpoint> endpoints = getDiscoveredIpPort();
     if (index >= defaultIpPort.size() + endpoints.size()) {
-      currentAvailbleIndex.set(0);
+      currentAvailableIndex.set(0);
       return returnWithLog(invalidate, defaultIpPort.get(0));
     }
     CacheEndpoint nextEndpoint = endpoints.get(index - defaultIpPort.size());

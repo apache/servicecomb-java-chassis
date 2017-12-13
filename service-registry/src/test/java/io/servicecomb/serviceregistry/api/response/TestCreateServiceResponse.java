@@ -42,7 +42,7 @@ public class TestCreateServiceResponse {
   }
 
   @Test
-  public void testIntializedValues() {
+  public void testInitializedValues() {
     initFields(); //Initialize the Object
     Assert.assertEquals("testServiceId", oCreateServiceResponse.getServiceId());
   }

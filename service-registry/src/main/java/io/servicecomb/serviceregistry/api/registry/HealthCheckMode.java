@@ -23,7 +23,7 @@ import com.fasterxml.jackson.annotation.JsonValue;
  * Created by   on 2017/1/25.
  */
 public enum HealthCheckMode {
-  UNKNOWN("unknow"),
+  UNKNOWN("unknown"),
   HEARTBEAT("push"),
   PLATFORM("pull");
 

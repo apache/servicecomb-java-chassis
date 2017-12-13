@@ -64,7 +64,7 @@ public class TestMicroService {
   }
 
   @Test
-  public void testIntializedValues() {
+  public void testInitializedValues() {
     initMicroservice(); //Initialize the Object
     Assert.assertEquals("testAppID", oMicroservice.getAppId());
     Assert.assertEquals("This is the test", oMicroservice.getDescription());

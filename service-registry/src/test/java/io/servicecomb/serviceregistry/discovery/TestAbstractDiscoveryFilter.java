@@ -86,7 +86,7 @@ public class TestAbstractDiscoveryFilter {
   }
 
   @Test
-  public void discoveryNotInitedTwoce() {
+  public void discoveryNotInitedTwice() {
     inited[0] = false;
     inited[1] = false;
     doDiscovery();
