@@ -72,12 +72,17 @@ public final class ServiceRegistryConfig {
   public static final String MICROSERVICE_VERSION_FACTORY = "servicecomb.microserviceVersionFactory";
 
   private boolean ssl = true;
-  
+
   public static final String PROXY_PRE_NAME = "cse.proxy.";
+
   public static final String PROXY_ENABLE = PROXY_PRE_NAME + "enable";
+
   public static final String PROXY_HOST = PROXY_PRE_NAME + "host";
+
   public static final String PROXY_PORT = PROXY_PRE_NAME + "port";
+
   public static final String PROXY_USERNAME = PROXY_PRE_NAME + "username";
+
   public static final String PROXY_PASSWD = PROXY_PRE_NAME + "passwd";
 
   private ServiceRegistryConfig() {
@@ -104,7 +109,8 @@ public final class ServiceRegistryConfig {
     if (workerPoolSize <= 0) {
       int nAvailableProcessors = Runtime.getRuntime().availableProcessors();
       LOGGER.warn("The property `{}` must be positive integer, fallback to use number of available processors: {}",
-          workerPoolSizeKey, nAvailableProcessors);
+          workerPoolSizeKey,
+          nAvailableProcessors);
       return nAvailableProcessors;
     }
     return workerPoolSize;
@@ -250,7 +256,7 @@ public final class ServiceRegistryConfig {
     String tenantName = getProperty(null, TENANT_SECRET_KEY);
     return tenantName;
   }
-  
+
   public Boolean isProxyEnable() {
     String enable = getProperty("false", PROXY_ENABLE);
     return Boolean.parseBoolean(enable);
