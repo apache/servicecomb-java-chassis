@@ -34,7 +34,7 @@ public class TestAbstractDiscoveryFilter {
     public boolean childrenInited() {
       childrenInitedCallCount++;
       return inited[childrenInitedCallCount - 1];
-    };
+    }
   };
 
   class AbstractDiscoveryFilterForTest extends AbstractDiscoveryFilter {

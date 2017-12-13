@@ -10,7 +10,7 @@ import java.security.PublicKey;
 public class RSAKeypair4Auth {
 
   private RSAKeypair4Auth() {
-  };
+  }
 
   private PrivateKey privateKey;
 

@@ -44,11 +44,11 @@ public class TestRestAsyncListener {
   HttpServletRequest request = new AbstractHttpServletRequest() {
     public String getMethod() {
       return "GET";
-    };
+    }
 
     public String getRequestURI() {
       return "path";
-    };
+    }
   };
 
   HttpServletRequestEx requestEx = new StandardHttpServletRequestEx(request);

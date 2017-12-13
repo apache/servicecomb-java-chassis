@@ -25,5 +25,5 @@ public interface FallbackPolicy {
 
   default void record(Invocation invocation, Response response, boolean isSuccess) {
 
-  };
+  }
 }
