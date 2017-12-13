@@ -18,6 +18,7 @@
 package io.servicecomb.demo.springmvc.tests.endpoints;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -76,7 +77,9 @@ public class CodeFirstSpringmvcBase {
 
   public String fileUpload(MultipartFile file1, MultipartFile file2, String name) {
     try {
-      return IOUtils.toString(file1.getInputStream()) + IOUtils.toString(file2.getInputStream()) + name;
+      return IOUtils.toString(file1.getBytes(), StandardCharsets.UTF_8.name())
+          + IOUtils.toString(file2.getBytes(), StandardCharsets.UTF_8.name())
+          + name;
     } catch (IOException e) {
       throw new IllegalArgumentException(e);
     }
