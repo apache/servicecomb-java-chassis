@@ -153,21 +153,22 @@ public class RestClientRequestImpl implements RestClientRequest {
   }
 
   private void attachFiles(String boundary) {
-    Iterator<Part> uploadsIterator = uploads.values().iterator();
+    Iterator<Entry<String, Part>> uploadsIterator = uploads.entrySet().iterator();
     attachFile(boundary, uploadsIterator);
   }
 
-  private void attachFile(String boundary, Iterator<Part> uploadsIterator) {
+  private void attachFile(String boundary, Iterator<Entry<String, Part>> uploadsIterator) {
     if (!uploadsIterator.hasNext()) {
       request.write(boundaryEndInfo(boundary));
       request.end();
       return;
     }
 
-    // maybe it's a memory file, now we do not support this
-    // not easy to wrapping inputstream to readStream
-    Part part = uploadsIterator.next();
-    String name = part.getName();
+    Entry<String, Part> entry = uploadsIterator.next();
+    // do not use part.getName() to get parameter name
+    // because pojo consumer not easy to set name to part
+    String name = entry.getKey();
+    Part part = entry.getValue();
     String filename = part.getSubmittedFileName();
 
     InputStreamToReadStream fileStream = null;
