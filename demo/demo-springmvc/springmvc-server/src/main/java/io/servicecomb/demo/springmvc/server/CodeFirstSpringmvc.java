@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.Part;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response.Status;
 
@@ -73,7 +74,7 @@ import io.vertx.core.json.JsonObject;
 @RestSchema(schemaId = "codeFirst")
 @RequestMapping(path = "/codeFirstSpringmvc", produces = MediaType.APPLICATION_JSON_VALUE)
 public class CodeFirstSpringmvc {
-  private String _fileUpload(MultipartFile file1, MultipartFile file2) {
+  private String _fileUpload(MultipartFile file1, Part file2) {
     try (InputStream is1 = file1.getInputStream(); InputStream is2 = file2.getInputStream()) {
       String content1 = IOUtils.toString(is1);
       String content2 = IOUtils.toString(is2);
@@ -85,7 +86,7 @@ public class CodeFirstSpringmvc {
 
   @PostMapping(path = "/upload", produces = MediaType.TEXT_PLAIN_VALUE)
   public String fileUpload(@RequestPart(name = "file1") MultipartFile file1,
-      @RequestPart(name = "someFile") MultipartFile file2) {
+      @RequestPart(name = "someFile") Part file2) {
     return _fileUpload(file1, file2);
   }
 
