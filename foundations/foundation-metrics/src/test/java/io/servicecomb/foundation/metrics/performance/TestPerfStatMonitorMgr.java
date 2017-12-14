@@ -61,7 +61,7 @@ public class TestPerfStatMonitorMgr {
     oPerfStatMonitorMgr.registerPerfStat(new PerfStatSuccFail("b"), Integer.MAX_VALUE);
 
     Assert.assertThat(
-        oPerfStatMonitorMgr.getMonitorList().stream().map(ps -> ps.getName()).collect(Collectors.toList()),
+        oPerfStatMonitorMgr.getMonitorList().stream().map(PerfStatMonitor::getName).collect(Collectors.toList()),
         Matchers.contains("a", "b"));
   }
 }

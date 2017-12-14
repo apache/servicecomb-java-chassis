@@ -63,9 +63,7 @@ public final class InvokerUtils {
       SyncResponseExecutor respExecutor = new SyncResponseExecutor();
       invocation.setResponseExecutor(respExecutor);
 
-      invocation.next(resp -> {
-        respExecutor.setResponse(resp);
-      });
+      invocation.next(respExecutor::setResponse);
 
       return respExecutor.waitResponse();
     } catch (Throwable e) {

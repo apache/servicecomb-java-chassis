@@ -53,13 +53,7 @@ public class PerfStatMonitorMgr {
 
       monitorList.add(monitor);
 
-      monitorList.sort(new Comparator<PerfStatMonitor>() {
-
-        @Override
-        public int compare(PerfStatMonitor o1, PerfStatMonitor o2) {
-          return Integer.compare(o1.getIndex(), o2.getIndex());
-        }
-      });
+      monitorList.sort(Comparator.comparingInt(PerfStatMonitor::getIndex));
     }
 
     monitor.addThreadStat(perfStat);
@@ -79,7 +73,7 @@ public class PerfStatMonitorMgr {
   }
 
   public Map<String, PerfStat> getMonitorPerfStat() {
-    return monitorList.stream().collect(Collectors.toMap(m -> m.getName(), m -> m.getPerfStat()));
+    return monitorList.stream().collect(Collectors.toMap(PerfStatMonitor::getName, PerfStatMonitor::getPerfStat));
   }
 
   public List<PerfStatMonitor> getMonitorList() {

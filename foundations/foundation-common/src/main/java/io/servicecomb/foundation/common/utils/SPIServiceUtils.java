@@ -53,9 +53,7 @@ public final class SPIServiceUtils {
 
   public static <T> List<T> getAllService(Class<T> serviceType) {
     List<T> list = new ArrayList<>();
-    ServiceLoader.load(serviceType).forEach(service -> {
-      list.add(service);
-    });
+    ServiceLoader.load(serviceType).forEach(list::add);
 
     return list;
   }
@@ -76,7 +74,7 @@ public final class SPIServiceUtils {
 
     return serviceEntries.stream()
         .sorted(Comparator.comparingInt(Entry::getKey))
-        .map(e -> e.getValue())
+        .map(Entry::getValue)
         .collect(Collectors.toList());
   }
 
