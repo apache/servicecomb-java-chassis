@@ -84,7 +84,7 @@ public class MicroserviceRegisterTask extends AbstractRegisterTask {
 
       schemaIdSetMatch = true;
       // 重新注册服务场景下，instanceId不应该缓存
-      microservice.getIntance().setInstanceId(null);
+      microservice.getInstance().setInstanceId(null);
 
       LOGGER.info(
           "Registry Microservice successfully. id={} appId={}, name={}, version={}, schemaIds={}",
@@ -96,7 +96,7 @@ public class MicroserviceRegisterTask extends AbstractRegisterTask {
     }
 
     microservice.setServiceId(serviceId);
-    microservice.getIntance().setServiceId(microservice.getServiceId());
+    microservice.getInstance().setServiceId(microservice.getServiceId());
 
     return registerSchemas();
   }

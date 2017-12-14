@@ -139,7 +139,7 @@ public class TestCseApplicationListener {
       @Mocked RegistryUtils ru) {
     new Expectations() {
       {
-        RegistryUtils.destory();
+        RegistryUtils.destroy();
       }
     };
     CseApplicationListener cal = new CseApplicationListener();

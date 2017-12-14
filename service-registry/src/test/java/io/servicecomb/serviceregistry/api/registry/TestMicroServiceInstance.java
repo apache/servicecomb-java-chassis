@@ -86,7 +86,7 @@ public class TestMicroServiceInstance {
 
   @SuppressWarnings("deprecation")
   @Test
-  public void testIntializedValues() {
+  public void testInitializedValues() {
     initMicroserviceInstance(); //Initialize the Object
     Assert.assertEquals("testHostName", oMicroserviceInstance.getHostName());
     Assert.assertEquals("testInstanceID", oMicroserviceInstance.getInstanceId());

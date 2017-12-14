@@ -46,7 +46,7 @@ public class TestBasePath {
   }
 
   @Test
-  public void testIntializedValues() {
+  public void testInitializedValues() {
     initBasePath(); //Initialize the Values
     Assert.assertEquals("a", oBasePath.getPath());
     Assert.assertNotNull(oBasePath.getProperty());

@@ -45,7 +45,7 @@ public class TestMicroserviceKey {
   }
 
   @Test
-  public void testIntializedValues() {
+  public void testInitializedValues() {
     initFields(); //Initialize the Object
     Assert.assertEquals("1", oMicroserviceKey.getVersion());
     Assert.assertEquals("testServiceName", oMicroserviceKey.getServiceName());

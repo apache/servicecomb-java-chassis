@@ -66,8 +66,16 @@ public final class RegistryUtils {
     serviceRegistry.run();
   }
 
-  public static void destory() {
+  public static void destroy() {
     serviceRegistry.destroy();
+  }
+
+  /**
+   * @deprecated Replace by {@link #destroy()}
+   */
+  @Deprecated
+  public static void destory() {
+    destroy();
   }
 
   public static ServiceRegistry getServiceRegistry() {

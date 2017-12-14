@@ -192,7 +192,7 @@ public abstract class AbstractServiceRegistry implements ServiceRegistry {
   }
 
   public boolean unregisterInstance() {
-    MicroserviceInstance microserviceInstance = microservice.getIntance();
+    MicroserviceInstance microserviceInstance = microservice.getInstance();
     boolean result = srClient.unregisterMicroserviceInstance(microserviceInstance.getServiceId(),
         microserviceInstance.getInstanceId());
     if (!result) {
@@ -243,7 +243,7 @@ public abstract class AbstractServiceRegistry implements ServiceRegistry {
   }
 
   public boolean updateInstanceProperties(Map<String, String> instanceProperties) {
-    MicroserviceInstance microserviceInstance = microservice.getIntance();
+    MicroserviceInstance microserviceInstance = microservice.getInstance();
     boolean success = srClient.updateInstanceProperties(microserviceInstance.getServiceId(),
         microserviceInstance.getInstanceId(),
         instanceProperties);
@@ -262,7 +262,7 @@ public abstract class AbstractServiceRegistry implements ServiceRegistry {
   }
 
   public MicroserviceInstance getMicroserviceInstance() {
-    return microservice.getIntance();
+    return microservice.getInstance();
   }
 
   public void destroy() {

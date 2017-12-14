@@ -52,7 +52,7 @@ public class TestGetInstancesResponse {
   }
 
   @Test
-  public void testIntializedValues() {
+  public void testInitializedValues() {
     initFields(); //Initialize the Object
     Assert.assertEquals(1, oGetInstancesResponse.getInstances().size());
   }

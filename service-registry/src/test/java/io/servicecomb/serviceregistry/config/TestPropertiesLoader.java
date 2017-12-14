@@ -97,7 +97,7 @@ public class TestPropertiesLoader {
   @Test
   public void testInstancePropertiesLoader() {
     Microservice microservice = ServiceRegistryFactory.createLocal().getMicroservice();
-    MicroserviceInstance instance = microservice.getIntance();
+    MicroserviceInstance instance = microservice.getInstance();
     Map<String, String> expectedMap = new HashMap<>();
     expectedMap.put("key0", "value0");
     expectedMap.put("ek0", "ev0");
