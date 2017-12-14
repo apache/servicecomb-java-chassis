@@ -35,6 +35,7 @@ import io.servicecomb.swagger.converter.property.StringPropertyConverter;
 import io.servicecomb.swagger.extend.property.creator.ByteArrayPropertyCreator;
 import io.servicecomb.swagger.extend.property.creator.BytePropertyCreator;
 import io.servicecomb.swagger.extend.property.creator.InputStreamPropertyCreator;
+import io.servicecomb.swagger.extend.property.creator.PartPropertyCreator;
 import io.servicecomb.swagger.extend.property.creator.PropertyCreator;
 import io.servicecomb.swagger.extend.property.creator.ShortPropertyCreator;
 import io.swagger.converter.ModelConverter;
@@ -58,6 +59,7 @@ public class ModelResolverExt extends ModelResolver {
     addPropertyCreator(new ShortPropertyCreator());
     addPropertyCreator(new ByteArrayPropertyCreator());
     addPropertyCreator(new InputStreamPropertyCreator());
+    addPropertyCreator(new PartPropertyCreator());
     loadPropertyCreators();
   }
 
