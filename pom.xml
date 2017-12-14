@@ -201,8 +201,7 @@
         <configuration>
           <excludes>
             <exclude>.travis.yml</exclude>
-            <exclude>**/README.md</exclude>
-            <excldue>target/**</excldue>
+            <exclude>**/*.md</exclude>
           </excludes>
         </configuration>
       </plugin>
