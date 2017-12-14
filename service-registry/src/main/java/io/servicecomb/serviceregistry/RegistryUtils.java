@@ -70,6 +70,14 @@ public final class RegistryUtils {
     serviceRegistry.destroy();
   }
 
+  /**
+   * @deprecated Replace by {@link #destroy()}
+   */
+  @Deprecated
+  public static void destory() {
+    destroy();
+  }
+
   public static ServiceRegistry getServiceRegistry() {
     return serviceRegistry;
   }
