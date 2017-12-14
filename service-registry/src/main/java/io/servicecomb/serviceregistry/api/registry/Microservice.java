@@ -67,8 +67,24 @@ public class Microservice {
     return instance;
   }
 
+  /**
+   * @deprecated Replace by {@link #getInstance()}
+   */
+  @Deprecated
+  public MicroserviceInstance getIntance() {
+    return getInstance();
+  }
+
   public void setInstance(MicroserviceInstance instance) {
     this.instance = instance;
+  }
+
+  /**
+   * @deprecated Replace by {@link #setInstance(MicroserviceInstance)}
+   */
+  @Deprecated
+  public void setIntance(MicroserviceInstance instance) {
+    setInstance(instance);
   }
 
   public String getServiceId() {
