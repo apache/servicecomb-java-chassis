@@ -37,18 +37,6 @@
       <artifactId>foundation-metrics</artifactId>
     </dependency>
     <dependency>
-      <groupId>com.netflix.servo</groupId>
-      <artifactId>servo-core</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>com.netflix.hystrix</groupId>
-      <artifactId>hystrix-core</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>com.netflix.archaius</groupId>
-      <artifactId>archaius-core</artifactId>
-    </dependency>
-    <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-log4j12</artifactId>
       <scope>test</scope>

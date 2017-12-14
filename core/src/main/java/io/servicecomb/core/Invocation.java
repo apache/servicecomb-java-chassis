@@ -185,7 +185,7 @@ public class Invocation extends SwaggerInvocation {
   public void triggerStartProcessingEvent() {
     this.startProcessingTime = System.nanoTime();
     EventUtils.triggerEvent(new InvocationStartProcessingEvent(
-        operationMeta.getMicroserviceQualifiedName(), startProcessingTime, startProcessingTime - startTime));
+        operationMeta.getMicroserviceQualifiedName(),this.invocationType, startProcessingTime, startProcessingTime - startTime));
   }
 
   public void triggerFinishedEvent() {

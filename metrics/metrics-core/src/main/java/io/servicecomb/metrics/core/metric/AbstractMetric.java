@@ -16,9 +16,6 @@
 
 package io.servicecomb.metrics.core.metric;
 
-import java.util.HashMap;
-import java.util.Map;
-
 public abstract class AbstractMetric implements Metric {
 
   private final String name;
@@ -30,12 +27,5 @@ public abstract class AbstractMetric implements Metric {
 
   public AbstractMetric(String name) {
     this.name = name;
-  }
-
-  @Override
-  public Map<String, Number> getAll() {
-    Map<String, Number> values = new HashMap<>();
-    values.put(name, get(null));
-    return values;
   }
 }

@@ -16,8 +16,42 @@
 
 package io.servicecomb.metrics.core.metric;
 
+import java.util.HashMap;
 import java.util.Map;
 
-public interface BackgroundMetric extends Metric {
-  Map<String, Number> getAllWithFilter(String prefix);
+import io.servicecomb.foundation.common.exceptions.ServiceCombException;
+import rx.functions.Func0;
+
+public class BackgroundMetric extends AbstractMetric {
+
+  private Map<String, Number> lastUpdateValues = new HashMap<>();
+
+  private final Func0<Map<String, Number>> getCallback;
+
+  public BackgroundMetric(String name, Func0<Map<String, Number>> getCallback) {
+    super(name);
+    this.getCallback = getCallback;
+  }
+
+  @Override
+  public Number get() {
+    throw new ServiceCombException("unsupport single get without key");
+  }
+
+  public Number get(String key) {
+    if (lastUpdateValues.containsKey(key)) {
+      return lastUpdateValues.get(key);
+    } else {
+      throw new ServiceCombException("can't find " + key + " in " + getName() + " metric");
+    }
+  }
+
+
+  public void call(){
+    lastUpdateValues = this.getCallback.call();
+  }
+
+  public Map<String, Number> getAll() {
+    return lastUpdateValues;
+  }
 }

@@ -16,13 +16,26 @@
 
 package io.servicecomb.metrics.core;
 
+//use for publish later
 public class EmbeddedMetricTemplates {
 
-  private static final String QUEUE_HEADER_FORMAT = "servicecomb.%s.queue";
-
-  public static final String COUNT_IN_QUEUE_TEMPLATE = QUEUE_HEADER_FORMAT + ".waitInQueue.count";
-
-  public static final String EXECUTION_TIME_TEMPLATE = QUEUE_HEADER_FORMAT + ".executionTime";
-
-  public static final String LIFE_TIME_IN_QUEUE_TEMPLATE = QUEUE_HEADER_FORMAT + ".lifeTimeInQueue";
+//  private static final String QUEUE_HEADER_FORMAT = "servicecomb.%s.queue";
+//
+//  public static final String COUNT_IN_QUEUE_TEMPLATE = QUEUE_HEADER_FORMAT + ".waitInQueue.count";
+//
+//  public static final String EXECUTION_TIME_TEMPLATE = QUEUE_HEADER_FORMAT + ".executionTime";
+//
+//  public static final String EXECUTION_TIME_MAX_TEMPLATE = EXECUTION_TIME_TEMPLATE + ".max";
+//
+//  public static final String EXECUTION_TIME_MIN_TEMPLATE = EXECUTION_TIME_TEMPLATE + ".min";
+//
+//  public static final String EXECUTION_TIME_AVERAGE_TEMPLATE = EXECUTION_TIME_TEMPLATE + ".average";
+//
+//  public static final String LIFE_TIME_IN_QUEUE_TEMPLATE = QUEUE_HEADER_FORMAT + ".lifeTimeInQueue";
+//
+//  public static final String LIFE_TIME_IN_QUEUE_MAX_TEMPLATE = LIFE_TIME_IN_QUEUE_TEMPLATE + ".max";
+//
+//  public static final String LIFE_TIME_IN_QUEUE_MIN_TEMPLATE = LIFE_TIME_IN_QUEUE_TEMPLATE + ".min";
+//
+//  public static final String LIFE_TIME_IN_QUEUE_AVERAGE_TEMPLATE = LIFE_TIME_IN_QUEUE_TEMPLATE + ".average";
 }

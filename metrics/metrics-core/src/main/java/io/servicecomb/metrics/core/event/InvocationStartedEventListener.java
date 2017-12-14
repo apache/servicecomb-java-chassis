@@ -17,43 +17,20 @@
 package io.servicecomb.metrics.core.event;
 
 import io.servicecomb.core.metrics.InvocationStartedEvent;
-import io.servicecomb.foundation.metrics.event.MetricsEvent;
-import io.servicecomb.foundation.metrics.event.MetricsEventListener;
-import io.servicecomb.metrics.core.EmbeddedMetricTemplates;
-import io.servicecomb.metrics.core.metric.MetricFactory;
-import io.servicecomb.metrics.core.metric.WritableMetric;
-import io.servicecomb.metrics.core.registry.MetricsRegistry;
+import io.servicecomb.foundation.common.event.Event;
+import io.servicecomb.foundation.common.event.EventListener;
+import io.servicecomb.metrics.core.registry.ThreadLocalMonitorManager;
 
-public class InvocationStartedEventListener implements MetricsEventListener {
-
-  private final MetricsRegistry registry;
-
-  private final MetricFactory factory;
-
-  public InvocationStartedEventListener(MetricsRegistry registry,
-      MetricFactory factory) {
-    this.registry = registry;
-    this.factory = factory;
-  }
-
+public class InvocationStartedEventListener implements EventListener {
   @Override
-  public Class<? extends MetricsEvent> getConcernedEvent() {
+  public Class<? extends Event> getConcernedEvent() {
     return InvocationStartedEvent.class;
   }
 
   @Override
-  public void process(MetricsEvent data) {
+  public void process(Event data) {
     InvocationStartedEvent event = (InvocationStartedEvent) data;
-
-    String countInQueueName = String.format(EmbeddedMetricTemplates.COUNT_IN_QUEUE_TEMPLATE, event.getOperationName());
-    WritableMetric metric = (WritableMetric) registry.getMetric(countInQueueName);
-    if (metric == null) {
-      metric = (WritableMetric) registry.getOrCreateMetric(factory.createCounter(countInQueueName));
-    }
-    String instanceCountInQueueName = String.format(EmbeddedMetricTemplates.COUNT_IN_QUEUE_TEMPLATE, "instance");
-    WritableMetric instanceMetric = (WritableMetric) registry.getMetric(instanceCountInQueueName);
-
-    metric.increment();
-    instanceMetric.increment();
+    ThreadLocalMonitorManager.getInvocationMonitor().getInvocationThreadLocalCache(event.getOperationName())
+        .increaseCountInQueue();
   }
 }

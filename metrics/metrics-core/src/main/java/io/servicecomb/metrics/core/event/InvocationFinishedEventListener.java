@@ -17,43 +17,27 @@
 package io.servicecomb.metrics.core.event;
 
 import io.servicecomb.core.metrics.InvocationFinishedEvent;
-import io.servicecomb.foundation.metrics.event.MetricsEvent;
-import io.servicecomb.foundation.metrics.event.MetricsEventListener;
-import io.servicecomb.metrics.core.EmbeddedMetricTemplates;
-import io.servicecomb.metrics.core.metric.MetricFactory;
-import io.servicecomb.metrics.core.metric.WritableMetric;
-import io.servicecomb.metrics.core.registry.MetricsRegistry;
+import io.servicecomb.foundation.common.event.Event;
+import io.servicecomb.foundation.common.event.EventListener;
+import io.servicecomb.metrics.core.registry.InvocationThreadLocalCache;
+import io.servicecomb.metrics.core.registry.ThreadLocalMonitorManager;
+import io.servicecomb.swagger.invocation.InvocationType;
 
-public class InvocationFinishedEventListener implements MetricsEventListener {
-
-  private final MetricsRegistry registry;
-
-  private final MetricFactory factory;
-
-  public InvocationFinishedEventListener(MetricsRegistry registry,
-      MetricFactory factory) {
-    this.registry = registry;
-    this.factory = factory;
-  }
-
+public class InvocationFinishedEventListener implements EventListener {
   @Override
-  public Class<? extends MetricsEvent> getConcernedEvent() {
+  public Class<? extends Event> getConcernedEvent() {
     return InvocationFinishedEvent.class;
   }
 
   @Override
-  public void process(MetricsEvent data) {
+  public void process(Event data) {
     InvocationFinishedEvent event = (InvocationFinishedEvent) data;
-
-    String executionTimeName = String.format(EmbeddedMetricTemplates.EXECUTION_TIME_TEMPLATE, event.getOperationName());
-    WritableMetric metric = (WritableMetric) registry.getMetric(executionTimeName);
-    if (metric == null) {
-      metric = (WritableMetric) registry.getOrCreateMetric(factory.createTimer(executionTimeName));
+    InvocationThreadLocalCache cache = ThreadLocalMonitorManager.getInvocationMonitor()
+        .getInvocationThreadLocalCache(event.getOperationName());
+    cache.increaseCallCount(event.getInvocationType());
+    //only producer invocation need increase queue time
+    if (InvocationType.PRODUCER.equals(event.getInvocationType())) {
+      cache.increaseExecutionTime(event.getProcessElapsedNanoTime());
     }
-    String instanceExecutionTimeName = String.format(EmbeddedMetricTemplates.EXECUTION_TIME_TEMPLATE, "instance");
-    WritableMetric instanceMetric = (WritableMetric) registry.getMetric(instanceExecutionTimeName);
-
-    metric.update(event.getProcessElapsedNanoTime());
-    instanceMetric.update(event.getProcessElapsedNanoTime());
   }
 }

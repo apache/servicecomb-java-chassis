@@ -16,15 +16,15 @@
 
 package io.servicecomb.metrics.core.metric;
 
-import com.netflix.servo.monitor.DoubleGauge;
+import com.google.common.util.concurrent.AtomicDouble;
 
 public class DoubleGaugeMetric extends AbstractMetric implements WritableMetric {
 
-  private final DoubleGauge gauge;
+  private final AtomicDouble gauge;
 
-  public DoubleGaugeMetric(DoubleGauge gauge) {
-    super(gauge.getConfig().getName());
-    this.gauge = gauge;
+  public DoubleGaugeMetric(String name) {
+    super(name);
+    this.gauge = new AtomicDouble(0);
   }
 
   @Override
@@ -34,16 +34,16 @@ public class DoubleGaugeMetric extends AbstractMetric implements WritableMetric 
 
   @Override
   public void increment() {
-    gauge.getNumber().addAndGet(1);
+    gauge.addAndGet(1);
   }
 
   @Override
   public void decrement() {
-    gauge.getNumber().addAndGet(-1);
+    gauge.addAndGet(-1);
   }
 
   @Override
-  public Number get(String tag) {
-    return gauge.getValue();
+  public Number get() {
+    return gauge.get();
   }
 }

@@ -16,34 +16,34 @@
 
 package io.servicecomb.metrics.core.metric;
 
-import com.netflix.servo.monitor.Counter;
+import java.util.concurrent.atomic.AtomicLong;
 
 public class CounterMetric extends AbstractMetric implements WritableMetric {
 
-  private final Counter counter;
+  private final AtomicLong counter;
 
-  public CounterMetric(Counter counter) {
-    super(counter.getConfig().getName());
-    this.counter = counter;
+  public CounterMetric(String name) {
+    super(name);
+    this.counter = new AtomicLong(0);
   }
 
   @Override
   public void update(Number num) {
-    counter.increment(num.longValue());
+    counter.addAndGet(num.longValue());
   }
 
   @Override
   public void increment() {
-    counter.increment();
+    counter.decrementAndGet();
   }
 
   @Override
   public void decrement() {
-    counter.increment(-1);
+    counter.decrementAndGet();
   }
 
   @Override
-  public Number get(String tag) {
-    return counter.getValue();
+  public Number get() {
+    return counter.get();
   }
 }

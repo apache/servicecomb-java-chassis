@@ -14,21 +14,10 @@
  * limitations under the License.
  */
 
-package io.servicecomb.metrics.core.metric;
+package io.servicecomb.metrics.core.event;
 
-import rx.functions.Func0;
+import io.servicecomb.foundation.common.event.EventListener;
 
-public class CustomMetric extends AbstractMetric {
-
-  private final Func0<Number> getCallback;
-
-  public CustomMetric(String name, Func0<Number> getCallback) {
-    super(name);
-    this.getCallback = getCallback;
-  }
-
-  @Override
-  public Number get() {
-    return getCallback.call();
-  }
+public interface EventListenerManager {
+  void registerEventListener(EventListener listener);
 }

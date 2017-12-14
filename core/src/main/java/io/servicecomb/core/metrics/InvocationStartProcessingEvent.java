@@ -18,6 +18,7 @@
 package io.servicecomb.core.metrics;
 
 import io.servicecomb.foundation.common.event.Event;
+import io.servicecomb.swagger.invocation.InvocationType;
 
 public class InvocationStartProcessingEvent implements Event {
   private final String operationName;
@@ -25,6 +26,8 @@ public class InvocationStartProcessingEvent implements Event {
   private final long startProcessingTime;
 
   private final long inQueueNanoTime;
+
+  private final InvocationType invocationType;
 
   public long getInQueueNanoTime() {
     return inQueueNanoTime;
@@ -34,8 +37,13 @@ public class InvocationStartProcessingEvent implements Event {
     return operationName;
   }
 
-  public InvocationStartProcessingEvent(String operationName, long startProcessingTime, long inQueueNanoTime) {
+  public InvocationType getInvocationType() {
+    return invocationType;
+  }
+
+  public InvocationStartProcessingEvent(String operationName, InvocationType invocationType, long startProcessingTime, long inQueueNanoTime) {
     this.operationName = operationName;
+    this.invocationType = invocationType;
     this.startProcessingTime = startProcessingTime;
     this.inQueueNanoTime = inQueueNanoTime;
   }
