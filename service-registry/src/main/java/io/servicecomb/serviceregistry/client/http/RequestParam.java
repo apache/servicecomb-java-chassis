@@ -41,6 +41,8 @@ public class RequestParam {
 
   private Map<String, String> cookies;
 
+  private long timeout;
+
   public Map<String, String> getCookies() {
     return cookies;
   }
@@ -129,4 +131,14 @@ public class RequestParam {
     headers.put(key, value);
     return this;
   }
+
+  public long getTimeout() {
+    return timeout;
+  }
+
+  public RequestParam setTimeout(long timeout) {
+    this.timeout = timeout;
+    return this;
+  }
+
 }

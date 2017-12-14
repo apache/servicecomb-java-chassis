@@ -49,6 +49,8 @@ public final class ServiceRegistryConfig {
 
   private static final int DEFAULT_REQUEST_TIMEOUT_IN_MS = 30000;
 
+  private static final int DEFAULT_REQUEST_HEARTBEAT_TIMEOUT_IN_MS = 3000;
+
   private static final int DEFAULT_CHECK_INTERVAL_IN_S = 30;
 
   private static final int DEFAULT_CHECK_TIMES = 3;
@@ -164,6 +166,15 @@ public final class ServiceRegistryConfig {
             .getIntProperty("cse.service.registry.client.timeout.request", DEFAULT_REQUEST_TIMEOUT_IN_MS);
     int timeout = property.get();
     return timeout < 1 ? DEFAULT_REQUEST_TIMEOUT_IN_MS : timeout;
+  }
+
+  //Set the timeout of the heartbeat request
+  public int getHeartBeatRequestTimeout() {
+    DynamicIntProperty property =
+        DynamicPropertyFactory.getInstance()
+            .getIntProperty("cse.service.registry.client.timeout.heartbeat", DEFAULT_REQUEST_HEARTBEAT_TIMEOUT_IN_MS);
+    int timeout = property.get();
+    return timeout < 1 ? DEFAULT_REQUEST_HEARTBEAT_TIMEOUT_IN_MS : timeout;
   }
 
   public int getHeartbeatInterval() {
