@@ -16,8 +16,19 @@
 
 package io.servicecomb.metrics.core.event;
 
-import io.servicecomb.foundation.metrics.event.MetricsEventListener;
+import io.servicecomb.foundation.common.event.EventListener;
+import io.servicecomb.foundation.common.utils.EventUtils;
 
-public interface MetricsEventListenerManager {
-  void registerEventListener(MetricsEventListener listener);
+public class DefaultEventListenerManager implements EventListenerManager {
+
+  public DefaultEventListenerManager() {
+    this.registerEventListener(new InvocationStartedEventListener());
+    this.registerEventListener(new InvocationStartProcessingEventListener());
+    this.registerEventListener(new InvocationFinishedEventListener());
+  }
+
+  @Override
+  public void registerEventListener(EventListener listener) {
+    EventUtils.registerEventListener(listener);
+  }
 }

@@ -16,25 +16,12 @@
 
 package io.servicecomb.metrics.core.registry;
 
-import java.util.List;
-import java.util.Map;
-
 import io.servicecomb.metrics.core.metric.Metric;
+import io.servicecomb.metrics.core.model.RegistryModel;
 
 public interface MetricsRegistry {
   void registerMetric(Metric metric);
 
-  Metric getMetric(String name);
-
-  Metric getOrCreateMetric(Metric metric);
-
-  List<Long> getPollingIntervals();
-
-  Map<String, Number> getAllMetricsValue();
-
-  Map<String, Number> getMetricsValues(String group);
-
-  Map<String, Number> getMetricsValues(String group, String level);
-
-  Map<String, Number> getMetricsValues(String group, String level, String catalog);
+  //for upper component use,like publish
+  RegistryModel getRegistryModel();
 }

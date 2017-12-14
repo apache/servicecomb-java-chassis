@@ -14,22 +14,10 @@
  * limitations under the License.
  */
 
-package io.servicecomb.metrics.core.metric;
+package io.servicecomb.metrics.core.schedule;
 
-import java.util.Map;
+import io.servicecomb.metrics.core.model.RegistryModel;
 
-import rx.functions.Func0;
-
-public interface MetricFactory {
-  WritableMetric createCounter(String name);
-
-  WritableMetric createDoubleGauge(String name);
-
-  WritableMetric createLongGauge(String name);
-
-  WritableMetric createTimer(String name);
-
-  Metric createCustom(String name, Func0<Number> getCallback);
-
-  Metric createBackground(String name, Func0<Map<String, Number>> getCallback, long reloadInterval);
+public interface StatisticsRunner {
+  RegistryModel getRegistryModel();
 }

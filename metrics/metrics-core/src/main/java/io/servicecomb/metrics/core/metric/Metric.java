@@ -16,12 +16,8 @@
 
 package io.servicecomb.metrics.core.metric;
 
-import java.util.Map;
-
 public interface Metric {
   String getName();
-  
-  Number get(String tag);
 
-  Map<String, Number> getAll();
+  Number get();
 }

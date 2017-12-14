@@ -21,13 +21,11 @@
         http://www.springframework.org/schema/beans
         http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
 
-  <bean id="defaultMetricFactory" class="io.servicecomb.metrics.core.metric.DefaultMetricFactory">
+  <bean id="defaultStaticsRunner" class="io.servicecomb.metrics.core.schedule.DefaultStatisticsRunner">
   </bean>
   <bean id="defaultMetricsRegistry" class="io.servicecomb.metrics.core.registry.DefaultMetricsRegistry">
-    <constructor-arg index="0" ref="defaultMetricFactory"/>
+    <constructor-arg ref="defaultStaticsRunner"/>
   </bean>
-  <bean class="io.servicecomb.metrics.core.event.DefaultMetricsEventListenerManager">
-    <constructor-arg index="0" ref="defaultMetricsRegistry"/>
-    <constructor-arg index="1" ref="defaultMetricFactory"/>
+  <bean class="io.servicecomb.metrics.core.event.DefaultEventListenerManager">
   </bean>
 </beans>

@@ -16,15 +16,15 @@
 
 package io.servicecomb.metrics.core.metric;
 
-import com.netflix.servo.monitor.LongGauge;
+import java.util.concurrent.atomic.AtomicLong;
 
-public class LongGaugeMetric extends AbstractMetric implements WritableMetric{
+public class LongGaugeMetric extends AbstractMetric implements WritableMetric {
 
-  private final LongGauge gauge;
+  private final AtomicLong gauge;
 
-  public LongGaugeMetric(LongGauge gauge) {
-    super(gauge.getConfig().getName());
-    this.gauge = gauge;
+  public LongGaugeMetric(String name) {
+    super(name);
+    this.gauge = new AtomicLong(0);
   }
 
   @Override
@@ -34,16 +34,16 @@ public class LongGaugeMetric extends AbstractMetric implements WritableMetric{
 
   @Override
   public void increment() {
-    gauge.getNumber().incrementAndGet();
+    gauge.incrementAndGet();
   }
 
   @Override
   public void decrement() {
-    gauge.getNumber().decrementAndGet();
+    gauge.decrementAndGet();
   }
 
   @Override
-  public Number get(String tag) {
-    return gauge.getValue();
+  public Number get() {
+    return gauge.get();
   }
 }
