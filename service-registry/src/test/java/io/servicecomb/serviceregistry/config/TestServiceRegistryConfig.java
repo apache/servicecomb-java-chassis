@@ -50,6 +50,7 @@ public class TestServiceRegistryConfig {
     Assert.assertEquals(1, oConfig.getWorkerPoolSize());
     Assert.assertEquals(true, oConfig.isSsl());
     Assert.assertEquals(30000, oConfig.getRequestTimeout());
+    Assert.assertEquals(3000, oConfig.getHeartBeatRequestTimeout());
     Assert.assertNotEquals(null, oConfig.getResendHeartBeatTimes());
     Assert.assertEquals(false, oConfig.isPreferIpAddress());
     Assert.assertEquals(true, oConfig.isWatch());

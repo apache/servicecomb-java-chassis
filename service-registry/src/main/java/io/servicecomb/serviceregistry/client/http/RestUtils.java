@@ -55,6 +55,14 @@ final class RestUtils {
   }
 
   public static void httpDo(RequestContext requestContext, Handler<RestResponse> responseHandler) {
+    if (requestContext.getParams().getTimeout() != 0) {
+      httpDo(requestContext.getParams().getTimeout(), requestContext, responseHandler);
+      return;
+    }
+    httpDo(ServiceRegistryConfig.INSTANCE.getRequestTimeout(), requestContext, responseHandler);
+  }
+  
+  public static void httpDo(long timeout, RequestContext requestContext, Handler<RestResponse> responseHandler) {
     HttpClientWithContext vertxHttpClient = HttpClientPool.INSTANCE.getClient();
     vertxHttpClient.runOnContext(httpClient -> {
       IpPort ipPort = requestContext.getIpPort();
@@ -80,7 +88,7 @@ final class RestUtils {
             responseHandler.handle(new RestResponse(requestContext, response));
           });
 
-      httpClientRequest.setTimeout(ServiceRegistryConfig.INSTANCE.getRequestTimeout())
+      httpClientRequest.setTimeout(timeout)
           .exceptionHandler(e -> {
             LOGGER.error("{} {} fail, endpoint is {}:{}, message: {}",
                 httpMethod,
