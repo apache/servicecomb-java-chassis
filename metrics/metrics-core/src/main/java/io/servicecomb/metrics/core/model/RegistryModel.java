@@ -18,17 +18,12 @@ package io.servicecomb.metrics.core.model;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-
-import io.servicecomb.metrics.core.metric.Metric;
 
 public class RegistryModel {
 
   private InstanceModel instanceModel;
 
   private final Map<String, InvocationModel> allInvocations;
-
-  private final Map<String, Metric> customMetrics;
 
   public InstanceModel getInstanceModel() {
     return instanceModel;
@@ -38,21 +33,14 @@ public class RegistryModel {
     return allInvocations;
   }
 
-  public Map<String, Metric> getCustomMetrics() {
-    return customMetrics;
-  }
-
   public RegistryModel() {
     this.instanceModel = new InstanceModel();
     this.allInvocations = new HashMap<>();
-    this.customMetrics = new ConcurrentHashMap<>();
   }
 
   public RegistryModel(InstanceModel instanceModel,
-      Map<String, InvocationModel> allInvocations,
-      Map<String, Metric> customMetrics) {
+      Map<String, InvocationModel> allInvocations) {
     this.instanceModel = instanceModel;
     this.allInvocations = allInvocations;
-    this.customMetrics = customMetrics;
   }
 }

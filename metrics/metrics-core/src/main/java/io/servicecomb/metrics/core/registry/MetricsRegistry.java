@@ -16,12 +16,9 @@
 
 package io.servicecomb.metrics.core.registry;
 
-import io.servicecomb.metrics.core.metric.Metric;
 import io.servicecomb.metrics.core.model.RegistryModel;
 
 public interface MetricsRegistry {
-  void registerMetric(Metric metric);
-
   //for upper component use,like publish
   RegistryModel getRegistryModel();
 }
