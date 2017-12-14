@@ -25,8 +25,6 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
-import io.servicecomb.metrics.core.metric.BackgroundMetric;
-import io.servicecomb.metrics.core.metric.Metric;
 import io.servicecomb.metrics.core.model.InstanceModel;
 import io.servicecomb.metrics.core.model.InvocationModel;
 import io.servicecomb.metrics.core.model.RegistryModel;
@@ -122,15 +120,7 @@ public class DefaultStatisticsRunner extends AbstractStatisticsRunner {
         executionTimeMax, executionTimeMin,
         totalExecutionTimeAverage / totalProviderCallCount);
 
-    //invoke registration background metrics
-    for (Metric metric : registryModel.get().getCustomMetrics().values()) {
-      if (metric instanceof BackgroundMetric) {
-        ((BackgroundMetric) metric).call();
-      }
-    }
-
-    RegistryModel newRegistryModel = new RegistryModel(newInstanceModel, newInvocationModels,
-        registryModel.get().getCustomMetrics());
+    RegistryModel newRegistryModel = new RegistryModel(newInstanceModel, newInvocationModels);
 
     //update registry model once
     registryModel.set(newRegistryModel);
