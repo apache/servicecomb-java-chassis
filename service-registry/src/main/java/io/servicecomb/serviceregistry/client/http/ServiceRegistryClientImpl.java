@@ -55,6 +55,7 @@ import io.servicecomb.serviceregistry.api.response.RegisterInstanceResponse;
 import io.servicecomb.serviceregistry.client.ClientException;
 import io.servicecomb.serviceregistry.client.IpPortManager;
 import io.servicecomb.serviceregistry.client.ServiceRegistryClient;
+import io.servicecomb.serviceregistry.config.ServiceRegistryConfig;
 import io.vertx.core.Handler;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.http.HttpClientResponse;
@@ -429,7 +430,7 @@ public final class ServiceRegistryClientImpl implements ServiceRegistryClient {
     CountDownLatch countDownLatch = new CountDownLatch(1);
     RestUtils.put(ipPort,
         String.format(Const.REGISTRY_API.MICROSERVICE_HEARTBEAT, microserviceId, microserviceInstanceId),
-        new RequestParam(),
+        new RequestParam().setTimeout(ServiceRegistryConfig.INSTANCE.getHeartBeatRequestTimeout()),
         syncHandler(countDownLatch, HttpClientResponse.class, holder));
 
     try {
