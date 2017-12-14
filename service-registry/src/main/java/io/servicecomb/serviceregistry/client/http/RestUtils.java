@@ -79,7 +79,11 @@ final class RestUtils {
             responseHandler.handle(new RestResponse(requestContext, response));
           });
 
-      httpClientRequest.setTimeout(ServiceRegistryConfig.INSTANCE.getRequestTimeout())
+      int timeout = ServiceRegistryConfig.INSTANCE.getRequestTimeout();
+      if (requestContext.getUri().endsWith("/heartbeat")) {
+        timeout = 1;
+      }
+      httpClientRequest.setTimeout(timeout)
           .exceptionHandler(e -> {
             LOGGER.error("{} {} fail, endpoint is {}:{}, message: {}",
                 httpMethod,
