@@ -26,7 +26,7 @@ import io.servicecomb.core.metrics.InvocationStartProcessingEvent;
 import io.servicecomb.core.metrics.InvocationStartedEvent;
 import io.servicecomb.foundation.common.utils.EventUtils;
 import io.servicecomb.metrics.core.event.DefaultEventListenerManager;
-import io.servicecomb.metrics.core.model.RegistryModel;
+import io.servicecomb.metrics.core.model.RegistryMetricsModel;
 import io.servicecomb.metrics.core.schedule.DefaultStatisticsRunner;
 import io.servicecomb.swagger.invocation.InvocationType;
 
@@ -65,30 +65,33 @@ public class TestEventAndRunner {
 
     DefaultStatisticsRunner runner = new DefaultStatisticsRunner();
 
-    //we need some time escape for sim statistics interval
-    Thread.sleep(100);
     runner.run();
 
-    RegistryModel model = runner.getRegistryModel();
+    RegistryMetricsModel model = runner.getRegistryModel();
 
-    Assert.assertTrue(model.getInvocations().get("fun1").getCountInQueue() == 0);
-    Assert.assertTrue(model.getInvocations().get("fun11").getCountInQueue() == 1);
-    Assert.assertTrue(model.getInstanceModel().getCountInQueue() == 1);
+    Assert.assertEquals(model.getInvocations().get("fun1").getCountInQueue(), 0);
+    Assert.assertEquals(model.getInvocations().get("fun11").getCountInQueue(), 1);
+    Assert.assertEquals(model.getInstanceModel().getCountInQueue(), 1);
 
-    Assert.assertTrue(model.getInvocations().get("fun1").getLifeTimeInQueueMin() == TimeUnit.MILLISECONDS.toNanos(100));
-    Assert.assertTrue(model.getInvocations().get("fun1").getLifeTimeInQueueMax() == TimeUnit.MILLISECONDS.toNanos(300));
-    Assert.assertTrue(
-        model.getInvocations().get("fun1").getLifeTimeInQueueAverage() == TimeUnit.MILLISECONDS.toNanos(200));
-    Assert.assertTrue(model.getInstanceModel().getLifeTimeInQueueMin() == TimeUnit.MILLISECONDS.toNanos(100));
-    Assert.assertTrue(model.getInstanceModel().getLifeTimeInQueueMax() == TimeUnit.MILLISECONDS.toNanos(500));
-    Assert.assertTrue(model.getInstanceModel().getLifeTimeInQueueAverage() == TimeUnit.MILLISECONDS.toNanos(300));
+    Assert.assertEquals(model.getInvocations().get("fun1").getLifeTimeInQueueMin(), TimeUnit.MILLISECONDS.toNanos(100),
+        0);
+    Assert.assertEquals(model.getInvocations().get("fun1").getLifeTimeInQueueMax(), TimeUnit.MILLISECONDS.toNanos(300),
+        0);
+    Assert.assertEquals(
+        model.getInvocations().get("fun1").getLifeTimeInQueueAverage(), TimeUnit.MILLISECONDS.toNanos(200), 0);
+    Assert.assertEquals(model.getInstanceModel().getLifeTimeInQueueMin(), TimeUnit.MILLISECONDS.toNanos(100), 0);
+    Assert.assertEquals(model.getInstanceModel().getLifeTimeInQueueMax(), TimeUnit.MILLISECONDS.toNanos(500), 0);
+    Assert.assertEquals(model.getInstanceModel().getLifeTimeInQueueAverage(), TimeUnit.MILLISECONDS.toNanos(300), 0);
 
-    Assert.assertTrue(model.getInvocations().get("fun1").getExecutionTimeMin() == TimeUnit.MILLISECONDS.toNanos(200));
-    Assert.assertTrue(model.getInvocations().get("fun1").getExecutionTimeMax() == TimeUnit.MILLISECONDS.toNanos(400));
     Assert
-        .assertTrue(model.getInvocations().get("fun1").getExecutionTimeAverage() == TimeUnit.MILLISECONDS.toNanos(300));
-    Assert.assertTrue(model.getInstanceModel().getExecutionTimeMin() == TimeUnit.MILLISECONDS.toNanos(200));
-    Assert.assertTrue(model.getInstanceModel().getExecutionTimeMax() == TimeUnit.MILLISECONDS.toNanos(600));
-    Assert.assertTrue(model.getInstanceModel().getExecutionTimeAverage() == TimeUnit.MILLISECONDS.toNanos(400));
+        .assertEquals(model.getInvocations().get("fun1").getExecutionTimeMin(), TimeUnit.MILLISECONDS.toNanos(200), 0);
+    Assert
+        .assertEquals(model.getInvocations().get("fun1").getExecutionTimeMax(), TimeUnit.MILLISECONDS.toNanos(400), 0);
+    Assert
+        .assertEquals(model.getInvocations().get("fun1").getExecutionTimeAverage(), TimeUnit.MILLISECONDS.toNanos(300),
+            0);
+    Assert.assertEquals(model.getInstanceModel().getExecutionTimeMin(), TimeUnit.MILLISECONDS.toNanos(200), 0);
+    Assert.assertEquals(model.getInstanceModel().getExecutionTimeMax(), TimeUnit.MILLISECONDS.toNanos(600), 0);
+    Assert.assertEquals(model.getInstanceModel().getExecutionTimeAverage(), TimeUnit.MILLISECONDS.toNanos(400), 0);
   }
 }

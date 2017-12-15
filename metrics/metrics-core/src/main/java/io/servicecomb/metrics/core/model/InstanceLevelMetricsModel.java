@@ -16,31 +16,15 @@
 
 package io.servicecomb.metrics.core.model;
 
-import java.util.HashMap;
-import java.util.Map;
+public class InstanceLevelMetricsModel extends AbstractMetricsModel {
 
-public class RegistryModel {
-
-  private InstanceModel instanceModel;
-
-  private final Map<String, InvocationModel> allInvocations;
-
-  public InstanceModel getInstanceModel() {
-    return instanceModel;
+  public InstanceLevelMetricsModel() {
+    this(0, 0, 0, 0, 0, 0, 0);
   }
 
-  public Map<String, InvocationModel> getInvocations() {
-    return allInvocations;
-  }
-
-  public RegistryModel() {
-    this.instanceModel = new InstanceModel();
-    this.allInvocations = new HashMap<>();
-  }
-
-  public RegistryModel(InstanceModel instanceModel,
-      Map<String, InvocationModel> allInvocations) {
-    this.instanceModel = instanceModel;
-    this.allInvocations = allInvocations;
+  public InstanceLevelMetricsModel(long countInQueue, double lifeTimeInQueueMax, double lifeTimeInQueueMin,
+      double lifeTimeInQueueAverage, double executionTimeMax, double executionTimeMin, double executionTimeAverage) {
+    super(countInQueue, lifeTimeInQueueMax, lifeTimeInQueueMin, lifeTimeInQueueAverage, executionTimeMax,
+        executionTimeMin, executionTimeAverage);
   }
 }
