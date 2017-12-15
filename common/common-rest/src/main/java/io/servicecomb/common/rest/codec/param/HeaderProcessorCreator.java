@@ -22,6 +22,9 @@ import java.util.Enumeration;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.type.TypeFactory;
 
@@ -30,6 +33,8 @@ import io.servicecomb.common.rest.codec.RestObjectMapper;
 import io.swagger.models.parameters.Parameter;
 
 public class HeaderProcessorCreator implements ParamValueProcessorCreator {
+  private static final Logger LOGGER = LoggerFactory.getLogger(HeaderProcessorCreator.class);
+
   public static final String PARAMTYPE = "header";
 
   public static class HeaderProcessor extends AbstractParamProcessor {
@@ -58,6 +63,7 @@ public class HeaderProcessorCreator implements ParamValueProcessorCreator {
     public void setValue(RestClientRequest clientRequest, Object arg) throws Exception {
       if (null == arg) {
         // null header should not be set to clientRequest to avoid NullPointerException in Netty.
+        LOGGER.debug("Header arg is null, will not be set into clientRequest. paramPath = [{}]", paramPath);
         return;
       }
       clientRequest.putHeader(paramPath, RestObjectMapper.INSTANCE.convertToString(arg));

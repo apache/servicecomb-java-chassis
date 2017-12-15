@@ -16,6 +16,8 @@
 
 package io.servicecomb.provider.springmvc.reference;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
 
 import io.servicecomb.common.rest.RestConst;
@@ -26,6 +28,8 @@ import io.servicecomb.foundation.vertx.http.HttpServletResponseEx;
 import io.servicecomb.swagger.invocation.Response;
 
 public class RestTemplateCopyHeaderFilter implements HttpClientFilter {
+  private static final Logger LOGGER = LoggerFactory.getLogger(RestTemplateCopyHeaderFilter.class);
+
   @Override
   public int getOrder() {
     return Integer.MIN_VALUE;
@@ -42,6 +46,7 @@ public class RestTemplateCopyHeaderFilter implements HttpClientFilter {
       for (String value : values) {
         // null args should not be set to requestEx to avoid NullPointerException in Netty.
         if (null == value) {
+          LOGGER.debug("header value is null, key = [{}]. Will not set this header into request", key);
           continue;
         }
         requestEx.addHeader(key, value);
