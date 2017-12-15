@@ -64,5 +64,26 @@
       <artifactId>hibernate-validator</artifactId>
     </dependency>
   </dependencies>
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.rat</groupId>
+        <artifactId>apache-rat-plugin</artifactId>
+        <configuration>
+          <excludes>
+            <exclude>.travis.yml</exclude>
+            <exclude>**/*.md</exclude>
+            <exclude>**/target/*</exclude>
+            <!-- Skip the ssl configuration files -->
+            <exculde>**/resources/ssl/**</exculde>
+            <!-- Skip the protobuf files -->
+            <exclude>**/*.proto</exclude>
+            <!-- Skip the idl files -->
+            <exclude>**/*.idl</exclude>
+          </excludes>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
 
 </project>
