@@ -32,6 +32,7 @@ import io.servicecomb.foundation.common.cache.VersionedCache;
 import io.servicecomb.serviceregistry.ServiceRegistry;
 import io.servicecomb.serviceregistry.api.Const;
 import io.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
+import io.servicecomb.serviceregistry.api.registry.MicroserviceInstanceStatus;
 import io.servicecomb.serviceregistry.api.response.MicroserviceInstanceChangedEvent;
 import io.servicecomb.serviceregistry.config.ServiceRegistryConfig;
 import io.servicecomb.serviceregistry.task.InstancePullTask;
@@ -149,6 +150,11 @@ public class InstanceCacheManagerOld implements InstanceCacheManager {
       switch (changedEvent.getAction()) {
         case CREATE:
         case UPDATE:
+          if (changedEvent.getInstance().getStatus() != MicroserviceInstanceStatus.UP) {
+            instMap.remove(changedEvent.getInstance().getInstanceId());
+            cacheMap.put(key, new InstanceCache(appId, microserviceName, version, instMap));
+            break;
+          }
           instMap.put(changedEvent.getInstance().getInstanceId(), changedEvent.getInstance());
           cacheMap.put(key, new InstanceCache(appId, microserviceName, version, instMap));
           break;
