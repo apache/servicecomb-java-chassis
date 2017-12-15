@@ -28,31 +28,12 @@
 
 	<dependencies>
 		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-actuator</artifactId>
+			<groupId>io.servicecomb</groupId>
+			<artifactId>foundation-config</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>org.springframework.cloud</groupId>
-			<artifactId>spring-cloud-commons</artifactId>
-			<optional>true</optional>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.cloud</groupId>
-			<artifactId>spring-cloud-context</artifactId>
-			<optional>true</optional>
-		</dependency>
-		<dependency>
-			<groupId>javax.servlet</groupId>
-			<artifactId>javax.servlet-api</artifactId>
-			<scope>compile</scope>
-		</dependency>
-		<dependency>
-			<groupId>commons-configuration</groupId>
-			<artifactId>commons-configuration</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>com.netflix.archaius</groupId>
-			<artifactId>archaius-core</artifactId>
+			<groupId>io.servicecomb</groupId>
+			<artifactId>foundation-config-cc</artifactId>
 		</dependency>
 	</dependencies>
 </project>
