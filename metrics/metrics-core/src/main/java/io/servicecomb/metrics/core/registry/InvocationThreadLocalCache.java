@@ -157,7 +157,7 @@ public class InvocationThreadLocalCache {
   }
 
   public InvocationThreadLocalCache collect() {
-    InvocationThreadLocalCache clone = new InvocationThreadLocalCache(operationName, countInQueue, providerCallCount,
+    InvocationThreadLocalCache cloneCache = new InvocationThreadLocalCache(operationName, countInQueue, providerCallCount,
         consumerCallCount,
         lifeTimeInQueue, lifeTimeInQueueMax, lifeTimeInQueueMin, executionTime, executionTimeMax, executionTimeMin);
     //reset max and min after collected (stat runner polled)
@@ -165,7 +165,7 @@ public class InvocationThreadLocalCache {
     lifeTimeInQueueMin = 0;
     executionTimeMax = 0;
     executionTimeMin = 0;
-    return clone;
+    return cloneCache;
   }
 
   private boolean isValidMax(double source, double value) {

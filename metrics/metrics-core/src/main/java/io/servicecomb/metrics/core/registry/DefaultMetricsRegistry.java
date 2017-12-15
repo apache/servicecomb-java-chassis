@@ -16,7 +16,7 @@
 
 package io.servicecomb.metrics.core.registry;
 
-import io.servicecomb.metrics.core.model.RegistryModel;
+import io.servicecomb.metrics.core.model.RegistryMetricsModel;
 import io.servicecomb.metrics.core.schedule.StatisticsRunner;
 
 public class DefaultMetricsRegistry implements MetricsRegistry {
@@ -28,7 +28,7 @@ public class DefaultMetricsRegistry implements MetricsRegistry {
   }
 
   @Override
-  public RegistryModel getRegistryModel() {
+  public RegistryMetricsModel getRegistryModel() {
     return statisticsRunner.getRegistryModel();
   }
 }

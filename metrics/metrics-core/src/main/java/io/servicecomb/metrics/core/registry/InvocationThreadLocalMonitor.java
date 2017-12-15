@@ -29,11 +29,11 @@ public class InvocationThreadLocalMonitor {
   }
 
   public InvocationThreadLocalCache getInvocationThreadLocalCache(String operationName) {
-    InvocationThreadLocalCache model = caches.get(operationName);
-    if (model == null) {
-      model = caches.computeIfAbsent(operationName, m -> new InvocationThreadLocalCache(operationName));
+    InvocationThreadLocalCache cache = caches.get(operationName);
+    if (cache == null) {
+      cache = caches.computeIfAbsent(operationName, m -> new InvocationThreadLocalCache(operationName));
     }
-    return model;
+    return cache;
   }
 
   public List<InvocationThreadLocalCache> collectInvocationThreadLocalCache() {

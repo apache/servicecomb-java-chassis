@@ -16,8 +16,8 @@
 
 package io.servicecomb.metrics.core.schedule;
 
-import io.servicecomb.metrics.core.model.RegistryModel;
+import io.servicecomb.metrics.core.model.RegistryMetricsModel;
 
 public interface StatisticsRunner {
-  RegistryModel getRegistryModel();
+  RegistryMetricsModel getRegistryModel();
 }

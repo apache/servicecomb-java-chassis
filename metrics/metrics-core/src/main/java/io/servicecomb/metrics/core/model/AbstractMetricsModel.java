@@ -16,10 +16,7 @@
 
 package io.servicecomb.metrics.core.model;
 
-public class InvocationModel {
-
-  private final String operationName;
-
+public class AbstractMetricsModel {
   private final long countInQueue;
 
   private final double lifeTimeInQueueMax;
@@ -33,10 +30,6 @@ public class InvocationModel {
   private final double executionTimeMin;
 
   private final double executionTimeAverage;
-
-  public String getOperationName() {
-    return operationName;
-  }
 
   public long getCountInQueue() {
     return countInQueue;
@@ -66,15 +59,8 @@ public class InvocationModel {
     return executionTimeAverage;
   }
 
-  public InvocationModel(String operationName) {
-    this(operationName, 0, 0, 0, 0, 0, 0, 0);
-  }
-
-  public InvocationModel(String operationName, long countInQueue,
-      double lifeTimeInQueueMax, double lifeTimeInQueueMin,
-      double lifeTimeInQueueAverage, double executionTimeMax,
-      double executionTimeMin, double executionTimeAverage) {
-    this.operationName = operationName;
+  public AbstractMetricsModel(long countInQueue, double lifeTimeInQueueMax, double lifeTimeInQueueMin,
+      double lifeTimeInQueueAverage, double executionTimeMax, double executionTimeMin, double executionTimeAverage) {
     this.countInQueue = countInQueue;
     this.lifeTimeInQueueMax = lifeTimeInQueueMax;
     this.lifeTimeInQueueMin = lifeTimeInQueueMin;

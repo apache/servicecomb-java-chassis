@@ -36,10 +36,10 @@ public final class ThreadLocalMonitorManager {
   }
 
   public static List<InvocationThreadLocalCache> getAllInvocationThreadLocalCache() {
-    List<InvocationThreadLocalCache> models = new ArrayList<>();
+    List<InvocationThreadLocalCache> caches = new ArrayList<>();
     for (InvocationThreadLocalMonitor monitor : allThreadMonitor) {
-      models.addAll(monitor.collectInvocationThreadLocalCache());
+      caches.addAll(monitor.collectInvocationThreadLocalCache());
     }
-    return models;
+    return caches;
   }
 }

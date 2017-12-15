@@ -25,22 +25,22 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
-import io.servicecomb.metrics.core.model.InstanceModel;
-import io.servicecomb.metrics.core.model.InvocationModel;
-import io.servicecomb.metrics.core.model.RegistryModel;
+import io.servicecomb.metrics.core.model.InstanceLevelMetricsModel;
+import io.servicecomb.metrics.core.model.InvocationLevelMetricsModel;
+import io.servicecomb.metrics.core.model.RegistryMetricsModel;
 import io.servicecomb.metrics.core.registry.InvocationThreadLocalCache;
 import io.servicecomb.metrics.core.registry.ThreadLocalMonitorManager;
 
 public class DefaultStatisticsRunner extends AbstractStatisticsRunner {
 
-  private final AtomicReference<RegistryModel> registryModel = new AtomicReference<>(new RegistryModel());
+  private final AtomicReference<RegistryMetricsModel> registryModel = new AtomicReference<>(new RegistryMetricsModel());
 
   private final Map<String, InvocationThreadLocalCache> lastRunInvocationModels;
 
   private final AtomicLong lastRunNanoTime;
 
   @Override
-  public RegistryModel getRegistryModel() {
+  public RegistryMetricsModel getRegistryModel() {
     return registryModel.get();
   }
 
@@ -76,7 +76,7 @@ public class DefaultStatisticsRunner extends AbstractStatisticsRunner {
     // unused before compute tps and latency
     //double escapedSecondTime = (double)(currentTime - lastRunNanoTime.get()) / 1000000000;
 
-    Map<String, InvocationModel> newInvocationModels = new ConcurrentHashMap<>();
+    Map<String, InvocationLevelMetricsModel> newInvocationModels = new ConcurrentHashMap<>();
     for (InvocationThreadLocalCache mergedLocalModel : mergedLocalModels.values()) {
       InvocationThreadLocalCache lastModel = lastRunInvocationModels
           .getOrDefault(mergedLocalModel.getOperationName(),
@@ -88,7 +88,7 @@ public class DefaultStatisticsRunner extends AbstractStatisticsRunner {
           (mergedLocalModel.getLifeTimeInQueue() - lastModel.getLifeTimeInQueue()) / providerCallCount;
 
       newInvocationModels.put(mergedLocalModel.getOperationName(),
-          new InvocationModel(mergedLocalModel.getOperationName(), mergedLocalModel.getCountInQueue(),
+          new InvocationLevelMetricsModel(mergedLocalModel.getOperationName(), mergedLocalModel.getCountInQueue(),
               mergedLocalModel.getLifeTimeInQueueMax(), mergedLocalModel.getLifeTimeInQueueMin(),
               averageLifeTimeInQueue,
               mergedLocalModel.getExecutionTimeMax(), mergedLocalModel.getExecutionTimeMin(), averageExecuteTime));
@@ -115,12 +115,12 @@ public class DefaultStatisticsRunner extends AbstractStatisticsRunner {
       lastRunInvocationModels.put(mergedLocalModel.getOperationName(), mergedLocalModel);
     }
 
-    InstanceModel newInstanceModel = new InstanceModel(totalCountInQueue, lifeTimeInQueueMax, lifeTimeInQueueMin,
+    InstanceLevelMetricsModel newInstanceModel = new InstanceLevelMetricsModel(totalCountInQueue, lifeTimeInQueueMax, lifeTimeInQueueMin,
         totalLifeTimeInQueue / totalProviderCallCount,
         executionTimeMax, executionTimeMin,
         totalExecutionTimeAverage / totalProviderCallCount);
 
-    RegistryModel newRegistryModel = new RegistryModel(newInstanceModel, newInvocationModels);
+    RegistryMetricsModel newRegistryModel = new RegistryMetricsModel(newInstanceModel, newInvocationModels);
 
     //update registry model once
     registryModel.set(newRegistryModel);
