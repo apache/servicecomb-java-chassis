@@ -91,7 +91,6 @@ public class TestInstanceCacheManagerOld {
     Assert.assertEquals("UP", microservice.getInstance().getStatus().toString());
     oChangedEvent.setAction(WatchAction.EXPIRE);
     oInstanceCacheManager.onInstanceUpdate(oChangedEvent);
-
     Assert.assertEquals(oInstanceCacheManager.cacheMap.size(), 0);
 
     InstanceCache newServiceCache = oInstanceCacheManager.getOrCreate("default", "newService", "1.0.1");
