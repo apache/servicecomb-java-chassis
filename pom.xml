@@ -202,6 +202,7 @@
           <excludes>
             <exclude>.travis.yml</exclude>
             <exclude>**/*.md</exclude>
+            <exclude>**/target/*</exclude>
           </excludes>
         </configuration>
       </plugin>
