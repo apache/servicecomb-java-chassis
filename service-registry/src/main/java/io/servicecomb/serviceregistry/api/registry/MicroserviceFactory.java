@@ -20,11 +20,16 @@ import static io.servicecomb.foundation.common.base.ServiceCombConstants.CONFIG_
 import static io.servicecomb.foundation.common.base.ServiceCombConstants.CONFIG_QUALIFIED_MICROSERVICE_NAME_KEY;
 import static io.servicecomb.foundation.common.base.ServiceCombConstants.CONFIG_QUALIFIED_MICROSERVICE_ROLE_KEY;
 import static io.servicecomb.foundation.common.base.ServiceCombConstants.CONFIG_QUALIFIED_MICROSERVICE_VERSION_KEY;
+import static io.servicecomb.foundation.common.base.ServiceCombConstants.CONFIG_MICROSERVICE_DEVELOPMENT_FRAMEWORK_KEY;
+import static io.servicecomb.foundation.common.base.ServiceCombConstants.CONFIG_MICROSERVICE_DEVELOPMENT_FRAMEWORK_VERSION_KEY;
+import static io.servicecomb.foundation.common.base.ServiceCombConstants.CONFIG_MICROSERVICE_REGISTER_WAY_KEY;
 import static io.servicecomb.foundation.common.base.ServiceCombConstants.DEFAULT_MICROSERVICE_NAME;
+import static io.servicecomb.foundation.common.base.ServiceCombConstants.DEFAULT_MICROSERVICE_DEVELOPMENT_FRAMEWORK;
 import static io.servicecomb.serviceregistry.definition.DefinitionConst.CONFIG_ALLOW_CROSS_APP_KEY;
 import static io.servicecomb.serviceregistry.definition.DefinitionConst.DEFAULT_APPLICATION_ID;
 import static io.servicecomb.serviceregistry.definition.DefinitionConst.DEFAULT_MICROSERVICE_VERSION;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.configuration.Configuration;
@@ -64,6 +69,16 @@ public class MicroserviceFactory {
       microservice.setAlias(Microservice.generateAbsoluteMicroserviceName(microservice.getAppId(),
           microservice.getServiceName()));
     }
+    
+    Map<String, String> framework = new HashMap<>();
+    framework.put("name", configuration.getString(CONFIG_MICROSERVICE_DEVELOPMENT_FRAMEWORK_KEY, DEFAULT_MICROSERVICE_DEVELOPMENT_FRAMEWORK));
+    framework.put("version", configuration.getString(CONFIG_MICROSERVICE_DEVELOPMENT_FRAMEWORK_VERSION_KEY, ""));
+    microservice.setFramework(framework);
+    String str = "";
+    if (configuration.getString(CONFIG_MICROSERVICE_REGISTER_WAY_KEY, "") != null) {
+      str = configuration.getString(CONFIG_MICROSERVICE_REGISTER_WAY_KEY, "");
+    }
+    microservice.setRegisteredBy(MicroserviceRegisterWay.find(str).toString());
 
     return microservice;
   }
