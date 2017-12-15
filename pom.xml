@@ -203,6 +203,12 @@
             <exclude>.travis.yml</exclude>
             <exclude>**/*.md</exclude>
             <exclude>**/target/*</exclude>
+            <!-- Skip the ssl configuration files -->
+            <exculde>**/resources/ssl/**</exculde>
+            <!-- Skip the protobuf files -->
+            <exclude>**/*.proto</exclude>
+            <!-- Skip the idl files -->
+            <exclude>**/*.idl</exclude>
           </excludes>
         </configuration>
       </plugin>
