@@ -39,11 +39,13 @@ public class TestAppManager {
 
   String versionRule = "0+";
 
+  String revision = "0";
+
   @Test
   public void getOrCreateMicroserviceVersionRule() {
     new Expectations(RegistryUtils.class) {
       {
-        RegistryUtils.findServiceInstance(appId, serviceName, DefinitionConst.VERSION_RULE_ALL);
+        RegistryUtils.findServiceInstance(appId, serviceName, DefinitionConst.VERSION_RULE_ALL, revision);
         result = Collections.emptyList();
       }
     };
@@ -58,7 +60,7 @@ public class TestAppManager {
   public void getOrCreateMicroserviceVersions() {
     new Expectations(RegistryUtils.class) {
       {
-        RegistryUtils.findServiceInstance(appId, serviceName, DefinitionConst.VERSION_RULE_ALL);
+        RegistryUtils.findServiceInstance(appId, serviceName, DefinitionConst.VERSION_RULE_ALL, revision);
         result = Collections.emptyList();
       }
     };

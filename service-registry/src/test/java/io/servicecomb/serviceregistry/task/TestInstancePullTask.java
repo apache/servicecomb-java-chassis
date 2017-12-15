@@ -42,9 +42,9 @@ public class TestInstancePullTask {
       {
         cacheManager.getCachedEntries();
         result = caches;
-        cacheManager.createInstanceCache("sc", "sc", "0.0.1");
+        cacheManager.createInstanceCache(serviceCenter);
         result = changedServiceCenter;
-        cacheManager.createInstanceCache("other", "other", "0.0.1");
+        cacheManager.createInstanceCache(otherService);
         result = changedService;
         cacheManager.updateInstanceMap("sc", "sc", changedServiceCenter);
         cacheManager.updateInstanceMap("other", "other", changedService);
@@ -68,9 +68,9 @@ public class TestInstancePullTask {
       {
         cacheManager.getCachedEntries();
         result = caches;
-        cacheManager.createInstanceCache("sc", "sc", "0.0.1");
+        cacheManager.createInstanceCache(serviceCenter);
         result = serviceCenter;
-        cacheManager.createInstanceCache("other", "other", "0.0.1");
+        cacheManager.createInstanceCache(otherService);
         result = otherService;
       }
     };
@@ -93,7 +93,7 @@ public class TestInstancePullTask {
       {
         cacheManager.getCachedEntries();
         result = caches;
-        cacheManager.createInstanceCache("sc", "sc", "0.0.1");
+        cacheManager.createInstanceCache(serviceCenter);
         result = new java.lang.Error();
       }
     };

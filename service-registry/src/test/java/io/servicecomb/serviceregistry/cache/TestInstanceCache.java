@@ -45,6 +45,7 @@ public class TestInstanceCache {
 
     instMap.put(instance.getInstanceId(), instance);
     instanceCache = new InstanceCache("testAppID", "testMicroServiceName", "1.0", instMap);
+    instanceCache.setRevision("1");
   }
 
   @Test
@@ -53,6 +54,7 @@ public class TestInstanceCache {
     Assert.assertEquals("testMicroServiceName", instanceCache.getMicroserviceName());
     Assert.assertEquals("1.0", instanceCache.getMicroserviceVersionRule());
     Assert.assertNotNull(instanceCache.getInstanceMap());
+    Assert.assertEquals("1", instanceCache.getRevision());
   }
 
   @Test
