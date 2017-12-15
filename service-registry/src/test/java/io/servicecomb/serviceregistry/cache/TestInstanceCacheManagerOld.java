@@ -1,11 +1,12 @@
 /*
- * Copyright 2017 Huawei Technologies Co., Ltd
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *    http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -54,45 +55,46 @@ public class TestInstanceCacheManagerOld {
     instance.setInstanceId("88887777");
     instanceMap.put(instance.getInstanceId(), instance);
     oInstanceCacheManager
-        .updateInstanceMap("default", "default", new InstanceCache("default", "default", "lastest", instanceMap));
+        .updateInstanceMap("default", "default", new InstanceCache("default", "default", "latest", instanceMap));
 
-    MicroserviceInstanceChangedEvent oChangedEnvent = new MicroserviceInstanceChangedEvent();
-    oChangedEnvent.setAction(WatchAction.UPDATE);
+    MicroserviceInstanceChangedEvent oChangedEvent = new MicroserviceInstanceChangedEvent();
+    oChangedEvent.setAction(WatchAction.UPDATE);
     MicroserviceKey oKey = new MicroserviceKey();
     oKey.setAppId(microservice.getAppId());
     oKey.setVersion(microservice.getVersion());
     oKey.setServiceName(microservice.getServiceName());
-    oChangedEnvent.setKey(oKey);
-    oChangedEnvent.setInstance(instance);
+    oChangedEvent.setKey(oKey);
+    oChangedEvent.setInstance(instance);
     Assert.assertEquals(1, oInstanceCacheManager.cacheMap.get("default/default").getInstanceMap().size());
 
-    oInstanceCacheManager.onInstanceUpdate(oChangedEnvent);
-    oChangedEnvent.setAction(WatchAction.DELETE);
-    oInstanceCacheManager.onInstanceUpdate(oChangedEnvent);
+    oInstanceCacheManager.onInstanceUpdate(oChangedEvent);
+    oChangedEvent.setAction(WatchAction.DELETE);
+    oInstanceCacheManager.onInstanceUpdate(oChangedEvent);
     Assert.assertEquals(0, oInstanceCacheManager.cacheMap.get("default/default").getInstanceMap().size());
 
-    oChangedEnvent.setAction(WatchAction.CREATE);
-    oInstanceCacheManager.onInstanceUpdate(oChangedEnvent);
+    oChangedEvent.setAction(WatchAction.CREATE);
+    oInstanceCacheManager.onInstanceUpdate(oChangedEvent);
     Assert.assertEquals(1, oInstanceCacheManager.cacheMap.get("default/default").getInstanceMap().size());
     Assert.assertEquals(1, oInstanceCacheManager.getCachedEntries().size());
 
-    oChangedEnvent.getInstance().setStatus(MicroserviceInstanceStatus.DOWN);
-    oChangedEnvent.setAction(WatchAction.UPDATE);
-    oInstanceCacheManager.onInstanceUpdate(oChangedEnvent);
+    oChangedEvent.getInstance().setStatus(MicroserviceInstanceStatus.DOWN);
+    oChangedEvent.setAction(WatchAction.UPDATE);
+    oInstanceCacheManager.onInstanceUpdate(oChangedEvent);
     Assert.assertEquals(0, oInstanceCacheManager.cacheMap.get("default/default").getInstanceMap().size());
 
-    oChangedEnvent.getInstance().setStatus(MicroserviceInstanceStatus.UP);
-    oChangedEnvent.setAction(WatchAction.CREATE);
-    oInstanceCacheManager.onInstanceUpdate(oChangedEnvent);
+    oChangedEvent.getInstance().setStatus(MicroserviceInstanceStatus.UP);
+    oChangedEvent.setAction(WatchAction.CREATE);
+    oInstanceCacheManager.onInstanceUpdate(oChangedEvent);
     Assert.assertEquals(1, oInstanceCacheManager.cacheMap.get("default/default").getInstanceMap().size());
     Assert.assertEquals(1, oInstanceCacheManager.getCachedEntries().size());
 
-    Assert.assertEquals("UP", microservice.getIntance().getStatus().toString());
-    oChangedEnvent.setAction(WatchAction.EXPIRE);
-    oInstanceCacheManager.onInstanceUpdate(oChangedEnvent);
+    Assert.assertEquals("UP", microservice.getInstance().getStatus().toString());
+    oChangedEvent.setAction(WatchAction.EXPIRE);
+    oInstanceCacheManager.onInstanceUpdate(oChangedEvent);
+
     Assert.assertEquals(oInstanceCacheManager.cacheMap.size(), 0);
 
-    InstanceCache newServiceCache = oInstanceCacheManager.getOrCreate("defalut", "newService", "1.0.1");
+    InstanceCache newServiceCache = oInstanceCacheManager.getOrCreate("default", "newService", "1.0.1");
     Assert.assertNotNull(newServiceCache);
     Assert.assertEquals(1, oInstanceCacheManager.getCachedEntries().size());
 
@@ -103,13 +105,13 @@ public class TestInstanceCacheManagerOld {
         return newServiceCache;
       }
     };
-    VersionedCache versionedCache = oInstanceCacheManager.getOrCreateVersionedCache("defalut", "newService", "1.0.1");
+    VersionedCache versionedCache = oInstanceCacheManager.getOrCreateVersionedCache("default", "newService", "1.0.1");
     Assert.assertEquals("1.0.1", versionedCache.name());
     Assert.assertTrue(versionedCache.isEmpty());
   }
 
   @Test
-  public void testCacheAvaiable(@Mocked ServiceRegistry serviceRegistry,
+  public void testCacheAvailable(@Mocked ServiceRegistry serviceRegistry,
       @Mocked ServiceRegistryConfig serviceRegistryConfig) {
     EventBus eventBus = new EventBus();
     InstanceCacheManagerOld instanceCacheManager =

@@ -1,11 +1,12 @@
 /*
- * Copyright 2017 Huawei Technologies Co., Ltd
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *    http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -84,7 +85,7 @@ public class MicroserviceRegisterTask extends AbstractRegisterTask {
 
       schemaIdSetMatch = true;
       // 重新注册服务场景下，instanceId不应该缓存
-      microservice.getIntance().setInstanceId(null);
+      microservice.getInstance().setInstanceId(null);
 
       LOGGER.info(
           "Registry Microservice successfully. id={} appId={}, name={}, version={}, schemaIds={}",
@@ -96,7 +97,7 @@ public class MicroserviceRegisterTask extends AbstractRegisterTask {
     }
 
     microservice.setServiceId(serviceId);
-    microservice.getIntance().setServiceId(microservice.getServiceId());
+    microservice.getInstance().setServiceId(microservice.getServiceId());
 
     return registerSchemas();
   }

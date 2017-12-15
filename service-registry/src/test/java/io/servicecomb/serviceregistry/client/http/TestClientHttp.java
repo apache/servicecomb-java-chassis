@@ -1,11 +1,12 @@
 /*
- * Copyright 2017 Huawei Technologies Co., Ltd
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *    http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -37,7 +38,7 @@ import mockit.Mock;
 import mockit.MockUp;
 import mockit.Mocked;
 
-public class TestClienthttp {
+public class TestClientHttp {
   @SuppressWarnings("unchecked")
   @Test
   public void testServiceRegistryClientImpl(@Mocked IpPortManager manager) {
@@ -74,7 +75,7 @@ public class TestClienthttp {
     ServiceRegistryClientImpl oClient = new ServiceRegistryClientImpl(manager);
     oClient.init();
     oClient.registerMicroservice(microservice);
-    oClient.registerMicroserviceInstance(microservice.getIntance());
+    oClient.registerMicroserviceInstance(microservice.getInstance());
     Assert.assertEquals(null, oClient.getMicroservice(microservice.getServiceId()));
     Assert.assertEquals(null, oClient.getMicroserviceInstance("testConsumerID", "testproviderID"));
     Assert.assertEquals(null,
@@ -88,12 +89,12 @@ public class TestClienthttp {
             microservice.getVersion()));
     Assert.assertEquals(null,
         oClient.heartbeat(microservice.getServiceId(),
-            microservice.getIntance().getInstanceId()));
+            microservice.getInstance().getInstanceId()));
     oClient.watch("",
         Mockito.mock(AsyncResultCallback.class));
     Assert.assertEquals(false,
         oClient.unregisterMicroserviceInstance(microservice.getServiceId(),
-            microservice.getIntance().getInstanceId()));
+            microservice.getInstance().getInstanceId()));
   }
 
   @Test

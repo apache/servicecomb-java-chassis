@@ -1,11 +1,12 @@
 /*
- * Copyright 2017 Huawei Technologies Co., Ltd
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *    http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -78,11 +79,11 @@ public class TestServiceRegistryClientImpl {
   }
 
   @Test
-  public void testPrivateMehtodCreateHttpClientOptions() {
+  public void testPrivateMethodCreateHttpClientOptions() {
     MicroserviceFactory microserviceFactory = new MicroserviceFactory();
     Microservice microservice = microserviceFactory.create("app", "ms");
     oClient.registerMicroservice(microservice);
-    oClient.registerMicroserviceInstance(microservice.getIntance());
+    oClient.registerMicroserviceInstance(microservice.getInstance());
     new MockUp<ServiceRegistryConfig>() {
       @Mock
       public HttpVersion getHttpVersion() {
@@ -109,7 +110,7 @@ public class TestServiceRegistryClientImpl {
     MicroserviceFactory microserviceFactory = new MicroserviceFactory();
     Microservice microservice = microserviceFactory.create("app", "ms");
     Assert.assertEquals(null, oClient.registerMicroservice(microservice));
-    Assert.assertEquals(null, oClient.registerMicroserviceInstance(microservice.getIntance()));
+    Assert.assertEquals(null, oClient.registerMicroserviceInstance(microservice.getInstance()));
     oClient.init();
     Assert.assertEquals(null,
         oClient.getMicroserviceId(microservice.getAppId(),
