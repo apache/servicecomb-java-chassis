@@ -152,10 +152,9 @@ public class InstanceCacheManagerOld implements InstanceCacheManager {
         case UPDATE:
           if (changedEvent.getInstance().getStatus() != MicroserviceInstanceStatus.UP) {
             instMap.remove(changedEvent.getInstance().getInstanceId());
-            cacheMap.put(key, new InstanceCache(appId, microserviceName, version, instMap));
-            break;
+          } else {
+            instMap.put(changedEvent.getInstance().getInstanceId(), changedEvent.getInstance());
           }
-          instMap.put(changedEvent.getInstance().getInstanceId(), changedEvent.getInstance());
           cacheMap.put(key, new InstanceCache(appId, microserviceName, version, instMap));
           break;
         case EXPIRE:
