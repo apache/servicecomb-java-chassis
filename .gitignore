@@ -77,3 +77,6 @@ __pycache__/
 
 # SVN metadata
 .svn/
+
+# Mac
+.DS_Store
