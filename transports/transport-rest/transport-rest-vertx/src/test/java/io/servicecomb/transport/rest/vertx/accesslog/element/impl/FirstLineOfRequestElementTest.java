@@ -1,7 +1,6 @@
 package io.servicecomb.transport.rest.vertx.accesslog.element.impl;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
 
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -31,6 +30,6 @@ public class FirstLineOfRequestElementTest {
 
     String result = ELEMENT.getFormattedElement(param);
 
-    assertEquals("DELETE \"" + uri + "\" HTTP/1.1", result);
+    assertEquals("\"DELETE " + uri + " HTTP/1.1\"", result);
   }
 }

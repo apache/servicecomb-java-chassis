@@ -2,7 +2,9 @@ package io.servicecomb.transport.rest.vertx.accesslog.impl;
 
 import static org.junit.Assert.assertEquals;
 
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
+import java.util.TimeZone;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -22,15 +24,16 @@ import mockit.Deencapsulation;
 
 public class AccessLogHandlerImplTest {
 
-  public static final AccessLogElement methodElement = new MethodElement();
+  private static final AccessLogElement methodElement = new MethodElement();
 
-  public static final AccessLogElement datetimeElement = new DatetimeConfigurableElement();
+  private static final AccessLogElement datetimeElement = new DatetimeConfigurableElement();
 
-  public static final AccessLogElement plainTextElement = new PlainTextElement(" - ");
+  private static final AccessLogElement plainTextElement = new PlainTextElement(" - ");
 
-  public static final Logger logger = Mockito.mock(Logger.class);
+  private static final Logger logger = Mockito.mock(Logger.class);
 
-  private static final AccessLogHandlerImpl accessLogHandlerImpl = new AccessLogHandlerImpl("", s -> {
+  private static final AccessLogHandlerImpl accessLogHandlerImpl = new AccessLogHandlerImpl("rawPattern", s -> {
+    assertEquals("rawPattern", s);
     return Arrays.asList(new AccessLogElementExtraction().setAccessLogElement(methodElement),
         new AccessLogElementExtraction().setAccessLogElement(plainTextElement),
         new AccessLogElementExtraction().setAccessLogElement(datetimeElement));
@@ -60,13 +63,18 @@ public class AccessLogHandlerImplTest {
   public void testLog() {
     RoutingContext context = Mockito.mock(RoutingContext.class);
     HttpServerRequest request = Mockito.mock(HttpServerRequest.class);
-    AccessLogParam accessLogParam = new AccessLogParam().setStartMillisecond(1416863450581L).setRoutingContext(context);
+    long startMillisecond = 1416863450581L;
+    AccessLogParam accessLogParam = new AccessLogParam().setStartMillisecond(startMillisecond)
+        .setRoutingContext(context);
+    SimpleDateFormat simpleDateFormat = new SimpleDateFormat(DatetimeConfigurableElement.DEFAULT_DATETIME_PATTERN,
+        DatetimeConfigurableElement.DEFAULT_LOCALE);
+    simpleDateFormat.setTimeZone(TimeZone.getDefault());
 
     Mockito.when(context.request()).thenReturn(request);
     Mockito.when(request.method()).thenReturn(HttpMethod.DELETE);
 
     Deencapsulation.invoke(accessLogHandlerImpl, "log", accessLogParam);
 
-    Mockito.verify(logger).info("DELETE" + " - " + "Tue, 25 Nov 2014 05:10:50 CST");
+    Mockito.verify(logger).info("DELETE" + " - " + simpleDateFormat.format(startMillisecond));
   }
 }
