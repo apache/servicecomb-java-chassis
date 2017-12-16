@@ -109,7 +109,7 @@ public class InstanceCacheManagerOld implements InstanceCacheManager {
 
     String revision = microserviceInstanceRefresh.getRevision();
     String rev = instanceCache.getRevision();
-    if (Integer.valueOf(rev) - Integer.valueOf(revision) >= 0) {
+    if (Integer.valueOf(rev) - Integer.valueOf(revision) > 0) {
       return instanceCache;
     }
     List<MicroserviceInstance> instances = microserviceInstanceRefresh.getInstances();
