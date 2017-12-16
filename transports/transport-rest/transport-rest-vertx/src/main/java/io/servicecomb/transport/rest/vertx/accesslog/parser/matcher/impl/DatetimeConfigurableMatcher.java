@@ -4,7 +4,7 @@ import io.servicecomb.transport.rest.vertx.accesslog.element.AccessLogElement;
 import io.servicecomb.transport.rest.vertx.accesslog.element.impl.DatetimeConfigurableElement;
 
 /**
- * There are two kinds of configurable datetime placeholder:
+ * Compatible with two kinds of configurable datetime placeholder:
  * <ul>
  *   <li>%{PATTERN}t</li>
  *   <li>%{PATTERN|TIMEZONE|LOCALE}t</li>

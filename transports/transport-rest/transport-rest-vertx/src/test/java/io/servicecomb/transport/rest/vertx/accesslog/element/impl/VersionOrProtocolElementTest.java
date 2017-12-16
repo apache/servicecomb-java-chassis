@@ -23,8 +23,15 @@ public class VersionOrProtocolElementTest {
     Mockito.when(request.version()).thenReturn(HttpVersion.HTTP_1_1);
 
     String result = new VersionOrProtocolElement().getFormattedElement(param);
-
     assertEquals("HTTP/1.1", result);
+
+    Mockito.when(request.version()).thenReturn(HttpVersion.HTTP_1_0);
+    result = new VersionOrProtocolElement().getFormattedElement(param);
+    assertEquals("HTTP/1.0", result);
+
+    Mockito.when(request.version()).thenReturn(HttpVersion.HTTP_2);
+    result = new VersionOrProtocolElement().getFormattedElement(param);
+    assertEquals("HTTP/2.0", result);
   }
 
   @Test
