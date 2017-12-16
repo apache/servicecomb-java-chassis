@@ -270,6 +270,7 @@ public class LocalServiceRegistryClientImpl implements ServiceRegistryClient {
     }
 
     microserviceInstanceRefresh.setInstances(allInstances);
+    microserviceInstanceRefresh.setRevision(DefinitionConst.DEFAULT_REVISION);
     return microserviceInstanceRefresh;
   }
 
