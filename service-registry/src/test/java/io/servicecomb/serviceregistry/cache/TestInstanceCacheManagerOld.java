@@ -88,7 +88,7 @@ public class TestInstanceCacheManagerOld {
     oInstanceCacheManager.cacheMap.clear();
     new MockUp<InstanceCacheManagerOld>(oInstanceCacheManager) {
       @Mock
-      InstanceCache createInstanceCache(String appId, String microserviceName, String microserviceVersionRule) {
+      InstanceCache createInstanceCache(InstanceCache instanceCache) {
         return newServiceCache;
       }
     };

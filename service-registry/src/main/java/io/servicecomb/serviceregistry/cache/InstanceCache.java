@@ -30,6 +30,7 @@ import org.slf4j.LoggerFactory;
 import io.servicecomb.foundation.common.cache.VersionedCache;
 import io.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
 import io.servicecomb.serviceregistry.api.registry.MicroserviceInstanceStatus;
+import io.servicecomb.serviceregistry.definition.DefinitionConst;
 
 /**
  * 缓存指定微服务的所有实例
@@ -60,6 +61,9 @@ public class InstanceCache {
   private volatile Map<String, List<CacheEndpoint>> transportMap;
 
   private Object lockObj = new Object();
+
+  //cached Revision in the header
+  private String revision = DefinitionConst.DEFAULT_REVISION;
 
   /**
    * 用于初始化场景
@@ -135,4 +139,13 @@ public class InstanceCache {
   public String getAppId() {
     return appId;
   }
+
+  public String getRevision() {
+    return revision;
+  }
+
+  public void setRevision(String revision) {
+    this.revision = revision;
+  }
+
 }
