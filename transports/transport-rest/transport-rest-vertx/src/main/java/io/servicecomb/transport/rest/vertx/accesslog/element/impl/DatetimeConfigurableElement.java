@@ -10,7 +10,15 @@ import org.springframework.util.StringUtils;
 import io.servicecomb.transport.rest.vertx.accesslog.AccessLogParam;
 import io.servicecomb.transport.rest.vertx.accesslog.element.AccessLogElement;
 
+/**
+ * Configurable datetime element.
+ */
 public class DatetimeConfigurableElement implements AccessLogElement {
+
+  public static final String DEFAULT_DATETIME_PATTERN = "EEE, dd MMM yyyy HH:mm:ss zzz";
+
+  public static final Locale DEFAULT_LOCALE = Locale.US;
+
   private String pattern;
 
   private TimeZone timezone;
@@ -19,10 +27,17 @@ public class DatetimeConfigurableElement implements AccessLogElement {
 
   private final ThreadLocal<SimpleDateFormat> datetimeFormatHolder = new ThreadLocal<>();
 
+  /**
+   * all config is set to default value.
+   */
   public DatetimeConfigurableElement() {
-    this("||");
+    this(DEFAULT_DATETIME_PATTERN);
   }
 
+  /**
+   * the configurations not specified will get a default value.
+   * @param config the format of config is "PATTERN|TIMEZONE|LOCALE" or "PATTERN". It depends on whether the config contains the separator "|"
+   */
   public DatetimeConfigurableElement(String config) {
     String[] configArr = null;
     if (config.contains("|")) {
@@ -40,21 +55,20 @@ public class DatetimeConfigurableElement implements AccessLogElement {
     setConfigruations(configArr);
   }
 
-  protected String[] splitConfig(String config) {
+  private String[] splitConfig(String config) {
     return config.split("\\|{1}?", -1);
   }
 
   private void setConfigruations(String[] configArr) {
-    this.pattern = StringUtils.isEmpty(configArr[0]) ? "EEE, dd MMM yyyy HH:mm:ss zzz" : configArr[0];
+    this.pattern = StringUtils.isEmpty(configArr[0]) ? DEFAULT_DATETIME_PATTERN : configArr[0];
     this.timezone = StringUtils.isEmpty(configArr[1]) ? TimeZone.getDefault() : TimeZone.getTimeZone(configArr[1]);
-    this.locale = StringUtils.isEmpty(configArr[2]) ? Locale.US : Locale.forLanguageTag(configArr[2]);
+    this.locale = StringUtils.isEmpty(configArr[2]) ? DEFAULT_LOCALE : Locale.forLanguageTag(configArr[2]);
   }
 
   @Override
   public String getFormattedElement(AccessLogParam accessLogParam) {
     SimpleDateFormat dateFormat = getDatetimeFormat();
-    String datetime = dateFormat.format(new Date(accessLogParam.getStartMillisecond()));
-    return datetime;
+    return dateFormat.format(new Date(accessLogParam.getStartMillisecond()));
   }
 
   private SimpleDateFormat getDatetimeFormat() {

@@ -1,6 +1,6 @@
 package io.servicecomb.transport.rest.vertx.accesslog.element.impl;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -12,7 +12,7 @@ import io.vertx.ext.web.RoutingContext;
 
 public class ResponseHeaderElementTest {
 
-  public static final String IDENTIFIER = "identifier";
+  private static final String IDENTIFIER = "identifier";
 
   private static final ResponseHeaderElement ELEMENT = new ResponseHeaderElement(IDENTIFIER);
 
@@ -33,6 +33,7 @@ public class ResponseHeaderElementTest {
     String result = ELEMENT.getFormattedElement(param);
 
     assertEquals(headerValue, result);
+    assertEquals(ELEMENT.getIdentifier(), IDENTIFIER);
   }
 
   @Test

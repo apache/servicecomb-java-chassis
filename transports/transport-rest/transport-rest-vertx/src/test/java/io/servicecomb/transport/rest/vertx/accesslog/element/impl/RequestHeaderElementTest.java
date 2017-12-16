@@ -31,6 +31,7 @@ public class RequestHeaderElementTest {
     String result = ELEMENT.getFormattedElement(param);
 
     assertEquals(testValue, result);
+    assertEquals(ELEMENT.getIdentifier(), HEADER_IDENTIFIER);
   }
 
   @Test
