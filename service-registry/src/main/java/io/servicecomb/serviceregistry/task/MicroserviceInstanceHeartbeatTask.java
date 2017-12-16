@@ -28,6 +28,7 @@ import io.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
 import io.servicecomb.serviceregistry.api.response.HeartbeatResponse;
 import io.servicecomb.serviceregistry.client.ServiceRegistryClient;
 import io.servicecomb.serviceregistry.task.event.HeartbeatFailEvent;
+import io.servicecomb.serviceregistry.task.event.HeartbeatSuccEvent;
 
 public class MicroserviceInstanceHeartbeatTask extends AbstractTask {
   private static final Logger LOGGER = LoggerFactory.getLogger(MicroserviceInstanceHeartbeatTask.class);
@@ -82,7 +83,7 @@ public class MicroserviceInstanceHeartbeatTask extends AbstractTask {
       EventManager.post(new HeartbeatFailEvent());
       return HeartbeatResult.INSTANCE_NOT_REGISTERED;
     }
-
+    EventManager.post(new HeartbeatSuccEvent());
     return HeartbeatResult.SUCCESS;
   }
 }
