@@ -124,7 +124,7 @@ public class MicroserviceVersions {
       return;
     }
     String rev = microserviceInstanceRefresh.getRevision();
-    if (Integer.valueOf(revision) - Integer.valueOf(rev) >= 0) {
+    if (Integer.valueOf(revision) - Integer.valueOf(rev) > 0) {
       return;
     }
     List<MicroserviceInstance> pulledInstances = microserviceInstanceRefresh.getInstances();
