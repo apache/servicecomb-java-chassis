@@ -17,8 +17,8 @@ public class AccessLogHandlerImpl implements AccessLogHandler {
 
   private static AccessLogElement[] accessLogElements;
 
-  public AccessLogHandlerImpl(String rowLogPattern, AccessLogPatternParser accessLogPatternParser) {
-    List<AccessLogElementExtraction> extractionList = accessLogPatternParser.parsePattern(rowLogPattern);
+  public AccessLogHandlerImpl(String rawPattern, AccessLogPatternParser accessLogPatternParser) {
+    List<AccessLogElementExtraction> extractionList = accessLogPatternParser.parsePattern(rawPattern);
 
     accessLogElements = new AccessLogElement[extractionList.size()];
     for (int i = 0; i < extractionList.size(); ++i) {

@@ -12,12 +12,14 @@ public class FirstLineOfRequestElement implements AccessLogElement {
 
   @Override
   public String getFormattedElement(AccessLogParam accessLogParam) {
-    StringBuilder result = new StringBuilder()
+    StringBuilder result = new StringBuilder(64)
+        .append("\"")
         .append(METHOD_ELEMENT.getFormattedElement(accessLogParam))
-        .append(" \"")
+        .append(" ")
         .append(URI_PATH_ONLY_ELEMENT.getFormattedElement(accessLogParam))
-        .append("\" ")
-        .append(VERSION_OR_PROTOCOL_ELEMENT.getFormattedElement(accessLogParam));
+        .append(" ")
+        .append(VERSION_OR_PROTOCOL_ELEMENT.getFormattedElement(accessLogParam))
+        .append("\"");
 
     return result.toString();
   }

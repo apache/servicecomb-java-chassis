@@ -6,8 +6,8 @@ import io.servicecomb.transport.rest.vertx.accesslog.element.impl.DatetimeConfig
 /**
  * Compatible with two kinds of configurable datetime placeholder:
  * <ul>
- *   <li>%{PATTERN}t</li>
- *   <li>%{PATTERN|TIMEZONE|LOCALE}t</li>
+ *   <li>v1: %{PATTERN}t</li>
+ *   <li>v2: %{PATTERN|TIMEZONE|LOCALE}t</li>
  * </ul>
  */
 public class DatetimeConfigurableMatcher extends ConfigurableAccessLogElementMatcher {
