@@ -26,8 +26,8 @@ import io.servicecomb.core.metrics.InvocationStartProcessingEvent;
 import io.servicecomb.core.metrics.InvocationStartedEvent;
 import io.servicecomb.foundation.common.utils.EventUtils;
 import io.servicecomb.metrics.core.event.DefaultEventListenerManager;
-import io.servicecomb.metrics.core.model.RegistryMetricsModel;
-import io.servicecomb.metrics.core.schedule.DefaultStatisticsRunner;
+import io.servicecomb.metrics.core.metric.RegistryMetric;
+import io.servicecomb.metrics.core.registry.DefaultMetricsRegistry;
 import io.servicecomb.swagger.invocation.InvocationType;
 
 public class TestEventAndRunner {
@@ -35,7 +35,9 @@ public class TestEventAndRunner {
   @Test
   public void test() throws InterruptedException {
 
-    DefaultEventListenerManager manager = new DefaultEventListenerManager();
+    DefaultMetricsRegistry registry = new DefaultMetricsRegistry("2000");
+
+    DefaultEventListenerManager manager = new DefaultEventListenerManager(registry);
 
     EventUtils.triggerEvent(new InvocationStartedEvent("fun1", System.nanoTime()));
     EventUtils.triggerEvent(
@@ -63,35 +65,41 @@ public class TestEventAndRunner {
 
     EventUtils.triggerEvent(new InvocationStartedEvent("fun11", System.nanoTime()));
 
-    DefaultStatisticsRunner runner = new DefaultStatisticsRunner();
+    Thread.sleep(2000);
 
-    runner.run();
+    RegistryMetric model = registry.getRegistryMetric(0);
 
-    RegistryMetricsModel model = runner.getRegistryModel();
+    Assert.assertEquals(model.getInvocationMetrics().get("fun1").getWaitInQueue(), 0);
+    Assert.assertEquals(model.getInvocationMetrics().get("fun11").getWaitInQueue(), 1);
+    Assert.assertEquals(model.getInstanceMetric().getWaitInQueue(), 1);
 
-    Assert.assertEquals(model.getInvocations().get("fun1").getCountInQueue(), 0);
-    Assert.assertEquals(model.getInvocations().get("fun11").getCountInQueue(), 1);
-    Assert.assertEquals(model.getInstanceModel().getCountInQueue(), 1);
-
-    Assert.assertEquals(model.getInvocations().get("fun1").getLifeTimeInQueueMin(), TimeUnit.MILLISECONDS.toNanos(100),
+    Assert.assertEquals(model.getInvocationMetrics().get("fun1").getLifeTimeInQueue().getMin(),
+        TimeUnit.MILLISECONDS.toNanos(100),
         0);
-    Assert.assertEquals(model.getInvocations().get("fun1").getLifeTimeInQueueMax(), TimeUnit.MILLISECONDS.toNanos(300),
+    Assert.assertEquals(model.getInvocationMetrics().get("fun1").getLifeTimeInQueue().getMax(),
+        TimeUnit.MILLISECONDS.toNanos(300),
         0);
     Assert.assertEquals(
-        model.getInvocations().get("fun1").getLifeTimeInQueueAverage(), TimeUnit.MILLISECONDS.toNanos(200), 0);
-    Assert.assertEquals(model.getInstanceModel().getLifeTimeInQueueMin(), TimeUnit.MILLISECONDS.toNanos(100), 0);
-    Assert.assertEquals(model.getInstanceModel().getLifeTimeInQueueMax(), TimeUnit.MILLISECONDS.toNanos(500), 0);
-    Assert.assertEquals(model.getInstanceModel().getLifeTimeInQueueAverage(), TimeUnit.MILLISECONDS.toNanos(300), 0);
+        model.getInvocationMetrics().get("fun1").getLifeTimeInQueue().getAverage(), TimeUnit.MILLISECONDS.toNanos(200),
+        0);
+    Assert.assertEquals(model.getInstanceMetric().getLifeTimeInQueue().getMin(), TimeUnit.MILLISECONDS.toNanos(100), 0);
+    Assert.assertEquals(model.getInstanceMetric().getLifeTimeInQueue().getMax(), TimeUnit.MILLISECONDS.toNanos(500), 0);
+    Assert.assertEquals(model.getInstanceMetric().getLifeTimeInQueue().getAverage(), TimeUnit.MILLISECONDS.toNanos(300),
+        0);
 
     Assert
-        .assertEquals(model.getInvocations().get("fun1").getExecutionTimeMin(), TimeUnit.MILLISECONDS.toNanos(200), 0);
+        .assertEquals(model.getInvocationMetrics().get("fun1").getExecutionTime().getMin(),
+            TimeUnit.MILLISECONDS.toNanos(200), 0);
     Assert
-        .assertEquals(model.getInvocations().get("fun1").getExecutionTimeMax(), TimeUnit.MILLISECONDS.toNanos(400), 0);
+        .assertEquals(model.getInvocationMetrics().get("fun1").getExecutionTime().getMax(),
+            TimeUnit.MILLISECONDS.toNanos(400), 0);
     Assert
-        .assertEquals(model.getInvocations().get("fun1").getExecutionTimeAverage(), TimeUnit.MILLISECONDS.toNanos(300),
+        .assertEquals(model.getInvocationMetrics().get("fun1").getExecutionTime().getAverage(),
+            TimeUnit.MILLISECONDS.toNanos(300),
             0);
-    Assert.assertEquals(model.getInstanceModel().getExecutionTimeMin(), TimeUnit.MILLISECONDS.toNanos(200), 0);
-    Assert.assertEquals(model.getInstanceModel().getExecutionTimeMax(), TimeUnit.MILLISECONDS.toNanos(600), 0);
-    Assert.assertEquals(model.getInstanceModel().getExecutionTimeAverage(), TimeUnit.MILLISECONDS.toNanos(400), 0);
+    Assert.assertEquals(model.getInstanceMetric().getExecutionTime().getMin(), TimeUnit.MILLISECONDS.toNanos(200), 0);
+    Assert.assertEquals(model.getInstanceMetric().getExecutionTime().getMax(), TimeUnit.MILLISECONDS.toNanos(600), 0);
+    Assert
+        .assertEquals(model.getInstanceMetric().getExecutionTime().getAverage(), TimeUnit.MILLISECONDS.toNanos(400), 0);
   }
 }

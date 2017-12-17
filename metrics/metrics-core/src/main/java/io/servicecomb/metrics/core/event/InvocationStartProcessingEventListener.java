@@ -19,11 +19,18 @@ package io.servicecomb.metrics.core.event;
 import io.servicecomb.core.metrics.InvocationStartProcessingEvent;
 import io.servicecomb.foundation.common.event.Event;
 import io.servicecomb.foundation.common.event.EventListener;
-import io.servicecomb.metrics.core.registry.InvocationThreadLocalCache;
-import io.servicecomb.metrics.core.registry.ThreadLocalMonitorManager;
+import io.servicecomb.metrics.core.monitor.InvocationMonitor;
+import io.servicecomb.metrics.core.registry.MetricsRegistry;
 import io.servicecomb.swagger.invocation.InvocationType;
 
 public class InvocationStartProcessingEventListener implements EventListener {
+
+  private final MetricsRegistry registry;
+
+  public InvocationStartProcessingEventListener(MetricsRegistry registry) {
+    this.registry = registry;
+  }
+
   @Override
   public Class<? extends Event> getConcernedEvent() {
     return InvocationStartProcessingEvent.class;
@@ -32,12 +39,10 @@ public class InvocationStartProcessingEventListener implements EventListener {
   @Override
   public void process(Event data) {
     InvocationStartProcessingEvent event = (InvocationStartProcessingEvent) data;
-    InvocationThreadLocalCache cache = ThreadLocalMonitorManager.getInvocationMonitor()
-        .getInvocationThreadLocalCache(event.getOperationName());
-    cache.decreaseCountInQueue();
-    //only producer invocation need increase queue time
+    InvocationMonitor monitor = registry.getRegistryMonitor().getInvocationMonitor(event.getOperationName());
+    monitor.getWaitInQueue().increment(-1);
     if (InvocationType.PRODUCER.equals(event.getInvocationType())) {
-      cache.increaseLifeTimeInQueue(event.getInQueueNanoTime());
+      monitor.getLifeTimeInQueue().update(event.getInQueueNanoTime());
     }
   }
 }

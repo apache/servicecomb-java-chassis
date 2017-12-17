@@ -16,20 +16,37 @@
 
 package io.servicecomb.metrics.core.registry;
 
-import io.servicecomb.metrics.core.model.RegistryMetricsModel;
-import io.servicecomb.metrics.core.schedule.StatisticsRunner;
+import org.springframework.stereotype.Component;
 
+import com.netflix.config.DynamicPropertyFactory;
+
+import io.servicecomb.metrics.core.metric.RegistryMetric;
+import io.servicecomb.metrics.core.monitor.RegistryMonitor;
+
+@Component
 public class DefaultMetricsRegistry implements MetricsRegistry {
 
-  private final StatisticsRunner statisticsRunner;
+  private static final String METRICS_POLLING = "servicecomb.metrics.polling";
 
-  public DefaultMetricsRegistry(StatisticsRunner staticsRunner) {
-    this.statisticsRunner = staticsRunner;
+  private final RegistryMonitor registryMonitor;
+
+  public DefaultMetricsRegistry() {
+    this(DynamicPropertyFactory.getInstance().getStringProperty(METRICS_POLLING, "10000").get());
+  }
+
+  public DefaultMetricsRegistry(String pollingSetting) {
+    System.getProperties().setProperty("servo.pollers", pollingSetting);
+    this.registryMonitor = new RegistryMonitor();
   }
 
   @Override
-  public RegistryMetricsModel getRegistryModel() {
-    return statisticsRunner.getRegistryModel();
+  public RegistryMonitor getRegistryMonitor() {
+    return registryMonitor;
+  }
+
+  @Override
+  public RegistryMetric getRegistryMetric(int pollerIndex) {
+    return new RegistryMetric(registryMonitor, pollerIndex);
   }
 }
 
