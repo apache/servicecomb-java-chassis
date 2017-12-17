@@ -16,9 +16,11 @@
 
 package io.servicecomb.metrics.core.registry;
 
-import io.servicecomb.metrics.core.model.RegistryMetricsModel;
+import io.servicecomb.metrics.core.metric.RegistryMetric;
+import io.servicecomb.metrics.core.monitor.RegistryMonitor;
 
 public interface MetricsRegistry {
-  //for upper component use,like publish
-  RegistryMetricsModel getRegistryModel();
+  RegistryMonitor getRegistryMonitor();
+
+  RegistryMetric getRegistryMetric(int pollerIndex);
 }

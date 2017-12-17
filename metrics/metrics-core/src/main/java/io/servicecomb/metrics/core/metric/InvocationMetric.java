@@ -14,10 +14,19 @@
  * limitations under the License.
  */
 
-package io.servicecomb.metrics.core.schedule;
+package io.servicecomb.metrics.core.metric;
 
-import io.servicecomb.metrics.core.model.RegistryMetricsModel;
+public class InvocationMetric extends ModelMetric {
+  private final String operationName;
 
-public interface StatisticsRunner {
-  RegistryMetricsModel getRegistryModel();
+  public String getOperationName() {
+    return operationName;
+  }
+
+  public InvocationMetric(String operationName, long waitInQueue,
+      TimeMetric lifeTimeInQueue, TimeMetric executionTime, TimeMetric consumerLatency,
+      TimeMetric producerLatency) {
+    super(waitInQueue, lifeTimeInQueue, executionTime, consumerLatency, producerLatency);
+    this.operationName = operationName;
+  }
 }

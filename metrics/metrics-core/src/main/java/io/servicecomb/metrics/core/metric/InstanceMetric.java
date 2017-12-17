@@ -14,17 +14,11 @@
  * limitations under the License.
  */
 
-package io.servicecomb.metrics.core.model;
+package io.servicecomb.metrics.core.metric;
 
-public class InstanceLevelMetricsModel extends AbstractMetricsModel {
-
-  public InstanceLevelMetricsModel() {
-    this(0, 0, 0, 0, 0, 0, 0);
-  }
-
-  public InstanceLevelMetricsModel(long countInQueue, double lifeTimeInQueueMax, double lifeTimeInQueueMin,
-      double lifeTimeInQueueAverage, double executionTimeMax, double executionTimeMin, double executionTimeAverage) {
-    super(countInQueue, lifeTimeInQueueMax, lifeTimeInQueueMin, lifeTimeInQueueAverage, executionTimeMax,
-        executionTimeMin, executionTimeAverage);
+public class InstanceMetric extends ModelMetric {
+  public InstanceMetric(long waitInQueue, TimeMetric lifeTimeInQueue,
+      TimeMetric executionTime, TimeMetric consumerLatency, TimeMetric producerLatency) {
+    super(waitInQueue, lifeTimeInQueue, executionTime, consumerLatency, producerLatency);
   }
 }
