@@ -18,7 +18,6 @@ package io.servicecomb.transport.rest.vertx.accesslog.parser.impl;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
@@ -69,9 +68,8 @@ public class DefaultAccessLogPatternParser implements AccessLogPatternParser {
       new StatusMatcher()
   );
 
-  public static final Comparator<AccessLogElementExtraction> ACCESS_LOG_ELEMENT_EXTRACTION_COMPARATOR = (e1, e2) -> {
-    return e1.getStart() - e2.getStart();
-  };
+  public static final Comparator<AccessLogElementExtraction> ACCESS_LOG_ELEMENT_EXTRACTION_COMPARATOR = Comparator
+      .comparingInt(AccessLogElementExtraction::getStart);
 
   @Override
   public List<AccessLogElementExtraction> parsePattern(String rawPattern) {
@@ -83,7 +81,7 @@ public class DefaultAccessLogPatternParser implements AccessLogPatternParser {
       }
     }
 
-    Collections.sort(extractionList, ACCESS_LOG_ELEMENT_EXTRACTION_COMPARATOR);
+    extractionList.sort(ACCESS_LOG_ELEMENT_EXTRACTION_COMPARATOR);
     checkExtractionList(extractionList);
     fillInPlainTextElement(rawPattern, extractionList);
 
@@ -123,6 +121,6 @@ public class DefaultAccessLogPatternParser implements AccessLogPatternParser {
     }
 
     extractionList.addAll(plainTextExtractionList);
-    Collections.sort(extractionList, ACCESS_LOG_ELEMENT_EXTRACTION_COMPARATOR);
+    extractionList.sort(ACCESS_LOG_ELEMENT_EXTRACTION_COMPARATOR);
   }
 }
