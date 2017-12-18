@@ -93,7 +93,7 @@ public class LoadbalanceHandler implements Handler {
     String strategy = Configuration.INSTANCE.getRuleStrategyName(invocation.getMicroserviceName());
     boolean isRuleChanged = StringUtils.equals(policy,this.policy) && StringUtils.equals(strategy, this.strategy);
     
-    if (!result){
+    if (!isRuleChanged){
       //配置变化，需要重新生成所有的lb实例
       synchronized (lock) {
         loadBalancerMap.clear();
