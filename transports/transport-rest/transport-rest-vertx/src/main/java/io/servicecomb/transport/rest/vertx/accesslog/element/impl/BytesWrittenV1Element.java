@@ -20,6 +20,9 @@ import io.servicecomb.transport.rest.vertx.accesslog.AccessLogParam;
 import io.servicecomb.transport.rest.vertx.accesslog.element.AccessLogElement;
 import io.vertx.core.http.HttpServerResponse;
 
+/**
+ * Zero bytes written as 0
+ */
 public class BytesWrittenV1Element implements AccessLogElement {
 
   public static final String ZERO_BYTES = "0";

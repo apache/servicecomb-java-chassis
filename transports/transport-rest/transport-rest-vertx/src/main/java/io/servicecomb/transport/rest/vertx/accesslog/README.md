@@ -4,7 +4,7 @@
 
 To enable access log printing, you can config access log in microservice.yaml like below:
 ```yaml
-cse:
+servicecomb:
   accesslog:
     enabled: true
     pattern: "%h - - %t %r !! %q cs-uri %% %s %B"
@@ -14,11 +14,11 @@ cse:
 
 | Config Item | Range of Value | Default Value | Meaning |
 | :---------- | :------------- | :------------ | :------ |
-| cse.accesslog.enabled | true/false | false | print access log if true |
-| cse.accesslog.pattern | a string field representing log pattern | "%h - - %t %r %s %B" | see details of ***Currently Supported Elements*** below |
+| servicecomb.accesslog.enabled | true/false | false | print access log if true |
+| servicecomb.accesslog.pattern | a string field representing log pattern | "%h - - %t %r %s %B" | see details of ***Currently Supported Elements*** below |
 
 > ***Caution:***
-> - all of the configuration item above can be omitted, in this case, default value will take effect.
+> - all of the configuration items above can be omitted, in this case, default value will take effect.
 
 ## Supported log elements
 
@@ -49,8 +49,13 @@ cse:
 
 ## Access log file settings
 
-Default access log configurations is in `config/base/log4j.properties`.
+Access log will be written in a separate log file named `access.log` located in the same directory with common logs.
 
-Access log will be written in a separate log file named `cse.access.log` located in the same directory with common logs.
+Default access log printer is based on Log4j, users can override access log file configuration in their `log4j.properties` file.
 
-Users can override access log file configuration as the same way of common logs.
+***Common access log file configuration items***
+
+| Configuration Item | Default Value | Meaning |
+| :----------------- | :------------ | :------ |
+| paas.logs.accesslog.dir | ${paas.logs.dir} | access log output directory |
+| paas.logs.accesslog.file | access.log | access log file name |
