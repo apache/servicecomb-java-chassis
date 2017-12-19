@@ -14,24 +14,16 @@
  * limitations under the License.
  */
 
-package io.servicecomb.metrics.core.registry;
+package io.servicecomb.metrics.core.publish;
 
-import org.springframework.stereotype.Component;
+import java.util.List;
 
-import io.servicecomb.metrics.core.monitor.RegistryMonitor;
+import io.servicecomb.metrics.core.metric.RegistryMetric;
 
-@Component
-public class DefaultMetricsRegistry implements MetricsRegistry {
+public interface DataSource {
 
-  private final RegistryMonitor registryMonitor;
+  //为上层提供Metric信息
+  RegistryMetric getRegistryMetric(int pollerIndex);
 
-  public DefaultMetricsRegistry() {
-    this.registryMonitor = new RegistryMonitor();
-  }
-
-  @Override
-  public RegistryMonitor getRegistryMonitor() {
-    return registryMonitor;
-  }
+  List<Long> getAppliedPollingIntervals();
 }
-

@@ -27,6 +27,7 @@ import io.servicecomb.core.metrics.InvocationStartedEvent;
 import io.servicecomb.foundation.common.utils.EventUtils;
 import io.servicecomb.metrics.core.event.DefaultEventListenerManager;
 import io.servicecomb.metrics.core.metric.RegistryMetric;
+import io.servicecomb.metrics.core.publish.DefaultDataSource;
 import io.servicecomb.metrics.core.registry.DefaultMetricsRegistry;
 import io.servicecomb.swagger.invocation.InvocationType;
 
@@ -35,7 +36,8 @@ public class TestEventAndRunner {
   @Test
   public void test() throws InterruptedException {
 
-    DefaultMetricsRegistry registry = new DefaultMetricsRegistry("2000");
+    DefaultMetricsRegistry registry = new DefaultMetricsRegistry();
+    DefaultDataSource dataSource = new DefaultDataSource(registry, "2000");
 
     DefaultEventListenerManager manager = new DefaultEventListenerManager(registry);
 
@@ -67,7 +69,7 @@ public class TestEventAndRunner {
 
     Thread.sleep(2000);
 
-    RegistryMetric model = registry.getRegistryMetric(0);
+    RegistryMetric model = dataSource.getRegistryMetric(0);
 
     Assert.assertEquals(model.getInvocationMetrics().get("fun1").getWaitInQueue(), 0);
     Assert.assertEquals(model.getInvocationMetrics().get("fun11").getWaitInQueue(), 1);
@@ -101,5 +103,36 @@ public class TestEventAndRunner {
     Assert.assertEquals(model.getInstanceMetric().getExecutionTime().getMax(), TimeUnit.MILLISECONDS.toNanos(600), 0);
     Assert
         .assertEquals(model.getInstanceMetric().getExecutionTime().getAverage(), TimeUnit.MILLISECONDS.toNanos(400), 0);
+
+
+    Assert
+        .assertEquals(model.getInvocationMetrics().get("fun1").getProducerLatency().getMin(),
+            TimeUnit.MILLISECONDS.toNanos(300), 0);
+    Assert
+        .assertEquals(model.getInvocationMetrics().get("fun1").getProducerLatency().getMax(),
+            TimeUnit.MILLISECONDS.toNanos(700), 0);
+    Assert
+        .assertEquals(model.getInvocationMetrics().get("fun1").getProducerLatency().getAverage(),
+            TimeUnit.MILLISECONDS.toNanos(500),
+            0);
+    Assert.assertEquals(model.getInstanceMetric().getProducerLatency().getMin(), TimeUnit.MILLISECONDS.toNanos(300), 0);
+    Assert.assertEquals(model.getInstanceMetric().getProducerLatency().getMax(), TimeUnit.MILLISECONDS.toNanos(1100), 0);
+    Assert
+        .assertEquals(model.getInstanceMetric().getProducerLatency().getAverage(), TimeUnit.MILLISECONDS.toNanos(700), 0);
+
+    Assert
+        .assertEquals(model.getInvocationMetrics().get("fun1").getConsumerLatency().getMin(),
+            TimeUnit.MILLISECONDS.toNanos(0), 0);
+    Assert
+        .assertEquals(model.getInvocationMetrics().get("fun1").getConsumerLatency().getMax(),
+            TimeUnit.MILLISECONDS.toNanos(0), 0);
+    Assert
+        .assertEquals(model.getInvocationMetrics().get("fun1").getConsumerLatency().getAverage(),
+            TimeUnit.MILLISECONDS.toNanos(0),
+            0);
+    Assert.assertEquals(model.getInstanceMetric().getConsumerLatency().getMin(), TimeUnit.MILLISECONDS.toNanos(0), 0);
+    Assert.assertEquals(model.getInstanceMetric().getConsumerLatency().getMax(), TimeUnit.MILLISECONDS.toNanos(0), 0);
+    Assert
+        .assertEquals(model.getInstanceMetric().getConsumerLatency().getAverage(), TimeUnit.MILLISECONDS.toNanos(0), 0);
   }
 }
