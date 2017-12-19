@@ -15,27 +15,50 @@
  * limitations under the License.
  */
 
-package io.servicecomb.serviceregistry.api.request;
+package io.servicecomb.serviceregistry.api.registry;
 
-public class CreateSchemaRequest {
-  private String schema;
+/**
+ * Created by on 2017/12/19.
+ */
+public class ServiceCenterEnvironment {
+  private String version;
 
-  private String summary;
+  private String buildTag;
 
-  public String getSchema() {
-    return schema;
+  private String runMode;
+
+  private String apiVersion;
+
+  public String getVersion() {
+    return version;
   }
 
-  public void setSchema(String schema) {
-    this.schema = schema;
+  public void setVersion(String version) {
+    this.version = version;
   }
 
-  public String getSummary() {
-    return summary;
+  public String getBuildTag() {
+    return buildTag;
   }
 
-  public void setSummary(String summary) {
-    this.summary = summary;
+  public void setBuildTag(String buildTag) {
+    this.buildTag = buildTag;
+  }
+
+  public String getRunMode() {
+    return runMode;
+  }
+
+  public void setRunMode(String runMode) {
+    this.runMode = runMode;
+  }
+
+  public String getApiVersion() {
+    return apiVersion;
+  }
+
+  public void setApiVersion(String apiVersion) {
+    this.apiVersion = apiVersion;
   }
 
 }

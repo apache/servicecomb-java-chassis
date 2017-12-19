@@ -23,6 +23,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -35,9 +36,13 @@ import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
 import org.yaml.snakeyaml.Yaml;
 
+import com.google.common.hash.Hashing;
+
 import io.servicecomb.foundation.vertx.AsyncResultCallback;
+import io.servicecomb.serviceregistry.api.Const;
 import io.servicecomb.serviceregistry.api.registry.Microservice;
 import io.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
+import io.servicecomb.serviceregistry.api.registry.ServiceCenterEnvironment;
 import io.servicecomb.serviceregistry.api.response.HeartbeatResponse;
 import io.servicecomb.serviceregistry.api.response.MicroserviceInstanceChangedEvent;
 import io.servicecomb.serviceregistry.version.Version;
@@ -58,6 +63,8 @@ public class LocalServiceRegistryClientImpl implements ServiceRegistryClient {
   // first key is microservice id
   // second key is instance id
   private Map<String, Map<String, MicroserviceInstance>> microserviceInstanceMap = new ConcurrentHashMap<>();
+
+  private ServiceCenterEnvironment serviceCenterEnvironment = new ServiceCenterEnvironment();
 
   public LocalServiceRegistryClientImpl() {
     if (StringUtils.isEmpty(LOCAL_REGISTRY_FILE)) {
@@ -123,6 +130,10 @@ public class LocalServiceRegistryClientImpl implements ServiceRegistryClient {
         microserviceInstanceMap.put(microservice.getServiceId(), instanceMap);
       }
     }
+    serviceCenterEnvironment.setVersion("0.4.1");
+    serviceCenterEnvironment.setBuildTag("20171201150624.1055.ad31520ef590c7183932664d05f3ebffd25c3714");
+    serviceCenterEnvironment.setRunMode(Const.SERVICECENTER_RUNMODE_DEV);
+    serviceCenterEnvironment.setApiVersion("3.0.0");
   }
 
   @Override
@@ -338,6 +349,20 @@ public class LocalServiceRegistryClientImpl implements ServiceRegistryClient {
     Map<String, MicroserviceInstance> instances = microserviceInstanceMap.get(serviceId);
     return instances.get(instanceId);
   }
-  
-  
+
+  @Override
+  public ServiceCenterEnvironment getServiceCenterEnvironment() {
+    return serviceCenterEnvironment;
+  }
+
+  @Override
+  public String getSchemaSummary(String microserviceId, String schemaId) {
+    Microservice microservice = microserviceIdMap.get(microserviceId);
+    if (microservice == null) {
+      throw new IllegalArgumentException("Invalid serviceId, serviceId=" + microserviceId);
+    }
+    String schemaSummary = Hashing.sha256().newHasher().putString(microservice.getSchemaMap().get(schemaId), StandardCharsets.UTF_8).hash().toString();
+    return schemaSummary;
+  }
+
 }

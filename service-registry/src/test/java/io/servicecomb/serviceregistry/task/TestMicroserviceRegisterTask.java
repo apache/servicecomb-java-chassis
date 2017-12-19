@@ -112,10 +112,10 @@ public class TestMicroserviceRegisterTask {
         result = null;
         srClient.registerMicroservice((Microservice) any);
         result = "serviceId";
-        srClient.isSchemaExist("serviceId", "exist");
-        result = true;
         srClient.isSchemaExist(anyString, anyString);
         result = false;
+        srClient.getServiceCenterEnvironment().getRunMode();
+        result = "dev";
         srClient.registerSchema(anyString, anyString, anyString);
         result = false;
       }
@@ -142,6 +142,8 @@ public class TestMicroserviceRegisterTask {
         result = "serviceId";
         srClient.isSchemaExist(anyString, anyString);
         result = false;
+        srClient.getServiceCenterEnvironment().getRunMode();
+        result = "dev";
         srClient.registerSchema(anyString, anyString, anyString);
         result = true;
       }
@@ -227,6 +229,96 @@ public class TestMicroserviceRegisterTask {
     Assert.assertEquals(false, registerTask.isRegistered());
     Assert.assertEquals(false, registerTask.isSchemaIdSetMatch());
     Assert.assertEquals("serviceId", microservice.getServiceId());
+    Assert.assertEquals(1, taskList.size());
+  }
+
+  @Test
+  public void testSchemaContentNotExist(@Mocked ServiceRegistryClient srClient) {
+    microservice.addSchema("exist", "");
+    new Expectations() {
+      {
+        srClient.getMicroserviceId(anyString, anyString, anyString);
+        result = null;
+        srClient.registerMicroservice((Microservice) any);
+        result = "serviceId";
+        srClient.isSchemaExist(anyString, anyString);
+        result = true;
+        srClient.getSchema(anyString, anyString);
+        result = null;
+        srClient.registerSchema(anyString, anyString, anyString);
+        result = true;
+      }
+    };
+
+    MicroserviceRegisterTask registerTask = new MicroserviceRegisterTask(eventBus, srClient, microservice);
+    registerTask.run();
+
+    Assert.assertEquals(true, registerTask.isRegistered());
+    Assert.assertEquals(true, registerTask.isSchemaIdSetMatch());
+    Assert.assertEquals("serviceId", microservice.getServiceId());
+    Assert.assertEquals("serviceId", microservice.getInstance().getServiceId());
+    Assert.assertEquals(1, taskList.size());
+  }
+
+  @Test
+  public void testSchemaSummaryNotExist(@Mocked ServiceRegistryClient srClient) {
+    microservice.addSchema("exist", "");
+    new Expectations() {
+      {
+        srClient.getMicroserviceId(anyString, anyString, anyString);
+        result = null;
+        srClient.registerMicroservice((Microservice) any);
+        result = "serviceId";
+        srClient.isSchemaExist(anyString, anyString);
+        result = true;
+        srClient.getSchema(anyString, anyString);
+        result = "schema";
+        srClient.getSchemaSummary(anyString, anyString);
+        result = null;
+        srClient.registerSchema(anyString, anyString, anyString);
+        result = true;
+      }
+    };
+
+    MicroserviceRegisterTask registerTask = new MicroserviceRegisterTask(eventBus, srClient, microservice);
+    registerTask.run();
+
+    Assert.assertEquals(true, registerTask.isRegistered());
+    Assert.assertEquals(true, registerTask.isSchemaIdSetMatch());
+    Assert.assertEquals("serviceId", microservice.getServiceId());
+    Assert.assertEquals("serviceId", microservice.getInstance().getServiceId());
+    Assert.assertEquals(1, taskList.size());
+  }
+
+  @Test
+  public void testSchemaSummaryNotMatch(@Mocked ServiceRegistryClient srClient) {
+    microservice.addSchema("exist", "");
+    new Expectations() {
+      {
+        srClient.getMicroserviceId(anyString, anyString, anyString);
+        result = null;
+        srClient.registerMicroservice((Microservice) any);
+        result = "serviceId";
+        srClient.isSchemaExist(anyString, anyString);
+        result = true;
+        srClient.getSchema(anyString, anyString);
+        result = "schema";
+        srClient.getSchemaSummary(anyString, anyString);
+        result = "schemaSummary";
+        srClient.getServiceCenterEnvironment().getRunMode();
+        result = "dev";
+        srClient.registerSchema(anyString, anyString, anyString);
+        result = true;
+      }
+    };
+
+    MicroserviceRegisterTask registerTask = new MicroserviceRegisterTask(eventBus, srClient, microservice);
+    registerTask.run();
+
+    Assert.assertEquals(true, registerTask.isRegistered());
+    Assert.assertEquals(true, registerTask.isSchemaIdSetMatch());
+    Assert.assertEquals("serviceId", microservice.getServiceId());
+    Assert.assertEquals("serviceId", microservice.getInstance().getServiceId());
     Assert.assertEquals(1, taskList.size());
   }
 }

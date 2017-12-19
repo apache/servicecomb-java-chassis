@@ -14,41 +14,49 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.servicecomb.serviceregistry.api.request;
+
+package io.servicecomb.serviceregistry.api.registry;
 
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-public class TestCreateSchemaRequest {
-  CreateSchemaRequest createSchemaRequest = null;
+public class TestServiceCenterEnvironment {
+
+  ServiceCenterEnvironment serviceCenterEnvironment = null;
 
   @Before
   public void setUp() throws Exception {
-    createSchemaRequest = new CreateSchemaRequest();
+    serviceCenterEnvironment = new ServiceCenterEnvironment();
   }
 
   @After
   public void tearDown() throws Exception {
-    createSchemaRequest = null;
+    serviceCenterEnvironment = null;
   }
 
   @Test
   public void testDefaultValues() {
-    Assert.assertNull(createSchemaRequest.getSchema());
-    Assert.assertNull(createSchemaRequest.getSummary());
+    Assert.assertNull(serviceCenterEnvironment.getVersion());
+    Assert.assertNull(serviceCenterEnvironment.getBuildTag());
+    Assert.assertNull(serviceCenterEnvironment.getRunMode());
+    Assert.assertNull(serviceCenterEnvironment.getApiVersion());
   }
 
   @Test
   public void testInitializedValues() {
-    initCreateSchemaRequest();
-    Assert.assertEquals("schema", createSchemaRequest.getSchema());
-    Assert.assertEquals("summary", createSchemaRequest.getSummary());
+    initServiceCenterEnvironment();
+    Assert.assertEquals("0.4.1", serviceCenterEnvironment.getVersion());
+    Assert.assertEquals("2017", serviceCenterEnvironment.getBuildTag());
+    Assert.assertEquals("dev", serviceCenterEnvironment.getRunMode());
+    Assert.assertEquals("3.0.0", serviceCenterEnvironment.getApiVersion());
   }
 
-  private void initCreateSchemaRequest() {
-    createSchemaRequest.setSchema("schema");
-    createSchemaRequest.setSummary("summary");
+  private void initServiceCenterEnvironment() {
+    serviceCenterEnvironment.setVersion("0.4.1");
+    serviceCenterEnvironment.setBuildTag("2017");
+    serviceCenterEnvironment.setRunMode("dev");
+    serviceCenterEnvironment.setApiVersion("3.0.0");
   }
 }

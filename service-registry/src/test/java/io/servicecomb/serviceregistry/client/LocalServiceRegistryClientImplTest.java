@@ -18,6 +18,7 @@
 package io.servicecomb.serviceregistry.client;
 
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 import org.hamcrest.Matchers;
@@ -28,8 +29,11 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
+import com.google.common.hash.Hashing;
+
 import io.servicecomb.serviceregistry.api.registry.Microservice;
 import io.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
+import io.servicecomb.serviceregistry.api.registry.ServiceCenterEnvironment;
 import io.servicecomb.serviceregistry.definition.DefinitionConst;
 
 public class LocalServiceRegistryClientImplTest {
@@ -155,5 +159,22 @@ public class LocalServiceRegistryClientImplTest {
     instance.setServiceId(microservice.getServiceId());
     String instanceId = registryClient.registerMicroserviceInstance(instance);
     Assert.assertNotNull(registryClient.findServiceInstance(microservice.getServiceId(), instanceId));
+  }
+
+  @Test
+  public void testServiceCenterEnvironment() {
+    ServiceCenterEnvironment serviceCenterEnvironment = registryClient.getServiceCenterEnvironment();
+    Assert.assertEquals("0.4.1", serviceCenterEnvironment.getVersion());
+    Assert.assertEquals("20171201150624.1055.ad31520ef590c7183932664d05f3ebffd25c3714", serviceCenterEnvironment.getBuildTag());
+    Assert.assertEquals("dev", serviceCenterEnvironment.getRunMode());
+    Assert.assertEquals("3.0.0", serviceCenterEnvironment.getApiVersion());
+  }
+
+  @Test
+  public void testGetSchemaSummary() {
+    Microservice microservice = mockRegisterMicroservice(appId, microserviceName, "1.0.0");
+    registryClient.registerSchema(microservice.getServiceId(), "sid", "content");
+    String schemaSummary = Hashing.sha256().newHasher().putString("content", StandardCharsets.UTF_8).hash().toString();
+    Assert.assertEquals(schemaSummary, registryClient.getSchemaSummary(microservice.getServiceId(), "sid"));
   }
 }
