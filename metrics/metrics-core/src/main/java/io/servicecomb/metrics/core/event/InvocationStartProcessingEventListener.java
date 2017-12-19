@@ -20,15 +20,15 @@ import io.servicecomb.core.metrics.InvocationStartProcessingEvent;
 import io.servicecomb.foundation.common.event.Event;
 import io.servicecomb.foundation.common.event.EventListener;
 import io.servicecomb.metrics.core.monitor.InvocationMonitor;
-import io.servicecomb.metrics.core.registry.MetricsRegistry;
+import io.servicecomb.metrics.core.monitor.RegistryMonitor;
 import io.servicecomb.swagger.invocation.InvocationType;
 
 public class InvocationStartProcessingEventListener implements EventListener {
 
-  private final MetricsRegistry registry;
+  private final RegistryMonitor registryMonitor;
 
-  public InvocationStartProcessingEventListener(MetricsRegistry registry) {
-    this.registry = registry;
+  public InvocationStartProcessingEventListener(RegistryMonitor registryMonitor) {
+    this.registryMonitor = registryMonitor;
   }
 
   @Override
@@ -39,7 +39,7 @@ public class InvocationStartProcessingEventListener implements EventListener {
   @Override
   public void process(Event data) {
     InvocationStartProcessingEvent event = (InvocationStartProcessingEvent) data;
-    InvocationMonitor monitor = registry.getRegistryMonitor().getInvocationMonitor(event.getOperationName());
+    InvocationMonitor monitor = registryMonitor.getInvocationMonitor(event.getOperationName());
     monitor.getWaitInQueue().increment(-1);
     if (InvocationType.PRODUCER.equals(event.getInvocationType())) {
       monitor.getLifeTimeInQueue().update(event.getInQueueNanoTime());

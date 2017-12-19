@@ -16,7 +16,7 @@
 
 package io.servicecomb.metrics.core.metric;
 
-public class TimeMetric {
+public class TimerMetric {
   private final long total;
 
   private final long count;
@@ -47,11 +47,11 @@ public class TimeMetric {
     return max;
   }
 
-  public TimeMetric() {
+  public TimerMetric() {
     this(0, 0, 0, 0);
   }
 
-  public TimeMetric(long total, long count, long min, long max) {
+  public TimerMetric(long total, long count, long min, long max) {
     this.total = total;
     this.count = count;
     if (count != 0) {
@@ -63,8 +63,8 @@ public class TimeMetric {
     this.max = max;
   }
 
-  public TimeMetric merge(TimeMetric metric) {
-    return new TimeMetric(this.total + metric.total, this.count + metric.count,
+  public TimerMetric merge(TimerMetric metric) {
+    return new TimerMetric(this.total + metric.total, this.count + metric.count,
         getMin(this.min, metric.min), getMax(this.max, metric.max));
   }
 
