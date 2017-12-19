@@ -42,8 +42,8 @@ public class TestParseConfigUtils {
   public void testNotifyItemsChangedNeedRefresh() {
 
     boolean status = true;
-    Map<String, Object> before = new HashMap<String, Object>();
-    Map<String, Object> after = new HashMap<String, Object>();
+    Map<String, Object> before = new HashMap<>();
+    Map<String, Object> after = new HashMap<>();
     try {
       Deencapsulation.invoke(pc, "notifyItemsChangedNeedRefresh", before, after);
     } catch (Exception e) {

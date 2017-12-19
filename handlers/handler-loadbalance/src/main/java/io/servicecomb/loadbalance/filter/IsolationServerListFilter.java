@@ -78,7 +78,7 @@ public final class IsolationServerListFilter implements ServerListFilterExt {
       return servers;
     }
 
-    List<Server> filteredServers = new ArrayList<Server>();
+    List<Server> filteredServers = new ArrayList<>();
     for (Server server : servers) {
       if (allowVisit(server)) {
         filteredServers.add(server);

@@ -50,6 +50,6 @@ public class SpringmvcConsumerResponseMapper implements ConsumerResponseMapper {
       }
     }
 
-    return new ResponseEntity<Object>(response.getResult(), httpHeaders, status);
+    return new ResponseEntity<>(response.getResult(), httpHeaders, status);
   }
 }

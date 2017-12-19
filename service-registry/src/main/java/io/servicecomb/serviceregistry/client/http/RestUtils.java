@@ -174,7 +174,7 @@ final class RestUtils {
   }
 
   private static Map<String, String> defaultHeaders() {
-    Map<String, String> headers = new HashMap<String, String>();
+    Map<String, String> headers = new HashMap<>();
     headers.put(HEADER_CONTENT_TYPE, "application/json");
     headers.put(HEADER_USER_AGENT, "cse-serviceregistry-client/1.0.0");
     headers.put(HEADER_TENANT_NAME, ServiceRegistryConfig.INSTANCE.getTenantName());

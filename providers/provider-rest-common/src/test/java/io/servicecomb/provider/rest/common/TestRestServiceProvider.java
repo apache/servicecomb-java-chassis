@@ -36,7 +36,7 @@ public class TestRestServiceProvider {
   @Test
   public void testInit() throws Exception {
     ApplicationContext context = Mockito.mock(ApplicationContext.class);
-    Mockito.when(context.getBeansWithAnnotation(RestSchema.class)).thenReturn(new HashMap<String, Object>());
+    Mockito.when(context.getBeansWithAnnotation(RestSchema.class)).thenReturn(new HashMap<>());
 
     new MockUp<BeanUtils>() {
       @Mock

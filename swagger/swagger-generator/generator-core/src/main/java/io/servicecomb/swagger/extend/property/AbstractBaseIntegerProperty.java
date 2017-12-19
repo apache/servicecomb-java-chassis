@@ -38,7 +38,7 @@ public abstract class AbstractBaseIntegerProperty<T> extends BaseIntegerProperty
 
   public AbstractBaseIntegerProperty<T> addEnum(T value) {
     if (this.enumNames == null) {
-      this.enumNames = new ArrayList<T>();
+      this.enumNames = new ArrayList<>();
     }
     if (!enumNames.contains(value)) {
       enumNames.add(value);
