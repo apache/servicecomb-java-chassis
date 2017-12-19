@@ -35,7 +35,6 @@ import io.servicecomb.serviceregistry.api.registry.MicroserviceFactory;
 import io.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
 import io.servicecomb.serviceregistry.cache.InstanceCacheManager;
 import io.servicecomb.serviceregistry.cache.InstanceCacheManagerNew;
-import io.servicecomb.serviceregistry.cache.InstanceCacheManagerOld;
 import io.servicecomb.serviceregistry.client.IpPortManager;
 import io.servicecomb.serviceregistry.client.ServiceRegistryClient;
 import io.servicecomb.serviceregistry.config.ServiceRegistryConfig;
@@ -117,13 +116,6 @@ public abstract class AbstractServiceRegistry implements ServiceRegistry {
   }
 
   protected void initCacheManager() {
-    // now only edge use new mechanism
-    String microserviceVersionFactoryClass = serviceRegistryConfig.getMicroserviceVersionFactory();
-    if (microserviceVersionFactoryClass == null) {
-      instanceCacheManager = new InstanceCacheManagerOld(eventBus, this, serviceRegistryConfig);
-      return;
-    }
-
     instanceCacheManager = new InstanceCacheManagerNew(appManager);
   }
 
