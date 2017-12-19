@@ -14,24 +14,17 @@
  * limitations under the License.
  */
 
-package io.servicecomb.metrics.core.registry;
+package io.servicecomb.metrics.sample.perf;
 
-import org.springframework.stereotype.Component;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-import io.servicecomb.metrics.core.monitor.RegistryMonitor;
+import io.servicecomb.springboot.starter.provider.EnableServiceComb;
 
-@Component
-public class DefaultMetricsRegistry implements MetricsRegistry {
-
-  private final RegistryMonitor registryMonitor;
-
-  public DefaultMetricsRegistry() {
-    this.registryMonitor = new RegistryMonitor();
-  }
-
-  @Override
-  public RegistryMonitor getRegistryMonitor() {
-    return registryMonitor;
+@SpringBootApplication
+@EnableServiceComb
+public class PerfApplication {
+  public static void main(String[] args) {
+    SpringApplication.run(PerfApplication.class, args);
   }
 }
-

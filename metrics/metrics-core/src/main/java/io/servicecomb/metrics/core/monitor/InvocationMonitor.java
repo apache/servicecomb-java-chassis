@@ -69,9 +69,9 @@ public class InvocationMonitor {
 
   public InvocationMetric toInvocationMetric(int pollerIndex) {
     return new InvocationMetric(this.getOperationName(), this.getWaitInQueue().getValue(pollerIndex).longValue(),
-        this.lifeTimeInQueue.toMetric(pollerIndex),
-        this.executionTime.toMetric(pollerIndex),
-        this.consumerLatency.toMetric(pollerIndex),
-        this.producerLatency.toMetric(pollerIndex));
+        this.lifeTimeInQueue.toTimerMetric(pollerIndex),
+        this.executionTime.toTimerMetric(pollerIndex),
+        this.consumerLatency.toTimerMetric(pollerIndex),
+        this.producerLatency.toTimerMetric(pollerIndex));
   }
 }

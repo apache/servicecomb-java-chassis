@@ -48,7 +48,7 @@ public class TimeMonitor {
     max = new MaxGauge(MonitorConfig.builder(name + ".max").build());
   }
 
-  public TimeMetric toMetric(int pollerIndex) {
+  public TimeMetric toTimerMetric(int pollerIndex) {
     return new TimeMetric(total.getCount(pollerIndex), count.getCount(pollerIndex),
         min.getValue(pollerIndex), max.getValue(pollerIndex));
   }

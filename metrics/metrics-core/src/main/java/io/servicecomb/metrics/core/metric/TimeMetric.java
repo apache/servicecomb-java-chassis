@@ -54,7 +54,11 @@ public class TimeMetric {
   public TimeMetric(long total, long count, long min, long max) {
     this.total = total;
     this.count = count;
-    this.average = (double) total / (double) count;
+    if (count != 0) {
+      this.average = (double) total / (double) count;
+    } else {
+      this.average = 0;
+    }
     this.min = min;
     this.max = max;
   }

@@ -16,11 +16,8 @@
 
 package io.servicecomb.metrics.core.registry;
 
-import io.servicecomb.metrics.core.metric.RegistryMetric;
 import io.servicecomb.metrics.core.monitor.RegistryMonitor;
 
 public interface MetricsRegistry {
   RegistryMonitor getRegistryMonitor();
-
-  RegistryMetric getRegistryMetric(int pollerIndex);
 }
