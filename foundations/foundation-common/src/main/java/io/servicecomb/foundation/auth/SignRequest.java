@@ -37,7 +37,7 @@ public class SignRequest {
   /**
    * Map of the headers included in this request
    */
-  private Map<String, String> headers = new HashMap<String, String>();
+  private Map<String, String> headers = new HashMap<>();
 
   /**
    * The service endpoint to which this request should be sent

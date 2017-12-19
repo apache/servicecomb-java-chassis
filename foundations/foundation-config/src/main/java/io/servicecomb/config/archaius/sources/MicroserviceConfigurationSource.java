@@ -39,7 +39,7 @@ public class MicroserviceConfigurationSource implements PolledConfigurationSourc
   }
 
   public PollResult poll(boolean b, Object o) throws Exception {
-    Map<String, Object> configurations = new LinkedHashMap<String, Object>();
+    Map<String, Object> configurations = new LinkedHashMap<>();
 
     for (ConfigModel configModel : configModels) {
       configurations.putAll(YAMLUtil.retrieveItems("", configModel.getConfig()));

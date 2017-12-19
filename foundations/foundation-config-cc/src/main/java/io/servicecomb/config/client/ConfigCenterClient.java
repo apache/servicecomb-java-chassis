@@ -328,7 +328,7 @@ public class ConfigCenterClient {
       LOGGER.warn("set uri failed, uri is {}, message: {}", endpoint.toString(), e.getMessage());
     }
 
-    Map<String, String[]> queryParams = new HashMap<String, String[]>();
+    Map<String, String[]> queryParams = new HashMap<>();
     if (endpoint.contains("?")) {
       String parameters = endpoint.substring(endpoint.indexOf("?") + 1);
       if (null != parameters && !"".equals(parameters)) {

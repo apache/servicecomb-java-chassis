@@ -105,7 +105,7 @@ public final class CertificateUtil {
   }
 
   public static Set<String> getCN(X509Certificate cert) {
-    Set<String> names = new HashSet<String>();
+    Set<String> names = new HashSet<>();
 
     // 读取CN
     String subjectDN = cert.getSubjectX500Principal().getName();

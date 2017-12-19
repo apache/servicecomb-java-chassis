@@ -45,7 +45,7 @@ public class CseDiscoveryClient implements DiscoveryClient {
 
   @Override
   public List<ServiceInstance> getInstances(final String serviceId) {
-    List<ServiceInstance> instances = new ArrayList<ServiceInstance>();
+    List<ServiceInstance> instances = new ArrayList<>();
     ServiceRegistryClient client = RegistryUtils.getServiceRegistryClient();
     String appId = RegistryUtils.getAppId();
     ReferenceConfig referenceConfig = consumerProviderManager.getReferenceConfig(serviceId);

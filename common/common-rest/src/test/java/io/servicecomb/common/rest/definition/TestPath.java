@@ -59,7 +59,7 @@ public class TestPath {
     Assert.assertEquals("(]+?)/(.*)", (oSecondPathRegExp.toString()));
     Assert.assertEquals(false, oSecondPathRegExp.isStaticPath());
     Assert.assertEquals(0, oSecondPathRegExp.getStaticCharCount());
-    Assert.assertNotEquals(null, (oPathRegExp.match("//{test}//", new HashMap<String, String>())));
+    Assert.assertNotEquals(null, (oPathRegExp.match("//{test}//", new HashMap<>())));
     // Error Scenarios
     oPathRegExp = new PathRegExp("//{test \t}//");
     // Error Scenarios for double {{

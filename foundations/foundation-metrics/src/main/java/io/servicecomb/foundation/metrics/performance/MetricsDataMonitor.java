@@ -46,15 +46,15 @@ public class MetricsDataMonitor {
   // key is operQualifiedName
   // inc
   // after invocation finished
-  public Map<String, Long> operMetricsTotalReq = new ConcurrentHashMap<String, Long>();
+  public Map<String, Long> operMetricsTotalReq = new ConcurrentHashMap<>();
 
   // key is operQualifiedName
   // inc
   // after invocation finished
-  public Map<String, Long> operMetricsTotalFailReq = new ConcurrentHashMap<String, Long>();
+  public Map<String, Long> operMetricsTotalFailReq = new ConcurrentHashMap<>();
 
   // key is operQualifiedName
-  public Map<String, QueueMetricsData> queueMetrics = new ConcurrentHashMap<String, QueueMetricsData>();
+  public Map<String, QueueMetricsData> queueMetrics = new ConcurrentHashMap<>();
 
   /**
    * default constructor.

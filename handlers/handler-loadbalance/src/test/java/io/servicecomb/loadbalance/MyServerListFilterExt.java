@@ -34,7 +34,7 @@ public class MyServerListFilterExt implements ServerListFilterExt {
   @Override
   public List<Server> getFilteredListOfServers(List<Server> serverList) {
     if (invocation.getAppId().equals("test")) {
-      return new ArrayList<Server>();
+      return new ArrayList<>();
     }
     return serverList;
   }

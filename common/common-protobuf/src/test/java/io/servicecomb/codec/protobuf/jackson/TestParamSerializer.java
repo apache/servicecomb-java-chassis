@@ -92,7 +92,7 @@ public class TestParamSerializer {
       }
     };
 
-    List<ProtobufField> listProtobufField = new ArrayList<ProtobufField>();
+    List<ProtobufField> listProtobufField = new ArrayList<>();
     listProtobufField.add(Mockito.mock(ProtobufField.class));
 
     new MockUp<ProtobufMessage>() {

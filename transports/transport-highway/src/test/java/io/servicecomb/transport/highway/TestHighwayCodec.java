@@ -154,7 +154,7 @@ public class TestHighwayCodec {
 
     ResponseHeader header = new ResponseHeader();
     header.setStatusCode(200);
-    header.setContext(new HashMap<String, String>());
+    header.setContext(new HashMap<>());
     header.getContext().put("a", "10");
     Buffer responseBuf = HighwayCodec.encodeResponse(0, header, null, null, new ProtobufFeature());
 

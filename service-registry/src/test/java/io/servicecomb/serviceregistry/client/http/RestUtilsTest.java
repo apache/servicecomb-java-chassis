@@ -37,7 +37,7 @@ public class RestUtilsTest {
         new IpPort("127.0.0.1", 443),
         new RequestParam().addQueryParam("testParam", "test"),
         "test",
-        new HashMap<String, String>())));
+        new HashMap<>())));
     assertThat(headers.get("Content-Type"), is("application/json"));
     assertThat(headers.get("User-Agent"), is("cse-serviceregistry-client/1.0.0"));
     assertThat(headers.get("x-domain-name"), is("default"));

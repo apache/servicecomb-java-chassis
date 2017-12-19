@@ -33,7 +33,7 @@ public class TestRequestMeta {
 
   RestOperationMeta swaggerRestOperation = Mockito.mock(RestOperationMeta.class);
 
-  Map<String, String> pathParams = new HashMap<String, String>();
+  Map<String, String> pathParams = new HashMap<>();
 
   RequestMeta requestmeta = new RequestMeta(referenceConfig, swaggerRestOperation, pathParams);
 

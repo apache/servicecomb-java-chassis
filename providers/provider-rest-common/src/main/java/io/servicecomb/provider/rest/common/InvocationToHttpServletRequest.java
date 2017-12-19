@@ -69,7 +69,7 @@ public class InvocationToHttpServletRequest extends AbstractHttpServletRequest {
 
   @Override
   public Map<String, String[]> getParameterMap() {
-    Map<String, String[]> paramMap = new HashMap<String, String[]>();
+    Map<String, String[]> paramMap = new HashMap<>();
     for (RestParam param : swaggerOperation.getParamList()) {
       String[] value = param.getValueAsStrings(args);
       paramMap.put(param.getParamName(), value);

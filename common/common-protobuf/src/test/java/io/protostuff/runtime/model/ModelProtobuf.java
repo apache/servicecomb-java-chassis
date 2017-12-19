@@ -866,7 +866,7 @@ public final class ModelProtobuf {
             }
             case 82: {
               if (!((mutable_bitField0_ & 0x00000100) == 0x00000100)) {
-                userList_ = new java.util.ArrayList<io.protostuff.runtime.model.ModelProtobuf.User>();
+                userList_ = new java.util.ArrayList<>();
                 mutable_bitField0_ |= 0x00000100;
               }
               userList_.add(
@@ -2513,7 +2513,7 @@ public final class ModelProtobuf {
 
       private void ensureUserListIsMutable() {
         if (!((bitField0_ & 0x00000100) == 0x00000100)) {
-          userList_ = new java.util.ArrayList<io.protostuff.runtime.model.ModelProtobuf.User>(userList_);
+          userList_ = new java.util.ArrayList<>(userList_);
           bitField0_ |= 0x00000100;
         }
       }
@@ -2755,7 +2755,7 @@ public final class ModelProtobuf {
       private com.google.protobuf.RepeatedFieldBuilderV3<io.protostuff.runtime.model.ModelProtobuf.User, io.protostuff.runtime.model.ModelProtobuf.User.Builder, io.protostuff.runtime.model.ModelProtobuf.UserOrBuilder> getUserListFieldBuilder() {
         if (userListBuilder_ == null) {
           userListBuilder_ =
-              new com.google.protobuf.RepeatedFieldBuilderV3<io.protostuff.runtime.model.ModelProtobuf.User, io.protostuff.runtime.model.ModelProtobuf.User.Builder, io.protostuff.runtime.model.ModelProtobuf.UserOrBuilder>(
+              new com.google.protobuf.RepeatedFieldBuilderV3<>(
                   userList_,
                   ((bitField0_ & 0x00000100) == 0x00000100),
                   getParentForChildren(),
