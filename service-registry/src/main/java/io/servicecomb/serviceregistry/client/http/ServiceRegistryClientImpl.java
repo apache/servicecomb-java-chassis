@@ -258,7 +258,7 @@ public final class ServiceRegistryClientImpl implements ServiceRegistryClient {
       CreateSchemaRequest request = new CreateSchemaRequest();
       request.setSchema(schemaContent);
       String summary = Hashing.sha256().newHasher().putString(schemaContent, StandardCharsets.UTF_8).hash().toString();
-      request.setSummary(summary);
+      request.setSignature(summary);
       byte[] body = JsonUtils.writeValueAsBytes(request);
 
       CountDownLatch countDownLatch = new CountDownLatch(1);
@@ -365,10 +365,7 @@ public final class ServiceRegistryClientImpl implements ServiceRegistryClient {
           schemaId,
           e);
     }
-    if (getSchemaResponse.getSchemaSummary() != null) {
-      return getSchemaResponse.getSchemaSummary();
-    }
-    return  null;
+    return getSchemaResponse.getSchemaSummary();
   }
 
   @Override

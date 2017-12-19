@@ -38,6 +38,8 @@ public class MicroserviceRegisterTask extends AbstractRegisterTask {
 
   private boolean schemaIdSetMatch;
 
+  private boolean scEnvIsDev = false;
+
   public MicroserviceRegisterTask(EventBus eventBus, ServiceRegistryClient srClient, Microservice microservice) {
     super(eventBus, srClient, microservice);
     this.taskStatus = TaskStatus.READY;
@@ -116,8 +118,8 @@ public class MicroserviceRegisterTask extends AbstractRegisterTask {
     schemaIdSetMatch = existSchemas.equals(localSchemas);
 
     if (!schemaIdSetMatch) {
-      LOGGER.warn(
-          "SchemaIds is different between local and service center. "
+      LOGGER.error(
+          "SchemaIds is different between local and service center. Please change microservice version. "
               + "id={} appId={}, name={}, version={}, local schemaIds={}, service center schemaIds={}",
           microservice.getServiceId(),
           microservice.getAppId(),
@@ -125,6 +127,9 @@ public class MicroserviceRegisterTask extends AbstractRegisterTask {
           microservice.getVersion(),
           localSchemas,
           existSchemas);
+      if (!serviceCenterEnvIsDev()) {
+        return false;
+      }
       return true;
     }
 
@@ -146,40 +151,12 @@ public class MicroserviceRegisterTask extends AbstractRegisterTask {
       boolean exists = srClient.isSchemaExist(microservice.getServiceId(), schemaId);
       LOGGER.info("schemaId {} exists {}", schemaId, exists);
       if (!exists) {
-        if (serviceCenterEnvIsDev()) {
-            if (!srClient.registerSchema(microservice.getServiceId(), schemaId, content)) {
-                return false;
-            }
+        if (!srClient.registerSchema(microservice.getServiceId(), schemaId, content)) {
+          return false;
         }
       } else {
-        //query if schema exist, if not exist, register schema&summary in SC
-        String serviceId = microservice.getServiceId();
-        String schema = srClient.getSchema(serviceId, schemaId);
-        if (null == schema) {
-          LOGGER.warn("schemacontent {}/{} does not exist.", serviceId, schemaId);
-          if (!srClient.registerSchema(serviceId, schemaId, content)) {
-            return false;
-          }
-        } else {
-          //query if schemaSummary exist, if not exist, register schema&summary in SC
-          String schemaSummary = srClient.getSchemaSummary(serviceId, schemaId);
-          if (null == schemaSummary) {
-            LOGGER.warn("schemasummary {}/{} does not exist.", serviceId, schemaId);
-            if (!srClient.registerSchema(serviceId, schemaId, content)) {
-              return false;
-            }
-          } else {
-        	//compare to localschema, if don't match,when SC runMode is dev,register schema&summary in SC
-            String localSummary = Hashing.sha256().newHasher().putString(content, StandardCharsets.UTF_8).hash().toString();
-            if (!localSummary.equals(schemaSummary)) {
-              LOGGER.warn("schemaSummary {}/{} is different from servicecenter.", serviceId, schemaId);
-              if (serviceCenterEnvIsDev()) {
-                if (!srClient.registerSchema(serviceId, schemaId, content)) {
-                  return false;
-                }
-              }
-            }
-          }
+        if (!checkSchemaSummary(schemaId, content)) {
+          return false;
         }
       }
     }
@@ -187,12 +164,33 @@ public class MicroserviceRegisterTask extends AbstractRegisterTask {
     return true;
   }
 
+  private boolean checkSchemaSummary(String schemaId, String content) {
+    //query if schemaSummary exist, if not exist, register schema&summary in SC
+    String serviceId = microservice.getServiceId();
+    String schemaSummary = srClient.getSchemaSummary(serviceId, schemaId);
+    if (null == schemaSummary) {
+      return srClient.registerSchema(serviceId, schemaId, content);
+    } else {
+      //compare to localschema, if don't match,when SC runMode is dev,register schema&summary in SC
+      String localSummary = Hashing.sha256().newHasher().putString(content, StandardCharsets.UTF_8).hash().toString();
+      if (!localSummary.equals(schemaSummary)) {
+        if (scEnvIsDev || serviceCenterEnvIsDev()) {
+          return srClient.registerSchema(serviceId, schemaId, content);
+        } else {
+          return false;
+        }
+      }
+    }
+    return true;
+  }
+
   private boolean serviceCenterEnvIsDev() {
     if (Const.SERVICECENTER_RUNMODE_DEV.equals(srClient.getServiceCenterEnvironment().getRunMode())) {
       LOGGER.warn("The current servicecenter environment runmode is {}", Const.SERVICECENTER_RUNMODE_DEV);
+      scEnvIsDev = true;
       return true;
     }
-    LOGGER.error("The current servicecenter environment runmode isn't {}", Const.SERVICECENTER_RUNMODE_DEV);
+    LOGGER.error("The current servicecenter environment runmode isn't {}, schema info can't be modified.", Const.SERVICECENTER_RUNMODE_DEV);
     return false;
   }
 }

@@ -37,18 +37,18 @@ public class TestCreateSchemaRequest {
   @Test
   public void testDefaultValues() {
     Assert.assertNull(createSchemaRequest.getSchema());
-    Assert.assertNull(createSchemaRequest.getSummary());
+    Assert.assertNull(createSchemaRequest.getSignature());
   }
 
   @Test
   public void testInitializedValues() {
     initCreateSchemaRequest();
     Assert.assertEquals("schema", createSchemaRequest.getSchema());
-    Assert.assertEquals("summary", createSchemaRequest.getSummary());
+    Assert.assertEquals("summary", createSchemaRequest.getSignature());
   }
 
   private void initCreateSchemaRequest() {
     createSchemaRequest.setSchema("schema");
-    createSchemaRequest.setSummary("summary");
+    createSchemaRequest.setSignature("summary");
   }
 }

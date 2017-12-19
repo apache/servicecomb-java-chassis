@@ -17,10 +17,13 @@
 
 package io.servicecomb.serviceregistry.api.request;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public class CreateSchemaRequest {
   private String schema;
 
-  private String summary;
+  @JsonProperty(value = "summary")
+  private String signature;
 
   public String getSchema() {
     return schema;
@@ -30,12 +33,12 @@ public class CreateSchemaRequest {
     this.schema = schema;
   }
 
-  public String getSummary() {
-    return summary;
+  public String getSignature() {
+    return signature;
   }
 
-  public void setSummary(String summary) {
-    this.summary = summary;
+  public void setSignature(String signature) {
+    this.signature = signature;
   }
 
 }
