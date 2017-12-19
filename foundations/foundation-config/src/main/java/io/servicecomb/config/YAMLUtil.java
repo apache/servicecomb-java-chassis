@@ -32,7 +32,7 @@ public final class YAMLUtil {
 
   @SuppressWarnings("unchecked")
   public static Map<String, Object> yaml2Properties(InputStream input) {
-    Map<String, Object> configurations = new LinkedHashMap<String, Object>();
+    Map<String, Object> configurations = new LinkedHashMap<>();
     Yaml yaml = new Yaml();
     yaml.loadAll(input).forEach(data -> configurations.putAll(retrieveItems("", (Map<String, Object>) data)));
     return configurations;
@@ -40,7 +40,7 @@ public final class YAMLUtil {
 
   @SuppressWarnings("unchecked")
   public static Map<String, Object> retrieveItems(String prefix, Map<String, Object> propertieMap) {
-    Map<String, Object> result = new LinkedHashMap<String, Object>();
+    Map<String, Object> result = new LinkedHashMap<>();
     if (!prefix.isEmpty()) {
       prefix += ".";
     }

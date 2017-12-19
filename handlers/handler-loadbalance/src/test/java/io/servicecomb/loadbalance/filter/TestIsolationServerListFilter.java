@@ -103,7 +103,7 @@ public class TestIsolationServerListFilter {
     Mockito.when(invocation.getMicroserviceName()).thenReturn("microserviceName");
     Mockito.when(testServer.getLastVisitTime()).thenReturn(System.currentTimeMillis());
 
-    List<Server> serverList = new ArrayList<Server>();
+    List<Server> serverList = new ArrayList<>();
     serverList.add(testServer);
     IsolationServerListFilter.setLoadBalancerStats(loadBalancerStats);
     IsolationServerListFilter.setInvocation(invocation);
@@ -133,7 +133,7 @@ public class TestIsolationServerListFilter {
       loadBalancerStats.incrementNumRequests(testServer);
     }
 
-    List<Server> serverList = new ArrayList<Server>();
+    List<Server> serverList = new ArrayList<>();
     serverList.add(testServer);
     IsolationServerListFilter.setLoadBalancerStats(loadBalancerStats);
     IsolationServerListFilter.setInvocation(invocation);
@@ -156,7 +156,7 @@ public class TestIsolationServerListFilter {
       loadBalancerStats.incrementNumRequests(testServer);
     }
 
-    List<Server> serverList = new ArrayList<Server>();
+    List<Server> serverList = new ArrayList<>();
     serverList.add(testServer);
     IsolationServerListFilter.setLoadBalancerStats(loadBalancerStats);
     IsolationServerListFilter.setInvocation(invocation);

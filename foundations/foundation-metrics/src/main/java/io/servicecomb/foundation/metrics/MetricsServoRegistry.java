@@ -184,9 +184,9 @@ public class MetricsServoRegistry implements InitializingBean {
   protected final Func0<String> getTotalReqProdOperLevel = new Func0<String>() {
     @Override
     public String call() {
-      Map<String, Long> totalMap = new HashMap<String, Long>();
+      Map<String, Long> totalMap = new HashMap<>();
       Map<String, Long> oldMap = localMetrics.operMetricsTotalReq;
-      Map<String, Long> metricMap = new HashMap<String, Long>();
+      Map<String, Long> metricMap = new HashMap<>();
       for (MetricsDataMonitor metricsDataMonitor : metricsList) {
         Collection<String> keySet = metricsDataMonitor.operMetricsTotalReq.keySet();
         for (String key : keySet) {
@@ -213,9 +213,9 @@ public class MetricsServoRegistry implements InitializingBean {
   protected final Func0<String> getTotalReqFailProdOperLevel = new Func0<String>() {
     @Override
     public String call() {
-      Map<String, Long> totalMap = new HashMap<String, Long>();
+      Map<String, Long> totalMap = new HashMap<>();
       Map<String, Long> oldMap = localMetrics.operMetricsTotalFailReq;
-      Map<String, Long> metricMap = new HashMap<String, Long>();
+      Map<String, Long> metricMap = new HashMap<>();
       for (MetricsDataMonitor metricsDataMonitor : metricsList) {
         Collection<String> keySet = metricsDataMonitor.operMetricsTotalFailReq.keySet();
         for (String key : keySet) {
@@ -242,7 +242,7 @@ public class MetricsServoRegistry implements InitializingBean {
   protected final Func0<String> getQueueMetrics = new Func0<String>() {
     @Override
     public String call() {
-      Map<String, QueueMetricsData> totalMap = new HashMap<String, QueueMetricsData>();
+      Map<String, QueueMetricsData> totalMap = new HashMap<>();
 
       for (MetricsDataMonitor metricsDataMonitor : metricsList) {
         Collection<String> keySet = metricsDataMonitor.getQueueMetrics().keySet();
@@ -276,7 +276,7 @@ public class MetricsServoRegistry implements InitializingBean {
       }
 
       Map<String, QueueMetricsData> oldMap = localMetrics.getQueueMetrics();
-      Map<String, QueueMetricsData> metricMap = new HashMap<String, QueueMetricsData>();
+      Map<String, QueueMetricsData> metricMap = new HashMap<>();
       Map<String, String> result = new HashMap<>();
       Map<String, String> resultInstancePublishMap = new HashMap<>();
 
@@ -534,7 +534,7 @@ public class MetricsServoRegistry implements InitializingBean {
    */
   private List<Monitor<?>> getMetricsMonitors() {
 
-    List<Monitor<?>> monitors = new ArrayList<Monitor<?>>();
+    List<Monitor<?>> monitors = new ArrayList<>();
     monitors.add(getRequestValuesGaugeMonitor("totalRequestsPerProvider INSTANCE_LEVEL",
         getTotalReqProvider));
 

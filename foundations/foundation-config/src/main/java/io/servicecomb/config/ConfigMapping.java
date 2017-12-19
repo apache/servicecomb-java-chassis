@@ -48,7 +48,7 @@ public final class ConfigMapping {
     if (configMap == null) {
       return new LinkedHashMap<>();
     }
-    Map<String, Object> retMap = new LinkedHashMap<String, Object>();
+    Map<String, Object> retMap = new LinkedHashMap<>();
     retMap.putAll(oldMap);
     for (Map.Entry<String, Object> entry : configMap.entrySet()) {
       String key = entry.getKey();
