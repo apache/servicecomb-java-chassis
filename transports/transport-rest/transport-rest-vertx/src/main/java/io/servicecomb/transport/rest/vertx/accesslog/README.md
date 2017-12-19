@@ -7,7 +7,7 @@ To enable access log printing, you can config access log in microservice.yaml li
 servicecomb:
   accesslog:
     enabled: true
-    pattern: "%h - - %t %r !! %q cs-uri %% %s %B"
+    pattern: "%h - - %t %r %s %B"
 ```
 
 ***Access Log Configurations in microservice.yaml***
