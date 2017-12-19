@@ -31,6 +31,8 @@ import com.google.common.eventbus.EventBus;
 
 import io.servicecomb.config.ConfigUtil;
 import io.servicecomb.foundation.common.net.IpPort;
+import io.servicecomb.serviceregistry.RegistryUtils;
+import io.servicecomb.serviceregistry.ServiceRegistry;
 import io.servicecomb.serviceregistry.client.LocalServiceRegistryClientImpl;
 import io.servicecomb.serviceregistry.client.ServiceRegistryClient;
 import io.servicecomb.serviceregistry.config.ServiceRegistryConfig;
@@ -62,7 +64,8 @@ public class TestRemoteServiceRegistry {
   public ExpectedException expectedException = ExpectedException.none();
 
   @Test
-  public void testLifeCycle(@Injectable ServiceRegistryConfig config, @Injectable MicroserviceDefinition definition) {
+  public void testLifeCycle(@Injectable ServiceRegistryConfig config, @Injectable MicroserviceDefinition definition,
+      @Injectable ServiceRegistry registry) {
     ArrayList<IpPort> ipPortList = new ArrayList<>();
     ipPortList.add(new IpPort("127.0.0.1", 9980));
     ipPortList.add(new IpPort("127.0.0.1", 9981));
@@ -86,6 +89,8 @@ public class TestRemoteServiceRegistry {
       }
     };
 
+    ServiceRegistry oldRegistry = RegistryUtils.getServiceRegistry();
+    RegistryUtils.setServiceRegistry(registry);
     EventBus bus = new EventBus();
     RemoteServiceRegistry remote = new TestingRemoteServiceRegistry(bus, config, definition);
     remote.init();
@@ -102,6 +107,7 @@ public class TestRemoteServiceRegistry {
       }
     }, 0, TimeUnit.SECONDS);
     Assert.assertTrue(remote.getTaskPool().isShutdown());
+    RegistryUtils.setServiceRegistry(oldRegistry);
   }
 
   @Test
