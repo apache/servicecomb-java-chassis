@@ -65,6 +65,7 @@ import io.servicecomb.swagger.invocation.response.Headers;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import io.swagger.annotations.ResponseHeader;
@@ -311,4 +312,17 @@ public class CodeFirstSpringmvc {
     Assert.notNull(form1);
     return form1 + form2;
   }
+
+  @RequestMapping(path = "/testStrArray", method = RequestMethod.GET)
+  public String testStrArray(@ApiParam(collectionFormat = "csv") String[] str){
+    try {
+      for (int i = 0; i < str.length; i++) {
+        System.out.println(str.length + "*****" + str[i] + "\n");
+      }
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+    return "ok";
+  }
+
 }

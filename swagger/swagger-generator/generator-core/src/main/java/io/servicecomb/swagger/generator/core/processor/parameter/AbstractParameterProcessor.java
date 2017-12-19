@@ -20,6 +20,7 @@ package io.servicecomb.swagger.generator.core.processor.parameter;
 import io.servicecomb.swagger.generator.core.OperationGenerator;
 import io.servicecomb.swagger.generator.core.ParameterAnnotationProcessor;
 import io.servicecomb.swagger.generator.core.utils.ParamUtils;
+import io.swagger.annotations.ApiParam;
 import io.swagger.models.parameters.AbstractSerializableParameter;
 
 public abstract class AbstractParameterProcessor<T extends AbstractSerializableParameter<?>>
@@ -35,8 +36,8 @@ public abstract class AbstractParameterProcessor<T extends AbstractSerializableP
 
   protected void fillParameter(Object annotation, OperationGenerator operationGenerator, int paramIdx,
       T parameter) {
-    setParameterName(annotation, operationGenerator, paramIdx, parameter);
     setParameterType(operationGenerator, paramIdx, parameter);
+    setParameterName(annotation, operationGenerator, paramIdx, parameter);
   }
 
   protected void setParameterType(OperationGenerator operationGenerator, int paramIdx,
@@ -52,9 +53,14 @@ public abstract class AbstractParameterProcessor<T extends AbstractSerializableP
     String paramName = getAnnotationParameterName(annotation);
     paramName = ParamUtils.getParameterName(paramName, operationGenerator.getProviderMethod(), paramIdx);
     parameter.setName(paramName);
+    parameter.setCollectionFormat(getAnnotationParameterColFmt(annotation));
   }
 
   protected abstract T createParameter();
 
   protected abstract String getAnnotationParameterName(Object annotation);
+
+  protected String getAnnotationParameterColFmt(Object annotation) {
+    return null;
+  }
 }
