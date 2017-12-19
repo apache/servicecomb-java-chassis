@@ -20,8 +20,11 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
+import org.springframework.stereotype.Component;
+
 import io.servicecomb.metrics.core.metric.InvocationMetric;
 
+@Component
 public class RegistryMonitor {
 
   private final Map<String, InvocationMonitor> invocationMonitors;
@@ -31,11 +34,7 @@ public class RegistryMonitor {
   }
 
   public InvocationMonitor getInvocationMonitor(String operationName) {
-    InvocationMonitor level = invocationMonitors.getOrDefault(operationName, null);
-    if (level == null) {
-      level = invocationMonitors.computeIfAbsent(operationName, i -> new InvocationMonitor(operationName));
-    }
-    return level;
+    return invocationMonitors.computeIfAbsent(operationName, i -> new InvocationMonitor(operationName));
   }
 
   public Map<String, InvocationMetric> toInvocationMetrics(int pollerIndex) {

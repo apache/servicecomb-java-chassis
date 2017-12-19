@@ -39,10 +39,10 @@ public class RegistryMetric {
 
     //sum instance level metric
     long waitInQueue = 0;
-    TimeMetric lifeTimeInQueue = new TimeMetric();
-    TimeMetric executionTime = new TimeMetric();
-    TimeMetric consumerLatency = new TimeMetric();
-    TimeMetric producerLatency = new TimeMetric();
+    TimerMetric lifeTimeInQueue = new TimerMetric();
+    TimerMetric executionTime = new TimerMetric();
+    TimerMetric consumerLatency = new TimerMetric();
+    TimerMetric producerLatency = new TimerMetric();
     for (InvocationMetric metric : invocationMetrics.values()) {
       waitInQueue += metric.getWaitInQueue();
       lifeTimeInQueue = lifeTimeInQueue.merge(metric.getLifeTimeInQueue());

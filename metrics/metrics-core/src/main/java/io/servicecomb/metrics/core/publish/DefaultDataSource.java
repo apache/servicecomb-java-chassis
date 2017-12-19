@@ -31,7 +31,7 @@ import com.netflix.config.DynamicPropertyFactory;
 import com.netflix.servo.monitor.Pollers;
 
 import io.servicecomb.metrics.core.metric.RegistryMetric;
-import io.servicecomb.metrics.core.registry.MetricsRegistry;
+import io.servicecomb.metrics.core.monitor.RegistryMonitor;
 
 @Component
 public class DefaultDataSource implements DataSource {
@@ -39,24 +39,22 @@ public class DefaultDataSource implements DataSource {
 
   private static final String METRICS_POLLING_MIN = "servicecomb.metrics.polling.min";
 
-  private final long minPollingTime;
-
   private final List<Long> appliedPollingIntervals;
 
-  private final MetricsRegistry registry;
+  private final RegistryMonitor registryMonitor;
 
   private final Map<Integer, RegistryMetric> registryMetrics;
 
   @Autowired
-  public DefaultDataSource(MetricsRegistry registry) {
-    this(registry, DynamicPropertyFactory.getInstance().getStringProperty(METRICS_POLLING_TIME, "10000").get());
+  public DefaultDataSource(RegistryMonitor registryMonitor) {
+    this(registryMonitor, DynamicPropertyFactory.getInstance().getStringProperty(METRICS_POLLING_TIME, "10000").get());
   }
 
-  public DefaultDataSource(MetricsRegistry registry, String pollingSettings) {
+  public DefaultDataSource(RegistryMonitor registryMonitor, String pollingSettings) {
     this.registryMetrics = new ConcurrentHashMap<>();
-    this.registry = registry;
+    this.registryMonitor = registryMonitor;
     //需要限制一下Polling的最小时间间隔， Servo推荐是10000（10秒），默认最低限制为100毫秒
-    this.minPollingTime = DynamicPropertyFactory.getInstance().getLongProperty(METRICS_POLLING_MIN, 100).get();
+    long minPollingTime = DynamicPropertyFactory.getInstance().getLongProperty(METRICS_POLLING_MIN, 100).get();
     System.getProperties().setProperty("servo.pollers", pollingSettings);
 
     List<Long> intervals = Pollers.getPollingIntervals();
@@ -64,10 +62,10 @@ public class DefaultDataSource implements DataSource {
     for (int index = 0; index < intervals.size(); index++) {
       int finalIndex = index;
       long finalInterval = intervals.get(finalIndex) < minPollingTime ? minPollingTime : intervals.get(finalIndex);
-      final Runnable executor = () -> reloadRegistryMetric(finalIndex);
+      final Runnable poller = () -> reloadRegistryMetric(finalIndex);
       Executors.newScheduledThreadPool(1)
           //for step counter correct work we need poll in time ,otherwise current step will return Datapoint.UNKNOWN (missing last sample)
-          .scheduleWithFixedDelay(executor, 0, (long) ((double) finalInterval / (double) 2), MILLISECONDS);
+          .scheduleWithFixedDelay(poller, 0, (long) (finalInterval * 0.5), MILLISECONDS);
       appliedIntervals.add(finalInterval);
     }
     this.appliedPollingIntervals = appliedIntervals;
@@ -75,7 +73,7 @@ public class DefaultDataSource implements DataSource {
 
   @Override
   public RegistryMetric getRegistryMetric(int pollerIndex) {
-    return registryMetrics.getOrDefault(pollerIndex, new RegistryMetric(registry.getRegistryMonitor(), pollerIndex));
+    return registryMetrics.getOrDefault(pollerIndex, new RegistryMetric(registryMonitor, pollerIndex));
   }
 
   @Override
@@ -84,6 +82,6 @@ public class DefaultDataSource implements DataSource {
   }
 
   private void reloadRegistryMetric(Integer pollingIndex) {
-    registryMetrics.put(pollingIndex, new RegistryMetric(registry.getRegistryMonitor(), pollingIndex));
+    registryMetrics.put(pollingIndex, new RegistryMetric(registryMonitor, pollingIndex));
   }
 }

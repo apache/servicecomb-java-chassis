@@ -26,13 +26,13 @@ public class InvocationMonitor {
 
   private final BasicCounter waitInQueue;
 
-  private final TimeMonitor lifeTimeInQueue;
+  private final TimerMonitor lifeTimeInQueue;
 
-  private final TimeMonitor executionTime;
+  private final TimerMonitor executionTime;
 
-  private final TimeMonitor consumerLatency;
+  private final TimerMonitor consumerLatency;
 
-  private final TimeMonitor producerLatency;
+  private final TimerMonitor producerLatency;
 
   public String getOperationName() {
     return operationName;
@@ -42,29 +42,29 @@ public class InvocationMonitor {
     return waitInQueue;
   }
 
-  public TimeMonitor getLifeTimeInQueue() {
+  public TimerMonitor getLifeTimeInQueue() {
     return lifeTimeInQueue;
   }
 
-  public TimeMonitor getExecutionTime() {
+  public TimerMonitor getExecutionTime() {
     return executionTime;
   }
 
-  public TimeMonitor getConsumerLatency() {
+  public TimerMonitor getConsumerLatency() {
     return consumerLatency;
   }
 
-  public TimeMonitor getProducerLatency() {
+  public TimerMonitor getProducerLatency() {
     return producerLatency;
   }
 
   public InvocationMonitor(String operationName) {
     this.operationName = operationName;
     this.waitInQueue = new BasicCounter(MonitorConfig.builder("waitInQueue").build());
-    this.lifeTimeInQueue = new TimeMonitor("lifeTimeInQueue");
-    this.executionTime = new TimeMonitor("executionTime");
-    this.consumerLatency = new TimeMonitor("consumerLatency");
-    this.producerLatency = new TimeMonitor("producerLatency");
+    this.lifeTimeInQueue = new TimerMonitor("lifeTimeInQueue");
+    this.executionTime = new TimerMonitor("executionTime");
+    this.consumerLatency = new TimerMonitor("consumerLatency");
+    this.producerLatency = new TimerMonitor("producerLatency");
   }
 
   public InvocationMetric toInvocationMetric(int pollerIndex) {

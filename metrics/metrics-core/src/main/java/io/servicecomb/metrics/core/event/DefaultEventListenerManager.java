@@ -21,16 +21,16 @@ import org.springframework.stereotype.Component;
 
 import io.servicecomb.foundation.common.event.EventListener;
 import io.servicecomb.foundation.common.utils.EventUtils;
-import io.servicecomb.metrics.core.registry.MetricsRegistry;
+import io.servicecomb.metrics.core.monitor.RegistryMonitor;
 
 @Component
 public class DefaultEventListenerManager implements EventListenerManager {
 
   @Autowired
-  public DefaultEventListenerManager(MetricsRegistry registry) {
-    this.registerEventListener(new InvocationStartedEventListener(registry));
-    this.registerEventListener(new InvocationStartProcessingEventListener(registry));
-    this.registerEventListener(new InvocationFinishedEventListener(registry));
+  public DefaultEventListenerManager(RegistryMonitor registryMonitor) {
+    this.registerEventListener(new InvocationStartedEventListener(registryMonitor));
+    this.registerEventListener(new InvocationStartProcessingEventListener(registryMonitor));
+    this.registerEventListener(new InvocationFinishedEventListener(registryMonitor));
   }
 
   @Override

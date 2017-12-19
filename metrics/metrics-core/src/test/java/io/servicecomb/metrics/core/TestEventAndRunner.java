@@ -27,19 +27,18 @@ import io.servicecomb.core.metrics.InvocationStartedEvent;
 import io.servicecomb.foundation.common.utils.EventUtils;
 import io.servicecomb.metrics.core.event.DefaultEventListenerManager;
 import io.servicecomb.metrics.core.metric.RegistryMetric;
+import io.servicecomb.metrics.core.monitor.RegistryMonitor;
 import io.servicecomb.metrics.core.publish.DefaultDataSource;
-import io.servicecomb.metrics.core.registry.DefaultMetricsRegistry;
 import io.servicecomb.swagger.invocation.InvocationType;
 
 public class TestEventAndRunner {
 
   @Test
   public void test() throws InterruptedException {
+    RegistryMonitor monitor = new RegistryMonitor();
+    DefaultDataSource dataSource = new DefaultDataSource(monitor,"2000");
 
-    DefaultMetricsRegistry registry = new DefaultMetricsRegistry();
-    DefaultDataSource dataSource = new DefaultDataSource(registry, "2000");
-
-    DefaultEventListenerManager manager = new DefaultEventListenerManager(registry);
+    DefaultEventListenerManager manager = new DefaultEventListenerManager(monitor);
 
     EventUtils.triggerEvent(new InvocationStartedEvent("fun1", System.nanoTime()));
     EventUtils.triggerEvent(

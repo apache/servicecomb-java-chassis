@@ -19,37 +19,37 @@ package io.servicecomb.metrics.core.metric;
 public abstract class ModelMetric {
   private final long waitInQueue;
 
-  private final TimeMetric lifeTimeInQueue;
+  private final TimerMetric lifeTimeInQueue;
 
-  private final TimeMetric executionTime;
+  private final TimerMetric executionTime;
 
-  private final TimeMetric consumerLatency;
+  private final TimerMetric consumerLatency;
 
-  private final TimeMetric producerLatency;
+  private final TimerMetric producerLatency;
 
   public long getWaitInQueue() {
     return waitInQueue;
   }
 
-  public TimeMetric getLifeTimeInQueue() {
+  public TimerMetric getLifeTimeInQueue() {
     return lifeTimeInQueue;
   }
 
-  public TimeMetric getExecutionTime() {
+  public TimerMetric getExecutionTime() {
     return executionTime;
   }
 
-  public TimeMetric getConsumerLatency() {
+  public TimerMetric getConsumerLatency() {
     return consumerLatency;
   }
 
-  public TimeMetric getProducerLatency() {
+  public TimerMetric getProducerLatency() {
     return producerLatency;
   }
 
   public ModelMetric(long waitInQueue,
-      TimeMetric lifeTimeInQueue, TimeMetric executionTime, TimeMetric consumerLatency,
-      TimeMetric producerLatency) {
+      TimerMetric lifeTimeInQueue, TimerMetric executionTime, TimerMetric consumerLatency,
+      TimerMetric producerLatency) {
     this.waitInQueue = waitInQueue;
     this.lifeTimeInQueue = lifeTimeInQueue;
     this.executionTime = executionTime;

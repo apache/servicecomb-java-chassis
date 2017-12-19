@@ -19,14 +19,14 @@ package io.servicecomb.metrics.core.event;
 import io.servicecomb.core.metrics.InvocationStartedEvent;
 import io.servicecomb.foundation.common.event.Event;
 import io.servicecomb.foundation.common.event.EventListener;
-import io.servicecomb.metrics.core.registry.MetricsRegistry;
+import io.servicecomb.metrics.core.monitor.RegistryMonitor;
 
 public class InvocationStartedEventListener implements EventListener {
 
-  private final MetricsRegistry registry;
+  private final RegistryMonitor registryMonitor;
 
-  public InvocationStartedEventListener(MetricsRegistry registry) {
-    this.registry = registry;
+  public InvocationStartedEventListener(RegistryMonitor registryMonitor) {
+    this.registryMonitor = registryMonitor;
   }
 
   @Override
@@ -37,6 +37,6 @@ public class InvocationStartedEventListener implements EventListener {
   @Override
   public void process(Event data) {
     InvocationStartedEvent event = (InvocationStartedEvent) data;
-    registry.getRegistryMonitor().getInvocationMonitor(event.getOperationName()).getWaitInQueue().increment();
+    registryMonitor.getInvocationMonitor(event.getOperationName()).getWaitInQueue().increment();
   }
 }
