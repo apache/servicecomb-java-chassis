@@ -1,0 +1,25 @@
+swagger: "2.0"
+info:
+  version: "1.0.0"
+  title: "MetricsPublisher"
+  x-java-interface: "io.servicecomb.metrics.core.publish.MetricsPublisher"
+basePath: "/metrics"
+consumes:
+- "application/json"
+produces:
+- "application/json"
+paths:
+  /{pollerIndex}:
+    get:
+      operationId: "metrics"
+      parameters:
+      - name: "pollerIndex"
+        in: "path"
+        required: true
+        type: "integer"
+        format: "int32"
+      responses:
+        200:
+          description: "response of 200"
+          schema:
+            type: "string"
