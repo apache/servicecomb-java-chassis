@@ -35,6 +35,10 @@ public class InvocationMonitor {
 
   private final TimerMonitor producerLatency;
 
+  private final CallMonitor consumerCall;
+
+  private final CallMonitor producerCall;
+
   public String getOperationName() {
     return operationName;
   }
@@ -59,13 +63,24 @@ public class InvocationMonitor {
     return producerLatency;
   }
 
+  public CallMonitor getConsumerCall() {
+    return consumerCall;
+  }
+
+  public CallMonitor getProducerCall() {
+    return producerCall;
+  }
+
   public InvocationMonitor(String operationName) {
     this.operationName = operationName;
-    this.waitInQueue = new BasicCounter(MonitorConfig.builder("waitInQueue").build());
-    this.lifeTimeInQueue = new TimerMonitor("lifeTimeInQueue");
-    this.executionTime = new TimerMonitor("executionTime");
-    this.consumerLatency = new TimerMonitor("consumerLatency");
-    this.producerLatency = new TimerMonitor("producerLatency");
+    this.waitInQueue = new BasicCounter(MonitorConfig.builder(operationName + ".waitInQueue.count").build());
+    this.lifeTimeInQueue = new TimerMonitor(operationName + ".lifeTimeInQueue");
+    this.executionTime = new TimerMonitor(operationName + ".executionTime");
+    this.consumerLatency = new TimerMonitor(operationName + ".consumerLatency");
+    this.producerLatency = new TimerMonitor(operationName + ".producerLatency");
+
+    this.consumerCall = new CallMonitor(operationName + ".consumerCall");
+    this.producerCall = new CallMonitor(operationName + ".producerCall");
   }
 
   public InvocationMetric toInvocationMetric(int pollerIndex) {
@@ -73,6 +88,8 @@ public class InvocationMonitor {
         this.lifeTimeInQueue.toTimerMetric(pollerIndex),
         this.executionTime.toTimerMetric(pollerIndex),
         this.consumerLatency.toTimerMetric(pollerIndex),
-        this.producerLatency.toTimerMetric(pollerIndex));
+        this.producerLatency.toTimerMetric(pollerIndex),
+        this.consumerCall.toCallMetric(pollerIndex),
+        this.producerCall.toCallMetric(pollerIndex));
   }
 }

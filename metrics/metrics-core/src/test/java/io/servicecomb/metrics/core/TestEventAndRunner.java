@@ -17,24 +17,16 @@
 
 package io.servicecomb.metrics.core;
 
-import static org.mockito.Mockito.when;
-
-import java.lang.management.MemoryMXBean;
-import java.lang.management.MemoryUsage;
-import java.lang.management.OperatingSystemMXBean;
-import java.lang.management.ThreadMXBean;
 import java.util.concurrent.TimeUnit;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.mockito.Mockito;
 
 import io.servicecomb.core.metrics.InvocationFinishedEvent;
 import io.servicecomb.core.metrics.InvocationStartProcessingEvent;
 import io.servicecomb.core.metrics.InvocationStartedEvent;
 import io.servicecomb.foundation.common.utils.EventUtils;
 import io.servicecomb.metrics.core.event.DefaultEventListenerManager;
-import io.servicecomb.metrics.core.extra.DefaultSystemResource;
 import io.servicecomb.metrics.core.metric.RegistryMetric;
 import io.servicecomb.metrics.core.monitor.RegistryMonitor;
 import io.servicecomb.metrics.core.publish.DefaultDataSource;
@@ -44,27 +36,8 @@ public class TestEventAndRunner {
 
   @Test
   public void test() throws InterruptedException {
-    OperatingSystemMXBean systemMXBean = Mockito.mock(OperatingSystemMXBean.class);
-    when(systemMXBean.getSystemLoadAverage()).thenReturn(1.0);
-    ThreadMXBean threadMXBean = Mockito.mock(ThreadMXBean.class);
-    when(threadMXBean.getThreadCount()).thenReturn(2);
-    MemoryMXBean memoryMXBean = Mockito.mock(MemoryMXBean.class);
-    MemoryUsage heap = Mockito.mock(MemoryUsage.class);
-    when(memoryMXBean.getHeapMemoryUsage()).thenReturn(heap);
-    when(heap.getCommitted()).thenReturn(100L);
-    when(heap.getInit()).thenReturn(200L);
-    when(heap.getMax()).thenReturn(300L);
-    when(heap.getUsed()).thenReturn(400L);
-    MemoryUsage nonHeap = Mockito.mock(MemoryUsage.class);
-    when(memoryMXBean.getNonHeapMemoryUsage()).thenReturn(nonHeap);
-    when(nonHeap.getCommitted()).thenReturn(500L);
-    when(nonHeap.getInit()).thenReturn(600L);
-    when(nonHeap.getMax()).thenReturn(700L);
-    when(nonHeap.getUsed()).thenReturn(800L);
-
     RegistryMonitor monitor = new RegistryMonitor();
-    DefaultSystemResource systemResource = new DefaultSystemResource(systemMXBean, threadMXBean, memoryMXBean);
-    DefaultDataSource dataSource = new DefaultDataSource(systemResource, monitor, "2000");
+    DefaultDataSource dataSource = new DefaultDataSource(monitor, "2000");
 
     DefaultEventListenerManager manager = new DefaultEventListenerManager(monitor);
 
@@ -163,15 +136,17 @@ public class TestEventAndRunner {
     Assert
         .assertEquals(model.getInstanceMetric().getConsumerLatency().getAverage(), TimeUnit.MILLISECONDS.toNanos(0), 0);
 
-    Assert.assertEquals(model.getInstanceMetric().getSystemMetric().getCpuLoad(), 1.0, 0);
-    Assert.assertEquals(model.getInstanceMetric().getSystemMetric().getCpuRunningThreads(), 2, 0);
-    Assert.assertEquals(model.getInstanceMetric().getSystemMetric().getHeapCommit(), 100, 0);
-    Assert.assertEquals(model.getInstanceMetric().getSystemMetric().getHeapInit(), 200, 0);
-    Assert.assertEquals(model.getInstanceMetric().getSystemMetric().getHeapMax(), 300, 0);
-    Assert.assertEquals(model.getInstanceMetric().getSystemMetric().getHeapUsed(), 400, 0);
-    Assert.assertEquals(model.getInstanceMetric().getSystemMetric().getNonHeapCommit(), 500, 0);
-    Assert.assertEquals(model.getInstanceMetric().getSystemMetric().getNonHeapInit(), 600, 0);
-    Assert.assertEquals(model.getInstanceMetric().getSystemMetric().getNonHeapMax(), 700, 0);
-    Assert.assertEquals(model.getInstanceMetric().getSystemMetric().getNonHeapUsed(), 800, 0);
+    Assert.assertEquals(model.getInvocationMetrics().get("fun1").getConsumerCall().getTotal(), 0, 0);
+    Assert.assertEquals(model.getInvocationMetrics().get("fun1").getConsumerCall().getTps(), 0, 0);
+    Assert.assertEquals(model.getInvocationMetrics().get("fun1").getProducerCall().getTotal(), 2, 0);
+    Assert.assertEquals(model.getInvocationMetrics().get("fun1").getProducerCall().getTps(), 1.0, 0);
+    Assert.assertEquals(model.getInvocationMetrics().get("fun12").getConsumerCall().getTotal(), 0, 0);
+    Assert.assertEquals(model.getInvocationMetrics().get("fun12").getConsumerCall().getTps(), 0, 0);
+    Assert.assertEquals(model.getInvocationMetrics().get("fun12").getProducerCall().getTotal(), 1, 0);
+    Assert.assertEquals(model.getInvocationMetrics().get("fun12").getProducerCall().getTps(), 0.5, 0);
+    Assert.assertEquals(model.getInstanceMetric().getConsumerCall().getTotal(), 0, 0);
+    Assert.assertEquals(model.getInstanceMetric().getConsumerCall().getTps(), 0, 0);
+    Assert.assertEquals(model.getInstanceMetric().getProducerCall().getTotal(), 3, 0);
+    Assert.assertEquals(model.getInstanceMetric().getProducerCall().getTps(), 1.5, 0);
   }
 }
