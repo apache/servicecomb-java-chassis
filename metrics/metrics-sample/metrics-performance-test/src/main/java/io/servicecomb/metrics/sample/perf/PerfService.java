@@ -23,10 +23,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-
-import io.servicecomb.foundation.common.utils.JsonUtils;
-import io.servicecomb.metrics.core.metric.RegistryMetric;
 import io.servicecomb.metrics.core.publish.DataSource;
 import io.servicecomb.provider.rest.common.RestSchema;
 
@@ -89,11 +85,5 @@ public class PerfService {
   @GetMapping(path = "/f9")
   public String fun9() {
     return UUID.randomUUID().toString();
-  }
-
-  @GetMapping(path = "/metrics")
-  public String metrics() throws JsonProcessingException {
-    RegistryMetric metric = this.dataSource.getRegistryMetric(0);
-    return JsonUtils.writeValueAsString(metric);
   }
 }
