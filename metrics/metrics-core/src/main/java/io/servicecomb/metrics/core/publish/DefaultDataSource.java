@@ -31,6 +31,7 @@ import org.springframework.stereotype.Component;
 import com.netflix.config.DynamicPropertyFactory;
 import com.netflix.servo.monitor.Pollers;
 
+import io.servicecomb.metrics.core.extra.SystemResource;
 import io.servicecomb.metrics.core.metric.RegistryMetric;
 import io.servicecomb.metrics.core.monitor.RegistryMonitor;
 
@@ -44,15 +45,19 @@ public class DefaultDataSource implements DataSource {
 
   private final RegistryMonitor registryMonitor;
 
+  private final SystemResource systemResource;
+
   private final Map<Integer, RegistryMetric> registryMetrics;
 
   @Autowired
-  public DefaultDataSource(RegistryMonitor registryMonitor) {
-    this(registryMonitor, DynamicPropertyFactory.getInstance().getStringProperty(METRICS_POLLING_TIME, "10000").get());
+  public DefaultDataSource(SystemResource systemResource, RegistryMonitor registryMonitor) {
+    this(systemResource, registryMonitor,
+        DynamicPropertyFactory.getInstance().getStringProperty(METRICS_POLLING_TIME, "10000").get());
   }
 
-  public DefaultDataSource(RegistryMonitor registryMonitor, String pollingSettings) {
+  public DefaultDataSource(SystemResource systemResource, RegistryMonitor registryMonitor, String pollingSettings) {
     this.registryMetrics = new ConcurrentHashMap<>();
+    this.systemResource = systemResource;
     this.registryMonitor = registryMonitor;
     //需要限制一下Polling的最小时间间隔， Servo推荐是10000（10秒），默认最低限制为100毫秒
     long minPollingTime = DynamicPropertyFactory.getInstance().getLongProperty(METRICS_POLLING_MIN, 100).get();
@@ -74,7 +79,7 @@ public class DefaultDataSource implements DataSource {
 
   @Override
   public RegistryMetric getRegistryMetric(int pollerIndex) {
-    return registryMetrics.getOrDefault(pollerIndex, new RegistryMetric(registryMonitor, pollerIndex));
+    return registryMetrics.getOrDefault(pollerIndex, new RegistryMetric(systemResource, registryMonitor, pollerIndex));
   }
 
   @Override
@@ -83,6 +88,6 @@ public class DefaultDataSource implements DataSource {
   }
 
   private void reloadRegistryMetric(Integer pollingIndex) {
-    registryMetrics.put(pollingIndex, new RegistryMetric(registryMonitor, pollingIndex));
+    registryMetrics.put(pollingIndex, new RegistryMetric(systemResource, registryMonitor, pollingIndex));
   }
 }
