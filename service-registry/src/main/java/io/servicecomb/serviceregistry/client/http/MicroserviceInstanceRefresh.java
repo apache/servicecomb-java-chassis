@@ -53,5 +53,4 @@ public class MicroserviceInstanceRefresh {
   public void setInstances(List<MicroserviceInstance> instances) {
     this.instances = instances;
   }
-
 }
