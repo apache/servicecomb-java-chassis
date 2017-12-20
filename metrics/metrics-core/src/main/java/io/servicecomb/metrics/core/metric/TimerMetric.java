@@ -74,6 +74,6 @@ public class TimerMetric {
   }
 
   private long getMax(long value1, long value2) {
-    return value1 == 0 || value2 > value1 ? value2 : value1;
+    return value2 > value1 ? value2 : value1;
   }
 }

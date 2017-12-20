@@ -37,7 +37,7 @@ public class TestEventAndRunner {
   @Test
   public void test() throws InterruptedException {
     RegistryMonitor monitor = new RegistryMonitor();
-    DefaultDataSource dataSource = new DefaultDataSource(monitor,"2000");
+    DefaultDataSource dataSource = new DefaultDataSource(monitor, "2000");
 
     DefaultEventListenerManager manager = new DefaultEventListenerManager(monitor);
 
@@ -104,7 +104,6 @@ public class TestEventAndRunner {
     Assert
         .assertEquals(model.getInstanceMetric().getExecutionTime().getAverage(), TimeUnit.MILLISECONDS.toNanos(400), 0);
 
-
     Assert
         .assertEquals(model.getInvocationMetrics().get("fun1").getProducerLatency().getMin(),
             TimeUnit.MILLISECONDS.toNanos(300), 0);
@@ -116,9 +115,11 @@ public class TestEventAndRunner {
             TimeUnit.MILLISECONDS.toNanos(500),
             0);
     Assert.assertEquals(model.getInstanceMetric().getProducerLatency().getMin(), TimeUnit.MILLISECONDS.toNanos(300), 0);
-    Assert.assertEquals(model.getInstanceMetric().getProducerLatency().getMax(), TimeUnit.MILLISECONDS.toNanos(1100), 0);
     Assert
-        .assertEquals(model.getInstanceMetric().getProducerLatency().getAverage(), TimeUnit.MILLISECONDS.toNanos(700), 0);
+        .assertEquals(model.getInstanceMetric().getProducerLatency().getMax(), TimeUnit.MILLISECONDS.toNanos(1100), 0);
+    Assert
+        .assertEquals(model.getInstanceMetric().getProducerLatency().getAverage(), TimeUnit.MILLISECONDS.toNanos(700),
+            0);
 
     Assert
         .assertEquals(model.getInvocationMetrics().get("fun1").getConsumerLatency().getMin(),
@@ -134,5 +135,18 @@ public class TestEventAndRunner {
     Assert.assertEquals(model.getInstanceMetric().getConsumerLatency().getMax(), TimeUnit.MILLISECONDS.toNanos(0), 0);
     Assert
         .assertEquals(model.getInstanceMetric().getConsumerLatency().getAverage(), TimeUnit.MILLISECONDS.toNanos(0), 0);
+
+    Assert.assertEquals(model.getInvocationMetrics().get("fun1").getConsumerCall().getTotal(), 0, 0);
+    Assert.assertEquals(model.getInvocationMetrics().get("fun1").getConsumerCall().getTps(), 0, 0);
+    Assert.assertEquals(model.getInvocationMetrics().get("fun1").getProducerCall().getTotal(), 2, 0);
+    Assert.assertEquals(model.getInvocationMetrics().get("fun1").getProducerCall().getTps(), 1.0, 0);
+    Assert.assertEquals(model.getInvocationMetrics().get("fun12").getConsumerCall().getTotal(), 0, 0);
+    Assert.assertEquals(model.getInvocationMetrics().get("fun12").getConsumerCall().getTps(), 0, 0);
+    Assert.assertEquals(model.getInvocationMetrics().get("fun12").getProducerCall().getTotal(), 1, 0);
+    Assert.assertEquals(model.getInvocationMetrics().get("fun12").getProducerCall().getTps(), 0.5, 0);
+    Assert.assertEquals(model.getInstanceMetric().getConsumerCall().getTotal(), 0, 0);
+    Assert.assertEquals(model.getInstanceMetric().getConsumerCall().getTps(), 0, 0);
+    Assert.assertEquals(model.getInstanceMetric().getProducerCall().getTotal(), 3, 0);
+    Assert.assertEquals(model.getInstanceMetric().getProducerCall().getTps(), 1.5, 0);
   }
 }

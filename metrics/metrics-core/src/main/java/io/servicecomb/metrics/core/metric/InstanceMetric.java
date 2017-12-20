@@ -19,7 +19,8 @@ package io.servicecomb.metrics.core.metric;
 
 public class InstanceMetric extends ModelMetric {
   public InstanceMetric(long waitInQueue, TimerMetric lifeTimeInQueue,
-      TimerMetric executionTime, TimerMetric consumerLatency, TimerMetric producerLatency) {
-    super(waitInQueue, lifeTimeInQueue, executionTime, consumerLatency, producerLatency);
+      TimerMetric executionTime, TimerMetric consumerLatency, TimerMetric producerLatency,
+      CallMetric consumerCall, CallMetric producerCall) {
+    super(waitInQueue, lifeTimeInQueue, executionTime, consumerLatency, producerLatency, consumerCall, producerCall);
   }
 }
