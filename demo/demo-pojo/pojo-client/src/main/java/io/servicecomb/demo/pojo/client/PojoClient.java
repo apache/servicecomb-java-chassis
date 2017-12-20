@@ -170,7 +170,7 @@ public class PojoClient {
 
     result =
         InvokerUtils.syncInvoke("pojo",
-            "0.0.1",
+            "0.0.4",
             transport,
             "server",
             "splitParam",
