@@ -26,8 +26,8 @@ public class InvocationMetric extends ModelMetric {
 
   public InvocationMetric(String operationName, long waitInQueue,
       TimerMetric lifeTimeInQueue, TimerMetric executionTime, TimerMetric consumerLatency,
-      TimerMetric producerLatency) {
-    super(waitInQueue, lifeTimeInQueue, executionTime, consumerLatency, producerLatency);
+      TimerMetric producerLatency, CallMetric consumerCall, CallMetric producerCall) {
+    super(waitInQueue, lifeTimeInQueue, executionTime, consumerLatency, producerLatency, consumerCall, producerCall);
     this.operationName = operationName;
   }
 }

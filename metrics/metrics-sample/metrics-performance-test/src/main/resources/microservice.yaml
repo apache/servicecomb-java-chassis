@@ -31,5 +31,5 @@ servicecomb:
   metrics:
     #polling setting
     polling:
-      #Time Unit is MILLISECONDS
+      #Support Muti Polling Time (MILLISECONDS) like 10000,60000 (10s and 60s)
       time: 10000

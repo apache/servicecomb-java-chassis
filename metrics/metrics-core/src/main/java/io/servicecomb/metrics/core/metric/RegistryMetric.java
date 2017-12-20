@@ -19,7 +19,6 @@ package io.servicecomb.metrics.core.metric;
 
 import java.util.Map;
 
-import io.servicecomb.metrics.core.extra.SystemResource;
 import io.servicecomb.metrics.core.monitor.RegistryMonitor;
 
 public class RegistryMetric {
@@ -36,7 +35,7 @@ public class RegistryMetric {
     return invocationMetrics;
   }
 
-  public RegistryMetric(SystemResource systemResource, RegistryMonitor registryMonitor, int pollerIndex) {
+  public RegistryMetric(RegistryMonitor registryMonitor, int pollerIndex) {
     invocationMetrics = registryMonitor.toInvocationMetrics(pollerIndex);
 
     //sum instance level metric
@@ -45,21 +44,21 @@ public class RegistryMetric {
     TimerMetric executionTime = new TimerMetric();
     TimerMetric consumerLatency = new TimerMetric();
     TimerMetric producerLatency = new TimerMetric();
+
+    CallMetric consumerCall = new CallMetric();
+    CallMetric producerCall = new CallMetric();
+
     for (InvocationMetric metric : invocationMetrics.values()) {
       waitInQueue += metric.getWaitInQueue();
       lifeTimeInQueue = lifeTimeInQueue.merge(metric.getLifeTimeInQueue());
       executionTime = executionTime.merge(metric.getExecutionTime());
       consumerLatency = consumerLatency.merge(metric.getConsumerLatency());
       producerLatency = producerLatency.merge(metric.getProducerLatency());
+      consumerCall = consumerCall.merge(metric.getConsumerCall());
+      producerCall = producerCall.merge(metric.getProducerCall());
     }
 
-    SystemMetric systemMetric = new SystemMetric(systemResource.getCpuLoad(), systemResource.getCpuRunningThreads(),
-        systemResource.getHeapInit(), systemResource.getHeapMax(), systemResource.getHeapCommit(),
-        systemResource.getHeapUsed(),
-        systemResource.getNonHeapInit(), systemResource.getNonHeapMax(), systemResource.getNonHeapCommit(),
-        systemResource.getNonHeapUsed());
-
-    instanceMetric = new InstanceMetric(waitInQueue, systemMetric, lifeTimeInQueue, executionTime, consumerLatency,
-        producerLatency);
+    instanceMetric = new InstanceMetric(waitInQueue, lifeTimeInQueue, executionTime, consumerLatency, producerLatency,
+        consumerCall, producerCall);
   }
 }

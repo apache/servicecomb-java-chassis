@@ -28,6 +28,10 @@ public abstract class ModelMetric {
 
   private final TimerMetric producerLatency;
 
+  private final CallMetric consumerCall;
+
+  private final CallMetric producerCall;
+
   public long getWaitInQueue() {
     return waitInQueue;
   }
@@ -48,13 +52,23 @@ public abstract class ModelMetric {
     return producerLatency;
   }
 
+  public CallMetric getConsumerCall() {
+    return consumerCall;
+  }
+
+  public CallMetric getProducerCall() {
+    return producerCall;
+  }
+
   public ModelMetric(long waitInQueue,
       TimerMetric lifeTimeInQueue, TimerMetric executionTime, TimerMetric consumerLatency,
-      TimerMetric producerLatency) {
+      TimerMetric producerLatency, CallMetric consumerCall, CallMetric producerCall) {
     this.waitInQueue = waitInQueue;
     this.lifeTimeInQueue = lifeTimeInQueue;
     this.executionTime = executionTime;
     this.consumerLatency = consumerLatency;
     this.producerLatency = producerLatency;
+    this.consumerCall = consumerCall;
+    this.producerCall = producerCall;
   }
 }
