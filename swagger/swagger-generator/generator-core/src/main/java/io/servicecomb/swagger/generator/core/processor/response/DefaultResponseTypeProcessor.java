@@ -25,6 +25,11 @@ import io.swagger.converter.ModelConverters;
 import io.swagger.models.properties.Property;
 
 public class DefaultResponseTypeProcessor implements ResponseTypeProcessor {
+  @Override
+  public Class<?> getResponseType() {
+    // not care for this.
+    return null;
+  }
 
   @Override
   public Property process(OperationGenerator operationGenerator) {
