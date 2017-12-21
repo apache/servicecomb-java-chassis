@@ -15,33 +15,14 @@
  * limitations under the License.
  */
 
-package io.servicecomb.metrics.core.metric;
+package io.servicecomb.metrics.core;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+public class MetricsConst {
+  public static final String CONSUMER_PREFIX_TEMPLATE = "servicecomb.%s.consumer";
 
-public class InvocationMetric {
-  private final String operationName;
+  public static final String PRODUCER_PREFIX_TEMPLATE = "servicecomb.%s.producer";
 
-  @JsonIgnore
-  private final String prefix;
+  public static final String INSTANCE_CONSUMER_PREFIX = String.format(CONSUMER_PREFIX_TEMPLATE, "instance");
 
-  private final long waitInQueue;
-
-  public String getOperationName() {
-    return operationName;
-  }
-
-  public String getPrefix() {
-    return prefix;
-  }
-
-  public long getWaitInQueue() {
-    return waitInQueue;
-  }
-
-  public InvocationMetric(String operationName, String prefix, long waitInQueue) {
-    this.operationName = operationName;
-    this.prefix = prefix;
-    this.waitInQueue = waitInQueue;
-  }
+  public static final String INSTANCE_PRODUCER_PREFIX = String.format(PRODUCER_PREFIX_TEMPLATE, "instance");
 }

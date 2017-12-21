@@ -32,5 +32,5 @@ servicecomb:
   metrics:
     #polling setting
     polling:
-      #Support Muti Polling Time (MILLISECONDS) like 10000,60000 (10s and 60s)
+      #Support Muti-Polling Time (MILLISECONDS) like 10000,60000 (10s and 60s), Use pollerIndex make selection,start from 0
       time: 10000
