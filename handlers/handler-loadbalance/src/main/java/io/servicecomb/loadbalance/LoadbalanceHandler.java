@@ -92,7 +92,7 @@ public class LoadbalanceHandler implements Handler {
   public void handle(Invocation invocation, AsyncResponse asyncResp) throws Exception {
     String policy = Configuration.INSTANCE.getPolicy(invocation.getMicroserviceName());
     String strategy = Configuration.INSTANCE.getRuleStrategyName(invocation.getMicroserviceName());
-    boolean isRuleNotChanged = isEqual(policy, this.policy) && isEqual(strategy,this.strategy);
+    boolean isRuleNotChanged = isEqual(policy, this.policy) && isEqual(strategy, this.strategy);
     if (!isRuleNotChanged) {
       //配置变化，需要重新生成所有的lb实例
       synchronized (lock) {
