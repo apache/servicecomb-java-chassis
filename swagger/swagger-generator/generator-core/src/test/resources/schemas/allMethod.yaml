@@ -209,6 +209,15 @@ paths:
       responses:
         200:
           description: "response of 200"
+  /testCompletableFuture:
+    post:
+      operationId: "testCompletableFuture"
+      parameters: []
+      responses:
+        200:
+          description: "response of 200"
+          schema:
+            type: "string"
   /testDouble:
     post:
       operationId: "testDouble"

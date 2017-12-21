@@ -213,6 +213,11 @@ public class TestSwaggerUtils {
   }
 
   @Test
+  public void testCompletableFuture() {
+    testSchemaMethod("completableFuture", "testCompletableFuture");
+  }
+
+  @Test
   public void testDate() {
     SwaggerGenerator generator = testSchemaMethod("date", "testDate");
     JavassistUtils.detach("gen.cse.ms.ut.SchemaIntf");
