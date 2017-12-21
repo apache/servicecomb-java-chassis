@@ -447,9 +447,6 @@ public class TestLoadbalanceHandler {
     boolean globalNotNull = handler.isEqual(null, "com.netflix.loadbalancer.RandomRule");
     Assert.assertEquals(false, globalNotNull);  
     boolean localNotNull = handler.isEqual("com.netflix.loadbalancer.RandomRule", null);
-    Assert.assertEquals(false, localNotNull);  
-    
-    
-    
+    Assert.assertEquals(false, localNotNull); 
   }
 }
