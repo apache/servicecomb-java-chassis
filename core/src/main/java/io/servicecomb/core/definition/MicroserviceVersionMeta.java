@@ -19,6 +19,7 @@ package io.servicecomb.core.definition;
 
 import io.servicecomb.core.CseContext;
 import io.servicecomb.core.definition.classloader.MicroserviceClassLoaderFactory;
+import io.servicecomb.serviceregistry.api.Const;
 import io.servicecomb.serviceregistry.consumer.MicroserviceVersion;
 
 public class MicroserviceVersionMeta extends MicroserviceVersion {
@@ -31,8 +32,13 @@ public class MicroserviceVersionMeta extends MicroserviceVersion {
     this.microserviceMeta = new MicroserviceMeta(microserviceName);
     this.microserviceMeta.setClassLoader(
         classLoaderFactory.create(microservice.getAppId(), microserviceName, microservice.getVersion()));
-    CseContext.getInstance().getConsumerSchemaFactory().getOrCreateConsumerSchema(microserviceMeta, microservice);
-    CseContext.getInstance().getSchemaListenerManager().notifySchemaListener(microserviceMeta);
+    if (Const.REGISTRY_APP_ID.equals(microservice.getAppId()) && Const.REGISTRY_SERVICE_NAME.equals(microserviceName)) {
+      // do not load service center schemas
+      return;
+    } else {
+      CseContext.getInstance().getConsumerSchemaFactory().getOrCreateConsumerSchema(microserviceMeta, microservice);
+      CseContext.getInstance().getSchemaListenerManager().notifySchemaListener(microserviceMeta);
+    }
   }
 
   public MicroserviceMeta getMicroserviceMeta() {
