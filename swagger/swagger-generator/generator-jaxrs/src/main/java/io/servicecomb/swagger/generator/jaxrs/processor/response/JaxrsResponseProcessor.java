@@ -20,6 +20,7 @@ import java.lang.reflect.Type;
 import java.util.List;
 
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 import io.servicecomb.swagger.generator.core.OperationGenerator;
 import io.servicecomb.swagger.generator.core.ResponseTypeProcessor;
@@ -27,7 +28,11 @@ import io.servicecomb.swagger.generator.core.utils.ParamUtils;
 import io.swagger.converter.ModelConverters;
 import io.swagger.models.properties.Property;
 
-public class ResponseProcessor implements ResponseTypeProcessor {
+public class JaxrsResponseProcessor implements ResponseTypeProcessor {
+  @Override
+  public Class<?> getResponseType() {
+    return Response.class;
+  }
 
   @Override
   public Property process(OperationGenerator operationGenerator) {
