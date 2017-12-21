@@ -92,9 +92,9 @@ public class LoadbalanceHandler implements Handler {
   public void handle(Invocation invocation, AsyncResponse asyncResp) throws Exception {
     String policy = Configuration.INSTANCE.getPolicy(invocation.getMicroserviceName());
     String strategy = Configuration.INSTANCE.getRuleStrategyName(invocation.getMicroserviceName());
-    boolean isRuleNotChanged = StringUtils.equals(policy,this.policy) && StringUtils.equals(strategy, this.strategy);
-    
-    if (!isRuleNotChanged){
+    boolean isRuleNotChanged = isEqual(policy, this.policy) && isEqual(strategy,this.strategy);
+
+    if (!isRuleNotChanged) {
       //配置变化，需要重新生成所有的lb实例
       synchronized (lock) {
         loadBalancerMap.clear();
@@ -350,5 +350,9 @@ public class LoadbalanceHandler implements Handler {
         LOGGER.warn("Unable to load filter class: " + className);
       }
     }
+  }
+
+  public boolean isEqual(String str1, String str2) {
+    return (str1 == null ? str2 == null : str1.equals(str2));
   }
 }
