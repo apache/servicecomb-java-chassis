@@ -33,7 +33,6 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.Response;
 
 import io.servicecomb.swagger.generator.core.utils.ClassUtils;
 import io.servicecomb.swagger.generator.jaxrs.processor.annotation.ConsumesAnnotationProcessor;
@@ -47,7 +46,6 @@ import io.servicecomb.swagger.generator.jaxrs.processor.annotation.PathParamAnno
 import io.servicecomb.swagger.generator.jaxrs.processor.annotation.ProducesAnnotationProcessor;
 import io.servicecomb.swagger.generator.jaxrs.processor.annotation.QueryParamAnnotationProcessor;
 import io.servicecomb.swagger.generator.jaxrs.processor.parameter.JaxrsDefaultParameterProcessor;
-import io.servicecomb.swagger.generator.jaxrs.processor.response.ResponseProcessor;
 import io.servicecomb.swagger.generator.rest.RestSwaggerGeneratorContext;
 
 public class JaxrsSwaggerGeneratorContext extends RestSwaggerGeneratorContext {
@@ -112,12 +110,5 @@ public class JaxrsSwaggerGeneratorContext extends RestSwaggerGeneratorContext {
 
     parameterAnnotationMgr.register(HeaderParam.class, new HeaderParamAnnotationProcessor());
     parameterAnnotationMgr.register(QueryParam.class, new QueryParamAnnotationProcessor());
-  }
-
-  @Override
-  protected void initResponseTypeProcessorMgr() {
-    super.initResponseTypeProcessorMgr();
-
-    responseTypeProcessorMgr.register(Response.class, new ResponseProcessor());
   }
 }
