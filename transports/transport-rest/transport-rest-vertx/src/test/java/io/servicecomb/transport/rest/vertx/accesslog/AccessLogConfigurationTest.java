@@ -17,9 +17,22 @@
 
 package io.servicecomb.transport.rest.vertx.accesslog;
 
-import io.vertx.core.Handler;
-import io.vertx.ext.web.RoutingContext;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 
-public interface AccessLogHandler extends Handler<RoutingContext> {
+import org.junit.Test;
 
+public class AccessLogConfigurationTest {
+
+  @Test
+  public void getAccessLogEnabled() {
+    boolean result = AccessLogConfiguration.INSTANCE.getAccessLogEnabled();
+    assertFalse(result);
+  }
+
+  @Test
+  public void getAccesslogPattern() {
+    String result = AccessLogConfiguration.INSTANCE.getAccesslogPattern();
+    assertEquals("%h - - %t %r %s %B", result);
+  }
 }

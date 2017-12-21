@@ -33,8 +33,7 @@ public final class AccessLogConfiguration {
   }
 
   public boolean getAccessLogEnabled() {
-    String enabled = getProperty("false", ACCESSLOG_ENABLED);
-    return Boolean.parseBoolean(enabled);
+    return getBooleanProperty(false, ACCESSLOG_ENABLED);
   }
 
   public String getAccesslogPattern() {
@@ -42,11 +41,10 @@ public final class AccessLogConfiguration {
   }
 
   private String getProperty(String defaultValue, String key) {
-    String property = DynamicPropertyFactory.getInstance().getStringProperty(key, defaultValue).get();
-    if (null == property) {
-      return defaultValue;
-    } else {
-      return property;
-    }
+    return DynamicPropertyFactory.getInstance().getStringProperty(key, defaultValue).get();
+  }
+
+  private boolean getBooleanProperty(boolean defaultValue, String key) {
+    return DynamicPropertyFactory.getInstance().getBooleanProperty(key, defaultValue).get();
   }
 }
