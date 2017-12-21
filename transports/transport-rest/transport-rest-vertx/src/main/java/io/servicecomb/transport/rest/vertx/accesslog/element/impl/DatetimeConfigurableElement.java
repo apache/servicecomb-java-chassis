@@ -36,13 +36,13 @@ public class DatetimeConfigurableElement implements AccessLogElement {
 
   public static final Locale DEFAULT_LOCALE = Locale.US;
 
+  private final ThreadLocal<SimpleDateFormat> datetimeFormatHolder = new ThreadLocal<>();
+
   private String pattern;
 
   private TimeZone timezone;
 
   private Locale locale;
-
-  private final ThreadLocal<SimpleDateFormat> datetimeFormatHolder = new ThreadLocal<>();
 
   /**
    * all config is set to default value.

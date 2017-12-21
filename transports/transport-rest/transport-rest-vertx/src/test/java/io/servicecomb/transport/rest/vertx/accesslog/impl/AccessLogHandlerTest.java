@@ -1,3 +1,20 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package io.servicecomb.transport.rest.vertx.accesslog.impl;
 
 import static org.junit.Assert.assertEquals;
@@ -22,7 +39,7 @@ import io.vertx.core.http.HttpServerRequest;
 import io.vertx.ext.web.RoutingContext;
 import mockit.Deencapsulation;
 
-public class AccessLogHandlerImplTest {
+public class AccessLogHandlerTest {
 
   private static final AccessLogElement methodElement = new MethodElement();
 
@@ -32,7 +49,7 @@ public class AccessLogHandlerImplTest {
 
   private static final Logger logger = Mockito.mock(Logger.class);
 
-  private static final AccessLogHandlerImpl accessLogHandlerImpl = new AccessLogHandlerImpl("rawPattern", s -> {
+  private static final AccessLogHandler ACCESS_LOG_HANDLER = new AccessLogHandler("rawPattern", s -> {
     assertEquals("rawPattern", s);
     return Arrays.asList(new AccessLogElementExtraction().setAccessLogElement(methodElement),
         new AccessLogElementExtraction().setAccessLogElement(plainTextElement),
@@ -41,12 +58,12 @@ public class AccessLogHandlerImplTest {
 
   @BeforeClass
   public static void init() {
-    Deencapsulation.setField(AccessLogHandlerImpl.class, "LOGGER", logger);
+    Deencapsulation.setField(AccessLogHandler.class, "LOGGER", logger);
   }
 
   @Test
   public void testConstructor() {
-    AccessLogElement[] elements = Deencapsulation.getField(accessLogHandlerImpl, "accessLogElements");
+    AccessLogElement[] elements = Deencapsulation.getField(ACCESS_LOG_HANDLER, "accessLogElements");
     assertEquals(3, elements.length);
     assertEquals(methodElement, elements[0]);
     assertEquals(plainTextElement, elements[1]);
@@ -56,7 +73,7 @@ public class AccessLogHandlerImplTest {
   @Test
   public void handle() {
     RoutingContext testContext = Mockito.mock(RoutingContext.class);
-    accessLogHandlerImpl.handle(testContext);
+    ACCESS_LOG_HANDLER.handle(testContext);
   }
 
   @Test
@@ -73,7 +90,7 @@ public class AccessLogHandlerImplTest {
     Mockito.when(context.request()).thenReturn(request);
     Mockito.when(request.method()).thenReturn(HttpMethod.DELETE);
 
-    Deencapsulation.invoke(accessLogHandlerImpl, "log", accessLogParam);
+    Deencapsulation.invoke(ACCESS_LOG_HANDLER, "log", accessLogParam);
 
     Mockito.verify(logger).info("DELETE" + " - " + simpleDateFormat.format(startMillisecond));
   }

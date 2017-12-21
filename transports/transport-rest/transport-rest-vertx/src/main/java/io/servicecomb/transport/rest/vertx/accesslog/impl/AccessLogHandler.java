@@ -22,19 +22,19 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import io.servicecomb.transport.rest.vertx.accesslog.AccessLogHandler;
 import io.servicecomb.transport.rest.vertx.accesslog.AccessLogParam;
 import io.servicecomb.transport.rest.vertx.accesslog.element.AccessLogElement;
 import io.servicecomb.transport.rest.vertx.accesslog.parser.AccessLogElementExtraction;
 import io.servicecomb.transport.rest.vertx.accesslog.parser.AccessLogPatternParser;
+import io.vertx.core.Handler;
 import io.vertx.ext.web.RoutingContext;
 
-public class AccessLogHandlerImpl implements AccessLogHandler {
+public class AccessLogHandler implements Handler<RoutingContext> {
   private static Logger LOGGER = LoggerFactory.getLogger("accesslog");
 
   private static AccessLogElement[] accessLogElements;
 
-  public AccessLogHandlerImpl(String rawPattern, AccessLogPatternParser accessLogPatternParser) {
+  public AccessLogHandler(String rawPattern, AccessLogPatternParser accessLogPatternParser) {
     List<AccessLogElementExtraction> extractionList = accessLogPatternParser.parsePattern(rawPattern);
 
     accessLogElements = new AccessLogElement[extractionList.size()];

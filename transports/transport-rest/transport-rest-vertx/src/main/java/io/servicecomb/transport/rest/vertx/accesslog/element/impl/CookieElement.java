@@ -22,7 +22,6 @@ import java.util.Set;
 import io.servicecomb.transport.rest.vertx.accesslog.AccessLogParam;
 import io.servicecomb.transport.rest.vertx.accesslog.element.AccessLogElement;
 import io.vertx.ext.web.Cookie;
-import io.vertx.ext.web.RoutingContext;
 
 public class CookieElement implements AccessLogElement {
 
@@ -36,16 +35,7 @@ public class CookieElement implements AccessLogElement {
 
   @Override
   public String getFormattedElement(AccessLogParam accessLogParam) {
-    RoutingContext context = accessLogParam.getRoutingContext();
-    if (null == context) {
-      return RESULT_NOT_FOUND;
-    }
-
-    if (context.cookieCount() == 0) {
-      return RESULT_NOT_FOUND;
-    }
-
-    Set<Cookie> cookieSet = context.cookies();
+    Set<Cookie> cookieSet = accessLogParam.getRoutingContext().cookies();
     if (null == cookieSet) {
       return RESULT_NOT_FOUND;
     }

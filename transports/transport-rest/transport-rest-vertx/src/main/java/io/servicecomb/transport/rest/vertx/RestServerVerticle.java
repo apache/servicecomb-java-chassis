@@ -31,7 +31,7 @@ import io.servicecomb.foundation.ssl.SSLOption;
 import io.servicecomb.foundation.ssl.SSLOptionFactory;
 import io.servicecomb.foundation.vertx.VertxTLSBuilder;
 import io.servicecomb.transport.rest.vertx.accesslog.AccessLogConfiguration;
-import io.servicecomb.transport.rest.vertx.accesslog.impl.AccessLogHandlerImpl;
+import io.servicecomb.transport.rest.vertx.accesslog.impl.AccessLogHandler;
 import io.servicecomb.transport.rest.vertx.accesslog.parser.impl.DefaultAccessLogPatternParser;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Context;
@@ -40,8 +40,6 @@ import io.vertx.core.Vertx;
 import io.vertx.core.http.HttpServer;
 import io.vertx.core.http.HttpServerOptions;
 import io.vertx.ext.web.Router;
-import io.vertx.ext.web.handler.LoggerFormat;
-import io.vertx.ext.web.handler.impl.LoggerHandlerImpl;
 
 public class RestServerVerticle extends AbstractVerticle {
   private static final Logger LOGGER = LoggerFactory.getLogger(RestServerVerticle.class);
@@ -91,7 +89,7 @@ public class RestServerVerticle extends AbstractVerticle {
       String pattern = AccessLogConfiguration.INSTANCE.getAccesslogPattern();
       LOGGER.info("access log enabled, pattern = {}", pattern);
       mainRouter.route()
-          .handler(new AccessLogHandlerImpl(
+          .handler(new AccessLogHandler(
               pattern,
               new DefaultAccessLogPatternParser()));
     }
