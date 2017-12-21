@@ -16,6 +16,7 @@
  */
 package io.servicecomb.serviceregistry.registry;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -33,6 +34,7 @@ import io.servicecomb.serviceregistry.api.registry.BasePath;
 import io.servicecomb.serviceregistry.api.registry.Microservice;
 import io.servicecomb.serviceregistry.api.registry.MicroserviceFactory;
 import io.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
+import io.servicecomb.serviceregistry.api.registry.MicroserviceInstanceStatus;
 import io.servicecomb.serviceregistry.cache.InstanceCacheManager;
 import io.servicecomb.serviceregistry.cache.InstanceCacheManagerNew;
 import io.servicecomb.serviceregistry.cache.InstanceCacheManagerOld;
@@ -219,18 +221,25 @@ public abstract class AbstractServiceRegistry implements ServiceRegistry {
       return null;
     }
 
+    List<MicroserviceInstance> availInstances = new ArrayList<>();
+    for (MicroserviceInstance instance : instances) {
+      if (instance.getStatus() != MicroserviceInstanceStatus.UP) {
+        continue;
+      }
+      availInstances.add(instance);
+    }
     LOGGER.info("find instances[{}] from service center success. service={}/{}/{}",
-        instances.size(),
+    	availInstances.size(),
         appId,
         serviceName,
         versionRule);
-    for (MicroserviceInstance instance : instances) {
+    for (MicroserviceInstance instance : availInstances) {
       LOGGER.info("service id={}, instance id={}, endpoints={}",
           instance.getServiceId(),
           instance.getInstanceId(),
           instance.getEndpoints());
     }
-    return instances;
+    return availInstances;
   }
 
   @Override

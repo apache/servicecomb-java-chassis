@@ -30,6 +30,7 @@ import io.servicecomb.serviceregistry.ServiceRegistry;
 import io.servicecomb.serviceregistry.api.MicroserviceKey;
 import io.servicecomb.serviceregistry.api.registry.Microservice;
 import io.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
+import io.servicecomb.serviceregistry.api.registry.MicroserviceInstanceStatus;
 import io.servicecomb.serviceregistry.api.registry.WatchAction;
 import io.servicecomb.serviceregistry.api.response.MicroserviceInstanceChangedEvent;
 import io.servicecomb.serviceregistry.config.ServiceRegistryConfig;
@@ -71,6 +72,17 @@ public class TestInstanceCacheManagerOld {
     oInstanceCacheManager.onInstanceUpdate(oChangedEvent);
     Assert.assertEquals(0, oInstanceCacheManager.cacheMap.get("default/default").getInstanceMap().size());
 
+    oChangedEvent.setAction(WatchAction.CREATE);
+    oInstanceCacheManager.onInstanceUpdate(oChangedEvent);
+    Assert.assertEquals(1, oInstanceCacheManager.cacheMap.get("default/default").getInstanceMap().size());
+    Assert.assertEquals(1, oInstanceCacheManager.getCachedEntries().size());
+
+    oChangedEvent.getInstance().setStatus(MicroserviceInstanceStatus.DOWN);
+    oChangedEvent.setAction(WatchAction.UPDATE);
+    oInstanceCacheManager.onInstanceUpdate(oChangedEvent);
+    Assert.assertEquals(0, oInstanceCacheManager.cacheMap.get("default/default").getInstanceMap().size());
+
+    oChangedEvent.getInstance().setStatus(MicroserviceInstanceStatus.UP);
     oChangedEvent.setAction(WatchAction.CREATE);
     oInstanceCacheManager.onInstanceUpdate(oChangedEvent);
     Assert.assertEquals(1, oInstanceCacheManager.cacheMap.get("default/default").getInstanceMap().size());
