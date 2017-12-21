@@ -34,4 +34,14 @@
     <module>metrics-core</module>
     <module>metrics-sample</module>
   </modules>
+  
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>io.servicecomb</groupId>
+        <artifactId>metrics-core</artifactId>
+        <version>0.6.0-SNAPSHOT</version>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
 </project>

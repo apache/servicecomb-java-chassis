@@ -94,8 +94,12 @@ public class RegistryMetric {
 
   public Map<String, Number> toMap() {
     Map<String, Number> metrics = new HashMap<>();
-    metrics.putAll(instanceMetric.getConsumerMetric().toMap());
-    metrics.putAll(instanceMetric.getProducerMetric().toMap());
+    if(instanceMetric.getConsumerMetric() != null) {
+      metrics.putAll(instanceMetric.getConsumerMetric().toMap());
+    }
+    if(instanceMetric.getProducerMetric() != null) {
+      metrics.putAll(instanceMetric.getProducerMetric().toMap());
+    }
     //will override waitInQueue.count value
     metrics.put(MetricsConst.INSTANCE_PRODUCER_PREFIX + ".waitInQueue.count", instanceMetric.getWaitInQueue());
     for (ConsumerInvocationMetric metric : consumerMetrics.values()) {

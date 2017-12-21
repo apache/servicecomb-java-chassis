@@ -1,11 +1,12 @@
 /*
- * Copyright 2017 Huawei Technologies Co., Ltd
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *    http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,18 +19,35 @@ package io.servicecomb.metrics.sample.output.file;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.springframework.stereotype.Component;
+
+import com.netflix.config.DynamicPropertyFactory;
 
 import io.servicecomb.metrics.core.metric.RegistryMetric;
 
 @Component
 public class SimpleMetricsContentConvertor implements MetricsContentConvertor {
+  public static final String METRICS_ROUND_PLACES = "servicecomb.metrics.round_places";
+
+  private final int doubleRoundPlaces;
+
+  private final String doubleStringFormatter;
+
+  public SimpleMetricsContentConvertor() {
+    doubleRoundPlaces = DynamicPropertyFactory.getInstance().getIntProperty(METRICS_ROUND_PLACES, 1).get();
+    doubleStringFormatter = "%." + String.valueOf(doubleRoundPlaces) + "f";
+  }
+
   @Override
   public Map<String, String> convert(RegistryMetric registryMetric) {
     Map<String, String> pickedMetrics = new HashMap<>();
 
-    //TODO:draw all metrics from RegistryMetric
+    Map<String, Number> metrics = registryMetric.toMap();
+    for (Entry<String, Number> metric : metrics.entrySet()) {
+      pickedMetrics.put(metric.getKey(), String.format(doubleStringFormatter, metric.getValue().doubleValue()));
+    }
 
     return pickedMetrics;
   }

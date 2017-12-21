@@ -25,6 +25,4 @@
 
 	<bean class="io.servicecomb.foundation.metrics.MetricsConfig">
 	</bean>
-	<bean class="io.servicecomb.foundation.metrics.MetricsServoRegistry">
-	</bean>
 </beans>
