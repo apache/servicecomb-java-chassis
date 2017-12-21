@@ -17,7 +17,15 @@
 
 package io.servicecomb.metrics.core.metric;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 public class CallMetric {
+  @JsonIgnore
+  private final String prefix;
+
   private final long total;
 
   private final double tps;
@@ -30,16 +38,24 @@ public class CallMetric {
     return tps;
   }
 
-  public CallMetric() {
-    this(0, 0);
+  public CallMetric(String prefix) {
+    this(prefix, 0, 0);
   }
 
-  public CallMetric(long total, double tps) {
+  public CallMetric(String prefix, long total, double tps) {
+    this.prefix = prefix;
     this.total = total;
     this.tps = tps;
   }
 
   public CallMetric merge(CallMetric metric) {
-    return new CallMetric(this.total + metric.total, this.tps + metric.tps);
+    return new CallMetric(this.prefix, this.total + metric.total, this.tps + metric.tps);
+  }
+
+  public Map<String, Number> toMap() {
+    Map<String, Number> metrics = new HashMap<>();
+    metrics.put(prefix + ".total", total);
+    metrics.put(prefix + ".tps", tps);
+    return metrics;
   }
 }
