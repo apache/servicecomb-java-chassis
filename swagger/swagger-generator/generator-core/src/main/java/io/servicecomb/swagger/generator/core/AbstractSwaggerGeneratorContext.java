@@ -140,7 +140,9 @@ public abstract class AbstractSwaggerGeneratorContext implements SwaggerGenerato
   }
 
   protected void initResponseTypeProcessorMgr() {
-
+    SPIServiceUtils.getAllService(ResponseTypeProcessor.class).forEach(p -> {
+      responseTypeProcessorMgr.register(p.getResponseType(), p);
+    });
   }
 
   public void setDefaultParamProcessor(DefaultParameterProcessor defaultParamProcessor) {
