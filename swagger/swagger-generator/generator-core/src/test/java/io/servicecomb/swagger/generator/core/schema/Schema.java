@@ -22,6 +22,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
 
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
@@ -154,6 +155,10 @@ public class Schema {
 
   public void testMapList(Map<String, List<User>> value) {
 
+  }
+
+  public CompletableFuture<String> testCompletableFuture() {
+    return null;
   }
 
   public void testAllType(AllType obj) {
