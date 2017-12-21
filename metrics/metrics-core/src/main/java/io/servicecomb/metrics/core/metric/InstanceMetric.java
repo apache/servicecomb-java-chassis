@@ -17,18 +17,35 @@
 
 package io.servicecomb.metrics.core.metric;
 
-public class InstanceMetric extends ModelMetric {
+public class InstanceMetric {
+  private final long waitInQueue;
 
-  private final SystemMetric systemMetric;
+  private final ConsumerInvocationMetric consumerMetric;
 
-  public SystemMetric getSystemMetric() {
-    return systemMetric;
+  private final ProducerInvocationMetric producerMetric;
+
+  public long getWaitInQueue() {
+    return waitInQueue;
   }
 
-  public InstanceMetric(long waitInQueue, SystemMetric systemMetric,
-      TimerMetric lifeTimeInQueue, TimerMetric executionTime, TimerMetric consumerLatency,
-      TimerMetric producerLatency) {
-    super(waitInQueue, lifeTimeInQueue, executionTime, consumerLatency, producerLatency);
-    this.systemMetric = systemMetric;
+  public ConsumerInvocationMetric getConsumerMetric() {
+    return consumerMetric;
+  }
+
+  public ProducerInvocationMetric getProducerMetric() {
+    return producerMetric;
+  }
+
+  public InstanceMetric() {
+    waitInQueue = 0;
+    consumerMetric = null;
+    producerMetric = null;
+  }
+
+  public InstanceMetric(long waitInQueue, ConsumerInvocationMetric consumerMetric,
+      ProducerInvocationMetric producerMetric) {
+    this.waitInQueue = waitInQueue;
+    this.consumerMetric = consumerMetric;
+    this.producerMetric = producerMetric;
   }
 }

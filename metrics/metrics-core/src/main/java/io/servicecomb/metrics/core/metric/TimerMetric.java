@@ -17,7 +17,15 @@
 
 package io.servicecomb.metrics.core.metric;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 public class TimerMetric {
+  @JsonIgnore
+  private final String prefix;
+
   private final long total;
 
   private final long count;
@@ -48,11 +56,12 @@ public class TimerMetric {
     return max;
   }
 
-  public TimerMetric() {
-    this(0, 0, 0, 0);
+  public TimerMetric(String prefix) {
+    this(prefix, 0, 0, 0, 0);
   }
 
-  public TimerMetric(long total, long count, long min, long max) {
+  public TimerMetric(String prefix, long total, long count, long min, long max) {
+    this.prefix = prefix;
     this.total = total;
     this.count = count;
     if (count != 0) {
@@ -65,7 +74,7 @@ public class TimerMetric {
   }
 
   public TimerMetric merge(TimerMetric metric) {
-    return new TimerMetric(this.total + metric.total, this.count + metric.count,
+    return new TimerMetric(this.prefix, this.total + metric.total, this.count + metric.count,
         getMin(this.min, metric.min), getMax(this.max, metric.max));
   }
 
@@ -75,5 +84,15 @@ public class TimerMetric {
 
   private long getMax(long value1, long value2) {
     return value2 > value1 ? value2 : value1;
+  }
+
+  public Map<String, Number> toMap() {
+    Map<String, Number> metrics = new HashMap<>();
+    metrics.put(prefix + ".total", total);
+    metrics.put(prefix + ".count", count);
+    metrics.put(prefix + ".average", average);
+    metrics.put(prefix + ".max", max);
+    metrics.put(prefix + ".min", min);
+    return metrics;
   }
 }

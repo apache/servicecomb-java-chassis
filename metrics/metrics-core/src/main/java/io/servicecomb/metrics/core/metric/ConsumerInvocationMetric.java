@@ -17,31 +17,33 @@
 
 package io.servicecomb.metrics.core.metric;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import java.util.HashMap;
+import java.util.Map;
 
-public class InvocationMetric {
-  private final String operationName;
+public class ConsumerInvocationMetric extends InvocationMetric {
+  private final TimerMetric consumerLatency;
 
-  @JsonIgnore
-  private final String prefix;
+  private final CallMetric consumerCall;
 
-  private final long waitInQueue;
-
-  public String getOperationName() {
-    return operationName;
+  public TimerMetric getConsumerLatency() {
+    return consumerLatency;
   }
 
-  public String getPrefix() {
-    return prefix;
+  public CallMetric getConsumerCall() {
+    return consumerCall;
   }
 
-  public long getWaitInQueue() {
-    return waitInQueue;
+  public ConsumerInvocationMetric(String operationName, String prefix, long waitInQueue,
+      TimerMetric consumerLatency, CallMetric consumerCall) {
+    super(operationName, prefix, waitInQueue);
+    this.consumerLatency = consumerLatency;
+    this.consumerCall = consumerCall;
   }
 
-  public InvocationMetric(String operationName, String prefix, long waitInQueue) {
-    this.operationName = operationName;
-    this.prefix = prefix;
-    this.waitInQueue = waitInQueue;
+  public Map<String, Number> toMap() {
+    Map<String, Number> metrics = new HashMap<>();
+    metrics.putAll(consumerLatency.toMap());
+    metrics.putAll(consumerCall.toMap());
+    return metrics;
   }
 }

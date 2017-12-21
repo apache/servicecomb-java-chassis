@@ -17,24 +17,17 @@
 
 package io.servicecomb.metrics.core.metric;
 
-public abstract class ModelMetric {
-  private final long waitInQueue;
+import java.util.HashMap;
+import java.util.Map;
 
+public class ProducerInvocationMetric extends InvocationMetric {
   private final TimerMetric lifeTimeInQueue;
 
   private final TimerMetric executionTime;
 
-  private final TimerMetric consumerLatency;
-
   private final TimerMetric producerLatency;
 
-  private final CallMetric consumerCall;
-
   private final CallMetric producerCall;
-
-  public long getWaitInQueue() {
-    return waitInQueue;
-  }
 
   public TimerMetric getLifeTimeInQueue() {
     return lifeTimeInQueue;
@@ -44,31 +37,30 @@ public abstract class ModelMetric {
     return executionTime;
   }
 
-  public TimerMetric getConsumerLatency() {
-    return consumerLatency;
-  }
-
   public TimerMetric getProducerLatency() {
     return producerLatency;
-  }
-
-  public CallMetric getConsumerCall() {
-    return consumerCall;
   }
 
   public CallMetric getProducerCall() {
     return producerCall;
   }
 
-  public ModelMetric(long waitInQueue,
-      TimerMetric lifeTimeInQueue, TimerMetric executionTime, TimerMetric consumerLatency,
-      TimerMetric producerLatency, CallMetric consumerCall, CallMetric producerCall) {
-    this.waitInQueue = waitInQueue;
+  public ProducerInvocationMetric(String operationName, String prefix, long waitInQueue,
+      TimerMetric lifeTimeInQueue, TimerMetric executionTime, TimerMetric producerLatency, CallMetric producerCall) {
+    super(operationName, prefix, waitInQueue);
     this.lifeTimeInQueue = lifeTimeInQueue;
     this.executionTime = executionTime;
-    this.consumerLatency = consumerLatency;
     this.producerLatency = producerLatency;
-    this.consumerCall = consumerCall;
     this.producerCall = producerCall;
+  }
+
+  public Map<String, Number> toMap() {
+    Map<String, Number> metrics = new HashMap<>();
+    metrics.put(getPrefix() + ".waitInQueue.count", getWaitInQueue());
+    metrics.putAll(lifeTimeInQueue.toMap());
+    metrics.putAll(executionTime.toMap());
+    metrics.putAll(producerLatency.toMap());
+    metrics.putAll(producerCall.toMap());
+    return metrics;
   }
 }
