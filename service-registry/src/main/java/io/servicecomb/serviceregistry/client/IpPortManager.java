@@ -84,7 +84,7 @@ public class IpPortManager {
       return returnWithLog(invalidate, defaultIpPort.get(index));
     }
     List<CacheEndpoint> endpoints = getDiscoveredIpPort();
-    if (index >= defaultIpPort.size() + endpoints.size()) {
+    if (endpoints == null || (index >= defaultIpPort.size() + endpoints.size())) {
       currentAvailableIndex.set(0);
       return returnWithLog(invalidate, defaultIpPort.get(0));
     }
