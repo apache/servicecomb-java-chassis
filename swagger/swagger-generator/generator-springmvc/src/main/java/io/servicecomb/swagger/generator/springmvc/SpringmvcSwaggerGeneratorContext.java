@@ -19,7 +19,6 @@ package io.servicecomb.swagger.generator.springmvc;
 
 import java.lang.reflect.Method;
 
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -51,7 +50,6 @@ import io.servicecomb.swagger.generator.springmvc.processor.annotation.RequestMa
 import io.servicecomb.swagger.generator.springmvc.processor.annotation.RequestParamAnnotationProcessor;
 import io.servicecomb.swagger.generator.springmvc.processor.annotation.RequestPartAnnotationProcessor;
 import io.servicecomb.swagger.generator.springmvc.processor.parameter.SpringmvcDefaultParameterProcessor;
-import io.servicecomb.swagger.generator.springmvc.processor.response.ResponseEntityProcessor;
 
 public class SpringmvcSwaggerGeneratorContext extends RestSwaggerGeneratorContext {
   private static final int ORDER = 1000;
@@ -116,12 +114,5 @@ public class SpringmvcSwaggerGeneratorContext extends RestSwaggerGeneratorContex
   @Override
   protected void initDefaultParameterProcessor() {
     defaultParameterProcessor = new SpringmvcDefaultParameterProcessor();
-  }
-
-  @Override
-  protected void initResponseTypeProcessorMgr() {
-    super.initResponseTypeProcessorMgr();
-
-    responseTypeProcessorMgr.register(ResponseEntity.class, new ResponseEntityProcessor());
   }
 }

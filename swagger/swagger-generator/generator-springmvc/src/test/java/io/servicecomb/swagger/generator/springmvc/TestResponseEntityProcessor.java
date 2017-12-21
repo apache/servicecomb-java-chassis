@@ -14,15 +14,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.servicecomb.swagger.generator.springmvc.processor.response;
+package io.servicecomb.swagger.generator.springmvc;
 
+import org.junit.Assert;
+import org.junit.Test;
 import org.springframework.http.ResponseEntity;
 
-import io.servicecomb.swagger.generator.core.processor.response.AbstractOneGenericResponseProcessor;
+import io.servicecomb.swagger.generator.springmvc.processor.response.ResponseEntityProcessor;
 
-public class ResponseEntityProcessor extends AbstractOneGenericResponseProcessor {
-  @Override
-  public Class<?> getResponseType() {
-    return ResponseEntity.class;
+public class TestResponseEntityProcessor {
+  ResponseEntityProcessor processor = new ResponseEntityProcessor();
+
+  @Test
+  public void getResponseType() {
+    Assert.assertEquals(ResponseEntity.class, processor.getResponseType());
   }
 }
