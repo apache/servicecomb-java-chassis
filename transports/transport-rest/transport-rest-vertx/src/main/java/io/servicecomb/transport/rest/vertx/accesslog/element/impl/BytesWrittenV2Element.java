@@ -38,8 +38,8 @@ public class BytesWrittenV2Element implements AccessLogElement {
     long bytesWritten = response.bytesWritten();
     if (0 == bytesWritten) {
       return ZERO_BYTES;
-    } else {
-      return String.valueOf(bytesWritten);
     }
+
+    return String.valueOf(bytesWritten);
   }
 }
