@@ -63,10 +63,11 @@ public class DefaultDataSource implements DataSource {
     for (int index = 0; index < intervals.size(); index++) {
       int finalIndex = index;
       long finalInterval = intervals.get(finalIndex) < minPollingTime ? minPollingTime : intervals.get(finalIndex);
+      long pollerInterval = (long) (finalInterval * 0.5);
       final Runnable poller = () -> reloadRegistryMetric(finalIndex);
       Executors.newScheduledThreadPool(1)
           //for step counter correct work we need poll in time ,otherwise current step will return Datapoint.UNKNOWN (missing last sample)
-          .scheduleWithFixedDelay(poller, 0, (long) (finalInterval * 0.5), MILLISECONDS);
+          .scheduleWithFixedDelay(poller, pollerInterval, pollerInterval, MILLISECONDS);
       appliedIntervals.add(finalInterval);
     }
     this.appliedPollingIntervals = appliedIntervals;
@@ -74,7 +75,7 @@ public class DefaultDataSource implements DataSource {
 
   @Override
   public RegistryMetric getRegistryMetric(int pollerIndex) {
-    return registryMetrics.getOrDefault(pollerIndex, new RegistryMetric(registryMonitor, pollerIndex));
+    return registryMetrics.getOrDefault(pollerIndex, new RegistryMetric());
   }
 
   @Override
@@ -82,7 +83,7 @@ public class DefaultDataSource implements DataSource {
     return appliedPollingIntervals;
   }
 
-  private void reloadRegistryMetric(Integer pollingIndex) {
-    registryMetrics.put(pollingIndex, new RegistryMetric(registryMonitor, pollingIndex));
+  private void reloadRegistryMetric(Integer pollerIndex) {
+    registryMetrics.put(pollerIndex, registryMonitor.toRegistryMetric(pollerIndex));
   }
 }

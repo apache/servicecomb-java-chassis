@@ -20,18 +20,19 @@
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <parent>
-    <artifactId>metrics</artifactId>
+    <artifactId>metrics-sample</artifactId>
     <groupId>io.servicecomb</groupId>
     <version>0.6.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
 
-  <artifactId>metrics-sample</artifactId>
-  <packaging>pom</packaging>
+  <artifactId>metrics-output-file</artifactId>
 
-  <modules>
-    <module>metrics-performance-test</module>
-    <module>metrics-output-file</module>
-  </modules>
+  <dependencies>
+    <dependency>
+      <groupId>io.servicecomb</groupId>
+      <artifactId>metrics-core</artifactId>
+    </dependency>
+  </dependencies>
 
 </project>

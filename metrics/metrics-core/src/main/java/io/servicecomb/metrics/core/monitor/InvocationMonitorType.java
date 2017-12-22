@@ -15,10 +15,10 @@
  * limitations under the License.
  */
 
-package io.servicecomb.foundation.metrics.output.servo;
+package io.servicecomb.metrics.core.monitor;
 
-import java.util.Map;
-
-public interface MetricsContentFormatter {
-  Map<String, String> format(Map<String, String> input);
+public enum InvocationMonitorType {
+  UNKNOWN,
+  CONSUMER,
+  PRODUCER
 }

@@ -15,33 +15,34 @@
  * limitations under the License.
  */
 
-package io.servicecomb.metrics.core.metric;
+package io.servicecomb.metrics.core.monitor;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.netflix.servo.monitor.BasicCounter;
+import com.netflix.servo.monitor.MonitorConfig;
+import com.netflix.servo.monitor.StepCounter;
 
-public class InvocationMetric {
-  private final String operationName;
+import io.servicecomb.metrics.core.metric.CallMetric;
 
-  @JsonIgnore
+public class CallMonitor {
   private final String prefix;
 
-  private final long waitInQueue;
+  private final BasicCounter total;
 
-  public String getOperationName() {
-    return operationName;
-  }
+  private final StepCounter tps;
 
-  public String getPrefix() {
-    return prefix;
-  }
-
-  public long getWaitInQueue() {
-    return waitInQueue;
-  }
-
-  public InvocationMetric(String operationName, String prefix, long waitInQueue) {
-    this.operationName = operationName;
+  public CallMonitor(String prefix) {
     this.prefix = prefix;
-    this.waitInQueue = waitInQueue;
+    this.total = new BasicCounter(MonitorConfig.builder(prefix + ".total").build());
+    this.tps = new StepCounter(MonitorConfig.builder(prefix + ".tps").build());
+  }
+
+  public void increment() {
+    total.increment();
+    tps.increment();
+  }
+
+  public CallMetric toCallMetric(int pollerIndex) {
+    return new CallMetric(this.prefix, total.getValue(pollerIndex).longValue(),
+        tps.getValue(pollerIndex).doubleValue());
   }
 }

@@ -15,33 +15,10 @@
  * limitations under the License.
  */
 
-package io.servicecomb.metrics.core.metric;
+package io.servicecomb.metrics.sample.output.file;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import java.util.Map;
 
-public class InvocationMetric {
-  private final String operationName;
-
-  @JsonIgnore
-  private final String prefix;
-
-  private final long waitInQueue;
-
-  public String getOperationName() {
-    return operationName;
-  }
-
-  public String getPrefix() {
-    return prefix;
-  }
-
-  public long getWaitInQueue() {
-    return waitInQueue;
-  }
-
-  public InvocationMetric(String operationName, String prefix, long waitInQueue) {
-    this.operationName = operationName;
-    this.prefix = prefix;
-    this.waitInQueue = waitInQueue;
-  }
+public interface MetricsContentFormatter {
+  Map<String, String> format(Map<String, String> input);
 }

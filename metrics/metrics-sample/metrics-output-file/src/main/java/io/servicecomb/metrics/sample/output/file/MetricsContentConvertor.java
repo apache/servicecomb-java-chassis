@@ -15,28 +15,13 @@
  * limitations under the License.
  */
 
-package io.servicecomb.foundation.metrics;
+package io.servicecomb.metrics.sample.output.file;
 
-import java.util.HashMap;
 import java.util.Map;
 
-import org.junit.Assert;
-import org.junit.Test;
+import io.servicecomb.metrics.core.metric.RegistryMetric;
 
-import io.servicecomb.foundation.metrics.output.servo.SimpleMetricsContentFormatter;
-
-public class TestSimpleMetricsContentFormatter {
-
-  @Test
-  public void testFormatter() {
-    SimpleMetricsContentFormatter formatter = new SimpleMetricsContentFormatter();
-
-    Map<String, String> input = new HashMap<>();
-    input.put("key", "value");
-
-    Map<String, String> output = formatter.format(input);
-
-    Assert.assertTrue(output.containsKey("key"));
-    Assert.assertTrue(output.get("key").contains("\"key\":\"value\""));
-  }
+//convert metrics to output content
+public interface MetricsContentConvertor {
+  Map<String, String> convert(RegistryMetric registryMetric);
 }

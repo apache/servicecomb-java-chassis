@@ -17,31 +17,45 @@
 
 package io.servicecomb.metrics.core.metric;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-public class InvocationMetric {
-  private final String operationName;
-
+public class CallMetric {
   @JsonIgnore
   private final String prefix;
 
-  private final long waitInQueue;
+  private final long total;
 
-  public String getOperationName() {
-    return operationName;
+  private final double tps;
+
+  public long getTotal() {
+    return total;
   }
 
-  public String getPrefix() {
-    return prefix;
+  public double getTps() {
+    return tps;
   }
 
-  public long getWaitInQueue() {
-    return waitInQueue;
+  public CallMetric(String prefix) {
+    this(prefix, 0, 0);
   }
 
-  public InvocationMetric(String operationName, String prefix, long waitInQueue) {
-    this.operationName = operationName;
+  public CallMetric(String prefix, long total, double tps) {
     this.prefix = prefix;
-    this.waitInQueue = waitInQueue;
+    this.total = total;
+    this.tps = tps;
+  }
+
+  public CallMetric merge(CallMetric metric) {
+    return new CallMetric(this.prefix, this.total + metric.total, this.tps + metric.tps);
+  }
+
+  public Map<String, Number> toMap() {
+    Map<String, Number> metrics = new HashMap<>();
+    metrics.put(prefix + ".total", total);
+    metrics.put(prefix + ".tps", tps);
+    return metrics;
   }
 }

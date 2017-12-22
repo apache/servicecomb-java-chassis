@@ -15,14 +15,30 @@
  * limitations under the License.
  */
 
-package io.servicecomb.foundation.metrics.output.servo;
+package io.servicecomb.metrics.sample.output.file;
 
-import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
-import com.netflix.servo.Metric;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 
-//convert metrics to output content
-public interface MetricsContentConvertor {
-  Map<String, String> convert(List<Metric> metrics);
+@Component
+public class MetricsFileOutput {
+
+  private final Map<String, org.slf4j.Logger> allLoggers = new ConcurrentHashMap<>();
+
+  public MetricsFileOutput() {
+  }
+
+  public void output(Map<String, String> metrics) {
+    for (String metricName : metrics.keySet()) {
+      if(metricName.equals("servicecomb.instance.producer.waitInQueue.count")) {
+        int x = 100;
+      }
+
+      org.slf4j.Logger logger = allLoggers.computeIfAbsent(metricName, l -> LoggerFactory.getLogger(metricName));
+      logger.error(metrics.get(metricName));
+    }
+  }
 }

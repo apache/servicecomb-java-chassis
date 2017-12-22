@@ -15,37 +15,14 @@
  * limitations under the License.
  */
 
-package io.servicecomb.foundation.metrics;
+package io.servicecomb.metrics.core;
 
-public class TpsAndLatencyData {
-  private final long successCount;
+public class MetricsConst {
+  public static final String CONSUMER_PREFIX_TEMPLATE = "servicecomb.%s.consumer";
 
-  private final long failureCount;
+  public static final String PRODUCER_PREFIX_TEMPLATE = "servicecomb.%s.producer";
 
-  private final int operationLatency;
+  public static final String INSTANCE_CONSUMER_PREFIX = String.format(CONSUMER_PREFIX_TEMPLATE, "instance");
 
-  private final long windowInMilliseconds;
-
-  public long getSuccessCount() {
-    return successCount;
-  }
-
-  public long getFailureCount() {
-    return failureCount;
-  }
-
-  public int getOperationLatency() {
-    return operationLatency;
-  }
-
-  public long getWindowInMilliseconds() {
-    return windowInMilliseconds;
-  }
-
-  public TpsAndLatencyData(long successCount, long failureCount, int operationLatency, long windowInMilliseconds) {
-    this.successCount = successCount;
-    this.failureCount = failureCount;
-    this.operationLatency = operationLatency;
-    this.windowInMilliseconds = windowInMilliseconds;
-  }
+  public static final String INSTANCE_PRODUCER_PREFIX = String.format(PRODUCER_PREFIX_TEMPLATE, "instance");
 }

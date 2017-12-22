@@ -41,9 +41,14 @@ public class InvocationStartProcessingEventListener implements EventListener {
   public void process(Event data) {
     InvocationStartProcessingEvent event = (InvocationStartProcessingEvent) data;
     InvocationMonitor monitor = registryMonitor.getInvocationMonitor(event.getOperationName());
+    //TODO:current java chassis unable know invocation type before starting process,so all type WaitInQueue increment(-1) (decrement)
     monitor.getWaitInQueue().increment(-1);
+    monitor.setInvocationMonitorType(event.getInvocationType());
     if (InvocationType.PRODUCER.equals(event.getInvocationType())) {
       monitor.getLifeTimeInQueue().update(event.getInQueueNanoTime());
+      monitor.getProducerCall().increment();
+    } else {
+      monitor.getConsumerCall().increment();
     }
   }
 }

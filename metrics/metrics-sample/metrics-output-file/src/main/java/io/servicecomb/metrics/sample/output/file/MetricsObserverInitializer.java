@@ -15,65 +15,62 @@
  * limitations under the License.
  */
 
-package io.servicecomb.foundation.metrics.output.servo;
+package io.servicecomb.metrics.sample.output.file;
 
-import java.util.concurrent.TimeUnit;
+import static java.util.concurrent.TimeUnit.SECONDS;
+
+import java.util.Map;
+import java.util.concurrent.Executors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.netflix.config.DynamicPropertyFactory;
-import com.netflix.servo.publish.BasicMetricFilter;
-import com.netflix.servo.publish.CounterToRateMetricTransform;
-import com.netflix.servo.publish.MetricObserver;
-import com.netflix.servo.publish.MonitorRegistryMetricPoller;
-import com.netflix.servo.publish.PollRunnable;
-import com.netflix.servo.publish.PollScheduler;
 
-import io.servicecomb.foundation.metrics.output.MetricsFileOutput;
+import io.servicecomb.metrics.core.metric.RegistryMetric;
+import io.servicecomb.metrics.core.publish.DataSource;
 
-//manage and init ServoObservers
 @Component
 public class MetricsObserverInitializer {
 
   public static final String METRICS_POLL_TIME = "servicecomb.metrics.polltime";
+
   public static final String METRICS_FILE_ENABLED = "servicecomb.metrics.file.enabled";
 
   private final int metricPoll;
+
   private final MetricsFileOutput fileOutput;
+
   private final MetricsContentConvertor convertor;
+
   private final MetricsContentFormatter formatter;
+
+  private final DataSource dataSource;
 
   @Autowired
   public MetricsObserverInitializer(MetricsFileOutput fileOutput, MetricsContentConvertor convertor,
-      MetricsContentFormatter formatter) {
-    this(fileOutput, convertor, formatter, true);
-  }
-
-  public MetricsObserverInitializer(MetricsFileOutput fileOutput, MetricsContentConvertor convertor,
-      MetricsContentFormatter formatter, boolean autoInit) {
+      MetricsContentFormatter formatter, DataSource dataSource) {
     metricPoll = DynamicPropertyFactory.getInstance().getIntProperty(METRICS_POLL_TIME, 30).get();
     this.fileOutput = fileOutput;
     this.convertor = convertor;
     this.formatter = formatter;
-    if (autoInit) {
-      this.init();
-    }
+    this.dataSource = dataSource;
+    this.init();
   }
 
   public void init() {
-    PollScheduler scheduler = PollScheduler.getInstance();
-    if (!scheduler.isStarted()) {
-      scheduler.start();
-    }
-
     if (isRollingFileEnabled()) {
-      MetricObserver fileObserver = new FileOutputMetricObserver(fileOutput, convertor, formatter);
-      MetricObserver fileTransform = new CounterToRateMetricTransform(fileObserver, metricPoll, TimeUnit.SECONDS);
-      PollRunnable fileTask = new PollRunnable(new MonitorRegistryMetricPoller(), BasicMetricFilter.MATCH_ALL,
-          fileTransform);
-      scheduler.addPoller(fileTask, metricPoll, TimeUnit.SECONDS);
+      final Runnable poller = this::run;
+      Executors.newScheduledThreadPool(1)
+          .scheduleWithFixedDelay(poller, 0, metricPoll, SECONDS);
     }
+  }
+
+  private void run() {
+    RegistryMetric registryMetric = dataSource.getRegistryMetric(0);
+    Map<String, String> convertedMetrics = convertor.convert(registryMetric);
+    Map<String, String> formattedMetrics = formatter.format(convertedMetrics);
+    fileOutput.output(formattedMetrics);
   }
 
   public boolean isRollingFileEnabled() {

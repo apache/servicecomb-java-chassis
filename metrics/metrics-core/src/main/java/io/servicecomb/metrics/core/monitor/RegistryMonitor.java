@@ -17,13 +17,14 @@
 
 package io.servicecomb.metrics.core.monitor;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Component;
 
 import io.servicecomb.metrics.core.metric.InvocationMetric;
+import io.servicecomb.metrics.core.metric.RegistryMetric;
 
 @Component
 public class RegistryMonitor {
@@ -38,8 +39,11 @@ public class RegistryMonitor {
     return invocationMonitors.computeIfAbsent(operationName, i -> new InvocationMonitor(operationName));
   }
 
-  public Map<String, InvocationMetric> toInvocationMetrics(int pollerIndex) {
-    return invocationMonitors.values().stream().collect(Collectors.toMap(InvocationMonitor::getOperationName,
-        monitor -> monitor.toInvocationMetric(pollerIndex)));
+  public RegistryMetric toRegistryMetric(int pollerIndex) {
+    Map<String, InvocationMetric> invocationMetrics = new HashMap<>();
+    for (InvocationMonitor monitor : invocationMonitors.values()) {
+      invocationMetrics.put(monitor.getOperationName(), monitor.toInvocationMetric(pollerIndex));
+    }
+    return new RegistryMetric(invocationMetrics);
   }
 }

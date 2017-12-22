@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package io.servicecomb.foundation.metrics.output.servo;
+package io.servicecomb.metrics.sample.output.file;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -29,16 +29,14 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.netflix.config.DynamicPropertyFactory;
 
 import io.servicecomb.foundation.common.net.NetUtils;
 import io.servicecomb.foundation.common.utils.JsonUtils;
+import io.servicecomb.serviceregistry.RegistryUtils;
+import io.servicecomb.serviceregistry.api.registry.Microservice;
 
 @Component
 public class SimpleMetricsContentFormatter implements MetricsContentFormatter {
-
-  public static final String METRICS_FILE_NAME_PREFIX = "servicecomb.metrics.file.name_prefix";
-
   private static final Logger logger = LoggerFactory.getLogger(SimpleMetricsContentFormatter.class);
 
   private final String applicationName;
@@ -52,7 +50,8 @@ public class SimpleMetricsContentFormatter implements MetricsContentFormatter {
       hostName = NetUtils.getHostAddress();
     }
 
-    applicationName = DynamicPropertyFactory.getInstance().getStringProperty(METRICS_FILE_NAME_PREFIX, "metrics").get();
+    Microservice microservice = RegistryUtils.getMicroservice();
+    applicationName = microservice.getAppId() + "." + microservice.getServiceName();
   }
 
   @Override
