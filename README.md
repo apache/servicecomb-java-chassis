@@ -1,4 +1,4 @@
-# Java Chassis [![Build Status](https://travis-ci.org/ServiceComb/ServiceComb-Java-Chassis.svg?branch=master)](https://travis-ci.org/ServiceComb/ServiceComb-Java-Chassis?branch=master)[![Coverage Status](https://coveralls.io/repos/github/ServiceComb/ServiceComb-Java-Chassis/badge.svg?branch=master)](https://coveralls.io/github/ServiceComb/ServiceComb-Java-Chassis?branch=master)
+# Java Chassis [![Build Status](https://travis-ci.org/apache/incubator-servicecomb-java-chassis.svg?branch=master)](https://travis-ci.org/apache/incubator-servicecomb-java-chassis?branch=master)[![Coverage Status](https://coveralls.io/repos/github/apache/incubator-servicecomb-java-chassis/badge.svg?branch=master)](https://coveralls.io/github/apache/incubator-servicecomb-java-chassis?branch=master)
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/io.servicecomb/java-chassis-core/badge.svg)](http://search.maven.org/#search%7Cga%7C1%7Cio.servicecomb)
 [![License](https://img.shields.io/badge/license-Apache%202-4EB1BA.svg)](https://www.apache.org/licenses/LICENSE-2.0.html)
 
@@ -59,8 +59,7 @@ The first build may take a longer than expected as Maven downloads all the depen
 
 Bugs: [issues](https://github.com/ServiceComb/java-chassis/issues)
 
-mailing list: [subscribe](mailto:dev-subscribe@servicecomb.incubator.apache.org)
-mailing list: [dev](https://lists.apache.org/list.html?dev@servicecomb.apache.org)
+mailing list: [subscribe](mailto:dev-subscribe@servicecomb.incubator.apache.org)  [dev](https://lists.apache.org/list.html?dev@servicecomb.apache.org)
 
 
 ## Contributing
