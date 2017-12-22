@@ -1,0 +1,227 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one or more
+  ~ contributor license agreements.  See the NOTICE file distributed with
+  ~ this work for additional information regarding copyright ownership.
+  ~ The ASF licenses this file to You under the Apache License, Version 2.0
+  ~ (the "License"); you may not use this file except in compliance with
+  ~ the License.  You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<configuration status="error" monitorInterval="300">
+  <Properties>
+    <!--metrics文件Rolling单文件最大大小(KB,MB,GB)-->
+    <Property name="maxFileSize">10MB</Property>
+    <!--metrics文件Rolling保存数量-->
+    <Property name="maxFileCount">10</Property>
+    <!--metrics文件存储目录-->
+    <Property name="filePath">./samples/bmi/calculator/target/metric/</Property>
+    <!--metrics文件名前缀-->
+    <Property name="filePrefix">bmi.calculator</Property>
+  </Properties>
+
+  <Appenders>
+    <RollingFile name="averageServiceExecutionTime" fileName="${filePath}${filePrefix}.averageServiceExecutionTime.dat"
+      filePattern="${filePath}${filePrefix}.averageServiceExecutionTime-%i.dat">
+      <PatternLayout pattern="%m%n"/>
+      <SizeBasedTriggeringPolicy size="${maxFileSize}"/>
+      <DefaultRolloverStrategy max="${maxFileCount}"/>
+    </RollingFile>
+    <RollingFile name="averageTimeInQueue" fileName="${filePath}${filePrefix}.averageTimeInQueue.dat"
+      filePattern="${filePath}${filePrefix}.averageTimeInQueue-%i.dat">
+      <PatternLayout pattern="%m%n"/>
+      <SizeBasedTriggeringPolicy size="${maxFileSize}"/>
+      <DefaultRolloverStrategy max="${maxFileCount}"/>
+    </RollingFile>
+    <RollingFile name="countInQueue" fileName="${filePath}${filePrefix}.countInQueue.dat"
+      filePattern="${filePath}${filePrefix}.countInQueue-%i.dat">
+      <PatternLayout pattern="%m%n"/>
+      <SizeBasedTriggeringPolicy size="${maxFileSize}"/>
+      <DefaultRolloverStrategy max="${maxFileCount}"/>
+    </RollingFile>
+    <RollingFile name="cpuLoad" fileName="${filePath}${filePrefix}.cpuLoad.dat"
+      filePattern="${filePath}${filePrefix}.cpuLoad-%i.dat">
+      <PatternLayout pattern="%m%n"/>
+      <SizeBasedTriggeringPolicy size="${maxFileSize}"/>
+      <DefaultRolloverStrategy max="${maxFileCount}"/>
+    </RollingFile>
+    <RollingFile name="cpuRunningThreads" fileName="${filePath}${filePrefix}.cpuRunningThreads.dat"
+      filePattern="${filePath}${filePrefix}.cpuRunningThreads-%i.dat">
+      <PatternLayout pattern="%m%n"/>
+      <SizeBasedTriggeringPolicy size="${maxFileSize}"/>
+      <DefaultRolloverStrategy max="${maxFileCount}"/>
+    </RollingFile>
+    <RollingFile name="heapCommit" fileName="${filePath}${filePrefix}.heapCommit.dat"
+      filePattern="${filePath}${filePrefix}.heapCommit-%i.dat">
+      <PatternLayout pattern="%m%n"/>
+      <SizeBasedTriggeringPolicy size="${maxFileSize}"/>
+      <DefaultRolloverStrategy max="${maxFileCount}"/>
+    </RollingFile>
+    <RollingFile name="heapInit" fileName="${filePath}${filePrefix}.heapInit.dat"
+      filePattern="${filePath}${filePrefix}.heapInit-%i.dat">
+      <PatternLayout pattern="%m%n"/>
+      <SizeBasedTriggeringPolicy size="${maxFileSize}"/>
+      <DefaultRolloverStrategy max="${maxFileCount}"/>
+    </RollingFile>
+    <RollingFile name="heapMax" fileName="${filePath}${filePrefix}.heapMax.dat"
+      filePattern="${filePath}${filePrefix}.heapMax-%i.dat">
+      <PatternLayout pattern="%m%n"/>
+      <SizeBasedTriggeringPolicy size="${maxFileSize}"/>
+      <DefaultRolloverStrategy max="${maxFileCount}"/>
+    </RollingFile>
+    <RollingFile name="heapUsed" fileName="${filePath}${filePrefix}.heapUsed.dat"
+      filePattern="${filePath}${filePrefix}.heapUsed-%i.dat">
+      <PatternLayout pattern="%m%n"/>
+      <SizeBasedTriggeringPolicy size="${maxFileSize}"/>
+      <DefaultRolloverStrategy max="${maxFileCount}"/>
+    </RollingFile>
+    <RollingFile name="latency" fileName="${filePath}${filePrefix}.latency.dat"
+      filePattern="${filePath}${filePrefix}.latency-%i.dat">
+      <PatternLayout pattern="%m%n"/>
+      <SizeBasedTriggeringPolicy size="${maxFileSize}"/>
+      <DefaultRolloverStrategy max="${maxFileCount}"/>
+    </RollingFile>
+    <RollingFile name="maxLifeTimeInQueue" fileName="${filePath}${filePrefix}.maxLifeTimeInQueue.dat"
+      filePattern="${filePath}${filePrefix}.maxLifeTimeInQueue-%i.dat">
+      <PatternLayout pattern="%m%n"/>
+      <SizeBasedTriggeringPolicy size="${maxFileSize}"/>
+      <DefaultRolloverStrategy max="${maxFileCount}"/>
+    </RollingFile>
+    <RollingFile name="minLifeTimeInQueue" fileName="${filePath}${filePrefix}.minLifeTimeInQueue.dat"
+      filePattern="${filePath}${filePrefix}.minLifeTimeInQueue-%i.dat">
+      <PatternLayout pattern="%m%n"/>
+      <SizeBasedTriggeringPolicy size="${maxFileSize}"/>
+      <DefaultRolloverStrategy max="${maxFileCount}"/>
+    </RollingFile>
+    <RollingFile name="nonHeapCommit" fileName="${filePath}${filePrefix}.nonHeapCommit.dat"
+      filePattern="${filePath}${filePrefix}.nonHeapCommit-%i.dat">
+      <PatternLayout pattern="%m%n"/>
+      <SizeBasedTriggeringPolicy size="${maxFileSize}"/>
+      <DefaultRolloverStrategy max="${maxFileCount}"/>
+    </RollingFile>
+    <RollingFile name="nonHeapInit" fileName="${filePath}${filePrefix}.nonHeapInit.dat"
+      filePattern="${filePath}${filePrefix}.nonHeapInit-%i.dat">
+      <PatternLayout pattern="%m%n"/>
+      <SizeBasedTriggeringPolicy size="${maxFileSize}"/>
+      <DefaultRolloverStrategy max="${maxFileCount}"/>
+    </RollingFile>
+    <RollingFile name="nonHeapMax" fileName="${filePath}${filePrefix}.nonHeapMax.dat"
+      filePattern="${filePath}${filePrefix}.nonHeapMax-%i.dat">
+      <PatternLayout pattern="%m%n"/>
+      <SizeBasedTriggeringPolicy size="${maxFileSize}"/>
+      <DefaultRolloverStrategy max="${maxFileCount}"/>
+    </RollingFile>
+    <RollingFile name="nonHeapUsed" fileName="${filePath}${filePrefix}.nonHeapUsed.dat"
+      filePattern="${filePath}${filePrefix}.nonHeapUsed-%i.dat">
+      <PatternLayout pattern="%m%n"/>
+      <SizeBasedTriggeringPolicy size="${maxFileSize}"/>
+      <DefaultRolloverStrategy max="${maxFileCount}"/>
+    </RollingFile>
+    <RollingFile name="totalFailedRequestsPerProvider"
+      fileName="${filePath}${filePrefix}.totalFailedRequestsPerProvider.dat"
+      filePattern="${filePath}${filePrefix}.totalFailedRequestsPerProvider-%i.dat">
+      <PatternLayout pattern="%m%n"/>
+      <SizeBasedTriggeringPolicy size="${maxFileSize}"/>
+      <DefaultRolloverStrategy max="${maxFileCount}"/>
+    </RollingFile>
+    <RollingFile name="totalFailRequestsPerConsumer"
+      fileName="${filePath}${filePrefix}.totalFailRequestsPerConsumer.dat"
+      filePattern="${filePath}${filePrefix}.totalFailRequestsPerConsumer-%i.dat">
+      <PatternLayout pattern="%m%n"/>
+      <SizeBasedTriggeringPolicy size="${maxFileSize}"/>
+      <DefaultRolloverStrategy max="${maxFileCount}"/>
+    </RollingFile>
+    <RollingFile name="totalRequestsPerConsumer" fileName="${filePath}${filePrefix}.totalRequestsPerConsumer.dat"
+      filePattern="${filePath}${filePrefix}.totalRequestsPerConsumer-%i.dat">
+      <PatternLayout pattern="%m%n"/>
+      <SizeBasedTriggeringPolicy size="${maxFileSize}"/>
+      <DefaultRolloverStrategy max="${maxFileCount}"/>
+    </RollingFile>
+    <RollingFile name="totalRequestsPerProvider" fileName="${filePath}${filePrefix}.totalRequestsPerProvider.dat"
+      filePattern="${filePath}${filePrefix}.totalRequestsPerProvider-%i.dat">
+      <PatternLayout pattern="%m%n"/>
+      <SizeBasedTriggeringPolicy size="${maxFileSize}"/>
+      <DefaultRolloverStrategy max="${maxFileCount}"/>
+    </RollingFile>
+    <RollingFile name="tps" fileName="${filePath}${filePrefix}.tps.dat"
+      filePattern="${filePath}${filePrefix}.tps-%i.dat">
+      <PatternLayout pattern="%m%n"/>
+      <SizeBasedTriggeringPolicy size="${maxFileSize}"/>
+      <DefaultRolloverStrategy max="${maxFileCount}"/>
+    </RollingFile>
+  </Appenders>
+
+  <Loggers>
+    <Logger name="averageServiceExecutionTime" level="error" additivity="false">
+      <AppenderRef ref="averageServiceExecutionTime"/>
+    </Logger>
+    <Logger name="averageTimeInQueue" level="error" additivity="false">
+      <AppenderRef ref="averageTimeInQueue"/>
+    </Logger>
+    <Logger name="countInQueue" level="error" additivity="false">
+      <AppenderRef ref="countInQueue"/>
+    </Logger>
+    <Logger name="cpuLoad" level="error" additivity="false">
+      <AppenderRef ref="cpuLoad"/>
+    </Logger>
+    <Logger name="cpuRunningThreads" level="error" additivity="false">
+      <AppenderRef ref="cpuRunningThreads"/>
+    </Logger>
+    <Logger name="heapCommit" level="error" additivity="false">
+      <AppenderRef ref="heapCommit"/>
+    </Logger>
+    <Logger name="heapInit" level="error" additivity="false">
+      <AppenderRef ref="heapInit"/>
+    </Logger>
+    <Logger name="heapMax" level="error" additivity="false">
+      <AppenderRef ref="heapMax"/>
+    </Logger>
+    <Logger name="heapUsed" level="error" additivity="false">
+      <AppenderRef ref="heapUsed"/>
+    </Logger>
+    <Logger name="latency" level="error" additivity="false">
+      <AppenderRef ref="latency"/>
+    </Logger>
+    <Logger name="maxLifeTimeInQueue" level="error" additivity="false">
+      <AppenderRef ref="maxLifeTimeInQueue"/>
+    </Logger>
+    <Logger name="minLifeTimeInQueue" level="error" additivity="false">
+      <AppenderRef ref="minLifeTimeInQueue"/>
+    </Logger>
+    <Logger name="nonHeapCommit" level="error" additivity="false">
+      <AppenderRef ref="nonHeapCommit"/>
+    </Logger>
+    <Logger name="nonHeapInit" level="error" additivity="false">
+      <AppenderRef ref="nonHeapInit"/>
+    </Logger>
+    <Logger name="nonHeapMax" level="error" additivity="false">
+      <AppenderRef ref="nonHeapMax"/>
+    </Logger>
+    <Logger name="nonHeapUsed" level="error" additivity="false">
+      <AppenderRef ref="nonHeapUsed"/>
+    </Logger>
+    <Logger name="totalFailedRequestsPerProvider" level="error" additivity="false">
+      <AppenderRef ref="totalFailedRequestsPerProvider"/>
+    </Logger>
+    <Logger name="totalFailRequestsPerConsumer" level="error" additivity="false">
+      <AppenderRef ref="totalFailRequestsPerConsumer"/>
+    </Logger>
+    <Logger name="totalRequestsPerConsumer" level="error" additivity="false">
+      <AppenderRef ref="totalRequestsPerConsumer"/>
+    </Logger>
+    <Logger name="totalRequestsPerProvider" level="error" additivity="false">
+      <AppenderRef ref="totalRequestsPerProvider"/>
+    </Logger>
+    <Logger name="tps" level="error" additivity="false">
+      <AppenderRef ref="tps"/>
+    </Logger>
+  </Loggers>
+</configuration>
