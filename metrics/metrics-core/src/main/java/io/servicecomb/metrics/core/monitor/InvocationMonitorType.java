@@ -18,6 +18,7 @@
 package io.servicecomb.metrics.core.monitor;
 
 public enum InvocationMonitorType {
+  //when InvocationStartedEvent received,InvocationType is unknown
   UNKNOWN,
   CONSUMER,
   PRODUCER
