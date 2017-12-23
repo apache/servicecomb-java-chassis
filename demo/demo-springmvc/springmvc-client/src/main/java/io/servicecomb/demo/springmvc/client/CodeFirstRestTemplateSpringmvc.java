@@ -209,4 +209,10 @@ public class CodeFirstRestTemplateSpringmvc extends CodeFirstRestTemplate {
     map.put("form2", "");
     TestMgr.check(code + "", template.postForEntity(cseUrlPrefix + "/testform", formEntiry, String.class).getBody());
   }
+
+  @Override
+  protected void testCodeFirstIsTrue(RestTemplate template, String cseUrlPrefix) {
+    String result = template.getForObject(cseUrlPrefix + "testStrArray?str=a1,b1,c1", String.class);
+    TestMgr.check("ok", result);
+  }
 }
