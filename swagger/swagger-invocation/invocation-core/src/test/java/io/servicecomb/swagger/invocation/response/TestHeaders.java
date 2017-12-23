@@ -21,6 +21,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -52,5 +53,14 @@ public class TestHeaders {
     headers.addHeader("h1", "h1v2");
 
     Assert.assertEquals("h1v1", headers.getFirst("h1"));
+  }
+
+  @Test
+  public void addHeader_list() {
+    Headers headers = new Headers();
+    headers.addHeader("h", Arrays.asList("v1", "v2"));
+    headers.addHeader("h", Arrays.asList("v3"));
+
+    Assert.assertThat(headers.getHeader("h"), Matchers.contains("v1", "v2", "v3"));
   }
 }

@@ -16,29 +16,23 @@
  */
 package io.servicecomb.swagger.invocation.jaxrs.response;
 
-import java.util.List;
-import java.util.Map.Entry;
+import java.lang.reflect.Type;
 
-import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.core.Response.StatusType;
+import javax.ws.rs.core.Response;
 
-import io.servicecomb.swagger.invocation.Response;
+import io.servicecomb.swagger.invocation.response.ResponseMapperFactorys;
 import io.servicecomb.swagger.invocation.response.producer.ProducerResponseMapper;
+import io.servicecomb.swagger.invocation.response.producer.ProducerResponseMapperFactory;
 
-public class JaxrsProducerResponseMapper implements ProducerResponseMapper {
+public class JaxrsProducerResponseMapperFactory implements ProducerResponseMapperFactory {
   @Override
-  public Response mapResponse(StatusType status, Object response) {
-    javax.ws.rs.core.Response jaxrsResponse = (javax.ws.rs.core.Response) response;
+  public boolean isMatch(Type swaggerType, Type producerType) {
+    return Response.class.equals(producerType);
+  }
 
-    Response cseResponse = Response.status(jaxrsResponse.getStatusInfo()).entity(jaxrsResponse.getEntity());
-    MultivaluedMap<String, Object> headers = jaxrsResponse.getHeaders();
-    for (Entry<String, List<Object>> entry : headers.entrySet()) {
-      if (entry.getValue() == null || entry.getValue().isEmpty()) {
-        continue;
-      }
-
-      cseResponse.getHeaders().addHeader(entry.getKey(), entry.getValue());
-    }
-    return cseResponse;
+  @Override
+  public ProducerResponseMapper createResponseMapper(ResponseMapperFactorys<ProducerResponseMapper> factorys,
+      Type swaggerType, Type producerType) {
+    return new JaxrsProducerResponseMapper();
   }
 }

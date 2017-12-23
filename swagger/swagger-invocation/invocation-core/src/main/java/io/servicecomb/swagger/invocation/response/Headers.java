@@ -63,4 +63,15 @@ public class Headers {
 
     return this;
   }
+
+  public Headers addHeader(String name, List<Object> value) {
+    if (headerMap == null) {
+      headerMap = new HashMap<>();
+    }
+
+    List<Object> values = headerMap.computeIfAbsent(name, k -> new ArrayList<>());
+    values.addAll(value);
+
+    return this;
+  }
 }
