@@ -53,7 +53,7 @@ public class RegistryMetric {
     consumerMetrics = new HashMap<>();
     producerMetrics = new HashMap<>();
 
-    //TODO:current java chassis unable know invocation type before starting process,ProducerInvocation + UnknownTypeInvocation
+    //TODO:current java chassis unable know invocation type before starting process,totalWaitInQueue = ProducerInvocation + UnknownTypeInvocation
     long totalWaitInQueue = 0;
     long producerWaitInQueue = 0;
     TimerMetric lifeTimeInQueue = new TimerMetric(MetricsConst.INSTANCE_PRODUCER_PREFIX + ".lifeTimeInQueue");

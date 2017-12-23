@@ -24,7 +24,7 @@ import com.netflix.servo.monitor.StepCounter;
 
 import io.servicecomb.metrics.core.metric.TimerMetric;
 
-public class TimerMonitor {
+public class TimerMonitor extends BasicMonitor {
   private final String prefix;
 
   private final StepCounter total;
@@ -52,8 +52,11 @@ public class TimerMonitor {
     max = new MaxGauge(MonitorConfig.builder(prefix + ".max").build());
   }
 
-  public TimerMetric toTimerMetric(int pollerIndex) {
-    return new TimerMetric(this.prefix, total.getCount(pollerIndex), count.getCount(pollerIndex),
-        min.getValue(pollerIndex), max.getValue(pollerIndex));
+  public TimerMetric toTimerMetric(int windowTimeIndex) {
+    return new TimerMetric(this.prefix,
+        this.adjustValue(total.getCount(windowTimeIndex)),
+        this.adjustValue(count.getCount(windowTimeIndex)),
+        this.adjustValue(min.getValue(windowTimeIndex)),
+        this.adjustValue(max.getValue(windowTimeIndex)));
   }
 }

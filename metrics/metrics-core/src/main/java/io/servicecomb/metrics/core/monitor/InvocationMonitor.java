@@ -26,7 +26,7 @@ import io.servicecomb.metrics.core.metric.InvocationMetric;
 import io.servicecomb.metrics.core.metric.ProducerInvocationMetric;
 import io.servicecomb.swagger.invocation.InvocationType;
 
-public class InvocationMonitor {
+public class InvocationMonitor extends BasicMonitor {
   private final String operationName;
 
   private final String consumerPrefix;
@@ -104,18 +104,18 @@ public class InvocationMonitor {
     this.producerCall = new CallMonitor(producerPrefix + ".producerCall");
   }
 
-  public InvocationMetric toInvocationMetric(int pollerIndex) {
+  public InvocationMetric toInvocationMetric(int windowTimeIndex) {
     InvocationMetric metric;
-    long queueCount = waitInQueue.getValue(pollerIndex).longValue();
+    long queueCount = waitInQueue.getValue(windowTimeIndex).longValue();
     if (invocationMonitorType.equals(InvocationMonitorType.PRODUCER)) {
       metric = new ProducerInvocationMetric(operationName, producerPrefix, queueCount,
-          lifeTimeInQueue.toTimerMetric(pollerIndex),
-          executionTime.toTimerMetric(pollerIndex),
-          producerLatency.toTimerMetric(pollerIndex),
-          producerCall.toCallMetric(pollerIndex));
+          lifeTimeInQueue.toTimerMetric(windowTimeIndex),
+          executionTime.toTimerMetric(windowTimeIndex),
+          producerLatency.toTimerMetric(windowTimeIndex),
+          producerCall.toCallMetric(windowTimeIndex));
     } else if (invocationMonitorType.equals(InvocationMonitorType.CONSUMER)) {
       metric = new ConsumerInvocationMetric(operationName, consumerPrefix, queueCount,
-          consumerLatency.toTimerMetric(pollerIndex), consumerCall.toCallMetric(pollerIndex));
+          consumerLatency.toTimerMetric(windowTimeIndex), consumerCall.toCallMetric(windowTimeIndex));
     } else {
       metric = new InvocationMetric(operationName, consumerPrefix, queueCount);
     }
