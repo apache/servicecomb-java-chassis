@@ -16,19 +16,23 @@
  */
 package io.servicecomb.swagger.invocation.response.consumer;
 
-import org.springframework.stereotype.Component;
+import org.junit.Assert;
+import org.junit.Test;
 
 import io.servicecomb.swagger.invocation.Response;
+import io.servicecomb.swagger.invocation.converter.Converter;
+import io.servicecomb.swagger.invocation.converter.ConverterMgr;
 
-@Component
-public class ConsumerResponseCseSame implements ConsumerResponseMapper {
-  @Override
-  public Class<?> getResponseClass() {
-    return Response.class;
-  }
+public class TestDefaultConsumerResponseMapper {
+  ConverterMgr mgr = new ConverterMgr();
 
-  @Override
-  public Object mapResponse(Response response) {
-    return response;
+  Converter converter = mgr.findConverter(Integer.class, String.class);
+
+  DefaultConsumerResponseMapper mapper = new DefaultConsumerResponseMapper(converter);
+
+  @Test
+  public void mapResponse() {
+    Object result = mapper.mapResponse(Response.ok(1));
+    Assert.assertEquals("1", result);
   }
 }

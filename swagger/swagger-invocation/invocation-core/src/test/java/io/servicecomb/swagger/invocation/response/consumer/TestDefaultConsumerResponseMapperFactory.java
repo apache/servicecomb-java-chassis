@@ -16,8 +16,37 @@
  */
 package io.servicecomb.swagger.invocation.response.consumer;
 
-import io.servicecomb.swagger.invocation.Response;
+import org.junit.Assert;
+import org.junit.BeforeClass;
+import org.junit.Test;
 
-public interface ConsumerResponseMapper {
-  Object mapResponse(Response response);
+import io.servicecomb.swagger.invocation.Response;
+import io.servicecomb.swagger.invocation.converter.ConverterMgr;
+
+public class TestDefaultConsumerResponseMapperFactory {
+  static ConverterMgr mgr = new ConverterMgr();
+
+  static DefaultConsumerResponseMapperFactory factory = new DefaultConsumerResponseMapperFactory();
+
+  @BeforeClass
+  public static void setup() {
+    factory.setConverterMgr(mgr);
+  }
+
+  @Test
+  public void getOrder() {
+    Assert.assertEquals(Integer.MAX_VALUE, factory.getOrder());
+  }
+
+  @Test
+  public void isMatch() {
+    Assert.assertTrue(factory.isMatch(null, null));
+  }
+
+  @Test
+  public void createResponseMapper() {
+    ConsumerResponseMapper mapper = factory.createResponseMapper(null, Integer.class, String.class);
+    Object result = mapper.mapResponse(Response.ok(1));
+    Assert.assertEquals("1", result);
+  }
 }

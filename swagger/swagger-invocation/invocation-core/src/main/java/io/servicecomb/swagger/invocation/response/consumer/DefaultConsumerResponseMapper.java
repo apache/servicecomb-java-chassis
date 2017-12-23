@@ -19,16 +19,11 @@ package io.servicecomb.swagger.invocation.response.consumer;
 import io.servicecomb.swagger.invocation.Response;
 import io.servicecomb.swagger.invocation.converter.Converter;
 
-public class ConsumerResponseMapperCommon implements ConsumerResponseMapper {
+public class DefaultConsumerResponseMapper implements ConsumerResponseMapper {
   private Converter converter;
 
-  public ConsumerResponseMapperCommon(Converter converter) {
+  public DefaultConsumerResponseMapper(Converter converter) {
     this.converter = converter;
-  }
-
-  @Override
-  public Class<?> getResponseClass() {
-    return null;
   }
 
   @Override

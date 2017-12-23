@@ -16,8 +16,22 @@
  */
 package io.servicecomb.swagger.invocation.response.consumer;
 
-import io.servicecomb.swagger.invocation.Response;
+import java.lang.reflect.Type;
 
-public interface ConsumerResponseMapper {
-  Object mapResponse(Response response);
+import io.servicecomb.swagger.invocation.Response;
+import io.servicecomb.swagger.invocation.response.ResponseMapperFactorys;
+
+public class CseResponseConsumerResponseMapperFactory implements ConsumerResponseMapperFactory {
+  private static final ConsumerResponseMapper SAME = response -> response;
+
+  @Override
+  public boolean isMatch(Type swaggerType, Type consumerType) {
+    return Response.class.equals(consumerType);
+  }
+
+  @Override
+  public ConsumerResponseMapper createResponseMapper(ResponseMapperFactorys<ConsumerResponseMapper> factorys,
+      Type swaggerType, Type consumerType) {
+    return SAME;
+  }
 }
