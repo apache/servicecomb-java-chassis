@@ -30,7 +30,7 @@ import io.servicecomb.metrics.core.monitor.RegistryMonitor;
 
 @Component
 public class DefaultDataSource implements DataSource {
-  private static final String METRICS_POLLING_TIME = "servicecomb.metrics.polling.time";
+  private static final String METRICS_POLLING_TIME = "servicecomb.metrics.window_time";
 
   private final RegistryMonitor registryMonitor;
 
