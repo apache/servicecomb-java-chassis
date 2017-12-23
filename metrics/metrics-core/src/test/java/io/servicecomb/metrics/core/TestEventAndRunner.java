@@ -116,7 +116,7 @@ public class TestEventAndRunner {
 
     //check InstanceMetric
     Assert.assertEquals(model.getInstanceMetric().getWaitInQueue(), 1);
-    Assert.assertEquals(model.getInstanceMetric().getProducerMetric().getWaitInQueue(), 1);
+    Assert.assertEquals(model.getInstanceMetric().getProducerMetric().getWaitInQueue(), 0);
     Assert.assertEquals(model.getInstanceMetric().getProducerMetric().getLifeTimeInQueue().getCount(), 3);
     Assert.assertEquals(model.getInstanceMetric().getProducerMetric().getLifeTimeInQueue().getTotal(),
         900, 0);

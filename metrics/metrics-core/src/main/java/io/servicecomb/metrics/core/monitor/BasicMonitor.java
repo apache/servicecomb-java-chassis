@@ -17,6 +17,8 @@
 
 package io.servicecomb.metrics.core.monitor;
 
+import java.util.concurrent.TimeUnit;
+
 public class BasicMonitor {
 
   //for time-related monitor type, if stop poll value over one window time,
@@ -33,7 +35,7 @@ public class BasicMonitor {
 
   //Counting use System.nano get more precise time
   //so we need change unit to millisecond when ouput
-  public double convertNanosecondToMillisecond(long nanoValue){
-    return nanoValue * 0.000001;
+  public long convertNanosecondToMillisecond(long nanoValue) {
+    return TimeUnit.NANOSECONDS.toMillis(nanoValue);
   }
 }

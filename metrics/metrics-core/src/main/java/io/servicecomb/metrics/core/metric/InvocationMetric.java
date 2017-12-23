@@ -41,4 +41,16 @@ public class InvocationMetric {
     this.prefix = prefix;
     this.waitInQueue = waitInQueue;
   }
+
+  public InstanceCalculationMetric merge(InstanceCalculationMetric metric) {
+    return new InstanceCalculationMetric(metric.getTotalWaitInQueue() + waitInQueue,
+        metric.getProducerWaitInQueue(),
+        metric.getConsumerMetrics(), metric.getProducerMetrics(),
+        metric.getLifeTimeInQueue(),
+        metric.getExecutionTime(),
+        metric.getConsumerLatency(),
+        metric.getProducerLatency(),
+        metric.getConsumerCall(),
+        metric.getProducerCall());
+  }
 }

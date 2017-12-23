@@ -23,17 +23,17 @@ import java.util.Map;
 public class TimerMetric {
   private final String prefix;
 
-  private final double total;
+  private final long total;
 
   private final long count;
 
   private final double average;
 
-  private final double min;
+  private final long min;
 
-  private final double max;
+  private final long max;
 
-  public double getTotal() {
+  public long getTotal() {
     return total;
   }
 
@@ -45,11 +45,11 @@ public class TimerMetric {
     return average;
   }
 
-  public double getMin() {
+  public long getMin() {
     return min;
   }
 
-  public double getMax() {
+  public long getMax() {
     return max;
   }
 
@@ -57,7 +57,7 @@ public class TimerMetric {
     this(prefix, 0, 0, 0, 0);
   }
 
-  public TimerMetric(String prefix, double total, long count, double min, double max) {
+  public TimerMetric(String prefix, long total, long count, long min, long max) {
     this.prefix = prefix;
     this.total = total;
     this.count = count;
@@ -75,11 +75,11 @@ public class TimerMetric {
         getMin(this.min, metric.min), getMax(this.max, metric.max));
   }
 
-  private double getMin(double value1, double value2) {
+  private long getMin(long value1, long value2) {
     return value1 == 0 || (value2 != 0 && value2 < value1) ? value2 : value1;
   }
 
-  private double getMax(double value1, double value2) {
+  private long getMax(long value1, long value2) {
     return value2 > value1 ? value2 : value1;
   }
 
