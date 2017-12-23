@@ -54,6 +54,20 @@ public class ProducerInvocationMetric extends InvocationMetric {
     this.producerCall = producerCall;
   }
 
+  @Override
+  public InstanceCalculationMetric merge(InstanceCalculationMetric metric) {
+    metric.getProducerMetrics().put(this.getOperationName(), this);
+    return new InstanceCalculationMetric(metric.getTotalWaitInQueue() + getWaitInQueue(),
+        metric.getProducerWaitInQueue() + getWaitInQueue(),
+        metric.getConsumerMetrics(), metric.getProducerMetrics(),
+        metric.getLifeTimeInQueue().merge(lifeTimeInQueue),
+        metric.getExecutionTime().merge(executionTime),
+        metric.getConsumerLatency(),
+        metric.getProducerLatency().merge(producerLatency),
+        metric.getConsumerCall(),
+        metric.getProducerCall().merge(producerCall));
+  }
+
   public Map<String, Number> toMap() {
     Map<String, Number> metrics = new HashMap<>();
     metrics.put(getPrefix() + ".waitInQueue.count", getWaitInQueue());

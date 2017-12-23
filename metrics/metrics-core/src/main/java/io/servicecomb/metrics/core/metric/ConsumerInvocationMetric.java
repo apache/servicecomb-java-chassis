@@ -40,6 +40,20 @@ public class ConsumerInvocationMetric extends InvocationMetric {
     this.consumerCall = consumerCall;
   }
 
+  @Override
+  public InstanceCalculationMetric merge(InstanceCalculationMetric metric) {
+    metric.getConsumerMetrics().put(this.getOperationName(), this);
+    return new InstanceCalculationMetric(metric.getTotalWaitInQueue(),
+        metric.getProducerWaitInQueue(),
+        metric.getConsumerMetrics(), metric.getProducerMetrics(),
+        metric.getLifeTimeInQueue(),
+        metric.getExecutionTime(),
+        metric.getConsumerLatency().merge(consumerLatency),
+        metric.getProducerLatency(),
+        metric.getConsumerCall().merge(consumerCall),
+        metric.getProducerCall());
+  }
+
   public Map<String, Number> toMap() {
     Map<String, Number> metrics = new HashMap<>();
     metrics.putAll(consumerLatency.toMap());

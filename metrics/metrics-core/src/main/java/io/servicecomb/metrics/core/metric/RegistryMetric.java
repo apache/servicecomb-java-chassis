@@ -44,46 +44,21 @@ public class RegistryMetric {
 
   public RegistryMetric(SystemMetric systemMetric, Map<String, InvocationMetric> invocationMetrics) {
     //sum instance level metric
-    consumerMetrics = new HashMap<>();
-    producerMetrics = new HashMap<>();
-
-    //TODO:current java chassis unable know invocation type before starting process,totalWaitInQueue = ProducerInvocation + UnknownTypeInvocation
-    long totalWaitInQueue = 0;
-    long producerWaitInQueue = 0;
-    TimerMetric lifeTimeInQueue = new TimerMetric(MetricsConst.INSTANCE_PRODUCER_PREFIX + ".lifeTimeInQueue");
-    TimerMetric executionTime = new TimerMetric(MetricsConst.INSTANCE_PRODUCER_PREFIX + ".executionTime");
-    TimerMetric consumerLatency = new TimerMetric(MetricsConst.INSTANCE_CONSUMER_PREFIX + ".consumerLatency");
-    TimerMetric producerLatency = new TimerMetric(MetricsConst.INSTANCE_PRODUCER_PREFIX + ".producerLatency");
-    CallMetric consumerCall = new CallMetric(MetricsConst.INSTANCE_CONSUMER_PREFIX + ".consumerCall");
-    CallMetric producerCall = new CallMetric(MetricsConst.INSTANCE_PRODUCER_PREFIX + ".producerCall");
-
+    InstanceCalculationMetric calculationMetric = new InstanceCalculationMetric();
     for (InvocationMetric metric : invocationMetrics.values()) {
-      if (metric != null) {
-        if (metric instanceof ConsumerInvocationMetric) {
-          ConsumerInvocationMetric consumerMetric = (ConsumerInvocationMetric) metric;
-          consumerLatency = consumerLatency.merge(consumerMetric.getConsumerLatency());
-          consumerCall = consumerCall.merge(consumerMetric.getConsumerCall());
-          consumerMetrics.put(metric.getOperationName(), consumerMetric);
-        } else if (metric instanceof ProducerInvocationMetric) {
-          ProducerInvocationMetric producerMetric = (ProducerInvocationMetric) metric;
-          totalWaitInQueue += producerMetric.getWaitInQueue();
-          producerWaitInQueue += producerMetric.getWaitInQueue();
-          lifeTimeInQueue = lifeTimeInQueue.merge(producerMetric.getLifeTimeInQueue());
-          executionTime = executionTime.merge(producerMetric.getExecutionTime());
-          producerLatency = producerLatency.merge(producerMetric.getProducerLatency());
-          producerCall = producerCall.merge(producerMetric.getProducerCall());
-          producerMetrics.put(metric.getOperationName(), producerMetric);
-        } else {
-          totalWaitInQueue += metric.getWaitInQueue();
-        }
-      }
+      calculationMetric = metric.merge(calculationMetric);
     }
 
-    instanceMetric = new InstanceMetric(totalWaitInQueue, systemMetric,
+    this.instanceMetric = new InstanceMetric(calculationMetric.getTotalWaitInQueue(), systemMetric,
         new ConsumerInvocationMetric("instance", MetricsConst.INSTANCE_CONSUMER_PREFIX,
-            producerWaitInQueue, consumerLatency, consumerCall),
+            calculationMetric.getProducerWaitInQueue(),
+            calculationMetric.getConsumerLatency(), calculationMetric.getConsumerCall()),
         new ProducerInvocationMetric("instance", MetricsConst.INSTANCE_PRODUCER_PREFIX,
-            totalWaitInQueue, lifeTimeInQueue, executionTime, producerLatency, producerCall));
+            calculationMetric.getProducerWaitInQueue(),
+            calculationMetric.getLifeTimeInQueue(), calculationMetric.getExecutionTime(),
+            calculationMetric.getProducerLatency(), calculationMetric.getProducerCall()));
+    this.producerMetrics = calculationMetric.getProducerMetrics();
+    this.consumerMetrics = calculationMetric.getConsumerMetrics();
   }
 
   public Map<String, Number> toMap() {
