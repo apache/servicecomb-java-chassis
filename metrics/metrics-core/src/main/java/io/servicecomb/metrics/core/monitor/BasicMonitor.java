@@ -30,4 +30,10 @@ public class BasicMonitor {
   public long adjustValue(long value) {
     return value < 0 ? 0 : value;
   }
+
+  //Counting use System.nano get more precise time
+  //so we need change unit to millisecond when ouput
+  public double convertNanosecondToMillisecond(long nanoValue){
+    return nanoValue * 0.000001;
+  }
 }

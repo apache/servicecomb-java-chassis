@@ -27,12 +27,15 @@ import io.servicecomb.metrics.core.metric.TimerMetric;
 public class TimerMonitor extends BasicMonitor {
   private final String prefix;
 
+  //nanosecond sum
   private final StepCounter total;
 
   private final StepCounter count;
 
+  //nanosecond min
   private final MinGauge min;
 
+  //nanosecond max
   private final MaxGauge max;
 
   public void update(long value) {
@@ -54,9 +57,9 @@ public class TimerMonitor extends BasicMonitor {
 
   public TimerMetric toTimerMetric(int windowTimeIndex) {
     return new TimerMetric(this.prefix,
-        this.adjustValue(total.getCount(windowTimeIndex)),
+        this.convertNanosecondToMillisecond(this.adjustValue(total.getCount(windowTimeIndex))),
         this.adjustValue(count.getCount(windowTimeIndex)),
-        this.adjustValue(min.getValue(windowTimeIndex)),
-        this.adjustValue(max.getValue(windowTimeIndex)));
+        this.convertNanosecondToMillisecond(this.adjustValue(min.getValue(windowTimeIndex))),
+        this.convertNanosecondToMillisecond(this.adjustValue(max.getValue(windowTimeIndex))));
   }
 }
