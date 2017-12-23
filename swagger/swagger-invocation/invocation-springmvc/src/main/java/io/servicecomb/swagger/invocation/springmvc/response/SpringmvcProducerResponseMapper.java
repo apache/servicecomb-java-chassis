@@ -23,18 +23,17 @@ import javax.ws.rs.core.Response.StatusType;
 
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Component;
 
 import io.servicecomb.swagger.invocation.Response;
 import io.servicecomb.swagger.invocation.context.HttpStatus;
 import io.servicecomb.swagger.invocation.response.Headers;
 import io.servicecomb.swagger.invocation.response.producer.ProducerResponseMapper;
 
-@Component
 public class SpringmvcProducerResponseMapper implements ProducerResponseMapper {
-  @Override
-  public Class<?> getResponseClass() {
-    return ResponseEntity.class;
+  private ProducerResponseMapper realMapper;
+
+  public SpringmvcProducerResponseMapper(ProducerResponseMapper realMapper) {
+    this.realMapper = realMapper;
   }
 
   @SuppressWarnings("unchecked")
@@ -44,9 +43,16 @@ public class SpringmvcProducerResponseMapper implements ProducerResponseMapper {
 
     StatusType responseStatus = new HttpStatus(springmvcResponse.getStatusCode().value(),
         springmvcResponse.getStatusCode().getReasonPhrase());
-    Response cseResponse = Response.status(responseStatus).entity(springmvcResponse.getBody());
-    HttpHeaders headers = springmvcResponse.getHeaders();
 
+    Response cseResponse = null;
+    if (HttpStatus.isSuccess(responseStatus)) {
+      cseResponse = realMapper.mapResponse(responseStatus, springmvcResponse.getBody());
+    } else {
+      // not support fail response mapper now
+      cseResponse = Response.status(responseStatus).entity(springmvcResponse.getBody());
+    }
+
+    HttpHeaders headers = springmvcResponse.getHeaders();
     Headers cseHeaders = cseResponse.getHeaders();
     for (Entry<String, List<String>> entry : headers.entrySet()) {
       if (entry.getValue() == null || entry.getValue().isEmpty()) {
