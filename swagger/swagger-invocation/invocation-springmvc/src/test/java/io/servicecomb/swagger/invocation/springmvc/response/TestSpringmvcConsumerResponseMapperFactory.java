@@ -19,6 +19,7 @@ package io.servicecomb.swagger.invocation.springmvc.response;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 import org.hamcrest.Matchers;
 import org.junit.Assert;
@@ -39,6 +40,10 @@ public class TestSpringmvcConsumerResponseMapperFactory {
 
   ResponseMapperFactorys<ConsumerResponseMapper> factorys =
       new ResponseMapperFactorys<>(ConsumerResponseMapperFactory.class, converterMgr);
+
+  public CompletableFuture<ResponseEntity<String[]>> asyncResponseEntityMethod() {
+    return null;
+  }
 
   public ResponseEntity<String[]> responseEntity() {
     return null;
@@ -72,6 +77,21 @@ public class TestSpringmvcConsumerResponseMapperFactory {
 
     ConsumerResponseMapper mapper = factory
         .createResponseMapper(factorys, listMethod.getGenericReturnType(), responseEntityMethod.getGenericReturnType());
+    Assert.assertThat(mapper, Matchers.instanceOf(SpringmvcConsumerResponseMapper.class));
+
+    Response response = Response.ok(Arrays.asList("a", "b"));
+    @SuppressWarnings("unchecked")
+    ResponseEntity<String[]> responseEntity = (ResponseEntity<String[]>) mapper.mapResponse(response);
+    Assert.assertThat(responseEntity.getBody(), Matchers.arrayContaining("a", "b"));
+  }
+
+  @Test
+  public void asyncResponseEntity() {
+    Method responseEntityMethod = ReflectUtils.findMethod(this.getClass(), "asyncResponseEntityMethod");
+    Method listMethod = ReflectUtils.findMethod(this.getClass(), "list");
+
+    ConsumerResponseMapper mapper = factorys
+        .createResponseMapper(listMethod.getGenericReturnType(), responseEntityMethod.getGenericReturnType());
     Assert.assertThat(mapper, Matchers.instanceOf(SpringmvcConsumerResponseMapper.class));
 
     Response response = Response.ok(Arrays.asList("a", "b"));
