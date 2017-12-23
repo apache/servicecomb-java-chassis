@@ -15,22 +15,28 @@
 ## limitations under the License.
 ## ---------------------------------------------------------------------------
 
-# all interconnected microservices must belong to an application wth the same ID
-APPLICATION_ID: metricsPerfTest
-service_description:
-# name of the declaring microservice
-  name: demo
-  version: 0.0.1
-cse:
-  service:
-    registry:
-      address: http://127.0.0.1:30100
-  rest:
-    address: 0.0.0.0:7777
-
-servicecomb:
-  metrics:
-    #polling setting
-    polling:
-      #Time Unit is MILLISECONDS
-      time: 10000
+swagger: "2.0"
+info:
+  version: "1.0.0"
+  title: "MetricsPublisher"
+  x-java-interface: "io.servicecomb.metrics.core.publish.MetricsPublisher"
+basePath: "/metrics"
+consumes:
+- "application/json"
+produces:
+- "application/json"
+paths:
+  /{pollerIndex}:
+    get:
+      operationId: "metrics"
+      parameters:
+      - name: "pollerIndex"
+        in: "path"
+        required: true
+        type: "integer"
+        format: "int32"
+      responses:
+        200:
+          description: "response of 200"
+          schema:
+            type: "string"
