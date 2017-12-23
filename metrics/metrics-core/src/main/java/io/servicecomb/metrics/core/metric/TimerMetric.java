@@ -20,10 +20,7 @@ package io.servicecomb.metrics.core.metric;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
 public class TimerMetric {
-  @JsonIgnore
   private final String prefix;
 
   private final double total;

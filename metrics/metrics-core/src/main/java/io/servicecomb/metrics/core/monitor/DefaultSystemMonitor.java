@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package io.servicecomb.metrics.core.extra;
+package io.servicecomb.metrics.core.monitor;
 
 import java.lang.management.ManagementFactory;
 import java.lang.management.MemoryMXBean;
@@ -24,8 +24,10 @@ import java.lang.management.ThreadMXBean;
 
 import org.springframework.stereotype.Component;
 
+import io.servicecomb.metrics.core.metric.SystemMetric;
+
 @Component
-public class DefaultSystemResource implements SystemResource {
+public class DefaultSystemMonitor implements SystemMonitor {
 
   private final OperatingSystemMXBean systemMXBean;
 
@@ -33,12 +35,12 @@ public class DefaultSystemResource implements SystemResource {
 
   private final MemoryMXBean memoryMXBean;
 
-  public DefaultSystemResource() {
+  public DefaultSystemMonitor() {
     this(ManagementFactory.getOperatingSystemMXBean(), ManagementFactory.getThreadMXBean(),
         ManagementFactory.getMemoryMXBean());
   }
 
-  public DefaultSystemResource(OperatingSystemMXBean systemMXBean, ThreadMXBean threadMXBean,
+  public DefaultSystemMonitor(OperatingSystemMXBean systemMXBean, ThreadMXBean threadMXBean,
       MemoryMXBean memoryMXBean) {
     this.systemMXBean = systemMXBean;
     this.threadMXBean = threadMXBean;
@@ -93,5 +95,12 @@ public class DefaultSystemResource implements SystemResource {
   @Override
   public long getNonHeapUsed() {
     return memoryMXBean.getNonHeapMemoryUsage().getUsed();
+  }
+
+  @Override
+  public SystemMetric toSystemMetric() {
+    return new SystemMetric(getCpuLoad(),
+        getCpuRunningThreads(), getHeapInit(), getHeapMax(), getHeapCommit(), getHeapUsed(),
+        getNonHeapInit(), getNonHeapMax(), getNonHeapCommit(), getNonHeapUsed());
   }
 }

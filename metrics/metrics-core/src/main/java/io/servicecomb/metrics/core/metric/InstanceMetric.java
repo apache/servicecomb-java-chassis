@@ -20,12 +20,18 @@ package io.servicecomb.metrics.core.metric;
 public class InstanceMetric {
   private final long waitInQueue;
 
+  private final SystemMetric systemMetric;
+
   private final ConsumerInvocationMetric consumerMetric;
 
   private final ProducerInvocationMetric producerMetric;
 
   public long getWaitInQueue() {
     return waitInQueue;
+  }
+
+  public SystemMetric getSystemMetric() {
+    return systemMetric;
   }
 
   public ConsumerInvocationMetric getConsumerMetric() {
@@ -36,15 +42,11 @@ public class InstanceMetric {
     return producerMetric;
   }
 
-  public InstanceMetric() {
-    waitInQueue = 0;
-    consumerMetric = null;
-    producerMetric = null;
-  }
-
-  public InstanceMetric(long waitInQueue, ConsumerInvocationMetric consumerMetric,
+  public InstanceMetric(long waitInQueue, SystemMetric systemMetric,
+      ConsumerInvocationMetric consumerMetric,
       ProducerInvocationMetric producerMetric) {
     this.waitInQueue = waitInQueue;
+    this.systemMetric = systemMetric;
     this.consumerMetric = consumerMetric;
     this.producerMetric = producerMetric;
   }

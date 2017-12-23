@@ -15,9 +15,11 @@
  * limitations under the License.
  */
 
-package io.servicecomb.metrics.core.extra;
+package io.servicecomb.metrics.core.monitor;
 
-public interface SystemResource {
+import io.servicecomb.metrics.core.metric.SystemMetric;
+
+public interface SystemMonitor {
   double getCpuLoad();
 
   int getCpuRunningThreads();
@@ -37,4 +39,6 @@ public interface SystemResource {
   long getNonHeapCommit();
 
   long getNonHeapUsed();
+
+  SystemMetric toSystemMetric();
 }

@@ -17,12 +17,9 @@
 
 package io.servicecomb.metrics.core.metric;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
 public class InvocationMetric {
   private final String operationName;
 
-  @JsonIgnore
   private final String prefix;
 
   private final long waitInQueue;
