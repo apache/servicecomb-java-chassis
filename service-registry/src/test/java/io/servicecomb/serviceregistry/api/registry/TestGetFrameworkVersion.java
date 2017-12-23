@@ -17,40 +17,30 @@
 
 package io.servicecomb.serviceregistry.api.registry;
 
+import java.io.FileNotFoundException;
+
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-public class TestFramework {
+public class TestGetFrameworkVersion {
 
-  Framework framework = null;
+  GetFrameworkVersion getFrameworkVersion = null;
 
   @Before
   public void setUp() throws Exception {
-    framework = new Framework();
+    getFrameworkVersion = new GetFrameworkVersion();
   }
 
   @After
   public void tearDown() throws Exception {
-    framework = null;
+    getFrameworkVersion = null;
   }
 
   @Test
-  public void testDefaultValues() {
-    Assert.assertNull(framework.getName());
-    Assert.assertNull(framework.getVersion());
+  public void test() throws FileNotFoundException {
+    Assert.assertNotEquals("0.0.0", getFrameworkVersion.getFrameworkVersion());
   }
 
-  @Test
-  public void testInitializedValues() {
-    initFramework(); //Initialize the Values
-    Assert.assertEquals("JAVA-CHASSIS", framework.getName());
-    Assert.assertEquals("x.x.x", framework.getVersion());
-  }
-
-  private void initFramework() {
-    framework.setName("JAVA-CHASSIS");
-    framework.setVersion("x.x.x");
-  }
 }

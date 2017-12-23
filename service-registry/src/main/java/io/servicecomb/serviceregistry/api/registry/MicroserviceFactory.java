@@ -71,7 +71,7 @@ public class MicroserviceFactory {
 
     Framework framework = new Framework();
     framework.setName(configuration.getString(CONFIG_MICROSERVICE_DEVELOPMENT_FRAMEWORK_KEY, DEFAULT_VALUE));
-    GetFrameworkVersionFromXml version = new GetFrameworkVersionFromXml();
+    GetFrameworkVersion version = new GetFrameworkVersion();
     framework.setVersion(version.getFrameworkVersion());
     microservice.setFramework(framework);
     microservice.setRegisteredBy(configuration.getString(CONFIG_MICROSERVICE_REGISTER_WAY_KEY, DEFAULT_VALUE));

@@ -81,7 +81,7 @@ public class TestMicroService {
     Assert.assertEquals(1, oMicroservice.getSchemas().size());
     Assert.assertEquals(1, oMicroservice.getPaths().size());
     Assert.assertEquals("JAVA-CHASSIS", oMicroservice.getFramework().getName());
-    Assert.assertEquals("0.4.0", oMicroservice.getFramework().getVersion());
+    Assert.assertEquals("x.x.x", oMicroservice.getFramework().getVersion());
     Assert.assertEquals("SDK", oMicroservice.getRegisteredBy());
   }
 
@@ -99,7 +99,7 @@ public class TestMicroService {
     oMicroservice.setSchemas(oListSchemas);
     oMicroservice.getPaths().add(new BasePath());
     framework.setName("JAVA-CHASSIS");
-    framework.setVersion("0.4.0");
+    framework.setVersion("x.x.x");
     oMicroservice.setFramework(framework);
     oMicroservice.setRegisteredBy("SDK");
   }

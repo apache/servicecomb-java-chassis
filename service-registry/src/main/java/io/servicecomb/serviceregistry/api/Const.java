@@ -148,6 +148,10 @@ public final class Const {
   public static final String PATH_CHECKSESSION = "checksession";
 
   public static final String URL_PREFIX = "urlPrefix";
-  
+
   public static final String INSTANCE_PUBKEY_PRO = "publickey";
+
+  public static final String GROUPID = "io.servicecomb";
+
+  public static final String ARTIFACTID = "java-chassis";
 }

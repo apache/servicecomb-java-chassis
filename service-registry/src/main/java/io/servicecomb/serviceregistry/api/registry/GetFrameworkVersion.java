@@ -17,40 +17,21 @@
 
 package io.servicecomb.serviceregistry.api.registry;
 
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import com.fasterxml.jackson.core.Version;
+import com.fasterxml.jackson.core.util.VersionUtil;
 
-public class TestFramework {
+import io.servicecomb.serviceregistry.api.Const;
 
-  Framework framework = null;
+/**
+ * Created by on 2017/12/22.
+ */
+public class GetFrameworkVersion {
 
-  @Before
-  public void setUp() throws Exception {
-    framework = new Framework();
+  public String getFrameworkVersion() {
+    ClassLoader loader = Thread.currentThread().getContextClassLoader();
+    @SuppressWarnings("deprecation")
+	Version version = VersionUtil.mavenVersionFor(loader, Const.GROUPID, Const.ARTIFACTID);
+    return version.toString();
   }
 
-  @After
-  public void tearDown() throws Exception {
-    framework = null;
-  }
-
-  @Test
-  public void testDefaultValues() {
-    Assert.assertNull(framework.getName());
-    Assert.assertNull(framework.getVersion());
-  }
-
-  @Test
-  public void testInitializedValues() {
-    initFramework(); //Initialize the Values
-    Assert.assertEquals("JAVA-CHASSIS", framework.getName());
-    Assert.assertEquals("x.x.x", framework.getVersion());
-  }
-
-  private void initFramework() {
-    framework.setName("JAVA-CHASSIS");
-    framework.setVersion("x.x.x");
-  }
 }
