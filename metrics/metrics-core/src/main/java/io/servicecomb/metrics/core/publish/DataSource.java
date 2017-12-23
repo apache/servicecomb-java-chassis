@@ -47,8 +47,8 @@ public interface DataSource {
    * windowTimeIndex = 1 will return result of the setting 2000(2 second)
    *
    * there are three monitor of max,min,total
-   * 0----------1----------2----------            <-time line (second)
-   *   100,200    300,400                         <-value record
+   * 0----------1----------2----------3----------  <-time line (second)
+   *   100,200    300,400                          <-value record
    *
    *                 ↑ getRegistryMetric(0) will return max=200 min=100 total=300
    *                   getRegistryMetric(1) will return max=0 min=0 total=0
