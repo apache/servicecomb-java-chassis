@@ -16,28 +16,23 @@
  */
 package io.servicecomb.swagger.invocation.jaxrs.response;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
+import java.lang.reflect.Type;
 
-import javax.ws.rs.core.Response.ResponseBuilder;
+import javax.ws.rs.core.Response;
 
-import io.servicecomb.swagger.invocation.Response;
+import io.servicecomb.swagger.invocation.response.ResponseMapperFactorys;
 import io.servicecomb.swagger.invocation.response.consumer.ConsumerResponseMapper;
+import io.servicecomb.swagger.invocation.response.consumer.ConsumerResponseMapperFactory;
 
-public class JaxrsConsumerResponseMapper implements ConsumerResponseMapper {
+public class JaxrsConsumerResponseMapperFactory implements ConsumerResponseMapperFactory {
   @Override
-  public Object mapResponse(Response response) {
-    ResponseBuilder responseBuilder =
-        javax.ws.rs.core.Response.status(response.getStatus()).entity(response.getResult());
+  public boolean isMatch(Type swaggerType, Type consumerType) {
+    return Response.class.equals(consumerType);
+  }
 
-    Map<String, List<Object>> headers = response.getHeaders().getHeaderMap();
-    if (headers != null) {
-      for (Entry<String, List<Object>> entry : headers.entrySet()) {
-        responseBuilder.header(entry.getKey(), entry.getValue());
-      }
-    }
-
-    return responseBuilder.build();
+  @Override
+  public ConsumerResponseMapper createResponseMapper(ResponseMapperFactorys<ConsumerResponseMapper> factorys,
+      Type swaggerType, Type consumerType) {
+    return new JaxrsConsumerResponseMapper();
   }
 }
