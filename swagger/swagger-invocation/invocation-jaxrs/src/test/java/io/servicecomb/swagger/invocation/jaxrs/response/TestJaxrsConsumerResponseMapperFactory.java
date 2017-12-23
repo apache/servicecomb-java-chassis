@@ -16,28 +16,28 @@
  */
 package io.servicecomb.swagger.invocation.jaxrs.response;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
+import javax.ws.rs.core.Response;
 
-import javax.ws.rs.core.Response.ResponseBuilder;
+import org.hamcrest.Matchers;
+import org.junit.Assert;
+import org.junit.Test;
 
-import io.servicecomb.swagger.invocation.Response;
-import io.servicecomb.swagger.invocation.response.consumer.ConsumerResponseMapper;
+public class TestJaxrsConsumerResponseMapperFactory {
+  JaxrsConsumerResponseMapperFactory factory = new JaxrsConsumerResponseMapperFactory();
 
-public class JaxrsConsumerResponseMapper implements ConsumerResponseMapper {
-  @Override
-  public Object mapResponse(Response response) {
-    ResponseBuilder responseBuilder =
-        javax.ws.rs.core.Response.status(response.getStatus()).entity(response.getResult());
+  @Test
+  public void isMatch_true() {
+    Assert.assertTrue(factory.isMatch(null, Response.class));
+  }
 
-    Map<String, List<Object>> headers = response.getHeaders().getHeaderMap();
-    if (headers != null) {
-      for (Entry<String, List<Object>> entry : headers.entrySet()) {
-        responseBuilder.header(entry.getKey(), entry.getValue());
-      }
-    }
+  @Test
+  public void isMatch_false() {
+    Assert.assertFalse(factory.isMatch(null, String.class));
+  }
 
-    return responseBuilder.build();
+  @Test
+  public void createResponseMapper() {
+    Assert.assertThat(factory.createResponseMapper(null, null, null),
+        Matchers.instanceOf(JaxrsConsumerResponseMapper.class));
   }
 }
