@@ -30,7 +30,8 @@ cse:
 
 servicecomb:
   metrics:
-    #polling setting
-    polling:
-      #Support Muti-Polling Time (MILLISECONDS) like 10000,60000 (10s and 60s), Use pollerIndex make selection,start from 0
-      time: 10000
+    #Support Muti-WindowTime (MILLISECONDS) like 10000,60000 (10s and 60s), Use WindowTimeIndex make selection,start from 0
+    #Default value is single WindowTime : 5000 (5 second)
+    #Will direct set value of "servo.pollers"
+    #More info can be found here : https://github.com/Netflix/servo/wiki/Getting-Started -> Polling Intervals Chapter
+    window_time: 5000
