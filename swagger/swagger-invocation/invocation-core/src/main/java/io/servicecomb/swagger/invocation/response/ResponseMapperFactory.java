@@ -16,42 +16,20 @@
  */
 package io.servicecomb.swagger.invocation.response;
 
-import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.util.HashMap;
-import java.util.Map;
 
-import javax.inject.Inject;
-
-import io.servicecomb.swagger.invocation.converter.Converter;
 import io.servicecomb.swagger.invocation.converter.ConverterMgr;
 
-public abstract class ResponseMapperFactory<MAPPER> {
-  @Inject
-  protected ConverterMgr converterMgr;
-
-  // 特殊的应答，比如ResponseEntity/cse Response之类
-  protected Map<Class<?>, MAPPER> mappers = new HashMap<>();
-
-  public void setConverterMgr(ConverterMgr converterMgr) {
-    this.converterMgr = converterMgr;
+public interface ResponseMapperFactory<MAPPER> {
+  default int getOrder() {
+    return 0;
   }
 
-  public MAPPER createResponseMapper(Type src, Type target) {
-    Type type = choose(src, target);
-    if (ParameterizedType.class.isAssignableFrom(type.getClass())) {
-      type = ((ParameterizedType) type).getRawType();
-    }
-    MAPPER mapper = mappers.get(type);
-    if (mapper != null) {
-      return mapper;
-    }
-
-    Converter converter = converterMgr.findConverter(src, target);
-    return doCreateResponseMapper(converter);
+  default void setConverterMgr(ConverterMgr converterMgr) {
   }
 
-  protected abstract Type choose(Type src, Type target);
+  boolean isMatch(Type swaggerType, Type providerType);
 
-  protected abstract MAPPER doCreateResponseMapper(Converter converter);
+  MAPPER createResponseMapper(ResponseMapperFactorys<MAPPER> factorys, Type swaggerType,
+      Type providerType);
 }
