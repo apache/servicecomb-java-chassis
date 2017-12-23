@@ -33,6 +33,8 @@ import io.servicecomb.swagger.invocation.arguments.consumer.ConsumerArgumentsMap
 import io.servicecomb.swagger.invocation.arguments.consumer.ConsumerArgumentsMapperFactory;
 import io.servicecomb.swagger.invocation.arguments.producer.ProducerArgumentsMapper;
 import io.servicecomb.swagger.invocation.arguments.producer.ProducerArgumentsMapperFactory;
+import io.servicecomb.swagger.invocation.converter.ConverterMgr;
+import io.servicecomb.swagger.invocation.response.ResponseMapperFactorys;
 import io.servicecomb.swagger.invocation.response.consumer.ConsumerResponseMapper;
 import io.servicecomb.swagger.invocation.response.consumer.ConsumerResponseMapperFactory;
 import io.servicecomb.swagger.invocation.response.producer.ProducerResponseMapper;
@@ -45,14 +47,20 @@ public class SwaggerEnvironment {
   @Inject
   private ProducerArgumentsMapperFactory producerArgumentsFactory;
 
-  @Inject
-  private ProducerResponseMapperFactory producerResponseMapperFactory;
+  private ResponseMapperFactorys<ProducerResponseMapper> producerResponseMapperFactorys =
+      new ResponseMapperFactorys<>(ProducerResponseMapperFactory.class);
 
   @Inject
   private ConsumerArgumentsMapperFactory consumerArgumentsFactory;
 
+  private ResponseMapperFactorys<ConsumerResponseMapper> consumerResponseMapperFactorys =
+      new ResponseMapperFactorys<>(ConsumerResponseMapperFactory.class);
+
   @Inject
-  private ConsumerResponseMapperFactory consumerResponseMapperFactory;
+  public void setConverterMgr(ConverterMgr converterMgr) {
+    consumerResponseMapperFactorys.setConverterMgr(converterMgr);
+    producerResponseMapperFactorys.setConverterMgr(converterMgr);
+  }
 
   public ProducerArgumentsMapperFactory getProducerArgumentsFactory() {
     return producerArgumentsFactory;
@@ -62,28 +70,12 @@ public class SwaggerEnvironment {
     this.producerArgumentsFactory = producerArgumentsFactory;
   }
 
-  public ProducerResponseMapperFactory getProducerResponseMapperFactory() {
-    return producerResponseMapperFactory;
-  }
-
-  public void setProducerResponseMapperFactory(ProducerResponseMapperFactory producerResponseMapperFactory) {
-    this.producerResponseMapperFactory = producerResponseMapperFactory;
-  }
-
   public ConsumerArgumentsMapperFactory getConsumerArgumentsFactory() {
     return consumerArgumentsFactory;
   }
 
   public void setConsumerArgumentsFactory(ConsumerArgumentsMapperFactory consumerArgumentsFactory) {
     this.consumerArgumentsFactory = consumerArgumentsFactory;
-  }
-
-  public ConsumerResponseMapperFactory getConsumerResponseMapperFactory() {
-    return consumerResponseMapperFactory;
-  }
-
-  public void setConsumerResponseMapperFactory(ConsumerResponseMapperFactory consumerResponseMapperFactory) {
-    this.consumerResponseMapperFactory = consumerResponseMapperFactory;
   }
 
   public SwaggerConsumer createConsumer(Class<?> consumerIntf) {
@@ -109,7 +101,7 @@ public class SwaggerEnvironment {
 
       ConsumerArgumentsMapper argsMapper =
           consumerArgumentsFactory.createArgumentsMapper(swaggerMethod, consumerMethod);
-      ConsumerResponseMapper responseMapper = consumerResponseMapperFactory.createResponseMapper(
+      ConsumerResponseMapper responseMapper = consumerResponseMapperFactorys.createResponseMapper(
           swaggerMethod.getGenericReturnType(),
           consumerMethod.getGenericReturnType());
 
@@ -148,9 +140,9 @@ public class SwaggerEnvironment {
 
       ProducerArgumentsMapper argsMapper = producerArgumentsFactory.createArgumentsMapper(swaggerMethod,
           producerMethod);
-      ProducerResponseMapper responseMapper = producerResponseMapperFactory.createResponseMapper(
-          producerMethod.getGenericReturnType(),
-          swaggerMethod.getGenericReturnType());
+      ProducerResponseMapper responseMapper = producerResponseMapperFactorys.createResponseMapper(
+          swaggerMethod.getGenericReturnType(),
+          producerMethod.getGenericReturnType());
 
       SwaggerProducerOperation op = new SwaggerProducerOperation();
       op.setName(methodName);

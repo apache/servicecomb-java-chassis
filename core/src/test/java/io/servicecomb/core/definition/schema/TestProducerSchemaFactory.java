@@ -47,7 +47,6 @@ import io.servicecomb.swagger.invocation.arguments.producer.ProducerArgumentsMap
 import io.servicecomb.swagger.invocation.converter.ConverterMgr;
 import io.servicecomb.swagger.invocation.exception.CommonExceptionData;
 import io.servicecomb.swagger.invocation.exception.InvocationException;
-import io.servicecomb.swagger.invocation.response.producer.ProducerResponseMapperFactory;
 
 public class TestProducerSchemaFactory {
   private static SwaggerEnvironment swaggerEnv = new BootstrapNormal().boot();
@@ -68,9 +67,6 @@ public class TestProducerSchemaFactory {
     RegistryUtils.setServiceRegistry(serviceRegistry);
 
     ConverterMgr converterMgr = new ConverterMgr();
-    ProducerResponseMapperFactory responseMapperFactory = new ProducerResponseMapperFactory();
-    responseMapperFactory.setConverterMgr(converterMgr);
-
     ProducerArgumentsMapperFactory producerArgsMapperFactory = new ProducerArgumentsMapperFactory();
     producerArgsMapperFactory.setConverterMgr(converterMgr);
 
