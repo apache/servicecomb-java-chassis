@@ -27,7 +27,7 @@ import io.servicecomb.metrics.core.metric.InvocationMetric;
 import io.servicecomb.metrics.core.metric.RegistryMetric;
 
 @Component
-public class RegistryMonitor {
+public class RegistryMonitor extends BasicMonitor {
 
   private final Map<String, InvocationMonitor> invocationMonitors;
 
@@ -39,10 +39,10 @@ public class RegistryMonitor {
     return invocationMonitors.computeIfAbsent(operationName, i -> new InvocationMonitor(operationName));
   }
 
-  public RegistryMetric toRegistryMetric(int pollerIndex) {
+  public RegistryMetric toRegistryMetric(int windowTimeIndex) {
     Map<String, InvocationMetric> invocationMetrics = new HashMap<>();
     for (InvocationMonitor monitor : invocationMonitors.values()) {
-      invocationMetrics.put(monitor.getOperationName(), monitor.toInvocationMetric(pollerIndex));
+      invocationMetrics.put(monitor.getOperationName(), monitor.toInvocationMetric(windowTimeIndex));
     }
     return new RegistryMetric(invocationMetrics);
   }

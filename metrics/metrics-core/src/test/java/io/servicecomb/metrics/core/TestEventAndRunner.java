@@ -39,13 +39,13 @@ public class TestEventAndRunner {
   @Test
   public void test() throws InterruptedException {
     RegistryMonitor monitor = new RegistryMonitor();
-    DefaultDataSource dataSource = new DefaultDataSource(monitor, "2000");
+    DefaultDataSource dataSource = new DefaultDataSource(monitor, "1000");
 
-    List<Long> intervals = dataSource.getAppliedPollingIntervals();
+    List<Long> intervals = dataSource.getAppliedWindowTime();
     Assert.assertEquals(intervals.size(), 1);
-    Assert.assertEquals(intervals.get(0).intValue(), 2000);
+    Assert.assertEquals(intervals.get(0).intValue(), 1000);
 
-    DefaultEventListenerManager manager = new DefaultEventListenerManager(monitor);
+    new DefaultEventListenerManager(monitor);
 
     //fun1 is a PRODUCER invocation call twice and all is completed
     EventUtils.triggerEvent(new InvocationStartedEvent("fun1", System.nanoTime()));
@@ -82,9 +82,10 @@ public class TestEventAndRunner {
     //fun4 is a invocation call only started and no processing start and finished
     EventUtils.triggerEvent(new InvocationStartedEvent("fun4", System.nanoTime()));
 
-    Thread.sleep(2000);
+    //sim lease one window time
+    Thread.sleep(1000);
 
-    RegistryMetric model = dataSource.getRegistryMetric(0);
+    RegistryMetric model = dataSource.getRegistryMetric();
 
     //check InstanceMetric
     Assert.assertEquals(model.getInstanceMetric().getWaitInQueue(), 1);
@@ -119,7 +120,7 @@ public class TestEventAndRunner {
     Assert.assertEquals(model.getInstanceMetric().getProducerMetric().getProducerLatency().getMin(),
         TimeUnit.MILLISECONDS.toNanos(300));
 
-    Assert.assertEquals(model.getInstanceMetric().getProducerMetric().getProducerCall().getTps(), 1.5, 0);
+    Assert.assertEquals(model.getInstanceMetric().getProducerMetric().getProducerCall().getTps(), 3, 0);
     Assert.assertEquals(model.getInstanceMetric().getProducerMetric().getProducerCall().getTotal(), 3);
 
     Assert.assertEquals(model.getInstanceMetric().getConsumerMetric().getConsumerLatency().getCount(), 1);
@@ -132,7 +133,7 @@ public class TestEventAndRunner {
     Assert.assertEquals(model.getInstanceMetric().getConsumerMetric().getConsumerLatency().getMin(),
         TimeUnit.MILLISECONDS.toNanos(300));
 
-    Assert.assertEquals(model.getInstanceMetric().getConsumerMetric().getConsumerCall().getTps(), 0.5, 0);
+    Assert.assertEquals(model.getInstanceMetric().getConsumerMetric().getConsumerCall().getTps(), 1, 0);
     Assert.assertEquals(model.getInstanceMetric().getConsumerMetric().getConsumerCall().getTotal(), 1);
 
     //check ProducerMetrics
@@ -167,7 +168,7 @@ public class TestEventAndRunner {
     Assert.assertEquals(model.getProducerMetrics().get("fun1").getProducerLatency().getMin(),
         TimeUnit.MILLISECONDS.toNanos(300));
 
-    Assert.assertEquals(model.getProducerMetrics().get("fun1").getProducerCall().getTps(), 1, 0);
+    Assert.assertEquals(model.getProducerMetrics().get("fun1").getProducerCall().getTps(), 2, 0);
     Assert.assertEquals(model.getProducerMetrics().get("fun1").getProducerCall().getTotal(), 2);
 
     //fun3
@@ -202,7 +203,7 @@ public class TestEventAndRunner {
     Assert.assertEquals(model.getProducerMetrics().get("fun3").getProducerLatency().getMin(),
         TimeUnit.MILLISECONDS.toNanos(0));
 
-    Assert.assertEquals(model.getProducerMetrics().get("fun3").getProducerCall().getTps(), 0.5, 0);
+    Assert.assertEquals(model.getProducerMetrics().get("fun3").getProducerCall().getTps(), 1, 0);
     Assert.assertEquals(model.getProducerMetrics().get("fun3").getProducerCall().getTotal(), 1);
 
     //check ConsumerMetrics
@@ -218,7 +219,7 @@ public class TestEventAndRunner {
     Assert.assertEquals(model.getConsumerMetrics().get("fun2").getConsumerLatency().getMin(),
         TimeUnit.MILLISECONDS.toNanos(300));
 
-    Assert.assertEquals(model.getConsumerMetrics().get("fun2").getConsumerCall().getTps(), 0.5, 0);
+    Assert.assertEquals(model.getConsumerMetrics().get("fun2").getConsumerCall().getTps(), 1, 0);
     Assert.assertEquals(model.getConsumerMetrics().get("fun2").getConsumerCall().getTotal(), 1);
 
     Map<String, Number> metrics = model.toMap();

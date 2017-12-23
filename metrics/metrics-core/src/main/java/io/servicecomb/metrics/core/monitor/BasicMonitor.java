@@ -15,16 +15,19 @@
  * limitations under the License.
  */
 
-package io.servicecomb.metrics.core.publish;
+package io.servicecomb.metrics.core.monitor;
 
-import java.util.List;
+public class BasicMonitor {
 
-import io.servicecomb.metrics.core.metric.RegistryMetric;
+  //for time-related monitor type, if stop poll value over one window time,
+  //the value may return -1 because servo can't known precise value of previous step
+  //so must change to return 0
+  public double adjustValue(double value) {
+    return value < 0 ? 0 : value;
+  }
 
-public interface DataSource {
-  RegistryMetric getRegistryMetric();
-
-  RegistryMetric getRegistryMetric(int windowTimeIndex);
-
-  List<Long> getAppliedWindowTime();
+  //same as above
+  public long adjustValue(long value) {
+    return value < 0 ? 0 : value;
+  }
 }
