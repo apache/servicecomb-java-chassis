@@ -33,12 +33,15 @@ public class TestMicroService {
 
   Map<String, String> oMapProperties = null;
 
+  Map<String, String> oMapFramework = null;
+
   List<String> oListSchemas = null;
 
   @Before
   public void setUp() throws Exception {
     oMicroservice = new Microservice();
     oMapProperties = new HashMap<>();
+    oMapFramework = new HashMap<>();
     oListSchemas = new ArrayList<>();
   }
 
@@ -61,6 +64,8 @@ public class TestMicroService {
     Assert.assertEquals(MicroserviceInstanceStatus.UP.toString(), oMicroservice.getStatus());
     Assert.assertNull(oMicroservice.getVersion());
     Assert.assertEquals(0, oMicroservice.getPaths().size());
+    Assert.assertEquals(0, oMicroservice.getFramework().size());
+    Assert.assertNull(oMicroservice.getRegisteredBy());
   }
 
   @Test
@@ -76,6 +81,9 @@ public class TestMicroService {
     Assert.assertEquals("fakeProxy", oMicroservice.getProperties().get("proxy"));
     Assert.assertEquals(1, oMicroservice.getSchemas().size());
     Assert.assertEquals(1, oMicroservice.getPaths().size());
+    Assert.assertEquals("JAVA-CHASSIS", oMicroservice.getFramework().get("name"));
+    Assert.assertEquals("0.4.0", oMicroservice.getFramework().get("version"));
+    Assert.assertEquals("SDK", oMicroservice.getRegisteredBy());
   }
 
   private void initMicroservice() {
@@ -91,5 +99,9 @@ public class TestMicroService {
     oMicroservice.setProperties(oMapProperties);
     oMicroservice.setSchemas(oListSchemas);
     oMicroservice.getPaths().add(new BasePath());
+    oMapFramework.put("name", "JAVA-CHASSIS");
+    oMapFramework.put("version", "0.4.0");
+    oMicroservice.setFramework(oMapFramework);
+    oMicroservice.setRegisteredBy("SDK");
   }
 }
