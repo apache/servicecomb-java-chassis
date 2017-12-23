@@ -42,13 +42,7 @@ public class RegistryMetric {
     return producerMetrics;
   }
 
-  public RegistryMetric() {
-    consumerMetrics = new HashMap<>();
-    producerMetrics = new HashMap<>();
-    instanceMetric = new InstanceMetric();
-  }
-
-  public RegistryMetric(Map<String, InvocationMetric> invocationMetrics) {
+  public RegistryMetric(SystemMetric systemMetric, Map<String, InvocationMetric> invocationMetrics) {
     //sum instance level metric
     consumerMetrics = new HashMap<>();
     producerMetrics = new HashMap<>();
@@ -85,7 +79,7 @@ public class RegistryMetric {
       }
     }
 
-    instanceMetric = new InstanceMetric(totalWaitInQueue,
+    instanceMetric = new InstanceMetric(totalWaitInQueue, systemMetric,
         new ConsumerInvocationMetric("instance", MetricsConst.INSTANCE_CONSUMER_PREFIX,
             producerWaitInQueue, consumerLatency, consumerCall),
         new ProducerInvocationMetric("instance", MetricsConst.INSTANCE_PRODUCER_PREFIX,

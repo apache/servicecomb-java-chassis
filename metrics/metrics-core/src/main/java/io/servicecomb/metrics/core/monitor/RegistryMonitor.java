@@ -21,6 +21,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import io.servicecomb.metrics.core.metric.InvocationMetric;
@@ -29,9 +30,13 @@ import io.servicecomb.metrics.core.metric.RegistryMetric;
 @Component
 public class RegistryMonitor extends BasicMonitor {
 
+  private final SystemMonitor systemMonitor;
+
   private final Map<String, InvocationMonitor> invocationMonitors;
 
-  public RegistryMonitor() {
+  @Autowired
+  public RegistryMonitor(SystemMonitor systemMonitor) {
+    this.systemMonitor = systemMonitor;
     this.invocationMonitors = new ConcurrentHashMap<>();
   }
 
@@ -44,6 +49,6 @@ public class RegistryMonitor extends BasicMonitor {
     for (InvocationMonitor monitor : invocationMonitors.values()) {
       invocationMetrics.put(monitor.getOperationName(), monitor.toInvocationMetric(windowTimeIndex));
     }
-    return new RegistryMetric(invocationMetrics);
+    return new RegistryMetric(systemMonitor.toSystemMetric(), invocationMetrics);
   }
 }
