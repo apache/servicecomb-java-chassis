@@ -16,8 +16,29 @@
  */
 package io.servicecomb.swagger.invocation.response.consumer;
 
+import org.junit.Assert;
+import org.junit.Test;
+
 import io.servicecomb.swagger.invocation.Response;
 
-public interface ConsumerResponseMapper {
-  Object mapResponse(Response response);
+public class TestCseResponseConsumerResponseMapperFactory {
+  CseResponseConsumerResponseMapperFactory factory = new CseResponseConsumerResponseMapperFactory();
+
+  @Test
+  public void isMatch_true() {
+    Assert.assertTrue(factory.isMatch(String.class, Response.class));
+  }
+
+  @Test
+  public void isMatch_false() {
+    Assert.assertFalse(factory.isMatch(String.class, String.class));
+  }
+
+  @Test
+  public void createResponseMapper() {
+    ConsumerResponseMapper mapper = factory.createResponseMapper(null, null, Response.class);
+    Response response = Response.ok(null);
+
+    Assert.assertSame(response, mapper.mapResponse(response));
+  }
 }
