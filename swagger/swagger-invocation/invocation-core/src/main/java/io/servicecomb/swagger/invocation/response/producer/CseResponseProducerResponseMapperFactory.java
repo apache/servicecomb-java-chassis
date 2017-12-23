@@ -16,10 +16,22 @@
  */
 package io.servicecomb.swagger.invocation.response.producer;
 
-import javax.ws.rs.core.Response.StatusType;
+import java.lang.reflect.Type;
 
 import io.servicecomb.swagger.invocation.Response;
+import io.servicecomb.swagger.invocation.response.ResponseMapperFactorys;
 
-public interface ProducerResponseMapper {
-  Response mapResponse(StatusType status, Object response);
+public class CseResponseProducerResponseMapperFactory implements ProducerResponseMapperFactory {
+  private static final ProducerResponseMapper SAME = (status, response) -> (Response) response;
+
+  @Override
+  public boolean isMatch(Type swaggerType, Type producerType) {
+    return producerType.equals(Response.class);
+  }
+
+  @Override
+  public ProducerResponseMapper createResponseMapper(ResponseMapperFactorys<ProducerResponseMapper> factorys,
+      Type swaggerType, Type producerType) {
+    return SAME;
+  }
 }

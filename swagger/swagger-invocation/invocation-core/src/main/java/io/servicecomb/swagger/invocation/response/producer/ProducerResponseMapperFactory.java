@@ -16,37 +16,8 @@
  */
 package io.servicecomb.swagger.invocation.response.producer;
 
-import java.lang.reflect.Type;
-import java.util.List;
-
-import javax.inject.Inject;
-
-import org.springframework.stereotype.Component;
-
-import io.servicecomb.swagger.invocation.converter.Converter;
 import io.servicecomb.swagger.invocation.response.ResponseMapperFactory;
 
-@Component
-public class ProducerResponseMapperFactory extends ResponseMapperFactory<ProducerResponseMapper> {
+public interface ProducerResponseMapperFactory extends ResponseMapperFactory<ProducerResponseMapper> {
 
-  @Inject
-  public void setMapperList(List<ProducerResponseMapper> mapperList) {
-    for (ProducerResponseMapper mapper : mapperList) {
-      if (mapper.getResponseClass() == null) {
-        throw new Error("response class must not be null");
-      }
-
-      mappers.put(mapper.getResponseClass(), mapper);
-    }
-  }
-
-  @Override
-  protected Type choose(Type src, Type target) {
-    return src;
-  }
-
-  @Override
-  protected ProducerResponseMapper doCreateResponseMapper(Converter converter) {
-    return new ProducerResponseMapperCommon(converter);
-  }
 }

@@ -16,10 +16,26 @@
  */
 package io.servicecomb.swagger.invocation.response.producer;
 
-import javax.ws.rs.core.Response.StatusType;
+import javax.ws.rs.core.Response.Status;
+
+import org.junit.Assert;
+import org.junit.Test;
 
 import io.servicecomb.swagger.invocation.Response;
+import io.servicecomb.swagger.invocation.converter.Converter;
+import io.servicecomb.swagger.invocation.converter.ConverterMgr;
 
-public interface ProducerResponseMapper {
-  Response mapResponse(StatusType status, Object response);
+public class TestDefaultProducerResponseMapper {
+  ConverterMgr mgr = new ConverterMgr();
+
+  Converter converter = mgr.findConverter(Integer.class, String.class);
+
+  DefaultProducerResponseMapper mapper = new DefaultProducerResponseMapper(converter);
+
+  @Test
+  public void mapResponse() {
+    Response result = mapper.mapResponse(Status.OK, 1);
+    Assert.assertSame(Status.OK, result.getStatus());
+    Assert.assertEquals("1", result.getResult());
+  }
 }

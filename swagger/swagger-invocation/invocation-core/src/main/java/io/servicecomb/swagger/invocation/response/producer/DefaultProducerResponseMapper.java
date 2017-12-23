@@ -18,19 +18,19 @@ package io.servicecomb.swagger.invocation.response.producer;
 
 import javax.ws.rs.core.Response.StatusType;
 
-import org.springframework.stereotype.Component;
-
 import io.servicecomb.swagger.invocation.Response;
+import io.servicecomb.swagger.invocation.converter.Converter;
 
-@Component
-public class ProducerResponseCseSame implements ProducerResponseMapper {
-  @Override
-  public Class<?> getResponseClass() {
-    return Response.class;
+public class DefaultProducerResponseMapper implements ProducerResponseMapper {
+  private Converter converter;
+
+  public DefaultProducerResponseMapper(Converter converter) {
+    this.converter = converter;
   }
 
   @Override
   public Response mapResponse(StatusType status, Object response) {
-    return (Response) response;
+    Object swaggerResult = converter.convert(response);
+    return Response.create(status, swaggerResult);
   }
 }
