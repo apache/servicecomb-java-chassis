@@ -26,17 +26,17 @@ public class TimerMetric {
   @JsonIgnore
   private final String prefix;
 
-  private final long total;
+  private final double total;
 
   private final long count;
 
   private final double average;
 
-  private final long min;
+  private final double min;
 
-  private final long max;
+  private final double max;
 
-  public long getTotal() {
+  public double getTotal() {
     return total;
   }
 
@@ -48,11 +48,11 @@ public class TimerMetric {
     return average;
   }
 
-  public long getMin() {
+  public double getMin() {
     return min;
   }
 
-  public long getMax() {
+  public double getMax() {
     return max;
   }
 
@@ -60,12 +60,12 @@ public class TimerMetric {
     this(prefix, 0, 0, 0, 0);
   }
 
-  public TimerMetric(String prefix, long total, long count, long min, long max) {
+  public TimerMetric(String prefix, double total, long count, double min, double max) {
     this.prefix = prefix;
     this.total = total;
     this.count = count;
     if (count != 0) {
-      this.average = (double) total / (double) count;
+      this.average = total / (double) count;
     } else {
       this.average = 0;
     }
@@ -78,11 +78,11 @@ public class TimerMetric {
         getMin(this.min, metric.min), getMax(this.max, metric.max));
   }
 
-  private long getMin(long value1, long value2) {
+  private double getMin(double value1, double value2) {
     return value1 == 0 || (value2 != 0 && value2 < value1) ? value2 : value1;
   }
 
-  private long getMax(long value1, long value2) {
+  private double getMax(double value1, double value2) {
     return value2 > value1 ? value2 : value1;
   }
 
