@@ -23,16 +23,15 @@ import java.util.Map.Entry;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Component;
 
 import io.servicecomb.swagger.invocation.Response;
 import io.servicecomb.swagger.invocation.response.consumer.ConsumerResponseMapper;
 
-@Component
 public class SpringmvcConsumerResponseMapper implements ConsumerResponseMapper {
-  @Override
-  public Class<?> getResponseClass() {
-    return ResponseEntity.class;
+  private ConsumerResponseMapper realMapper;
+
+  public SpringmvcConsumerResponseMapper(ConsumerResponseMapper realMapper) {
+    this.realMapper = realMapper;
   }
 
   @Override
@@ -50,6 +49,7 @@ public class SpringmvcConsumerResponseMapper implements ConsumerResponseMapper {
       }
     }
 
-    return new ResponseEntity<>(response.getResult(), httpHeaders, status);
+    Object realResult = realMapper.mapResponse(response);
+    return new ResponseEntity<>(realResult, httpHeaders, status);
   }
 }
