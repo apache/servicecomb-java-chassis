@@ -16,4 +16,5 @@
 #
 
 io.servicecomb.swagger.invocation.response.consumer.CseResponseConsumerResponseMapperFactory
+io.servicecomb.swagger.invocation.response.consumer.CompletableFutureConsumerResponseMapperFactory
 io.servicecomb.swagger.invocation.response.consumer.DefaultConsumerResponseMapperFactory

@@ -16,4 +16,5 @@
 #
 
 io.servicecomb.swagger.invocation.response.producer.CseResponseProducerResponseMapperFactory
+io.servicecomb.swagger.invocation.response.producer.CompletableFutureProducerResponseMapperFactory
 io.servicecomb.swagger.invocation.response.producer.DefaultProducerResponseMapperFactory
