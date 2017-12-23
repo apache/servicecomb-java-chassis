@@ -16,26 +16,31 @@
  */
 package io.servicecomb.swagger.invocation.response.producer;
 
-import javax.ws.rs.core.Response.StatusType;
+import javax.ws.rs.core.Response.Status;
+
+import org.junit.Assert;
+import org.junit.Test;
 
 import io.servicecomb.swagger.invocation.Response;
-import io.servicecomb.swagger.invocation.converter.Converter;
 
-public class ProducerResponseMapperCommon implements ProducerResponseMapper {
-  private Converter converter;
+public class TestCseResponseProducerResponseMapperFactory {
+  CseResponseProducerResponseMapperFactory factory = new CseResponseProducerResponseMapperFactory();
 
-  public ProducerResponseMapperCommon(Converter converter) {
-    this.converter = converter;
+  @Test
+  public void isMatch_true() {
+    Assert.assertTrue(factory.isMatch(String.class, Response.class));
   }
 
-  @Override
-  public Class<?> getResponseClass() {
-    return null;
+  @Test
+  public void isMatch_false() {
+    Assert.assertFalse(factory.isMatch(String.class, String.class));
   }
 
-  @Override
-  public Response mapResponse(StatusType status, Object response) {
-    Object swaggerResult = converter.convert(response);
-    return Response.create(status, swaggerResult);
+  @Test
+  public void createResponseMapper() {
+    ProducerResponseMapper mapper = factory.createResponseMapper(null, null, Response.class);
+    Response response = Response.ok(null);
+
+    Assert.assertSame(response, mapper.mapResponse(Status.OK, response));
   }
 }
