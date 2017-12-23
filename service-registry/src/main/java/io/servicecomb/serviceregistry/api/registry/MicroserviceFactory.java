@@ -21,6 +21,9 @@ import static io.servicecomb.foundation.common.base.ServiceCombConstants.CONFIG_
 import static io.servicecomb.foundation.common.base.ServiceCombConstants.CONFIG_QUALIFIED_MICROSERVICE_NAME_KEY;
 import static io.servicecomb.foundation.common.base.ServiceCombConstants.CONFIG_QUALIFIED_MICROSERVICE_ROLE_KEY;
 import static io.servicecomb.foundation.common.base.ServiceCombConstants.CONFIG_QUALIFIED_MICROSERVICE_VERSION_KEY;
+import static io.servicecomb.foundation.common.base.ServiceCombConstants.CONFIG_MICROSERVICE_DEVELOPMENT_FRAMEWORK_KEY;
+import static io.servicecomb.foundation.common.base.ServiceCombConstants.CONFIG_MICROSERVICE_REGISTER_WAY_KEY;
+import static io.servicecomb.foundation.common.base.ServiceCombConstants.DEFAULT_VALUE;
 import static io.servicecomb.foundation.common.base.ServiceCombConstants.DEFAULT_MICROSERVICE_NAME;
 import static io.servicecomb.serviceregistry.definition.DefinitionConst.CONFIG_ALLOW_CROSS_APP_KEY;
 import static io.servicecomb.serviceregistry.definition.DefinitionConst.DEFAULT_APPLICATION_ID;
@@ -65,6 +68,13 @@ public class MicroserviceFactory {
       microservice.setAlias(Microservice.generateAbsoluteMicroserviceName(microservice.getAppId(),
           microservice.getServiceName()));
     }
+
+    Framework framework = new Framework();
+    framework.setName(configuration.getString(CONFIG_MICROSERVICE_DEVELOPMENT_FRAMEWORK_KEY, DEFAULT_VALUE));
+    GetFrameworkVersionFromXml version = new GetFrameworkVersionFromXml();
+    framework.setVersion(version.getFrameworkVersion());
+    microservice.setFramework(framework);
+    microservice.setRegisteredBy(configuration.getString(CONFIG_MICROSERVICE_REGISTER_WAY_KEY, DEFAULT_VALUE));
 
     return microservice;
   }

@@ -50,4 +50,10 @@ public interface ServiceCombConstants {
   String CONFIG_CSE_PREFIX = "cse.";
 
   String CONFIG_KEY_SPLITER = "_";
+
+  String CONFIG_MICROSERVICE_DEVELOPMENT_FRAMEWORK_KEY = "framework.name";
+
+  String DEFAULT_VALUE = "UNKNOWN";
+
+  String CONFIG_MICROSERVICE_REGISTER_WAY_KEY = "registerBy";
 }

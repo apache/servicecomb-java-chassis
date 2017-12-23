@@ -24,6 +24,7 @@ import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import io.servicecomb.serviceregistry.api.Const;
 
@@ -33,6 +34,11 @@ import io.servicecomb.serviceregistry.api.Const;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Microservice {
   private String serviceId;
+
+  private Framework framework;
+
+  @JsonProperty(value = "registerBy")
+  private String registeredBy;
 
   private String appId;
 
@@ -188,5 +194,21 @@ public class Microservice {
 
   public void setPaths(List<BasePath> paths) {
     this.paths = paths;
+  }
+
+  public Framework getFramework() {
+    return framework;
+  }
+
+  public void setFramework(Framework framework) {
+    this.framework = framework;
+  }
+
+  public String getRegisteredBy() {
+    return registeredBy;
+  }
+
+  public void setRegisteredBy(String registeredBy) {
+    this.registeredBy = registeredBy;
   }
 }
