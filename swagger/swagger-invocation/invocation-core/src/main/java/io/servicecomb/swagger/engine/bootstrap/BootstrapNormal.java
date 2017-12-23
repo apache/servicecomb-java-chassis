@@ -25,8 +25,6 @@ import io.servicecomb.swagger.invocation.arguments.consumer.ConsumerInvocationCo
 import io.servicecomb.swagger.invocation.arguments.producer.ProducerArgumentsMapperFactory;
 import io.servicecomb.swagger.invocation.arguments.producer.ProducerInvocationContextMapperFactory;
 import io.servicecomb.swagger.invocation.converter.ConverterMgr;
-import io.servicecomb.swagger.invocation.response.consumer.ConsumerResponseMapperFactory;
-import io.servicecomb.swagger.invocation.response.producer.ProducerResponseMapperFactory;
 
 public class BootstrapNormal implements SwaggerBootstrap {
   public SwaggerEnvironment boot() {
@@ -39,18 +37,12 @@ public class BootstrapNormal implements SwaggerBootstrap {
     producerArgumentsFactory.setConverterMgr(converterMgr);
     env.setProducerArgumentsFactory(producerArgumentsFactory);
 
-    ProducerResponseMapperFactory producerResponseMapperFactory = new ProducerResponseMapperFactory();
-    producerResponseMapperFactory.setConverterMgr(converterMgr);
-    env.setProducerResponseMapperFactory(producerResponseMapperFactory);
-
     ConsumerArgumentsMapperFactory consumerArgumentsFactory = new ConsumerArgumentsMapperFactory();
     consumerArgumentsFactory.setFactoryList(Arrays.asList(new ConsumerInvocationContextMapperFactory()));
     consumerArgumentsFactory.setConverterMgr(converterMgr);
     env.setConsumerArgumentsFactory(consumerArgumentsFactory);
 
-    ConsumerResponseMapperFactory consumerResponseMapperFactory = new ConsumerResponseMapperFactory();
-    consumerResponseMapperFactory.setConverterMgr(converterMgr);
-    env.setConsumerResponseMapperFactory(consumerResponseMapperFactory);
+    env.setConverterMgr(converterMgr);
 
     return env;
   }
