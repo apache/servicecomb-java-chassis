@@ -17,30 +17,34 @@
 
 package io.servicecomb.serviceregistry.api.registry;
 
-import java.io.FileNotFoundException;
-
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.fasterxml.jackson.core.Version;
+import com.fasterxml.jackson.core.util.VersionUtil;
+
 public class TestGetFrameworkVersion {
 
-  GetFrameworkVersion getFrameworkVersion = null;
+  ClassLoader classLoader = null;
 
   @Before
   public void setUp() throws Exception {
-    getFrameworkVersion = new GetFrameworkVersion();
+    classLoader = Thread.currentThread().getContextClassLoader();
   }
 
   @After
   public void tearDown() throws Exception {
-    getFrameworkVersion = null;
+    classLoader = null;
   }
 
   @Test
-  public void test() throws FileNotFoundException {
-    Assert.assertNotEquals("0.0.0", getFrameworkVersion.getFrameworkVersion());
+  public void test() {
+    @SuppressWarnings("deprecation")
+	Version version = VersionUtil.mavenVersionFor(classLoader, "io.servicecomb", "java-chassis");
+
+    Assert.assertEquals("1.0.0-test", version.toString());
   }
 
 }
