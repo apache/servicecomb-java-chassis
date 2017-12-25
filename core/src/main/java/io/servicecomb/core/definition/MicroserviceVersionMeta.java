@@ -35,10 +35,10 @@ public class MicroserviceVersionMeta extends MicroserviceVersion {
     if (Const.REGISTRY_APP_ID.equals(microservice.getAppId()) && Const.REGISTRY_SERVICE_NAME.equals(microserviceName)) {
       // do not load service center schemas
       return;
-    } else {
-      CseContext.getInstance().getConsumerSchemaFactory().getOrCreateConsumerSchema(microserviceMeta, microservice);
-      CseContext.getInstance().getSchemaListenerManager().notifySchemaListener(microserviceMeta);
     }
+
+    CseContext.getInstance().getConsumerSchemaFactory().getOrCreateConsumerSchema(microserviceMeta, microservice);
+    CseContext.getInstance().getSchemaListenerManager().notifySchemaListener(microserviceMeta);
   }
 
   public MicroserviceMeta getMicroserviceMeta() {
