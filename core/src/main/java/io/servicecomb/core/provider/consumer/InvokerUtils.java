@@ -87,14 +87,8 @@ public final class InvokerUtils {
     }
   }
 
+  @Deprecated
   public static Object invoke(Invocation invocation) {
-    if (invocation.getOperationMeta().isSync()) {
-      return syncInvoke(invocation);
-    }
-
-    Object[] args = invocation.getArgs();
-    AsyncResponse asyncResp = (AsyncResponse) args[args.length - 1];
-    reactiveInvoke(invocation, asyncResp);
-    return null;
+    return syncInvoke(invocation);
   }
 }

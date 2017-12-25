@@ -56,7 +56,6 @@ public class TestOperationMeta {
     Assert.assertEquals("app:test", operationMeta.getMicroserviceName());
     Assert.assertEquals("test", operationMeta.getOperationId());
     Assert.assertEquals("x", operationMeta.getParamName(0));
-    Assert.assertEquals(true, operationMeta.isSync());
 
     operationMeta.putExtData("ext", 1);
     Assert.assertEquals(1, (int) operationMeta.getExtData("ext"));

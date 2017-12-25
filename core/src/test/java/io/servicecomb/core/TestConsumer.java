@@ -30,7 +30,6 @@ import org.mockito.Mockito;
 import io.servicecomb.core.definition.OperationMeta;
 import io.servicecomb.core.definition.SchemaMeta;
 import io.servicecomb.core.provider.consumer.ConsumerProviderManager;
-import io.servicecomb.core.provider.consumer.InvokerUtils;
 import io.servicecomb.core.provider.consumer.SyncResponseExecutor;
 import io.servicecomb.foundation.common.RegisterManager;
 import io.servicecomb.swagger.invocation.AsyncResponse;
@@ -71,39 +70,6 @@ public class TestConsumer {
       }
     });
     Assert.assertEquals(true, oExecutor.waitResponse().isSuccessed());
-  }
-
-  @Test
-  public void testInvokerUtils() {
-    Invocation oInvocation = Mockito.mock(Invocation.class);
-    OperationMeta oOperationMeta = Mockito.mock(OperationMeta.class);
-    Mockito.when(oOperationMeta.isSync()).thenReturn(false);
-    Mockito.when(oInvocation.getOperationMeta()).thenReturn(oOperationMeta);
-    InvokerUtils.reactiveInvoke(oInvocation, Mockito.mock(AsyncResponse.class));
-    boolean validReactiveInvoke = true;
-    try {
-      InvokerUtils.reactiveInvoke(null, null);
-    } catch (Exception e) {
-      Assert.assertEquals(java.lang.NullPointerException.class, e.getClass());
-      validReactiveInvoke = false;
-    }
-    Assert.assertFalse(validReactiveInvoke);
-    boolean validInvokeIsNull = true;
-    try {
-      InvokerUtils.invoke(null);
-    } catch (Exception e) {
-      Assert.assertEquals(java.lang.NullPointerException.class, e.getClass());
-      validInvokeIsNull = false;
-    }
-    Assert.assertFalse(validInvokeIsNull);
-    boolean validInvoke = true;
-    try {
-      InvokerUtils.invoke(oInvocation);
-    } catch (Exception e) {
-      Assert.assertEquals(java.lang.NullPointerException.class, e.getClass());
-      validInvoke = false;
-    }
-    Assert.assertFalse(validInvoke);
   }
 
   @Test
