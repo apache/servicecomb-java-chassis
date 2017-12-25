@@ -17,24 +17,42 @@
 
 package io.servicecomb.provider.pojo;
 
+import java.util.concurrent.CompletableFuture;
+
+import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 
 import io.servicecomb.core.CseContext;
+import io.servicecomb.core.Invocation;
 import io.servicecomb.core.definition.MicroserviceMeta;
 import io.servicecomb.core.definition.schema.ConsumerSchemaFactory;
 import io.servicecomb.core.provider.consumer.ConsumerProviderManager;
+import io.servicecomb.core.provider.consumer.InvokerUtils;
 import io.servicecomb.core.provider.consumer.ReferenceConfig;
 import io.servicecomb.core.provider.consumer.ReferenceConfigUtils;
 import io.servicecomb.swagger.engine.SwaggerConsumer;
+import io.servicecomb.swagger.engine.SwaggerConsumerOperation;
 import io.servicecomb.swagger.engine.bootstrap.BootstrapNormal;
+import io.servicecomb.swagger.invocation.AsyncResponse;
+import io.servicecomb.swagger.invocation.Response;
+import io.servicecomb.swagger.invocation.exception.InvocationException;
+import io.servicecomb.swagger.invocation.response.consumer.ConsumerResponseMapper;
 import mockit.Deencapsulation;
 import mockit.Expectations;
 import mockit.Injectable;
+import mockit.Mock;
+import mockit.MockUp;
+import mockit.Mocked;
 
 public class TestInvoker {
+  @Rule
+  public ExpectedException expectedException = ExpectedException.none();
+
   @Before
   public void setup() {
     ReferenceConfigUtils.setReady(true);
@@ -137,5 +155,99 @@ public class TestInvoker {
 
     SwaggerConsumer swaggerConsumer = Deencapsulation.getField(invoker, "swaggerConsumer");
     Assert.assertEquals(IPerson.class, swaggerConsumer.getConsumerIntf());
+  }
+
+  @Test
+  public void syncInvoke_normal(@Mocked Invocation invocation,
+      @Mocked SwaggerConsumerOperation consumerOperation,
+      @Mocked ConsumerResponseMapper mapper) {
+    Response response = Response.ok("1");
+    new MockUp<InvokerUtils>() {
+      @Mock
+      Response innerSyncInvoke(Invocation invocation) {
+        return response;
+      }
+    };
+    new Expectations() {
+      {
+        consumerOperation.getResponseMapper();
+        result = mapper;
+        mapper.mapResponse(response);
+        result = 1;
+      }
+    };
+
+    Invoker invoker = new Invoker("test", null, IPerson.class);
+    Object result = invoker.syncInvoke(invocation, consumerOperation);
+    Assert.assertEquals(1, result);
+  }
+
+  @Test
+  public void syncInvoke_failed(@Mocked Invocation invocation,
+      @Mocked SwaggerConsumerOperation consumerOperation,
+      @Mocked ConsumerResponseMapper mapper) {
+    Throwable error = new Error("failed");
+    Response response = Response.createConsumerFail(error);
+    new MockUp<InvokerUtils>() {
+      @Mock
+      Response innerSyncInvoke(Invocation invocation) {
+        return response;
+      }
+    };
+
+    expectedException.expect(InvocationException.class);
+    expectedException.expectCause(Matchers.sameInstance(error));
+
+    Invoker invoker = new Invoker("test", null, IPerson.class);
+    invoker.syncInvoke(invocation, consumerOperation);
+  }
+
+  @Test
+  public void completableFutureInvoke_normal(@Mocked Invocation invocation,
+      @Mocked SwaggerConsumerOperation consumerOperation,
+      @Mocked ConsumerResponseMapper mapper) {
+    Response response = Response.ok("1");
+    new MockUp<InvokerUtils>() {
+      @Mock
+      void reactiveInvoke(Invocation invocation, AsyncResponse asyncResp) {
+        asyncResp.handle(response);;
+      }
+    };
+    new Expectations() {
+      {
+        consumerOperation.getResponseMapper();
+        result = mapper;
+        mapper.mapResponse(response);
+        result = 1;
+      }
+    };
+
+    Invoker invoker = new Invoker("test", null, IPerson.class);
+    CompletableFuture<Object> future = invoker.completableFutureInvoke(invocation, consumerOperation);
+    future.whenComplete((result, ex) -> {
+      Assert.assertEquals(1, result);
+      Assert.assertEquals(null, ex);
+    });
+  }
+
+  @Test
+  public void completableFutureInvoke_failed(@Mocked Invocation invocation,
+      @Mocked SwaggerConsumerOperation consumerOperation,
+      @Mocked ConsumerResponseMapper mapper) {
+    Throwable error = new Error("failed");
+    Response response = Response.createConsumerFail(error);
+    new MockUp<InvokerUtils>() {
+      @Mock
+      void reactiveInvoke(Invocation invocation, AsyncResponse asyncResp) {
+        asyncResp.handle(response);;
+      }
+    };
+
+    Invoker invoker = new Invoker("test", null, IPerson.class);
+    CompletableFuture<Object> future = invoker.completableFutureInvoke(invocation, consumerOperation);
+    future.whenComplete((result, ex) -> {
+      Assert.assertEquals(null, result);
+      Assert.assertSame(error, ex);
+    });
   }
 }
