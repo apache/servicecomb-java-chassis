@@ -18,7 +18,7 @@
 APPLICATION_ID: springmvc-sample
 service_description:
   name: springmvc
-  version: 0.0.1
+  version: 0.0.2
 cse:
   service:
     registry:
@@ -27,3 +27,7 @@ cse:
     address: 0.0.0.0:8080
   highway:
     address: 0.0.0.0:7070
+  handler:
+    chain:
+      Provider:
+        default: bizkeeper-provider

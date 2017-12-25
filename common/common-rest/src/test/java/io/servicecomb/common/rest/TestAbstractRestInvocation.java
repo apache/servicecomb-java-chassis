@@ -374,6 +374,7 @@ public class TestAbstractRestInvocation {
     restInvocation.sendResponseQuietly(response);
 
     Assert.assertSame(response, result.value);
+
   }
 
   @Test

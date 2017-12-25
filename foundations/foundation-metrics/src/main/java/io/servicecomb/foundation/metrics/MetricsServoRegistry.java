@@ -532,7 +532,7 @@ public class MetricsServoRegistry implements InitializingBean {
    *
    * @return List of monitors
    */
-  private List<Monitor<?>> getMetricsMonitors() {
+  public List<Monitor<?>> getMetricsMonitors() {
 
     List<Monitor<?>> monitors = new ArrayList<>();
     monitors.add(getRequestValuesGaugeMonitor("totalRequestsPerProvider INSTANCE_LEVEL",
