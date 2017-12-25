@@ -29,6 +29,7 @@ import com.netflix.hystrix.strategy.executionhook.HystrixCommandExecutionHook;
 
 import io.servicecomb.core.Handler;
 import io.servicecomb.core.Invocation;
+import io.servicecomb.foundation.metrics.performance.MetricsDataMonitorUtil;
 import io.servicecomb.swagger.invocation.AsyncResponse;
 import io.servicecomb.swagger.invocation.Response;
 import rx.Observable;
@@ -79,10 +80,19 @@ public abstract class BizkeeperHandler implements Handler {
   public void handle(Invocation invocation, AsyncResponse asyncResp) throws Exception {
     HystrixObservable<Response> command = delegate.createBizkeeperCommand(invocation);
 
+    new MetricsDataMonitorUtil()
+        .setAllReqProviderAndConsumer(invocation.getOperationMeta().getMicroserviceQualifiedName(),
+            String.valueOf(invocation.getInvocationType()));
+
     Observable<Response> observable = command.toObservable();
     observable.subscribe(asyncResp::complete, error -> {
       LOG.warn("catch error in bizkeeper:" + error.getMessage());
       asyncResp.fail(invocation.getInvocationType(), error);
+
+      new MetricsDataMonitorUtil()
+          .setAllFailReqProviderAndConsumer(invocation.getOperationMeta().getMicroserviceQualifiedName(),
+              String.valueOf(invocation.getInvocationType()));
+
     }, () -> {
 
     });

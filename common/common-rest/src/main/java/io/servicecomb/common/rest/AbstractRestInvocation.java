@@ -45,6 +45,9 @@ import io.servicecomb.core.definition.OperationMeta;
 import io.servicecomb.core.metrics.InvocationStartedEvent;
 import io.servicecomb.foundation.common.utils.EventUtils;
 import io.servicecomb.foundation.common.utils.JsonUtils;
+import io.servicecomb.foundation.metrics.MetricsServoRegistry;
+import io.servicecomb.foundation.metrics.performance.QueueMetrics;
+import io.servicecomb.foundation.metrics.performance.QueueMetricsData;
 import io.servicecomb.foundation.vertx.http.HttpServletRequestEx;
 import io.servicecomb.foundation.vertx.http.HttpServletResponseEx;
 import io.servicecomb.foundation.vertx.stream.BufferOutputStream;
@@ -109,6 +112,8 @@ public abstract class AbstractRestInvocation {
         System.nanoTime());
     EventUtils.triggerEvent(startedEvent);
 
+    QueueMetrics metricsData = initMetrics(operationMeta);
+
     operationMeta.getExecutor().execute(() -> {
       synchronized (this.requestEx) {
         try {
@@ -121,7 +126,7 @@ public abstract class AbstractRestInvocation {
             return;
           }
 
-          runOnExecutor(startedEvent);
+          runOnExecutor(metricsData,startedEvent);
         } catch (Throwable e) {
           LOGGER.error("rest server onRequest error", e);
           sendFailResponse(e);
@@ -130,9 +135,12 @@ public abstract class AbstractRestInvocation {
     });
   }
 
-  protected void runOnExecutor(InvocationStartedEvent startedEvent) {
+  protected void runOnExecutor(QueueMetrics metricsData,InvocationStartedEvent startedEvent) {
     Object[] args = RestCodec.restToArgs(requestEx, restOperationMeta);
     createInvocation(args);
+
+    this.invocation.setMetricsData(metricsData);
+    updateMetrics();
 
     //立刻设置开始时间，否则Finished时无法计算TotalTime
     invocation.setStartTime(startedEvent.getStartedTime());
@@ -181,6 +189,7 @@ public abstract class AbstractRestInvocation {
       sendResponseQuietly(resp);
 
       invocation.triggerFinishedEvent();
+      endMetrics();
     });
   }
 
@@ -233,6 +242,54 @@ public abstract class AbstractRestInvocation {
       }
 
       responseEx.flushBuffer();
+    }
+  }
+
+  /**
+   * Init the metrics. Note down the queue count and start time.
+   * @param operationMeta Operation data
+   * @return QueueMetrics
+   */
+  private QueueMetrics initMetrics(OperationMeta operationMeta) {
+    QueueMetrics metricsData = new QueueMetrics();
+    metricsData.setQueueStartTime(System.currentTimeMillis());
+    metricsData.setOperQualifiedName(operationMeta.getMicroserviceQualifiedName());
+    QueueMetricsData reqQueue = MetricsServoRegistry.getOrCreateLocalMetrics()
+        .getOrCreateQueueMetrics(operationMeta.getMicroserviceQualifiedName());
+    reqQueue.incrementCountInQueue();
+    return metricsData;
+  }
+
+  /**
+   * Update the queue metrics.
+   */
+  private void updateMetrics() {
+    QueueMetrics metricsData = (QueueMetrics) this.invocation.getMetricsData();
+    if (null != metricsData) {
+      metricsData.setQueueEndTime(System.currentTimeMillis());
+      QueueMetricsData reqQueue = MetricsServoRegistry.getOrCreateLocalMetrics()
+          .getOrCreateQueueMetrics(restOperationMeta.getOperationMeta().getMicroserviceQualifiedName());
+      reqQueue.incrementTotalCount();
+      Long timeInQueue = metricsData.getQueueEndTime() - metricsData.getQueueStartTime();
+      reqQueue.setTotalTime(reqQueue.getTotalTime() + timeInQueue);
+      reqQueue.setMinLifeTimeInQueue(timeInQueue);
+      reqQueue.setMaxLifeTimeInQueue(timeInQueue);
+      reqQueue.decrementCountInQueue();
+    }
+  }
+
+  /**
+   * Prepare the end time of queue metrics.
+   */
+  private void endMetrics() {
+    QueueMetrics metricsData = (QueueMetrics) this.invocation.getMetricsData();
+    if (null != metricsData) {
+      metricsData.setEndOperTime(System.currentTimeMillis());
+      QueueMetricsData reqQueue = MetricsServoRegistry.getOrCreateLocalMetrics()
+          .getOrCreateQueueMetrics(restOperationMeta.getOperationMeta().getMicroserviceQualifiedName());
+      reqQueue.incrementTotalServExecutionCount();
+      reqQueue.setTotalServExecutionTime(
+          reqQueue.getTotalServExecutionTime() + (metricsData.getEndOperTime() - metricsData.getQueueEndTime()));
     }
   }
 }
