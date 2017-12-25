@@ -18,13 +18,23 @@
 package io.servicecomb.samples.springmvc.provider;
 
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import javax.ws.rs.core.MediaType;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.netflix.servo.monitor.Monitor;
+
+import io.servicecomb.foundation.common.utils.JsonUtils;
+import io.servicecomb.foundation.metrics.MetricsServoRegistry;
 import io.servicecomb.provider.rest.common.RestSchema;
 import io.servicecomb.samples.common.schema.Hello;
 import io.servicecomb.samples.common.schema.models.Person;
@@ -32,6 +42,13 @@ import io.servicecomb.samples.common.schema.models.Person;
 @RestSchema(schemaId = "springmvcHello")
 @RequestMapping(path = "/springmvchello", produces = MediaType.APPLICATION_JSON)
 public class SpringmvcHelloImpl implements Hello {
+
+  private MetricsServoRegistry registry;
+
+  @Autowired
+  public SpringmvcHelloImpl(MetricsServoRegistry registry) {
+    this.registry = registry;
+  }
 
   @Override
   @RequestMapping(path = "/sayhi", method = RequestMethod.POST)
@@ -43,5 +60,20 @@ public class SpringmvcHelloImpl implements Hello {
   @RequestMapping(path = "/sayhello", method = RequestMethod.POST)
   public String sayHello(@RequestBody Person person) {
     return "Hello person " + person.getName();
+  }
+
+  //metrics it test
+  @RequestMapping(path = "/metricsForTest", method = RequestMethod.GET)
+  public String metricsForTest() {
+    List<Monitor<?>> monitors = registry.getMetricsMonitors();
+    Map<String, String> values = new HashMap<>();
+    for (Monitor<?> monitor : monitors) {
+      values.put(monitor.getConfig().getName(), monitor.getValue().toString());
+    }
+    try {
+      return JsonUtils.writeValueAsString(values);
+    } catch (JsonProcessingException e) {
+      return "{}";
+    }
   }
 }

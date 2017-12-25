@@ -18,7 +18,7 @@
 APPLICATION_ID: springmvc-sample
 service_description:
   name: springmvcConsumer
-  version: 0.0.1
+  version: 0.0.2
 cse:
   service:
     registry:
@@ -30,6 +30,3 @@ cse:
   isolation:
     Consumer:
       enabled: false
-  references:
-    springmvc:
-      version-rule: 0.0.1
