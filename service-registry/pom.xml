@@ -28,15 +28,6 @@
 
   <artifactId>service-registry</artifactId>
 
-  <build>
-    <resources>
-      <resource>
-        <filtering>true</filtering>
-        <directory>src/main/resources</directory>
-      </resource>
-    </resources>
-  </build>
-
   <dependencies>
     <dependency>
       <groupId>io.servicecomb</groupId>
