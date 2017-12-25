@@ -23,7 +23,7 @@ import com.netflix.servo.monitor.StepCounter;
 
 import io.servicecomb.metrics.core.metric.CallMetric;
 
-public class CallMonitor extends BasicMonitor {
+public class CallMonitor {
   private final String prefix;
 
   private final BasicCounter total;
@@ -41,8 +41,15 @@ public class CallMonitor extends BasicMonitor {
     tps.increment();
   }
 
-  public CallMetric toCallMetric(int windowTimeIndex) {
+  public CallMetric toMetric(int windowTimeIndex) {
     return new CallMetric(this.prefix, total.getValue(windowTimeIndex).longValue(),
         this.adjustValue(tps.getValue(windowTimeIndex).doubleValue()));
+  }
+
+  //for time-related monitor type, if stop poll value over one window time,
+  //the value may return -1 because servo can't known precise value of previous step
+  //so must change to return 0
+  public double adjustValue(double value) {
+    return value < 0 ? 0 : value;
   }
 }

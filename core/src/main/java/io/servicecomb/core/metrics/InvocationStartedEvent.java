@@ -18,9 +18,12 @@
 package io.servicecomb.core.metrics;
 
 import io.servicecomb.foundation.common.event.Event;
+import io.servicecomb.swagger.invocation.InvocationType;
 
 public class InvocationStartedEvent implements Event {
   private final String operationName;
+
+  private final InvocationType invocationType;
 
   private final long startedTime;
 
@@ -28,12 +31,17 @@ public class InvocationStartedEvent implements Event {
     return operationName;
   }
 
+  public InvocationType getInvocationType() {
+    return invocationType;
+  }
+
   public long getStartedTime() {
     return startedTime;
   }
 
-  public InvocationStartedEvent(String operationName, long startedTime) {
+  public InvocationStartedEvent(String operationName, InvocationType invocationType, long startedTime) {
     this.operationName = operationName;
+    this.invocationType = invocationType;
     this.startedTime = startedTime;
   }
 }

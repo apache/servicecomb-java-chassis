@@ -98,7 +98,7 @@ public class DefaultSystemMonitor implements SystemMonitor {
   }
 
   @Override
-  public SystemMetric toSystemMetric() {
+  public SystemMetric toMetric() {
     return new SystemMetric(getCpuLoad(),
         getCpuRunningThreads(), getHeapInit(), getHeapMax(), getHeapCommit(), getHeapUsed(),
         getNonHeapInit(), getNonHeapMax(), getNonHeapCommit(), getNonHeapUsed());

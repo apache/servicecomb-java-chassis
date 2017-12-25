@@ -17,6 +17,9 @@
 
 package io.servicecomb.metrics.core.metric;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class SystemMetric {
   private final double cpuLoad;
 
@@ -91,5 +94,21 @@ public class SystemMetric {
     this.nonHeapMax = nonHeapMax;
     this.nonHeapCommit = nonHeapCommit;
     this.nonHeapUsed = nonHeapUsed;
+  }
+
+  public Map<String, Number> toMap() {
+    String prefix = "servicecomb.instance.system";
+    Map<String, Number> metrics = new HashMap<>();
+    metrics.put(prefix + ".cpu.load", cpuLoad);
+    metrics.put(prefix + ".cpu.runningThreads", cpuRunningThreads);
+    metrics.put(prefix + ".heap.init", heapInit);
+    metrics.put(prefix + ".heap.max", heapMax);
+    metrics.put(prefix + ".heap.commit", heapCommit);
+    metrics.put(prefix + ".heap.used", heapUsed);
+    metrics.put(prefix + ".nonHeap.init", nonHeapInit);
+    metrics.put(prefix + ".nonHeap.max", nonHeapMax);
+    metrics.put(prefix + ".nonHeap.commit", nonHeapCommit);
+    metrics.put(prefix + ".nonHeap.used", nonHeapUsed);
+    return metrics;
   }
 }

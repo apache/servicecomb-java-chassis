@@ -20,7 +20,8 @@ package io.servicecomb.metrics.core.event;
 import io.servicecomb.core.metrics.InvocationFinishedEvent;
 import io.servicecomb.foundation.common.event.Event;
 import io.servicecomb.foundation.common.event.EventListener;
-import io.servicecomb.metrics.core.monitor.InvocationMonitor;
+import io.servicecomb.metrics.core.monitor.ConsumerInvocationMonitor;
+import io.servicecomb.metrics.core.monitor.ProducerInvocationMonitor;
 import io.servicecomb.metrics.core.monitor.RegistryMonitor;
 import io.servicecomb.swagger.invocation.InvocationType;
 
@@ -40,11 +41,12 @@ public class InvocationFinishedEventListener implements EventListener {
   @Override
   public void process(Event data) {
     InvocationFinishedEvent event = (InvocationFinishedEvent) data;
-    InvocationMonitor monitor = registryMonitor.getInvocationMonitor(event.getOperationName());
     if (InvocationType.PRODUCER.equals(event.getInvocationType())) {
+      ProducerInvocationMonitor monitor = registryMonitor.getProducerInvocationMonitor(event.getOperationName());
       monitor.getExecutionTime().update(event.getProcessElapsedNanoTime());
       monitor.getProducerLatency().update(event.getTotalElapsedNanoTime());
     } else {
+      ConsumerInvocationMonitor monitor = registryMonitor.getConsumerInvocationMonitor(event.getOperationName());
       monitor.getConsumerLatency().update(event.getTotalElapsedNanoTime());
     }
   }

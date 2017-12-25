@@ -23,15 +23,11 @@ import io.servicecomb.swagger.invocation.InvocationType;
 public class InvocationStartProcessingEvent implements Event {
   private final String operationName;
 
+  private final InvocationType invocationType;
+
   private final long startProcessingTime;
 
   private final long inQueueNanoTime;
-
-  private final InvocationType invocationType;
-
-  public long getInQueueNanoTime() {
-    return inQueueNanoTime;
-  }
 
   public String getOperationName() {
     return operationName;
@@ -41,7 +37,12 @@ public class InvocationStartProcessingEvent implements Event {
     return invocationType;
   }
 
-  public InvocationStartProcessingEvent(String operationName, InvocationType invocationType, long startProcessingTime, long inQueueNanoTime) {
+  public long getInQueueNanoTime() {
+    return inQueueNanoTime;
+  }
+
+  public InvocationStartProcessingEvent(String operationName, InvocationType invocationType, long startProcessingTime,
+      long inQueueNanoTime) {
     this.operationName = operationName;
     this.invocationType = invocationType;
     this.startProcessingTime = startProcessingTime;

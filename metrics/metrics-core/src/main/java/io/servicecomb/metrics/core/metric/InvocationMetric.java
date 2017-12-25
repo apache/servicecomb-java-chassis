@@ -22,8 +22,6 @@ public class InvocationMetric {
 
   private final String prefix;
 
-  private final long waitInQueue;
-
   public String getOperationName() {
     return operationName;
   }
@@ -32,25 +30,8 @@ public class InvocationMetric {
     return prefix;
   }
 
-  public long getWaitInQueue() {
-    return waitInQueue;
-  }
-
-  public InvocationMetric(String operationName, String prefix, long waitInQueue) {
+  public InvocationMetric(String operationName, String prefix) {
     this.operationName = operationName;
     this.prefix = prefix;
-    this.waitInQueue = waitInQueue;
-  }
-
-  public InstanceCalculationMetric merge(InstanceCalculationMetric metric) {
-    return new InstanceCalculationMetric(metric.getTotalWaitInQueue() + waitInQueue,
-        metric.getProducerWaitInQueue(),
-        metric.getConsumerMetrics(), metric.getProducerMetrics(),
-        metric.getLifeTimeInQueue(),
-        metric.getExecutionTime(),
-        metric.getConsumerLatency(),
-        metric.getProducerLatency(),
-        metric.getConsumerCall(),
-        metric.getProducerCall());
   }
 }

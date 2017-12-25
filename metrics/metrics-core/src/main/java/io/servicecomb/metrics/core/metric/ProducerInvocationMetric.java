@@ -21,6 +21,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class ProducerInvocationMetric extends InvocationMetric {
+  private final long waitInQueue;
+
   private final TimerMetric lifeTimeInQueue;
 
   private final TimerMetric executionTime;
@@ -28,6 +30,10 @@ public class ProducerInvocationMetric extends InvocationMetric {
   private final TimerMetric producerLatency;
 
   private final CallMetric producerCall;
+
+  public long getWaitInQueue() {
+    return waitInQueue;
+  }
 
   public TimerMetric getLifeTimeInQueue() {
     return lifeTimeInQueue;
@@ -47,24 +53,20 @@ public class ProducerInvocationMetric extends InvocationMetric {
 
   public ProducerInvocationMetric(String operationName, String prefix, long waitInQueue,
       TimerMetric lifeTimeInQueue, TimerMetric executionTime, TimerMetric producerLatency, CallMetric producerCall) {
-    super(operationName, prefix, waitInQueue);
+    super(operationName, prefix);
+    this.waitInQueue = waitInQueue;
     this.lifeTimeInQueue = lifeTimeInQueue;
     this.executionTime = executionTime;
     this.producerLatency = producerLatency;
     this.producerCall = producerCall;
   }
 
-  @Override
-  public InstanceCalculationMetric merge(InstanceCalculationMetric metric) {
-    metric.getProducerMetrics().put(this.getOperationName(), this);
-    return new InstanceCalculationMetric(metric.getTotalWaitInQueue() + getWaitInQueue(),
-        metric.getProducerWaitInQueue() + getWaitInQueue(),
-        metric.getConsumerMetrics(), metric.getProducerMetrics(),
+  public ProducerInvocationMetric merge(ProducerInvocationMetric metric) {
+    return new ProducerInvocationMetric(this.getOperationName(), this.getPrefix(),
+        this.getWaitInQueue() + metric.getWaitInQueue(),
         metric.getLifeTimeInQueue().merge(lifeTimeInQueue),
         metric.getExecutionTime().merge(executionTime),
-        metric.getConsumerLatency(),
         metric.getProducerLatency().merge(producerLatency),
-        metric.getConsumerCall(),
         metric.getProducerCall().merge(producerCall));
   }
 

@@ -17,6 +17,8 @@
 
 package io.servicecomb.metrics.core.monitor;
 
+import java.util.concurrent.TimeUnit;
+
 import com.netflix.servo.monitor.MaxGauge;
 import com.netflix.servo.monitor.MinGauge;
 import com.netflix.servo.monitor.MonitorConfig;
@@ -24,7 +26,7 @@ import com.netflix.servo.monitor.StepCounter;
 
 import io.servicecomb.metrics.core.metric.TimerMetric;
 
-public class TimerMonitor extends BasicMonitor {
+public class TimerMonitor {
   private final String prefix;
 
   //nanosecond sum
@@ -55,11 +57,24 @@ public class TimerMonitor extends BasicMonitor {
     max = new MaxGauge(MonitorConfig.builder(prefix + ".max").build());
   }
 
-  public TimerMetric toTimerMetric(int windowTimeIndex) {
+  public TimerMetric toMetric(int windowTimeIndex) {
     return new TimerMetric(this.prefix,
         this.convertNanosecondToMillisecond(this.adjustValue(total.getCount(windowTimeIndex))),
         this.adjustValue(count.getCount(windowTimeIndex)),
         this.convertNanosecondToMillisecond(this.adjustValue(min.getValue(windowTimeIndex))),
         this.convertNanosecondToMillisecond(this.adjustValue(max.getValue(windowTimeIndex))));
+  }
+
+  //for time-related monitor type, if stop poll value over one window time,
+  //the value may return -1 because servo can't known precise value of previous step
+  //so must change to return 0
+  public long adjustValue(long value) {
+    return value < 0 ? 0 : value;
+  }
+
+  //Counting use System.nano get more precise time
+  //so we need change unit to millisecond when ouput
+  public long convertNanosecondToMillisecond(long nanoValue) {
+    return TimeUnit.NANOSECONDS.toMillis(nanoValue);
   }
 }
