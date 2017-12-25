@@ -20,6 +20,7 @@ package io.servicecomb.provider.pojo;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
+import java.util.concurrent.CompletableFuture;
 
 import org.springframework.util.StringUtils;
 
@@ -49,7 +50,7 @@ public class Invoker implements InvocationHandler {
 
   private ReferenceConfig referenceConfig;
 
-  private SwaggerConsumer swaggerConsumer;
+  private volatile SwaggerConsumer swaggerConsumer;
 
   @SuppressWarnings("unchecked")
   public static <T> T createProxy(String microserviceName, String schemaId, Class<?> consumerIntf) {
@@ -86,7 +87,11 @@ public class Invoker implements InvocationHandler {
   @Override
   public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
     if (swaggerConsumer == null) {
-      prepare();
+      synchronized (this) {
+        if (swaggerConsumer == null) {
+          prepare();
+        }
+      }
     }
 
     Invocation invocation =
@@ -95,11 +100,34 @@ public class Invoker implements InvocationHandler {
     SwaggerConsumerOperation consumerOperation = swaggerConsumer.findOperation(method.getName());
     consumerOperation.getArgumentsMapper().toInvocation(args, invocation);
 
+    if (CompletableFuture.class.equals(method.getReturnType())) {
+      return completableFutureInvoke(invocation, consumerOperation);
+    }
+
+    return syncInvoke(invocation, consumerOperation);
+  }
+
+  protected Object syncInvoke(Invocation invocation, SwaggerConsumerOperation consumerOperation) {
     Response response = InvokerUtils.innerSyncInvoke(invocation);
     if (response.isSuccessed()) {
       return consumerOperation.getResponseMapper().mapResponse(response);
     }
 
     throw ExceptionFactory.convertConsumerException(response.getResult());
+  }
+
+  protected CompletableFuture<Object> completableFutureInvoke(Invocation invocation,
+      SwaggerConsumerOperation consumerOperation) {
+    CompletableFuture<Object> future = new CompletableFuture<>();
+    InvokerUtils.reactiveInvoke(invocation, response -> {
+      if (response.isSuccessed()) {
+        Object result = consumerOperation.getResponseMapper().mapResponse(response);
+        future.complete(result);
+        return;
+      }
+
+      future.completeExceptionally(response.getResult());
+    });
+    return future;
   }
 }
