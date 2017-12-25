@@ -73,35 +73,17 @@ public class TestInvokerUtils {
     Assert.assertTrue(validAssert);
   }
 
+  @SuppressWarnings("deprecation")
   @Test
-  public void testInvokeWithException() {
-    new MockUp<SyncResponseExecutor>() {
+  public void invoke() {
+    new MockUp<InvokerUtils>() {
       @Mock
-      public Response waitResponse() throws InterruptedException {
-        return Mockito.mock(Response.class);
+      Object syncInvoke(Invocation invocation) {
+        return 1;
       }
     };
-    Invocation invocation = Mockito.mock(Invocation.class);
-    OperationMeta operationMeta = Mockito.mock(OperationMeta.class);
-    Mockito.when(invocation.getOperationMeta()).thenReturn(operationMeta);
-    Mockito.when(operationMeta.isSync()).thenReturn(true);
-    try {
-      InvokerUtils.invoke(invocation);
-    } catch (InvocationException e) {
-      Assert.assertEquals(490, e.getStatusCode());
-    }
-  }
 
-  @Test
-  public void testInvoke() {
-    Object[] objectArray = new Object[2];
-    Invocation invocation = Mockito.mock(Invocation.class);
-    OperationMeta operationMeta = Mockito.mock(OperationMeta.class);
-    Mockito.when(invocation.getOperationMeta()).thenReturn(operationMeta);
-    Mockito.when(operationMeta.isSync()).thenReturn(false);
-    Mockito.when(invocation.getArgs()).thenReturn(objectArray);
-    Object obj = InvokerUtils.invoke(invocation);
-    Assert.assertNull(obj);
+    Assert.assertEquals(1, InvokerUtils.invoke(null));
   }
 
   @Test

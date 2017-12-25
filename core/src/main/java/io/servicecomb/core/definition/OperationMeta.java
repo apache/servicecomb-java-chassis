@@ -24,7 +24,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executor;
 
 import io.servicecomb.core.executor.ExecutorManager;
-import io.servicecomb.swagger.invocation.AsyncResponse;
 import io.servicecomb.swagger.invocation.response.ResponseMeta;
 import io.servicecomb.swagger.invocation.response.ResponsesMeta;
 import io.swagger.models.Operation;
@@ -40,8 +39,6 @@ public class OperationMeta {
 
   // 契约对应的method，与consumer、producer的method没有必然关系
   private Method method;
-
-  private boolean sync;
 
   private String httpMethod;
 
@@ -67,9 +64,8 @@ public class OperationMeta {
     this.method = method;
     this.httpMethod = httpMethod.toUpperCase(Locale.US);
     this.swaggerOperation = swaggerOperation;
-    executor = ExecutorManager.findExecutor(this);
 
-    collectMethodType();
+    executor = ExecutorManager.findExecutor(this);
 
     responsesMeta.init(schemaMeta.getMicroserviceMeta().getClassLoader(),
         schemaMeta.getPackageName(),
@@ -88,17 +84,6 @@ public class OperationMeta {
 
   public String getOperationPath() {
     return operationPath;
-  }
-
-  private void collectMethodType() {
-    Class<?>[] params = method.getParameterTypes();
-    if (params.length == 0) {
-      sync = true;
-      return;
-    }
-
-    Class<?> lastParam = params[params.length - 1];
-    sync = !AsyncResponse.class.isAssignableFrom(lastParam);
   }
 
   public Operation getSwaggerOperation() {
@@ -145,10 +130,6 @@ public class OperationMeta {
   @SuppressWarnings("unchecked")
   public <T> T getExtData(String key) {
     return (T) extData.get(key);
-  }
-
-  public boolean isSync() {
-    return sync;
   }
 
   public Executor getExecutor() {
