@@ -23,13 +23,21 @@ import io.servicecomb.swagger.invocation.InvocationType;
 public class InvocationFinishedEvent implements Event {
   private final String operationName;
 
+  private final InvocationType invocationType;
+
   private final long finishedTime;
 
   private final long processElapsedNanoTime;
 
   private final long totalElapsedNanoTime;
 
-  private final InvocationType invocationType;
+  public String getOperationName() {
+    return operationName;
+  }
+
+  public InvocationType getInvocationType() {
+    return invocationType;
+  }
 
   public long getProcessElapsedNanoTime() {
     return processElapsedNanoTime;
@@ -37,14 +45,6 @@ public class InvocationFinishedEvent implements Event {
 
   public long getTotalElapsedNanoTime() {
     return totalElapsedNanoTime;
-  }
-
-  public InvocationType getInvocationType() {
-    return invocationType;
-  }
-
-  public String getOperationName() {
-    return operationName;
   }
 
   public InvocationFinishedEvent(String operationName, InvocationType invocationType, long finishedTime,

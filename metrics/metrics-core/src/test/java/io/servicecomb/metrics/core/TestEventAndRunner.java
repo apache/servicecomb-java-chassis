@@ -75,7 +75,7 @@ public class TestEventAndRunner {
     new DefaultEventListenerManager(monitor);
 
     //fun1 is a PRODUCER invocation call twice and all is completed
-    EventUtils.triggerEvent(new InvocationStartedEvent("fun1", System.nanoTime()));
+    EventUtils.triggerEvent(new InvocationStartedEvent("fun1", InvocationType.PRODUCER, System.nanoTime()));
     EventUtils.triggerEvent(
         new InvocationStartProcessingEvent("fun1", InvocationType.PRODUCER, System.nanoTime(),
             TimeUnit.MILLISECONDS.toNanos(100)));
@@ -83,7 +83,7 @@ public class TestEventAndRunner {
         .triggerEvent(new InvocationFinishedEvent("fun1", InvocationType.PRODUCER, System.nanoTime(),
             TimeUnit.MILLISECONDS.toNanos(200), TimeUnit.MILLISECONDS.toNanos(300)));
 
-    EventUtils.triggerEvent(new InvocationStartedEvent("fun1", System.nanoTime()));
+    EventUtils.triggerEvent(new InvocationStartedEvent("fun1", InvocationType.PRODUCER, System.nanoTime()));
     EventUtils.triggerEvent(
         new InvocationStartProcessingEvent("fun1", InvocationType.PRODUCER, System.nanoTime(),
             TimeUnit.MILLISECONDS.toNanos(300)));
@@ -92,13 +92,13 @@ public class TestEventAndRunner {
             TimeUnit.MILLISECONDS.toNanos(400), TimeUnit.MILLISECONDS.toNanos(700)));
 
     //fun3 is a PRODUCER invocation call uncompleted
-    EventUtils.triggerEvent(new InvocationStartedEvent("fun3", System.nanoTime()));
+    EventUtils.triggerEvent(new InvocationStartedEvent("fun3", InvocationType.PRODUCER, System.nanoTime()));
     EventUtils.triggerEvent(
         new InvocationStartProcessingEvent("fun3", InvocationType.PRODUCER, System.nanoTime(),
             TimeUnit.MILLISECONDS.toNanos(500)));
 
     //fun2 is a CONSUMER invocation call once and completed
-    EventUtils.triggerEvent(new InvocationStartedEvent("fun2", System.nanoTime()));
+    EventUtils.triggerEvent(new InvocationStartedEvent("fun2", InvocationType.CONSUMER, System.nanoTime()));
     EventUtils.triggerEvent(
         new InvocationStartProcessingEvent("fun2", InvocationType.CONSUMER, System.nanoTime(),
             TimeUnit.MILLISECONDS.toNanos(100)));
@@ -107,7 +107,7 @@ public class TestEventAndRunner {
             TimeUnit.MILLISECONDS.toNanos(200), TimeUnit.MILLISECONDS.toNanos(300)));
 
     //fun4 is a invocation call only started and no processing start and finished
-    EventUtils.triggerEvent(new InvocationStartedEvent("fun4", System.nanoTime()));
+    EventUtils.triggerEvent(new InvocationStartedEvent("fun4", InvocationType.PRODUCER, System.nanoTime()));
 
     //sim lease one window time
     Thread.sleep(1000);
@@ -115,8 +115,7 @@ public class TestEventAndRunner {
     RegistryMetric model = dataSource.getRegistryMetric();
 
     //check InstanceMetric
-    Assert.assertEquals(model.getInstanceMetric().getWaitInQueue(), 1);
-    Assert.assertEquals(model.getInstanceMetric().getProducerMetric().getWaitInQueue(), 0);
+    Assert.assertEquals(model.getInstanceMetric().getProducerMetric().getWaitInQueue(), 1);
     Assert.assertEquals(model.getInstanceMetric().getProducerMetric().getLifeTimeInQueue().getCount(), 3);
     Assert.assertEquals(model.getInstanceMetric().getProducerMetric().getLifeTimeInQueue().getTotal(),
         900, 0);
@@ -147,8 +146,8 @@ public class TestEventAndRunner {
     Assert.assertEquals(model.getInstanceMetric().getProducerMetric().getProducerLatency().getMin(),
         300, 0);
 
-    Assert.assertEquals(model.getInstanceMetric().getProducerMetric().getProducerCall().getTps(), 3, 0);
-    Assert.assertEquals(model.getInstanceMetric().getProducerMetric().getProducerCall().getTotal(), 3);
+    Assert.assertEquals(model.getInstanceMetric().getProducerMetric().getProducerCall().getTps(), 4, 0);
+    Assert.assertEquals(model.getInstanceMetric().getProducerMetric().getProducerCall().getTotal(), 4);
 
     Assert.assertEquals(model.getInstanceMetric().getConsumerMetric().getConsumerLatency().getCount(), 1);
     Assert.assertEquals(model.getInstanceMetric().getConsumerMetric().getConsumerLatency().getTotal(),
@@ -235,7 +234,6 @@ public class TestEventAndRunner {
 
     //check ConsumerMetrics
     //no need
-    Assert.assertEquals(model.getConsumerMetrics().get("fun2").getWaitInQueue(), 0);
     Assert.assertEquals(model.getConsumerMetrics().get("fun2").getConsumerLatency().getCount(), 1);
     Assert.assertEquals(model.getConsumerMetrics().get("fun2").getConsumerLatency().getTotal(),
         300, 0);
@@ -250,7 +248,7 @@ public class TestEventAndRunner {
     Assert.assertEquals(model.getConsumerMetrics().get("fun2").getConsumerCall().getTotal(), 1);
 
     Map<String, Number> metrics = model.toMap();
-    Assert.assertEquals(metrics.size(), 68);
+    Assert.assertEquals(metrics.size(), 72);
 
     Assert.assertEquals(model.getInstanceMetric().getSystemMetric().getCpuLoad(), 1.0, 0);
     Assert.assertEquals(model.getInstanceMetric().getSystemMetric().getCpuRunningThreads(), 2, 0);

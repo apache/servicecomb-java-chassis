@@ -20,7 +20,10 @@ package io.servicecomb.metrics.core.event;
 import io.servicecomb.core.metrics.InvocationStartedEvent;
 import io.servicecomb.foundation.common.event.Event;
 import io.servicecomb.foundation.common.event.EventListener;
+import io.servicecomb.metrics.core.monitor.ConsumerInvocationMonitor;
+import io.servicecomb.metrics.core.monitor.ProducerInvocationMonitor;
 import io.servicecomb.metrics.core.monitor.RegistryMonitor;
+import io.servicecomb.swagger.invocation.InvocationType;
 
 public class InvocationStartedEventListener implements EventListener {
 
@@ -38,7 +41,13 @@ public class InvocationStartedEventListener implements EventListener {
   @Override
   public void process(Event data) {
     InvocationStartedEvent event = (InvocationStartedEvent) data;
-    //TODO:current java chassis unable know invocation type before starting process,so all type WaitInQueue increment
-    registryMonitor.getInvocationMonitor(event.getOperationName()).getWaitInQueue().increment();
+    if (InvocationType.PRODUCER.equals(event.getInvocationType())) {
+      ProducerInvocationMonitor monitor = registryMonitor.getProducerInvocationMonitor(event.getOperationName());
+      monitor.getWaitInQueue().increment();
+      monitor.getProducerCall().increment();
+    } else {
+      ConsumerInvocationMonitor monitor = registryMonitor.getConsumerInvocationMonitor(event.getOperationName());
+      monitor.getConsumerCall().increment();
+    }
   }
 }

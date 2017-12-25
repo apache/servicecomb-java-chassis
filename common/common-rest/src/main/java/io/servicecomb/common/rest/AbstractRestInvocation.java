@@ -51,6 +51,7 @@ import io.servicecomb.foundation.metrics.performance.QueueMetricsData;
 import io.servicecomb.foundation.vertx.http.HttpServletRequestEx;
 import io.servicecomb.foundation.vertx.http.HttpServletResponseEx;
 import io.servicecomb.foundation.vertx.stream.BufferOutputStream;
+import io.servicecomb.swagger.invocation.InvocationType;
 import io.servicecomb.swagger.invocation.Response;
 import io.servicecomb.swagger.invocation.exception.InvocationException;
 
@@ -109,7 +110,7 @@ public abstract class AbstractRestInvocation {
     OperationMeta operationMeta = restOperationMeta.getOperationMeta();
 
     InvocationStartedEvent startedEvent = new InvocationStartedEvent(operationMeta.getMicroserviceQualifiedName(),
-        System.nanoTime());
+        InvocationType.PRODUCER, System.nanoTime());
     EventUtils.triggerEvent(startedEvent);
 
     QueueMetrics metricsData = initMetrics(operationMeta);
@@ -226,7 +227,7 @@ public abstract class AbstractRestInvocation {
       }
     }
     responseEx.setStatus(response.getStatusCode(), response.getReasonPhrase());
-    responseEx.setContentType(produceProcessor.getName()+"; charset=utf-8");
+    responseEx.setContentType(produceProcessor.getName() + "; charset=utf-8");
 
     Object body = response.getResult();
     if (response.isFailed()) {

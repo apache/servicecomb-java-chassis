@@ -42,31 +42,41 @@ public class RegistryMetric {
     return producerMetrics;
   }
 
-  public RegistryMetric(SystemMetric systemMetric, Map<String, InvocationMetric> invocationMetrics) {
+  public RegistryMetric(SystemMetric systemMetric,
+      Map<String, ConsumerInvocationMetric> consumerMetrics,
+      Map<String, ProducerInvocationMetric> producerMetrics) {
+
+    this.consumerMetrics = consumerMetrics;
+    this.producerMetrics = producerMetrics;
+
+    ConsumerInvocationMetric instanceConsumerInvocationMetric = new ConsumerInvocationMetric("instance",
+        MetricsConst.INSTANCE_CONSUMER_PREFIX,
+        new TimerMetric(MetricsConst.INSTANCE_PRODUCER_PREFIX + ".producerLatency"),
+        new CallMetric(MetricsConst.INSTANCE_CONSUMER_PREFIX + ".consumerCall"));
+    ProducerInvocationMetric instanceProducerInvocationMetric = new ProducerInvocationMetric("instance",
+        MetricsConst.INSTANCE_PRODUCER_PREFIX, 0,
+        new TimerMetric(MetricsConst.INSTANCE_PRODUCER_PREFIX + ".lifeTimeInQueue"),
+        new TimerMetric(MetricsConst.INSTANCE_PRODUCER_PREFIX + ".executionTime"),
+        new TimerMetric(MetricsConst.INSTANCE_PRODUCER_PREFIX + ".producerLatency"),
+        new CallMetric(MetricsConst.INSTANCE_PRODUCER_PREFIX + ".producerCall"));
+
     //sum instance level metric
-    InstanceCalculationMetric calculationMetric = new InstanceCalculationMetric();
-    for (InvocationMetric metric : invocationMetrics.values()) {
-      calculationMetric = metric.merge(calculationMetric);
+    for (ConsumerInvocationMetric metric : consumerMetrics.values()) {
+      instanceConsumerInvocationMetric = instanceConsumerInvocationMetric.merge(metric);
+    }
+    for (ProducerInvocationMetric metric : producerMetrics.values()) {
+      instanceProducerInvocationMetric = instanceProducerInvocationMetric.merge(metric);
     }
 
-    this.instanceMetric = new InstanceMetric(calculationMetric.getTotalWaitInQueue(), systemMetric,
-        new ConsumerInvocationMetric("instance", MetricsConst.INSTANCE_CONSUMER_PREFIX,
-            calculationMetric.getProducerWaitInQueue(),
-            calculationMetric.getConsumerLatency(), calculationMetric.getConsumerCall()),
-        new ProducerInvocationMetric("instance", MetricsConst.INSTANCE_PRODUCER_PREFIX,
-            calculationMetric.getProducerWaitInQueue(),
-            calculationMetric.getLifeTimeInQueue(), calculationMetric.getExecutionTime(),
-            calculationMetric.getProducerLatency(), calculationMetric.getProducerCall()));
-    this.producerMetrics = calculationMetric.getProducerMetrics();
-    this.consumerMetrics = calculationMetric.getConsumerMetrics();
+    this.instanceMetric = new InstanceMetric(systemMetric,
+        instanceConsumerInvocationMetric, instanceProducerInvocationMetric);
   }
 
   public Map<String, Number> toMap() {
     Map<String, Number> metrics = new HashMap<>();
+    metrics.putAll(instanceMetric.getSystemMetric().toMap());
     metrics.putAll(instanceMetric.getConsumerMetric().toMap());
     metrics.putAll(instanceMetric.getProducerMetric().toMap());
-    //will override waitInQueue.count value
-    metrics.put(MetricsConst.INSTANCE_PRODUCER_PREFIX + ".waitInQueue.count", instanceMetric.getWaitInQueue());
     for (ConsumerInvocationMetric metric : consumerMetrics.values()) {
       metrics.putAll(metric.toMap());
     }

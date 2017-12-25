@@ -40,5 +40,5 @@ public interface SystemMonitor {
 
   long getNonHeapUsed();
 
-  SystemMetric toSystemMetric();
+  SystemMetric toMetric();
 }

@@ -39,6 +39,7 @@ import io.servicecomb.foundation.metrics.MetricsServoRegistry;
 import io.servicecomb.foundation.metrics.performance.QueueMetrics;
 import io.servicecomb.foundation.metrics.performance.QueueMetricsData;
 import io.servicecomb.foundation.vertx.tcp.TcpConnection;
+import io.servicecomb.swagger.invocation.InvocationType;
 import io.servicecomb.swagger.invocation.Response;
 import io.servicecomb.swagger.invocation.exception.InvocationException;
 import io.servicecomb.transport.highway.message.RequestHeader;
@@ -167,7 +168,7 @@ public class HighwayServerInvoke {
    */
   public void execute() {
     InvocationStartedEvent startedEvent = new InvocationStartedEvent(operationMeta.getMicroserviceQualifiedName(),
-        System.nanoTime());
+        InvocationType.PRODUCER, System.nanoTime());
     EventUtils.triggerEvent(startedEvent);
     QueueMetrics metricsData = initMetrics(operationMeta);
     operationMeta.getExecutor().execute(() -> runInExecutor(metricsData,startedEvent));

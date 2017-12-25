@@ -24,31 +24,43 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import io.servicecomb.metrics.core.metric.InvocationMetric;
+import io.servicecomb.metrics.core.metric.ConsumerInvocationMetric;
+import io.servicecomb.metrics.core.metric.ProducerInvocationMetric;
 import io.servicecomb.metrics.core.metric.RegistryMetric;
 
 @Component
-public class RegistryMonitor extends BasicMonitor {
+public class RegistryMonitor {
 
   private final SystemMonitor systemMonitor;
 
-  private final Map<String, InvocationMonitor> invocationMonitors;
+  private final Map<String, ConsumerInvocationMonitor> consumerInvocationMonitors;
+
+  private final Map<String, ProducerInvocationMonitor> producerInvocationMonitors;
 
   @Autowired
   public RegistryMonitor(SystemMonitor systemMonitor) {
     this.systemMonitor = systemMonitor;
-    this.invocationMonitors = new ConcurrentHashMap<>();
+    this.consumerInvocationMonitors = new ConcurrentHashMap<>();
+    this.producerInvocationMonitors = new ConcurrentHashMap<>();
   }
 
-  public InvocationMonitor getInvocationMonitor(String operationName) {
-    return invocationMonitors.computeIfAbsent(operationName, i -> new InvocationMonitor(operationName));
+  public ConsumerInvocationMonitor getConsumerInvocationMonitor(String operationName) {
+    return consumerInvocationMonitors.computeIfAbsent(operationName, i -> new ConsumerInvocationMonitor(operationName));
+  }
+
+  public ProducerInvocationMonitor getProducerInvocationMonitor(String operationName) {
+    return producerInvocationMonitors.computeIfAbsent(operationName, i -> new ProducerInvocationMonitor(operationName));
   }
 
   public RegistryMetric toRegistryMetric(int windowTimeIndex) {
-    Map<String, InvocationMetric> invocationMetrics = new HashMap<>();
-    for (InvocationMonitor monitor : invocationMonitors.values()) {
-      invocationMetrics.put(monitor.getOperationName(), monitor.toInvocationMetric(windowTimeIndex));
+    Map<String, ConsumerInvocationMetric> consumerInvocationMetrics = new HashMap<>();
+    for (ConsumerInvocationMonitor monitor : this.consumerInvocationMonitors.values()) {
+      consumerInvocationMetrics.put(monitor.getOperationName(), monitor.toMetric(windowTimeIndex));
     }
-    return new RegistryMetric(systemMonitor.toSystemMetric(), invocationMetrics);
+    Map<String, ProducerInvocationMetric> producerInvocationMetrics = new HashMap<>();
+    for (ProducerInvocationMonitor monitor : this.producerInvocationMonitors.values()) {
+      producerInvocationMetrics.put(monitor.getOperationName(), monitor.toMetric(windowTimeIndex));
+    }
+    return new RegistryMetric(systemMonitor.toMetric(), consumerInvocationMetrics, producerInvocationMetrics);
   }
 }

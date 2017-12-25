@@ -33,25 +33,17 @@ public class ConsumerInvocationMetric extends InvocationMetric {
     return consumerCall;
   }
 
-  public ConsumerInvocationMetric(String operationName, String prefix, long waitInQueue,
+  public ConsumerInvocationMetric(String operationName, String prefix,
       TimerMetric consumerLatency, CallMetric consumerCall) {
-    super(operationName, prefix, waitInQueue);
+    super(operationName, prefix);
     this.consumerLatency = consumerLatency;
     this.consumerCall = consumerCall;
   }
 
-  @Override
-  public InstanceCalculationMetric merge(InstanceCalculationMetric metric) {
-    metric.getConsumerMetrics().put(this.getOperationName(), this);
-    return new InstanceCalculationMetric(metric.getTotalWaitInQueue(),
-        metric.getProducerWaitInQueue(),
-        metric.getConsumerMetrics(), metric.getProducerMetrics(),
-        metric.getLifeTimeInQueue(),
-        metric.getExecutionTime(),
+  public ConsumerInvocationMetric merge(ConsumerInvocationMetric metric) {
+    return new ConsumerInvocationMetric(this.getOperationName(), this.getPrefix(),
         metric.getConsumerLatency().merge(consumerLatency),
-        metric.getProducerLatency(),
-        metric.getConsumerCall().merge(consumerCall),
-        metric.getProducerCall());
+        metric.getConsumerCall().merge(consumerCall));
   }
 
   public Map<String, Number> toMap() {
