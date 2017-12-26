@@ -17,32 +17,32 @@
 
 package io.servicecomb.metrics.core.publish;
 
-import org.springframework.stereotype.Component;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
+import io.servicecomb.metrics.core.metric.RegistryMetric;
+import io.servicecomb.provider.rest.common.RestSchema;
 
-import io.servicecomb.foundation.common.exceptions.ServiceCombException;
-import io.servicecomb.foundation.common.utils.JsonUtils;
-
-@Component
-public class JsonMetricsPublisher implements MetricsPublisher {
+@RestSchema(schemaId = "metricsEndpoint")
+@RequestMapping(path = "/metrics")
+public class DefaultMetricsPublisher implements MetricsPublisher {
 
   private final DataSource dataSource;
 
-  public JsonMetricsPublisher(DataSource dataSource) {
+  public DefaultMetricsPublisher(DataSource dataSource) {
     this.dataSource = dataSource;
   }
 
+  @RequestMapping(path = "/", method = RequestMethod.GET)
   @Override
-  public String metrics(int pollerIndex) {
-    if (pollerIndex >= 0 && pollerIndex < dataSource.getAppliedPollingIntervals().size()) {
-      try {
-        return JsonUtils.writeValueAsString(dataSource.getRegistryMetric(pollerIndex));
-      } catch (JsonProcessingException e) {
-        throw new ServiceCombException("serialize metrics failed", e);
-      }
-    } else {
-      return "{}";
-    }
+  public RegistryMetric metrics() {
+    return dataSource.getRegistryMetric();
+  }
+
+  @RequestMapping(path = "/{windowTimeIndex}", method = RequestMethod.GET)
+  @Override
+  public RegistryMetric metricsWithWindowTimeIndex(@PathVariable(name = "windowTimeIndex") int windowTimeIndex) {
+    return dataSource.getRegistryMetric(windowTimeIndex);
   }
 }

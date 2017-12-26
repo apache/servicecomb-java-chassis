@@ -17,26 +17,34 @@
 
 package io.servicecomb.metrics.core;
 
+import java.io.IOException;
+import java.util.Map;
+
 import org.junit.Assert;
 import org.junit.Test;
 
+import io.servicecomb.metrics.core.metric.RegistryMetric;
+import io.servicecomb.metrics.core.monitor.DefaultSystemMonitor;
 import io.servicecomb.metrics.core.monitor.RegistryMonitor;
+import io.servicecomb.metrics.core.monitor.SystemMonitor;
 import io.servicecomb.metrics.core.publish.DefaultDataSource;
-import io.servicecomb.metrics.core.publish.JsonMetricsPublisher;
+import io.servicecomb.metrics.core.publish.DefaultMetricsPublisher;
 
 public class TestPublisher {
 
   @Test
-  public void test() {
-    RegistryMonitor registryMonitor = new RegistryMonitor();
+  public void test() throws IOException {
+    SystemMonitor systemMonitor = new DefaultSystemMonitor();
+    RegistryMonitor registryMonitor = new RegistryMonitor(systemMonitor);
     DefaultDataSource dataSource = new DefaultDataSource(registryMonitor);
-    JsonMetricsPublisher publisher = new JsonMetricsPublisher(dataSource);
-    String content = publisher.metrics(0);
-    Assert
-        .assertEquals(content,
-            "{\"instanceMetric\":{\"waitInQueue\":0,\"lifeTimeInQueue\":{\"total\":0,\"count\":0,\"average\":0.0,"+
-                "\"min\":0,\"max\":0},\"executionTime\":{\"total\":0,\"count\":0,\"average\":0.0,\"min\":0,\"max\":0},"+
-                "\"consumerLatency\":{\"total\":0,\"count\":0,\"average\":0.0,\"min\":0,\"max\":0},\"producerLatency"+
-                "\":{\"total\":0,\"count\":0,\"average\":0.0,\"min\":0,\"max\":0}},\"invocationMetrics\":{}}");
+    DefaultMetricsPublisher publisher = new DefaultMetricsPublisher(dataSource);
+
+    RegistryMetric registryMetric = publisher.metrics();
+    Map<String, Number> metricsMap = registryMetric.toMap();
+    Assert.assertEquals(metricsMap.size(), 30);
+
+    registryMetric = publisher.metricsWithWindowTimeIndex(0);
+    metricsMap = registryMetric.toMap();
+    Assert.assertEquals(metricsMap.size(), 30);
   }
 }
