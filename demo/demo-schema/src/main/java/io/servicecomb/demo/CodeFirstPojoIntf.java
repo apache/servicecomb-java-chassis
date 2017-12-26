@@ -43,8 +43,6 @@ public interface CodeFirstPojoIntf {
 
   String sayHi(String name);
 
-  String sayHi2(String name);
-
   boolean isTrue();
 
   String addString(List<String> s);

@@ -152,7 +152,11 @@ public class CodeFirstPojoClient {
   }
 
   protected void testCodeFirstSayHi2(CodeFirstPojoIntf codeFirst) {
-    String result = codeFirst.sayHi2("world");
+    if (!CodeFirstPojoClientIntf.class.isInstance(codeFirst)) {
+      return;
+    }
+
+    String result = ((CodeFirstPojoClientIntf) codeFirst).sayHi2("world");
     TestMgr.check("world sayhi 2", result);
   }
 
