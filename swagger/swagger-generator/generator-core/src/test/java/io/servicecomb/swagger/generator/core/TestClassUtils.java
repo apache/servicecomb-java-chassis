@@ -17,23 +17,32 @@
 
 package io.servicecomb.swagger.generator.core;
 
+import static junit.framework.TestCase.fail;
 import static org.hamcrest.core.Is.is;
 
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import javax.ws.rs.Path;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.mockito.Mockito;
 
+import io.servicecomb.common.javassist.JavassistUtils;
 import io.servicecomb.swagger.generator.core.schema.User;
 import io.servicecomb.swagger.generator.core.unittest.UnitTestSwaggerUtils;
 import io.servicecomb.swagger.generator.core.utils.ClassUtils;
 import io.swagger.annotations.SwaggerDefinition;
+import io.swagger.models.Swagger;
+import javassist.CannotCompileException;
+import javassist.ClassPool;
+import javassist.CtClass;
+import mockit.Deencapsulation;
 
 @SwaggerDefinition
 public class TestClassUtils {
@@ -159,5 +168,40 @@ public class TestClassUtils {
   public void testCorrectClassNameEmptyPart() {
     String result = ClassUtils.correctClassName("..a..a..");
     Assert.assertThat(result, is("_._.a._.a._._"));
+  }
+
+  @Test
+  public void testGetOrCreateClass() {
+    String className = this.getClass().getCanonicalName();
+
+    Class<?> result = ClassUtils.getOrCreateClass(null, "", new Swagger(), null, className);
+
+    Assert.assertEquals(this.getClass(), result);
+  }
+
+  @Test
+  public void testGetOrCreateClassOnPropertyIsNull() {
+    ClassLoader classLoader = Mockito.mock(ClassLoader.class);
+    String className = this.getClass().getCanonicalName();
+    ClassPool classPool = Mockito.mock(ClassPool.class);
+    CtClass ctClass = Mockito.mock(CtClass.class);
+
+    Map<ClassLoader, ClassPool> classPoolMap = Deencapsulation.getField(JavassistUtils.class, "CLASSPOOLS");
+    classPoolMap.put(classLoader, classPool);
+
+    try {
+      Mockito.when(classLoader.loadClass(className)).thenReturn(null);
+    } catch (ClassNotFoundException e) {
+      fail("unexpected exception: " + e);
+    }
+    Mockito.when(classPool.getOrNull(className)).thenReturn(ctClass);
+    try {
+      Mockito.when(ctClass.toClass(classLoader, null)).thenReturn(this.getClass());
+    } catch (CannotCompileException e) {
+      fail("unexpected exception: " + e);
+    }
+
+    Class<?> result = ClassUtils.getOrCreateClass(classLoader, "", new Swagger(), null, className);
+    Assert.assertEquals(this.getClass(), result);
   }
 }

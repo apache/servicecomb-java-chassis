@@ -133,13 +133,15 @@ public final class ClassUtils {
     ClassConfig classConfig = new ClassConfig();
     classConfig.setClassName(clsName);
 
-    for (Entry<String, Property> entry : properties.entrySet()) {
-      JavaType propertyJavaType =
-          ConverterMgr.findJavaType(classLoader,
-              packageName,
-              swagger,
-              entry.getValue());
-      classConfig.addField(entry.getKey(), propertyJavaType);
+    if (null != properties) {
+      for (Entry<String, Property> entry : properties.entrySet()) {
+        JavaType propertyJavaType =
+            ConverterMgr.findJavaType(classLoader,
+                packageName,
+                swagger,
+                entry.getValue());
+        classConfig.addField(entry.getKey(), propertyJavaType);
+      }
     }
 
     cls = JavassistUtils.createClass(classLoader, classConfig);
