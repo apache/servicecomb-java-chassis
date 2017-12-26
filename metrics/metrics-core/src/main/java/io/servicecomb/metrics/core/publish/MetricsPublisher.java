@@ -17,6 +17,10 @@
 
 package io.servicecomb.metrics.core.publish;
 
+import io.servicecomb.metrics.core.metric.RegistryMetric;
+
 public interface MetricsPublisher {
-  String metrics(int pollerIndex);
+  RegistryMetric metrics();
+
+  RegistryMetric metricsWithWindowTimeIndex(int windowTimeIndex);
 }
