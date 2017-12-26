@@ -77,15 +77,18 @@ public class LocalProducerInvoker implements InvocationHandler {
     SwaggerProducerOperation producerOp = producer.findOperation(consumerOp.getSwaggerMethod().getName());
 
     consumerOp.getArgumentsMapper().toInvocation(args, invocation);
-    producerResponse = producerOp.doInvoke(invocation);
-    Object realResult = consumerOp.getResponseMapper().mapResponse(producerResponse);
+
+    CompletableFuture<Object> future = new CompletableFuture<>();
+    producerOp.invoke(invocation, ar -> {
+      producerResponse = ar;
+      Object realResult = consumerOp.getResponseMapper().mapResponse(producerResponse);
+      future.complete(realResult);
+    });
 
     if (CompletableFuture.class.equals(method.getReturnType())) {
-      CompletableFuture<Object> future = new CompletableFuture<>();
-      future.complete(realResult);
       return future;
     }
 
-    return realResult;
+    return future.get();
   }
 }

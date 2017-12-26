@@ -19,8 +19,10 @@ package io.servicecomb.swagger.invocation.models;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 import io.servicecomb.swagger.invocation.context.InvocationContext;
+import io.swagger.annotations.ApiOperation;
 
 public class PojoImpl {
   public int testSimple(int a, int b, int c) {
@@ -32,8 +34,11 @@ public class PojoImpl {
     return user;
   }
 
-  public String testSimpleAndObject(String prefix, Person user) {
-    return prefix + " " + user.getName();
+  @ApiOperation(nickname = "testSimpleAndObject", value = "")
+  public CompletableFuture<String> testSimpleAndObjectAsync(String prefix, Person user) {
+    CompletableFuture<String> future = new CompletableFuture<>();
+    future.complete(prefix + " " + user.getName());
+    return future;
   }
 
   public String testContext(InvocationContext context, String name) {
