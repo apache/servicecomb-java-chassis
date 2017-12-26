@@ -304,12 +304,6 @@ public class PojoIntegrationTestBase {
   }
 
   @Test
-  public void remoteCodeFirstPojo_sayHi2() {
-    String result = PojoService.codeFirst.sayHi2("world");
-    assertThat(result, is("world sayhi 2"));
-  }
-
-  @Test
   public void remoteCodeFirstPojo_isTrue() {
     boolean result = PojoService.codeFirst.isTrue();
     assertThat(result, is(true));

@@ -20,12 +20,14 @@ package io.servicecomb.demo.pojo.server;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 
 import io.servicecomb.demo.CodeFirstPojoIntf;
 import io.servicecomb.demo.compute.Person;
 import io.servicecomb.demo.server.User;
 import io.servicecomb.provider.pojo.RpcSchema;
 import io.servicecomb.swagger.invocation.context.ContextUtils;
+import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.SwaggerDefinition;
 
 @RpcSchema()
@@ -85,8 +87,11 @@ public class CodeFirstPojo implements CodeFirstPojoIntf {
     return name + " sayhi";
   }
 
-  public String sayHi2(String name) {
-    return name + " sayhi 2";
+  @ApiOperation(nickname = "sayHi2", value = "")
+  public CompletableFuture<String> sayHi2Async(String name) {
+    CompletableFuture<String> future = new CompletableFuture<>();
+    future.complete(name + " sayhi 2");
+    return future;
   }
 
   public boolean isTrue() {
