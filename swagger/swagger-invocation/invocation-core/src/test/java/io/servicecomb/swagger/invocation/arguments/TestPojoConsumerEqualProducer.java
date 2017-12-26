@@ -19,6 +19,7 @@ package io.servicecomb.swagger.invocation.arguments;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 import org.junit.Assert;
 import org.junit.BeforeClass;
@@ -74,6 +75,20 @@ public class TestPojoConsumerEqualProducer {
     person.setName("abc");
 
     Person result = proxy.testObject(person);
+
+    Person swaggerPerson = invoker.getSwaggerArgument(0);
+    Assert.assertEquals(person, swaggerPerson);
+
+    Assert.assertEquals("hello abc", result.getName());
+  }
+
+  @Test
+  public void testObjectAsync() throws Exception {
+    Person person = new Person();
+    person.setName("abc");
+
+    CompletableFuture<Person> future = proxy.testObjectAsync(person);
+    Person result = future.get();
 
     Person swaggerPerson = invoker.getSwaggerArgument(0);
     Assert.assertEquals(person, swaggerPerson);

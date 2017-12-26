@@ -22,6 +22,7 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
 import io.servicecomb.foundation.common.utils.BeanUtils;
@@ -88,9 +89,9 @@ public class SwaggerEnvironment {
     consumer.setConsumerIntf(consumerIntf);
     consumer.setSwaggerIntf(swaggerIntf);
     for (Method consumerMethod : consumerIntf.getMethods()) {
-      String methodName = consumerMethod.getName();
+      String swaggerMethodName = findSwaggerMethodName(consumerMethod);
       // consumer参数不一定等于swagger参数
-      Method swaggerMethod = ReflectUtils.findMethod(swaggerIntf, methodName);
+      Method swaggerMethod = ReflectUtils.findMethod(swaggerIntf, swaggerMethodName);
       if (swaggerMethod == null) {
         // consumer大于契约，非法
         String msg = String.format("consumer method %s:%s not exist in swagger.",
@@ -106,7 +107,7 @@ public class SwaggerEnvironment {
           consumerMethod.getGenericReturnType());
 
       SwaggerConsumerOperation op = new SwaggerConsumerOperation();
-      op.setName(methodName);
+      op.setName(consumerMethod.getName());
       op.setConsumerMethod(consumerMethod);
       op.setSwaggerMethod(swaggerMethod);
       op.setArgumentsMapper(argsMapper);
@@ -116,6 +117,15 @@ public class SwaggerEnvironment {
     }
 
     return consumer;
+  }
+
+  protected String findSwaggerMethodName(Method consumerMethod) {
+    ApiOperation apiOperationAnnotation = consumerMethod.getAnnotation(ApiOperation.class);
+    if (apiOperationAnnotation == null || StringUtils.isEmpty(apiOperationAnnotation.nickname())) {
+      return consumerMethod.getName();
+    }
+
+    return apiOperationAnnotation.nickname();
   }
 
   public SwaggerProducer createProducer(Object producerInstance, Swagger swagger) {

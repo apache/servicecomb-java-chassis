@@ -19,6 +19,7 @@ package io.servicecomb.swagger.engine.unittest;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
+import java.util.concurrent.CompletableFuture;
 
 import io.servicecomb.swagger.engine.SwaggerConsumer;
 import io.servicecomb.swagger.engine.SwaggerConsumerOperation;
@@ -73,10 +74,18 @@ public class LocalProducerInvoker implements InvocationHandler {
     invocation = new SwaggerInvocation();
 
     SwaggerConsumerOperation consumerOp = consumer.findOperation(method.getName());
-    SwaggerProducerOperation producerOp = producer.findOperation(method.getName());
+    SwaggerProducerOperation producerOp = producer.findOperation(consumerOp.getSwaggerMethod().getName());
 
     consumerOp.getArgumentsMapper().toInvocation(args, invocation);
     producerResponse = producerOp.doInvoke(invocation);
-    return consumerOp.getResponseMapper().mapResponse(producerResponse);
+    Object realResult = consumerOp.getResponseMapper().mapResponse(producerResponse);
+
+    if (CompletableFuture.class.equals(method.getReturnType())) {
+      CompletableFuture<Object> future = new CompletableFuture<>();
+      future.complete(realResult);
+      return future;
+    }
+
+    return realResult;
   }
 }
