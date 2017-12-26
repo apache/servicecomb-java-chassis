@@ -180,11 +180,19 @@ public class SwaggerEnvironment {
   private Map<String, Method> retrieveVisibleMethods(Class<?> clazz) {
     Map<String, Method> visibleMethods = new HashMap<>();
     for (Method method : clazz.getMethods()) {
-      if (method.isAnnotationPresent(ApiOperation.class) &&
-          method.getAnnotation(ApiOperation.class).hidden()) {
-        continue;
+      String methodName = method.getName();
+      ApiOperation apiOperationAnnotation = method.getAnnotation(ApiOperation.class);
+      if (apiOperationAnnotation != null) {
+        if (apiOperationAnnotation.hidden()) {
+          continue;
+        }
+
+        if (StringUtils.isNotEmpty(apiOperationAnnotation.nickname())) {
+          methodName = apiOperationAnnotation.nickname();
+        }
       }
-      visibleMethods.put(method.getName(), method);
+
+      visibleMethods.put(methodName, method);
     }
     return visibleMethods;
   }

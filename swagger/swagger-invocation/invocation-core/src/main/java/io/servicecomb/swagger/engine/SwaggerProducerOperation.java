@@ -18,6 +18,7 @@ package io.servicecomb.swagger.engine;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.concurrent.CompletableFuture;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -105,12 +106,43 @@ public class SwaggerProducerOperation {
   }
 
   public void invoke(SwaggerInvocation invocation, AsyncResponse asyncResp) {
+    if (CompletableFuture.class.equals(producerMethod.getReturnType())) {
+      completableFutureInvoke(invocation, asyncResp);
+      return;
+    }
+
+    syncInvoke(invocation, asyncResp);
+  }
+
+  public void completableFutureInvoke(SwaggerInvocation invocation, AsyncResponse asyncResp) {
     ContextUtils.setInvocationContext(invocation);
-
-    Response response = doInvoke(invocation);
-
+    doCompletableFutureInvoke(invocation, asyncResp);
     ContextUtils.removeInvocationContext();
+  }
 
+  @SuppressWarnings("unchecked")
+  public void doCompletableFutureInvoke(SwaggerInvocation invocation, AsyncResponse asyncResp) {
+    try {
+      Object[] args = argumentsMapper.toProducerArgs(invocation);
+      Object result = producerMethod.invoke(producerInstance, args);
+
+      ((CompletableFuture<Object>) result).whenComplete((realResult, ex) -> {
+        if (ex == null) {
+          asyncResp.handle(responseMapper.mapResponse(invocation.getStatus(), realResult));
+          return;
+        }
+
+        asyncResp.handle(processException(ex));
+      });
+    } catch (Throwable e) {
+      asyncResp.handle(processException(e));
+    }
+  }
+
+  public void syncInvoke(SwaggerInvocation invocation, AsyncResponse asyncResp) {
+    ContextUtils.setInvocationContext(invocation);
+    Response response = doInvoke(invocation);
+    ContextUtils.removeInvocationContext();
     asyncResp.handle(response);
   }
 
