@@ -18,13 +18,18 @@
 package io.servicecomb.swagger.invocation.models;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 import io.servicecomb.swagger.invocation.context.InvocationContext;
+import io.swagger.annotations.ApiOperation;
 
 public interface PojoConsumerIntf {
   int testSimple(int a, int b, int c);
 
   Person testObject(Person user);
+
+  @ApiOperation(nickname = "testObject", value = "")
+  CompletableFuture<Person> testObjectAsync(Person user);
 
   String testSimpleAndObject(String prefix, Person user);
 

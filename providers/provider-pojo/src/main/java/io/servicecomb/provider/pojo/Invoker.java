@@ -94,10 +94,11 @@ public class Invoker implements InvocationHandler {
       }
     }
 
-    Invocation invocation =
-        InvocationFactory.forConsumer(referenceConfig, schemaMeta, method.getName(), null);
-
     SwaggerConsumerOperation consumerOperation = swaggerConsumer.findOperation(method.getName());
+    Invocation invocation =
+        InvocationFactory
+            .forConsumer(referenceConfig, schemaMeta, consumerOperation.getSwaggerMethod().getName(), null);
+
     consumerOperation.getArgumentsMapper().toInvocation(args, invocation);
 
     if (CompletableFuture.class.equals(method.getReturnType())) {
