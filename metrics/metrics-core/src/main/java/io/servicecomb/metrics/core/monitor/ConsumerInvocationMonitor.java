@@ -17,8 +17,9 @@
 
 package io.servicecomb.metrics.core.monitor;
 
-import io.servicecomb.metrics.core.MetricsConst;
-import io.servicecomb.metrics.core.metric.ConsumerInvocationMetric;
+
+import io.servicecomb.metrics.common.ConsumerInvocationMetric;
+import io.servicecomb.metrics.common.MetricsConst;
 
 public class ConsumerInvocationMonitor extends InvocationMonitor {
   private final TimerMonitor consumerLatency;

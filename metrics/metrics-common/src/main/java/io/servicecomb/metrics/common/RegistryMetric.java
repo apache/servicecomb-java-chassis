@@ -15,20 +15,19 @@
  * limitations under the License.
  */
 
-package io.servicecomb.metrics.core.metric;
+package io.servicecomb.metrics.common;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import io.servicecomb.metrics.core.MetricsConst;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class RegistryMetric {
+  private InstanceMetric instanceMetric;
 
-  private final InstanceMetric instanceMetric;
+  private Map<String, ConsumerInvocationMetric> consumerMetrics;
 
-  private final Map<String, ConsumerInvocationMetric> consumerMetrics;
-
-  private final Map<String, ProducerInvocationMetric> producerMetrics;
+  private Map<String, ProducerInvocationMetric> producerMetrics;
 
   public InstanceMetric getInstanceMetric() {
     return instanceMetric;
@@ -42,10 +41,9 @@ public class RegistryMetric {
     return producerMetrics;
   }
 
-  public RegistryMetric(SystemMetric systemMetric,
-      Map<String, ConsumerInvocationMetric> consumerMetrics,
-      Map<String, ProducerInvocationMetric> producerMetrics) {
-
+  public RegistryMetric(@JsonProperty("systemMetric") SystemMetric systemMetric,
+      @JsonProperty("consumerMetrics") Map<String, ConsumerInvocationMetric> consumerMetrics,
+      @JsonProperty("producerMetrics") Map<String, ProducerInvocationMetric> producerMetrics) {
     this.consumerMetrics = consumerMetrics;
     this.producerMetrics = producerMetrics;
 

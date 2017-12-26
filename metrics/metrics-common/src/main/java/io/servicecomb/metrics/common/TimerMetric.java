@@ -15,10 +15,12 @@
  * limitations under the License.
  */
 
-package io.servicecomb.metrics.core.metric;
+package io.servicecomb.metrics.common;
 
 import java.util.HashMap;
 import java.util.Map;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class TimerMetric {
   private final String prefix;
@@ -57,7 +59,9 @@ public class TimerMetric {
     this(prefix, 0, 0, 0, 0);
   }
 
-  public TimerMetric(String prefix, long total, long count, long min, long max) {
+  public TimerMetric(@JsonProperty("prefix") String prefix,
+      @JsonProperty("total") long total, @JsonProperty("count") long count,
+      @JsonProperty("min") long min, @JsonProperty("max") long max) {
     this.prefix = prefix;
     this.total = total;
     this.count = count;

@@ -15,32 +15,14 @@
  * limitations under the License.
  */
 
-package io.servicecomb.metrics.core.metric;
+package io.servicecomb.metrics.common;
 
-public class InstanceMetric {
-  private final SystemMetric systemMetric;
+public class MetricsConst {
+  public static final String CONSUMER_PREFIX_TEMPLATE = "servicecomb.%s.consumer";
 
-  private final ConsumerInvocationMetric consumerMetric;
+  public static final String PRODUCER_PREFIX_TEMPLATE = "servicecomb.%s.producer";
 
-  private final ProducerInvocationMetric producerMetric;
+  public static final String INSTANCE_CONSUMER_PREFIX = String.format(CONSUMER_PREFIX_TEMPLATE, "instance");
 
-  public SystemMetric getSystemMetric() {
-    return systemMetric;
-  }
-
-  public ConsumerInvocationMetric getConsumerMetric() {
-    return consumerMetric;
-  }
-
-  public ProducerInvocationMetric getProducerMetric() {
-    return producerMetric;
-  }
-
-  public InstanceMetric(SystemMetric systemMetric,
-      ConsumerInvocationMetric consumerMetric,
-      ProducerInvocationMetric producerMetric) {
-    this.systemMetric = systemMetric;
-    this.consumerMetric = consumerMetric;
-    this.producerMetric = producerMetric;
-  }
+  public static final String INSTANCE_PRODUCER_PREFIX = String.format(PRODUCER_PREFIX_TEMPLATE, "instance");
 }

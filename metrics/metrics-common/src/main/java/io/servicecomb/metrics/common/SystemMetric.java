@@ -15,10 +15,12 @@
  * limitations under the License.
  */
 
-package io.servicecomb.metrics.core.metric;
+package io.servicecomb.metrics.common;
 
 import java.util.HashMap;
 import java.util.Map;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class SystemMetric {
   private final double cpuLoad;
@@ -81,9 +83,12 @@ public class SystemMetric {
     return nonHeapUsed;
   }
 
-  public SystemMetric(double cpuLoad, int cpuRunningThreads,
-      long heapInit, long heapMax, long heapCommit, long heapUsed,
-      long nonHeapInit, long nonHeapMax, long nonHeapCommit, long nonHeapUsed) {
+  public SystemMetric(@JsonProperty("cpuLoad") double cpuLoad,
+      @JsonProperty("cpuRunningThreads") int cpuRunningThreads,
+      @JsonProperty("heapInit") long heapInit, @JsonProperty("heapMax") long heapMax,
+      @JsonProperty("heapCommit") long heapCommit, @JsonProperty("heapUsed") long heapUsed,
+      @JsonProperty("nonHeapInit") long nonHeapInit, @JsonProperty("nonHeapMax") long nonHeapMax,
+      @JsonProperty("nonHeapCommit") long nonHeapCommit, @JsonProperty("nonHeapUsed") long nonHeapUsed) {
     this.cpuLoad = cpuLoad;
     this.cpuRunningThreads = cpuRunningThreads;
     this.heapInit = heapInit;

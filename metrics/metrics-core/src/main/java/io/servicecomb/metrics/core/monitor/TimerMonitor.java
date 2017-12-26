@@ -24,7 +24,7 @@ import com.netflix.servo.monitor.MinGauge;
 import com.netflix.servo.monitor.MonitorConfig;
 import com.netflix.servo.monitor.StepCounter;
 
-import io.servicecomb.metrics.core.metric.TimerMetric;
+import io.servicecomb.metrics.common.TimerMetric;
 
 public class TimerMonitor {
   private final String prefix;

@@ -15,14 +15,23 @@
  * limitations under the License.
  */
 
-package io.servicecomb.metrics.core;
+package io.servicecomb.metrics.common;
 
-public class MetricsConst {
-  public static final String CONSUMER_PREFIX_TEMPLATE = "servicecomb.%s.consumer";
+public class InvocationMetric {
+  private final String operationName;
 
-  public static final String PRODUCER_PREFIX_TEMPLATE = "servicecomb.%s.producer";
+  private final String prefix;
 
-  public static final String INSTANCE_CONSUMER_PREFIX = String.format(CONSUMER_PREFIX_TEMPLATE, "instance");
+  public String getOperationName() {
+    return operationName;
+  }
 
-  public static final String INSTANCE_PRODUCER_PREFIX = String.format(PRODUCER_PREFIX_TEMPLATE, "instance");
+  public String getPrefix() {
+    return prefix;
+  }
+
+  public InvocationMetric(String operationName, String prefix) {
+    this.operationName = operationName;
+    this.prefix = prefix;
+  }
 }

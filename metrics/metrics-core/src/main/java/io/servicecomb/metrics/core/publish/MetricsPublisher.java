@@ -17,7 +17,7 @@
 
 package io.servicecomb.metrics.core.publish;
 
-import io.servicecomb.metrics.core.metric.RegistryMetric;
+import io.servicecomb.metrics.common.RegistryMetric;
 
 public interface MetricsPublisher {
   RegistryMetric metrics();

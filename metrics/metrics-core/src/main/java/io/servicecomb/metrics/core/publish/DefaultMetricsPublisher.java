@@ -21,7 +21,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
-import io.servicecomb.metrics.core.metric.RegistryMetric;
+import io.servicecomb.metrics.common.RegistryMetric;
 import io.servicecomb.provider.rest.common.RestSchema;
 
 @RestSchema(schemaId = "metricsEndpoint")

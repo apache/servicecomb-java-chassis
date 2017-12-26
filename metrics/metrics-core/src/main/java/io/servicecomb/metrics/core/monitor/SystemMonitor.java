@@ -17,7 +17,7 @@
 
 package io.servicecomb.metrics.core.monitor;
 
-import io.servicecomb.metrics.core.metric.SystemMetric;
+import io.servicecomb.metrics.common.SystemMetric;
 
 public interface SystemMonitor {
   double getCpuLoad();
