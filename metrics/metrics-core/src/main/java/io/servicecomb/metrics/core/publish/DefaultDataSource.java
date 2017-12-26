@@ -25,7 +25,7 @@ import org.springframework.stereotype.Component;
 import com.netflix.config.DynamicPropertyFactory;
 import com.netflix.servo.monitor.Pollers;
 
-import io.servicecomb.metrics.core.metric.RegistryMetric;
+import io.servicecomb.metrics.common.RegistryMetric;
 import io.servicecomb.metrics.core.monitor.RegistryMonitor;
 
 @Component

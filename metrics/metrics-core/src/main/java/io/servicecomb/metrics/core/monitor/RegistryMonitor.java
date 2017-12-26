@@ -24,9 +24,9 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import io.servicecomb.metrics.core.metric.ConsumerInvocationMetric;
-import io.servicecomb.metrics.core.metric.ProducerInvocationMetric;
-import io.servicecomb.metrics.core.metric.RegistryMetric;
+import io.servicecomb.metrics.common.ConsumerInvocationMetric;
+import io.servicecomb.metrics.common.ProducerInvocationMetric;
+import io.servicecomb.metrics.common.RegistryMetric;
 
 @Component
 public class RegistryMonitor {

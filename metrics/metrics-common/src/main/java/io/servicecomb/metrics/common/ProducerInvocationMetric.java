@@ -15,10 +15,12 @@
  * limitations under the License.
  */
 
-package io.servicecomb.metrics.core.metric;
+package io.servicecomb.metrics.common;
 
 import java.util.HashMap;
 import java.util.Map;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class ProducerInvocationMetric extends InvocationMetric {
   private final long waitInQueue;
@@ -51,8 +53,13 @@ public class ProducerInvocationMetric extends InvocationMetric {
     return producerCall;
   }
 
-  public ProducerInvocationMetric(String operationName, String prefix, long waitInQueue,
-      TimerMetric lifeTimeInQueue, TimerMetric executionTime, TimerMetric producerLatency, CallMetric producerCall) {
+  public ProducerInvocationMetric(@JsonProperty("operationName") String operationName,
+      @JsonProperty("prefix") String prefix,
+      @JsonProperty("waitInQueue") long waitInQueue,
+      @JsonProperty("lifeTimeInQueue") TimerMetric lifeTimeInQueue,
+      @JsonProperty("executionTime") TimerMetric executionTime,
+      @JsonProperty("producerLatency") TimerMetric producerLatency,
+      @JsonProperty("producerCall") CallMetric producerCall) {
     super(operationName, prefix);
     this.waitInQueue = waitInQueue;
     this.lifeTimeInQueue = lifeTimeInQueue;

@@ -24,7 +24,7 @@ import java.lang.management.ThreadMXBean;
 
 import org.springframework.stereotype.Component;
 
-import io.servicecomb.metrics.core.metric.SystemMetric;
+import io.servicecomb.metrics.common.SystemMetric;
 
 @Component
 public class DefaultSystemMonitor implements SystemMonitor {

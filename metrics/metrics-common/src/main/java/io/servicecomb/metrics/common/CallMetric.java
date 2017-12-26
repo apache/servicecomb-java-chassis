@@ -15,41 +15,47 @@
  * limitations under the License.
  */
 
-package io.servicecomb.metrics.core.metric;
+package io.servicecomb.metrics.common;
 
 import java.util.HashMap;
 import java.util.Map;
 
-public class ConsumerInvocationMetric extends InvocationMetric {
-  private final TimerMetric consumerLatency;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
-  private final CallMetric consumerCall;
+public class CallMetric {
+  private final String prefix;
 
-  public TimerMetric getConsumerLatency() {
-    return consumerLatency;
+  private final long total;
+
+  private final double tps;
+
+  public long getTotal() {
+    return total;
   }
 
-  public CallMetric getConsumerCall() {
-    return consumerCall;
+  public double getTps() {
+    return tps;
   }
 
-  public ConsumerInvocationMetric(String operationName, String prefix,
-      TimerMetric consumerLatency, CallMetric consumerCall) {
-    super(operationName, prefix);
-    this.consumerLatency = consumerLatency;
-    this.consumerCall = consumerCall;
+  public CallMetric(String prefix) {
+    this(prefix, 0, 0);
   }
 
-  public ConsumerInvocationMetric merge(ConsumerInvocationMetric metric) {
-    return new ConsumerInvocationMetric(this.getOperationName(), this.getPrefix(),
-        metric.getConsumerLatency().merge(consumerLatency),
-        metric.getConsumerCall().merge(consumerCall));
+  public CallMetric(@JsonProperty("prefix") String prefix, @JsonProperty("total") long total,
+      @JsonProperty("tps") double tps) {
+    this.prefix = prefix;
+    this.total = total;
+    this.tps = tps;
+  }
+
+  public CallMetric merge(CallMetric metric) {
+    return new CallMetric(this.prefix, this.total + metric.total, this.tps + metric.tps);
   }
 
   public Map<String, Number> toMap() {
     Map<String, Number> metrics = new HashMap<>();
-    metrics.putAll(consumerLatency.toMap());
-    metrics.putAll(consumerCall.toMap());
+    metrics.put(prefix + ".total", total);
+    metrics.put(prefix + ".tps", tps);
     return metrics;
   }
 }

@@ -19,12 +19,12 @@ package io.servicecomb.metrics.core.publish;
 
 import java.util.List;
 
-import io.servicecomb.metrics.core.metric.RegistryMetric;
+import io.servicecomb.metrics.common.RegistryMetric;
 
 public interface DataSource {
 
   /**  What's the WindowTime ?
-  We all know there are two major type of metric :
+   We all know there are two major type of metric :
    1.Time-unrelated,you can get the latest value any time immediately:
    Counter -> increase or decrease
    Guage -> set a certain one value
@@ -34,7 +34,7 @@ public interface DataSource {
    Rate -> like TPS,algorithm is f = sum / second
 
    Will be return "servicecomb.metrics.window_time" setting in microservice.yaml
-  */
+   */
   List<Long> getAppliedWindowTime();
 
   //return getRegistryMetric(0)

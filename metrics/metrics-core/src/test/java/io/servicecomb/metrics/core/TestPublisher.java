@@ -23,7 +23,7 @@ import java.util.Map;
 import org.junit.Assert;
 import org.junit.Test;
 
-import io.servicecomb.metrics.core.metric.RegistryMetric;
+import io.servicecomb.metrics.common.RegistryMetric;
 import io.servicecomb.metrics.core.monitor.DefaultSystemMonitor;
 import io.servicecomb.metrics.core.monitor.RegistryMonitor;
 import io.servicecomb.metrics.core.monitor.SystemMonitor;

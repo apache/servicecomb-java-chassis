@@ -33,5 +33,6 @@
   <modules>
     <module>metrics-core</module>
     <module>metrics-sample</module>
+    <module>metrics-common</module>
   </modules>
 </project>

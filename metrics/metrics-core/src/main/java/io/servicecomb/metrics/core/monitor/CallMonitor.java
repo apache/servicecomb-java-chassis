@@ -21,7 +21,7 @@ import com.netflix.servo.monitor.BasicCounter;
 import com.netflix.servo.monitor.MonitorConfig;
 import com.netflix.servo.monitor.StepCounter;
 
-import io.servicecomb.metrics.core.metric.CallMetric;
+import io.servicecomb.metrics.common.CallMetric;
 
 public class CallMonitor {
   private final String prefix;
