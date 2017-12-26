@@ -22,6 +22,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 import javax.inject.Inject;
 
@@ -35,7 +37,7 @@ import io.servicecomb.provider.pojo.RpcReference;
 
 public class CodeFirstPojoClient {
   @RpcReference(microserviceName = "pojo", schemaId = "io.servicecomb.demo.CodeFirstPojoIntf")
-  public CodeFirstPojoIntf codeFirstAnnotation;
+  public CodeFirstPojoClientIntf codeFirstAnnotation;
 
   @RpcReference(microserviceName = "pojo")
   public CodeFirstPojoIntf codeFirstAnnotationEmptySchemaId;
@@ -68,6 +70,20 @@ public class CodeFirstPojoClient {
     //            testCodeFirstRawJsonString(template, cseUrlPrefix);
     testCodeFirstSayHello(codeFirst);
     testCodeFirstReduce(codeFirst);
+    testCodeFirstCompletableFuture(codeFirst);
+  }
+
+  private void testCodeFirstCompletableFuture(CodeFirstPojoIntf codeFirst) {
+    if (!CodeFirstPojoClientIntf.class.isInstance(codeFirst)) {
+      return;
+    }
+
+    CompletableFuture<String> future = ((CodeFirstPojoClientIntf) codeFirst).sayHiAsync("someone");
+    try {
+      TestMgr.check("someone sayhi", future.get());
+    } catch (InterruptedException | ExecutionException e) {
+      throw new IllegalStateException(e);
+    }
   }
 
   private void testCodeFirstUserMap(CodeFirstPojoIntf codeFirst) {
