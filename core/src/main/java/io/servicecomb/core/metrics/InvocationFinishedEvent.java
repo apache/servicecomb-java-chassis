@@ -25,8 +25,6 @@ public class InvocationFinishedEvent implements Event {
 
   private final InvocationType invocationType;
 
-  private final long finishedTime;
-
   private final long processElapsedNanoTime;
 
   private final long totalElapsedNanoTime;
@@ -47,12 +45,11 @@ public class InvocationFinishedEvent implements Event {
     return totalElapsedNanoTime;
   }
 
-  public InvocationFinishedEvent(String operationName, InvocationType invocationType, long finishedTime,
+  public InvocationFinishedEvent(String operationName, InvocationType invocationType,
       long processElapsedNanoTime,
       long totalElapsedNanoTime) {
     this.operationName = operationName;
     this.invocationType = invocationType;
-    this.finishedTime = finishedTime;
     this.processElapsedNanoTime = processElapsedNanoTime;
     this.totalElapsedNanoTime = totalElapsedNanoTime;
   }
