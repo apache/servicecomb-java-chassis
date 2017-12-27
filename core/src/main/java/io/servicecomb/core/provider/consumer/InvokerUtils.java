@@ -23,7 +23,10 @@ import org.slf4j.LoggerFactory;
 import io.servicecomb.core.Invocation;
 import io.servicecomb.core.definition.SchemaMeta;
 import io.servicecomb.core.invocation.InvocationFactory;
+import io.servicecomb.core.metrics.InvocationStartedEvent;
+import io.servicecomb.foundation.common.utils.EventUtils;
 import io.servicecomb.swagger.invocation.AsyncResponse;
+import io.servicecomb.swagger.invocation.InvocationType;
 import io.servicecomb.swagger.invocation.Response;
 import io.servicecomb.swagger.invocation.exception.ExceptionFactory;
 import io.servicecomb.swagger.invocation.exception.InvocationException;
@@ -61,6 +64,7 @@ public final class InvokerUtils {
 
   public static Response innerSyncInvoke(Invocation invocation) {
     try {
+      triggerStartedEvent(invocation);
       SyncResponseExecutor respExecutor = new SyncResponseExecutor();
       invocation.setResponseExecutor(respExecutor);
 
@@ -72,11 +76,14 @@ public final class InvokerUtils {
           String.format("invoke failed, %s", invocation.getOperationMeta().getMicroserviceQualifiedName());
       LOGGER.debug(msg, e);
       return Response.createConsumerFail(e);
+    } finally {
+      invocation.triggerFinishedEvent();
     }
   }
 
   public static void reactiveInvoke(Invocation invocation, AsyncResponse asyncResp) {
     try {
+      triggerStartedEvent(invocation);
       ReactiveResponseExecutor respExecutor = new ReactiveResponseExecutor();
       invocation.setResponseExecutor(respExecutor);
 
@@ -84,11 +91,20 @@ public final class InvokerUtils {
     } catch (Throwable e) {
       LOGGER.error("invoke failed, {}", invocation.getOperationMeta().getMicroserviceQualifiedName());
       asyncResp.consumerFail(e);
+    } finally {
+      invocation.triggerFinishedEvent();
     }
   }
 
   @Deprecated
   public static Object invoke(Invocation invocation) {
     return syncInvoke(invocation);
+  }
+
+  private static void triggerStartedEvent(Invocation invocation) {
+    long startTime = System.nanoTime();
+    EventUtils.triggerEvent(new InvocationStartedEvent(invocation.getMicroserviceQualifiedName(),
+        InvocationType.CONSUMER, startTime));
+    invocation.setStartTime(startTime);
   }
 }

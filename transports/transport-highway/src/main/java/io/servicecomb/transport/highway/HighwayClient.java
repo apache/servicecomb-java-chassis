@@ -26,9 +26,7 @@ import io.servicecomb.codec.protobuf.definition.OperationProtobuf;
 import io.servicecomb.codec.protobuf.definition.ProtobufManager;
 import io.servicecomb.core.Invocation;
 import io.servicecomb.core.definition.OperationMeta;
-import io.servicecomb.core.metrics.InvocationStartedEvent;
 import io.servicecomb.core.transport.AbstractTransport;
-import io.servicecomb.foundation.common.utils.EventUtils;
 import io.servicecomb.foundation.ssl.SSLCustom;
 import io.servicecomb.foundation.ssl.SSLOption;
 import io.servicecomb.foundation.ssl.SSLOptionFactory;
@@ -37,7 +35,6 @@ import io.servicecomb.foundation.vertx.VertxUtils;
 import io.servicecomb.foundation.vertx.client.ClientPoolManager;
 import io.servicecomb.foundation.vertx.client.tcp.TcpClientConfig;
 import io.servicecomb.swagger.invocation.AsyncResponse;
-import io.servicecomb.swagger.invocation.InvocationType;
 import io.servicecomb.swagger.invocation.Response;
 import io.vertx.core.DeploymentOptions;
 import io.vertx.core.Vertx;
@@ -69,7 +66,11 @@ public class HighwayClient {
   private TcpClientConfig createTcpClientConfig() {
     TcpClientConfig tcpClientConfig = new TcpClientConfig();
     DynamicLongProperty prop = AbstractTransport.getRequestTimeoutProperty();
-    prop.addCallback(() -> tcpClientConfig.setRequestTimeoutMillis(prop.get()));
+    prop.addCallback(new Runnable() {
+      public void run() {
+        tcpClientConfig.setRequestTimeoutMillis(prop.get());
+      }
+    });
     tcpClientConfig.setRequestTimeoutMillis(prop.get());
 
     if (this.sslEnabled) {
@@ -88,12 +89,6 @@ public class HighwayClient {
   }
 
   public void send(Invocation invocation, AsyncResponse asyncResp) throws Exception {
-
-    long startTime = System.nanoTime();
-    EventUtils.triggerEvent(new InvocationStartedEvent(invocation.getMicroserviceQualifiedName(),
-        InvocationType.CONSUMER, startTime));
-    invocation.setStartTime(startTime);
-
     HighwayClientConnectionPool tcpClientPool = clientMgr.findThreadBindClientPool();
 
     OperationMeta operationMeta = invocation.getOperationMeta();
@@ -105,26 +100,22 @@ public class HighwayClient {
     tcpClientPool.send(tcpClient, clientPackage, ar -> {
       // 此时是在网络线程中，转换线程
       invocation.getResponseExecutor().execute(() -> {
-        try {
-          if (ar.failed()) {
-            // 只会是本地异常
-            asyncResp.consumerFail(ar.cause());
-            return;
-          }
+        if (ar.failed()) {
+          // 只会是本地异常
+          asyncResp.consumerFail(ar.cause());
+          return;
+        }
 
-          // 处理应答
-          try {
-            Response response =
-                HighwayCodec.decodeResponse(invocation,
-                    operationProtobuf,
-                    ar.result(),
-                    tcpClient.getProtobufFeature());
-            asyncResp.complete(response);
-          } catch (Throwable e) {
-            asyncResp.consumerFail(e);
-          }
-        } finally {
-          invocation.triggerFinishedEvent();
+        // 处理应答
+        try {
+          Response response =
+              HighwayCodec.decodeResponse(invocation,
+                  operationProtobuf,
+                  ar.result(),
+                  tcpClient.getProtobufFeature());
+          asyncResp.complete(response);
+        } catch (Throwable e) {
+          asyncResp.consumerFail(e);
         }
       });
     });
