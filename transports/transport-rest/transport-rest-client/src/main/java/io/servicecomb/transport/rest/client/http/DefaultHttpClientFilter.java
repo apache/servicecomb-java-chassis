@@ -69,7 +69,8 @@ public class DefaultHttpClientFilter implements HttpClientFilter {
     ProduceProcessor produceProcessor = findProduceProcessor(swaggerRestOperation, responseEx);
     if (produceProcessor == null) {
       String msg =
-          String.format("path %s, statusCode %d, reasonPhrase %s, response content-type %s is not supported",
+          String.format("method %s, path %s, statusCode %d, reasonPhrase %s, response content-type %s is not supported",
+              swaggerRestOperation.getHttpMethod(),
               swaggerRestOperation.getAbsolutePath(),
               responseEx.getStatus(),
               responseEx.getStatusType().getReasonPhrase(),
