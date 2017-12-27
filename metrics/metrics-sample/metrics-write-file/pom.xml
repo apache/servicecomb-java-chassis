@@ -28,5 +28,11 @@
 
   <artifactId>metrics-write-file</artifactId>
 
+  <dependencies>
+    <dependency>
+      <groupId>io.servicecomb</groupId>
+      <artifactId>metrics-write-file-config</artifactId>
+    </dependency>
+  </dependencies>
 
 </project>

@@ -18,23 +18,31 @@
 package io.servicecomb.metrics.sample.writefile;
 
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
-import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import io.servicecomb.metrics.sample.writefile.config.FileWriterManager;
+import io.servicecomb.serviceregistry.RegistryUtils;
+import io.servicecomb.serviceregistry.api.registry.Microservice;
 
 @Component
 public class MetricsFileOutput {
 
-  private final Map<String, org.slf4j.Logger> allLoggers = new ConcurrentHashMap<>();
+  private final FileWriterManager fileWriterManager;
 
-  public MetricsFileOutput() {
+  private final String filePrefix;
+
+  @Autowired
+  public MetricsFileOutput(FileWriterManager fileWriterManager) {
+    this.fileWriterManager = fileWriterManager;
+    Microservice microservice = RegistryUtils.getMicroservice();
+    filePrefix = microservice.getAppId() + "." + microservice.getServiceName() + ".";
   }
 
   public void output(Map<String, String> metrics) {
     for (String metricName : metrics.keySet()) {
-      org.slf4j.Logger logger = allLoggers.computeIfAbsent(metricName, l -> LoggerFactory.getLogger(metricName));
-      logger.error(metrics.get(metricName));
+      fileWriterManager.write(metricName, filePrefix, metrics.get(metricName));
     }
   }
 }
