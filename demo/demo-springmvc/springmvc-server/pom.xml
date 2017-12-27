@@ -36,6 +36,12 @@
 			<groupId>io.servicecomb</groupId>
 			<artifactId>provider-springmvc</artifactId>
 		</dependency>
+
+		<dependency>
+			<groupId>io.servicecomb</groupId>
+			<artifactId>metrics-core</artifactId>
+		</dependency>
+
 	</dependencies>
 
 	<properties>
