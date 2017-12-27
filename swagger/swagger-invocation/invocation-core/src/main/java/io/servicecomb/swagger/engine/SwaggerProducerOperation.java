@@ -20,20 +20,15 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.concurrent.CompletableFuture;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import io.servicecomb.swagger.invocation.AsyncResponse;
 import io.servicecomb.swagger.invocation.Response;
 import io.servicecomb.swagger.invocation.SwaggerInvocation;
 import io.servicecomb.swagger.invocation.arguments.producer.ProducerArgumentsMapper;
 import io.servicecomb.swagger.invocation.context.ContextUtils;
-import io.servicecomb.swagger.invocation.exception.InvocationException;
+import io.servicecomb.swagger.invocation.exception.ExceptionFactory;
 import io.servicecomb.swagger.invocation.response.producer.ProducerResponseMapper;
 
 public class SwaggerProducerOperation {
-  private static final Logger LOGGER = LoggerFactory.getLogger(SwaggerProducerOperation.class);
-
   private String name;
 
   // 因为存在aop场景，所以，producerClass不一定等于producerInstance.getClass()
@@ -132,10 +127,10 @@ public class SwaggerProducerOperation {
           return;
         }
 
-        asyncResp.handle(processException(ex));
+        asyncResp.handle(processException(invocation, ex));
       });
     } catch (Throwable e) {
-      asyncResp.handle(processException(e));
+      asyncResp.handle(processException(invocation, e));
     }
   }
 
@@ -153,25 +148,16 @@ public class SwaggerProducerOperation {
       Object result = producerMethod.invoke(producerInstance, args);
       response = responseMapper.mapResponse(invocation.getStatus(), result);
     } catch (Throwable e) {
-      response = processException(e);
+      response = processException(invocation, e);
     }
     return response;
   }
 
-  protected Response processException(Throwable e) {
+  protected Response processException(SwaggerInvocation invocation, Throwable e) {
     if (InvocationTargetException.class.isInstance(e)) {
       e = ((InvocationTargetException) e).getTargetException();
     }
 
-    if (InvocationException.class.isInstance(e)) {
-      return Response.failResp((InvocationException) e);
-    }
-
-    // 未知异常，记录下来方便定位问题
-    Response response = Response.producerFailResp(e);
-    String msg =
-        String.format("Producer invoke failed, %s:%s", producerClass.getName(), producerMethod.getName());
-    LOGGER.error(msg, e);
-    return response;
+    return ExceptionFactory.convertExceptionToResponse(invocation, e);
   }
 }
