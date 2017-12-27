@@ -41,9 +41,17 @@ public class RegistryMetric {
     return producerMetrics;
   }
 
-  public RegistryMetric(@JsonProperty("systemMetric") SystemMetric systemMetric,
+  public RegistryMetric(@JsonProperty("instanceMetric") InstanceMetric instanceMetric,
       @JsonProperty("consumerMetrics") Map<String, ConsumerInvocationMetric> consumerMetrics,
       @JsonProperty("producerMetrics") Map<String, ProducerInvocationMetric> producerMetrics) {
+    this.consumerMetrics = consumerMetrics;
+    this.producerMetrics = producerMetrics;
+    this.instanceMetric = instanceMetric;
+  }
+
+  public RegistryMetric(SystemMetric systemMetric,
+      Map<String, ConsumerInvocationMetric> consumerMetrics,
+      Map<String, ProducerInvocationMetric> producerMetrics) {
     this.consumerMetrics = consumerMetrics;
     this.producerMetrics = producerMetrics;
 
