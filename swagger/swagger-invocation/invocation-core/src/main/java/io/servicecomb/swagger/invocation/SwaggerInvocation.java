@@ -53,4 +53,8 @@ public class SwaggerInvocation extends InvocationContext {
   public void setSwaggerArgument(int idx, Object swaggerArgument) {
     this.swaggerArguments[idx] = swaggerArgument;
   }
+
+  public String getInvocationQualifiedName() {
+    return invocationType.name();
+  }
 }
