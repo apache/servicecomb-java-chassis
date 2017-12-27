@@ -26,9 +26,15 @@
   </parent>
   <modelVersion>4.0.0</modelVersion>
 
-  <artifactId>metrics-write-file-log4j2-config</artifactId>
+  <artifactId>metrics-write-file-config-log4j2</artifactId>
 
   <dependencies>
+
+    <dependency>
+      <groupId>io.servicecomb</groupId>
+      <artifactId>metrics-write-file-config</artifactId>
+    </dependency>
+
     <dependency>
       <groupId>org.apache.logging.log4j</groupId>
       <artifactId>log4j-api</artifactId>
