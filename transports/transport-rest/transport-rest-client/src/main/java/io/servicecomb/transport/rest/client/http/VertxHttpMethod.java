@@ -30,11 +30,9 @@ import io.servicecomb.common.rest.definition.RestOperationMeta;
 import io.servicecomb.common.rest.filter.HttpClientFilter;
 import io.servicecomb.core.Invocation;
 import io.servicecomb.core.definition.OperationMeta;
-import io.servicecomb.core.metrics.InvocationStartedEvent;
 import io.servicecomb.core.transport.AbstractTransport;
 import io.servicecomb.foundation.common.net.IpPort;
 import io.servicecomb.foundation.common.net.URIEndpointObject;
-import io.servicecomb.foundation.common.utils.EventUtils;
 import io.servicecomb.foundation.common.utils.JsonUtils;
 import io.servicecomb.foundation.common.utils.SPIServiceUtils;
 import io.servicecomb.foundation.vertx.client.http.HttpClientWithContext;
@@ -44,7 +42,6 @@ import io.servicecomb.foundation.vertx.http.VertxClientRequestToHttpServletReque
 import io.servicecomb.foundation.vertx.http.VertxClientResponseToHttpServletResponse;
 import io.servicecomb.serviceregistry.api.Const;
 import io.servicecomb.swagger.invocation.AsyncResponse;
-import io.servicecomb.swagger.invocation.InvocationType;
 import io.servicecomb.swagger.invocation.Response;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.http.HttpClient;
@@ -69,11 +66,6 @@ public class VertxHttpMethod {
       AsyncResponse asyncResp) throws Exception {
     OperationMeta operationMeta = invocation.getOperationMeta();
     RestOperationMeta swaggerRestOperation = operationMeta.getExtData(RestConst.SWAGGER_REST_OPERATION);
-
-    long startTime = System.nanoTime();
-    EventUtils.triggerEvent(new InvocationStartedEvent(invocation.getMicroserviceQualifiedName(),
-        InvocationType.CONSUMER, startTime));
-    invocation.setStartTime(startTime);
 
     String path = this.createRequestPath(invocation, swaggerRestOperation);
     IpPort ipPort = (IpPort) invocation.getEndpoint().getAddress();
@@ -155,8 +147,6 @@ public class VertxHttpMethod {
           }
         } catch (Throwable e) {
           asyncResp.fail(invocation.getInvocationType(), e);
-        } finally {
-          invocation.triggerFinishedEvent();
         }
       });
     });
