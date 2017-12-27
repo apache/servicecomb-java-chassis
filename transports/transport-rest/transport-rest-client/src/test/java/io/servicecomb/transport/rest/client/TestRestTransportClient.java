@@ -56,7 +56,7 @@ public class TestRestTransportClient {
 
   @Before
   public void setUp() throws Exception {
-    instance = new RestTransportClient(false);
+    instance = new RestTransportClient();
   }
 
   @After
@@ -88,7 +88,7 @@ public class TestRestTransportClient {
         return true;
       }
     };
-    RestTransportClient client = new RestTransportClient(true);
+    RestTransportClient client = new RestTransportClient();
     client.init(vertx);
     Assert.assertEquals(options.isSsl(), true);
     Assert.assertEquals(options.getIdleTimeout(), 30);

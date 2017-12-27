@@ -42,14 +42,14 @@ public final class RestTransportClient {
 
   private ClientPoolManager<HttpClientWithContext> clientMgr = new ClientPoolManager<>();
 
-  private final boolean sslEnabled;
+  private HttpClientOptions httpClientOptions;
 
-  public RestTransportClient(boolean sslEnabled) {
-    this.sslEnabled = sslEnabled;
+  public HttpClientOptions getHttpClientOptions() {
+    return httpClientOptions;
   }
 
   public void init(Vertx vertx) throws Exception {
-    HttpClientOptions httpClientOptions = createHttpClientOptions();
+    httpClientOptions = createHttpClientOptions();
     DeploymentOptions deployOptions = VertxUtils.createClientDeployOptions(clientMgr,
         TransportClientConfig.getThreadCount(),
         TransportClientConfig.getConnectionPoolPerThread(),
@@ -57,24 +57,22 @@ public final class RestTransportClient {
     VertxUtils.blockDeploy(vertx, HttpClientVerticle.class, deployOptions);
   }
 
-  private HttpClientOptions createHttpClientOptions() {
+  private static HttpClientOptions createHttpClientOptions() {
     HttpClientOptions httpClientOptions = new HttpClientOptions();
     httpClientOptions.setMaxPoolSize(TransportClientConfig.getConnectionMaxPoolSize());
     httpClientOptions.setIdleTimeout(TransportClientConfig.getConnectionIdleTimeoutInSeconds());
     httpClientOptions.setKeepAlive(TransportClientConfig.getConnectionKeepAlive());
-    if (this.sslEnabled) {
-      SSLOptionFactory factory =
-          SSLOptionFactory.createSSLOptionFactory(SSL_KEY,
-              null);
-      SSLOption sslOption;
-      if (factory == null) {
-        sslOption = SSLOption.buildFromYaml(SSL_KEY);
-      } else {
-        sslOption = factory.createSSLOption();
-      }
-      SSLCustom sslCustom = SSLCustom.createSSLCustom(sslOption.getSslCustomClass());
-      VertxTLSBuilder.buildHttpClientOptions(sslOption, sslCustom, httpClientOptions);
+    SSLOptionFactory factory =
+        SSLOptionFactory.createSSLOptionFactory(SSL_KEY,
+            null);
+    SSLOption sslOption;
+    if (factory == null) {
+      sslOption = SSLOption.buildFromYaml(SSL_KEY);
+    } else {
+      sslOption = factory.createSSLOption();
     }
+    SSLCustom sslCustom = SSLCustom.createSSLCustom(sslOption.getSslCustomClass());
+    VertxTLSBuilder.buildHttpClientOptions(sslOption, sslCustom, httpClientOptions);
     return httpClientOptions;
   }
 
