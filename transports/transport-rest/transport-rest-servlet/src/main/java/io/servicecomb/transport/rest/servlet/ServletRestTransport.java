@@ -27,7 +27,6 @@ import org.springframework.util.StringUtils;
 
 import io.servicecomb.core.Invocation;
 import io.servicecomb.core.transport.AbstractTransport;
-import io.servicecomb.foundation.common.net.URIEndpointObject;
 import io.servicecomb.serviceregistry.api.Const;
 import io.servicecomb.swagger.invocation.AsyncResponse;
 import io.servicecomb.transport.rest.client.RestTransportClient;
@@ -36,6 +35,8 @@ import io.servicecomb.transport.rest.client.RestTransportClientManager;
 @Component
 public class ServletRestTransport extends AbstractTransport {
   private static final Logger LOGGER = LoggerFactory.getLogger(ServletRestTransport.class);
+
+  private RestTransportClient restClient;
 
   @Override
   public String getName() {
@@ -69,19 +70,12 @@ public class ServletRestTransport extends AbstractTransport {
     String listenAddress = ServletConfig.getLocalServerAddress();
     setListenAddressWithoutSchema(listenAddress, queryMap);
 
-    return deployClient();
-  }
-
-  private boolean deployClient() {
-    return RestTransportClientManager.INSTANCE.getRestTransportClient(true) != null &&
-        RestTransportClientManager.INSTANCE.getRestTransportClient(false) != null;
+    restClient = RestTransportClientManager.INSTANCE.getRestClient();
+    return true;
   }
 
   @Override
   public void send(Invocation invocation, AsyncResponse asyncResp) throws Exception {
-    URIEndpointObject endpoint = (URIEndpointObject) invocation.getEndpoint().getAddress();
-    RestTransportClient client =
-        RestTransportClientManager.INSTANCE.getRestTransportClient(endpoint.isSslEnabled());
-    client.send(invocation, asyncResp);
+    restClient.send(invocation, asyncResp);
   }
 }

@@ -48,6 +48,7 @@ import io.vertx.core.http.HttpClient;
 import io.vertx.core.http.HttpClientRequest;
 import io.vertx.core.http.HttpClientResponse;
 import io.vertx.core.http.HttpMethod;
+import io.vertx.core.http.RequestOptions;
 
 public class VertxHttpMethod {
   private static final Logger LOGGER = LoggerFactory.getLogger(VertxHttpMethod.class);
@@ -122,9 +123,19 @@ public class VertxHttpMethod {
 
   HttpClientRequest createRequest(HttpClient client, Invocation invocation, IpPort ipPort, String path,
       AsyncResponse asyncResp) {
+    URIEndpointObject endpoint = (URIEndpointObject) invocation.getEndpoint().getAddress();
+    RequestOptions requestOptions = new RequestOptions();
+    requestOptions.setHost(ipPort.getHostOrIp())
+        .setPort(ipPort.getPort())
+        .setSsl(endpoint.isSslEnabled())
+        .setURI(path);
+
     HttpMethod method = getMethod(invocation);
-    LOGGER.debug("Calling method {} of {} by rest", method, invocation.getMicroserviceName());
-    HttpClientRequest request = client.request(method, ipPort.getPort(), ipPort.getHostOrIp(), path, response -> {
+    LOGGER.debug("Sending request by rest, method={}, qualifiedName={}, endpoint={}.",
+        method,
+        invocation.getMicroserviceQualifiedName(),
+        invocation.getEndpoint().getEndpoint());
+    HttpClientRequest request = client.request(method, requestOptions, response -> {
       handleResponse(invocation, response, asyncResp);
     });
     return request;
