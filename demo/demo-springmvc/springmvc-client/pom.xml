@@ -40,6 +40,12 @@
 			<groupId>io.servicecomb</groupId>
 			<artifactId>provider-pojo</artifactId>
 		</dependency>
+
+		<dependency>
+			<groupId>io.servicecomb</groupId>
+			<artifactId>metrics-common</artifactId>
+		</dependency>
+
 	</dependencies>
 
 	<properties>

@@ -20,6 +20,7 @@ package io.servicecomb.demo.springmvc.server;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -29,6 +30,7 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response.Status;
 
 import org.apache.commons.io.IOUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -50,11 +52,16 @@ import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.netflix.servo.monitor.Monitor;
+
 import io.servicecomb.common.rest.codec.RestObjectMapper;
 import io.servicecomb.demo.compute.Person;
 import io.servicecomb.demo.ignore.InputModelForTestIgnore;
 import io.servicecomb.demo.ignore.OutputModelForTestIgnore;
 import io.servicecomb.demo.server.User;
+import io.servicecomb.foundation.common.utils.JsonUtils;
+import io.servicecomb.foundation.metrics.MetricsServoRegistry;
 import io.servicecomb.provider.rest.common.RestSchema;
 import io.servicecomb.swagger.extend.annotations.RawJsonRequestBody;
 import io.servicecomb.swagger.extend.annotations.ResponseHeaders;
@@ -74,6 +81,15 @@ import io.vertx.core.json.JsonObject;
 @RestSchema(schemaId = "codeFirst")
 @RequestMapping(path = "/codeFirstSpringmvc", produces = MediaType.APPLICATION_JSON_VALUE)
 public class CodeFirstSpringmvc {
+
+  private MetricsServoRegistry registry;
+
+  @Autowired
+  public CodeFirstSpringmvc(MetricsServoRegistry registry) {
+    this.registry = registry;
+  }
+
+
   private String _fileUpload(MultipartFile file1, Part file2) {
     try (InputStream is1 = file1.getInputStream(); InputStream is2 = file2.getInputStream()) {
       String content1 = IOUtils.toString(is1);
@@ -283,7 +299,7 @@ public class CodeFirstSpringmvc {
     return new OutputModelForTestIgnore("output_id", input.getInputId(), input.getContent(), input.getInputObject(),
         input.getInputJsonObject(), input.getInputIgnoreInterface(),
         new Person("outputSomeone"), new JsonObject("{\"OutputJsonKey\" : \"OutputJsonValue\"}"), () -> {
-        });
+    });
   }
 
   @SuppressWarnings("unchecked")
@@ -311,5 +327,20 @@ public class CodeFirstSpringmvc {
     String form2 = request.getParameter("form2");
     Assert.notNull(form1);
     return form1 + form2;
+  }
+
+
+  @RequestMapping(path = "/metricsForTest", method = RequestMethod.GET)
+  public String metricsForTest() {
+    List<Monitor<?>> monitors = registry.getMetricsMonitors();
+    Map<String, String> values = new HashMap<>();
+    for (Monitor<?> monitor : monitors) {
+      values.put(monitor.getConfig().getName(), monitor.getValue().toString());
+    }
+    try {
+      return JsonUtils.writeValueAsString(values);
+    } catch (JsonProcessingException e) {
+      return "{}";
+    }
   }
 }

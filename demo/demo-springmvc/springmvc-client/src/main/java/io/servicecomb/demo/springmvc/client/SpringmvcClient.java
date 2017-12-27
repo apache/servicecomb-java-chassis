@@ -32,7 +32,9 @@ import io.servicecomb.demo.TestMgr;
 import io.servicecomb.demo.controller.Controller;
 import io.servicecomb.demo.controller.Person;
 import io.servicecomb.foundation.common.utils.BeanUtils;
+import io.servicecomb.foundation.common.utils.JsonUtils;
 import io.servicecomb.foundation.common.utils.Log4jUtils;
+import io.servicecomb.metrics.common.RegistryMetric;
 import io.servicecomb.provider.springmvc.reference.CseRestTemplate;
 import io.servicecomb.provider.springmvc.reference.RestTemplateBuilder;
 import io.servicecomb.provider.springmvc.reference.UrlWithServiceNameClientHttpRequestFactory;
@@ -80,6 +82,51 @@ public class SpringmvcClient {
       testController(templateUrlWithServiceName, microserviceName);
 
       testController();
+    }
+
+    //0.5.0 version metrics integration test
+    try {
+      // this test class is intended for retry hanging issue JAV-127
+      String content = restTemplate.getForObject("cse://springmvc/codeFirstSpringmvc/metricsForTest", String.class);
+      Map<String, String> resultMap = JsonUtils.OBJ_MAPPER.readValue(content, HashMap.class);
+
+      TestMgr.check(String.valueOf(true), String.valueOf(resultMap.get("CPU and Memory").contains("heapUsed=")));
+
+      TestMgr.check(resultMap.get("totalRequestProvider OPERATIONAL_LEVEL"),
+          "{springmvc.codeFirst.saySomething=3, springmvc.codeFirst.testRawJsonAnnotation=3, " +
+              "springmvc.codeFirst.sayHi2=3, springmvc.codeFirst.responseEntity=6, springmvc.codeFirst.fileUpload=3, " +
+              "springmvc.codeFirst.responseEntityPATCH=3, springmvc.codeFirst.textPlain=3, " +
+              "springmvc.codeFirst.metricsForTest=1, springmvc.codeFirst.testform=6, " +
+              "springmvc.controller.saySomething=6, springmvc.codeFirst.fallbackReturnNull=6, " +
+              "springmvc.codeFirst.addString=3, springmvc.codeFirst.reduce=3, springmvc.codeFirst.sayHi=3, " +
+              "springmvc.codeFirst.cseResponse=6, springmvc.codeFirst.bytes=3, springmvc.controller.sayHei=3, " +
+              "springmvc.codeFirst.fallbackThrowException=9, springmvc.codeFirst.testModelWithIgnoreField=1, " +
+              "springmvc.codeFirst.testUserMap=3, springmvc.codeFirst.isTrue=3, springmvc.codeFirst.add=3, " +
+              "springmvc.codeFirst.fallbackFromCache=6, springmvc.controller.sayHi=17, springmvc.codeFirst.sayHello=6,"
+              +
+              " springmvc.controller.sayHello=6, springmvc.codeFirst.addDate=3}");
+
+      TestMgr.check(String.valueOf(resultMap.get("RequestQueueRelated").contains("springmvc.codeFirst.saySomething")),
+          String.valueOf(true));
+      TestMgr.check(String.valueOf(resultMap.get("RequestQueueRelated").contains("springmvc.controller.sayHi")),
+          String.valueOf(true));
+    } catch (Exception e) {
+      TestMgr.check("true", "false");
+    }
+
+    //0.5.0 later version metrics integration test
+    try {
+      Object obj = restTemplate.getForObject("cse://springmvc/metrics", Object.class);
+      String content = JsonUtils.writeValueAsString(obj);
+      RegistryMetric metric = JsonUtils.OBJ_MAPPER.readValue(content, RegistryMetric.class);
+
+      TestMgr.check(String.valueOf(metric.getInstanceMetric().getSystemMetric().getHeapUsed() != 0), "true");
+      TestMgr.check(String.valueOf(metric.getProducerMetrics().size() == 28), "true");
+      TestMgr.check(String.valueOf(
+          metric.getProducerMetrics().get("springmvc.codeFirst.saySomething").getProducerCall().getTotal() == 3),
+          "true");
+    } catch (Exception e) {
+      TestMgr.check("true", "false");
     }
   }
 
