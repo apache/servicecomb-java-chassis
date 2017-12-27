@@ -77,33 +77,33 @@ public class TestEventAndRunner {
     //fun1 is a PRODUCER invocation call twice and all is completed
     EventUtils.triggerEvent(new InvocationStartedEvent("fun1", InvocationType.PRODUCER, System.nanoTime()));
     EventUtils.triggerEvent(
-        new InvocationStartProcessingEvent("fun1", InvocationType.PRODUCER, System.nanoTime(),
+        new InvocationStartProcessingEvent("fun1", InvocationType.PRODUCER,
             TimeUnit.MILLISECONDS.toNanos(100)));
     EventUtils
-        .triggerEvent(new InvocationFinishedEvent("fun1", InvocationType.PRODUCER, System.nanoTime(),
+        .triggerEvent(new InvocationFinishedEvent("fun1", InvocationType.PRODUCER,
             TimeUnit.MILLISECONDS.toNanos(200), TimeUnit.MILLISECONDS.toNanos(300)));
 
     EventUtils.triggerEvent(new InvocationStartedEvent("fun1", InvocationType.PRODUCER, System.nanoTime()));
     EventUtils.triggerEvent(
-        new InvocationStartProcessingEvent("fun1", InvocationType.PRODUCER, System.nanoTime(),
+        new InvocationStartProcessingEvent("fun1", InvocationType.PRODUCER,
             TimeUnit.MILLISECONDS.toNanos(300)));
     EventUtils
-        .triggerEvent(new InvocationFinishedEvent("fun1", InvocationType.PRODUCER, System.nanoTime(),
+        .triggerEvent(new InvocationFinishedEvent("fun1", InvocationType.PRODUCER,
             TimeUnit.MILLISECONDS.toNanos(400), TimeUnit.MILLISECONDS.toNanos(700)));
 
     //fun3 is a PRODUCER invocation call uncompleted
     EventUtils.triggerEvent(new InvocationStartedEvent("fun3", InvocationType.PRODUCER, System.nanoTime()));
     EventUtils.triggerEvent(
-        new InvocationStartProcessingEvent("fun3", InvocationType.PRODUCER, System.nanoTime(),
+        new InvocationStartProcessingEvent("fun3", InvocationType.PRODUCER,
             TimeUnit.MILLISECONDS.toNanos(500)));
 
     //fun2 is a CONSUMER invocation call once and completed
     EventUtils.triggerEvent(new InvocationStartedEvent("fun2", InvocationType.CONSUMER, System.nanoTime()));
     EventUtils.triggerEvent(
-        new InvocationStartProcessingEvent("fun2", InvocationType.CONSUMER, System.nanoTime(),
+        new InvocationStartProcessingEvent("fun2", InvocationType.CONSUMER,
             TimeUnit.MILLISECONDS.toNanos(100)));
     EventUtils
-        .triggerEvent(new InvocationFinishedEvent("fun2", InvocationType.CONSUMER, System.nanoTime(),
+        .triggerEvent(new InvocationFinishedEvent("fun2", InvocationType.CONSUMER,
             TimeUnit.MILLISECONDS.toNanos(200), TimeUnit.MILLISECONDS.toNanos(300)));
 
     //fun4 is a invocation call only started and no processing start and finished
