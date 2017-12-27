@@ -59,6 +59,7 @@ public class SpringmvcConsumerMain {
 
     String metricsResult = restTemplate.getForObject("cse://springmvc/springmvchello/metricsForTest/", String.class);
 
+    @SuppressWarnings("unchecked")
     Map<String, String> resultMap = JsonUtils.OBJ_MAPPER.readValue(metricsResult, HashMap.class);
 
     if (!resultMap.get("CPU and Memory").contains("heapUsed=")) {
