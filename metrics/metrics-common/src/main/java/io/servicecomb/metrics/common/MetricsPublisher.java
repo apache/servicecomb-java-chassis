@@ -15,9 +15,7 @@
  * limitations under the License.
  */
 
-package io.servicecomb.metrics.core.publish;
-
-import io.servicecomb.metrics.common.RegistryMetric;
+package io.servicecomb.metrics.common;
 
 public interface MetricsPublisher {
   RegistryMetric metrics();
