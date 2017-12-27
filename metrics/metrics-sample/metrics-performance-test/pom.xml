@@ -42,19 +42,6 @@
       <groupId>org.hibernate</groupId>
       <artifactId>hibernate-validator</artifactId>
     </dependency>
-
-    <!--add or move metrics-core for enable or disable-->
-    <dependency>
-      <groupId>io.servicecomb</groupId>
-      <artifactId>metrics-core</artifactId>
-      <exclusions>
-        <exclusion>
-          <groupId>io.servicecomb</groupId>
-          <artifactId>foundation-metrics</artifactId>
-        </exclusion>
-      </exclusions>
-      <version>0.6.0-SNAPSHOT</version>
-    </dependency>
   </dependencies>
 
   <build>

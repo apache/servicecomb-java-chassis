@@ -20,32 +20,25 @@
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <parent>
-    <artifactId>metrics</artifactId>
+    <artifactId>metrics-sample</artifactId>
     <groupId>io.servicecomb</groupId>
     <version>0.6.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
 
-  <artifactId>metrics-sample</artifactId>
-  <packaging>pom</packaging>
+  <artifactId>metrics-write-file-log4j2-config</artifactId>
 
-  <modules>
-    <module>metrics-performance-test</module>
-    <module>metrics-write-file</module>
-    <module>metrics-write-file-log4j2-config</module>
-  </modules>
-
-  <!--add or move metrics-core for enable or disable-->
   <dependencies>
     <dependency>
-      <groupId>io.servicecomb</groupId>
-      <artifactId>metrics-common</artifactId>
+      <groupId>org.apache.logging.log4j</groupId>
+      <artifactId>log4j-api</artifactId>
+      <version>2.8.2</version>
     </dependency>
     <dependency>
-      <groupId>io.servicecomb</groupId>
-      <artifactId>metrics-core</artifactId>
+      <groupId>org.apache.logging.log4j</groupId>
+      <artifactId>log4j-core</artifactId>
+      <version>2.8.2</version>
     </dependency>
   </dependencies>
-
 
 </project>
