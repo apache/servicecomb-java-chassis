@@ -20,6 +20,8 @@ import java.lang.reflect.InvocationTargetException;
 
 import javax.ws.rs.core.Response.StatusType;
 
+import io.servicecomb.swagger.invocation.Response;
+import io.servicecomb.swagger.invocation.SwaggerInvocation;
 import io.servicecomb.swagger.invocation.context.HttpStatus;
 
 public final class ExceptionFactory {
@@ -41,6 +43,8 @@ public final class ExceptionFactory {
   public static final int CONSUMER_INNER_STATUS_CODE = 490;
 
   public static final String CONSUMER_INNER_REASON_PHRASE = "Cse Internal Bad Request";
+
+  private static ExceptionToResponseConverters exceptionToResponseConverters = new ExceptionToResponseConverters();
 
   public static final StatusType CONSUMER_INNER_STATUS =
       new HttpStatus(CONSUMER_INNER_STATUS_CODE, CONSUMER_INNER_REASON_PHRASE);
@@ -118,5 +122,9 @@ public final class ExceptionFactory {
 
     CommonExceptionData data = new CommonExceptionData(errorMsg);
     return doCreate(statusCode, reasonPhrase, data, e);
+  }
+
+  public static Response convertExceptionToResponse(SwaggerInvocation swaggerInvocation, Throwable e) {
+    return exceptionToResponseConverters.convertExceptionToResponse(swaggerInvocation, e);
   }
 }

@@ -110,14 +110,19 @@ public class TestProducerSchemaFactory {
     Object addBody = Class.forName("cse.gen.app.ms.schema.addBody").newInstance();
     ReflectUtils.setField(addBody, "x", 1);
     ReflectUtils.setField(addBody, "y", 2);
-    Invocation invocation = new Invocation((Endpoint) null, operationMeta, new Object[] {addBody});
+    Invocation invocation = new Invocation((Endpoint) null, operationMeta, new Object[] {addBody}) {
+      @Override
+      public String getInvocationQualifiedName() {
+        return "";
+      }
+    };
     Holder<Response> holder = new Holder<>();
     producerOperation.invoke(invocation, resp -> {
       holder.value = resp;
     });
     Assert.assertEquals(3, (int) holder.value.getResult());
 
-    invocation = new Invocation((Endpoint) null, operationMeta, new Object[] {1, 2});
+    invocation.setSwaggerArguments(new Object[] {1, 2});
     producerOperation.invoke(invocation, resp -> {
       holder.value = resp;
     });
