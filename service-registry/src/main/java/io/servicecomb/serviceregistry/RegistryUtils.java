@@ -38,6 +38,7 @@ import io.servicecomb.serviceregistry.api.registry.Microservice;
 import io.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
 import io.servicecomb.serviceregistry.cache.InstanceCacheManager;
 import io.servicecomb.serviceregistry.client.ServiceRegistryClient;
+import io.servicecomb.serviceregistry.client.http.MicroserviceInstanceRefresh;
 import io.servicecomb.serviceregistry.config.ServiceRegistryConfig;
 import io.servicecomb.serviceregistry.definition.MicroserviceDefinition;
 import io.servicecomb.serviceregistry.registry.ServiceRegistryFactory;
@@ -202,9 +203,9 @@ public final class RegistryUtils {
     return new IpPort(publicAddressSetting, publishPort);
   }
 
-  public static List<MicroserviceInstance> findServiceInstance(String appId, String serviceName,
-      String versionRule) {
-    return serviceRegistry.findServiceInstance(appId, serviceName, versionRule);
+  public static MicroserviceInstanceRefresh findServiceInstance(String appId, String serviceName,
+      String versionRule, String revision) {
+    return serviceRegistry.findServiceInstance(appId, serviceName, versionRule, revision);
   }
 
   // update microservice instance properties
