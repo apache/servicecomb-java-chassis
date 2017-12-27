@@ -69,6 +69,7 @@
     <module>spring-boot-starter</module>
     <module>tracing</module>
     <module>edge</module>
+    <module>metrics</module>
   </modules>
 
   <distributionManagement>
