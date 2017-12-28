@@ -76,7 +76,7 @@ public class TestRestTransportClient {
       <CLIENT_POOL, CLIENT_OPTIONS> DeploymentOptions createClientDeployOptions(
           ClientPoolManager<CLIENT_POOL> clientMgr,
           int instanceCount,
-          int poolCountPerVerticle, CLIENT_OPTIONS clientOptions) {
+          CLIENT_OPTIONS clientOptions) {
         options = (HttpClientOptions) clientOptions;
         return null;
       }
@@ -90,10 +90,10 @@ public class TestRestTransportClient {
     };
     RestTransportClient client = new RestTransportClient();
     client.init(vertx);
-    Assert.assertEquals(options.isSsl(), true);
-    Assert.assertEquals(options.getIdleTimeout(), 30);
-    Assert.assertEquals(options.isKeepAlive(), true);
-    Assert.assertEquals(options.getMaxPoolSize(), 5);
+    Assert.assertTrue(options.isSsl());
+    Assert.assertEquals(30, options.getIdleTimeout());
+    Assert.assertTrue(options.isKeepAlive());
+    Assert.assertEquals(5, options.getMaxPoolSize());
   }
 
   @Test

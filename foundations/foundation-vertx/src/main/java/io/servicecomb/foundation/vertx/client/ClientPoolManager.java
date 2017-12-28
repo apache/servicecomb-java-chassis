@@ -17,21 +17,22 @@
 
 package io.servicecomb.foundation.vertx.client;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * CLIENT_POOL是一个完备的连接池，支持向同一个目标建立一个或多个连接
  * 之所以再包装一层，是因为多个线程使用一个连接池的场景下
  * 会导致多个线程抢连接池的同一把锁
- * 包装之后，允许使用m个网络线程，每个线程中有n个连接池
+ * 包装之后，允许使用m个网络线程，每个线程中有1个连接池
+ * 
+ * ClientPoolManager only optimized for invoker not in eventloop
  */
 public class ClientPoolManager<CLIENT_POOL> {
-  // 多个网络线程
-  private List<NetThreadData<CLIENT_POOL>> netThreads = new ArrayList<>();
+  private List<CLIENT_POOL> pools = new CopyOnWriteArrayList<>();
 
   private AtomicInteger bindIndex = new AtomicInteger();
 
@@ -40,29 +41,15 @@ public class ClientPoolManager<CLIENT_POOL> {
   // TODO:要不要考虑已经绑定的线程消失了的场景？
   private Map<Long, CLIENT_POOL> threadBindMap = new ConcurrentHashMap<>();
 
-  private static final Object LOCK = new Object();
-
-  public void addNetThread(NetThreadData<CLIENT_POOL> netThread) {
-    synchronized (LOCK) {
-      netThreads.add(netThread);
-    }
+  public void addPool(CLIENT_POOL pool) {
+    pools.add(pool);
   }
 
   public CLIENT_POOL findThreadBindClientPool() {
     long threadId = Thread.currentThread().getId();
-    CLIENT_POOL clientPool = threadBindMap.get(threadId);
-    if (clientPool == null) {
-      synchronized (LOCK) {
-        clientPool = threadBindMap.get(threadId);
-        if (clientPool == null) {
-          int idx = bindIndex.getAndIncrement() % netThreads.size();
-          NetThreadData<CLIENT_POOL> netThread = netThreads.get(idx);
-          clientPool = netThread.selectClientPool();
-          threadBindMap.put(threadId, clientPool);
-        }
-      }
-    }
-
-    return clientPool;
+    return threadBindMap.computeIfAbsent(threadId, tid -> {
+      int idx = bindIndex.getAndIncrement() % pools.size();
+      return pools.get(idx);
+    });
   }
 }

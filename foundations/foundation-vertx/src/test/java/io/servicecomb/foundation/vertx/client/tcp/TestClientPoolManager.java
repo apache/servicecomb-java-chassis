@@ -18,30 +18,19 @@
 package io.servicecomb.foundation.vertx.client.tcp;
 
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
-import org.mockito.Mockito;
 
 import io.servicecomb.foundation.vertx.client.ClientPoolManager;
-import io.servicecomb.foundation.vertx.client.NetThreadData;
 import io.servicecomb.foundation.vertx.client.http.HttpClientWithContext;
+import mockit.Mocked;
 
 public class TestClientPoolManager {
-  private ClientPoolManager<HttpClientWithContext> instance;
-
-  @Before
-  public void setUp() throws Exception {
-    instance = new ClientPoolManager<>();
-  }
+  private ClientPoolManager<HttpClientWithContext> instance = new ClientPoolManager<>();
 
   @Test
-  public void testAddNetThread() {
-    @SuppressWarnings("unchecked")
-    NetThreadData<HttpClientWithContext> netThread = Mockito.mock(NetThreadData.class);
-    instance.addNetThread(netThread);
-    HttpClientWithContext context = Mockito.mock(HttpClientWithContext.class);
-    Mockito.when(netThread.selectClientPool()).thenReturn(context);
-    HttpClientWithContext netThreadValue = instance.findThreadBindClientPool();
-    Assert.assertNotNull(netThreadValue);
+  public void findThreadBindClientPool(@Mocked HttpClientWithContext pool) {
+    instance.addPool(pool);
+    HttpClientWithContext result = instance.findThreadBindClientPool();
+    Assert.assertSame(pool, result);
   }
 }

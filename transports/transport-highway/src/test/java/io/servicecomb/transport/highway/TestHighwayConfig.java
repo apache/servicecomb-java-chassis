@@ -22,18 +22,17 @@ import org.junit.Test;
 
 public class TestHighwayConfig {
   @Test
-  public void testGetThreadCount() {
+  public void getServerThreadCount() {
     Assert.assertEquals(HighwayConfig.getServerThreadCount(), 1);
+  }
+
+  @Test
+  public void getClientThreadCount() {
     Assert.assertEquals(HighwayConfig.getClientThreadCount(), 1);
   }
 
   @Test
-  public void testGetAddress() {
+  public void getAddress() {
     Assert.assertEquals(HighwayConfig.getAddress(), null);
-  }
-
-  @Test
-  public void testGetConnectionPoolPerThread() {
-    Assert.assertEquals(HighwayConfig.getClientConnectionPoolPerThread(), 1);
   }
 }

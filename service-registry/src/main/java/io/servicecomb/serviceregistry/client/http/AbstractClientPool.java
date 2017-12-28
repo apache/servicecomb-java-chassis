@@ -59,7 +59,6 @@ public abstract class AbstractClientPool implements ClientPool {
     DeploymentOptions deployOptions =
         VertxUtils.createClientDeployOptions(this.clientMgr,
             ServiceRegistryConfig.INSTANCE.getWorkerPoolSize(),
-            1,
             httpClientOptions);
     try {
       VertxUtils.blockDeploy(vertx, HttpClientVerticle.class, deployOptions);

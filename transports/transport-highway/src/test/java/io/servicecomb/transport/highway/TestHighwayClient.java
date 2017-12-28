@@ -54,7 +54,8 @@ import mockit.Mocked;
 
 public class TestHighwayClient {
   private TcpClientConfig options;
-  private static final String REQUEST_TIMEOUT_KEY = "cse.request.timeout"; 
+
+  private static final String REQUEST_TIMEOUT_KEY = "cse.request.timeout";
 
   HighwayClient client = new HighwayClient(true);
 
@@ -69,7 +70,6 @@ public class TestHighwayClient {
   Endpoint endpoint = Mockito.mock(Endpoint.class);
 
   Executor excutor = Mockito.mock(Executor.class);
-  
 
   @BeforeClass
   public static void beforeCls() {
@@ -92,7 +92,7 @@ public class TestHighwayClient {
       <CLIENT_POOL, CLIENT_OPTIONS> DeploymentOptions createClientDeployOptions(
           ClientPoolManager<CLIENT_POOL> clientMgr,
           int instanceCount,
-          int poolCountPerVerticle, CLIENT_OPTIONS clientOptions) {
+          CLIENT_OPTIONS clientOptions) {
         options = (TcpClientConfig) clientOptions;
         return null;
       }
@@ -106,7 +106,7 @@ public class TestHighwayClient {
     };
 
     client.init(vertx);
-    Assert.assertEquals(options.isSsl(), true);
+    Assert.assertTrue(options.isSsl());
   }
 
   @Test

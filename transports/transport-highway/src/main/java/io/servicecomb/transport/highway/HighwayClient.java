@@ -57,7 +57,6 @@ public class HighwayClient {
 
     DeploymentOptions deployOptions = VertxUtils.createClientDeployOptions(clientMgr,
         HighwayConfig.getClientThreadCount(),
-        HighwayConfig.getClientConnectionPoolPerThread(),
         config);
 
     VertxUtils.blockDeploy(vertx, HighwayClientVerticle.class, deployOptions);

@@ -75,11 +75,10 @@ public final class VertxUtils {
   public static <CLIENT_POOL, CLIENT_OPTIONS> DeploymentOptions createClientDeployOptions(
       ClientPoolManager<CLIENT_POOL> clientMgr,
       int instanceCount,
-      int poolCountPerVerticle, CLIENT_OPTIONS clientOptions) {
+      CLIENT_OPTIONS clientOptions) {
     DeploymentOptions options = new DeploymentOptions().setInstances(instanceCount);
     SimpleJsonObject config = new SimpleJsonObject();
     config.put(AbstractClientVerticle.CLIENT_MGR, clientMgr);
-    config.put(AbstractClientVerticle.POOL_COUNT, poolCountPerVerticle);
     config.put(AbstractClientVerticle.CLIENT_OPTIONS, clientOptions);
     options.setConfig(config);
 

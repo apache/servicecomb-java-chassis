@@ -31,10 +31,11 @@ public abstract class AbstractTcpClientVerticle<T extends TcpClientConnection, P
 
   @Override
   public void start() throws Exception {
-    super.start();
     clientConfig = (TcpClientConfig) config().getValue(CLIENT_OPTIONS);
 
     // vertx.createNetClient()创建出来的netClient不支持跨线程调用
     netClient = new NetClientImpl((VertxInternal) vertx, clientConfig, false);
+
+    super.start();
   }
 }

@@ -153,7 +153,7 @@ public class ConfigCenterClient {
   private void deployConfigClient() throws InterruptedException {
     Vertx vertx = VertxUtils.getOrCreateVertxByName("config-center", null);
     HttpClientOptions httpClientOptions = createHttpClientOptions();
-    DeploymentOptions deployOptions = VertxUtils.createClientDeployOptions(clientMgr, 1, 1, httpClientOptions);
+    DeploymentOptions deployOptions = VertxUtils.createClientDeployOptions(clientMgr, 1, httpClientOptions);
     VertxUtils.blockDeploy(vertx, HttpClientVerticle.class, deployOptions);
   }
 

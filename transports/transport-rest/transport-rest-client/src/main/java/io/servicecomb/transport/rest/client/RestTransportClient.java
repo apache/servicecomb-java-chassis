@@ -52,7 +52,6 @@ public final class RestTransportClient {
     httpClientOptions = createHttpClientOptions();
     DeploymentOptions deployOptions = VertxUtils.createClientDeployOptions(clientMgr,
         TransportClientConfig.getThreadCount(),
-        TransportClientConfig.getConnectionPoolPerThread(),
         httpClientOptions);
     VertxUtils.blockDeploy(vertx, HttpClientVerticle.class, deployOptions);
   }
