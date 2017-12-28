@@ -19,6 +19,6 @@ package io.servicecomb.metrics.sample.writefile;
 
 import java.util.Map;
 
-public interface MetricsContentFormatter {
+public interface FileContentFormatter {
   Map<String, String> format(Map<String, String> input);
 }

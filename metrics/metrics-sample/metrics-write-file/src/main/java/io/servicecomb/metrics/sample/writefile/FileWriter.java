@@ -27,14 +27,14 @@ import io.servicecomb.serviceregistry.RegistryUtils;
 import io.servicecomb.serviceregistry.api.registry.Microservice;
 
 @Component
-public class MetricsFileOutput {
+public class FileWriter {
 
   private final FileWriterManager fileWriterManager;
 
   private final String filePrefix;
 
   @Autowired
-  public MetricsFileOutput(FileWriterManager fileWriterManager) {
+  public FileWriter(FileWriterManager fileWriterManager) {
     this.fileWriterManager = fileWriterManager;
     Microservice microservice = RegistryUtils.getMicroservice();
     filePrefix = microservice.getAppId() + "." + microservice.getServiceName() + ".";

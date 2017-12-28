@@ -40,9 +40,14 @@ servicecomb:
     #metrics double value round places,default value is 1
     round_places: 1
     file:
-      enabled: true
+      enabled: false
       #metrics file name prefix setting,default value is "metrics"
       name_prefix: bmi.calculator
+
+      root_path: ./samples/bmi/calculator/target/metric/
+      rolling:
+        max_file_count: 10
+        max_file_size : 10MB
 
     #Version 0.5.0+ config
     #Support Muti-WindowTime (MILLISECONDS) like 10000,60000 (10s and 60s), Use WindowTimeIndex make selection,start from 0

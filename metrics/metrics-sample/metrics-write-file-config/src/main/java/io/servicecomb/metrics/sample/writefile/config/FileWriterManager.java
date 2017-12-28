@@ -18,5 +18,5 @@
 package io.servicecomb.metrics.sample.writefile.config;
 
 public interface FileWriterManager {
-  void write(String loggerName, String filePerfix, String content);
+  void write(String loggerName, String filePrefix, String content);
 }

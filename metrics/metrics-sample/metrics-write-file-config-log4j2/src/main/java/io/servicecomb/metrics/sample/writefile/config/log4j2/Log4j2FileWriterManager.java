@@ -38,11 +38,15 @@ import io.servicecomb.metrics.sample.writefile.config.FileWriterManager;
 
 @Component
 public class Log4j2FileWriterManager implements FileWriterManager {
-  private static final String METRICS_FILE_ROLLING_MAXFILECOUNT = "servicecomb.metrics.file.rolling.max_file_count";
+  private static final String METRICS_FILE_ROLLING_MAX_FILE_COUNT = "servicecomb.metrics.file.rolling.max_file_count";
 
-  private static final String METRICS_FILE_ROLLING_MAXFILESIZE = "servicecomb.metrics.file.rolling.max_file_size";
+  private static final String METRICS_FILE_ROLLING_MAX_FILE_SIZE = "servicecomb.metrics.file.rolling.max_file_size";
 
-  private static final String METRICS_FILE_ROOTPATH = "servicecomb.metrics.file.root_path";
+  private static final String METRICS_FILE_ROOT_PATH = "servicecomb.metrics.file.root_path";
+
+  private final LoggerContext ctx = (LoggerContext) LogManager.getContext(false);
+
+  private final Configuration config = ctx.getConfiguration();
 
   private final Map<String, RollingFileAppender> fileAppenders = new ConcurrentHashMap<>();
 
@@ -53,30 +57,31 @@ public class Log4j2FileWriterManager implements FileWriterManager {
   private final String rootPath;
 
   public Log4j2FileWriterManager() {
-    maxFileCount = DynamicPropertyFactory.getInstance().getIntProperty(METRICS_FILE_ROLLING_MAXFILECOUNT, 10).get();
-    maxFileSize = DynamicPropertyFactory.getInstance().getStringProperty(METRICS_FILE_ROLLING_MAXFILESIZE, "10MB").get();
-    rootPath = DynamicPropertyFactory.getInstance().getStringProperty(METRICS_FILE_ROOTPATH, "target").get();
+    maxFileCount = DynamicPropertyFactory.getInstance().getIntProperty(METRICS_FILE_ROLLING_MAX_FILE_COUNT, 10).get();
+    maxFileSize = DynamicPropertyFactory.getInstance().getStringProperty(METRICS_FILE_ROLLING_MAX_FILE_SIZE, "10MB")
+        .get();
+    rootPath = DynamicPropertyFactory.getInstance().getStringProperty(METRICS_FILE_ROOT_PATH, "target").get();
   }
 
   @Override
-  public void write(String loggerName, String filePerfix, String content) {
-    RollingFileAppender appender = fileAppenders.computeIfAbsent(loggerName, f -> initLogger(loggerName, filePerfix));
-    appender.append(Log4jLogEvent.newBuilder().setMessage(new SimpleMessage(content)).build());
+  public void write(String loggerName, String filePrefix, String content) {
+    RollingFileAppender logger = fileAppenders.computeIfAbsent(loggerName, f -> initLogger(loggerName, filePrefix));
+    logger.append(Log4jLogEvent.newBuilder().setMessage(new SimpleMessage(content)).build());
   }
 
-  private RollingFileAppender initLogger(String loggerName, String filePerfix) {
-    String fileName = Paths.get(rootPath, filePerfix + loggerName + ".dat").toString();
-    String filePattern = Paths.get(rootPath, filePerfix + loggerName + "-%i.dat").toString();
+  private RollingFileAppender initLogger(String loggerName, String filePrefix) {
+    String fileName = Paths.get(rootPath, filePrefix + loggerName + ".dat").toString();
+    String filePattern = Paths.get(rootPath, filePrefix + loggerName + "-%i.dat").toString();
 
-    LoggerContext ctx = (LoggerContext) LogManager.getContext(false);
-    Configuration config = ctx.getConfiguration();
-    return RollingFileAppender.newBuilder().withName(loggerName)
-        .withLayout(PatternLayout.newBuilder().withPattern(PatternLayout.DEFAULT_CONVERSION_PATTERN).build())
-        .withFileName(fileName)
-        .withFilePattern(filePattern)
-        .withPolicy(SizeBasedTriggeringPolicy.createPolicy(maxFileSize))
-        .withStrategy(
-            DefaultRolloverStrategy.createStrategy(String.valueOf(maxFileCount), null, null, null, null, false, config))
-        .build();
+    PatternLayout layout = PatternLayout.newBuilder().withPattern(PatternLayout.DEFAULT_CONVERSION_PATTERN).build();
+    SizeBasedTriggeringPolicy policy = SizeBasedTriggeringPolicy.createPolicy(maxFileSize);
+    DefaultRolloverStrategy strategy = DefaultRolloverStrategy.createStrategy(String.valueOf(maxFileCount), null, null,
+        null, null, false, config);
+
+    //TODO:in version 2.8 + , log4j2 request use RollingFileAppender.newBuilder,but throw No such static method exception
+    RollingFileAppender appender = RollingFileAppender
+        .createAppender(fileName, filePattern, "true", loggerName, "true", null,
+            "true", policy, strategy, layout, null, null, null, null, config);
+    return appender;
   }
 }
