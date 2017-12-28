@@ -33,6 +33,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.netflix.servo.monitor.Monitor;
 
+import io.servicecomb.foundation.common.exceptions.ServiceCombException;
 import io.servicecomb.foundation.common.utils.JsonUtils;
 import io.servicecomb.foundation.metrics.MetricsServoRegistry;
 import io.servicecomb.provider.rest.common.RestSchema;
@@ -73,7 +74,7 @@ public class SpringmvcHelloImpl implements Hello {
     try {
       return JsonUtils.writeValueAsString(values);
     } catch (JsonProcessingException e) {
-      return "{}";
+      throw new ServiceCombException("json error", e);
     }
   }
 }

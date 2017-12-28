@@ -59,6 +59,10 @@ public class WriteFileInitializer {
     this.formatter = formatter;
     this.dataSource = dataSource;
 
+    //may any problem ?
+    if(RegistryUtils.getServiceRegistry() == null) {
+      RegistryUtils.init();
+    }
     Microservice microservice = RegistryUtils.getMicroservice();
     filePrefix = microservice.getAppId() + "." + microservice.getServiceName() + ".";
 
