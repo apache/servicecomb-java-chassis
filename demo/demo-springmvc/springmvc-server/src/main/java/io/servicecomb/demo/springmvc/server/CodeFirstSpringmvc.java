@@ -329,7 +329,7 @@ public class CodeFirstSpringmvc {
     return form1 + form2;
   }
 
-
+  //Only for 0.5.0 Integration Test
   @RequestMapping(path = "/metricsForTest", method = RequestMethod.GET)
   public String metricsForTest() {
     List<Monitor<?>> monitors = registry.getMetricsMonitors();
@@ -340,7 +340,7 @@ public class CodeFirstSpringmvc {
     try {
       return JsonUtils.writeValueAsString(values);
     } catch (JsonProcessingException e) {
-      return "{}";
+      throw new InvocationException(500, "500", "JsonProcessingException", e);
     }
   }
 }

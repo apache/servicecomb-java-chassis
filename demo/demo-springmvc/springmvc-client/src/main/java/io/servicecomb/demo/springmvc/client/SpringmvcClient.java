@@ -34,6 +34,7 @@ import io.servicecomb.demo.controller.Person;
 import io.servicecomb.foundation.common.utils.BeanUtils;
 import io.servicecomb.foundation.common.utils.JsonUtils;
 import io.servicecomb.foundation.common.utils.Log4jUtils;
+import io.servicecomb.metrics.common.MetricsPublisher;
 import io.servicecomb.metrics.common.RegistryMetric;
 import io.servicecomb.provider.springmvc.reference.CseRestTemplate;
 import io.servicecomb.provider.springmvc.reference.RestTemplateBuilder;
@@ -45,6 +46,8 @@ public class SpringmvcClient {
   private static RestTemplate restTemplate;
 
   private static Controller controller;
+
+  private static MetricsPublisher metricsPublisher;
 
   public static void main(String[] args) throws Exception {
     templateUrlWithServiceName.setRequestFactory(new UrlWithServiceNameClientHttpRequestFactory());
@@ -59,6 +62,8 @@ public class SpringmvcClient {
   public static void run() throws Exception {
     restTemplate = RestTemplateBuilder.create();
     controller = BeanUtils.getBean("controller");
+    metricsPublisher = BeanUtils.getBean("metricsPublisher");
+
 
     String prefix = "cse://springmvc";
 
@@ -116,9 +121,7 @@ public class SpringmvcClient {
 
     //0.5.0 later version metrics integration test
     try {
-      Object obj = restTemplate.getForObject("cse://springmvc/metrics", Object.class);
-      String content = JsonUtils.writeValueAsString(obj);
-      RegistryMetric metric = JsonUtils.OBJ_MAPPER.readValue(content, RegistryMetric.class);
+      RegistryMetric metric = metricsPublisher.metrics();
 
       TestMgr.check(String.valueOf(metric.getInstanceMetric().getSystemMetric().getHeapUsed() != 0), "true");
       TestMgr.check(String.valueOf(metric.getProducerMetrics().size() == 28), "true");

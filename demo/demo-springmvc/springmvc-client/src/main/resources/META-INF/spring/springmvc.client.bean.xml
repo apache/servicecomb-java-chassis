@@ -28,4 +28,7 @@
 	<cse:rpc-reference id="controller" microservice-name="springmvc"
 		schema-id="controller" interface="io.servicecomb.demo.controller.Controller"></cse:rpc-reference>
 
+	<cse:rpc-reference id="metricsPublisher" microservice-name="springmvc"
+		schema-id="metricsEndpoint" interface="io.servicecomb.metrics.common.MetricsPublisher"></cse:rpc-reference>
+
 </beans>
