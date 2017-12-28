@@ -53,23 +53,6 @@
       <groupId>org.hibernate</groupId>
       <artifactId>hibernate-validator</artifactId>
     </dependency>
-
-    <dependency>
-      <groupId>io.servicecomb</groupId>
-      <artifactId>metrics-write-file-config</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>io.servicecomb</groupId>
-      <artifactId>metrics-write-file-config-log4j2</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>io.servicecomb</groupId>
-      <artifactId>metrics-core</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>io.servicecomb</groupId>
-      <artifactId>metrics-write-file</artifactId>
-    </dependency>
   </dependencies>
 
   <build>
