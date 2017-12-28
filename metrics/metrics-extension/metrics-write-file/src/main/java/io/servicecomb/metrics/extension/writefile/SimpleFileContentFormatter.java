@@ -50,6 +50,10 @@ public class SimpleFileContentFormatter implements FileContentFormatter {
       hostName = NetUtils.getHostAddress();
     }
 
+    //may any problem ?
+    if(RegistryUtils.getServiceRegistry() == null) {
+      RegistryUtils.init();
+    }
     Microservice microservice = RegistryUtils.getMicroservice();
     applicationName = microservice.getAppId() + "." + microservice.getServiceName();
   }
