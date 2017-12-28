@@ -31,23 +31,23 @@ import io.servicecomb.metrics.common.RegistryMetric;
 import io.servicecomb.metrics.core.publish.DataSource;
 
 @Component
-public class MetricsObserverInitializer {
+public class WriteFileInitializer {
 
   private static final String METRICS_WINDOW_TIME = "servicecomb.metrics.window_time";
 
   private final int metricPoll;
 
-  private final MetricsFileOutput fileOutput;
+  private final FileWriter fileOutput;
 
-  private final MetricsContentConvertor convertor;
+  private final FileContentConvertor convertor;
 
-  private final MetricsContentFormatter formatter;
+  private final FileContentFormatter formatter;
 
   private final DataSource dataSource;
 
   @Autowired
-  public MetricsObserverInitializer(MetricsFileOutput fileOutput, MetricsContentConvertor convertor,
-      MetricsContentFormatter formatter, DataSource dataSource) {
+  public WriteFileInitializer(FileWriter fileOutput, FileContentConvertor convertor,
+      FileContentFormatter formatter, DataSource dataSource) {
     metricPoll = DynamicPropertyFactory.getInstance().getIntProperty(METRICS_WINDOW_TIME, 5000).get();
     this.fileOutput = fileOutput;
     this.convertor = convertor;

@@ -33,24 +33,25 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import io.servicecomb.foundation.common.net.NetUtils;
 import io.servicecomb.foundation.common.utils.JsonUtils;
 import io.servicecomb.serviceregistry.RegistryUtils;
+import io.servicecomb.serviceregistry.api.registry.Microservice;
 
 @Component
-public class SimpleMetricsContentFormatter implements MetricsContentFormatter {
-  private static final Logger logger = LoggerFactory.getLogger(SimpleMetricsContentFormatter.class);
+public class SimpleFileContentFormatter implements FileContentFormatter {
+  private static final Logger logger = LoggerFactory.getLogger(SimpleFileContentFormatter.class);
 
   private final String applicationName;
 
   private String hostName;
 
   @Autowired
-  public SimpleMetricsContentFormatter() {
+  public SimpleFileContentFormatter() {
     hostName = NetUtils.getHostName();
     if (StringUtils.isEmpty(hostName)) {
       hostName = NetUtils.getHostAddress();
     }
 
-    applicationName =
-        RegistryUtils.getMicroservice().getAppId() + "." + RegistryUtils.getMicroservice().getServiceName();
+    Microservice microservice = RegistryUtils.getMicroservice();
+    applicationName = microservice.getAppId() + "." + microservice.getServiceName();
   }
 
   @Override

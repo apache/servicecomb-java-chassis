@@ -17,21 +17,11 @@
 
 package io.servicecomb.metrics.sample.writefile;
 
-import java.util.HashMap;
 import java.util.Map;
-
-import org.springframework.stereotype.Component;
 
 import io.servicecomb.metrics.common.RegistryMetric;
 
-@Component
-public class SimpleMetricsContentConvertor implements MetricsContentConvertor {
-  @Override
-  public Map<String, String> convert(RegistryMetric registryMetric) {
-    Map<String, String> pickedMetrics = new HashMap<>();
-
-    //TODO:draw all metrics from RegistryMetric
-
-    return pickedMetrics;
-  }
+//convert metrics to output content
+public interface FileContentConvertor {
+  Map<String, String> convert(RegistryMetric registryMetric);
 }
