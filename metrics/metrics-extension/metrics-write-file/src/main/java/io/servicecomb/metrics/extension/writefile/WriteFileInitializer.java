@@ -60,23 +60,33 @@ public class WriteFileInitializer {
     this.dataSource = dataSource;
 
     //may any problem ?
-    if(RegistryUtils.getServiceRegistry() == null) {
+    if (RegistryUtils.getServiceRegistry() == null) {
       RegistryUtils.init();
     }
     Microservice microservice = RegistryUtils.getMicroservice();
-    filePrefix = microservice.getAppId() + "." + microservice.getServiceName() + ".";
+    this.filePrefix = microservice.getAppId() + "." + microservice.getServiceName() + ".";
 
     this.init();
   }
 
-  public void init() {
+  public WriteFileInitializer(MetricsFileWriter fileWriter, FileContentConvertor convertor,
+      FileContentFormatter formatter, DataSource dataSource, String filePrefix) {
+    metricPoll = DynamicPropertyFactory.getInstance().getIntProperty(METRICS_WINDOW_TIME, 5000).get();
+    this.fileWriter = fileWriter;
+    this.convertor = convertor;
+    this.formatter = formatter;
+    this.dataSource = dataSource;
+    this.filePrefix = filePrefix;
+  }
+
+  private void init() {
     final Runnable poller = this::run;
     Executors.newScheduledThreadPool(1)
         .scheduleWithFixedDelay(poller, 0, metricPoll, MILLISECONDS);
   }
 
-  private void run() {
-    RegistryMetric registryMetric = dataSource.getRegistryMetric(0);
+  public void run() {
+    RegistryMetric registryMetric = dataSource.getRegistryMetric();
     Map<String, String> convertedMetrics = convertor.convert(registryMetric);
     Map<String, String> formattedMetrics = formatter.format(convertedMetrics);
 
