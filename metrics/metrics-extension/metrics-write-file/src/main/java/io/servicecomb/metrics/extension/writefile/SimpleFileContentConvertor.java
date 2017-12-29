@@ -17,22 +17,48 @@
 
 package io.servicecomb.metrics.extension.writefile;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
 import org.springframework.stereotype.Component;
 
+import com.netflix.config.DynamicPropertyFactory;
+
 import io.servicecomb.metrics.common.RegistryMetric;
 
 @Component
 public class SimpleFileContentConvertor implements FileContentConvertor {
+
+  private static final String METRICS_ROUND_PLACES = "servicecomb.metrics.round_places";
+
+  private final int doubleRoundPlaces;
+
+  private final String doubleStringFormatter;
+
+  public SimpleFileContentConvertor() {
+    doubleRoundPlaces = DynamicPropertyFactory.getInstance().getIntProperty(METRICS_ROUND_PLACES, 1).get();
+    doubleStringFormatter = "%." + String.valueOf(doubleRoundPlaces) + "f";
+  }
+
   @Override
   public Map<String, String> convert(RegistryMetric registryMetric) {
     Map<String, String> pickedMetrics = new HashMap<>();
-    for (Entry<String,Number> metric : registryMetric.toMap().entrySet()) {
-      pickedMetrics.put(metric.getKey(),String.valueOf(metric.getValue()));
+    for (Entry<String, Number> metric : registryMetric.toMap().entrySet()) {
+      pickedMetrics.put(metric.getKey(), String.format(doubleStringFormatter,
+          round(metric.getValue().doubleValue(), doubleRoundPlaces)));
     }
     return pickedMetrics;
+  }
+
+  private double round(double value, int places) {
+    if (!Double.isNaN(value) && !Double.isInfinite(value)) {
+      BigDecimal decimal = new BigDecimal(value);
+      return decimal.setScale(places, RoundingMode.HALF_UP).doubleValue();
+    } else {
+      return 0;
+    }
   }
 }

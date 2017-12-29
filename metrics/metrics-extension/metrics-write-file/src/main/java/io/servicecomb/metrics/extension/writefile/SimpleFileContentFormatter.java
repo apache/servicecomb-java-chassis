@@ -51,11 +51,16 @@ public class SimpleFileContentFormatter implements FileContentFormatter {
     }
 
     //may any problem ?
-    if(RegistryUtils.getServiceRegistry() == null) {
+    if (RegistryUtils.getServiceRegistry() == null) {
       RegistryUtils.init();
     }
     Microservice microservice = RegistryUtils.getMicroservice();
     applicationName = microservice.getAppId() + "." + microservice.getServiceName();
+  }
+
+  public SimpleFileContentFormatter(String hostName, String applicationName) {
+    this.hostName = hostName;
+    this.applicationName = applicationName;
   }
 
   @Override
