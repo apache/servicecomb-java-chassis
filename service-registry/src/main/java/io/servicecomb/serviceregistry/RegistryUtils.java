@@ -20,7 +20,6 @@ package io.servicecomb.serviceregistry;
 import java.net.InetSocketAddress;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.List;
 import java.util.Map;
 
 import org.apache.http.client.utils.URIBuilder;
@@ -38,6 +37,7 @@ import io.servicecomb.serviceregistry.api.registry.Microservice;
 import io.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
 import io.servicecomb.serviceregistry.cache.InstanceCacheManager;
 import io.servicecomb.serviceregistry.client.ServiceRegistryClient;
+import io.servicecomb.serviceregistry.client.http.MicroserviceInstances;
 import io.servicecomb.serviceregistry.config.ServiceRegistryConfig;
 import io.servicecomb.serviceregistry.definition.MicroserviceDefinition;
 import io.servicecomb.serviceregistry.registry.ServiceRegistryFactory;
@@ -202,9 +202,9 @@ public final class RegistryUtils {
     return new IpPort(publicAddressSetting, publishPort);
   }
 
-  public static List<MicroserviceInstance> findServiceInstance(String appId, String serviceName,
-      String versionRule) {
-    return serviceRegistry.findServiceInstance(appId, serviceName, versionRule);
+  public static MicroserviceInstances findServiceInstance(String appId, String serviceName,
+      String versionRule, String revision) {
+    return serviceRegistry.findServiceInstance(appId, serviceName, versionRule, revision);
   }
 
   // update microservice instance properties

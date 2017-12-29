@@ -30,6 +30,7 @@ import org.junit.rules.ExpectedException;
 
 import io.servicecomb.serviceregistry.api.registry.Microservice;
 import io.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
+import io.servicecomb.serviceregistry.client.http.MicroserviceInstances;
 import io.servicecomb.serviceregistry.definition.DefinitionConst;
 
 public class LocalServiceRegistryClientImplTest {
@@ -53,8 +54,9 @@ public class LocalServiceRegistryClientImplTest {
   public void testLoadRegistryFile() {
     Assert.assertNotNull(registryClient);
     Assert.assertThat(registryClient.getAllMicroservices().size(), Is.is(1));
-    List<MicroserviceInstance> m =
-        registryClient.findServiceInstance("", "myapp", "springmvctest", DefinitionConst.VERSION_RULE_ALL);
+    MicroserviceInstances microserviceInstances =
+        registryClient.findServiceInstance("", "myapp", "springmvctest", DefinitionConst.VERSION_RULE_ALL, DefinitionConst.DEFAULT_REVISION);
+    List<MicroserviceInstance> m = microserviceInstances.getInstancesResponse().getInstances();
     Assert.assertEquals(1, m.size());
   }
 
@@ -109,8 +111,9 @@ public class LocalServiceRegistryClientImplTest {
 
   @Test
   public void findServiceInstance_noInstances() {
-    List<MicroserviceInstance> result =
-        registryClient.findServiceInstance("self", appId, microserviceName, DefinitionConst.VERSION_RULE_ALL);
+    MicroserviceInstances microserviceInstances =
+        registryClient.findServiceInstance("self", appId, microserviceName, DefinitionConst.VERSION_RULE_ALL, DefinitionConst.DEFAULT_REVISION);
+    List<MicroserviceInstance> result = microserviceInstances.getInstancesResponse().getInstances();
 
     Assert.assertThat(result, Matchers.empty());
   }
@@ -124,8 +127,9 @@ public class LocalServiceRegistryClientImplTest {
     instance.setServiceId(v1.getServiceId());
     registryClient.registerMicroserviceInstance(instance);
 
-    List<MicroserviceInstance> result =
-        registryClient.findServiceInstance("self", appId, microserviceName, "1.0.0");
+    MicroserviceInstances microserviceInstances =
+        registryClient.findServiceInstance("self", appId, microserviceName, "1.0.0", "0");
+    List<MicroserviceInstance> result = microserviceInstances.getInstancesResponse().getInstances();
 
     Assert.assertThat(result, Matchers.contains(instance));
   }
