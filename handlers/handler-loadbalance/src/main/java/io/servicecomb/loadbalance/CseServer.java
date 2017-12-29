@@ -23,6 +23,7 @@ import com.netflix.loadbalancer.Server;
 
 import io.servicecomb.core.Endpoint;
 import io.servicecomb.core.Transport;
+import io.servicecomb.foundation.common.utils.RollingWindowBucketedCounter;
 import io.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
 import io.servicecomb.serviceregistry.cache.CacheEndpoint;
 
@@ -32,6 +33,11 @@ import io.servicecomb.serviceregistry.cache.CacheEndpoint;
  *
  */
 public class CseServer extends Server {
+
+  public static final long SAMPLE_UNIT_TIME = 1000L;
+
+  public static final int COUNTER_SIZE = 10;
+
   private final Endpoint endpoint;
 
   // 所属服务实例
@@ -43,6 +49,18 @@ public class CseServer extends Server {
    * Count the continuous invocation failure. Once invocation successes, set this to zero.
    */
   private AtomicInteger continuousFailureCount = new AtomicInteger(0);
+
+  /**
+   * Count the total invocations in the last 10 sec.
+   */
+  private RollingWindowBucketedCounter totalInvocationCount =
+      new RollingWindowBucketedCounter(SAMPLE_UNIT_TIME, COUNTER_SIZE);
+
+  /**
+   * Count the failed invocations in the last 10 sec.
+   */
+  private RollingWindowBucketedCounter failureInvocationCount =
+      new RollingWindowBucketedCounter(SAMPLE_UNIT_TIME, COUNTER_SIZE);
 
   public long getLastVisitTime() {
     return lastVisitTime;
@@ -91,6 +109,41 @@ public class CseServer extends Server {
 
   public int getCountinuousFailureCount() {
     return continuousFailureCount.get();
+  }
+
+  /**
+   * This method should be invoked if an invocation succeeds.
+   */
+  public void invocationSucceeded() {
+    totalInvocationCount.increment();
+    clearContinuousFailure();
+  }
+
+  /**
+   * This method should be invoked if an invocation failed.
+   */
+  public void invocationFailed() {
+    totalInvocationCount.increment();
+    failureInvocationCount.increment();
+    incrementContinuousFailureCount();
+  }
+
+  /**
+   * Get the total invocation count.
+   *
+   * @see #totalInvocationCount
+   */
+  public long getTotalInvocationCount() {
+    return totalInvocationCount.getTotalCount();
+  }
+
+  /**
+   * Get the failed invocation count.
+   *
+   * @see #failureInvocationCount
+   */
+  public long getFailureInvocationCount() {
+    return failureInvocationCount.getTotalCount();
   }
 
   public boolean equals(Object o) {
