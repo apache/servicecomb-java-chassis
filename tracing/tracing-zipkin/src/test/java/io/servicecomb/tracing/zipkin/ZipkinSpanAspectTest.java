@@ -39,7 +39,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import brave.Tracing;
-import brave.internal.StrictCurrentTraceContext;
+import brave.propagation.StrictCurrentTraceContext;
+
 import io.servicecomb.tracing.zipkin.ZipkinSpanAspectTest.TracingConfig;
 import io.servicecomb.tracing.zipkin.app.ZipkinSpanTestApplication;
 import io.servicecomb.tracing.zipkin.app.ZipkinSpanTestApplication.CustomSpanTask;

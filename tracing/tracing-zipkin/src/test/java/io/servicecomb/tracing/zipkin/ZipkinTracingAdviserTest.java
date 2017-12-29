@@ -44,7 +44,7 @@ import org.junit.Test;
 import brave.Span;
 import brave.Tracer.SpanInScope;
 import brave.Tracing;
-import brave.internal.StrictCurrentTraceContext;
+import brave.propagation.StrictCurrentTraceContext;
 import io.servicecomb.tracing.zipkin.ZipkinTracingAdviser.ThrowableSupplier;
 
 public class ZipkinTracingAdviserTest {
