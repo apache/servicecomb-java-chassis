@@ -160,67 +160,67 @@
   </Appenders>
 
   <Loggers>
-    <Logger name="averageServiceExecutionTime" level="error" additivity="false">
+    <Logger name="averageServiceExecutionTime" level="trace" additivity="false">
       <AppenderRef ref="averageServiceExecutionTime"/>
     </Logger>
-    <Logger name="averageTimeInQueue" level="error" additivity="false">
+    <Logger name="averageTimeInQueue" level="trace" additivity="false">
       <AppenderRef ref="averageTimeInQueue"/>
     </Logger>
-    <Logger name="countInQueue" level="error" additivity="false">
+    <Logger name="countInQueue" level="trace" additivity="false">
       <AppenderRef ref="countInQueue"/>
     </Logger>
-    <Logger name="cpuLoad" level="error" additivity="false">
+    <Logger name="cpuLoad" level="trace" additivity="false">
       <AppenderRef ref="cpuLoad"/>
     </Logger>
-    <Logger name="cpuRunningThreads" level="error" additivity="false">
+    <Logger name="cpuRunningThreads" level="trace" additivity="false">
       <AppenderRef ref="cpuRunningThreads"/>
     </Logger>
-    <Logger name="heapCommit" level="error" additivity="false">
+    <Logger name="heapCommit" level="trace" additivity="false">
       <AppenderRef ref="heapCommit"/>
     </Logger>
-    <Logger name="heapInit" level="error" additivity="false">
+    <Logger name="heapInit" level="trace" additivity="false">
       <AppenderRef ref="heapInit"/>
     </Logger>
-    <Logger name="heapMax" level="error" additivity="false">
+    <Logger name="heapMax" level="trace" additivity="false">
       <AppenderRef ref="heapMax"/>
     </Logger>
-    <Logger name="heapUsed" level="error" additivity="false">
+    <Logger name="heapUsed" level="trace" additivity="false">
       <AppenderRef ref="heapUsed"/>
     </Logger>
-    <Logger name="latency" level="error" additivity="false">
+    <Logger name="latency" level="trace" additivity="false">
       <AppenderRef ref="latency"/>
     </Logger>
-    <Logger name="maxLifeTimeInQueue" level="error" additivity="false">
+    <Logger name="maxLifeTimeInQueue" level="trace" additivity="false">
       <AppenderRef ref="maxLifeTimeInQueue"/>
     </Logger>
-    <Logger name="minLifeTimeInQueue" level="error" additivity="false">
+    <Logger name="minLifeTimeInQueue" level="trace" additivity="false">
       <AppenderRef ref="minLifeTimeInQueue"/>
     </Logger>
-    <Logger name="nonHeapCommit" level="error" additivity="false">
+    <Logger name="nonHeapCommit" level="trace" additivity="false">
       <AppenderRef ref="nonHeapCommit"/>
     </Logger>
-    <Logger name="nonHeapInit" level="error" additivity="false">
+    <Logger name="nonHeapInit" level="trace" additivity="false">
       <AppenderRef ref="nonHeapInit"/>
     </Logger>
-    <Logger name="nonHeapMax" level="error" additivity="false">
+    <Logger name="nonHeapMax" level="trace" additivity="false">
       <AppenderRef ref="nonHeapMax"/>
     </Logger>
-    <Logger name="nonHeapUsed" level="error" additivity="false">
+    <Logger name="nonHeapUsed" level="trace" additivity="false">
       <AppenderRef ref="nonHeapUsed"/>
     </Logger>
-    <Logger name="totalFailedRequestsPerProvider" level="error" additivity="false">
+    <Logger name="totalFailedRequestsPerProvider" level="trace" additivity="false">
       <AppenderRef ref="totalFailedRequestsPerProvider"/>
     </Logger>
-    <Logger name="totalFailRequestsPerConsumer" level="error" additivity="false">
+    <Logger name="totalFailRequestsPerConsumer" level="trace" additivity="false">
       <AppenderRef ref="totalFailRequestsPerConsumer"/>
     </Logger>
-    <Logger name="totalRequestsPerConsumer" level="error" additivity="false">
+    <Logger name="totalRequestsPerConsumer" level="trace" additivity="false">
       <AppenderRef ref="totalRequestsPerConsumer"/>
     </Logger>
-    <Logger name="totalRequestsPerProvider" level="error" additivity="false">
+    <Logger name="totalRequestsPerProvider" level="trace" additivity="false">
       <AppenderRef ref="totalRequestsPerProvider"/>
     </Logger>
-    <Logger name="tps" level="error" additivity="false">
+    <Logger name="tps" level="trace" additivity="false">
       <AppenderRef ref="tps"/>
     </Logger>
   </Loggers>

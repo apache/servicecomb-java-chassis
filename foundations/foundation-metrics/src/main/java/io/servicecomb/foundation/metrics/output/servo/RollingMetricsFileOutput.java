@@ -38,7 +38,7 @@ public class RollingMetricsFileOutput extends MetricsFileOutput {
   public void output(Map<String, String> metrics) {
     for (String metricName : metrics.keySet()) {
       Logger logger = allLoggers.computeIfAbsent(metricName, l -> LoggerFactory.getLogger(metricName));
-      logger.error(metrics.get(metricName));
+      logger.trace(metrics.get(metricName));
     }
   }
 }
