@@ -17,6 +17,8 @@
 
 package io.servicecomb.metrics.core.publish;
 
+import java.util.List;
+
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -33,6 +35,12 @@ public class DefaultMetricsPublisher implements MetricsPublisher {
 
   public DefaultMetricsPublisher(DataSource dataSource) {
     this.dataSource = dataSource;
+  }
+
+  @RequestMapping(path = "/appliedWindowTime", method = RequestMethod.GET)
+  @Override
+  public List<Long> getAppliedWindowTime() {
+    return dataSource.getAppliedWindowTime();
   }
 
   @RequestMapping(path = "/", method = RequestMethod.GET)

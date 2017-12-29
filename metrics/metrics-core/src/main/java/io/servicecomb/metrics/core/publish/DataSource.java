@@ -37,7 +37,7 @@ public interface DataSource {
    */
   List<Long> getAppliedWindowTime();
 
-  //return getRegistryMetric(0)
+  //same as getRegistryMetric(0)
   RegistryMetric getRegistryMetric();
 
   /**
