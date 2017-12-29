@@ -66,11 +66,13 @@ public class TestEventAndRunner {
 
     DefaultSystemMonitor systemMonitor = new DefaultSystemMonitor(systemMXBean, threadMXBean, memoryMXBean);
     RegistryMonitor monitor = new RegistryMonitor(systemMonitor);
-    DefaultDataSource dataSource = new DefaultDataSource(monitor, "1000");
+    DefaultDataSource dataSource = new DefaultDataSource(monitor, "1000,2000,3000");
 
     List<Long> intervals = dataSource.getAppliedWindowTime();
-    Assert.assertEquals(intervals.size(), 1);
+    Assert.assertEquals(intervals.size(), 3);
     Assert.assertEquals(intervals.get(0).intValue(), 1000);
+    Assert.assertEquals(intervals.get(1).intValue(), 2000);
+    Assert.assertEquals(intervals.get(2).intValue(), 3000);
 
     new DefaultEventListenerManager(monitor);
 

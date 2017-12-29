@@ -18,6 +18,7 @@
 package io.servicecomb.metrics.core;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 
 import org.junit.Assert;
@@ -36,7 +37,7 @@ public class TestPublisher {
   public void test() throws IOException {
     SystemMonitor systemMonitor = new DefaultSystemMonitor();
     RegistryMonitor registryMonitor = new RegistryMonitor(systemMonitor);
-    DefaultDataSource dataSource = new DefaultDataSource(registryMonitor);
+    DefaultDataSource dataSource = new DefaultDataSource(registryMonitor,"1000,2000,3000");
     DefaultMetricsPublisher publisher = new DefaultMetricsPublisher(dataSource);
 
     RegistryMetric registryMetric = publisher.metrics();
@@ -46,5 +47,11 @@ public class TestPublisher {
     registryMetric = publisher.metricsWithWindowTimeIndex(0);
     metricsMap = registryMetric.toMap();
     Assert.assertEquals(metricsMap.size(), 30);
+
+    List<Long> appliedWindowTime = publisher.getAppliedWindowTime();
+    Assert.assertEquals(appliedWindowTime.size(),3);
+    Assert.assertEquals(appliedWindowTime.get(0).longValue(),1000);
+    Assert.assertEquals(appliedWindowTime.get(1).longValue(),2000);
+    Assert.assertEquals(appliedWindowTime.get(2).longValue(),3000);
   }
 }
