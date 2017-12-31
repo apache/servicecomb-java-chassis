@@ -97,11 +97,11 @@ public class CseServer extends Server {
     return endpoint.getEndpoint();
   }
 
-  public void clearContinuousFailure() {
+  void clearContinuousFailure() {
     continuousFailureCount.set(0);
   }
 
-  public void incrementContinuousFailureCount() {
+  void incrementContinuousFailureCount() {
     if (continuousFailureCount.get() < Integer.MAX_VALUE) {
       continuousFailureCount.incrementAndGet();
     }

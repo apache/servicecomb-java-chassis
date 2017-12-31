@@ -164,10 +164,10 @@ public class LoadbalanceHandler implements Handler {
       chosenLB.getLoadBalancerStats().noteResponseTime(server, (System.currentTimeMillis() - time));
       if (resp.isFailed()) {
         chosenLB.getLoadBalancerStats().incrementSuccessiveConnectionFailureCount(server);
-        server.incrementContinuousFailureCount();
+        server.invocationFailed();
       } else {
         chosenLB.getLoadBalancerStats().incrementActiveRequestsCount(server);
-        server.clearContinuousFailure();
+        server.invocationSucceeded();
       }
       asyncResp.handle(resp);
     });
@@ -265,11 +265,11 @@ public class LoadbalanceHandler implements Handler {
                     ((Throwable) resp.getResult()).getMessage(),
                     s);
                 chosenLB.getLoadBalancerStats().incrementSuccessiveConnectionFailureCount(s);
-                ((CseServer) s).incrementContinuousFailureCount();
+                ((CseServer) s).invocationFailed();
                 f.onError(resp.getResult());
               } else {
                 chosenLB.getLoadBalancerStats().incrementActiveRequestsCount(s);
-                ((CseServer) s).clearContinuousFailure();
+                ((CseServer) s).invocationSucceeded();
                 chosenLB.getLoadBalancerStats().noteResponseTime(s,
                     (System.currentTimeMillis() - time));
                 f.onNext(resp);
