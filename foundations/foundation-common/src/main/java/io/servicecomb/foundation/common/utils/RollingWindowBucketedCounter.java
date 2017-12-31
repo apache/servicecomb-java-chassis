@@ -25,13 +25,13 @@ import java.util.concurrent.atomic.AtomicLong;
 /**
  * A thread-safe time-windowed rolling counter.
  * <p>
- *   In consider of performance, records are counted in buckets, and the current working bucket will not be counted
- *   in the {@link #totalCount}.<br/>
- *   i.e. If {@link #increment()} is invoked, it will be counted in {@link #currentBucket}, but this result won't be
+ *   In consideration of performance, records are stored in {@link #buckets}, and the {@link #workingBucket} will not be
+ *   counted in the {@link #totalCount}.<br/>
+ *   i.e. If {@link #increment()} is invoked, it will be counted in the {@link #workingBucket}, but this result won't be
  *   reflected in {@link #totalCount} instantly. <br/>
- *   When {@link #bucketSizeMs} milliseconds passes, the buckets are shifted,
- *   and the next bucket will act as the working bucket. The counted number in the previous working bucket will be added
- *   into {@link #totalCount}, and the number in oldest bucket will be removed from {@link #totalCount}.
+ *   When {@link #bucketSizeMs} milliseconds passes, the cursor is shifted, and the value in the {@link #workingBucket}
+ *   will be copied into {@link #buckets}, the oldest value will be overwritten. Then the {@link #workingBucket} will be
+ *   reset to zero. All of the value in {@link #buckets} will be added into {@link #totalCount}.
  * </p>
  */
 public class RollingWindowBucketedCounter {
@@ -45,12 +45,12 @@ public class RollingWindowBucketedCounter {
    */
   private int bucketNum;
 
-  private AtomicLong[] buckets;
+  private long[] buckets;
 
-  private AtomicLong currentBucket;
+  private AtomicLong workingBucket;
 
   /**
-   * index of current working bucket
+   * index of the next written bucket
    */
   private int cursor;
 
@@ -58,19 +58,12 @@ public class RollingWindowBucketedCounter {
 
   private long totalCount;
 
-  /**
-   * The size of {@link #buckets} should be one more than the {@link #bucketNum} to spare a bucket for current counting.
-   * i.e. the rest buckets in {@link #buckets} will be counted to {@link #totalCount}
-   */
   public RollingWindowBucketedCounter(long bucketSizeMs, int bucketNum) {
     this.bucketSizeMs = bucketSizeMs;
     this.bucketNum = bucketNum;
     this.shiftTime = currentTimeMillis() + bucketSizeMs;
-    this.buckets = new AtomicLong[this.bucketNum + 1];
-    for (int i = 0; i < this.buckets.length; ++i) {
-      this.buckets[i] = new AtomicLong(0);
-    }
-    this.currentBucket = this.buckets[this.cursor];
+    this.buckets = new long[this.bucketNum];
+    this.workingBucket = new AtomicLong();
   }
 
   public long getTotalCount() {
@@ -93,14 +86,14 @@ public class RollingWindowBucketedCounter {
       lastCount = bucketNum;
     }
 
-    List<Long> lastBuckets = new ArrayList<>();
+    List<Long> lastBuckets = new ArrayList<>(lastCount);
     int offset = cursor - 1;
     for (int i = 0; i < lastCount; ++i) {
       if (offset < 0) {
         offset = buckets.length - 1;
       }
 
-      lastBuckets.add(buckets[offset].get());
+      lastBuckets.add(buckets[offset]);
       --offset;
     }
 
@@ -108,12 +101,12 @@ public class RollingWindowBucketedCounter {
   }
 
   public long getCurrentBucket() {
-    return this.currentBucket.get();
+    return this.workingBucket.get();
   }
 
   public void increment() {
     checkAndShift();
-    currentBucket.incrementAndGet();
+    workingBucket.incrementAndGet();
   }
 
   /**
@@ -121,7 +114,6 @@ public class RollingWindowBucketedCounter {
    */
   private void checkAndShift() {
     if (shiftTime <= currentTimeMillis()) {
-      // is shifting
       shift();
     }
   }
@@ -133,22 +125,28 @@ public class RollingWindowBucketedCounter {
   private synchronized void shift() {
     long current = currentTimeMillis();
     if (shiftTime > current) {
+      // has been shifted
       return;
     }
 
     long step = (current - shiftTime) / bucketSizeMs + 1;
     incrementShiftTime(step);
-    if (step > buckets.length) {
-      // to avoid repeated operation
-      step = buckets.length;
+    buckets[cursor] = workingBucket.getAndSet(0L);
+    shiftCursor();
+
+    // if this counter is not invoked for more than bucketSizeMs milliseconds, additional cursor shift is needed.
+    if (step > 1) {
+      --step;
+      if (step > buckets.length) {
+        // to avoid repeated operation
+        step = buckets.length;
+      }
+      for (int i = 0; i < step; ++i) {
+        buckets[cursor] = 0L;
+        shiftCursor();
+      }
     }
 
-    for (int i = 0; i < step; ++i) {
-      shiftCursor();
-      buckets[cursor].set(0L);
-    }
-
-    currentBucket = buckets[cursor];
     refreshTotalCount();
   }
 
@@ -159,18 +157,14 @@ public class RollingWindowBucketedCounter {
   private void shiftCursor() {
     ++cursor;
     if (cursor >= buckets.length) {
-      cursor = cursor % buckets.length;
+      cursor = 0;
     }
   }
 
   void refreshTotalCount() {
     long count = 0;
     for (int i = 0; i < buckets.length; ++i) {
-      if (i == cursor) {
-        // current working bucket will not be counted
-        continue;
-      }
-      count += buckets[i].get();
+      count += buckets[i];
     }
 
     totalCount = count;
@@ -182,7 +176,7 @@ public class RollingWindowBucketedCounter {
     sb.append("bucketSizeMs=").append(bucketSizeMs);
     sb.append(", bucketNum=").append(bucketNum);
     sb.append(", buckets=").append(Arrays.toString(buckets));
-    sb.append(", currentBucket=").append(currentBucket.get());
+    sb.append(", workingBucket=").append(workingBucket);
     sb.append(", cursor=").append(cursor);
     sb.append(", shiftTime=").append(shiftTime);
     sb.append(", totalCount=").append(totalCount);

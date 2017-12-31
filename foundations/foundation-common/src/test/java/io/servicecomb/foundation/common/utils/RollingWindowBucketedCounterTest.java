@@ -38,10 +38,10 @@ public class RollingWindowBucketedCounterTest {
   public void testInit() {
     RollingWindowBucketedCounter counter = new RollingWindowBucketedCounter(UNIT_TIME, 5);
 
-    AtomicLong[] buckets = Deencapsulation.getField(counter, "buckets");
-    assertEquals(6, buckets.length);
-    for (AtomicLong bucket : buckets) {
-      assertEquals(0L, bucket.get());
+    long[] buckets = Deencapsulation.getField(counter, "buckets");
+    assertEquals(5, buckets.length);
+    for (long bucket : buckets) {
+      assertEquals(0L, bucket);
     }
   }
 
@@ -79,7 +79,7 @@ public class RollingWindowBucketedCounterTest {
   }
 
   /**
-   * CounterTime = {@link RollingWindowBucketedCounter#bucketSizeMs} * ({@link RollingWindowBucketedCounter#bucketNum} +1),
+   * CounterTime = {@link RollingWindowBucketedCounter#bucketSizeMs} * {@link RollingWindowBucketedCounter#bucketNum},
    * that means the longest time the counter can hold.
    */
   @Test
@@ -101,7 +101,20 @@ public class RollingWindowBucketedCounterTest {
       counter.addTimeMillis(UNIT_TIME);
     }
     assertEquals(3, counter.getTotalCount());
-    assertEquals(0, ((AtomicLong) Deencapsulation.getField(counter, "currentBucket")).get());
+    assertEquals(0, ((AtomicLong) Deencapsulation.getField(counter, "workingBucket")).get());
+  }
+
+  @Test
+  public void testIncrementOnTimeIntervalEqualsToCounterTime() {
+    TestCounter counter = new TestCounter(UNIT_TIME, 5);
+    for (int i = 0; i < 6; ++i) {
+      counter.addTimeMillis(UNIT_TIME);
+      counter.increment();
+    }
+
+    counter.addTimeMillis(UNIT_TIME * 5);
+
+    assertEquals(1, counter.getTotalCount());
   }
 
   @Test
@@ -114,7 +127,7 @@ public class RollingWindowBucketedCounterTest {
       assertEquals(i, counter.getTotalCount());
     }
 
-    counter.addTimeMillis(7 * UNIT_TIME);
+    counter.addTimeMillis(6 * UNIT_TIME);
     long totalCount = counter.getTotalCount();
     assertEquals(0, totalCount);
 
@@ -123,7 +136,7 @@ public class RollingWindowBucketedCounterTest {
       counter.addTimeMillis(UNIT_TIME);
     }
     assertEquals(2, counter.getTotalCount());
-    assertEquals(0, ((AtomicLong) Deencapsulation.getField(counter, "currentBucket")).get());
+    assertEquals(0, ((AtomicLong) Deencapsulation.getField(counter, "workingBucket")).get());
   }
 
   @Test
@@ -183,7 +196,6 @@ public class RollingWindowBucketedCounterTest {
     }
 
     latch.await();
-    // to ensure all of the increment will be counted(not in working bucket)
     Thread.sleep(30L);
     counter.getTotalCount();
   }
