@@ -87,12 +87,16 @@ public final class InvokerUtils {
       ReactiveResponseExecutor respExecutor = new ReactiveResponseExecutor();
       invocation.setResponseExecutor(respExecutor);
 
-      invocation.next(asyncResp);
+      AsyncResponse wrappedAsyncResponse = response -> {
+        invocation.triggerFinishedEvent();
+        asyncResp.handle(response);
+      };
+
+      invocation.next(wrappedAsyncResponse);
     } catch (Throwable e) {
+      invocation.triggerFinishedEvent();
       LOGGER.error("invoke failed, {}", invocation.getOperationMeta().getMicroserviceQualifiedName());
       asyncResp.consumerFail(e);
-    } finally {
-      invocation.triggerFinishedEvent();
     }
   }
 
