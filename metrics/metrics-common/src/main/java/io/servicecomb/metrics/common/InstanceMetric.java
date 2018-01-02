@@ -17,6 +17,9 @@
 
 package io.servicecomb.metrics.common;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class InstanceMetric {
@@ -44,5 +47,13 @@ public class InstanceMetric {
     this.systemMetric = systemMetric;
     this.consumerMetric = consumerMetric;
     this.producerMetric = producerMetric;
+  }
+
+  public Map<String, Number> toMap() {
+    Map<String, Number> metrics = new HashMap<>();
+    metrics.putAll(systemMetric.toMap());
+    metrics.putAll(consumerMetric.toMap());
+    metrics.putAll(producerMetric.toMap());
+    return metrics;
   }
 }

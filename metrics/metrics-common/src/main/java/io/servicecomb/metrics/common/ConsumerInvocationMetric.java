@@ -46,8 +46,8 @@ public class ConsumerInvocationMetric extends InvocationMetric {
 
   public ConsumerInvocationMetric merge(ConsumerInvocationMetric metric) {
     return new ConsumerInvocationMetric(this.getOperationName(), this.getPrefix(),
-        metric.getConsumerLatency().merge(consumerLatency),
-        metric.getConsumerCall().merge(consumerCall));
+        consumerLatency.merge(metric.getConsumerLatency()),
+        consumerCall.merge(metric.getConsumerCall()));
   }
 
   public Map<String, Number> toMap() {

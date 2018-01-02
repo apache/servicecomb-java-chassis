@@ -57,7 +57,7 @@ public class RegistryMetric {
 
     ConsumerInvocationMetric instanceConsumerInvocationMetric = new ConsumerInvocationMetric("instance",
         MetricsConst.INSTANCE_CONSUMER_PREFIX,
-        new TimerMetric(MetricsConst.INSTANCE_PRODUCER_PREFIX + ".producerLatency"),
+        new TimerMetric(MetricsConst.INSTANCE_CONSUMER_PREFIX + ".producerLatency"),
         new CallMetric(MetricsConst.INSTANCE_CONSUMER_PREFIX + ".consumerCall"));
     ProducerInvocationMetric instanceProducerInvocationMetric = new ProducerInvocationMetric("instance",
         MetricsConst.INSTANCE_PRODUCER_PREFIX, 0,
@@ -80,9 +80,7 @@ public class RegistryMetric {
 
   public Map<String, Number> toMap() {
     Map<String, Number> metrics = new HashMap<>();
-    metrics.putAll(instanceMetric.getSystemMetric().toMap());
-    metrics.putAll(instanceMetric.getConsumerMetric().toMap());
-    metrics.putAll(instanceMetric.getProducerMetric().toMap());
+    metrics.putAll(instanceMetric.toMap());
     for (ConsumerInvocationMetric metric : consumerMetrics.values()) {
       metrics.putAll(metric.toMap());
     }
