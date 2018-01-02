@@ -27,6 +27,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import io.servicecomb.metrics.common.MetricsPublisher;
 import io.servicecomb.metrics.common.RegistryMetric;
 import io.servicecomb.provider.rest.common.RestSchema;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
 
 @RestSchema(schemaId = "metricsEndpoint")
 @RequestMapping(path = "/metrics")
@@ -52,6 +54,9 @@ public class DefaultMetricsPublisher implements MetricsPublisher {
     return dataSource.getRegistryMetric();
   }
 
+  @ApiResponses({
+      @ApiResponse(code = 400, response = String.class, message = "illegal request content"),
+  })
   @RequestMapping(path = "/{windowTime}", method = RequestMethod.GET)
   @CrossOrigin
   @Override
