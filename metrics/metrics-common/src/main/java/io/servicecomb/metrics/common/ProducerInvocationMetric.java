@@ -71,10 +71,10 @@ public class ProducerInvocationMetric extends InvocationMetric {
   public ProducerInvocationMetric merge(ProducerInvocationMetric metric) {
     return new ProducerInvocationMetric(this.getOperationName(), this.getPrefix(),
         this.getWaitInQueue() + metric.getWaitInQueue(),
-        metric.getLifeTimeInQueue().merge(lifeTimeInQueue),
-        metric.getExecutionTime().merge(executionTime),
-        metric.getProducerLatency().merge(producerLatency),
-        metric.getProducerCall().merge(producerCall));
+        lifeTimeInQueue.merge(metric.getLifeTimeInQueue()),
+        executionTime.merge(metric.getExecutionTime()),
+        producerLatency.merge(metric.getProducerLatency()),
+        producerCall.merge(metric.getProducerCall()));
   }
 
   public Map<String, Number> toMap() {
