@@ -83,13 +83,13 @@ public class DefaultDataSource implements DataSource {
 
   @Override
   public RegistryMetric getRegistryMetric(long windowTime) {
-    if (appliedWindowTimes.containsKey(windowTime)) {
-      return registryMonitor.toRegistryMetric(appliedWindowTimes.get(windowTime));
-    } else {
-      throw new InvocationException(BAD_REQUEST,
-          "windowTime : " + windowTime + " unset in servicecomb.metrics.window_time,current available are : " +
-              Strings.join(",", getAppliedWindowTime().iterator()));
+    Integer index = appliedWindowTimes.get(windowTime);
+    if (index != null) {
+      return registryMonitor.toRegistryMetric(index);
     }
+    throw new InvocationException(BAD_REQUEST,
+        "windowTime : " + windowTime + " unset in servicecomb.metrics.window_time,current available are : " +
+            Strings.join(",", getAppliedWindowTime().iterator()));
   }
 
   @Override
