@@ -37,26 +37,26 @@ public interface DataSource {
    */
   List<Long> getAppliedWindowTime();
 
-  //same as getRegistryMetric(0)
+  //same as getRegistryMetric({first setting windowTime})
   RegistryMetric getRegistryMetric();
 
   /**
-   * windowTimeIndex usage example:
+   * windowTime usage example:
    * if there is two window time set in "servicecomb.metrics.window_time" like 1000,2000
-   * then windowTimeIndex = 0 will return result of the setting 1000(1 second)
-   * windowTimeIndex = 1 will return result of the setting 2000(2 second)
+   * then windowTime = 1000 will return result of the setting 1000(1 second)
+   * windowTime = 2000 will return result of the setting 2000(2 second)
    *
    * there are three monitor of max,min,total
    * 0----------1----------2----------3----------  <-time line (second)
    *   100,200    300,400                          <-value record
    *
-   *                 ↑ getRegistryMetric(0) will return max=200 min=100 total=300
-   *                   getRegistryMetric(1) will return max=0 min=0 total=0
-   *                             ↑ getRegistryMetric(0) will return max=300 min=400 total=700
-   *                               getRegistryMetric(1) will return max=400 min=100 total=1000
+   *                 ↑ getRegistryMetric(1000) will return max=200 min=100 total=300
+   *                   getRegistryMetric(2000) will return max=0 min=0 total=0
+   *                             ↑ getRegistryMetric(1000) will return max=300 min=400 total=700
+   *                               getRegistryMetric(2000) will return max=400 min=100 total=1000
    *
-   * @param windowTimeIndex index of getAppliedWindowTime() item
+   * @param windowTime getAppliedWindowTime() item
    * @return RegistryMetric
    */
-  RegistryMetric getRegistryMetric(int windowTimeIndex);
+  RegistryMetric getRegistryMetric(long windowTime);
 }

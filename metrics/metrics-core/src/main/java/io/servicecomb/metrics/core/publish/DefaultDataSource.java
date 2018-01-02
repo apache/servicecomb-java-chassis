@@ -17,22 +17,33 @@
 
 package io.servicecomb.metrics.core.publish;
 
+import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
+
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.netflix.config.DynamicPropertyFactory;
 import com.netflix.servo.monitor.Pollers;
+import com.netflix.servo.util.Strings;
 
+import io.servicecomb.foundation.common.exceptions.ServiceCombException;
 import io.servicecomb.metrics.common.RegistryMetric;
 import io.servicecomb.metrics.core.monitor.RegistryMonitor;
+import io.servicecomb.swagger.invocation.exception.InvocationException;
 
 @Component
 public class DefaultDataSource implements DataSource {
   private static final String METRICS_POLLING_TIME = "servicecomb.metrics.window_time";
 
   private final RegistryMonitor registryMonitor;
+
+  private final Map<Long, Integer> appliedWindowTimes = new HashMap<>();
 
   @Autowired
   public DefaultDataSource(RegistryMonitor registryMonitor) {
@@ -41,17 +52,44 @@ public class DefaultDataSource implements DataSource {
 
   public DefaultDataSource(RegistryMonitor registryMonitor, String pollingSettings) {
     this.registryMonitor = registryMonitor;
-    System.getProperties().setProperty("servo.pollers", pollingSettings);
+
+    String[] singlePollingSettings = pollingSettings.split(",");
+    Set<Long> parsePollingSettings = new HashSet<>();
+    for (String singlePollingSetting : singlePollingSettings) {
+      try {
+        long settingValue = Long.parseLong(singlePollingSetting);
+        if (settingValue > 0) {
+          parsePollingSettings.add(settingValue);
+        } else {
+          throw new ServiceCombException(
+              "bad format servicecomb.metrics.window_time : " + String.valueOf(settingValue));
+        }
+      } catch (NumberFormatException e) {
+        throw new ServiceCombException("bad format servicecomb.metrics.window_time", e);
+      }
+    }
+    String finalPollingSettings = Strings.join(",", parsePollingSettings.iterator());
+    System.getProperties().setProperty("servo.pollers", finalPollingSettings);
+    List<Long> appliedWindowTimes = getAppliedWindowTime();
+    for (int i = 0; i < appliedWindowTimes.size(); i++) {
+      this.appliedWindowTimes.put(appliedWindowTimes.get(i), i);
+    }
   }
 
   @Override
   public RegistryMetric getRegistryMetric() {
-    return getRegistryMetric(0);
+    return getRegistryMetric(getAppliedWindowTime().get(0));
   }
 
   @Override
-  public RegistryMetric getRegistryMetric(int windowTimeIndex) {
-    return registryMonitor.toRegistryMetric(windowTimeIndex);
+  public RegistryMetric getRegistryMetric(long windowTime) {
+    if (appliedWindowTimes.containsKey(windowTime)) {
+      return registryMonitor.toRegistryMetric(appliedWindowTimes.get(windowTime));
+    } else {
+      throw new InvocationException(BAD_REQUEST,
+          "windowTime : " + windowTime + " unset in servicecomb.metrics.window_time,current available are : " +
+              Strings.join(",", getAppliedWindowTime().iterator()));
+    }
   }
 
   @Override
