@@ -17,7 +17,10 @@
 
 package io.servicecomb.metrics.core;
 
+import static org.hamcrest.Matchers.containsInAnyOrder;
+
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -37,21 +40,19 @@ public class TestPublisher {
   public void test() throws IOException {
     SystemMonitor systemMonitor = new DefaultSystemMonitor();
     RegistryMonitor registryMonitor = new RegistryMonitor(systemMonitor);
-    DefaultDataSource dataSource = new DefaultDataSource(registryMonitor,"1000,2000,3000");
+    DefaultDataSource dataSource = new DefaultDataSource(registryMonitor, "1000,2000,3000,3000,2000,1000");
     DefaultMetricsPublisher publisher = new DefaultMetricsPublisher(dataSource);
 
     RegistryMetric registryMetric = publisher.metrics();
     Map<String, Number> metricsMap = registryMetric.toMap();
     Assert.assertEquals(metricsMap.size(), 30);
 
-    registryMetric = publisher.metricsWithWindowTimeIndex(0);
+    registryMetric = publisher.metricsWithWindowTimeIndex(1000);
     metricsMap = registryMetric.toMap();
     Assert.assertEquals(metricsMap.size(), 30);
 
     List<Long> appliedWindowTime = publisher.getAppliedWindowTime();
-    Assert.assertEquals(appliedWindowTime.size(),3);
-    Assert.assertEquals(appliedWindowTime.get(0).longValue(),1000);
-    Assert.assertEquals(appliedWindowTime.get(1).longValue(),2000);
-    Assert.assertEquals(appliedWindowTime.get(2).longValue(),3000);
+    Assert.assertEquals(appliedWindowTime.size(), 3);
+    Assert.assertThat(appliedWindowTime, containsInAnyOrder(Arrays.asList(1000L, 2000L, 3000L).toArray()));
   }
 }

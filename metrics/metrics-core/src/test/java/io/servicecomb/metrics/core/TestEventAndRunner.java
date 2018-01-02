@@ -17,12 +17,14 @@
 
 package io.servicecomb.metrics.core;
 
+import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.mockito.Mockito.when;
 
 import java.lang.management.MemoryMXBean;
 import java.lang.management.MemoryUsage;
 import java.lang.management.OperatingSystemMXBean;
 import java.lang.management.ThreadMXBean;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -70,9 +72,7 @@ public class TestEventAndRunner {
 
     List<Long> intervals = dataSource.getAppliedWindowTime();
     Assert.assertEquals(intervals.size(), 3);
-    Assert.assertEquals(intervals.get(0).intValue(), 1000);
-    Assert.assertEquals(intervals.get(1).intValue(), 2000);
-    Assert.assertEquals(intervals.get(2).intValue(), 3000);
+    Assert.assertThat(intervals, containsInAnyOrder(Arrays.asList(1000L, 2000L, 3000L).toArray()));
 
     new DefaultEventListenerManager(monitor);
 
@@ -114,7 +114,7 @@ public class TestEventAndRunner {
     //sim lease one window time
     Thread.sleep(1000);
 
-    RegistryMetric model = dataSource.getRegistryMetric();
+    RegistryMetric model = dataSource.getRegistryMetric(1000);
 
     //check InstanceMetric
     Assert.assertEquals(model.getInstanceMetric().getProducerMetric().getWaitInQueue(), 1);

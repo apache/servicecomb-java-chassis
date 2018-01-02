@@ -19,6 +19,7 @@ package io.servicecomb.metrics.core.publish;
 
 import java.util.List;
 
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -38,20 +39,23 @@ public class DefaultMetricsPublisher implements MetricsPublisher {
   }
 
   @RequestMapping(path = "/appliedWindowTime", method = RequestMethod.GET)
+  @CrossOrigin
   @Override
   public List<Long> getAppliedWindowTime() {
     return dataSource.getAppliedWindowTime();
   }
 
   @RequestMapping(path = "/", method = RequestMethod.GET)
+  @CrossOrigin
   @Override
   public RegistryMetric metrics() {
     return dataSource.getRegistryMetric();
   }
 
-  @RequestMapping(path = "/{windowTimeIndex}", method = RequestMethod.GET)
+  @RequestMapping(path = "/{windowTime}", method = RequestMethod.GET)
+  @CrossOrigin
   @Override
-  public RegistryMetric metricsWithWindowTimeIndex(@PathVariable(name = "windowTimeIndex") int windowTimeIndex) {
-    return dataSource.getRegistryMetric(windowTimeIndex);
+  public RegistryMetric metricsWithWindowTimeIndex(@PathVariable(name = "windowTime") long windowTime) {
+    return dataSource.getRegistryMetric(windowTime);
   }
 }
