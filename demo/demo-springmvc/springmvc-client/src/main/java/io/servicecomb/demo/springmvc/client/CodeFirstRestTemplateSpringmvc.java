@@ -100,16 +100,19 @@ public class CodeFirstRestTemplateSpringmvc extends CodeFirstRestTemplate {
     File someFile = File.createTempFile("upload2", ".txt");
     FileUtils.writeStringToFile(someFile, file2Content);
 
+    String expect = file1.getName() + ":" + file1Content + "\n" + someFile.getName() + ":" + file2Content;
+
     String result = testRestTemplateUpload(template, cseUrlPrefix, file1, someFile);
-    TestMgr.check(file1Content + file2Content, result);
+    TestMgr.check(expect, result);
 
     result = uploadPartAndFile.fileUpload(new FilePart(null, file1), someFile);
-    TestMgr.check(file1Content + file2Content, result);
+    TestMgr.check(expect, result);
 
+    expect = "null:" + file1Content + "\n" + someFile.getName() + ":" + file2Content;
     result = uploadStreamAndResource
         .fileUpload(new ByteArrayInputStream(file1Content.getBytes(StandardCharsets.UTF_8)),
             new PathResource(someFile.getAbsolutePath()));
-    TestMgr.check(file1Content + file2Content, result);
+    TestMgr.check(expect, result);
   }
 
   private String testRestTemplateUpload(RestTemplate template, String cseUrlPrefix, File file1, File someFile) {

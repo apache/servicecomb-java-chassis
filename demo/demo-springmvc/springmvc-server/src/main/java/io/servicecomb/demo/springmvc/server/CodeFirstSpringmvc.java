@@ -94,7 +94,8 @@ public class CodeFirstSpringmvc {
     try (InputStream is1 = file1.getInputStream(); InputStream is2 = file2.getInputStream()) {
       String content1 = IOUtils.toString(is1);
       String content2 = IOUtils.toString(is2);
-      return content1 + content2;
+      return file1.getOriginalFilename() + ":" + content1 + "\n" +
+          file2.getSubmittedFileName() + ":" + content2;
     } catch (IOException e) {
       throw new IllegalArgumentException(e);
     }
@@ -299,7 +300,7 @@ public class CodeFirstSpringmvc {
     return new OutputModelForTestIgnore("output_id", input.getInputId(), input.getContent(), input.getInputObject(),
         input.getInputJsonObject(), input.getInputIgnoreInterface(),
         new Person("outputSomeone"), new JsonObject("{\"OutputJsonKey\" : \"OutputJsonValue\"}"), () -> {
-    });
+        });
   }
 
   @SuppressWarnings("unchecked")
