@@ -25,7 +25,9 @@ import org.junit.Test;
 import org.mockito.Mockito;
 
 import io.servicecomb.core.Transport;
+import io.servicecomb.foundation.common.utils.RollingWindowBucketedCounter;
 import io.servicecomb.serviceregistry.cache.CacheEndpoint;
+import mockit.Deencapsulation;
 
 /**
  *
@@ -90,5 +92,37 @@ public class TestCseServer {
     cs.incrementContinuousFailureCount();
     cs.clearContinuousFailure();
     assertEquals(0, cs.getCountinuousFailureCount());
+  }
+
+  @Test
+  public void testInvocationSucceeded() {
+    RollingWindowBucketedCounter totalCounter = Mockito.mock(RollingWindowBucketedCounter.class);
+    cs.incrementContinuousFailureCount();
+
+    Deencapsulation.setField(cs, "totalInvocationCount", totalCounter);
+
+    cs.invocationSucceeded();
+
+    Mockito.verify(totalCounter).increment();
+    assertEquals(0, cs.getCountinuousFailureCount());
+  }
+
+  @Test
+  public void testInvocationFailed() {
+    RollingWindowBucketedCounter totalCounter = Mockito.mock(RollingWindowBucketedCounter.class);
+    RollingWindowBucketedCounter failureCounter = Mockito.mock(RollingWindowBucketedCounter.class);
+
+    Deencapsulation.setField(cs, "totalInvocationCount", totalCounter);
+    Deencapsulation.setField(cs, "failureInvocationCount", failureCounter);
+
+    Mockito.when(totalCounter.getTotalCount()).thenReturn(3L);
+    Mockito.when(failureCounter.getTotalCount()).thenReturn(1L);
+    cs.invocationFailed();
+
+    Mockito.verify(totalCounter).increment();
+    Mockito.verify(failureCounter).increment();
+    assertEquals(1, cs.getCountinuousFailureCount());
+    assertEquals(3, cs.getTotalInvocationCount());
+    assertEquals(1, cs.getFailureInvocationCount());
   }
 }

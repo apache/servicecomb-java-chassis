@@ -23,10 +23,8 @@ import org.slf4j.LoggerFactory;
 import com.netflix.loadbalancer.AbstractLoadBalancer;
 import com.netflix.loadbalancer.ILoadBalancer;
 import com.netflix.loadbalancer.IRule;
-import com.netflix.loadbalancer.LoadBalancerStats;
 import com.netflix.loadbalancer.RoundRobinRule;
 import com.netflix.loadbalancer.Server;
-import com.netflix.loadbalancer.ServerStats;
 
 /**
  * 会话保持策略：优先选择上一次选中的服务器，保证请求都发送到同一个服务器上去。
@@ -99,15 +97,10 @@ public class SessionStickinessRule implements IRule {
   }
 
   private boolean isErrorThresholdMet() {
-    AbstractLoadBalancer lb = (AbstractLoadBalancer) getLoadBalancer();
-    LoadBalancerStats stats = lb.getLoadBalancerStats();
-
-    if (stats != null && stats.getServerStats() != null && stats.getServerStats().size() > 0) {
-      ServerStats serverStats = stats.getSingleServerStat(lastServer);
-      int successiveFaildCount = serverStats.getSuccessiveConnectionFailureCount();
+    if (null != lastServer) {
+      long failureInvocationCount = ((CseServer) lastServer).getFailureInvocationCount();
       if (Configuration.INSTANCE.getSuccessiveFailedTimes() > 0
-          && successiveFaildCount >= Configuration.INSTANCE.getSuccessiveFailedTimes()) {
-        serverStats.clearSuccessiveConnectionFailureCount();
+          && failureInvocationCount >= Configuration.INSTANCE.getSuccessiveFailedTimes()) {
         return true;
       }
     }

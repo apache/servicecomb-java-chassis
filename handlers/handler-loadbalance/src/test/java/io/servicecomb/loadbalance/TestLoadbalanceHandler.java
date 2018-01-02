@@ -437,16 +437,16 @@ public class TestLoadbalanceHandler {
 
     // no exception
   }
-  
+
   @Test
   public void testIsEqual(){
     boolean nullResult = handler.isEqual(null, null);
-    Assert.assertEquals(true, nullResult);  
+    Assert.assertEquals(true, nullResult);
     boolean bothNotNullResult = handler.isEqual("com.netflix.loadbalancer.RandomRule", "com.netflix.loadbalancer.RandomRule");
-    Assert.assertEquals(true, bothNotNullResult);  
+    Assert.assertEquals(true, bothNotNullResult);
     boolean globalNotNull = handler.isEqual(null, "com.netflix.loadbalancer.RandomRule");
-    Assert.assertEquals(false, globalNotNull);  
+    Assert.assertEquals(false, globalNotNull);
     boolean localNotNull = handler.isEqual("com.netflix.loadbalancer.RandomRule", null);
-    Assert.assertEquals(false, localNotNull); 
+    Assert.assertEquals(false, localNotNull);
   }
 }

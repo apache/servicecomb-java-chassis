@@ -17,6 +17,7 @@
 
 package io.servicecomb.loadbalance;
 
+import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -229,5 +230,34 @@ public class TestSessionSticknessRule {
       status = false;
     }
     Assert.assertTrue(status);
+  }
+
+  @Test
+  public void testIsErrorThresholdMet() {
+    SessionStickinessRule ss = new SessionStickinessRule();
+    CseServer server = Mockito.mock(CseServer.class);
+
+    Deencapsulation.setField(ss, "lastServer", server);
+    Mockito.when(server.getFailureInvocationCount()).thenReturn(0L);
+
+    assertEquals(false, Deencapsulation.invoke(ss, "isErrorThresholdMet"));
+  }
+
+  @Test
+  public void testIsErrorThresholdMetOnThresholdIsReached() {
+    SessionStickinessRule ss = new SessionStickinessRule();
+    CseServer server = Mockito.mock(CseServer.class);
+
+    Deencapsulation.setField(ss, "lastServer", server);
+    Mockito.when(server.getFailureInvocationCount()).thenReturn(5L);
+
+    assertEquals(true, Deencapsulation.invoke(ss, "isErrorThresholdMet"));
+  }
+
+  @Test
+  public void testIsErrorThresholdMetOnLastServerIsNull() {
+    SessionStickinessRule ss = new SessionStickinessRule();
+
+    assertEquals(false, Deencapsulation.invoke(ss, "isErrorThresholdMet"));
   }
 }
