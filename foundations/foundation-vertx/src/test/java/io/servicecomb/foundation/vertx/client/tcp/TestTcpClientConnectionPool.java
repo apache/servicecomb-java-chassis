@@ -16,15 +16,30 @@
  */
 package io.servicecomb.foundation.vertx.client.tcp;
 
-import io.vertx.core.Context;
+import org.hamcrest.Matchers;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
 
-public class TcpClientConnectionPool extends AbstractTcpClientConnectionPool<TcpClientConnection> {
-  public TcpClientConnectionPool(Context context, NetClientWrapper netClientWrapper) {
-    super(context, netClientWrapper);
+import io.vertx.core.Context;
+import mockit.Mocked;
+
+public class TestTcpClientConnectionPool {
+  @Mocked
+  Context context;
+
+  @Mocked
+  NetClientWrapper netClientWrapper;
+
+  TcpClientConnectionPool pool;
+
+  @Before
+  public void setup() {
+    pool = new TcpClientConnectionPool(context, netClientWrapper);
   }
 
-  @Override
-  protected TcpClientConnection create(String endpoint) {
-    return new TcpClientConnection(context, netClientWrapper, endpoint);
+  @Test
+  public void create() {
+    Assert.assertThat(pool.create("rest://localhost:8765"), Matchers.instanceOf(TcpClientConnection.class));
   }
 }

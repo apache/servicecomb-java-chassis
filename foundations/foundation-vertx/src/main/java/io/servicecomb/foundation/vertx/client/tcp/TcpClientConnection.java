@@ -29,6 +29,8 @@ import java.util.concurrent.TimeoutException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.annotations.VisibleForTesting;
+
 import io.servicecomb.foundation.common.net.URIEndpointObject;
 import io.servicecomb.foundation.vertx.server.TcpParser;
 import io.servicecomb.foundation.vertx.tcp.TcpConnection;
@@ -37,7 +39,6 @@ import io.servicecomb.foundation.vertx.tcp.TcpOutputStream;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Context;
 import io.vertx.core.buffer.Buffer;
-import io.vertx.core.net.NetClient;
 import io.vertx.core.net.NetSocket;
 import io.vertx.core.net.impl.NetSocketImpl;
 
@@ -51,9 +52,11 @@ public class TcpClientConnection extends TcpConnection {
     WORKING
   }
 
-  private NetClient netClient;
+  private NetClientWrapper netClientWrapper;
 
   private TcpClientConfig clientConfig;
+
+  private URIEndpointObject endpoint;
 
   private InetSocketAddress socketAddress;
 
@@ -70,14 +73,14 @@ public class TcpClientConnection extends TcpConnection {
 
   private volatile Map<Long, TcpRequest> requestMap = new ConcurrentHashMap<>();
 
-  public TcpClientConnection(Context context, NetClient netClient, String endpoint, TcpClientConfig clientConfig) {
+  public TcpClientConnection(Context context, NetClientWrapper netClientWrapper, String strEndpoint) {
     this.setContext(context);
 
-    this.netClient = netClient;
-    URIEndpointObject ipPort = new URIEndpointObject(endpoint);
-    this.socketAddress = ipPort.getSocketAddress();
-    this.remoteSupportLogin = Boolean.parseBoolean(ipPort.getFirst(TcpConst.LOGIN));
-    this.clientConfig = clientConfig;
+    this.netClientWrapper = netClientWrapper;
+    endpoint = new URIEndpointObject(strEndpoint);
+    this.socketAddress = endpoint.getSocketAddress();
+    this.remoteSupportLogin = Boolean.parseBoolean(endpoint.getFirst(TcpConst.LOGIN));
+    this.clientConfig = netClientWrapper.getClientConfig(endpoint.isSslEnabled());
   }
 
   public boolean isLocalSupportLogin() {
@@ -96,9 +99,8 @@ public class TcpClientConnection extends TcpConnection {
     return true;
   }
 
-  public void send(AbstractTcpClientPackage tcpClientPackage, long msTimeout,
-      TcpResponseCallback callback) {
-    requestMap.put(tcpClientPackage.getMsgId(), new TcpRequest(msTimeout, callback));
+  public void send(AbstractTcpClientPackage tcpClientPackage, TcpResponseCallback callback) {
+    requestMap.put(tcpClientPackage.getMsgId(), new TcpRequest(clientConfig.getRequestTimeoutMillis(), callback));
 
     if (writeToBufferQueue(tcpClientPackage)) {
       return;
@@ -154,18 +156,22 @@ public class TcpClientConnection extends TcpConnection {
     }
   }
 
-  private void connect() {
+  @VisibleForTesting
+  protected void connect() {
     this.status = Status.CONNECTING;
     LOGGER.info("connecting to address {}", socketAddress.toString());
 
-    netClient.connect(socketAddress.getPort(), socketAddress.getHostString(), ar -> {
-      if (ar.succeeded()) {
-        onConnectSuccess(ar.result());
-        return;
-      }
+    netClientWrapper.connect(endpoint.isSslEnabled(),
+        socketAddress.getPort(),
+        socketAddress.getHostString(),
+        ar -> {
+          if (ar.succeeded()) {
+            onConnectSuccess(ar.result());
+            return;
+          }
 
-      onConnectFailed(ar.cause());
-    });
+          onConnectFailed(ar.cause());
+        });
   }
 
   private void onConnectSuccess(NetSocket socket) {
