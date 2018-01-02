@@ -19,18 +19,13 @@ package io.servicecomb.foundation.vertx.client;
 
 import io.vertx.core.AbstractVerticle;
 
-public abstract class AbstractClientVerticle<CLIENT_POOL> extends AbstractVerticle
-    implements ClientPoolFactory<CLIENT_POOL> {
+public class ClientVerticle<CLIENT_POOL> extends AbstractVerticle {
   public static final String CLIENT_MGR = "clientMgr";
-
-  public static final String CLIENT_OPTIONS = "clientOptions";
 
   @SuppressWarnings("unchecked")
   @Override
   public void start() throws Exception {
     ClientPoolManager<CLIENT_POOL> clientMgr = (ClientPoolManager<CLIENT_POOL>) config().getValue(CLIENT_MGR);
-
-    CLIENT_POOL pool = createClientPool();
-    clientMgr.addPool(pool);
+    clientMgr.createClientPool();
   }
 }
