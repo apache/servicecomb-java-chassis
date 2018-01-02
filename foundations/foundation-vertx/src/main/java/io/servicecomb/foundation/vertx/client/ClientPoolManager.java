@@ -19,9 +19,13 @@ package io.servicecomb.foundation.vertx.client;
 
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicInteger;
+
+import io.vertx.core.Context;
+import io.vertx.core.Vertx;
 
 /**
  * CLIENT_POOL是一个完备的连接池，支持向同一个目标建立一个或多个连接
@@ -29,9 +33,20 @@ import java.util.concurrent.atomic.AtomicInteger;
  * 会导致多个线程抢连接池的同一把锁
  * 包装之后，允许使用m个网络线程，每个线程中有1个连接池
  * 
- * ClientPoolManager only optimized for invoker not in eventloop
+ * support both sync and reactive invoke.
+ * 1.sync invoke, bind to a net thread
+ * 2.async but not in eventloop, select but not bind to a net thread
+ * 3.async and in eventloop, use clientPool in self thread
+ * 
+ * sync/async is not about net operation, just about consumer invoke mode.
  */
 public class ClientPoolManager<CLIENT_POOL> {
+  private Vertx vertx;
+
+  private String id = UUID.randomUUID().toString();
+
+  private ClientPoolFactory<CLIENT_POOL> factory;
+
   private List<CLIENT_POOL> pools = new CopyOnWriteArrayList<>();
 
   private AtomicInteger bindIndex = new AtomicInteger();
@@ -41,15 +56,64 @@ public class ClientPoolManager<CLIENT_POOL> {
   // TODO:要不要考虑已经绑定的线程消失了的场景？
   private Map<Long, CLIENT_POOL> threadBindMap = new ConcurrentHashMap<>();
 
-  public void addPool(CLIENT_POOL pool) {
+  public ClientPoolManager(Vertx vertx, ClientPoolFactory<CLIENT_POOL> factory) {
+    this.vertx = vertx;
+    this.factory = factory;
+  }
+
+  public CLIENT_POOL createClientPool() {
+    CLIENT_POOL pool = factory.createClientPool();
+    addPool(pool);
+    return pool;
+  }
+
+  protected void addPool(CLIENT_POOL pool) {
+    Vertx.currentContext().put(id, pool);
     pools.add(pool);
+  }
+
+  public CLIENT_POOL findClientPool(boolean sync) {
+    if (sync) {
+      return findThreadBindClientPool();
+    }
+
+    // reactive mode
+    return findByContext();
+  }
+
+  protected CLIENT_POOL findByContext() {
+    Context currentContext = Vertx.currentContext();
+    if (currentContext != null
+        && currentContext.owner() == vertx
+        && currentContext.isEventLoopContext()) {
+      // standard reactive mode
+      CLIENT_POOL clientPool = currentContext.get(id);
+      if (clientPool != null) {
+        return clientPool;
+      }
+
+      // this will make "client.thread-count" bigger than which in microservice.yaml
+      // maybe it's better to remove "client.thread-count", just use "rest/highway.thread-count"
+      return createClientPool();
+    }
+
+    // not in correct context:
+    // 1.normal thread
+    // 2.vertx worker thread
+    // 3.other vertx thread
+    // select a existing context
+    return nextPool();
   }
 
   public CLIENT_POOL findThreadBindClientPool() {
     long threadId = Thread.currentThread().getId();
     return threadBindMap.computeIfAbsent(threadId, tid -> {
-      int idx = bindIndex.getAndIncrement() % pools.size();
-      return pools.get(idx);
+      return nextPool();
     });
+  }
+
+  protected CLIENT_POOL nextPool() {
+    int idx = bindIndex.getAndIncrement() % pools.size();
+    return pools.get(idx);
   }
 }
