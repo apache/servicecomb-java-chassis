@@ -19,31 +19,29 @@ package io.servicecomb.foundation.vertx.client.tcp;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
 
 import io.vertx.core.Context;
-import io.vertx.core.net.NetClient;
 
 public abstract class AbstractTcpClientConnectionPool<T extends TcpClientConnection> {
   // 是在哪个context中创建的
   protected Context context;
 
-  protected TcpClientConfig clientConfig;
-
-  protected NetClient netClient;
+  protected NetClientWrapper netClientWrapper;
 
   // key为address
   protected Map<String, T> tcpClientMap = new ConcurrentHashMap<>();
 
-  public AbstractTcpClientConnectionPool(TcpClientConfig clientConfig, Context context, NetClient netClient) {
-    this.clientConfig = clientConfig;
+  public AbstractTcpClientConnectionPool(Context context,
+      NetClientWrapper netClientWrapper) {
     this.context = context;
-    this.netClient = netClient;
+    this.netClientWrapper = netClientWrapper;
 
-    startCheckTimeout(clientConfig, context);
+    startCheckTimeout(context);
   }
 
-  protected void startCheckTimeout(TcpClientConfig clientConfig, Context context) {
-    context.owner().setPeriodic(clientConfig.getRequestTimeoutMillis(), this::onCheckTimeout);
+  protected void startCheckTimeout(Context context) {
+    context.owner().setPeriodic(TimeUnit.SECONDS.toMillis(1), this::onCheckTimeout);
   }
 
   private void onCheckTimeout(Long event) {
@@ -52,20 +50,8 @@ public abstract class AbstractTcpClientConnectionPool<T extends TcpClientConnect
     }
   }
 
-  public void send(TcpClientConnection tcpClient, AbstractTcpClientPackage tcpClientPackage,
-      TcpResponseCallback callback) {
-    tcpClient.send(tcpClientPackage, clientConfig.getRequestTimeoutMillis(), callback);
-  }
-
   public T findOrCreateClient(String endpoint) {
-    T tcpClient = tcpClientMap.get(endpoint);
-    if (tcpClient == null) {
-      synchronized (this) {
-        tcpClient = tcpClientMap.computeIfAbsent(endpoint, this::create);
-      }
-    }
-
-    return tcpClient;
+    return tcpClientMap.computeIfAbsent(endpoint, this::create);
   }
 
   protected abstract T create(String endpoint);

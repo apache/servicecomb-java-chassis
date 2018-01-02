@@ -14,42 +14,39 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-package io.servicecomb.foundation.vertx.client.tcp;
+package io.servicecomb.foundation.vertx.client.http;
 
 import org.junit.Assert;
 import org.junit.Test;
 
-import io.servicecomb.foundation.vertx.client.ClientPoolManager;
 import io.vertx.core.Context;
-import io.vertx.core.impl.VertxInternal;
-import io.vertx.core.json.JsonObject;
+import io.vertx.core.Vertx;
+import io.vertx.core.http.HttpClient;
+import io.vertx.core.http.HttpClientOptions;
+import io.vertx.core.impl.VertxImpl;
 import mockit.Expectations;
 import mockit.Mocked;
 
-public class TestTcpClientVerticle {
-  private ClientPoolManager<TcpClientConnectionPool> clientMgr = new ClientPoolManager<>();
+public class TestHttpClientPoolFactory {
+  private HttpClientOptions httpClientOptions = new HttpClientOptions();
+
+  HttpClientPoolFactory factory = new HttpClientPoolFactory(httpClientOptions);
 
   @Test
-  public void testTcpClientVerticle(@Mocked TcpClientConfig config, @Mocked VertxInternal vertx,
-      @Mocked Context context,
-      @Mocked JsonObject json) throws Exception {
-
-    new Expectations() {
+  public void createClientPool(@Mocked Vertx vertx, @Mocked Context context, @Mocked HttpClient httpClient) {
+    new Expectations(VertxImpl.class) {
       {
-        context.config();
-        result = json;
-        json.getValue("clientOptions");
-        result = config;
-        json.getValue("clientMgr");
-        result = clientMgr;
+        VertxImpl.context();
+        result = context;
+        context.owner();
+        result = vertx;
+        vertx.createHttpClient(httpClientOptions);
+        result = httpClient;
       }
     };
+    HttpClientWithContext pool = factory.createClientPool();
 
-    TcpClientVerticle client = new TcpClientVerticle();
-    client.init(vertx, context);
-    client.start();
-    TcpClientConnectionPool pool = client.createClientPool();
-    Assert.assertNotNull(pool);
+    Assert.assertSame(context, pool.context());
+    Assert.assertSame(httpClient, pool.getHttpClient());
   }
 }

@@ -17,15 +17,24 @@
 
 package io.servicecomb.foundation.vertx.client.http;
 
-import io.servicecomb.foundation.vertx.client.AbstractClientVerticle;
+import io.servicecomb.foundation.vertx.client.ClientPoolFactory;
+import io.vertx.core.Context;
+import io.vertx.core.Vertx;
 import io.vertx.core.http.HttpClient;
 import io.vertx.core.http.HttpClientOptions;
 
-public class HttpClientVerticle extends AbstractClientVerticle<HttpClientWithContext> {
+// execute in vertx context
+public class HttpClientPoolFactory implements ClientPoolFactory<HttpClientWithContext> {
+  private HttpClientOptions httpClientOptions;
+
+  public HttpClientPoolFactory(HttpClientOptions httpClientOptions) {
+    this.httpClientOptions = httpClientOptions;
+  }
+
   @Override
   public HttpClientWithContext createClientPool() {
-    HttpClientOptions httpClientOptions = (HttpClientOptions) config().getValue(CLIENT_OPTIONS);
-    HttpClient httpClient = vertx.createHttpClient(httpClientOptions);
+    Context context = Vertx.currentContext();
+    HttpClient httpClient = context.owner().createHttpClient(httpClientOptions);
 
     return new HttpClientWithContext(httpClient, context);
   }

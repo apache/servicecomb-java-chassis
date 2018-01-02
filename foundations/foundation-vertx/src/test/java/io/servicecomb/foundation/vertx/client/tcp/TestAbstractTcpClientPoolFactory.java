@@ -14,40 +14,37 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.servicecomb.foundation.vertx.client.http;
+package io.servicecomb.foundation.vertx.client.tcp;
 
 import org.junit.Assert;
 import org.junit.Test;
 
-import io.servicecomb.foundation.vertx.SimpleJsonObject;
-import io.servicecomb.foundation.vertx.client.AbstractClientVerticle;
-import io.servicecomb.foundation.vertx.client.ClientPoolManager;
 import io.vertx.core.Context;
 import io.vertx.core.Vertx;
-import io.vertx.core.json.JsonObject;
+import io.vertx.core.impl.VertxImpl;
 import mockit.Expectations;
 import mockit.Mocked;
 
-public class TestHttpClientVerticle {
-  HttpClientVerticle verticle = new HttpClientVerticle();
+public class TestAbstractTcpClientPoolFactory {
+  private TcpClientConfig normalClientConfig = new TcpClientConfig();
+
+  private TcpClientConfig sslClientConfig = new TcpClientConfig();
+
+  TcpClientPoolFactory factory = new TcpClientPoolFactory(normalClientConfig, sslClientConfig);
 
   @Test
-  public void start(@Mocked Vertx vertx, @Mocked Context context) throws Exception {
-    ClientPoolManager<HttpClientWithContext> clientMgr = new ClientPoolManager<>();
-
-    JsonObject jsonObject = new SimpleJsonObject();
-    jsonObject.put(AbstractClientVerticle.CLIENT_MGR, clientMgr);
-
-    new Expectations() {
+  public void createClientPool(@Mocked Vertx vertx, @Mocked Context context) {
+    new Expectations(VertxImpl.class) {
       {
-        context.config();
-        result = jsonObject;
+        VertxImpl.context();
+        result = context;
+        context.owner();
+        result = vertx;
       }
     };
-    verticle.init(vertx, context);
-    verticle.start();
+    TcpClientConnectionPool pool = factory.createClientPool();
 
-    HttpClientWithContext result = clientMgr.findThreadBindClientPool();
-    Assert.assertSame(context, result.context());
+    Assert.assertSame(normalClientConfig, pool.netClientWrapper.getClientConfig(false));
+    Assert.assertSame(sslClientConfig, pool.netClientWrapper.getClientConfig(true));
   }
 }

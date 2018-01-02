@@ -14,28 +14,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package io.servicecomb.foundation.vertx.client.tcp;
 
-import io.servicecomb.foundation.vertx.client.AbstractClientVerticle;
-import io.vertx.core.impl.VertxInternal;
-import io.vertx.core.net.NetClient;
-import io.vertx.core.net.impl.NetClientImpl;
+import io.vertx.core.Context;
 
-public abstract class AbstractTcpClientVerticle<T extends TcpClientConnection, P extends AbstractTcpClientConnectionPool<T>>
-    extends AbstractClientVerticle<P> {
-  protected TcpClientConfig clientConfig;
-
-  // 每线程一个实例即可
-  protected NetClient netClient;
+public class TcpClientPoolFactory extends AbstractTcpClientPoolFactory<TcpClientConnectionPool> {
+  public TcpClientPoolFactory(TcpClientConfig normalClientConfig, TcpClientConfig sslClientConfig) {
+    super(normalClientConfig, sslClientConfig);
+  }
 
   @Override
-  public void start() throws Exception {
-    clientConfig = (TcpClientConfig) config().getValue(CLIENT_OPTIONS);
-
-    // vertx.createNetClient()创建出来的netClient不支持跨线程调用
-    netClient = new NetClientImpl((VertxInternal) vertx, clientConfig, false);
-
-    super.start();
+  protected TcpClientConnectionPool doCreateClientPool(Context context, NetClientWrapper netClientWrapper) {
+    return new TcpClientConnectionPool(context, netClientWrapper);
   }
 }
