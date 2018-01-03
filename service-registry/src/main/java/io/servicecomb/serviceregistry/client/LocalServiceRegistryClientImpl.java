@@ -38,8 +38,11 @@ import org.yaml.snakeyaml.Yaml;
 import io.servicecomb.foundation.vertx.AsyncResultCallback;
 import io.servicecomb.serviceregistry.api.registry.Microservice;
 import io.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
+import io.servicecomb.serviceregistry.api.response.FindInstancesResponse;
 import io.servicecomb.serviceregistry.api.response.HeartbeatResponse;
 import io.servicecomb.serviceregistry.api.response.MicroserviceInstanceChangedEvent;
+import io.servicecomb.serviceregistry.client.http.MicroserviceInstances;
+import io.servicecomb.serviceregistry.definition.DefinitionConst;
 import io.servicecomb.serviceregistry.version.Version;
 import io.servicecomb.serviceregistry.version.VersionRule;
 import io.servicecomb.serviceregistry.version.VersionRuleUtils;
@@ -265,6 +268,43 @@ public class LocalServiceRegistryClientImpl implements ServiceRegistryClient {
     }
 
     return allInstances;
+  }
+
+  @Override
+  public MicroserviceInstances findServiceInstances(String selfMicroserviceId, String appId, String serviceName,
+      String strVersionRule, String revision) {
+    List<MicroserviceInstance> allInstances = new ArrayList<>();
+    MicroserviceInstances microserviceInstances = new MicroserviceInstances();
+    FindInstancesResponse response = new FindInstancesResponse();
+
+    VersionRule versionRule = VersionRuleUtils.getOrCreate(strVersionRule);
+    Microservice latestMicroservice = findLatest(appId, serviceName, versionRule);
+    if (latestMicroservice == null) {
+      response.setInstances(allInstances);
+      microserviceInstances.setInstancesResponse(response);
+      microserviceInstances.setRevision(DefinitionConst.DEFAULT_REVISION);
+      return microserviceInstances;
+    }
+
+    Version latestVersion = VersionUtils.getOrCreate(latestMicroservice.getVersion());
+    for (Entry<String, Microservice> entry : microserviceIdMap.entrySet()) {
+      Microservice microservice = entry.getValue();
+      if (!isSameMicroservice(microservice, appId, serviceName)) {
+        continue;
+      }
+
+      Version version = VersionUtils.getOrCreate(entry.getValue().getVersion());
+      if (!versionRule.isMatch(version, latestVersion)) {
+        continue;
+      }
+
+      Map<String, MicroserviceInstance> instances = microserviceInstanceMap.get(entry.getValue().getServiceId());
+      allInstances.addAll(instances.values());
+    }
+    response.setInstances(allInstances);
+    microserviceInstances.setInstancesResponse(response);
+
+    return microserviceInstances;
   }
 
   @Override

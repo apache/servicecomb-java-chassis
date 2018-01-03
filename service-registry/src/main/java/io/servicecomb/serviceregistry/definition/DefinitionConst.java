@@ -34,4 +34,6 @@ public interface DefinitionConst {
   String VERSION_RULE_LATEST = "latest";
 
   String VERSION_RULE_ALL = "0.0.0+";
+
+  String DEFAULT_REVISION = "0";
 }

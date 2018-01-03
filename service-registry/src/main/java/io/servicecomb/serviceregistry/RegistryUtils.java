@@ -38,6 +38,7 @@ import io.servicecomb.serviceregistry.api.registry.Microservice;
 import io.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
 import io.servicecomb.serviceregistry.cache.InstanceCacheManager;
 import io.servicecomb.serviceregistry.client.ServiceRegistryClient;
+import io.servicecomb.serviceregistry.client.http.MicroserviceInstances;
 import io.servicecomb.serviceregistry.config.ServiceRegistryConfig;
 import io.servicecomb.serviceregistry.definition.MicroserviceDefinition;
 import io.servicecomb.serviceregistry.registry.ServiceRegistryFactory;
@@ -214,5 +215,10 @@ public final class RegistryUtils {
 
   public static Microservice getMicroservice(String microserviceId) {
     return serviceRegistry.getRemoteMicroservice(microserviceId);
+  }
+
+  public static MicroserviceInstances findServiceInstances(String appId, String serviceName,
+      String versionRule, String revision) {
+    return serviceRegistry.findServiceInstances(appId, serviceName, versionRule, revision);
   }
 }

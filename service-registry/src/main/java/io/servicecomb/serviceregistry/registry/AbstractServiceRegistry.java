@@ -37,6 +37,7 @@ import io.servicecomb.serviceregistry.cache.InstanceCacheManager;
 import io.servicecomb.serviceregistry.cache.InstanceCacheManagerNew;
 import io.servicecomb.serviceregistry.client.IpPortManager;
 import io.servicecomb.serviceregistry.client.ServiceRegistryClient;
+import io.servicecomb.serviceregistry.client.http.MicroserviceInstances;
 import io.servicecomb.serviceregistry.config.ServiceRegistryConfig;
 import io.servicecomb.serviceregistry.consumer.AppManager;
 import io.servicecomb.serviceregistry.consumer.MicroserviceVersionFactory;
@@ -223,6 +224,39 @@ public abstract class AbstractServiceRegistry implements ServiceRegistry {
           instance.getEndpoints());
     }
     return instances;
+  }
+
+  public MicroserviceInstances findServiceInstances(String appId, String serviceName,
+      String versionRule, String revision) {
+    MicroserviceInstances microserviceInstances = srClient.findServiceInstances(microservice.getServiceId(),
+        appId,
+        serviceName,
+        versionRule,
+        revision);
+
+    if (microserviceInstances == null) {
+      LOGGER.error("find empty instances from service center. service={}/{}/{}", appId, serviceName, versionRule);
+      return null;
+    }
+
+    if (!microserviceInstances.isNeedRefresh()) {
+      LOGGER.info("instances revision is not changed, service={}/{}/{}", appId, serviceName, versionRule);
+      return microserviceInstances;
+    }
+
+    List<MicroserviceInstance> instances = microserviceInstances.getInstancesResponse().getInstances();
+    LOGGER.info("find instances[{}] from service center success. service={}/{}/{}",
+        instances.size(),
+        appId,
+        serviceName,
+        versionRule);
+    for (MicroserviceInstance instance : instances) {
+      LOGGER.info("service id={}, instance id={}, endpoints={}",
+          instance.getServiceId(),
+          instance.getInstanceId(),
+          instance.getEndpoints());
+    }
+    return microserviceInstances;
   }
 
   @Override

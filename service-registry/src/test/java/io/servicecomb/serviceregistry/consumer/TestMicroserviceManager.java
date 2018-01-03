@@ -22,12 +22,16 @@ import java.util.Map;
 
 import javax.xml.ws.Holder;
 
+import org.junit.After;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 
 import com.google.common.eventbus.EventBus;
 
 import io.servicecomb.serviceregistry.RegistryUtils;
+import io.servicecomb.serviceregistry.api.response.FindInstancesResponse;
+import io.servicecomb.serviceregistry.client.http.MicroserviceInstances;
 import io.servicecomb.serviceregistry.definition.DefinitionConst;
 import io.servicecomb.serviceregistry.task.event.PeriodicPullEvent;
 import io.servicecomb.serviceregistry.task.event.RecoveryEvent;
@@ -49,12 +53,30 @@ public class TestMicroserviceManager {
 
   MicroserviceManager microserviceManager = new MicroserviceManager(appManager, appId);
 
+  MicroserviceInstances microserviceInstances = null;
+
+  FindInstancesResponse findInstancesResponse = null;
+
+  @Before
+  public void setUp() throws Exception {
+    microserviceInstances = new MicroserviceInstances();
+    findInstancesResponse = new FindInstancesResponse();
+    findInstancesResponse.setInstances(Collections.emptyList());
+    microserviceInstances.setInstancesResponse(findInstancesResponse);
+  }
+
+  @After
+  public void tearDown() throws Exception {
+    findInstancesResponse = null;
+    microserviceInstances = null;
+  }
+
   @Test
   public void getOrCreateMicroserviceVersionRule() {
     new Expectations(RegistryUtils.class) {
       {
-        RegistryUtils.findServiceInstance(appId, serviceName, DefinitionConst.VERSION_RULE_ALL);
-        result = Collections.emptyList();
+        RegistryUtils.findServiceInstances(appId, serviceName, DefinitionConst.VERSION_RULE_ALL, DefinitionConst.DEFAULT_REVISION);
+        result = microserviceInstances;
       }
     };
 

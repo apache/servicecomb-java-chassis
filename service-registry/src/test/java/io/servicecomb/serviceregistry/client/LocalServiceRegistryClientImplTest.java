@@ -30,6 +30,7 @@ import org.junit.rules.ExpectedException;
 
 import io.servicecomb.serviceregistry.api.registry.Microservice;
 import io.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
+import io.servicecomb.serviceregistry.client.http.MicroserviceInstances;
 import io.servicecomb.serviceregistry.definition.DefinitionConst;
 
 public class LocalServiceRegistryClientImplTest {
@@ -56,6 +57,11 @@ public class LocalServiceRegistryClientImplTest {
     List<MicroserviceInstance> m =
         registryClient.findServiceInstance("", "myapp", "springmvctest", DefinitionConst.VERSION_RULE_ALL);
     Assert.assertEquals(1, m.size());
+
+    MicroserviceInstances microserviceInstances =
+        registryClient.findServiceInstances("", "myapp", "springmvctest", DefinitionConst.VERSION_RULE_ALL, DefinitionConst.DEFAULT_REVISION);
+    List<MicroserviceInstance> mi = microserviceInstances.getInstancesResponse().getInstances();
+    Assert.assertEquals(1, mi.size());
   }
 
   private Microservice mockRegisterMicroservice(String appId, String name, String version) {
@@ -113,6 +119,12 @@ public class LocalServiceRegistryClientImplTest {
         registryClient.findServiceInstance("self", appId, microserviceName, DefinitionConst.VERSION_RULE_ALL);
 
     Assert.assertThat(result, Matchers.empty());
+
+    MicroserviceInstances microserviceInstances =
+        registryClient.findServiceInstances("self", appId, microserviceName, DefinitionConst.VERSION_RULE_ALL, DefinitionConst.DEFAULT_REVISION);
+    List<MicroserviceInstance> results = microserviceInstances.getInstancesResponse().getInstances();
+
+    Assert.assertThat(results, Matchers.empty());
   }
 
   @Test
@@ -128,6 +140,12 @@ public class LocalServiceRegistryClientImplTest {
         registryClient.findServiceInstance("self", appId, microserviceName, "1.0.0");
 
     Assert.assertThat(result, Matchers.contains(instance));
+
+    MicroserviceInstances microserviceInstances =
+        registryClient.findServiceInstances("self", appId, microserviceName, "1.0.0", "0");
+    List<MicroserviceInstance> results = microserviceInstances.getInstancesResponse().getInstances();
+
+    Assert.assertThat(results, Matchers.contains(instance));
   }
 
   @Test
