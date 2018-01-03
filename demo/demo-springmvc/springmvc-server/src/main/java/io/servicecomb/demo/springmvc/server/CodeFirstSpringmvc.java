@@ -343,4 +343,12 @@ public class CodeFirstSpringmvc {
       throw new InvocationException(500, "500", "JsonProcessingException", e);
     }
   }
+
+  @RequestMapping(path = "/testGetStrArray", method = RequestMethod.GET)
+  public String[] testGetStrArray(@RequestParamColFmt(collectionFormat = "csv") String[] str) {
+    for (int i = 0; i < str.length; i++) {
+      System.out.println("*******"+str[i]);
+    }
+    return str;
+  }
 }

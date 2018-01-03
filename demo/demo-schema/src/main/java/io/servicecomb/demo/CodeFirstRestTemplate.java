@@ -17,21 +17,29 @@
 
 package io.servicecomb.demo;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.ReflectionUtils;
 import org.springframework.web.client.RestTemplate;
 
 import io.servicecomb.core.CseContext;
 import io.servicecomb.demo.compute.Person;
 import io.servicecomb.demo.ignore.InputModelForTestIgnore;
 import io.servicecomb.demo.ignore.OutputModelForTestIgnore;
+import io.servicecomb.demo.server.Test;
 import io.servicecomb.demo.server.User;
 import io.servicecomb.serviceregistry.RegistryUtils;
 import io.vertx.core.json.JsonObject;
@@ -68,6 +76,7 @@ public class CodeFirstRestTemplate {
       }
 
       testRawJson(template, cseUrlPrefix);
+      testGetStrArray(template, cseUrlPrefix);
     }
   }
 
@@ -248,5 +257,21 @@ public class CodeFirstRestTemplate {
     String input = "{\"name\" : \"zyy\"}";
     String output = template.postForObject(cseUrlPrefix + "rawJsonAnnotation", input, String.class);
     TestMgr.check("hello zyy", output);
+  }
+
+
+  protected void testGetStrArray(RestTemplate template, String cseUrlPrefix) {
+
+    String[] instrArray = {"a1,b1,c1"};
+    ArrayList result = template.getForObject(cseUrlPrefix + "testGetStrArray?str=a1,b1,c1", ArrayList.class);
+    ArrayList result1 = template
+        .getForObject(cseUrlPrefix + "testGetStrArray?str={instrArray}", ArrayList.class, "a1,b1,c1");
+    ArrayList result2 = template
+        .getForObject(cseUrlPrefix + "testGetStrArray?str={instrArray}", ArrayList.class, instrArray);
+
+    String[] output = {"a1", "b1", "c1"};
+    TestMgr.check(true, Arrays.asList(output).equals(result));
+    TestMgr.check(true, Arrays.asList(output).equals(result1));
+    TestMgr.check(true, Arrays.asList(output).equals(result2));
   }
 }
