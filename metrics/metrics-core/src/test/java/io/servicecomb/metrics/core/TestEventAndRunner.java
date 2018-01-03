@@ -250,7 +250,7 @@ public class TestEventAndRunner {
     Assert.assertEquals(model.getConsumerMetrics().get("fun2").getConsumerCall().getTotal(), 1);
 
     Map<String, Number> metrics = model.toMap();
-    Assert.assertEquals(metrics.size(), 72);
+    Assert.assertEquals(96, metrics.size());
 
     Assert.assertEquals(model.getInstanceMetric().getSystemMetric().getCpuLoad(), 1.0, 0);
     Assert.assertEquals(model.getInstanceMetric().getSystemMetric().getCpuRunningThreads(), 2, 0);
