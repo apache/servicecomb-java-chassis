@@ -95,9 +95,10 @@ public class SpringmvcClient {
       String content = restTemplate.getForObject("cse://springmvc/codeFirstSpringmvc/metricsForTest", String.class);
       Map<String, String> resultMap = JsonUtils.OBJ_MAPPER.readValue(content, HashMap.class);
 
-      TestMgr.check(String.valueOf(true), String.valueOf(resultMap.get("CPU and Memory").contains("heapUsed=")));
+      TestMgr.check(true, resultMap.get("CPU and Memory").contains("heapUsed="));
 
-      String[] requestProviders = resultMap.get("totalRequestProvider OPERATIONAL_LEVEL").replace("{", "")
+      String[] requestProviders = resultMap.get("totalRequestProvider OPERATIONAL_LEVEL")
+          .replace("{", "")
           .replace("}", "").split(",");
       Map<String, Integer> requests = new HashMap<>();
       for (String requestProvider : requestProviders) {
@@ -106,13 +107,11 @@ public class SpringmvcClient {
       }
 
       for (Entry<String, Integer> request : requests.entrySet()) {
-        TestMgr.check(String.valueOf(true), String.valueOf(request.getValue() > 0));
+        TestMgr.check(true, request.getValue() > 0);
       }
 
-      TestMgr.check(String.valueOf(true),
-          String.valueOf(resultMap.get("RequestQueueRelated").contains("springmvc.codeFirst.saySomething")));
-      TestMgr.check(String.valueOf(true),
-          String.valueOf(resultMap.get("RequestQueueRelated").contains("springmvc.controller.sayHi")));
+      TestMgr.check(true, resultMap.get("RequestQueueRelated").contains("springmvc.codeFirst.saySomething"));
+      TestMgr.check(true, resultMap.get("RequestQueueRelated").contains("springmvc.controller.sayHi"));
     } catch (Exception e) {
       TestMgr.check("true", "false");
     }
@@ -122,10 +121,10 @@ public class SpringmvcClient {
       RegistryMetric metric = metricsPublisher.metrics();
 
       TestMgr
-          .check(String.valueOf(true), String.valueOf(metric.getInstanceMetric().getSystemMetric().getHeapUsed() != 0));
-      TestMgr.check(String.valueOf(true), String.valueOf(metric.getProducerMetrics().size() > 0));
-      TestMgr.check(String.valueOf(true), String.valueOf(
-          metric.getProducerMetrics().get("springmvc.codeFirst.saySomething").getProducerCall().getTotal() > 0));
+          .check(true, metric.getInstanceMetric().getSystemMetric().getHeapUsed() != 0);
+      TestMgr.check(true, metric.getProducerMetrics().size() > 0);
+      TestMgr.check(true,
+          metric.getProducerMetrics().get("springmvc.codeFirst.saySomething").getProducerCall().getTotal() > 0);
     } catch (Exception e) {
       TestMgr.check("true", "false");
     }
