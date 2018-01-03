@@ -19,7 +19,6 @@ package io.servicecomb.transport.rest.client;
 
 import io.servicecomb.foundation.vertx.VertxUtils;
 import io.vertx.core.Vertx;
-import io.vertx.core.http.HttpClientOptions;
 
 public final class RestTransportClientManager {
   public static final RestTransportClientManager INSTANCE = new RestTransportClientManager();
@@ -27,24 +26,14 @@ public final class RestTransportClientManager {
   // same instance in AbstractTranport. need refactor in future.
   private final Vertx transportVertx = VertxUtils.getOrCreateVertxByName("transport", null);
 
-  // caller not in eventloop
-  private RestTransportClient restClient = null;
-
-  private HttpClientOptions httpClientOptions;
+  private RestTransportClient restClient = new RestTransportClient();
 
   private RestTransportClientManager() {
-    restClient = new RestTransportClient();
     try {
       restClient.init(transportVertx);
     } catch (Exception e) {
       throw new IllegalStateException("Failed to init RestTransportClient.", e);
     }
-
-    httpClientOptions = restClient.getHttpClientOptions();
-  }
-
-  public HttpClientOptions getHttpClientOptions() {
-    return httpClientOptions;
   }
 
   public RestTransportClient getRestClient() {

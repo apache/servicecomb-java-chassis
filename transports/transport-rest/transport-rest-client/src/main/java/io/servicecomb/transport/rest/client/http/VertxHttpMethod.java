@@ -93,14 +93,6 @@ public class VertxHttpMethod {
       asyncResp.fail(invocation.getInvocationType(), e);
     });
 
-    LOGGER.debug(
-        "Running HTTP method {} on {} at {}:{}{}",
-        invocation.getOperationMeta().getMethod(),
-        invocation.getMicroserviceName(),
-        ipPort.getHostOrIp(),
-        ipPort.getPort(),
-        path);
-
     // 从业务线程转移到网络线程中去发送
     httpClientWithContext.runOnContext(httpClient -> {
       this.setCseContext(invocation, clientRequest);
@@ -131,9 +123,10 @@ public class VertxHttpMethod {
         .setURI(path);
 
     HttpMethod method = getMethod(invocation);
-    LOGGER.debug("Sending request by rest, method={}, qualifiedName={}, endpoint={}.",
+    LOGGER.debug("Sending request by rest, method={}, qualifiedName={}, path={}, endpoint={}.",
         method,
         invocation.getMicroserviceQualifiedName(),
+        path,
         invocation.getEndpoint().getEndpoint());
     HttpClientRequest request = client.request(method, requestOptions, response -> {
       handleResponse(invocation, response, asyncResp);

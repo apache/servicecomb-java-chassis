@@ -44,8 +44,6 @@ public class TestRestTransportClient {
 
   private RestTransportClient instance = null;
 
-  private HttpClientOptions options;
-
   Invocation invocation = Mockito.mock(Invocation.class);
 
   AsyncResponse asyncResp = Mockito.mock(AsyncResponse.class);
@@ -70,17 +68,8 @@ public class TestRestTransportClient {
   }
 
   @Test
-  public void testSSL(@Mocked Vertx vertx, @Mocked VertxUtils utils) throws Exception {
+  public void init(@Mocked Vertx vertx, @Mocked VertxUtils utils) throws Exception {
     new MockUp<VertxUtils>() {
-      @Mock
-      <CLIENT_POOL, CLIENT_OPTIONS> DeploymentOptions createClientDeployOptions(
-          ClientPoolManager<CLIENT_POOL> clientMgr,
-          int instanceCount,
-          CLIENT_OPTIONS clientOptions) {
-        options = (HttpClientOptions) clientOptions;
-        return null;
-      }
-
       @Mock
       <VERTICLE extends AbstractVerticle> boolean blockDeploy(Vertx vertx,
           Class<VERTICLE> cls,
@@ -90,10 +79,9 @@ public class TestRestTransportClient {
     };
     RestTransportClient client = new RestTransportClient();
     client.init(vertx);
-    Assert.assertTrue(options.isSsl());
-    Assert.assertEquals(30, options.getIdleTimeout());
-    Assert.assertTrue(options.isKeepAlive());
-    Assert.assertEquals(5, options.getMaxPoolSize());
+
+    ClientPoolManager<HttpClientWithContext> clientMgr = Deencapsulation.getField(client, "clientMgr");
+    Assert.assertSame(vertx, Deencapsulation.getField(clientMgr, "vertx"));
   }
 
   @Test
@@ -111,32 +99,7 @@ public class TestRestTransportClient {
 
   @Test
   public void testCreateHttpClientOptions() {
-
     HttpClientOptions obj = (HttpClientOptions) Deencapsulation.invoke(instance, "createHttpClientOptions");
     Assert.assertNotNull(obj);
-  }
-
-  @Test
-  public void testSend() {
-    boolean validAssert;
-    Mockito.when(invocation.getOperationMeta()).thenReturn(operationMeta);
-
-    new MockUp<ClientPoolManager<HttpClientWithContext>>() {
-
-      @Mock
-      public HttpClientWithContext findThreadBindClientPool() {
-        return new HttpClientWithContext(null, null);
-      }
-    };
-
-    Mockito.when(operationMeta.getExtData(RestConst.SWAGGER_REST_OPERATION)).thenReturn(swaggerRestOperation);
-
-    try {
-      validAssert = true;
-      instance.send(invocation, asyncResp);
-    } catch (Exception e) {
-      validAssert = false;
-    }
-    Assert.assertTrue(validAssert);
   }
 }
