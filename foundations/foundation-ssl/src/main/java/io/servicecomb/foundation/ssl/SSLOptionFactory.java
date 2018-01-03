@@ -33,7 +33,7 @@ public interface SSLOptionFactory {
       try {
         return (SSLOptionFactory) Class.forName(className).newInstance();
       } catch (InstantiationException | IllegalAccessException | ClassNotFoundException e) {
-        return null;
+        throw new IllegalStateException("Failed to create SSLOptionFactory.", e);
       }
     }
     return null;

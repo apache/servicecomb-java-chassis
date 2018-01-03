@@ -17,11 +17,15 @@
 
 package io.servicecomb.foundation.vertx;
 
+import org.junit.AfterClass;
 import org.junit.Assert;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import io.servicecomb.foundation.ssl.SSLCustom;
 import io.servicecomb.foundation.ssl.SSLOption;
+import io.servicecomb.foundation.ssl.SSLOptionFactory;
+import io.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import io.vertx.core.http.ClientAuth;
 import io.vertx.core.http.HttpClientOptions;
 import io.vertx.core.http.HttpServerOptions;
@@ -29,6 +33,15 @@ import mockit.Mock;
 import mockit.MockUp;
 
 public class TestVertxTLSBuilder {
+  @BeforeClass
+  public static void classSetup() {
+    ArchaiusUtils.resetConfig();
+  }
+
+  @AfterClass
+  public static void classTeardown() {
+    ArchaiusUtils.resetConfig();
+  }
 
   @Test
   public void testbuildHttpServerOptions() {
@@ -38,6 +51,36 @@ public class TestVertxTLSBuilder {
     VertxTLSBuilder.buildNetServerOptions(option, custom, serverOptions);
     Assert.assertEquals(serverOptions.getEnabledSecureTransportProtocols().toArray().length, 1);
     Assert.assertEquals(serverOptions.getClientAuth(), ClientAuth.REQUEST);
+  }
+
+  @Test
+  public void testbuildHttpClientOptions_sslKey_noFactory() {
+    HttpClientOptions clientOptions = new HttpClientOptions();
+    VertxTLSBuilder.buildHttpClientOptions("notExist", clientOptions);
+    Assert.assertTrue(clientOptions.isSsl());
+  }
+
+  public static class SSLOptionFactoryForTest implements SSLOptionFactory {
+    static SSLOption sslOption = new SSLOption();
+    static {
+      sslOption.setProtocols("");
+      sslOption.setCiphers(SSLOption.DEFAUL_CIPHERS);
+      sslOption.setCheckCNHost(true);
+    }
+
+    @Override
+    public SSLOption createSSLOption() {
+      return sslOption;
+    }
+  }
+
+  @Test
+  public void testbuildHttpClientOptions_ssl_withFactory() {
+    ArchaiusUtils.setProperty("ssl.exist.sslOptionFactory", SSLOptionFactoryForTest.class.getName());
+    HttpClientOptions clientOptions = new HttpClientOptions();
+    VertxTLSBuilder.buildHttpClientOptions("exist", clientOptions);
+    Assert.assertTrue(clientOptions.isSsl());
+    Assert.assertTrue(clientOptions.isVerifyHost());
   }
 
   @Test

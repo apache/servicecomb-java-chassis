@@ -22,6 +22,7 @@ import java.io.File;
 import io.servicecomb.foundation.ssl.SSLCustom;
 import io.servicecomb.foundation.ssl.SSLManager;
 import io.servicecomb.foundation.ssl.SSLOption;
+import io.servicecomb.foundation.ssl.SSLOptionFactory;
 import io.vertx.core.http.ClientAuth;
 import io.vertx.core.http.HttpClientOptions;
 import io.vertx.core.net.ClientOptionsBase;
@@ -48,6 +49,18 @@ public final class VertxTLSBuilder {
       netServerOptions.setClientAuth(ClientAuth.REQUEST);
     }
     return netServerOptions;
+  }
+
+  public static void buildHttpClientOptions(String sslKey, HttpClientOptions httpClientOptions) {
+    SSLOptionFactory factory = SSLOptionFactory.createSSLOptionFactory(sslKey, null);
+    SSLOption sslOption;
+    if (factory == null) {
+      sslOption = SSLOption.buildFromYaml(sslKey);
+    } else {
+      sslOption = factory.createSSLOption();
+    }
+    SSLCustom sslCustom = SSLCustom.createSSLCustom(sslOption.getSslCustomClass());
+    buildHttpClientOptions(sslOption, sslCustom, httpClientOptions);
   }
 
   public static HttpClientOptions buildHttpClientOptions(SSLOption sslOption, SSLCustom sslCustom,
