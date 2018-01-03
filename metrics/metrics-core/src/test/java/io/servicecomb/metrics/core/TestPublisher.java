@@ -45,11 +45,11 @@ public class TestPublisher {
 
     RegistryMetric registryMetric = publisher.metrics();
     Map<String, Number> metricsMap = registryMetric.toMap();
-    Assert.assertEquals(metricsMap.size(), 30);
+    Assert.assertEquals(35, metricsMap.size());
 
     registryMetric = publisher.metricsWithWindowTimeIndex(1000);
     metricsMap = registryMetric.toMap();
-    Assert.assertEquals(metricsMap.size(), 30);
+    Assert.assertEquals(35, metricsMap.size());
 
     List<Long> appliedWindowTime = publisher.getAppliedWindowTime();
     Assert.assertEquals(appliedWindowTime.size(), 3);
