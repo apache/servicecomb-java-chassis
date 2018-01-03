@@ -17,9 +17,12 @@
 
 package io.servicecomb.demo.jaxrs.server;
 
+import java.util.Arrays;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
@@ -44,6 +47,7 @@ import io.servicecomb.demo.ignore.OutputModelForTestIgnore;
 import io.servicecomb.demo.server.User;
 import io.servicecomb.provider.rest.common.RestSchema;
 import io.servicecomb.swagger.extend.annotations.RawJsonRequestBody;
+import io.servicecomb.swagger.extend.annotations.RequestParamColFmt;
 import io.servicecomb.swagger.extend.annotations.ResponseHeaders;
 import io.servicecomb.swagger.invocation.Response;
 import io.servicecomb.swagger.invocation.context.ContextUtils;
@@ -201,5 +205,14 @@ public class CodeFirstJaxrs {
       return null;
     }
     return "hello " + person.get("name");
+  }
+
+  @Path("/testGetStrArray")
+  @GET
+  public String[] testGetStrArray(@RequestParamColFmt(collectionFormat = "csv") String[] str) {
+    for (int i = 0; i < str.length; i++) {
+      System.out.println("*******"+str[i]);
+    }
+    return str;
   }
 }
