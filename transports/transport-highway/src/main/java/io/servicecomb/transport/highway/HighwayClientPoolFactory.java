@@ -14,21 +14,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package io.servicecomb.transport.highway;
 
-import org.junit.Assert;
-import org.junit.Test;
+import io.servicecomb.foundation.vertx.client.tcp.AbstractTcpClientPoolFactory;
+import io.servicecomb.foundation.vertx.client.tcp.NetClientWrapper;
+import io.servicecomb.foundation.vertx.client.tcp.TcpClientConfig;
+import io.vertx.core.Context;
 
-public class TestHighwayClientManager {
-  @Test
-  public void testRestTransportClientManager() {
-    HighwayClient client1 = HighwayClientManager.INSTANCE.getHighwayClient(false);
-    HighwayClient client2 = HighwayClientManager.INSTANCE.getHighwayClient(false);
-    Assert.assertEquals(client1, client2);
+public class HighwayClientPoolFactory extends AbstractTcpClientPoolFactory<HighwayClientConnectionPool> {
+  public HighwayClientPoolFactory(TcpClientConfig normalClientConfig, TcpClientConfig sslClientConfig) {
+    super(normalClientConfig, sslClientConfig);
+  }
 
-    HighwayClient client3 = HighwayClientManager.INSTANCE.getHighwayClient(true);
-    HighwayClient client4 = HighwayClientManager.INSTANCE.getHighwayClient(true);
-    Assert.assertEquals(client3, client4);
+  @Override
+  protected HighwayClientConnectionPool doCreateClientPool(Context context, NetClientWrapper netClientWrapper) {
+    return new HighwayClientConnectionPool(context, netClientWrapper);
   }
 }

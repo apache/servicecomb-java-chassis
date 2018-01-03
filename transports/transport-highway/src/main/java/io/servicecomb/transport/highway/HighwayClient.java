@@ -33,6 +33,7 @@ import io.servicecomb.foundation.ssl.SSLOptionFactory;
 import io.servicecomb.foundation.vertx.VertxTLSBuilder;
 import io.servicecomb.foundation.vertx.VertxUtils;
 import io.servicecomb.foundation.vertx.client.ClientPoolManager;
+import io.servicecomb.foundation.vertx.client.ClientVerticle;
 import io.servicecomb.foundation.vertx.client.tcp.TcpClientConfig;
 import io.servicecomb.swagger.invocation.AsyncResponse;
 import io.servicecomb.swagger.invocation.Response;
@@ -40,26 +41,24 @@ import io.vertx.core.DeploymentOptions;
 import io.vertx.core.Vertx;
 
 public class HighwayClient {
-  private static final Logger log = LoggerFactory.getLogger(HighwayClient.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(HighwayClient.class);
 
   private static final String SSL_KEY = "highway.consumer";
 
-  private ClientPoolManager<HighwayClientConnectionPool> clientMgr = new ClientPoolManager<>();
-
-  private final boolean sslEnabled;
-
-  public HighwayClient(boolean sslEnabled) {
-    this.sslEnabled = sslEnabled;
-  }
+  private ClientPoolManager<HighwayClientConnectionPool> clientMgr;
 
   public void init(Vertx vertx) throws Exception {
-    TcpClientConfig config = createTcpClientConfig();
+    TcpClientConfig normalConfig = createTcpClientConfig();
+    normalConfig.setSsl(false);
+
+    TcpClientConfig sslConfig = createTcpClientConfig();
+    sslConfig.setSsl(true);
+
+    clientMgr = new ClientPoolManager<>(vertx, new HighwayClientPoolFactory(normalConfig, sslConfig));
 
     DeploymentOptions deployOptions = VertxUtils.createClientDeployOptions(clientMgr,
-        HighwayConfig.getClientThreadCount(),
-        config);
-
-    VertxUtils.blockDeploy(vertx, HighwayClientVerticle.class, deployOptions);
+        HighwayConfig.getClientThreadCount());
+    VertxUtils.blockDeploy(vertx, ClientVerticle.class, deployOptions);
   }
 
   private TcpClientConfig createTcpClientConfig() {
@@ -72,31 +71,33 @@ public class HighwayClient {
     });
     tcpClientConfig.setRequestTimeoutMillis(prop.get());
 
-    if (this.sslEnabled) {
-      SSLOptionFactory factory =
-          SSLOptionFactory.createSSLOptionFactory(SSL_KEY, null);
-      SSLOption sslOption;
-      if (factory == null) {
-        sslOption = SSLOption.buildFromYaml(SSL_KEY);
-      } else {
-        sslOption = factory.createSSLOption();
-      }
-      SSLCustom sslCustom = SSLCustom.createSSLCustom(sslOption.getSslCustomClass());
-      VertxTLSBuilder.buildClientOptionsBase(sslOption, sslCustom, tcpClientConfig);
+    SSLOptionFactory factory =
+        SSLOptionFactory.createSSLOptionFactory(SSL_KEY, null);
+    SSLOption sslOption;
+    if (factory == null) {
+      sslOption = SSLOption.buildFromYaml(SSL_KEY);
+    } else {
+      sslOption = factory.createSSLOption();
     }
+    SSLCustom sslCustom = SSLCustom.createSSLCustom(sslOption.getSslCustomClass());
+    VertxTLSBuilder.buildClientOptionsBase(sslOption, sslCustom, tcpClientConfig);
+
     return tcpClientConfig;
   }
 
   public void send(Invocation invocation, AsyncResponse asyncResp) throws Exception {
-    HighwayClientConnectionPool tcpClientPool = clientMgr.findThreadBindClientPool();
+    HighwayClientConnectionPool tcpClientPool = clientMgr.findClientPool(invocation.isSync());
 
     OperationMeta operationMeta = invocation.getOperationMeta();
     OperationProtobuf operationProtobuf = ProtobufManager.getOrCreateOperation(operationMeta);
 
-    HighwayClientConnection tcpClient = tcpClientPool.findOrCreateClient(invocation.getEndpoint().getEndpoint());
+    HighwayClientConnection tcpClient =
+        tcpClientPool.findOrCreateClient(invocation.getEndpoint().getEndpoint());
     HighwayClientPackage clientPackage = new HighwayClientPackage(invocation, operationProtobuf, tcpClient);
-    log.debug("Calling method {} of {} by highway", operationMeta.getMethod(), invocation.getMicroserviceName());
-    tcpClientPool.send(tcpClient, clientPackage, ar -> {
+    LOGGER.debug("Sending request by highway, qualifiedName={}, endpoint={}.",
+        invocation.getMicroserviceQualifiedName(),
+        invocation.getEndpoint().getEndpoint());
+    tcpClient.send(clientPackage, ar -> {
       // 此时是在网络线程中，转换线程
       invocation.getResponseExecutor().execute(() -> {
         if (ar.failed()) {
