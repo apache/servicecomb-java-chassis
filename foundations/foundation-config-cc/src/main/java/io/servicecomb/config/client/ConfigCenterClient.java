@@ -54,7 +54,8 @@ import io.servicecomb.foundation.ssl.SSLOptionFactory;
 import io.servicecomb.foundation.vertx.VertxTLSBuilder;
 import io.servicecomb.foundation.vertx.VertxUtils;
 import io.servicecomb.foundation.vertx.client.ClientPoolManager;
-import io.servicecomb.foundation.vertx.client.http.HttpClientVerticle;
+import io.servicecomb.foundation.vertx.client.ClientVerticle;
+import io.servicecomb.foundation.vertx.client.http.HttpClientPoolFactory;
 import io.servicecomb.foundation.vertx.client.http.HttpClientWithContext;
 import io.vertx.core.DeploymentOptions;
 import io.vertx.core.Vertx;
@@ -99,7 +100,7 @@ public class ConfigCenterClient {
 
   private ConfigCenterConfigurationSourceImpl.UpdateHandler updateHandler;
 
-  private static ClientPoolManager<HttpClientWithContext> clientMgr = new ClientPoolManager<>();
+  private static ClientPoolManager<HttpClientWithContext> clientMgr;
 
   private boolean isWatching = false;
 
@@ -152,9 +153,12 @@ public class ConfigCenterClient {
 
   private void deployConfigClient() throws InterruptedException {
     Vertx vertx = VertxUtils.getOrCreateVertxByName("config-center", null);
+
     HttpClientOptions httpClientOptions = createHttpClientOptions();
-    DeploymentOptions deployOptions = VertxUtils.createClientDeployOptions(clientMgr, 1, httpClientOptions);
-    VertxUtils.blockDeploy(vertx, HttpClientVerticle.class, deployOptions);
+    clientMgr = new ClientPoolManager<>(vertx, new HttpClientPoolFactory(httpClientOptions));
+
+    DeploymentOptions deployOptions = VertxUtils.createClientDeployOptions(clientMgr, 1);
+    VertxUtils.blockDeploy(vertx, ClientVerticle.class, deployOptions);
   }
 
   private HttpClientOptions createHttpClientOptions() {
