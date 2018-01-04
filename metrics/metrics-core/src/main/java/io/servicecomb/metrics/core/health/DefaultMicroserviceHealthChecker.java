@@ -17,9 +17,9 @@
 
 package io.servicecomb.metrics.core.health;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import io.servicecomb.foundation.common.exceptions.ServiceCombException;
 import io.servicecomb.foundation.common.utils.JsonUtils;
 import io.servicecomb.metrics.common.DefaultHealthCheckExtraData;
 import io.servicecomb.metrics.common.HealthCheckResult;
@@ -29,6 +29,8 @@ import io.servicecomb.serviceregistry.api.registry.Microservice;
 import io.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
 
 public class DefaultMicroserviceHealthChecker implements HealthChecker {
+
+  private static Logger logger = LoggerFactory.getLogger(DefaultMicroserviceHealthChecker.class);
 
   @Override
   public String getName() {
@@ -42,10 +44,6 @@ public class DefaultMicroserviceHealthChecker implements HealthChecker {
 
   private String getExtraData() {
     try {
-      if (RegistryUtils.getServiceRegistry() == null) {
-        RegistryUtils.init();
-      }
-
       Microservice microservice = RegistryUtils.getMicroservice();
       MicroserviceInstance instance = RegistryUtils.getMicroserviceInstance();
       return JsonUtils.writeValueAsString(new DefaultHealthCheckExtraData(
@@ -55,8 +53,10 @@ public class DefaultMicroserviceHealthChecker implements HealthChecker {
           microservice.getServiceName(),
           microservice.getVersion(),
           String.join(",", instance.getEndpoints())));
-    } catch (JsonProcessingException e) {
-      throw new ServiceCombException("unable load microservice info for healthchecker", e);
+    } catch (Exception e) {
+      String error = "unable load microservice info from RegistryUtils";
+      logger.error(error, e);
+      return error;
     }
   }
 }
