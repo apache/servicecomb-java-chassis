@@ -63,7 +63,7 @@ import io.vertx.core.http.HttpClientResponse;
 
 public final class ServiceRegistryClientImpl implements ServiceRegistryClient {
   private static final Logger LOGGER = LoggerFactory.getLogger(ServiceRegistryClientImpl.class);
-
+  private static final int MAX_ITERATE = 3;
   private IpPortManager ipPortManager;
 
   // key是本进程的微服务id和服务管理中心的id
@@ -80,9 +80,25 @@ public final class ServiceRegistryClientImpl implements ServiceRegistryClient {
 
   private void retry(RequestContext requestContext, Handler<RestResponse> responseHandler) {
     LOGGER.warn("invoke service [{}] failed, retry.", requestContext.getUri());
-    requestContext.setIpPort(ipPortManager.getAvailableAddress(true));
+    requestContext.setIpPort(getRetryAddress(requestContext.getIpPort()));
     requestContext.setRetry(true);
     RestUtils.httpDo(requestContext, responseHandler);
+  }
+
+  // try a different address if it is possible when retrying
+  private IpPort getRetryAddress(IpPort currentIpPort) {
+    int retry = MAX_ITERATE;
+    IpPort nextIpPort = ipPortManager.getAvailableAddress(true);
+    while (retry > 0) {
+      if (currentIpPort.equals(nextIpPort)) {
+        nextIpPort = ipPortManager.getAvailableAddress(true);
+      } else {
+        break;
+      }
+      retry--;
+    }
+    LOGGER.info("Retry. Current address is {} and trying {}", currentIpPort.toString(), nextIpPort.toString());
+    return nextIpPort;
   }
 
   @SuppressWarnings("unchecked")
@@ -111,7 +127,8 @@ public final class ServiceRegistryClientImpl implements ServiceRegistryClient {
               holder.value =
                   JsonUtils.readValue(bodyBuffer.getBytes(), cls);
             } catch (Exception e) {
-              LOGGER.warn(bodyBuffer.toString());
+              LOGGER.warn("read value failed and response message is {}",
+                  bodyBuffer.toString());
             }
             countDownLatch.countDown();
           });

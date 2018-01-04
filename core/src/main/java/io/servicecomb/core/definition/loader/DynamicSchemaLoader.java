@@ -39,7 +39,11 @@ import io.servicecomb.serviceregistry.RegistryUtils;
  *   需要支持在不同的产品中部署为不同的微服务名
  *   微服务名是由环境变量等等方式注入的
  *   此时可以在BootListener中进行注册（必须在producer初始化之前注册契约）
+ *
+ * @Deprecated This class is deprecated because when making calls to a provider, schemas will be downloaded from service enter.
+ * And at provider, schemas will register to service center when starting up.
  */
+@Deprecated
 public class DynamicSchemaLoader {
   private static final Logger LOGGER = LoggerFactory.getLogger(DynamicSchemaLoader.class);
 

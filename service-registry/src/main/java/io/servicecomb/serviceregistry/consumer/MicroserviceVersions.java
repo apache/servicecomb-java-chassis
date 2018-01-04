@@ -104,6 +104,9 @@ public class MicroserviceVersions {
         microserviceName,
         DefinitionConst.VERSION_RULE_ALL);
     if (pulledInstances == null) {
+      // exception happens and try pull again later.
+      pendingPullCount.incrementAndGet();
+      appManager.getEventBus().post(new PullMicroserviceVersionsInstancesEvent(this, TimeUnit.SECONDS.toMillis(1)));
       return;
     }
 

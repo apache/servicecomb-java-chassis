@@ -30,5 +30,9 @@ public class TestIpPort {
     Assert.assertEquals(inst1.getHostOrIp(), inst2.getHostOrIp());
     Assert.assertEquals(inst1.getPort(), inst2.getPort());
     Assert.assertEquals(inst1.getSocketAddress().getHostName(), inst2.getSocketAddress().getHostName());
+    Assert.assertEquals(inst1, inst1);
+    Assert.assertEquals(inst1, inst2);
+    Assert.assertEquals(inst1.toString(), "localhost:3333");
+    Assert.assertNotEquals(inst1, new Object());
   }
 }
