@@ -56,6 +56,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.netflix.servo.monitor.Monitor;
 
 import io.servicecomb.common.rest.codec.RestObjectMapper;
+import io.servicecomb.core.Const;
 import io.servicecomb.demo.compute.Person;
 import io.servicecomb.demo.ignore.InputModelForTestIgnore;
 import io.servicecomb.demo.ignore.OutputModelForTestIgnore;
@@ -118,10 +119,10 @@ public class CodeFirstSpringmvc {
   @RequestMapping(path = "/responseEntity", method = RequestMethod.POST)
   public ResponseEntity<Date> responseEntity(InvocationContext c1, @RequestAttribute("date") Date date) {
     HttpHeaders headers = new HttpHeaders();
-    headers.add("h1", "h1v " + c1.getContext().toString());
+    headers.add("h1", "h1v " + c1.getContext().get(Const.SRC_MICROSERVICE).toString());
 
     InvocationContext c2 = ContextUtils.getInvocationContext();
-    headers.add("h2", "h2v " + c2.getContext().toString());
+    headers.add("h2", "h2v " + c2.getContext().get(Const.SRC_MICROSERVICE).toString());
 
     return new ResponseEntity<Date>(date, headers, HttpStatus.ACCEPTED);
   }
@@ -131,10 +132,10 @@ public class CodeFirstSpringmvc {
   @RequestMapping(path = "/responseEntity", method = RequestMethod.PATCH)
   public ResponseEntity<Date> responseEntityPATCH(InvocationContext c1, @RequestAttribute("date") Date date) {
     HttpHeaders headers = new HttpHeaders();
-    headers.add("h1", "h1v " + c1.getContext().toString());
+    headers.add("h1", "h1v " + c1.getContext().get(Const.SRC_MICROSERVICE).toString());
 
     InvocationContext c2 = ContextUtils.getInvocationContext();
-    headers.add("h2", "h2v " + c2.getContext().toString());
+    headers.add("h2", "h2v " + c2.getContext().get(Const.SRC_MICROSERVICE).toString());
 
     return new ResponseEntity<Date>(date, headers, HttpStatus.ACCEPTED);
   }
@@ -146,10 +147,10 @@ public class CodeFirstSpringmvc {
   public Response cseResponse(InvocationContext c1) {
     Response response = Response.createSuccess(Status.ACCEPTED, new User());
     Headers headers = response.getHeaders();
-    headers.addHeader("h1", "h1v " + c1.getContext().toString());
+    headers.addHeader("h1", "h1v " + c1.getContext().get(Const.SRC_MICROSERVICE).toString());
 
     InvocationContext c2 = ContextUtils.getInvocationContext();
-    headers.addHeader("h2", "h2v " + c2.getContext().toString());
+    headers.addHeader("h2", "h2v " + c2.getContext().get(Const.SRC_MICROSERVICE).toString());
 
     return response;
   }
@@ -306,7 +307,7 @@ public class CodeFirstSpringmvc {
     return new OutputModelForTestIgnore("output_id", input.getInputId(), input.getContent(), input.getInputObject(),
         input.getInputJsonObject(), input.getInputIgnoreInterface(),
         new Person("outputSomeone"), new JsonObject("{\"OutputJsonKey\" : \"OutputJsonValue\"}"), () -> {
-        });
+    });
   }
 
   @SuppressWarnings("unchecked")
@@ -349,5 +350,10 @@ public class CodeFirstSpringmvc {
     } catch (JsonProcessingException e) {
       throw new InvocationException(500, "500", "JsonProcessingException", e);
     }
+  }
+
+  @GetMapping(path = "/traceId")
+  public String getTraceId() {
+    return ContextUtils.getInvocationContext().getContext(Const.TRACE_ID_NAME);
   }
 }

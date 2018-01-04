@@ -175,15 +175,15 @@ public class CodeFirstRestTemplateSpringmvc extends CodeFirstRestTemplate {
 
     ResponseEntity<Date> responseEntity = intf.responseEntity(date);
     TestMgr.check(date, responseEntity.getBody());
-    TestMgr.check("h1v {x-cse-src-microservice=" + srcName + "}", responseEntity.getHeaders().getFirst("h1"));
-    TestMgr.check("h2v {x-cse-src-microservice=" + srcName + "}", responseEntity.getHeaders().getFirst("h2"));
+    TestMgr.check("h1v " + srcName, responseEntity.getHeaders().getFirst("h1"));
+    TestMgr.check("h2v " + srcName, responseEntity.getHeaders().getFirst("h2"));
 
     checkStatusCode("springmvc", 202, responseEntity.getStatusCode());
 
     Response cseResponse = intf.cseResponse();
     TestMgr.check("User [name=nameA, age=100, index=0]", cseResponse.getResult());
-    TestMgr.check("h1v {x-cse-src-microservice=" + srcName + "}", cseResponse.getHeaders().getFirst("h1"));
-    TestMgr.check("h2v {x-cse-src-microservice=" + srcName + "}", cseResponse.getHeaders().getFirst("h2"));
+    TestMgr.check("h1v " + srcName, cseResponse.getHeaders().getFirst("h1"));
+    TestMgr.check("h2v " + srcName, cseResponse.getHeaders().getFirst("h2"));
   }
 
   private void testResponseEntity(String microserviceName, RestTemplate template, String cseUrlPrefix) {
@@ -199,19 +199,15 @@ public class CodeFirstRestTemplateSpringmvc extends CodeFirstRestTemplate {
     ResponseEntity<Date> responseEntity =
         template.exchange(cseUrlPrefix + "responseEntity", HttpMethod.POST, httpEntity, Date.class);
     TestMgr.check(date, responseEntity.getBody());
-    TestMgr.check("h1v {contextKey=contextValue, x-cse-src-microservice=" + srcName + "}",
-        responseEntity.getHeaders().getFirst("h1"));
-    TestMgr.check("h2v {contextKey=contextValue, x-cse-src-microservice=" + srcName + "}",
-        responseEntity.getHeaders().getFirst("h2"));
+    TestMgr.check("h1v " + srcName, responseEntity.getHeaders().getFirst("h1"));
+    TestMgr.check("h2v " + srcName, responseEntity.getHeaders().getFirst("h2"));
     checkStatusCode(microserviceName, 202, responseEntity.getStatusCode());
 
     responseEntity =
         template.exchange(cseUrlPrefix + "responseEntity", HttpMethod.PATCH, httpEntity, Date.class);
     TestMgr.check(date, responseEntity.getBody());
-    TestMgr.check("h1v {contextKey=contextValue, x-cse-src-microservice=" + srcName + "}",
-        responseEntity.getHeaders().getFirst("h1"));
-    TestMgr.check("h2v {contextKey=contextValue, x-cse-src-microservice=" + srcName + "}",
-        responseEntity.getHeaders().getFirst("h2"));
+    TestMgr.check("h1v " + srcName, responseEntity.getHeaders().getFirst("h1"));
+    TestMgr.check("h2v " + srcName, responseEntity.getHeaders().getFirst("h2"));
     checkStatusCode(microserviceName, 202, responseEntity.getStatusCode());
   }
 

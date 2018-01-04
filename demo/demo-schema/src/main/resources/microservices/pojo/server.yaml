@@ -176,7 +176,14 @@ paths:
           description: add string
           schema:
             type: string
-            
+  /testTraceId:
+    get:
+      operationId: testTraceId
+      responses:
+        200:
+          description: get trace id
+          schema:
+            type: string
 definitions:
   Error:
     type: object

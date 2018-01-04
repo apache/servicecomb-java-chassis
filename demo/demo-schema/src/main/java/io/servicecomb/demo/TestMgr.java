@@ -22,6 +22,7 @@ import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.util.StringUtils;
 
 public class TestMgr {
   private static final Logger LOGGER = LoggerFactory.getLogger(TestMgr.class);
@@ -47,6 +48,12 @@ public class TestMgr {
     }
   }
 
+  public static void checkNotEmpty(String real) {
+    if (StringUtils.isEmpty(real)) {
+      errorList.add(new Error(msg + " | unexpected null result, method is " + getCaller()));
+    }
+  }
+
   public static void summary() {
     if (errorList.isEmpty()) {
       LOGGER.info("............. test finished ............");
@@ -61,5 +68,14 @@ public class TestMgr {
 
   public static List<Throwable> errors() {
     return errorList;
+  }
+
+  private static String getCaller() {
+    StackTraceElement[] stackTrace = Thread.currentThread().getStackTrace();
+    if (stackTrace.length < 3) {
+      return null;
+    }
+    StackTraceElement stackTraceElement = stackTrace[3];
+    return stackTraceElement.getClassName() + "." + stackTraceElement.getMethodName();
   }
 }
