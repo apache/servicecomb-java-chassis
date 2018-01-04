@@ -19,12 +19,16 @@ package io.servicecomb.serviceregistry.consumer;
 
 import java.util.Collections;
 
+import org.junit.After;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 
 import com.google.common.eventbus.EventBus;
 
 import io.servicecomb.serviceregistry.RegistryUtils;
+import io.servicecomb.serviceregistry.api.response.FindInstancesResponse;
+import io.servicecomb.serviceregistry.client.http.MicroserviceInstances;
 import io.servicecomb.serviceregistry.definition.DefinitionConst;
 import mockit.Expectations;
 import mockit.Mocked;
@@ -40,12 +44,30 @@ public class TestAppManager {
 
   String versionRule = "0+";
 
+  MicroserviceInstances microserviceInstances = null;
+
+  FindInstancesResponse findInstancesResponse = null;
+
+  @Before
+  public void setUp() throws Exception {
+    microserviceInstances = new MicroserviceInstances();
+    findInstancesResponse = new FindInstancesResponse();
+    findInstancesResponse.setInstances(Collections.emptyList());
+    microserviceInstances.setInstancesResponse(findInstancesResponse);
+  }
+
+  @After
+  public void tearDown() throws Exception {
+    findInstancesResponse = null;
+    microserviceInstances = null;
+  }
+
   @Test
   public void getOrCreateMicroserviceVersionRule() {
     new Expectations(RegistryUtils.class) {
       {
-        RegistryUtils.findServiceInstance(appId, serviceName, DefinitionConst.VERSION_RULE_ALL);
-        result = Collections.emptyList();
+        RegistryUtils.findServiceInstance(appId, serviceName, DefinitionConst.VERSION_RULE_ALL, DefinitionConst.DEFAULT_REVISION);
+        result = microserviceInstances;
       }
     };
 
@@ -59,8 +81,8 @@ public class TestAppManager {
   public void getOrCreateMicroserviceVersions() {
     new Expectations(RegistryUtils.class) {
       {
-        RegistryUtils.findServiceInstance(appId, serviceName, DefinitionConst.VERSION_RULE_ALL);
-        result = Collections.emptyList();
+        RegistryUtils.findServiceInstance(appId, serviceName, DefinitionConst.VERSION_RULE_ALL, DefinitionConst.DEFAULT_REVISION);
+        result = microserviceInstances;
       }
     };
 

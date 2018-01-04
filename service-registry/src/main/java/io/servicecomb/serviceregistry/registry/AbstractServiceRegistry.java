@@ -37,6 +37,7 @@ import io.servicecomb.serviceregistry.cache.InstanceCacheManager;
 import io.servicecomb.serviceregistry.cache.InstanceCacheManagerNew;
 import io.servicecomb.serviceregistry.client.IpPortManager;
 import io.servicecomb.serviceregistry.client.ServiceRegistryClient;
+import io.servicecomb.serviceregistry.client.http.MicroserviceInstances;
 import io.servicecomb.serviceregistry.config.ServiceRegistryConfig;
 import io.servicecomb.serviceregistry.consumer.AppManager;
 import io.servicecomb.serviceregistry.consumer.MicroserviceVersionFactory;
@@ -200,17 +201,25 @@ public abstract class AbstractServiceRegistry implements ServiceRegistry {
     return true;
   }
 
-  public List<MicroserviceInstance> findServiceInstance(String appId, String serviceName,
-      String versionRule) {
-    List<MicroserviceInstance> instances = srClient.findServiceInstance(microservice.getServiceId(),
+  public MicroserviceInstances findServiceInstance(String appId, String serviceName,
+      String versionRule, String revision) {
+    MicroserviceInstances microserviceInstances = srClient.findServiceInstance(microservice.getServiceId(),
         appId,
         serviceName,
-        versionRule);
-    if (instances == null) {
+        versionRule,
+        revision);
+
+    if (microserviceInstances == null) {
       LOGGER.error("find empty instances from service center. service={}/{}/{}", appId, serviceName, versionRule);
       return null;
     }
 
+    if (!microserviceInstances.isNeedRefresh()) {
+      LOGGER.info("instances revision is not changed, service={}/{}/{}", appId, serviceName, versionRule);
+      return microserviceInstances;
+    }
+
+    List<MicroserviceInstance> instances = microserviceInstances.getInstancesResponse().getInstances();
     LOGGER.info("find instances[{}] from service center success. service={}/{}/{}",
         instances.size(),
         appId,
@@ -222,7 +231,7 @@ public abstract class AbstractServiceRegistry implements ServiceRegistry {
           instance.getInstanceId(),
           instance.getEndpoints());
     }
-    return instances;
+    return microserviceInstances;
   }
 
   @Override

@@ -47,6 +47,7 @@ import io.servicecomb.config.ConfigUtil;
 import io.servicecomb.foundation.common.net.NetUtils;
 import io.servicecomb.serviceregistry.api.registry.Microservice;
 import io.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
+import io.servicecomb.serviceregistry.client.http.MicroserviceInstances;
 import io.servicecomb.serviceregistry.registry.ServiceRegistryFactory;
 import mockit.Deencapsulation;
 import mockit.Expectations;
@@ -94,7 +95,8 @@ public class TestRegistry {
     Assert.assertEquals(serviceRegistry.getMicroservice(), microservice);
     Assert.assertEquals(serviceRegistry.getMicroserviceInstance(), RegistryUtils.getMicroserviceInstance());
 
-    List<MicroserviceInstance> instanceList = RegistryUtils.findServiceInstance("default", "default", "0.0.1");
+    MicroserviceInstances microserviceInstances = RegistryUtils.findServiceInstance("default", "default", "0.0.1", "0");
+    List<MicroserviceInstance> instanceList = microserviceInstances.getInstancesResponse().getInstances();
     Assert.assertEquals(1, instanceList.size());
     Assert.assertEquals(RegistryUtils.getMicroservice().getServiceId(), instanceList.get(0).getServiceId());
 

@@ -38,8 +38,11 @@ import org.yaml.snakeyaml.Yaml;
 import io.servicecomb.foundation.vertx.AsyncResultCallback;
 import io.servicecomb.serviceregistry.api.registry.Microservice;
 import io.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
+import io.servicecomb.serviceregistry.api.response.FindInstancesResponse;
 import io.servicecomb.serviceregistry.api.response.HeartbeatResponse;
 import io.servicecomb.serviceregistry.api.response.MicroserviceInstanceChangedEvent;
+import io.servicecomb.serviceregistry.client.http.MicroserviceInstances;
+import io.servicecomb.serviceregistry.definition.DefinitionConst;
 import io.servicecomb.serviceregistry.version.Version;
 import io.servicecomb.serviceregistry.version.VersionRule;
 import io.servicecomb.serviceregistry.version.VersionRuleUtils;
@@ -238,14 +241,19 @@ public class LocalServiceRegistryClientImpl implements ServiceRegistryClient {
   }
 
   @Override
-  public List<MicroserviceInstance> findServiceInstance(String selfMicroserviceId, String appId, String serviceName,
-      String strVersionRule) {
+  public MicroserviceInstances findServiceInstance(String selfMicroserviceId, String appId, String serviceName,
+      String strVersionRule, String revision) {
     List<MicroserviceInstance> allInstances = new ArrayList<>();
+    MicroserviceInstances microserviceInstances = new MicroserviceInstances();
+    FindInstancesResponse response = new FindInstancesResponse();
 
     VersionRule versionRule = VersionRuleUtils.getOrCreate(strVersionRule);
     Microservice latestMicroservice = findLatest(appId, serviceName, versionRule);
     if (latestMicroservice == null) {
-      return allInstances;
+      response.setInstances(allInstances);
+      microserviceInstances.setInstancesResponse(response);
+      microserviceInstances.setRevision(DefinitionConst.DEFAULT_REVISION);
+      return microserviceInstances;
     }
 
     Version latestVersion = VersionUtils.getOrCreate(latestMicroservice.getVersion());
@@ -263,8 +271,10 @@ public class LocalServiceRegistryClientImpl implements ServiceRegistryClient {
       Map<String, MicroserviceInstance> instances = microserviceInstanceMap.get(entry.getValue().getServiceId());
       allInstances.addAll(instances.values());
     }
+    response.setInstances(allInstances);
+    microserviceInstances.setInstancesResponse(response);
 
-    return allInstances;
+    return microserviceInstances;
   }
 
   @Override

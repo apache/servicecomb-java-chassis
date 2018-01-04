@@ -25,6 +25,7 @@ import io.servicecomb.serviceregistry.api.registry.Microservice;
 import io.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
 import io.servicecomb.serviceregistry.api.response.HeartbeatResponse;
 import io.servicecomb.serviceregistry.api.response.MicroserviceInstanceChangedEvent;
+import io.servicecomb.serviceregistry.client.http.MicroserviceInstances;
 
 public interface ServiceRegistryClient {
   void init();
@@ -120,10 +121,10 @@ public interface ServiceRegistryClient {
 
   /**
    *
-   * 按照app+interface+version查询实例endpoints信息
+   * 按照app+interface+version+revision查询实例endpoints信息
    */
-  List<MicroserviceInstance> findServiceInstance(String consumerId, String appId, String serviceName,
-      String versionRule);
+  MicroserviceInstances findServiceInstance(String consumerId, String appId, String serviceName,
+      String versionRule, String revision);
   
   /**
    * 通过serviceId， instanceId 获取instance对象。
