@@ -36,6 +36,7 @@
     <spring.version>4.3.5.RELEASE</spring.version>
     <slf4j.version>1.7.7</slf4j.version>
     <log4j.version>1.2.17</log4j.version>
+    <log4j2.version>2.8.2</log4j2.version>
     <commons.io.version>2.4</commons.io.version>
     <javassist.version>3.18.1-GA</javassist.version>
     <javax.ws.rs.version>2.0.1</javax.ws.rs.version>
@@ -518,6 +519,16 @@
         <groupId>log4j</groupId>
         <artifactId>log4j</artifactId>
         <version>${log4j.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.logging.log4j</groupId>
+        <artifactId>log4j-api</artifactId>
+        <version>${log4j2.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.logging.log4j</groupId>
+        <artifactId>log4j-core</artifactId>
+        <version>${log4j2.version}</version>
       </dependency>
       <dependency>
         <groupId>commons-io</groupId>
