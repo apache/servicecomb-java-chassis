@@ -30,7 +30,7 @@ import io.servicecomb.provider.rest.common.RestSchema;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 
-@RestSchema(schemaId = "metricsEndpoint")
+@RestSchema(schemaId = "healthEndpoint")
 @RequestMapping(path = "/health")
 public class DefaultHealthCheckerPublisher implements HealthCheckerPublisher {
 

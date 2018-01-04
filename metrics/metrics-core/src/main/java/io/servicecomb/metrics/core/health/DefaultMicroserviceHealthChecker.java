@@ -30,13 +30,25 @@ import io.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
 
 public class DefaultMicroserviceHealthChecker implements HealthChecker {
 
-  private final String extraData;
+  @Override
+  public String getName() {
+    return "default";
+  }
 
-  public DefaultMicroserviceHealthChecker() {
+  @Override
+  public HealthCheckResult check() {
+    return new HealthCheckResult(true, "", getExtraData());
+  }
+
+  private String getExtraData() {
     try {
+      if (RegistryUtils.getServiceRegistry() == null) {
+        RegistryUtils.init();
+      }
+
       Microservice microservice = RegistryUtils.getMicroservice();
       MicroserviceInstance instance = RegistryUtils.getMicroserviceInstance();
-      extraData = JsonUtils.writeValueAsString(new DefaultHealthCheckExtraData(
+      return JsonUtils.writeValueAsString(new DefaultHealthCheckExtraData(
           instance.getInstanceId(),
           instance.getHostName(),
           microservice.getAppId(),
@@ -46,15 +58,5 @@ public class DefaultMicroserviceHealthChecker implements HealthChecker {
     } catch (JsonProcessingException e) {
       throw new ServiceCombException("unable load microservice info for healthchecker", e);
     }
-  }
-
-  @Override
-  public String getName() {
-    return "default";
-  }
-
-  @Override
-  public HealthCheckResult check() {
-    return new HealthCheckResult(true, "", extraData);
   }
 }
