@@ -60,7 +60,7 @@ public class DefaultMetricsPublisher implements MetricsPublisher {
   @RequestMapping(path = "/{windowTime}", method = RequestMethod.GET)
   @CrossOrigin
   @Override
-  public RegistryMetric metricsWithWindowTimeIndex(@PathVariable(name = "windowTime") long windowTime) {
+  public RegistryMetric metricsWithWindowTime(@PathVariable(name = "windowTime") long windowTime) {
     return dataSource.getRegistryMetric(windowTime);
   }
 }
