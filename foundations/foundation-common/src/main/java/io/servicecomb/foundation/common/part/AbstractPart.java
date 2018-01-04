@@ -21,15 +21,18 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collection;
 
+import javax.activation.MimetypesFileTypeMap;
 import javax.servlet.http.Part;
 import javax.ws.rs.core.MediaType;
 
 public class AbstractPart implements Part {
+  private static MimetypesFileTypeMap mimetypesFileTypeMap = new MimetypesFileTypeMap();
+
   protected String name;
 
-  protected String submittedFileName;
+  private String submittedFileName;
 
-  protected String contentType = MediaType.MULTIPART_FORM_DATA;
+  protected String contentType;
 
   @Override
   public InputStream getInputStream() throws IOException {
@@ -38,7 +41,7 @@ public class AbstractPart implements Part {
 
   @Override
   public String getContentType() {
-    return contentType;
+    return contentType != null ? contentType : MediaType.APPLICATION_OCTET_STREAM;
   }
 
   @SuppressWarnings("unchecked")
@@ -55,6 +58,19 @@ public class AbstractPart implements Part {
   @Override
   public String getSubmittedFileName() {
     return submittedFileName;
+  }
+
+  public void setSubmittedFileName(String submittedFileName) {
+    this.submittedFileName = submittedFileName;
+    updateContentType();
+  }
+
+  private void updateContentType() {
+    if (contentType != null || submittedFileName == null) {
+      return;
+    }
+
+    contentType = mimetypesFileTypeMap.getContentType(submittedFileName);
   }
 
   @Override

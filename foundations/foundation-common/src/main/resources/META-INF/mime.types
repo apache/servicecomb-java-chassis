@@ -1,0 +1,157 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+application/octet-stream                    bin
+application/astound                         asd,asn
+application/fastman                         lcc
+application/java-archive                    jar
+application/java-serialized-object          ser
+application/java-vm                         class
+application/mac-binhex40                    hqx
+application/x-stuffit                       sit
+application/mbedlet                         mbd
+application/msword                          doc,dot,wiz,rtf
+application/oda                             oda
+application/pdf                             pdf
+application/postscript                      ai,eps,ps
+application/studiom                         smp
+application/timbuktu                        tbt
+application/vnd.ms-excel                    xls,xlw,xla,xlc,xlm,xlt
+application/vnd.ms-powerpoint               ppt,pps,pot
+application/vnd.ms-project                  mpp
+application/winhlp                          hlp
+application/x-javascript                    js
+application/x-javascript;charset=UTF-8      jsu
+application/x-java-jnlp-file                jnlp
+application/x-aim                           aim
+application/x-asap                          asp
+application/x-csh                           csh
+application/x-dvi                           dvi
+application/x-earthtime                     etc
+application/x-envoy                         evy
+application/x-gtar                          gtar
+application/x-cpio                          cpio
+application/x-hdf                           hdf
+application/x-latex                         latex
+application/x-javascript-config             jsc
+application/x-maker                         fm
+application/x-mif                           mif,mi
+application/x-mocha                         mocha,moc
+application/x-msaccess                      mdb
+application/x-mscardfile                    crd
+application/x-msclip                        clp
+application/x-msmediaview                   m13,m14
+application/x-msmetafile                    wmf
+application/x-msmoney                       mny
+application/x-mspublisher                   pub
+application/x-msschedule                    scd
+application/x-msterminal                    trm
+application/x-mswrite                       wri
+application/x-NET-Install                   ins
+application/x-netcdf                        nc,cdf
+application/x-ns-proxy-autoconfig           proxy
+application/x-salsa                         slc
+application/x-sh                            sh
+application/x-shar                          shar
+application/x-sprite                        spr,sprite
+application/x-tar                           tar
+application/x-tcl                           tcl
+application/x-perl                          pl
+application/x-tex                           tex
+application/x-texinfo                       texinfo,texi
+application/x-timbuktu                      tbp
+application/x-tkined                        tki,tkined
+application/x-troff-man                     man
+application/x-troff-me                      me
+application/x-troff-ms                      ms
+application/x-troff                         t,tr,roff
+application/x-wais-source                   src
+application/zip                             zip
+application/pre-encrypted                   enc
+application/x-pkcs7-crl                     crl
+application/x-fortezza-ckl                  ckl
+application/xml-dtd                         dtd
+
+audio/basic                                 au,snd
+audio/echospeech                            es,esl
+audio/midi                                  midi,mid
+audio/x-aiff                                aif,aiff,aifc
+audio/x-wav                                 wav
+audio/x-pn-realaudio                        ra,ram
+audio/x-pac                                 pac
+audio/x-epac                                pae
+audio/x-liveaudio                           lam
+
+drawing/x-dwf                               dwf
+
+image/fif                                   fif
+image/x-icon                                ico
+image/gif                                   gif
+image/ief                                   ief
+image/ifs                                   ifs
+image/jpeg                                  jpeg,jpg,jpe,jfif,pjpeg,pjp
+image/png                                   png
+image/tiff                                  tiff,tif
+image/vnd                                   dwg,svf
+image/wavelet                               wi
+image/bmp                                   bmp
+image/x-photo-cd                            pcd
+image/x-cmu-raster                          ras
+image/x-portable-anymap                     pnm
+image/x-portable-bitmap                     pbm
+image/x-portable-graymap                    pgm
+image/x-portable-pixmap                     ppm
+image/x-rgb                                 rgb
+image/x-xbitmap                             xbm
+image/x-xpixmap                             xpm
+image/x-xwindowdump                         xwd
+
+text/css                                    css
+
+text/html                                   htm,html
+text/plain                                  txt
+text/richtext                               rtx
+text/tab-separated-values                   tsv
+text/x-setext                               etx
+text/x-speech                               talk
+text/xml                                    xml
+text/xul                                    xul
+
+video/isivideo                              fvi
+video/mpeg                                  mpeg,mpg,mpe,mpv,vbs,mpegv
+video/x-mpeg2                               mpv2,mp2v
+video/msvideo                               avi
+video/quicktime                             qt,mov,moov
+video/vivo                                  viv,vivo
+video/wavelet                               wv
+video/x-sgi-movie                           movie
+
+x-world/x-svr                               svr
+x-world/x-vrml                              wrl
+x-world/x-vrt                               vrt
+
+x-conference/x-cooltalk                     ice
+
+magnus-internal/imagemap                    map
+magnus-internal/parsed-html                 shtml
+magnus-internal/cgi                         cgi,exe,bat
+
+application/x-x509-ca-cert                  cacert
+
+application/x-x509-server-cert              scert
+application/x-x509-user-cert                ucert
+application/x-x509-email-cert               ecert
+

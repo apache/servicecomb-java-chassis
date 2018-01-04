@@ -94,8 +94,14 @@ public class CodeFirstSpringmvc {
     try (InputStream is1 = file1.getInputStream(); InputStream is2 = file2.getInputStream()) {
       String content1 = IOUtils.toString(is1);
       String content2 = IOUtils.toString(is2);
-      return file1.getOriginalFilename() + ":" + content1 + "\n" +
-          file2.getSubmittedFileName() + ":" + content2;
+      return String.format("%s:%s:%s\n"
+          + "%s:%s:%s",
+          file1.getOriginalFilename(),
+          file1.getContentType(),
+          content1,
+          file2.getSubmittedFileName(),
+          file2.getContentType(),
+          content2);
     } catch (IOException e) {
       throw new IllegalArgumentException(e);
     }

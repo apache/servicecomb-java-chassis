@@ -47,7 +47,7 @@ public class TestAbstractPart {
 
   @Test
   public void getContentType() throws IOException {
-    Assert.assertEquals(MediaType.MULTIPART_FORM_DATA, part.getContentType());
+    Assert.assertEquals(MediaType.APPLICATION_OCTET_STREAM, part.getContentType());
 
     String contentType = "abc";
     part.contentType(contentType);
@@ -68,8 +68,30 @@ public class TestAbstractPart {
     Assert.assertNull(part.getSubmittedFileName());
 
     String submittedFileName = "abc";
-    part.submittedFileName = submittedFileName;
+    part.setSubmittedFileName(submittedFileName);
     Assert.assertEquals(submittedFileName, part.getSubmittedFileName());
+  }
+
+  @Test
+  public void setSubmittedFileName_contentTypeNotNull() {
+    part.contentType(MediaType.TEXT_PLAIN);
+    part.setSubmittedFileName("a.zip");
+
+    Assert.assertEquals(MediaType.TEXT_PLAIN, part.getContentType());
+  }
+
+  @Test
+  public void setSubmittedFileName_setNull() {
+    part.setSubmittedFileName(null);
+
+    Assert.assertEquals(MediaType.APPLICATION_OCTET_STREAM, part.getContentType());
+  }
+
+  @Test
+  public void setSubmittedFileName_setNormal() {
+    part.setSubmittedFileName("a.zip");
+
+    Assert.assertEquals("application/zip", part.getContentType());
   }
 
   @Test
