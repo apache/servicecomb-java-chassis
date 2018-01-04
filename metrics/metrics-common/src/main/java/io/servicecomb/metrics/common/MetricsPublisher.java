@@ -55,5 +55,5 @@ public interface MetricsPublisher {
    * @param windowTime getAppliedWindowTime() item
    * @return RegistryMetric
    */
-  RegistryMetric metricsWithWindowTimeIndex(long windowTime);
+  RegistryMetric metricsWithWindowTime(long windowTime);
 }

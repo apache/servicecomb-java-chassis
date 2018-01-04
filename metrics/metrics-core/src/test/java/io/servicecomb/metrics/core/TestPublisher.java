@@ -47,7 +47,7 @@ public class TestPublisher {
     Map<String, Number> metricsMap = registryMetric.toMap();
     Assert.assertEquals(35, metricsMap.size());
 
-    registryMetric = publisher.metricsWithWindowTimeIndex(1000);
+    registryMetric = publisher.metricsWithWindowTime(1000);
     metricsMap = registryMetric.toMap();
     Assert.assertEquals(35, metricsMap.size());
 
