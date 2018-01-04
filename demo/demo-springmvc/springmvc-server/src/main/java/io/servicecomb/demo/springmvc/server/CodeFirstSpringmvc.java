@@ -30,6 +30,8 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response.Status;
 
 import org.apache.commons.io.IOUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -83,6 +85,7 @@ import io.vertx.core.json.JsonObject;
 @RequestMapping(path = "/codeFirstSpringmvc", produces = MediaType.APPLICATION_JSON_VALUE)
 public class CodeFirstSpringmvc {
 
+  private static final Logger LOGGER= LoggerFactory.getLogger(CodeFirstSpringmvc.class);
   private MetricsServoRegistry registry;
 
   @Autowired
@@ -348,7 +351,7 @@ public class CodeFirstSpringmvc {
   @RequestMapping(path = "/testGetStrArray", method = RequestMethod.GET)
   public String[] testGetStrArray(@RequestParamColFmt(collectionFormat = "csv") String[] str) {
     for (int i = 0; i < str.length; i++) {
-      System.out.println("*******"+str[i]);
+      LOGGER.info("*******"+str[i]);
     }
     return str;
   }

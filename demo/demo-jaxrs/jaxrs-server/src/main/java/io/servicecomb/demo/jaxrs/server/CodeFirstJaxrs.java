@@ -40,6 +40,9 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response.Status;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import io.servicecomb.common.rest.codec.RestObjectMapper;
 import io.servicecomb.demo.compute.Person;
 import io.servicecomb.demo.ignore.InputModelForTestIgnore;
@@ -63,6 +66,8 @@ import io.vertx.core.json.JsonObject;
 @Path("/codeFirstJaxrs")
 @Produces(MediaType.APPLICATION_JSON)
 public class CodeFirstJaxrs {
+  private static final Logger LOGGER = LoggerFactory.getLogger(CodeFirstJaxrs.class);
+
   //    public Response getUserResponse() {
   //
   //    }
@@ -211,7 +216,7 @@ public class CodeFirstJaxrs {
   @GET
   public String[] testGetStrArray(@RequestParamColFmt(collectionFormat = "csv") String[] str) {
     for (int i = 0; i < str.length; i++) {
-      System.out.println("*******"+str[i]);
+      LOGGER.info("*******" + str[i]);
     }
     return str;
   }
