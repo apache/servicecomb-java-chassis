@@ -32,6 +32,7 @@ import io.servicecomb.serviceregistry.client.ServiceRegistryClient;
 import io.servicecomb.serviceregistry.client.http.ServiceRegistryClientImpl;
 import io.servicecomb.serviceregistry.config.ServiceRegistryConfig;
 import io.servicecomb.serviceregistry.definition.MicroserviceDefinition;
+import io.servicecomb.serviceregistry.task.MicroserviceRegisterTask;
 import io.servicecomb.serviceregistry.task.event.PeriodicPullEvent;
 import io.servicecomb.serviceregistry.task.event.PullMicroserviceVersionsInstancesEvent;
 import io.servicecomb.serviceregistry.task.event.ShutdownEvent;
@@ -77,8 +78,6 @@ public class RemoteServiceRegistry extends AbstractServiceRegistry {
   public void run() {
     super.run();
 
-    ipPortManager.initAutoDiscovery();
-
     taskPool.scheduleAtFixedRate(serviceCenterTask,
         serviceRegistryConfig.getHeartbeatInterval(),
         serviceRegistryConfig.getHeartbeatInterval(),
@@ -101,6 +100,12 @@ public class RemoteServiceRegistry extends AbstractServiceRegistry {
     taskPool.schedule(event.getMicroserviceVersions()::pullInstances, event.getMsDelay(), TimeUnit.MILLISECONDS);
   }
 
+  @Subscribe
+  public void onMicroserviceRegistryTask(MicroserviceRegisterTask event) {
+    if (event.isRegistered()) {
+      ipPortManager.initAutoDiscovery();
+    }
+  }
   // for testing
   ScheduledThreadPoolExecutor getTaskPool() {
     return this.taskPool;

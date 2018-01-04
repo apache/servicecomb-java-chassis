@@ -19,6 +19,7 @@ package io.servicecomb.serviceregistry.client;
 
 import static io.servicecomb.serviceregistry.api.Const.REGISTRY_APP_ID;
 import static io.servicecomb.serviceregistry.api.Const.REGISTRY_SERVICE_NAME;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -46,9 +47,9 @@ public class IpPortManager {
 
   private ArrayList<IpPort> defaultIpPort;
 
-  private InstanceCache instanceCache = null;
-
   private AtomicInteger currentAvailableIndex;
+
+  private boolean autoDiscoveryInited = false;
 
   public IpPortManager(ServiceRegistryConfig serviceRegistryConfig, InstanceCacheManager instanceCacheManager) {
     this.serviceRegistryConfig = serviceRegistryConfig;
@@ -65,10 +66,11 @@ public class IpPortManager {
 
   // we have to do this operation after the first time setup has already done
   public void initAutoDiscovery() {
-    if (this.serviceRegistryConfig.isRegistryAutoDiscovery()) {
-      instanceCache = instanceCacheManager.getOrCreate(REGISTRY_APP_ID,
+    if (!autoDiscoveryInited && this.serviceRegistryConfig.isRegistryAutoDiscovery()) {
+      instanceCacheManager.getOrCreate(REGISTRY_APP_ID,
           REGISTRY_SERVICE_NAME,
           DefinitionConst.VERSION_RULE_LATEST);
+      autoDiscoveryInited = true;
     }
   }
 
@@ -100,10 +102,10 @@ public class IpPortManager {
   }
 
   private List<CacheEndpoint> getDiscoveredIpPort() {
-    if (instanceCache == null) {
-      return new ArrayList<>(0);
+    if (!autoDiscoveryInited || !this.serviceRegistryConfig.isRegistryAutoDiscovery()) {
+      return null;
     }
-    instanceCache = instanceCacheManager.getOrCreate(REGISTRY_APP_ID,
+    InstanceCache instanceCache = instanceCacheManager.getOrCreate(REGISTRY_APP_ID,
         REGISTRY_SERVICE_NAME,
         DefinitionConst.VERSION_RULE_LATEST);
     return instanceCache.getOrCreateTransportMap().get(defaultTransport);
