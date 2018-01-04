@@ -25,7 +25,7 @@ import io.servicecomb.springboot.starter.provider.EnableServiceComb;
 @SpringBootApplication
 @EnableServiceComb
 public class ServiceApplication {
-  public static void main(String[] args) throws Exception {
+  public static void main(String[] args) {
     SpringApplication.run(ServiceApplication.class, args);
   }
 }

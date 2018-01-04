@@ -76,10 +76,9 @@ public class Log4J2MetricsFileWriter implements MetricsFileWriter {
     DefaultRolloverStrategy strategy = DefaultRolloverStrategy.createStrategy(String.valueOf(maxFileCount), null, null,
         null, null, false, config);
 
-    //TODO:in version 2.8 + , log4j2 request use RollingFileAppender.newBuilder,but throw No such static method exception
-    RollingFileAppender appender = RollingFileAppender
+    //TODO:use RollingFileAppender.newBuilder throw No such static method exception,will improve later!
+    return RollingFileAppender
         .createAppender(fileName, filePattern, "true", loggerName, "true", null,
             "true", policy, strategy, layout, null, null, null, null, config);
-    return appender;
   }
 }
