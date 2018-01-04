@@ -27,6 +27,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
+import io.servicecomb.core.Const;
 import io.servicecomb.core.CseContext;
 import io.servicecomb.core.provider.consumer.InvokerUtils;
 import io.servicecomb.demo.DemoConst;
@@ -40,11 +41,13 @@ import io.servicecomb.demo.smartcare.SmartCare;
 import io.servicecomb.foundation.common.utils.BeanUtils;
 import io.servicecomb.foundation.common.utils.Log4jUtils;
 import io.servicecomb.provider.pojo.RpcReference;
+import io.servicecomb.swagger.invocation.context.ContextUtils;
+import io.servicecomb.swagger.invocation.context.InvocationContext;
 import io.servicecomb.swagger.invocation.exception.InvocationException;
 
 @Component
 public class PojoClient {
-  private static Logger LOGGER = LoggerFactory.getLogger(PojoClient.class);
+  public static final byte buffer[] = new byte[1024];
 
   public static CodeFirstPojoClient codeFirstPojoClient;
 
@@ -58,9 +61,9 @@ public class PojoClient {
 
   public static Test testFromXml;
 
-  private static SmartCare smartcare;
+  private static Logger LOGGER = LoggerFactory.getLogger(PojoClient.class);
 
-  public static final byte buffer[] = new byte[1024];
+  private static SmartCare smartcare;
 
   static {
     Arrays.fill(buffer, (byte) 1);
@@ -68,11 +71,6 @@ public class PojoClient {
 
   public static void setTestFromXml(Test testFromXml) {
     PojoClient.testFromXml = testFromXml;
-  }
-
-  @Inject
-  public void setCodeFirstPojoClient(CodeFirstPojoClient codeFirstPojoClient) {
-    PojoClient.codeFirstPojoClient = codeFirstPojoClient;
   }
 
   public static void main(String[] args) throws Exception {
@@ -110,7 +108,31 @@ public class PojoClient {
       testSmartCare(smartcare);
 
       testCommonInvoke(transport);
+
+      if ("rest".equals(transport)) {
+        testTraceIdOnNotSetBefore();
+      }
+
+      testTraceIdOnContextContainsTraceId();
     }
+  }
+
+  /**
+   * Only in http transport, traceId will be set to invocation if null.
+   * But in highway, nothing done.
+   */
+  private static void testTraceIdOnNotSetBefore() {
+    String traceId = test.testTraceId();
+    TestMgr.checkNotEmpty(traceId);
+  }
+
+  private static void testTraceIdOnContextContainsTraceId() {
+    InvocationContext context = new InvocationContext();
+    context.addContext(Const.TRACE_ID_NAME, String.valueOf(Long.MIN_VALUE));
+    ContextUtils.setInvocationContext(context);
+    String traceId = test.testTraceId();
+    TestMgr.check(String.valueOf(Long.MIN_VALUE), traceId);
+    ContextUtils.removeInvocationContext();
   }
 
   private static void testSmartCare(SmartCare smartCare) {
@@ -220,5 +242,10 @@ public class PojoClient {
     LOGGER.info("wrap param result:{}", result);
 
     TestMgr.check("User [name=nameA,  users count:1, age=100, index=0]", result);
+  }
+
+  @Inject
+  public void setCodeFirstPojoClient(CodeFirstPojoClient codeFirstPojoClient) {
+    PojoClient.codeFirstPojoClient = codeFirstPojoClient;
   }
 }

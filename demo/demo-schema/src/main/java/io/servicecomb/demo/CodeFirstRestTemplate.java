@@ -28,12 +28,15 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 
+import io.servicecomb.core.Const;
 import io.servicecomb.core.CseContext;
 import io.servicecomb.demo.compute.Person;
 import io.servicecomb.demo.ignore.InputModelForTestIgnore;
 import io.servicecomb.demo.ignore.OutputModelForTestIgnore;
 import io.servicecomb.demo.server.User;
 import io.servicecomb.serviceregistry.RegistryUtils;
+import io.servicecomb.swagger.invocation.context.ContextUtils;
+import io.servicecomb.swagger.invocation.context.InvocationContext;
 import io.vertx.core.json.JsonObject;
 
 public class CodeFirstRestTemplate {
@@ -65,7 +68,11 @@ public class CodeFirstRestTemplate {
       // TODO: highway unsupported until JAV-394 completed
       if (transport.equals("rest")) {
         testOnlyRest(template, cseUrlPrefix);
+        // only rest transport will set trace id
+        testTraceIdOnNotSetBefore(template, cseUrlPrefix);
       }
+
+      testTraceIdOnContextContainsTraceId(template, cseUrlPrefix);
 
       testRawJson(template, cseUrlPrefix);
     }
@@ -123,13 +130,12 @@ public class CodeFirstRestTemplate {
   private void testCseResponse(String targetMicroserviceName, RestTemplate template,
       String cseUrlPrefix) {
     String srcMicroserviceName = RegistryUtils.getMicroservice().getServiceName();
-    String context = String.format("{x-cse-src-microservice=%s}", srcMicroserviceName);
 
     ResponseEntity<User> responseEntity =
         template.exchange(cseUrlPrefix + "cseResponse", HttpMethod.GET, null, User.class);
     TestMgr.check("User [name=nameA, age=100, index=0]", responseEntity.getBody());
-    TestMgr.check("h1v " + context, responseEntity.getHeaders().getFirst("h1"));
-    TestMgr.check("h2v " + context, responseEntity.getHeaders().getFirst("h2"));
+    TestMgr.check("h1v " + srcMicroserviceName, responseEntity.getHeaders().getFirst("h1"));
+    TestMgr.check("h2v " + srcMicroserviceName, responseEntity.getHeaders().getFirst("h2"));
     checkStatusCode(targetMicroserviceName, 202, responseEntity.getStatusCode());
   }
 
@@ -227,7 +233,7 @@ public class CodeFirstRestTemplate {
   protected void testModelFieldIgnore(RestTemplate template, String cseUrlPrefix) {
     InputModelForTestIgnore input = new InputModelForTestIgnore("input_id_rest", "input_id_content",
         new Person("inputSomeone"), new JsonObject("{\"InputJsonKey\" : \"InputJsonValue\"}"), () -> {
-        });
+    });
     OutputModelForTestIgnore output = template
         .postForObject(cseUrlPrefix + "ignore", input, OutputModelForTestIgnore.class);
 
@@ -248,5 +254,21 @@ public class CodeFirstRestTemplate {
     String input = "{\"name\" : \"zyy\"}";
     String output = template.postForObject(cseUrlPrefix + "rawJsonAnnotation", input, String.class);
     TestMgr.check("hello zyy", output);
+  }
+
+  protected void testTraceIdOnNotSetBefore(RestTemplate template, String cseUrlPrefix) {
+    String traceIdUrl = cseUrlPrefix + "traceId";
+    String result = template.getForObject(traceIdUrl, String.class);
+    TestMgr.checkNotEmpty(result);
+  }
+
+  protected void testTraceIdOnContextContainsTraceId(RestTemplate template, String cseUrlPrefix) {
+    String traceIdUrl = cseUrlPrefix + "traceId";
+    InvocationContext invocationContext = new InvocationContext();
+    invocationContext.addContext(Const.TRACE_ID_NAME, String.valueOf(Long.MIN_VALUE));
+    ContextUtils.setInvocationContext(invocationContext);
+    String result = template.getForObject(traceIdUrl, String.class);
+    TestMgr.check(String.valueOf(Long.MIN_VALUE), result);
+    ContextUtils.removeInvocationContext();
   }
 }

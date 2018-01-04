@@ -33,4 +33,6 @@ public interface Test {
   User splitParam(int index, User user);
 
   String addString(String[] strArr);
+
+  String testTraceId();
 }

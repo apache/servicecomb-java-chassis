@@ -38,6 +38,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response.Status;
 
 import io.servicecomb.common.rest.codec.RestObjectMapper;
+import io.servicecomb.core.Const;
 import io.servicecomb.demo.compute.Person;
 import io.servicecomb.demo.ignore.InputModelForTestIgnore;
 import io.servicecomb.demo.ignore.OutputModelForTestIgnore;
@@ -70,10 +71,10 @@ public class CodeFirstJaxrs {
   public Response cseResponse(InvocationContext c1) {
     Response response = Response.createSuccess(Status.ACCEPTED, new User());
     Headers headers = response.getHeaders();
-    headers.addHeader("h1", "h1v " + c1.getContext().toString());
+    headers.addHeader("h1", "h1v " + c1.getContext().get(Const.SRC_MICROSERVICE).toString());
 
     InvocationContext c2 = ContextUtils.getInvocationContext();
-    headers.addHeader("h2", "h2v " + c2.getContext().toString());
+    headers.addHeader("h2", "h2v " + c2.getContext().get(Const.SRC_MICROSERVICE).toString());
 
     return response;
   }
@@ -201,5 +202,11 @@ public class CodeFirstJaxrs {
       return null;
     }
     return "hello " + person.get("name");
+  }
+
+  @Path("/traceId")
+  @GET
+  public String getTraceId() {
+    return ContextUtils.getInvocationContext().getContext(Const.TRACE_ID_NAME);
   }
 }
