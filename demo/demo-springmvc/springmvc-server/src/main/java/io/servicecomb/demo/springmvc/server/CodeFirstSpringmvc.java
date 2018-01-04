@@ -64,6 +64,7 @@ import io.servicecomb.foundation.common.utils.JsonUtils;
 import io.servicecomb.foundation.metrics.MetricsServoRegistry;
 import io.servicecomb.provider.rest.common.RestSchema;
 import io.servicecomb.swagger.extend.annotations.RawJsonRequestBody;
+import io.servicecomb.swagger.extend.annotations.RequestParamColFmt;
 import io.servicecomb.swagger.extend.annotations.ResponseHeaders;
 import io.servicecomb.swagger.invocation.Response;
 import io.servicecomb.swagger.invocation.context.ContextUtils;
