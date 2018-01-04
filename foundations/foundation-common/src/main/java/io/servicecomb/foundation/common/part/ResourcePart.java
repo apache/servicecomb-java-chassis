@@ -28,7 +28,7 @@ public class ResourcePart extends AbstractPart {
   public ResourcePart(String name, Resource resource) {
     this.name = name;
     this.resource = resource;
-    this.submittedFileName = resource.getFilename();
+    this.setSubmittedFileName(resource.getFilename());
   }
 
   @Override

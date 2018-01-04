@@ -192,7 +192,7 @@ public class RestClientRequestImpl implements RestClientRequest {
       attachFile(boundary, uploadsIterator);
     });
 
-    Buffer fileHeader = fileBoundaryInfo(boundary, name, filename);
+    Buffer fileHeader = fileBoundaryInfo(boundary, name, part);
     request.write(fileHeader);
     Pump.pump(fileStream, request).start();
   }
@@ -203,12 +203,16 @@ public class RestClientRequestImpl implements RestClientRequest {
         .appendString("--" + boundary + "--\r\n");
   }
 
-  private Buffer fileBoundaryInfo(String boundary, String name, String filename) {
+  protected Buffer fileBoundaryInfo(String boundary, String name, Part part) {
     Buffer buffer = Buffer.buffer();
     buffer.appendString("\r\n");
     buffer.appendString("--" + boundary + "\r\n");
-    buffer.appendString("Content-Disposition: form-data; name=\"" + name + "\"; filename=\"" + filename + "\"\r\n");
-    buffer.appendString("Content-Type: multipart/form-data\r\n");
+    buffer.appendString("Content-Disposition: form-data; name=\"")
+        .appendString(name)
+        .appendString("\"; filename=\"")
+        .appendString(part.getSubmittedFileName() != null ? part.getSubmittedFileName() : "null")
+        .appendString("\"\r\n");
+    buffer.appendString("Content-Type: ").appendString(part.getContentType()).appendString("\r\n");
     buffer.appendString("Content-Transfer-Encoding: binary\r\n");
     buffer.appendString("\r\n");
     return buffer;

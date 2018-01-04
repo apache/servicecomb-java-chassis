@@ -16,6 +16,9 @@
  */
 package io.servicecomb.common.rest.codec.param;
 
+import javax.servlet.http.Part;
+import javax.ws.rs.core.MediaType;
+
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -24,6 +27,7 @@ import io.vertx.core.buffer.Buffer;
 import io.vertx.core.http.CaseInsensitiveHeaders;
 import io.vertx.core.http.HttpClientRequest;
 import io.vertx.core.http.HttpHeaders;
+import mockit.Expectations;
 import mockit.Mock;
 import mockit.MockUp;
 import mockit.Mocked;
@@ -66,7 +70,47 @@ public class TestRestClientRequestImpl {
     restClientRequest.end();
     Buffer buffer = restClientRequest.getBodyBuffer();
     Assert.assertEquals("I love servicecomb", buffer.toString());
-    Assert.assertEquals("sessionid=abcdefghijklmnopqrstuvwxyz; region=china-north; ", 
+    Assert.assertEquals("sessionid=abcdefghijklmnopqrstuvwxyz; region=china-north; ",
         restClientRequest.request.headers().get(HttpHeaders.COOKIE));
+  }
+
+  @Test
+  public void fileBoundaryInfo_nullSubmittedFileName(@Mocked Part part) {
+    new Expectations() {
+      {
+        part.getSubmittedFileName();
+        result = null;
+        part.getContentType();
+        result = "abc";
+      }
+    };
+    RestClientRequestImpl restClientRequest = new RestClientRequestImpl(request, null, null);
+    Buffer buffer = restClientRequest.fileBoundaryInfo("boundary", "name", part);
+    Assert.assertEquals("\r\n" +
+        "--boundary\r\n" +
+        "Content-Disposition: form-data; name=\"name\"; filename=\"null\"\r\n" +
+        "Content-Type: abc\r\n" +
+        "Content-Transfer-Encoding: binary\r\n" +
+        "\r\n", buffer.toString());
+  }
+
+  @Test
+  public void fileBoundaryInfo_validSubmittedFileName(@Mocked Part part) {
+    new Expectations() {
+      {
+        part.getSubmittedFileName();
+        result = "a.txt";
+        part.getContentType();
+        result = MediaType.TEXT_PLAIN;
+      }
+    };
+    RestClientRequestImpl restClientRequest = new RestClientRequestImpl(request, null, null);
+    Buffer buffer = restClientRequest.fileBoundaryInfo("boundary", "name", part);
+    Assert.assertEquals("\r\n" +
+        "--boundary\r\n" +
+        "Content-Disposition: form-data; name=\"name\"; filename=\"a.txt\"\r\n" +
+        "Content-Type: text/plain\r\n" +
+        "Content-Transfer-Encoding: binary\r\n" +
+        "\r\n", buffer.toString());
   }
 }

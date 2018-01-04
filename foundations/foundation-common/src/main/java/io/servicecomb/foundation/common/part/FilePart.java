@@ -34,7 +34,7 @@ public class FilePart extends AbstractPart {
   public FilePart(String name, File file) {
     this.name = name;
     this.file = file;
-    this.submittedFileName = this.file.getName();
+    this.setSubmittedFileName(this.file.getName());
   }
 
   @Override
