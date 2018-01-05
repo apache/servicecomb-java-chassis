@@ -19,7 +19,7 @@ package io.servicecomb.tests.tracing;
 
 import static io.servicecomb.foundation.common.base.ServiceCombConstants.CONFIG_TRACING_COLLECTOR_ADDRESS;
 import static io.servicecomb.serviceregistry.client.LocalServiceRegistryClientImpl.LOCAL_REGISTRY_FILE_KEY;
-import static org.hamcrest.collection.IsIterableContainingInOrder.contains;
+import static org.hamcrest.collection.IsIterableContainingInAnyOrder.containsInAnyOrder;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 import static org.springframework.http.HttpStatus.OK;
@@ -28,6 +28,7 @@ import java.lang.invoke.MethodHandles;
 import java.net.URL;
 import java.util.Collection;
 import java.util.List;
+import java.util.ArrayList;
 import java.util.stream.Collectors;
 
 import org.junit.BeforeClass;
@@ -39,8 +40,8 @@ import org.springframework.web.client.RestTemplate;
 
 import io.servicecomb.tests.EmbeddedAppender;
 import io.servicecomb.tests.Log4jConfig;
-import zipkin.Codec;
-import zipkin.Span;
+import zipkin2.codec.SpanBytesDecoder;
+import zipkin2.Span;
 import zipkin.junit.ZipkinRule;
 
 public class TracingTestBase {
@@ -74,27 +75,33 @@ public class TracingTestBase {
         .map(this::extractIds)
         .collect(Collectors.toList());
 
-    String url = zipkin.httpUrl() + "/api/v1/trace/{traceId}";
+    String url = zipkin.httpUrl() + "/api/v2/trace/{traceId}";
+    log.info("rest url:" + url);
     ResponseEntity<String> responseEntity = restTemplate.getForEntity(url, String.class, traceId(loggedIds));
 
     assertThat(responseEntity.getStatusCode(), is(OK));
     String body = responseEntity.getBody();
     log.info("Received trace json: {}", body);
-    List<Span> spans = Codec.JSON.readSpans(body.getBytes());
+    List<Span> spans = new ArrayList<Span>();
+    SpanBytesDecoder.JSON_V2.decodeList(body.getBytes(), spans);
 
     List<String> tracedValues = tracedValues(spans);
     tracedValues.forEach(value -> log.info("Received value {}", value));
-    assertThat(tracedValues, contains(values));
+    log.info("values: " + String.join(",",values));
+    assertThat(tracedValues, containsInAnyOrder(values));
   }
 
   private List<String> tracedValues(List<Span> spans) {
     return spans.stream()
-        .filter(span -> span.binaryAnnotations != null)
-        .map(span -> span.binaryAnnotations)
+        .filter(span -> span.tags() != null)
+        .map(span -> span.tags().entrySet())
         .flatMap(Collection::stream)
-        .filter(span -> "call.path".equals(span.key) || "http.path".equals(span.key) || "http.status_code".equals(span.key))
-        .filter(span -> span.value != null)
-        .map(annotation -> new String(annotation.value))
+        .filter(span -> "call.path".equals(span.getKey()) || "http.path".equals(span.getKey()) || "http.status_code"
+            .equals
+            (span
+        .getKey()))
+        .filter(span -> span.getValue() != null)
+        .map(annotation -> new String(annotation.getValue()))
         .distinct()
         .collect(Collectors.toList());
   }
