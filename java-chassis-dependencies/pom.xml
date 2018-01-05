@@ -651,6 +651,13 @@
         <version>${zipkin.version}</version>
       </dependency>
       <dependency>
+        <!-- only needed in test phase for mocking brave -->
+        <groupId>io.zipkin.java</groupId>
+        <artifactId>zipkin</artifactId>
+        <version>${zipkin.version}</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
         <groupId>io.zipkin.brave</groupId>
         <artifactId>brave</artifactId>
         <version>${brave.version}</version>

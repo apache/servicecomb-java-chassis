@@ -58,6 +58,13 @@
       <artifactId>brave-context-log4j12</artifactId>
     </dependency>
     <dependency>
+      <!-- only needed in test phase for mocking brave -->
+      <groupId>io.zipkin.java</groupId>
+      <artifactId>zipkin</artifactId>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
       <groupId>com.google.code.findbugs</groupId>
       <artifactId>jsr305</artifactId>
     </dependency>
