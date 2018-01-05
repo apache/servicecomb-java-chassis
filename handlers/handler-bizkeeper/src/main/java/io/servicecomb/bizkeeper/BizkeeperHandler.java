@@ -21,7 +21,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.netflix.hystrix.HystrixCommandProperties;
-import com.netflix.hystrix.HystrixCommandProperties.ExecutionIsolationStrategy;
 import com.netflix.hystrix.HystrixInvokable;
 import com.netflix.hystrix.HystrixObservable;
 import com.netflix.hystrix.strategy.HystrixPlugins;
@@ -43,12 +42,6 @@ public abstract class BizkeeperHandler implements Handler {
 
   protected final String groupname;
 
-  private static final int WINDOW_IN_MILLISECONDS = 10000;
-
-  private static final int WINDOW_BUCKETS = 10;
-
-  private static final int SNAPSHOT_INTERVAL = 1000;
-
   static {
     try {
       HystrixPlugins.getInstance().registerPropertiesStrategy(HystrixPropertiesStrategyExt.getInstance());
@@ -57,6 +50,7 @@ public abstract class BizkeeperHandler implements Handler {
     }
     try {
       HystrixPlugins.getInstance().registerCommandExecutionHook(new HystrixCommandExecutionHook() {
+        @Override
         public <T> Exception onExecutionError(HystrixInvokable<T> commandInstance, Exception e) {
           LOG.warn("bizkeeper execution error", e);
           return e; //by default, just pass through
@@ -99,59 +93,5 @@ public abstract class BizkeeperHandler implements Handler {
   }
 
   protected void setCommonProperties(Invocation invocation, HystrixCommandProperties.Setter setter) {
-    setter.withExecutionTimeoutInMilliseconds(Configuration.INSTANCE
-        .getIsolationTimeoutInMilliseconds(groupname,
-            invocation.getMicroserviceName(),
-            invocation.getOperationMeta().getMicroserviceQualifiedName()))
-        .withExecutionIsolationSemaphoreMaxConcurrentRequests(Configuration.INSTANCE
-            .getIsolationMaxConcurrentRequests(groupname,
-                invocation.getMicroserviceName(),
-                invocation.getOperationMeta()
-                    .getMicroserviceQualifiedName()))
-        .withExecutionTimeoutEnabled(
-            Configuration.INSTANCE.getIsolationTimeoutEnabled(groupname,
-                invocation.getMicroserviceName(),
-                invocation.getOperationMeta()
-                    .getMicroserviceQualifiedName()))
-        .withCircuitBreakerEnabled(Configuration.INSTANCE.isCircuitBreakerEnabled(groupname,
-            invocation.getMicroserviceName(),
-            invocation.getOperationMeta()
-                .getMicroserviceQualifiedName()))
-        .withCircuitBreakerForceOpen(Configuration.INSTANCE.isCircuitBreakerForceOpen(groupname,
-            invocation.getMicroserviceName(),
-            invocation.getOperationMeta()
-                .getMicroserviceQualifiedName()))
-        .withCircuitBreakerForceClosed(Configuration.INSTANCE.isCircuitBreakerForceClosed(groupname,
-            invocation.getMicroserviceName(),
-            invocation.getOperationMeta()
-                .getMicroserviceQualifiedName()))
-        .withCircuitBreakerSleepWindowInMilliseconds(
-            Configuration.INSTANCE.getCircuitBreakerSleepWindowInMilliseconds(groupname,
-                invocation.getMicroserviceName(),
-                invocation.getOperationMeta()
-                    .getMicroserviceQualifiedName()))
-        .withCircuitBreakerRequestVolumeThreshold(
-            Configuration.INSTANCE.getCircuitBreakerRequestVolumeThreshold(groupname,
-                invocation.getMicroserviceName(),
-                invocation.getOperationMeta()
-                    .getMicroserviceQualifiedName()))
-        .withCircuitBreakerErrorThresholdPercentage(
-            Configuration.INSTANCE.getCircuitBreakerErrorThresholdPercentage(groupname,
-                invocation.getMicroserviceName(),
-                invocation.getOperationMeta()
-                    .getMicroserviceQualifiedName()))
-        .withFallbackEnabled(
-            Configuration.INSTANCE.isFallbackEnabled(groupname,
-                invocation.getMicroserviceName(),
-                invocation.getOperationMeta().getMicroserviceQualifiedName()))
-        .withExecutionIsolationStrategy(ExecutionIsolationStrategy.SEMAPHORE)
-        .withMetricsRollingPercentileEnabled(false)
-        .withMetricsRollingStatisticalWindowInMilliseconds(WINDOW_IN_MILLISECONDS)
-        .withMetricsRollingStatisticalWindowBuckets(WINDOW_BUCKETS)
-        .withMetricsHealthSnapshotIntervalInMilliseconds(SNAPSHOT_INTERVAL)
-        .withFallbackIsolationSemaphoreMaxConcurrentRequests(Configuration.INSTANCE
-            .getFallbackMaxConcurrentRequests(groupname,
-                invocation.getMicroserviceName(),
-                invocation.getOperationMeta().getMicroserviceQualifiedName()));
   }
 }
