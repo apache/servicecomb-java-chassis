@@ -45,7 +45,7 @@ import io.servicecomb.tracing.zipkin.ZipkinSpanAspectTest.TracingConfig;
 import io.servicecomb.tracing.zipkin.app.ZipkinSpanTestApplication;
 import io.servicecomb.tracing.zipkin.app.ZipkinSpanTestApplication.CustomSpanTask;
 import io.servicecomb.tracing.zipkin.app.ZipkinSpanTestApplication.SomeSlowTask;
-import zipkin.Span;
+import zipkin2.Span;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = {ZipkinSpanTestApplication.class, TracingConfig.class})
@@ -74,8 +74,8 @@ public class ZipkinSpanAspectTest {
 
     await().atMost(2, SECONDS).until(() -> !spans.isEmpty());
 
-    zipkin.Span span = spans.poll();
-    assertThat(span.name, is("crawl"));
+    zipkin2.Span span = spans.poll();
+    assertThat(span.name(), is("crawl"));
     assertThat(tracedValues(span), contains(SomeSlowTask.class.getMethod("crawl").toString()));
   }
   
@@ -84,17 +84,17 @@ public class ZipkinSpanAspectTest {
     customSpanTask.invoke();
     await().atMost(2, SECONDS).until(() -> !spans.isEmpty());
   
-    zipkin.Span span = spans.poll();
-    assertThat(span.name, is("transaction1"));
+    zipkin2.Span span = spans.poll();
+    assertThat(span.name(), is("transaction1"));
     assertThat(tracedValues(span), contains("startA"));
     
   }
 
-  private List<String> tracedValues(zipkin.Span spans) {
-    return spans.binaryAnnotations.stream()
-        .filter(span -> CALL_PATH.equals(span.key) || "error".equals(span.key))
-        .filter(span -> span.value != null)
-        .map(annotation -> new String(annotation.value))
+  private List<String> tracedValues(zipkin2.Span spans) {
+    return spans.tags().entrySet().stream()
+        .filter(span -> CALL_PATH.equals(span.getKey()) || "error".equals(span.getKey()))
+        .filter(span -> span.getValue() != null)
+        .map(annotation -> new String(annotation.getValue()))
         .distinct()
         .collect(Collectors.toList());
   }
@@ -110,7 +110,7 @@ public class ZipkinSpanAspectTest {
     Tracing tracing(Queue<Span> spans) {
       return Tracing.newBuilder()
           .currentTraceContext(new StrictCurrentTraceContext())
-          .reporter(spans::add)
+          .spanReporter(spans::add)
           .build();
     }
   }

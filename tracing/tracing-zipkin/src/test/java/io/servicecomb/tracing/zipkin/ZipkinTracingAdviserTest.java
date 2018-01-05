@@ -60,11 +60,11 @@ public class ZipkinTracingAdviserTest {
 
   private final ThrowableSupplier<String> supplier = () -> expected;
 
-  private final Map<Long, Queue<zipkin.Span>> traces = new ConcurrentHashMap<>();
+  private final Map<String, Queue<zipkin2.Span>> traces = new ConcurrentHashMap<>();
 
   private final Tracing tracing = Tracing.newBuilder()
       .currentTraceContext(new StrictCurrentTraceContext())
-      .reporter(e -> traces.computeIfAbsent(e.traceId, id -> new ConcurrentLinkedDeque<>()).add(e))
+      .spanReporter(e -> traces.computeIfAbsent(e.traceId(), id -> new ConcurrentLinkedDeque<>()).add(e))
       .build();
 
   private final ZipkinTracingAdviser tracingAdviser = new ZipkinTracingAdviser(tracing.tracer());
@@ -81,8 +81,8 @@ public class ZipkinTracingAdviserTest {
     assertThat(result, is(expected));
     await().atMost(2, SECONDS).until(() -> !traces.isEmpty());
 
-    zipkin.Span span = traces.values().iterator().next().poll();
-    assertThat(span.name, is(spanName));
+    zipkin2.Span span = traces.values().iterator().next().poll();
+    assertThat(span.name(), is(spanName));
     assertThat(tracedValues(span), contains(this.getClass().getCanonicalName()));
   }
 
@@ -99,8 +99,8 @@ public class ZipkinTracingAdviserTest {
 
     await().atMost(2, SECONDS).until(() -> !traces.isEmpty());
 
-    zipkin.Span span = traces.values().iterator().next().poll();
-    assertThat(span.name, is(spanName));
+    zipkin2.Span span = traces.values().iterator().next().poll();
+    assertThat(span.name(), is(spanName));
     assertThat(tracedValues(span), containsInAnyOrder(this.getClass().getCanonicalName(), "RuntimeException: oops"));
   }
 
@@ -129,13 +129,13 @@ public class ZipkinTracingAdviserTest {
 
     assertThat(traces.size(), is(nThreads));
 
-    for (Queue<zipkin.Span> queue : traces.values()) {
-      zipkin.Span child = queue.poll();
-      assertThat(child.name, is(spanName));
+    for (Queue<zipkin2.Span> queue : traces.values()) {
+      zipkin2.Span child = queue.poll();
+      assertThat(child.name(), is(spanName));
 
-      zipkin.Span parent = queue.poll();
-      assertThat(child.parentId, is(parent.id));
-      assertThat(child.traceId, is(parent.traceId));
+      zipkin2.Span parent = queue.poll();
+      assertThat(child.parentId(), is(parent.id()));
+      assertThat(child.traceId(), is(parent.traceId()));
       assertThat(tracedValues(child), contains(this.getClass().getCanonicalName()));
     }
   }
@@ -148,11 +148,11 @@ public class ZipkinTracingAdviserTest {
     }
   }
 
-  private List<String> tracedValues(zipkin.Span spans) {
-    return spans.binaryAnnotations.stream()
-        .filter(span -> CALL_PATH.equals(span.key) || "error".equals(span.key))
-        .filter(span -> span.value != null)
-        .map(annotation -> new String(annotation.value))
+  private List<String> tracedValues(zipkin2.Span spans) {
+    return spans.tags().entrySet().stream()
+        .filter(span -> CALL_PATH.equals(span.getKey()) || "error".equals(span.getKey()))
+        .filter(span -> span.getValue() != null)
+        .map(annotation -> new String(annotation.getValue()))
         .distinct()
         .collect(Collectors.toList());
   }
