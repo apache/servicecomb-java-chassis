@@ -45,7 +45,7 @@ public class TestClientHttp {
     IpPort ipPort = new IpPort("127.0.0.1", 8853);
     new Expectations() {
       {
-        manager.getAvailableAddress(false);
+        manager.getAvailableAddress();
         result = ipPort;
       }
     };
@@ -143,7 +143,7 @@ public class TestClientHttp {
   @Test
   public void testIpPortManager(@Mocked InstanceCacheManager instanceCacheManager) throws Exception {
     IpPortManager oManager = new IpPortManager(ServiceRegistryConfig.INSTANCE, instanceCacheManager);
-    IpPort oIPPort = oManager.getAvailableAddress(true);
-    Assert.assertEquals(oIPPort.getHostOrIp(), oManager.getAvailableAddress(false).getHostOrIp());
+    IpPort oIPPort = oManager.getNextAvailableAddress(new IpPort("", 33));
+    Assert.assertEquals(oIPPort.getHostOrIp(), oManager.getAvailableAddress().getHostOrIp());
   }
 }

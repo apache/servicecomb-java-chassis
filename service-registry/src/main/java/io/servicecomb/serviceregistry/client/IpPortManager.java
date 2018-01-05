@@ -74,31 +74,32 @@ public class IpPortManager {
     }
   }
 
-  public IpPort getAvailableAddress(boolean invalidate) {
-    int index;
-    if (invalidate) {
-      index = currentAvailableIndex.incrementAndGet();
-    } else {
-      index = currentAvailableIndex.get();
+  public IpPort getNextAvailableAddress(IpPort failedIpPort) {
+    IpPort current = getAvailableAddress();
+    if (current.equals(failedIpPort)) {
+      currentAvailableIndex.incrementAndGet();
+      current = getAvailableAddress();
     }
 
+    LOGGER.info("Change service center address from {} to {}", failedIpPort.toString(), current.toString());
+    return current;
+  }
+
+  public IpPort getAvailableAddress() {
+    return getAvailableAddress(currentAvailableIndex.get());
+  }
+
+  private IpPort getAvailableAddress(int index) {
     if (index < defaultIpPort.size()) {
-      return returnWithLog(invalidate, defaultIpPort.get(index));
+      return defaultIpPort.get(index);
     }
     List<CacheEndpoint> endpoints = getDiscoveredIpPort();
     if (endpoints == null || (index >= defaultIpPort.size() + endpoints.size())) {
       currentAvailableIndex.set(0);
-      return returnWithLog(invalidate, defaultIpPort.get(0));
+      return defaultIpPort.get(0);
     }
     CacheEndpoint nextEndpoint = endpoints.get(index - defaultIpPort.size());
-    return returnWithLog(invalidate, new URIEndpointObject(nextEndpoint.getEndpoint()));
-  }
-
-  private IpPort returnWithLog(boolean needLog, IpPort result) {
-    if (needLog) {
-      LOGGER.info("Using next service center address {}:{}.", result.getHostOrIp(), result.getPort());
-    }
-    return result;
+    return new URIEndpointObject(nextEndpoint.getEndpoint());
   }
 
   private List<CacheEndpoint> getDiscoveredIpPort() {
