@@ -47,9 +47,9 @@ public class HystrixCommandPropertiesExt extends HystrixCommandProperties {
   // must occur before statistics matter
   private static final Integer DEFAULT_CIRCUITBREAKERREQUESTVOLUMETHRESHOLD = 20;
 
-  // default => sleepWindow: 5000 = 5 seconds that we will sleep before trying
+  // default => sleepWindow: 15000 = 15 seconds that we will sleep before trying
   // again after tripping the circuit
-  private static final Integer DEFAULT_CIRCUITBREAKERSLEEPWINDOWINMILLISECONDS = 5000;
+  private static final Integer DEFAULT_CIRCUITBREAKERSLEEPWINDOWINMILLISECONDS = 15000;
 
   // default => errorThresholdPercentage = 50 = if 50%+ of requests in 10
   // seconds are failures or latent then we will trip the circuit
@@ -62,16 +62,16 @@ public class HystrixCommandPropertiesExt extends HystrixCommandProperties {
   // default => ignoreErrors = false
   static final Boolean DEFAULT_CIRCUITBREAKERFORCECLOSED = false;
 
-  // default => executionTimeoutInMilliseconds: 1000 = 1 second
-  private static final Integer DEFAULT_EXECUTIONTIMEOUTINMILLISECONDS = 1000;
+  // default => executionTimeoutInMilliseconds: 30000 = 30 second
+  private static final Integer DEFAULT_EXECUTIONTIMEOUTINMILLISECONDS = 30000;
 
-  private static final Boolean DEFAULT_EXECUTIONTIMEOUTENABLED = true;
+  private static final Boolean DEFAULT_EXECUTIONTIMEOUTENABLED = false;
 
-  private static final ExecutionIsolationStrategy DEFAULT_ISOLATIONSTRATEGY = ExecutionIsolationStrategy.THREAD;
+  private static final ExecutionIsolationStrategy DEFAULT_ISOLATIONSTRATEGY = ExecutionIsolationStrategy.SEMAPHORE;
 
   private static final Boolean DEFAULT_EXECUTIONISOLATIONTHREADINTERRUPTONTIMEOUT = true;
 
-  private static final Boolean DEFAULT_METRICSROLLINGPERCENTILEENABLED = true;
+  private static final Boolean DEFAULT_METRICSROLLINGPERCENTILEENABLED = false;
 
   private static final Boolean DEFAULT_REQUESTCACHEENABLED = true;
 
@@ -79,7 +79,7 @@ public class HystrixCommandPropertiesExt extends HystrixCommandProperties {
 
   private static final Boolean DEFAULT_FALLBACKENABLED = true;
 
-  private static final Integer DEFAULT_EXECUTIONISOLATIONSEMAPHOREMAXCONCURRENTREQUESTS = 10;
+  private static final Integer DEFAULT_EXECUTIONISOLATIONSEMAPHOREMAXCONCURRENTREQUESTS = 1000;
 
   private static final Boolean DEFAULT_REQUESTLOGENABLED = true;
 
@@ -94,9 +94,9 @@ public class HystrixCommandPropertiesExt extends HystrixCommandProperties {
   // default to 100 values max per bucket
   private static final Integer DEFAULT_METRICSROLLINGPERCENTILEBUCKETSIZE = 100;
 
-  // default to 500ms as max frequency between allowing snapshots of health
+  // default to 1000ms as max frequency between allowing snapshots of health
   // (error percentage etc)
-  private static final Integer DEFAULT_METRICSHEALTHSNAPSHOTINTERVALINMILLISECONDS = 500;
+  private static final Integer DEFAULT_METRICSHEALTHSNAPSHOTINTERVALINMILLISECONDS = 1000;
 
   private static final int COMMAND_KEY_LENGTH = 3;
 
@@ -328,103 +328,128 @@ public class HystrixCommandPropertiesExt extends HystrixCommandProperties {
         .build();
   }
 
+  @Override
   public HystrixProperty<Boolean> circuitBreakerEnabled() {
     return circuitBreakerEnabled;
   }
 
+  @Override
   public HystrixProperty<Integer> circuitBreakerErrorThresholdPercentage() {
     return circuitBreakerErrorThresholdPercentage;
   }
 
+  @Override
   public HystrixProperty<Boolean> circuitBreakerForceClosed() {
     return circuitBreakerForceClosed;
   }
 
+  @Override
   public HystrixProperty<Boolean> circuitBreakerForceOpen() {
     return circuitBreakerForceOpen;
   }
 
+  @Override
   public HystrixProperty<Integer> circuitBreakerRequestVolumeThreshold() {
     return circuitBreakerRequestVolumeThreshold;
   }
 
+  @Override
   public HystrixProperty<Integer> circuitBreakerSleepWindowInMilliseconds() {
     return circuitBreakerSleepWindowInMilliseconds;
   }
 
+  @Override
   public HystrixProperty<Integer> executionIsolationSemaphoreMaxConcurrentRequests() {
     return executionIsolationSemaphoreMaxConcurrentRequests;
   }
 
+  @Override
   public HystrixProperty<ExecutionIsolationStrategy> executionIsolationStrategy() {
     return executionIsolationStrategy;
   }
 
+  @Override
   public HystrixProperty<Boolean> executionIsolationThreadInterruptOnTimeout() {
     return executionIsolationThreadInterruptOnTimeout;
   }
 
+  @Override
   public HystrixProperty<String> executionIsolationThreadPoolKeyOverride() {
     return executionIsolationThreadPoolKeyOverride;
   }
 
+  @Override
   @Deprecated // prefer {@link #executionTimeoutInMilliseconds}
   public HystrixProperty<Integer> executionIsolationThreadTimeoutInMilliseconds() {
     return executionTimeoutInMilliseconds;
   }
 
+  @Override
   public HystrixProperty<Integer> executionTimeoutInMilliseconds() {
     return executionIsolationThreadTimeoutInMilliseconds();
   }
 
+  @Override
   public HystrixProperty<Boolean> executionTimeoutEnabled() {
     return executionTimeoutEnabled;
   }
 
+  @Override
   public HystrixProperty<Integer> fallbackIsolationSemaphoreMaxConcurrentRequests() {
     return fallbackIsolationSemaphoreMaxConcurrentRequests;
   }
 
+  @Override
   public HystrixProperty<Boolean> fallbackEnabled() {
     return fallbackEnabled;
   }
 
+  @Override
   public HystrixProperty<Integer> metricsHealthSnapshotIntervalInMilliseconds() {
     return metricsHealthSnapshotIntervalInMilliseconds;
   }
 
+  @Override
   public HystrixProperty<Integer> metricsRollingPercentileBucketSize() {
     return metricsRollingPercentileBucketSize;
   }
 
+  @Override
   public HystrixProperty<Boolean> metricsRollingPercentileEnabled() {
     return metricsRollingPercentileEnabled;
   }
 
+  @Override
   public HystrixProperty<Integer> metricsRollingPercentileWindow() {
     return metricsRollingPercentileWindowInMilliseconds;
   }
 
+  @Override
   public HystrixProperty<Integer> metricsRollingPercentileWindowInMilliseconds() {
     return metricsRollingPercentileWindowInMilliseconds;
   }
 
+  @Override
   public HystrixProperty<Integer> metricsRollingPercentileWindowBuckets() {
     return metricsRollingPercentileWindowBuckets;
   }
 
+  @Override
   public HystrixProperty<Integer> metricsRollingStatisticalWindowInMilliseconds() {
     return metricsRollingStatisticalWindowInMilliseconds;
   }
 
+  @Override
   public HystrixProperty<Integer> metricsRollingStatisticalWindowBuckets() {
     return metricsRollingStatisticalWindowBuckets;
   }
 
+  @Override
   public HystrixProperty<Boolean> requestCacheEnabled() {
     return requestCacheEnabled;
   }
 
+  @Override
   public HystrixProperty<Boolean> requestLogEnabled() {
     return requestLogEnabled;
   }
