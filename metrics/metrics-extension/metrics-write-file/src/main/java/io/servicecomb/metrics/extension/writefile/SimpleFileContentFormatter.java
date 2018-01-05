@@ -24,39 +24,17 @@ import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
-import io.servicecomb.foundation.common.net.NetUtils;
 import io.servicecomb.foundation.common.utils.JsonUtils;
-import io.servicecomb.serviceregistry.RegistryUtils;
-import io.servicecomb.serviceregistry.api.registry.Microservice;
 
-@Component
 public class SimpleFileContentFormatter implements FileContentFormatter {
   private static final Logger logger = LoggerFactory.getLogger(SimpleFileContentFormatter.class);
 
   private final String applicationName;
 
-  private String hostName;
-
-  @Autowired
-  public SimpleFileContentFormatter() {
-    hostName = NetUtils.getHostName();
-    if (StringUtils.isEmpty(hostName)) {
-      hostName = NetUtils.getHostAddress();
-    }
-
-    //may any problem ?
-    if (RegistryUtils.getServiceRegistry() == null) {
-      RegistryUtils.init();
-    }
-    Microservice microservice = RegistryUtils.getMicroservice();
-    applicationName = microservice.getAppId() + "." + microservice.getServiceName();
-  }
+  private final String hostName;
 
   public SimpleFileContentFormatter(String hostName, String applicationName) {
     this.hostName = hostName;
@@ -68,14 +46,15 @@ public class SimpleFileContentFormatter implements FileContentFormatter {
     return input.entrySet().stream()
         .collect(Collectors.toMap(Entry::getKey, entry -> {
           try {
-            return JsonUtils
-                .writeValueAsString(new OutputJsonObject(applicationName, hostName, entry.getKey(), entry.getValue()));
+            return JsonUtils.writeValueAsString(
+                new OutputJsonObject(applicationName, hostName, entry.getKey(), entry.getValue()));
           } catch (JsonProcessingException e) {
-            logger.error("error convert metrics data to json convert", e);
+            logger.error("error format metrics data", e);
             return "";
           }
         }));
   }
+
 
   class OutputJsonObject {
     private String plugin_id;

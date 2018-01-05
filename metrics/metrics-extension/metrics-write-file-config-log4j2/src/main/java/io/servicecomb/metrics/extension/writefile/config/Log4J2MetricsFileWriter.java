@@ -68,8 +68,8 @@ public class Log4J2MetricsFileWriter implements MetricsFileWriter {
   }
 
   private RollingFileAppender initLogger(String loggerName, String filePrefix) {
-    String fileName = Paths.get(rootPath, filePrefix + loggerName + ".dat").toString();
-    String filePattern = Paths.get(rootPath, filePrefix + loggerName + "-%i.dat").toString();
+    String fileName = Paths.get(rootPath, filePrefix + "." + loggerName + ".dat").toString();
+    String filePattern = Paths.get(rootPath, filePrefix + "." + loggerName + "-%i.dat").toString();
 
     PatternLayout layout = PatternLayout.newBuilder().withPattern(PatternLayout.DEFAULT_CONVERSION_PATTERN).build();
     SizeBasedTriggeringPolicy policy = SizeBasedTriggeringPolicy.createPolicy(maxFileSize);

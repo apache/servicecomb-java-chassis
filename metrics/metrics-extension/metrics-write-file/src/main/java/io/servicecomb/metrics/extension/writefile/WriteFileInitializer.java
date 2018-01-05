@@ -22,11 +22,13 @@ import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import java.util.Map;
 import java.util.concurrent.Executors;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.netflix.config.DynamicPropertyFactory;
 
+import io.servicecomb.foundation.common.net.NetUtils;
 import io.servicecomb.metrics.common.RegistryMetric;
 import io.servicecomb.metrics.core.publish.DataSource;
 import io.servicecomb.metrics.extension.writefile.config.MetricsFileWriter;
@@ -40,42 +42,32 @@ public class WriteFileInitializer {
 
   private final int metricPoll;
 
-  private final FileContentConvertor convertor;
+  private FileContentConvertor convertor;
 
-  private final FileContentFormatter formatter;
+  private FileContentFormatter formatter;
 
   private final DataSource dataSource;
 
   private final MetricsFileWriter fileWriter;
 
-  private final String filePrefix;
+  private String filePrefix;
+
+  private String hostName;
 
   @Autowired
-  public WriteFileInitializer(MetricsFileWriter fileWriter, FileContentConvertor convertor,
-      FileContentFormatter formatter, DataSource dataSource) {
+  public WriteFileInitializer(MetricsFileWriter fileWriter, DataSource dataSource) {
     metricPoll = DynamicPropertyFactory.getInstance().getIntProperty(METRICS_WINDOW_TIME, 5000).get();
     this.fileWriter = fileWriter;
-    this.convertor = convertor;
-    this.formatter = formatter;
     this.dataSource = dataSource;
-
-    //may any problem ?
-    if (RegistryUtils.getServiceRegistry() == null) {
-      RegistryUtils.init();
-    }
-    Microservice microservice = RegistryUtils.getMicroservice();
-    this.filePrefix = microservice.getAppId() + "." + microservice.getServiceName() + ".";
 
     this.init();
   }
 
-  public WriteFileInitializer(MetricsFileWriter fileWriter, FileContentConvertor convertor,
-      FileContentFormatter formatter, DataSource dataSource, String filePrefix) {
+  public WriteFileInitializer(MetricsFileWriter fileWriter, DataSource dataSource, String hostName, String filePrefix) {
     metricPoll = DynamicPropertyFactory.getInstance().getIntProperty(METRICS_WINDOW_TIME, 5000).get();
     this.fileWriter = fileWriter;
-    this.convertor = convertor;
-    this.formatter = formatter;
     this.dataSource = dataSource;
+    this.hostName = hostName;
     this.filePrefix = filePrefix;
   }
 
@@ -86,12 +78,33 @@ public class WriteFileInitializer {
   }
 
   public void run() {
-    RegistryMetric registryMetric = dataSource.getRegistryMetric();
-    Map<String, String> convertedMetrics = convertor.convert(registryMetric);
-    Map<String, String> formattedMetrics = formatter.format(convertedMetrics);
+    //wait RegistryUtils init completed
+    if (RegistryUtils.getServiceRegistry() != null) {
+      if (StringUtils.isEmpty(filePrefix)) {
+        Microservice microservice = RegistryUtils.getMicroservice();
+        filePrefix = microservice.getAppId() + "." + microservice.getServiceName();
+      }
+      if (StringUtils.isEmpty(hostName)) {
+        hostName = NetUtils.getHostName();
+        if (StringUtils.isEmpty(hostName)) {
+          hostName = NetUtils.getHostAddress();
+        }
+      }
 
-    for (String metricName : formattedMetrics.keySet()) {
-      fileWriter.write(metricName, filePrefix, formattedMetrics.get(metricName));
+      if (convertor == null) {
+        convertor = new SimpleFileContentConvertor();
+      }
+      if (formatter == null) {
+        formatter = new SimpleFileContentFormatter(hostName, filePrefix);
+      }
+
+      RegistryMetric registryMetric = dataSource.getRegistryMetric();
+      Map<String, String> convertedMetrics = convertor.convert(registryMetric);
+      Map<String, String> formattedMetrics = formatter.format(convertedMetrics);
+
+      for (String metricName : formattedMetrics.keySet()) {
+        fileWriter.write(metricName, filePrefix, formattedMetrics.get(metricName));
+      }
     }
   }
 }

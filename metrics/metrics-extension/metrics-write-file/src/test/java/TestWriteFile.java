@@ -16,7 +16,9 @@
  */
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -28,20 +30,102 @@ import io.servicecomb.metrics.common.RegistryMetric;
 import io.servicecomb.metrics.common.SystemMetric;
 import io.servicecomb.metrics.common.TimerMetric;
 import io.servicecomb.metrics.core.publish.DataSource;
-import io.servicecomb.metrics.extension.writefile.SimpleFileContentConvertor;
-import io.servicecomb.metrics.extension.writefile.SimpleFileContentFormatter;
 import io.servicecomb.metrics.extension.writefile.WriteFileInitializer;
 import io.servicecomb.metrics.extension.writefile.config.MetricsFileWriter;
+import io.servicecomb.serviceregistry.Features;
+import io.servicecomb.serviceregistry.RegistryUtils;
+import io.servicecomb.serviceregistry.ServiceRegistry;
+import io.servicecomb.serviceregistry.api.registry.Microservice;
+import io.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
+import io.servicecomb.serviceregistry.cache.InstanceCacheManager;
+import io.servicecomb.serviceregistry.client.ServiceRegistryClient;
+import io.servicecomb.serviceregistry.consumer.AppManager;
+import mockit.Expectations;
 
 public class TestWriteFile {
 
   @Test
   public void test() {
 
-    StringBuilder builder = new StringBuilder();
+    new Expectations(RegistryUtils.class) {
+      {
+        RegistryUtils.getServiceRegistry();
+        result = new ServiceRegistry() {
+          @Override
+          public void init() {
 
-    SimpleFileContentFormatter formatter = new SimpleFileContentFormatter("localhost", "appId.serviceName");
-    SimpleFileContentConvertor convertor = new SimpleFileContentConvertor();
+          }
+
+          @Override
+          public void run() {
+
+          }
+
+          @Override
+          public void destroy() {
+
+          }
+
+          @Override
+          public Set<String> getCombinedMicroserviceNames() {
+            return null;
+          }
+
+          @Override
+          public Microservice getMicroservice() {
+            return null;
+          }
+
+          @Override
+          public MicroserviceInstance getMicroserviceInstance() {
+            return null;
+          }
+
+          @Override
+          public ServiceRegistryClient getServiceRegistryClient() {
+            return null;
+          }
+
+          @Override
+          public AppManager getAppManager() {
+            return null;
+          }
+
+          @Override
+          public InstanceCacheManager getInstanceCacheManager() {
+            return null;
+          }
+
+          @Override
+          public List<MicroserviceInstance> findServiceInstance(String appId, String microserviceName,
+              String microserviceVersionRule) {
+            return null;
+          }
+
+          @Override
+          public boolean updateMicroserviceProperties(Map<String, String> properties) {
+            return false;
+          }
+
+          @Override
+          public boolean updateInstanceProperties(Map<String, String> instanceProperties) {
+            return false;
+          }
+
+          @Override
+          public Microservice getRemoteMicroservice(String microserviceId) {
+            return null;
+          }
+
+          @Override
+          public Features getFeatures() {
+            return null;
+          }
+        };
+      }
+    };
+
+    StringBuilder builder = new StringBuilder();
 
     MetricsFileWriter writer = (loggerName, filePrefix, content) ->
         builder.append(loggerName).append(filePrefix).append(content);
@@ -61,8 +145,8 @@ public class TestWriteFile {
     DataSource dataSource = Mockito.mock(DataSource.class);
     Mockito.when(dataSource.getRegistryMetric()).thenReturn(metric);
 
-    WriteFileInitializer writeFileInitializer = new WriteFileInitializer(writer, convertor, formatter, dataSource,
-        "appId.serviceName");
+    WriteFileInitializer writeFileInitializer = new WriteFileInitializer(writer, dataSource,
+        "localhost", "appId.serviceName");
 
     writeFileInitializer.run();
 

@@ -31,7 +31,7 @@
   <dependencies>
     <dependency>
       <groupId>io.servicecomb</groupId>
-      <artifactId>metrics-write-file-config</artifactId>
+      <artifactId>metrics-write-file</artifactId>
     </dependency>
 
     <dependency>

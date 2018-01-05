@@ -63,18 +63,10 @@
       <artifactId>metrics-write-file-common</artifactId>
     </dependency>
 
-    <!--metrics dependency-->
-    <dependency>
-      <groupId>io.servicecomb</groupId>
-      <artifactId>metrics-write-file-config</artifactId>
-    </dependency>
+    <!--metrics write file dependency-->
     <dependency>
       <groupId>io.servicecomb</groupId>
       <artifactId>metrics-write-file-config-log4j</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>io.servicecomb</groupId>
-      <artifactId>metrics-write-file</artifactId>
     </dependency>
 
   </dependencies>
