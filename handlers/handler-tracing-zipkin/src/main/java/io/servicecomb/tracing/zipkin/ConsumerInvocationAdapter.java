@@ -22,7 +22,7 @@ import javax.annotation.Nonnull;
 import brave.http.HttpClientAdapter;
 import io.servicecomb.core.Invocation;
 import io.servicecomb.swagger.invocation.Response;
-import zipkin.internal.Nullable;
+import zipkin2.internal.Nullable;
 
 class ConsumerInvocationAdapter extends HttpClientAdapter<Invocation, Response> {
 

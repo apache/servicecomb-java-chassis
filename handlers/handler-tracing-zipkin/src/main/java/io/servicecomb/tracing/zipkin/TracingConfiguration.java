@@ -31,11 +31,11 @@ import brave.context.log4j12.MDCCurrentTraceContext;
 import brave.http.HttpTracing;
 import brave.propagation.CurrentTraceContext;
 import io.servicecomb.config.DynamicProperties;
-import zipkin.Span;
-import zipkin.reporter.AsyncReporter;
-import zipkin.reporter.Reporter;
-import zipkin.reporter.Sender;
-import zipkin.reporter.okhttp3.OkHttpSender;
+import zipkin2.Span;
+import zipkin2.reporter.AsyncReporter;
+import zipkin2.reporter.Reporter;
+import zipkin2.reporter.Sender;
+import zipkin2.reporter.okhttp3.OkHttpSender;
 
 @Configuration
 class TracingConfiguration {
@@ -56,6 +56,7 @@ class TracingConfiguration {
     return AsyncReporter.builder(sender).build();
   }
 
+
   @Bean
   Tracing tracing(Reporter<Span> reporter, DynamicProperties dynamicProperties,
       CurrentTraceContext currentTraceContext) {
@@ -63,7 +64,7 @@ class TracingConfiguration {
         .localServiceName(dynamicProperties.getStringProperty(CONFIG_QUALIFIED_MICROSERVICE_NAME_KEY,
             DEFAULT_MICROSERVICE_NAME))
         .currentTraceContext(currentTraceContext) // puts trace IDs into logs
-        .reporter(reporter)
+        .spanReporter(reporter)
         .build();
   }
 

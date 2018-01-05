@@ -42,7 +42,7 @@
       <artifactId>brave</artifactId>
     </dependency>
     <dependency>
-      <groupId>io.zipkin.reporter</groupId>
+      <groupId>io.zipkin.reporter2</groupId>
       <artifactId>zipkin-sender-okhttp3</artifactId>
     </dependency>
     <dependency>
