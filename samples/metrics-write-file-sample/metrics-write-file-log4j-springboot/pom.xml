@@ -29,6 +29,9 @@
   <artifactId>metrics-write-file-log4j-springboot</artifactId>
 
   <!--need exclusion log4j-over-slf4j-->
+  <!--spring boot starter included log4j-over-slf4j,this log bridge not implement the full interface for log4j,
+  excluded the bridge jar let all slf4j calls go directly to log4j instead of the bridge.
+  more info can be found here : https://www.slf4j.org/legacy.html#log4j-over-slf4j -->
   <dependencies>
     <dependency>
       <groupId>org.springframework.boot</groupId>
@@ -68,18 +71,10 @@
       <artifactId>metrics-write-file-common</artifactId>
     </dependency>
 
-    <!--metrics dependency-->
-    <dependency>
-      <groupId>io.servicecomb</groupId>
-      <artifactId>metrics-write-file-config</artifactId>
-    </dependency>
+    <!--metrics write file dependency-->
     <dependency>
       <groupId>io.servicecomb</groupId>
       <artifactId>metrics-write-file-config-log4j</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>io.servicecomb</groupId>
-      <artifactId>metrics-write-file</artifactId>
     </dependency>
   </dependencies>
 

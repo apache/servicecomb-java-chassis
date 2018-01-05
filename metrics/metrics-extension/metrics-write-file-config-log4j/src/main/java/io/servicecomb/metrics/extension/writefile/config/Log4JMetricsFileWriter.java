@@ -63,7 +63,7 @@ public class Log4JMetricsFileWriter implements MetricsFileWriter {
   }
 
   private RollingFileAppender initLogger(String loggerName, String filePrefix) {
-    String fileName = Paths.get(rootPath, filePrefix + loggerName + ".dat").toString();
+    String fileName = Paths.get(rootPath, filePrefix + "." + loggerName + ".dat").toString();
     RollingFileAppender fileAppender = new RollingFileAppender();
     fileAppender.setName(loggerName);
     fileAppender.setFile(fileName);

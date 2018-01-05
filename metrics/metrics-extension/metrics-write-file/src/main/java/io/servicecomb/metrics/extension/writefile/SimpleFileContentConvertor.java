@@ -23,13 +23,10 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.springframework.stereotype.Component;
-
 import com.netflix.config.DynamicPropertyFactory;
 
 import io.servicecomb.metrics.common.RegistryMetric;
 
-@Component
 public class SimpleFileContentConvertor implements FileContentConvertor {
 
   private static final String METRICS_ROUND_PLACES = "servicecomb.metrics.round_places";
@@ -54,7 +51,7 @@ public class SimpleFileContentConvertor implements FileContentConvertor {
   }
 
   private double round(double value, int places) {
-    if (!Double.isNaN(value) && !Double.isInfinite(value)) {
+    if (!Double.isNaN(value)) {
       BigDecimal decimal = new BigDecimal(value);
       return decimal.setScale(places, RoundingMode.HALF_UP).doubleValue();
     } else {
