@@ -80,9 +80,9 @@ public class TestIpPortManager {
     };
 
     IpPortManager manager = new IpPortManager(config, cacheManager);
-    IpPort address1 = manager.getAvailableAddress(false);
+    IpPort address1 = manager.getAvailableAddress();
 
-    if(address1.getPort() == 9980) {
+    if (address1.getPort() == 9980) {
       Assert.assertEquals("127.0.0.1", address1.getHostOrIp());
       Assert.assertEquals(9980, address1.getPort());
     } else {
@@ -90,8 +90,8 @@ public class TestIpPortManager {
       Assert.assertEquals(9981, address1.getPort());
     }
 
-    IpPort address2 = manager.getAvailableAddress(true);
-    if(address1.getPort() == 9980) {
+    IpPort address2 = manager.getNextAvailableAddress(address1);
+    if (address1.getPort() == 9980) {
       Assert.assertEquals("127.0.0.1", address2.getHostOrIp());
       Assert.assertEquals(9981, address2.getPort());
     } else {
@@ -99,8 +99,8 @@ public class TestIpPortManager {
       Assert.assertEquals(9980, address2.getPort());
     }
 
-    IpPort address3 = manager.getAvailableAddress(false);
-    if(address1.getPort() == 9980) {
+    IpPort address3 = manager.getAvailableAddress();
+    if (address1.getPort() == 9980) {
       Assert.assertEquals("127.0.0.1", address3.getHostOrIp());
       Assert.assertEquals(9981, address3.getPort());
     } else {
@@ -120,19 +120,19 @@ public class TestIpPortManager {
         result = addresses;
       }
     };
-    
+
     manager.initAutoDiscovery();
-    IpPort address4 = manager.getAvailableAddress(true);
-    if(address1.getPort() == 9980) {
+    IpPort address4 = manager.getNextAvailableAddress(address3);
+    if (address1.getPort() == 9980) {
       Assert.assertEquals("127.0.0.1", address4.getHostOrIp());
       Assert.assertEquals(9982, address4.getPort());
     } else {
-      address4 = manager.getAvailableAddress(true);
+      address4 = manager.getNextAvailableAddress(address1);
       Assert.assertEquals("127.0.0.1", address4.getHostOrIp());
       Assert.assertEquals(9982, address4.getPort());
     }
 
-    IpPort address5 = manager.getAvailableAddress(true);
+    IpPort address5 = manager.getNextAvailableAddress(address4);
     Assert.assertEquals("127.0.0.1", address5.getHostOrIp());
     Assert.assertEquals(9980, address5.getPort());
   }
@@ -153,5 +153,4 @@ public class TestIpPortManager {
       }
     };
   }
-
 }
