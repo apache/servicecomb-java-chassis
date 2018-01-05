@@ -20,6 +20,7 @@ package io.servicecomb.config.client;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -37,8 +38,6 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import io.netty.handler.codec.http.HttpResponseStatus;
 import io.servicecomb.config.archaius.sources.ApolloConfigurationSourceImpl.UpdateHandler;
 import io.servicecomb.foundation.common.utils.JsonUtils;
-import io.servicecomb.foundation.vertx.client.ClientPoolManager;
-import io.servicecomb.foundation.vertx.client.http.HttpClientWithContext;
 
 public class ApolloClient {
 
@@ -46,29 +45,29 @@ public class ApolloClient {
 
   private static final ApolloConfig APOLLO_CONFIG = ApolloConfig.INSTANCE;
 
-  public static final Map<String, Object> originalConfigMap = new HashMap<>();
+  private static final Map<String, Object> originalConfigMap = new ConcurrentHashMap<>();
 
-  private static ScheduledExecutorService EXECUTOR = Executors.newScheduledThreadPool(1);
+  private static final ScheduledExecutorService EXECUTOR = Executors.newScheduledThreadPool(1);
 
-  private int refreshInterval = APOLLO_CONFIG.getRefreshInterval();
+  private final int refreshInterval = APOLLO_CONFIG.getRefreshInterval();
 
-  private int firstRefreshInterval = APOLLO_CONFIG.getFirstRefreshInterval();
+  private final int firstRefreshInterval = APOLLO_CONFIG.getFirstRefreshInterval();
 
-  private String serviceUri = APOLLO_CONFIG.getServerUri();
+  private final String serviceUri = APOLLO_CONFIG.getServerUri();
 
-  private String serviceName = APOLLO_CONFIG.getServiceName();
+  private final String serviceName = APOLLO_CONFIG.getServiceName();
 
-  private String token = APOLLO_CONFIG.getToken();
+  private final String token = APOLLO_CONFIG.getToken();
 
-  private String env = APOLLO_CONFIG.getEnv();
+  private final String env = APOLLO_CONFIG.getEnv();
 
-  private String clusters = APOLLO_CONFIG.getServerClusters();
+  private final String clusters = APOLLO_CONFIG.getServerClusters();
 
-  private String namespace = APOLLO_CONFIG.getNamespace();
+  private final String namespace = APOLLO_CONFIG.getNamespace();
 
-  private UpdateHandler updateHandler;
+  private final UpdateHandler updateHandler;
 
-  private static ClientPoolManager<HttpClientWithContext> clientMgr = new ClientPoolManager<>();
+  private static RestTemplate rest = new RestTemplate();
 
   public ApolloClient(UpdateHandler updateHandler) {
     this.updateHandler = updateHandler;
@@ -82,7 +81,7 @@ public class ApolloClient {
   class ConfigRefresh implements Runnable {
     private String serviceUri;
 
-    public ConfigRefresh(String serviceUris) {
+    ConfigRefresh(String serviceUris) {
       this.serviceUri = serviceUris;
     }
 
@@ -91,16 +90,16 @@ public class ApolloClient {
       try {
         refreshConfig();
       } catch (Exception e) {
-        LOGGER.error("client refresh thread exception", e);
+
+        LOGGER.error("client refresh thread exception ", e);
       }
     }
 
-    public void refreshConfig() {
-      RestTemplate rest = new RestTemplate();
+    void refreshConfig() {
       HttpHeaders headers = new HttpHeaders();
       headers.add("Content-Type", "application/json;charset=UTF-8");
       headers.add("Authorization", token);
-      HttpEntity<String> entity = new HttpEntity<String>(headers);
+      HttpEntity<String> entity = new HttpEntity<>(headers);
       ResponseEntity<String> exchange = rest.exchange(composeAPI(), HttpMethod.GET, entity, String.class);
       if (HttpResponseStatus.OK.code() == exchange.getStatusCode().value()) {
         try {
@@ -109,8 +108,11 @@ public class ApolloClient {
               });
           refreshConfigItems((Map<String, Object>) body.get("configurations"));
         } catch (IOException e) {
-          e.printStackTrace();
+          LOGGER.error("JsonObject parse config center response error: ", e);
         }
+      } else {
+        LOGGER.error("fetch configuration failed, error code:{} for {}", exchange.getStatusCodeValue(),
+            exchange.getBody());
       }
     }
 
@@ -129,7 +131,7 @@ public class ApolloClient {
       originalConfigMap.putAll(map);
     }
 
-    private void compareChangedConfig(Map<String, Object> before, Map<String, Object> after) {
+    void compareChangedConfig(Map<String, Object> before, Map<String, Object> after) {
       Map<String, Object> itemsCreated = new HashMap<>();
       Map<String, Object> itemsDeleted = new HashMap<>();
       Map<String, Object> itemsModified = new HashMap<>();
