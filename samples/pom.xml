@@ -34,6 +34,7 @@
     <module>auth-sample</module>
     <module>bmi</module>
     <module>metrics-write-file-sample</module>
+    <module>config-apollo-sample</module>
   </modules>
 
   <dependencyManagement>

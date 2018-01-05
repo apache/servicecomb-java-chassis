@@ -70,6 +70,7 @@
     <module>tracing</module>
     <module>edge</module>
     <module>metrics</module>
+    <module>dynamic-config</module>
   </modules>
 
   <distributionManagement>
