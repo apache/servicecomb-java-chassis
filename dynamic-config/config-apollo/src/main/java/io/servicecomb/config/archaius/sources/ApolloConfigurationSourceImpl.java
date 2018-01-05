@@ -21,6 +21,8 @@ import static com.netflix.config.WatchedUpdateResult.createIncremental;
 
 import java.util.List;
 import java.util.Map;
+
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.apache.commons.configuration.Configuration;
@@ -28,7 +30,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.Maps;
 import com.netflix.config.ConcurrentCompositeConfiguration;
 import com.netflix.config.WatchedUpdateListener;
 import com.netflix.config.WatchedUpdateResult;
@@ -41,14 +42,14 @@ import io.servicecomb.config.spi.ConfigCenterConfigurationSource;
 public class ApolloConfigurationSourceImpl implements ConfigCenterConfigurationSource {
   private static final Logger LOGGER = LoggerFactory.getLogger(ConfigCenterConfigurationSource.class);
 
-  private final Map<String, Object> valueCache = Maps.newConcurrentMap();
+  private final Map<String, Object> valueCache = new ConcurrentHashMap<>();
 
-  private List<WatchedUpdateListener> listeners = new CopyOnWriteArrayList<WatchedUpdateListener>();
+  private List<WatchedUpdateListener> listeners = new CopyOnWriteArrayList<>();
 
   public ApolloConfigurationSourceImpl() {
   }
 
-  private UpdateHandler updateHandler = new UpdateHandler();
+  private final UpdateHandler updateHandler = new UpdateHandler();
 
   @Override
   public void init(Configuration localConfiguration) {
@@ -56,7 +57,7 @@ public class ApolloConfigurationSourceImpl implements ConfigCenterConfigurationS
     init();
   }
 
-  public void init() {
+  private void init() {
     ApolloClient apolloClient = new ApolloClient(updateHandler);
     apolloClient.refreshApolloConfig();
   }
@@ -75,7 +76,7 @@ public class ApolloConfigurationSourceImpl implements ConfigCenterConfigurationS
     }
   }
 
-  public void updateConfiguration(WatchedUpdateResult result) {
+  private void updateConfiguration(WatchedUpdateResult result) {
     for (WatchedUpdateListener l : listeners) {
       try {
         l.updateConfiguration(result);
@@ -102,12 +103,14 @@ public class ApolloConfigurationSourceImpl implements ConfigCenterConfigurationS
       Map<String, Object> configuration = ConfigMapping.getConvertedMap(config);
       if ("create".equals(action)) {
         valueCache.putAll(configuration);
-        updateConfiguration(createIncremental(ImmutableMap.<String, Object>copyOf(configuration),
+
+        updateConfiguration(createIncremental(ImmutableMap.copyOf(configuration),
             null,
             null));
       } else if ("set".equals(action)) {
         valueCache.putAll(configuration);
-        updateConfiguration(createIncremental(null, ImmutableMap.<String, Object>copyOf(configuration),
+
+        updateConfiguration(createIncremental(null, ImmutableMap.copyOf(configuration),
             null));
       } else if ("delete".equals(action)) {
         for (String itemKey : configuration.keySet()) {
@@ -115,7 +118,7 @@ public class ApolloConfigurationSourceImpl implements ConfigCenterConfigurationS
         }
         updateConfiguration(createIncremental(null,
             null,
-            ImmutableMap.<String, Object>copyOf(configuration)));
+            ImmutableMap.copyOf(configuration)));
       } else {
         LOGGER.error("action: {} is invalid.", action);
         return;

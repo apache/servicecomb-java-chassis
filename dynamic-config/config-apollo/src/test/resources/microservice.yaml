@@ -32,7 +32,9 @@ apollo:
     env: DEV
     clusters: test-cluster
     namespace: application
-    token: #get token from Apollo web pages
+    token: xxx
+    refreshInterval: 30
+    firstRefreshInterval: 0
 cse:
   service:
     registry:
