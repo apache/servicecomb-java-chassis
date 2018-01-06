@@ -105,7 +105,7 @@ public class TestBizkeeperHandler extends BizkeeperHandler {
     } catch (Exception e) {
       validAssert = false;
     }
-    Assert.assertFalse(validAssert);
+    Assert.assertTrue(validAssert);
   }
 
   @Override
@@ -145,7 +145,7 @@ public class TestBizkeeperHandler extends BizkeeperHandler {
     System.setProperty("cse.fallbackpolicy.Group_Name.testHandleForceReturnnull.policy", "returnnull");
     bizkeeperHandler.handle(invocation, f -> {
       Assert.assertTrue(f.isSuccessed());
-      Assert.assertEquals(null, (Object) f.getResult());
+      Assert.assertEquals(null, f.getResult());
     });
   }
 }
