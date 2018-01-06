@@ -51,7 +51,6 @@ public class SpringmvcClient {
   private static MetricsPublisher metricsPublisher;
 
   public static void main(String[] args) throws Exception {
-    templateUrlWithServiceName.setRequestFactory(new UrlWithServiceNameClientHttpRequestFactory());
     Log4jUtils.init();
     BeanUtils.init();
 
@@ -61,6 +60,7 @@ public class SpringmvcClient {
   }
 
   public static void run() throws Exception {
+    templateUrlWithServiceName.setRequestFactory(new UrlWithServiceNameClientHttpRequestFactory());
     restTemplate = RestTemplateBuilder.create();
     controller = BeanUtils.getBean("controller");
     metricsPublisher = BeanUtils.getBean("metricsPublisher");
