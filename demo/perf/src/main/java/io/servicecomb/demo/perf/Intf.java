@@ -15,36 +15,12 @@
  * limitations under the License.
  */
 
-package io.servicecomb.demo.client.perf;
+package io.servicecomb.demo.perf;
 
-public class Config {
-  private static int clientThread;
+import java.util.concurrent.CompletableFuture;
 
-  private static String transport;
+public interface Intf {
+  String syncQuery(String id, int step, int all, boolean fromDB);
 
-  private static String mode;
-
-  public static String getTransport() {
-    return transport;
-  }
-
-  public static void setTransport(String transport) {
-    Config.transport = transport;
-  }
-
-  public static int getClientThread() {
-    return clientThread;
-  }
-
-  public static void setClientThread(int clientThread) {
-    Config.clientThread = clientThread;
-  }
-
-  public static String getMode() {
-    return mode;
-  }
-
-  public static void setMode(String mode) {
-    Config.mode = mode;
-  }
+  CompletableFuture<String> asyncQuery(String id, int step, int all, boolean fromDB);
 }

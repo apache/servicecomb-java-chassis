@@ -15,32 +15,35 @@
  * limitations under the License.
  */
 
-package io.servicecomb.demo.client.perf;
+package io.servicecomb.demo.perf;
 
-import io.servicecomb.core.CseContext;
+import java.util.Arrays;
+import java.util.List;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
+
 import io.servicecomb.foundation.common.utils.BeanUtils;
-import io.servicecomb.foundation.common.utils.Log4jUtils;
 import io.servicecomb.foundation.vertx.VertxUtils;
-import io.vertx.core.Vertx;
+import io.servicecomb.metrics.core.publish.DataSource;
 
-public class PerfClient {
+public class PerfMain {
+
   public static void main(String[] args) throws Exception {
-    Log4jUtils.init();
     BeanUtils.init();
 
-    System.out.println("mode:" + Config.getMode());
+    // redis
+    RedisClientUtils.init(VertxUtils.getOrCreateVertxByName("transport", null));
 
-    CseContext.getInstance().getConsumerProviderManager().setTransport("pojo", Config.getTransport());
-    System.out.printf("test %s performance\n", Config.getTransport());
+    // metrics
+    DataSource dataSource = BeanUtils.getContext().getBean(DataSource.class);
+    PerfMetricsFilePublisher metricsLog = new PerfMetricsFilePublisher(dataSource);
+    Executors.newScheduledThreadPool(1).scheduleWithFixedDelay(metricsLog::onCycle, 0, 1, TimeUnit.SECONDS);
 
-    if ("reactive".equals(Config.getMode())) {
-      Vertx vertx = VertxUtils.getOrCreateVertxByName("perfClient", null);
-      VertxUtils.deployVerticle(vertx, ClientVerticle.class, Config.getClientThread());
-      return;
-    }
-
-    for (int idx = 0; idx < Config.getClientThread(); idx++) {
-      new ClientThread().start();
+    List<String> argList = Arrays.asList(args);
+    if (argList.contains("-c")) {
+      PerfConsumer consumer = BeanUtils.getContext().getBean(PerfConsumer.class);
+      consumer.runConsumer();
     }
   }
+
 }

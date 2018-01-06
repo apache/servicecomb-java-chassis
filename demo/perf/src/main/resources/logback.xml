@@ -16,15 +16,14 @@
   ~ limitations under the License.
   -->
 
-<beans xmlns="http://www.springframework.org/schema/beans"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:p="http://www.springframework.org/schema/p"
-	xmlns:util="http://www.springframework.org/schema/util"
-	xsi:schemaLocation="
-		http://www.springframework.org/schema/beans classpath:org/springframework/beans/factory/xml/spring-beans-3.0.xsd">
-
-	<bean class="io.servicecomb.demo.client.perf.Config">
-		<property name="clientThread" value="${cse.demo.client.thread}"></property>
-		<property name="transport" value="${cse.demo.client.transport}"></property>
-		<property name="mode" value="${cse.demo.client.mode}"></property>
-	</bean>
-</beans>
+<configuration scan="true">
+  <jmxConfigurator />
+  <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+    <encoder>
+      <pattern>%d [%level] [%thread] - %msg (%F:%L\)%n</pattern>
+    </encoder>
+  </appender>
+  <root level="INFO">
+    <appender-ref ref="STDOUT" />
+  </root>
+</configuration>

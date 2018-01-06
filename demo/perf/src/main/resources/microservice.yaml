@@ -15,28 +15,47 @@
 ## limitations under the License.
 ## ---------------------------------------------------------------------------
 
-cse-config-order: 100
-APPLICATION_ID: pojotest
+APPLICATION_ID: perfTest
 service_description:
-  name: perfClient
+  name: perf1
   version: 0.0.1
 cse:
   service:
     registry:
       address: http://127.0.0.1:30100
   rest:
-    client:
-      thread-count: 10
-      connection-pool-per-thread: 1
+    address: 0.0.0.0:8080?sslEnabled=false
     server:
-      thread-count: 10
+      thread-count: 8
+    client:
+      thread-count: 8
+      connection:
+        maxPoolSize: 30
   highway:
-    thread-count: 1
-    connection-pool-per-thread: 10
-  handler:
-    chain:
-      Consumer:
-        default: loadbalance
+    address: 0.0.0.0:7070?sslEnabled=false
+    server:
+      thread-count: 8
+    client:
+      thread-count: 8
+  references:
+    transport: rest
+servicecomb:
   metrics:
-    cycle:
-      ms: 1000
+    window_time: 1000
+    
+sync-count: 10
+async-count: 20
+sync: false
+producer: perf1
+id: 1
+step: 1
+all: 1
+fromDB: false
+response-size: 1
+
+redis:
+  client:
+    count: 8
+  host: localhost
+  port: 6379
+#  password: 
