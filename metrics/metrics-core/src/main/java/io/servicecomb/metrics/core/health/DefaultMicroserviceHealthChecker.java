@@ -17,6 +17,8 @@
 
 package io.servicecomb.metrics.core.health;
 
+import javax.ws.rs.core.Response.Status;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -27,6 +29,7 @@ import io.servicecomb.metrics.common.HealthChecker;
 import io.servicecomb.serviceregistry.RegistryUtils;
 import io.servicecomb.serviceregistry.api.registry.Microservice;
 import io.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
+import io.servicecomb.swagger.invocation.exception.InvocationException;
 
 public class DefaultMicroserviceHealthChecker implements HealthChecker {
 
@@ -56,7 +59,7 @@ public class DefaultMicroserviceHealthChecker implements HealthChecker {
     } catch (Exception e) {
       String error = "unable load microservice info from RegistryUtils";
       logger.error(error, e);
-      return error;
+      throw new InvocationException(Status.INTERNAL_SERVER_ERROR, error);
     }
   }
 }

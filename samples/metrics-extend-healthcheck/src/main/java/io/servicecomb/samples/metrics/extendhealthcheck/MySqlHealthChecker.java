@@ -17,18 +17,38 @@
 
 package io.servicecomb.samples.metrics.extendhealthcheck;
 
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+
 import io.servicecomb.metrics.common.HealthCheckResult;
 import io.servicecomb.metrics.common.HealthChecker;
 
-public class CustomHealthChecker implements HealthChecker {
+//this is a demo health checker for mysql
+public class MySqlHealthChecker implements HealthChecker {
   @Override
   public String getName() {
-    return "custom";
+    return "mysql";
   }
 
   @Override
   public HealthCheckResult check() {
     //add your health check code here
-    return new HealthCheckResult(true, "demo health check", "no extra data");
+    Connection connection = null;
+    try {
+      connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/test_db?useSSL=false", "root", "pwd");
+      return new HealthCheckResult(true, "local mysql health check", "");
+    } catch (SQLException e) {
+      e.printStackTrace();
+      return new HealthCheckResult(false, "local mysql health check", e.toString());
+    } finally {
+      if (connection != null) {
+        try {
+          connection.close();
+        } catch (SQLException e) {
+          e.printStackTrace();
+        }
+      }
+    }
   }
 }
