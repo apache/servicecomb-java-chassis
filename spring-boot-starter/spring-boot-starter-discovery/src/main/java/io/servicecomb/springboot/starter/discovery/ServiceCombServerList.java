@@ -16,65 +16,57 @@
  */
 package io.servicecomb.springboot.starter.discovery;
 
+import java.util.ArrayList;
 import java.util.List;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import java.util.Map;
 
 import com.netflix.client.config.IClientConfig;
 import com.netflix.loadbalancer.AbstractServerList;
 import com.netflix.loadbalancer.Server;
 
-import io.servicecomb.loadbalance.ServerListCache;
+import io.servicecomb.foundation.common.cache.VersionedCache;
+import io.servicecomb.foundation.common.net.URIEndpointObject;
+import io.servicecomb.serviceregistry.RegistryUtils;
+import io.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
+import io.servicecomb.serviceregistry.definition.DefinitionConst;
+import io.servicecomb.serviceregistry.discovery.DiscoveryContext;
+import io.servicecomb.serviceregistry.discovery.DiscoveryTree;
 
 public class ServiceCombServerList extends AbstractServerList<Server> {
 
-  private static final Logger logger = LoggerFactory.getLogger(ServiceCombServerList.class);
-
-  private final CseRoutesProperties config;
-
-  private ServerListCache serverListCache;
+  private DiscoveryTree discoveryTree = new DiscoveryTree();
 
   private String serviceId;
 
-  public ServiceCombServerList(CseRoutesProperties config) {
-    this.config = config;
+  public ServiceCombServerList() {
   }
 
   @Override
   public List<Server> getInitialListOfServers() {
-    return servers();
+    DiscoveryContext context = new DiscoveryContext();
+    context.setInputParameters(serviceId);
+    VersionedCache serversVersionedCache = discoveryTree.discovery(context,
+        RegistryUtils.getAppId(),
+        serviceId,
+        DefinitionConst.VERSION_RULE_ALL);
+    Map<String, MicroserviceInstance> servers = serversVersionedCache.data();
+    List<Server> instances = new ArrayList<>(servers.size());
+    for (MicroserviceInstance s : servers.values()) {
+      for (String endpoint : s.getEndpoints()) {
+        URIEndpointObject uri = new URIEndpointObject(endpoint);
+        instances.add(new Server(uri.getHostOrIp(), uri.getPort()));
+      }
+    }
+    return instances;
   }
 
   @Override
   public List<Server> getUpdatedListOfServers() {
-    return servers();
-  }
-
-  private List<Server> servers() {
-    if (serverListCache == null) {
-      throw new ServiceCombDiscoveryException("Service list is not initialized");
-    }
-
-    logger.info("Looking for service with app id: {}, service id: {}, version rule: {}",
-        config.getAppID(),
-        serviceId,
-        config.getVersionRule(serviceId));
-
-    List<Server> endpoints = serverListCache.getLatestEndpoints();
-
-    logger.info("Found service endpoints {}", endpoints);
-    return endpoints;
+    return getInitialListOfServers();
   }
 
   @Override
   public void initWithNiwsConfig(IClientConfig iClientConfig) {
-    serviceId = iClientConfig.getClientName();
-
-    serverListCache = new CseServerListCacheWrapper(
-        config.getAppID(),
-        serviceId,
-        config.getVersionRule(serviceId),
-        "rest");
+    this.serviceId = iClientConfig.getClientName();
   }
 }

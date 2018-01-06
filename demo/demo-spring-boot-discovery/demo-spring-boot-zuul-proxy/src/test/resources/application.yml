@@ -17,16 +17,15 @@
 
 server:
   port: 0
-spring:
-  cloud:
-    cse:
-      host: 127.0.0.1
-      port: 9980
+
 zuul:
   routes:
     gateway:
       serviceId: discoveryServer
-
+discoveryServer:
+  ribbon:
+    eureka:
+      enabled: false
 hystrix:
   command:
     default:
