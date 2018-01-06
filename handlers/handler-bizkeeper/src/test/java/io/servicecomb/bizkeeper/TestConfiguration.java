@@ -54,5 +54,12 @@ public class TestConfiguration {
     String str = c.getFallbackPolicyPolicy("groupname", test2, "testqualify");
     // no need to give default value now
     assertEquals(null, str);
+
+    assertFalse(c.isCircuitBreakerForceOpen("groupname", test2, "testqualify"));
+    assertFalse(c.isCircuitBreakerForceClosed("groupname", test2, "testqualify"));
+    assertEquals(15000, c.getCircuitBreakerSleepWindowInMilliseconds("groupname", test2, "testqualify"));
+    assertEquals(20, c.getCircuitBreakerRequestVolumeThreshold("groupname", test2, "testqualify"));
+    assertEquals(50, c.getCircuitBreakerErrorThresholdPercentage("groupname", test2, "testqualify"));
+    assertTrue(c.isFallbackEnabled("groupname", test2, "testqualify"));
   }
 }
