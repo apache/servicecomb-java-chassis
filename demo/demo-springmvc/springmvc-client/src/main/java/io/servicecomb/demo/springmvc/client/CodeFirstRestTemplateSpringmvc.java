@@ -146,6 +146,8 @@ public class CodeFirstRestTemplateSpringmvc extends CodeFirstRestTemplate {
 
     result = template.getForObject(cseUrlPrefix + "/fallback/fromcache/hello", String.class);
     TestMgr.check(result, "hello");
+    result = template.getForObject(cseUrlPrefix + "/fallback/fromcache/hello", String.class);
+    TestMgr.check(result, "hello");
     result = template.getForObject(cseUrlPrefix + "/fallback/fromcache/throwexception", String.class);
     TestMgr.check(result, "hello");
 
