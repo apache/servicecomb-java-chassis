@@ -18,25 +18,24 @@ package io.servicecomb.springboot.starter.discovery;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import javax.inject.Inject;
+import java.util.Map;
 
 import org.springframework.cloud.client.DefaultServiceInstance;
 import org.springframework.cloud.client.ServiceInstance;
 import org.springframework.cloud.client.discovery.DiscoveryClient;
 
-import io.servicecomb.core.provider.consumer.ConsumerProviderManager;
-import io.servicecomb.core.provider.consumer.ReferenceConfig;
+import io.servicecomb.foundation.common.cache.VersionedCache;
 import io.servicecomb.foundation.common.net.URIEndpointObject;
 import io.servicecomb.serviceregistry.RegistryUtils;
 import io.servicecomb.serviceregistry.api.registry.Microservice;
 import io.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
 import io.servicecomb.serviceregistry.client.ServiceRegistryClient;
+import io.servicecomb.serviceregistry.definition.DefinitionConst;
+import io.servicecomb.serviceregistry.discovery.DiscoveryContext;
+import io.servicecomb.serviceregistry.discovery.DiscoveryTree;
 
 public class CseDiscoveryClient implements DiscoveryClient {
-
-  @Inject
-  private ConsumerProviderManager consumerProviderManager;
+  private DiscoveryTree discoveryTree = new DiscoveryTree();
 
   @Override
   public String description() {
@@ -45,21 +44,18 @@ public class CseDiscoveryClient implements DiscoveryClient {
 
   @Override
   public List<ServiceInstance> getInstances(final String serviceId) {
-    List<ServiceInstance> instances = new ArrayList<>();
-    ServiceRegistryClient client = RegistryUtils.getServiceRegistryClient();
-    String appId = RegistryUtils.getAppId();
-    ReferenceConfig referenceConfig = consumerProviderManager.getReferenceConfig(serviceId);
-    String versionRule = referenceConfig.getMicroserviceVersionRule();
-    String cseServiceID = client.getMicroserviceId(appId, serviceId, versionRule);
-    List<MicroserviceInstance> cseServices = client.getMicroserviceInstance(cseServiceID, cseServiceID);
-    if (null != cseServices && !cseServices.isEmpty()) {
-      for (MicroserviceInstance instance : cseServices) {
-        List<String> eps = instance.getEndpoints();
-        for (String ep : eps) {
-          URIEndpointObject uri = new URIEndpointObject(ep);
-          instances.add(new DefaultServiceInstance(instance.getServiceId(), uri.getHostOrIp(),
-              uri.getPort(), false));
-        }
+    DiscoveryContext context = new DiscoveryContext();
+    context.setInputParameters(serviceId);
+    VersionedCache serversVersionedCache = discoveryTree.discovery(context,
+        RegistryUtils.getAppId(),
+        serviceId,
+        DefinitionConst.VERSION_RULE_ALL);
+    Map<String, MicroserviceInstance> servers = serversVersionedCache.data();
+    List<ServiceInstance> instances = new ArrayList<>(servers.size());
+    for (MicroserviceInstance s : servers.values()) {
+      for (String endpoint : s.getEndpoints()) {
+        URIEndpointObject uri = new URIEndpointObject(endpoint);
+        instances.add(new DefaultServiceInstance(serviceId, uri.getHostOrIp(), uri.getPort(), uri.isSslEnabled()));
       }
     }
     return instances;
