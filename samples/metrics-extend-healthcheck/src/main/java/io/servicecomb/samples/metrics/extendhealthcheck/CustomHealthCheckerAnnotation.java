@@ -17,32 +17,20 @@
 
 package io.servicecomb.samples.metrics.extendhealthcheck;
 
-import java.util.UUID;
+import io.servicecomb.metrics.common.Health;
+import io.servicecomb.metrics.common.HealthCheckResult;
+import io.servicecomb.metrics.common.HealthChecker;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-
-import io.servicecomb.metrics.core.publish.HealthCheckerManager;
-import io.servicecomb.provider.rest.common.RestSchema;
-
-//simple service sim
-@RestSchema(schemaId = "demoServiceEndpoint")
-@RequestMapping(path = "/")
-public class SimpleService {
-
-  private final HealthCheckerManager manager;
-
-  @Autowired
-  public SimpleService(HealthCheckerManager manager) {
-    this.manager = manager;
-
-    //register your custom health check
-    this.manager.register(new MySqlHealthChecker());
+//this health check will auto register because Health Annotation
+@Health
+public class CustomHealthCheckerAnnotation implements HealthChecker {
+  @Override
+  public String getName() {
+    return "custom";
   }
 
-  @GetMapping(path = "/f")
-  public String fun() {
-    return UUID.randomUUID().toString();
+  @Override
+  public HealthCheckResult check() {
+    return new HealthCheckResult(true, "custom", "no extra data");
   }
 }
