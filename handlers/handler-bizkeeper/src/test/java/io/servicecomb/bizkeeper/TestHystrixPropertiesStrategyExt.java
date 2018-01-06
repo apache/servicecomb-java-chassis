@@ -78,5 +78,7 @@ public class TestHystrixPropertiesStrategyExt {
     Assert.assertFalse(commandPro.executionTimeoutEnabled().get());
     Assert.assertEquals(Integer.valueOf(10), commandPro.fallbackIsolationSemaphoreMaxConcurrentRequests().get());
     Assert.assertTrue(commandPro.fallbackEnabled().get());
+    Assert.assertEquals(Integer.valueOf(100), commandPro.metricsRollingPercentileBucketSize().get());
+    Assert.assertFalse(commandPro.metricsRollingPercentileEnabled().get());
   }
 }
