@@ -18,6 +18,8 @@
 package io.servicecomb.core.definition.schema;
 
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executor;
 
 import javax.inject.Inject;
 
@@ -32,6 +34,8 @@ import io.servicecomb.core.Const;
 import io.servicecomb.core.definition.MicroserviceMeta;
 import io.servicecomb.core.definition.OperationMeta;
 import io.servicecomb.core.definition.SchemaMeta;
+import io.servicecomb.core.executor.ExecutorManager;
+import io.servicecomb.foundation.common.utils.BeanUtils;
 import io.servicecomb.serviceregistry.RegistryUtils;
 import io.servicecomb.swagger.engine.SwaggerEnvironment;
 import io.servicecomb.swagger.engine.SwaggerProducer;
@@ -76,9 +80,14 @@ public class ProducerSchemaFactory extends AbstractSchemaFactory<ProducerSchemaC
     SchemaMeta schemaMeta = getOrCreateSchema(context);
 
     SwaggerProducer producer = swaggerEnv.createProducer(producerInstance, schemaMeta.getSwagger());
+    Executor reactiveExecutor = BeanUtils.getBean(ExecutorManager.EXECUTOR_REACTIVE);
     for (OperationMeta operationMeta : schemaMeta.getOperations()) {
       SwaggerProducerOperation producerOperation = producer.findOperation(operationMeta.getOperationId());
       operationMeta.putExtData(Const.PRODUCER_OPERATION, producerOperation);
+
+      if (CompletableFuture.class.equals(producerOperation.getProducerMethod().getReturnType())) {
+        operationMeta.setExecutor(ExecutorManager.findExecutor(operationMeta, reactiveExecutor));
+      }
     }
 
     return schemaMeta;

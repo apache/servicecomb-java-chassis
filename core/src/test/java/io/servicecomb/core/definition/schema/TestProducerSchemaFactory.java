@@ -16,14 +16,16 @@
  */
 package io.servicecomb.core.definition.schema;
 
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executor;
+
 import javax.xml.ws.Holder;
 
+import org.hamcrest.Matchers;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.mockito.Mockito;
-import org.springframework.context.ApplicationContext;
 
 import io.servicecomb.core.Const;
 import io.servicecomb.core.Endpoint;
@@ -32,6 +34,8 @@ import io.servicecomb.core.definition.MicroserviceMetaManager;
 import io.servicecomb.core.definition.OperationMeta;
 import io.servicecomb.core.definition.SchemaMeta;
 import io.servicecomb.core.definition.loader.SchemaLoader;
+import io.servicecomb.core.executor.ExecutorManager;
+import io.servicecomb.core.executor.ReactiveExecutor;
 import io.servicecomb.core.unittest.UnitTestMeta;
 import io.servicecomb.foundation.common.utils.BeanUtils;
 import io.servicecomb.foundation.common.utils.ReflectUtils;
@@ -47,6 +51,8 @@ import io.servicecomb.swagger.invocation.arguments.producer.ProducerArgumentsMap
 import io.servicecomb.swagger.invocation.converter.ConverterMgr;
 import io.servicecomb.swagger.invocation.exception.CommonExceptionData;
 import io.servicecomb.swagger.invocation.exception.InvocationException;
+import mockit.Mock;
+import mockit.MockUp;
 
 public class TestProducerSchemaFactory {
   private static SwaggerEnvironment swaggerEnv = new BootstrapNormal().boot();
@@ -58,6 +64,10 @@ public class TestProducerSchemaFactory {
   public static class TestProducerSchemaFactoryImpl {
     public int add(int x, int y) {
       return x + y;
+    }
+
+    public CompletableFuture<String> async() {
+      return null;
     }
   }
 
@@ -85,7 +95,24 @@ public class TestProducerSchemaFactory {
         "compositeSwaggerGeneratorContext",
         compositeSwaggerGeneratorContext);
 
-    BeanUtils.setContext(Mockito.mock(ApplicationContext.class));
+    Executor reactiveExecutor = new ReactiveExecutor();
+    Executor normalExecutor = (cmd) -> {
+    };
+    new MockUp<BeanUtils>() {
+      @SuppressWarnings("unchecked")
+      @Mock
+      <T> T getBean(String name) {
+        if (ExecutorManager.EXECUTOR_REACTIVE.equals(name)) {
+          return (T) reactiveExecutor;
+        }
+
+        return (T) normalExecutor;
+      }
+    };
+
+    //    ApplicationContext applicationContext = Mockito.mock(ApplicationContext.class);
+    //    BeanUtils.setContext(applicationContext);
+    //    Mockito.when(applicationContext.getBean(ExecutorManager.EXECUTOR_REACTIVE)).thenReturn(new ReactiveExecutor());
 
     UnitTestMeta.init();
 
@@ -130,5 +157,11 @@ public class TestProducerSchemaFactory {
     InvocationException exception = (InvocationException) holder.value.getResult();
     CommonExceptionData data = (CommonExceptionData) exception.getErrorData();
     Assert.assertEquals("Cse Internal Server Error", data.getMessage());
+  }
+
+  @Test
+  public void testCompletableFuture() {
+    OperationMeta operationMeta = schemaMeta.ensureFindOperation("async");
+    Assert.assertThat(operationMeta.getExecutor(), Matchers.instanceOf(ReactiveExecutor.class));
   }
 }
