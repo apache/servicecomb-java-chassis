@@ -67,7 +67,7 @@ public class TestHealthCheckerManager {
     HealthCheckerManager manager = new DefaultHealthCheckerManager();
     Map<String, HealthCheckResult> results = manager.check();
 
-    Assert.assertTrue(results.get("default").isHealth());
+    Assert.assertTrue(results.get("default").isHealthy());
 
     DefaultHealthCheckExtraData data = JsonUtils.OBJ_MAPPER
         .readValue(results.get("default").getExtraData(), DefaultHealthCheckExtraData.class);
