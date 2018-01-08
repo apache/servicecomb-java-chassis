@@ -17,6 +17,9 @@
 
 package io.servicecomb.swagger.generator.core;
 
+import static org.hamcrest.Matchers.contains;
+import static org.junit.Assert.assertThat;
+
 import java.util.Collections;
 
 import org.junit.Assert;
@@ -50,11 +53,6 @@ public class TestSwaggerGenerator {
     swaggerGenerator.addDefaultTag(null);
     swaggerGenerator.addDefaultTag("test2");
 
-    Assert.assertEquals(2, swaggerGenerator.getDefaultTags().size());
-    int index = 0;
-    for (String tagName : swaggerGenerator.getDefaultTags()) {
-      ++index;
-      Assert.assertEquals("test" + index, tagName);
-    }
+    assertThat(swaggerGenerator.getDefaultTags(), contains("test1", "test2"));
   }
 }

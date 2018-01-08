@@ -17,7 +17,9 @@
 
 package io.servicecomb.swagger.generator.core.processor.annotation;
 
+import static org.hamcrest.Matchers.contains;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
 
 import java.util.Set;
 
@@ -38,13 +40,7 @@ public class ApiProcessorTest {
     apiProcessor.process(SwaggerTestTarget.class.getAnnotation(Api.class),
         swaggerGenerator);
 
-    Set<String> tags = swaggerGenerator.getDefaultTags();
-    assertEquals(2, tags.size());
-    int index = 0;
-    for (String tagName : tags) {
-      ++index;
-      assertEquals("tag" + index, tagName);
-    }
+    assertThat(swaggerGenerator.getDefaultTags(), contains("tag1", "tag2"));
   }
 
   @Test

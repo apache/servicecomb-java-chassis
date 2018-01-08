@@ -17,7 +17,9 @@
 
 package io.servicecomb.swagger.generator.core.processor.annotation;
 
+import static org.hamcrest.Matchers.contains;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
 
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -52,9 +54,7 @@ public class SwaggerDefinitionProcessorTest {
     assertEquals("testValue", tag.getExternalDocs().getDescription());
     assertEquals("testUrl", tag.getExternalDocs().getUrl());
     assertEquals("127.0.0.1", swagger.getHost());
-    assertEquals(2, swagger.getSchemes().size());
-    assertEquals(io.swagger.models.Scheme.HTTP, swagger.getSchemes().get(0));
-    assertEquals(io.swagger.models.Scheme.HTTPS, swagger.getSchemes().get(1));
+    assertThat(swagger.getSchemes(), contains(io.swagger.models.Scheme.HTTP, io.swagger.models.Scheme.HTTPS));
     io.swagger.models.Info info = swagger.getInfo();
     assertEquals("title", info.getTitle());
     assertEquals("version", info.getVersion());

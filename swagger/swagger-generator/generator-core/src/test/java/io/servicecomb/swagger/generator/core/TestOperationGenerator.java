@@ -17,7 +17,9 @@
 
 package io.servicecomb.swagger.generator.core;
 
+import static org.hamcrest.Matchers.contains;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
 
 import java.lang.reflect.Method;
 import java.util.Collections;
@@ -55,9 +57,7 @@ public class TestOperationGenerator {
     operationGenerator.generate();
 
     List<String> tagList = operationGenerator.getOperation().getTags();
-    assertEquals(2, tagList.size());
-    assertEquals("tag1", tagList.get(0));
-    assertEquals("tag2", tagList.get(1));
+    assertThat(tagList, contains("tag1", "tag2"));
   }
 
   @Test
@@ -71,9 +71,7 @@ public class TestOperationGenerator {
     operationGenerator.generate();
 
     List<String> tagList = operationGenerator.getOperation().getTags();
-    assertEquals(2, tagList.size());
-    assertEquals("default0", tagList.get(0));
-    assertEquals("default1", tagList.get(1));
+    assertThat(tagList, contains("default0", "default1"));
   }
 
   @Test
@@ -87,9 +85,7 @@ public class TestOperationGenerator {
     operationGenerator.generate();
 
     List<String> tagList = operationGenerator.getOperation().getTags();
-    assertEquals(2, tagList.size());
-    assertEquals("default0", tagList.get(0));
-    assertEquals("default1", tagList.get(1));
+    assertThat(tagList, contains("default0", "default1"));
   }
 
   private static class TestClass {
