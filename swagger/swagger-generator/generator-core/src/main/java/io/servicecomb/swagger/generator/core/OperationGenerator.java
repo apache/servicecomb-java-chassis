@@ -221,6 +221,24 @@ public class OperationGenerator {
       }
       processor.process(annotation, this);
     }
+
+    setDefaultTag();
+  }
+
+  private void setDefaultTag() {
+    // if tag has been defined, do nothing
+    if (null != operation.getTags()) {
+      for (String tag : operation.getTags()) {
+        if (!StringUtils.isEmpty(tag)) {
+          return;
+        }
+      }
+    }
+
+    // if there is no tag, set default tag
+    if (!swaggerGenerator.getDefaultTags().isEmpty()) {
+      operation.setTags(new ArrayList<>(swaggerGenerator.getDefaultTags()));
+    }
   }
 
   /**

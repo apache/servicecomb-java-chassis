@@ -40,4 +40,21 @@ public class TestSwaggerGenerator {
 
     Assert.assertEquals("/a/varValue/b", swaggerGenerator.getSwagger().getBasePath());
   }
+
+  @Test
+  public void testAddDefaultTag() {
+    SwaggerGenerator swaggerGenerator = new SwaggerGenerator(new PojoSwaggerGeneratorContext(), null);
+
+    swaggerGenerator.addDefaultTag("test1");
+    swaggerGenerator.addDefaultTag("");
+    swaggerGenerator.addDefaultTag(null);
+    swaggerGenerator.addDefaultTag("test2");
+
+    Assert.assertEquals(2, swaggerGenerator.getDefaultTags().size());
+    int index = 0;
+    for (String tagName : swaggerGenerator.getDefaultTags()) {
+      ++index;
+      Assert.assertEquals("test" + index, tagName);
+    }
+  }
 }

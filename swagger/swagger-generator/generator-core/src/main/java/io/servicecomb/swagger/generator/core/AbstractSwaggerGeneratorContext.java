@@ -33,6 +33,7 @@ import io.servicecomb.swagger.generator.core.processor.annotation.ApiImplicitPar
 import io.servicecomb.swagger.generator.core.processor.annotation.ApiImplicitParamsClassProcessor;
 import io.servicecomb.swagger.generator.core.processor.annotation.ApiImplicitParamsMethodProcessor;
 import io.servicecomb.swagger.generator.core.processor.annotation.ApiOperationProcessor;
+import io.servicecomb.swagger.generator.core.processor.annotation.ApiProcessor;
 import io.servicecomb.swagger.generator.core.processor.annotation.ApiResponseClassProcessor;
 import io.servicecomb.swagger.generator.core.processor.annotation.ApiResponseMethodProcessor;
 import io.servicecomb.swagger.generator.core.processor.annotation.ApiResponsesClassProcessor;
@@ -42,6 +43,7 @@ import io.servicecomb.swagger.generator.core.processor.annotation.ResponseHeader
 import io.servicecomb.swagger.generator.core.processor.annotation.SwaggerDefinitionProcessor;
 import io.servicecomb.swagger.generator.core.processor.parametertype.RawJsonRequestBodyProcessor;
 import io.servicecomb.swagger.generator.core.processor.response.DefaultResponseTypeProcessor;
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
@@ -104,6 +106,7 @@ public abstract class AbstractSwaggerGeneratorContext implements SwaggerGenerato
   }
 
   protected void initClassAnnotationMgr() {
+    classAnnotationMgr.register(Api.class, new ApiProcessor());
     classAnnotationMgr.register(SwaggerDefinition.class, new SwaggerDefinitionProcessor());
 
     classAnnotationMgr.register(ApiImplicitParams.class, new ApiImplicitParamsClassProcessor());
