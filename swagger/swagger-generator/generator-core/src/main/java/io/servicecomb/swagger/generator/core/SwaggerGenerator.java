@@ -22,19 +22,23 @@ import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 
 import javax.ws.rs.core.MediaType;
 
 import org.springframework.util.StringUtils;
 
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.models.Info;
 import io.swagger.models.Operation;
 import io.swagger.models.Path;
 import io.swagger.models.Swagger;
+import io.swagger.models.Tag;
 import io.swagger.models.parameters.Parameter;
 
 /**
@@ -60,6 +64,13 @@ public class SwaggerGenerator {
   protected Class<?> cls;
 
   protected Swagger swagger;
+
+  /**
+   * According to the definition of swagger, the {@link Tag} defined in {@link Api#tags()} will be set
+   * to all of the operations in this swagger. And the {@link Tag} definde in {@link ApiOperation#tags()} will overwrite
+   * the {@link Api#tags()}.
+   */
+  protected Set<String> defaultTags = new LinkedHashSet<>();
 
   private Map<String, OperationGenerator> operationGeneratorMap = new HashMap<>();
 
@@ -280,5 +291,21 @@ public class SwaggerGenerator {
     }
 
     throw new Error("method not found, name=" + methodName);
+  }
+
+  /**
+   * Add a tag to {@link #defaultTags} if the corresponding tag not exists.
+   * @param tagName the name of the added tag
+   */
+  public void addDefaultTag(String tagName) {
+    if (StringUtils.isEmpty(tagName) || defaultTags.contains(tagName)) {
+      return;
+    }
+
+    defaultTags.add(tagName);
+  }
+
+  public Set<String> getDefaultTags() {
+    return defaultTags;
   }
 }

@@ -15,44 +15,33 @@
  * limitations under the License.
  */
 
-package io.servicecomb.swagger.generator.core;
+package io.servicecomb.swagger.generator.core.processor.annotation;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 import java.lang.reflect.Method;
-import java.util.Collections;
 import java.util.List;
 
 import org.junit.Test;
-import org.springframework.util.StringValueResolver;
 
-import io.servicecomb.foundation.test.scaffolding.spring.SpringUtils;
+import io.servicecomb.swagger.generator.core.OperationGenerator;
+import io.servicecomb.swagger.generator.core.SwaggerGenerator;
 import io.servicecomb.swagger.generator.pojo.PojoSwaggerGeneratorContext;
 import io.swagger.annotations.ApiOperation;
 
-public class TestOperationGenerator {
-  @Test
-  public void testPathPlaceHolder() {
-    StringValueResolver stringValueResolver =
-        SpringUtils.createStringValueResolver(Collections.singletonMap("var", "varValue"));
-
-    PojoSwaggerGeneratorContext context = new PojoSwaggerGeneratorContext();
-    context.setEmbeddedValueResolver(stringValueResolver);
-
-    SwaggerGenerator swaggerGenerator = new SwaggerGenerator(context, null);
-    OperationGenerator operationGenerator = new OperationGenerator(swaggerGenerator, null);
-    operationGenerator.setPath("/a/${var}/b");
-
-    assertEquals("/a/varValue/b", operationGenerator.getPath());
-  }
+public class ApiOperationProcessorTest {
 
   @Test
   public void testConvertTags() throws NoSuchMethodException {
+    ApiOperationProcessor apiOperationProcessor = new ApiOperationProcessor();
+
     Method function = TestClass.class.getMethod("function");
     SwaggerGenerator swaggerGenerator = new SwaggerGenerator(new PojoSwaggerGeneratorContext(), TestClass.class);
     OperationGenerator operationGenerator = new OperationGenerator(swaggerGenerator, function);
 
-    operationGenerator.generate();
+    apiOperationProcessor.process(function.getAnnotation(ApiOperation.class),
+        operationGenerator);
 
     List<String> tagList = operationGenerator.getOperation().getTags();
     assertEquals(2, tagList.size());
@@ -62,34 +51,17 @@ public class TestOperationGenerator {
 
   @Test
   public void testConvertTagsOnMethodWithNoTag() throws NoSuchMethodException {
+    ApiOperationProcessor apiOperationProcessor = new ApiOperationProcessor();
+
     Method function = TestClass.class.getMethod("functionWithNoTag");
     SwaggerGenerator swaggerGenerator = new SwaggerGenerator(new PojoSwaggerGeneratorContext(), TestClass.class);
     OperationGenerator operationGenerator = new OperationGenerator(swaggerGenerator, function);
-    swaggerGenerator.addDefaultTag("default0");
-    swaggerGenerator.addDefaultTag("default1");
 
-    operationGenerator.generate();
-
-    List<String> tagList = operationGenerator.getOperation().getTags();
-    assertEquals(2, tagList.size());
-    assertEquals("default0", tagList.get(0));
-    assertEquals("default1", tagList.get(1));
-  }
-
-  @Test
-  public void testConvertTagsOnMethodWithNoAnnotation() throws NoSuchMethodException {
-    Method function = TestClass.class.getMethod("functionWithNoAnnotation");
-    SwaggerGenerator swaggerGenerator = new SwaggerGenerator(new PojoSwaggerGeneratorContext(), TestClass.class);
-    OperationGenerator operationGenerator = new OperationGenerator(swaggerGenerator, function);
-    swaggerGenerator.addDefaultTag("default0");
-    swaggerGenerator.addDefaultTag("default1");
-
-    operationGenerator.generate();
+    apiOperationProcessor.process(function.getAnnotation(ApiOperation.class),
+        operationGenerator);
 
     List<String> tagList = operationGenerator.getOperation().getTags();
-    assertEquals(2, tagList.size());
-    assertEquals("default0", tagList.get(0));
-    assertEquals("default1", tagList.get(1));
+    assertNull(tagList);
   }
 
   private static class TestClass {
@@ -99,9 +71,6 @@ public class TestOperationGenerator {
 
     @ApiOperation(value = "value2")
     public void functionWithNoTag() {
-    }
-
-    public void functionWithNoAnnotation() {
     }
   }
 }
