@@ -36,10 +36,6 @@
   <dependencies>
     <dependency>
       <groupId>io.servicecomb</groupId>
-      <artifactId>metrics-common</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>io.servicecomb</groupId>
       <artifactId>metrics-core</artifactId>
     </dependency>
   </dependencies>
