@@ -29,36 +29,4 @@
   <artifactId>metrics-extension</artifactId>
   <packaging>pom</packaging>
 
-  <modules>
-    <module>metrics-write-file-config</module>
-    <module>metrics-write-file-config-log4j</module>
-    <module>metrics-write-file-config-log4j2</module>
-    <module>metrics-write-file</module>
-  </modules>
-
-  <dependencyManagement>
-    <dependencies>
-      <dependency>
-        <groupId>io.servicecomb</groupId>
-        <artifactId>metrics-write-file-config</artifactId>
-        <version>0.6.0-SNAPSHOT</version>
-      </dependency>
-      <dependency>
-        <groupId>io.servicecomb</groupId>
-        <artifactId>metrics-write-file-config-log4j</artifactId>
-        <version>0.6.0-SNAPSHOT</version>
-      </dependency>
-      <dependency>
-        <groupId>io.servicecomb</groupId>
-        <artifactId>metrics-write-file-config-log4j2</artifactId>
-        <version>0.6.0-SNAPSHOT</version>
-      </dependency>
-      <dependency>
-        <groupId>io.servicecomb</groupId>
-        <artifactId>metrics-write-file</artifactId>
-        <version>0.6.0-SNAPSHOT</version>
-      </dependency>
-    </dependencies>
-  </dependencyManagement>
-
 </project>

@@ -29,37 +29,51 @@
   <artifactId>metrics-write-file-sample</artifactId>
   <packaging>pom</packaging>
   <modules>
+    <module>metrics-write-file-config</module>
+    <module>metrics-write-file</module>
+    <module>metrics-write-file-config-log4j</module>
+    <module>metrics-write-file-config-log4j2</module>
+    <module>metrics-write-file-common</module>
     <module>metrics-write-file-log4j</module>
     <module>metrics-write-file-log4j2</module>
     <module>metrics-write-file-log4j-springboot</module>
-    <module>metrics-write-file-common</module>
     <module>metrics-write-file-log4j2-springboot</module>
   </modules>
 
   <dependencyManagement>
     <dependencies>
       <dependency>
+        <groupId>io.servicecomb</groupId>
+        <artifactId>metrics-core</artifactId>
+        <version>0.6.0-SNAPSHOT</version>
+      </dependency>
+      <dependency>
+        <groupId>io.servicecomb.samples</groupId>
+        <artifactId>metrics-write-file-config</artifactId>
+        <version>0.6.0-SNAPSHOT</version>
+      </dependency>
+      <dependency>
+        <groupId>io.servicecomb.samples</groupId>
+        <artifactId>metrics-write-file</artifactId>
+        <version>0.6.0-SNAPSHOT</version>
+      </dependency>
+      <dependency>
         <groupId>io.servicecomb.samples</groupId>
         <artifactId>metrics-write-file-common</artifactId>
         <version>0.6.0-SNAPSHOT</version>
       </dependency>
       <dependency>
-        <groupId>io.servicecomb</groupId>
-        <artifactId>metrics-write-file-config</artifactId>
-        <version>0.6.0-SNAPSHOT</version>
-      </dependency>
-      <dependency>
-        <groupId>io.servicecomb</groupId>
+        <groupId>io.servicecomb.samples</groupId>
         <artifactId>metrics-write-file-config-log4j</artifactId>
         <version>0.6.0-SNAPSHOT</version>
       </dependency>
       <dependency>
-        <groupId>io.servicecomb</groupId>
+        <groupId>io.servicecomb.samples</groupId>
         <artifactId>metrics-write-file-config-log4j2</artifactId>
         <version>0.6.0-SNAPSHOT</version>
       </dependency>
       <dependency>
-        <groupId>io.servicecomb</groupId>
+        <groupId>io.servicecomb.samples</groupId>
         <artifactId>metrics-write-file</artifactId>
         <version>0.6.0-SNAPSHOT</version>
       </dependency>
