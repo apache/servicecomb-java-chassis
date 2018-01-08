@@ -51,9 +51,10 @@ public interface ServiceCombConstants {
 
   String CONFIG_KEY_SPLITER = "_";
 
-  String CONFIG_MICROSERVICE_DEVELOPMENT_FRAMEWORK_KEY = "framework.name";
+  String CONFIG_FRAMEWORK_DEFAULT_NAME = "servicecomb-java-chassis";
 
-  String DEFAULT_VALUE = "UNKNOWN";
-
-  String CONFIG_MICROSERVICE_REGISTER_WAY_KEY = "registerBy";
+  String CONFIG_FRAMEWORK_DEFAULT_VERSION = "1.0";
+  
+  String CONFIG_DEFAULT_REGISTER_BY = "SDK";
+  
 }

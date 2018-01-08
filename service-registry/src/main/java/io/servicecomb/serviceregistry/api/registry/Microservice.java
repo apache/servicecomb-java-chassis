@@ -24,7 +24,6 @@ import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonProperty;
 
 import io.servicecomb.serviceregistry.api.Const;
 
@@ -37,8 +36,7 @@ public class Microservice {
 
   private Framework framework;
 
-  @JsonProperty(value = "registerBy")
-  private String registeredBy;
+  private String registerBy;
 
   private String appId;
 
@@ -204,11 +202,11 @@ public class Microservice {
     this.framework = framework;
   }
 
-  public String getRegisteredBy() {
-    return registeredBy;
+  public String getRegisterBy() {
+    return registerBy;
   }
 
-  public void setRegisteredBy(String registeredBy) {
-    this.registeredBy = registeredBy;
+  public void setRegisterBy(String registerBy) {
+    this.registerBy = registerBy;
   }
 }

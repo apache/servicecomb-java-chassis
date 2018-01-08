@@ -21,9 +21,9 @@ import static io.servicecomb.foundation.common.base.ServiceCombConstants.CONFIG_
 import static io.servicecomb.foundation.common.base.ServiceCombConstants.CONFIG_QUALIFIED_MICROSERVICE_NAME_KEY;
 import static io.servicecomb.foundation.common.base.ServiceCombConstants.CONFIG_QUALIFIED_MICROSERVICE_ROLE_KEY;
 import static io.servicecomb.foundation.common.base.ServiceCombConstants.CONFIG_QUALIFIED_MICROSERVICE_VERSION_KEY;
-import static io.servicecomb.foundation.common.base.ServiceCombConstants.CONFIG_MICROSERVICE_DEVELOPMENT_FRAMEWORK_KEY;
-import static io.servicecomb.foundation.common.base.ServiceCombConstants.CONFIG_MICROSERVICE_REGISTER_WAY_KEY;
-import static io.servicecomb.foundation.common.base.ServiceCombConstants.DEFAULT_VALUE;
+import static io.servicecomb.foundation.common.base.ServiceCombConstants.CONFIG_FRAMEWORK_DEFAULT_NAME;
+import static io.servicecomb.foundation.common.base.ServiceCombConstants.CONFIG_FRAMEWORK_DEFAULT_VERSION;
+import static io.servicecomb.foundation.common.base.ServiceCombConstants.CONFIG_DEFAULT_REGISTER_BY;
 import static io.servicecomb.foundation.common.base.ServiceCombConstants.DEFAULT_MICROSERVICE_NAME;
 import static io.servicecomb.serviceregistry.definition.DefinitionConst.CONFIG_ALLOW_CROSS_APP_KEY;
 import static io.servicecomb.serviceregistry.definition.DefinitionConst.DEFAULT_APPLICATION_ID;
@@ -69,12 +69,12 @@ public class MicroserviceFactory {
           microservice.getServiceName()));
     }
 
+    // use default values, we can add configure item in future.
     Framework framework = new Framework();
-    framework.setName(configuration.getString(CONFIG_MICROSERVICE_DEVELOPMENT_FRAMEWORK_KEY, DEFAULT_VALUE));
-    GetFrameworkVersion version = new GetFrameworkVersion();
-    framework.setVersion(version.getFrameworkVersion());
+    framework.setName(CONFIG_FRAMEWORK_DEFAULT_NAME);
+    framework.setVersion(CONFIG_FRAMEWORK_DEFAULT_VERSION);
     microservice.setFramework(framework);
-    microservice.setRegisteredBy(configuration.getString(CONFIG_MICROSERVICE_REGISTER_WAY_KEY, DEFAULT_VALUE));
+    microservice.setRegisterBy(CONFIG_DEFAULT_REGISTER_BY);
 
     return microservice;
   }

@@ -264,11 +264,5 @@
         </plugin>
       </plugins>
     </pluginManagement>
-    <resources>
-      <resource>
-        <filtering>true</filtering>
-        <directory>src/main/resources</directory>
-      </resource>
-    </resources>
   </build>
 </project>
