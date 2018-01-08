@@ -57,7 +57,7 @@ public class RegistryMetric {
 
     ConsumerInvocationMetric instanceConsumerInvocationMetric = new ConsumerInvocationMetric("instance",
         MetricsConst.INSTANCE_CONSUMER_PREFIX,
-        new TimerMetric(MetricsConst.INSTANCE_CONSUMER_PREFIX + ".producerLatency"),
+        new TimerMetric(MetricsConst.INSTANCE_CONSUMER_PREFIX + ".consumerLatency"),
         new CallMetric(MetricsConst.INSTANCE_CONSUMER_PREFIX + ".consumerCall"));
     ProducerInvocationMetric instanceProducerInvocationMetric = new ProducerInvocationMetric("instance",
         MetricsConst.INSTANCE_PRODUCER_PREFIX, 0,
