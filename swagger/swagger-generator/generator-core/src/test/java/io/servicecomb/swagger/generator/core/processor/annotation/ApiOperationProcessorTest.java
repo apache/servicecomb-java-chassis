@@ -17,8 +17,9 @@
 
 package io.servicecomb.swagger.generator.core.processor.annotation;
 
-import static org.junit.Assert.assertEquals;
+import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThat;
 
 import java.lang.reflect.Method;
 import java.util.List;
@@ -43,10 +44,7 @@ public class ApiOperationProcessorTest {
     apiOperationProcessor.process(function.getAnnotation(ApiOperation.class),
         operationGenerator);
 
-    List<String> tagList = operationGenerator.getOperation().getTags();
-    assertEquals(2, tagList.size());
-    assertEquals("tag1", tagList.get(0));
-    assertEquals("tag2", tagList.get(1));
+    assertThat(operationGenerator.getOperation().getTags(), containsInAnyOrder("tag1", "tag2"));
   }
 
   @Test
