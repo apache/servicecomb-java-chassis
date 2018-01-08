@@ -75,9 +75,10 @@ public class IpPortManager {
   }
 
   public IpPort getNextAvailableAddress(IpPort failedIpPort) {
-    IpPort current = getAvailableAddress();
+    int currentIndex = currentAvailableIndex.get();
+    IpPort current = getAvailableAddress(currentIndex);
     if (current.equals(failedIpPort)) {
-      currentAvailableIndex.incrementAndGet();
+      currentAvailableIndex.compareAndSet(currentIndex, currentIndex + 1);
       current = getAvailableAddress();
     }
 
