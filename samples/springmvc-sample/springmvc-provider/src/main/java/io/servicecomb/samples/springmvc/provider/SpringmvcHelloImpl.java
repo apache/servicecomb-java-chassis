@@ -18,10 +18,6 @@
 package io.servicecomb.samples.springmvc.provider;
 
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import javax.ws.rs.core.MediaType;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,11 +26,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.netflix.servo.monitor.Monitor;
-
-import io.servicecomb.foundation.common.exceptions.ServiceCombException;
-import io.servicecomb.foundation.common.utils.JsonUtils;
 import io.servicecomb.foundation.metrics.MetricsServoRegistry;
 import io.servicecomb.provider.rest.common.RestSchema;
 import io.servicecomb.samples.common.schema.Hello;
@@ -61,20 +52,5 @@ public class SpringmvcHelloImpl implements Hello {
   @RequestMapping(path = "/sayhello", method = RequestMethod.POST)
   public String sayHello(@RequestBody Person person) {
     return "Hello person " + person.getName();
-  }
-
-  //metrics it test
-  @RequestMapping(path = "/metricsForTest", method = RequestMethod.GET)
-  public String metricsForTest() {
-    List<Monitor<?>> monitors = registry.getMetricsMonitors();
-    Map<String, String> values = new HashMap<>();
-    for (Monitor<?> monitor : monitors) {
-      values.put(monitor.getConfig().getName(), monitor.getValue().toString());
-    }
-    try {
-      return JsonUtils.writeValueAsString(values);
-    } catch (JsonProcessingException e) {
-      throw new ServiceCombException("json error", e);
-    }
   }
 }

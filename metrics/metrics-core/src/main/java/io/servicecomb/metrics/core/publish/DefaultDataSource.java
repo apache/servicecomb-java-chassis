@@ -34,20 +34,20 @@ import com.netflix.servo.util.Strings;
 
 import io.servicecomb.foundation.common.exceptions.ServiceCombException;
 import io.servicecomb.metrics.common.RegistryMetric;
+import io.servicecomb.metrics.core.MetricsConfig;
 import io.servicecomb.metrics.core.monitor.RegistryMonitor;
 import io.servicecomb.swagger.invocation.exception.InvocationException;
 
 @Component
 public class DefaultDataSource implements DataSource {
-  private static final String METRICS_POLLING_TIME = "servicecomb.metrics.window_time";
-
   private final RegistryMonitor registryMonitor;
 
   private final Map<Long, Integer> appliedWindowTimes = new HashMap<>();
 
   @Autowired
   public DefaultDataSource(RegistryMonitor registryMonitor) {
-    this(registryMonitor, DynamicPropertyFactory.getInstance().getStringProperty(METRICS_POLLING_TIME, "5000").get());
+    this(registryMonitor,
+        DynamicPropertyFactory.getInstance().getStringProperty(MetricsConfig.METRICS_POLLING_TIME, "5000").get());
   }
 
   public DefaultDataSource(RegistryMonitor registryMonitor, String pollingSettings) {

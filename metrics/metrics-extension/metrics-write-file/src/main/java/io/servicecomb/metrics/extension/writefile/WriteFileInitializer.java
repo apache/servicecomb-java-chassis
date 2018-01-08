@@ -30,6 +30,7 @@ import com.netflix.config.DynamicPropertyFactory;
 
 import io.servicecomb.foundation.common.net.NetUtils;
 import io.servicecomb.metrics.common.RegistryMetric;
+import io.servicecomb.metrics.core.MetricsConfig;
 import io.servicecomb.metrics.core.publish.DataSource;
 import io.servicecomb.metrics.extension.writefile.config.MetricsFileWriter;
 import io.servicecomb.serviceregistry.RegistryUtils;
@@ -37,9 +38,6 @@ import io.servicecomb.serviceregistry.api.registry.Microservice;
 
 @Component
 public class WriteFileInitializer {
-
-  private static final String METRICS_WINDOW_TIME = "servicecomb.metrics.window_time";
-
   private final int metricPoll;
 
   private FileContentConvertor convertor;
@@ -56,7 +54,7 @@ public class WriteFileInitializer {
 
   @Autowired
   public WriteFileInitializer(MetricsFileWriter fileWriter, DataSource dataSource) {
-    metricPoll = DynamicPropertyFactory.getInstance().getIntProperty(METRICS_WINDOW_TIME, 5000).get();
+    metricPoll = DynamicPropertyFactory.getInstance().getIntProperty(MetricsConfig.METRICS_POLLING_TIME, 5000).get();
     this.fileWriter = fileWriter;
     this.dataSource = dataSource;
 
@@ -64,7 +62,7 @@ public class WriteFileInitializer {
   }
 
   public WriteFileInitializer(MetricsFileWriter fileWriter, DataSource dataSource, String hostName, String filePrefix) {
-    metricPoll = DynamicPropertyFactory.getInstance().getIntProperty(METRICS_WINDOW_TIME, 5000).get();
+    metricPoll = DynamicPropertyFactory.getInstance().getIntProperty(MetricsConfig.METRICS_POLLING_TIME, 5000).get();
     this.fileWriter = fileWriter;
     this.dataSource = dataSource;
     this.hostName = hostName;
