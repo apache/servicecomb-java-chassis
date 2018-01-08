@@ -50,6 +50,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -350,6 +351,13 @@ public class CodeFirstSpringmvc {
     } catch (JsonProcessingException e) {
       throw new InvocationException(500, "500", "JsonProcessingException", e);
     }
+  }
+
+  //Only for Prometheus integration test
+  @RequestMapping(path = "/prometheusForTest", method = RequestMethod.GET)
+  public String prometheusForTest() {
+    RestTemplate defaultRestTemplate = new RestTemplate();
+    return defaultRestTemplate.getForObject("http://localhost:9696/metrics", String.class);
   }
 
   @GetMapping(path = "/traceId")

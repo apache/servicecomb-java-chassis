@@ -128,6 +128,29 @@ public class SpringmvcClient {
     } catch (Exception e) {
       TestMgr.check("true", "false");
     }
+
+    //prometheus integration test
+    try {
+      String content = restTemplate.getForObject("cse://springmvc/codeFirstSpringmvc/prometheusForTest", String.class);
+      String[] metricLines = content.split("\n");
+      if (metricLines.length > 0) {
+        for (String metricLine : metricLines) {
+          if (!metricLine.startsWith("#")) {
+            String[] metricKeyAndValue = metricLine.split(" ");
+            if (!metricKeyAndValue[0].startsWith("servicecomb_instance_system")) {
+              if (Double.parseDouble(metricKeyAndValue[1]) < 0) {
+                TestMgr.check("true", "false");
+                break;
+              }
+            }
+          }
+        }
+      } else {
+        TestMgr.check("true", "false");
+      }
+    } catch (Exception e) {
+      TestMgr.check("true", "false");
+    }
   }
 
   private static void testController(RestTemplate template, String microserviceName) {

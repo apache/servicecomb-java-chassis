@@ -39,7 +39,7 @@
 
 		<dependency>
 			<groupId>io.servicecomb</groupId>
-			<artifactId>metrics-core</artifactId>
+			<artifactId>metrics-prometheus</artifactId>
 		</dependency>
 
 	</dependencies>
