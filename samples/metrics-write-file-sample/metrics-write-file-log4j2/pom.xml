@@ -65,7 +65,7 @@
 
     <!--metrics write file dependency-->
     <dependency>
-      <groupId>io.servicecomb</groupId>
+      <groupId>io.servicecomb.samples</groupId>
       <artifactId>metrics-write-file-config-log4j2</artifactId>
     </dependency>
 

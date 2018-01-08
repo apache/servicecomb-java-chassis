@@ -26,55 +26,22 @@
   </parent>
   <modelVersion>4.0.0</modelVersion>
 
-  <artifactId>metrics-write-file-log4j2-springboot</artifactId>
+  <artifactId>metrics-write-file-config-log4j2</artifactId>
 
   <dependencies>
     <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter</artifactId>
-    </dependency>
-
-    <dependency>
-      <groupId>io.servicecomb</groupId>
-      <artifactId>spring-boot-starter-provider</artifactId>
-    </dependency>
-
-    <dependency>
-      <groupId>io.servicecomb</groupId>
-      <artifactId>handler-flowcontrol-qps</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>io.servicecomb</groupId>
-      <artifactId>handler-bizkeeper</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>io.servicecomb</groupId>
-      <artifactId>handler-tracing-zipkin</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.hibernate</groupId>
-      <artifactId>hibernate-validator</artifactId>
-    </dependency>
-
-    <dependency>
       <groupId>io.servicecomb.samples</groupId>
-      <artifactId>metrics-write-file-common</artifactId>
+      <artifactId>metrics-write-file</artifactId>
     </dependency>
 
-    <!--metrics write file dependency-->
     <dependency>
-      <groupId>io.servicecomb.samples</groupId>
-      <artifactId>metrics-write-file-config-log4j2</artifactId>
+      <groupId>org.apache.logging.log4j</groupId>
+      <artifactId>log4j-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.logging.log4j</groupId>
+      <artifactId>log4j-core</artifactId>
     </dependency>
   </dependencies>
-
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-maven-plugin</artifactId>
-      </plugin>
-    </plugins>
-  </build>
 
 </project>
