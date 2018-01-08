@@ -39,9 +39,15 @@ public interface ServiceCombConstants {
 
   String CONFIG_TRACING_COLLECTOR_ADDRESS = "servicecomb.tracing.collector.address";
 
+  String CONFIG_TRACING_COLLECTOR_API_V1 = "v1";
+
+  String CONFIG_TRACING_COLLECTOR_API_V2 = "v2";
+
+  String CONFIG_TRACING_COLLECTOR_API_VERSION = "servicecomb.tracing.collector.apiVersion";
+
   String CONFIG_TRACING_ENABLED_KEY = "servicecomb.tracing.enabled";
 
-  String CONFIG_TRACING_COLLECTOR_PATH = "/api/v2/spans";
+  String CONFIG_TRACING_COLLECTOR_PATH = "/api/{0}/spans";
 
   String DEFAULT_TRACING_COLLECTOR_ADDRESS = "http://127.0.0.1:9411";
 

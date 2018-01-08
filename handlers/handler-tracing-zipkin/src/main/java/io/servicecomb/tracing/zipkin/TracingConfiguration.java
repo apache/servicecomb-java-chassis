@@ -19,19 +19,26 @@ package io.servicecomb.tracing.zipkin;
 
 import static io.servicecomb.foundation.common.base.ServiceCombConstants.CONFIG_QUALIFIED_MICROSERVICE_NAME_KEY;
 import static io.servicecomb.foundation.common.base.ServiceCombConstants.CONFIG_TRACING_COLLECTOR_ADDRESS;
+import static io.servicecomb.foundation.common.base.ServiceCombConstants.CONFIG_TRACING_COLLECTOR_API_VERSION;
 import static io.servicecomb.foundation.common.base.ServiceCombConstants.CONFIG_TRACING_COLLECTOR_PATH;
+import static io.servicecomb.foundation.common.base.ServiceCombConstants.CONFIG_TRACING_COLLECTOR_API_V1;
+import static io.servicecomb.foundation.common.base.ServiceCombConstants.CONFIG_TRACING_COLLECTOR_API_V2;
 import static io.servicecomb.foundation.common.base.ServiceCombConstants.DEFAULT_MICROSERVICE_NAME;
 import static io.servicecomb.foundation.common.base.ServiceCombConstants.DEFAULT_TRACING_COLLECTOR_ADDRESS;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import java.text.MessageFormat;
+
 import brave.Tracing;
 import brave.context.log4j12.MDCCurrentTraceContext;
 import brave.http.HttpTracing;
 import brave.propagation.CurrentTraceContext;
 import io.servicecomb.config.DynamicProperties;
+
 import zipkin2.Span;
+import zipkin2.codec.SpanBytesEncoder;
 import zipkin2.reporter.AsyncReporter;
 import zipkin2.reporter.Reporter;
 import zipkin2.reporter.Sender;
@@ -39,20 +46,33 @@ import zipkin2.reporter.okhttp3.OkHttpSender;
 
 @Configuration
 class TracingConfiguration {
+  private String apiVersion = CONFIG_TRACING_COLLECTOR_API_V2;
 
   @Bean
   Sender sender(DynamicProperties dynamicProperties) {
+    apiVersion = dynamicProperties.getStringProperty(CONFIG_TRACING_COLLECTOR_API_VERSION,
+        CONFIG_TRACING_COLLECTOR_API_V2).toLowerCase();
+    // use default value if the user set value is invalid
+    if (apiVersion.compareTo(CONFIG_TRACING_COLLECTOR_API_V1) != 0){
+      apiVersion = CONFIG_TRACING_COLLECTOR_API_V2;
+    }
+
+    String path = MessageFormat.format(CONFIG_TRACING_COLLECTOR_PATH, apiVersion);
     return OkHttpSender.create(
         dynamicProperties.getStringProperty(
             CONFIG_TRACING_COLLECTOR_ADDRESS,
             DEFAULT_TRACING_COLLECTOR_ADDRESS)
             .trim()
             .replaceAll("/+$", "")
-            .concat(CONFIG_TRACING_COLLECTOR_PATH));
+            .concat(path));
   }
 
   @Bean
   Reporter<Span> zipkinReporter(Sender sender) {
+    if (apiVersion.compareTo(CONFIG_TRACING_COLLECTOR_API_V1) == 0){
+      return AsyncReporter.builder(sender).build(SpanBytesEncoder.JSON_V1);
+    }
+
     return AsyncReporter.builder(sender).build();
   }
 
