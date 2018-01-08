@@ -54,7 +54,7 @@ public class MetricsCollector extends Collector implements Collector.Describable
   }
 
   private List<MetricFamilySamples> load() {
-    RegistryMetric registryMetric = dataSource.getRegistryMetric(0);
+    RegistryMetric registryMetric = dataSource.getRegistryMetric();
     List<MetricFamilySamples> familySamples = new ArrayList<>();
     familySamples.add(getFamilySamples("Instance Level", registryMetric.getInstanceMetric().toMap()));
     for (Entry<String, ConsumerInvocationMetric> consumerMetric : registryMetric.getConsumerMetrics().entrySet()) {
