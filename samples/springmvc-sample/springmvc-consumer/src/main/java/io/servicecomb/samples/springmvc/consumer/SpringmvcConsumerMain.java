@@ -16,15 +16,10 @@
  */
 package io.servicecomb.samples.springmvc.consumer;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
-import io.servicecomb.foundation.common.exceptions.ServiceCombException;
 import io.servicecomb.foundation.common.utils.BeanUtils;
-import io.servicecomb.foundation.common.utils.JsonUtils;
 import io.servicecomb.foundation.common.utils.Log4jUtils;
 import io.servicecomb.provider.pojo.RpcReference;
 import io.servicecomb.provider.springmvc.reference.RestTemplateBuilder;
@@ -56,26 +51,6 @@ public class SpringmvcConsumerMain {
     // POJO Consumer
     System.out.println("POJO consumer sayhi services: " + hello.sayHi("Java Chassis"));
     System.out.println("POJO consumer sayhi services: " + hello.sayHello(person));
-
-    String metricsResult = restTemplate.getForObject("cse://springmvc/springmvchello/metricsForTest/", String.class);
-
-    @SuppressWarnings("unchecked")
-    Map<String, String> resultMap = JsonUtils.OBJ_MAPPER.readValue(metricsResult, HashMap.class);
-
-    if (!resultMap.get("CPU and Memory").contains("heapUsed=")) {
-      throw new ServiceCombException("check metrics error");
-    }
-
-    if (!resultMap.get("totalRequestProvider OPERATIONAL_LEVEL")
-        .equals("{springmvc.springmvcHello.sayHi=2, springmvc.springmvcHello.sayHello=2, springmvc.springmvcHello.metricsForTest=1}")) {
-      throw new ServiceCombException("check metrics error");
-    }
-
-    if (!resultMap.get("RequestQueueRelated").contains("springmvc.springmvcHello.sayHi") ||
-        !resultMap.get("RequestQueueRelated").contains("springmvc.springmvcHello.sayHello")){
-      throw new ServiceCombException("check metrics error");
-    }
-
   }
 
   public static void init() throws Exception {

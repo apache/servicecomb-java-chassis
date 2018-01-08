@@ -566,8 +566,7 @@ public class MetricsServoRegistry implements InitializingBean {
     if (!Double.isNaN(value)) {
       BigDecimal decimal = new BigDecimal(value);
       return decimal.setScale(places, RoundingMode.HALF_UP).doubleValue();
-    } else {
-      return 0;
     }
+    return 0;
   }
 }
