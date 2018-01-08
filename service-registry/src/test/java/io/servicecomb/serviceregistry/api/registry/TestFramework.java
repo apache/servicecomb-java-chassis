@@ -17,40 +17,23 @@
 
 package io.servicecomb.serviceregistry.api.registry;
 
-import org.junit.After;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
 
 public class TestFramework {
-
-  Framework framework = null;
-
-  @Before
-  public void setUp() throws Exception {
-    framework = new Framework();
-  }
-
-  @After
-  public void tearDown() throws Exception {
-    framework = null;
-  }
-
   @Test
   public void testDefaultValues() {
+    Framework framework = new Framework();
     Assert.assertNull(framework.getName());
     Assert.assertNull(framework.getVersion());
   }
 
   @Test
   public void testInitializedValues() {
-    initFramework(); //Initialize the Values
-    Assert.assertEquals("JAVA-CHASSIS", framework.getName());
-    Assert.assertEquals("x.x.x", framework.getVersion());
-  }
-
-  private void initFramework() {
+    Framework framework = new Framework();
     framework.setName("JAVA-CHASSIS");
     framework.setVersion("x.x.x");
+    Assert.assertEquals("JAVA-CHASSIS", framework.getName());
+    Assert.assertEquals("x.x.x", framework.getVersion());
   }
 }

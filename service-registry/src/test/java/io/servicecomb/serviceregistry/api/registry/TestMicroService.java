@@ -35,14 +35,11 @@ public class TestMicroService {
 
   List<String> oListSchemas = null;
 
-  Framework framework = null;
-
   @Before
   public void setUp() throws Exception {
     oMicroservice = new Microservice();
     oMapProperties = new HashMap<>();
     oListSchemas = new ArrayList<>();
-    framework = new Framework();
   }
 
   @After
@@ -98,6 +95,7 @@ public class TestMicroService {
     oMicroservice.setProperties(oMapProperties);
     oMicroservice.setSchemas(oListSchemas);
     oMicroservice.getPaths().add(new BasePath());
+    Framework framework = new Framework();
     framework.setName("JAVA-CHASSIS");
     framework.setVersion("x.x.x");
     oMicroservice.setFramework(framework);
