@@ -96,10 +96,8 @@ public class TracingTestBase {
         .filter(span -> span.tags() != null)
         .map(span -> span.tags().entrySet())
         .flatMap(Collection::stream)
-        .filter(span -> "call.path".equals(span.getKey()) || "http.path".equals(span.getKey()) || "http.status_code"
-            .equals
-            (span
-        .getKey()))
+        .filter(span -> "call.path".equals(span.getKey()) || "http.path".equals(span.getKey())
+            || "http.status_code".equals(span.getKey()))
         .filter(span -> span.getValue() != null)
         .map(annotation -> new String(annotation.getValue()))
         .distinct()
