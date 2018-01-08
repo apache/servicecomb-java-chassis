@@ -71,5 +71,6 @@ public class TestServiceCombServerList {
     List<Server> serverList = list.getInitialListOfServers();
     Assert.assertEquals(2, serverList.size());
     Assert.assertEquals(4444, serverList.get(1).getPort());
+    Assert.assertEquals(serverList.size(), list.getUpdatedListOfServers().size());
   }
 }
