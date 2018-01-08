@@ -46,12 +46,6 @@ public class RestServerVerticle extends AbstractVerticle {
 
   private static final String SSL_KEY = "rest.provider";
 
-  private static final int ACCEPT_BACKLOG = 2048;
-
-  private static final int SEND_BUFFER_SIZE = 4096;
-
-  private static final int RECEIVE_BUFFER_SIZE = 4096;
-
   private Endpoint endpoint;
 
   private URIEndpointObject endpointObject;
@@ -128,9 +122,6 @@ public class RestServerVerticle extends AbstractVerticle {
 
   private HttpServerOptions createDefaultHttpServerOptions() {
     HttpServerOptions serverOptions = new HttpServerOptions();
-    serverOptions.setAcceptBacklog(ACCEPT_BACKLOG);
-    serverOptions.setSendBufferSize(SEND_BUFFER_SIZE);
-    serverOptions.setReceiveBufferSize(RECEIVE_BUFFER_SIZE);
     serverOptions.setUsePooledBuffers(true);
     serverOptions.setIdleTimeout(TransportConfig.getConnectionIdleTimeoutInSeconds());
 
