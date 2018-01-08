@@ -17,14 +17,24 @@
 
 package io.servicecomb.core;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.junit.Assert;
 import org.junit.Test;
 
 import io.servicecomb.core.endpoint.EndpointsCache;
+import io.servicecomb.core.transport.TransportManager;
 import io.servicecomb.serviceregistry.api.registry.Microservice;
+import io.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
+import io.servicecomb.serviceregistry.cache.CacheEndpoint;
+import io.servicecomb.serviceregistry.cache.InstanceCache;
+import io.servicecomb.serviceregistry.cache.InstanceCacheManager;
 import io.servicecomb.swagger.invocation.AsyncResponse;
+import mockit.Expectations;
+import mockit.Injectable;
 import mockit.Mocked;
 
 public class TestTransport {
@@ -69,15 +79,34 @@ public class TestTransport {
   }
 
   @Test
-  public void testAbstractTransport(@Mocked Microservice microservice) throws Exception {
+  public void testAbstractTransport(@Mocked Microservice microservice,
+      @Injectable InstanceCacheManager instanceCacheManager, @Injectable TransportManager transportManager,
+      @Mocked InstanceCache instanceCache, @Injectable MicroserviceInstance instance)
+      throws Exception {
+    EndpointsCache.init(instanceCacheManager, transportManager);
+    EndpointsCache oEndpointsCache = new EndpointsCache("app", "testname", "test", "rest");
 
-    EndpointsCache oEndpointsCache = new EndpointsCache("app", "testname", "test", "test");
+    List<Endpoint> endpoionts = oEndpointsCache.getLatestEndpoints();
+    Assert.assertEquals(endpoionts.size(), 0);
 
-    try {
-      List<Endpoint> endpoionts = oEndpointsCache.getLatestEndpoints();
-      Assert.assertEquals(endpoionts.size(), 0);
-    } catch (Exception e) {
-      Assert.assertEquals(null, e.getMessage());
-    }
+    Map<String, List<CacheEndpoint>> allTransportMap = new HashMap<>();
+    CacheEndpoint cacheEndpoint = new CacheEndpoint("rest://127.0.0.1:9999", instance);
+    List<CacheEndpoint> restEndpoints = new ArrayList<>();
+    restEndpoints.add(cacheEndpoint);
+    allTransportMap.put("rest", restEndpoints);
+
+    new Expectations() {
+      {
+        instanceCacheManager.getOrCreate(anyString, anyString, anyString);
+        result = instanceCache;
+        instanceCache.cacheChanged((InstanceCache) any);
+        result = true;
+        instanceCache.getOrCreateTransportMap();
+        result = allTransportMap;
+      }
+    };
+
+    endpoionts = oEndpointsCache.getLatestEndpoints();
+    Assert.assertEquals(endpoionts.size(), 1);
   }
 }
