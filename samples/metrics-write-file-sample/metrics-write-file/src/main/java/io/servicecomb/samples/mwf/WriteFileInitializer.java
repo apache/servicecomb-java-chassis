@@ -56,8 +56,7 @@ public class WriteFileInitializer {
     metricPoll = DynamicPropertyFactory.getInstance().getIntProperty(MetricsConfig.METRICS_POLLING_TIME, 5000).get();
     this.fileWriter = fileWriter;
     this.dataSource = dataSource;
-
-    this.init();
+    this.convertor = new SimpleFileContentConvertor();
   }
 
   public WriteFileInitializer(MetricsFileWriter fileWriter, DataSource dataSource, String hostName, String filePrefix) {
@@ -66,42 +65,36 @@ public class WriteFileInitializer {
     this.dataSource = dataSource;
     this.hostName = hostName;
     this.filePrefix = filePrefix;
+    this.convertor = new SimpleFileContentConvertor();
+    this.formatter = new SimpleFileContentFormatter(hostName, filePrefix);
   }
 
-  private void init() {
+  public void startOutput() {
+    if (StringUtils.isEmpty(filePrefix)) {
+      Microservice microservice = RegistryUtils.getMicroservice();
+      filePrefix = microservice.getAppId() + "." + microservice.getServiceName();
+    }
+    if (StringUtils.isEmpty(hostName)) {
+      hostName = NetUtils.getHostName();
+      if (StringUtils.isEmpty(hostName)) {
+        hostName = NetUtils.getHostAddress();
+      }
+    }
+
+    formatter = new SimpleFileContentFormatter(hostName, filePrefix);
+
     final Runnable poller = this::run;
     Executors.newScheduledThreadPool(1)
         .scheduleWithFixedDelay(poller, 0, metricPoll, MILLISECONDS);
   }
 
   public void run() {
-    //wait RegistryUtils init completed
-    if (RegistryUtils.getServiceRegistry() != null) {
-      if (StringUtils.isEmpty(filePrefix)) {
-        Microservice microservice = RegistryUtils.getMicroservice();
-        filePrefix = microservice.getAppId() + "." + microservice.getServiceName();
-      }
-      if (StringUtils.isEmpty(hostName)) {
-        hostName = NetUtils.getHostName();
-        if (StringUtils.isEmpty(hostName)) {
-          hostName = NetUtils.getHostAddress();
-        }
-      }
+    RegistryMetric registryMetric = dataSource.getRegistryMetric();
+    Map<String, String> convertedMetrics = convertor.convert(registryMetric);
+    Map<String, String> formattedMetrics = formatter.format(convertedMetrics);
 
-      if (convertor == null) {
-        convertor = new SimpleFileContentConvertor();
-      }
-      if (formatter == null) {
-        formatter = new SimpleFileContentFormatter(hostName, filePrefix);
-      }
-
-      RegistryMetric registryMetric = dataSource.getRegistryMetric();
-      Map<String, String> convertedMetrics = convertor.convert(registryMetric);
-      Map<String, String> formattedMetrics = formatter.format(convertedMetrics);
-
-      for (String metricName : formattedMetrics.keySet()) {
-        fileWriter.write(metricName, filePrefix, formattedMetrics.get(metricName));
-      }
+    for (String metricName : formattedMetrics.keySet()) {
+      fileWriter.write(metricName, filePrefix, formattedMetrics.get(metricName));
     }
   }
 }
