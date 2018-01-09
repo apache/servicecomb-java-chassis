@@ -132,6 +132,15 @@ public class SpringmvcClient {
     //prometheus integration test
     try {
       String content = restTemplate.getForObject("cse://springmvc/codeFirstSpringmvc/prometheusForTest", String.class);
+
+      TestMgr.check(true,content.contains("servicecomb_springmvc_codeFirst_addDate"));
+      TestMgr.check(true,content.contains("servicecomb_springmvc_codeFirst_sayHello"));
+      TestMgr.check(true,content.contains("servicecomb_springmvc_codeFirst_fallbackFromCache"));
+      TestMgr.check(true,content.contains("servicecomb_springmvc_codeFirst_isTrue_producer"));
+      TestMgr.check(true,content.contains("servicecomb_springmvc_codeFirst_add"));
+      TestMgr.check(true,content.contains("servicecomb_springmvc_codeFirst_sayHi2"));
+      TestMgr.check(true,content.contains("servicecomb_springmvc_codeFirst_saySomething"));
+
       String[] metricLines = content.split("\n");
       if (metricLines.length > 0) {
         for (String metricLine : metricLines) {
