@@ -149,8 +149,8 @@ public final class ProtobufSchemaUtils {
       Parameter[] params = method.getParameters();
       for (int idx = 0; idx < params.length; idx++) {
         Parameter param = params[idx];
-        String paramName = getValidParamName(operationMeta.getParamName(idx));
-
+        String paramName = io.servicecomb.swagger.generator.core.utils.ClassUtils
+            .correctMethodParameterName(operationMeta.getParamName(idx));
         config.addField(paramName, param.getParameterizedType());
       }
 
@@ -158,18 +158,5 @@ public final class ProtobufSchemaUtils {
 
       return createWrapSchema(config);
     });
-  }
-
-  private static String getValidParamName(String paramName) {
-    if (SourceVersion.isName(paramName)) {
-      return paramName;
-    }
-    StringBuffer newParam = new StringBuffer();
-    for (int index = 0; index < paramName.length(); index++) {
-      if (Character.isJavaIdentifierPart(paramName.charAt(index))) {
-        newParam.append(paramName.charAt(index));
-      }
-    }
-    return newParam.toString();
   }
 }

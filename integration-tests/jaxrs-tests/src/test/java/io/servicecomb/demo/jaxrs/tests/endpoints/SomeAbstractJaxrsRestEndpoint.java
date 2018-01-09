@@ -106,6 +106,12 @@ public class SomeAbstractJaxrsRestEndpoint {
     return prefix + " " + user.getName();
   }
 
+  @Path("/saysomething1")
+  @POST
+  public String saySomething1(@HeaderParam("prefix-test") String prefix_test, Person user) {
+    return prefix_test + " " + user.getName();
+  }
+
   @Path("/sayhi/{name}")
   @PUT
   public String sayHi(@PathParam("name") String name) {
