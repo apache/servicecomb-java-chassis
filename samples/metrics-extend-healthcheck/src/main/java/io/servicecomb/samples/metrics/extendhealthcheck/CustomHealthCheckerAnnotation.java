@@ -17,12 +17,13 @@
 
 package io.servicecomb.samples.metrics.extendhealthcheck;
 
-import io.servicecomb.metrics.common.Health;
+import org.springframework.stereotype.Component;
+
 import io.servicecomb.metrics.common.HealthCheckResult;
 import io.servicecomb.metrics.common.HealthChecker;
 
-//this health check will auto register because Health Annotation
-@Health
+//this health check will auto register because spring bean annotation
+@Component
 public class CustomHealthCheckerAnnotation implements HealthChecker {
   @Override
   public String getName() {

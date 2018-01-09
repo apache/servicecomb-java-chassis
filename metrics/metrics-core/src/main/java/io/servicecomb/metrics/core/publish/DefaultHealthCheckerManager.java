@@ -19,8 +19,6 @@ package io.servicecomb.metrics.core.publish;
 
 import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
@@ -28,12 +26,10 @@ import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.config.BeanDefinition;
-import org.springframework.context.annotation.ClassPathScanningCandidateComponentProvider;
-import org.springframework.core.type.filter.AnnotationTypeFilter;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
-import io.servicecomb.metrics.common.Health;
 import io.servicecomb.metrics.common.HealthCheckResult;
 import io.servicecomb.metrics.common.HealthChecker;
 import io.servicecomb.metrics.core.health.DefaultMicroserviceHealthChecker;
@@ -46,13 +42,21 @@ public class DefaultHealthCheckerManager implements HealthCheckerManager {
 
   private final Map<String, HealthChecker> healthCheckers;
 
-  public DefaultHealthCheckerManager() {
+  private ApplicationContext context;
+
+  @Autowired
+  public DefaultHealthCheckerManager(ApplicationContext context) {
+    this.context = context;
     this.healthCheckers = new ConcurrentHashMap<>();
     HealthChecker defaultHealthChecker = new DefaultMicroserviceHealthChecker();
     this.healthCheckers.put(defaultHealthChecker.getName(), defaultHealthChecker);
 
-    for (HealthChecker checker : getAllAnnotationHealthChecker()) {
-      this.healthCheckers.put(checker.getName(), checker);
+    for (String beanName : context.getBeanDefinitionNames()) {
+      Class<?> beanClass = context.getType(beanName);
+      if (HealthChecker.class.isAssignableFrom(beanClass)) {
+        Object bean = context.getBean(beanName);
+        this.healthCheckers.put(((HealthChecker) bean).getName(), (HealthChecker) bean);
+      }
     }
   }
 
@@ -73,29 +77,5 @@ public class DefaultHealthCheckerManager implements HealthCheckerManager {
       return checker.check();
     }
     throw new InvocationException(BAD_REQUEST, "HealthChecker name : " + name + " unregister");
-  }
-
-  private List<HealthChecker> getAllAnnotationHealthChecker() {
-    List<HealthChecker> checkers = new ArrayList<>();
-    ClassPathScanningCandidateComponentProvider scanner = new ClassPathScanningCandidateComponentProvider(false);
-    scanner.addIncludeFilter(new AnnotationTypeFilter(Health.class));
-    for (BeanDefinition definition : scanner.findCandidateComponents("./")) {
-      try {
-        Class<?> beanClass = Class.forName(definition.getBeanClassName());
-        if (HealthChecker.class.isAssignableFrom(beanClass)) {
-          try {
-            checkers.add((HealthChecker) beanClass.getConstructor(null).newInstance());
-          } catch (Exception e) {
-            logger.error("construct health check class failed", e);
-          }
-        } else {
-          logger.error(
-              "health annotation class:" + definition.getBeanClassName() + " not implement HealthChecker interface");
-        }
-      } catch (ClassNotFoundException e) {
-        logger.error("health check class not found", e);
-      }
-    }
-    return checkers;
   }
 }
