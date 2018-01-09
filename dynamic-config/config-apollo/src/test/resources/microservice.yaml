@@ -31,7 +31,11 @@ apollo:
     token: xxx
     refreshInterval: 30
     firstRefreshInterval: 0
+
 cse:
+  config:
+    client:
+      serverUri: http://127.0.0.1:8070
   service:
     registry:
       address: http://127.0.0.1:30100

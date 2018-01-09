@@ -30,6 +30,9 @@ apollo:
     namespace: application
     token: #get token from Apollo web pages
 cse:
+  config:
+    client:
+      serverUri: http://127.0.0.1:8070
   service:
     registry:
       address: http://127.0.0.1:30100
