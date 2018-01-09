@@ -21,6 +21,7 @@ import javax.ws.rs.core.Response.Status;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 
 import io.servicecomb.foundation.common.utils.JsonUtils;
 import io.servicecomb.metrics.common.DefaultHealthCheckExtraData;
@@ -31,6 +32,7 @@ import io.servicecomb.serviceregistry.api.registry.Microservice;
 import io.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
 import io.servicecomb.swagger.invocation.exception.InvocationException;
 
+@Component
 public class DefaultMicroserviceHealthChecker implements HealthChecker {
 
   private static Logger logger = LoggerFactory.getLogger(DefaultMicroserviceHealthChecker.class);
