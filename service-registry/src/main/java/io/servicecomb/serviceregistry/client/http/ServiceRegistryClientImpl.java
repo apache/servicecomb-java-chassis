@@ -549,51 +549,32 @@ public final class ServiceRegistryClientImpl implements ServiceRegistryClient {
   @Override
   public List<MicroserviceInstance> findServiceInstance(String consumerId, String appId, String serviceName,
       String versionRule) {
-    Holder<FindInstancesResponse> holder = new Holder<>();
-    IpPort ipPort = ipPortManager.getAvailableAddress();
-
-    CountDownLatch countDownLatch = new CountDownLatch(1);
-    RestUtils.get(ipPort,
-        Const.REGISTRY_API.MICROSERVICE_INSTANCES,
-        new RequestParam().addQueryParam("appId", appId)
-            .addQueryParam("serviceName", serviceName)
-            .addQueryParam("version", versionRule)
-            .addHeader("X-ConsumerId", consumerId),
-        syncHandler(countDownLatch, FindInstancesResponse.class, holder));
-    try {
-      countDownLatch.await();
-      if (holder.value == null) {
-        return null; // error
-      }
-      List<MicroserviceInstance> list = holder.value.getInstances();
-      if (list == null) {
-        return new ArrayList<>();
-      }
-      return list;
-    } catch (Exception e) {
-      LOGGER.error("find microservice instance {}/{}/{} failed",
-          appId,
-          serviceName,
-          versionRule,
-          e);
+    MicroserviceInstances instances = findServiceInstances(consumerId, appId, serviceName, versionRule, null);
+    if (instances == null) {
+      return null;
     }
-    return null;
+    return instances.getInstancesResponse().getInstances();
   }
 
   @Override
   public MicroserviceInstances findServiceInstances(String consumerId, String appId, String serviceName,
       String versionRule, String revision) {
     MicroserviceInstances microserviceInstances = new MicroserviceInstances();
-    IpPort ipPort = ipPortManager.getAvailableAddress(false);
+    IpPort ipPort = ipPortManager.getAvailableAddress();
 
     CountDownLatch countDownLatch = new CountDownLatch(1);
+    
+    RequestParam requestParam = new RequestParam().addQueryParam("appId", appId)
+    .addQueryParam("serviceName", serviceName)
+    .addQueryParam("version", versionRule)
+    .addHeader("X-ConsumerId", consumerId);
+    if(revision != null) {
+      requestParam.addQueryParam("rev", revision);
+    }
+    
     RestUtils.get(ipPort,
         Const.REGISTRY_API.MICROSERVICE_INSTANCES,
-        new RequestParam().addQueryParam("appId", appId)
-            .addQueryParam("serviceName", serviceName)
-            .addQueryParam("version", versionRule)
-            .addQueryParam("rev", revision)
-            .addHeader("X-ConsumerId", consumerId),
+        requestParam,
         syncHandlerForInstances(countDownLatch, microserviceInstances));
     try {
       countDownLatch.await();

@@ -203,27 +203,8 @@ public abstract class AbstractServiceRegistry implements ServiceRegistry {
 
   public List<MicroserviceInstance> findServiceInstance(String appId, String serviceName,
       String versionRule) {
-    List<MicroserviceInstance> instances = srClient.findServiceInstance(microservice.getServiceId(),
-        appId,
-        serviceName,
-        versionRule);
-    if (instances == null) {
-      LOGGER.error("Can not find any instances from service center due to previous errors. service={}/{}/{}", appId, serviceName, versionRule);
-      return null;
-    }
-
-    LOGGER.info("find instances[{}] from service center success. service={}/{}/{}",
-        instances.size(),
-        appId,
-        serviceName,
-        versionRule);
-    for (MicroserviceInstance instance : instances) {
-      LOGGER.info("service id={}, instance id={}, endpoints={}",
-          instance.getServiceId(),
-          instance.getInstanceId(),
-          instance.getEndpoints());
-    }
-    return instances;
+    MicroserviceInstances instances = findServiceInstances(appId, serviceName, versionRule, null);
+    return instances.getInstancesResponse().getInstances();
   }
 
   public MicroserviceInstances findServiceInstances(String appId, String serviceName,
@@ -235,7 +216,7 @@ public abstract class AbstractServiceRegistry implements ServiceRegistry {
         revision);
 
     if (microserviceInstances == null) {
-      LOGGER.error("find empty instances from service center. service={}/{}/{}", appId, serviceName, versionRule);
+      LOGGER.error("Can not find any instances from service center due to previous errors. service={}/{}/{}", appId, serviceName, versionRule);
       return null;
     }
 

@@ -59,7 +59,7 @@ public class LocalServiceRegistryClientImplTest {
     Assert.assertEquals(1, m.size());
 
     MicroserviceInstances microserviceInstances =
-        registryClient.findServiceInstances("", "myapp", "springmvctest", DefinitionConst.VERSION_RULE_ALL, DefinitionConst.DEFAULT_REVISION);
+        registryClient.findServiceInstances("", "myapp", "springmvctest", DefinitionConst.VERSION_RULE_ALL, null);
     List<MicroserviceInstance> mi = microserviceInstances.getInstancesResponse().getInstances();
     Assert.assertEquals(1, mi.size());
   }
@@ -121,7 +121,7 @@ public class LocalServiceRegistryClientImplTest {
     Assert.assertThat(result, Matchers.empty());
 
     MicroserviceInstances microserviceInstances =
-        registryClient.findServiceInstances("self", appId, microserviceName, DefinitionConst.VERSION_RULE_ALL, DefinitionConst.DEFAULT_REVISION);
+        registryClient.findServiceInstances("self", appId, microserviceName, DefinitionConst.VERSION_RULE_ALL, null);
     List<MicroserviceInstance> results = microserviceInstances.getInstancesResponse().getInstances();
 
     Assert.assertThat(results, Matchers.empty());

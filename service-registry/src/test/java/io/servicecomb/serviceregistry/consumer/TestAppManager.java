@@ -66,7 +66,7 @@ public class TestAppManager {
   public void getOrCreateMicroserviceVersionRule() {
     new Expectations(RegistryUtils.class) {
       {
-        RegistryUtils.findServiceInstances(appId, serviceName, DefinitionConst.VERSION_RULE_ALL, DefinitionConst.DEFAULT_REVISION);
+        RegistryUtils.findServiceInstances(appId, serviceName, DefinitionConst.VERSION_RULE_ALL, null);
         result = microserviceInstances;
       }
     };
@@ -81,7 +81,7 @@ public class TestAppManager {
   public void getOrCreateMicroserviceVersions() {
     new Expectations(RegistryUtils.class) {
       {
-        RegistryUtils.findServiceInstances(appId, serviceName, DefinitionConst.VERSION_RULE_ALL, DefinitionConst.DEFAULT_REVISION);
+        RegistryUtils.findServiceInstances(appId, serviceName, DefinitionConst.VERSION_RULE_ALL, null);
         result = microserviceInstances;
       }
     };

@@ -46,7 +46,7 @@ public class MicroserviceVersions {
 
   private String microserviceName;
 
-  private String revision = DefinitionConst.DEFAULT_REVISION;
+  private String revision = null;
 
   private List<MicroserviceInstance> instances;
 
@@ -91,14 +91,6 @@ public class MicroserviceVersions {
   @SuppressWarnings("unchecked")
   public <T extends MicroserviceVersion> T getVersion(String serviceId) {
     return (T) versions.get(serviceId);
-  }
-
-  public String getRevision() {
-    return revision;
-  }
-
-  public void setRevision(String revision) {
-    this.revision = revision;
   }
 
   public void submitPull() {
