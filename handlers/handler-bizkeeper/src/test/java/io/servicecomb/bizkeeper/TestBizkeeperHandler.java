@@ -22,6 +22,8 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
 
 import com.netflix.hystrix.HystrixCommandProperties;
 import com.netflix.hystrix.HystrixObservableCommand;
@@ -30,6 +32,7 @@ import com.netflix.hystrix.strategy.HystrixPlugins;
 import io.servicecomb.core.Invocation;
 import io.servicecomb.core.definition.OperationMeta;
 import io.servicecomb.swagger.invocation.AsyncResponse;
+import io.servicecomb.swagger.invocation.InvocationType;
 
 public class TestBizkeeperHandler extends BizkeeperHandler {
 
@@ -105,7 +108,7 @@ public class TestBizkeeperHandler extends BizkeeperHandler {
     } catch (Exception e) {
       validAssert = false;
     }
-    Assert.assertFalse(validAssert);
+    Assert.assertTrue(validAssert);
   }
 
   @Override
@@ -145,7 +148,62 @@ public class TestBizkeeperHandler extends BizkeeperHandler {
     System.setProperty("cse.fallbackpolicy.Group_Name.testHandleForceReturnnull.policy", "returnnull");
     bizkeeperHandler.handle(invocation, f -> {
       Assert.assertTrue(f.isSuccessed());
-      Assert.assertEquals(null, (Object) f.getResult());
+      Assert.assertNull(f.getResult());
+    });
+  }
+
+  @Test
+  public void testHandleInError() throws Exception {
+    Mockito.when(invocation.getMicroserviceName()).thenReturn("testHandleInError");
+    Mockito.when(invocation.getOperationMeta()).thenReturn(Mockito.mock(OperationMeta.class));
+    Mockito.when(invocation.getOperationMeta().getMicroserviceQualifiedName())
+        .thenReturn("testHandleInError");
+    FallbackPolicy policy = Mockito.mock(FallbackPolicy.class);
+    Mockito.when(policy.name()).thenReturn("throwException");
+    Mockito.when(policy.getFallbackResponse(Mockito.any(Invocation.class))).thenThrow(new RuntimeException());
+    FallbackPolicyManager.addPolicy(policy);
+    System.setProperty("cse.fallbackpolicy.groupname.testHandleInError.policy", "throwException");
+    Mockito.doAnswer(new Answer<Void>() {
+      @Override
+      public Void answer(InvocationOnMock invocation) {
+        AsyncResponse asyncRsp = invocation.getArgumentAt(0, AsyncResponse.class);
+        asyncRsp.fail(InvocationType.CONSUMER, new Exception("testHandleInError"));
+        return null;
+      }
+    }).when(invocation).next(Mockito.any(AsyncResponse.class));;
+    bizkeeperHandler.handle(invocation, f -> {
+      Assert.assertTrue(f.isFailed());
+    });
+  }
+
+  @Test
+  public void testHandlNextException() throws Exception {
+    Mockito.when(invocation.getMicroserviceName()).thenReturn("testHandlNextException");
+    Mockito.when(invocation.getOperationMeta()).thenReturn(Mockito.mock(OperationMeta.class));
+    Mockito.when(invocation.getOperationMeta().getMicroserviceQualifiedName())
+        .thenReturn("testHandlNextException");
+    Mockito.doThrow(new Exception("testHandlNextException")).when(invocation).next(Mockito.any(AsyncResponse.class));
+    bizkeeperHandler.handle(invocation, f -> {
+      Assert.assertTrue(f.isFailed());
+    });
+  }
+
+  @Test
+  public void testHandleSuccess() throws Exception {
+    Mockito.when(invocation.getMicroserviceName()).thenReturn("testHandleSuccess");
+    Mockito.when(invocation.getOperationMeta()).thenReturn(Mockito.mock(OperationMeta.class));
+    Mockito.when(invocation.getOperationMeta().getMicroserviceQualifiedName())
+        .thenReturn("testHandleSuccess");
+    Mockito.doAnswer(new Answer<Void>() {
+      @Override
+      public Void answer(InvocationOnMock invocation) {
+        AsyncResponse asyncRsp = invocation.getArgumentAt(0, AsyncResponse.class);
+        asyncRsp.success("");
+        return null;
+      }
+    }).when(invocation).next(Mockito.any(AsyncResponse.class));;
+    bizkeeperHandler.handle(invocation, f -> {
+      Assert.assertTrue(f.isSuccessed());
     });
   }
 }

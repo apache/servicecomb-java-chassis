@@ -208,7 +208,7 @@ public abstract class AbstractServiceRegistry implements ServiceRegistry {
         serviceName,
         versionRule);
     if (instances == null) {
-      LOGGER.error("find empty instances from service center. service={}/{}/{}", appId, serviceName, versionRule);
+      LOGGER.error("Can not find any instances from service center due to previous errors. service={}/{}/{}", appId, serviceName, versionRule);
       return null;
     }
 

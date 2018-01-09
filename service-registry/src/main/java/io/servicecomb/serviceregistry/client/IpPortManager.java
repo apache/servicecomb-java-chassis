@@ -19,6 +19,7 @@ package io.servicecomb.serviceregistry.client;
 
 import static io.servicecomb.serviceregistry.api.Const.REGISTRY_APP_ID;
 import static io.servicecomb.serviceregistry.api.Const.REGISTRY_SERVICE_NAME;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -46,9 +47,9 @@ public class IpPortManager {
 
   private ArrayList<IpPort> defaultIpPort;
 
-  private InstanceCache instanceCache = null;
-
   private AtomicInteger currentAvailableIndex;
+
+  private boolean autoDiscoveryInited = false;
 
   public IpPortManager(ServiceRegistryConfig serviceRegistryConfig, InstanceCacheManager instanceCacheManager) {
     this.serviceRegistryConfig = serviceRegistryConfig;
@@ -65,45 +66,48 @@ public class IpPortManager {
 
   // we have to do this operation after the first time setup has already done
   public void initAutoDiscovery() {
-    if (this.serviceRegistryConfig.isRegistryAutoDiscovery()) {
-      instanceCache = instanceCacheManager.getOrCreate(REGISTRY_APP_ID,
+    if (!autoDiscoveryInited && this.serviceRegistryConfig.isRegistryAutoDiscovery()) {
+      instanceCacheManager.getOrCreate(REGISTRY_APP_ID,
           REGISTRY_SERVICE_NAME,
           DefinitionConst.VERSION_RULE_LATEST);
+      autoDiscoveryInited = true;
     }
   }
 
-  public IpPort getAvailableAddress(boolean invalidate) {
-    int index;
-    if (invalidate) {
-      index = currentAvailableIndex.incrementAndGet();
-    } else {
-      index = currentAvailableIndex.get();
+  public IpPort getNextAvailableAddress(IpPort failedIpPort) {
+    int currentIndex = currentAvailableIndex.get();
+    IpPort current = getAvailableAddress(currentIndex);
+    if (current.equals(failedIpPort)) {
+      currentAvailableIndex.compareAndSet(currentIndex, currentIndex + 1);
+      current = getAvailableAddress();
     }
 
+    LOGGER.info("Change service center address from {} to {}", failedIpPort.toString(), current.toString());
+    return current;
+  }
+
+  public IpPort getAvailableAddress() {
+    return getAvailableAddress(currentAvailableIndex.get());
+  }
+
+  private IpPort getAvailableAddress(int index) {
     if (index < defaultIpPort.size()) {
-      return returnWithLog(invalidate, defaultIpPort.get(index));
+      return defaultIpPort.get(index);
     }
     List<CacheEndpoint> endpoints = getDiscoveredIpPort();
     if (endpoints == null || (index >= defaultIpPort.size() + endpoints.size())) {
       currentAvailableIndex.set(0);
-      return returnWithLog(invalidate, defaultIpPort.get(0));
+      return defaultIpPort.get(0);
     }
     CacheEndpoint nextEndpoint = endpoints.get(index - defaultIpPort.size());
-    return returnWithLog(invalidate, new URIEndpointObject(nextEndpoint.getEndpoint()));
-  }
-
-  private IpPort returnWithLog(boolean needLog, IpPort result) {
-    if (needLog) {
-      LOGGER.info("Using next service center address {}:{}.", result.getHostOrIp(), result.getPort());
-    }
-    return result;
+    return new URIEndpointObject(nextEndpoint.getEndpoint());
   }
 
   private List<CacheEndpoint> getDiscoveredIpPort() {
-    if (instanceCache == null) {
-      return new ArrayList<>(0);
+    if (!autoDiscoveryInited || !this.serviceRegistryConfig.isRegistryAutoDiscovery()) {
+      return null;
     }
-    instanceCache = instanceCacheManager.getOrCreate(REGISTRY_APP_ID,
+    InstanceCache instanceCache = instanceCacheManager.getOrCreate(REGISTRY_APP_ID,
         REGISTRY_SERVICE_NAME,
         DefinitionConst.VERSION_RULE_LATEST);
     return instanceCache.getOrCreateTransportMap().get(defaultTransport);

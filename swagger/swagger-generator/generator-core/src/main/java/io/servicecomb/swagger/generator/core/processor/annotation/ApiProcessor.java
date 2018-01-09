@@ -15,40 +15,29 @@
  * limitations under the License.
  */
 
-package io.servicecomb.foundation.common.part;
+package io.servicecomb.swagger.generator.core.processor.annotation;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import org.springframework.util.StringUtils;
 
-import org.apache.commons.io.FileUtils;
+import io.servicecomb.swagger.generator.core.ClassAnnotationProcessor;
+import io.servicecomb.swagger.generator.core.SwaggerGenerator;
+import io.swagger.annotations.Api;
 
-public class FilePart extends AbstractPart {
-  private File file;
-
-  public FilePart(String name, String file) {
-    this(name, new File(file));
-  }
-
-  public FilePart(String name, File file) {
-    this.name = name;
-    this.file = file;
-    this.setSubmittedFileName(this.file.getName());
-  }
-
+public class ApiProcessor implements ClassAnnotationProcessor {
   @Override
-  public InputStream getInputStream() throws IOException {
-    return new FileInputStream(file);
+  public void process(Object annotation, SwaggerGenerator swaggerGenerator) {
+    Api api = (Api) annotation;
+
+    setTags(api, swaggerGenerator);
   }
 
-  @Override
-  public long getSize() {
-    return file.length();
-  }
-
-  @Override
-  public void write(String fileName) throws IOException {
-    FileUtils.copyFile(file, new File(fileName));
+  private void setTags(Api api, SwaggerGenerator swaggerGenerator) {
+    String[] tags = api.tags();
+    for (String tagName : tags) {
+      if (StringUtils.isEmpty(tagName)) {
+        continue;
+      }
+      swaggerGenerator.addDefaultTag(tagName);
+    }
   }
 }

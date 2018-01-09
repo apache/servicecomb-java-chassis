@@ -70,13 +70,15 @@ public class TestHystrixPropertiesStrategyExt {
     Assert.assertFalse(commandPro.circuitBreakerForceClosed().get());
     Assert.assertFalse(commandPro.circuitBreakerForceOpen().get());
     Assert.assertEquals(Integer.valueOf(20), commandPro.circuitBreakerRequestVolumeThreshold().get());
-    Assert.assertEquals(Integer.valueOf(5000), commandPro.circuitBreakerSleepWindowInMilliseconds().get());
-    Assert.assertEquals(Integer.valueOf(10), commandPro.executionIsolationSemaphoreMaxConcurrentRequests().get());
+    Assert.assertEquals(Integer.valueOf(15000), commandPro.circuitBreakerSleepWindowInMilliseconds().get());
+    Assert.assertEquals(Integer.valueOf(1000), commandPro.executionIsolationSemaphoreMaxConcurrentRequests().get());
     Assert.assertTrue(commandPro.executionIsolationThreadInterruptOnTimeout().get());
     Assert.assertEquals(null, commandPro.executionIsolationThreadPoolKeyOverride().get());
-    Assert.assertEquals(Integer.valueOf(1000), commandPro.executionTimeoutInMilliseconds().get());
-    Assert.assertTrue(commandPro.executionTimeoutEnabled().get());
+    Assert.assertEquals(Integer.valueOf(30000), commandPro.executionTimeoutInMilliseconds().get());
+    Assert.assertFalse(commandPro.executionTimeoutEnabled().get());
     Assert.assertEquals(Integer.valueOf(10), commandPro.fallbackIsolationSemaphoreMaxConcurrentRequests().get());
     Assert.assertTrue(commandPro.fallbackEnabled().get());
+    Assert.assertEquals(Integer.valueOf(100), commandPro.metricsRollingPercentileBucketSize().get());
+    Assert.assertFalse(commandPro.metricsRollingPercentileEnabled().get());
   }
 }

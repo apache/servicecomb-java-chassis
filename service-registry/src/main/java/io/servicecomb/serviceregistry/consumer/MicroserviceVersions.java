@@ -116,6 +116,9 @@ public class MicroserviceVersions {
         DefinitionConst.VERSION_RULE_ALL,
         revision);
     if (microserviceInstances == null) {
+      // exception happens and try pull again later.
+      pendingPullCount.incrementAndGet();
+      appManager.getEventBus().post(new PullMicroserviceVersionsInstancesEvent(this, TimeUnit.SECONDS.toMillis(1)));
       return;
     }
     if (!microserviceInstances.isNeedRefresh()) {

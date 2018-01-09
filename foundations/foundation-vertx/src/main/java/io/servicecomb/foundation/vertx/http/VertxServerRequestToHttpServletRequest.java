@@ -36,7 +36,6 @@ import javax.ws.rs.core.HttpHeaders;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import io.servicecomb.foundation.common.part.FilePart;
 import io.servicecomb.foundation.vertx.stream.BufferInputStream;
 import io.vertx.core.MultiMap;
 import io.vertx.core.buffer.Buffer;
@@ -236,7 +235,6 @@ public class VertxServerRequestToHttpServletRequest extends AbstractHttpServletR
     }
 
     final FileUpload fileUpload = upload.get();
-    return new FilePart(name, fileUpload.uploadedFileName())
-        .contentType(fileUpload.contentType());
+    return new FileUploadPart(fileUpload);
   }
 }

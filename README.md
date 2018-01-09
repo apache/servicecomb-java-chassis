@@ -57,7 +57,7 @@ The first build may take a longer than expected as Maven downloads all the depen
 
 ## Contact
 
-Bugs: [issues](https://github.com/ServiceComb/java-chassis/issues)
+Bugs: [issues](https://issues.apache.org/jira/browse/SCB)
 
 mailing list: [subscribe](mailto:dev-subscribe@servicecomb.incubator.apache.org)  [dev](https://lists.apache.org/list.html?dev@servicecomb.apache.org)
 

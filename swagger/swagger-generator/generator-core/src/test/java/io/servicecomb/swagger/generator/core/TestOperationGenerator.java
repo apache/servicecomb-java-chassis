@@ -17,14 +17,20 @@
 
 package io.servicecomb.swagger.generator.core;
 
-import java.util.Collections;
+import static org.hamcrest.Matchers.contains;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
 
-import org.junit.Assert;
+import java.lang.reflect.Method;
+import java.util.Collections;
+import java.util.List;
+
 import org.junit.Test;
 import org.springframework.util.StringValueResolver;
 
 import io.servicecomb.foundation.test.scaffolding.spring.SpringUtils;
 import io.servicecomb.swagger.generator.pojo.PojoSwaggerGeneratorContext;
+import io.swagger.annotations.ApiOperation;
 
 public class TestOperationGenerator {
   @Test
@@ -39,6 +45,59 @@ public class TestOperationGenerator {
     OperationGenerator operationGenerator = new OperationGenerator(swaggerGenerator, null);
     operationGenerator.setPath("/a/${var}/b");
 
-    Assert.assertEquals("/a/varValue/b", operationGenerator.getPath());
+    assertEquals("/a/varValue/b", operationGenerator.getPath());
+  }
+
+  @Test
+  public void testConvertTags() throws NoSuchMethodException {
+    Method function = TestClass.class.getMethod("function");
+    SwaggerGenerator swaggerGenerator = new SwaggerGenerator(new PojoSwaggerGeneratorContext(), TestClass.class);
+    OperationGenerator operationGenerator = new OperationGenerator(swaggerGenerator, function);
+
+    operationGenerator.generate();
+
+    List<String> tagList = operationGenerator.getOperation().getTags();
+    assertThat(tagList, contains("tag1", "tag2"));
+  }
+
+  @Test
+  public void testConvertTagsOnMethodWithNoTag() throws NoSuchMethodException {
+    Method function = TestClass.class.getMethod("functionWithNoTag");
+    SwaggerGenerator swaggerGenerator = new SwaggerGenerator(new PojoSwaggerGeneratorContext(), TestClass.class);
+    OperationGenerator operationGenerator = new OperationGenerator(swaggerGenerator, function);
+    swaggerGenerator.addDefaultTag("default0");
+    swaggerGenerator.addDefaultTag("default1");
+
+    operationGenerator.generate();
+
+    List<String> tagList = operationGenerator.getOperation().getTags();
+    assertThat(tagList, contains("default0", "default1"));
+  }
+
+  @Test
+  public void testConvertTagsOnMethodWithNoAnnotation() throws NoSuchMethodException {
+    Method function = TestClass.class.getMethod("functionWithNoAnnotation");
+    SwaggerGenerator swaggerGenerator = new SwaggerGenerator(new PojoSwaggerGeneratorContext(), TestClass.class);
+    OperationGenerator operationGenerator = new OperationGenerator(swaggerGenerator, function);
+    swaggerGenerator.addDefaultTag("default0");
+    swaggerGenerator.addDefaultTag("default1");
+
+    operationGenerator.generate();
+
+    List<String> tagList = operationGenerator.getOperation().getTags();
+    assertThat(tagList, contains("default0", "default1"));
+  }
+
+  private static class TestClass {
+    @ApiOperation(value = "value1", tags = {"tag1", "tag2"})
+    public void function() {
+    }
+
+    @ApiOperation(value = "value2")
+    public void functionWithNoTag() {
+    }
+
+    public void functionWithNoAnnotation() {
+    }
   }
 }

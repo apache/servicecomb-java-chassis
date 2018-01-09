@@ -17,6 +17,9 @@
 
 package io.servicecomb.swagger.generator.core;
 
+import static org.hamcrest.Matchers.contains;
+import static org.junit.Assert.assertThat;
+
 import java.util.Collections;
 
 import org.junit.Assert;
@@ -39,5 +42,17 @@ public class TestSwaggerGenerator {
     swaggerGenerator.setBasePath("/a/${var}/b");
 
     Assert.assertEquals("/a/varValue/b", swaggerGenerator.getSwagger().getBasePath());
+  }
+
+  @Test
+  public void testAddDefaultTag() {
+    SwaggerGenerator swaggerGenerator = new SwaggerGenerator(new PojoSwaggerGeneratorContext(), null);
+
+    swaggerGenerator.addDefaultTag("test1");
+    swaggerGenerator.addDefaultTag("");
+    swaggerGenerator.addDefaultTag(null);
+    swaggerGenerator.addDefaultTag("test2");
+
+    assertThat(swaggerGenerator.getDefaultTags(), contains("test1", "test2"));
   }
 }

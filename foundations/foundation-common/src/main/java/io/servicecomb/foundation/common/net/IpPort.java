@@ -53,6 +53,28 @@ public class IpPort {
     this.port = port;
   }
 
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+
+    IpPort ipPort = (IpPort) o;
+
+    if (port != ipPort.port) {
+      return false;
+    }
+    return hostOrIp.equals(ipPort.hostOrIp);
+  }
+
+  @Override
+  public String toString() {
+    return hostOrIp + ":" + port;
+  }
+
   public InetSocketAddress getSocketAddress() {
     if (socketAddress == null) {
       synchronized (lock) {
