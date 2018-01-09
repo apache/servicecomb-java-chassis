@@ -50,4 +50,11 @@ public interface ServiceCombConstants {
   String CONFIG_CSE_PREFIX = "cse.";
 
   String CONFIG_KEY_SPLITER = "_";
+
+  String CONFIG_FRAMEWORK_DEFAULT_NAME = "servicecomb-java-chassis";
+
+  String CONFIG_FRAMEWORK_DEFAULT_VERSION = "";
+  
+  String CONFIG_DEFAULT_REGISTER_BY = "SDK";
+  
 }

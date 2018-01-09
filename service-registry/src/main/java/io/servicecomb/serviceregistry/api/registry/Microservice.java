@@ -34,6 +34,10 @@ import io.servicecomb.serviceregistry.api.Const;
 public class Microservice {
   private String serviceId;
 
+  private Framework framework;
+
+  private String registerBy;
+
   private String appId;
 
   private String serviceName;
@@ -188,5 +192,21 @@ public class Microservice {
 
   public void setPaths(List<BasePath> paths) {
     this.paths = paths;
+  }
+
+  public Framework getFramework() {
+    return framework;
+  }
+
+  public void setFramework(Framework framework) {
+    this.framework = framework;
+  }
+
+  public String getRegisterBy() {
+    return registerBy;
+  }
+
+  public void setRegisterBy(String registerBy) {
+    this.registerBy = registerBy;
   }
 }

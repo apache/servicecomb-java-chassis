@@ -61,6 +61,7 @@ public class TestMicroService {
     Assert.assertEquals(MicroserviceInstanceStatus.UP.toString(), oMicroservice.getStatus());
     Assert.assertNull(oMicroservice.getVersion());
     Assert.assertEquals(0, oMicroservice.getPaths().size());
+    Assert.assertNull(oMicroservice.getFramework());
   }
 
   @Test
@@ -76,6 +77,9 @@ public class TestMicroService {
     Assert.assertEquals("fakeProxy", oMicroservice.getProperties().get("proxy"));
     Assert.assertEquals(1, oMicroservice.getSchemas().size());
     Assert.assertEquals(1, oMicroservice.getPaths().size());
+    Assert.assertEquals("JAVA-CHASSIS", oMicroservice.getFramework().getName());
+    Assert.assertEquals("x.x.x", oMicroservice.getFramework().getVersion());
+    Assert.assertEquals("SDK", oMicroservice.getRegisterBy());
   }
 
   private void initMicroservice() {
@@ -91,5 +95,10 @@ public class TestMicroService {
     oMicroservice.setProperties(oMapProperties);
     oMicroservice.setSchemas(oListSchemas);
     oMicroservice.getPaths().add(new BasePath());
+    Framework framework = new Framework();
+    framework.setName("JAVA-CHASSIS");
+    framework.setVersion("x.x.x");
+    oMicroservice.setFramework(framework);
+    oMicroservice.setRegisterBy("SDK");
   }
 }
