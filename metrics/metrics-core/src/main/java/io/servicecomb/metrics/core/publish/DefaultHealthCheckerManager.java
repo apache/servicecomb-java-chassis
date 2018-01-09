@@ -45,9 +45,6 @@ public class DefaultHealthCheckerManager implements HealthCheckerManager {
   @Autowired(required = false)
   public DefaultHealthCheckerManager(List<HealthChecker> springHealthCheckers) {
     this.healthCheckers = new ConcurrentHashMap<>();
-    HealthChecker defaultHealthChecker = new DefaultMicroserviceHealthChecker();
-    this.healthCheckers.put(defaultHealthChecker.getName(), defaultHealthChecker);
-
     if (springHealthCheckers != null && !springHealthCheckers.isEmpty()) {
       for (HealthChecker checker : springHealthCheckers) {
         this.healthCheckers.put(checker.getName(), checker);

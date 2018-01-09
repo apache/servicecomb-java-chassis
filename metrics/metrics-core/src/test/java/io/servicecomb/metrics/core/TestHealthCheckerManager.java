@@ -31,6 +31,7 @@ import io.servicecomb.foundation.common.utils.JsonUtils;
 import io.servicecomb.metrics.common.DefaultHealthCheckExtraData;
 import io.servicecomb.metrics.common.HealthCheckResult;
 import io.servicecomb.metrics.common.HealthChecker;
+import io.servicecomb.metrics.core.health.DefaultMicroserviceHealthChecker;
 import io.servicecomb.metrics.core.publish.DefaultHealthCheckerManager;
 import io.servicecomb.metrics.core.publish.HealthCheckerManager;
 import io.servicecomb.serviceregistry.RegistryUtils;
@@ -68,17 +69,7 @@ public class TestHealthCheckerManager {
     };
 
     List<HealthChecker> checkers = new ArrayList<>();
-    checkers.add(new HealthChecker() {
-      @Override
-      public String getName() {
-        return "custom";
-      }
-
-      @Override
-      public HealthCheckResult check() {
-        return new HealthCheckResult(true, "", "");
-      }
-    });
+    checkers.add(new DefaultMicroserviceHealthChecker());
 
     HealthCheckerManager manager = new DefaultHealthCheckerManager(checkers);
     Map<String, HealthCheckResult> results = manager.check();
