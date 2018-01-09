@@ -21,10 +21,6 @@ service_description:
   name: apollo-test
   version: 1.0.1
 
-dynamic:
-  config:
-    enabled: true
-
 apollo:
   config:
     serverUri: http://127.0.0.1:8070
