@@ -53,7 +53,7 @@ public interface ServiceCombConstants {
 
   String CONFIG_FRAMEWORK_DEFAULT_NAME = "servicecomb-java-chassis";
 
-  String CONFIG_FRAMEWORK_DEFAULT_VERSION = "1.0";
+  String CONFIG_FRAMEWORK_DEFAULT_VERSION = "";
   
   String CONFIG_DEFAULT_REGISTER_BY = "SDK";
   
