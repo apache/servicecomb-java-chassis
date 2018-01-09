@@ -110,6 +110,5 @@ public class JaxrsSwaggerGeneratorContext extends RestSwaggerGeneratorContext {
 
     parameterAnnotationMgr.register(HeaderParam.class, new HeaderParamAnnotationProcessor());
     parameterAnnotationMgr.register(QueryParam.class, new QueryParamAnnotationProcessor());
-    parameterAnnotationMgr.register(RequestParamColFmt.class, new RequestParamColFmtAnnotationProcessor());
   }
 }
