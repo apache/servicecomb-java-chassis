@@ -17,12 +17,12 @@
 
 package io.servicecomb.config.client;
 
-import com.netflix.config.ConcurrentCompositeConfiguration;
+import org.apache.commons.configuration.Configuration;
 
 public class ApolloConfig {
   public static final ApolloConfig INSTANCE = new ApolloConfig();
 
-  private static ConcurrentCompositeConfiguration finalConfig;
+  private static Configuration finalConfig;
 
   private static final String SERVER_URL_KEY = "apollo.config.serverUri";
 
@@ -47,11 +47,11 @@ public class ApolloConfig {
   private ApolloConfig() {
   }
 
-  public static void setConcurrentCompositeConfiguration(ConcurrentCompositeConfiguration config) {
-    finalConfig = (ConcurrentCompositeConfiguration) config;
+  public static void setConcurrentCompositeConfiguration(Configuration config) {
+    finalConfig = config;
   }
 
-  public ConcurrentCompositeConfiguration getConcurrentCompositeConfiguration() {
+  public Configuration getConcurrentCompositeConfiguration() {
     return finalConfig;
   }
 

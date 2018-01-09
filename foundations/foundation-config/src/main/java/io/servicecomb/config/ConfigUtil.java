@@ -53,8 +53,6 @@ public final class ConfigUtil {
 
   protected static final String configCenterUrlKey = "cse.config.client.serverUri";
 
-  protected static final String dynamicConfigEnabled = "dynamic.config.enabled";
-
   private static final String MICROSERVICE_CONFIG_LOADER_KEY = "cse-microservice-config-loader";
 
   private ConfigUtil() {
@@ -153,8 +151,7 @@ public final class ConfigUtil {
   }
 
   public static DynamicWatchedConfiguration createConfigFromConfigCenter(Configuration localConfiguration) {
-    if (localConfiguration.getProperty(configCenterUrlKey) == null &&
-        !localConfiguration.getBoolean(dynamicConfigEnabled, false)) {
+    if (localConfiguration.getProperty(configCenterUrlKey) == null) {
       LOGGER.info("config center URL is missing, skip to load configuration from config center");
       return null;
     }
