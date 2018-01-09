@@ -125,6 +125,8 @@ public class TestServiceRegistryClientImpl {
     Assert.assertEquals(null, oClient.heartbeat("microserviceId", "microserviceInstanceId"));
     Assert.assertEquals(null,
         oClient.findServiceInstance("selfMicroserviceId", "appId", "serviceName", "versionRule"));
+    Assert.assertEquals(null,
+        oClient.findServiceInstances("selfMicroserviceId", "appId", "serviceName", "versionRule", "0"));
 
     Assert.assertEquals("a", new ClientException("a").getMessage());
   }

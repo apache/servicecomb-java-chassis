@@ -24,6 +24,7 @@ import io.servicecomb.serviceregistry.api.registry.Microservice;
 import io.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
 import io.servicecomb.serviceregistry.cache.InstanceCacheManager;
 import io.servicecomb.serviceregistry.client.ServiceRegistryClient;
+import io.servicecomb.serviceregistry.client.http.MicroserviceInstances;
 import io.servicecomb.serviceregistry.consumer.AppManager;
 
 public interface ServiceRegistry {
@@ -47,6 +48,9 @@ public interface ServiceRegistry {
 
   List<MicroserviceInstance> findServiceInstance(String appId, String microserviceName,
       String microserviceVersionRule);
+
+  MicroserviceInstances findServiceInstances(String appId, String microserviceName,
+      String microserviceVersionRule, String revision);
 
   boolean updateMicroserviceProperties(Map<String, String> properties);
 

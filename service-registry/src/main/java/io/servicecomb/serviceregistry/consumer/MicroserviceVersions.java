@@ -33,6 +33,7 @@ import io.servicecomb.serviceregistry.RegistryUtils;
 import io.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
 import io.servicecomb.serviceregistry.api.registry.MicroserviceInstanceStatus;
 import io.servicecomb.serviceregistry.api.response.MicroserviceInstanceChangedEvent;
+import io.servicecomb.serviceregistry.client.http.MicroserviceInstances;
 import io.servicecomb.serviceregistry.definition.DefinitionConst;
 import io.servicecomb.serviceregistry.task.event.PullMicroserviceVersionsInstancesEvent;
 
@@ -44,6 +45,8 @@ public class MicroserviceVersions {
   private String appId;
 
   private String microserviceName;
+
+  private String revision = null;
 
   private List<MicroserviceInstance> instances;
 
@@ -100,20 +103,26 @@ public class MicroserviceVersions {
       return;
     }
 
-    List<MicroserviceInstance> pulledInstances = RegistryUtils.findServiceInstance(appId,
+    MicroserviceInstances microserviceInstances = RegistryUtils.findServiceInstances(appId,
         microserviceName,
-        DefinitionConst.VERSION_RULE_ALL);
-    if (pulledInstances == null) {
+        DefinitionConst.VERSION_RULE_ALL,
+        revision);
+    if (microserviceInstances == null) {
       // exception happens and try pull again later.
       pendingPullCount.incrementAndGet();
       appManager.getEventBus().post(new PullMicroserviceVersionsInstancesEvent(this, TimeUnit.SECONDS.toMillis(1)));
       return;
     }
+    if (!microserviceInstances.isNeedRefresh()) {
+      return;
+    }
+    List<MicroserviceInstance> pulledInstances = microserviceInstances.getInstancesResponse().getInstances();
+    String rev = microserviceInstances.getRevision();
 
-    setInstances(pulledInstances);
+    setInstances(pulledInstances, rev);
   }
 
-  private void setInstances(List<MicroserviceInstance> pulledInstances) {
+  private void setInstances(List<MicroserviceInstance> pulledInstances, String rev) {
     synchronized (lock) {
       instances = pulledInstances
           .stream()
@@ -136,6 +145,7 @@ public class MicroserviceVersions {
       for (MicroserviceVersionRule microserviceVersionRule : versionRules.values()) {
         microserviceVersionRule.setInstances(instances);
       }
+      revision = rev;
     }
   }
 

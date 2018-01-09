@@ -37,6 +37,7 @@ import io.servicecomb.serviceregistry.cache.InstanceCacheManager;
 import io.servicecomb.serviceregistry.cache.InstanceCacheManagerNew;
 import io.servicecomb.serviceregistry.client.IpPortManager;
 import io.servicecomb.serviceregistry.client.ServiceRegistryClient;
+import io.servicecomb.serviceregistry.client.http.MicroserviceInstances;
 import io.servicecomb.serviceregistry.config.ServiceRegistryConfig;
 import io.servicecomb.serviceregistry.consumer.AppManager;
 import io.servicecomb.serviceregistry.consumer.MicroserviceVersionFactory;
@@ -202,15 +203,29 @@ public abstract class AbstractServiceRegistry implements ServiceRegistry {
 
   public List<MicroserviceInstance> findServiceInstance(String appId, String serviceName,
       String versionRule) {
-    List<MicroserviceInstance> instances = srClient.findServiceInstance(microservice.getServiceId(),
+    MicroserviceInstances instances = findServiceInstances(appId, serviceName, versionRule, null);
+    return instances.getInstancesResponse().getInstances();
+  }
+
+  public MicroserviceInstances findServiceInstances(String appId, String serviceName,
+      String versionRule, String revision) {
+    MicroserviceInstances microserviceInstances = srClient.findServiceInstances(microservice.getServiceId(),
         appId,
         serviceName,
-        versionRule);
-    if (instances == null) {
+        versionRule,
+        revision);
+
+    if (microserviceInstances == null) {
       LOGGER.error("Can not find any instances from service center due to previous errors. service={}/{}/{}", appId, serviceName, versionRule);
       return null;
     }
 
+    if (!microserviceInstances.isNeedRefresh()) {
+      LOGGER.info("instances revision is not changed, service={}/{}/{}", appId, serviceName, versionRule);
+      return microserviceInstances;
+    }
+
+    List<MicroserviceInstance> instances = microserviceInstances.getInstancesResponse().getInstances();
     LOGGER.info("find instances[{}] from service center success. service={}/{}/{}",
         instances.size(),
         appId,
@@ -222,7 +237,7 @@ public abstract class AbstractServiceRegistry implements ServiceRegistry {
           instance.getInstanceId(),
           instance.getEndpoints());
     }
-    return instances;
+    return microserviceInstances;
   }
 
   @Override

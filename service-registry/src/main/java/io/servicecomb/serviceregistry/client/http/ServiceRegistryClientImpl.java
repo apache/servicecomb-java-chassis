@@ -152,6 +152,36 @@ public final class ServiceRegistryClientImpl implements ServiceRegistryClient {
     };
   }
 
+  private <T> Handler<RestResponse> syncHandlerForInstances(CountDownLatch countDownLatch, MicroserviceInstances mInstances) {
+    return restResponse -> {
+      RequestContext requestContext = restResponse.getRequestContext();
+      HttpClientResponse response = restResponse.getResponse();
+      if (response == null) {
+        // 请求失败，触发请求SC的其他实例
+        if (!requestContext.isRetry()) {
+          retry(requestContext, syncHandlerForInstances(countDownLatch, mInstances));
+        } else {
+          countDownLatch.countDown();
+        }
+        return;
+      }
+      response.bodyHandler(
+          bodyBuffer -> {
+            try {
+              mInstances.setRevision(response.getHeader("X-Resource-Revision"));
+              if (response.statusCode() == 304) {
+                mInstances.setNeedRefresh(false);
+              } else {
+                mInstances.setInstancesResponse(JsonUtils.readValue(bodyBuffer.getBytes(), FindInstancesResponse.class));
+              }
+            } catch (Exception e) {
+              LOGGER.warn(bodyBuffer.toString(), e);
+            }
+            countDownLatch.countDown();
+          });
+    };
+  }
+
   @Override
   public List<Microservice> getAllMicroservices() {
     Holder<GetAllServicesResponse> holder = new Holder<>();
@@ -519,27 +549,46 @@ public final class ServiceRegistryClientImpl implements ServiceRegistryClient {
   @Override
   public List<MicroserviceInstance> findServiceInstance(String consumerId, String appId, String serviceName,
       String versionRule) {
-    Holder<FindInstancesResponse> holder = new Holder<>();
+    MicroserviceInstances instances = findServiceInstances(consumerId, appId, serviceName, versionRule, null);
+    if (instances == null) {
+      return null;
+    }
+    return instances.getInstancesResponse().getInstances();
+  }
+
+  @Override
+  public MicroserviceInstances findServiceInstances(String consumerId, String appId, String serviceName,
+      String versionRule, String revision) {
+    MicroserviceInstances microserviceInstances = new MicroserviceInstances();
     IpPort ipPort = ipPortManager.getAvailableAddress();
 
     CountDownLatch countDownLatch = new CountDownLatch(1);
+    
+    RequestParam requestParam = new RequestParam().addQueryParam("appId", appId)
+    .addQueryParam("serviceName", serviceName)
+    .addQueryParam("version", versionRule)
+    .addHeader("X-ConsumerId", consumerId);
+    if(revision != null) {
+      requestParam.addQueryParam("rev", revision);
+    }
+    
     RestUtils.get(ipPort,
         Const.REGISTRY_API.MICROSERVICE_INSTANCES,
-        new RequestParam().addQueryParam("appId", appId)
-            .addQueryParam("serviceName", serviceName)
-            .addQueryParam("version", versionRule)
-            .addHeader("X-ConsumerId", consumerId),
-        syncHandler(countDownLatch, FindInstancesResponse.class, holder));
+        requestParam,
+        syncHandlerForInstances(countDownLatch, microserviceInstances));
     try {
       countDownLatch.await();
-      if (holder.value == null) {
+      if (!microserviceInstances.isNeedRefresh()) {
+        return microserviceInstances;
+      }
+      if (microserviceInstances.getInstancesResponse() == null) {
         return null; // error
       }
-      List<MicroserviceInstance> list = holder.value.getInstances();
+      List<MicroserviceInstance> list = microserviceInstances.getInstancesResponse().getInstances();
       if (list == null) {
-        return new ArrayList<>();
+        microserviceInstances.getInstancesResponse().setInstances(new ArrayList<>());
       }
-      return list;
+      return microserviceInstances;
     } catch (Exception e) {
       LOGGER.error("find microservice instance {}/{}/{} failed",
           appId,

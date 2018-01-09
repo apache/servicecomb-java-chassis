@@ -23,7 +23,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import org.junit.After;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 
 import com.google.common.eventbus.EventBus;
@@ -34,7 +36,9 @@ import io.servicecomb.serviceregistry.api.MicroserviceKey;
 import io.servicecomb.serviceregistry.api.registry.Microservice;
 import io.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
 import io.servicecomb.serviceregistry.api.registry.MicroserviceInstanceStatus;
+import io.servicecomb.serviceregistry.api.response.FindInstancesResponse;
 import io.servicecomb.serviceregistry.api.response.MicroserviceInstanceChangedEvent;
+import io.servicecomb.serviceregistry.client.http.MicroserviceInstances;
 import io.servicecomb.serviceregistry.task.event.PullMicroserviceVersionsInstancesEvent;
 import io.servicecomb.serviceregistry.version.Version;
 import mockit.Deencapsulation;
@@ -60,6 +64,22 @@ public class TestMicroserviceVersions {
 
   AtomicInteger pendingPullCount;
 
+  MicroserviceInstances microserviceInstances = null;
+
+  FindInstancesResponse findInstancesResponse = null;
+
+  @Before
+  public void setUp() throws Exception {
+    microserviceInstances = new MicroserviceInstances();
+    findInstancesResponse = new FindInstancesResponse();
+  }
+
+  @After
+  public void tearDown() throws Exception {
+    findInstancesResponse = null;
+    microserviceInstances = null;
+  }
+
   public TestMicroserviceVersions() {
     microserviceVersions = new MicroserviceVersions(appManager, appId, microserviceName);
     pendingPullCount = Deencapsulation.getField(microserviceVersions, "pendingPullCount");
@@ -81,15 +101,23 @@ public class TestMicroserviceVersions {
     instances.add(instance);
   }
 
+  private void createMicroserviceInstances() {
+    findInstancesResponse.setInstances(instances);
+    microserviceInstances.setInstancesResponse(findInstancesResponse);
+    microserviceInstances.setRevision("1");
+    microserviceInstances.setNeedRefresh(true);
+  }
+
   private void setup(String microserviceId) {
     createMicroservice(microserviceId);
     createInstance(microserviceId);
+    createMicroserviceInstances();
 
     new MockUp<RegistryUtils>() {
       @Mock
-      List<MicroserviceInstance> findServiceInstance(String appId, String serviceName,
-          String versionRule) {
-        return instances;
+      MicroserviceInstances findServiceInstances(String appId, String serviceName,
+          String versionRule, String revision) {
+        return microserviceInstances;
       }
 
       @Mock
@@ -123,8 +151,8 @@ public class TestMicroserviceVersions {
   public void pullInstancesCancel() {
     new MockUp<RegistryUtils>() {
       @Mock
-      List<MicroserviceInstance> findServiceInstance(String appId, String serviceName,
-          String versionRule) {
+      MicroserviceInstances findServiceInstances(String appId, String serviceName,
+          String versionRule, String revision) {
         throw new Error("must not pull");
       }
     };
@@ -139,8 +167,8 @@ public class TestMicroserviceVersions {
   public void pullInstancesNull() {
     new MockUp<RegistryUtils>() {
       @Mock
-      List<MicroserviceInstance> findServiceInstance(String appId, String serviceName,
-          String versionRule) {
+      MicroserviceInstances findServiceInstances(String appId, String serviceName,
+          String versionRule, String revision) {
         return null;
       }
     };
@@ -169,7 +197,7 @@ public class TestMicroserviceVersions {
     setup(microserviceId);
 
     instances.get(0).setStatus(MicroserviceInstanceStatus.DOWN);
-    Deencapsulation.invoke(microserviceVersions, "setInstances", instances);
+    Deencapsulation.invoke(microserviceVersions, "setInstances", instances, "0");
 
     List<?> resultInstances = Deencapsulation.getField(microserviceVersions, "instances");
     Assert.assertTrue(resultInstances.isEmpty());
