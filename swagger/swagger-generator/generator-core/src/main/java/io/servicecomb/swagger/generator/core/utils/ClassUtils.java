@@ -24,6 +24,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+
+import javax.lang.model.SourceVersion;
+
 import java.util.Set;
 
 import org.springframework.util.StringUtils;
@@ -279,11 +282,27 @@ public final class ClassUtils {
     return JavassistUtils.createClass(classLoader, classConfig);
   }
 
-  public static String correctMethodParameterName(String name) {
-    return name.replace(".", "_").replace("-", "_");
+  public static String correctMethodParameterName(String paramName) {
+    if (SourceVersion.isName(paramName)) {
+      return paramName;
+    }
+    StringBuffer newParam = new StringBuffer();
+    char tempChar;
+    for (int index = 0; index < paramName.length(); index++) {
+      tempChar = paramName.charAt(index);
+      if (Character.isJavaIdentifierPart(tempChar)) {
+        newParam.append(paramName.charAt(index));
+      } else if (tempChar == '.' || tempChar == '-') {
+        newParam.append('_');
+      }
+    }
+    return newParam.toString();
   }
 
   public static String correctClassName(String name) {
+    if (SourceVersion.isIdentifier(name) && !SourceVersion.isKeyword(name)) {
+      return name;
+    }
     String parts[] = name.split("\\.", -1);
     for (int idx = 0; idx < parts.length; idx++) {
       String part = parts[idx];

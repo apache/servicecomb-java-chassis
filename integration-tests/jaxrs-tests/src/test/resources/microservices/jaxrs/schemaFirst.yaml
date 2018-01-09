@@ -111,6 +111,24 @@ paths:
           description: say something
           schema:
             type: string
+  /saysomething1:
+    post:
+      operationId: saySomething1
+      parameters:
+        - name: prefix-test
+          in: header
+          required: true
+          type: string
+        - name: user
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/Person'
+      responses:
+        200:
+          description: say something
+          schema:
+            type: string
   /sayhi/{name}:
     put:
       operationId: sayHi
