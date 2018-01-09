@@ -29,4 +29,8 @@
   <artifactId>metrics-integration</artifactId>
   <packaging>pom</packaging>
 
+  <modules>
+    <module>metrics-prometheus</module>
+  </modules>
+
 </project>
