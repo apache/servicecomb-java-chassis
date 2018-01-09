@@ -30,6 +30,8 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response.Status;
 
 import org.apache.commons.io.IOUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -75,6 +77,7 @@ import io.servicecomb.swagger.invocation.response.Headers;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import io.swagger.annotations.ResponseHeader;
@@ -83,6 +86,7 @@ import io.vertx.core.json.JsonObject;
 @RestSchema(schemaId = "codeFirst")
 @RequestMapping(path = "/codeFirstSpringmvc", produces = MediaType.APPLICATION_JSON_VALUE)
 public class CodeFirstSpringmvc {
+  private Logger LOGGER= LoggerFactory.getLogger(this.getClass());
 
   private MetricsServoRegistry registry;
 
@@ -363,5 +367,12 @@ public class CodeFirstSpringmvc {
   @GetMapping(path = "/traceId")
   public String getTraceId() {
     return ContextUtils.getInvocationContext().getContext(Const.TRACE_ID_NAME);
+  }
+  @GetMapping(path = "/testGetStrArray")
+  public String[] testGetStrArray(@ApiParam(collectionFormat = "csv") String[] str) {
+    for (int i = 0; i < str.length; i++) {
+      LOGGER.info("*******" + str[i]);
+    }
+    return str;
   }
 }

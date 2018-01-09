@@ -20,6 +20,8 @@ package io.servicecomb.common.rest.codec.param;
 import org.junit.Assert;
 import org.junit.Test;
 
+import io.servicecomb.common.rest.codec.param.QueryProcessorCreator.CsvQueryProcessor;
+import io.servicecomb.common.rest.codec.param.QueryProcessorCreator.MultiQueryProcessor;
 import io.servicecomb.common.rest.codec.param.QueryProcessorCreator.QueryProcessor;
 import io.swagger.models.parameters.Parameter;
 import io.swagger.models.parameters.QueryParameter;
@@ -31,9 +33,28 @@ public class TestQueryProcessorCreator {
         ParamValueProcessorCreatorManager.INSTANCE.findValue(QueryProcessorCreator.PARAMTYPE);
     Parameter parameter = new QueryParameter();
     parameter.setName("query");
-
     ParamValueProcessor processor = creator.create(parameter, String.class);
 
     Assert.assertEquals(QueryProcessor.class, processor.getClass());
+
+    ((QueryParameter) parameter).setCollectionFormat("xxx");
+    ParamValueProcessor processorXXX = creator.create(parameter, String.class);
+
+    Assert.assertEquals(QueryProcessor.class, processorXXX.getClass());
+
+    ((QueryParameter) parameter).setCollectionFormat(null);
+    ParamValueProcessor processorNull = creator.create(parameter, String.class);
+
+    Assert.assertEquals(QueryProcessor.class, processorNull.getClass());
+
+    ((QueryParameter) parameter).setCollectionFormat("multi");
+    ParamValueProcessor processorMulti = creator.create(parameter, String.class);
+
+    Assert.assertEquals(MultiQueryProcessor.class, processorMulti.getClass());
+
+    ((QueryParameter) parameter).setCollectionFormat("csv");
+    ParamValueProcessor processorCsv = creator.create(parameter, String.class);
+
+    Assert.assertEquals(CsvQueryProcessor.class, processorCsv.getClass());
   }
 }

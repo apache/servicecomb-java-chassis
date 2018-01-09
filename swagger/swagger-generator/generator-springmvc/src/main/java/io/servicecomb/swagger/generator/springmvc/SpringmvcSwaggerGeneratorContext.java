@@ -104,6 +104,7 @@ public class SpringmvcSwaggerGeneratorContext extends RestSwaggerGeneratorContex
     parameterAnnotationMgr.register(RequestParam.class, new RequestParamAnnotationProcessor());
     parameterAnnotationMgr.register(RequestAttribute.class, new RequestAttributeAnnotationProcessor());
     parameterAnnotationMgr.register(RequestPart.class, new RequestPartAnnotationProcessor());
+    parameterAnnotationMgr.register(RequestParamColFmt.class, new RequestParamColFmtAnnotationProcessor());
   }
 
   @Override
