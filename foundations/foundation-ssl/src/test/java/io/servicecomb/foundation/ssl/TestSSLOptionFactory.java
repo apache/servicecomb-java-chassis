@@ -17,8 +17,11 @@
 
 package io.servicecomb.foundation.ssl;
 
+import org.hamcrest.Matchers;
 import org.junit.Assert;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 
 import com.netflix.config.ConcurrentCompositeConfiguration;
 
@@ -28,6 +31,9 @@ import mockit.MockUp;
 import mockit.Mocked;
 
 public class TestSSLOptionFactory {
+  @Rule
+  public ExpectedException expectedException = ExpectedException.none();
+
   @Test
   public void testSSLOptionFactory() {
     SSLOptionFactory factory = SSLOptionFactory.createSSLOptionFactory("cc", null);
@@ -42,8 +48,10 @@ public class TestSSLOptionFactory {
         result = "wrong";
       }
     };
-    SSLOptionFactory factory = SSLOptionFactory.createSSLOptionFactory("cc", null);
-    Assert.assertEquals(factory, null);
+
+    expectedException.expect(IllegalStateException.class);
+    expectedException.expectMessage(Matchers.is("Failed to create SSLOptionFactory."));
+    SSLOptionFactory.createSSLOptionFactory("cc", null);
   }
 
   @Test

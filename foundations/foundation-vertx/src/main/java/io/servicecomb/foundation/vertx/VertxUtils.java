@@ -31,8 +31,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import io.netty.buffer.ByteBuf;
-import io.servicecomb.foundation.vertx.client.AbstractClientVerticle;
 import io.servicecomb.foundation.vertx.client.ClientPoolManager;
+import io.servicecomb.foundation.vertx.client.ClientVerticle;
 import io.servicecomb.foundation.vertx.stream.BufferInputStream;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Context;
@@ -72,15 +72,12 @@ public final class VertxUtils {
     vertx.deployVerticle(cls.getName(), options);
   }
 
-  public static <CLIENT_POOL, CLIENT_OPTIONS> DeploymentOptions createClientDeployOptions(
+  public static <CLIENT_POOL> DeploymentOptions createClientDeployOptions(
       ClientPoolManager<CLIENT_POOL> clientMgr,
-      int instanceCount,
-      int poolCountPerVerticle, CLIENT_OPTIONS clientOptions) {
+      int instanceCount) {
     DeploymentOptions options = new DeploymentOptions().setInstances(instanceCount);
     SimpleJsonObject config = new SimpleJsonObject();
-    config.put(AbstractClientVerticle.CLIENT_MGR, clientMgr);
-    config.put(AbstractClientVerticle.POOL_COUNT, poolCountPerVerticle);
-    config.put(AbstractClientVerticle.CLIENT_OPTIONS, clientOptions);
+    config.put(ClientVerticle.CLIENT_MGR, clientMgr);
     options.setConfig(config);
 
     return options;

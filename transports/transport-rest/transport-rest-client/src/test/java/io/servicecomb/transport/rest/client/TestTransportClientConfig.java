@@ -21,14 +21,23 @@ import org.junit.Assert;
 import org.junit.Test;
 
 public class TestTransportClientConfig {
-
   @Test
-  public void testGetThreadCount() {
+  public void getThreadCount() {
     Assert.assertEquals(1, TransportClientConfig.getThreadCount());
   }
 
   @Test
-  public void testGetConnectionPoolPerThread() {
-    Assert.assertEquals(1, TransportClientConfig.getConnectionPoolPerThread());
+  public void getConnectionMaxPoolSize() {
+    Assert.assertEquals(5, TransportClientConfig.getConnectionMaxPoolSize());
+  }
+
+  @Test
+  public void getConnectionIdleTimeoutInSeconds() {
+    Assert.assertEquals(30, TransportClientConfig.getConnectionIdleTimeoutInSeconds());
+  }
+
+  @Test
+  public void getConnectionKeepAlive() {
+    Assert.assertTrue(TransportClientConfig.getConnectionKeepAlive());
   }
 }

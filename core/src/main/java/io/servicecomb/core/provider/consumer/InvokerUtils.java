@@ -84,6 +84,8 @@ public final class InvokerUtils {
   public static void reactiveInvoke(Invocation invocation, AsyncResponse asyncResp) {
     try {
       triggerStartedEvent(invocation);
+      invocation.setSync(false);
+
       ReactiveResponseExecutor respExecutor = new ReactiveResponseExecutor();
       invocation.setResponseExecutor(respExecutor);
 

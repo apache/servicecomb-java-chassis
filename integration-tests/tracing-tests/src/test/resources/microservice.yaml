@@ -38,3 +38,6 @@ servicecomb:
   tracing:
     collector:
       address: http://localhost:9411
+  executor:
+    default:
+      thread-per-group: 10

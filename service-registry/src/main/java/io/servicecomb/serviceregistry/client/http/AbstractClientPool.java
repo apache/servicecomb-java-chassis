@@ -20,13 +20,10 @@ package io.servicecomb.serviceregistry.client.http;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import io.servicecomb.foundation.ssl.SSLCustom;
-import io.servicecomb.foundation.ssl.SSLOption;
-import io.servicecomb.foundation.ssl.SSLOptionFactory;
-import io.servicecomb.foundation.vertx.VertxTLSBuilder;
 import io.servicecomb.foundation.vertx.VertxUtils;
 import io.servicecomb.foundation.vertx.client.ClientPoolManager;
-import io.servicecomb.foundation.vertx.client.http.HttpClientVerticle;
+import io.servicecomb.foundation.vertx.client.ClientVerticle;
+import io.servicecomb.foundation.vertx.client.http.HttpClientPoolFactory;
 import io.servicecomb.foundation.vertx.client.http.HttpClientWithContext;
 import io.servicecomb.serviceregistry.config.ServiceRegistryConfig;
 import io.vertx.core.DeploymentOptions;
@@ -37,12 +34,11 @@ import io.vertx.core.http.HttpClientOptions;
  * Created by  on 2017/4/28.
  */
 public abstract class AbstractClientPool implements ClientPool {
-
   private static final Logger LOGGER = LoggerFactory.getLogger(AbstractClientPool.class);
 
-  private ClientPoolManager<HttpClientWithContext> clientMgr = new ClientPoolManager<>();
+  protected static final String SSL_KEY = "sc.consumer";
 
-  private static final String SSL_KEY = "sc.consumer";
+  private ClientPoolManager<HttpClientWithContext> clientMgr;
 
   public AbstractClientPool() {
     create();
@@ -56,28 +52,15 @@ public abstract class AbstractClientPool implements ClientPool {
     // 这里面是同步接口，且好像直接在事件线程中用，保险起见，先使用独立的vertx实例
     Vertx vertx = VertxUtils.getOrCreateVertxByName("registry", null);
     HttpClientOptions httpClientOptions = createHttpClientOptions();
+    clientMgr = new ClientPoolManager<>(vertx, new HttpClientPoolFactory(httpClientOptions));
+
     DeploymentOptions deployOptions =
         VertxUtils.createClientDeployOptions(this.clientMgr,
-            ServiceRegistryConfig.INSTANCE.getWorkerPoolSize(),
-            1,
-            httpClientOptions);
+            ServiceRegistryConfig.INSTANCE.getWorkerPoolSize());
     try {
-      VertxUtils.blockDeploy(vertx, HttpClientVerticle.class, deployOptions);
+      VertxUtils.blockDeploy(vertx, ClientVerticle.class, deployOptions);
     } catch (InterruptedException e) {
       LOGGER.error("deploy a registry verticle failed, {}", e.getMessage());
     }
-  }
-
-  protected void buildSecureClientOptions(HttpClientOptions httpClientOptions) {
-    SSLOptionFactory factory =
-        SSLOptionFactory.createSSLOptionFactory(SSL_KEY, null);
-    SSLOption sslOption;
-    if (factory == null) {
-      sslOption = SSLOption.buildFromYaml(SSL_KEY);
-    } else {
-      sslOption = factory.createSSLOption();
-    }
-    SSLCustom sslCustom = SSLCustom.createSSLCustom(sslOption.getSslCustomClass());
-    VertxTLSBuilder.buildHttpClientOptions(sslOption, sslCustom, httpClientOptions);
   }
 }

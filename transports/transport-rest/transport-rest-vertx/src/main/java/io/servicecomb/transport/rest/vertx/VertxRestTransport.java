@@ -37,6 +37,8 @@ import io.vertx.core.DeploymentOptions;
 public class VertxRestTransport extends AbstractTransport {
   private static final Logger log = LoggerFactory.getLogger(VertxRestTransport.class);
 
+  private RestTransportClient restClient;
+
   @Override
   public String getName() {
     return Const.RESTFUL;
@@ -66,25 +68,18 @@ public class VertxRestTransport extends AbstractTransport {
 
   @Override
   public boolean init() throws Exception {
+    restClient = RestTransportClientManager.INSTANCE.getRestClient();
+    
     // 部署transport server
     DeploymentOptions options = new DeploymentOptions().setInstances(TransportConfig.getThreadCount());
     SimpleJsonObject json = new SimpleJsonObject();
     json.put(ENDPOINT_KEY, getEndpoint());
     options.setConfig(json);
-    return VertxUtils.blockDeploy(transportVertx, RestServerVerticle.class, options) && deployClient();
-  }
-
-  private boolean deployClient() {
-    return RestTransportClientManager.INSTANCE.getRestTransportClient(true) != null &&
-        RestTransportClientManager.INSTANCE.getRestTransportClient(false) != null;
+    return VertxUtils.blockDeploy(transportVertx, RestServerVerticle.class, options) ;
   }
 
   @Override
   public void send(Invocation invocation, AsyncResponse asyncResp) throws Exception {
-    URIEndpointObject endpoint = (URIEndpointObject) invocation.getEndpoint().getAddress();
-    RestTransportClient client =
-        RestTransportClientManager.INSTANCE.getRestTransportClient(endpoint.isSslEnabled());
-    log.debug("Sending request by rest to endpoint {}:{}", endpoint.getHostOrIp(), endpoint.getPort());
-    client.send(invocation, asyncResp);
+    restClient.send(invocation, asyncResp);
   }
 }

@@ -21,13 +21,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import io.servicecomb.core.Invocation;
-import io.servicecomb.foundation.ssl.SSLCustom;
-import io.servicecomb.foundation.ssl.SSLOption;
-import io.servicecomb.foundation.ssl.SSLOptionFactory;
 import io.servicecomb.foundation.vertx.VertxTLSBuilder;
 import io.servicecomb.foundation.vertx.VertxUtils;
 import io.servicecomb.foundation.vertx.client.ClientPoolManager;
-import io.servicecomb.foundation.vertx.client.http.HttpClientVerticle;
+import io.servicecomb.foundation.vertx.client.ClientVerticle;
+import io.servicecomb.foundation.vertx.client.http.HttpClientPoolFactory;
 import io.servicecomb.foundation.vertx.client.http.HttpClientWithContext;
 import io.servicecomb.swagger.invocation.AsyncResponse;
 import io.servicecomb.transport.rest.client.http.VertxHttpMethod;
@@ -40,46 +38,30 @@ public final class RestTransportClient {
 
   private static final String SSL_KEY = "rest.consumer";
 
-  private ClientPoolManager<HttpClientWithContext> clientMgr = new ClientPoolManager<>();
+  private ClientPoolManager<HttpClientWithContext> clientMgr;
 
-  private final boolean sslEnabled;
-
-  public RestTransportClient(boolean sslEnabled) {
-    this.sslEnabled = sslEnabled;
-  }
 
   public void init(Vertx vertx) throws Exception {
     HttpClientOptions httpClientOptions = createHttpClientOptions();
+    clientMgr = new ClientPoolManager<>(vertx, new HttpClientPoolFactory(httpClientOptions));
+
     DeploymentOptions deployOptions = VertxUtils.createClientDeployOptions(clientMgr,
-        TransportClientConfig.getThreadCount(),
-        TransportClientConfig.getConnectionPoolPerThread(),
-        httpClientOptions);
-    VertxUtils.blockDeploy(vertx, HttpClientVerticle.class, deployOptions);
+        TransportClientConfig.getThreadCount());
+    VertxUtils.blockDeploy(vertx, ClientVerticle.class, deployOptions);
   }
 
-  private HttpClientOptions createHttpClientOptions() {
+  private static HttpClientOptions createHttpClientOptions() {
     HttpClientOptions httpClientOptions = new HttpClientOptions();
     httpClientOptions.setMaxPoolSize(TransportClientConfig.getConnectionMaxPoolSize());
     httpClientOptions.setIdleTimeout(TransportClientConfig.getConnectionIdleTimeoutInSeconds());
     httpClientOptions.setKeepAlive(TransportClientConfig.getConnectionKeepAlive());
-    if (this.sslEnabled) {
-      SSLOptionFactory factory =
-          SSLOptionFactory.createSSLOptionFactory(SSL_KEY,
-              null);
-      SSLOption sslOption;
-      if (factory == null) {
-        sslOption = SSLOption.buildFromYaml(SSL_KEY);
-      } else {
-        sslOption = factory.createSSLOption();
-      }
-      SSLCustom sslCustom = SSLCustom.createSSLCustom(sslOption.getSslCustomClass());
-      VertxTLSBuilder.buildHttpClientOptions(sslOption, sslCustom, httpClientOptions);
-    }
+
+    VertxTLSBuilder.buildHttpClientOptions(SSL_KEY, httpClientOptions);
     return httpClientOptions;
   }
 
   public void send(Invocation invocation, AsyncResponse asyncResp) throws Exception {
-    HttpClientWithContext httpClientWithContext = clientMgr.findThreadBindClientPool();
+    HttpClientWithContext httpClientWithContext = clientMgr.findClientPool(invocation.isSync());
     try {
       VertxHttpMethod.INSTANCE.doMethod(httpClientWithContext, invocation, asyncResp);
     } catch (Exception e) {

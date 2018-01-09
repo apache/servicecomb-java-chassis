@@ -19,6 +19,7 @@ package io.servicecomb.foundation.test.scaffolding.config;
 
 import java.lang.reflect.Field;
 
+import org.apache.commons.configuration.Configuration;
 import org.springframework.util.ReflectionUtils;
 
 import com.netflix.config.ConfigurationManager;
@@ -56,5 +57,12 @@ public final class ArchaiusUtils {
     ReflectionUtils.setField(FIELD_CONFIG, null, null);
     ReflectionUtils.setField(FIELD_INITIALIZED_WITH_DEFAULT_CONFIG, null, false);
     ReflectionUtils.setField(FIELD_DYNAMIC_PROPERTY_SUPPORTIMPL, null, null);
+  }
+
+  public static void setProperty(String key, Object value) {
+    // ensure have instance
+    DynamicPropertyFactory.getInstance();
+    Configuration config = (Configuration) DynamicPropertyFactory.getBackingConfigurationSource();
+    config.addProperty(key, value);
   }
 }

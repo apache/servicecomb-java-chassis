@@ -42,10 +42,4 @@ public final class HighwayConfig {
         DynamicPropertyFactory.getInstance().getIntProperty("cse.highway.client.thread-count", 1);
     return address.get();
   }
-
-  public static int getClientConnectionPoolPerThread() {
-    DynamicIntProperty address =
-        DynamicPropertyFactory.getInstance().getIntProperty("cse.highway.client.connection-pool-per-thread", 1);
-    return address.get();
-  }
 }

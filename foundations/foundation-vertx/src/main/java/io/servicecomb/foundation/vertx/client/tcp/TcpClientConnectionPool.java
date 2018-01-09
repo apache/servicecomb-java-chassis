@@ -17,18 +17,14 @@
 package io.servicecomb.foundation.vertx.client.tcp;
 
 import io.vertx.core.Context;
-import io.vertx.core.net.NetClient;
 
 public class TcpClientConnectionPool extends AbstractTcpClientConnectionPool<TcpClientConnection> {
-  public TcpClientConnectionPool(TcpClientConfig clientConfig, Context context, NetClient netClient) {
-    super(clientConfig, context, netClient);
+  public TcpClientConnectionPool(Context context, NetClientWrapper netClientWrapper) {
+    super(context, netClientWrapper);
   }
 
-  /**
-   * {@inheritDoc}
-   */
   @Override
   protected TcpClientConnection create(String endpoint) {
-    return new TcpClientConnection(context, netClient, endpoint, clientConfig);
+    return new TcpClientConnection(context, netClientWrapper, endpoint);
   }
 }

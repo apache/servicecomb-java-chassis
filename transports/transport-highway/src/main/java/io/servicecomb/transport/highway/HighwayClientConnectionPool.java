@@ -17,17 +17,16 @@
 package io.servicecomb.transport.highway;
 
 import io.servicecomb.foundation.vertx.client.tcp.AbstractTcpClientConnectionPool;
-import io.servicecomb.foundation.vertx.client.tcp.TcpClientConfig;
+import io.servicecomb.foundation.vertx.client.tcp.NetClientWrapper;
 import io.vertx.core.Context;
-import io.vertx.core.net.NetClient;
 
 public class HighwayClientConnectionPool extends AbstractTcpClientConnectionPool<HighwayClientConnection> {
-  public HighwayClientConnectionPool(TcpClientConfig clientConfig, Context context, NetClient netClient) {
-    super(clientConfig, context, netClient);
+  public HighwayClientConnectionPool(Context context, NetClientWrapper netClientWrapper) {
+    super(context, netClientWrapper);
   }
 
   @Override
   protected HighwayClientConnection create(String endpoint) {
-    return new HighwayClientConnection(context, netClient, endpoint, clientConfig);
+    return new HighwayClientConnection(context, netClientWrapper, endpoint);
   }
 }

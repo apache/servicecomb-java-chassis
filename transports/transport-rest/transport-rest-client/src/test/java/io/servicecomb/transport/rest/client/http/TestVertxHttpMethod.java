@@ -120,6 +120,11 @@ public class TestVertxHttpMethod extends VertxHttpMethod {
     HttpClient client = mock(HttpClient.class);
     Invocation invocation = mock(Invocation.class);
     OperationMeta operationMeta = mock(OperationMeta.class);
+    Endpoint endpoint = mock(Endpoint.class);
+    URIEndpointObject address = mock(URIEndpointObject.class);
+    when(invocation.getEndpoint()).thenReturn(endpoint);
+    when(endpoint.getAddress()).thenReturn(address);
+    when(address.isSslEnabled()).thenReturn(false);
     when(invocation.getOperationMeta()).thenReturn(operationMeta);
     RestOperationMeta swaggerRestOperation = mock(RestOperationMeta.class);
     when(operationMeta.getExtData(RestConst.SWAGGER_REST_OPERATION)).thenReturn(swaggerRestOperation);

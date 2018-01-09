@@ -21,7 +21,7 @@ import org.slf4j.LoggerFactory;
 
 import io.protostuff.runtime.ProtobufFeature;
 import io.servicecomb.foundation.vertx.client.tcp.AbstractTcpClientPackage;
-import io.servicecomb.foundation.vertx.client.tcp.TcpClientConfig;
+import io.servicecomb.foundation.vertx.client.tcp.NetClientWrapper;
 import io.servicecomb.foundation.vertx.client.tcp.TcpClientConnection;
 import io.servicecomb.foundation.vertx.tcp.TcpOutputStream;
 import io.servicecomb.transport.highway.message.LoginRequest;
@@ -29,16 +29,14 @@ import io.servicecomb.transport.highway.message.LoginResponse;
 import io.servicecomb.transport.highway.message.RequestHeader;
 import io.vertx.core.Context;
 import io.vertx.core.buffer.Buffer;
-import io.vertx.core.net.NetClient;
 
 public class HighwayClientConnection extends TcpClientConnection {
   private static final Logger LOGGER = LoggerFactory.getLogger(HighwayClientConnection.class);
 
   private ProtobufFeature protobufFeature = new ProtobufFeature();
 
-  public HighwayClientConnection(Context context, NetClient netClient, String endpoint,
-      TcpClientConfig clientConfig) {
-    super(context, netClient, endpoint, clientConfig);
+  public HighwayClientConnection(Context context, NetClientWrapper netClientWrapper, String endpoint) {
+    super(context, netClientWrapper, endpoint);
     setLocalSupportLogin(true);
   }
 

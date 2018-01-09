@@ -73,6 +73,8 @@ public class Invocation extends SwaggerInvocation {
 
   private long startProcessingTime;
 
+  private boolean sync = true;
+
   public void setStartTime(long startTime) {
     this.startTime = startTime;
   }
@@ -206,5 +208,13 @@ public class Invocation extends SwaggerInvocation {
         .triggerEvent(new InvocationFinishedEvent(operationMeta.getMicroserviceQualifiedName(),
             this.invocationType, finishedTime - startProcessingTime,
             finishedTime - startTime));
+  }
+
+  public boolean isSync() {
+    return sync;
+  }
+
+  public void setSync(boolean sync) {
+    this.sync = sync;
   }
 }

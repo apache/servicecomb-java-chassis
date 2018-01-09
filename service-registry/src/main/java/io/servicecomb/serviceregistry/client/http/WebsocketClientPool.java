@@ -20,6 +20,7 @@ package io.servicecomb.serviceregistry.client.http;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import io.servicecomb.foundation.vertx.VertxTLSBuilder;
 import io.servicecomb.serviceregistry.config.ServiceRegistryConfig;
 import io.vertx.core.http.HttpClientOptions;
 import io.vertx.core.http.HttpVersion;
@@ -49,7 +50,7 @@ public final class WebsocketClientPool extends AbstractClientPool {
     }
     if (ServiceRegistryConfig.INSTANCE.isSsl()) {
       LOGGER.debug("service center ws client performs requests over TLS");
-      buildSecureClientOptions(httpClientOptions);
+      VertxTLSBuilder.buildHttpClientOptions(SSL_KEY, httpClientOptions);
     }
     return httpClientOptions;
   }

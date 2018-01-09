@@ -109,7 +109,7 @@ public class TestDefaultHttpClientFilter {
     Response response = filter.afterReceiveResponse(invocation, responseEx);
     InvocationException exception = response.getResult();
     CommonExceptionData data = (CommonExceptionData) exception.getErrorData();
-    Assert.assertEquals("path null, statusCode 0, reasonPhrase null, response content-type null is not supported",
+    Assert.assertEquals("method null, path null, statusCode 0, reasonPhrase null, response content-type null is not supported",
         data.getMessage());
   }
 

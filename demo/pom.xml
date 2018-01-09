@@ -35,7 +35,7 @@
     <module>demo-server-servlet</module>
     <module>demo-pojo</module>
     <module>demo-jaxrs</module>
-    <module>demo-perf-client</module>
+    
     <module>demo-springmvc</module>
     <module>demo-schema</module>
     <module>demo-crossapp</module>
@@ -45,6 +45,8 @@
     <module>demo-multiple</module>
     <module>demo-signature</module>
     <module>demo-edge</module>
+    
+    <module>perf</module>
   </modules>
 
   <dependencyManagement>

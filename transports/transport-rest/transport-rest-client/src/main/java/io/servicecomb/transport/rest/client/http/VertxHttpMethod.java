@@ -48,6 +48,7 @@ import io.vertx.core.http.HttpClient;
 import io.vertx.core.http.HttpClientRequest;
 import io.vertx.core.http.HttpClientResponse;
 import io.vertx.core.http.HttpMethod;
+import io.vertx.core.http.RequestOptions;
 
 public class VertxHttpMethod {
   private static final Logger LOGGER = LoggerFactory.getLogger(VertxHttpMethod.class);
@@ -92,14 +93,6 @@ public class VertxHttpMethod {
       asyncResp.fail(invocation.getInvocationType(), e);
     });
 
-    LOGGER.debug(
-        "Running HTTP method {} on {} at {}:{}{}",
-        invocation.getOperationMeta().getMethod(),
-        invocation.getMicroserviceName(),
-        ipPort.getHostOrIp(),
-        ipPort.getPort(),
-        path);
-
     // 从业务线程转移到网络线程中去发送
     httpClientWithContext.runOnContext(httpClient -> {
       this.setCseContext(invocation, clientRequest);
@@ -122,9 +115,20 @@ public class VertxHttpMethod {
 
   HttpClientRequest createRequest(HttpClient client, Invocation invocation, IpPort ipPort, String path,
       AsyncResponse asyncResp) {
+    URIEndpointObject endpoint = (URIEndpointObject) invocation.getEndpoint().getAddress();
+    RequestOptions requestOptions = new RequestOptions();
+    requestOptions.setHost(ipPort.getHostOrIp())
+        .setPort(ipPort.getPort())
+        .setSsl(endpoint.isSslEnabled())
+        .setURI(path);
+
     HttpMethod method = getMethod(invocation);
-    LOGGER.debug("Calling method {} of {} by rest", method, invocation.getMicroserviceName());
-    HttpClientRequest request = client.request(method, ipPort.getPort(), ipPort.getHostOrIp(), path, response -> {
+    LOGGER.debug("Sending request by rest, method={}, qualifiedName={}, path={}, endpoint={}.",
+        method,
+        invocation.getMicroserviceQualifiedName(),
+        path,
+        invocation.getEndpoint().getEndpoint());
+    HttpClientRequest request = client.request(method, requestOptions, response -> {
       handleResponse(invocation, response, asyncResp);
     });
     return request;

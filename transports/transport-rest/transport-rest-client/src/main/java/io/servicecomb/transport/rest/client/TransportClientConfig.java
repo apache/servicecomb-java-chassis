@@ -28,11 +28,6 @@ public final class TransportClientConfig {
         getIntProperty("cse.rest.client.thread-count", 1).get();
   }
 
-  public static int getConnectionPoolPerThread() {
-    return DynamicPropertyFactory.getInstance().
-        getIntProperty("cse.rest.client.connection-pool-per-thread", 1).get();
-  }
-
   public static int getConnectionMaxPoolSize() {
     return DynamicPropertyFactory.getInstance().
         getIntProperty("cse.rest.client.connection.maxPoolSize", 5).get();

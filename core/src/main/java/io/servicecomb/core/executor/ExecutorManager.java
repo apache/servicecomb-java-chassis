@@ -25,6 +25,8 @@ import io.servicecomb.core.definition.OperationMeta;
 import io.servicecomb.foundation.common.utils.BeanUtils;
 
 public final class ExecutorManager {
+  public static final String KEY_EXECUTORS_PREFIX = "cse.executors.Provider.";
+
   public static final String KEY_EXECUTORS_DEFAULT = "cse.executors.default";
 
   public static final String EXECUTOR_GROUP_THREADPOOL = "cse.executor.groupThreadPool";
@@ -38,13 +40,21 @@ public final class ExecutorManager {
 
   // 只会在初始化时执行，一点点重复的查找，没必要做缓存
   public static Executor findExecutor(OperationMeta operationMeta) {
-    Executor executor = findByKey("cse.executors.Provider." + operationMeta.getSchemaQualifiedName());
+    return findExecutor(operationMeta, null);
+  }
+
+  public static Executor findExecutor(OperationMeta operationMeta, Executor defaultOperationExecutor) {
+    Executor executor = findByKey(KEY_EXECUTORS_PREFIX + operationMeta.getSchemaQualifiedName());
     if (executor != null) {
       return executor;
     }
 
+    if (defaultOperationExecutor != null) {
+      return defaultOperationExecutor;
+    }
+
     // 尝试schema级别
-    executor = findByKey("cse.executors.Provider." + operationMeta.getSchemaMeta().getName());
+    executor = findByKey(KEY_EXECUTORS_PREFIX + operationMeta.getSchemaMeta().getName());
     if (executor != null) {
       return executor;
     }
