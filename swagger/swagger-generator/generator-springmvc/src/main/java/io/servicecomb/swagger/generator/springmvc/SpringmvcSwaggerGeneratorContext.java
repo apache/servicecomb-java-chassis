@@ -33,6 +33,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 
+import io.servicecomb.swagger.extend.annotations.RequestParamColFmt;
+import io.servicecomb.swagger.generator.core.processor.parametertype.RequestParamColFmtAnnotationProcessor;
 import io.servicecomb.swagger.generator.core.utils.ClassUtils;
 import io.servicecomb.swagger.generator.rest.RestSwaggerGeneratorContext;
 import io.servicecomb.swagger.generator.springmvc.processor.annotation.CookieValueAnnotationProcessor;
@@ -104,6 +106,7 @@ public class SpringmvcSwaggerGeneratorContext extends RestSwaggerGeneratorContex
     parameterAnnotationMgr.register(RequestParam.class, new RequestParamAnnotationProcessor());
     parameterAnnotationMgr.register(RequestAttribute.class, new RequestAttributeAnnotationProcessor());
     parameterAnnotationMgr.register(RequestPart.class, new RequestPartAnnotationProcessor());
+    parameterAnnotationMgr.register(RequestParamColFmt.class, new RequestParamColFmtAnnotationProcessor());
   }
 
   @Override

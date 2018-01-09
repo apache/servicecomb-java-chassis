@@ -17,9 +17,12 @@
 
 package io.servicecomb.demo.jaxrs.server;
 
+import java.util.Arrays;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
@@ -37,6 +40,9 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response.Status;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import io.servicecomb.common.rest.codec.RestObjectMapper;
 import io.servicecomb.demo.compute.Person;
 import io.servicecomb.demo.ignore.InputModelForTestIgnore;
@@ -44,6 +50,7 @@ import io.servicecomb.demo.ignore.OutputModelForTestIgnore;
 import io.servicecomb.demo.server.User;
 import io.servicecomb.provider.rest.common.RestSchema;
 import io.servicecomb.swagger.extend.annotations.RawJsonRequestBody;
+import io.servicecomb.swagger.extend.annotations.RequestParamColFmt;
 import io.servicecomb.swagger.extend.annotations.ResponseHeaders;
 import io.servicecomb.swagger.invocation.Response;
 import io.servicecomb.swagger.invocation.context.ContextUtils;
@@ -59,6 +66,8 @@ import io.vertx.core.json.JsonObject;
 @Path("/codeFirstJaxrs")
 @Produces(MediaType.APPLICATION_JSON)
 public class CodeFirstJaxrs {
+  private static final Logger LOGGER = LoggerFactory.getLogger(CodeFirstJaxrs.class);
+
   //    public Response getUserResponse() {
   //
   //    }
@@ -201,5 +210,14 @@ public class CodeFirstJaxrs {
       return null;
     }
     return "hello " + person.get("name");
+  }
+
+  @Path("/testGetStrArray")
+  @GET
+  public String[] testGetStrArray(@RequestParamColFmt(collectionFormat = "csv") String[] str) {
+    for (int i = 0; i < str.length; i++) {
+      LOGGER.info("*******" + str[i]);
+    }
+    return str;
   }
 }
