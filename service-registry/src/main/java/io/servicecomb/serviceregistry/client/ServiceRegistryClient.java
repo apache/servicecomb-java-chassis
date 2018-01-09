@@ -23,11 +23,18 @@ import java.util.Map;
 import io.servicecomb.foundation.vertx.AsyncResultCallback;
 import io.servicecomb.serviceregistry.api.registry.Microservice;
 import io.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
+import io.servicecomb.serviceregistry.api.registry.ServiceCenterEnvironment;
 import io.servicecomb.serviceregistry.api.response.HeartbeatResponse;
 import io.servicecomb.serviceregistry.api.response.MicroserviceInstanceChangedEvent;
 
 public interface ServiceRegistryClient {
   void init();
+
+  /**
+  *
+  * get servicecenter Info
+  */
+  ServiceCenterEnvironment getServiceCenterEnvironment();
 
   /**
    * get all microservices
@@ -74,6 +81,12 @@ public interface ServiceRegistryClient {
    * 获取schema内容
    */
   String getSchema(String microserviceId, String schemaId);
+
+  /**
+  *
+  * get schema summary
+  */
+  String getSchemaSummary(String microserviceId, String schemaId);
 
   /**
    *

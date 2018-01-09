@@ -20,6 +20,7 @@ package io.servicecomb.serviceregistry.client.http;
 import static java.util.Collections.emptyList;
 
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -32,12 +33,15 @@ import javax.xml.ws.Holder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.hash.Hashing;
+
 import io.servicecomb.foundation.common.net.IpPort;
 import io.servicecomb.foundation.common.utils.JsonUtils;
 import io.servicecomb.foundation.vertx.AsyncResultCallback;
 import io.servicecomb.serviceregistry.api.Const;
 import io.servicecomb.serviceregistry.api.registry.Microservice;
 import io.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
+import io.servicecomb.serviceregistry.api.registry.ServiceCenterEnvironment;
 import io.servicecomb.serviceregistry.api.request.CreateSchemaRequest;
 import io.servicecomb.serviceregistry.api.request.CreateServiceRequest;
 import io.servicecomb.serviceregistry.api.request.RegisterInstanceRequest;
@@ -153,6 +157,28 @@ public final class ServiceRegistryClientImpl implements ServiceRegistryClient {
   }
 
   @Override
+  public ServiceCenterEnvironment getServiceCenterEnvironment() {
+    Holder<ServiceCenterEnvironment> holder = new Holder<>();
+    IpPort ipPort = ipPortManager.getAvailableAddress(false);
+    
+    CountDownLatch countDownLatch = new CountDownLatch(1);
+    
+    RestUtils.get(ipPort,
+        Const.SERVICECENTER_ENVIRONMENT,
+        new RequestParam(),
+        syncHandler(countDownLatch, ServiceCenterEnvironment.class, holder));
+    try {
+      countDownLatch.await();
+      if (holder.value != null) {
+        return holder.value;
+      }
+    } catch (Exception e) {
+      LOGGER.error("query servicecenterEnvironment failed", e);
+    }
+    return null;
+  }
+
+  @Override
   public List<Microservice> getAllMicroservices() {
     Holder<GetAllServicesResponse> holder = new Holder<>();
     IpPort ipPort = ipPortManager.getAvailableAddress();
@@ -232,6 +258,8 @@ public final class ServiceRegistryClientImpl implements ServiceRegistryClient {
     try {
       CreateSchemaRequest request = new CreateSchemaRequest();
       request.setSchema(schemaContent);
+      String summary = Hashing.sha256().newHasher().putString(schemaContent, StandardCharsets.UTF_8).hash().toString();
+      request.setSignature(summary);
       byte[] body = JsonUtils.writeValueAsBytes(request);
 
       CountDownLatch countDownLatch = new CountDownLatch(1);
@@ -292,6 +320,53 @@ public final class ServiceRegistryClientImpl implements ServiceRegistryClient {
     }
 
     return null;
+  }
+
+  @Override
+  public String getSchemaSummary(String microserviceId, String schemaId) {
+    IpPort ipPort = ipPortManager.getAvailableAddress(false);
+    GetSchemaResponse getSchemaResponse = new GetSchemaResponse();
+    
+    CountDownLatch countDownLatch = new CountDownLatch(1);
+    RestUtils.get(ipPort,
+        Const.REGISTRY_API.MICROSERVICE_EXISTENCE,
+        new RequestParam().addQueryParam("type", "schema")
+            .addQueryParam("serviceId", microserviceId)
+            .addQueryParam("schemaId", schemaId),
+        new Handler<RestResponse>() {
+            @Override
+            public void handle(RestResponse restResponse) {
+              RequestContext requestContext = restResponse.getRequestContext();
+              HttpClientResponse response = restResponse.getResponse();
+              if (response == null) {
+                //Request failure, to trigger request other instances of the SC
+                if (!requestContext.isRetry()) {
+                  retry(requestContext, this);
+                } else {
+                  countDownLatch.countDown();
+                }
+                return;
+              }
+              response.bodyHandler(
+                bodyBuffer -> {
+                  try {
+                    getSchemaResponse.setSchemaSummary(response.getHeader("X-Schema-Summary"));
+                  } catch (Exception e) {
+                    LOGGER.warn(bodyBuffer.toString(), e);
+                  }
+                  countDownLatch.countDown();
+                });
+            }
+        });
+    try {
+      countDownLatch.await();
+    } catch (Exception e) {
+      LOGGER.error("query schemasummary exist {}/{} failed",
+          microserviceId,
+          schemaId,
+          e);
+    }
+    return getSchemaResponse.getSchemaSummary();
   }
 
   @Override

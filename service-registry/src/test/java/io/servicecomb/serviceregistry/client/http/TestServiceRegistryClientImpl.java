@@ -256,4 +256,82 @@ public class TestServiceRegistryClientImpl {
   {
     Assert.assertNull(oClient.findServiceInstance("aaa","bbb"));
   }
+
+  @Test
+  public void testGetServiceCenterEnvironmentSuccess() {
+    new MockUp<ServiceRegistryClientImpl>() {
+        @Mock
+        <T> Handler<RestResponse> syncHandler(CountDownLatch countDownLatch, Class<T> cls, Holder<T> holder) {
+          return restResponse -> {
+            HttpClientResponse response = Mockito.mock(HttpClientResponse.class);
+            Mockito.when(response.statusCode()).thenReturn(400);
+
+            try {
+              holder.value = cls.newInstance();
+            } catch (Exception e) {
+              e.printStackTrace();
+            }
+          };
+        }
+      };
+    new MockUp<RestUtils>() {
+      @Mock
+      void httpDo(RequestContext requestContext, Handler<RestResponse> responseHandler) {
+        responseHandler.handle(null);
+      }
+    };
+    Assert.assertNotNull(oClient.getServiceCenterEnvironment());
+  }
+
+  @Test
+  public void testGetServiceCenterEnvironmentException() {
+    InterruptedException e = new InterruptedException();
+    new MockUp<CountDownLatch>() {
+      @Mock
+      public void await() throws InterruptedException {
+        throw e;
+      }
+    };
+
+    new RegisterSchemaTester() {
+      void doRun(java.util.List<LoggingEvent> events) {
+        oClient.getServiceCenterEnvironment();
+        Assert.assertEquals(
+            "query servicecenterEnvironment failed",
+            events.get(0).getMessage());
+        Assert.assertEquals(e, events.get(0).getThrowableInformation().getThrowable());
+      }
+    }.run();
+  }
+
+  @Test
+  public void testGetServiceCenterEnvironmentNoResponse() {
+    Assert.assertNull(oClient.getServiceCenterEnvironment());
+  }
+
+  @Test
+  public void testGetSchemaSummaryNoResponse() {
+    Assert.assertNull(oClient.getSchemaSummary("microserviceId", "schemaId"));
+  }
+
+  @Test
+  public void testGetSchemaSummaryException() {
+    InterruptedException e = new InterruptedException();
+    new MockUp<CountDownLatch>() {
+      @Mock
+      public void await() throws InterruptedException {
+        throw e;
+      }
+    };
+
+    new RegisterSchemaTester() {
+      void doRun(java.util.List<LoggingEvent> events) {
+        oClient.getSchemaSummary("microserviceId", "schemaId");
+        Assert.assertEquals(
+            "query schemasummary exist microserviceId/schemaId failed",
+            events.get(0).getMessage());
+        Assert.assertEquals(e, events.get(0).getThrowableInformation().getThrowable());
+      }
+    }.run();
+  }
 }

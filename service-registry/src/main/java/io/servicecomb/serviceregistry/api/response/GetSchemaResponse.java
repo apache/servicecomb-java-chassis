@@ -20,6 +20,8 @@ package io.servicecomb.serviceregistry.api.response;
 public class GetSchemaResponse {
   private String schema;
 
+  private String schemaSummary;
+
   public String getSchema() {
     return schema;
   }
@@ -27,4 +29,13 @@ public class GetSchemaResponse {
   public void setSchema(String schema) {
     this.schema = schema;
   }
+
+  public String getSchemaSummary() {
+    return schemaSummary;
+  }
+
+  public void setSchemaSummary(String schemaSummary) {
+    this.schemaSummary = schemaSummary;
+  }
+
 }

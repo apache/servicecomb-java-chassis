@@ -14,41 +14,49 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.servicecomb.serviceregistry.api.request;
+
+package io.servicecomb.serviceregistry.api.response;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mockito;
 
-public class TestCreateSchemaRequest {
-  CreateSchemaRequest createSchemaRequest = null;
+import io.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
+
+public class TestGetSchemaResponse {
+
+  GetSchemaResponse getSchemaResponse = null;
 
   @Before
   public void setUp() throws Exception {
-    createSchemaRequest = new CreateSchemaRequest();
+    getSchemaResponse = new GetSchemaResponse();
   }
 
   @After
   public void tearDown() throws Exception {
-    createSchemaRequest = null;
+    getSchemaResponse = null;
   }
 
   @Test
   public void testDefaultValues() {
-    Assert.assertNull(createSchemaRequest.getSchema());
-    Assert.assertNull(createSchemaRequest.getSignature());
+    Assert.assertNull(getSchemaResponse.getSchema());
+    Assert.assertNull(getSchemaResponse.getSchemaSummary());
   }
 
   @Test
   public void testInitializedValues() {
-    initCreateSchemaRequest();
-    Assert.assertEquals("schema", createSchemaRequest.getSchema());
-    Assert.assertEquals("summary", createSchemaRequest.getSignature());
+    initGetSchemaResponse(); //Initialize the Object
+    Assert.assertEquals("schema", getSchemaResponse.getSchema());
+    Assert.assertEquals("schemaSummary", getSchemaResponse.getSchemaSummary());
   }
 
-  private void initCreateSchemaRequest() {
-    createSchemaRequest.setSchema("schema");
-    createSchemaRequest.setSignature("summary");
+  private void initGetSchemaResponse() {
+    getSchemaResponse.setSchema("schema");
+    getSchemaResponse.setSchemaSummary("schemaSummary");
   }
 }

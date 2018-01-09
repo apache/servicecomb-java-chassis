@@ -16,6 +16,7 @@
  */
 package io.servicecomb.serviceregistry.task;
 
+import java.nio.charset.StandardCharsets;
 import java.util.HashSet;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -26,7 +27,9 @@ import org.springframework.util.StringUtils;
 
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
+import com.google.common.hash.Hashing;
 
+import io.servicecomb.serviceregistry.api.Const;
 import io.servicecomb.serviceregistry.api.registry.Microservice;
 import io.servicecomb.serviceregistry.client.ServiceRegistryClient;
 
@@ -34,6 +37,8 @@ public class MicroserviceRegisterTask extends AbstractRegisterTask {
   private static final Logger LOGGER = LoggerFactory.getLogger(MicroserviceRegisterTask.class);
 
   private boolean schemaIdSetMatch;
+
+  private boolean scEnvIsDev = false;
 
   public MicroserviceRegisterTask(EventBus eventBus, ServiceRegistryClient srClient, Microservice microservice) {
     super(eventBus, srClient, microservice);
@@ -122,6 +127,9 @@ public class MicroserviceRegisterTask extends AbstractRegisterTask {
           microservice.getVersion(),
           localSchemas,
           existSchemas);
+      if (!serviceCenterEnvIsDev()) {
+        return false;
+      }
       return true;
     }
 
@@ -146,9 +154,43 @@ public class MicroserviceRegisterTask extends AbstractRegisterTask {
         if (!srClient.registerSchema(microservice.getServiceId(), schemaId, content)) {
           return false;
         }
+      } else {
+        if (!checkSchemaSummary(schemaId, content)) {
+          return false;
+        }
       }
     }
 
     return true;
+  }
+
+  private boolean checkSchemaSummary(String schemaId, String content) {
+    //query if schemaSummary exist, if not exist, register schema&summary in SC
+    String serviceId = microservice.getServiceId();
+    String schemaSummary = srClient.getSchemaSummary(serviceId, schemaId);
+    if (null == schemaSummary) {
+      return srClient.registerSchema(serviceId, schemaId, content);
+    } else {
+      //compare to localschema, if don't match,when SC runMode is dev,register schema&summary in SC
+      String localSummary = Hashing.sha256().newHasher().putString(content, StandardCharsets.UTF_8).hash().toString();
+      if (!localSummary.equals(schemaSummary)) {
+        if (scEnvIsDev || serviceCenterEnvIsDev()) {
+          return srClient.registerSchema(serviceId, schemaId, content);
+        } else {
+          return false;
+        }
+      }
+    }
+    return true;
+  }
+
+  private boolean serviceCenterEnvIsDev() {
+    if (Const.SERVICECENTER_RUNMODE_DEV.equals(srClient.getServiceCenterEnvironment().getRunMode())) {
+      LOGGER.warn("The current servicecenter environment runmode is {}", Const.SERVICECENTER_RUNMODE_DEV);
+      scEnvIsDev = true;
+      return true;
+    }
+    LOGGER.error("The current servicecenter environment runmode isn't {}, schema info can't be modified.", Const.SERVICECENTER_RUNMODE_DEV);
+    return false;
   }
 }
