@@ -19,6 +19,7 @@ package io.servicecomb.springboot.starter.discovery;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.springframework.cloud.client.DefaultServiceInstance;
 import org.springframework.cloud.client.ServiceInstance;
@@ -35,7 +36,7 @@ import io.servicecomb.serviceregistry.discovery.DiscoveryContext;
 import io.servicecomb.serviceregistry.discovery.DiscoveryTree;
 
 public class CseDiscoveryClient implements DiscoveryClient {
-  private DiscoveryTree discoveryTree = new DiscoveryTree();
+  private Map<String, DiscoveryTree> discoveryTrees = new ConcurrentHashMap<>();
 
   @Override
   public String description() {
@@ -46,6 +47,9 @@ public class CseDiscoveryClient implements DiscoveryClient {
   public List<ServiceInstance> getInstances(final String serviceId) {
     DiscoveryContext context = new DiscoveryContext();
     context.setInputParameters(serviceId);
+    DiscoveryTree discoveryTree = discoveryTrees.computeIfAbsent(serviceId, key -> {
+      return new DiscoveryTree();
+    });
     VersionedCache serversVersionedCache = discoveryTree.discovery(context,
         RegistryUtils.getAppId(),
         serviceId,
