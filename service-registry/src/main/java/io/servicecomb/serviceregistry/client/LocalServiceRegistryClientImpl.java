@@ -29,6 +29,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -60,6 +61,8 @@ public class LocalServiceRegistryClientImpl implements ServiceRegistryClient {
   // first key is microservice id
   // second key is instance id
   private Map<String, Map<String, MicroserviceInstance>> microserviceInstanceMap = new ConcurrentHashMap<>();
+
+  private AtomicInteger revision = new AtomicInteger(0);
 
   public LocalServiceRegistryClientImpl() {
     if (StringUtils.isEmpty(LOCAL_REGISTRY_FILE)) {
@@ -125,6 +128,10 @@ public class LocalServiceRegistryClientImpl implements ServiceRegistryClient {
         microserviceInstanceMap.put(microservice.getServiceId(), instanceMap);
       }
     }
+
+    if(!data.isEmpty()) {
+      revision.incrementAndGet();
+    }
   }
 
   @Override
@@ -151,6 +158,7 @@ public class LocalServiceRegistryClientImpl implements ServiceRegistryClient {
     microserviceIdMap.put(serviceId, microservice);
 
     microserviceInstanceMap.computeIfAbsent(serviceId, k -> new ConcurrentHashMap<>());
+    revision.incrementAndGet();
     return serviceId;
   }
 
@@ -169,6 +177,7 @@ public class LocalServiceRegistryClientImpl implements ServiceRegistryClient {
     String instanceId =
         instance.getInstanceId() == null ? UUID.randomUUID().toString() : instance.getInstanceId();
     instanceMap.put(instanceId, instance);
+    revision.incrementAndGet();
     return instanceId;
   }
 
@@ -187,6 +196,7 @@ public class LocalServiceRegistryClientImpl implements ServiceRegistryClient {
     Map<String, MicroserviceInstance> instanceMap = microserviceInstanceMap.get(microserviceId);
     if (instanceMap != null) {
       instanceMap.remove(microserviceInstanceId);
+      revision.getAndIncrement();
     }
     return true;
   }
@@ -250,16 +260,22 @@ public class LocalServiceRegistryClientImpl implements ServiceRegistryClient {
   @Override
   public MicroserviceInstances findServiceInstances(String selfMicroserviceId, String appId, String serviceName,
       String strVersionRule, String revision) {
+
+    int currentRevision = this.revision.get();
     List<MicroserviceInstance> allInstances = new ArrayList<>();
     MicroserviceInstances microserviceInstances = new MicroserviceInstances();
     FindInstancesResponse response = new FindInstancesResponse();
+    if (revision != null && currentRevision == Integer.parseInt(revision)) {
+      microserviceInstances.setNeedRefresh(false);
+      return microserviceInstances;
+    }
 
+    microserviceInstances.setRevision(String.valueOf(currentRevision));
     VersionRule versionRule = VersionRuleUtils.getOrCreate(strVersionRule);
     Microservice latestMicroservice = findLatest(appId, serviceName, versionRule);
     if (latestMicroservice == null) {
       response.setInstances(allInstances);
       microserviceInstances.setInstancesResponse(response);
-      microserviceInstances.setRevision(null);
       return microserviceInstances;
     }
 
