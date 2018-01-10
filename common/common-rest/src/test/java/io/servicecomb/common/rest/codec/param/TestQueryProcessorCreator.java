@@ -21,7 +21,6 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import io.servicecomb.common.rest.codec.param.QueryProcessorCreator.CsvQueryProcessor;
-import io.servicecomb.common.rest.codec.param.QueryProcessorCreator.MultiQueryProcessor;
 import io.servicecomb.common.rest.codec.param.QueryProcessorCreator.QueryProcessor;
 import io.swagger.models.parameters.Parameter;
 import io.swagger.models.parameters.QueryParameter;
@@ -46,11 +45,6 @@ public class TestQueryProcessorCreator {
     ParamValueProcessor processorNull = creator.create(parameter, String.class);
 
     Assert.assertEquals(QueryProcessor.class, processorNull.getClass());
-
-    ((QueryParameter) parameter).setCollectionFormat("multi");
-    ParamValueProcessor processorMulti = creator.create(parameter, String.class);
-
-    Assert.assertEquals(MultiQueryProcessor.class, processorMulti.getClass());
 
     ((QueryParameter) parameter).setCollectionFormat("csv");
     ParamValueProcessor processorCsv = creator.create(parameter, String.class);

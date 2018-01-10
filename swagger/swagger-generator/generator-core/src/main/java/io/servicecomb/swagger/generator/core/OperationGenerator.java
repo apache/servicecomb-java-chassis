@@ -275,9 +275,10 @@ public class OperationGenerator {
   }
 
   private void processByApiParamAnnotation(Map<String, Annotation> apiParams) {
-    ParameterAnnotationProcessor processor = new ApiParamAnnotationProcessor();
     for (int paramIdx = 0; paramIdx < apiParams.size(); paramIdx++) {
-      processor.process(apiParams.get(String.valueOf(paramIdx)), this, paramIdx);
+      Annotation annotation = apiParams.get(String.valueOf(paramIdx));
+      ParameterAnnotationProcessor processor = context.findParameterAnnotationProcessor(annotation.annotationType());
+      processor.process(annotation, this, paramIdx);
     }
   }
 
