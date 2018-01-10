@@ -169,10 +169,15 @@ public final class ServiceRegistryClientImpl implements ServiceRegistryClient {
           bodyBuffer -> {
             try {
               mInstances.setRevision(response.getHeader("X-Resource-Revision"));
-              if (response.statusCode() == 304) {
-                mInstances.setNeedRefresh(false);
-              } else {
-                mInstances.setInstancesResponse(JsonUtils.readValue(bodyBuffer.getBytes(), FindInstancesResponse.class));
+              switch (response.statusCode()) {
+                case 304:
+                  mInstances.setNeedRefresh(false);
+                  break;
+                case 200:
+                  mInstances.setInstancesResponse(JsonUtils.readValue(bodyBuffer.getBytes(), FindInstancesResponse.class));
+                  break;
+                default:
+                  LOGGER.error(bodyBuffer.toString());
               }
             } catch (Exception e) {
               LOGGER.warn(bodyBuffer.toString(), e);

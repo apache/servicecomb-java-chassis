@@ -204,6 +204,9 @@ public abstract class AbstractServiceRegistry implements ServiceRegistry {
   public List<MicroserviceInstance> findServiceInstance(String appId, String serviceName,
       String versionRule) {
     MicroserviceInstances instances = findServiceInstances(appId, serviceName, versionRule, null);
+    if (instances == null) {
+      return null;
+    }
     return instances.getInstancesResponse().getInstances();
   }
 
