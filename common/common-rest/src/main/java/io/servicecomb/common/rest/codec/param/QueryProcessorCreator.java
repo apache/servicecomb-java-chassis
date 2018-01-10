@@ -51,9 +51,6 @@ public class QueryProcessorCreator implements ParamValueProcessorCreator {
     if (collectionFormat.equals("csv")) {
       return new CsvQueryProcessor(parameter.getName(), targetType);
     }
-    if (collectionFormat.equals("multi")) {
-      return new MultiQueryProcessor(parameter.getName(), targetType);
-    }
 
     return new QueryProcessor(parameter.getName(), targetType);
   }
@@ -61,35 +58,6 @@ public class QueryProcessorCreator implements ParamValueProcessorCreator {
 
   public static class QueryProcessor extends AbstractParamProcessor {
     public QueryProcessor(String paramPath, JavaType targetType) {
-      super(paramPath, targetType);
-    }
-
-    @Override
-    public Object getValue(HttpServletRequest request) throws Exception {
-      Object value = null;
-      if (targetType.isContainerType()) {
-        value = request.getParameterValues(paramPath);
-      } else {
-        value = request.getParameter(paramPath);
-      }
-
-      return convertValue(value, targetType);
-    }
-
-    @Override
-    public void setValue(RestClientRequest clientRequest, Object arg) throws Exception {
-      // query不需要set
-    }
-
-    @Override
-    public String getProcessorType() {
-      return PARAMTYPE;
-    }
-  }
-
-
-  public static class MultiQueryProcessor extends AbstractParamProcessor {
-    public MultiQueryProcessor(String paramPath, JavaType targetType) {
       super(paramPath, targetType);
     }
 
