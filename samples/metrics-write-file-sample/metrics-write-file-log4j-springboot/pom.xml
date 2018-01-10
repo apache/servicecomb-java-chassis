@@ -67,14 +67,12 @@
     </dependency>
 
     <dependency>
-      <groupId>io.servicecomb.samples</groupId>
-      <artifactId>metrics-write-file-common</artifactId>
+      <groupId>log4j</groupId>
+      <artifactId>log4j</artifactId>
     </dependency>
-
-    <!--metrics write file dependency-->
     <dependency>
       <groupId>io.servicecomb.samples</groupId>
-      <artifactId>metrics-write-file-config-log4j</artifactId>
+      <artifactId>metrics-write-file</artifactId>
     </dependency>
   </dependencies>
 

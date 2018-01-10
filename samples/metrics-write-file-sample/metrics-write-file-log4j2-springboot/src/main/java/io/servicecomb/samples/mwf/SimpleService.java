@@ -17,12 +17,20 @@
 
 package io.servicecomb.samples.mwf;
 
-import io.servicecomb.foundation.common.utils.BeanUtils;
-import io.servicecomb.foundation.common.utils.Log4jUtils;
+import java.util.UUID;
 
-public class ServiceApplication {
-  public static void main(String[] args) throws Exception {
-    Log4jUtils.init();
-    BeanUtils.init();
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+
+import io.servicecomb.provider.rest.common.RestSchema;
+
+//simple service sim
+@RestSchema(schemaId = "demoServiceEndpoint")
+@RequestMapping(path = "/")
+public class SimpleService {
+
+  @GetMapping(path = "/f")
+  public String fun() {
+    return UUID.randomUUID().toString();
   }
 }

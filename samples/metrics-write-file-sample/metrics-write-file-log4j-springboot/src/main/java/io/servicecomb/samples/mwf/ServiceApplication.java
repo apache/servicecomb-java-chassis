@@ -17,12 +17,15 @@
 
 package io.servicecomb.samples.mwf;
 
-import io.servicecomb.foundation.common.utils.BeanUtils;
-import io.servicecomb.foundation.common.utils.Log4jUtils;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
 
+import io.servicecomb.springboot.starter.provider.EnableServiceComb;
+
+@SpringBootApplication
+@EnableServiceComb
 public class ServiceApplication {
-  public static void main(String[] args) throws Exception {
-    Log4jUtils.init();
-    BeanUtils.init();
+  public static void main(String[] args) {
+    SpringApplication.run(ServiceApplication.class, args);
   }
 }
