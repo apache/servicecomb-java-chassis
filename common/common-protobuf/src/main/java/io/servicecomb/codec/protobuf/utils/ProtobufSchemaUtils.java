@@ -25,6 +25,8 @@ import java.util.Date;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import javax.lang.model.SourceVersion;
+
 import org.springframework.util.ClassUtils;
 
 import com.fasterxml.jackson.databind.JavaType;
@@ -147,8 +149,8 @@ public final class ProtobufSchemaUtils {
       Parameter[] params = method.getParameters();
       for (int idx = 0; idx < params.length; idx++) {
         Parameter param = params[idx];
-        String paramName = operationMeta.getParamName(idx);
-
+        String paramName = io.servicecomb.swagger.generator.core.utils.ClassUtils
+            .correctMethodParameterName(operationMeta.getParamName(idx));
         config.addField(paramName, param.getParameterizedType());
       }
 
