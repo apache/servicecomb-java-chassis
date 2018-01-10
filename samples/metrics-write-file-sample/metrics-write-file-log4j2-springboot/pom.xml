@@ -57,15 +57,18 @@
     </dependency>
 
     <dependency>
-      <groupId>io.servicecomb.samples</groupId>
-      <artifactId>metrics-write-file-common</artifactId>
+      <groupId>org.apache.logging.log4j</groupId>
+      <artifactId>log4j-api</artifactId>
     </dependency>
-
-    <!--metrics write file dependency-->
+    <dependency>
+      <groupId>org.apache.logging.log4j</groupId>
+      <artifactId>log4j-core</artifactId>
+    </dependency>
     <dependency>
       <groupId>io.servicecomb.samples</groupId>
-      <artifactId>metrics-write-file-config-log4j2</artifactId>
+      <artifactId>metrics-write-file</artifactId>
     </dependency>
+
   </dependencies>
 
   <build>

@@ -39,6 +39,7 @@ import io.servicecomb.serviceregistry.api.registry.Microservice;
 import io.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
 import io.servicecomb.serviceregistry.cache.InstanceCacheManager;
 import io.servicecomb.serviceregistry.client.ServiceRegistryClient;
+import io.servicecomb.serviceregistry.client.http.MicroserviceInstances;
 import io.servicecomb.serviceregistry.consumer.AppManager;
 import mockit.Expectations;
 
@@ -99,6 +100,12 @@ public class TestWriteFile {
           @Override
           public List<MicroserviceInstance> findServiceInstance(String appId, String microserviceName,
               String microserviceVersionRule) {
+            return null;
+          }
+
+          @Override
+          public MicroserviceInstances findServiceInstances(String appId, String microserviceName,
+              String microserviceVersionRule, String revision) {
             return null;
           }
 
