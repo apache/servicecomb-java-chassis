@@ -178,6 +178,7 @@ public final class ServiceRegistryClientImpl implements ServiceRegistryClient {
                   break;
                 default:
                   LOGGER.error(bodyBuffer.toString());
+                  break;
               }
             } catch (Exception e) {
               LOGGER.warn(bodyBuffer.toString(), e);
