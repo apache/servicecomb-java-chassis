@@ -18,7 +18,7 @@
 package io.servicecomb.metrics.common;
 
 public class HealthCheckResult {
-  private boolean isHealthy;
+  private boolean healthy;
 
   private String information;
 
@@ -28,7 +28,7 @@ public class HealthCheckResult {
   private long timestamp;
 
   public boolean isHealthy() {
-    return isHealthy;
+    return healthy;
   }
 
   public String getInformation() {
@@ -46,9 +46,9 @@ public class HealthCheckResult {
   public HealthCheckResult() {
   }
 
-  public HealthCheckResult(boolean isHealthy, String information, String extraData) {
+  public HealthCheckResult(boolean healthy, String information, String extraData) {
     this();
-    this.isHealthy = isHealthy;
+    this.healthy = healthy;
     this.information = information;
     this.extraData = extraData;
     this.timestamp = System.currentTimeMillis();
