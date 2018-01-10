@@ -295,7 +295,7 @@ public class OperationGenerator {
 
       ParameterAnnotationProcessor processor =
           context.findParameterAnnotationProcessor(annotation.annotationType());
-      if (processor != null) {
+      if (processor != null && !(processor instanceof ApiParamAnnotationProcessor)) {
         processor.process(annotation, this, paramIdx);
       }
     }
