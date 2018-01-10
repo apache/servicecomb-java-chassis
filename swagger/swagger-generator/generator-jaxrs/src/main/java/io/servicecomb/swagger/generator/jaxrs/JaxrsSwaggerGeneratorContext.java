@@ -34,6 +34,7 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 
+import io.servicecomb.swagger.generator.core.processor.annotation.ApiParamAnnotationProcessor;
 import io.servicecomb.swagger.generator.core.utils.ClassUtils;
 import io.servicecomb.swagger.generator.jaxrs.processor.annotation.ConsumesAnnotationProcessor;
 import io.servicecomb.swagger.generator.jaxrs.processor.annotation.CookieParamAnnotationProcessor;
@@ -47,6 +48,7 @@ import io.servicecomb.swagger.generator.jaxrs.processor.annotation.ProducesAnnot
 import io.servicecomb.swagger.generator.jaxrs.processor.annotation.QueryParamAnnotationProcessor;
 import io.servicecomb.swagger.generator.jaxrs.processor.parameter.JaxrsDefaultParameterProcessor;
 import io.servicecomb.swagger.generator.rest.RestSwaggerGeneratorContext;
+import io.swagger.annotations.ApiParam;
 
 public class JaxrsSwaggerGeneratorContext extends RestSwaggerGeneratorContext {
   private static final int ORDER = 2000;
@@ -110,5 +112,7 @@ public class JaxrsSwaggerGeneratorContext extends RestSwaggerGeneratorContext {
 
     parameterAnnotationMgr.register(HeaderParam.class, new HeaderParamAnnotationProcessor());
     parameterAnnotationMgr.register(QueryParam.class, new QueryParamAnnotationProcessor());
+    parameterAnnotationMgr.register(ApiParam.class, new ApiParamAnnotationProcessor());
+
   }
 }

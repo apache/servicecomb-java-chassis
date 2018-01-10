@@ -33,6 +33,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 
+import io.servicecomb.swagger.generator.core.processor.annotation.ApiParamAnnotationProcessor;
 import io.servicecomb.swagger.generator.core.utils.ClassUtils;
 import io.servicecomb.swagger.generator.rest.RestSwaggerGeneratorContext;
 import io.servicecomb.swagger.generator.springmvc.processor.annotation.CookieValueAnnotationProcessor;
@@ -50,6 +51,7 @@ import io.servicecomb.swagger.generator.springmvc.processor.annotation.RequestMa
 import io.servicecomb.swagger.generator.springmvc.processor.annotation.RequestParamAnnotationProcessor;
 import io.servicecomb.swagger.generator.springmvc.processor.annotation.RequestPartAnnotationProcessor;
 import io.servicecomb.swagger.generator.springmvc.processor.parameter.SpringmvcDefaultParameterProcessor;
+import io.swagger.annotations.ApiParam;
 
 public class SpringmvcSwaggerGeneratorContext extends RestSwaggerGeneratorContext {
   private static final int ORDER = 1000;
@@ -104,6 +106,7 @@ public class SpringmvcSwaggerGeneratorContext extends RestSwaggerGeneratorContex
     parameterAnnotationMgr.register(RequestParam.class, new RequestParamAnnotationProcessor());
     parameterAnnotationMgr.register(RequestAttribute.class, new RequestAttributeAnnotationProcessor());
     parameterAnnotationMgr.register(RequestPart.class, new RequestPartAnnotationProcessor());
+    parameterAnnotationMgr.register(ApiParam.class, new ApiParamAnnotationProcessor());
   }
 
   @Override
