@@ -17,6 +17,10 @@
 
 package io.servicecomb.config.client;
 
+import static io.servicecomb.config.client.ConfigurationAction.CREATE;
+import static io.servicecomb.config.client.ConfigurationAction.DELETE;
+import static io.servicecomb.config.client.ConfigurationAction.SET;
+
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
@@ -79,7 +83,7 @@ public class ApolloClient {
   }
 
   class ConfigRefresh implements Runnable {
-    private String serviceUri;
+    private final String serviceUri;
 
     ConfigRefresh(String serviceUris) {
       this.serviceUri = serviceUris;
@@ -136,11 +140,11 @@ public class ApolloClient {
       Map<String, Object> itemsDeleted = new HashMap<>();
       Map<String, Object> itemsModified = new HashMap<>();
       if (before == null || before.isEmpty()) {
-        updateHandler.handle("create", after);
+        updateHandler.handle(CREATE, after);
         return;
       }
       if (after == null || after.isEmpty()) {
-        updateHandler.handle("delete", before);
+        updateHandler.handle(DELETE, before);
         return;
       }
       for (String itemKey : after.keySet()) {
@@ -155,9 +159,9 @@ public class ApolloClient {
           itemsDeleted.put(itemKey, "");
         }
       }
-      updateHandler.handle("create", itemsCreated);
-      updateHandler.handle("set", itemsModified);
-      updateHandler.handle("delete", itemsDeleted);
+      updateHandler.handle(CREATE, itemsCreated);
+      updateHandler.handle(SET, itemsModified);
+      updateHandler.handle(DELETE, itemsDeleted);
     }
   }
 }

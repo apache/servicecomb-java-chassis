@@ -18,25 +18,29 @@
 package io.servicecomb.config.archaius.sources;
 
 import static com.netflix.config.WatchedUpdateResult.createIncremental;
+import static io.servicecomb.config.client.ConfigurationAction.CREATE;
+import static io.servicecomb.config.client.ConfigurationAction.DELETE;
+import static io.servicecomb.config.client.ConfigurationAction.SET;
 
 import java.util.List;
 import java.util.Map;
-
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
+
+import javax.validation.constraints.NotNull;
 
 import org.apache.commons.configuration.Configuration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.ImmutableMap;
-import com.netflix.config.ConcurrentCompositeConfiguration;
 import com.netflix.config.WatchedUpdateListener;
 import com.netflix.config.WatchedUpdateResult;
 
 import io.servicecomb.config.ConfigMapping;
 import io.servicecomb.config.client.ApolloClient;
 import io.servicecomb.config.client.ApolloConfig;
+import io.servicecomb.config.client.ConfigurationAction;
 import io.servicecomb.config.spi.ConfigCenterConfigurationSource;
 
 public class ApolloConfigurationSourceImpl implements ConfigCenterConfigurationSource {
@@ -53,7 +57,7 @@ public class ApolloConfigurationSourceImpl implements ConfigCenterConfigurationS
 
   @Override
   public void init(Configuration localConfiguration) {
-    ApolloConfig.setConcurrentCompositeConfiguration((ConcurrentCompositeConfiguration) localConfiguration);
+    ApolloConfig.setConcurrentCompositeConfiguration(localConfiguration);
     init();
   }
 
@@ -63,17 +67,13 @@ public class ApolloConfigurationSourceImpl implements ConfigCenterConfigurationS
   }
 
   @Override
-  public void addUpdateListener(WatchedUpdateListener watchedUpdateListener) {
-    if (watchedUpdateListener != null) {
-      listeners.add(watchedUpdateListener);
-    }
+  public void addUpdateListener(@NotNull WatchedUpdateListener watchedUpdateListener) {
+    listeners.add(watchedUpdateListener);
   }
 
   @Override
-  public void removeUpdateListener(WatchedUpdateListener watchedUpdateListener) {
-    if (watchedUpdateListener != null) {
-      listeners.remove(watchedUpdateListener);
-    }
+  public void removeUpdateListener(@NotNull WatchedUpdateListener watchedUpdateListener) {
+    listeners.remove(watchedUpdateListener);
   }
 
   private void updateConfiguration(WatchedUpdateResult result) {
@@ -96,23 +96,23 @@ public class ApolloConfigurationSourceImpl implements ConfigCenterConfigurationS
   }
 
   public class UpdateHandler {
-    public void handle(String action, Map<String, Object> config) {
+    public void handle(ConfigurationAction action, Map<String, Object> config) {
       if (config == null || config.isEmpty()) {
         return;
       }
       Map<String, Object> configuration = ConfigMapping.getConvertedMap(config);
-      if ("create".equals(action)) {
+      if (CREATE.equals(action)) {
         valueCache.putAll(configuration);
 
         updateConfiguration(createIncremental(ImmutableMap.copyOf(configuration),
             null,
             null));
-      } else if ("set".equals(action)) {
+      } else if (SET.equals(action)) {
         valueCache.putAll(configuration);
 
         updateConfiguration(createIncremental(null, ImmutableMap.copyOf(configuration),
             null));
-      } else if ("delete".equals(action)) {
+      } else if (DELETE.equals(action)) {
         for (String itemKey : configuration.keySet()) {
           valueCache.remove(itemKey);
         }
@@ -120,10 +120,10 @@ public class ApolloConfigurationSourceImpl implements ConfigCenterConfigurationS
             null,
             ImmutableMap.copyOf(configuration)));
       } else {
-        LOGGER.error("action: {} is invalid.", action);
+        LOGGER.error("action: {} is invalid.", action.name());
         return;
       }
-      LOGGER.warn("Config value cache changed: action:{}; item:{}", action, configuration.keySet());
+      LOGGER.warn("Config value cache changed: action:{}; item:{}", action.name(), configuration.keySet());
     }
   }
 }
