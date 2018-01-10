@@ -35,6 +35,8 @@ public interface SchemaFirstJaxrs {
 
   String saySomething(String prefix, Person user);
 
+  String saySomething1(String prefix_test, Person user);
+
   String sayHi(String name);
 
   String sayHi2(String name);

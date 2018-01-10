@@ -238,6 +238,24 @@ public class JaxrsIntegrationTestBase {
   }
 
   @Test
+  public void ableToPostWithHeaderWithIdentifier() {
+    Person person = new Person();
+    person.setName("person name");
+
+    HttpHeaders headers = new HttpHeaders();
+    headers.setContentType(APPLICATION_JSON);
+    headers.add("prefix-test", "prefix  prefix");
+
+    HttpEntity<Person> requestEntity = new HttpEntity<>(person, headers);
+    for (String url : urls) {
+      ResponseEntity<String> responseEntity = restTemplate
+          .postForEntity(url + "saysomething1", requestEntity, String.class);
+
+      assertEquals("prefix  prefix person name", jsonBodyOf(responseEntity, String.class));
+    }
+  }
+
+  @Test
   public void ableToPostObjectAsJson() {
     Map<String, String> personFieldMap = new HashMap<>();
     personFieldMap.put("name", "person name from map");
