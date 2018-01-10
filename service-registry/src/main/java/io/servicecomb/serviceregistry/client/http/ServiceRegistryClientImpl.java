@@ -177,11 +177,11 @@ public final class ServiceRegistryClientImpl implements ServiceRegistryClient {
                   mInstances.setInstancesResponse(JsonUtils.readValue(bodyBuffer.getBytes(), FindInstancesResponse.class));
                   break;
                 default:
-                  LOGGER.error(bodyBuffer.toString());
+                  LOGGER.warn(bodyBuffer.toString());
                   break;
               }
             } catch (Exception e) {
-              LOGGER.warn(bodyBuffer.toString(), e);
+              LOGGER.warn("read value failed and response message is {}", bodyBuffer.toString());
             }
             countDownLatch.countDown();
           });
