@@ -17,6 +17,10 @@
 
 package io.servicecomb.config.archaius.sources;
 
+import static io.servicecomb.config.client.ConfigurationAction.CREATE;
+import static io.servicecomb.config.client.ConfigurationAction.DELETE;
+import static io.servicecomb.config.client.ConfigurationAction.SET;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -38,7 +42,7 @@ public class ApolloConfigurationSourceImplTest {
     UpdateHandler udateHandler = Deencapsulation.getField(apolloConfigurationSource, UpdateHandler.class);
     Map<String, Object> createItems = new HashMap<>();
     createItems.put("testKey", "testValue");
-    udateHandler.handle("create", createItems);
+    udateHandler.handle(CREATE, createItems);
   }
 
   @Test
@@ -49,7 +53,7 @@ public class ApolloConfigurationSourceImplTest {
     UpdateHandler udateHandler = Deencapsulation.getField(apolloConfigurationSource, UpdateHandler.class);
     Map<String, Object> updateItems = new HashMap<>();
     updateItems.put("testKey", "testValue");
-    udateHandler.handle("set", updateItems);
+    udateHandler.handle(SET, updateItems);
   }
 
   @Test
@@ -61,7 +65,7 @@ public class ApolloConfigurationSourceImplTest {
     deleteItems.put("testKey", "testValue");
 
     apolloConfigurationSource.getCurrentData().put("testKey", "testValue");
-    udateHandler.handle("delete", deleteItems);
+    udateHandler.handle(DELETE, deleteItems);
     Assert.assertTrue(apolloConfigurationSource.getCurrentData().isEmpty());
   }
 
