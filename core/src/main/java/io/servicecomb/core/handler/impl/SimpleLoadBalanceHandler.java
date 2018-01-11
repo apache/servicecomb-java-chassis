@@ -19,7 +19,6 @@ package io.servicecomb.core.handler.impl;
 
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.slf4j.Logger;
@@ -31,6 +30,7 @@ import io.servicecomb.core.Invocation;
 import io.servicecomb.core.exception.ExceptionUtils;
 import io.servicecomb.core.filter.EndpointDiscoveryFilter;
 import io.servicecomb.foundation.common.cache.VersionedCache;
+import io.servicecomb.foundation.common.concurrent.ConcurrentHashMapEx;
 import io.servicecomb.serviceregistry.discovery.DiscoveryContext;
 import io.servicecomb.serviceregistry.discovery.DiscoveryFilter;
 import io.servicecomb.serviceregistry.discovery.DiscoveryTree;
@@ -45,7 +45,7 @@ public class SimpleLoadBalanceHandler implements Handler {
   private DiscoveryTree discoveryTree = new DiscoveryTree();
 
   // key为grouping filter qualified name
-  private volatile Map<String, AtomicInteger> indexMap = new ConcurrentHashMap<>();
+  private volatile Map<String, AtomicInteger> indexMap = new ConcurrentHashMapEx<>();
 
   public SimpleLoadBalanceHandler() {
     discoveryTree.loadFromSPI(DiscoveryFilter.class);

@@ -22,12 +22,12 @@ import java.util.HashMap;
 import java.util.IdentityHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.concurrent.ConcurrentHashMap;
 
 import io.servicecomb.core.Invocation;
 import io.servicecomb.core.definition.MicroserviceMeta;
 import io.servicecomb.core.definition.MicroserviceVersionMeta;
 import io.servicecomb.core.definition.OperationMeta;
+import io.servicecomb.foundation.common.concurrent.ConcurrentHashMapEx;
 import io.servicecomb.serviceregistry.RegistryUtils;
 import io.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
 import io.servicecomb.serviceregistry.consumer.AppManager;
@@ -83,7 +83,7 @@ public class OperationInstancesDiscoveryFilter extends AbstractDiscoveryFilter {
 
   protected Map<String, DiscoveryTreeNode> initOperationNodes(DiscoveryTreeNode parent,
       Map<MicroserviceVersionMeta, Map<String, MicroserviceInstance>> versionMap) {
-    Map<String, DiscoveryTreeNode> tmpChildren = new ConcurrentHashMap<>();
+    Map<String, DiscoveryTreeNode> tmpChildren = new ConcurrentHashMapEx<>();
     versionMap
         .keySet()
         .stream()

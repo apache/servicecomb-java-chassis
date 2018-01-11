@@ -18,18 +18,18 @@
 package io.servicecomb.serviceregistry.discovery;
 
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 import io.servicecomb.foundation.common.cache.VersionedCache;
+import io.servicecomb.foundation.common.concurrent.ConcurrentHashMapEx;
 
 public class DiscoveryTreeNode extends VersionedCache {
   private boolean childrenInited;
 
   private int level;
 
-  protected Map<String, Object> attributes = new ConcurrentHashMap<>();
+  protected Map<String, Object> attributes = new ConcurrentHashMapEx<>();
 
-  protected Map<String, DiscoveryTreeNode> children = new ConcurrentHashMap<>();
+  protected Map<String, DiscoveryTreeNode> children = new ConcurrentHashMapEx<>();
 
   public boolean childrenInited() {
     return childrenInited;

@@ -20,7 +20,6 @@ package io.servicecomb.core.executor;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -29,6 +28,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.netflix.config.DynamicPropertyFactory;
+
+import io.servicecomb.foundation.common.concurrent.ConcurrentHashMapEx;
 
 public class FixedThreadExecutor implements Executor {
   private static final Logger LOGGER = LoggerFactory.getLogger(FixedThreadExecutor.class);
@@ -44,7 +45,7 @@ public class FixedThreadExecutor implements Executor {
   // it's impossible that has too many network thread, so index will not too big that less than 0
   private AtomicInteger index = new AtomicInteger();
 
-  private Map<Long, Executor> threadExecutorMap = new ConcurrentHashMap<>();
+  private Map<Long, Executor> threadExecutorMap = new ConcurrentHashMapEx<>();
 
   public FixedThreadExecutor() {
     int groupCount = DynamicPropertyFactory.getInstance().getIntProperty(KEY_GROUP, 2).get();

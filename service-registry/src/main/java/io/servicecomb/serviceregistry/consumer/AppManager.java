@@ -18,9 +18,10 @@
 package io.servicecomb.serviceregistry.consumer;
 
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 import com.google.common.eventbus.EventBus;
+
+import io.servicecomb.foundation.common.concurrent.ConcurrentHashMapEx;
 
 public class AppManager {
   private EventBus eventBus;
@@ -28,7 +29,7 @@ public class AppManager {
   private MicroserviceVersionFactory microserviceVersionFactory = new DefaultMicroserviceVersionFactory();
 
   // key: appId
-  private Map<String, MicroserviceManager> apps = new ConcurrentHashMap<>();
+  private Map<String, MicroserviceManager> apps = new ConcurrentHashMapEx<>();
 
   public AppManager(EventBus eventBus) {
     this.eventBus = eventBus;

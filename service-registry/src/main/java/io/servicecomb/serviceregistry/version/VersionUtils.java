@@ -19,10 +19,11 @@ package io.servicecomb.serviceregistry.version;
 
 import java.util.Map;
 import java.util.Objects;
-import java.util.concurrent.ConcurrentHashMap;
+
+import io.servicecomb.foundation.common.concurrent.ConcurrentHashMapEx;
 
 public final class VersionUtils {
-  private static Map<String, Version> versionCache = new ConcurrentHashMap<>();
+  private static Map<String, Version> versionCache = new ConcurrentHashMapEx<>();
 
   public static Version getOrCreate(String strVersion) {
     Objects.requireNonNull(strVersion);

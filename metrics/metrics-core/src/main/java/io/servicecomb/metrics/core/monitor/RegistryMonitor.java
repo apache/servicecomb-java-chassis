@@ -19,11 +19,11 @@ package io.servicecomb.metrics.core.monitor;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import io.servicecomb.foundation.common.concurrent.ConcurrentHashMapEx;
 import io.servicecomb.metrics.common.ConsumerInvocationMetric;
 import io.servicecomb.metrics.common.ProducerInvocationMetric;
 import io.servicecomb.metrics.common.RegistryMetric;
@@ -40,8 +40,8 @@ public class RegistryMonitor {
   @Autowired
   public RegistryMonitor(SystemMonitor systemMonitor) {
     this.systemMonitor = systemMonitor;
-    this.consumerInvocationMonitors = new ConcurrentHashMap<>();
-    this.producerInvocationMonitors = new ConcurrentHashMap<>();
+    this.consumerInvocationMonitors = new ConcurrentHashMapEx<>();
+    this.producerInvocationMonitors = new ConcurrentHashMapEx<>();
   }
 
   public ConsumerInvocationMonitor getConsumerInvocationMonitor(String operationName) {

@@ -19,7 +19,6 @@ package io.servicecomb.samples.mwf;
 
 import java.nio.file.Paths;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
@@ -30,6 +29,8 @@ import org.springframework.stereotype.Component;
 
 import com.netflix.config.DynamicPropertyFactory;
 
+import io.servicecomb.foundation.common.concurrent.ConcurrentHashMapEx;
+
 @Component
 public class Log4JMetricsFileWriter implements MetricsFileWriter {
   private static final String METRICS_FILE_ROLLING_MAX_FILE_COUNT = "servicecomb.metrics.file.rolling.max_file_count";
@@ -39,7 +40,7 @@ public class Log4JMetricsFileWriter implements MetricsFileWriter {
   private static final String METRICS_FILE_ROOT_PATH = "servicecomb.metrics.file.root_path";
 
 
-  private final Map<String, RollingFileAppender> fileAppenders = new ConcurrentHashMap<>();
+  private final Map<String, RollingFileAppender> fileAppenders = new ConcurrentHashMapEx<>();
 
   private final int maxFileCount;
 
@@ -49,7 +50,8 @@ public class Log4JMetricsFileWriter implements MetricsFileWriter {
 
   public Log4JMetricsFileWriter() {
     maxFileCount = DynamicPropertyFactory.getInstance().getIntProperty(METRICS_FILE_ROLLING_MAX_FILE_COUNT, 10).get();
-    maxFileSize = DynamicPropertyFactory.getInstance().getStringProperty(METRICS_FILE_ROLLING_MAX_FILE_SIZE, "10MB")
+    maxFileSize = DynamicPropertyFactory.getInstance()
+        .getStringProperty(METRICS_FILE_ROLLING_MAX_FILE_SIZE, "10MB")
         .get();
     rootPath = DynamicPropertyFactory.getInstance().getStringProperty(METRICS_FILE_ROOT_PATH, "target").get();
   }

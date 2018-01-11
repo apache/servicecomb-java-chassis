@@ -19,7 +19,6 @@ package io.servicecomb.serviceregistry.consumer;
 
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
@@ -29,6 +28,7 @@ import org.slf4j.LoggerFactory;
 
 import com.google.common.eventbus.Subscribe;
 
+import io.servicecomb.foundation.common.concurrent.ConcurrentHashMapEx;
 import io.servicecomb.serviceregistry.RegistryUtils;
 import io.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
 import io.servicecomb.serviceregistry.api.registry.MicroserviceInstanceStatus;
@@ -51,10 +51,10 @@ public class MicroserviceVersions {
   private List<MicroserviceInstance> instances;
 
   // key is service id
-  private Map<String, MicroserviceVersion> versions = new ConcurrentHashMap<>();
+  private Map<String, MicroserviceVersion> versions = new ConcurrentHashMapEx<>();
 
   // key is version rule
-  private Map<String, MicroserviceVersionRule> versionRules = new ConcurrentHashMap<>();
+  private Map<String, MicroserviceVersionRule> versionRules = new ConcurrentHashMapEx<>();
 
   // process pulled instances and create versionRule must be protected by lock
   // otherwise maybe lost instance or version in versionRule

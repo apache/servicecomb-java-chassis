@@ -18,18 +18,18 @@
 package io.servicecomb.foundation.metrics.output.servo;
 
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
+import io.servicecomb.foundation.common.concurrent.ConcurrentHashMapEx;
 import io.servicecomb.foundation.metrics.output.MetricsFileOutput;
 
 @Component
 public class RollingMetricsFileOutput extends MetricsFileOutput {
 
-  private final Map<String, Logger> allLoggers = new ConcurrentHashMap<>();
+  private final Map<String, Logger> allLoggers = new ConcurrentHashMapEx<>();
 
   public RollingMetricsFileOutput() {
   }

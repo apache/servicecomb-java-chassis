@@ -18,7 +18,8 @@
 package io.servicecomb.foundation.metrics.performance;
 
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
+
+import io.servicecomb.foundation.common.concurrent.ConcurrentHashMapEx;
 
 /**
  * Implements the collection of metrics such as total request, total fail
@@ -46,15 +47,15 @@ public class MetricsDataMonitor {
   // key is operQualifiedName
   // inc
   // after invocation finished
-  public Map<String, Long> operMetricsTotalReq = new ConcurrentHashMap<>();
+  public Map<String, Long> operMetricsTotalReq = new ConcurrentHashMapEx<>();
 
   // key is operQualifiedName
   // inc
   // after invocation finished
-  public Map<String, Long> operMetricsTotalFailReq = new ConcurrentHashMap<>();
+  public Map<String, Long> operMetricsTotalFailReq = new ConcurrentHashMapEx<>();
 
   // key is operQualifiedName
-  public Map<String, QueueMetricsData> queueMetrics = new ConcurrentHashMap<>();
+  public Map<String, QueueMetricsData> queueMetrics = new ConcurrentHashMapEx<>();
 
   /**
    * default constructor.
@@ -70,8 +71,7 @@ public class MetricsDataMonitor {
    * @return QueueMetrics object based on key
    */
   public QueueMetricsData getOrCreateQueueMetrics(String pathId) {
-    return queueMetrics.computeIfAbsent(pathId, p -> new QueueMetricsData()
-    );
+    return queueMetrics.computeIfAbsent(pathId, p -> new QueueMetricsData());
   }
 
   /**

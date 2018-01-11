@@ -18,10 +18,10 @@
 package io.servicecomb.edge.core;
 
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 import org.springframework.util.StringUtils;
 
+import io.servicecomb.foundation.common.concurrent.ConcurrentHashMapEx;
 import io.servicecomb.foundation.common.exceptions.ServiceCombException;
 import io.servicecomb.serviceregistry.version.VersionRule;
 import io.servicecomb.serviceregistry.version.VersionRuleUtils;
@@ -29,7 +29,7 @@ import io.servicecomb.serviceregistry.version.VersionRuleUtils;
 public class CompatiblePathVersionMapper {
   // v1 -> 1.0.0-2.0.0
   // v2 -> 2.0.0-3.0.0
-  private Map<String, VersionRule> mapper = new ConcurrentHashMap<>();
+  private Map<String, VersionRule> mapper = new ConcurrentHashMapEx<>();
 
   public VersionRule getOrCreate(String pathVersion) {
     return mapper.computeIfAbsent(pathVersion, pv -> {
