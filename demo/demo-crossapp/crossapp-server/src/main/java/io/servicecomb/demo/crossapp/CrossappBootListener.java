@@ -22,6 +22,7 @@ import org.springframework.stereotype.Component;
 import io.servicecomb.core.BootListener;
 import io.servicecomb.core.definition.loader.DynamicSchemaLoader;
 
+@SuppressWarnings("deprecation")
 @Component
 public class CrossappBootListener implements BootListener {
   @Override

@@ -55,9 +55,7 @@ public class ApolloClientTest {
         Matchers.anyString(),
         Matchers.any(HttpMethod.class),
         Matchers.<HttpEntity<String>>any(),
-        Matchers.<Class<String>>any()
-        )
-    ).thenReturn(responseEntity);
+        Matchers.<Class<String>>any())).thenReturn(responseEntity);
     ApolloConfigurationSourceImpl impl = new ApolloConfigurationSourceImpl();
     UpdateHandler updateHandler = impl.new UpdateHandler();
     ApolloClient apolloClient = new ApolloClient(updateHandler);
@@ -81,7 +79,6 @@ public class ApolloClientTest {
 
     ConfigRefresh cr = apolloClient.new ConfigRefresh("");
 
-    ApolloConfig instance = ApolloConfig.INSTANCE;
     try {
       Deencapsulation.invoke(cr, "compareChangedConfig", before, after);
     } catch (Exception e) {

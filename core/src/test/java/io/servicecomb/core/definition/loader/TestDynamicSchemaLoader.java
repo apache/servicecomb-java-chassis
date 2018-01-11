@@ -67,6 +67,7 @@ public class TestDynamicSchemaLoader {
     RegistryUtils.setServiceRegistry(null);
   }
 
+  @SuppressWarnings("deprecation")
   @Test
   public void testRegisterSchemas() {
     DynamicSchemaLoader.INSTANCE.registerSchemas("classpath*:test/test/schema.yaml");
@@ -74,6 +75,7 @@ public class TestDynamicSchemaLoader {
     Assert.assertEquals("cse.gen.pojotest.perfClient.schema", schemaMeta.getPackageName());
   }
 
+  @SuppressWarnings("deprecation")
   @Test
   public void testRegisterShemasAcrossApp() {
     DynamicSchemaLoader.INSTANCE.registerSchemas("CSE:as", "classpath*:test/test/schema.yaml");

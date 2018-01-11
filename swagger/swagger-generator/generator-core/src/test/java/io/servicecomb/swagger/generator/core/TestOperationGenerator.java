@@ -97,6 +97,7 @@ public class TestOperationGenerator {
     public void functionWithNoTag() {
     }
 
+    @SuppressWarnings("unused")
     public void functionWithNoAnnotation() {
     }
   }
