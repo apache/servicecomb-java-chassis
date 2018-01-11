@@ -20,13 +20,11 @@ package io.servicecomb.samples.springmvc.provider;
 
 import javax.ws.rs.core.MediaType;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import io.servicecomb.foundation.metrics.MetricsServoRegistry;
 import io.servicecomb.provider.rest.common.RestSchema;
 import io.servicecomb.samples.common.schema.Hello;
 import io.servicecomb.samples.common.schema.models.Person;
@@ -34,14 +32,6 @@ import io.servicecomb.samples.common.schema.models.Person;
 @RestSchema(schemaId = "springmvcHello")
 @RequestMapping(path = "/springmvchello", produces = MediaType.APPLICATION_JSON)
 public class SpringmvcHelloImpl implements Hello {
-
-  private MetricsServoRegistry registry;
-
-  @Autowired
-  public SpringmvcHelloImpl(MetricsServoRegistry registry) {
-    this.registry = registry;
-  }
-
   @Override
   @RequestMapping(path = "/sayhi", method = RequestMethod.POST)
   public String sayHi(@RequestParam(name = "name") String name) {

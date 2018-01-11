@@ -20,7 +20,12 @@ package io.servicecomb.metrics.prometheus;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEvent;
+import org.springframework.context.ApplicationListener;
+import org.springframework.context.event.ContextClosedEvent;
 import org.springframework.stereotype.Component;
 
 import com.netflix.config.DynamicPropertyFactory;
@@ -30,12 +35,14 @@ import io.prometheus.client.exporter.HTTPServer;
 import io.servicecomb.foundation.common.exceptions.ServiceCombException;
 
 @Component
-public class MetricsPublisher {
+public class MetricsPublisher implements ApplicationListener<ApplicationEvent> {
+  private static final Logger LOGGER = LoggerFactory.getLogger(MetricsPublisher.class);
+
   private static final String METRICS_PROMETHEUS_PORT = "servicecomb.metrics.prometheus.port";
 
   private final MetricsCollector metricsCollector;
 
-  private final HTTPServer httpServer;
+  private HTTPServer httpServer;
 
   @Autowired
   public MetricsPublisher(MetricsCollector metricsCollector) {
@@ -45,8 +52,20 @@ public class MetricsPublisher {
     this.metricsCollector.register();
     try {
       this.httpServer = new HTTPServer(new InetSocketAddress(publishPort), CollectorRegistry.defaultRegistry, true);
+      LOGGER.info("Prometheus httpServer listened {}.", publishPort);
     } catch (IOException e) {
       throw new ServiceCombException("create http publish server failed", e);
     }
+  }
+
+  @Override
+  public void onApplicationEvent(ApplicationEvent event) {
+    if (!ContextClosedEvent.class.isInstance(event) || httpServer == null) {
+      return;
+    }
+
+    httpServer.stop();
+    httpServer = null;
+    LOGGER.info("Prometheus httpServer stopped.");
   }
 }

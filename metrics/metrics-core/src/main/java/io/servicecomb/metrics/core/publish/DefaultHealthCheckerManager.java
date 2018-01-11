@@ -25,21 +25,15 @@ import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import io.servicecomb.metrics.common.HealthCheckResult;
 import io.servicecomb.metrics.common.HealthChecker;
-import io.servicecomb.metrics.core.health.DefaultMicroserviceHealthChecker;
 import io.servicecomb.swagger.invocation.exception.InvocationException;
 
 @Component
 public class DefaultHealthCheckerManager implements HealthCheckerManager {
-
-  private static Logger logger = LoggerFactory.getLogger(DefaultHealthCheckerManager.class);
-
   private final Map<String, HealthChecker> healthCheckers;
 
   @Autowired(required = false)

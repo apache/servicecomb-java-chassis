@@ -69,6 +69,7 @@ public class Log4J2MetricsFileWriter implements MetricsFileWriter {
     logger.append(Log4jLogEvent.newBuilder().setMessage(new SimpleMessage(content)).build());
   }
 
+  @SuppressWarnings("deprecation")
   private RollingFileAppender initLogger(String loggerName, String filePrefix) {
     String fileName = Paths.get(rootPath, filePrefix + "." + loggerName + ".dat").toString();
     String filePattern = Paths.get(rootPath, filePrefix + "." + loggerName + "-%i.dat").toString();
