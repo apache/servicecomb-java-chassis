@@ -18,9 +18,9 @@
 package io.servicecomb.foundation.vertx.client.tcp;
 
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
+import io.servicecomb.foundation.common.concurrent.ConcurrentHashMapEx;
 import io.vertx.core.Context;
 
 public abstract class AbstractTcpClientConnectionPool<T extends TcpClientConnection> {
@@ -30,7 +30,7 @@ public abstract class AbstractTcpClientConnectionPool<T extends TcpClientConnect
   protected NetClientWrapper netClientWrapper;
 
   // key为address
-  protected Map<String, T> tcpClientMap = new ConcurrentHashMap<>();
+  protected Map<String, T> tcpClientMap = new ConcurrentHashMapEx<>();
 
   public AbstractTcpClientConnectionPool(Context context,
       NetClientWrapper netClientWrapper) {

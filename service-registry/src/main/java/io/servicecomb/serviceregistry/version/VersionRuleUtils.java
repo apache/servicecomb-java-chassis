@@ -21,12 +21,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.concurrent.ConcurrentHashMap;
+
+import io.servicecomb.foundation.common.concurrent.ConcurrentHashMapEx;
 
 public final class VersionRuleUtils {
   private static List<VersionRuleParser> parsers = new ArrayList<>();
 
-  private static Map<String, VersionRule> versionRuleCache = new ConcurrentHashMap<>();
+  private static Map<String, VersionRule> versionRuleCache = new ConcurrentHashMapEx<>();
 
   static {
     parsers.add(new VersionRuleLatestParser());

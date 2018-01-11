@@ -20,10 +20,10 @@ package io.servicecomb.foundation.vertx.client;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import io.servicecomb.foundation.common.concurrent.ConcurrentHashMapEx;
 import io.vertx.core.Context;
 import io.vertx.core.Vertx;
 
@@ -54,7 +54,7 @@ public class ClientPoolManager<CLIENT_POOL> {
   // send的调用线程与CLIENT_POOL的绑定关系，不直接用hash，是担心分配不均
   // key是调用者的线程id
   // TODO:要不要考虑已经绑定的线程消失了的场景？
-  private Map<Long, CLIENT_POOL> threadBindMap = new ConcurrentHashMap<>();
+  private Map<Long, CLIENT_POOL> threadBindMap = new ConcurrentHashMapEx<>();
 
   public ClientPoolManager(Vertx vertx, ClientPoolFactory<CLIENT_POOL> factory) {
     this.vertx = vertx;

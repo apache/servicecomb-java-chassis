@@ -19,7 +19,6 @@ package io.servicecomb.samples.mwf;
 
 import java.nio.file.Paths;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.core.LoggerContext;
@@ -34,6 +33,8 @@ import org.springframework.stereotype.Component;
 
 import com.netflix.config.DynamicPropertyFactory;
 
+import io.servicecomb.foundation.common.concurrent.ConcurrentHashMapEx;
+
 @Component
 public class Log4J2MetricsFileWriter implements MetricsFileWriter {
   private static final String METRICS_FILE_ROLLING_MAX_FILE_COUNT = "servicecomb.metrics.file.rolling.max_file_count";
@@ -46,7 +47,7 @@ public class Log4J2MetricsFileWriter implements MetricsFileWriter {
 
   private final Configuration config = ctx.getConfiguration();
 
-  private final Map<String, RollingFileAppender> fileAppenders = new ConcurrentHashMap<>();
+  private final Map<String, RollingFileAppender> fileAppenders = new ConcurrentHashMapEx<>();
 
   private final int maxFileCount;
 
@@ -56,7 +57,8 @@ public class Log4J2MetricsFileWriter implements MetricsFileWriter {
 
   public Log4J2MetricsFileWriter() {
     maxFileCount = DynamicPropertyFactory.getInstance().getIntProperty(METRICS_FILE_ROLLING_MAX_FILE_COUNT, 10).get();
-    maxFileSize = DynamicPropertyFactory.getInstance().getStringProperty(METRICS_FILE_ROLLING_MAX_FILE_SIZE, "10MB")
+    maxFileSize = DynamicPropertyFactory.getInstance()
+        .getStringProperty(METRICS_FILE_ROLLING_MAX_FILE_SIZE, "10MB")
         .get();
     rootPath = DynamicPropertyFactory.getInstance().getStringProperty(METRICS_FILE_ROOT_PATH, "target").get();
   }
@@ -73,12 +75,30 @@ public class Log4J2MetricsFileWriter implements MetricsFileWriter {
 
     PatternLayout layout = PatternLayout.newBuilder().withPattern(PatternLayout.DEFAULT_CONVERSION_PATTERN).build();
     SizeBasedTriggeringPolicy policy = SizeBasedTriggeringPolicy.createPolicy(maxFileSize);
-    DefaultRolloverStrategy strategy = DefaultRolloverStrategy.createStrategy(String.valueOf(maxFileCount), null, null,
-        null, null, false, config);
+    DefaultRolloverStrategy strategy = DefaultRolloverStrategy.createStrategy(String.valueOf(maxFileCount),
+        null,
+        null,
+        null,
+        null,
+        false,
+        config);
 
     //TODO:use RollingFileAppender.newBuilder throw No such static method exception,will improve later!
     return RollingFileAppender
-        .createAppender(fileName, filePattern, "true", loggerName, "true", null,
-            "true", policy, strategy, layout, null, null, null, null, config);
+        .createAppender(fileName,
+            filePattern,
+            "true",
+            loggerName,
+            "true",
+            null,
+            "true",
+            policy,
+            strategy,
+            layout,
+            null,
+            null,
+            null,
+            null,
+            config);
   }
 }

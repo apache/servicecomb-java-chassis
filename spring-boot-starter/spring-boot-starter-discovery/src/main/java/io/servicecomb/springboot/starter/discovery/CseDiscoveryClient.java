@@ -19,13 +19,13 @@ package io.servicecomb.springboot.starter.discovery;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 import org.springframework.cloud.client.DefaultServiceInstance;
 import org.springframework.cloud.client.ServiceInstance;
 import org.springframework.cloud.client.discovery.DiscoveryClient;
 
 import io.servicecomb.foundation.common.cache.VersionedCache;
+import io.servicecomb.foundation.common.concurrent.ConcurrentHashMapEx;
 import io.servicecomb.foundation.common.net.URIEndpointObject;
 import io.servicecomb.serviceregistry.RegistryUtils;
 import io.servicecomb.serviceregistry.api.registry.Microservice;
@@ -36,7 +36,7 @@ import io.servicecomb.serviceregistry.discovery.DiscoveryContext;
 import io.servicecomb.serviceregistry.discovery.DiscoveryTree;
 
 public class CseDiscoveryClient implements DiscoveryClient {
-  private Map<String, DiscoveryTree> discoveryTrees = new ConcurrentHashMap<>();
+  private Map<String, DiscoveryTree> discoveryTrees = new ConcurrentHashMapEx<>();
 
   @Override
   public String description() {

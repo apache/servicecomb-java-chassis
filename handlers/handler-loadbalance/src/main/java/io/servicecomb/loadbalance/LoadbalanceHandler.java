@@ -20,7 +20,6 @@ package io.servicecomb.loadbalance;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -44,6 +43,7 @@ import io.servicecomb.core.Invocation;
 import io.servicecomb.core.exception.ExceptionUtils;
 import io.servicecomb.core.provider.consumer.SyncResponseExecutor;
 import io.servicecomb.foundation.common.cache.VersionedCache;
+import io.servicecomb.foundation.common.concurrent.ConcurrentHashMapEx;
 import io.servicecomb.loadbalance.filter.CseServerDiscoveryFilter;
 import io.servicecomb.loadbalance.filter.IsolationServerListFilter;
 import io.servicecomb.loadbalance.filter.TransactionControlFilter;
@@ -73,7 +73,7 @@ public class LoadbalanceHandler implements Handler {
   private DiscoveryTree discoveryTree = new DiscoveryTree();
 
   // key为grouping filter qualified name
-  private volatile Map<String, LoadBalancer> loadBalancerMap = new ConcurrentHashMap<>();
+  private volatile Map<String, LoadBalancer> loadBalancerMap = new ConcurrentHashMapEx<>();
 
   private final Object lock = new Object();
 
