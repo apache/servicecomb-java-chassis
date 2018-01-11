@@ -24,6 +24,7 @@
     <relativePath>../parent</relativePath>
   </parent>
   <artifactId>foundations</artifactId>
+  <name>Java Chassis::Foundations</name>
   <packaging>pom</packaging>
   <modules>
       <module>foundation-vertx</module>

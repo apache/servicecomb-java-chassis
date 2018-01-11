@@ -24,6 +24,7 @@
     <relativePath>../parent</relativePath>
   </parent>
   <artifactId>common</artifactId>
+  <name>Java Chassis::Common</name>
   <packaging>pom</packaging>
   <modules>
       <module>common-javassist</module>

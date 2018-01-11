@@ -29,6 +29,7 @@
   </parent>
 
   <artifactId>metrics</artifactId>
+  <name>Java Chassis::Metrics</name>
 
   <modules>
     <module>metrics-common</module>

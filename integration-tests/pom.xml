@@ -27,6 +27,7 @@
 
   <groupId>io.servicecomb.tests</groupId>
   <artifactId>integration-tests</artifactId>
+  <name>Java Chassis::Integration Tests</name>
   <packaging>pom</packaging>
 
   <modules>

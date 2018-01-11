@@ -25,6 +25,7 @@
   </parent>
 
   <artifactId>foundation-config-cc</artifactId>
+  <name>Java Chassis::Foundations::Config CC</name>
 
   <dependencies>
 

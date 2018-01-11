@@ -24,6 +24,7 @@
 		<version>0.6.0-SNAPSHOT</version>
 	</parent>
 	<artifactId>spring-boot-starter-discovery</artifactId>
+	<name>Java Chassis::Spring Boot Starter::Discovery</name>
 
 	<dependencies>
 		<dependency>

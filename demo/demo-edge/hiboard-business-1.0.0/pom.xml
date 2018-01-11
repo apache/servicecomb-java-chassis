@@ -25,6 +25,7 @@
     <version>0.6.0-SNAPSHOT</version>
   </parent>
   <artifactId>hiboard-business-1-0-0</artifactId>
+  <name>Java Chassis::Demo::Edge::HiBoard Business 1.0.0</name>
 
   <properties>
     <demo.main>io.servicecomb.demo.edge.business.BusinessMain_V1_0_0</demo.main>

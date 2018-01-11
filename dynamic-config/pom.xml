@@ -29,6 +29,7 @@
   <modelVersion>4.0.0</modelVersion>
 
   <artifactId>dynamic-config</artifactId>
+  <name>Java Chassis::Dynamic Config</name>
   <packaging>pom</packaging>
   <modules>
     <module>config-apollo</module>

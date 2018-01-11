@@ -30,7 +30,7 @@
   <artifactId>java-chassis-parent</artifactId>
   <packaging>pom</packaging>
 
-  <name>Java Chassis Parent</name>
+  <name>Java Chassis::Parent</name>
   <description>Java Chassis Parent</description>
   <url>https://github.com/ServiceComb/java-chassis</url>
 
@@ -133,9 +133,33 @@
           <excludes>**/demo/**</excludes>
         </configuration>
       </plugin>
+      <plugin>
+        <artifactId>maven-remote-resources-plugin</artifactId>
+        <version>1.5</version>
+        <executions>
+          <execution>
+            <goals>
+              <goal>process</goal>
+            </goals>
+            <configuration>
+              <resourceBundles>
+                <resourceBundle>org.apache:apache-jar-resource-bundle:1.4</resourceBundle>
+                <resourceBundle>org.apache:apache-incubator-disclaimer-resource-bundle:1.1</resourceBundle>
+              </resourceBundles>
+              <properties>
+                <projectName>Apache ServiceComb</projectName>
+              </properties>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
     </plugins>
     <pluginManagement>
       <plugins>
+        <plugin>
+          <artifactId>maven-remote-resources-plugin</artifactId>
+          <version>1.5</version>
+        </plugin>
         <plugin>
           <groupId>io.fabric8</groupId>
           <artifactId>docker-maven-plugin</artifactId>

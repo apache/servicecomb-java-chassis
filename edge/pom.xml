@@ -26,6 +26,7 @@
     <relativePath>../parent</relativePath>
   </parent>
   <artifactId>edge</artifactId>
+  <name>Java Chassis::Edge</name>
   <packaging>pom</packaging>
   <modules>
     <module>edge-core</module>

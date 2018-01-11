@@ -23,6 +23,7 @@
     <version>0.6.0-SNAPSHOT</version>
   </parent>
   <artifactId>swagger-generator</artifactId>
+  <name>Java Chassis::Swagger::Generator</name>
   <packaging>pom</packaging>
   <modules>
   	<module>generator-core</module>

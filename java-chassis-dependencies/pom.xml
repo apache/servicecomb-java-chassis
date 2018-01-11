@@ -27,6 +27,7 @@
   </parent>
 
   <artifactId>java-chassis-dependencies</artifactId>
+  <name>Java Chassis::Dependencies</name>
   <packaging>pom</packaging>
 
   <properties>

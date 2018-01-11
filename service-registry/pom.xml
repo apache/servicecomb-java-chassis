@@ -27,6 +27,7 @@
   <modelVersion>4.0.0</modelVersion>
 
   <artifactId>service-registry</artifactId>
+  <name>Java Chassis::Service Registry</name>
 
   <dependencies>
     <dependency>

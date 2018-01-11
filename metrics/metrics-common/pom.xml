@@ -27,6 +27,7 @@
   <modelVersion>4.0.0</modelVersion>
 
   <artifactId>metrics-common</artifactId>
+  <name>Java Chassis::Metrics::Common</name>
 
   <dependencies>
     <dependency>

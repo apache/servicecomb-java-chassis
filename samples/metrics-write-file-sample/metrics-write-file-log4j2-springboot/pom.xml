@@ -27,6 +27,7 @@
   <modelVersion>4.0.0</modelVersion>
 
   <artifactId>metrics-write-file-log4j2-springboot</artifactId>
+  <name>Java Chassis::Metrics::Sample::Metrics::WriteFile::Log4j2</name>
 
   <dependencies>
     <dependency>
@@ -68,6 +69,5 @@
       <groupId>io.servicecomb.samples</groupId>
       <artifactId>metrics-write-file</artifactId>
     </dependency>
-
   </dependencies>
 </project>

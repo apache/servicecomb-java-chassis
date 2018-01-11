@@ -25,7 +25,7 @@
     <version>0.6.0-SNAPSHOT</version>
   </parent>
   <artifactId>demo-spring-boot-discovery-server</artifactId>
-  <name>demo-spring-boot-discovery-server</name>
+  <name>Java Chassis::Demo::Spring Boot Discovery::Server</name>
   <dependencies>
     <dependency>
       <groupId>io.servicecomb.demo</groupId>

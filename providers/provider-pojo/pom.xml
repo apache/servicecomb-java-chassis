@@ -24,6 +24,7 @@
 		<version>0.6.0-SNAPSHOT</version>
 	</parent>
 	<artifactId>provider-pojo</artifactId>
+	<name>Java Chassis::Providers::POJO</name>
 	<dependencies>
 		<dependency>
 			<groupId>io.servicecomb</groupId>

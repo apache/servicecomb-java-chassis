@@ -25,6 +25,7 @@
 	</parent>
 
 	<artifactId>spring-boot-starter-configuration</artifactId>
+	<name>Java Chassis::Spring Boot Starter::Configuration</name>
 
 	<dependencies>
 		<dependency>

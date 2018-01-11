@@ -27,6 +27,7 @@
   <modelVersion>4.0.0</modelVersion>
 
   <artifactId>test-common</artifactId>
+  <name>Java Chassis::Integration Tests::Common</name>
 
   <dependencies>
     <dependency>

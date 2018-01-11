@@ -27,6 +27,8 @@
   </parent>
   <groupId>io.servicecomb.demo</groupId>
   <artifactId>demo-parent</artifactId>
+  <name>Java Chassis::Demo</name>
+
   <packaging>pom</packaging>
   <modules>
     <module>docker-build-config</module>

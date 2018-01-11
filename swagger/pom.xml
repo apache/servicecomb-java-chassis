@@ -24,6 +24,7 @@
     <relativePath>../parent</relativePath>
   </parent>
   <artifactId>swagger</artifactId>
+  <name>Java Chassis::Swagger</name>
   <packaging>pom</packaging>
   <modules>
   	<module>swagger-generator</module>

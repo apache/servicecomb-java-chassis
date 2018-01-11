@@ -27,6 +27,7 @@
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>config-apollo</artifactId>
+  <name>Java Chassis::Dynamic Config::Apollo</name>
   <dependencies>
     <dependency>
       <groupId>io.servicecomb</groupId>

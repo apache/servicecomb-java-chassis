@@ -26,6 +26,7 @@
 		<version>0.6.0-SNAPSHOT</version>
 	</parent>
 	<artifactId>demo-spring-boot-zuul-proxy</artifactId>
+	<name>Java Chassis::Demo::Spring Boot Discovery::Zuul Proxy</name>
 	<properties>
 		<demo.main>io.servicecomb.demo.discovery.zuul.DiscoveryZuulProxyIT.DiscoveryZuulProxy</demo.main>
 	</properties>

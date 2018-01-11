@@ -25,6 +25,8 @@
     <relativePath>../parent</relativePath>
   </parent>
   <artifactId>java-chassis-core</artifactId>
+  <name>Java Chassis::Core</name>
+  
   <dependencies>
     <dependency>
       <groupId>io.servicecomb</groupId>

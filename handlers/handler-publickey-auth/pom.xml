@@ -25,6 +25,7 @@
 	</parent>
 
 	<artifactId>handler-publickey-auth</artifactId>
+	<name>Java Chassis::Handlers::PublicKey Auth</name>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

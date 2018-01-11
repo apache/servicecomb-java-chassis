@@ -25,6 +25,7 @@
 	</parent>
 
 	<artifactId>handler-bizkeeper</artifactId>
+	<name>Java Chassis::Handlers::Bizkeeper</name>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

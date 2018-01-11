@@ -25,6 +25,7 @@
     <version>0.6.0-SNAPSHOT</version>
   </parent>
   <artifactId>hiboard-consumer</artifactId>
+  <name>Java Chassis::Demo::Edge::HiBoard Consumer</name>
 
   <properties>
     <demo.main>io.servicecomb.demo.edge.consumer.ConsumerMain</demo.main>

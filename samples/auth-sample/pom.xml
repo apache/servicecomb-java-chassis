@@ -23,6 +23,7 @@
     <version>0.6.0-SNAPSHOT</version>
   </parent>
   <artifactId>auth-sample</artifactId>
+  <name>Java Chassis::Samples::Auth</name>
   <packaging>pom</packaging>
   <modules>
       <module>auth-provider</module>
