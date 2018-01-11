@@ -17,7 +17,9 @@
 
 package org.apache.servicecomb.metrics.common;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -25,37 +27,44 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class CallMetric {
   private final String prefix;
 
-  private final long total;
+  private final List<LongMetricValue> totalValues;
 
-  private final double tps;
+  private final List<DoubleMetricValue> tpsValues;
 
-  public long getTotal() {
-    return total;
+  public List<LongMetricValue> getTotalValues() {
+    return totalValues;
   }
 
-  public double getTps() {
-    return tps;
+  public List<DoubleMetricValue> getTpsValues() {
+    return tpsValues;
   }
 
   public CallMetric(String prefix) {
-    this(prefix, 0, 0);
+    this(prefix, new ArrayList<>(), new ArrayList<>());
   }
 
-  public CallMetric(@JsonProperty("prefix") String prefix, @JsonProperty("total") long total,
-      @JsonProperty("tps") double tps) {
+  public CallMetric(@JsonProperty("prefix") String prefix,
+      @JsonProperty("totalValues") List<LongMetricValue> totalValues,
+      @JsonProperty("tpsValues") List<DoubleMetricValue> tpsValues) {
     this.prefix = prefix;
-    this.total = total;
-    this.tps = tps;
+    this.totalValues = totalValues;
+    this.tpsValues = tpsValues;
   }
 
   public CallMetric merge(CallMetric metric) {
-    return new CallMetric(this.prefix, this.total + metric.total, this.tps + metric.tps);
+    return new CallMetric(this.prefix,
+        LongMetricValue.merge(metric.getTotalValues(), this.getTotalValues()),
+        DoubleMetricValue.merge(metric.getTpsValues(), this.getTpsValues()));
   }
 
   public Map<String, Number> toMap() {
     Map<String, Number> metrics = new HashMap<>();
-    metrics.put(prefix + ".total", total);
-    metrics.put(prefix + ".tps", tps);
+    for (MetricValue totalValue : totalValues) {
+      metrics.put(prefix + ".total." + totalValue.getKey(), totalValue.getValue());
+    }
+    for (MetricValue tpsValue : tpsValues) {
+      metrics.put(prefix + ".tps." + tpsValue.getKey(), tpsValue.getValue());
+    }
     return metrics;
   }
 }
