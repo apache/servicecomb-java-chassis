@@ -88,9 +88,6 @@
 
 定义映射后，在配置装载的时候框架会默认进行映射，把以我们定义的配置项映射为开源组件可以认的配置项。
 
-##　多配置源的继承配置
-参考[测试代码](http://code.huawei.com/CSE-Incubator/cse-config/blob/master/archaius-yaml/src/test/java/com/huawei/paas/config/archaius/sources/YAMLConfigurationSourceTest.java#L46), 在初始化配置的时候按照测试代码中的方式对多个ConfigurationSource进行初始化以实现继承式的配置装载。
-
 ## TODO
 * 接入Config-center，做PUSH模式的动态刷新
 * 对接Spring Configuration实现对业务系统的配置

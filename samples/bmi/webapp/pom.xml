@@ -27,6 +27,7 @@
   <modelVersion>4.0.0</modelVersion>
 
   <artifactId>webapp</artifactId>
+  <name>Java Chassis::Samples::BMI::Webapp</name>
 
   <dependencies>
     <dependency>

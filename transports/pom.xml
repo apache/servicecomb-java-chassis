@@ -24,6 +24,7 @@
     <relativePath>../parent</relativePath>
   </parent>
   <artifactId>transports</artifactId>
+  <name>Java Chassis::Transports</name>
   <packaging>pom</packaging>
   <modules>
       <module>transport-highway</module>

@@ -27,6 +27,7 @@
   <modelVersion>4.0.0</modelVersion>
 
   <artifactId>spring-springmvc-tests</artifactId>
+  <name>Java Chassis::Integration Tests::Spring MVC</name>
   <dependencies>
     <dependency>
       <groupId>io.servicecomb.tests</groupId>

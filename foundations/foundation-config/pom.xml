@@ -29,6 +29,7 @@
   </properties>
 
   <artifactId>foundation-config</artifactId>
+  <name>Java Chassis::Foundations::Config</name>
   <dependencies>
     <dependency>
       <groupId>io.servicecomb</groupId>

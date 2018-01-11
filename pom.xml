@@ -202,6 +202,7 @@
         <artifactId>apache-rat-plugin</artifactId>
         <configuration>
           <excludes>
+            <exclude>DISCLAIMER</exclude>
             <exclude>.travis.yml</exclude>
             <exclude>**/*.md</exclude>
             <exclude>**/target/*</exclude>

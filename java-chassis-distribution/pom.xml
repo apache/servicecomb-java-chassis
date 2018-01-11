@@ -25,6 +25,7 @@
         <relativePath>../parent</relativePath>
     </parent>
     <artifactId>java-chassis-distribution</artifactId>
+    <name>Java Chassis::Distribution</name>
     <packaging>pom</packaging>
     <dependencies>
         <dependency>

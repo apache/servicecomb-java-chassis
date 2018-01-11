@@ -24,6 +24,7 @@
 		<artifactId>foundations</artifactId>
 	</parent>
 	<artifactId>foundation-common</artifactId>
+	<name>Java Chassis::Foundations::Common</name>
 
 	<dependencies>
 		<dependency>

@@ -22,6 +22,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>io.servicecomb.springboot.springmvc.server</groupId>
 	<artifactId>demo-spring-boot-springmvc-server</artifactId>
+	<name>Java Chassis::Demo::Spring Boot::Spring MVC Client</name>
 	<parent>
 		<groupId>io.servicecomb.demo</groupId>
 		<artifactId>demo-spring-boot</artifactId>

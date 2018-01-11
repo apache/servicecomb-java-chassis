@@ -27,6 +27,7 @@
   <modelVersion>4.0.0</modelVersion>
 
   <artifactId>jaxrs-tests</artifactId>
+  <name>Java Chassis::Integration Tests::JAXRS</name>
 
   <dependencies>
     <dependency>

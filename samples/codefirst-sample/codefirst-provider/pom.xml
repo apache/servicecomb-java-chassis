@@ -24,6 +24,7 @@
         <version>0.6.0-SNAPSHOT</version>
     </parent>
     <artifactId>codefirst-provider</artifactId>
+    <name>Java Chassis::Samples::CodeFirst::Provider</name>
     <properties>
          <project.build.sourceEncoding>
              UTF-8

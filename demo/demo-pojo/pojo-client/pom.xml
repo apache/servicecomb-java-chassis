@@ -25,6 +25,7 @@
     <version>0.6.0-SNAPSHOT</version>
   </parent>
   <artifactId>pojo-client</artifactId>
+  <name>Java Chassis::Demo::POJO::Client</name>
 
   <dependencies>
     <dependency>

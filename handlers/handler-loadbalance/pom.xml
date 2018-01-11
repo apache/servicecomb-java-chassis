@@ -25,6 +25,7 @@
 	</parent>
 
 	<artifactId>handler-loadbalance</artifactId>
+	<name>Java Chassis::Handlers::Loadbalance</name>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

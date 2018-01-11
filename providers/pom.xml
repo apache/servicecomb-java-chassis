@@ -24,6 +24,7 @@
     <relativePath>../parent</relativePath>
   </parent>
   <artifactId>providers</artifactId>
+  <name>Java Chassis::Providers</name>
   <packaging>pom</packaging>
   <modules>
       <module>provider-jaxrs</module>

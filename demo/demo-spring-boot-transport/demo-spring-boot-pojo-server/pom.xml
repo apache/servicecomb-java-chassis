@@ -21,6 +21,7 @@
 	xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 	<modelVersion>4.0.0</modelVersion>
 	<artifactId>demo-spring-boot-pojo-server</artifactId>
+	<name>Java Chassis::Demo::Spring Boot::Transport::POJO Server</name>
 	<parent>
 		<groupId>io.servicecomb.demo</groupId>
 		<artifactId>demo-spring-boot-transport</artifactId>

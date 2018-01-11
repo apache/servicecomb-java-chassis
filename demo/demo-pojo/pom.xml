@@ -25,6 +25,7 @@
 		<version>0.6.0-SNAPSHOT</version>
 	</parent>
 	<artifactId>demo-pojo</artifactId>
+	<name>Java Chassis::Demo::POJO</name>
 	<packaging>pom</packaging>
 	<modules>
 		<module>pojo-server</module>

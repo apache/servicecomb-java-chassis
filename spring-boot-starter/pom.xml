@@ -24,6 +24,8 @@
     <relativePath>../parent</relativePath>
   </parent>
   <artifactId>spring-boot-starter-parent</artifactId>
+  <name>Java Chassis::Spring Boot Starter::Parent</name>
+
   <packaging>pom</packaging>
   <modules>
   	<module>spring-boot-starter-configuration</module>

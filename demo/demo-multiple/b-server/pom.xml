@@ -24,7 +24,9 @@
 		<artifactId>demo-multiple</artifactId>
 		<version>0.6.0-SNAPSHOT</version>
 	</parent>
+
 	<artifactId>b-server</artifactId>
+	<name>Java Chassis::Demo::Multiple::B server</name>
 
 	<properties>
 		<demo.main>io.servicecomb.demo.multiple.b.server.BServerMain</demo.main>

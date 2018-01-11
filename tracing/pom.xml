@@ -28,6 +28,7 @@
   <modelVersion>4.0.0</modelVersion>
 
   <artifactId>tracing</artifactId>
+  <name>Java Chassis::Tracing</name>
   <packaging>pom</packaging>
   <modules>
     <module>tracing-common</module>

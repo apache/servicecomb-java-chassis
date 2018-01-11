@@ -24,6 +24,7 @@
     <version>0.6.0-SNAPSHOT</version>
   </parent>
   <artifactId>edge-service</artifactId>
+  <name>Java Chassis::Demo::Edge::Service</name>
 
   <properties>
     <demo.main>io.servicecomb.demo.edge.service.EdgeMain</demo.main>
