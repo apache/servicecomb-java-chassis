@@ -20,20 +20,17 @@ package org.apache.servicecomb.metrics.core.monitor;
 import org.apache.servicecomb.metrics.common.CallMetric;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import com.netflix.servo.monitor.BasicCounter;
 import com.netflix.servo.monitor.MonitorConfig;
 import com.netflix.servo.monitor.StepCounter;
-import com.netflix.servo.tag.Tag;
-import com.netflix.servo.tag.TagList;
 
 import io.servicecomb.metrics.common.CallMetric;
 import io.servicecomb.metrics.common.DoubleMetricValue;
 import io.servicecomb.metrics.common.LongMetricValue;
 import io.servicecomb.metrics.core.MetricsDimension;
+import io.servicecomb.metrics.core.utils.MonitorUtils;
 
 public class CallMonitor {
   private final String prefix;
@@ -68,33 +65,31 @@ public class CallMonitor {
     }
   }
 
+  public void increment(String dimensionKey, String dimensionValue) {
+    for (int i = 0; i < totalCounters.size(); i++) {
+      BasicCounter totalCounter = totalCounters.get(i);
+      if (MonitorUtils.containsTagValue(totalCounter, dimensionKey, dimensionValue)) {
+        totalCounter.increment();
+      }
+      StepCounter tpsCounter = tpsCounters.get(i);
+      if (MonitorUtils.containsTagValue(tpsCounter, dimensionKey, dimensionValue)) {
+        tpsCounter.increment();
+      }
+    }
+  }
+
   public CallMetric toMetric(int windowTimeIndex) {
     List<LongMetricValue> totalValues = new ArrayList<>();
     List<DoubleMetricValue> tpsValues = new ArrayList<>();
     for (int i = 0; i < totalCounters.size(); i++) {
-      totalValues.add(new LongMetricValue(totalCounters.get(i).getValue(windowTimeIndex).longValue(),
-          convertTags(totalCounters.get(i).getConfig().getTags())));
-      tpsValues.add(new DoubleMetricValue(adjustValue(tpsCounters.get(i).getValue(windowTimeIndex).doubleValue()),
-          convertTags(tpsCounters.get(i).getConfig().getTags())));
+      BasicCounter totalCounter = totalCounters.get(i);
+      totalValues.add(new LongMetricValue(totalCounter.getValue(windowTimeIndex).longValue(),
+          MonitorUtils.convertTags(totalCounter)));
+      StepCounter tpsCounter = tpsCounters.get(i);
+      tpsValues.add(
+          new DoubleMetricValue(MonitorUtils.adjustValue(tpsCounter.getValue(windowTimeIndex).doubleValue()),
+              MonitorUtils.convertTags(tpsCounter)));
     }
     return new CallMetric(this.prefix, totalValues, tpsValues);
-  }
-
-  //for time-related monitor type, if stop poll value over one window time,
-  //the value may return -1 because servo can't known precise value of previous step
-  //so must change to return 0
-  private double adjustValue(double value) {
-    return value < 0 ? 0 : value;
-  }
-
-  private Map<String, String> convertTags(TagList tags) {
-    if (tags.size() != 0) {
-      Map<String, String> tagMap = new HashMap<>();
-      for (Tag tag : tags) {
-        tagMap.put(tag.getKey(), tag.getValue());
-      }
-      return tagMap;
-    }
-    return null;
   }
 }

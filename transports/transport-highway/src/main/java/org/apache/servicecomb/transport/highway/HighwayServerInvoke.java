@@ -134,7 +134,7 @@ public class HighwayServerInvoke {
     invocation.next(response -> {
       sendResponse(invocation.getContext(), response);
       endMetrics(invocation);
-      invocation.triggerFinishedEvent();
+      invocation.triggerFinishedEvent(response.isSuccessed());
     });
   }
 
