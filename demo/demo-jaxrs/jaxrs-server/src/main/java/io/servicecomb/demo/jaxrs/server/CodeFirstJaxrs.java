@@ -37,6 +37,9 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response.Status;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import io.servicecomb.common.rest.codec.RestObjectMapper;
 import io.servicecomb.core.Const;
 import io.servicecomb.demo.compute.Person;
@@ -52,6 +55,7 @@ import io.servicecomb.swagger.invocation.context.InvocationContext;
 import io.servicecomb.swagger.invocation.response.Headers;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
+import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ResponseHeader;
 import io.vertx.core.json.JsonObject;
@@ -60,6 +64,7 @@ import io.vertx.core.json.JsonObject;
 @Path("/codeFirstJaxrs")
 @Produces(MediaType.APPLICATION_JSON)
 public class CodeFirstJaxrs {
+  private Logger LOGGER= LoggerFactory.getLogger(this.getClass());
   //    public Response getUserResponse() {
   //
   //    }
@@ -208,5 +213,14 @@ public class CodeFirstJaxrs {
   @GET
   public String getTraceId() {
     return ContextUtils.getInvocationContext().getContext(Const.TRACE_ID_NAME);
+  }
+
+  @Path("/testGetStrArray")
+  @GET
+  public String[] testGetStrArray(@ApiParam(collectionFormat = "csv") @QueryParam(value = "str") String[] str) {
+    for (int i = 0; i < str.length; i++) {
+      LOGGER.info("*******" + str[i]);
+    }
+    return str;
   }
 }

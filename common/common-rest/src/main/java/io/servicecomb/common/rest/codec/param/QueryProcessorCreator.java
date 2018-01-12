@@ -18,6 +18,9 @@
 package io.servicecomb.common.rest.codec.param;
 
 import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -26,9 +29,32 @@ import com.fasterxml.jackson.databind.type.TypeFactory;
 
 import io.servicecomb.common.rest.codec.RestClientRequest;
 import io.swagger.models.parameters.Parameter;
+import io.swagger.models.parameters.QueryParameter;
 
 public class QueryProcessorCreator implements ParamValueProcessorCreator {
+
   public static final String PARAMTYPE = "query";
+
+  public QueryProcessorCreator() {
+    ParamValueProcessorCreatorManager.INSTANCE.register(PARAMTYPE, this);
+  }
+
+  @Override
+  public ParamValueProcessor create(Parameter parameter, Type genericParamType) {
+    JavaType targetType = TypeFactory.defaultInstance().constructType(genericParamType);
+
+    String collectionFormat = ((QueryParameter) parameter).getCollectionFormat();
+
+    if (collectionFormat == null) {
+      return new QueryProcessor(parameter.getName(), targetType);
+    }
+    if (collectionFormat.equals("csv")) {
+      return new CsvQueryProcessor(parameter.getName(), targetType);
+    }
+
+    return new QueryProcessor(parameter.getName(), targetType);
+  }
+
 
   public static class QueryProcessor extends AbstractParamProcessor {
     public QueryProcessor(String paramPath, JavaType targetType) {
@@ -58,13 +84,39 @@ public class QueryProcessorCreator implements ParamValueProcessorCreator {
     }
   }
 
-  public QueryProcessorCreator() {
-    ParamValueProcessorCreatorManager.INSTANCE.register(PARAMTYPE, this);
-  }
+  public static class CsvQueryProcessor extends AbstractParamProcessor {
 
-  @Override
-  public ParamValueProcessor create(Parameter parameter, Type genericParamType) {
-    JavaType targetType = TypeFactory.defaultInstance().constructType(genericParamType);
-    return new QueryProcessor(parameter.getName(), targetType);
+
+    public CsvQueryProcessor(String paramPath, JavaType targetType) {
+      super(paramPath, targetType);
+    }
+
+    @Override
+    public Object getValue(HttpServletRequest request) throws Exception {
+      Object value = null;
+
+      if (targetType.isContainerType()) {
+        String[] strs = request.getParameterValues(paramPath);
+        List<String> asList = new ArrayList<>();
+        for (String str : strs) {
+          asList.addAll(Arrays.asList(str.split(",")));
+        }
+        value = asList.toArray();
+      } else {
+        value = request.getParameter(paramPath);
+      }
+
+      return convertValue(value, targetType);
+    }
+
+    @Override
+    public void setValue(RestClientRequest clientRequest, Object arg) throws Exception {
+
+    }
+
+    @Override
+    public String getProcessorType() {
+      return PARAMTYPE;
+    }
   }
 }

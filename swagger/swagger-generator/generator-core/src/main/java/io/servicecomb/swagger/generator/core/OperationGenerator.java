@@ -31,7 +31,9 @@ import org.springframework.util.StringUtils;
 
 import io.servicecomb.swagger.SwaggerUtils;
 import io.servicecomb.swagger.extend.parameter.ContextParameter;
+import io.servicecomb.swagger.generator.core.processor.annotation.ApiParamAnnotationProcessor;
 import io.servicecomb.swagger.generator.core.utils.ParamUtils;
+import io.swagger.annotations.ApiParam;
 import io.swagger.models.HttpMethod;
 import io.swagger.models.Operation;
 import io.swagger.models.Path;
@@ -71,6 +73,8 @@ public class OperationGenerator {
   protected String path;
 
   protected String httpMethod;
+
+  private Map<String, Annotation> apiParams = new HashMap();
 
   public OperationGenerator(SwaggerGenerator swaggerGenerator, Method providerMethod) {
     this.swaggerGenerator = swaggerGenerator;
@@ -266,6 +270,16 @@ public class OperationGenerator {
         context.getDefaultParamProcessor().process(this, paramIdx);
       }
     }
+
+    processByApiParamAnnotation(apiParams);
+  }
+
+  private void processByApiParamAnnotation(Map<String, Annotation> apiParams) {
+    for (int paramIdx = 0; paramIdx < apiParams.size(); paramIdx++) {
+      Annotation annotation = apiParams.get(String.valueOf(paramIdx));
+      ParameterAnnotationProcessor processor = context.findParameterAnnotationProcessor(annotation.annotationType());
+      processor.process(annotation, this, paramIdx);
+    }
   }
 
   private boolean isArgumentNotProcessed(int swaggerParamCount) {
@@ -274,9 +288,14 @@ public class OperationGenerator {
 
   protected void processByParameterAnnotation(Annotation[] paramAnnotations, int paramIdx) {
     for (Annotation annotation : paramAnnotations) {
+
+      if (annotation instanceof ApiParam) {
+        apiParams.put(String.valueOf(paramIdx), annotation);
+      }
+
       ParameterAnnotationProcessor processor =
           context.findParameterAnnotationProcessor(annotation.annotationType());
-      if (processor != null) {
+      if (processor != null && !(processor instanceof ApiParamAnnotationProcessor)) {
         processor.process(annotation, this, paramIdx);
       }
     }

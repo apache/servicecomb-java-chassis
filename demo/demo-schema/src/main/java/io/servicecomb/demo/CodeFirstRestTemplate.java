@@ -17,6 +17,8 @@
 
 package io.servicecomb.demo;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -75,7 +77,22 @@ public class CodeFirstRestTemplate {
       testTraceIdOnContextContainsTraceId(template, cseUrlPrefix);
 
       testRawJson(template, cseUrlPrefix);
+      testStrArray(template, cseUrlPrefix);
     }
+  }
+
+  private void testStrArray(RestTemplate template, String cseUrlPrefix) {
+    String[] instrArray = {"a1,b1,c1"};
+    ArrayList result = template.getForObject(cseUrlPrefix + "testGetStrArray?str=a1,b1,c1", ArrayList.class);
+    ArrayList result1 = template
+        .getForObject(cseUrlPrefix + "testGetStrArray?str={instrArray}", ArrayList.class, "a1,b1,c1");
+    ArrayList result2 = template
+        .getForObject(cseUrlPrefix + "testGetStrArray?str={instrArray}", ArrayList.class, instrArray);
+
+    String[] output = {"a1", "b1", "c1"};
+    TestMgr.check(true, Arrays.asList(output).equals(result));
+    TestMgr.check(true, Arrays.asList(output).equals(result1));
+    TestMgr.check(true, Arrays.asList(output).equals(result2));
   }
 
   protected void testOnlyRest(RestTemplate template, String cseUrlPrefix) {
