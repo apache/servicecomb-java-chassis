@@ -97,31 +97,37 @@ public class MetricsCollector extends Collector implements Collector.Describable
     samples.addAll(convertMetricValues(metric.getExecutionTime().toMap()));
     samples.addAll(convertMetricValues(metric.getLifeTimeInQueue().toMap()));
     samples.addAll(convertMetricValues(metric.getProducerLatency().toMap()));
-    samples.add(new Sample(metric.getPrefix() + ".waitInQueue.count", new ArrayList<>(), new ArrayList<>(),
-        (double) metric.getWaitInQueue()));
+    samples.add(
+        new Sample(formatMetricName(metric.getPrefix() + ".waitInQueue.count"), new ArrayList<>(), new ArrayList<>(),
+            (double) metric.getWaitInQueue()));
     return samples;
   }
 
   private List<Sample> convertMetricValues(Map<String, Number> metrics) {
     return metrics.entrySet().stream().map((entry) ->
-        new Sample(entry.getKey().replace(".", "_"),
-            new ArrayList<>(), new ArrayList<>(), entry.getValue().doubleValue())).collect(Collectors.toList());
+        new Sample(formatMetricName(entry.getKey()), new ArrayList<>(), new ArrayList<>(),
+            entry.getValue().doubleValue())).collect(Collectors.toList());
   }
 
   private List<Sample> convertCallMetric(CallMetric metric) {
     List<Sample> samples = new ArrayList<>();
-    String totalName = (metric.getPrefix() + ".total").replace(".", "_");
+    String totalName = formatMetricName(metric.getPrefix() + ".total");
     for (LongMetricValue value : metric.getTotalValue()) {
       samples.add(new Sample(totalName,
           new ArrayList<>(value.getDimensions().keySet()), new ArrayList<>(value.getDimensions().values()),
           (double) value.getValue()));
     }
-    String tpsName = (metric.getPrefix() + ".tps").replace(".", "_");
+    String tpsName = formatMetricName(metric.getPrefix() + ".tps");
     for (DoubleMetricValue value : metric.getTpsValues()) {
       samples.add(new Sample(tpsName,
           new ArrayList<>(value.getDimensions().keySet()), new ArrayList<>(value.getDimensions().values()),
           value.getValue()));
     }
     return samples;
+  }
+
+  //convert name for match prometheus
+  private String formatMetricName(String name) {
+    return name.replace(".", "_");
   }
 }
