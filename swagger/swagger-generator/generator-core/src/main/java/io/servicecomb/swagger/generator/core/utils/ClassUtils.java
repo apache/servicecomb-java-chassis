@@ -24,6 +24,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+
+import javax.lang.model.SourceVersion;
+
 import java.util.Set;
 
 import org.springframework.util.StringUtils;
@@ -49,64 +52,6 @@ public final class ClassUtils {
   // reference:
   //  https://docs.oracle.com/javase/tutorial/java/nutsandbolts/_keywords.html
   //  https://en.wikipedia.org/wiki/List_of_Java_keywords
-  private static final Set<String> JAVA_RESERVED_WORDS = new HashSet<>();
-
-  static {
-    JAVA_RESERVED_WORDS.addAll(Arrays.asList("true",
-        "false",
-        "null",
-        "abstract",
-        "continue",
-        "for",
-        "new",
-        "switch",
-        "assert",
-        "default",
-        "goto",
-        "package",
-        "synchronized",
-        "boolean",
-        "do",
-        "if",
-        "private",
-        "this",
-        "break",
-        "double",
-        "implements",
-        "protected",
-        "throw",
-        "byte",
-        "else",
-        "import",
-        "public",
-        "throws",
-        "case",
-        "enum",
-        "instanceof",
-        "return",
-        "transient",
-        "catch",
-        "extends",
-        "int",
-        "short",
-        "try",
-        "char",
-        "final",
-        "interface",
-        "static",
-        "void",
-        "class",
-        "finally",
-        "long",
-        "strictfp",
-        "volatile",
-        "const",
-        "float",
-        "native",
-        "super",
-        "while"));
-  }
-
   private ClassUtils() {
   }
 
@@ -279,11 +224,27 @@ public final class ClassUtils {
     return JavassistUtils.createClass(classLoader, classConfig);
   }
 
-  public static String correctMethodParameterName(String name) {
-    return name.replace(".", "_").replace("-", "_");
+  public static String correctMethodParameterName(String paramName) {
+    if (SourceVersion.isName(paramName)) {
+      return paramName;
+    }
+    StringBuffer newParam = new StringBuffer();
+    char tempChar;
+    for (int index = 0; index < paramName.length(); index++) {
+      tempChar = paramName.charAt(index);
+      if (Character.isJavaIdentifierPart(tempChar)) {
+        newParam.append(paramName.charAt(index));
+      } else if (tempChar == '.' || tempChar == '-') {
+        newParam.append('_');
+      }
+    }
+    return newParam.toString();
   }
 
   public static String correctClassName(String name) {
+    if (SourceVersion.isIdentifier(name) && !SourceVersion.isKeyword(name)) {
+      return name;
+    }
     String parts[] = name.split("\\.", -1);
     for (int idx = 0; idx < parts.length; idx++) {
       String part = parts[idx];
@@ -293,7 +254,7 @@ public final class ClassUtils {
       }
 
       part = part.replace('-', '_');
-      if (Character.isDigit(part.charAt(0)) || JAVA_RESERVED_WORDS.contains(part)) {
+      if (Character.isDigit(part.charAt(0)) || SourceVersion.isKeyword(part)) {
         part = "_" + part;
       }
       parts[idx] = part;
