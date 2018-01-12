@@ -29,7 +29,7 @@ import com.netflix.servo.monitor.StepCounter;
 import io.servicecomb.metrics.common.CallMetric;
 import io.servicecomb.metrics.common.DoubleMetricValue;
 import io.servicecomb.metrics.common.LongMetricValue;
-import io.servicecomb.metrics.core.MetricsDimension;
+import io.servicecomb.metrics.common.MetricsDimension;
 import io.servicecomb.metrics.core.utils.MonitorUtils;
 
 public class CallMonitor {

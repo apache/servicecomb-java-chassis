@@ -54,8 +54,11 @@ public class PerfMetricsFilePublisher {
       String opName = entry.getKey();
       sb.append(String
           .format("  %-16d%-16d%-16.3f%s\n",
-              entry.getValue().getConsumerCall().getTotal(),
-              (long) entry.getValue().getConsumerCall().getTps(),
+              entry.getValue().getConsumerCall()
+                  .getTotalValue(MetricsDimension.DIMENSION_STATUS, MetricsDimension.DIMENSION_STATUS_ALL).getValue(),
+              entry.getValue().getConsumerCall()
+                  .getTpsValue(MetricsDimension.DIMENSION_STATUS, MetricsDimension.DIMENSION_STATUS_ALL).getValue()
+                  .longValue(),
               entry.getValue().getConsumerLatency().getAverage(),
               opName));
     }
@@ -66,8 +69,11 @@ public class PerfMetricsFilePublisher {
       String opName = entry.getKey();
       sb.append(
           String.format("  %-16d%-16d%-16.3f%-16.3f%-16.3f%s\n",
-              entry.getValue().getProducerCall().getTotal(),
-              (long) entry.getValue().getProducerCall().getTps(),
+              entry.getValue().getProducerCall()
+                  .getTotalValue(MetricsDimension.DIMENSION_STATUS, MetricsDimension.DIMENSION_STATUS_ALL).getValue(),
+              entry.getValue().getProducerCall()
+                  .getTpsValue(MetricsDimension.DIMENSION_STATUS, MetricsDimension.DIMENSION_STATUS_ALL).getValue()
+                  .longValue(),
               entry.getValue().getProducerLatency().getAverage(),
               entry.getValue().getLifeTimeInQueue().getAverage(),
               entry.getValue().getExecutionTime().getAverage(),
