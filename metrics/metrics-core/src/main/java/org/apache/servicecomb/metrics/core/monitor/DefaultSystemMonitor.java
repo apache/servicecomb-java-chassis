@@ -98,12 +98,7 @@ public class DefaultSystemMonitor implements SystemMonitor {
 
   @Override
   public SystemMetric toMetric() {
-    return new SystemMetric(adjustValue(getCpuLoad()),
-        getCpuRunningThreads(), getHeapInit(), getHeapMax(), getHeapCommit(), getHeapUsed(),
-        getNonHeapInit(), getNonHeapMax(), getNonHeapCommit(), getNonHeapUsed());
-  }
-
-  private double adjustValue(double value) {
-    return value < 0 ? Double.NaN : value;
+    return new SystemMetric(getCpuLoad(), getCpuRunningThreads(), getHeapInit(), getHeapMax(), getHeapCommit(),
+        getHeapUsed(), getNonHeapInit(), getNonHeapMax(), getNonHeapCommit(), getNonHeapUsed());
   }
 }
