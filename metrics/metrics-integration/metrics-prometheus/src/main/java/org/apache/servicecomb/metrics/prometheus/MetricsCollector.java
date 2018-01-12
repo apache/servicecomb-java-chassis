@@ -112,7 +112,7 @@ public class MetricsCollector extends Collector implements Collector.Describable
   private List<Sample> convertCallMetric(CallMetric metric) {
     List<Sample> samples = new ArrayList<>();
     String totalName = formatMetricName(metric.getPrefix() + ".total");
-    for (LongMetricValue value : metric.getTotalValue()) {
+    for (LongMetricValue value : metric.getTotalValues()) {
       samples.add(new Sample(totalName,
           new ArrayList<>(value.getDimensions().keySet()), new ArrayList<>(value.getDimensions().values()),
           (double) value.getValue()));
