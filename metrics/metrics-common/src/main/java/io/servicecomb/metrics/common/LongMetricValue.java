@@ -53,6 +53,8 @@ public class LongMetricValue extends MetricValue<Long> {
     for (LongMetricValue s : source) {
       if (finalValues.containsKey(s.getKey())) {
         finalValues.put(s.getKey(), finalValues.get(s.getKey()).merge(s));
+      } else {
+        finalValues.put(s.getKey(), s);
       }
     }
     return new ArrayList<>(finalValues.values());

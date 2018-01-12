@@ -15,11 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.metrics.core.monitor;
+package io.servicecomb.metrics.core.monitor;
 
 
-import org.apache.servicecomb.metrics.common.ConsumerInvocationMetric;
-import org.apache.servicecomb.metrics.common.MetricsConst;
+import io.servicecomb.metrics.common.ConsumerInvocationMetric;
+import io.servicecomb.metrics.common.MetricsConst;
+import io.servicecomb.metrics.core.MetricsDimension;
 
 public class ConsumerInvocationMonitor extends InvocationMonitor {
   private final TimerMonitor consumerLatency;
@@ -37,7 +38,7 @@ public class ConsumerInvocationMonitor extends InvocationMonitor {
   public ConsumerInvocationMonitor(String operationName) {
     super(operationName, String.format(MetricsConst.CONSUMER_PREFIX_TEMPLATE, operationName));
     this.consumerLatency = new TimerMonitor(this.getPrefix() + ".consumerLatency");
-    this.consumerCall = new CallMonitor(this.getPrefix() + ".consumerCall");
+    this.consumerCall = new CallMonitor(this.getPrefix() + ".consumerCall", MetricsDimension.DIMENSION_STATUS);
   }
 
   public ConsumerInvocationMetric toMetric(int windowTimeIndex) {

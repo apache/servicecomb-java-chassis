@@ -39,20 +39,20 @@ public class CallMonitor {
 
   private final List<StepCounter> tpsCounters;
 
-  public CallMonitor(String prefix, String... dimensions) {
+  public CallMonitor(String prefix, String... dimensionKeys) {
     this.prefix = prefix;
     this.totalCounters = new ArrayList<>();
     this.tpsCounters = new ArrayList<>();
-    if (dimensions.length == 0) {
+    if (dimensionKeys.length == 0) {
       this.totalCounters.add(new BasicCounter(MonitorConfig.builder(prefix + ".total").build()));
       this.tpsCounters.add(new StepCounter(MonitorConfig.builder(prefix + ".tps").build()));
     } else {
-      for (String dimension : dimensions) {
-        for (String option : MetricsDimension.getDimensionOptions(dimension)) {
+      for (String dimensionKey : dimensionKeys) {
+        for (String option : MetricsDimension.getDimensionOptions(dimensionKey)) {
           this.totalCounters
-              .add(new BasicCounter(MonitorConfig.builder(prefix + ".total").withTag(dimension, option).build()));
+              .add(new BasicCounter(MonitorConfig.builder(prefix + ".total").withTag(dimensionKey, option).build()));
           this.tpsCounters
-              .add(new StepCounter(MonitorConfig.builder(prefix + ".tps").withTag(dimension, option).build()));
+              .add(new StepCounter(MonitorConfig.builder(prefix + ".tps").withTag(dimensionKey, option).build()));
         }
       }
     }

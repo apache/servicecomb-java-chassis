@@ -15,13 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.metrics.core.monitor;
-
-import org.apache.servicecomb.metrics.common.MetricsConst;
-import org.apache.servicecomb.metrics.common.ProducerInvocationMetric;
+package io.servicecomb.metrics.core.monitor;
 
 import com.netflix.servo.monitor.BasicCounter;
 import com.netflix.servo.monitor.MonitorConfig;
+
+import io.servicecomb.metrics.common.MetricsConst;
+import io.servicecomb.metrics.common.ProducerInvocationMetric;
+import io.servicecomb.metrics.core.MetricsDimension;
 
 public class ProducerInvocationMonitor extends InvocationMonitor {
   private final BasicCounter waitInQueue;
@@ -60,7 +61,7 @@ public class ProducerInvocationMonitor extends InvocationMonitor {
     this.lifeTimeInQueue = new TimerMonitor(this.getPrefix() + ".lifeTimeInQueue");
     this.executionTime = new TimerMonitor(this.getPrefix() + ".executionTime");
     this.producerLatency = new TimerMonitor(this.getPrefix() + ".producerLatency");
-    this.producerCall = new CallMonitor(this.getPrefix() + ".producerCall");
+    this.producerCall = new CallMonitor(this.getPrefix() + ".producerCall", MetricsDimension.DIMENSION_STATUS);
   }
 
   public ProducerInvocationMetric toMetric(int windowTimeIndex) {

@@ -51,7 +51,10 @@ public class MonitorUtils {
     if (tags.size() != 0) {
       Map<String, String> tagMap = new HashMap<>();
       for (Tag tag : tags) {
-        tagMap.put(tag.getKey(), tag.getValue());
+        //we don't need servo internal type tag for metrics
+        if (!"type".equals(tag.getKey())) {
+          tagMap.put(tag.getKey(), tag.getValue());
+        }
       }
       return tagMap;
     }

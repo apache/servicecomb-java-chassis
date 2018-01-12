@@ -19,7 +19,6 @@ package org.apache.servicecomb.metrics.core;
 
 import static org.hamcrest.Matchers.containsInAnyOrder;
 
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -36,7 +35,7 @@ import org.junit.Test;
 public class TestPublisher {
 
   @Test
-  public void test() throws IOException {
+  public void test() {
     SystemMonitor systemMonitor = new DefaultSystemMonitor();
     RegistryMonitor registryMonitor = new RegistryMonitor(systemMonitor);
     DefaultDataSource dataSource = new DefaultDataSource(registryMonitor, "1000,2000,3000,3000,2000,1000");
@@ -44,11 +43,11 @@ public class TestPublisher {
 
     RegistryMetric registryMetric = publisher.metrics();
     Map<String, Number> metricsMap = registryMetric.toMap();
-    Assert.assertEquals(35, metricsMap.size());
+    Assert.assertEquals(31, metricsMap.size());
 
     registryMetric = publisher.metricsWithWindowTime(1000);
     metricsMap = registryMetric.toMap();
-    Assert.assertEquals(35, metricsMap.size());
+    Assert.assertEquals(31, metricsMap.size());
 
     List<Long> appliedWindowTime = publisher.getAppliedWindowTime();
     Assert.assertEquals(appliedWindowTime.size(), 3);

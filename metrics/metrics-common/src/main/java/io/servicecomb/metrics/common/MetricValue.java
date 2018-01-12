@@ -48,7 +48,7 @@ public class MetricValue<T extends Number> {
       for (String key : keys) {
         builder.append(String.format("%s=%s,", key, dimensions.get(key)));
       }
-      builder.deleteCharAt(dimensions.size() - 1);
+      builder.deleteCharAt(builder.length() - 1);
       builder.append("}");
       finalKey = builder.toString();
     }
@@ -61,5 +61,10 @@ public class MetricValue<T extends Number> {
     this.key = key;
     this.value = value;
     this.dimensions = dimensions;
+  }
+
+  public boolean containDimension(String dimensionKey, String dimensionValue) {
+    return this.getDimensions().containsKey(dimensionKey) &&
+        dimensionValue.equals(this.getDimensions().get(dimensionKey));
   }
 }

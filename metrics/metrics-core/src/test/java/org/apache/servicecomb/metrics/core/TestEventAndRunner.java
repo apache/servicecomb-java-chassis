@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.metrics.core;
+package io.servicecomb.metrics.core;
 
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.mockito.Mockito.when;
@@ -29,19 +29,20 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.servicecomb.core.metrics.InvocationFinishedEvent;
-import org.apache.servicecomb.core.metrics.InvocationStartProcessingEvent;
-import org.apache.servicecomb.core.metrics.InvocationStartedEvent;
-import org.apache.servicecomb.foundation.common.utils.EventUtils;
-import org.apache.servicecomb.metrics.common.RegistryMetric;
-import org.apache.servicecomb.metrics.core.event.DefaultEventListenerManager;
-import org.apache.servicecomb.metrics.core.monitor.DefaultSystemMonitor;
-import org.apache.servicecomb.metrics.core.monitor.RegistryMonitor;
-import org.apache.servicecomb.metrics.core.publish.DefaultDataSource;
-import org.apache.servicecomb.swagger.invocation.InvocationType;
 import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.Mockito;
+
+import io.servicecomb.core.metrics.InvocationFinishedEvent;
+import io.servicecomb.core.metrics.InvocationStartProcessingEvent;
+import io.servicecomb.core.metrics.InvocationStartedEvent;
+import io.servicecomb.foundation.common.utils.EventUtils;
+import io.servicecomb.metrics.common.RegistryMetric;
+import io.servicecomb.metrics.core.event.DefaultEventListenerManager;
+import io.servicecomb.metrics.core.monitor.DefaultSystemMonitor;
+import io.servicecomb.metrics.core.monitor.RegistryMonitor;
+import io.servicecomb.metrics.core.publish.DefaultDataSource;
+import io.servicecomb.swagger.invocation.InvocationType;
 
 public class TestEventAndRunner {
 
@@ -75,14 +76,15 @@ public class TestEventAndRunner {
 
     new DefaultEventListenerManager(monitor);
 
-    //fun1 is a PRODUCER invocation call twice and all is completed
+    //fun1 is a PRODUCER invocation call 2 time and all is completed
+    //two time success
     EventUtils.triggerEvent(new InvocationStartedEvent("fun1", InvocationType.PRODUCER, System.nanoTime()));
     EventUtils.triggerEvent(
         new InvocationStartProcessingEvent("fun1", InvocationType.PRODUCER,
             TimeUnit.MILLISECONDS.toNanos(100)));
     EventUtils
         .triggerEvent(new InvocationFinishedEvent("fun1", InvocationType.PRODUCER,
-            TimeUnit.MILLISECONDS.toNanos(200), TimeUnit.MILLISECONDS.toNanos(300)));
+            TimeUnit.MILLISECONDS.toNanos(200), TimeUnit.MILLISECONDS.toNanos(300), true));
 
     EventUtils.triggerEvent(new InvocationStartedEvent("fun1", InvocationType.PRODUCER, System.nanoTime()));
     EventUtils.triggerEvent(
@@ -90,13 +92,22 @@ public class TestEventAndRunner {
             TimeUnit.MILLISECONDS.toNanos(300)));
     EventUtils
         .triggerEvent(new InvocationFinishedEvent("fun1", InvocationType.PRODUCER,
-            TimeUnit.MILLISECONDS.toNanos(400), TimeUnit.MILLISECONDS.toNanos(700)));
+            TimeUnit.MILLISECONDS.toNanos(400), TimeUnit.MILLISECONDS.toNanos(700), false));
+
+    //==========================================================================
 
     //fun3 is a PRODUCER invocation call uncompleted
     EventUtils.triggerEvent(new InvocationStartedEvent("fun3", InvocationType.PRODUCER, System.nanoTime()));
     EventUtils.triggerEvent(
         new InvocationStartProcessingEvent("fun3", InvocationType.PRODUCER,
             TimeUnit.MILLISECONDS.toNanos(500)));
+
+    //==========================================================================
+
+    //fun4 is a PRODUCER call only started and no processing start and finished
+    EventUtils.triggerEvent(new InvocationStartedEvent("fun4", InvocationType.PRODUCER, System.nanoTime()));
+
+    //==========================================================================
 
     //fun2 is a CONSUMER invocation call once and completed
     EventUtils.triggerEvent(new InvocationStartedEvent("fun2", InvocationType.CONSUMER, System.nanoTime()));
@@ -105,10 +116,9 @@ public class TestEventAndRunner {
             TimeUnit.MILLISECONDS.toNanos(100)));
     EventUtils
         .triggerEvent(new InvocationFinishedEvent("fun2", InvocationType.CONSUMER,
-            TimeUnit.MILLISECONDS.toNanos(200), TimeUnit.MILLISECONDS.toNanos(300)));
+            TimeUnit.MILLISECONDS.toNanos(200), TimeUnit.MILLISECONDS.toNanos(300), true));
 
-    //fun4 is a invocation call only started and no processing start and finished
-    EventUtils.triggerEvent(new InvocationStartedEvent("fun4", InvocationType.PRODUCER, System.nanoTime()));
+    //==========================================================================
 
     //sim lease one window time
     Thread.sleep(1000);
@@ -116,194 +126,176 @@ public class TestEventAndRunner {
     RegistryMetric model = dataSource.getRegistryMetric(1000);
 
     //check InstanceMetric
-    Assert.assertEquals(model.getInstanceMetric().getProducerMetric().getWaitInQueue(), 1);
-    Assert.assertEquals(model.getInstanceMetric().getProducerMetric().getLifeTimeInQueue().getCount(), 3);
-    Assert.assertEquals(model.getInstanceMetric().getProducerMetric().getLifeTimeInQueue().getTotal(),
-        900,
+    Assert.assertEquals(1, model.getInstanceMetric().getProducerMetric().getWaitInQueue());
+    Assert.assertEquals(3, model.getInstanceMetric().getProducerMetric().getLifeTimeInQueue().getCount());
+    Assert.assertEquals(900, model.getInstanceMetric().getProducerMetric().getLifeTimeInQueue().getTotal(), 0);
+    Assert.assertEquals(300, model.getInstanceMetric().getProducerMetric().getLifeTimeInQueue().getAverage(),
         0);
-    Assert.assertEquals(model.getInstanceMetric().getProducerMetric().getLifeTimeInQueue().getAverage(),
-        300,
+    Assert.assertEquals(500, model.getInstanceMetric().getProducerMetric().getLifeTimeInQueue().getMax(),
         0);
-    Assert.assertEquals(model.getInstanceMetric().getProducerMetric().getLifeTimeInQueue().getMax(),
-        500,
-        0);
-    Assert.assertEquals(model.getInstanceMetric().getProducerMetric().getLifeTimeInQueue().getMin(),
-        100,
+    Assert.assertEquals(100, model.getInstanceMetric().getProducerMetric().getLifeTimeInQueue().getMin(),
         0);
 
-    Assert.assertEquals(model.getInstanceMetric().getProducerMetric().getExecutionTime().getCount(), 2);
-    Assert.assertEquals(model.getInstanceMetric().getProducerMetric().getExecutionTime().getTotal(),
-        600,
+    Assert.assertEquals(2, model.getInstanceMetric().getProducerMetric().getExecutionTime().getCount());
+    Assert.assertEquals(600, model.getInstanceMetric().getProducerMetric().getExecutionTime().getTotal(),
         0);
-    Assert.assertEquals(model.getInstanceMetric().getProducerMetric().getExecutionTime().getAverage(),
-        300,
+    Assert.assertEquals(300, model.getInstanceMetric().getProducerMetric().getExecutionTime().getAverage(),
         0);
-    Assert.assertEquals(model.getInstanceMetric().getProducerMetric().getExecutionTime().getMax(),
-        400,
+    Assert.assertEquals(400, model.getInstanceMetric().getProducerMetric().getExecutionTime().getMax(),
         0);
-    Assert.assertEquals(model.getInstanceMetric().getProducerMetric().getExecutionTime().getMin(),
-        200,
+    Assert.assertEquals(200, model.getInstanceMetric().getProducerMetric().getExecutionTime().getMin(),
         0);
 
-    Assert.assertEquals(model.getInstanceMetric().getProducerMetric().getProducerLatency().getCount(), 2);
-    Assert.assertEquals(model.getInstanceMetric().getProducerMetric().getProducerLatency().getTotal(),
-        1000,
+    Assert.assertEquals(2, model.getInstanceMetric().getProducerMetric().getProducerLatency().getCount());
+    Assert.assertEquals(1000, model.getInstanceMetric().getProducerMetric().getProducerLatency().getTotal(),
         0);
-    Assert.assertEquals(model.getInstanceMetric().getProducerMetric().getProducerLatency().getAverage(),
-        500,
+    Assert.assertEquals(500, model.getInstanceMetric().getProducerMetric().getProducerLatency().getAverage(),
         0);
-    Assert.assertEquals(model.getInstanceMetric().getProducerMetric().getProducerLatency().getMax(),
-        700,
+    Assert.assertEquals(700, model.getInstanceMetric().getProducerMetric().getProducerLatency().getMax(),
         0);
-    Assert.assertEquals(model.getInstanceMetric().getProducerMetric().getProducerLatency().getMin(),
-        300,
+    Assert.assertEquals(300, model.getInstanceMetric().getProducerMetric().getProducerLatency().getMin(),
         0);
 
-    Assert.assertEquals(model.getInstanceMetric().getProducerMetric().getProducerCall().getTps(), 4, 0);
-    Assert.assertEquals(model.getInstanceMetric().getProducerMetric().getProducerCall().getTotal(), 4);
+    Assert.assertEquals(4, model.getInstanceMetric().getProducerMetric().getProducerCall()
+        .getTpsValue(MetricsDimension.DIMENSION_STATUS, MetricsDimension.DIMENSION_STATUS_ALL).getValue(), 0);
+    Assert.assertEquals(1, model.getInstanceMetric().getProducerMetric().getProducerCall()
+        .getTpsValue(MetricsDimension.DIMENSION_STATUS, MetricsDimension.DIMENSION_STATUS_SUCCESS).getValue(), 0);
+    Assert.assertEquals(1, model.getInstanceMetric().getProducerMetric().getProducerCall()
+        .getTpsValue(MetricsDimension.DIMENSION_STATUS, MetricsDimension.DIMENSION_STATUS_FAILED).getValue(), 0);
 
-    Assert.assertEquals(model.getInstanceMetric().getConsumerMetric().getConsumerLatency().getCount(), 1);
-    Assert.assertEquals(model.getInstanceMetric().getConsumerMetric().getConsumerLatency().getTotal(),
-        300,
+    Assert.assertEquals(4, model.getInstanceMetric().getProducerMetric().getProducerCall()
+        .getTotalValues(MetricsDimension.DIMENSION_STATUS, MetricsDimension.DIMENSION_STATUS_ALL).getValue(), 0);
+    Assert.assertEquals(1, model.getInstanceMetric().getProducerMetric().getProducerCall()
+        .getTotalValues(MetricsDimension.DIMENSION_STATUS, MetricsDimension.DIMENSION_STATUS_SUCCESS).getValue(), 0);
+    Assert.assertEquals(1, model.getInstanceMetric().getProducerMetric().getProducerCall()
+        .getTotalValues(MetricsDimension.DIMENSION_STATUS, MetricsDimension.DIMENSION_STATUS_FAILED).getValue(), 0);
+
+    Assert.assertEquals(1, model.getInstanceMetric().getConsumerMetric().getConsumerLatency().getCount());
+    Assert.assertEquals(300, model.getInstanceMetric().getConsumerMetric().getConsumerLatency().getTotal(),
         0);
-    Assert.assertEquals(model.getInstanceMetric().getConsumerMetric().getConsumerLatency().getAverage(),
-        300,
+    Assert.assertEquals(300, model.getInstanceMetric().getConsumerMetric().getConsumerLatency().getAverage(),
         0);
-    Assert.assertEquals(model.getInstanceMetric().getConsumerMetric().getConsumerLatency().getMax(),
-        300,
+    Assert.assertEquals(300, model.getInstanceMetric().getConsumerMetric().getConsumerLatency().getMax(),
         0);
-    Assert.assertEquals(model.getInstanceMetric().getConsumerMetric().getConsumerLatency().getMin(),
-        300,
+    Assert.assertEquals(300, model.getInstanceMetric().getConsumerMetric().getConsumerLatency().getMin(),
         0);
 
-    Assert.assertEquals(model.getInstanceMetric().getConsumerMetric().getConsumerCall().getTps(), 1, 0);
-    Assert.assertEquals(model.getInstanceMetric().getConsumerMetric().getConsumerCall().getTotal(), 1);
+    Assert.assertEquals(1, model.getInstanceMetric().getConsumerMetric().getConsumerCall()
+        .getTpsValue(MetricsDimension.DIMENSION_STATUS, MetricsDimension.DIMENSION_STATUS_ALL).getValue(), 0);
+    Assert.assertEquals(1, model.getInstanceMetric().getConsumerMetric().getConsumerCall()
+        .getTpsValue(MetricsDimension.DIMENSION_STATUS, MetricsDimension.DIMENSION_STATUS_SUCCESS).getValue(), 0);
+    Assert.assertEquals(0, model.getInstanceMetric().getConsumerMetric().getConsumerCall()
+        .getTpsValue(MetricsDimension.DIMENSION_STATUS, MetricsDimension.DIMENSION_STATUS_FAILED).getValue(), 0);
+
+    Assert.assertEquals(1, model.getInstanceMetric().getConsumerMetric().getConsumerCall()
+        .getTotalValues(MetricsDimension.DIMENSION_STATUS, MetricsDimension.DIMENSION_STATUS_ALL).getValue(), 0);
+    Assert.assertEquals(1, model.getInstanceMetric().getConsumerMetric().getConsumerCall()
+        .getTotalValues(MetricsDimension.DIMENSION_STATUS, MetricsDimension.DIMENSION_STATUS_SUCCESS).getValue(), 0);
+    Assert.assertEquals(0, model.getInstanceMetric().getConsumerMetric().getConsumerCall()
+        .getTotalValues(MetricsDimension.DIMENSION_STATUS, MetricsDimension.DIMENSION_STATUS_FAILED).getValue(), 0);
 
     //check ProducerMetrics
-    Assert.assertEquals(model.getProducerMetrics().get("fun1").getWaitInQueue(), 0);
-    Assert.assertEquals(model.getProducerMetrics().get("fun1").getLifeTimeInQueue().getCount(), 2);
-    Assert.assertEquals(model.getProducerMetrics().get("fun1").getLifeTimeInQueue().getTotal(),
-        400,
-        0);
-    Assert.assertEquals(model.getProducerMetrics().get("fun1").getLifeTimeInQueue().getAverage(),
-        200,
-        0);
-    Assert.assertEquals(model.getProducerMetrics().get("fun1").getLifeTimeInQueue().getMax(),
-        300,
-        0);
-    Assert.assertEquals(model.getProducerMetrics().get("fun1").getLifeTimeInQueue().getMin(),
-        100,
-        0);
+    Assert.assertEquals(0, model.getProducerMetrics().get("fun1").getWaitInQueue());
+    Assert.assertEquals(2, model.getProducerMetrics().get("fun1").getLifeTimeInQueue().getCount());
+    Assert.assertEquals(400, model.getProducerMetrics().get("fun1").getLifeTimeInQueue().getTotal(), 0);
+    Assert.assertEquals(200, model.getProducerMetrics().get("fun1").getLifeTimeInQueue().getAverage(), 0);
+    Assert.assertEquals(300, model.getProducerMetrics().get("fun1").getLifeTimeInQueue().getMax(), 0);
+    Assert.assertEquals(100, model.getProducerMetrics().get("fun1").getLifeTimeInQueue().getMin(), 0);
 
-    Assert.assertEquals(model.getProducerMetrics().get("fun1").getExecutionTime().getCount(), 2);
-    Assert.assertEquals(model.getProducerMetrics().get("fun1").getExecutionTime().getTotal(),
-        600,
-        0);
-    Assert.assertEquals(model.getProducerMetrics().get("fun1").getExecutionTime().getAverage(),
-        300,
-        0);
-    Assert.assertEquals(model.getProducerMetrics().get("fun1").getExecutionTime().getMax(),
-        400,
-        0);
-    Assert.assertEquals(model.getProducerMetrics().get("fun1").getExecutionTime().getMin(),
-        200,
-        0);
+    Assert.assertEquals(2, model.getProducerMetrics().get("fun1").getExecutionTime().getCount());
+    Assert.assertEquals(600, model.getProducerMetrics().get("fun1").getExecutionTime().getTotal(), 0);
+    Assert.assertEquals(300, model.getProducerMetrics().get("fun1").getExecutionTime().getAverage(), 0);
+    Assert.assertEquals(400, model.getProducerMetrics().get("fun1").getExecutionTime().getMax(), 0);
+    Assert.assertEquals(200, model.getProducerMetrics().get("fun1").getExecutionTime().getMin(), 0);
 
-    Assert.assertEquals(model.getProducerMetrics().get("fun1").getProducerLatency().getCount(), 2);
-    Assert.assertEquals(model.getProducerMetrics().get("fun1").getProducerLatency().getTotal(),
-        1000,
-        0);
-    Assert.assertEquals(model.getProducerMetrics().get("fun1").getProducerLatency().getAverage(),
-        500,
-        0);
-    Assert.assertEquals(model.getProducerMetrics().get("fun1").getProducerLatency().getMax(),
-        700,
-        0);
-    Assert.assertEquals(model.getProducerMetrics().get("fun1").getProducerLatency().getMin(),
-        300,
-        0);
+    Assert.assertEquals(2, model.getProducerMetrics().get("fun1").getProducerLatency().getCount());
+    Assert.assertEquals(1000, model.getProducerMetrics().get("fun1").getProducerLatency().getTotal(), 0);
+    Assert.assertEquals(500, model.getProducerMetrics().get("fun1").getProducerLatency().getAverage(), 0);
+    Assert.assertEquals(700, model.getProducerMetrics().get("fun1").getProducerLatency().getMax(), 0);
+    Assert.assertEquals(300, model.getProducerMetrics().get("fun1").getProducerLatency().getMin(), 0);
 
-    Assert.assertEquals(model.getProducerMetrics().get("fun1").getProducerCall().getTps(), 2, 0);
-    Assert.assertEquals(model.getProducerMetrics().get("fun1").getProducerCall().getTotal(), 2);
+    Assert.assertEquals(2, model.getProducerMetrics().get("fun1").getProducerCall()
+        .getTpsValue(MetricsDimension.DIMENSION_STATUS, MetricsDimension.DIMENSION_STATUS_ALL).getValue(), 0);
+    Assert.assertEquals(1, model.getProducerMetrics().get("fun1").getProducerCall()
+        .getTpsValue(MetricsDimension.DIMENSION_STATUS, MetricsDimension.DIMENSION_STATUS_SUCCESS).getValue(), 0);
+    Assert.assertEquals(1, model.getProducerMetrics().get("fun1").getProducerCall()
+        .getTpsValue(MetricsDimension.DIMENSION_STATUS, MetricsDimension.DIMENSION_STATUS_FAILED).getValue(), 0);
+
+    Assert.assertEquals(2, model.getProducerMetrics().get("fun1").getProducerCall()
+        .getTotalValues(MetricsDimension.DIMENSION_STATUS, MetricsDimension.DIMENSION_STATUS_ALL).getValue(), 0);
+    Assert.assertEquals(1, model.getProducerMetrics().get("fun1").getProducerCall()
+        .getTotalValues(MetricsDimension.DIMENSION_STATUS, MetricsDimension.DIMENSION_STATUS_SUCCESS).getValue(), 0);
+    Assert.assertEquals(1, model.getProducerMetrics().get("fun1").getProducerCall()
+        .getTotalValues(MetricsDimension.DIMENSION_STATUS, MetricsDimension.DIMENSION_STATUS_FAILED).getValue(), 0);
 
     //fun3
-    Assert.assertEquals(model.getProducerMetrics().get("fun3").getWaitInQueue(), 0);
-    Assert.assertEquals(model.getProducerMetrics().get("fun3").getLifeTimeInQueue().getCount(), 1);
-    Assert.assertEquals(model.getProducerMetrics().get("fun3").getLifeTimeInQueue().getTotal(),
-        500,
-        0);
-    Assert.assertEquals(model.getProducerMetrics().get("fun3").getLifeTimeInQueue().getAverage(),
-        500,
-        0);
-    Assert.assertEquals(model.getProducerMetrics().get("fun3").getLifeTimeInQueue().getMax(),
-        500,
-        0);
-    Assert.assertEquals(model.getProducerMetrics().get("fun3").getLifeTimeInQueue().getMin(),
-        500,
-        0);
+    Assert.assertEquals(0, model.getProducerMetrics().get("fun3").getWaitInQueue());
+    Assert.assertEquals(1, model.getProducerMetrics().get("fun3").getLifeTimeInQueue().getCount());
+    Assert.assertEquals(500, model.getProducerMetrics().get("fun3").getLifeTimeInQueue().getTotal(), 0);
+    Assert.assertEquals(500, model.getProducerMetrics().get("fun3").getLifeTimeInQueue().getAverage(), 0);
+    Assert.assertEquals(500, model.getProducerMetrics().get("fun3").getLifeTimeInQueue().getMax(), 0);
+    Assert.assertEquals(500, model.getProducerMetrics().get("fun3").getLifeTimeInQueue().getMin(), 0);
 
-    Assert.assertEquals(model.getProducerMetrics().get("fun3").getExecutionTime().getCount(), 0);
-    Assert.assertEquals(model.getProducerMetrics().get("fun3").getExecutionTime().getTotal(),
-        0,
-        0);
-    Assert.assertEquals(model.getProducerMetrics().get("fun3").getExecutionTime().getAverage(),
-        0,
-        0);
-    Assert.assertEquals(model.getProducerMetrics().get("fun3").getExecutionTime().getMax(),
-        0,
-        0);
-    Assert.assertEquals(model.getProducerMetrics().get("fun3").getExecutionTime().getMin(),
-        0,
-        0);
+    Assert.assertEquals(0, model.getProducerMetrics().get("fun3").getExecutionTime().getCount());
+    Assert.assertEquals(0, model.getProducerMetrics().get("fun3").getExecutionTime().getTotal(), 0);
+    Assert.assertEquals(0, model.getProducerMetrics().get("fun3").getExecutionTime().getAverage(), 0);
+    Assert.assertEquals(0, model.getProducerMetrics().get("fun3").getExecutionTime().getMax(), 0);
+    Assert.assertEquals(0, model.getProducerMetrics().get("fun3").getExecutionTime().getMin(), 0);
 
-    Assert.assertEquals(model.getProducerMetrics().get("fun3").getProducerLatency().getCount(), 0);
-    Assert.assertEquals(model.getProducerMetrics().get("fun3").getProducerLatency().getTotal(),
-        0,
-        0);
-    Assert.assertEquals(model.getProducerMetrics().get("fun3").getProducerLatency().getAverage(),
-        0,
-        0);
-    Assert.assertEquals(model.getProducerMetrics().get("fun3").getProducerLatency().getMax(),
-        0,
-        0);
-    Assert.assertEquals(model.getProducerMetrics().get("fun3").getProducerLatency().getMin(),
-        0,
-        0);
+    Assert.assertEquals(0, model.getProducerMetrics().get("fun3").getProducerLatency().getCount());
+    Assert.assertEquals(0, model.getProducerMetrics().get("fun3").getProducerLatency().getTotal(), 0);
+    Assert.assertEquals(0, model.getProducerMetrics().get("fun3").getProducerLatency().getAverage(), 0);
+    Assert.assertEquals(0, model.getProducerMetrics().get("fun3").getProducerLatency().getMax(), 0);
+    Assert.assertEquals(0, model.getProducerMetrics().get("fun3").getProducerLatency().getMin(), 0);
 
-    Assert.assertEquals(model.getProducerMetrics().get("fun3").getProducerCall().getTps(), 1, 0);
-    Assert.assertEquals(model.getProducerMetrics().get("fun3").getProducerCall().getTotal(), 1);
+    Assert.assertEquals(1, model.getProducerMetrics().get("fun3").getProducerCall()
+        .getTpsValue(MetricsDimension.DIMENSION_STATUS, MetricsDimension.DIMENSION_STATUS_ALL).getValue(), 0);
+    Assert.assertEquals(0, model.getProducerMetrics().get("fun3").getProducerCall()
+        .getTpsValue(MetricsDimension.DIMENSION_STATUS, MetricsDimension.DIMENSION_STATUS_SUCCESS).getValue(), 0);
+    Assert.assertEquals(0, model.getProducerMetrics().get("fun3").getProducerCall()
+        .getTpsValue(MetricsDimension.DIMENSION_STATUS, MetricsDimension.DIMENSION_STATUS_FAILED).getValue(), 0);
+
+    Assert.assertEquals(1, model.getProducerMetrics().get("fun3").getProducerCall()
+        .getTotalValues(MetricsDimension.DIMENSION_STATUS, MetricsDimension.DIMENSION_STATUS_ALL).getValue(), 0);
+    Assert.assertEquals(0, model.getProducerMetrics().get("fun3").getProducerCall()
+        .getTotalValues(MetricsDimension.DIMENSION_STATUS, MetricsDimension.DIMENSION_STATUS_SUCCESS).getValue(), 0);
+    Assert.assertEquals(0, model.getProducerMetrics().get("fun3").getProducerCall()
+        .getTotalValues(MetricsDimension.DIMENSION_STATUS, MetricsDimension.DIMENSION_STATUS_FAILED).getValue(), 0);
 
     //check ConsumerMetrics
     //no need
-    Assert.assertEquals(model.getConsumerMetrics().get("fun2").getConsumerLatency().getCount(), 1);
-    Assert.assertEquals(model.getConsumerMetrics().get("fun2").getConsumerLatency().getTotal(),
-        300,
-        0);
-    Assert.assertEquals(model.getConsumerMetrics().get("fun2").getConsumerLatency().getAverage(),
-        300,
-        0);
-    Assert.assertEquals(model.getConsumerMetrics().get("fun2").getConsumerLatency().getMax(),
-        300,
-        0);
-    Assert.assertEquals(model.getConsumerMetrics().get("fun2").getConsumerLatency().getMin(),
-        300,
-        0);
+    Assert.assertEquals(1, model.getConsumerMetrics().get("fun2").getConsumerLatency().getCount());
+    Assert.assertEquals(300, model.getConsumerMetrics().get("fun2").getConsumerLatency().getTotal(), 0);
+    Assert.assertEquals(300, model.getConsumerMetrics().get("fun2").getConsumerLatency().getAverage(), 0);
+    Assert.assertEquals(300, model.getConsumerMetrics().get("fun2").getConsumerLatency().getMax(), 0);
+    Assert.assertEquals(300, model.getConsumerMetrics().get("fun2").getConsumerLatency().getMin(), 0);
 
-    Assert.assertEquals(model.getConsumerMetrics().get("fun2").getConsumerCall().getTps(), 1, 0);
-    Assert.assertEquals(model.getConsumerMetrics().get("fun2").getConsumerCall().getTotal(), 1);
+    Assert.assertEquals(1, model.getConsumerMetrics().get("fun2").getConsumerCall()
+        .getTpsValue(MetricsDimension.DIMENSION_STATUS, MetricsDimension.DIMENSION_STATUS_ALL).getValue(), 0);
+    Assert.assertEquals(1, model.getConsumerMetrics().get("fun2").getConsumerCall()
+        .getTpsValue(MetricsDimension.DIMENSION_STATUS, MetricsDimension.DIMENSION_STATUS_SUCCESS).getValue(), 0);
+    Assert.assertEquals(0, model.getConsumerMetrics().get("fun2").getConsumerCall()
+        .getTpsValue(MetricsDimension.DIMENSION_STATUS, MetricsDimension.DIMENSION_STATUS_FAILED).getValue(), 0);
+
+    Assert.assertEquals(1, model.getConsumerMetrics().get("fun2").getConsumerCall()
+        .getTotalValues(MetricsDimension.DIMENSION_STATUS, MetricsDimension.DIMENSION_STATUS_ALL).getValue(), 0);
+    Assert.assertEquals(1, model.getConsumerMetrics().get("fun2").getConsumerCall()
+        .getTotalValues(MetricsDimension.DIMENSION_STATUS, MetricsDimension.DIMENSION_STATUS_SUCCESS).getValue(), 0);
+    Assert.assertEquals(0, model.getConsumerMetrics().get("fun2").getConsumerCall()
+        .getTotalValues(MetricsDimension.DIMENSION_STATUS, MetricsDimension.DIMENSION_STATUS_FAILED).getValue(), 0);
 
     Map<String, Number> metrics = model.toMap();
-    Assert.assertEquals(96, metrics.size());
+    Assert.assertEquals(120, metrics.size());
 
-    Assert.assertEquals(model.getInstanceMetric().getSystemMetric().getCpuLoad(), 1.0, 0);
-    Assert.assertEquals(model.getInstanceMetric().getSystemMetric().getCpuRunningThreads(), 2, 0);
-    Assert.assertEquals(model.getInstanceMetric().getSystemMetric().getHeapCommit(), 100, 0);
-    Assert.assertEquals(model.getInstanceMetric().getSystemMetric().getHeapInit(), 200, 0);
-    Assert.assertEquals(model.getInstanceMetric().getSystemMetric().getHeapMax(), 300, 0);
-    Assert.assertEquals(model.getInstanceMetric().getSystemMetric().getHeapUsed(), 400, 0);
-    Assert.assertEquals(model.getInstanceMetric().getSystemMetric().getNonHeapCommit(), 500, 0);
-    Assert.assertEquals(model.getInstanceMetric().getSystemMetric().getNonHeapInit(), 600, 0);
-    Assert.assertEquals(model.getInstanceMetric().getSystemMetric().getNonHeapMax(), 700, 0);
-    Assert.assertEquals(model.getInstanceMetric().getSystemMetric().getNonHeapUsed(), 800, 0);
+    Assert.assertEquals(1.0, model.getInstanceMetric().getSystemMetric().getCpuLoad(), 0);
+    Assert.assertEquals(2, model.getInstanceMetric().getSystemMetric().getCpuRunningThreads(), 0);
+    Assert.assertEquals(100, model.getInstanceMetric().getSystemMetric().getHeapCommit(), 0);
+    Assert.assertEquals(200, model.getInstanceMetric().getSystemMetric().getHeapInit(), 0);
+    Assert.assertEquals(300, model.getInstanceMetric().getSystemMetric().getHeapMax(), 0);
+    Assert.assertEquals(400, model.getInstanceMetric().getSystemMetric().getHeapUsed(), 0);
+    Assert.assertEquals(500, model.getInstanceMetric().getSystemMetric().getNonHeapCommit(), 0);
+    Assert.assertEquals(600, model.getInstanceMetric().getSystemMetric().getNonHeapInit(), 0);
+    Assert.assertEquals(700, model.getInstanceMetric().getSystemMetric().getNonHeapMax(), 0);
+    Assert.assertEquals(800, model.getInstanceMetric().getSystemMetric().getNonHeapUsed(), 0);
   }
 }
