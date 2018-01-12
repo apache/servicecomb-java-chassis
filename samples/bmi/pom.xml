@@ -37,7 +37,6 @@
     <module>webapp</module>
   </modules>
 
-  <name>bmi</name>
   <description>Quick Start Demo for Using ServiceComb Java Chassis</description>
 
   <properties>
