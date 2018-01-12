@@ -125,7 +125,8 @@ public class SpringmvcClient {
           .check(true, metric.getInstanceMetric().getSystemMetric().getHeapUsed() != 0);
       TestMgr.check(true, metric.getProducerMetrics().size() > 0);
       TestMgr.check(true,
-          metric.getProducerMetrics().get("springmvc.codeFirst.saySomething").getProducerCall().getTotal() > 0);
+          metric.getProducerMetrics().get("springmvc.codeFirst.saySomething").getProducerCall()
+              .getTotalValue(MetricsDimension.DIMENSION_STATUS, MetricsDimension.DIMENSION_STATUS_ALL).getValue() > 0);
     } catch (Exception e) {
       TestMgr.check("true", "false");
     }

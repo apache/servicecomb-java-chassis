@@ -20,7 +20,7 @@ package io.servicecomb.metrics.core.event;
 import io.servicecomb.core.metrics.InvocationFinishedEvent;
 import io.servicecomb.foundation.common.event.Event;
 import io.servicecomb.foundation.common.event.EventListener;
-import io.servicecomb.metrics.core.MetricsDimension;
+import io.servicecomb.metrics.common.MetricsDimension;
 import io.servicecomb.metrics.core.monitor.ConsumerInvocationMonitor;
 import io.servicecomb.metrics.core.monitor.ProducerInvocationMonitor;
 import io.servicecomb.metrics.core.monitor.RegistryMonitor;

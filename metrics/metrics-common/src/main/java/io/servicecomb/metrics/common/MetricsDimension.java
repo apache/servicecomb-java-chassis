@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package io.servicecomb.metrics.core;
+package io.servicecomb.metrics.common;
 
 import io.servicecomb.foundation.common.exceptions.ServiceCombException;
 

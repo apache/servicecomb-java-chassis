@@ -31,11 +31,15 @@ public class CallMetric {
 
   private final List<DoubleMetricValue> tpsValues;
 
-  public List<LongMetricValue> getTotalValues() {
+  public String getPrefix() {
+    return prefix;
+  }
+
+  public List<LongMetricValue> getTotalValue() {
     return totalValues;
   }
 
-  public LongMetricValue getTotalValues(String dimensionKey, String dimensionValue) {
+  public LongMetricValue getTotalValue(String dimensionKey, String dimensionValue) {
     for (LongMetricValue value : totalValues) {
       if (value.containDimension(dimensionKey, dimensionValue)) {
         return value;
@@ -71,7 +75,7 @@ public class CallMetric {
 
   public CallMetric merge(CallMetric metric) {
     return new CallMetric(this.prefix,
-        LongMetricValue.merge(metric.getTotalValues(), this.getTotalValues()),
+        LongMetricValue.merge(metric.getTotalValue(), this.getTotalValue()),
         DoubleMetricValue.merge(metric.getTpsValues(), this.getTpsValues()));
   }
 

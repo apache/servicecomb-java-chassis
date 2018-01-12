@@ -21,8 +21,8 @@ import com.netflix.servo.monitor.BasicCounter;
 import com.netflix.servo.monitor.MonitorConfig;
 
 import io.servicecomb.metrics.common.MetricsConst;
+import io.servicecomb.metrics.common.MetricsDimension;
 import io.servicecomb.metrics.common.ProducerInvocationMetric;
-import io.servicecomb.metrics.core.MetricsDimension;
 
 public class ProducerInvocationMonitor extends InvocationMonitor {
   private final BasicCounter waitInQueue;

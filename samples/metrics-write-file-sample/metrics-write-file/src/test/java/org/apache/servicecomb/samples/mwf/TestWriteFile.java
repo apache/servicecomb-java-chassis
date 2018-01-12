@@ -15,32 +15,35 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.samples.mwf;
+package io.servicecomb.samples.mwf;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.servicecomb.metrics.common.CallMetric;
-import org.apache.servicecomb.metrics.common.ConsumerInvocationMetric;
-import org.apache.servicecomb.metrics.common.RegistryMetric;
-import org.apache.servicecomb.metrics.common.SystemMetric;
-import org.apache.servicecomb.metrics.common.TimerMetric;
-import org.apache.servicecomb.metrics.core.publish.DataSource;
-import org.apache.servicecomb.serviceregistry.Features;
-import org.apache.servicecomb.serviceregistry.RegistryUtils;
-import org.apache.servicecomb.serviceregistry.ServiceRegistry;
-import org.apache.servicecomb.serviceregistry.api.registry.Microservice;
-import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
-import org.apache.servicecomb.serviceregistry.cache.InstanceCacheManager;
-import org.apache.servicecomb.serviceregistry.client.ServiceRegistryClient;
-import org.apache.servicecomb.serviceregistry.client.http.MicroserviceInstances;
-import org.apache.servicecomb.serviceregistry.consumer.AppManager;
 import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.Mockito;
 
+import io.servicecomb.metrics.common.CallMetric;
+import io.servicecomb.metrics.common.ConsumerInvocationMetric;
+import io.servicecomb.metrics.common.DoubleMetricValue;
+import io.servicecomb.metrics.common.LongMetricValue;
+import io.servicecomb.metrics.common.RegistryMetric;
+import io.servicecomb.metrics.common.SystemMetric;
+import io.servicecomb.metrics.common.TimerMetric;
+import io.servicecomb.metrics.core.publish.DataSource;
+import io.servicecomb.serviceregistry.Features;
+import io.servicecomb.serviceregistry.RegistryUtils;
+import io.servicecomb.serviceregistry.ServiceRegistry;
+import io.servicecomb.serviceregistry.api.registry.Microservice;
+import io.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
+import io.servicecomb.serviceregistry.cache.InstanceCacheManager;
+import io.servicecomb.serviceregistry.client.ServiceRegistryClient;
+import io.servicecomb.serviceregistry.client.http.MicroserviceInstances;
+import io.servicecomb.serviceregistry.consumer.AppManager;
 import mockit.Expectations;
 
 public class TestWriteFile {
@@ -134,20 +137,22 @@ public class TestWriteFile {
 
     StringBuilder builder = new StringBuilder();
 
-    MetricsFileWriter writer =
-        (loggerName, filePrefix, content) -> builder.append(loggerName).append(filePrefix).append(content);
+    MetricsFileWriter writer = (loggerName, filePrefix, content) ->
+        builder.append(loggerName).append(filePrefix).append(content);
 
     SystemMetric systemMetric = new SystemMetric(50, 10, 1, 2, 3,
         4, 5, 6, 7, 8);
 
     Map<String, ConsumerInvocationMetric> consumerInvocationMetricMap = new HashMap<>();
-    consumerInvocationMetricMap.put("A",
-        new ConsumerInvocationMetric("A", "A",
-            new TimerMetric("A1", 1, 2, 3, 4), new CallMetric("A2", 100, 999.44444)));
+    consumerInvocationMetricMap.put("A", new ConsumerInvocationMetric("A", "A",
+        new TimerMetric("A1", 1, 2, 3, 4),
+        new CallMetric("A2", Arrays.asList(new LongMetricValue("A2", 100L, new HashMap<>())),
+            Arrays.asList(new DoubleMetricValue("A2", 999.44444, new HashMap<>())))));
 
-    consumerInvocationMetricMap.put("B",
-        new ConsumerInvocationMetric("B", "B",
-            new TimerMetric("B1", 1, 2, 3, 4), new CallMetric("B2", 100, 888.66666)));
+    consumerInvocationMetricMap.put("B", new ConsumerInvocationMetric("B", "B",
+        new TimerMetric("B1", 1, 2, 3, 4),
+        new CallMetric("B2", Arrays.asList(new LongMetricValue("B2", 100L, new HashMap<>())),
+            Arrays.asList(new DoubleMetricValue("B2", 888.66666, new HashMap<>())))));
 
     RegistryMetric metric = new RegistryMetric(systemMetric, consumerInvocationMetricMap, new HashMap<>());
 
