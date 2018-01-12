@@ -35,8 +35,26 @@ public class CallMetric {
     return totalValues;
   }
 
+  public LongMetricValue getTotalValues(String dimensionKey, String dimensionValue) {
+    for (LongMetricValue value : totalValues) {
+      if (value.containDimension(dimensionKey, dimensionValue)) {
+        return value;
+      }
+    }
+    return null;
+  }
+
   public List<DoubleMetricValue> getTpsValues() {
     return tpsValues;
+  }
+
+  public DoubleMetricValue getTpsValue(String dimensionKey, String dimensionValue) {
+    for (DoubleMetricValue value : tpsValues) {
+      if (value.containDimension(dimensionKey, dimensionValue)) {
+        return value;
+      }
+    }
+    return null;
   }
 
   public CallMetric(String prefix) {
