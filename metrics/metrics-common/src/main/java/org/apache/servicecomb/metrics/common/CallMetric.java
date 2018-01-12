@@ -35,7 +35,7 @@ public class CallMetric {
     return prefix;
   }
 
-  public List<LongMetricValue> getTotalValue() {
+  public List<LongMetricValue> getTotalValues() {
     return totalValues;
   }
 
@@ -75,7 +75,7 @@ public class CallMetric {
 
   public CallMetric merge(CallMetric metric) {
     return new CallMetric(this.prefix,
-        LongMetricValue.merge(metric.getTotalValue(), this.getTotalValue()),
+        LongMetricValue.merge(metric.getTotalValues(), this.getTotalValues()),
         DoubleMetricValue.merge(metric.getTpsValues(), this.getTpsValues()));
   }
 
