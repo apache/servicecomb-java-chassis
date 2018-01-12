@@ -15,16 +15,15 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.metrics.core.monitor;
-
-import java.util.concurrent.TimeUnit;
-
-import org.apache.servicecomb.metrics.common.TimerMetric;
+package io.servicecomb.metrics.core.monitor;
 
 import com.netflix.servo.monitor.MaxGauge;
 import com.netflix.servo.monitor.MinGauge;
 import com.netflix.servo.monitor.MonitorConfig;
 import com.netflix.servo.monitor.StepCounter;
+
+import io.servicecomb.metrics.common.TimerMetric;
+import io.servicecomb.metrics.core.utils.MonitorUtils;
 
 public class TimerMonitor {
   private final String prefix;
@@ -59,22 +58,9 @@ public class TimerMonitor {
 
   public TimerMetric toMetric(int windowTimeIndex) {
     return new TimerMetric(this.prefix,
-        this.convertNanosecondToMillisecond(this.adjustValue(total.getCount(windowTimeIndex))),
-        this.adjustValue(count.getCount(windowTimeIndex)),
-        this.convertNanosecondToMillisecond(this.adjustValue(min.getValue(windowTimeIndex))),
-        this.convertNanosecondToMillisecond(this.adjustValue(max.getValue(windowTimeIndex))));
-  }
-
-  //for time-related monitor type, if stop poll value over one window time,
-  //the value may return -1 because servo can't known precise value of previous step
-  //so must change to return 0
-  public long adjustValue(long value) {
-    return value < 0 ? 0 : value;
-  }
-
-  //Counting use System.nano get more precise time
-  //so we need change unit to millisecond when ouput
-  public long convertNanosecondToMillisecond(long nanoValue) {
-    return TimeUnit.NANOSECONDS.toMillis(nanoValue);
+        MonitorUtils.convertNanosecondToMillisecond(MonitorUtils.adjustValue(total.getCount(windowTimeIndex))),
+        MonitorUtils.adjustValue(count.getCount(windowTimeIndex)),
+        MonitorUtils.convertNanosecondToMillisecond(MonitorUtils.adjustValue(min.getValue(windowTimeIndex))),
+        MonitorUtils.convertNanosecondToMillisecond(MonitorUtils.adjustValue(max.getValue(windowTimeIndex))));
   }
 }

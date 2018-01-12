@@ -62,6 +62,7 @@ public final class InvokerUtils {
   }
 
   public static Response innerSyncInvoke(Invocation invocation) {
+    boolean success = false;
     try {
       triggerStartedEvent(invocation);
       SyncResponseExecutor respExecutor = new SyncResponseExecutor();
@@ -69,14 +70,16 @@ public final class InvokerUtils {
 
       invocation.next(respExecutor::setResponse);
 
-      return respExecutor.waitResponse();
+      Response response = respExecutor.waitResponse();
+      success = response.isSuccessed();
+      return response;
     } catch (Throwable e) {
       String msg =
           String.format("invoke failed, %s", invocation.getOperationMeta().getMicroserviceQualifiedName());
       LOGGER.debug(msg, e);
       return Response.createConsumerFail(e);
     } finally {
-      invocation.triggerFinishedEvent();
+      invocation.triggerFinishedEvent(success);
     }
   }
 
@@ -89,12 +92,11 @@ public final class InvokerUtils {
       invocation.setResponseExecutor(respExecutor);
 
       invocation.next(ar -> {
-        invocation.triggerFinishedEvent();
+        invocation.triggerFinishedEvent(ar.isSuccessed());
         asyncResp.handle(ar);
       });
-
     } catch (Throwable e) {
-      invocation.triggerFinishedEvent();
+      invocation.triggerFinishedEvent(false);
       LOGGER.error("invoke failed, {}", invocation.getOperationMeta().getMicroserviceQualifiedName());
       asyncResp.consumerFail(e);
     }

@@ -15,15 +15,16 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.metrics.core.event;
+package io.servicecomb.metrics.core.event;
 
-import org.apache.servicecomb.core.metrics.InvocationFinishedEvent;
-import org.apache.servicecomb.foundation.common.event.Event;
-import org.apache.servicecomb.foundation.common.event.EventListener;
-import org.apache.servicecomb.metrics.core.monitor.ConsumerInvocationMonitor;
-import org.apache.servicecomb.metrics.core.monitor.ProducerInvocationMonitor;
-import org.apache.servicecomb.metrics.core.monitor.RegistryMonitor;
-import org.apache.servicecomb.swagger.invocation.InvocationType;
+import io.servicecomb.core.metrics.InvocationFinishedEvent;
+import io.servicecomb.foundation.common.event.Event;
+import io.servicecomb.foundation.common.event.EventListener;
+import io.servicecomb.metrics.core.MetricsDimension;
+import io.servicecomb.metrics.core.monitor.ConsumerInvocationMonitor;
+import io.servicecomb.metrics.core.monitor.ProducerInvocationMonitor;
+import io.servicecomb.metrics.core.monitor.RegistryMonitor;
+import io.servicecomb.swagger.invocation.InvocationType;
 
 public class InvocationFinishedEventListener implements EventListener {
 
@@ -45,9 +46,13 @@ public class InvocationFinishedEventListener implements EventListener {
       ProducerInvocationMonitor monitor = registryMonitor.getProducerInvocationMonitor(event.getOperationName());
       monitor.getExecutionTime().update(event.getProcessElapsedNanoTime());
       monitor.getProducerLatency().update(event.getTotalElapsedNanoTime());
+      monitor.getProducerCall().increment(MetricsDimension.DIMENSION_STATUS,
+          event.isSuccess() ? MetricsDimension.DIMENSION_STATUS_SUCCESS : MetricsDimension.DIMENSION_STATUS_FAILED);
     } else {
       ConsumerInvocationMonitor monitor = registryMonitor.getConsumerInvocationMonitor(event.getOperationName());
       monitor.getConsumerLatency().update(event.getTotalElapsedNanoTime());
+      monitor.getConsumerCall().increment(MetricsDimension.DIMENSION_STATUS,
+          event.isSuccess() ? MetricsDimension.DIMENSION_STATUS_SUCCESS : MetricsDimension.DIMENSION_STATUS_FAILED);
     }
   }
 }
