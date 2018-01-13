@@ -20,6 +20,13 @@
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
+  <parent>
+    <groupId>org.apache</groupId>
+    <artifactId>apache</artifactId>
+    <version>18</version>
+  </parent>
+
+
   <groupId>org.apache.servicecomb</groupId>
   <artifactId>java-chassis</artifactId>
   <version>0.6.0-SNAPSHOT</version>
@@ -41,12 +48,39 @@
     </license>
   </licenses>
 
+  <mailingLists>
+    <mailingList>
+      <name>Development List</name>
+      <subscribe>dev-subscribe@servicecomb.apache.org</subscribe>
+      <unsubscribe>dev-unsubscribe@servicecomb.apache.org</unsubscribe>
+      <post>dev@servicecomb.apache.org</post>
+    </mailingList>
+    <mailingList>
+      <name>Commits List</name>
+      <subscribe>commits-subscribe@servicecomb.apache.org</subscribe>
+      <unsubscribe>commits-unsubscribe@servicecomb.apache.org</unsubscribe>
+      <post>commits@servicecomb.apache.org</post>
+    </mailingList>
+  </mailingLists>
+
   <developers>
     <developer>
       <name>The ServiceComb Developer Team</name>
-      <email>dev@servicecomb.io</email>
+      <email>dev@servicecomb.apache.org</email>
     </developer>
   </developers>
+
+  <issueManagement>
+    <system>jira</system>
+    <url>https://issues.apache.org/jira/browse/SCB</url>
+  </issueManagement>
+
+  <organization>
+    <name>The Apache Software Foundation</name>
+    <url>http://www.apache.org/</url>
+  </organization>
+
+  <inceptionYear>2017</inceptionYear>
 
   <scm>
     <url>https://github.com/apache/incubator-servicecomb-java-chassis</url>
@@ -73,17 +107,6 @@
     <module>dynamic-config</module>
   </modules>
 
-  <distributionManagement>
-    <repository>
-      <id>ossrh</id>
-      <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
-    </repository>
-    <snapshotRepository>
-      <id>ossrh</id>
-      <url>https://oss.sonatype.org/content/repositories/snapshots</url>
-    </snapshotRepository>
-  </distributionManagement>
-
   <profiles>
     <profile>
       <id>release</id>
@@ -93,28 +116,7 @@
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-deploy-plugin</artifactId>
         </plugin>
-        <plugin>
-            <groupId>org.sonatype.plugins</groupId>
-            <artifactId>nexus-staging-maven-plugin</artifactId>
-            <version>1.6.7</version>
-	    <executions>
-             <execution>
-               <id>default-deploy</id>
-               <phase>deploy</phase>
-               <goals>
-                 <goal>deploy</goal>
-               </goals>
-             </execution>
-            </executions>
-            <extensions>true</extensions>
-            <configuration>
-              <serverId>ossrh</serverId>
-              <nexusUrl>https://oss.sonatype.org/</nexusUrl>
-              <autoReleaseAfterClose>false</autoReleaseAfterClose>
-              <skipLocalStaging>true</skipLocalStaging>
-            </configuration>
-        </plugin>  
-	<plugin>
+	      <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-gpg-plugin</artifactId>
             <version>1.6</version>
