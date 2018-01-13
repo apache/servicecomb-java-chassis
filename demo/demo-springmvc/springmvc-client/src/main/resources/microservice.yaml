@@ -53,7 +53,7 @@ cse:
     serverListFilters: zoneaware
     serverListFilter:
       zoneaware:
-        className: io.servicecomb.loadbalance.filter.ZoneAwareServerListFilterExt
+        className: org.apache.servicecomb.loadbalance.filter.ZoneAwareServerListFilterExt
   fallbackpolicy:
     Consumer:
       springmvc:
@@ -90,4 +90,4 @@ ssl.keyStore: server.p12
 ssl.keyStoreType: PKCS12
 ssl.keyStoreValue: Changeme_123
 ssl.crl: revoke.crl
-ssl.sslCustomClass: io.servicecomb.demo.DemoSSLCustom
+ssl.sslCustomClass: org.apache.servicecomb.demo.DemoSSLCustom

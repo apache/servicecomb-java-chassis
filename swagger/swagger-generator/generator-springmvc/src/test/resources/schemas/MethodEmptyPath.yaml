@@ -19,7 +19,7 @@
 swagger: "2.0"
 info:
   version: "1.0.0"
-  title: "swagger definition for io.servicecomb.swagger.generator.springmvc.MethodEmptyPath"
+  title: "swagger definition for org.apache.servicecomb.swagger.generator.springmvc.MethodEmptyPath"
   x-java-interface: "gen.cse.ms.ut.MethodEmptyPathIntf"
 basePath: "/MethodEmptyPath"
 consumes:

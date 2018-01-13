@@ -19,7 +19,7 @@
 swagger: "2.0"
 info:
   version: "1.0.0"
-  title: "swagger definition for io.servicecomb.swagger.generator.core.schema.Schema"
+  title: "swagger definition for org.apache.servicecomb.swagger.generator.core.schema.Schema"
   x-java-interface: "gen.cse.ms.ut.SchemaIntf"
 basePath: "/Schema"
 consumes:
@@ -90,7 +90,7 @@ definitions:
         enum:
         - "WHITE"
         - "BLACK"
-        x-java-class: "io.servicecomb.swagger.generator.core.schema.Color"
+        x-java-class: "org.apache.servicecomb.swagger.generator.core.schema.Color"
       cValue:
         type: "string"
       cObjectValue:
@@ -113,7 +113,7 @@ definitions:
         type: "object"
         additionalProperties:
           $ref: "#/definitions/User"
-    x-java-class: "io.servicecomb.swagger.generator.core.schema.AllType"
+    x-java-class: "org.apache.servicecomb.swagger.generator.core.schema.AllType"
   User:
     type: "object"
     properties:
@@ -122,7 +122,7 @@ definitions:
       age:
         type: "integer"
         format: "int32"
-    x-java-class: "io.servicecomb.swagger.generator.core.schema.User"
+    x-java-class: "org.apache.servicecomb.swagger.generator.core.schema.User"
   testMultiParamBody:
     type: "object"
     properties:
@@ -153,7 +153,7 @@ definitions:
         enum:
         - "WHITE"
         - "BLACK"
-        x-java-class: "io.servicecomb.swagger.generator.core.schema.Color"
+        x-java-class: "org.apache.servicecomb.swagger.generator.core.schema.Color"
       cValue:
         type: "string"
       bytes:

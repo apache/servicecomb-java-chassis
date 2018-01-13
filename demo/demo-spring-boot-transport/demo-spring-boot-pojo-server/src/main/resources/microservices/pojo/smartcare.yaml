@@ -21,7 +21,7 @@ swagger: '2.0'
 info:
   title: smartcare test
   version: 1.0.0
-  x-java-interface: io.servicecomb.demo.smartcare.SmartCare
+  x-java-interface: org.apache.servicecomb.demo.smartcare.SmartCare
 
 # the domain of the service
 #host: api.uber.com
@@ -123,7 +123,7 @@ definitions:
 
   Response:
     type: object
-    x-java-class: io.servicecomb.demo.smartcare.Response
+    x-java-class: org.apache.servicecomb.demo.smartcare.Response
     properties:
       resultCode:
         type: integer

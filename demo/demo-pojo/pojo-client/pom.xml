@@ -39,7 +39,7 @@
   </dependencies>
 
   <properties>
-    <demo.main>io.servicecomb.demo.pojo.client.PojoClient</demo.main>
+    <demo.main>org.apache.servicecomb.demo.pojo.client.PojoClient</demo.main>
   </properties>
   <build>
     <plugins>

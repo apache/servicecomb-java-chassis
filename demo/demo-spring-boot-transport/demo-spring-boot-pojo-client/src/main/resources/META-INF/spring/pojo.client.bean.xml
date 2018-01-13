@@ -26,9 +26,9 @@
 		http://www.huawei.com/schema/paas/cse/rpc classpath:META-INF/spring/spring-paas-cse-rpc.xsd">
 
 	<cse:rpc-reference id="server" microservice-name="pojo"
-		schema-id="server" interface="io.servicecomb.demo.server.Test"></cse:rpc-reference>
+		schema-id="server" interface="org.apache.servicecomb.demo.server.Test"></cse:rpc-reference>
 		
-	<bean class="io.servicecomb.demo.pojo.client.PojoClientTest">
+	<bean class="org.apache.servicecomb.demo.pojo.client.PojoClientTest">
 		<property name="testFromXml" ref="server"></property>
 	</bean>
 </beans>

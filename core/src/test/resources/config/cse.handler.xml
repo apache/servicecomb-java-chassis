@@ -17,5 +17,5 @@
 
 <config>
 	<handler id="simpleLB"
-		class="io.servicecomb.core.handler.impl.SimpleLoadBalanceHandler" />
+		class="org.apache.servicecomb.core.handler.impl.SimpleLoadBalanceHandler" />
 </config>

@@ -28,7 +28,7 @@
   <name>Java Chassis::Demo::Edge::HiBoard Business 2.0.0</name>
 
   <properties>
-    <demo.main>io.servicecomb.demo.edge.business.BusinessMain_V2_0_0</demo.main>
+    <demo.main>org.apache.servicecomb.demo.edge.business.BusinessMain_V2_0_0</demo.main>
   </properties>
 
   <dependencies>

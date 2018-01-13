@@ -50,7 +50,7 @@
 	</dependencies>
 
 	<properties>
-		<demo.main>io.servicecomb.demo.springmvc.client.SpringmvcClient</demo.main>
+		<demo.main>org.apache.servicecomb.demo.springmvc.client.SpringmvcClient</demo.main>
 	</properties>
 	<build>
 		<plugins>

@@ -16,5 +16,5 @@
   ~ limitations under the License.
   -->
 <config>
-  <handler id="myhandler" class="io.servicecomb.handler.MyHandler"/>
+  <handler id="myhandler" class="org.apache.servicecomb.handler.MyHandler"/>
 </config>

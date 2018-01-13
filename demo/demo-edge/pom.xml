@@ -29,8 +29,8 @@
   <packaging>pom</packaging>
   <modules>
     <module>edge-service</module>
-    
-    
+
+
     <module>hiboard-model</module>
     <module>hiboard-consumer</module>
     <module>hiboard-business-1.0.0</module>

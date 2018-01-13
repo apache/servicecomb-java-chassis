@@ -17,5 +17,5 @@
 
 <config>
 	<handler id="auth"
-		class="io.servicecomb.demo.edge.service.handler.AuthHandler" />
+		class="org.apache.servicecomb.demo.edge.service.handler.AuthHandler" />
 </config>

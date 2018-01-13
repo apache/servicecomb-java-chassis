@@ -17,7 +17,7 @@
 
 <config>
 	<handler id="tracing-consumer"
-		class="io.servicecomb.tracing.zipkin.ZipkinConsumerTracingHandler" />
+		class="org.apache.servicecomb.tracing.zipkin.ZipkinConsumerTracingHandler" />
 	<handler id="tracing-provider"
-		class="io.servicecomb.tracing.zipkin.ZipkinProviderTracingHandler" />
+		class="org.apache.servicecomb.tracing.zipkin.ZipkinProviderTracingHandler" />
 </config>

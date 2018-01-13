@@ -15,7 +15,7 @@
 ## limitations under the License.
 ## ---------------------------------------------------------------------------
 servicecomb:
-  microserviceVersionFactory: io.servicecomb.core.definition.PrivateMicroserviceVersionMetaFactory
+  microserviceVersionFactory: org.apache.servicecomb.core.definition.PrivateMicroserviceVersionMetaFactory
 
 APPLICATION_ID: springmvctest
 service_description:
@@ -72,4 +72,4 @@ ssl.keyStore: server.p12
 ssl.keyStoreType: PKCS12
 ssl.keyStoreValue: Changeme_123
 ssl.crl: revoke.crl
-ssl.sslCustomClass: io.servicecomb.demo.DemoSSLCustom
+ssl.sslCustomClass: org.apache.servicecomb.demo.DemoSSLCustom

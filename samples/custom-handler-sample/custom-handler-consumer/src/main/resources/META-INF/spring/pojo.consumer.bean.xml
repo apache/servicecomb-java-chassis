@@ -24,5 +24,5 @@
 		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd
 		">
 
-    <context:component-scan base-package="io.servicecomb.samples.customerhandler.consumer" />
+    <context:component-scan base-package="org.apache.servicecomb.samples.customerhandler.consumer" />
 </beans>

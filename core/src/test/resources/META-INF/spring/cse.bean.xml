@@ -22,13 +22,13 @@
 	xsi:schemaLocation="
 		http://www.springframework.org/schema/beans
 		classpath:/org/springframework/beans/factory/xml/spring-beans-3.0.xsd">
-	<bean class="io.servicecomb.core.config.ConfigurationSpringInitializer">
+	<bean class="org.apache.servicecomb.core.config.ConfigurationSpringInitializer">
 		<property name="configId" value="config" />
 	</bean>
 
-	<bean class="io.servicecomb.core.CseApplicationListener">
+	<bean class="org.apache.servicecomb.core.CseApplicationListener">
 	</bean>
 
-	<bean id="cse.executor.default" class="io.servicecomb.core.executor.FixedThreadExecutor"></bean>
-	<bean id="cse.executor.reactive" class="io.servicecomb.core.executor.ReactiveExecutor"></bean>
+	<bean id="cse.executor.default" class="org.apache.servicecomb.core.executor.FixedThreadExecutor"></bean>
+	<bean id="cse.executor.reactive" class="org.apache.servicecomb.core.executor.ReactiveExecutor"></bean>
 </beans>

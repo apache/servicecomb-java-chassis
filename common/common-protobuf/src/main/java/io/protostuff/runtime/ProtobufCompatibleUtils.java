@@ -19,11 +19,12 @@ package io.protostuff.runtime;
 import java.io.IOException;
 import java.util.Map;
 
+import org.apache.servicecomb.foundation.common.utils.ReflectUtils;
+
 import io.protostuff.Input;
 import io.protostuff.Output;
 import io.protostuff.Pipe;
 import io.protostuff.WireFormat.FieldType;
-import io.servicecomb.foundation.common.utils.ReflectUtils;
 
 /**
  * protostuff实现protobuf逻辑时，关于map的编码与protobuf不兼容

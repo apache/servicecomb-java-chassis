@@ -19,15 +19,14 @@ package org.springframework.web.client;
 
 import java.io.IOException;
 
+import org.apache.servicecomb.provider.common.MockUtil;
+import org.apache.servicecomb.provider.springmvc.reference.CseClientHttpRequest;
 import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.springframework.http.HttpOutputMessage;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.http.converter.HttpMessageNotWritableException;
-
-import io.servicecomb.provider.common.MockUtil;
-import io.servicecomb.provider.springmvc.reference.CseClientHttpRequest;
 
 public class TestCseHttpMessageConverter {
 

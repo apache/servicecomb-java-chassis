@@ -17,9 +17,9 @@
 
 swagger: '2.0'
 info:
-  title: "swagger definition for io.servicecomb.demo.jaxrs.tests.endpoints.SchemaFirstJaxrsImpl"
+  title: "swagger definition for org.apache.servicecomb.demo.jaxrs.tests.endpoints.SchemaFirstJaxrsImpl"
   version: 1.0.0
-  x-java-interface: io.servicecomb.demo.jaxrs.tests.endpoints.SchemaFirstJaxrs
+  x-java-interface: org.apache.servicecomb.demo.jaxrs.tests.endpoints.SchemaFirstJaxrs
 basePath: "/schemaFirstJaxrs"
 produces:
   - application/json
@@ -281,10 +281,10 @@ definitions:
         type: array
         items:
           type: string
-    x-java-class: io.servicecomb.demo.server.User
+    x-java-class: org.apache.servicecomb.demo.server.User
   Person:
     type: object
     properties:
       name:
         type: string
-    x-java-class: io.servicecomb.demo.compute.Person
+    x-java-class: org.apache.servicecomb.demo.compute.Person

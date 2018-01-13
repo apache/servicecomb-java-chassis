@@ -44,7 +44,7 @@
   </dependencies>
 
   <properties>
-    <demo.main>io.servicecomb.demo.discovery.server.DiscoveryServer</demo.main>
+    <demo.main>org.apache.servicecomb.demo.discovery.server.DiscoveryServer</demo.main>
   </properties>
   <build>
     <plugins>

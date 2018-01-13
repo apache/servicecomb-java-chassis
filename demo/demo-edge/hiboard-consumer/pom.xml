@@ -28,7 +28,7 @@
   <name>Java Chassis::Demo::Edge::HiBoard Consumer</name>
 
   <properties>
-    <demo.main>io.servicecomb.demo.edge.consumer.ConsumerMain</demo.main>
+    <demo.main>org.apache.servicecomb.demo.edge.consumer.ConsumerMain</demo.main>
   </properties>
 
   <dependencies>

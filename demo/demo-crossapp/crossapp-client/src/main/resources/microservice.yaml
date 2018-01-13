@@ -30,6 +30,6 @@ cse:
   loadbalance:
     appServer:appService:
       transactionControl:
-        policy: io.servicecomb.loadbalance.filter.SimpleTransactionControlFilter
+        policy: org.apache.servicecomb.loadbalance.filter.SimpleTransactionControlFilter
         options:
           tag0: value0
