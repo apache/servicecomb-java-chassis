@@ -19,34 +19,34 @@
     xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>io.servicecomb.samples</groupId>
+        <groupId>org.apache.servicecomb.samples</groupId>
         <artifactId>pojo-sample</artifactId>
         <version>0.6.0-SNAPSHOT</version>
     </parent>
     <artifactId>pojo-provider</artifactId>
     <dependencies>
         <dependency>
-            <groupId>io.servicecomb</groupId>
+            <groupId>org.apache.servicecomb</groupId>
             <artifactId>handler-bizkeeper</artifactId>
         </dependency>
         <dependency>
-            <groupId>io.servicecomb</groupId>
+            <groupId>org.apache.servicecomb</groupId>
             <artifactId>handler-loadbalance</artifactId>
         </dependency>
         <dependency>
-            <groupId>io.servicecomb</groupId>
+            <groupId>org.apache.servicecomb</groupId>
             <artifactId>transport-highway</artifactId>
         </dependency>
         <dependency>
-            <groupId>io.servicecomb</groupId>
+            <groupId>org.apache.servicecomb</groupId>
             <artifactId>transport-rest-vertx</artifactId>
         </dependency>
         <dependency>
-            <groupId>io.servicecomb</groupId>
+            <groupId>org.apache.servicecomb</groupId>
             <artifactId>handler-flowcontrol-qps</artifactId>
         </dependency>
         <dependency>
-            <groupId>io.servicecomb</groupId>
+            <groupId>org.apache.servicecomb</groupId>
             <artifactId>provider-pojo</artifactId>
         </dependency>
         <dependency>
@@ -54,7 +54,7 @@
             <artifactId>slf4j-log4j12</artifactId>
         </dependency>
         <dependency>
-            <groupId>io.servicecomb.samples</groupId>
+            <groupId>org.apache.servicecomb.samples</groupId>
             <artifactId>common-schema</artifactId>
         </dependency>
     </dependencies>

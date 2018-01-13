@@ -20,7 +20,7 @@
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
-    <groupId>io.servicecomb.demo</groupId>
+    <groupId>org.apache.servicecomb.demo</groupId>
     <artifactId>demo-edge</artifactId>
     <version>0.6.0-SNAPSHOT</version>
   </parent>
@@ -33,23 +33,23 @@
 
   <dependencies>
     <dependency>
-      <groupId>io.servicecomb</groupId>
+      <groupId>org.apache.servicecomb</groupId>
       <artifactId>provider-pojo</artifactId>
     </dependency>
     <dependency>
-      <groupId>io.servicecomb</groupId>
+      <groupId>org.apache.servicecomb</groupId>
       <artifactId>provider-springmvc</artifactId>
     </dependency>
     <dependency>
-      <groupId>io.servicecomb</groupId>
+      <groupId>org.apache.servicecomb</groupId>
       <artifactId>transport-rest-vertx</artifactId>
     </dependency>
     <dependency>
-      <groupId>io.servicecomb</groupId>
+      <groupId>org.apache.servicecomb</groupId>
       <artifactId>transport-rest-servlet</artifactId>
     </dependency>
     <dependency>
-      <groupId>io.servicecomb.demo</groupId>
+      <groupId>org.apache.servicecomb.demo</groupId>
       <artifactId>hiboard-model</artifactId>
       <version>0.6.0-SNAPSHOT</version>
     </dependency>

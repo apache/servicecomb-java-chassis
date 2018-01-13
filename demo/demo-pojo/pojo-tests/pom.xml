@@ -21,7 +21,7 @@
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <parent>
     <artifactId>demo-pojo</artifactId>
-    <groupId>io.servicecomb.demo</groupId>
+    <groupId>org.apache.servicecomb.demo</groupId>
     <version>0.6.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
@@ -31,11 +31,11 @@
 
   <dependencies>
     <dependency>
-      <groupId>io.servicecomb.demo</groupId>
+      <groupId>org.apache.servicecomb.demo</groupId>
       <artifactId>demo-schema</artifactId>
     </dependency>
     <dependency>
-      <groupId>io.servicecomb</groupId>
+      <groupId>org.apache.servicecomb</groupId>
       <artifactId>provider-pojo</artifactId>
     </dependency>
     <dependency>

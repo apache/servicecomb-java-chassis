@@ -23,7 +23,7 @@
 	<artifactId>demo-spring-boot-jaxrs-server</artifactId>
 	<name>Java Chassis::Demo::Spring Boot::JAXRS Server</name>
 	<parent>
-		<groupId>io.servicecomb.demo</groupId>
+		<groupId>org.apache.servicecomb.demo</groupId>
 		<artifactId>demo-spring-boot</artifactId>
 		<version>0.6.0-SNAPSHOT</version>
 	</parent>
@@ -32,7 +32,7 @@
 	</properties>
 	<dependencies>
 		<dependency>
-			<groupId>io.servicecomb.demo</groupId>
+			<groupId>org.apache.servicecomb.demo</groupId>
 			<artifactId>jaxrs-server</artifactId>
 		</dependency>
 		<dependency>
@@ -56,7 +56,7 @@
 				<configuration>
 					<mixins>
 						<mixin>
-							<groupId>io.servicecomb.demo</groupId>
+							<groupId>org.apache.servicecomb.demo</groupId>
 							<artifactId>docker-build-config</artifactId>
 							<version>0.6.0-SNAPSHOT</version>
 						</mixin>

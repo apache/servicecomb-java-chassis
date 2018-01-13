@@ -18,14 +18,14 @@
 
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <parent>
-    <groupId>io.servicecomb</groupId>
+    <groupId>org.apache.servicecomb</groupId>
     <artifactId>java-chassis-parent</artifactId>
     <version>0.6.0-SNAPSHOT</version>
     <relativePath>../parent</relativePath>
   </parent>
   <modelVersion>4.0.0</modelVersion>
 
-  <groupId>io.servicecomb.tests</groupId>
+  <groupId>org.apache.servicecomb.tests</groupId>
   <artifactId>integration-tests</artifactId>
   <name>Java Chassis::Integration Tests</name>
   <packaging>pom</packaging>
@@ -45,12 +45,12 @@
   <dependencyManagement>
     <dependencies>
       <dependency>
-        <groupId>io.servicecomb.demo</groupId>
+        <groupId>org.apache.servicecomb.demo</groupId>
         <artifactId>demo-schema</artifactId>
         <version>0.6.0-SNAPSHOT</version>
       </dependency>
       <dependency>
-        <groupId>io.servicecomb.tests</groupId>
+        <groupId>org.apache.servicecomb.tests</groupId>
         <artifactId>test-common</artifactId>
         <version>0.6.0-SNAPSHOT</version>
         <type>test-jar</type>
@@ -76,15 +76,15 @@
   </dependencyManagement>
   <dependencies>
     <dependency>
-      <groupId>io.servicecomb</groupId>
+      <groupId>org.apache.servicecomb</groupId>
       <artifactId>handler-bizkeeper</artifactId>
     </dependency>
     <dependency>
-      <groupId>io.servicecomb</groupId>
+      <groupId>org.apache.servicecomb</groupId>
       <artifactId>handler-loadbalance</artifactId>
     </dependency>
     <dependency>
-      <groupId>io.servicecomb</groupId>
+      <groupId>org.apache.servicecomb</groupId>
       <artifactId>transport-highway</artifactId>
     </dependency>
     <dependency>
@@ -92,11 +92,11 @@
       <artifactId>javax.servlet-api</artifactId>
     </dependency>
     <dependency>
-      <groupId>io.servicecomb</groupId>
+      <groupId>org.apache.servicecomb</groupId>
       <artifactId>handler-flowcontrol-qps</artifactId>
     </dependency>
     <dependency>
-      <groupId>io.servicecomb</groupId>
+      <groupId>org.apache.servicecomb</groupId>
       <artifactId>swagger-generator-springmvc</artifactId>
     </dependency>
   </dependencies>
