@@ -16,35 +16,19 @@
   ~ limitations under the License.
   -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.apache.servicecomb.demo</groupId>
-    <artifactId>demo-parent</artifactId>
+    <artifactId>demo-edge</artifactId>
     <version>0.6.0-SNAPSHOT</version>
   </parent>
-  <artifactId>demo-edge</artifactId>
-  <name>Java Chassis::Demo::Edge</name>
-  <packaging>pom</packaging>
-  <modules>
-    <module>edge-service</module>
-
-
-    <module>model</module>
-    <module>consumer</module>
-    <module>business-1.0.0</module>
-    <module>business-1-1-0</module>
-    <module>business-2.0.0</module>
-    <module>authentication</module>
-  </modules>
-
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-dependency-plugin</artifactId>
-      </plugin>
-    </plugins>
-  </build>
+  <artifactId>model</artifactId>
+  <name>Java Chassis::Demo::Edge::Model</name>
+  <dependencies>
+    <dependency>
+      <groupId>org.apache.servicecomb</groupId>
+      <artifactId>service-registry</artifactId>
+    </dependency>
+  </dependencies>
 </project>

@@ -17,13 +17,13 @@
 
 APPLICATION_ID: edge
 service_description:
-  name: auth
-  version: 0.0.1
+  name: business
+  version: 1.0.0
 cse:
   service:
     registry:
       address: http://127.0.0.1:30100
   rest:
-    address: 127.0.0.1:7070
+    address: 127.0.0.1:8080
     server:
-      thread-count: 10
+      thread-count: 1
