@@ -38,7 +38,7 @@
 	</dependencies>
 
 	<properties>
-		<demo.main>io.servicecomb.demo.multiple.server.MultipleServer</demo.main>
+		<demo.main>org.apache.servicecomb.demo.multiple.server.MultipleServer</demo.main>
 	</properties>
 	<build>
 		<plugins>

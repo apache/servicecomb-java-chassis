@@ -27,7 +27,7 @@
   <name>Java Chassis::Demo::Edge::Service</name>
 
   <properties>
-    <demo.main>io.servicecomb.demo.edge.service.EdgeMain</demo.main>
+    <demo.main>org.apache.servicecomb.demo.edge.service.EdgeMain</demo.main>
   </properties>
 
   <dependencies>

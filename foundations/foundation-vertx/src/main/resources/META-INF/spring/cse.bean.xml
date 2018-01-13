@@ -24,6 +24,6 @@
         classpath:/org/springframework/beans/factory/xml/spring-beans-3.0.xsd">
 
 	<bean id="cse.executor.vertx-worker"
-		class="io.servicecomb.foundation.vertx.executor.VertxWorkerExecutor"></bean>
+		class="org.apache.servicecomb.foundation.vertx.executor.VertxWorkerExecutor"></bean>
 
 </beans>

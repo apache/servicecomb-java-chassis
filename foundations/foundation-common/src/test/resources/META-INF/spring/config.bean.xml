@@ -24,11 +24,11 @@
         http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
 
 	<bean
-		class="io.servicecomb.foundation.common.config.PaaSPropertyPlaceholderConfigurer">
+		class="org.apache.servicecomb.foundation.common.config.PaaSPropertyPlaceholderConfigurer">
 		<property name="configId" value="pTest" />
 	</bean>
 
-	<bean id="beanProp" class="io.servicecomb.foundation.common.config.BeanProp">
+	<bean id="beanProp" class="org.apache.servicecomb.foundation.common.config.BeanProp">
 		<property name="test">
 			<value>${1.2}</value>
 		</property>

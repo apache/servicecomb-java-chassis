@@ -18,7 +18,7 @@
 service_description:
   name: default
   version: 0.0.1
-  propertyExtentedClass: io.servicecomb.serviceregistry.MicroServicePropertyExtendedStub
+  propertyExtentedClass: org.apache.servicecomb.serviceregistry.MicroServicePropertyExtendedStub
 cse:
   service:
     registry:

@@ -15,10 +15,10 @@
  * limitations under the License.
  */
 
-import com.netflix.config.DynamicPropertyFactory;
+import org.apache.servicecomb.foundation.common.utils.BeanUtils;
+import org.apache.servicecomb.foundation.common.utils.Log4jUtils;
 
-import io.servicecomb.foundation.common.utils.BeanUtils;
-import io.servicecomb.foundation.common.utils.Log4jUtils;
+import com.netflix.config.DynamicPropertyFactory;
 
 public class MainServer {
   public static void main(String[] args) throws Exception {

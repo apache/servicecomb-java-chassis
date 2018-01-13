@@ -17,7 +17,7 @@
 
 <config>
 	<handler id="bizkeeper-consumer"
-		class="io.servicecomb.bizkeeper.ConsumerBizkeeperHandler" />
+		class="org.apache.servicecomb.bizkeeper.ConsumerBizkeeperHandler" />
 	<handler id="bizkeeper-provider"
-		class="io.servicecomb.bizkeeper.ProviderBizkeeperHanlder" />
+		class="org.apache.servicecomb.bizkeeper.ProviderBizkeeperHanlder" />
 </config>

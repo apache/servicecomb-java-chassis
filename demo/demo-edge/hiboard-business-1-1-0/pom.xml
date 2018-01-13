@@ -25,7 +25,7 @@
   <artifactId>hiboard-business-1-1-0</artifactId>
   <name>Java Chassis::Demo::Edge::HiBoard Business 1.1.0</name>
   <properties>
-    <demo.main>io.servicecomb.demo.edge.business.BusinessMain_V1_1_0</demo.main>
+    <demo.main>org.apache.servicecomb.demo.edge.business.BusinessMain_V1_1_0</demo.main>
   </properties>
 
   <dependencies>

@@ -40,7 +40,7 @@
 	</dependencies>
 
 	<properties>
-		<demo.main>io.servicecomb.demo.jaxrs.server.JaxrsServer</demo.main>
+		<demo.main>org.apache.servicecomb.demo.jaxrs.server.JaxrsServer</demo.main>
 	</properties>
 	<build>
 		<plugins>

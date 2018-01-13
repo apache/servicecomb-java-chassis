@@ -24,11 +24,11 @@
 		http://www.huawei.com/schema/paas/cse/rpc classpath:META-INF/spring/spring-paas-cse-rpc.xsd
 		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd">
 
-    <context:component-scan base-package="io.servicecomb.demo.springmvc.client" />
+    <context:component-scan base-package="org.apache.servicecomb.demo.springmvc.client" />
 	<cse:rpc-reference id="controller" microservice-name="springmvc"
-		schema-id="controller" interface="io.servicecomb.demo.controller.Controller"></cse:rpc-reference>
+		schema-id="controller" interface="org.apache.servicecomb.demo.controller.Controller"></cse:rpc-reference>
 
 	<cse:rpc-reference id="metricsPublisher" microservice-name="springmvc"
-		schema-id="metricsEndpoint" interface="io.servicecomb.metrics.common.MetricsPublisher"></cse:rpc-reference>
+		schema-id="metricsEndpoint" interface="org.apache.servicecomb.metrics.common.MetricsPublisher"></cse:rpc-reference>
 
 </beans>

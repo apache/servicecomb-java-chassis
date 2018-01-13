@@ -29,7 +29,7 @@
 	</parent>
 	
 	<properties>
-		<demo.main>io.servicecomb.springboot.pojo.client.PojoClient</demo.main>
+		<demo.main>org.apache.servicecomb.springboot.pojo.client.PojoClient</demo.main>
 	</properties>
 	<dependencies>
 		<dependency>

@@ -17,4 +17,4 @@
 
 cse-config-order: -500
 servicecomb:
-  microserviceVersionFactory: io.servicecomb.core.definition.PrivateMicroserviceVersionMetaFactory
+  microserviceVersionFactory: org.apache.servicecomb.core.definition.PrivateMicroserviceVersionMetaFactory

@@ -37,7 +37,7 @@
 	</dependencies>
 
 	<properties>
-		<demo.main>io.servicecomb.demo.local.DemoLocal</demo.main>
+		<demo.main>org.apache.servicecomb.demo.local.DemoLocal</demo.main>
 	</properties>
 	<build>
 		<plugins>

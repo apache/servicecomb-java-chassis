@@ -19,7 +19,7 @@
 swagger: "2.0"
 info:
   version: "1.0.0"
-  title: "swagger definition for io.servicecomb.swagger.generator.springmvc.MethodResponseEntity"
+  title: "swagger definition for org.apache.servicecomb.swagger.generator.springmvc.MethodResponseEntity"
   x-java-interface: "gen.cse.ms.ut.MethodResponseEntityIntf"
 basePath: "/MethodResponseEntity"
 consumes:
@@ -99,4 +99,4 @@ definitions:
     properties:
       name:
         type: "string"
-    x-java-class: "io.servicecomb.swagger.generator.springmvc.User"
+    x-java-class: "org.apache.servicecomb.swagger.generator.springmvc.User"

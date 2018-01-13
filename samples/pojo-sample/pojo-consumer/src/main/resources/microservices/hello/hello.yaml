@@ -19,7 +19,7 @@ swagger: '2.0'
 info:
   title: hello
   version: 1.0.0
-  x-java-interface: io.servicecomb.samples.pojo.Hello
+  x-java-interface: org.apache.servicecomb.samples.pojo.Hello
 basePath: /pojo/rest/hello
 produces:
   - application/json

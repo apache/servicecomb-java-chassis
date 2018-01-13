@@ -50,7 +50,7 @@ e.g. the example `SlowRepoImpl` in the previous section reports the following sp
 | key | value |
 | --- | --- |
 | span name | crawl |
-| call.path	| public abstract java.lang.String io.servicecomb.tests.tracing.SlowRepo.crawl() throws java.lang.InterruptedException |
+| call.path	| public abstract java.lang.String org.apache.servicecomb.tests.tracing.SlowRepo.crawl() throws java.lang.InterruptedException |
 
 ## Constraints
 * Customized tracing with annotation only supports method calls in the request thread.

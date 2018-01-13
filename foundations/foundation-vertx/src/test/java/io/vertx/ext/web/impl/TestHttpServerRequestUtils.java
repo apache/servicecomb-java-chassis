@@ -17,10 +17,10 @@
 
 package io.vertx.ext.web.impl;
 
+import org.apache.servicecomb.foundation.vertx.http.VertxServerRequestToHttpServletRequest;
 import org.junit.Assert;
 import org.junit.Test;
 
-import io.servicecomb.foundation.vertx.http.VertxServerRequestToHttpServletRequest;
 import io.vertx.core.http.HttpServerRequest;
 import io.vertx.ext.web.RoutingContext;
 import mockit.Expectations;

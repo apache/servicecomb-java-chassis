@@ -15,4 +15,4 @@
 ## limitations under the License.
 ## ---------------------------------------------------------------------------
 
-org.springframework.boot.autoconfigure.EnableAutoConfiguration=io.servicecomb.springboot.starter.registry.CseAutoConfiguration
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=org.apache.servicecomb.springboot.starter.registry.CseAutoConfiguration

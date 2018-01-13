@@ -15,10 +15,10 @@
 ## limitations under the License.
 ## ---------------------------------------------------------------------------
 
-io.servicecomb.springboot.starter.provider.EnableServiceComb=\
-  io.servicecomb.springboot.starter.discovery.CseDiscoveryClientConfiguration,\
-  io.servicecomb.springboot.starter.discovery.CseRibbonConfiguration
+org.apache.servicecomb.springboot.starter.provider.EnableServiceComb=\
+  org.apache.servicecomb.springboot.starter.discovery.CseDiscoveryClientConfiguration,\
+  org.apache.servicecomb.springboot.starter.discovery.CseRibbonConfiguration
 org.springframework.cloud.client.discovery.EnableDiscoveryClient=\
-  io.servicecomb.springboot.starter.discovery.CseDiscoveryClientConfiguration
+  org.apache.servicecomb.springboot.starter.discovery.CseDiscoveryClientConfiguration
 org.springframework.cloud.netflix.ribbon.RibbonClient=\
-  io.servicecomb.springboot.starter.discovery.CseRibbonConfiguration
+  org.apache.servicecomb.springboot.starter.discovery.CseRibbonConfiguration

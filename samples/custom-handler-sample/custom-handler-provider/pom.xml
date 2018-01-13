@@ -16,47 +16,47 @@
   ~ limitations under the License.
   -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <modelVersion>4.0.0</modelVersion>
-    <parent>
-        <groupId>io.servicecomb.samples</groupId>
-        <artifactId>custom-handler-sample</artifactId>
-        <version>0.6.0-SNAPSHOT</version>
-    </parent>
-    <artifactId>custom-handler-provider</artifactId>
-    <name>Java Chassis::Samples::Custom Handler::Provider</name>
-    <dependencies>
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>io.servicecomb.samples</groupId>
+    <artifactId>custom-handler-sample</artifactId>
+    <version>0.6.0-SNAPSHOT</version>
+  </parent>
+  <artifactId>custom-handler-provider</artifactId>
+  <name>Java Chassis::Samples::Custom Handler::Provider</name>
+  <dependencies>
 
-        <dependency>
-            <groupId>io.servicecomb</groupId>
-            <artifactId>provider-pojo</artifactId>
-        </dependency>
+    <dependency>
+      <groupId>io.servicecomb</groupId>
+      <artifactId>provider-pojo</artifactId>
+    </dependency>
 
-        <dependency>
-            <groupId>io.servicecomb</groupId>
-            <artifactId>transport-highway</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>io.servicecomb</groupId>
-            <artifactId>transport-rest-vertx</artifactId>
-        </dependency>
+    <dependency>
+      <groupId>io.servicecomb</groupId>
+      <artifactId>transport-highway</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>io.servicecomb</groupId>
+      <artifactId>transport-rest-vertx</artifactId>
+    </dependency>
 
-        <dependency>
-            <groupId>io.servicecomb</groupId>
-            <artifactId>handler-loadbalance</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>io.servicecomb</groupId>
-            <artifactId>handler-flowcontrol-qps</artifactId>
-        </dependency>
+    <dependency>
+      <groupId>io.servicecomb</groupId>
+      <artifactId>handler-loadbalance</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>io.servicecomb</groupId>
+      <artifactId>handler-flowcontrol-qps</artifactId>
+    </dependency>
 
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-log4j12</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>io.servicecomb.samples</groupId>
-            <artifactId>common-schema</artifactId>
-        </dependency>
-    </dependencies>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-log4j12</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>io.servicecomb.samples</groupId>
+      <artifactId>common-schema</artifactId>
+    </dependency>
+  </dependencies>
 </project>

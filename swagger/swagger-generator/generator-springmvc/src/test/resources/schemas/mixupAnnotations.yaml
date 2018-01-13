@@ -19,7 +19,7 @@
 swagger: "2.0"
 info:
   version: "1.0.0"
-  title: "swagger definition for io.servicecomb.swagger.generator.springmvc.MethodMixupAnnotations"
+  title: "swagger definition for org.apache.servicecomb.swagger.generator.springmvc.MethodMixupAnnotations"
   x-java-interface: "gen.cse.ms.ut.MethodMixupAnnotationsIntf"
 basePath: "/MethodMixupAnnotations"
 consumes:
@@ -249,4 +249,4 @@ definitions:
     properties:
       name:
         type: "string"
-    x-java-class: "io.servicecomb.swagger.generator.springmvc.User"
+    x-java-class: "org.apache.servicecomb.swagger.generator.springmvc.User"

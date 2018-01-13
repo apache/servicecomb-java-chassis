@@ -25,10 +25,10 @@
 		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd
 		http://www.huawei.com/schema/paas/cse/rpc classpath:META-INF/spring/spring-paas-cse-rpc.xsd">
 
-	<bean id="hello" class="io.servicecomb.demo.pojo.server.HelloImpl"></bean>
+	<bean id="hello" class="org.apache.servicecomb.demo.pojo.server.HelloImpl"></bean>
 	<cse:rpc-schema schema-id="helloworld.Greeter"
 		implementation="spring:hello"></cse:rpc-schema>
 
 	<cse:rpc-schema schema-id="smartcare"
-		implementation="io.servicecomb.demo.pojo.server.SmartCareImpl"></cse:rpc-schema>
+		implementation="org.apache.servicecomb.demo.pojo.server.SmartCareImpl"></cse:rpc-schema>
 </beans>

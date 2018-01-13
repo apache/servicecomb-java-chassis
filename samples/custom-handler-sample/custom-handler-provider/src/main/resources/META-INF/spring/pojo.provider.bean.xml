@@ -25,5 +25,5 @@
 		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd
 		http://www.huawei.com/schema/paas/cse/rpc classpath:META-INF/spring/spring-paas-cse-rpc.xsd">
 
-    <context:component-scan base-package="io.servicecomb.samples.customerhandler.provider" />
+    <context:component-scan base-package="org.apache.servicecomb.samples.customerhandler.provider" />
 </beans>

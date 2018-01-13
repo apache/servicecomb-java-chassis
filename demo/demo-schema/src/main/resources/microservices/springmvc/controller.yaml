@@ -21,7 +21,7 @@ swagger: '2.0'
 info:
   title: rest test
   version: 1.0.0
-  x-java-interface: io.servicecomb.demo.controller.Controller
+  x-java-interface: org.apache.servicecomb.demo.controller.Controller
   
 # the domain of the service
 #host: api.uber.com

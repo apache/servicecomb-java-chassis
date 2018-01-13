@@ -21,7 +21,7 @@ service_description:
   properties:
     key1: value1
     key2: value2
-  propertyExtentedClass: io.servicecomb.serviceregistry.MicroServicePropertyExtendedStub
+  propertyExtentedClass: org.apache.servicecomb.serviceregistry.MicroServicePropertyExtendedStub
   paths:
     - path: /test1/testpath
       property:
@@ -32,7 +32,7 @@ service_description:
 instance_description:
   properties:
     key0: value0
-  propertyExtentedClass: io.servicecomb.serviceregistry.MicroServicePropertyExtendedStub
+  propertyExtentedClass: org.apache.servicecomb.serviceregistry.MicroServicePropertyExtendedStub
 
 cse:
   service:

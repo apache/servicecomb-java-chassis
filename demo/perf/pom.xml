@@ -61,7 +61,7 @@
   </dependencies>
 
   <properties>
-    <demo.main>io.servicecomb.demo.perf.PerfMain</demo.main>
+    <demo.main>org.apache.servicecomb.demo.perf.PerfMain</demo.main>
   </properties>
   <build>
     <plugins>

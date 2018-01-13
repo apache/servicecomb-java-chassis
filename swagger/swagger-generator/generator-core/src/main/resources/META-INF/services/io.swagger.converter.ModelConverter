@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-io.servicecomb.swagger.extend.ModelResolverExt
+org.apache.servicecomb.swagger.extend.ModelResolverExt
