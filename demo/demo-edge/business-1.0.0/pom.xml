@@ -21,30 +21,33 @@
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.apache.servicecomb.demo</groupId>
-    <artifactId>demo-parent</artifactId>
+    <artifactId>demo-edge</artifactId>
     <version>0.6.0-SNAPSHOT</version>
   </parent>
-  <artifactId>demo-edge</artifactId>
-  <name>Java Chassis::Demo::Edge</name>
-  <packaging>pom</packaging>
-  <modules>
-    <module>edge-service</module>
+  <artifactId>business-1-0-0</artifactId>
+  <name>Java Chassis::Demo::Edge::Business 1.0.0</name>
 
+  <properties>
+    <demo.main>org.apache.servicecomb.demo.edge.business.BusinessMain_V1_0_0</demo.main>
+  </properties>
 
-    <module>model</module>
-    <module>consumer</module>
-    <module>business-1.0.0</module>
-    <module>business-1-1-0</module>
-    <module>business-2.0.0</module>
-    <module>authentication</module>
-  </modules>
-
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-dependency-plugin</artifactId>
-      </plugin>
-    </plugins>
-  </build>
+  <dependencies>
+    <dependency>
+      <groupId>org.apache.servicecomb</groupId>
+      <artifactId>provider-springmvc</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.servicecomb</groupId>
+      <artifactId>transport-rest-vertx</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.servicecomb</groupId>
+      <artifactId>transport-rest-servlet</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.servicecomb.demo</groupId>
+      <artifactId>model</artifactId>
+      <version>0.6.0-SNAPSHOT</version>
+    </dependency>
+  </dependencies>
 </project>

@@ -15,7 +15,7 @@
 ## limitations under the License.
 ## ---------------------------------------------------------------------------
 
-APPLICATION_ID: hiboard
+APPLICATION_ID: edge
 service_description:
   name: edge
   version: 0.0.1

@@ -17,13 +17,9 @@
 
 APPLICATION_ID: edge
 service_description:
-  name: auth
+  name: consumer
   version: 0.0.1
 cse:
   service:
     registry:
       address: http://127.0.0.1:30100
-  rest:
-    address: 127.0.0.1:7070
-    server:
-      thread-count: 10
