@@ -6,7 +6,7 @@ interest.
 1. Include the following dependency
 ```
     <dependency>
-      <groupId>io.servicecomb</groupId>
+      <groupId>org.apache.servicecomb</groupId>
       <artifactId>tracing-zipkin</artifactId>
     </dependency>
 ```

@@ -19,7 +19,7 @@
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
-    <groupId>io.servicecomb.samples</groupId>
+    <groupId>org.apache.servicecomb.samples</groupId>
     <artifactId>codefirst-sample</artifactId>
     <version>0.6.0-SNAPSHOT</version>
   </parent>
@@ -30,19 +30,19 @@
   </properties>
   <dependencies>
     <dependency>
-      <groupId>io.servicecomb.samples</groupId>
+      <groupId>org.apache.servicecomb.samples</groupId>
       <artifactId>common-schema</artifactId>
     </dependency>
     <dependency>
-      <groupId>io.servicecomb</groupId>
+      <groupId>org.apache.servicecomb</groupId>
       <artifactId>provider-pojo</artifactId>
     </dependency>
     <dependency>
-      <groupId>io.servicecomb</groupId>
+      <groupId>org.apache.servicecomb</groupId>
       <artifactId>transport-highway</artifactId>
     </dependency>
     <dependency>
-      <groupId>io.servicecomb</groupId>
+      <groupId>org.apache.servicecomb</groupId>
       <artifactId>transport-rest-vertx</artifactId>
     </dependency>
     <dependency>

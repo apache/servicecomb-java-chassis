@@ -19,7 +19,7 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
-		<groupId>io.servicecomb</groupId>
+		<groupId>org.apache.servicecomb</groupId>
 		<artifactId>transports</artifactId>
 		<version>0.6.0-SNAPSHOT</version>
 	</parent>
@@ -27,15 +27,15 @@
 	<name>Java Chassis::Transports::Hightway</name>
 	<dependencies>
 		<dependency>
-			<groupId>io.servicecomb</groupId>
+			<groupId>org.apache.servicecomb</groupId>
 			<artifactId>java-chassis-core</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>io.servicecomb</groupId>
+			<groupId>org.apache.servicecomb</groupId>
 			<artifactId>foundation-vertx</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>io.servicecomb</groupId>
+			<groupId>org.apache.servicecomb</groupId>
 			<artifactId>common-protobuf</artifactId>
 		</dependency>
 		<dependency>
@@ -49,7 +49,7 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
-			<groupId>io.servicecomb</groupId>
+			<groupId>org.apache.servicecomb</groupId>
 			<artifactId>foundation-metrics</artifactId>
 		</dependency>
 	</dependencies>

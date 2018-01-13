@@ -19,7 +19,7 @@
     xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>io.servicecomb</groupId>
+        <groupId>org.apache.servicecomb</groupId>
         <artifactId>java-chassis-parent</artifactId>
         <version>0.6.0-SNAPSHOT</version>
         <relativePath>../parent</relativePath>
@@ -29,151 +29,151 @@
     <packaging>pom</packaging>
     <dependencies>
         <dependency>
-            <groupId>io.servicecomb</groupId>
+            <groupId>org.apache.servicecomb</groupId>
             <artifactId>common-javassist</artifactId>
         </dependency>
         <dependency>
-            <groupId>io.servicecomb</groupId>
+            <groupId>org.apache.servicecomb</groupId>
             <artifactId>common-protobuf</artifactId>
         </dependency>
         <dependency>
-            <groupId>io.servicecomb</groupId>
+            <groupId>org.apache.servicecomb</groupId>
             <artifactId>common-rest</artifactId>
         </dependency>
         <dependency>
-            <groupId>io.servicecomb</groupId>
+            <groupId>org.apache.servicecomb</groupId>
             <artifactId>java-chassis-core</artifactId>
         </dependency>
         <dependency>
-            <groupId>io.servicecomb</groupId>
+            <groupId>org.apache.servicecomb</groupId>
             <artifactId>spring-boot-starter-configuration</artifactId>
         </dependency>
         <dependency>
-            <groupId>io.servicecomb</groupId>
+            <groupId>org.apache.servicecomb</groupId>
             <artifactId>spring-boot-starter-provider</artifactId>
         </dependency>
         <dependency>
-            <groupId>io.servicecomb</groupId>
+            <groupId>org.apache.servicecomb</groupId>
             <artifactId>spring-boot-starter-discovery</artifactId>
         </dependency>
         <dependency>
-            <groupId>io.servicecomb</groupId>
+            <groupId>org.apache.servicecomb</groupId>
             <artifactId>spring-boot-starter-registry</artifactId>
         </dependency>
         <dependency>
-            <groupId>io.servicecomb</groupId>
+            <groupId>org.apache.servicecomb</groupId>
             <artifactId>spring-boot-starter-transport</artifactId>
         </dependency>
         <dependency>
-            <groupId>io.servicecomb</groupId>
+            <groupId>org.apache.servicecomb</groupId>
             <artifactId>swagger-generator-core</artifactId>
         </dependency>
         <dependency>
-            <groupId>io.servicecomb</groupId>
+            <groupId>org.apache.servicecomb</groupId>
             <artifactId>swagger-generator-jaxrs</artifactId>
         </dependency>
         <dependency>
-            <groupId>io.servicecomb</groupId>
+            <groupId>org.apache.servicecomb</groupId>
             <artifactId>swagger-generator-springmvc</artifactId>
         </dependency>
         <dependency>
-            <groupId>io.servicecomb</groupId>
+            <groupId>org.apache.servicecomb</groupId>
             <artifactId>swagger-invocation-core</artifactId>
         </dependency>
         <dependency>
-            <groupId>io.servicecomb</groupId>
+            <groupId>org.apache.servicecomb</groupId>
             <artifactId>swagger-invocation-jaxrs</artifactId>
         </dependency>
         <dependency>
-            <groupId>io.servicecomb</groupId>
+            <groupId>org.apache.servicecomb</groupId>
             <artifactId>swagger-invocation-springmvc</artifactId>
         </dependency>
         <dependency>
-            <groupId>io.servicecomb</groupId>
+            <groupId>org.apache.servicecomb</groupId>
             <artifactId>foundation-common</artifactId>
         </dependency>
         <dependency>
-            <groupId>io.servicecomb</groupId>
+            <groupId>org.apache.servicecomb</groupId>
             <artifactId>foundation-config</artifactId>
         </dependency>
         <dependency>
-            <groupId>io.servicecomb</groupId>
+            <groupId>org.apache.servicecomb</groupId>
             <artifactId>foundation-metrics</artifactId>
         </dependency>
         <dependency>
-            <groupId>io.servicecomb</groupId>
+            <groupId>org.apache.servicecomb</groupId>
             <artifactId>foundation-ssl</artifactId>
         </dependency>
         <dependency>
-            <groupId>io.servicecomb</groupId>
+            <groupId>org.apache.servicecomb</groupId>
             <artifactId>foundation-vertx</artifactId>
         </dependency>
         <dependency>
-            <groupId>io.servicecomb</groupId>
+            <groupId>org.apache.servicecomb</groupId>
             <artifactId>foundation-test-scaffolding</artifactId>
         </dependency>
         <dependency>
-            <groupId>io.servicecomb</groupId>
+            <groupId>org.apache.servicecomb</groupId>
             <artifactId>handler-bizkeeper</artifactId>
         </dependency>
         <dependency>
-            <groupId>io.servicecomb</groupId>
+            <groupId>org.apache.servicecomb</groupId>
             <artifactId>handler-flowcontrol-qps</artifactId>
         </dependency>
         <dependency>
-            <groupId>io.servicecomb</groupId>
+            <groupId>org.apache.servicecomb</groupId>
             <artifactId>handler-loadbalance</artifactId>
         </dependency>
         <dependency>
-            <groupId>io.servicecomb</groupId>
+            <groupId>org.apache.servicecomb</groupId>
             <artifactId>handler-tracing-zipkin</artifactId>
         </dependency>
         <dependency>
-            <groupId>io.servicecomb</groupId>
+            <groupId>org.apache.servicecomb</groupId>
             <artifactId>provider-jaxrs</artifactId>
         </dependency>
         <dependency>
-            <groupId>io.servicecomb</groupId>
+            <groupId>org.apache.servicecomb</groupId>
             <artifactId>provider-pojo</artifactId>
         </dependency>
         <dependency>
-            <groupId>io.servicecomb</groupId>
+            <groupId>org.apache.servicecomb</groupId>
             <artifactId>provider-rest-common</artifactId>
         </dependency>
         <dependency>
-            <groupId>io.servicecomb</groupId>
+            <groupId>org.apache.servicecomb</groupId>
             <artifactId>provider-springmvc</artifactId>
         </dependency>
         <dependency>
-            <groupId>io.servicecomb</groupId>
+            <groupId>org.apache.servicecomb</groupId>
             <artifactId>service-registry</artifactId>
         </dependency>
         <dependency>
-            <groupId>io.servicecomb</groupId>
+            <groupId>org.apache.servicecomb</groupId>
             <artifactId>transport-highway</artifactId>
         </dependency>
         <dependency>
-            <groupId>io.servicecomb</groupId>
+            <groupId>org.apache.servicecomb</groupId>
             <artifactId>transport-rest-client</artifactId>
         </dependency>
         <dependency>
-            <groupId>io.servicecomb</groupId>
+            <groupId>org.apache.servicecomb</groupId>
             <artifactId>transport-rest-servlet</artifactId>
         </dependency>
         <dependency>
-            <groupId>io.servicecomb</groupId>
+            <groupId>org.apache.servicecomb</groupId>
             <artifactId>transport-rest-vertx</artifactId>
         </dependency>
         <dependency>
-            <groupId>io.servicecomb</groupId>
+            <groupId>org.apache.servicecomb</groupId>
             <artifactId>tracing-zipkin</artifactId>
         </dependency>
         <dependency>
-            <groupId>io.servicecomb</groupId>
+            <groupId>org.apache.servicecomb</groupId>
             <artifactId>tracing-common</artifactId>
         </dependency>
         <dependency>
-          <groupId>io.servicecomb</groupId>
+          <groupId>org.apache.servicecomb</groupId>
           <artifactId>edge-core</artifactId>
         </dependency>
     </dependencies>

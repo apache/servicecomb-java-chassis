@@ -21,7 +21,7 @@
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <parent>
     <artifactId>integration-tests</artifactId>
-    <groupId>io.servicecomb.tests</groupId>
+    <groupId>org.apache.servicecomb.tests</groupId>
     <version>0.6.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
@@ -30,19 +30,19 @@
   <name>Java Chassis::Integration Tests::Spring MVC</name>
   <dependencies>
     <dependency>
-      <groupId>io.servicecomb.tests</groupId>
+      <groupId>org.apache.servicecomb.tests</groupId>
       <artifactId>springmvc-tests</artifactId>
       <version>0.6.0-SNAPSHOT</version>
       <type>test-jar</type>
       <exclusions>
         <exclusion>
-          <groupId>io.servicecomb.demo</groupId>
+          <groupId>org.apache.servicecomb.demo</groupId>
           <artifactId>demo-signature</artifactId>
         </exclusion>
       </exclusions>
     </dependency>
     <dependency>
-      <groupId>io.servicecomb</groupId>
+      <groupId>org.apache.servicecomb</groupId>
       <artifactId>spring-boot-starter-provider</artifactId>
     </dependency>
     <dependency>

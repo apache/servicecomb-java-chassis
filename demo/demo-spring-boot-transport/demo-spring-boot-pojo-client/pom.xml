@@ -23,7 +23,7 @@
 	<artifactId>demo-spring-boot-pojo-client</artifactId>
 	<name>Java Chassis::Demo::Spring Boot::Transport::POJO Client</name>
 	<parent>
-		<groupId>io.servicecomb.demo</groupId>
+		<groupId>org.apache.servicecomb.demo</groupId>
 		<artifactId>demo-spring-boot-transport</artifactId>
 		<version>0.6.0-SNAPSHOT</version>
 	</parent>
@@ -33,7 +33,7 @@
 	</properties>
 	<dependencies>
 		<dependency>
-			<groupId>io.servicecomb</groupId>
+			<groupId>org.apache.servicecomb</groupId>
 			<artifactId>spring-boot-starter-provider</artifactId>
 		</dependency>
 		<dependency>
@@ -61,7 +61,7 @@
 				<configuration>
 					<mixins>
 						<mixin>
-							<groupId>io.servicecomb.demo</groupId>
+							<groupId>org.apache.servicecomb.demo</groupId>
 							<artifactId>docker-run-config</artifactId>
 							<version>0.6.0-SNAPSHOT</version>
 						</mixin>

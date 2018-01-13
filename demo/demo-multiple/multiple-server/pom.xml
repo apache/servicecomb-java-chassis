@@ -20,7 +20,7 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
-		<groupId>io.servicecomb.demo</groupId>
+		<groupId>org.apache.servicecomb.demo</groupId>
 		<artifactId>demo-multiple</artifactId>
 		<version>0.6.0-SNAPSHOT</version>
 	</parent>
@@ -28,11 +28,11 @@
 	<name>Java Chassis::Demo::Multiple::Server</name>
 	<dependencies>
 		<dependency>
-			<groupId>io.servicecomb.demo</groupId>
+			<groupId>org.apache.servicecomb.demo</groupId>
 			<artifactId>a-server</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>io.servicecomb.demo</groupId>
+			<groupId>org.apache.servicecomb.demo</groupId>
 			<artifactId>b-server</artifactId>
 		</dependency>
 	</dependencies>
@@ -48,7 +48,7 @@
 				<configuration>
 					<mixins>
 						<mixin>
-							<groupId>io.servicecomb.demo</groupId>
+							<groupId>org.apache.servicecomb.demo</groupId>
 							<artifactId>docker-build-config</artifactId>
 							<version>0.6.0-SNAPSHOT</version>
 						</mixin>

@@ -20,7 +20,7 @@
   xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <modelVersion>4.0.0</modelVersion>
   <parent>
-    <groupId>io.servicecomb.demo</groupId>
+    <groupId>org.apache.servicecomb.demo</groupId>
     <artifactId>demo-spring-boot-discovery</artifactId>
     <version>0.6.0-SNAPSHOT</version>
   </parent>
@@ -28,17 +28,17 @@
   <name>Java Chassis::Demo::Spring Boot Discovery::Server</name>
   <dependencies>
     <dependency>
-      <groupId>io.servicecomb.demo</groupId>
+      <groupId>org.apache.servicecomb.demo</groupId>
       <artifactId>demo-schema</artifactId>
       <exclusions>
         <exclusion>
-          <groupId>io.servicecomb.demo</groupId>
+          <groupId>org.apache.servicecomb.demo</groupId>
           <artifactId>demo-signature</artifactId>
         </exclusion>
       </exclusions>
     </dependency>
     <dependency>
-      <groupId>io.servicecomb</groupId>
+      <groupId>org.apache.servicecomb</groupId>
       <artifactId>provider-springmvc</artifactId>
     </dependency>
   </dependencies>
@@ -58,7 +58,7 @@
         <configuration>
           <mixins>
             <mixin>
-              <groupId>io.servicecomb.demo</groupId>
+              <groupId>org.apache.servicecomb.demo</groupId>
               <artifactId>docker-build-config</artifactId>
               <version>0.6.0-SNAPSHOT</version>
             </mixin>

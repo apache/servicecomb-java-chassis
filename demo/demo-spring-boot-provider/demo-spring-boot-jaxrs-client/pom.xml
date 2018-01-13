@@ -23,13 +23,13 @@
 	<artifactId>demo-spring-boot-jaxrs-client</artifactId>
 	<name>Java Chassis::Demo::Spring Boot::JAXRS Client</name>
 	<parent>
-		<groupId>io.servicecomb.demo</groupId>
+		<groupId>org.apache.servicecomb.demo</groupId>
 		<artifactId>demo-spring-boot</artifactId>
 		<version>0.6.0-SNAPSHOT</version>
 	</parent>
 	<dependencies>
 		<dependency>
-			<groupId>io.servicecomb.demo</groupId>
+			<groupId>org.apache.servicecomb.demo</groupId>
 			<artifactId>jaxrs-client</artifactId>
 		</dependency>
 		<dependency>
@@ -54,7 +54,7 @@
 				<configuration>
 					<mixins>
 						<mixin>
-							<groupId>io.servicecomb.demo</groupId>
+							<groupId>org.apache.servicecomb.demo</groupId>
 							<artifactId>docker-run-config</artifactId>
 							<version>0.6.0-SNAPSHOT</version>
 						</mixin>

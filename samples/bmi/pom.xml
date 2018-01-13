@@ -26,7 +26,7 @@
     <relativePath /> <!-- lookup parent from repository -->
   </parent>
 
-  <groupId>io.servicecomb.samples</groupId>
+  <groupId>org.apache.servicecomb.samples</groupId>
   <artifactId>bmi</artifactId>
   <name>Java Chassis::Samples::BMI</name>
   <version>0.6.0-SNAPSHOT</version>
@@ -49,7 +49,7 @@
   <dependencyManagement>
     <dependencies>
       <dependency>
-        <groupId>io.servicecomb</groupId>
+        <groupId>org.apache.servicecomb</groupId>
         <artifactId>java-chassis-dependencies</artifactId>
         <version>${java-chassis.version}</version>
         <type>pom</type>
