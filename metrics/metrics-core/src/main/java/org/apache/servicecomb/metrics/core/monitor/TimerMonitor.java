@@ -15,15 +15,15 @@
  * limitations under the License.
  */
 
-package io.servicecomb.metrics.core.monitor;
+package org.apache.servicecomb.metrics.core.monitor;
+
+import org.apache.servicecomb.metrics.common.TimerMetric;
+import org.apache.servicecomb.metrics.core.utils.MonitorUtils;
 
 import com.netflix.servo.monitor.MaxGauge;
 import com.netflix.servo.monitor.MinGauge;
 import com.netflix.servo.monitor.MonitorConfig;
 import com.netflix.servo.monitor.StepCounter;
-
-import io.servicecomb.metrics.common.TimerMetric;
-import io.servicecomb.metrics.core.utils.MonitorUtils;
 
 public class TimerMonitor {
   private final String prefix;

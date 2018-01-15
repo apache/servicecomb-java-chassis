@@ -31,7 +31,7 @@
 
   <dependencies>
     <dependency>
-      <groupId>io.servicecomb</groupId>
+      <groupId>org.apache.servicecomb</groupId>
       <artifactId>foundation-common</artifactId>
     </dependency>
   </dependencies>

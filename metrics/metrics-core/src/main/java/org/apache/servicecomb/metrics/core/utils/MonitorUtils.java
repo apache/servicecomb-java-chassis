@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package io.servicecomb.metrics.core.utils;
+package org.apache.servicecomb.metrics.core.utils;
 
 import java.util.HashMap;
 import java.util.Map;

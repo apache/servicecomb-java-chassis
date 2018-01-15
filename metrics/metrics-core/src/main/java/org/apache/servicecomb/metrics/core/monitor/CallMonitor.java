@@ -17,20 +17,18 @@
 
 package org.apache.servicecomb.metrics.core.monitor;
 
-import org.apache.servicecomb.metrics.common.CallMetric;
-
 import java.util.ArrayList;
 import java.util.List;
+
+import org.apache.servicecomb.metrics.common.CallMetric;
+import org.apache.servicecomb.metrics.common.DoubleMetricValue;
+import org.apache.servicecomb.metrics.common.LongMetricValue;
+import org.apache.servicecomb.metrics.common.MetricsDimension;
+import org.apache.servicecomb.metrics.core.utils.MonitorUtils;
 
 import com.netflix.servo.monitor.BasicCounter;
 import com.netflix.servo.monitor.MonitorConfig;
 import com.netflix.servo.monitor.StepCounter;
-
-import io.servicecomb.metrics.common.CallMetric;
-import io.servicecomb.metrics.common.DoubleMetricValue;
-import io.servicecomb.metrics.common.LongMetricValue;
-import io.servicecomb.metrics.common.MetricsDimension;
-import io.servicecomb.metrics.core.utils.MonitorUtils;
 
 public class CallMonitor {
   private final String prefix;

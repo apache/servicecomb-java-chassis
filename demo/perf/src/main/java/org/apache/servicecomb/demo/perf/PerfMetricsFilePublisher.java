@@ -19,6 +19,7 @@ package org.apache.servicecomb.demo.perf;
 import java.util.Map.Entry;
 
 import org.apache.servicecomb.metrics.common.ConsumerInvocationMetric;
+import org.apache.servicecomb.metrics.common.MetricsDimension;
 import org.apache.servicecomb.metrics.common.ProducerInvocationMetric;
 import org.apache.servicecomb.metrics.common.RegistryMetric;
 import org.apache.servicecomb.metrics.core.publish.DataSource;

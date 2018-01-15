@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package io.servicecomb.metrics.common;
+package org.apache.servicecomb.metrics.common;
 
 import java.util.Arrays;
 import java.util.Map;

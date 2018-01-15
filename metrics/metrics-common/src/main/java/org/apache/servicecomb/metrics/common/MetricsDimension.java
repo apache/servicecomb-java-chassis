@@ -15,9 +15,9 @@
  * limitations under the License.
  */
 
-package io.servicecomb.metrics.common;
+package org.apache.servicecomb.metrics.common;
 
-import io.servicecomb.foundation.common.exceptions.ServiceCombException;
+import org.apache.servicecomb.foundation.common.exceptions.ServiceCombException;
 
 public class MetricsDimension {
   public static final String DIMENSION_STATUS = "Status";

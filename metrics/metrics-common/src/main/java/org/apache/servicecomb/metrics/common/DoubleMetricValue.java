@@ -15,42 +15,42 @@
  * limitations under the License.
  */
 
-package io.servicecomb.metrics.common;
+package org.apache.servicecomb.metrics.common;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.servicecomb.foundation.common.exceptions.ServiceCombException;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import io.servicecomb.foundation.common.exceptions.ServiceCombException;
-
-public class LongMetricValue extends MetricValue<Long> {
-  public LongMetricValue(Long value, Map<String, String> dimensions) {
+public class DoubleMetricValue extends MetricValue<Double> {
+  public DoubleMetricValue(Double value, Map<String, String> dimensions) {
     super(value, dimensions);
   }
 
-  public LongMetricValue(@JsonProperty("key") String key,
-      @JsonProperty("value") Long value,
+  public DoubleMetricValue(@JsonProperty("key") String key,
+      @JsonProperty("value") Double value,
       @JsonProperty("dimensions") Map<String, String> dimensions) {
     super(key, value, dimensions);
   }
 
-  public LongMetricValue merge(LongMetricValue value) {
+  private DoubleMetricValue merge(DoubleMetricValue value) {
     if (this.getKey().equals(value.getKey())) {
-      return new LongMetricValue(this.getKey(), this.getValue() + value.getValue(), this.getDimensions());
+      return new DoubleMetricValue(this.getKey(), this.getValue() + value.getValue(), this.getDimensions());
     }
     throw new ServiceCombException("unable merge different key values,source key :" + value.getKey() +
         " target key :" + this.getKey());
   }
 
-  public static List<LongMetricValue> merge(List<LongMetricValue> source, List<LongMetricValue> target) {
-    Map<String, LongMetricValue> finalValues = new HashMap<>();
-    for (LongMetricValue t : target) {
+  public static List<DoubleMetricValue> merge(List<DoubleMetricValue> source, List<DoubleMetricValue> target) {
+    Map<String, DoubleMetricValue> finalValues = new HashMap<>();
+    for (DoubleMetricValue t : target) {
       finalValues.put(t.getKey(), t);
     }
-    for (LongMetricValue s : source) {
+    for (DoubleMetricValue s : source) {
       if (finalValues.containsKey(s.getKey())) {
         finalValues.put(s.getKey(), finalValues.get(s.getKey()).merge(s));
       } else {
