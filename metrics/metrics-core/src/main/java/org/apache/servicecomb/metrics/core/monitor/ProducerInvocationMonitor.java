@@ -15,14 +15,14 @@
  * limitations under the License.
  */
 
-package io.servicecomb.metrics.core.monitor;
+package org.apache.servicecomb.metrics.core.monitor;
+
+import org.apache.servicecomb.metrics.common.MetricsConst;
+import org.apache.servicecomb.metrics.common.MetricsDimension;
+import org.apache.servicecomb.metrics.common.ProducerInvocationMetric;
 
 import com.netflix.servo.monitor.BasicCounter;
 import com.netflix.servo.monitor.MonitorConfig;
-
-import io.servicecomb.metrics.common.MetricsConst;
-import io.servicecomb.metrics.common.MetricsDimension;
-import io.servicecomb.metrics.common.ProducerInvocationMetric;
 
 public class ProducerInvocationMonitor extends InvocationMonitor {
   private final BasicCounter waitInQueue;

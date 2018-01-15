@@ -15,25 +15,25 @@
  * limitations under the License.
  */
 
-package io.servicecomb.metrics.prometheus;
+package org.apache.servicecomb.metrics.prometheus;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.apache.servicecomb.metrics.common.CallMetric;
+import org.apache.servicecomb.metrics.common.ConsumerInvocationMetric;
+import org.apache.servicecomb.metrics.common.DoubleMetricValue;
+import org.apache.servicecomb.metrics.common.LongMetricValue;
+import org.apache.servicecomb.metrics.common.ProducerInvocationMetric;
+import org.apache.servicecomb.metrics.common.RegistryMetric;
+import org.apache.servicecomb.metrics.core.publish.DataSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import io.prometheus.client.Collector;
 import io.prometheus.client.Collector.MetricFamilySamples.Sample;
-import io.servicecomb.metrics.common.CallMetric;
-import io.servicecomb.metrics.common.ConsumerInvocationMetric;
-import io.servicecomb.metrics.common.DoubleMetricValue;
-import io.servicecomb.metrics.common.LongMetricValue;
-import io.servicecomb.metrics.common.ProducerInvocationMetric;
-import io.servicecomb.metrics.common.RegistryMetric;
-import io.servicecomb.metrics.core.publish.DataSource;
 
 @Component
 public class MetricsCollector extends Collector implements Collector.Describable {

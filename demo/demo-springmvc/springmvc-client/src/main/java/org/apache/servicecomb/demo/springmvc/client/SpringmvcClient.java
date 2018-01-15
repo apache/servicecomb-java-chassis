@@ -29,6 +29,7 @@ import org.apache.servicecomb.demo.controller.Person;
 import org.apache.servicecomb.foundation.common.utils.BeanUtils;
 import org.apache.servicecomb.foundation.common.utils.JsonUtils;
 import org.apache.servicecomb.foundation.common.utils.Log4jUtils;
+import org.apache.servicecomb.metrics.common.MetricsDimension;
 import org.apache.servicecomb.metrics.common.MetricsPublisher;
 import org.apache.servicecomb.metrics.common.RegistryMetric;
 import org.apache.servicecomb.provider.springmvc.reference.CseRestTemplate;
@@ -58,7 +59,7 @@ public class SpringmvcClient {
     TestMgr.summary();
   }
 
-  public static void run() throws Exception {
+  public static void run() {
     templateUrlWithServiceName.setRequestFactory(new UrlWithServiceNameClientHttpRequestFactory());
     restTemplate = RestTemplateBuilder.create();
     controller = BeanUtils.getBean("controller");

@@ -15,12 +15,12 @@
  * limitations under the License.
  */
 
-package io.servicecomb.metrics.core.monitor;
+package org.apache.servicecomb.metrics.core.monitor;
 
 
-import io.servicecomb.metrics.common.ConsumerInvocationMetric;
-import io.servicecomb.metrics.common.MetricsConst;
-import io.servicecomb.metrics.common.MetricsDimension;
+import org.apache.servicecomb.metrics.common.ConsumerInvocationMetric;
+import org.apache.servicecomb.metrics.common.MetricsConst;
+import org.apache.servicecomb.metrics.common.MetricsDimension;
 
 public class ConsumerInvocationMonitor extends InvocationMonitor {
   private final TimerMonitor consumerLatency;
