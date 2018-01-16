@@ -26,18 +26,18 @@ import org.springframework.stereotype.Component;
 @Component
 public class DefaultGaugeService implements GaugeService {
 
-  private final Map<String, Number> gauges;
+  private final Map<String, Double> gauges;
 
   public DefaultGaugeService() {
     this.gauges = new ConcurrentHashMapEx<>();
   }
 
   @Override
-  public void update(String name, Number value) {
+  public void update(String name, double value) {
     this.gauges.put(name, value);
   }
 
-  public Map<String, Number> toMetrics() {
+  public Map<String, Double> toMetrics() {
     return new HashMap<>(gauges);
   }
 }

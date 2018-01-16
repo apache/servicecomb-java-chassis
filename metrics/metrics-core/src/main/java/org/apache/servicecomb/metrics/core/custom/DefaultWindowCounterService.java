@@ -39,8 +39,8 @@ public class DefaultWindowCounterService implements WindowCounterService {
     counter.update(value);
   }
 
-  public Map<String, Number> toMetrics(int windowTimeIndex) {
-    Map<String, Number> metrics = new HashMap<>();
+  public Map<String, Double> toMetrics(int windowTimeIndex) {
+    Map<String, Double> metrics = new HashMap<>();
     for (Entry<String, WindowCounter> counter : counters.entrySet()) {
       metrics.putAll(counter.getValue().toMetric(windowTimeIndex));
     }

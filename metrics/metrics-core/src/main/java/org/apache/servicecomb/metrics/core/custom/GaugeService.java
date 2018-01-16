@@ -17,6 +17,9 @@
 
 package org.apache.servicecomb.metrics.core.custom;
 
+/**
+ GaugeService is simple service for manage basic guage,Window Time-unrelated,always get latest value
+ */
 public interface GaugeService {
-  void update(String name, Number value);
+  void update(String name, double value);
 }

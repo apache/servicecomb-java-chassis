@@ -17,6 +17,9 @@
 
 package org.apache.servicecomb.metrics.core.custom;
 
+/**
+ CounterService is simple service for manage basic counter,Window Time-unrelated,always get latest value
+ */
 public interface CounterService {
   void increment(String name);
 

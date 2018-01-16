@@ -75,7 +75,7 @@ public class RegistryMonitor {
       producerInvocationMetrics.put(monitor.getOperationName(), monitor.toMetric(windowTimeIndex));
     }
 
-    Map<String, Number> customMetrics = new HashMap<>(counterService.toMetrics());
+    Map<String, Double> customMetrics = new HashMap<>(counterService.toMetrics());
     customMetrics.putAll(gaugeService.toMetrics());
     customMetrics.putAll(windowCounterService.toMetrics(windowTimeIndex));
 

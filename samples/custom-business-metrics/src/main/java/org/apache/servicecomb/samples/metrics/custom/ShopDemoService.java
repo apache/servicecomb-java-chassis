@@ -17,6 +17,9 @@
 
 package org.apache.servicecomb.samples.metrics.custom;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+
 import org.apache.servicecomb.metrics.core.custom.CounterService;
 import org.apache.servicecomb.metrics.core.custom.GaugeService;
 import org.apache.servicecomb.metrics.core.custom.WindowCounterService;
@@ -49,7 +52,7 @@ public class ShopDemoService {
     counterService.decrement("Active User");
   }
 
-  public void order(String orderInfo) throws InterruptedException {
+  public void order(double amount) throws InterruptedException {
     long start = System.currentTimeMillis();
     //sim  do order process
     Thread.sleep(100);
@@ -58,13 +61,22 @@ public class ShopDemoService {
     windowCounterService.record("Order Latency", System.currentTimeMillis() - start);
 
     windowCounterService.record("Order Count", 1);
-    //only support long
-    windowCounterService.record("Order Amount", 66);
+
+    //only support long,please do unit convert ,$99.00 -> $9900 , $59.99 -> 5999
+    windowCounterService.record("Order Amount", (long) round(amount * 100, 0));
   }
 
   public void discount(double value) {
     //make a discount to Levis Jeans
 
     gaugeService.update("Levis Jeans", value);
+  }
+
+  private double round(double value, int places) {
+    if (!Double.isNaN(value)) {
+      BigDecimal decimal = new BigDecimal(value);
+      return decimal.setScale(places, RoundingMode.HALF_UP).doubleValue();
+    }
+    return 0;
   }
 }
