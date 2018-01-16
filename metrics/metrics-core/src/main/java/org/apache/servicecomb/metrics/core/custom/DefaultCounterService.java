@@ -61,10 +61,10 @@ public class DefaultCounterService implements CounterService {
     return counters.computeIfAbsent(name, n -> new BasicCounter(MonitorConfig.builder(n).build()));
   }
 
-  public Map<String, Number> toMetrics() {
-    Map<String, Number> metrics = new HashMap<>();
+  public Map<String, Double> toMetrics() {
+    Map<String, Double> metrics = new HashMap<>();
     for (Entry<String, BasicCounter> counter : counters.entrySet()) {
-      metrics.put(counter.getKey(), counter.getValue().getValue());
+      metrics.put(counter.getKey(), counter.getValue().getValue().doubleValue());
     }
     return metrics;
   }

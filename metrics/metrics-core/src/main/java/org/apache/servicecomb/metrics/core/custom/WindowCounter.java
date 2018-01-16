@@ -53,8 +53,8 @@ public class WindowCounter {
     }
   }
 
-  public Map<String, Number> toMetric(int windowTimeIndex) {
-    Map<String, Number> metrics = new HashMap<>();
+  public Map<String, Double> toMetric(int windowTimeIndex) {
+    Map<String, Double> metrics = new HashMap<>();
     metrics.put(name + ".total", this.adjustValue(total.getCount(windowTimeIndex)));
     metrics.put(name + ".count", this.adjustValue(count.getCount(windowTimeIndex)));
     metrics.put(name + ".max", this.adjustValue(max.getValue(windowTimeIndex)));
@@ -62,15 +62,9 @@ public class WindowCounter {
     double value = count.getCount(windowTimeIndex) == 0 ? 0 :
         (double) this.total.getCount(windowTimeIndex) / (double) this.count.getCount(windowTimeIndex);
     metrics.put(name + ".average", value);
-    metrics.put(name + ".tps", this.adjustValue(total.getValue(windowTimeIndex).doubleValue()));
+    metrics.put(name + ".rate", this.adjustValue(total.getValue(windowTimeIndex).doubleValue()));
+    metrics.put(name + ".tps", this.adjustValue(count.getValue(windowTimeIndex).doubleValue()));
     return metrics;
-  }
-
-  //for time-related monitor type, if stop poll value over one window time,
-  //the value may return -1 because servo can't known precise value of previous step
-  //so must change to return 0
-  private long adjustValue(long value) {
-    return value < 0 ? 0 : value;
   }
 
   //for time-related monitor type, if stop poll value over one window time,

@@ -96,6 +96,13 @@ public class MetricsCollector extends Collector implements Collector.Describable
     return familySamples;
   }
 
+  private <T extends Number> MetricFamilySamples getFamilySamples(String name, Map<String, T> metrics) {
+    List<Sample> samples = metrics.entrySet()
+        .stream()
+        .map((entry) -> new Sample(entry.getKey().replace(".", "_"),
+            new ArrayList<>(), new ArrayList<>(), entry.getValue().doubleValue()))
+        .collect(Collectors.toList());
+    return new MetricFamilySamples(name, Type.UNTYPED, name + " Metrics", samples);
   private List<Sample> convertConsumerMetric(ConsumerInvocationMetric metric) {
     return convertMetricValues(metric.getConsumerLatency().toMap());
   }

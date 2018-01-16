@@ -39,7 +39,7 @@ public class TestCustomMetrics {
 
     RegistryMonitor registryMonitor = new RegistryMonitor(systemMonitor, counterService, gaugeService,
         windowCounterService);
-    DefaultDataSource dataSource = new DefaultDataSource(registryMonitor, "1000,2000,3000,3000,2000,1000");
+    DefaultDataSource dataSource = new DefaultDataSource(registryMonitor, "1000,2000,3000");
 
     counterService.increment("C1");
     counterService.increment("C1");
@@ -54,9 +54,10 @@ public class TestCustomMetrics {
     gaugeService.update("G1", 200);
     gaugeService.update("G2", 150);
 
-    windowCounterService.record("W1", 1);
-    windowCounterService.record("W1", 2);
-    windowCounterService.record("W1", 3);
+    windowCounterService.record("W1", 100);
+    windowCounterService.record("W1", 200);
+    windowCounterService.record("W1", 300);
+    windowCounterService.record("W1", 400);
 
     //sim lease one window time
     Thread.sleep(1000);
@@ -69,11 +70,12 @@ public class TestCustomMetrics {
     Assert.assertEquals(200, metric.getCustomMetrics().get("G1").intValue());
     Assert.assertEquals(150, metric.getCustomMetrics().get("G2").intValue());
 
-    Assert.assertEquals(6, metric.getCustomMetrics().get("W1.total").doubleValue(), 0);
-    Assert.assertEquals(3, metric.getCustomMetrics().get("W1.count").doubleValue(), 0);
-    Assert.assertEquals(6, metric.getCustomMetrics().get("W1.tps").doubleValue(), 0);
-    Assert.assertEquals(2, metric.getCustomMetrics().get("W1.average").doubleValue(), 0);
-    Assert.assertEquals(1, metric.getCustomMetrics().get("W1.min").doubleValue(), 0);
-    Assert.assertEquals(3, metric.getCustomMetrics().get("W1.max").doubleValue(), 0);
+    Assert.assertEquals(1000, metric.getCustomMetrics().get("W1.total"), 0);
+    Assert.assertEquals(4, metric.getCustomMetrics().get("W1.count"), 0);
+    Assert.assertEquals(4, metric.getCustomMetrics().get("W1.tps"), 0);
+    Assert.assertEquals(1000, metric.getCustomMetrics().get("W1.rate"), 0);
+    Assert.assertEquals(250, metric.getCustomMetrics().get("W1.average"), 0);
+    Assert.assertEquals(100, metric.getCustomMetrics().get("W1.min"), 0);
+    Assert.assertEquals(400, metric.getCustomMetrics().get("W1.max"), 0);
   }
 }

@@ -29,7 +29,7 @@ public class RegistryMetric {
 
   private final Map<String, ProducerInvocationMetric> producerMetrics;
 
-  private final Map<String, Number> customMetrics;
+  private final Map<String, Double> customMetrics;
 
   public InstanceMetric getInstanceMetric() {
     return instanceMetric;
@@ -43,14 +43,14 @@ public class RegistryMetric {
     return producerMetrics;
   }
 
-  public Map<String, Number> getCustomMetrics() {
+  public Map<String, Double> getCustomMetrics() {
     return customMetrics;
   }
 
   public RegistryMetric(@JsonProperty("instanceMetric") InstanceMetric instanceMetric,
       @JsonProperty("consumerMetrics") Map<String, ConsumerInvocationMetric> consumerMetrics,
       @JsonProperty("producerMetrics") Map<String, ProducerInvocationMetric> producerMetrics,
-      @JsonProperty("customMetrics") Map<String, Number> customMetrics) {
+      @JsonProperty("customMetrics") Map<String, Double> customMetrics) {
     this.consumerMetrics = consumerMetrics;
     this.producerMetrics = producerMetrics;
     this.instanceMetric = instanceMetric;
@@ -60,7 +60,7 @@ public class RegistryMetric {
   public RegistryMetric(SystemMetric systemMetric,
       Map<String, ConsumerInvocationMetric> consumerMetrics,
       Map<String, ProducerInvocationMetric> producerMetrics,
-      Map<String, Number> customMetrics) {
+      Map<String, Double> customMetrics) {
     this.consumerMetrics = consumerMetrics;
     this.producerMetrics = producerMetrics;
     this.customMetrics = customMetrics;
