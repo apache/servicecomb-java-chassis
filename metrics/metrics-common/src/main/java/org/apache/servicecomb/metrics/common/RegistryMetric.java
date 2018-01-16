@@ -23,11 +23,13 @@ import java.util.Map;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class RegistryMetric {
-  private InstanceMetric instanceMetric;
+  private final InstanceMetric instanceMetric;
 
-  private Map<String, ConsumerInvocationMetric> consumerMetrics;
+  private final Map<String, ConsumerInvocationMetric> consumerMetrics;
 
-  private Map<String, ProducerInvocationMetric> producerMetrics;
+  private final Map<String, ProducerInvocationMetric> producerMetrics;
+
+  private final Map<String, Number> customMetrics;
 
   public InstanceMetric getInstanceMetric() {
     return instanceMetric;
@@ -41,19 +43,27 @@ public class RegistryMetric {
     return producerMetrics;
   }
 
+  public Map<String, Number> getCustomMetrics() {
+    return customMetrics;
+  }
+
   public RegistryMetric(@JsonProperty("instanceMetric") InstanceMetric instanceMetric,
       @JsonProperty("consumerMetrics") Map<String, ConsumerInvocationMetric> consumerMetrics,
-      @JsonProperty("producerMetrics") Map<String, ProducerInvocationMetric> producerMetrics) {
+      @JsonProperty("producerMetrics") Map<String, ProducerInvocationMetric> producerMetrics,
+      @JsonProperty("customMetrics") Map<String, Number> customMetrics) {
     this.consumerMetrics = consumerMetrics;
     this.producerMetrics = producerMetrics;
     this.instanceMetric = instanceMetric;
+    this.customMetrics = customMetrics;
   }
 
   public RegistryMetric(SystemMetric systemMetric,
       Map<String, ConsumerInvocationMetric> consumerMetrics,
-      Map<String, ProducerInvocationMetric> producerMetrics) {
+      Map<String, ProducerInvocationMetric> producerMetrics,
+      Map<String, Number> customMetrics) {
     this.consumerMetrics = consumerMetrics;
     this.producerMetrics = producerMetrics;
+    this.customMetrics = customMetrics;
 
     ConsumerInvocationMetric instanceConsumerInvocationMetric = new ConsumerInvocationMetric("instance",
         MetricsConst.INSTANCE_CONSUMER_PREFIX,
@@ -79,8 +89,7 @@ public class RegistryMetric {
   }
 
   public Map<String, Number> toMap() {
-    Map<String, Number> metrics = new HashMap<>();
-    metrics.putAll(instanceMetric.toMap());
+    Map<String, Number> metrics = new HashMap<>(instanceMetric.toMap());
     for (ConsumerInvocationMetric metric : consumerMetrics.values()) {
       metrics.putAll(metric.toMap());
     }

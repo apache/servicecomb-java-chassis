@@ -35,6 +35,9 @@ import org.apache.servicecomb.core.metrics.InvocationStartedEvent;
 import org.apache.servicecomb.foundation.common.utils.EventUtils;
 import org.apache.servicecomb.metrics.common.MetricsDimension;
 import org.apache.servicecomb.metrics.common.RegistryMetric;
+import org.apache.servicecomb.metrics.core.custom.DefaultCounterService;
+import org.apache.servicecomb.metrics.core.custom.DefaultGaugeService;
+import org.apache.servicecomb.metrics.core.custom.DefaultWindowCounterService;
 import org.apache.servicecomb.metrics.core.event.DefaultEventListenerManager;
 import org.apache.servicecomb.metrics.core.event.dimension.StatusConvertorFactory;
 import org.apache.servicecomb.metrics.core.monitor.DefaultSystemMonitor;
@@ -68,7 +71,8 @@ public class TestEventAndRunner {
     when(nonHeap.getUsed()).thenReturn(800L);
 
     DefaultSystemMonitor systemMonitor = new DefaultSystemMonitor(systemMXBean, threadMXBean, memoryMXBean);
-    RegistryMonitor monitor = new RegistryMonitor(systemMonitor);
+    RegistryMonitor monitor = new RegistryMonitor(systemMonitor, new DefaultCounterService(), new DefaultGaugeService(),
+        new DefaultWindowCounterService());
     DefaultDataSource dataSource = new DefaultDataSource(monitor, "1000,2000,3000");
 
     List<Long> intervals = dataSource.getAppliedWindowTime();

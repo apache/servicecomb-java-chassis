@@ -78,6 +78,11 @@ public class MetricsCollector extends Collector implements Collector.Describable
           .add(new MetricFamilySamples("Consumer Side", Type.UNTYPED, "Consumer Side Metrics", consumerSamples));
     }
 
+    if (registryMetric.getCustomMetrics().size() != 0) {
+      familySamples.add(getFamilySamples("User Custom", registryMetric.getCustomMetrics()));
+    }
+
+
     if (registryMetric.getProducerMetrics().size() != 0) {
       List<Sample> producerSamples = new ArrayList<>();
       for (ProducerInvocationMetric metric : registryMetric.getProducerMetrics().values()) {

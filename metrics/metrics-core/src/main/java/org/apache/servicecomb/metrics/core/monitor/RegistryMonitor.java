@@ -24,6 +24,9 @@ import org.apache.servicecomb.foundation.common.concurrent.ConcurrentHashMapEx;
 import org.apache.servicecomb.metrics.common.ConsumerInvocationMetric;
 import org.apache.servicecomb.metrics.common.ProducerInvocationMetric;
 import org.apache.servicecomb.metrics.common.RegistryMetric;
+import org.apache.servicecomb.metrics.core.custom.DefaultCounterService;
+import org.apache.servicecomb.metrics.core.custom.DefaultGaugeService;
+import org.apache.servicecomb.metrics.core.custom.DefaultWindowCounterService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -36,9 +39,20 @@ public class RegistryMonitor {
 
   private final Map<String, ProducerInvocationMonitor> producerInvocationMonitors;
 
+  private final DefaultCounterService counterService;
+
+  private final DefaultGaugeService gaugeService;
+
+  private final DefaultWindowCounterService windowCounterService;
+
   @Autowired
-  public RegistryMonitor(SystemMonitor systemMonitor) {
+  public RegistryMonitor(SystemMonitor systemMonitor,
+      DefaultCounterService counterService, DefaultGaugeService gaugeService,
+      DefaultWindowCounterService windowCounterService) {
     this.systemMonitor = systemMonitor;
+    this.counterService = counterService;
+    this.gaugeService = gaugeService;
+    this.windowCounterService = windowCounterService;
     this.consumerInvocationMonitors = new ConcurrentHashMapEx<>();
     this.producerInvocationMonitors = new ConcurrentHashMapEx<>();
   }
@@ -60,6 +74,12 @@ public class RegistryMonitor {
     for (ProducerInvocationMonitor monitor : this.producerInvocationMonitors.values()) {
       producerInvocationMetrics.put(monitor.getOperationName(), monitor.toMetric(windowTimeIndex));
     }
-    return new RegistryMetric(systemMonitor.toMetric(), consumerInvocationMetrics, producerInvocationMetrics);
+
+    Map<String, Number> customMetrics = new HashMap<>(counterService.toMetrics());
+    customMetrics.putAll(gaugeService.toMetrics());
+    customMetrics.putAll(windowCounterService.toMetrics(windowTimeIndex));
+
+    return new RegistryMetric(systemMonitor.toMetric(), consumerInvocationMetrics, producerInvocationMetrics,
+        customMetrics);
   }
 }
