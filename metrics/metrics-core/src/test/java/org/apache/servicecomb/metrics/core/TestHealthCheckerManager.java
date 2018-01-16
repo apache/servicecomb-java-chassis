@@ -72,6 +72,19 @@ public class TestHealthCheckerManager {
     checkers.add(new DefaultMicroserviceHealthChecker());
 
     HealthCheckerManager manager = new DefaultHealthCheckerManager(checkers);
+
+    manager.register(new HealthChecker() {
+      @Override
+      public String getName() {
+        return "test";
+      }
+
+      @Override
+      public HealthCheckResult check() {
+        return new HealthCheckResult(false, "bad", "bad");
+      }
+    });
+
     Map<String, HealthCheckResult> results = manager.check();
 
     Assert.assertTrue(results.get("default").isHealthy());
@@ -84,5 +97,8 @@ public class TestHealthCheckerManager {
     Assert.assertTrue(data.getInstanceId().equals("001"));
     Assert.assertTrue(data.getHostName().equals("localhost"));
     Assert.assertTrue(data.getEndpoints().equals("127.0.0.1,192.168.0.100"));
+
+    HealthCheckResult result = manager.check("test");
+    Assert.assertTrue(!result.isHealthy());
   }
 }
