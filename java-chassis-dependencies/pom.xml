@@ -344,6 +344,12 @@
         <groupId>com.netflix.servo</groupId>
         <artifactId>servo-core</artifactId>
         <version>0.10.1</version>
+        <exclusions>
+          <exclusion>
+            <groupId>com.google.code.findbugs</groupId>
+            <artifactId>annotations</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>com.google.inject</groupId>
@@ -414,6 +420,12 @@
         <groupId>com.netflix.archaius</groupId>
         <artifactId>archaius-core</artifactId>
         <version>0.7.3</version>
+        <exclusions>
+          <exclusion>
+            <groupId>com.google.code.findbugs</groupId>
+            <artifactId>annotations</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>com.google.code.findbugs</groupId>
