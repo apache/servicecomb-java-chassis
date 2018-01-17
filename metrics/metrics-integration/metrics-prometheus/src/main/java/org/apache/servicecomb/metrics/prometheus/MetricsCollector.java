@@ -59,30 +59,33 @@ public class MetricsCollector extends Collector implements Collector.Describable
     RegistryMetric registryMetric = dataSource.getRegistryMetric();
     List<MetricFamilySamples> familySamples = new ArrayList<>();
 
-    List<Sample> samples = new ArrayList<>();
-    samples.addAll(convertMetricValues(registryMetric.getInstanceMetric().getSystemMetric().toMap()));
-    samples.addAll(convertConsumerMetric(registryMetric.getInstanceMetric().getConsumerMetric()));
-    samples.addAll(convertCallMetric(registryMetric.getInstanceMetric().getConsumerMetric().getConsumerCall()));
-    samples.addAll(convertProducerMetric(registryMetric.getInstanceMetric().getProducerMetric()));
-    samples.addAll(convertCallMetric(registryMetric.getInstanceMetric().getProducerMetric().getProducerCall()));
-    familySamples.add(new MetricFamilySamples("Instance Level", Type.UNTYPED, "Instance Level Metrics", samples));
+    List<Sample> instanceSamples = new ArrayList<>();
+    instanceSamples.addAll(convertMetricValues(registryMetric.getInstanceMetric().getSystemMetric().toMap()));
+    instanceSamples.addAll(convertConsumerMetric(registryMetric.getInstanceMetric().getConsumerMetric()));
+    instanceSamples.addAll(convertCallMetric(registryMetric.getInstanceMetric().getConsumerMetric().getConsumerCall()));
+    instanceSamples.addAll(convertProducerMetric(registryMetric.getInstanceMetric().getProducerMetric()));
+    instanceSamples.addAll(convertCallMetric(registryMetric.getInstanceMetric().getProducerMetric().getProducerCall()));
+    familySamples
+        .add(new MetricFamilySamples("Instance Level", Type.UNTYPED, "Instance Level Metrics", instanceSamples));
 
     if (registryMetric.getConsumerMetrics().size() != 0) {
-      samples = new ArrayList<>();
+      List<Sample> consumerSamples = new ArrayList<>();
       for (ConsumerInvocationMetric metric : registryMetric.getConsumerMetrics().values()) {
-        samples.addAll(convertConsumerMetric(metric));
-        samples.addAll(convertCallMetric(metric.getConsumerCall()));
+        consumerSamples.addAll(convertConsumerMetric(metric));
+        consumerSamples.addAll(convertCallMetric(metric.getConsumerCall()));
       }
-      familySamples.add(new MetricFamilySamples("Consumer Side", Type.UNTYPED, "Consumer Side Metrics", samples));
+      familySamples
+          .add(new MetricFamilySamples("Consumer Side", Type.UNTYPED, "Consumer Side Metrics", consumerSamples));
     }
 
     if (registryMetric.getProducerMetrics().size() != 0) {
-      samples = new ArrayList<>();
+      List<Sample> producerSamples = new ArrayList<>();
       for (ProducerInvocationMetric metric : registryMetric.getProducerMetrics().values()) {
-        samples.addAll(convertProducerMetric(metric));
-        samples.addAll(convertCallMetric(metric.getProducerCall()));
+        producerSamples.addAll(convertProducerMetric(metric));
+        producerSamples.addAll(convertCallMetric(metric.getProducerCall()));
       }
-      familySamples.add(new MetricFamilySamples("Producer Side", Type.UNTYPED, "Producer Side Metrics", samples));
+      familySamples
+          .add(new MetricFamilySamples("Producer Side", Type.UNTYPED, "Producer Side Metrics", producerSamples));
     }
 
     return familySamples;

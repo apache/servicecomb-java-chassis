@@ -17,6 +17,7 @@
 
 package org.apache.servicecomb.metrics.core.utils;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -58,7 +59,7 @@ public class MonitorUtils {
       }
       return tagMap;
     }
-    return null;
+    return Collections.emptyMap();
   }
 
   //Counting use System.nano get more precise time

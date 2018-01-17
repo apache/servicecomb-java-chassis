@@ -22,8 +22,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.servicecomb.foundation.common.exceptions.ServiceCombException;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class LongMetricValue extends MetricValue<Long> {
@@ -38,11 +36,7 @@ public class LongMetricValue extends MetricValue<Long> {
   }
 
   private LongMetricValue merge(LongMetricValue value) {
-    if (this.getKey().equals(value.getKey())) {
-      return new LongMetricValue(this.getKey(), this.getValue() + value.getValue(), this.getDimensions());
-    }
-    throw new ServiceCombException("unable merge different key values,source key :" + value.getKey() +
-        " target key :" + this.getKey());
+    return new LongMetricValue(this.getKey(), this.getValue() + value.getValue(), this.getDimensions());
   }
 
   public static List<LongMetricValue> merge(List<LongMetricValue> source, List<LongMetricValue> target) {

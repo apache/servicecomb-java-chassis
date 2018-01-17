@@ -22,8 +22,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.servicecomb.foundation.common.exceptions.ServiceCombException;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class DoubleMetricValue extends MetricValue<Double> {
@@ -38,11 +36,7 @@ public class DoubleMetricValue extends MetricValue<Double> {
   }
 
   private DoubleMetricValue merge(DoubleMetricValue value) {
-    if (this.getKey().equals(value.getKey())) {
-      return new DoubleMetricValue(this.getKey(), this.getValue() + value.getValue(), this.getDimensions());
-    }
-    throw new ServiceCombException("unable merge different key values,source key :" + value.getKey() +
-        " target key :" + this.getKey());
+    return new DoubleMetricValue(this.getKey(), this.getValue() + value.getValue(), this.getDimensions());
   }
 
   public static List<DoubleMetricValue> merge(List<DoubleMetricValue> source, List<DoubleMetricValue> target) {
