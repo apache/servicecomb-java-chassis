@@ -54,7 +54,7 @@ public class TestPublisher {
     Assert.assertEquals(31, metricsMap.size());
 
     List<Long> appliedWindowTime = publisher.getAppliedWindowTime();
-    Assert.assertEquals(appliedWindowTime.size(), 3);
+    Assert.assertEquals(3, appliedWindowTime.size());
     Assert.assertThat(appliedWindowTime, containsInAnyOrder(Arrays.asList(1000L, 2000L, 3000L).toArray()));
   }
 }
