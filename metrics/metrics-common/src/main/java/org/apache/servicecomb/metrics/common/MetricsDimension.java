@@ -17,23 +17,30 @@
 
 package org.apache.servicecomb.metrics.common;
 
-import org.apache.servicecomb.foundation.common.exceptions.ServiceCombException;
-
 public class MetricsDimension {
   public static final String DIMENSION_STATUS = "Status";
 
   public static final String DIMENSION_STATUS_ALL = "all";
 
-  public static final String DIMENSION_STATUS_SUCCESS = "success";
+  public static final String DIMENSION_STATUS_SUCCESS_FAILED_SUCCESS = "success";
 
-  public static final String DIMENSION_STATUS_FAILED = "failed";
+  public static final String DIMENSION_STATUS_SUCCESS_FAILED_FAILED = "failed";
 
-  public static String[] getDimensionOptions(String dimension) {
-    if (DIMENSION_STATUS.equals(dimension)) {
-      return new String[] {MetricsDimension.DIMENSION_STATUS_ALL,
-          MetricsDimension.DIMENSION_STATUS_SUCCESS,
-          MetricsDimension.DIMENSION_STATUS_FAILED};
-    }
-    throw new ServiceCombException("illegal dimension key : " + dimension);
-  }
+  public static final String DIMENSION_STATUS_CODE_GROUP_1XX = "1xx";
+
+  public static final String DIMENSION_STATUS_CODE_GROUP_2XX = "2xx";
+
+  public static final String DIMENSION_STATUS_CODE_GROUP_3XX = "3xx";
+
+  public static final String DIMENSION_STATUS_CODE_GROUP_4XX = "4xx";
+
+  public static final String DIMENSION_STATUS_CODE_GROUP_5XX = "5xx";
+
+  public static final String DIMENSION_STATUS_CODE_GROUP_OTHER = "xxx";
+
+  public static final String DIMENSION_STATUS_OUTPUT_LEVEL_SUCCESS_FAILED = "success_failed";
+
+  public static final String DIMENSION_STATUS_OUTPUT_LEVEL_CODE_GROUP = "code_group";
+
+  public static final String DIMENSION_STATUS_OUTPUT_LEVEL_CODE = "code";
 }

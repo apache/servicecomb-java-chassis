@@ -29,6 +29,8 @@ public class InvocationFinishedEvent implements Event {
 
   private final long totalElapsedNanoTime;
 
+  private final int statusCode;
+
   private final boolean success;
 
   public String getOperationName() {
@@ -47,18 +49,21 @@ public class InvocationFinishedEvent implements Event {
     return totalElapsedNanoTime;
   }
 
+  public int getStatusCode() {
+    return statusCode;
+  }
+
   public boolean isSuccess() {
     return success;
   }
 
   public InvocationFinishedEvent(String operationName, InvocationType invocationType,
-      long processElapsedNanoTime,
-      long totalElapsedNanoTime,
-      boolean success) {
+      long processElapsedNanoTime, long totalElapsedNanoTime, int statusCode, boolean success) {
     this.operationName = operationName;
     this.invocationType = invocationType;
     this.processElapsedNanoTime = processElapsedNanoTime;
     this.totalElapsedNanoTime = totalElapsedNanoTime;
+    this.statusCode = statusCode;
     this.success = success;
   }
 }

@@ -36,6 +36,7 @@ import org.apache.servicecomb.foundation.common.utils.EventUtils;
 import org.apache.servicecomb.metrics.common.MetricsDimension;
 import org.apache.servicecomb.metrics.common.RegistryMetric;
 import org.apache.servicecomb.metrics.core.event.DefaultEventListenerManager;
+import org.apache.servicecomb.metrics.core.event.dimension.StatusConvertorFactory;
 import org.apache.servicecomb.metrics.core.monitor.DefaultSystemMonitor;
 import org.apache.servicecomb.metrics.core.monitor.RegistryMonitor;
 import org.apache.servicecomb.metrics.core.publish.DefaultDataSource;
@@ -74,7 +75,8 @@ public class TestEventAndRunner {
     Assert.assertEquals(intervals.size(), 3);
     Assert.assertThat(intervals, containsInAnyOrder(Arrays.asList(1000L, 2000L, 3000L).toArray()));
 
-    new DefaultEventListenerManager(monitor);
+    new DefaultEventListenerManager(monitor, new StatusConvertorFactory(),
+        MetricsDimension.DIMENSION_STATUS_OUTPUT_LEVEL_SUCCESS_FAILED);
 
     //fun1 is a PRODUCER invocation call 2 time and all is completed
     //two time success
@@ -84,7 +86,7 @@ public class TestEventAndRunner {
             TimeUnit.MILLISECONDS.toNanos(100)));
     EventUtils
         .triggerEvent(new InvocationFinishedEvent("fun1", InvocationType.PRODUCER,
-            TimeUnit.MILLISECONDS.toNanos(200), TimeUnit.MILLISECONDS.toNanos(300), true));
+            TimeUnit.MILLISECONDS.toNanos(200), TimeUnit.MILLISECONDS.toNanos(300), 200, true));
 
     EventUtils.triggerEvent(new InvocationStartedEvent("fun1", InvocationType.PRODUCER, System.nanoTime()));
     EventUtils.triggerEvent(
@@ -92,7 +94,7 @@ public class TestEventAndRunner {
             TimeUnit.MILLISECONDS.toNanos(300)));
     EventUtils
         .triggerEvent(new InvocationFinishedEvent("fun1", InvocationType.PRODUCER,
-            TimeUnit.MILLISECONDS.toNanos(400), TimeUnit.MILLISECONDS.toNanos(700), false));
+            TimeUnit.MILLISECONDS.toNanos(400), TimeUnit.MILLISECONDS.toNanos(700), 500, false));
 
     //==========================================================================
 
@@ -116,7 +118,7 @@ public class TestEventAndRunner {
             TimeUnit.MILLISECONDS.toNanos(100)));
     EventUtils
         .triggerEvent(new InvocationFinishedEvent("fun2", InvocationType.CONSUMER,
-            TimeUnit.MILLISECONDS.toNanos(200), TimeUnit.MILLISECONDS.toNanos(300), true));
+            TimeUnit.MILLISECONDS.toNanos(200), TimeUnit.MILLISECONDS.toNanos(300), 200, true));
 
     //==========================================================================
 
@@ -159,16 +161,20 @@ public class TestEventAndRunner {
     Assert.assertEquals(4, model.getInstanceMetric().getProducerMetric().getProducerCall()
         .getTpsValue(MetricsDimension.DIMENSION_STATUS, MetricsDimension.DIMENSION_STATUS_ALL).getValue(), 0);
     Assert.assertEquals(1, model.getInstanceMetric().getProducerMetric().getProducerCall()
-        .getTpsValue(MetricsDimension.DIMENSION_STATUS, MetricsDimension.DIMENSION_STATUS_SUCCESS).getValue(), 0);
+        .getTpsValue(MetricsDimension.DIMENSION_STATUS, MetricsDimension.DIMENSION_STATUS_SUCCESS_FAILED_SUCCESS)
+        .getValue(), 0);
     Assert.assertEquals(1, model.getInstanceMetric().getProducerMetric().getProducerCall()
-        .getTpsValue(MetricsDimension.DIMENSION_STATUS, MetricsDimension.DIMENSION_STATUS_FAILED).getValue(), 0);
+        .getTpsValue(MetricsDimension.DIMENSION_STATUS, MetricsDimension.DIMENSION_STATUS_SUCCESS_FAILED_FAILED)
+        .getValue(), 0);
 
     Assert.assertEquals(4, model.getInstanceMetric().getProducerMetric().getProducerCall()
         .getTotalValue(MetricsDimension.DIMENSION_STATUS, MetricsDimension.DIMENSION_STATUS_ALL).getValue(), 0);
     Assert.assertEquals(1, model.getInstanceMetric().getProducerMetric().getProducerCall()
-        .getTotalValue(MetricsDimension.DIMENSION_STATUS, MetricsDimension.DIMENSION_STATUS_SUCCESS).getValue(), 0);
+        .getTotalValue(MetricsDimension.DIMENSION_STATUS, MetricsDimension.DIMENSION_STATUS_SUCCESS_FAILED_SUCCESS)
+        .getValue(), 0);
     Assert.assertEquals(1, model.getInstanceMetric().getProducerMetric().getProducerCall()
-        .getTotalValue(MetricsDimension.DIMENSION_STATUS, MetricsDimension.DIMENSION_STATUS_FAILED).getValue(), 0);
+        .getTotalValue(MetricsDimension.DIMENSION_STATUS, MetricsDimension.DIMENSION_STATUS_SUCCESS_FAILED_FAILED)
+        .getValue(), 0);
 
     Assert.assertEquals(1, model.getInstanceMetric().getConsumerMetric().getConsumerLatency().getCount());
     Assert.assertEquals(300, model.getInstanceMetric().getConsumerMetric().getConsumerLatency().getTotal(),
@@ -183,16 +189,20 @@ public class TestEventAndRunner {
     Assert.assertEquals(1, model.getInstanceMetric().getConsumerMetric().getConsumerCall()
         .getTpsValue(MetricsDimension.DIMENSION_STATUS, MetricsDimension.DIMENSION_STATUS_ALL).getValue(), 0);
     Assert.assertEquals(1, model.getInstanceMetric().getConsumerMetric().getConsumerCall()
-        .getTpsValue(MetricsDimension.DIMENSION_STATUS, MetricsDimension.DIMENSION_STATUS_SUCCESS).getValue(), 0);
+        .getTpsValue(MetricsDimension.DIMENSION_STATUS, MetricsDimension.DIMENSION_STATUS_SUCCESS_FAILED_SUCCESS)
+        .getValue(), 0);
     Assert.assertEquals(0, model.getInstanceMetric().getConsumerMetric().getConsumerCall()
-        .getTpsValue(MetricsDimension.DIMENSION_STATUS, MetricsDimension.DIMENSION_STATUS_FAILED).getValue(), 0);
+        .getTpsValue(MetricsDimension.DIMENSION_STATUS, MetricsDimension.DIMENSION_STATUS_SUCCESS_FAILED_FAILED)
+        .getValue(), 0);
 
     Assert.assertEquals(1, model.getInstanceMetric().getConsumerMetric().getConsumerCall()
         .getTotalValue(MetricsDimension.DIMENSION_STATUS, MetricsDimension.DIMENSION_STATUS_ALL).getValue(), 0);
     Assert.assertEquals(1, model.getInstanceMetric().getConsumerMetric().getConsumerCall()
-        .getTotalValue(MetricsDimension.DIMENSION_STATUS, MetricsDimension.DIMENSION_STATUS_SUCCESS).getValue(), 0);
+        .getTotalValue(MetricsDimension.DIMENSION_STATUS, MetricsDimension.DIMENSION_STATUS_SUCCESS_FAILED_SUCCESS)
+        .getValue(), 0);
     Assert.assertEquals(0, model.getInstanceMetric().getConsumerMetric().getConsumerCall()
-        .getTotalValue(MetricsDimension.DIMENSION_STATUS, MetricsDimension.DIMENSION_STATUS_FAILED).getValue(), 0);
+        .getTotalValue(MetricsDimension.DIMENSION_STATUS, MetricsDimension.DIMENSION_STATUS_SUCCESS_FAILED_FAILED)
+        .getValue(), 0);
 
     //check ProducerMetrics
     Assert.assertEquals(0, model.getProducerMetrics().get("fun1").getWaitInQueue());
@@ -217,16 +227,20 @@ public class TestEventAndRunner {
     Assert.assertEquals(2, model.getProducerMetrics().get("fun1").getProducerCall()
         .getTpsValue(MetricsDimension.DIMENSION_STATUS, MetricsDimension.DIMENSION_STATUS_ALL).getValue(), 0);
     Assert.assertEquals(1, model.getProducerMetrics().get("fun1").getProducerCall()
-        .getTpsValue(MetricsDimension.DIMENSION_STATUS, MetricsDimension.DIMENSION_STATUS_SUCCESS).getValue(), 0);
+        .getTpsValue(MetricsDimension.DIMENSION_STATUS, MetricsDimension.DIMENSION_STATUS_SUCCESS_FAILED_SUCCESS)
+        .getValue(), 0);
     Assert.assertEquals(1, model.getProducerMetrics().get("fun1").getProducerCall()
-        .getTpsValue(MetricsDimension.DIMENSION_STATUS, MetricsDimension.DIMENSION_STATUS_FAILED).getValue(), 0);
+        .getTpsValue(MetricsDimension.DIMENSION_STATUS, MetricsDimension.DIMENSION_STATUS_SUCCESS_FAILED_FAILED)
+        .getValue(), 0);
 
     Assert.assertEquals(2, model.getProducerMetrics().get("fun1").getProducerCall()
         .getTotalValue(MetricsDimension.DIMENSION_STATUS, MetricsDimension.DIMENSION_STATUS_ALL).getValue(), 0);
     Assert.assertEquals(1, model.getProducerMetrics().get("fun1").getProducerCall()
-        .getTotalValue(MetricsDimension.DIMENSION_STATUS, MetricsDimension.DIMENSION_STATUS_SUCCESS).getValue(), 0);
+        .getTotalValue(MetricsDimension.DIMENSION_STATUS, MetricsDimension.DIMENSION_STATUS_SUCCESS_FAILED_SUCCESS)
+        .getValue(), 0);
     Assert.assertEquals(1, model.getProducerMetrics().get("fun1").getProducerCall()
-        .getTotalValue(MetricsDimension.DIMENSION_STATUS, MetricsDimension.DIMENSION_STATUS_FAILED).getValue(), 0);
+        .getTotalValue(MetricsDimension.DIMENSION_STATUS, MetricsDimension.DIMENSION_STATUS_SUCCESS_FAILED_FAILED)
+        .getValue(), 0);
 
     //fun3
     Assert.assertEquals(0, model.getProducerMetrics().get("fun3").getWaitInQueue());
@@ -251,16 +265,20 @@ public class TestEventAndRunner {
     Assert.assertEquals(1, model.getProducerMetrics().get("fun3").getProducerCall()
         .getTpsValue(MetricsDimension.DIMENSION_STATUS, MetricsDimension.DIMENSION_STATUS_ALL).getValue(), 0);
     Assert.assertEquals(0, model.getProducerMetrics().get("fun3").getProducerCall()
-        .getTpsValue(MetricsDimension.DIMENSION_STATUS, MetricsDimension.DIMENSION_STATUS_SUCCESS).getValue(), 0);
+        .getTpsValue(MetricsDimension.DIMENSION_STATUS, MetricsDimension.DIMENSION_STATUS_SUCCESS_FAILED_SUCCESS)
+        .getValue(), 0);
     Assert.assertEquals(0, model.getProducerMetrics().get("fun3").getProducerCall()
-        .getTpsValue(MetricsDimension.DIMENSION_STATUS, MetricsDimension.DIMENSION_STATUS_FAILED).getValue(), 0);
+        .getTpsValue(MetricsDimension.DIMENSION_STATUS, MetricsDimension.DIMENSION_STATUS_SUCCESS_FAILED_FAILED)
+        .getValue(), 0);
 
     Assert.assertEquals(1, model.getProducerMetrics().get("fun3").getProducerCall()
         .getTotalValue(MetricsDimension.DIMENSION_STATUS, MetricsDimension.DIMENSION_STATUS_ALL).getValue(), 0);
     Assert.assertEquals(0, model.getProducerMetrics().get("fun3").getProducerCall()
-        .getTotalValue(MetricsDimension.DIMENSION_STATUS, MetricsDimension.DIMENSION_STATUS_SUCCESS).getValue(), 0);
+        .getTotalValue(MetricsDimension.DIMENSION_STATUS, MetricsDimension.DIMENSION_STATUS_SUCCESS_FAILED_SUCCESS)
+        .getValue(), 0);
     Assert.assertEquals(0, model.getProducerMetrics().get("fun3").getProducerCall()
-        .getTotalValue(MetricsDimension.DIMENSION_STATUS, MetricsDimension.DIMENSION_STATUS_FAILED).getValue(), 0);
+        .getTotalValue(MetricsDimension.DIMENSION_STATUS, MetricsDimension.DIMENSION_STATUS_SUCCESS_FAILED_FAILED)
+        .getValue(), 0);
 
     //check ConsumerMetrics
     //no need
@@ -273,19 +291,23 @@ public class TestEventAndRunner {
     Assert.assertEquals(1, model.getConsumerMetrics().get("fun2").getConsumerCall()
         .getTpsValue(MetricsDimension.DIMENSION_STATUS, MetricsDimension.DIMENSION_STATUS_ALL).getValue(), 0);
     Assert.assertEquals(1, model.getConsumerMetrics().get("fun2").getConsumerCall()
-        .getTpsValue(MetricsDimension.DIMENSION_STATUS, MetricsDimension.DIMENSION_STATUS_SUCCESS).getValue(), 0);
+        .getTpsValue(MetricsDimension.DIMENSION_STATUS, MetricsDimension.DIMENSION_STATUS_SUCCESS_FAILED_SUCCESS)
+        .getValue(), 0);
     Assert.assertEquals(0, model.getConsumerMetrics().get("fun2").getConsumerCall()
-        .getTpsValue(MetricsDimension.DIMENSION_STATUS, MetricsDimension.DIMENSION_STATUS_FAILED).getValue(), 0);
+        .getTpsValue(MetricsDimension.DIMENSION_STATUS, MetricsDimension.DIMENSION_STATUS_SUCCESS_FAILED_FAILED)
+        .getValue(), 0);
 
     Assert.assertEquals(1, model.getConsumerMetrics().get("fun2").getConsumerCall()
         .getTotalValue(MetricsDimension.DIMENSION_STATUS, MetricsDimension.DIMENSION_STATUS_ALL).getValue(), 0);
     Assert.assertEquals(1, model.getConsumerMetrics().get("fun2").getConsumerCall()
-        .getTotalValue(MetricsDimension.DIMENSION_STATUS, MetricsDimension.DIMENSION_STATUS_SUCCESS).getValue(), 0);
+        .getTotalValue(MetricsDimension.DIMENSION_STATUS, MetricsDimension.DIMENSION_STATUS_SUCCESS_FAILED_SUCCESS)
+        .getValue(), 0);
     Assert.assertEquals(0, model.getConsumerMetrics().get("fun2").getConsumerCall()
-        .getTotalValue(MetricsDimension.DIMENSION_STATUS, MetricsDimension.DIMENSION_STATUS_FAILED).getValue(), 0);
+        .getTotalValue(MetricsDimension.DIMENSION_STATUS, MetricsDimension.DIMENSION_STATUS_SUCCESS_FAILED_FAILED)
+        .getValue(), 0);
 
     Map<String, Number> metrics = model.toMap();
-    Assert.assertEquals(120, metrics.size());
+    Assert.assertEquals(108, metrics.size());
 
     Assert.assertEquals(1.0, model.getInstanceMetric().getSystemMetric().getCpuLoad(), 0);
     Assert.assertEquals(2, model.getInstanceMetric().getSystemMetric().getCpuRunningThreads(), 0);

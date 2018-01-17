@@ -20,7 +20,6 @@ package org.apache.servicecomb.metrics.core.monitor;
 
 import org.apache.servicecomb.metrics.common.ConsumerInvocationMetric;
 import org.apache.servicecomb.metrics.common.MetricsConst;
-import org.apache.servicecomb.metrics.common.MetricsDimension;
 
 public class ConsumerInvocationMonitor extends InvocationMonitor {
   private final TimerMonitor consumerLatency;
@@ -38,7 +37,7 @@ public class ConsumerInvocationMonitor extends InvocationMonitor {
   public ConsumerInvocationMonitor(String operationName) {
     super(operationName, String.format(MetricsConst.CONSUMER_PREFIX_TEMPLATE, operationName));
     this.consumerLatency = new TimerMonitor(this.getPrefix() + ".consumerLatency");
-    this.consumerCall = new CallMonitor(this.getPrefix() + ".consumerCall", MetricsDimension.DIMENSION_STATUS);
+    this.consumerCall = new CallMonitor(this.getPrefix() + ".consumerCall");
   }
 
   public ConsumerInvocationMetric toMetric(int windowTimeIndex) {

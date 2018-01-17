@@ -15,10 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.metrics.core;
+package org.apache.servicecomb.metrics.core.event.dimension;
 
-public class MetricsConfig {
-  public static final String METRICS_POLLING_TIME = "servicecomb.metrics.window_time";
-
-  public static final String METRICS_DIMENSION_STATUS_OUTPUT_LEVEL = "servicecomb.metrics.dimension.status.output_level";
+public class CodeStatusConvertor implements StatusConvertor {
+  @Override
+  public String convert(boolean success, int statusCode) {
+    return String.valueOf(statusCode);
+  }
 }

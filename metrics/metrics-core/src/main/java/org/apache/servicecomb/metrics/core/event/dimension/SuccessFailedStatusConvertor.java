@@ -15,10 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.metrics.core;
+package org.apache.servicecomb.metrics.core.event.dimension;
 
-public class MetricsConfig {
-  public static final String METRICS_POLLING_TIME = "servicecomb.metrics.window_time";
+import org.apache.servicecomb.metrics.common.MetricsDimension;
 
-  public static final String METRICS_DIMENSION_STATUS_OUTPUT_LEVEL = "servicecomb.metrics.dimension.status.output_level";
+public class SuccessFailedStatusConvertor implements StatusConvertor {
+  @Override
+  public String convert(boolean success, int statusCode) {
+    return success ? MetricsDimension.DIMENSION_STATUS_SUCCESS_FAILED_SUCCESS
+        : MetricsDimension.DIMENSION_STATUS_SUCCESS_FAILED_FAILED;
+  }
 }

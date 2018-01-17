@@ -19,7 +19,9 @@ package org.apache.servicecomb.metrics.core.monitor;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
+import org.apache.servicecomb.foundation.common.concurrent.ConcurrentHashMapEx;
 import org.apache.servicecomb.metrics.common.CallMetric;
 import org.apache.servicecomb.metrics.common.DoubleMetricValue;
 import org.apache.servicecomb.metrics.common.LongMetricValue;
@@ -33,61 +35,61 @@ import com.netflix.servo.monitor.StepCounter;
 public class CallMonitor {
   private final String prefix;
 
-  private final List<BasicCounter> totalCounters;
+  private final Map<String, Map<String, DimensionCounter>> dimensionCounters;
 
-  private final List<StepCounter> tpsCounters;
-
-  public CallMonitor(String prefix, String... dimensionKeys) {
+  public CallMonitor(String prefix) {
     this.prefix = prefix;
-    this.totalCounters = new ArrayList<>();
-    this.tpsCounters = new ArrayList<>();
-    if (dimensionKeys.length == 0) {
-      this.totalCounters.add(new BasicCounter(MonitorConfig.builder(prefix + ".total").build()));
-      this.tpsCounters.add(new StepCounter(MonitorConfig.builder(prefix + ".tps").build()));
-    } else {
-      for (String dimensionKey : dimensionKeys) {
-        for (String option : MetricsDimension.getDimensionOptions(dimensionKey)) {
-          this.totalCounters
-              .add(new BasicCounter(MonitorConfig.builder(prefix + ".total").withTag(dimensionKey, option).build()));
-          this.tpsCounters
-              .add(new StepCounter(MonitorConfig.builder(prefix + ".tps").withTag(dimensionKey, option).build()));
-        }
-      }
-    }
+    this.dimensionCounters = new ConcurrentHashMapEx<>();
+    this.dimensionCounters.put(MetricsDimension.DIMENSION_STATUS, new ConcurrentHashMapEx<>());
   }
 
-  public void increment() {
-    for (int i = 0; i < totalCounters.size(); i++) {
-      totalCounters.get(i).increment();
-      tpsCounters.get(i).increment();
-    }
-  }
-
-  public void increment(String dimensionKey, String dimensionValue) {
-    for (int i = 0; i < totalCounters.size(); i++) {
-      BasicCounter totalCounter = totalCounters.get(i);
-      if (MonitorUtils.containsTagValue(totalCounter, dimensionKey, dimensionValue)) {
-        totalCounter.increment();
-      }
-      StepCounter tpsCounter = tpsCounters.get(i);
-      if (MonitorUtils.containsTagValue(tpsCounter, dimensionKey, dimensionValue)) {
-        tpsCounter.increment();
-      }
+  public void increment(String dimensionKey, String... dimensionValues) {
+    for (String dimensionValue : dimensionValues) {
+      DimensionCounter counter = dimensionCounters.get(dimensionKey)
+          .computeIfAbsent(dimensionValue, d -> new DimensionCounter(
+              new BasicCounter(MonitorConfig.builder(prefix + ".total").withTag(dimensionKey, dimensionValue).build()),
+              new StepCounter(MonitorConfig.builder(prefix + ".tps").withTag(dimensionKey, dimensionValue).build())));
+      counter.increment();
     }
   }
 
   public CallMetric toMetric(int windowTimeIndex) {
     List<LongMetricValue> totalValues = new ArrayList<>();
     List<DoubleMetricValue> tpsValues = new ArrayList<>();
-    for (int i = 0; i < totalCounters.size(); i++) {
-      BasicCounter totalCounter = totalCounters.get(i);
-      totalValues.add(new LongMetricValue(totalCounter.getValue(windowTimeIndex).longValue(),
-          MonitorUtils.convertTags(totalCounter)));
-      StepCounter tpsCounter = tpsCounters.get(i);
-      tpsValues.add(
-          new DoubleMetricValue(MonitorUtils.adjustValue(tpsCounter.getValue(windowTimeIndex).doubleValue()),
-              MonitorUtils.convertTags(tpsCounter)));
+    for (Map<String, DimensionCounter> dimensionCounter : dimensionCounters.values()) {
+      for (DimensionCounter counter : dimensionCounter.values()) {
+        totalValues.add(new LongMetricValue(counter.getTotal().getValue(windowTimeIndex).longValue(),
+            MonitorUtils.convertTags(counter.getTotal())));
+        tpsValues.add(
+            new DoubleMetricValue(MonitorUtils.adjustValue(counter.getTps().getValue(windowTimeIndex).doubleValue()),
+                MonitorUtils.convertTags(counter.getTps())));
+      }
     }
+
     return new CallMetric(this.prefix, totalValues, tpsValues);
+  }
+
+  class DimensionCounter {
+    private final BasicCounter total;
+
+    private final StepCounter tps;
+
+    public BasicCounter getTotal() {
+      return total;
+    }
+
+    public StepCounter getTps() {
+      return tps;
+    }
+
+    public DimensionCounter(BasicCounter total, StepCounter tps) {
+      this.total = total;
+      this.tps = tps;
+    }
+
+    public void increment() {
+      total.increment();
+      tps.increment();
+    }
   }
 }
