@@ -33,6 +33,7 @@ import org.apache.servicecomb.swagger.converter.parameter.AbstractSerializablePa
 import org.apache.servicecomb.swagger.converter.parameter.BodyParameterConverter;
 import org.apache.servicecomb.swagger.converter.property.ArrayPropertyConverter;
 import org.apache.servicecomb.swagger.converter.property.MapPropertyConverter;
+import org.apache.servicecomb.swagger.converter.property.ObjectPropertyConverter;
 import org.apache.servicecomb.swagger.converter.property.RefPropertyConverter;
 import org.apache.servicecomb.swagger.converter.property.StringPropertyConverter;
 import org.apache.servicecomb.swagger.extend.property.ByteProperty;
@@ -67,6 +68,7 @@ import io.swagger.models.properties.FloatProperty;
 import io.swagger.models.properties.IntegerProperty;
 import io.swagger.models.properties.LongProperty;
 import io.swagger.models.properties.MapProperty;
+import io.swagger.models.properties.ObjectProperty;
 import io.swagger.models.properties.Property;
 import io.swagger.models.properties.RefProperty;
 import io.swagger.models.properties.StringProperty;
@@ -143,6 +145,7 @@ public final class ConverterMgr {
     converterMap.put(ArrayProperty.class, new ArrayPropertyConverter());
     converterMap.put(MapProperty.class, new MapPropertyConverter());
     converterMap.put(StringProperty.class, new StringPropertyConverter());
+    converterMap.put(ObjectProperty.class, new ObjectPropertyConverter());
 
     converterMap.put(ModelImpl.class, new ModelImplConverter());
     converterMap.put(RefModel.class, new RefModelConverter());
