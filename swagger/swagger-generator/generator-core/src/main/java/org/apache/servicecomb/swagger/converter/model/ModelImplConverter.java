@@ -26,6 +26,7 @@ import com.fasterxml.jackson.databind.type.TypeFactory;
 
 import io.swagger.models.ModelImpl;
 import io.swagger.models.Swagger;
+import io.swagger.models.properties.ObjectProperty;
 
 public class ModelImplConverter extends AbstractModelConverter {
   @Override
@@ -46,6 +47,12 @@ public class ModelImplConverter extends AbstractModelConverter {
           packageName,
           swagger,
           modelImpl.getAdditionalProperties());
+    }
+
+    if (ObjectProperty.TYPE.equals(modelImpl.getType())
+        && modelImpl.getProperties() == null
+        && modelImpl.getName() == null) {
+      return TypeFactory.defaultInstance().constructType(Object.class);
     }
 
     // 根据name、property动态生成class
