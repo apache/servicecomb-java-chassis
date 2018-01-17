@@ -23,10 +23,10 @@ import org.springframework.web.client.RestTemplate;
 
 public class CodeFirstRestTemplateJaxrs extends CodeFirstRestTemplate {
   @Override
-  protected void testExtend(RestTemplate template, String cseUrlPrefix) {
-    super.testExtend(template, cseUrlPrefix);
-
+  protected void testAllTransport(String microserviceName, RestTemplate template, String cseUrlPrefix) {
     testDefaultPath(template, cseUrlPrefix);
+
+    super.testAllTransport(microserviceName, template, cseUrlPrefix);
   }
 
   private void testDefaultPath(RestTemplate template, String cseUrlPrefix) {

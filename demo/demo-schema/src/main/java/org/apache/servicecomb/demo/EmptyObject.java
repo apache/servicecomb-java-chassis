@@ -14,18 +14,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package org.apache.servicecomb.demo;
 
-package org.apache.servicecomb.demo.springmvc.server;
+public class EmptyObject {
 
-public class TemplateResponse<T> {
-  private T value;
-
-  public T getValue() {
-    return value;
-  }
-
-  public void setValue(T value) {
-    this.value = value;
-  }
-  
 }
