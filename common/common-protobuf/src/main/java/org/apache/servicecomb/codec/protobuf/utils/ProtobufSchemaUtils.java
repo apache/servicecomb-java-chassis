@@ -17,6 +17,7 @@
 
 package org.apache.servicecomb.codec.protobuf.utils;
 
+import java.io.IOException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.lang.reflect.Type;
@@ -28,20 +29,58 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.apache.servicecomb.codec.protobuf.utils.schema.WrapSchemaFactory;
 import org.apache.servicecomb.common.javassist.JavassistUtils;
 import org.apache.servicecomb.core.definition.OperationMeta;
+import org.apache.servicecomb.foundation.common.utils.JsonUtils;
 import org.springframework.util.ClassUtils;
 
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.type.TypeFactory;
 
+import io.protostuff.Input;
+import io.protostuff.Output;
+import io.protostuff.Pipe;
 import io.protostuff.Schema;
+import io.protostuff.WireFormat.FieldType;
+import io.protostuff.runtime.DefaultIdStrategy;
+import io.protostuff.runtime.Delegate;
 import io.protostuff.runtime.ProtobufCompatibleUtils;
+import io.protostuff.runtime.RuntimeEnv;
 import io.protostuff.runtime.RuntimeSchema;
 
 public final class ProtobufSchemaUtils {
   private static volatile Map<String, WrapSchema> schemaCache = new ConcurrentHashMap<>();
 
   static {
+    initProtobufObjectCodec();
     ProtobufCompatibleUtils.init();
+  }
+
+  protected static void initProtobufObjectCodec() {
+    ((DefaultIdStrategy) RuntimeEnv.ID_STRATEGY).registerDelegate(new Delegate<Object>() {
+      @Override
+      public FieldType getFieldType() {
+        return FieldType.BYTES;
+      }
+
+      @Override
+      public Object readFrom(Input input) throws IOException {
+        return JsonUtils.readValue(input.readByteArray(), Object.class);
+      }
+
+      @Override
+      public void writeTo(Output output, int number, Object value, boolean repeated) throws IOException {
+        output.writeByteArray(number, JsonUtils.writeValueAsBytes(value), false);
+      }
+
+      @Override
+      public void transfer(Pipe pipe, Input input, Output output, int number, boolean repeated) throws IOException {
+        throw new IllegalStateException("not support.");
+      }
+
+      @Override
+      public Class<?> typeClass() {
+        return Object.class;
+      }
+    });
   }
 
   private interface SchemaCreator {
@@ -83,12 +122,15 @@ public final class ProtobufSchemaUtils {
   }
 
   private static boolean isNeedWrap(Class<?> cls) {
-    // protobuf不支持原子类型、enum、string、数组、collection等等作为msg，只有Object类型才可以
+    // protobuf不支持原子类型、enum、string、数组、collection等等作为msg
+    // 只有pojo类型才可以
+    // java.lang.Object也不可以，因为这可以是任意类型，结果不确定
     return ClassUtils.isPrimitiveOrWrapper(cls) || cls.isArray() || cls.isEnum()
         || String.class.isAssignableFrom(cls)
         || Collection.class.isAssignableFrom(cls)
         || Map.class.isAssignableFrom(cls)
-        || Date.class.isAssignableFrom(cls);
+        || Date.class.isAssignableFrom(cls)
+        || Object.class.equals(cls);
   }
 
   // 为了支持method args的场景，全部实现ProtobufMessageWrapper接口，有的场景有点浪费，不过无关紧要
