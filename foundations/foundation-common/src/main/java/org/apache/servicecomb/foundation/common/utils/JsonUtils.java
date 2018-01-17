@@ -21,29 +21,23 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerationException;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 
 public final class JsonUtils {
   public static final ObjectMapper OBJ_MAPPER;
 
   static {
-    //如果待转换的字符串比较随机，这个缓存很容易就填满，会导致同步清空缓存，对性能有影响
-    JsonFactory jsonFactory = new JsonFactory();
-    jsonFactory.configure(JsonFactory.Feature.INTERN_FIELD_NAMES, false);
-    OBJ_MAPPER = new ObjectMapper(jsonFactory);
+    OBJ_MAPPER = new ObjectMapper();
+    OBJ_MAPPER.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
+    OBJ_MAPPER.disable(SerializationFeature.FAIL_ON_EMPTY_BEANS);
   }
-
-  //    static
-  //    {
-  //        //设置反序列化时忽略json字符串中存在而Java对象实际没有的属性
-  //        om.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-  //    }
 
   private JsonUtils() {
   }
