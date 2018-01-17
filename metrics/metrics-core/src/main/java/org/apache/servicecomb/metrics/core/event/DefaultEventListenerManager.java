@@ -19,18 +19,31 @@ package org.apache.servicecomb.metrics.core.event;
 
 import org.apache.servicecomb.foundation.common.event.EventListener;
 import org.apache.servicecomb.foundation.common.utils.EventUtils;
+import org.apache.servicecomb.metrics.common.MetricsDimension;
+import org.apache.servicecomb.metrics.core.MetricsConfig;
+import org.apache.servicecomb.metrics.core.event.dimension.StatusConvertorFactory;
 import org.apache.servicecomb.metrics.core.monitor.RegistryMonitor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import com.netflix.config.DynamicPropertyFactory;
 
 @Component
 public class DefaultEventListenerManager implements EventListenerManager {
 
   @Autowired
-  public DefaultEventListenerManager(RegistryMonitor registryMonitor) {
+  public DefaultEventListenerManager(RegistryMonitor registryMonitor, StatusConvertorFactory convertorFactory) {
+    this(registryMonitor, convertorFactory, DynamicPropertyFactory
+        .getInstance().getStringProperty(MetricsConfig.METRICS_DIMENSION_STATUS_OUTPUT_LEVEL,
+            MetricsDimension.DIMENSION_STATUS_OUTPUT_LEVEL_SUCCESS_FAILED).get());
+  }
+
+  public DefaultEventListenerManager(RegistryMonitor registryMonitor, StatusConvertorFactory convertorFactory,
+      String outputLevel) {
     this.registerEventListener(new InvocationStartedEventListener(registryMonitor));
     this.registerEventListener(new InvocationStartProcessingEventListener(registryMonitor));
-    this.registerEventListener(new InvocationFinishedEventListener(registryMonitor));
+    this.registerEventListener(
+        new InvocationFinishedEventListener(registryMonitor, convertorFactory.getConvertor(outputLevel)));
   }
 
   @Override

@@ -45,7 +45,7 @@ public class CallMetric {
         return value;
       }
     }
-    return null;
+    return new LongMetricValue(dimensionValue, 0L, null);
   }
 
   public List<DoubleMetricValue> getTpsValues() {
@@ -58,7 +58,7 @@ public class CallMetric {
         return value;
       }
     }
-    return null;
+    return new DoubleMetricValue(dimensionValue, 0.0, null);
   }
 
   public CallMetric(String prefix) {

@@ -189,7 +189,7 @@ public abstract class AbstractRestInvocation {
     invocation.next(resp -> {
       sendResponseQuietly(resp);
 
-      invocation.triggerFinishedEvent(resp.isSuccessed());
+      invocation.triggerFinishedEvent(resp.getStatusCode(), resp.isSuccessed());
       endMetrics();
     });
   }

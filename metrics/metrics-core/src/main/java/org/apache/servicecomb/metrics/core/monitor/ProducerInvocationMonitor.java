@@ -18,7 +18,6 @@
 package org.apache.servicecomb.metrics.core.monitor;
 
 import org.apache.servicecomb.metrics.common.MetricsConst;
-import org.apache.servicecomb.metrics.common.MetricsDimension;
 import org.apache.servicecomb.metrics.common.ProducerInvocationMetric;
 
 import com.netflix.servo.monitor.BasicCounter;
@@ -61,7 +60,7 @@ public class ProducerInvocationMonitor extends InvocationMonitor {
     this.lifeTimeInQueue = new TimerMonitor(this.getPrefix() + ".lifeTimeInQueue");
     this.executionTime = new TimerMonitor(this.getPrefix() + ".executionTime");
     this.producerLatency = new TimerMonitor(this.getPrefix() + ".producerLatency");
-    this.producerCall = new CallMonitor(this.getPrefix() + ".producerCall", MetricsDimension.DIMENSION_STATUS);
+    this.producerCall = new CallMonitor(this.getPrefix() + ".producerCall");
   }
 
   public ProducerInvocationMetric toMetric(int windowTimeIndex) {

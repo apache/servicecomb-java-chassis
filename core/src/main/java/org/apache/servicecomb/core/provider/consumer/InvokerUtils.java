@@ -63,6 +63,7 @@ public final class InvokerUtils {
 
   public static Response innerSyncInvoke(Invocation invocation) {
     boolean success = false;
+    int statusCode = 0;
     try {
       triggerStartedEvent(invocation);
       SyncResponseExecutor respExecutor = new SyncResponseExecutor();
@@ -72,6 +73,7 @@ public final class InvokerUtils {
 
       Response response = respExecutor.waitResponse();
       success = response.isSuccessed();
+      statusCode = response.getStatusCode();
       return response;
     } catch (Throwable e) {
       String msg =
@@ -79,7 +81,7 @@ public final class InvokerUtils {
       LOGGER.debug(msg, e);
       return Response.createConsumerFail(e);
     } finally {
-      invocation.triggerFinishedEvent(success);
+      invocation.triggerFinishedEvent(statusCode, success);
     }
   }
 
@@ -92,11 +94,12 @@ public final class InvokerUtils {
       invocation.setResponseExecutor(respExecutor);
 
       invocation.next(ar -> {
-        invocation.triggerFinishedEvent(ar.isSuccessed());
+        invocation.triggerFinishedEvent(ar.getStatusCode(), ar.isSuccessed());
         asyncResp.handle(ar);
       });
     } catch (Throwable e) {
-      invocation.triggerFinishedEvent(false);
+      //if throw exception,we can use 500 for status code ?
+      invocation.triggerFinishedEvent(500, false);
       LOGGER.error("invoke failed, {}", invocation.getOperationMeta().getMicroserviceQualifiedName());
       asyncResp.consumerFail(e);
     }
