@@ -31,7 +31,7 @@
   <packaging>pom</packaging>
 
   <properties>
-    <jackson.version>2.8.10</jackson.version>
+    <jackson.version>2.9.2</jackson.version>
     <vertx.version>3.5.0</vertx.version>
     <tec.zkclient.version>0.8</tec.zkclient.version>
     <spring.version>4.3.5.RELEASE</spring.version>
@@ -45,7 +45,7 @@
     <apache.httpclient>4.5.2</apache.httpclient>
     <protostuff.version>1.5.2</protostuff.version>
     <swagger.version>1.5.12</swagger.version>
-    <netty.version>4.1.5.Final</netty.version>
+    <netty.version>4.1.17.Final</netty.version>
     <main.basedir>${basedir}/../..</main.basedir>
     <narayana.version>5.3.2.Final</narayana.version>
     <cxf.version>3.1.6</cxf.version>
