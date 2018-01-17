@@ -28,10 +28,12 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.Part;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response.Status;
+import javax.xml.ws.Holder;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.servicecomb.common.rest.codec.RestObjectMapper;
 import org.apache.servicecomb.core.Const;
+import org.apache.servicecomb.demo.EmptyObject;
 import org.apache.servicecomb.demo.compute.Person;
 import org.apache.servicecomb.demo.ignore.InputModelForTestIgnore;
 import org.apache.servicecomb.demo.ignore.OutputModelForTestIgnore;
@@ -159,11 +161,6 @@ public class CodeFirstSpringmvc {
   @PostMapping(path = "/testUserMap")
   public Map<String, User> testUserMap(@RequestBody Map<String, User> userMap) {
     return userMap;
-  }
-
-  @RequestMapping(path = "/testUserMapGeneric", method = RequestMethod.POST)
-  public TemplateResponse<String> testUserMapGeneric(@RequestBody Map<String, User> userMap) {
-    return null;
   }
 
   @RequestMapping(path = "/textPlain", method = RequestMethod.POST, consumes = MediaType.TEXT_PLAIN_VALUE)
@@ -308,7 +305,7 @@ public class CodeFirstSpringmvc {
     return new OutputModelForTestIgnore("output_id", input.getInputId(), input.getContent(), input.getInputObject(),
         input.getInputJsonObject(), input.getInputIgnoreInterface(),
         new Person("outputSomeone"), new JsonObject("{\"OutputJsonKey\" : \"OutputJsonValue\"}"), () -> {
-    });
+        });
   }
 
   @SuppressWarnings("unchecked")
@@ -363,5 +360,35 @@ public class CodeFirstSpringmvc {
   @GetMapping(path = "/traceId")
   public String getTraceId() {
     return ContextUtils.getInvocationContext().getContext(Const.TRACE_ID_NAME);
+  }
+
+  @PostMapping(path = "/emptyObject")
+  public EmptyObject testEmpty(@RequestBody EmptyObject input) {
+    return input;
+  }
+
+  @PostMapping(path = "/object")
+  public Object testObject(@RequestBody Object input) {
+    return input;
+  }
+
+  @PostMapping(path = "/mapObject")
+  public Map<String, Object> testMapObject(@RequestBody Map<String, Object> input) {
+    return input;
+  }
+
+  @PostMapping(path = "/listObject")
+  public List<Object> testListObject(@RequestBody List<Object> input) {
+    return input;
+  }
+
+  @PostMapping(path = "/holderObject")
+  public Holder<Object> testHolderObject(@RequestBody Holder<Object> input) {
+    return input;
+  }
+
+  @PostMapping(path = "/generic")
+  public Holder<User> testGeneric(@RequestBody Holder<User> input) {
+    return input;
   }
 }

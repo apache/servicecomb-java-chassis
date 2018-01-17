@@ -40,46 +40,58 @@ import org.springframework.web.client.RestTemplate;
 import io.vertx.core.json.JsonObject;
 
 public class CodeFirstRestTemplate {
+  protected void changeTransport(String microserviceName, String transport) {
+    CseContext.getInstance().getConsumerProviderManager().setTransport(microserviceName, transport);
+    TestMgr.setMsg(microserviceName, transport);
+  }
+
   public void testCodeFirst(RestTemplate template, String microserviceName, String basePath) {
+    String cseUrlPrefix = "cse://" + microserviceName + basePath;
+    changeTransport(microserviceName, "highway");
+    testOnlyHighway(template, cseUrlPrefix);
+
+    changeTransport(microserviceName, Const.RESTFUL);
+    testOnlyRest(template, cseUrlPrefix);
+
     for (String transport : DemoConst.transports) {
-      CseContext.getInstance().getConsumerProviderManager().setTransport(microserviceName, transport);
-      TestMgr.setMsg(microserviceName, transport);
-
-      String cseUrlPrefix = "cse://" + microserviceName + basePath;
-
-      testExtend(template, cseUrlPrefix);
-
-      testCodeFirstUserMap(template, cseUrlPrefix);
-      testCodeFirstTextPlain(template, cseUrlPrefix);
-      testCodeFirstBytes(template, cseUrlPrefix);
-      testCseResponse(microserviceName, template, cseUrlPrefix);
-      testCodeFirstAddDate(template, cseUrlPrefix);
-
-      testCodeFirstAdd(template, cseUrlPrefix);
-      testCodeFirstAddString(template, cseUrlPrefix);
-      testCodeFirstIsTrue(template, cseUrlPrefix);
-      testCodeFirstSayHi2(template, cseUrlPrefix);
-      testCodeFirstSayHi(template, cseUrlPrefix);
-      testCodeFirstSaySomething(template, cseUrlPrefix);
-      //            testCodeFirstRawJsonString(template, cseUrlPrefix);
-      testCodeFirstSayHello(template, cseUrlPrefix);
-      testCodeFirstReduce(template, cseUrlPrefix);
-
-      // TODO: highway unsupported until JAV-394 completed
-      if (transport.equals("rest")) {
-        testOnlyRest(template, cseUrlPrefix);
-        // only rest transport will set trace id
-        testTraceIdOnNotSetBefore(template, cseUrlPrefix);
-      }
-
-      testTraceIdOnContextContainsTraceId(template, cseUrlPrefix);
-
-      testRawJson(template, cseUrlPrefix);
+      changeTransport(microserviceName, transport);
+      testAllTransport(microserviceName, template, cseUrlPrefix);
     }
   }
 
+  protected void testAllTransport(String microserviceName, RestTemplate template, String cseUrlPrefix) {
+    testCodeFirstUserMap(template, cseUrlPrefix);
+    testCodeFirstTextPlain(template, cseUrlPrefix);
+    testCodeFirstBytes(template, cseUrlPrefix);
+    testCseResponse(microserviceName, template, cseUrlPrefix);
+    testCodeFirstAddDate(template, cseUrlPrefix);
+
+    testCodeFirstAdd(template, cseUrlPrefix);
+    testCodeFirstAddString(template, cseUrlPrefix);
+    testCodeFirstIsTrue(template, cseUrlPrefix);
+    testCodeFirstSayHi2(template, cseUrlPrefix);
+    testCodeFirstSayHi(template, cseUrlPrefix);
+    testCodeFirstSaySomething(template, cseUrlPrefix);
+    //            testCodeFirstRawJsonString(template, cseUrlPrefix);
+    testCodeFirstSayHello(template, cseUrlPrefix);
+    testCodeFirstReduce(template, cseUrlPrefix);
+
+    testTraceIdOnContextContainsTraceId(template, cseUrlPrefix);
+
+    testRawJson(template, cseUrlPrefix);
+  }
+
+  protected void testOnlyHighway(RestTemplate template, String cseUrlPrefix) {
+
+  }
+
   protected void testOnlyRest(RestTemplate template, String cseUrlPrefix) {
+    // TODO: highway unsupported until JAV-394 completed
     testModelFieldIgnore(template, cseUrlPrefix);
+
+    // only rest transport will set trace id
+    testTraceIdOnNotSetBefore(template, cseUrlPrefix);
+
   }
 
   private void testCodeFirstUserMap(RestTemplate template, String cseUrlPrefix) {
@@ -150,10 +162,6 @@ public class CodeFirstRestTemplate {
         Date.class,
         seconds);
     TestMgr.check(new Date(date.getTime() + seconds * 1000), result);
-  }
-
-  protected void testExtend(RestTemplate template, String cseUrlPrefix) {
-
   }
 
   protected void testCodeFirstAddString(RestTemplate template, String cseUrlPrefix) {
@@ -233,7 +241,7 @@ public class CodeFirstRestTemplate {
   protected void testModelFieldIgnore(RestTemplate template, String cseUrlPrefix) {
     InputModelForTestIgnore input = new InputModelForTestIgnore("input_id_rest", "input_id_content",
         new Person("inputSomeone"), new JsonObject("{\"InputJsonKey\" : \"InputJsonValue\"}"), () -> {
-    });
+        });
     OutputModelForTestIgnore output = template
         .postForObject(cseUrlPrefix + "ignore", input, OutputModelForTestIgnore.class);
 

@@ -40,6 +40,10 @@ public class TestMgr {
   }
 
   public static void check(Object expect, Object real) {
+    if (expect == real) {
+      return;
+    }
+
     String strExpect = String.valueOf(expect);
     String strReal = String.valueOf(real);
 

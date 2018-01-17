@@ -35,10 +35,8 @@ import org.apache.servicecomb.demo.CodeFirstRestTemplate;
 import org.apache.servicecomb.demo.TestMgr;
 import org.apache.servicecomb.foundation.common.part.FilePart;
 import org.apache.servicecomb.provider.pojo.Invoker;
-import org.apache.servicecomb.provider.pojo.RpcReference;
 import org.apache.servicecomb.provider.springmvc.reference.CseHttpEntity;
 import org.apache.servicecomb.serviceregistry.RegistryUtils;
-import org.apache.servicecomb.swagger.invocation.Response;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.PathResource;
 import org.springframework.core.io.Resource;
@@ -66,8 +64,9 @@ public class CodeFirstRestTemplateSpringmvc extends CodeFirstRestTemplate {
   private UploadStreamAndResource uploadStreamAndResource =
       Invoker.createProxy("springmvc", "codeFirst", UploadStreamAndResource.class);
 
-  @RpcReference(microserviceName = "springmvc", schemaId = "codeFirst")
-  private CodeFirstSprigmvcIntf intf;
+  private TestResponse testResponse = new TestResponse();
+
+  private TestObject testObject = new TestObject();
 
   @Override
   protected void testOnlyRest(RestTemplate template, String cseUrlPrefix) {
@@ -77,17 +76,30 @@ public class CodeFirstRestTemplateSpringmvc extends CodeFirstRestTemplate {
       throw new IllegalStateException(e);
     }
 
+    testResponse.runRest();
+    testObject.runRest();
+
     super.testOnlyRest(template, cseUrlPrefix);
   }
 
   @Override
-  protected void testExtend(RestTemplate template, String cseUrlPrefix) {
-    super.testExtend(template, cseUrlPrefix);
+  protected void testOnlyHighway(RestTemplate template, String cseUrlPrefix) {
+    testResponse.runHighway();
+    testObject.runHighway();
+
+    super.testOnlyHighway(template, cseUrlPrefix);
+  }
+
+  @Override
+  protected void testAllTransport(String microserviceName, RestTemplate template, String cseUrlPrefix) {
+    testResponse.runAllTransport();
+    testObject.runAllTransport();
 
     testResponseEntity("springmvc", template, cseUrlPrefix);
     testCodeFirstTestForm(template, cseUrlPrefix);
-    testIntf();
     testFallback(template, cseUrlPrefix);
+
+    super.testAllTransport(microserviceName, template, cseUrlPrefix);
   }
 
   private void testUpload(RestTemplate template, String cseUrlPrefix) throws IOException {
@@ -165,24 +177,6 @@ public class CodeFirstRestTemplateSpringmvc extends CodeFirstRestTemplate {
 
     result = template.getForObject(cseUrlPrefix + "/fallback/force/hello", String.class);
     TestMgr.check(result, "mockedreslut");
-  }
-
-  private void testIntf() {
-    Date date = new Date();
-
-    String srcName = RegistryUtils.getMicroservice().getServiceName();
-
-    ResponseEntity<Date> responseEntity = intf.responseEntity(date);
-    TestMgr.check(date, responseEntity.getBody());
-    TestMgr.check("h1v " + srcName, responseEntity.getHeaders().getFirst("h1"));
-    TestMgr.check("h2v " + srcName, responseEntity.getHeaders().getFirst("h2"));
-
-    checkStatusCode("springmvc", 202, responseEntity.getStatusCode());
-
-    Response cseResponse = intf.cseResponse();
-    TestMgr.check("User [name=nameA, age=100, index=0]", cseResponse.getResult());
-    TestMgr.check("h1v " + srcName, cseResponse.getHeaders().getFirst("h1"));
-    TestMgr.check("h2v " + srcName, cseResponse.getHeaders().getFirst("h2"));
   }
 
   private void testResponseEntity(String microserviceName, RestTemplate template, String cseUrlPrefix) {
