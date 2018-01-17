@@ -172,11 +172,16 @@ public final class JavassistUtils {
       }
 
       for (MethodConfig methodConfig : config.getMethodList()) {
-        CtMethod ctMethod = CtMethod.make(methodConfig.getSource(), ctClass);
-        if (methodConfig.getGenericSignature() != null) {
-          ctMethod.setGenericSignature(methodConfig.getGenericSignature());
+        try {
+          CtMethod ctMethod = CtMethod.make(methodConfig.getSource(), ctClass);
+          if (methodConfig.getGenericSignature() != null) {
+            ctMethod.setGenericSignature(methodConfig.getGenericSignature());
+          }
+          ctClass.addMethod(ctMethod);
+        } catch (CannotCompileException e) {
+          LOGGER.error("Failed to create method, source:\n{}.", methodConfig.getSource());
+          throw e;
         }
-        ctClass.addMethod(ctMethod);
       }
 
       LOGGER.info("generate {} in classLoader {}.", config.getClassName(), classLoader);
