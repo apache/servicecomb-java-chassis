@@ -21,6 +21,7 @@ import com.fasterxml.jackson.core.JsonParser.Feature;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.type.TypeFactory;
 import com.fasterxml.jackson.databind.util.ISO8601DateFormat;
 
@@ -36,6 +37,7 @@ public final class RestObjectMapper extends ObjectMapper {
     setDateFormat(new ISO8601DateFormat());
     getFactory().disable(Feature.AUTO_CLOSE_SOURCE);
     disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
+    disable(SerializationFeature.FAIL_ON_EMPTY_BEANS);
   }
 
   public String convertToString(Object value) throws Exception {
