@@ -22,6 +22,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.servicecomb.common.javassist.FieldConfig;
+import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -116,5 +117,20 @@ public class TestProtobufSchemaUtils {
     Input input = new ByteArrayInput(bytes, false);
 
     return schema.readObject(input);
+  }
+
+  @Test
+  public void object() throws Exception {
+    WrapSchema schema = ProtobufSchemaUtils.getOrCreateSchema(Object.class);
+
+    LinkedBuffer linkedBuf = LinkedBuffer.allocate();
+    ProtobufOutput output = new ProtobufOutput(linkedBuf);
+    schema.writeObject(output, 1);
+
+    Input input = new ByteArrayInput(output.toByteArray(), false);
+    Object result = schema.readObject(input);
+
+    Assert.assertEquals(1, result);
+    Assert.assertThat(result, Matchers.instanceOf(Integer.class));
   }
 }
