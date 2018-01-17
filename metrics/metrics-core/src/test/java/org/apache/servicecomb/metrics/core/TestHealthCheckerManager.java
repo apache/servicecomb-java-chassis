@@ -87,18 +87,18 @@ public class TestHealthCheckerManager {
 
     Map<String, HealthCheckResult> results = manager.check();
 
-    Assert.assertTrue(results.get("default").isHealthy());
+    Assert.assertEquals(true,results.get("default").isHealthy());
 
     DefaultHealthCheckExtraData data = JsonUtils.OBJ_MAPPER
         .readValue(results.get("default").getExtraData(), DefaultHealthCheckExtraData.class);
-    Assert.assertTrue(data.getAppId().equals("appId"));
-    Assert.assertTrue(data.getServiceName().equals("serviceName"));
-    Assert.assertTrue(data.getServiceVersion().equals("0.0.1"));
-    Assert.assertTrue(data.getInstanceId().equals("001"));
-    Assert.assertTrue(data.getHostName().equals("localhost"));
-    Assert.assertTrue(data.getEndpoints().equals("127.0.0.1,192.168.0.100"));
+    Assert.assertEquals("appId",data.getAppId());
+    Assert.assertEquals("serviceName",data.getServiceName());
+    Assert.assertEquals("0.0.1",data.getServiceVersion());
+    Assert.assertEquals("001",data.getInstanceId());
+    Assert.assertEquals("localhost",data.getHostName());
+    Assert.assertEquals("127.0.0.1,192.168.0.100",data.getEndpoints());
 
     HealthCheckResult result = manager.check("test");
-    Assert.assertTrue(!result.isHealthy());
+    Assert.assertEquals(false,result.isHealthy());
   }
 }

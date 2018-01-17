@@ -42,6 +42,8 @@ public class ShopDemoService {
     this.counterService = counterService;
     this.gaugeService = gaugeService;
     this.windowCounterService = windowCounterService;
+
+    login(null,null);
   }
 
   public void login(String name, String password) {
@@ -60,16 +62,18 @@ public class ShopDemoService {
     //sim record order process time
     windowCounterService.record("Order Latency", System.currentTimeMillis() - start);
 
+    //plus one
     windowCounterService.record("Order Count", 1);
 
-    //only support long,please do unit convert ,$99.00 -> $9900 , $59.99 -> 5999
+    //only support long,please do unit convert ,$99.00 dollar -> $9900 cent, $59.99 dollar -> $5999 cent
     windowCounterService.record("Order Amount", (long) round(amount * 100, 0));
   }
 
   public void discount(double value) {
     //make a discount to Levis Jeans
 
-    gaugeService.update("Levis Jeans", value);
+    //record current Levis Jeans Discount
+    gaugeService.update("Levis Jeans Discount", value);
   }
 
   private double round(double value, int places) {
@@ -79,4 +83,12 @@ public class ShopDemoService {
     }
     return 0;
   }
+
+  /*  Output of RegistryMetric.customMetrics :
+   *  Active User
+   *  Order Latency (total,count,tps,rate,average,max,min)
+   *  Order Count (total,count,tps,rate,average,max,min)
+   *  Order Amount (total,count,tps,rate,average,max,min)
+   *  Levis Jeans Discount
+   */
 }

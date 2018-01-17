@@ -18,10 +18,10 @@
 package org.apache.servicecomb.metrics.core.custom;
 
 /**
- GaugeService is complex service for manage Window Time-related Step Counter,
+ WindowCounterService is complex service for manage Window Time-related Step Counter,
  It will output total,count,tps,rate,average,max and min
  examples:
- if record three time in one window,and window time = 2000 (2 seconds), like :
+ if record four time in one window,and window time = 2000 (2 seconds), like :
  record("Order Amount",100)
  record("Order Amount",200)
  record("Order Amount",300)

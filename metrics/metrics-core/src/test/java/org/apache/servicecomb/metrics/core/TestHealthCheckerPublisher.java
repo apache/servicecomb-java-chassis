@@ -48,11 +48,9 @@ public class TestHealthCheckerPublisher {
 
     HealthCheckerPublisher publisher = new DefaultHealthCheckerPublisher(manager);
     Map<String, HealthCheckResult> content = publisher.health();
-    Assert.assertTrue(JsonUtils.writeValueAsString(content.get("default"))
-        .equals(JsonUtils.writeValueAsString(result)));
+    Assert.assertEquals(JsonUtils.writeValueAsString(result),JsonUtils.writeValueAsString(content.get("default")));
 
     HealthCheckResult checkResult = publisher.healthWithName("default");
-    Assert.assertTrue(JsonUtils.writeValueAsString(checkResult)
-        .equals(JsonUtils.writeValueAsString(result)));
+    Assert.assertEquals(JsonUtils.writeValueAsString(result),JsonUtils.writeValueAsString(checkResult));
   }
 }
