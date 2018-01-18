@@ -80,7 +80,7 @@
                 </image>
                 <image>
                   <name>nobodyiam/apollo-quick-start</name>
-                  <alias>apollo-quick-start</alias>
+                  <alias>apollo.servicecomb.apache.org</alias>
                   <run>
                     <links>
                       <link>apollo-db</link>

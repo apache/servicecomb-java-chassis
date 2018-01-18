@@ -16,14 +16,14 @@
 ## limitations under the License.
 ## ---------------------------------------------------------------------------
 
-APPLICATION_ID: pojotest
+APPLICATION_ID: dynamic-config-test
 service_description:
   name: apollo-test
   version: 1.0.1
 
 apollo:
   config:
-    serverUri: http://apollo-quick-start:8070
+    serverUri: http://apollo.servicecomb.apache.org:8070
     serviceName: SampleApp
     env: DEV
     clusters: default
@@ -33,4 +33,4 @@ apollo:
 cse:
   config:
     client:
-      serverUri: http://127.0.0.1:8070
+      serverUri: http://apollo.servicecomb.apache.org:8070
