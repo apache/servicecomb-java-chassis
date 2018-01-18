@@ -55,10 +55,7 @@ public class RedisSession {
   }
 
   private void createCache() {
-    createResult = new StringBuilder(64 + PerfConfiguration.responseData.length()).append(id)
-        .append(" from redis: ")
-        .append(PerfConfiguration.responseData)
-        .toString();
+    createResult = PerfConfiguration.buildResponse("redis", id);
     redis.set(id, createResult, this::onCreateCacheResponse);
   }
 

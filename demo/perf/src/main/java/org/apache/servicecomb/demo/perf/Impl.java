@@ -18,7 +18,9 @@ package org.apache.servicecomb.demo.perf;
 
 import java.util.concurrent.CompletableFuture;
 
+import org.apache.servicecomb.provider.pojo.Invoker;
 import org.apache.servicecomb.provider.rest.common.RestSchema;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -29,10 +31,16 @@ import org.springframework.web.bind.annotation.RequestParam;
 public class Impl {
   private Intf intf;
 
-  public Impl() {
-    //    intf = Invoker.createProxy(perfConfiguration.getNextMicroserviceName(),
-    //        "impl",
-    //        Intf.class);
+  @Value(value = "${service_description.name}")
+  public void setSelfMicroserviceName(String selfMicroserviceName) {
+    // self: perf-1/perf-a
+    // next: perf-2/perf-b
+    char last = selfMicroserviceName.charAt(selfMicroserviceName.length() - 1);
+    String nextMicroserviceName =
+        selfMicroserviceName.substring(0, selfMicroserviceName.length() - 1) + (char) (last + 1);
+    intf = Invoker.createProxy(nextMicroserviceName,
+        "impl",
+        Intf.class);
   }
 
   @GetMapping(path = "/syncQuery/{id}")
@@ -44,14 +52,14 @@ public class Impl {
         return RedisClientUtils.syncQuery(id);
       }
 
-      return new StringBuilder(64 + PerfConfiguration.responseData.length())
-          .append(id)
-          .append(" from memory: ")
-          .append(PerfConfiguration.responseData)
-          .toString();
+      return buildFromMemoryResponse(id);
     }
 
     return intf.syncQuery(id, step, all, fromDB);
+  }
+
+  public String buildFromMemoryResponse(String id) {
+    return PerfConfiguration.buildResponse("memory", id);
   }
 
   @GetMapping(path = "/asyncQuery/{id}")
@@ -64,7 +72,7 @@ public class Impl {
       }
 
       CompletableFuture<String> future = new CompletableFuture<>();
-      future.complete("value of " + id + " from memory.");
+      future.complete(buildFromMemoryResponse(id));
       return future;
     }
 
