@@ -57,6 +57,9 @@ import org.apache.servicecomb.serviceregistry.config.ServiceRegistryConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.annotations.VisibleForTesting;
+
+import io.netty.handler.codec.http.HttpStatusClass;
 import io.vertx.core.Handler;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.http.HttpClientResponse;
@@ -85,8 +88,9 @@ public final class ServiceRegistryClientImpl implements ServiceRegistryClient {
     RestUtils.httpDo(requestContext, responseHandler);
   }
 
+  @VisibleForTesting
   @SuppressWarnings("unchecked")
-  private <T> Handler<RestResponse> syncHandler(CountDownLatch countDownLatch, Class<T> cls,
+  protected <T> Handler<RestResponse> syncHandler(CountDownLatch countDownLatch, Class<T> cls,
       Holder<T> holder) {
     return restResponse -> {
       RequestContext requestContext = restResponse.getRequestContext();
@@ -107,6 +111,18 @@ public final class ServiceRegistryClientImpl implements ServiceRegistryClient {
               countDownLatch.countDown();
               return;
             }
+
+            // no need to support 304 in this place
+            if (!HttpStatusClass.SUCCESS.equals(HttpStatusClass.valueOf(response.statusCode()))) {
+              LOGGER.warn("get response for {} failed, {}:{}, {}",
+                  cls.getName(),
+                  response.statusCode(),
+                  response.statusMessage(),
+                  bodyBuffer.toString());
+              countDownLatch.countDown();
+              return;
+            }
+
             try {
               holder.value =
                   JsonUtils.readValue(bodyBuffer.getBytes(), cls);
@@ -259,7 +275,7 @@ public final class ServiceRegistryClientImpl implements ServiceRegistryClient {
           schemaId,
           e);
     }
-    return holder.value != null;
+    return holder.value != null && schemaId.equals(holder.value.getSchemaId());
   }
 
   @Override
