@@ -37,6 +37,9 @@ public class CseXmlWebApplicationContext extends XmlWebApplicationContext {
 
   private String defaultBeanResource = BeanUtils.DEFAULT_BEAN_RESOURCE;
 
+  public CseXmlWebApplicationContext() {
+  }
+
   public CseXmlWebApplicationContext(ServletContext servletContext) {
     setServletContext(servletContext);
   }
