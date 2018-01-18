@@ -43,10 +43,10 @@ import com.netflix.config.DynamicPropertyFactory;
 import com.netflix.config.DynamicStringProperty;
 
 public class DynamicConfigurationIT {
-
-
-  public static String url;
-  public static String token;
+  private static String url;
+  private static String token;
+  private static final HttpHeaders headers = new HttpHeaders();
+  private static final RestTemplate rest = new RestTemplate();
 
   @BeforeClass
   public static void setUp() throws Exception {
@@ -54,31 +54,32 @@ public class DynamicConfigurationIT {
     BeanUtils.init();
     url = DynamicPropertyFactory.getInstance().getStringProperty("apollo.config.serverUri", "missing").getValue();
     token = DynamicPropertyFactory.getInstance().getStringProperty("apollo.config.token", "missing").getValue();
+    headers.add("Content-Type", "application/json;charset=UTF-8");
+    headers.add("Authorization", token);
   }
 
   @After
-  public void tearDown() throws Exception {
-    //delete
+  public void tearDown() {
     clearConfiguration();
   }
 
-  //delete configuration items set by test code
-  public void clearConfiguration() {
+  public int clearConfiguration() {
     String delete = url + "/openapi/v1/envs/DEV/apps/SampleApp/clusters/default/namespaces/application/items/loadbalance?operator=apollo";
+    HttpEntity<?> entity = new HttpEntity<Object>(headers);
+    ResponseEntity<String> exchange = rest.exchange(delete, HttpMethod.DELETE, entity, String.class);
+    Assert.assertEquals(exchange.getStatusCodeValue(), HttpStatus.OK);
+    return releaseConfiguration();
+  }
+
+  public int releaseConfiguration(){
     String release = url + "/openapi/v1/envs/DEV/apps/SampleApp/clusters/default/namespaces/application/releases";
     RestTemplate rest = new RestTemplate();
-    HttpHeaders headers = new HttpHeaders();
-    headers.add("Content-Type", "application/json;charset=UTF-8");
-    headers.add("Authorization", token);
-    HttpEntity<?> entity = new HttpEntity<Object>(headers);
-
-    ResponseEntity<String> exchange = rest.exchange(delete, HttpMethod.DELETE, entity, String.class);
-    Map<String,String> body = new HashMap<>();
+    Map<String, String> body = new HashMap<>();
     body.put("releaseTitle", "release-configuration");
     body.put("releasedBy", "apollo");
-    entity = new HttpEntity<Object>(body, headers);
-    exchange = rest.exchange(release, HttpMethod.POST, entity, String.class);
-
+    HttpEntity<?> entity = new HttpEntity<Object>(body, headers);
+    ResponseEntity<String> exchange = rest.exchange(release, HttpMethod.POST, entity, String.class);
+    return exchange.getStatusCodeValue();
   }
 
   @Test
@@ -86,40 +87,20 @@ public class DynamicConfigurationIT {
     //before
     Assert.assertEquals(DynamicPropertyFactory.getInstance().getStringProperty("loadbalcance", "default").getValue(), "default");
 
-    //set and return 200. release 200,update return 200
-
     String setLoadBalance = url + "/openapi/v1/envs/DEV/apps/SampleApp/clusters/default/namespaces/application/items";
-
-    String release = url + "/openapi/v1/envs/DEV/apps/SampleApp/clusters/default/namespaces/application/releases";
-    RestTemplate rest = new RestTemplate();
-    HttpHeaders headers = new HttpHeaders();
-    headers.add("Content-Type", "application/json;charset=UTF-8");
-    headers.add("Authorization", token);
-
-    //set new configuration item
     Map<String, String> body = new HashMap<>();
     body.put("key", "loadbalance");
     body.put("value", "roundrobbin");
     body.put("dataChangeCreatedBy", "apollo");
     HttpEntity<?> entity = new HttpEntity<Object>(body, headers);
-
     ResponseEntity<String> exchange = rest.exchange(setLoadBalance, HttpMethod.POST, entity, String.class);
     Assert.assertEquals(exchange.getStatusCodeValue(), HttpStatus.OK.value());
+    Assert.assertEquals(releaseConfiguration(), HttpStatus.OK);
 
-    //relese loadbalance item
-    body.clear();
-    body.put("releaseTitle", "release-configuration");
-    body.put("releasedBy", "apollo");
-    entity = new HttpEntity<Object>(body, headers);
-    exchange = rest.exchange(release, HttpMethod.POST, entity, String.class);
-    Assert.assertEquals(exchange.getStatusCodeValue(), HttpStatus.OK.value());
-
-    //waiting for a refresh cycle
     await().atMost(5, SECONDS).until(
         () -> DynamicPropertyFactory.getInstance().getStringProperty("loadbalance", "default").getValue()
             .equals("roundrobbin"));
 
-    //update loadbalance value
     String updateLoadBalance =
         url + "/openapi/v1/envs/DEV/apps/SampleApp/clusters/default/namespaces/application/items/" + "loadbalance";
     body.clear();
@@ -129,14 +110,8 @@ public class DynamicConfigurationIT {
     entity = new HttpEntity<Object>(body, headers);
     exchange = rest.exchange(updateLoadBalance, HttpMethod.PUT, entity, String.class);
     Assert.assertEquals(exchange.getStatusCodeValue(), HttpStatus.OK.value());
+    Assert.assertEquals(releaseConfiguration(), HttpStatus.OK);
 
-    //release again
-    body.clear();
-    body.put("releaseTitle", "test-release");
-    body.put("releasedBy", "apollo");
-    entity = new HttpEntity<Object>(body, headers);
-    exchange = rest.exchange(release, HttpMethod.POST, entity, String.class);
-    Assert.assertEquals(exchange.getStatusCodeValue(), HttpStatus.OK.value());
     await().atMost(5, SECONDS).until(
         () -> DynamicPropertyFactory.getInstance().getStringProperty("loadbalance", "default").getValue()
             .equals("random"));
