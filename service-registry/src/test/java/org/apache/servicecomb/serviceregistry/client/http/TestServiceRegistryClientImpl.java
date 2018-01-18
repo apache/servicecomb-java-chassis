@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 
+import javax.ws.rs.core.Response.Status;
 import javax.xml.ws.Holder;
 
 import org.apache.log4j.Appender;
@@ -30,6 +31,7 @@ import org.apache.log4j.Logger;
 import org.apache.log4j.spi.LoggingEvent;
 import org.apache.servicecomb.serviceregistry.api.registry.Microservice;
 import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceFactory;
+import org.apache.servicecomb.serviceregistry.api.response.GetExistenceResponse;
 import org.apache.servicecomb.serviceregistry.client.ClientException;
 import org.apache.servicecomb.serviceregistry.client.IpPortManager;
 import org.apache.servicecomb.serviceregistry.client.http.ServiceRegistryClientImpl.ResponseWrapper;
@@ -46,6 +48,7 @@ import io.vertx.core.http.HttpClientOptions;
 import io.vertx.core.http.HttpClientResponse;
 import io.vertx.core.http.HttpVersion;
 import mockit.Deencapsulation;
+import mockit.Expectations;
 import mockit.Mock;
 import mockit.MockUp;
 import mockit.Mocked;
@@ -252,6 +255,54 @@ public class TestServiceRegistryClientImpl {
     }.run();
   }
 
+  @Test
+  public void syncHandler_failed(@Mocked RequestContext requestContext,
+      @Mocked HttpClientResponse response) {
+    CountDownLatch countDownLatch = new CountDownLatch(1);
+    Class<GetExistenceResponse> cls = GetExistenceResponse.class;
+    Holder<GetExistenceResponse> holder = new Holder<>();
+    Handler<RestResponse> handler = oClient.syncHandler(countDownLatch, cls, holder);
+
+    Holder<Handler<Buffer>> bodyHandlerHolder = new Holder<>();
+    new MockUp<HttpClientResponse>(response) {
+      @Mock
+      HttpClientResponse bodyHandler(Handler<Buffer> bodyHandler) {
+        bodyHandlerHolder.value = bodyHandler;
+        return null;
+      }
+    };
+    new Expectations() {
+      {
+        response.statusCode();
+        result = 400;
+        response.statusMessage();
+        result = Status.BAD_REQUEST.getReasonPhrase();
+      }
+    };
+
+    RestResponse event = new RestResponse(requestContext, response);
+    handler.handle(event);
+
+    Buffer bodyBuffer = Buffer.buffer("{}");
+    bodyHandlerHolder.value.handle(bodyBuffer);
+
+    Assert.assertNull(holder.value);
+  }
+
+  @Test
+  public void isSchemaExist() {
+    String microserviceId = "msId";
+    String schemaId = "schemaId";
+
+    new MockUp<RestUtils>() {
+      @Mock
+      void httpDo(RequestContext requestContext, Handler<RestResponse> responseHandler) {
+        Holder<GetExistenceResponse> holder = Deencapsulation.getField(responseHandler, "arg$4");
+        holder.value = new GetExistenceResponse();
+      }
+    };
+    Assert.assertFalse(oClient.isSchemaExist(microserviceId, schemaId));
+  }
 
   @Test
   public void testFindServiceInstance() {
