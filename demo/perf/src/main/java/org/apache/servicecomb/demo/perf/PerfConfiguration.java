@@ -16,6 +16,7 @@
  */
 package org.apache.servicecomb.demo.perf;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -23,10 +24,6 @@ import com.google.common.base.Strings;
 
 @Component
 public class PerfConfiguration {
-  public static String selfMicroserviceName;
-
-  public static String nextMicroserviceName;
-
   public static int syncCount;
 
   public static int asyncCount;
@@ -55,15 +52,14 @@ public class PerfConfiguration {
 
   public static String redisPassword;
 
-  @Value(value = "${service_description.name}")
-  public void setSelfMicroserviceName(String selfMicroserviceName) {
-    PerfConfiguration.selfMicroserviceName = selfMicroserviceName;
-
-    // self: perf-1/perf-a
-    // next: perf-2/perf-b
-    char last = selfMicroserviceName.charAt(selfMicroserviceName.length() - 1);
-    nextMicroserviceName =
-        selfMicroserviceName.substring(0, selfMicroserviceName.length() - 1) + (char) (last + 1);
+  public static String buildResponse(String from, String id) {
+    return new StringBuilder(64 + PerfConfiguration.responseData.length())
+        .append(id)
+        .append(" from ")
+        .append(from)
+        .append(": ")
+        .append(PerfConfiguration.responseData)
+        .toString();
   }
 
   @Value(value = "${response-size}")
@@ -127,8 +123,11 @@ public class PerfConfiguration {
     PerfConfiguration.redisPort = redisPort;
   }
 
-  @Value(value = "${redis.password:null}")
+  @Value(value = "${redis.password:}")
   public void setRedisPassword(String redisPassword) {
+    if (StringUtils.isEmpty(redisPassword)) {
+      return;
+    }
     PerfConfiguration.redisPassword = redisPassword;
   }
 }
