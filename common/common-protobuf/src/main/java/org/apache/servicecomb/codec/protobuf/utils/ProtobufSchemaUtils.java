@@ -158,7 +158,9 @@ public final class ProtobufSchemaUtils {
       WrapClassConfig config = new WrapClassConfig();
       config.setType(WrapType.NORMAL_WRAP);
 
-      config.setClassName("gen.wrap.protobuf." + key.replaceAll("[<>]", "_").replace("[", "array_"));
+      config.setClassName(
+          "gen.wrap.protobuf." +
+              org.apache.servicecomb.swagger.generator.core.utils.ClassUtils.correctClassName(key));
       if (!Void.TYPE.isAssignableFrom(javaType.getRawClass())) {
         config.addField("field0", javaType);
       }
