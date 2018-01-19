@@ -21,6 +21,9 @@ import java.util.Map;
 
 import org.apache.servicecomb.swagger.generator.core.SwaggerConst;
 import org.apache.servicecomb.swagger.generator.core.utils.ClassUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.util.StringUtils;
 
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.type.TypeFactory;
@@ -28,6 +31,7 @@ import com.fasterxml.jackson.databind.type.TypeFactory;
 import io.swagger.models.Swagger;
 
 public abstract class AbstractConverter implements Converter {
+  private static final Logger LOGGER = LoggerFactory.getLogger(AbstractConverter.class);
 
   protected abstract Map<String, Object> findVendorExtensions(Object def);
 
@@ -35,23 +39,39 @@ public abstract class AbstractConverter implements Converter {
 
   @Override
   public JavaType convert(ClassLoader classLoader, String packageName, Swagger swagger, Object def) {
+    TypeFactory typeFactory = TypeFactory
+        .defaultInstance()
+        .withClassLoader(classLoader);
+
     Map<String, Object> vendorExtensions = findVendorExtensions(def);
-    JavaType javaType = getJavaTypeByVendorExtensions(classLoader, vendorExtensions);
-    if (javaType != null) {
-      return javaType;
+    String canonical = ClassUtils.getVendorExtension(vendorExtensions, SwaggerConst.EXT_JAVA_CLASS);
+    if (!StringUtils.isEmpty(canonical)) {
+      Class<?> clsResult = ClassUtils.getClassByName(classLoader, canonical);
+      if (clsResult != null) {
+        return typeFactory.constructType(clsResult);
+      }
     }
 
-    return doConvert(classLoader, packageName, swagger, def);
-  }
+    // ensure all depend model exist
+    // maybe create dynamic class by canonical
+    JavaType result = doConvert(classLoader, packageName, swagger, def);
 
-  private JavaType getJavaTypeByVendorExtensions(ClassLoader classLoader,
-      Map<String, Object> vendorExtensions) {
-    Class<?> cls =
-        ClassUtils.getClassByVendorExtensions(classLoader, vendorExtensions, SwaggerConst.EXT_JAVA_CLASS);
-    if (cls == null) {
-      return null;
+    String rawClassName = ClassUtils.getRawClassName(canonical);
+    if (StringUtils.isEmpty(rawClassName)) {
+      return result;
     }
 
-    return TypeFactory.defaultInstance().constructType(cls);
+    try {
+      JavaType rawType = typeFactory.constructFromCanonical(rawClassName);
+
+      if (rawType.getRawClass().getTypeParameters().length > 0) {
+        return typeFactory.constructFromCanonical(canonical);
+      }
+
+      return result;
+    } catch (IllegalArgumentException e) {
+      LOGGER.info("failed to load generic class, use {}.", result.getGenericSignature(), e);
+      return result;
+    }
   }
 }
