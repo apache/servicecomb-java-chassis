@@ -30,6 +30,16 @@
                 <exclude>**/target/**/*</exclude>
             </excludes>
         </fileSet>
+        <fileSet>
+            <directory>../</directory>
+            <outputDirectory>java-chassis-distribution-${project.version}</outputDirectory>
+            <includes>
+                <include>NOTICE</include>
+                <include>LICENSE</include>
+                <include>DISCLAIMER</include>
+                <include>README.md</include>
+            </includes>
+        </fileSet>
     </fileSets>
     <dependencySets>
         <dependencySet>
