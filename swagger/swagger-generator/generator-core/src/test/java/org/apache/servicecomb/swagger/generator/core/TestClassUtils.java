@@ -171,6 +171,12 @@ public class TestClassUtils {
   }
 
   @Test
+  public void testCorrectClassNameCanonical() {
+    String result = ClassUtils.correctClassName("java.util.List<java.lang.String>[");
+    Assert.assertThat(result, is("java.util.List_java.lang.String_array_"));
+  }
+
+  @Test
   public void testGetOrCreateClass() {
     String className = this.getClass().getCanonicalName();
 
