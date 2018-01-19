@@ -20,6 +20,7 @@ package org.apache.servicecomb.common.javassist;
 import static java.util.Locale.ENGLISH;
 
 import java.lang.reflect.Modifier;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.IdentityHashMap;
 import java.util.List;
@@ -30,6 +31,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.util.ClassUtils;
 
 import com.fasterxml.jackson.databind.JavaType;
+import com.google.common.hash.Hashing;
 
 import javassist.CannotCompileException;
 import javassist.ClassPool;
@@ -80,6 +82,25 @@ public final class JavassistUtils {
   @SuppressWarnings("rawtypes")
   public static Class<? extends Enum> createEnum(String clsName, List<String> values) {
     return createEnum(null, clsName, values);
+  }
+
+  @SuppressWarnings("rawtypes")
+  public static Class<? extends Enum> getOrCreateEnumWithPackageName(ClassLoader classLoader, String packageName,
+      List<String> enums) {
+    String strEnums = enums.toString();
+    String enumClsName =
+        packageName + ".Enum_" + Hashing.sha256().hashString(strEnums, StandardCharsets.UTF_8).toString();
+    return JavassistUtils.getOrCreateEnumWithClassName(classLoader, enumClsName, enums);
+  }
+
+  @SuppressWarnings({"rawtypes", "unchecked"})
+  public static synchronized Class<? extends Enum> getOrCreateEnumWithClassName(ClassLoader classLoader, String clsName,
+      List<String> values) {
+    try {
+      return (Class<? extends Enum>) classLoader.loadClass(clsName);
+    } catch (ClassNotFoundException e) {
+      return createEnum(classLoader, clsName, values);
+    }
   }
 
   @SuppressWarnings({"rawtypes", "unchecked"})
@@ -148,7 +169,6 @@ public final class JavassistUtils {
       if (config.isIntf()) {
         ctClass = classPool.makeInterface(config.getClassName());
       } else {
-
         ctClass = classPool.makeClass(config.getClassName());
       }
     }

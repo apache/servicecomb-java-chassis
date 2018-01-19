@@ -17,9 +17,7 @@
 
 package org.apache.servicecomb.swagger.converter.property;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.servicecomb.common.javassist.JavassistUtils;
 import org.apache.servicecomb.swagger.converter.ConverterMgr;
@@ -31,32 +29,6 @@ import io.swagger.models.Swagger;
 import io.swagger.models.properties.StringProperty;
 
 public class StringPropertyConverter extends AbstractPropertyConverter {
-  // 用于生成唯一的enum名称
-  // key为enum names， value为enum cls javaType
-  private static Map<String, JavaType> enumMap = new HashMap<>();
-
-  private static final Object LOCK = new Object();
-
-  // 转换并创建enum是小概率事件，没必要double check
-  private static JavaType getOrCreateEnumByNames(ClassLoader classLoader, String packageName, List<String> enums) {
-    String strEnums = enums.toString();
-
-    synchronized (LOCK) {
-      JavaType javaType = enumMap.get(strEnums);
-      if (javaType != null) {
-        return javaType;
-      }
-
-      String enumClsName = packageName + ".Enum" + enumMap.size();
-      @SuppressWarnings("rawtypes")
-      Class<? extends Enum> enumCls = JavassistUtils.createEnum(classLoader, enumClsName, enums);
-      javaType = TypeFactory.defaultInstance().constructType(enumCls);
-      enumMap.put(strEnums, javaType);
-
-      return javaType;
-    }
-  }
-
   public static JavaType findJavaType(ClassLoader classLoader, String packageName, Swagger swagger, String type,
       String format, List<String> enums) {
     if (!isEnum(enums)) {
@@ -64,7 +36,8 @@ public class StringPropertyConverter extends AbstractPropertyConverter {
     }
 
     // enum，且需要动态生成class
-    return getOrCreateEnumByNames(classLoader, packageName, enums);
+    Class<?> enumCls = JavassistUtils.getOrCreateEnumWithPackageName(classLoader, packageName, enums);
+    return TypeFactory.defaultInstance().constructType(enumCls);
   }
 
   public static boolean isEnum(StringProperty stringProperty) {
