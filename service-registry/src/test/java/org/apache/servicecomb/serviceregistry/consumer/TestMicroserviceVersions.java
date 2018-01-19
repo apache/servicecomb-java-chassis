@@ -278,4 +278,18 @@ public class TestMicroserviceVersions {
 
     Assert.assertEquals(2, pendingPullCount.get());
   }
+
+  @Test
+  public void safeSetInstances() {
+    new MockUp<MicroserviceVersions>(microserviceVersions) {
+      @Mock
+      void setInstances(List<MicroserviceInstance> pulledInstances, String rev) {
+        throw new Error("failed to set instances");
+      }
+    };
+
+    microserviceVersions.safeSetInstances(null, null);
+    
+    Assert.assertEquals(1, pendingPullCount.get());
+  }
 }
