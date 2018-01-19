@@ -226,7 +226,7 @@ public abstract class AbstractServiceRegistry implements ServiceRegistry {
     }
 
     if (!microserviceInstances.isNeedRefresh()) {
-      LOGGER.info("instances revision is not changed, service={}/{}/{}", appId, serviceName, versionRule);
+      LOGGER.debug("instances revision is not changed, service={}/{}/{}", appId, serviceName, versionRule);
       return microserviceInstances;
     }
 
