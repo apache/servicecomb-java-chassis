@@ -19,7 +19,9 @@ package org.apache.servicecomb.swagger.converter.model;
 
 import org.apache.servicecomb.swagger.converter.ConverterMgr;
 import org.apache.servicecomb.swagger.converter.property.MapPropertyConverter;
+import org.apache.servicecomb.swagger.generator.core.SwaggerConst;
 import org.apache.servicecomb.swagger.generator.core.utils.ClassUtils;
+import org.springframework.util.StringUtils;
 
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.type.TypeFactory;
@@ -55,11 +57,28 @@ public class ModelImplConverter extends AbstractModelConverter {
       return TypeFactory.defaultInstance().constructType(Object.class);
     }
 
-    // 根据name、property动态生成class
-    if (packageName == null) {
-      throw new Error("packageName should not be null");
+    return getOrCreateType(classLoader, packageName, swagger, modelImpl);
+  }
+
+  protected String getOrCreateClassName(String packageName, ModelImpl modelImpl) throws Error {
+    // dynamic create class by name and property
+    // try to use x-java-class first
+    // if not defined then use new class name
+    String canonical = ClassUtils.getVendorExtension(findVendorExtensions(modelImpl), SwaggerConst.EXT_JAVA_CLASS);
+    if (!StringUtils.isEmpty(canonical)) {
+      return canonical;
     }
-    String clsName = packageName + "." + modelImpl.getName();
+
+    if (packageName == null) {
+      throw new IllegalStateException("packageName should not be null");
+    }
+    return packageName + "." + modelImpl.getName();
+  }
+
+  protected JavaType getOrCreateType(ClassLoader classLoader, String packageName, Swagger swagger, ModelImpl modelImpl)
+      throws Error {
+    String clsName = getOrCreateClassName(packageName, modelImpl);
+    clsName = ClassUtils.correctClassName(clsName);
     Class<?> cls =
         ClassUtils.getOrCreateClass(classLoader, packageName, swagger, modelImpl.getProperties(), clsName);
     return TypeFactory.defaultInstance().constructType(cls);

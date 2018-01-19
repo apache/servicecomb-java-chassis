@@ -144,16 +144,38 @@ public final class ClassUtils {
 
   public static Class<?> getClassByVendorExtensions(ClassLoader classLoader, Map<String, Object> vendorExtensions,
       String clsKey) {
-    if (vendorExtensions == null) {
-      return null;
-    }
-
-    String clsName = (String) vendorExtensions.get(clsKey);
+    String clsName = getVendorExtension(vendorExtensions, clsKey);
     if (StringUtils.isEmpty(clsName)) {
       return null;
     }
 
     return getClassByName(classLoader, clsName);
+  }
+
+  public static String getRawClassName(String canonical) {
+    if (StringUtils.isEmpty(canonical)) {
+      return null;
+    }
+
+    int idx = canonical.indexOf("<");
+    if (idx == 0) {
+      throw new IllegalStateException("Invalid class canonical: " + canonical);
+    }
+
+    if (idx < 0) {
+      return canonical;
+    }
+
+    return canonical.substring(0, idx);
+  }
+
+  @SuppressWarnings("unchecked")
+  public static <T> T getVendorExtension(Map<String, Object> vendorExtensions, String key) {
+    if (vendorExtensions == null) {
+      return null;
+    }
+
+    return (T) vendorExtensions.get(key);
   }
 
   public static Class<?> getOrCreateInterface(SwaggerGenerator generator) {
