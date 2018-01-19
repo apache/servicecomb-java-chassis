@@ -23,12 +23,17 @@ import org.apache.servicecomb.core.filter.EndpointDiscoveryFilter;
 import org.apache.servicecomb.loadbalance.CseServer;
 import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
 import org.apache.servicecomb.serviceregistry.cache.CacheEndpoint;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class CseServerDiscoveryFilter extends EndpointDiscoveryFilter {
+  private static final Logger LOGGER = LoggerFactory.getLogger(CseServerDiscoveryFilter.class);
+
   @Override
   protected Object createEndpoint(String transportName, String endpoint, MicroserviceInstance instance) {
     Transport transport = CseContext.getInstance().getTransportManager().findTransport(transportName);
     if (transport == null) {
+      LOGGER.info("not deployed transport {}, ignore {}.", transportName, endpoint);
       return null;
     }
 
