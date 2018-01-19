@@ -35,6 +35,7 @@ import org.apache.servicecomb.swagger.extend.property.creator.ShortPropertyCreat
 import org.springframework.util.StringUtils;
 
 import com.fasterxml.jackson.databind.JavaType;
+import com.google.common.annotations.VisibleForTesting;
 
 import io.swagger.converter.ModelConverter;
 import io.swagger.converter.ModelConverterContext;
@@ -70,8 +71,9 @@ public class ModelResolverExt extends ModelResolver {
         .forEach(this::addPropertyCreator);
   }
 
-  private void setType(JavaType type, Map<String, Object> vendorExtensions) {
-    vendorExtensions.put(ExtendConst.EXT_JAVA_CLASS, type.getRawClass().getName());
+  @VisibleForTesting
+  protected void setType(JavaType type, Map<String, Object> vendorExtensions) {
+    vendorExtensions.put(ExtendConst.EXT_JAVA_CLASS, type.toCanonical());
   }
 
   private void checkType(JavaType type) {
