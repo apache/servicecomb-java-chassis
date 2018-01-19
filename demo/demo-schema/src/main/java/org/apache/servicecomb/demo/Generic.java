@@ -14,33 +14,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.servicecomb.demo.springmvc.client;
+package org.apache.servicecomb.demo;
 
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-
-import javax.xml.ws.Holder;
-
-import org.apache.servicecomb.demo.EmptyObject;
-import org.apache.servicecomb.demo.server.User;
-import org.apache.servicecomb.swagger.invocation.Response;
-import org.springframework.http.ResponseEntity;
-
-public interface CodeFirstSprigmvcIntf {
-  ResponseEntity<Date> responseEntity(Date date);
-
-  Response cseResponse();
-
-  Object testObject(Object input);
-
-  EmptyObject testEmpty(EmptyObject input);
-
-  Map<String, Object> testMapObject(Map<String, Object> input);
-
-  List<Object> testListObject(List<Object> input);
-
-  Holder<Object> testHolderObject(Holder<Object> input);
-
-  Holder<User> testGeneric(Holder<User> input);
+public class Generic<T> {
+  public T value;
 }

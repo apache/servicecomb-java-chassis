@@ -68,6 +68,8 @@ public class CodeFirstRestTemplateSpringmvc extends CodeFirstRestTemplate {
 
   private TestObject testObject = new TestObject();
 
+  private TestGeneric testGeneric = new TestGeneric();
+
   @Override
   protected void testOnlyRest(RestTemplate template, String cseUrlPrefix) {
     try {
@@ -78,6 +80,7 @@ public class CodeFirstRestTemplateSpringmvc extends CodeFirstRestTemplate {
 
     testResponse.runRest();
     testObject.runRest();
+    testGeneric.runRest();
 
     super.testOnlyRest(template, cseUrlPrefix);
   }
@@ -86,6 +89,7 @@ public class CodeFirstRestTemplateSpringmvc extends CodeFirstRestTemplate {
   protected void testOnlyHighway(RestTemplate template, String cseUrlPrefix) {
     testResponse.runHighway();
     testObject.runHighway();
+    testGeneric.runHighway();
 
     super.testOnlyHighway(template, cseUrlPrefix);
   }
@@ -94,6 +98,7 @@ public class CodeFirstRestTemplateSpringmvc extends CodeFirstRestTemplate {
   protected void testAllTransport(String microserviceName, RestTemplate template, String cseUrlPrefix) {
     testResponse.runAllTransport();
     testObject.runAllTransport();
+    testGeneric.runAllTransport();
 
     testResponseEntity("springmvc", template, cseUrlPrefix);
     testCodeFirstTestForm(template, cseUrlPrefix);

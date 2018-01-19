@@ -25,10 +25,10 @@ import org.apache.servicecomb.swagger.invocation.Response;
 import org.springframework.http.ResponseEntity;
 
 public class TestResponse {
-  private CodeFirstSprigmvcIntf intf;
+  private CodeFirstSpringmvcIntf intf;
 
   public TestResponse() {
-    intf = Invoker.createProxy("springmvc", "codeFirst", CodeFirstSprigmvcIntf.class);
+    intf = Invoker.createProxy("springmvc", "codeFirst", CodeFirstSpringmvcIntf.class);
   }
 
   public void runRest() {

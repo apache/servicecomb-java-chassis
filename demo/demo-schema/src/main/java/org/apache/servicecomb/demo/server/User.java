@@ -17,6 +17,10 @@
 
 package org.apache.servicecomb.demo.server;
 
+import org.apache.servicecomb.foundation.common.utils.JsonUtils;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+
 public class User {
   private String name = "nameA";
 
@@ -61,5 +65,13 @@ public class User {
   @Override
   public String toString() {
     return "User [name=" + name + ", age=" + age + ", index=" + index + "]";
+  }
+
+  public String jsonString() {
+    try {
+      return JsonUtils.writeValueAsString(this);
+    } catch (JsonProcessingException e) {
+      throw new IllegalStateException(e);
+    }
   }
 }

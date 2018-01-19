@@ -27,20 +27,19 @@ import javax.xml.ws.Holder;
 
 import org.apache.servicecomb.demo.EmptyObject;
 import org.apache.servicecomb.demo.TestMgr;
-import org.apache.servicecomb.demo.server.User;
 import org.apache.servicecomb.provider.pojo.Invoker;
 import org.apache.servicecomb.provider.springmvc.reference.CseRestTemplate;
 import org.springframework.web.client.RestTemplate;
 
 public class TestObject {
-  private CodeFirstSprigmvcIntf intf;
+  private CodeFirstSpringmvcIntf intf;
 
   private RestTemplate restTemplate = new CseRestTemplate();
 
   private String prefix = "cse://springmvc/codeFirstSpringmvc";
 
   public TestObject() {
-    intf = Invoker.createProxy("springmvc", "codeFirst", CodeFirstSprigmvcIntf.class);
+    intf = Invoker.createProxy("springmvc", "codeFirst", CodeFirstSpringmvcIntf.class);
   }
 
   public void runRest() {
@@ -57,17 +56,6 @@ public class TestObject {
     testObject();
     testListObject();
     testHolderObject();
-    testGeneric();
-  }
-
-  @SuppressWarnings("unchecked")
-  private void testGeneric() {
-    Holder<User> holder = new Holder<>(new User());
-    Holder<User> result = intf.testGeneric(holder);
-    TestMgr.check("{name=nameA, age=100, index=0, names=null}", result.value);
-
-    result = restTemplate.postForObject(prefix + "/generic", holder, Holder.class);
-    TestMgr.check("{name=nameA, age=100, index=0, names=null}", result.value);
   }
 
   @SuppressWarnings("unchecked")
