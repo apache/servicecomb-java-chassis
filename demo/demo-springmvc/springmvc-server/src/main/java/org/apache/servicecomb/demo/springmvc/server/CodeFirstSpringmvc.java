@@ -34,6 +34,7 @@ import org.apache.commons.io.IOUtils;
 import org.apache.servicecomb.common.rest.codec.RestObjectMapper;
 import org.apache.servicecomb.core.Const;
 import org.apache.servicecomb.demo.EmptyObject;
+import org.apache.servicecomb.demo.Generic;
 import org.apache.servicecomb.demo.compute.Person;
 import org.apache.servicecomb.demo.ignore.InputModelForTestIgnore;
 import org.apache.servicecomb.demo.ignore.OutputModelForTestIgnore;
@@ -387,8 +388,47 @@ public class CodeFirstSpringmvc {
     return input;
   }
 
-  @PostMapping(path = "/generic")
-  public Holder<User> testGeneric(@RequestBody Holder<User> input) {
+  @PostMapping(path = "/holderUser")
+  public Holder<User> testHolderUser(@RequestBody Holder<User> input) {
+    Assert.isInstanceOf(Holder.class, input);
+    Assert.isInstanceOf(User.class, input.value);
+    return input;
+  }
+
+  @PostMapping(path = "/genericUser")
+  public Generic<User> testGenericUser(@RequestBody Generic<User> input) {
+    Assert.isInstanceOf(Generic.class, input);
+    Assert.isInstanceOf(User.class, input.value);
+    return input;
+  }
+
+  @PostMapping(path = "/genericLong")
+  public Generic<Long> testGenericLong(@RequestBody Generic<Long> input) {
+    Assert.isInstanceOf(Generic.class, input);
+    Assert.isInstanceOf(Long.class, input.value);
+    return input;
+  }
+
+  @PostMapping(path = "/genericDate")
+  public Generic<Date> testGenericDate(@RequestBody Generic<Date> input) {
+    Assert.isInstanceOf(Generic.class, input);
+    Assert.isInstanceOf(Date.class, input.value);
+    System.out.println(input.value);
+    return input;
+  }
+
+  @PostMapping(path = "/genericEnum")
+  public Generic<HttpStatus> testGenericEnum(@RequestBody Generic<HttpStatus> input) {
+    Assert.isInstanceOf(Generic.class, input);
+    Assert.isInstanceOf(HttpStatus.class, input.value);
+    return input;
+  }
+
+  @PostMapping(path = "/genericGenericUser")
+  public Generic<Generic<User>> testGenericGenericUser(@RequestBody Generic<Generic<User>> input) {
+    Assert.isInstanceOf(Generic.class, input);
+    Assert.isInstanceOf(Generic.class, input.value);
+    Assert.isInstanceOf(User.class, input.value.value);
     return input;
   }
 }
