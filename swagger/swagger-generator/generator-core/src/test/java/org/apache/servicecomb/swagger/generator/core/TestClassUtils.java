@@ -22,6 +22,7 @@ import static org.hamcrest.core.Is.is;
 
 import java.lang.reflect.Method;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -33,8 +34,11 @@ import org.apache.servicecomb.common.javassist.JavassistUtils;
 import org.apache.servicecomb.swagger.generator.core.schema.User;
 import org.apache.servicecomb.swagger.generator.core.unittest.UnitTestSwaggerUtils;
 import org.apache.servicecomb.swagger.generator.core.utils.ClassUtils;
+import org.hamcrest.Matchers;
 import org.junit.Assert;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import org.mockito.Mockito;
 
 import io.swagger.annotations.SwaggerDefinition;
@@ -106,6 +110,12 @@ public class TestClassUtils {
         "super",
         "while"));
   }
+
+  ClassLoader classLoader = new ClassLoader() {
+  };
+
+  @Rule
+  public ExpectedException expectedException = ExpectedException.none();
 
   @Test
   public void testHasAnnotation() {
@@ -209,5 +219,55 @@ public class TestClassUtils {
 
     Class<?> result = ClassUtils.getOrCreateClass(classLoader, "", new Swagger(), null, className);
     Assert.assertEquals(this.getClass(), result);
+  }
+
+  @Test
+  public void getClassByVendorExtensions_noName() {
+    Map<String, Object> vendorExtensions = new HashMap<>();
+
+    Assert
+        .assertNull(ClassUtils.getClassByVendorExtensions(classLoader, vendorExtensions, SwaggerConst.EXT_JAVA_CLASS));
+  }
+
+  @Test
+  public void getClassByVendorExtensions_notExist() {
+    Map<String, Object> vendorExtensions = new HashMap<>();
+    vendorExtensions.put(SwaggerConst.EXT_JAVA_CLASS, "-" + String.class.getName());
+
+    Assert
+        .assertNull(ClassUtils.getClassByVendorExtensions(classLoader, vendorExtensions, SwaggerConst.EXT_JAVA_CLASS));
+  }
+
+  @Test
+  public void getClassByVendorExtensions_normal() {
+    Map<String, Object> vendorExtensions = new HashMap<>();
+    vendorExtensions.put(SwaggerConst.EXT_JAVA_CLASS, String.class.getName());
+
+    Assert.assertSame(String.class,
+        ClassUtils.getClassByVendorExtensions(classLoader, vendorExtensions, SwaggerConst.EXT_JAVA_CLASS));
+  }
+
+  @Test
+  public void getRawClassName_empty() {
+    Assert.assertNull(ClassUtils.getRawClassName(null));
+    Assert.assertNull(ClassUtils.getRawClassName(""));
+  }
+
+  @Test
+  public void getRawClassName_normal() {
+    Assert.assertEquals(String.class.getName(), ClassUtils.getRawClassName(String.class.getName()));
+  }
+
+  @Test
+  public void getRawClassName_generic() {
+    Assert.assertEquals("abc", ClassUtils.getRawClassName("abc<d>"));
+  }
+
+  @Test
+  public void getRawClassName_invalid() {
+    expectedException.expect(IllegalStateException.class);
+    expectedException.expectMessage(Matchers.is("Invalid class canonical: <abc>"));
+
+    ClassUtils.getRawClassName("<abc>");
   }
 }
