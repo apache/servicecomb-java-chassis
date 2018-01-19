@@ -99,6 +99,11 @@ public abstract class ArgumentsMapperFactory {
       return false;
     }
 
+    // no public field, it's not rpc wrapper class
+    if (((Class<?>) swaggerType).getFields().length == 0) {
+      return false;
+    }
+
     swaggerType = ((Class<?>) swaggerType).getFields()[0].getGenericType();
     Converter converter = converterMgr.findConverter(type, firstProviderParam, swaggerType);
     if (ConverterCommon.class.isInstance(converter)) {
