@@ -18,11 +18,16 @@
 package org.apache.servicecomb.common.javassist;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
+import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import javax.ws.rs.core.Response.Status;
 
 import org.apache.servicecomb.foundation.common.utils.ReflectUtils;
 import org.junit.Assert;
@@ -30,6 +35,7 @@ import org.junit.Test;
 
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.type.TypeFactory;
+import com.google.common.hash.Hashing;
 
 import javassist.ClassPool;
 import mockit.Deencapsulation;
@@ -161,13 +167,70 @@ public class TestJavassistUtils {
   }
 
   @Test
-  public void testEnum() throws Exception {
+  public void getOrCreateEnumWithClassName_get() {
+    Class<?> cls = Status.class;
+
+    Assert.assertSame(cls,
+        JavassistUtils.getOrCreateEnumWithClassName(Thread.currentThread().getContextClassLoader(),
+            Status.class.getName(),
+            null));
+  }
+
+  @Test
+  public void getOrCreateEnumWithClassName_create()
+      throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
+    String name = "cse.ut.EnumAbc";
+    Assert.assertNull(ClassPool.getDefault().getOrNull(name));
+
     @SuppressWarnings("rawtypes")
-    Class<? extends Enum> cls = JavassistUtils.createEnum("cse.ut.EnumAbc", "a", "b");
+    Class<? extends Enum> cls =
+        JavassistUtils
+            .getOrCreateEnumWithClassName(Thread.currentThread().getContextClassLoader(),
+                name,
+                Arrays.asList("a", "b"));
+    checkEnum(name, cls);
+  }
+
+  @Test
+  public void getOrCreateEnumWithPackageName()
+      throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
+    List<String> enums = Arrays.asList("a", "b");
+    String packageName = "cse.ut";
+    String clsName =
+        packageName + ".Enum_" + Hashing.sha256().hashString(enums.toString(), StandardCharsets.UTF_8).toString();
+    Assert.assertNull(ClassPool.getDefault().getOrNull(clsName));
+
+    @SuppressWarnings("rawtypes")
+    Class<? extends Enum> cls =
+        JavassistUtils
+            .getOrCreateEnumWithPackageName(Thread.currentThread().getContextClassLoader(),
+                packageName,
+                Arrays.asList("a", "b"));
+
+    checkEnum(clsName, cls);
+    Assert.assertSame(cls,
+        JavassistUtils
+            .getOrCreateEnumWithPackageName(Thread.currentThread().getContextClassLoader(),
+                packageName,
+                Arrays.asList("a", "b")));
+
+  }
+
+  @Test
+  public void testEnum() throws Exception {
+    String name = "cse.ut.EnumAbc2";
+    @SuppressWarnings("rawtypes")
+    Class<? extends Enum> cls = JavassistUtils.createEnum(name, "a", "b");
+    checkEnum(name, cls);
+  }
+
+  @SuppressWarnings("rawtypes")
+  protected void checkEnum(String expectName, Class<? extends Enum> cls)
+      throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
     Method method = cls.getMethod("values");
     Enum<?>[] values = (Enum<?>[]) method.invoke(null);
 
-    Assert.assertEquals("cse.ut.EnumAbc", cls.getName());
+    Assert.assertEquals(expectName, cls.getName());
     Assert.assertEquals(2, values.length);
     Assert.assertEquals("a", values[0].name());
     Assert.assertEquals(0, values[0].ordinal());
@@ -192,8 +255,10 @@ public class TestJavassistUtils {
 
   @Test
   public void managerClassPool() {
-    ClassLoader classLoader1 = new ClassLoader() { };
-    ClassLoader classLoader2 = new ClassLoader() { };
+    ClassLoader classLoader1 = new ClassLoader() {
+    };
+    ClassLoader classLoader2 = new ClassLoader() {
+    };
 
     ClassPool p1 = Deencapsulation.invoke(JavassistUtils.class, "getOrCreateClassPool", classLoader1);
     ClassPool p2 = Deencapsulation.invoke(JavassistUtils.class, "getOrCreateClassPool", classLoader2);
