@@ -94,6 +94,7 @@ public class MicroserviceVersions {
 
   public void submitPull() {
     pendingPullCount.incrementAndGet();
+
     pullInstances();
   }
 
@@ -108,8 +109,7 @@ public class MicroserviceVersions {
         revision);
     if (microserviceInstances == null) {
       // exception happens and try pull again later.
-      pendingPullCount.incrementAndGet();
-      appManager.getEventBus().post(new PullMicroserviceVersionsInstancesEvent(this, TimeUnit.SECONDS.toMillis(1)));
+      postPullInstanceEvent(TimeUnit.SECONDS.toMillis(1));
       return;
     }
     if (!microserviceInstances.isNeedRefresh()) {
@@ -118,7 +118,25 @@ public class MicroserviceVersions {
     List<MicroserviceInstance> pulledInstances = microserviceInstances.getInstancesResponse().getInstances();
     String rev = microserviceInstances.getRevision();
 
-    setInstances(pulledInstances, rev);
+    safeSetInstances(pulledInstances, rev);
+  }
+
+  protected void safeSetInstances(List<MicroserviceInstance> pulledInstances, String rev) {
+    try {
+      setInstances(pulledInstances, rev);
+    } catch (Throwable e) {
+      LOGGER.error("Failed to setInstances, appId={}, microserviceName={}.",
+          getAppId(),
+          getMicroserviceName(),
+          e);
+      // exception happens and try pull again later.
+      postPullInstanceEvent(TimeUnit.SECONDS.toMillis(1));
+    }
+  }
+
+  private void postPullInstanceEvent(long msTime) {
+    pendingPullCount.incrementAndGet();
+    appManager.getEventBus().post(new PullMicroserviceVersionsInstancesEvent(this, msTime));
   }
 
   private void setInstances(List<MicroserviceInstance> pulledInstances, String rev) {
@@ -193,7 +211,6 @@ public class MicroserviceVersions {
     //   if pull 1/2/3, and then delete 3, but "delete 3" received before pull result, will have wrong 3.
     // EXPIRE::
     //   black/white config in SC changed, we must refresh all data from sc.
-    pendingPullCount.incrementAndGet();
-    appManager.getEventBus().post(new PullMicroserviceVersionsInstancesEvent(this, TimeUnit.SECONDS.toMillis(1)));
+    postPullInstanceEvent(TimeUnit.MILLISECONDS.toMillis(1));
   }
 }
