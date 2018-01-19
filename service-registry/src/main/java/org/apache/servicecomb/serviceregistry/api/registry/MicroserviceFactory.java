@@ -56,7 +56,7 @@ public class MicroserviceFactory {
     microservice.setAppId(configuration.getString(CONFIG_APPLICATION_ID_KEY, DEFAULT_APPLICATION_ID));
     microservice.setVersion(configuration.getString(CONFIG_QUALIFIED_MICROSERVICE_VERSION_KEY,
         DEFAULT_MICROSERVICE_VERSION));
-    microservice.setDescription(configuration.getString(CONFIG_QUALIFIED_MICROSERVICE_DESCRIPTION_KEY, ""));
+    setDescription(configuration, microservice);
     microservice.setLevel(configuration.getString(CONFIG_QUALIFIED_MICROSERVICE_ROLE_KEY, "FRONT"));
     microservice.setPaths(ConfigurePropertyUtils.getMicroservicePaths(configuration));
     Map<String, String> propertiesMap = MicroservicePropertiesLoader.INSTANCE.loadProperties(configuration);
@@ -76,6 +76,24 @@ public class MicroserviceFactory {
     microservice.setRegisterBy(CONFIG_DEFAULT_REGISTER_BY);
 
     return microservice;
+  }
+
+  /**
+   * {@code service_description.description} is split by {@code ,},
+   * need to combine the description array to raw description.
+   */
+  private void setDescription(Configuration configuration, Microservice microservice) {
+    String[] descriptionArray = configuration.getStringArray(CONFIG_QUALIFIED_MICROSERVICE_DESCRIPTION_KEY);
+    if (null == descriptionArray || descriptionArray.length < 1) {
+      return;
+    }
+
+    StringBuilder rawDescriptionBuilder = new StringBuilder();
+    for (String desc : descriptionArray) {
+      rawDescriptionBuilder.append(desc).append(",");
+    }
+
+    microservice.setDescription(rawDescriptionBuilder.substring(0, rawDescriptionBuilder.length() - 1));
   }
 
   private boolean allowCrossApp(Map<String, String> propertiesMap) {
