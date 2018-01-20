@@ -17,6 +17,9 @@
 
 package org.apache.servicecomb.common.rest.codec;
 
+import java.text.FieldPosition;
+import java.util.Date;
+
 import com.fasterxml.jackson.core.JsonParser.Feature;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JavaType;
@@ -24,6 +27,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.type.TypeFactory;
 import com.fasterxml.jackson.databind.util.ISO8601DateFormat;
+import com.fasterxml.jackson.databind.util.ISO8601Utils;
 
 public final class RestObjectMapper extends ObjectMapper {
   public static final RestObjectMapper INSTANCE = new RestObjectMapper();
@@ -34,7 +38,18 @@ public final class RestObjectMapper extends ObjectMapper {
 
   private RestObjectMapper() {
     // swagger中要求date使用ISO8601格式传递，这里与之做了功能绑定，这在cse中是没有问题的
-    setDateFormat(new ISO8601DateFormat());
+    setDateFormat(new ISO8601DateFormat() {
+      private static final long serialVersionUID = 7798938088541203312L;
+
+      // to support millis
+      @Override
+      public StringBuffer format(Date date, StringBuffer toAppendTo, FieldPosition fieldPosition) {
+        String value = ISO8601Utils.format(date, true);
+        toAppendTo.append(value);
+        return toAppendTo;
+      }
+    });
+
     getFactory().disable(Feature.AUTO_CLOSE_SOURCE);
     disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
     disable(SerializationFeature.FAIL_ON_EMPTY_BEANS);

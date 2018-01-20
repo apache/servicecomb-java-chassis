@@ -131,7 +131,7 @@ public class TestCookieProcessor {
   @Test
   public void testSetValueDate() throws Exception {
     Date date = new Date();
-    String strDate = ISO8601Utils.format(date);
+    String strDate = ISO8601Utils.format(date, true);
 
     createClientRequest();
 
