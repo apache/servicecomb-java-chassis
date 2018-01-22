@@ -36,7 +36,7 @@ import io.prometheus.client.exporter.HTTPServer;
 
 @Component
 public class MetricsPublisher implements ApplicationListener<ApplicationEvent> {
-  private static final Logger LOGGER = LoggerFactory.getLogger(MetricsPublisher.class);
+  private static final Logger logger = LoggerFactory.getLogger(MetricsPublisher.class);
 
   private static final String METRICS_PROMETHEUS_PORT = "servicecomb.metrics.prometheus.port";
 
@@ -52,7 +52,7 @@ public class MetricsPublisher implements ApplicationListener<ApplicationEvent> {
     this.metricsCollector.register();
     try {
       this.httpServer = new HTTPServer(new InetSocketAddress(publishPort), CollectorRegistry.defaultRegistry, true);
-      LOGGER.info("Prometheus httpServer listened {}.", publishPort);
+      logger.info("Prometheus httpServer listened {}.", publishPort);
     } catch (IOException e) {
       throw new ServiceCombException("create http publish server failed", e);
     }
@@ -66,6 +66,6 @@ public class MetricsPublisher implements ApplicationListener<ApplicationEvent> {
 
     httpServer.stop();
     httpServer = null;
-    LOGGER.info("Prometheus httpServer stopped.");
+    logger.info("Prometheus httpServer stopped.");
   }
 }

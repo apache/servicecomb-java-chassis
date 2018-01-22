@@ -27,7 +27,7 @@
   <modelVersion>4.0.0</modelVersion>
 
   <artifactId>metrics-prometheus</artifactId>
-  <name>Java Chassis::Metrics::Prometheus Integration</name>
+  <name>Java Chassis::Metrics::Integration::Prometheus</name>
 
   <dependencies>
     <dependency>
