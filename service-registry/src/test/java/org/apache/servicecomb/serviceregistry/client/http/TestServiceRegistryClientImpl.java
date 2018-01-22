@@ -29,6 +29,7 @@ import javax.xml.ws.Holder;
 import org.apache.log4j.Appender;
 import org.apache.log4j.Logger;
 import org.apache.log4j.spi.LoggingEvent;
+import org.apache.servicecomb.foundation.common.net.IpPort;
 import org.apache.servicecomb.serviceregistry.api.registry.Microservice;
 import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceFactory;
 import org.apache.servicecomb.serviceregistry.api.response.GetExistenceResponse;
@@ -307,5 +308,17 @@ public class TestServiceRegistryClientImpl {
   @Test
   public void testFindServiceInstance() {
     Assert.assertNull(oClient.findServiceInstance("aaa", "bbb"));
+  }
+
+  @Test
+  public void findServiceInstance_consumerId_null() {
+    new MockUp<IpPortManager>(ipPortManager) {
+      @Mock
+      IpPort getAvailableAddress() {
+        throw new Error("must not invoke this.");
+      }
+    };
+
+    Assert.assertNull(oClient.findServiceInstance(null, "appId", "serviceName", "1.0.0+"));
   }
 }

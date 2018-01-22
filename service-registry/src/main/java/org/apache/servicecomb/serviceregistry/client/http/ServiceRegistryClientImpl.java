@@ -583,6 +583,15 @@ public final class ServiceRegistryClientImpl implements ServiceRegistryClient {
   @Override
   public MicroserviceInstances findServiceInstances(String consumerId, String appId, String serviceName,
       String versionRule, String revision) {
+    // must register self first, and then invoke findServiceInstances
+    if (consumerId == null) {
+      LOGGER.error("find microservice instance {}/{}/{} failed, not registered to serviceCenter.",
+          appId,
+          serviceName,
+          versionRule);
+      return null;
+    }
+
     MicroserviceInstances microserviceInstances = new MicroserviceInstances();
     IpPort ipPort = ipPortManager.getAvailableAddress();
 
