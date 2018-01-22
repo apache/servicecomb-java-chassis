@@ -15,10 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.metrics.overwatch;
+package org.apache.servicecomb.metrics.overwatch.dto;
 
 public class InstanceStatus {
   private final Integer rpm;
+
   private final Integer fpm;
 
   public Integer getRpm() {

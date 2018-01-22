@@ -15,26 +15,44 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.metrics.overwatch;
+package org.apache.servicecomb.metrics.overwatch.dto;
 
-import org.apache.servicecomb.core.BootListener;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+public class SystemFailure {
+  private final Integer time;
 
-@Component
-public class MetricsBootListener implements BootListener {
+  private final String system;
 
-  private final MetricsSender sender;
+  private final String host;
 
-  @Autowired
-  public MetricsBootListener(MetricsSender sender) {
-    this.sender = sender;
+  private final String url;
+
+  private final String status;
+
+  public Integer getTime() {
+    return time;
   }
 
-  @Override
-  public void onBootEvent(BootEvent event) {
-    if (EventType.BEFORE_REGISTRY.equals(event.getEventType())) {
-      this.sender.startSend();
-    }
+  public String getSystem() {
+    return system;
+  }
+
+  public String getHost() {
+    return host;
+  }
+
+  public String getUrl() {
+    return url;
+  }
+
+  public String getStatus() {
+    return status;
+  }
+
+  public SystemFailure(Integer time, String system, String host, String url, String status) {
+    this.time = time;
+    this.system = system;
+    this.host = host;
+    this.url = url;
+    this.status = status;
   }
 }

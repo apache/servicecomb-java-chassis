@@ -15,26 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.metrics.overwatch;
+package org.apache.servicecomb.metrics.push;
 
-import java.util.Map;
+import org.apache.servicecomb.metrics.common.RegistryMetric;
 
-public class SystemStatus {
-  private final Integer time;
+public interface MetricsPusher {
+  long getWindowTime();
 
-  private final Map<String, Map<String, Map<String, InstanceStatus>>> stats;
+  String getServiceName();
 
-  public Integer getTime() {
-    return time;
-  }
-
-  public Map<String, Map<String, Map<String, InstanceStatus>>> getStats() {
-    return stats;
-  }
-
-  public SystemStatus(Integer time,
-      Map<String, Map<String, Map<String, InstanceStatus>>> stats) {
-    this.time = time;
-    this.stats = stats;
-  }
+  void push(RegistryMetric metric);
 }

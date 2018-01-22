@@ -15,10 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.metrics.overwatch;
+package org.apache.servicecomb.metrics.overwatch.dto;
 
-import org.apache.servicecomb.metrics.common.RegistryMetric;
+import java.util.Map;
 
-public interface MetricsConvertor {
-  SystemStatus convert(String serviceName, RegistryMetric metric);
+public class SystemStatus {
+  private final Integer time;
+
+  private final Map<String, Map<String, Map<String, InstanceStatus>>> stats;
+
+  public Integer getTime() {
+    return time;
+  }
+
+  public Map<String, Map<String, Map<String, InstanceStatus>>> getStats() {
+    return stats;
+  }
+
+  public SystemStatus(Integer time,
+      Map<String, Map<String, Map<String, InstanceStatus>>> stats) {
+    this.time = time;
+    this.stats = stats;
+  }
 }
