@@ -70,7 +70,10 @@ public abstract class AbstractConverter implements Converter {
 
       return result;
     } catch (IllegalArgumentException e) {
-      LOGGER.info("failed to load generic class, use {}.", result.getGenericSignature(), e);
+      LOGGER.info("failed to load generic class {}, use {}. cause: {}.",
+          rawClassName,
+          result.getGenericSignature(),
+          e.getMessage());
       return result;
     }
   }
