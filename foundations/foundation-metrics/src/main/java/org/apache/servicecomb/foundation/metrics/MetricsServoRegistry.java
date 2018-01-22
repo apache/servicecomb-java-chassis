@@ -444,7 +444,7 @@ public class MetricsServoRegistry implements InitializingBean {
   }
 
   /**
-   * Implementation of request metrics with using servo guage metric type.
+   * Implementation of request metrics with using servo gauge metric type.
    */
   protected abstract class GaugeMetric extends AbstractMonitor<Number> implements Gauge<Number> {
 
