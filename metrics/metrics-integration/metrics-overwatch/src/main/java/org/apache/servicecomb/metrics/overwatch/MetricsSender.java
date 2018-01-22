@@ -22,6 +22,7 @@ import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import java.util.concurrent.Executors;
 
 import org.apache.servicecomb.metrics.core.publish.DataSource;
+import org.apache.servicecomb.serviceregistry.RegistryUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,6 +50,8 @@ public class MetricsSender {
 
   private final RestTemplate template;
 
+  private String serviceName;
+
   @Autowired
   public MetricsSender(DataSource dataSource, MetricsConvertor formatter) {
     this.dataSource = dataSource;
@@ -64,15 +67,18 @@ public class MetricsSender {
           METRICS_OVERWATCH_WINDOW_TIME + " no set or illegal value, use datasource first window time : " + windowTime);
     }
     this.windowTime = windowTime;
-
     this.template = new RestTemplate();
+  }
 
+  public void startSend() {
+    serviceName = RegistryUtils.getMicroservice().getServiceName();
     final Runnable executor = this::sendMetrics;
     Executors.newScheduledThreadPool(1).scheduleWithFixedDelay(executor, 0, windowTime, MILLISECONDS);
   }
 
   public void sendMetrics() {
-    SystemStatus systemStatus = formatter.convert(dataSource.getRegistryMetric(this.windowTime));
+    SystemStatus systemStatus = formatter.convert(this.serviceName, dataSource.getRegistryMetric(this.windowTime));
+
     ResponseEntity<String> result = this.template.postForEntity(this.overwatchURL, systemStatus, String.class);
   }
 }

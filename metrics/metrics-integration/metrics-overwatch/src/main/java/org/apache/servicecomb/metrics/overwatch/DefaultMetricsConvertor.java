@@ -29,22 +29,21 @@ import org.springframework.stereotype.Component;
 @Component
 public class DefaultMetricsConvertor implements MetricsConvertor {
   @Override
-  public SystemStatus convert(RegistryMetric metric) {
-
-    Map<String, Map<String, InstanceStatus>> results = new HashMap<>();
-
+  public SystemStatus convert(String serviceName, RegistryMetric metric) {
+    Map<String, Map<String, Map<String, InstanceStatus>>> allStatus = new HashMap<>();
+    Map<String, Map<String, InstanceStatus>> callServiceStatus = new HashMap<>();
+    allStatus.put(serviceName, callServiceStatus);
     for (Entry<String, ConsumerInvocationMetric> entry : metric.getConsumerMetrics().entrySet()) {
-      String serviceName = entry.getKey().split(".")[0];
-      Map<String, InstanceStatus> instanceStatus = results.computeIfAbsent(serviceName, s -> new HashMap<>());
+      String callServiceName = entry.getKey().split(".")[0];
+      Map<String, InstanceStatus> instanceStatus = callServiceStatus
+          .computeIfAbsent(callServiceName, s -> new HashMap<>());
       InstanceStatus status = instanceStatus.computeIfAbsent("total", s -> new InstanceStatus(0, 0));
-
       instanceStatus.put("total", new InstanceStatus(
           (int) (entry.getValue().getConsumerCall().getTpsValue(MetricsDimension.DIMENSION_STATUS,
               MetricsDimension.DIMENSION_STATUS_SUCCESS_FAILED_SUCCESS).getValue() * 60) + status.getRpm(),
           (int) (entry.getValue().getConsumerCall().getTpsValue(MetricsDimension.DIMENSION_STATUS,
               MetricsDimension.DIMENSION_STATUS_SUCCESS_FAILED_FAILED).getValue() * 60) + status.getFpm()));
     }
-
-    return new SystemStatus((int) (System.currentTimeMillis() / 1000), "ServiceComb", results);
+    return new SystemStatus((int) (System.currentTimeMillis() / 1000), allStatus);
   }
 }

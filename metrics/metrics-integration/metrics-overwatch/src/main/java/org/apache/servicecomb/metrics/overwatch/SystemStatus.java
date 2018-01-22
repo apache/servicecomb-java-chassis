@@ -22,27 +22,19 @@ import java.util.Map;
 public class SystemStatus {
   private final Integer time;
 
-  private final String system;
-
-  private final Map<String, Map<String, InstanceStatus>> stats;
+  private final Map<String, Map<String, Map<String, InstanceStatus>>> stats;
 
   public Integer getTime() {
     return time;
   }
 
-  public String getSystem() {
-    return system;
-  }
-
-  public Map<String, Map<String, InstanceStatus>> getStats() {
+  public Map<String, Map<String, Map<String, InstanceStatus>>> getStats() {
     return stats;
   }
 
-  public SystemStatus(Integer time, String system, Map<String, Map<String, InstanceStatus>> stats) {
+  public SystemStatus(Integer time,
+      Map<String, Map<String, Map<String, InstanceStatus>>> stats) {
     this.time = time;
-    this.system = system;
     this.stats = stats;
   }
-
-
 }

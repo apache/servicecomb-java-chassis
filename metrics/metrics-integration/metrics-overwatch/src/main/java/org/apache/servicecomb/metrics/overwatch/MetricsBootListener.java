@@ -17,8 +17,24 @@
 
 package org.apache.servicecomb.metrics.overwatch;
 
-import org.apache.servicecomb.metrics.common.RegistryMetric;
+import org.apache.servicecomb.core.BootListener;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
-public interface MetricsConvertor {
-  SystemStatus convert(String serviceName, RegistryMetric metric);
+@Component
+public class MetricsBootListener implements BootListener {
+
+  private final MetricsSender sender;
+
+  @Autowired
+  public MetricsBootListener(MetricsSender sender) {
+    this.sender = sender;
+  }
+
+  @Override
+  public void onBootEvent(BootEvent event) {
+    if (EventType.BEFORE_REGISTRY.equals(event.getEventType())) {
+      this.sender.startSend();
+    }
+  }
 }
