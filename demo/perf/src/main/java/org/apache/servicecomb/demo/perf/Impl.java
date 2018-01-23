@@ -55,7 +55,7 @@ public class Impl {
       return buildFromMemoryResponse(id);
     }
 
-    return intf.syncQuery(id, step, all, fromDB);
+    return intf.syncQuery(id, step + 1, all, fromDB);
   }
 
   public String buildFromMemoryResponse(String id) {
@@ -76,6 +76,6 @@ public class Impl {
       return future;
     }
 
-    return intf.asyncQuery(id, step, all, fromDB);
+    return intf.asyncQuery(id, step + 1, all, fromDB);
   }
 }
