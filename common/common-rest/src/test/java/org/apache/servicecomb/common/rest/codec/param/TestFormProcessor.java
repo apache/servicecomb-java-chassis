@@ -40,6 +40,7 @@ import mockit.Mock;
 import mockit.MockUp;
 import mockit.Mocked;
 
+@SuppressWarnings("deprecation")
 public class TestFormProcessor {
   @Mocked
   HttpServletRequest request;

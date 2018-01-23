@@ -29,6 +29,7 @@ import com.fasterxml.jackson.databind.type.TypeFactory;
 import com.fasterxml.jackson.databind.util.ISO8601DateFormat;
 import com.fasterxml.jackson.databind.util.ISO8601Utils;
 
+@SuppressWarnings("deprecation")
 public final class RestObjectMapper extends ObjectMapper {
   public static final RestObjectMapper INSTANCE = new RestObjectMapper();
 

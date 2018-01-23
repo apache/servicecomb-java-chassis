@@ -41,6 +41,7 @@ import mockit.Mock;
 import mockit.MockUp;
 import mockit.Mocked;
 
+@SuppressWarnings("deprecation")
 public class TestHeaderProcessor {
   @Mocked
   HttpServletRequest request;

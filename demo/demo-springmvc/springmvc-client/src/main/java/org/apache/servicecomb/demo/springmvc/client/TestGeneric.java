@@ -30,6 +30,7 @@ import org.springframework.web.client.RestTemplate;
 
 import com.fasterxml.jackson.databind.util.ISO8601Utils;
 
+@SuppressWarnings("deprecation")
 public class TestGeneric {
   private CodeFirstSpringmvcIntf intf;
 
