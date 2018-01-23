@@ -17,6 +17,8 @@
 
 package org.apache.servicecomb.core.provider.consumer;
 
+import javax.xml.ws.Holder;
+
 import org.apache.servicecomb.core.BootListener;
 import org.apache.servicecomb.core.CseContext;
 import org.apache.servicecomb.core.Invocation;
@@ -25,6 +27,8 @@ import org.apache.servicecomb.core.definition.SchemaMeta;
 import org.apache.servicecomb.core.invocation.InvocationFactory;
 import org.apache.servicecomb.swagger.invocation.AsyncResponse;
 import org.apache.servicecomb.swagger.invocation.Response;
+import org.apache.servicecomb.swagger.invocation.context.ContextUtils;
+import org.apache.servicecomb.swagger.invocation.context.InvocationContext;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 import org.junit.Assert;
 import org.junit.Test;
@@ -34,6 +38,7 @@ import mockit.Expectations;
 import mockit.Injectable;
 import mockit.Mock;
 import mockit.MockUp;
+import mockit.Mocked;
 
 public class TestInvokerUtils {
 
@@ -61,17 +66,28 @@ public class TestInvokerUtils {
   }
 
   @Test
-  public void testReactiveInvoke() {
-    Invocation invocation = Mockito.mock(Invocation.class);
-    AsyncResponse asyncResp = Mockito.mock(AsyncResponse.class);
-    boolean validAssert;
-    try {
-      InvokerUtils.reactiveInvoke(invocation, asyncResp);
-      validAssert = true;
-    } catch (Exception e) {
-      validAssert = false;
-    }
-    Assert.assertTrue(validAssert);
+  public void testReactiveInvoke(@Mocked Invocation invocation, @Mocked InvocationContext parentContext,
+      @Mocked Response response) {
+    new MockUp<Invocation>(invocation) {
+      @Mock
+      InvocationContext getParentContext() {
+        return parentContext;
+      }
+
+      @Mock
+      void next(AsyncResponse asyncResp) {
+        asyncResp.handle(response);
+      }
+    };
+
+
+    Holder<InvocationContext> holder = new Holder<>();
+    InvokerUtils.reactiveInvoke(invocation, ar -> {
+      holder.value = ContextUtils.getInvocationContext();
+    });
+
+    Assert.assertNull(ContextUtils.getInvocationContext());
+    Assert.assertSame(parentContext, holder.value);
   }
 
   @SuppressWarnings("deprecation")

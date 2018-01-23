@@ -25,6 +25,7 @@ import org.apache.servicecomb.foundation.common.utils.EventUtils;
 import org.apache.servicecomb.swagger.invocation.AsyncResponse;
 import org.apache.servicecomb.swagger.invocation.InvocationType;
 import org.apache.servicecomb.swagger.invocation.Response;
+import org.apache.servicecomb.swagger.invocation.context.ContextUtils;
 import org.apache.servicecomb.swagger.invocation.exception.ExceptionFactory;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 import org.slf4j.Logger;
@@ -94,8 +95,13 @@ public final class InvokerUtils {
       invocation.setResponseExecutor(respExecutor);
 
       invocation.next(ar -> {
-        invocation.triggerFinishedEvent(ar.getStatusCode(), ar.isSuccessed());
-        asyncResp.handle(ar);
+        ContextUtils.setInvocationContext(invocation.getParentContext());
+        try {
+          invocation.triggerFinishedEvent(ar.getStatusCode(), ar.isSuccessed());
+          asyncResp.handle(ar);
+        } finally {
+          ContextUtils.removeInvocationContext();
+        }
       });
     } catch (Throwable e) {
       //if throw exception,we can use 500 for status code ?
