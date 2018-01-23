@@ -112,6 +112,13 @@ public class CodeFirstSpringmvc {
     }
   }
 
+  @PostMapping(path = "/upload1", produces = MediaType.TEXT_PLAIN_VALUE)
+  public String fileUpload1(@RequestPart(name = "file1") MultipartFile file1) throws IOException {
+    try (InputStream is = file1.getInputStream()) {
+      return IOUtils.toString(is);
+    }
+  }
+
   @PostMapping(path = "/upload", produces = MediaType.TEXT_PLAIN_VALUE)
   public String fileUpload(@RequestPart(name = "file1") MultipartFile file1,
       @RequestPart(name = "someFile") Part file2) {
