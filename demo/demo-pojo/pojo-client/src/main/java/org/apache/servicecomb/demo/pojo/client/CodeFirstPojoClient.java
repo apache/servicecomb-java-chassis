@@ -23,7 +23,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
+import java.util.concurrent.CountDownLatch;
 
 import javax.inject.Inject;
 
@@ -33,7 +33,12 @@ import org.apache.servicecomb.demo.DemoConst;
 import org.apache.servicecomb.demo.TestMgr;
 import org.apache.servicecomb.demo.compute.Person;
 import org.apache.servicecomb.demo.server.User;
+import org.apache.servicecomb.foundation.vertx.VertxUtils;
 import org.apache.servicecomb.provider.pojo.RpcReference;
+import org.apache.servicecomb.swagger.invocation.context.ContextUtils;
+import org.apache.servicecomb.swagger.invocation.context.InvocationContext;
+
+import io.vertx.core.Vertx;
 
 public class CodeFirstPojoClient {
   @RpcReference(microserviceName = "pojo", schemaId = "org.apache.servicecomb.demo.CodeFirstPojoIntf")
@@ -78,10 +83,33 @@ public class CodeFirstPojoClient {
       return;
     }
 
-    CompletableFuture<String> future = ((CodeFirstPojoClientIntf) codeFirst).sayHiAsync("someone");
+    Vertx vertx = VertxUtils.getOrCreateVertxByName("transport", null);
+    CountDownLatch latch = new CountDownLatch(1);
+    // vertx.runOnContext in normal thread is not a good practice
+    // here just a test, not care for this.
+    vertx.runOnContext(V -> {
+      InvocationContext context = new InvocationContext();
+      context.addContext("k", "v");
+      ContextUtils.setInvocationContext(context);
+      CompletableFuture<String> future = ((CodeFirstPojoClientIntf) codeFirst).sayHiAsync("someone");
+
+      future.thenCompose(result -> {
+        TestMgr.check("someone sayhi, context k: v", result);
+
+        TestMgr.check(true, context == ContextUtils.getInvocationContext());
+
+        return ((CodeFirstPojoClientIntf) codeFirst).sayHiAsync("someone 1");
+      }).whenComplete((r, e) -> {
+        TestMgr.check("someone 1 sayhi, context k: v", r);
+        latch.countDown();
+      });
+
+      ContextUtils.removeInvocationContext();
+    });
+
     try {
-      TestMgr.check("someone sayhi", future.get());
-    } catch (InterruptedException | ExecutionException e) {
+      latch.await();
+    } catch (InterruptedException e) {
       throw new IllegalStateException(e);
     }
   }
@@ -162,7 +190,7 @@ public class CodeFirstPojoClient {
 
   protected void testCodeFirstSayHi(CodeFirstPojoIntf codeFirst) {
     String result = codeFirst.sayHi("world");
-    TestMgr.check("world sayhi", result);
+    TestMgr.check("world sayhi, context k: null", result);
     //        TestMgr.check(202, responseEntity.getStatusCode());
   }
 
