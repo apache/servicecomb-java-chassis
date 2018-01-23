@@ -37,6 +37,7 @@ import mockit.Mock;
 import mockit.MockUp;
 import mockit.Mocked;
 
+@SuppressWarnings("deprecation")
 public class TestCookieProcessor {
   @Mocked
   HttpServletRequest request;
