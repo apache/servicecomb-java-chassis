@@ -26,11 +26,17 @@ public class SwaggerInvocation extends InvocationContext {
 
   protected Object[] swaggerArguments;
 
+  protected InvocationContext parentContext;
+
   public SwaggerInvocation() {
-    InvocationContext context = ContextUtils.getInvocationContext();
-    if (context != null) {
-      addContext(context.getContext());
+    parentContext = ContextUtils.getInvocationContext();
+    if (parentContext != null) {
+      addContext(parentContext.getContext());
     }
+  }
+
+  public InvocationContext getParentContext() {
+    return parentContext;
   }
 
   public InvocationType getInvocationType() {
