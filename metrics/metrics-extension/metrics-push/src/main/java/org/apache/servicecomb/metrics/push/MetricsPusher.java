@@ -19,10 +19,15 @@ package org.apache.servicecomb.metrics.push;
 
 import org.apache.servicecomb.metrics.common.RegistryMetric;
 
+//push metrics data to Monitor System such as zabbix
 public interface MetricsPusher {
+  //What's window time used for push,choose one from metrics window time
+  //If return less or equal 0,will auto select first metrics window time set as default
   long getWindowTime();
 
+  //Service Name
   String getServiceName();
 
+  //push implement
   void push(RegistryMetric metric);
 }

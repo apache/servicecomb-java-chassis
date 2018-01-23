@@ -78,7 +78,9 @@ public class OverwatchMetricsPublisher implements MetricsPusher {
     try {
       HttpEntity request = new HttpEntity<>(JsonUtils.writeValueAsString(systemStatus), headers);
       ResponseEntity<String> result = this.template.postForEntity(this.overwatchURL, request, String.class);
-      String content = result.toString();
+      if (result.getStatusCodeValue() != 200) {
+        logger.error("push overwatch error : " + result.toString());
+      }
     } catch (JsonProcessingException e) {
       logger.error("format status error", e);
     }
@@ -92,8 +94,8 @@ public class OverwatchMetricsPublisher implements MetricsPusher {
       String callServiceName = entry.getKey().split("\\.")[0];
       Map<String, InstanceStatus> instanceStatus = callServiceStatus
           .computeIfAbsent(callServiceName, s -> new HashMap<>());
-      InstanceStatus status = instanceStatus.computeIfAbsent("total", s -> new InstanceStatus(0, 0));
-      instanceStatus.put("total", new InstanceStatus(
+      InstanceStatus status = instanceStatus.computeIfAbsent("192.168.1.1", s -> new InstanceStatus(0, 0));
+      instanceStatus.put("192.168.1.1", new InstanceStatus(
           (int) (entry.getValue().getConsumerCall().getTpsValue(MetricsDimension.DIMENSION_STATUS,
               MetricsDimension.DIMENSION_STATUS_SUCCESS_FAILED_SUCCESS).getValue() * 60) + status.getRpm(),
           (int) (entry.getValue().getConsumerCall().getTpsValue(MetricsDimension.DIMENSION_STATUS,
