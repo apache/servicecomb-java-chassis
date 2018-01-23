@@ -745,7 +745,7 @@
       </dependency>
       <dependency>
         <groupId>org.apache.servicecomb</groupId>
-	<artifactId>foundation-config-cc</artifactId>
+	<artifactId>config-cc</artifactId>
 	<version>0.6.0-SNAPSHOT</version>
 	</dependency>
       <dependency>
