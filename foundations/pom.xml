@@ -30,7 +30,6 @@
       <module>foundation-vertx</module>
       <module>foundation-common</module>
       <module>foundation-config</module>
-      <module>foundation-config-cc</module>
       <module>foundation-metrics</module>
       <module>foundation-ssl</module>
       <module>foundation-test-scaffolding</module>

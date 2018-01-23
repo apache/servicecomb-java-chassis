@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <!--
   ~ Licensed to the Apache Software Foundation (ASF) under one or more
   ~ contributor license agreements.  See the NOTICE file distributed with
@@ -14,17 +15,17 @@
   ~ See the License for the specific language governing permissions and
   ~ limitations under the License.
   -->
-
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
   <parent>
-    <artifactId>foundations</artifactId>
+    <artifactId>dynamic-config</artifactId>
     <groupId>org.apache.servicecomb</groupId>
     <version>0.6.0-SNAPSHOT</version>
   </parent>
+  <modelVersion>4.0.0</modelVersion>
 
-  <artifactId>foundation-config-cc</artifactId>
+  <artifactId>config-cc</artifactId>
   <name>Java Chassis::Foundations::Config CC</name>
 
   <dependencies>
@@ -42,4 +43,5 @@
       <artifactId>foundation-vertx</artifactId>
     </dependency>
   </dependencies>
+
 </project>

@@ -34,7 +34,7 @@
 		</dependency>
 		<dependency>
 			<groupId>org.apache.servicecomb</groupId>
-			<artifactId>foundation-config-cc</artifactId>
+			<artifactId>config-cc</artifactId>
 		</dependency>
 	</dependencies>
 </project>

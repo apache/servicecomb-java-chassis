@@ -33,6 +33,7 @@
   <packaging>pom</packaging>
   <modules>
     <module>config-apollo</module>
+    <module>config-cc</module>
   </modules>
 
 </project>
