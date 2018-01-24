@@ -19,6 +19,7 @@ package org.apache.servicecomb.foundation.vertx.client;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.servicecomb.foundation.vertx.client.http.HttpClientWithContext;
 import org.hamcrest.Matchers;
@@ -117,9 +118,27 @@ public class TestClientPoolManager {
     pools.add(pool1);
     pools.add(pool2);
 
+    new MockUp<Thread>() {
+      @Mock
+      long getId() {
+        return 0;
+      }
+    };
+
     Assert.assertSame(pool1, poolMgr.findThreadBindClientPool());
     // find again, get the same result
     Assert.assertSame(pool1, poolMgr.findThreadBindClientPool());
+
+    new MockUp<Thread>() {
+      @Mock
+      long getId() {
+        return 1;
+      }
+    };
+
+    Assert.assertSame(pool2, poolMgr.findThreadBindClientPool());
+    // find again, get the same result
+    Assert.assertSame(pool2, poolMgr.findThreadBindClientPool());
   }
 
   @Test
@@ -140,6 +159,29 @@ public class TestClientPoolManager {
     Assert.assertNotSame(notMatchPool, result);
     // find again, get the same result
     Assert.assertSame(result, poolMgr.findByContext());
+  }
+
+  @Test
+  public void findByContext_wrongContext_reverse() {
+    HttpClientWithContext pool1 = new HttpClientWithContext(null, null);
+    HttpClientWithContext pool2 = new HttpClientWithContext(null, null);
+    pools.add(pool1);
+    pools.add(pool2);
+
+    new Expectations(VertxImpl.class) {
+      {
+        VertxImpl.context();
+        result = null;
+      }
+    };
+
+    AtomicInteger reactiveNextIndex = Deencapsulation.getField(poolMgr, "reactiveNextIndex");
+    reactiveNextIndex.set(Integer.MAX_VALUE);
+    // each time invoke find, reactiveNextIndex will inc 1
+    Assert.assertSame(pool2, poolMgr.findByContext());
+    Assert.assertSame(pool1, poolMgr.findByContext());
+    Assert.assertSame(pool2, poolMgr.findByContext());
+    Assert.assertSame(pool1, poolMgr.findByContext());
   }
 
   @Test
