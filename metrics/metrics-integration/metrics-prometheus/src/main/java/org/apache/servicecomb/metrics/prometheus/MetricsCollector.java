@@ -78,11 +78,6 @@ public class MetricsCollector extends Collector implements Collector.Describable
           .add(new MetricFamilySamples("Consumer Side", Type.UNTYPED, "Consumer Side Metrics", consumerSamples));
     }
 
-    if (registryMetric.getCustomMetrics().size() != 0) {
-      familySamples.add(getFamilySamples("User Custom", registryMetric.getCustomMetrics()));
-    }
-
-
     if (registryMetric.getProducerMetrics().size() != 0) {
       List<Sample> producerSamples = new ArrayList<>();
       for (ProducerInvocationMetric metric : registryMetric.getProducerMetrics().values()) {
@@ -91,6 +86,10 @@ public class MetricsCollector extends Collector implements Collector.Describable
       }
       familySamples
           .add(new MetricFamilySamples("Producer Side", Type.UNTYPED, "Producer Side Metrics", producerSamples));
+    }
+
+    if (registryMetric.getCustomMetrics().size() != 0) {
+      familySamples.add(getFamilySamples("User Custom", registryMetric.getCustomMetrics()));
     }
 
     return familySamples;
@@ -103,6 +102,8 @@ public class MetricsCollector extends Collector implements Collector.Describable
             new ArrayList<>(), new ArrayList<>(), entry.getValue().doubleValue()))
         .collect(Collectors.toList());
     return new MetricFamilySamples(name, Type.UNTYPED, name + " Metrics", samples);
+  }
+
   private List<Sample> convertConsumerMetric(ConsumerInvocationMetric metric) {
     return convertMetricValues(metric.getConsumerLatency().toMap());
   }
