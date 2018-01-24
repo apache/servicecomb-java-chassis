@@ -81,10 +81,10 @@ public class CallMetric {
 
   public Map<String, Number> toMap() {
     Map<String, Number> metrics = new HashMap<>();
-    for (MetricValue totalValue : totalValues) {
+    for (LongMetricValue totalValue : totalValues) {
       metrics.put(prefix + ".total." + totalValue.getKey(), totalValue.getValue());
     }
-    for (MetricValue tpsValue : tpsValues) {
+    for (DoubleMetricValue tpsValue : tpsValues) {
       metrics.put(prefix + ".tps." + tpsValue.getKey(), tpsValue.getValue());
     }
     return metrics;
