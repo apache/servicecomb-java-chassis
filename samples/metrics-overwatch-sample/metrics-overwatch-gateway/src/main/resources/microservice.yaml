@@ -1,4 +1,4 @@
-﻿## ---------------------------------------------------------------------------
+## ---------------------------------------------------------------------------
 ## Licensed to the Apache Software Foundation (ASF) under one or more
 ## contributor license agreements.  See the NOTICE file distributed with
 ## this work for additional information regarding copyright ownership.
@@ -15,21 +15,16 @@
 ## limitations under the License.
 ## ---------------------------------------------------------------------------
 
-APPLICATION_ID: springmvc-sample
+APPLICATION_ID: overwatch
 service_description:
-  name: springmvcConsumer
-  version: 0.0.2
+  name: Gateway
+  version: 0.0.1
 cse:
   service:
     registry:
       address: http://127.0.0.1:30100
-  handler:
-    chain:
-      Consumer:
-        default: bizkeeper-consumer,loadbalance
-  isolation:
-    Consumer:
-      enabled: false
+  rest:
+    address: 0.0.0.0:9091
 
 servicecomb:
   metrics:

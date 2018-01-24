@@ -16,6 +16,8 @@
  */
 package org.apache.servicecomb.samples.springmvc.consumer;
 
+import java.util.Random;
+
 import org.apache.servicecomb.foundation.common.utils.BeanUtils;
 import org.apache.servicecomb.foundation.common.utils.Log4jUtils;
 import org.apache.servicecomb.provider.pojo.RpcReference;
@@ -35,21 +37,33 @@ public class SpringmvcConsumerMain {
 
   public static void main(String[] args) throws Exception {
     init();
-    Person person = new Person();
-    person.setName("ServiceComb/Java Chassis");
 
-    // RestTemplate Consumer or POJO Consumer. You can choose whatever you like
-    // RestTemplate Consumer
-    String sayHiResult =
-        restTemplate.postForObject("cse://springmvc/springmvchello/sayhi?name=Java Chassis", null, String.class);
-    String sayHelloResult = restTemplate.postForObject("cse://springmvc/springmvchello/sayhello", person, String.class);
-    System.out.println("RestTemplate Consumer or POJO Consumer.  You can choose whatever you like.");
-    System.out.println("RestTemplate consumer sayhi services: " + sayHiResult);
-    System.out.println("RestTemplate consumer sayhello services: " + sayHelloResult);
+    Random r = new Random();
 
-    // POJO Consumer
-    System.out.println("POJO consumer sayhi services: " + hello.sayHi("Java Chassis"));
-    System.out.println("POJO consumer sayhi services: " + hello.sayHello(person));
+    while (true) {
+
+      Thread.sleep(r.nextInt(1000));
+
+      try {
+        Person person = new Person();
+        person.setName("ServiceComb/Java Chassis");
+
+        // RestTemplate Consumer or POJO Consumer. You can choose whatever you like
+        // RestTemplate Consumer
+        String sayHiResult =
+            restTemplate.postForObject("cse://springmvc/springmvchello/sayhi?name=Java Chassis", null, String.class);
+        String sayHelloResult = restTemplate
+            .postForObject("cse://springmvc/springmvchello/sayhello", person, String.class);
+        System.out.println("RestTemplate Consumer or POJO Consumer.  You can choose whatever you like.");
+        System.out.println("RestTemplate consumer sayhi services: " + sayHiResult);
+        System.out.println("RestTemplate consumer sayhello services: " + sayHelloResult);
+
+        // POJO Consumer
+        System.out.println("POJO consumer sayhi services: " + hello.sayHi("Java Chassis"));
+        System.out.println("POJO consumer sayhi services: " + hello.sayHello(person));
+      }
+      catch (Exception e){}
+    }
   }
 
   public static void init() throws Exception {
