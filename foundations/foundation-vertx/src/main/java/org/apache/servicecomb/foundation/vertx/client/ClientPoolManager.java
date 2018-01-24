@@ -18,12 +18,9 @@
 package org.apache.servicecomb.foundation.vertx.client;
 
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicInteger;
-
-import org.apache.servicecomb.foundation.common.concurrent.ConcurrentHashMapEx;
 
 import io.vertx.core.Context;
 import io.vertx.core.Vertx;
@@ -50,12 +47,9 @@ public class ClientPoolManager<CLIENT_POOL> {
 
   private List<CLIENT_POOL> pools = new CopyOnWriteArrayList<>();
 
-  private AtomicInteger bindIndex = new AtomicInteger();
-
-  // send的调用线程与CLIENT_POOL的绑定关系，不直接用hash，是担心分配不均
-  // key是调用者的线程id
-  // TODO:要不要考虑已经绑定的线程消失了的场景？
-  private Map<Long, CLIENT_POOL> threadBindMap = new ConcurrentHashMapEx<>();
+  // reactive mode, when call from other thread, must select a context for it
+  // if we use threadId to hash a context, will always select the same context from one thread
+  private AtomicInteger reactiveNextIndex = new AtomicInteger();
 
   public ClientPoolManager(Vertx vertx, ClientPoolFactory<CLIENT_POOL> factory) {
     this.vertx = vertx;
@@ -103,18 +97,15 @@ public class ClientPoolManager<CLIENT_POOL> {
     // 2.vertx worker thread
     // 3.other vertx thread
     // select a existing context
-    return nextPool();
+    int idx = reactiveNextIndex.getAndIncrement() % pools.size();
+    if (idx < 0) {
+      idx = -idx;
+    }
+    return pools.get(idx);
   }
 
   public CLIENT_POOL findThreadBindClientPool() {
-    long threadId = Thread.currentThread().getId();
-    return threadBindMap.computeIfAbsent(threadId, tid -> {
-      return nextPool();
-    });
-  }
-
-  protected CLIENT_POOL nextPool() {
-    int idx = bindIndex.getAndIncrement() % pools.size();
+    int idx = (int) (Thread.currentThread().getId() % pools.size());
     return pools.get(idx);
   }
 }
