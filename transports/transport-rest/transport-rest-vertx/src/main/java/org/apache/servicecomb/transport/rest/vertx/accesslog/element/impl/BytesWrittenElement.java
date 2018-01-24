@@ -22,22 +22,22 @@ import org.apache.servicecomb.transport.rest.vertx.accesslog.element.AccessLogEl
 
 import io.vertx.core.http.HttpServerResponse;
 
-/**
- * Zero bytes written as 0
- */
-public class BytesWrittenV1Element implements AccessLogElement {
+public class BytesWrittenElement implements AccessLogElement {
+  // print zeroBytes when bytes is zero
+  private final String zeroBytes;
 
-  public static final String ZERO_BYTES = "0";
+  public BytesWrittenElement(String zeroBytesPlaceholder) {
+    zeroBytes = zeroBytesPlaceholder;
+  }
 
   @Override
   public String getFormattedElement(AccessLogParam accessLogParam) {
     HttpServerResponse response = accessLogParam.getRoutingContext().response();
     if (null == response) {
-      return ZERO_BYTES;
+      return zeroBytes;
     }
 
     long bytesWritten = response.bytesWritten();
-
-    return String.valueOf(bytesWritten);
+    return 0 == bytesWritten ? zeroBytes : String.valueOf(bytesWritten);
   }
 }

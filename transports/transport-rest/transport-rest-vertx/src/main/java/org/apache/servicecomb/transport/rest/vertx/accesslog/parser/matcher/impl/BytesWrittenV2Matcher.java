@@ -18,11 +18,11 @@
 package org.apache.servicecomb.transport.rest.vertx.accesslog.parser.matcher.impl;
 
 import org.apache.servicecomb.transport.rest.vertx.accesslog.element.AccessLogElement;
-import org.apache.servicecomb.transport.rest.vertx.accesslog.element.impl.BytesWrittenV2Element;
+import org.apache.servicecomb.transport.rest.vertx.accesslog.element.impl.BytesWrittenElement;
 
 public class BytesWrittenV2Matcher extends SinglePatternImmutableElementMatcher {
 
-  public static final BytesWrittenV2Element ELEMENT = new BytesWrittenV2Element();
+  public static final BytesWrittenElement ELEMENT = new BytesWrittenElement("-");
 
   @Override
   protected String getPlaceholderPattern() {

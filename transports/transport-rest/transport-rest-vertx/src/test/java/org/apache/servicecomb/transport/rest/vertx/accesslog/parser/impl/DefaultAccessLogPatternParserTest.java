@@ -23,8 +23,7 @@ import static org.junit.Assert.fail;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.servicecomb.transport.rest.vertx.accesslog.element.impl.BytesWrittenV1Element;
-import org.apache.servicecomb.transport.rest.vertx.accesslog.element.impl.BytesWrittenV2Element;
+import org.apache.servicecomb.transport.rest.vertx.accesslog.element.impl.BytesWrittenElement;
 import org.apache.servicecomb.transport.rest.vertx.accesslog.element.impl.CookieElement;
 import org.apache.servicecomb.transport.rest.vertx.accesslog.element.impl.DatetimeConfigurableElement;
 import org.apache.servicecomb.transport.rest.vertx.accesslog.element.impl.DurationMillisecondElement;
@@ -72,8 +71,8 @@ public class DefaultAccessLogPatternParserTest {
     assertEquals(RemoteHostElement.class, result.get(8).getAccessLogElement().getClass());
     assertEquals(LocalHostElement.class, result.get(9).getAccessLogElement().getClass());
     assertEquals(LocalPortElement.class, result.get(10).getAccessLogElement().getClass());
-    assertEquals(BytesWrittenV1Element.class, result.get(11).getAccessLogElement().getClass());
-    assertEquals(BytesWrittenV2Element.class, result.get(12).getAccessLogElement().getClass());
+    assertEquals(BytesWrittenElement.class, result.get(11).getAccessLogElement().getClass());
+    assertEquals(BytesWrittenElement.class, result.get(12).getAccessLogElement().getClass());
     assertEquals(FirstLineOfRequestElement.class, result.get(13).getAccessLogElement().getClass());
     assertEquals(UriPathOnlyElement.class, result.get(14).getAccessLogElement().getClass());
     assertEquals(QueryOnlyElement.class, result.get(15).getAccessLogElement().getClass());
