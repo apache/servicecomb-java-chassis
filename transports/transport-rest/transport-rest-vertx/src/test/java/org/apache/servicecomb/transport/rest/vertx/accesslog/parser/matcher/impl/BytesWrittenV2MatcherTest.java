@@ -22,7 +22,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.List;
 
-import org.apache.servicecomb.transport.rest.vertx.accesslog.element.impl.BytesWrittenV2Element;
+import org.apache.servicecomb.transport.rest.vertx.accesslog.element.impl.BytesWrittenElement;
 import org.apache.servicecomb.transport.rest.vertx.accesslog.parser.AccessLogElementExtraction;
 import org.junit.Test;
 
@@ -57,6 +57,6 @@ public class BytesWrittenV2MatcherTest {
 
   @Test
   public void getAccessLogElement() {
-    assertTrue(BytesWrittenV2Element.class.equals(MATCHER.getAccessLogElement().getClass()));
+    assertTrue(BytesWrittenElement.class.equals(MATCHER.getAccessLogElement().getClass()));
   }
 }
