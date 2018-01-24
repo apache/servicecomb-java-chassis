@@ -42,12 +42,12 @@ public class MonitorUtils {
     return value < 0 ? 0 : value;
   }
 
-  public static boolean containsTagValue(Monitor monitor, String tagKey, String tagValue) {
+  public static boolean containsTagValue(Monitor<?> monitor, String tagKey, String tagValue) {
     TagList tags = monitor.getConfig().getTags();
     return tags.containsKey(tagKey) && tagValue.equals(tags.getTag(tagKey).getValue());
   }
 
-  public static Map<String, String> convertTags(Monitor monitor) {
+  public static Map<String, String> convertTags(Monitor<?> monitor) {
     TagList tags = monitor.getConfig().getTags();
     if (tags.size() != 0) {
       Map<String, String> tagMap = new HashMap<>();

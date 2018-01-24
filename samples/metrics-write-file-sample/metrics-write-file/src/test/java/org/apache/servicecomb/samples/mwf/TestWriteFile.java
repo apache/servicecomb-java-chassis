@@ -17,7 +17,6 @@
 
 package org.apache.servicecomb.samples.mwf;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -138,22 +137,24 @@ public class TestWriteFile {
 
     StringBuilder builder = new StringBuilder();
 
-    MetricsFileWriter writer = (loggerName, filePrefix, content) ->
-        builder.append(loggerName).append(filePrefix).append(content);
+    MetricsFileWriter writer =
+        (loggerName, filePrefix, content) -> builder.append(loggerName).append(filePrefix).append(content);
 
     SystemMetric systemMetric = new SystemMetric(50, 10, 1, 2, 3,
         4, 5, 6, 7, 8);
 
     Map<String, ConsumerInvocationMetric> consumerInvocationMetricMap = new HashMap<>();
-    consumerInvocationMetricMap.put("A", new ConsumerInvocationMetric("A", "A",
-        new TimerMetric("A1", 1, 2, 3, 4),
-        new CallMetric("A2", Collections.singletonList(new LongMetricValue("A2", 100L, new HashMap<>())),
-            Collections.singletonList(new DoubleMetricValue("A2", 999.44444, new HashMap<>())))));
+    consumerInvocationMetricMap.put("A",
+        new ConsumerInvocationMetric("A", "A",
+            new TimerMetric("A1", 1, 2, 3, 4),
+            new CallMetric("A2", Collections.singletonList(new LongMetricValue("A2", 100L, new HashMap<>())),
+                Collections.singletonList(new DoubleMetricValue("A2", 999.44444, new HashMap<>())))));
 
-    consumerInvocationMetricMap.put("B", new ConsumerInvocationMetric("B", "B",
-        new TimerMetric("B1", 1, 2, 3, 4),
-        new CallMetric("B2", Collections.singletonList(new LongMetricValue("B2", 100L, new HashMap<>())),
-            Collections.singletonList(new DoubleMetricValue("B2", 888.66666, new HashMap<>())))));
+    consumerInvocationMetricMap.put("B",
+        new ConsumerInvocationMetric("B", "B",
+            new TimerMetric("B1", 1, 2, 3, 4),
+            new CallMetric("B2", Collections.singletonList(new LongMetricValue("B2", 100L, new HashMap<>())),
+                Collections.singletonList(new DoubleMetricValue("B2", 888.66666, new HashMap<>())))));
 
     RegistryMetric metric = new RegistryMetric(systemMetric, consumerInvocationMetricMap, new HashMap<>(),
         new HashMap<>());
