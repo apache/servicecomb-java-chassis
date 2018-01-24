@@ -42,10 +42,15 @@ import org.apache.servicecomb.transport.rest.vertx.accesslog.parser.matcher.impl
 import org.apache.servicecomb.transport.rest.vertx.accesslog.parser.matcher.impl.RequestHeaderElementMatcher;
 import org.apache.servicecomb.transport.rest.vertx.accesslog.parser.matcher.impl.ResponseHeaderElementMatcher;
 import org.apache.servicecomb.transport.rest.vertx.accesslog.parser.matcher.impl.StatusMatcher;
+import org.apache.servicecomb.transport.rest.vertx.accesslog.parser.matcher.impl.TraceIdMatcher;
 import org.apache.servicecomb.transport.rest.vertx.accesslog.parser.matcher.impl.UriPathIncludeQueryMatcher;
 import org.apache.servicecomb.transport.rest.vertx.accesslog.parser.matcher.impl.UriPathOnlyMatcher;
 import org.apache.servicecomb.transport.rest.vertx.accesslog.parser.matcher.impl.VersionOrProtocolMatcher;
 
+/**
+ * contains all kinds of {@link AccessLogElementMatcher},
+ * generate a chain of {@link AccessLogElementExtraction} according to the raw access log pattern.
+ */
 public class DefaultAccessLogPatternParser implements AccessLogPatternParser {
   private static final List<AccessLogElementMatcher> MATCHER_LIST = Arrays.asList(
       new RequestHeaderElementMatcher(),
@@ -66,7 +71,8 @@ public class DefaultAccessLogPatternParser implements AccessLogPatternParser {
       new MethodMatcher(),
       new QueryOnlyMatcher(),
       new UriPathOnlyMatcher(),
-      new StatusMatcher());
+      new StatusMatcher(),
+      new TraceIdMatcher());
 
   public static final Comparator<AccessLogElementExtraction> ACCESS_LOG_ELEMENT_EXTRACTION_COMPARATOR = Comparator
       .comparingInt(AccessLogElementExtraction::getStart);
@@ -101,8 +107,8 @@ public class DefaultAccessLogPatternParser implements AccessLogPatternParser {
 
   /**
    * The content not matched in rawPattern will be printed as it is, so should be converted to {@link PlainTextElement}
-   * @param rawPattern
-   * @param extractionList
+   * @param rawPattern access log string pattern
+   * @param extractionList {@link AccessLogElementExtraction} list indicating the position of each access log element
    */
   private void fillInPlainTextElement(String rawPattern, List<AccessLogElementExtraction> extractionList) {
     int cursor = 0;

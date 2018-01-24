@@ -18,11 +18,15 @@
 package org.apache.servicecomb.transport.rest.vertx.accesslog.parser.impl;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
+import org.apache.servicecomb.transport.rest.vertx.accesslog.element.AccessLogElement;
 import org.apache.servicecomb.transport.rest.vertx.accesslog.element.impl.BytesWrittenElement;
 import org.apache.servicecomb.transport.rest.vertx.accesslog.element.impl.CookieElement;
 import org.apache.servicecomb.transport.rest.vertx.accesslog.element.impl.DatetimeConfigurableElement;
@@ -38,10 +42,12 @@ import org.apache.servicecomb.transport.rest.vertx.accesslog.element.impl.Remote
 import org.apache.servicecomb.transport.rest.vertx.accesslog.element.impl.RequestHeaderElement;
 import org.apache.servicecomb.transport.rest.vertx.accesslog.element.impl.ResponseHeaderElement;
 import org.apache.servicecomb.transport.rest.vertx.accesslog.element.impl.StatusElement;
+import org.apache.servicecomb.transport.rest.vertx.accesslog.element.impl.TraceIdElement;
 import org.apache.servicecomb.transport.rest.vertx.accesslog.element.impl.UriPathIncludeQueryElement;
 import org.apache.servicecomb.transport.rest.vertx.accesslog.element.impl.UriPathOnlyElement;
 import org.apache.servicecomb.transport.rest.vertx.accesslog.element.impl.VersionOrProtocolElement;
 import org.apache.servicecomb.transport.rest.vertx.accesslog.parser.AccessLogElementExtraction;
+import org.hamcrest.Matchers;
 import org.junit.Test;
 
 import mockit.Deencapsulation;
@@ -52,40 +58,48 @@ public class DefaultAccessLogPatternParserTest {
       + "%{yyyy MM dd HH:mm:ss|GMT+0|en-US}t"
       + "%{incoming-header}i"
       + "%{outgoing-header}o"
-      + "%{cookie}c";
+      + "%{cookie}c"
+      + "%SCB-traceId";
 
   private static DefaultAccessLogPatternParser accessLogPatternParser = new DefaultAccessLogPatternParser();
 
   @Test
+  @SuppressWarnings(value = "unchecked")
   public void testParsePattern() {
     List<AccessLogElementExtraction> result = accessLogPatternParser.parsePattern(ROW_PATTERN);
-    assertEquals(26, result.size());
-    assertEquals(PlainTextElement.class, result.get(0).getAccessLogElement().getClass());
-    assertEquals(MethodElement.class, result.get(1).getAccessLogElement().getClass());
-    assertEquals(PlainTextElement.class, result.get(2).getAccessLogElement().getClass());
-    assertEquals(MethodElement.class, result.get(3).getAccessLogElement().getClass());
-    assertEquals(PlainTextElement.class, result.get(4).getAccessLogElement().getClass());
-    assertEquals(StatusElement.class, result.get(5).getAccessLogElement().getClass());
-    assertEquals(DurationSecondElement.class, result.get(6).getAccessLogElement().getClass());
-    assertEquals(DurationMillisecondElement.class, result.get(7).getAccessLogElement().getClass());
-    assertEquals(RemoteHostElement.class, result.get(8).getAccessLogElement().getClass());
-    assertEquals(LocalHostElement.class, result.get(9).getAccessLogElement().getClass());
-    assertEquals(LocalPortElement.class, result.get(10).getAccessLogElement().getClass());
-    assertEquals(BytesWrittenElement.class, result.get(11).getAccessLogElement().getClass());
-    assertEquals(BytesWrittenElement.class, result.get(12).getAccessLogElement().getClass());
-    assertEquals(FirstLineOfRequestElement.class, result.get(13).getAccessLogElement().getClass());
-    assertEquals(UriPathOnlyElement.class, result.get(14).getAccessLogElement().getClass());
-    assertEquals(QueryOnlyElement.class, result.get(15).getAccessLogElement().getClass());
-    assertEquals(UriPathOnlyElement.class, result.get(16).getAccessLogElement().getClass());
-    assertEquals(QueryOnlyElement.class, result.get(17).getAccessLogElement().getClass());
-    assertEquals(UriPathIncludeQueryElement.class, result.get(18).getAccessLogElement().getClass());
-    assertEquals(VersionOrProtocolElement.class, result.get(19).getAccessLogElement().getClass());
-    assertEquals(DatetimeConfigurableElement.class, result.get(20).getAccessLogElement().getClass());
-    assertEquals(DatetimeConfigurableElement.class, result.get(21).getAccessLogElement().getClass());
-    assertEquals(DatetimeConfigurableElement.class, result.get(22).getAccessLogElement().getClass());
-    assertEquals(RequestHeaderElement.class, result.get(23).getAccessLogElement().getClass());
-    assertEquals(ResponseHeaderElement.class, result.get(24).getAccessLogElement().getClass());
-    assertEquals(CookieElement.class, result.get(25).getAccessLogElement().getClass());
+    assertEquals(27, result.size());
+
+    assertThat(result.stream().map(AccessLogElementExtraction::getAccessLogElement)
+            .filter(Objects::nonNull).map(AccessLogElement::getClass)
+            .collect(Collectors.toList()),
+        Matchers.contains(
+            PlainTextElement.class,
+            MethodElement.class,
+            PlainTextElement.class,
+            MethodElement.class,
+            PlainTextElement.class,
+            StatusElement.class,
+            DurationSecondElement.class,
+            DurationMillisecondElement.class,
+            RemoteHostElement.class,
+            LocalHostElement.class,
+            LocalPortElement.class,
+            BytesWrittenElement.class,
+            BytesWrittenElement.class,
+            FirstLineOfRequestElement.class,
+            UriPathOnlyElement.class,
+            QueryOnlyElement.class,
+            UriPathOnlyElement.class,
+            QueryOnlyElement.class,
+            UriPathIncludeQueryElement.class,
+            VersionOrProtocolElement.class,
+            DatetimeConfigurableElement.class,
+            DatetimeConfigurableElement.class,
+            DatetimeConfigurableElement.class,
+            RequestHeaderElement.class,
+            ResponseHeaderElement.class,
+            CookieElement.class,
+            TraceIdElement.class));
   }
 
   @Test

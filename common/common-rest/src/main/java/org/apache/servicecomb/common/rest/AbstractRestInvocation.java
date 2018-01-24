@@ -106,6 +106,14 @@ public abstract class AbstractRestInvocation {
     invocation.setContext(cseContext);
   }
 
+  public String getContext(String key) {
+    if (null == invocation || null == invocation.getContext()) {
+      return null;
+    }
+
+    return invocation.getContext(key);
+  }
+
   protected void scheduleInvocation() {
     OperationMeta operationMeta = restOperationMeta.getOperationMeta();
 
