@@ -217,6 +217,17 @@ public class TestAbstractRestInvocation {
   }
 
   @Test
+  public void getContext() {
+    invocation.addContext("key", "test");
+    Assert.assertEquals("test", restInvocation.getContext("key"));
+  }
+
+  @Test
+  public void getContextNull() {
+    Assert.assertEquals(null, restInvocation.getContext("key"));
+  }
+
+  @Test
   public void invokeFilterHaveResponse(@Mocked HttpServerFilter filter) {
     Response response = Response.ok("");
     new Expectations() {
