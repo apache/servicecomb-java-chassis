@@ -290,27 +290,53 @@ public class TestMicroserviceVersions {
     };
 
     microserviceVersions.safeSetInstances(null, null);
-    
+
     Assert.assertEquals(1, pendingPullCount.get());
   }
-  
-  @Test
-  public void  testIsEventAccept(){
-    MicroserviceKey key = new MicroserviceKey();
-    key.setAppId(appId);
-    key.setServiceName(microserviceName);
+
+  public void checkIsEventAccept(MicroserviceKey key, boolean expected) {
+
     MicroserviceInstanceChangedEvent changeEvent = new MicroserviceInstanceChangedEvent();
     changeEvent.setKey(key);
     boolean isEventAccept = microserviceVersions.isEventAccept(changeEvent);
-    Assert.assertEquals(true, isEventAccept);
-    
-    microserviceVersions = new MicroserviceVersions(appManager, appId, appId+Const.APP_SERVICE_SEPARATOR+microserviceName);
-    key.setAppId(appId);
-    key.setServiceName(appId+Const.APP_SERVICE_SEPARATOR+microserviceName);
-    changeEvent.setKey(key);
-    boolean isEventAcceptWhenAccrossApp = microserviceVersions.isEventAccept(changeEvent);
-    Assert.assertEquals(true, isEventAcceptWhenAccrossApp);
-    
+    Assert.assertEquals(expected, isEventAccept);
   }
 
+  @Test
+  public void testIsEventAccept() {
+    MicroserviceKey key = new MicroserviceKey();
+
+    key.setAppId(appId);
+    key.setServiceName(microserviceName);
+    checkIsEventAccept(key, true);
+
+    key.setServiceName("falseMicroserviceName");
+    checkIsEventAccept(key, false);
+
+    key.setAppId("falseAppId");
+    checkIsEventAccept(key, false);
+
+    key.setServiceName(microserviceName);
+    checkIsEventAccept(key, false);
+
+
+    key.setAppId(appId);
+    key.setServiceName(appId + Const.APP_SERVICE_SEPARATOR + microserviceName);
+
+    microserviceVersions =
+        new MicroserviceVersions(appManager, appId, appId + Const.APP_SERVICE_SEPARATOR + microserviceName);
+    checkIsEventAccept(key, true);
+
+    microserviceVersions =
+        new MicroserviceVersions(appManager, "falseAppId", appId + Const.APP_SERVICE_SEPARATOR + microserviceName);
+    checkIsEventAccept(key, false);
+
+    microserviceVersions = new MicroserviceVersions(appManager, "falseAppId",
+        "false" + appId + Const.APP_SERVICE_SEPARATOR + microserviceName);
+    checkIsEventAccept(key, false);
+
+    microserviceVersions =
+        new MicroserviceVersions(appManager, appId, "false" + appId + Const.APP_SERVICE_SEPARATOR + microserviceName);
+    checkIsEventAccept(key, false);
+  }
 }
