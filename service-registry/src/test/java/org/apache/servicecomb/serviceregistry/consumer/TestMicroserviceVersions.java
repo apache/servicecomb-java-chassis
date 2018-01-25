@@ -24,6 +24,7 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.servicecomb.serviceregistry.RegistryUtils;
+import org.apache.servicecomb.serviceregistry.api.Const;
 import org.apache.servicecomb.serviceregistry.api.MicroserviceKey;
 import org.apache.servicecomb.serviceregistry.api.registry.Microservice;
 import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
@@ -292,4 +293,24 @@ public class TestMicroserviceVersions {
     
     Assert.assertEquals(1, pendingPullCount.get());
   }
+  
+  @Test
+  public void  testIsEventAccept(){
+    MicroserviceKey key = new MicroserviceKey();
+    key.setAppId(appId);
+    key.setServiceName(microserviceName);
+    MicroserviceInstanceChangedEvent changeEvent = new MicroserviceInstanceChangedEvent();
+    changeEvent.setKey(key);
+    boolean isEventAccept = microserviceVersions.isEventAccept(changeEvent);
+    Assert.assertEquals(true, isEventAccept);
+    
+    microserviceVersions = new MicroserviceVersions(appManager, appId, appId+Const.APP_SERVICE_SEPARATOR+microserviceName);
+    key.setAppId(appId);
+    key.setServiceName(appId+Const.APP_SERVICE_SEPARATOR+microserviceName);
+    changeEvent.setKey(key);
+    boolean isEventAcceptWhenAccrossApp = microserviceVersions.isEventAccept(changeEvent);
+    Assert.assertEquals(true, isEventAcceptWhenAccrossApp);
+    
+  }
+
 }

@@ -25,6 +25,7 @@ import java.util.stream.Collectors;
 
 import org.apache.servicecomb.foundation.common.concurrent.ConcurrentHashMapEx;
 import org.apache.servicecomb.serviceregistry.RegistryUtils;
+import org.apache.servicecomb.serviceregistry.api.Const;
 import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
 import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceInstanceStatus;
 import org.apache.servicecomb.serviceregistry.api.response.MicroserviceInstanceChangedEvent;
@@ -195,11 +196,9 @@ public class MicroserviceVersions {
 
   @Subscribe
   public void onMicroserviceInstanceChanged(MicroserviceInstanceChangedEvent changedEvent) {
-    if (!appId.equals(changedEvent.getKey().getAppId()) ||
-        !microserviceName.equals(changedEvent.getKey().getServiceName())) {
+    if (!isEventAccept(changedEvent)) {
       return;
     }
-
     // pull instances always replace old instances, not append
     //
     // pull result and watch event sequence is not defined even inside SC.
@@ -212,5 +211,12 @@ public class MicroserviceVersions {
     // EXPIRE::
     //   black/white config in SC changed, we must refresh all data from sc.
     postPullInstanceEvent(TimeUnit.MILLISECONDS.toMillis(1));
+  }
+  
+  protected boolean isEventAccept(MicroserviceInstanceChangedEvent changedEvent) {
+    return (appId.equals(changedEvent.getKey().getAppId()) &&
+        microserviceName.equals(changedEvent.getKey().getServiceName())) ||
+        microserviceName.equals(
+            changedEvent.getKey().getAppId() + Const.APP_SERVICE_SEPARATOR + changedEvent.getKey().getServiceName());
   }
 }
