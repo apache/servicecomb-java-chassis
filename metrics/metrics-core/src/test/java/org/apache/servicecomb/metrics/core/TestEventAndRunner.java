@@ -70,9 +70,12 @@ public class TestEventAndRunner {
     when(nonHeap.getMax()).thenReturn(700L);
     when(nonHeap.getUsed()).thenReturn(800L);
 
+    DefaultCounterService counterService = new DefaultCounterService();
+    DefaultGaugeService gaugeService = new DefaultGaugeService();
+    DefaultWindowCounterService windowCounterService = new DefaultWindowCounterService();
+
     DefaultSystemMonitor systemMonitor = new DefaultSystemMonitor(systemMXBean, threadMXBean, memoryMXBean);
-    RegistryMonitor monitor = new RegistryMonitor(systemMonitor, new DefaultCounterService(), new DefaultGaugeService(),
-        new DefaultWindowCounterService());
+    RegistryMonitor monitor = new RegistryMonitor(systemMonitor, counterService, gaugeService, windowCounterService);
     DefaultDataSource dataSource = new DefaultDataSource(monitor, "1000,2000,3000");
 
     List<Long> intervals = dataSource.getAppliedWindowTime();
@@ -80,6 +83,7 @@ public class TestEventAndRunner {
     Assert.assertThat(intervals, containsInAnyOrder(Arrays.asList(1000L, 2000L, 3000L).toArray()));
 
     new DefaultEventListenerManager(monitor, new StatusConvertorFactory(),
+        counterService, gaugeService, windowCounterService,
         MetricsDimension.DIMENSION_STATUS_OUTPUT_LEVEL_SUCCESS_FAILED);
 
     //fun1 is a PRODUCER invocation call 2 time and all is completed
