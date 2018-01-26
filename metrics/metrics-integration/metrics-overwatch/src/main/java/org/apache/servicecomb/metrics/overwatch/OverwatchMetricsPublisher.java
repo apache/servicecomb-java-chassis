@@ -127,7 +127,7 @@ public class OverwatchMetricsPublisher implements MetricsPusher {
       InstanceStatus status = instanceStatus.computeIfAbsent(NetUtils.getHostAddress(), s -> new InstanceStatus(0, 0));
       instanceStatus.put(NetUtils.getHostAddress(), new InstanceStatus(
           (int) (entry.getValue().getConsumerCall().getTpsValue(MetricsDimension.DIMENSION_STATUS,
-              MetricsDimension.DIMENSION_STATUS_SUCCESS_FAILED_SUCCESS).getValue() * 60) + status.getRpm(),
+              MetricsDimension.DIMENSION_STATUS_ALL).getValue() * 60) + status.getRpm(),
           (int) (entry.getValue().getConsumerCall().getTpsValue(MetricsDimension.DIMENSION_STATUS,
               MetricsDimension.DIMENSION_STATUS_SUCCESS_FAILED_FAILED).getValue() * 60) + status.getFpm()));
     }
