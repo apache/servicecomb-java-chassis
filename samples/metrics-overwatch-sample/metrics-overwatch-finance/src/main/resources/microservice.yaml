@@ -30,3 +30,8 @@ servicecomb:
   metrics:
     overwatch:
       address: 192.241.237.48:3000
+
+mysql:
+  address: jdbc:mysql://192.168.99.100:32704/finance_db?useSSL=false
+  user: root
+  password: pwd
