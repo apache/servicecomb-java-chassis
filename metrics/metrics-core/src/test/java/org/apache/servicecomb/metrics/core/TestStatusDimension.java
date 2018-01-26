@@ -100,11 +100,15 @@ public class TestStatusDimension {
   private RegistryMetric prepare(String outputLevel) throws InterruptedException {
     DefaultSystemMonitor systemMonitor = new DefaultSystemMonitor();
 
-    RegistryMonitor monitor = new RegistryMonitor(systemMonitor, new DefaultCounterService(), new DefaultGaugeService(),
-        new DefaultWindowCounterService());
+    DefaultCounterService counterService = new DefaultCounterService();
+    DefaultGaugeService gaugeService = new DefaultGaugeService();
+    DefaultWindowCounterService windowCounterService = new DefaultWindowCounterService();
+
+    RegistryMonitor monitor = new RegistryMonitor(systemMonitor, counterService, gaugeService, windowCounterService);
     DefaultDataSource dataSource = new DefaultDataSource(monitor, "1000,2000,3000");
 
-    new DefaultEventListenerManager(monitor, new StatusConvertorFactory(), outputLevel);
+    new DefaultEventListenerManager(monitor, new StatusConvertorFactory(),
+        counterService, gaugeService, windowCounterService, outputLevel);
 
     EventUtils.triggerEvent(new InvocationStartedEvent("fun1", InvocationType.PRODUCER, System.nanoTime()));
     EventUtils.triggerEvent(

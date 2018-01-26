@@ -21,6 +21,9 @@ import org.apache.servicecomb.foundation.common.event.EventListener;
 import org.apache.servicecomb.foundation.common.utils.EventUtils;
 import org.apache.servicecomb.metrics.common.MetricsDimension;
 import org.apache.servicecomb.metrics.core.MetricsConfig;
+import org.apache.servicecomb.metrics.core.custom.CounterService;
+import org.apache.servicecomb.metrics.core.custom.GaugeService;
+import org.apache.servicecomb.metrics.core.custom.WindowCounterService;
 import org.apache.servicecomb.metrics.core.event.dimension.StatusConvertorFactory;
 import org.apache.servicecomb.metrics.core.monitor.RegistryMonitor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,18 +35,24 @@ import com.netflix.config.DynamicPropertyFactory;
 public class DefaultEventListenerManager implements EventListenerManager {
 
   @Autowired
-  public DefaultEventListenerManager(RegistryMonitor registryMonitor, StatusConvertorFactory convertorFactory) {
-    this(registryMonitor, convertorFactory, DynamicPropertyFactory
-        .getInstance().getStringProperty(MetricsConfig.METRICS_DIMENSION_STATUS_OUTPUT_LEVEL,
+  public DefaultEventListenerManager(RegistryMonitor registryMonitor, StatusConvertorFactory convertorFactory,
+      CounterService counterService, GaugeService gaugeService, WindowCounterService windowCounterService) {
+    this(registryMonitor, convertorFactory, counterService, gaugeService, windowCounterService,
+        DynamicPropertyFactory.getInstance().getStringProperty(MetricsConfig.METRICS_DIMENSION_STATUS_OUTPUT_LEVEL,
             MetricsDimension.DIMENSION_STATUS_OUTPUT_LEVEL_SUCCESS_FAILED).get());
   }
 
   public DefaultEventListenerManager(RegistryMonitor registryMonitor, StatusConvertorFactory convertorFactory,
+      CounterService counterService, GaugeService gaugeService, WindowCounterService windowCounterService,
       String outputLevel) {
     this.registerEventListener(new InvocationStartedEventListener(registryMonitor));
     this.registerEventListener(new InvocationStartProcessingEventListener(registryMonitor));
     this.registerEventListener(
         new InvocationFinishedEventListener(registryMonitor, convertorFactory.getConvertor(outputLevel)));
+
+    this.registerEventListener(new CounterEventListener(counterService));
+    this.registerEventListener(new GaugeEventListener(gaugeService));
+    this.registerEventListener(new WindowCounterEventListener(windowCounterService));
   }
 
   @Override
