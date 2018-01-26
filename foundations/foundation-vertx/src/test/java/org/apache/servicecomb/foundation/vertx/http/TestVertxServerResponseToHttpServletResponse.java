@@ -26,14 +26,21 @@ import org.apache.servicecomb.foundation.common.http.HttpStatus;
 import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 
+import io.vertx.core.Context;
+import io.vertx.core.Handler;
 import io.vertx.core.MultiMap;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.http.HttpServerResponse;
+import io.vertx.core.impl.VertxImpl;
 import mockit.Deencapsulation;
+import mockit.Expectations;
 import mockit.Mock;
 import mockit.MockUp;
+import mockit.Mocked;
 
 public class TestVertxServerResponseToHttpServletResponse {
   MultiMap headers = MultiMap.caseInsensitiveMultiMap();
@@ -45,6 +52,14 @@ public class TestVertxServerResponseToHttpServletResponse {
   VertxServerResponseToHttpServletResponse response;
 
   boolean flushWithBody;
+
+  boolean runOnContextInvoked;
+
+  @Mocked
+  Context context;
+
+  @Rule
+  public ExpectedException expectedException = ExpectedException.none();
 
   @Before
   public void setup() {
@@ -87,7 +102,37 @@ public class TestVertxServerResponseToHttpServletResponse {
       }
     }.getMockInstance();
 
+    new Expectations(VertxImpl.class) {
+      {
+        VertxImpl.context();
+        result = context;
+      }
+    };
+
+    new MockUp<Context>(context) {
+      @Mock
+      void runOnContext(Handler<Void> action) {
+        runOnContextInvoked = true;
+        action.handle(null);
+      }
+    };
+
     response = new VertxServerResponseToHttpServletResponse(serverResponse);
+  }
+
+  @Test
+  public void construct_invalid() throws IOException {
+    new Expectations(VertxImpl.class) {
+      {
+        VertxImpl.context();
+        result = null;
+      }
+    };
+
+    expectedException.expect(NullPointerException.class);
+    expectedException.expectMessage(Matchers.is("must run in vertx context."));
+
+    new VertxServerResponseToHttpServletResponse(serverResponse);
   }
 
   @Test
@@ -168,16 +213,36 @@ public class TestVertxServerResponseToHttpServletResponse {
   }
 
   @Test
-  public void flushBufferNoBody() throws IOException {
+  public void flushBuffer_sameContext() throws IOException {
     response.flushBuffer();
+
+    Assert.assertFalse(runOnContextInvoked);
+  }
+
+  @Test
+  public void flushBuffer_diffContext() throws IOException {
+    new Expectations(VertxImpl.class) {
+      {
+        VertxImpl.context();
+        result = null;
+      }
+    };
+    response.flushBuffer();
+
+    Assert.assertTrue(runOnContextInvoked);
+  }
+
+  @Test
+  public void internalFlushBufferNoBody() throws IOException {
+    response.internalFlushBuffer();
 
     Assert.assertFalse(flushWithBody);
   }
 
   @Test
-  public void flushBufferWithBody() throws IOException {
+  public void internalFlushBufferWithBody() throws IOException {
     response.setBodyBuffer(Buffer.buffer());
-    response.flushBuffer();
+    response.internalFlushBuffer();
 
     Assert.assertTrue(flushWithBody);
   }

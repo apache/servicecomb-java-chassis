@@ -47,6 +47,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
+import io.vertx.core.Context;
+import io.vertx.core.impl.VertxImpl;
 import io.vertx.ext.web.RoutingContext;
 import io.vertx.ext.web.impl.HttpServerRequestWrapperForTest;
 import mockit.Deencapsulation;
@@ -57,7 +59,10 @@ public class TestEdgeInvocation {
   String microserviceName = "ms";
 
   @Mocked
-  RoutingContext context;
+  RoutingContext routingContext;
+
+  @Mocked
+  Context context;
 
   @Mocked
   HttpServerRequestWrapperForTest request;
@@ -79,11 +84,18 @@ public class TestEdgeInvocation {
 
   @Before
   public void setup() {
+    new Expectations(VertxImpl.class) {
+      {
+        VertxImpl.context();
+        result = context;
+      }
+    };
+
     Deencapsulation.setField(referenceConfig, "microserviceMeta", microserviceMeta);
     referenceConfig.setMicroserviceVersionRule("latest");
     referenceConfig.setTransport("rest");
 
-    edgeInvocation.init(microserviceName, context, "/base", httpServerFilters);
+    edgeInvocation.init(microserviceName, routingContext, "/base", httpServerFilters);
 
     requestEx = Deencapsulation.getField(edgeInvocation, "requestEx");
     responseEx = Deencapsulation.getField(edgeInvocation, "responseEx");

@@ -19,21 +19,29 @@ package org.apache.servicecomb.foundation.vertx.http;
 
 import java.io.IOException;
 import java.util.Collection;
+import java.util.Objects;
 
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Response.StatusType;
 
 import org.apache.servicecomb.foundation.common.http.HttpStatus;
 
+import io.vertx.core.Context;
+import io.vertx.core.Vertx;
 import io.vertx.core.http.HttpServerResponse;
 
 public class VertxServerResponseToHttpServletResponse extends AbstractHttpServletResponse {
+  private Context context;
+
   private HttpServerResponse serverResponse;
 
   private StatusType statusType;
 
   public VertxServerResponseToHttpServletResponse(HttpServerResponse serverResponse) {
+    this.context = Vertx.currentContext();
     this.serverResponse = serverResponse;
+
+    Objects.requireNonNull(context, "must run in vertx context.");
   }
 
   @Override
@@ -92,6 +100,17 @@ public class VertxServerResponseToHttpServletResponse extends AbstractHttpServle
 
   @Override
   public void flushBuffer() throws IOException {
+    if (context == Vertx.currentContext()) {
+      internalFlushBuffer();
+      return;
+    }
+
+    context.runOnContext(V -> {
+      internalFlushBuffer();
+    });
+  }
+
+  public void internalFlushBuffer() {
     if (bodyBuffer == null) {
       serverResponse.end();
       return;
