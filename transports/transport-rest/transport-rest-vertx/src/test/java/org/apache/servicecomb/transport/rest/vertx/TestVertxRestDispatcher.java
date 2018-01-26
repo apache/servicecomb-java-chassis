@@ -36,7 +36,9 @@ import org.junit.Before;
 import org.junit.Test;
 
 import io.netty.handler.codec.http.multipart.HttpPostRequestDecoder.ErrorDataDecoderException;
+import io.vertx.core.Context;
 import io.vertx.core.http.HttpServerRequest;
+import io.vertx.core.impl.VertxImpl;
 import io.vertx.core.net.SocketAddress;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.RoutingContext;
@@ -149,9 +151,10 @@ public class TestVertxRestDispatcher {
   }
 
   @Test
-  public void onRequest(@Mocked HttpServerRequest request, @Mocked SocketAddress socketAdrress) {
+  public void onRequest(@Mocked Context context, @Mocked HttpServerRequest request,
+      @Mocked SocketAddress socketAdrress) {
     Map<String, Object> map = new HashMap<>();
-    RoutingContext context = new MockUp<RoutingContext>() {
+    RoutingContext routingContext = new MockUp<RoutingContext>() {
       @Mock
       RoutingContext put(String key, Object obj) {
         map.put(key, obj);
@@ -163,7 +166,14 @@ public class TestVertxRestDispatcher {
         return request;
       }
     }.getMockInstance();
-    Deencapsulation.invoke(dispatcher, "onRequest", context);
+
+    new Expectations(VertxImpl.class) {
+      {
+        VertxImpl.context();
+        result = context;
+      }
+    };
+    Deencapsulation.invoke(dispatcher, "onRequest", routingContext);
 
     Assert.assertEquals(RestProducerInvocation.class, map.get(RestConst.REST_PRODUCER_INVOCATION).getClass());
     Assert.assertTrue(invoked);
