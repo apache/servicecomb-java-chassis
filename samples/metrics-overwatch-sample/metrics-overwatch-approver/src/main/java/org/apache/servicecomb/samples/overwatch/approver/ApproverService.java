@@ -21,10 +21,7 @@ import org.apache.servicecomb.provider.rest.common.RestSchema;
 import org.apache.servicecomb.provider.springmvc.reference.RestTemplateBuilder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.client.RestTemplate;
-
-import com.netflix.config.DynamicPropertyFactory;
 
 @RestSchema(schemaId = "approverServiceEndpoint")
 @RequestMapping(path = "/")
@@ -35,12 +32,12 @@ public class ApproverService {
   @GetMapping(path = "/audit")
   public Boolean audit(double amount) {
     if (amount <= 10000) {
-      boolean result = restTemplate.getForObject("cse://Supervisor/audit?amount=" +
+      boolean resultSupervisor = restTemplate.getForObject("cse://Supervisor/audit?amount=" +
           String.format("%.2f", amount), Boolean.class);
-      if (result) {
-        return restTemplate.getForObject("cse://Finance/audit?amount=" +
-            String.format("%.2f", amount), Boolean.class);
-      }
+
+      boolean resultFinance = restTemplate.getForObject("cse://Finance/audit?amount=" +
+          String.format("%.2f", amount), Boolean.class);
+      return resultFinance && resultSupervisor;
     }
     return false;
   }
