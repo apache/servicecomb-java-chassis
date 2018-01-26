@@ -21,12 +21,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.lang.management.ManagementFactory;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CountDownLatch;
 
 import javax.xml.ws.Holder;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.servicecomb.foundation.common.concurrent.ConcurrentHashMapEx;
 import org.apache.servicecomb.foundation.vertx.client.ClientPoolManager;
 import org.apache.servicecomb.foundation.vertx.client.ClientVerticle;
 import org.apache.servicecomb.foundation.vertx.stream.BufferInputStream;
@@ -61,9 +61,13 @@ public final class VertxUtils {
   private static final long BLOCKED_THREAD_CHECK_INTERVAL = Long.MAX_VALUE / 2;
 
   // key为vertx实例名称，以支撑vertx功能分组
-  private static Map<String, Vertx> vertxMap = new ConcurrentHashMap<>();
+  private static Map<String, VertxImplEx> vertxMap = new ConcurrentHashMapEx<>();
 
   private VertxUtils() {
+  }
+
+  public static Map<String, VertxImplEx> getVertxMap() {
+    return vertxMap;
   }
 
   public static <T extends AbstractVerticle> void deployVerticle(Vertx vertx, Class<T> cls, int instanceCount) {
@@ -106,18 +110,9 @@ public final class VertxUtils {
   }
 
   public static Vertx getOrCreateVertxByName(String name, VertxOptions vertxOptions) {
-    Vertx vertx = getVertxByName(name);
-    if (vertx == null) {
-      synchronized (VertxUtils.class) {
-        vertx = getVertxByName(name);
-        if (vertx == null) {
-          vertx = init(name, vertxOptions);
-          vertxMap.put(name, vertx);
-        }
-      }
-    }
-
-    return vertx;
+    return vertxMap.computeIfAbsent(name, vertxName -> {
+      return (VertxImplEx) init(vertxName, vertxOptions);
+    });
   }
 
   public static Vertx init(VertxOptions vertxOptions) {
