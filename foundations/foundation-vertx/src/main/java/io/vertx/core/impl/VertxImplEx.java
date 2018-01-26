@@ -18,13 +18,17 @@
 package io.vertx.core.impl;
 
 import java.lang.reflect.Field;
+import java.util.concurrent.atomic.AtomicLong;
 
 import org.springframework.util.ReflectionUtils;
 import org.springframework.util.StringUtils;
 
 import io.vertx.core.VertxOptions;
+import io.vertx.core.json.JsonObject;
 
 public class VertxImplEx extends VertxImpl {
+  private AtomicLong eventLoopContextCreated = new AtomicLong();
+
   public VertxImplEx(String name, VertxOptions vertxOptions) {
     super(vertxOptions);
 
@@ -41,5 +45,16 @@ public class VertxImplEx extends VertxImpl {
 
     String prefix = (String) ReflectionUtils.getField(field, eventLoopThreadFactory);
     ReflectionUtils.setField(field, eventLoopThreadFactory, name + "-" + prefix);
+  }
+
+  @Override
+  public EventLoopContext createEventLoopContext(String deploymentID, WorkerPool workerPool, JsonObject config,
+      ClassLoader tccl) {
+    eventLoopContextCreated.incrementAndGet();
+    return super.createEventLoopContext(deploymentID, workerPool, config, tccl);
+  }
+
+  public long getEventLoopContextCreatedCount() {
+    return eventLoopContextCreated.get();
   }
 }
