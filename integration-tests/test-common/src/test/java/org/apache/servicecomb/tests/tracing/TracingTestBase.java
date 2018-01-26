@@ -75,6 +75,15 @@ public class TracingTestBase {
         .map(this::extractIds)
         .collect(Collectors.toList());
 
+    // Sleep for 5 seconds to wait the reporter finish posting to zipkin server.
+    // See SCB-293
+    try {
+      Thread.sleep(5000);
+    } catch (InterruptedException e) {
+      log.error("Thread interrupted, ", e.getMessage());
+      Thread.currentThread().interrupt();
+    }
+
     String url = zipkin.httpUrl() + "/api/v2/trace/{traceId}";
     log.info("rest url:" + url);
     ResponseEntity<String> responseEntity = restTemplate.getForEntity(url, String.class, traceId(loggedIds));
