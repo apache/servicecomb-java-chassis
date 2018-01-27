@@ -44,7 +44,6 @@ import org.apache.servicecomb.core.executor.ReactiveExecutor;
 import org.apache.servicecomb.core.metrics.InvocationStartedEvent;
 import org.apache.servicecomb.core.provider.consumer.ReferenceConfig;
 import org.apache.servicecomb.foundation.common.utils.JsonUtils;
-import org.apache.servicecomb.foundation.metrics.performance.QueueMetrics;
 import org.apache.servicecomb.foundation.vertx.http.AbstractHttpServletRequest;
 import org.apache.servicecomb.foundation.vertx.http.HttpServletRequestEx;
 import org.apache.servicecomb.foundation.vertx.http.HttpServletResponseEx;
@@ -229,7 +228,7 @@ public class TestAbstractRestInvocation {
     Holder<Response> result = new Holder<>();
     restInvocation = new AbstractRestInvocationForTest() {
       @Override
-      protected void doInvoke() throws Throwable {
+      protected void doInvoke() {
         result.value = Response.ok("not run to here");
       }
 
@@ -258,7 +257,7 @@ public class TestAbstractRestInvocation {
     Holder<Boolean> result = new Holder<>();
     restInvocation = new AbstractRestInvocationForTest() {
       @Override
-      protected void doInvoke() throws Throwable {
+      protected void doInvoke() {
         result.value = true;
       }
     };
@@ -288,7 +287,7 @@ public class TestAbstractRestInvocation {
       }
 
       @Override
-      protected void doInvoke() throws Throwable {
+      protected void doInvoke() {
 
       }
     };
@@ -311,7 +310,7 @@ public class TestAbstractRestInvocation {
 
     restInvocation = new AbstractRestInvocationForTest() {
       @Override
-      protected void doInvoke() throws Throwable {
+      protected void doInvoke() {
       }
 
       @Override
@@ -338,7 +337,7 @@ public class TestAbstractRestInvocation {
     Holder<Response> result = new Holder<>();
     restInvocation = new AbstractRestInvocationForTest() {
       @Override
-      protected void doInvoke() throws Throwable {
+      protected void doInvoke() {
       }
 
       @Override
@@ -360,11 +359,11 @@ public class TestAbstractRestInvocation {
     Holder<Response> result = new Holder<>();
     restInvocation = new AbstractRestInvocationForTest() {
       @Override
-      protected void doInvoke() throws Throwable {
+      protected void doInvoke() {
       }
 
       @Override
-      protected void sendResponse(Response response) throws Exception {
+      protected void sendResponse(Response response) {
         result.value = response;
       }
     };
@@ -379,11 +378,11 @@ public class TestAbstractRestInvocation {
   public void sendResponseQuietlyException(@Mocked Response response) {
     restInvocation = new AbstractRestInvocationForTest() {
       @Override
-      protected void doInvoke() throws Throwable {
+      protected void doInvoke() {
       }
 
       @Override
-      protected void sendResponse(Response response) throws Exception {
+      protected void sendResponse(Response response) {
         throw new Error("");
       }
     };
@@ -623,7 +622,7 @@ public class TestAbstractRestInvocation {
     Error error = new Error("run on executor");
     restInvocation = new AbstractRestInvocationForTest() {
       @Override
-      protected void runOnExecutor(QueueMetrics metricsData, InvocationStartedEvent startedEvent) {
+      protected void runOnExecutor(InvocationStartedEvent startedEvent) {
         throw error;
       }
 
@@ -660,7 +659,7 @@ public class TestAbstractRestInvocation {
 
     restInvocation = new AbstractRestInvocationForTest() {
       @Override
-      protected void runOnExecutor(QueueMetrics metricsData, InvocationStartedEvent startedEvent) {
+      protected void runOnExecutor(InvocationStartedEvent startedEvent) {
         throw new Error("run on executor");
       }
 
@@ -696,7 +695,7 @@ public class TestAbstractRestInvocation {
     Holder<Boolean> result = new Holder<>();
     restInvocation = new AbstractRestInvocationForTest() {
       @Override
-      protected void runOnExecutor(QueueMetrics metricsData, InvocationStartedEvent startedEvent) {
+      protected void runOnExecutor(InvocationStartedEvent startedEvent) {
         result.value = true;
       }
     };
@@ -727,7 +726,7 @@ public class TestAbstractRestInvocation {
     restInvocation.requestEx = requestEx;
     restInvocation.restOperationMeta = restOperation;
 
-    restInvocation.runOnExecutor(null, new InvocationStartedEvent("", InvocationType.PRODUCER, System.nanoTime()));
+    restInvocation.runOnExecutor(new InvocationStartedEvent("", InvocationType.PRODUCER, System.nanoTime()));
     Assert.assertTrue(result.value);
     Assert.assertSame(invocation, restInvocation.invocation);
   }
@@ -738,7 +737,7 @@ public class TestAbstractRestInvocation {
     Response response = Response.ok("ok");
     Handler handler = new Handler() {
       @Override
-      public void handle(Invocation invocation, AsyncResponse asyncResp) throws Exception {
+      public void handle(Invocation invocation, AsyncResponse asyncResp) {
         asyncResp.complete(response);
       }
     };

@@ -19,7 +19,6 @@ package org.apache.servicecomb.bizkeeper;
 
 import org.apache.servicecomb.core.Handler;
 import org.apache.servicecomb.core.Invocation;
-import org.apache.servicecomb.foundation.metrics.performance.MetricsDataMonitorUtil;
 import org.apache.servicecomb.swagger.invocation.AsyncResponse;
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.slf4j.Logger;
@@ -71,22 +70,13 @@ public abstract class BizkeeperHandler implements Handler {
   protected abstract BizkeeperCommand createBizkeeperCommand(Invocation invocation);
 
   @Override
-  public void handle(Invocation invocation, AsyncResponse asyncResp) throws Exception {
+  public void handle(Invocation invocation, AsyncResponse asyncResp) {
     HystrixObservable<Response> command = delegate.createBizkeeperCommand(invocation);
-
-    new MetricsDataMonitorUtil()
-        .setAllReqProviderAndConsumer(invocation.getOperationMeta().getMicroserviceQualifiedName(),
-            String.valueOf(invocation.getInvocationType()));
 
     Observable<Response> observable = command.toObservable();
     observable.subscribe(asyncResp::complete, error -> {
       LOG.warn("catch error in bizkeeper:" + error.getMessage());
       asyncResp.fail(invocation.getInvocationType(), error);
-
-      new MetricsDataMonitorUtil()
-          .setAllFailReqProviderAndConsumer(invocation.getOperationMeta().getMicroserviceQualifiedName(),
-              String.valueOf(invocation.getInvocationType()));
-
     }, () -> {
 
     });
