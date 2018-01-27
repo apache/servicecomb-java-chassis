@@ -53,17 +53,6 @@ public class Invocation extends SwaggerInvocation {
 
   private int handlerIndex;
 
-  //start,end of queue and operation time after queue for operation level metrics.
-  private Object metricsData;
-
-  public Object getMetricsData() {
-    return metricsData;
-  }
-
-  public void setMetricsData(Object metricsData) {
-    this.metricsData = metricsData;
-  }
-
 
   // 应答的处理器
   // 同步模式：避免应答在网络线程中处理解码等等业务级逻辑

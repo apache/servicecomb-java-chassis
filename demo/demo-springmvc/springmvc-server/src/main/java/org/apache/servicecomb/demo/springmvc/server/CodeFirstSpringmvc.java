@@ -20,7 +20,6 @@ package org.apache.servicecomb.demo.springmvc.server;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -39,8 +38,6 @@ import org.apache.servicecomb.demo.compute.Person;
 import org.apache.servicecomb.demo.ignore.InputModelForTestIgnore;
 import org.apache.servicecomb.demo.ignore.OutputModelForTestIgnore;
 import org.apache.servicecomb.demo.server.User;
-import org.apache.servicecomb.foundation.common.utils.JsonUtils;
-import org.apache.servicecomb.foundation.metrics.MetricsServoRegistry;
 import org.apache.servicecomb.provider.rest.common.RestSchema;
 import org.apache.servicecomb.swagger.extend.annotations.RawJsonRequestBody;
 import org.apache.servicecomb.swagger.extend.annotations.ResponseHeaders;
@@ -49,7 +46,6 @@ import org.apache.servicecomb.swagger.invocation.context.ContextUtils;
 import org.apache.servicecomb.swagger.invocation.context.InvocationContext;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 import org.apache.servicecomb.swagger.invocation.response.Headers;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -72,9 +68,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.netflix.servo.monitor.Monitor;
-
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
@@ -87,20 +80,12 @@ import io.vertx.core.json.JsonObject;
 @RequestMapping(path = "/codeFirstSpringmvc", produces = MediaType.APPLICATION_JSON_VALUE)
 public class CodeFirstSpringmvc {
 
-  private MetricsServoRegistry registry;
-
-  @Autowired
-  public CodeFirstSpringmvc(MetricsServoRegistry registry) {
-    this.registry = registry;
-  }
-
-
   private String _fileUpload(MultipartFile file1, Part file2) {
     try (InputStream is1 = file1.getInputStream(); InputStream is2 = file2.getInputStream()) {
       String content1 = IOUtils.toString(is1);
       String content2 = IOUtils.toString(is2);
       return String.format("%s:%s:%s\n"
-          + "%s:%s:%s",
+              + "%s:%s:%s",
           file1.getOriginalFilename(),
           file1.getContentType(),
           content1,
@@ -135,7 +120,7 @@ public class CodeFirstSpringmvc {
     InvocationContext c2 = ContextUtils.getInvocationContext();
     headers.add("h2", "h2v " + c2.getContext().get(Const.SRC_MICROSERVICE).toString());
 
-    return new ResponseEntity<Date>(date, headers, HttpStatus.ACCEPTED);
+    return new ResponseEntity<>(date, headers, HttpStatus.ACCEPTED);
   }
 
   @ResponseHeaders({@ResponseHeader(name = "h1", response = String.class),
@@ -148,7 +133,7 @@ public class CodeFirstSpringmvc {
     InvocationContext c2 = ContextUtils.getInvocationContext();
     headers.add("h2", "h2v " + c2.getContext().get(Const.SRC_MICROSERVICE).toString());
 
-    return new ResponseEntity<Date>(date, headers, HttpStatus.ACCEPTED);
+    return new ResponseEntity<>(date, headers, HttpStatus.ACCEPTED);
   }
 
   @ApiResponse(code = 200, response = User.class, message = "")
@@ -313,7 +298,7 @@ public class CodeFirstSpringmvc {
     return new OutputModelForTestIgnore("output_id", input.getInputId(), input.getContent(), input.getInputObject(),
         input.getInputJsonObject(), input.getInputIgnoreInterface(),
         new Person("outputSomeone"), new JsonObject("{\"OutputJsonKey\" : \"OutputJsonValue\"}"), () -> {
-        });
+    });
   }
 
   @SuppressWarnings("unchecked")
@@ -341,21 +326,6 @@ public class CodeFirstSpringmvc {
     String form2 = request.getParameter("form2");
     Assert.notNull(form1);
     return form1 + form2;
-  }
-
-  //Only for 0.5.0 Integration Test
-  @RequestMapping(path = "/metricsForTest", method = RequestMethod.GET)
-  public String metricsForTest() {
-    List<Monitor<?>> monitors = registry.getMetricsMonitors();
-    Map<String, String> values = new HashMap<>();
-    for (Monitor<?> monitor : monitors) {
-      values.put(monitor.getConfig().getName(), monitor.getValue().toString());
-    }
-    try {
-      return JsonUtils.writeValueAsString(values);
-    } catch (JsonProcessingException e) {
-      throw new InvocationException(500, "500", "JsonProcessingException", e);
-    }
   }
 
   //Only for Prometheus integration test
