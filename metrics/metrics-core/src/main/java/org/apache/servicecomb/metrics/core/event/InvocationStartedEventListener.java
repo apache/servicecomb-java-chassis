@@ -18,15 +18,15 @@
 package org.apache.servicecomb.metrics.core.event;
 
 import org.apache.servicecomb.core.metrics.InvocationStartedEvent;
-import org.apache.servicecomb.foundation.common.event.Event;
-import org.apache.servicecomb.foundation.common.event.EventListener;
 import org.apache.servicecomb.metrics.common.MetricsDimension;
 import org.apache.servicecomb.metrics.core.monitor.ConsumerInvocationMonitor;
 import org.apache.servicecomb.metrics.core.monitor.ProducerInvocationMonitor;
 import org.apache.servicecomb.metrics.core.monitor.RegistryMonitor;
 import org.apache.servicecomb.swagger.invocation.InvocationType;
 
-public class InvocationStartedEventListener implements EventListener {
+import com.google.common.eventbus.Subscribe;
+
+public class InvocationStartedEventListener {
 
   private final RegistryMonitor registryMonitor;
 
@@ -34,14 +34,8 @@ public class InvocationStartedEventListener implements EventListener {
     this.registryMonitor = registryMonitor;
   }
 
-  @Override
-  public Class<? extends Event> getConcernedEvent() {
-    return InvocationStartedEvent.class;
-  }
-
-  @Override
-  public void process(Event data) {
-    InvocationStartedEvent event = (InvocationStartedEvent) data;
+  @Subscribe
+  public void process(InvocationStartedEvent event) {
     if (InvocationType.PRODUCER.equals(event.getInvocationType())) {
       ProducerInvocationMonitor monitor = registryMonitor.getProducerInvocationMonitor(event.getOperationName());
       monitor.getWaitInQueue().increment();
