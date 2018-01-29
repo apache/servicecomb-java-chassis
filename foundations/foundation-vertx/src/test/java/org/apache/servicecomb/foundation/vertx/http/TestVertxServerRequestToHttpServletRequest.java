@@ -53,6 +53,9 @@ public class TestVertxServerRequestToHttpServletRequest {
   @Mocked
   HttpServerRequest vertxRequest;
 
+  @Mocked
+  SocketAddress socketAddress;
+
   VertxServerRequestToHttpServletRequest request;
 
   @Before
@@ -61,6 +64,8 @@ public class TestVertxServerRequestToHttpServletRequest {
       {
         context.request();
         result = vertxRequest;
+        vertxRequest.remoteAddress();
+        result = socketAddress;
       }
     };
 
@@ -192,13 +197,11 @@ public class TestVertxServerRequestToHttpServletRequest {
   }
 
   @Test
-  public void testGetRemoteAddr(@Mocked SocketAddress sa) {
+  public void testGetRemoteAddr() {
     new Expectations() {
       {
-        sa.host();
+        socketAddress.host();
         result = "host";
-        vertxRequest.remoteAddress();
-        result = sa;
       }
     };
 
@@ -206,13 +209,22 @@ public class TestVertxServerRequestToHttpServletRequest {
   }
 
   @Test
-  public void testGetRemoteHost(@Mocked SocketAddress sa) {
+  public void testGetRemoteAddrNull() {
     new Expectations() {
       {
-        sa.host();
+        socketAddress.host();
+        result = null;
+      }
+    };
+    Assert.assertEquals(null, request.getRemoteAddr());
+  }
+
+  @Test
+  public void testGetRemoteHost() {
+    new Expectations() {
+      {
+        socketAddress.host();
         result = "host";
-        vertxRequest.remoteAddress();
-        result = sa;
       }
     };
 
@@ -220,13 +232,11 @@ public class TestVertxServerRequestToHttpServletRequest {
   }
 
   @Test
-  public void testGetRemotePort(@Mocked SocketAddress sa) {
+  public void testGetRemotePort() {
     new Expectations() {
       {
-        sa.port();
+        socketAddress.port();
         result = 1234;
-        vertxRequest.remoteAddress();
-        result = sa;
       }
     };
 
