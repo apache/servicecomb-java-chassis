@@ -17,6 +17,7 @@
 
 package org.apache.servicecomb.serviceregistry.client.http;
 
+import org.apache.servicecomb.foundation.vertx.AddressResolverConfig;
 import org.apache.servicecomb.foundation.vertx.VertxUtils;
 import org.apache.servicecomb.foundation.vertx.client.ClientPoolManager;
 import org.apache.servicecomb.foundation.vertx.client.ClientVerticle;
@@ -28,6 +29,7 @@ import org.slf4j.LoggerFactory;
 
 import io.vertx.core.DeploymentOptions;
 import io.vertx.core.Vertx;
+import io.vertx.core.VertxOptions;
 import io.vertx.core.http.HttpClientOptions;
 
 /**
@@ -50,7 +52,9 @@ public abstract class AbstractClientPool implements ClientPool {
 
   public void create() {
     // 这里面是同步接口，且好像直接在事件线程中用，保险起见，先使用独立的vertx实例
-    Vertx vertx = VertxUtils.getOrCreateVertxByName("registry", null);
+    VertxOptions vertxOptions = new VertxOptions();
+    vertxOptions.setAddressResolverOptions(AddressResolverConfig.getAddressResover(SSL_KEY));
+    Vertx vertx = VertxUtils.getOrCreateVertxByName("registry", vertxOptions);
     HttpClientOptions httpClientOptions = createHttpClientOptions();
     clientMgr = new ClientPoolManager<>(vertx, new HttpClientPoolFactory(httpClientOptions));
 
