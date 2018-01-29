@@ -40,6 +40,7 @@ import org.slf4j.LoggerFactory;
 import io.vertx.core.MultiMap;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.http.HttpServerRequest;
+import io.vertx.core.net.SocketAddress;
 import io.vertx.ext.web.FileUpload;
 import io.vertx.ext.web.RoutingContext;
 
@@ -59,6 +60,8 @@ public class VertxServerRequestToHttpServletRequest extends AbstractHttpServletR
 
   private String path;
 
+  private SocketAddress socketAddress;
+
   public VertxServerRequestToHttpServletRequest(RoutingContext context, String path) {
     this(context);
     this.path = path;
@@ -67,6 +70,7 @@ public class VertxServerRequestToHttpServletRequest extends AbstractHttpServletR
   public VertxServerRequestToHttpServletRequest(RoutingContext context) {
     this.context = context;
     this.vertxRequest = context.request();
+    this.socketAddress = this.vertxRequest.remoteAddress();
     super.setBodyBuffer(context.getBody());
   }
 
@@ -127,17 +131,17 @@ public class VertxServerRequestToHttpServletRequest extends AbstractHttpServletR
 
   @Override
   public String getRemoteAddr() {
-    return this.vertxRequest.remoteAddress().host();
+    return this.socketAddress.host();
   }
 
   @Override
   public String getRemoteHost() {
-    return this.vertxRequest.remoteAddress().host();
+    return this.socketAddress.host();
   }
 
   @Override
   public int getRemotePort() {
-    return this.vertxRequest.remoteAddress().port();
+    return this.socketAddress.port();
   }
 
   @Override
