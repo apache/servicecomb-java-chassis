@@ -22,12 +22,10 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.apache.servicecomb.foundation.common.concurrent.ConcurrentHashMapEx;
-import org.springframework.stereotype.Component;
 
 import com.netflix.servo.monitor.BasicCounter;
 import com.netflix.servo.monitor.MonitorConfig;
 
-@Component
 public class DefaultCounterService implements CounterService {
 
   private final Map<String, BasicCounter> counters;

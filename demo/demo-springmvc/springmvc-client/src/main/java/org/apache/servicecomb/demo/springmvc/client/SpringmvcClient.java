@@ -29,9 +29,7 @@ import org.apache.servicecomb.demo.controller.Person;
 import org.apache.servicecomb.foundation.common.utils.BeanUtils;
 import org.apache.servicecomb.foundation.common.utils.JsonUtils;
 import org.apache.servicecomb.foundation.common.utils.Log4jUtils;
-import org.apache.servicecomb.metrics.common.MetricsDimension;
 import org.apache.servicecomb.metrics.common.MetricsPublisher;
-import org.apache.servicecomb.metrics.common.RegistryMetric;
 import org.apache.servicecomb.provider.springmvc.reference.CseRestTemplate;
 import org.apache.servicecomb.provider.springmvc.reference.RestTemplateBuilder;
 import org.apache.servicecomb.provider.springmvc.reference.UrlWithServiceNameClientHttpRequestFactory;
@@ -91,14 +89,9 @@ public class SpringmvcClient {
 
     //0.5.0 later version metrics integration test
     try {
-      RegistryMetric metric = metricsPublisher.metrics();
-
-      TestMgr
-          .check(true, metric.getInstanceMetric().getSystemMetric().getHeapUsed() != 0);
-      TestMgr.check(true, metric.getProducerMetrics().size() > 0);
-      TestMgr.check(true,
-          metric.getProducerMetrics().get("springmvc.codeFirst.saySomething").getProducerCall()
-              .getTotalValue(MetricsDimension.DIMENSION_STATUS, MetricsDimension.DIMENSION_STATUS_ALL).getValue() > 0);
+      Map<String, Double> metric = metricsPublisher.metrics();
+      TestMgr.check(true, metric.get("servicecomb.instance.system.heap.commit") != 0);
+      TestMgr.check(true, metric.get("servicecomb.springmvc.codeFirst.saySomething.producer.producerCall.total.{Status=all}") > 0);
     } catch (Exception e) {
       TestMgr.check("true", "false");
     }

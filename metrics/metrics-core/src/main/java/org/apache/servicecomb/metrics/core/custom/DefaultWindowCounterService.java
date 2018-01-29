@@ -22,9 +22,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.apache.servicecomb.foundation.common.concurrent.ConcurrentHashMapEx;
-import org.springframework.stereotype.Component;
 
-@Component
 public class DefaultWindowCounterService implements WindowCounterService {
 
   private final Map<String, WindowCounter> counters;

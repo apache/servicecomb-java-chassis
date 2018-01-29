@@ -87,13 +87,13 @@ public class TimerMetric {
     return value2 > value1 ? value2 : value1;
   }
 
-  public Map<String, Number> toMap() {
-    Map<String, Number> metrics = new HashMap<>();
-    metrics.put(prefix + ".total", total);
-    metrics.put(prefix + ".count", count);
+  public Map<String, Double> toMap() {
+    Map<String, Double> metrics = new HashMap<>();
+    metrics.put(prefix + ".total", (double) total);
+    metrics.put(prefix + ".count", (double) count);
     metrics.put(prefix + ".average", average);
-    metrics.put(prefix + ".max", max);
-    metrics.put(prefix + ".min", min);
+    metrics.put(prefix + ".max", (double) max);
+    metrics.put(prefix + ".min", (double) min);
     return metrics;
   }
 }

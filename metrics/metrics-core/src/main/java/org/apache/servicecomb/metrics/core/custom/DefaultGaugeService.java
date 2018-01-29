@@ -21,9 +21,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.servicecomb.foundation.common.concurrent.ConcurrentHashMapEx;
-import org.springframework.stereotype.Component;
 
-@Component
 public class DefaultGaugeService implements GaugeService {
 
   private final Map<String, Double> gauges;

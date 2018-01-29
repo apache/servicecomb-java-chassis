@@ -101,19 +101,19 @@ public class SystemMetric {
     this.nonHeapUsed = nonHeapUsed;
   }
 
-  public Map<String, Number> toMap() {
+  public Map<String, Double> toMap() {
     String prefix = "servicecomb.instance.system";
-    Map<String, Number> metrics = new HashMap<>();
+    Map<String, Double> metrics = new HashMap<>();
     metrics.put(prefix + ".cpu.load", cpuLoad);
-    metrics.put(prefix + ".cpu.runningThreads", cpuRunningThreads);
-    metrics.put(prefix + ".heap.init", heapInit);
-    metrics.put(prefix + ".heap.max", heapMax);
-    metrics.put(prefix + ".heap.commit", heapCommit);
-    metrics.put(prefix + ".heap.used", heapUsed);
-    metrics.put(prefix + ".nonHeap.init", nonHeapInit);
-    metrics.put(prefix + ".nonHeap.max", nonHeapMax);
-    metrics.put(prefix + ".nonHeap.commit", nonHeapCommit);
-    metrics.put(prefix + ".nonHeap.used", nonHeapUsed);
+    metrics.put(prefix + ".cpu.runningThreads", (double) cpuRunningThreads);
+    metrics.put(prefix + ".heap.init", (double) heapInit);
+    metrics.put(prefix + ".heap.max", (double) heapMax);
+    metrics.put(prefix + ".heap.commit", (double) heapCommit);
+    metrics.put(prefix + ".heap.used", (double) heapUsed);
+    metrics.put(prefix + ".nonHeap.init", (double) nonHeapInit);
+    metrics.put(prefix + ".nonHeap.max", (double) nonHeapMax);
+    metrics.put(prefix + ".nonHeap.commit", (double) nonHeapCommit);
+    metrics.put(prefix + ".nonHeap.used", (double) nonHeapUsed);
     return metrics;
   }
 }

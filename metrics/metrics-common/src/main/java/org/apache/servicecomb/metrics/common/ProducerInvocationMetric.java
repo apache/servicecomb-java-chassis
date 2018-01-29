@@ -77,9 +77,9 @@ public class ProducerInvocationMetric extends InvocationMetric {
         producerCall.merge(metric.getProducerCall()));
   }
 
-  public Map<String, Number> toMap() {
-    Map<String, Number> metrics = new HashMap<>();
-    metrics.put(getPrefix() + ".waitInQueue.count", getWaitInQueue());
+  public Map<String, Double> toMap() {
+    Map<String, Double> metrics = new HashMap<>();
+    metrics.put(getPrefix() + ".waitInQueue.count", (double) getWaitInQueue());
     metrics.putAll(lifeTimeInQueue.toMap());
     metrics.putAll(executionTime.toMap());
     metrics.putAll(producerLatency.toMap());
