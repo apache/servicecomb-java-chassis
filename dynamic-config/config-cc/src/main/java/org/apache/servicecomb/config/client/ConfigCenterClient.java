@@ -45,6 +45,7 @@ import org.apache.servicecomb.foundation.common.utils.JsonUtils;
 import org.apache.servicecomb.foundation.ssl.SSLCustom;
 import org.apache.servicecomb.foundation.ssl.SSLOption;
 import org.apache.servicecomb.foundation.ssl.SSLOptionFactory;
+import org.apache.servicecomb.foundation.vertx.AddressResolverConfig;
 import org.apache.servicecomb.foundation.vertx.VertxTLSBuilder;
 import org.apache.servicecomb.foundation.vertx.VertxUtils;
 import org.apache.servicecomb.foundation.vertx.client.ClientPoolManager;
@@ -59,6 +60,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import io.netty.handler.codec.http.HttpResponseStatus;
 import io.vertx.core.DeploymentOptions;
 import io.vertx.core.Vertx;
+import io.vertx.core.VertxOptions;
 import io.vertx.core.http.CaseInsensitiveHeaders;
 import io.vertx.core.http.HttpClientOptions;
 import io.vertx.core.http.HttpClientRequest;
@@ -152,7 +154,9 @@ public class ConfigCenterClient {
   }
 
   private void deployConfigClient() throws InterruptedException {
-    Vertx vertx = VertxUtils.getOrCreateVertxByName("config-center", null);
+    VertxOptions vertxOptions = new VertxOptions();
+    vertxOptions.setAddressResolverOptions(AddressResolverConfig.getAddressResover(SSL_KEY));
+    Vertx vertx = VertxUtils.getOrCreateVertxByName("config-center", vertxOptions);
 
     HttpClientOptions httpClientOptions = createHttpClientOptions();
     clientMgr = new ClientPoolManager<>(vertx, new HttpClientPoolFactory(httpClientOptions));
