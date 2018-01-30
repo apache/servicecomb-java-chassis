@@ -29,7 +29,7 @@ import org.junit.Test;
 
 import io.vertx.core.dns.AddressResolverOptions;
 
-public class TestAddressResoverConfig {
+public class TestAddressResolverConfig {
 
   @BeforeClass
   public static void classSetup() {
@@ -62,9 +62,11 @@ public class TestAddressResoverConfig {
     ArchaiusUtils.setProperty("addressResolver.rotateServers", true);
     AddressResolverOptions aroc = AddressResolverConfig.getAddressResover("test");
     Assert.assertThat(aroc.getServers(), is(Arrays.asList("8.8.8.8", "8.8.4.4")));
-    Assert.assertEquals("test.svc.local.cluster", aroc.getSearchDomains().get(0));
+    Assert.assertThat(aroc.getSearchDomains(),
+        is(Arrays.asList("test.svc.local.cluster", "svc.local.cluster", "local.cluster")));
     AddressResolverOptions aroc1 = AddressResolverConfig.getAddressResover("test1");
-    Assert.assertEquals("default.svc.local.cluster", aroc1.getSearchDomains().get(0));
+    Assert.assertThat(aroc1.getSearchDomains(),
+        is(Arrays.asList("default.svc.local.cluster", "svc.local.cluster", "local.cluster")));
   }
 
   @Test
