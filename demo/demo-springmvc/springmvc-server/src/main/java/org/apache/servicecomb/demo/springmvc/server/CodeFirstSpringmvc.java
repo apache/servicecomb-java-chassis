@@ -235,6 +235,18 @@ public class CodeFirstSpringmvc {
     return name + " sayhi";
   }
 
+  @RequestMapping(path = "/sayhi/compressed/{name}/v2", method = RequestMethod.GET)
+  public String sayHiForCompressed(@PathVariable(name = "name") String name) {
+    String bigText =
+        "This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,"
+            + "This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,"
+            + "This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,"
+            + "This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,"
+            + "This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,"
+            + "This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text!";
+    return name + " sayhi compressed:" + bigText;
+  }
+
   @RequestMapping(path = "/sayhi/{name}/v2", method = RequestMethod.PUT)
   public String sayHi2(@PathVariable(name = "name") String name) {
     return name + " sayhi 2";
