@@ -114,6 +114,13 @@ public class SpringmvcClient {
 
       TestMgr.check(true, resultMap.get("RequestQueueRelated").contains("springmvc.codeFirst.saySomething"));
       TestMgr.check(true, resultMap.get("RequestQueueRelated").contains("springmvc.controller.sayHi"));
+      ResponseEntity<String> entityCompress =
+          restTemplate.getForEntity(prefix + "/codeFirstSpringmvc/sayhi/compressed/{name}/v2", String.class, "Test");
+      TestMgr.check(
+          "Test sayhi compressed:This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text!",
+          entityCompress.getBody());
+      // this just test length value return correctly, not realy Content-Length returned by the server, the value has been rewrited by transport-client
+      TestMgr.check("936", entityCompress.getHeaders().get("Content-Length"));
     } catch (Exception e) {
       TestMgr.check("true", "false");
     }
@@ -126,8 +133,11 @@ public class SpringmvcClient {
           .check(true, metric.getInstanceMetric().getSystemMetric().getHeapUsed() != 0);
       TestMgr.check(true, metric.getProducerMetrics().size() > 0);
       TestMgr.check(true,
-          metric.getProducerMetrics().get("springmvc.codeFirst.saySomething").getProducerCall()
-              .getTotalValue(MetricsDimension.DIMENSION_STATUS, MetricsDimension.DIMENSION_STATUS_ALL).getValue() > 0);
+          metric.getProducerMetrics()
+              .get("springmvc.codeFirst.saySomething")
+              .getProducerCall()
+              .getTotalValue(MetricsDimension.DIMENSION_STATUS, MetricsDimension.DIMENSION_STATUS_ALL)
+              .getValue() > 0);
     } catch (Exception e) {
       TestMgr.check("true", "false");
     }

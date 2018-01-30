@@ -240,6 +240,18 @@ public class CodeFirstSpringmvc {
     return name + " sayhi 2";
   }
 
+  @RequestMapping(path = "/sayhi/compressed/{name}/v2", method = RequestMethod.GET)
+  public String sayHiForCompressed(@PathVariable(name = "name") String name) {
+    String bigText =
+        "This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,"
+            + "This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,"
+            + "This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,"
+            + "This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,"
+            + "This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,"
+            + "This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text!";
+    return name + " sayhi compressed:" + bigText;
+  }
+
   @RequestMapping(path = "/istrue", method = RequestMethod.GET)
   public boolean isTrue() {
     return true;

@@ -63,4 +63,14 @@ public class TestTransportConfig {
     Assert.assertEquals(10, TransportConfig.getThreadCount());
     config.clearProperty("cse.rest.server.thread-count");
   }
+
+  @Test
+  public void testGetCompressedAndHeaderSize() {
+    config.addProperty("cse.rest.server.compression", true);
+    Assert.assertEquals(true, TransportConfig.getCompressed());
+    config.addProperty("cse.rest.server.maxHeaderSize", 2048);
+    Assert.assertEquals(2048, TransportConfig.getMaxHeaderSize());
+    config.clearProperty("cse.rest.server.compression");
+    config.clearProperty("cse.rest.server.maxHeaderSize");
+  }
 }
