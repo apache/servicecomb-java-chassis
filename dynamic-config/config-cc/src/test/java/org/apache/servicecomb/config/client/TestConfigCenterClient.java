@@ -18,18 +18,22 @@
 package org.apache.servicecomb.config.client;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.servicecomb.config.ConfigUtil;
 import org.apache.servicecomb.config.archaius.sources.ConfigCenterConfigurationSourceImpl;
 import org.apache.servicecomb.config.archaius.sources.ConfigCenterConfigurationSourceImpl.UpdateHandler;
 import org.apache.servicecomb.config.client.ConfigCenterClient.ConfigRefresh;
+import org.apache.servicecomb.foundation.common.event.EventManager;
 import org.apache.servicecomb.foundation.vertx.client.http.HttpClientWithContext;
 import org.apache.servicecomb.foundation.vertx.client.http.HttpClientWithContext.RunHandler;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mockito.Mockito;
+
+import com.google.common.eventbus.Subscribe;
 
 import io.vertx.core.Handler;
 import io.vertx.core.MultiMap;
@@ -167,5 +171,64 @@ public class TestConfigCenterClient {
     Assert.assertEquals(2, flatItems.size());
     Deencapsulation.setField(cc, "refreshMode", 0);
     refresh.run();
+  }
+
+  @SuppressWarnings("unchecked")
+  @Test
+  public void testConfigRefreshException() {
+    ConfigCenterConfigurationSourceImpl impl = new ConfigCenterConfigurationSourceImpl();
+    Map<String, String> map = new HashMap<>();
+    EventManager.register(new Object() {
+      @Subscribe
+      public void testMsg(Object event) {
+        if (event instanceof ConnFailEvent) {
+          map.put("result", "Fail event trigger");
+        }
+        if (event instanceof ConnSuccEvent) {
+          map.put("result", "Succ event trigger");
+        }
+      }
+    });
+    impl.init(ConfigUtil.createLocalConfig());
+    UpdateHandler updateHandler = impl.new UpdateHandler();
+    HttpClientRequest request = Mockito.mock(HttpClientRequest.class);
+    Mockito.when(request.headers()).thenReturn(MultiMap.caseInsensitiveMultiMap());
+    Buffer rsp = Mockito.mock(Buffer.class);
+    Mockito.when(rsp.toString())
+        .thenReturn("{\"application\":{\"2\":\"2\",\"aa\":\"1\"},\"vmalledge\":{\"aa\":\"3\"}}");
+
+    HttpClientResponse event = Mockito.mock(HttpClientResponse.class);
+    Mockito.when(event.bodyHandler(Mockito.any(Handler.class))).then(invocation -> {
+      Handler<Buffer> handler = invocation.getArgumentAt(0, Handler.class);
+      handler.handle(rsp);
+      return null;
+    });
+    Mockito.when(event.statusCode()).thenReturn(400);
+    Buffer buf = Mockito.mock(Buffer.class);
+    Mockito.when(buf.toJsonObject()).thenReturn(new JsonObject(
+        "{\"action\":\"UPDATE\",\"key\":\"vmalledge\",\"value\":\"{\\\"aa\\\":\\\"3\\\"}\"}"));
+    HttpClient httpClient = Mockito.mock(HttpClient.class);
+    Mockito.when(
+        httpClient.get(Mockito.anyInt(), Mockito.anyString(), Mockito.anyString(), Mockito.any(Handler.class)))
+        .then(invocation -> {
+          Handler<HttpClientResponse> handler = invocation.getArgumentAt(3, Handler.class);
+          handler.handle(event);
+          return request;
+        });
+    new MockUp<HttpClientWithContext>() {
+      @Mock
+      public void runOnContext(RunHandler handler) {
+        handler.run(httpClient);
+      }
+    };
+    ConfigCenterClient cc = new ConfigCenterClient(updateHandler);
+    ParseConfigUtils parseConfigUtils = new ParseConfigUtils(updateHandler);
+    MemberDiscovery memberdis = new MemberDiscovery(Arrays.asList("http://configcentertest:30103"));
+    ConfigRefresh refresh = cc.new ConfigRefresh(parseConfigUtils, memberdis);
+    refresh.run();
+    Assert.assertEquals("Fail event trigger", map.get("result"));
+    Mockito.when(event.statusCode()).thenReturn(200);
+    refresh.run();
+    Assert.assertEquals("Succ event trigger", map.get("result"));
   }
 }
