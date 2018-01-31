@@ -119,8 +119,6 @@ public class SpringmvcClient {
       TestMgr.check(
           "Test sayhi compressed:This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text!",
           entityCompress.getBody());
-      // this just test length value return correctly, not realy Content-Length returned by the server, the value has been rewrited by transport-client
-      TestMgr.check("936", entityCompress.getHeaders().get("Content-Length"));
     } catch (Exception e) {
       TestMgr.check("true", "false");
     }
