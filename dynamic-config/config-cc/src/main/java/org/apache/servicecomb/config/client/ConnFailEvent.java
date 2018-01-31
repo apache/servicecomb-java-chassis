@@ -17,26 +17,19 @@
 
 package org.apache.servicecomb.config.client;
 
-import org.junit.Assert;
-import org.junit.Test;
+public class ConnFailEvent {
 
-import mockit.Expectations;
-import mockit.Mocked;
+  private String msg;
 
-public class TestURIConst {
-  @Test
-  public void testURI(final @Mocked ConfigCenterConfig config) {
-    new Expectations() {
-      {
-        config.getDomainName();
-        result = "mytenant";
-        config.getApiVersion();
-        result = "v3";
-      }
-    };
+  public ConnFailEvent(String msg) {
+    this.msg = msg;
+  }
 
-    Assert.assertEquals(URIConst.MEMBERS, "/v3/mytenant/configuration/members");
-    Assert.assertEquals(URIConst.REFRESH_ITEMS, "/v3/mytenant/configuration/refresh/items");
-    Assert.assertEquals(URIConst.ITEMS, "/v3/mytenant/configuration/items");
+  public String getMsg() {
+    return msg;
+  }
+
+  public void setMsg(String msg) {
+    this.msg = msg;
   }
 }
