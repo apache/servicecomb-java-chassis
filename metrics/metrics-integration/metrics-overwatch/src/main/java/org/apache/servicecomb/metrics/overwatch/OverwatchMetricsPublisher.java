@@ -48,7 +48,7 @@ import com.netflix.config.DynamicPropertyFactory;
 
 @Component
 public class OverwatchMetricsPublisher implements MetricsPusher {
-  private static final Logger logger = LoggerFactory.getLogger(OverwatchMetricsPublisher.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(OverwatchMetricsPublisher.class);
 
   private static final String METRICS_OVERWATCH_ADDRESS = "servicecomb.metrics.overwatch.address";
 
@@ -64,8 +64,8 @@ public class OverwatchMetricsPublisher implements MetricsPusher {
 
   public OverwatchMetricsPublisher(HealthCheckerManager checkerManager) {
     this.checkerManager = checkerManager;
-    String url = "http://" + DynamicPropertyFactory.getInstance()
-        .getStringProperty(METRICS_OVERWATCH_ADDRESS, "localhost:3000").get();
+    String url = DynamicPropertyFactory.getInstance()
+        .getStringProperty(METRICS_OVERWATCH_ADDRESS, "http://localhost:3000").get();
 
     this.overwatchURL = url + "/stats/";
     this.overwatchFailureURL = url + "/failure/";
@@ -88,7 +88,7 @@ public class OverwatchMetricsPublisher implements MetricsPusher {
     try {
       send(this.overwatchURL, JsonUtils.writeValueAsString(systemStatus));
     } catch (JsonProcessingException e) {
-      logger.error("format status error", e);
+      LOGGER.error("format status error", e);
     }
 
     Map<String, HealthCheckResult> checkResults = checkerManager.check();
@@ -100,7 +100,7 @@ public class OverwatchMetricsPublisher implements MetricsPusher {
         try {
           send(this.overwatchFailureURL, JsonUtils.writeValueAsString(failure));
         } catch (JsonProcessingException e) {
-          logger.error("format status error", e);
+          LOGGER.error("format status error", e);
         }
       }
     }
@@ -112,7 +112,7 @@ public class OverwatchMetricsPublisher implements MetricsPusher {
     HttpEntity request = new HttpEntity<>(content, headers);
     ResponseEntity<String> result = this.template.postForEntity(url, request, String.class);
     if (result.getStatusCodeValue() != 200) {
-      logger.error("push overwatch error : " + result.toString());
+      LOGGER.error("push overwatch error : " + result.toString());
     }
   }
 

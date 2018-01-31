@@ -30,7 +30,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class MetricsBootListener implements BootListener {
-  private static final Logger logger = LoggerFactory.getLogger(MetricsBootListener.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(MetricsBootListener.class);
 
   private final MetricsPusher pusher;
 
@@ -45,7 +45,7 @@ public class MetricsBootListener implements BootListener {
     long windowTime = pusher.getWindowTime();
     if (windowTime <= 0 || !dataSource.getAppliedWindowTime().contains(windowTime)) {
       this.windowTime = dataSource.getAppliedWindowTime().get(0);
-      logger.error("window time no set or illegal value, use datasource first window time : " + this.windowTime);
+      LOGGER.error("window time no set or illegal value, use datasource first window time : " + this.windowTime);
     } else {
       this.windowTime = windowTime;
     }
