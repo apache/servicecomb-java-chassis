@@ -36,6 +36,7 @@
     <module>handler-bizkeeper</module>
     <module>handler-flowcontrol-qps</module>
     <module>handler-loadbalance</module>
+    <module>handler-fault-injection</module>
     <module>handler-publickey-auth</module>
   </modules>
 
