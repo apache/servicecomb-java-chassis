@@ -134,11 +134,11 @@ public final class ConfigCenterConfig {
   }
 
   public String getProxyUsername() {
-    return finalConfig.getString(PROXY_USERNAME, "user");
+    return finalConfig.getString(PROXY_USERNAME, "");
   }
 
   public String getProxyPasswd() {
-    return finalConfig.getString(PROXY_PASSWD, "passwd");
+    return finalConfig.getString(PROXY_PASSWD, "");
   }
 
   @SuppressWarnings("unchecked")
