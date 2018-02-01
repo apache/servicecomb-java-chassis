@@ -18,9 +18,9 @@
 package org.apache.servicecomb.metrics.core.publish;
 
 import java.util.List;
+import java.util.Map;
 
 import org.apache.servicecomb.metrics.common.MetricsPublisher;
-import org.apache.servicecomb.metrics.common.RegistryMetric;
 import org.apache.servicecomb.provider.rest.common.RestSchema;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -50,8 +50,8 @@ public class DefaultMetricsPublisher implements MetricsPublisher {
   @RequestMapping(path = "/", method = RequestMethod.GET)
   @CrossOrigin
   @Override
-  public RegistryMetric metrics() {
-    return dataSource.getRegistryMetric();
+  public Map<String, Double> metrics() {
+    return dataSource.getRegistryMetric().toMap();
   }
 
   @ApiResponses({
@@ -60,7 +60,7 @@ public class DefaultMetricsPublisher implements MetricsPublisher {
   @RequestMapping(path = "/{windowTime}", method = RequestMethod.GET)
   @CrossOrigin
   @Override
-  public RegistryMetric metricsWithWindowTime(@PathVariable(name = "windowTime") long windowTime) {
-    return dataSource.getRegistryMetric(windowTime);
+  public Map<String, Double> metricsWithWindowTime(@PathVariable(name = "windowTime") long windowTime) {
+    return dataSource.getRegistryMetric(windowTime).toMap();
   }
 }

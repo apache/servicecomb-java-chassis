@@ -49,8 +49,8 @@ public class InstanceMetric {
     this.producerMetric = producerMetric;
   }
 
-  public Map<String, Number> toMap() {
-    Map<String, Number> metrics = new HashMap<>();
+  public Map<String, Double> toMap() {
+    Map<String, Double> metrics = new HashMap<>();
     metrics.putAll(systemMetric.toMap());
     metrics.putAll(consumerMetric.toMap());
     metrics.putAll(producerMetric.toMap());

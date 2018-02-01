@@ -37,7 +37,6 @@
     <module>metrics-write-file-sample</module>
     <module>metrics-extend-healthcheck</module>
     <module>config-apollo-sample</module>
-    <module>custom-business-metrics</module>
   </modules>
 
   <dependencyManagement>

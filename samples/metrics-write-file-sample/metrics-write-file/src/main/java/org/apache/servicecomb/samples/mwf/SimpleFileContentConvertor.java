@@ -43,10 +43,10 @@ public class SimpleFileContentConvertor implements FileContentConvertor {
   @Override
   public Map<String, String> convert(RegistryMetric registryMetric) {
     Map<String, String> pickedMetrics = new HashMap<>();
-    for (Entry<String, Number> metric : registryMetric.toMap().entrySet()) {
+    for (Entry<String, Double> metric : registryMetric.toMap().entrySet()) {
       pickedMetrics.put(metric.getKey(),
           String.format(doubleStringFormatter,
-              round(metric.getValue().doubleValue(), doubleRoundPlaces)));
+              round(metric.getValue(), doubleRoundPlaces)));
     }
     return pickedMetrics;
   }

@@ -18,6 +18,7 @@
 package org.apache.servicecomb.metrics.common;
 
 import java.util.List;
+import java.util.Map;
 
 public interface MetricsPublisher {
   /**  What's the WindowTime ?
@@ -29,13 +30,13 @@ public interface MetricsPublisher {
    Max & Min -> the max value or min value in a centain time
    Average -> average value, the simplest algorithm is f = sum / count
    Rate -> like TPS,algorithm is f = sum / second
-  
+
    Will be return "servicecomb.metrics.window_time" setting in microservice.yaml
    */
   List<Long> getAppliedWindowTime();
 
   //same as getRegistryMetric({first setting windowTime})
-  RegistryMetric metrics();
+  Map<String, Double> metrics();
 
   /**
    * windowTime usage example:
@@ -53,7 +54,7 @@ public interface MetricsPublisher {
    *                               getRegistryMetric(2000) will return max=400 min=100 total=1000
    *
    * @param windowTime getAppliedWindowTime() item
-   * @return RegistryMetric
+   * @return Map<String   ,   Double>
    */
-  RegistryMetric metricsWithWindowTime(long windowTime);
+  Map<String, Double> metricsWithWindowTime(long windowTime);
 }

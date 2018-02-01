@@ -79,10 +79,10 @@ public class CallMetric {
         DoubleMetricValue.merge(metric.getTpsValues(), this.getTpsValues()));
   }
 
-  public Map<String, Number> toMap() {
-    Map<String, Number> metrics = new HashMap<>();
+  public Map<String, Double> toMap() {
+    Map<String, Double> metrics = new HashMap<>();
     for (LongMetricValue totalValue : totalValues) {
-      metrics.put(prefix + ".total." + totalValue.getKey(), totalValue.getValue());
+      metrics.put(prefix + ".total." + totalValue.getKey(), totalValue.getValue().doubleValue());
     }
     for (DoubleMetricValue tpsValue : tpsValues) {
       metrics.put(prefix + ".tps." + tpsValue.getKey(), tpsValue.getValue());

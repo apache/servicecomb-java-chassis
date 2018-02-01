@@ -17,8 +17,7 @@
 
 package org.apache.servicecomb.metrics.core.event;
 
-import org.apache.servicecomb.foundation.common.event.EventListener;
-import org.apache.servicecomb.foundation.common.utils.EventUtils;
+import org.apache.servicecomb.foundation.common.event.EventManager;
 import org.apache.servicecomb.metrics.common.MetricsDimension;
 import org.apache.servicecomb.metrics.core.MetricsConfig;
 import org.apache.servicecomb.metrics.core.event.dimension.StatusConvertorFactory;
@@ -29,7 +28,7 @@ import org.springframework.stereotype.Component;
 import com.netflix.config.DynamicPropertyFactory;
 
 @Component
-public class DefaultEventListenerManager implements EventListenerManager {
+public class DefaultEventListenerManager {
 
   @Autowired
   public DefaultEventListenerManager(RegistryMonitor registryMonitor, StatusConvertorFactory convertorFactory) {
@@ -40,14 +39,9 @@ public class DefaultEventListenerManager implements EventListenerManager {
 
   public DefaultEventListenerManager(RegistryMonitor registryMonitor, StatusConvertorFactory convertorFactory,
       String outputLevel) {
-    this.registerEventListener(new InvocationStartedEventListener(registryMonitor));
-    this.registerEventListener(new InvocationStartProcessingEventListener(registryMonitor));
-    this.registerEventListener(
-        new InvocationFinishedEventListener(registryMonitor, convertorFactory.getConvertor(outputLevel)));
-  }
-
-  @Override
-  public void registerEventListener(EventListener listener) {
-    EventUtils.registerEventListener(listener);
+    EventManager.register(new InvocationStartedEventListener(registryMonitor));
+    EventManager.register(new InvocationStartProcessingEventListener(registryMonitor));
+    EventManager
+        .register(new InvocationFinishedEventListener(registryMonitor, convertorFactory.getConvertor(outputLevel)));
   }
 }

@@ -156,8 +156,7 @@ public class TestWriteFile {
             new CallMetric("B2", Collections.singletonList(new LongMetricValue("B2", 100L, new HashMap<>())),
                 Collections.singletonList(new DoubleMetricValue("B2", 888.66666, new HashMap<>())))));
 
-    RegistryMetric metric = new RegistryMetric(systemMetric, consumerInvocationMetricMap, new HashMap<>(),
-        new HashMap<>());
+    RegistryMetric metric = new RegistryMetric(systemMetric, consumerInvocationMetricMap, new HashMap<>());
 
     DataSource dataSource = Mockito.mock(DataSource.class);
     Mockito.when(dataSource.getRegistryMetric()).thenReturn(metric);
