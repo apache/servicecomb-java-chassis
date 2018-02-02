@@ -31,7 +31,6 @@ import io.vertx.core.Vertx;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.streams.ReadStream;
 
-// copy from AsyncFileImpl and modify
 public class InputStreamToReadStream implements ReadStream<Buffer> {
   private static final Logger LOGGER = LoggerFactory.getLogger(InputStreamToReadStream.class);
 
