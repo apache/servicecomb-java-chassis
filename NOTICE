@@ -71,3 +71,54 @@ The following components are provided under the  BSD  (http://asm.objectweb.org/
 
 ASM Core (http://asm.objectweb.org/asm/) org.ow2.asm:asm:jar:5.0.4
 
+================================================================
+For foundations/foundation-vertx/src/main/java/io/vertx/ext/web/impl/MimeTypesUtils.java
+(Forked from https://github.com/vert-x3/vertx-web/blob/927ed057ddc028eb09a168db621de3d72fd85ed4/vertx-web/src/main/java/io/vertx/ext/web/impl/Utils.java)
+
+Copyright 2014 Red Hat, Inc.
+
+ All rights reserved. This program and the accompanying materials
+ are made available under the terms of the Eclipse Public License v1.0
+ and Apache License v2.0 which accompanies this distribution.
+
+ The Eclipse Public License is available at
+ http://www.eclipse.org/legal/epl-v10.html
+
+ The Apache License v2.0 is available at
+ http://www.opensource.org/licenses/apache2.0.php
+
+ You may elect to redistribute this code under either of these licenses.
+
+================================================================
+For swagger/swagger-generator/generator-core/src/main/java/org/apache/servicecomb/swagger/extend/property/AbstractBaseIntegerProperty.java
+(Forked from https://github.com/swagger-api/swagger-core/blob/master/modules/swagger-models/src/main/java/io/swagger/models/properties/IntegerProperty.java)
+
+Copyright 2016 SmartBear Software
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at [apache.org/licenses/LICENSE-2.0](http://www.apache.org/licenses/LICENSE-2.0)
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+
+================================================================
+For transports/transport-rest/transport-rest-vertx/src/main/java/org/apache/servicecomb/transport/rest/vertx/RestBodyHandler.java
+(Froked from https://github.com/vert-x3/vertx-web/blob/master/vertx-web/src/main/java/io/vertx/ext/web/handler/impl/BodyHandlerImpl.java)
+
+Copyright 2014 Red Hat, Inc.
+
+ All rights reserved. This program and the accompanying materials
+ are made available under the terms of the Eclipse Public License v1.0
+ and Apache License v2.0 which accompanies this distribution.
+
+ The Eclipse Public License is available at
+ http://www.eclipse.org/legal/epl-v10.html
+
+ The Apache License v2.0 is available at
+ http://www.opensource.org/licenses/apache2.0.php
+
+ You may elect to redistribute this code under either of these licenses.
