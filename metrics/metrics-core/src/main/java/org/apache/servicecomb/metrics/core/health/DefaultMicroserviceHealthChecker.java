@@ -34,7 +34,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class DefaultMicroserviceHealthChecker implements HealthChecker {
 
-  private static Logger logger = LoggerFactory.getLogger(DefaultMicroserviceHealthChecker.class);
+  private static Logger LOGGER = LoggerFactory.getLogger(DefaultMicroserviceHealthChecker.class);
 
   @Override
   public String getName() {
@@ -59,7 +59,7 @@ public class DefaultMicroserviceHealthChecker implements HealthChecker {
           String.join(",", instance.getEndpoints())));
     } catch (Exception e) {
       String error = "unable load microservice info from RegistryUtils";
-      logger.error(error, e);
+      LOGGER.error(error, e);
       throw new InvocationException(Status.INTERNAL_SERVER_ERROR, error);
     }
   }

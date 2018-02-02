@@ -985,7 +985,17 @@
       </dependency>
       <dependency>
         <groupId>org.apache.servicecomb</groupId>
+        <artifactId>metrics-push</artifactId>
+        <version>0.6.0-SNAPSHOT</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.servicecomb</groupId>
         <artifactId>metrics-prometheus</artifactId>
+        <version>0.6.0-SNAPSHOT</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.servicecomb</groupId>
+        <artifactId>metrics-overwatch</artifactId>
         <version>0.6.0-SNAPSHOT</version>
       </dependency>
     </dependencies>

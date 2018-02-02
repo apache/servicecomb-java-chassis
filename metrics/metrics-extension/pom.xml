@@ -28,6 +28,9 @@
 
   <artifactId>metrics-extension</artifactId>
   <name>Java Chassis::Metrics::Extension</name>
+  <modules>
+    <module>metrics-push</module>
+  </modules>
   <packaging>pom</packaging>
 
 </project>
