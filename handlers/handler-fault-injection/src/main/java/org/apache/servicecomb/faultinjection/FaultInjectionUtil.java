@@ -33,10 +33,6 @@ public class FaultInjectionUtil {
   // key is config paramter
   public static Map<String, AtomicInteger> configCenterValue = new ConcurrentHashMapEx<>();
 
-  private FaultInjectionUtil() {
-
-  }
-
   /**
    * Returns total requests per provider for operational level.
    * 

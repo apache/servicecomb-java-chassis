@@ -115,17 +115,17 @@ public class TestFaultInjectHandler {
 
   /**
    * Tests the fault injection handler functionality with global configuration
-   * without delay/abort condition.
+   * with delay/abort condition.
    * 
    * @throws Exception
    */
   @Test
-  public void testFaultInjectHandlerGlobalCfgSuccess() throws Exception {
+  public void testFaultInjectHandlerConfigChangeGlobal() throws Exception {
 
-    System.setProperty("cse.governance.Consumer.global.policy.fault.protocols.rest.delay.fixedDelay", "5");
-    System.setProperty("cse.governance.Consumer.global.policy.fault.protocols.rest.delay.percent", "10");
-    System.setProperty("cse.governance.Consumer.global.policy.fault.protocols.rest.abort.percent", "10");
-    System.setProperty("cse.governance.Consumer.global.policy.fault.protocols.rest.abort.httpStatus", "421");
+    System.setProperty("cse.governance.Consumer._global.policy.fault.protocols.rest.delay.fixedDelay", "5");
+    System.setProperty("cse.governance.Consumer._global.policy.fault.protocols.rest.delay.percent", "10");
+    System.setProperty("cse.governance.Consumer._global.policy.fault.protocols.rest.abort.percent", "10");
+    System.setProperty("cse.governance.Consumer._global.policy.fault.protocols.rest.abort.httpStatus", "421");
 
     Mockito.when(invocation.getMicroserviceQualifiedName()).thenReturn("MicroserviceQualifiedName3");
     Mockito.when(invocation.getTransport()).thenReturn(transport);
@@ -142,10 +142,10 @@ public class TestFaultInjectHandler {
       validAssert = false;
     }
 
-    System.getProperties().remove("cse.governance.Consumer.global.policy.fault.protocols.rest.delay.fixedDelay");
-    System.getProperties().remove("cse.governance.Consumer.global.policy.fault.protocols.rest.delay.percent");
-    System.getProperties().remove("cse.governance.Consumer.global.policy.fault.protocols.rest.abort.percent");
-    System.getProperties().remove("cse.governance.Consumer.global.policy.fault.protocols.rest.abort.httpStatus");
+    System.getProperties().remove("cse.governance.Consumer._global.policy.fault.protocols.rest.delay.fixedDelay");
+    System.getProperties().remove("cse.governance.Consumer._global.policy.fault.protocols.rest.delay.percent");
+    System.getProperties().remove("cse.governance.Consumer._global.policy.fault.protocols.rest.abort.percent");
+    System.getProperties().remove("cse.governance.Consumer._global.policy.fault.protocols.rest.abort.httpStatus");
 
     Assert.assertTrue(validAssert);
     AtomicLong count = FaultInjectionUtil.getOperMetTotalReq("restMicroserviceQualifiedName3");
@@ -236,7 +236,7 @@ public class TestFaultInjectHandler {
   }
 
   /**
-   * Tests the fault injection handler functionality with schema level configuration
+   * Tests the fault injection handler functionality with operation level configuration
    * with delay/abort condition.
    * 
    * @throws Exception
@@ -244,16 +244,16 @@ public class TestFaultInjectHandler {
   @Test
   public void testFaultInjectHandlerOperationCfgSuccess() throws Exception {
 
-    System.setProperty("cse.governance.Consumer.operations.sayHello.policy.fault.protocols.rest.delay.fixedDelay", "1");
-    System.setProperty("cse.governance.Consumer.operations.sayHello.policy.fault.protocols.rest.delay.percent", "10");
-    System.setProperty("cse.governance.Consumer.operations.sayHello.policy.fault.protocols.rest.abort.percent", "10");
-    System.setProperty("cse.governance.Consumer.operations.sayHello.policy.fault.protocols.rest.abort.httpStatus",
+    System.setProperty("cse.governance.Consumer.operations.sayHi.policy.fault.protocols.rest.delay.fixedDelay", "1");
+    System.setProperty("cse.governance.Consumer.operations.sayHi.policy.fault.protocols.rest.delay.percent", "10");
+    System.setProperty("cse.governance.Consumer.operations.sayHi.policy.fault.protocols.rest.abort.percent", "10");
+    System.setProperty("cse.governance.Consumer.operations.sayHi.policy.fault.protocols.rest.abort.httpStatus",
         "421");
 
     Mockito.when(invocation.getMicroserviceQualifiedName()).thenReturn("MicroserviceQualifiedName6");
     Mockito.when(invocation.getTransport()).thenReturn(transport);
     Mockito.when(transport.getName()).thenReturn("rest");
-    Mockito.when(invocation.getOperationName()).thenReturn("sayHello");
+    Mockito.when(invocation.getOperationName()).thenReturn("sayHi");
     Mockito.when(invocation.getSchemaId()).thenReturn("testSchema");
     Mockito.when(invocation.getMicroserviceName()).thenReturn("carts");
 
@@ -266,35 +266,32 @@ public class TestFaultInjectHandler {
     }
 
     System.getProperties()
-        .remove("cse.governance.Consumer.operations.sayHello.policy.fault.protocols.rest.delay.fixedDelay");
+        .remove("cse.governance.Consumer.operations.sayHi.policy.fault.protocols.rest.delay.fixedDelay");
     System.getProperties()
-        .remove("cse.governance.Consumer.operations.sayHello.policy.fault.protocols.rest.delay.percent");
+        .remove("cse.governance.Consumer.operations.sayHi.policy.fault.protocols.rest.delay.percent");
     System.getProperties()
-        .remove("cse.governance.Consumer.operations.sayHello.policy.fault.protocols.rest.abort.percent");
+        .remove("cse.governance.Consumer.operations.sayHi.policy.fault.protocols.rest.abort.percent");
     System.getProperties()
-        .remove("cse.governance.Consumer.operations.sayHello.policy.fault.protocols.rest.abort.httpStatus");
+        .remove("cse.governance.Consumer.operations.sayHi.policy.fault.protocols.rest.abort.httpStatus");
     Assert.assertTrue(validAssert);
     AtomicLong count = FaultInjectionUtil.getOperMetTotalReq("restMicroserviceQualifiedName6");
     assertEquals(2, count.get());
   }
 
   /**
-   * Tests the fault injection handler functionality with schema level configuration
-   * with delay/abort condition.
+   * Tests the fault injection handler functionality with configuration change event for global level config.
    * 
    * @throws Exception
    */
   @Test
-  public void testFaultInjectHandlerConfigCenterCallBack() throws Exception {
+  public void testFaultInjectHandlerConfigChangeEvent1() throws Exception {
 
     Mockito.when(invocation.getMicroserviceQualifiedName()).thenReturn("MicroserviceQualifiedName7");
     Mockito.when(invocation.getTransport()).thenReturn(transport);
     Mockito.when(transport.getName()).thenReturn("rest");
-    Mockito.when(invocation.getOperationName()).thenReturn("sayBye");
-    Mockito.when(invocation.getSchemaId()).thenReturn("testSchema");
-    Mockito.when(invocation.getMicroserviceName()).thenReturn("carts");
-    TestFaultInjectUtil
-        .updateProperty("cse.governance.Consumer.operations.sayBye.policy.fault.protocols.rest.delay.fixedDelay", 5);
+    Mockito.when(invocation.getOperationName()).thenReturn("sayBye1");
+    Mockito.when(invocation.getSchemaId()).thenReturn("testSchema1");
+    Mockito.when(invocation.getMicroserviceName()).thenReturn("carts1");
     boolean validAssert;
     try {
       validAssert = true;
@@ -303,8 +300,122 @@ public class TestFaultInjectHandler {
       validAssert = false;
     }
 
+    TestFaultInjectUtil
+        .updateProperty("cse.governance.Consumer._global.policy.fault.protocols.rest.delay.fixedDelay", 500);
+
+    handler.handle(invocation, asyncResp);
+
     Assert.assertTrue(validAssert);
     AtomicLong count = FaultInjectionUtil.getOperMetTotalReq("restMicroserviceQualifiedName7");
-    assertEquals(2, count.get());
+    assertEquals(3, count.get());
+  }
+
+  /**
+   * Tests the fault injection handler functionality with configuration change event for operation level config.
+   * 
+   * @throws Exception
+   */
+  @Test
+  public void testFaultInjectHandlerConfigChangeEvent2() throws Exception {
+    System.setProperty("cse.governance.Consumer.operations.sayBye2.policy.fault.protocols.rest.delay.fixedDelay", "1");
+
+    Mockito.when(invocation.getMicroserviceQualifiedName()).thenReturn("MicroserviceQualifiedName8");
+    Mockito.when(invocation.getTransport()).thenReturn(transport);
+    Mockito.when(transport.getName()).thenReturn("rest");
+    Mockito.when(invocation.getOperationName()).thenReturn("sayBye2");
+    Mockito.when(invocation.getSchemaId()).thenReturn("testSchema2");
+    Mockito.when(invocation.getMicroserviceName()).thenReturn("carts2");
+    boolean validAssert;
+    try {
+      validAssert = true;
+      handler.handle(invocation, asyncResp);
+    } catch (Exception e) {
+      validAssert = false;
+    }
+
+    TestFaultInjectUtil
+        .updateProperty("cse.governance.Consumer.operations.sayBye2.policy.fault.protocols.rest.delay.fixedDelay", 500);
+
+    handler.handle(invocation, asyncResp);
+
+    System.getProperties()
+        .remove("cse.governance.Consumer.operations.sayBye2.policy.fault.protocols.rest.delay.fixedDelay");
+
+    Assert.assertTrue(validAssert);
+    AtomicLong count = FaultInjectionUtil.getOperMetTotalReq("restMicroserviceQualifiedName8");
+    assertEquals(3, count.get());
+  }
+
+  /**
+   * Tests the fault injection handler functionality with configuration change event for schema level config.
+   * 
+   * @throws Exception
+   */
+  @Test
+  public void testFaultInjectHandlerConfigChangeEvent3() throws Exception {
+    System.setProperty("cse.governance.Consumer.schemas.testSchema3.policy.fault.protocols.rest.delay.fixedDelay", "1");
+
+    Mockito.when(invocation.getMicroserviceQualifiedName()).thenReturn("MicroserviceQualifiedName9");
+    Mockito.when(invocation.getTransport()).thenReturn(transport);
+    Mockito.when(transport.getName()).thenReturn("rest");
+    Mockito.when(invocation.getOperationName()).thenReturn("sayBye3");
+    Mockito.when(invocation.getSchemaId()).thenReturn("testSchema3");
+    Mockito.when(invocation.getMicroserviceName()).thenReturn("carts3");
+    boolean validAssert;
+    try {
+      validAssert = true;
+      handler.handle(invocation, asyncResp);
+    } catch (Exception e) {
+      validAssert = false;
+    }
+
+    TestFaultInjectUtil
+        .updateProperty("cse.governance.Consumer.schemas.testSchema3.policy.fault.protocols.rest.delay.fixedDelay",
+            500);
+
+    handler.handle(invocation, asyncResp);
+
+    System.getProperties()
+        .remove("cse.governance.Consumer.schemas.testSchema3.policy.fault.protocols.rest.delay.fixedDelay");
+
+    Assert.assertTrue(validAssert);
+    AtomicLong count = FaultInjectionUtil.getOperMetTotalReq("restMicroserviceQualifiedName9");
+    assertEquals(3, count.get());
+  }
+
+  /**
+   * Tests the fault injection handler functionality with configuration change event for service level config.
+   * 
+   * @throws Exception
+   */
+  @Test
+  public void testFaultInjectHandlerConfigChangeEvent4() throws Exception {
+    System.setProperty("cse.governance.Consumer.carts4.policy.fault.protocols.rest.delay.fixedDelay", "1");
+
+    Mockito.when(invocation.getMicroserviceQualifiedName()).thenReturn("MicroserviceQualifiedName10");
+    Mockito.when(invocation.getTransport()).thenReturn(transport);
+    Mockito.when(transport.getName()).thenReturn("rest");
+    Mockito.when(invocation.getOperationName()).thenReturn("sayBye4");
+    Mockito.when(invocation.getSchemaId()).thenReturn("testSchema4");
+    Mockito.when(invocation.getMicroserviceName()).thenReturn("carts4");
+    boolean validAssert;
+    try {
+      validAssert = true;
+      handler.handle(invocation, asyncResp);
+    } catch (Exception e) {
+      validAssert = false;
+    }
+
+    TestFaultInjectUtil
+        .updateProperty("cse.governance.Consumer.carts4.policy.fault.protocols.rest.delay.fixedDelay", 500);
+
+    handler.handle(invocation, asyncResp);
+
+    System.getProperties()
+        .remove("cse.governance.Consumer.carts4.policy.fault.protocols.rest.delay.fixedDelay");
+
+    Assert.assertTrue(validAssert);
+    AtomicLong count = FaultInjectionUtil.getOperMetTotalReq("restMicroserviceQualifiedName10");
+    assertEquals(3, count.get());
   }
 }

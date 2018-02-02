@@ -136,9 +136,6 @@ public class FaultInjectionHandler implements Handler {
 
     //first need to check in config center map which has high priority.
     Map<String, AtomicInteger> cfgMap = FaultInjectionUtil.getConfigCenterMap();
-    if (cfgMap.containsKey(key)) {
-      return cfgMap.get(key).get();
-    }
 
     // get the config base on priority. operationName-->schema-->service-->global
     String operationName = invocation.getOperationName();
@@ -149,6 +146,10 @@ public class FaultInjectionHandler implements Handler {
       } else {
         config = CONSUMER_FAULTINJECTION_OPERATION + operationName + "."
             + CONSUMER_FAULTINJECTION_REST + key;
+      }
+
+      if (cfgMap.containsKey(config)) {
+        return cfgMap.get(config).get();
       }
 
       value = faultCfg.getConfigVal(config, FAULT_INJECTION_CFG_NULL);
@@ -167,6 +168,10 @@ public class FaultInjectionHandler implements Handler {
             + CONSUMER_FAULTINJECTION_REST + key;
       }
 
+      if (cfgMap.containsKey(config)) {
+        return cfgMap.get(config).get();
+      }
+
       value = faultCfg.getConfigVal(config, FAULT_INJECTION_CFG_NULL);
       if ((value != FAULT_INJECTION_CFG_NULL)) {
         return value;
@@ -183,6 +188,10 @@ public class FaultInjectionHandler implements Handler {
             + CONSUMER_FAULTINJECTION_REST + key;
       }
 
+      if (cfgMap.containsKey(config)) {
+        return cfgMap.get(config).get();
+      }
+
       value = faultCfg.getConfigVal(config, FAULT_INJECTION_CFG_NULL);
       if ((value != FAULT_INJECTION_CFG_NULL)) {
         return value;
@@ -195,6 +204,10 @@ public class FaultInjectionHandler implements Handler {
     } else {
       config = CONSUMER_FAULTINJECTION_GLOBAL
           + CONSUMER_FAULTINJECTION_REST + key;
+    }
+
+    if (cfgMap.containsKey(config)) {
+      return cfgMap.get(config).get();
     }
 
     value = faultCfg.getConfigVal(config, defaultValue);
