@@ -20,6 +20,7 @@ package org.apache.servicecomb.foundation.vertx;
 import java.util.Arrays;
 import java.util.List;
 
+import com.netflix.config.ConcurrentCompositeConfiguration;
 import com.netflix.config.DynamicPropertyFactory;
 
 import io.vertx.core.dns.AddressResolverOptions;
@@ -32,58 +33,89 @@ public class AddressResolverConfig {
    * @return AddressResolverOptions
    */
   public static AddressResolverOptions getAddressResover(String tag) {
+    return getAddressResover(tag, null);
+  }
+
+  /**
+   * get the target endpoints with custom address resolve config
+   * @param tag config tag, such as sc.consumer or cc.consumer
+   * @param configSource get config from special config source
+   * @return AddressResolverOptions
+   */
+  public static AddressResolverOptions getAddressResover(String tag, ConcurrentCompositeConfiguration configSource) {
     AddressResolverOptions addressResolverOptions = new AddressResolverOptions();
     addressResolverOptions
-        .setServers(getStringListProperty(AddressResolverOptions.DEFAULT_SEACH_DOMAINS,
+        .setServers(getStringListProperty(configSource,
+            AddressResolverOptions.DEFAULT_SEACH_DOMAINS,
             "addressResolver." + tag + ".servers",
             "addressResolver.servers"));
     addressResolverOptions
-        .setOptResourceEnabled(getBooleanProperty(AddressResolverOptions.DEFAULT_OPT_RESOURCE_ENABLED,
+        .setOptResourceEnabled(getBooleanProperty(configSource,
+            AddressResolverOptions.DEFAULT_OPT_RESOURCE_ENABLED,
             "addressResolver." + tag + ".optResourceEnabled",
             "addressResolver.optResourceEnabled"));
     addressResolverOptions
-        .setCacheMinTimeToLive(getIntProperty(AddressResolverOptions.DEFAULT_CACHE_MIN_TIME_TO_LIVE,
+        .setCacheMinTimeToLive(getIntProperty(configSource,
+            AddressResolverOptions.DEFAULT_CACHE_MIN_TIME_TO_LIVE,
             "addressResolver." + tag + ".cacheMinTimeToLive",
             "addressResolver.cacheMinTimeToLive"));
     addressResolverOptions
-        .setCacheMaxTimeToLive(getIntProperty(AddressResolverOptions.DEFAULT_CACHE_MAX_TIME_TO_LIVE,
+        .setCacheMaxTimeToLive(getIntProperty(configSource,
+            AddressResolverOptions.DEFAULT_CACHE_MAX_TIME_TO_LIVE,
             "addressResolver." + tag + ".cacheMaxTimeToLive",
             "addressResolver.cacheMaxTimeToLive"));
     addressResolverOptions
-        .setCacheNegativeTimeToLive(getIntProperty(AddressResolverOptions.DEFAULT_CACHE_NEGATIVE_TIME_TO_LIVE,
+        .setCacheNegativeTimeToLive(getIntProperty(configSource,
+            AddressResolverOptions.DEFAULT_CACHE_NEGATIVE_TIME_TO_LIVE,
             "addressResolver." + tag + ".cacheNegativeTimeToLive",
             "addressResolver.cacheNegativeTimeToLive"));
     addressResolverOptions
-        .setQueryTimeout(getIntProperty(AddressResolverOptions.DEFAULT_QUERY_TIMEOUT,
+        .setQueryTimeout(getIntProperty(configSource,
+            AddressResolverOptions.DEFAULT_QUERY_TIMEOUT,
             "addressResolver." + tag + ".queryTimeout",
             "addressResolver.queryTimeout"));
     addressResolverOptions
-        .setMaxQueries(getIntProperty(AddressResolverOptions.DEFAULT_MAX_QUERIES,
+        .setMaxQueries(getIntProperty(configSource,
+            AddressResolverOptions.DEFAULT_MAX_QUERIES,
             "addressResolver." + tag + ".maxQueries",
             "addressResolver.maxQueries"));
     addressResolverOptions
-        .setRdFlag(getBooleanProperty(AddressResolverOptions.DEFAULT_RD_FLAG,
+        .setRdFlag(getBooleanProperty(configSource,
+            AddressResolverOptions.DEFAULT_RD_FLAG,
             "addressResolver." + tag + ".rdFlag",
             "addressResolver.rdFlag"));
     addressResolverOptions
-        .setSearchDomains(getStringListProperty(AddressResolverOptions.DEFAULT_SEACH_DOMAINS,
+        .setSearchDomains(getStringListProperty(configSource,
+            AddressResolverOptions.DEFAULT_SEACH_DOMAINS,
             "addressResolver." + tag + ".searchDomains",
             "addressResolver.searchDomains"));
     addressResolverOptions
-        .setNdots(getIntProperty(AddressResolverOptions.DEFAULT_CACHE_MIN_TIME_TO_LIVE,
+        .setNdots(getIntProperty(configSource,
+            AddressResolverOptions.DEFAULT_CACHE_MIN_TIME_TO_LIVE,
             "addressResolver." + tag + ".ndots",
             "addressResolver.ndots"));
     addressResolverOptions
-        .setRotateServers(getBooleanProperty(AddressResolverOptions.DEFAULT_ROTATE_SERVERS,
+        .setRotateServers(getBooleanProperty(configSource,
+            AddressResolverOptions.DEFAULT_ROTATE_SERVERS,
             "addressResolver." + tag + ".rotateServers",
             "addressResolver.rotateServers"));
     return addressResolverOptions;
   }
 
-  private static List<String> getStringListProperty(List<String> defaultValue, String... keys) {
+  private static List<String> getStringListProperty(ConcurrentCompositeConfiguration configSource,
+      List<String> defaultValue, String... keys) {
     String property = null;
     for (String key : keys) {
-      property = DynamicPropertyFactory.getInstance().getStringProperty(key, null).get();
+      if (configSource != null) {
+        Object v = configSource.getProperty(key);
+        if (List.class.isInstance(v)) {
+          property = listToString(((List<?>) v).toArray());
+        } else {
+          property = (String) configSource.getProperty(key);
+        }
+      } else {
+        property = DynamicPropertyFactory.getInstance().getStringProperty(key, null).get();
+      }
       if (property != null) {
         break;
       }
@@ -95,14 +127,18 @@ public class AddressResolverConfig {
     }
   }
 
-  private static int getIntProperty(int defaultValue, String... keys) {
+  private static int getIntProperty(ConcurrentCompositeConfiguration configSource, int defaultValue, String... keys) {
     int property = -1;
     for (String key : keys) {
-      property = DynamicPropertyFactory.getInstance().getIntProperty(key, -1).get();
-      if (property > 0) {
-        break;
+      if (configSource != null) {
+        if (configSource.getProperty(key) != null) {
+          return configSource.getInt(key);
+        }
+      } else {
+        property = DynamicPropertyFactory.getInstance().getIntProperty(key, -1).get();
       }
     }
+
     if (property > 0) {
       return property;
     } else {
@@ -110,18 +146,36 @@ public class AddressResolverConfig {
     }
   }
 
-  private static boolean getBooleanProperty(boolean defaultValue, String... keys) {
+  private static boolean getBooleanProperty(ConcurrentCompositeConfiguration configSource, boolean defaultValue,
+      String... keys) {
     String property = null;
     for (String key : keys) {
-      property = DynamicPropertyFactory.getInstance().getStringProperty(key, null).get();
+      if (configSource != null) {
+        if (configSource.getProperty(key) != null) {
+          return configSource.getBoolean(key);
+        }
+      } else {
+        property = DynamicPropertyFactory.getInstance().getStringProperty(key, null).get();
+      }
       if (property != null) {
         break;
       }
     }
+
     if (property != null) {
       return Boolean.parseBoolean(property);
     } else {
       return defaultValue;
     }
+  }
+
+  private static String listToString(Object[] lists) {
+    StringBuilder sb = new StringBuilder();
+    sb.append(lists[0]);
+    for (int i = 1; i < lists.length; i++) {
+      sb.append(",");
+      sb.append(lists[i]);
+    }
+    return sb.toString();
   }
 }

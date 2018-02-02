@@ -147,7 +147,9 @@ public class ConfigCenterClient {
           }
         });
         SignRequest signReq = createSignRequest(request.method().toString(),
-            configCenter + URIConst.MEMBERS, new HashMap<>(), null);
+            configCenter + URIConst.MEMBERS,
+            new HashMap<>(),
+            null);
         if (ConfigCenterConfig.INSTANCE.getToken() != null) {
           request.headers().add("X-Auth-Token", ConfigCenterConfig.INSTANCE.getToken());
         }
@@ -159,7 +161,8 @@ public class ConfigCenterClient {
 
   private void deployConfigClient() throws InterruptedException {
     VertxOptions vertxOptions = new VertxOptions();
-    vertxOptions.setAddressResolverOptions(AddressResolverConfig.getAddressResover(SSL_KEY));
+    vertxOptions.setAddressResolverOptions(AddressResolverConfig.getAddressResover(SSL_KEY,
+        ConfigCenterConfig.INSTANCE.getConcurrentCompositeConfiguration()));
     Vertx vertx = VertxUtils.getOrCreateVertxByName("config-center", vertxOptions);
 
     HttpClientOptions httpClientOptions = createHttpClientOptions();
@@ -245,7 +248,9 @@ public class ConfigCenterClient {
         authHeaderProviders.forEach(provider -> authHeaders.putAll(provider.getSignAuthHeaders(
             createSignRequest(null, configCenter + url, headers, null))));
 
-        client.websocket(refreshPort, ipPort.getHostOrIp(), url,
+        client.websocket(refreshPort,
+            ipPort.getHostOrIp(),
+            url,
             new CaseInsensitiveHeaders().addAll(headers)
                 .addAll(authHeaders),
             ws -> {
@@ -284,7 +289,9 @@ public class ConfigCenterClient {
 
     private void startHeartBeatThread(WebSocket ws) {
       heartbeatTask = Executors.newScheduledThreadPool(1);
-      heartbeatTask.scheduleWithFixedDelay(() -> sendHeartbeat(ws), HEARTBEAT_INTERVAL, HEARTBEAT_INTERVAL,
+      heartbeatTask.scheduleWithFixedDelay(() -> sendHeartbeat(ws),
+          HEARTBEAT_INTERVAL,
+          HEARTBEAT_INTERVAL,
           TimeUnit.MILLISECONDS);
     }
 
@@ -338,7 +345,9 @@ public class ConfigCenterClient {
         request.headers().addAll(headers);
         authHeaderProviders.forEach(provider -> request.headers()
             .addAll(provider.getSignAuthHeaders(createSignRequest(request.method().toString(),
-                configcenter + path, headers, null))));
+                configcenter + path,
+                headers,
+                null))));
         request.exceptionHandler(e -> {
           LOGGER.error("config refresh fail {}", e.getMessage());
         });
