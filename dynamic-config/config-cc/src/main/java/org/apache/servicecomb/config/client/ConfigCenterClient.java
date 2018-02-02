@@ -39,6 +39,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.servicecomb.config.archaius.sources.ConfigCenterConfigurationSourceImpl;
 import org.apache.servicecomb.foundation.auth.AuthHeaderProvider;
 import org.apache.servicecomb.foundation.auth.SignRequest;
+import org.apache.servicecomb.foundation.common.event.EventManager;
 import org.apache.servicecomb.foundation.common.net.IpPort;
 import org.apache.servicecomb.foundation.common.net.NetUtils;
 import org.apache.servicecomb.foundation.common.utils.JsonUtils;
@@ -67,6 +68,7 @@ import io.vertx.core.http.HttpClientRequest;
 import io.vertx.core.http.WebSocket;
 import io.vertx.core.http.impl.FrameType;
 import io.vertx.core.http.impl.ws.WebSocketFrameImpl;
+import io.vertx.core.net.ProxyOptions;
 
 /**
  * Created by on 2016/5/17.
@@ -126,8 +128,10 @@ public class ConfigCenterClient {
     }
     MemberDiscovery memberdis = new MemberDiscovery(serverUri);
     refreshMembers(memberdis);
-    EXECUTOR.scheduleWithFixedDelay(new ConfigRefresh(parseConfigUtils, memberdis), firstRefreshInterval,
-        refreshInterval, TimeUnit.MILLISECONDS);
+    EXECUTOR.scheduleWithFixedDelay(new ConfigRefresh(parseConfigUtils, memberdis),
+        firstRefreshInterval,
+        refreshInterval,
+        TimeUnit.MILLISECONDS);
   }
 
   private void refreshMembers(MemberDiscovery memberDiscovery) {
@@ -167,9 +171,17 @@ public class ConfigCenterClient {
 
   private HttpClientOptions createHttpClientOptions() {
     HttpClientOptions httpClientOptions = new HttpClientOptions();
+    if (ConfigCenterConfig.INSTANCE.isProxyEnable()) {
+      ProxyOptions proxy = new ProxyOptions()
+          .setHost(ConfigCenterConfig.INSTANCE.getProxyHost())
+          .setPort(ConfigCenterConfig.INSTANCE.getProxyPort())
+          .setUsername(ConfigCenterConfig.INSTANCE.getProxyUsername())
+          .setPassword(ConfigCenterConfig.INSTANCE.getProxyPasswd());
+      httpClientOptions.setProxyOptions(proxy);
+    }
     httpClientOptions.setConnectTimeout(CONFIG_CENTER_CONFIG.getConnectionTimeout());
     if (serverUri.get(0).toLowerCase().startsWith("https")) {
-      LOGGER.debug("service center client performs requests over TLS");
+      LOGGER.debug("config center client performs requests over TLS");
       SSLOptionFactory factory = SSLOptionFactory.createSSLOptionFactory(SSL_KEY,
           ConfigCenterConfig.INSTANCE.getConcurrentCompositeConfiguration());
       SSLOption sslOption;
@@ -216,7 +228,7 @@ public class ConfigCenterClient {
 
     // create watch and wait for done
     public void doWatch(String configCenter)
-        throws URISyntaxException, UnsupportedEncodingException, InterruptedException {
+        throws UnsupportedEncodingException, InterruptedException {
       CountDownLatch waiter = new CountDownLatch(1);
       IpPort ipPort = NetUtils.parseIpPortFromURI(configCenter);
       String url = URIConst.REFRESH_ITEMS + "?dimensionsInfo="
@@ -285,7 +297,9 @@ public class ConfigCenterClient {
     private void sendHeartbeat(WebSocket ws) {
       try {
         ws.writeFrame(new WebSocketFrameImpl(FrameType.PING));
+        EventManager.post(new ConnSuccEvent());
       } catch (IllegalStateException e) {
+        EventManager.post(new ConnFailEvent("heartbeat fail, " + e.getMessage()));
         LOGGER.error("heartbeat fail", e);
       }
     }
@@ -302,11 +316,17 @@ public class ConfigCenterClient {
                     .refreshConfigItems(JsonUtils.OBJ_MAPPER.readValue(buf.toString(),
                         new TypeReference<LinkedHashMap<String, Map<String, String>>>() {
                         }));
+                EventManager.post(new ConnSuccEvent());
               } catch (IOException e) {
+                EventManager.post(new ConnFailEvent("config refresh result parse fail " + e.getMessage()));
                 LOGGER.error("config refresh result parse fail", e);
               }
             });
           } else {
+            rsp.bodyHandler(buf -> {
+              LOGGER.error("fetch config fail: " + buf);
+            });
+            EventManager.post(new ConnFailEvent("fetch config fail"));
             LOGGER.error("fetch config fail");
           }
         });
@@ -333,7 +353,7 @@ public class ConfigCenterClient {
     try {
       signReq.setEndpoint(new URI(endpoint));
     } catch (URISyntaxException e) {
-      LOGGER.warn("set uri failed, uri is {}, message: {}", endpoint.toString(), e.getMessage());
+      LOGGER.warn("set uri failed, uri is {}, message: {}", endpoint, e.getMessage());
     }
 
     Map<String, String[]> queryParams = new HashMap<>();

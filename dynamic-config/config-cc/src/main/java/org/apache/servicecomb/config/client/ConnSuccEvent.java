@@ -15,14 +15,8 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.foundation.metrics.output.servo;
+package org.apache.servicecomb.config.client;
 
-import java.util.List;
-import java.util.Map;
+public class ConnSuccEvent {
 
-import com.netflix.servo.Metric;
-
-//convert metrics to output content
-public interface MetricsContentConvertor {
-  Map<String, String> convert(List<Metric> metrics);
 }

@@ -15,37 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.foundation.metrics;
+package org.apache.servicecomb.config.client;
 
-public class TpsAndLatencyData {
-  private final long successCount;
+public class ConnFailEvent {
 
-  private final long failureCount;
+  private String msg;
 
-  private final int operationLatency;
-
-  private final long windowInMilliseconds;
-
-  public long getSuccessCount() {
-    return successCount;
+  public ConnFailEvent(String msg) {
+    this.msg = msg;
   }
 
-  public long getFailureCount() {
-    return failureCount;
+  public String getMsg() {
+    return msg;
   }
 
-  public int getOperationLatency() {
-    return operationLatency;
-  }
-
-  public long getWindowInMilliseconds() {
-    return windowInMilliseconds;
-  }
-
-  public TpsAndLatencyData(long successCount, long failureCount, int operationLatency, long windowInMilliseconds) {
-    this.successCount = successCount;
-    this.failureCount = failureCount;
-    this.operationLatency = operationLatency;
-    this.windowInMilliseconds = windowInMilliseconds;
+  public void setMsg(String msg) {
+    this.msg = msg;
   }
 }

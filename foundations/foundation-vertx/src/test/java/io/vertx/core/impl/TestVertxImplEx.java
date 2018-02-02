@@ -14,28 +14,34 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package io.vertx.core.impl;
 
-package org.apache.servicecomb.foundation.metrics;
-
-import java.util.HashMap;
-import java.util.Map;
-
-import org.apache.servicecomb.foundation.metrics.output.servo.SimpleMetricsContentFormatter;
 import org.junit.Assert;
 import org.junit.Test;
 
-public class TestSimpleMetricsContentFormatter {
+import io.vertx.core.VertxOptions;
+import io.vertx.core.json.JsonObject;
+import mockit.Mock;
+import mockit.MockUp;
+import mockit.Mocked;
 
+public class TestVertxImplEx {
   @Test
-  public void testFormatter() {
-    SimpleMetricsContentFormatter formatter = new SimpleMetricsContentFormatter();
+  public void testContextCreatedCount(@Mocked EventLoopContext context) {
+    new MockUp<VertxImpl>() {
+      @Mock
+      EventLoopContext createEventLoopContext(String deploymentID, WorkerPool workerPool, JsonObject config,
+          ClassLoader tccl) {
+        return context;
+      }
+    };
 
-    Map<String, String> input = new HashMap<>();
-    input.put("key", "value");
+    VertxImplEx vertx = new VertxImplEx("test", new VertxOptions());
 
-    Map<String, String> output = formatter.format(input);
+    vertx.createEventLoopContext(null, null, null, null);
+    Assert.assertEquals(1, vertx.getEventLoopContextCreatedCount());
 
-    Assert.assertTrue(output.containsKey("key"));
-    Assert.assertTrue(output.get("key").contains("\"key\":\"value\""));
+    vertx.createEventLoopContext(null, null, null, null);
+    Assert.assertEquals(2, vertx.getEventLoopContextCreatedCount());
   }
 }

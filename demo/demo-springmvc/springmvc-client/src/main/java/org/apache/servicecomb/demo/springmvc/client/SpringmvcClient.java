@@ -89,40 +89,6 @@ public class SpringmvcClient {
       testController();
     }
 
-    //0.5.0 version metrics integration test
-    try {
-      // this test class is intended for retry hanging issue JAV-127
-      String content = restTemplate.getForObject("cse://springmvc/codeFirstSpringmvc/metricsForTest", String.class);
-      @SuppressWarnings("unchecked")
-      Map<String, String> resultMap = JsonUtils.OBJ_MAPPER.readValue(content, HashMap.class);
-
-      TestMgr.check(true, resultMap.get("CPU and Memory").contains("heapUsed="));
-
-      String[] requestProviders = resultMap.get("totalRequestProvider OPERATIONAL_LEVEL")
-          .replace("{", "")
-          .replace("}", "")
-          .split(",");
-      Map<String, Integer> requests = new HashMap<>();
-      for (String requestProvider : requestProviders) {
-        String[] requestKeyAndValues = requestProvider.split("=");
-        requests.put(requestKeyAndValues[0], Integer.parseInt(requestKeyAndValues[1]));
-      }
-
-      for (Entry<String, Integer> request : requests.entrySet()) {
-        TestMgr.check(true, request.getValue() > 0);
-      }
-
-      TestMgr.check(true, resultMap.get("RequestQueueRelated").contains("springmvc.codeFirst.saySomething"));
-      TestMgr.check(true, resultMap.get("RequestQueueRelated").contains("springmvc.controller.sayHi"));
-      ResponseEntity<String> entityCompress =
-          restTemplate.getForEntity(prefix + "/codeFirstSpringmvc/sayhi/compressed/{name}/v2", String.class, "Test");
-      TestMgr.check(
-          "Test sayhi compressed:This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text!",
-          entityCompress.getBody());
-    } catch (Exception e) {
-      TestMgr.check("true", "false");
-    }
-
     //0.5.0 later version metrics integration test
     try {
       RegistryMetric metric = metricsPublisher.metrics();

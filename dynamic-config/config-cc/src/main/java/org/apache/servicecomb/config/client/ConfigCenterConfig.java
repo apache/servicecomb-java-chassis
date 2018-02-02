@@ -18,7 +18,6 @@
 package org.apache.servicecomb.config.client;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import com.google.common.base.Joiner;
@@ -57,6 +56,18 @@ public final class ConfigCenterConfig {
 
   private static final String INSTANCE_TAGS = "instance_description.properties.tags";
 
+  public static final String PROXY_PRE_NAME = "cse.proxy.";
+
+  public static final String PROXY_ENABLE = PROXY_PRE_NAME + "enable";
+
+  public static final String PROXY_HOST = PROXY_PRE_NAME + "host";
+
+  public static final String PROXY_PORT = PROXY_PRE_NAME + "port";
+
+  public static final String PROXY_USERNAME = PROXY_PRE_NAME + "username";
+
+  public static final String PROXY_PASSWD = PROXY_PRE_NAME + "passwd";
+
   private static final int DEFAULT_REFRESH_MODE = 0;
 
   private static final int DEFAULT_REFRESH_PORT = 30104;
@@ -71,7 +82,7 @@ public final class ConfigCenterConfig {
   }
 
   public static void setConcurrentCompositeConfiguration(ConcurrentCompositeConfiguration config) {
-    finalConfig = (ConcurrentCompositeConfiguration) config;
+    finalConfig = config;
   }
 
   public ConcurrentCompositeConfiguration getConcurrentCompositeConfiguration() {
@@ -110,6 +121,26 @@ public final class ConfigCenterConfig {
     return finalConfig.getInt(FIRST_REFRESH_INTERVAL, DEFAULT_FIRST_REFRESH_INTERVAL);
   }
 
+  public Boolean isProxyEnable() {
+    return finalConfig.getBoolean(PROXY_ENABLE, false);
+  }
+
+  public String getProxyHost() {
+    return finalConfig.getString(PROXY_HOST, "127.0.0.1");
+  }
+
+  public int getProxyPort() {
+    return finalConfig.getInt(PROXY_PORT, 8080);
+  }
+
+  public String getProxyUsername() {
+    return finalConfig.getString(PROXY_USERNAME, "");
+  }
+
+  public String getProxyPasswd() {
+    return finalConfig.getString(PROXY_PASSWD, "");
+  }
+
   @SuppressWarnings("unchecked")
   public String getServiceName() {
     String service = finalConfig.getString(SERVICE_NAME);
@@ -140,7 +171,9 @@ public final class ConfigCenterConfig {
   public List<String> getServerUri() {
     String[] result = finalConfig.getStringArray(SERVER_URL_KEY);
     List<String> configCenterUris = new ArrayList<>(result.length);
-    configCenterUris.addAll(Arrays.asList(result));
+    for (int i = 0; i < result.length; i++) {
+      configCenterUris.add(result[i]);
+    }
     return configCenterUris;
   }
 
