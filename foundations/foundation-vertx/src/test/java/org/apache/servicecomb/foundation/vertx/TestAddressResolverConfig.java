@@ -56,6 +56,8 @@ public class TestAddressResolverConfig {
         result = new String[] {"default.svc.local.cluster"};
         finalConfig.getInteger("addressResolver.queryTimeout", null);
         result = 2000;
+        finalConfig.getInteger("addressResolver.maxQueries", null);
+        result = -2;
       }
     };
     AddressResolverOptions aroc = AddressResolverConfig.getAddressResover("test", finalConfig);
@@ -64,6 +66,8 @@ public class TestAddressResolverConfig {
         is(Arrays.asList("default.svc.local.cluster")));
     Assert.assertEquals(aroc.getQueryTimeout(),
         2000);
+    Assert.assertNotEquals(aroc.getMaxQueries(),
+        -2);
   }
 
   @Test

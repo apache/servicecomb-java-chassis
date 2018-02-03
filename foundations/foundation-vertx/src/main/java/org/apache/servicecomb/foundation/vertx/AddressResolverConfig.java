@@ -21,12 +21,16 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.configuration.Configuration;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.netflix.config.DynamicPropertyFactory;
 
 import io.vertx.core.dns.AddressResolverOptions;
 
 public class AddressResolverConfig {
+
+  private static final Logger LOGGER = LoggerFactory.getLogger(AddressResolverConfig.class);
 
   /**
    * get the target endpoints with custom address resolve config
@@ -56,27 +60,27 @@ public class AddressResolverConfig {
             "addressResolver." + tag + ".optResourceEnabled",
             "addressResolver.optResourceEnabled"));
     addressResolverOptions
-        .setCacheMinTimeToLive(getIntProperty(configSource,
+        .setCacheMinTimeToLive(getPositiveIntProperty(configSource,
             AddressResolverOptions.DEFAULT_CACHE_MIN_TIME_TO_LIVE,
             "addressResolver." + tag + ".cacheMinTimeToLive",
             "addressResolver.cacheMinTimeToLive"));
     addressResolverOptions
-        .setCacheMaxTimeToLive(getIntProperty(configSource,
+        .setCacheMaxTimeToLive(getPositiveIntProperty(configSource,
             AddressResolverOptions.DEFAULT_CACHE_MAX_TIME_TO_LIVE,
             "addressResolver." + tag + ".cacheMaxTimeToLive",
             "addressResolver.cacheMaxTimeToLive"));
     addressResolverOptions
-        .setCacheNegativeTimeToLive(getIntProperty(configSource,
+        .setCacheNegativeTimeToLive(getPositiveIntProperty(configSource,
             AddressResolverOptions.DEFAULT_CACHE_NEGATIVE_TIME_TO_LIVE,
             "addressResolver." + tag + ".cacheNegativeTimeToLive",
             "addressResolver.cacheNegativeTimeToLive"));
     addressResolverOptions
-        .setQueryTimeout(getIntProperty(configSource,
+        .setQueryTimeout(getPositiveIntProperty(configSource,
             AddressResolverOptions.DEFAULT_QUERY_TIMEOUT,
             "addressResolver." + tag + ".queryTimeout",
             "addressResolver.queryTimeout"));
     addressResolverOptions
-        .setMaxQueries(getIntProperty(configSource,
+        .setMaxQueries(getPositiveIntProperty(configSource,
             AddressResolverOptions.DEFAULT_MAX_QUERIES,
             "addressResolver." + tag + ".maxQueries",
             "addressResolver.maxQueries"));
@@ -91,7 +95,7 @@ public class AddressResolverConfig {
             "addressResolver." + tag + ".searchDomains",
             "addressResolver.searchDomains"));
     addressResolverOptions
-        .setNdots(getIntProperty(configSource,
+        .setNdots(getPositiveIntProperty(configSource,
             AddressResolverOptions.DEFAULT_CACHE_MIN_TIME_TO_LIVE,
             "addressResolver." + tag + ".ndots",
             "addressResolver.ndots"));
@@ -117,13 +121,17 @@ public class AddressResolverConfig {
     return defaultValue;
   }
 
-  private static int getIntProperty(Configuration configSource, int defaultValue, String... keys) {
+  private static int getPositiveIntProperty(Configuration configSource, int defaultValue, String... keys) {
     if (configSource == null) {
       configSource = (Configuration) DynamicPropertyFactory.getBackingConfigurationSource();
     }
     for (String key : keys) {
       Integer val = configSource.getInteger(key, null);
-      if (val != null && val > 0) {
+      if (val != null && val <= 0) {
+        LOGGER.warn("Address resover key:{}'s value:{} is not positive, please check!", key, val);
+        continue;
+      }
+      if (val != null) {
         return val;
       }
     }
