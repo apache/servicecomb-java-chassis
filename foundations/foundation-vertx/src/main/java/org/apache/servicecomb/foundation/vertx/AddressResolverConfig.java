@@ -20,7 +20,8 @@ package org.apache.servicecomb.foundation.vertx;
 import java.util.Arrays;
 import java.util.List;
 
-import com.netflix.config.ConcurrentCompositeConfiguration;
+import org.apache.commons.configuration.Configuration;
+
 import com.netflix.config.DynamicPropertyFactory;
 
 import io.vertx.core.dns.AddressResolverOptions;
@@ -42,7 +43,7 @@ public class AddressResolverConfig {
    * @param configSource get config from special config source
    * @return AddressResolverOptions
    */
-  public static AddressResolverOptions getAddressResover(String tag, ConcurrentCompositeConfiguration configSource) {
+  public static AddressResolverOptions getAddressResover(String tag, Configuration configSource) {
     AddressResolverOptions addressResolverOptions = new AddressResolverOptions();
     addressResolverOptions
         .setServers(getStringListProperty(configSource,
@@ -102,80 +103,44 @@ public class AddressResolverConfig {
     return addressResolverOptions;
   }
 
-  private static List<String> getStringListProperty(ConcurrentCompositeConfiguration configSource,
+  private static List<String> getStringListProperty(Configuration configSource,
       List<String> defaultValue, String... keys) {
-    String property = null;
+    if (configSource == null) {
+      configSource = (Configuration) DynamicPropertyFactory.getBackingConfigurationSource();
+    }
     for (String key : keys) {
-      if (configSource != null) {
-        Object v = configSource.getProperty(key);
-        if (List.class.isInstance(v)) {
-          property = listToString(((List<?>) v).toArray());
-        } else {
-          property = (String) configSource.getProperty(key);
-        }
-      } else {
-        property = DynamicPropertyFactory.getInstance().getStringProperty(key, null).get();
-      }
-      if (property != null) {
-        break;
+      String[] vals = configSource.getStringArray(key);
+      if (vals != null && vals.length > 0) {
+        return Arrays.asList(vals);
       }
     }
-    if (property != null) {
-      return Arrays.asList(property.split(","));
-    } else {
-      return defaultValue;
-    }
+    return defaultValue;
   }
 
-  private static int getIntProperty(ConcurrentCompositeConfiguration configSource, int defaultValue, String... keys) {
-    int property = -1;
+  private static int getIntProperty(Configuration configSource, int defaultValue, String... keys) {
+    if (configSource == null) {
+      configSource = (Configuration) DynamicPropertyFactory.getBackingConfigurationSource();
+    }
     for (String key : keys) {
-      if (configSource != null) {
-        if (configSource.getProperty(key) != null) {
-          return configSource.getInt(key);
-        }
-      } else {
-        property = DynamicPropertyFactory.getInstance().getIntProperty(key, -1).get();
+      Integer val = configSource.getInteger(key, null);
+      if (val != null && val > 0) {
+        return val;
       }
     }
-
-    if (property > 0) {
-      return property;
-    } else {
-      return defaultValue;
-    }
+    return defaultValue;
   }
 
-  private static boolean getBooleanProperty(ConcurrentCompositeConfiguration configSource, boolean defaultValue,
+  private static boolean getBooleanProperty(Configuration configSource, boolean defaultValue,
       String... keys) {
-    String property = null;
+    if (configSource == null) {
+      configSource = (Configuration) DynamicPropertyFactory.getBackingConfigurationSource();
+    }
     for (String key : keys) {
-      if (configSource != null) {
-        if (configSource.getProperty(key) != null) {
-          return configSource.getBoolean(key);
-        }
-      } else {
-        property = DynamicPropertyFactory.getInstance().getStringProperty(key, null).get();
-      }
-      if (property != null) {
-        break;
+      Boolean val = configSource.getBoolean(key, null);
+      if (val != null) {
+        return val;
       }
     }
-
-    if (property != null) {
-      return Boolean.parseBoolean(property);
-    } else {
-      return defaultValue;
-    }
-  }
-
-  private static String listToString(Object[] lists) {
-    StringBuilder sb = new StringBuilder();
-    sb.append(lists[0]);
-    for (int i = 1; i < lists.length; i++) {
-      sb.append(",");
-      sb.append(lists[i]);
-    }
-    return sb.toString();
+    return defaultValue;
   }
 }

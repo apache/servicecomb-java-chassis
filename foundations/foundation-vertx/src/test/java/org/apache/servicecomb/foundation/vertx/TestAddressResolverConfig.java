@@ -21,13 +21,12 @@ import static org.hamcrest.CoreMatchers.is;
 
 import java.util.Arrays;
 
+import org.apache.commons.configuration.Configuration;
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
-
-import com.netflix.config.ConcurrentCompositeConfiguration;
 
 import io.vertx.core.dns.AddressResolverOptions;
 import mockit.Expectations;
@@ -46,35 +45,25 @@ public class TestAddressResolverConfig {
   }
 
   @Test
-  public void testGetResoverFromResource(@Mocked ConcurrentCompositeConfiguration finalConfig) {
+  public void testGetResoverFromResource(@Mocked Configuration finalConfig) {
     ArchaiusUtils.resetConfig();
     ArchaiusUtils.setProperty("addressResolver.servers", "8.8.8.8,8.8.4.4");
-    ArchaiusUtils.setProperty("addressResolver.optResourceEnabled", true);
-    ArchaiusUtils.setProperty("addressResolver.cacheMinTimeToLive", 0);
-    ArchaiusUtils.setProperty("addressResolver.cacheMaxTimeToLive", 10000);
-    ArchaiusUtils.setProperty("addressResolver.cacheNegativeTimeToLive", 0);
-    ArchaiusUtils.setProperty("addressResolver.queryTimeout", 1000);
-    ArchaiusUtils.setProperty("addressResolver.maxQueries", 3);
-    ArchaiusUtils.setProperty("addressResolver.test.maxQueries", 3);
-    ArchaiusUtils.setProperty("addressResolver.rdFlag", true);
-    ArchaiusUtils.setProperty("addressResolver.searchDomains",
-        "default.svc.local.cluster,svc.local.cluster,local.cluster");
-    ArchaiusUtils.setProperty("addressResolver.test.searchDomains",
-        "test.svc.local.cluster,svc.local.cluster,local.cluster");
-    ArchaiusUtils.setProperty("addressResolver.ndots", 3);
-    ArchaiusUtils.setProperty("addressResolver.rotateServers", true);
     new Expectations() {
       {
-        finalConfig.getProperty("addressResolver.servers");
-        result = "6.6.6.6,6.6.4.4";
-        finalConfig.getProperty("addressResolver.searchDomains");
-        result = "default.svc.local.cluster";
+        finalConfig.getStringArray("addressResolver.servers");
+        result = new String[] {"6.6.6.6", "6.6.4.4"};
+        finalConfig.getStringArray("addressResolver.searchDomains");
+        result = new String[] {"default.svc.local.cluster"};
+        finalConfig.getInteger("addressResolver.queryTimeout", null);
+        result = 2000;
       }
     };
     AddressResolverOptions aroc = AddressResolverConfig.getAddressResover("test", finalConfig);
     Assert.assertThat(aroc.getServers(), is(Arrays.asList("6.6.6.6", "6.6.4.4")));
     Assert.assertThat(aroc.getSearchDomains(),
         is(Arrays.asList("default.svc.local.cluster")));
+    Assert.assertEquals(aroc.getQueryTimeout(),
+        2000);
   }
 
   @Test
