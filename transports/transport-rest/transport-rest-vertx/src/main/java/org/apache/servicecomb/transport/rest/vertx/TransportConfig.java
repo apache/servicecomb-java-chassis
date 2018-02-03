@@ -21,6 +21,8 @@ import com.netflix.config.DynamicIntProperty;
 import com.netflix.config.DynamicPropertyFactory;
 import com.netflix.config.DynamicStringProperty;
 
+import io.vertx.core.http.HttpServerOptions;
+
 public final class TransportConfig {
   private TransportConfig() {
   }
@@ -40,6 +42,18 @@ public final class TransportConfig {
   public static int getConnectionIdleTimeoutInSeconds() {
     return DynamicPropertyFactory.getInstance()
         .getIntProperty("cse.rest.server.connection.idleTimeoutInSeconds", 60)
+        .get();
+  }
+
+  public static boolean getCompressed() {
+    return DynamicPropertyFactory.getInstance()
+        .getBooleanProperty("cse.rest.server.compression", false)
+        .get();
+  }
+
+  public static int getMaxHeaderSize() {
+    return DynamicPropertyFactory.getInstance()
+        .getIntProperty("cse.rest.server.maxHeaderSize", HttpServerOptions.DEFAULT_MAX_HEADER_SIZE)
         .get();
   }
 }

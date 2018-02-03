@@ -20,7 +20,7 @@ servicecomb:
 APPLICATION_ID: springmvctest
 service_description:
   name: springmvc
-  version: 0.0.3
+  version: 0.0.4
   paths:
     - path: /test1/testpath
       property:
@@ -46,6 +46,8 @@ cse:
       autodiscovery: true
   rest:
     address: 0.0.0.0:8080?sslEnabled=true
+    server:
+      compression: true
   highway:
     address: 0.0.0.0:7070?sslEnabled=true
   handler:
