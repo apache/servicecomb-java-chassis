@@ -24,9 +24,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.servicecomb.metrics.common.RegistryMetric;
-import org.apache.servicecomb.metrics.core.custom.DefaultCounterService;
-import org.apache.servicecomb.metrics.core.custom.DefaultGaugeService;
-import org.apache.servicecomb.metrics.core.custom.DefaultWindowCounterService;
 import org.apache.servicecomb.metrics.core.monitor.DefaultSystemMonitor;
 import org.apache.servicecomb.metrics.core.monitor.RegistryMonitor;
 import org.apache.servicecomb.metrics.core.monitor.SystemMonitor;
@@ -40,8 +37,7 @@ public class TestPublisher {
   @Test
   public void test() {
     SystemMonitor systemMonitor = new DefaultSystemMonitor();
-    RegistryMonitor registryMonitor = new RegistryMonitor(systemMonitor, new DefaultCounterService(),
-        new DefaultGaugeService(), new DefaultWindowCounterService());
+    RegistryMonitor registryMonitor = new RegistryMonitor(systemMonitor);
     DefaultDataSource dataSource = new DefaultDataSource(registryMonitor, "1000,2000,3000,3000,2000,1000");
     DefaultMetricsPublisher publisher = new DefaultMetricsPublisher(dataSource);
 

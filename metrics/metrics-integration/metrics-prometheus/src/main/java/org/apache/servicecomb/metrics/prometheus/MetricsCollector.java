@@ -88,20 +88,7 @@ public class MetricsCollector extends Collector implements Collector.Describable
           .add(new MetricFamilySamples("Producer Side", Type.UNTYPED, "Producer Side Metrics", producerSamples));
     }
 
-    if (registryMetric.getCustomMetrics().size() != 0) {
-      familySamples.add(getFamilySamples("User Custom", registryMetric.getCustomMetrics()));
-    }
-
     return familySamples;
-  }
-
-  private <T extends Number> MetricFamilySamples getFamilySamples(String name, Map<String, T> metrics) {
-    List<Sample> samples = metrics.entrySet()
-        .stream()
-        .map((entry) -> new Sample(entry.getKey().replace(".", "_"),
-            new ArrayList<>(), new ArrayList<>(), entry.getValue().doubleValue()))
-        .collect(Collectors.toList());
-    return new MetricFamilySamples(name, Type.UNTYPED, name + " Metrics", samples);
   }
 
   private List<Sample> convertConsumerMetric(ConsumerInvocationMetric metric) {
