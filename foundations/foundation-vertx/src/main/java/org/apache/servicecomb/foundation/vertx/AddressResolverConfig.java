@@ -109,8 +109,11 @@ public class AddressResolverConfig {
 
   private static List<String> getStringListProperty(Configuration configSource,
       List<String> defaultValue, String... keys) {
-    if (configSource == null) {
+    if (configSource == null && DynamicPropertyFactory.getBackingConfigurationSource() != null) {
       configSource = (Configuration) DynamicPropertyFactory.getBackingConfigurationSource();
+    }
+    if (configSource == null) {
+      return defaultValue;
     }
     for (String key : keys) {
       String[] vals = configSource.getStringArray(key);
@@ -122,8 +125,11 @@ public class AddressResolverConfig {
   }
 
   private static int getPositiveIntProperty(Configuration configSource, int defaultValue, String... keys) {
-    if (configSource == null) {
+    if (configSource == null && DynamicPropertyFactory.getBackingConfigurationSource() != null) {
       configSource = (Configuration) DynamicPropertyFactory.getBackingConfigurationSource();
+    }
+    if (configSource == null) {
+      return defaultValue;
     }
     for (String key : keys) {
       Integer val = configSource.getInteger(key, null);
@@ -140,8 +146,11 @@ public class AddressResolverConfig {
 
   private static boolean getBooleanProperty(Configuration configSource, boolean defaultValue,
       String... keys) {
-    if (configSource == null) {
+    if (configSource == null && DynamicPropertyFactory.getBackingConfigurationSource() != null) {
       configSource = (Configuration) DynamicPropertyFactory.getBackingConfigurationSource();
+    }
+    if (configSource == null) {
+      return defaultValue;
     }
     for (String key : keys) {
       Boolean val = configSource.getBoolean(key, null);
