@@ -70,7 +70,7 @@ public class MicroserviceFactory {
     // use default values, we can add configure item in future.
     Framework framework = new Framework();
     framework.setName(CONFIG_FRAMEWORK_DEFAULT_NAME);
-    framework.setVersion(MicroserviceFactory.class.getPackage().getImplementationVersion());
+    framework.setVersion("ServiceComb:" + MicroserviceFactory.class.getPackage().getImplementationVersion());
     microservice.setFramework(framework);
     microservice.setRegisterBy(CONFIG_DEFAULT_REGISTER_BY);
 
