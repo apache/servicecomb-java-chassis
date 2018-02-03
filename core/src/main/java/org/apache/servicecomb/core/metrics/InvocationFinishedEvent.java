@@ -17,10 +17,9 @@
 
 package org.apache.servicecomb.core.metrics;
 
-import org.apache.servicecomb.foundation.common.event.Event;
 import org.apache.servicecomb.swagger.invocation.InvocationType;
 
-public class InvocationFinishedEvent implements Event {
+public class InvocationFinishedEvent {
   private final String operationName;
 
   private final InvocationType invocationType;

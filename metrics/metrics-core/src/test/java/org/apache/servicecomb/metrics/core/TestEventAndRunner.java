@@ -32,7 +32,7 @@ import java.util.concurrent.TimeUnit;
 import org.apache.servicecomb.core.metrics.InvocationFinishedEvent;
 import org.apache.servicecomb.core.metrics.InvocationStartProcessingEvent;
 import org.apache.servicecomb.core.metrics.InvocationStartedEvent;
-import org.apache.servicecomb.foundation.common.utils.EventUtils;
+import org.apache.servicecomb.foundation.common.event.EventManager;
 import org.apache.servicecomb.metrics.common.MetricsDimension;
 import org.apache.servicecomb.metrics.common.RegistryMetric;
 import org.apache.servicecomb.metrics.core.custom.DefaultCounterService;
@@ -84,45 +84,42 @@ public class TestEventAndRunner {
 
     //fun1 is a PRODUCER invocation call 2 time and all is completed
     //two time success
-    EventUtils.triggerEvent(new InvocationStartedEvent("fun1", InvocationType.PRODUCER, System.nanoTime()));
-    EventUtils.triggerEvent(
+    EventManager.post(new InvocationStartedEvent("fun1", InvocationType.PRODUCER, System.nanoTime()));
+    EventManager.post(
         new InvocationStartProcessingEvent("fun1", InvocationType.PRODUCER,
             TimeUnit.MILLISECONDS.toNanos(100)));
-    EventUtils
-        .triggerEvent(new InvocationFinishedEvent("fun1", InvocationType.PRODUCER,
-            TimeUnit.MILLISECONDS.toNanos(200), TimeUnit.MILLISECONDS.toNanos(300), 200, true));
+    EventManager.post(new InvocationFinishedEvent("fun1", InvocationType.PRODUCER,
+        TimeUnit.MILLISECONDS.toNanos(200), TimeUnit.MILLISECONDS.toNanos(300), 200, true));
 
-    EventUtils.triggerEvent(new InvocationStartedEvent("fun1", InvocationType.PRODUCER, System.nanoTime()));
-    EventUtils.triggerEvent(
+    EventManager.post(new InvocationStartedEvent("fun1", InvocationType.PRODUCER, System.nanoTime()));
+    EventManager.post(
         new InvocationStartProcessingEvent("fun1", InvocationType.PRODUCER,
             TimeUnit.MILLISECONDS.toNanos(300)));
-    EventUtils
-        .triggerEvent(new InvocationFinishedEvent("fun1", InvocationType.PRODUCER,
-            TimeUnit.MILLISECONDS.toNanos(400), TimeUnit.MILLISECONDS.toNanos(700), 500, false));
+    EventManager.post(new InvocationFinishedEvent("fun1", InvocationType.PRODUCER,
+        TimeUnit.MILLISECONDS.toNanos(400), TimeUnit.MILLISECONDS.toNanos(700), 500, false));
 
     //==========================================================================
 
     //fun3 is a PRODUCER invocation call uncompleted
-    EventUtils.triggerEvent(new InvocationStartedEvent("fun3", InvocationType.PRODUCER, System.nanoTime()));
-    EventUtils.triggerEvent(
+    EventManager.post(new InvocationStartedEvent("fun3", InvocationType.PRODUCER, System.nanoTime()));
+    EventManager.post(
         new InvocationStartProcessingEvent("fun3", InvocationType.PRODUCER,
             TimeUnit.MILLISECONDS.toNanos(500)));
 
     //==========================================================================
 
     //fun4 is a PRODUCER call only started and no processing start and finished
-    EventUtils.triggerEvent(new InvocationStartedEvent("fun4", InvocationType.PRODUCER, System.nanoTime()));
+    EventManager.post(new InvocationStartedEvent("fun4", InvocationType.PRODUCER, System.nanoTime()));
 
     //==========================================================================
 
     //fun2 is a CONSUMER invocation call once and completed
-    EventUtils.triggerEvent(new InvocationStartedEvent("fun2", InvocationType.CONSUMER, System.nanoTime()));
-    EventUtils.triggerEvent(
+    EventManager.post(new InvocationStartedEvent("fun2", InvocationType.CONSUMER, System.nanoTime()));
+    EventManager.post(
         new InvocationStartProcessingEvent("fun2", InvocationType.CONSUMER,
             TimeUnit.MILLISECONDS.toNanos(100)));
-    EventUtils
-        .triggerEvent(new InvocationFinishedEvent("fun2", InvocationType.CONSUMER,
-            TimeUnit.MILLISECONDS.toNanos(200), TimeUnit.MILLISECONDS.toNanos(300), 200, true));
+    EventManager.post(new InvocationFinishedEvent("fun2", InvocationType.CONSUMER,
+        TimeUnit.MILLISECONDS.toNanos(200), TimeUnit.MILLISECONDS.toNanos(300), 200, true));
 
     //==========================================================================
 

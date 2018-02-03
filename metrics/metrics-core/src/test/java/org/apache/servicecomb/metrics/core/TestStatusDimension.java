@@ -22,7 +22,7 @@ import java.util.concurrent.TimeUnit;
 import org.apache.servicecomb.core.metrics.InvocationFinishedEvent;
 import org.apache.servicecomb.core.metrics.InvocationStartProcessingEvent;
 import org.apache.servicecomb.core.metrics.InvocationStartedEvent;
-import org.apache.servicecomb.foundation.common.utils.EventUtils;
+import org.apache.servicecomb.foundation.common.event.EventManager;
 import org.apache.servicecomb.metrics.common.MetricsDimension;
 import org.apache.servicecomb.metrics.common.RegistryMetric;
 import org.apache.servicecomb.metrics.core.custom.DefaultCounterService;
@@ -106,54 +106,48 @@ public class TestStatusDimension {
 
     new DefaultEventListenerManager(monitor, new StatusConvertorFactory(), outputLevel);
 
-    EventUtils.triggerEvent(new InvocationStartedEvent("fun1", InvocationType.PRODUCER, System.nanoTime()));
-    EventUtils.triggerEvent(
+    EventManager.post(new InvocationStartedEvent("fun1", InvocationType.PRODUCER, System.nanoTime()));
+    EventManager.post(
         new InvocationStartProcessingEvent("fun1", InvocationType.PRODUCER,
             TimeUnit.MILLISECONDS.toNanos(100)));
-    EventUtils
-        .triggerEvent(new InvocationFinishedEvent("fun1", InvocationType.PRODUCER,
-            TimeUnit.MILLISECONDS.toNanos(200), TimeUnit.MILLISECONDS.toNanos(300), 222, true));
+    EventManager.post(new InvocationFinishedEvent("fun1", InvocationType.PRODUCER,
+        TimeUnit.MILLISECONDS.toNanos(200), TimeUnit.MILLISECONDS.toNanos(300), 222, true));
 
-    EventUtils.triggerEvent(new InvocationStartedEvent("fun1", InvocationType.PRODUCER, System.nanoTime()));
-    EventUtils.triggerEvent(
+    EventManager.post(new InvocationStartedEvent("fun1", InvocationType.PRODUCER, System.nanoTime()));
+    EventManager.post(
         new InvocationStartProcessingEvent("fun1", InvocationType.PRODUCER,
             TimeUnit.MILLISECONDS.toNanos(100)));
-    EventUtils
-        .triggerEvent(new InvocationFinishedEvent("fun1", InvocationType.PRODUCER,
-            TimeUnit.MILLISECONDS.toNanos(200), TimeUnit.MILLISECONDS.toNanos(300), 333, false));
+    EventManager.post(new InvocationFinishedEvent("fun1", InvocationType.PRODUCER,
+        TimeUnit.MILLISECONDS.toNanos(200), TimeUnit.MILLISECONDS.toNanos(300), 333, false));
 
-    EventUtils.triggerEvent(new InvocationStartedEvent("fun1", InvocationType.PRODUCER, System.nanoTime()));
-    EventUtils.triggerEvent(
+    EventManager.post(new InvocationStartedEvent("fun1", InvocationType.PRODUCER, System.nanoTime()));
+    EventManager.post(
         new InvocationStartProcessingEvent("fun1", InvocationType.PRODUCER,
             TimeUnit.MILLISECONDS.toNanos(100)));
-    EventUtils
-        .triggerEvent(new InvocationFinishedEvent("fun1", InvocationType.PRODUCER,
-            TimeUnit.MILLISECONDS.toNanos(200), TimeUnit.MILLISECONDS.toNanos(300), 444, false));
+    EventManager.post(new InvocationFinishedEvent("fun1", InvocationType.PRODUCER,
+        TimeUnit.MILLISECONDS.toNanos(200), TimeUnit.MILLISECONDS.toNanos(300), 444, false));
 
-    EventUtils.triggerEvent(new InvocationStartedEvent("fun1", InvocationType.PRODUCER, System.nanoTime()));
-    EventUtils.triggerEvent(
+    EventManager.post(new InvocationStartedEvent("fun1", InvocationType.PRODUCER, System.nanoTime()));
+    EventManager.post(
         new InvocationStartProcessingEvent("fun1", InvocationType.PRODUCER,
             TimeUnit.MILLISECONDS.toNanos(100)));
-    EventUtils
-        .triggerEvent(new InvocationFinishedEvent("fun1", InvocationType.PRODUCER,
-            TimeUnit.MILLISECONDS.toNanos(200), TimeUnit.MILLISECONDS.toNanos(300), 555, false));
+    EventManager.post(new InvocationFinishedEvent("fun1", InvocationType.PRODUCER,
+        TimeUnit.MILLISECONDS.toNanos(200), TimeUnit.MILLISECONDS.toNanos(300), 555, false));
 
-    EventUtils.triggerEvent(new InvocationStartedEvent("fun1", InvocationType.PRODUCER, System.nanoTime()));
-    EventUtils.triggerEvent(
+    EventManager.post(new InvocationStartedEvent("fun1", InvocationType.PRODUCER, System.nanoTime()));
+    EventManager.post(
         new InvocationStartProcessingEvent("fun1", InvocationType.PRODUCER,
             TimeUnit.MILLISECONDS.toNanos(100)));
-    EventUtils
-        .triggerEvent(new InvocationFinishedEvent("fun1", InvocationType.PRODUCER,
-            TimeUnit.MILLISECONDS.toNanos(200), TimeUnit.MILLISECONDS.toNanos(300), 666, false));
+    EventManager.post(new InvocationFinishedEvent("fun1", InvocationType.PRODUCER,
+        TimeUnit.MILLISECONDS.toNanos(200), TimeUnit.MILLISECONDS.toNanos(300), 666, false));
 
     //fun2 is a CONSUMER invocation call once and completed
-    EventUtils.triggerEvent(new InvocationStartedEvent("fun2", InvocationType.CONSUMER, System.nanoTime()));
-    EventUtils.triggerEvent(
+    EventManager.post(new InvocationStartedEvent("fun2", InvocationType.CONSUMER, System.nanoTime()));
+    EventManager.post(
         new InvocationStartProcessingEvent("fun2", InvocationType.CONSUMER,
             TimeUnit.MILLISECONDS.toNanos(100)));
-    EventUtils
-        .triggerEvent(new InvocationFinishedEvent("fun2", InvocationType.CONSUMER,
-            TimeUnit.MILLISECONDS.toNanos(200), TimeUnit.MILLISECONDS.toNanos(300), 200, true));
+    EventManager.post(new InvocationFinishedEvent("fun2", InvocationType.CONSUMER,
+        TimeUnit.MILLISECONDS.toNanos(200), TimeUnit.MILLISECONDS.toNanos(300), 200, true));
 
     //sim lease one window time
     Thread.sleep(1000);

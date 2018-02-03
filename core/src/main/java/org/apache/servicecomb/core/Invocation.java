@@ -27,7 +27,7 @@ import org.apache.servicecomb.core.definition.SchemaMeta;
 import org.apache.servicecomb.core.metrics.InvocationFinishedEvent;
 import org.apache.servicecomb.core.metrics.InvocationStartProcessingEvent;
 import org.apache.servicecomb.core.provider.consumer.ReferenceConfig;
-import org.apache.servicecomb.foundation.common.utils.EventUtils;
+import org.apache.servicecomb.foundation.common.event.EventManager;
 import org.apache.servicecomb.swagger.invocation.AsyncResponse;
 import org.apache.servicecomb.swagger.invocation.InvocationType;
 import org.apache.servicecomb.swagger.invocation.SwaggerInvocation;
@@ -187,16 +187,15 @@ public class Invocation extends SwaggerInvocation {
 
   public void triggerStartProcessingEvent() {
     this.startProcessingTime = System.nanoTime();
-    EventUtils.triggerEvent(new InvocationStartProcessingEvent(
+    EventManager.post(new InvocationStartProcessingEvent(
         operationMeta.getMicroserviceQualifiedName(), this.invocationType, startProcessingTime - startTime));
   }
 
   public void triggerFinishedEvent(int statusCode, boolean success) {
     long finishedTime = System.nanoTime();
-    EventUtils
-        .triggerEvent(new InvocationFinishedEvent(operationMeta.getMicroserviceQualifiedName(),
-            this.invocationType, finishedTime - startProcessingTime,
-            finishedTime - startTime, statusCode, success));
+    EventManager.post(new InvocationFinishedEvent(operationMeta.getMicroserviceQualifiedName(),
+        this.invocationType, finishedTime - startProcessingTime,
+        finishedTime - startTime, statusCode, success));
   }
 
   public boolean isSync() {
