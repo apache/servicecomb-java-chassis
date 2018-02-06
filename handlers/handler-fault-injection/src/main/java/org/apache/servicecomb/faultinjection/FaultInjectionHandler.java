@@ -42,47 +42,52 @@ public class FaultInjectionHandler implements Handler {
 
   @Override
   public void handle(Invocation invocation, AsyncResponse asyncResp) throws Exception {
-    // prepare the key and lookup for request count.
-    String key = invocation.getTransport().getName() + invocation.getMicroserviceQualifiedName();
 
-    AtomicLong reqCount = FaultInjectionUtil.getOperMetTotalReq(key);
-    long reqCountCurrent = reqCount.get();
-    // increment the request count here after checking the delay/abort condition.
-    reqCount.incrementAndGet();
+    //if no transport then call next handler.
+    if ((invocation.getTransport() != null) && (invocation.getTransport().getName() != null)) {
 
-    // get the config values related to delay percentage.
-    int delayPercent = getFaultInjectionConfig(invocation,
-        "delay.percent",
-        FAULT_INJECTION_DELAY_PERCENTAGE_DEFAULT);
+      // prepare the key and lookup for request count.
+      String key = invocation.getTransport().getName() + invocation.getMicroserviceQualifiedName();
 
-    // check fault delay condition.
-    boolean isDelay = checkFaultInjectionDelayAndAbort(reqCountCurrent, delayPercent);
-    if (isDelay) {
-      LOGGER.info("delay is added for the request by fault inject handler");
-      long delay = getFaultInjectionConfig(invocation,
-          "delay.fixedDelay",
-          FAULT_INJECTION_DELAY_DEFAULT);
+      AtomicLong reqCount = FaultInjectionUtil.getOperMetTotalReq(key);
+      long reqCountCurrent = reqCount.get();
+      // increment the request count here after checking the delay/abort condition.
+      reqCount.incrementAndGet();
 
-      Thread.sleep(delay);
-    }
-
-    // get the config values related to delay.
-    int abortPercent = getFaultInjectionConfig(invocation,
-        "abort.percent",
-        FAULT_INJECTION_ABORT_PERCENTAGE_DEFAULT);
-
-    // check fault delay condition.
-    boolean isAbort = checkFaultInjectionDelayAndAbort(reqCountCurrent, abortPercent);
-    if (isAbort) {
       // get the config values related to delay percentage.
-      int errorCode = getFaultInjectionConfig(invocation,
-          "abort.httpStatus",
-          FAULT_INJECTION_ABORT_ERROR_MSG_DEFAULT);
-      // if request need to be abort then return failure with given error code
-      CommonExceptionData errorData = new CommonExceptionData("aborted by fault inject");
-      asyncResp.consumerFail(
-          new InvocationException(new HttpStatus(errorCode, "aborted by fault inject"), errorData));
-      return;
+      int delayPercent = getFaultInjectionConfig(invocation,
+          "delay.percent",
+          FAULT_INJECTION_DELAY_PERCENTAGE_DEFAULT);
+
+      // check fault delay condition.
+      boolean isDelay = checkFaultInjectionDelayAndAbort(reqCountCurrent, delayPercent);
+      if (isDelay) {
+        LOGGER.info("delay is added for the request by fault inject handler");
+        long delay = getFaultInjectionConfig(invocation,
+            "delay.fixedDelay",
+            FAULT_INJECTION_DELAY_DEFAULT);
+
+        Thread.sleep(delay);
+      }
+
+      // get the config values related to delay.
+      int abortPercent = getFaultInjectionConfig(invocation,
+          "abort.percent",
+          FAULT_INJECTION_ABORT_PERCENTAGE_DEFAULT);
+
+      // check fault delay condition.
+      boolean isAbort = checkFaultInjectionDelayAndAbort(reqCountCurrent, abortPercent);
+      if (isAbort) {
+        // get the config values related to delay percentage.
+        int errorCode = getFaultInjectionConfig(invocation,
+            "abort.httpStatus",
+            FAULT_INJECTION_ABORT_ERROR_MSG_DEFAULT);
+        // if request need to be abort then return failure with given error code
+        CommonExceptionData errorData = new CommonExceptionData("aborted by fault inject");
+        asyncResp.consumerFail(
+            new InvocationException(new HttpStatus(errorCode, "aborted by fault inject"), errorData));
+        return;
+      }
     }
 
     // if no delay and no abort then continue to next handler.
@@ -139,32 +144,15 @@ public class FaultInjectionHandler implements Handler {
 
     // get the config base on priority. operationName-->schema-->service-->global
     String operationName = invocation.getOperationName();
-    if (operationName != null) {
-      if (invocation.getTransport().getName().equals(FAULTINJECTION_HIGHWAY_TRANSPORT)) {
-        config = CONSUMER_FAULTINJECTION_OPERATION + operationName + "."
-            + CONSUMER_FAULTINJECTION_HIGHWAY + key;
-      } else {
-        config = CONSUMER_FAULTINJECTION_OPERATION + operationName + "."
-            + CONSUMER_FAULTINJECTION_REST + key;
-      }
-
-      if (cfgMap.containsKey(config)) {
-        return cfgMap.get(config).get();
-      }
-
-      value = faultCfg.getConfigVal(config, FAULT_INJECTION_CFG_NULL);
-      if ((value != FAULT_INJECTION_CFG_NULL)) {
-        return value;
-      }
-    }
-
     String schema = invocation.getSchemaId();
-    if (schema != null) {
+    String serviceName = invocation.getMicroserviceName();
+
+    if (operationName != null && schema != null && serviceName != null) {
       if (invocation.getTransport().getName().equals(FAULTINJECTION_HIGHWAY_TRANSPORT)) {
-        config = CONSUMER_FAULTINJECTION_SCHEMAS + schema + "."
+        config = CONSUMER_FAULTINJECTION + serviceName + ".schemas." + schema + ".operations." + operationName + "."
             + CONSUMER_FAULTINJECTION_HIGHWAY + key;
       } else {
-        config = CONSUMER_FAULTINJECTION_SCHEMAS + schema + "."
+        config = CONSUMER_FAULTINJECTION + serviceName + ".schemas." + schema + ".operations." + operationName + "."
             + CONSUMER_FAULTINJECTION_REST + key;
       }
 
@@ -178,7 +166,25 @@ public class FaultInjectionHandler implements Handler {
       }
     }
 
-    String serviceName = invocation.getMicroserviceName();
+    if (schema != null && serviceName != null) {
+      if (invocation.getTransport().getName().equals(FAULTINJECTION_HIGHWAY_TRANSPORT)) {
+        config = CONSUMER_FAULTINJECTION + serviceName + ".schemas." + schema + "."
+            + CONSUMER_FAULTINJECTION_HIGHWAY + key;
+      } else {
+        config = CONSUMER_FAULTINJECTION + serviceName + ".schemas." + schema + "."
+            + CONSUMER_FAULTINJECTION_REST + key;
+      }
+
+      if (cfgMap.containsKey(config)) {
+        return cfgMap.get(config).get();
+      }
+
+      value = faultCfg.getConfigVal(config, FAULT_INJECTION_CFG_NULL);
+      if ((value != FAULT_INJECTION_CFG_NULL)) {
+        return value;
+      }
+    }
+
     if (serviceName != null) {
       if (invocation.getTransport().getName().equals(FAULTINJECTION_HIGHWAY_TRANSPORT)) {
         config = CONSUMER_FAULTINJECTION + serviceName + "."
@@ -198,7 +204,7 @@ public class FaultInjectionHandler implements Handler {
       }
     }
 
-    if (invocation.getTransport().getName().equals("highway")) {
+    if (invocation.getTransport().getName().equals(FAULTINJECTION_HIGHWAY_TRANSPORT)) {
       config = CONSUMER_FAULTINJECTION_GLOBAL
           + CONSUMER_FAULTINJECTION_HIGHWAY + key;
     } else {

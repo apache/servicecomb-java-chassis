@@ -49,7 +49,7 @@ public final class FaultInjectionConfig {
 
         //store the value in config center map and check for next requests.
         FaultInjectionUtil.setConfigCenterValue(cfgName, new AtomicInteger(newValue));
-        LOGGER.info("{} changed from {} to {}", cfgName, dynamicIntProperty, newValue);
+        LOGGER.info("{} changed to {}", cfgName, newValue);
       });
     }
 

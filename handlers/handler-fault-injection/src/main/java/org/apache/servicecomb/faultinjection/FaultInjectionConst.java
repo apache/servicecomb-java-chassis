@@ -33,10 +33,6 @@ public class FaultInjectionConst {
 
   public static final String CONSUMER_FAULTINJECTION = "cse.governance.Consumer.";
 
-  public static final String CONSUMER_FAULTINJECTION_OPERATION = "cse.governance.Consumer.operations.";
-
-  public static final String CONSUMER_FAULTINJECTION_SCHEMAS = "cse.governance.Consumer.schemas.";
-
   public static final String CONSUMER_FAULTINJECTION_GLOBAL = "cse.governance.Consumer._global.";
 
   public static final String CONSUMER_FAULTINJECTION_REST = "policy.fault.protocols.rest.";
