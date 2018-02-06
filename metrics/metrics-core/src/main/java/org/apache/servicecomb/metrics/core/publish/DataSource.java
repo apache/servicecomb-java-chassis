@@ -52,7 +52,8 @@ public interface DataSource {
    *                               getMetrics(2000) will return max=400 min=100 total=1000
    *
    * @param windowTime getAppliedWindowTime() item
-   * @return Map<String, Double>
+   * @param calculateLatency need output latency
+   * @return Map<String   ,       Double>
    */
-  Map<String, Double> getMetrics(long windowTime);
+  Map<String, Double> getMetrics(long windowTime, boolean calculateLatency);
 }

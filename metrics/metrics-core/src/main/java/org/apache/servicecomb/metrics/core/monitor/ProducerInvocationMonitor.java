@@ -71,13 +71,13 @@ public class ProducerInvocationMonitor {
     this.producerCall = new CallMonitor(operation, MetricsConst.STAGE_WHOLE, MetricsConst.ROLE_PRODUCER);
   }
 
-  public Map<String, Double> toMetric(int windowTimeIndex) {
+  public Map<String, Double> toMetric(int windowTimeIndex, boolean calculateLatency) {
     Map<String, Double> metrics = new HashMap<>();
     metrics.put(MonitorUtils.getMonitorName(waitInQueue.getConfig()),
         waitInQueue.getValue(windowTimeIndex).doubleValue());
-    metrics.putAll(lifeTimeInQueue.toMetric(windowTimeIndex));
-    metrics.putAll(executionTime.toMetric(windowTimeIndex));
-    metrics.putAll(producerLatency.toMetric(windowTimeIndex));
+    metrics.putAll(lifeTimeInQueue.toMetric(windowTimeIndex, calculateLatency));
+    metrics.putAll(executionTime.toMetric(windowTimeIndex, calculateLatency));
+    metrics.putAll(producerLatency.toMetric(windowTimeIndex, calculateLatency));
     metrics.putAll(producerCall.toMetric(windowTimeIndex));
     return metrics;
   }

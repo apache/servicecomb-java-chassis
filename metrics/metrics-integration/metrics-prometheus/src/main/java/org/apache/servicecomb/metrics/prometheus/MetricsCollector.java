@@ -53,7 +53,7 @@ public class MetricsCollector extends Collector implements Collector.Describable
   }
 
   private List<MetricFamilySamples> load() {
-    Map<String, Double> registryMetric = dataSource.getMetrics(Pollers.getPollingIntervals().get(0));
+    Map<String, Double> registryMetric = dataSource.getMetrics(Pollers.getPollingIntervals().get(0), true);
     List<MetricFamilySamples> familySamples = new ArrayList<>();
 
     List<Sample> samples = new ArrayList<>();

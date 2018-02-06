@@ -128,7 +128,7 @@ public class TestEventAndRunner {
     //sim lease one window time
     Thread.sleep(1000);
 
-    Map<String, Double> metrics = dataSource.getMetrics(1000);
+    Map<String, Double> metrics = dataSource.getMetrics(1000, false);
 
     //check ProducerMetrics
     //fun1
@@ -155,22 +155,42 @@ public class TestEventAndRunner {
         Lists.newArrayList("fun1", MetricsConst.ROLE_PRODUCER, MetricsConst.STAGE_WHOLE, "max",
             "200")), 0);
 
-    Assert.assertEquals(200, MetricsUtils.getFirstMatchMetricValue(metrics, MetricsConst.SERVICECOMB_INVOCATION,
+    //
+    Assert.assertEquals(2, MetricsUtils.getFirstMatchMetricValue(metrics, MetricsConst.SERVICECOMB_INVOCATION,
         Lists.newArrayList(MetricsConst.TAG_OPERATION, MetricsConst.TAG_ROLE, MetricsConst.TAG_STAGE,
             MetricsConst.TAG_STATISTIC, MetricsConst.TAG_STATUS),
-        Lists.newArrayList("fun1", MetricsConst.ROLE_PRODUCER, MetricsConst.STAGE_QUEUE, "latency",
+        Lists.newArrayList("fun1", MetricsConst.ROLE_PRODUCER, MetricsConst.STAGE_QUEUE, "count",
             "200")), 0);
 
-    Assert.assertEquals(300, MetricsUtils.getFirstMatchMetricValue(metrics, MetricsConst.SERVICECOMB_INVOCATION,
+    Assert.assertEquals(2, MetricsUtils.getFirstMatchMetricValue(metrics, MetricsConst.SERVICECOMB_INVOCATION,
         Lists.newArrayList(MetricsConst.TAG_OPERATION, MetricsConst.TAG_ROLE, MetricsConst.TAG_STAGE,
             MetricsConst.TAG_STATISTIC, MetricsConst.TAG_STATUS),
-        Lists.newArrayList("fun1", MetricsConst.ROLE_PRODUCER, MetricsConst.STAGE_EXECUTION, "latency",
+        Lists.newArrayList("fun1", MetricsConst.ROLE_PRODUCER, MetricsConst.STAGE_EXECUTION, "count",
             "200")), 0);
 
-    Assert.assertEquals(500, MetricsUtils.getFirstMatchMetricValue(metrics, MetricsConst.SERVICECOMB_INVOCATION,
+    Assert.assertEquals(2, MetricsUtils.getFirstMatchMetricValue(metrics, MetricsConst.SERVICECOMB_INVOCATION,
         Lists.newArrayList(MetricsConst.TAG_OPERATION, MetricsConst.TAG_ROLE, MetricsConst.TAG_STAGE,
             MetricsConst.TAG_STATISTIC, MetricsConst.TAG_STATUS),
-        Lists.newArrayList("fun1", MetricsConst.ROLE_PRODUCER, MetricsConst.STAGE_WHOLE, "latency",
+        Lists.newArrayList("fun1", MetricsConst.ROLE_PRODUCER, MetricsConst.STAGE_WHOLE, "count",
+            "200")), 0);
+
+    //
+    Assert.assertEquals(400, MetricsUtils.getFirstMatchMetricValue(metrics, MetricsConst.SERVICECOMB_INVOCATION,
+        Lists.newArrayList(MetricsConst.TAG_OPERATION, MetricsConst.TAG_ROLE, MetricsConst.TAG_STAGE,
+            MetricsConst.TAG_STATISTIC, MetricsConst.TAG_STATUS),
+        Lists.newArrayList("fun1", MetricsConst.ROLE_PRODUCER, MetricsConst.STAGE_QUEUE, "totalTime",
+            "200")), 0);
+
+    Assert.assertEquals(600, MetricsUtils.getFirstMatchMetricValue(metrics, MetricsConst.SERVICECOMB_INVOCATION,
+        Lists.newArrayList(MetricsConst.TAG_OPERATION, MetricsConst.TAG_ROLE, MetricsConst.TAG_STAGE,
+            MetricsConst.TAG_STATISTIC, MetricsConst.TAG_STATUS),
+        Lists.newArrayList("fun1", MetricsConst.ROLE_PRODUCER, MetricsConst.STAGE_EXECUTION, "totalTime",
+            "200")), 0);
+
+    Assert.assertEquals(1000, MetricsUtils.getFirstMatchMetricValue(metrics, MetricsConst.SERVICECOMB_INVOCATION,
+        Lists.newArrayList(MetricsConst.TAG_OPERATION, MetricsConst.TAG_ROLE, MetricsConst.TAG_STAGE,
+            MetricsConst.TAG_STATISTIC, MetricsConst.TAG_STATUS),
+        Lists.newArrayList("fun1", MetricsConst.ROLE_PRODUCER, MetricsConst.STAGE_WHOLE, "totalTime",
             "200")), 0);
 
     Assert.assertEquals(2,
@@ -184,7 +204,7 @@ public class TestEventAndRunner {
         MetricsUtils.getFirstMatchMetricValue(metrics, MetricsConst.SERVICECOMB_INVOCATION,
             Lists.newArrayList(MetricsConst.TAG_OPERATION, MetricsConst.TAG_ROLE, MetricsConst.TAG_STAGE,
                 MetricsConst.TAG_STATISTIC, MetricsConst.TAG_STATUS),
-            Lists.newArrayList("fun1", MetricsConst.ROLE_PRODUCER, MetricsConst.STAGE_WHOLE, "count",
+            Lists.newArrayList("fun1", MetricsConst.ROLE_PRODUCER, MetricsConst.STAGE_WHOLE, "totalCount",
                 "200")), 0);
 
     Assert.assertEquals(1,
@@ -198,7 +218,7 @@ public class TestEventAndRunner {
         MetricsUtils.getFirstMatchMetricValue(metrics, MetricsConst.SERVICECOMB_INVOCATION,
             Lists.newArrayList(MetricsConst.TAG_OPERATION, MetricsConst.TAG_ROLE, MetricsConst.TAG_STAGE,
                 MetricsConst.TAG_STATISTIC, MetricsConst.TAG_STATUS),
-            Lists.newArrayList("fun1", MetricsConst.ROLE_PRODUCER, MetricsConst.STAGE_WHOLE, "count",
+            Lists.newArrayList("fun1", MetricsConst.ROLE_PRODUCER, MetricsConst.STAGE_WHOLE, "totalCount",
                 "500")), 0);
 
     //fun3
@@ -225,24 +245,6 @@ public class TestEventAndRunner {
         Lists.newArrayList("fun3", MetricsConst.ROLE_PRODUCER, MetricsConst.STAGE_WHOLE, "max",
             "200")), 0);
 
-    Assert.assertEquals(Double.NaN, MetricsUtils.getFirstMatchMetricValue(metrics, MetricsConst.SERVICECOMB_INVOCATION,
-        Lists.newArrayList(MetricsConst.TAG_OPERATION, MetricsConst.TAG_ROLE, MetricsConst.TAG_STAGE,
-            MetricsConst.TAG_STATISTIC, MetricsConst.TAG_STATUS),
-        Lists.newArrayList("fun3", MetricsConst.ROLE_PRODUCER, MetricsConst.STAGE_QUEUE, "latency",
-            "200")), 0);
-
-    Assert.assertEquals(Double.NaN, MetricsUtils.getFirstMatchMetricValue(metrics, MetricsConst.SERVICECOMB_INVOCATION,
-        Lists.newArrayList(MetricsConst.TAG_OPERATION, MetricsConst.TAG_ROLE, MetricsConst.TAG_STAGE,
-            MetricsConst.TAG_STATISTIC, MetricsConst.TAG_STATUS),
-        Lists.newArrayList("fun3", MetricsConst.ROLE_PRODUCER, MetricsConst.STAGE_EXECUTION, "latency",
-            "200")), 0);
-
-    Assert.assertEquals(Double.NaN, MetricsUtils.getFirstMatchMetricValue(metrics, MetricsConst.SERVICECOMB_INVOCATION,
-        Lists.newArrayList(MetricsConst.TAG_OPERATION, MetricsConst.TAG_ROLE, MetricsConst.TAG_STAGE,
-            MetricsConst.TAG_STATISTIC, MetricsConst.TAG_STATUS),
-        Lists.newArrayList("fun3", MetricsConst.ROLE_PRODUCER, MetricsConst.STAGE_WHOLE, "latency",
-            "200")), 0);
-
     Assert.assertEquals(Double.NaN,
         MetricsUtils.getFirstMatchMetricValue(metrics, MetricsConst.SERVICECOMB_INVOCATION,
             Lists.newArrayList(MetricsConst.TAG_OPERATION, MetricsConst.TAG_ROLE, MetricsConst.TAG_STAGE,
@@ -261,14 +263,14 @@ public class TestEventAndRunner {
         MetricsUtils.getFirstMatchMetricValue(metrics, MetricsConst.SERVICECOMB_INVOCATION,
             Lists.newArrayList(MetricsConst.TAG_OPERATION, MetricsConst.TAG_ROLE, MetricsConst.TAG_STAGE,
                 MetricsConst.TAG_STATISTIC, MetricsConst.TAG_STATUS),
-            Lists.newArrayList("fun3", MetricsConst.ROLE_PRODUCER, MetricsConst.STAGE_WHOLE, "count",
+            Lists.newArrayList("fun3", MetricsConst.ROLE_PRODUCER, MetricsConst.STAGE_WHOLE, "totalCount",
                 "200")), 0);
 
     Assert.assertEquals(Double.NaN,
         MetricsUtils.getFirstMatchMetricValue(metrics, MetricsConst.SERVICECOMB_INVOCATION,
             Lists.newArrayList(MetricsConst.TAG_OPERATION, MetricsConst.TAG_ROLE, MetricsConst.TAG_STAGE,
                 MetricsConst.TAG_STATISTIC, MetricsConst.TAG_STATUS),
-            Lists.newArrayList("fun3", MetricsConst.ROLE_PRODUCER, MetricsConst.STAGE_WHOLE, "count",
+            Lists.newArrayList("fun3", MetricsConst.ROLE_PRODUCER, MetricsConst.STAGE_WHOLE, "totalCount",
                 "500")), 0);
 
     //check ConsumerMetrics
@@ -279,10 +281,16 @@ public class TestEventAndRunner {
         Lists.newArrayList("fun2", MetricsConst.ROLE_CONSUMER, MetricsConst.STAGE_WHOLE, "max",
             "200")), 0);
 
+    Assert.assertEquals(1, MetricsUtils.getFirstMatchMetricValue(metrics, MetricsConst.SERVICECOMB_INVOCATION,
+        Lists.newArrayList(MetricsConst.TAG_OPERATION, MetricsConst.TAG_ROLE, MetricsConst.TAG_STAGE,
+            MetricsConst.TAG_STATISTIC, MetricsConst.TAG_STATUS),
+        Lists.newArrayList("fun2", MetricsConst.ROLE_CONSUMER, MetricsConst.STAGE_WHOLE, "count",
+            "200")), 0);
+
     Assert.assertEquals(300, MetricsUtils.getFirstMatchMetricValue(metrics, MetricsConst.SERVICECOMB_INVOCATION,
         Lists.newArrayList(MetricsConst.TAG_OPERATION, MetricsConst.TAG_ROLE, MetricsConst.TAG_STAGE,
             MetricsConst.TAG_STATISTIC, MetricsConst.TAG_STATUS),
-        Lists.newArrayList("fun2", MetricsConst.ROLE_CONSUMER, MetricsConst.STAGE_WHOLE, "latency",
+        Lists.newArrayList("fun2", MetricsConst.ROLE_CONSUMER, MetricsConst.STAGE_WHOLE, "totalTime",
             "200")), 0);
 
     Assert.assertEquals(1,
@@ -303,14 +311,14 @@ public class TestEventAndRunner {
         MetricsUtils.getFirstMatchMetricValue(metrics, MetricsConst.SERVICECOMB_INVOCATION,
             Lists.newArrayList(MetricsConst.TAG_OPERATION, MetricsConst.TAG_ROLE, MetricsConst.TAG_STAGE,
                 MetricsConst.TAG_STATISTIC, MetricsConst.TAG_STATUS),
-            Lists.newArrayList("fun2", MetricsConst.ROLE_CONSUMER, MetricsConst.STAGE_WHOLE, "count",
+            Lists.newArrayList("fun2", MetricsConst.ROLE_CONSUMER, MetricsConst.STAGE_WHOLE, "totalCount",
                 "200")), 0);
 
     Assert.assertEquals(Double.NaN,
         MetricsUtils.getFirstMatchMetricValue(metrics, MetricsConst.SERVICECOMB_INVOCATION,
             Lists.newArrayList(MetricsConst.TAG_OPERATION, MetricsConst.TAG_ROLE, MetricsConst.TAG_STAGE,
                 MetricsConst.TAG_STATISTIC, MetricsConst.TAG_STATUS),
-            Lists.newArrayList("fun2", MetricsConst.ROLE_CONSUMER, MetricsConst.STAGE_WHOLE, "count",
+            Lists.newArrayList("fun2", MetricsConst.ROLE_CONSUMER, MetricsConst.STAGE_WHOLE, "totalCount",
                 "500")), 0);
 
     //fun4

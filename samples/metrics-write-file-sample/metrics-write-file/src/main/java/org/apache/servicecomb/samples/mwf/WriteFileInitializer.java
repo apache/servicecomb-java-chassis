@@ -88,7 +88,7 @@ public class WriteFileInitializer {
   }
 
   private void run() {
-    Map<String, Double> registryMetric = dataSource.getMetrics(Pollers.getPollingIntervals().get(0));
+    Map<String, Double> registryMetric = dataSource.getMetrics(Pollers.getPollingIntervals().get(0), true);
     Map<String, String> convertedMetrics = convertor.convert(registryMetric);
     Map<String, String> formattedMetrics = formatter.format(convertedMetrics);
 

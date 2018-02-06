@@ -42,7 +42,7 @@ public class PerfMetricsFilePublisher {
   }
 
   public void onCycle() {
-    Map<String, Double> metrics = dataSource.getMetrics(Pollers.getPollingIntervals().get(0));
+    Map<String, Double> metrics = dataSource.getMetrics(Pollers.getPollingIntervals().get(0), true);
 
     StringBuilder sb = new StringBuilder();
     sb.append("\n");

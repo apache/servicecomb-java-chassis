@@ -22,7 +22,6 @@ import java.util.Map;
 
 import org.apache.servicecomb.foundation.common.concurrent.ConcurrentHashMapEx;
 import org.apache.servicecomb.metrics.common.MetricsConst;
-import org.apache.servicecomb.metrics.common.MetricsDimension;
 import org.apache.servicecomb.metrics.core.utils.MonitorUtils;
 
 import com.netflix.servo.monitor.MaxGauge;
@@ -30,7 +29,7 @@ import com.netflix.servo.monitor.MonitorConfig;
 import com.netflix.servo.monitor.StepCounter;
 
 public class TimerMonitor {
-  private final Map<String, Map<String, DimensionCounter>> dimensionCounters;
+  private final Map<String, StatusCounter> statusCounters;
 
   private final String operation;
 
@@ -43,53 +42,63 @@ public class TimerMonitor {
     this.stage = stage;
     this.role = role;
 
-    this.dimensionCounters = new ConcurrentHashMapEx<>();
-    this.dimensionCounters.put(MetricsDimension.DIMENSION_STATUS, new ConcurrentHashMapEx<>());
+    this.statusCounters = new ConcurrentHashMapEx<>();
   }
 
-  public void update(long value, String dimensionKey, String... dimensionValues) {
-    for (String dimensionValue : dimensionValues) {
-      TimerMonitor.DimensionCounter counter = dimensionCounters.get(dimensionKey)
-          .computeIfAbsent(dimensionValue, d -> new TimerMonitor.DimensionCounter(
-              new StepCounter(MonitorConfig.builder(MetricsConst.SERVICECOMB_INVOCATION).build()),
-              new StepCounter(MonitorConfig.builder(MetricsConst.SERVICECOMB_INVOCATION).build()),
-              new MaxGauge(MonitorConfig.builder(MetricsConst.SERVICECOMB_INVOCATION)
-                  .withTag(dimensionKey, dimensionValue)
-                  .withTag(MetricsConst.TAG_OPERATION, operation)
-                  .withTag(MetricsConst.TAG_STAGE, stage)
-                  .withTag(MetricsConst.TAG_ROLE, role)
-                  .withTag(MetricsConst.TAG_STATISTIC, "max")
-                  .build()),
-              MonitorConfig.builder(MetricsConst.SERVICECOMB_INVOCATION)
-                  .withTag(dimensionKey, dimensionValue)
-                  .withTag(MetricsConst.TAG_OPERATION, operation)
-                  .withTag(MetricsConst.TAG_STAGE, stage)
-                  .withTag(MetricsConst.TAG_ROLE, role)
-                  .withTag(MetricsConst.TAG_STATISTIC, "latency")
-                  .build()));
-      counter.update(value);
-    }
+  public void update(long value, String statusCode) {
+    StatusCounter counter = statusCounters
+        .computeIfAbsent(statusCode, d -> new StatusCounter(
+            new StepCounter(MonitorConfig.builder(MetricsConst.SERVICECOMB_INVOCATION)
+                .withTag(MetricsConst.TAG_STATUS, statusCode)
+                .withTag(MetricsConst.TAG_OPERATION, operation)
+                .withTag(MetricsConst.TAG_STAGE, stage)
+                .withTag(MetricsConst.TAG_ROLE, role)
+                .withTag(MetricsConst.TAG_STATISTIC, "totalTime")
+                .build()),
+            new StepCounter(MonitorConfig.builder(MetricsConst.SERVICECOMB_INVOCATION)
+                .withTag(MetricsConst.TAG_STATUS, statusCode)
+                .withTag(MetricsConst.TAG_OPERATION, operation)
+                .withTag(MetricsConst.TAG_STAGE, stage)
+                .withTag(MetricsConst.TAG_ROLE, role)
+                .withTag(MetricsConst.TAG_STATISTIC, "count")
+                .build()),
+            new MaxGauge(MonitorConfig.builder(MetricsConst.SERVICECOMB_INVOCATION)
+                .withTag(MetricsConst.TAG_STATUS, statusCode)
+                .withTag(MetricsConst.TAG_OPERATION, operation)
+                .withTag(MetricsConst.TAG_STAGE, stage)
+                .withTag(MetricsConst.TAG_ROLE, role)
+                .withTag(MetricsConst.TAG_STATISTIC, "max")
+                .build()),
+            MonitorConfig.builder(MetricsConst.SERVICECOMB_INVOCATION)
+                .withTag(MetricsConst.TAG_STATUS, statusCode)
+                .withTag(MetricsConst.TAG_OPERATION, operation)
+                .withTag(MetricsConst.TAG_STAGE, stage)
+                .withTag(MetricsConst.TAG_ROLE, role)
+                .withTag(MetricsConst.TAG_STATISTIC, "latency")
+                .build()));
+    counter.update(value);
   }
 
-  public Map<String, Double> toMetric(int windowTimeIndex) {
+  public Map<String, Double> toMetric(int windowTimeIndex, boolean calculateLatency) {
     Map<String, Double> metrics = new HashMap<>();
-    for (Map<String, TimerMonitor.DimensionCounter> dimensionCounter : dimensionCounters.values()) {
-      for (TimerMonitor.DimensionCounter counter : dimensionCounter.values()) {
-        double total = (double) MonitorUtils.convertNanosecondToMillisecond(
-            MonitorUtils.adjustValue(counter.getTotal().getCount(windowTimeIndex)));
-        double count = (double) MonitorUtils.adjustValue(counter.getCount().getCount(windowTimeIndex));
-
-        metrics.put(MonitorUtils.getMonitorName(counter.getMax().getConfig()),
-            (double) MonitorUtils
-                .convertNanosecondToMillisecond(MonitorUtils.adjustValue(counter.getMax().getValue(windowTimeIndex))));
-        //latency = total / count
+    for (StatusCounter counter : statusCounters.values()) {
+      double total = (double) MonitorUtils.convertNanosecondToMillisecond(
+          MonitorUtils.adjustValue(counter.getTotal().getCount(windowTimeIndex)));
+      double count = (double) MonitorUtils.adjustValue(counter.getCount().getCount(windowTimeIndex));
+      metrics.put(MonitorUtils.getMonitorName(counter.getTotal().getConfig()), total);
+      metrics.put(MonitorUtils.getMonitorName(counter.getCount().getConfig()), count);
+      metrics.put(MonitorUtils.getMonitorName(counter.getMax().getConfig()),
+          (double) MonitorUtils
+              .convertNanosecondToMillisecond(
+                  MonitorUtils.adjustValue(counter.getMax().getValue(windowTimeIndex))));
+      if (calculateLatency) {
         metrics.put(MonitorUtils.getMonitorName(counter.getLatency()), total / count);
       }
     }
     return metrics;
   }
 
-  class DimensionCounter {
+  class StatusCounter {
     //nanosecond sum
     private final StepCounter total;
 
@@ -116,7 +125,7 @@ public class TimerMonitor {
       return latency;
     }
 
-    public DimensionCounter(StepCounter total, StepCounter count, MaxGauge max, MonitorConfig latency) {
+    public StatusCounter(StepCounter total, StepCounter count, MaxGauge max, MonitorConfig latency) {
       this.total = total;
       this.count = count;
       this.max = max;

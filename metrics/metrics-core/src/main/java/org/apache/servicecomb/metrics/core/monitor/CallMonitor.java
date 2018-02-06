@@ -22,7 +22,6 @@ import java.util.Map;
 
 import org.apache.servicecomb.foundation.common.concurrent.ConcurrentHashMapEx;
 import org.apache.servicecomb.metrics.common.MetricsConst;
-import org.apache.servicecomb.metrics.common.MetricsDimension;
 import org.apache.servicecomb.metrics.core.utils.MonitorUtils;
 
 import com.netflix.servo.monitor.BasicCounter;
@@ -30,7 +29,7 @@ import com.netflix.servo.monitor.MonitorConfig;
 import com.netflix.servo.monitor.StepCounter;
 
 public class CallMonitor {
-  private final Map<String, Map<String, DimensionCounter>> dimensionCounters;
+  private final Map<String, StatusCounter> statusCounters;
 
   private final String operation;
 
@@ -43,46 +42,41 @@ public class CallMonitor {
     this.stage = stage;
     this.role = role;
 
-    this.dimensionCounters = new ConcurrentHashMapEx<>();
-    this.dimensionCounters.put(MetricsDimension.DIMENSION_STATUS, new ConcurrentHashMapEx<>());
+    this.statusCounters = new ConcurrentHashMapEx<>();
   }
 
-  public void increment(String dimensionKey, String... dimensionValues) {
-    for (String dimensionValue : dimensionValues) {
-      DimensionCounter counter = dimensionCounters.get(dimensionKey)
-          .computeIfAbsent(dimensionValue, d -> new DimensionCounter(
-              new BasicCounter(MonitorConfig.builder(MetricsConst.SERVICECOMB_INVOCATION)
-                  .withTag(dimensionKey, dimensionValue)
-                  .withTag(MetricsConst.TAG_OPERATION, operation)
-                  .withTag(MetricsConst.TAG_STAGE, stage)
-                  .withTag(MetricsConst.TAG_ROLE, role)
-                  .withTag(MetricsConst.TAG_STATISTIC, "count")
-                  .build()),
-              new StepCounter(MonitorConfig.builder(MetricsConst.SERVICECOMB_INVOCATION)
-                  .withTag(dimensionKey, dimensionValue)
-                  .withTag(MetricsConst.TAG_OPERATION, operation)
-                  .withTag(MetricsConst.TAG_STAGE, stage)
-                  .withTag(MetricsConst.TAG_ROLE, role)
-                  .withTag(MetricsConst.TAG_STATISTIC, "tps")
-                  .build())));
-      counter.increment();
-    }
+  public void increment(String statusCode) {
+    StatusCounter counter = statusCounters
+        .computeIfAbsent(statusCode, d -> new StatusCounter(
+            new BasicCounter(MonitorConfig.builder(MetricsConst.SERVICECOMB_INVOCATION)
+                .withTag(MetricsConst.TAG_STATUS, statusCode)
+                .withTag(MetricsConst.TAG_OPERATION, operation)
+                .withTag(MetricsConst.TAG_STAGE, stage)
+                .withTag(MetricsConst.TAG_ROLE, role)
+                .withTag(MetricsConst.TAG_STATISTIC, "totalCount")
+                .build()),
+            new StepCounter(MonitorConfig.builder(MetricsConst.SERVICECOMB_INVOCATION)
+                .withTag(MetricsConst.TAG_STATUS, statusCode)
+                .withTag(MetricsConst.TAG_OPERATION, operation)
+                .withTag(MetricsConst.TAG_STAGE, stage)
+                .withTag(MetricsConst.TAG_ROLE, role)
+                .withTag(MetricsConst.TAG_STATISTIC, "tps")
+                .build())));
+    counter.increment();
   }
 
   public Map<String, Double> toMetric(int windowTimeIndex) {
     Map<String, Double> metrics = new HashMap<>();
-    for (Map<String, DimensionCounter> dimensionCounter : dimensionCounters.values()) {
-      for (DimensionCounter counter : dimensionCounter.values()) {
-        metrics.put(MonitorUtils.getMonitorName(counter.getTotal().getConfig()),
-            counter.getTotal().getValue(windowTimeIndex).doubleValue());
-        metrics.put(MonitorUtils.getMonitorName(counter.getTps().getConfig()),
-            counter.getTps().getValue(windowTimeIndex).doubleValue());
-      }
+    for (StatusCounter counter : statusCounters.values()) {
+      metrics.put(MonitorUtils.getMonitorName(counter.getTotal().getConfig()),
+          counter.getTotal().getValue(windowTimeIndex).doubleValue());
+      metrics.put(MonitorUtils.getMonitorName(counter.getTps().getConfig()),
+          counter.getTps().getValue(windowTimeIndex).doubleValue());
     }
     return metrics;
   }
 
-  class DimensionCounter {
+  class StatusCounter {
     private final BasicCounter total;
 
     private final StepCounter tps;
@@ -95,7 +89,7 @@ public class CallMonitor {
       return tps;
     }
 
-    public DimensionCounter(BasicCounter total, StepCounter tps) {
+    public StatusCounter(BasicCounter total, StepCounter tps) {
       this.total = total;
       this.tps = tps;
     }

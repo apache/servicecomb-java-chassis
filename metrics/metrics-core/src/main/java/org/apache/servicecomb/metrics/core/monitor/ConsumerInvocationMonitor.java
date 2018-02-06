@@ -41,10 +41,10 @@ public class ConsumerInvocationMonitor {
     this.consumerCall = new CallMonitor(operation, MetricsConst.STAGE_WHOLE, MetricsConst.ROLE_CONSUMER);
   }
 
-  public Map<String, Double> toMetric(int windowTimeIndex) {
+  public Map<String, Double> toMetric(int windowTimeIndex, boolean calculateLatency) {
     Map<String, Double> metrics = new HashMap<>();
     metrics.putAll(consumerCall.toMetric(windowTimeIndex));
-    metrics.putAll(consumerLatency.toMetric(windowTimeIndex));
+    metrics.putAll(consumerLatency.toMetric(windowTimeIndex, calculateLatency));
     return metrics;
   }
 }

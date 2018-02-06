@@ -45,6 +45,6 @@ public class DefaultMetricsPublisher implements MetricsPublisher {
   @CrossOrigin
   @Override
   public Map<String, Double> metrics() {
-    return dataSource.getMetrics(dataSource.getAppliedWindowTime().get(0));
+    return dataSource.getMetrics(dataSource.getAppliedWindowTime().get(0), false);
   }
 }

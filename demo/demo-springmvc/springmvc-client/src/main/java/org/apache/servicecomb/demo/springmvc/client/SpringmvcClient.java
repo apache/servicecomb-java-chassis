@@ -92,12 +92,12 @@ public class SpringmvcClient {
     //0.5.0 later version metrics integration test
     try {
       Thread.sleep(1000);
-      Map<String, Double> metric = metricsPublisher.metrics();
+      Map<String, Double> metrics = metricsPublisher.metrics();
 
       TestMgr
-          .check(true, metric.get("jvm(statistic=gauge,name=heapUsed)") != 0);
-      TestMgr.check(true, metric.size() > 0);
-      TestMgr.check(true, metric.get(
+          .check(true, metrics.get("jvm(statistic=gauge,name=heapUsed)") != 0);
+      TestMgr.check(true, metrics.size() > 0);
+      TestMgr.check(true, metrics.get(
           "servicecomb.invocation(operation=springmvc.codeFirst.saySomething,role=producer,stage=whole,statistic=count,status=200)")
           > 0);
     } catch (Exception e) {

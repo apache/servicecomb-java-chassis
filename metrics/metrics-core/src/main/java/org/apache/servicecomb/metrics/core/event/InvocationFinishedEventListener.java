@@ -20,7 +20,6 @@ package org.apache.servicecomb.metrics.core.event;
 import org.apache.servicecomb.core.metrics.InvocationFinishedEvent;
 import org.apache.servicecomb.foundation.common.event.Event;
 import org.apache.servicecomb.foundation.common.event.EventListener;
-import org.apache.servicecomb.metrics.common.MetricsDimension;
 import org.apache.servicecomb.metrics.core.monitor.ConsumerInvocationMonitor;
 import org.apache.servicecomb.metrics.core.monitor.ProducerInvocationMonitor;
 import org.apache.servicecomb.metrics.core.monitor.RegistryMonitor;
@@ -43,21 +42,14 @@ public class InvocationFinishedEventListener implements EventListener {
     InvocationFinishedEvent event = (InvocationFinishedEvent) data;
     if (InvocationType.PRODUCER.equals(event.getInvocationType())) {
       ProducerInvocationMonitor monitor = registryMonitor.getProducerInvocationMonitor(event.getOperationName());
-      monitor.getExecutionTime()
-          .update(event.getProcessElapsedNanoTime(), MetricsDimension.DIMENSION_STATUS,
-              String.valueOf(event.getStatusCode()));
-      monitor.getLifeTimeInQueue()
-          .update(event.getInQueueNanoTime(), MetricsDimension.DIMENSION_STATUS, String.valueOf(event.getStatusCode()));
-      monitor.getProducerLatency()
-          .update(event.getTotalElapsedNanoTime(), MetricsDimension.DIMENSION_STATUS,
-              String.valueOf(event.getStatusCode()));
-      monitor.getProducerCall().increment(MetricsDimension.DIMENSION_STATUS, String.valueOf(event.getStatusCode()));
+      monitor.getLifeTimeInQueue().update(event.getInQueueNanoTime(), String.valueOf(event.getStatusCode()));
+      monitor.getExecutionTime().update(event.getProcessElapsedNanoTime(), String.valueOf(event.getStatusCode()));
+      monitor.getProducerLatency().update(event.getTotalElapsedNanoTime(), String.valueOf(event.getStatusCode()));
+      monitor.getProducerCall().increment(String.valueOf(event.getStatusCode()));
     } else {
       ConsumerInvocationMonitor monitor = registryMonitor.getConsumerInvocationMonitor(event.getOperationName());
-      monitor.getConsumerLatency()
-          .update(event.getTotalElapsedNanoTime(), MetricsDimension.DIMENSION_STATUS,
-              String.valueOf(event.getStatusCode()));
-      monitor.getConsumerCall().increment(MetricsDimension.DIMENSION_STATUS, String.valueOf(event.getStatusCode()));
+      monitor.getConsumerLatency().update(event.getTotalElapsedNanoTime(), String.valueOf(event.getStatusCode()));
+      monitor.getConsumerCall().increment(String.valueOf(event.getStatusCode()));
     }
   }
 }

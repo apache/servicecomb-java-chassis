@@ -75,10 +75,10 @@ public class DefaultDataSource implements DataSource {
   }
 
   @Override
-  public Map<String, Double> getMetrics(long windowTime) {
+  public Map<String, Double> getMetrics(long windowTime, boolean calculateLatency) {
     Integer index = appliedWindowTimes.get(windowTime);
     if (index != null) {
-      return registryMonitor.toRegistryMetric(index);
+      return registryMonitor.toMetric(index, calculateLatency);
     }
     throw new InvocationException(BAD_REQUEST,
         "windowTime : " + windowTime + " unset in servicecomb.metrics.window_time,current available are : " +
