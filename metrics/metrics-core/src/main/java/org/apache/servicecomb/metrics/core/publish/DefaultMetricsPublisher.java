@@ -17,13 +17,11 @@
 
 package org.apache.servicecomb.metrics.core.publish;
 
-import java.util.List;
+import java.util.Map;
 
 import org.apache.servicecomb.metrics.common.MetricsPublisher;
-import org.apache.servicecomb.metrics.common.RegistryMetric;
 import org.apache.servicecomb.provider.rest.common.RestSchema;
 import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
@@ -40,27 +38,13 @@ public class DefaultMetricsPublisher implements MetricsPublisher {
     this.dataSource = dataSource;
   }
 
-  @RequestMapping(path = "/appliedWindowTime", method = RequestMethod.GET)
-  @CrossOrigin
-  @Override
-  public List<Long> getAppliedWindowTime() {
-    return dataSource.getAppliedWindowTime();
-  }
-
-  @RequestMapping(path = "/", method = RequestMethod.GET)
-  @CrossOrigin
-  @Override
-  public RegistryMetric metrics() {
-    return dataSource.getRegistryMetric();
-  }
-
   @ApiResponses({
       @ApiResponse(code = 400, response = String.class, message = "illegal request content"),
   })
-  @RequestMapping(path = "/{windowTime}", method = RequestMethod.GET)
+  @RequestMapping(path = "/", method = RequestMethod.GET)
   @CrossOrigin
   @Override
-  public RegistryMetric metricsWithWindowTime(@PathVariable(name = "windowTime") long windowTime) {
-    return dataSource.getRegistryMetric(windowTime);
+  public Map<String, Double> metrics() {
+    return dataSource.getMetrics(dataSource.getAppliedWindowTime().get(0));
   }
 }

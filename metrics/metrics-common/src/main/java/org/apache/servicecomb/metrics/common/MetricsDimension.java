@@ -18,7 +18,7 @@
 package org.apache.servicecomb.metrics.common;
 
 public class MetricsDimension {
-  public static final String DIMENSION_STATUS = "Status";
+  public static final String DIMENSION_STATUS = "status";
 
   public static final String DIMENSION_STATUS_ALL = "all";
 

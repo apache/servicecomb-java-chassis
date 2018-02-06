@@ -17,7 +17,7 @@
 
 package org.apache.servicecomb.metrics.core.monitor;
 
-import org.apache.servicecomb.metrics.common.SystemMetric;
+import java.util.Map;
 
 public interface SystemMonitor {
   double getCpuLoad();
@@ -40,5 +40,5 @@ public interface SystemMonitor {
 
   long getNonHeapUsed();
 
-  SystemMetric toMetric();
+  Map<String, Double> toMetric();
 }

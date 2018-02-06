@@ -17,50 +17,118 @@
 
 package org.apache.servicecomb.metrics.core.monitor;
 
-import org.apache.servicecomb.metrics.common.TimerMetric;
+import java.util.HashMap;
+import java.util.Map;
+
+import org.apache.servicecomb.foundation.common.concurrent.ConcurrentHashMapEx;
+import org.apache.servicecomb.metrics.common.MetricsConst;
+import org.apache.servicecomb.metrics.common.MetricsDimension;
 import org.apache.servicecomb.metrics.core.utils.MonitorUtils;
 
 import com.netflix.servo.monitor.MaxGauge;
-import com.netflix.servo.monitor.MinGauge;
 import com.netflix.servo.monitor.MonitorConfig;
 import com.netflix.servo.monitor.StepCounter;
 
 public class TimerMonitor {
-  private final String prefix;
+  private final Map<String, Map<String, DimensionCounter>> dimensionCounters;
 
-  //nanosecond sum
-  private final StepCounter total;
+  private final String operation;
 
-  private final StepCounter count;
+  private final String stage;
 
-  //nanosecond min
-  private final MinGauge min;
+  private final String role;
 
-  //nanosecond max
-  private final MaxGauge max;
+  public TimerMonitor(String operation, String stage, String role) {
+    this.operation = operation;
+    this.stage = stage;
+    this.role = role;
 
-  public void update(long value) {
-    if (value > 0) {
-      total.increment(value);
-      count.increment();
-      max.update(value);
-      min.update(value);
+    this.dimensionCounters = new ConcurrentHashMapEx<>();
+    this.dimensionCounters.put(MetricsDimension.DIMENSION_STATUS, new ConcurrentHashMapEx<>());
+  }
+
+  public void update(long value, String dimensionKey, String... dimensionValues) {
+    for (String dimensionValue : dimensionValues) {
+      TimerMonitor.DimensionCounter counter = dimensionCounters.get(dimensionKey)
+          .computeIfAbsent(dimensionValue, d -> new TimerMonitor.DimensionCounter(
+              new StepCounter(MonitorConfig.builder(MetricsConst.SERVICECOMB_INVOCATION).build()),
+              new StepCounter(MonitorConfig.builder(MetricsConst.SERVICECOMB_INVOCATION).build()),
+              new MaxGauge(MonitorConfig.builder(MetricsConst.SERVICECOMB_INVOCATION)
+                  .withTag(dimensionKey, dimensionValue)
+                  .withTag(MetricsConst.TAG_OPERATION, operation)
+                  .withTag(MetricsConst.TAG_STAGE, stage)
+                  .withTag(MetricsConst.TAG_ROLE, role)
+                  .withTag(MetricsConst.TAG_STATISTIC, "max")
+                  .build()),
+              MonitorConfig.builder(MetricsConst.SERVICECOMB_INVOCATION)
+                  .withTag(dimensionKey, dimensionValue)
+                  .withTag(MetricsConst.TAG_OPERATION, operation)
+                  .withTag(MetricsConst.TAG_STAGE, stage)
+                  .withTag(MetricsConst.TAG_ROLE, role)
+                  .withTag(MetricsConst.TAG_STATISTIC, "latency")
+                  .build()));
+      counter.update(value);
     }
   }
 
-  public TimerMonitor(String prefix) {
-    this.prefix = prefix;
-    total = new StepCounter(MonitorConfig.builder(prefix + ".total").build());
-    count = new StepCounter(MonitorConfig.builder(prefix + ".count").build());
-    min = new MinGauge(MonitorConfig.builder(prefix + ".min").build());
-    max = new MaxGauge(MonitorConfig.builder(prefix + ".max").build());
+  public Map<String, Double> toMetric(int windowTimeIndex) {
+    Map<String, Double> metrics = new HashMap<>();
+    for (Map<String, TimerMonitor.DimensionCounter> dimensionCounter : dimensionCounters.values()) {
+      for (TimerMonitor.DimensionCounter counter : dimensionCounter.values()) {
+        double total = (double) MonitorUtils.convertNanosecondToMillisecond(
+            MonitorUtils.adjustValue(counter.getTotal().getCount(windowTimeIndex)));
+        double count = (double) MonitorUtils.adjustValue(counter.getCount().getCount(windowTimeIndex));
+
+        metrics.put(MonitorUtils.getMonitorName(counter.getMax().getConfig()),
+            (double) MonitorUtils
+                .convertNanosecondToMillisecond(MonitorUtils.adjustValue(counter.getMax().getValue(windowTimeIndex))));
+        //latency = total / count
+        metrics.put(MonitorUtils.getMonitorName(counter.getLatency()), total / count);
+      }
+    }
+    return metrics;
   }
 
-  public TimerMetric toMetric(int windowTimeIndex) {
-    return new TimerMetric(this.prefix,
-        MonitorUtils.convertNanosecondToMillisecond(MonitorUtils.adjustValue(total.getCount(windowTimeIndex))),
-        MonitorUtils.adjustValue(count.getCount(windowTimeIndex)),
-        MonitorUtils.convertNanosecondToMillisecond(MonitorUtils.adjustValue(min.getValue(windowTimeIndex))),
-        MonitorUtils.convertNanosecondToMillisecond(MonitorUtils.adjustValue(max.getValue(windowTimeIndex))));
+  class DimensionCounter {
+    //nanosecond sum
+    private final StepCounter total;
+
+    private final StepCounter count;
+
+    //nanosecond max
+    private final MaxGauge max;
+
+    private final MonitorConfig latency;
+
+    public StepCounter getTotal() {
+      return total;
+    }
+
+    public StepCounter getCount() {
+      return count;
+    }
+
+    public MaxGauge getMax() {
+      return max;
+    }
+
+    public MonitorConfig getLatency() {
+      return latency;
+    }
+
+    public DimensionCounter(StepCounter total, StepCounter count, MaxGauge max, MonitorConfig latency) {
+      this.total = total;
+      this.count = count;
+      this.max = max;
+      this.latency = latency;
+    }
+
+    public void update(long value) {
+      if (value > 0) {
+        total.increment(value);
+        count.increment();
+        max.update(value);
+      }
+    }
   }
 }

@@ -48,12 +48,31 @@ public class InvocationFinishedEventListener implements EventListener {
     String statusDimensionValue = convertor.convert(event.isSuccess(), event.getStatusCode());
     if (InvocationType.PRODUCER.equals(event.getInvocationType())) {
       ProducerInvocationMonitor monitor = registryMonitor.getProducerInvocationMonitor(event.getOperationName());
-      monitor.getExecutionTime().update(event.getProcessElapsedNanoTime());
-      monitor.getProducerLatency().update(event.getTotalElapsedNanoTime());
-      monitor.getProducerCall().increment(MetricsDimension.DIMENSION_STATUS, statusDimensionValue);
+      record(event, monitor, statusDimensionValue, MetricsDimension.DIMENSION_STATUS_ALL);
     } else {
       ConsumerInvocationMonitor monitor = registryMonitor.getConsumerInvocationMonitor(event.getOperationName());
-      monitor.getConsumerLatency().update(event.getTotalElapsedNanoTime());
+      record(event, monitor, statusDimensionValue, MetricsDimension.DIMENSION_STATUS_ALL);
+    }
+  }
+
+  private void record(InvocationFinishedEvent event, ProducerInvocationMonitor monitor,
+      String... statusDimensionValues) {
+    for (String statusDimensionValue : statusDimensionValues) {
+      monitor.getExecutionTime()
+          .update(event.getProcessElapsedNanoTime(), MetricsDimension.DIMENSION_STATUS, statusDimensionValue);
+      monitor.getLifeTimeInQueue()
+          .update(event.getInQueueNanoTime(), MetricsDimension.DIMENSION_STATUS, statusDimensionValue);
+      monitor.getProducerLatency()
+          .update(event.getTotalElapsedNanoTime(), MetricsDimension.DIMENSION_STATUS, statusDimensionValue);
+      monitor.getProducerCall().increment(MetricsDimension.DIMENSION_STATUS, statusDimensionValue);
+    }
+  }
+
+  private void record(InvocationFinishedEvent event, ConsumerInvocationMonitor monitor,
+      String... statusDimensionValues) {
+    for (String statusDimensionValue : statusDimensionValues) {
+      monitor.getConsumerLatency()
+          .update(event.getTotalElapsedNanoTime(), MetricsDimension.DIMENSION_STATUS, statusDimensionValue);
       monitor.getConsumerCall().increment(MetricsDimension.DIMENSION_STATUS, statusDimensionValue);
     }
   }

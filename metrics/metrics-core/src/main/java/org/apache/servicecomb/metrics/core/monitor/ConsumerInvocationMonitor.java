@@ -18,10 +18,12 @@
 package org.apache.servicecomb.metrics.core.monitor;
 
 
-import org.apache.servicecomb.metrics.common.ConsumerInvocationMetric;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.apache.servicecomb.metrics.common.MetricsConst;
 
-public class ConsumerInvocationMonitor extends InvocationMonitor {
+public class ConsumerInvocationMonitor {
   private final TimerMonitor consumerLatency;
 
   private final CallMonitor consumerCall;
@@ -34,14 +36,15 @@ public class ConsumerInvocationMonitor extends InvocationMonitor {
     return consumerCall;
   }
 
-  public ConsumerInvocationMonitor(String operationName) {
-    super(operationName, String.format(MetricsConst.CONSUMER_PREFIX_TEMPLATE, operationName));
-    this.consumerLatency = new TimerMonitor(this.getPrefix() + ".consumerLatency");
-    this.consumerCall = new CallMonitor(this.getPrefix() + ".consumerCall");
+  public ConsumerInvocationMonitor(String operation) {
+    this.consumerLatency = new TimerMonitor(operation, MetricsConst.STAGE_FULL, MetricsConst.ROLE_CONSUMER);
+    this.consumerCall = new CallMonitor(operation, MetricsConst.STAGE_FULL, MetricsConst.ROLE_CONSUMER);
   }
 
-  public ConsumerInvocationMetric toMetric(int windowTimeIndex) {
-    return new ConsumerInvocationMetric(this.getOperationName(), this.getPrefix(),
-        consumerLatency.toMetric(windowTimeIndex), consumerCall.toMetric(windowTimeIndex));
+  public Map<String, Double> toMetric(int windowTimeIndex) {
+    Map<String, Double> metrics = new HashMap<>();
+    metrics.putAll(consumerCall.toMetric(windowTimeIndex));
+    metrics.putAll(consumerLatency.toMetric(windowTimeIndex));
+    return metrics;
   }
 }

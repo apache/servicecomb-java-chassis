@@ -73,3 +73,7 @@ ssl.keyStoreType: PKCS12
 ssl.keyStoreValue: Changeme_123
 ssl.crl: revoke.crl
 ssl.sslCustomClass: org.apache.servicecomb.demo.DemoSSLCustom
+
+servicecomb:
+  metrics:
+    window_time: 1000

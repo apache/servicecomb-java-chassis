@@ -26,7 +26,6 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.servicecomb.foundation.common.exceptions.ServiceCombException;
-import org.apache.servicecomb.metrics.common.RegistryMetric;
 import org.apache.servicecomb.metrics.core.MetricsConfig;
 import org.apache.servicecomb.metrics.core.monitor.RegistryMonitor;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
@@ -76,12 +75,7 @@ public class DefaultDataSource implements DataSource {
   }
 
   @Override
-  public RegistryMetric getRegistryMetric() {
-    return getRegistryMetric(getAppliedWindowTime().get(0));
-  }
-
-  @Override
-  public RegistryMetric getRegistryMetric(long windowTime) {
+  public Map<String, Double> getMetrics(long windowTime) {
     Integer index = appliedWindowTimes.get(windowTime);
     if (index != null) {
       return registryMonitor.toRegistryMetric(index);

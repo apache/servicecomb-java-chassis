@@ -18,8 +18,7 @@
 package org.apache.servicecomb.metrics.core.publish;
 
 import java.util.List;
-
-import org.apache.servicecomb.metrics.common.RegistryMetric;
+import java.util.Map;
 
 public interface DataSource {
 
@@ -32,13 +31,10 @@ public interface DataSource {
    Max & Min -> the max value or min value in a centain time
    Average -> average value, the simplest algorithm is f = sum / count
    Rate -> like TPS,algorithm is f = sum / second
-  
+
    Will be return "servicecomb.metrics.window_time" setting in microservice.yaml
    */
   List<Long> getAppliedWindowTime();
-
-  //same as getRegistryMetric({first setting windowTime})
-  RegistryMetric getRegistryMetric();
 
   /**
    * windowTime usage example:
@@ -50,13 +46,13 @@ public interface DataSource {
    * 0----------1----------2----------3----------  <-time line (second)
    *   100,200    300,400                          <-value record
    *
-   *                 ↑ getRegistryMetric(1000) will return max=200 min=100 total=300
-   *                   getRegistryMetric(2000) will return max=0 min=0 total=0
-   *                             ↑ getRegistryMetric(1000) will return max=300 min=400 total=700
-   *                               getRegistryMetric(2000) will return max=400 min=100 total=1000
+   *                 ↑ getMetrics(1000) will return max=200 min=100 total=300
+   *                   getMetrics(2000) will return max=0 min=0 total=0
+   *                             ↑ getMetrics(1000) will return max=300 min=400 total=700
+   *                               getMetrics(2000) will return max=400 min=100 total=1000
    *
    * @param windowTime getAppliedWindowTime() item
-   * @return RegistryMetric
+   * @return Map<String, Double>
    */
-  RegistryMetric getRegistryMetric(long windowTime);
+  Map<String, Double> getMetrics(long windowTime);
 }

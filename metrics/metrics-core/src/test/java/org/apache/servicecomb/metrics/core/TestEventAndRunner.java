@@ -33,8 +33,9 @@ import org.apache.servicecomb.core.metrics.InvocationFinishedEvent;
 import org.apache.servicecomb.core.metrics.InvocationStartProcessingEvent;
 import org.apache.servicecomb.core.metrics.InvocationStartedEvent;
 import org.apache.servicecomb.foundation.common.utils.EventUtils;
+import org.apache.servicecomb.metrics.common.MetricsConst;
 import org.apache.servicecomb.metrics.common.MetricsDimension;
-import org.apache.servicecomb.metrics.common.RegistryMetric;
+import org.apache.servicecomb.metrics.common.MetricsUtils;
 import org.apache.servicecomb.metrics.core.event.DefaultEventListenerManager;
 import org.apache.servicecomb.metrics.core.event.dimension.StatusConvertorFactory;
 import org.apache.servicecomb.metrics.core.monitor.DefaultSystemMonitor;
@@ -44,6 +45,8 @@ import org.apache.servicecomb.swagger.invocation.InvocationType;
 import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.Mockito;
+
+import com.google.common.collect.Lists;
 
 public class TestEventAndRunner {
 
@@ -82,18 +85,16 @@ public class TestEventAndRunner {
     //two time success
     EventUtils.triggerEvent(new InvocationStartedEvent("fun1", InvocationType.PRODUCER, System.nanoTime()));
     EventUtils.triggerEvent(
-        new InvocationStartProcessingEvent("fun1", InvocationType.PRODUCER,
-            TimeUnit.MILLISECONDS.toNanos(100)));
+        new InvocationStartProcessingEvent("fun1", InvocationType.PRODUCER));
     EventUtils
-        .triggerEvent(new InvocationFinishedEvent("fun1", InvocationType.PRODUCER,
+        .triggerEvent(new InvocationFinishedEvent("fun1", InvocationType.PRODUCER, TimeUnit.MILLISECONDS.toNanos(100),
             TimeUnit.MILLISECONDS.toNanos(200), TimeUnit.MILLISECONDS.toNanos(300), 200, true));
 
     EventUtils.triggerEvent(new InvocationStartedEvent("fun1", InvocationType.PRODUCER, System.nanoTime()));
     EventUtils.triggerEvent(
-        new InvocationStartProcessingEvent("fun1", InvocationType.PRODUCER,
-            TimeUnit.MILLISECONDS.toNanos(300)));
+        new InvocationStartProcessingEvent("fun1", InvocationType.PRODUCER));
     EventUtils
-        .triggerEvent(new InvocationFinishedEvent("fun1", InvocationType.PRODUCER,
+        .triggerEvent(new InvocationFinishedEvent("fun1", InvocationType.PRODUCER, TimeUnit.MILLISECONDS.toNanos(300),
             TimeUnit.MILLISECONDS.toNanos(400), TimeUnit.MILLISECONDS.toNanos(700), 500, false));
 
     //==========================================================================
@@ -101,8 +102,7 @@ public class TestEventAndRunner {
     //fun3 is a PRODUCER invocation call uncompleted
     EventUtils.triggerEvent(new InvocationStartedEvent("fun3", InvocationType.PRODUCER, System.nanoTime()));
     EventUtils.triggerEvent(
-        new InvocationStartProcessingEvent("fun3", InvocationType.PRODUCER,
-            TimeUnit.MILLISECONDS.toNanos(500)));
+        new InvocationStartProcessingEvent("fun3", InvocationType.PRODUCER));
 
     //==========================================================================
 
@@ -114,10 +114,9 @@ public class TestEventAndRunner {
     //fun2 is a CONSUMER invocation call once and completed
     EventUtils.triggerEvent(new InvocationStartedEvent("fun2", InvocationType.CONSUMER, System.nanoTime()));
     EventUtils.triggerEvent(
-        new InvocationStartProcessingEvent("fun2", InvocationType.CONSUMER,
-            TimeUnit.MILLISECONDS.toNanos(100)));
+        new InvocationStartProcessingEvent("fun2", InvocationType.CONSUMER));
     EventUtils
-        .triggerEvent(new InvocationFinishedEvent("fun2", InvocationType.CONSUMER,
+        .triggerEvent(new InvocationFinishedEvent("fun2", InvocationType.CONSUMER, TimeUnit.MILLISECONDS.toNanos(100),
             TimeUnit.MILLISECONDS.toNanos(200), TimeUnit.MILLISECONDS.toNanos(300), 200, true));
 
     //==========================================================================
@@ -125,199 +124,207 @@ public class TestEventAndRunner {
     //sim lease one window time
     Thread.sleep(1000);
 
-    RegistryMetric model = dataSource.getRegistryMetric(1000);
-
-    //check InstanceMetric
-    Assert.assertEquals(1, model.getInstanceMetric().getProducerMetric().getWaitInQueue());
-    Assert.assertEquals(3, model.getInstanceMetric().getProducerMetric().getLifeTimeInQueue().getCount());
-    Assert.assertEquals(900, model.getInstanceMetric().getProducerMetric().getLifeTimeInQueue().getTotal(), 0);
-    Assert.assertEquals(300, model.getInstanceMetric().getProducerMetric().getLifeTimeInQueue().getAverage(),
-        0);
-    Assert.assertEquals(500, model.getInstanceMetric().getProducerMetric().getLifeTimeInQueue().getMax(),
-        0);
-    Assert.assertEquals(100, model.getInstanceMetric().getProducerMetric().getLifeTimeInQueue().getMin(),
-        0);
-
-    Assert.assertEquals(2, model.getInstanceMetric().getProducerMetric().getExecutionTime().getCount());
-    Assert.assertEquals(600, model.getInstanceMetric().getProducerMetric().getExecutionTime().getTotal(),
-        0);
-    Assert.assertEquals(300, model.getInstanceMetric().getProducerMetric().getExecutionTime().getAverage(),
-        0);
-    Assert.assertEquals(400, model.getInstanceMetric().getProducerMetric().getExecutionTime().getMax(),
-        0);
-    Assert.assertEquals(200, model.getInstanceMetric().getProducerMetric().getExecutionTime().getMin(),
-        0);
-
-    Assert.assertEquals(2, model.getInstanceMetric().getProducerMetric().getProducerLatency().getCount());
-    Assert.assertEquals(1000, model.getInstanceMetric().getProducerMetric().getProducerLatency().getTotal(),
-        0);
-    Assert.assertEquals(500, model.getInstanceMetric().getProducerMetric().getProducerLatency().getAverage(),
-        0);
-    Assert.assertEquals(700, model.getInstanceMetric().getProducerMetric().getProducerLatency().getMax(),
-        0);
-    Assert.assertEquals(300, model.getInstanceMetric().getProducerMetric().getProducerLatency().getMin(),
-        0);
-
-    Assert.assertEquals(4, model.getInstanceMetric().getProducerMetric().getProducerCall()
-        .getTpsValue(MetricsDimension.DIMENSION_STATUS, MetricsDimension.DIMENSION_STATUS_ALL).getValue(), 0);
-    Assert.assertEquals(1, model.getInstanceMetric().getProducerMetric().getProducerCall()
-        .getTpsValue(MetricsDimension.DIMENSION_STATUS, MetricsDimension.DIMENSION_STATUS_SUCCESS_FAILED_SUCCESS)
-        .getValue(), 0);
-    Assert.assertEquals(1, model.getInstanceMetric().getProducerMetric().getProducerCall()
-        .getTpsValue(MetricsDimension.DIMENSION_STATUS, MetricsDimension.DIMENSION_STATUS_SUCCESS_FAILED_FAILED)
-        .getValue(), 0);
-
-    Assert.assertEquals(4, model.getInstanceMetric().getProducerMetric().getProducerCall()
-        .getTotalValue(MetricsDimension.DIMENSION_STATUS, MetricsDimension.DIMENSION_STATUS_ALL).getValue(), 0);
-    Assert.assertEquals(1, model.getInstanceMetric().getProducerMetric().getProducerCall()
-        .getTotalValue(MetricsDimension.DIMENSION_STATUS, MetricsDimension.DIMENSION_STATUS_SUCCESS_FAILED_SUCCESS)
-        .getValue(), 0);
-    Assert.assertEquals(1, model.getInstanceMetric().getProducerMetric().getProducerCall()
-        .getTotalValue(MetricsDimension.DIMENSION_STATUS, MetricsDimension.DIMENSION_STATUS_SUCCESS_FAILED_FAILED)
-        .getValue(), 0);
-
-    Assert.assertEquals(1, model.getInstanceMetric().getConsumerMetric().getConsumerLatency().getCount());
-    Assert.assertEquals(300, model.getInstanceMetric().getConsumerMetric().getConsumerLatency().getTotal(),
-        0);
-    Assert.assertEquals(300, model.getInstanceMetric().getConsumerMetric().getConsumerLatency().getAverage(),
-        0);
-    Assert.assertEquals(300, model.getInstanceMetric().getConsumerMetric().getConsumerLatency().getMax(),
-        0);
-    Assert.assertEquals(300, model.getInstanceMetric().getConsumerMetric().getConsumerLatency().getMin(),
-        0);
-
-    Assert.assertEquals(1, model.getInstanceMetric().getConsumerMetric().getConsumerCall()
-        .getTpsValue(MetricsDimension.DIMENSION_STATUS, MetricsDimension.DIMENSION_STATUS_ALL).getValue(), 0);
-    Assert.assertEquals(1, model.getInstanceMetric().getConsumerMetric().getConsumerCall()
-        .getTpsValue(MetricsDimension.DIMENSION_STATUS, MetricsDimension.DIMENSION_STATUS_SUCCESS_FAILED_SUCCESS)
-        .getValue(), 0);
-    Assert.assertEquals(0, model.getInstanceMetric().getConsumerMetric().getConsumerCall()
-        .getTpsValue(MetricsDimension.DIMENSION_STATUS, MetricsDimension.DIMENSION_STATUS_SUCCESS_FAILED_FAILED)
-        .getValue(), 0);
-
-    Assert.assertEquals(1, model.getInstanceMetric().getConsumerMetric().getConsumerCall()
-        .getTotalValue(MetricsDimension.DIMENSION_STATUS, MetricsDimension.DIMENSION_STATUS_ALL).getValue(), 0);
-    Assert.assertEquals(1, model.getInstanceMetric().getConsumerMetric().getConsumerCall()
-        .getTotalValue(MetricsDimension.DIMENSION_STATUS, MetricsDimension.DIMENSION_STATUS_SUCCESS_FAILED_SUCCESS)
-        .getValue(), 0);
-    Assert.assertEquals(0, model.getInstanceMetric().getConsumerMetric().getConsumerCall()
-        .getTotalValue(MetricsDimension.DIMENSION_STATUS, MetricsDimension.DIMENSION_STATUS_SUCCESS_FAILED_FAILED)
-        .getValue(), 0);
+    Map<String, Double> metrics = dataSource.getMetrics(1000);
 
     //check ProducerMetrics
-    Assert.assertEquals(0, model.getProducerMetrics().get("fun1").getWaitInQueue());
-    Assert.assertEquals(2, model.getProducerMetrics().get("fun1").getLifeTimeInQueue().getCount());
-    Assert.assertEquals(400, model.getProducerMetrics().get("fun1").getLifeTimeInQueue().getTotal(), 0);
-    Assert.assertEquals(200, model.getProducerMetrics().get("fun1").getLifeTimeInQueue().getAverage(), 0);
-    Assert.assertEquals(300, model.getProducerMetrics().get("fun1").getLifeTimeInQueue().getMax(), 0);
-    Assert.assertEquals(100, model.getProducerMetrics().get("fun1").getLifeTimeInQueue().getMin(), 0);
+    //fun1
+    Assert.assertEquals(0, MetricsUtils.getFirstMatchMetricValue(metrics, MetricsConst.SERVICECOMB_INVOCATION,
+        Lists.newArrayList(MetricsConst.TAG_OPERATION, MetricsConst.TAG_ROLE, MetricsConst.TAG_STAGE,
+            MetricsConst.TAG_STATISTIC),
+        Lists.newArrayList("fun1", MetricsConst.ROLE_PRODUCER, MetricsConst.STAGE_QUEUE, "waitInQueue")), 0);
 
-    Assert.assertEquals(2, model.getProducerMetrics().get("fun1").getExecutionTime().getCount());
-    Assert.assertEquals(600, model.getProducerMetrics().get("fun1").getExecutionTime().getTotal(), 0);
-    Assert.assertEquals(300, model.getProducerMetrics().get("fun1").getExecutionTime().getAverage(), 0);
-    Assert.assertEquals(400, model.getProducerMetrics().get("fun1").getExecutionTime().getMax(), 0);
-    Assert.assertEquals(200, model.getProducerMetrics().get("fun1").getExecutionTime().getMin(), 0);
+    Assert.assertEquals(300, MetricsUtils.getFirstMatchMetricValue(metrics, MetricsConst.SERVICECOMB_INVOCATION,
+        Lists.newArrayList(MetricsConst.TAG_OPERATION, MetricsConst.TAG_ROLE, MetricsConst.TAG_STAGE,
+            MetricsConst.TAG_STATISTIC, MetricsConst.TAG_STATUS),
+        Lists.newArrayList("fun1", MetricsConst.ROLE_PRODUCER, MetricsConst.STAGE_QUEUE, "max",
+            MetricsDimension.DIMENSION_STATUS_ALL)), 0);
 
-    Assert.assertEquals(2, model.getProducerMetrics().get("fun1").getProducerLatency().getCount());
-    Assert.assertEquals(1000, model.getProducerMetrics().get("fun1").getProducerLatency().getTotal(), 0);
-    Assert.assertEquals(500, model.getProducerMetrics().get("fun1").getProducerLatency().getAverage(), 0);
-    Assert.assertEquals(700, model.getProducerMetrics().get("fun1").getProducerLatency().getMax(), 0);
-    Assert.assertEquals(300, model.getProducerMetrics().get("fun1").getProducerLatency().getMin(), 0);
+    Assert.assertEquals(400, MetricsUtils.getFirstMatchMetricValue(metrics, MetricsConst.SERVICECOMB_INVOCATION,
+        Lists.newArrayList(MetricsConst.TAG_OPERATION, MetricsConst.TAG_ROLE, MetricsConst.TAG_STAGE,
+            MetricsConst.TAG_STATISTIC, MetricsConst.TAG_STATUS),
+        Lists.newArrayList("fun1", MetricsConst.ROLE_PRODUCER, MetricsConst.STAGE_EXECUTION, "max",
+            MetricsDimension.DIMENSION_STATUS_ALL)), 0);
 
-    Assert.assertEquals(2, model.getProducerMetrics().get("fun1").getProducerCall()
-        .getTpsValue(MetricsDimension.DIMENSION_STATUS, MetricsDimension.DIMENSION_STATUS_ALL).getValue(), 0);
-    Assert.assertEquals(1, model.getProducerMetrics().get("fun1").getProducerCall()
-        .getTpsValue(MetricsDimension.DIMENSION_STATUS, MetricsDimension.DIMENSION_STATUS_SUCCESS_FAILED_SUCCESS)
-        .getValue(), 0);
-    Assert.assertEquals(1, model.getProducerMetrics().get("fun1").getProducerCall()
-        .getTpsValue(MetricsDimension.DIMENSION_STATUS, MetricsDimension.DIMENSION_STATUS_SUCCESS_FAILED_FAILED)
-        .getValue(), 0);
+    Assert.assertEquals(700, MetricsUtils.getFirstMatchMetricValue(metrics, MetricsConst.SERVICECOMB_INVOCATION,
+        Lists.newArrayList(MetricsConst.TAG_OPERATION, MetricsConst.TAG_ROLE, MetricsConst.TAG_STAGE,
+            MetricsConst.TAG_STATISTIC, MetricsConst.TAG_STATUS),
+        Lists.newArrayList("fun1", MetricsConst.ROLE_PRODUCER, MetricsConst.STAGE_FULL, "max",
+            MetricsDimension.DIMENSION_STATUS_ALL)), 0);
 
-    Assert.assertEquals(2, model.getProducerMetrics().get("fun1").getProducerCall()
-        .getTotalValue(MetricsDimension.DIMENSION_STATUS, MetricsDimension.DIMENSION_STATUS_ALL).getValue(), 0);
-    Assert.assertEquals(1, model.getProducerMetrics().get("fun1").getProducerCall()
-        .getTotalValue(MetricsDimension.DIMENSION_STATUS, MetricsDimension.DIMENSION_STATUS_SUCCESS_FAILED_SUCCESS)
-        .getValue(), 0);
-    Assert.assertEquals(1, model.getProducerMetrics().get("fun1").getProducerCall()
-        .getTotalValue(MetricsDimension.DIMENSION_STATUS, MetricsDimension.DIMENSION_STATUS_SUCCESS_FAILED_FAILED)
-        .getValue(), 0);
+    Assert.assertEquals(2,
+        MetricsUtils.getFirstMatchMetricValue(metrics, MetricsConst.SERVICECOMB_INVOCATION,
+            Lists.newArrayList(MetricsConst.TAG_OPERATION, MetricsConst.TAG_ROLE, MetricsConst.TAG_STAGE,
+                MetricsConst.TAG_STATISTIC, MetricsConst.TAG_STATUS),
+            Lists.newArrayList("fun1", MetricsConst.ROLE_PRODUCER, MetricsConst.STAGE_FULL, "tps",
+                MetricsDimension.DIMENSION_STATUS_ALL)), 0);
+
+    Assert.assertEquals(1,
+        MetricsUtils.getFirstMatchMetricValue(metrics, MetricsConst.SERVICECOMB_INVOCATION,
+            Lists.newArrayList(MetricsConst.TAG_OPERATION, MetricsConst.TAG_ROLE, MetricsConst.TAG_STAGE,
+                MetricsConst.TAG_STATISTIC, MetricsConst.TAG_STATUS),
+            Lists.newArrayList("fun1", MetricsConst.ROLE_PRODUCER, MetricsConst.STAGE_FULL, "tps",
+                MetricsDimension.DIMENSION_STATUS_SUCCESS_FAILED_SUCCESS)), 0);
+
+    Assert.assertEquals(1,
+        MetricsUtils.getFirstMatchMetricValue(metrics, MetricsConst.SERVICECOMB_INVOCATION,
+            Lists.newArrayList(MetricsConst.TAG_OPERATION, MetricsConst.TAG_ROLE, MetricsConst.TAG_STAGE,
+                MetricsConst.TAG_STATISTIC, MetricsConst.TAG_STATUS),
+            Lists.newArrayList("fun1", MetricsConst.ROLE_PRODUCER, MetricsConst.STAGE_FULL, "tps",
+                MetricsDimension.DIMENSION_STATUS_SUCCESS_FAILED_FAILED)), 0);
+
+    Assert.assertEquals(2,
+        MetricsUtils.getFirstMatchMetricValue(metrics, MetricsConst.SERVICECOMB_INVOCATION,
+            Lists.newArrayList(MetricsConst.TAG_OPERATION, MetricsConst.TAG_ROLE, MetricsConst.TAG_STAGE,
+                MetricsConst.TAG_STATISTIC, MetricsConst.TAG_STATUS),
+            Lists.newArrayList("fun1", MetricsConst.ROLE_PRODUCER, MetricsConst.STAGE_FULL, "count",
+                MetricsDimension.DIMENSION_STATUS_ALL)), 0);
+
+    Assert.assertEquals(1,
+        MetricsUtils.getFirstMatchMetricValue(metrics, MetricsConst.SERVICECOMB_INVOCATION,
+            Lists.newArrayList(MetricsConst.TAG_OPERATION, MetricsConst.TAG_ROLE, MetricsConst.TAG_STAGE,
+                MetricsConst.TAG_STATISTIC, MetricsConst.TAG_STATUS),
+            Lists.newArrayList("fun1", MetricsConst.ROLE_PRODUCER, MetricsConst.STAGE_FULL, "count",
+                MetricsDimension.DIMENSION_STATUS_SUCCESS_FAILED_SUCCESS)), 0);
+
+    Assert.assertEquals(1,
+        MetricsUtils.getFirstMatchMetricValue(metrics, MetricsConst.SERVICECOMB_INVOCATION,
+            Lists.newArrayList(MetricsConst.TAG_OPERATION, MetricsConst.TAG_ROLE, MetricsConst.TAG_STAGE,
+                MetricsConst.TAG_STATISTIC, MetricsConst.TAG_STATUS),
+            Lists.newArrayList("fun1", MetricsConst.ROLE_PRODUCER, MetricsConst.STAGE_FULL, "count",
+                MetricsDimension.DIMENSION_STATUS_SUCCESS_FAILED_FAILED)), 0);
 
     //fun3
-    Assert.assertEquals(0, model.getProducerMetrics().get("fun3").getWaitInQueue());
-    Assert.assertEquals(1, model.getProducerMetrics().get("fun3").getLifeTimeInQueue().getCount());
-    Assert.assertEquals(500, model.getProducerMetrics().get("fun3").getLifeTimeInQueue().getTotal(), 0);
-    Assert.assertEquals(500, model.getProducerMetrics().get("fun3").getLifeTimeInQueue().getAverage(), 0);
-    Assert.assertEquals(500, model.getProducerMetrics().get("fun3").getLifeTimeInQueue().getMax(), 0);
-    Assert.assertEquals(500, model.getProducerMetrics().get("fun3").getLifeTimeInQueue().getMin(), 0);
+    Assert.assertEquals(0, MetricsUtils.getFirstMatchMetricValue(metrics, MetricsConst.SERVICECOMB_INVOCATION,
+        Lists.newArrayList(MetricsConst.TAG_OPERATION, MetricsConst.TAG_ROLE, MetricsConst.TAG_STAGE,
+            MetricsConst.TAG_STATISTIC),
+        Lists.newArrayList("fun3", MetricsConst.ROLE_PRODUCER, MetricsConst.STAGE_QUEUE, "waitInQueue")), 0);
 
-    Assert.assertEquals(0, model.getProducerMetrics().get("fun3").getExecutionTime().getCount());
-    Assert.assertEquals(0, model.getProducerMetrics().get("fun3").getExecutionTime().getTotal(), 0);
-    Assert.assertEquals(0, model.getProducerMetrics().get("fun3").getExecutionTime().getAverage(), 0);
-    Assert.assertEquals(0, model.getProducerMetrics().get("fun3").getExecutionTime().getMax(), 0);
-    Assert.assertEquals(0, model.getProducerMetrics().get("fun3").getExecutionTime().getMin(), 0);
+    Assert.assertEquals(Double.NaN, MetricsUtils.getFirstMatchMetricValue(metrics, MetricsConst.SERVICECOMB_INVOCATION,
+        Lists.newArrayList(MetricsConst.TAG_OPERATION, MetricsConst.TAG_ROLE, MetricsConst.TAG_STAGE,
+            MetricsConst.TAG_STATISTIC, MetricsConst.TAG_STATUS),
+        Lists.newArrayList("fun3", MetricsConst.ROLE_PRODUCER, MetricsConst.STAGE_QUEUE, "max",
+            MetricsDimension.DIMENSION_STATUS_ALL)), 0);
 
-    Assert.assertEquals(0, model.getProducerMetrics().get("fun3").getProducerLatency().getCount());
-    Assert.assertEquals(0, model.getProducerMetrics().get("fun3").getProducerLatency().getTotal(), 0);
-    Assert.assertEquals(0, model.getProducerMetrics().get("fun3").getProducerLatency().getAverage(), 0);
-    Assert.assertEquals(0, model.getProducerMetrics().get("fun3").getProducerLatency().getMax(), 0);
-    Assert.assertEquals(0, model.getProducerMetrics().get("fun3").getProducerLatency().getMin(), 0);
+    Assert.assertEquals(Double.NaN, MetricsUtils.getFirstMatchMetricValue(metrics, MetricsConst.SERVICECOMB_INVOCATION,
+        Lists.newArrayList(MetricsConst.TAG_OPERATION, MetricsConst.TAG_ROLE, MetricsConst.TAG_STAGE,
+            MetricsConst.TAG_STATISTIC, MetricsConst.TAG_STATUS),
+        Lists.newArrayList("fun3", MetricsConst.ROLE_PRODUCER, MetricsConst.STAGE_EXECUTION, "max",
+            MetricsDimension.DIMENSION_STATUS_ALL)), 0);
 
-    Assert.assertEquals(1, model.getProducerMetrics().get("fun3").getProducerCall()
-        .getTpsValue(MetricsDimension.DIMENSION_STATUS, MetricsDimension.DIMENSION_STATUS_ALL).getValue(), 0);
-    Assert.assertEquals(0, model.getProducerMetrics().get("fun3").getProducerCall()
-        .getTpsValue(MetricsDimension.DIMENSION_STATUS, MetricsDimension.DIMENSION_STATUS_SUCCESS_FAILED_SUCCESS)
-        .getValue(), 0);
-    Assert.assertEquals(0, model.getProducerMetrics().get("fun3").getProducerCall()
-        .getTpsValue(MetricsDimension.DIMENSION_STATUS, MetricsDimension.DIMENSION_STATUS_SUCCESS_FAILED_FAILED)
-        .getValue(), 0);
+    Assert.assertEquals(Double.NaN, MetricsUtils.getFirstMatchMetricValue(metrics, MetricsConst.SERVICECOMB_INVOCATION,
+        Lists.newArrayList(MetricsConst.TAG_OPERATION, MetricsConst.TAG_ROLE, MetricsConst.TAG_STAGE,
+            MetricsConst.TAG_STATISTIC, MetricsConst.TAG_STATUS),
+        Lists.newArrayList("fun3", MetricsConst.ROLE_PRODUCER, MetricsConst.STAGE_FULL, "max",
+            MetricsDimension.DIMENSION_STATUS_ALL)), 0);
 
-    Assert.assertEquals(1, model.getProducerMetrics().get("fun3").getProducerCall()
-        .getTotalValue(MetricsDimension.DIMENSION_STATUS, MetricsDimension.DIMENSION_STATUS_ALL).getValue(), 0);
-    Assert.assertEquals(0, model.getProducerMetrics().get("fun3").getProducerCall()
-        .getTotalValue(MetricsDimension.DIMENSION_STATUS, MetricsDimension.DIMENSION_STATUS_SUCCESS_FAILED_SUCCESS)
-        .getValue(), 0);
-    Assert.assertEquals(0, model.getProducerMetrics().get("fun3").getProducerCall()
-        .getTotalValue(MetricsDimension.DIMENSION_STATUS, MetricsDimension.DIMENSION_STATUS_SUCCESS_FAILED_FAILED)
-        .getValue(), 0);
+    Assert.assertEquals(Double.NaN,
+        MetricsUtils.getFirstMatchMetricValue(metrics, MetricsConst.SERVICECOMB_INVOCATION,
+            Lists.newArrayList(MetricsConst.TAG_OPERATION, MetricsConst.TAG_ROLE, MetricsConst.TAG_STAGE,
+                MetricsConst.TAG_STATISTIC, MetricsConst.TAG_STATUS),
+            Lists.newArrayList("fun3", MetricsConst.ROLE_PRODUCER, MetricsConst.STAGE_FULL, "tps",
+                MetricsDimension.DIMENSION_STATUS_ALL)), 0);
+
+    Assert.assertEquals(Double.NaN,
+        MetricsUtils.getFirstMatchMetricValue(metrics, MetricsConst.SERVICECOMB_INVOCATION,
+            Lists.newArrayList(MetricsConst.TAG_OPERATION, MetricsConst.TAG_ROLE, MetricsConst.TAG_STAGE,
+                MetricsConst.TAG_STATISTIC, MetricsConst.TAG_STATUS),
+            Lists.newArrayList("fun3", MetricsConst.ROLE_PRODUCER, MetricsConst.STAGE_FULL, "tps",
+                MetricsDimension.DIMENSION_STATUS_SUCCESS_FAILED_SUCCESS)), 0);
+
+    Assert.assertEquals(Double.NaN,
+        MetricsUtils.getFirstMatchMetricValue(metrics, MetricsConst.SERVICECOMB_INVOCATION,
+            Lists.newArrayList(MetricsConst.TAG_OPERATION, MetricsConst.TAG_ROLE, MetricsConst.TAG_STAGE,
+                MetricsConst.TAG_STATISTIC, MetricsConst.TAG_STATUS),
+            Lists.newArrayList("fun3", MetricsConst.ROLE_PRODUCER, MetricsConst.STAGE_FULL, "tps",
+                MetricsDimension.DIMENSION_STATUS_SUCCESS_FAILED_FAILED)), 0);
+
+    Assert.assertEquals(Double.NaN,
+        MetricsUtils.getFirstMatchMetricValue(metrics, MetricsConst.SERVICECOMB_INVOCATION,
+            Lists.newArrayList(MetricsConst.TAG_OPERATION, MetricsConst.TAG_ROLE, MetricsConst.TAG_STAGE,
+                MetricsConst.TAG_STATISTIC, MetricsConst.TAG_STATUS),
+            Lists.newArrayList("fun3", MetricsConst.ROLE_PRODUCER, MetricsConst.STAGE_FULL, "count",
+                MetricsDimension.DIMENSION_STATUS_ALL)), 0);
+
+    Assert.assertEquals(Double.NaN,
+        MetricsUtils.getFirstMatchMetricValue(metrics, MetricsConst.SERVICECOMB_INVOCATION,
+            Lists.newArrayList(MetricsConst.TAG_OPERATION, MetricsConst.TAG_ROLE, MetricsConst.TAG_STAGE,
+                MetricsConst.TAG_STATISTIC, MetricsConst.TAG_STATUS),
+            Lists.newArrayList("fun3", MetricsConst.ROLE_PRODUCER, MetricsConst.STAGE_FULL, "count",
+                MetricsDimension.DIMENSION_STATUS_SUCCESS_FAILED_SUCCESS)), 0);
+
+    Assert.assertEquals(Double.NaN,
+        MetricsUtils.getFirstMatchMetricValue(metrics, MetricsConst.SERVICECOMB_INVOCATION,
+            Lists.newArrayList(MetricsConst.TAG_OPERATION, MetricsConst.TAG_ROLE, MetricsConst.TAG_STAGE,
+                MetricsConst.TAG_STATISTIC, MetricsConst.TAG_STATUS),
+            Lists.newArrayList("fun3", MetricsConst.ROLE_PRODUCER, MetricsConst.STAGE_FULL, "count",
+                MetricsDimension.DIMENSION_STATUS_SUCCESS_FAILED_FAILED)), 0);
 
     //check ConsumerMetrics
-    //no need
-    Assert.assertEquals(1, model.getConsumerMetrics().get("fun2").getConsumerLatency().getCount());
-    Assert.assertEquals(300, model.getConsumerMetrics().get("fun2").getConsumerLatency().getTotal(), 0);
-    Assert.assertEquals(300, model.getConsumerMetrics().get("fun2").getConsumerLatency().getAverage(), 0);
-    Assert.assertEquals(300, model.getConsumerMetrics().get("fun2").getConsumerLatency().getMax(), 0);
-    Assert.assertEquals(300, model.getConsumerMetrics().get("fun2").getConsumerLatency().getMin(), 0);
+    //fun2
+    Assert.assertEquals(300, MetricsUtils.getFirstMatchMetricValue(metrics, MetricsConst.SERVICECOMB_INVOCATION,
+        Lists.newArrayList(MetricsConst.TAG_OPERATION, MetricsConst.TAG_ROLE, MetricsConst.TAG_STAGE,
+            MetricsConst.TAG_STATISTIC, MetricsConst.TAG_STATUS),
+        Lists.newArrayList("fun2", MetricsConst.ROLE_CONSUMER, MetricsConst.STAGE_FULL, "max",
+            MetricsDimension.DIMENSION_STATUS_ALL)), 0);
 
-    Assert.assertEquals(1, model.getConsumerMetrics().get("fun2").getConsumerCall()
-        .getTpsValue(MetricsDimension.DIMENSION_STATUS, MetricsDimension.DIMENSION_STATUS_ALL).getValue(), 0);
-    Assert.assertEquals(1, model.getConsumerMetrics().get("fun2").getConsumerCall()
-        .getTpsValue(MetricsDimension.DIMENSION_STATUS, MetricsDimension.DIMENSION_STATUS_SUCCESS_FAILED_SUCCESS)
-        .getValue(), 0);
-    Assert.assertEquals(0, model.getConsumerMetrics().get("fun2").getConsumerCall()
-        .getTpsValue(MetricsDimension.DIMENSION_STATUS, MetricsDimension.DIMENSION_STATUS_SUCCESS_FAILED_FAILED)
-        .getValue(), 0);
+    Assert.assertEquals(1,
+        MetricsUtils.getFirstMatchMetricValue(metrics, MetricsConst.SERVICECOMB_INVOCATION,
+            Lists.newArrayList(MetricsConst.TAG_OPERATION, MetricsConst.TAG_ROLE, MetricsConst.TAG_STAGE,
+                MetricsConst.TAG_STATISTIC, MetricsConst.TAG_STATUS),
+            Lists.newArrayList("fun2", MetricsConst.ROLE_CONSUMER, MetricsConst.STAGE_FULL, "tps",
+                MetricsDimension.DIMENSION_STATUS_ALL)), 0);
 
-    Assert.assertEquals(1, model.getConsumerMetrics().get("fun2").getConsumerCall()
-        .getTotalValue(MetricsDimension.DIMENSION_STATUS, MetricsDimension.DIMENSION_STATUS_ALL).getValue(), 0);
-    Assert.assertEquals(1, model.getConsumerMetrics().get("fun2").getConsumerCall()
-        .getTotalValue(MetricsDimension.DIMENSION_STATUS, MetricsDimension.DIMENSION_STATUS_SUCCESS_FAILED_SUCCESS)
-        .getValue(), 0);
-    Assert.assertEquals(0, model.getConsumerMetrics().get("fun2").getConsumerCall()
-        .getTotalValue(MetricsDimension.DIMENSION_STATUS, MetricsDimension.DIMENSION_STATUS_SUCCESS_FAILED_FAILED)
-        .getValue(), 0);
+    Assert.assertEquals(1,
+        MetricsUtils.getFirstMatchMetricValue(metrics, MetricsConst.SERVICECOMB_INVOCATION,
+            Lists.newArrayList(MetricsConst.TAG_OPERATION, MetricsConst.TAG_ROLE, MetricsConst.TAG_STAGE,
+                MetricsConst.TAG_STATISTIC, MetricsConst.TAG_STATUS),
+            Lists.newArrayList("fun2", MetricsConst.ROLE_CONSUMER, MetricsConst.STAGE_FULL, "tps",
+                MetricsDimension.DIMENSION_STATUS_SUCCESS_FAILED_SUCCESS)), 0);
 
-    Map<String, Number> metrics = model.toMap();
-    Assert.assertEquals(108, metrics.size());
+    Assert.assertEquals(Double.NaN,
+        MetricsUtils.getFirstMatchMetricValue(metrics, MetricsConst.SERVICECOMB_INVOCATION,
+            Lists.newArrayList(MetricsConst.TAG_OPERATION, MetricsConst.TAG_ROLE, MetricsConst.TAG_STAGE,
+                MetricsConst.TAG_STATISTIC, MetricsConst.TAG_STATUS),
+            Lists.newArrayList("fun2", MetricsConst.ROLE_CONSUMER, MetricsConst.STAGE_FULL, "tps",
+                MetricsDimension.DIMENSION_STATUS_SUCCESS_FAILED_FAILED)), 0);
 
-    Assert.assertEquals(1.0, model.getInstanceMetric().getSystemMetric().getCpuLoad(), 0);
-    Assert.assertEquals(2, model.getInstanceMetric().getSystemMetric().getCpuRunningThreads(), 0);
-    Assert.assertEquals(100, model.getInstanceMetric().getSystemMetric().getHeapCommit(), 0);
-    Assert.assertEquals(200, model.getInstanceMetric().getSystemMetric().getHeapInit(), 0);
-    Assert.assertEquals(300, model.getInstanceMetric().getSystemMetric().getHeapMax(), 0);
-    Assert.assertEquals(400, model.getInstanceMetric().getSystemMetric().getHeapUsed(), 0);
-    Assert.assertEquals(500, model.getInstanceMetric().getSystemMetric().getNonHeapCommit(), 0);
-    Assert.assertEquals(600, model.getInstanceMetric().getSystemMetric().getNonHeapInit(), 0);
-    Assert.assertEquals(700, model.getInstanceMetric().getSystemMetric().getNonHeapMax(), 0);
-    Assert.assertEquals(800, model.getInstanceMetric().getSystemMetric().getNonHeapUsed(), 0);
+    Assert.assertEquals(1,
+        MetricsUtils.getFirstMatchMetricValue(metrics, MetricsConst.SERVICECOMB_INVOCATION,
+            Lists.newArrayList(MetricsConst.TAG_OPERATION, MetricsConst.TAG_ROLE, MetricsConst.TAG_STAGE,
+                MetricsConst.TAG_STATISTIC, MetricsConst.TAG_STATUS),
+            Lists.newArrayList("fun2", MetricsConst.ROLE_CONSUMER, MetricsConst.STAGE_FULL, "count",
+                MetricsDimension.DIMENSION_STATUS_ALL)), 0);
+
+    Assert.assertEquals(1,
+        MetricsUtils.getFirstMatchMetricValue(metrics, MetricsConst.SERVICECOMB_INVOCATION,
+            Lists.newArrayList(MetricsConst.TAG_OPERATION, MetricsConst.TAG_ROLE, MetricsConst.TAG_STAGE,
+                MetricsConst.TAG_STATISTIC, MetricsConst.TAG_STATUS),
+            Lists.newArrayList("fun2", MetricsConst.ROLE_CONSUMER, MetricsConst.STAGE_FULL, "count",
+                MetricsDimension.DIMENSION_STATUS_SUCCESS_FAILED_SUCCESS)), 0);
+
+    Assert.assertEquals(Double.NaN,
+        MetricsUtils.getFirstMatchMetricValue(metrics, MetricsConst.SERVICECOMB_INVOCATION,
+            Lists.newArrayList(MetricsConst.TAG_OPERATION, MetricsConst.TAG_ROLE, MetricsConst.TAG_STAGE,
+                MetricsConst.TAG_STATISTIC, MetricsConst.TAG_STATUS),
+            Lists.newArrayList("fun2", MetricsConst.ROLE_CONSUMER, MetricsConst.STAGE_FULL, "count",
+                MetricsDimension.DIMENSION_STATUS_SUCCESS_FAILED_FAILED)), 0);
+
+    //System metrics
+    Assert.assertEquals(1.0, getSystemMetric(metrics, "cpuLoad"), 0);
+    Assert.assertEquals(2, getSystemMetric(metrics, "cpuRunningThreads"), 0);
+    Assert.assertEquals(100, getSystemMetric(metrics, "heapCommit"), 0);
+    Assert.assertEquals(200, getSystemMetric(metrics, "heapInit"), 0);
+    Assert.assertEquals(300, getSystemMetric(metrics, "heapMax"), 0);
+    Assert.assertEquals(400, getSystemMetric(metrics, "heapUsed"), 0);
+    Assert.assertEquals(500, getSystemMetric(metrics, "nonHeapCommit"), 0);
+    Assert.assertEquals(600, getSystemMetric(metrics, "nonHeapInit"), 0);
+    Assert.assertEquals(700, getSystemMetric(metrics, "nonHeapMax"), 0);
+    Assert.assertEquals(800, getSystemMetric(metrics, "nonHeapUsed"), 0);
+  }
+
+  private Double getSystemMetric(Map<String, Double> metrics, String name) {
+    return MetricsUtils.getFirstMatchMetricValue(metrics, MetricsConst.JVM,
+        Lists.newArrayList(MetricsConst.TAG_NAME, MetricsConst.TAG_STATISTIC),
+        Lists.newArrayList(name, "gauge"));
   }
 }

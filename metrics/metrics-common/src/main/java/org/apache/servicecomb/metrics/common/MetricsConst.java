@@ -18,11 +18,29 @@
 package org.apache.servicecomb.metrics.common;
 
 public class MetricsConst {
-  public static final String CONSUMER_PREFIX_TEMPLATE = "servicecomb.%s.consumer";
+  public static final String JVM = "jvm";
 
-  public static final String PRODUCER_PREFIX_TEMPLATE = "servicecomb.%s.producer";
+  public static final String SERVICECOMB_INVOCATION = "servicecomb.invocation";
 
-  public static final String INSTANCE_CONSUMER_PREFIX = String.format(CONSUMER_PREFIX_TEMPLATE, "instance");
+  public static final String TAG_NAME = "name";
 
-  public static final String INSTANCE_PRODUCER_PREFIX = String.format(PRODUCER_PREFIX_TEMPLATE, "instance");
+  public static final String TAG_OPERATION = "operation";
+
+  public static final String TAG_STATUS = "status";
+
+  public static final String TAG_STAGE = "stage";
+
+  public static final String TAG_ROLE = "role";
+
+  public static final String TAG_STATISTIC = "statistic";
+
+  public static final String STAGE_FULL = "full";
+
+  public static final String STAGE_QUEUE = "queue";
+
+  public static final String STAGE_EXECUTION = "execution";
+
+  public static final String ROLE_CONSUMER = "consumer";
+
+  public static final String ROLE_PRODUCER = "producer";
 }

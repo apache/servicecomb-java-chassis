@@ -21,8 +21,10 @@ import java.lang.management.ManagementFactory;
 import java.lang.management.MemoryMXBean;
 import java.lang.management.OperatingSystemMXBean;
 import java.lang.management.ThreadMXBean;
+import java.util.HashMap;
+import java.util.Map;
 
-import org.apache.servicecomb.metrics.common.SystemMetric;
+import org.apache.servicecomb.metrics.common.MetricsConst;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -97,8 +99,28 @@ public class DefaultSystemMonitor implements SystemMonitor {
   }
 
   @Override
-  public SystemMetric toMetric() {
-    return new SystemMetric(getCpuLoad(), getCpuRunningThreads(), getHeapInit(), getHeapMax(), getHeapCommit(),
-        getHeapUsed(), getNonHeapInit(), getNonHeapMax(), getNonHeapCommit(), getNonHeapUsed());
+  public Map<String, Double> toMetric() {
+    Map<String, Double> metrics = new HashMap<>();
+    metrics.put(String.format(MetricsConst.JVM + "(%s=%s,%s=%s)", MetricsConst.TAG_STATISTIC, "gauge",
+        MetricsConst.TAG_NAME, "cpuLoad"), getCpuLoad());
+    metrics.put(String.format(MetricsConst.JVM + "(%s=%s,%s=%s)", MetricsConst.TAG_STATISTIC, "gauge",
+        MetricsConst.TAG_NAME, "cpuRunningThreads"), (double) getCpuRunningThreads());
+    metrics.put(String.format(MetricsConst.JVM + "(%s=%s,%s=%s)", MetricsConst.TAG_STATISTIC, "gauge",
+        MetricsConst.TAG_NAME, "heapInit"), (double) getHeapInit());
+    metrics.put(String.format(MetricsConst.JVM + "(%s=%s,%s=%s)", MetricsConst.TAG_STATISTIC, "gauge",
+        MetricsConst.TAG_NAME, "heapMax"), (double) getHeapMax());
+    metrics.put(String.format(MetricsConst.JVM + "(%s=%s,%s=%s)", MetricsConst.TAG_STATISTIC, "gauge",
+        MetricsConst.TAG_NAME, "heapCommit"), (double) getHeapCommit());
+    metrics.put(String.format(MetricsConst.JVM + "(%s=%s,%s=%s)", MetricsConst.TAG_STATISTIC, "gauge",
+        MetricsConst.TAG_NAME, "heapUsed"), (double) getHeapUsed());
+    metrics.put(String.format(MetricsConst.JVM + "(%s=%s,%s=%s)", MetricsConst.TAG_STATISTIC, "gauge",
+        MetricsConst.TAG_NAME, "nonHeapInit"), (double) getNonHeapInit());
+    metrics.put(String.format(MetricsConst.JVM + "(%s=%s,%s=%s)", MetricsConst.TAG_STATISTIC, "gauge",
+        MetricsConst.TAG_NAME, "nonHeapMax"), (double) getNonHeapMax());
+    metrics.put(String.format(MetricsConst.JVM + "(%s=%s,%s=%s)", MetricsConst.TAG_STATISTIC, "gauge",
+        MetricsConst.TAG_NAME, "nonHeapCommit"), (double) getNonHeapCommit());
+    metrics.put(String.format(MetricsConst.JVM + "(%s=%s,%s=%s)", MetricsConst.TAG_STATISTIC, "gauge",
+        MetricsConst.TAG_NAME, "nonHeapUsed"), (double) getNonHeapUsed());
+    return metrics;
   }
 }

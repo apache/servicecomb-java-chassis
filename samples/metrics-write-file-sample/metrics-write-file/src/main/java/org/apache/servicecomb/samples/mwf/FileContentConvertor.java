@@ -19,9 +19,7 @@ package org.apache.servicecomb.samples.mwf;
 
 import java.util.Map;
 
-import org.apache.servicecomb.metrics.common.RegistryMetric;
-
 //convert metrics to output content
 public interface FileContentConvertor {
-  Map<String, String> convert(RegistryMetric registryMetric);
+  Map<String, String> convert(Map<String, Double> registryMetric);
 }

@@ -23,7 +23,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.apache.servicecomb.metrics.common.RegistryMetric;
+import org.apache.servicecomb.metrics.common.MetricsConst;
 
 import com.netflix.config.DynamicPropertyFactory;
 
@@ -41,12 +41,11 @@ public class SimpleFileContentConvertor implements FileContentConvertor {
   }
 
   @Override
-  public Map<String, String> convert(RegistryMetric registryMetric) {
+  public Map<String, String> convert(Map<String, Double> registryMetric) {
     Map<String, String> pickedMetrics = new HashMap<>();
-    for (Entry<String, Number> metric : registryMetric.toMap().entrySet()) {
-      pickedMetrics.put(metric.getKey(),
-          String.format(doubleStringFormatter,
-              round(metric.getValue().doubleValue(), doubleRoundPlaces)));
+    for (Entry<String, Double> metric : registryMetric.entrySet()) {
+      pickedMetrics.put(convertMetricKey(metric.getKey()),
+          String.format(doubleStringFormatter, round(metric.getValue(), doubleRoundPlaces)));
     }
     return pickedMetrics;
   }
@@ -57,5 +56,27 @@ public class SimpleFileContentConvertor implements FileContentConvertor {
       return decimal.setScale(places, RoundingMode.HALF_UP).doubleValue();
     }
     return 0;
+  }
+
+  private String convertMetricKey(String key) {
+    String[] nameAndTag = key.split("\\(");
+    Map<String, String> tags = new HashMap<>();
+    String[] tagAnValues = nameAndTag[1].split("[=,)]");
+    for (int i = 0; i < tagAnValues.length; i += 2) {
+      tags.put(tagAnValues[i], tagAnValues[i + 1]);
+    }
+    if(nameAndTag[0].startsWith(MetricsConst.JVM)) {
+      return "jvm." + tags.get(MetricsConst.TAG_NAME);
+    } else {
+      StringBuilder builder = new StringBuilder();
+      builder.append(tags.get(MetricsConst.TAG_OPERATION));
+      builder.append(".");
+      builder.append(tags.get(MetricsConst.TAG_ROLE));
+      builder.append(".");
+      builder.append(tags.get(MetricsConst.TAG_STAGE));
+      builder.append(".");
+      builder.append(tags.get(MetricsConst.TAG_STATISTIC));
+      return builder.toString();
+    }
   }
 }
