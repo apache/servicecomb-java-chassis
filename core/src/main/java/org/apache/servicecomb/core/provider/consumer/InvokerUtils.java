@@ -59,7 +59,7 @@ public final class InvokerUtils {
       return response.getResult();
     }
 
-    throw ExceptionFactory.convertConsumerException((Throwable) response.getResult());
+    throw ExceptionFactory.convertConsumerException(response.getResult());
   }
 
   public static Response innerSyncInvoke(Invocation invocation) {
@@ -73,7 +73,6 @@ public final class InvokerUtils {
       invocation.next(respExecutor::setResponse);
 
       Response response = respExecutor.waitResponse();
-      success = response.isSuccessed();
       statusCode = response.getStatusCode();
       return response;
     } catch (Throwable e) {
@@ -82,7 +81,7 @@ public final class InvokerUtils {
       LOGGER.debug(msg, e);
       return Response.createConsumerFail(e);
     } finally {
-      invocation.triggerFinishedEvent(statusCode, success);
+      invocation.triggerFinishedEvent(statusCode);
     }
   }
 
@@ -97,7 +96,7 @@ public final class InvokerUtils {
       invocation.next(ar -> {
         ContextUtils.setInvocationContext(invocation.getParentContext());
         try {
-          invocation.triggerFinishedEvent(ar.getStatusCode(), ar.isSuccessed());
+          invocation.triggerFinishedEvent(ar.getStatusCode());
           asyncResp.handle(ar);
         } finally {
           ContextUtils.removeInvocationContext();
@@ -105,7 +104,7 @@ public final class InvokerUtils {
       });
     } catch (Throwable e) {
       //if throw exception,we can use 500 for status code ?
-      invocation.triggerFinishedEvent(500, false);
+      invocation.triggerFinishedEvent(500);
       LOGGER.error("invoke failed, {}", invocation.getOperationMeta().getMicroserviceQualifiedName());
       asyncResp.consumerFail(e);
     }

@@ -17,10 +17,8 @@
 
 package org.apache.servicecomb.metrics.core.utils;
 
-import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
-import com.netflix.servo.monitor.Monitor;
 import com.netflix.servo.monitor.MonitorConfig;
 import com.netflix.servo.tag.Tag;
 import com.netflix.servo.tag.TagList;
@@ -45,7 +43,9 @@ public class MonitorUtils {
     if (tags.size() != 0) {
       StringBuilder tagPart = new StringBuilder("(");
       for (Tag tag : tags) {
-        tagPart.append(String.format("%s=%s,", tag.getKey(), tag.getValue()));
+        if (!"type".equals(tag.getKey())) {
+          tagPart.append(String.format("%s=%s,", tag.getKey(), tag.getValue()));
+        }
       }
       tagPart.deleteCharAt(tagPart.length() - 1);
       tagPart.append(")");

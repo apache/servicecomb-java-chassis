@@ -34,10 +34,8 @@ import org.apache.servicecomb.core.metrics.InvocationStartProcessingEvent;
 import org.apache.servicecomb.core.metrics.InvocationStartedEvent;
 import org.apache.servicecomb.foundation.common.utils.EventUtils;
 import org.apache.servicecomb.metrics.common.MetricsConst;
-import org.apache.servicecomb.metrics.common.MetricsDimension;
 import org.apache.servicecomb.metrics.common.MetricsUtils;
 import org.apache.servicecomb.metrics.core.event.DefaultEventListenerManager;
-import org.apache.servicecomb.metrics.core.event.dimension.StatusConvertorFactory;
 import org.apache.servicecomb.metrics.core.monitor.DefaultSystemMonitor;
 import org.apache.servicecomb.metrics.core.monitor.RegistryMonitor;
 import org.apache.servicecomb.metrics.core.publish.DefaultDataSource;
@@ -78,8 +76,7 @@ public class TestEventAndRunner {
     Assert.assertEquals(intervals.size(), 3);
     Assert.assertThat(intervals, containsInAnyOrder(Arrays.asList(1000L, 2000L, 3000L).toArray()));
 
-    new DefaultEventListenerManager(monitor, new StatusConvertorFactory(),
-        MetricsDimension.DIMENSION_STATUS_OUTPUT_LEVEL_SUCCESS_FAILED);
+    new DefaultEventListenerManager(monitor);
 
     //fun1 is a PRODUCER invocation call 2 time and all is completed
     //two time success
@@ -88,14 +85,21 @@ public class TestEventAndRunner {
         new InvocationStartProcessingEvent("fun1", InvocationType.PRODUCER));
     EventUtils
         .triggerEvent(new InvocationFinishedEvent("fun1", InvocationType.PRODUCER, TimeUnit.MILLISECONDS.toNanos(100),
-            TimeUnit.MILLISECONDS.toNanos(200), TimeUnit.MILLISECONDS.toNanos(300), 200, true));
+            TimeUnit.MILLISECONDS.toNanos(200), TimeUnit.MILLISECONDS.toNanos(300), 200));
 
     EventUtils.triggerEvent(new InvocationStartedEvent("fun1", InvocationType.PRODUCER, System.nanoTime()));
     EventUtils.triggerEvent(
         new InvocationStartProcessingEvent("fun1", InvocationType.PRODUCER));
     EventUtils
         .triggerEvent(new InvocationFinishedEvent("fun1", InvocationType.PRODUCER, TimeUnit.MILLISECONDS.toNanos(300),
-            TimeUnit.MILLISECONDS.toNanos(400), TimeUnit.MILLISECONDS.toNanos(700), 500, false));
+            TimeUnit.MILLISECONDS.toNanos(400), TimeUnit.MILLISECONDS.toNanos(700), 200));
+
+    EventUtils.triggerEvent(new InvocationStartedEvent("fun1", InvocationType.PRODUCER, System.nanoTime()));
+    EventUtils.triggerEvent(
+        new InvocationStartProcessingEvent("fun1", InvocationType.PRODUCER));
+    EventUtils
+        .triggerEvent(new InvocationFinishedEvent("fun1", InvocationType.PRODUCER, TimeUnit.MILLISECONDS.toNanos(300),
+            TimeUnit.MILLISECONDS.toNanos(400), TimeUnit.MILLISECONDS.toNanos(700), 500));
 
     //==========================================================================
 
@@ -117,7 +121,7 @@ public class TestEventAndRunner {
         new InvocationStartProcessingEvent("fun2", InvocationType.CONSUMER));
     EventUtils
         .triggerEvent(new InvocationFinishedEvent("fun2", InvocationType.CONSUMER, TimeUnit.MILLISECONDS.toNanos(100),
-            TimeUnit.MILLISECONDS.toNanos(200), TimeUnit.MILLISECONDS.toNanos(300), 200, true));
+            TimeUnit.MILLISECONDS.toNanos(200), TimeUnit.MILLISECONDS.toNanos(300), 200));
 
     //==========================================================================
 
@@ -137,61 +141,65 @@ public class TestEventAndRunner {
         Lists.newArrayList(MetricsConst.TAG_OPERATION, MetricsConst.TAG_ROLE, MetricsConst.TAG_STAGE,
             MetricsConst.TAG_STATISTIC, MetricsConst.TAG_STATUS),
         Lists.newArrayList("fun1", MetricsConst.ROLE_PRODUCER, MetricsConst.STAGE_QUEUE, "max",
-            MetricsDimension.DIMENSION_STATUS_ALL)), 0);
+            "200")), 0);
 
     Assert.assertEquals(400, MetricsUtils.getFirstMatchMetricValue(metrics, MetricsConst.SERVICECOMB_INVOCATION,
         Lists.newArrayList(MetricsConst.TAG_OPERATION, MetricsConst.TAG_ROLE, MetricsConst.TAG_STAGE,
             MetricsConst.TAG_STATISTIC, MetricsConst.TAG_STATUS),
         Lists.newArrayList("fun1", MetricsConst.ROLE_PRODUCER, MetricsConst.STAGE_EXECUTION, "max",
-            MetricsDimension.DIMENSION_STATUS_ALL)), 0);
+            "200")), 0);
 
     Assert.assertEquals(700, MetricsUtils.getFirstMatchMetricValue(metrics, MetricsConst.SERVICECOMB_INVOCATION,
         Lists.newArrayList(MetricsConst.TAG_OPERATION, MetricsConst.TAG_ROLE, MetricsConst.TAG_STAGE,
             MetricsConst.TAG_STATISTIC, MetricsConst.TAG_STATUS),
         Lists.newArrayList("fun1", MetricsConst.ROLE_PRODUCER, MetricsConst.STAGE_WHOLE, "max",
-            MetricsDimension.DIMENSION_STATUS_ALL)), 0);
+            "200")), 0);
+
+    Assert.assertEquals(200, MetricsUtils.getFirstMatchMetricValue(metrics, MetricsConst.SERVICECOMB_INVOCATION,
+        Lists.newArrayList(MetricsConst.TAG_OPERATION, MetricsConst.TAG_ROLE, MetricsConst.TAG_STAGE,
+            MetricsConst.TAG_STATISTIC, MetricsConst.TAG_STATUS),
+        Lists.newArrayList("fun1", MetricsConst.ROLE_PRODUCER, MetricsConst.STAGE_QUEUE, "latency",
+            "200")), 0);
+
+    Assert.assertEquals(300, MetricsUtils.getFirstMatchMetricValue(metrics, MetricsConst.SERVICECOMB_INVOCATION,
+        Lists.newArrayList(MetricsConst.TAG_OPERATION, MetricsConst.TAG_ROLE, MetricsConst.TAG_STAGE,
+            MetricsConst.TAG_STATISTIC, MetricsConst.TAG_STATUS),
+        Lists.newArrayList("fun1", MetricsConst.ROLE_PRODUCER, MetricsConst.STAGE_EXECUTION, "latency",
+            "200")), 0);
+
+    Assert.assertEquals(500, MetricsUtils.getFirstMatchMetricValue(metrics, MetricsConst.SERVICECOMB_INVOCATION,
+        Lists.newArrayList(MetricsConst.TAG_OPERATION, MetricsConst.TAG_ROLE, MetricsConst.TAG_STAGE,
+            MetricsConst.TAG_STATISTIC, MetricsConst.TAG_STATUS),
+        Lists.newArrayList("fun1", MetricsConst.ROLE_PRODUCER, MetricsConst.STAGE_WHOLE, "latency",
+            "200")), 0);
 
     Assert.assertEquals(2,
         MetricsUtils.getFirstMatchMetricValue(metrics, MetricsConst.SERVICECOMB_INVOCATION,
             Lists.newArrayList(MetricsConst.TAG_OPERATION, MetricsConst.TAG_ROLE, MetricsConst.TAG_STAGE,
                 MetricsConst.TAG_STATISTIC, MetricsConst.TAG_STATUS),
             Lists.newArrayList("fun1", MetricsConst.ROLE_PRODUCER, MetricsConst.STAGE_WHOLE, "tps",
-                MetricsDimension.DIMENSION_STATUS_ALL)), 0);
-
-    Assert.assertEquals(1,
-        MetricsUtils.getFirstMatchMetricValue(metrics, MetricsConst.SERVICECOMB_INVOCATION,
-            Lists.newArrayList(MetricsConst.TAG_OPERATION, MetricsConst.TAG_ROLE, MetricsConst.TAG_STAGE,
-                MetricsConst.TAG_STATISTIC, MetricsConst.TAG_STATUS),
-            Lists.newArrayList("fun1", MetricsConst.ROLE_PRODUCER, MetricsConst.STAGE_WHOLE, "tps",
-                MetricsDimension.DIMENSION_STATUS_SUCCESS_FAILED_SUCCESS)), 0);
-
-    Assert.assertEquals(1,
-        MetricsUtils.getFirstMatchMetricValue(metrics, MetricsConst.SERVICECOMB_INVOCATION,
-            Lists.newArrayList(MetricsConst.TAG_OPERATION, MetricsConst.TAG_ROLE, MetricsConst.TAG_STAGE,
-                MetricsConst.TAG_STATISTIC, MetricsConst.TAG_STATUS),
-            Lists.newArrayList("fun1", MetricsConst.ROLE_PRODUCER, MetricsConst.STAGE_WHOLE, "tps",
-                MetricsDimension.DIMENSION_STATUS_SUCCESS_FAILED_FAILED)), 0);
+                "200")), 0);
 
     Assert.assertEquals(2,
         MetricsUtils.getFirstMatchMetricValue(metrics, MetricsConst.SERVICECOMB_INVOCATION,
             Lists.newArrayList(MetricsConst.TAG_OPERATION, MetricsConst.TAG_ROLE, MetricsConst.TAG_STAGE,
                 MetricsConst.TAG_STATISTIC, MetricsConst.TAG_STATUS),
             Lists.newArrayList("fun1", MetricsConst.ROLE_PRODUCER, MetricsConst.STAGE_WHOLE, "count",
-                MetricsDimension.DIMENSION_STATUS_ALL)), 0);
+                "200")), 0);
+
+    Assert.assertEquals(1,
+        MetricsUtils.getFirstMatchMetricValue(metrics, MetricsConst.SERVICECOMB_INVOCATION,
+            Lists.newArrayList(MetricsConst.TAG_OPERATION, MetricsConst.TAG_ROLE, MetricsConst.TAG_STAGE,
+                MetricsConst.TAG_STATISTIC, MetricsConst.TAG_STATUS),
+            Lists.newArrayList("fun1", MetricsConst.ROLE_PRODUCER, MetricsConst.STAGE_WHOLE, "tps",
+                "500")), 0);
 
     Assert.assertEquals(1,
         MetricsUtils.getFirstMatchMetricValue(metrics, MetricsConst.SERVICECOMB_INVOCATION,
             Lists.newArrayList(MetricsConst.TAG_OPERATION, MetricsConst.TAG_ROLE, MetricsConst.TAG_STAGE,
                 MetricsConst.TAG_STATISTIC, MetricsConst.TAG_STATUS),
             Lists.newArrayList("fun1", MetricsConst.ROLE_PRODUCER, MetricsConst.STAGE_WHOLE, "count",
-                MetricsDimension.DIMENSION_STATUS_SUCCESS_FAILED_SUCCESS)), 0);
-
-    Assert.assertEquals(1,
-        MetricsUtils.getFirstMatchMetricValue(metrics, MetricsConst.SERVICECOMB_INVOCATION,
-            Lists.newArrayList(MetricsConst.TAG_OPERATION, MetricsConst.TAG_ROLE, MetricsConst.TAG_STAGE,
-                MetricsConst.TAG_STATISTIC, MetricsConst.TAG_STATUS),
-            Lists.newArrayList("fun1", MetricsConst.ROLE_PRODUCER, MetricsConst.STAGE_WHOLE, "count",
-                MetricsDimension.DIMENSION_STATUS_SUCCESS_FAILED_FAILED)), 0);
+                "500")), 0);
 
     //fun3
     Assert.assertEquals(0, MetricsUtils.getFirstMatchMetricValue(metrics, MetricsConst.SERVICECOMB_INVOCATION,
@@ -203,61 +211,65 @@ public class TestEventAndRunner {
         Lists.newArrayList(MetricsConst.TAG_OPERATION, MetricsConst.TAG_ROLE, MetricsConst.TAG_STAGE,
             MetricsConst.TAG_STATISTIC, MetricsConst.TAG_STATUS),
         Lists.newArrayList("fun3", MetricsConst.ROLE_PRODUCER, MetricsConst.STAGE_QUEUE, "max",
-            MetricsDimension.DIMENSION_STATUS_ALL)), 0);
+            "200")), 0);
 
     Assert.assertEquals(Double.NaN, MetricsUtils.getFirstMatchMetricValue(metrics, MetricsConst.SERVICECOMB_INVOCATION,
         Lists.newArrayList(MetricsConst.TAG_OPERATION, MetricsConst.TAG_ROLE, MetricsConst.TAG_STAGE,
             MetricsConst.TAG_STATISTIC, MetricsConst.TAG_STATUS),
         Lists.newArrayList("fun3", MetricsConst.ROLE_PRODUCER, MetricsConst.STAGE_EXECUTION, "max",
-            MetricsDimension.DIMENSION_STATUS_ALL)), 0);
+            "200")), 0);
 
     Assert.assertEquals(Double.NaN, MetricsUtils.getFirstMatchMetricValue(metrics, MetricsConst.SERVICECOMB_INVOCATION,
         Lists.newArrayList(MetricsConst.TAG_OPERATION, MetricsConst.TAG_ROLE, MetricsConst.TAG_STAGE,
             MetricsConst.TAG_STATISTIC, MetricsConst.TAG_STATUS),
         Lists.newArrayList("fun3", MetricsConst.ROLE_PRODUCER, MetricsConst.STAGE_WHOLE, "max",
-            MetricsDimension.DIMENSION_STATUS_ALL)), 0);
+            "200")), 0);
+
+    Assert.assertEquals(Double.NaN, MetricsUtils.getFirstMatchMetricValue(metrics, MetricsConst.SERVICECOMB_INVOCATION,
+        Lists.newArrayList(MetricsConst.TAG_OPERATION, MetricsConst.TAG_ROLE, MetricsConst.TAG_STAGE,
+            MetricsConst.TAG_STATISTIC, MetricsConst.TAG_STATUS),
+        Lists.newArrayList("fun3", MetricsConst.ROLE_PRODUCER, MetricsConst.STAGE_QUEUE, "latency",
+            "200")), 0);
+
+    Assert.assertEquals(Double.NaN, MetricsUtils.getFirstMatchMetricValue(metrics, MetricsConst.SERVICECOMB_INVOCATION,
+        Lists.newArrayList(MetricsConst.TAG_OPERATION, MetricsConst.TAG_ROLE, MetricsConst.TAG_STAGE,
+            MetricsConst.TAG_STATISTIC, MetricsConst.TAG_STATUS),
+        Lists.newArrayList("fun3", MetricsConst.ROLE_PRODUCER, MetricsConst.STAGE_EXECUTION, "latency",
+            "200")), 0);
+
+    Assert.assertEquals(Double.NaN, MetricsUtils.getFirstMatchMetricValue(metrics, MetricsConst.SERVICECOMB_INVOCATION,
+        Lists.newArrayList(MetricsConst.TAG_OPERATION, MetricsConst.TAG_ROLE, MetricsConst.TAG_STAGE,
+            MetricsConst.TAG_STATISTIC, MetricsConst.TAG_STATUS),
+        Lists.newArrayList("fun3", MetricsConst.ROLE_PRODUCER, MetricsConst.STAGE_WHOLE, "latency",
+            "200")), 0);
 
     Assert.assertEquals(Double.NaN,
         MetricsUtils.getFirstMatchMetricValue(metrics, MetricsConst.SERVICECOMB_INVOCATION,
             Lists.newArrayList(MetricsConst.TAG_OPERATION, MetricsConst.TAG_ROLE, MetricsConst.TAG_STAGE,
                 MetricsConst.TAG_STATISTIC, MetricsConst.TAG_STATUS),
             Lists.newArrayList("fun3", MetricsConst.ROLE_PRODUCER, MetricsConst.STAGE_WHOLE, "tps",
-                MetricsDimension.DIMENSION_STATUS_ALL)), 0);
+                "200")), 0);
 
     Assert.assertEquals(Double.NaN,
         MetricsUtils.getFirstMatchMetricValue(metrics, MetricsConst.SERVICECOMB_INVOCATION,
             Lists.newArrayList(MetricsConst.TAG_OPERATION, MetricsConst.TAG_ROLE, MetricsConst.TAG_STAGE,
                 MetricsConst.TAG_STATISTIC, MetricsConst.TAG_STATUS),
             Lists.newArrayList("fun3", MetricsConst.ROLE_PRODUCER, MetricsConst.STAGE_WHOLE, "tps",
-                MetricsDimension.DIMENSION_STATUS_SUCCESS_FAILED_SUCCESS)), 0);
-
-    Assert.assertEquals(Double.NaN,
-        MetricsUtils.getFirstMatchMetricValue(metrics, MetricsConst.SERVICECOMB_INVOCATION,
-            Lists.newArrayList(MetricsConst.TAG_OPERATION, MetricsConst.TAG_ROLE, MetricsConst.TAG_STAGE,
-                MetricsConst.TAG_STATISTIC, MetricsConst.TAG_STATUS),
-            Lists.newArrayList("fun3", MetricsConst.ROLE_PRODUCER, MetricsConst.STAGE_WHOLE, "tps",
-                MetricsDimension.DIMENSION_STATUS_SUCCESS_FAILED_FAILED)), 0);
+                "500")), 0);
 
     Assert.assertEquals(Double.NaN,
         MetricsUtils.getFirstMatchMetricValue(metrics, MetricsConst.SERVICECOMB_INVOCATION,
             Lists.newArrayList(MetricsConst.TAG_OPERATION, MetricsConst.TAG_ROLE, MetricsConst.TAG_STAGE,
                 MetricsConst.TAG_STATISTIC, MetricsConst.TAG_STATUS),
             Lists.newArrayList("fun3", MetricsConst.ROLE_PRODUCER, MetricsConst.STAGE_WHOLE, "count",
-                MetricsDimension.DIMENSION_STATUS_ALL)), 0);
+                "200")), 0);
 
     Assert.assertEquals(Double.NaN,
         MetricsUtils.getFirstMatchMetricValue(metrics, MetricsConst.SERVICECOMB_INVOCATION,
             Lists.newArrayList(MetricsConst.TAG_OPERATION, MetricsConst.TAG_ROLE, MetricsConst.TAG_STAGE,
                 MetricsConst.TAG_STATISTIC, MetricsConst.TAG_STATUS),
             Lists.newArrayList("fun3", MetricsConst.ROLE_PRODUCER, MetricsConst.STAGE_WHOLE, "count",
-                MetricsDimension.DIMENSION_STATUS_SUCCESS_FAILED_SUCCESS)), 0);
-
-    Assert.assertEquals(Double.NaN,
-        MetricsUtils.getFirstMatchMetricValue(metrics, MetricsConst.SERVICECOMB_INVOCATION,
-            Lists.newArrayList(MetricsConst.TAG_OPERATION, MetricsConst.TAG_ROLE, MetricsConst.TAG_STAGE,
-                MetricsConst.TAG_STATISTIC, MetricsConst.TAG_STATUS),
-            Lists.newArrayList("fun3", MetricsConst.ROLE_PRODUCER, MetricsConst.STAGE_WHOLE, "count",
-                MetricsDimension.DIMENSION_STATUS_SUCCESS_FAILED_FAILED)), 0);
+                "500")), 0);
 
     //check ConsumerMetrics
     //fun2
@@ -265,49 +277,47 @@ public class TestEventAndRunner {
         Lists.newArrayList(MetricsConst.TAG_OPERATION, MetricsConst.TAG_ROLE, MetricsConst.TAG_STAGE,
             MetricsConst.TAG_STATISTIC, MetricsConst.TAG_STATUS),
         Lists.newArrayList("fun2", MetricsConst.ROLE_CONSUMER, MetricsConst.STAGE_WHOLE, "max",
-            MetricsDimension.DIMENSION_STATUS_ALL)), 0);
+            "200")), 0);
+
+    Assert.assertEquals(300, MetricsUtils.getFirstMatchMetricValue(metrics, MetricsConst.SERVICECOMB_INVOCATION,
+        Lists.newArrayList(MetricsConst.TAG_OPERATION, MetricsConst.TAG_ROLE, MetricsConst.TAG_STAGE,
+            MetricsConst.TAG_STATISTIC, MetricsConst.TAG_STATUS),
+        Lists.newArrayList("fun2", MetricsConst.ROLE_CONSUMER, MetricsConst.STAGE_WHOLE, "latency",
+            "200")), 0);
 
     Assert.assertEquals(1,
         MetricsUtils.getFirstMatchMetricValue(metrics, MetricsConst.SERVICECOMB_INVOCATION,
             Lists.newArrayList(MetricsConst.TAG_OPERATION, MetricsConst.TAG_ROLE, MetricsConst.TAG_STAGE,
                 MetricsConst.TAG_STATISTIC, MetricsConst.TAG_STATUS),
             Lists.newArrayList("fun2", MetricsConst.ROLE_CONSUMER, MetricsConst.STAGE_WHOLE, "tps",
-                MetricsDimension.DIMENSION_STATUS_ALL)), 0);
-
-    Assert.assertEquals(1,
-        MetricsUtils.getFirstMatchMetricValue(metrics, MetricsConst.SERVICECOMB_INVOCATION,
-            Lists.newArrayList(MetricsConst.TAG_OPERATION, MetricsConst.TAG_ROLE, MetricsConst.TAG_STAGE,
-                MetricsConst.TAG_STATISTIC, MetricsConst.TAG_STATUS),
-            Lists.newArrayList("fun2", MetricsConst.ROLE_CONSUMER, MetricsConst.STAGE_WHOLE, "tps",
-                MetricsDimension.DIMENSION_STATUS_SUCCESS_FAILED_SUCCESS)), 0);
+                "200")), 0);
 
     Assert.assertEquals(Double.NaN,
         MetricsUtils.getFirstMatchMetricValue(metrics, MetricsConst.SERVICECOMB_INVOCATION,
             Lists.newArrayList(MetricsConst.TAG_OPERATION, MetricsConst.TAG_ROLE, MetricsConst.TAG_STAGE,
                 MetricsConst.TAG_STATISTIC, MetricsConst.TAG_STATUS),
             Lists.newArrayList("fun2", MetricsConst.ROLE_CONSUMER, MetricsConst.STAGE_WHOLE, "tps",
-                MetricsDimension.DIMENSION_STATUS_SUCCESS_FAILED_FAILED)), 0);
+                "500")), 0);
 
     Assert.assertEquals(1,
         MetricsUtils.getFirstMatchMetricValue(metrics, MetricsConst.SERVICECOMB_INVOCATION,
             Lists.newArrayList(MetricsConst.TAG_OPERATION, MetricsConst.TAG_ROLE, MetricsConst.TAG_STAGE,
                 MetricsConst.TAG_STATISTIC, MetricsConst.TAG_STATUS),
             Lists.newArrayList("fun2", MetricsConst.ROLE_CONSUMER, MetricsConst.STAGE_WHOLE, "count",
-                MetricsDimension.DIMENSION_STATUS_ALL)), 0);
-
-    Assert.assertEquals(1,
-        MetricsUtils.getFirstMatchMetricValue(metrics, MetricsConst.SERVICECOMB_INVOCATION,
-            Lists.newArrayList(MetricsConst.TAG_OPERATION, MetricsConst.TAG_ROLE, MetricsConst.TAG_STAGE,
-                MetricsConst.TAG_STATISTIC, MetricsConst.TAG_STATUS),
-            Lists.newArrayList("fun2", MetricsConst.ROLE_CONSUMER, MetricsConst.STAGE_WHOLE, "count",
-                MetricsDimension.DIMENSION_STATUS_SUCCESS_FAILED_SUCCESS)), 0);
+                "200")), 0);
 
     Assert.assertEquals(Double.NaN,
         MetricsUtils.getFirstMatchMetricValue(metrics, MetricsConst.SERVICECOMB_INVOCATION,
             Lists.newArrayList(MetricsConst.TAG_OPERATION, MetricsConst.TAG_ROLE, MetricsConst.TAG_STAGE,
                 MetricsConst.TAG_STATISTIC, MetricsConst.TAG_STATUS),
             Lists.newArrayList("fun2", MetricsConst.ROLE_CONSUMER, MetricsConst.STAGE_WHOLE, "count",
-                MetricsDimension.DIMENSION_STATUS_SUCCESS_FAILED_FAILED)), 0);
+                "500")), 0);
+
+    //fun4
+    Assert.assertEquals(1, MetricsUtils.getFirstMatchMetricValue(metrics, MetricsConst.SERVICECOMB_INVOCATION,
+        Lists.newArrayList(MetricsConst.TAG_OPERATION, MetricsConst.TAG_ROLE, MetricsConst.TAG_STAGE,
+            MetricsConst.TAG_STATISTIC),
+        Lists.newArrayList("fun4", MetricsConst.ROLE_PRODUCER, MetricsConst.STAGE_QUEUE, "waitInQueue")), 0);
 
     //System metrics
     Assert.assertEquals(1.0, getSystemMetric(metrics, "cpuLoad"), 0);

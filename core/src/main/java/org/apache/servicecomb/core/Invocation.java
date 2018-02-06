@@ -191,13 +191,13 @@ public class Invocation extends SwaggerInvocation {
         operationMeta.getMicroserviceQualifiedName(), this.invocationType));
   }
 
-  public void triggerFinishedEvent(int statusCode, boolean success) {
+  public void triggerFinishedEvent(int statusCode) {
     long finishedTime = System.nanoTime();
     EventUtils
         .triggerEvent(new InvocationFinishedEvent(operationMeta.getMicroserviceQualifiedName(), this.invocationType,
             startProcessingTime - startTime,
             finishedTime - startProcessingTime,
-            finishedTime - startTime, statusCode, success));
+            finishedTime - startTime, statusCode));
   }
 
   public boolean isSync() {

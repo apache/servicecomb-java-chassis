@@ -98,7 +98,7 @@ public class SpringmvcClient {
           .check(true, metric.get("jvm(statistic=gauge,name=heapUsed)") != 0);
       TestMgr.check(true, metric.size() > 0);
       TestMgr.check(true, metric.get(
-          "servicecomb.invocation(operation=springmvc.codeFirst.saySomething,role=producer,stage=full,statistic=count,status=success,type=COUNTER)")
+          "servicecomb.invocation(operation=springmvc.codeFirst.saySomething,role=producer,stage=whole,statistic=count,status=200)")
           > 0);
     } catch (Exception e) {
       TestMgr.check("true", "false");
