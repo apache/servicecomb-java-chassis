@@ -34,7 +34,7 @@ public class MetricsConst {
 
   public static final String TAG_STATISTIC = "statistic";
 
-  public static final String STAGE_FULL = "full";
+  public static final String STAGE_WHOLE = "whole";
 
   public static final String STAGE_QUEUE = "queue";
 

@@ -67,8 +67,8 @@ public class ProducerInvocationMonitor {
 
     this.lifeTimeInQueue = new TimerMonitor(operation, MetricsConst.STAGE_QUEUE, MetricsConst.ROLE_PRODUCER);
     this.executionTime = new TimerMonitor(operation, MetricsConst.STAGE_EXECUTION, MetricsConst.ROLE_PRODUCER);
-    this.producerLatency = new TimerMonitor(operation, MetricsConst.STAGE_FULL, MetricsConst.ROLE_PRODUCER);
-    this.producerCall = new CallMonitor(operation, MetricsConst.STAGE_FULL, MetricsConst.ROLE_PRODUCER);
+    this.producerLatency = new TimerMonitor(operation, MetricsConst.STAGE_WHOLE, MetricsConst.ROLE_PRODUCER);
+    this.producerCall = new CallMonitor(operation, MetricsConst.STAGE_WHOLE, MetricsConst.ROLE_PRODUCER);
   }
 
   public Map<String, Double> toMetric(int windowTimeIndex) {

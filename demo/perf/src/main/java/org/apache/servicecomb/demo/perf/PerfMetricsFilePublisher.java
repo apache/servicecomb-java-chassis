@@ -88,11 +88,11 @@ public class PerfMetricsFilePublisher {
       }
       if (MetricsConst.SERVICECOMB_INVOCATION.equals(nameAndTag[0])) {
         if (MetricsConst.ROLE_CONSUMER.equals(tags.get(MetricsConst.TAG_ROLE))) {
-          if (MetricsConst.STAGE_FULL.equals(tags.get(MetricsConst.TAG_STAGE))) {
+          if (MetricsConst.STAGE_WHOLE.equals(tags.get(MetricsConst.TAG_STAGE))) {
             setStatisticValue(metric, tags, getOperationMetrics(consumerMetrics, tags.get(MetricsConst.TAG_OPERATION)));
           }
         } else {
-          if (MetricsConst.STAGE_FULL.equals(tags.get(MetricsConst.TAG_STAGE))) {
+          if (MetricsConst.STAGE_WHOLE.equals(tags.get(MetricsConst.TAG_STAGE))) {
             setStatisticValue(metric, tags, getOperationMetrics(producerMetrics, tags.get(MetricsConst.TAG_OPERATION)));
           } else if (MetricsConst.STAGE_QUEUE.equals(tags.get(MetricsConst.TAG_STAGE))) {
             if ("latency".equals(tags.get(MetricsConst.TAG_STATISTIC))) {

@@ -37,8 +37,8 @@ public class ConsumerInvocationMonitor {
   }
 
   public ConsumerInvocationMonitor(String operation) {
-    this.consumerLatency = new TimerMonitor(operation, MetricsConst.STAGE_FULL, MetricsConst.ROLE_CONSUMER);
-    this.consumerCall = new CallMonitor(operation, MetricsConst.STAGE_FULL, MetricsConst.ROLE_CONSUMER);
+    this.consumerLatency = new TimerMonitor(operation, MetricsConst.STAGE_WHOLE, MetricsConst.ROLE_CONSUMER);
+    this.consumerCall = new CallMonitor(operation, MetricsConst.STAGE_WHOLE, MetricsConst.ROLE_CONSUMER);
   }
 
   public Map<String, Double> toMetric(int windowTimeIndex) {

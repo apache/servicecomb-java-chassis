@@ -48,42 +48,42 @@ public class TestStatusDimension {
         MetricsUtils.getFirstMatchMetricValue(metrics, MetricsConst.SERVICECOMB_INVOCATION,
             Lists.newArrayList(MetricsConst.TAG_OPERATION, MetricsConst.TAG_ROLE, MetricsConst.TAG_STAGE,
                 MetricsConst.TAG_STATISTIC, MetricsConst.TAG_STATUS),
-            Lists.newArrayList("fun1", MetricsConst.ROLE_PRODUCER, MetricsConst.STAGE_FULL, "tps",
+            Lists.newArrayList("fun1", MetricsConst.ROLE_PRODUCER, MetricsConst.STAGE_WHOLE, "tps",
                 MetricsDimension.DIMENSION_STATUS_ALL)), 0);
 
     Assert.assertEquals(1,
         MetricsUtils.getFirstMatchMetricValue(metrics, MetricsConst.SERVICECOMB_INVOCATION,
             Lists.newArrayList(MetricsConst.TAG_OPERATION, MetricsConst.TAG_ROLE, MetricsConst.TAG_STAGE,
                 MetricsConst.TAG_STATISTIC, MetricsConst.TAG_STATUS),
-            Lists.newArrayList("fun1", MetricsConst.ROLE_PRODUCER, MetricsConst.STAGE_FULL, "tps",
+            Lists.newArrayList("fun1", MetricsConst.ROLE_PRODUCER, MetricsConst.STAGE_WHOLE, "tps",
                 MetricsDimension.DIMENSION_STATUS_CODE_GROUP_2XX)), 0);
 
     Assert.assertEquals(1,
         MetricsUtils.getFirstMatchMetricValue(metrics, MetricsConst.SERVICECOMB_INVOCATION,
             Lists.newArrayList(MetricsConst.TAG_OPERATION, MetricsConst.TAG_ROLE, MetricsConst.TAG_STAGE,
                 MetricsConst.TAG_STATISTIC, MetricsConst.TAG_STATUS),
-            Lists.newArrayList("fun1", MetricsConst.ROLE_PRODUCER, MetricsConst.STAGE_FULL, "tps",
+            Lists.newArrayList("fun1", MetricsConst.ROLE_PRODUCER, MetricsConst.STAGE_WHOLE, "tps",
                 MetricsDimension.DIMENSION_STATUS_CODE_GROUP_3XX)), 0);
 
     Assert.assertEquals(1,
         MetricsUtils.getFirstMatchMetricValue(metrics, MetricsConst.SERVICECOMB_INVOCATION,
             Lists.newArrayList(MetricsConst.TAG_OPERATION, MetricsConst.TAG_ROLE, MetricsConst.TAG_STAGE,
                 MetricsConst.TAG_STATISTIC, MetricsConst.TAG_STATUS),
-            Lists.newArrayList("fun1", MetricsConst.ROLE_PRODUCER, MetricsConst.STAGE_FULL, "tps",
+            Lists.newArrayList("fun1", MetricsConst.ROLE_PRODUCER, MetricsConst.STAGE_WHOLE, "tps",
                 MetricsDimension.DIMENSION_STATUS_CODE_GROUP_4XX)), 0);
 
     Assert.assertEquals(1,
         MetricsUtils.getFirstMatchMetricValue(metrics, MetricsConst.SERVICECOMB_INVOCATION,
             Lists.newArrayList(MetricsConst.TAG_OPERATION, MetricsConst.TAG_ROLE, MetricsConst.TAG_STAGE,
                 MetricsConst.TAG_STATISTIC, MetricsConst.TAG_STATUS),
-            Lists.newArrayList("fun1", MetricsConst.ROLE_PRODUCER, MetricsConst.STAGE_FULL, "tps",
+            Lists.newArrayList("fun1", MetricsConst.ROLE_PRODUCER, MetricsConst.STAGE_WHOLE, "tps",
                 MetricsDimension.DIMENSION_STATUS_CODE_GROUP_5XX)), 0);
 
     Assert.assertEquals(1,
         MetricsUtils.getFirstMatchMetricValue(metrics, MetricsConst.SERVICECOMB_INVOCATION,
             Lists.newArrayList(MetricsConst.TAG_OPERATION, MetricsConst.TAG_ROLE, MetricsConst.TAG_STAGE,
                 MetricsConst.TAG_STATISTIC, MetricsConst.TAG_STATUS),
-            Lists.newArrayList("fun1", MetricsConst.ROLE_PRODUCER, MetricsConst.STAGE_FULL, "tps",
+            Lists.newArrayList("fun1", MetricsConst.ROLE_PRODUCER, MetricsConst.STAGE_WHOLE, "tps",
                 MetricsDimension.DIMENSION_STATUS_CODE_GROUP_OTHER)),
         0);
 
@@ -91,14 +91,14 @@ public class TestStatusDimension {
         MetricsUtils.getFirstMatchMetricValue(metrics, MetricsConst.SERVICECOMB_INVOCATION,
             Lists.newArrayList(MetricsConst.TAG_OPERATION, MetricsConst.TAG_ROLE, MetricsConst.TAG_STAGE,
                 MetricsConst.TAG_STATISTIC, MetricsConst.TAG_STATUS),
-            Lists.newArrayList("fun2", MetricsConst.ROLE_CONSUMER, MetricsConst.STAGE_FULL, "tps",
+            Lists.newArrayList("fun2", MetricsConst.ROLE_CONSUMER, MetricsConst.STAGE_WHOLE, "tps",
                 MetricsDimension.DIMENSION_STATUS_ALL)), 0);
 
     Assert.assertEquals(1,
         MetricsUtils.getFirstMatchMetricValue(metrics, MetricsConst.SERVICECOMB_INVOCATION,
             Lists.newArrayList(MetricsConst.TAG_OPERATION, MetricsConst.TAG_ROLE, MetricsConst.TAG_STAGE,
                 MetricsConst.TAG_STATISTIC, MetricsConst.TAG_STATUS),
-            Lists.newArrayList("fun2", MetricsConst.ROLE_CONSUMER, MetricsConst.STAGE_FULL, "tps",
+            Lists.newArrayList("fun2", MetricsConst.ROLE_CONSUMER, MetricsConst.STAGE_WHOLE, "tps",
                 MetricsDimension.DIMENSION_STATUS_CODE_GROUP_2XX)), 0);
   }
 
@@ -110,52 +110,52 @@ public class TestStatusDimension {
         MetricsUtils.getFirstMatchMetricValue(metrics, MetricsConst.SERVICECOMB_INVOCATION,
             Lists.newArrayList(MetricsConst.TAG_OPERATION, MetricsConst.TAG_ROLE, MetricsConst.TAG_STAGE,
                 MetricsConst.TAG_STATISTIC, MetricsConst.TAG_STATUS),
-            Lists.newArrayList("fun1", MetricsConst.ROLE_PRODUCER, MetricsConst.STAGE_FULL, "tps",
+            Lists.newArrayList("fun1", MetricsConst.ROLE_PRODUCER, MetricsConst.STAGE_WHOLE, "tps",
                 MetricsDimension.DIMENSION_STATUS_ALL)), 0);
 
     Assert.assertEquals(1,
         MetricsUtils.getFirstMatchMetricValue(metrics, MetricsConst.SERVICECOMB_INVOCATION,
             Lists.newArrayList(MetricsConst.TAG_OPERATION, MetricsConst.TAG_ROLE, MetricsConst.TAG_STAGE,
                 MetricsConst.TAG_STATISTIC, MetricsConst.TAG_STATUS),
-            Lists.newArrayList("fun1", MetricsConst.ROLE_PRODUCER, MetricsConst.STAGE_FULL, "tps", "222")), 0);
+            Lists.newArrayList("fun1", MetricsConst.ROLE_PRODUCER, MetricsConst.STAGE_WHOLE, "tps", "222")), 0);
 
     Assert.assertEquals(1,
         MetricsUtils.getFirstMatchMetricValue(metrics, MetricsConst.SERVICECOMB_INVOCATION,
             Lists.newArrayList(MetricsConst.TAG_OPERATION, MetricsConst.TAG_ROLE, MetricsConst.TAG_STAGE,
                 MetricsConst.TAG_STATISTIC, MetricsConst.TAG_STATUS),
-            Lists.newArrayList("fun1", MetricsConst.ROLE_PRODUCER, MetricsConst.STAGE_FULL, "tps", "333")), 0);
+            Lists.newArrayList("fun1", MetricsConst.ROLE_PRODUCER, MetricsConst.STAGE_WHOLE, "tps", "333")), 0);
 
     Assert.assertEquals(1,
         MetricsUtils.getFirstMatchMetricValue(metrics, MetricsConst.SERVICECOMB_INVOCATION,
             Lists.newArrayList(MetricsConst.TAG_OPERATION, MetricsConst.TAG_ROLE, MetricsConst.TAG_STAGE,
                 MetricsConst.TAG_STATISTIC, MetricsConst.TAG_STATUS),
-            Lists.newArrayList("fun1", MetricsConst.ROLE_PRODUCER, MetricsConst.STAGE_FULL, "tps", "444")), 0);
+            Lists.newArrayList("fun1", MetricsConst.ROLE_PRODUCER, MetricsConst.STAGE_WHOLE, "tps", "444")), 0);
 
     Assert.assertEquals(1,
         MetricsUtils.getFirstMatchMetricValue(metrics, MetricsConst.SERVICECOMB_INVOCATION,
             Lists.newArrayList(MetricsConst.TAG_OPERATION, MetricsConst.TAG_ROLE, MetricsConst.TAG_STAGE,
                 MetricsConst.TAG_STATISTIC, MetricsConst.TAG_STATUS),
-            Lists.newArrayList("fun1", MetricsConst.ROLE_PRODUCER, MetricsConst.STAGE_FULL, "tps", "555")), 0);
+            Lists.newArrayList("fun1", MetricsConst.ROLE_PRODUCER, MetricsConst.STAGE_WHOLE, "tps", "555")), 0);
 
     Assert.assertEquals(1,
         MetricsUtils.getFirstMatchMetricValue(metrics, MetricsConst.SERVICECOMB_INVOCATION,
             Lists.newArrayList(MetricsConst.TAG_OPERATION, MetricsConst.TAG_ROLE, MetricsConst.TAG_STAGE,
                 MetricsConst.TAG_STATISTIC, MetricsConst.TAG_STATUS),
-            Lists.newArrayList("fun1", MetricsConst.ROLE_PRODUCER, MetricsConst.STAGE_FULL, "tps", "666")),
+            Lists.newArrayList("fun1", MetricsConst.ROLE_PRODUCER, MetricsConst.STAGE_WHOLE, "tps", "666")),
         0);
 
     Assert.assertEquals(1,
         MetricsUtils.getFirstMatchMetricValue(metrics, MetricsConst.SERVICECOMB_INVOCATION,
             Lists.newArrayList(MetricsConst.TAG_OPERATION, MetricsConst.TAG_ROLE, MetricsConst.TAG_STAGE,
                 MetricsConst.TAG_STATISTIC, MetricsConst.TAG_STATUS),
-            Lists.newArrayList("fun2", MetricsConst.ROLE_CONSUMER, MetricsConst.STAGE_FULL, "tps",
+            Lists.newArrayList("fun2", MetricsConst.ROLE_CONSUMER, MetricsConst.STAGE_WHOLE, "tps",
                 MetricsDimension.DIMENSION_STATUS_ALL)), 0);
 
     Assert.assertEquals(1,
         MetricsUtils.getFirstMatchMetricValue(metrics, MetricsConst.SERVICECOMB_INVOCATION,
             Lists.newArrayList(MetricsConst.TAG_OPERATION, MetricsConst.TAG_ROLE, MetricsConst.TAG_STAGE,
                 MetricsConst.TAG_STATISTIC, MetricsConst.TAG_STATUS),
-            Lists.newArrayList("fun2", MetricsConst.ROLE_CONSUMER, MetricsConst.STAGE_FULL, "tps", "200")), 0);
+            Lists.newArrayList("fun2", MetricsConst.ROLE_CONSUMER, MetricsConst.STAGE_WHOLE, "tps", "200")), 0);
   }
 
   private Map<String, Double> prepare(String outputLevel) throws InterruptedException {
