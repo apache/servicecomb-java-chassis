@@ -17,6 +17,10 @@
 
 package org.apache.servicecomb.serviceregistry.consumer;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.servicecomb.foundation.common.concurrent.ConcurrentHashMapEx;
@@ -26,6 +30,8 @@ import org.apache.servicecomb.serviceregistry.task.event.RecoveryEvent;
 import com.google.common.eventbus.Subscribe;
 
 public class MicroserviceManager {
+  private static final int MAX_NUM_OF_MICROSERVICES = 1000;
+
   private AppManager appManager;
 
   private String appId;
@@ -41,11 +47,31 @@ public class MicroserviceManager {
   }
 
   public MicroserviceVersions getOrCreateMicroserviceVersions(String microserviceName) {
-    return versionsByName.computeIfAbsent(microserviceName, name -> {
+    MicroserviceVersions microserviceVersions = versionsByName.computeIfAbsent(microserviceName, name -> {
       MicroserviceVersions instance = new MicroserviceVersions(appManager, appId, microserviceName);
       instance.submitPull();
       return instance;
     });
+    if (!microserviceVersions.isValidated()) {
+      // remove this microservice if it does not exist or not registered in order to get it back when access it again
+      versionsByName.remove(microserviceName);
+    } else {
+      microserviceVersions.updateLastAccessTime();
+    }
+    if (versionsByName.size() >= MAX_NUM_OF_MICROSERVICES) {
+      // do clean up for cache so many things
+      List<MicroserviceVersions> entries = new ArrayList<>(versionsByName.size());
+      versionsByName.values().forEach((item) -> {
+        entries.add(item);
+      });
+      Collections.sort(entries, Comparator.comparingLong(MicroserviceVersions::getLastAccessedTime));
+      entries.forEach((item) -> {
+        if (versionsByName.size() > MAX_NUM_OF_MICROSERVICES / 2) {
+          versionsByName.remove(item.getMicroserviceName());
+        }
+      });
+    }
+    return microserviceVersions;
   }
 
   public MicroserviceVersionRule getOrCreateMicroserviceVersionRule(String microserviceName,
