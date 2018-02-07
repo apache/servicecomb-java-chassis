@@ -291,7 +291,8 @@ public class TestMicroserviceVersions {
 
     microserviceVersions.safeSetInstances(null, null);
 
-    Assert.assertEquals(1, pendingPullCount.get());
+    Assert.assertEquals(0, pendingPullCount.get());
+    Assert.assertEquals(microserviceVersions.isValidated(), false);
   }
 
   public void checkIsEventAccept(MicroserviceKey key, boolean expected) {

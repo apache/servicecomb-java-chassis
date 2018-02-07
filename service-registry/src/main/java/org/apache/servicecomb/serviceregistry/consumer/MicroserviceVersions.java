@@ -19,7 +19,6 @@ package org.apache.servicecomb.serviceregistry.consumer;
 
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
@@ -64,6 +63,8 @@ public class MicroserviceVersions {
   // only pendingPullCount is 0, then do a real pull 
   private AtomicInteger pendingPullCount = new AtomicInteger();
 
+  private long lastAccessedTime = -1;
+
   public MicroserviceVersions(AppManager appManager, String appId, String microserviceName) {
     this.appManager = appManager;
     this.appId = appId;
@@ -74,6 +75,18 @@ public class MicroserviceVersions {
         microserviceName);
 
     appManager.getEventBus().register(this);
+  }
+
+  public void updateLastAccessTime() {
+    this.lastAccessedTime = System.currentTimeMillis();
+  }
+
+  public boolean isValidated() {
+    return this.lastAccessedTime != -1;
+  }
+
+  public long getLastAccessedTime() {
+    return this.lastAccessedTime;
   }
 
   public String getAppId() {
@@ -109,8 +122,6 @@ public class MicroserviceVersions {
         DefinitionConst.VERSION_RULE_ALL,
         revision);
     if (microserviceInstances == null) {
-      // exception happens and try pull again later.
-      postPullInstanceEvent(TimeUnit.SECONDS.toMillis(1));
       return;
     }
     if (!microserviceInstances.isNeedRefresh()) {
@@ -125,13 +136,12 @@ public class MicroserviceVersions {
   protected void safeSetInstances(List<MicroserviceInstance> pulledInstances, String rev) {
     try {
       setInstances(pulledInstances, rev);
+      updateLastAccessTime();
     } catch (Throwable e) {
       LOGGER.error("Failed to setInstances, appId={}, microserviceName={}.",
           getAppId(),
           getMicroserviceName(),
           e);
-      // exception happens and try pull again later.
-      postPullInstanceEvent(TimeUnit.SECONDS.toMillis(1));
     }
   }
 
@@ -210,9 +220,9 @@ public class MicroserviceVersions {
     //   if pull 1/2/3, and then delete 3, but "delete 3" received before pull result, will have wrong 3.
     // EXPIRE::
     //   black/white config in SC changed, we must refresh all data from sc.
-    postPullInstanceEvent(TimeUnit.MILLISECONDS.toMillis(1));
+    postPullInstanceEvent(0);
   }
-  
+
   protected boolean isEventAccept(MicroserviceInstanceChangedEvent changedEvent) {
     return (appId.equals(changedEvent.getKey().getAppId()) &&
         microserviceName.equals(changedEvent.getKey().getServiceName())) ||

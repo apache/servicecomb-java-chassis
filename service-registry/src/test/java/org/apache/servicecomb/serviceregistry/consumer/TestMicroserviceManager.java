@@ -53,6 +53,8 @@ public class TestMicroserviceManager {
 
   MicroserviceManager microserviceManager = new MicroserviceManager(appManager, appId);
 
+  Map<String, MicroserviceVersions> cachedVersions = Deencapsulation.getField(microserviceManager, "versionsByName");
+
   MicroserviceInstances microserviceInstances = null;
 
   FindInstancesResponse findInstancesResponse = null;
@@ -84,6 +86,50 @@ public class TestMicroserviceManager {
         microserviceManager.getOrCreateMicroserviceVersionRule(serviceName, versionRule);
     Assert.assertEquals("0.0.0+", microserviceVersionRule.getVersionRule().getVersionRule());
     Assert.assertNull(microserviceVersionRule.getLatestMicroserviceVersion());
+    Assert.assertEquals(1, cachedVersions.size());
+  }
+
+  @Test
+  public void testCreateRuleServiceNotExists() throws Exception {
+    new Expectations(RegistryUtils.class) {
+      {
+        RegistryUtils.findServiceInstances(appId, anyString, DefinitionConst.VERSION_RULE_ALL, null);
+        result = microserviceInstances;
+      }
+    };
+
+    for (int i = 0; i < 1005; i++) {
+      MicroserviceVersionRule microserviceVersionRule =
+          microserviceManager.getOrCreateMicroserviceVersionRule(serviceName + i, versionRule);
+      Assert.assertEquals("0.0.0+", microserviceVersionRule.getVersionRule().getVersionRule());
+      Assert.assertNull(microserviceVersionRule.getLatestMicroserviceVersion());
+      if (i == 499) {
+        Thread.sleep(1);
+      }
+    }
+
+    Assert.assertEquals(505, cachedVersions.size());
+    Assert.assertEquals("msName1004", cachedVersions.get("msName1004").getMicroserviceName());
+    Assert.assertEquals("msName1000", cachedVersions.get("msName1000").getMicroserviceName());
+    Assert.assertEquals("msName500", cachedVersions.get("msName500").getMicroserviceName());
+    Assert.assertEquals(null, cachedVersions.get("msName0"));
+    Assert.assertEquals(null, cachedVersions.get("msName499"));
+  }
+
+  @Test
+  public void testCreateRuleServiceMany() {
+    new Expectations(RegistryUtils.class) {
+      {
+        RegistryUtils.findServiceInstances(appId, serviceName, DefinitionConst.VERSION_RULE_ALL, null);
+        result = null;
+      }
+    };
+
+    MicroserviceVersionRule microserviceVersionRule =
+        microserviceManager.getOrCreateMicroserviceVersionRule(serviceName, versionRule);
+    Assert.assertEquals("0.0.0+", microserviceVersionRule.getVersionRule().getVersionRule());
+    Assert.assertNull(microserviceVersionRule.getLatestMicroserviceVersion());
+    Assert.assertEquals(0, cachedVersions.size());
   }
 
   @Test
