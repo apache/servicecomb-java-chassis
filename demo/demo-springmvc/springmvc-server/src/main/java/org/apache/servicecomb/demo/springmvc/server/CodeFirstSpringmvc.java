@@ -85,7 +85,7 @@ public class CodeFirstSpringmvc {
       String content1 = IOUtils.toString(is1);
       String content2 = IOUtils.toString(is2);
       return String.format("%s:%s:%s\n"
-              + "%s:%s:%s",
+          + "%s:%s:%s",
           file1.getOriginalFilename(),
           file1.getContentType(),
           content1,
@@ -220,6 +220,18 @@ public class CodeFirstSpringmvc {
     return name + " sayhi";
   }
 
+  @RequestMapping(path = "/sayhi/compressed/{name}/v2", method = RequestMethod.GET)
+  public String sayHiForCompressed(@PathVariable(name = "name") String name) {
+    String bigText =
+        "This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,"
+            + "This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,"
+            + "This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,"
+            + "This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,"
+            + "This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,"
+            + "This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text!";
+    return name + " sayhi compressed:" + bigText;
+  }
+
   @RequestMapping(path = "/sayhi/{name}/v2", method = RequestMethod.PUT)
   public String sayHi2(@PathVariable(name = "name") String name) {
     return name + " sayhi 2";
@@ -298,7 +310,7 @@ public class CodeFirstSpringmvc {
     return new OutputModelForTestIgnore("output_id", input.getInputId(), input.getContent(), input.getInputObject(),
         input.getInputJsonObject(), input.getInputIgnoreInterface(),
         new Person("outputSomeone"), new JsonObject("{\"OutputJsonKey\" : \"OutputJsonValue\"}"), () -> {
-    });
+        });
   }
 
   @SuppressWarnings("unchecked")

@@ -19,7 +19,6 @@ package org.apache.servicecomb.demo.springmvc.client;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import org.apache.servicecomb.core.CseContext;
 import org.apache.servicecomb.demo.DemoConst;
@@ -27,7 +26,6 @@ import org.apache.servicecomb.demo.TestMgr;
 import org.apache.servicecomb.demo.controller.Controller;
 import org.apache.servicecomb.demo.controller.Person;
 import org.apache.servicecomb.foundation.common.utils.BeanUtils;
-import org.apache.servicecomb.foundation.common.utils.JsonUtils;
 import org.apache.servicecomb.foundation.common.utils.Log4jUtils;
 import org.apache.servicecomb.metrics.common.MetricsDimension;
 import org.apache.servicecomb.metrics.common.MetricsPublisher;
@@ -88,6 +86,11 @@ public class SpringmvcClient {
 
       testController();
     }
+    ResponseEntity<String> entityCompress =
+        restTemplate.getForEntity(prefix + "/codeFirstSpringmvc/sayhi/compressed/{name}/v2", String.class, "Test");
+    TestMgr.check(
+        "Test sayhi compressed:This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text!",
+        entityCompress.getBody());
 
     //0.5.0 later version metrics integration test
     try {
