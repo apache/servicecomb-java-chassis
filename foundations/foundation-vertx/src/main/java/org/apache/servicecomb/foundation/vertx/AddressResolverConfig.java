@@ -109,9 +109,7 @@ public class AddressResolverConfig {
 
   private static List<String> getStringListProperty(Configuration configSource,
       List<String> defaultValue, String... keys) {
-    if (configSource == null && DynamicPropertyFactory.getBackingConfigurationSource() != null) {
-      configSource = (Configuration) DynamicPropertyFactory.getBackingConfigurationSource();
-    }
+    configSource = guardConfigSource(configSource);
     if (configSource == null) {
       return defaultValue;
     }
@@ -125,9 +123,7 @@ public class AddressResolverConfig {
   }
 
   private static int getPositiveIntProperty(Configuration configSource, int defaultValue, String... keys) {
-    if (configSource == null && DynamicPropertyFactory.getBackingConfigurationSource() != null) {
-      configSource = (Configuration) DynamicPropertyFactory.getBackingConfigurationSource();
-    }
+    configSource = guardConfigSource(configSource);
     if (configSource == null) {
       return defaultValue;
     }
@@ -146,9 +142,7 @@ public class AddressResolverConfig {
 
   private static boolean getBooleanProperty(Configuration configSource, boolean defaultValue,
       String... keys) {
-    if (configSource == null && DynamicPropertyFactory.getBackingConfigurationSource() != null) {
-      configSource = (Configuration) DynamicPropertyFactory.getBackingConfigurationSource();
-    }
+    configSource = guardConfigSource(configSource);
     if (configSource == null) {
       return defaultValue;
     }
@@ -159,5 +153,12 @@ public class AddressResolverConfig {
       }
     }
     return defaultValue;
+  }
+
+  private static Configuration guardConfigSource(Configuration configSource) {
+    if (configSource == null && DynamicPropertyFactory.getBackingConfigurationSource() != null) {
+      configSource = (Configuration) DynamicPropertyFactory.getBackingConfigurationSource();
+    }
+    return configSource;
   }
 }
