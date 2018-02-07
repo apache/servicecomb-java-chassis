@@ -151,7 +151,7 @@ public final class ConfigUtil {
 
   public static DynamicWatchedConfiguration createConfigFromConfigCenter(Configuration localConfiguration) {
     if (localConfiguration.getProperty(configCenterUrlKey) == null) {
-      LOGGER.info("config center URL is missing, skip to load configuration from config center");
+      LOGGER.info("config center URL is not configured");
       return null;
     }
 
