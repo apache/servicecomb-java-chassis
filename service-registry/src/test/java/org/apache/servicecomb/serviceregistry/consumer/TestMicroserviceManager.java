@@ -90,7 +90,7 @@ public class TestMicroserviceManager {
   }
 
   @Test
-  public void testCreateRuleServiceNotExists() throws Exception {
+  public void testCreateRuleServiceTooMany() throws Exception {
     new Expectations(RegistryUtils.class) {
       {
         RegistryUtils.findServiceInstances(appId, anyString, DefinitionConst.VERSION_RULE_ALL, null);
@@ -117,7 +117,7 @@ public class TestMicroserviceManager {
   }
 
   @Test
-  public void testCreateRuleServiceMany() {
+  public void testCreateRuleServiceNotExists() {
     new Expectations(RegistryUtils.class) {
       {
         RegistryUtils.findServiceInstances(appId, serviceName, DefinitionConst.VERSION_RULE_ALL, null);
