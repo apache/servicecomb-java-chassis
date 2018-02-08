@@ -16,13 +16,14 @@
  */
 package org.apache.servicecomb.demo.perf;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
 import org.apache.servicecomb.foundation.vertx.VertxUtils;
 import org.apache.servicecomb.metrics.common.MetricsConst;
 import org.apache.servicecomb.metrics.common.MetricsUtils;
+import org.apache.servicecomb.metrics.common.publish.MetricNode;
+import org.apache.servicecomb.metrics.common.publish.MetricsLoader;
 import org.apache.servicecomb.metrics.core.publish.DataSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -75,131 +76,55 @@ public class PerfMetricsFilePublisher {
   }
 
   private void collectMetrics(Map<String, Double> metrics, StringBuilder sb) {
-    Map<String, OperationMetrics> consumerMetrics = new HashMap<>();
-    Map<String, OperationMetrics> producerMetrics = new HashMap<>();
+    MetricsLoader loader = new MetricsLoader(metrics);
+    MetricNode treeNode = loader
+        .getMetricTree(MetricsConst.SERVICECOMB_INVOCATION, MetricsConst.TAG_ROLE, MetricsConst.TAG_OPERATION,
+            MetricsConst.TAG_STATUS);
 
-    for (Entry<String, Double> metric : metrics.entrySet()) {
-      String[] nameAndTag = metric.getKey().split("\\(");
-      Map<String, String> tags = new HashMap<>();
-      String[] tagAnValues = nameAndTag[1].split("[=,)]");
-      for (int i = 0; i < tagAnValues.length; i += 2) {
-        tags.put(tagAnValues[i], tagAnValues[i + 1]);
-      }
-      if (MetricsConst.SERVICECOMB_INVOCATION.equals(nameAndTag[0])) {
-        if (MetricsConst.ROLE_CONSUMER.equals(tags.get(MetricsConst.TAG_ROLE))) {
-          if (MetricsConst.STAGE_WHOLE.equals(tags.get(MetricsConst.TAG_STAGE))) {
-            setStatisticValue(metric, tags, getOperationMetrics(consumerMetrics, tags.get(MetricsConst.TAG_OPERATION)));
-          }
-        } else {
-          if (MetricsConst.STAGE_WHOLE.equals(tags.get(MetricsConst.TAG_STAGE))) {
-            setStatisticValue(metric, tags, getOperationMetrics(producerMetrics, tags.get(MetricsConst.TAG_OPERATION)));
-          } else if (MetricsConst.STAGE_QUEUE.equals(tags.get(MetricsConst.TAG_STAGE))) {
-            if ("latency".equals(tags.get(MetricsConst.TAG_STATISTIC))) {
-              getOperationMetrics(producerMetrics, tags.get(MetricsConst.TAG_OPERATION)).setQueue(metric.getValue());
-            }
-          } else if (MetricsConst.STAGE_EXECUTION.equals(tags.get(MetricsConst.TAG_STAGE))) {
-            if ("latency".equals(tags.get(MetricsConst.TAG_STATISTIC))) {
-              getOperationMetrics(producerMetrics, tags.get(MetricsConst.TAG_OPERATION)).setExecute(metric.getValue());
-            }
+    if (treeNode != null && treeNode.getChildren().size() != 0) {
+      MetricNode consumerNode = treeNode.getChildren().get(MetricsConst.ROLE_CONSUMER);
+      if (consumerNode != null) {
+        sb.append("consumer:\n");
+        sb.append("  tps     latency(ms) status  operation\n");
+        for (Entry<String, MetricNode> operationNode : consumerNode.getChildren().entrySet()) {
+          for (Entry<String, MetricNode> statusNode : operationNode.getValue().getChildren().entrySet()) {
+            sb.append(String.format("  %-7.0f %-11.3f %-9s %s\n",
+                statusNode.getValue()
+                    .getFirstMatchMetricValue(Lists.newArrayList(MetricsConst.TAG_STAGE, MetricsConst.TAG_STATISTIC),
+                        Lists.newArrayList(MetricsConst.STAGE_WHOLE, "tps")),
+                statusNode.getValue()
+                    .getFirstMatchMetricValue(Lists.newArrayList(MetricsConst.TAG_STAGE, MetricsConst.TAG_STATISTIC),
+                        Lists.newArrayList(MetricsConst.STAGE_WHOLE, "latency")),
+                statusNode.getKey(),
+                operationNode.getKey()));
           }
         }
       }
-    }
 
-    if (consumerMetrics.size() != 0) {
-      sb.append("consumer:\n"
-          + "  total               tps     latency(ms) name\n");
-      for (Entry<String, OperationMetrics> entry : consumerMetrics.entrySet()) {
-        String opName = entry.getKey();
-        sb.append(String
-            .format("  %-19d %-7.3f %-11.3f %s\n",
-                (long) entry.getValue().getTotal(),
-                entry.getValue().getTps(),
-                entry.getValue().getLatency(),
-                opName));
+      MetricNode producerNode = treeNode.getChildren().get(MetricsConst.ROLE_PRODUCER);
+      if (producerNode != null) {
+        sb.append("producer:\n");
+        sb.append("  tps     latency(ms) queue(ms) execute(ms) status  operation\n");
+        for (Entry<String, MetricNode> operationNode : producerNode.getChildren().entrySet()) {
+          for (Entry<String, MetricNode> statusNode : operationNode.getValue().getChildren().entrySet()) {
+            sb.append(String.format("  %-7.0f %-11.3f %-9.3f %-11.3f %-7s %s\n",
+                statusNode.getValue()
+                    .getFirstMatchMetricValue(Lists.newArrayList(MetricsConst.TAG_STAGE, MetricsConst.TAG_STATISTIC),
+                        Lists.newArrayList(MetricsConst.STAGE_WHOLE, "tps")),
+                statusNode.getValue()
+                    .getFirstMatchMetricValue(Lists.newArrayList(MetricsConst.TAG_STAGE, MetricsConst.TAG_STATISTIC),
+                        Lists.newArrayList(MetricsConst.STAGE_WHOLE, "latency")),
+                statusNode.getValue()
+                    .getFirstMatchMetricValue(Lists.newArrayList(MetricsConst.TAG_STAGE, MetricsConst.TAG_STATISTIC),
+                        Lists.newArrayList(MetricsConst.STAGE_QUEUE, "latency")),
+                statusNode.getValue()
+                    .getFirstMatchMetricValue(Lists.newArrayList(MetricsConst.TAG_STAGE, MetricsConst.TAG_STATISTIC),
+                        Lists.newArrayList(MetricsConst.STAGE_EXECUTION, "latency")),
+                statusNode.getKey(),
+                operationNode.getKey()));
+          }
+        }
       }
-    }
-
-    if (producerMetrics.size() != 0) {
-      sb.append("producer:\n"
-          + "  total               tps     latency(ms) queue(ms) execute(ms) name\n");
-      for (Entry<String, OperationMetrics> entry : producerMetrics.entrySet()) {
-        String opName = entry.getKey();
-        sb.append(
-            String.format("  %-19d %-7.3f %-11.3f %-9.3f %-11.3f %s\n",
-                (long) entry.getValue().getTotal(),
-                entry.getValue().getTps(),
-                entry.getValue().getLatency(),
-                entry.getValue().getQueue(),
-                entry.getValue().getExecute(),
-                opName));
-      }
-    }
-  }
-
-  private void setStatisticValue(Entry<String, Double> metric, Map<String, String> tags, OperationMetrics opMetrics) {
-    if ("tps".equals(tags.get(MetricsConst.TAG_STATISTIC))) {
-      opMetrics.setTps(metric.getValue());
-    } else if ("count".equals(tags.get(MetricsConst.TAG_STATISTIC))) {
-      opMetrics.setTotal(metric.getValue());
-    } else if ("latency".equals(tags.get(MetricsConst.TAG_STATISTIC))) {
-      opMetrics.setLatency(metric.getValue());
-    }
-  }
-
-  private OperationMetrics getOperationMetrics(Map<String, OperationMetrics> operationMetrics, String name) {
-    return operationMetrics.computeIfAbsent(name, f -> new OperationMetrics());
-  }
-
-  class OperationMetrics {
-    private double total;
-
-    private double tps;
-
-    private double latency;
-
-    private double queue;
-
-    private double execute;
-
-    public double getTotal() {
-      return total;
-    }
-
-    public void setTotal(double total) {
-      this.total = total;
-    }
-
-    public double getTps() {
-      return tps;
-    }
-
-    public void setTps(double tps) {
-      this.tps = tps;
-    }
-
-    public double getLatency() {
-      return latency;
-    }
-
-    public void setLatency(double latency) {
-      this.latency = latency;
-    }
-
-    public double getQueue() {
-      return queue;
-    }
-
-    public void setQueue(double queue) {
-      this.queue = queue;
-    }
-
-    public double getExecute() {
-      return execute;
-    }
-
-    public void setExecute(double execute) {
-      this.execute = execute;
     }
   }
 }
