@@ -36,6 +36,12 @@ public interface DataSource {
    */
   List<Long> getAppliedWindowTime();
 
+  //same as call measure(getAppliedWindowTime().get(0),false)
+  Map<String, Double> measure();
+
+  //same as call measure(windowTime,false)
+  Map<String, Double> measure(long windowTime);
+
   /**
    * windowTime usage example:
    * if there is two window time set in "servicecomb.metrics.window_time" like 1000,2000
@@ -46,14 +52,14 @@ public interface DataSource {
    * 0----------1----------2----------3----------  <-time line (second)
    *   100,200    300,400                          <-value record
    *
-   *                 ↑ getMetrics(1000) will return max=200 min=100 total=300
-   *                   getMetrics(2000) will return max=0 min=0 total=0
-   *                             ↑ getMetrics(1000) will return max=300 min=400 total=700
-   *                               getMetrics(2000) will return max=400 min=100 total=1000
+   *                 ↑ measure(1000) will return max=200 min=100 total=300
+   *                   measure(2000) will return max=0 min=0 total=0
+   *                             ↑ measure(1000) will return max=300 min=400 total=700
+   *                               measure(2000) will return max=400 min=100 total=1000
    *
    * @param windowTime getAppliedWindowTime() item
    * @param calculateLatency need output latency
-   * @return Map<String   ,       Double>
+   * @return Map<String , Double>
    */
-  Map<String, Double> getMetrics(long windowTime, boolean calculateLatency);
+  Map<String, Double> measure(long windowTime, boolean calculateLatency);
 }

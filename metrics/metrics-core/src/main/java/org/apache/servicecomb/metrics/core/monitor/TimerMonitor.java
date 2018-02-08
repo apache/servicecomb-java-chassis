@@ -27,6 +27,7 @@ import org.apache.servicecomb.metrics.core.utils.MonitorUtils;
 import com.netflix.servo.monitor.MaxGauge;
 import com.netflix.servo.monitor.MonitorConfig;
 import com.netflix.servo.monitor.StepCounter;
+import com.netflix.servo.tag.Tags;
 
 public class TimerMonitor {
   private final Map<String, StatusCounter> statusCounters;
@@ -47,60 +48,21 @@ public class TimerMonitor {
 
   public void update(long value, String statusCode) {
     StatusCounter counter = statusCounters
-        .computeIfAbsent(statusCode, d -> new StatusCounter(
-            new StepCounter(MonitorConfig.builder(MetricsConst.SERVICECOMB_INVOCATION)
-                .withTag(MetricsConst.TAG_STATUS, statusCode)
-                .withTag(MetricsConst.TAG_OPERATION, operation)
-                .withTag(MetricsConst.TAG_STAGE, stage)
-                .withTag(MetricsConst.TAG_ROLE, role)
-                .withTag(MetricsConst.TAG_STATISTIC, "totalTime")
-                .build()),
-            new StepCounter(MonitorConfig.builder(MetricsConst.SERVICECOMB_INVOCATION)
-                .withTag(MetricsConst.TAG_STATUS, statusCode)
-                .withTag(MetricsConst.TAG_OPERATION, operation)
-                .withTag(MetricsConst.TAG_STAGE, stage)
-                .withTag(MetricsConst.TAG_ROLE, role)
-                .withTag(MetricsConst.TAG_STATISTIC, "count")
-                .build()),
-            new MaxGauge(MonitorConfig.builder(MetricsConst.SERVICECOMB_INVOCATION)
-                .withTag(MetricsConst.TAG_STATUS, statusCode)
-                .withTag(MetricsConst.TAG_OPERATION, operation)
-                .withTag(MetricsConst.TAG_STAGE, stage)
-                .withTag(MetricsConst.TAG_ROLE, role)
-                .withTag(MetricsConst.TAG_STATISTIC, "max")
-                .build()),
-            MonitorConfig.builder(MetricsConst.SERVICECOMB_INVOCATION)
-                .withTag(MetricsConst.TAG_STATUS, statusCode)
-                .withTag(MetricsConst.TAG_OPERATION, operation)
-                .withTag(MetricsConst.TAG_STAGE, stage)
-                .withTag(MetricsConst.TAG_ROLE, role)
-                .withTag(MetricsConst.TAG_STATISTIC, "latency")
-                .build()));
+        .computeIfAbsent(statusCode, d -> new StatusCounter(operation, stage, role, statusCode));
     counter.update(value);
   }
 
-  public Map<String, Double> toMetric(int windowTimeIndex, boolean calculateLatency) {
-    Map<String, Double> metrics = new HashMap<>();
+  public Map<String, Double> measure(int windowTimeIndex, boolean calculateLatency) {
+    Map<String, Double> measurements = new HashMap<>();
     for (StatusCounter counter : statusCounters.values()) {
-      double total = (double) MonitorUtils.convertNanosecondToMillisecond(
-          MonitorUtils.adjustValue(counter.getTotal().getCount(windowTimeIndex)));
-      double count = (double) MonitorUtils.adjustValue(counter.getCount().getCount(windowTimeIndex));
-      metrics.put(MonitorUtils.getMonitorName(counter.getTotal().getConfig()), total);
-      metrics.put(MonitorUtils.getMonitorName(counter.getCount().getConfig()), count);
-      metrics.put(MonitorUtils.getMonitorName(counter.getMax().getConfig()),
-          (double) MonitorUtils
-              .convertNanosecondToMillisecond(
-                  MonitorUtils.adjustValue(counter.getMax().getValue(windowTimeIndex))));
-      if (calculateLatency) {
-        metrics.put(MonitorUtils.getMonitorName(counter.getLatency()), total / count);
-      }
+      measurements.putAll(counter.measure(windowTimeIndex, calculateLatency));
     }
-    return metrics;
+    return measurements;
   }
 
   class StatusCounter {
     //nanosecond sum
-    private final StepCounter total;
+    private final StepCounter totalTime;
 
     private final StepCounter count;
 
@@ -109,35 +71,38 @@ public class TimerMonitor {
 
     private final MonitorConfig latency;
 
-    public StepCounter getTotal() {
-      return total;
-    }
+    public StatusCounter(String operation, String stage, String role, String statusCode) {
+      MonitorConfig config = MonitorConfig.builder(MetricsConst.SERVICECOMB_INVOCATION)
+          .withTag(MetricsConst.TAG_STATUS, statusCode).withTag(MetricsConst.TAG_OPERATION, operation)
+          .withTag(MetricsConst.TAG_STAGE, stage).withTag(MetricsConst.TAG_ROLE, role).build();
 
-    public StepCounter getCount() {
-      return count;
-    }
-
-    public MaxGauge getMax() {
-      return max;
-    }
-
-    public MonitorConfig getLatency() {
-      return latency;
-    }
-
-    public StatusCounter(StepCounter total, StepCounter count, MaxGauge max, MonitorConfig latency) {
-      this.total = total;
-      this.count = count;
-      this.max = max;
-      this.latency = latency;
+      this.latency = config.withAdditionalTag(Tags.newTag(MetricsConst.TAG_STATISTIC, "latency"));
+      this.totalTime = new StepCounter(config.withAdditionalTag(Tags.newTag(MetricsConst.TAG_STATISTIC, "totalTime")));
+      this.count = new StepCounter(config.withAdditionalTag(Tags.newTag(MetricsConst.TAG_STATISTIC, "count")));
+      this.max = new MaxGauge(config.withAdditionalTag(Tags.newTag(MetricsConst.TAG_STATISTIC, "max")));
     }
 
     public void update(long value) {
       if (value > 0) {
-        total.increment(value);
+        totalTime.increment(value);
         count.increment();
         max.update(value);
       }
+    }
+
+    public Map<String, Double> measure(int windowTimeIndex, boolean calculateLatency) {
+      Map<String, Double> measurements = new HashMap<>();
+      double totalTime = (double) MonitorUtils.convertNanosecondToMillisecond(
+          MonitorUtils.adjustValue(this.totalTime.getCount(windowTimeIndex)));
+      double count = (double) MonitorUtils.adjustValue(this.count.getCount(windowTimeIndex));
+      measurements.put(MonitorUtils.getMonitorName(this.totalTime.getConfig()), totalTime);
+      measurements.put(MonitorUtils.getMonitorName(this.count.getConfig()), count);
+      measurements.put(MonitorUtils.getMonitorName(this.max.getConfig()), (double) MonitorUtils
+          .convertNanosecondToMillisecond(MonitorUtils.adjustValue(this.max.getValue(windowTimeIndex))));
+      if (calculateLatency) {
+        measurements.put(MonitorUtils.getMonitorName(latency), totalTime / count);
+      }
+      return measurements;
     }
   }
 }

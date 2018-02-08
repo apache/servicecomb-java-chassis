@@ -17,7 +17,6 @@
 
 package org.apache.servicecomb.metrics.core.monitor;
 
-
 import java.util.HashMap;
 import java.util.Map;
 
@@ -41,10 +40,10 @@ public class ConsumerInvocationMonitor {
     this.consumerCall = new CallMonitor(operation, MetricsConst.STAGE_WHOLE, MetricsConst.ROLE_CONSUMER);
   }
 
-  public Map<String, Double> toMetric(int windowTimeIndex, boolean calculateLatency) {
-    Map<String, Double> metrics = new HashMap<>();
-    metrics.putAll(consumerCall.toMetric(windowTimeIndex));
-    metrics.putAll(consumerLatency.toMetric(windowTimeIndex, calculateLatency));
-    return metrics;
+  public Map<String, Double> measure(int windowTimeIndex, boolean calculateLatency) {
+    Map<String, Double> measurements = new HashMap<>();
+    measurements.putAll(consumerCall.measure(windowTimeIndex));
+    measurements.putAll(consumerLatency.measure(windowTimeIndex, calculateLatency));
+    return measurements;
   }
 }

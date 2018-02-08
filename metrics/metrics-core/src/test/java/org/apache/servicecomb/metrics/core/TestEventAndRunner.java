@@ -128,7 +128,7 @@ public class TestEventAndRunner {
     //sim lease one window time
     Thread.sleep(1000);
 
-    Map<String, Double> metrics = dataSource.getMetrics(1000, false);
+    Map<String, Double> metrics = dataSource.measure(1000, false);
 
     //check ProducerMetrics
     //fun1
@@ -155,7 +155,6 @@ public class TestEventAndRunner {
         Lists.newArrayList("fun1", MetricsConst.ROLE_PRODUCER, MetricsConst.STAGE_WHOLE, "max",
             "200")), 0);
 
-    //
     Assert.assertEquals(2, MetricsUtils.getFirstMatchMetricValue(metrics, MetricsConst.SERVICECOMB_INVOCATION,
         Lists.newArrayList(MetricsConst.TAG_OPERATION, MetricsConst.TAG_ROLE, MetricsConst.TAG_STAGE,
             MetricsConst.TAG_STATISTIC, MetricsConst.TAG_STATUS),
@@ -174,7 +173,6 @@ public class TestEventAndRunner {
         Lists.newArrayList("fun1", MetricsConst.ROLE_PRODUCER, MetricsConst.STAGE_WHOLE, "count",
             "200")), 0);
 
-    //
     Assert.assertEquals(400, MetricsUtils.getFirstMatchMetricValue(metrics, MetricsConst.SERVICECOMB_INVOCATION,
         Lists.newArrayList(MetricsConst.TAG_OPERATION, MetricsConst.TAG_ROLE, MetricsConst.TAG_STAGE,
             MetricsConst.TAG_STATISTIC, MetricsConst.TAG_STATUS),

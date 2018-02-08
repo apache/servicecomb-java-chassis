@@ -32,7 +32,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.netflix.config.DynamicPropertyFactory;
-import com.netflix.servo.monitor.Pollers;
 
 @Component
 public class WriteFileInitializer {
@@ -88,7 +87,7 @@ public class WriteFileInitializer {
   }
 
   private void run() {
-    Map<String, Double> registryMetric = dataSource.getMetrics(Pollers.getPollingIntervals().get(0), true);
+    Map<String, Double> registryMetric = dataSource.measure(dataSource.getAppliedWindowTime().get(0), true);
     Map<String, String> convertedMetrics = convertor.convert(registryMetric);
     Map<String, String> formattedMetrics = formatter.format(convertedMetrics);
 

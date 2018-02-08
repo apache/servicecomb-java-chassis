@@ -48,14 +48,14 @@ public class RegistryMonitor {
     return producerInvocationMonitors.computeIfAbsent(operationName, i -> new ProducerInvocationMonitor(operationName));
   }
 
-  public Map<String, Double> toMetric(int windowTimeIndex, boolean calculateLatency) {
-    Map<String, Double> metrics = new HashMap<>(systemMonitor.toMetric());
+  public Map<String, Double> measure(int windowTimeIndex, boolean calculateLatency) {
+    Map<String, Double> measurements = new HashMap<>(systemMonitor.measure());
     for (ConsumerInvocationMonitor monitor : this.consumerInvocationMonitors.values()) {
-      metrics.putAll(monitor.toMetric(windowTimeIndex, calculateLatency));
+      measurements.putAll(monitor.measure(windowTimeIndex, calculateLatency));
     }
     for (ProducerInvocationMonitor monitor : this.producerInvocationMonitors.values()) {
-      metrics.putAll(monitor.toMetric(windowTimeIndex, calculateLatency));
+      measurements.putAll(monitor.measure(windowTimeIndex, calculateLatency));
     }
-    return metrics;
+    return measurements;
   }
 }

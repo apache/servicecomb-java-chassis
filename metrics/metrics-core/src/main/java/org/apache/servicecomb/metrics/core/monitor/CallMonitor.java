@@ -27,6 +27,7 @@ import org.apache.servicecomb.metrics.core.utils.MonitorUtils;
 import com.netflix.servo.monitor.BasicCounter;
 import com.netflix.servo.monitor.MonitorConfig;
 import com.netflix.servo.monitor.StepCounter;
+import com.netflix.servo.tag.Tags;
 
 public class CallMonitor {
   private final Map<String, StatusCounter> statusCounters;
@@ -47,56 +48,45 @@ public class CallMonitor {
 
   public void increment(String statusCode) {
     StatusCounter counter = statusCounters
-        .computeIfAbsent(statusCode, d -> new StatusCounter(
-            new BasicCounter(MonitorConfig.builder(MetricsConst.SERVICECOMB_INVOCATION)
-                .withTag(MetricsConst.TAG_STATUS, statusCode)
-                .withTag(MetricsConst.TAG_OPERATION, operation)
-                .withTag(MetricsConst.TAG_STAGE, stage)
-                .withTag(MetricsConst.TAG_ROLE, role)
-                .withTag(MetricsConst.TAG_STATISTIC, "totalCount")
-                .build()),
-            new StepCounter(MonitorConfig.builder(MetricsConst.SERVICECOMB_INVOCATION)
-                .withTag(MetricsConst.TAG_STATUS, statusCode)
-                .withTag(MetricsConst.TAG_OPERATION, operation)
-                .withTag(MetricsConst.TAG_STAGE, stage)
-                .withTag(MetricsConst.TAG_ROLE, role)
-                .withTag(MetricsConst.TAG_STATISTIC, "tps")
-                .build())));
+        .computeIfAbsent(statusCode, d -> new StatusCounter(operation, stage, role, statusCode));
     counter.increment();
   }
 
-  public Map<String, Double> toMetric(int windowTimeIndex) {
+  public Map<String, Double> measure(int windowTimeIndex) {
     Map<String, Double> metrics = new HashMap<>();
     for (StatusCounter counter : statusCounters.values()) {
-      metrics.put(MonitorUtils.getMonitorName(counter.getTotal().getConfig()),
-          counter.getTotal().getValue(windowTimeIndex).doubleValue());
-      metrics.put(MonitorUtils.getMonitorName(counter.getTps().getConfig()),
-          counter.getTps().getValue(windowTimeIndex).doubleValue());
+      metrics.putAll(counter.measure(windowTimeIndex));
     }
     return metrics;
   }
 
   class StatusCounter {
-    private final BasicCounter total;
+    private final BasicCounter totalCount;
 
     private final StepCounter tps;
 
-    public BasicCounter getTotal() {
-      return total;
-    }
+    public StatusCounter(String operation, String stage, String role, String statusCode) {
+      MonitorConfig config = MonitorConfig.builder(MetricsConst.SERVICECOMB_INVOCATION)
+          .withTag(MetricsConst.TAG_STATUS, statusCode).withTag(MetricsConst.TAG_OPERATION, operation)
+          .withTag(MetricsConst.TAG_STAGE, stage).withTag(MetricsConst.TAG_ROLE, role).build();
 
-    public StepCounter getTps() {
-      return tps;
-    }
-
-    public StatusCounter(BasicCounter total, StepCounter tps) {
-      this.total = total;
-      this.tps = tps;
+      this.totalCount = new BasicCounter(
+          config.withAdditionalTag(Tags.newTag(MetricsConst.TAG_STATISTIC, "totalCount")));
+      this.tps = new StepCounter(config.withAdditionalTag(Tags.newTag(MetricsConst.TAG_STATISTIC, "tps")));
     }
 
     public void increment() {
-      total.increment();
+      totalCount.increment();
       tps.increment();
+    }
+
+    public Map<String, Double> measure(int windowTimeIndex) {
+      Map<String, Double> measurements = new HashMap<>();
+      measurements.put(MonitorUtils.getMonitorName(this.totalCount.getConfig()),
+          this.totalCount.getValue(windowTimeIndex).doubleValue());
+      measurements.put(MonitorUtils.getMonitorName(this.tps.getConfig()),
+          this.tps.getValue(windowTimeIndex).doubleValue());
+      return measurements;
     }
   }
 }

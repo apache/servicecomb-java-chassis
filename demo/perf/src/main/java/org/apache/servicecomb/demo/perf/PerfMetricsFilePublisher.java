@@ -28,7 +28,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.Lists;
-import com.netflix.servo.monitor.Pollers;
 
 import io.vertx.core.impl.VertxImplEx;
 
@@ -42,7 +41,7 @@ public class PerfMetricsFilePublisher {
   }
 
   public void onCycle() {
-    Map<String, Double> metrics = dataSource.getMetrics(Pollers.getPollingIntervals().get(0), true);
+    Map<String, Double> metrics = dataSource.measure(dataSource.getAppliedWindowTime().get(0), true);
 
     StringBuilder sb = new StringBuilder();
     sb.append("\n");

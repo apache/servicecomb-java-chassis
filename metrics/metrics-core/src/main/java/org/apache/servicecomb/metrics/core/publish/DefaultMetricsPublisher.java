@@ -21,6 +21,7 @@ import java.util.Map;
 
 import org.apache.servicecomb.metrics.common.MetricsPublisher;
 import org.apache.servicecomb.provider.rest.common.RestSchema;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -34,6 +35,7 @@ public class DefaultMetricsPublisher implements MetricsPublisher {
 
   private final DataSource dataSource;
 
+  @Autowired
   public DefaultMetricsPublisher(DataSource dataSource) {
     this.dataSource = dataSource;
   }
@@ -45,6 +47,6 @@ public class DefaultMetricsPublisher implements MetricsPublisher {
   @CrossOrigin
   @Override
   public Map<String, Double> metrics() {
-    return dataSource.getMetrics(dataSource.getAppliedWindowTime().get(0), false);
+    return dataSource.measure();
   }
 }

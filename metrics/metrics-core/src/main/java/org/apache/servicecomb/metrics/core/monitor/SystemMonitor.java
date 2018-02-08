@@ -40,5 +40,5 @@ public interface SystemMonitor {
 
   long getNonHeapUsed();
 
-  Map<String, Double> toMetric();
+  Map<String, Double> measure();
 }
