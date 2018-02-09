@@ -26,8 +26,6 @@ import org.apache.servicecomb.serviceregistry.task.event.RecoveryEvent;
 import com.google.common.eventbus.Subscribe;
 
 public class MicroserviceManager {
-  private static final int MAX_NUM_OF_MICROSERVICES = 1000;
-
   private AppManager appManager;
 
   private String appId;
