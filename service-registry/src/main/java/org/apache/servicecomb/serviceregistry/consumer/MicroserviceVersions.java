@@ -63,7 +63,7 @@ public class MicroserviceVersions {
   // only pendingPullCount is 0, then do a real pull 
   private AtomicInteger pendingPullCount = new AtomicInteger();
 
-  private long lastAccessedTime = -1;
+  private boolean validated = false;
 
   public MicroserviceVersions(AppManager appManager, String appId, String microserviceName) {
     this.appManager = appManager;
@@ -77,16 +77,8 @@ public class MicroserviceVersions {
     appManager.getEventBus().register(this);
   }
 
-  public void updateLastAccessTime() {
-    this.lastAccessedTime = System.currentTimeMillis();
-  }
-
   public boolean isValidated() {
-    return this.lastAccessedTime != -1;
-  }
-
-  public long getLastAccessedTime() {
-    return this.lastAccessedTime;
+    return validated;
   }
 
   public String getAppId() {
@@ -136,7 +128,7 @@ public class MicroserviceVersions {
   protected void safeSetInstances(List<MicroserviceInstance> pulledInstances, String rev) {
     try {
       setInstances(pulledInstances, rev);
-      updateLastAccessTime();
+      validated = true;
     } catch (Throwable e) {
       LOGGER.error("Failed to setInstances, appId={}, microserviceName={}.",
           getAppId(),

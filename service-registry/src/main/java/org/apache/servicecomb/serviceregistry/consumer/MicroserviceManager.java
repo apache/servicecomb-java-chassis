@@ -17,10 +17,6 @@
 
 package org.apache.servicecomb.serviceregistry.consumer;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
 import java.util.Map;
 
 import org.apache.servicecomb.foundation.common.concurrent.ConcurrentHashMapEx;
@@ -55,21 +51,6 @@ public class MicroserviceManager {
     if (!microserviceVersions.isValidated()) {
       // remove this microservice if it does not exist or not registered in order to get it back when access it again
       versionsByName.remove(microserviceName);
-    } else {
-      microserviceVersions.updateLastAccessTime();
-    }
-    if (versionsByName.size() >= MAX_NUM_OF_MICROSERVICES) {
-      // do clean up for cache so many things
-      List<MicroserviceVersions> entries = new ArrayList<>(versionsByName.size());
-      versionsByName.values().forEach((item) -> {
-        entries.add(item);
-      });
-      Collections.sort(entries, Comparator.comparingLong(MicroserviceVersions::getLastAccessedTime));
-      entries.forEach((item) -> {
-        if (versionsByName.size() > MAX_NUM_OF_MICROSERVICES / 2) {
-          versionsByName.remove(item.getMicroserviceName());
-        }
-      });
     }
     return microserviceVersions;
   }
