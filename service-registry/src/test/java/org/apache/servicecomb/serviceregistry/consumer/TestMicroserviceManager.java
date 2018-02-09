@@ -108,12 +108,11 @@ public class TestMicroserviceManager {
       }
     }
 
-    Assert.assertEquals(505, cachedVersions.size());
+    Assert.assertEquals(1005, cachedVersions.size());
     Assert.assertEquals("msName1004", cachedVersions.get("msName1004").getMicroserviceName());
     Assert.assertEquals("msName1000", cachedVersions.get("msName1000").getMicroserviceName());
     Assert.assertEquals("msName500", cachedVersions.get("msName500").getMicroserviceName());
-    Assert.assertEquals(null, cachedVersions.get("msName0"));
-    Assert.assertEquals(null, cachedVersions.get("msName499"));
+    Assert.assertEquals("msName0", cachedVersions.get("msName0").getMicroserviceName());
   }
 
   @Test
