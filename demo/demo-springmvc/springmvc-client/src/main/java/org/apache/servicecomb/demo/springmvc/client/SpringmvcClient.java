@@ -86,11 +86,17 @@ public class SpringmvcClient {
 
       testController();
     }
+    HttpHeaders headers = new HttpHeaders();
+    headers.set("Accept-Encoding", "gzip");
+    HttpEntity<String> entity = new HttpEntity<>(headers);
     ResponseEntity<String> entityCompress =
-        restTemplate.getForEntity(prefix + "/codeFirstSpringmvc/sayhi/compressed/{name}/v2", String.class, "Test");
+        restTemplate.exchange(prefix
+            + "/codeFirstSpringmvc/sayhi/compressed/{name}/v2", HttpMethod.GET, entity, String.class, "Test");
     TestMgr.check(
         "Test sayhi compressed:This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text!",
         entityCompress.getBody());
+    TestMgr.check("gzip", entityCompress.getHeaders().get("content-encoding"));
+    TestMgr.check("75", entityCompress.getHeaders().get("content-length"));
 
     //0.5.0 later version metrics integration test
     try {

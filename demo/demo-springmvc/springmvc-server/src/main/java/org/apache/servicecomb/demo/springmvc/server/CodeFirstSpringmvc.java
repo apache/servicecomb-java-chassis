@@ -220,7 +220,7 @@ public class CodeFirstSpringmvc {
     return name + " sayhi";
   }
 
-  @RequestMapping(path = "/sayhi/compressed/{name}/v2", method = RequestMethod.GET)
+  @RequestMapping(path = "/sayhi/compressed/{name}/v2", method = RequestMethod.GET, produces = MediaType.TEXT_PLAIN_VALUE)
   public String sayHiForCompressed(@PathVariable(name = "name") String name) {
     String bigText =
         "This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,This is a big text,"
