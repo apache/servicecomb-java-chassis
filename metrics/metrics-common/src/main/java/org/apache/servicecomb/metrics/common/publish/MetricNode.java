@@ -24,6 +24,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.apache.servicecomb.metrics.common.MetricsConst;
+
 public class MetricNode {
   public final String name;
 
@@ -43,6 +45,19 @@ public class MetricNode {
     return children;
   }
 
+  public MetricNode getChildrenNode(String tagValue) {
+    return children.get(tagValue);
+  }
+
+  public Double getFirstMatchMetricValue(String tagKey, String tagValue) {
+    for (Metric metric : this.metrics) {
+      if (metric.containTag(tagKey, tagValue)) {
+        return metric.getValue();
+      }
+    }
+    return Double.NaN;
+  }
+
   public Double getFirstMatchMetricValue(List<String> tagKeys, List<String> tagValues) {
     for (Metric metric : this.metrics) {
       if (metric.containTag(tagKeys, tagValues)) {
@@ -50,6 +65,10 @@ public class MetricNode {
       }
     }
     return Double.NaN;
+  }
+
+  public double getMatchStatisticMetricValue(String statisticValue) {
+    return getFirstMatchMetricValue(MetricsConst.TAG_STATISTIC, statisticValue);
   }
 
   public MetricNode(List<Metric> metrics, String... groupTagKeys) {

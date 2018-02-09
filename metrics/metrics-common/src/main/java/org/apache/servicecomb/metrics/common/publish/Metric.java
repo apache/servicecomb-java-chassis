@@ -60,7 +60,7 @@ public class Metric {
     return true;
   }
 
-  private boolean containTag(String tagKey, String tagValue) {
+  public boolean containTag(String tagKey, String tagValue) {
     return tags.containsKey(tagKey) && tagValue.equals(tags.get(tagKey));
   }
 }

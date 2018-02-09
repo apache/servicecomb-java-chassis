@@ -34,7 +34,8 @@ import org.apache.servicecomb.core.metrics.InvocationStartProcessingEvent;
 import org.apache.servicecomb.core.metrics.InvocationStartedEvent;
 import org.apache.servicecomb.foundation.common.utils.EventUtils;
 import org.apache.servicecomb.metrics.common.MetricsConst;
-import org.apache.servicecomb.metrics.common.MetricsUtils;
+import org.apache.servicecomb.metrics.common.publish.MetricNode;
+import org.apache.servicecomb.metrics.common.publish.MetricsLoader;
 import org.apache.servicecomb.metrics.core.event.DefaultEventListenerManager;
 import org.apache.servicecomb.metrics.core.monitor.DefaultSystemMonitor;
 import org.apache.servicecomb.metrics.core.monitor.RegistryMonitor;
@@ -43,8 +44,6 @@ import org.apache.servicecomb.swagger.invocation.InvocationType;
 import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.Mockito;
-
-import com.google.common.collect.Lists;
 
 public class TestEventAndRunner {
 
@@ -78,6 +77,7 @@ public class TestEventAndRunner {
 
     new DefaultEventListenerManager(monitor);
 
+    //==========================================================================
     //fun1 is a PRODUCER invocation call 2 time and all is completed
     //two time success
     EventUtils.triggerEvent(new InvocationStartedEvent("fun1", InvocationType.PRODUCER, System.nanoTime()));
@@ -102,19 +102,6 @@ public class TestEventAndRunner {
             TimeUnit.MILLISECONDS.toNanos(400), TimeUnit.MILLISECONDS.toNanos(700), 500));
 
     //==========================================================================
-
-    //fun3 is a PRODUCER invocation call uncompleted
-    EventUtils.triggerEvent(new InvocationStartedEvent("fun3", InvocationType.PRODUCER, System.nanoTime()));
-    EventUtils.triggerEvent(
-        new InvocationStartProcessingEvent("fun3", InvocationType.PRODUCER));
-
-    //==========================================================================
-
-    //fun4 is a PRODUCER call only started and no processing start and finished
-    EventUtils.triggerEvent(new InvocationStartedEvent("fun4", InvocationType.PRODUCER, System.nanoTime()));
-
-    //==========================================================================
-
     //fun2 is a CONSUMER invocation call once and completed
     EventUtils.triggerEvent(new InvocationStartedEvent("fun2", InvocationType.CONSUMER, System.nanoTime()));
     EventUtils.triggerEvent(
@@ -124,223 +111,100 @@ public class TestEventAndRunner {
             TimeUnit.MILLISECONDS.toNanos(200), TimeUnit.MILLISECONDS.toNanos(300), 200));
 
     //==========================================================================
+    //fun3 is a PRODUCER invocation call uncompleted
+    EventUtils.triggerEvent(new InvocationStartedEvent("fun3", InvocationType.PRODUCER, System.nanoTime()));
+    EventUtils.triggerEvent(
+        new InvocationStartProcessingEvent("fun3", InvocationType.PRODUCER));
+
+    //==========================================================================
+    //fun4 is a PRODUCER call only started and no processing start and finished
+    EventUtils.triggerEvent(new InvocationStartedEvent("fun4", InvocationType.PRODUCER, System.nanoTime()));
+
+    //==========================================================================
 
     //sim lease one window time
     Thread.sleep(1000);
 
     Map<String, Double> metrics = dataSource.measure(1000, false);
 
+    MetricsLoader loader = new MetricsLoader(metrics);
+
+    MetricNode node = loader
+        .getMetricTree(MetricsConst.SERVICECOMB_INVOCATION, MetricsConst.TAG_OPERATION, MetricsConst.TAG_ROLE,
+            MetricsConst.TAG_STAGE);
+
     //check ProducerMetrics
     //fun1
-    Assert.assertEquals(0, MetricsUtils.getFirstMatchMetricValue(metrics, MetricsConst.SERVICECOMB_INVOCATION,
-        Lists.newArrayList(MetricsConst.TAG_OPERATION, MetricsConst.TAG_ROLE, MetricsConst.TAG_STAGE,
-            MetricsConst.TAG_STATISTIC),
-        Lists.newArrayList("fun1", MetricsConst.ROLE_PRODUCER, MetricsConst.STAGE_QUEUE, "waitInQueue")), 0);
+    MetricNode node1_queue = node.getChildrenNode("fun1").getChildrenNode(MetricsConst.ROLE_PRODUCER)
+        .getChildrenNode(MetricsConst.STAGE_QUEUE);
+    Assert.assertEquals(0, node1_queue.getMatchStatisticMetricValue("waitInQueue"), 0);
+    MetricNode node1_queue_status = new MetricNode(node1_queue.getMetrics(), MetricsConst.TAG_STATUS);
+    Assert.assertEquals(300, node1_queue_status.getChildrenNode("200").getMatchStatisticMetricValue("max"), 0);
+    Assert.assertEquals(2, node1_queue_status.getChildrenNode("200").getMatchStatisticMetricValue("count"), 0);
+    Assert.assertEquals(400, node1_queue_status.getChildrenNode("200").getMatchStatisticMetricValue("totalTime"), 0);
+    Assert.assertEquals(300, node1_queue_status.getChildrenNode("500").getMatchStatisticMetricValue("max"), 0);
+    Assert.assertEquals(1, node1_queue_status.getChildrenNode("500").getMatchStatisticMetricValue("count"), 0);
+    Assert.assertEquals(300, node1_queue_status.getChildrenNode("500").getMatchStatisticMetricValue("totalTime"), 0);
 
-    Assert.assertEquals(300, MetricsUtils.getFirstMatchMetricValue(metrics, MetricsConst.SERVICECOMB_INVOCATION,
-        Lists.newArrayList(MetricsConst.TAG_OPERATION, MetricsConst.TAG_ROLE, MetricsConst.TAG_STAGE,
-            MetricsConst.TAG_STATISTIC, MetricsConst.TAG_STATUS),
-        Lists.newArrayList("fun1", MetricsConst.ROLE_PRODUCER, MetricsConst.STAGE_QUEUE, "max",
-            "200")), 0);
+    MetricNode node1_exec = node.getChildrenNode("fun1").getChildrenNode(MetricsConst.ROLE_PRODUCER)
+        .getChildrenNode(MetricsConst.STAGE_EXECUTION);
+    MetricNode node1_exec_status = new MetricNode(node1_exec.getMetrics(), MetricsConst.TAG_STATUS);
+    Assert.assertEquals(400, node1_exec_status.getChildrenNode("200").getMatchStatisticMetricValue("max"), 0);
+    Assert.assertEquals(2, node1_exec_status.getChildrenNode("200").getMatchStatisticMetricValue("count"), 0);
+    Assert.assertEquals(600, node1_exec_status.getChildrenNode("200").getMatchStatisticMetricValue("totalTime"), 0);
+    Assert.assertEquals(400, node1_exec_status.getChildrenNode("500").getMatchStatisticMetricValue("max"), 0);
+    Assert.assertEquals(1, node1_exec_status.getChildrenNode("500").getMatchStatisticMetricValue("count"), 0);
+    Assert.assertEquals(400, node1_exec_status.getChildrenNode("500").getMatchStatisticMetricValue("totalTime"), 0);
 
-    Assert.assertEquals(400, MetricsUtils.getFirstMatchMetricValue(metrics, MetricsConst.SERVICECOMB_INVOCATION,
-        Lists.newArrayList(MetricsConst.TAG_OPERATION, MetricsConst.TAG_ROLE, MetricsConst.TAG_STAGE,
-            MetricsConst.TAG_STATISTIC, MetricsConst.TAG_STATUS),
-        Lists.newArrayList("fun1", MetricsConst.ROLE_PRODUCER, MetricsConst.STAGE_EXECUTION, "max",
-            "200")), 0);
-
-    Assert.assertEquals(700, MetricsUtils.getFirstMatchMetricValue(metrics, MetricsConst.SERVICECOMB_INVOCATION,
-        Lists.newArrayList(MetricsConst.TAG_OPERATION, MetricsConst.TAG_ROLE, MetricsConst.TAG_STAGE,
-            MetricsConst.TAG_STATISTIC, MetricsConst.TAG_STATUS),
-        Lists.newArrayList("fun1", MetricsConst.ROLE_PRODUCER, MetricsConst.STAGE_WHOLE, "max",
-            "200")), 0);
-
-    Assert.assertEquals(2, MetricsUtils.getFirstMatchMetricValue(metrics, MetricsConst.SERVICECOMB_INVOCATION,
-        Lists.newArrayList(MetricsConst.TAG_OPERATION, MetricsConst.TAG_ROLE, MetricsConst.TAG_STAGE,
-            MetricsConst.TAG_STATISTIC, MetricsConst.TAG_STATUS),
-        Lists.newArrayList("fun1", MetricsConst.ROLE_PRODUCER, MetricsConst.STAGE_QUEUE, "count",
-            "200")), 0);
-
-    Assert.assertEquals(2, MetricsUtils.getFirstMatchMetricValue(metrics, MetricsConst.SERVICECOMB_INVOCATION,
-        Lists.newArrayList(MetricsConst.TAG_OPERATION, MetricsConst.TAG_ROLE, MetricsConst.TAG_STAGE,
-            MetricsConst.TAG_STATISTIC, MetricsConst.TAG_STATUS),
-        Lists.newArrayList("fun1", MetricsConst.ROLE_PRODUCER, MetricsConst.STAGE_EXECUTION, "count",
-            "200")), 0);
-
-    Assert.assertEquals(2, MetricsUtils.getFirstMatchMetricValue(metrics, MetricsConst.SERVICECOMB_INVOCATION,
-        Lists.newArrayList(MetricsConst.TAG_OPERATION, MetricsConst.TAG_ROLE, MetricsConst.TAG_STAGE,
-            MetricsConst.TAG_STATISTIC, MetricsConst.TAG_STATUS),
-        Lists.newArrayList("fun1", MetricsConst.ROLE_PRODUCER, MetricsConst.STAGE_WHOLE, "count",
-            "200")), 0);
-
-    Assert.assertEquals(400, MetricsUtils.getFirstMatchMetricValue(metrics, MetricsConst.SERVICECOMB_INVOCATION,
-        Lists.newArrayList(MetricsConst.TAG_OPERATION, MetricsConst.TAG_ROLE, MetricsConst.TAG_STAGE,
-            MetricsConst.TAG_STATISTIC, MetricsConst.TAG_STATUS),
-        Lists.newArrayList("fun1", MetricsConst.ROLE_PRODUCER, MetricsConst.STAGE_QUEUE, "totalTime",
-            "200")), 0);
-
-    Assert.assertEquals(600, MetricsUtils.getFirstMatchMetricValue(metrics, MetricsConst.SERVICECOMB_INVOCATION,
-        Lists.newArrayList(MetricsConst.TAG_OPERATION, MetricsConst.TAG_ROLE, MetricsConst.TAG_STAGE,
-            MetricsConst.TAG_STATISTIC, MetricsConst.TAG_STATUS),
-        Lists.newArrayList("fun1", MetricsConst.ROLE_PRODUCER, MetricsConst.STAGE_EXECUTION, "totalTime",
-            "200")), 0);
-
-    Assert.assertEquals(1000, MetricsUtils.getFirstMatchMetricValue(metrics, MetricsConst.SERVICECOMB_INVOCATION,
-        Lists.newArrayList(MetricsConst.TAG_OPERATION, MetricsConst.TAG_ROLE, MetricsConst.TAG_STAGE,
-            MetricsConst.TAG_STATISTIC, MetricsConst.TAG_STATUS),
-        Lists.newArrayList("fun1", MetricsConst.ROLE_PRODUCER, MetricsConst.STAGE_WHOLE, "totalTime",
-            "200")), 0);
-
-    Assert.assertEquals(2,
-        MetricsUtils.getFirstMatchMetricValue(metrics, MetricsConst.SERVICECOMB_INVOCATION,
-            Lists.newArrayList(MetricsConst.TAG_OPERATION, MetricsConst.TAG_ROLE, MetricsConst.TAG_STAGE,
-                MetricsConst.TAG_STATISTIC, MetricsConst.TAG_STATUS),
-            Lists.newArrayList("fun1", MetricsConst.ROLE_PRODUCER, MetricsConst.STAGE_WHOLE, "tps",
-                "200")), 0);
-
-    Assert.assertEquals(2,
-        MetricsUtils.getFirstMatchMetricValue(metrics, MetricsConst.SERVICECOMB_INVOCATION,
-            Lists.newArrayList(MetricsConst.TAG_OPERATION, MetricsConst.TAG_ROLE, MetricsConst.TAG_STAGE,
-                MetricsConst.TAG_STATISTIC, MetricsConst.TAG_STATUS),
-            Lists.newArrayList("fun1", MetricsConst.ROLE_PRODUCER, MetricsConst.STAGE_WHOLE, "totalCount",
-                "200")), 0);
-
-    Assert.assertEquals(1,
-        MetricsUtils.getFirstMatchMetricValue(metrics, MetricsConst.SERVICECOMB_INVOCATION,
-            Lists.newArrayList(MetricsConst.TAG_OPERATION, MetricsConst.TAG_ROLE, MetricsConst.TAG_STAGE,
-                MetricsConst.TAG_STATISTIC, MetricsConst.TAG_STATUS),
-            Lists.newArrayList("fun1", MetricsConst.ROLE_PRODUCER, MetricsConst.STAGE_WHOLE, "tps",
-                "500")), 0);
-
-    Assert.assertEquals(1,
-        MetricsUtils.getFirstMatchMetricValue(metrics, MetricsConst.SERVICECOMB_INVOCATION,
-            Lists.newArrayList(MetricsConst.TAG_OPERATION, MetricsConst.TAG_ROLE, MetricsConst.TAG_STAGE,
-                MetricsConst.TAG_STATISTIC, MetricsConst.TAG_STATUS),
-            Lists.newArrayList("fun1", MetricsConst.ROLE_PRODUCER, MetricsConst.STAGE_WHOLE, "totalCount",
-                "500")), 0);
-
-    //fun3
-    Assert.assertEquals(0, MetricsUtils.getFirstMatchMetricValue(metrics, MetricsConst.SERVICECOMB_INVOCATION,
-        Lists.newArrayList(MetricsConst.TAG_OPERATION, MetricsConst.TAG_ROLE, MetricsConst.TAG_STAGE,
-            MetricsConst.TAG_STATISTIC),
-        Lists.newArrayList("fun3", MetricsConst.ROLE_PRODUCER, MetricsConst.STAGE_QUEUE, "waitInQueue")), 0);
-
-    Assert.assertEquals(Double.NaN, MetricsUtils.getFirstMatchMetricValue(metrics, MetricsConst.SERVICECOMB_INVOCATION,
-        Lists.newArrayList(MetricsConst.TAG_OPERATION, MetricsConst.TAG_ROLE, MetricsConst.TAG_STAGE,
-            MetricsConst.TAG_STATISTIC, MetricsConst.TAG_STATUS),
-        Lists.newArrayList("fun3", MetricsConst.ROLE_PRODUCER, MetricsConst.STAGE_QUEUE, "max",
-            "200")), 0);
-
-    Assert.assertEquals(Double.NaN, MetricsUtils.getFirstMatchMetricValue(metrics, MetricsConst.SERVICECOMB_INVOCATION,
-        Lists.newArrayList(MetricsConst.TAG_OPERATION, MetricsConst.TAG_ROLE, MetricsConst.TAG_STAGE,
-            MetricsConst.TAG_STATISTIC, MetricsConst.TAG_STATUS),
-        Lists.newArrayList("fun3", MetricsConst.ROLE_PRODUCER, MetricsConst.STAGE_EXECUTION, "max",
-            "200")), 0);
-
-    Assert.assertEquals(Double.NaN, MetricsUtils.getFirstMatchMetricValue(metrics, MetricsConst.SERVICECOMB_INVOCATION,
-        Lists.newArrayList(MetricsConst.TAG_OPERATION, MetricsConst.TAG_ROLE, MetricsConst.TAG_STAGE,
-            MetricsConst.TAG_STATISTIC, MetricsConst.TAG_STATUS),
-        Lists.newArrayList("fun3", MetricsConst.ROLE_PRODUCER, MetricsConst.STAGE_WHOLE, "max",
-            "200")), 0);
-
-    Assert.assertEquals(Double.NaN,
-        MetricsUtils.getFirstMatchMetricValue(metrics, MetricsConst.SERVICECOMB_INVOCATION,
-            Lists.newArrayList(MetricsConst.TAG_OPERATION, MetricsConst.TAG_ROLE, MetricsConst.TAG_STAGE,
-                MetricsConst.TAG_STATISTIC, MetricsConst.TAG_STATUS),
-            Lists.newArrayList("fun3", MetricsConst.ROLE_PRODUCER, MetricsConst.STAGE_WHOLE, "tps",
-                "200")), 0);
-
-    Assert.assertEquals(Double.NaN,
-        MetricsUtils.getFirstMatchMetricValue(metrics, MetricsConst.SERVICECOMB_INVOCATION,
-            Lists.newArrayList(MetricsConst.TAG_OPERATION, MetricsConst.TAG_ROLE, MetricsConst.TAG_STAGE,
-                MetricsConst.TAG_STATISTIC, MetricsConst.TAG_STATUS),
-            Lists.newArrayList("fun3", MetricsConst.ROLE_PRODUCER, MetricsConst.STAGE_WHOLE, "tps",
-                "500")), 0);
-
-    Assert.assertEquals(Double.NaN,
-        MetricsUtils.getFirstMatchMetricValue(metrics, MetricsConst.SERVICECOMB_INVOCATION,
-            Lists.newArrayList(MetricsConst.TAG_OPERATION, MetricsConst.TAG_ROLE, MetricsConst.TAG_STAGE,
-                MetricsConst.TAG_STATISTIC, MetricsConst.TAG_STATUS),
-            Lists.newArrayList("fun3", MetricsConst.ROLE_PRODUCER, MetricsConst.STAGE_WHOLE, "totalCount",
-                "200")), 0);
-
-    Assert.assertEquals(Double.NaN,
-        MetricsUtils.getFirstMatchMetricValue(metrics, MetricsConst.SERVICECOMB_INVOCATION,
-            Lists.newArrayList(MetricsConst.TAG_OPERATION, MetricsConst.TAG_ROLE, MetricsConst.TAG_STAGE,
-                MetricsConst.TAG_STATISTIC, MetricsConst.TAG_STATUS),
-            Lists.newArrayList("fun3", MetricsConst.ROLE_PRODUCER, MetricsConst.STAGE_WHOLE, "totalCount",
-                "500")), 0);
+    MetricNode node1_whole = node.getChildrenNode("fun1").getChildrenNode(MetricsConst.ROLE_PRODUCER)
+        .getChildrenNode(MetricsConst.STAGE_WHOLE);
+    MetricNode node1_whole_status = new MetricNode(node1_whole.getMetrics(), MetricsConst.TAG_STATUS);
+    Assert.assertEquals(700, node1_whole_status.getChildrenNode("200").getMatchStatisticMetricValue("max"), 0);
+    Assert.assertEquals(2, node1_whole_status.getChildrenNode("200").getMatchStatisticMetricValue("count"), 0);
+    Assert.assertEquals(1000, node1_whole_status.getChildrenNode("200").getMatchStatisticMetricValue("totalTime"), 0);
+    Assert.assertEquals(700, node1_whole_status.getChildrenNode("500").getMatchStatisticMetricValue("max"), 0);
+    Assert.assertEquals(1, node1_whole_status.getChildrenNode("500").getMatchStatisticMetricValue("count"), 0);
+    Assert.assertEquals(700, node1_whole_status.getChildrenNode("500").getMatchStatisticMetricValue("totalTime"), 0);
+    Assert.assertEquals(2, node1_whole_status.getChildrenNode("200").getMatchStatisticMetricValue("tps"), 0);
+    Assert.assertEquals(2, node1_whole_status.getChildrenNode("200").getMatchStatisticMetricValue("totalCount"), 0);
+    Assert.assertEquals(1, node1_whole_status.getChildrenNode("500").getMatchStatisticMetricValue("tps"), 0);
+    Assert.assertEquals(1, node1_whole_status.getChildrenNode("500").getMatchStatisticMetricValue("totalCount"), 0);
 
     //check ConsumerMetrics
     //fun2
-    Assert.assertEquals(300, MetricsUtils.getFirstMatchMetricValue(metrics, MetricsConst.SERVICECOMB_INVOCATION,
-        Lists.newArrayList(MetricsConst.TAG_OPERATION, MetricsConst.TAG_ROLE, MetricsConst.TAG_STAGE,
-            MetricsConst.TAG_STATISTIC, MetricsConst.TAG_STATUS),
-        Lists.newArrayList("fun2", MetricsConst.ROLE_CONSUMER, MetricsConst.STAGE_WHOLE, "max",
-            "200")), 0);
+    MetricNode node2_whole = node.getChildrenNode("fun2").getChildrenNode(MetricsConst.ROLE_CONSUMER)
+        .getChildrenNode(MetricsConst.STAGE_WHOLE);
+    MetricNode node2_whole_status = new MetricNode(node2_whole.getMetrics(), MetricsConst.TAG_STATUS);
+    Assert.assertEquals(300, node2_whole_status.getChildrenNode("200").getMatchStatisticMetricValue("max"), 0);
+    Assert.assertEquals(1, node2_whole_status.getChildrenNode("200").getMatchStatisticMetricValue("count"), 0);
+    Assert.assertEquals(300, node2_whole_status.getChildrenNode("200").getMatchStatisticMetricValue("totalTime"), 0);
+    Assert.assertEquals(1, node2_whole_status.getChildrenNode("200").getMatchStatisticMetricValue("tps"), 0);
+    Assert.assertEquals(1, node2_whole_status.getChildrenNode("200").getMatchStatisticMetricValue("totalCount"), 0);
 
-    Assert.assertEquals(1, MetricsUtils.getFirstMatchMetricValue(metrics, MetricsConst.SERVICECOMB_INVOCATION,
-        Lists.newArrayList(MetricsConst.TAG_OPERATION, MetricsConst.TAG_ROLE, MetricsConst.TAG_STAGE,
-            MetricsConst.TAG_STATISTIC, MetricsConst.TAG_STATUS),
-        Lists.newArrayList("fun2", MetricsConst.ROLE_CONSUMER, MetricsConst.STAGE_WHOLE, "count",
-            "200")), 0);
-
-    Assert.assertEquals(300, MetricsUtils.getFirstMatchMetricValue(metrics, MetricsConst.SERVICECOMB_INVOCATION,
-        Lists.newArrayList(MetricsConst.TAG_OPERATION, MetricsConst.TAG_ROLE, MetricsConst.TAG_STAGE,
-            MetricsConst.TAG_STATISTIC, MetricsConst.TAG_STATUS),
-        Lists.newArrayList("fun2", MetricsConst.ROLE_CONSUMER, MetricsConst.STAGE_WHOLE, "totalTime",
-            "200")), 0);
-
-    Assert.assertEquals(1,
-        MetricsUtils.getFirstMatchMetricValue(metrics, MetricsConst.SERVICECOMB_INVOCATION,
-            Lists.newArrayList(MetricsConst.TAG_OPERATION, MetricsConst.TAG_ROLE, MetricsConst.TAG_STAGE,
-                MetricsConst.TAG_STATISTIC, MetricsConst.TAG_STATUS),
-            Lists.newArrayList("fun2", MetricsConst.ROLE_CONSUMER, MetricsConst.STAGE_WHOLE, "tps",
-                "200")), 0);
-
-    Assert.assertEquals(Double.NaN,
-        MetricsUtils.getFirstMatchMetricValue(metrics, MetricsConst.SERVICECOMB_INVOCATION,
-            Lists.newArrayList(MetricsConst.TAG_OPERATION, MetricsConst.TAG_ROLE, MetricsConst.TAG_STAGE,
-                MetricsConst.TAG_STATISTIC, MetricsConst.TAG_STATUS),
-            Lists.newArrayList("fun2", MetricsConst.ROLE_CONSUMER, MetricsConst.STAGE_WHOLE, "tps",
-                "500")), 0);
-
-    Assert.assertEquals(1,
-        MetricsUtils.getFirstMatchMetricValue(metrics, MetricsConst.SERVICECOMB_INVOCATION,
-            Lists.newArrayList(MetricsConst.TAG_OPERATION, MetricsConst.TAG_ROLE, MetricsConst.TAG_STAGE,
-                MetricsConst.TAG_STATISTIC, MetricsConst.TAG_STATUS),
-            Lists.newArrayList("fun2", MetricsConst.ROLE_CONSUMER, MetricsConst.STAGE_WHOLE, "totalCount",
-                "200")), 0);
-
-    Assert.assertEquals(Double.NaN,
-        MetricsUtils.getFirstMatchMetricValue(metrics, MetricsConst.SERVICECOMB_INVOCATION,
-            Lists.newArrayList(MetricsConst.TAG_OPERATION, MetricsConst.TAG_ROLE, MetricsConst.TAG_STAGE,
-                MetricsConst.TAG_STATISTIC, MetricsConst.TAG_STATUS),
-            Lists.newArrayList("fun2", MetricsConst.ROLE_CONSUMER, MetricsConst.STAGE_WHOLE, "totalCount",
-                "500")), 0);
+    //fun3
+    MetricNode node3_queue = node.getChildrenNode("fun3").getChildrenNode(MetricsConst.ROLE_PRODUCER)
+        .getChildrenNode(MetricsConst.STAGE_QUEUE);
+    Assert.assertEquals(0, node3_queue.getMatchStatisticMetricValue("waitInQueue"), 0);
 
     //fun4
-    Assert.assertEquals(1, MetricsUtils.getFirstMatchMetricValue(metrics, MetricsConst.SERVICECOMB_INVOCATION,
-        Lists.newArrayList(MetricsConst.TAG_OPERATION, MetricsConst.TAG_ROLE, MetricsConst.TAG_STAGE,
-            MetricsConst.TAG_STATISTIC),
-        Lists.newArrayList("fun4", MetricsConst.ROLE_PRODUCER, MetricsConst.STAGE_QUEUE, "waitInQueue")), 0);
+    MetricNode node4_queue = node.getChildrenNode("fun4").getChildrenNode(MetricsConst.ROLE_PRODUCER)
+        .getChildrenNode(MetricsConst.STAGE_QUEUE);
+    Assert.assertEquals(1, node4_queue.getMatchStatisticMetricValue("waitInQueue"), 0);
 
     //System metrics
-    Assert.assertEquals(1.0, getSystemMetric(metrics, "cpuLoad"), 0);
-    Assert.assertEquals(2, getSystemMetric(metrics, "cpuRunningThreads"), 0);
-    Assert.assertEquals(100, getSystemMetric(metrics, "heapCommit"), 0);
-    Assert.assertEquals(200, getSystemMetric(metrics, "heapInit"), 0);
-    Assert.assertEquals(300, getSystemMetric(metrics, "heapMax"), 0);
-    Assert.assertEquals(400, getSystemMetric(metrics, "heapUsed"), 0);
-    Assert.assertEquals(500, getSystemMetric(metrics, "nonHeapCommit"), 0);
-    Assert.assertEquals(600, getSystemMetric(metrics, "nonHeapInit"), 0);
-    Assert.assertEquals(700, getSystemMetric(metrics, "nonHeapMax"), 0);
-    Assert.assertEquals(800, getSystemMetric(metrics, "nonHeapUsed"), 0);
+    Assert.assertEquals(1.0, getSystemMetric(loader, "cpuLoad"), 0);
+    Assert.assertEquals(2, getSystemMetric(loader, "cpuRunningThreads"), 0);
+    Assert.assertEquals(100, getSystemMetric(loader, "heapCommit"), 0);
+    Assert.assertEquals(200, getSystemMetric(loader, "heapInit"), 0);
+    Assert.assertEquals(300, getSystemMetric(loader, "heapMax"), 0);
+    Assert.assertEquals(400, getSystemMetric(loader, "heapUsed"), 0);
+    Assert.assertEquals(500, getSystemMetric(loader, "nonHeapCommit"), 0);
+    Assert.assertEquals(600, getSystemMetric(loader, "nonHeapInit"), 0);
+    Assert.assertEquals(700, getSystemMetric(loader, "nonHeapMax"), 0);
+    Assert.assertEquals(800, getSystemMetric(loader, "nonHeapUsed"), 0);
   }
 
-  private Double getSystemMetric(Map<String, Double> metrics, String name) {
-    return MetricsUtils.getFirstMatchMetricValue(metrics, MetricsConst.JVM,
-        Lists.newArrayList(MetricsConst.TAG_NAME, MetricsConst.TAG_STATISTIC),
-        Lists.newArrayList(name, "gauge"));
+  private Double getSystemMetric(MetricsLoader loader, String name) {
+    return loader.getFirstMatchMetricValue(MetricsConst.JVM, MetricsConst.TAG_NAME, name);
   }
 }

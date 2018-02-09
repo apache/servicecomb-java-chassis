@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+//load origin metrics value and publish tree
 public class MetricsLoader {
 
   private final Map<String, List<Metric>> metrics;
@@ -40,5 +41,16 @@ public class MetricsLoader {
       return new MetricNode(metrics.get(id), groupTagKeys);
     }
     return null;
+  }
+
+  public double getFirstMatchMetricValue(String id, String tagKey, String tagValue) {
+    if (metrics.containsKey(id)) {
+      for (Metric metric : this.metrics.get(id)) {
+        if (metric.containTag(tagKey, tagValue)) {
+          return metric.getValue();
+        }
+      }
+    }
+    return Double.NaN;
   }
 }

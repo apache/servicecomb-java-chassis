@@ -21,7 +21,6 @@ import java.util.Map.Entry;
 
 import org.apache.servicecomb.foundation.vertx.VertxUtils;
 import org.apache.servicecomb.metrics.common.MetricsConst;
-import org.apache.servicecomb.metrics.common.MetricsUtils;
 import org.apache.servicecomb.metrics.common.publish.MetricNode;
 import org.apache.servicecomb.metrics.common.publish.MetricsLoader;
 import org.apache.servicecomb.metrics.core.publish.DataSource;
@@ -43,20 +42,20 @@ public class PerfMetricsFilePublisher {
 
   public void onCycle() {
     Map<String, Double> metrics = dataSource.measure(dataSource.getAppliedWindowTime().get(0), true);
+    MetricsLoader loader = new MetricsLoader(metrics);
 
     StringBuilder sb = new StringBuilder();
     sb.append("\n");
 
-    collectSystemMetrics(metrics, sb);
-    collectVertxMetrics(metrics, sb);
-    collectMetrics(metrics, sb);
+    collectSystemMetrics(loader, sb);
+    collectVertxMetrics(loader, sb);
+    collectMetrics(loader, sb);
 
     LOGGER.info(sb.toString());
   }
 
-  private void collectSystemMetrics(Map<String, Double> metrics, StringBuilder sb) {
-    double cpu = MetricsUtils.getFirstMatchMetricValue(metrics, MetricsConst.JVM,
-        Lists.newArrayList(MetricsConst.TAG_NAME), Lists.newArrayList("cpuLoad"));
+  private void collectSystemMetrics(MetricsLoader loader, StringBuilder sb) {
+    double cpu = loader.getFirstMatchMetricValue(MetricsConst.JVM, MetricsConst.TAG_NAME, "cpuLoad");
     // can not get cpu usage in windows, so skip this information
     if (cpu >= 0) {
       sb.append("cpu: ")
@@ -65,7 +64,7 @@ public class PerfMetricsFilePublisher {
     }
   }
 
-  private void collectVertxMetrics(Map<String, Double> metrics, StringBuilder sb) {
+  private void collectVertxMetrics(MetricsLoader loader, StringBuilder sb) {
     sb.append("vertx:\n")
         .append("  name       eventLoopContext-created\n");
     for (Entry<String, VertxImplEx> entry : VertxUtils.getVertxMap().entrySet()) {
@@ -75,8 +74,7 @@ public class PerfMetricsFilePublisher {
     }
   }
 
-  private void collectMetrics(Map<String, Double> metrics, StringBuilder sb) {
-    MetricsLoader loader = new MetricsLoader(metrics);
+  private void collectMetrics(MetricsLoader loader, StringBuilder sb) {
     MetricNode treeNode = loader
         .getMetricTree(MetricsConst.SERVICECOMB_INVOCATION, MetricsConst.TAG_ROLE, MetricsConst.TAG_OPERATION,
             MetricsConst.TAG_STATUS);
