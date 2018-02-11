@@ -26,26 +26,26 @@ servicecomb:
 
 | Element | Apache | W3C | Comment |
 | ----|------|------------| --------|
-| Method | %m  | cs-method | |
-| Status | %s  | sc-status | |
-| Duration s | %T  | - |  |
-| Duration ms | %D  | - | |
-| Remote Host | %h  | - |  |
-| Local Host | %v  | - |  |
+| HTTP method | %m  | cs-method | |
+| HTTP status | %s  | sc-status | |
+| Duration in second | %T  | - | The time taken to serve the request, in seconds |
+| Duration in millisecond | %D  | - | The time taken to serve the request, in millisecond |
+| Remote hostname | %h  | - | |
+| Local hostname | %v  | - |  |
 | Local port | %p  | - |  |
-| Bytes Written v1 | %B | - | Zero Bytes written as 0 |
-| Bytes Written v2 | %b | - | Zero Bytes written as - |
+| Size of response | %B | - | |
+| Size of response | %b | - | In CLF format, i.e. "-" is written if response size is 0 |
 | First line of request | %r  | - | |
-| URI path only | %U | cs-uri-stem | |
-| Query only | %q | cs-uri-query | |
-| URI path incl query | - | cs-uri | |
-| Version / Protocol | %H | - | |
-| Datetime Apache | %t | - | Logs by default the request timestamp using format 'EEE, dd MMM yyyy HH:mm:ss zzz', Locale English and Timezone GMT  |
-| Datetime Apache Configurable v1 | %{PATTERN}t | - | Specify the format pattern, by default it is used Locale English and Timezone GMT |
-| Datetime Apache Configurable v2 | %{PATTERN\|TIMEZONE\|LOCALE}t | - | Specify format pattern, timezone and locale |
-| Incoming Headers | %{IDENTIFIER}i  | - | If not found - will be logged |
-| Outgoing Response Headers | %{IDENTIFIER}o  | - | If not found - will be logged |
-| Cookie | %{IDENTIFIER}c  | - | If not found - will be logged |
+| URI path | %U | cs-uri-stem | |
+| Query string | %q | cs-uri-query | |
+| URI path and query string | - | cs-uri | |
+| Request protocol | %H | - | |
+| Datetime the request was received | %t | - | Write in default format, i.e. pattern is "EEE, dd MMM yyyy HH:mm:ss zzz", Locale is US and Timezone is GMT |
+| Configurable datetime the request was received | %{PATTERN\|TIMEZONE\|LOCALE}t | - | Write datetime in specified format pattern, timezone and locale. TIMEZONE and LOCALE can be omitted |
+| Request Header | %{VARNAME}i  | - | '-' is written if not found |
+| Response header | %{VARNAME}o  | - | '-' is written if not found |
+| Cookie | %{VARNAME}C  | - | '-' is written if not found |
+| TraceId | - | - | TraceId provided by ServiceComb，log format placeholder is "%SCB-traceId" |
 
 ## Access log file settings
 
