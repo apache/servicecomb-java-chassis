@@ -124,6 +124,8 @@ public class RestServerVerticle extends AbstractVerticle {
     HttpServerOptions serverOptions = new HttpServerOptions();
     serverOptions.setUsePooledBuffers(true);
     serverOptions.setIdleTimeout(TransportConfig.getConnectionIdleTimeoutInSeconds());
+    serverOptions.setCompressionSupported(TransportConfig.getCompressed());
+    serverOptions.setMaxHeaderSize(TransportConfig.getMaxHeaderSize());
 
     if (endpointObject.isSslEnabled()) {
       SSLOptionFactory factory =
