@@ -21,8 +21,8 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
-import org.apache.servicecomb.metrics.core.health.HealthCheckResult;
-import org.apache.servicecomb.metrics.core.health.HealthChecker;
+import org.apache.servicecomb.foundation.metrics.health.HealthCheckResult;
+import org.apache.servicecomb.foundation.metrics.health.HealthChecker;
 
 
 //this is a demo health checker for mysql

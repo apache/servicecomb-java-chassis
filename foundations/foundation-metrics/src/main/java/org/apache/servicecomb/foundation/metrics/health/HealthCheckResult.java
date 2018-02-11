@@ -15,15 +15,42 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.metrics.core.health;
+package org.apache.servicecomb.foundation.metrics.health;
 
-import java.util.Map;
+public class HealthCheckResult {
+  private boolean healthy;
 
+  private String information;
 
-public interface HealthCheckerManager {
-  void register(HealthChecker checker);
+  //unsupport object or generic type,so string..
+  private String extraData;
 
-  Map<String, HealthCheckResult> check();
+  private long timestamp;
 
-  HealthCheckResult check(String name);
+  public boolean isHealthy() {
+    return healthy;
+  }
+
+  public String getInformation() {
+    return information;
+  }
+
+  public String getExtraData() {
+    return extraData;
+  }
+
+  public long getTimestamp() {
+    return timestamp;
+  }
+
+  public HealthCheckResult() {
+  }
+
+  public HealthCheckResult(boolean healthy, String information, String extraData) {
+    this();
+    this.healthy = healthy;
+    this.information = information;
+    this.extraData = extraData;
+    this.timestamp = System.currentTimeMillis();
+  }
 }
