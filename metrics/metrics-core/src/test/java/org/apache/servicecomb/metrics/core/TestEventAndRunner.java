@@ -36,7 +36,7 @@ import org.apache.servicecomb.foundation.common.utils.EventUtils;
 import org.apache.servicecomb.foundation.metrics.MetricsConst;
 import org.apache.servicecomb.foundation.metrics.publish.MetricNode;
 import org.apache.servicecomb.foundation.metrics.publish.MetricsLoader;
-import org.apache.servicecomb.metrics.core.event.DefaultEventListenerManager;
+import org.apache.servicecomb.metrics.core.event.EventListenerManager;
 import org.apache.servicecomb.metrics.core.monitor.DefaultSystemMonitor;
 import org.apache.servicecomb.metrics.core.monitor.RegistryMonitor;
 import org.apache.servicecomb.swagger.invocation.InvocationType;
@@ -68,13 +68,13 @@ public class TestEventAndRunner {
 
     DefaultSystemMonitor systemMonitor = new DefaultSystemMonitor(systemMXBean, threadMXBean, memoryMXBean);
     RegistryMonitor monitor = new RegistryMonitor(systemMonitor);
-    DefaultDataSource dataSource = new DefaultDataSource(monitor, "1000,2000,3000");
+    MetricsDataSource dataSource = new MetricsDataSource(monitor, "1000,2000,3000");
 
     List<Long> intervals = dataSource.getAppliedWindowTime();
     Assert.assertEquals(intervals.size(), 3);
     Assert.assertThat(intervals, containsInAnyOrder(Arrays.asList(1000L, 2000L, 3000L).toArray()));
 
-    new DefaultEventListenerManager(monitor);
+    new EventListenerManager(monitor);
 
     //==========================================================================
     //fun1 is a PRODUCER invocation call 2 time and all is completed

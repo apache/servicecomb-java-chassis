@@ -36,22 +36,22 @@ import io.swagger.annotations.ApiResponses;
 
 @RestSchema(schemaId = "healthEndpoint")
 @RequestMapping(path = "/health")
-public class DefaultHealthCheckerPublisher {
+public class HealthCheckerPublisher {
 
   private HealthCheckerManager manager;
 
-  public DefaultHealthCheckerPublisher(HealthCheckerManager manager) {
-    this.init(manager);
+  public HealthCheckerPublisher() {
+    init(new HealthCheckerManager());
   }
 
-  public DefaultHealthCheckerPublisher() {
-    this.init(SPIServiceUtils.getTargetService(HealthCheckerManager.class));
+  public HealthCheckerPublisher(HealthCheckerManager manager) {
+    init(manager);
   }
 
   private void init(HealthCheckerManager manager) {
     this.manager = manager;
-    this.manager.register(new DefaultMicroserviceHealthChecker());
 
+    this.manager.register(new DefaultMicroserviceHealthChecker());
     List<HealthChecker> checkers = SPIServiceUtils.getAllService(HealthChecker.class);
     for (HealthChecker checker : checkers) {
       this.manager.register(checker);

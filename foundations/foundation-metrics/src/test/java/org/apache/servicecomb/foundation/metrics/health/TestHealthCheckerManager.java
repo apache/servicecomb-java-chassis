@@ -26,7 +26,7 @@ public class TestHealthCheckerManager {
 
   @Test
   public void testRegistry() {
-    HealthCheckerManager manager = new DefaultHealthCheckerManager();
+    HealthCheckerManager manager = new HealthCheckerManager();
 
     manager.register(new HealthChecker() {
       @Override
