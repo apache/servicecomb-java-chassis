@@ -19,25 +19,18 @@ package org.apache.servicecomb.transport.rest.vertx.accesslog.impl;
 
 import static org.junit.Assert.assertEquals;
 
-import java.text.SimpleDateFormat;
 import java.util.Arrays;
-import java.util.TimeZone;
 
-import org.apache.servicecomb.transport.rest.vertx.accesslog.AccessLogParam;
 import org.apache.servicecomb.transport.rest.vertx.accesslog.element.AccessLogElement;
 import org.apache.servicecomb.transport.rest.vertx.accesslog.element.impl.DatetimeConfigurableElement;
 import org.apache.servicecomb.transport.rest.vertx.accesslog.element.impl.MethodElement;
 import org.apache.servicecomb.transport.rest.vertx.accesslog.element.impl.PlainTextElement;
 import org.apache.servicecomb.transport.rest.vertx.accesslog.parser.AccessLogElementExtraction;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.slf4j.Logger;
 
-import io.vertx.core.http.HttpMethod;
-import io.vertx.core.http.HttpServerRequest;
 import io.vertx.ext.web.RoutingContext;
-import mockit.Deencapsulation;
 
 public class AccessLogHandlerTest {
 
@@ -56,42 +49,9 @@ public class AccessLogHandlerTest {
         new AccessLogElementExtraction().setAccessLogElement(datetimeElement));
   });
 
-  @BeforeClass
-  public static void init() {
-    Deencapsulation.setField(AccessLogHandler.class, "LOGGER", logger);
-  }
-
-  @Test
-  public void testConstructor() {
-    AccessLogElement[] elements = Deencapsulation.getField(ACCESS_LOG_HANDLER, "accessLogElements");
-    assertEquals(3, elements.length);
-    assertEquals(methodElement, elements[0]);
-    assertEquals(plainTextElement, elements[1]);
-    assertEquals(datetimeElement, elements[2]);
-  }
-
   @Test
   public void handle() {
     RoutingContext testContext = Mockito.mock(RoutingContext.class);
     ACCESS_LOG_HANDLER.handle(testContext);
-  }
-
-  @Test
-  public void testLog() {
-    RoutingContext context = Mockito.mock(RoutingContext.class);
-    HttpServerRequest request = Mockito.mock(HttpServerRequest.class);
-    long startMillisecond = 1416863450581L;
-    AccessLogParam accessLogParam = new AccessLogParam().setStartMillisecond(startMillisecond)
-        .setRoutingContext(context);
-    SimpleDateFormat simpleDateFormat = new SimpleDateFormat(DatetimeConfigurableElement.DEFAULT_DATETIME_PATTERN,
-        DatetimeConfigurableElement.DEFAULT_LOCALE);
-    simpleDateFormat.setTimeZone(TimeZone.getDefault());
-
-    Mockito.when(context.request()).thenReturn(request);
-    Mockito.when(request.method()).thenReturn(HttpMethod.DELETE);
-
-    Deencapsulation.invoke(ACCESS_LOG_HANDLER, "log", accessLogParam);
-
-    Mockito.verify(logger).info("DELETE" + " - " + simpleDateFormat.format(startMillisecond));
   }
 }

@@ -20,6 +20,7 @@ package org.apache.servicecomb.transport.rest.vertx.accesslog;
 import com.netflix.config.DynamicPropertyFactory;
 
 public final class AccessLogConfiguration {
+
   private static final String BASE = "servicecomb.accesslog.";
 
   private static final String ACCESSLOG_ENABLED = BASE + "enabled";
@@ -27,6 +28,8 @@ public final class AccessLogConfiguration {
   private static final String ACCESSLOG_PATTERN = BASE + "pattern";
 
   public static final AccessLogConfiguration INSTANCE = new AccessLogConfiguration();
+
+  public static final String DEFAULT_PATTERN = "%h - - %t %r %s %B";
 
   private AccessLogConfiguration() {
 
@@ -37,7 +40,7 @@ public final class AccessLogConfiguration {
   }
 
   public String getAccesslogPattern() {
-    return getProperty("%h - - %t %r %s %B", ACCESSLOG_PATTERN);
+    return getProperty(DEFAULT_PATTERN, ACCESSLOG_PATTERN);
   }
 
   private String getProperty(String defaultValue, String key) {
