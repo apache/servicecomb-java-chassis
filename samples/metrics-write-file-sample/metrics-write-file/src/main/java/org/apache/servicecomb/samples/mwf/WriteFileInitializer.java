@@ -24,8 +24,8 @@ import java.util.concurrent.Executors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.foundation.common.net.NetUtils;
+import org.apache.servicecomb.metrics.core.DataSource;
 import org.apache.servicecomb.metrics.core.MetricsConfig;
-import org.apache.servicecomb.metrics.core.publish.DataSource;
 import org.apache.servicecomb.serviceregistry.RegistryUtils;
 import org.apache.servicecomb.serviceregistry.api.registry.Microservice;
 import org.springframework.beans.factory.annotation.Autowired;

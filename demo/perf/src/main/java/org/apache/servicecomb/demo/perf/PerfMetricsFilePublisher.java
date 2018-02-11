@@ -23,7 +23,7 @@ import org.apache.servicecomb.foundation.metrics.MetricsConst;
 import org.apache.servicecomb.foundation.metrics.publish.MetricNode;
 import org.apache.servicecomb.foundation.metrics.publish.MetricsLoader;
 import org.apache.servicecomb.foundation.vertx.VertxUtils;
-import org.apache.servicecomb.metrics.core.publish.DataSource;
+import org.apache.servicecomb.metrics.core.DataSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

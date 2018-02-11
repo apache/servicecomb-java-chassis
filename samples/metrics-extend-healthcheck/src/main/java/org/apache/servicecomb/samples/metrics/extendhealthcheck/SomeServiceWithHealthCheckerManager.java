@@ -17,7 +17,7 @@
 
 package org.apache.servicecomb.samples.metrics.extendhealthcheck;
 
-import org.apache.servicecomb.metrics.core.publish.HealthCheckerManager;
+import org.apache.servicecomb.metrics.core.health.HealthCheckerManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

@@ -39,7 +39,6 @@ import org.apache.servicecomb.foundation.metrics.publish.MetricsLoader;
 import org.apache.servicecomb.metrics.core.event.DefaultEventListenerManager;
 import org.apache.servicecomb.metrics.core.monitor.DefaultSystemMonitor;
 import org.apache.servicecomb.metrics.core.monitor.RegistryMonitor;
-import org.apache.servicecomb.metrics.core.publish.DefaultDataSource;
 import org.apache.servicecomb.swagger.invocation.InvocationType;
 import org.junit.Assert;
 import org.junit.Test;

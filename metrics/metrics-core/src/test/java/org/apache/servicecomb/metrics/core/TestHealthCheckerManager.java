@@ -23,12 +23,12 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.servicecomb.foundation.common.utils.JsonUtils;
-import org.apache.servicecomb.foundation.metrics.publish.DefaultHealthCheckExtraData;
-import org.apache.servicecomb.foundation.metrics.publish.HealthCheckResult;
-import org.apache.servicecomb.foundation.metrics.publish.HealthChecker;
+import org.apache.servicecomb.metrics.core.health.DefaultHealthCheckExtraData;
+import org.apache.servicecomb.metrics.core.health.DefaultHealthCheckerManager;
 import org.apache.servicecomb.metrics.core.health.DefaultMicroserviceHealthChecker;
-import org.apache.servicecomb.metrics.core.publish.DefaultHealthCheckerManager;
-import org.apache.servicecomb.metrics.core.publish.HealthCheckerManager;
+import org.apache.servicecomb.metrics.core.health.HealthCheckResult;
+import org.apache.servicecomb.metrics.core.health.HealthChecker;
+import org.apache.servicecomb.metrics.core.health.HealthCheckerManager;
 import org.apache.servicecomb.serviceregistry.RegistryUtils;
 import org.apache.servicecomb.serviceregistry.api.registry.Microservice;
 import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceInstance;

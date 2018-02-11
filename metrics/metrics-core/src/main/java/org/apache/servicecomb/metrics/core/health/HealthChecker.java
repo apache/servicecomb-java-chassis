@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.foundation.metrics.publish;
+package org.apache.servicecomb.metrics.core.health;
 
 public interface HealthChecker {
   String getName();

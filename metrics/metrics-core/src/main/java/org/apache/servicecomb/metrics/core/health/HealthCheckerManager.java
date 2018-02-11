@@ -15,12 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.metrics.core.publish;
+package org.apache.servicecomb.metrics.core.health;
 
 import java.util.Map;
-
-import org.apache.servicecomb.foundation.metrics.publish.HealthCheckResult;
-import org.apache.servicecomb.foundation.metrics.publish.HealthChecker;
 
 
 public interface HealthCheckerManager {

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.metrics.core.publish;
+package org.apache.servicecomb.metrics.core;
 
 import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
 
@@ -26,7 +26,6 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.servicecomb.foundation.common.exceptions.ServiceCombException;
-import org.apache.servicecomb.metrics.core.MetricsConfig;
 import org.apache.servicecomb.metrics.core.monitor.RegistryMonitor;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 import org.springframework.beans.factory.annotation.Autowired;
