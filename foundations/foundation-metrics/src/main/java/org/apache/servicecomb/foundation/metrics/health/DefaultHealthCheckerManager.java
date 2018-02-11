@@ -17,27 +17,16 @@
 
 package org.apache.servicecomb.foundation.metrics.health;
 
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
-@Component
 public class DefaultHealthCheckerManager implements HealthCheckerManager {
   private final Map<String, HealthChecker> healthCheckers;
 
-  @Autowired(required = false)
-  public DefaultHealthCheckerManager(List<HealthChecker> springHealthCheckers) {
+  public DefaultHealthCheckerManager() {
     this.healthCheckers = new ConcurrentHashMap<>();
-    if (springHealthCheckers != null && !springHealthCheckers.isEmpty()) {
-      for (HealthChecker checker : springHealthCheckers) {
-        this.healthCheckers.put(checker.getName(), checker);
-      }
-    }
   }
 
   @Override
