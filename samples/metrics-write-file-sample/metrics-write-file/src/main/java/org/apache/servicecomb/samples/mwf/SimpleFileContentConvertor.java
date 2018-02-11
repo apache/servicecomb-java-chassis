@@ -23,7 +23,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.apache.servicecomb.metrics.common.MetricsConst;
+import org.apache.servicecomb.foundation.metrics.MetricsConst;
 
 import com.netflix.config.DynamicPropertyFactory;
 
@@ -65,7 +65,7 @@ public class SimpleFileContentConvertor implements FileContentConvertor {
     for (int i = 0; i < tagAnValues.length; i += 2) {
       tags.put(tagAnValues[i], tagAnValues[i + 1]);
     }
-    if(nameAndTag[0].startsWith(MetricsConst.JVM)) {
+    if (nameAndTag[0].startsWith(MetricsConst.JVM)) {
       return "jvm." + tags.get(MetricsConst.TAG_NAME);
     } else {
       StringBuilder builder = new StringBuilder();

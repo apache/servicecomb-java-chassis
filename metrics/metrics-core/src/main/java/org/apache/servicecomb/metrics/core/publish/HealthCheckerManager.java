@@ -19,8 +19,9 @@ package org.apache.servicecomb.metrics.core.publish;
 
 import java.util.Map;
 
-import org.apache.servicecomb.metrics.common.HealthCheckResult;
-import org.apache.servicecomb.metrics.common.HealthChecker;
+import org.apache.servicecomb.foundation.metrics.publish.HealthCheckResult;
+import org.apache.servicecomb.foundation.metrics.publish.HealthChecker;
+
 
 public interface HealthCheckerManager {
   void register(HealthChecker checker);

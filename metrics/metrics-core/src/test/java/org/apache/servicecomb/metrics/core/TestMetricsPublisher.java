@@ -19,7 +19,6 @@ package org.apache.servicecomb.metrics.core;
 
 import java.util.Map;
 
-import org.apache.servicecomb.metrics.common.MetricsPublisher;
 import org.apache.servicecomb.metrics.core.monitor.DefaultSystemMonitor;
 import org.apache.servicecomb.metrics.core.monitor.RegistryMonitor;
 import org.apache.servicecomb.metrics.core.publish.DefaultDataSource;
@@ -30,7 +29,7 @@ import org.junit.Test;
 public class TestMetricsPublisher {
   @Test
   public void test() {
-    MetricsPublisher publisher = new DefaultMetricsPublisher(
+    DefaultMetricsPublisher publisher = new DefaultMetricsPublisher(
         new DefaultDataSource(new RegistryMonitor(new DefaultSystemMonitor())));
     Map<String, Double> metrics = publisher.metrics();
     //10 jvm metrics get

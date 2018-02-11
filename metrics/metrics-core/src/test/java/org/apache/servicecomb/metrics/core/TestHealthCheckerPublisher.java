@@ -24,8 +24,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.servicecomb.foundation.common.utils.JsonUtils;
-import org.apache.servicecomb.metrics.common.HealthCheckResult;
-import org.apache.servicecomb.metrics.common.HealthCheckerPublisher;
+import org.apache.servicecomb.foundation.metrics.publish.HealthCheckResult;
 import org.apache.servicecomb.metrics.core.publish.DefaultHealthCheckerPublisher;
 import org.apache.servicecomb.metrics.core.publish.HealthCheckerManager;
 import org.junit.Assert;
@@ -46,11 +45,11 @@ public class TestHealthCheckerPublisher {
     when(manager.check()).thenReturn(results);
     when(manager.check("default")).thenReturn(result);
 
-    HealthCheckerPublisher publisher = new DefaultHealthCheckerPublisher(manager);
+    DefaultHealthCheckerPublisher publisher = new DefaultHealthCheckerPublisher(manager);
     Map<String, HealthCheckResult> content = publisher.health();
-    Assert.assertEquals(JsonUtils.writeValueAsString(result),JsonUtils.writeValueAsString(content.get("default")));
+    Assert.assertEquals(JsonUtils.writeValueAsString(result), JsonUtils.writeValueAsString(content.get("default")));
 
     HealthCheckResult checkResult = publisher.healthWithName("default");
-    Assert.assertEquals(JsonUtils.writeValueAsString(result),JsonUtils.writeValueAsString(checkResult));
+    Assert.assertEquals(JsonUtils.writeValueAsString(result), JsonUtils.writeValueAsString(checkResult));
   }
 }

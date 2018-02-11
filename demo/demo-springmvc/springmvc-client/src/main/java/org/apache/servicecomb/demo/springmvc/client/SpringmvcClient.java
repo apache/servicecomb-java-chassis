@@ -27,7 +27,6 @@ import org.apache.servicecomb.demo.controller.Controller;
 import org.apache.servicecomb.demo.controller.Person;
 import org.apache.servicecomb.foundation.common.utils.BeanUtils;
 import org.apache.servicecomb.foundation.common.utils.Log4jUtils;
-import org.apache.servicecomb.metrics.common.MetricsPublisher;
 import org.apache.servicecomb.provider.springmvc.reference.CseRestTemplate;
 import org.apache.servicecomb.provider.springmvc.reference.RestTemplateBuilder;
 import org.apache.servicecomb.provider.springmvc.reference.UrlWithServiceNameClientHttpRequestFactory;
@@ -44,8 +43,6 @@ public class SpringmvcClient {
 
   private static Controller controller;
 
-  private static MetricsPublisher metricsPublisher;
-
   public static void main(String[] args) throws Exception {
     Log4jUtils.init();
     BeanUtils.init();
@@ -59,7 +56,6 @@ public class SpringmvcClient {
     templateUrlWithServiceName.setRequestFactory(new UrlWithServiceNameClientHttpRequestFactory());
     restTemplate = RestTemplateBuilder.create();
     controller = BeanUtils.getBean("controller");
-    metricsPublisher = BeanUtils.getBean("metricsPublisher");
 
     String prefix = "cse://springmvc";
 
@@ -88,7 +84,7 @@ public class SpringmvcClient {
     //0.5.0 later version metrics integration test
     try {
       Thread.sleep(1000);
-      Map<String, Double> metrics = metricsPublisher.metrics();
+      Map<String, Double> metrics = restTemplate.getForObject(prefix + "/metrics", Map.class);
 
       TestMgr
           .check(true, metrics.get("jvm(statistic=gauge,name=heapUsed)") != 0);

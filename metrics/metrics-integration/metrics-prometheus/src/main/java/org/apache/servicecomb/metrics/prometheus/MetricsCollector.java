@@ -22,7 +22,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.apache.servicecomb.metrics.common.MetricsConst;
+import org.apache.servicecomb.foundation.metrics.MetricsConst;
 import org.apache.servicecomb.metrics.core.publish.DataSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;

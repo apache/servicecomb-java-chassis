@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.metrics.common.publish;
+package org.apache.servicecomb.foundation.metrics.publish;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -24,7 +24,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.apache.servicecomb.metrics.common.MetricsConst;
+import org.apache.servicecomb.foundation.metrics.MetricsConst;
 
 public class MetricNode {
   public final String name;

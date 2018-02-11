@@ -19,7 +19,6 @@ package org.apache.servicecomb.metrics.core.publish;
 
 import java.util.Map;
 
-import org.apache.servicecomb.metrics.common.MetricsPublisher;
 import org.apache.servicecomb.provider.rest.common.RestSchema;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -31,7 +30,7 @@ import io.swagger.annotations.ApiResponses;
 
 @RestSchema(schemaId = "metricsEndpoint")
 @RequestMapping(path = "/metrics")
-public class DefaultMetricsPublisher implements MetricsPublisher {
+public class DefaultMetricsPublisher {
 
   private final DataSource dataSource;
 
@@ -45,7 +44,6 @@ public class DefaultMetricsPublisher implements MetricsPublisher {
   })
   @RequestMapping(path = "/", method = RequestMethod.GET)
   @CrossOrigin
-  @Override
   public Map<String, Double> metrics() {
     return dataSource.measure();
   }

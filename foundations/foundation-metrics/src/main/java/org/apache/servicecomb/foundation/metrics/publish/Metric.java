@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.metrics.common.publish;
+package org.apache.servicecomb.foundation.metrics.publish;
 
 import java.util.HashMap;
 import java.util.List;

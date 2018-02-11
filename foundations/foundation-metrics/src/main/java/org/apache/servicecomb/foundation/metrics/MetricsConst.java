@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.metrics.common;
+package org.apache.servicecomb.foundation.metrics;
 
 public class MetricsConst {
   public static final String JVM = "jvm";

@@ -20,7 +20,7 @@ package org.apache.servicecomb.metrics.core.monitor;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.servicecomb.metrics.common.MetricsConst;
+import org.apache.servicecomb.foundation.metrics.MetricsConst;
 
 public class ConsumerInvocationMonitor {
   private final TimerMonitor consumerLatency;
