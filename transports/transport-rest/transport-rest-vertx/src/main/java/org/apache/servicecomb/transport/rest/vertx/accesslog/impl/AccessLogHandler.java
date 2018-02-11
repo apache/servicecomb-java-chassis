@@ -17,11 +17,8 @@
 
 package org.apache.servicecomb.transport.rest.vertx.accesslog.impl;
 
-import java.util.List;
-
+import org.apache.servicecomb.transport.rest.vertx.accesslog.AccessLogGenerator;
 import org.apache.servicecomb.transport.rest.vertx.accesslog.AccessLogParam;
-import org.apache.servicecomb.transport.rest.vertx.accesslog.element.AccessLogElement;
-import org.apache.servicecomb.transport.rest.vertx.accesslog.parser.AccessLogElementExtraction;
 import org.apache.servicecomb.transport.rest.vertx.accesslog.parser.AccessLogPatternParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,15 +29,10 @@ import io.vertx.ext.web.RoutingContext;
 public class AccessLogHandler implements Handler<RoutingContext> {
   private static Logger LOGGER = LoggerFactory.getLogger("accesslog");
 
-  private static AccessLogElement[] accessLogElements;
+  private AccessLogGenerator accessLogGenerator;
 
   public AccessLogHandler(String rawPattern, AccessLogPatternParser accessLogPatternParser) {
-    List<AccessLogElementExtraction> extractionList = accessLogPatternParser.parsePattern(rawPattern);
-
-    accessLogElements = new AccessLogElement[extractionList.size()];
-    for (int i = 0; i < extractionList.size(); ++i) {
-      accessLogElements[i] = extractionList.get(i).getAccessLogElement();
-    }
+    accessLogGenerator = new AccessLogGenerator(rawPattern, accessLogPatternParser);
   }
 
   @Override
@@ -48,24 +40,8 @@ public class AccessLogHandler implements Handler<RoutingContext> {
     AccessLogParam accessLogParam = new AccessLogParam().setStartMillisecond(System.currentTimeMillis())
         .setRoutingContext(context);
 
-    context.addBodyEndHandler(v -> log(accessLogParam));
+    context.addBodyEndHandler(v -> LOGGER.info(accessLogGenerator.generateLog(accessLogParam)));
 
     context.next();
-  }
-
-  private void log(AccessLogParam accessLogParam) {
-    StringBuilder log = new StringBuilder(128);
-    accessLogParam.setEndMillisecond(System.currentTimeMillis());
-
-    AccessLogElement[] accessLogElements = getAccessLogElements();
-    for (int i = 0; i < accessLogElements.length; ++i) {
-      log.append(accessLogElements[i].getFormattedElement(accessLogParam));
-    }
-
-    LOGGER.info(log.toString());
-  }
-
-  private AccessLogElement[] getAccessLogElements() {
-    return accessLogElements;
   }
 }
