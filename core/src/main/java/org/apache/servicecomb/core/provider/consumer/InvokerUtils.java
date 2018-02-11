@@ -34,9 +34,6 @@ import org.slf4j.LoggerFactory;
 public final class InvokerUtils {
   private static final Logger LOGGER = LoggerFactory.getLogger(InvokerUtils.class);
 
-  private InvokerUtils() {
-  }
-
   public static Object syncInvoke(String microserviceName, String schemaId, String operationName, Object[] args) {
     ReferenceConfig referenceConfig = ReferenceConfigUtils.getForInvoke(microserviceName);
     SchemaMeta schemaMeta = referenceConfig.getMicroserviceMeta().ensureFindSchemaMeta(schemaId);

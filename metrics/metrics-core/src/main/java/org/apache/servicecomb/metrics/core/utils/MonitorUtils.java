@@ -40,17 +40,14 @@ public class MonitorUtils {
 
   public static String getMonitorName(MonitorConfig config) {
     TagList tags = config.getTags();
-    if (tags.size() != 0) {
-      StringBuilder tagPart = new StringBuilder("(");
-      for (Tag tag : tags) {
-        if (!"type".equals(tag.getKey())) {
-          tagPart.append(String.format("%s=%s,", tag.getKey(), tag.getValue()));
-        }
+    StringBuilder tagPart = new StringBuilder("(");
+    for (Tag tag : tags) {
+      if (!"type".equals(tag.getKey())) {
+        tagPart.append(String.format("%s=%s,", tag.getKey(), tag.getValue()));
       }
-      tagPart.deleteCharAt(tagPart.length() - 1);
-      tagPart.append(")");
-      return config.getName() + tagPart.toString();
     }
-    return config.getName();
+    tagPart.deleteCharAt(tagPart.length() - 1);
+    tagPart.append(")");
+    return config.getName() + tagPart.toString();
   }
 }

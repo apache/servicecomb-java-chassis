@@ -125,7 +125,7 @@ public class TestEventAndRunner {
     //sim lease one window time
     Thread.sleep(1000);
 
-    Map<String, Double> metrics = dataSource.measure(1000, false);
+    Map<String, Double> metrics = dataSource.measure(1000, true);
 
     MetricsLoader loader = new MetricsLoader(metrics);
 

@@ -32,7 +32,7 @@ public class MetricsLoader {
     this.metrics = new HashMap<>();
     for (Entry<String, Double> entry : metrics.entrySet()) {
       Metric metric = new Metric(entry.getKey(), entry.getValue());
-      this.metrics.computeIfAbsent(metric.getId(), m -> new ArrayList<>()).add(metric);
+      this.metrics.computeIfAbsent(metric.getName(), m -> new ArrayList<>()).add(metric);
     }
   }
 
@@ -43,9 +43,9 @@ public class MetricsLoader {
     return null;
   }
 
-  public double getFirstMatchMetricValue(String id, String tagKey, String tagValue) {
-    if (metrics.containsKey(id)) {
-      for (Metric metric : this.metrics.get(id)) {
+  public double getFirstMatchMetricValue(String name, String tagKey, String tagValue) {
+    if (metrics.containsKey(name)) {
+      for (Metric metric : this.metrics.get(name)) {
         if (metric.containTag(tagKey, tagValue)) {
           return metric.getValue();
         }

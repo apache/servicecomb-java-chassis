@@ -22,14 +22,14 @@ import java.util.List;
 import java.util.Map;
 
 public class Metric {
-  private final String id;
+  private final String name;
 
   private final Map<String, String> tags;
 
   private double value;
 
-  public String getId() {
-    return id;
+  public String getName() {
+    return name;
   }
 
   public Map<String, String> getTags() {
@@ -40,14 +40,14 @@ public class Metric {
     return value;
   }
 
-  public Metric(String fullId, double value) {
-    String[] nameAndTag = fullId.split("\\(");
+  public Metric(String id, double value) {
+    String[] nameAndTag = id.split("\\(");
     this.tags = new HashMap<>();
     String[] tagAnValues = nameAndTag[1].split("[=,)]");
     for (int i = 0; i < tagAnValues.length; i += 2) {
       this.tags.put(tagAnValues[i], tagAnValues[i + 1]);
     }
-    this.id = nameAndTag[0];
+    this.name = nameAndTag[0];
     this.value = value;
   }
 

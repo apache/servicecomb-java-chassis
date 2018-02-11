@@ -27,15 +27,11 @@ import java.util.Map.Entry;
 import org.apache.servicecomb.foundation.metrics.MetricsConst;
 
 public class MetricNode {
-  public final String name;
+  private final String tagKey;
 
   private final List<Metric> metrics;
 
   private final Map<String, MetricNode> children;
-
-  public String getName() {
-    return name;
-  }
 
   public List<Metric> getMetrics() {
     return metrics;
@@ -73,14 +69,14 @@ public class MetricNode {
 
   public MetricNode(List<Metric> metrics, String... groupTagKeys) {
     if (groupTagKeys == null || groupTagKeys.length == 0) {
-      this.name = null;
+      this.tagKey = null;
       this.metrics = metrics;
       this.children = null;
     } else {
-      this.name = groupTagKeys[0];
+      this.tagKey = groupTagKeys[0];
       this.metrics = null;
       this.children = new HashMap<>();
-      Map<String, List<Metric>> groups = groupByTag(metrics, this.name);
+      Map<String, List<Metric>> groups = groupByTag(metrics, this.tagKey);
       if (groupTagKeys.length == 1) {
         for (Entry<String, List<Metric>> group : groups.entrySet()) {
           this.children.put(group.getKey(), new MetricNode(null, group.getValue(), null));
@@ -94,8 +90,8 @@ public class MetricNode {
     }
   }
 
-  private MetricNode(String name, List<Metric> metrics, Map<String, MetricNode> children) {
-    this.name = name;
+  private MetricNode(String tagKey, List<Metric> metrics, Map<String, MetricNode> children) {
+    this.tagKey = tagKey;
     this.metrics = metrics;
     this.children = children;
   }
