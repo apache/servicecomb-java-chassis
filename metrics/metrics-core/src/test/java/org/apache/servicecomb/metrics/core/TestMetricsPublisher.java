@@ -21,7 +21,6 @@ import java.util.Map;
 
 import org.apache.servicecomb.metrics.core.monitor.DefaultSystemMonitor;
 import org.apache.servicecomb.metrics.core.monitor.RegistryMonitor;
-import org.apache.servicecomb.metrics.core.publish.DefaultDataSource;
 import org.apache.servicecomb.metrics.core.publish.DefaultMetricsPublisher;
 import org.junit.Assert;
 import org.junit.Test;

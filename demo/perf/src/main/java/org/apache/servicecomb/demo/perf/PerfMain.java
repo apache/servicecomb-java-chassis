@@ -24,7 +24,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.apache.servicecomb.foundation.common.utils.BeanUtils;
 import org.apache.servicecomb.foundation.vertx.VertxUtils;
-import org.apache.servicecomb.metrics.core.publish.DataSource;
+import org.apache.servicecomb.metrics.core.DataSource;
 
 public class PerfMain {
 
@@ -45,5 +45,4 @@ public class PerfMain {
       consumer.runConsumer();
     }
   }
-
 }

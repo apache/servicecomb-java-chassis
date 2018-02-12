@@ -15,42 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.foundation.metrics.publish;
+package org.apache.servicecomb.foundation.metrics.health;
 
-public class HealthCheckResult {
-  private boolean healthy;
+public interface HealthChecker {
+  String getName();
 
-  private String information;
-
-  //unsupport object or generic type,so string..
-  private String extraData;
-
-  private long timestamp;
-
-  public boolean isHealthy() {
-    return healthy;
-  }
-
-  public String getInformation() {
-    return information;
-  }
-
-  public String getExtraData() {
-    return extraData;
-  }
-
-  public long getTimestamp() {
-    return timestamp;
-  }
-
-  public HealthCheckResult() {
-  }
-
-  public HealthCheckResult(boolean healthy, String information, String extraData) {
-    this();
-    this.healthy = healthy;
-    this.information = information;
-    this.extraData = extraData;
-    this.timestamp = System.currentTimeMillis();
-  }
+  HealthCheckResult check();
 }
