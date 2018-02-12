@@ -63,7 +63,7 @@ public class AccessLogGeneratorTest {
 
   @Test
   public void testConstructor() {
-    AccessLogItem[] elements = Deencapsulation.getField(ACCESS_LOG_GENERATOR, "accessLogElements");
+    AccessLogItem[] elements = Deencapsulation.getField(ACCESS_LOG_GENERATOR, "accessLogItems");
     assertEquals(3, elements.length);
     assertEquals(HttpMethodItem.class, elements[0].getClass());
     assertEquals(PlainTextItem.class, elements[1].getClass());
