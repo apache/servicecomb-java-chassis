@@ -30,7 +30,7 @@ import org.apache.servicecomb.foundation.metrics.health.HealthChecker;
 import org.apache.servicecomb.foundation.metrics.health.HealthCheckerManager;
 import org.apache.servicecomb.metrics.core.health.DefaultHealthCheckExtraData;
 import org.apache.servicecomb.metrics.core.health.DefaultMicroserviceHealthChecker;
-import org.apache.servicecomb.metrics.core.publish.DefaultHealthCheckerPublisher;
+import org.apache.servicecomb.metrics.core.publish.HealthCheckerPublisher;
 import org.apache.servicecomb.serviceregistry.RegistryUtils;
 import org.apache.servicecomb.serviceregistry.api.registry.Microservice;
 import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
@@ -78,7 +78,7 @@ public class TestHealthCheckerPublisher {
     when(manager.check()).thenReturn(results);
     when(manager.check("default")).thenReturn(result.check());
 
-    DefaultHealthCheckerPublisher publisher = new DefaultHealthCheckerPublisher(manager);
+    HealthCheckerPublisher publisher = new HealthCheckerPublisher(manager);
     Map<String, HealthCheckResult> content = publisher.health();
 
     DefaultHealthCheckExtraData data = JsonUtils.OBJ_MAPPER

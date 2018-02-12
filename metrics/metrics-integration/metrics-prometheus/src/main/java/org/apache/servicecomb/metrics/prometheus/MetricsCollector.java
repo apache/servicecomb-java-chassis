@@ -23,22 +23,12 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.apache.servicecomb.foundation.metrics.MetricsConst;
-import org.apache.servicecomb.metrics.core.DataSource;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import org.apache.servicecomb.metrics.core.MetricsDataSource;
 
 import io.prometheus.client.Collector;
 import io.prometheus.client.Collector.MetricFamilySamples.Sample;
 
-@Component
 public class MetricsCollector extends Collector implements Collector.Describable {
-
-  private final DataSource dataSource;
-
-  @Autowired
-  public MetricsCollector(DataSource dataSource) {
-    this.dataSource = dataSource;
-  }
 
   @Override
   public List<MetricFamilySamples> collect() {
@@ -51,7 +41,8 @@ public class MetricsCollector extends Collector implements Collector.Describable
   }
 
   private List<MetricFamilySamples> load() {
-    Map<String, Double> registryMetric = dataSource.measure(dataSource.getAppliedWindowTime().get(0), true);
+    Map<String, Double> registryMetric = MetricsDataSource.getInstance()
+        .measure(MetricsDataSource.getInstance().getAppliedWindowTime().get(0), true);
     List<MetricFamilySamples> familySamples = new ArrayList<>();
 
     List<Sample> samples = new ArrayList<>();

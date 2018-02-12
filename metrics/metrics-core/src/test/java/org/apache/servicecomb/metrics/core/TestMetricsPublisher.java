@@ -19,17 +19,14 @@ package org.apache.servicecomb.metrics.core;
 
 import java.util.Map;
 
-import org.apache.servicecomb.metrics.core.monitor.DefaultSystemMonitor;
-import org.apache.servicecomb.metrics.core.monitor.RegistryMonitor;
-import org.apache.servicecomb.metrics.core.publish.DefaultMetricsPublisher;
+import org.apache.servicecomb.metrics.core.publish.MetricsPublisher;
 import org.junit.Assert;
 import org.junit.Test;
 
 public class TestMetricsPublisher {
   @Test
   public void test() {
-    DefaultMetricsPublisher publisher = new DefaultMetricsPublisher(
-        new DefaultDataSource(new RegistryMonitor(new DefaultSystemMonitor())));
+    MetricsPublisher publisher = new MetricsPublisher();
     Map<String, Double> metrics = publisher.metrics();
     //10 jvm metrics get
     Assert.assertEquals(10, metrics.size());

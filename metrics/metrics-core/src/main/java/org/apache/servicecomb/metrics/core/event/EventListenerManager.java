@@ -18,7 +18,17 @@
 package org.apache.servicecomb.metrics.core.event;
 
 import org.apache.servicecomb.foundation.common.event.EventListener;
+import org.apache.servicecomb.foundation.common.utils.EventUtils;
+import org.apache.servicecomb.metrics.core.monitor.RegistryMonitor;
 
-public interface EventListenerManager {
-  void registerEventListener(EventListener listener);
+public class EventListenerManager {
+  public EventListenerManager(RegistryMonitor registryMonitor) {
+    this.registerEventListener(new InvocationStartedEventListener(registryMonitor));
+    this.registerEventListener(new InvocationStartProcessingEventListener(registryMonitor));
+    this.registerEventListener(new InvocationFinishedEventListener(registryMonitor));
+  }
+
+  public void registerEventListener(EventListener listener) {
+    EventUtils.registerEventListener(listener);
+  }
 }

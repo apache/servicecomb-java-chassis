@@ -21,20 +21,31 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.servicecomb.foundation.common.concurrent.ConcurrentHashMapEx;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
 
-@Component
 public class RegistryMonitor {
 
-  private final SystemMonitor systemMonitor;
+  private SystemMonitor systemMonitor;
 
-  private final Map<String, ConsumerInvocationMonitor> consumerInvocationMonitors;
+  private Map<String, ConsumerInvocationMonitor> consumerInvocationMonitors;
 
-  private final Map<String, ProducerInvocationMonitor> producerInvocationMonitors;
+  private Map<String, ProducerInvocationMonitor> producerInvocationMonitors;
 
-  @Autowired
+  private static final RegistryMonitor INSTANCE = new RegistryMonitor();
+
+  public static RegistryMonitor getInstance() {
+    return INSTANCE;
+  }
+
+  private RegistryMonitor() {
+    init(SPIServiceUtils.getTargetService(SystemMonitor.class));
+  }
+
   public RegistryMonitor(SystemMonitor systemMonitor) {
+    init(systemMonitor);
+  }
+
+  private void init(SystemMonitor systemMonitor) {
     this.systemMonitor = systemMonitor;
     this.consumerInvocationMonitors = new ConcurrentHashMapEx<>();
     this.producerInvocationMonitors = new ConcurrentHashMapEx<>();

@@ -18,12 +18,30 @@
 package org.apache.servicecomb.foundation.metrics.health;
 
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
+public class HealthCheckerManager {
+  private final Map<String, HealthChecker> healthCheckers;
 
-public interface HealthCheckerManager {
-  void register(HealthChecker checker);
+  public HealthCheckerManager() {
+    this.healthCheckers = new ConcurrentHashMap<>();
+  }
 
-  Map<String, HealthCheckResult> check();
+  public void register(HealthChecker checker) {
+    healthCheckers.put(checker.getName(), checker);
+  }
 
-  HealthCheckResult check(String name);
+  public Map<String, HealthCheckResult> check() {
+    return healthCheckers.entrySet().stream().collect(Collectors.toMap(Entry::getKey, e -> e.getValue().check()));
+  }
+
+  public HealthCheckResult check(String name) {
+    HealthChecker checker = healthCheckers.get(name);
+    if (checker != null) {
+      return checker.check();
+    }
+    return null;
+  }
 }

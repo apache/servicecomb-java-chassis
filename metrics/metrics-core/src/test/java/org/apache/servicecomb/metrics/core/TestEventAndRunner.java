@@ -36,7 +36,7 @@ import org.apache.servicecomb.foundation.common.utils.EventUtils;
 import org.apache.servicecomb.foundation.metrics.MetricsConst;
 import org.apache.servicecomb.foundation.metrics.publish.MetricNode;
 import org.apache.servicecomb.foundation.metrics.publish.MetricsLoader;
-import org.apache.servicecomb.metrics.core.event.DefaultEventListenerManager;
+import org.apache.servicecomb.metrics.core.event.EventListenerManager;
 import org.apache.servicecomb.metrics.core.monitor.DefaultSystemMonitor;
 import org.apache.servicecomb.metrics.core.monitor.RegistryMonitor;
 import org.apache.servicecomb.swagger.invocation.InvocationType;
@@ -68,13 +68,13 @@ public class TestEventAndRunner {
 
     DefaultSystemMonitor systemMonitor = new DefaultSystemMonitor(systemMXBean, threadMXBean, memoryMXBean);
     RegistryMonitor monitor = new RegistryMonitor(systemMonitor);
-    DefaultDataSource dataSource = new DefaultDataSource(monitor, "1000,2000,3000");
+    MetricsDataSource dataSource = new MetricsDataSource(monitor, "1000,2000,4000");
 
     List<Long> intervals = dataSource.getAppliedWindowTime();
     Assert.assertEquals(intervals.size(), 3);
-    Assert.assertThat(intervals, containsInAnyOrder(Arrays.asList(1000L, 2000L, 3000L).toArray()));
+    Assert.assertThat(intervals, containsInAnyOrder(Arrays.asList(1000L, 2000L, 4000L).toArray()));
 
-    new DefaultEventListenerManager(monitor);
+    new EventListenerManager(monitor);
 
     //==========================================================================
     //fun1 is a PRODUCER invocation call 2 time and all is completed
@@ -121,10 +121,11 @@ public class TestEventAndRunner {
 
     //==========================================================================
 
-    //sim lease one window time
-    Thread.sleep(1000);
+    //sim at lease one window time
+    //increase up to 4 seconds in order to prevent low-probability test failed on ci
+    Thread.sleep(4000);
 
-    Map<String, Double> metrics = dataSource.measure(1000, true);
+    Map<String, Double> metrics = dataSource.measure(4000, true);
 
     MetricsLoader loader = new MetricsLoader(metrics);
 
@@ -164,9 +165,9 @@ public class TestEventAndRunner {
     Assert.assertEquals(700, node1_whole_status.getChildrenNode("500").getMatchStatisticMetricValue("max"), 0);
     Assert.assertEquals(1, node1_whole_status.getChildrenNode("500").getMatchStatisticMetricValue("count"), 0);
     Assert.assertEquals(700, node1_whole_status.getChildrenNode("500").getMatchStatisticMetricValue("totalTime"), 0);
-    Assert.assertEquals(2, node1_whole_status.getChildrenNode("200").getMatchStatisticMetricValue("tps"), 0);
+    Assert.assertEquals(0.5, node1_whole_status.getChildrenNode("200").getMatchStatisticMetricValue("tps"), 0);
     Assert.assertEquals(2, node1_whole_status.getChildrenNode("200").getMatchStatisticMetricValue("totalCount"), 0);
-    Assert.assertEquals(1, node1_whole_status.getChildrenNode("500").getMatchStatisticMetricValue("tps"), 0);
+    Assert.assertEquals(0.25, node1_whole_status.getChildrenNode("500").getMatchStatisticMetricValue("tps"), 0);
     Assert.assertEquals(1, node1_whole_status.getChildrenNode("500").getMatchStatisticMetricValue("totalCount"), 0);
 
     //check ConsumerMetrics
@@ -177,7 +178,7 @@ public class TestEventAndRunner {
     Assert.assertEquals(300, node2_whole_status.getChildrenNode("200").getMatchStatisticMetricValue("max"), 0);
     Assert.assertEquals(1, node2_whole_status.getChildrenNode("200").getMatchStatisticMetricValue("count"), 0);
     Assert.assertEquals(300, node2_whole_status.getChildrenNode("200").getMatchStatisticMetricValue("totalTime"), 0);
-    Assert.assertEquals(1, node2_whole_status.getChildrenNode("200").getMatchStatisticMetricValue("tps"), 0);
+    Assert.assertEquals(0.25, node2_whole_status.getChildrenNode("200").getMatchStatisticMetricValue("tps"), 0);
     Assert.assertEquals(1, node2_whole_status.getChildrenNode("200").getMatchStatisticMetricValue("totalCount"), 0);
 
     //fun3

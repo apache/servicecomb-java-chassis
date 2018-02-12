@@ -19,9 +19,10 @@ package org.apache.servicecomb.metrics.core.publish;
 
 import java.util.Map;
 
-import org.apache.servicecomb.metrics.core.DataSource;
+import org.apache.servicecomb.metrics.core.MetricsDataSource;
+import org.apache.servicecomb.metrics.core.event.EventListenerManager;
+import org.apache.servicecomb.metrics.core.monitor.RegistryMonitor;
 import org.apache.servicecomb.provider.rest.common.RestSchema;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -31,13 +32,10 @@ import io.swagger.annotations.ApiResponses;
 
 @RestSchema(schemaId = "metricsEndpoint")
 @RequestMapping(path = "/metrics")
-public class DefaultMetricsPublisher {
+public class MetricsPublisher {
 
-  private final DataSource dataSource;
-
-  @Autowired
-  public DefaultMetricsPublisher(DataSource dataSource) {
-    this.dataSource = dataSource;
+  public MetricsPublisher() {
+    new EventListenerManager(RegistryMonitor.getInstance());
   }
 
   @ApiResponses({
@@ -46,6 +44,6 @@ public class DefaultMetricsPublisher {
   @RequestMapping(path = "/", method = RequestMethod.GET)
   @CrossOrigin
   public Map<String, Double> metrics() {
-    return dataSource.measure();
+    return MetricsDataSource.getInstance().measure();
   }
 }
