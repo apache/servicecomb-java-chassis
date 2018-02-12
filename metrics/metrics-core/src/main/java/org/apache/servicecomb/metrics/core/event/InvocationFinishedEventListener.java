@@ -20,8 +20,6 @@ package org.apache.servicecomb.metrics.core.event;
 import org.apache.servicecomb.core.metrics.InvocationFinishedEvent;
 import org.apache.servicecomb.foundation.common.event.Event;
 import org.apache.servicecomb.foundation.common.event.EventListener;
-import org.apache.servicecomb.metrics.common.MetricsDimension;
-import org.apache.servicecomb.metrics.core.event.dimension.StatusConvertor;
 import org.apache.servicecomb.metrics.core.monitor.ConsumerInvocationMonitor;
 import org.apache.servicecomb.metrics.core.monitor.ProducerInvocationMonitor;
 import org.apache.servicecomb.metrics.core.monitor.RegistryMonitor;
@@ -30,11 +28,8 @@ import org.apache.servicecomb.swagger.invocation.InvocationType;
 public class InvocationFinishedEventListener implements EventListener {
   private final RegistryMonitor registryMonitor;
 
-  private final StatusConvertor convertor;
-
-  public InvocationFinishedEventListener(RegistryMonitor registryMonitor, StatusConvertor convertor) {
+  public InvocationFinishedEventListener(RegistryMonitor registryMonitor) {
     this.registryMonitor = registryMonitor;
-    this.convertor = convertor;
   }
 
   @Override
@@ -45,16 +40,16 @@ public class InvocationFinishedEventListener implements EventListener {
   @Override
   public void process(Event data) {
     InvocationFinishedEvent event = (InvocationFinishedEvent) data;
-    String statusDimensionValue = convertor.convert(event.isSuccess(), event.getStatusCode());
     if (InvocationType.PRODUCER.equals(event.getInvocationType())) {
       ProducerInvocationMonitor monitor = registryMonitor.getProducerInvocationMonitor(event.getOperationName());
-      monitor.getExecutionTime().update(event.getProcessElapsedNanoTime());
-      monitor.getProducerLatency().update(event.getTotalElapsedNanoTime());
-      monitor.getProducerCall().increment(MetricsDimension.DIMENSION_STATUS, statusDimensionValue);
+      monitor.getLifeTimeInQueue().update(event.getInQueueNanoTime(), String.valueOf(event.getStatusCode()));
+      monitor.getExecutionTime().update(event.getProcessElapsedNanoTime(), String.valueOf(event.getStatusCode()));
+      monitor.getProducerLatency().update(event.getTotalElapsedNanoTime(), String.valueOf(event.getStatusCode()));
+      monitor.getProducerCall().increment(String.valueOf(event.getStatusCode()));
     } else {
       ConsumerInvocationMonitor monitor = registryMonitor.getConsumerInvocationMonitor(event.getOperationName());
-      monitor.getConsumerLatency().update(event.getTotalElapsedNanoTime());
-      monitor.getConsumerCall().increment(MetricsDimension.DIMENSION_STATUS, statusDimensionValue);
+      monitor.getConsumerLatency().update(event.getTotalElapsedNanoTime(), String.valueOf(event.getStatusCode()));
+      monitor.getConsumerCall().increment(String.valueOf(event.getStatusCode()));
     }
   }
 }

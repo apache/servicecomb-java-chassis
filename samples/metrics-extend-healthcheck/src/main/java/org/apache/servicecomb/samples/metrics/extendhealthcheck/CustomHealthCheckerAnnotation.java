@@ -17,8 +17,8 @@
 
 package org.apache.servicecomb.samples.metrics.extendhealthcheck;
 
-import org.apache.servicecomb.metrics.common.HealthCheckResult;
-import org.apache.servicecomb.metrics.common.HealthChecker;
+import org.apache.servicecomb.foundation.metrics.publish.HealthCheckResult;
+import org.apache.servicecomb.foundation.metrics.publish.HealthChecker;
 import org.springframework.stereotype.Component;
 
 //this health check will auto register because spring bean annotation

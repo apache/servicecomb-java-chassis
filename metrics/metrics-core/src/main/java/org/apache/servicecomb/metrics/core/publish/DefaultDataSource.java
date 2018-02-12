@@ -26,15 +26,14 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.servicecomb.foundation.common.exceptions.ServiceCombException;
-import org.apache.servicecomb.metrics.common.RegistryMetric;
 import org.apache.servicecomb.metrics.core.MetricsConfig;
 import org.apache.servicecomb.metrics.core.monitor.RegistryMonitor;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.google.common.collect.Lists;
 import com.netflix.config.DynamicPropertyFactory;
-import com.netflix.servo.monitor.Pollers;
 import com.netflix.servo.util.Strings;
 
 @Component
@@ -52,9 +51,9 @@ public class DefaultDataSource implements DataSource {
   public DefaultDataSource(RegistryMonitor registryMonitor, String pollingSettings) {
     this.registryMonitor = registryMonitor;
 
-    String[] singlePollingSettings = pollingSettings.split(",");
+    String[] pollingSettingStrings = pollingSettings.split(",");
     Set<Long> parsePollingSettings = new HashSet<>();
-    for (String singlePollingSetting : singlePollingSettings) {
+    for (String singlePollingSetting : pollingSettingStrings) {
       try {
         long settingValue = Long.parseLong(singlePollingSetting);
         if (settingValue > 0) {
@@ -67,32 +66,37 @@ public class DefaultDataSource implements DataSource {
         throw new ServiceCombException("bad format servicecomb.metrics.window_time", e);
       }
     }
-    String finalPollingSettings = Strings.join(",", parsePollingSettings.iterator());
-    System.getProperties().setProperty("servo.pollers", finalPollingSettings);
-    List<Long> appliedWindowTimes = getAppliedWindowTime();
-    for (int i = 0; i < appliedWindowTimes.size(); i++) {
-      this.appliedWindowTimes.put(appliedWindowTimes.get(i), i);
-    }
-  }
 
-  @Override
-  public RegistryMetric getRegistryMetric() {
-    return getRegistryMetric(getAppliedWindowTime().get(0));
-  }
-
-  @Override
-  public RegistryMetric getRegistryMetric(long windowTime) {
-    Integer index = appliedWindowTimes.get(windowTime);
-    if (index != null) {
-      return registryMonitor.toRegistryMetric(index);
+    List<Long> sortedPollingSettings = Lists.newArrayList(parsePollingSettings);
+    System.getProperties().setProperty("servo.pollers", Strings.join(",", sortedPollingSettings.iterator()));
+    for (int i = 0; i < sortedPollingSettings.size(); i++) {
+      this.appliedWindowTimes.put(sortedPollingSettings.get(i), i);
     }
-    throw new InvocationException(BAD_REQUEST,
-        "windowTime : " + windowTime + " unset in servicecomb.metrics.window_time,current available are : " +
-            Strings.join(",", getAppliedWindowTime().iterator()));
   }
 
   @Override
   public List<Long> getAppliedWindowTime() {
-    return Pollers.getPollingIntervals();
+    return Lists.newArrayList(appliedWindowTimes.keySet());
+  }
+
+  @Override
+  public Map<String, Double> measure() {
+    return measure(getAppliedWindowTime().get(0));
+  }
+
+  @Override
+  public Map<String, Double> measure(long windowTime) {
+    return measure(windowTime, false);
+  }
+
+  @Override
+  public Map<String, Double> measure(long windowTime, boolean calculateLatency) {
+    Integer index = appliedWindowTimes.get(windowTime);
+    if (index != null) {
+      return registryMonitor.measure(index, calculateLatency);
+    }
+    throw new InvocationException(BAD_REQUEST,
+        "windowTime : " + windowTime + " unset in servicecomb.metrics.window_time,current available are : " +
+            Strings.join(",", getAppliedWindowTime().iterator()));
   }
 }

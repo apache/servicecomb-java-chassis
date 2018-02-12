@@ -20,8 +20,6 @@ package org.apache.servicecomb.metrics.core.event;
 import org.apache.servicecomb.core.metrics.InvocationStartedEvent;
 import org.apache.servicecomb.foundation.common.event.Event;
 import org.apache.servicecomb.foundation.common.event.EventListener;
-import org.apache.servicecomb.metrics.common.MetricsDimension;
-import org.apache.servicecomb.metrics.core.monitor.ConsumerInvocationMonitor;
 import org.apache.servicecomb.metrics.core.monitor.ProducerInvocationMonitor;
 import org.apache.servicecomb.metrics.core.monitor.RegistryMonitor;
 import org.apache.servicecomb.swagger.invocation.InvocationType;
@@ -45,10 +43,6 @@ public class InvocationStartedEventListener implements EventListener {
     if (InvocationType.PRODUCER.equals(event.getInvocationType())) {
       ProducerInvocationMonitor monitor = registryMonitor.getProducerInvocationMonitor(event.getOperationName());
       monitor.getWaitInQueue().increment();
-      monitor.getProducerCall().increment(MetricsDimension.DIMENSION_STATUS, MetricsDimension.DIMENSION_STATUS_ALL);
-    } else {
-      ConsumerInvocationMonitor monitor = registryMonitor.getConsumerInvocationMonitor(event.getOperationName());
-      monitor.getConsumerCall().increment(MetricsDimension.DIMENSION_STATUS, MetricsDimension.DIMENSION_STATUS_ALL);
     }
   }
 }

@@ -16,16 +16,18 @@
  */
 package org.apache.servicecomb.demo.perf;
 
+import java.util.Map;
 import java.util.Map.Entry;
 
+import org.apache.servicecomb.foundation.metrics.MetricsConst;
+import org.apache.servicecomb.foundation.metrics.publish.MetricNode;
+import org.apache.servicecomb.foundation.metrics.publish.MetricsLoader;
 import org.apache.servicecomb.foundation.vertx.VertxUtils;
-import org.apache.servicecomb.metrics.common.ConsumerInvocationMetric;
-import org.apache.servicecomb.metrics.common.MetricsDimension;
-import org.apache.servicecomb.metrics.common.ProducerInvocationMetric;
-import org.apache.servicecomb.metrics.common.RegistryMetric;
 import org.apache.servicecomb.metrics.core.publish.DataSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.common.collect.Lists;
 
 import io.vertx.core.impl.VertxImplEx;
 
@@ -39,21 +41,21 @@ public class PerfMetricsFilePublisher {
   }
 
   public void onCycle() {
-    RegistryMetric metric = dataSource.getRegistryMetric();
+    Map<String, Double> metrics = dataSource.measure(dataSource.getAppliedWindowTime().get(0), true);
+    MetricsLoader loader = new MetricsLoader(metrics);
 
     StringBuilder sb = new StringBuilder();
     sb.append("\n");
 
-    collectSystemMetrics(metric, sb);
-    collectVertxMetrics(metric, sb);
-    collectConsumerMetrics(metric, sb);
-    collectProducerMetrics(metric, sb);
+    collectSystemMetrics(loader, sb);
+    collectVertxMetrics(loader, sb);
+    collectMetrics(loader, sb);
 
     LOGGER.info(sb.toString());
   }
 
-  protected void collectSystemMetrics(RegistryMetric metric, StringBuilder sb) {
-    double cpu = metric.getInstanceMetric().getSystemMetric().getCpuLoad();
+  private void collectSystemMetrics(MetricsLoader loader, StringBuilder sb) {
+    double cpu = loader.getFirstMatchMetricValue(MetricsConst.JVM, MetricsConst.TAG_NAME, "cpuLoad");
     // can not get cpu usage in windows, so skip this information
     if (cpu >= 0) {
       sb.append("cpu: ")
@@ -62,7 +64,7 @@ public class PerfMetricsFilePublisher {
     }
   }
 
-  protected void collectVertxMetrics(RegistryMetric metric, StringBuilder sb) {
+  private void collectVertxMetrics(MetricsLoader loader, StringBuilder sb) {
     sb.append("vertx:\n")
         .append("  name       eventLoopContext-created\n");
     for (Entry<String, VertxImplEx> entry : VertxUtils.getVertxMap().entrySet()) {
@@ -72,55 +74,55 @@ public class PerfMetricsFilePublisher {
     }
   }
 
-  protected void collectProducerMetrics(RegistryMetric metric, StringBuilder sb) {
-    if (metric.getProducerMetrics().isEmpty()) {
-      return;
-    }
+  private void collectMetrics(MetricsLoader loader, StringBuilder sb) {
+    MetricNode treeNode = loader
+        .getMetricTree(MetricsConst.SERVICECOMB_INVOCATION, MetricsConst.TAG_ROLE, MetricsConst.TAG_OPERATION,
+            MetricsConst.TAG_STATUS);
 
-    sb.append("producer:\n"
-        + "  total               tps     latency(ms) queue(ms) execute(ms) name\n");
-    for (Entry<String, ProducerInvocationMetric> entry : metric.getProducerMetrics().entrySet()) {
-      String opName = entry.getKey();
-      sb.append(
-          String.format("  %-19d %-7d %-11.3f %-9.3f %-11.3f %s\n",
-              entry.getValue()
-                  .getProducerCall()
-                  .getTotalValue(MetricsDimension.DIMENSION_STATUS, MetricsDimension.DIMENSION_STATUS_ALL)
-                  .getValue(),
-              entry.getValue()
-                  .getProducerCall()
-                  .getTpsValue(MetricsDimension.DIMENSION_STATUS, MetricsDimension.DIMENSION_STATUS_ALL)
-                  .getValue()
-                  .longValue(),
-              entry.getValue().getProducerLatency().getAverage(),
-              entry.getValue().getLifeTimeInQueue().getAverage(),
-              entry.getValue().getExecutionTime().getAverage(),
-              opName));
-    }
-  }
+    if (treeNode != null && treeNode.getChildren().size() != 0) {
+      MetricNode consumerNode = treeNode.getChildren().get(MetricsConst.ROLE_CONSUMER);
+      if (consumerNode != null) {
+        sb.append("consumer:\n");
+        sb.append("  tps     latency(ms) status  operation\n");
+        for (Entry<String, MetricNode> operationNode : consumerNode.getChildren().entrySet()) {
+          for (Entry<String, MetricNode> statusNode : operationNode.getValue().getChildren().entrySet()) {
+            sb.append(String.format("  %-7.0f %-11.3f %-9s %s\n",
+                statusNode.getValue()
+                    .getFirstMatchMetricValue(Lists.newArrayList(MetricsConst.TAG_STAGE, MetricsConst.TAG_STATISTIC),
+                        Lists.newArrayList(MetricsConst.STAGE_WHOLE, "tps")),
+                statusNode.getValue()
+                    .getFirstMatchMetricValue(Lists.newArrayList(MetricsConst.TAG_STAGE, MetricsConst.TAG_STATISTIC),
+                        Lists.newArrayList(MetricsConst.STAGE_WHOLE, "latency")),
+                statusNode.getKey(),
+                operationNode.getKey()));
+          }
+        }
+      }
 
-  protected void collectConsumerMetrics(RegistryMetric metric, StringBuilder sb) {
-    if (metric.getConsumerMetrics().isEmpty()) {
-      return;
-    }
-
-    sb.append("consumer:\n"
-        + "  total               tps     latency(ms) name\n");
-    for (Entry<String, ConsumerInvocationMetric> entry : metric.getConsumerMetrics().entrySet()) {
-      String opName = entry.getKey();
-      sb.append(String
-          .format("  %-19d %-7d %-11.3f %s\n",
-              entry.getValue()
-                  .getConsumerCall()
-                  .getTotalValue(MetricsDimension.DIMENSION_STATUS, MetricsDimension.DIMENSION_STATUS_ALL)
-                  .getValue(),
-              entry.getValue()
-                  .getConsumerCall()
-                  .getTpsValue(MetricsDimension.DIMENSION_STATUS, MetricsDimension.DIMENSION_STATUS_ALL)
-                  .getValue()
-                  .longValue(),
-              entry.getValue().getConsumerLatency().getAverage(),
-              opName));
+      MetricNode producerNode = treeNode.getChildren().get(MetricsConst.ROLE_PRODUCER);
+      if (producerNode != null) {
+        sb.append("producer:\n");
+        sb.append("  tps     latency(ms) queue(ms) execute(ms) status  operation\n");
+        for (Entry<String, MetricNode> operationNode : producerNode.getChildren().entrySet()) {
+          for (Entry<String, MetricNode> statusNode : operationNode.getValue().getChildren().entrySet()) {
+            sb.append(String.format("  %-7.0f %-11.3f %-9.3f %-11.3f %-7s %s\n",
+                statusNode.getValue()
+                    .getFirstMatchMetricValue(Lists.newArrayList(MetricsConst.TAG_STAGE, MetricsConst.TAG_STATISTIC),
+                        Lists.newArrayList(MetricsConst.STAGE_WHOLE, "tps")),
+                statusNode.getValue()
+                    .getFirstMatchMetricValue(Lists.newArrayList(MetricsConst.TAG_STAGE, MetricsConst.TAG_STATISTIC),
+                        Lists.newArrayList(MetricsConst.STAGE_WHOLE, "latency")),
+                statusNode.getValue()
+                    .getFirstMatchMetricValue(Lists.newArrayList(MetricsConst.TAG_STAGE, MetricsConst.TAG_STATISTIC),
+                        Lists.newArrayList(MetricsConst.STAGE_QUEUE, "latency")),
+                statusNode.getValue()
+                    .getFirstMatchMetricValue(Lists.newArrayList(MetricsConst.TAG_STAGE, MetricsConst.TAG_STATISTIC),
+                        Lists.newArrayList(MetricsConst.STAGE_EXECUTION, "latency")),
+                statusNode.getKey(),
+                operationNode.getKey()));
+          }
+        }
+      }
     }
   }
 }

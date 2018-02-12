@@ -21,9 +21,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.servicecomb.foundation.common.concurrent.ConcurrentHashMapEx;
-import org.apache.servicecomb.metrics.common.ConsumerInvocationMetric;
-import org.apache.servicecomb.metrics.common.ProducerInvocationMetric;
-import org.apache.servicecomb.metrics.common.RegistryMetric;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -51,16 +48,14 @@ public class RegistryMonitor {
     return producerInvocationMonitors.computeIfAbsent(operationName, i -> new ProducerInvocationMonitor(operationName));
   }
 
-  public RegistryMetric toRegistryMetric(int windowTimeIndex) {
-    Map<String, ConsumerInvocationMetric> consumerInvocationMetrics = new HashMap<>();
+  public Map<String, Double> measure(int windowTimeIndex, boolean calculateLatency) {
+    Map<String, Double> measurements = new HashMap<>(systemMonitor.measure());
     for (ConsumerInvocationMonitor monitor : this.consumerInvocationMonitors.values()) {
-      consumerInvocationMetrics.put(monitor.getOperationName(), monitor.toMetric(windowTimeIndex));
+      measurements.putAll(monitor.measure(windowTimeIndex, calculateLatency));
     }
-    Map<String, ProducerInvocationMetric> producerInvocationMetrics = new HashMap<>();
     for (ProducerInvocationMonitor monitor : this.producerInvocationMonitors.values()) {
-      producerInvocationMetrics.put(monitor.getOperationName(), monitor.toMetric(windowTimeIndex));
+      measurements.putAll(monitor.measure(windowTimeIndex, calculateLatency));
     }
-
-    return new RegistryMetric(systemMonitor.toMetric(), consumerInvocationMetrics, producerInvocationMetrics);
+    return measurements;
   }
 }

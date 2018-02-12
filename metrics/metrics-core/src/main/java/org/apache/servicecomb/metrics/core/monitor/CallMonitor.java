@@ -17,79 +17,76 @@
 
 package org.apache.servicecomb.metrics.core.monitor;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.servicecomb.foundation.common.concurrent.ConcurrentHashMapEx;
-import org.apache.servicecomb.metrics.common.CallMetric;
-import org.apache.servicecomb.metrics.common.DoubleMetricValue;
-import org.apache.servicecomb.metrics.common.LongMetricValue;
-import org.apache.servicecomb.metrics.common.MetricsDimension;
+import org.apache.servicecomb.foundation.metrics.MetricsConst;
 import org.apache.servicecomb.metrics.core.utils.MonitorUtils;
 
 import com.netflix.servo.monitor.BasicCounter;
 import com.netflix.servo.monitor.MonitorConfig;
 import com.netflix.servo.monitor.StepCounter;
+import com.netflix.servo.tag.Tags;
 
 public class CallMonitor {
-  private final String prefix;
+  private final Map<String, StatusCounter> statusCounters;
 
-  private final Map<String, Map<String, DimensionCounter>> dimensionCounters;
+  private final String operation;
 
-  public CallMonitor(String prefix) {
-    this.prefix = prefix;
-    this.dimensionCounters = new ConcurrentHashMapEx<>();
-    this.dimensionCounters.put(MetricsDimension.DIMENSION_STATUS, new ConcurrentHashMapEx<>());
+  private final String stage;
+
+  private final String role;
+
+  public CallMonitor(String operation, String stage, String role) {
+    this.operation = operation;
+    this.stage = stage;
+    this.role = role;
+
+    this.statusCounters = new ConcurrentHashMapEx<>();
   }
 
-  public void increment(String dimensionKey, String... dimensionValues) {
-    for (String dimensionValue : dimensionValues) {
-      DimensionCounter counter = dimensionCounters.get(dimensionKey)
-          .computeIfAbsent(dimensionValue, d -> new DimensionCounter(
-              new BasicCounter(MonitorConfig.builder(prefix + ".total").withTag(dimensionKey, dimensionValue).build()),
-              new StepCounter(MonitorConfig.builder(prefix + ".tps").withTag(dimensionKey, dimensionValue).build())));
-      counter.increment();
+  public void increment(String statusCode) {
+    StatusCounter counter = statusCounters
+        .computeIfAbsent(statusCode, d -> new StatusCounter(operation, stage, role, statusCode));
+    counter.increment();
+  }
+
+  public Map<String, Double> measure(int windowTimeIndex) {
+    Map<String, Double> metrics = new HashMap<>();
+    for (StatusCounter counter : statusCounters.values()) {
+      metrics.putAll(counter.measure(windowTimeIndex));
     }
+    return metrics;
   }
 
-  public CallMetric toMetric(int windowTimeIndex) {
-    List<LongMetricValue> totalValues = new ArrayList<>();
-    List<DoubleMetricValue> tpsValues = new ArrayList<>();
-    for (Map<String, DimensionCounter> dimensionCounter : dimensionCounters.values()) {
-      for (DimensionCounter counter : dimensionCounter.values()) {
-        totalValues.add(new LongMetricValue(counter.getTotal().getValue(windowTimeIndex).longValue(),
-            MonitorUtils.convertTags(counter.getTotal())));
-        tpsValues.add(
-            new DoubleMetricValue(MonitorUtils.adjustValue(counter.getTps().getValue(windowTimeIndex).doubleValue()),
-                MonitorUtils.convertTags(counter.getTps())));
-      }
-    }
-
-    return new CallMetric(this.prefix, totalValues, tpsValues);
-  }
-
-  class DimensionCounter {
-    private final BasicCounter total;
+  class StatusCounter {
+    private final BasicCounter totalCount;
 
     private final StepCounter tps;
 
-    public BasicCounter getTotal() {
-      return total;
-    }
+    public StatusCounter(String operation, String stage, String role, String statusCode) {
+      MonitorConfig config = MonitorConfig.builder(MetricsConst.SERVICECOMB_INVOCATION)
+          .withTag(MetricsConst.TAG_STATUS, statusCode).withTag(MetricsConst.TAG_OPERATION, operation)
+          .withTag(MetricsConst.TAG_STAGE, stage).withTag(MetricsConst.TAG_ROLE, role).build();
 
-    public StepCounter getTps() {
-      return tps;
-    }
-
-    public DimensionCounter(BasicCounter total, StepCounter tps) {
-      this.total = total;
-      this.tps = tps;
+      this.totalCount = new BasicCounter(
+          config.withAdditionalTag(Tags.newTag(MetricsConst.TAG_STATISTIC, "totalCount")));
+      this.tps = new StepCounter(config.withAdditionalTag(Tags.newTag(MetricsConst.TAG_STATISTIC, "tps")));
     }
 
     public void increment() {
-      total.increment();
+      totalCount.increment();
       tps.increment();
+    }
+
+    public Map<String, Double> measure(int windowTimeIndex) {
+      Map<String, Double> measurements = new HashMap<>();
+      measurements.put(MonitorUtils.getMonitorName(this.totalCount.getConfig()),
+          this.totalCount.getValue(windowTimeIndex).doubleValue());
+      measurements.put(MonitorUtils.getMonitorName(this.tps.getConfig()),
+          this.tps.getValue(windowTimeIndex).doubleValue());
+      return measurements;
     }
   }
 }

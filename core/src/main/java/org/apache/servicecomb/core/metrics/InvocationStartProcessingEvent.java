@@ -25,8 +25,6 @@ public class InvocationStartProcessingEvent implements Event {
 
   private final InvocationType invocationType;
 
-  private final long inQueueNanoTime;
-
   public String getOperationName() {
     return operationName;
   }
@@ -35,14 +33,9 @@ public class InvocationStartProcessingEvent implements Event {
     return invocationType;
   }
 
-  public long getInQueueNanoTime() {
-    return inQueueNanoTime;
-  }
 
-  public InvocationStartProcessingEvent(String operationName, InvocationType invocationType,
-      long inQueueNanoTime) {
+  public InvocationStartProcessingEvent(String operationName, InvocationType invocationType) {
     this.operationName = operationName;
     this.invocationType = invocationType;
-    this.inQueueNanoTime = inQueueNanoTime;
   }
 }

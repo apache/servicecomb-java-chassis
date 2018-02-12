@@ -24,7 +24,6 @@ import java.util.concurrent.Executors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.foundation.common.net.NetUtils;
-import org.apache.servicecomb.metrics.common.RegistryMetric;
 import org.apache.servicecomb.metrics.core.MetricsConfig;
 import org.apache.servicecomb.metrics.core.publish.DataSource;
 import org.apache.servicecomb.serviceregistry.RegistryUtils;
@@ -87,8 +86,8 @@ public class WriteFileInitializer {
         .scheduleWithFixedDelay(poller, 0, metricPoll, MILLISECONDS);
   }
 
-  public void run() {
-    RegistryMetric registryMetric = dataSource.getRegistryMetric();
+  private void run() {
+    Map<String, Double> registryMetric = dataSource.measure(dataSource.getAppliedWindowTime().get(0), true);
     Map<String, String> convertedMetrics = convertor.convert(registryMetric);
     Map<String, String> formattedMetrics = formatter.format(convertedMetrics);
 
