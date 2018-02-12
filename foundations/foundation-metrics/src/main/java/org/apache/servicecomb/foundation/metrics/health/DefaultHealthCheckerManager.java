@@ -15,9 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.metrics.core.publish;
-
-import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
+package org.apache.servicecomb.foundation.metrics.health;
 
 import java.util.List;
 import java.util.Map;
@@ -25,9 +23,6 @@ import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
-import org.apache.servicecomb.foundation.metrics.publish.HealthCheckResult;
-import org.apache.servicecomb.foundation.metrics.publish.HealthChecker;
-import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -61,6 +56,6 @@ public class DefaultHealthCheckerManager implements HealthCheckerManager {
     if (checker != null) {
       return checker.check();
     }
-    throw new InvocationException(BAD_REQUEST, "HealthChecker name : " + name + " unregister");
+    return null;
   }
 }

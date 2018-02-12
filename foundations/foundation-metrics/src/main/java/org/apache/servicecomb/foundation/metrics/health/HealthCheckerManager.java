@@ -15,10 +15,15 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.foundation.metrics.publish;
+package org.apache.servicecomb.foundation.metrics.health;
 
-public interface HealthChecker {
-  String getName();
+import java.util.Map;
 
-  HealthCheckResult check();
+
+public interface HealthCheckerManager {
+  void register(HealthChecker checker);
+
+  Map<String, HealthCheckResult> check();
+
+  HealthCheckResult check(String name);
 }

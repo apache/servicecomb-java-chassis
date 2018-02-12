@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.metrics.core.publish;
+package org.apache.servicecomb.metrics.core;
 
 import java.util.List;
 import java.util.Map;
