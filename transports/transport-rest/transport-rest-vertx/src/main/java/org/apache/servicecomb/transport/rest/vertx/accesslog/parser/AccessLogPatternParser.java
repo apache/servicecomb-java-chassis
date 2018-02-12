@@ -20,6 +20,5 @@ package org.apache.servicecomb.transport.rest.vertx.accesslog.parser;
 import java.util.List;
 
 public interface AccessLogPatternParser {
-  List<AccessLogElementExtraction> parsePattern(String rawPattern);
-  List<AccessLogItemLocation> parsePattern2(String rawPattern);
+  List<AccessLogItemLocation> parsePattern(String rawPattern);
 }
