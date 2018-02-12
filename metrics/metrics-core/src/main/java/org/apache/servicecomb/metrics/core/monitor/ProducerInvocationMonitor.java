@@ -17,13 +17,16 @@
 
 package org.apache.servicecomb.metrics.core.monitor;
 
-import org.apache.servicecomb.metrics.common.MetricsConst;
-import org.apache.servicecomb.metrics.common.ProducerInvocationMetric;
+import java.util.HashMap;
+import java.util.Map;
+
+import org.apache.servicecomb.foundation.metrics.MetricsConst;
+import org.apache.servicecomb.metrics.core.utils.MonitorUtils;
 
 import com.netflix.servo.monitor.BasicCounter;
 import com.netflix.servo.monitor.MonitorConfig;
 
-public class ProducerInvocationMonitor extends InvocationMonitor {
+public class ProducerInvocationMonitor {
   private final BasicCounter waitInQueue;
 
   private final TimerMonitor lifeTimeInQueue;
@@ -54,21 +57,28 @@ public class ProducerInvocationMonitor extends InvocationMonitor {
     return producerCall;
   }
 
-  public ProducerInvocationMonitor(String operationName) {
-    super(operationName, String.format(MetricsConst.PRODUCER_PREFIX_TEMPLATE, operationName));
-    this.waitInQueue = new BasicCounter(MonitorConfig.builder(this.getPrefix() + ".waitInQueue.count").build());
-    this.lifeTimeInQueue = new TimerMonitor(this.getPrefix() + ".lifeTimeInQueue");
-    this.executionTime = new TimerMonitor(this.getPrefix() + ".executionTime");
-    this.producerLatency = new TimerMonitor(this.getPrefix() + ".producerLatency");
-    this.producerCall = new CallMonitor(this.getPrefix() + ".producerCall");
+  public ProducerInvocationMonitor(String operation) {
+    this.waitInQueue = new BasicCounter(MonitorConfig.builder(MetricsConst.SERVICECOMB_INVOCATION)
+        .withTag(MetricsConst.TAG_OPERATION, operation)
+        .withTag(MetricsConst.TAG_STAGE, MetricsConst.STAGE_QUEUE)
+        .withTag(MetricsConst.TAG_ROLE, MetricsConst.ROLE_PRODUCER)
+        .withTag(MetricsConst.TAG_STATISTIC, "waitInQueue")
+        .build());
+
+    this.lifeTimeInQueue = new TimerMonitor(operation, MetricsConst.STAGE_QUEUE, MetricsConst.ROLE_PRODUCER);
+    this.executionTime = new TimerMonitor(operation, MetricsConst.STAGE_EXECUTION, MetricsConst.ROLE_PRODUCER);
+    this.producerLatency = new TimerMonitor(operation, MetricsConst.STAGE_WHOLE, MetricsConst.ROLE_PRODUCER);
+    this.producerCall = new CallMonitor(operation, MetricsConst.STAGE_WHOLE, MetricsConst.ROLE_PRODUCER);
   }
 
-  public ProducerInvocationMetric toMetric(int windowTimeIndex) {
-    return new ProducerInvocationMetric(this.getOperationName(), this.getPrefix(),
-        this.getWaitInQueue().getValue(windowTimeIndex).longValue(),
-        lifeTimeInQueue.toMetric(windowTimeIndex),
-        executionTime.toMetric(windowTimeIndex),
-        producerLatency.toMetric(windowTimeIndex),
-        producerCall.toMetric(windowTimeIndex));
+  public Map<String, Double> measure(int windowTimeIndex, boolean calculateLatency) {
+    Map<String, Double> measurements = new HashMap<>();
+    measurements.put(MonitorUtils.getMonitorName(waitInQueue.getConfig()),
+        waitInQueue.getValue(windowTimeIndex).doubleValue());
+    measurements.putAll(lifeTimeInQueue.measure(windowTimeIndex, calculateLatency));
+    measurements.putAll(executionTime.measure(windowTimeIndex, calculateLatency));
+    measurements.putAll(producerLatency.measure(windowTimeIndex, calculateLatency));
+    measurements.putAll(producerCall.measure(windowTimeIndex));
+    return measurements;
   }
 }

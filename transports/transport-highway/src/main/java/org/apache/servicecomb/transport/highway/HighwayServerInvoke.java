@@ -129,7 +129,7 @@ public class HighwayServerInvoke {
 
     invocation.next(response -> {
       sendResponse(invocation.getContext(), response);
-      invocation.triggerFinishedEvent(response.getStatusCode(), response.isSuccessed());
+      invocation.triggerFinishedEvent(response.getStatusCode());
     });
   }
 

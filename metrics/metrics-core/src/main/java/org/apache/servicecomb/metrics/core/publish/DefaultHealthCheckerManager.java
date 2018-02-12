@@ -25,8 +25,8 @@ import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
-import org.apache.servicecomb.metrics.common.HealthCheckResult;
-import org.apache.servicecomb.metrics.common.HealthChecker;
+import org.apache.servicecomb.foundation.metrics.publish.HealthCheckResult;
+import org.apache.servicecomb.foundation.metrics.publish.HealthChecker;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;

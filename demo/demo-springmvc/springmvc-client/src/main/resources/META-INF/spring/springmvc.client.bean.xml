@@ -17,18 +17,14 @@
   -->
 
 <beans xmlns="http://www.springframework.org/schema/beans" xmlns:context="http://www.springframework.org/schema/context"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:p="http://www.springframework.org/schema/p"
-	xmlns:util="http://www.springframework.org/schema/util" xmlns:cse="http://www.huawei.com/schema/paas/cse/rpc"
-	xsi:schemaLocation="
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:p="http://www.springframework.org/schema/p"
+  xmlns:util="http://www.springframework.org/schema/util" xmlns:cse="http://www.huawei.com/schema/paas/cse/rpc"
+  xsi:schemaLocation="
 		http://www.springframework.org/schema/beans classpath:org/springframework/beans/factory/xml/spring-beans-3.0.xsd
 		http://www.huawei.com/schema/paas/cse/rpc classpath:META-INF/spring/spring-paas-cse-rpc.xsd
 		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd">
 
-    <context:component-scan base-package="org.apache.servicecomb.demo.springmvc.client" />
-	<cse:rpc-reference id="controller" microservice-name="springmvc"
-		schema-id="controller" interface="org.apache.servicecomb.demo.controller.Controller"></cse:rpc-reference>
-
-	<cse:rpc-reference id="metricsPublisher" microservice-name="springmvc"
-		schema-id="metricsEndpoint" interface="org.apache.servicecomb.metrics.common.MetricsPublisher"></cse:rpc-reference>
-
+  <context:component-scan base-package="org.apache.servicecomb.demo.springmvc.client"/>
+  <cse:rpc-reference id="controller" microservice-name="springmvc"
+    schema-id="controller" interface="org.apache.servicecomb.demo.controller.Controller"></cse:rpc-reference>
 </beans>

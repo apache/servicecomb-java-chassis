@@ -23,9 +23,9 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.servicecomb.foundation.common.utils.JsonUtils;
-import org.apache.servicecomb.metrics.common.DefaultHealthCheckExtraData;
-import org.apache.servicecomb.metrics.common.HealthCheckResult;
-import org.apache.servicecomb.metrics.common.HealthChecker;
+import org.apache.servicecomb.foundation.metrics.publish.DefaultHealthCheckExtraData;
+import org.apache.servicecomb.foundation.metrics.publish.HealthCheckResult;
+import org.apache.servicecomb.foundation.metrics.publish.HealthChecker;
 import org.apache.servicecomb.metrics.core.health.DefaultMicroserviceHealthChecker;
 import org.apache.servicecomb.metrics.core.publish.DefaultHealthCheckerManager;
 import org.apache.servicecomb.metrics.core.publish.HealthCheckerManager;
@@ -87,18 +87,18 @@ public class TestHealthCheckerManager {
 
     Map<String, HealthCheckResult> results = manager.check();
 
-    Assert.assertEquals(true,results.get("default").isHealthy());
+    Assert.assertEquals(true, results.get("default").isHealthy());
 
     DefaultHealthCheckExtraData data = JsonUtils.OBJ_MAPPER
         .readValue(results.get("default").getExtraData(), DefaultHealthCheckExtraData.class);
-    Assert.assertEquals("appId",data.getAppId());
-    Assert.assertEquals("serviceName",data.getServiceName());
-    Assert.assertEquals("0.0.1",data.getServiceVersion());
-    Assert.assertEquals("001",data.getInstanceId());
-    Assert.assertEquals("localhost",data.getHostName());
-    Assert.assertEquals("127.0.0.1,192.168.0.100",data.getEndpoints());
+    Assert.assertEquals("appId", data.getAppId());
+    Assert.assertEquals("serviceName", data.getServiceName());
+    Assert.assertEquals("0.0.1", data.getServiceVersion());
+    Assert.assertEquals("001", data.getInstanceId());
+    Assert.assertEquals("localhost", data.getHostName());
+    Assert.assertEquals("127.0.0.1,192.168.0.100", data.getEndpoints());
 
     HealthCheckResult result = manager.check("test");
-    Assert.assertEquals(false,result.isHealthy());
+    Assert.assertEquals(false, result.isHealthy());
   }
 }

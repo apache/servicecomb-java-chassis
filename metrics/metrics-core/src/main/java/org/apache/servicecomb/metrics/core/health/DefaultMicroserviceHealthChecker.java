@@ -20,9 +20,9 @@ package org.apache.servicecomb.metrics.core.health;
 import javax.ws.rs.core.Response.Status;
 
 import org.apache.servicecomb.foundation.common.utils.JsonUtils;
-import org.apache.servicecomb.metrics.common.DefaultHealthCheckExtraData;
-import org.apache.servicecomb.metrics.common.HealthCheckResult;
-import org.apache.servicecomb.metrics.common.HealthChecker;
+import org.apache.servicecomb.foundation.metrics.publish.DefaultHealthCheckExtraData;
+import org.apache.servicecomb.foundation.metrics.publish.HealthCheckResult;
+import org.apache.servicecomb.foundation.metrics.publish.HealthChecker;
 import org.apache.servicecomb.serviceregistry.RegistryUtils;
 import org.apache.servicecomb.serviceregistry.api.registry.Microservice;
 import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceInstance;

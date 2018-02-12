@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.metrics.common;
+package org.apache.servicecomb.foundation.metrics.publish;
 
 public class DefaultHealthCheckExtraData {
   private String instanceId;

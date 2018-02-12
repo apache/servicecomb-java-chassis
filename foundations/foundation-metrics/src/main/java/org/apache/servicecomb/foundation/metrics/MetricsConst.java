@@ -15,12 +15,32 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.metrics.common;
+package org.apache.servicecomb.foundation.metrics;
 
-import java.util.Map;
+public class MetricsConst {
+  public static final String JVM = "jvm";
 
-public interface HealthCheckerPublisher {
-  Map<String, HealthCheckResult> health();
+  public static final String SERVICECOMB_INVOCATION = "servicecomb.invocation";
 
-  HealthCheckResult healthWithName(String name);
+  public static final String TAG_NAME = "name";
+
+  public static final String TAG_OPERATION = "operation";
+
+  public static final String TAG_STATUS = "status";
+
+  public static final String TAG_STAGE = "stage";
+
+  public static final String TAG_ROLE = "role";
+
+  public static final String TAG_STATISTIC = "statistic";
+
+  public static final String STAGE_WHOLE = "whole";
+
+  public static final String STAGE_QUEUE = "queue";
+
+  public static final String STAGE_EXECUTION = "execution";
+
+  public static final String ROLE_CONSUMER = "consumer";
+
+  public static final String ROLE_PRODUCER = "producer";
 }

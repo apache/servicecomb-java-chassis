@@ -15,23 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.metrics.common;
+package org.apache.servicecomb.foundation.metrics.publish;
 
-public class InvocationMetric {
-  private final String operationName;
+public interface HealthChecker {
+  String getName();
 
-  private final String prefix;
-
-  public String getOperationName() {
-    return operationName;
-  }
-
-  public String getPrefix() {
-    return prefix;
-  }
-
-  public InvocationMetric(String operationName, String prefix) {
-    this.operationName = operationName;
-    this.prefix = prefix;
-  }
+  HealthCheckResult check();
 }

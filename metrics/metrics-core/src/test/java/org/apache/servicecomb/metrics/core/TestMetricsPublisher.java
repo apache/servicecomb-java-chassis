@@ -15,23 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.metrics.core.monitor;
+package org.apache.servicecomb.metrics.core;
 
-public class InvocationMonitor {
-  private final String operationName;
+import java.util.Map;
 
-  private final String prefix;
+import org.apache.servicecomb.metrics.core.monitor.DefaultSystemMonitor;
+import org.apache.servicecomb.metrics.core.monitor.RegistryMonitor;
+import org.apache.servicecomb.metrics.core.publish.DefaultDataSource;
+import org.apache.servicecomb.metrics.core.publish.DefaultMetricsPublisher;
+import org.junit.Assert;
+import org.junit.Test;
 
-  public String getOperationName() {
-    return operationName;
-  }
-
-  public String getPrefix() {
-    return prefix;
-  }
-
-  public InvocationMonitor(String operationName, String prefix) {
-    this.operationName = operationName;
-    this.prefix = prefix;
+public class TestMetricsPublisher {
+  @Test
+  public void test() {
+    DefaultMetricsPublisher publisher = new DefaultMetricsPublisher(
+        new DefaultDataSource(new RegistryMonitor(new DefaultSystemMonitor())));
+    Map<String, Double> metrics = publisher.metrics();
+    //10 jvm metrics get
+    Assert.assertEquals(10, metrics.size());
   }
 }

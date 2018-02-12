@@ -19,8 +19,7 @@ package org.apache.servicecomb.metrics.core.publish;
 
 import java.util.Map;
 
-import org.apache.servicecomb.metrics.common.HealthCheckResult;
-import org.apache.servicecomb.metrics.common.HealthCheckerPublisher;
+import org.apache.servicecomb.foundation.metrics.publish.HealthCheckResult;
 import org.apache.servicecomb.provider.rest.common.RestSchema;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -32,7 +31,7 @@ import io.swagger.annotations.ApiResponses;
 
 @RestSchema(schemaId = "healthEndpoint")
 @RequestMapping(path = "/health")
-public class DefaultHealthCheckerPublisher implements HealthCheckerPublisher {
+public class DefaultHealthCheckerPublisher {
 
   private final HealthCheckerManager manager;
 
@@ -42,7 +41,6 @@ public class DefaultHealthCheckerPublisher implements HealthCheckerPublisher {
 
   @RequestMapping(path = "/", method = RequestMethod.GET)
   @CrossOrigin
-  @Override
   public Map<String, HealthCheckResult> health() {
     return manager.check();
   }
@@ -52,7 +50,6 @@ public class DefaultHealthCheckerPublisher implements HealthCheckerPublisher {
   })
   @RequestMapping(path = "/{name}", method = RequestMethod.GET)
   @CrossOrigin
-  @Override
   public HealthCheckResult healthWithName(@PathVariable(name = "name") String name) {
     return manager.check(name);
   }
