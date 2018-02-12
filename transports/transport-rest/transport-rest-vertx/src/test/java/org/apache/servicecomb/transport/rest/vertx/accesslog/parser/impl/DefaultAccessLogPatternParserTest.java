@@ -26,27 +26,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-import org.apache.servicecomb.transport.rest.vertx.accesslog.element.AccessLogElement;
-import org.apache.servicecomb.transport.rest.vertx.accesslog.element.impl.BytesWrittenElement;
-import org.apache.servicecomb.transport.rest.vertx.accesslog.element.impl.CookieElement;
-import org.apache.servicecomb.transport.rest.vertx.accesslog.element.impl.DatetimeConfigurableElement;
-import org.apache.servicecomb.transport.rest.vertx.accesslog.element.impl.DurationMillisecondElement;
-import org.apache.servicecomb.transport.rest.vertx.accesslog.element.impl.DurationSecondElement;
-import org.apache.servicecomb.transport.rest.vertx.accesslog.element.impl.FirstLineOfRequestElement;
-import org.apache.servicecomb.transport.rest.vertx.accesslog.element.impl.LocalHostElement;
-import org.apache.servicecomb.transport.rest.vertx.accesslog.element.impl.LocalPortElement;
-import org.apache.servicecomb.transport.rest.vertx.accesslog.element.impl.MethodElement;
-import org.apache.servicecomb.transport.rest.vertx.accesslog.element.impl.PlainTextElement;
-import org.apache.servicecomb.transport.rest.vertx.accesslog.element.impl.QueryOnlyElement;
-import org.apache.servicecomb.transport.rest.vertx.accesslog.element.impl.RemoteHostElement;
-import org.apache.servicecomb.transport.rest.vertx.accesslog.element.impl.RequestHeaderElement;
-import org.apache.servicecomb.transport.rest.vertx.accesslog.element.impl.ResponseHeaderElement;
-import org.apache.servicecomb.transport.rest.vertx.accesslog.element.impl.StatusElement;
-import org.apache.servicecomb.transport.rest.vertx.accesslog.element.impl.TraceIdElement;
-import org.apache.servicecomb.transport.rest.vertx.accesslog.element.impl.UriPathIncludeQueryElement;
-import org.apache.servicecomb.transport.rest.vertx.accesslog.element.impl.UriPathOnlyElement;
-import org.apache.servicecomb.transport.rest.vertx.accesslog.element.impl.VersionOrProtocolElement;
-import org.apache.servicecomb.transport.rest.vertx.accesslog.parser.AccessLogElementExtraction;
 import org.apache.servicecomb.transport.rest.vertx.accesslog.parser.AccessLogItemLocation;
 import org.apache.servicecomb.transport.rest.vertx.accesslog.placeholder.AccessLogItemTypeEnum;
 import org.hamcrest.Matchers;
@@ -68,7 +47,7 @@ public class DefaultAccessLogPatternParserTest {
   @Test
   @SuppressWarnings(value = "unchecked")
   public void testParsePattern() {
-    List<AccessLogItemLocation> result = accessLogPatternParser.parsePattern2(ROW_PATTERN);
+    List<AccessLogItemLocation> result = accessLogPatternParser.parsePattern(ROW_PATTERN);
     assertEquals(27, result.size());
 
     assertThat(result.stream().map(AccessLogItemLocation::getPlaceHolder)
@@ -104,45 +83,6 @@ public class DefaultAccessLogPatternParserTest {
   }
 
   @Test
-  @SuppressWarnings(value = "unchecked")
-  public void testParsePattern2() {
-    List<AccessLogElementExtraction> result = accessLogPatternParser.parsePattern(ROW_PATTERN);
-    assertEquals(27, result.size());
-
-    assertThat(result.stream().map(AccessLogElementExtraction::getAccessLogElement)
-            .filter(Objects::nonNull).map(AccessLogElement::getClass)
-            .collect(Collectors.toList()),
-        Matchers.contains(
-            PlainTextElement.class,
-            MethodElement.class,
-            PlainTextElement.class,
-            MethodElement.class,
-            PlainTextElement.class,
-            StatusElement.class,
-            DurationSecondElement.class,
-            DurationMillisecondElement.class,
-            RemoteHostElement.class,
-            LocalHostElement.class,
-            LocalPortElement.class,
-            BytesWrittenElement.class,
-            BytesWrittenElement.class,
-            FirstLineOfRequestElement.class,
-            UriPathOnlyElement.class,
-            QueryOnlyElement.class,
-            UriPathOnlyElement.class,
-            QueryOnlyElement.class,
-            UriPathIncludeQueryElement.class,
-            VersionOrProtocolElement.class,
-            DatetimeConfigurableElement.class,
-            DatetimeConfigurableElement.class,
-            DatetimeConfigurableElement.class,
-            RequestHeaderElement.class,
-            ResponseHeaderElement.class,
-            PlainTextElement.class,
-            TraceIdElement.class));
-  }
-
-  @Test
   public void testCheckLocationList() {
     List<AccessLogItemLocation> locationList = new ArrayList<>(3);
     locationList.add(new AccessLogItemLocation().setStart(0).setEnd(3));
@@ -169,22 +109,6 @@ public class DefaultAccessLogPatternParserTest {
     try {
       Deencapsulation.invoke(new DefaultAccessLogPatternParser(), "checkLocationList",
           "0123456", locationList);
-      fail("expect an exception");
-    } catch (Exception e) {
-      assertEquals(IllegalArgumentException.class, e.getClass());
-      assertEquals("access log pattern contains illegal placeholder, please check it.", e.getMessage());
-    }
-  }
-
-  @Test
-  public void testCheckExtractionList() {
-    List<AccessLogElementExtraction> extractionList = new ArrayList<>(3);
-    extractionList.add(new AccessLogElementExtraction().setStart(0).setEnd(3));
-    extractionList.add(new AccessLogElementExtraction().setStart(3).setEnd(6));
-    extractionList.add(new AccessLogElementExtraction().setStart(5).setEnd(9));
-
-    try {
-      Deencapsulation.invoke(new DefaultAccessLogPatternParser(), "checkExtractionList", extractionList);
       fail("expect an exception");
     } catch (Exception e) {
       assertEquals(IllegalArgumentException.class, e.getClass());

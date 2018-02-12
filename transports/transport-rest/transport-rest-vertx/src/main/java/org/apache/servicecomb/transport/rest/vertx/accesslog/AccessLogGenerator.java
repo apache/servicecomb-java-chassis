@@ -3,7 +3,8 @@ package org.apache.servicecomb.transport.rest.vertx.accesslog;
 import java.util.List;
 
 import org.apache.servicecomb.transport.rest.vertx.accesslog.element.AccessLogElement;
-import org.apache.servicecomb.transport.rest.vertx.accesslog.parser.AccessLogElementExtraction;
+import org.apache.servicecomb.transport.rest.vertx.accesslog.element.AccessLogItemFactory;
+import org.apache.servicecomb.transport.rest.vertx.accesslog.parser.AccessLogItemLocation;
 import org.apache.servicecomb.transport.rest.vertx.accesslog.parser.AccessLogPatternParser;
 
 /**
@@ -17,13 +18,14 @@ public class AccessLogGenerator {
    */
   private AccessLogElement[] accessLogElements;
 
-  public AccessLogGenerator(String rawPattern, AccessLogPatternParser accessLogPatternParser) {
-    List<AccessLogElementExtraction> extractionList = accessLogPatternParser.parsePattern(rawPattern);
+  private AccessLogItemFactory accessLogItemFactory = new AccessLogItemFactory();
 
-    accessLogElements = new AccessLogElement[extractionList.size()];
-    for (int i = 0; i < extractionList.size(); ++i) {
-      accessLogElements[i] = extractionList.get(i).getAccessLogElement();
-    }
+  public AccessLogGenerator(String rawPattern, AccessLogPatternParser accessLogPatternParser) {
+    List<AccessLogItemLocation> locationList = accessLogPatternParser.parsePattern(rawPattern);
+
+    List<AccessLogElement> itemList = accessLogItemFactory.createAccessLogItem(rawPattern, locationList);
+    accessLogElements = new AccessLogElement[itemList.size()];
+    accessLogElements = itemList.toArray(accessLogElements);
   }
 
   public String generateLog(AccessLogParam accessLogParam) {

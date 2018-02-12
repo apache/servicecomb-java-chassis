@@ -11,9 +11,9 @@ import org.apache.servicecomb.transport.rest.vertx.accesslog.element.AccessLogEl
 import org.apache.servicecomb.transport.rest.vertx.accesslog.element.impl.DatetimeConfigurableElement;
 import org.apache.servicecomb.transport.rest.vertx.accesslog.element.impl.MethodElement;
 import org.apache.servicecomb.transport.rest.vertx.accesslog.element.impl.PlainTextElement;
-import org.apache.servicecomb.transport.rest.vertx.accesslog.parser.AccessLogElementExtraction;
 import org.apache.servicecomb.transport.rest.vertx.accesslog.parser.AccessLogItemLocation;
 import org.apache.servicecomb.transport.rest.vertx.accesslog.parser.AccessLogPatternParser;
+import org.apache.servicecomb.transport.rest.vertx.accesslog.placeholder.AccessLogItemTypeEnum;
 import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -31,19 +31,16 @@ public class AccessLogGeneratorTest {
 
   private static final AccessLogElement plainTextElement = new PlainTextElement(" - ");
 
-  private static final AccessLogGenerator ACCESS_LOG_GENERATOR = new AccessLogGenerator("rawPattern",
+  private static final AccessLogGenerator ACCESS_LOG_GENERATOR = new AccessLogGenerator("%m - %t",
       new AccessLogPatternParser() {
         @Override
-        public List<AccessLogElementExtraction> parsePattern(String rawPattern) {
-          assertEquals("rawPattern", rawPattern);
-          return Arrays.asList(new AccessLogElementExtraction().setAccessLogElement(methodElement),
-              new AccessLogElementExtraction().setAccessLogElement(plainTextElement),
-              new AccessLogElementExtraction().setAccessLogElement(datetimeElement));
-        }
-
-        @Override
-        public List<AccessLogItemLocation> parsePattern2(String rawPattern) {
-          return null;
+        public List<AccessLogItemLocation> parsePattern(String rawPattern) {
+          assertEquals("%m - %t", rawPattern);
+          return Arrays.asList(
+              new AccessLogItemLocation().setStart(0).setEnd(2).setPlaceHolder(AccessLogItemTypeEnum.HTTP_METHOD),
+              new AccessLogItemLocation().setStart(2).setEnd(5).setPlaceHolder(AccessLogItemTypeEnum.TEXT_PLAIN),
+              new AccessLogItemLocation().setStart(5).setEnd(7)
+                  .setPlaceHolder(AccessLogItemTypeEnum.DATETIME_DEFAULT));
         }
       });
 
@@ -51,9 +48,9 @@ public class AccessLogGeneratorTest {
   public void testConstructor() {
     AccessLogElement[] elements = Deencapsulation.getField(ACCESS_LOG_GENERATOR, "accessLogElements");
     assertEquals(3, elements.length);
-    assertEquals(methodElement, elements[0]);
-    assertEquals(plainTextElement, elements[1]);
-    assertEquals(datetimeElement, elements[2]);
+    assertEquals(MethodElement.class, elements[0].getClass());
+    assertEquals(PlainTextElement.class, elements[1].getClass());
+    assertEquals(DatetimeConfigurableElement.class, elements[2].getClass());
   }
 
   @Test

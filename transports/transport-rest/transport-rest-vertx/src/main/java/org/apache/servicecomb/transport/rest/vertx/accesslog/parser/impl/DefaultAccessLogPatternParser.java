@@ -19,44 +19,19 @@ package org.apache.servicecomb.transport.rest.vertx.accesslog.parser.impl;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Comparator;
 import java.util.List;
 
-import org.apache.servicecomb.transport.rest.vertx.accesslog.element.impl.PlainTextElement;
-import org.apache.servicecomb.transport.rest.vertx.accesslog.parser.AccessLogElementExtraction;
 import org.apache.servicecomb.transport.rest.vertx.accesslog.parser.AccessLogItemLocation;
 import org.apache.servicecomb.transport.rest.vertx.accesslog.parser.AccessLogPatternParser;
-import org.apache.servicecomb.transport.rest.vertx.accesslog.parser.matcher.AccessLogElementMatcher;
 import org.apache.servicecomb.transport.rest.vertx.accesslog.parser.matcher.AccessLogItemMatcher;
 import org.apache.servicecomb.transport.rest.vertx.accesslog.parser.matcher.PercentagePrefixConfigurableMatcher;
 import org.apache.servicecomb.transport.rest.vertx.accesslog.parser.matcher.SimpleItemMatcher;
-import org.apache.servicecomb.transport.rest.vertx.accesslog.parser.matcher.impl.BytesWrittenV1Matcher;
-import org.apache.servicecomb.transport.rest.vertx.accesslog.parser.matcher.impl.BytesWrittenV2Matcher;
-import org.apache.servicecomb.transport.rest.vertx.accesslog.parser.matcher.impl.CookieElementMatcher;
-import org.apache.servicecomb.transport.rest.vertx.accesslog.parser.matcher.impl.DatetimeConfigurableMatcher;
-import org.apache.servicecomb.transport.rest.vertx.accesslog.parser.matcher.impl.DatetimeMatcher;
-import org.apache.servicecomb.transport.rest.vertx.accesslog.parser.matcher.impl.DurationMillisecondMatcher;
-import org.apache.servicecomb.transport.rest.vertx.accesslog.parser.matcher.impl.DurationSecondMatcher;
-import org.apache.servicecomb.transport.rest.vertx.accesslog.parser.matcher.impl.FirstLineOfRequestMatcher;
-import org.apache.servicecomb.transport.rest.vertx.accesslog.parser.matcher.impl.LocalHostMatcher;
-import org.apache.servicecomb.transport.rest.vertx.accesslog.parser.matcher.impl.LocalPortMatcher;
-import org.apache.servicecomb.transport.rest.vertx.accesslog.parser.matcher.impl.MethodMatcher;
-import org.apache.servicecomb.transport.rest.vertx.accesslog.parser.matcher.impl.QueryOnlyMatcher;
-import org.apache.servicecomb.transport.rest.vertx.accesslog.parser.matcher.impl.RemoteHostMatcher;
-import org.apache.servicecomb.transport.rest.vertx.accesslog.parser.matcher.impl.RequestHeaderElementMatcher;
-import org.apache.servicecomb.transport.rest.vertx.accesslog.parser.matcher.impl.ResponseHeaderElementMatcher;
-import org.apache.servicecomb.transport.rest.vertx.accesslog.parser.matcher.impl.StatusMatcher;
-import org.apache.servicecomb.transport.rest.vertx.accesslog.parser.matcher.impl.TraceIdMatcher;
-import org.apache.servicecomb.transport.rest.vertx.accesslog.parser.matcher.impl.UriPathIncludeQueryMatcher;
-import org.apache.servicecomb.transport.rest.vertx.accesslog.parser.matcher.impl.UriPathOnlyMatcher;
-import org.apache.servicecomb.transport.rest.vertx.accesslog.parser.matcher.impl.VersionOrProtocolMatcher;
 import org.apache.servicecomb.transport.rest.vertx.accesslog.placeholder.AccessLogItemTypeEnum;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * contains all kinds of {@link AccessLogElementMatcher},
- * generate a chain of {@link AccessLogElementExtraction} according to the raw access log pattern.
+ * locate all kinds of access log item, and mark their type.
  */
 public class DefaultAccessLogPatternParser implements AccessLogPatternParser {
   private static final Logger LOGGER = LoggerFactory.getLogger(DefaultAccessLogPatternParser.class);
@@ -66,7 +41,7 @@ public class DefaultAccessLogPatternParser implements AccessLogPatternParser {
   );
 
   @Override
-  public List<AccessLogItemLocation> parsePattern2(String rawPattern) {
+  public List<AccessLogItemLocation> parsePattern(String rawPattern) {
     LOGGER.info("parse access log pattern: [{}]", rawPattern);
     List<AccessLogItemLocation> locationList = new ArrayList<>();
     for (int i = 0; i < rawPattern.length(); ) {
@@ -139,83 +114,5 @@ public class DefaultAccessLogPatternParser implements AccessLogPatternParser {
     if (preEnd > rawPattern.length()) {
       throw new IllegalArgumentException("access log pattern contains illegal placeholder, please check it.");
     }
-  }
-
-
-  private static final List<AccessLogElementMatcher> MATCHER_LIST = Arrays.asList(
-      new RequestHeaderElementMatcher(),
-      new DatetimeConfigurableMatcher(),
-      new CookieElementMatcher(),
-      new ResponseHeaderElementMatcher(),
-      new DurationSecondMatcher(),
-      new VersionOrProtocolMatcher(),
-      new BytesWrittenV1Matcher(),
-      new BytesWrittenV2Matcher(),
-      new DurationMillisecondMatcher(),
-      new LocalPortMatcher(),
-      new LocalHostMatcher(),
-      new UriPathIncludeQueryMatcher(),
-      new FirstLineOfRequestMatcher(),
-      new DatetimeMatcher(),
-      new RemoteHostMatcher(),
-      new MethodMatcher(),
-      new QueryOnlyMatcher(),
-      new UriPathOnlyMatcher(),
-      new StatusMatcher(),
-      new TraceIdMatcher());
-
-  public static final Comparator<AccessLogElementExtraction> ACCESS_LOG_ELEMENT_EXTRACTION_COMPARATOR = Comparator
-      .comparingInt(AccessLogElementExtraction::getStart);
-
-  @Override
-  public List<AccessLogElementExtraction> parsePattern(String rawPattern) {
-    List<AccessLogElementExtraction> extractionList = new ArrayList<>();
-    for (AccessLogElementMatcher matcher : MATCHER_LIST) {
-      List<AccessLogElementExtraction> extractions = matcher.extractElementPlaceholder(rawPattern);
-      if (null != extractions) {
-        extractionList.addAll(extractions);
-      }
-    }
-
-    extractionList.sort(ACCESS_LOG_ELEMENT_EXTRACTION_COMPARATOR);
-    checkExtractionList(extractionList);
-    fillInPlainTextElement(rawPattern, extractionList);
-
-    return extractionList;
-  }
-
-  private void checkExtractionList(List<AccessLogElementExtraction> extractionList) {
-    int preEnd = -1;
-    for (AccessLogElementExtraction extraction : extractionList) {
-      if (preEnd > extraction.getStart()) {
-        throw new IllegalArgumentException("access log pattern contains illegal placeholder, please check it.");
-      }
-
-      preEnd = extraction.getEnd();
-    }
-  }
-
-  /**
-   * The content not matched in rawPattern will be printed as it is, so should be converted to {@link PlainTextElement}
-   * @param rawPattern access log string pattern
-   * @param extractionList {@link AccessLogElementExtraction} list indicating the position of each access log element
-   */
-  private void fillInPlainTextElement(String rawPattern, List<AccessLogElementExtraction> extractionList) {
-    int cursor = 0;
-    List<AccessLogElementExtraction> plainTextExtractionList = new ArrayList<>();
-    for (AccessLogElementExtraction extraction : extractionList) {
-      if (cursor < extraction.getStart()) {
-        plainTextExtractionList.add(
-            new AccessLogElementExtraction()
-                .setStart(cursor)
-                .setEnd(extraction.getStart())
-                .setAccessLogElement(
-                    new PlainTextElement(rawPattern.substring(cursor, extraction.getStart()))));
-      }
-      cursor = extraction.getEnd();
-    }
-
-    extractionList.addAll(plainTextExtractionList);
-    extractionList.sort(ACCESS_LOG_ELEMENT_EXTRACTION_COMPARATOR);
   }
 }
