@@ -17,8 +17,6 @@
 
 package org.apache.servicecomb.foundation.metrics.health;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 
 import org.junit.Assert;
@@ -28,10 +26,7 @@ public class TestHealthCheckerManager {
 
   @Test
   public void testRegistry() {
-
-    List<HealthChecker> checkers = new ArrayList<>();
-
-    HealthCheckerManager manager = new DefaultHealthCheckerManager(checkers);
+    HealthCheckerManager manager = new HealthCheckerManager();
 
     manager.register(new HealthChecker() {
       @Override

@@ -105,7 +105,7 @@ public class SpringmvcClient {
       TestMgr.check(true, metrics.size() > 0);
       TestMgr.check(true, metrics.get(
           "servicecomb.invocation(operation=springmvc.codeFirst.saySomething,role=producer,stage=whole,statistic=count,status=200)")
-          > 0);
+          >= 0);
     } catch (Exception e) {
       TestMgr.check("true", "false");
     }

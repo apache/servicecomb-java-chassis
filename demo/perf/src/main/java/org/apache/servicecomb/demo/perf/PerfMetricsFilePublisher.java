@@ -23,7 +23,7 @@ import org.apache.servicecomb.foundation.metrics.MetricsConst;
 import org.apache.servicecomb.foundation.metrics.publish.MetricNode;
 import org.apache.servicecomb.foundation.metrics.publish.MetricsLoader;
 import org.apache.servicecomb.foundation.vertx.VertxUtils;
-import org.apache.servicecomb.metrics.core.DataSource;
+import org.apache.servicecomb.metrics.core.MetricsDataSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,9 +34,9 @@ import io.vertx.core.impl.VertxImplEx;
 public class PerfMetricsFilePublisher {
   private static final Logger LOGGER = LoggerFactory.getLogger(PerfMetricsFilePublisher.class);
 
-  private DataSource dataSource;
+  private MetricsDataSource dataSource;
 
-  public PerfMetricsFilePublisher(DataSource dataSource) {
+  public PerfMetricsFilePublisher(MetricsDataSource dataSource) {
     this.dataSource = dataSource;
   }
 

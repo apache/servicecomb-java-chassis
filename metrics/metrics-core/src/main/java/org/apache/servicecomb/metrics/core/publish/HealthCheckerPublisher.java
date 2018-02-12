@@ -17,10 +17,14 @@
 
 package org.apache.servicecomb.metrics.core.publish;
 
+import java.util.List;
 import java.util.Map;
 
+import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
 import org.apache.servicecomb.foundation.metrics.health.HealthCheckResult;
+import org.apache.servicecomb.foundation.metrics.health.HealthChecker;
 import org.apache.servicecomb.foundation.metrics.health.HealthCheckerManager;
+import org.apache.servicecomb.metrics.core.health.DefaultMicroserviceHealthChecker;
 import org.apache.servicecomb.provider.rest.common.RestSchema;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -32,12 +36,26 @@ import io.swagger.annotations.ApiResponses;
 
 @RestSchema(schemaId = "healthEndpoint")
 @RequestMapping(path = "/health")
-public class DefaultHealthCheckerPublisher {
+public class HealthCheckerPublisher {
 
-  private final HealthCheckerManager manager;
+  private HealthCheckerManager manager;
 
-  public DefaultHealthCheckerPublisher(HealthCheckerManager manager) {
+  public HealthCheckerPublisher() {
+    init(new HealthCheckerManager());
+  }
+
+  public HealthCheckerPublisher(HealthCheckerManager manager) {
+    init(manager);
+  }
+
+  private void init(HealthCheckerManager manager) {
     this.manager = manager;
+
+    this.manager.register(new DefaultMicroserviceHealthChecker());
+    List<HealthChecker> checkers = SPIServiceUtils.getAllService(HealthChecker.class);
+    for (HealthChecker checker : checkers) {
+      this.manager.register(checker);
+    }
   }
 
   @RequestMapping(path = "/", method = RequestMethod.GET)
