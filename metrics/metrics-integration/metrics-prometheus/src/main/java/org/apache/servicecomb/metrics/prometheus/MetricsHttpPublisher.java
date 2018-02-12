@@ -23,7 +23,6 @@ import java.net.InetSocketAddress;
 import org.apache.servicecomb.foundation.common.exceptions.ServiceCombException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextClosedEvent;
@@ -35,21 +34,18 @@ import io.prometheus.client.CollectorRegistry;
 import io.prometheus.client.exporter.HTTPServer;
 
 @Component
-public class MetricsPublisher implements ApplicationListener<ApplicationEvent> {
-  private static final Logger LOGGER = LoggerFactory.getLogger(MetricsPublisher.class);
+public class MetricsHttpPublisher implements ApplicationListener<ApplicationEvent> {
+  private static final Logger LOGGER = LoggerFactory.getLogger(MetricsHttpPublisher.class);
 
   private static final String METRICS_PROMETHEUS_PORT = "servicecomb.metrics.prometheus.port";
 
-  private final MetricsCollector metricsCollector;
-
   private HTTPServer httpServer;
 
-  @Autowired
-  public MetricsPublisher(MetricsCollector metricsCollector) {
+  public MetricsHttpPublisher() {
     //prometheus default port allocation is here : https://github.com/prometheus/prometheus/wiki/Default-port-allocations
     int publishPort = DynamicPropertyFactory.getInstance().getIntProperty(METRICS_PROMETHEUS_PORT, 9696).get();
-    this.metricsCollector = metricsCollector;
-    this.metricsCollector.register();
+    MetricsCollector metricsCollector = new MetricsCollector();
+    metricsCollector.register();
     try {
       this.httpServer = new HTTPServer(new InetSocketAddress(publishPort), CollectorRegistry.defaultRegistry, true);
       LOGGER.info("Prometheus httpServer listened {}.", publishPort);
