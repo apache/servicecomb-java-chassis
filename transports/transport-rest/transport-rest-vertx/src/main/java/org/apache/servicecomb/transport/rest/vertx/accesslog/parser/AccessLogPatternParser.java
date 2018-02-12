@@ -21,4 +21,5 @@ import java.util.List;
 
 public interface AccessLogPatternParser {
   List<AccessLogElementExtraction> parsePattern(String rawPattern);
+  List<AccessLogItemLocation> parsePattern2(String rawPattern);
 }

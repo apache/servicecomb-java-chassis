@@ -10,7 +10,7 @@ public class SimpleItemMatcherTest {
 
   private static final SimpleItemMatcher MATCHER = new SimpleItemMatcher();
 
-  public static final String PATTERN = AccessLogConfiguration.DEFAULT_PATTERN;
+  public static final String PATTERN = "%h - - %t %r %s %B";
 
   @Test
   public void testMatch() {
@@ -22,7 +22,7 @@ public class SimpleItemMatcherTest {
             .setEnd(2)
             .setPlaceHolder(AccessLogItemTypeEnum.REMOTE_HOSTNAME));
 
-    location = MATCHER.match(PATTERN, 7);
+    location = MATCHER.match(PATTERN, 3);
     Assert.assertEquals(
         location,
         new AccessLogItemLocation()
@@ -30,29 +30,8 @@ public class SimpleItemMatcherTest {
             .setEnd(9)
             .setPlaceHolder(AccessLogItemTypeEnum.DATETIME_DEFAULT));
 
-    location = MATCHER.match(PATTERN, 10);
-    Assert.assertEquals(
-        location,
-        new AccessLogItemLocation()
-            .setStart(10)
-            .setEnd(12)
-            .setPlaceHolder(AccessLogItemTypeEnum.FIRST_LINE_OF_REQUEST));
-
-    location = MATCHER.match(PATTERN, 13);
-    Assert.assertEquals(
-        location,
-        new AccessLogItemLocation()
-            .setStart(13)
-            .setEnd(15)
-            .setPlaceHolder(AccessLogItemTypeEnum.HTTP_STATUS));
-
-    location = MATCHER.match(PATTERN, 16);
-    Assert.assertEquals(
-        location,
-        new AccessLogItemLocation()
-            .setStart(16)
-            .setEnd(18)
-            .setPlaceHolder(AccessLogItemTypeEnum.RESPONSE_SIZE));
+    location = MATCHER.match(PATTERN, 17);
+    Assert.assertNull(location);
   }
 
   @Test

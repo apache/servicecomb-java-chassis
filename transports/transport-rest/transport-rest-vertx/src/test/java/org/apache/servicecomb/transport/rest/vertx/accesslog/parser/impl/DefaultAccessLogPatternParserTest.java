@@ -47,6 +47,8 @@ import org.apache.servicecomb.transport.rest.vertx.accesslog.element.impl.UriPat
 import org.apache.servicecomb.transport.rest.vertx.accesslog.element.impl.UriPathOnlyElement;
 import org.apache.servicecomb.transport.rest.vertx.accesslog.element.impl.VersionOrProtocolElement;
 import org.apache.servicecomb.transport.rest.vertx.accesslog.parser.AccessLogElementExtraction;
+import org.apache.servicecomb.transport.rest.vertx.accesslog.parser.AccessLogItemLocation;
+import org.apache.servicecomb.transport.rest.vertx.accesslog.placeholder.AccessLogItemTypeEnum;
 import org.hamcrest.Matchers;
 import org.junit.Test;
 
@@ -58,7 +60,7 @@ public class DefaultAccessLogPatternParserTest {
       + "%{yyyy MM dd HH:mm:ss|GMT+0|en-US}t"
       + "%{incoming-header}i"
       + "%{outgoing-header}o"
-      + "%{cookie}c"
+      + "%{cookie}C"
       + "%SCB-traceId";
 
   private static DefaultAccessLogPatternParser accessLogPatternParser = new DefaultAccessLogPatternParser();
@@ -66,6 +68,44 @@ public class DefaultAccessLogPatternParserTest {
   @Test
   @SuppressWarnings(value = "unchecked")
   public void testParsePattern() {
+    List<AccessLogItemLocation> result = accessLogPatternParser.parsePattern2(ROW_PATTERN);
+    assertEquals(27, result.size());
+
+    assertThat(result.stream().map(AccessLogItemLocation::getPlaceHolder)
+            .filter(Objects::nonNull).collect(Collectors.toList()),
+        Matchers.contains(
+            AccessLogItemTypeEnum.TEXT_PLAIN,
+            AccessLogItemTypeEnum.HTTP_METHOD,
+            AccessLogItemTypeEnum.TEXT_PLAIN,
+            AccessLogItemTypeEnum.HTTP_METHOD,
+            AccessLogItemTypeEnum.TEXT_PLAIN,
+            AccessLogItemTypeEnum.HTTP_STATUS,
+            AccessLogItemTypeEnum.DURATION_IN_SECOND,
+            AccessLogItemTypeEnum.DURATION_IN_MILLISECOND,
+            AccessLogItemTypeEnum.REMOTE_HOSTNAME,
+            AccessLogItemTypeEnum.LOCAL_HOSTNAME,
+            AccessLogItemTypeEnum.LOCAL_PORT,
+            AccessLogItemTypeEnum.RESPONSE_SIZE,
+            AccessLogItemTypeEnum.RESPONSE_SIZE_CLF,
+            AccessLogItemTypeEnum.FIRST_LINE_OF_REQUEST,
+            AccessLogItemTypeEnum.URL_PATH,
+            AccessLogItemTypeEnum.QUERY_STRING,
+            AccessLogItemTypeEnum.URL_PATH,
+            AccessLogItemTypeEnum.QUERY_STRING,
+            AccessLogItemTypeEnum.URL_PATH_WITH_QUERY,
+            AccessLogItemTypeEnum.REQUEST_PROTOCOL,
+            AccessLogItemTypeEnum.DATETIME_DEFAULT,
+            AccessLogItemTypeEnum.DATETIME_CONFIGURABLE,
+            AccessLogItemTypeEnum.DATETIME_CONFIGURABLE,
+            AccessLogItemTypeEnum.REQUEST_HEADER,
+            AccessLogItemTypeEnum.RESPONSE_HEADER,
+            AccessLogItemTypeEnum.COOKIE,
+            AccessLogItemTypeEnum.SCB_TRACE_ID));
+  }
+
+  @Test
+  @SuppressWarnings(value = "unchecked")
+  public void testParsePattern2() {
     List<AccessLogElementExtraction> result = accessLogPatternParser.parsePattern(ROW_PATTERN);
     assertEquals(27, result.size());
 
@@ -98,8 +138,42 @@ public class DefaultAccessLogPatternParserTest {
             DatetimeConfigurableElement.class,
             RequestHeaderElement.class,
             ResponseHeaderElement.class,
-            CookieElement.class,
+            PlainTextElement.class,
             TraceIdElement.class));
+  }
+
+  @Test
+  public void testCheckLocationList() {
+    List<AccessLogItemLocation> locationList = new ArrayList<>(3);
+    locationList.add(new AccessLogItemLocation().setStart(0).setEnd(3));
+    locationList.add(new AccessLogItemLocation().setStart(3).setEnd(6));
+    locationList.add(new AccessLogItemLocation().setStart(5).setEnd(9));
+
+    try {
+      Deencapsulation.invoke(new DefaultAccessLogPatternParser(), "checkLocationList",
+          "0123456789", locationList);
+      fail("expect an exception");
+    } catch (Exception e) {
+      assertEquals(IllegalArgumentException.class, e.getClass());
+      assertEquals("access log pattern contains illegal placeholder, please check it.", e.getMessage());
+    }
+  }
+
+  @Test
+  public void testCheckLocationListOnLocationEndGreaterThanPatternLength() {
+    List<AccessLogItemLocation> locationList = new ArrayList<>(3);
+    locationList.add(new AccessLogItemLocation().setStart(0).setEnd(3));
+    locationList.add(new AccessLogItemLocation().setStart(3).setEnd(6));
+    locationList.add(new AccessLogItemLocation().setStart(7).setEnd(9));
+
+    try {
+      Deencapsulation.invoke(new DefaultAccessLogPatternParser(), "checkLocationList",
+          "0123456", locationList);
+      fail("expect an exception");
+    } catch (Exception e) {
+      assertEquals(IllegalArgumentException.class, e.getClass());
+      assertEquals("access log pattern contains illegal placeholder, please check it.", e.getMessage());
+    }
   }
 
   @Test

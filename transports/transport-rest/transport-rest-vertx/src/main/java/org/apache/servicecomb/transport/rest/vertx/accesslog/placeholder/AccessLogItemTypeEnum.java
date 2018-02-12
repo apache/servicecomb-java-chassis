@@ -4,6 +4,7 @@ package org.apache.servicecomb.transport.rest.vertx.accesslog.placeholder;
  * record what kinds of access log item we support
  */
 public enum AccessLogItemTypeEnum {
+  TEXT_PLAIN,
   // %m, cs-method
   HTTP_METHOD,
   // %s, sc-status

@@ -24,8 +24,12 @@ import java.util.List;
 
 import org.apache.servicecomb.transport.rest.vertx.accesslog.element.impl.PlainTextElement;
 import org.apache.servicecomb.transport.rest.vertx.accesslog.parser.AccessLogElementExtraction;
+import org.apache.servicecomb.transport.rest.vertx.accesslog.parser.AccessLogItemLocation;
 import org.apache.servicecomb.transport.rest.vertx.accesslog.parser.AccessLogPatternParser;
 import org.apache.servicecomb.transport.rest.vertx.accesslog.parser.matcher.AccessLogElementMatcher;
+import org.apache.servicecomb.transport.rest.vertx.accesslog.parser.matcher.AccessLogItemMatcher;
+import org.apache.servicecomb.transport.rest.vertx.accesslog.parser.matcher.PercentagePrefixConfigurableMatcher;
+import org.apache.servicecomb.transport.rest.vertx.accesslog.parser.matcher.SimpleItemMatcher;
 import org.apache.servicecomb.transport.rest.vertx.accesslog.parser.matcher.impl.BytesWrittenV1Matcher;
 import org.apache.servicecomb.transport.rest.vertx.accesslog.parser.matcher.impl.BytesWrittenV2Matcher;
 import org.apache.servicecomb.transport.rest.vertx.accesslog.parser.matcher.impl.CookieElementMatcher;
@@ -46,12 +50,98 @@ import org.apache.servicecomb.transport.rest.vertx.accesslog.parser.matcher.impl
 import org.apache.servicecomb.transport.rest.vertx.accesslog.parser.matcher.impl.UriPathIncludeQueryMatcher;
 import org.apache.servicecomb.transport.rest.vertx.accesslog.parser.matcher.impl.UriPathOnlyMatcher;
 import org.apache.servicecomb.transport.rest.vertx.accesslog.parser.matcher.impl.VersionOrProtocolMatcher;
+import org.apache.servicecomb.transport.rest.vertx.accesslog.placeholder.AccessLogItemTypeEnum;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * contains all kinds of {@link AccessLogElementMatcher},
  * generate a chain of {@link AccessLogElementExtraction} according to the raw access log pattern.
  */
 public class DefaultAccessLogPatternParser implements AccessLogPatternParser {
+  private static final Logger LOGGER = LoggerFactory.getLogger(DefaultAccessLogPatternParser.class);
+
+  private static final List<AccessLogItemMatcher> matcherList = Arrays.asList(
+      new SimpleItemMatcher(), new PercentagePrefixConfigurableMatcher()
+  );
+
+  @Override
+  public List<AccessLogItemLocation> parsePattern2(String rawPattern) {
+    LOGGER.info("parse access log pattern: [{}]", rawPattern);
+    List<AccessLogItemLocation> locationList = new ArrayList<>();
+    for (int i = 0; i < rawPattern.length(); ) {
+      AccessLogItemLocation location = match(rawPattern, i);
+      if (null == location) {
+        break;
+      }
+
+      locationList.add(location);
+      i = location.getEnd();
+    }
+
+    checkLocationList(rawPattern, locationList);
+
+    locationList = fillInTextPlain(rawPattern, locationList);
+
+    return locationList;
+  }
+
+  private AccessLogItemLocation match(String rawPattern, int offset) {
+    AccessLogItemLocation result = null;
+    for (AccessLogItemMatcher matcher : matcherList) {
+      AccessLogItemLocation location = matcher.match(rawPattern, offset);
+      if ((null == result) || (null != location && location.getStart() < result.getStart())) {
+        // if result is null or location is nearer to offset, use location as result
+        result = location;
+      }
+    }
+    return result;
+  }
+
+  /**
+   * The content not matched in rawPattern will be printed as it is, so should be converted to {@link AccessLogItemTypeEnum#TEXT_PLAIN}
+   * @param rawPattern access log string pattern
+   * @param locationList {@link AccessLogItemLocation} list indicating the position of each access log item
+   */
+  private List<AccessLogItemLocation> fillInTextPlain(String rawPattern, List<AccessLogItemLocation> locationList) {
+    int cursor = 0;
+    List<AccessLogItemLocation> result = new ArrayList<>();
+
+    for (AccessLogItemLocation location : locationList) {
+      if (cursor == location.getStart()) {
+        result.add(location);
+      } else if (cursor < location.getStart()) {
+        result.add(new AccessLogItemLocation().setStart(cursor).setEnd(location.getStart()).setPlaceHolder(
+            AccessLogItemTypeEnum.TEXT_PLAIN));
+        result.add(location);
+      }
+      cursor = location.getEnd();
+    }
+
+    if (cursor < rawPattern.length()) {
+      result.add(new AccessLogItemLocation().setStart(cursor).setEnd(rawPattern.length())
+          .setPlaceHolder(AccessLogItemTypeEnum.TEXT_PLAIN));
+    }
+
+    return result;
+  }
+
+  private void checkLocationList(String rawPattern, List<AccessLogItemLocation> locationList) {
+    int preEnd = -1;
+    for (AccessLogItemLocation location : locationList) {
+      if (preEnd > location.getStart()) {
+        throw new IllegalArgumentException("access log pattern contains illegal placeholder, please check it.");
+      }
+
+      preEnd = location.getEnd();
+    }
+
+    if (preEnd > rawPattern.length()) {
+      throw new IllegalArgumentException("access log pattern contains illegal placeholder, please check it.");
+    }
+  }
+
+
   private static final List<AccessLogElementMatcher> MATCHER_LIST = Arrays.asList(
       new RequestHeaderElementMatcher(),
       new DatetimeConfigurableMatcher(),
