@@ -46,6 +46,8 @@ cse:
       autodiscovery: true
   rest:
     address: 0.0.0.0:8080?sslEnabled=true
+    server:
+      compression: true
   highway:
     address: 0.0.0.0:7070?sslEnabled=true
   handler:
