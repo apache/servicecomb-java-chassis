@@ -29,12 +29,12 @@ public class UrlPathItemTest {
 
   @Test
   public void getFormattedElement() {
-    AccessLogParam param = new AccessLogParam();
+    AccessLogParam<RoutingContext> param = new AccessLogParam<>();
     RoutingContext context = Mockito.mock(RoutingContext.class);
     HttpServerRequest request = Mockito.mock(HttpServerRequest.class);
     String uri = "/uri/test";
 
-    param.setRoutingContext(context);
+    param.setContextData(context);
     Mockito.when(context.request()).thenReturn(request);
     Mockito.when(request.path()).thenReturn(uri);
 
@@ -45,10 +45,10 @@ public class UrlPathItemTest {
 
   @Test
   public void getFormattedElementOnRequestIsNull() {
-    AccessLogParam param = new AccessLogParam();
+    AccessLogParam<RoutingContext> param = new AccessLogParam<>();
     RoutingContext context = Mockito.mock(RoutingContext.class);
 
-    param.setRoutingContext(context);
+    param.setContextData(context);
     Mockito.when(context.request()).thenReturn(null);
 
     String result = new UrlPathItem().getFormattedItem(param);
@@ -58,11 +58,11 @@ public class UrlPathItemTest {
 
   @Test
   public void getFormattedElementOnMethodIsNull() {
-    AccessLogParam param = new AccessLogParam();
+    AccessLogParam<RoutingContext> param = new AccessLogParam<>();
     RoutingContext context = Mockito.mock(RoutingContext.class);
     HttpServerRequest request = Mockito.mock(HttpServerRequest.class);
 
-    param.setRoutingContext(context);
+    param.setContextData(context);
     Mockito.when(context.request()).thenReturn(request);
     Mockito.when(request.path()).thenReturn(null);
 

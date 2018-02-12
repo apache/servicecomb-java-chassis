@@ -19,6 +19,9 @@ package org.apache.servicecomb.transport.rest.vertx.accesslog.parser;
 
 import java.util.List;
 
+/**
+ * Parse the raw pattern, and generate a list of information about each access log item.
+ */
 public interface AccessLogPatternParser {
   List<AccessLogItemLocation> parsePattern(String rawPattern);
 }

@@ -20,14 +20,12 @@ package org.apache.servicecomb.transport.rest.vertx.accesslog.element;
 import org.apache.servicecomb.transport.rest.vertx.accesslog.AccessLogParam;
 
 /**
- * element should be printed into access log.
+ * Access log item represents the items supported in access log printing.
+ * It generate the segment of access log according to {@link AccessLogParam}
  */
-public interface AccessLogItem {
+public interface AccessLogItem<T> {
   /**
    * find out specified content from {@link AccessLogParam}, format the content and return it.
-   *
-   * @param accessLogParam
-   * @return
    */
-  String getFormattedItem(AccessLogParam accessLogParam);
+  String getFormattedItem(AccessLogParam<T> accessLogParam);
 }

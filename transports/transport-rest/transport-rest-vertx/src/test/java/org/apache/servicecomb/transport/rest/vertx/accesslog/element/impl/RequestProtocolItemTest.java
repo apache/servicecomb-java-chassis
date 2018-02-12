@@ -31,11 +31,11 @@ public class RequestProtocolItemTest {
 
   @Test
   public void getFormattedElement() {
-    AccessLogParam param = new AccessLogParam();
+    AccessLogParam<RoutingContext> param = new AccessLogParam<>();
     RoutingContext context = Mockito.mock(RoutingContext.class);
     HttpServerRequest request = Mockito.mock(HttpServerRequest.class);
 
-    param.setRoutingContext(context);
+    param.setContextData(context);
     Mockito.when(context.request()).thenReturn(request);
     Mockito.when(request.version()).thenReturn(HttpVersion.HTTP_1_1);
 
@@ -53,10 +53,10 @@ public class RequestProtocolItemTest {
 
   @Test
   public void getFormattedElementOnRequestIsNull() {
-    AccessLogParam param = new AccessLogParam();
+    AccessLogParam<RoutingContext> param = new AccessLogParam<>();
     RoutingContext context = Mockito.mock(RoutingContext.class);
 
-    param.setRoutingContext(context);
+    param.setContextData(context);
     Mockito.when(context.request()).thenReturn(null);
 
     String result = new RequestProtocolItem().getFormattedItem(param);
@@ -67,11 +67,11 @@ public class RequestProtocolItemTest {
 
   @Test
   public void getFormattedElementOnVersionIsNull() {
-    AccessLogParam param = new AccessLogParam();
+    AccessLogParam<RoutingContext> param = new AccessLogParam<>();
     RoutingContext context = Mockito.mock(RoutingContext.class);
     HttpServerRequest request = Mockito.mock(HttpServerRequest.class);
 
-    param.setRoutingContext(context);
+    param.setContextData(context);
     Mockito.when(context.request()).thenReturn(request);
     Mockito.when(request.version()).thenReturn(null);
 

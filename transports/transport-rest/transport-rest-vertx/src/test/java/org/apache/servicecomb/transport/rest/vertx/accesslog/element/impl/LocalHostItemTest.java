@@ -33,13 +33,13 @@ public class LocalHostItemTest {
 
   @Test
   public void getFormattedElement() {
-    AccessLogParam param = new AccessLogParam();
+    AccessLogParam<RoutingContext> param = new AccessLogParam<>();
     RoutingContext context = Mockito.mock(RoutingContext.class);
     HttpServerRequest request = Mockito.mock(HttpServerRequest.class);
     SocketAddress localAddress = Mockito.mock(SocketAddress.class);
     String localHost = "testHost";
 
-    param.setRoutingContext(context);
+    param.setContextData(context);
     Mockito.when(context.request()).thenReturn(request);
     Mockito.when(request.localAddress()).thenReturn(localAddress);
     Mockito.when(localAddress.host()).thenReturn(localHost);
@@ -51,10 +51,10 @@ public class LocalHostItemTest {
 
   @Test
   public void getFormattedElementOnRequestIsNull() {
-    AccessLogParam param = new AccessLogParam();
+    AccessLogParam<RoutingContext> param = new AccessLogParam<>();
     RoutingContext context = Mockito.mock(RoutingContext.class);
 
-    param.setRoutingContext(context);
+    param.setContextData(context);
     Mockito.when(context.request()).thenReturn(null);
 
     String result = ELEMENT.getFormattedItem(param);
@@ -64,11 +64,11 @@ public class LocalHostItemTest {
 
   @Test
   public void getFormattedElementOnLocalAddressIsNull() {
-    AccessLogParam param = new AccessLogParam();
+    AccessLogParam<RoutingContext> param = new AccessLogParam<>();
     RoutingContext context = Mockito.mock(RoutingContext.class);
     HttpServerRequest request = Mockito.mock(HttpServerRequest.class);
 
-    param.setRoutingContext(context);
+    param.setContextData(context);
     Mockito.when(context.request()).thenReturn(request);
     Mockito.when(request.localAddress()).thenReturn(null);
 
@@ -79,12 +79,12 @@ public class LocalHostItemTest {
 
   @Test
   public void getFormattedElementOnHostIsNull() {
-    AccessLogParam param = new AccessLogParam();
+    AccessLogParam<RoutingContext> param = new AccessLogParam<>();
     RoutingContext context = Mockito.mock(RoutingContext.class);
     HttpServerRequest request = Mockito.mock(HttpServerRequest.class);
     SocketAddress localAddress = Mockito.mock(SocketAddress.class);
 
-    param.setRoutingContext(context);
+    param.setContextData(context);
     Mockito.when(context.request()).thenReturn(request);
     Mockito.when(request.localAddress()).thenReturn(localAddress);
     Mockito.when(localAddress.host()).thenReturn(null);
@@ -96,13 +96,13 @@ public class LocalHostItemTest {
 
   @Test
   public void getFormattedElementIsEmpty() {
-    AccessLogParam param = new AccessLogParam();
+    AccessLogParam<RoutingContext> param = new AccessLogParam<>();
     RoutingContext context = Mockito.mock(RoutingContext.class);
     HttpServerRequest request = Mockito.mock(HttpServerRequest.class);
     SocketAddress localAddress = Mockito.mock(SocketAddress.class);
     String localHost = "";
 
-    param.setRoutingContext(context);
+    param.setContextData(context);
     Mockito.when(context.request()).thenReturn(request);
     Mockito.when(request.localAddress()).thenReturn(localAddress);
     Mockito.when(localAddress.host()).thenReturn(localHost);

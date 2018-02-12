@@ -28,16 +28,16 @@ import io.vertx.ext.web.RoutingContext;
 
 public class StatusItemTest {
 
-  public static final HttpStatusItem STATUS_ELEMENT = new HttpStatusItem();
+  private static final HttpStatusItem STATUS_ELEMENT = new HttpStatusItem();
 
   @Test
   public void getFormattedElement() {
-    AccessLogParam param = new AccessLogParam();
+    AccessLogParam<RoutingContext> param = new AccessLogParam<>();
     RoutingContext context = Mockito.mock(RoutingContext.class);
     HttpServerResponse response = Mockito.mock(HttpServerResponse.class);
     int statusCode = 200;
 
-    param.setRoutingContext(context);
+    param.setContextData(context);
     Mockito.when(context.response()).thenReturn(response);
     Mockito.when(response.getStatusCode()).thenReturn(statusCode);
 
@@ -49,10 +49,10 @@ public class StatusItemTest {
 
   @Test
   public void getFormattedElementOnResponseIsNull() {
-    AccessLogParam param = new AccessLogParam();
+    AccessLogParam<RoutingContext> param = new AccessLogParam<>();
     RoutingContext context = Mockito.mock(RoutingContext.class);
 
-    param.setRoutingContext(context);
+    param.setContextData(context);
     Mockito.when(context.response()).thenReturn(null);
 
     String result = STATUS_ELEMENT.getFormattedItem(param);

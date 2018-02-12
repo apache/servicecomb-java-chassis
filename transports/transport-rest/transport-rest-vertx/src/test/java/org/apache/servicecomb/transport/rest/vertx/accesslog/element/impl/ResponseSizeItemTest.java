@@ -32,12 +32,12 @@ public class ResponseSizeItemTest {
 
   @Test
   public void getFormattedElement() {
-    AccessLogParam param = new AccessLogParam();
+    AccessLogParam<RoutingContext> param = new AccessLogParam<>();
     RoutingContext mockContext = Mockito.mock(RoutingContext.class);
     HttpServerResponse mockResponse = Mockito.mock(HttpServerResponse.class);
     long bytesWritten = 16L;
 
-    param.setRoutingContext(mockContext);
+    param.setContextData(mockContext);
     Mockito.when(mockContext.response()).thenReturn(mockResponse);
     Mockito.when(mockResponse.bytesWritten()).thenReturn(bytesWritten);
 
@@ -48,10 +48,10 @@ public class ResponseSizeItemTest {
 
   @Test
   public void getFormattedElementOnResponseIsNull() {
-    AccessLogParam param = new AccessLogParam();
+    AccessLogParam<RoutingContext> param = new AccessLogParam<>();
     RoutingContext mockContext = Mockito.mock(RoutingContext.class);
 
-    param.setRoutingContext(mockContext);
+    param.setContextData(mockContext);
     Mockito.when(mockContext.response()).thenReturn(null);
 
     String result = ELEMENT.getFormattedItem(param);
@@ -62,12 +62,12 @@ public class ResponseSizeItemTest {
 
   @Test
   public void getFormattedElementOnBytesWrittenIsZero() {
-    AccessLogParam param = new AccessLogParam();
+    AccessLogParam<RoutingContext> param = new AccessLogParam<>();
     RoutingContext mockContext = Mockito.mock(RoutingContext.class);
     HttpServerResponse mockResponse = Mockito.mock(HttpServerResponse.class);
     long bytesWritten = 0L;
 
-    param.setRoutingContext(mockContext);
+    param.setContextData(mockContext);
     Mockito.when(mockContext.response()).thenReturn(mockResponse);
     Mockito.when(mockResponse.bytesWritten()).thenReturn(bytesWritten);
 

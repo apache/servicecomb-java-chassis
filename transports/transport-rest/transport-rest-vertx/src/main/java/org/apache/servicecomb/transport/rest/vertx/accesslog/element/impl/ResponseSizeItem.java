@@ -21,8 +21,9 @@ import org.apache.servicecomb.transport.rest.vertx.accesslog.AccessLogParam;
 import org.apache.servicecomb.transport.rest.vertx.accesslog.element.AccessLogItem;
 
 import io.vertx.core.http.HttpServerResponse;
+import io.vertx.ext.web.RoutingContext;
 
-public class ResponseSizeItem implements AccessLogItem {
+public class ResponseSizeItem implements AccessLogItem<RoutingContext> {
   // print zeroBytes when bytes is zero
   private final String zeroBytes;
 
@@ -31,8 +32,8 @@ public class ResponseSizeItem implements AccessLogItem {
   }
 
   @Override
-  public String getFormattedItem(AccessLogParam accessLogParam) {
-    HttpServerResponse response = accessLogParam.getRoutingContext().response();
+  public String getFormattedItem(AccessLogParam<RoutingContext> accessLogParam) {
+    HttpServerResponse response = accessLogParam.getContextData().response();
     if (null == response) {
       return zeroBytes;
     }

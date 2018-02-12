@@ -37,8 +37,8 @@ public class AccessLogHandler implements Handler<RoutingContext> {
 
   @Override
   public void handle(RoutingContext context) {
-    AccessLogParam accessLogParam = new AccessLogParam().setStartMillisecond(System.currentTimeMillis())
-        .setRoutingContext(context);
+    AccessLogParam<RoutingContext> accessLogParam = new AccessLogParam<>();
+    accessLogParam.setStartMillisecond(System.currentTimeMillis()).setContextData(context);
 
     context.addBodyEndHandler(v -> LOGGER.info(accessLogGenerator.generateLog(accessLogParam)));
 

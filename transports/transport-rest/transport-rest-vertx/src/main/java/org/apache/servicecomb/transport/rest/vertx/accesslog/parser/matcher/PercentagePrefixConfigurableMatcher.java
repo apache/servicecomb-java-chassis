@@ -24,6 +24,9 @@ import java.util.Map.Entry;
 import org.apache.servicecomb.transport.rest.vertx.accesslog.parser.AccessLogItemLocation;
 import org.apache.servicecomb.transport.rest.vertx.accesslog.placeholder.AccessLogItemTypeEnum;
 
+/**
+ * for those access log item whose placeholder like "%{configpart}C"
+ */
 public class PercentagePrefixConfigurableMatcher implements AccessLogItemMatcher {
 
   public static final String GENERAL_PREFIX = "%{";

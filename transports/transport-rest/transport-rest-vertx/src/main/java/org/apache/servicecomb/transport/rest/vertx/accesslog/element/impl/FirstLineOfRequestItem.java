@@ -20,7 +20,9 @@ package org.apache.servicecomb.transport.rest.vertx.accesslog.element.impl;
 import org.apache.servicecomb.transport.rest.vertx.accesslog.AccessLogParam;
 import org.apache.servicecomb.transport.rest.vertx.accesslog.element.AccessLogItem;
 
-public class FirstLineOfRequestItem implements AccessLogItem {
+import io.vertx.ext.web.RoutingContext;
+
+public class FirstLineOfRequestItem implements AccessLogItem<RoutingContext> {
   private static final HttpMethodItem METHOD_ELEMENT = new HttpMethodItem();
 
   private static final UrlPathItem URI_PATH_ONLY_ELEMENT = new UrlPathItem();
@@ -28,7 +30,7 @@ public class FirstLineOfRequestItem implements AccessLogItem {
   private static final RequestProtocolItem VERSION_OR_PROTOCOL_ELEMENT = new RequestProtocolItem();
 
   @Override
-  public String getFormattedItem(AccessLogParam accessLogParam) {
+  public String getFormattedItem(AccessLogParam<RoutingContext> accessLogParam) {
     StringBuilder result = new StringBuilder(64)
         .append("\"")
         .append(METHOD_ELEMENT.getFormattedItem(accessLogParam))

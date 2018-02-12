@@ -34,12 +34,12 @@ public class FirstLineOfRequestItemTest {
 
   @Test
   public void getFormattedElement() {
-    AccessLogParam param = new AccessLogParam();
+    AccessLogParam<RoutingContext> param = new AccessLogParam<>();
     RoutingContext mockContext = Mockito.mock(RoutingContext.class);
     HttpServerRequest request = Mockito.mock(HttpServerRequest.class);
     String uri = "/test/uri";
 
-    param.setRoutingContext(mockContext);
+    param.setContextData(mockContext);
     Mockito.when(mockContext.request()).thenReturn(request);
     Mockito.when(request.method()).thenReturn(HttpMethod.DELETE);
     Mockito.when(request.path()).thenReturn(uri);

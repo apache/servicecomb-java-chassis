@@ -30,9 +30,6 @@ import org.apache.servicecomb.transport.rest.vertx.accesslog.placeholder.AccessL
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/**
- * locate all kinds of access log item, and mark their type.
- */
 public class DefaultAccessLogPatternParser implements AccessLogPatternParser {
   private static final Logger LOGGER = LoggerFactory.getLogger(DefaultAccessLogPatternParser.class);
 
@@ -40,6 +37,9 @@ public class DefaultAccessLogPatternParser implements AccessLogPatternParser {
       new SimpleItemMatcher(), new PercentagePrefixConfigurableMatcher()
   );
 
+  /**
+   * locate all kinds of access log item, and mark their type.
+   */
   @Override
   public List<AccessLogItemLocation> parsePattern(String rawPattern) {
     LOGGER.info("parse access log pattern: [{}]", rawPattern);
@@ -61,6 +61,9 @@ public class DefaultAccessLogPatternParser implements AccessLogPatternParser {
     return locationList;
   }
 
+  /**
+   * find out a placeholder that occurs firstly behind the offset index.
+   */
   private AccessLogItemLocation match(String rawPattern, int offset) {
     AccessLogItemLocation result = null;
     for (AccessLogItemMatcher matcher : matcherList) {
@@ -101,6 +104,10 @@ public class DefaultAccessLogPatternParser implements AccessLogPatternParser {
     return result;
   }
 
+  /**
+   * If the access log items' location overlaps or is illegal(exceeding the boundary of the rawPattern),
+   * a {@link IllegalArgumentException} will be thrown out.
+   */
   private void checkLocationList(String rawPattern, List<AccessLogItemLocation> locationList) {
     int preEnd = -1;
     for (AccessLogItemLocation location : locationList) {

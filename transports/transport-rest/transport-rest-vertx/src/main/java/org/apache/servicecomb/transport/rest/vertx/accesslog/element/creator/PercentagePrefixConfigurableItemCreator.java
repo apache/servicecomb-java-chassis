@@ -26,6 +26,10 @@ import org.apache.servicecomb.transport.rest.vertx.accesslog.element.impl.Respon
 import org.apache.servicecomb.transport.rest.vertx.accesslog.parser.AccessLogItemLocation;
 import org.apache.servicecomb.transport.rest.vertx.accesslog.placeholder.AccessLogItemTypeEnum;
 
+/**
+ * Some access log item contains changeable part, so we should get it's configuration from rawPattern, and generate it
+ * each time it is needed.
+ */
 public class PercentagePrefixConfigurableItemCreator implements AccessLogItemCreator {
   @Override
   public AccessLogItem create(String rawPattern, AccessLogItemLocation location) {

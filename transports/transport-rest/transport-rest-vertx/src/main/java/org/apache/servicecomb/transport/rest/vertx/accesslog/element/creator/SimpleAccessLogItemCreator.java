@@ -21,24 +21,29 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.servicecomb.transport.rest.vertx.accesslog.element.AccessLogItem;
-import org.apache.servicecomb.transport.rest.vertx.accesslog.element.impl.ResponseSizeItem;
 import org.apache.servicecomb.transport.rest.vertx.accesslog.element.impl.DatetimeConfigurableItem;
 import org.apache.servicecomb.transport.rest.vertx.accesslog.element.impl.DurationMillisecondItem;
 import org.apache.servicecomb.transport.rest.vertx.accesslog.element.impl.DurationSecondItem;
 import org.apache.servicecomb.transport.rest.vertx.accesslog.element.impl.FirstLineOfRequestItem;
+import org.apache.servicecomb.transport.rest.vertx.accesslog.element.impl.HttpMethodItem;
+import org.apache.servicecomb.transport.rest.vertx.accesslog.element.impl.HttpStatusItem;
 import org.apache.servicecomb.transport.rest.vertx.accesslog.element.impl.LocalHostItem;
 import org.apache.servicecomb.transport.rest.vertx.accesslog.element.impl.LocalPortItem;
-import org.apache.servicecomb.transport.rest.vertx.accesslog.element.impl.HttpMethodItem;
 import org.apache.servicecomb.transport.rest.vertx.accesslog.element.impl.QueryStringItem;
 import org.apache.servicecomb.transport.rest.vertx.accesslog.element.impl.RemoteHostItem;
-import org.apache.servicecomb.transport.rest.vertx.accesslog.element.impl.HttpStatusItem;
-import org.apache.servicecomb.transport.rest.vertx.accesslog.element.impl.TraceIdItem;
-import org.apache.servicecomb.transport.rest.vertx.accesslog.element.impl.UrlPathWithQueryItem;
-import org.apache.servicecomb.transport.rest.vertx.accesslog.element.impl.UrlPathItem;
 import org.apache.servicecomb.transport.rest.vertx.accesslog.element.impl.RequestProtocolItem;
+import org.apache.servicecomb.transport.rest.vertx.accesslog.element.impl.ResponseSizeItem;
+import org.apache.servicecomb.transport.rest.vertx.accesslog.element.impl.TraceIdItem;
+import org.apache.servicecomb.transport.rest.vertx.accesslog.element.impl.UrlPathItem;
+import org.apache.servicecomb.transport.rest.vertx.accesslog.element.impl.UrlPathWithQueryItem;
 import org.apache.servicecomb.transport.rest.vertx.accesslog.parser.AccessLogItemLocation;
 import org.apache.servicecomb.transport.rest.vertx.accesslog.placeholder.AccessLogItemTypeEnum;
 
+/**
+ * For some access log items, their placeholder contains no modifiable part, like "%s" or "sc-status".
+ * So we can build a mapping relationship between the placeholder and item instances, when an item is needed, get it by
+ * it's placeholder.
+ */
 public class SimpleAccessLogItemCreator implements AccessLogItemCreator {
   private static final Map<AccessLogItemTypeEnum, AccessLogItem> SIMPLE_ACCESSLOG_ITEM_MAP = new HashMap<>();
 

@@ -21,8 +21,9 @@ import org.apache.servicecomb.transport.rest.vertx.accesslog.AccessLogParam;
 import org.apache.servicecomb.transport.rest.vertx.accesslog.element.AccessLogItem;
 
 import io.vertx.core.MultiMap;
+import io.vertx.ext.web.RoutingContext;
 
-public class RequestHeaderItem implements AccessLogItem {
+public class RequestHeaderItem implements AccessLogItem<RoutingContext> {
 
   public static final String RESULT_NOT_FOUND = "-";
 
@@ -33,8 +34,8 @@ public class RequestHeaderItem implements AccessLogItem {
   }
 
   @Override
-  public String getFormattedItem(AccessLogParam accessLogParam) {
-    MultiMap headers = accessLogParam.getRoutingContext().request().headers();
+  public String getFormattedItem(AccessLogParam<RoutingContext> accessLogParam) {
+    MultiMap headers = accessLogParam.getContextData().request().headers();
     if (null == headers) {
       return "-";
     }

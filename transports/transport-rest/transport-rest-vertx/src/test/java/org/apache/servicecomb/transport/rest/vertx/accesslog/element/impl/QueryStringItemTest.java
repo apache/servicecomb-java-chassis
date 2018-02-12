@@ -30,12 +30,12 @@ public class QueryStringItemTest {
 
   @Test
   public void getFormattedElement() {
-    AccessLogParam param = new AccessLogParam();
+    AccessLogParam<RoutingContext> param = new AccessLogParam<>();
     RoutingContext context = Mockito.mock(RoutingContext.class);
     HttpServerRequest request = Mockito.mock(HttpServerRequest.class);
     String query = "?status=up";
 
-    param.setRoutingContext(context);
+    param.setContextData(context);
     Mockito.when(context.request()).thenReturn(request);
     Mockito.when(request.query()).thenReturn(query);
 
@@ -46,10 +46,10 @@ public class QueryStringItemTest {
 
   @Test
   public void getFormattedElementOnRequestIsNull() {
-    AccessLogParam param = new AccessLogParam();
+    AccessLogParam<RoutingContext> param = new AccessLogParam<>();
     RoutingContext context = Mockito.mock(RoutingContext.class);
 
-    param.setRoutingContext(context);
+    param.setContextData(context);
     Mockito.when(context.request()).thenReturn(null);
 
     String result = new QueryStringItem().getFormattedItem(param);
@@ -59,11 +59,11 @@ public class QueryStringItemTest {
 
   @Test
   public void getFormattedElementOnQueryIsNull() {
-    AccessLogParam param = new AccessLogParam();
+    AccessLogParam<RoutingContext> param = new AccessLogParam<>();
     RoutingContext context = Mockito.mock(RoutingContext.class);
     HttpServerRequest request = Mockito.mock(HttpServerRequest.class);
 
-    param.setRoutingContext(context);
+    param.setContextData(context);
     Mockito.when(context.request()).thenReturn(request);
     Mockito.when(request.query()).thenReturn(null);
 
@@ -74,12 +74,12 @@ public class QueryStringItemTest {
 
   @Test
   public void getFormattedElementOnQueryIsEmpty() {
-    AccessLogParam param = new AccessLogParam();
+    AccessLogParam<RoutingContext> param = new AccessLogParam<>();
     RoutingContext context = Mockito.mock(RoutingContext.class);
     HttpServerRequest request = Mockito.mock(HttpServerRequest.class);
     String query = "";
 
-    param.setRoutingContext(context);
+    param.setContextData(context);
     Mockito.when(context.request()).thenReturn(request);
     Mockito.when(request.query()).thenReturn(query);
 

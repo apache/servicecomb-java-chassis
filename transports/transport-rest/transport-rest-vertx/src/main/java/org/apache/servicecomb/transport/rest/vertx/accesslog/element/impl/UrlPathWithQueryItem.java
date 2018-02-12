@@ -22,14 +22,15 @@ import org.apache.servicecomb.transport.rest.vertx.accesslog.element.AccessLogIt
 import org.springframework.util.StringUtils;
 
 import io.vertx.core.http.HttpServerRequest;
+import io.vertx.ext.web.RoutingContext;
 
-public class UrlPathWithQueryItem implements AccessLogItem {
+public class UrlPathWithQueryItem implements AccessLogItem<RoutingContext> {
 
   public static final String EMPTY_RESULT = "-";
 
   @Override
-  public String getFormattedItem(AccessLogParam accessLogParam) {
-    HttpServerRequest request = accessLogParam.getRoutingContext().request();
+  public String getFormattedItem(AccessLogParam<RoutingContext> accessLogParam) {
+    HttpServerRequest request = accessLogParam.getContextData().request();
     if (null == request) {
       return EMPTY_RESULT;
     }

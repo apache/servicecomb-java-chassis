@@ -24,13 +24,15 @@ import org.apache.servicecomb.transport.rest.vertx.accesslog.AccessLogParam;
 import org.apache.servicecomb.transport.rest.vertx.accesslog.element.AccessLogItem;
 import org.springframework.util.StringUtils;
 
-public class TraceIdItem implements AccessLogItem {
+import io.vertx.ext.web.RoutingContext;
+
+public class TraceIdItem implements AccessLogItem<RoutingContext> {
 
   private static final String TRACE_ID_NOT_FOUND = "-";
 
   @Override
-  public String getFormattedItem(AccessLogParam accessLogParam) {
-    Map<String, Object> data = accessLogParam.getRoutingContext().data();
+  public String getFormattedItem(AccessLogParam<RoutingContext> accessLogParam) {
+    Map<String, Object> data = accessLogParam.getContextData().data();
     if (null == data) {
       return TRACE_ID_NOT_FOUND;
     }
