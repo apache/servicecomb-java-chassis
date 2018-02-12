@@ -22,7 +22,7 @@ public class PercentagePrefixConfigurableMatcherTest {
             .setEnd(11)
             .setPlaceHolder(AccessLogItemTypeEnum.DATETIME_CONFIGURABLE));
 
-    location = MATCHER.match(TEST_RAW_PATTERN, 12);
+    location = MATCHER.match(TEST_RAW_PATTERN, 10);
     Assert.assertEquals(
         location,
         new AccessLogItemLocation()
@@ -30,13 +30,8 @@ public class PercentagePrefixConfigurableMatcherTest {
             .setEnd(28)
             .setPlaceHolder(AccessLogItemTypeEnum.COOKIE));
 
-    location = MATCHER.match(TEST_RAW_PATTERN, 29);
-    Assert.assertEquals(
-        location,
-        new AccessLogItemLocation()
-            .setStart(29)
-            .setEnd(45)
-            .setPlaceHolder(AccessLogItemTypeEnum.DATETIME_CONFIGURABLE));
+    location = MATCHER.match(TEST_RAW_PATTERN, 30);
+    Assert.assertNull(location);
   }
 
   @Test

@@ -20,12 +20,15 @@ package org.apache.servicecomb.transport.rest.vertx.accesslog.impl;
 import static org.junit.Assert.assertEquals;
 
 import java.util.Arrays;
+import java.util.List;
 
 import org.apache.servicecomb.transport.rest.vertx.accesslog.element.AccessLogElement;
 import org.apache.servicecomb.transport.rest.vertx.accesslog.element.impl.DatetimeConfigurableElement;
 import org.apache.servicecomb.transport.rest.vertx.accesslog.element.impl.MethodElement;
 import org.apache.servicecomb.transport.rest.vertx.accesslog.element.impl.PlainTextElement;
 import org.apache.servicecomb.transport.rest.vertx.accesslog.parser.AccessLogElementExtraction;
+import org.apache.servicecomb.transport.rest.vertx.accesslog.parser.AccessLogItemLocation;
+import org.apache.servicecomb.transport.rest.vertx.accesslog.parser.AccessLogPatternParser;
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.slf4j.Logger;
@@ -42,12 +45,21 @@ public class AccessLogHandlerTest {
 
   private static final Logger logger = Mockito.mock(Logger.class);
 
-  private static final AccessLogHandler ACCESS_LOG_HANDLER = new AccessLogHandler("rawPattern", s -> {
-    assertEquals("rawPattern", s);
-    return Arrays.asList(new AccessLogElementExtraction().setAccessLogElement(methodElement),
-        new AccessLogElementExtraction().setAccessLogElement(plainTextElement),
-        new AccessLogElementExtraction().setAccessLogElement(datetimeElement));
-  });
+  private static final AccessLogHandler ACCESS_LOG_HANDLER = new AccessLogHandler("rawPattern",
+      new AccessLogPatternParser() {
+        @Override
+        public List<AccessLogElementExtraction> parsePattern(String rawPattern) {
+          assertEquals("rawPattern", rawPattern);
+          return Arrays.asList(new AccessLogElementExtraction().setAccessLogElement(methodElement),
+              new AccessLogElementExtraction().setAccessLogElement(plainTextElement),
+              new AccessLogElementExtraction().setAccessLogElement(datetimeElement));
+        }
+
+        @Override
+        public List<AccessLogItemLocation> parsePattern2(String rawPattern) {
+          return null;
+        }
+      });
 
   @Test
   public void handle() {
