@@ -38,7 +38,7 @@ public class TraceIdItemTest {
 
   @Test
   public void testGetFormattedElement() {
-    AccessLogParam param = new AccessLogParam();
+    AccessLogParam<RoutingContext> param = new AccessLogParam<>();
     RoutingContext routingContext = Mockito.mock(RoutingContext.class);
     Map<String, Object> data = new HashMap<>();
     RestProducerInvocation restProducerInvocation = new RestProducerInvocation();
@@ -50,7 +50,7 @@ public class TraceIdItemTest {
     Mockito.when(routingContext.data()).thenReturn(data);
     data.put("servicecomb-rest-producer-invocation", restProducerInvocation);
 
-    param.setRoutingContext(routingContext);
+    param.setContextData(routingContext);
 
     String result = ELEMENT.getFormattedItem(param);
     Assert.assertThat(result, is(traceIdTest));
@@ -58,7 +58,7 @@ public class TraceIdItemTest {
 
   @Test
   public void testGetFormattedElementOnTraceIdNotFound() {
-    AccessLogParam param = new AccessLogParam();
+    AccessLogParam<RoutingContext> param = new AccessLogParam<>();
     RoutingContext routingContext = Mockito.mock(RoutingContext.class);
     Map<String, Object> data = new HashMap<>();
     RestProducerInvocation restProducerInvocation = new RestProducerInvocation();
@@ -69,7 +69,7 @@ public class TraceIdItemTest {
     Mockito.when(routingContext.data()).thenReturn(data);
     data.put("servicecomb-rest-producer-invocation", restProducerInvocation);
 
-    param.setRoutingContext(routingContext);
+    param.setContextData(routingContext);
 
     String result = ELEMENT.getFormattedItem(param);
     Assert.assertThat(result, is("-"));
@@ -81,12 +81,12 @@ public class TraceIdItemTest {
 
   @Test
   public void testGetFormattedElementOnInvocationContextIsNull() {
-    AccessLogParam param = new AccessLogParam();
+    AccessLogParam<RoutingContext> param = new AccessLogParam<>();
     RoutingContext routingContext = Mockito.mock(RoutingContext.class);
     Map<String, Object> data = new HashMap<>();
 
     Mockito.when(routingContext.data()).thenReturn(data);
-    param.setRoutingContext(routingContext);
+    param.setContextData(routingContext);
 
     String result = ELEMENT.getFormattedItem(param);
     Assert.assertThat(result, is("-"));
@@ -94,10 +94,10 @@ public class TraceIdItemTest {
 
   @Test
   public void testGetFormattedElementOnDataIsNull() {
-    AccessLogParam param = new AccessLogParam();
+    AccessLogParam<RoutingContext> param = new AccessLogParam<>();
     RoutingContext routingContext = Mockito.mock(RoutingContext.class);
 
-    param.setRoutingContext(routingContext);
+    param.setContextData(routingContext);
     Mockito.when(routingContext.data()).thenReturn(null);
 
     String result = ELEMENT.getFormattedItem(param);

@@ -36,7 +36,7 @@ public class CookieItemTest {
 
   @Test
   public void getFormattedElement() {
-    AccessLogParam param = new AccessLogParam();
+    AccessLogParam<RoutingContext> param = new AccessLogParam<>();
     RoutingContext mockContext = Mockito.mock(RoutingContext.class);
     HashSet<Cookie> cookieSet = new HashSet<>();
     String cookieValue = "cookieValue";
@@ -45,7 +45,7 @@ public class CookieItemTest {
     cookieSet.add(cookie);
     Mockito.when(mockContext.cookieCount()).thenReturn(1);
     Mockito.when(mockContext.cookies()).thenReturn(cookieSet);
-    param.setRoutingContext(mockContext);
+    param.setContextData(mockContext);
 
     String result = ELEMENT.getFormattedItem(param);
 
@@ -54,13 +54,13 @@ public class CookieItemTest {
 
   @Test
   public void getFormattedElementOnCookieCountIsZero() {
-    AccessLogParam param = new AccessLogParam();
+    AccessLogParam<RoutingContext> param = new AccessLogParam<>();
     RoutingContext mockContext = Mockito.mock(RoutingContext.class);
     HashSet<Cookie> cookieSet = new HashSet<>();
 
     Mockito.when(mockContext.cookieCount()).thenReturn(0);
     Mockito.when(mockContext.cookies()).thenReturn(cookieSet);
-    param.setRoutingContext(mockContext);
+    param.setContextData(mockContext);
 
     String result = ELEMENT.getFormattedItem(param);
 
@@ -69,12 +69,12 @@ public class CookieItemTest {
 
   @Test
   public void getFormattedElementOnCookieSetIsNull() {
-    AccessLogParam param = new AccessLogParam();
+    AccessLogParam<RoutingContext> param = new AccessLogParam<>();
     RoutingContext mockContext = Mockito.mock(RoutingContext.class);
 
     Mockito.when(mockContext.cookieCount()).thenReturn(1);
     Mockito.when(mockContext.cookies()).thenReturn(null);
-    param.setRoutingContext(mockContext);
+    param.setContextData(mockContext);
 
     String result = ELEMENT.getFormattedItem(param);
 
@@ -83,7 +83,7 @@ public class CookieItemTest {
 
   @Test
   public void getFormattedElementOnNotFound() {
-    AccessLogParam param = new AccessLogParam();
+    AccessLogParam<RoutingContext> param = new AccessLogParam<>();
     RoutingContext mockContext = Mockito.mock(RoutingContext.class);
     HashSet<Cookie> cookieSet = new HashSet<>();
     String cookieValue = "cookieValue";
@@ -92,7 +92,7 @@ public class CookieItemTest {
     cookieSet.add(cookie);
     Mockito.when(mockContext.cookieCount()).thenReturn(1);
     Mockito.when(mockContext.cookies()).thenReturn(cookieSet);
-    param.setRoutingContext(mockContext);
+    param.setContextData(mockContext);
 
     String result = ELEMENT.getFormattedItem(param);
 

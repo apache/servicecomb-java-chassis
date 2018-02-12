@@ -17,21 +17,26 @@
 
 package org.apache.servicecomb.transport.rest.vertx.accesslog;
 
-import io.vertx.ext.web.RoutingContext;
-
-public class AccessLogParam {
-  private RoutingContext routingContext;
+/**
+ * carry the data used in access log.
+ */
+public class AccessLogParam<T> {
+  /**
+   * data object that contains request and response information.
+   * For example, in vertx rest transport it's {@link io.vertx.ext.web.RoutingContext}
+   */
+  private T contextData;
 
   private long startMillisecond;
 
   private long endMillisecond;
 
-  public RoutingContext getRoutingContext() {
-    return routingContext;
+  public T getContextData() {
+    return contextData;
   }
 
-  public AccessLogParam setRoutingContext(RoutingContext routingContext) {
-    this.routingContext = routingContext;
+  public AccessLogParam<T> setContextData(T contextData) {
+    this.contextData = contextData;
     return this;
   }
 
@@ -39,7 +44,7 @@ public class AccessLogParam {
     return startMillisecond;
   }
 
-  public AccessLogParam setStartMillisecond(long startMillisecond) {
+  public AccessLogParam<T> setStartMillisecond(long startMillisecond) {
     this.startMillisecond = startMillisecond;
     return this;
   }
@@ -48,7 +53,7 @@ public class AccessLogParam {
     return endMillisecond;
   }
 
-  public AccessLogParam setEndMillisecond(long endMillisecond) {
+  public AccessLogParam<T> setEndMillisecond(long endMillisecond) {
     this.endMillisecond = endMillisecond;
     return this;
   }
@@ -56,7 +61,7 @@ public class AccessLogParam {
   @Override
   public String toString() {
     final StringBuilder sb = new StringBuilder("AccessLogParam{");
-    sb.append("routingContext=").append(routingContext);
+    sb.append("contextData=").append(contextData);
     sb.append(", startMillisecond=").append(startMillisecond);
     sb.append(", endMillisecond=").append(endMillisecond);
     sb.append('}');

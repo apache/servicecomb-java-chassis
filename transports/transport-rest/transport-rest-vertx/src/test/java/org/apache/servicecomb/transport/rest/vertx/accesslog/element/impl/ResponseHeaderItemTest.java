@@ -35,13 +35,13 @@ public class ResponseHeaderItemTest {
 
   @Test
   public void getFormattedElement() {
-    AccessLogParam param = new AccessLogParam();
+    AccessLogParam<RoutingContext> param = new AccessLogParam<>();
     RoutingContext mockContext = Mockito.mock(RoutingContext.class);
     HttpServerResponse mockResponse = Mockito.mock(HttpServerResponse.class);
     VertxHttpHeaders headers = new VertxHttpHeaders();
     String headerValue = "headerValue";
 
-    param.setRoutingContext(mockContext);
+    param.setContextData(mockContext);
     headers.add(VAR_NAME, headerValue);
 
     Mockito.when(mockContext.response()).thenReturn(mockResponse);
@@ -55,11 +55,11 @@ public class ResponseHeaderItemTest {
 
   @Test
   public void getFormattedElementOnHeadersIsNull() {
-    AccessLogParam param = new AccessLogParam();
+    AccessLogParam<RoutingContext> param = new AccessLogParam<>();
     RoutingContext mockContext = Mockito.mock(RoutingContext.class);
     HttpServerResponse mockResponse = Mockito.mock(HttpServerResponse.class);
 
-    param.setRoutingContext(mockContext);
+    param.setContextData(mockContext);
 
     Mockito.when(mockContext.response()).thenReturn(mockResponse);
 
@@ -70,10 +70,10 @@ public class ResponseHeaderItemTest {
 
   @Test
   public void getFormattedElementOnResponseIsNull() {
-    AccessLogParam param = new AccessLogParam();
+    AccessLogParam<RoutingContext> param = new AccessLogParam<>();
     RoutingContext mockContext = Mockito.mock(RoutingContext.class);
 
-    param.setRoutingContext(mockContext);
+    param.setContextData(mockContext);
 
     Mockito.when(mockContext.response()).thenReturn(null);
 
@@ -84,13 +84,13 @@ public class ResponseHeaderItemTest {
 
   @Test
   public void getFormattedElementOnNotFound() {
-    AccessLogParam param = new AccessLogParam();
+    AccessLogParam<RoutingContext> param = new AccessLogParam<>();
     RoutingContext mockContext = Mockito.mock(RoutingContext.class);
     HttpServerResponse mockResponse = Mockito.mock(HttpServerResponse.class);
     VertxHttpHeaders headers = new VertxHttpHeaders();
     String headerValue = "headerValue";
 
-    param.setRoutingContext(mockContext);
+    param.setContextData(mockContext);
     headers.add("anotherHeader", headerValue);
 
     Mockito.when(mockContext.response()).thenReturn(mockResponse);

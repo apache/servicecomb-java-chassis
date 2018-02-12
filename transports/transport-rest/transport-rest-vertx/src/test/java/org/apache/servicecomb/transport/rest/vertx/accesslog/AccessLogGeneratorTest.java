@@ -21,7 +21,6 @@ import static org.junit.Assert.assertEquals;
 
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
-import java.util.List;
 import java.util.TimeZone;
 
 import org.apache.servicecomb.transport.rest.vertx.accesslog.element.AccessLogItem;
@@ -29,7 +28,6 @@ import org.apache.servicecomb.transport.rest.vertx.accesslog.element.impl.Dateti
 import org.apache.servicecomb.transport.rest.vertx.accesslog.element.impl.HttpMethodItem;
 import org.apache.servicecomb.transport.rest.vertx.accesslog.element.impl.PlainTextItem;
 import org.apache.servicecomb.transport.rest.vertx.accesslog.parser.AccessLogItemLocation;
-import org.apache.servicecomb.transport.rest.vertx.accesslog.parser.AccessLogPatternParser;
 import org.apache.servicecomb.transport.rest.vertx.accesslog.placeholder.AccessLogItemTypeEnum;
 import org.junit.Assert;
 import org.junit.Test;
@@ -49,16 +47,13 @@ public class AccessLogGeneratorTest {
   private static final AccessLogItem plainTextElement = new PlainTextItem(" - ");
 
   private static final AccessLogGenerator ACCESS_LOG_GENERATOR = new AccessLogGenerator("%m - %t",
-      new AccessLogPatternParser() {
-        @Override
-        public List<AccessLogItemLocation> parsePattern(String rawPattern) {
-          assertEquals("%m - %t", rawPattern);
-          return Arrays.asList(
-              new AccessLogItemLocation().setStart(0).setEnd(2).setPlaceHolder(AccessLogItemTypeEnum.HTTP_METHOD),
-              new AccessLogItemLocation().setStart(2).setEnd(5).setPlaceHolder(AccessLogItemTypeEnum.TEXT_PLAIN),
-              new AccessLogItemLocation().setStart(5).setEnd(7)
-                  .setPlaceHolder(AccessLogItemTypeEnum.DATETIME_DEFAULT));
-        }
+      rawPattern -> {
+        assertEquals("%m - %t", rawPattern);
+        return Arrays.asList(
+            new AccessLogItemLocation().setStart(0).setEnd(2).setPlaceHolder(AccessLogItemTypeEnum.HTTP_METHOD),
+            new AccessLogItemLocation().setStart(2).setEnd(5).setPlaceHolder(AccessLogItemTypeEnum.TEXT_PLAIN),
+            new AccessLogItemLocation().setStart(5).setEnd(7)
+                .setPlaceHolder(AccessLogItemTypeEnum.DATETIME_DEFAULT));
       });
 
   @Test
@@ -75,8 +70,8 @@ public class AccessLogGeneratorTest {
     RoutingContext context = Mockito.mock(RoutingContext.class);
     HttpServerRequest request = Mockito.mock(HttpServerRequest.class);
     long startMillisecond = 1416863450581L;
-    AccessLogParam accessLogParam = new AccessLogParam().setStartMillisecond(startMillisecond)
-        .setRoutingContext(context);
+    AccessLogParam<RoutingContext> accessLogParam = new AccessLogParam<>();
+    accessLogParam.setStartMillisecond(startMillisecond).setContextData(context);
     SimpleDateFormat simpleDateFormat = new SimpleDateFormat(DatetimeConfigurableItem.DEFAULT_DATETIME_PATTERN,
         DatetimeConfigurableItem.DEFAULT_LOCALE);
     simpleDateFormat.setTimeZone(TimeZone.getDefault());

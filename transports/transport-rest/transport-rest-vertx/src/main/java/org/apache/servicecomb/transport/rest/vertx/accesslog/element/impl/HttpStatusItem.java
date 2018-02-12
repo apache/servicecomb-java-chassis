@@ -21,14 +21,15 @@ import org.apache.servicecomb.transport.rest.vertx.accesslog.AccessLogParam;
 import org.apache.servicecomb.transport.rest.vertx.accesslog.element.AccessLogItem;
 
 import io.vertx.core.http.HttpServerResponse;
+import io.vertx.ext.web.RoutingContext;
 
-public class HttpStatusItem implements AccessLogItem {
+public class HttpStatusItem implements AccessLogItem<RoutingContext> {
 
   public static final String EMPTY_RESULT = "-";
 
   @Override
-  public String getFormattedItem(AccessLogParam accessLogParam) {
-    HttpServerResponse response = accessLogParam.getRoutingContext().response();
+  public String getFormattedItem(AccessLogParam<RoutingContext> accessLogParam) {
+    HttpServerResponse response = accessLogParam.getContextData().response();
     if (null == response) {
       return EMPTY_RESULT;
     }

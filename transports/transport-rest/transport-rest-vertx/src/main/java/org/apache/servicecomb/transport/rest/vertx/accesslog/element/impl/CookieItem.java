@@ -23,8 +23,9 @@ import org.apache.servicecomb.transport.rest.vertx.accesslog.AccessLogParam;
 import org.apache.servicecomb.transport.rest.vertx.accesslog.element.AccessLogItem;
 
 import io.vertx.ext.web.Cookie;
+import io.vertx.ext.web.RoutingContext;
 
-public class CookieItem implements AccessLogItem {
+public class CookieItem implements AccessLogItem<RoutingContext> {
 
   public static final String RESULT_NOT_FOUND = "-";
 
@@ -35,8 +36,8 @@ public class CookieItem implements AccessLogItem {
   }
 
   @Override
-  public String getFormattedItem(AccessLogParam accessLogParam) {
-    Set<Cookie> cookieSet = accessLogParam.getRoutingContext().cookies();
+  public String getFormattedItem(AccessLogParam<RoutingContext> accessLogParam) {
+    Set<Cookie> cookieSet = accessLogParam.getContextData().cookies();
     if (null == cookieSet) {
       return RESULT_NOT_FOUND;
     }

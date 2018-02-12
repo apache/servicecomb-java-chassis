@@ -26,6 +26,11 @@ import org.apache.servicecomb.transport.rest.vertx.accesslog.element.creator.Per
 import org.apache.servicecomb.transport.rest.vertx.accesslog.element.creator.SimpleAccessLogItemCreator;
 import org.apache.servicecomb.transport.rest.vertx.accesslog.parser.AccessLogItemLocation;
 
+/**
+ * The factory of {@link AccessLogItem}.
+ * Using the {@link AccessLogItemCreator} to generate AccessLogItem, according to {@link AccessLogItemLocation}
+ * and rawPattern.
+ */
 public class AccessLogItemFactory {
   private List<AccessLogItemCreator> creatorList = Arrays
       .asList(new SimpleAccessLogItemCreator(), new PercentagePrefixConfigurableItemCreator());
@@ -39,6 +44,9 @@ public class AccessLogItemFactory {
     return itemList;
   }
 
+  /**
+   * generate single AccessLogItem
+   */
   private void setItemList(String rawPattern, List<AccessLogItem> itemList, AccessLogItemLocation location) {
     AccessLogItem item = null;
     for (AccessLogItemCreator creator : creatorList) {

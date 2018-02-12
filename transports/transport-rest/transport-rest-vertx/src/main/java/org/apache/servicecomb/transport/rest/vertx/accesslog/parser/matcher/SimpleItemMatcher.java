@@ -24,8 +24,11 @@ import java.util.Map.Entry;
 import org.apache.servicecomb.transport.rest.vertx.accesslog.parser.AccessLogItemLocation;
 import org.apache.servicecomb.transport.rest.vertx.accesslog.placeholder.AccessLogItemTypeEnum;
 
+/**
+ * for those access log items whose placeholder has no changeable part.
+ */
 public class SimpleItemMatcher implements AccessLogItemMatcher {
-  private static final Map<String, AccessLogItemTypeEnum> PLACEHOLDER_ENUM_MAP = new LinkedHashMap<String, AccessLogItemTypeEnum>();
+  private static final Map<String, AccessLogItemTypeEnum> PLACEHOLDER_ENUM_MAP = new LinkedHashMap<>();
 
   static {
     PLACEHOLDER_ENUM_MAP.put("%m", AccessLogItemTypeEnum.HTTP_METHOD);

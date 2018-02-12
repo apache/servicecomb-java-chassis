@@ -36,7 +36,8 @@ public class RequestHeaderItemTest {
   @Test
   public void getFormattedElement() {
     RoutingContext mockContext = Mockito.mock(RoutingContext.class);
-    AccessLogParam param = new AccessLogParam().setRoutingContext(mockContext);
+    AccessLogParam<RoutingContext> param = new AccessLogParam<>();
+    param.setContextData(mockContext);
     HttpServerRequest mockRequest = Mockito.mock(HttpServerRequest.class);
     VertxHttpHeaders headers = new VertxHttpHeaders();
     String testValue = "testValue";
@@ -54,7 +55,8 @@ public class RequestHeaderItemTest {
   @Test
   public void getFormattedElementIfHeaderIsNull() {
     RoutingContext mockContext = Mockito.mock(RoutingContext.class);
-    AccessLogParam param = new AccessLogParam().setRoutingContext(mockContext);
+    AccessLogParam<RoutingContext> param = new AccessLogParam<>();
+    param.setContextData(mockContext);
     HttpServerRequest mockRequest = Mockito.mock(HttpServerRequest.class);
 
     Mockito.when(mockContext.request()).thenReturn(mockRequest);
@@ -68,7 +70,8 @@ public class RequestHeaderItemTest {
   @Test
   public void getFormattedElementIfNotFound() {
     RoutingContext mockContext = Mockito.mock(RoutingContext.class);
-    AccessLogParam param = new AccessLogParam().setRoutingContext(mockContext);
+    AccessLogParam<RoutingContext> param = new AccessLogParam<>();
+    param.setContextData(mockContext);
     HttpServerRequest mockRequest = Mockito.mock(HttpServerRequest.class);
     VertxHttpHeaders headers = new VertxHttpHeaders();
     String testValue = "testValue";

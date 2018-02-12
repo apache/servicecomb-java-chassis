@@ -34,7 +34,8 @@ public class HttpMethodItemTest {
     HttpServerRequest request = Mockito.mock(HttpServerRequest.class);
     Mockito.when(routingContext.request()).thenReturn(request);
     Mockito.when(request.method()).thenReturn(HttpMethod.DELETE);
-    AccessLogParam param = new AccessLogParam().setRoutingContext(routingContext);
+    AccessLogParam<RoutingContext> param = new AccessLogParam<>();
+    param.setContextData(routingContext);
 
     Assert.assertEquals("DELETE", new HttpMethodItem().getFormattedItem(param));
   }
@@ -42,7 +43,8 @@ public class HttpMethodItemTest {
   @Test
   public void getFormattedElementOnRequestIsNull() {
     RoutingContext routingContext = Mockito.mock(RoutingContext.class);
-    AccessLogParam param = new AccessLogParam().setRoutingContext(routingContext);
+    AccessLogParam<RoutingContext> param = new AccessLogParam<>();
+    param.setContextData(routingContext);
 
     Mockito.when(routingContext.request()).thenReturn(null);
 
@@ -53,7 +55,8 @@ public class HttpMethodItemTest {
   public void getFormattedElementOnMethodIsNull() {
     RoutingContext routingContext = Mockito.mock(RoutingContext.class);
     HttpServerRequest request = Mockito.mock(HttpServerRequest.class);
-    AccessLogParam param = new AccessLogParam().setRoutingContext(routingContext);
+    AccessLogParam<RoutingContext> param = new AccessLogParam<>();
+    param.setContextData(routingContext);
 
     Mockito.when(routingContext.request()).thenReturn(request);
     Mockito.when(request.method()).thenReturn(null);
