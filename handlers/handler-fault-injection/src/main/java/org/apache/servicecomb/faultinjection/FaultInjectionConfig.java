@@ -17,10 +17,10 @@
 
 package org.apache.servicecomb.faultinjection;
 
-import java.util.LinkedList;
-import java.util.List;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import org.apache.servicecomb.foundation.common.concurrent.ConcurrentHashMapEx;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,13 +36,14 @@ public final class FaultInjectionConfig {
   private static final Logger LOGGER = LoggerFactory.getLogger(FaultInjectionConfig.class);
 
   // key is configuration parameter.
-  public static List<String> cfgCallback = new LinkedList<>();
+  public static Map<String, String> cfgCallback = new ConcurrentHashMapEx<>();
 
   public int getConfigVal(String config, int defaultValue) {
     DynamicIntProperty dynamicIntProperty = DynamicPropertyFactory.getInstance().getIntProperty(config,
         defaultValue);
-    if (!cfgCallback.contains(config)) {
-      cfgCallback.add(config);
+
+    if (cfgCallback.get(config) == null) {
+      cfgCallback.put(config, config);
       dynamicIntProperty.addCallback(() -> {
         int newValue = dynamicIntProperty.get();
         String cfgName = dynamicIntProperty.getName();
