@@ -35,7 +35,10 @@ cse:
           interval: 90
         watch: false
       autodiscovery: true
-
+  rest:
+    client:
+      connection:
+        compression: true
   references:
     version-rule: 0+
   handler:

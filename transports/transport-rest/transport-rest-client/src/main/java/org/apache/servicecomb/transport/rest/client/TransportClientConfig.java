@@ -40,4 +40,8 @@ public final class TransportClientConfig {
   public static boolean getConnectionKeepAlive() {
     return DynamicPropertyFactory.getInstance().getBooleanProperty("cse.rest.client.connection.keepAlive", true).get();
   }
+  
+  public static boolean getConnectionCompression() {
+    return DynamicPropertyFactory.getInstance().getBooleanProperty("cse.rest.client.connection.compression", false).get();
+  }
 }

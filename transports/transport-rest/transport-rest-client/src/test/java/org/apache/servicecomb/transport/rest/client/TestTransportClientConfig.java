@@ -40,4 +40,9 @@ public class TestTransportClientConfig {
   public void getConnectionKeepAlive() {
     Assert.assertTrue(TransportClientConfig.getConnectionKeepAlive());
   }
+
+  @Test
+  public void getConnectionCompression() {
+    Assert.assertFalse(TransportClientConfig.getConnectionCompression());
+  }
 }

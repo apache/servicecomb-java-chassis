@@ -55,6 +55,7 @@ public final class RestTransportClient {
     httpClientOptions.setMaxPoolSize(TransportClientConfig.getConnectionMaxPoolSize());
     httpClientOptions.setIdleTimeout(TransportClientConfig.getConnectionIdleTimeoutInSeconds());
     httpClientOptions.setKeepAlive(TransportClientConfig.getConnectionKeepAlive());
+    httpClientOptions.setTryUseCompression(TransportClientConfig.getConnectionCompression());
 
     VertxTLSBuilder.buildHttpClientOptions(SSL_KEY, httpClientOptions);
     return httpClientOptions;
