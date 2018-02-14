@@ -15,30 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.metrics.core.monitor;
+package org.apache.servicecomb.metrics.core;
 
 import java.util.Map;
 
-public interface SystemMonitor {
-  double getCpuLoad();
+import org.apache.servicecomb.metrics.core.publish.MetricsPublisher;
+import org.junit.Assert;
+import org.junit.Test;
 
-  int getCpuRunningThreads();
-
-  long getHeapInit();
-
-  long getHeapMax();
-
-  long getHeapCommit();
-
-  long getHeapUsed();
-
-  long getNonHeapInit();
-
-  long getNonHeapMax();
-
-  long getNonHeapCommit();
-
-  long getNonHeapUsed();
-
-  Map<String, Double> measure();
+public class TestMetricsPublisher {
+  @Test
+  public void test() {
+    MetricsPublisher publisher = new MetricsPublisher();
+    Map<String, Double> metrics = publisher.metrics();
+    //10 jvm metrics get
+    Assert.assertEquals(10, metrics.size());
+  }
 }

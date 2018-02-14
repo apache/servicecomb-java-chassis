@@ -15,30 +15,32 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.metrics.core.monitor;
+package org.apache.servicecomb.foundation.metrics;
 
-import java.util.Map;
+public class MetricsConst {
+  public static final String JVM = "jvm";
 
-public interface SystemMonitor {
-  double getCpuLoad();
+  public static final String SERVICECOMB_INVOCATION = "servicecomb.invocation";
 
-  int getCpuRunningThreads();
+  public static final String TAG_NAME = "name";
 
-  long getHeapInit();
+  public static final String TAG_OPERATION = "operation";
 
-  long getHeapMax();
+  public static final String TAG_STATUS = "status";
 
-  long getHeapCommit();
+  public static final String TAG_STAGE = "stage";
 
-  long getHeapUsed();
+  public static final String TAG_ROLE = "role";
 
-  long getNonHeapInit();
+  public static final String TAG_STATISTIC = "statistic";
 
-  long getNonHeapMax();
+  public static final String STAGE_WHOLE = "whole";
 
-  long getNonHeapCommit();
+  public static final String STAGE_QUEUE = "queue";
 
-  long getNonHeapUsed();
+  public static final String STAGE_EXECUTION = "execution";
 
-  Map<String, Double> measure();
+  public static final String ROLE_CONSUMER = "consumer";
+
+  public static final String ROLE_PRODUCER = "producer";
 }

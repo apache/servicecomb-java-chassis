@@ -21,23 +21,31 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.servicecomb.foundation.common.concurrent.ConcurrentHashMapEx;
-import org.apache.servicecomb.metrics.common.ConsumerInvocationMetric;
-import org.apache.servicecomb.metrics.common.ProducerInvocationMetric;
-import org.apache.servicecomb.metrics.common.RegistryMetric;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
 
-@Component
 public class RegistryMonitor {
 
-  private final SystemMonitor systemMonitor;
+  private SystemMonitor systemMonitor;
 
-  private final Map<String, ConsumerInvocationMonitor> consumerInvocationMonitors;
+  private Map<String, ConsumerInvocationMonitor> consumerInvocationMonitors;
 
-  private final Map<String, ProducerInvocationMonitor> producerInvocationMonitors;
+  private Map<String, ProducerInvocationMonitor> producerInvocationMonitors;
 
-  @Autowired
+  private static final RegistryMonitor INSTANCE = new RegistryMonitor();
+
+  public static RegistryMonitor getInstance() {
+    return INSTANCE;
+  }
+
+  private RegistryMonitor() {
+    init(SPIServiceUtils.getTargetService(SystemMonitor.class));
+  }
+
   public RegistryMonitor(SystemMonitor systemMonitor) {
+    init(systemMonitor);
+  }
+
+  private void init(SystemMonitor systemMonitor) {
     this.systemMonitor = systemMonitor;
     this.consumerInvocationMonitors = new ConcurrentHashMapEx<>();
     this.producerInvocationMonitors = new ConcurrentHashMapEx<>();
@@ -51,16 +59,14 @@ public class RegistryMonitor {
     return producerInvocationMonitors.computeIfAbsent(operationName, i -> new ProducerInvocationMonitor(operationName));
   }
 
-  public RegistryMetric toRegistryMetric(int windowTimeIndex) {
-    Map<String, ConsumerInvocationMetric> consumerInvocationMetrics = new HashMap<>();
+  public Map<String, Double> measure(int windowTimeIndex, boolean calculateLatency) {
+    Map<String, Double> measurements = new HashMap<>(systemMonitor.measure());
     for (ConsumerInvocationMonitor monitor : this.consumerInvocationMonitors.values()) {
-      consumerInvocationMetrics.put(monitor.getOperationName(), monitor.toMetric(windowTimeIndex));
+      measurements.putAll(monitor.measure(windowTimeIndex, calculateLatency));
     }
-    Map<String, ProducerInvocationMetric> producerInvocationMetrics = new HashMap<>();
     for (ProducerInvocationMonitor monitor : this.producerInvocationMonitors.values()) {
-      producerInvocationMetrics.put(monitor.getOperationName(), monitor.toMetric(windowTimeIndex));
+      measurements.putAll(monitor.measure(windowTimeIndex, calculateLatency));
     }
-
-    return new RegistryMetric(systemMonitor.toMetric(), consumerInvocationMetrics, producerInvocationMetrics);
+    return measurements;
   }
 }

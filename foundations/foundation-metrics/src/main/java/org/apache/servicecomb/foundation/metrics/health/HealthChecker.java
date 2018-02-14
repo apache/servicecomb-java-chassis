@@ -15,30 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.metrics.core.monitor;
+package org.apache.servicecomb.foundation.metrics.health;
 
-import java.util.Map;
+public interface HealthChecker {
+  String getName();
 
-public interface SystemMonitor {
-  double getCpuLoad();
-
-  int getCpuRunningThreads();
-
-  long getHeapInit();
-
-  long getHeapMax();
-
-  long getHeapCommit();
-
-  long getHeapUsed();
-
-  long getNonHeapInit();
-
-  long getNonHeapMax();
-
-  long getNonHeapCommit();
-
-  long getNonHeapUsed();
-
-  Map<String, Double> measure();
+  HealthCheckResult check();
 }

@@ -15,30 +15,42 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.metrics.core.monitor;
+package org.apache.servicecomb.foundation.metrics.health;
 
-import java.util.Map;
+public class HealthCheckResult {
+  private boolean healthy;
 
-public interface SystemMonitor {
-  double getCpuLoad();
+  private String information;
 
-  int getCpuRunningThreads();
+  //unsupport object or generic type,so string..
+  private String extraData;
 
-  long getHeapInit();
+  private long timestamp;
 
-  long getHeapMax();
+  public boolean isHealthy() {
+    return healthy;
+  }
 
-  long getHeapCommit();
+  public String getInformation() {
+    return information;
+  }
 
-  long getHeapUsed();
+  public String getExtraData() {
+    return extraData;
+  }
 
-  long getNonHeapInit();
+  public long getTimestamp() {
+    return timestamp;
+  }
 
-  long getNonHeapMax();
+  public HealthCheckResult() {
+  }
 
-  long getNonHeapCommit();
-
-  long getNonHeapUsed();
-
-  Map<String, Double> measure();
+  public HealthCheckResult(boolean healthy, String information, String extraData) {
+    this();
+    this.healthy = healthy;
+    this.information = information;
+    this.extraData = extraData;
+    this.timestamp = System.currentTimeMillis();
+  }
 }

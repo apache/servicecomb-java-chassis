@@ -27,9 +27,6 @@ import org.apache.servicecomb.demo.controller.Controller;
 import org.apache.servicecomb.demo.controller.Person;
 import org.apache.servicecomb.foundation.common.utils.BeanUtils;
 import org.apache.servicecomb.foundation.common.utils.Log4jUtils;
-import org.apache.servicecomb.metrics.common.MetricsDimension;
-import org.apache.servicecomb.metrics.common.MetricsPublisher;
-import org.apache.servicecomb.metrics.common.RegistryMetric;
 import org.apache.servicecomb.provider.springmvc.reference.CseRestTemplate;
 import org.apache.servicecomb.provider.springmvc.reference.RestTemplateBuilder;
 import org.apache.servicecomb.provider.springmvc.reference.UrlWithServiceNameClientHttpRequestFactory;
@@ -46,8 +43,6 @@ public class SpringmvcClient {
 
   private static Controller controller;
 
-  private static MetricsPublisher metricsPublisher;
-
   public static void main(String[] args) throws Exception {
     Log4jUtils.init();
     BeanUtils.init();
@@ -61,7 +56,6 @@ public class SpringmvcClient {
     templateUrlWithServiceName.setRequestFactory(new UrlWithServiceNameClientHttpRequestFactory());
     restTemplate = RestTemplateBuilder.create();
     controller = BeanUtils.getBean("controller");
-    metricsPublisher = BeanUtils.getBean("metricsPublisher");
 
     String prefix = "cse://springmvc";
 
@@ -103,14 +97,15 @@ public class SpringmvcClient {
 
     //0.5.0 later version metrics integration test
     try {
-      RegistryMetric metric = metricsPublisher.metrics();
+      Thread.sleep(1000);
+      Map<String, Double> metrics = restTemplate.getForObject(prefix + "/metrics", Map.class);
 
       TestMgr
-          .check(true, metric.getInstanceMetric().getSystemMetric().getHeapUsed() != 0);
-      TestMgr.check(true, metric.getProducerMetrics().size() > 0);
-      TestMgr.check(true,
-          metric.getProducerMetrics().get("springmvc.codeFirst.saySomething").getProducerCall()
-              .getTotalValue(MetricsDimension.DIMENSION_STATUS, MetricsDimension.DIMENSION_STATUS_ALL).getValue() > 0);
+          .check(true, metrics.get("jvm(statistic=gauge,name=heapUsed)") != 0);
+      TestMgr.check(true, metrics.size() > 0);
+      TestMgr.check(true, metrics.get(
+          "servicecomb.invocation(operation=springmvc.codeFirst.saySomething,role=producer,stage=whole,statistic=count,status=200)")
+          >= 0);
     } catch (Exception e) {
       TestMgr.check("true", "false");
     }
@@ -119,20 +114,20 @@ public class SpringmvcClient {
     try {
       String content = restTemplate.getForObject("cse://springmvc/codeFirstSpringmvc/prometheusForTest", String.class);
 
-      TestMgr.check(true, content.contains("servicecomb_springmvc_codeFirst_addDate"));
-      TestMgr.check(true, content.contains("servicecomb_springmvc_codeFirst_sayHello"));
-      TestMgr.check(true, content.contains("servicecomb_springmvc_codeFirst_fallbackFromCache"));
-      TestMgr.check(true, content.contains("servicecomb_springmvc_codeFirst_isTrue_producer"));
-      TestMgr.check(true, content.contains("servicecomb_springmvc_codeFirst_add"));
-      TestMgr.check(true, content.contains("servicecomb_springmvc_codeFirst_sayHi2"));
-      TestMgr.check(true, content.contains("servicecomb_springmvc_codeFirst_saySomething"));
+      TestMgr.check(true, content.contains("servicecomb_invocation_springmvc_codeFirst_addDate"));
+      TestMgr.check(true, content.contains("servicecomb_invocation_springmvc_codeFirst_sayHello"));
+      TestMgr.check(true, content.contains("servicecomb_invocation_springmvc_codeFirst_fallbackFromCache"));
+      TestMgr.check(true, content.contains("servicecomb_invocation_springmvc_codeFirst_isTrue"));
+      TestMgr.check(true, content.contains("servicecomb_invocation_springmvc_codeFirst_add"));
+      TestMgr.check(true, content.contains("servicecomb_invocation_springmvc_codeFirst_sayHi2"));
+      TestMgr.check(true, content.contains("servicecomb_invocation_springmvc_codeFirst_saySomething"));
 
       String[] metricLines = content.split("\n");
       if (metricLines.length > 0) {
         for (String metricLine : metricLines) {
           if (!metricLine.startsWith("#")) {
             String[] metricKeyAndValue = metricLine.split(" ");
-            if (!metricKeyAndValue[0].startsWith("servicecomb_instance_system")) {
+            if (!metricKeyAndValue[0].startsWith("jvm")) {
               if (Double.parseDouble(metricKeyAndValue[1]) < 0) {
                 TestMgr.check("true", "false");
                 break;

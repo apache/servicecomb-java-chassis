@@ -19,6 +19,4 @@ package org.apache.servicecomb.metrics.core;
 
 public class MetricsConfig {
   public static final String METRICS_POLLING_TIME = "servicecomb.metrics.window_time";
-
-  public static final String METRICS_DIMENSION_STATUS_OUTPUT_LEVEL = "servicecomb.metrics.dimension.status.output_level";
 }

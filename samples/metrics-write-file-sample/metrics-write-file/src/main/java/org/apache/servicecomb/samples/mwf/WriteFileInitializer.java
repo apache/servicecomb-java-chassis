@@ -24,9 +24,8 @@ import java.util.concurrent.Executors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.foundation.common.net.NetUtils;
-import org.apache.servicecomb.metrics.common.RegistryMetric;
 import org.apache.servicecomb.metrics.core.MetricsConfig;
-import org.apache.servicecomb.metrics.core.publish.DataSource;
+import org.apache.servicecomb.metrics.core.MetricsDataSource;
 import org.apache.servicecomb.serviceregistry.RegistryUtils;
 import org.apache.servicecomb.serviceregistry.api.registry.Microservice;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,8 +41,6 @@ public class WriteFileInitializer {
 
   private FileContentFormatter formatter;
 
-  private final DataSource dataSource;
-
   private final MetricsFileWriter fileWriter;
 
   private String filePrefix;
@@ -51,17 +48,15 @@ public class WriteFileInitializer {
   private String hostName;
 
   @Autowired
-  public WriteFileInitializer(MetricsFileWriter fileWriter, DataSource dataSource) {
+  public WriteFileInitializer(MetricsFileWriter fileWriter) {
     metricPoll = DynamicPropertyFactory.getInstance().getIntProperty(MetricsConfig.METRICS_POLLING_TIME, 5000).get();
     this.fileWriter = fileWriter;
-    this.dataSource = dataSource;
     this.convertor = new SimpleFileContentConvertor();
   }
 
-  public WriteFileInitializer(MetricsFileWriter fileWriter, DataSource dataSource, String hostName, String filePrefix) {
+  public WriteFileInitializer(MetricsFileWriter fileWriter, String hostName, String filePrefix) {
     metricPoll = DynamicPropertyFactory.getInstance().getIntProperty(MetricsConfig.METRICS_POLLING_TIME, 5000).get();
     this.fileWriter = fileWriter;
-    this.dataSource = dataSource;
     this.hostName = hostName;
     this.filePrefix = filePrefix;
     this.convertor = new SimpleFileContentConvertor();
@@ -87,8 +82,9 @@ public class WriteFileInitializer {
         .scheduleWithFixedDelay(poller, 0, metricPoll, MILLISECONDS);
   }
 
-  public void run() {
-    RegistryMetric registryMetric = dataSource.getRegistryMetric();
+  private void run() {
+    Map<String, Double> registryMetric = MetricsDataSource.getInstance()
+        .measure(MetricsDataSource.getInstance().getAppliedWindowTime().get(0), true);
     Map<String, String> convertedMetrics = convertor.convert(registryMetric);
     Map<String, String> formattedMetrics = formatter.format(convertedMetrics);
 

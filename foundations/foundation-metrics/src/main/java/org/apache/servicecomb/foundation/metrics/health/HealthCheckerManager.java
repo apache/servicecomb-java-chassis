@@ -15,30 +15,33 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.metrics.core.monitor;
+package org.apache.servicecomb.foundation.metrics.health;
 
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
-public interface SystemMonitor {
-  double getCpuLoad();
+public class HealthCheckerManager {
+  private final Map<String, HealthChecker> healthCheckers;
 
-  int getCpuRunningThreads();
+  public HealthCheckerManager() {
+    this.healthCheckers = new ConcurrentHashMap<>();
+  }
 
-  long getHeapInit();
+  public void register(HealthChecker checker) {
+    healthCheckers.put(checker.getName(), checker);
+  }
 
-  long getHeapMax();
+  public Map<String, HealthCheckResult> check() {
+    return healthCheckers.entrySet().stream().collect(Collectors.toMap(Entry::getKey, e -> e.getValue().check()));
+  }
 
-  long getHeapCommit();
-
-  long getHeapUsed();
-
-  long getNonHeapInit();
-
-  long getNonHeapMax();
-
-  long getNonHeapCommit();
-
-  long getNonHeapUsed();
-
-  Map<String, Double> measure();
+  public HealthCheckResult check(String name) {
+    HealthChecker checker = healthCheckers.get(name);
+    if (checker != null) {
+      return checker.check();
+    }
+    return null;
+  }
 }

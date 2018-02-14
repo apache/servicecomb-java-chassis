@@ -20,30 +20,15 @@ package org.apache.servicecomb.metrics.prometheus;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
+import java.util.Map.Entry;
 
-import org.apache.servicecomb.metrics.common.CallMetric;
-import org.apache.servicecomb.metrics.common.ConsumerInvocationMetric;
-import org.apache.servicecomb.metrics.common.DoubleMetricValue;
-import org.apache.servicecomb.metrics.common.LongMetricValue;
-import org.apache.servicecomb.metrics.common.ProducerInvocationMetric;
-import org.apache.servicecomb.metrics.common.RegistryMetric;
-import org.apache.servicecomb.metrics.core.publish.DataSource;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import org.apache.servicecomb.foundation.metrics.MetricsConst;
+import org.apache.servicecomb.metrics.core.MetricsDataSource;
 
 import io.prometheus.client.Collector;
 import io.prometheus.client.Collector.MetricFamilySamples.Sample;
 
-@Component
 public class MetricsCollector extends Collector implements Collector.Describable {
-
-  private final DataSource dataSource;
-
-  @Autowired
-  public MetricsCollector(DataSource dataSource) {
-    this.dataSource = dataSource;
-  }
 
   @Override
   public List<MetricFamilySamples> collect() {
@@ -56,77 +41,33 @@ public class MetricsCollector extends Collector implements Collector.Describable
   }
 
   private List<MetricFamilySamples> load() {
-    RegistryMetric registryMetric = dataSource.getRegistryMetric();
+    Map<String, Double> registryMetric = MetricsDataSource.getInstance()
+        .measure(MetricsDataSource.getInstance().getAppliedWindowTime().get(0), true);
     List<MetricFamilySamples> familySamples = new ArrayList<>();
 
-    List<Sample> instanceSamples = new ArrayList<>();
-    instanceSamples.addAll(convertMetricValues(registryMetric.getInstanceMetric().getSystemMetric().toMap()));
-    instanceSamples.addAll(convertConsumerMetric(registryMetric.getInstanceMetric().getConsumerMetric()));
-    instanceSamples.addAll(convertCallMetric(registryMetric.getInstanceMetric().getConsumerMetric().getConsumerCall()));
-    instanceSamples.addAll(convertProducerMetric(registryMetric.getInstanceMetric().getProducerMetric()));
-    instanceSamples.addAll(convertCallMetric(registryMetric.getInstanceMetric().getProducerMetric().getProducerCall()));
-    familySamples
-        .add(new MetricFamilySamples("Instance Level", Type.UNTYPED, "Instance Level Metrics", instanceSamples));
-
-    if (registryMetric.getConsumerMetrics().size() != 0) {
-      List<Sample> consumerSamples = new ArrayList<>();
-      for (ConsumerInvocationMetric metric : registryMetric.getConsumerMetrics().values()) {
-        consumerSamples.addAll(convertConsumerMetric(metric));
-        consumerSamples.addAll(convertCallMetric(metric.getConsumerCall()));
+    List<Sample> samples = new ArrayList<>();
+    for (Entry<String, Double> metric : registryMetric.entrySet()) {
+      List<String> tagNames = new ArrayList<>();
+      List<String> tagValues = new ArrayList<>();
+      String name = metric.getKey();
+      if (metric.getKey().contains("(")) {
+        String[] nameAndTag = metric.getKey().split("\\(");
+        name = nameAndTag[0];
+        String[] tagAnValues = nameAndTag[1].split("[=,)]");
+        for (int i = 0; i < tagAnValues.length; i += 2) {
+          //we need put operation name in metrics name,not a label
+          if (MetricsConst.TAG_OPERATION.equals(tagAnValues[i])) {
+            name = name + "." + tagAnValues[i + 1];
+          } else if (!"type".equals(tagAnValues[i])) {
+            tagNames.add(tagAnValues[i]);
+            tagValues.add(tagAnValues[i + 1]);
+          }
+        }
       }
-      familySamples
-          .add(new MetricFamilySamples("Consumer Side", Type.UNTYPED, "Consumer Side Metrics", consumerSamples));
+      samples.add(new Sample(formatMetricName(name), tagNames, tagValues, metric.getValue()));
     }
-
-    if (registryMetric.getProducerMetrics().size() != 0) {
-      List<Sample> producerSamples = new ArrayList<>();
-      for (ProducerInvocationMetric metric : registryMetric.getProducerMetrics().values()) {
-        producerSamples.addAll(convertProducerMetric(metric));
-        producerSamples.addAll(convertCallMetric(metric.getProducerCall()));
-      }
-      familySamples
-          .add(new MetricFamilySamples("Producer Side", Type.UNTYPED, "Producer Side Metrics", producerSamples));
-    }
-
+    familySamples.add(new MetricFamilySamples("ServiceComb Metrics", Type.UNTYPED, "ServiceComb Metrics", samples));
     return familySamples;
-  }
-
-  private List<Sample> convertConsumerMetric(ConsumerInvocationMetric metric) {
-    return convertMetricValues(metric.getConsumerLatency().toMap());
-  }
-
-  private List<Sample> convertProducerMetric(ProducerInvocationMetric metric) {
-    List<Sample> samples = new ArrayList<>();
-    samples.addAll(convertMetricValues(metric.getExecutionTime().toMap()));
-    samples.addAll(convertMetricValues(metric.getLifeTimeInQueue().toMap()));
-    samples.addAll(convertMetricValues(metric.getProducerLatency().toMap()));
-    samples.add(
-        new Sample(formatMetricName(metric.getPrefix() + ".waitInQueue.count"), new ArrayList<>(), new ArrayList<>(),
-            (double) metric.getWaitInQueue()));
-    return samples;
-  }
-
-  private List<Sample> convertMetricValues(Map<String, Number> metrics) {
-    return metrics.entrySet().stream().map((entry) ->
-        new Sample(formatMetricName(entry.getKey()), new ArrayList<>(), new ArrayList<>(),
-            entry.getValue().doubleValue())).collect(Collectors.toList());
-  }
-
-  private List<Sample> convertCallMetric(CallMetric metric) {
-    List<Sample> samples = new ArrayList<>();
-    String totalName = formatMetricName(metric.getPrefix() + ".total");
-    for (LongMetricValue value : metric.getTotalValues()) {
-      samples.add(new Sample(totalName,
-          new ArrayList<>(value.getDimensions().keySet()), new ArrayList<>(value.getDimensions().values()),
-          (double) value.getValue()));
-    }
-    String tpsName = formatMetricName(metric.getPrefix() + ".tps");
-    for (DoubleMetricValue value : metric.getTpsValues()) {
-      samples.add(new Sample(tpsName,
-          new ArrayList<>(value.getDimensions().keySet()), new ArrayList<>(value.getDimensions().values()),
-          value.getValue()));
-    }
-    return samples;
   }
 
   //convert name for match prometheus

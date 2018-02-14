@@ -15,30 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.metrics.core.monitor;
+package org.apache.servicecomb.samples.metrics.extendhealthcheck;
 
-import java.util.Map;
+import org.apache.servicecomb.foundation.metrics.health.HealthCheckResult;
+import org.apache.servicecomb.foundation.metrics.health.HealthChecker;
 
-public interface SystemMonitor {
-  double getCpuLoad();
 
-  int getCpuRunningThreads();
+public class CustomHealthChecker implements HealthChecker {
+  @Override
+  public String getName() {
+    return "custom";
+  }
 
-  long getHeapInit();
-
-  long getHeapMax();
-
-  long getHeapCommit();
-
-  long getHeapUsed();
-
-  long getNonHeapInit();
-
-  long getNonHeapMax();
-
-  long getNonHeapCommit();
-
-  long getNonHeapUsed();
-
-  Map<String, Double> measure();
+  @Override
+  public HealthCheckResult check() {
+    return new HealthCheckResult(true, "custom", "no extra data");
+  }
 }

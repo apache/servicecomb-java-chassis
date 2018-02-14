@@ -43,7 +43,6 @@ public class InvocationStartProcessingEventListener implements EventListener {
     if (InvocationType.PRODUCER.equals(event.getInvocationType())) {
       ProducerInvocationMonitor monitor = registryMonitor.getProducerInvocationMonitor(event.getOperationName());
       monitor.getWaitInQueue().increment(-1);
-      monitor.getLifeTimeInQueue().update(event.getInQueueNanoTime());
     }
   }
 }

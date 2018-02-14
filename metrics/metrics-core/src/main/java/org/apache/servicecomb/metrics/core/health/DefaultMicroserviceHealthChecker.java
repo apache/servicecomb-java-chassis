@@ -20,18 +20,15 @@ package org.apache.servicecomb.metrics.core.health;
 import javax.ws.rs.core.Response.Status;
 
 import org.apache.servicecomb.foundation.common.utils.JsonUtils;
-import org.apache.servicecomb.metrics.common.DefaultHealthCheckExtraData;
-import org.apache.servicecomb.metrics.common.HealthCheckResult;
-import org.apache.servicecomb.metrics.common.HealthChecker;
+import org.apache.servicecomb.foundation.metrics.health.HealthCheckResult;
+import org.apache.servicecomb.foundation.metrics.health.HealthChecker;
 import org.apache.servicecomb.serviceregistry.RegistryUtils;
 import org.apache.servicecomb.serviceregistry.api.registry.Microservice;
 import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Component;
 
-@Component
 public class DefaultMicroserviceHealthChecker implements HealthChecker {
 
   private static Logger logger = LoggerFactory.getLogger(DefaultMicroserviceHealthChecker.class);

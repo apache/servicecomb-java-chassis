@@ -24,7 +24,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.apache.servicecomb.foundation.common.utils.BeanUtils;
 import org.apache.servicecomb.foundation.vertx.VertxUtils;
-import org.apache.servicecomb.metrics.core.publish.DataSource;
+import org.apache.servicecomb.metrics.core.MetricsDataSource;
 
 public class PerfMain {
 
@@ -35,8 +35,8 @@ public class PerfMain {
     RedisClientUtils.init(VertxUtils.getOrCreateVertxByName("transport", null));
 
     // metrics
-    DataSource dataSource = BeanUtils.getContext().getBean(DataSource.class);
-    PerfMetricsFilePublisher metricsLog = new PerfMetricsFilePublisher(dataSource);
+    //DataSource dataSource = BeanUtils.getContext().getBean(Def.class);
+    PerfMetricsFilePublisher metricsLog = new PerfMetricsFilePublisher(MetricsDataSource.getInstance());
     Executors.newScheduledThreadPool(1).scheduleWithFixedDelay(metricsLog::onCycle, 0, 1, TimeUnit.SECONDS);
 
     List<String> argList = Arrays.asList(args);
@@ -45,5 +45,4 @@ public class PerfMain {
       consumer.runConsumer();
     }
   }
-
 }
