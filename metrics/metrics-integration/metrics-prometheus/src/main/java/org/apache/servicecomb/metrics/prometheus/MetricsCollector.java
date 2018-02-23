@@ -23,7 +23,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.apache.servicecomb.foundation.metrics.MetricsConst;
-import org.apache.servicecomb.metrics.core.MetricsDataSource;
+import org.apache.servicecomb.metrics.core.MonitorManager;
 
 import io.prometheus.client.Collector;
 import io.prometheus.client.Collector.MetricFamilySamples.Sample;
@@ -41,12 +41,11 @@ public class MetricsCollector extends Collector implements Collector.Describable
   }
 
   private List<MetricFamilySamples> load() {
-    Map<String, Double> registryMetric = MetricsDataSource.getInstance()
-        .measure(MetricsDataSource.getInstance().getAppliedWindowTime().get(0), true);
+    Map<String, Double> metrics = MonitorManager.getInstance().measure();
     List<MetricFamilySamples> familySamples = new ArrayList<>();
 
     List<Sample> samples = new ArrayList<>();
-    for (Entry<String, Double> metric : registryMetric.entrySet()) {
+    for (Entry<String, Double> metric : metrics.entrySet()) {
       List<String> tagNames = new ArrayList<>();
       List<String> tagValues = new ArrayList<>();
       String name = metric.getKey();

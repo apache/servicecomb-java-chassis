@@ -18,31 +18,20 @@
 package org.apache.servicecomb.metrics.core.event;
 
 import org.apache.servicecomb.core.metrics.InvocationStartedEvent;
-import org.apache.servicecomb.foundation.common.event.Event;
 import org.apache.servicecomb.foundation.common.event.EventListener;
-import org.apache.servicecomb.metrics.core.monitor.ProducerInvocationMonitor;
-import org.apache.servicecomb.metrics.core.monitor.RegistryMonitor;
+import org.apache.servicecomb.foundation.metrics.MetricsConst;
+import org.apache.servicecomb.metrics.core.MonitorManager;
 import org.apache.servicecomb.swagger.invocation.InvocationType;
 
-public class InvocationStartedEventListener implements EventListener {
-
-  private final RegistryMonitor registryMonitor;
-
-  public InvocationStartedEventListener(RegistryMonitor registryMonitor) {
-    this.registryMonitor = registryMonitor;
-  }
-
+public class InvocationStartedEventListener implements EventListener<InvocationStartedEvent> {
   @Override
-  public Class<? extends Event> getConcernedEvent() {
-    return InvocationStartedEvent.class;
-  }
-
-  @Override
-  public void process(Event data) {
-    InvocationStartedEvent event = (InvocationStartedEvent) data;
-    if (InvocationType.PRODUCER.equals(event.getInvocationType())) {
-      ProducerInvocationMonitor monitor = registryMonitor.getProducerInvocationMonitor(event.getOperationName());
-      monitor.getWaitInQueue().increment();
+  public void process(InvocationStartedEvent data) {
+    if (InvocationType.PRODUCER.equals(data.getInvocationType())) {
+      MonitorManager.getInstance().getCounter(false, MetricsConst.SERVICECOMB_INVOCATION,
+          MetricsConst.TAG_OPERATION, data.getOperationName(),
+          MetricsConst.TAG_STAGE, MetricsConst.STAGE_QUEUE,
+          MetricsConst.TAG_ROLE, String.valueOf(InvocationType.PRODUCER),
+          MetricsConst.TAG_STATISTIC, "waitInQueue").increment();
     }
   }
 }

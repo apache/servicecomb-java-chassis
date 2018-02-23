@@ -20,27 +20,28 @@ package org.apache.servicecomb.foundation.common.event;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-public class EventBus {
-  private final Map<Class<? extends Event>, List<EventListener>> allEventListeners = new ConcurrentHashMap<>();
+import org.apache.servicecomb.foundation.common.concurrent.ConcurrentHashMapEx;
 
-  public void registerEventListener(EventListener eventListener) {
+public class EventBus {
+  private final Map<Class, List<EventListener>> allEventListeners = new ConcurrentHashMapEx<>();
+
+  public <T> void registerEventListener(Class<T> cls, EventListener<T> eventListener) {
     List<EventListener> eventListeners = allEventListeners
-        .computeIfAbsent(eventListener.getConcernedEvent(), f -> new CopyOnWriteArrayList<>());
+        .computeIfAbsent(cls, f -> new CopyOnWriteArrayList<>());
     eventListeners.add(eventListener);
   }
 
-  public void unregisterEventListener(EventListener eventListener) {
+  public <T> void unregisterEventListener(Class<T> cls, EventListener<T> eventListener) {
     List<EventListener> eventListeners = allEventListeners
-        .computeIfAbsent(eventListener.getConcernedEvent(), f -> new CopyOnWriteArrayList<>());
+        .computeIfAbsent(cls, f -> new CopyOnWriteArrayList<>());
     if (eventListeners.contains(eventListener)) {
       eventListeners.remove(eventListener);
     }
   }
 
-  public void triggerEvent(Event event) {
+  public <T> void triggerEvent(T event) {
     List<EventListener> eventListeners = allEventListeners.getOrDefault(event.getClass(), Collections.emptyList());
     for (EventListener eventListener : eventListeners) {
       eventListener.process(event);

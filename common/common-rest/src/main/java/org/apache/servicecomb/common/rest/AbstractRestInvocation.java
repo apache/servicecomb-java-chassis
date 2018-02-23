@@ -145,7 +145,7 @@ public abstract class AbstractRestInvocation {
 
     //立刻设置开始时间，否则Finished时无法计算TotalTime
     invocation.setStartTime(startedEvent.getStartedTime());
-    invocation.triggerStartProcessingEvent();
+    invocation.triggerStartExecutionEvent();
 
     invoke();
   }

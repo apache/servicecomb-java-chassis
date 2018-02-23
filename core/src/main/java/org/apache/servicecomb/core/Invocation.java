@@ -25,7 +25,7 @@ import java.util.concurrent.Executor;
 import org.apache.servicecomb.core.definition.OperationMeta;
 import org.apache.servicecomb.core.definition.SchemaMeta;
 import org.apache.servicecomb.core.metrics.InvocationFinishedEvent;
-import org.apache.servicecomb.core.metrics.InvocationStartProcessingEvent;
+import org.apache.servicecomb.core.metrics.InvocationStartExecutionEvent;
 import org.apache.servicecomb.core.provider.consumer.ReferenceConfig;
 import org.apache.servicecomb.foundation.common.utils.EventUtils;
 import org.apache.servicecomb.swagger.invocation.AsyncResponse;
@@ -60,7 +60,7 @@ public class Invocation extends SwaggerInvocation {
 
   private long startTime;
 
-  private long startProcessingTime;
+  private long startExecutionTime;
 
   private boolean sync = true;
 
@@ -185,18 +185,18 @@ public class Invocation extends SwaggerInvocation {
     return operationMeta.getMicroserviceQualifiedName();
   }
 
-  public void triggerStartProcessingEvent() {
-    this.startProcessingTime = System.nanoTime();
-    EventUtils.triggerEvent(new InvocationStartProcessingEvent(
-        operationMeta.getMicroserviceQualifiedName(), this.invocationType));
+  public void triggerStartExecutionEvent() {
+    if (InvocationType.PRODUCER.equals(invocationType)) {
+      this.startExecutionTime = System.nanoTime();
+      EventUtils.triggerEvent(new InvocationStartExecutionEvent(operationMeta.getMicroserviceQualifiedName()));
+    }
   }
 
   public void triggerFinishedEvent(int statusCode) {
     long finishedTime = System.nanoTime();
     EventUtils
         .triggerEvent(new InvocationFinishedEvent(operationMeta.getMicroserviceQualifiedName(), this.invocationType,
-            startProcessingTime - startTime,
-            finishedTime - startProcessingTime,
+            startExecutionTime - startTime, finishedTime - startExecutionTime,
             finishedTime - startTime, statusCode));
   }
 

@@ -25,7 +25,7 @@ import java.util.concurrent.Executors;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.foundation.common.net.NetUtils;
 import org.apache.servicecomb.metrics.core.MetricsConfig;
-import org.apache.servicecomb.metrics.core.MetricsDataSource;
+import org.apache.servicecomb.metrics.core.MonitorManager;
 import org.apache.servicecomb.serviceregistry.RegistryUtils;
 import org.apache.servicecomb.serviceregistry.api.registry.Microservice;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,13 +49,13 @@ public class WriteFileInitializer {
 
   @Autowired
   public WriteFileInitializer(MetricsFileWriter fileWriter) {
-    metricPoll = DynamicPropertyFactory.getInstance().getIntProperty(MetricsConfig.METRICS_POLLING_TIME, 5000).get();
+    metricPoll = DynamicPropertyFactory.getInstance().getIntProperty(MetricsConfig.METRICS_WINDOW_TIME, 5000).get();
     this.fileWriter = fileWriter;
     this.convertor = new SimpleFileContentConvertor();
   }
 
   public WriteFileInitializer(MetricsFileWriter fileWriter, String hostName, String filePrefix) {
-    metricPoll = DynamicPropertyFactory.getInstance().getIntProperty(MetricsConfig.METRICS_POLLING_TIME, 5000).get();
+    metricPoll = DynamicPropertyFactory.getInstance().getIntProperty(MetricsConfig.METRICS_WINDOW_TIME, 5000).get();
     this.fileWriter = fileWriter;
     this.hostName = hostName;
     this.filePrefix = filePrefix;
@@ -83,9 +83,8 @@ public class WriteFileInitializer {
   }
 
   private void run() {
-    Map<String, Double> registryMetric = MetricsDataSource.getInstance()
-        .measure(MetricsDataSource.getInstance().getAppliedWindowTime().get(0), true);
-    Map<String, String> convertedMetrics = convertor.convert(registryMetric);
+    Map<String, Double> metrics = MonitorManager.getInstance().measure();
+    Map<String, String> convertedMetrics = convertor.convert(metrics);
     Map<String, String> formattedMetrics = formatter.format(convertedMetrics);
 
     for (String metricName : formattedMetrics.keySet()) {

@@ -24,7 +24,6 @@ import java.util.concurrent.TimeUnit;
 
 import org.apache.servicecomb.foundation.common.utils.BeanUtils;
 import org.apache.servicecomb.foundation.vertx.VertxUtils;
-import org.apache.servicecomb.metrics.core.MetricsDataSource;
 
 public class PerfMain {
 
@@ -36,7 +35,7 @@ public class PerfMain {
 
     // metrics
     //DataSource dataSource = BeanUtils.getContext().getBean(Def.class);
-    PerfMetricsFilePublisher metricsLog = new PerfMetricsFilePublisher(MetricsDataSource.getInstance());
+    PerfMetricsFilePublisher metricsLog = new PerfMetricsFilePublisher();
     Executors.newScheduledThreadPool(1).scheduleWithFixedDelay(metricsLog::onCycle, 0, 1, TimeUnit.SECONDS);
 
     List<String> argList = Arrays.asList(args);

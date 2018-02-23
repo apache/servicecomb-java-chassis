@@ -24,15 +24,10 @@ import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
 import org.apache.servicecomb.foundation.metrics.health.HealthCheckResult;
 import org.apache.servicecomb.foundation.metrics.health.HealthChecker;
 import org.apache.servicecomb.foundation.metrics.health.HealthCheckerManager;
-import org.apache.servicecomb.metrics.core.health.DefaultMicroserviceHealthChecker;
 import org.apache.servicecomb.provider.rest.common.RestSchema;
 import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
 
 @RestSchema(schemaId = "healthEndpoint")
 @RequestMapping(path = "/health")
@@ -50,8 +45,6 @@ public class HealthCheckerPublisher {
 
   private void init(HealthCheckerManager manager) {
     this.manager = manager;
-
-    this.manager.register(new DefaultMicroserviceHealthChecker());
     List<HealthChecker> checkers = SPIServiceUtils.getAllService(HealthChecker.class);
     for (HealthChecker checker : checkers) {
       this.manager.register(checker);
@@ -60,16 +53,19 @@ public class HealthCheckerPublisher {
 
   @RequestMapping(path = "/", method = RequestMethod.GET)
   @CrossOrigin
-  public Map<String, HealthCheckResult> health() {
-    return manager.check();
+  public boolean checkHealth() {
+    Map<String, HealthCheckResult> results = manager.check();
+    for (HealthCheckResult result : results.values()) {
+      if (!result.isHealthy()) {
+        return false;
+      }
+    }
+    return true;
   }
 
-  @ApiResponses({
-      @ApiResponse(code = 400, response = String.class, message = "illegal request content"),
-  })
-  @RequestMapping(path = "/{name}", method = RequestMethod.GET)
+  @RequestMapping(path = "/detail", method = RequestMethod.GET)
   @CrossOrigin
-  public HealthCheckResult healthWithName(@PathVariable(name = "name") String name) {
-    return manager.check(name);
+  public Map<String, HealthCheckResult> checkHealthDetail() {
+    return manager.check();
   }
 }

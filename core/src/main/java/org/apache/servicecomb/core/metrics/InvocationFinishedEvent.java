@@ -17,17 +17,16 @@
 
 package org.apache.servicecomb.core.metrics;
 
-import org.apache.servicecomb.foundation.common.event.Event;
 import org.apache.servicecomb.swagger.invocation.InvocationType;
 
-public class InvocationFinishedEvent implements Event {
+public class InvocationFinishedEvent {
   private final String operationName;
 
   private final InvocationType invocationType;
 
   private final long inQueueNanoTime;
 
-  private final long processElapsedNanoTime;
+  private final long executionElapsedNanoTime;
 
   private final long totalElapsedNanoTime;
 
@@ -45,8 +44,8 @@ public class InvocationFinishedEvent implements Event {
     return inQueueNanoTime;
   }
 
-  public long getProcessElapsedNanoTime() {
-    return processElapsedNanoTime;
+  public long getExecutionElapsedNanoTime() {
+    return executionElapsedNanoTime;
   }
 
   public long getTotalElapsedNanoTime() {
@@ -58,11 +57,11 @@ public class InvocationFinishedEvent implements Event {
   }
 
   public InvocationFinishedEvent(String operationName, InvocationType invocationType,
-      long inQueueNanoTime, long processElapsedNanoTime, long totalElapsedNanoTime, int statusCode) {
+      long inQueueNanoTime, long executionElapsedNanoTime, long totalElapsedNanoTime, int statusCode) {
     this.operationName = operationName;
     this.invocationType = invocationType;
     this.inQueueNanoTime = inQueueNanoTime;
-    this.processElapsedNanoTime = processElapsedNanoTime;
+    this.executionElapsedNanoTime = executionElapsedNanoTime;
     this.totalElapsedNanoTime = totalElapsedNanoTime;
     this.statusCode = statusCode;
   }

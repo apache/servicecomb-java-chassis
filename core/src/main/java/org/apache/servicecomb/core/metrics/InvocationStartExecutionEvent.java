@@ -15,30 +15,16 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.metrics.core.monitor;
+package org.apache.servicecomb.core.metrics;
 
-import java.util.Map;
+public class InvocationStartExecutionEvent {
+  private final String operationName;
 
-public interface SystemMonitor {
-  double getCpuLoad();
+  public String getOperationName() {
+    return operationName;
+  }
 
-  int getCpuRunningThreads();
-
-  long getHeapInit();
-
-  long getHeapMax();
-
-  long getHeapCommit();
-
-  long getHeapUsed();
-
-  long getNonHeapInit();
-
-  long getNonHeapMax();
-
-  long getNonHeapCommit();
-
-  long getNonHeapUsed();
-
-  Map<String, Double> measure();
+  public InvocationStartExecutionEvent(String operationName) {
+    this.operationName = operationName;
+  }
 }

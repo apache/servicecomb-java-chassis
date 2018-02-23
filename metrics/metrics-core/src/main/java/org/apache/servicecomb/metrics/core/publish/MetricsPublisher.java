@@ -19,9 +19,14 @@ package org.apache.servicecomb.metrics.core.publish;
 
 import java.util.Map;
 
-import org.apache.servicecomb.metrics.core.MetricsDataSource;
-import org.apache.servicecomb.metrics.core.event.EventListenerManager;
-import org.apache.servicecomb.metrics.core.monitor.RegistryMonitor;
+import org.apache.servicecomb.core.metrics.InvocationFinishedEvent;
+import org.apache.servicecomb.core.metrics.InvocationStartExecutionEvent;
+import org.apache.servicecomb.core.metrics.InvocationStartedEvent;
+import org.apache.servicecomb.foundation.common.utils.EventUtils;
+import org.apache.servicecomb.metrics.core.MonitorManager;
+import org.apache.servicecomb.metrics.core.event.InvocationFinishedEventListener;
+import org.apache.servicecomb.metrics.core.event.InvocationStartExecutionEventListener;
+import org.apache.servicecomb.metrics.core.event.InvocationStartedEventListener;
 import org.apache.servicecomb.provider.rest.common.RestSchema;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -35,7 +40,11 @@ import io.swagger.annotations.ApiResponses;
 public class MetricsPublisher {
 
   public MetricsPublisher() {
-    new EventListenerManager(RegistryMonitor.getInstance());
+    //init
+    EventUtils.registerEventListener(InvocationFinishedEvent.class, new InvocationFinishedEventListener());
+    EventUtils.registerEventListener(InvocationStartExecutionEvent.class, new InvocationStartExecutionEventListener());
+    EventUtils.registerEventListener(InvocationStartedEvent.class, new InvocationStartedEventListener());
+    MonitorManager.getInstance();
   }
 
   @ApiResponses({
@@ -43,7 +52,7 @@ public class MetricsPublisher {
   })
   @RequestMapping(path = "/", method = RequestMethod.GET)
   @CrossOrigin
-  public Map<String, Double> metrics() {
-    return MetricsDataSource.getInstance().measure();
+  public Map<String, Double> measure() {
+    return MonitorManager.getInstance().measure();
   }
 }

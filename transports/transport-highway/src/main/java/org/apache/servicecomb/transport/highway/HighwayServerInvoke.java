@@ -125,7 +125,7 @@ public class HighwayServerInvoke {
     invocation.getHandlerContext().put(Const.REMOTE_ADDRESS, this.connection.getNetSocket().remoteAddress());
     //立刻设置开始时间，否则Finished时无法计算TotalTime
     invocation.setStartTime(startedEvent.getStartedTime());
-    invocation.triggerStartProcessingEvent();
+    invocation.triggerStartExecutionEvent();
 
     invocation.next(response -> {
       sendResponse(invocation.getContext(), response);

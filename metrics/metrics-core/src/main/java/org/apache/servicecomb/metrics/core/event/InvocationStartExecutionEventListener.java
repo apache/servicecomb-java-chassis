@@ -15,27 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.core.metrics;
+package org.apache.servicecomb.metrics.core.event;
 
-import org.apache.servicecomb.foundation.common.event.Event;
+import org.apache.servicecomb.core.metrics.InvocationStartExecutionEvent;
+import org.apache.servicecomb.foundation.common.event.EventListener;
+import org.apache.servicecomb.foundation.metrics.MetricsConst;
+import org.apache.servicecomb.metrics.core.MonitorManager;
 import org.apache.servicecomb.swagger.invocation.InvocationType;
 
-public class InvocationStartProcessingEvent implements Event {
-  private final String operationName;
-
-  private final InvocationType invocationType;
-
-  public String getOperationName() {
-    return operationName;
-  }
-
-  public InvocationType getInvocationType() {
-    return invocationType;
-  }
-
-
-  public InvocationStartProcessingEvent(String operationName, InvocationType invocationType) {
-    this.operationName = operationName;
-    this.invocationType = invocationType;
+public class InvocationStartExecutionEventListener implements EventListener<InvocationStartExecutionEvent> {
+  @Override
+  public void process(InvocationStartExecutionEvent data) {
+    MonitorManager.getInstance().getCounter(false, MetricsConst.SERVICECOMB_INVOCATION,
+        MetricsConst.TAG_OPERATION, data.getOperationName(),
+        MetricsConst.TAG_STAGE, MetricsConst.STAGE_QUEUE,
+        MetricsConst.TAG_ROLE, String.valueOf(InvocationType.PRODUCER),
+        MetricsConst.TAG_STATISTIC, "waitInQueue").increment(-1);
   }
 }
