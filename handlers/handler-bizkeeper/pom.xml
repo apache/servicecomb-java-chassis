@@ -21,7 +21,7 @@
 	<parent>
 		<groupId>org.apache.servicecomb</groupId>
 		<artifactId>handlers</artifactId>
-		<version>0.6.0-SNAPSHOT</version>
+		<version>1.0.0-m1-SNAPSHOT</version>
 	</parent>
 
 	<artifactId>handler-bizkeeper</artifactId>

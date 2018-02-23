@@ -22,7 +22,7 @@
   <parent>
     <groupId>org.apache.servicecomb.demo</groupId>
     <artifactId>demo-pojo</artifactId>
-    <version>0.6.0-SNAPSHOT</version>
+    <version>1.0.0-m1-SNAPSHOT</version>
   </parent>
   <artifactId>pojo-client</artifactId>
   <name>Java Chassis::Demo::POJO::Client</name>
@@ -55,7 +55,7 @@
             <mixin>
               <groupId>org.apache.servicecomb.demo</groupId>
               <artifactId>docker-run-config</artifactId>
-              <version>0.6.0-SNAPSHOT</version>
+              <version>1.0.0-m1-SNAPSHOT</version>
             </mixin>
           </mixins>
         </configuration>
