@@ -11,7 +11,7 @@ jobs:
   - stage: Compilation and Installation
     script: scripts/travis.sh install
   - stage: Deploy on
-    script: if [ "$TRAVIS_PULL_REQUEST" != "true" ]; then bash scripts/travis.sh deploy;
+    script: if [ "$TRAVIS_PULL_REQUEST" == "false" ]; then bash scripts/travis.sh deploy;
       fi
 env:
   global:
