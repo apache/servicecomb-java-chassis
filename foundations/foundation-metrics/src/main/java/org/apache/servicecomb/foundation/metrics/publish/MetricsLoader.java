@@ -23,6 +23,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.apache.servicecomb.foundation.common.exceptions.ServiceCombException;
+
 //load origin metrics value and publish tree
 public class MetricsLoader {
 
@@ -40,7 +42,7 @@ public class MetricsLoader {
     if (metrics.containsKey(id)) {
       return new MetricNode(metrics.get(id), groupTagKeys);
     }
-    return null;
+    throw new ServiceCombException("no such id : " + id);
   }
 
   public double getFirstMatchMetricValue(String name, String tagKey, String tagValue) {

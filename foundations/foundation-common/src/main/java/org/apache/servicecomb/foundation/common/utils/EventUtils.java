@@ -17,22 +17,21 @@
 
 package org.apache.servicecomb.foundation.common.utils;
 
-import org.apache.servicecomb.foundation.common.event.Event;
 import org.apache.servicecomb.foundation.common.event.EventBus;
 import org.apache.servicecomb.foundation.common.event.EventListener;
 
 public final class EventUtils {
   private static final EventBus eventBus = new EventBus();
 
-  public static void registerEventListener(EventListener eventListener) {
-    eventBus.registerEventListener(eventListener);
+  public static <T> void registerEventListener(Class<T> cls, EventListener<T> eventListener) {
+    eventBus.registerEventListener(cls, eventListener);
   }
 
-  public static void unregisterEventListener(EventListener eventListener) {
-    eventBus.unregisterEventListener(eventListener);
+  public static <T> void unregisterEventListener(Class<T> cls, EventListener<T> eventListener) {
+    eventBus.unregisterEventListener(cls, eventListener);
   }
 
-  public static void triggerEvent(Event event) {
+  public static <T> void triggerEvent(T event) {
     eventBus.triggerEvent(event);
   }
 }

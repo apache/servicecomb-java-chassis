@@ -34,13 +34,11 @@ public class MetricsConst {
 
   public static final String TAG_STATISTIC = "statistic";
 
-  public static final String STAGE_WHOLE = "whole";
+  public static final String TAG_UNIT = "unit";
+
+  public static final String STAGE_TOTAL = "total";
 
   public static final String STAGE_QUEUE = "queue";
 
   public static final String STAGE_EXECUTION = "execution";
-
-  public static final String ROLE_CONSUMER = "consumer";
-
-  public static final String ROLE_PRODUCER = "producer";
 }

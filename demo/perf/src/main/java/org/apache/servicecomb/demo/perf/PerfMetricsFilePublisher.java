@@ -18,30 +18,25 @@ package org.apache.servicecomb.demo.perf;
 
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.concurrent.TimeUnit;
 
+import org.apache.servicecomb.foundation.common.exceptions.ServiceCombException;
 import org.apache.servicecomb.foundation.metrics.MetricsConst;
 import org.apache.servicecomb.foundation.metrics.publish.MetricNode;
 import org.apache.servicecomb.foundation.metrics.publish.MetricsLoader;
 import org.apache.servicecomb.foundation.vertx.VertxUtils;
-import org.apache.servicecomb.metrics.core.MetricsDataSource;
+import org.apache.servicecomb.metrics.core.MonitorManager;
+import org.apache.servicecomb.swagger.invocation.InvocationType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.common.collect.Lists;
 
 import io.vertx.core.impl.VertxImplEx;
 
 public class PerfMetricsFilePublisher {
   private static final Logger LOGGER = LoggerFactory.getLogger(PerfMetricsFilePublisher.class);
 
-  private MetricsDataSource dataSource;
-
-  public PerfMetricsFilePublisher(MetricsDataSource dataSource) {
-    this.dataSource = dataSource;
-  }
-
   public void onCycle() {
-    Map<String, Double> metrics = dataSource.measure(dataSource.getAppliedWindowTime().get(0), true);
+    Map<String, Double> metrics = MonitorManager.getInstance().measure();
     MetricsLoader loader = new MetricsLoader(metrics);
 
     StringBuilder sb = new StringBuilder();
@@ -75,12 +70,19 @@ public class PerfMetricsFilePublisher {
   }
 
   private void collectMetrics(MetricsLoader loader, StringBuilder sb) {
-    MetricNode treeNode = loader
-        .getMetricTree(MetricsConst.SERVICECOMB_INVOCATION, MetricsConst.TAG_ROLE, MetricsConst.TAG_OPERATION,
-            MetricsConst.TAG_STATUS);
+    MetricNode treeNode;
+    try {
+      treeNode = loader
+          .getMetricTree(MetricsConst.SERVICECOMB_INVOCATION, MetricsConst.TAG_ROLE, MetricsConst.TAG_OPERATION,
+              MetricsConst.TAG_STATUS);
+    }
+    //before receive any request,there are no MetricsConst.SERVICECOMB_INVOCATION,so getMetricTree will throw ServiceCombException
+    catch (ServiceCombException ignored) {
+      return;
+    }
 
     if (treeNode != null && treeNode.getChildren().size() != 0) {
-      MetricNode consumerNode = treeNode.getChildren().get(MetricsConst.ROLE_CONSUMER);
+      MetricNode consumerNode = treeNode.getChildren().get(String.valueOf(InvocationType.CONSUMER));
       if (consumerNode != null) {
         sb.append("consumer:\n");
         sb.append("  tps     latency(ms) status  operation\n");
@@ -88,18 +90,17 @@ public class PerfMetricsFilePublisher {
           for (Entry<String, MetricNode> statusNode : operationNode.getValue().getChildren().entrySet()) {
             sb.append(String.format("  %-7.0f %-11.3f %-9s %s\n",
                 statusNode.getValue()
-                    .getFirstMatchMetricValue(Lists.newArrayList(MetricsConst.TAG_STAGE, MetricsConst.TAG_STATISTIC),
-                        Lists.newArrayList(MetricsConst.STAGE_WHOLE, "tps")),
+                    .getFirstMatchMetricValue(MetricsConst.TAG_STAGE, MetricsConst.STAGE_TOTAL,
+                        MetricsConst.TAG_STATISTIC, "tps"),
                 statusNode.getValue()
-                    .getFirstMatchMetricValue(Lists.newArrayList(MetricsConst.TAG_STAGE, MetricsConst.TAG_STATISTIC),
-                        Lists.newArrayList(MetricsConst.STAGE_WHOLE, "latency")),
-                statusNode.getKey(),
-                operationNode.getKey()));
+                    .getFirstMatchMetricValue(TimeUnit.MILLISECONDS, MetricsConst.TAG_STAGE, MetricsConst.STAGE_TOTAL,
+                        MetricsConst.TAG_STATISTIC, "latency"),
+                statusNode.getKey(), operationNode.getKey()));
           }
         }
       }
 
-      MetricNode producerNode = treeNode.getChildren().get(MetricsConst.ROLE_PRODUCER);
+      MetricNode producerNode = treeNode.getChildren().get(String.valueOf(InvocationType.PRODUCER));
       if (producerNode != null) {
         sb.append("producer:\n");
         sb.append("  tps     latency(ms) queue(ms) execute(ms) status  operation\n");
@@ -107,19 +108,19 @@ public class PerfMetricsFilePublisher {
           for (Entry<String, MetricNode> statusNode : operationNode.getValue().getChildren().entrySet()) {
             sb.append(String.format("  %-7.0f %-11.3f %-9.3f %-11.3f %-7s %s\n",
                 statusNode.getValue()
-                    .getFirstMatchMetricValue(Lists.newArrayList(MetricsConst.TAG_STAGE, MetricsConst.TAG_STATISTIC),
-                        Lists.newArrayList(MetricsConst.STAGE_WHOLE, "tps")),
+                    .getFirstMatchMetricValue(MetricsConst.TAG_STAGE, MetricsConst.STAGE_TOTAL,
+                        MetricsConst.TAG_STATISTIC, "tps"),
                 statusNode.getValue()
-                    .getFirstMatchMetricValue(Lists.newArrayList(MetricsConst.TAG_STAGE, MetricsConst.TAG_STATISTIC),
-                        Lists.newArrayList(MetricsConst.STAGE_WHOLE, "latency")),
+                    .getFirstMatchMetricValue(TimeUnit.MILLISECONDS, MetricsConst.TAG_STAGE, MetricsConst.STAGE_TOTAL,
+                        MetricsConst.TAG_STATISTIC, "latency"),
                 statusNode.getValue()
-                    .getFirstMatchMetricValue(Lists.newArrayList(MetricsConst.TAG_STAGE, MetricsConst.TAG_STATISTIC),
-                        Lists.newArrayList(MetricsConst.STAGE_QUEUE, "latency")),
+                    .getFirstMatchMetricValue(TimeUnit.MILLISECONDS, MetricsConst.TAG_STAGE, MetricsConst.STAGE_QUEUE,
+                        MetricsConst.TAG_STATISTIC, "latency"),
                 statusNode.getValue()
-                    .getFirstMatchMetricValue(Lists.newArrayList(MetricsConst.TAG_STAGE, MetricsConst.TAG_STATISTIC),
-                        Lists.newArrayList(MetricsConst.STAGE_EXECUTION, "latency")),
-                statusNode.getKey(),
-                operationNode.getKey()));
+                    .getFirstMatchMetricValue(TimeUnit.MILLISECONDS, MetricsConst.TAG_STAGE,
+                        MetricsConst.STAGE_EXECUTION,
+                        MetricsConst.TAG_STATISTIC, "latency"),
+                statusNode.getKey(), operationNode.getKey()));
           }
         }
       }

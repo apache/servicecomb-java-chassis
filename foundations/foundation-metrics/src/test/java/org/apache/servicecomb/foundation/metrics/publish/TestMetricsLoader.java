@@ -23,8 +23,6 @@ import java.util.Map;
 import org.junit.Assert;
 import org.junit.Test;
 
-import com.google.common.collect.Lists;
-
 public class TestMetricsLoader {
   @Test
   public void test() {
@@ -49,9 +47,7 @@ public class TestMetricsLoader {
 
     MetricNode node_k1 = node.getChildrenNode("1");
 
-    Assert.assertEquals(200, node_k1.getFirstMatchMetricValue(
-        Lists.newArrayList("K2", "K3"),
-        Lists.newArrayList("20", "30")), 0);
+    Assert.assertEquals(200, node_k1.getFirstMatchMetricValue("K2", "20", "K3", "30"), 0);
 
     Assert.assertEquals(100, node_k1.getFirstMatchMetricValue("K2", "2"), 0);
 

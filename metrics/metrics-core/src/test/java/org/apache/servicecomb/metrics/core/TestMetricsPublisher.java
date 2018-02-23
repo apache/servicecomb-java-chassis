@@ -27,7 +27,7 @@ public class TestMetricsPublisher {
   @Test
   public void test() {
     MetricsPublisher publisher = new MetricsPublisher();
-    Map<String, Double> metrics = publisher.metrics();
+    Map<String, Double> metrics = publisher.measure();
     //10 jvm metrics get
     Assert.assertEquals(10, metrics.size());
   }

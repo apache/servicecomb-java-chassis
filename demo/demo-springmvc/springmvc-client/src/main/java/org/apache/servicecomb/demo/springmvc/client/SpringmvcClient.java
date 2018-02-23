@@ -101,10 +101,10 @@ public class SpringmvcClient {
       Map<String, Double> metrics = restTemplate.getForObject(prefix + "/metrics", Map.class);
 
       TestMgr
-          .check(true, metrics.get("jvm(statistic=gauge,name=heapUsed)") != 0);
+          .check(true, metrics.get("jvm(name=heapUsed,statistic=gauge)") != 0);
       TestMgr.check(true, metrics.size() > 0);
       TestMgr.check(true, metrics.get(
-          "servicecomb.invocation(operation=springmvc.codeFirst.saySomething,role=producer,stage=whole,statistic=count,status=200)")
+          "servicecomb.invocation(operation=springmvc.codeFirst.saySomething,role=PRODUCER,stage=total,statistic=count,status=200)")
           >= 0);
     } catch (Exception e) {
       TestMgr.check("true", "false");

@@ -17,39 +17,45 @@
 
 package org.apache.servicecomb.metrics.core.event;
 
+import java.util.concurrent.TimeUnit;
+
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.servicecomb.core.metrics.InvocationFinishedEvent;
-import org.apache.servicecomb.foundation.common.event.Event;
 import org.apache.servicecomb.foundation.common.event.EventListener;
-import org.apache.servicecomb.metrics.core.monitor.ConsumerInvocationMonitor;
-import org.apache.servicecomb.metrics.core.monitor.ProducerInvocationMonitor;
-import org.apache.servicecomb.metrics.core.monitor.RegistryMonitor;
+import org.apache.servicecomb.foundation.metrics.MetricsConst;
+import org.apache.servicecomb.metrics.core.MonitorManager;
 import org.apache.servicecomb.swagger.invocation.InvocationType;
 
-public class InvocationFinishedEventListener implements EventListener {
-  private final RegistryMonitor registryMonitor;
-
-  public InvocationFinishedEventListener(RegistryMonitor registryMonitor) {
-    this.registryMonitor = registryMonitor;
-  }
-
+public class InvocationFinishedEventListener implements EventListener<InvocationFinishedEvent> {
   @Override
-  public Class<? extends Event> getConcernedEvent() {
-    return InvocationFinishedEvent.class;
-  }
-
-  @Override
-  public void process(Event data) {
-    InvocationFinishedEvent event = (InvocationFinishedEvent) data;
-    if (InvocationType.PRODUCER.equals(event.getInvocationType())) {
-      ProducerInvocationMonitor monitor = registryMonitor.getProducerInvocationMonitor(event.getOperationName());
-      monitor.getLifeTimeInQueue().update(event.getInQueueNanoTime(), String.valueOf(event.getStatusCode()));
-      monitor.getExecutionTime().update(event.getProcessElapsedNanoTime(), String.valueOf(event.getStatusCode()));
-      monitor.getProducerLatency().update(event.getTotalElapsedNanoTime(), String.valueOf(event.getStatusCode()));
-      monitor.getProducerCall().increment(String.valueOf(event.getStatusCode()));
-    } else {
-      ConsumerInvocationMonitor monitor = registryMonitor.getConsumerInvocationMonitor(event.getOperationName());
-      monitor.getConsumerLatency().update(event.getTotalElapsedNanoTime(), String.valueOf(event.getStatusCode()));
-      monitor.getConsumerCall().increment(String.valueOf(event.getStatusCode()));
+  public void process(InvocationFinishedEvent data) {
+    String[] tags = new String[] {MetricsConst.TAG_OPERATION, data.getOperationName(),
+        MetricsConst.TAG_ROLE, String.valueOf(data.getInvocationType()),
+        MetricsConst.TAG_STATUS, String.valueOf(data.getStatusCode())};
+    this.updateLatency(MetricsConst.STAGE_TOTAL, data.getTotalElapsedNanoTime(), tags);
+    this.updateCount(tags);
+    if (InvocationType.PRODUCER.equals(data.getInvocationType())) {
+      this.updateLatency(MetricsConst.STAGE_QUEUE, data.getInQueueNanoTime(), tags);
+      this.updateLatency(MetricsConst.STAGE_EXECUTION, data.getExecutionElapsedNanoTime(), tags);
     }
+  }
+
+  private void updateLatency(String stage, long value, String... basicTags) {
+    String[] tags = ArrayUtils
+        .addAll(basicTags, MetricsConst.TAG_STAGE, stage, MetricsConst.TAG_UNIT, String.valueOf(TimeUnit.MILLISECONDS));
+    MonitorManager.getInstance()
+        .getTimer(MetricsConst.SERVICECOMB_INVOCATION, ArrayUtils.addAll(tags, MetricsConst.TAG_STATISTIC, "latency"))
+        .record(value, TimeUnit.NANOSECONDS);
+    MonitorManager.getInstance()
+        .getMaxGauge(MetricsConst.SERVICECOMB_INVOCATION, ArrayUtils.addAll(tags, MetricsConst.TAG_STATISTIC, "max"))
+        .update(TimeUnit.NANOSECONDS.toMillis(value));
+  }
+
+  private void updateCount(String... basicTags) {
+    String[] tags = ArrayUtils.addAll(basicTags, MetricsConst.TAG_STAGE, MetricsConst.STAGE_TOTAL);
+    MonitorManager.getInstance().getCounter(true, MetricsConst.SERVICECOMB_INVOCATION,
+        ArrayUtils.addAll(tags, MetricsConst.TAG_STATISTIC, "tps")).increment();
+    MonitorManager.getInstance().getCounter(false, MetricsConst.SERVICECOMB_INVOCATION,
+        ArrayUtils.addAll(tags, MetricsConst.TAG_STATISTIC, "count")).increment();
   }
 }

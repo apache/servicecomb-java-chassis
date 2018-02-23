@@ -27,6 +27,7 @@
   <modelVersion>4.0.0</modelVersion>
 
   <artifactId>tracing-zipkin</artifactId>
+  <name>Java Chassis::Tracing::Zipkin</name>
 
   <dependencies>
     <dependency>

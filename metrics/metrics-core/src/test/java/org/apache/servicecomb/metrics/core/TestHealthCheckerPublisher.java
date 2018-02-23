@@ -17,86 +17,52 @@
 
 package org.apache.servicecomb.metrics.core;
 
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-
-import java.io.IOException;
-import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.servicecomb.foundation.common.utils.JsonUtils;
 import org.apache.servicecomb.foundation.metrics.health.HealthCheckResult;
 import org.apache.servicecomb.foundation.metrics.health.HealthChecker;
 import org.apache.servicecomb.foundation.metrics.health.HealthCheckerManager;
-import org.apache.servicecomb.metrics.core.health.DefaultHealthCheckExtraData;
-import org.apache.servicecomb.metrics.core.health.DefaultMicroserviceHealthChecker;
 import org.apache.servicecomb.metrics.core.publish.HealthCheckerPublisher;
-import org.apache.servicecomb.serviceregistry.RegistryUtils;
-import org.apache.servicecomb.serviceregistry.api.registry.Microservice;
-import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
 import org.junit.Assert;
 import org.junit.Test;
-
-import com.google.common.collect.Lists;
-
-import mockit.Expectations;
 
 public class TestHealthCheckerPublisher {
 
   @Test
-  public void testPublisher() throws IOException {
-    Microservice microservice = new Microservice();
-    microservice.setAppId("appId");
-    microservice.setServiceName("serviceName");
-    microservice.setVersion("0.0.1");
-
-    MicroserviceInstance microserviceInstance = new MicroserviceInstance();
-    microserviceInstance.setEndpoints(Lists.newArrayList("127.0.0.1", "192.168.0.100"));
-    microserviceInstance.setInstanceId("001");
-    microserviceInstance.setHostName("localhost");
-
-    new Expectations(RegistryUtils.class) {
-      {
-        RegistryUtils.getMicroservice();
-        result = microservice;
+  public void test() {
+    HealthCheckerManager manager = new HealthCheckerManager();
+    manager.register(new HealthChecker() {
+      @Override
+      public String getName() {
+        return "test";
       }
-    };
 
-    new Expectations(RegistryUtils.class) {
-      {
-        RegistryUtils.getMicroserviceInstance();
-        result = microserviceInstance;
+      @Override
+      public HealthCheckResult check() {
+        return new HealthCheckResult(true, "info", "extra data");
       }
-    };
+    });
 
-    HealthCheckerManager manager = mock(HealthCheckerManager.class);
+    manager.register(new HealthChecker() {
+      @Override
+      public String getName() {
+        return "test2";
+      }
 
-    Map<String, HealthCheckResult> results = new HashMap<>();
-    HealthChecker result = new DefaultMicroserviceHealthChecker();
-    results.put("default", result.check());
-
-    when(manager.check()).thenReturn(results);
-    when(manager.check("default")).thenReturn(result.check());
+      @Override
+      public HealthCheckResult check() {
+        return new HealthCheckResult(false, "info2", "extra data 2");
+      }
+    });
 
     HealthCheckerPublisher publisher = new HealthCheckerPublisher(manager);
-    Map<String, HealthCheckResult> content = publisher.health();
 
-    DefaultHealthCheckExtraData data = JsonUtils.OBJ_MAPPER
-        .readValue(content.get("default").getExtraData(), DefaultHealthCheckExtraData.class);
-    Assert.assertEquals("appId", data.getAppId());
-    Assert.assertEquals("serviceName", data.getServiceName());
-    Assert.assertEquals("0.0.1", data.getServiceVersion());
-    Assert.assertEquals("001", data.getInstanceId());
-    Assert.assertEquals("localhost", data.getHostName());
-    Assert.assertEquals("127.0.0.1,192.168.0.100", data.getEndpoints());
+    Assert.assertEquals(false, publisher.checkHealth());
 
-    data = JsonUtils.OBJ_MAPPER
-        .readValue(publisher.healthWithName("default").getExtraData(), DefaultHealthCheckExtraData.class);
-    Assert.assertEquals("appId", data.getAppId());
-    Assert.assertEquals("serviceName", data.getServiceName());
-    Assert.assertEquals("0.0.1", data.getServiceVersion());
-    Assert.assertEquals("001", data.getInstanceId());
-    Assert.assertEquals("localhost", data.getHostName());
-    Assert.assertEquals("127.0.0.1,192.168.0.100", data.getEndpoints());
+    Map<String, HealthCheckResult> content = publisher.checkHealthDetail();
+
+    Assert.assertEquals(true, content.get("test").isHealthy());
+    Assert.assertEquals("info", content.get("test").getInformation());
+    Assert.assertEquals("extra data", content.get("test").getExtraData());
   }
 }

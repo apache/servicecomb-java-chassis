@@ -32,32 +32,20 @@ public class TestEventBus {
   public void test() throws InterruptedException {
     AtomicBoolean eventReceived = new AtomicBoolean(false);
 
-    EventListener listener = new EventListener() {
-      @Override
-      public Class<? extends Event> getConcernedEvent() {
-        return TestEvent.class;
-      }
+    EventListener<String> listener = data -> eventReceived.set(true);
 
-      @Override
-      public void process(Event data) {
-        eventReceived.set(true);
-      }
-    };
+    EventUtils.registerEventListener(String.class, listener);
 
-    EventUtils.registerEventListener(listener);
-    EventUtils.triggerEvent(new TestEvent());
+    EventUtils.triggerEvent("xxx");
     await().atMost(1, TimeUnit.SECONDS)
         .until(eventReceived::get);
     Assert.assertTrue(eventReceived.get());
 
     eventReceived.set(false);
 
-    EventUtils.unregisterEventListener(listener);
-    EventUtils.triggerEvent(new TestEvent());
+    EventUtils.unregisterEventListener(String.class, listener);
+    EventUtils.triggerEvent("xxx");
     Thread.sleep(1000);
     Assert.assertFalse(eventReceived.get());
-  }
-
-  private class TestEvent implements Event {
   }
 }
