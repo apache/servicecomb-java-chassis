@@ -19,14 +19,7 @@ package org.apache.servicecomb.metrics.core.publish;
 
 import java.util.Map;
 
-import org.apache.servicecomb.core.metrics.InvocationFinishedEvent;
-import org.apache.servicecomb.core.metrics.InvocationStartExecutionEvent;
-import org.apache.servicecomb.core.metrics.InvocationStartedEvent;
-import org.apache.servicecomb.foundation.common.utils.EventUtils;
 import org.apache.servicecomb.metrics.core.MonitorManager;
-import org.apache.servicecomb.metrics.core.event.InvocationFinishedEventListener;
-import org.apache.servicecomb.metrics.core.event.InvocationStartExecutionEventListener;
-import org.apache.servicecomb.metrics.core.event.InvocationStartedEventListener;
 import org.apache.servicecomb.provider.rest.common.RestSchema;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -38,15 +31,6 @@ import io.swagger.annotations.ApiResponses;
 @RestSchema(schemaId = "metricsEndpoint")
 @RequestMapping(path = "/metrics")
 public class MetricsPublisher {
-
-  public MetricsPublisher() {
-    //init
-    EventUtils.registerEventListener(InvocationFinishedEvent.class, new InvocationFinishedEventListener());
-    EventUtils.registerEventListener(InvocationStartExecutionEvent.class, new InvocationStartExecutionEventListener());
-    EventUtils.registerEventListener(InvocationStartedEvent.class, new InvocationStartedEventListener());
-    MonitorManager.getInstance();
-  }
-
   @ApiResponses({
       @ApiResponse(code = 400, response = String.class, message = "illegal request content"),
   })

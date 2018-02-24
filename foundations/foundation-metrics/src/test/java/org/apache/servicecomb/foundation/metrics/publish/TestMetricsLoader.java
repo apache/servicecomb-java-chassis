@@ -38,21 +38,8 @@ public class TestMetricsLoader {
     metrics.put("Y(K1=1000,K2=2000,K3=3000)", 800.0);
 
     MetricsLoader loader = new MetricsLoader(metrics);
-
     Assert.assertEquals(200.0, loader.getFirstMatchMetricValue("X", "K3", "30"), 0);
-
     MetricNode node = loader.getMetricTree("X", "K1");
-
     Assert.assertEquals(2, node.getChildren().size());
-
-    MetricNode node_k1 = node.getChildrenNode("1");
-
-    Assert.assertEquals(200, node_k1.getFirstMatchMetricValue("K2", "20", "K3", "30"), 0);
-
-    Assert.assertEquals(100, node_k1.getFirstMatchMetricValue("K2", "2"), 0);
-
-    MetricNode newGroup = new MetricNode(node_k1.getMetrics(), "K2", "K3");
-
-    Assert.assertEquals(1, newGroup.getChildrenNode("2").getChildrenNode("3").getMetrics().size(), 0);
   }
 }

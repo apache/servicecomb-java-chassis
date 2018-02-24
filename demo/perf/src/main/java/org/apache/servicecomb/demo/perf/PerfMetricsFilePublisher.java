@@ -20,7 +20,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.servicecomb.foundation.common.exceptions.ServiceCombException;
 import org.apache.servicecomb.foundation.metrics.MetricsConst;
 import org.apache.servicecomb.foundation.metrics.publish.MetricNode;
 import org.apache.servicecomb.foundation.metrics.publish.MetricsLoader;
@@ -70,57 +69,51 @@ public class PerfMetricsFilePublisher {
   }
 
   private void collectMetrics(MetricsLoader loader, StringBuilder sb) {
-    MetricNode treeNode;
-    try {
-      treeNode = loader
+    if (loader.containsId(MetricsConst.SERVICECOMB_INVOCATION)) {
+      MetricNode treeNode = loader
           .getMetricTree(MetricsConst.SERVICECOMB_INVOCATION, MetricsConst.TAG_ROLE, MetricsConst.TAG_OPERATION,
               MetricsConst.TAG_STATUS);
-    }
-    //before receive any request,there are no MetricsConst.SERVICECOMB_INVOCATION,so getMetricTree will throw ServiceCombException
-    catch (ServiceCombException ignored) {
-      return;
-    }
-
-    if (treeNode != null && treeNode.getChildren().size() != 0) {
-      MetricNode consumerNode = treeNode.getChildren().get(String.valueOf(InvocationType.CONSUMER));
-      if (consumerNode != null) {
-        sb.append("consumer:\n");
-        sb.append("  tps     latency(ms) status  operation\n");
-        for (Entry<String, MetricNode> operationNode : consumerNode.getChildren().entrySet()) {
-          for (Entry<String, MetricNode> statusNode : operationNode.getValue().getChildren().entrySet()) {
-            sb.append(String.format("  %-7.0f %-11.3f %-9s %s\n",
-                statusNode.getValue()
-                    .getFirstMatchMetricValue(MetricsConst.TAG_STAGE, MetricsConst.STAGE_TOTAL,
-                        MetricsConst.TAG_STATISTIC, "tps"),
-                statusNode.getValue()
-                    .getFirstMatchMetricValue(TimeUnit.MILLISECONDS, MetricsConst.TAG_STAGE, MetricsConst.STAGE_TOTAL,
-                        MetricsConst.TAG_STATISTIC, "latency"),
-                statusNode.getKey(), operationNode.getKey()));
+      if (treeNode != null && treeNode.getChildren().size() != 0) {
+        MetricNode consumerNode = treeNode.getChildren().get(String.valueOf(InvocationType.CONSUMER).toLowerCase());
+        if (consumerNode != null) {
+          sb.append("consumer:\n");
+          sb.append("  tps     latency(ms) status  operation\n");
+          for (Entry<String, MetricNode> operationNode : consumerNode.getChildren().entrySet()) {
+            for (Entry<String, MetricNode> statusNode : operationNode.getValue().getChildren().entrySet()) {
+              sb.append(String.format("  %-7.0f %-11.3f %-9s %s\n",
+                  statusNode.getValue()
+                      .getFirstMatchMetricValue(MetricsConst.TAG_STAGE, MetricsConst.STAGE_TOTAL,
+                          MetricsConst.TAG_STATISTIC, "tps"),
+                  statusNode.getValue()
+                      .getFirstMatchMetricValue(TimeUnit.MILLISECONDS, MetricsConst.TAG_STAGE, MetricsConst.STAGE_TOTAL,
+                          MetricsConst.TAG_STATISTIC, "latency"),
+                  statusNode.getKey(), operationNode.getKey()));
+            }
           }
         }
-      }
 
-      MetricNode producerNode = treeNode.getChildren().get(String.valueOf(InvocationType.PRODUCER));
-      if (producerNode != null) {
-        sb.append("producer:\n");
-        sb.append("  tps     latency(ms) queue(ms) execute(ms) status  operation\n");
-        for (Entry<String, MetricNode> operationNode : producerNode.getChildren().entrySet()) {
-          for (Entry<String, MetricNode> statusNode : operationNode.getValue().getChildren().entrySet()) {
-            sb.append(String.format("  %-7.0f %-11.3f %-9.3f %-11.3f %-7s %s\n",
-                statusNode.getValue()
-                    .getFirstMatchMetricValue(MetricsConst.TAG_STAGE, MetricsConst.STAGE_TOTAL,
-                        MetricsConst.TAG_STATISTIC, "tps"),
-                statusNode.getValue()
-                    .getFirstMatchMetricValue(TimeUnit.MILLISECONDS, MetricsConst.TAG_STAGE, MetricsConst.STAGE_TOTAL,
-                        MetricsConst.TAG_STATISTIC, "latency"),
-                statusNode.getValue()
-                    .getFirstMatchMetricValue(TimeUnit.MILLISECONDS, MetricsConst.TAG_STAGE, MetricsConst.STAGE_QUEUE,
-                        MetricsConst.TAG_STATISTIC, "latency"),
-                statusNode.getValue()
-                    .getFirstMatchMetricValue(TimeUnit.MILLISECONDS, MetricsConst.TAG_STAGE,
-                        MetricsConst.STAGE_EXECUTION,
-                        MetricsConst.TAG_STATISTIC, "latency"),
-                statusNode.getKey(), operationNode.getKey()));
+        MetricNode producerNode = treeNode.getChildren().get(String.valueOf(InvocationType.PRODUCER).toLowerCase());
+        if (producerNode != null) {
+          sb.append("producer:\n");
+          sb.append("  tps     latency(ms) queue(ms) execute(ms) status  operation\n");
+          for (Entry<String, MetricNode> operationNode : producerNode.getChildren().entrySet()) {
+            for (Entry<String, MetricNode> statusNode : operationNode.getValue().getChildren().entrySet()) {
+              sb.append(String.format("  %-7.0f %-11.3f %-9.3f %-11.3f %-7s %s\n",
+                  statusNode.getValue()
+                      .getFirstMatchMetricValue(MetricsConst.TAG_STAGE, MetricsConst.STAGE_TOTAL,
+                          MetricsConst.TAG_STATISTIC, "tps"),
+                  statusNode.getValue()
+                      .getFirstMatchMetricValue(TimeUnit.MILLISECONDS, MetricsConst.TAG_STAGE, MetricsConst.STAGE_TOTAL,
+                          MetricsConst.TAG_STATISTIC, "latency"),
+                  statusNode.getValue()
+                      .getFirstMatchMetricValue(TimeUnit.MILLISECONDS, MetricsConst.TAG_STAGE, MetricsConst.STAGE_QUEUE,
+                          MetricsConst.TAG_STATISTIC, "latency"),
+                  statusNode.getValue()
+                      .getFirstMatchMetricValue(TimeUnit.MILLISECONDS, MetricsConst.TAG_STAGE,
+                          MetricsConst.STAGE_EXECUTION,
+                          MetricsConst.TAG_STATISTIC, "latency"),
+                  statusNode.getKey(), operationNode.getKey()));
+            }
           }
         }
       }

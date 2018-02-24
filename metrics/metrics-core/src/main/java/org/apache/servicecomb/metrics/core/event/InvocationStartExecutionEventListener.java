@@ -25,11 +25,16 @@ import org.apache.servicecomb.swagger.invocation.InvocationType;
 
 public class InvocationStartExecutionEventListener implements EventListener<InvocationStartExecutionEvent> {
   @Override
+  public Class<InvocationStartExecutionEvent> getEventClass() {
+    return InvocationStartExecutionEvent.class;
+  }
+
+  @Override
   public void process(InvocationStartExecutionEvent data) {
-    MonitorManager.getInstance().getCounter(false, MetricsConst.SERVICECOMB_INVOCATION,
+    MonitorManager.getInstance().getCounter(MetricsConst.SERVICECOMB_INVOCATION,
         MetricsConst.TAG_OPERATION, data.getOperationName(),
         MetricsConst.TAG_STAGE, MetricsConst.STAGE_QUEUE,
-        MetricsConst.TAG_ROLE, String.valueOf(InvocationType.PRODUCER),
+        MetricsConst.TAG_ROLE, String.valueOf(InvocationType.PRODUCER).toLowerCase(),
         MetricsConst.TAG_STATISTIC, "waitInQueue").increment(-1);
   }
 }

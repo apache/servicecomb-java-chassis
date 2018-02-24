@@ -23,9 +23,23 @@ import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.apache.servicecomb.foundation.common.concurrent.ConcurrentHashMapEx;
+import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
 
 public class EventBus {
   private final Map<Class, List<EventListener>> allEventListeners = new ConcurrentHashMapEx<>();
+
+  private static final EventBus INSTANCE = new EventBus();
+
+  public static EventBus getInstance() {
+    return INSTANCE;
+  }
+
+  private EventBus() {
+    List<EventListener> listeners = SPIServiceUtils.getAllService(EventListener.class);
+    for (EventListener listener : listeners) {
+      this.registerEventListener(listener.getEventClass(), listener);
+    }
+  }
 
   public <T> void registerEventListener(Class<T> cls, EventListener<T> eventListener) {
     List<EventListener> eventListeners = allEventListeners

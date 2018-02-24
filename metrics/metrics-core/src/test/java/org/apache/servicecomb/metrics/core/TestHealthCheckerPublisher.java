@@ -59,7 +59,7 @@ public class TestHealthCheckerPublisher {
 
     Assert.assertEquals(false, publisher.checkHealth());
 
-    Map<String, HealthCheckResult> content = publisher.checkHealthDetail();
+    Map<String, HealthCheckResult> content = publisher.checkHealthDetails();
 
     Assert.assertEquals(true, content.get("test").isHealthy());
     Assert.assertEquals("info", content.get("test").getInformation());

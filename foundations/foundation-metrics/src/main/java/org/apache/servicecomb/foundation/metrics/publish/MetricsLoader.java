@@ -39,10 +39,14 @@ public class MetricsLoader {
   }
 
   public MetricNode getMetricTree(String id, String... groupTagKeys) {
-    if (metrics.containsKey(id)) {
+    if (containsId(id)) {
       return new MetricNode(metrics.get(id), groupTagKeys);
     }
     throw new ServiceCombException("no such id : " + id);
+  }
+
+  public boolean containsId(String id) {
+    return metrics.containsKey(id);
   }
 
   public double getFirstMatchMetricValue(String name, String tagKey, String tagValue) {

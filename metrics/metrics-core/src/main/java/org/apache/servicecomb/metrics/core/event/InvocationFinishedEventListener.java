@@ -28,9 +28,14 @@ import org.apache.servicecomb.swagger.invocation.InvocationType;
 
 public class InvocationFinishedEventListener implements EventListener<InvocationFinishedEvent> {
   @Override
+  public Class<InvocationFinishedEvent> getEventClass() {
+    return InvocationFinishedEvent.class;
+  }
+
+  @Override
   public void process(InvocationFinishedEvent data) {
     String[] tags = new String[] {MetricsConst.TAG_OPERATION, data.getOperationName(),
-        MetricsConst.TAG_ROLE, String.valueOf(data.getInvocationType()),
+        MetricsConst.TAG_ROLE, String.valueOf(data.getInvocationType()).toLowerCase(),
         MetricsConst.TAG_STATUS, String.valueOf(data.getStatusCode())};
     this.updateLatency(MetricsConst.STAGE_TOTAL, data.getTotalElapsedNanoTime(), tags);
     this.updateCount(tags);
@@ -53,9 +58,9 @@ public class InvocationFinishedEventListener implements EventListener<Invocation
 
   private void updateCount(String... basicTags) {
     String[] tags = ArrayUtils.addAll(basicTags, MetricsConst.TAG_STAGE, MetricsConst.STAGE_TOTAL);
-    MonitorManager.getInstance().getCounter(true, MetricsConst.SERVICECOMB_INVOCATION,
+    MonitorManager.getInstance().getStepCounter(MetricsConst.SERVICECOMB_INVOCATION,
         ArrayUtils.addAll(tags, MetricsConst.TAG_STATISTIC, "tps")).increment();
-    MonitorManager.getInstance().getCounter(false, MetricsConst.SERVICECOMB_INVOCATION,
+    MonitorManager.getInstance().getCounter(MetricsConst.SERVICECOMB_INVOCATION,
         ArrayUtils.addAll(tags, MetricsConst.TAG_STATISTIC, "count")).increment();
   }
 }

@@ -19,6 +19,7 @@ package org.apache.servicecomb.foundation.common.event;
 
 //Common event listener interface,java chassis component can trigger event let high level component perceive data change.
 public interface EventListener<T> {
+  Class<T> getEventClass();
 
   //process event data
   void process(T data);
