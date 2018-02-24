@@ -39,7 +39,7 @@ import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.definition.MicroserviceMeta;
 import org.apache.servicecomb.core.definition.OperationMeta;
 import org.apache.servicecomb.core.metrics.InvocationStartedEvent;
-import org.apache.servicecomb.foundation.common.utils.EventUtils;
+import org.apache.servicecomb.foundation.common.event.EventBus;
 import org.apache.servicecomb.foundation.common.utils.JsonUtils;
 import org.apache.servicecomb.foundation.vertx.http.HttpServletRequestEx;
 import org.apache.servicecomb.foundation.vertx.http.HttpServletResponseEx;
@@ -116,7 +116,7 @@ public abstract class AbstractRestInvocation {
 
     InvocationStartedEvent startedEvent = new InvocationStartedEvent(operationMeta.getMicroserviceQualifiedName(),
         InvocationType.PRODUCER, System.nanoTime());
-    EventUtils.triggerEvent(startedEvent);
+    EventBus.getInstance().triggerEvent(startedEvent);
 
     operationMeta.getExecutor().execute(() -> {
       synchronized (this.requestEx) {

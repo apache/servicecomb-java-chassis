@@ -22,7 +22,6 @@ import static org.awaitility.Awaitility.await;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import org.apache.servicecomb.foundation.common.utils.EventUtils;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -32,19 +31,29 @@ public class TestEventBus {
   public void test() throws InterruptedException {
     AtomicBoolean eventReceived = new AtomicBoolean(false);
 
-    EventListener<String> listener = data -> eventReceived.set(true);
+    EventListener<String> listener = new EventListener<String>() {
+      @Override
+      public Class<String> getEventClass() {
+        return String.class;
+      }
 
-    EventUtils.registerEventListener(String.class, listener);
+      @Override
+      public void process(String data) {
+        eventReceived.set(true);
+      }
+    };
 
-    EventUtils.triggerEvent("xxx");
+    EventBus.getInstance().registerEventListener(String.class, listener);
+
+    EventBus.getInstance().triggerEvent("xxx");
     await().atMost(1, TimeUnit.SECONDS)
         .until(eventReceived::get);
     Assert.assertTrue(eventReceived.get());
 
     eventReceived.set(false);
 
-    EventUtils.unregisterEventListener(String.class, listener);
-    EventUtils.triggerEvent("xxx");
+    EventBus.getInstance().unregisterEventListener(String.class, listener);
+    EventBus.getInstance().triggerEvent("xxx");
     Thread.sleep(1000);
     Assert.assertFalse(eventReceived.get());
   }

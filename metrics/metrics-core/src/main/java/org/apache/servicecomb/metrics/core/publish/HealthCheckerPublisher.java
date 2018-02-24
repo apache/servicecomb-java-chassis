@@ -65,7 +65,7 @@ public class HealthCheckerPublisher {
 
   @RequestMapping(path = "/detail", method = RequestMethod.GET)
   @CrossOrigin
-  public Map<String, HealthCheckResult> checkHealthDetail() {
+  public Map<String, HealthCheckResult> checkHealthDetails() {
     return manager.check();
   }
 }

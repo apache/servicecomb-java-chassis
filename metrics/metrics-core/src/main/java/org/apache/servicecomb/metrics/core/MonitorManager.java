@@ -50,6 +50,8 @@ public class MonitorManager {
 
   private final Map<String, Counter> counters;
 
+  private final Map<String, Counter> stepCounters;
+
   private final Map<String, MaxGauge> maxGauges;
 
   private final Map<String, Gauge> gauges;
@@ -66,6 +68,7 @@ public class MonitorManager {
 
   private MonitorManager() {
     this.counters = new ConcurrentHashMapEx<>();
+    this.stepCounters = new ConcurrentHashMapEx<>();
     this.maxGauges = new ConcurrentHashMapEx<>();
     this.gauges = new ConcurrentHashMapEx<>();
     this.timers = new ConcurrentHashMapEx<>();
@@ -79,10 +82,17 @@ public class MonitorManager {
     System.getProperties().setProperty("servo.pollers", time > 0 ? String.valueOf(time) : "5000");
   }
 
-  public Counter getCounter(boolean isStepCounter, String name, String... tags) {
+  public Counter getCounter(String name, String... tags) {
     return counters.computeIfAbsent(getMonitorKey(name, tags), f -> {
-      Counter counter =
-          isStepCounter ? new StepCounter(getConfig(name, tags)) : new BasicCounter(getConfig(name, tags));
+      Counter counter = new BasicCounter(getConfig(name, tags));
+      basicMonitorRegistry.register(counter);
+      return counter;
+    });
+  }
+
+  public Counter getStepCounter(String name, String... tags) {
+    return stepCounters.computeIfAbsent(getMonitorKey(name, tags), f -> {
+      Counter counter = new StepCounter(getConfig(name, tags));
       basicMonitorRegistry.register(counter);
       return counter;
     });

@@ -30,7 +30,7 @@ import org.apache.servicecomb.core.definition.MicroserviceMetaManager;
 import org.apache.servicecomb.core.definition.OperationMeta;
 import org.apache.servicecomb.core.definition.SchemaMeta;
 import org.apache.servicecomb.core.metrics.InvocationStartedEvent;
-import org.apache.servicecomb.foundation.common.utils.EventUtils;
+import org.apache.servicecomb.foundation.common.event.EventBus;
 import org.apache.servicecomb.foundation.vertx.tcp.TcpConnection;
 import org.apache.servicecomb.swagger.invocation.InvocationType;
 import org.apache.servicecomb.swagger.invocation.Response;
@@ -164,7 +164,7 @@ public class HighwayServerInvoke {
   public void execute() {
     InvocationStartedEvent startedEvent = new InvocationStartedEvent(operationMeta.getMicroserviceQualifiedName(),
         InvocationType.PRODUCER, System.nanoTime());
-    EventUtils.triggerEvent(startedEvent);
+    EventBus.getInstance().triggerEvent(startedEvent);
     operationMeta.getExecutor().execute(() -> runInExecutor(startedEvent));
   }
 }

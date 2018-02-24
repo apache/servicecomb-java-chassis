@@ -21,7 +21,7 @@ import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.definition.SchemaMeta;
 import org.apache.servicecomb.core.invocation.InvocationFactory;
 import org.apache.servicecomb.core.metrics.InvocationStartedEvent;
-import org.apache.servicecomb.foundation.common.utils.EventUtils;
+import org.apache.servicecomb.foundation.common.event.EventBus;
 import org.apache.servicecomb.swagger.invocation.AsyncResponse;
 import org.apache.servicecomb.swagger.invocation.InvocationType;
 import org.apache.servicecomb.swagger.invocation.Response;
@@ -114,7 +114,7 @@ public final class InvokerUtils {
 
   private static void triggerStartedEvent(Invocation invocation) {
     long startTime = System.nanoTime();
-    EventUtils.triggerEvent(new InvocationStartedEvent(invocation.getMicroserviceQualifiedName(),
+    EventBus.getInstance().triggerEvent(new InvocationStartedEvent(invocation.getMicroserviceQualifiedName(),
         InvocationType.CONSUMER, startTime));
     invocation.setStartTime(startTime);
   }
