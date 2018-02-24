@@ -17,31 +17,40 @@
 
 package org.apache.servicecomb.foundation.metrics.health;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
+import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
+
 public class HealthCheckerManager {
   private final Map<String, HealthChecker> healthCheckers;
 
-  public HealthCheckerManager() {
+  private static final HealthCheckerManager INSTANCE = new HealthCheckerManager();
+
+  public static HealthCheckerManager getInstance() {
+    return INSTANCE;
+  }
+
+  private HealthCheckerManager() {
     this.healthCheckers = new ConcurrentHashMap<>();
+    List<HealthChecker> checkers = SPIServiceUtils.getAllService(HealthChecker.class);
+    for (HealthChecker checker : checkers) {
+      register(checker);
+    }
   }
 
   public void register(HealthChecker checker) {
     healthCheckers.put(checker.getName(), checker);
   }
 
-  public Map<String, HealthCheckResult> check() {
-    return healthCheckers.entrySet().stream().collect(Collectors.toMap(Entry::getKey, e -> e.getValue().check()));
+  public void unregister(String name) {
+    healthCheckers.remove(name);
   }
 
-  public HealthCheckResult check(String name) {
-    HealthChecker checker = healthCheckers.get(name);
-    if (checker != null) {
-      return checker.check();
-    }
-    return null;
+  public Map<String, HealthCheckResult> check() {
+    return healthCheckers.entrySet().stream().collect(Collectors.toMap(Entry::getKey, e -> e.getValue().check()));
   }
 }

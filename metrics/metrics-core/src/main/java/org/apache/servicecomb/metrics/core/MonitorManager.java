@@ -17,14 +17,13 @@
 
 package org.apache.servicecomb.metrics.core;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.concurrent.Callable;
+import java.util.function.Function;
 
 import org.apache.servicecomb.foundation.common.concurrent.ConcurrentHashMapEx;
 import org.apache.servicecomb.foundation.metrics.MetricsConst;
@@ -41,7 +40,6 @@ import com.netflix.servo.monitor.MaxGauge;
 import com.netflix.servo.monitor.Monitor;
 import com.netflix.servo.monitor.MonitorConfig;
 import com.netflix.servo.monitor.MonitorConfig.Builder;
-import com.netflix.servo.monitor.StepCounter;
 import com.netflix.servo.monitor.Timer;
 import com.netflix.servo.tag.Tag;
 import com.netflix.servo.tag.TagList;
@@ -49,8 +47,6 @@ import com.netflix.servo.tag.TagList;
 public class MonitorManager {
 
   private final Map<String, Counter> counters;
-
-  private final Map<String, Counter> stepCounters;
 
   private final Map<String, MaxGauge> maxGauges;
 
@@ -68,7 +64,6 @@ public class MonitorManager {
 
   private MonitorManager() {
     this.counters = new ConcurrentHashMapEx<>();
-    this.stepCounters = new ConcurrentHashMapEx<>();
     this.maxGauges = new ConcurrentHashMapEx<>();
     this.gauges = new ConcurrentHashMapEx<>();
     this.timers = new ConcurrentHashMapEx<>();
@@ -90,9 +85,9 @@ public class MonitorManager {
     });
   }
 
-  public Counter getStepCounter(String name, String... tags) {
-    return stepCounters.computeIfAbsent(getMonitorKey(name, tags), f -> {
-      Counter counter = new StepCounter(getConfig(name, tags));
+  public Counter getCounter(Function<MonitorConfig, Counter> function, String name, String... tags) {
+    return counters.computeIfAbsent(getMonitorKey(name, tags), f -> {
+      Counter counter = function.apply(getConfig(name, tags));
       basicMonitorRegistry.register(counter);
       return counter;
     });
@@ -124,8 +119,7 @@ public class MonitorManager {
 
   public Map<String, Double> measure() {
     Map<String, Double> measurements = new HashMap<>();
-    List<Monitor> monitors = new ArrayList<>(basicMonitorRegistry.getRegisteredMonitors());
-    for (Monitor monitor : monitors) {
+    for (Monitor monitor : basicMonitorRegistry.getRegisteredMonitors()) {
       measurements.put(getMonitorKey(monitor.getConfig()),
           ((Number) monitor.getValue(0)).doubleValue());
     }
@@ -157,7 +151,7 @@ public class MonitorManager {
     return name;
   }
 
-  private static String getMonitorKey(MonitorConfig config) {
+  private String getMonitorKey(MonitorConfig config) {
     TagList tags = config.getTags();
     StringBuilder tagPart = new StringBuilder("(");
     for (Tag tag : tags) {

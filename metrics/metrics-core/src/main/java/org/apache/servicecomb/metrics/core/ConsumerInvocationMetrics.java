@@ -15,23 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.metrics.core.event;
+package org.apache.servicecomb.metrics.core;
 
-import org.apache.servicecomb.core.metrics.InvocationStartedEvent;
-import org.apache.servicecomb.foundation.common.event.EventListener;
-import org.apache.servicecomb.metrics.core.InvocationMetricsManager;
-import org.apache.servicecomb.swagger.invocation.InvocationType;
+import java.util.concurrent.TimeUnit;
 
-public class InvocationStartedEventListener implements EventListener<InvocationStartedEvent> {
-  @Override
-  public Class<InvocationStartedEvent> getEventClass() {
-    return InvocationStartedEvent.class;
+import org.apache.servicecomb.foundation.metrics.MetricsConst;
+
+public class ConsumerInvocationMetrics extends AbstractInvocationMetrics {
+  public ConsumerInvocationMetrics(String... tags) {
+    super(tags);
   }
 
-  @Override
-  public void process(InvocationStartedEvent data) {
-    if (InvocationType.PRODUCER.equals(data.getInvocationType())) {
-      InvocationMetricsManager.getInstance().incrementWaitInQueue(data.getOperationName());
-    }
+  public void update(long totalElapsedNanoTime) {
+    this.updateCallMonitors();
+    this.updateLatencyMonitors(MetricsConst.STAGE_TOTAL, totalElapsedNanoTime, TimeUnit.NANOSECONDS);
   }
 }

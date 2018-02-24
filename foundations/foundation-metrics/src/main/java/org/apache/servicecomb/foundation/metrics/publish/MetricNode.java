@@ -27,6 +27,8 @@ import java.util.concurrent.TimeUnit;
 
 import org.apache.servicecomb.foundation.metrics.MetricsConst;
 
+import com.google.common.collect.Lists;
+
 public class MetricNode {
   private final String tagKey;
 
@@ -34,66 +36,10 @@ public class MetricNode {
 
   private final Map<String, MetricNode> children;
 
-  public List<Metric> getMetrics() {
-    return metrics;
-  }
-
-  public Map<String, MetricNode> getChildren() {
-    return children;
-  }
-
-  public MetricNode getChildrenNode(String tagValue) {
-    return children.get(tagValue);
-  }
-
-  public Double getFirstMatchMetricValue(String tagKey, String tagValue) {
-    for (Metric metric : this.metrics) {
-      if (metric.containTag(tagKey, tagValue)) {
-        return metric.getValue();
-      }
-    }
-    return Double.NaN;
-  }
-
-  public Double getFirstMatchMetricValue(TimeUnit unit, String tagKey, String tagValue) {
-    for (Metric metric : this.metrics) {
-      if (metric.containTag(tagKey, tagValue)) {
-        return metric.getValue(unit);
-      }
-    }
-    return Double.NaN;
-  }
-
-  public Double getFirstMatchMetricValue(String... tags) {
-    for (Metric metric : this.metrics) {
-      if (metric.containTag(tags)) {
-        return metric.getValue();
-      }
-    }
-    return Double.NaN;
-  }
-
-  public Double getFirstMatchMetricValue(TimeUnit unit, String... tags) {
-    for (Metric metric : this.metrics) {
-      if (metric.containTag(tags)) {
-        return metric.getValue(unit);
-      }
-    }
-    return Double.NaN;
-  }
-
-  public double getMatchStatisticMetricValue(String statisticValue) {
-    return getFirstMatchMetricValue(MetricsConst.TAG_STATISTIC, statisticValue);
-  }
-
-  public double getMatchStatisticMetricValue(TimeUnit unit, String statisticValue) {
-    return getFirstMatchMetricValue(unit, MetricsConst.TAG_STATISTIC, statisticValue);
-  }
-
-  public MetricNode(List<Metric> metrics, String... groupTagKeys) {
+  public MetricNode(Iterable<Metric> metrics, String... groupTagKeys) {
     if (groupTagKeys == null || groupTagKeys.length == 0) {
       this.tagKey = null;
-      this.metrics = metrics;
+      this.metrics = Lists.newArrayList(metrics);
       this.children = null;
     } else {
       this.tagKey = groupTagKeys[0];
@@ -119,11 +65,79 @@ public class MetricNode {
     this.children = children;
   }
 
-  private Map<String, List<Metric>> groupByTag(List<Metric> metrics, String tagKey) {
+  public Iterable<Metric> getMetrics() {
+    return metrics;
+  }
+
+  public int getMetricCount() {
+    return metrics.size();
+  }
+
+  public Iterable<Entry<String, MetricNode>> getChildren() {
+    return children.entrySet();
+  }
+
+  public MetricNode getChildren(String tagValue) {
+    return children.get(tagValue);
+  }
+
+  public int getChildrenCount() {
+    return children.size();
+  }
+
+  public MetricNode getChildrenNode(String tagValue) {
+    return children.get(tagValue);
+  }
+
+  public Double getFirstMatchMetricValue(String tagKey, String tagValue) {
+    for (Metric metric : this.metrics) {
+      if (metric.containsTag(tagKey, tagValue)) {
+        return metric.getValue();
+      }
+    }
+    return Double.NaN;
+  }
+
+  public Double getFirstMatchMetricValue(TimeUnit unit, String tagKey, String tagValue) {
+    for (Metric metric : this.metrics) {
+      if (metric.containsTag(tagKey, tagValue)) {
+        return metric.getValue(unit);
+      }
+    }
+    return Double.NaN;
+  }
+
+  public Double getFirstMatchMetricValue(String... tags) {
+    for (Metric metric : this.metrics) {
+      if (metric.containsTag(tags)) {
+        return metric.getValue();
+      }
+    }
+    return Double.NaN;
+  }
+
+  public Double getFirstMatchMetricValue(TimeUnit unit, String... tags) {
+    for (Metric metric : this.metrics) {
+      if (metric.containsTag(tags)) {
+        return metric.getValue(unit);
+      }
+    }
+    return Double.NaN;
+  }
+
+  public double getMatchStatisticMetricValue(String statisticValue) {
+    return getFirstMatchMetricValue(MetricsConst.TAG_STATISTIC, statisticValue);
+  }
+
+  public double getMatchStatisticMetricValue(TimeUnit unit, String statisticValue) {
+    return getFirstMatchMetricValue(unit, MetricsConst.TAG_STATISTIC, statisticValue);
+  }
+
+  private Map<String, List<Metric>> groupByTag(Iterable<Metric> metrics, String tagKey) {
     Map<String, List<Metric>> groups = new HashMap<>();
     for (Metric metric : metrics) {
-      if (metric.getTags().containsKey(tagKey)) {
-        groups.computeIfAbsent(metric.getTags().get(tagKey), g -> new ArrayList<>()).add(metric);
+      if (metric.containsTagKey(tagKey)) {
+        groups.computeIfAbsent(metric.getTagValue(tagKey), g -> new ArrayList<>()).add(metric);
       }
     }
     return groups;

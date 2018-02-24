@@ -24,8 +24,12 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.apache.servicecomb.foundation.common.concurrent.ConcurrentHashMapEx;
 import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class EventBus {
+  private static final Logger LOGGER = LoggerFactory.getLogger(EventBus.class);
+
   private final Map<Class, List<EventListener>> allEventListeners = new ConcurrentHashMapEx<>();
 
   private static final EventBus INSTANCE = new EventBus();
@@ -37,19 +41,21 @@ public class EventBus {
   private EventBus() {
     List<EventListener> listeners = SPIServiceUtils.getAllService(EventListener.class);
     for (EventListener listener : listeners) {
-      this.registerEventListener(listener.getEventClass(), listener);
+      this.registerEventListener(listener);
+      LOGGER.info("EventBus register " + listener.getClass().getName()
+          + " for process " + listener.getEventClass().getName());
     }
   }
 
-  public <T> void registerEventListener(Class<T> cls, EventListener<T> eventListener) {
+  public <T> void registerEventListener(EventListener<T> eventListener) {
     List<EventListener> eventListeners = allEventListeners
-        .computeIfAbsent(cls, f -> new CopyOnWriteArrayList<>());
+        .computeIfAbsent(eventListener.getEventClass(), f -> new CopyOnWriteArrayList<>());
     eventListeners.add(eventListener);
   }
 
-  public <T> void unregisterEventListener(Class<T> cls, EventListener<T> eventListener) {
+  public <T> void unregisterEventListener(EventListener<T> eventListener) {
     List<EventListener> eventListeners = allEventListeners
-        .computeIfAbsent(cls, f -> new CopyOnWriteArrayList<>());
+        .computeIfAbsent(eventListener.getEventClass(), f -> new CopyOnWriteArrayList<>());
     if (eventListeners.contains(eventListener)) {
       eventListeners.remove(eventListener);
     }

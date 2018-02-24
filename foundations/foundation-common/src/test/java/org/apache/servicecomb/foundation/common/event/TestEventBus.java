@@ -43,7 +43,7 @@ public class TestEventBus {
       }
     };
 
-    EventBus.getInstance().registerEventListener(String.class, listener);
+    EventBus.getInstance().registerEventListener(listener);
 
     EventBus.getInstance().triggerEvent("xxx");
     await().atMost(1, TimeUnit.SECONDS)
@@ -52,7 +52,7 @@ public class TestEventBus {
 
     eventReceived.set(false);
 
-    EventBus.getInstance().unregisterEventListener(String.class, listener);
+    EventBus.getInstance().unregisterEventListener(listener);
     EventBus.getInstance().triggerEvent("xxx");
     Thread.sleep(1000);
     Assert.assertFalse(eventReceived.get());

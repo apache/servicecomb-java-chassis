@@ -26,9 +26,7 @@ public class TestHealthCheckerManager {
 
   @Test
   public void testRegistry() {
-    HealthCheckerManager manager = new HealthCheckerManager();
-
-    manager.register(new HealthChecker() {
+    HealthCheckerManager.getInstance().register(new HealthChecker() {
       @Override
       public String getName() {
         return "test";
@@ -40,16 +38,10 @@ public class TestHealthCheckerManager {
       }
     });
 
-    Map<String, HealthCheckResult> results = manager.check();
-
+    Map<String, HealthCheckResult> results = HealthCheckerManager.getInstance().check();
     Assert.assertEquals(1, results.size());
 
-    HealthCheckResult result = manager.check().get("test");
-    Assert.assertEquals(false, result.isHealthy());
-    Assert.assertEquals("bad", result.getInformation());
-    Assert.assertEquals("bad call", result.getExtraData());
-
-    result = manager.check("test");
+    HealthCheckResult result = HealthCheckerManager.getInstance().check().get("test");
     Assert.assertEquals(false, result.isHealthy());
     Assert.assertEquals("bad", result.getInformation());
     Assert.assertEquals("bad call", result.getExtraData());
