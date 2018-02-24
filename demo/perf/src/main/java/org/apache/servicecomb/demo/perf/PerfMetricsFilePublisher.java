@@ -73,13 +73,13 @@ public class PerfMetricsFilePublisher {
       MetricNode treeNode = loader
           .getMetricTree(MetricsConst.SERVICECOMB_INVOCATION, MetricsConst.TAG_ROLE, MetricsConst.TAG_OPERATION,
               MetricsConst.TAG_STATUS);
-      if (treeNode != null && treeNode.getChildren().size() != 0) {
-        MetricNode consumerNode = treeNode.getChildren().get(String.valueOf(InvocationType.CONSUMER).toLowerCase());
+      if (treeNode != null && treeNode.getChildrenCount() != 0) {
+        MetricNode consumerNode = treeNode.getChildren(String.valueOf(InvocationType.CONSUMER).toLowerCase());
         if (consumerNode != null) {
           sb.append("consumer:\n");
           sb.append("  tps     latency(ms) status  operation\n");
-          for (Entry<String, MetricNode> operationNode : consumerNode.getChildren().entrySet()) {
-            for (Entry<String, MetricNode> statusNode : operationNode.getValue().getChildren().entrySet()) {
+          for (Entry<String, MetricNode> operationNode : consumerNode.getChildren()) {
+            for (Entry<String, MetricNode> statusNode : operationNode.getValue().getChildren()) {
               sb.append(String.format("  %-7.0f %-11.3f %-9s %s\n",
                   statusNode.getValue()
                       .getFirstMatchMetricValue(MetricsConst.TAG_STAGE, MetricsConst.STAGE_TOTAL,
@@ -92,12 +92,12 @@ public class PerfMetricsFilePublisher {
           }
         }
 
-        MetricNode producerNode = treeNode.getChildren().get(String.valueOf(InvocationType.PRODUCER).toLowerCase());
+        MetricNode producerNode = treeNode.getChildren(String.valueOf(InvocationType.PRODUCER).toLowerCase());
         if (producerNode != null) {
           sb.append("producer:\n");
           sb.append("  tps     latency(ms) queue(ms) execute(ms) status  operation\n");
-          for (Entry<String, MetricNode> operationNode : producerNode.getChildren().entrySet()) {
-            for (Entry<String, MetricNode> statusNode : operationNode.getValue().getChildren().entrySet()) {
+          for (Entry<String, MetricNode> operationNode : producerNode.getChildren()) {
+            for (Entry<String, MetricNode> statusNode : operationNode.getValue().getChildren()) {
               sb.append(String.format("  %-7.0f %-11.3f %-9.3f %-11.3f %-7s %s\n",
                   statusNode.getValue()
                       .getFirstMatchMetricValue(MetricsConst.TAG_STAGE, MetricsConst.STAGE_TOTAL,

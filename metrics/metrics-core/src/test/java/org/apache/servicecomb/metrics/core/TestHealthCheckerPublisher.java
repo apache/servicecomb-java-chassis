@@ -30,8 +30,7 @@ public class TestHealthCheckerPublisher {
 
   @Test
   public void test() {
-    HealthCheckerManager manager = new HealthCheckerManager();
-    manager.register(new HealthChecker() {
+    HealthCheckerManager.getInstance().register(new HealthChecker() {
       @Override
       public String getName() {
         return "test";
@@ -43,7 +42,7 @@ public class TestHealthCheckerPublisher {
       }
     });
 
-    manager.register(new HealthChecker() {
+    HealthCheckerManager.getInstance().register(new HealthChecker() {
       @Override
       public String getName() {
         return "test2";
@@ -55,7 +54,7 @@ public class TestHealthCheckerPublisher {
       }
     });
 
-    HealthCheckerPublisher publisher = new HealthCheckerPublisher(manager);
+    HealthCheckerPublisher publisher = new HealthCheckerPublisher();
 
     Assert.assertEquals(false, publisher.checkHealth());
 

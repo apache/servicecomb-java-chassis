@@ -19,9 +19,7 @@ package org.apache.servicecomb.metrics.core.event;
 
 import org.apache.servicecomb.core.metrics.InvocationStartExecutionEvent;
 import org.apache.servicecomb.foundation.common.event.EventListener;
-import org.apache.servicecomb.foundation.metrics.MetricsConst;
-import org.apache.servicecomb.metrics.core.MonitorManager;
-import org.apache.servicecomb.swagger.invocation.InvocationType;
+import org.apache.servicecomb.metrics.core.InvocationMetricsManager;
 
 public class InvocationStartExecutionEventListener implements EventListener<InvocationStartExecutionEvent> {
   @Override
@@ -31,10 +29,6 @@ public class InvocationStartExecutionEventListener implements EventListener<Invo
 
   @Override
   public void process(InvocationStartExecutionEvent data) {
-    MonitorManager.getInstance().getCounter(MetricsConst.SERVICECOMB_INVOCATION,
-        MetricsConst.TAG_OPERATION, data.getOperationName(),
-        MetricsConst.TAG_STAGE, MetricsConst.STAGE_QUEUE,
-        MetricsConst.TAG_ROLE, String.valueOf(InvocationType.PRODUCER).toLowerCase(),
-        MetricsConst.TAG_STATISTIC, "waitInQueue").increment(-1);
+    InvocationMetricsManager.getInstance().decrementWaitInQueue(data.getOperationName());
   }
 }

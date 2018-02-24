@@ -40,6 +40,6 @@ public class TestMetricsLoader {
     MetricsLoader loader = new MetricsLoader(metrics);
     Assert.assertEquals(200.0, loader.getFirstMatchMetricValue("X", "K3", "30"), 0);
     MetricNode node = loader.getMetricTree("X", "K1");
-    Assert.assertEquals(2, node.getChildren().size());
+    Assert.assertEquals(2, node.getChildrenCount());
   }
 }

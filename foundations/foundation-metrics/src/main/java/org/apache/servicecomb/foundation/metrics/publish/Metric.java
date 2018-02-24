@@ -34,8 +34,15 @@ public class Metric {
     return name;
   }
 
-  public Map<String, String> getTags() {
-    return tags;
+  public Metric(String id, double value) {
+    String[] nameAndTag = id.split("\\(");
+    this.tags = new HashMap<>();
+    String[] tagAnValues = nameAndTag[1].split("[=,)]");
+    for (int i = 0; i < tagAnValues.length; i += 2) {
+      this.tags.put(tagAnValues[i], tagAnValues[i + 1]);
+    }
+    this.name = nameAndTag[0];
+    this.value = value;
   }
 
   public double getValue() {
@@ -51,24 +58,21 @@ public class Metric {
     return value;
   }
 
-  public Metric(String id, double value) {
-    String[] nameAndTag = id.split("\\(");
-    this.tags = new HashMap<>();
-    String[] tagAnValues = nameAndTag[1].split("[=,)]");
-    for (int i = 0; i < tagAnValues.length; i += 2) {
-      this.tags.put(tagAnValues[i], tagAnValues[i + 1]);
-    }
-    this.name = nameAndTag[0];
-    this.value = value;
+  public boolean containsTagKey(String tagKey) {
+    return tags.containsKey(tagKey);
   }
 
-  public boolean containTag(String tagKey, String tagValue) {
+  public String getTagValue(String tagKey) {
+    return tags.get(tagKey);
+  }
+
+  public boolean containsTag(String tagKey, String tagValue) {
     return tags.containsKey(tagKey) && tagValue.equals(tags.get(tagKey));
   }
 
-  public boolean containTag(String... tags) {
+  public boolean containsTag(String... tags) {
     for (int i = 0; i < tags.length; i += 2) {
-      if (!containTag(tags[i], tags[i + 1])) {
+      if (!containsTag(tags[i], tags[i + 1])) {
         return false;
       }
     }

@@ -44,7 +44,7 @@ public class TestMetricNode {
     MetricNode node_k1 = node.getChildrenNode("1");
 
     //check metrics list
-    Assert.assertEquals(3, node_k1.getMetrics().size());
+    Assert.assertEquals(3, node_k1.getMetricCount());
 
     //check getFirstMatchMetricValue with single Tag
     Assert.assertEquals(100, node_k1.getFirstMatchMetricValue("K2", "2"), 0);
@@ -64,6 +64,6 @@ public class TestMetricNode {
 
     //check generate new MetricNode from existed MetricNode
     MetricNode newNode = new MetricNode(node_k1.getMetrics(), "K2", "K3");
-    Assert.assertEquals(1, newNode.getChildrenNode("2").getChildrenNode("3").getMetrics().size(), 0);
+    Assert.assertEquals(1, newNode.getChildrenNode("2").getChildrenNode("3").getMetricCount(), 0);
   }
 }

@@ -52,7 +52,7 @@ public class MetricsLoader {
   public double getFirstMatchMetricValue(String name, String tagKey, String tagValue) {
     if (metrics.containsKey(name)) {
       for (Metric metric : this.metrics.get(name)) {
-        if (metric.containTag(tagKey, tagValue)) {
+        if (metric.containsTag(tagKey, tagValue)) {
           return metric.getValue();
         }
       }

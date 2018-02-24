@@ -32,29 +32,10 @@ import org.springframework.web.bind.annotation.RequestMethod;
 @RestSchema(schemaId = "healthEndpoint")
 @RequestMapping(path = "/health")
 public class HealthCheckerPublisher {
-
-  private HealthCheckerManager manager;
-
-  public HealthCheckerPublisher() {
-    init(new HealthCheckerManager());
-  }
-
-  public HealthCheckerPublisher(HealthCheckerManager manager) {
-    init(manager);
-  }
-
-  private void init(HealthCheckerManager manager) {
-    this.manager = manager;
-    List<HealthChecker> checkers = SPIServiceUtils.getAllService(HealthChecker.class);
-    for (HealthChecker checker : checkers) {
-      this.manager.register(checker);
-    }
-  }
-
   @RequestMapping(path = "/", method = RequestMethod.GET)
   @CrossOrigin
   public boolean checkHealth() {
-    Map<String, HealthCheckResult> results = manager.check();
+    Map<String, HealthCheckResult> results = HealthCheckerManager.getInstance().check();
     for (HealthCheckResult result : results.values()) {
       if (!result.isHealthy()) {
         return false;
@@ -66,6 +47,6 @@ public class HealthCheckerPublisher {
   @RequestMapping(path = "/detail", method = RequestMethod.GET)
   @CrossOrigin
   public Map<String, HealthCheckResult> checkHealthDetails() {
-    return manager.check();
+    return HealthCheckerManager.getInstance().check();
   }
 }
