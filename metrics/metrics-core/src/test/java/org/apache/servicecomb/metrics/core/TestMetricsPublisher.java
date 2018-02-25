@@ -25,7 +25,9 @@ import org.junit.Test;
 
 public class TestMetricsPublisher {
   @Test
-  public void test() {
+  public void testMeasure() {
+    System.getProperties().setProperty(MetricsConfig.METRICS_WINDOW_TIME, "2000");
+
     MetricsPublisher publisher = new MetricsPublisher();
     Map<String, Double> metrics = publisher.measure();
     //10 jvm metrics get

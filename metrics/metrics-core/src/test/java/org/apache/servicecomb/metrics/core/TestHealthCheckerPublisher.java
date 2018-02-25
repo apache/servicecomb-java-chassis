@@ -24,12 +24,13 @@ import org.apache.servicecomb.foundation.metrics.health.HealthChecker;
 import org.apache.servicecomb.foundation.metrics.health.HealthCheckerManager;
 import org.apache.servicecomb.metrics.core.publish.HealthCheckerPublisher;
 import org.junit.Assert;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 public class TestHealthCheckerPublisher {
 
-  @Test
-  public void test() {
+  @BeforeClass
+  public static void setup() {
     HealthCheckerManager.getInstance().register(new HealthChecker() {
       @Override
       public String getName() {
@@ -53,13 +54,18 @@ public class TestHealthCheckerPublisher {
         return new HealthCheckResult(false, "info2", "extra data 2");
       }
     });
+  }
 
+  @Test
+  public void checkHealth() {
     HealthCheckerPublisher publisher = new HealthCheckerPublisher();
-
     Assert.assertEquals(false, publisher.checkHealth());
+  }
 
+  @Test
+  public void checkHealthDetails() {
+    HealthCheckerPublisher publisher = new HealthCheckerPublisher();
     Map<String, HealthCheckResult> content = publisher.checkHealthDetails();
-
     Assert.assertEquals(true, content.get("test").isHealthy());
     Assert.assertEquals("info", content.get("test").getInformation());
     Assert.assertEquals("extra data", content.get("test").getExtraData());

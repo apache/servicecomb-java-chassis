@@ -29,13 +29,17 @@ import org.apache.servicecomb.foundation.metrics.publish.MetricNode;
 import org.apache.servicecomb.foundation.metrics.publish.MetricsLoader;
 import org.apache.servicecomb.swagger.invocation.InvocationType;
 import org.junit.Assert;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
-public class TestEventAndRunner {
+public class TestMonitorManager {
 
-  @Test
-  public void test() throws InterruptedException {
-    //init
+  private static MetricsLoader currentWindowMetricsLoader;
+
+  private static MetricsLoader nextWindowMetricsLoader;
+
+  @BeforeClass
+  public static void setup() throws InterruptedException {
     System.getProperties().setProperty(MetricsConfig.METRICS_WINDOW_TIME, "2000");
 
     //==========================================================================
@@ -74,19 +78,35 @@ public class TestEventAndRunner {
     //fun4 is a PRODUCER call only started and no processing start and finished
     EventBus.getInstance().triggerEvent(new InvocationStartedEvent("fun4", InvocationType.PRODUCER, System.nanoTime()));
 
-    //==========================================================================
-
     Map<String, Double> metrics = MonitorManager.getInstance().measure();
-    MetricsLoader loader = new MetricsLoader(metrics);
-    MetricNode node = loader
+    currentWindowMetricsLoader = new MetricsLoader(metrics);
+
+    //sim at lease one window time
+    Thread.sleep(2000);
+
+    metrics = MonitorManager.getInstance().measure();
+    nextWindowMetricsLoader = new MetricsLoader(metrics);
+  }
+
+  @Test
+  public void checkFun1WaitInQueue() {
+    MetricNode node = currentWindowMetricsLoader
         .getMetricTree(MetricsConst.SERVICECOMB_INVOCATION, MetricsConst.TAG_OPERATION, MetricsConst.TAG_ROLE,
             MetricsConst.TAG_STAGE);
-    //checkHealth ProducerMetrics
-    //fun1
     MetricNode node1_queue = node.getChildrenNode("fun1")
         .getChildrenNode(String.valueOf(InvocationType.PRODUCER).toLowerCase())
         .getChildrenNode(MetricsConst.STAGE_QUEUE);
     Assert.assertEquals(0, node1_queue.getMatchStatisticMetricValue("waitInQueue"), 0);
+  }
+
+  @Test
+  public void checkFun1Latency() {
+    MetricNode node = currentWindowMetricsLoader
+        .getMetricTree(MetricsConst.SERVICECOMB_INVOCATION, MetricsConst.TAG_OPERATION, MetricsConst.TAG_ROLE,
+            MetricsConst.TAG_STAGE);
+    MetricNode node1_queue = node.getChildrenNode("fun1")
+        .getChildrenNode(String.valueOf(InvocationType.PRODUCER).toLowerCase())
+        .getChildrenNode(MetricsConst.STAGE_QUEUE);
     MetricNode node1_queue_status = new MetricNode(node1_queue.getMetrics(), MetricsConst.TAG_STATUS);
     Assert.assertEquals(200,
         node1_queue_status.getChildrenNode("200").getMatchStatisticMetricValue(TimeUnit.MILLISECONDS, "latency"), 0);
@@ -110,75 +130,136 @@ public class TestEventAndRunner {
         node1_whole_status.getChildrenNode("200").getMatchStatisticMetricValue(TimeUnit.MILLISECONDS, "latency"), 0);
     Assert.assertEquals(700,
         node1_whole_status.getChildrenNode("500").getMatchStatisticMetricValue(TimeUnit.MILLISECONDS, "latency"), 0);
+  }
+
+  @Test
+  public void checkFun1Count() {
+    MetricNode node = currentWindowMetricsLoader
+        .getMetricTree(MetricsConst.SERVICECOMB_INVOCATION, MetricsConst.TAG_OPERATION, MetricsConst.TAG_ROLE,
+            MetricsConst.TAG_STAGE);
+    MetricNode node1_whole = node.getChildrenNode("fun1")
+        .getChildrenNode(String.valueOf(InvocationType.PRODUCER).toLowerCase())
+        .getChildrenNode(MetricsConst.STAGE_TOTAL);
+    MetricNode node1_whole_status = new MetricNode(node1_whole.getMetrics(), MetricsConst.TAG_STATUS);
     Assert.assertEquals(2, node1_whole_status.getChildrenNode("200").getMatchStatisticMetricValue("count"), 0);
     Assert.assertEquals(1, node1_whole_status.getChildrenNode("500").getMatchStatisticMetricValue("count"), 0);
+  }
 
-    //checkHealth ConsumerMetrics
-    //fun2
+  @Test
+  public void checkFun1Max() {
+    MetricNode node = nextWindowMetricsLoader
+        .getMetricTree(MetricsConst.SERVICECOMB_INVOCATION, MetricsConst.TAG_OPERATION, MetricsConst.TAG_ROLE,
+            MetricsConst.TAG_STAGE);
+    MetricNode node1_queue = node.getChildrenNode("fun1")
+        .getChildrenNode(String.valueOf(InvocationType.PRODUCER).toLowerCase())
+        .getChildrenNode(MetricsConst.STAGE_QUEUE);
+    MetricNode node1_queue_status = new MetricNode(node1_queue.getMetrics(), MetricsConst.TAG_STATUS);
+    Assert.assertEquals(300,
+        node1_queue_status.getChildrenNode("200").getMatchStatisticMetricValue(TimeUnit.MILLISECONDS, "max"), 0);
+    Assert.assertEquals(300,
+        node1_queue_status.getChildrenNode("500").getMatchStatisticMetricValue(TimeUnit.MILLISECONDS, "max"), 0);
+
+    MetricNode node1_exec = node.getChildrenNode("fun1")
+        .getChildrenNode(String.valueOf(InvocationType.PRODUCER).toLowerCase())
+        .getChildrenNode(MetricsConst.STAGE_EXECUTION);
+    MetricNode node1_exec_status = new MetricNode(node1_exec.getMetrics(), MetricsConst.TAG_STATUS);
+    Assert.assertEquals(400,
+        node1_exec_status.getChildrenNode("200").getMatchStatisticMetricValue(TimeUnit.MILLISECONDS, "max"), 0);
+    Assert.assertEquals(400,
+        node1_exec_status.getChildrenNode("500").getMatchStatisticMetricValue(TimeUnit.MILLISECONDS, "max"), 0);
+
+    MetricNode node1_whole = node.getChildrenNode("fun1")
+        .getChildrenNode(String.valueOf(InvocationType.PRODUCER).toLowerCase())
+        .getChildrenNode(MetricsConst.STAGE_TOTAL);
+    MetricNode node1_whole_status = new MetricNode(node1_whole.getMetrics(), MetricsConst.TAG_STATUS);
+    Assert.assertEquals(700,
+        node1_whole_status.getChildrenNode("200").getMatchStatisticMetricValue(TimeUnit.MILLISECONDS, "max"), 0);
+    Assert.assertEquals(700,
+        node1_whole_status.getChildrenNode("500").getMatchStatisticMetricValue(TimeUnit.MILLISECONDS, "max"), 0);
+  }
+
+  @Test
+  public void checkFun1Tps() {
+    MetricNode node = nextWindowMetricsLoader
+        .getMetricTree(MetricsConst.SERVICECOMB_INVOCATION, MetricsConst.TAG_OPERATION, MetricsConst.TAG_ROLE,
+            MetricsConst.TAG_STAGE);
+    MetricNode node1_whole = node.getChildrenNode("fun1")
+        .getChildrenNode(String.valueOf(InvocationType.PRODUCER).toLowerCase())
+        .getChildrenNode(MetricsConst.STAGE_TOTAL);
+    MetricNode node1_whole_status = new MetricNode(node1_whole.getMetrics(), MetricsConst.TAG_STATUS);
+    Assert.assertEquals(1, node1_whole_status.getChildrenNode("200").getMatchStatisticMetricValue("tps"), 0);
+    Assert.assertEquals(0.5, node1_whole_status.getChildrenNode("500").getMatchStatisticMetricValue("tps"), 0);
+  }
+
+  @Test
+  public void checkFun2Latency() {
+    MetricNode node = currentWindowMetricsLoader
+        .getMetricTree(MetricsConst.SERVICECOMB_INVOCATION, MetricsConst.TAG_OPERATION, MetricsConst.TAG_ROLE,
+            MetricsConst.TAG_STAGE);
     MetricNode node2_whole = node.getChildrenNode("fun2")
         .getChildrenNode(String.valueOf(InvocationType.CONSUMER).toLowerCase())
         .getChildrenNode(MetricsConst.STAGE_TOTAL);
     MetricNode node2_whole_status = new MetricNode(node2_whole.getMetrics(), MetricsConst.TAG_STATUS);
     Assert.assertEquals(300,
         node2_whole_status.getChildrenNode("200").getMatchStatisticMetricValue(TimeUnit.MILLISECONDS, "latency"), 0);
-    Assert.assertEquals(1, node2_whole_status.getChildrenNode("200").getMatchStatisticMetricValue("count"), 0);
+  }
 
-    //fun3
+  @Test
+  public void checkFun2Count() {
+    MetricNode node = currentWindowMetricsLoader
+        .getMetricTree(MetricsConst.SERVICECOMB_INVOCATION, MetricsConst.TAG_OPERATION, MetricsConst.TAG_ROLE,
+            MetricsConst.TAG_STAGE);
+    MetricNode node2_whole = node.getChildrenNode("fun2")
+        .getChildrenNode(String.valueOf(InvocationType.CONSUMER).toLowerCase())
+        .getChildrenNode(MetricsConst.STAGE_TOTAL);
+    MetricNode node2_whole_status = new MetricNode(node2_whole.getMetrics(), MetricsConst.TAG_STATUS);
+    Assert.assertEquals(1, node2_whole_status.getChildrenNode("200").getMatchStatisticMetricValue("count"), 0);
+  }
+
+  @Test
+  public void checkFun2Tps() {
+    MetricNode node = nextWindowMetricsLoader
+        .getMetricTree(MetricsConst.SERVICECOMB_INVOCATION, MetricsConst.TAG_OPERATION, MetricsConst.TAG_ROLE,
+            MetricsConst.TAG_STAGE);
+    MetricNode node2_whole = node.getChildrenNode("fun2")
+        .getChildrenNode(String.valueOf(InvocationType.CONSUMER).toLowerCase())
+        .getChildrenNode(MetricsConst.STAGE_TOTAL);
+    MetricNode node2_whole_status = new MetricNode(node2_whole.getMetrics(), MetricsConst.TAG_STATUS);
+    Assert.assertEquals(0.5, node2_whole_status.getChildrenNode("200").getMatchStatisticMetricValue("tps"), 0);
+  }
+
+  @Test
+  public void checkFun2Max() {
+    MetricNode node = nextWindowMetricsLoader
+        .getMetricTree(MetricsConst.SERVICECOMB_INVOCATION, MetricsConst.TAG_OPERATION, MetricsConst.TAG_ROLE,
+            MetricsConst.TAG_STAGE);
+    MetricNode node2_whole = node.getChildrenNode("fun2")
+        .getChildrenNode(String.valueOf(InvocationType.CONSUMER).toLowerCase())
+        .getChildrenNode(MetricsConst.STAGE_TOTAL);
+    MetricNode node2_whole_status = new MetricNode(node2_whole.getMetrics(), MetricsConst.TAG_STATUS);
+    Assert.assertEquals(300,
+        node2_whole_status.getChildrenNode("200").getMatchStatisticMetricValue(TimeUnit.MILLISECONDS, "max"), 0);
+  }
+
+  @Test
+  public void checkFun3WaitInQueue() {
+    MetricNode node = currentWindowMetricsLoader
+        .getMetricTree(MetricsConst.SERVICECOMB_INVOCATION, MetricsConst.TAG_OPERATION, MetricsConst.TAG_ROLE,
+            MetricsConst.TAG_STAGE);
     MetricNode node3_queue = node.getChildrenNode("fun3")
         .getChildrenNode(String.valueOf(InvocationType.PRODUCER).toLowerCase())
         .getChildrenNode(MetricsConst.STAGE_QUEUE);
     Assert.assertEquals(0, node3_queue.getMatchStatisticMetricValue("waitInQueue"), 0);
+  }
 
-    //fun4
+  @Test
+  public void checkFun4WaitInQueue() {
+    MetricNode node = currentWindowMetricsLoader
+        .getMetricTree(MetricsConst.SERVICECOMB_INVOCATION, MetricsConst.TAG_OPERATION, MetricsConst.TAG_ROLE,
+            MetricsConst.TAG_STAGE);
     MetricNode node4_queue = node.getChildrenNode("fun4")
         .getChildrenNode(String.valueOf(InvocationType.PRODUCER).toLowerCase())
         .getChildrenNode(MetricsConst.STAGE_QUEUE);
     Assert.assertEquals(1, node4_queue.getMatchStatisticMetricValue("waitInQueue"), 0);
-
-    //sim at lease one window time
-    Thread.sleep(2000);
-
-    metrics = MonitorManager.getInstance().measure();
-    loader = new MetricsLoader(metrics);
-    node = loader
-        .getMetricTree(MetricsConst.SERVICECOMB_INVOCATION, MetricsConst.TAG_OPERATION, MetricsConst.TAG_ROLE,
-            MetricsConst.TAG_STAGE);
-
-    node1_queue = node.getChildrenNode("fun1").getChildrenNode(String.valueOf(InvocationType.PRODUCER).toLowerCase())
-        .getChildrenNode(MetricsConst.STAGE_QUEUE);
-    node1_queue_status = new MetricNode(node1_queue.getMetrics(), MetricsConst.TAG_STATUS);
-    Assert.assertEquals(300,
-        node1_queue_status.getChildrenNode("200").getMatchStatisticMetricValue(TimeUnit.MILLISECONDS, "max"), 0);
-    Assert.assertEquals(300,
-        node1_queue_status.getChildrenNode("500").getMatchStatisticMetricValue(TimeUnit.MILLISECONDS, "max"), 0);
-
-    node1_exec = node.getChildrenNode("fun1").getChildrenNode(String.valueOf(InvocationType.PRODUCER).toLowerCase())
-        .getChildrenNode(MetricsConst.STAGE_EXECUTION);
-    node1_exec_status = new MetricNode(node1_exec.getMetrics(), MetricsConst.TAG_STATUS);
-    Assert.assertEquals(400,
-        node1_exec_status.getChildrenNode("200").getMatchStatisticMetricValue(TimeUnit.MILLISECONDS, "max"), 0);
-    Assert.assertEquals(400,
-        node1_exec_status.getChildrenNode("500").getMatchStatisticMetricValue(TimeUnit.MILLISECONDS, "max"), 0);
-
-    node1_whole = node.getChildrenNode("fun1").getChildrenNode(String.valueOf(InvocationType.PRODUCER).toLowerCase())
-        .getChildrenNode(MetricsConst.STAGE_TOTAL);
-    node1_whole_status = new MetricNode(node1_whole.getMetrics(), MetricsConst.TAG_STATUS);
-    Assert.assertEquals(700,
-        node1_whole_status.getChildrenNode("200").getMatchStatisticMetricValue(TimeUnit.MILLISECONDS, "max"), 0);
-    Assert.assertEquals(700,
-        node1_whole_status.getChildrenNode("500").getMatchStatisticMetricValue(TimeUnit.MILLISECONDS, "max"), 0);
-
-    Assert.assertEquals(1, node1_whole_status.getChildrenNode("200").getMatchStatisticMetricValue("tps"), 0);
-    Assert.assertEquals(0.5, node1_whole_status.getChildrenNode("500").getMatchStatisticMetricValue("tps"), 0);
-
-    //checkHealth ConsumerMetrics
-    //fun2
-    node2_whole = node.getChildrenNode("fun2").getChildrenNode(String.valueOf(InvocationType.CONSUMER).toLowerCase())
-        .getChildrenNode(MetricsConst.STAGE_TOTAL);
-    node2_whole_status = new MetricNode(node2_whole.getMetrics(), MetricsConst.TAG_STATUS);
-    Assert.assertEquals(300,
-        node2_whole_status.getChildrenNode("200").getMatchStatisticMetricValue(TimeUnit.MILLISECONDS, "max"), 0);
-
-    Assert.assertEquals(0.5, node2_whole_status.getChildrenNode("200").getMatchStatisticMetricValue("tps"), 0);
   }
 }

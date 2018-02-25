@@ -17,12 +17,9 @@
 
 package org.apache.servicecomb.metrics.core.publish;
 
-import java.util.List;
 import java.util.Map;
 
-import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
 import org.apache.servicecomb.foundation.metrics.health.HealthCheckResult;
-import org.apache.servicecomb.foundation.metrics.health.HealthChecker;
 import org.apache.servicecomb.foundation.metrics.health.HealthCheckerManager;
 import org.apache.servicecomb.provider.rest.common.RestSchema;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -44,7 +41,7 @@ public class HealthCheckerPublisher {
     return true;
   }
 
-  @RequestMapping(path = "/detail", method = RequestMethod.GET)
+  @RequestMapping(path = "/details", method = RequestMethod.GET)
   @CrossOrigin
   public Map<String, HealthCheckResult> checkHealthDetails() {
     return HealthCheckerManager.getInstance().check();

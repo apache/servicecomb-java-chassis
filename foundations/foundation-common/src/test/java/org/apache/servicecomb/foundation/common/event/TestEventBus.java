@@ -28,7 +28,31 @@ import org.junit.Test;
 public class TestEventBus {
 
   @Test
-  public void test() throws InterruptedException {
+  public void checkEventReceivedAndProcessed() {
+    AtomicBoolean eventReceived = new AtomicBoolean(false);
+
+    EventListener<String> listener = new EventListener<String>() {
+      @Override
+      public Class<String> getEventClass() {
+        return String.class;
+      }
+
+      @Override
+      public void process(String data) {
+        eventReceived.set(true);
+      }
+    };
+
+    EventBus.getInstance().registerEventListener(listener);
+
+    EventBus.getInstance().triggerEvent("xxx");
+    await().atMost(1, TimeUnit.SECONDS)
+        .until(eventReceived::get);
+    Assert.assertTrue(eventReceived.get());
+  }
+
+  @Test
+  public void checkEventCanNotReceivedAfterUnregister() throws InterruptedException {
     AtomicBoolean eventReceived = new AtomicBoolean(false);
 
     EventListener<String> listener = new EventListener<String>() {

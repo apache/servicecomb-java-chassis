@@ -22,11 +22,14 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import org.junit.Assert;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 public class TestMetricNode {
-  @Test
-  public void test() {
+  private static MetricsLoader loader;
+
+  @BeforeClass
+  public static void steup() {
     Map<String, Double> metrics = new HashMap<>();
     metrics.put("X(K1=1,K2=2,K3=3,unit=SECONDS,statistic=A)", 100.0);
     metrics.put("X(K1=1,K2=2,K3=30000,unit=SECONDS,statistic=AA)", 110.0);
@@ -39,30 +42,48 @@ public class TestMetricNode {
     metrics.put("Y(K1=100,K2=200,K3=300)", 700.0);
     metrics.put("Y(K1=1000,K2=2000,K3=3000)", 800.0);
 
-    MetricsLoader loader = new MetricsLoader(metrics);
+    loader = new MetricsLoader(metrics);
+  }
+
+  @Test
+  public void checkNodeMetricCount() {
     MetricNode node = loader.getMetricTree("X", "K1");
     MetricNode node_k1 = node.getChildrenNode("1");
-
-    //check metrics list
     Assert.assertEquals(3, node_k1.getMetricCount());
+  }
 
-    //check getFirstMatchMetricValue with single Tag
+  @Test
+  public void checkGetFirstMatchMetricValueWithSingleTag() {
+    MetricNode node = loader.getMetricTree("X", "K1");
+    MetricNode node_k1 = node.getChildrenNode("1");
     Assert.assertEquals(100, node_k1.getFirstMatchMetricValue("K2", "2"), 0);
     Assert.assertEquals(100 * 1000, node_k1.getFirstMatchMetricValue(TimeUnit.MILLISECONDS, "K2", "2"), 0);
     Assert.assertEquals(100 * 1000, node_k1.getFirstMatchMetricValue(TimeUnit.MILLISECONDS, "K2", "2"), 0);
+  }
 
-    //check getFirstMatchMetricValue with multi Tag
+  @Test
+  public void checkGetFirstMatchMetricValueWithMultiTag() {
+    MetricNode node = loader.getMetricTree("X", "K1");
+    MetricNode node_k1 = node.getChildrenNode("1");
     Assert.assertEquals(200, node_k1.getFirstMatchMetricValue("K3", "30", "K2", "20"), 0);
     Assert.assertEquals(200 * 1000, node_k1.getFirstMatchMetricValue(TimeUnit.MILLISECONDS, "K3", "30", "K2", "20"), 0);
     Assert.assertEquals(110.0, node_k1.getFirstMatchMetricValue("K2", "2", "K3", "30000"), 0);
     Assert
         .assertEquals(110 * 1000, node_k1.getFirstMatchMetricValue(TimeUnit.MILLISECONDS, "K2", "2", "K3", "30000"), 0);
+  }
 
-    //check direct get statistic value
+  @Test
+  public void checkGetMatchStatisticMetricValue() {
+    MetricNode node = loader.getMetricTree("X", "K1");
+    MetricNode node_k1 = node.getChildrenNode("1");
     Assert.assertEquals(100, node_k1.getMatchStatisticMetricValue("A"), 0);
     Assert.assertEquals(100 * 1000, node_k1.getMatchStatisticMetricValue(TimeUnit.MILLISECONDS, "A"), 0);
+  }
 
-    //check generate new MetricNode from existed MetricNode
+  @Test
+  public void checkGenerateMetricNodeFromExistedNode() {
+    MetricNode node = loader.getMetricTree("X", "K1");
+    MetricNode node_k1 = node.getChildrenNode("1");
     MetricNode newNode = new MetricNode(node_k1.getMetrics(), "K2", "K3");
     Assert.assertEquals(1, newNode.getChildrenNode("2").getChildrenNode("3").getMetricCount(), 0);
   }
