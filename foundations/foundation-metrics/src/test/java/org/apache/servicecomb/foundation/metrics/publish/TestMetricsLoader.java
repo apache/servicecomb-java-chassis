@@ -21,11 +21,14 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.junit.Assert;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 public class TestMetricsLoader {
-  @Test
-  public void test() {
+  private static MetricsLoader loader;
+
+  @BeforeClass
+  public static void setup() {
     Map<String, Double> metrics = new HashMap<>();
     metrics.put("X(K1=1,K2=2,K3=3)", 100.0);
     metrics.put("X(K1=1,K2=20,K3=30)", 200.0);
@@ -37,8 +40,16 @@ public class TestMetricsLoader {
     metrics.put("Y(K1=100,K2=200,K3=300)", 700.0);
     metrics.put("Y(K1=1000,K2=2000,K3=3000)", 800.0);
 
-    MetricsLoader loader = new MetricsLoader(metrics);
+    loader = new MetricsLoader(metrics);
+  }
+
+  @Test
+  public void checkFirstMatchMetricValue() {
     Assert.assertEquals(200.0, loader.getFirstMatchMetricValue("X", "K3", "30"), 0);
+  }
+
+  @Test
+  public void checkGetChildrenCount() {
     MetricNode node = loader.getMetricTree("X", "K1");
     Assert.assertEquals(2, node.getChildrenCount());
   }

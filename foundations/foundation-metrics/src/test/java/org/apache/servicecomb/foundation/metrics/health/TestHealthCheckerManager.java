@@ -24,26 +24,72 @@ import org.junit.Test;
 
 public class TestHealthCheckerManager {
 
+  private HealthChecker good = new HealthChecker() {
+    @Override
+    public String getName() {
+      return "testBad";
+    }
+
+    @Override
+    public HealthCheckResult check() {
+      return new HealthCheckResult(false, "bad", "bad component");
+    }
+  };
+
+  private HealthChecker bad = new HealthChecker() {
+    @Override
+    public String getName() {
+      return "testGood";
+    }
+
+    @Override
+    public HealthCheckResult check() {
+      return new HealthCheckResult(true, "good", "good component");
+    }
+  };
+
+  private void reset() {
+    HealthCheckerManager.getInstance().unregister(good.getName());
+    HealthCheckerManager.getInstance().unregister(bad.getName());
+  }
+
   @Test
-  public void testRegistry() {
-    HealthCheckerManager.getInstance().register(new HealthChecker() {
-      @Override
-      public String getName() {
-        return "test";
-      }
-
-      @Override
-      public HealthCheckResult check() {
-        return new HealthCheckResult(false, "bad", "bad call");
-      }
-    });
-
+  public void checkResultCount() {
+    reset();
     Map<String, HealthCheckResult> results = HealthCheckerManager.getInstance().check();
+    Assert.assertEquals(0, results.size());
+
+    reset();
+    HealthCheckerManager.getInstance().register(good);
+    results = HealthCheckerManager.getInstance().check();
     Assert.assertEquals(1, results.size());
 
-    HealthCheckResult result = HealthCheckerManager.getInstance().check().get("test");
+    reset();
+    HealthCheckerManager.getInstance().register(good);
+    HealthCheckerManager.getInstance().register(bad);
+    results = HealthCheckerManager.getInstance().check();
+    Assert.assertEquals(2, results.size());
+  }
+
+  @Test
+  public void checkGoodResult() {
+    reset();
+    HealthCheckerManager.getInstance().register(good);
+    HealthCheckerManager.getInstance().register(bad);
+    HealthCheckResult result = HealthCheckerManager.getInstance().check().get("testGood");
+    Assert.assertEquals(true, result.isHealthy());
+    Assert.assertEquals("good", result.getInformation());
+    Assert.assertEquals("good component", result.getExtraData());
+  }
+
+  @Test
+  public void checkBadResult() {
+    reset();
+    HealthCheckerManager.getInstance().register(good);
+    HealthCheckerManager.getInstance().register(bad);
+    HealthCheckResult result = HealthCheckerManager.getInstance().check().get("testBad");
     Assert.assertEquals(false, result.isHealthy());
     Assert.assertEquals("bad", result.getInformation());
-    Assert.assertEquals("bad call", result.getExtraData());
+    Assert.assertEquals("bad component", result.getExtraData());
   }
 }
