@@ -37,9 +37,11 @@ public class Metric {
   public Metric(String id, double value) {
     String[] nameAndTag = id.split("\\(");
     this.tags = new HashMap<>();
-    String[] tagAnValues = nameAndTag[1].split("[=,)]");
-    for (int i = 0; i < tagAnValues.length; i += 2) {
-      this.tags.put(tagAnValues[i], tagAnValues[i + 1]);
+    if (nameAndTag.length > 1) {
+      String[] tagAnValues = nameAndTag[1].split("[=,)]");
+      for (int i = 0; i < tagAnValues.length; i += 2) {
+        this.tags.put(tagAnValues[i], tagAnValues[i + 1]);
+      }
     }
     this.name = nameAndTag[0];
     this.value = value;

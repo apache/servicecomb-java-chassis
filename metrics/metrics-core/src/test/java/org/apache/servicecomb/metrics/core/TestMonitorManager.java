@@ -32,6 +32,8 @@ import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import com.netflix.servo.monitor.Counter;
+
 public class TestMonitorManager {
 
   private static MetricsLoader currentWindowMetricsLoader;
@@ -261,5 +263,16 @@ public class TestMonitorManager {
         .getChildrenNode(String.valueOf(InvocationType.PRODUCER).toLowerCase())
         .getChildrenNode(MetricsConst.STAGE_QUEUE);
     Assert.assertEquals(1, node4_queue.getMatchStatisticMetricValue("waitInQueue"), 0);
+  }
+
+  @Test
+  public void checkRegisterMonitorWithoutAnyTags() {
+    Counter counter = MonitorManager.getInstance().getCounter("MonitorWithoutAnyTag");
+    counter.increment(999);
+    MetricsLoader loader = new MetricsLoader(MonitorManager.getInstance().measure());
+
+    MetricNode node = loader.getMetricTree("MonitorWithoutAnyTag");
+    Assert.assertEquals(1, node.getMetricCount());
+    Assert.assertEquals(999, node.getMetrics().iterator().next().getValue(), 0);
   }
 }

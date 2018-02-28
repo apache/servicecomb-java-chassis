@@ -159,9 +159,12 @@ public class MonitorManager {
         tagPart.append(String.format("%s=%s,", tag.getKey(), tag.getValue()));
       }
     }
-    tagPart.deleteCharAt(tagPart.length() - 1);
-    tagPart.append(")");
-    return config.getName() + tagPart.toString();
+    if (tagPart.length() != 1) {
+      tagPart.deleteCharAt(tagPart.length() - 1);
+      tagPart.append(")");
+      return config.getName() + tagPart.toString();
+    }
+    return config.getName();
   }
 
 
