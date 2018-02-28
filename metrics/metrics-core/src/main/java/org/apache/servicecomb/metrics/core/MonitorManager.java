@@ -60,6 +60,8 @@ public class MonitorManager {
 
   private final MonitorRegistry basicMonitorRegistry;
 
+  private static final char[] forbiddenCharacter = new char[] {'(', ')', '=', ','};
+
   private static final MonitorManager INSTANCE = new MonitorManager();
 
   public static MonitorManager getInstance() {
@@ -208,6 +210,17 @@ public class MonitorManager {
   }
 
   private boolean isCorrectMonitorNameAndTags(String name, String... tags) {
-    return StringUtils.isNotEmpty(name) && tags.length % 2 == 0;
+    boolean passed = StringUtils.isNotEmpty(name) && tags.length % 2 == 0;
+    if (passed) {
+      if (StringUtils.containsNone(name, forbiddenCharacter)) {
+        for (String tag : tags) {
+          if (StringUtils.containsAny(tag, forbiddenCharacter)) {
+            return false;
+          }
+        }
+        return true;
+      }
+    }
+    return false;
   }
 }

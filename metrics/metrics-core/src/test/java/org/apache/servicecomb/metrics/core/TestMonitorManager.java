@@ -286,4 +286,39 @@ public class TestMonitorManager {
     catch (ServiceCombException ignore) {
     }
   }
+
+  @Test
+  public void checkRegisterMonitorWithBadNameAndTags() throws Exception {
+    try {
+      MonitorManager.getInstance().getCounter("MonitorWithBad(");
+      throw new Exception("CheckFailed");
+    }
+    //ignore because throw exception is correct
+    catch (ServiceCombException ignore) {
+    }
+
+    try {
+      MonitorManager.getInstance().getCounter("MonitorWithBad,");
+      throw new Exception("CheckFailed");
+    }
+    //ignore because throw exception is correct
+    catch (ServiceCombException ignore) {
+    }
+
+    try {
+      MonitorManager.getInstance().getCounter("MonitorWithBad","TagX=","Y");
+      throw new Exception("CheckFailed");
+    }
+    //ignore because throw exception is correct
+    catch (ServiceCombException ignore) {
+    }
+
+    try {
+      MonitorManager.getInstance().getCounter("MonitorWithBad","TagX","Y)");
+      throw new Exception("CheckFailed");
+    }
+    //ignore because throw exception is correct
+    catch (ServiceCombException ignore) {
+    }
+  }
 }
