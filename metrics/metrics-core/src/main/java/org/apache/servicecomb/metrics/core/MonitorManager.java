@@ -17,7 +17,9 @@
 
 package org.apache.servicecomb.metrics.core;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.SortedMap;
@@ -25,7 +27,9 @@ import java.util.TreeMap;
 import java.util.concurrent.Callable;
 import java.util.function.Function;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.foundation.common.concurrent.ConcurrentHashMapEx;
+import org.apache.servicecomb.foundation.common.exceptions.ServiceCombException;
 import org.apache.servicecomb.foundation.metrics.MetricsConst;
 
 import com.netflix.config.DynamicPropertyFactory;
@@ -78,43 +82,58 @@ public class MonitorManager {
   }
 
   public Counter getCounter(String name, String... tags) {
-    return counters.computeIfAbsent(getMonitorKey(name, tags), f -> {
-      Counter counter = new BasicCounter(getConfig(name, tags));
-      basicMonitorRegistry.register(counter);
-      return counter;
-    });
+    if (checkMonitorNameAndTags(name, tags)) {
+      return counters.computeIfAbsent(getMonitorKey(name, tags), f -> {
+        Counter counter = new BasicCounter(getConfig(name, tags));
+        basicMonitorRegistry.register(counter);
+        return counter;
+      });
+    }
+    throw new ServiceCombException("bad name or tags count");
   }
 
   public Counter getCounter(Function<MonitorConfig, Counter> function, String name, String... tags) {
-    return counters.computeIfAbsent(getMonitorKey(name, tags), f -> {
-      Counter counter = function.apply(getConfig(name, tags));
-      basicMonitorRegistry.register(counter);
-      return counter;
-    });
+    if (checkMonitorNameAndTags(name, tags)) {
+      return counters.computeIfAbsent(getMonitorKey(name, tags), f -> {
+        Counter counter = function.apply(getConfig(name, tags));
+        basicMonitorRegistry.register(counter);
+        return counter;
+      });
+    }
+    throw new ServiceCombException("bad name or tags count");
   }
 
   public MaxGauge getMaxGauge(String name, String... tags) {
-    return maxGauges.computeIfAbsent(getMonitorKey(name, tags), f -> {
-      MaxGauge maxGauge = new MaxGauge(getConfig(name, tags));
-      basicMonitorRegistry.register(maxGauge);
-      return maxGauge;
-    });
+    if (checkMonitorNameAndTags(name, tags)) {
+      return maxGauges.computeIfAbsent(getMonitorKey(name, tags), f -> {
+        MaxGauge maxGauge = new MaxGauge(getConfig(name, tags));
+        basicMonitorRegistry.register(maxGauge);
+        return maxGauge;
+      });
+    }
+    throw new ServiceCombException("bad name or tags count");
   }
 
   public <V extends Number> Gauge getGauge(Callable<V> callable, String name, String... tags) {
-    return gauges.computeIfAbsent(getMonitorKey(name, tags), f -> {
-      Gauge gauge = new BasicGauge<>(getConfig(name, tags), callable);
-      basicMonitorRegistry.register(gauge);
-      return gauge;
-    });
+    if (checkMonitorNameAndTags(name, tags)) {
+      return gauges.computeIfAbsent(getMonitorKey(name, tags), f -> {
+        Gauge gauge = new BasicGauge<>(getConfig(name, tags), callable);
+        basicMonitorRegistry.register(gauge);
+        return gauge;
+      });
+    }
+    throw new ServiceCombException("bad name or tags count");
   }
 
   public Timer getTimer(String name, String... tags) {
-    return timers.computeIfAbsent(getMonitorKey(name, tags), f -> {
-      Timer timer = new BasicTimer(getConfig(name, tags));
-      basicMonitorRegistry.register(timer);
-      return timer;
-    });
+    if (checkMonitorNameAndTags(name, tags)) {
+      return timers.computeIfAbsent(getMonitorKey(name, tags), f -> {
+        Timer timer = new BasicTimer(getConfig(name, tags));
+        basicMonitorRegistry.register(timer);
+        return timer;
+      });
+    }
+    throw new ServiceCombException("bad name or tags count");
   }
 
   public Map<String, Double> measure() {
@@ -127,44 +146,46 @@ public class MonitorManager {
   }
 
   private MonitorConfig getConfig(String name, String... tags) {
-    Builder builder = MonitorConfig.builder(name);
-    for (int i = 0; i < tags.length; i += 2) {
-      builder.withTag(tags[i], tags[i + 1]);
+    if (checkMonitorNameAndTags(name, tags)) {
+      Builder builder = MonitorConfig.builder(name);
+      for (int i = 0; i < tags.length; i += 2) {
+        builder.withTag(tags[i], tags[i + 1]);
+      }
+      return builder.build();
     }
-    return builder.build();
+    throw new ServiceCombException("bad name or tags count");
   }
 
   private String getMonitorKey(String name, String... tags) {
-    if (tags.length != 0) {
-      SortedMap<String, String> tagMap = new TreeMap<>();
-      for (int i = 0; i < tags.length; i += 2) {
-        tagMap.put(tags[i], tags[i + 1]);
+    if (checkMonitorNameAndTags(name, tags)) {
+      if (tags.length != 0) {
+        SortedMap<String, String> tagMap = new TreeMap<>();
+        for (int i = 0; i < tags.length; i += 2) {
+          tagMap.put(tags[i], tags[i + 1]);
+        }
+        StringBuilder builder = new StringBuilder("(");
+        for (Entry<String, String> entry : tagMap.entrySet()) {
+          builder.append(String.format("%s=%s,", entry.getKey(), entry.getValue()));
+        }
+        builder.deleteCharAt(builder.length() - 1);
+        builder.append(")");
+        return name + builder.toString();
       }
-      StringBuilder builder = new StringBuilder("(");
-      for (Entry<String, String> entry : tagMap.entrySet()) {
-        builder.append(String.format("%s=%s,", entry.getKey(), entry.getValue()));
-      }
-      builder.deleteCharAt(builder.length() - 1);
-      builder.append(")");
-      return name + builder.toString();
+      return name;
     }
-    return name;
+    throw new ServiceCombException("bad name or tags count");
   }
 
   private String getMonitorKey(MonitorConfig config) {
-    TagList tags = config.getTags();
-    StringBuilder tagPart = new StringBuilder("(");
-    for (Tag tag : tags) {
+    TagList tagList = config.getTags();
+    List<String> tags = new ArrayList<>();
+    for (Tag tag : tagList) {
       if (!"type".equals(tag.getKey())) {
-        tagPart.append(String.format("%s=%s,", tag.getKey(), tag.getValue()));
+        tags.add(tag.getKey());
+        tags.add(tag.getValue());
       }
     }
-    if (tagPart.length() != 1) {
-      tagPart.deleteCharAt(tagPart.length() - 1);
-      tagPart.append(")");
-      return config.getName() + tagPart.toString();
-    }
-    return config.getName();
+    return getMonitorKey(config.getName(), tags.toArray(new String[0]));
   }
 
 
@@ -184,5 +205,9 @@ public class MonitorManager {
 
   private <V extends Number> void registerSystemMetricItem(Callable<V> callable, String name) {
     this.getGauge(callable, MetricsConst.JVM, MetricsConst.TAG_STATISTIC, "gauge", MetricsConst.TAG_NAME, name);
+  }
+
+  private boolean checkMonitorNameAndTags(String name, String... tags) {
+    return StringUtils.isNotEmpty(name) && tags.length % 2 == 0;
   }
 }

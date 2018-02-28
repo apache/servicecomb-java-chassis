@@ -81,4 +81,28 @@ public class TestEventBus {
     Thread.sleep(1000);
     Assert.assertFalse(eventReceived.get());
   }
+
+  @Test
+  public void checkUnmatchTypeWillNotReceived() throws InterruptedException {
+    AtomicBoolean eventReceived = new AtomicBoolean(false);
+
+    EventListener<String> listener = new EventListener<String>() {
+      @Override
+      public Class<String> getEventClass() {
+        return String.class;
+      }
+
+      @Override
+      public void process(String data) {
+        eventReceived.set(true);
+      }
+    };
+
+    EventBus.getInstance().registerEventListener(listener);
+
+    //trigger a Integer type event object
+    EventBus.getInstance().triggerEvent(new Integer(1));
+    Thread.sleep(1000);
+    Assert.assertFalse(eventReceived.get());
+  }
 }

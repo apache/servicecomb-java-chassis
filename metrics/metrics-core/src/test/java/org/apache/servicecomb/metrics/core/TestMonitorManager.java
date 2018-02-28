@@ -24,6 +24,7 @@ import org.apache.servicecomb.core.metrics.InvocationFinishedEvent;
 import org.apache.servicecomb.core.metrics.InvocationStartExecutionEvent;
 import org.apache.servicecomb.core.metrics.InvocationStartedEvent;
 import org.apache.servicecomb.foundation.common.event.EventBus;
+import org.apache.servicecomb.foundation.common.exceptions.ServiceCombException;
 import org.apache.servicecomb.foundation.metrics.MetricsConst;
 import org.apache.servicecomb.foundation.metrics.publish.MetricNode;
 import org.apache.servicecomb.foundation.metrics.publish.MetricsLoader;
@@ -269,10 +270,20 @@ public class TestMonitorManager {
   public void checkRegisterMonitorWithoutAnyTags() {
     Counter counter = MonitorManager.getInstance().getCounter("MonitorWithoutAnyTag");
     counter.increment(999);
-    MetricsLoader loader = new MetricsLoader(MonitorManager.getInstance().measure());
+    Assert.assertTrue(MonitorManager.getInstance().measure().containsKey("MonitorWithoutAnyTag"));
+    Assert.assertEquals(999, MonitorManager.getInstance().measure().get("MonitorWithoutAnyTag"), 0);
+  }
 
-    MetricNode node = loader.getMetricTree("MonitorWithoutAnyTag");
-    Assert.assertEquals(1, node.getMetricCount());
-    Assert.assertEquals(999, node.getMetrics().iterator().next().getValue(), 0);
+  @Test
+  public void checkRegisterMonitorWithBadTags() throws Exception {
+    MonitorManager.getInstance().getCounter("Monitor", "X", "Y");
+
+    try {
+      MonitorManager.getInstance().getCounter("MonitorWithBadCountTag", "X");
+      throw new Exception("CheckFailed");
+    }
+    //ignore because throw exception is correct
+    catch (ServiceCombException ignore) {
+    }
   }
 }

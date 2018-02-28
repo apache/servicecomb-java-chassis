@@ -21,6 +21,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.servicecomb.foundation.common.exceptions.ServiceCombException;
 import org.apache.servicecomb.foundation.metrics.MetricsConst;
 
 public class Metric {
@@ -35,16 +36,33 @@ public class Metric {
   }
 
   public Metric(String id, double value) {
-    String[] nameAndTag = id.split("\\(");
-    this.tags = new HashMap<>();
-    if (nameAndTag.length > 1) {
-      String[] tagAnValues = nameAndTag[1].split("[=,)]");
-      for (int i = 0; i < tagAnValues.length; i += 2) {
-        this.tags.put(tagAnValues[i], tagAnValues[i + 1]);
+    if (isCorrectId(id)) {
+      this.tags = new HashMap<>();
+      this.value = value;
+      String[] nameAndTag = id.split("[()]");
+      if (nameAndTag.length == 1) {
+        if (!id.endsWith(")")) {
+          this.name = nameAndTag[0];
+        } else {
+          throw new ServiceCombException("bad format id");
+        }
+      } else if (nameAndTag.length == 2) {
+        this.name = nameAndTag[0];
+        String[] tagAnValues = nameAndTag[1].split(",");
+        for (String tagAnValue : tagAnValues) {
+          String[] kv = tagAnValue.split("=");
+          if (kv.length == 2) {
+            this.tags.put(kv[0], kv[1]);
+          } else {
+            throw new ServiceCombException("bad format tag");
+          }
+        }
+      } else {
+        throw new ServiceCombException("bad format id");
       }
+    } else {
+      throw new ServiceCombException("bad format id");
     }
-    this.name = nameAndTag[0];
-    this.value = value;
   }
 
   public double getValue() {
@@ -60,6 +78,10 @@ public class Metric {
     return value;
   }
 
+  public int getTagsCount() {
+    return tags.size();
+  }
+
   public boolean containsTagKey(String tagKey) {
     return tags.containsKey(tagKey);
   }
@@ -73,11 +95,28 @@ public class Metric {
   }
 
   public boolean containsTag(String... tags) {
-    for (int i = 0; i < tags.length; i += 2) {
-      if (!containsTag(tags[i], tags[i + 1])) {
-        return false;
+    if (tags.length >= 2 && tags.length % 2 == 0) {
+      for (int i = 0; i < tags.length; i += 2) {
+        if (!containsTag(tags[i], tags[i + 1])) {
+          return false;
+        }
+      }
+      return true;
+    }
+    throw new ServiceCombException("bad tags count");
+  }
+
+  private int getCharCount(String id, char c) {
+    int count = 0;
+    for (char cr : id.toCharArray()) {
+      if (cr == c) {
+        count++;
       }
     }
-    return true;
+    return count;
+  }
+
+  private boolean isCorrectId(String id) {
+    return id != null && !id.endsWith("(") && getCharCount(id, '(') <= 1 && getCharCount(id, ')') <= 1;
   }
 }
