@@ -76,6 +76,10 @@ public class SimpleFileContentConvertor implements FileContentConvertor {
       builder.append(tags.get(MetricsConst.TAG_STAGE));
       builder.append(".");
       builder.append(tags.get(MetricsConst.TAG_STATISTIC));
+      if (tags.containsKey(MetricsConst.TAG_STATUS)) {
+        builder.append(".");
+        builder.append(tags.get(MetricsConst.TAG_STATUS));
+      }
       return builder.toString();
     }
   }
