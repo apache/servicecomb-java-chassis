@@ -23,6 +23,6 @@ import org.apache.servicecomb.transport.rest.vertx.accesslog.parser.AccessLogIte
 /**
  * The actual creator of AccessLogItem.
  */
-public interface AccessLogItemCreator {
-  AccessLogItem create(String rawPattern, AccessLogItemLocation location);
+public interface AccessLogItemCreator<T> {
+  AccessLogItem<T> create(String rawPattern, AccessLogItemLocation location);
 }

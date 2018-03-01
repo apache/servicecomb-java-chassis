@@ -22,13 +22,16 @@ import static org.junit.Assert.assertEquals;
 import org.apache.servicecomb.transport.rest.vertx.accesslog.AccessLogParam;
 import org.junit.Test;
 
+import io.vertx.ext.web.RoutingContext;
+
 public class DurationSecondItemTest {
 
   public static final DurationSecondItem ELEMENT = new DurationSecondItem();
 
   @Test
   public void getFormattedElementOn999ms() {
-    AccessLogParam param = new AccessLogParam().setStartMillisecond(1L).setEndMillisecond(1000L);
+    AccessLogParam<RoutingContext> param =
+        new AccessLogParam<RoutingContext>().setStartMillisecond(1L).setEndMillisecond(1000L);
 
     String result = ELEMENT.getFormattedItem(param);
 
@@ -37,7 +40,8 @@ public class DurationSecondItemTest {
 
   @Test
   public void getFormattedElementOn1000ms() {
-    AccessLogParam param = new AccessLogParam().setStartMillisecond(1L).setEndMillisecond(1001L);
+    AccessLogParam<RoutingContext> param =
+        new AccessLogParam<RoutingContext>().setStartMillisecond(1L).setEndMillisecond(1001L);
 
     String result = ELEMENT.getFormattedItem(param);
 
@@ -46,7 +50,8 @@ public class DurationSecondItemTest {
 
   @Test
   public void getFormattedElementOn1001ms() {
-    AccessLogParam param = new AccessLogParam().setStartMillisecond(1L).setEndMillisecond(1002L);
+    AccessLogParam<RoutingContext> param =
+        new AccessLogParam<RoutingContext>().setStartMillisecond(1L).setEndMillisecond(1002L);
 
     String result = ELEMENT.getFormattedItem(param);
 

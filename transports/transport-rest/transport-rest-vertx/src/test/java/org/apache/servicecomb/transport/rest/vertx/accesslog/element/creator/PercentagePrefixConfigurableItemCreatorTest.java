@@ -28,6 +28,8 @@ import org.apache.servicecomb.transport.rest.vertx.accesslog.placeholder.AccessL
 import org.junit.Assert;
 import org.junit.Test;
 
+import io.vertx.ext.web.RoutingContext;
+
 public class PercentagePrefixConfigurableItemCreatorTest {
   private static final String PATTERN = "test %{EEE, dd MMM yyyy HH:mm:ss zzz}t %{VARNAME1}i %{VARNAME2}o %{VARNAME3}C";
 
@@ -38,7 +40,7 @@ public class PercentagePrefixConfigurableItemCreatorTest {
     AccessLogItemLocation location = new AccessLogItemLocation().setStart(5).setEnd(38).setPlaceHolder(
         AccessLogItemTypeEnum.DATETIME_CONFIGURABLE);
 
-    AccessLogItem item = CREATOR.create(PATTERN, location);
+    AccessLogItem<RoutingContext> item = CREATOR.create(PATTERN, location);
 
     Assert.assertEquals(DatetimeConfigurableItem.class, item.getClass());
     Assert.assertEquals("EEE, dd MMM yyyy HH:mm:ss zzz", ((DatetimeConfigurableItem) item).getPattern());
@@ -49,7 +51,7 @@ public class PercentagePrefixConfigurableItemCreatorTest {
     AccessLogItemLocation location = new AccessLogItemLocation().setStart(39).setEnd(51).setPlaceHolder(
         AccessLogItemTypeEnum.REQUEST_HEADER);
 
-    AccessLogItem item = CREATOR.create(PATTERN, location);
+    AccessLogItem<RoutingContext> item = CREATOR.create(PATTERN, location);
 
     Assert.assertEquals(RequestHeaderItem.class, item.getClass());
     Assert.assertEquals("VARNAME1", ((RequestHeaderItem) item).getVarName());
@@ -61,7 +63,7 @@ public class PercentagePrefixConfigurableItemCreatorTest {
     AccessLogItemLocation location = new AccessLogItemLocation().setStart(52).setEnd(64).setPlaceHolder(
         AccessLogItemTypeEnum.RESPONSE_HEADER);
 
-    AccessLogItem item = CREATOR.create(PATTERN, location);
+    AccessLogItem<RoutingContext> item = CREATOR.create(PATTERN, location);
 
     Assert.assertEquals(ResponseHeaderItem.class, item.getClass());
     Assert.assertEquals("VARNAME2", ((ResponseHeaderItem) item).getVarName());
@@ -72,7 +74,7 @@ public class PercentagePrefixConfigurableItemCreatorTest {
     AccessLogItemLocation location = new AccessLogItemLocation().setStart(65).setEnd(77).setPlaceHolder(
         AccessLogItemTypeEnum.COOKIE);
 
-    AccessLogItem item = CREATOR.create(PATTERN, location);
+    AccessLogItem<RoutingContext> item = CREATOR.create(PATTERN, location);
 
     Assert.assertEquals(CookieItem.class, item.getClass());
     Assert.assertEquals("VARNAME3", ((CookieItem) item).getVarName());
@@ -80,10 +82,11 @@ public class PercentagePrefixConfigurableItemCreatorTest {
 
   @Test
   public void testPlainTextItem() {
-    AccessLogItemLocation location = new AccessLogItemLocation().setStart(0).setEnd(5)
+    AccessLogItemLocation location = new AccessLogItemLocation().setStart(0)
+        .setEnd(5)
         .setPlaceHolder(AccessLogItemTypeEnum.TEXT_PLAIN);
 
-    AccessLogItem item = CREATOR.create(PATTERN, location);
+    AccessLogItem<RoutingContext> item = CREATOR.create(PATTERN, location);
 
     Assert.assertEquals(PlainTextItem.class, item.getClass());
     Assert.assertEquals("test ", ((PlainTextItem) item).getFormattedItem(null));

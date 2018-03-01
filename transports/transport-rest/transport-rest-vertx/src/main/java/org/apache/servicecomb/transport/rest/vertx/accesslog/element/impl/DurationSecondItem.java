@@ -20,9 +20,11 @@ package org.apache.servicecomb.transport.rest.vertx.accesslog.element.impl;
 import org.apache.servicecomb.transport.rest.vertx.accesslog.AccessLogParam;
 import org.apache.servicecomb.transport.rest.vertx.accesslog.element.AccessLogItem;
 
-public class DurationSecondItem implements AccessLogItem {
+import io.vertx.ext.web.RoutingContext;
+
+public class DurationSecondItem implements AccessLogItem<RoutingContext> {
   @Override
-  public String getFormattedItem(AccessLogParam accessLogParam) {
+  public String getFormattedItem(AccessLogParam<RoutingContext> accessLogParam) {
     return String.valueOf((accessLogParam.getEndMillisecond() - accessLogParam.getStartMillisecond()) / 1000);
   }
 }

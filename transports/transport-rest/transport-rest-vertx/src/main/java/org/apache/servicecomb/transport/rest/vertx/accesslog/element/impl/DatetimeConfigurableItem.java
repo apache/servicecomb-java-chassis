@@ -26,10 +26,12 @@ import org.apache.servicecomb.transport.rest.vertx.accesslog.AccessLogParam;
 import org.apache.servicecomb.transport.rest.vertx.accesslog.element.AccessLogItem;
 import org.springframework.util.StringUtils;
 
+import io.vertx.ext.web.RoutingContext;
+
 /**
- * Configurable datetime element.
+ * Configurable dateTime element.
  */
-public class DatetimeConfigurableItem implements AccessLogItem {
+public class DatetimeConfigurableItem implements AccessLogItem<RoutingContext> {
 
   public static final String DEFAULT_DATETIME_PATTERN = "EEE, dd MMM yyyy HH:mm:ss zzz";
 
@@ -44,7 +46,7 @@ public class DatetimeConfigurableItem implements AccessLogItem {
   private Locale locale;
 
   /**
-   * all config is set to default value.
+   * all configuration is set to default value.
    */
   public DatetimeConfigurableItem() {
     this(DEFAULT_DATETIME_PATTERN);
@@ -52,14 +54,14 @@ public class DatetimeConfigurableItem implements AccessLogItem {
 
   /**
    * the configurations not specified will get a default value.
-   * @param config the format of config is "PATTERN|TIMEZONE|LOCALE" or "PATTERN". It depends on whether the config contains the separator "|"
+   * @param config the format of configuration is "PATTERN|TIMEZONE|LOCALE" or "PATTERN". It depends on whether the config contains the separator "|"
    */
   public DatetimeConfigurableItem(String config) {
     String[] configArr = null;
     if (config.contains("|")) {
       configArr = splitConfig(config);
     } else {
-      // if there is no seperator "|", regard config as pattern.
+      // if there is no separator "|", regard configuration as pattern.
       configArr = new String[3];
       configArr[0] = config;
     }
@@ -82,7 +84,7 @@ public class DatetimeConfigurableItem implements AccessLogItem {
   }
 
   @Override
-  public String getFormattedItem(AccessLogParam accessLogParam) {
+  public String getFormattedItem(AccessLogParam<RoutingContext> accessLogParam) {
     SimpleDateFormat dateFormat = getDatetimeFormat();
     return dateFormat.format(new Date(accessLogParam.getStartMillisecond()));
   }

@@ -26,6 +26,8 @@ import java.util.TimeZone;
 import org.apache.servicecomb.transport.rest.vertx.accesslog.AccessLogParam;
 import org.junit.Test;
 
+import io.vertx.ext.web.RoutingContext;
+
 public class DatetimeConfigurableItemTest {
 
   private static final long START_MILLISECOND = 1416863450581L;
@@ -35,7 +37,8 @@ public class DatetimeConfigurableItemTest {
     DatetimeConfigurableItem element = new DatetimeConfigurableItem(
         "EEE, yyyy MMM dd HH:mm:ss zzz|GMT-08|zh-CN");
 
-    AccessLogParam accessLogParam = new AccessLogParam().setStartMillisecond(START_MILLISECOND);
+    AccessLogParam<RoutingContext> accessLogParam =
+        new AccessLogParam<RoutingContext>().setStartMillisecond(START_MILLISECOND);
 
     String result = element.getFormattedItem(accessLogParam);
 
@@ -47,7 +50,8 @@ public class DatetimeConfigurableItemTest {
     DatetimeConfigurableItem element = new DatetimeConfigurableItem(
         "|GMT+08|zh-CN");
 
-    AccessLogParam accessLogParam = new AccessLogParam().setStartMillisecond(START_MILLISECOND);
+    AccessLogParam<RoutingContext> accessLogParam =
+        new AccessLogParam<RoutingContext>().setStartMillisecond(START_MILLISECOND);
 
     String result = element.getFormattedItem(accessLogParam);
 
@@ -61,7 +65,8 @@ public class DatetimeConfigurableItemTest {
     SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy/MM/dd zzz", Locale.forLanguageTag("zh-CN"));
     simpleDateFormat.setTimeZone(TimeZone.getDefault());
 
-    AccessLogParam accessLogParam = new AccessLogParam().setStartMillisecond(START_MILLISECOND);
+    AccessLogParam<RoutingContext> accessLogParam =
+        new AccessLogParam<RoutingContext>().setStartMillisecond(START_MILLISECOND);
 
     String result = element.getFormattedItem(accessLogParam);
 
@@ -73,7 +78,8 @@ public class DatetimeConfigurableItemTest {
     DatetimeConfigurableItem element = new DatetimeConfigurableItem(
         "EEE, dd MMM yyyy HH:mm:ss zzz|GMT+08|");
 
-    AccessLogParam accessLogParam = new AccessLogParam().setStartMillisecond(START_MILLISECOND);
+    AccessLogParam<RoutingContext> accessLogParam =
+        new AccessLogParam<RoutingContext>().setStartMillisecond(START_MILLISECOND);
 
     String result = element.getFormattedItem(accessLogParam);
 
@@ -87,7 +93,8 @@ public class DatetimeConfigurableItemTest {
     SimpleDateFormat simpleDateFormat = new SimpleDateFormat(DatetimeConfigurableItem.DEFAULT_DATETIME_PATTERN,
         Locale.US);
     simpleDateFormat.setTimeZone(TimeZone.getDefault());
-    AccessLogParam accessLogParam = new AccessLogParam().setStartMillisecond(START_MILLISECOND);
+    AccessLogParam<RoutingContext> accessLogParam =
+        new AccessLogParam<RoutingContext>().setStartMillisecond(START_MILLISECOND);
 
     String result = element.getFormattedItem(accessLogParam);
 
@@ -99,7 +106,8 @@ public class DatetimeConfigurableItemTest {
     DatetimeConfigurableItem element = new DatetimeConfigurableItem();
     SimpleDateFormat simpleDateFormat = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss zzz", Locale.US);
     simpleDateFormat.setTimeZone(TimeZone.getDefault());
-    AccessLogParam accessLogParam = new AccessLogParam().setStartMillisecond(START_MILLISECOND);
+    AccessLogParam<RoutingContext> accessLogParam =
+        new AccessLogParam<RoutingContext>().setStartMillisecond(START_MILLISECOND);
 
     String result = element.getFormattedItem(accessLogParam);
 
@@ -114,7 +122,8 @@ public class DatetimeConfigurableItemTest {
     DatetimeConfigurableItem element = new DatetimeConfigurableItem("yyyy/MM/dd HH:mm:ss zzz");
     SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss zzz", Locale.US);
     simpleDateFormat.setTimeZone(TimeZone.getDefault());
-    AccessLogParam accessLogParam = new AccessLogParam().setStartMillisecond(START_MILLISECOND);
+    AccessLogParam<RoutingContext> accessLogParam =
+        new AccessLogParam<RoutingContext>().setStartMillisecond(START_MILLISECOND);
 
     String result = element.getFormattedItem(accessLogParam);
 

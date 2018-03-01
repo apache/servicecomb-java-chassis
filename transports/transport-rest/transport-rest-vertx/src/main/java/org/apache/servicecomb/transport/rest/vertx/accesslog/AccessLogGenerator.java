@@ -24,6 +24,8 @@ import org.apache.servicecomb.transport.rest.vertx.accesslog.element.AccessLogIt
 import org.apache.servicecomb.transport.rest.vertx.accesslog.parser.AccessLogItemLocation;
 import org.apache.servicecomb.transport.rest.vertx.accesslog.parser.AccessLogPatternParser;
 
+import io.vertx.ext.web.RoutingContext;
+
 /**
  * Accept {@link AccessLogParam} and generate access log.
  * <br/>
@@ -33,23 +35,24 @@ public class AccessLogGenerator {
   /**
    * traversal this array to generate access log segment.
    */
-  private AccessLogItem[] accessLogItems;
+  private AccessLogItem<RoutingContext>[] accessLogItems;
 
   private AccessLogItemFactory accessLogItemFactory = new AccessLogItemFactory();
 
+  @SuppressWarnings("unchecked")
   public AccessLogGenerator(String rawPattern, AccessLogPatternParser accessLogPatternParser) {
     List<AccessLogItemLocation> locationList = accessLogPatternParser.parsePattern(rawPattern);
 
-    List<AccessLogItem> itemList = accessLogItemFactory.createAccessLogItem(rawPattern, locationList);
+    List<AccessLogItem<RoutingContext>> itemList = accessLogItemFactory.createAccessLogItem(rawPattern, locationList);
     accessLogItems = new AccessLogItem[itemList.size()];
     accessLogItems = itemList.toArray(accessLogItems);
   }
 
-  public String generateLog(AccessLogParam accessLogParam) {
+  public String generateLog(AccessLogParam<RoutingContext> accessLogParam) {
     StringBuilder log = new StringBuilder(128);
     accessLogParam.setEndMillisecond(System.currentTimeMillis());
 
-    AccessLogItem[] accessLogItems = getAccessLogItems();
+    AccessLogItem<RoutingContext>[] accessLogItems = getAccessLogItems();
     for (int i = 0; i < accessLogItems.length; ++i) {
       log.append(accessLogItems[i].getFormattedItem(accessLogParam));
     }
@@ -58,7 +61,7 @@ public class AccessLogGenerator {
   }
 
 
-  private AccessLogItem[] getAccessLogItems() {
+  private AccessLogItem<RoutingContext>[] getAccessLogItems() {
     return accessLogItems;
   }
 }

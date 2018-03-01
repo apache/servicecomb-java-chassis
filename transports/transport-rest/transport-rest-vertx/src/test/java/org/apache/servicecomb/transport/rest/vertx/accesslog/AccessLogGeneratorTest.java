@@ -40,25 +40,20 @@ import mockit.Deencapsulation;
 
 public class AccessLogGeneratorTest {
 
-  private static final AccessLogItem methodElement = new HttpMethodItem();
-
-  private static final AccessLogItem datetimeElement = new DatetimeConfigurableItem();
-
-  private static final AccessLogItem plainTextElement = new PlainTextItem(" - ");
-
   private static final AccessLogGenerator ACCESS_LOG_GENERATOR = new AccessLogGenerator("%m - %t",
       rawPattern -> {
         assertEquals("%m - %t", rawPattern);
         return Arrays.asList(
             new AccessLogItemLocation().setStart(0).setEnd(2).setPlaceHolder(AccessLogItemTypeEnum.HTTP_METHOD),
             new AccessLogItemLocation().setStart(2).setEnd(5).setPlaceHolder(AccessLogItemTypeEnum.TEXT_PLAIN),
-            new AccessLogItemLocation().setStart(5).setEnd(7)
+            new AccessLogItemLocation().setStart(5)
+                .setEnd(7)
                 .setPlaceHolder(AccessLogItemTypeEnum.DATETIME_DEFAULT));
       });
 
   @Test
   public void testConstructor() {
-    AccessLogItem[] elements = Deencapsulation.getField(ACCESS_LOG_GENERATOR, "accessLogItems");
+    AccessLogItem<RoutingContext>[] elements = Deencapsulation.getField(ACCESS_LOG_GENERATOR, "accessLogItems");
     assertEquals(3, elements.length);
     assertEquals(HttpMethodItem.class, elements[0].getClass());
     assertEquals(PlainTextItem.class, elements[1].getClass());
