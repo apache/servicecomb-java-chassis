@@ -78,7 +78,7 @@ public class TestEventBus {
     EventBus.getInstance().registerEventListener(listener);
 
     //trigger a Integer type event object
-    EventBus.getInstance().triggerEvent(new Integer(1));
+    EventBus.getInstance().triggerEvent(1);
     Assert.assertFalse(eventReceived.get());
   }
 }

@@ -54,7 +54,7 @@ public class MonitorManager {
 
   private final Map<String, MaxGauge> maxGauges;
 
-  private final Map<String, Gauge> gauges;
+  private final Map<String, Gauge<?>> gauges;
 
   private final Map<String, Timer> timers;
 
@@ -110,10 +110,10 @@ public class MonitorManager {
     });
   }
 
-  public <V extends Number> Gauge getGauge(Callable<V> callable, String name, String... tags) {
+  public <V extends Number> Gauge<?> getGauge(Callable<V> callable, String name, String... tags) {
     validateMonitorNameAndTags(name, tags);
     return gauges.computeIfAbsent(getMonitorKey(name, tags), f -> {
-      Gauge gauge = new BasicGauge<>(getConfig(name, tags), callable);
+      Gauge<?> gauge = new BasicGauge<>(getConfig(name, tags), callable);
       basicMonitorRegistry.register(gauge);
       return gauge;
     });
@@ -130,7 +130,7 @@ public class MonitorManager {
 
   public Map<String, Double> measure() {
     Map<String, Double> measurements = new HashMap<>();
-    for (Monitor monitor : basicMonitorRegistry.getRegisteredMonitors()) {
+    for (Monitor<?> monitor : basicMonitorRegistry.getRegisteredMonitors()) {
       measurements.put(getMonitorKey(monitor.getConfig()),
           ((Number) monitor.getValue(0)).doubleValue());
     }

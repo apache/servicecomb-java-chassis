@@ -30,6 +30,8 @@ import org.slf4j.LoggerFactory;
 public class EventBus {
   private static final Logger LOGGER = LoggerFactory.getLogger(EventBus.class);
 
+  //key is event object type,fast locate listener and fire
+  @SuppressWarnings("rawtypes")
   private final Map<Class, List<EventListener>> allEventListeners = new ConcurrentHashMapEx<>();
 
   private static final EventBus INSTANCE = new EventBus();
@@ -38,6 +40,8 @@ public class EventBus {
     return INSTANCE;
   }
 
+  //event class will get from getEventClass method
+  @SuppressWarnings({"rawtypes"})
   private EventBus() {
     List<EventListener> listeners = SPIServiceUtils.getAllService(EventListener.class);
     for (EventListener listener : listeners) {
@@ -47,13 +51,17 @@ public class EventBus {
     }
   }
 
-  public <T> void registerEventListener(EventListener<T> eventListener) {
+  //event class will get from getEventClass method
+  @SuppressWarnings("rawtypes")
+  public void registerEventListener(EventListener eventListener) {
     List<EventListener> eventListeners = allEventListeners
         .computeIfAbsent(eventListener.getEventClass(), f -> new CopyOnWriteArrayList<>());
     eventListeners.add(eventListener);
   }
 
-  public <T> void unregisterEventListener(EventListener<T> eventListener) {
+  //event class will get from getEventClass method
+  @SuppressWarnings("rawtypes")
+  public void unregisterEventListener(EventListener eventListener) {
     List<EventListener> eventListeners = allEventListeners
         .computeIfAbsent(eventListener.getEventClass(), f -> new CopyOnWriteArrayList<>());
     if (eventListeners.contains(eventListener)) {
@@ -61,7 +69,8 @@ public class EventBus {
     }
   }
 
-  public <T> void triggerEvent(T event) {
+  @SuppressWarnings({"rawtypes", "unchecked"})
+  public void triggerEvent(Object event) {
     List<EventListener> eventListeners = allEventListeners.getOrDefault(event.getClass(), Collections.emptyList());
     for (EventListener eventListener : eventListeners) {
       eventListener.process(event);
