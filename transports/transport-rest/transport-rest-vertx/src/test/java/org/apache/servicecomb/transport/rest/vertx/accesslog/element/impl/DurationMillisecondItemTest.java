@@ -22,13 +22,16 @@ import static org.junit.Assert.assertEquals;
 import org.apache.servicecomb.transport.rest.vertx.accesslog.AccessLogParam;
 import org.junit.Test;
 
+import io.vertx.ext.web.RoutingContext;
+
 public class DurationMillisecondItemTest {
 
   public static final DurationMillisecondItem ELEMENT = new DurationMillisecondItem();
 
   @Test
   public void getFormattedElement() {
-    AccessLogParam param = new AccessLogParam().setStartMillisecond(1L).setEndMillisecond(2L);
+    AccessLogParam<RoutingContext> param =
+        new AccessLogParam<RoutingContext>().setStartMillisecond(1L).setEndMillisecond(2L);
 
     String result = ELEMENT.getFormattedItem(param);
 

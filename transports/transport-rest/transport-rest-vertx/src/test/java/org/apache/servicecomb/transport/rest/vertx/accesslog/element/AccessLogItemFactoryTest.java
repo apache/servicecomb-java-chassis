@@ -30,6 +30,8 @@ import org.apache.servicecomb.transport.rest.vertx.accesslog.placeholder.AccessL
 import org.junit.Assert;
 import org.junit.Test;
 
+import io.vertx.ext.web.RoutingContext;
+
 public class AccessLogItemFactoryTest {
   private static final String PATTERN = "test %{EEE, dd MMM yyyy HH:mm:ss zzz}t cs-uri-query cs-uri %{VARNAME1}i";
 
@@ -38,12 +40,12 @@ public class AccessLogItemFactoryTest {
       new AccessLogItemLocation().setStart(5).setEnd(38).setPlaceHolder(AccessLogItemTypeEnum.DATETIME_CONFIGURABLE),
       new AccessLogItemLocation().setStart(39).setEnd(51).setPlaceHolder(AccessLogItemTypeEnum.QUERY_STRING),
       new AccessLogItemLocation().setStart(52).setEnd(58).setPlaceHolder(AccessLogItemTypeEnum.URL_PATH_WITH_QUERY),
-      new AccessLogItemLocation().setStart(59).setEnd(71).setPlaceHolder(AccessLogItemTypeEnum.REQUEST_HEADER)
-  );
+      new AccessLogItemLocation().setStart(59).setEnd(71).setPlaceHolder(AccessLogItemTypeEnum.REQUEST_HEADER));
 
   @Test
   public void testCreateAccessLogItem() {
-    List<AccessLogItem> itemList = new AccessLogItemFactory().createAccessLogItem(PATTERN, locationList);
+    List<AccessLogItem<RoutingContext>> itemList =
+        new AccessLogItemFactory().createAccessLogItem(PATTERN, locationList);
     Assert.assertEquals(5, itemList.size());
     Assert.assertEquals(PlainTextItem.class, itemList.get(0).getClass());
     Assert.assertEquals(DatetimeConfigurableItem.class, itemList.get(1).getClass());

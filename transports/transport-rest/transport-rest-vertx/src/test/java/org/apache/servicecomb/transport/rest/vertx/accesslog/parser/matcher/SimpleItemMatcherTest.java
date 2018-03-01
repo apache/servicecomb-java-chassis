@@ -17,7 +17,6 @@
 
 package org.apache.servicecomb.transport.rest.vertx.accesslog.parser.matcher;
 
-import org.apache.servicecomb.transport.rest.vertx.accesslog.AccessLogConfiguration;
 import org.apache.servicecomb.transport.rest.vertx.accesslog.parser.AccessLogItemLocation;
 import org.apache.servicecomb.transport.rest.vertx.accesslog.placeholder.AccessLogItemTypeEnum;
 import org.junit.Assert;

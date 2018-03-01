@@ -26,17 +26,20 @@ import org.apache.servicecomb.transport.rest.vertx.accesslog.element.creator.Per
 import org.apache.servicecomb.transport.rest.vertx.accesslog.element.creator.SimpleAccessLogItemCreator;
 import org.apache.servicecomb.transport.rest.vertx.accesslog.parser.AccessLogItemLocation;
 
+import io.vertx.ext.web.RoutingContext;
+
 /**
  * The factory of {@link AccessLogItem}.
  * Using the {@link AccessLogItemCreator} to generate AccessLogItem, according to {@link AccessLogItemLocation}
  * and rawPattern.
  */
 public class AccessLogItemFactory {
-  private List<AccessLogItemCreator> creatorList = Arrays
+  private List<AccessLogItemCreator<RoutingContext>> creatorList = Arrays
       .asList(new SimpleAccessLogItemCreator(), new PercentagePrefixConfigurableItemCreator());
 
-  public List<AccessLogItem> createAccessLogItem(String rawPattern, List<AccessLogItemLocation> locationList) {
-    List<AccessLogItem> itemList = new ArrayList<>();
+  public List<AccessLogItem<RoutingContext>> createAccessLogItem(String rawPattern,
+      List<AccessLogItemLocation> locationList) {
+    List<AccessLogItem<RoutingContext>> itemList = new ArrayList<>();
     for (AccessLogItemLocation location : locationList) {
       setItemList(rawPattern, itemList, location);
     }
@@ -47,9 +50,10 @@ public class AccessLogItemFactory {
   /**
    * generate single AccessLogItem
    */
-  private void setItemList(String rawPattern, List<AccessLogItem> itemList, AccessLogItemLocation location) {
-    AccessLogItem item = null;
-    for (AccessLogItemCreator creator : creatorList) {
+  private void setItemList(String rawPattern, List<AccessLogItem<RoutingContext>> itemList,
+      AccessLogItemLocation location) {
+    AccessLogItem<RoutingContext> item = null;
+    for (AccessLogItemCreator<RoutingContext> creator : creatorList) {
       item = creator.create(rawPattern, location);
       if (null != item) {
         break;

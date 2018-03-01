@@ -45,7 +45,6 @@ public class DefaultAccessLogPatternParserTest {
   private static DefaultAccessLogPatternParser accessLogPatternParser = new DefaultAccessLogPatternParser();
 
   @Test
-  @SuppressWarnings(value = "unchecked")
   public void testParsePattern() {
     List<AccessLogItemLocation> result = accessLogPatternParser.parsePattern(ROW_PATTERN);
     assertEquals(27, result.size());

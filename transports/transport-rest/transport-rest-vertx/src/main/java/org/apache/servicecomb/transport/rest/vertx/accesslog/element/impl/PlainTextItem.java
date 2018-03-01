@@ -20,10 +20,12 @@ package org.apache.servicecomb.transport.rest.vertx.accesslog.element.impl;
 import org.apache.servicecomb.transport.rest.vertx.accesslog.AccessLogParam;
 import org.apache.servicecomb.transport.rest.vertx.accesslog.element.AccessLogItem;
 
+import io.vertx.ext.web.RoutingContext;
+
 /**
  * Print content as it is.
  */
-public class PlainTextItem implements AccessLogItem {
+public class PlainTextItem implements AccessLogItem<RoutingContext> {
   private final String content;
 
   public PlainTextItem(String content) {
@@ -31,7 +33,7 @@ public class PlainTextItem implements AccessLogItem {
   }
 
   @Override
-  public String getFormattedItem(AccessLogParam accessLogParam) {
+  public String getFormattedItem(AccessLogParam<RoutingContext> accessLogParam) {
     return content;
   }
 }

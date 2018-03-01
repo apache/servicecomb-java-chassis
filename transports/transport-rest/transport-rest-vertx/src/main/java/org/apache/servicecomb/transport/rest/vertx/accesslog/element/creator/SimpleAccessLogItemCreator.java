@@ -39,13 +39,16 @@ import org.apache.servicecomb.transport.rest.vertx.accesslog.element.impl.UrlPat
 import org.apache.servicecomb.transport.rest.vertx.accesslog.parser.AccessLogItemLocation;
 import org.apache.servicecomb.transport.rest.vertx.accesslog.placeholder.AccessLogItemTypeEnum;
 
+import io.vertx.ext.web.RoutingContext;
+
 /**
  * For some access log items, their placeholder contains no modifiable part, like "%s" or "sc-status".
  * So we can build a mapping relationship between the placeholder and item instances, when an item is needed, get it by
  * it's placeholder.
  */
-public class SimpleAccessLogItemCreator implements AccessLogItemCreator {
-  private static final Map<AccessLogItemTypeEnum, AccessLogItem> SIMPLE_ACCESSLOG_ITEM_MAP = new HashMap<>();
+public class SimpleAccessLogItemCreator implements AccessLogItemCreator<RoutingContext> {
+  private static final Map<AccessLogItemTypeEnum, AccessLogItem<RoutingContext>> SIMPLE_ACCESSLOG_ITEM_MAP =
+      new HashMap<>();
 
   static {
     SIMPLE_ACCESSLOG_ITEM_MAP.put(AccessLogItemTypeEnum.HTTP_METHOD, new HttpMethodItem());
@@ -67,7 +70,7 @@ public class SimpleAccessLogItemCreator implements AccessLogItemCreator {
   }
 
   @Override
-  public AccessLogItem create(String rawPattern, AccessLogItemLocation location) {
+  public AccessLogItem<RoutingContext> create(String rawPattern, AccessLogItemLocation location) {
     return SIMPLE_ACCESSLOG_ITEM_MAP.get(location.getPlaceHolder());
   }
 }

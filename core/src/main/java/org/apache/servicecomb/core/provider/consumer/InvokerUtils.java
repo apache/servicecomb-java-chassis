@@ -60,7 +60,6 @@ public final class InvokerUtils {
   }
 
   public static Response innerSyncInvoke(Invocation invocation) {
-    boolean success = false;
     int statusCode = 0;
     try {
       triggerStartedEvent(invocation);
