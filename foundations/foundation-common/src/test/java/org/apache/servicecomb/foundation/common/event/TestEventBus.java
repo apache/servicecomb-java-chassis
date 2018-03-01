@@ -58,7 +58,7 @@ public class TestEventBus {
   }
 
   @Test
-  public void checkEventCanNotReceivedAfterUnregister() throws InterruptedException {
+  public void checkEventCanNotReceivedAfterUnregister() {
     EventBus.getInstance().registerEventListener(listener);
 
     EventBus.getInstance().triggerEvent("xxx");
@@ -70,17 +70,15 @@ public class TestEventBus {
 
     EventBus.getInstance().unregisterEventListener(listener);
     EventBus.getInstance().triggerEvent("xxx");
-    Thread.sleep(1000);
     Assert.assertFalse(eventReceived.get());
   }
 
   @Test
-  public void checkUnmatchTypeWillNotReceived() throws InterruptedException {
+  public void checkUnmatchTypeWillNotReceived() {
     EventBus.getInstance().registerEventListener(listener);
 
     //trigger a Integer type event object
     EventBus.getInstance().triggerEvent(new Integer(1));
-    Thread.sleep(1000);
     Assert.assertFalse(eventReceived.get());
   }
 }

@@ -25,9 +25,9 @@ import org.apache.servicecomb.foundation.common.exceptions.ServiceCombException;
 import org.apache.servicecomb.foundation.metrics.MetricsConst;
 
 public class Metric {
-  private final String name;
+  private String name;
 
-  private final Map<String, String> tags;
+  private Map<String, String> tags;
 
   private double value;
 
@@ -41,27 +41,35 @@ public class Metric {
       this.value = value;
       String[] nameAndTag = id.split("[()]");
       if (nameAndTag.length == 1) {
-        if (!id.endsWith(")")) {
-          this.name = nameAndTag[0];
-        } else {
-          throw new ServiceCombException("bad format id " + id);
-        }
+        processIdWithoutTags(id, nameAndTag[0]);
       } else if (nameAndTag.length == 2) {
-        this.name = nameAndTag[0];
-        String[] tagAnValues = nameAndTag[1].split(",");
-        for (String tagAnValue : tagAnValues) {
-          String[] kv = tagAnValue.split("=");
-          if (kv.length == 2) {
-            this.tags.put(kv[0], kv[1]);
-          } else {
-            throw new ServiceCombException("bad format tag " + id);
-          }
-        }
+        processIdHadTags(id, nameAndTag);
       } else {
         throw new ServiceCombException("bad format id " + id);
       }
     } else {
       throw new ServiceCombException("bad format id " + id);
+    }
+  }
+
+  private void processIdWithoutTags(String id, String name) {
+    if (!id.endsWith(")")) {
+      this.name = name;
+    } else {
+      throw new ServiceCombException("bad format id " + id);
+    }
+  }
+
+  private void processIdHadTags(String id, String[] nameAndTag) {
+    this.name = nameAndTag[0];
+    String[] tagAnValues = nameAndTag[1].split(",");
+    for (String tagAnValue : tagAnValues) {
+      String[] kv = tagAnValue.split("=");
+      if (kv.length == 2) {
+        this.tags.put(kv[0], kv[1]);
+      } else {
+        throw new ServiceCombException("bad format tag " + id);
+      }
     }
   }
 

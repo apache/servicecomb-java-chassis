@@ -20,6 +20,7 @@ package org.apache.servicecomb.foundation.metrics.health;
 import java.util.Map;
 
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 
 public class TestHealthCheckerManager {
@@ -48,32 +49,35 @@ public class TestHealthCheckerManager {
     }
   };
 
-  private void reset() {
+  @Before
+  public void reset() {
     HealthCheckerManager.getInstance().unregister(good.getName());
     HealthCheckerManager.getInstance().unregister(bad.getName());
   }
 
   @Test
-  public void checkResultCount() {
-    reset();
+  public void checkResultCount_None() {
     Map<String, HealthCheckResult> results = HealthCheckerManager.getInstance().check();
     Assert.assertEquals(0, results.size());
+  }
 
-    reset();
+  @Test
+  public void checkResultCount_One() {
     HealthCheckerManager.getInstance().register(good);
-    results = HealthCheckerManager.getInstance().check();
+    Map<String, HealthCheckResult> results = HealthCheckerManager.getInstance().check();
     Assert.assertEquals(1, results.size());
+  }
 
-    reset();
+  @Test
+  public void checkResultCount_Both() {
     HealthCheckerManager.getInstance().register(good);
     HealthCheckerManager.getInstance().register(bad);
-    results = HealthCheckerManager.getInstance().check();
+    Map<String, HealthCheckResult> results = HealthCheckerManager.getInstance().check();
     Assert.assertEquals(2, results.size());
   }
 
   @Test
   public void checkGoodResult() {
-    reset();
     HealthCheckerManager.getInstance().register(good);
     HealthCheckerManager.getInstance().register(bad);
     HealthCheckResult result = HealthCheckerManager.getInstance().check().get("testGood");
@@ -84,7 +88,6 @@ public class TestHealthCheckerManager {
 
   @Test
   public void checkBadResult() {
-    reset();
     HealthCheckerManager.getInstance().register(good);
     HealthCheckerManager.getInstance().register(bad);
     HealthCheckResult result = HealthCheckerManager.getInstance().check().get("testBad");
