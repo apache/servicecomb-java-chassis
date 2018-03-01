@@ -23,26 +23,32 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 
 public class TestEventBus {
 
+  private AtomicBoolean eventReceived = new AtomicBoolean(false);
+
+  private EventListener<String> listener = new EventListener<String>() {
+    @Override
+    public Class<String> getEventClass() {
+      return String.class;
+    }
+
+    @Override
+    public void process(String data) {
+      eventReceived.set(true);
+    }
+  };
+
+  @Before
+  public void reset() {
+    EventBus.getInstance().unregisterEventListener(listener);
+  }
+
   @Test
   public void checkEventReceivedAndProcessed() {
-    AtomicBoolean eventReceived = new AtomicBoolean(false);
-
-    EventListener<String> listener = new EventListener<String>() {
-      @Override
-      public Class<String> getEventClass() {
-        return String.class;
-      }
-
-      @Override
-      public void process(String data) {
-        eventReceived.set(true);
-      }
-    };
-
     EventBus.getInstance().registerEventListener(listener);
 
     EventBus.getInstance().triggerEvent("xxx");
@@ -52,21 +58,7 @@ public class TestEventBus {
   }
 
   @Test
-  public void checkEventCanNotReceivedAfterUnregister() throws InterruptedException {
-    AtomicBoolean eventReceived = new AtomicBoolean(false);
-
-    EventListener<String> listener = new EventListener<String>() {
-      @Override
-      public Class<String> getEventClass() {
-        return String.class;
-      }
-
-      @Override
-      public void process(String data) {
-        eventReceived.set(true);
-      }
-    };
-
+  public void checkEventCanNotReceivedAfterUnregister() {
     EventBus.getInstance().registerEventListener(listener);
 
     EventBus.getInstance().triggerEvent("xxx");
@@ -78,7 +70,15 @@ public class TestEventBus {
 
     EventBus.getInstance().unregisterEventListener(listener);
     EventBus.getInstance().triggerEvent("xxx");
-    Thread.sleep(1000);
+    Assert.assertFalse(eventReceived.get());
+  }
+
+  @Test
+  public void checkUnmatchTypeWillNotReceived() {
+    EventBus.getInstance().registerEventListener(listener);
+
+    //trigger a Integer type event object
+    EventBus.getInstance().triggerEvent(new Integer(1));
     Assert.assertFalse(eventReceived.get());
   }
 }

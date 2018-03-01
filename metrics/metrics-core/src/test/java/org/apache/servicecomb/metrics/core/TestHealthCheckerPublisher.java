@@ -24,46 +24,60 @@ import org.apache.servicecomb.foundation.metrics.health.HealthChecker;
 import org.apache.servicecomb.foundation.metrics.health.HealthCheckerManager;
 import org.apache.servicecomb.metrics.core.publish.HealthCheckerPublisher;
 import org.junit.Assert;
-import org.junit.BeforeClass;
+import org.junit.Before;
 import org.junit.Test;
 
 public class TestHealthCheckerPublisher {
+  private HealthChecker good = new HealthChecker() {
+    @Override
+    public String getName() {
+      return "test";
+    }
 
-  @BeforeClass
-  public static void setup() {
-    HealthCheckerManager.getInstance().register(new HealthChecker() {
-      @Override
-      public String getName() {
-        return "test";
-      }
+    @Override
+    public HealthCheckResult check() {
+      return new HealthCheckResult(true, "info", "extra data");
+    }
+  };
 
-      @Override
-      public HealthCheckResult check() {
-        return new HealthCheckResult(true, "info", "extra data");
-      }
-    });
+  private HealthChecker bad = new HealthChecker() {
+    @Override
+    public String getName() {
+      return "test2";
+    }
 
-    HealthCheckerManager.getInstance().register(new HealthChecker() {
-      @Override
-      public String getName() {
-        return "test2";
-      }
+    @Override
+    public HealthCheckResult check() {
+      return new HealthCheckResult(false, "info2", "extra data 2");
+    }
+  };
 
-      @Override
-      public HealthCheckResult check() {
-        return new HealthCheckResult(false, "info2", "extra data 2");
-      }
-    });
+
+  @Before
+  public void reset() {
+    HealthCheckerManager.getInstance().unregister(good.getName());
+    HealthCheckerManager.getInstance().unregister(bad.getName());
   }
 
   @Test
-  public void checkHealth() {
+  public void checkHealthGood() {
+    HealthCheckerManager.getInstance().register(good);
+    HealthCheckerPublisher publisher = new HealthCheckerPublisher();
+    Assert.assertEquals(true, publisher.checkHealth());
+  }
+
+  @Test
+  public void checkHealthBad() {
+    HealthCheckerManager.getInstance().register(good);
+    HealthCheckerManager.getInstance().register(bad);
     HealthCheckerPublisher publisher = new HealthCheckerPublisher();
     Assert.assertEquals(false, publisher.checkHealth());
   }
 
   @Test
   public void checkHealthDetails() {
+    HealthCheckerManager.getInstance().register(good);
+    HealthCheckerManager.getInstance().register(bad);
     HealthCheckerPublisher publisher = new HealthCheckerPublisher();
     Map<String, HealthCheckResult> content = publisher.checkHealthDetails();
     Assert.assertEquals(true, content.get("test").isHealthy());

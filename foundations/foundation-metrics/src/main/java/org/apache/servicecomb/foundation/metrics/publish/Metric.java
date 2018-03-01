@@ -21,12 +21,13 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.servicecomb.foundation.common.exceptions.ServiceCombException;
 import org.apache.servicecomb.foundation.metrics.MetricsConst;
 
 public class Metric {
-  private final String name;
+  private String name;
 
-  private final Map<String, String> tags;
+  private Map<String, String> tags;
 
   private double value;
 
@@ -35,14 +36,41 @@ public class Metric {
   }
 
   public Metric(String id, double value) {
-    String[] nameAndTag = id.split("\\(");
-    this.tags = new HashMap<>();
-    String[] tagAnValues = nameAndTag[1].split("[=,)]");
-    for (int i = 0; i < tagAnValues.length; i += 2) {
-      this.tags.put(tagAnValues[i], tagAnValues[i + 1]);
+    if (validateMetricId(id)) {
+      this.tags = new HashMap<>();
+      this.value = value;
+      String[] nameAndTag = id.split("[()]");
+      if (nameAndTag.length == 1) {
+        processIdWithoutTags(id, nameAndTag[0]);
+      } else if (nameAndTag.length == 2) {
+        processIdHadTags(id, nameAndTag);
+      } else {
+        throw new ServiceCombException("bad format id " + id);
+      }
+    } else {
+      throw new ServiceCombException("bad format id " + id);
     }
+  }
+
+  private void processIdWithoutTags(String id, String name) {
+    if (!id.endsWith(")")) {
+      this.name = name;
+    } else {
+      throw new ServiceCombException("bad format id " + id);
+    }
+  }
+
+  private void processIdHadTags(String id, String[] nameAndTag) {
     this.name = nameAndTag[0];
-    this.value = value;
+    String[] tagAnValues = nameAndTag[1].split(",");
+    for (String tagAnValue : tagAnValues) {
+      String[] kv = tagAnValue.split("=");
+      if (kv.length == 2) {
+        this.tags.put(kv[0], kv[1]);
+      } else {
+        throw new ServiceCombException("bad format tag " + id);
+      }
+    }
   }
 
   public double getValue() {
@@ -58,6 +86,10 @@ public class Metric {
     return value;
   }
 
+  public int getTagsCount() {
+    return tags.size();
+  }
+
   public boolean containsTagKey(String tagKey) {
     return tags.containsKey(tagKey);
   }
@@ -71,11 +103,29 @@ public class Metric {
   }
 
   public boolean containsTag(String... tags) {
-    for (int i = 0; i < tags.length; i += 2) {
-      if (!containsTag(tags[i], tags[i + 1])) {
-        return false;
+    if (tags.length >= 2 && tags.length % 2 == 0) {
+      for (int i = 0; i < tags.length; i += 2) {
+        if (!containsTag(tags[i], tags[i + 1])) {
+          return false;
+        }
+      }
+      return true;
+    }
+    throw new ServiceCombException("bad tags count : " + String.join(",", tags));
+  }
+
+  private int getCharCount(String id, char c) {
+    int count = 0;
+    for (char cr : id.toCharArray()) {
+      if (cr == c) {
+        count++;
       }
     }
-    return true;
+    return count;
+  }
+
+  private boolean validateMetricId(String id) {
+    return id != null && !"".equals(id) && !id.endsWith("(") &&
+        getCharCount(id, '(') <= 1 && getCharCount(id, ')') <= 1;
   }
 }

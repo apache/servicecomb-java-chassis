@@ -17,7 +17,9 @@
 
 package org.apache.servicecomb.metrics.core;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.SortedMap;
@@ -25,7 +27,9 @@ import java.util.TreeMap;
 import java.util.concurrent.Callable;
 import java.util.function.Function;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.foundation.common.concurrent.ConcurrentHashMapEx;
+import org.apache.servicecomb.foundation.common.exceptions.ServiceCombException;
 import org.apache.servicecomb.foundation.metrics.MetricsConst;
 
 import com.netflix.config.DynamicPropertyFactory;
@@ -56,6 +60,8 @@ public class MonitorManager {
 
   private final MonitorRegistry basicMonitorRegistry;
 
+  private static final char[] forbiddenCharacter = new char[] {'(', ')', '=', ','};
+
   private static final MonitorManager INSTANCE = new MonitorManager();
 
   public static MonitorManager getInstance() {
@@ -78,6 +84,7 @@ public class MonitorManager {
   }
 
   public Counter getCounter(String name, String... tags) {
+    validateMonitorNameAndTags(name, tags);
     return counters.computeIfAbsent(getMonitorKey(name, tags), f -> {
       Counter counter = new BasicCounter(getConfig(name, tags));
       basicMonitorRegistry.register(counter);
@@ -86,6 +93,7 @@ public class MonitorManager {
   }
 
   public Counter getCounter(Function<MonitorConfig, Counter> function, String name, String... tags) {
+    validateMonitorNameAndTags(name, tags);
     return counters.computeIfAbsent(getMonitorKey(name, tags), f -> {
       Counter counter = function.apply(getConfig(name, tags));
       basicMonitorRegistry.register(counter);
@@ -94,6 +102,7 @@ public class MonitorManager {
   }
 
   public MaxGauge getMaxGauge(String name, String... tags) {
+    validateMonitorNameAndTags(name, tags);
     return maxGauges.computeIfAbsent(getMonitorKey(name, tags), f -> {
       MaxGauge maxGauge = new MaxGauge(getConfig(name, tags));
       basicMonitorRegistry.register(maxGauge);
@@ -102,6 +111,7 @@ public class MonitorManager {
   }
 
   public <V extends Number> Gauge getGauge(Callable<V> callable, String name, String... tags) {
+    validateMonitorNameAndTags(name, tags);
     return gauges.computeIfAbsent(getMonitorKey(name, tags), f -> {
       Gauge gauge = new BasicGauge<>(getConfig(name, tags), callable);
       basicMonitorRegistry.register(gauge);
@@ -110,6 +120,7 @@ public class MonitorManager {
   }
 
   public Timer getTimer(String name, String... tags) {
+    validateMonitorNameAndTags(name, tags);
     return timers.computeIfAbsent(getMonitorKey(name, tags), f -> {
       Timer timer = new BasicTimer(getConfig(name, tags));
       basicMonitorRegistry.register(timer);
@@ -127,6 +138,7 @@ public class MonitorManager {
   }
 
   private MonitorConfig getConfig(String name, String... tags) {
+    validateMonitorNameAndTags(name, tags);
     Builder builder = MonitorConfig.builder(name);
     for (int i = 0; i < tags.length; i += 2) {
       builder.withTag(tags[i], tags[i + 1]);
@@ -135,6 +147,7 @@ public class MonitorManager {
   }
 
   private String getMonitorKey(String name, String... tags) {
+    validateMonitorNameAndTags(name, tags);
     if (tags.length != 0) {
       SortedMap<String, String> tagMap = new TreeMap<>();
       for (int i = 0; i < tags.length; i += 2) {
@@ -152,16 +165,15 @@ public class MonitorManager {
   }
 
   private String getMonitorKey(MonitorConfig config) {
-    TagList tags = config.getTags();
-    StringBuilder tagPart = new StringBuilder("(");
-    for (Tag tag : tags) {
+    TagList tagList = config.getTags();
+    List<String> tags = new ArrayList<>();
+    for (Tag tag : tagList) {
       if (!"type".equals(tag.getKey())) {
-        tagPart.append(String.format("%s=%s,", tag.getKey(), tag.getValue()));
+        tags.add(tag.getKey());
+        tags.add(tag.getValue());
       }
     }
-    tagPart.deleteCharAt(tagPart.length() - 1);
-    tagPart.append(")");
-    return config.getName() + tagPart.toString();
+    return getMonitorKey(config.getName(), tags.toArray(new String[0]));
   }
 
 
@@ -181,5 +193,25 @@ public class MonitorManager {
 
   private <V extends Number> void registerSystemMetricItem(Callable<V> callable, String name) {
     this.getGauge(callable, MetricsConst.JVM, MetricsConst.TAG_STATISTIC, "gauge", MetricsConst.TAG_NAME, name);
+  }
+
+  private void validateMonitorNameAndTags(String name, String... tags) {
+    boolean passed = StringUtils.isNotEmpty(name) && tags.length % 2 == 0;
+    if (passed) {
+      if (StringUtils.containsNone(name, forbiddenCharacter)) {
+        for (String tag : tags) {
+          if (StringUtils.containsAny(tag, forbiddenCharacter)) {
+            throw new ServiceCombException(
+                "validate name and tags failed name = " + name + " tags = " + String.join(",", tags));
+          }
+        }
+      } else {
+        throw new ServiceCombException(
+            "validate name and tags failed name = " + name + " tags = " + String.join(",", tags));
+      }
+    } else {
+      throw new ServiceCombException(
+          "validate name and tags failed name = " + name + " tags = " + String.join(",", tags));
+    }
   }
 }

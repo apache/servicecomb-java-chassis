@@ -20,9 +20,12 @@ package org.apache.servicecomb.foundation.metrics.publish;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.servicecomb.foundation.common.exceptions.ServiceCombException;
 import org.junit.Assert;
 import org.junit.BeforeClass;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 
 public class TestMetricsLoader {
   private static MetricsLoader loader;
@@ -52,5 +55,15 @@ public class TestMetricsLoader {
   public void checkGetChildrenCount() {
     MetricNode node = loader.getMetricTree("X", "K1");
     Assert.assertEquals(2, node.getChildrenCount());
+  }
+
+  @Rule
+  public ExpectedException thrown = ExpectedException.none();
+
+  @Test
+  public void checkNoSuchId() {
+    thrown.expect(ServiceCombException.class);
+    loader.getMetricTree("Z");
+    Assert.fail("checkNoSuchId failed");
   }
 }

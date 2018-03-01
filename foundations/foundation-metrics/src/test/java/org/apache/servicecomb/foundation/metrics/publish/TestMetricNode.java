@@ -17,7 +17,9 @@
 
 package org.apache.servicecomb.foundation.metrics.publish;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
@@ -86,5 +88,22 @@ public class TestMetricNode {
     MetricNode node_k1 = node.getChildrenNode("1");
     MetricNode newNode = new MetricNode(node_k1.getMetrics(), "K2", "K3");
     Assert.assertEquals(1, newNode.getChildrenNode("2").getChildrenNode("3").getMetricCount(), 0);
+  }
+
+  @Test
+  public void testNewMetricNode() {
+    List<Metric> metrics = new ArrayList<>();
+    metrics.add(new Metric("Y(K1=1,K2=2,K3=3)", 1));
+    metrics.add(new Metric("Y(K1=1,K2=20,K3=30)", 10));
+    metrics.add(new Metric("Y(K1=10,K2=20,K3=300)", 100));
+    metrics.add(new Metric("Y(K1=10,K2=20,K3=3000)", 1000));
+
+    MetricNode node = new MetricNode(metrics);
+    Assert.assertEquals(4, node.getMetricCount());
+    Assert.assertEquals(1.0, node.getFirstMatchMetricValue("K3", "3"), 0);
+
+    node = new MetricNode(metrics, "K1");
+    Assert.assertEquals(2, node.getChildrenCount());
+    Assert.assertEquals(1.0, node.getChildren("1").getFirstMatchMetricValue("K3", "3"), 0);
   }
 }
