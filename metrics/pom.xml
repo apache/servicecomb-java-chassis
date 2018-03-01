@@ -33,7 +33,6 @@
 
   <modules>
     <module>metrics-core</module>
-    <module>metrics-extension</module>
     <module>metrics-integration</module>
   </modules>
 
