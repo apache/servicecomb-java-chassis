@@ -84,58 +84,48 @@ public class MonitorManager {
   }
 
   public Counter getCounter(String name, String... tags) {
-    if (isCorrectMonitorNameAndTags(name, tags)) {
-      return counters.computeIfAbsent(getMonitorKey(name, tags), f -> {
-        Counter counter = new BasicCounter(getConfig(name, tags));
-        basicMonitorRegistry.register(counter);
-        return counter;
-      });
-    }
-    throw new ServiceCombException("bad name or tags count");
+    validateMonitorNameAndTags(name, tags);
+    return counters.computeIfAbsent(getMonitorKey(name, tags), f -> {
+      Counter counter = new BasicCounter(getConfig(name, tags));
+      basicMonitorRegistry.register(counter);
+      return counter;
+    });
   }
 
   public Counter getCounter(Function<MonitorConfig, Counter> function, String name, String... tags) {
-    if (isCorrectMonitorNameAndTags(name, tags)) {
-      return counters.computeIfAbsent(getMonitorKey(name, tags), f -> {
-        Counter counter = function.apply(getConfig(name, tags));
-        basicMonitorRegistry.register(counter);
-        return counter;
-      });
-    }
-    throw new ServiceCombException("bad name or tags count");
+    validateMonitorNameAndTags(name, tags);
+    return counters.computeIfAbsent(getMonitorKey(name, tags), f -> {
+      Counter counter = function.apply(getConfig(name, tags));
+      basicMonitorRegistry.register(counter);
+      return counter;
+    });
   }
 
   public MaxGauge getMaxGauge(String name, String... tags) {
-    if (isCorrectMonitorNameAndTags(name, tags)) {
-      return maxGauges.computeIfAbsent(getMonitorKey(name, tags), f -> {
-        MaxGauge maxGauge = new MaxGauge(getConfig(name, tags));
-        basicMonitorRegistry.register(maxGauge);
-        return maxGauge;
-      });
-    }
-    throw new ServiceCombException("bad name or tags count");
+    validateMonitorNameAndTags(name, tags);
+    return maxGauges.computeIfAbsent(getMonitorKey(name, tags), f -> {
+      MaxGauge maxGauge = new MaxGauge(getConfig(name, tags));
+      basicMonitorRegistry.register(maxGauge);
+      return maxGauge;
+    });
   }
 
   public <V extends Number> Gauge getGauge(Callable<V> callable, String name, String... tags) {
-    if (isCorrectMonitorNameAndTags(name, tags)) {
-      return gauges.computeIfAbsent(getMonitorKey(name, tags), f -> {
-        Gauge gauge = new BasicGauge<>(getConfig(name, tags), callable);
-        basicMonitorRegistry.register(gauge);
-        return gauge;
-      });
-    }
-    throw new ServiceCombException("bad name or tags count");
+    validateMonitorNameAndTags(name, tags);
+    return gauges.computeIfAbsent(getMonitorKey(name, tags), f -> {
+      Gauge gauge = new BasicGauge<>(getConfig(name, tags), callable);
+      basicMonitorRegistry.register(gauge);
+      return gauge;
+    });
   }
 
   public Timer getTimer(String name, String... tags) {
-    if (isCorrectMonitorNameAndTags(name, tags)) {
-      return timers.computeIfAbsent(getMonitorKey(name, tags), f -> {
-        Timer timer = new BasicTimer(getConfig(name, tags));
-        basicMonitorRegistry.register(timer);
-        return timer;
-      });
-    }
-    throw new ServiceCombException("bad name or tags count");
+    validateMonitorNameAndTags(name, tags);
+    return timers.computeIfAbsent(getMonitorKey(name, tags), f -> {
+      Timer timer = new BasicTimer(getConfig(name, tags));
+      basicMonitorRegistry.register(timer);
+      return timer;
+    });
   }
 
   public Map<String, Double> measure() {
@@ -148,34 +138,30 @@ public class MonitorManager {
   }
 
   private MonitorConfig getConfig(String name, String... tags) {
-    if (isCorrectMonitorNameAndTags(name, tags)) {
-      Builder builder = MonitorConfig.builder(name);
-      for (int i = 0; i < tags.length; i += 2) {
-        builder.withTag(tags[i], tags[i + 1]);
-      }
-      return builder.build();
+    validateMonitorNameAndTags(name, tags);
+    Builder builder = MonitorConfig.builder(name);
+    for (int i = 0; i < tags.length; i += 2) {
+      builder.withTag(tags[i], tags[i + 1]);
     }
-    throw new ServiceCombException("bad name or tags count");
+    return builder.build();
   }
 
   private String getMonitorKey(String name, String... tags) {
-    if (isCorrectMonitorNameAndTags(name, tags)) {
-      if (tags.length != 0) {
-        SortedMap<String, String> tagMap = new TreeMap<>();
-        for (int i = 0; i < tags.length; i += 2) {
-          tagMap.put(tags[i], tags[i + 1]);
-        }
-        StringBuilder builder = new StringBuilder("(");
-        for (Entry<String, String> entry : tagMap.entrySet()) {
-          builder.append(String.format("%s=%s,", entry.getKey(), entry.getValue()));
-        }
-        builder.deleteCharAt(builder.length() - 1);
-        builder.append(")");
-        return name + builder.toString();
+    validateMonitorNameAndTags(name, tags);
+    if (tags.length != 0) {
+      SortedMap<String, String> tagMap = new TreeMap<>();
+      for (int i = 0; i < tags.length; i += 2) {
+        tagMap.put(tags[i], tags[i + 1]);
       }
-      return name;
+      StringBuilder builder = new StringBuilder("(");
+      for (Entry<String, String> entry : tagMap.entrySet()) {
+        builder.append(String.format("%s=%s,", entry.getKey(), entry.getValue()));
+      }
+      builder.deleteCharAt(builder.length() - 1);
+      builder.append(")");
+      return name + builder.toString();
     }
-    throw new ServiceCombException("bad name or tags count");
+    return name;
   }
 
   private String getMonitorKey(MonitorConfig config) {
@@ -209,18 +195,23 @@ public class MonitorManager {
     this.getGauge(callable, MetricsConst.JVM, MetricsConst.TAG_STATISTIC, "gauge", MetricsConst.TAG_NAME, name);
   }
 
-  private boolean isCorrectMonitorNameAndTags(String name, String... tags) {
+  private void validateMonitorNameAndTags(String name, String... tags) {
     boolean passed = StringUtils.isNotEmpty(name) && tags.length % 2 == 0;
     if (passed) {
       if (StringUtils.containsNone(name, forbiddenCharacter)) {
         for (String tag : tags) {
           if (StringUtils.containsAny(tag, forbiddenCharacter)) {
-            return false;
+            throw new ServiceCombException(
+                "validate name and tags failed name = " + name + " tags = " + String.join(",", tags));
           }
         }
-        return true;
+      } else {
+        throw new ServiceCombException(
+            "validate name and tags failed name = " + name + " tags = " + String.join(",", tags));
       }
+    } else {
+      throw new ServiceCombException(
+          "validate name and tags failed name = " + name + " tags = " + String.join(",", tags));
     }
-    return false;
   }
 }

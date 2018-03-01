@@ -19,12 +19,13 @@ package org.apache.servicecomb.foundation.metrics.publish;
 
 import org.apache.servicecomb.foundation.common.exceptions.ServiceCombException;
 import org.junit.Assert;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 
 public class TestMetric {
-
   @Test
-  public void testNewMetric() throws Exception {
+  public void testNewMetric() {
 
     Metric metric = new Metric("Key", 100);
     Assert.assertEquals(0, metric.getTagsCount());
@@ -39,6 +40,12 @@ public class TestMetric {
     Assert.assertEquals(true, metric.containsTagKey("B"));
     Assert.assertEquals("1", metric.getTagValue("A"));
     Assert.assertEquals("X", metric.getTagValue("B"));
+
+    checkBadIdFormat(null);
+    checkBadIdFormat("");
+    checkBadIdFormat("(");
+    checkBadIdFormat(")");
+    checkBadIdFormat("()");
 
     checkBadIdFormat("Key(");
     checkBadIdFormat("Key)");
@@ -80,42 +87,32 @@ public class TestMetric {
   }
 
   @Test
-  public void checkMetricContainsTag() throws Exception {
+  public void checkMetricContainsTag() {
     Metric metric = new Metric("Key(A=1,B=X)", 100);
     Assert.assertEquals(true, metric.containsTag("A", "1"));
-
-    try {
-      metric.containsTag("A");
-      throw new Exception("CheckFailed");
-    }
-    //ignore because throw exception is correct
-    catch (ServiceCombException ignore) {
-    }
-
-    try {
-      metric.containsTag("A", "1", "B");
-      throw new Exception("CheckFailed");
-    }
-    //ignore because throw exception is correct
-    catch (ServiceCombException ignore) {
-    }
-
-    try {
-      metric.containsTag("A", "1", "B", "X", "C");
-      throw new Exception("CheckFailed");
-    }
-    //ignore because throw exception is correct
-    catch (ServiceCombException ignore) {
-    }
   }
 
-  private void checkBadIdFormat(String id) throws Exception {
-    try {
-      new Metric(id, 100);
-      throw new Exception("CheckFailed");
-    }
-    //ignore because throw exception is correct
-    catch (ServiceCombException ignore) {
-    }
+  @Test
+  public void checkMetricContainsTagWithWrongTagsCount() {
+    Metric metric = new Metric("Key(A=1,B=X)", 100);
+    checkMetricContainsTagWithWrongTagsCount(metric, "A");
+    checkMetricContainsTagWithWrongTagsCount(metric, "A", "1", "B");
+    checkMetricContainsTagWithWrongTagsCount(metric, "A", "1", "B", "X", "C");
+  }
+
+
+  @Rule
+  public ExpectedException thrown = ExpectedException.none();
+
+  private void checkMetricContainsTagWithWrongTagsCount(Metric metric, String... tags) {
+    thrown.expect(ServiceCombException.class);
+    metric.containsTag(tags);
+    Assert.fail("checkMetricContainsTagWithWrongTagsCount failed : " + String.join(",", tags));
+  }
+
+  private void checkBadIdFormat(String id) {
+    thrown.expect(ServiceCombException.class);
+    new Metric(id, 100);
+    Assert.fail("checkBadIdFormat failed : " + id);
   }
 }

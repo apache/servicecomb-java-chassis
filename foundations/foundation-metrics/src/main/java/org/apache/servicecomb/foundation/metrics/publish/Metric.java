@@ -36,7 +36,7 @@ public class Metric {
   }
 
   public Metric(String id, double value) {
-    if (isCorrectId(id)) {
+    if (validateMetricId(id)) {
       this.tags = new HashMap<>();
       this.value = value;
       String[] nameAndTag = id.split("[()]");
@@ -44,7 +44,7 @@ public class Metric {
         if (!id.endsWith(")")) {
           this.name = nameAndTag[0];
         } else {
-          throw new ServiceCombException("bad format id");
+          throw new ServiceCombException("bad format id " + id);
         }
       } else if (nameAndTag.length == 2) {
         this.name = nameAndTag[0];
@@ -54,14 +54,14 @@ public class Metric {
           if (kv.length == 2) {
             this.tags.put(kv[0], kv[1]);
           } else {
-            throw new ServiceCombException("bad format tag");
+            throw new ServiceCombException("bad format tag " + id);
           }
         }
       } else {
-        throw new ServiceCombException("bad format id");
+        throw new ServiceCombException("bad format id " + id);
       }
     } else {
-      throw new ServiceCombException("bad format id");
+      throw new ServiceCombException("bad format id " + id);
     }
   }
 
@@ -103,7 +103,7 @@ public class Metric {
       }
       return true;
     }
-    throw new ServiceCombException("bad tags count");
+    throw new ServiceCombException("bad tags count : " + String.join(",", tags));
   }
 
   private int getCharCount(String id, char c) {
@@ -116,7 +116,8 @@ public class Metric {
     return count;
   }
 
-  private boolean isCorrectId(String id) {
-    return id != null && !id.endsWith("(") && getCharCount(id, '(') <= 1 && getCharCount(id, ')') <= 1;
+  private boolean validateMetricId(String id) {
+    return id != null && !"".equals(id) && !id.endsWith("(") &&
+        getCharCount(id, '(') <= 1 && getCharCount(id, ')') <= 1;
   }
 }

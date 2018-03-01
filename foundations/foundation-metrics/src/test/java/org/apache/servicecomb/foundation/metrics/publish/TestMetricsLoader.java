@@ -23,7 +23,9 @@ import java.util.Map;
 import org.apache.servicecomb.foundation.common.exceptions.ServiceCombException;
 import org.junit.Assert;
 import org.junit.BeforeClass;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 
 public class TestMetricsLoader {
   private static MetricsLoader loader;
@@ -55,14 +57,13 @@ public class TestMetricsLoader {
     Assert.assertEquals(2, node.getChildrenCount());
   }
 
+  @Rule
+  public ExpectedException thrown = ExpectedException.none();
+
   @Test
-  public void checkNoSuchId() throws Exception {
-    try {
-      loader.getMetricTree("Z");
-      throw new Exception("CheckFailed");
-    }
-    //ignore because throw exception is correct
-    catch (ServiceCombException ignore) {
-    }
+  public void checkNoSuchId() {
+    thrown.expect(ServiceCombException.class);
+    loader.getMetricTree("Z");
+    Assert.fail("checkNoSuchId failed");
   }
 }

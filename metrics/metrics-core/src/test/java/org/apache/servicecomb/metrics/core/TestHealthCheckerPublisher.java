@@ -24,6 +24,7 @@ import org.apache.servicecomb.foundation.metrics.health.HealthChecker;
 import org.apache.servicecomb.foundation.metrics.health.HealthCheckerManager;
 import org.apache.servicecomb.metrics.core.publish.HealthCheckerPublisher;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 
 public class TestHealthCheckerPublisher {
@@ -52,14 +53,14 @@ public class TestHealthCheckerPublisher {
   };
 
 
-  private void reset() {
+  @Before
+  public void reset() {
     HealthCheckerManager.getInstance().unregister(good.getName());
     HealthCheckerManager.getInstance().unregister(bad.getName());
   }
 
   @Test
   public void checkHealthGood() {
-    reset();
     HealthCheckerManager.getInstance().register(good);
     HealthCheckerPublisher publisher = new HealthCheckerPublisher();
     Assert.assertEquals(true, publisher.checkHealth());
@@ -67,7 +68,6 @@ public class TestHealthCheckerPublisher {
 
   @Test
   public void checkHealthBad() {
-    reset();
     HealthCheckerManager.getInstance().register(good);
     HealthCheckerManager.getInstance().register(bad);
     HealthCheckerPublisher publisher = new HealthCheckerPublisher();
@@ -76,7 +76,6 @@ public class TestHealthCheckerPublisher {
 
   @Test
   public void checkHealthDetails() {
-    reset();
     HealthCheckerManager.getInstance().register(good);
     HealthCheckerManager.getInstance().register(bad);
     HealthCheckerPublisher publisher = new HealthCheckerPublisher();

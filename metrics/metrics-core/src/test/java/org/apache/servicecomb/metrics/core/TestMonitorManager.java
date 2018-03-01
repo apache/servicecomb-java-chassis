@@ -31,7 +31,9 @@ import org.apache.servicecomb.foundation.metrics.publish.MetricsLoader;
 import org.apache.servicecomb.swagger.invocation.InvocationType;
 import org.junit.Assert;
 import org.junit.BeforeClass;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 
 import com.netflix.servo.monitor.Counter;
 
@@ -274,51 +276,46 @@ public class TestMonitorManager {
     Assert.assertEquals(999, MonitorManager.getInstance().measure().get("MonitorWithoutAnyTag"), 0);
   }
 
-  @Test
-  public void checkRegisterMonitorWithBadTags() throws Exception {
-    MonitorManager.getInstance().getCounter("Monitor", "X", "Y");
+  @Rule
+  public ExpectedException thrown = ExpectedException.none();
 
-    try {
-      MonitorManager.getInstance().getCounter("MonitorWithBadCountTag", "X");
-      throw new Exception("CheckFailed");
-    }
-    //ignore because throw exception is correct
-    catch (ServiceCombException ignore) {
-    }
+  @Test
+  public void checkRegisterMonitor() {
+    MonitorManager.getInstance().getCounter("Monitor", "X", "Y");
   }
 
   @Test
-  public void checkRegisterMonitorWithBadNameAndTags() throws Exception {
-    try {
-      MonitorManager.getInstance().getCounter("MonitorWithBad(");
-      throw new Exception("CheckFailed");
-    }
-    //ignore because throw exception is correct
-    catch (ServiceCombException ignore) {
-    }
+  public void checkRegisterMonitorWithBadTags() {
+    thrown.expect(ServiceCombException.class);
+    MonitorManager.getInstance().getCounter("MonitorWithBadCountTag", "X");
+    Assert.fail("checkRegisterMonitorWithBadTags failed");
+  }
 
-    try {
-      MonitorManager.getInstance().getCounter("MonitorWithBad,");
-      throw new Exception("CheckFailed");
-    }
-    //ignore because throw exception is correct
-    catch (ServiceCombException ignore) {
-    }
+  @Test
+  public void checkRegisterMonitorWithBadNameAndTags_ContainLeftParenthesisChar() {
+    thrown.expect(ServiceCombException.class);
+    MonitorManager.getInstance().getCounter("MonitorWithBad(");
+    Assert.fail("checkRegisterMonitorWithBadTags failed : MonitorWithBad(");
+  }
 
-    try {
-      MonitorManager.getInstance().getCounter("MonitorWithBad","TagX=","Y");
-      throw new Exception("CheckFailed");
-    }
-    //ignore because throw exception is correct
-    catch (ServiceCombException ignore) {
-    }
+  @Test
+  public void checkRegisterMonitorWithBadNameAndTags_ContainCommaChar() {
+    thrown.expect(ServiceCombException.class);
+    MonitorManager.getInstance().getCounter("MonitorWithBad,");
+    Assert.fail("checkRegisterMonitorWithBadTags failed : MonitorWithBad,");
+  }
 
-    try {
-      MonitorManager.getInstance().getCounter("MonitorWithBad","TagX","Y)");
-      throw new Exception("CheckFailed");
-    }
-    //ignore because throw exception is correct
-    catch (ServiceCombException ignore) {
-    }
+  @Test
+  public void checkRegisterMonitorWithBadNameAndTags_ContainEqualChar() {
+    thrown.expect(ServiceCombException.class);
+    MonitorManager.getInstance().getCounter("MonitorWithBad", "TagX=", "Y");
+    Assert.fail("checkRegisterMonitorWithBadTags failed : name = MonitorWithBad, tags = TagX=,Y");
+  }
+
+  @Test
+  public void checkRegisterMonitorWithBadNameAndTags_ContainRightParenthesisChar() {
+    thrown.expect(ServiceCombException.class);
+    MonitorManager.getInstance().getCounter("MonitorWithBad", "TagX", "Y)");
+    Assert.fail("checkRegisterMonitorWithBadTags failed : name = MonitorWithBad, tags = TagX,Y)");
   }
 }
