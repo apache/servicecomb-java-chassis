@@ -22,7 +22,7 @@
     <parent>
         <artifactId>demo-parent</artifactId>
         <groupId>org.apache.servicecomb.demo</groupId>
-        <version>1.0.0-m1-SNAPSHOT</version>
+        <version>1.0.0-m1</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 

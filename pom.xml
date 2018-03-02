@@ -29,7 +29,7 @@
 
   <groupId>org.apache.servicecomb</groupId>
   <artifactId>java-chassis</artifactId>
-  <version>1.0.0-m1-SNAPSHOT</version>
+  <version>1.0.0-m1</version>
   <packaging>pom</packaging>
 
   <name>ServiceComb Java Chassis</name>
