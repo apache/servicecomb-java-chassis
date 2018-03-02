@@ -19,6 +19,8 @@ package org.apache.servicecomb.qps;
 
 import org.apache.servicecomb.core.definition.OperationMeta;
 import org.apache.servicecomb.core.definition.SchemaMeta;
+import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -35,6 +37,11 @@ public class TestConsumerQpsControllermanager {
   private static String schemaQualified = microserviceName + ".server";
 
   private static String operationQualified = schemaQualified + ".test";
+
+  @After
+  public void afterTest() {
+    ArchaiusUtils.resetConfig();
+  }
 
   @Test
   public void testQpsLimit(@Mocked SchemaMeta schemaMeta, @Mocked OperationMeta operationMeta) {
@@ -71,5 +78,48 @@ public class TestConsumerQpsControllermanager {
     QpsController qpsController = mgr.getOrCreate(operationMeta);
     Assert.assertEquals(expectValue, qpsController.getQpsLimit());
     Assert.assertEquals(expectKey, qpsController.getKey());
+  }
+
+  @Test
+  public void testQpsLimitOn2Operation(@Mocked SchemaMeta schemaMeta, @Mocked OperationMeta operationMeta0,
+      @Mocked OperationMeta operationMeta1) {
+    String operationQualified1 = operationQualified + "1";
+    new Expectations() {
+      {
+        operationMeta0.getMicroserviceQualifiedName();
+        result = operationQualified;
+
+        schemaMeta.getMicroserviceQualifiedName();
+        result = schemaQualified;
+
+        operationMeta0.getMicroserviceName();
+        result = microserviceName;
+
+        operationMeta1.getMicroserviceQualifiedName();
+        result = operationQualified1;
+
+        operationMeta1.getMicroserviceName();
+        result = microserviceName;
+      }
+    };
+
+    ConsumerQpsControllerManager mgr = new ConsumerQpsControllerManager();
+    QpsController qpsController = mgr.getOrCreate(operationMeta0);
+    Assert.assertEquals((Integer) Integer.MAX_VALUE, qpsController.getQpsLimit());
+    Assert.assertEquals(microserviceName, qpsController.getKey());
+
+    qpsController = mgr.getOrCreate(operationMeta1);
+    Assert.assertEquals((Integer) Integer.MAX_VALUE, qpsController.getQpsLimit());
+    Assert.assertEquals(microserviceName, qpsController.getKey());
+
+    // As operationMeta0 and operationMeta1 belong to the same schema, once the qps configuration of the schema level
+    // is changed, both of their qpsControllers should be changed.
+    Utils.updateProperty(Config.CONSUMER_LIMIT_KEY_PREFIX + schemaQualified, 200);
+    qpsController = mgr.getOrCreate(operationMeta0);
+    Assert.assertEquals(Integer.valueOf(200), qpsController.getQpsLimit());
+    Assert.assertEquals(schemaQualified, qpsController.getKey());
+    qpsController = mgr.getOrCreate(operationMeta1);
+    Assert.assertEquals(Integer.valueOf(200), qpsController.getQpsLimit());
+    Assert.assertEquals(schemaQualified, qpsController.getKey());
   }
 }
