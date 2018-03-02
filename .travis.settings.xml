@@ -20,8 +20,8 @@
     <servers>
         <server>
             <id>apache.snapshots.https</id>
-            <username>${env.SONATYPE_USERNAME}</username>
-            <password>${env.SONATYPE_PASSWORD}</password>
+            <username>${SONATYPE_USERNAME}</username>
+            <password>${SONATYPE_PASSWORD}</password>
         </server>
     </servers>
     <profiles>
