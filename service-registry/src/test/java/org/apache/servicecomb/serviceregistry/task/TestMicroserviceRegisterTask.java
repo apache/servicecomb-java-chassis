@@ -79,6 +79,23 @@ public class TestMicroserviceRegisterTask {
   }
 
   @Test
+  public void testRegisterAuthFailed(@Mocked ServiceRegistryClient srClient) {
+    new Expectations() {
+      {
+        srClient.getMicroserviceId(anyString, anyString, anyString);
+        result = "SC_AUTH_FAILED_401002";
+      }
+    };
+
+    MicroserviceRegisterTask registerTask = new MicroserviceRegisterTask(eventBus, srClient, microservice);
+    registerTask.run();
+
+    Assert.assertEquals(false, registerTask.isRegistered());
+    Assert.assertEquals(TaskStatus.FINISHED, registerTask.getTaskStatus());
+    Assert.assertEquals(null, microservice.getServiceId());
+  }
+
+  @Test
   public void testNewRegisterSuccess(@Mocked ServiceRegistryClient srClient) {
     new Expectations() {
       {

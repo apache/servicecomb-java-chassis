@@ -17,6 +17,7 @@
 
 package org.apache.servicecomb.config.client;
 
+import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -230,5 +231,53 @@ public class TestConfigCenterClient {
     Mockito.when(event.statusCode()).thenReturn(200);
     refresh.run();
     Assert.assertEquals("Succ event trigger", map.get("result"));
+  }
+
+  @SuppressWarnings("unchecked")
+  @Test
+  public void testConfigRefreshAuthFail() {
+    ConfigCenterConfigurationSourceImpl impl = new ConfigCenterConfigurationSourceImpl();
+    impl.init(ConfigUtil.createLocalConfig());
+    UpdateHandler updateHandler = impl.new UpdateHandler();
+    HttpClientRequest request = Mockito.mock(HttpClientRequest.class);
+    Mockito.when(request.headers()).thenReturn(MultiMap.caseInsensitiveMultiMap());
+    Buffer rsp = Mockito.mock(Buffer.class);
+    Mockito.when(rsp.toString())
+        .thenReturn("{\"requestid\":{\"test123\"}");
+
+    HttpClientResponse event = Mockito.mock(HttpClientResponse.class);
+    Mockito.when(event.bodyHandler(Mockito.any(Handler.class))).then(invocation -> {
+      Handler<Buffer> handler = invocation.getArgumentAt(0, Handler.class);
+      handler.handle(rsp);
+      return null;
+    });
+    Mockito.when(event.statusCode()).thenReturn(401);
+    HttpClient httpClient = Mockito.mock(HttpClient.class);
+    Mockito.when(
+        httpClient.get(Mockito.anyInt(), Mockito.anyString(), Mockito.anyString(), Mockito.any(Handler.class)))
+        .then(invocation -> {
+          Handler<HttpClientResponse> handler = invocation.getArgumentAt(3, Handler.class);
+          handler.handle(event);
+          return request;
+        });
+    new MockUp<HttpClientWithContext>() {
+      @Mock
+      public void runOnContext(RunHandler handler) {
+        handler.run(httpClient);
+      }
+    };
+    ConfigCenterClient cc = new ConfigCenterClient(updateHandler);
+    ParseConfigUtils parseConfigUtils = new ParseConfigUtils(updateHandler);
+    MemberDiscovery memberdis = new MemberDiscovery(Arrays.asList("http://configcentertest:30103"));
+    ConfigRefresh refresh = cc.new ConfigRefresh(parseConfigUtils, memberdis);
+    refresh.run();
+    try {
+      Field filed = cc.getClass().getDeclaredField("authFailed");
+      filed.setAccessible(true);
+      boolean auth = (boolean) filed.get(cc);
+      Assert.assertTrue(auth);
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
   }
 }

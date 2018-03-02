@@ -56,6 +56,11 @@ public class MicroserviceInstanceRegisterTask extends AbstractRegisterTask {
 
   @Override
   protected boolean doRegister() {
+    if (microserviceInstance.getServiceId() == null) {
+      LOGGER.warn(
+          "***This instance lack of micro service id, maybe auth failed, please check it***! This time we will not go on.");
+      return false;
+    }
     LOGGER.info("running microservice instance register task.");
     String hostName = "";
     if (serviceRegistryConfig.isPreferIpAddress()) {

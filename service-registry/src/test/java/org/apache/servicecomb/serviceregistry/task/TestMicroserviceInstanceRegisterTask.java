@@ -65,8 +65,9 @@ public class TestMicroserviceInstanceRegisterTask {
     microservice.setAppId("app");
     microservice.setServiceName("ms");
     microservice.setServiceId("serviceId");
-
-    microservice.setInstance(new MicroserviceInstance());
+    MicroserviceInstance instance = new MicroserviceInstance();
+    instance.setServiceId("001");
+    microservice.setInstance(instance);
 
     HealthCheck healthCheck = new HealthCheck();
     healthCheck.setMode(HealthCheckMode.HEARTBEAT);
@@ -84,10 +85,23 @@ public class TestMicroserviceInstanceRegisterTask {
     Assert.assertEquals(false, registerTask.isRegistered());
     Assert.assertEquals(0, taskList.size());
   }
+  
+  @Test
+  public void microserviceInstanceNotExist() {
+    microservice.getInstance().setServiceId(null);
+
+    MicroserviceInstanceRegisterTask registerTask =
+        new MicroserviceInstanceRegisterTask(eventBus, serviceRegistryConfig, null, microservice);
+    registerTask.run();
+
+    Assert.assertEquals(false, registerTask.isRegistered());
+    Assert.assertEquals(0, taskList.size());
+  }
 
   @Test
   public void registerIpSuccess() {
     MicroserviceInstance instance = microservice.getInstance();
+    instance.setServiceId("instance001");
     new Expectations(RegistryUtils.class) {
       {
         RegistryUtils.getPublishAddress();
@@ -118,6 +132,7 @@ public class TestMicroserviceInstanceRegisterTask {
   @Test
   public void registerHostSuccess() {
     MicroserviceInstance instance = microservice.getInstance();
+    instance.setServiceId("instance001");
     new Expectations(RegistryUtils.class) {
       {
         RegistryUtils.getPublishHostName();
@@ -148,6 +163,7 @@ public class TestMicroserviceInstanceRegisterTask {
   @Test
   public void registerIpFailed() {
     MicroserviceInstance instance = microservice.getInstance();
+    instance.setServiceId("instance001");
     new Expectations(RegistryUtils.class) {
       {
         RegistryUtils.getPublishAddress();

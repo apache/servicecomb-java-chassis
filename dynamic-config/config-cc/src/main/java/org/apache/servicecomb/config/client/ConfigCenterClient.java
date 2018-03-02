@@ -108,6 +108,8 @@ public class ConfigCenterClient {
 
   private boolean isWatching = false;
 
+  private boolean authFailed = false;
+
   private static final ServiceLoader<AuthHeaderProvider> authHeaderProviders =
       ServiceLoader.load(AuthHeaderProvider.class);
 
@@ -312,6 +314,9 @@ public class ConfigCenterClient {
     }
 
     public void refreshConfig(String configcenter) {
+      if (authFailed) {
+        return;
+      }
       clientMgr.findThreadBindClientPool().runOnContext(client -> {
         String path = URIConst.ITEMS + "?dimensionsInfo=" + StringUtils.deleteWhitespace(serviceName);
         IpPort ipPort = NetUtils.parseIpPortFromURI(configcenter);
@@ -331,6 +336,10 @@ public class ConfigCenterClient {
             });
           } else {
             rsp.bodyHandler(buf -> {
+              if (rsp.statusCode() == HttpResponseStatus.UNAUTHORIZED.code()) {
+                LOGGER.error("***Auth fail, maybe ak/sk is error, will not try again***!);
+                authFailed = true;
+              }
               LOGGER.error("fetch config fail: " + buf);
             });
             EventManager.post(new ConnFailEvent("fetch config fail"));
