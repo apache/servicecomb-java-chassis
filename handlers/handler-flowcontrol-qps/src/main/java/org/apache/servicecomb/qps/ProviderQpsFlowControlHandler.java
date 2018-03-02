@@ -17,7 +17,6 @@
 
 package org.apache.servicecomb.qps;
 
-import org.apache.servicecomb.core.Const;
 import org.apache.servicecomb.core.Handler;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.swagger.invocation.AsyncResponse;
@@ -34,16 +33,8 @@ public class ProviderQpsFlowControlHandler implements Handler {
       return;
     }
 
-    String microServiceName = (String) invocation.getContext(Const.SRC_MICROSERVICE);
-    if (microServiceName != null && !microServiceName.isEmpty()) {
-      QpsController qpsController = qpsControllerMgr.getOrCreate(microServiceName);
-      if (isLimitNewRequest(qpsController, asyncResp)) {
-        return;
-      }
-    }
-
-    QpsController globalQpsController = qpsControllerMgr.getOrCreate(null);
-    if (isLimitNewRequest(globalQpsController, asyncResp)) {
+    QpsController qpsController = qpsControllerMgr.getOrCreate(invocation);
+    if (isLimitNewRequest(qpsController, asyncResp)) {
       return;
     }
 

@@ -17,6 +17,8 @@
 
 package org.apache.servicecomb.qps;
 
+import java.util.concurrent.ConcurrentHashMap;
+
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.definition.OperationMeta;
 import org.apache.servicecomb.swagger.invocation.AsyncResponse;
@@ -24,13 +26,10 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.Mockito;
 
+import mockit.Deencapsulation;
 import mockit.Mock;
 import mockit.MockUp;
 
-/**
- *
- *
- */
 public class TestConsumerQpsFlowControlHandler {
 
   ConsumerQpsFlowControlHandler handler = new ConsumerQpsFlowControlHandler();
@@ -42,7 +41,7 @@ public class TestConsumerQpsFlowControlHandler {
   OperationMeta operationMeta = Mockito.mock(OperationMeta.class);
 
   @Test
-  public void testQpsController() throws Exception {
+  public void testQpsController() {
     QpsController qpsController = new QpsController("abc", 100);
     Assert.assertEquals(false, qpsController.isLimitNewRequest());
 
@@ -68,9 +67,11 @@ public class TestConsumerQpsFlowControlHandler {
     boolean validAssert;
     try {
       validAssert = true;
+      String key = "MicroserviceQualifiedName";
+      QpsController qpsController = new QpsController("key", 12);
       Mockito.when(invocation.getOperationMeta()).thenReturn(operationMeta);
-      Mockito.when(operationMeta.getMicroserviceQualifiedName()).thenReturn("MicroserviceQualifiedName");
-
+      Mockito.when(operationMeta.getMicroserviceQualifiedName()).thenReturn(key);
+      setQpsController(key, qpsController);
       new MockUp<QpsController>() {
         @Mock
         public boolean isLimitNewRequest() {
@@ -82,7 +83,7 @@ public class TestConsumerQpsFlowControlHandler {
 
         @Mock
         protected QpsController create(OperationMeta operationMeta) {
-          return new QpsController("key", 12);
+          return qpsController;
         }
       };
       handler.handle(invocation, asyncResp);
@@ -97,8 +98,11 @@ public class TestConsumerQpsFlowControlHandler {
     boolean validAssert;
     try {
       validAssert = true;
+      String key = "MicroserviceQualifiedName";
+      QpsController qpsController = new QpsController("key", 12);
       Mockito.when(invocation.getOperationMeta()).thenReturn(operationMeta);
-      Mockito.when(operationMeta.getMicroserviceQualifiedName()).thenReturn("MicroserviceQualifiedName");
+      Mockito.when(operationMeta.getMicroserviceQualifiedName()).thenReturn(key);
+      setQpsController(key, qpsController);
 
       new MockUp<QpsController>() {
         @Mock
@@ -111,7 +115,7 @@ public class TestConsumerQpsFlowControlHandler {
 
         @Mock
         protected QpsController create(OperationMeta operationMeta) {
-          return new QpsController("key", 12);
+          return qpsController;
         }
       };
       handler.handle(invocation, asyncResp);
@@ -119,5 +123,11 @@ public class TestConsumerQpsFlowControlHandler {
       validAssert = false;
     }
     Assert.assertTrue(validAssert);
+  }
+
+  private void setQpsController(String key, QpsController qpsController) {
+    ConsumerQpsControllerManager qpsControllerManager = Deencapsulation.getField(handler, "qpsControllerMgr");
+    ConcurrentHashMap<String, QpsController> objMap = Deencapsulation.getField(qpsControllerManager, "objMap");
+    objMap.put(key, qpsController);
   }
 }

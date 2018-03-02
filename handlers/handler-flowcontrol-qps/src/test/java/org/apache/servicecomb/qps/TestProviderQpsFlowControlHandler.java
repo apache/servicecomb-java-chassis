@@ -17,10 +17,14 @@
 
 package org.apache.servicecomb.qps;
 
+import static org.junit.Assert.fail;
+
 import org.apache.servicecomb.core.Const;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.definition.OperationMeta;
+import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.apache.servicecomb.swagger.invocation.AsyncResponse;
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -42,7 +46,14 @@ public class TestProviderQpsFlowControlHandler {
 
   @Before
   public void setUP() {
+    ArchaiusUtils.resetConfig();
     Utils.updateProperty(Config.PROVIDER_LIMIT_KEY_PREFIX + "test", 1);
+  }
+
+
+  @After
+  public void afterTest() {
+    ArchaiusUtils.resetConfig();
   }
 
   @Test
@@ -52,6 +63,8 @@ public class TestProviderQpsFlowControlHandler {
       {
         invocation.getContext(Const.SRC_MICROSERVICE);
         result = "test";
+        invocation.getOperationMeta();
+        result = AbstractQpsControllerManagerTest.getMockOperationMeta("pojo", "server", "opr");
         asyncResp.producerFail((Throwable) any);
         result = new RuntimeException("test error");
       }
@@ -67,7 +80,7 @@ public class TestProviderQpsFlowControlHandler {
       gHandler.handle(invocation, asyncResp);
       count++;
       gHandler.handle(invocation, asyncResp);
-      Assert.assertTrue(false);
+      fail("An exception is expected!");
     } catch (Exception e) {
       Assert.assertEquals(2, count);
       Assert.assertEquals("test error", e.getMessage());
@@ -75,7 +88,7 @@ public class TestProviderQpsFlowControlHandler {
   }
 
   @Test
-  public void testQpsController() throws Exception {
+  public void testQpsController() {
     QpsController qpsController = new QpsController("abc", 100);
     Assert.assertEquals(false, qpsController.isLimitNewRequest());
 
@@ -104,6 +117,8 @@ public class TestProviderQpsFlowControlHandler {
     try {
       validAssert = true;
       Mockito.when(invocation.getContext(Const.SRC_MICROSERVICE)).thenReturn("test");
+      OperationMeta mockOperationMeta = AbstractQpsControllerManagerTest.getMockOperationMeta("pojo", "server", "opr");
+      Mockito.when(invocation.getOperationMeta()).thenReturn(mockOperationMeta);
 
       new MockUp<QpsController>() {
         @Mock
@@ -121,6 +136,7 @@ public class TestProviderQpsFlowControlHandler {
       };
       handler.handle(invocation, asyncResp);
     } catch (Exception e) {
+      e.printStackTrace();
       validAssert = false;
     }
     Assert.assertTrue(validAssert);
@@ -132,6 +148,9 @@ public class TestProviderQpsFlowControlHandler {
     try {
       validAssert = true;
       Mockito.when(invocation.getContext(Const.SRC_MICROSERVICE)).thenReturn("test");
+      OperationMeta mockOperationMeta = AbstractQpsControllerManagerTest
+          .getMockOperationMeta("pojo", "server", "opr");
+      Mockito.when(invocation.getOperationMeta()).thenReturn(mockOperationMeta);
 
       new MockUp<QpsController>() {
         @Mock
@@ -149,6 +168,7 @@ public class TestProviderQpsFlowControlHandler {
       };
       handler.handle(invocation, asyncResp);
     } catch (Exception e) {
+      e.printStackTrace();
       validAssert = false;
     }
     Assert.assertTrue(validAssert);

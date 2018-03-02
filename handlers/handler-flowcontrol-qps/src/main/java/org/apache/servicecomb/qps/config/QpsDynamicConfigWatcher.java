@@ -21,7 +21,6 @@ import java.util.Map;
 
 import org.apache.servicecomb.core.definition.OperationMeta;
 import org.apache.servicecomb.foundation.common.concurrent.ConcurrentHashMapEx;
-import org.apache.servicecomb.qps.Config;
 import org.apache.servicecomb.qps.QpsController;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -52,6 +51,8 @@ public class QpsDynamicConfigWatcher {
 
   private QpsController globalQpsController;
 
+  private String qpsLimitConfigKeyPrefix = "";
+
   /**
    * Register a new observer. Once the qps config is changed, observer will be noticed.
    *
@@ -68,7 +69,7 @@ public class QpsDynamicConfigWatcher {
   }
 
   public void setGlobalQpsController(String configKey) {
-    DynamicProperty property = getDynamicProperty(configKey);
+    DynamicProperty property = DynamicProperty.getInstance(configKey);
 
     globalQpsController = new QpsController(configKey, property.getInteger());
 
@@ -77,6 +78,15 @@ public class QpsDynamicConfigWatcher {
       globalQpsController.setQpsLimit(property.getInteger());
       eventBus.post(configKey);
     });
+  }
+
+  /**
+   * QpsDynamicConfigWatcher will use {@link #qpsLimitConfigKeyPrefix} + {@code key} as configuration key.
+   */
+  public QpsDynamicConfigWatcher setQpsLimitConfigKeyPrefix(String qpsLimitConfigKeyPrefix) {
+    LOGGER.info("qpsLimitConfigKeyPrefix set to [{}]", qpsLimitConfigKeyPrefix);
+    this.qpsLimitConfigKeyPrefix = qpsLimitConfigKeyPrefix;
+    return this;
   }
 
   /**
@@ -101,7 +111,7 @@ public class QpsDynamicConfigWatcher {
       createIfNotExist(key);
     }
 
-    return searchQpsController(serviceName + SEPARATOR + operationMeta.getSchemaQualifiedName());
+    return searchQpsController(key);
   }
 
   /**
@@ -126,6 +136,10 @@ public class QpsDynamicConfigWatcher {
     return qpsController;
   }
 
+  public QpsController getGlobalQpsController() {
+    return globalQpsController;
+  }
+
   /**
    * Use key to search {@link QpsController}.
    * Firstly try to search "microservice.schema.operation". If no valid result found, then try "microservice.schema",
@@ -134,7 +148,7 @@ public class QpsDynamicConfigWatcher {
    * @param key key in {@link org.apache.servicecomb.qps.ConsumerQpsControllerManager#objMap},
    * the format should be "microservice.schema.operation".
    * @return a qps controller, lower level controllers with valid qpsLimit have priority.
-   * null will be returned only when {@link #qpsControllerMap} notContains no matched key.
+   * null will be returned only when {@link #qpsControllerMap} contains no matched key.
    */
   protected QpsController searchByKey(String key) {
     QpsController qpsController = qpsControllerMap.get(key);
@@ -180,7 +194,7 @@ public class QpsDynamicConfigWatcher {
   }
 
   private DynamicProperty getDynamicProperty(String key) {
-    String configKey = Config.CONSUMER_LIMIT_KEY_PREFIX + key;
+    String configKey = qpsLimitConfigKeyPrefix + key;
     return DynamicProperty.getInstance(configKey);
   }
 

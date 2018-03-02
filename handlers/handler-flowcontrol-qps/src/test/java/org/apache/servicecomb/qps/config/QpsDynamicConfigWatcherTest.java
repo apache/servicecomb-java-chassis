@@ -111,13 +111,14 @@ public class QpsDynamicConfigWatcherTest {
   @Test
   public void getOrCreateQpsControllerOnConfigAllExist() {
     QpsDynamicConfigWatcher watcher = new QpsDynamicConfigWatcher();
+    watcher.setQpsLimitConfigKeyPrefix(Config.CONSUMER_LIMIT_KEY_PREFIX);
     OperationMeta operationMeta = Mockito.mock(OperationMeta.class);
     SchemaMeta schemaMeta = Mockito.mock(SchemaMeta.class);
     Map<String, QpsController> qpsControllerMap = Deencapsulation.getField(watcher, "qpsControllerMap");
 
-    setConfig(MICROSERVICE_NAME, 100);
-    setConfig(SCHEMA_QUALIFIED, 200);
-    setConfig(OPERATION_QUALIFIED, 300);
+    setConfigWithDefaultPrefix(MICROSERVICE_NAME, 100);
+    setConfigWithDefaultPrefix(SCHEMA_QUALIFIED, 200);
+    setConfigWithDefaultPrefix(OPERATION_QUALIFIED, 300);
 
     Mockito.when(operationMeta.getSchemaMeta()).thenReturn(schemaMeta);
     Mockito.when(operationMeta.getSchemaQualifiedName()).thenReturn("server.test");
@@ -143,11 +144,12 @@ public class QpsDynamicConfigWatcherTest {
   @Test
   public void getOrCreateQpsControllerOnServiceConfigAllExist() {
     QpsDynamicConfigWatcher watcher = new QpsDynamicConfigWatcher();
+    watcher.setQpsLimitConfigKeyPrefix(Config.CONSUMER_LIMIT_KEY_PREFIX);
     OperationMeta operationMeta = Mockito.mock(OperationMeta.class);
     SchemaMeta schemaMeta = Mockito.mock(SchemaMeta.class);
     Map<String, QpsController> qpsControllerMap = Deencapsulation.getField(watcher, "qpsControllerMap");
 
-    setConfig(MICROSERVICE_NAME, 100);
+    setConfigWithDefaultPrefix(MICROSERVICE_NAME, 100);
 
     Mockito.when(operationMeta.getSchemaMeta()).thenReturn(schemaMeta);
     Mockito.when(operationMeta.getSchemaQualifiedName()).thenReturn("server.test");
@@ -170,7 +172,11 @@ public class QpsDynamicConfigWatcherTest {
     Assert.assertNull(qpsController.getQpsLimit());
   }
 
-  private void setConfig(String key, int value) {
+  public static void setConfig(String key, int value) {
+    Utils.updateProperty(key, value);
+  }
+
+  public static void setConfigWithDefaultPrefix(String key, int value) {
     String configKey = Config.CONSUMER_LIMIT_KEY_PREFIX + key;
     // To ensure the config is initialized
     DynamicProperty.getInstance(configKey);
@@ -180,7 +186,7 @@ public class QpsDynamicConfigWatcherTest {
   @Test
   public void searchQpsController() {
     QpsDynamicConfigWatcher watcher = new QpsDynamicConfigWatcher();
-
+    watcher.setQpsLimitConfigKeyPrefix(Config.CONSUMER_LIMIT_KEY_PREFIX);
     initWatcher(watcher);
 
     QpsController qpsController = watcher.searchQpsController(OPERATION_QUALIFIED);
@@ -188,17 +194,17 @@ public class QpsDynamicConfigWatcherTest {
     Assert.assertEquals(MICROSERVICE_NAME, qpsController.getKey());
     Assert.assertNull(qpsController.getQpsLimit());
 
-    setConfig(MICROSERVICE_NAME, 100);
+    setConfigWithDefaultPrefix(MICROSERVICE_NAME, 100);
     qpsController = watcher.searchQpsController(OPERATION_QUALIFIED);
     Assert.assertEquals(MICROSERVICE_NAME, qpsController.getKey());
     Assert.assertTrue(100 == qpsController.getQpsLimit());
 
-    setConfig(SCHEMA_QUALIFIED, 200);
+    setConfigWithDefaultPrefix(SCHEMA_QUALIFIED, 200);
     qpsController = watcher.searchQpsController(OPERATION_QUALIFIED);
     Assert.assertEquals(SCHEMA_QUALIFIED, qpsController.getKey());
     Assert.assertTrue(200 == qpsController.getQpsLimit());
 
-    setConfig(OPERATION_QUALIFIED, 300);
+    setConfigWithDefaultPrefix(OPERATION_QUALIFIED, 300);
     qpsController = watcher.searchQpsController(OPERATION_QUALIFIED);
     Assert.assertEquals(OPERATION_QUALIFIED, qpsController.getKey());
     Assert.assertTrue(300 == qpsController.getQpsLimit());
@@ -207,6 +213,7 @@ public class QpsDynamicConfigWatcherTest {
   @Test
   public void searchQpsControllerOnGlobalConfigExist() {
     QpsDynamicConfigWatcher watcher = new QpsDynamicConfigWatcher();
+    watcher.setQpsLimitConfigKeyPrefix(Config.CONSUMER_LIMIT_KEY_PREFIX);
     watcher.setGlobalQpsController(Config.PROVIDER_LIMIT_KEY_GLOBAL);
 
     initWatcher(watcher);
@@ -217,17 +224,17 @@ public class QpsDynamicConfigWatcherTest {
     Assert.assertEquals(Config.PROVIDER_LIMIT_KEY_GLOBAL, qpsController.getKey());
     Assert.assertTrue(400 == qpsController.getQpsLimit());
 
-    setConfig(MICROSERVICE_NAME, 100);
+    setConfigWithDefaultPrefix(MICROSERVICE_NAME, 100);
     qpsController = watcher.searchQpsController(OPERATION_QUALIFIED);
     Assert.assertEquals(MICROSERVICE_NAME, qpsController.getKey());
     Assert.assertTrue(100 == qpsController.getQpsLimit());
 
-    setConfig(SCHEMA_QUALIFIED, 200);
+    setConfigWithDefaultPrefix(SCHEMA_QUALIFIED, 200);
     qpsController = watcher.searchQpsController(OPERATION_QUALIFIED);
     Assert.assertEquals(SCHEMA_QUALIFIED, qpsController.getKey());
     Assert.assertTrue(200 == qpsController.getQpsLimit());
 
-    setConfig(OPERATION_QUALIFIED, 300);
+    setConfigWithDefaultPrefix(OPERATION_QUALIFIED, 300);
     qpsController = watcher.searchQpsController(OPERATION_QUALIFIED);
     Assert.assertEquals(OPERATION_QUALIFIED, qpsController.getKey());
     Assert.assertTrue(300 == qpsController.getQpsLimit());
@@ -236,36 +243,37 @@ public class QpsDynamicConfigWatcherTest {
   @Test
   public void testEventNotification() {
     QpsDynamicConfigWatcher watcher = new QpsDynamicConfigWatcher();
+    watcher.setQpsLimitConfigKeyPrefix(Config.CONSUMER_LIMIT_KEY_PREFIX);
 
     initWatcher(watcher);
 
-    List<String> reciecedKey = new ArrayList<>(1);
+    List<String> receivedKey = new ArrayList<>(1);
 
     // test common key
     Object checker = new Object() {
       @Subscribe
       public void accept(String s) {
-        reciecedKey.add(s);
+        receivedKey.add(s);
         Assert.assertEquals(OPERATION_QUALIFIED, s);
       }
     };
     watcher.register(checker);
-    setConfig(OPERATION_QUALIFIED, 200);
-    Assert.assertEquals(OPERATION_QUALIFIED, reciecedKey.get(0));
+    setConfigWithDefaultPrefix(OPERATION_QUALIFIED, 200);
+    Assert.assertEquals(OPERATION_QUALIFIED, receivedKey.get(0));
     watcher.unRegister(checker);
     // test global key
-    reciecedKey.clear();
+    receivedKey.clear();
     checker = new Object() {
       @Subscribe
       public void accept(String s) {
-        reciecedKey.add(s);
+        receivedKey.add(s);
         Assert.assertEquals(Config.PROVIDER_LIMIT_KEY_GLOBAL, s);
       }
     };
     watcher.register(checker);
     watcher.setGlobalQpsController(Config.PROVIDER_LIMIT_KEY_GLOBAL);
     setConfig(Config.PROVIDER_LIMIT_KEY_GLOBAL, 400);
-    Assert.assertEquals(Config.PROVIDER_LIMIT_KEY_GLOBAL, reciecedKey.get(0));
+    Assert.assertEquals(Config.PROVIDER_LIMIT_KEY_GLOBAL, receivedKey.get(0));
     watcher.unRegister(checker);
   }
 
@@ -278,21 +286,21 @@ public class QpsDynamicConfigWatcherTest {
     initQpsController(watcher, OPERATION_QUALIFIED);
 
     String key = "pojo.server.tes";
-    setConfig(key, 1100);
+    setConfigWithDefaultPrefix(key, 1100);
     initQpsController(watcher, key);
     key = "pojo.server.test2";
-    setConfig(key, 1200);
+    setConfigWithDefaultPrefix(key, 1200);
     initQpsController(watcher, key);
     key = "pojo.serve";
-    setConfig(key, 1300);
+    setConfigWithDefaultPrefix(key, 1300);
     initQpsController(watcher, key);
-    setConfig(key, 1400);
+    setConfigWithDefaultPrefix(key, 1400);
     key = "pojo.server2";
     initQpsController(watcher, key);
-    setConfig(key, 1500);
+    setConfigWithDefaultPrefix(key, 1500);
     key = "poj";
     initQpsController(watcher, key);
-    setConfig(key, 1600);
+    setConfigWithDefaultPrefix(key, 1600);
     key = "pojo2";
     initQpsController(watcher, key);
   }
