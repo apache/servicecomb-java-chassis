@@ -337,7 +337,7 @@ public class ConfigCenterClient {
           } else {
             rsp.bodyHandler(buf -> {
               if (rsp.statusCode() == HttpResponseStatus.UNAUTHORIZED.code()) {
-                LOGGER.error("***Auth fail, maybe ak/sk is error, will not try again***!);
+                LOGGER.error("**Auth fail, maybe ak/sk is error, will not try again***!");
                 authFailed = true;
               }
               LOGGER.error("fetch config fail: " + buf);
