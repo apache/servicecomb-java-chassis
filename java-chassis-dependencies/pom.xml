@@ -810,6 +810,11 @@
       </dependency>
       <dependency>
         <groupId>org.apache.servicecomb</groupId>
+        <artifactId>handler-fault-injection</artifactId>
+        <version>0.6.0-SNAPSHOT</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.servicecomb</groupId>
         <artifactId>handler-loadbalance</artifactId>
         <version>1.0.0-m1</version>
       </dependency>
