@@ -51,6 +51,7 @@ public final class ConfigUtil {
   private static final Logger LOGGER = LoggerFactory.getLogger(ConfigUtil.class);
 
   protected static final String configCenterUrlKey = "cse.config.client.serverUri";
+  protected static final String configApolloUrlKey = "apollo.config.serverUri";
 
   private static final String MICROSERVICE_CONFIG_LOADER_KEY = "cse-microservice-config-loader";
 
@@ -150,7 +151,7 @@ public final class ConfigUtil {
   }
 
   public static DynamicWatchedConfiguration createConfigFromConfigCenter(Configuration localConfiguration) {
-    if (localConfiguration.getProperty(configCenterUrlKey) == null) {
+    if ((localConfiguration.getProperty(configCenterUrlKey) == null) && (localConfiguration.getProperties((configApolloUrlKey)) == null )) {
       LOGGER.info("config center URL is missing, skip to load configuration from config center");
       return null;
     }
