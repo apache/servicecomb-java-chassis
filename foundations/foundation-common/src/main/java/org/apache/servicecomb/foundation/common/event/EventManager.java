@@ -18,13 +18,14 @@
 package org.apache.servicecomb.foundation.common.event;
 
 import com.google.common.eventbus.EventBus;
+import com.google.common.eventbus.SimpleEventBus;
 
 /**
  * EventManager for chassis events
  *
  */
 public class EventManager {
-  public static EventBus eventBus = new EventBus();
+  public static EventBus eventBus = new SimpleEventBus();
 
   /**
    * Registering listener.
