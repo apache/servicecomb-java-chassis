@@ -46,6 +46,7 @@
     <protostuff.version>1.5.2</protostuff.version>
     <swagger.version>1.5.12</swagger.version>
     <netty.version>4.1.17.Final</netty.version>
+    <tcnetty.version>2.0.7.Final</tcnetty.version>
     <main.basedir>${basedir}/../..</main.basedir>
     <narayana.version>5.3.2.Final</narayana.version>
     <cxf.version>3.1.6</cxf.version>
@@ -241,6 +242,11 @@
         <artifactId>netty-transport</artifactId>
         <version>${netty.version}</version>
       </dependency>
+      <dependency>
+        <groupId>io.netty</groupId>
+        <artifactId>netty-tcnative-boringssl-static</artifactId>
+        <version>${tcnetty.version}</version>
+      </dependency>      
       <dependency>
         <groupId>org.powermock</groupId>
         <artifactId>powermock-api-mockito</artifactId>
