@@ -28,7 +28,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.Resource;
 
-/**
+/*
  * 场景：
  * 1.consumer
  *   网管调用产品

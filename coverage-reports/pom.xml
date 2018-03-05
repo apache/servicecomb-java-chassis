@@ -21,7 +21,7 @@
   <parent>
     <groupId>org.apache.servicecomb</groupId>
     <artifactId>java-chassis-parent</artifactId>
-    <version>1.0.0-m1-SNAPSHOT</version>
+    <version>1.0.0-m1</version>
     <relativePath>../parent</relativePath>
   </parent>
   <modelVersion>4.0.0</modelVersion>
@@ -173,92 +173,92 @@
     <dependency>
       <groupId>org.apache.servicecomb.demo</groupId>
       <artifactId>pojo-client</artifactId>
-      <version>1.0.0-m1-SNAPSHOT</version>
+      <version>1.0.0-m1</version>
     </dependency>
     <dependency>
       <groupId>org.apache.servicecomb.demo</groupId>
       <artifactId>pojo-server</artifactId>
-      <version>1.0.0-m1-SNAPSHOT</version>
+      <version>1.0.0-m1</version>
     </dependency>
     <dependency>
       <groupId>org.apache.servicecomb.demo</groupId>
       <artifactId>jaxrs-client</artifactId>
-      <version>1.0.0-m1-SNAPSHOT</version>
+      <version>1.0.0-m1</version>
     </dependency>
     <dependency>
       <groupId>org.apache.servicecomb.demo</groupId>
       <artifactId>jaxrs-server</artifactId>
-      <version>1.0.0-m1-SNAPSHOT</version>
+      <version>1.0.0-m1</version>
     </dependency>
     <dependency>
       <groupId>org.apache.servicecomb.demo</groupId>
       <artifactId>springmvc-client</artifactId>
-      <version>1.0.0-m1-SNAPSHOT</version>
+      <version>1.0.0-m1</version>
     </dependency>
     <dependency>
       <groupId>org.apache.servicecomb.demo</groupId>
       <artifactId>springmvc-server</artifactId>
-      <version>1.0.0-m1-SNAPSHOT</version>
+      <version>1.0.0-m1</version>
     </dependency>
     <dependency>
       <groupId>org.apache.servicecomb.demo</groupId>
       <artifactId>crossapp-client</artifactId>
-      <version>1.0.0-m1-SNAPSHOT</version>
+      <version>1.0.0-m1</version>
     </dependency>
     <dependency>
       <groupId>org.apache.servicecomb.demo</groupId>
       <artifactId>crossapp-server</artifactId>
-      <version>1.0.0-m1-SNAPSHOT</version>
+      <version>1.0.0-m1</version>
     </dependency>
     <dependency>
       <groupId>org.apache.servicecomb.demo</groupId>
       <artifactId>demo-spring-boot-jaxrs-server</artifactId>
-      <version>1.0.0-m1-SNAPSHOT</version>
+      <version>1.0.0-m1</version>
     </dependency>
     <dependency>
       <groupId>org.apache.servicecomb.demo</groupId>
       <artifactId>demo-spring-boot-jaxrs-client</artifactId>
-      <version>1.0.0-m1-SNAPSHOT</version>
+      <version>1.0.0-m1</version>
     </dependency>
     <dependency>
       <groupId>org.apache.servicecomb.demo</groupId>
       <artifactId>demo-spring-boot-pojo-client</artifactId>
-      <version>1.0.0-m1-SNAPSHOT</version>
+      <version>1.0.0-m1</version>
     </dependency>
     <dependency>
       <groupId>org.apache.servicecomb.demo</groupId>
       <artifactId>demo-spring-boot-pojo-server</artifactId>
-      <version>1.0.0-m1-SNAPSHOT</version>
+      <version>1.0.0-m1</version>
     </dependency>
     <dependency>
       <groupId>org.apache.servicecomb.demo</groupId>
       <artifactId>demo-spring-boot-discovery-server</artifactId>
-      <version>1.0.0-m1-SNAPSHOT</version>
+      <version>1.0.0-m1</version>
     </dependency>
     <dependency>
       <groupId>org.apache.servicecomb.demo</groupId>
       <artifactId>demo-spring-boot-discovery-client</artifactId>
-      <version>1.0.0-m1-SNAPSHOT</version>
+      <version>1.0.0-m1</version>
     </dependency>
     <dependency>
       <groupId>org.apache.servicecomb.demo</groupId>
       <artifactId>demo-spring-boot-zuul-proxy</artifactId>
-      <version>1.0.0-m1-SNAPSHOT</version>
+      <version>1.0.0-m1</version>
     </dependency>
     <dependency>
       <groupId>org.apache.servicecomb.tests</groupId>
       <artifactId>jaxrs-tests</artifactId>
-      <version>1.0.0-m1-SNAPSHOT</version>
+      <version>1.0.0-m1</version>
     </dependency>
     <dependency>
       <groupId>org.apache.servicecomb.tests</groupId>
       <artifactId>springmvc-tests</artifactId>
-      <version>1.0.0-m1-SNAPSHOT</version>
+      <version>1.0.0-m1</version>
     </dependency>
     <dependency>
       <groupId>org.apache.servicecomb.tests</groupId>
       <artifactId>tracing-tests</artifactId>
-      <version>1.0.0-m1-SNAPSHOT</version>
+      <version>1.0.0-m1</version>
     </dependency>
   </dependencies>
 

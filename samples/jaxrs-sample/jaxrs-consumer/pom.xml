@@ -21,7 +21,7 @@
     <parent>
         <groupId>org.apache.servicecomb.samples</groupId>
         <artifactId>jaxrs-sample</artifactId>
-        <version>1.0.0-m1-SNAPSHOT</version>
+        <version>1.0.0-m1</version>
     </parent>
     <artifactId>jaxrs-consumer</artifactId>
     <name>Java Chassis::Samples::JAXRS::Consumer</name>

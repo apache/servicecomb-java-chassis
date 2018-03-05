@@ -11,8 +11,5 @@ jobs:
   - stage: Compilation and Installation
     script: scripts/travis.sh install
   - stage: Deploy on
-    script: if [ "$TRAVIS_PULL_REQUEST" == "false" ]; then bash scripts/travis.sh deploy;
+    script: if [ "$TRAVIS_PULL_REQUEST" == "false" ]; then bash scripts/travis.sh deploy; 
       fi
-env:
-  global:
-  - secure: XPGUumaRqIhXmXFRUuqq4FaHOE1xJ/+PPl8qUXzJB6PBEyqCn3Vt26lt/o5vrMtD29CXafo2UhB3Y+WVsQqMkHvYf3R/boau501BAqFkVWbhYQYtuSxWEHVgijrcZ7S/Ew3YowMCynydKKZEfpoE929RnQgIi2+8hrZuWUWHt+S+U+dwfmQJReKqEKlMzkPUP9F36OqlWueBes0+zz7jF8cb+Zn9Tzod29SY6ICngpW3UMA99cCbS+LfgqfxdY/m5wOfsnTHE/Yjb47SkSRVJ+UZ67wwWdkZb+/S9MKPubBw+hR+UH3eKqSEfJa87YEG/ElKxQbihEK6vBVC36keChZIuaaij6/SzUCtxlYW9M/FowtC8LkLlRXWW4mcWi9Mzz6dTaHJHbRdjEUO0FSopJ9+UZ5vs1+e8fsUNn2MRUtQzGhtTQkpixx7woLxqh/QToi8vIFMzsYAd6XOxkpS4TRZjNQ7dQVZlIGMPhkLmbb0NwCCpqnrTbtSt/OwIUWLk0D4kYUuZPPg9iUtqE/iRQVpL11ABmfH1FbrYSDLbZ/4/5grftMy4sbMZNPR2Dry98e+UTISCPRKt/cGLWlMBmnaQpDzt4+f5PQnVf0+R498kwh7ikFnNVl0zq87AavG8M2qWrhAzZhL538pBq7fWi6ZCLyMQypesDa4NpT+0wc=

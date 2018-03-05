@@ -46,7 +46,7 @@ import io.vertx.core.Vertx;
 public abstract class AbstractTransport implements Transport {
   private static final Logger LOGGER = LoggerFactory.getLogger(AbstractTransport.class);
 
-  /**
+  /*
    * 用于参数传递：比如向RestServerVerticle传递endpoint地址。
    */
   public static final String ENDPOINT_KEY = "cse.endpoint";
@@ -86,7 +86,7 @@ public abstract class AbstractTransport implements Transport {
     setListenAddressWithoutSchema(addressWithoutSchema, null);
   }
 
-  /**
+  /*
    * 将配置的URI转换为endpoint
    * addressWithoutSchema 配置的URI，没有schema部分
    */
