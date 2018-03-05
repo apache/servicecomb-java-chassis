@@ -18,36 +18,38 @@
 <assembly xmlns="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.2 http://maven.apache.org/xsd/assembly-1.1.2.xsd">
     <includeBaseDirectory>false</includeBaseDirectory>
-    <id>assembly</id>
+    <id>src</id>
     <formats>
         <format>zip</format>
     </formats>
     <fileSets>
         <fileSet>
-            <directory>../samples</directory>
-            <outputDirectory>java-chassis-distribution-${project.version}/samples</outputDirectory>
-            <excludes>
-                <exclude>**/target</exclude>
-                <exclude>**/target/**/*</exclude>
-            </excludes>
-        </fileSet>
-        <fileSet>
-            <directory>../</directory>
-            <outputDirectory>java-chassis-distribution-${project.version}</outputDirectory>
-            <includes>
-                <include>NOTICE</include>
-                <include>LICENSE</include>
-                <include>DISCLAIMER</include>
-                <include>README.md</include>
-            </includes>
+          <directory>..</directory>
+          <outputDirectory></outputDirectory>
+          <includes>
+            <include>**/*</include>
+          </includes>
+          <!-- excludes the binary files -->
+          <excludes>
+            <exclude>**/eclipse-classes/**</exclude>
+            <exclude>**/target/**</exclude>
+            <exclude>**/build/**</exclude>
+            <exclude>**/eclipse-classes/**</exclude>
+            <exclude>**/.*</exclude>
+            <exclude>**/.*/**</exclude>
+    
+            <exclude>**/surefire*</exclude>
+            <exclude>**/svn-commit*</exclude>
+    
+            <exclude>**/.idea/**</exclude>
+            <exclude>**/*.iml</exclude>
+            <exclude>**/*.ipr</exclude>
+            <exclude>**/*.iws</exclude>
+    
+            <exclude>**/cobertura.ser</exclude>
+    
+            <exclude>**/node_modules/**</exclude>
+          </excludes>
         </fileSet>
     </fileSets>
-    <dependencySets>
-        <dependencySet>
-            <useProjectArtifact>true</useProjectArtifact>
-            <unpack>false</unpack>
-            <outputDirectory>java-chassis-distribution-${project.version}/libs</outputDirectory>
-            <scope>runtime</scope>
-        </dependencySet>
-    </dependencySets>
 </assembly>
