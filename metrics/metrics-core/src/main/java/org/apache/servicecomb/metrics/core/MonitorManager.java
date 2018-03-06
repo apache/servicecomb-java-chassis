@@ -37,7 +37,6 @@ import com.netflix.servo.BasicMonitorRegistry;
 import com.netflix.servo.MonitorRegistry;
 import com.netflix.servo.monitor.BasicCounter;
 import com.netflix.servo.monitor.BasicGauge;
-import com.netflix.servo.monitor.BasicTimer;
 import com.netflix.servo.monitor.Counter;
 import com.netflix.servo.monitor.Gauge;
 import com.netflix.servo.monitor.MaxGauge;
@@ -122,8 +121,10 @@ public class MonitorManager {
   public Timer getTimer(String name, String... tags) {
     validateMonitorNameAndTags(name, tags);
     return timers.computeIfAbsent(getMonitorKey(name, tags), f -> {
-      Timer timer = new BasicTimer(getConfig(name, tags));
-      basicMonitorRegistry.register(timer);
+      HighPrecisionBasicTimer timer = new HighPrecisionBasicTimer(getConfig(name, tags));
+      //register both value and max
+      basicMonitorRegistry.register(timer.getTimerValueMonitor());
+      basicMonitorRegistry.register(timer.getTimerMaxMonitor());
       return timer;
     });
   }

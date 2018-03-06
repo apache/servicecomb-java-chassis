@@ -152,7 +152,7 @@ public class TestMonitorManager {
 
   @Test
   public void checkFun1Max() {
-    MetricNode node = nextWindowMetricsLoader
+    MetricNode node = currentWindowMetricsLoader
         .getMetricTree(MetricsConst.SERVICECOMB_INVOCATION, MetricsConst.TAG_OPERATION, MetricsConst.TAG_ROLE,
             MetricsConst.TAG_STAGE);
     MetricNode node1_queue = node.getChildrenNode("fun1")
@@ -235,7 +235,7 @@ public class TestMonitorManager {
 
   @Test
   public void checkFun2Max() {
-    MetricNode node = nextWindowMetricsLoader
+    MetricNode node = currentWindowMetricsLoader
         .getMetricTree(MetricsConst.SERVICECOMB_INVOCATION, MetricsConst.TAG_OPERATION, MetricsConst.TAG_ROLE,
             MetricsConst.TAG_STAGE);
     MetricNode node2_whole = node.getChildrenNode("fun2")
