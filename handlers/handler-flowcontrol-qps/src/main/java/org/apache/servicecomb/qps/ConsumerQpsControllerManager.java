@@ -17,8 +17,7 @@
 
 package org.apache.servicecomb.qps;
 
-import org.apache.servicecomb.core.Invocation;
-import org.apache.servicecomb.core.definition.OperationMeta;
+import com.netflix.config.DynamicProperty;
 
 /**
  * <p>
@@ -35,19 +34,24 @@ import org.apache.servicecomb.core.definition.OperationMeta;
  * </p>
  */
 public class ConsumerQpsControllerManager extends AbstractQpsControllerManager {
-  public ConsumerQpsControllerManager() {
-    qpsDynamicConfigWatcher.setQpsLimitConfigKeyPrefix(Config.CONSUMER_LIMIT_KEY_PREFIX);
+  private static volatile ConsumerQpsControllerManager INSTANCE;
+
+  private ConsumerQpsControllerManager() {
+  }
+
+  public static ConsumerQpsControllerManager getINSTANCE() {
+    if (null == INSTANCE) {
+      synchronized (ConsumerQpsControllerManager.class) {
+        if (null == INSTANCE) {
+          INSTANCE = new ConsumerQpsControllerManager();
+        }
+      }
+    }
+    return INSTANCE;
   }
 
   @Override
-  protected String getKey(Invocation invocation) {
-    return invocation.getOperationMeta().getMicroserviceQualifiedName();
-  }
-
-  @Override
-  protected QpsController create(Invocation invocation) {
-    // create is synchronized in parent class, there is no concurrent situation
-    OperationMeta operationMeta = invocation.getOperationMeta();
-    return qpsDynamicConfigWatcher.getOrCreateQpsController(operationMeta.getMicroserviceName(), operationMeta);
+  protected DynamicProperty getDynamicProperty(String configKey) {
+    return DynamicProperty.getInstance(Config.CONSUMER_LIMIT_KEY_PREFIX + configKey);
   }
 }

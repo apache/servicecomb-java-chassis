@@ -17,50 +17,53 @@
 
 package org.apache.servicecomb.qps;
 
-import org.apache.servicecomb.core.Const;
-import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.Mockito;
 
 public class TestProviderQpsControllermanager {
   @Before
   public void beforeTest() {
     ArchaiusUtils.resetConfig();
+    AbstractQpsControllerManagerTest.clearState(ProviderQpsControllerManager.getINSTANCE());
   }
 
   @After
   public void afterTest() {
     ArchaiusUtils.resetConfig();
+    AbstractQpsControllerManagerTest.clearState(ProviderQpsControllerManager.getINSTANCE());
   }
 
   @Test
   public void testQpsLimit() {
     String microserviceName = "pojo";
 
-    ProviderQpsControllerManager mgr = new ProviderQpsControllerManager();
+    ProviderQpsControllerManager mgr = ProviderQpsControllerManager.getINSTANCE();
     String schemaId = "server";
     String operationId = "test";
-    Invocation mockInvocation = AbstractQpsControllerManagerTest.
-        getMockInvocation(microserviceName, schemaId, operationId);
-    Mockito.when(mockInvocation.getContext(Const.SRC_MICROSERVICE)).thenReturn("pojo");
-    QpsController qpsController = mgr.getOrCreate(mockInvocation);
+    String qualifiedKey = "pojo.server.test";
+    QpsController qpsController = mgr.getOrCreate(qualifiedKey);
     Assert.assertEquals(null, qpsController.getQpsLimit());
     Assert.assertEquals(Config.PROVIDER_LIMIT_KEY_GLOBAL, qpsController.getKey());
 
-    doTestQpsLimit(mgr, microserviceName, schemaId, operationId, 100, microserviceName, 100);
-    doTestQpsLimit(mgr, microserviceName, schemaId, operationId, null, Config.PROVIDER_LIMIT_KEY_GLOBAL, null);
+    doTestQpsLimit(mgr, microserviceName, qualifiedKey, 100, microserviceName, 100);
+    String schemaKey = microserviceName + AbstractQpsControllerManager.SEPARATOR + schemaId;
+    doTestQpsLimit(mgr, schemaKey, qualifiedKey, 80, schemaKey, 80);
+    String operationKey =
+        microserviceName + AbstractQpsControllerManager.SEPARATOR + schemaId + AbstractQpsControllerManager.SEPARATOR
+            + operationId;
+    doTestQpsLimit(mgr, operationKey, qualifiedKey, 50, operationKey, 50);
+    doTestQpsLimit(mgr, operationKey, qualifiedKey, null, schemaKey, 80);
+    doTestQpsLimit(mgr, schemaKey, qualifiedKey, null, microserviceName, 100);
+    doTestQpsLimit(mgr, microserviceName, qualifiedKey, null, Config.PROVIDER_LIMIT_KEY_GLOBAL, null);
   }
 
-  private void doTestQpsLimit(ProviderQpsControllerManager mgr, String microserviceName, String schemaId,
-      String operatinoId, Integer newValue, String expectKey, Integer expectValue) {
-    Utils.updateProperty(Config.PROVIDER_LIMIT_KEY_PREFIX + microserviceName, newValue);
-    Invocation invocation = AbstractQpsControllerManagerTest.getMockInvocation(microserviceName, schemaId, operatinoId);
-    Mockito.when(invocation.getContext(Const.SRC_MICROSERVICE)).thenReturn(microserviceName);
-    QpsController qpsController = mgr.getOrCreate(invocation);
+  private void doTestQpsLimit(ProviderQpsControllerManager mgr, String configKey, String qualifiedKey,
+      Integer newValue, String expectKey, Integer expectValue) {
+    Utils.updateProperty(Config.PROVIDER_LIMIT_KEY_PREFIX + configKey, newValue);
+    QpsController qpsController = mgr.getOrCreate(qualifiedKey);
     Assert.assertEquals(expectValue, qpsController.getQpsLimit());
     Assert.assertEquals(expectKey, qpsController.getKey());
   }

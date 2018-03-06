@@ -17,17 +17,19 @@
 
 package org.apache.servicecomb.qps;
 
+import java.util.Map;
+
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.definition.OperationMeta;
 import org.apache.servicecomb.core.definition.SchemaMeta;
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
-import org.apache.servicecomb.qps.config.QpsDynamicConfigWatcher;
-import org.apache.servicecomb.qps.config.QpsDynamicConfigWatcherTest;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
+
+import mockit.Deencapsulation;
 
 public class AbstractQpsControllerManagerTest {
 
@@ -43,21 +45,18 @@ public class AbstractQpsControllerManagerTest {
 
   @Test
   public void testGetOrCreate() {
-    TestQpsControllerManager testQpsControllerManager = new TestQpsControllerManager();
+    AbstractQpsControllerManager testQpsControllerManager = new AbstractQpsControllerManager();
     initTestQpsControllerManager(testQpsControllerManager);
 
     // pojo
-    QpsDynamicConfigWatcherTest.setConfigWithDefaultPrefix("pojo", 100);
-    QpsController qpsController = testQpsControllerManager.getOrCreate(
-        getMockInvocation("pojo", "server", "test"));
+    setConfigWithDefaultPrefix("pojo", 100);
+    QpsController qpsController = testQpsControllerManager.getOrCreate("pojo.server.test");
     Assert.assertEquals("pojo", qpsController.getKey());
     Assert.assertTrue(100 == qpsController.getQpsLimit());
-    qpsController = testQpsControllerManager.getOrCreate(
-        getMockInvocation("pojo2", "server", "test"));
+    qpsController = testQpsControllerManager.getOrCreate("pojo2.server.test");
     Assert.assertEquals("pojo2", qpsController.getKey());
     Assert.assertNull(qpsController.getQpsLimit());
-    qpsController = testQpsControllerManager.getOrCreate(
-        getMockInvocation("poj", "server", "test"));
+    qpsController = testQpsControllerManager.getOrCreate("poj.server.test");
     Assert.assertEquals("poj", qpsController.getKey());
     Assert.assertNull(qpsController.getQpsLimit());
 
@@ -66,69 +65,58 @@ public class AbstractQpsControllerManagerTest {
 
   @Test
   public void testGetOrCreateWithGlobalConfig() {
-    TestQpsControllerManager testQpsControllerManager = new TestQpsControllerManager(Config.PROVIDER_LIMIT_KEY_GLOBAL);
+    AbstractQpsControllerManager testQpsControllerManager = new AbstractQpsControllerManager()
+        .setGlobalQpsController(Config.PROVIDER_LIMIT_KEY_GLOBAL);
 
     // global
-    QpsDynamicConfigWatcherTest.setConfig(Config.PROVIDER_LIMIT_KEY_GLOBAL, 50);
-    QpsController qpsController = testQpsControllerManager.getOrCreate(
-        getMockInvocation("pojo", "server", "test"));
+    setConfig(Config.PROVIDER_LIMIT_KEY_GLOBAL, 50);
+    QpsController qpsController = testQpsControllerManager.getOrCreate("pojo.server.test");
     Assert.assertEquals(Config.PROVIDER_LIMIT_KEY_GLOBAL, qpsController.getKey());
     Assert.assertTrue(50 == qpsController.getQpsLimit());
-    qpsController = testQpsControllerManager.getOrCreate(
-        getMockInvocation("pojo2", "server", "test"));
+    qpsController = testQpsControllerManager.getOrCreate("pojo2.server.test");
     Assert.assertEquals(Config.PROVIDER_LIMIT_KEY_GLOBAL, qpsController.getKey());
     Assert.assertTrue(50 == qpsController.getQpsLimit());
-    qpsController = testQpsControllerManager.getOrCreate(
-        getMockInvocation("poj", "server", "test"));
+    qpsController = testQpsControllerManager.getOrCreate("poj.server.test");
     Assert.assertEquals(Config.PROVIDER_LIMIT_KEY_GLOBAL, qpsController.getKey());
     Assert.assertTrue(50 == qpsController.getQpsLimit());
 
     // pojo
-    QpsDynamicConfigWatcherTest.setConfigWithDefaultPrefix("pojo", 100);
-    qpsController = testQpsControllerManager.getOrCreate(
-        getMockInvocation("pojo", "server", "test"));
+    setConfigWithDefaultPrefix("pojo", 100);
+    qpsController = testQpsControllerManager.getOrCreate("pojo.server.test");
     Assert.assertEquals("pojo", qpsController.getKey());
     Assert.assertTrue(100 == qpsController.getQpsLimit());
-    qpsController = testQpsControllerManager.getOrCreate(
-        getMockInvocation("pojo2", "server", "test"));
+    qpsController = testQpsControllerManager.getOrCreate("pojo2.server.test");
     Assert.assertEquals(Config.PROVIDER_LIMIT_KEY_GLOBAL, qpsController.getKey());
     Assert.assertTrue(50 == qpsController.getQpsLimit());
-    qpsController = testQpsControllerManager.getOrCreate(
-        getMockInvocation("poj", "server", "test"));
+    qpsController = testQpsControllerManager.getOrCreate("poj.server.test");
     Assert.assertEquals(Config.PROVIDER_LIMIT_KEY_GLOBAL, qpsController.getKey());
     Assert.assertTrue(50 == qpsController.getQpsLimit());
 
     testGetOrCreateCommon(testQpsControllerManager);
   }
 
-  private void testGetOrCreateCommon(TestQpsControllerManager testQpsControllerManager) {
+  private void testGetOrCreateCommon(AbstractQpsControllerManager testQpsControllerManager) {
     // pojo.server
-    QpsDynamicConfigWatcherTest.setConfigWithDefaultPrefix("pojo.server", 200);
-    QpsController qpsController = testQpsControllerManager.getOrCreate(
-        getMockInvocation("pojo", "server", "test"));
+    setConfigWithDefaultPrefix("pojo.server", 200);
+    QpsController qpsController = testQpsControllerManager.getOrCreate("pojo.server.test");
     Assert.assertEquals("pojo.server", qpsController.getKey());
     Assert.assertTrue(200 == qpsController.getQpsLimit());
-    qpsController = testQpsControllerManager.getOrCreate(
-        getMockInvocation("pojo", "server2", "test"));
+    qpsController = testQpsControllerManager.getOrCreate("pojo.server2.test");
     Assert.assertEquals("pojo", qpsController.getKey());
     Assert.assertTrue(100 == qpsController.getQpsLimit());
-    qpsController = testQpsControllerManager.getOrCreate(
-        getMockInvocation("pojo", "serve", "test"));
+    qpsController = testQpsControllerManager.getOrCreate("pojo.serve.test");
     Assert.assertEquals("pojo", qpsController.getKey());
     Assert.assertTrue(100 == qpsController.getQpsLimit());
 
     // pojo.server.test
-    QpsDynamicConfigWatcherTest.setConfigWithDefaultPrefix("pojo.server.test", 300);
-    qpsController = testQpsControllerManager.getOrCreate(
-        getMockInvocation("pojo", "server", "test"));
+    setConfigWithDefaultPrefix("pojo.server.test", 300);
+    qpsController = testQpsControllerManager.getOrCreate("pojo.server.test");
     Assert.assertEquals("pojo.server.test", qpsController.getKey());
     Assert.assertTrue(300 == qpsController.getQpsLimit());
-    qpsController = testQpsControllerManager.getOrCreate(
-        getMockInvocation("pojo", "server", "test2"));
+    qpsController = testQpsControllerManager.getOrCreate("pojo.server.test2");
     Assert.assertEquals("pojo.server", qpsController.getKey());
     Assert.assertTrue(200 == qpsController.getQpsLimit());
-    qpsController = testQpsControllerManager.getOrCreate(
-        getMockInvocation("pojo", "server", "tes"));
+    qpsController = testQpsControllerManager.getOrCreate("pojo.server.tes");
     Assert.assertEquals("pojo.server", qpsController.getKey());
     Assert.assertTrue(200 == qpsController.getQpsLimit());
   }
@@ -136,40 +124,31 @@ public class AbstractQpsControllerManagerTest {
   /**
    * Init testQpsControllerManager to test search function.
    */
-  private void initTestQpsControllerManager(TestQpsControllerManager testQpsControllerManager) {
+  private void initTestQpsControllerManager(AbstractQpsControllerManager testQpsControllerManager) {
     // pojo.server.test
-    QpsController qpsController = testQpsControllerManager.getOrCreate(
-        getMockInvocation("pojo", "server", "test"));
+    QpsController qpsController = testQpsControllerManager.getOrCreate("pojo.server.test");
     Assert.assertEquals("pojo", qpsController.getKey());
     Assert.assertNull(qpsController.getQpsLimit());
 
     // pojo.server.test2
-    testQpsControllerManager.getOrCreate(
-        getMockInvocation("pojo", "server", "test2"));
+    testQpsControllerManager.getOrCreate("pojo.server.test2");
 
     // pojo.server.tes
-    testQpsControllerManager.getOrCreate(
-        getMockInvocation("pojo", "server", "tes"));
+    testQpsControllerManager.getOrCreate("pojo.server.tes");
 
     // pojo.server2.test
-    testQpsControllerManager.getOrCreate(
-        getMockInvocation("pojo", "server2", "test"));
+    testQpsControllerManager.getOrCreate("pojo.server2.test");
 
     // pojo.serve.test
-    testQpsControllerManager.getOrCreate(
-        getMockInvocation("pojo", "serve", "test"));
+    testQpsControllerManager.getOrCreate("pojo.serve.test");
 
     // pojo2.server.test
-    qpsController = testQpsControllerManager.getOrCreate(
-        getMockInvocation("pojo2", "server", "test")
-    );
+    qpsController = testQpsControllerManager.getOrCreate("pojo2.server.test");
     Assert.assertEquals("pojo2", qpsController.getKey());
     Assert.assertNull(qpsController.getQpsLimit());
 
     // poj.server.test
-    qpsController = testQpsControllerManager.getOrCreate(
-        getMockInvocation("poj", "server", "test")
-    );
+    qpsController = testQpsControllerManager.getOrCreate("poj.server.test");
     Assert.assertEquals("poj", qpsController.getKey());
     Assert.assertNull(qpsController.getQpsLimit());
   }
@@ -185,30 +164,6 @@ public class AbstractQpsControllerManagerTest {
     Assert.assertEquals("schema.oper", operationMeta.getSchemaQualifiedName());
     Assert.assertEquals("schema", schemaMeta.getSchemaId());
   }
-
-  static class TestQpsControllerManager extends AbstractQpsControllerManager {
-    TestQpsControllerManager() {
-      qpsDynamicConfigWatcher.setQpsLimitConfigKeyPrefix(Config.CONSUMER_LIMIT_KEY_PREFIX);
-    }
-
-    TestQpsControllerManager(String globalKey) {
-      qpsDynamicConfigWatcher.setQpsLimitConfigKeyPrefix(Config.CONSUMER_LIMIT_KEY_PREFIX);
-      qpsDynamicConfigWatcher.setGlobalQpsController(globalKey);
-    }
-
-    @Override
-    protected String getKey(Invocation invocation) {
-      return invocation.getOperationMeta().getMicroserviceQualifiedName();
-    }
-
-    @Override
-    protected QpsController create(Invocation invocation) {
-      OperationMeta operationMeta = invocation.getOperationMeta();
-      return qpsDynamicConfigWatcher.getOrCreateQpsController(operationMeta.getMicroserviceName(),
-          operationMeta);
-    }
-  }
-
 
   public static Invocation getMockInvocation(String microserviceName, String schemaId, String operationId) {
     return getMockInvocation(
@@ -228,13 +183,30 @@ public class AbstractQpsControllerManagerTest {
 
     Mockito.when(operationMeta.getSchemaMeta()).thenReturn(schemaMeta);
     Mockito.when(operationMeta.getSchemaQualifiedName())
-        .thenReturn(schemaId + QpsDynamicConfigWatcher.SEPARATOR + operationId);
+        .thenReturn(schemaId + AbstractQpsControllerManager.SEPARATOR + operationId);
     Mockito.when(operationMeta.getMicroserviceQualifiedName()).thenReturn(
-        microserviceName + QpsDynamicConfigWatcher.SEPARATOR + schemaId + QpsDynamicConfigWatcher.SEPARATOR
+        microserviceName + AbstractQpsControllerManager.SEPARATOR + schemaId + AbstractQpsControllerManager.SEPARATOR
             + operationId);
     Mockito.when(operationMeta.getMicroserviceName()).thenReturn(microserviceName);
     Mockito.when(schemaMeta.getSchemaId()).thenReturn(schemaId);
 
     return operationMeta;
+  }
+
+  public static void setConfig(String key, int value) {
+    Utils.updateProperty(key, value);
+  }
+
+  public static void setConfigWithDefaultPrefix(String key, int value) {
+    String configKey = Config.CONSUMER_LIMIT_KEY_PREFIX + key;
+    Utils.updateProperty(configKey, value);
+  }
+
+  public static void clearState(AbstractQpsControllerManager qpsControllerManager) {
+    Map<String, QpsController> objMap = Deencapsulation.getField(qpsControllerManager, "qualifiedNameControllerMap");
+    objMap.clear();
+    Map<String, QpsController> configQpsControllerMap = Deencapsulation
+        .getField(qpsControllerManager, "configQpsControllerMap");
+    configQpsControllerMap.clear();
   }
 }

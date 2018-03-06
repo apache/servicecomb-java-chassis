@@ -17,41 +17,28 @@
 
 package org.apache.servicecomb.qps;
 
-import org.apache.servicecomb.core.Const;
-import org.apache.servicecomb.core.Invocation;
-import org.apache.servicecomb.qps.config.QpsDynamicConfigWatcher;
-import org.springframework.util.StringUtils;
+import com.netflix.config.DynamicProperty;
 
 public class ProviderQpsControllerManager extends AbstractQpsControllerManager {
-  public ProviderQpsControllerManager() {
-    qpsDynamicConfigWatcher.setQpsLimitConfigKeyPrefix(Config.PROVIDER_LIMIT_KEY_PREFIX);
-    qpsDynamicConfigWatcher.setGlobalQpsController(Config.PROVIDER_LIMIT_KEY_GLOBAL);
+  private static volatile ProviderQpsControllerManager INSTANCE;
+
+  private ProviderQpsControllerManager() {
+    setGlobalQpsController(Config.PROVIDER_LIMIT_KEY_GLOBAL);
   }
 
-  @Override
-  public QpsController getOrCreate(Invocation invocation) {
-    if (StringUtils.isEmpty(getConsumerMicroserviceName(invocation))) {
-      return qpsDynamicConfigWatcher.getGlobalQpsController();
+  public static ProviderQpsControllerManager getINSTANCE() {
+    if (null == INSTANCE) {
+      synchronized (ProviderQpsControllerManager.class) {
+        if (null == INSTANCE) {
+          INSTANCE = new ProviderQpsControllerManager();
+        }
+      }
     }
-
-    return super.getOrCreate(invocation);
+    return INSTANCE;
   }
 
   @Override
-  protected String getKey(Invocation invocation) {
-    String microServiceName = getConsumerMicroserviceName(invocation);
-    return microServiceName + QpsDynamicConfigWatcher.SEPARATOR
-        + invocation.getOperationMeta().getSchemaQualifiedName();
-  }
-
-  @Override
-  protected QpsController create(Invocation invocation) {
-    // create is synchronized in parent class, there is no concurrent situation
-    String microServiceName = getConsumerMicroserviceName(invocation);
-    return qpsDynamicConfigWatcher.getOrCreateQpsController(microServiceName, invocation.getOperationMeta());
-  }
-
-  private String getConsumerMicroserviceName(Invocation invocation) {
-    return (String) invocation.getContext(Const.SRC_MICROSERVICE);
+  protected DynamicProperty getDynamicProperty(String configKey) {
+    return DynamicProperty.getInstance(Config.PROVIDER_LIMIT_KEY_PREFIX + configKey);
   }
 }

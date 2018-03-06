@@ -88,6 +88,7 @@ public class TestConsumerQpsFlowControlHandler {
       };
       handler.handle(invocation, asyncResp);
     } catch (Exception e) {
+      e.printStackTrace();
       validAssert = false;
     }
     Assert.assertTrue(validAssert);
@@ -120,6 +121,7 @@ public class TestConsumerQpsFlowControlHandler {
       };
       handler.handle(invocation, asyncResp);
     } catch (Exception e) {
+      e.printStackTrace();
       validAssert = false;
     }
     Assert.assertTrue(validAssert);
@@ -127,7 +129,8 @@ public class TestConsumerQpsFlowControlHandler {
 
   private void setQpsController(String key, QpsController qpsController) {
     ConsumerQpsControllerManager qpsControllerManager = Deencapsulation.getField(handler, "qpsControllerMgr");
-    ConcurrentHashMap<String, QpsController> objMap = Deencapsulation.getField(qpsControllerManager, "objMap");
+    ConcurrentHashMap<String, QpsController> objMap = Deencapsulation
+        .getField(qpsControllerManager, "qualifiedNameControllerMap");
     objMap.put(key, qpsController);
   }
 }
