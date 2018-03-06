@@ -19,18 +19,16 @@ package org.apache.servicecomb.qps;
 
 import org.apache.servicecomb.core.Handler;
 import org.apache.servicecomb.core.Invocation;
-import org.apache.servicecomb.core.definition.OperationMeta;
 import org.apache.servicecomb.swagger.invocation.AsyncResponse;
 import org.apache.servicecomb.swagger.invocation.exception.CommonExceptionData;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 
 /**
- * consumer端针对调用目标的qps控制
- * 支持microservice、schema、operation三个级别的控制
- *
+ * For qps flow control on consumer side.
+ * Support 3 levels of microservice/schema/operation.
  */
 public class ConsumerQpsFlowControlHandler implements Handler {
-  private ConsumerQpsControllerManager qpsControllerMgr = new ConsumerQpsControllerManager();
+  private ConsumerQpsControllerManager qpsControllerMgr = ConsumerQpsControllerManager.getINSTANCE();
 
   @Override
   public void handle(Invocation invocation, AsyncResponse asyncResp) throws Exception {
@@ -39,10 +37,10 @@ public class ConsumerQpsFlowControlHandler implements Handler {
       return;
     }
 
-    OperationMeta operationMeta = invocation.getOperationMeta();
-    QpsController qpsController = qpsControllerMgr.getOrCreate(operationMeta);
+    QpsController qpsController = qpsControllerMgr.getOrCreate(
+        invocation.getOperationMeta().getMicroserviceQualifiedName());
     if (qpsController.isLimitNewRequest()) {
-      // 429
+      // return http status 429
       CommonExceptionData errorData = new CommonExceptionData("rejected by qps flowcontrol");
       asyncResp.consumerFail(
           new InvocationException(QpsConst.TOO_MANY_REQUESTS_STATUS, errorData));

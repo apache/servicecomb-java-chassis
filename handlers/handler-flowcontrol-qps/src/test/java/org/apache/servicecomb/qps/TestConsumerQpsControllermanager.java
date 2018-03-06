@@ -17,59 +17,89 @@
 
 package org.apache.servicecomb.qps;
 
-import org.apache.servicecomb.core.definition.OperationMeta;
-import org.apache.servicecomb.core.definition.SchemaMeta;
+import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
+import org.junit.After;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 
-import mockit.Expectations;
-import mockit.Mocked;
-
-/**
- *
- *
- */
 public class TestConsumerQpsControllermanager {
-  private static String microserviceName = "pojo";
+  private static final String MICROSERVICE_NAME = "pojo";
 
-  private static String schemaQualified = microserviceName + ".server";
+  public static final String SCHEMA_ID = "server";
 
-  private static String operationQualified = schemaQualified + ".test";
+  private static final String SCHEMA_QUALIFIED = MICROSERVICE_NAME + AbstractQpsControllerManager.SEPARATOR + SCHEMA_ID;
 
-  @Test
-  public void testQpsLimit(@Mocked SchemaMeta schemaMeta, @Mocked OperationMeta operationMeta) {
-    new Expectations() {
-      {
-        operationMeta.getMicroserviceQualifiedName();
-        result = operationQualified;
+  public static final String OPERATION_ID = "test";
 
-        schemaMeta.getMicroserviceQualifiedName();
-        result = schemaQualified;
+  private static final String OPERATION_QUALIFIED =
+      SCHEMA_QUALIFIED + AbstractQpsControllerManager.SEPARATOR + OPERATION_ID;
 
-        operationMeta.getMicroserviceName();
-        result = microserviceName;
-      }
-    };
-
-    ConsumerQpsControllerManager mgr = new ConsumerQpsControllerManager();
-    QpsController qpsController = mgr.getOrCreate(operationMeta);
-    Assert.assertEquals((Integer) Integer.MAX_VALUE, qpsController.getQpsLimit());
-    Assert.assertEquals(microserviceName, qpsController.getKey());
-
-    doTestQpsLimit(mgr, operationMeta, microserviceName, 100, microserviceName, 100);
-    doTestQpsLimit(mgr, operationMeta, schemaQualified, 200, schemaQualified, 200);
-    doTestQpsLimit(mgr, operationMeta, operationQualified, 300, operationQualified, 300);
-    doTestQpsLimit(mgr, operationMeta, operationQualified, null, schemaQualified, 200);
-    doTestQpsLimit(mgr, operationMeta, schemaQualified, null, microserviceName, 100);
-    doTestQpsLimit(mgr, operationMeta, microserviceName, null, microserviceName, Integer.MAX_VALUE);
+  @Before
+  public void beforeTest() {
+    ArchaiusUtils.resetConfig();
+    AbstractQpsControllerManagerTest.clearState(ConsumerQpsControllerManager.getINSTANCE());
   }
 
-  private void doTestQpsLimit(ConsumerQpsControllerManager mgr, OperationMeta operationMeta, String key,
+  @After
+  public void afterTest() {
+    ArchaiusUtils.resetConfig();
+    AbstractQpsControllerManagerTest.clearState(ConsumerQpsControllerManager.getINSTANCE());
+  }
+
+  @Test
+  public void testQpsLimit() {
+    String qualifiedKey = MICROSERVICE_NAME + AbstractQpsControllerManager.SEPARATOR + SCHEMA_ID
+        + AbstractQpsControllerManager.SEPARATOR + OPERATION_ID;
+
+    ConsumerQpsControllerManager mgr = ConsumerQpsControllerManager.getINSTANCE();
+    QpsController qpsController = mgr.getOrCreate(qualifiedKey);
+    Assert.assertNull(qpsController.getQpsLimit());
+    Assert.assertEquals(MICROSERVICE_NAME, qpsController.getKey());
+
+    doTestQpsLimit(mgr, qualifiedKey, MICROSERVICE_NAME, 100, MICROSERVICE_NAME, 100);
+    doTestQpsLimit(mgr, qualifiedKey, SCHEMA_QUALIFIED, 200, SCHEMA_QUALIFIED, 200);
+    doTestQpsLimit(mgr, qualifiedKey, OPERATION_QUALIFIED, 300, OPERATION_QUALIFIED, 300);
+    doTestQpsLimit(mgr, qualifiedKey, OPERATION_QUALIFIED, null, SCHEMA_QUALIFIED, 200);
+    doTestQpsLimit(mgr, qualifiedKey, SCHEMA_QUALIFIED, null, MICROSERVICE_NAME, 100);
+    doTestQpsLimit(mgr, qualifiedKey, MICROSERVICE_NAME, null, MICROSERVICE_NAME, null);
+  }
+
+  private void doTestQpsLimit(ConsumerQpsControllerManager mgr, String qualifiedKey, String key,
       Integer newValue,
       String expectKey, Integer expectValue) {
     Utils.updateProperty(Config.CONSUMER_LIMIT_KEY_PREFIX + key, newValue);
-    QpsController qpsController = mgr.getOrCreate(operationMeta);
-    Assert.assertEquals(expectValue, qpsController.getQpsLimit());
+    QpsController qpsController = mgr.getOrCreate(qualifiedKey);
     Assert.assertEquals(expectKey, qpsController.getKey());
+    Assert.assertEquals(expectValue, qpsController.getQpsLimit());
+  }
+
+  @Test
+  public void testQpsLimitOn2Operation() {
+    // qualifiedKey0 is pojo.server.test
+    // qualifiedKey1 is pojo.server.test1
+    String qualifiedKey0 = MICROSERVICE_NAME + AbstractQpsControllerManager.SEPARATOR + SCHEMA_ID
+        + AbstractQpsControllerManager.SEPARATOR + OPERATION_ID;
+    String qualifiedKey1 = MICROSERVICE_NAME + AbstractQpsControllerManager.SEPARATOR + SCHEMA_ID
+        + AbstractQpsControllerManager.SEPARATOR + OPERATION_ID + "1";
+
+    ConsumerQpsControllerManager mgr = ConsumerQpsControllerManager.getINSTANCE();
+    QpsController qpsController = mgr.getOrCreate(qualifiedKey0);
+    Assert.assertNull(qpsController.getQpsLimit());
+    Assert.assertEquals(MICROSERVICE_NAME, qpsController.getKey());
+
+    qpsController = mgr.getOrCreate(qualifiedKey1);
+    Assert.assertNull(qpsController.getQpsLimit());
+    Assert.assertEquals(MICROSERVICE_NAME, qpsController.getKey());
+
+    // As operationMeta0 and operationMeta1 belong to the same schema, once the qps configuration of the schema level
+    // is changed, both of their qpsControllers should be changed.
+    Utils.updateProperty(Config.CONSUMER_LIMIT_KEY_PREFIX + SCHEMA_QUALIFIED, 200);
+    qpsController = mgr.getOrCreate(qualifiedKey0);
+    Assert.assertEquals(Integer.valueOf(200), qpsController.getQpsLimit());
+    Assert.assertEquals(SCHEMA_QUALIFIED, qpsController.getKey());
+    qpsController = mgr.getOrCreate(qualifiedKey1);
+    Assert.assertEquals(Integer.valueOf(200), qpsController.getQpsLimit());
+    Assert.assertEquals(SCHEMA_QUALIFIED, qpsController.getKey());
   }
 }

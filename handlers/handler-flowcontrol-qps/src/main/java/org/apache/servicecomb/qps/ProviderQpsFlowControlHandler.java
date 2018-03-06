@@ -23,9 +23,10 @@ import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.swagger.invocation.AsyncResponse;
 import org.apache.servicecomb.swagger.invocation.exception.CommonExceptionData;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
+import org.springframework.util.StringUtils;
 
 public class ProviderQpsFlowControlHandler implements Handler {
-  private ProviderQpsControllerManager qpsControllerMgr = new ProviderQpsControllerManager();
+  private ProviderQpsControllerManager qpsControllerMgr = ProviderQpsControllerManager.getINSTANCE();
 
   @Override
   public void handle(Invocation invocation, AsyncResponse asyncResp) throws Exception {
@@ -34,16 +35,12 @@ public class ProviderQpsFlowControlHandler implements Handler {
       return;
     }
 
-    String microServiceName = (String) invocation.getContext(Const.SRC_MICROSERVICE);
-    if (microServiceName != null && !microServiceName.isEmpty()) {
-      QpsController qpsController = qpsControllerMgr.getOrCreate(microServiceName);
-      if (isLimitNewRequest(qpsController, asyncResp)) {
-        return;
-      }
-    }
-
-    QpsController globalQpsController = qpsControllerMgr.getOrCreate(null);
-    if (isLimitNewRequest(globalQpsController, asyncResp)) {
+    String microServiceName = invocation.getContext(Const.SRC_MICROSERVICE);
+    QpsController qpsController =
+        StringUtils.isEmpty(microServiceName)
+            ? qpsControllerMgr.getGlobalQpsController()
+            : qpsControllerMgr.getOrCreate(microServiceName + invocation.getOperationMeta().getSchemaQualifiedName());
+    if (isLimitNewRequest(qpsController, asyncResp)) {
       return;
     }
 
