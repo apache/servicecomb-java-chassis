@@ -40,6 +40,14 @@ public class MapBasedConfigurationSource implements ConfigCenterConfigurationSou
   }
 
   @Override
+  public boolean isValidSource(Configuration localConfiguration) {
+    if (localConfiguration.getProperty("cse.config.client.serverUri") == null) {
+      return false;
+    }
+    return true;
+  }
+
+  @Override
   public void init(Configuration localConfiguration) {
 
   }

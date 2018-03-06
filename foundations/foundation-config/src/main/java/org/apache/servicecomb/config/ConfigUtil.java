@@ -50,9 +50,6 @@ import com.netflix.config.WatchedUpdateResult;
 public final class ConfigUtil {
   private static final Logger LOGGER = LoggerFactory.getLogger(ConfigUtil.class);
 
-  protected static final String configCenterUrlKey = "cse.config.client.serverUri";
-  protected static final String configApolloUrlKey = "apollo.config.serverUri";
-
   private static final String MICROSERVICE_CONFIG_LOADER_KEY = "cse-microservice-config-loader";
 
   private ConfigUtil() {
@@ -151,16 +148,16 @@ public final class ConfigUtil {
   }
 
   public static DynamicWatchedConfiguration createConfigFromConfigCenter(Configuration localConfiguration) {
-    if ((localConfiguration.getProperty(configCenterUrlKey) == null) && (localConfiguration.getProperties((configApolloUrlKey)) == null )) {
-      LOGGER.info("config center URL is missing, skip to load configuration from config center");
-      return null;
-    }
-
     ConfigCenterConfigurationSource configCenterConfigurationSource =
         SPIServiceUtils.getTargetService(ConfigCenterConfigurationSource.class);
     if (null == configCenterConfigurationSource) {
       LOGGER.info(
           "config center SPI service can not find, skip to load configuration from config center");
+      return null;
+    }
+
+    if (!configCenterConfigurationSource.isValidSource(localConfiguration)) {
+      LOGGER.info("Config Source serverUri is not correctly configured.");
       return null;
     }
 
