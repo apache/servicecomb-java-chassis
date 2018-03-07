@@ -16,7 +16,7 @@
 ## limitations under the License.
 ## ---------------------------------------------------------------------------
 
-APPLICATION_ID: pojotest
+APPLICATION_ID: apollotest
 service_description:
   name: apollo-test
   version: 1.0.1
@@ -33,9 +33,6 @@ apollo:
     firstRefreshInterval: 0
 
 cse:
-  config:
-    client:
-      serverUri: http://127.0.0.1:8070
   service:
     registry:
       address: http://127.0.0.1:30100
