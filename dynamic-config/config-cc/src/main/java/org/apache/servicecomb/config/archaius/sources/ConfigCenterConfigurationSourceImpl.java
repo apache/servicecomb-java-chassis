@@ -57,6 +57,7 @@ public class ConfigCenterConfigurationSourceImpl implements ConfigCenterConfigur
   @Override
   public boolean isValidSource(Configuration localConfiguration) {
     if (localConfiguration.getProperty(CONFIG_CENTER_URL_KEY) == null) {
+      LOGGER.warn("Config Center configuration source is not configured!");
       return false;
     }
     return true;
