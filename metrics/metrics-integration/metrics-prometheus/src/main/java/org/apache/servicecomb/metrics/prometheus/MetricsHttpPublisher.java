@@ -17,7 +17,6 @@
 
 package org.apache.servicecomb.metrics.prometheus;
 
-import java.io.IOException;
 import java.net.InetSocketAddress;
 
 import org.apache.servicecomb.foundation.common.exceptions.ServiceCombException;
@@ -37,20 +36,34 @@ import io.prometheus.client.exporter.HTTPServer;
 public class MetricsHttpPublisher implements ApplicationListener<ApplicationEvent> {
   private static final Logger LOGGER = LoggerFactory.getLogger(MetricsHttpPublisher.class);
 
-  private static final String METRICS_PROMETHEUS_PORT = "servicecomb.metrics.prometheus.port";
+  private static final String METRICS_PROMETHEUS_ADDRESS = "servicecomb.metrics.prometheus.address";
 
   private HTTPServer httpServer;
 
   public MetricsHttpPublisher() {
     //prometheus default port allocation is here : https://github.com/prometheus/prometheus/wiki/Default-port-allocations
-    int publishPort = DynamicPropertyFactory.getInstance().getIntProperty(METRICS_PROMETHEUS_PORT, 9696).get();
-    MetricsCollector metricsCollector = new MetricsCollector();
-    metricsCollector.register();
-    try {
-      this.httpServer = new HTTPServer(new InetSocketAddress(publishPort), CollectorRegistry.defaultRegistry, true);
-      LOGGER.info("Prometheus httpServer listened {}.", publishPort);
-    } catch (IOException e) {
-      throw new ServiceCombException("create http publish server failed", e);
+    this.init(
+        DynamicPropertyFactory.getInstance().getStringProperty(METRICS_PROMETHEUS_ADDRESS, "localhost:9696").get());
+  }
+
+  public MetricsHttpPublisher(String address) {
+    this.init(address);
+  }
+
+  private void init(String address) {
+    String[] hostAndPort = address.split(":");
+    if (hostAndPort.length == 2) {
+      try {
+        InetSocketAddress socketAddress = new InetSocketAddress(hostAndPort[0], Integer.parseInt(hostAndPort[1]));
+        MetricsCollector metricsCollector = new MetricsCollector();
+        metricsCollector.register();
+        this.httpServer = new HTTPServer(socketAddress, CollectorRegistry.defaultRegistry, true);
+        LOGGER.info("Prometheus httpServer listened : {}.", address);
+      } catch (Exception e) {
+        throw new ServiceCombException("create http publish server failed,may bad address : " + address, e);
+      }
+    } else {
+      throw new ServiceCombException("create http publish server failed,bad address : " + address);
     }
   }
 
