@@ -199,3 +199,32 @@
    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
    See the License for the specific language governing permissions and
    limitations under the License.
+
+=======================================================================
+Apache ServiceComb Java Chassis Subcomponents:
+
+The Apache ServiceComb Java Chassis project contains subcomponents with
+separate copyright notices and license terms. Your use of the source
+for these subcomponents is subject to the terms and conditions of the
+following licenses.
+
+
+================================================================
+For foundations/foundation-vertx/src/main/java/io/vertx/ext/web/impl/MimeTypesUtils.java
+transports/transport-rest/transport-rest-vertx/src/main/java/org/apache/servicecomb/transport/rest/vertx/RestBodyHandler.java
+================================================================
+This product bundles files from vertx which is licensed under the Apache License v2.
+For details, see https://github.com/vert-x3/vertx-web
+
+
+================================================================
+For swagger/swagger-generator/generator-core/src/main/java/org/apache/servicecomb/swagger/extend/property/AbstractBaseIntegerProperty.java
+================================================================
+This product bundles files from swagger which is licensed under the Apache License v2.
+For details, see https://github.com/swagger-api/swagger-core
+
+================================================================
+For handlers/handler-bizkeeper/src/main/java/org/apache/servicecomb/bizkeeper/HystrixCommandPropertiesExt.java
+================================================================
+This product bundles files from swagger which is licensed under the Apache License v2.
+For details, see  https://github.com/Netflix/Hystrix
