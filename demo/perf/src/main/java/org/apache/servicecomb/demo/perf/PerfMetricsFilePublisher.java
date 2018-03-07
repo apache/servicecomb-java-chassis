@@ -24,6 +24,7 @@ import org.apache.servicecomb.foundation.metrics.MetricsConst;
 import org.apache.servicecomb.foundation.metrics.publish.MetricNode;
 import org.apache.servicecomb.foundation.metrics.publish.MetricsLoader;
 import org.apache.servicecomb.foundation.vertx.VertxUtils;
+import org.apache.servicecomb.metrics.core.MetricsUtils;
 import org.apache.servicecomb.metrics.core.MonitorManager;
 import org.apache.servicecomb.swagger.invocation.InvocationType;
 import org.slf4j.Logger;
@@ -35,7 +36,9 @@ public class PerfMetricsFilePublisher {
   private static final Logger LOGGER = LoggerFactory.getLogger(PerfMetricsFilePublisher.class);
 
   public void onCycle() {
-    Map<String, Double> metrics = MonitorManager.getInstance().measure();
+    //print with TimeUnit.MILLISECONDS
+    Map<String, Double> metrics = MetricsUtils
+        .convertMeasurements(MonitorManager.getInstance().measure(), TimeUnit.MILLISECONDS);
     MetricsLoader loader = new MetricsLoader(metrics);
 
     StringBuilder sb = new StringBuilder();
@@ -85,7 +88,7 @@ public class PerfMetricsFilePublisher {
                       .getFirstMatchMetricValue(MetricsConst.TAG_STAGE, MetricsConst.STAGE_TOTAL,
                           MetricsConst.TAG_STATISTIC, "tps"),
                   statusNode.getValue()
-                      .getFirstMatchMetricValue(TimeUnit.MILLISECONDS, MetricsConst.TAG_STAGE, MetricsConst.STAGE_TOTAL,
+                      .getFirstMatchMetricValue(MetricsConst.TAG_STAGE, MetricsConst.STAGE_TOTAL,
                           MetricsConst.TAG_STATISTIC, "latency"),
                   statusNode.getKey(), operationNode.getKey()));
             }
@@ -103,13 +106,13 @@ public class PerfMetricsFilePublisher {
                       .getFirstMatchMetricValue(MetricsConst.TAG_STAGE, MetricsConst.STAGE_TOTAL,
                           MetricsConst.TAG_STATISTIC, "tps"),
                   statusNode.getValue()
-                      .getFirstMatchMetricValue(TimeUnit.MILLISECONDS, MetricsConst.TAG_STAGE, MetricsConst.STAGE_TOTAL,
+                      .getFirstMatchMetricValue(MetricsConst.TAG_STAGE, MetricsConst.STAGE_TOTAL,
                           MetricsConst.TAG_STATISTIC, "latency"),
                   statusNode.getValue()
-                      .getFirstMatchMetricValue(TimeUnit.MILLISECONDS, MetricsConst.TAG_STAGE, MetricsConst.STAGE_QUEUE,
+                      .getFirstMatchMetricValue(MetricsConst.TAG_STAGE, MetricsConst.STAGE_QUEUE,
                           MetricsConst.TAG_STATISTIC, "latency"),
                   statusNode.getValue()
-                      .getFirstMatchMetricValue(TimeUnit.MILLISECONDS, MetricsConst.TAG_STAGE,
+                      .getFirstMatchMetricValue(MetricsConst.TAG_STAGE,
                           MetricsConst.STAGE_EXECUTION,
                           MetricsConst.TAG_STATISTIC, "latency"),
                   statusNode.getKey(), operationNode.getKey()));

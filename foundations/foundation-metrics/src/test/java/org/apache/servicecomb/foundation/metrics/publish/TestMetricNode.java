@@ -21,7 +21,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 
 import org.junit.Assert;
 import org.junit.BeforeClass;
@@ -59,8 +58,6 @@ public class TestMetricNode {
     MetricNode node = loader.getMetricTree("X", "K1");
     MetricNode node_k1 = node.getChildrenNode("1");
     Assert.assertEquals(100, node_k1.getFirstMatchMetricValue("K2", "2"), 0);
-    Assert.assertEquals(100 * 1000, node_k1.getFirstMatchMetricValue(TimeUnit.MILLISECONDS, "K2", "2"), 0);
-    Assert.assertEquals(100 * 1000, node_k1.getFirstMatchMetricValue(TimeUnit.MILLISECONDS, "K2", "2"), 0);
   }
 
   @Test
@@ -68,10 +65,7 @@ public class TestMetricNode {
     MetricNode node = loader.getMetricTree("X", "K1");
     MetricNode node_k1 = node.getChildrenNode("1");
     Assert.assertEquals(200, node_k1.getFirstMatchMetricValue("K3", "30", "K2", "20"), 0);
-    Assert.assertEquals(200 * 1000, node_k1.getFirstMatchMetricValue(TimeUnit.MILLISECONDS, "K3", "30", "K2", "20"), 0);
     Assert.assertEquals(110.0, node_k1.getFirstMatchMetricValue("K2", "2", "K3", "30000"), 0);
-    Assert
-        .assertEquals(110 * 1000, node_k1.getFirstMatchMetricValue(TimeUnit.MILLISECONDS, "K2", "2", "K3", "30000"), 0);
   }
 
   @Test
@@ -79,7 +73,6 @@ public class TestMetricNode {
     MetricNode node = loader.getMetricTree("X", "K1");
     MetricNode node_k1 = node.getChildrenNode("1");
     Assert.assertEquals(100, node_k1.getMatchStatisticMetricValue("A"), 0);
-    Assert.assertEquals(100 * 1000, node_k1.getMatchStatisticMetricValue(TimeUnit.MILLISECONDS, "A"), 0);
   }
 
   @Test

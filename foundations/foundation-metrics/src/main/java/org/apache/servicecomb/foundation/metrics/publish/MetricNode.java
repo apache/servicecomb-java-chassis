@@ -23,7 +23,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.concurrent.TimeUnit;
 
 import org.apache.servicecomb.foundation.metrics.MetricsConst;
 
@@ -98,15 +97,6 @@ public class MetricNode {
     return Double.NaN;
   }
 
-  public Double getFirstMatchMetricValue(TimeUnit unit, String tagKey, String tagValue) {
-    for (Metric metric : this.metrics) {
-      if (metric.containsTag(tagKey, tagValue)) {
-        return metric.getValue(unit);
-      }
-    }
-    return Double.NaN;
-  }
-
   public Double getFirstMatchMetricValue(String... tags) {
     for (Metric metric : this.metrics) {
       if (metric.containsTag(tags)) {
@@ -116,21 +106,8 @@ public class MetricNode {
     return Double.NaN;
   }
 
-  public Double getFirstMatchMetricValue(TimeUnit unit, String... tags) {
-    for (Metric metric : this.metrics) {
-      if (metric.containsTag(tags)) {
-        return metric.getValue(unit);
-      }
-    }
-    return Double.NaN;
-  }
-
   public double getMatchStatisticMetricValue(String statisticValue) {
     return getFirstMatchMetricValue(MetricsConst.TAG_STATISTIC, statisticValue);
-  }
-
-  public double getMatchStatisticMetricValue(TimeUnit unit, String statisticValue) {
-    return getFirstMatchMetricValue(unit, MetricsConst.TAG_STATISTIC, statisticValue);
   }
 
   private Map<String, List<Metric>> groupByTag(Iterable<Metric> metrics, String tagKey) {

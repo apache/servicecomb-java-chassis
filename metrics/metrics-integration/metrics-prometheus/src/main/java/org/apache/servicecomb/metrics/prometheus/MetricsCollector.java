@@ -21,9 +21,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.servicecomb.foundation.metrics.MetricsConst;
+import org.apache.servicecomb.metrics.core.MetricsUtils;
 import org.apache.servicecomb.metrics.core.MonitorManager;
+
+import com.netflix.servo.monitor.MonitorConfig;
 
 import io.prometheus.client.Collector;
 import io.prometheus.client.Collector.MetricFamilySamples.Sample;
@@ -41,9 +45,11 @@ public class MetricsCollector extends Collector implements Collector.Describable
   }
 
   private List<MetricFamilySamples> load() {
-    Map<String, Double> metrics = MonitorManager.getInstance().measure();
-    List<MetricFamilySamples> familySamples = new ArrayList<>();
+    Map<MonitorConfig, Double> measurements = MonitorManager.getInstance().measure();
+    //export with TimeUnit.MILLISECONDS as default
+    Map<String, Double> metrics = MetricsUtils.convertMeasurements(measurements, TimeUnit.MILLISECONDS);
 
+    List<MetricFamilySamples> familySamples = new ArrayList<>();
     List<Sample> samples = new ArrayList<>();
     for (Entry<String, Double> metric : metrics.entrySet()) {
       List<String> tagNames = new ArrayList<>();

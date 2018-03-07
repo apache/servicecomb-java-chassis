@@ -19,10 +19,8 @@ package org.apache.servicecomb.foundation.metrics.publish;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 
 import org.apache.servicecomb.foundation.common.exceptions.ServiceCombException;
-import org.apache.servicecomb.foundation.metrics.MetricsConst;
 
 public class Metric {
   private String name;
@@ -74,15 +72,6 @@ public class Metric {
   }
 
   public double getValue() {
-    return value;
-  }
-
-  public double getValue(TimeUnit unit) {
-    if (tags.containsKey(MetricsConst.TAG_UNIT)) {
-      if (!tags.get(MetricsConst.TAG_UNIT).equals(String.valueOf(unit))) {
-        return unit.convert((long) value, TimeUnit.valueOf(tags.get(MetricsConst.TAG_UNIT)));
-      }
-    }
     return value;
   }
 

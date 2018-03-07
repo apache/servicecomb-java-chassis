@@ -56,8 +56,8 @@ abstract class AbstractInvocationMetrics {
   }
 
   void addLatencyMonitors(String stage, String... tags) {
-    String[] tagsWithStageAndUnit = ArrayUtils
-        .addAll(tags, MetricsConst.TAG_STAGE, stage, MetricsConst.TAG_UNIT, String.valueOf(TimeUnit.MILLISECONDS));
+    String[] tagsWithStageAndUnit = ArrayUtils.addAll(tags,
+        MetricsConst.TAG_STAGE, stage, MetricsConst.TAG_STATISTIC, "latency");
     this.averageLatencies.put(stage, MonitorManager.getInstance()
         .getTimer(MetricsConst.SERVICECOMB_INVOCATION, tagsWithStageAndUnit));
   }

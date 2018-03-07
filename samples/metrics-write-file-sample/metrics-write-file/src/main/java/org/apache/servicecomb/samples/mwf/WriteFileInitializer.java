@@ -21,10 +21,12 @@ import static java.util.concurrent.TimeUnit.MILLISECONDS;
 
 import java.util.Map;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.foundation.common.net.NetUtils;
 import org.apache.servicecomb.metrics.core.MetricsConfig;
+import org.apache.servicecomb.metrics.core.MetricsUtils;
 import org.apache.servicecomb.metrics.core.MonitorManager;
 import org.apache.servicecomb.serviceregistry.RegistryUtils;
 import org.apache.servicecomb.serviceregistry.api.registry.Microservice;
@@ -83,7 +85,9 @@ public class WriteFileInitializer {
   }
 
   private void run() {
-    Map<String, Double> metrics = MonitorManager.getInstance().measure();
+    //output with TimeUnit.MILLISECONDS as default
+    Map<String, Double> metrics = MetricsUtils
+        .convertMeasurements(MonitorManager.getInstance().measure(), TimeUnit.MILLISECONDS);
     Map<String, String> convertedMetrics = convertor.convert(metrics);
     Map<String, String> formattedMetrics = formatter.format(convertedMetrics);
 
