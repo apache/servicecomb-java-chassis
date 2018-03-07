@@ -44,6 +44,7 @@ public final class SSLOption {
       + "TLS_RSA_WITH_AES_128_GCM_SHA256";
 
   static {
+    DEFAULT_OPTION.setEngine("jdk");
     DEFAULT_OPTION.setProtocols("TLSv1.2");
     DEFAULT_OPTION.setCiphers(DEFAUL_CIPHERS);
     DEFAULT_OPTION.setAuthPeer(false);
@@ -60,6 +61,8 @@ public final class SSLOption {
     DEFAULT_OPTION.setKeyStoreValue("keyStoreValue");
     DEFAULT_OPTION.setCrl("revoke.crl");
   }
+
+  private String engine;
 
   private String protocols;
 
@@ -92,6 +95,14 @@ public final class SSLOption {
   private String crl;
 
   private String sslCustomClass;
+
+  public String getEngine() {
+    return engine;
+  }
+
+  public void setEngine(String engine) {
+    this.engine = engine;
+  }
 
   public void setProtocols(String protocols) {
     this.protocols = protocols;
@@ -295,6 +306,10 @@ public final class SSLOption {
 
   public static SSLOption buildFromYaml(String tag, ConcurrentCompositeConfiguration configSource) {
     SSLOption option = new SSLOption();
+    option.engine = getStringProperty(configSource,
+        DEFAULT_OPTION.getEngine(),
+        "ssl." + tag + ".engine",
+        "ssl.engine");
     option.protocols =
         getStringProperty(configSource,
             DEFAULT_OPTION.getProtocols(),

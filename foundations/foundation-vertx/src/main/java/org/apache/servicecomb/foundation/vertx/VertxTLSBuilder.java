@@ -29,6 +29,7 @@ import io.vertx.core.http.HttpClientOptions;
 import io.vertx.core.net.ClientOptionsBase;
 import io.vertx.core.net.JksOptions;
 import io.vertx.core.net.NetServerOptions;
+import io.vertx.core.net.OpenSSLEngineOptions;
 import io.vertx.core.net.PfxOptions;
 import io.vertx.core.net.TCPSSLOptions;
 
@@ -86,6 +87,12 @@ public final class VertxTLSBuilder {
   private static TCPSSLOptions buildTCPSSLOptions(SSLOption sslOption, SSLCustom sslCustom,
       TCPSSLOptions tcpClientOptions) {
     tcpClientOptions.setSsl(true);
+
+    if (sslOption.getEngine().equalsIgnoreCase("openssl")) {
+      OpenSSLEngineOptions options = new OpenSSLEngineOptions();
+      options.setSessionCacheEnabled(true);
+      tcpClientOptions.setOpenSslEngineOptions(new OpenSSLEngineOptions());
+    }
     if (isFileExists(sslCustom.getFullPath(sslOption.getKeyStore()))) {
       if (STORE_PKCS12.equalsIgnoreCase(sslOption.getKeyStoreType())) {
         PfxOptions keyPfxOptions = new PfxOptions();
