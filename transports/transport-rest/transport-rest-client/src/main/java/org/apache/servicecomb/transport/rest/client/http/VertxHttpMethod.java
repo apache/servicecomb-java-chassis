@@ -20,7 +20,6 @@ package org.apache.servicecomb.transport.rest.client.http;
 import java.util.List;
 
 import org.apache.servicecomb.common.rest.RestConst;
-import org.apache.servicecomb.common.rest.codec.RestCodec;
 import org.apache.servicecomb.common.rest.codec.param.RestClientRequestImpl;
 import org.apache.servicecomb.common.rest.definition.RestOperationMeta;
 import org.apache.servicecomb.common.rest.filter.HttpClientFilter;
@@ -80,7 +79,7 @@ public class VertxHttpMethod {
     clientRequest.putHeader(org.apache.servicecomb.core.Const.TARGET_MICROSERVICE, invocation.getMicroserviceName());
     RestClientRequestImpl restClientRequest =
         new RestClientRequestImpl(clientRequest, httpClientWithContext.context().owner(), asyncResp);
-    RestCodec.argsToRest(invocation.getArgs(), swaggerRestOperation, restClientRequest);
+    invocation.getHandlerContext().put(RestConst.INVOCATION_HANDLER_REQUESTCLIENT, restClientRequest);
 
     Buffer requestBodyBuffer = restClientRequest.getBodyBuffer();
     HttpServletRequestEx requestEx = new VertxClientRequestToHttpServletRequest(clientRequest, requestBodyBuffer);

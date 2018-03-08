@@ -26,7 +26,6 @@ import java.util.concurrent.Executor;
 import javax.ws.rs.core.Response.Status;
 import javax.xml.ws.Holder;
 
-import org.apache.servicecomb.common.rest.codec.RestCodec;
 import org.apache.servicecomb.common.rest.codec.produce.ProduceProcessorManager;
 import org.apache.servicecomb.common.rest.definition.RestOperationMeta;
 import org.apache.servicecomb.common.rest.filter.HttpServerFilter;
@@ -44,6 +43,7 @@ import org.apache.servicecomb.core.executor.ReactiveExecutor;
 import org.apache.servicecomb.core.metrics.InvocationStartedEvent;
 import org.apache.servicecomb.core.provider.consumer.ReferenceConfig;
 import org.apache.servicecomb.foundation.common.utils.JsonUtils;
+import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
 import org.apache.servicecomb.foundation.vertx.http.AbstractHttpServletRequest;
 import org.apache.servicecomb.foundation.vertx.http.HttpServletRequestEx;
 import org.apache.servicecomb.foundation.vertx.http.HttpServletResponseEx;
@@ -116,6 +116,8 @@ public class TestAbstractRestInvocation {
     invocation = new Invocation(endpoint, operationMeta, swaggerArguments);
 
     initRestInvocation();
+    List<HttpServerFilter> httpServerFilters = SPIServiceUtils.getSortedService(HttpServerFilter.class);
+    restInvocation.setHttpServerFilters(httpServerFilters);
   }
 
   private void initRestInvocation() {
@@ -535,8 +537,16 @@ public class TestAbstractRestInvocation {
   @Test
   public void testDoSendResponseResultOKFilter(@Mocked Response response)
       throws Exception {
+    Headers headers = new Headers();
+    headers.addHeader("Content-Type", "application/json");
     new Expectations() {
       {
+        response.getHeaders();
+        result = headers;
+        response.getStatusCode();
+        result = 123;
+        response.getReasonPhrase();
+        result = "reason";
         response.getResult();
         result = "ok";
       }
@@ -558,7 +568,9 @@ public class TestAbstractRestInvocation {
     }.getMockInstance();
 
     initRestInvocation();
-    restInvocation.setHttpServerFilters(Arrays.asList(filter));
+    List<HttpServerFilter> httpServerFilters = SPIServiceUtils.getSortedService(HttpServerFilter.class);
+    httpServerFilters.add(filter);
+    restInvocation.setHttpServerFilters(httpServerFilters);
 
     restInvocation.sendResponse(response);
     Assert.assertEquals("\"ok\"-filter", buffer.toString());
@@ -720,13 +732,6 @@ public class TestAbstractRestInvocation {
 
   @Test
   public void runOnExecutor() {
-    new Expectations(RestCodec.class) {
-      {
-        RestCodec.restToArgs(requestEx, restOperation);
-        result = null;
-      }
-    };
-
     Holder<Boolean> result = new Holder<>();
     restInvocation = new AbstractRestInvocationForTest() {
       @Override

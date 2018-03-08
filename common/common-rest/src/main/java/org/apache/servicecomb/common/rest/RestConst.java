@@ -34,11 +34,23 @@ public final class RestConst {
   // in HttpServletRequest attribute
   public static final String PATH_PARAMETERS = "servicecomb-paths";
 
+  //in HttpServletRequest attribute
+  public static final String OPERATION_PARAMETERS = "servicecomb-operations";
+
   // in HttpServletRequest attribute
   public static final String BODY_PARAMETER = "servicecomb-body";
 
   // in HttpServletRequest attribute
   public static final String FORM_PARAMETERS = "servicecomb-forms";
+
+  //in invocation response
+  public static final String INVOCATION_HANDLER_RESPONSE = "servicecomb-invocation-hanlder-response";
+
+  //in invocation response
+  public static final String INVOCATION_HANDLER_PROCESSOR = "servicecomb-invocation-hanlder-processor";
+
+  //in invocation response
+  public static final String INVOCATION_HANDLER_REQUESTCLIENT = "servicecomb-invocation-hanlder-requestclient";
 
   public static final String REST_PRODUCER_INVOCATION = "servicecomb-rest-producer-invocation";
 
