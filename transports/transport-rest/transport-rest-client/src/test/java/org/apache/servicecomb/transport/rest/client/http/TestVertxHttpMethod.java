@@ -110,6 +110,8 @@ public class TestVertxHttpMethod extends VertxHttpMethod {
     when(endpoint.getAddress()).thenReturn(address);
 
     when(request.exceptionHandler(Mockito.any())).then(answer -> null);
+    Map<String, Object> map = new HashMap<>();
+    when(invocation.getHandlerContext()).then(answer -> map);;
 
     this.doMethod(httpClientWithContext, invocation, asyncResp);
     Assert.assertTrue(true);
