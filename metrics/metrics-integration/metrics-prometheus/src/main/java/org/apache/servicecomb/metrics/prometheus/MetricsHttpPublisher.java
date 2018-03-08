@@ -43,7 +43,7 @@ public class MetricsHttpPublisher implements ApplicationListener<ApplicationEven
   public MetricsHttpPublisher() {
     //prometheus default port allocation is here : https://github.com/prometheus/prometheus/wiki/Default-port-allocations
     this.init(
-        DynamicPropertyFactory.getInstance().getStringProperty(METRICS_PROMETHEUS_ADDRESS, "localhost:9696").get());
+        DynamicPropertyFactory.getInstance().getStringProperty(METRICS_PROMETHEUS_ADDRESS, "0.0.0.0:9696").get());
   }
 
   public MetricsHttpPublisher(String address) {
@@ -51,20 +51,23 @@ public class MetricsHttpPublisher implements ApplicationListener<ApplicationEven
   }
 
   private void init(String address) {
+    try {
+      InetSocketAddress socketAddress = getSocketAddress(address);
+      MetricsCollector metricsCollector = new MetricsCollector();
+      metricsCollector.register();
+      this.httpServer = new HTTPServer(socketAddress, CollectorRegistry.defaultRegistry, true);
+      LOGGER.info("Prometheus httpServer listened : {}.", address);
+    } catch (Exception e) {
+      throw new ServiceCombException("create http publish server failed,may bad address : " + address, e);
+    }
+  }
+
+  private InetSocketAddress getSocketAddress(String address) {
     String[] hostAndPort = address.split(":");
     if (hostAndPort.length == 2) {
-      try {
-        InetSocketAddress socketAddress = new InetSocketAddress(hostAndPort[0], Integer.parseInt(hostAndPort[1]));
-        MetricsCollector metricsCollector = new MetricsCollector();
-        metricsCollector.register();
-        this.httpServer = new HTTPServer(socketAddress, CollectorRegistry.defaultRegistry, true);
-        LOGGER.info("Prometheus httpServer listened : {}.", address);
-      } catch (Exception e) {
-        throw new ServiceCombException("create http publish server failed,may bad address : " + address, e);
-      }
-    } else {
-      throw new ServiceCombException("create http publish server failed,bad address : " + address);
+      return new InetSocketAddress(hostAndPort[0], Integer.parseInt(hostAndPort[1]));
     }
+    throw new ServiceCombException("create http publish server failed,bad address : " + address);
   }
 
   @Override

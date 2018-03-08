@@ -32,21 +32,21 @@ public class TestMetricsHttpPublisher {
   public void testBadPublishAddress() {
     thrown.expect(ServiceCombException.class);
     new MetricsHttpPublisher("a:b:c");
-    Assert.fail("testPublishAddress failed : a:b:c");
+    Assert.fail("testBadPublishAddress failed,this address must throw ServiceCombException : a:b:c");
   }
 
   @Test
   public void testBadPublishAddress_BadPort() {
     thrown.expect(ServiceCombException.class);
     new MetricsHttpPublisher("localhost:xxxx");
-    Assert.fail("testPublishAddress failed : localhost:xxxx");
+    Assert.fail("testBadPublishAddress failed,this address must throw ServiceCombException : localhost:xxxx");
   }
 
   @Test
   public void testBadPublishAddress_ToLargePort() {
     thrown.expect(ServiceCombException.class);
     new MetricsHttpPublisher("localhost:9999999");
-    Assert.fail("testPublishAddress failed : localhost:9999999");
+    Assert.fail("testBadPublishAddress failed,this address must throw ServiceCombException : localhost:9999999");
   }
 
   @Test
