@@ -27,7 +27,6 @@ import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Response.Status;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.servicecomb.common.rest.codec.RestCodec;
 import org.apache.servicecomb.common.rest.codec.produce.ProduceProcessor;
 import org.apache.servicecomb.common.rest.codec.produce.ProduceProcessorManager;
 import org.apache.servicecomb.common.rest.definition.RestOperationMeta;
@@ -43,14 +42,11 @@ import org.apache.servicecomb.foundation.common.event.EventBus;
 import org.apache.servicecomb.foundation.common.utils.JsonUtils;
 import org.apache.servicecomb.foundation.vertx.http.HttpServletRequestEx;
 import org.apache.servicecomb.foundation.vertx.http.HttpServletResponseEx;
-import org.apache.servicecomb.foundation.vertx.stream.BufferOutputStream;
 import org.apache.servicecomb.swagger.invocation.InvocationType;
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import io.netty.buffer.Unpooled;
 
 public abstract class AbstractRestInvocation {
   private static final Logger LOGGER = LoggerFactory.getLogger(AbstractRestInvocation.class);
@@ -80,6 +76,7 @@ public abstract class AbstractRestInvocation {
 
     OperationLocator locator = locateOperation(servicePathManager);
     requestEx.setAttribute(RestConst.PATH_PARAMETERS, locator.getPathVarMap());
+    requestEx.setAttribute(RestConst.OPERATION_PARAMETERS, locator.getOperation());
     this.restOperationMeta = locator.getOperation();
   }
 
@@ -140,8 +137,7 @@ public abstract class AbstractRestInvocation {
   }
 
   protected void runOnExecutor(InvocationStartedEvent startedEvent) {
-    Object[] args = RestCodec.restToArgs(requestEx, restOperationMeta);
-    createInvocation(args);
+    createInvocation(null);
 
     //立刻设置开始时间，否则Finished时无法计算TotalTime
     invocation.setStartTime(startedEvent.getStartedTime());
@@ -227,21 +223,13 @@ public abstract class AbstractRestInvocation {
     }
     responseEx.setStatus(response.getStatusCode(), response.getReasonPhrase());
     responseEx.setContentType(produceProcessor.getName() + "; charset=utf-8");
+    invocation.getHandlerContext().put(RestConst.INVOCATION_HANDLER_RESPONSE, response);
+    invocation.getHandlerContext().put(RestConst.INVOCATION_HANDLER_PROCESSOR, produceProcessor);
 
-    Object body = response.getResult();
-    if (response.isFailed()) {
-      body = ((InvocationException) body).getErrorData();
+    for (HttpServerFilter filter : httpServerFilters) {
+      filter.beforeSendResponse(invocation, responseEx);
     }
 
-    try (BufferOutputStream output = new BufferOutputStream(Unpooled.compositeBuffer())) {
-      produceProcessor.encodeResponse(output, body);
-
-      responseEx.setBodyBuffer(output.getBuffer());
-      for (HttpServerFilter filter : httpServerFilters) {
-        filter.beforeSendResponse(invocation, responseEx);
-      }
-
-      responseEx.flushBuffer();
-    }
+    responseEx.flushBuffer();
   }
 }
