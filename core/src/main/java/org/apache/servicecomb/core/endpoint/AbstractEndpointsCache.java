@@ -50,7 +50,7 @@ public abstract class AbstractEndpointsCache<ENDPOINT> {
     AbstractEndpointsCache.transportManager = transportManager;
   }
 
-  /**
+  /*
    * transportName 可能为""，表示走任意健康的地址即可
    */
   public AbstractEndpointsCache(String appId, String microserviceName, String microserviceVersionRule,

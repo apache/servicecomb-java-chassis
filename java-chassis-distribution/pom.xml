@@ -21,7 +21,7 @@
     <parent>
         <groupId>org.apache.servicecomb</groupId>
         <artifactId>java-chassis-parent</artifactId>
-        <version>1.0.0-m1-SNAPSHOT</version>
+        <version>1.0.0-m1</version>
         <relativePath>../parent</relativePath>
     </parent>
     <artifactId>java-chassis-distribution</artifactId>
@@ -187,13 +187,26 @@
                         <artifactId>maven-assembly-plugin</artifactId>
                         <executions>
                             <execution>
+                                <id>bin</id>
                                 <phase>package</phase>
                                 <goals>
                                     <goal>single</goal>
                                 </goals>
                                 <configuration>
                                     <descriptors>
-                                        <descriptor>src/assembly/assembly.xml</descriptor>
+                                        <descriptor>src/assembly/bin.xml</descriptor>
+                                    </descriptors>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>src</id>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>single</goal>
+                                </goals>
+                                <configuration>
+                                    <descriptors>
+                                        <descriptor>src/assembly/src.xml</descriptor>
                                     </descriptors>
                                 </configuration>
                             </execution>

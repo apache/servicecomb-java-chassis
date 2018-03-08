@@ -25,7 +25,7 @@
 	<parent>
 		<groupId>org.apache.servicecomb.demo</groupId>
 		<artifactId>demo-spring-boot</artifactId>
-		<version>1.0.0-m1-SNAPSHOT</version>
+		<version>1.0.0-m1</version>
 	</parent>
 	<dependencies>
 		<dependency>
@@ -56,7 +56,7 @@
 						<mixin>
 							<groupId>org.apache.servicecomb.demo</groupId>
 							<artifactId>docker-run-config</artifactId>
-							<version>1.0.0-m1-SNAPSHOT</version>
+							<version>1.0.0-m1</version>
 						</mixin>
 					</mixins>
 				</configuration>

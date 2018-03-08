@@ -49,7 +49,18 @@ public class ConfigCenterConfigurationSourceImpl implements ConfigCenterConfigur
 
   private UpdateHandler updateHandler = new UpdateHandler();
 
+  private static final String CONFIG_CENTER_URL_KEY = "cse.config.client.serverUri";
+
   public ConfigCenterConfigurationSourceImpl() {
+  }
+
+  @Override
+  public boolean isValidSource(Configuration localConfiguration) {
+    if (localConfiguration.getProperty(CONFIG_CENTER_URL_KEY) == null) {
+      LOGGER.warn("Config Center configuration source is not configured!");
+      return false;
+    }
+    return true;
   }
 
   private void init() {

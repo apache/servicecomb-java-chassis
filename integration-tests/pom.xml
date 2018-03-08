@@ -20,7 +20,7 @@
   <parent>
     <groupId>org.apache.servicecomb</groupId>
     <artifactId>java-chassis-parent</artifactId>
-    <version>1.0.0-m1-SNAPSHOT</version>
+    <version>1.0.0-m1</version>
     <relativePath>../parent</relativePath>
   </parent>
   <modelVersion>4.0.0</modelVersion>
@@ -48,12 +48,12 @@
       <dependency>
         <groupId>org.apache.servicecomb.demo</groupId>
         <artifactId>demo-schema</artifactId>
-        <version>1.0.0-m1-SNAPSHOT</version>
+        <version>1.0.0-m1</version>
       </dependency>
       <dependency>
         <groupId>org.apache.servicecomb.tests</groupId>
         <artifactId>test-common</artifactId>
-        <version>1.0.0-m1-SNAPSHOT</version>
+        <version>1.0.0-m1</version>
         <type>test-jar</type>
       </dependency>
       <dependency>

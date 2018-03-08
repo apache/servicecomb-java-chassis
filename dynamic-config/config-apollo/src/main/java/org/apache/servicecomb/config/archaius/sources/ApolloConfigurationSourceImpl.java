@@ -49,10 +49,21 @@ public class ApolloConfigurationSourceImpl implements ConfigCenterConfigurationS
 
   private List<WatchedUpdateListener> listeners = new CopyOnWriteArrayList<>();
 
+  private static final String APOLLO_CONFIG_URL_KEY = "apollo.config.serverUri";
+
   public ApolloConfigurationSourceImpl() {
   }
 
   private final UpdateHandler updateHandler = new UpdateHandler();
+
+  @Override
+  public boolean isValidSource(Configuration localConfiguration) {
+    if (localConfiguration.getProperty(APOLLO_CONFIG_URL_KEY) == null){
+      LOGGER.warn("Apollo configuration source is not configured!");
+      return false;
+    }
+    return true;
+  }
 
   @Override
   public void init(Configuration localConfiguration) {

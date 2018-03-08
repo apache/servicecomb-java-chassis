@@ -53,7 +53,7 @@ public class SchemaLoader {
     this.microserviceMetaManager = microserviceMetaManager;
   }
 
-  /**
+  /*
    * resource的路径格式，至少是以这个形式结尾：schemaId.yaml
    */
   public SchemaMeta registerSchema(String microserviceName, Resource resource) {

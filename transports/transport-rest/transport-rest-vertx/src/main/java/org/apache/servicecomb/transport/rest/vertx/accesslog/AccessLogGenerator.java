@@ -26,13 +26,13 @@ import org.apache.servicecomb.transport.rest.vertx.accesslog.parser.AccessLogPat
 
 import io.vertx.ext.web.RoutingContext;
 
-/**
+/*
  * Accept {@link AccessLogParam} and generate access log.
  * <br/>
  * Each AccessLogParam for a line of access log.
  */
 public class AccessLogGenerator {
-  /**
+  /*
    * traversal this array to generate access log segment.
    */
   private AccessLogItem<RoutingContext>[] accessLogItems;
