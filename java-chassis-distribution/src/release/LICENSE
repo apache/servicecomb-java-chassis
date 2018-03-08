@@ -346,6 +346,7 @@ spring-cloud-starter-ribbon (https://projects.spring.io/spring-cloud) org.spring
 Spring Cloud Netflix Core (https://spring.io/spring-cloud/spring-cloud-netflix/spring-cloud-netflix-core) org.springframework.cloud:spring-cloud-netflix-core:jar:1.2.6.RELEASE
 spring-cloud-starter-archaius (https://projects.spring.io/spring-cloud) org.springframework.cloud:spring-cloud-starter-archaius:jar:1.2.6.RELEASE
 Spring Boot Actuator (http://projects.spring.io/spring-boot/) org.springframework.boot:spring-boot-actuator:jar:1.4.5.RELEASE
+Netty/TomcatNative(https://netty.io/wiki/forked-tomcat-native.html) io.netty:netty-tcnative-boringssl-static:2.0.7.Final
 Netty/Resolver (http://netty.io/netty-resolver/) io.netty:netty-resolver:jar:4.1.17.Final
 Spring Boot Starter (http://projects.spring.io/spring-boot/) org.springframework.boot:spring-boot-starter:jar:1.4.5.RELEASE
 Netty/Codec (http://netty.io/netty-codec/) io.netty:netty-codec:jar:4.1.17.Final
