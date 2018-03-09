@@ -62,7 +62,7 @@ public class ServerRestArgsFilter implements HttpServerFilter {
       produceProcessor.encodeResponse(output, body);
 
       responseEx.setBodyBuffer(output.getBuffer());
-    } catch (Exception e) {
+    } catch (Throwable e) {
       throw ExceptionFactory.convertProducerException(e);
     }
   }
