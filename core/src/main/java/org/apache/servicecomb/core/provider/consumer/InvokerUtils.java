@@ -20,10 +20,7 @@ package org.apache.servicecomb.core.provider.consumer;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.definition.SchemaMeta;
 import org.apache.servicecomb.core.invocation.InvocationFactory;
-import org.apache.servicecomb.core.metrics.InvocationStartedEvent;
-import org.apache.servicecomb.foundation.common.event.EventBus;
 import org.apache.servicecomb.swagger.invocation.AsyncResponse;
-import org.apache.servicecomb.swagger.invocation.InvocationType;
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.apache.servicecomb.swagger.invocation.context.ContextUtils;
 import org.apache.servicecomb.swagger.invocation.exception.ExceptionFactory;
@@ -60,30 +57,30 @@ public final class InvokerUtils {
   }
 
   public static Response innerSyncInvoke(Invocation invocation) {
-    int statusCode = 0;
     try {
-      triggerStartedEvent(invocation);
+      invocation.onStart();
       SyncResponseExecutor respExecutor = new SyncResponseExecutor();
       invocation.setResponseExecutor(respExecutor);
 
       invocation.next(respExecutor::setResponse);
 
       Response response = respExecutor.waitResponse();
-      statusCode = response.getStatusCode();
+      invocation.onFinish(response);
       return response;
     } catch (Throwable e) {
       String msg =
           String.format("invoke failed, %s", invocation.getOperationMeta().getMicroserviceQualifiedName());
       LOGGER.debug(msg, e);
-      return Response.createConsumerFail(e);
-    } finally {
-      invocation.triggerFinishedEvent(statusCode);
+
+      Response response = Response.createConsumerFail(e);
+      invocation.onFinish(response);
+      return response;
     }
   }
 
   public static void reactiveInvoke(Invocation invocation, AsyncResponse asyncResp) {
     try {
-      triggerStartedEvent(invocation);
+      invocation.onStart();
       invocation.setSync(false);
 
       ReactiveResponseExecutor respExecutor = new ReactiveResponseExecutor();
@@ -92,7 +89,7 @@ public final class InvokerUtils {
       invocation.next(ar -> {
         ContextUtils.setInvocationContext(invocation.getParentContext());
         try {
-          invocation.triggerFinishedEvent(ar.getStatusCode());
+          invocation.onFinish(ar);
           asyncResp.handle(ar);
         } finally {
           ContextUtils.removeInvocationContext();
@@ -100,21 +97,15 @@ public final class InvokerUtils {
       });
     } catch (Throwable e) {
       //if throw exception,we can use 500 for status code ?
-      invocation.triggerFinishedEvent(500);
+      Response response = Response.createConsumerFail(e);
+      invocation.onFinish(response);
       LOGGER.error("invoke failed, {}", invocation.getOperationMeta().getMicroserviceQualifiedName());
-      asyncResp.consumerFail(e);
+      asyncResp.handle(response);
     }
   }
 
   @Deprecated
   public static Object invoke(Invocation invocation) {
     return syncInvoke(invocation);
-  }
-
-  private static void triggerStartedEvent(Invocation invocation) {
-    long startTime = System.nanoTime();
-    EventBus.getInstance().triggerEvent(new InvocationStartedEvent(invocation.getMicroserviceQualifiedName(),
-        InvocationType.CONSUMER, startTime));
-    invocation.setStartTime(startTime);
   }
 }
