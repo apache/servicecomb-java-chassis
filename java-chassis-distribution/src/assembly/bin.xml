@@ -25,15 +25,23 @@
     <fileSets>
         <fileSet>
             <directory>../samples</directory>
-            <outputDirectory>java-chassis-distribution-${project.version}/samples</outputDirectory>
+            <outputDirectory>apache-servicecomb-incubating-java-chassis-distribution-${project.version}/samples</outputDirectory>
             <excludes>
+                <exclude>**/*.iml</exclude>
+                <exclude>**/eclipse-classes/**</exclude>
+                <exclude>**/build/**</exclude>
+                <exclude>**/eclipse-classes/**</exclude>
+                <exclude>**/.*</exclude>
+                <exclude>**/.*/**</exclude>
+                <exclude>**/target</exclude>
+                <exclude>**/target/**/*</exclude>
                 <exclude>**/target</exclude>
                 <exclude>**/target/**/*</exclude>
             </excludes>
         </fileSet>
         <fileSet>
             <directory>../</directory>
-            <outputDirectory>java-chassis-distribution-${project.version}</outputDirectory>
+            <outputDirectory>apache-servicecomb-incubating-java-chassis-distribution-${project.version}</outputDirectory>
             <includes>
                 <include>DISCLAIMER</include>
                 <include>README.md</include>
@@ -41,7 +49,7 @@
         </fileSet>
         <fileSet>
             <directory>src/release</directory>
-            <outputDirectory>java-chassis-distribution-${project.version}</outputDirectory>
+            <outputDirectory>apache-servicecomb-incubating-java-chassis-distribution-${project.version}</outputDirectory>
             <includes>
                 <include>NOTICE</include>
                 <include>LICENSE</include>
@@ -53,7 +61,7 @@
         <dependencySet>
             <useProjectArtifact>true</useProjectArtifact>
             <unpack>false</unpack>
-            <outputDirectory>java-chassis-distribution-${project.version}/libs</outputDirectory>
+            <outputDirectory>apache-servicecomb-incubating-java-chassis-distribution-${project.version}/libs</outputDirectory>
             <scope>runtime</scope>
         </dependencySet>
     </dependencySets>
