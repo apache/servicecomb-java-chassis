@@ -45,7 +45,7 @@ public class ClientRestArgsFilter implements HttpClientFilter {
     try {
       RestCodec.argsToRest(invocation.getArgs(), swaggerRestOperation, restClientRequest);
       requestEx.setBodyBuffer(restClientRequest.getBodyBuffer());
-    } catch (Exception e) {
+    } catch (Throwable e) {
       throw ExceptionFactory.convertConsumerException(e);
     }
   }
