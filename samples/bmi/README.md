@@ -11,7 +11,7 @@ There are two microservices in this demo.
 ## Quick Start(Linux)
 1. Run the service center
 
-  [how to start service center](http://servicecomb.incubator.apache.org/users/setup-environment/#)
+   [how to start service center](http://servicecomb.incubator.apache.org/users/setup-environment/#)
 
 2. Get the bmi demo's code
 ```bash
