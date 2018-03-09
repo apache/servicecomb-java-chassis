@@ -37,7 +37,9 @@
             <exclude>**/eclipse-classes/**</exclude>
             <exclude>**/.*</exclude>
             <exclude>**/.*/**</exclude>
-    
+            <exclude>*.enc</exclude>
+            <exclude>*.gpg</exclude>
+            <exclude>random_seed</exclude>
             <exclude>**/surefire*</exclude>
             <exclude>**/svn-commit*</exclude>
     

@@ -24,7 +24,7 @@
         <version>1.0.0-m2-SNAPSHOT</version>
         <relativePath>../parent</relativePath>
     </parent>
-    <artifactId>java-chassis-distribution</artifactId>
+    <artifactId>apache-servicecomb-incubating-java-chassis-distribution</artifactId>
     <name>Java Chassis::Distribution</name>
     <packaging>pom</packaging>
     <dependencies>
