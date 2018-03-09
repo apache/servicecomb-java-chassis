@@ -32,7 +32,7 @@ ServiceComb support users to define a customized handler and and invoke the hand
 
   ```yaml
   cse:
-    ......
+    # other configurations omitted
     handler:
       chain:
         Consumer:

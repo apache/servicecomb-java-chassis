@@ -1,6 +1,6 @@
 ## Auth-Sample
 
-To make sure the security between the interfaces of services, users can enable `RSA Authorizaiton  ` by simple configuration as below.
+To make sure the security between the interfaces of services, users can enable `RSA Authorizaiton` by simple configuration as below.
 
 ## Consumer Service
 
@@ -17,7 +17,7 @@ To make sure the security between the interfaces of services, users can enable `
 
   ```yaml
   cse:
-    ......
+    # other configurations omitted
     handler:
       chain:
         Consumer:
@@ -39,7 +39,7 @@ To make sure the security between the interfaces of services, users can enable `
 
   ```yaml
   cse:
-    ......
+    # other configurations omitted
     handler:
       chain:
         Consumer:
@@ -57,10 +57,3 @@ Auth sample use `RestTemplate` to present RSA communication between provider and
 * Start auth-provider
 
 * Start auth-consumer
-
-
-
-
-
-
-
