@@ -10,15 +10,13 @@ There are two microservices in this demo.
 
 ## Quick Start(Linux)
 1. Run the service center
-```bash
-wget https://github.com/ServiceComb/service-center/releases/download/0.1.1/service-center-0.1.1-linux-amd64.tar.gz
-tar xvf service-center-0.1.1-linux-amd64.tar.gz
-(cd service-center-0.1.1-linux-amd64; bash start.sh)
-```
+
+  [how to start service center](http://servicecomb.incubator.apache.org/users/setup-environment/#)
+
 2. Get the bmi demo's code
 ```bash
-git clone https://github.com/ServiceComb/ServiceComb-Java-Chassis
-cd ServiceComb-Java-Chassis/samples
+git clone https://github.com/apache/incubator-servicecomb-java-chassis.git
+cd incubator-servicecomb-java-chassis/samples
 ```
 3. Run microservices
 * Run the **BMI calculator service**
