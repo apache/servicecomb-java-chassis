@@ -23,7 +23,7 @@
   <parent>
     <groupId>org.apache.servicecomb</groupId>
     <artifactId>java-chassis</artifactId>
-    <version>1.0.0-m1</version>
+    <version>1.0.0-m2-SNAPSHOT</version>
   </parent>
 
   <artifactId>java-chassis-dependencies</artifactId>
@@ -731,43 +731,43 @@
       <dependency>
         <groupId>org.apache.servicecomb</groupId>
         <artifactId>foundation-common</artifactId>
-        <version>1.0.0-m1</version>
+        <version>1.0.0-m2-SNAPSHOT</version>
       </dependency>
       <dependency>
         <groupId>org.apache.servicecomb</groupId>
         <artifactId>foundation-test-scaffolding</artifactId>
-        <version>1.0.0-m1</version>
+        <version>1.0.0-m2-SNAPSHOT</version>
         <scope>test</scope>
       </dependency>
       <dependency>
         <groupId>org.apache.servicecomb</groupId>
         <artifactId>foundation-ssl</artifactId>
-        <version>1.0.0-m1</version>
+        <version>1.0.0-m2-SNAPSHOT</version>
       </dependency>
       <dependency>
         <groupId>org.apache.servicecomb</groupId>
         <artifactId>foundation-config</artifactId>
-        <version>1.0.0-m1</version>
+        <version>1.0.0-m2-SNAPSHOT</version>
       </dependency>
       <dependency>
         <groupId>org.apache.servicecomb</groupId>
 	<artifactId>config-cc</artifactId>
-	<version>1.0.0-m1</version>
+	<version>1.0.0-m2-SNAPSHOT</version>
 	</dependency>
       <dependency>
         <groupId>org.apache.servicecomb</groupId>
         <artifactId>config-apollo</artifactId>
-        <version>1.0.0-m1</version>
+        <version>1.0.0-m2-SNAPSHOT</version>
       </dependency>
 	<dependency>
 	<groupId>org.apache.servicecomb</groupId>
         <artifactId>foundation-vertx</artifactId>
-        <version>1.0.0-m1</version>
+        <version>1.0.0-m2-SNAPSHOT</version>
       </dependency>
       <dependency>
         <groupId>org.apache.servicecomb</groupId>
         <artifactId>foundation-metrics</artifactId>
-        <version>1.0.0-m1</version>
+        <version>1.0.0-m2-SNAPSHOT</version>
       </dependency>
       <dependency>
         <groupId>com.fasterxml.jackson.dataformat</groupId>
@@ -807,192 +807,192 @@
       <dependency>
         <groupId>org.apache.servicecomb</groupId>
         <artifactId>java-chassis-core</artifactId>
-        <version>1.0.0-m1</version>
+        <version>1.0.0-m2-SNAPSHOT</version>
       </dependency>
       <dependency>
         <groupId>org.apache.servicecomb</groupId>
         <artifactId>handler-bizkeeper</artifactId>
-        <version>1.0.0-m1</version>
+        <version>1.0.0-m2-SNAPSHOT</version>
       </dependency>
       <dependency>
         <groupId>org.apache.servicecomb</groupId>
         <artifactId>handler-loadbalance</artifactId>
-        <version>1.0.0-m1</version>
+        <version>1.0.0-m2-SNAPSHOT</version>
       </dependency>
       <dependency>
         <groupId>org.apache.servicecomb</groupId>
         <artifactId>handler-flowcontrol-qps</artifactId>
-        <version>1.0.0-m1</version>
+        <version>1.0.0-m2-SNAPSHOT</version>
       </dependency>
       <dependency>
         <groupId>org.apache.servicecomb</groupId>
         <artifactId>handler-publickey-auth</artifactId>
-        <version>1.0.0-m1</version>
+        <version>1.0.0-m2-SNAPSHOT</version>
       </dependency>
       <dependency>
         <groupId>org.apache.servicecomb</groupId>
         <artifactId>common-rest</artifactId>
-        <version>1.0.0-m1</version>
+        <version>1.0.0-m2-SNAPSHOT</version>
       </dependency>
       <dependency>
         <groupId>org.apache.servicecomb</groupId>
         <artifactId>transport-rest-client</artifactId>
-        <version>1.0.0-m1</version>
+        <version>1.0.0-m2-SNAPSHOT</version>
       </dependency>
       <dependency>
         <groupId>org.apache.servicecomb</groupId>
         <artifactId>transport-rest-vertx</artifactId>
-        <version>1.0.0-m1</version>
+        <version>1.0.0-m2-SNAPSHOT</version>
       </dependency>
       <dependency>
         <groupId>org.apache.servicecomb</groupId>
         <artifactId>transport-rest-servlet</artifactId>
-        <version>1.0.0-m1</version>
+        <version>1.0.0-m2-SNAPSHOT</version>
       </dependency>
       <dependency>
         <groupId>org.apache.servicecomb</groupId>
         <artifactId>common-protobuf</artifactId>
-        <version>1.0.0-m1</version>
+        <version>1.0.0-m2-SNAPSHOT</version>
       </dependency>
       <dependency>
         <groupId>org.apache.servicecomb</groupId>
         <artifactId>common-javassist</artifactId>
-        <version>1.0.0-m1</version>
+        <version>1.0.0-m2-SNAPSHOT</version>
       </dependency>
       <dependency>
         <groupId>org.apache.servicecomb</groupId>
         <artifactId>swagger-generator-core</artifactId>
-        <version>1.0.0-m1</version>
+        <version>1.0.0-m2-SNAPSHOT</version>
       </dependency>
       <dependency>
         <groupId>org.apache.servicecomb</groupId>
         <artifactId>swagger-generator-jaxrs</artifactId>
-        <version>1.0.0-m1</version>
+        <version>1.0.0-m2-SNAPSHOT</version>
       </dependency>
       <dependency>
         <groupId>org.apache.servicecomb</groupId>
         <artifactId>swagger-generator-springmvc</artifactId>
-        <version>1.0.0-m1</version>
+        <version>1.0.0-m2-SNAPSHOT</version>
       </dependency>
       <dependency>
         <groupId>org.apache.servicecomb</groupId>
         <artifactId>swagger-invocation-core</artifactId>
-        <version>1.0.0-m1</version>
+        <version>1.0.0-m2-SNAPSHOT</version>
       </dependency>
       <dependency>
         <groupId>org.apache.servicecomb</groupId>
         <artifactId>swagger-invocation-jaxrs</artifactId>
-        <version>1.0.0-m1</version>
+        <version>1.0.0-m2-SNAPSHOT</version>
       </dependency>
       <dependency>
         <groupId>org.apache.servicecomb</groupId>
         <artifactId>swagger-invocation-springmvc</artifactId>
-        <version>1.0.0-m1</version>
+        <version>1.0.0-m2-SNAPSHOT</version>
       </dependency>
       <dependency>
         <groupId>org.apache.servicecomb</groupId>
         <artifactId>service-registry</artifactId>
-        <version>1.0.0-m1</version>
+        <version>1.0.0-m2-SNAPSHOT</version>
       </dependency>
       <dependency>
         <groupId>org.apache.servicecomb</groupId>
         <artifactId>provider-pojo</artifactId>
-        <version>1.0.0-m1</version>
+        <version>1.0.0-m2-SNAPSHOT</version>
       </dependency>
       <dependency>
         <groupId>org.apache.servicecomb</groupId>
         <artifactId>provider-rest-common</artifactId>
-        <version>1.0.0-m1</version>
+        <version>1.0.0-m2-SNAPSHOT</version>
       </dependency>
       <dependency>
         <groupId>org.apache.servicecomb</groupId>
         <artifactId>provider-jaxrs</artifactId>
-        <version>1.0.0-m1</version>
+        <version>1.0.0-m2-SNAPSHOT</version>
       </dependency>
       <dependency>
         <groupId>org.apache.servicecomb</groupId>
         <artifactId>provider-springmvc</artifactId>
-        <version>1.0.0-m1</version>
+        <version>1.0.0-m2-SNAPSHOT</version>
       </dependency>
       <dependency>
         <groupId>org.apache.servicecomb</groupId>
         <artifactId>transport-highway</artifactId>
-        <version>1.0.0-m1</version>
+        <version>1.0.0-m2-SNAPSHOT</version>
       </dependency>
       <dependency>
         <groupId>org.apache.servicecomb</groupId>
         <artifactId>spring-boot-starter-configuration</artifactId>
-        <version>1.0.0-m1</version>
+        <version>1.0.0-m2-SNAPSHOT</version>
       </dependency>
       <dependency>
         <groupId>org.apache.servicecomb</groupId>
         <artifactId>spring-boot-starter-servicecomb</artifactId>
-        <version>1.0.0-m1</version>
+        <version>1.0.0-m2-SNAPSHOT</version>
       </dependency>
       <dependency>
         <groupId>org.apache.servicecomb</groupId>
         <artifactId>spring-boot-starter-provider</artifactId>
-        <version>1.0.0-m1</version>
+        <version>1.0.0-m2-SNAPSHOT</version>
       </dependency>
       <dependency>
         <groupId>org.apache.servicecomb</groupId>
         <artifactId>spring-boot-starter-discovery</artifactId>
-        <version>1.0.0-m1</version>
+        <version>1.0.0-m2-SNAPSHOT</version>
       </dependency>
       <dependency>
         <groupId>org.apache.servicecomb</groupId>
         <artifactId>spring-boot-starter-registry</artifactId>
-        <version>1.0.0-m1</version>
+        <version>1.0.0-m2-SNAPSHOT</version>
       </dependency>
       <dependency>
         <groupId>org.apache.servicecomb</groupId>
         <artifactId>spring-boot-starter-transport</artifactId>
-        <version>1.0.0-m1</version>
+        <version>1.0.0-m2-SNAPSHOT</version>
       </dependency>
       <dependency>
         <groupId>org.apache.servicecomb</groupId>
         <artifactId>spring-cloud-zuul</artifactId>
-        <version>1.0.0-m1</version>
+        <version>1.0.0-m2-SNAPSHOT</version>
       </dependency>
       <dependency>
         <groupId>org.apache.servicecomb</groupId>
         <artifactId>spring-cloud-zuul-zipkin</artifactId>
-        <version>1.0.0-m1</version>
+        <version>1.0.0-m2-SNAPSHOT</version>
       </dependency>
       <dependency>
         <groupId>org.apache.servicecomb</groupId>
         <artifactId>handler-tracing-zipkin</artifactId>
-        <version>1.0.0-m1</version>
+        <version>1.0.0-m2-SNAPSHOT</version>
       </dependency>
       <dependency>
         <groupId>org.apache.servicecomb</groupId>
         <artifactId>tracing-common</artifactId>
-        <version>1.0.0-m1</version>
+        <version>1.0.0-m2-SNAPSHOT</version>
       </dependency>
       <dependency>
         <groupId>org.apache.servicecomb</groupId>
         <artifactId>tracing-zipkin</artifactId>
-        <version>1.0.0-m1</version>
+        <version>1.0.0-m2-SNAPSHOT</version>
       </dependency>
       <dependency>
         <groupId>org.apache.servicecomb</groupId>
         <artifactId>edge-core</artifactId>
-        <version>1.0.0-m1</version>
+        <version>1.0.0-m2-SNAPSHOT</version>
       </dependency>
       <dependency>
         <groupId>org.apache.servicecomb</groupId>
         <artifactId>metrics-core</artifactId>
-        <version>1.0.0-m1</version>
+        <version>1.0.0-m2-SNAPSHOT</version>
       </dependency>
       <dependency>
         <groupId>org.apache.servicecomb</groupId>
         <artifactId>metrics-common</artifactId>
-        <version>1.0.0-m1</version>
+        <version>1.0.0-m2-SNAPSHOT</version>
       </dependency>
       <dependency>
         <groupId>org.apache.servicecomb</groupId>
         <artifactId>metrics-prometheus</artifactId>
-        <version>1.0.0-m1</version>
+        <version>1.0.0-m2-SNAPSHOT</version>
       </dependency>
     </dependencies>
   </dependencyManagement>
