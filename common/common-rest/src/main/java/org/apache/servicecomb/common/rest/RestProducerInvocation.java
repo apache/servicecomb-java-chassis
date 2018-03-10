@@ -50,6 +50,7 @@ public class RestProducerInvocation extends AbstractRestInvocation {
       return;
     }
 
+    createInvocation();
     scheduleInvocation();
   }
 
@@ -70,9 +71,9 @@ public class RestProducerInvocation extends AbstractRestInvocation {
   }
 
   @Override
-  protected void createInvocation(Object[] args) {
+  protected void createInvocation() {
     this.invocation = InvocationFactory.forProvider(transport.getEndpoint(),
         restOperationMeta.getOperationMeta(),
-        args);
+        null);
   }
 }

@@ -37,12 +37,9 @@ import org.apache.servicecomb.core.Const;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.definition.MicroserviceMeta;
 import org.apache.servicecomb.core.definition.OperationMeta;
-import org.apache.servicecomb.core.metrics.InvocationStartedEvent;
-import org.apache.servicecomb.foundation.common.event.EventBus;
 import org.apache.servicecomb.foundation.common.utils.JsonUtils;
 import org.apache.servicecomb.foundation.vertx.http.HttpServletRequestEx;
 import org.apache.servicecomb.foundation.vertx.http.HttpServletResponseEx;
-import org.apache.servicecomb.swagger.invocation.InvocationType;
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 import org.slf4j.Logger;
@@ -109,11 +106,9 @@ public abstract class AbstractRestInvocation {
   }
 
   protected void scheduleInvocation() {
+    createInvocation();
+    invocation.onStart();
     OperationMeta operationMeta = restOperationMeta.getOperationMeta();
-
-    InvocationStartedEvent startedEvent = new InvocationStartedEvent(operationMeta.getMicroserviceQualifiedName(),
-        InvocationType.PRODUCER, System.nanoTime());
-    EventBus.getInstance().triggerEvent(startedEvent);
 
     operationMeta.getExecutor().execute(() -> {
       synchronized (this.requestEx) {
@@ -127,7 +122,7 @@ public abstract class AbstractRestInvocation {
             return;
           }
 
-          runOnExecutor(startedEvent);
+          runOnExecutor();
         } catch (Throwable e) {
           LOGGER.error("rest server onRequest error", e);
           sendFailResponse(e);
@@ -136,19 +131,16 @@ public abstract class AbstractRestInvocation {
     });
   }
 
-  protected void runOnExecutor(InvocationStartedEvent startedEvent) {
-    createInvocation(null);
-
-    //立刻设置开始时间，否则Finished时无法计算TotalTime
-    invocation.setStartTime(startedEvent.getStartedTime());
-    invocation.triggerStartExecutionEvent();
+  protected void runOnExecutor() {
+    invocation.onStartExecute();
 
     invoke();
   }
 
   protected abstract OperationLocator locateOperation(ServicePathManager servicePathManager);
 
-  protected abstract void createInvocation(Object[] args);
+  // create a invocation without args setted
+  protected abstract void createInvocation();
 
   public void invoke() {
     try {
@@ -184,8 +176,6 @@ public abstract class AbstractRestInvocation {
   protected void doInvoke() throws Throwable {
     invocation.next(resp -> {
       sendResponseQuietly(resp);
-
-      invocation.triggerFinishedEvent(resp.getStatusCode());
     });
   }
 
@@ -207,6 +197,7 @@ public abstract class AbstractRestInvocation {
           e);
     } finally {
       requestEx.getAsyncContext().complete();
+      invocation.onFinish(response);
     }
   }
 
