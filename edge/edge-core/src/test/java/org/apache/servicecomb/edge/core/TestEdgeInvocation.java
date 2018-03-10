@@ -217,7 +217,6 @@ public class TestEdgeInvocation {
     edgeInvocation.microserviceVersionRule = microserviceVersionRule;
     Deencapsulation.setField(edgeInvocation, "restOperationMeta", restOperationMeta);
 
-    Object[] args = new Object[] {};
     new Expectations(RegistryUtils.class) {
       {
         RegistryUtils.getMicroservice();
@@ -225,7 +224,7 @@ public class TestEdgeInvocation {
       }
     };
 
-    edgeInvocation.createInvocation(args);
+    edgeInvocation.createInvocation();
     Invocation invocation = Deencapsulation.getField(edgeInvocation, "invocation");
     Assert.assertThat(invocation.getResponseExecutor(), Matchers.instanceOf(ReactiveResponseExecutor.class));
   }

@@ -39,26 +39,32 @@ import org.apache.servicecomb.core.definition.MicroserviceMeta;
 import org.apache.servicecomb.core.definition.MicroserviceMetaManager;
 import org.apache.servicecomb.core.definition.OperationMeta;
 import org.apache.servicecomb.core.definition.SchemaMeta;
+import org.apache.servicecomb.core.event.InvocationFinishEvent;
+import org.apache.servicecomb.core.event.InvocationStartEvent;
 import org.apache.servicecomb.core.executor.ReactiveExecutor;
-import org.apache.servicecomb.core.metrics.InvocationStartedEvent;
 import org.apache.servicecomb.core.provider.consumer.ReferenceConfig;
+import org.apache.servicecomb.foundation.common.event.EventManager;
 import org.apache.servicecomb.foundation.common.utils.JsonUtils;
 import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
 import org.apache.servicecomb.foundation.vertx.http.AbstractHttpServletRequest;
 import org.apache.servicecomb.foundation.vertx.http.HttpServletRequestEx;
 import org.apache.servicecomb.foundation.vertx.http.HttpServletResponseEx;
 import org.apache.servicecomb.swagger.invocation.AsyncResponse;
-import org.apache.servicecomb.swagger.invocation.InvocationType;
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.apache.servicecomb.swagger.invocation.exception.CommonExceptionData;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 import org.apache.servicecomb.swagger.invocation.response.Headers;
 import org.hamcrest.Matchers;
+import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+
+import com.google.common.eventbus.EventBus;
+import com.google.common.eventbus.Subscribe;
 
 import io.vertx.core.buffer.Buffer;
 import mockit.Deencapsulation;
@@ -104,12 +110,22 @@ public class TestAbstractRestInvocation {
     }
 
     @Override
-    protected void createInvocation(Object[] args) {
+    protected void createInvocation() {
       this.invocation = TestAbstractRestInvocation.this.invocation;
     }
   }
 
   AbstractRestInvocation restInvocation = new AbstractRestInvocationForTest();
+
+  @BeforeClass
+  public static void classSetup() {
+    EventManager.eventBus = new EventBus();
+  }
+
+  @AfterClass
+  public static void classTeardown() {
+    EventManager.eventBus = new EventBus();
+  }
 
   @Before
   public void setup() {
@@ -369,6 +385,15 @@ public class TestAbstractRestInvocation {
 
   @Test
   public void sendResponseQuietlyNormal(@Mocked Response response) {
+    Holder<InvocationFinishEvent> eventHolder = new Holder<>();
+    Object subscriber = new Object() {
+      @Subscribe
+      public void onFinished(InvocationFinishEvent event) {
+        eventHolder.value = event;
+      }
+    };
+    EventManager.register(subscriber);
+
     Holder<Response> result = new Holder<>();
     restInvocation = new AbstractRestInvocationForTest() {
       @Override
@@ -384,6 +409,9 @@ public class TestAbstractRestInvocation {
 
     restInvocation.sendResponseQuietly(response);
 
+    EventManager.unregister(subscriber);
+
+    Assert.assertSame(invocation, eventHolder.value.getInvocation());
     Assert.assertSame(response, result.value);
   }
 
@@ -636,8 +664,6 @@ public class TestAbstractRestInvocation {
         result = operationMeta;
         operationMeta.getExecutor();
         result = executor;
-        operationMeta.getMicroserviceQualifiedName();
-        result = "sayHi";
       }
     };
 
@@ -645,7 +671,7 @@ public class TestAbstractRestInvocation {
     Error error = new Error("run on executor");
     restInvocation = new AbstractRestInvocationForTest() {
       @Override
-      protected void runOnExecutor(InvocationStartedEvent startedEvent) {
+      protected void runOnExecutor() {
         throw error;
       }
 
@@ -682,7 +708,7 @@ public class TestAbstractRestInvocation {
 
     restInvocation = new AbstractRestInvocationForTest() {
       @Override
-      protected void runOnExecutor(InvocationStartedEvent startedEvent) {
+      protected void runOnExecutor() {
         throw new Error("run on executor");
       }
 
@@ -700,6 +726,22 @@ public class TestAbstractRestInvocation {
 
   @Test
   public void scheduleInvocationNormal(@Mocked OperationMeta operationMeta) {
+    long time = 123;
+    new MockUp<System>() {
+      @Mock
+      long nanoTime() {
+        return time;
+      }
+    };
+    Holder<InvocationStartEvent> eventHolder = new Holder<>();
+    Object subscriber = new Object() {
+      @Subscribe
+      public void onStart(InvocationStartEvent event) {
+        eventHolder.value = event;
+      }
+    };
+    EventManager.register(subscriber);
+
     Executor executor = new ReactiveExecutor();
     requestEx = new AbstractHttpServletRequest() {
     };
@@ -710,15 +752,13 @@ public class TestAbstractRestInvocation {
         result = operationMeta;
         operationMeta.getExecutor();
         result = executor;
-        operationMeta.getMicroserviceQualifiedName();
-        result = "sayHi";
       }
     };
 
     Holder<Boolean> result = new Holder<>();
     restInvocation = new AbstractRestInvocationForTest() {
       @Override
-      protected void runOnExecutor(InvocationStartedEvent startedEvent) {
+      protected void runOnExecutor() {
         result.value = true;
       }
     };
@@ -726,12 +766,23 @@ public class TestAbstractRestInvocation {
     restInvocation.restOperationMeta = restOperation;
 
     restInvocation.scheduleInvocation();
+    EventManager.unregister(subscriber);
 
     Assert.assertTrue(result.value);
+    Assert.assertEquals(time, invocation.getStartTime());
+    Assert.assertSame(invocation, eventHolder.value.getInvocation());
   }
 
   @Test
   public void runOnExecutor() {
+    long time = 123;
+    new MockUp<System>() {
+      @Mock
+      long nanoTime() {
+        return time;
+      }
+    };
+
     Holder<Boolean> result = new Holder<>();
     restInvocation = new AbstractRestInvocationForTest() {
       @Override
@@ -739,12 +790,15 @@ public class TestAbstractRestInvocation {
         result.value = true;
       }
     };
+    restInvocation.createInvocation();
     restInvocation.requestEx = requestEx;
     restInvocation.restOperationMeta = restOperation;
 
-    restInvocation.runOnExecutor(new InvocationStartedEvent("", InvocationType.PRODUCER, System.nanoTime()));
+    restInvocation.runOnExecutor();
+
     Assert.assertTrue(result.value);
     Assert.assertSame(invocation, restInvocation.invocation);
+    Assert.assertEquals(time, invocation.getStartExecutionTime());
   }
 
   @Test
