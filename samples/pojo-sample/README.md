@@ -42,8 +42,40 @@ public class CodeFirstConsumerMain {
 
 1. Start the ServiceComb/Service Center
 
-   [how to start the service center](http://servicecomb.incubator.apache.org/users/setup-environment/#)
+   - [how to start the service center](http://servicecomb.incubator.apache.org/users/setup-environment/#)
+   - make sure service center address is configured correctly in `microservice.yaml` file
 
-2. Start the POJO provider
+   ```yaml
+   cse:
+     service:
+       registry:
+         address: http://127.0.0.1:30100		#service center address
+   ```
 
-3. Start the POJO consumer
+2. Start the pojo-provider service
+
+   - Start provider service by maven
+
+     Compile the source code at root directory of ServiceComb Java Chassis, which is `incubator-servicecomb-java-chassis/`, and use `mvn exec` to execute the main class `PojoProviderMain`.
+
+     ```bash
+     cd incubator-servicecomb-java-chassis/
+     mvn clean install -Psamples -DskipTests			#only need to install at first time.
+     cd samples/pojo-sample/pojo-provider/
+     mvn exec:java -Dexec.mainClass="org.apache.servicecomb.samples.pojo.provider.PojoProviderMain"
+     ```
+
+   - Start provider service by IDE
+
+     Import the project by InteliJ IDEA or Eclipse, add sample module to pom.xml file in root module `incubator-servicecomb-java-chassis/pom.xml`, and add `<module>samples</module>` to `<modules></modules>` block, Then find `main` function `PojoProviderMain` of provider service and `RUN` it like any other Java program.
+
+3. Start the pojo-consumer service 
+
+   Just like how to start pojo-provider service. But the main class of pojo-consumer service is `PojoConsumerMain`. 
+
+   ```bash
+   cd samples/pojo-sample/pojo-consumer/
+   mvn exec:java -Dexec.mainClass="org.apache.servicecomb.samples.pojo.consumer.PojoConsumerMain"
+   ```
+
+   ​

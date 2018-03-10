@@ -9,11 +9,43 @@
 
 1. Start the ServiceComb/Service Center
 
-   [how to start the service center](http://servicecomb.incubator.apache.org/users/setup-environment/#)
+   * [how to start the service center](http://servicecomb.incubator.apache.org/users/setup-environment/#)
+   * make sure service center address is configured correctly in `microservice.yaml` file
 
-2. Start the springmvc-provider
+   ```yaml
+   cse:
+     service:
+       registry:
+         address: http://127.0.0.1:30100		#service center address
+   ```
 
-3. Start the springmvc-consumer
+2. Start the springmvc-provider service
+
+   * Start provider service by maven
+
+     Compile the source code at root directory of ServiceComb Java Chassis, which is `incubator-servicecomb-java-chassis/`, and use `mvn exec` to execute the main class `SpringmvcProviderMain`.
+
+     ```bash
+     cd incubator-servicecomb-java-chassis/
+     mvn clean install -Psamples -DskipTests		#Only need to install at first time
+     cd samples/springmvc-sample/springmvc-provider/
+     mvn exec:java -Dexec.mainClass="org.apache.servicecomb.samples.springmvc.provider.SpringmvcProviderMain"
+     ```
+
+   * Start provider service by IDE
+
+     Import the project by InteliJ IDEA or Eclipse, add sample module to pom.xml file in root module `incubator-servicecomb-java-chassis/pom.xml`, and add `<module>samples</module>` to `<modules></modules>` block, Then find `main` function of provider service and `RUN` it like any other Java Program.
+
+3. Start the springmvc-consumer service
+
+   Just like how to start springmvc-provider service. But the main class of springmvc-consumer service is `SpringmvcConsumerMain`. 
+
+   ```bash
+   cd samples/springmvc-sample/springmvc-consumer/
+   mvn exec:java -Dexec.mainClass="org.apache.servicecomb.samples.springmvc.consumer.SpringmvcConsumerMain"
+   ```
+
+   ​
 
 ## More
 

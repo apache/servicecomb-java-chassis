@@ -50,10 +50,42 @@ To make sure the security between the interfaces of services, users can enable `
 
 Auth sample use `RestTemplate` to present RSA communication between provider and consumer.
 
-* Start ServiceComb/Service Center
+1. Start the ServiceComb/Service Center
 
-  [how to start service center](http://servicecomb.incubator.apache.org/users/setup-environment/#)
+   - [how to start the service center](http://servicecomb.incubator.apache.org/users/setup-environment/#)
+   - make sure service center address is configured correctly in `microservice.yaml` file
 
-* Start auth-provider
+   ```yaml
+   cse:
+     service:
+       registry:
+         address: http://127.0.0.1:30100		#service center address
+   ```
 
-* Start auth-consumer
+2. Start the auth-provider service
+
+   - Start provider service by maven
+
+     Compile the source code at root directory of ServiceComb Java Chassis, which is `incubator-servicecomb-java-chassis/`, and use `mvn exec` to execute the main class `AuthProviderMain`.
+
+     ```bash
+     cd incubator-servicecomb-java-chassis/
+     mvn clean install -Psamples -DskipTests			#only need to install at first time.
+     cd samples/auth-sample/auth-provider/
+     mvn exec:java -Dexec.mainClass="org.apache.servicecomb.samples.springmvc.provider.AuthProviderMain"
+     ```
+
+   - Start provider service by IDE
+
+     Import the project by InteliJ IDEA or Eclipse, add sample module to pom.xml file in root module `incubator-servicecomb-java-chassis/pom.xml`, and add `<module>samples</module>` to `<modules></modules>` block, Then find `main` function `AuthProviderMain` of provider service and `RUN` it like any other Java program.
+
+3. Start the auth-consumer service
+
+   Just like how to start auth-provider service. But the main class of auth-consumer service is `AuthConsumerMain`. 
+
+   ```bash
+   cd samples/auth-sample/auth-consumer/
+   mvn exec:java -Dexec.mainClass="org.apache.servicecomb.samples.springmvc.consumer.AuthConsumerMain"
+   ```
+
+   ​

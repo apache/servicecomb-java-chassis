@@ -41,11 +41,42 @@ ServiceComb support users to define a customized handler and and invoke the hand
 
 ## Sample Quick Start
 
-1. Start ServiceComb/Service Center
+1. Start the ServiceComb/Service Center
 
-   [how to start service center](http://servicecomb.incubator.apache.org/users/setup-environment/#)
+   - [how to start the service center](http://servicecomb.incubator.apache.org/users/setup-environment/#)
+   - make sure service center address is configured correctly in `microservice.yaml` file
 
-2. Start custom-handler-provider
+   ```yaml
+   cse:
+     service:
+       registry:
+         address: http://127.0.0.1:30100		#service center address
+   ```
 
-3. Start custom-handler-consumer
+2. Start the custom-handler-provider service
 
+   - Start provider service by maven
+
+     Compile the source code at root directory of ServiceComb Java Chassis, which is `incubator-servicecomb-java-chassis/`, and use `mvn exec` to execute the main class `CustomHandlerProviderMain`.
+
+     ```bash
+     cd incubator-servicecomb-java-chassis/			#need to complie code at root directory
+     mvn clean install -Psamples -DskipTests			#only need to install at first time.
+     cd samples/custom-handler-sample/custom-handler-provider/
+     mvn exec:java -Dexec.mainClass="org.apache.servicecomb.samples.customerhandler.provider.CustomHandlerProviderMain"
+     ```
+
+   - Start provider service by IDE
+
+     Import the project by InteliJ IDEA or Eclipse, add sample module to pom.xml file in root module `incubator-servicecomb-java-chassis/pom.xml`, and add `<module>samples</module>` to `<modules></modules>` block, Then find `main` function `CustomHandlerProviderMain` of provider service and `RUN` it like any other Java program.
+
+3. Start the custom-handler-consumer service
+
+   Just like how to start custom-handler-provider service. But the main class of custom-handler-consumer service is `CustomHandlerCustomerMain`. 
+
+   ```bash
+   cd samples/custom-handler-sample/custom-handler-consumer
+   mvn exec:java -Dexec.mainClass="org.apache.servicecomb.samples.customerhandler.consumer.CustomHandlerCustomerMain"
+   ```
+
+   ​

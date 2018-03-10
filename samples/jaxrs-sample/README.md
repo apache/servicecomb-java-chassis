@@ -17,10 +17,42 @@ To consume a provider-service, only need to decalare a member of a service API t
 
 ### Sample Quick Start
 
-1. Start ServiceComb/Service Center
+1. Start the ServiceComb/Service Center
 
-   [how to start service center](http://servicecomb.incubator.apache.org/users/setup-environment/#)
+   - [how to start the service center](http://servicecomb.incubator.apache.org/users/setup-environment/#)
+   - make sure service center address is configured correctly in `microservice.yaml` file
 
-2. Start JAX-RS Provider
+   ```yaml
+   cse:
+     service:
+       registry:
+         address: http://127.0.0.1:30100		#service center address
+   ```
 
-3. Start JAX-RS Consumer
+2. Start the jaxrs-provider service
+
+   - Start provider service by maven
+
+     Compile the source code at root directory of ServiceComb Java Chassis, which is `incubator-servicecomb-java-chassis/`, and use `mvn exec` to execute the main class `JaxrsProviderMain`.
+
+     ```bash
+     cd incubator-servicecomb-java-chassis/
+     mvn clean install -Psamples -DskipTests			#only need to install at first time.
+     cd samples/jaxrs-sample/jaxrs-provider/
+     mvn exec:java -Dexec.mainClass="org.apache.servicecomb.samples.jaxrs.provider.JaxrsProviderMain"
+     ```
+
+   - Start provider service by IDE
+
+     Import the project by InteliJ IDEA or Eclipse, add sample module to pom.xml file in root module `incubator-servicecomb-java-chassis/pom.xml`, and add `<module>samples</module>` to `<modules></modules>` block, Then find `main` function `JaxrsProviderMain` of provider service and `RUN` it like any other Java Program.
+
+3. Start the jaxrs-consumer service
+
+   Just like how to start jaxrs-provider service. But the main class of jaxrs-consumer service is `JaxrsConsumerMain`. 
+
+   ```bash
+   cd samples/jaxrs-sample/jaxrs-consumer/
+   mvn exec:java -Dexec.mainClass="org.apache.servicecomb.samples.jaxrs.consumer.JaxrsConsumerMain"
+   ```
+
+   ​
