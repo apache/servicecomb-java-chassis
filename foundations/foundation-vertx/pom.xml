@@ -53,4 +53,21 @@
       <artifactId>foundation-test-scaffolding</artifactId>
     </dependency>
   </dependencies>
+
+  <!--
+   Disable surefire forking for vertex, it causes the UT to fail
+   on some platforms(mainly linux).
+   -->
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <configuration>
+          <forkCount>1</forkCount>
+          <reuseForks>false</reuseForks>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
 </project>
