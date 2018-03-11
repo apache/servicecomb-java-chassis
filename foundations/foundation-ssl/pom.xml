@@ -21,7 +21,7 @@
 	<parent>
 		<groupId>org.apache.servicecomb</groupId>
 		<artifactId>foundations</artifactId>
-		<version>1.0.0-m2-SNAPSHOT</version>
+		<version>1.0.0-m1</version>
 	</parent>
 	<artifactId>foundation-ssl</artifactId>
 	<name>Java Chassis::Foundations::SSL</name>

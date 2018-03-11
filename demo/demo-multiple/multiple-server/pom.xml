@@ -22,7 +22,7 @@
 	<parent>
 		<groupId>org.apache.servicecomb.demo</groupId>
 		<artifactId>demo-multiple</artifactId>
-		<version>1.0.0-m2-SNAPSHOT</version>
+		<version>1.0.0-m1</version>
 	</parent>
 	<artifactId>multiple-server</artifactId>
 	<name>Java Chassis::Demo::Multiple::Server</name>
@@ -50,7 +50,7 @@
 						<mixin>
 							<groupId>org.apache.servicecomb.demo</groupId>
 							<artifactId>docker-build-config</artifactId>
-							<version>1.0.0-m2-SNAPSHOT</version>
+							<version>1.0.0-m1</version>
 						</mixin>
 					</mixins>
 				</configuration>

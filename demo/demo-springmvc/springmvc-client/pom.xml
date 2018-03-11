@@ -23,7 +23,7 @@
 	<parent>
 		<groupId>org.apache.servicecomb.demo</groupId>
 		<artifactId>demo-springmvc</artifactId>
-		<version>1.0.0-m2-SNAPSHOT</version>
+		<version>1.0.0-m1</version>
 	</parent>
 	<artifactId>springmvc-client</artifactId>
 	<name>Java Chassis::Demo::Spring MVC::Client</name>
@@ -60,7 +60,7 @@
 						<mixin>
 							<groupId>org.apache.servicecomb.demo</groupId>
 							<artifactId>docker-run-config</artifactId>
-							<version>1.0.0-m2-SNAPSHOT</version>
+							<version>1.0.0-m1</version>
 						</mixin>
 					</mixins>
 				</configuration>

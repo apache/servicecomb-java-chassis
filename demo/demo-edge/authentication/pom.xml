@@ -21,7 +21,7 @@
   <parent>
     <groupId>org.apache.servicecomb.demo</groupId>
     <artifactId>demo-edge</artifactId>
-    <version>1.0.0-m2-SNAPSHOT</version>
+    <version>1.0.0-m1</version>
   </parent>
   <artifactId>authentication</artifactId>
   <name>Java Chassis::Demo::Edge::Authentication</name>
