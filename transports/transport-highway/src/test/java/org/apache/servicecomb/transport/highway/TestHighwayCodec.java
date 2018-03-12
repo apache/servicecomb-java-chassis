@@ -19,12 +19,14 @@ package org.apache.servicecomb.transport.highway;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.servicecomb.codec.protobuf.definition.OperationProtobuf;
 import org.apache.servicecomb.codec.protobuf.utils.WrapSchema;
 import org.apache.servicecomb.codec.protobuf.utils.schema.NotWrapSchema;
+import org.apache.servicecomb.core.Endpoint;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.definition.OperationMeta;
 import org.apache.servicecomb.core.definition.SchemaMeta;
@@ -51,6 +53,7 @@ import io.protostuff.runtime.ProtobufFeature;
 import io.vertx.core.buffer.Buffer;
 import mockit.Mock;
 import mockit.MockUp;
+import mockit.Mocked;
 
 public class TestHighwayCodec {
 
@@ -75,7 +78,6 @@ public class TestHighwayCodec {
   @BeforeClass
   public static void setupClass() {
     ProtobufCompatibleUtils.init();
-    HighwayCodec.setHighwayTransport(new HighwayTransport());
   }
 
   @Before
@@ -126,17 +128,17 @@ public class TestHighwayCodec {
   }
 
   @Test
-  public void testDecodeRequest() {
-    boolean status = true;
+  public void testDecodeRequest(@Mocked Endpoint endpoint) throws Exception {
+    commonMock();
+    Mockito.when(schemaMeta.getProviderHandlerChain()).thenReturn(Collections.emptyList());
+    Object[] args = new Object[] {};
+    Mockito.when(schema.readObject(bodyBuffer, null)).thenReturn(args);
+    
+    Invocation invocation = new Invocation(endpoint, operationMeta, null);
 
-    try {
-      commonMock();
-      Invocation inv = HighwayCodec.decodeRequest(header, operationProtobuf, bodyBuffer, null);
-      Assert.assertNotNull(inv);
-    } catch (Exception e) {
-      status = false;
-    }
-    Assert.assertTrue(status);
+    HighwayCodec.decodeRequest(invocation, header, operationProtobuf, bodyBuffer, null);
+
+    Assert.assertSame(args, invocation.getSwaggerArguments());
   }
 
   @Test

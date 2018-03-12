@@ -20,7 +20,6 @@ package org.apache.servicecomb.transport.highway;
 import org.apache.servicecomb.codec.protobuf.definition.OperationProtobuf;
 import org.apache.servicecomb.codec.protobuf.utils.WrapSchema;
 import org.apache.servicecomb.core.Invocation;
-import org.apache.servicecomb.core.invocation.InvocationFactory;
 import org.apache.servicecomb.foundation.vertx.client.tcp.TcpData;
 import org.apache.servicecomb.foundation.vertx.tcp.TcpOutputStream;
 import org.apache.servicecomb.swagger.invocation.Response;
@@ -31,13 +30,7 @@ import io.protostuff.runtime.ProtobufFeature;
 import io.vertx.core.buffer.Buffer;
 
 public final class HighwayCodec {
-  private static HighwayTransport highwayTransport;
-
   private HighwayCodec() {
-  }
-
-  public static void setHighwayTransport(HighwayTransport highwayTransport) {
-    HighwayCodec.highwayTransport = highwayTransport;
   }
 
   public static TcpOutputStream encodeRequest(long msgId, Invocation invocation,
@@ -56,17 +49,13 @@ public final class HighwayCodec {
     return os;
   }
 
-  public static Invocation decodeRequest(RequestHeader header, OperationProtobuf operationProtobuf,
+  public static void decodeRequest(Invocation invocation, RequestHeader header, OperationProtobuf operationProtobuf,
       Buffer bodyBuffer, ProtobufFeature protobufFeature) throws Exception {
     WrapSchema schema = operationProtobuf.getRequestSchema();
     Object[] args = schema.readObject(bodyBuffer, protobufFeature);
 
-    Invocation invocation =
-        InvocationFactory.forProvider(highwayTransport.getEndpoint(),
-            operationProtobuf.getOperationMeta(),
-            args);
+    invocation.setSwaggerArguments(args);
     invocation.setContext(header.getContext());
-    return invocation;
   }
 
   public static RequestHeader readRequestHeader(Buffer headerBuffer,

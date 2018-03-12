@@ -24,6 +24,7 @@ import org.apache.servicecomb.codec.protobuf.definition.ProtobufManager;
 import org.apache.servicecomb.codec.protobuf.utils.ProtobufSchemaUtils;
 import org.apache.servicecomb.codec.protobuf.utils.WrapSchema;
 import org.apache.servicecomb.core.CseContext;
+import org.apache.servicecomb.core.Endpoint;
 import org.apache.servicecomb.core.definition.MicroserviceMeta;
 import org.apache.servicecomb.core.definition.MicroserviceMetaManager;
 import org.apache.servicecomb.core.definition.OperationMeta;
@@ -59,6 +60,9 @@ public class TestHighwayServerConnection {
   MicroserviceMetaManager microserviceMetaManager;
 
   @Mocked
+  Endpoint endpoint;
+
+  @Mocked
   NetSocketImpl netSocket;
 
   RequestHeader header = new RequestHeader();
@@ -71,7 +75,7 @@ public class TestHighwayServerConnection {
         result = new SocketAddressImpl(new InetSocketAddress("127.0.0.1", 80));
       }
     };
-    connection = new HighwayServerConnection();
+    connection = new HighwayServerConnection(endpoint);
     connection.init(netSocket);
 
     header = new RequestHeader();

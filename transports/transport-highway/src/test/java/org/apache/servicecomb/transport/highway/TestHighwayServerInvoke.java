@@ -17,16 +17,26 @@
 
 package org.apache.servicecomb.transport.highway;
 
+import javax.xml.ws.Holder;
+
 import org.apache.servicecomb.core.definition.OperationMeta;
 import org.apache.servicecomb.core.definition.SchemaMeta;
+import org.apache.servicecomb.core.event.InvocationFinishEvent;
+import org.apache.servicecomb.core.event.InvocationStartEvent;
 import org.apache.servicecomb.core.executor.ReactiveExecutor;
 import org.apache.servicecomb.core.unittest.UnitTestMeta;
+import org.apache.servicecomb.foundation.common.event.EventManager;
 import org.apache.servicecomb.foundation.vertx.tcp.TcpConnection;
 import org.apache.servicecomb.transport.common.MockUtil;
 import org.apache.servicecomb.transport.highway.message.RequestHeader;
+import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
+
+import com.google.common.eventbus.EventBus;
+import com.google.common.eventbus.Subscribe;
 
 import io.netty.buffer.ByteBuf;
 import io.vertx.core.buffer.Buffer;
@@ -51,6 +61,16 @@ public class TestHighwayServerInvoke {
   private NetSocket netSocket;
 
   private SocketAddress socketAddress;
+
+  @BeforeClass
+  public static void classSetup() {
+    EventManager.eventBus = new EventBus();
+  }
+
+  @AfterClass
+  public static void classTeardown() {
+    EventManager.eventBus = new EventBus();
+  }
 
   @Before
   public void setup() {
@@ -87,6 +107,21 @@ public class TestHighwayServerInvoke {
 
   @Test
   public void test() {
+    Holder<InvocationStartEvent> startHolder = new Holder<>();
+    Holder<InvocationFinishEvent> finishHolder = new Holder<>();
+    Object subscriber = new Object() {
+      @Subscribe
+      public void onStart(InvocationStartEvent event) {
+        startHolder.value = event;
+      }
+
+      @Subscribe
+      public void onFinish(InvocationFinishEvent event) {
+        finishHolder.value = event;
+      }
+    };
+    EventManager.register(subscriber);
+
     MockUtil.getInstance().mockHighwayCodec();
 
     SchemaMeta schemaMeta = unitTestMeta.getOrCreateSchemaMeta(Impl.class);
@@ -111,6 +146,11 @@ public class TestHighwayServerInvoke {
     // exe失败
     MockUtil.getInstance().decodeRequestSucc = false;
     highwayServerInvoke.execute();
+    EventManager.unregister(subscriber);
+
     Assert.assertEquals(true, Buffer.buffer(netSocketBuffer).toString().startsWith("CSE.TCP"));
+    Assert.assertSame(highwayServerInvoke.invocation, startHolder.value.getInvocation());
+    Assert.assertSame(highwayServerInvoke.invocation, finishHolder.value.getInvocation());
+    Assert.assertTrue(highwayServerInvoke.invocation.getStartExecutionTime() != 0);
   }
 }
