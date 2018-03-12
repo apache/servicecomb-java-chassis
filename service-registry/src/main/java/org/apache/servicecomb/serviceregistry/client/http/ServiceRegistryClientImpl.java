@@ -59,6 +59,7 @@ import org.slf4j.LoggerFactory;
 
 import com.google.common.annotations.VisibleForTesting;
 
+import io.netty.handler.codec.http.HttpResponseStatus;
 import io.netty.handler.codec.http.HttpStatusClass;
 import io.vertx.core.Handler;
 import io.vertx.core.buffer.Buffer;
@@ -112,6 +113,17 @@ public final class ServiceRegistryClientImpl implements ServiceRegistryClient {
               return;
             }
 
+            if (HttpStatusClass.CLIENT_ERROR.equals(HttpStatusClass.valueOf(response.statusCode()))) {
+              String errorCode = bodyBuffer.toJsonObject().getString("errorCode");
+              if (response.statusCode() == HttpResponseStatus.UNAUTHORIZED.code()
+                  || cls.getName().equals(GetExistenceResponse.class.getName()) && "401002".equals(errorCode)) {
+                GetExistenceResponse resp = new GetExistenceResponse();
+                resp.setServiceId("SC_AUTH_FAILED_401002");
+                holder.value = (T) resp;
+                countDownLatch.countDown();
+                return;
+              }
+            }
             // no need to support 304 in this place
             if (!HttpStatusClass.SUCCESS.equals(HttpStatusClass.valueOf(response.statusCode()))) {
               LOGGER.warn("get response for {} failed, {}:{}, {}",

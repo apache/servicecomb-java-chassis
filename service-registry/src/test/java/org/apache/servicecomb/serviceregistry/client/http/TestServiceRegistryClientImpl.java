@@ -187,6 +187,56 @@ public class TestServiceRegistryClientImpl {
     }.run();
   }
 
+  @SuppressWarnings("unchecked")
+  @Test
+  public void testRegisterAuthFailedResponse() {
+    HttpClientResponse response = Mockito.mock(HttpClientResponse.class);
+    Mockito.when(response.statusCode()).then(invocation -> {
+      return 400;
+    });
+    Mockito.when(response.bodyHandler(Mockito.any(Handler.class))).then(invocation -> {
+      Handler<Buffer> handler = invocation.getArgumentAt(0, Handler.class);
+      Buffer bodyBuffer = Buffer.buffer("{\"errorCode\":\"401002\"}");
+      handler.handle(bodyBuffer);
+      return null;
+    });
+
+    new MockUp<RestUtils>() {
+      @Mock
+      void httpDo(RequestContext requestContext, Handler<RestResponse> responseHandler) {
+        responseHandler.handle(new RestResponse(requestContext, response));
+      }
+    };
+
+    String serviceId = oClient.getMicroserviceId("test", "service", "latest");
+    Assert.assertEquals("SC_AUTH_FAILED_401002", serviceId);
+  }
+  
+  @SuppressWarnings("unchecked")
+  @Test
+  public void testRegisterAuthFailedResponseAPIGW() {
+    HttpClientResponse response = Mockito.mock(HttpClientResponse.class);
+    Mockito.when(response.statusCode()).then(invocation -> {
+      return 401;
+    });
+    Mockito.when(response.bodyHandler(Mockito.any(Handler.class))).then(invocation -> {
+      Handler<Buffer> handler = invocation.getArgumentAt(0, Handler.class);
+      Buffer bodyBuffer = Buffer.buffer("{\"requestid\":\"xxxxx\"}");
+      handler.handle(bodyBuffer);
+      return null;
+    });
+
+    new MockUp<RestUtils>() {
+      @Mock
+      void httpDo(RequestContext requestContext, Handler<RestResponse> responseHandler) {
+        responseHandler.handle(new RestResponse(requestContext, response));
+      }
+    };
+
+    String serviceId = oClient.getMicroserviceId("test", "service", "latest");
+    Assert.assertEquals("SC_AUTH_FAILED_401002", serviceId);
+  }
+
   @Test
   public void testRegisterSchemaErrorResponse() {
     new MockUp<ServiceRegistryClientImpl>() {

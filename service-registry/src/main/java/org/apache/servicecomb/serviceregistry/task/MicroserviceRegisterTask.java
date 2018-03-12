@@ -59,6 +59,17 @@ public class MicroserviceRegisterTask extends AbstractRegisterTask {
         microservice.getServiceName(),
         microservice.getVersion());
     if (!StringUtils.isEmpty(serviceId)) {
+      // if return auth failed code, don't do this task again!
+      if ("SC_AUTH_FAILED_401002".equals(serviceId)) {
+        LOGGER.warn(
+            "***Server auth failed, no need to register***. appId={}, name={}, version={}",
+            microservice.getAppId(),
+            microservice.getServiceName(),
+            microservice.getVersion());
+        this.taskStatus = TaskStatus.FINISHED;
+        this.registered = false;
+        return false;
+      }
       // 已经注册过了，不需要重新注册
       microservice.setServiceId(serviceId);
       LOGGER.info(
