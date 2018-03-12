@@ -49,7 +49,7 @@ public class SpringmvcConsumerMain {
 
     // POJO Consumer
     System.out.println("POJO consumer sayhi services: " + hello.sayHi("Java Chassis"));
-    System.out.println("POJO consumer sayhi services: " + hello.sayHello(person));
+    System.out.println("POJO consumer sayhello services: " + hello.sayHello(person));
   }
 
   public static void init() throws Exception {

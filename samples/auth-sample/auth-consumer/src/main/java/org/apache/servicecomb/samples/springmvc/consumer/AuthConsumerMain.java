@@ -21,7 +21,6 @@ import org.apache.servicecomb.foundation.common.utils.Log4jUtils;
 import org.apache.servicecomb.provider.springmvc.reference.RestTemplateBuilder;
 import org.apache.servicecomb.samples.common.schema.models.Person;
 import org.springframework.stereotype.Component;
-import org.springframework.util.Assert;
 import org.springframework.web.client.RestTemplate;
 
 @Component
@@ -44,8 +43,8 @@ public class AuthConsumerMain {
         "cse://auth-provider/springmvchello/sayhello",
         person,
         String.class);
-    Assert.isTrue("Hello Authenticate".equals(sayHiResult));
-    Assert.isTrue("Hello person ServiceComb/Authenticate".equals(sayHelloResult));
+    System.out.println(sayHiResult);
+    System.out.println(sayHelloResult);
   }
 
   public static void init() throws Exception {
