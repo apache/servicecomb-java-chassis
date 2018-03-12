@@ -16,6 +16,9 @@
  */
 package org.apache.servicecomb.serviceregistry.registry;
 
+import static org.apache.servicecomb.foundation.common.base.ServiceCombConstants.CONFIG_DEFAULT_REGISTER_BY;
+import static org.apache.servicecomb.foundation.common.base.ServiceCombConstants.CONFIG_FRAMEWORK_DEFAULT_NAME;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -25,6 +28,8 @@ import org.apache.servicecomb.serviceregistry.Features;
 import org.apache.servicecomb.serviceregistry.ServiceRegistry;
 import org.apache.servicecomb.serviceregistry.api.Const;
 import org.apache.servicecomb.serviceregistry.api.registry.BasePath;
+import org.apache.servicecomb.serviceregistry.api.registry.Framework;
+import org.apache.servicecomb.serviceregistry.api.registry.FrameworkVersions;
 import org.apache.servicecomb.serviceregistry.api.registry.Microservice;
 import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceFactory;
 import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
@@ -162,9 +167,18 @@ public abstract class AbstractServiceRegistry implements ServiceRegistry {
   public void run() {
     loadStaticConfiguration();
 
+    loadFrameworkVersions();
     // try register
     // if failed, then retry in thread
     serviceCenterTask.init();
+  }
+
+  private void loadFrameworkVersions() {
+    Framework framework = new Framework();
+    framework.setName(CONFIG_FRAMEWORK_DEFAULT_NAME);
+    framework.setVersion(FrameworkVersions.allVersions());
+    microservice.setFramework(framework);
+    microservice.setRegisterBy(CONFIG_DEFAULT_REGISTER_BY);
   }
 
   private void loadStaticConfiguration() {

@@ -22,6 +22,7 @@ import java.util.List;
 
 import org.apache.servicecomb.serviceregistry.api.registry.Microservice;
 import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
+import org.apache.servicecomb.serviceregistry.api.registry.ServiceCenterInfo;
 import org.apache.servicecomb.serviceregistry.client.http.MicroserviceInstances;
 import org.apache.servicecomb.serviceregistry.definition.DefinitionConst;
 import org.hamcrest.Matchers;
@@ -171,5 +172,11 @@ public class LocalServiceRegistryClientImplTest {
     instance.setServiceId(microservice.getServiceId());
     String instanceId = registryClient.registerMicroserviceInstance(instance);
     Assert.assertNotNull(registryClient.findServiceInstance(microservice.getServiceId(), instanceId));
+  }
+
+  @Test
+  public void testGetServiceCenterInfo() {
+    ServiceCenterInfo serviceCenterInfo = registryClient.getServiceCenterInfo();
+    Assert.assertEquals("1.0.0", serviceCenterInfo.getVersion());
   }
 }

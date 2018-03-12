@@ -137,6 +137,14 @@ public final class Const {
       }
     }
 
+    public static final String SERVICECENTER_VERSION;
+    static {
+      if (VERSION_V3.equals(CURRENT_VERSION)) {
+        SERVICECENTER_VERSION = "/version";
+      } else {
+        SERVICECENTER_VERSION = V4_PREFIX + "/version";
+      }
+    }
   }
 
   public static final String REGISTRY_APP_ID = "default";
