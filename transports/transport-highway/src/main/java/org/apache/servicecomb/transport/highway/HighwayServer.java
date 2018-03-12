@@ -17,18 +17,21 @@
 
 package org.apache.servicecomb.transport.highway;
 
+import org.apache.servicecomb.core.Endpoint;
 import org.apache.servicecomb.foundation.common.net.URIEndpointObject;
 import org.apache.servicecomb.foundation.vertx.server.TcpServer;
 import org.apache.servicecomb.foundation.vertx.server.TcpServerConnection;
 
 public class HighwayServer extends TcpServer {
+  private Endpoint endpoint;
 
-  public HighwayServer(URIEndpointObject endpointObject) {
-    super(endpointObject);
+  public HighwayServer(Endpoint endpoint) {
+    super((URIEndpointObject) endpoint.getAddress());
+    this.endpoint = endpoint;
   }
 
   @Override
   protected TcpServerConnection createTcpServerConnection() {
-    return new HighwayServerConnection();
+    return new HighwayServerConnection(endpoint);
   }
 }

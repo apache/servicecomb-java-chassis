@@ -24,15 +24,14 @@ import org.apache.servicecomb.codec.protobuf.definition.ProtobufManager;
 import org.apache.servicecomb.codec.protobuf.utils.WrapSchema;
 import org.apache.servicecomb.core.Const;
 import org.apache.servicecomb.core.CseContext;
+import org.apache.servicecomb.core.Endpoint;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.definition.MicroserviceMeta;
 import org.apache.servicecomb.core.definition.MicroserviceMetaManager;
 import org.apache.servicecomb.core.definition.OperationMeta;
 import org.apache.servicecomb.core.definition.SchemaMeta;
-import org.apache.servicecomb.core.metrics.InvocationStartedEvent;
-import org.apache.servicecomb.foundation.common.event.EventBus;
+import org.apache.servicecomb.core.invocation.InvocationFactory;
 import org.apache.servicecomb.foundation.vertx.tcp.TcpConnection;
-import org.apache.servicecomb.swagger.invocation.InvocationType;
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 import org.apache.servicecomb.transport.highway.message.RequestHeader;
@@ -62,11 +61,16 @@ public class HighwayServerInvoke {
 
   private Buffer bodyBuffer;
 
+  private Endpoint endpoint;
+
+  Invocation invocation;
+
   public HighwayServerInvoke() {
-    this(null);
+    this(null, null);
   }
 
-  public HighwayServerInvoke(ProtobufFeature protobufFeature) {
+  public HighwayServerInvoke(Endpoint endpoint, ProtobufFeature protobufFeature) {
+    this.endpoint = endpoint;
     this.protobufFeature = protobufFeature;
   }
 
@@ -107,9 +111,9 @@ public class HighwayServerInvoke {
     this.bodyBuffer = bodyBuffer;
   }
 
-  private void runInExecutor(InvocationStartedEvent startedEvent) {
+  private void runInExecutor() {
     try {
-      doRunInExecutor(startedEvent);
+      doRunInExecutor();
     } catch (Throwable e) {
       String msg = String.format("handle request error, %s, msgId=%d",
           operationMeta.getMicroserviceQualifiedName(),
@@ -120,16 +124,14 @@ public class HighwayServerInvoke {
     }
   }
 
-  private void doRunInExecutor(InvocationStartedEvent startedEvent) throws Exception {
-    Invocation invocation = HighwayCodec.decodeRequest(header, operationProtobuf, bodyBuffer, protobufFeature);
+  private void doRunInExecutor() throws Exception {
+    invocation.onStartExecute();
+
+    HighwayCodec.decodeRequest(invocation, header, operationProtobuf, bodyBuffer, protobufFeature);
     invocation.getHandlerContext().put(Const.REMOTE_ADDRESS, this.connection.getNetSocket().remoteAddress());
-    //立刻设置开始时间，否则Finished时无法计算TotalTime
-    invocation.setStartTime(startedEvent.getStartedTime());
-    invocation.triggerStartExecutionEvent();
 
     invocation.next(response -> {
       sendResponse(invocation.getContext(), response);
-      invocation.triggerFinishedEvent(response.getStatusCode());
     });
   }
 
@@ -155,6 +157,8 @@ public class HighwayServerInvoke {
           operationProtobuf.getOperationMeta().getMicroserviceQualifiedName(),
           msgId);
       LOGGER.error(msg, e);
+    } finally {
+      invocation.onFinish(response);
     }
   }
 
@@ -162,9 +166,10 @@ public class HighwayServerInvoke {
    * start time in queue.
    */
   public void execute() {
-    InvocationStartedEvent startedEvent = new InvocationStartedEvent(operationMeta.getMicroserviceQualifiedName(),
-        InvocationType.PRODUCER, System.nanoTime());
-    EventBus.getInstance().triggerEvent(startedEvent);
-    operationMeta.getExecutor().execute(() -> runInExecutor(startedEvent));
+    invocation = InvocationFactory.forProvider(endpoint,
+        operationProtobuf.getOperationMeta(),
+        null);
+    invocation.onStart();
+    operationMeta.getExecutor().execute(() -> runInExecutor());
   }
 }

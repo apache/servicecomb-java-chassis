@@ -66,7 +66,7 @@ public class HighwayServerVerticle extends AbstractVerticle {
       return;
     }
 
-    HighwayServer server = new HighwayServer(endpointObject);
+    HighwayServer server = new HighwayServer(endpoint);
     server.init(vertx, SSL_KEY, ar -> {
       if (ar.succeeded()) {
         InetSocketAddress socketAddress = ar.result();
