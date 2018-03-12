@@ -22,9 +22,9 @@ To use Apollo as configuration source in ServiceComb Java Chassis services:
   apollo:
     config:
       serverUri: http://127.0.0.1:8070	#Apollo portal server address
-      serviceName: apollo-test		#service name
-      env: DEV				#default valueDEV
-      clusters: test-cluster		#default value default
+      serviceName: apollo-test		#service name use AppId in apollo
+      env: DEV				#default value DEV
+      clusters: default			#default value default
       namespace: application		#default value application
       token: 				#get token from Apollo web pages
   ```
