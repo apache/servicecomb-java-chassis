@@ -35,13 +35,17 @@ public class HelloWorldConsumer  {
 
 Project documentation is available on the [ServiceComb website][servicecomb-website].
 
-[servicecomb-website]: http://servicecomb.io/
+[servicecomb-website]: http://servicecomb.incubator.apache.org/
 
 ## Building
 
-You don’t need to build from source to use Java Chassis (binaries in repo.servicecomb.io), but if you want to try out the latest and greatest, Java Chassis can be easily built with the maven.  You also need JDK 1.8.
+You don’t need to build from source to use Java Chassis (binaries in apache nexus ), but if you want to try out the latest and greatest, Java Chassis can be easily built with the maven.  You also need JDK 1.8.
 
-      mvn clean install
+      mvn clean install 
+
+If you want to build the release kits from the source
+
+      mvn clean install  -Prelease,distribution
 
 The first build may take a longer than expected as Maven downloads all the dependencies.
 
