@@ -35,6 +35,7 @@ import org.apache.servicecomb.foundation.vertx.AsyncResultCallback;
 import org.apache.servicecomb.serviceregistry.api.Const;
 import org.apache.servicecomb.serviceregistry.api.registry.Microservice;
 import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
+import org.apache.servicecomb.serviceregistry.api.registry.ServiceCenterInfo;
 import org.apache.servicecomb.serviceregistry.api.request.CreateSchemaRequest;
 import org.apache.servicecomb.serviceregistry.api.request.CreateServiceRequest;
 import org.apache.servicecomb.serviceregistry.api.request.RegisterInstanceRequest;
@@ -734,5 +735,26 @@ public final class ServiceRegistryClientImpl implements ServiceRegistryClient {
       LOGGER.error("get instance from sc failed");
       return null;
     }
+  }
+
+  @Override
+  public ServiceCenterInfo getServiceCenterInfo() {
+    Holder<ServiceCenterInfo> holder = new Holder<>();
+    IpPort ipPort = ipPortManager.getAvailableAddress();
+
+    CountDownLatch countDownLatch = new CountDownLatch(1);
+    RestUtils.get(ipPort,
+        Const.REGISTRY_API.SERVICECENTER_VERSION,
+        new RequestParam(),
+        syncHandler(countDownLatch, ServiceCenterInfo.class, holder));
+    try {
+      countDownLatch.await();
+      if (holder.value != null) {
+        return holder.value;
+      }
+    } catch (Exception e) {
+      LOGGER.error("query servicecenter version info failed.", e);
+    }
+    return null;
   }
 }

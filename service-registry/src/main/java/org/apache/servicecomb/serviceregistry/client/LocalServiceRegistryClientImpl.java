@@ -34,6 +34,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.apache.servicecomb.foundation.vertx.AsyncResultCallback;
 import org.apache.servicecomb.serviceregistry.api.registry.Microservice;
 import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
+import org.apache.servicecomb.serviceregistry.api.registry.ServiceCenterConfig;
+import org.apache.servicecomb.serviceregistry.api.registry.ServiceCenterInfo;
 import org.apache.servicecomb.serviceregistry.api.response.FindInstancesResponse;
 import org.apache.servicecomb.serviceregistry.api.response.HeartbeatResponse;
 import org.apache.servicecomb.serviceregistry.api.response.MicroserviceInstanceChangedEvent;
@@ -371,5 +373,15 @@ public class LocalServiceRegistryClientImpl implements ServiceRegistryClient {
     return instances.get(instanceId);
   }
 
+  @Override
+  public ServiceCenterInfo getServiceCenterInfo() {
+    ServiceCenterInfo info = new ServiceCenterInfo();
+    info.setVersion("1.0.0");
+    info.setBuildTag("20180312");
+    info.setRunMode("dev");
+    info.setApiVersion("4.0.0");
+    info.setConfig(new ServiceCenterConfig());
+    return info;
+  }
 
 }

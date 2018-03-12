@@ -25,6 +25,7 @@ import org.apache.servicecomb.config.ConfigUtil;
 import org.apache.servicecomb.foundation.common.net.IpPort;
 import org.apache.servicecomb.serviceregistry.RegistryUtils;
 import org.apache.servicecomb.serviceregistry.ServiceRegistry;
+import org.apache.servicecomb.serviceregistry.api.registry.ServiceCenterInfo;
 import org.apache.servicecomb.serviceregistry.client.LocalServiceRegistryClientImpl;
 import org.apache.servicecomb.serviceregistry.client.ServiceRegistryClient;
 import org.apache.servicecomb.serviceregistry.config.ServiceRegistryConfig;
@@ -33,10 +34,12 @@ import org.apache.servicecomb.serviceregistry.definition.MicroserviceDefinition;
 import org.apache.servicecomb.serviceregistry.task.event.PullMicroserviceVersionsInstancesEvent;
 import org.apache.servicecomb.serviceregistry.task.event.ShutdownEvent;
 import org.hamcrest.Matchers;
+import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+import org.mockito.Mockito;
 
 import com.google.common.eventbus.EventBus;
 
@@ -48,6 +51,10 @@ import mockit.MockUp;
 import mockit.Mocked;
 
 public class TestRemoteServiceRegistry {
+  private static ServiceRegistryClient registryClient = Mockito.mock(ServiceRegistryClient.class);
+  private static ServiceRegistry serviceRegistry = Mockito.mock(ServiceRegistry.class);
+  private static ServiceCenterInfo serviceCenterInfo = Mockito.mock(ServiceCenterInfo.class);
+
   class TestingRemoteServiceRegistry extends RemoteServiceRegistry {
     public TestingRemoteServiceRegistry(EventBus eventBus, ServiceRegistryConfig serviceRegistryConfig,
         MicroserviceDefinition microserviceDefinition) {
@@ -94,6 +101,10 @@ public class TestRemoteServiceRegistry {
     EventBus bus = new EventBus();
     RemoteServiceRegistry remote = new TestingRemoteServiceRegistry(bus, config, definition);
     remote.init();
+    Deencapsulation.setField(RegistryUtils.class, "serviceRegistry", serviceRegistry);
+    Mockito.when(serviceRegistry.getServiceRegistryClient()).thenReturn(registryClient);
+    Mockito.when(registryClient.getServiceCenterInfo()).thenReturn(serviceCenterInfo);
+    Mockito.when(serviceCenterInfo.getVersion()).thenReturn("1.0.0");
     remote.run();
     Assert.assertTrue(2 <= remote.getTaskPool().getTaskCount()); // includes complete tasks
 
@@ -133,5 +144,10 @@ public class TestRemoteServiceRegistry {
     bus.register(remote);
     Deencapsulation.setField(remote, "taskPool", taskPool);
     bus.post(event);
+  }
+
+  @AfterClass
+  public static void teardown() {
+    Deencapsulation.setField(RegistryUtils.class, "serviceRegistry", null);
   }
 }

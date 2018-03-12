@@ -32,6 +32,8 @@ import org.apache.log4j.spi.LoggingEvent;
 import org.apache.servicecomb.foundation.common.net.IpPort;
 import org.apache.servicecomb.serviceregistry.api.registry.Microservice;
 import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceFactory;
+import org.apache.servicecomb.serviceregistry.api.registry.ServiceCenterConfig;
+import org.apache.servicecomb.serviceregistry.api.registry.ServiceCenterInfo;
 import org.apache.servicecomb.serviceregistry.api.response.GetExistenceResponse;
 import org.apache.servicecomb.serviceregistry.client.ClientException;
 import org.apache.servicecomb.serviceregistry.client.IpPortManager;
@@ -320,5 +322,49 @@ public class TestServiceRegistryClientImpl {
     };
 
     Assert.assertNull(oClient.findServiceInstance(null, "appId", "serviceName", "1.0.0+"));
+  }
+
+  @Test
+  public void testGetServiceCenterInfoSuccess() {
+    ServiceCenterInfo serviceCenterInfo = new ServiceCenterInfo();
+    serviceCenterInfo.setVersion("x.x.x");
+    serviceCenterInfo.setBuildTag("xxx");
+    serviceCenterInfo.setRunMode("dev");
+    serviceCenterInfo.setApiVersion("x.x.x");
+    serviceCenterInfo.setConfig(new ServiceCenterConfig());
+
+    new MockUp<RestUtils>() {
+      @Mock
+      void httpDo(RequestContext requestContext, Handler<RestResponse> responseHandler) {
+        Holder<ServiceCenterInfo> holder = Deencapsulation.getField(responseHandler, "arg$4");
+        holder.value = serviceCenterInfo;
+      }
+    };
+    ServiceCenterInfo info = oClient.getServiceCenterInfo();
+    Assert.assertEquals("x.x.x", info.getVersion());
+    Assert.assertEquals("xxx", info.getBuildTag());
+    Assert.assertEquals("dev", info.getRunMode());
+    Assert.assertNotNull(info.getConfig());
+  }
+
+  @Test
+  public void testGetServiceCenterInfoException() {
+    InterruptedException e = new InterruptedException();
+    new MockUp<CountDownLatch>() {
+      @Mock
+      public void await() throws InterruptedException {
+        throw e;
+      }
+    };
+
+    new RegisterSchemaTester() {
+      void doRun(java.util.List<LoggingEvent> events) {
+        oClient.getServiceCenterInfo();
+        Assert.assertEquals(
+            "query servicecenter version info failed.",
+            events.get(0).getMessage());
+        Assert.assertEquals(e, events.get(0).getThrowableInformation().getThrowable());
+      }
+    }.run();
   }
 }

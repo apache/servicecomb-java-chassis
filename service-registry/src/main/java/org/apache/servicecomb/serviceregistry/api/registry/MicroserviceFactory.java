@@ -17,8 +17,6 @@
 package org.apache.servicecomb.serviceregistry.api.registry;
 
 import static org.apache.servicecomb.foundation.common.base.ServiceCombConstants.CONFIG_APPLICATION_ID_KEY;
-import static org.apache.servicecomb.foundation.common.base.ServiceCombConstants.CONFIG_DEFAULT_REGISTER_BY;
-import static org.apache.servicecomb.foundation.common.base.ServiceCombConstants.CONFIG_FRAMEWORK_DEFAULT_NAME;
 import static org.apache.servicecomb.foundation.common.base.ServiceCombConstants.CONFIG_QUALIFIED_MICROSERVICE_DESCRIPTION_KEY;
 import static org.apache.servicecomb.foundation.common.base.ServiceCombConstants.CONFIG_QUALIFIED_MICROSERVICE_NAME_KEY;
 import static org.apache.servicecomb.foundation.common.base.ServiceCombConstants.CONFIG_QUALIFIED_MICROSERVICE_ROLE_KEY;
@@ -66,13 +64,6 @@ public class MicroserviceFactory {
       microservice.setAlias(Microservice.generateAbsoluteMicroserviceName(microservice.getAppId(),
           microservice.getServiceName()));
     }
-
-    // use default values, we can add configure item in future.
-    Framework framework = new Framework();
-    framework.setName(CONFIG_FRAMEWORK_DEFAULT_NAME);
-    framework.setVersion(FrameworkVersions.allVersions());
-    microservice.setFramework(framework);
-    microservice.setRegisterBy(CONFIG_DEFAULT_REGISTER_BY);
 
     return microservice;
   }

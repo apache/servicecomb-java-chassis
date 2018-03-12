@@ -34,6 +34,8 @@ import org.apache.servicecomb.config.ConfigUtil;
 import org.apache.servicecomb.foundation.common.net.NetUtils;
 import org.apache.servicecomb.serviceregistry.api.registry.Microservice;
 import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
+import org.apache.servicecomb.serviceregistry.api.registry.ServiceCenterInfo;
+import org.apache.servicecomb.serviceregistry.client.ServiceRegistryClient;
 import org.apache.servicecomb.serviceregistry.client.http.MicroserviceInstances;
 import org.apache.servicecomb.serviceregistry.registry.ServiceRegistryFactory;
 import org.junit.AfterClass;
@@ -55,6 +57,9 @@ import mockit.Mocked;
 
 public class TestRegistry {
   private static final AbstractConfiguration inMemoryConfig = new ConcurrentMapConfiguration();
+  private static ServiceRegistryClient registryClient = Mockito.mock(ServiceRegistryClient.class);
+  private static ServiceRegistry serviceRegistry = Mockito.mock(ServiceRegistry.class);
+  private static ServiceCenterInfo serviceCenterInfo = Mockito.mock(ServiceCenterInfo.class);
 
   @BeforeClass
   public static void initSetup() throws Exception {
@@ -64,6 +69,11 @@ public class TestRegistry {
     configuration.addConfiguration(inMemoryConfig);
 
     ConfigurationManager.install(configuration);
+
+    Deencapsulation.setField(RegistryUtils.class, "serviceRegistry", serviceRegistry);
+    Mockito.when(serviceRegistry.getServiceRegistryClient()).thenReturn(registryClient);
+    Mockito.when(registryClient.getServiceCenterInfo()).thenReturn(serviceCenterInfo);
+    Mockito.when(serviceCenterInfo.getVersion()).thenReturn("1.0.0");
   }
 
   @AfterClass
@@ -72,6 +82,7 @@ public class TestRegistry {
     Deencapsulation.setField(ConfigurationManager.class, "customConfigurationInstalled", false);
     Deencapsulation.setField(DynamicPropertyFactory.class, "config", null);
     RegistryUtils.setServiceRegistry(null);
+    Deencapsulation.setField(RegistryUtils.class, "serviceRegistry", null);
   }
 
   @Before
