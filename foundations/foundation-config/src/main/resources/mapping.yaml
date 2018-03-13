@@ -19,3 +19,6 @@ eureka:
   client:
     serviceUrl:
       defaultZone: registry.client.serviceUrl.defaultZone
+
+service_description:
+  environment: SERVICECOMB_ENV
