@@ -38,6 +38,8 @@ public class Microservice {
 
   private String registerBy;
 
+  private String environment;
+
   private String appId;
 
   private String serviceName;
@@ -208,5 +210,13 @@ public class Microservice {
 
   public void setRegisterBy(String registerBy) {
     this.registerBy = registerBy;
+  }
+
+  public String getEnvironment() {
+    return environment;
+  }
+
+  public void setEnvironment(String environment) {
+    this.environment = environment;
   }
 }
