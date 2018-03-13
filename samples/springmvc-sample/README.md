@@ -45,8 +45,19 @@
    mvn exec:java -Dexec.mainClass="org.apache.servicecomb.samples.springmvc.consumer.SpringmvcConsumerMain"
    ```
 
+4. How to verify
+   On the producer side, the output should contain the following stuffs if the producer starts up successfully:
+   1. *'swagger: 2.0 info: version: 1.0.0 ...'* means the producer generated swagger contracts
+   2. *'rest listen success. address=0.0.0.0:8080'* means the rest endpoint is listening on port 8080
+   3. *'highway listen success. address=0.0.0.0:7070'* means the highway endpoint is listening on port 7070
+   4. *'Register microservice instance success'* means the producer has registered successfully to service center
+   
+   On the consumer side, you can see the following outputs if the consumer can invoke the producer:
+   1. *'RestTemplate consumer sayhi services: Hello Java Chassis'* means the consumer calls sayhi by RestTemplate successfully
+   2. *'RestTemplate consumer sayhello services: Hello person ServiceComb/Java Chassis'* means the consumer calls sayhello by RestTemplate successfully
+   3. *'POJO consumer sayhi services: Hello Java Chassis'* means the consumer calls sayhi by RpcReference successfully
+   4. *'POJO consumer sayhello services: Hello person ServiceComb/Java Chassis'* means the consumer calls sayhello by RpcReference successfully
    ​
-
 ## More
 
 [Develop with RestTemplate](http://servicecomb.incubator.apache.org/users/develop-with-rest-template/)

@@ -28,6 +28,6 @@ cse:
       Provider:
         default: auth-provider
   rest:
-    address: 0.0.0.0:8082
+    address: 0.0.0.0:8080
   highway:
     address: 0.0.0.0:7070

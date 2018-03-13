@@ -48,4 +48,17 @@ For detail information please refer to [Doc](http://servicecomb.incubator.apache
    mvn exec:java -Dexec.mainClass="org.apache.servicecomb.samples.codefirst.consumer.CodeFirstConsumerMain"
    ```
 
-   ​
+4. How to verify
+   On the producer side, the output should contain the following stuffs if the producer starts up successfully:
+   1. *'swagger: 2.0 info: version: 1.0.0 ...'* means the producer generated swagger contracts
+   2. *'rest listen success. address=0.0.0.0:8080'* means the rest endpoint is listening on port 8080
+   3. *'highway listen success. address=0.0.0.0:7070'* means the highway endpoint is listening on port 7070
+   4. *'Register microservice instance success'* means the producer has registered successfully to service center
+   
+   On the consumer side, you can see the following outputs if the consumer can invoke the producer:
+   1. *'Pojo Hello Java Chassis'* means the consumer calls sayhi successfully 
+   2. *'Jaxrs Hello Java Chassis'* means the consumer calls Jaxrs sayhi successfully
+   3. *'Spring mvc Hello Java Chassis'* means the consumer calls SpringMvc sayhi successfully
+   4. *'Pojo Hello person ServiceComb/Java Chassis'* means the consumer calls sayhello successfully
+   5. *'Jaxrs Hello person ServiceComb/Java Chassis'* means the consumer calls Jaxrs sayhello successfully
+   6. *'Spring mvc Hello person ServiceComb/Java Chassis'* means the consumer calls SpringMvc sayhello successfully

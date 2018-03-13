@@ -79,4 +79,13 @@ ServiceComb support users to define a customized handler and and invoke the hand
    mvn exec:java -Dexec.mainClass="org.apache.servicecomb.samples.customerhandler.consumer.CustomHandlerCustomerMain"
    ```
 
-   ​
+4. How to verify
+   On the producer side, the output should contain the following stuffs if the producer starts up successfully:
+   1. *'swagger: 2.0 info: version: 1.0.0 ...'* means the producer generated swagger contracts
+   2. *'rest listen success. address=0.0.0.0:8080'* means the rest endpoint is listening on port 8080
+   3. *'highway listen success. address=0.0.0.0:7070'* means the highway endpoint is listening on port 7070
+   4. *'Register microservice instance success'* means the producer has registered successfully to service center
+   
+   On the consumer side, you can see the following outputs:
+   1. *'It's my handler!'* means custom handler had take effect
+  
