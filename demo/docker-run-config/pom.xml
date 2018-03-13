@@ -89,7 +89,7 @@
                                         <port>8080:8080</port>
                                     </ports>
                                     <dependsOn>
-                                        <dependsOn>service-center</dependsOn>
+                                        <container>service-center</container>
                                     </dependsOn>
                                 </run>
                             </image>

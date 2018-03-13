@@ -99,7 +99,9 @@
                       <port>apollo.config:8080</port>
                       <port>apollo.portal:8070</port>
                     </ports>
-                    <dependsOn>mysql</dependsOn>
+                    <dependsOn>
+                      <container>mysql</container>
+                    </dependsOn>
                   </run>
                 </image>
               </images>
