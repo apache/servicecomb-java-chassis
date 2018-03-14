@@ -17,7 +17,6 @@
 
 package org.apache.servicecomb.provider.springmvc.reference;
 
-import java.io.IOException;
 import java.io.OutputStream;
 import java.net.URI;
 import java.util.List;
@@ -73,6 +72,34 @@ public class CseClientHttpRequest implements ClientHttpRequest {
     this.method = method;
   }
 
+  public String getPath() {
+    return path;
+  }
+
+  public void setPath(String path) {
+    this.path = path;
+  }
+
+  protected RequestMeta getRequestMeta() {
+    return requestMeta;
+  }
+
+  protected void setRequestMeta(RequestMeta requestMeta) {
+    this.requestMeta = requestMeta;
+  }
+
+  public void setUri(URI uri) {
+    this.uri = uri;
+  }
+
+  public void setMethod(HttpMethod method) {
+    this.method = method;
+  }
+
+  protected void setQueryParams(Map<String, List<String>> queryParams) {
+    this.queryParams = queryParams;
+  }
+
   public InvocationContext getContext() {
     return context;
   }
@@ -101,12 +128,12 @@ public class CseClientHttpRequest implements ClientHttpRequest {
   }
 
   @Override
-  public OutputStream getBody() throws IOException {
+  public OutputStream getBody() {
     return null;
   }
 
   @Override
-  public ClientHttpResponse execute() throws IOException {
+  public ClientHttpResponse execute() {
     path = findUriPath(uri);
     requestMeta = createRequestMeta(method.name(), uri);
 
@@ -119,7 +146,7 @@ public class CseClientHttpRequest implements ClientHttpRequest {
     return this.invoke(args);
   }
 
-  private RequestMeta createRequestMeta(String httpMetod, URI uri) {
+  protected RequestMeta createRequestMeta(String httpMetod, URI uri) {
     String microserviceName = uri.getAuthority();
     ReferenceConfig referenceConfig = ReferenceConfigUtils.getForInvoke(microserviceName);
 
@@ -142,7 +169,7 @@ public class CseClientHttpRequest implements ClientHttpRequest {
     return uri.getRawPath();
   }
 
-  private CseClientHttpResponse invoke(Object[] args) {
+  protected Invocation prepareInvocation(Object[] args) {
     Invocation invocation =
         InvocationFactory.forConsumer(requestMeta.getReferenceConfig(),
             requestMeta.getOperationMeta(),
@@ -153,22 +180,26 @@ public class CseClientHttpRequest implements ClientHttpRequest {
     if (context != null) {
       invocation.addContext(context);
     }
-
     invocation.getHandlerContext().put(RestConst.CONSUMER_HEADER, httpHeaders);
+    return invocation;
+  }
+
+  private CseClientHttpResponse invoke(Object[] args) {
+    Invocation invocation = prepareInvocation(args);
     Response response = doInvoke(invocation);
 
     if (response.isSuccessed()) {
       return new CseClientHttpResponse(response);
     }
 
-    throw ExceptionFactory.convertConsumerException((Throwable) response.getResult());
+    throw ExceptionFactory.convertConsumerException(response.getResult());
   }
 
   protected Response doInvoke(Invocation invocation) {
     return InvokerUtils.innerSyncInvoke(invocation);
   }
 
-  private Object[] collectArguments() {
+  protected Object[] collectArguments() {
     HttpServletRequest mockRequest = new CommonToHttpServletRequest(requestMeta.getPathParams(), queryParams,
         httpHeaders, requestBody, requestMeta.getSwaggerRestOperation().isFormData());
     return RestCodec.restToArgs(mockRequest, requestMeta.getSwaggerRestOperation());
