@@ -44,6 +44,12 @@ cse:
           interval: 10
         watch: false
       autodiscovery: true
+  config:
+    client:
+      serverUri: http://127.0.0.1:30103,http://127.0.0.2:30103
+      refreshMode: 0
+      refresh_interval: 5000
+
   rest:
     address: 0.0.0.0:8080?sslEnabled=true
     server:

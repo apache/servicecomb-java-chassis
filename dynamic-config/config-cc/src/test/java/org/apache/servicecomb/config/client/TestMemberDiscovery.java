@@ -19,7 +19,10 @@ package org.apache.servicecomb.config.client;
 
 import static org.junit.Assert.assertNotNull;
 
+import java.util.Arrays;
+
 import org.apache.servicecomb.config.ConfigUtil;
+import org.apache.servicecomb.foundation.common.event.EventManager;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -36,6 +39,32 @@ public class TestMemberDiscovery {
   public void testGetConfigServerURIs() {
     MemberDiscovery dc = new MemberDiscovery(ConfigCenterConfig.INSTANCE.getServerUri());
     assertNotNull(dc.getConfigServer());
+  }
+
+  @Test
+  public void testServerChange() {
+    MemberDiscovery dc = new MemberDiscovery(Arrays.asList("http://127.0.0.1:30103", "http://127.0.0.1:30104"));
+    String server1 = dc.getConfigServer();
+    EventManager.post(new ConnFailEvent("connect failed."));
+    String server2 = dc.getConfigServer();
+    Assert.assertNotEquals(server1, server2);
+    EventManager.post(new ConnFailEvent("connect failed."));
+    server2 = dc.getConfigServer();
+    Assert.assertEquals(server1, server2);
+    
+    dc.refreshMembers(new JsonObject(
+        "{\"instances\":"
+        + "[{\"status\":\"UP\",\"endpoints\":[\"rest://0.0.0.0:30109\"],\"hostName\":\"125292-0.0.0.0\",\"serviceName\":\"configServer\",\"isHttps\":false}"
+        + ",{\"status\":\"UP\",\"endpoints\":[\"rest://0.0.0.0:30108\"],\"hostName\":\"125293-0.0.0.0\",\"serviceName\":\"configServer\",\"isHttps\":false}"
+        + "]}"));
+    server1 = dc.getConfigServer();
+    Assert.assertEquals(server1, "http://0.0.0.0:30109");
+    EventManager.post(new ConnFailEvent("connect failed."));
+    server2 = dc.getConfigServer();
+    Assert.assertNotEquals(server1, server2);
+    EventManager.post(new ConnFailEvent("connect failed."));
+    server2 = dc.getConfigServer();
+    Assert.assertEquals(server1, server2);
   }
 
   @Test

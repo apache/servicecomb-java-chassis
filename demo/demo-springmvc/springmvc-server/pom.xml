@@ -43,6 +43,10 @@
 			<artifactId>metrics-prometheus</artifactId>
 		</dependency>
 
+		<dependency>
+			<groupId>org.apache.servicecomb</groupId>
+			<artifactId>config-cc</artifactId>
+		</dependency>
 	</dependencies>
 
 	<properties>

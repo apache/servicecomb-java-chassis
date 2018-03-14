@@ -100,7 +100,7 @@ public class ConfigCenterClient {
 
   private String serviceName = CONFIG_CENTER_CONFIG.getServiceName();
 
-  private List<String> serverUri = CONFIG_CENTER_CONFIG.getServerUri();
+  private MemberDiscovery memberDiscovery = new MemberDiscovery(CONFIG_CENTER_CONFIG.getServerUri());
 
   private ConfigCenterConfigurationSourceImpl.UpdateHandler updateHandler;
 
@@ -126,9 +126,8 @@ public class ConfigCenterClient {
     } catch (InterruptedException e) {
       throw new IllegalStateException(e);
     }
-    MemberDiscovery memberdis = new MemberDiscovery(serverUri);
-    refreshMembers(memberdis);
-    EXECUTOR.scheduleWithFixedDelay(new ConfigRefresh(parseConfigUtils, memberdis),
+    refreshMembers(memberDiscovery);
+    EXECUTOR.scheduleWithFixedDelay(new ConfigRefresh(parseConfigUtils, memberDiscovery),
         firstRefreshInterval,
         refreshInterval,
         TimeUnit.MILLISECONDS);
@@ -183,7 +182,7 @@ public class ConfigCenterClient {
       httpClientOptions.setProxyOptions(proxy);
     }
     httpClientOptions.setConnectTimeout(CONFIG_CENTER_CONFIG.getConnectionTimeout());
-    if (serverUri.get(0).toLowerCase().startsWith("https")) {
+    if (this.memberDiscovery.getConfigServer().toLowerCase().startsWith("https")) {
       LOGGER.debug("config center client performs requests over TLS");
       SSLOptionFactory factory = SSLOptionFactory.createSSLOptionFactory(SSL_KEY,
           ConfigCenterConfig.INSTANCE.getConcurrentCompositeConfiguration());
@@ -280,7 +279,7 @@ public class ConfigCenterClient {
               waiter.countDown();
             },
             e -> {
-              LOGGER.error("watcher connect to config center {} failed: {}", serverUri, e.getMessage());
+              LOGGER.error("watcher connect to config center {} refresh port {} failed. Error message is [{}]", configCenter, refreshPort, e.getMessage());
               waiter.countDown();
             });
       });
@@ -326,15 +325,15 @@ public class ConfigCenterClient {
                 EventManager.post(new ConnSuccEvent());
               } catch (IOException e) {
                 EventManager.post(new ConnFailEvent("config refresh result parse fail " + e.getMessage()));
-                LOGGER.error("config refresh result parse fail", e);
+                LOGGER.error("Config refresh from {} failed. Error message is [{}].", configcenter, e.getMessage());
               }
             });
           } else {
             rsp.bodyHandler(buf -> {
-              LOGGER.error("fetch config fail: " + buf);
+              LOGGER.error("Server error message is [{}].", buf);
             });
             EventManager.post(new ConnFailEvent("fetch config fail"));
-            LOGGER.error("fetch config fail");
+            LOGGER.error("Config refresh from {} failed.", configcenter);
           }
         });
         Map<String, String> headers = new HashMap<>();
@@ -349,7 +348,8 @@ public class ConfigCenterClient {
                 headers,
                 null))));
         request.exceptionHandler(e -> {
-          LOGGER.error("config refresh fail {}", e.getMessage());
+          EventManager.post(new ConnFailEvent("fetch config fail"));
+          LOGGER.error("Config refresh from {} failed. Error message is [{}].", configcenter, e.getMessage());
         });
         request.end();
       });
