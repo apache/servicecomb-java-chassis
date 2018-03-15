@@ -73,7 +73,6 @@ public abstract class AbstractRestInvocation {
 
     OperationLocator locator = locateOperation(servicePathManager);
     requestEx.setAttribute(RestConst.PATH_PARAMETERS, locator.getPathVarMap());
-    requestEx.setAttribute(RestConst.OPERATION_PARAMETERS, locator.getOperation());
     this.restOperationMeta = locator.getOperation();
   }
 
@@ -214,8 +213,8 @@ public abstract class AbstractRestInvocation {
     }
     responseEx.setStatus(response.getStatusCode(), response.getReasonPhrase());
     responseEx.setContentType(produceProcessor.getName() + "; charset=utf-8");
-    invocation.getHandlerContext().put(RestConst.INVOCATION_HANDLER_RESPONSE, response);
-    invocation.getHandlerContext().put(RestConst.INVOCATION_HANDLER_PROCESSOR, produceProcessor);
+    responseEx.setAttribute(RestConst.INVOCATION_HANDLER_RESPONSE, response);
+    responseEx.setAttribute(RestConst.INVOCATION_HANDLER_PROCESSOR, produceProcessor);
 
     for (HttpServerFilter filter : httpServerFilters) {
       filter.beforeSendResponse(invocation, responseEx);

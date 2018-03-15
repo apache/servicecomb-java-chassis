@@ -23,6 +23,7 @@ import org.apache.servicecomb.common.rest.codec.produce.ProduceProcessor;
 import org.apache.servicecomb.common.rest.definition.RestOperationMeta;
 import org.apache.servicecomb.common.rest.filter.HttpServerFilter;
 import org.apache.servicecomb.core.Invocation;
+import org.apache.servicecomb.core.definition.OperationMeta;
 import org.apache.servicecomb.foundation.vertx.http.HttpServletRequestEx;
 import org.apache.servicecomb.foundation.vertx.http.HttpServletResponseEx;
 import org.apache.servicecomb.foundation.vertx.stream.BufferOutputStream;
@@ -41,8 +42,8 @@ public class ServerRestArgsFilter implements HttpServerFilter {
 
   @Override
   public Response afterReceiveRequest(Invocation invocation, HttpServletRequestEx requestEx) {
-    RestOperationMeta restOperationMeta = (RestOperationMeta) requestEx
-        .getAttribute(RestConst.OPERATION_PARAMETERS);
+    OperationMeta operationMeta = invocation.getOperationMeta();
+    RestOperationMeta restOperationMeta = operationMeta.getExtData(RestConst.SWAGGER_REST_OPERATION);
     Object[] args = RestCodec.restToArgs(requestEx, restOperationMeta);
     invocation.setSwaggerArguments(args);
     return null;
@@ -50,9 +51,9 @@ public class ServerRestArgsFilter implements HttpServerFilter {
 
   @Override
   public void beforeSendResponse(Invocation invocation, HttpServletResponseEx responseEx) {
-    Response response = (Response) invocation.getHandlerContext().get(RestConst.INVOCATION_HANDLER_RESPONSE);
-    ProduceProcessor produceProcessor = (ProduceProcessor) invocation.getHandlerContext()
-        .get(RestConst.INVOCATION_HANDLER_PROCESSOR);
+    Response response = (Response) responseEx.getAttribute(RestConst.INVOCATION_HANDLER_RESPONSE);
+    ProduceProcessor produceProcessor =
+        (ProduceProcessor) responseEx.getAttribute(RestConst.INVOCATION_HANDLER_PROCESSOR);
     Object body = response.getResult();
     if (response.isFailed()) {
       body = ((InvocationException) body).getErrorData();

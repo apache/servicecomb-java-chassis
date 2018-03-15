@@ -34,9 +34,6 @@ public final class RestConst {
   // in HttpServletRequest attribute
   public static final String PATH_PARAMETERS = "servicecomb-paths";
 
-  //in HttpServletRequest attribute
-  public static final String OPERATION_PARAMETERS = "servicecomb-operations";
-
   // in HttpServletRequest attribute
   public static final String BODY_PARAMETER = "servicecomb-body";
 

@@ -18,6 +18,8 @@
 package org.apache.servicecomb.foundation.vertx.http;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpServletResponseWrapper;
@@ -29,6 +31,8 @@ import io.vertx.core.buffer.Buffer;
 
 public class StandardHttpServletResponseEx extends HttpServletResponseWrapper implements HttpServletResponseEx {
   private BodyBufferSupport bodyBuffer = new BodyBufferSupportImpl();
+
+  private Map<String, Object> attributes = new HashMap<>();
 
   private StatusType statusType;
 
@@ -80,5 +84,15 @@ public class StandardHttpServletResponseEx extends HttpServletResponseWrapper im
       getOutputStream().write(bytes, 0, getBodyBytesLength());
     }
     super.flushBuffer();
+  }
+
+  @Override
+  public void setAttribute(String key, Object value) {
+    this.attributes.put(key, value);
+  }
+
+  @Override
+  public Object getAttribute(String key) {
+    return this.attributes.get(key);
   }
 }
