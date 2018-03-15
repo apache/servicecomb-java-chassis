@@ -104,9 +104,6 @@ public abstract class AbstractServiceRegistry implements ServiceRegistry {
     }
 
     serviceCenterInfo = srClient.getServiceCenterInfo();
-    if (serviceCenterInfo == null) {
-      throw new IllegalStateException("Failed to load servicecenter info");
-    }
 
     createServiceCenterTask();
 
@@ -184,15 +181,30 @@ public abstract class AbstractServiceRegistry implements ServiceRegistry {
   }
 
   private void loadFrameworkVersions() {
-    Version scVersion = VersionUtils.getOrCreate(serviceCenterInfo.getVersion());
-    Version frameworkVersion = VersionUtils.getOrCreate(Const.SERVICECENTER_FRAMEWORK_VERSION);
     Framework framework = new Framework();
     framework.setName(CONFIG_FRAMEWORK_DEFAULT_NAME);
-    if (scVersion.compareTo(frameworkVersion) >= 0) {
+
+    if (needSetFrameworkVersion()) {
       framework.setVersion(FrameworkVersions.allVersions());
     }
     microservice.setFramework(framework);
     microservice.setRegisterBy(CONFIG_DEFAULT_REGISTER_BY);
+  }
+
+  private boolean needSetFrameworkVersion() {
+    if (serviceCenterInfo == null) {
+      LOGGER.warn("Server startup when service center not started and cannot retrieve version info, assume latest.");
+      return true;
+    } else {
+      Version scVersion = VersionUtils.getOrCreate(serviceCenterInfo.getVersion());
+      Version frameworkVersion = VersionUtils.getOrCreate(Const.SERVICECENTER_FRAMEWORK_VERSION);
+
+      if (scVersion.compareTo(frameworkVersion) >= 0) {
+        return true;
+      } else {
+        return false;
+      }
+    }
   }
 
   private void loadStaticConfiguration() {
