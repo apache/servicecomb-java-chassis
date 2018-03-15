@@ -34,6 +34,7 @@ import org.apache.servicecomb.core.provider.consumer.ReferenceConfigUtils;
 import org.apache.servicecomb.core.provider.producer.ProducerProviderManager;
 import org.apache.servicecomb.core.transport.TransportManager;
 import org.apache.servicecomb.foundation.common.event.EventManager;
+import org.apache.servicecomb.foundation.common.utils.BeanUtils;
 import org.apache.servicecomb.foundation.common.utils.ReflectUtils;
 import org.apache.servicecomb.serviceregistry.RegistryUtils;
 import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
@@ -41,8 +42,10 @@ import org.apache.servicecomb.serviceregistry.task.MicroserviceInstanceRegisterT
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Assert;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mockito.Mockito;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.event.ContextClosedEvent;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.context.support.AbstractApplicationContext;
@@ -53,9 +56,17 @@ import mockit.Injectable;
 import mockit.Mocked;
 
 public class TestCseApplicationListener {
+  static ApplicationContext orgContext;
+
+  @BeforeClass
+  public static void classSetup() {
+    orgContext = BeanUtils.getContext();
+  }
+
   @AfterClass
   public static void teardown() {
     AbstractEndpointsCache.init(null, null);
+    BeanUtils.setContext(orgContext);
   }
 
   @After

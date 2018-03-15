@@ -34,7 +34,6 @@ import org.apache.servicecomb.core.handler.config.Config;
 import org.apache.servicecomb.core.handler.impl.SimpleLoadBalanceHandler;
 import org.apache.servicecomb.core.provider.consumer.ConsumerProviderManager;
 import org.apache.servicecomb.foundation.common.utils.BeanUtils;
-import org.apache.servicecomb.serviceregistry.api.registry.Microservice;
 import org.apache.servicecomb.swagger.generator.core.unittest.UnitTestSwaggerUtils;
 import org.mockito.Mockito;
 import org.springframework.context.ApplicationContext;
@@ -58,13 +57,7 @@ public class UnitTestMeta {
 
     ConsumerProviderManager consumerProviderManager = new ConsumerProviderManager();
 
-    ConsumerSchemaFactory consumerSchemaFactory = new ConsumerSchemaFactory() {
-      @Override
-      protected Microservice findMicroservice(MicroserviceMeta microserviceMeta,
-          String microserviceVersionRule) {
-        return null;
-      }
-    };
+    ConsumerSchemaFactory consumerSchemaFactory = new ConsumerSchemaFactory();
     consumerSchemaFactory.setMicroserviceMetaManager(microserviceMetaManager);
     consumerSchemaFactory.setSchemaListenerManager(schemaListenerManager);
 
@@ -77,7 +70,7 @@ public class UnitTestMeta {
     Config config = new Config();
     Class<?> cls = SimpleLoadBalanceHandler.class;
     config.getHandlerClassMap().put("simpleLB", (Class<Handler>) cls);
-    ProducerHandlerManager.INSTANCE.init(config);
+    ProducerHandlerManager.INSTANCE.init(new Config());
     ConsumerHandlerManager.INSTANCE.init(config);
 
     ApplicationContext applicationContext = Mockito.mock(ApplicationContext.class);

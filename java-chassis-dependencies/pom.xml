@@ -358,6 +358,11 @@
         </exclusions>
       </dependency>
       <dependency>
+        <groupId>com.netflix.spectator</groupId>
+        <artifactId>spectator-reg-servo</artifactId>
+        <version>0.62.0</version>
+      </dependency>
+      <dependency>
         <groupId>com.google.inject</groupId>
         <artifactId>guice</artifactId>
         <version>4.0</version>

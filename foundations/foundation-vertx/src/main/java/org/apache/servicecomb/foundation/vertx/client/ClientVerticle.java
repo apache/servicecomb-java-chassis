@@ -17,15 +17,25 @@
 
 package org.apache.servicecomb.foundation.vertx.client;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import io.vertx.core.AbstractVerticle;
 
 public class ClientVerticle<CLIENT_POOL> extends AbstractVerticle {
+  private static final Logger LOGGER = LoggerFactory.getLogger(ClientVerticle.class);
   public static final String CLIENT_MGR = "clientMgr";
 
   @SuppressWarnings("unchecked")
   @Override
   public void start() throws Exception {
-    ClientPoolManager<CLIENT_POOL> clientMgr = (ClientPoolManager<CLIENT_POOL>) config().getValue(CLIENT_MGR);
-    clientMgr.createClientPool();
+    try {
+      ClientPoolManager<CLIENT_POOL> clientMgr = (ClientPoolManager<CLIENT_POOL>) config().getValue(CLIENT_MGR);
+      clientMgr.createClientPool();
+    } catch (Throwable e) {
+      // vert.x got some states that not print error and execute call back in VertexUtils.blockDeploy, we add a log our self.
+      LOGGER.error("", e);
+      throw e;
+    }
   }
 }

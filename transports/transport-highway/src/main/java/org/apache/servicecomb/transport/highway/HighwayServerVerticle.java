@@ -48,9 +48,14 @@ public class HighwayServerVerticle extends AbstractVerticle {
 
   @Override
   public void start(Future<Void> startFuture) throws Exception {
-    super.start();
-
-    startListen(startFuture);
+    try {
+      super.start();
+      startListen(startFuture);
+    } catch (Throwable e) {
+      // vert.x got some states that not print error and execute call back in VertexUtils.blockDeploy, we add a log our self.
+      LOGGER.error("", e);
+      throw e;
+    }
   }
 
   protected void startListen(Future<Void> startFuture) {
@@ -61,7 +66,7 @@ public class HighwayServerVerticle extends AbstractVerticle {
       return;
     }
 
-    HighwayServer server = new HighwayServer(endpointObject);
+    HighwayServer server = new HighwayServer(endpoint);
     server.init(vertx, SSL_KEY, ar -> {
       if (ar.succeeded()) {
         InetSocketAddress socketAddress = ar.result();

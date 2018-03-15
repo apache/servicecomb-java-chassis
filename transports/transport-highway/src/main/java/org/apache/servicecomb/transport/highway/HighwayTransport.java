@@ -43,8 +43,6 @@ public class HighwayTransport extends AbstractTransport {
   public boolean init() throws Exception {
     highwayClient.init(transportVertx);
 
-    HighwayCodec.setHighwayTransport(this);
-
     DeploymentOptions deployOptions = new DeploymentOptions().setInstances(HighwayConfig.getServerThreadCount());
     setListenAddressWithoutSchema(HighwayConfig.getAddress(), Collections.singletonMap(TcpConst.LOGIN, "true"));
     SimpleJsonObject json = new SimpleJsonObject();

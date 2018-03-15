@@ -20,9 +20,13 @@ package org.apache.servicecomb.config.client;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
+import org.apache.servicecomb.foundation.common.event.EventManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.common.eventbus.Subscribe;
 
 import io.vertx.core.json.JsonObject;
 
@@ -37,15 +41,27 @@ public class MemberDiscovery {
 
   private List<String> configServerAddresses = new ArrayList<>();
 
+  private AtomicInteger counter = new AtomicInteger(0);
+
   public MemberDiscovery(List<String> configCenterUri) {
     if (configCenterUri != null && !configCenterUri.isEmpty()) {
       configServerAddresses.addAll(configCenterUri);
     }
     Collections.shuffle(configServerAddresses);
+    EventManager.register(this);
   }
 
   public String getConfigServer() {
-    return configServerAddresses.get(0);
+    if(configServerAddresses.isEmpty()) {
+      throw new IllegalStateException("Config center address is not available.");
+    }
+    int index = Math.abs(counter.get() % configServerAddresses.size());
+    return configServerAddresses.get(index);
+  }
+
+  @Subscribe
+  public void onConnFailEvent(ConnFailEvent e) {
+    counter.incrementAndGet();
   }
 
   public void refreshMembers(JsonObject members) {

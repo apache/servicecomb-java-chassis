@@ -18,6 +18,7 @@ package org.apache.servicecomb.transport.highway;
 
 import javax.ws.rs.core.Response.Status;
 
+import org.apache.servicecomb.core.Endpoint;
 import org.apache.servicecomb.foundation.vertx.server.TcpBufferHandler;
 import org.apache.servicecomb.foundation.vertx.server.TcpParser;
 import org.apache.servicecomb.foundation.vertx.server.TcpServerConnection;
@@ -35,7 +36,13 @@ import io.vertx.core.net.NetSocket;
 public class HighwayServerConnection extends TcpServerConnection implements TcpBufferHandler {
   private static final Logger LOGGER = LoggerFactory.getLogger(HighwayServerConnection.class);
 
+  private Endpoint endpoint;
+
   private ProtobufFeature protobufFeature = new ProtobufFeature();
+
+  public HighwayServerConnection(Endpoint endpoint) {
+    this.endpoint = endpoint;
+  }
 
   @Override
   public void init(NetSocket netSocket) {
@@ -115,7 +122,7 @@ public class HighwayServerConnection extends TcpServerConnection implements TcpB
   }
 
   protected void onRequest(long msgId, RequestHeader header, Buffer bodyBuffer) {
-    HighwayServerInvoke invoke = new HighwayServerInvoke(protobufFeature);
+    HighwayServerInvoke invoke = new HighwayServerInvoke(endpoint, protobufFeature);
     if (invoke.init(this, msgId, header, bodyBuffer)) {
       invoke.execute();
     }

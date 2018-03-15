@@ -59,23 +59,25 @@ public class RestServerVerticle extends AbstractVerticle {
 
   @Override
   public void start(Future<Void> startFuture) throws Exception {
-    super.start();
-
-    // 如果本地未配置地址，则表示不必监听，只需要作为客户端使用即可
-    if (endpointObject == null) {
-      LOGGER.warn("rest listen address is not configured, will not start.");
-      startFuture.complete();
-      return;
+    try {
+      super.start();
+      // 如果本地未配置地址，则表示不必监听，只需要作为客户端使用即可
+      if (endpointObject == null) {
+        LOGGER.warn("rest listen address is not configured, will not start.");
+        startFuture.complete();
+        return;
+      }
+      Router mainRouter = Router.router(vertx);
+      mountAccessLogHandler(mainRouter);
+      initDispatcher(mainRouter);
+      HttpServer httpServer = createHttpServer();
+      httpServer.requestHandler(mainRouter::accept);
+      startListen(httpServer, startFuture);
+    } catch(Throwable e) {
+      // vert.x got some states that not print error and execute call back in VertexUtils.blockDeploy, we add a log our self.
+      LOGGER.error("", e);
+      throw e;
     }
-
-    Router mainRouter = Router.router(vertx);
-    mountAccessLogHandler(mainRouter);
-    initDispatcher(mainRouter);
-
-    HttpServer httpServer = createHttpServer();
-    httpServer.requestHandler(mainRouter::accept);
-
-    startListen(httpServer, startFuture);
   }
 
   private void mountAccessLogHandler(Router mainRouter) {

@@ -15,7 +15,7 @@
 ## limitations under the License.
 ## ---------------------------------------------------------------------------
 
-APPLICATION_ID: pojotest
+APPLICATION_ID: app
 service_description:
   name: perfClient
   version: 0.0.1

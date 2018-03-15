@@ -432,6 +432,8 @@ rxnetty-contexts (https://github.com/ReactiveX/RxNetty) io.reactivex:rxnetty-con
 rxnetty-servo (https://github.com/ReactiveX/RxNetty) io.reactivex:rxnetty-servo:jar:0.4.9
 servo-core (https://github.com/Netflix/servo) com.netflix.servo:servo-core:jar:0.10.1
 servo-internal (https://github.com/Netflix/servo) com.netflix.servo:servo-internal:jar:0.10.1
+spectator-reg-servo (https://github.com/Netflix/spectator) com.netflix.spectator:spectator-reg-servo:0.62.0
+spectator-api (https://github.com/Netflix/spectator) com.netflix.spectator:spectator-api:0.62.0
 spring-cloud-starter (https://projects.spring.io/spring-cloud) org.springframework.cloud:spring-cloud-starter:jar:1.1.8.RELEASE
 spring-cloud-starter-archaius (https://projects.spring.io/spring-cloud) org.springframework.cloud:spring-cloud-starter-archaius:jar:1.2.6.RELEASE
 spring-cloud-starter-hystrix (https://projects.spring.io/spring-cloud) org.springframework.cloud:spring-cloud-starter-hystrix:jar:1.2.6.RELEASE

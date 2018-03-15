@@ -20,12 +20,16 @@ package org.apache.servicecomb.core.definition.schema;
 import javax.inject.Inject;
 
 import org.apache.servicecomb.core.definition.MicroserviceMeta;
+import org.apache.servicecomb.core.definition.MicroserviceVersionMeta;
 import org.apache.servicecomb.core.definition.SchemaMeta;
 import org.apache.servicecomb.core.definition.SchemaUtils;
 import org.apache.servicecomb.core.definition.loader.SchemaListenerManager;
 import org.apache.servicecomb.serviceregistry.RegistryUtils;
 import org.apache.servicecomb.serviceregistry.api.registry.Microservice;
 import org.apache.servicecomb.serviceregistry.client.ServiceRegistryClient;
+import org.apache.servicecomb.serviceregistry.consumer.AppManager;
+import org.apache.servicecomb.serviceregistry.consumer.MicroserviceVersion;
+import org.apache.servicecomb.serviceregistry.consumer.MicroserviceVersionRule;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -40,10 +44,16 @@ public class ConsumerSchemaFactory extends AbstractSchemaFactory<ConsumerSchemaC
   @Inject
   protected SchemaListenerManager schemaListenerManager;
 
+  AppManager appManager;
+
   private final Object lock = new Object();
 
   public void setSchemaListenerManager(SchemaListenerManager schemaListenerManager) {
     this.schemaListenerManager = schemaListenerManager;
+  }
+
+  public void setAppManager(AppManager appManager) {
+    this.appManager = appManager;
   }
 
   // 透明rpc场景，因为每次指定schema调用，所以可以懒加载
@@ -53,7 +63,7 @@ public class ConsumerSchemaFactory extends AbstractSchemaFactory<ConsumerSchemaC
   // 用于rest consumer注册的场景，此时启动流程已经完成，需要主动通知listener
   // microserviceName可能是本app内的微服务
   // 也可能是appid:name形式的其他app的微服务
-  public MicroserviceMeta getOrCreateMicroserviceMeta(String microserviceName, String microserviceVersionRule) {
+  public MicroserviceMeta getOrCreateMicroserviceMeta(String microserviceName, String versionRule) {
     MicroserviceMeta microserviceMeta = microserviceMetaManager.findValue(microserviceName);
     if (microserviceMeta != null) {
       return microserviceMeta;
@@ -66,50 +76,38 @@ public class ConsumerSchemaFactory extends AbstractSchemaFactory<ConsumerSchemaC
         return microserviceMeta;
       }
 
-      // 获取指定服务中有哪些schemaId
-      // 先取本地，再从服务中心取，如果服务中心取成功了，则将schema id合并处理
       microserviceMeta = new MicroserviceMeta(microserviceName);
-      Microservice microservice =
-          findMicroservice(microserviceMeta, microserviceVersionRule);
-      if (microservice == null) {
+      if (appManager == null) {
+        appManager = RegistryUtils.getServiceRegistry().getAppManager();
+      }
+      MicroserviceVersionRule microserviceVersionRule =
+          appManager.getOrCreateMicroserviceVersionRule(microserviceMeta.getAppId(),
+              microserviceName,
+              versionRule);
+      MicroserviceVersion microserviceVersion = microserviceVersionRule.getLatestMicroserviceVersion();
+      if (microserviceVersion == null) {
         throw new IllegalStateException(
             String.format("Probably invoke a service before it is registered, appId=%s, name=%s",
                 microserviceMeta.getAppId(),
                 microserviceName));
       }
 
-      getOrCreateConsumerSchema(microserviceMeta, microservice);
+      if (MicroserviceVersionMeta.class.isInstance(microserviceVersion)) {
+        microserviceMeta = ((MicroserviceVersionMeta) microserviceVersion).getMicroserviceMeta();
+      } else {
+        getOrCreateConsumerSchema(microserviceMeta, microserviceVersion.getMicroservice());
+        schemaListenerManager.notifySchemaListener(microserviceMeta);
+      }
+
+      LOGGER.info("Found schema ids from service center, {}:{}:{}:{}",
+          microserviceMeta.getAppId(),
+          microserviceName,
+          versionRule,
+          microserviceVersion.getMicroservice().getSchemas());
 
       microserviceMetaManager.register(microserviceName, microserviceMeta);
-      schemaListenerManager.notifySchemaListener(microserviceMeta);
       return microserviceMeta;
     }
-  }
-
-  protected Microservice findMicroservice(MicroserviceMeta microserviceMeta, String microserviceVersionRule) {
-    String appId = microserviceMeta.getAppId();
-    String microserviceName = microserviceMeta.getName();
-    ServiceRegistryClient client = RegistryUtils.getServiceRegistryClient();
-    String microserviceId = client.getMicroserviceId(appId,
-        microserviceMeta.getShortName(),
-        microserviceVersionRule);
-    if (StringUtils.isEmpty(microserviceId)) {
-      LOGGER.error("can not get microservice id, {}:{}:{}", appId, microserviceName, microserviceVersionRule);
-      return null;
-    }
-
-    Microservice microservice = client.getMicroservice(microserviceId);
-    if (microservice == null) {
-      LOGGER.error("can not get microservice, {}:{}:{}", appId, microserviceName, microserviceVersionRule);
-      return null;
-    }
-
-    LOGGER.info("Found schema ids from service center, {}:{}:{}:{}",
-        appId,
-        microserviceName,
-        microserviceVersionRule,
-        microservice.getSchemas());
-    return microservice;
   }
 
   // 允许consumerIntf与schemaId对应的interface原型不同，用于支持context类型的参数
