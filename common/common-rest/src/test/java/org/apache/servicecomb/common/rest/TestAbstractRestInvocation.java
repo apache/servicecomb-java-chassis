@@ -421,6 +421,18 @@ public class TestAbstractRestInvocation {
 
     Map<String, Object> result = new HashMap<>();
     responseEx = new MockUp<HttpServletResponseEx>() {
+      private Map<String, Object> attributes = new HashMap<>();
+
+      @Mock
+      public void setAttribute(String key, Object value) {
+        this.attributes.put(key, value);
+      }
+
+      @Mock
+      public Object getAttribute(String key) {
+        return this.attributes.get(key);
+      }
+
       @Mock
       void setStatus(int sc, String sm) {
         result.put("statusCode", sc);
@@ -463,6 +475,18 @@ public class TestAbstractRestInvocation {
 
     Headers resultHeaders = new Headers();
     responseEx = new MockUp<HttpServletResponseEx>() {
+      private Map<String, Object> attributes = new HashMap<>();
+
+      @Mock
+      public void setAttribute(String key, Object value) {
+        this.attributes.put(key, value);
+      }
+
+      @Mock
+      public Object getAttribute(String key) {
+        return this.attributes.get(key);
+      }
+
       @Mock
       void addHeader(String name, String value) {
         resultHeaders.addHeader(name, value);
@@ -497,6 +521,18 @@ public class TestAbstractRestInvocation {
 
     Headers resultHeaders = new Headers();
     responseEx = new MockUp<HttpServletResponseEx>() {
+      private Map<String, Object> attributes = new HashMap<>();
+
+      @Mock
+      public void setAttribute(String key, Object value) {
+        this.attributes.put(key, value);
+      }
+
+      @Mock
+      public Object getAttribute(String key) {
+        return this.attributes.get(key);
+      }
+
       @Mock
       void addHeader(String name, String value) {
         resultHeaders.addHeader(name, value);
@@ -523,6 +559,18 @@ public class TestAbstractRestInvocation {
 
     Buffer buffer = Buffer.buffer();
     responseEx = new MockUp<HttpServletResponseEx>() {
+      private Map<String, Object> attributes = new HashMap<>();
+
+      @Mock
+      public void setAttribute(String key, Object value) {
+        this.attributes.put(key, value);
+      }
+
+      @Mock
+      public Object getAttribute(String key) {
+        return this.attributes.get(key);
+      }
+
       @Mock
       void setBodyBuffer(Buffer bodyBuffer) {
         buffer.appendBuffer(bodyBuffer);
@@ -554,6 +602,18 @@ public class TestAbstractRestInvocation {
 
     Buffer buffer = Buffer.buffer();
     responseEx = new MockUp<HttpServletResponseEx>() {
+      private Map<String, Object> attributes = new HashMap<>();
+
+      @Mock
+      public void setAttribute(String key, Object value) {
+        this.attributes.put(key, value);
+      }
+
+      @Mock
+      public Object getAttribute(String key) {
+        return this.attributes.get(key);
+      }
+
       @Mock
       void setBodyBuffer(Buffer bodyBuffer) {
         buffer.appendBuffer(bodyBuffer);

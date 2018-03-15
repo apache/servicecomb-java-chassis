@@ -20,13 +20,17 @@ package org.apache.servicecomb.foundation.vertx.http;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
 
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.Cookie;
 import javax.ws.rs.core.Response.StatusType;
 
 public abstract class AbstractHttpServletResponse extends BodyBufferSupportImpl implements HttpServletResponseEx {
+  private Map<String, Object> attributes = new HashMap<>();
+
   @Override
   public String getCharacterEncoding() {
     throw new Error("not supported method");
@@ -215,5 +219,15 @@ public abstract class AbstractHttpServletResponse extends BodyBufferSupportImpl 
   @Override
   public StatusType getStatusType() {
     throw new Error("not supported method");
+  }
+
+  @Override
+  public void setAttribute(String key, Object value) {
+    this.attributes.put(key, value);
+  }
+
+  @Override
+  public Object getAttribute(String key) {
+    return this.attributes.get(key);
   }
 }

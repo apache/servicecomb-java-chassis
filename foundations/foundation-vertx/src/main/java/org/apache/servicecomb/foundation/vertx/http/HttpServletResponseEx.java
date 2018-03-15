@@ -22,4 +22,8 @@ import javax.ws.rs.core.Response.StatusType;
 
 public interface HttpServletResponseEx extends HttpServletResponse, BodyBufferSupport {
   StatusType getStatusType();
+
+  void setAttribute(String key, Object value);
+
+  Object getAttribute(String key);
 }
