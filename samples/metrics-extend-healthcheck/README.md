@@ -32,6 +32,11 @@ In this demo,we had make two checkers :
 </dependency>
 ```
 
+### Start service
+```bash
+mvn spring-boot:run
+```
+
 ### Do check and get result
 If you had config rest transport address in microservice.yaml like:
 ```yaml
