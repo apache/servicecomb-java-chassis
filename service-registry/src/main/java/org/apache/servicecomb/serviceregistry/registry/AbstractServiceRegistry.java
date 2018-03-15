@@ -33,6 +33,7 @@ import org.apache.servicecomb.serviceregistry.api.registry.FrameworkVersions;
 import org.apache.servicecomb.serviceregistry.api.registry.Microservice;
 import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceFactory;
 import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
+import org.apache.servicecomb.serviceregistry.api.registry.ServiceCenterInfo;
 import org.apache.servicecomb.serviceregistry.cache.InstanceCacheManager;
 import org.apache.servicecomb.serviceregistry.cache.InstanceCacheManagerNew;
 import org.apache.servicecomb.serviceregistry.client.IpPortManager;
@@ -45,6 +46,8 @@ import org.apache.servicecomb.serviceregistry.definition.MicroserviceDefinition;
 import org.apache.servicecomb.serviceregistry.task.MicroserviceServiceCenterTask;
 import org.apache.servicecomb.serviceregistry.task.ServiceCenterTask;
 import org.apache.servicecomb.serviceregistry.task.event.ShutdownEvent;
+import org.apache.servicecomb.serviceregistry.version.Version;
+import org.apache.servicecomb.serviceregistry.version.VersionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -75,6 +78,8 @@ public abstract class AbstractServiceRegistry implements ServiceRegistry {
 
   protected ServiceCenterTask serviceCenterTask;
 
+  protected ServiceCenterInfo serviceCenterInfo;
+
   public AbstractServiceRegistry(EventBus eventBus, ServiceRegistryConfig serviceRegistryConfig,
       MicroserviceDefinition microserviceDefinition) {
     this.eventBus = eventBus;
@@ -96,6 +101,11 @@ public abstract class AbstractServiceRegistry implements ServiceRegistry {
     ipPortManager = new IpPortManager(serviceRegistryConfig, instanceCacheManager);
     if (srClient == null) {
       srClient = createServiceRegistryClient();
+    }
+
+    serviceCenterInfo = srClient.getServiceCenterInfo();
+    if (serviceCenterInfo == null) {
+      throw new IllegalStateException("Failed to load servicecenter info");
     }
 
     createServiceCenterTask();
@@ -174,9 +184,13 @@ public abstract class AbstractServiceRegistry implements ServiceRegistry {
   }
 
   private void loadFrameworkVersions() {
+    Version scVersion = VersionUtils.getOrCreate(serviceCenterInfo.getVersion());
+    Version frameworkVersion = VersionUtils.getOrCreate(Const.SERVICECENTER_FRAMEWORK_VERSION);
     Framework framework = new Framework();
     framework.setName(CONFIG_FRAMEWORK_DEFAULT_NAME);
-    framework.setVersion(FrameworkVersions.allVersions());
+    if (scVersion.compareTo(frameworkVersion) >= 0) {
+      framework.setVersion(FrameworkVersions.allVersions());
+    }
     microservice.setFramework(framework);
     microservice.setRegisterBy(CONFIG_DEFAULT_REGISTER_BY);
   }
