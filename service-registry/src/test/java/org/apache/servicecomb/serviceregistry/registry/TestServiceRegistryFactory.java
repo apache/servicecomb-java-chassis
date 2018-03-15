@@ -20,6 +20,7 @@ package org.apache.servicecomb.serviceregistry.registry;
 import java.util.Collections;
 
 import org.apache.servicecomb.serviceregistry.ServiceRegistry;
+import org.apache.servicecomb.serviceregistry.api.registry.ServiceCenterInfo;
 import org.apache.servicecomb.serviceregistry.client.LocalServiceRegistryClientImpl;
 import org.apache.servicecomb.serviceregistry.client.ServiceRegistryClient;
 import org.apache.servicecomb.serviceregistry.client.http.ServiceRegistryClientImpl;
@@ -42,8 +43,16 @@ public class TestServiceRegistryFactory {
     ServiceRegistryConfig serviceRegistryConfig = ServiceRegistryConfig.INSTANCE;
     MicroserviceDefinition microserviceDefinition = new MicroserviceDefinition(Collections.emptyList());
 
-    ServiceRegistry serviceRegistry =
-        ServiceRegistryFactory.create(eventBus, serviceRegistryConfig, microserviceDefinition);
+    ServiceRegistry serviceRegistry = new RemoteServiceRegistry(eventBus, serviceRegistryConfig, microserviceDefinition) {
+      @Override
+      protected ServiceRegistryClient createServiceRegistryClient() {
+        return new ServiceRegistryClientImpl(ipPortManager) {
+          public ServiceCenterInfo getServiceCenterInfo() {
+            return new ServiceCenterInfo();
+          }
+        };
+      }
+    };
     serviceRegistry.init();
     ServiceRegistryClient client = serviceRegistry.getServiceRegistryClient();
     Assert.assertTrue(client instanceof ServiceRegistryClientImpl);

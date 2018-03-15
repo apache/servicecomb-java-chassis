@@ -17,34 +17,10 @@
 
 package org.apache.servicecomb.serviceregistry.api.registry;
 
-import org.apache.servicecomb.serviceregistry.RegistryUtils;
-import org.apache.servicecomb.serviceregistry.ServiceRegistry;
-import org.apache.servicecomb.serviceregistry.client.ServiceRegistryClient;
-import org.junit.AfterClass;
 import org.junit.Assert;
-import org.junit.BeforeClass;
 import org.junit.Test;
-import org.mockito.Mockito;
-import mockit.Deencapsulation;
 
 public class TestFrameworkVersions {
-  private static ServiceRegistryClient registryClient = Mockito.mock(ServiceRegistryClient.class);
-  private static ServiceRegistry serviceRegistry = Mockito.mock(ServiceRegistry.class);
-  private static ServiceCenterInfo serviceCenterInfo = Mockito.mock(ServiceCenterInfo.class);
-
-  @BeforeClass
-  public static void init() {
-    Deencapsulation.setField(RegistryUtils.class, "serviceRegistry", serviceRegistry);
-    Mockito.when(serviceRegistry.getServiceRegistryClient()).thenReturn(registryClient);
-    Mockito.when(registryClient.getServiceCenterInfo()).thenReturn(serviceCenterInfo);
-    Mockito.when(serviceCenterInfo.getVersion()).thenReturn("1.0.0");
-  }
-
-  @AfterClass
-  public static void teardown() {
-    Deencapsulation.setField(RegistryUtils.class, "serviceRegistry", null);
-  }
-
   @Test
   public void testFrameworkVersions() {
     Assert.assertEquals("ServiceComb:null", FrameworkVersions.allVersions());
