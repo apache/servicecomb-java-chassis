@@ -15,4 +15,14 @@ This module contain log4j2 MetricsFileWriter implement if your project use it as
 This module contain log4j MetricsFileWriter implement if your project use it as Logging component.
 
 ## How to use
-Startup ServiceApplication in  metrics-write-file-log4j2-springboot or metrics-write-file-log4j-springboot,you can see metric files had generated in **target/metric** folder,open your browser and make a request to http://localhost:8080/f ,wait a moment then you can see invocation metric files also be generated.
+Startup ServiceApplication in  metrics-write-file-log4j2-springboot or metrics-write-file-log4j-springboot
+
+1. If start service by maven
+```bash
+mvn spring-boot:run
+```
+you can see metric files had generated in **samples/metrics-write-file-sample/metrics-write-file-log4j(log4j2)-springboot/target/metric** folder,open your browser and make a request to http://localhost:8080/f ,wait a moment then you can see invocation metric files also be generated.
+
+2. If start service by IDE   
+
+you can see metric files had generated in **target/metric** folder,open your browser and make a request to http://localhost:8080/f ,wait a moment then you can see invocation metric files also be generated.
