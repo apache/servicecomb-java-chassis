@@ -65,7 +65,7 @@ import io.vertx.core.Handler;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.http.HttpClientResponse;
 
-public class ServiceRegistryClientImpl implements ServiceRegistryClient {
+public final class ServiceRegistryClientImpl implements ServiceRegistryClient {
   private static final Logger LOGGER = LoggerFactory.getLogger(ServiceRegistryClientImpl.class);
 
   private IpPortManager ipPortManager;
