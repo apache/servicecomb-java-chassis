@@ -81,18 +81,15 @@ public class RemoteServiceRegistry extends AbstractServiceRegistry {
         serviceRegistryConfig.getHeartbeatInterval(),
         serviceRegistryConfig.getHeartbeatInterval(),
         TimeUnit.SECONDS);
-    if (isNeedPull()) {
+
       taskPool.scheduleAtFixedRate(
           () -> eventBus.post(new PeriodicPullEvent()),
           serviceRegistryConfig.getInstancePullInterval(),
           serviceRegistryConfig.getInstancePullInterval(),
           TimeUnit.SECONDS);
-    }
+
   }
 
-  private boolean isNeedPull() {
-    return !serviceRegistryConfig.isWatch();
-  }
 
   @Subscribe
   public void onPullMicroserviceVersionsInstancesEvent(PullMicroserviceVersionsInstancesEvent event) {
