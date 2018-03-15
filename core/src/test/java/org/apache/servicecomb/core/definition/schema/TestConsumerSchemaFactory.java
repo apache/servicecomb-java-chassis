@@ -30,23 +30,17 @@ import org.apache.servicecomb.foundation.common.utils.ReflectUtils;
 import org.apache.servicecomb.serviceregistry.RegistryUtils;
 import org.apache.servicecomb.serviceregistry.ServiceRegistry;
 import org.apache.servicecomb.serviceregistry.api.registry.Microservice;
-import org.apache.servicecomb.serviceregistry.client.ServiceRegistryClient;
+import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
+import org.apache.servicecomb.serviceregistry.registry.ServiceRegistryFactory;
 import org.apache.servicecomb.swagger.generator.core.CompositeSwaggerGeneratorContext;
 import org.apache.servicecomb.swagger.generator.core.unittest.UnitTestSwaggerUtils;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.mockito.Mockito;
-
-import mockit.Deencapsulation;
 
 public class TestConsumerSchemaFactory {
   private static ConsumerSchemaFactory consumerSchemaFactory = new ConsumerSchemaFactory();
-
-  private static ServiceRegistryClient registryClient = Mockito.mock(ServiceRegistryClient.class);
-
-  private static ServiceRegistry serviceRegistry = Mockito.mock(ServiceRegistry.class);
 
   private static SchemaListener schemaListener = new SchemaListener() {
 
@@ -68,8 +62,9 @@ public class TestConsumerSchemaFactory {
 
   @BeforeClass
   public static void init() {
-    Deencapsulation.setField(RegistryUtils.class, "serviceRegistry", serviceRegistry);
-    Mockito.when(serviceRegistry.getServiceRegistryClient()).thenReturn(registryClient);
+    ServiceRegistry serviceRegistry = ServiceRegistryFactory.createLocal();
+    serviceRegistry.init();
+    RegistryUtils.setServiceRegistry(serviceRegistry);
 
     SchemaListenerManager schemaListenerManager = new SchemaListenerManager();
     schemaListenerManager.setSchemaListenerList(Arrays.asList(schemaListener));
@@ -92,26 +87,29 @@ public class TestConsumerSchemaFactory {
     SchemaMeta schemaMeta = new UnitTestMeta().getOrCreateSchemaMeta(TestConsumerSchemaFactoryImpl.class);
     String content = UnitTestSwaggerUtils.pretty(schemaMeta.getSwagger());
 
-    Mockito.when(registryClient.getMicroserviceId("app", "ms", "latest")).thenReturn("0");
-    Mockito.when(registryClient.getSchema("0", "schema")).thenReturn(content);
-
     Microservice microservice = new Microservice();
     microservice.setAppId("app");
     microservice.setServiceId("0");
     microservice.setServiceName("ms");
+    microservice.setVersion("1.0.0");
     microservice.addSchema("schema", content);
-    Mockito.when(registryClient.getMicroservice("0")).thenReturn(microservice);
+    serviceRegistry.getServiceRegistryClient().registerMicroservice(microservice);
+
+    MicroserviceInstance instance = new MicroserviceInstance();
+    instance.setServiceId("0");
+    instance.setInstanceId("0");
+    serviceRegistry.getServiceRegistryClient().registerMicroserviceInstance(instance);
   }
 
   @AfterClass
   public static void teardown() {
-    Deencapsulation.setField(RegistryUtils.class, "serviceRegistry", null);
+    RegistryUtils.setServiceRegistry(null);
   }
 
   @Test
   public void testGetOrCreateConsumer() {
     MicroserviceMeta microserviceMeta =
-        consumerSchemaFactory.getOrCreateMicroserviceMeta("app:ms", "latest");
+        consumerSchemaFactory.getOrCreateMicroserviceMeta("ms", "latest");
     OperationMeta operationMeta = microserviceMeta.ensureFindOperation("schema.add");
     Assert.assertEquals("add", operationMeta.getOperationId());
   }
