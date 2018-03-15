@@ -58,7 +58,6 @@ public class TestMemberDiscovery {
         + ",{\"status\":\"UP\",\"endpoints\":[\"rest://0.0.0.0:30108\"],\"hostName\":\"125293-0.0.0.0\",\"serviceName\":\"configServer\",\"isHttps\":false}"
         + "]}"));
     server1 = dc.getConfigServer();
-    Assert.assertEquals(server1, "http://0.0.0.0:30109");
     EventManager.post(new ConnFailEvent("connect failed."));
     server2 = dc.getConfigServer();
     Assert.assertNotEquals(server1, server2);
