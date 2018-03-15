@@ -71,7 +71,7 @@ public class TestDynamicSchemaLoader {
   public void testRegisterSchemas() {
     DynamicSchemaLoader.INSTANCE.registerSchemas("classpath*:test/test/schema.yaml");
     SchemaMeta schemaMeta = microserviceMetaManager.ensureFindSchemaMeta("perfClient", "schema");
-    Assert.assertEquals("cse.gen.pojotest.perfClient.schema", schemaMeta.getPackageName());
+    Assert.assertEquals("cse.gen.app.perfClient.schema", schemaMeta.getPackageName());
   }
 
   @SuppressWarnings("deprecation")
