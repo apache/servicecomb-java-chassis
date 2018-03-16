@@ -196,7 +196,11 @@ public abstract class AbstractRestInvocation {
           e);
     } finally {
       requestEx.getAsyncContext().complete();
-      invocation.onFinish(response);
+      // if failed to locate path, then will not create invocation
+      // TODO: statistics this case
+      if (invocation != null) {
+        invocation.onFinish(response);
+      }
     }
   }
 
