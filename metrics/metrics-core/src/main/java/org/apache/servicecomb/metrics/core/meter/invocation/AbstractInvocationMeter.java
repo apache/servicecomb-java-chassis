@@ -14,18 +14,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.servicecomb.core.event;
+package org.apache.servicecomb.metrics.core.meter.invocation;
+
+import java.util.concurrent.TimeUnit;
 
 import org.apache.servicecomb.core.Invocation;
+import org.apache.servicecomb.core.event.InvocationFinishEvent;
+import org.apache.servicecomb.swagger.invocation.Response;
 
-public class InvocationStartEvent {
-  private Invocation invocation;
+import com.netflix.spectator.api.Id;
+import com.netflix.spectator.api.Registry;
+import com.netflix.spectator.api.Timer;
 
-  public InvocationStartEvent(Invocation invocation) {
-    this.invocation = invocation;
+public abstract class AbstractInvocationMeter {
+  private Timer totalTimer;
+
+  public AbstractInvocationMeter(Registry registry, Id id, Invocation invocation, Response response) {
+    totalTimer = registry.timer(id.withTag(MeterInvocationConst.TAG_STAGE, MeterInvocationConst.STAGE_TOTAL));
   }
 
-  public Invocation getInvocation() {
-    return invocation;
+  public void onInvocationFinish(InvocationFinishEvent event) {
+    totalTimer.record(event.getNanoCurrent() - event.getInvocation().getStartTime(), TimeUnit.NANOSECONDS);
   }
 }

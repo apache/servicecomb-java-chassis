@@ -14,41 +14,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package org.apache.servicecomb.metrics.core;
 
-package org.apache.servicecomb.foundation.common.event;
+import org.apache.servicecomb.core.BootListener;
+import org.apache.servicecomb.foundation.common.event.EventManager;
+import org.apache.servicecomb.foundation.metrics.MetricsBootstrap;
+import org.springframework.stereotype.Component;
 
-import com.google.common.eventbus.EventBus;
-import com.google.common.eventbus.SimpleEventBus;
+import com.netflix.spectator.api.Spectator;
 
-/**
- * EventManager for chassis events
- *
- */
-public class EventManager {
-  public static EventBus eventBus = new SimpleEventBus();
+@Component
+public class MetricsBootListener implements BootListener {
+  private MetricsBootstrap metricsBootstrap = new MetricsBootstrap();
 
-  public static EventBus getEventBus() {
-    return eventBus;
-  }
+  @Override
+  public void onBootEvent(BootEvent event) {
+    if (!EventType.AFTER_REGISTRY.equals(event.getEventType())) {
+      return;
+    }
 
-  /**
-   * Registering listener.
-   */
-  public static void register(Object listener) {
-    eventBus.register(listener);
-  }
-
-  /**
-   * post event.
-   */
-  public static void post(Object event) {
-    eventBus.post(event);
-  }
-
-  /**
-   * Unregistering listener.
-   */
-  public static void unregister(Object listener) {
-    eventBus.unregister(listener);
+    metricsBootstrap.start(Spectator.globalRegistry(), EventManager.getEventBus());
   }
 }

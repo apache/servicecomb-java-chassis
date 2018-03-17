@@ -14,41 +14,29 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package org.apache.servicecomb.metrics.core.meter.invocation;
 
-package org.apache.servicecomb.foundation.common.event;
+import com.netflix.spectator.api.Statistic;
 
-import com.google.common.eventbus.EventBus;
-import com.google.common.eventbus.SimpleEventBus;
+public interface MeterInvocationConst {
+  final String INVOCATION_NAME = "servicecomb.invocation";
 
-/**
- * EventManager for chassis events
- *
- */
-public class EventManager {
-  public static EventBus eventBus = new SimpleEventBus();
+  // consumer or producer
+  final String TAG_ROLE = "role";
 
-  public static EventBus getEventBus() {
-    return eventBus;
-  }
+  final String TAG_OPERATION = "operation";
 
-  /**
-   * Registering listener.
-   */
-  public static void register(Object listener) {
-    eventBus.register(listener);
-  }
+  final String TAG_TRANSPORT = "transport";
 
-  /**
-   * post event.
-   */
-  public static void post(Object event) {
-    eventBus.post(event);
-  }
+  final String TAG_STAGE = "stage";
 
-  /**
-   * Unregistering listener.
-   */
-  public static void unregister(Object listener) {
-    eventBus.unregister(listener);
-  }
+  final String TAG_STATUS = "status";
+
+  final String TAG_STATISTIC = Statistic.count.key();
+
+  final String STAGE_TOTAL = "total";
+
+  final String STAGE_EXECUTOR_QUEUE = "queue";
+
+  final String STAGE_EXECUTION = "execution";
 }

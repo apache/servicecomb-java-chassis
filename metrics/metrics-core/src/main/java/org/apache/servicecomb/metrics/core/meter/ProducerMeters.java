@@ -14,41 +14,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package org.apache.servicecomb.metrics.core.meter;
 
-package org.apache.servicecomb.foundation.common.event;
+import org.apache.servicecomb.metrics.core.meter.invocation.AbstractInvocationMeters;
+import org.apache.servicecomb.metrics.core.meter.invocation.ProducerInvocationMeters;
 
-import com.google.common.eventbus.EventBus;
-import com.google.common.eventbus.SimpleEventBus;
+import com.netflix.spectator.api.Registry;
 
-/**
- * EventManager for chassis events
- *
- */
-public class EventManager {
-  public static EventBus eventBus = new SimpleEventBus();
+public class ProducerMeters {
+  private AbstractInvocationMeters invocationMeters;
 
-  public static EventBus getEventBus() {
-    return eventBus;
+  public ProducerMeters(Registry registry) {
+    invocationMeters = new ProducerInvocationMeters(registry);
   }
 
-  /**
-   * Registering listener.
-   */
-  public static void register(Object listener) {
-    eventBus.register(listener);
-  }
-
-  /**
-   * post event.
-   */
-  public static void post(Object event) {
-    eventBus.post(event);
-  }
-
-  /**
-   * Unregistering listener.
-   */
-  public static void unregister(Object listener) {
-    eventBus.unregister(listener);
+  public AbstractInvocationMeters getInvocationMeters() {
+    return invocationMeters;
   }
 }
