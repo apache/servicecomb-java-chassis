@@ -72,7 +72,7 @@ Auth sample use `RestTemplate` to present RSA communication between provider and
      cd incubator-servicecomb-java-chassis/
      mvn clean install -Psamples -DskipTests			#only need to install at first time.
      cd samples/auth-sample/auth-provider/
-     mvn exec:java -Dexec.mainClass="org.apache.servicecomb.samples.springmvc.provider.AuthProviderMain"
+     mvn exec:java -Dexec.mainClass="org.apache.servicecomb.samples.auth.provider.AuthProviderMain"
      ```
 
    - Start provider service by IDE
@@ -85,7 +85,7 @@ Auth sample use `RestTemplate` to present RSA communication between provider and
 
    ```bash
    cd samples/auth-sample/auth-consumer/
-   mvn exec:java -Dexec.mainClass="org.apache.servicecomb.samples.springmvc.consumer.AuthConsumerMain"
+   mvn exec:java -Dexec.mainClass="org.apache.servicecomb.samples.auth.consumer.AuthConsumerMain"
    ```
 
 4. How to verify
