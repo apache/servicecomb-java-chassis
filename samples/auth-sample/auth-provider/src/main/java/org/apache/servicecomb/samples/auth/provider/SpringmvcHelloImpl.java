@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.samples.springmvc.provider;
+package org.apache.servicecomb.samples.auth.provider;
 
 
 import javax.ws.rs.core.MediaType;
