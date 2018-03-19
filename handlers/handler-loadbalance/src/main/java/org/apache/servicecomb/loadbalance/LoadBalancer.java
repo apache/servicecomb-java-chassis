@@ -46,12 +46,15 @@ public class LoadBalancer extends AbstractLoadBalancer {
   // 以filter类名为Key
   private Map<String, ServerListFilterExt> filters;
 
-  public LoadBalancer(String name, IRule rule) {
+  private String microServiceName;
+
+  public LoadBalancer(String name, IRule rule, String microServiceName) {
     this.name = name;
     this.rule = rule;
-    this.rule.setLoadBalancer(this);
+    this.microServiceName = microServiceName;
     this.lbStats = new LoadBalancerStats(null);
     this.filters = new ConcurrentHashMap<>();
+    this.rule.setLoadBalancer(this);
   }
 
   public String getName() {
@@ -121,5 +124,9 @@ public class LoadBalancer extends AbstractLoadBalancer {
 
   public int getFilterSize() {
     return filters.size();
+  }
+
+  public String getMicroServiceName() {
+    return microServiceName;
   }
 }

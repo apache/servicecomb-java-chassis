@@ -311,7 +311,7 @@ public class LoadbalanceHandler implements Handler {
 
   private LoadBalancer createLoadBalancer(String microserviceName, String loadBalancerName) {
     IRule rule = ExtensionsManager.createLoadBalancerRule(microserviceName);
-    LoadBalancer lb = new LoadBalancer(loadBalancerName, rule);
+    LoadBalancer lb = new LoadBalancer(loadBalancerName, rule, microserviceName);
 
     // we can change this implementation to ExtensionsManager in the future.
     loadServerListFilters(lb);

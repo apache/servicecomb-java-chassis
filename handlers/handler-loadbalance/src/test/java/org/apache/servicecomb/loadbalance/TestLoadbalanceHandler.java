@@ -76,7 +76,7 @@ public class TestLoadbalanceHandler {
 
   Map<String, LoadBalancer> loadBalancerMap = Deencapsulation.getField(handler, "loadBalancerMap");
 
-  private LoadBalancer loadBalancer = new LoadBalancer("loadBalancerName", rule);
+  private LoadBalancer loadBalancer = new LoadBalancer("loadBalancerName", rule, "test");
 
   @Injectable
   Invocation invocation;
@@ -238,12 +238,12 @@ public class TestLoadbalanceHandler {
     Invocation invocation = Mockito.mock(Invocation.class);
     Mockito.when(invocation.getMicroserviceName()).thenReturn("test");
     LoadbalanceHandler lbHandler = new LoadbalanceHandler();
-    LoadBalancer myLB = new LoadBalancer("loadBalancerName", rule);
+    LoadBalancer myLB = new LoadBalancer("loadBalancerName", rule, "test");
     lbHandler.setIsolationFilter(myLB, "abc");
     Assert.assertEquals(1, myLB.getFilterSize());
 
     Mockito.when(invocation.getMicroserviceName()).thenReturn("abc");
-    myLB = new LoadBalancer("loadBalancerName", rule);
+    myLB = new LoadBalancer("loadBalancerName", rule, "test");
     lbHandler.setIsolationFilter(myLB, "abc");
     myLB.setInvocation(invocation);
 

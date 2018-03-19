@@ -32,10 +32,12 @@ import com.netflix.loadbalancer.AbstractLoadBalancer.ServerGroup;
 import com.netflix.loadbalancer.IRule;
 import com.netflix.loadbalancer.Server;
 
+import mockit.Deencapsulation;
+
 public class TestLoadBalancer {
   private IRule rule = Mockito.mock(IRule.class);
 
-  private LoadBalancer loadBalancer = new LoadBalancer("loadBalancerName", rule);
+  private LoadBalancer loadBalancer = new LoadBalancer("loadBalancerName", rule, "test");
 
   @Test
   public void name() {
@@ -145,5 +147,33 @@ public class TestLoadBalancer {
     TransactionControlFilter filter = Mockito.mock(TransactionControlFilter.class);
     Mockito.when(filter.getFilteredListOfServers(servers)).thenReturn(servers);
     Assert.assertEquals(servers, loadBalancer.getAllServers());
+  }
+  
+  @Test
+  public void testLaodBalanceWithSessionSticknessRule() {
+    SessionStickinessRule rule = new SessionStickinessRule();
+    LoadBalancer lb = new LoadBalancer("lb1", rule, "service");
+    Assert.assertEquals(lb.getMicroServiceName(), "service");
+    Assert.assertEquals("service", Deencapsulation.getField(rule, "microserviceName"));
+    
+    List<Server> servers = new ArrayList<>();
+    Server server = new Server("host1", 80);
+    server.setAlive(true);
+    Server server2 = new Server("host2", 80);
+    server2.setAlive(true);
+    servers.add(server);
+    servers.add(server2);
+    lb.setServerList(servers);
+    
+    Server s = lb.chooseServer("test");
+    Assert.assertEquals(server2, s);
+    s = lb.chooseServer("test");
+    Assert.assertEquals(server2, s);
+    
+    long time =  Deencapsulation.getField(rule, "lastAccessedTime");
+    Deencapsulation.setField(rule, "lastAccessedTime", time - 1000 * 10);
+    Utils.updateProperty("cse.loadbalance.service.SessionStickinessRule.sessionTimeoutInSeconds", 9);
+    s = lb.chooseServer("test");
+    Assert.assertEquals(server, s);
   }
 }
