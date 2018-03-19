@@ -51,6 +51,8 @@ public class SessionStickinessRule implements IRule {
 
   private static final int MILLI_COUNT_IN_SECOND = 1000;
 
+  private String microserviceName;
+
   public SessionStickinessRule() {
     triggerRule = new RoundRobinRule();
   }
@@ -92,9 +94,9 @@ public class SessionStickinessRule implements IRule {
   }
 
   private boolean isTimeOut() {
-    return Configuration.INSTANCE.getSessionTimeoutInSeconds() > 0
+    return Configuration.INSTANCE.getSessionTimeoutInSeconds(microserviceName) > 0
         && System.currentTimeMillis()
-            - this.lastAccessedTime > ((long) Configuration.INSTANCE.getSessionTimeoutInSeconds()
+            - this.lastAccessedTime > ((long) Configuration.INSTANCE.getSessionTimeoutInSeconds(microserviceName)
                 * MILLI_COUNT_IN_SECOND);
   }
 
@@ -105,8 +107,8 @@ public class SessionStickinessRule implements IRule {
     if (stats != null && stats.getServerStats() != null && stats.getServerStats().size() > 0) {
       ServerStats serverStats = stats.getSingleServerStat(lastServer);
       int successiveFaildCount = serverStats.getSuccessiveConnectionFailureCount();
-      if (Configuration.INSTANCE.getSuccessiveFailedTimes() > 0
-          && successiveFaildCount >= Configuration.INSTANCE.getSuccessiveFailedTimes()) {
+      if (Configuration.INSTANCE.getSuccessiveFailedTimes(microserviceName) > 0
+          && successiveFaildCount >= Configuration.INSTANCE.getSuccessiveFailedTimes(microserviceName)) {
         serverStats.clearSuccessiveConnectionFailureCount();
         return true;
       }
@@ -139,6 +141,7 @@ public class SessionStickinessRule implements IRule {
   @Override
   public void setLoadBalancer(ILoadBalancer lb) {
     this.lb = lb;
+    this.microserviceName = ((LoadBalancer) lb).getMicroServiceName();
   }
 
   @Override

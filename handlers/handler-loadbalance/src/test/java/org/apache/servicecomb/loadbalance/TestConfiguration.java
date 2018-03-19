@@ -47,20 +47,12 @@ public class TestConfiguration {
 
   @Test
   public void testFullConfigurationWithArgsString() {
-
-    Configuration.INSTANCE.getPolicy("test");
-    Configuration.INSTANCE.getRetryOnNext("test");
-    Configuration.INSTANCE.getRetryOnSame("test");
-    Configuration.INSTANCE.isRetryEnabled("test");
-    Configuration.INSTANCE.getSuccessiveFailedTimes();
-    Configuration.INSTANCE.getSessionTimeoutInSeconds();
-
     assertNull(Configuration.INSTANCE.getPolicy("test"));
     assertNotNull(Configuration.INSTANCE.getRetryOnNext("test"));
     assertNotNull(Configuration.INSTANCE.getRetryOnSame("test"));
     assertNotNull(Configuration.INSTANCE.isRetryEnabled("test"));
-    assertNotNull(Configuration.INSTANCE.getSuccessiveFailedTimes());
-    assertNotNull(Configuration.INSTANCE.getSessionTimeoutInSeconds());
+    assertNotNull(Configuration.INSTANCE.getSuccessiveFailedTimes("test"));
+    assertNotNull(Configuration.INSTANCE.getSessionTimeoutInSeconds("test"));
   }
 
   @Test
@@ -154,15 +146,11 @@ public class TestConfiguration {
 
   @Test
   public void testGetSuccessiveFailedTimes() {
-
-    Configuration.INSTANCE.getSuccessiveFailedTimes();
-    assertNotNull(Configuration.INSTANCE.getSuccessiveFailedTimes());
+    assertNotNull(Configuration.INSTANCE.getSuccessiveFailedTimes("test"));
   }
 
   @Test
   public void testGetSessionTimeoutInSeconds() {
-
-    Configuration.INSTANCE.getSessionTimeoutInSeconds();
-    assertNotNull(Configuration.INSTANCE.getSessionTimeoutInSeconds());
+    assertNotNull(Configuration.INSTANCE.getSessionTimeoutInSeconds("test"));
   }
 }
