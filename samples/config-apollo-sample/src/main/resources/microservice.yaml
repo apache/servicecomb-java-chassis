@@ -26,7 +26,7 @@ apollo:
     serverUri: http://127.0.0.1:8070
     serviceName: apollo-test
     env: DEV
-    clusters: test-cluster
+    clusters: default
     namespace: application
     token: #get token from Apollo web pages
 cse:
