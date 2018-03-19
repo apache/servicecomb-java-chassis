@@ -36,6 +36,7 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
 import com.netflix.servo.monitor.Counter;
+import com.netflix.servo.monitor.MonitorConfig;
 
 public class TestMonitorManager {
 
@@ -83,14 +84,15 @@ public class TestMonitorManager {
     //fun4 is a PRODUCER call only started and no processing start and finished
     EventBus.getInstance().triggerEvent(new InvocationStartedEvent("fun4", InvocationType.PRODUCER, System.nanoTime()));
 
-    Map<String, Double> metrics = MonitorManager.getInstance().measure();
-    currentWindowMetricsLoader = new MetricsLoader(metrics);
+    Map<MonitorConfig, Double> measurements = MonitorManager.getInstance().measure();
+    currentWindowMetricsLoader = new MetricsLoader(
+        MetricsUtils.convertMeasurements(measurements, TimeUnit.MILLISECONDS));
 
     //sim at lease one window time
     Thread.sleep(2000);
 
-    metrics = MonitorManager.getInstance().measure();
-    nextWindowMetricsLoader = new MetricsLoader(metrics);
+    measurements = MonitorManager.getInstance().measure();
+    nextWindowMetricsLoader = new MetricsLoader(MetricsUtils.convertMeasurements(measurements, TimeUnit.MILLISECONDS));
   }
 
   @Test
@@ -114,27 +116,27 @@ public class TestMonitorManager {
         .getChildrenNode(MetricsConst.STAGE_QUEUE);
     MetricNode node1_queue_status = new MetricNode(node1_queue.getMetrics(), MetricsConst.TAG_STATUS);
     Assert.assertEquals(200,
-        node1_queue_status.getChildrenNode("200").getMatchStatisticMetricValue(TimeUnit.MILLISECONDS, "latency"), 0);
+        node1_queue_status.getChildrenNode("200").getMatchStatisticMetricValue("latency"), 0);
     Assert.assertEquals(300,
-        node1_queue_status.getChildrenNode("500").getMatchStatisticMetricValue(TimeUnit.MILLISECONDS, "latency"), 0);
+        node1_queue_status.getChildrenNode("500").getMatchStatisticMetricValue("latency"), 0);
 
     MetricNode node1_exec = node.getChildrenNode("fun1")
         .getChildrenNode(String.valueOf(InvocationType.PRODUCER).toLowerCase())
         .getChildrenNode(MetricsConst.STAGE_EXECUTION);
     MetricNode node1_exec_status = new MetricNode(node1_exec.getMetrics(), MetricsConst.TAG_STATUS);
     Assert.assertEquals(300,
-        node1_exec_status.getChildrenNode("200").getMatchStatisticMetricValue(TimeUnit.MILLISECONDS, "latency"), 0);
+        node1_exec_status.getChildrenNode("200").getMatchStatisticMetricValue("latency"), 0);
     Assert.assertEquals(400,
-        node1_exec_status.getChildrenNode("500").getMatchStatisticMetricValue(TimeUnit.MILLISECONDS, "latency"), 0);
+        node1_exec_status.getChildrenNode("500").getMatchStatisticMetricValue("latency"), 0);
 
     MetricNode node1_whole = node.getChildrenNode("fun1")
         .getChildrenNode(String.valueOf(InvocationType.PRODUCER).toLowerCase())
         .getChildrenNode(MetricsConst.STAGE_TOTAL);
     MetricNode node1_whole_status = new MetricNode(node1_whole.getMetrics(), MetricsConst.TAG_STATUS);
     Assert.assertEquals(500,
-        node1_whole_status.getChildrenNode("200").getMatchStatisticMetricValue(TimeUnit.MILLISECONDS, "latency"), 0);
+        node1_whole_status.getChildrenNode("200").getMatchStatisticMetricValue("latency"), 0);
     Assert.assertEquals(700,
-        node1_whole_status.getChildrenNode("500").getMatchStatisticMetricValue(TimeUnit.MILLISECONDS, "latency"), 0);
+        node1_whole_status.getChildrenNode("500").getMatchStatisticMetricValue("latency"), 0);
   }
 
   @Test
@@ -152,7 +154,7 @@ public class TestMonitorManager {
 
   @Test
   public void checkFun1Max() {
-    MetricNode node = nextWindowMetricsLoader
+    MetricNode node = currentWindowMetricsLoader
         .getMetricTree(MetricsConst.SERVICECOMB_INVOCATION, MetricsConst.TAG_OPERATION, MetricsConst.TAG_ROLE,
             MetricsConst.TAG_STAGE);
     MetricNode node1_queue = node.getChildrenNode("fun1")
@@ -160,27 +162,27 @@ public class TestMonitorManager {
         .getChildrenNode(MetricsConst.STAGE_QUEUE);
     MetricNode node1_queue_status = new MetricNode(node1_queue.getMetrics(), MetricsConst.TAG_STATUS);
     Assert.assertEquals(300,
-        node1_queue_status.getChildrenNode("200").getMatchStatisticMetricValue(TimeUnit.MILLISECONDS, "max"), 0);
+        node1_queue_status.getChildrenNode("200").getMatchStatisticMetricValue("max"), 0);
     Assert.assertEquals(300,
-        node1_queue_status.getChildrenNode("500").getMatchStatisticMetricValue(TimeUnit.MILLISECONDS, "max"), 0);
+        node1_queue_status.getChildrenNode("500").getMatchStatisticMetricValue("max"), 0);
 
     MetricNode node1_exec = node.getChildrenNode("fun1")
         .getChildrenNode(String.valueOf(InvocationType.PRODUCER).toLowerCase())
         .getChildrenNode(MetricsConst.STAGE_EXECUTION);
     MetricNode node1_exec_status = new MetricNode(node1_exec.getMetrics(), MetricsConst.TAG_STATUS);
     Assert.assertEquals(400,
-        node1_exec_status.getChildrenNode("200").getMatchStatisticMetricValue(TimeUnit.MILLISECONDS, "max"), 0);
+        node1_exec_status.getChildrenNode("200").getMatchStatisticMetricValue("max"), 0);
     Assert.assertEquals(400,
-        node1_exec_status.getChildrenNode("500").getMatchStatisticMetricValue(TimeUnit.MILLISECONDS, "max"), 0);
+        node1_exec_status.getChildrenNode("500").getMatchStatisticMetricValue("max"), 0);
 
     MetricNode node1_whole = node.getChildrenNode("fun1")
         .getChildrenNode(String.valueOf(InvocationType.PRODUCER).toLowerCase())
         .getChildrenNode(MetricsConst.STAGE_TOTAL);
     MetricNode node1_whole_status = new MetricNode(node1_whole.getMetrics(), MetricsConst.TAG_STATUS);
     Assert.assertEquals(700,
-        node1_whole_status.getChildrenNode("200").getMatchStatisticMetricValue(TimeUnit.MILLISECONDS, "max"), 0);
+        node1_whole_status.getChildrenNode("200").getMatchStatisticMetricValue("max"), 0);
     Assert.assertEquals(700,
-        node1_whole_status.getChildrenNode("500").getMatchStatisticMetricValue(TimeUnit.MILLISECONDS, "max"), 0);
+        node1_whole_status.getChildrenNode("500").getMatchStatisticMetricValue("max"), 0);
   }
 
   @Test
@@ -206,7 +208,7 @@ public class TestMonitorManager {
         .getChildrenNode(MetricsConst.STAGE_TOTAL);
     MetricNode node2_whole_status = new MetricNode(node2_whole.getMetrics(), MetricsConst.TAG_STATUS);
     Assert.assertEquals(300,
-        node2_whole_status.getChildrenNode("200").getMatchStatisticMetricValue(TimeUnit.MILLISECONDS, "latency"), 0);
+        node2_whole_status.getChildrenNode("200").getMatchStatisticMetricValue("latency"), 0);
   }
 
   @Test
@@ -235,7 +237,7 @@ public class TestMonitorManager {
 
   @Test
   public void checkFun2Max() {
-    MetricNode node = nextWindowMetricsLoader
+    MetricNode node = currentWindowMetricsLoader
         .getMetricTree(MetricsConst.SERVICECOMB_INVOCATION, MetricsConst.TAG_OPERATION, MetricsConst.TAG_ROLE,
             MetricsConst.TAG_STAGE);
     MetricNode node2_whole = node.getChildrenNode("fun2")
@@ -243,7 +245,7 @@ public class TestMonitorManager {
         .getChildrenNode(MetricsConst.STAGE_TOTAL);
     MetricNode node2_whole_status = new MetricNode(node2_whole.getMetrics(), MetricsConst.TAG_STATUS);
     Assert.assertEquals(300,
-        node2_whole_status.getChildrenNode("200").getMatchStatisticMetricValue(TimeUnit.MILLISECONDS, "max"), 0);
+        node2_whole_status.getChildrenNode("200").getMatchStatisticMetricValue("max"), 0);
   }
 
   @Test
@@ -272,8 +274,10 @@ public class TestMonitorManager {
   public void checkRegisterMonitorWithoutAnyTags() {
     Counter counter = MonitorManager.getInstance().getCounter("MonitorWithoutAnyTag");
     counter.increment(999);
-    Assert.assertTrue(MonitorManager.getInstance().measure().containsKey("MonitorWithoutAnyTag"));
-    Assert.assertEquals(999, MonitorManager.getInstance().measure().get("MonitorWithoutAnyTag"), 0);
+    Map<String, Double> metrics = MetricsUtils
+        .convertMeasurements(MonitorManager.getInstance().measure(), TimeUnit.MILLISECONDS);
+    Assert.assertTrue(metrics.containsKey("MonitorWithoutAnyTag"));
+    Assert.assertEquals(999, metrics.get("MonitorWithoutAnyTag"), 0);
   }
 
   @Rule

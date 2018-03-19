@@ -18,12 +18,16 @@
 package org.apache.servicecomb.metrics.core.publish;
 
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
+import org.apache.servicecomb.metrics.core.MetricsUtils;
 import org.apache.servicecomb.metrics.core.MonitorManager;
 import org.apache.servicecomb.provider.rest.common.RestSchema;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+
+import com.netflix.servo.monitor.MonitorConfig;
 
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
@@ -37,6 +41,8 @@ public class MetricsPublisher {
   @RequestMapping(path = "/", method = RequestMethod.GET)
   @CrossOrigin
   public Map<String, Double> measure() {
-    return MonitorManager.getInstance().measure();
+    Map<MonitorConfig, Double> measurements = MonitorManager.getInstance().measure();
+    //publish with TimeUnit.SECONDS as default
+    return MetricsUtils.convertMeasurements(measurements, TimeUnit.SECONDS);
   }
 }

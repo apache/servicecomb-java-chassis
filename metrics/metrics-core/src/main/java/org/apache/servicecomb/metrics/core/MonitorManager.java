@@ -17,14 +17,10 @@
 
 package org.apache.servicecomb.metrics.core;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
-import java.util.SortedMap;
-import java.util.TreeMap;
 import java.util.concurrent.Callable;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 
 import org.apache.commons.lang3.StringUtils;
@@ -45,8 +41,7 @@ import com.netflix.servo.monitor.Monitor;
 import com.netflix.servo.monitor.MonitorConfig;
 import com.netflix.servo.monitor.MonitorConfig.Builder;
 import com.netflix.servo.monitor.Timer;
-import com.netflix.servo.tag.Tag;
-import com.netflix.servo.tag.TagList;
+import com.netflix.servo.tag.Tags;
 
 public class MonitorManager {
 
@@ -58,7 +53,7 @@ public class MonitorManager {
 
   private final Map<String, Timer> timers;
 
-  private final MonitorRegistry basicMonitorRegistry;
+  private final MonitorRegistry registry;
 
   private static final char[] forbiddenCharacter = new char[] {'(', ')', '=', ','};
 
@@ -73,7 +68,7 @@ public class MonitorManager {
     this.maxGauges = new ConcurrentHashMapEx<>();
     this.gauges = new ConcurrentHashMapEx<>();
     this.timers = new ConcurrentHashMapEx<>();
-    this.basicMonitorRegistry = new BasicMonitorRegistry();
+    this.registry = new BasicMonitorRegistry();
     setupWindowTime();
     registerSystemMetrics();
   }
@@ -85,54 +80,56 @@ public class MonitorManager {
 
   public Counter getCounter(String name, String... tags) {
     validateMonitorNameAndTags(name, tags);
-    return counters.computeIfAbsent(getMonitorKey(name, tags), f -> {
+    return counters.computeIfAbsent(MetricsUtils.getMonitorKey(name, tags), f -> {
       Counter counter = new BasicCounter(getConfig(name, tags));
-      basicMonitorRegistry.register(counter);
+      registry.register(counter);
       return counter;
     });
   }
 
   public Counter getCounter(Function<MonitorConfig, Counter> function, String name, String... tags) {
     validateMonitorNameAndTags(name, tags);
-    return counters.computeIfAbsent(getMonitorKey(name, tags), f -> {
+    return counters.computeIfAbsent(MetricsUtils.getMonitorKey(name, tags), f -> {
       Counter counter = function.apply(getConfig(name, tags));
-      basicMonitorRegistry.register(counter);
+      registry.register(counter);
       return counter;
     });
   }
 
   public MaxGauge getMaxGauge(String name, String... tags) {
     validateMonitorNameAndTags(name, tags);
-    return maxGauges.computeIfAbsent(getMonitorKey(name, tags), f -> {
+    return maxGauges.computeIfAbsent(MetricsUtils.getMonitorKey(name, tags), f -> {
       MaxGauge maxGauge = new MaxGauge(getConfig(name, tags));
-      basicMonitorRegistry.register(maxGauge);
+      registry.register(maxGauge);
       return maxGauge;
     });
   }
 
   public <V extends Number> Gauge<?> getGauge(Callable<V> callable, String name, String... tags) {
     validateMonitorNameAndTags(name, tags);
-    return gauges.computeIfAbsent(getMonitorKey(name, tags), f -> {
+    return gauges.computeIfAbsent(MetricsUtils.getMonitorKey(name, tags), f -> {
       Gauge<?> gauge = new BasicGauge<>(getConfig(name, tags), callable);
-      basicMonitorRegistry.register(gauge);
+      registry.register(gauge);
       return gauge;
     });
   }
 
   public Timer getTimer(String name, String... tags) {
     validateMonitorNameAndTags(name, tags);
-    return timers.computeIfAbsent(getMonitorKey(name, tags), f -> {
-      Timer timer = new BasicTimer(getConfig(name, tags));
-      basicMonitorRegistry.register(timer);
+    return timers.computeIfAbsent(MetricsUtils.getMonitorKey(name, tags), f -> {
+      BasicTimer timer = new BasicTimer(getConfig(name, tags).withAdditionalTag(
+          Tags.newTag(MetricsConst.TAG_UNIT, String.valueOf(TimeUnit.NANOSECONDS))), TimeUnit.NANOSECONDS);
+      //register both value and max
+      registry.register(timer);
+      registry.register(new BasicTimerMaxMonitor(timer));
       return timer;
     });
   }
 
-  public Map<String, Double> measure() {
-    Map<String, Double> measurements = new HashMap<>();
-    for (Monitor<?> monitor : basicMonitorRegistry.getRegisteredMonitors()) {
-      measurements.put(getMonitorKey(monitor.getConfig()),
-          ((Number) monitor.getValue(0)).doubleValue());
+  public Map<MonitorConfig, Double> measure() {
+    Map<MonitorConfig, Double> measurements = new HashMap<>();
+    for (Monitor<?> monitor : registry.getRegisteredMonitors()) {
+      measurements.put(monitor.getConfig(), ((Number) monitor.getValue(0)).doubleValue());
     }
     return measurements;
   }
@@ -145,37 +142,6 @@ public class MonitorManager {
     }
     return builder.build();
   }
-
-  private String getMonitorKey(String name, String... tags) {
-    validateMonitorNameAndTags(name, tags);
-    if (tags.length != 0) {
-      SortedMap<String, String> tagMap = new TreeMap<>();
-      for (int i = 0; i < tags.length; i += 2) {
-        tagMap.put(tags[i], tags[i + 1]);
-      }
-      StringBuilder builder = new StringBuilder("(");
-      for (Entry<String, String> entry : tagMap.entrySet()) {
-        builder.append(String.format("%s=%s,", entry.getKey(), entry.getValue()));
-      }
-      builder.deleteCharAt(builder.length() - 1);
-      builder.append(")");
-      return name + builder.toString();
-    }
-    return name;
-  }
-
-  private String getMonitorKey(MonitorConfig config) {
-    TagList tagList = config.getTags();
-    List<String> tags = new ArrayList<>();
-    for (Tag tag : tagList) {
-      if (!"type".equals(tag.getKey())) {
-        tags.add(tag.getKey());
-        tags.add(tag.getValue());
-      }
-    }
-    return getMonitorKey(config.getName(), tags.toArray(new String[0]));
-  }
-
 
   private void registerSystemMetrics() {
     SystemMetrics resource = new SystemMetrics();
@@ -212,6 +178,29 @@ public class MonitorManager {
     } else {
       throw new ServiceCombException(
           "validate name and tags failed name = " + name + " tags = " + String.join(",", tags));
+    }
+  }
+
+  class BasicTimerMaxMonitor implements Monitor<Double> {
+    private final BasicTimer timer;
+
+    BasicTimerMaxMonitor(BasicTimer timer) {
+      this.timer = timer;
+    }
+
+    @Override
+    public Double getValue() {
+      return getValue(0);
+    }
+
+    @Override
+    public Double getValue(int pollerIndex) {
+      return timer.getMax();
+    }
+
+    @Override
+    public MonitorConfig getConfig() {
+      return timer.getConfig().withAdditionalTag(Tags.newTag(MetricsConst.TAG_STATISTIC, "max"));
     }
   }
 }

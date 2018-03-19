@@ -25,7 +25,6 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.apache.servicecomb.foundation.metrics.MetricsConst;
 
 import com.netflix.servo.monitor.Counter;
-import com.netflix.servo.monitor.MaxGauge;
 import com.netflix.servo.monitor.StepCounter;
 import com.netflix.servo.monitor.Timer;
 
@@ -36,8 +35,6 @@ abstract class AbstractInvocationMetrics {
 
   private final Map<String, Timer> averageLatencies;
 
-  private final Map<String, MaxGauge> maxLatencies;
-
   AbstractInvocationMetrics(String... tags) {
     String[] tagsWithStage = ArrayUtils.addAll(tags, MetricsConst.TAG_STAGE, MetricsConst.STAGE_TOTAL);
     this.tps = MonitorManager.getInstance().getCounter(StepCounter::new, MetricsConst.SERVICECOMB_INVOCATION,
@@ -46,7 +43,6 @@ abstract class AbstractInvocationMetrics {
         ArrayUtils.addAll(tagsWithStage, MetricsConst.TAG_STATISTIC, "count"));
 
     this.averageLatencies = new HashMap<>();
-    this.maxLatencies = new HashMap<>();
     this.addLatencyMonitors(MetricsConst.STAGE_TOTAL, tags);
   }
 
@@ -57,17 +53,12 @@ abstract class AbstractInvocationMetrics {
 
   void updateLatencyMonitors(String stage, long value, TimeUnit unit) {
     averageLatencies.get(stage).record(value, unit);
-    maxLatencies.get(stage).update(unit.toMillis(value));
   }
 
   void addLatencyMonitors(String stage, String... tags) {
-    String[] tagsWithStageAndUnit = ArrayUtils
-        .addAll(tags, MetricsConst.TAG_STAGE, stage, MetricsConst.TAG_UNIT, String.valueOf(TimeUnit.MILLISECONDS));
+    String[] tagsWithStageAndUnit = ArrayUtils.addAll(tags,
+        MetricsConst.TAG_STAGE, stage, MetricsConst.TAG_STATISTIC, "latency");
     this.averageLatencies.put(stage, MonitorManager.getInstance()
-        .getTimer(MetricsConst.SERVICECOMB_INVOCATION,
-            ArrayUtils.addAll(tagsWithStageAndUnit, MetricsConst.TAG_STATISTIC, "latency")));
-    this.maxLatencies.put(stage, MonitorManager.getInstance()
-        .getMaxGauge(MetricsConst.SERVICECOMB_INVOCATION,
-            ArrayUtils.addAll(tagsWithStageAndUnit, MetricsConst.TAG_STATISTIC, "max")));
+        .getTimer(MetricsConst.SERVICECOMB_INVOCATION, tagsWithStageAndUnit));
   }
 }
