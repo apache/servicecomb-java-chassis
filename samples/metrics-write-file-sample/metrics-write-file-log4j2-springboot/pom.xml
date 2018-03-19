@@ -22,7 +22,7 @@
   <parent>
     <artifactId>metrics-write-file-sample</artifactId>
     <groupId>org.apache.servicecomb.samples</groupId>
-    <version>1.0.0-m1</version>
+    <version>1.0.0-m2-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
 
