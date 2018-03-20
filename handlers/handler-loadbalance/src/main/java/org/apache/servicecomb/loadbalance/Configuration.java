@@ -103,7 +103,6 @@ public final class Configuration {
 
   public int getSessionTimeoutInSeconds(String microservice) {
     final int defaultValue = 30;
-    // do not support MicroService level now
     String p = getStringProperty("30",
         PROP_ROOT + microservice + "." + SESSION_TIMEOUT_IN_SECONDS,
         PROP_ROOT + SESSION_TIMEOUT_IN_SECONDS);
@@ -116,7 +115,6 @@ public final class Configuration {
 
   public int getSuccessiveFailedTimes(String microservice) {
     final int defaultValue = 5;
-    // do not support MicroService level now
     String p = getStringProperty("5",
         PROP_ROOT + microservice + "." + SUCCESSIVE_FAILED_TIMES,
         PROP_ROOT + SUCCESSIVE_FAILED_TIMES);

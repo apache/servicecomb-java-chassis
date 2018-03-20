@@ -150,7 +150,7 @@ public class TestLoadBalancer {
   }
   
   @Test
-  public void testLaodBalanceWithSessionSticknessRule() {
+  public void testLoadBalanceWithSessionSticknessRule() {
     SessionStickinessRule rule = new SessionStickinessRule();
     LoadBalancer lb = new LoadBalancer("lb1", rule, "service");
     Assert.assertEquals(lb.getMicroServiceName(), "service");
@@ -175,5 +175,14 @@ public class TestLoadBalancer {
     Utils.updateProperty("cse.loadbalance.service.SessionStickinessRule.sessionTimeoutInSeconds", 9);
     s = lb.chooseServer("test");
     Assert.assertEquals(server, s);
+    
+    Utils.updateProperty("cse.loadbalance.service.SessionStickinessRule.successiveFailedTimes", 5);
+    lb.getLoadBalancerStats().incrementSuccessiveConnectionFailureCount(s);
+    lb.getLoadBalancerStats().incrementSuccessiveConnectionFailureCount(s);
+    lb.getLoadBalancerStats().incrementSuccessiveConnectionFailureCount(s);
+    lb.getLoadBalancerStats().incrementSuccessiveConnectionFailureCount(s);
+    lb.getLoadBalancerStats().incrementSuccessiveConnectionFailureCount(s);
+    s = lb.chooseServer("test");
+    Assert.assertEquals(server2, s);
   }
 }
