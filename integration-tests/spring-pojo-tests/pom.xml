@@ -22,7 +22,7 @@
   <parent>
     <artifactId>integration-tests</artifactId>
     <groupId>org.apache.servicecomb.tests</groupId>
-    <version>1.0.0-m1</version>
+    <version>1.0.0-m2-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
 
@@ -33,7 +33,7 @@
     <dependency>
       <groupId>org.apache.servicecomb.tests</groupId>
       <artifactId>pojo-test</artifactId>
-      <version>1.0.0-m1</version>
+      <version>1.0.0-m2-SNAPSHOT</version>
       <type>test-jar</type>
       <exclusions>
         <exclusion>
