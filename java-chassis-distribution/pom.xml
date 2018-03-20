@@ -129,6 +129,10 @@
             <artifactId>handler-tracing-zipkin</artifactId>
         </dependency>
         <dependency>
+          <groupId>org.apache.servicecomb</groupId>
+          <artifactId>handler-fault-injection</artifactId>
+        </dependency>
+        <dependency>
             <groupId>org.apache.servicecomb</groupId>
             <artifactId>provider-jaxrs</artifactId>
         </dependency>
