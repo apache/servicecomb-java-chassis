@@ -16,28 +16,16 @@
   ~ limitations under the License.
   -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <parent>
-    <groupId>org.apache.servicecomb</groupId>
-    <artifactId>java-chassis-parent</artifactId>
-    <version>1.0.0-m2-SNAPSHOT</version>
-    <relativePath>../parent</relativePath>
-  </parent>
-  <modelVersion>4.0.0</modelVersion>
-
-  <artifactId>handlers</artifactId>
-  <name>Java Chassis::Handlers</name>
-  <packaging>pom</packaging>
-
-  <modules>
-    <module>handler-tracing-zipkin</module>
-    <module>handler-bizkeeper</module>
-    <module>handler-flowcontrol-qps</module>
-    <module>handler-loadbalance</module>
-    <module>handler-fault-injection</module>
-    <module>handler-publickey-auth</module>
-  </modules>
-
-</project>
+  <beans xmlns = "http://www.springframework.org/schema/beans"
+   xmlns:xsi = "http://www.w3.org/2001/XMLSchema-instance"
+   xmlns:context = "http://www.springframework.org/schema/context"
+   xsi:schemaLocation = "http://www.springframework.org/schema/beans
+   http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+   http://www.springframework.org/schema/context
+   http://www.springframework.org/schema/context/spring-context-3.0.xsd">
+  
+  <context:annotation-config />
+	<!-- <context:spring-configured /> -->
+  <context:component-scan base-package="org.apache.servicecomb.faultinjection" />
+  <bean class="org.apache.servicecomb.faultinjection.BeanHolder" init-method="init"/>
+</beans>
