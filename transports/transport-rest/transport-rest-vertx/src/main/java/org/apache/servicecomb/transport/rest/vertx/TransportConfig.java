@@ -21,9 +21,17 @@ import com.netflix.config.DynamicIntProperty;
 import com.netflix.config.DynamicPropertyFactory;
 import com.netflix.config.DynamicStringProperty;
 
-import io.vertx.core.http.HttpServerOptions;
-
 public final class TransportConfig {
+
+  public static final int DEFAULT_SERVER_THREAD_COUNT = 1;
+
+  public static final int DEFAULT_SERVER_CONNECTION_IDLE_TIMEOUT_SECOND = 60;
+
+  public static final boolean DEFAULT_SERVER_COMPRESSION_SUPPORT = false;
+
+  // 32K
+  public static final int DEFAULT_SERVER_MAX_HEADER_SIZE = 32 * 1024;
+
   private TransportConfig() {
   }
 
@@ -35,25 +43,27 @@ public final class TransportConfig {
 
   public static int getThreadCount() {
     DynamicIntProperty address =
-        DynamicPropertyFactory.getInstance().getIntProperty("cse.rest.server.thread-count", 1);
+        DynamicPropertyFactory.getInstance()
+            .getIntProperty("cse.rest.server.thread-count", DEFAULT_SERVER_THREAD_COUNT);
     return address.get();
   }
 
   public static int getConnectionIdleTimeoutInSeconds() {
     return DynamicPropertyFactory.getInstance()
-        .getIntProperty("cse.rest.server.connection.idleTimeoutInSeconds", 60)
+        .getIntProperty("cse.rest.server.connection.idleTimeoutInSeconds",
+            DEFAULT_SERVER_CONNECTION_IDLE_TIMEOUT_SECOND)
         .get();
   }
 
   public static boolean getCompressed() {
     return DynamicPropertyFactory.getInstance()
-        .getBooleanProperty("cse.rest.server.compression", false)
+        .getBooleanProperty("cse.rest.server.compression", DEFAULT_SERVER_COMPRESSION_SUPPORT)
         .get();
   }
 
   public static int getMaxHeaderSize() {
     return DynamicPropertyFactory.getInstance()
-        .getIntProperty("cse.rest.server.maxHeaderSize", HttpServerOptions.DEFAULT_MAX_HEADER_SIZE)
+        .getIntProperty("cse.rest.server.maxHeaderSize", DEFAULT_SERVER_MAX_HEADER_SIZE)
         .get();
   }
 }
