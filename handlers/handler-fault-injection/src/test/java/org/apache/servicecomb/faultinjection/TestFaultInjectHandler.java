@@ -26,6 +26,7 @@ import java.util.concurrent.atomic.AtomicLong;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.Transport;
 import org.apache.servicecomb.core.definition.OperationMeta;
+import org.apache.servicecomb.foundation.vertx.VertxUtils;
 import org.apache.servicecomb.swagger.invocation.AsyncResponse;
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.junit.After;
@@ -35,6 +36,8 @@ import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
+
+import io.vertx.core.Vertx;
 
 /**
  * Tests the fault injection handler functionality.
@@ -139,7 +142,7 @@ public class TestFaultInjectHandler {
     Mockito.when(invocation.getSchemaId()).thenReturn("sayHelloSchema");
     Mockito.when(invocation.getMicroserviceName()).thenReturn("hello");
 
-    List<Fault> faultInjectionFeatureList = Arrays.asList(abortFault, delayFault);
+    List<Fault> faultInjectionFeatureList = Arrays.asList(delayFault, abortFault);
     handler.setFaultFeature(faultInjectionFeatureList);
 
     handler.handle(invocation, asyncResp);
@@ -367,7 +370,6 @@ public class TestFaultInjectHandler {
     Mockito.when(invocation.getSchemaId()).thenReturn("testSchema1");
     Mockito.when(invocation.getMicroserviceName()).thenReturn("carts1");
     boolean validAssert;
-    long timeOld = System.currentTimeMillis();
 
     List<Fault> faultInjectionFeatureList = Arrays.asList(delayFault, abortFault);
     handler.setFaultFeature(faultInjectionFeatureList);
@@ -385,14 +387,8 @@ public class TestFaultInjectHandler {
         .updateProperty("cse.governance.Consumer._global.policy.fault.protocols.rest.abort.httpStatus", 421);
 
     handler.handle(invocation, ar -> {
-      //check whether error code return, defaut is 421.
-      assertEquals(421, response.getStatusCode());
       assertEquals(true, response.isFailed());
-      long timeNow = System.currentTimeMillis();
-      //if really time delay is added it should be greater than 5s.
-      Assert.assertTrue((timeNow - timeOld) >= 500);
     });
-
 
     System.getProperties()
         .remove(
@@ -617,7 +613,6 @@ public class TestFaultInjectHandler {
 
     AtomicLong count = FaultInjectionUtil.getOperMetTotalReq("restMicroserviceQualifiedName10");
     assertEquals(3, count.get());
-
   }
 
   /**
@@ -641,7 +636,6 @@ public class TestFaultInjectHandler {
     Mockito.when(invocation.getSchemaId()).thenReturn("testSchema4");
     Mockito.when(invocation.getMicroserviceName()).thenReturn("carts5");
     boolean validAssert;
-    long timeOld = System.currentTimeMillis();
 
     List<Fault> faultInjectionFeatureList = Arrays.asList(delayFault, abortFault);
     handler.setFaultFeature(faultInjectionFeatureList);
@@ -657,14 +651,8 @@ public class TestFaultInjectHandler {
         .updateProperty("cse.governance.Consumer.carts5.policy.fault.protocols.rest.abort.percent", 500);
 
     handler.handle(invocation, ar -> {
-      //check whether error code return,
-      assertEquals(421, response.getStatusCode());
       assertEquals(true, response.isFailed());
-      long timeNow = System.currentTimeMillis();
-      //if really time delay is added it should be greater than 5s.
-      Assert.assertTrue((timeNow - timeOld) >= 500);
     });
-
 
     System.getProperties()
         .remove("cse.governance.Consumer.carts5.policy.fault.protocols.rest.delay.fixedDelay");
@@ -675,9 +663,43 @@ public class TestFaultInjectHandler {
     System.getProperties()
         .remove("cse.governance.Consumer.carts5.policy.fault.protocols.rest.abort.httpStatus");
 
-
     AtomicLong count = FaultInjectionUtil.getOperMetTotalReq("restMicroserviceQualifiedName11");
     assertEquals(3, count.get());
+  }
+
+  /**
+   * Tests the fault injection handler functionality with configuration change event for service level config.
+   * 
+   * @throws Exception
+   */
+  @Test
+  public void testFaultInjectHandlerConfigChangeEvent6() throws Exception {
+    System.setProperty("cse.governance.Consumer.carts6.policy.fault.protocols.rest.delay.fixedDelay", "1000");
+
+    System.setProperty(
+        "cse.governance.Consumer.carts6.policy.fault.protocols.rest.delay.percent",
+        "100");
+
+    Mockito.when(invocation.getMicroserviceQualifiedName()).thenReturn("MicroserviceQualifiedName12");
+    Mockito.when(invocation.getTransport()).thenReturn(transport);
+    Mockito.when(transport.getName()).thenReturn("rest");
+    Mockito.when(invocation.getOperationName()).thenReturn("sayBye4");
+    Mockito.when(invocation.getSchemaId()).thenReturn("testSchema4");
+    Mockito.when(invocation.getMicroserviceName()).thenReturn("carts6");
+
+    DelayFault delayFault = new DelayFault();
+    FaultParam faultParam = new FaultParam(3);
+    Vertx vertx = VertxUtils.getOrCreateVertxByName("faultinjectionTest", null);
+    faultParam.setVertx(vertx);
+
+    delayFault.injectFault(invocation, faultParam, ar);
+    System.getProperties()
+        .remove("cse.governance.Consumer.carts6.policy.fault.protocols.rest.delay.fixedDelay");
+    System.getProperties()
+        .remove("cse.governance.Consumer.carts6.policy.fault.protocols.rest.delay.percent");
+
+    AtomicLong count = FaultInjectionUtil.getOperMetTotalReq("restMicroserviceQualifiedName12");
+    assertEquals(1, count.get());
 
   }
 }

@@ -24,8 +24,10 @@ import java.util.concurrent.atomic.AtomicLong;
 import org.apache.servicecomb.core.Handler;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.swagger.invocation.AsyncResponse;
-import org.apache.servicecomb.swagger.invocation.context.HttpStatus;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
+
+import io.vertx.core.Context;
+import io.vertx.core.Vertx;
 
 /**
  * Fault injection handler which injects the delay/abort for requests based on
@@ -57,16 +59,28 @@ public class FaultInjectionHandler implements Handler {
     // increment the request count here after checking the delay/abort condition.
     reqCount.incrementAndGet();
 
-    for (Fault fault : faultInjectionFeatureList) {
-      FaultResponse faultResponse = fault.injectFault(invocation, new FaultParam(reqCountCurrent));
-
-      if (faultResponse.getStatusCode() != 0) {
-        asyncResp.consumerFail(new InvocationException(new HttpStatus(faultResponse.getErrorCode(),
-            "invocation exception induced by fault injection"), faultResponse.getErrorData()));
-        return;
-      }
+    FaultParam param = new FaultParam(reqCountCurrent);
+    Context currentContext = Vertx.currentContext();
+    if (currentContext != null && currentContext.isEventLoopContext()) {
+      param.setVertx(currentContext.owner());
     }
 
-    invocation.next(asyncResp);
+    FaultExecutor executor = new FaultExecutor(faultInjectionFeatureList, invocation, param);
+    executor.execute(response -> {
+      try {
+        if (response.isFailed()) {
+          asyncResp.complete(response);
+        } else {
+          FaultResponse r = response.getResult();
+          if (r.getStatusCode() == FaultInjectionConst.FAULT_INJECTION_ERROR) {
+            asyncResp.consumerFail(new InvocationException(r.getErrorCode(), "", r.getErrorData()));
+            return;
+          }
+          invocation.next(asyncResp);
+        }
+      } catch (Exception e) {
+        asyncResp.consumerFail(e);
+      }
+    });
   }
 }

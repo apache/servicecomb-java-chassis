@@ -71,16 +71,17 @@ public class TestFaultInjectConfig {
   public void testConstants() {
     assertEquals("cse.governance.Consumer.", FaultInjectionConst.CONSUMER_FAULTINJECTION);
     assertEquals("policy.fault.protocols.", FaultInjectionConst.CONSUMER_FAULTINJECTION_POLICY_PROTOCOLS);
-    assertEquals(-1, FaultInjectionConst.FAULT_INJECTION_CFG_NULL);
+    assertEquals(-1, FaultInjectionConst.FAULT_INJECTION_DEFAULT_VALUE);
     assertEquals("cse.governance.Consumer._global.", FaultInjectionConst.CONSUMER_FAULTINJECTION_GLOBAL);
-    assertEquals(10, FaultInjectionConst.FAULTINJECTION_PRIORITY_MIN);
-    assertEquals(1, FaultInjectionConst.FAULTINJECTION_PRIORITY_MAX);
+    assertEquals(-1, FaultInjectionConst.FAULT_INJECTION_ERROR);
   }
 
   @Test
   public void testFaultParam() {
     faultParam.setReqCount(100);
+    faultParam.setVertx(null);
     assertEquals(100, faultParam.getReqCount());
+    assertEquals(null, faultParam.getVertx());
   }
 
   @Test
@@ -96,7 +97,7 @@ public class TestFaultInjectConfig {
 
   @Test
   public void testFaultPriority() {
-    assertEquals(10, abortFault.getPriority());
-    assertEquals(1, delayFault.getPriority());
+    assertEquals(200, abortFault.getPriority());
+    assertEquals(100, delayFault.getPriority());
   }
 }

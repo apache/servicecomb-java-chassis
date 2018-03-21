@@ -22,15 +22,13 @@ package org.apache.servicecomb.faultinjection;
  */
 public class FaultInjectionConst {
 
-  public static final int FAULT_INJECTION_CFG_NULL = -1;
+  public static final int FAULT_INJECTION_DEFAULT_VALUE = -1;
+
+  public static final int FAULT_INJECTION_ERROR = -1;
 
   public static final String CONSUMER_FAULTINJECTION = "cse.governance.Consumer.";
 
   public static final String CONSUMER_FAULTINJECTION_GLOBAL = "cse.governance.Consumer._global.";
 
   public static final String CONSUMER_FAULTINJECTION_POLICY_PROTOCOLS = "policy.fault.protocols.";
-
-  public static final int FAULTINJECTION_PRIORITY_MIN = 10;
-
-  public static final int FAULTINJECTION_PRIORITY_MAX = 1;
 }
