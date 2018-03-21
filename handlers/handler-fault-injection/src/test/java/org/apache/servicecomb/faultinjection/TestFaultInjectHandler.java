@@ -55,6 +55,9 @@ public class TestFaultInjectHandler {
 
   Response response;
 
+  boolean isDelay;
+
+  boolean isAbort;
 
   @InjectMocks
   FaultInjectionHandler faultHandler;
@@ -172,23 +175,22 @@ public class TestFaultInjectHandler {
     Mockito.when(invocation.getSchemaId()).thenReturn("sayHelloSchema");
     Mockito.when(invocation.getMicroserviceName()).thenReturn("hello");
 
-    List<Fault> faultInjectionFeatureList = Arrays.asList(abortFault, delayFault);
+    List<Fault> faultInjectionFeatureList = Arrays.asList(abortFault);
     handler.setFaultFeature(faultInjectionFeatureList);
 
-    boolean validAssert;
-    try {
-      validAssert = true;
-      handler.handle(invocation, asyncResp);
-    } catch (Exception e) {
-      validAssert = false;
-    }
+    handler.handle(invocation, ar -> {
+      //this case no delay/no abort so reponse is null, it should not enter this in this block.
+      isDelay = true;
+      isAbort = true;
+    });
+    Assert.assertFalse(isDelay);
+    Assert.assertFalse(isAbort);
 
     System.getProperties().remove("cse.governance.Consumer._global.policy.fault.protocols.rest.delay.fixedDelay");
     System.getProperties().remove("cse.governance.Consumer._global.policy.fault.protocols.rest.delay.percent");
     System.getProperties().remove("cse.governance.Consumer._global.policy.fault.protocols.rest.abort.percent");
     System.getProperties().remove("cse.governance.Consumer._global.policy.fault.protocols.rest.abort.httpStatus");
 
-    Assert.assertTrue(validAssert);
     AtomicLong count = FaultInjectionUtil.getOperMetTotalReq("restMicroserviceQualifiedName3");
     assertEquals(2, count.get());
   }
@@ -217,20 +219,19 @@ public class TestFaultInjectHandler {
     List<Fault> faultInjectionFeatureList = Arrays.asList(abortFault, delayFault);
     handler.setFaultFeature(faultInjectionFeatureList);
 
-    boolean validAssert;
-    try {
-      validAssert = true;
-      handler.handle(invocation, asyncResp);
-    } catch (Exception e) {
-      validAssert = false;
-    }
+    handler.handle(invocation, ar -> {
+      //this case no delay/no abort so reponse is null, it should not enter this in this block.
+      isDelay = true;
+      isAbort = true;
+    });
+    Assert.assertFalse(isDelay);
+    Assert.assertFalse(isAbort);
 
     System.getProperties().remove("cse.governance.Consumer.carts.policy.fault.protocols.rest.delay.fixedDelay");
     System.getProperties().remove("cse.governance.Consumer.carts.policy.fault.protocols.rest.delay.percent");
     System.getProperties().remove("cse.governance.Consumer.carts.policy.fault.protocols.rest.abort.percent");
     System.getProperties().remove("cse.governance.Consumer.carts.policy.fault.protocols.rest.abort.httpStatus");
 
-    Assert.assertTrue(validAssert);
     AtomicLong count = FaultInjectionUtil.getOperMetTotalReq("restMicroserviceQualifiedName4");
     assertEquals(2, count.get());
   }
@@ -263,13 +264,13 @@ public class TestFaultInjectHandler {
     List<Fault> faultInjectionFeatureList = Arrays.asList(abortFault, delayFault);
     handler.setFaultFeature(faultInjectionFeatureList);
 
-    boolean validAssert;
-    try {
-      validAssert = true;
-      handler.handle(invocation, asyncResp);
-    } catch (Exception e) {
-      validAssert = false;
-    }
+    handler.handle(invocation, ar -> {
+      //this case no delay/no abort so reponse is null, it should not enter this in this block.
+      isDelay = true;
+      isAbort = true;
+    });
+    Assert.assertFalse(isDelay);
+    Assert.assertFalse(isAbort);
 
     System.getProperties()
         .remove("cse.governance.Consumer.carts.schemas.testSchema.policy.fault.protocols.rest.delay.fixedDelay");
@@ -280,7 +281,6 @@ public class TestFaultInjectHandler {
     System.getProperties()
         .remove("cse.governance.Consumer.carts.schemas.testSchema.policy.fault.protocols.rest.abort.httpStatus");
 
-    Assert.assertTrue(validAssert);
     AtomicLong count = FaultInjectionUtil.getOperMetTotalReq("restMicroserviceQualifiedName5");
     assertEquals(2, count.get());
   }
@@ -317,13 +317,14 @@ public class TestFaultInjectHandler {
     List<Fault> faultInjectionFeatureList = Arrays.asList(abortFault, delayFault);
     handler.setFaultFeature(faultInjectionFeatureList);
 
-    boolean validAssert;
-    try {
-      validAssert = true;
-      handler.handle(invocation, asyncResp);
-    } catch (Exception e) {
-      validAssert = false;
-    }
+    handler.handle(invocation, ar -> {
+      //this case no delay/no abort so reponse is null, it should not enter this in this block.
+      isDelay = true;
+      isAbort = true;
+    });
+
+    Assert.assertFalse(isDelay);
+    Assert.assertFalse(isAbort);
 
     System.getProperties()
         .remove(
@@ -337,7 +338,7 @@ public class TestFaultInjectHandler {
     System.getProperties()
         .remove(
             "cse.governance.Consumer.carts.schemas.testSchema.operations.sayHi.policy.fault.protocols.rest.abort.httpStatus");
-    Assert.assertTrue(validAssert);
+
     AtomicLong count = FaultInjectionUtil.getOperMetTotalReq("restMicroserviceQualifiedName6");
     assertEquals(2, count.get());
   }

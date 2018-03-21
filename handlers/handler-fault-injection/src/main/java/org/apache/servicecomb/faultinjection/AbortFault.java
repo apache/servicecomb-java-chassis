@@ -26,11 +26,11 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class AbortFault extends AbstractFault {
-  private static final Logger LOGGER = LoggerFactory.getLogger(FaultInjectionConfig.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(AbortFault.class);
 
   @Override
   public void injectFault(Invocation invocation, FaultParam faultParam, AsyncResponse asynResponse) {
-    // get the config values related to delay.
+    // get the config values related to abort.
     int abortPercent = FaultInjectionUtil.getFaultInjectionConfig(invocation,
         "abort.percent");
 
@@ -43,7 +43,7 @@ public class AbortFault extends AbstractFault {
     // check fault abort condition.
     boolean isAbort = FaultInjectionUtil.checkFaultInjectionDelayAndAbort(faultParam.getReqCount(), abortPercent);
     if (isAbort) {
-      // get the config values related to delay percentage.
+      // get the config values related to abort percentage.
       int errorCode = FaultInjectionUtil.getFaultInjectionConfig(invocation,
           "abort.httpStatus");
 

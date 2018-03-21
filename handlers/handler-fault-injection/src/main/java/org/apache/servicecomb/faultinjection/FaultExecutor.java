@@ -59,7 +59,7 @@ public class FaultExecutor {
         asyncResponse.complete(response);
       } else {
         FaultResponse r = response.getResult();
-        if (r.getStatusCode() != 0) {
+        if (r.getStatusCode() == FaultInjectionConst.FAULT_INJECTION_ERROR) {
           asyncResponse.complete(response);
         } else {
           FaultExecutor.this.next(asyncResponse);
