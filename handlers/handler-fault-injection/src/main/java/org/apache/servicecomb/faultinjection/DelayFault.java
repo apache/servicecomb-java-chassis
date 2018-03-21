@@ -76,7 +76,5 @@ public class DelayFault extends AbstractFault {
         asynResponse.success(new FaultResponse());
       }
     }
-    asynResponse.success(new FaultResponse());
   }
-
 }
