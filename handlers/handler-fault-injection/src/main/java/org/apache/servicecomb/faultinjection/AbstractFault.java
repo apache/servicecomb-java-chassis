@@ -17,9 +17,6 @@
 
 package org.apache.servicecomb.faultinjection;
 
-import org.springframework.stereotype.Component;
-
-@Component
 public abstract class AbstractFault implements Fault {
 
 }

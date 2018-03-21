@@ -28,7 +28,7 @@ import io.vertx.core.Vertx;
 
 @Component
 public class DelayFault extends AbstractFault {
-  private static final Logger LOGGER = LoggerFactory.getLogger(FaultInjectionHandler.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(DelayFault.class);
 
   @Override
   public int getPriority() {
@@ -76,6 +76,7 @@ public class DelayFault extends AbstractFault {
         asynResponse.success(new FaultResponse());
       }
     }
+    asynResponse.success(new FaultResponse());
   }
 
 }

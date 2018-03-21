@@ -16,6 +16,6 @@
   -->
 
 <config>
-	<handler id="fault-injection"
+	<handler id="fault-injection-consumer"
 		class="org.apache.servicecomb.faultinjection.FaultInjectionHandler" />
 </config>
