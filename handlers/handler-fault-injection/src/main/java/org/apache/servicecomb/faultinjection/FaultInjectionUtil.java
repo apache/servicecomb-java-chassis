@@ -20,7 +20,7 @@ package org.apache.servicecomb.faultinjection;
 import static org.apache.servicecomb.faultinjection.FaultInjectionConst.CONSUMER_FAULTINJECTION;
 import static org.apache.servicecomb.faultinjection.FaultInjectionConst.CONSUMER_FAULTINJECTION_GLOBAL;
 import static org.apache.servicecomb.faultinjection.FaultInjectionConst.CONSUMER_FAULTINJECTION_POLICY_PROTOCOLS;
-import static org.apache.servicecomb.faultinjection.FaultInjectionConst.FAULT_INJECTION_CFG_NULL;
+import static org.apache.servicecomb.faultinjection.FaultInjectionConst.FAULT_INJECTION_DEFAULT_VALUE;
 
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -90,7 +90,7 @@ public class FaultInjectionUtil {
         + CONSUMER_FAULTINJECTION_POLICY_PROTOCOLS + invocation.getTransport().getName() + "." + key;
 
     value = getConfigValue(config);
-    if ((value != FAULT_INJECTION_CFG_NULL)) {
+    if ((value != FAULT_INJECTION_DEFAULT_VALUE)) {
       return value;
     }
 
@@ -98,14 +98,14 @@ public class FaultInjectionUtil {
         + CONSUMER_FAULTINJECTION_POLICY_PROTOCOLS + invocation.getTransport().getName() + "." + key;
 
     value = getConfigValue(config);
-    if ((value != FAULT_INJECTION_CFG_NULL)) {
+    if ((value != FAULT_INJECTION_DEFAULT_VALUE)) {
       return value;
     }
 
     config = CONSUMER_FAULTINJECTION + serviceName + "." + CONSUMER_FAULTINJECTION_POLICY_PROTOCOLS
         + invocation.getTransport().getName() + "." + key;
     value = getConfigValue(config);
-    if ((value != FAULT_INJECTION_CFG_NULL)) {
+    if ((value != FAULT_INJECTION_DEFAULT_VALUE)) {
       return value;
     }
 
@@ -130,7 +130,7 @@ public class FaultInjectionUtil {
       return cfgMap.get(config).get();
     }
 
-    value = FaultInjectionConfig.getConfigVal(config, FAULT_INJECTION_CFG_NULL);
+    value = FaultInjectionConfig.getConfigVal(config, FAULT_INJECTION_DEFAULT_VALUE);
     return value;
 
   }

@@ -42,8 +42,7 @@ public final class FaultInjectionConfig {
     DynamicIntProperty dynamicIntProperty = DynamicPropertyFactory.getInstance().getIntProperty(config,
         defaultValue);
 
-    if (cfgCallback.get(config) == null) {
-      cfgCallback.put(config, config);
+    cfgCallback.computeIfAbsent(config, key -> {
       dynamicIntProperty.addCallback(() -> {
         int newValue = dynamicIntProperty.get();
         String cfgName = dynamicIntProperty.getName();
@@ -52,7 +51,8 @@ public final class FaultInjectionConfig {
         FaultInjectionUtil.setConfigCenterValue(cfgName, new AtomicInteger(newValue));
         LOGGER.info("{} changed to {}", cfgName, newValue);
       });
-    }
+      return config;
+    });
 
     return dynamicIntProperty.get();
   }

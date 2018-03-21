@@ -18,6 +18,7 @@
 package org.apache.servicecomb.faultinjection;
 
 import org.apache.servicecomb.core.Invocation;
+import org.apache.servicecomb.swagger.invocation.AsyncResponse;
 import org.apache.servicecomb.swagger.invocation.exception.CommonExceptionData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,14 +29,15 @@ public class AbortFault extends AbstractFault {
   private static final Logger LOGGER = LoggerFactory.getLogger(FaultInjectionConfig.class);
 
   @Override
-  public FaultResponse injectFault(Invocation invocation, FaultParam faultParam) {
+  public void injectFault(Invocation invocation, FaultParam faultParam, AsyncResponse asynResponse) {
     // get the config values related to delay.
     int abortPercent = FaultInjectionUtil.getFaultInjectionConfig(invocation,
         "abort.percent");
 
-    if (abortPercent == FaultInjectionConst.FAULT_INJECTION_CFG_NULL) {
-      LOGGER.info("Fault injection: Abort percentage is not configured");
-      return new FaultResponse();
+    if (abortPercent == FaultInjectionConst.FAULT_INJECTION_DEFAULT_VALUE) {
+      LOGGER.debug("Fault injection: Abort percentage is not configured");
+      asynResponse.success(new FaultResponse());
+      return;
     }
 
     // check fault abort condition.
@@ -45,20 +47,24 @@ public class AbortFault extends AbstractFault {
       int errorCode = FaultInjectionUtil.getFaultInjectionConfig(invocation,
           "abort.httpStatus");
 
-      if (errorCode == FaultInjectionConst.FAULT_INJECTION_CFG_NULL) {
-        LOGGER.info("Fault injection: Abort error code is not configured");
-        return new FaultResponse();
+      if (errorCode == FaultInjectionConst.FAULT_INJECTION_DEFAULT_VALUE) {
+        LOGGER.debug("Fault injection: Abort error code is not configured");
+        asynResponse.success(new FaultResponse());
+        return;
       }
       // if request need to be abort then return failure with given error code
       CommonExceptionData errorData = new CommonExceptionData("aborted by fault inject");
-      return new FaultResponse(-1, errorCode, errorData);
+
+      FaultResponse response = new FaultResponse(FaultInjectionConst.FAULT_INJECTION_ERROR, errorCode, errorData);
+      asynResponse.success(response);
+      return;
     }
 
-    return new FaultResponse();
+    asynResponse.success(new FaultResponse());
   }
 
   @Override
   public int getPriority() {
-    return FaultInjectionConst.FAULTINJECTION_PRIORITY_MIN;
+    return 200;
   }
 }

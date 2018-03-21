@@ -18,10 +18,11 @@
 package org.apache.servicecomb.faultinjection;
 
 import org.apache.servicecomb.core.Invocation;
+import org.apache.servicecomb.swagger.invocation.AsyncResponse;
 
 public interface Fault {
 
   int getPriority();
 
-  FaultResponse injectFault(Invocation invocation, FaultParam faultAttributes);
+  void injectFault(Invocation invocation, FaultParam faultAttributes, AsyncResponse asynResponse);
 }
