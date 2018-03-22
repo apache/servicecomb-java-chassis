@@ -142,9 +142,9 @@ public class FaultInjectionUtil {
    * @param reqCount
    * @param percentage
    * @param key
-   * @return true/false
+   * @return true: delay/abort is needed. false: delay/abort is not needed.
    */
-  public static boolean checkFaultInjectionDelayAndAbort(long reqCount, int percentage) {
+  public static boolean isFaultNeedToInject(long reqCount, int percentage) {
     /*
      * Example: delay/abort percentage configured is 10% and Get the count(suppose
      * if it is 10th request) from map and calculate resultNew(10th request) and
@@ -160,9 +160,6 @@ public class FaultInjectionUtil {
     long resultOld = ((reqCount - 1) * percentage) / 100;
 
     // if both are not matching then delay/abort should be added.
-    if (resultNew != resultOld) {
-      return true;
-    }
-    return false;
+    return (resultNew != resultOld);
   }
 }

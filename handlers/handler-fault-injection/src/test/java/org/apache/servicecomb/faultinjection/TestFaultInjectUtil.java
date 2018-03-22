@@ -17,10 +17,7 @@
 
 package org.apache.servicecomb.faultinjection;
 
-import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.util.Arrays;
-import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -52,15 +49,6 @@ public class TestFaultInjectUtil {
 
   @Test
   public void testFaultInjectUtil() throws Exception {
-    BeanHolder beanHolder = new BeanHolder();
-    List<Fault> faultInjectionFeatureList = Arrays.asList(delayFault, abortFault);
-    Field field = beanHolder.getClass().getDeclaredField("faultInjectionFeatureList");
-    field.setAccessible(true);
-    field.set(beanHolder, faultInjectionFeatureList);
-    Mockito.when(delayFault.getPriority()).thenReturn(1);
-    Mockito.when(abortFault.getPriority()).thenReturn(10);
-
-    beanHolder.init();
     AtomicLong count1 = FaultInjectionUtil.getOperMetTotalReq("test");
     Assert.assertEquals(1, count1.get());
     count1.incrementAndGet();
