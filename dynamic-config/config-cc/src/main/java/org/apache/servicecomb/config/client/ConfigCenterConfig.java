@@ -17,6 +17,9 @@
 
 package org.apache.servicecomb.config.client;
 
+import static org.apache.servicecomb.foundation.common.base.ServiceCombConstants.DEFAULT_SERVICECOMB_ENV;
+import static org.apache.servicecomb.foundation.common.base.ServiceCombConstants.SERVICECOMB_ENV;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -183,5 +186,9 @@ public final class ConfigCenterConfig {
 
   public int getConnectionTimeout() {
     return finalConfig.getInt("cse.config.client.timeout.connection", DEFAULT_TIMEOUT_IN_MS);
+  }
+
+  public String getEnvironment() {
+    return finalConfig.getString(SERVICECOMB_ENV, DEFAULT_SERVICECOMB_ENV);
   }
 }

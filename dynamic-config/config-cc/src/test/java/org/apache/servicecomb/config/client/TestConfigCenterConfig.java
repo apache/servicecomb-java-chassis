@@ -36,4 +36,12 @@ public class TestConfigCenterConfig {
     Assert.assertEquals("https://172.16.8.7:30103", servers.get(0));
     Assert.assertEquals("https://172.16.8.7:30103", servers.get(1));
   }
+
+  @Test
+  public void getEnvironment() {
+    Assert.assertEquals("testing", ConfigCenterConfig.INSTANCE.getEnvironment());
+    System.setProperty("SERVICECOMB_ENV", "development");
+    ConfigCenterConfig.setConcurrentCompositeConfiguration(ConfigUtil.createLocalConfig());
+    Assert.assertEquals("development", ConfigCenterConfig.INSTANCE.getEnvironment());
+  }
 }

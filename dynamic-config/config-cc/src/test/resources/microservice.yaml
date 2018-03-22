@@ -55,3 +55,4 @@ cse:
       autodiscovery: true
 service_description:
   name: testDemo
+  environment: testing
