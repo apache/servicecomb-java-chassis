@@ -100,6 +100,8 @@ public class ConfigCenterClient {
 
   private String serviceName = CONFIG_CENTER_CONFIG.getServiceName();
 
+  private String environment = CONFIG_CENTER_CONFIG.getEnvironment();
+
   private MemberDiscovery memberDiscovery = new MemberDiscovery(CONFIG_CENTER_CONFIG.getServerUri());
 
   private ConfigCenterConfigurationSourceImpl.UpdateHandler updateHandler;
@@ -240,6 +242,7 @@ public class ConfigCenterClient {
       if (ConfigCenterConfig.INSTANCE.getToken() != null) {
         headers.put("X-Auth-Token", ConfigCenterConfig.INSTANCE.getToken());
       }
+      headers.put("x-environment", environment);
 
       HttpClientWithContext vertxHttpClient = clientMgr.findThreadBindClientPool();
       vertxHttpClient.runOnContext(client -> {
@@ -341,6 +344,7 @@ public class ConfigCenterClient {
         if (ConfigCenterConfig.INSTANCE.getToken() != null) {
           headers.put("X-Auth-Token", ConfigCenterConfig.INSTANCE.getToken());
         }
+        headers.put("x-environment", environment);
         request.headers().addAll(headers);
         authHeaderProviders.forEach(provider -> request.headers()
             .addAll(provider.getSignAuthHeaders(createSignRequest(request.method().toString(),
