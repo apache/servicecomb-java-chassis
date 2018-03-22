@@ -22,6 +22,7 @@ import static org.junit.Assert.assertNotNull;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.apache.servicecomb.loadbalance.filter.SimpleTransactionControlFilter;
 import org.apache.servicecomb.loadbalance.filter.TransactionControlFilter;
 import org.junit.Assert;
@@ -172,11 +173,11 @@ public class TestLoadBalancer {
     
     long time =  Deencapsulation.getField(rule, "lastAccessedTime");
     Deencapsulation.setField(rule, "lastAccessedTime", time - 1000 * 10);
-    Utils.updateProperty("cse.loadbalance.service.SessionStickinessRule.sessionTimeoutInSeconds", 9);
+    ArchaiusUtils.setProperty("cse.loadbalance.service.SessionStickinessRule.sessionTimeoutInSeconds", 9);
     s = lb.chooseServer("test");
     Assert.assertEquals(server, s);
     
-    Utils.updateProperty("cse.loadbalance.service.SessionStickinessRule.successiveFailedTimes", 5);
+    ArchaiusUtils.setProperty("cse.loadbalance.service.SessionStickinessRule.successiveFailedTimes", 5);
     lb.getLoadBalancerStats().incrementSuccessiveConnectionFailureCount(s);
     lb.getLoadBalancerStats().incrementSuccessiveConnectionFailureCount(s);
     lb.getLoadBalancerStats().incrementSuccessiveConnectionFailureCount(s);
