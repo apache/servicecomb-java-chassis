@@ -20,11 +20,10 @@ package org.apache.servicecomb.faultinjection;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.swagger.invocation.AsyncResponse;
 import org.apache.servicecomb.swagger.invocation.exception.CommonExceptionData;
+import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Component;
 
-@Component
 public class AbortFault extends AbstractFault {
   private static final Logger LOGGER = LoggerFactory.getLogger(AbortFault.class);
 
@@ -36,12 +35,12 @@ public class AbortFault extends AbstractFault {
 
     if (abortPercent == FaultInjectionConst.FAULT_INJECTION_DEFAULT_VALUE) {
       LOGGER.debug("Fault injection: Abort percentage is not configured");
-      asynResponse.success(new FaultResponse());
+      asynResponse.success("success");
       return;
     }
 
     // check fault abort condition.
-    boolean isAbort = FaultInjectionUtil.checkFaultInjectionDelayAndAbort(faultParam.getReqCount(), abortPercent);
+    boolean isAbort = FaultInjectionUtil.isFaultNeedToInject(faultParam.getReqCount(), abortPercent);
     if (isAbort) {
       // get the config values related to abort percentage.
       int errorCode = FaultInjectionUtil.getFaultInjectionConfig(invocation,
@@ -49,22 +48,20 @@ public class AbortFault extends AbstractFault {
 
       if (errorCode == FaultInjectionConst.FAULT_INJECTION_DEFAULT_VALUE) {
         LOGGER.debug("Fault injection: Abort error code is not configured");
-        asynResponse.success(new FaultResponse());
+        asynResponse.success("success");
         return;
       }
       // if request need to be abort then return failure with given error code
       CommonExceptionData errorData = new CommonExceptionData("aborted by fault inject");
-
-      FaultResponse response = new FaultResponse(FaultInjectionConst.FAULT_INJECTION_ERROR, errorCode, errorData);
-      asynResponse.success(response);
+      asynResponse.consumerFail(new InvocationException(errorCode, "aborted by fault inject", errorData));
       return;
     }
 
-    asynResponse.success(new FaultResponse());
+    asynResponse.success("success");
   }
 
   @Override
-  public int getPriority() {
+  public int getOrder() {
     return 200;
   }
 }

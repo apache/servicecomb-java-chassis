@@ -17,14 +17,13 @@
 
 package org.apache.servicecomb.faultinjection;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
 
 import org.apache.servicecomb.core.Handler;
 import org.apache.servicecomb.core.Invocation;
+import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
 import org.apache.servicecomb.swagger.invocation.AsyncResponse;
-import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 
 import io.vertx.core.Context;
 import io.vertx.core.Vertx;
@@ -37,15 +36,11 @@ import io.vertx.core.Vertx;
 
 public class FaultInjectionHandler implements Handler {
 
-  private static List<Fault> faultInjectionFeatureList = new ArrayList<>();
+  private List<Fault> faultInjectionFeatureList = SPIServiceUtils.getSortedService(Fault.class);
 
   //added only for unit testing
   public void setFaultFeature(List<Fault> faultFeature) {
     faultInjectionFeatureList = faultFeature;
-  }
-
-  public static List<Fault> getFaultFeature() {
-    return faultInjectionFeatureList;
   }
 
   @Override
@@ -54,10 +49,8 @@ public class FaultInjectionHandler implements Handler {
     // prepare the key and lookup for request count.
     String key = invocation.getTransport().getName() + invocation.getMicroserviceQualifiedName();
     AtomicLong reqCount = FaultInjectionUtil.getOperMetTotalReq(key);
-    long reqCountCurrent = reqCount.get();
-
     // increment the request count here after checking the delay/abort condition.
-    reqCount.incrementAndGet();
+    long reqCountCurrent = reqCount.getAndIncrement();
 
     FaultParam param = new FaultParam(reqCountCurrent);
     Context currentContext = Vertx.currentContext();
@@ -71,11 +64,6 @@ public class FaultInjectionHandler implements Handler {
         if (response.isFailed()) {
           asyncResp.complete(response);
         } else {
-          FaultResponse r = response.getResult();
-          if (r.getStatusCode() == FaultInjectionConst.FAULT_INJECTION_ERROR) {
-            asyncResp.consumerFail(new InvocationException(r.getErrorCode(), "", r.getErrorData()));
-            return;
-          }
           invocation.next(asyncResp);
         }
       } catch (Exception e) {

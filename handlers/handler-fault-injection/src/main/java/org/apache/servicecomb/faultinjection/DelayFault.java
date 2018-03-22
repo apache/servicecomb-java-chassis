@@ -21,17 +21,15 @@ import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.swagger.invocation.AsyncResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Component;
 
 import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
 
-@Component
 public class DelayFault extends AbstractFault {
   private static final Logger LOGGER = LoggerFactory.getLogger(DelayFault.class);
 
   @Override
-  public int getPriority() {
+  public int getOrder() {
     return 100;
   }
 
@@ -42,12 +40,12 @@ public class DelayFault extends AbstractFault {
 
     if (delayPercent == FaultInjectionConst.FAULT_INJECTION_DEFAULT_VALUE) {
       LOGGER.debug("Fault injection: delay percentage is not configured");
-      asynResponse.success(new FaultResponse());
+      asynResponse.success("success");
       return;
     }
 
     // check fault delay condition.
-    boolean isDelay = FaultInjectionUtil.checkFaultInjectionDelayAndAbort(faultParam.getReqCount(), delayPercent);
+    boolean isDelay = FaultInjectionUtil.isFaultNeedToInject(faultParam.getReqCount(), delayPercent);
     if (isDelay) {
       LOGGER.debug("Fault injection: delay is added for the request by fault inject handler");
       long delay = FaultInjectionUtil.getFaultInjectionConfig(invocation,
@@ -55,7 +53,7 @@ public class DelayFault extends AbstractFault {
 
       if (delay == FaultInjectionConst.FAULT_INJECTION_DEFAULT_VALUE) {
         LOGGER.debug("Fault injection: delay is not configured");
-        asynResponse.success(new FaultResponse());
+        asynResponse.success("success");
         return;
       }
 
@@ -64,7 +62,7 @@ public class DelayFault extends AbstractFault {
         vertx.setTimer(delay, new Handler<Long>() {
           @Override
           public void handle(Long timeID) {
-            asynResponse.success(new FaultResponse());
+            asynResponse.success("success");
           }
         });
       } else {
@@ -73,7 +71,7 @@ public class DelayFault extends AbstractFault {
         } catch (InterruptedException e) {
           LOGGER.info("Interrupted exception is received");
         }
-        asynResponse.success(new FaultResponse());
+        asynResponse.success("success");
       }
     }
   }

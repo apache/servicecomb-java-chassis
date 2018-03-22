@@ -48,7 +48,7 @@ public class FaultExecutor {
 
   private void next(AsyncResponse asyncResponse) {
     if (handlerIndex >= faultInjectList.size()) {
-      asyncResponse.complete(Response.succResp(new FaultResponse()));
+      asyncResponse.complete(Response.succResp("success"));
       return;
     }
 
@@ -58,12 +58,7 @@ public class FaultExecutor {
       if (response.isFailed()) {
         asyncResponse.complete(response);
       } else {
-        FaultResponse r = response.getResult();
-        if (r.getStatusCode() == FaultInjectionConst.FAULT_INJECTION_ERROR) {
-          asyncResponse.complete(response);
-        } else {
-          FaultExecutor.this.next(asyncResponse);
-        }
+        FaultExecutor.this.next(asyncResponse);
       }
     });
   }

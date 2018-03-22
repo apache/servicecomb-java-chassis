@@ -36,8 +36,6 @@ public class TestFaultInjectConfig {
 
   FaultParam faultParam;
 
-  FaultResponse faultResp;
-
   AbortFault abortFault;
 
   DelayFault delayFault;
@@ -48,7 +46,6 @@ public class TestFaultInjectConfig {
     faultConst = new FaultInjectionConst();
     faultUtil = new FaultInjectionUtil();
     faultParam = new FaultParam(10);
-    faultResp = new FaultResponse();
     abortFault = new AbortFault();
     delayFault = new DelayFault();
   }
@@ -85,19 +82,8 @@ public class TestFaultInjectConfig {
   }
 
   @Test
-  public void testFaultResponse() {
-    Object obj = new Object();
-    faultResp.setErrorCode(100);
-    faultResp.setErrorData(obj);
-    faultResp.setStatusCode(123);
-    assertEquals(123, faultResp.getStatusCode());
-    assertEquals(100, faultResp.getErrorCode());
-    assertEquals(obj, faultResp.getErrorData());
-  }
-
-  @Test
   public void testFaultPriority() {
-    assertEquals(200, abortFault.getPriority());
-    assertEquals(100, delayFault.getPriority());
+    assertEquals(200, abortFault.getOrder());
+    assertEquals(100, delayFault.getOrder());
   }
 }
