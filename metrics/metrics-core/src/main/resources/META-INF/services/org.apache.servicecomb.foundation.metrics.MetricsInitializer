@@ -16,3 +16,4 @@
 #
 
 org.apache.servicecomb.metrics.core.DefaultMetricsInitializer
+org.apache.servicecomb.metrics.core.publish.DefaultLogPublisher
