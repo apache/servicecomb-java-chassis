@@ -25,6 +25,7 @@ import org.junit.Test;
 
 import com.netflix.spectator.api.Measurement;
 
+import mockit.Expectations;
 import mockit.Mocked;
 
 public class TestMeasurementNode {
@@ -78,5 +79,19 @@ public class TestMeasurementNode {
     node.addMeasurement(measurement);
 
     Assert.assertThat(node.getMeasurements(), Matchers.contains(measurement));
+  }
+
+  @Test
+  public void summary(@Mocked Measurement measurement) {
+    new Expectations() {
+      {
+        measurement.value();
+        result = 10;
+      }
+    };
+    node.addMeasurement(measurement);
+    node.addMeasurement(measurement);
+
+    Assert.assertEquals(20, node.summary(), 0);
   }
 }

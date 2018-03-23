@@ -82,4 +82,13 @@ public class MeasurementNode {
   public void addMeasurement(Measurement measurement) {
     measurements.add(measurement);
   }
+
+  public double summary() {
+    double result = 0;
+    for (Measurement measurement : measurements) {
+      result += measurement.value();
+    }
+
+    return result;
+  }
 }
