@@ -29,8 +29,11 @@
           <includes>
             <include>**/*</include>
           </includes>
-          <!-- excludes the binary files -->
           <excludes>
+            <!--exclude the style files which use CC License from source distribution-->
+            <exclude>etc/eclipse-java-google-style.xml</exclude>
+            <exclude>etc/intellij-java-google-style.xml</exclude>
+            <!-- excludes the binary files -->
             <exclude>**/eclipse-classes/**</exclude>
             <exclude>**/target/**</exclude>
             <exclude>**/build/**</exclude>
