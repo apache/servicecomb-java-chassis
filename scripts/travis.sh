@@ -31,6 +31,7 @@ if [ "$1" == "install" ]; then
         if [ "$TAGGEDCOMMIT" == "true" ]; then
               	echo "Skipping the installation as it is tagged commit"
         else
+                mvn apache-rat:check -Pit,samples,distribution
                 mvn clean install -Ddocker.showLogs -Pdocker -Pjacoco -Pit -Pcoverage coveralls:report
 		if [ $? == 0 ]; then
 			echo "${green}Installation Success..${reset}"
