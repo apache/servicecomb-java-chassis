@@ -18,6 +18,7 @@
 package org.apache.servicecomb.samples.jaxrs.provider;
 
 
+import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
@@ -45,4 +46,11 @@ public class JaxrsHelloImpl implements Hello {
   public String sayHello(Person person) {
     return "Hello person " + person.getName();
   }
+
+  @Path("/saybye")
+  @GET
+  public String sayBye() {
+    return "Bye !";
+  }
+
 }
