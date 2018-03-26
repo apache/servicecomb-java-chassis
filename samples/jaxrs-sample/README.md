@@ -65,3 +65,4 @@ To consume a provider-service, only need to decalare a member of a service API t
    On the consumer side, you can see the following outputs if the consumer can invoke the producer:
    1. *'Hello Java Chassis'* means the consumer calls sayhi by RpcReference successfully
    2. *'Hello person ServiceComb/Java Chassis'* means the consumer calls sayhello by RpcReference successfully
+   3. *'Bye !'* means the consumer calls saybye by RestTemplate successfully

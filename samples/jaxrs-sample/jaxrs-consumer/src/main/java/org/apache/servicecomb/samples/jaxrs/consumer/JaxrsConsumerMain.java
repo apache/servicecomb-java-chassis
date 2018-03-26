@@ -19,9 +19,11 @@ package org.apache.servicecomb.samples.jaxrs.consumer;
 import org.apache.servicecomb.foundation.common.utils.BeanUtils;
 import org.apache.servicecomb.foundation.common.utils.Log4jUtils;
 import org.apache.servicecomb.provider.pojo.RpcReference;
+import org.apache.servicecomb.provider.springmvc.reference.RestTemplateBuilder;
 import org.apache.servicecomb.samples.common.schema.Hello;
 import org.apache.servicecomb.samples.common.schema.models.Person;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.RestTemplate;
 
 @Component
 public class JaxrsConsumerMain {
@@ -35,6 +37,10 @@ public class JaxrsConsumerMain {
     Person person = new Person();
     person.setName("ServiceComb/Java Chassis");
     System.out.println(hello.sayHello(person));
+
+    RestTemplate restTemplate = RestTemplateBuilder.create();
+    String result = restTemplate.getForObject("cse://jaxrs/jaxrshello/saybye", String.class);
+    System.out.println(result);
   }
 
   public static void init() throws Exception {
