@@ -48,7 +48,7 @@
         </dependency>
         <dependency>
             <groupId>org.apache.servicecomb</groupId>
-            <artifactId>provider-rest-common</artifactId>
+            <artifactId>provider-jaxrs</artifactId>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
