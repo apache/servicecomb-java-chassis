@@ -826,6 +826,11 @@
       </dependency>
       <dependency>
         <groupId>org.apache.servicecomb</groupId>
+        <artifactId>handler-validator</artifactId>
+        <version>1.0.0-m1</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.servicecomb</groupId>
         <artifactId>handler-flowcontrol-qps</artifactId>
         <version>1.0.0-m2-SNAPSHOT</version>
       </dependency>

@@ -1,4 +1,3 @@
-<?xml version="1.0" encoding="UTF-8"?>
 <!--
   ~ Licensed to the Apache Software Foundation (ASF) under one or more
   ~ contributor license agreements.  See the NOTICE file distributed with
@@ -16,29 +15,38 @@
   ~ limitations under the License.
   -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.apache.servicecomb</groupId>
-    <artifactId>java-chassis-parent</artifactId>
-    <version>1.0.0-m2-SNAPSHOT</version>
-    <relativePath>../parent</relativePath>
+    <artifactId>handlers</artifactId>
+    <version>1.0.0-m1</version>
   </parent>
-  <modelVersion>4.0.0</modelVersion>
-
-  <artifactId>handlers</artifactId>
-  <name>Java Chassis::Handlers</name>
-  <packaging>pom</packaging>
-
-  <modules>
-    <module>handler-tracing-zipkin</module>
-    <module>handler-bizkeeper</module>
-    <module>handler-flowcontrol-qps</module>
-    <module>handler-loadbalance</module>
-    <module>handler-fault-injection</module>
-    <module>handler-publickey-auth</module>
-    <module>handler-validator</module>
-  </modules>
-
+  <artifactId>handler-validator</artifactId>
+  <name>Java Chassis::Handlers::Validator</name>
+  <dependencies>
+    <dependency>
+      <groupId>org.apache.servicecomb</groupId>
+      <artifactId>java-chassis-core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.hibernate</groupId>
+      <artifactId>hibernate-validator</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.glassfish</groupId>
+      <artifactId>javax.el</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-log4j12</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>log4j</groupId>
+      <artifactId>log4j</artifactId>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
 </project>

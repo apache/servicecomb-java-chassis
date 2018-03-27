@@ -64,6 +64,10 @@
     </dependency>
     <dependency>
       <groupId>org.apache.servicecomb</groupId>
+      <artifactId>handler-validator</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.servicecomb</groupId>
       <artifactId>handler-publickey-auth</artifactId>
     </dependency>
     <dependency>
