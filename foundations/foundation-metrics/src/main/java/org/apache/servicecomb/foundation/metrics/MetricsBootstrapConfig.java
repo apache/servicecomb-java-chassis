@@ -27,7 +27,7 @@ public class MetricsBootstrapConfig {
 
   public MetricsBootstrapConfig() {
     msPollInterval =
-        DynamicPropertyFactory.getInstance().getIntProperty(METRICS_WINDOW_TIME, DEFAULT_METRICS_WINDOW_TIME).get();;
+        DynamicPropertyFactory.getInstance().getIntProperty(METRICS_WINDOW_TIME, DEFAULT_METRICS_WINDOW_TIME).get();
   }
 
   public long getMsPollInterval() {
