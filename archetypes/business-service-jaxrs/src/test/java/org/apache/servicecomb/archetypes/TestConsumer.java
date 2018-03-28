@@ -20,9 +20,10 @@ package org.apache.servicecomb.archetypes;
 import org.apache.servicecomb.foundation.common.utils.BeanUtils;
 import org.apache.servicecomb.foundation.common.utils.Log4jUtils;
 import org.apache.servicecomb.provider.springmvc.reference.RestTemplateBuilder;
-import org.junit.After;
+import org.apache.servicecomb.serviceregistry.client.LocalServiceRegistryClientImpl;
+import org.junit.AfterClass;
 import org.junit.Assert;
-import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
@@ -30,16 +31,18 @@ import org.springframework.web.client.RestTemplate;
 @Component
 public class TestConsumer {
 
-  private String setting;
+  private static String setting;
+
+  private final RestTemplate restTemplate = RestTemplateBuilder.create();
 
   //use local registry for test consumer
   //more details can be found :
   // http://servicecomb.incubator.apache.org/users/develop-with-rest-template/
   // http://servicecomb.incubator.apache.org/users/develop-with-rpc/
-  @Before
-  public void setUp() {
-    setting = System.getProperty("local.registry.file");
-    System.setProperty("local.registry.file",
+  @BeforeClass
+  public static void setUp() {
+    setting = System.getProperty(LocalServiceRegistryClientImpl.LOCAL_REGISTRY_FILE_KEY);
+    System.setProperty(LocalServiceRegistryClientImpl.LOCAL_REGISTRY_FILE_KEY,
         TestConsumer.class.getProtectionDomain().getCodeSource().getLocation().getPath() + "localregistry.yaml");
   }
 
@@ -50,14 +53,13 @@ public class TestConsumer {
     BeanUtils.init();
 
     //consumer call
-    RestTemplate restTemplate = RestTemplateBuilder.create();
     String result = restTemplate.getForObject("cse://business-service/hello", String.class);
     Assert.assertEquals("Hello World!", result);
   }
 
   //recovery local.registry.file setting
-  @After
-  public void tearDown() {
-    System.setProperty("local.registry.file", setting == null ? "" : setting);
+  @AfterClass
+  public static void tearDown() {
+    System.setProperty(LocalServiceRegistryClientImpl.LOCAL_REGISTRY_FILE_KEY, setting == null ? "" : setting);
   }
 }
