@@ -19,8 +19,6 @@ package org.apache.servicecomb.demo.perf;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
 
 import org.apache.servicecomb.foundation.common.utils.BeanUtils;
 import org.apache.servicecomb.foundation.vertx.VertxUtils;
@@ -32,11 +30,6 @@ public class PerfMain {
 
     // redis
     RedisClientUtils.init(VertxUtils.getOrCreateVertxByName("transport", null));
-
-    // metrics
-    //DataSource dataSource = BeanUtils.getContext().getBean(Def.class);
-    PerfMetricsFilePublisher metricsLog = new PerfMetricsFilePublisher();
-    Executors.newScheduledThreadPool(1).scheduleWithFixedDelay(metricsLog::onCycle, 0, 1, TimeUnit.SECONDS);
 
     List<String> argList = Arrays.asList(args);
     if (argList.contains("-c")) {
