@@ -15,7 +15,7 @@
 ## limitations under the License.
 ## ---------------------------------------------------------------------------
 
-# use for test consumer without service center
+# test service invocation between microservices without service center
 business-service:
   - id: "001"
     version: "1.0.0"

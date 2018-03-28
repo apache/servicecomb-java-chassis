@@ -15,16 +15,29 @@
 ## limitations under the License.
 ## ---------------------------------------------------------------------------
 
-#More details can be found : http://servicecomb.incubator.apache.org/users/service-definition/
+#More details can be found :
+# 1.http://servicecomb.incubator.apache.org/users/service-definition/
+# 2.http://servicecomb.incubator.apache.org/users/service-configurations/
+# 3.http://servicecomb.incubator.apache.org/users/communicate-protocol/
+
+#Indicates an application name
 APPLICATION_ID: business
 service_description:
+#Indicates a microservice name
+#The microservice name should be unique within an application.
+#The name can contain digits, uppercase and lowercase letters, hyphens(-), underscores(_), and periods(.); and can neither start nor end with punctuations.
+#The naming rule is as follows: ^[a-zA-Z0-9]+$|^[a-zA-Z0-9][a-zA-Z0-9_-.]*[a-zA-Z0-9]$.
   name: business-service
+#Indicates a service version
   version: 1.0.0
 cse:
   service:
+  #Specifies the service center IP address.
     registry:
       address: http://127.0.0.1:30100
+  #Specifies the rest transport listening IP address.
   rest:
     address: 0.0.0.0:8080
+  #Specifies the highway transport listening IP address.
   highway:
     address: 0.0.0.0:7070
