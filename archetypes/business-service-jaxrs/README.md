@@ -1,5 +1,8 @@
 ## Welcome to use ServiceComb Java Chassis
-This project(module) is generate by *org.apache.servicecomb.archetypes:business-service-jaxrs-archetype*, it's use **jaxrs provider** to develop service endpoint, you can direct run "TestConsumer" for test.
+This project(module) is generate by *org.apache.servicecomb.archetypes:business-service-jaxrs-archetype*, it's use **jaxrs provider** to develop service endpoint, you can direct run test.  
+```bash
+mvn test
+```
 
 ### More works can be done further:
 1. Modify "HelloEndpoint", add your business service logic,or create some new endpoints for provide your services.More details can be found : http://servicecomb.incubator.apache.org/users/develop-with-jax-rs/
@@ -17,4 +20,4 @@ Then you can get outputs in target folder:
 ```bash
 java -jar xxxxxx-{version}.jar
 ```
-*If you need to modify config setting in "microservice.yaml" like service center address but don't want repackage the executable jar, you can direct place a "microservice.yaml" file in same folder, then settings will be overrode.*
+*Notice: If you need to modify config setting in "microservice.yaml" like service center address but don't want repackage the executable jar, **you can direct place a new "microservice.yaml" file in same folder, then settings will be overrode.***
