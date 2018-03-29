@@ -50,6 +50,11 @@ public class IpPortManager {
 
   private boolean autoDiscoveryInited = false;
 
+  public int getMaxRetryTimes() {
+    return currentAvailableIndex.get() < 2 ? 2 : currentAvailableIndex.get();
+
+  }
+
   public IpPortManager(ServiceRegistryConfig serviceRegistryConfig, InstanceCacheManager instanceCacheManager) {
     this.serviceRegistryConfig = serviceRegistryConfig;
     this.instanceCacheManager = instanceCacheManager;
