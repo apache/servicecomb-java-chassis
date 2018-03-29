@@ -22,8 +22,10 @@ import java.util.AbstractMap.SimpleEntry;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.ServiceLoader;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
@@ -38,31 +40,21 @@ import org.springframework.util.ReflectionUtils;
 public final class SPIServiceUtils {
   private static final Logger LOGGER = LoggerFactory.getLogger(SPIServiceUtils.class);
 
+  // load one service, maybe trigger load another service
+  // computeIfAbsent can not support this feature
+  // so use double check
+  private static final Object LOCK = new Object();
+
+  private static final Map<Class<?>, List<Object>> cache = new ConcurrentHashMap<>();
+
   private SPIServiceUtils() {
 
   }
 
   /**
-   * get target service.if target services are array,only random access to a service.
+   * no cache, return new instances every time.
    */
-  public static <T> T getTargetService(Class<T> serviceType) {
-    ServiceLoader<T> loader = ServiceLoader.load(serviceType);
-    for (T service : loader) {
-      LOGGER.info("get the SPI service success, the extend service is: {}", service.getClass());
-      return service;
-    }
-    LOGGER.info("Can not get the SPI service, the interface type is: {}", serviceType.toString());
-    return null;
-  }
-
-  public static <T> List<T> getAllService(Class<T> serviceType) {
-    List<T> list = new ArrayList<>();
-    ServiceLoader.load(serviceType).forEach(list::add);
-
-    return list;
-  }
-
-  public static <T> List<T> getSortedService(Class<T> serviceType) {
+  public static <T> List<T> loadSortedService(Class<T> serviceType) {
     List<Entry<Integer, T>> serviceEntries = new ArrayList<>();
     ServiceLoader<T> serviceLoader = ServiceLoader.load(serviceType);
     serviceLoader.forEach(service -> {
@@ -76,18 +68,74 @@ public final class SPIServiceUtils {
       serviceEntries.add(entry);
     });
 
-    return serviceEntries.stream()
+    List<T> services = serviceEntries.stream()
         .sorted(Comparator.comparingInt(Entry::getKey))
         .map(Entry::getValue)
         .collect(Collectors.toList());
+
+    LOGGER.info("Found SPI service {}, count={}.", serviceType.getName(), services.size());
+    for (int idx = 0; idx < services.size(); idx++) {
+      T service = services.get(idx);
+      LOGGER.info("  {}. {}.", idx, service.getClass().getName());
+    }
+
+    return services;
   }
 
-  public static <T> T getPriorityHighestService(Class<T> serviceType) {
-    List<T> services = getSortedService(serviceType);
+  @SuppressWarnings("unchecked")
+  public static <T> List<T> getOrLoadSortedService(Class<T> serviceType) {
+    List<Object> services = cache.get(serviceType);
+    if (services == null) {
+      synchronized (LOCK) {
+        services = cache.get(serviceType);
+        if (services == null) {
+          services = (List<Object>) loadSortedService(serviceType);
+          cache.put(serviceType, services);
+        }
+      }
+    }
+
+    return (List<T>) services;
+  }
+
+  /**
+   * get target service.if target services are array,only random access to a service.
+   */
+  public static <T> T getTargetService(Class<T> serviceType) {
+    List<T> services = getOrLoadSortedService(serviceType);
     if (services.isEmpty()) {
+      LOGGER.info("Can not find SPI service for {}", serviceType.getName());
       return null;
     }
 
     return services.get(0);
+  }
+
+  public static <T> List<T> getAllService(Class<T> serviceType) {
+    return getOrLoadSortedService(serviceType);
+  }
+
+  public static <T> List<T> getSortedService(Class<T> serviceType) {
+    return getOrLoadSortedService(serviceType);
+  }
+
+  public static <T> T getPriorityHighestService(Class<T> serviceType) {
+    List<T> services = getOrLoadSortedService(serviceType);
+    if (services.isEmpty()) {
+      LOGGER.info("Can not find SPI service for {}", serviceType.getName());
+      return null;
+    }
+
+    return services.get(0);
+  }
+
+  @SuppressWarnings("unchecked")
+  public static <T, IMPL> IMPL getTargetService(Class<T> serviceType, Class<IMPL> implType) {
+    List<T> services = getOrLoadSortedService(serviceType);
+    return (IMPL) services
+        .stream()
+        .filter(service -> service.getClass().equals(implType))
+        .findFirst()
+        .orElse(null);
   }
 }
