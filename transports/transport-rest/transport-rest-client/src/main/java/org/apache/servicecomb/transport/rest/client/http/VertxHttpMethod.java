@@ -56,12 +56,6 @@ public class VertxHttpMethod {
 
   static List<HttpClientFilter> httpClientFilters = SPIServiceUtils.getSortedService(HttpClientFilter.class);
 
-  static {
-    for (HttpClientFilter filter : httpClientFilters) {
-      LOGGER.info("Found HttpClientFilter: {}.", filter.getClass().getName());
-    }
-  }
-
   public void doMethod(HttpClientWithContext httpClientWithContext, Invocation invocation,
       AsyncResponse asyncResp) throws Exception {
     OperationMeta operationMeta = invocation.getOperationMeta();

@@ -22,8 +22,6 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.Lists;
 import com.google.common.eventbus.EventBus;
@@ -32,8 +30,6 @@ import com.netflix.spectator.api.CompositeRegistry;
 import com.netflix.spectator.api.Meter;
 
 public class MetricsBootstrap {
-  private static final Logger LOGGER = LoggerFactory.getLogger(MetricsBootstrap.class);
-
   private CompositeRegistry globalRegistry;
 
   private EventBus eventBus;
@@ -60,8 +56,6 @@ public class MetricsBootstrap {
 
   protected void loadMetricsInitializers() {
     SPIServiceUtils.getSortedService(MetricsInitializer.class).forEach(initializer -> {
-      LOGGER.info("Found MetricsInitializer: {}", initializer.getClass().getName());
-
       initializer.init(globalRegistry, eventBus, config);
     });
   }
