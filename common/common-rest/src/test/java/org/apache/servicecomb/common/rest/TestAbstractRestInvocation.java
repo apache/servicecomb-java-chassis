@@ -656,7 +656,7 @@ public class TestAbstractRestInvocation {
     }.getMockInstance();
 
     initRestInvocation();
-    List<HttpServerFilter> httpServerFilters = SPIServiceUtils.getSortedService(HttpServerFilter.class);
+    List<HttpServerFilter> httpServerFilters = SPIServiceUtils.loadSortedService(HttpServerFilter.class);
     httpServerFilters.add(filter);
     restInvocation.setHttpServerFilters(httpServerFilters);
 

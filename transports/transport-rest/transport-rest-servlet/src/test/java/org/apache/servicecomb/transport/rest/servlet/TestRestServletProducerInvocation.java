@@ -26,7 +26,6 @@ import org.apache.servicecomb.common.rest.RestProducerInvocation;
 import org.apache.servicecomb.common.rest.definition.RestOperationMeta;
 import org.apache.servicecomb.common.rest.filter.HttpServerFilter;
 import org.apache.servicecomb.core.definition.OperationMeta;
-import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
 import org.apache.servicecomb.foundation.vertx.http.HttpServletRequestEx;
 import org.apache.servicecomb.foundation.vertx.http.StandardHttpServletRequestEx;
 import org.junit.Assert;
@@ -60,7 +59,7 @@ public class TestRestServletProducerInvocation {
     };
 
     List<HttpServerFilter> httpServerFilters = Arrays.asList(f1);
-    new Expectations(SPIServiceUtils.class) {
+    new Expectations() {
       {
         f1.needCacheRequest(operationMeta);
         result = true;
@@ -76,7 +75,7 @@ public class TestRestServletProducerInvocation {
   @Test
   public void collectCacheRequestCacheTrue(@Mocked HttpServerFilter f1) {
     List<HttpServerFilter> httpServerFilters = Arrays.asList(f1);
-    new Expectations(SPIServiceUtils.class) {
+    new Expectations() {
       {
         f1.needCacheRequest(operationMeta);
         result = true;
@@ -90,7 +89,7 @@ public class TestRestServletProducerInvocation {
   @Test
   public void collectCacheRequestCacheFalse(@Mocked HttpServerFilter f1) {
     List<HttpServerFilter> httpServerFilters = Arrays.asList(f1);
-    new Expectations(SPIServiceUtils.class) {
+    new Expectations() {
       {
         f1.needCacheRequest(operationMeta);
         result = false;
