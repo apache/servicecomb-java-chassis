@@ -41,6 +41,7 @@
   </dependencyManagement>
 
   <dependencies>
+    <!--for provider-->
     <dependency>
       <groupId>org.apache.servicecomb</groupId>
       <artifactId>transport-rest-vertx</artifactId>
@@ -58,16 +59,10 @@
       <artifactId>slf4j-log4j12</artifactId>
     </dependency>
 
-    <!--only for consumer under test-->
+    <!--for consumer-->
     <dependency>
       <groupId>org.apache.servicecomb</groupId>
       <artifactId>provider-springmvc</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <scope>test</scope>
     </dependency>
   </dependencies>
 
