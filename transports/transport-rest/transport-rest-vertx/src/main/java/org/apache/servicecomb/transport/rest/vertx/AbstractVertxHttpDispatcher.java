@@ -35,12 +35,6 @@ public abstract class AbstractVertxHttpDispatcher implements VertxHttpDispatcher
 
   protected List<HttpServerFilter> httpServerFilters = SPIServiceUtils.getSortedService(HttpServerFilter.class);
 
-  public AbstractVertxHttpDispatcher() {
-    for (HttpServerFilter filter : httpServerFilters) {
-      LOGGER.info("Found HttpServerFilter: {}.", filter.getClass().getName());
-    }
-  }
-
   protected BodyHandler createBodyHandler() {
     RestBodyHandler bodyHandler = new RestBodyHandler();
 

@@ -21,12 +21,8 @@ import java.util.List;
 
 import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
 import org.apache.servicecomb.swagger.invocation.converter.ConverterMgr;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class ResponseMapperFactorys<MAPPER> {
-  private static final Logger LOGGER = LoggerFactory.getLogger(ResponseMapperFactorys.class);
-
   private List<ResponseMapperFactory<MAPPER>> factorys;
 
   public ResponseMapperFactorys(Class<? extends ResponseMapperFactory<MAPPER>> factoryCls, ConverterMgr converterMgr) {
@@ -37,9 +33,6 @@ public class ResponseMapperFactorys<MAPPER> {
   @SuppressWarnings("unchecked")
   public ResponseMapperFactorys(Class<? extends ResponseMapperFactory<MAPPER>> factoryCls) {
     factorys = (List<ResponseMapperFactory<MAPPER>>) SPIServiceUtils.getSortedService(factoryCls);
-    factorys.forEach(factory -> {
-      LOGGER.info("found factory {} of {}:", factory.getClass().getName(), factoryCls.getName());
-    });
   }
 
   public void setConverterMgr(ConverterMgr converterMgr) {
