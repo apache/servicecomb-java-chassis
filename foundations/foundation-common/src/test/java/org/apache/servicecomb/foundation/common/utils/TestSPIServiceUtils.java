@@ -18,6 +18,7 @@
 package org.apache.servicecomb.foundation.common.utils;
 
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.ServiceLoader;
 
@@ -46,6 +47,19 @@ public class TestSPIServiceUtils {
   public void testGetTargetServiceNotNull() {
     SPIServiceDef service = SPIServiceUtils.getTargetService(SPIServiceDef.class);
     Assert.assertTrue(SPIServiceDef.class.isInstance(service));
+
+    Assert.assertSame(service, SPIServiceUtils.getTargetService(SPIServiceDef.class));
+  }
+
+  @Test
+  public void testGetTargetService_special_null() {
+    Assert.assertNull(SPIServiceUtils.getTargetService(SPIServiceDef0.class, SPIServiceDef0Impl.class));
+  }
+
+  @Test
+  public void testGetTargetService_special_notNull() {
+    SPIServiceDef service = SPIServiceUtils.getTargetService(SPIServiceDef.class, SPIServiceDefImpl.class);
+    Assert.assertTrue(SPIServiceDefImpl.class.isInstance(service));
   }
 
   @Test
@@ -68,6 +82,15 @@ public class TestSPIServiceUtils {
     };
 
     Assert.assertThat(SPIServiceUtils.getSortedService(Ordered.class), Matchers.contains(o1, o2));
+    Assert.assertThat(SPIServiceUtils.getAllService(Ordered.class), Matchers.contains(o1, o2));
     Assert.assertThat(SPIServiceUtils.getPriorityHighestService(Ordered.class), Matchers.is(o1));
+
+    Map<Class<?>, List<Object>> cache = Deencapsulation.getField(SPIServiceUtils.class, "cache");
+    cache.clear();
+  }
+
+  @Test
+  public void getPriorityHighestService_null() {
+    Assert.assertNull(SPIServiceUtils.getPriorityHighestService(SPIServiceDef0.class));
   }
 }
