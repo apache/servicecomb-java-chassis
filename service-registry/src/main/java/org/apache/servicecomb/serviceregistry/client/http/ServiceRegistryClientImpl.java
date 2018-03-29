@@ -85,7 +85,7 @@ public final class ServiceRegistryClientImpl implements ServiceRegistryClient {
   private void retry(RequestContext requestContext, Handler<RestResponse> responseHandler) {
     LOGGER.warn("invoke service [{}] failed, retry.", requestContext.getUri());
     requestContext.setIpPort(ipPortManager.getNextAvailableAddress(requestContext.getIpPort()));
-    requestContext.setRetry(true);
+    requestContext.setRetryTimes(requestContext.getRetryTimes() + 1);
     RestUtils.httpDo(requestContext, responseHandler);
   }
 
@@ -98,7 +98,7 @@ public final class ServiceRegistryClientImpl implements ServiceRegistryClient {
       HttpClientResponse response = restResponse.getResponse();
       if (response == null) {
         // 请求失败，触发请求SC的其他实例
-        if (!requestContext.isRetry()) {
+        if (requestContext.getRetryTimes() <= ipPortManager.getMaxRetryTimes()) {
           retry(requestContext, syncHandler(countDownLatch, cls, holder));
         } else {
           countDownLatch.countDown();
@@ -150,7 +150,7 @@ public final class ServiceRegistryClientImpl implements ServiceRegistryClient {
       HttpClientResponse response = restResponse.getResponse();
       if (response == null) {
         // 请求失败，触发请求SC的其他实例
-        if (!requestContext.isRetry()) {
+        if (requestContext.getRetryTimes() <= ipPortManager.getMaxRetryTimes()) {
           retry(requestContext, syncHandlerEx(countDownLatch, holder));
         } else {
           countDownLatch.countDown();
@@ -176,7 +176,7 @@ public final class ServiceRegistryClientImpl implements ServiceRegistryClient {
       HttpClientResponse response = restResponse.getResponse();
       if (response == null) {
         // 请求失败，触发请求SC的其他实例
-        if (!requestContext.isRetry()) {
+        if (requestContext.getRetryTimes() <= ipPortManager.getMaxRetryTimes()) {
           retry(requestContext, syncHandlerForInstances(countDownLatch, mInstances));
         } else {
           countDownLatch.countDown();
@@ -488,7 +488,7 @@ public final class ServiceRegistryClientImpl implements ServiceRegistryClient {
     RestUtils.put(ipPort,
         String.format(Const.REGISTRY_API.MICROSERVICE_HEARTBEAT, microserviceId, microserviceInstanceId),
         new RequestParam().setTimeout(ServiceRegistryConfig.INSTANCE.getHeartBeatRequestTimeout()),
-        syncHandler(countDownLatch, HttpClientResponse.class, holder));
+        syncHandlerForHeartbeat(countDownLatch, HttpClientResponse.class, holder));
 
     try {
       countDownLatch.await();
@@ -510,6 +510,52 @@ public final class ServiceRegistryClientImpl implements ServiceRegistryClient {
     }
     return null;
   }
+
+  @SuppressWarnings("unchecked")
+private <T> Handler<RestResponse> syncHandlerForHeartbeat(CountDownLatch countDownLatch, Class<T> cls,
+      Holder<T> holder) {
+    return restResponse -> {
+      RequestContext requestContext = restResponse.getRequestContext();
+      HttpClientResponse response = restResponse.getResponse();
+      if (response == null) {
+        // 请求失败，触发请求SC的其他实例
+        if (requestContext.getRetryTimes() <= ipPortManager.getMaxRetryTimes()) {
+          retry(requestContext, syncHandlerForHeartbeat(countDownLatch, cls, holder));
+        } else {
+          countDownLatch.countDown();
+        }
+        return;
+      }
+      response.bodyHandler(
+          bodyBuffer -> {
+            if (cls.getName().equals(HttpClientResponse.class.getName())) {
+              holder.value = (T) response;
+              countDownLatch.countDown();
+              return;
+            }
+
+            // no need to support 304 in this place
+            if (!HttpStatusClass.SUCCESS.equals(HttpStatusClass.valueOf(response.statusCode()))) {
+              LOGGER.warn("get response for {} failed, {}:{}, {}",
+                  cls.getName(),
+                  response.statusCode(),
+                  response.statusMessage(),
+                  bodyBuffer.toString());
+              countDownLatch.countDown();
+              return;
+            }
+
+            try {
+              holder.value =
+                  JsonUtils.readValue(bodyBuffer.getBytes(), cls);
+            } catch (Exception e) {
+              LOGGER.warn("read value failed and response message is {}",
+                  bodyBuffer.toString());
+            }
+            countDownLatch.countDown();
+          });
+    };
+ }
 
   public void watch(String selfMicroserviceId, AsyncResultCallback<MicroserviceInstanceChangedEvent> callback) {
     watch(selfMicroserviceId, callback, v -> {
