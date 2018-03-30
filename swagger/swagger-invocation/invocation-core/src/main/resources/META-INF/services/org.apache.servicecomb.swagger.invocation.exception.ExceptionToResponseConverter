@@ -17,3 +17,4 @@
 
 org.apache.servicecomb.swagger.invocation.exception.InvocationExceptionToResponseConverter
 org.apache.servicecomb.swagger.invocation.exception.DefaultExceptionToResponseConverter
+org.apache.servicecomb.swagger.invocation.extension.ConstraintViolationExceptionToResponseConverter

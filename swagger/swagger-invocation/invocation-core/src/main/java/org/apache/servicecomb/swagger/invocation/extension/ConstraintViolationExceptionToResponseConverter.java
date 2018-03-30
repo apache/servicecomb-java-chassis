@@ -14,17 +14,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.servicecomb.swagger.invocation.exception;
+package org.apache.servicecomb.swagger.invocation.extension;
+
+import javax.validation.ConstraintViolationException;
+import javax.ws.rs.core.Response.Status;
 
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.apache.servicecomb.swagger.invocation.SwaggerInvocation;
+import org.apache.servicecomb.swagger.invocation.exception.ExceptionToResponseConverter;
+import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 
-public interface ExceptionToResponseConverter<T extends Throwable> {
-  Class<T> getExceptionClass();
-
-  default int getOrder() {
-    return 0;
+public class ConstraintViolationExceptionToResponseConverter
+    implements ExceptionToResponseConverter<ConstraintViolationException> {
+  @Override
+  public Class<ConstraintViolationException> getExceptionClass() {
+    return ConstraintViolationException.class;
   }
 
-  Response convert(SwaggerInvocation swaggerInvocation, T e);
+  @Override
+  public Response convert(SwaggerInvocation swaggerInvocation, ConstraintViolationException e) {
+    return Response.createFail(new InvocationException(Status.BAD_REQUEST, e.getMessage()));
+  }
 }
