@@ -195,16 +195,11 @@ public abstract class AbstractServiceRegistry implements ServiceRegistry {
     if (serviceCenterInfo == null) {
       LOGGER.warn("Server startup when service center not started and cannot retrieve version info, assume latest.");
       return true;
-    } else {
-      Version scVersion = VersionUtils.getOrCreate(serviceCenterInfo.getVersion());
-      Version frameworkVersion = VersionUtils.getOrCreate(Const.SERVICECENTER_FRAMEWORK_VERSION);
-
-      if (scVersion.compareTo(frameworkVersion) >= 0) {
-        return true;
-      } else {
-        return false;
-      }
     }
+
+    Version scVersion = VersionUtils.getOrCreate(serviceCenterInfo.getVersion());
+    Version frameworkVersion = VersionUtils.getOrCreate(Const.SERVICECENTER_FRAMEWORK_VERSION);
+    return scVersion.compareTo(frameworkVersion) >= 0;
   }
 
   private void loadStaticConfiguration() {
