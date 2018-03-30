@@ -23,19 +23,22 @@
 		<artifactId>swagger-invocation</artifactId>
 		<version>1.0.0-m2-SNAPSHOT</version>
 	</parent>
-	<artifactId>swagger-invocation-core</artifactId>
-	<name>Java Chassis::Swagger::Invocation::Core</name>
+	<artifactId>swagger-invocation-validator</artifactId>
+	<name>Java Chassis::Swagger::Invocation::Validator</name>
 
 
 	<dependencies>
 		<dependency>
 			<groupId>org.apache.servicecomb</groupId>
-			<artifactId>swagger-generator-core</artifactId>
+			<artifactId>swagger-invocation-core</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>org.apache.servicecomb</groupId>
-			<artifactId>swagger-generator-jaxrs</artifactId>
-			<scope>test</scope>
+			<groupId>org.hibernate</groupId>
+			<artifactId>hibernate-validator</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.glassfish</groupId>
+			<artifactId>javax.el</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.slf4j</groupId>

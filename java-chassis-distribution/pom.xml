@@ -90,6 +90,10 @@
         </dependency>
         <dependency>
             <groupId>org.apache.servicecomb</groupId>
+            <artifactId>swagger-invocation-validator</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.servicecomb</groupId>
             <artifactId>foundation-common</artifactId>
         </dependency>
         <dependency>
