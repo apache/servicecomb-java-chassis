@@ -30,7 +30,7 @@ import org.apache.servicecomb.swagger.invocation.SwaggerInvocation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class ParameterValidator extends AbstractProducerInvokeExtension {
+public class ParameterValidator implements ProducerInvokeExtension {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(ParameterValidator.class);
 
@@ -52,7 +52,7 @@ public class ParameterValidator extends AbstractProducerInvokeExtension {
             Default.class);
     if (violations.size() > 0) {
       LOGGER.warn("Parameter validation failed : " + violations.toString());
-      throw new ConstraintViolationException(violations);
+      throw new ConstraintViolationException(violations.toString(), violations);
     }
   }
 
