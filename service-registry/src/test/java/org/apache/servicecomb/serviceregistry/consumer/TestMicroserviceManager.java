@@ -90,32 +90,6 @@ public class TestMicroserviceManager {
   }
 
   @Test
-  public void testCreateRuleServiceTooMany() throws Exception {
-    new Expectations(RegistryUtils.class) {
-      {
-        RegistryUtils.findServiceInstances(appId, anyString, DefinitionConst.VERSION_RULE_ALL, null);
-        result = microserviceInstances;
-      }
-    };
-
-    for (int i = 0; i < 1005; i++) {
-      MicroserviceVersionRule microserviceVersionRule =
-          microserviceManager.getOrCreateMicroserviceVersionRule(serviceName + i, versionRule);
-      Assert.assertEquals("0.0.0+", microserviceVersionRule.getVersionRule().getVersionRule());
-      Assert.assertNull(microserviceVersionRule.getLatestMicroserviceVersion());
-      if (i == 499) {
-        Thread.sleep(1);
-      }
-    }
-
-    Assert.assertEquals(1005, cachedVersions.size());
-    Assert.assertEquals("msName1004", cachedVersions.get("msName1004").getMicroserviceName());
-    Assert.assertEquals("msName1000", cachedVersions.get("msName1000").getMicroserviceName());
-    Assert.assertEquals("msName500", cachedVersions.get("msName500").getMicroserviceName());
-    Assert.assertEquals("msName0", cachedVersions.get("msName0").getMicroserviceName());
-  }
-
-  @Test
   public void testCreateRuleServiceNotExists() {
     new Expectations(RegistryUtils.class) {
       {
