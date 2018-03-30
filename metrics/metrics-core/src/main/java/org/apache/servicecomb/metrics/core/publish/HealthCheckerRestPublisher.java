@@ -19,18 +19,16 @@ package org.apache.servicecomb.metrics.core.publish;
 
 import java.util.Map;
 
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+
 import org.apache.servicecomb.foundation.metrics.health.HealthCheckResult;
 import org.apache.servicecomb.foundation.metrics.health.HealthCheckerManager;
-import org.apache.servicecomb.provider.rest.common.RestSchema;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 
-@RestSchema(schemaId = "healthEndpoint")
-@RequestMapping(path = "/health")
-public class HealthCheckerPublisher {
-  @RequestMapping(path = "/", method = RequestMethod.GET)
-  @CrossOrigin
+@Path("/health")
+public class HealthCheckerRestPublisher {
+  @Path("/")
+  @GET
   public boolean checkHealth() {
     Map<String, HealthCheckResult> results = HealthCheckerManager.getInstance().check();
     for (HealthCheckResult result : results.values()) {
@@ -41,8 +39,8 @@ public class HealthCheckerPublisher {
     return true;
   }
 
-  @RequestMapping(path = "/details", method = RequestMethod.GET)
-  @CrossOrigin
+  @Path("/details")
+  @GET
   public Map<String, HealthCheckResult> checkHealthDetails() {
     return HealthCheckerManager.getInstance().check();
   }
