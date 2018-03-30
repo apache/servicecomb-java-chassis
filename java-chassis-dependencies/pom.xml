@@ -901,6 +901,11 @@
       </dependency>
       <dependency>
         <groupId>org.apache.servicecomb</groupId>
+        <artifactId>swagger-invocation-validator</artifactId>
+        <version>1.0.0-m2-SNAPSHOT</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.servicecomb</groupId>
         <artifactId>service-registry</artifactId>
         <version>1.0.0-m2-SNAPSHOT</version>
       </dependency>

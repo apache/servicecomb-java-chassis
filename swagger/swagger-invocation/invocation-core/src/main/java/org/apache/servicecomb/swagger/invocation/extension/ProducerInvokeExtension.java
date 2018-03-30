@@ -22,9 +22,7 @@ import org.apache.servicecomb.swagger.invocation.SwaggerInvocation;
 
 public interface ProducerInvokeExtension {
 
-  default int getOrder() {
-    return 0;
-  }
+  public int getOrder();
 
   <T> void beforeMethodInvoke(SwaggerInvocation invocation, SwaggerProducerOperation producerOperation,
       Object[] args) throws Exception;

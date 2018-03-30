@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.servicecomb.swagger.invocation.extension;
+package org.apache.servicecomb.swagger.invocation.validator;
 
 import java.util.Set;
 
@@ -27,6 +27,7 @@ import javax.validation.groups.Default;
 
 import org.apache.servicecomb.swagger.engine.SwaggerProducerOperation;
 import org.apache.servicecomb.swagger.invocation.SwaggerInvocation;
+import org.apache.servicecomb.swagger.invocation.extension.ProducerInvokeExtension;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -54,6 +55,11 @@ public class ParameterValidator implements ProducerInvokeExtension {
       LOGGER.warn("Parameter validation failed : " + violations.toString());
       throw new ConstraintViolationException(violations.toString(), violations);
     }
+  }
+
+  @Override
+  public int getOrder() {
+    return 100;
   }
 
 }

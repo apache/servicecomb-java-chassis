@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.servicecomb.swagger.invocation.extension;
+package org.apache.servicecomb.swagger.invocation.validator;
 
 import javax.validation.ConstraintViolationException;
 import javax.ws.rs.core.Response.Status;
