@@ -85,7 +85,7 @@ public final class ServiceRegistryClientImpl implements ServiceRegistryClient {
   private void retry(RequestContext requestContext, Handler<RestResponse> responseHandler) {
     LOGGER.warn("invoke service [{}] failed, retry.", requestContext.getUri());
     requestContext.setIpPort(ipPortManager.getNextAvailableAddress(requestContext.getIpPort()));
-    requestContext.setRetryTimes(requestContext.getRetryTimes() + 1);
+    requestContext.incrementRetryTimes(requestContext.getRetryTimes());
     RestUtils.httpDo(requestContext, responseHandler);
   }
 
