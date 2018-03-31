@@ -50,6 +50,12 @@ public class IpPortManager {
 
   private boolean autoDiscoveryInited = false;
 
+  private int maxRetryTimes;
+
+  public int getMaxRetryTimes() {
+    return maxRetryTimes;
+  }
+
   public IpPortManager(ServiceRegistryConfig serviceRegistryConfig, InstanceCacheManager instanceCacheManager) {
     this.serviceRegistryConfig = serviceRegistryConfig;
     this.instanceCacheManager = instanceCacheManager;
@@ -61,6 +67,7 @@ public class IpPortManager {
     }
     int initialIndex = new Random().nextInt(defaultIpPort.size());
     currentAvailableIndex = new AtomicInteger(initialIndex);
+    maxRetryTimes = defaultIpPort.size() + (getDiscoveredIpPort() == null ? 0 : getDiscoveredIpPort().size());
   }
 
   // we have to do this operation after the first time setup has already done
