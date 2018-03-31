@@ -33,8 +33,7 @@ public class RequestContext {
 
   private RequestParam params;
 
-  // we can set max retry policies, now only try it twice
-  private boolean retry;
+  private int retryTimes = 0;
 
   public IpPort getIpPort() {
     return ipPort;
@@ -68,11 +67,12 @@ public class RequestContext {
     this.params = params;
   }
 
-  public boolean isRetry() {
-    return retry;
+
+  public int getRetryTimes() {
+    return retryTimes;
   }
 
-  public void setRetry(boolean retry) {
-    this.retry = retry;
+  public void incrementRetryTimes() {
+    ++this.retryTimes;
   }
 }
