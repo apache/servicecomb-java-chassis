@@ -16,9 +16,18 @@
  */
 package org.apache.servicecomb.metrics.core;
 
+import javax.inject.Inject;
+
 import org.apache.servicecomb.core.BootListener;
+import org.apache.servicecomb.core.definition.schema.ProducerSchemaFactory;
 import org.apache.servicecomb.foundation.common.event.EventManager;
+import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
 import org.apache.servicecomb.foundation.metrics.MetricsBootstrap;
+import org.apache.servicecomb.foundation.metrics.MetricsInitializer;
+import org.apache.servicecomb.metrics.core.publish.HealthCheckerRestPublisher;
+import org.apache.servicecomb.metrics.core.publish.MetricsRestPublisher;
+import org.apache.servicecomb.serviceregistry.RegistryUtils;
+import org.apache.servicecomb.serviceregistry.api.registry.Microservice;
 import org.springframework.stereotype.Component;
 
 import com.netflix.spectator.api.Spectator;
@@ -27,12 +36,36 @@ import com.netflix.spectator.api.Spectator;
 public class MetricsBootListener implements BootListener {
   private MetricsBootstrap metricsBootstrap = new MetricsBootstrap();
 
+  @Inject
+  private ProducerSchemaFactory producerSchemaFactory;
+
   @Override
   public void onBootEvent(BootEvent event) {
-    if (!EventType.AFTER_REGISTRY.equals(event.getEventType())) {
-      return;
+    switch (event.getEventType()) {
+      case BEFORE_PRODUCER_PROVIDER:
+        registerSchemas();
+        break;
+      case AFTER_REGISTRY:
+        metricsBootstrap.start(Spectator.globalRegistry(), EventManager.getEventBus());
+        break;
+      default:
+        break;
     }
+  }
 
-    metricsBootstrap.start(Spectator.globalRegistry(), EventManager.getEventBus());
+  private void registerSchemas() {
+    Microservice microservice = RegistryUtils.getMicroservice();
+
+    producerSchemaFactory.getOrCreateProducerSchema(microservice.getServiceName(),
+        "healthEndpoint",
+        HealthCheckerRestPublisher.class,
+        new HealthCheckerRestPublisher());
+
+    MetricsRestPublisher metricsRestPublisher =
+        SPIServiceUtils.getTargetService(MetricsInitializer.class, MetricsRestPublisher.class);
+    producerSchemaFactory.getOrCreateProducerSchema(microservice.getServiceName(),
+        "metricsEndpoint",
+        metricsRestPublisher.getClass(),
+        metricsRestPublisher);
   }
 }
