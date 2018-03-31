@@ -85,7 +85,7 @@ public final class ServiceRegistryClientImpl implements ServiceRegistryClient {
   private void retry(RequestContext requestContext, Handler<RestResponse> responseHandler) {
     LOGGER.warn("invoke service [{}] failed, retry.", requestContext.getUri());
     requestContext.setIpPort(ipPortManager.getNextAvailableAddress(requestContext.getIpPort()));
-    requestContext.setRetry(true);
+    requestContext.incrementRetryTimes();
     RestUtils.httpDo(requestContext, responseHandler);
   }
 
@@ -98,7 +98,7 @@ public final class ServiceRegistryClientImpl implements ServiceRegistryClient {
       HttpClientResponse response = restResponse.getResponse();
       if (response == null) {
         // 请求失败，触发请求SC的其他实例
-        if (!requestContext.isRetry()) {
+        if (requestContext.getRetryTimes() <= ipPortManager.getMaxRetryTimes()) {
           retry(requestContext, syncHandler(countDownLatch, cls, holder));
         } else {
           countDownLatch.countDown();
@@ -150,7 +150,7 @@ public final class ServiceRegistryClientImpl implements ServiceRegistryClient {
       HttpClientResponse response = restResponse.getResponse();
       if (response == null) {
         // 请求失败，触发请求SC的其他实例
-        if (!requestContext.isRetry()) {
+        if (requestContext.getRetryTimes() <= ipPortManager.getMaxRetryTimes()) {
           retry(requestContext, syncHandlerEx(countDownLatch, holder));
         } else {
           countDownLatch.countDown();
@@ -176,7 +176,7 @@ public final class ServiceRegistryClientImpl implements ServiceRegistryClient {
       HttpClientResponse response = restResponse.getResponse();
       if (response == null) {
         // 请求失败，触发请求SC的其他实例
-        if (!requestContext.isRetry()) {
+        if (requestContext.getRetryTimes() <= ipPortManager.getMaxRetryTimes()) {
           retry(requestContext, syncHandlerForInstances(countDownLatch, mInstances));
         } else {
           countDownLatch.countDown();
