@@ -72,7 +72,7 @@ public class RequestContext {
     return retryTimes;
   }
 
-  public void incrementRetryTimes(int retryTimes) {
-    this.retryTimes = retryTimes + 1;
+  public void incrementRetryTimes() {
+    ++this.retryTimes;
   }
 }
