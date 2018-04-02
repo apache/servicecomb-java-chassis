@@ -16,14 +16,14 @@
  */
 package org.apache.servicecomb.metrics.core.publish;
 
-import java.util.List;
-
 import org.apache.servicecomb.core.Const;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.event.InvocationFinishEvent;
 import org.apache.servicecomb.foundation.common.utils.JsonUtils;
-import org.apache.servicecomb.foundation.metrics.MetricsBootstrapConfig;
-import org.apache.servicecomb.metrics.core.DefaultMetricsInitializer;
+import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
+import org.apache.servicecomb.foundation.metrics.MetricsInitializer;
+import org.apache.servicecomb.metrics.core.DefaultRegistryInitializer;
+import org.apache.servicecomb.metrics.core.InvocationMetersInitializer;
 import org.apache.servicecomb.metrics.core.publish.model.DefaultPublishModel;
 import org.apache.servicecomb.swagger.invocation.InvocationType;
 import org.apache.servicecomb.swagger.invocation.Response;
@@ -33,19 +33,25 @@ import org.junit.Test;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.common.collect.Lists;
 import com.google.common.eventbus.EventBus;
-import com.netflix.spectator.api.CompositeRegistry;
 import com.netflix.spectator.api.DefaultRegistry;
 import com.netflix.spectator.api.ManualClock;
-import com.netflix.spectator.api.Meter;
 import com.netflix.spectator.api.Registry;
-import com.netflix.spectator.api.SpectatorUtils;
 
 import mockit.Expectations;
 import mockit.Mock;
 import mockit.MockUp;
 import mockit.Mocked;
 
-public class TestPublishModelFactory {
+public class TestInvocationPublishModelFactory {
+  EventBus eventBus = new EventBus();
+
+  Registry registry = new DefaultRegistry(new ManualClock());
+
+  @Mocked
+  DefaultRegistryInitializer defaultRegistryInitializer;
+
+  InvocationMetersInitializer invocationMetersInitializer = new InvocationMetersInitializer();
+
   @Mocked
   Invocation invocation;
 
@@ -56,28 +62,29 @@ public class TestPublishModelFactory {
 
   @Test
   public void createDefaultPublishModel() throws JsonProcessingException {
-    Registry registry = prepareRegistry();
-    List<Meter> meters = Lists.newArrayList(registry);
-    PublishModelFactory factory = new PublishModelFactory(meters);
+    new Expectations(SPIServiceUtils.class) {
+      {
+        SPIServiceUtils.getTargetService(MetricsInitializer.class, DefaultRegistryInitializer.class);
+        result = defaultRegistryInitializer;
+        defaultRegistryInitializer.getRegistry();
+        result = registry;
+      }
+    };
+    invocationMetersInitializer.init(null, eventBus, null);
+    prepareInvocation();
+
+    PublishModelFactory factory = new PublishModelFactory(Lists.newArrayList(registry.iterator()));
     DefaultPublishModel model = factory.createDefaultPublishModel();
 
     Assert.assertEquals(
-        "{\"consumer\":{\"operationPerfGroups\":{\"groups\":{\"rest\":{\"200\":{\"transport\":\"rest\",\"status\":\"200\",\"operationPerfs\":[{\"operation\":\"m.s.o\",\"stages\":{\"total\":{\"tps\":1,\"msTotalTime\":10000.0,\"msMaxLatency\":0.0}}}],\"summary\":{\"operation\":\"\",\"stages\":{\"total\":{\"tps\":1,\"msTotalTime\":10000.0,\"msMaxLatency\":0.0}}}}}}}},\"producer\":{\"operationPerfGroups\":{\"groups\":{\"rest\":{\"200\":{\"transport\":\"rest\",\"status\":\"200\",\"operationPerfs\":[{\"operation\":\"m.s.o\",\"stages\":{\"execution\":{\"tps\":1,\"msTotalTime\":5000.0,\"msMaxLatency\":0.0},\"total\":{\"tps\":1,\"msTotalTime\":10000.0,\"msMaxLatency\":0.0},\"queue\":{\"tps\":1,\"msTotalTime\":5000.0,\"msMaxLatency\":0.0}}}],\"summary\":{\"operation\":\"\",\"stages\":{\"execution\":{\"tps\":1,\"msTotalTime\":5000.0,\"msMaxLatency\":0.0},\"total\":{\"tps\":1,\"msTotalTime\":10000.0,\"msMaxLatency\":0.0},\"queue\":{\"tps\":1,\"msTotalTime\":5000.0,\"msMaxLatency\":0.0}}}}}}}}}",
-        JsonUtils.writeValueAsString(model));
+        "{\"operationPerfGroups\":{\"groups\":{\"rest\":{\"200\":{\"transport\":\"rest\",\"status\":\"200\",\"operationPerfs\":[{\"operation\":\"m.s.o\",\"stages\":{\"total\":{\"tps\":1,\"msTotalTime\":10000.0,\"msMaxLatency\":0.0}}}],\"summary\":{\"operation\":\"\",\"stages\":{\"total\":{\"tps\":1,\"msTotalTime\":10000.0,\"msMaxLatency\":0.0}}}}}}}}",
+        JsonUtils.writeValueAsString(model.getConsumer()));
+    Assert.assertEquals(
+        "{\"operationPerfGroups\":{\"groups\":{\"rest\":{\"200\":{\"transport\":\"rest\",\"status\":\"200\",\"operationPerfs\":[{\"operation\":\"m.s.o\",\"stages\":{\"execution\":{\"tps\":1,\"msTotalTime\":5000.0,\"msMaxLatency\":0.0},\"total\":{\"tps\":1,\"msTotalTime\":10000.0,\"msMaxLatency\":0.0},\"queue\":{\"tps\":1,\"msTotalTime\":5000.0,\"msMaxLatency\":0.0}}}],\"summary\":{\"operation\":\"\",\"stages\":{\"execution\":{\"tps\":1,\"msTotalTime\":5000.0,\"msMaxLatency\":0.0},\"total\":{\"tps\":1,\"msTotalTime\":10000.0,\"msMaxLatency\":0.0},\"queue\":{\"tps\":1,\"msTotalTime\":5000.0,\"msMaxLatency\":0.0}}}}}}}}",
+        JsonUtils.writeValueAsString(model.getProducer()));
   }
 
-  protected Registry prepareRegistry() {
-    CompositeRegistry globalRegistry = SpectatorUtils.createCompositeRegistry(null);
-    Registry registry = new DefaultRegistry(new ManualClock());
-    EventBus eventBus = new EventBus();
-
-    DefaultMetricsInitializer metricsInitializer = new DefaultMetricsInitializer() {
-      protected Registry createRegistry(MetricsBootstrapConfig config) {
-        return registry;
-      };
-    };
-    metricsInitializer.init(globalRegistry, eventBus, new MetricsBootstrapConfig());
-
+  protected void prepareInvocation() {
     new MockUp<System>() {
       @Mock
       long nanoTime() {
@@ -125,7 +132,5 @@ public class TestPublishModelFactory {
 
     invocationType = InvocationType.PRODUCER;
     eventBus.post(finishEvent);
-
-    return registry;
   }
 }

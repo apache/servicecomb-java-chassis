@@ -27,6 +27,7 @@ import org.apache.servicecomb.metrics.core.publish.model.invocation.OperationPer
 import org.apache.servicecomb.swagger.invocation.InvocationType;
 
 import com.netflix.spectator.api.Meter;
+import com.netflix.spectator.api.patterns.ThreadPoolMonitorPublishModelFactory;
 
 public class PublishModelFactory {
   private MeasurementTree tree;
@@ -52,6 +53,7 @@ public class PublishModelFactory {
         MeterInvocationConst.TAG_STATUS,
         MeterInvocationConst.TAG_STAGE,
         MeterInvocationConst.TAG_STATISTIC);
+
     return groupConfig;
   }
 
@@ -80,12 +82,12 @@ public class PublishModelFactory {
   public DefaultPublishModel createDefaultPublishModel() {
     DefaultPublishModel model = new DefaultPublishModel();
 
-    model
-        .getConsumer()
+    model.getConsumer()
         .setOperationPerfGroups(generateOperationPerfGroups(tree, InvocationType.CONSUMER.name()));
-    model
-        .getProducer()
+    model.getProducer()
         .setOperationPerfGroups(generateOperationPerfGroups(tree, InvocationType.PRODUCER.name()));
+
+    ThreadPoolMonitorPublishModelFactory.create(tree, model.getThreadPools());
 
     return model;
   }

@@ -65,11 +65,12 @@ public class TestMeasurementTree {
     MeasurementGroupConfig config = new MeasurementGroupConfig("id", "g1", "g2", Statistic.count.key());
     tree.from(registry.iterator(), config);
 
-    Assert.assertEquals(1, tree.getChildren().size());
+    Assert.assertEquals(2, tree.getChildren().size());
 
     MeasurementNode node = tree.findChild("id", "g1v", "g2v");
     Assert.assertEquals(2d, node.findChild(Statistic.count.value()).getMeasurements().get(0).value(), 0);
     Assert.assertEquals(12d, node.findChild(Statistic.totalTime.value()).getMeasurements().get(0).value(), 0);
+    Assert.assertEquals(0d, tree.findChild("id_notCare").summary(), 0);
   }
 
   @Test
