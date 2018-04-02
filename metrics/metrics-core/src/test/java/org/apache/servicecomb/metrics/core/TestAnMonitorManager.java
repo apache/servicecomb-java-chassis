@@ -37,7 +37,7 @@ import org.junit.rules.ExpectedException;
 
 import com.netflix.servo.monitor.Counter;
 
-public class TestMonitorManager {
+public class TestAnMonitorManager {
 
   private static MetricsLoader currentWindowMetricsLoader;
 
