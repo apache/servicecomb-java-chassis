@@ -26,6 +26,7 @@ import org.apache.servicecomb.foundation.metrics.PolledEvent;
 import org.apache.servicecomb.foundation.vertx.VertxUtils;
 import org.apache.servicecomb.metrics.core.meter.invocation.MeterInvocationConst;
 import org.apache.servicecomb.metrics.core.publish.model.DefaultPublishModel;
+import org.apache.servicecomb.metrics.core.publish.model.ThreadPoolPublishModel;
 import org.apache.servicecomb.metrics.core.publish.model.invocation.OperationPerf;
 import org.apache.servicecomb.metrics.core.publish.model.invocation.OperationPerfGroup;
 import org.apache.servicecomb.metrics.core.publish.model.invocation.OperationPerfGroups;
@@ -75,10 +76,34 @@ public class DefaultLogPublisher implements MetricsInitializer {
 
     PublishModelFactory factory = new PublishModelFactory(meters);
     DefaultPublishModel model = factory.createDefaultPublishModel();
+
+    printThreadPoolMetrics(model, sb);
+
     printConsumerLog(model, sb);
     printProducerLog(model, sb);
 
     LOGGER.info(sb.toString());
+  }
+
+  protected void printThreadPoolMetrics(DefaultPublishModel model, StringBuilder sb) {
+    if (model.getThreadPools().isEmpty()) {
+      return;
+    }
+
+    sb.append("threadPool:\n");
+    sb.append("  corePoolSize maxThreads poolSize currentThreadsBusy queueSize taskCount completedTaskCount name\n");
+    for (Entry<String, ThreadPoolPublishModel> entry : model.getThreadPools().entrySet()) {
+      ThreadPoolPublishModel threadPoolPublishModel = entry.getValue();
+      sb.append(String.format("  %-12d %-10d %-8d %-18d %-9d %-9.1f %-18.1f %s\n",
+          threadPoolPublishModel.getCorePoolSize(),
+          threadPoolPublishModel.getMaxThreads(),
+          threadPoolPublishModel.getPoolSize(),
+          threadPoolPublishModel.getCurrentThreadsBusy(),
+          threadPoolPublishModel.getQueueSize(),
+          threadPoolPublishModel.getAvgTaskCount(),
+          threadPoolPublishModel.getAvgCompletedTaskCount(),
+          entry.getKey()));
+    }
   }
 
   protected void printConsumerLog(DefaultPublishModel model, StringBuilder sb) {
