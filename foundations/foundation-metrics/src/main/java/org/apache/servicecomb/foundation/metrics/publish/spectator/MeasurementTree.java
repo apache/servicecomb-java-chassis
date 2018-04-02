@@ -45,12 +45,13 @@ public class MeasurementTree extends MeasurementNode {
   public void from(Iterable<Measurement> measurements, MeasurementGroupConfig groupConfig) {
     for (Measurement measurement : measurements) {
       Id id = measurement.id();
+      MeasurementNode node = addChild(id.name(), measurement);
+
       List<TagFinder> tagFinders = groupConfig.findTagFinders(id.name());
       if (tagFinders == null) {
         continue;
       }
 
-      MeasurementNode node = addChild(id.name(), measurement);
       for (TagFinder tagFinder : tagFinders) {
         Tag tag = tagFinder.find(id.tags());
         if (tag == null) {
