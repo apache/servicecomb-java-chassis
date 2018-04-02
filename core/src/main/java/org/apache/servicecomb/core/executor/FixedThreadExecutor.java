@@ -58,6 +58,10 @@ public class FixedThreadExecutor implements Executor {
     }
   }
 
+  public List<Executor> getExecutorList() {
+    return executorList;
+  }
+
   @Override
   public void execute(Runnable command) {
     long threadId = Thread.currentThread().getId();
