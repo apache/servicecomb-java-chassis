@@ -28,7 +28,9 @@ public interface BootListener {
     BEFORE_TRANSPORT,
     AFTER_TRANSPORT,
     BEFORE_REGISTRY,
-    AFTER_REGISTRY
+    AFTER_REGISTRY,
+    BEFORE_CLOSE,
+    AFTER_CLOSE
   }
 
   class BootEvent {
