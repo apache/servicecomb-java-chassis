@@ -32,6 +32,7 @@ import org.apache.servicecomb.foundation.test.scaffolding.log.LogCollector;
 import org.apache.servicecomb.foundation.vertx.VertxUtils;
 import org.apache.servicecomb.metrics.core.meter.invocation.MeterInvocationConst;
 import org.apache.servicecomb.metrics.core.publish.model.DefaultPublishModel;
+import org.apache.servicecomb.metrics.core.publish.model.ThreadPoolPublishModel;
 import org.apache.servicecomb.metrics.core.publish.model.invocation.OperationPerf;
 import org.apache.servicecomb.metrics.core.publish.model.invocation.OperationPerfGroup;
 import org.apache.servicecomb.metrics.core.publish.model.invocation.OperationPerfGroups;
@@ -157,6 +158,8 @@ public class TestDefaultLogPublisher {
     model.getConsumer().setOperationPerfGroups(operationPerfGroups);
     model.getProducer().setOperationPerfGroups(operationPerfGroups);
 
+    model.getThreadPools().put("test", new ThreadPoolPublishModel());
+
     new MockUp<PublishModelFactory>() {
       @Mock
       DefaultPublishModel createDefaultPublishModel() {
@@ -175,6 +178,9 @@ public class TestDefaultLogPublisher {
         "vertx:\n" +
         "  name       eventLoopContext-created\n" +
         "  v          1\n" +
+        "threadPool:\n" +
+        "  corePoolSize maxThreads poolSize currentThreadsBusy queueSize taskCount completedTaskCount name\n" +
+        "  0            0          0        0                  0         0.0       0.0                test\n" +
         "consumer:\n" +
         "  tps     latency(ms) max-latency(ms) operation\n" +
         "  rest.OK:\n" +
