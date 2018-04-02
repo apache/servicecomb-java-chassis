@@ -22,11 +22,17 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
+import javax.xml.ws.Holder;
+
+import org.apache.commons.lang3.reflect.FieldUtils;
 import org.apache.servicecomb.core.BootListener.BootEvent;
+import org.apache.servicecomb.core.BootListener.EventType;
 import org.apache.servicecomb.core.definition.loader.SchemaListenerManager;
 import org.apache.servicecomb.core.endpoint.AbstractEndpointsCache;
 import org.apache.servicecomb.core.provider.consumer.ConsumerProviderManager;
@@ -39,6 +45,7 @@ import org.apache.servicecomb.foundation.common.utils.ReflectUtils;
 import org.apache.servicecomb.serviceregistry.RegistryUtils;
 import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
 import org.apache.servicecomb.serviceregistry.task.MicroserviceInstanceRegisterTask;
+import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Assert;
@@ -53,6 +60,8 @@ import org.springframework.context.support.AbstractApplicationContext;
 import mockit.Deencapsulation;
 import mockit.Expectations;
 import mockit.Injectable;
+import mockit.Mock;
+import mockit.MockUp;
 import mockit.Mocked;
 
 public class TestCseApplicationListener {
@@ -147,15 +156,26 @@ public class TestCseApplicationListener {
   }
 
   @Test
-  public void testCseApplicationListenerShutdown(@Injectable ContextClosedEvent event,
-      @Mocked RegistryUtils ru) {
-    new Expectations() {
-      {
-        RegistryUtils.destroy();
+  public void testCseApplicationListenerShutdown(@Mocked ApplicationContext context) throws IllegalAccessException {
+    Holder<Boolean> destroyHolder = new Holder<>();
+    new MockUp<RegistryUtils>() {
+      @Mock
+      void destroy() {
+        destroyHolder.value = true;
       }
     };
     CseApplicationListener cal = new CseApplicationListener();
+    ContextClosedEvent event = new ContextClosedEvent(context);
+
+    List<EventType> eventTypes = new ArrayList<>();
+    BootListener bootListener = e -> {
+      eventTypes.add(e.getEventType());
+    };
+    FieldUtils.writeField(cal, "bootListenerList", Arrays.asList(bootListener), true);
     cal.onApplicationEvent(event);
+
+    Assert.assertTrue(destroyHolder.value);
+    Assert.assertThat(eventTypes, Matchers.contains(EventType.BEFORE_CLOSE, EventType.AFTER_CLOSE));
   }
 
   @Test
