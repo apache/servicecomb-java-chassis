@@ -52,7 +52,13 @@ public final class ConfigUtil {
 
   private static final String MICROSERVICE_CONFIG_LOADER_KEY = "cse-microservice-config-loader";
 
+  private static ConfigModel model = new ConfigModel();
+
   private ConfigUtil() {
+  }
+
+  public static void addConfigs(Map<String, Object> config) {
+    model.setConfig(config);
   }
 
   public static Object getProperty(String key) {
@@ -83,6 +89,9 @@ public final class ConfigUtil {
   public static ConcurrentCompositeConfiguration createLocalConfig() {
     MicroserviceConfigLoader loader = new MicroserviceConfigLoader();
     loader.loadAndSort();
+    if(model.getConfig() != null) {
+      loader.getConfigModels().add(model);
+    }
 
     LOGGER.info("create local config:");
     for (ConfigModel configModel : loader.getConfigModels()) {
@@ -93,6 +102,8 @@ public final class ConfigUtil {
     ConfigUtil.setMicroserviceConfigLoader(config, loader);
     return config;
   }
+
+
 
   public static ConcurrentCompositeConfiguration createLocalConfig(List<ConfigModel> configModelList) {
     ConcurrentCompositeConfiguration config = new ConcurrentCompositeConfiguration();

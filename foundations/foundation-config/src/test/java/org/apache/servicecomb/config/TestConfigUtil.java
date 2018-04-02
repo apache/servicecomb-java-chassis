@@ -27,6 +27,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.HashMap;
 
 import org.apache.commons.configuration.AbstractConfiguration;
 import org.apache.commons.configuration.Configuration;
@@ -78,6 +79,16 @@ public class TestConfigUtil {
   @AfterClass
   public static void tearDown() throws Exception {
     ArchaiusUtils.resetConfig();
+  }
+
+  @Test
+  public void testAddConfig() {
+    Map config = new HashMap<String, Object>();
+    config.put("APPLICATION_ID", "app");
+    ConfigUtil.addConfigs(config);
+    ConcurrentCompositeConfiguration configuration = ConfigUtil.createLocalConfig();
+    Assert.assertEquals(configuration.getString("APPLICATION_ID"), "app");
+
   }
 
   @Test
