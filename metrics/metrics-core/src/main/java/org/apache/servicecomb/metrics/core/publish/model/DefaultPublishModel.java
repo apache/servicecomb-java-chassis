@@ -16,16 +16,37 @@
  */
 package org.apache.servicecomb.metrics.core.publish.model;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class DefaultPublishModel {
   private ConsumerPublishModel consumer = new ConsumerPublishModel();
 
   private ProducerPublishModel producer = new ProducerPublishModel();
 
+  private Map<String, ThreadPoolPublishModel> threadPools = new HashMap<>();
+
   public ConsumerPublishModel getConsumer() {
     return consumer;
   }
 
+  public void setConsumer(ConsumerPublishModel consumer) {
+    this.consumer = consumer;
+  }
+
   public ProducerPublishModel getProducer() {
     return producer;
+  }
+
+  public void setProducer(ProducerPublishModel producer) {
+    this.producer = producer;
+  }
+
+  public Map<String, ThreadPoolPublishModel> getThreadPools() {
+    return threadPools;
+  }
+
+  public void setThreadPools(Map<String, ThreadPoolPublishModel> threadPools) {
+    this.threadPools = threadPools;
   }
 }
