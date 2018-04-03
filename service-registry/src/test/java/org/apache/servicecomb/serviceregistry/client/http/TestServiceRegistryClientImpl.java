@@ -38,7 +38,6 @@ import org.apache.servicecomb.serviceregistry.api.response.GetExistenceResponse;
 import org.apache.servicecomb.serviceregistry.client.ClientException;
 import org.apache.servicecomb.serviceregistry.client.IpPortManager;
 import org.apache.servicecomb.serviceregistry.client.http.ServiceRegistryClientImpl.ResponseWrapper;
-import org.apache.servicecomb.serviceregistry.config.ServiceRegistryConfig;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -49,7 +48,6 @@ import io.vertx.core.Handler;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.http.HttpClientOptions;
 import io.vertx.core.http.HttpClientResponse;
-import io.vertx.core.http.HttpVersion;
 import mockit.Deencapsulation;
 import mockit.Expectations;
 import mockit.Mock;
@@ -90,17 +88,6 @@ public class TestServiceRegistryClientImpl {
     Microservice microservice = microserviceFactory.create("app", "ms");
     oClient.registerMicroservice(microservice);
     oClient.registerMicroserviceInstance(microservice.getInstance());
-    new MockUp<ServiceRegistryConfig>() {
-      @Mock
-      public HttpVersion getHttpVersion() {
-        return HttpVersion.HTTP_2;
-      }
-
-      @Mock
-      public boolean isSsl() {
-        return true;
-      }
-    };
     try {
       oClient.init();
       HttpClientOptions httpClientOptions = Deencapsulation.invoke(oClient, "createHttpClientOptions");
