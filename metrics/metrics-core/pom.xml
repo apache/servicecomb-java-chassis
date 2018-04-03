@@ -30,16 +30,16 @@
 
   <dependencies>
     <dependency>
-      <groupId>com.netflix.servo</groupId>
-      <artifactId>servo-core</artifactId>
-    </dependency>
-    <dependency>
       <groupId>org.apache.servicecomb</groupId>
       <artifactId>foundation-metrics</artifactId>
     </dependency>
     <dependency>
       <groupId>org.apache.servicecomb</groupId>
-      <artifactId>provider-springmvc</artifactId>
+      <artifactId>java-chassis-core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.servicecomb</groupId>
+      <artifactId>swagger-generator-jaxrs</artifactId>
     </dependency>
 
     <dependency>

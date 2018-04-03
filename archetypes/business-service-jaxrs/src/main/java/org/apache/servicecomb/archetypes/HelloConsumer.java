@@ -15,22 +15,16 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.metrics.core;
+package org.apache.servicecomb.archetypes;
 
-import java.util.Map;
+import org.apache.servicecomb.provider.springmvc.reference.RestTemplateBuilder;
+import org.springframework.web.client.RestTemplate;
 
-import org.apache.servicecomb.metrics.core.publish.MetricsPublisher;
-import org.junit.Assert;
-import org.junit.Test;
+public class HelloConsumer {
+  private final RestTemplate restTemplate = RestTemplateBuilder.create();
 
-public class TestMetricsPublisher {
-  @Test
-  public void testMeasure() {
-    System.getProperties().setProperty(MetricsConfig.METRICS_WINDOW_TIME, "2000");
-
-    MetricsPublisher publisher = new MetricsPublisher();
-    Map<String, Double> metrics = publisher.measure();
-    //10 jvm metrics get
-    Assert.assertEquals(10, metrics.size());
+  public void invokeHello(){
+    String result = restTemplate.getForObject("cse://business-service/hello", String.class);
   }
+
 }

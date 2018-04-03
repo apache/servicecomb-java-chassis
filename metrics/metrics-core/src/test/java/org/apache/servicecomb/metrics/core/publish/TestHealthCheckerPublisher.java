@@ -15,14 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.metrics.core;
+package org.apache.servicecomb.metrics.core.publish;
 
 import java.util.Map;
 
 import org.apache.servicecomb.foundation.metrics.health.HealthCheckResult;
 import org.apache.servicecomb.foundation.metrics.health.HealthChecker;
 import org.apache.servicecomb.foundation.metrics.health.HealthCheckerManager;
-import org.apache.servicecomb.metrics.core.publish.HealthCheckerPublisher;
+import org.apache.servicecomb.metrics.core.publish.HealthCheckerRestPublisher;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -62,7 +62,7 @@ public class TestHealthCheckerPublisher {
   @Test
   public void checkHealthGood() {
     HealthCheckerManager.getInstance().register(good);
-    HealthCheckerPublisher publisher = new HealthCheckerPublisher();
+    HealthCheckerRestPublisher publisher = new HealthCheckerRestPublisher();
     Assert.assertEquals(true, publisher.checkHealth());
   }
 
@@ -70,7 +70,7 @@ public class TestHealthCheckerPublisher {
   public void checkHealthBad() {
     HealthCheckerManager.getInstance().register(good);
     HealthCheckerManager.getInstance().register(bad);
-    HealthCheckerPublisher publisher = new HealthCheckerPublisher();
+    HealthCheckerRestPublisher publisher = new HealthCheckerRestPublisher();
     Assert.assertEquals(false, publisher.checkHealth());
   }
 
@@ -78,7 +78,7 @@ public class TestHealthCheckerPublisher {
   public void checkHealthDetails() {
     HealthCheckerManager.getInstance().register(good);
     HealthCheckerManager.getInstance().register(bad);
-    HealthCheckerPublisher publisher = new HealthCheckerPublisher();
+    HealthCheckerRestPublisher publisher = new HealthCheckerRestPublisher();
     Map<String, HealthCheckResult> content = publisher.checkHealthDetails();
     Assert.assertEquals(true, content.get("test").isHealthy());
     Assert.assertEquals("info", content.get("test").getInformation());

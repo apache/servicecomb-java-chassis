@@ -15,28 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.metrics.core.publish;
+package org.apache.servicecomb.archetypes;
 
-import java.util.Map;
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
 
-import org.apache.servicecomb.metrics.core.MonitorManager;
 import org.apache.servicecomb.provider.rest.common.RestSchema;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
+@RestSchema(schemaId = "helloEndpoint")
+@Path("/")
+public class HelloEndpoint {
 
-@RestSchema(schemaId = "metricsEndpoint")
-@RequestMapping(path = "/metrics")
-public class MetricsPublisher {
-  @ApiResponses({
-      @ApiResponse(code = 400, response = String.class, message = "illegal request content"),
-  })
-  @RequestMapping(path = "/", method = RequestMethod.GET)
-  @CrossOrigin
-  public Map<String, Double> measure() {
-    return MonitorManager.getInstance().measure();
+  @Path("/hello")
+  @GET
+  public String hello() {
+    return "Hello World!";
   }
 }
