@@ -109,13 +109,13 @@ public class SpringmvcClient {
     try {
       String content = restTemplate.getForObject("cse://springmvc/codeFirstSpringmvc/prometheusForTest", String.class);
 
-      TestMgr.check(true, content.contains("servicecomb_invocation_springmvc_codeFirst_addDate"));
-      TestMgr.check(true, content.contains("servicecomb_invocation_springmvc_codeFirst_sayHello"));
-      TestMgr.check(true, content.contains("servicecomb_invocation_springmvc_codeFirst_fallbackFromCache"));
-      TestMgr.check(true, content.contains("servicecomb_invocation_springmvc_codeFirst_isTrue"));
-      TestMgr.check(true, content.contains("servicecomb_invocation_springmvc_codeFirst_add"));
-      TestMgr.check(true, content.contains("servicecomb_invocation_springmvc_codeFirst_sayHi2"));
-      TestMgr.check(true, content.contains("servicecomb_invocation_springmvc_codeFirst_saySomething"));
+      TestMgr.check(true, content.contains("servicecomb_invocation{operation=\"springmvc.codeFirst.addDate"));
+      TestMgr.check(true, content.contains("servicecomb_invocation{operation=\"springmvc.codeFirst.sayHello"));
+      TestMgr.check(true, content.contains("servicecomb_invocation{operation=\"springmvc.codeFirst.fallbackFromCache"));
+      TestMgr.check(true, content.contains("servicecomb_invocation{operation=\"springmvc.codeFirst.isTrue"));
+      TestMgr.check(true, content.contains("servicecomb_invocation{operation=\"springmvc.codeFirst.add"));
+      TestMgr.check(true, content.contains("servicecomb_invocation{operation=\"springmvc.codeFirst.sayHi2"));
+      TestMgr.check(true, content.contains("servicecomb_invocation{operation=\"springmvc.codeFirst.saySomething"));
 
       String[] metricLines = content.split("\n");
       if (metricLines.length > 0) {
