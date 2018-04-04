@@ -26,10 +26,7 @@ import org.apache.servicecomb.core.definition.OperationMeta;
 import org.apache.servicecomb.core.definition.SchemaMeta;
 import org.apache.servicecomb.core.event.InvocationFinishEvent;
 import org.apache.servicecomb.core.event.InvocationStartEvent;
-import org.apache.servicecomb.core.metrics.InvocationStartExecutionEvent;
-import org.apache.servicecomb.core.metrics.InvocationStartedEvent;
 import org.apache.servicecomb.core.provider.consumer.ReferenceConfig;
-import org.apache.servicecomb.foundation.common.event.EventBus;
 import org.apache.servicecomb.foundation.common.event.EventManager;
 import org.apache.servicecomb.swagger.invocation.AsyncResponse;
 import org.apache.servicecomb.swagger.invocation.InvocationType;
@@ -195,41 +192,14 @@ public class Invocation extends SwaggerInvocation {
   public void onStart() {
     this.startTime = System.nanoTime();
     EventManager.post(new InvocationStartEvent(this));
-
-    // old logic, need to be deleted
-    EventBus.getInstance().triggerEvent(new InvocationStartedEvent(getMicroserviceQualifiedName(),
-        invocationType, startTime));
   }
 
   public void onStartExecute() {
     this.startExecutionTime = System.nanoTime();
-
-    // old logic, need to be deleted
-    triggerStartExecutionEvent();
-  }
-
-  private void triggerStartExecutionEvent() {
-    if (InvocationType.PRODUCER.equals(invocationType)) {
-      this.startExecutionTime = System.nanoTime();
-      EventBus.getInstance()
-          .triggerEvent(new InvocationStartExecutionEvent(operationMeta.getMicroserviceQualifiedName()));
-    }
   }
 
   public void onFinish(Response response) {
     EventManager.post(new InvocationFinishEvent(this, response));
-
-    // old logic, need to be deleted
-    triggerFinishedEvent(response.getStatusCode());
-  }
-
-  private void triggerFinishedEvent(int statusCode) {
-    long finishedTime = System.nanoTime();
-    EventBus.getInstance()
-        .triggerEvent(new org.apache.servicecomb.core.metrics.InvocationFinishedEvent(
-            operationMeta.getMicroserviceQualifiedName(), this.invocationType,
-            startExecutionTime - startTime, finishedTime - startExecutionTime,
-            finishedTime - startTime, statusCode));
   }
 
   public boolean isSync() {
