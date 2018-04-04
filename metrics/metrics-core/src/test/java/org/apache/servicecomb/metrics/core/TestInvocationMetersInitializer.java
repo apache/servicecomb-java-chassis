@@ -19,7 +19,8 @@ package org.apache.servicecomb.metrics.core;
 import org.apache.servicecomb.core.Const;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.event.InvocationFinishEvent;
-import org.apache.servicecomb.foundation.metrics.MetricsBootstrapConfig;
+import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
+import org.apache.servicecomb.foundation.metrics.MetricsInitializer;
 import org.apache.servicecomb.foundation.metrics.publish.spectator.MeasurementGroupConfig;
 import org.apache.servicecomb.foundation.metrics.publish.spectator.MeasurementTree;
 import org.apache.servicecomb.metrics.core.meter.invocation.MeterInvocationConst;
@@ -30,40 +31,40 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.google.common.eventbus.EventBus;
-import com.netflix.spectator.api.CompositeRegistry;
 import com.netflix.spectator.api.DefaultRegistry;
 import com.netflix.spectator.api.ManualClock;
 import com.netflix.spectator.api.Registry;
-import com.netflix.spectator.api.SpectatorUtils;
 
 import mockit.Expectations;
 import mockit.Mocked;
 
-public class TestDefaultMetricsInitializer {
+public class TestInvocationMetersInitializer {
   EventBus eventBus = new EventBus();
 
-  ManualClock clock = new ManualClock();
+  Registry registry = new DefaultRegistry(new ManualClock());
 
-  CompositeRegistry globalRegistry = SpectatorUtils.createCompositeRegistry(new ManualClock());
-
-  DefaultMetricsInitializer metricsInitializer = new DefaultMetricsInitializer() {
-    protected Registry createRegistry(MetricsBootstrapConfig config) {
-      return new DefaultRegistry(new ManualClock());
-    };
-  };
-
-  MetricsBootstrapConfig config = new MetricsBootstrapConfig();
+  InvocationMetersInitializer invocationMetersInitializer = new InvocationMetersInitializer();
 
   @Mocked
-  private Invocation invocation;
+  Invocation invocation;
 
   @Mocked
-  private Response response;
+  Response response;
 
+  @Mocked
+  DefaultRegistryInitializer defaultRegistryInitializer;
 
   @Before
   public void setup() {
-    metricsInitializer.init(globalRegistry, eventBus, config);
+    new Expectations(SPIServiceUtils.class) {
+      {
+        SPIServiceUtils.getTargetService(MetricsInitializer.class, DefaultRegistryInitializer.class);
+        result = defaultRegistryInitializer;
+        defaultRegistryInitializer.getRegistry();
+        result = registry;
+      }
+    };
+    invocationMetersInitializer.init(null, eventBus, null);
   }
 
   @Test
@@ -91,7 +92,7 @@ public class TestDefaultMetricsInitializer {
     eventBus.post(event);
 
     MeasurementTree tree = new MeasurementTree();
-    tree.from(globalRegistry.iterator(), new MeasurementGroupConfig(MeterInvocationConst.INVOCATION_NAME));
+    tree.from(registry.iterator(), new MeasurementGroupConfig(MeterInvocationConst.INVOCATION_NAME));
     Assert.assertEquals(
         "[Measurement(servicecomb.invocation:operation=m.s.o:role=CONSUMER:stage=total:statistic=count:status=0:transport=rest,0,2.0), "
             + "Measurement(servicecomb.invocation:operation=m.s.o:role=CONSUMER:stage=total:statistic=totalTime:status=0:transport=rest,0,18.0)]",
@@ -125,7 +126,7 @@ public class TestDefaultMetricsInitializer {
     eventBus.post(event);
 
     MeasurementTree tree = new MeasurementTree();
-    tree.from(globalRegistry.iterator(), new MeasurementGroupConfig(MeterInvocationConst.INVOCATION_NAME));
+    tree.from(registry.iterator(), new MeasurementGroupConfig(MeterInvocationConst.INVOCATION_NAME));
     Assert.assertEquals(
         "[Measurement(servicecomb.invocation:operation=m.s.o:role=PRODUCER:stage=execution:statistic=count:status=0:transport=rest,0,2.0), "
             + "Measurement(servicecomb.invocation:operation=m.s.o:role=PRODUCER:stage=execution:statistic=totalTime:status=0:transport=rest,0,14.0), "
