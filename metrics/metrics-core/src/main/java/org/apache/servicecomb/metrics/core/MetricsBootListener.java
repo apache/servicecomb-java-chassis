@@ -48,6 +48,8 @@ public class MetricsBootListener implements BootListener {
       case AFTER_REGISTRY:
         metricsBootstrap.start(Spectator.globalRegistry(), EventManager.getEventBus());
         break;
+      case BEFORE_CLOSE:
+        metricsBootstrap.shutdown();
       default:
         break;
     }

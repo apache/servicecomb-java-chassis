@@ -20,8 +20,16 @@ import com.google.common.eventbus.EventBus;
 import com.netflix.spectator.api.CompositeRegistry;
 
 public interface MetricsInitializer {
+  default int getOrder() {
+    return 0;
+  }
+
   /** 
    * if create new registry, must add to globalRegistry
    */
   void init(CompositeRegistry globalRegistry, EventBus eventBus, MetricsBootstrapConfig config);
+
+  default void uninit() {
+
+  }
 }

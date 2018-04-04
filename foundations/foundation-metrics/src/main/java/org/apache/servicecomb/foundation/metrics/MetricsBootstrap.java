@@ -16,6 +16,8 @@
  */
 package org.apache.servicecomb.foundation.metrics;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -52,6 +54,12 @@ public class MetricsBootstrap {
 
   public void shutdown() {
     executorService.shutdown();
+
+    List<MetricsInitializer> initializers = new ArrayList<>(SPIServiceUtils.getSortedService(MetricsInitializer.class));
+    Collections.reverse(initializers);
+    initializers.forEach(initializer -> {
+      initializer.uninit();
+    });
   }
 
   protected void loadMetricsInitializers() {
