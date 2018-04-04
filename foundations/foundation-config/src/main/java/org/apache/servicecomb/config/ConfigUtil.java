@@ -57,7 +57,7 @@ public final class ConfigUtil {
   private ConfigUtil() {
   }
 
-  public static void addConfigs(Map<String, Object> config) {
+  public static void setConfigs(Map<String, Object> config) {
     model.setConfig(config);
   }
 
