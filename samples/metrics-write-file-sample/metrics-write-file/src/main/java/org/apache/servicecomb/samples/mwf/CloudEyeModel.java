@@ -14,22 +14,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.apache.servicecomb.samples.mwf;
 
-import java.util.UUID;
+public class CloudEyeModel {
+  private String plugin_id;
 
-import org.apache.servicecomb.provider.rest.common.RestSchema;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+  private CloudEyeMetricModel metric;
 
-//simple service sim
-@RestSchema(schemaId = "demoServiceEndpoint")
-@RequestMapping(path = "/")
-public class SimpleService {
+  public String getPlugin_id() {
+    return plugin_id;
+  }
 
-  @GetMapping(path = "/f")
-  public String fun() {
-    return UUID.randomUUID().toString();
+  public void setPlugin_id(String plugin_id) {
+    this.plugin_id = plugin_id;
+  }
+
+  public CloudEyeMetricModel getMetric() {
+    return metric;
+  }
+
+  public void setMetric(CloudEyeMetricModel metric) {
+    this.metric = metric;
   }
 }
