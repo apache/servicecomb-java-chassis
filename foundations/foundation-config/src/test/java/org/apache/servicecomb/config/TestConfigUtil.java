@@ -85,7 +85,7 @@ public class TestConfigUtil {
   public void testAddConfig() {
     Map config = new HashMap<String, Object>();
     config.put("APPLICATION_ID", "app");
-    ConfigUtil.addConfigs(config);
+    ConfigUtil.setConfigs(config);
     ConcurrentCompositeConfiguration configuration = ConfigUtil.createLocalConfig();
     Assert.assertEquals(configuration.getString("APPLICATION_ID"), "app");
 
