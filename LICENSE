@@ -220,7 +220,7 @@ For details, see https://github.com/vert-x3/vertx-web
 ================================================================
 For swagger/swagger-generator/generator-core/src/main/java/org/apache/servicecomb/swagger/extend/property/AbstractBaseIntegerProperty.java
 ================================================================
-This product bundles files from swagger which is licensed under the Apache License v2.
+This product bundles files from hystrix which is licensed under the Apache License v2.
 For details, see https://github.com/swagger-api/swagger-core
 
 ================================================================
