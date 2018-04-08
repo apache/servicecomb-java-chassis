@@ -226,5 +226,5 @@ For details, see https://github.com/swagger-api/swagger-core
 ================================================================
 For handlers/handler-bizkeeper/src/main/java/org/apache/servicecomb/bizkeeper/HystrixCommandPropertiesExt.java
 ================================================================
-This product bundles files from swagger which is licensed under the Apache License v2.
+This product bundles files from Hystrix which is licensed under the Apache License v2.
 For details, see  https://github.com/Netflix/Hystrix
