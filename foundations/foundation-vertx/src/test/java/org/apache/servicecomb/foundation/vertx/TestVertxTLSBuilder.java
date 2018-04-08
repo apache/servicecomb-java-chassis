@@ -49,7 +49,7 @@ public class TestVertxTLSBuilder {
     SSLCustom custom = SSLCustom.createSSLCustom(option.getSslCustomClass());
     HttpServerOptions serverOptions = new HttpServerOptions();
     VertxTLSBuilder.buildNetServerOptions(option, custom, serverOptions);
-    Assert.assertEquals(serverOptions.getEnabledSecureTransportProtocols().toArray().length, 1);
+    Assert.assertEquals(serverOptions.getEnabledSecureTransportProtocols().toArray().length, 3);
     Assert.assertEquals(serverOptions.getClientAuth(), ClientAuth.REQUEST);
   }
 
@@ -90,7 +90,7 @@ public class TestVertxTLSBuilder {
     SSLCustom custom = SSLCustom.createSSLCustom(option.getSslCustomClass());
     HttpClientOptions serverOptions = new HttpClientOptions();
     VertxTLSBuilder.buildHttpClientOptions(option, custom, serverOptions);
-    Assert.assertEquals(serverOptions.getEnabledSecureTransportProtocols().toArray().length, 1);
+    Assert.assertEquals(serverOptions.getEnabledSecureTransportProtocols().toArray().length, 3);
     Assert.assertEquals(serverOptions.isTrustAll(), true);
   }
 
@@ -100,7 +100,7 @@ public class TestVertxTLSBuilder {
     SSLCustom custom = SSLCustom.createSSLCustom(option.getSslCustomClass());
     HttpClientOptions serverOptions = new HttpClientOptions();
     VertxTLSBuilder.buildClientOptionsBase(option, custom, serverOptions);
-    Assert.assertEquals(serverOptions.getEnabledSecureTransportProtocols().toArray().length, 1);
+    Assert.assertEquals(serverOptions.getEnabledSecureTransportProtocols().toArray().length, 3);
     Assert.assertEquals(serverOptions.isTrustAll(), true);
   }
 
@@ -113,7 +113,7 @@ public class TestVertxTLSBuilder {
     SSLCustom custom = SSLCustom.createSSLCustom(option.getSslCustomClass());
     HttpClientOptions serverOptions = new HttpClientOptions();
     VertxTLSBuilder.buildClientOptionsBase(option, custom, serverOptions);
-    Assert.assertEquals(serverOptions.getEnabledSecureTransportProtocols().toArray().length, 1);
+    Assert.assertEquals(serverOptions.getEnabledSecureTransportProtocols().toArray().length, 3);
     Assert.assertEquals(serverOptions.isTrustAll(), true);
   }
 
@@ -130,7 +130,7 @@ public class TestVertxTLSBuilder {
       }
     };
     VertxTLSBuilder.buildClientOptionsBase(option, custom, serverOptions);
-    Assert.assertEquals(serverOptions.getEnabledSecureTransportProtocols().toArray().length, 1);
+    Assert.assertEquals(serverOptions.getEnabledSecureTransportProtocols().toArray().length, 3);
     Assert.assertEquals(serverOptions.isTrustAll(), true);
   }
 
@@ -147,7 +147,7 @@ public class TestVertxTLSBuilder {
       }
     };
     VertxTLSBuilder.buildClientOptionsBase(option, custom, serverOptions);
-    Assert.assertEquals(serverOptions.getEnabledSecureTransportProtocols().toArray().length, 1);
+    Assert.assertEquals(serverOptions.getEnabledSecureTransportProtocols().toArray().length, 3);
     Assert.assertEquals(serverOptions.isTrustAll(), true);
   }
 
@@ -164,7 +164,7 @@ public class TestVertxTLSBuilder {
       }
     };
     VertxTLSBuilder.buildClientOptionsBase(option, custom, serverOptions);
-    Assert.assertEquals(serverOptions.getEnabledSecureTransportProtocols().toArray().length, 1);
+    Assert.assertEquals(serverOptions.getEnabledSecureTransportProtocols().toArray().length, 3);
     Assert.assertEquals(serverOptions.isTrustAll(), true);
   }
 
@@ -182,7 +182,7 @@ public class TestVertxTLSBuilder {
       }
     };
     VertxTLSBuilder.buildNetServerOptions(option, custom, serverOptions);
-    Assert.assertEquals(serverOptions.getEnabledSecureTransportProtocols().toArray().length, 1);
+    Assert.assertEquals(serverOptions.getEnabledSecureTransportProtocols().toArray().length, 3);
     Assert.assertEquals(serverOptions.getClientAuth(), ClientAuth.REQUEST);
   }
 }
