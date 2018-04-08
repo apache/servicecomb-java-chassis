@@ -212,7 +212,7 @@ following licenses.
 ================================================================
 For Stax2 API org.codehaus.woodstox:stax2-api:bundle:3.1.4
 ================================================================
-This product bundles files from swagger which is licensed under the
+This product bundles files from stax2 which is licensed under the
 2-Clause BSD license.
 For details, see http://wiki.fasterxml.com/WoodstoxStax2
 You can find a copy of the License at licenses/LICENSE-woodstox-stax2-api
@@ -319,7 +319,7 @@ For details, see https://github.com/swagger-api/swagger-core
 ================================================================
 For handlers/handler-bizkeeper/src/main/java/org/apache/servicecomb/bizkeeper/HystrixCommandPropertiesExt.java
 ================================================================
-This product bundles files from swagger which is licensed under the Apache License v2.
+This product bundles files from Hystrix which is licensed under the Apache License v2.
 For details, see https://github.com/Netflix/Hystrix
 
 ================================================================
