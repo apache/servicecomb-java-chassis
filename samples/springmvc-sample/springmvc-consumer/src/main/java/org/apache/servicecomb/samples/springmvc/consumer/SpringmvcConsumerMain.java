@@ -16,8 +16,6 @@
  */
 package org.apache.servicecomb.samples.springmvc.consumer;
 
-import java.lang.invoke.MethodHandles;
-
 import org.apache.servicecomb.foundation.common.utils.BeanUtils;
 import org.apache.servicecomb.foundation.common.utils.Log4jUtils;
 import org.apache.servicecomb.provider.pojo.RpcReference;
@@ -37,7 +35,7 @@ import org.springframework.web.client.RestTemplate;
 
 @Component
 public class SpringmvcConsumerMain {
-  private static final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+  private static final Logger LOG = LoggerFactory.getLogger(SpringmvcConsumerMain.class);
   private static RestTemplate restTemplate = RestTemplateBuilder.create();
 
   @RpcReference(microserviceName = "springmvc", schemaId = "springmvcHello")
