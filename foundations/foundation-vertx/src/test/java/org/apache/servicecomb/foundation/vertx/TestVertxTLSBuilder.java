@@ -63,7 +63,7 @@ public class TestVertxTLSBuilder {
   public static class SSLOptionFactoryForTest implements SSLOptionFactory {
     static SSLOption sslOption = new SSLOption();
     static {
-      sslOption.setEngine("openssl");     	
+      sslOption.setEngine("openssl");
       sslOption.setProtocols("");
       sslOption.setCiphers(SSLOption.DEFAUL_CIPHERS);
       sslOption.setCheckCNHost(true);
