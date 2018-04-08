@@ -34,14 +34,12 @@ public class CseAsyncRestTemplate extends AsyncRestTemplate {
   }
 
   @Override
-  @SuppressWarnings("unchecked")
   protected <T> AsyncRequestCallback httpEntityCallback(HttpEntity<T> requestBody) {
-    return new CseAsyncRequestCallback(requestBody);
+    return new CseAsyncRequestCallback<T>(requestBody);
   }
 
   @Override
-  @SuppressWarnings("unchecked")
   protected <T> AsyncRequestCallback httpEntityCallback(HttpEntity<T> requestBody, Type responseType) {
-    return new CseAsyncRequestCallback(requestBody);
+    return new CseAsyncRequestCallback<T>(requestBody);
   }
 }

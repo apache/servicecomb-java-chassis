@@ -50,12 +50,11 @@ public class CseAsyncClientHttpRequest extends CseClientHttpRequest implements A
     return null;
   }
 
-  @SuppressWarnings("unchecked")
   private ListenableFuture<ClientHttpResponse> invoke(Object[] args) {
     Invocation invocation = prepareInvocation(args);
     invocation.getHandlerContext().put(RestConst.CONSUMER_HEADER, this.getHeaders());
     CompletableFuture<ClientHttpResponse> clientHttpResponseCompletableFuture = doAsyncInvoke(invocation);
-    return new CompletableToListenableFutureAdapter(clientHttpResponseCompletableFuture);
+    return new CompletableToListenableFutureAdapter<ClientHttpResponse>(clientHttpResponseCompletableFuture);
   }
 
   protected CompletableFuture<ClientHttpResponse> doAsyncInvoke(Invocation invocation) {

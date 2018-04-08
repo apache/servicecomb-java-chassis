@@ -28,27 +28,24 @@ public class CseAsyncRequestCallbackTest {
   @Test
   public void testNormal() {
     CseAsyncClientHttpRequest request = new CseAsyncClientHttpRequest();
-    @SuppressWarnings("unchecked")
-    CseAsyncRequestCallback cb = new CseAsyncRequestCallback(null);
+    CseAsyncRequestCallback<HttpEntity<?>> cb = new CseAsyncRequestCallback<>(null);
     cb.doWithRequest(request);
     Assert.assertEquals(null, request.getContext());
   }
 
   @Test
-  @SuppressWarnings("unchecked")
-  public void testHttpEntity(@Injectable HttpEntity<?> entity) {
-    CseAsyncRequestCallback cb = new CseAsyncRequestCallback(entity);
+  public void testHttpEntity(@Injectable HttpEntity<String> entity) {
+    CseAsyncRequestCallback<String> cb = new CseAsyncRequestCallback<>(entity);
     CseAsyncClientHttpRequest request = new CseAsyncClientHttpRequest();
     cb.doWithRequest(request);
     Assert.assertEquals(entity.getBody(), request.getBody());
   }
 
   @Test
-  @SuppressWarnings("unchecked")
-  public void testCseEntity(@Injectable CseHttpEntity<?> entity) {
+  public void testCseEntity(@Injectable CseHttpEntity<String> entity) {
     CseAsyncClientHttpRequest request = new CseAsyncClientHttpRequest();
     entity.addContext("c1", "c2");
-    CseAsyncRequestCallback cb = new CseAsyncRequestCallback(entity);
+	  CseAsyncRequestCallback<String> cb = new CseAsyncRequestCallback<>(entity);
     cb.doWithRequest(request);
     Assert.assertEquals(entity.getContext(), request.getContext());
   }

@@ -59,10 +59,10 @@ public class CseAsyncClientHttpRequestTest {
     ReferenceConfigUtils.setReady(false);
   }
 
-  @RequestMapping(path = "SpringmvcImpl")
-  static class SpringmvcImpl {
-    @RequestMapping(path = "/bytes", method = RequestMethod.POST)
-    public byte[] bytes(@RequestBody byte[] input) {
+  @RequestMapping(path = "CseAsyncClientHttpRequestTestSchema")
+  static class CseAsyncClientHttpRequestTestSchema {
+    @RequestMapping(path = "/testbytes", method = RequestMethod.POST)
+    public byte[] testbytes(@RequestBody byte[] input) {
       input[0] = (byte) (input[0] + 1);
       return input;
     }
@@ -89,17 +89,18 @@ public class CseAsyncClientHttpRequestTest {
     serviceRegistry.init();
     RegistryUtils.setServiceRegistry(serviceRegistry);
     UnitTestMeta meta = new UnitTestMeta();
+
     CseContext.getInstance()
         .getSchemaListenerManager()
         .setSchemaListenerList(Arrays.asList(new RestEngineSchemaListener()));
 
-    SchemaMeta schemaMeta = meta.getOrCreateSchemaMeta(CseAsyncClientHttpRequestTest.SpringmvcImpl.class);
+    SchemaMeta schemaMeta = meta.getOrCreateSchemaMeta(CseAsyncClientHttpRequestTest.CseAsyncClientHttpRequestTestSchema.class);
     CseContext.getInstance().getSchemaListenerManager().notifySchemaListener(schemaMeta);
 
     Holder<Invocation> holder = new Holder<>();
     CseAsyncClientHttpRequest client =
         new CseAsyncClientHttpRequest(URI.create(
-            "cse://app:test/" + CseAsyncClientHttpRequestTest.SpringmvcImpl.class.getSimpleName() + "/bytes"),
+            "cse://app:test/" + CseAsyncClientHttpRequestTest.CseAsyncClientHttpRequestTestSchema.class.getSimpleName() + "/testbytes"),
             HttpMethod.POST) {
           @Override
           protected CompletableFuture<ClientHttpResponse> doAsyncInvoke(Invocation invocation) {
@@ -124,8 +125,7 @@ public class CseAsyncClientHttpRequestTest {
     CseContext.getInstance()
         .getSchemaListenerManager()
         .setSchemaListenerList(Arrays.asList(new RestEngineSchemaListener()));
-
-    SchemaMeta schemaMeta = meta.getOrCreateSchemaMeta(CseAsyncClientHttpRequestTest.SpringmvcImpl.class);
+    SchemaMeta schemaMeta = meta.getOrCreateSchemaMeta(CseAsyncClientHttpRequestTest.CseAsyncClientHttpRequestTestSchema.class);
     CseContext.getInstance().getSchemaListenerManager().notifySchemaListener(schemaMeta);
 
     Throwable error = new Error("failed");
@@ -133,7 +133,7 @@ public class CseAsyncClientHttpRequestTest {
 
     CseAsyncClientHttpRequest client =
         new CseAsyncClientHttpRequest(URI.create(
-            "cse://app:test/" + CseAsyncClientHttpRequestTest.SpringmvcImpl.class.getSimpleName() + "/bytes"),
+            "cse://app:test/" + CseAsyncClientHttpRequestTest.CseAsyncClientHttpRequestTestSchema.class.getSimpleName() + "/testbytes"),
             HttpMethod.POST) {
           @Override
           protected CompletableFuture<ClientHttpResponse> doAsyncInvoke(Invocation invocation) {
