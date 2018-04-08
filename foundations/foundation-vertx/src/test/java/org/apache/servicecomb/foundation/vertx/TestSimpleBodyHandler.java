@@ -25,6 +25,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 
+import io.vertx.core.MultiMap;
 import io.vertx.core.http.HttpServerRequest;
 import io.vertx.core.http.HttpServerResponse;
 import io.vertx.ext.web.RoutingContext;
@@ -40,6 +41,8 @@ public class TestSimpleBodyHandler {
     context = Mockito.mock(RoutingContext.class);
     HttpServerRequest request = Mockito.mock(HttpServerRequest.class);
     Mockito.when(context.request()).thenReturn(request);
+    MultiMap multiMap = Mockito.mock(MultiMap.class);
+    Mockito.when(request.headers()).thenReturn(multiMap);
     HttpServerResponse response = Mockito.mock(HttpServerResponse.class);
     Mockito.when(response.setStatusCode(Status.UNSUPPORTED_MEDIA_TYPE.getStatusCode())).thenReturn(response);
     Mockito.when(context.response()).thenReturn(response);
