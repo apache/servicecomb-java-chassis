@@ -38,7 +38,7 @@ public class TestExceptionToResponseConverters {
       @Mocked Response rDef) {
     new Expectations(SPIServiceUtils.class) {
       {
-        SPIServiceUtils.getAllService(ExceptionToResponseConverter.class);
+        SPIServiceUtils.getSortedService(ExceptionToResponseConverter.class);
         result = Arrays.asList(c1, c2, cDef);
 
         c1.getExceptionClass();
