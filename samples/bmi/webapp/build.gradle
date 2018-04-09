@@ -1,0 +1,49 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+description = 'Java Chassis::Samples::BMI::Webapp'
+
+dependencies {
+    compile(group: 'org.springframework.boot', name: 'spring-boot-starter') {
+        exclude(module: 'commons-logging')
+    }
+    compile group: 'org.apache.servicecomb', name: 'spring-boot-starter-servicecomb'
+    compile group: 'org.apache.servicecomb', name: 'spring-boot-starter-discovery'
+    compile group: 'org.apache.servicecomb', name: 'spring-cloud-zuul'
+    compile group: 'org.apache.servicecomb', name: 'spring-cloud-zuul-zipkin'
+}
+
+// dependency-management-plugin is a replacement of dependencyManagement in maven
+// we need to enable the plugin and specify the dependencyManagement in the following form in each submodule
+// according to the official document: https://github.com/spring-gradle-plugins/dependency-management-plugin.
+buildscript {
+    dependencies {
+        classpath('io.spring.gradle:dependency-management-plugin:1.0.4.RELEASE')
+    }
+    repositories {
+        mavenLocal()
+        mavenCentral()
+    }
+}
+
+apply plugin: 'io.spring.dependency-management'
+
+dependencyManagement {
+    imports {
+        mavenBom 'org.apache.servicecomb:java-chassis-dependencies:1.0.0-m2-SNAPSHOT'
+    }
+}
