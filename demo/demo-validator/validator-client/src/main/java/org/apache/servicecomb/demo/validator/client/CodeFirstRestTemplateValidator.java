@@ -14,19 +14,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.servicecomb.swagger.invocation.extension;
 
-import org.apache.servicecomb.swagger.engine.SwaggerProducerOperation;
-import org.apache.servicecomb.swagger.invocation.SwaggerInvocation;
+package org.apache.servicecomb.demo.validator.client;
 
-/**
- * Producer method invocation extension to handle the required validations/checks before invoking the actual method.
- */
-public interface ProducerInvokeExtension {
+import org.apache.servicecomb.demo.CodeFirstRestTemplate;
+import org.apache.servicecomb.demo.TestMgr;
+import org.springframework.web.client.RestTemplate;
 
-  public int getOrder();
+public class CodeFirstRestTemplateValidator extends CodeFirstRestTemplate {
+  @Override
+  protected void testAllTransport(String microserviceName, RestTemplate template, String cseUrlPrefix) {
+    testDefaultPath(template, cseUrlPrefix);
 
-  ///Invoked before the method execution to handle the required checks before method invocation.
-  <T> void beforeMethodInvoke(SwaggerInvocation invocation, SwaggerProducerOperation producerOperation,
-      Object[] args) throws Exception;
+    super.testAllTransport(microserviceName, template, cseUrlPrefix);
+  }
+
+  private void testDefaultPath(RestTemplate template, String cseUrlPrefix) {
+    int result =
+        template.getForObject(cseUrlPrefix.substring(0, cseUrlPrefix.length() - 1), Integer.class);
+    TestMgr.check(100, result);
+  }
 }

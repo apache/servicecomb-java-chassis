@@ -53,7 +53,7 @@ public class ParameterValidator implements ProducerInvokeExtension {
             Default.class);
     if (violations.size() > 0) {
       LOGGER.warn("Parameter validation failed : " + violations.toString());
-      throw new ConstraintViolationException(violations.toString(), violations);
+      throw new ConstraintViolationException(violations);
     }
   }
 
