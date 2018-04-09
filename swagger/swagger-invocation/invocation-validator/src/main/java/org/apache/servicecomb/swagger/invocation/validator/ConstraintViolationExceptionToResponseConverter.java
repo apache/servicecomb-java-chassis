@@ -33,6 +33,11 @@ public class ConstraintViolationExceptionToResponseConverter
 
   @Override
   public Response convert(SwaggerInvocation swaggerInvocation, ConstraintViolationException e) {
-    return Response.createFail(new InvocationException(Status.BAD_REQUEST, e.getMessage()));
+    return Response.createFail(new InvocationException(Status.BAD_REQUEST, e.getConstraintViolations().toString()));
+  }
+
+  @Override
+  public int getOrder() {
+    return -100;
   }
 }

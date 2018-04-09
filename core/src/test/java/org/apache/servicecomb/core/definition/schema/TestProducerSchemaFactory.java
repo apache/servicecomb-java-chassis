@@ -1,5 +1,5 @@
 /*
- * Licensed to the Apache Software Foundation (ASF) under one or more
+	 * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The ASF licenses this file to You under the Apache License, Version 2.0
@@ -16,7 +16,6 @@
  */
 package org.apache.servicecomb.core.definition.schema;
 
-import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 
@@ -34,7 +33,6 @@ import org.apache.servicecomb.core.executor.ReactiveExecutor;
 import org.apache.servicecomb.core.unittest.UnitTestMeta;
 import org.apache.servicecomb.foundation.common.utils.BeanUtils;
 import org.apache.servicecomb.foundation.common.utils.ReflectUtils;
-import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
 import org.apache.servicecomb.serviceregistry.RegistryUtils;
 import org.apache.servicecomb.serviceregistry.ServiceRegistry;
 import org.apache.servicecomb.serviceregistry.registry.ServiceRegistryFactory;
@@ -47,7 +45,6 @@ import org.apache.servicecomb.swagger.invocation.arguments.producer.ProducerArgu
 import org.apache.servicecomb.swagger.invocation.converter.ConverterMgr;
 import org.apache.servicecomb.swagger.invocation.exception.CommonExceptionData;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
-import org.apache.servicecomb.swagger.invocation.extension.ProducerInvokeExtension;
 import org.hamcrest.Matchers;
 import org.junit.AfterClass;
 import org.junit.Assert;
@@ -136,11 +133,6 @@ public class TestProducerSchemaFactory {
     Assert.assertEquals("add", operationMeta.getOperationId());
 
     SwaggerProducerOperation producerOperation = operationMeta.getExtData(Const.PRODUCER_OPERATION);
-
-    List<ProducerInvokeExtension> producerInvokeExtenstionList =
-        SPIServiceUtils.getSortedService(ProducerInvokeExtension.class);
-
-    producerOperation.setProducerInvokeExtenstionList(producerInvokeExtenstionList);
 
     Object addBody = Class.forName("cse.gen.app.ms.schema.addBody").newInstance();
     ReflectUtils.setField(addBody, "x", 1);

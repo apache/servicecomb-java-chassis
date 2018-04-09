@@ -14,19 +14,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.servicecomb.swagger.invocation.extension;
 
-import org.apache.servicecomb.swagger.engine.SwaggerProducerOperation;
-import org.apache.servicecomb.swagger.invocation.SwaggerInvocation;
+package org.apache.servicecomb.demo.validator.server;
 
-/**
- * Producer method invocation extension to handle the required validations/checks before invoking the actual method.
- */
-public interface ProducerInvokeExtension {
+import org.apache.servicecomb.foundation.common.utils.BeanUtils;
+import org.apache.servicecomb.foundation.common.utils.Log4jUtils;
 
-  public int getOrder();
-
-  ///Invoked before the method execution to handle the required checks before method invocation.
-  <T> void beforeMethodInvoke(SwaggerInvocation invocation, SwaggerProducerOperation producerOperation,
-      Object[] args) throws Exception;
+public class ValidatorServer {
+  public static void main(String[] args) throws Exception {
+    Log4jUtils.init();
+    BeanUtils.init();
+  }
 }
