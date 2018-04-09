@@ -23,7 +23,7 @@ public interface ExceptionToResponseConverter<T extends Throwable> {
   Class<T> getExceptionClass();
 
   default int getOrder() {
-    return 100;
+    return 0;
   }
 
   Response convert(SwaggerInvocation swaggerInvocation, T e);
