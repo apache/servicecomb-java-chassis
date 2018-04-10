@@ -28,9 +28,11 @@ import org.apache.servicecomb.demo.CodeFirstRestTemplate;
 import org.apache.servicecomb.demo.DemoConst;
 import org.apache.servicecomb.demo.TestMgr;
 import org.apache.servicecomb.demo.compute.Person;
+import org.apache.servicecomb.demo.compute.Student;
 import org.apache.servicecomb.foundation.common.utils.BeanUtils;
 import org.apache.servicecomb.foundation.common.utils.Log4jUtils;
 import org.apache.servicecomb.provider.springmvc.reference.RestTemplateBuilder;
+import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -57,6 +59,7 @@ public class JaxrsClient {
     CodeFirstRestTemplate codeFirstClient = new CodeFirstRestTemplateJaxrs();
     codeFirstClient.testCodeFirst(templateNew, "jaxrs", "/codeFirstJaxrs/");
     testCompute(templateNew);
+    testValidator(templateNew);
   }
 
   private static void testCompute(RestTemplate template) throws Exception {
@@ -75,6 +78,21 @@ public class JaxrsClient {
       testRawJsonParam(template, cseUrlPrefix);
     }
   }
+
+  private static void testValidator(RestTemplate template) throws Exception {
+    String microserviceName = "jaxrs";
+    for (String transport : DemoConst.transports) {
+      CseContext.getInstance().getConsumerProviderManager().setTransport(microserviceName, transport);
+      TestMgr.setMsg(microserviceName, transport);
+
+      String cseUrlPrefix = "cse://" + microserviceName + "/validator/";
+
+      testValidatorAdd(template, cseUrlPrefix);
+      testValidatorSayHi(template, cseUrlPrefix);
+      testValidatorExchange(template, cseUrlPrefix);
+    }
+  }
+
 
   private static void testGet(RestTemplate template, String cseUrlPrefix) {
     Map<String, String> params = new HashMap<>();
@@ -146,5 +164,51 @@ public class JaxrsClient {
     String jsonPerson = RestObjectMapper.INSTANCE.writeValueAsString(person);
     TestMgr.check("hello Tom",
         template.postForObject(cseUrlPrefix + "/compute/testrawjson", jsonPerson, String.class));
+  }
+
+  private static void testValidatorAdd(RestTemplate template, String cseUrlPrefix) {
+    Map<String, String> params = new HashMap<>();
+    params.put("a", "5");
+    params.put("b", "3");
+    boolean isExcep = false;
+    try {
+      template.postForObject(cseUrlPrefix + "add", params, Integer.class);
+    } catch (InvocationException e) {
+      isExcep = true;
+      TestMgr.check(490, e.getStatus().getStatusCode());
+    }
+
+    TestMgr.check(true, isExcep);
+  }
+
+  private static void testValidatorSayHi(RestTemplate template, String cseUrlPrefix) {
+    boolean isExcep = false;
+    try {
+      template.exchange(cseUrlPrefix + "sayhi/{name}", HttpMethod.PUT, null, String.class, "te");
+    } catch (InvocationException e) {
+      isExcep = true;
+      TestMgr.check(490, e.getStatus().getStatusCode());
+    }
+    TestMgr.check(true, isExcep);
+  }
+
+  private static void testValidatorExchange(RestTemplate template, String cseUrlPrefix) {
+    HttpHeaders headers = new HttpHeaders();
+    headers.add("Accept", MediaType.APPLICATION_JSON);
+    Student student = new Student();
+    student.setName("");
+    student.setAge(25);
+    boolean isExcep = false;
+    try {
+      HttpEntity<Student> requestEntity = new HttpEntity<>(student, headers);
+      template.exchange(cseUrlPrefix + "/sayhello",
+          HttpMethod.POST,
+          requestEntity,
+          Student.class);
+    } catch (InvocationException e) {
+      isExcep = true;
+      TestMgr.check(490, e.getStatus().getStatusCode());
+    }
+    TestMgr.check(true, isExcep);
   }
 }
