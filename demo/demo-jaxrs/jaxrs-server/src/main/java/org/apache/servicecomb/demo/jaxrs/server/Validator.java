@@ -27,7 +27,7 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
-import org.apache.servicecomb.demo.compute.Student;
+import org.apache.servicecomb.demo.validator.Student;
 import org.apache.servicecomb.provider.rest.common.RestSchema;
 import org.apache.servicecomb.swagger.invocation.context.ContextUtils;
 import org.hibernate.validator.constraints.Length;
