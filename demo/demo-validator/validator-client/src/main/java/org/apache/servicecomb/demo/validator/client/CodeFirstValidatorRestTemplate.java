@@ -26,6 +26,7 @@ import org.apache.servicecomb.demo.DemoConst;
 import org.apache.servicecomb.demo.TestMgr;
 import org.apache.servicecomb.swagger.invocation.context.ContextUtils;
 import org.apache.servicecomb.swagger.invocation.context.InvocationContext;
+import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -68,8 +69,9 @@ public class CodeFirstValidatorRestTemplate {
     boolean isExcep = false;
     try {
       template.exchange(cseUrlPrefix + "sayhi/{name}", HttpMethod.PUT, null, String.class, "te");
-    } catch (Exception e) {
+    } catch (InvocationException e) {
       isExcep = true;
+      TestMgr.check(e.getStatus().getStatusCode(), 400);
     }
     TestMgr.check(true, isExcep);
   }
@@ -90,8 +92,9 @@ public class CodeFirstValidatorRestTemplate {
     boolean isExcep = false;
     try {
       template.postForObject(cseUrlPrefix + "add", params, Integer.class);
-    } catch (Exception e) {
+    } catch (InvocationException e) {
       isExcep = true;
+      TestMgr.check(e.getStatus().getStatusCode(), 400);
     }
 
     TestMgr.check(true, isExcep);
