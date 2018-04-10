@@ -15,14 +15,44 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.demo.validator.server;
+package org.apache.servicecomb.demo.validator;
 
-import org.apache.servicecomb.foundation.common.utils.BeanUtils;
-import org.apache.servicecomb.foundation.common.utils.Log4jUtils;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.NotNull;
 
-public class ValidatorServer {
-  public static void main(String[] args) throws Exception {
-    Log4jUtils.init();
-    BeanUtils.init();
+public class Student {
+  @NotNull
+  private String name;
+
+  @Max(20)
+  private int age;
+
+  public void setName(String name) {
+    this.name = name;
+  }
+
+  public String getName() {
+    return this.name;
+  }
+
+  public Student() {
+  }
+
+  public int getAge() {
+    return age;
+  }
+
+  public void setAge(int age) {
+    this.age = age;
+  }
+
+  public Student(String name, int age) {
+    this.name = name;
+    this.age = age;
+  }
+
+  @Override
+  public String toString() {
+    return name + " " + age;
   }
 }
