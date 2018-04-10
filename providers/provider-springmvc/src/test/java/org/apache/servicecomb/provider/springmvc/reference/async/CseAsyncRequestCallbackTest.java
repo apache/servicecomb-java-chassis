@@ -45,7 +45,7 @@ public class CseAsyncRequestCallbackTest {
   public void testCseEntity(@Injectable CseHttpEntity<String> entity) {
     CseAsyncClientHttpRequest request = new CseAsyncClientHttpRequest();
     entity.addContext("c1", "c2");
-	  CseAsyncRequestCallback<String> cb = new CseAsyncRequestCallback<>(entity);
+    CseAsyncRequestCallback<String> cb = new CseAsyncRequestCallback<>(entity);
     cb.doWithRequest(request);
     Assert.assertEquals(entity.getContext(), request.getContext());
   }

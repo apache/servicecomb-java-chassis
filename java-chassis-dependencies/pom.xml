@@ -246,7 +246,7 @@
         <groupId>io.netty</groupId>
         <artifactId>netty-tcnative-boringssl-static</artifactId>
         <version>${tcnetty.version}</version>
-      </dependency>      
+      </dependency>
       <dependency>
         <groupId>org.powermock</groupId>
         <artifactId>powermock-api-mockito</artifactId>
@@ -756,16 +756,16 @@
       </dependency>
       <dependency>
         <groupId>org.apache.servicecomb</groupId>
-	<artifactId>config-cc</artifactId>
-	<version>1.0.0-m2-SNAPSHOT</version>
-	</dependency>
+        <artifactId>config-cc</artifactId>
+        <version>1.0.0-m2-SNAPSHOT</version>
+      </dependency>
       <dependency>
         <groupId>org.apache.servicecomb</groupId>
         <artifactId>config-apollo</artifactId>
         <version>1.0.0-m2-SNAPSHOT</version>
       </dependency>
-	<dependency>
-	<groupId>org.apache.servicecomb</groupId>
+      <dependency>
+        <groupId>org.apache.servicecomb</groupId>
         <artifactId>foundation-vertx</artifactId>
         <version>1.0.0-m2-SNAPSHOT</version>
       </dependency>
