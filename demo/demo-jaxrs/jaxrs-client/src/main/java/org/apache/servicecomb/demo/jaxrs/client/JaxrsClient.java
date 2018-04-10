@@ -28,7 +28,7 @@ import org.apache.servicecomb.demo.CodeFirstRestTemplate;
 import org.apache.servicecomb.demo.DemoConst;
 import org.apache.servicecomb.demo.TestMgr;
 import org.apache.servicecomb.demo.compute.Person;
-import org.apache.servicecomb.demo.compute.Student;
+import org.apache.servicecomb.demo.validator.Student;
 import org.apache.servicecomb.foundation.common.utils.BeanUtils;
 import org.apache.servicecomb.foundation.common.utils.Log4jUtils;
 import org.apache.servicecomb.provider.springmvc.reference.RestTemplateBuilder;
@@ -87,9 +87,12 @@ public class JaxrsClient {
 
       String cseUrlPrefix = "cse://" + microserviceName + "/validator/";
 
-      testValidatorAdd(template, cseUrlPrefix);
-      testValidatorSayHi(template, cseUrlPrefix);
-      testValidatorExchange(template, cseUrlPrefix);
+      testValidatorAddSuccess(template, cseUrlPrefix);
+      testValidatorAddFail(template, cseUrlPrefix);
+      testValidatorSayHiSuccess(template, cseUrlPrefix);
+      testValidatorSayHiFail(template, cseUrlPrefix);
+      testValidatorExchangeSuccess(template, cseUrlPrefix);
+      testValidatorExchangeFail(template, cseUrlPrefix);
     }
   }
 
@@ -166,7 +169,7 @@ public class JaxrsClient {
         template.postForObject(cseUrlPrefix + "/compute/testrawjson", jsonPerson, String.class));
   }
 
-  private static void testValidatorAdd(RestTemplate template, String cseUrlPrefix) {
+  private static void testValidatorAddFail(RestTemplate template, String cseUrlPrefix) {
     Map<String, String> params = new HashMap<>();
     params.put("a", "5");
     params.put("b", "3");
@@ -181,7 +184,15 @@ public class JaxrsClient {
     TestMgr.check(true, isExcep);
   }
 
-  private static void testValidatorSayHi(RestTemplate template, String cseUrlPrefix) {
+  private static void testValidatorAddSuccess(RestTemplate template, String cseUrlPrefix) {
+    Map<String, String> params = new HashMap<>();
+    params.put("a", "5");
+    params.put("b", "20");
+    int result = template.postForObject(cseUrlPrefix + "add", params, Integer.class);
+    TestMgr.check(25, result);
+  }
+
+  private static void testValidatorSayHiFail(RestTemplate template, String cseUrlPrefix) {
     boolean isExcep = false;
     try {
       template.exchange(cseUrlPrefix + "sayhi/{name}", HttpMethod.PUT, null, String.class, "te");
@@ -192,7 +203,14 @@ public class JaxrsClient {
     TestMgr.check(true, isExcep);
   }
 
-  private static void testValidatorExchange(RestTemplate template, String cseUrlPrefix) {
+  private static void testValidatorSayHiSuccess(RestTemplate template, String cseUrlPrefix) {
+    ResponseEntity<String> responseEntity =
+        template.exchange(cseUrlPrefix + "sayhi/{name}", HttpMethod.PUT, null, String.class, "world");
+    TestMgr.check(202, responseEntity.getStatusCode());
+    TestMgr.check("world sayhi", responseEntity.getBody());
+  }
+
+  private static void testValidatorExchangeFail(RestTemplate template, String cseUrlPrefix) {
     HttpHeaders headers = new HttpHeaders();
     headers.add("Accept", MediaType.APPLICATION_JSON);
     Student student = new Student();
@@ -210,5 +228,13 @@ public class JaxrsClient {
       TestMgr.check(490, e.getStatus().getStatusCode());
     }
     TestMgr.check(true, isExcep);
+  }
+
+  private static void testValidatorExchangeSuccess(RestTemplate template, String cseUrlPrefix) {
+    Student student = new Student();
+    student.setName("test");
+    student.setAge(15);
+    Student result = template.postForObject(cseUrlPrefix + "sayhello", student, Student.class);
+    TestMgr.check("hello test 15", result);
   }
 }
