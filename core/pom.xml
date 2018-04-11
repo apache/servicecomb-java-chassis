@@ -37,10 +37,6 @@
       <artifactId>swagger-invocation-core</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.apache.servicecomb</groupId>
-      <artifactId>foundation-metrics</artifactId>
-    </dependency>
-    <dependency>
       <groupId>io.zipkin.brave</groupId>
       <artifactId>brave</artifactId>
     </dependency>
