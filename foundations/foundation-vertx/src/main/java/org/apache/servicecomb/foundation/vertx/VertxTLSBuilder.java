@@ -18,8 +18,6 @@
 package org.apache.servicecomb.foundation.vertx;
 
 import java.io.File;
-import java.util.Arrays;
-import java.util.HashSet;
 
 import org.apache.servicecomb.foundation.ssl.SSLCustom;
 import org.apache.servicecomb.foundation.ssl.SSLManager;
@@ -128,8 +126,9 @@ public final class VertxTLSBuilder {
         throw new IllegalArgumentException("invalid trust store type.");
       }
     }
-    HashSet<String> protocols = new HashSet<>(Arrays.asList(sslOption.getProtocols().split(",")));
-    tcpClientOptions.setEnabledSecureTransportProtocols(protocols);
+    for (String protocol : sslOption.getProtocols().split(",")) {
+      tcpClientOptions.addEnabledSecureTransportProtocol(protocol);
+    }
     for (String cipher : SSLManager.getEnalbedCiphers(sslOption.getCiphers())) {
       tcpClientOptions.addEnabledCipherSuite(cipher);
     }
