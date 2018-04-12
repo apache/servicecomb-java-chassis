@@ -345,7 +345,7 @@ ClassMate (http://github.com/cowtowncoder/java-classmate) com.fasterxml:classmat
 Commons IO (http://commons.apache.org/io/) commons-io:commons-io:jar:2.4
 Commons Lang (http://commons.apache.org/lang/) commons-lang:commons-lang:jar:2.6
 FindBugs-jsr305 (http://findbugs.sourceforge.net/) com.google.code.findbugs:jsr305:jar:3.0.1
-Guava: Google Core Libraries for Java (http://code.google.com/p/guava-libraries/guava) com.google.guava:guava:bundle:16.0.1
+Guava: Google Core Libraries for Java (http://code.google.com/p/guava-libraries/guava) com.google.guava:guava:bundle:19.0
 Hibernate Validator Engine (http://hibernate.org/validator/hibernate-validator) org.hibernate:hibernate-validator:jar:5.2.4.Final
 JBoss Logging 3 (http://www.jboss.org) org.jboss.logging:jboss-logging:jar:3.3.0.Final
 Jackson dataformat: CBOR (http://github.com/FasterXML/jackson-dataformats-binary) com.fasterxml.jackson.dataformat:jackson-dataformat-cbor:bundle:2.8.7

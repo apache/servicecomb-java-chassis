@@ -23,8 +23,8 @@ import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Test;
 
-public class TestSimpleEventBus {
-  private SimpleEventBus eventBus = new SimpleEventBus();
+public class TestEventBus {
+  private EventBus eventBus = new EventBus();
 
   private List<Object> events = new ArrayList<>();
 
@@ -45,13 +45,7 @@ public class TestSimpleEventBus {
   public void unregister() {
     Object obj = new SubscriberForTest();
 
-    // unregister not exist obj, should no problem
-    eventBus.unregister(obj);
-
     eventBus.register(obj);
-    eventBus.unregister(obj);
-
-    // unregister again, should no problem
     eventBus.unregister(obj);
   }
 
