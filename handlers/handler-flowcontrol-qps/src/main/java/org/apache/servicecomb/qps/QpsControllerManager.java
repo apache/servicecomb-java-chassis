@@ -19,8 +19,8 @@ package org.apache.servicecomb.qps;
 
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.regex.Pattern;
 
+import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.foundation.common.concurrent.ConcurrentHashMapEx;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,8 +29,6 @@ import com.netflix.config.DynamicProperty;
 
 public class QpsControllerManager {
   private static final Logger LOGGER = LoggerFactory.getLogger(QpsControllerManager.class);
-
-  private static final Pattern QUALIFIED_KEY_CHECKER = Pattern.compile("^[^.]+\\.[^.]+\\.[^.]+$");
 
   /**
    * Describe the relationship between configuration and qpsController.
@@ -48,22 +46,22 @@ public class QpsControllerManager {
 
   private String configKeyPrefix;
 
-  public QpsController getOrCreate(String key) {
-    return qualifiedNameControllerMap.computeIfAbsent(key, this::create);
+  public QpsController getOrCreate(String microerviceName, Invocation invocation) {
+    return qualifiedNameControllerMap
+        .computeIfAbsent(microerviceName + SEPARATOR + invocation.getOperationMeta().getSchemaQualifiedName(), key -> {
+          return create(key, microerviceName, invocation);
+        });
   }
 
   /**
    * Create relevant qpsLimit dynamicProperty and watch the configuration change.
    * Search and return a valid qpsController.
    */
-  protected QpsController create(String qualifiedNameKey) {
-    if (!QUALIFIED_KEY_CHECKER.matcher(qualifiedNameKey).matches()) {
-      throw new IllegalArgumentException("Unexpected qualified name: [" + qualifiedNameKey + "]");
-    }
+  protected QpsController create(String qualifiedNameKey, String microerviceName, Invocation invocation) {
     // create "microservice"
-    createQpsControllerIfNotExist(qualifiedNameKey.substring(0, qualifiedNameKey.indexOf(SEPARATOR)));
+    createQpsControllerIfNotExist(microerviceName);
     // create "microservice.schema"
-    createQpsControllerIfNotExist(qualifiedNameKey.substring(0, qualifiedNameKey.lastIndexOf(SEPARATOR)));
+    createQpsControllerIfNotExist(qualifiedNameKey.substring(0, microerviceName.length() + invocation.getSchemaId().length() + 1));
     // create "microservice.schema.operation"
     createQpsControllerIfNotExist(qualifiedNameKey);
 

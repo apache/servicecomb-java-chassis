@@ -41,8 +41,7 @@ public class ProviderQpsFlowControlHandler implements Handler {
     QpsController qpsController =
         StringUtils.isEmpty(microServiceName)
             ? qpsControllerMgr.getGlobalQpsController()
-            : qpsControllerMgr.getOrCreate(microServiceName + QpsControllerManager.SEPARATOR
-                + invocation.getOperationMeta().getSchemaQualifiedName());
+            : qpsControllerMgr.getOrCreate(microServiceName, invocation);
     if (isLimitNewRequest(qpsController, asyncResp)) {
       return;
     }
