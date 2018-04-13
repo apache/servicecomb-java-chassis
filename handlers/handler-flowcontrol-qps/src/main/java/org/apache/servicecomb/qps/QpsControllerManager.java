@@ -46,10 +46,10 @@ public class QpsControllerManager {
 
   private String configKeyPrefix;
 
-  public QpsController getOrCreate(String microerviceName, Invocation invocation) {
+  public QpsController getOrCreate(String microserviceName, Invocation invocation) {
     return qualifiedNameControllerMap
-        .computeIfAbsent(microerviceName + SEPARATOR + invocation.getOperationMeta().getSchemaQualifiedName(), key -> {
-          return create(key, microerviceName, invocation);
+        .computeIfAbsent(microserviceName + SEPARATOR + invocation.getOperationMeta().getSchemaQualifiedName(), key -> {
+          return create(key, microserviceName, invocation);
         });
   }
 
@@ -57,11 +57,11 @@ public class QpsControllerManager {
    * Create relevant qpsLimit dynamicProperty and watch the configuration change.
    * Search and return a valid qpsController.
    */
-  protected QpsController create(String qualifiedNameKey, String microerviceName, Invocation invocation) {
+  protected QpsController create(String qualifiedNameKey, String microserviceName, Invocation invocation) {
     // create "microservice"
-    createQpsControllerIfNotExist(microerviceName);
+    createQpsControllerIfNotExist(microserviceName);
     // create "microservice.schema"
-    createQpsControllerIfNotExist(qualifiedNameKey.substring(0, microerviceName.length() + invocation.getSchemaId().length() + 1));
+    createQpsControllerIfNotExist(qualifiedNameKey.substring(0, microserviceName.length() + invocation.getSchemaId().length() + 1));
     // create "microservice.schema.operation"
     createQpsControllerIfNotExist(qualifiedNameKey);
 
