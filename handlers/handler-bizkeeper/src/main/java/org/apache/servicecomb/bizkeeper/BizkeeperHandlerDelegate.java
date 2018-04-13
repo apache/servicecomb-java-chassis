@@ -56,7 +56,7 @@ public class BizkeeperHandlerDelegate {
       public Observable<Response> toObservable() {
         return Observable.create(f -> {
           try {
-            f.onNext(FallbackPolicyManager.getFallbackResponse(handler.groupname, invocation));
+            f.onNext(FallbackPolicyManager.getFallbackResponse(handler.groupname, null, invocation));
           } catch (Exception e) {
             f.onError(e);
           }
