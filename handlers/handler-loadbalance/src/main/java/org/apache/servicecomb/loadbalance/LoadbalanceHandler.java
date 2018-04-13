@@ -41,6 +41,8 @@ import org.apache.servicecomb.serviceregistry.discovery.DiscoveryFilter;
 import org.apache.servicecomb.serviceregistry.discovery.DiscoveryTree;
 import org.apache.servicecomb.swagger.invocation.AsyncResponse;
 import org.apache.servicecomb.swagger.invocation.Response;
+import org.apache.servicecomb.swagger.invocation.exception.ExceptionFactory;
+import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -260,7 +262,7 @@ public class LoadbalanceHandler implements Handler {
             invocation.setHandlerIndex(currentHandler); // for retry
             invocation.setEndpoint(((CseServer) s).getEndpoint());
             invocation.next(resp -> {
-              if (resp.isFailed()) {
+              if (isFailedResponse(resp)) {
                 LOGGER.error("service call error, msg is {}, server is {} ",
                     ((Throwable) resp.getResult()).getMessage(),
                     s);
@@ -288,6 +290,19 @@ public class LoadbalanceHandler implements Handler {
     }, error -> {
     }, () -> {
     });
+  }
+
+  protected boolean isFailedResponse(Response resp) {
+    if (resp.isFailed()) {
+      if (InvocationException.class.isInstance(resp.getResult())) {
+        InvocationException e = (InvocationException) resp.getResult();
+        return e.getStatusCode() == ExceptionFactory.CONSUMER_INNER_STATUS_CODE;
+      } else {
+        return true;
+      }
+    } else {
+      return false;
+    }
   }
 
   protected LoadBalancer getOrCreateLoadBalancer(Invocation invocation) {

@@ -16,17 +16,21 @@
  */
 package org.apache.servicecomb.loadbalance;
 
+import java.net.ConnectException;
+import java.net.SocketTimeoutException;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.servicecomb.config.ConfigUtil;
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
+import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
 import com.netflix.client.DefaultLoadBalancerRetryHandler;
+import com.netflix.client.RetryHandler;
 import com.netflix.loadbalancer.RandomRule;
 import com.netflix.loadbalancer.RoundRobinRule;
 import com.netflix.loadbalancer.WeightedResponseTimeRule;
@@ -109,7 +113,13 @@ public class TestExtensionsManager {
     System.getProperties().remove("cse.loadbalance.mytest3.NFLoadBalancerRuleClassName");
     System.getProperties().remove("cse.loadbalance.mytest4.NFLoadBalancerRuleClassName");
 
-    Assert.assertEquals(DefaultLoadBalancerRetryHandler.class.getName(),
-        ExtensionsManager.createRetryHandler("mytest1").getClass().getName());
+    RetryHandler retryHandler = ExtensionsManager.createRetryHandler("mytest1");
+    Assert.assertTrue(DefaultLoadBalancerRetryHandler.class.isInstance(retryHandler));
+    Assert.assertFalse(retryHandler.isRetriableException(new InvocationException(400, "", ""), false));
+    Assert.assertFalse(retryHandler.isRetriableException(new InvocationException(400, "", ""), true));
+    Assert.assertTrue(retryHandler.isRetriableException(new ConnectException(), false));
+    Assert.assertTrue(retryHandler.isRetriableException(new ConnectException(), true));
+    Assert.assertTrue(retryHandler.isRetriableException(new SocketTimeoutException(), false));
+    Assert.assertTrue(retryHandler.isRetriableException(new SocketTimeoutException(), true));
   }
 }

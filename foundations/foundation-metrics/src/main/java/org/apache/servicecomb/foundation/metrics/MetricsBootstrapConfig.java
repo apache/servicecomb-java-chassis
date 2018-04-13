@@ -21,7 +21,7 @@ import com.netflix.config.DynamicPropertyFactory;
 public class MetricsBootstrapConfig {
   public static final String METRICS_WINDOW_TIME = "servicecomb.metrics.window_time";
 
-  public static final int DEFAULT_METRICS_WINDOW_TIME = 5000;
+  public static final int DEFAULT_METRICS_WINDOW_TIME = 60000;
 
   private long msPollInterval;
 
