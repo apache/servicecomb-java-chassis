@@ -21,6 +21,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response.Status;
 
 import org.apache.servicecomb.common.rest.codec.RestObjectMapper;
 import org.apache.servicecomb.core.CseContext;
@@ -179,6 +180,8 @@ public class JaxrsClient {
     } catch (InvocationException e) {
       isExcep = true;
       TestMgr.check(400, e.getStatus().getStatusCode());
+      TestMgr.check(Status.BAD_REQUEST, e.getReasonPhrase());
+      TestMgr.check(true, e.getErrorData().toString().contains("ConstraintViolationImpl"));
     }
 
     TestMgr.check(true, isExcep);
@@ -199,6 +202,8 @@ public class JaxrsClient {
     } catch (InvocationException e) {
       isExcep = true;
       TestMgr.check(400, e.getStatus().getStatusCode());
+      TestMgr.check(Status.BAD_REQUEST, e.getReasonPhrase());
+      TestMgr.check(true, e.getErrorData().toString().contains("ConstraintViolationImpl"));
     }
     TestMgr.check(true, isExcep);
   }
@@ -226,6 +231,8 @@ public class JaxrsClient {
     } catch (InvocationException e) {
       isExcep = true;
       TestMgr.check(400, e.getStatus().getStatusCode());
+      TestMgr.check(Status.BAD_REQUEST, e.getReasonPhrase());
+      TestMgr.check(true, e.getErrorData().toString().contains("ConstraintViolationImpl"));
     }
     TestMgr.check(true, isExcep);
   }
