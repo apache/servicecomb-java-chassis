@@ -126,7 +126,6 @@ public final class VertxTLSBuilder {
         throw new IllegalArgumentException("invalid trust store type.");
       }
     }
-
     for (String protocol : sslOption.getProtocols().split(",")) {
       tcpClientOptions.addEnabledSecureTransportProtocol(protocol);
     }

@@ -16,14 +16,16 @@
  */
 package org.apache.servicecomb.metrics.core.publish;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import javax.ws.rs.core.Response.Status;
 
 import org.apache.servicecomb.core.Const;
 import org.apache.servicecomb.foundation.metrics.publish.spectator.MeasurementNode;
+import org.apache.servicecomb.foundation.metrics.publish.spectator.MeasurementTree;
 import org.apache.servicecomb.metrics.core.meter.invocation.MeterInvocationConst;
-import org.apache.servicecomb.metrics.core.publish.PublishUtils;
+import org.apache.servicecomb.metrics.core.publish.model.ThreadPoolPublishModel;
 import org.apache.servicecomb.metrics.core.publish.model.invocation.OperationPerf;
 import org.apache.servicecomb.metrics.core.publish.model.invocation.OperationPerfGroup;
 import org.apache.servicecomb.metrics.core.publish.model.invocation.OperationPerfGroups;
@@ -31,6 +33,8 @@ import org.apache.servicecomb.metrics.core.publish.model.invocation.PerfInfo;
 import org.apache.servicecomb.metrics.core.publish.model.invocation.Utils;
 import org.junit.Assert;
 import org.junit.Test;
+
+import com.netflix.spectator.api.patterns.ThreadPoolMonitorPublishModelFactory;
 
 public class TestPublishUtils {
   String op = "op";
@@ -71,5 +75,14 @@ public class TestPublishUtils {
     Assert.assertEquals(10, perfInfo.getTps());
     Assert.assertEquals(1000, perfInfo.calcMsLatency(), 0);
     Assert.assertEquals(100000, perfInfo.getMsMaxLatency(), 0);
+  }
+
+  @Test
+  public void createThreadPoolPublishModels_empty() {
+    Map<String, ThreadPoolPublishModel> threadPools = new HashMap<>();
+
+    ThreadPoolMonitorPublishModelFactory.create(new MeasurementTree(), threadPools);
+
+    Assert.assertTrue(threadPools.isEmpty());
   }
 }

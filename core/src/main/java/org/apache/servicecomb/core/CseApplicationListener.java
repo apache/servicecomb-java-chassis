@@ -147,7 +147,9 @@ public class CseApplicationListener
       }
     } else if (event instanceof ContextClosedEvent) {
       LOGGER.warn("cse is closing now...");
+      triggerEvent(EventType.BEFORE_CLOSE);
       RegistryUtils.destroy();
+      triggerEvent(EventType.AFTER_CLOSE);
       isInit = false;
     }
   }

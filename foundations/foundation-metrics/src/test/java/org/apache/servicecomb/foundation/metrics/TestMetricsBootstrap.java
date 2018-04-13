@@ -19,10 +19,10 @@ package org.apache.servicecomb.foundation.metrics;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.ScheduledExecutorService;
 
 import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
 import org.hamcrest.Matchers;
-import org.junit.After;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -31,6 +31,7 @@ import com.google.common.eventbus.Subscribe;
 import com.netflix.spectator.api.CompositeRegistry;
 import com.netflix.spectator.api.Meter;
 
+import mockit.Deencapsulation;
 import mockit.Expectations;
 import mockit.Mocked;
 
@@ -41,11 +42,6 @@ public class TestMetricsBootstrap {
   CompositeRegistry globalRegistry;
 
   EventBus eventBus = new EventBus();
-
-  @After
-  public void teardown() {
-    bootstrap.shutdown();
-  }
 
   @Test
   public void loadMetricsInitializers() {
@@ -64,6 +60,7 @@ public class TestMetricsBootstrap {
     };
 
     bootstrap.start(globalRegistry, eventBus);
+    bootstrap.shutdown();
 
     Assert.assertThat(initList, Matchers.contains(metricsInitializer, metricsInitializer));
   }
@@ -89,7 +86,56 @@ public class TestMetricsBootstrap {
     });
 
     bootstrap.pollMeters();
+    bootstrap.shutdown();
 
     Assert.assertEquals(meters, result.getMeters());
+  }
+
+  @Test
+  public void shutdown(@Mocked ScheduledExecutorService scheduledExecutorService) {
+    List<MetricsInitializer> uninitList = new ArrayList<>();
+    MetricsInitializer initializer1 = new MetricsInitializer() {
+      @Override
+      public int getOrder() {
+        return 1;
+      }
+
+      @Override
+      public void init(CompositeRegistry globalRegistry, EventBus eventBus, MetricsBootstrapConfig config) {
+      }
+
+      @Override
+      public void uninit() {
+        uninitList.add(this);
+      }
+    };
+
+    MetricsInitializer initializer2 = new MetricsInitializer() {
+      @Override
+      public int getOrder() {
+        return 2;
+      }
+
+      @Override
+      public void init(CompositeRegistry globalRegistry, EventBus eventBus, MetricsBootstrapConfig config) {
+      }
+
+      @Override
+      public void uninit() {
+        uninitList.add(this);
+      }
+    };
+
+    new Expectations(SPIServiceUtils.class) {
+      {
+        SPIServiceUtils.getSortedService(MetricsInitializer.class);
+        result = Arrays.asList(initializer1, initializer2);
+      }
+    };
+    Deencapsulation.setField(bootstrap, "executorService", scheduledExecutorService);
+
+    bootstrap.shutdown();
+
+    Assert.assertThat(uninitList, Matchers.contains(initializer2, initializer1));
   }
 }

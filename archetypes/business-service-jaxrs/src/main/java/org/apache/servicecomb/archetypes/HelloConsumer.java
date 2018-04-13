@@ -24,7 +24,7 @@ public class HelloConsumer {
   private final RestTemplate restTemplate = RestTemplateBuilder.create();
 
   public void invokeHello(){
-    String result = restTemplate.getForObject("cse://business-service/hello", String.class);
+    restTemplate.getForObject("cse://business-service/hello", String.class);
   }
 
 }
