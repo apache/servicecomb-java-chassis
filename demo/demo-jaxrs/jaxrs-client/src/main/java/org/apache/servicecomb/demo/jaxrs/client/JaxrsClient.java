@@ -178,7 +178,7 @@ public class JaxrsClient {
       template.postForObject(cseUrlPrefix + "add", params, Integer.class);
     } catch (InvocationException e) {
       isExcep = true;
-      TestMgr.check(490, e.getStatus().getStatusCode());
+      TestMgr.check(400, e.getStatus().getStatusCode());
     }
 
     TestMgr.check(true, isExcep);
@@ -198,7 +198,7 @@ public class JaxrsClient {
       template.exchange(cseUrlPrefix + "sayhi/{name}", HttpMethod.PUT, null, String.class, "te");
     } catch (InvocationException e) {
       isExcep = true;
-      TestMgr.check(490, e.getStatus().getStatusCode());
+      TestMgr.check(400, e.getStatus().getStatusCode());
     }
     TestMgr.check(true, isExcep);
   }
@@ -225,7 +225,7 @@ public class JaxrsClient {
           Student.class);
     } catch (InvocationException e) {
       isExcep = true;
-      TestMgr.check(490, e.getStatus().getStatusCode());
+      TestMgr.check(400, e.getStatus().getStatusCode());
     }
     TestMgr.check(true, isExcep);
   }
