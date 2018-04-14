@@ -29,6 +29,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
 
+import com.netflix.config.*;
 import org.apache.commons.configuration.AbstractConfiguration;
 import org.apache.commons.configuration.Configuration;
 import org.apache.servicecomb.config.archaius.sources.ConfigModel;
@@ -40,11 +41,6 @@ import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
-
-import com.netflix.config.ConcurrentCompositeConfiguration;
-import com.netflix.config.DynamicConfiguration;
-import com.netflix.config.DynamicPropertyFactory;
-import com.netflix.config.DynamicWatchedConfiguration;
 
 import mockit.Deencapsulation;
 import mockit.Expectations;
@@ -84,11 +80,15 @@ public class TestConfigUtil {
   @Test
   public void testAddConfig() {
     Map config = new HashMap<String, Object>();
-    config.put("APPLICATION_ID", "app");
+    config.put("service_description.name", "service_name_test");
     ConfigUtil.setConfigs(config);
-    ConcurrentCompositeConfiguration configuration = ConfigUtil.createLocalConfig();
-    Assert.assertEquals(configuration.getString("APPLICATION_ID"), "app");
-
+    ConfigUtil.addConfig("service_description.version", "1.0.2");
+    ConfigUtil.addConfig("cse.test.enabled", true);
+    ConfigUtil.addConfig("cse.test.num", 10);
+    AbstractConfiguration configuration = ConfigUtil.createDynamicConfig();
+    Assert.assertEquals(configuration.getString("service_description.name"), "service_name_test");
+    Assert.assertEquals(configuration.getBoolean("cse.test.enabled"), true);
+    Assert.assertEquals(configuration.getInt("cse.test.num"), 10);
   }
 
   @Test
