@@ -21,6 +21,7 @@ import static org.apache.servicecomb.foundation.common.base.ServiceCombConstants
 import static org.apache.servicecomb.foundation.common.base.ServiceCombConstants.CONFIG_KEY_SPLITER;
 import static org.apache.servicecomb.foundation.common.base.ServiceCombConstants.CONFIG_SERVICECOMB_PREFIX;
 
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -52,13 +53,17 @@ public final class ConfigUtil {
 
   private static final String MICROSERVICE_CONFIG_LOADER_KEY = "cse-microservice-config-loader";
 
-  private static ConfigModel model = new ConfigModel();
+  private static Map<String, Object> localConfig = new HashMap<>();
 
   private ConfigUtil() {
   }
 
   public static void setConfigs(Map<String, Object> config) {
-    model.setConfig(config);
+    localConfig = config;
+  }
+
+  public static void addConfig(String key, Object value) {
+    localConfig.put(key, value);
   }
 
   public static Object getProperty(String key) {
@@ -89,7 +94,9 @@ public final class ConfigUtil {
   public static ConcurrentCompositeConfiguration createLocalConfig() {
     MicroserviceConfigLoader loader = new MicroserviceConfigLoader();
     loader.loadAndSort();
-    if(model.getConfig() != null) {
+    if (localConfig.size() > 0) {
+      ConfigModel model = new ConfigModel();
+      model.setConfig(localConfig);
       loader.getConfigModels().add(model);
     }
 
