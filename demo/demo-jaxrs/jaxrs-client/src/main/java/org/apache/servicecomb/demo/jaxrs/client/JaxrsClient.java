@@ -181,7 +181,9 @@ public class JaxrsClient {
       isExcep = true;
       TestMgr.check(400, e.getStatus().getStatusCode());
       TestMgr.check(Status.BAD_REQUEST, e.getReasonPhrase());
-      TestMgr.check(true, e.getErrorData().toString().contains("ConstraintViolationImpl"));
+      TestMgr.check(
+          "CommonExceptionData [message=[ConstraintViolationImpl{interpolatedMessage='must be greater than or equal to 20', propertyPath=add.arg1, rootBeanClass=class org.apache.servicecomb.demo.jaxrs.server.Validator, messageTemplate='{javax.validation.constraints.Min.message}'}]]",
+          e.getErrorData());
     }
 
     TestMgr.check(true, isExcep);
@@ -203,7 +205,9 @@ public class JaxrsClient {
       isExcep = true;
       TestMgr.check(400, e.getStatus().getStatusCode());
       TestMgr.check(Status.BAD_REQUEST, e.getReasonPhrase());
-      TestMgr.check(true, e.getErrorData().toString().contains("ConstraintViolationImpl"));
+      TestMgr.check(
+          "CommonExceptionData [message=[ConstraintViolationImpl{interpolatedMessage='length must be between 3 and 2147483647', propertyPath=sayHi.arg0, rootBeanClass=class org.apache.servicecomb.demo.jaxrs.server.Validator, messageTemplate='{org.hibernate.validator.constraints.Length.message}'}]]",
+          e.getErrorData());
     }
     TestMgr.check(true, isExcep);
   }
@@ -232,7 +236,9 @@ public class JaxrsClient {
       isExcep = true;
       TestMgr.check(400, e.getStatus().getStatusCode());
       TestMgr.check(Status.BAD_REQUEST, e.getReasonPhrase());
-      TestMgr.check(true, e.getErrorData().toString().contains("ConstraintViolationImpl"));
+      TestMgr.check(
+          "CommonExceptionData [message=[ConstraintViolationImpl{interpolatedMessage='must be less than or equal to 20', propertyPath=sayHello.arg0.age, rootBeanClass=class org.apache.servicecomb.demo.jaxrs.server.Validator, messageTemplate='{javax.validation.constraints.Max.message}'}]]",
+          e.getErrorData());
     }
     TestMgr.check(true, isExcep);
   }
