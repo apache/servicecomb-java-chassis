@@ -29,6 +29,7 @@ import javax.xml.ws.Holder;
 import org.apache.servicecomb.common.rest.codec.produce.ProduceProcessorManager;
 import org.apache.servicecomb.common.rest.definition.RestOperationMeta;
 import org.apache.servicecomb.common.rest.filter.HttpServerFilter;
+import org.apache.servicecomb.common.rest.filter.HttpServerFilterBaseForTest;
 import org.apache.servicecomb.common.rest.locator.OperationLocator;
 import org.apache.servicecomb.common.rest.locator.ServicePathManager;
 import org.apache.servicecomb.core.Const;
@@ -403,6 +404,7 @@ public class TestAbstractRestInvocation {
       @Override
       protected void sendResponse(Response response) {
         result.value = response;
+        super.sendResponse(response);
       }
     };
     initRestInvocation();
@@ -648,12 +650,12 @@ public class TestAbstractRestInvocation {
       }
     }.getMockInstance();
 
-    HttpServerFilter filter = new MockUp<HttpServerFilter>() {
-      @Mock
-      void beforeSendResponse(Invocation invocation, HttpServletResponseEx responseEx) {
+    HttpServerFilter filter = new HttpServerFilterBaseForTest() {
+      @Override
+      public void beforeSendResponse(Invocation invocation, HttpServletResponseEx responseEx) {
         buffer.appendString("-filter");
       }
-    }.getMockInstance();
+    };
 
     initRestInvocation();
     List<HttpServerFilter> httpServerFilters = SPIServiceUtils.loadSortedService(HttpServerFilter.class);

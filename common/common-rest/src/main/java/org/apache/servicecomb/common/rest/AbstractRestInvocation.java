@@ -17,11 +17,13 @@
 
 package org.apache.servicecomb.common.rest;
 
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.concurrent.CompletableFuture;
 
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Response.Status;
@@ -31,6 +33,7 @@ import org.apache.servicecomb.common.rest.codec.produce.ProduceProcessor;
 import org.apache.servicecomb.common.rest.codec.produce.ProduceProcessorManager;
 import org.apache.servicecomb.common.rest.definition.RestOperationMeta;
 import org.apache.servicecomb.common.rest.filter.HttpServerFilter;
+import org.apache.servicecomb.common.rest.filter.HttpServerFilterBeforeSendResponseExecutor;
 import org.apache.servicecomb.common.rest.locator.OperationLocator;
 import org.apache.servicecomb.common.rest.locator.ServicePathManager;
 import org.apache.servicecomb.core.Const;
@@ -194,18 +197,11 @@ public abstract class AbstractRestInvocation {
       LOGGER.error("Failed to send rest response, operation:{}.",
           invocation.getMicroserviceQualifiedName(),
           e);
-    } finally {
-      requestEx.getAsyncContext().complete();
-      // if failed to locate path, then will not create invocation
-      // TODO: statistics this case
-      if (invocation != null) {
-        invocation.onFinish(response);
-      }
     }
   }
 
   @SuppressWarnings("deprecation")
-  protected void sendResponse(Response response) throws Exception {
+  protected void sendResponse(Response response) {
     if (response.getHeaders().getHeaderMap() != null) {
       for (Entry<String, List<Object>> entry : response.getHeaders().getHeaderMap().entrySet()) {
         for (Object value : entry.getValue()) {
@@ -220,10 +216,38 @@ public abstract class AbstractRestInvocation {
     responseEx.setAttribute(RestConst.INVOCATION_HANDLER_RESPONSE, response);
     responseEx.setAttribute(RestConst.INVOCATION_HANDLER_PROCESSOR, produceProcessor);
 
-    for (HttpServerFilter filter : httpServerFilters) {
-      filter.beforeSendResponse(invocation, responseEx);
+    executeHttpServerFilters(response);
+  }
+
+  protected void executeHttpServerFilters(Response response) {
+    HttpServerFilterBeforeSendResponseExecutor exec =
+        new HttpServerFilterBeforeSendResponseExecutor(httpServerFilters, invocation, responseEx);
+    CompletableFuture<Void> future = exec.run();
+    future.whenComplete((v, e) -> {
+      onExecuteHttpServerFiltersFinish(response, e);
+    });
+  }
+
+  protected void onExecuteHttpServerFiltersFinish(Response response, Throwable e) {
+    if (e != null) {
+      LOGGER.error("Failed to execute HttpServerFilters, operation:{}.",
+          invocation.getMicroserviceQualifiedName(),
+          e);
     }
 
-    responseEx.flushBuffer();
+    try {
+      responseEx.flushBuffer();
+    } catch (IOException flushException) {
+      LOGGER.error("Failed to flush rest response, operation:{}.",
+          invocation.getMicroserviceQualifiedName(),
+          flushException);
+    }
+
+    requestEx.getAsyncContext().complete();
+    // if failed to locate path, then will not create invocation
+    // TODO: statistics this case
+    if (invocation != null) {
+      invocation.onFinish(response);
+    }
   }
 }
