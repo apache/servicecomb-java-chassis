@@ -79,7 +79,7 @@ public class TestConfigUtil {
 
   @Test
   public void testAddConfig() {
-    Map config = new HashMap<String, Object>();
+    Map<String, Object> config = new HashMap<>();
     config.put("service_description.name", "service_name_test");
     ConfigUtil.setConfigs(config);
     ConfigUtil.addConfig("service_description.version", "1.0.2");
