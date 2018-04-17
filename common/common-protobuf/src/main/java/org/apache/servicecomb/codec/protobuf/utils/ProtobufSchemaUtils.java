@@ -178,7 +178,7 @@ public final class ProtobufSchemaUtils {
     return getOrCreateSchema(type, () -> {
       if (!isArgsNeedWrap(method)) {
         // 可以直接使用
-        Class<?> cls = (Class<?>) method.getParameterTypes()[0];
+        Class<?> cls = method.getParameterTypes()[0];
         Schema<?> schema = RuntimeSchema.createFrom(cls);
         return WrapSchemaFactory.createSchema(schema, WrapType.ARGS_NOT_WRAP);
       }
