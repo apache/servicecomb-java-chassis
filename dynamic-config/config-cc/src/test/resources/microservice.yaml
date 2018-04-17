@@ -46,7 +46,7 @@ cse:
   config:
     client:
       serviceName: testDemo
-      serverUri: https://172.16.8.7:30103,https://${host.name}:30103
+      serverUri: https://172.16.8.7:30103,https://${host.name}:30103,http://172.16.8.7,https://172.16.8.7
       tenantName: csetest
       refreshMode: 1
       refresh_interval: 10000

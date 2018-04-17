@@ -35,6 +35,8 @@ public class TestConfigCenterConfig {
     List<String> servers = ConfigCenterConfig.INSTANCE.getServerUri();
     Assert.assertEquals("https://172.16.8.7:30103", servers.get(0));
     Assert.assertEquals("https://172.16.8.7:30103", servers.get(1));
+    Assert.assertEquals("http://172.16.8.7:80", servers.get(2));
+    Assert.assertEquals("https://172.16.8.7:443", servers.get(3));
   }
 
   @Test
