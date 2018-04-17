@@ -152,7 +152,7 @@ public class TestJavassistUtils {
   public void multiWrapper() throws Exception {
     ClassConfig classConfig = new ClassConfig();
     classConfig.setClassName("cse.ut.multi.Wrapper");
-    classConfig.addField("intField", (Type) int.class);
+    classConfig.addField("intField", int.class);
     classConfig.addField("strField", String.class);
 
     JavassistUtils.genMultiWrapperInterface(classConfig);
@@ -161,7 +161,7 @@ public class TestJavassistUtils {
 
     MultiWrapper instance = (MultiWrapper) wrapperClass.newInstance();
     instance.writeFields(new Object[] {100, "test"});
-    Object[] fieldValues = (Object[]) instance.readFields();
+    Object[] fieldValues = instance.readFields();
     Assert.assertEquals(100, fieldValues[0]);
     Assert.assertEquals("test", fieldValues[1]);
   }
