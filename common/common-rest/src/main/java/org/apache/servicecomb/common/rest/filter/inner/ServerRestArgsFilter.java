@@ -17,6 +17,10 @@
 
 package org.apache.servicecomb.common.rest.filter.inner;
 
+import java.util.concurrent.CompletableFuture;
+
+import javax.servlet.http.Part;
+
 import org.apache.servicecomb.common.rest.RestConst;
 import org.apache.servicecomb.common.rest.codec.RestCodec;
 import org.apache.servicecomb.common.rest.codec.produce.ProduceProcessor;
@@ -50,7 +54,7 @@ public class ServerRestArgsFilter implements HttpServerFilter {
   }
 
   @Override
-  public void beforeSendResponse(Invocation invocation, HttpServletResponseEx responseEx) {
+  public CompletableFuture<Void> asyncBeforeSendResponse(Invocation invocation, HttpServletResponseEx responseEx) {
     Response response = (Response) responseEx.getAttribute(RestConst.INVOCATION_HANDLER_RESPONSE);
     ProduceProcessor produceProcessor =
         (ProduceProcessor) responseEx.getAttribute(RestConst.INVOCATION_HANDLER_PROCESSOR);
@@ -59,13 +63,19 @@ public class ServerRestArgsFilter implements HttpServerFilter {
       body = ((InvocationException) body).getErrorData();
     }
 
+    if (Part.class.isInstance(body)) {
+      return responseEx.sendPart((Part) body);
+    }
+
+    CompletableFuture<Void> future = new CompletableFuture<Void>();
     try (BufferOutputStream output = new BufferOutputStream(Unpooled.compositeBuffer())) {
       produceProcessor.encodeResponse(output, body);
 
       responseEx.setBodyBuffer(output.getBuffer());
+      future.complete(null);
     } catch (Throwable e) {
-      throw ExceptionFactory.convertProducerException(e);
+      future.completeExceptionally(ExceptionFactory.convertProducerException(e));
     }
+    return future;
   }
-
 }
