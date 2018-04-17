@@ -47,7 +47,7 @@ public class TestFallbackPolicyManager {
       }
     };
 
-    Assert.assertEquals((String) null, FallbackPolicyManager.getFallbackResponse("Consumer", invocation).getResult());
+    Assert.assertEquals((String) null, FallbackPolicyManager.getFallbackResponse("Consumer", null, invocation).getResult());
 
     new Expectations() {
       {
@@ -62,7 +62,7 @@ public class TestFallbackPolicyManager {
       }
     };
     Assert.assertEquals(CseException.class,
-        ((Exception) FallbackPolicyManager.getFallbackResponse("Consumer", invocation).getResult()).getCause()
+        ((Exception) FallbackPolicyManager.getFallbackResponse("Consumer", null, invocation).getResult()).getCause()
             .getClass());
 
     new Expectations() {
@@ -82,7 +82,7 @@ public class TestFallbackPolicyManager {
     FallbackPolicyManager.record("Consumer", invocation, Response.succResp("mockedsuccess"), true);
     FallbackPolicyManager.record("Consumer", invocation, Response.succResp("mockedfailure"), false);
     Assert.assertEquals("mockedsuccess",
-        FallbackPolicyManager.getFallbackResponse("Consumer", invocation).getResult());
+        FallbackPolicyManager.getFallbackResponse("Consumer", null, invocation).getResult());
 
     new Expectations() {
       {
@@ -97,7 +97,7 @@ public class TestFallbackPolicyManager {
       }
     };
     Assert.assertEquals(CseException.class,
-        ((Exception) FallbackPolicyManager.getFallbackResponse("Consumer", invocation).getResult()).getCause()
+        ((Exception) FallbackPolicyManager.getFallbackResponse("Consumer", null, invocation).getResult()).getCause()
             .getClass());
   }
 }

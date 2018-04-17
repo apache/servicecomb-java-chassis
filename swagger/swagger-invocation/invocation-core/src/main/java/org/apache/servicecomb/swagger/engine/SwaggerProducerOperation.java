@@ -18,14 +18,17 @@ package org.apache.servicecomb.swagger.engine;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
+import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
 import org.apache.servicecomb.swagger.invocation.AsyncResponse;
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.apache.servicecomb.swagger.invocation.SwaggerInvocation;
 import org.apache.servicecomb.swagger.invocation.arguments.producer.ProducerArgumentsMapper;
 import org.apache.servicecomb.swagger.invocation.context.ContextUtils;
 import org.apache.servicecomb.swagger.invocation.exception.ExceptionFactory;
+import org.apache.servicecomb.swagger.invocation.extension.ProducerInvokeExtension;
 import org.apache.servicecomb.swagger.invocation.response.producer.ProducerResponseMapper;
 
 public class SwaggerProducerOperation {
@@ -43,6 +46,9 @@ public class SwaggerProducerOperation {
   private ProducerArgumentsMapper argumentsMapper;
 
   private ProducerResponseMapper responseMapper;
+
+  private List<ProducerInvokeExtension> producerInvokeExtenstionList =
+      SPIServiceUtils.getSortedService(ProducerInvokeExtension.class);
 
   public String getName() {
     return name;
@@ -119,6 +125,9 @@ public class SwaggerProducerOperation {
   public void doCompletableFutureInvoke(SwaggerInvocation invocation, AsyncResponse asyncResp) {
     try {
       Object[] args = argumentsMapper.toProducerArgs(invocation);
+      for (ProducerInvokeExtension producerInvokeExtension : producerInvokeExtenstionList) {
+        producerInvokeExtension.beforeMethodInvoke(invocation, this, args);
+      }
       Object result = producerMethod.invoke(producerInstance, args);
 
       ((CompletableFuture<Object>) result).whenComplete((realResult, ex) -> {
@@ -145,6 +154,9 @@ public class SwaggerProducerOperation {
     Response response = null;
     try {
       Object[] args = argumentsMapper.toProducerArgs(invocation);
+      for (ProducerInvokeExtension producerInvokeExtension : producerInvokeExtenstionList) {
+        producerInvokeExtension.beforeMethodInvoke(invocation, this, args);
+      }
       Object result = producerMethod.invoke(producerInstance, args);
       response = responseMapper.mapResponse(invocation.getStatus(), result);
     } catch (Throwable e) {

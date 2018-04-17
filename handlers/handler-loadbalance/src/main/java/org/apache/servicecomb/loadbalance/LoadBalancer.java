@@ -37,7 +37,7 @@ import com.netflix.loadbalancer.ServerListFilter;
 public class LoadBalancer extends AbstractLoadBalancer {
   private String name;
 
-  private List<Server> serverList;
+  private List<Server> serverList = Collections.emptyList();
 
   private IRule rule;
 

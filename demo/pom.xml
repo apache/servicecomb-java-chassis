@@ -47,7 +47,6 @@
     <module>demo-multiple</module>
     <module>demo-signature</module>
     <module>demo-edge</module>
-    
     <module>perf</module>
   </modules>
 
