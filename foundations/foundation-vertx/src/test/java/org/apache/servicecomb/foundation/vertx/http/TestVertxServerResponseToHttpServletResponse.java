@@ -18,7 +18,11 @@
 package org.apache.servicecomb.foundation.vertx.http;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
+import javax.servlet.http.Part;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Response.StatusType;
 
@@ -30,9 +34,12 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
+import io.vertx.core.AsyncResult;
 import io.vertx.core.Context;
+import io.vertx.core.Future;
 import io.vertx.core.Handler;
 import io.vertx.core.MultiMap;
+import io.vertx.core.Vertx;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.http.HttpServerResponse;
 import io.vertx.core.impl.VertxImpl;
@@ -56,10 +63,15 @@ public class TestVertxServerResponseToHttpServletResponse {
   boolean runOnContextInvoked;
 
   @Mocked
+  Vertx vertx;
+
+  @Mocked
   Context context;
 
   @Rule
   public ExpectedException expectedException = ExpectedException.none();
+
+  boolean chunked;
 
   @Before
   public void setup() {
@@ -92,6 +104,12 @@ public class TestVertxServerResponseToHttpServletResponse {
       }
 
       @Mock
+      HttpServerResponse putHeader(String name, String value) {
+        headers.set(name, value);
+        return serverResponse;
+      }
+
+      @Mock
       void end() {
         flushWithBody = false;
       }
@@ -99,6 +117,17 @@ public class TestVertxServerResponseToHttpServletResponse {
       @Mock
       void end(Buffer chunk) {
         flushWithBody = true;
+      }
+
+      @Mock
+      HttpServerResponse setChunked(boolean chunked) {
+        TestVertxServerResponseToHttpServletResponse.this.chunked = chunked;
+        return serverResponse;
+      }
+
+      @Mock
+      boolean isChunked() {
+        return chunked;
       }
     }.getMockInstance();
 
@@ -114,6 +143,22 @@ public class TestVertxServerResponseToHttpServletResponse {
       void runOnContext(Handler<Void> action) {
         runOnContextInvoked = true;
         action.handle(null);
+      }
+
+      @Mock
+      Vertx owner() {
+        return vertx;
+      }
+    };
+
+    new MockUp<Vertx>(vertx) {
+      @Mock
+      <T> void executeBlocking(Handler<Future<T>> blockingCodeHandler, boolean ordered,
+          Handler<AsyncResult<T>> resultHandler) {
+        Future<T> future = Future.future();
+        future.setHandler(resultHandler);
+
+        blockingCodeHandler.handle(future);
       }
     };
 
@@ -245,5 +290,92 @@ public class TestVertxServerResponseToHttpServletResponse {
     response.internalFlushBuffer();
 
     Assert.assertTrue(flushWithBody);
+  }
+
+  @Test
+  public void prepareSendPartHeader_update(@Mocked Part part) {
+    new Expectations() {
+      {
+        part.getContentType();
+        result = "type";
+        part.getSubmittedFileName();
+        result = "name";
+      }
+    };
+    response.prepareSendPartHeader(part);
+
+    Assert.assertTrue(serverResponse.isChunked());
+    Assert.assertEquals("type", response.getHeader(HttpHeaders.CONTENT_TYPE));
+    Assert.assertEquals("attachment;filename=name", response.getHeader(HttpHeaders.CONTENT_DISPOSITION));
+  }
+
+  @Test
+  public void prepareSendPartHeader_notUpdate(@Mocked Part part) {
+    headers.add(HttpHeaders.CONTENT_LENGTH, "10");
+    headers.add(HttpHeaders.CONTENT_TYPE, "type");
+    headers.add(HttpHeaders.CONTENT_DISPOSITION, "disposition");
+
+    response.prepareSendPartHeader(part);
+
+    Assert.assertFalse(serverResponse.isChunked());
+    Assert.assertEquals("type", response.getHeader(HttpHeaders.CONTENT_TYPE));
+    Assert.assertEquals("disposition", response.getHeader(HttpHeaders.CONTENT_DISPOSITION));
+  }
+
+  @Test
+  public void sendPart_openInputStreamFailed(@Mocked Part part)
+      throws IOException, InterruptedException, ExecutionException {
+    IOException ioException = new IOException("forbid open stream");
+    new Expectations() {
+      {
+        part.getInputStream();
+        result = ioException;
+      }
+    };
+
+    CompletableFuture<Void> future = response.sendPart(part);
+
+    expectedException.expect(ExecutionException.class);
+    expectedException.expectCause(Matchers.sameInstance(ioException));
+
+    future.get();
+  }
+
+  @Test
+  public void sendPart_inputStreamBreak(@Mocked Part part, @Mocked InputStream inputStream)
+      throws IOException, InterruptedException, ExecutionException {
+    IOException ioException = new IOException("forbid read");
+    new Expectations() {
+      {
+        part.getInputStream();
+        result = inputStream;
+        inputStream.read((byte[]) any);
+        result = ioException;
+      }
+    };
+
+    CompletableFuture<Void> future = response.sendPart(part);
+
+    expectedException.expect(ExecutionException.class);
+    expectedException.expectCause(Matchers.sameInstance(ioException));
+
+    future.get();
+  }
+
+  @Test
+  public void sendPart_succ(@Mocked Part part, @Mocked InputStream inputStream)
+      throws IOException, InterruptedException, ExecutionException {
+    new Expectations() {
+      {
+        part.getInputStream();
+        result = inputStream;
+        inputStream.read((byte[]) any);
+        result = -1;
+      }
+    };
+
+    CompletableFuture<Void> future = response.sendPart(part);
+
+    Assert.assertNull(future.get());
   }
 }
