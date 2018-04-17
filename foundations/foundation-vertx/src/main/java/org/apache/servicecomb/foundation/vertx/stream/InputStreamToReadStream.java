@@ -34,7 +34,7 @@ import io.vertx.core.streams.ReadStream;
 public class InputStreamToReadStream implements ReadStream<Buffer> {
   private static final Logger LOGGER = LoggerFactory.getLogger(InputStreamToReadStream.class);
 
-  public static final int DEFAULT_READ_BUFFER_SIZE = 8192;
+  public static final int DEFAULT_READ_BUFFER_SIZE = 1024 * 1024;
 
   private Vertx vertx;
 
