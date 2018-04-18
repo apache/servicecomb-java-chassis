@@ -29,6 +29,7 @@ import com.netflix.loadbalancer.IRule;
 import com.netflix.loadbalancer.LoadBalancerStats;
 import com.netflix.loadbalancer.Server;
 import com.netflix.loadbalancer.ServerListFilter;
+import com.netflix.loadbalancer.WeightedResponseTimeRule;
 
 /**
  * 实现不包含服务器状态监测的负载均衡器。（这些职责在注册中心客户端实现）
@@ -59,6 +60,13 @@ public class LoadBalancer extends AbstractLoadBalancer {
 
   public String getName() {
     return name;
+  }
+
+  public void shutdown() {
+    // netflix components does not have a property way to shutdown laodbalancers so we do it in a not quite elegant way.
+    if (this.rule instanceof WeightedResponseTimeRule) {
+      ((WeightedResponseTimeRule) this.rule).shutdown();
+    }
   }
 
   // every filter group has a loadBalancer instance

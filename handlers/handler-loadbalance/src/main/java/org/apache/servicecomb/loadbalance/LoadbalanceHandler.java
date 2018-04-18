@@ -98,7 +98,7 @@ public class LoadbalanceHandler implements Handler {
     if (!isRuleNotChanged) {
       //配置变化，需要重新生成所有的lb实例
       synchronized (lock) {
-        loadBalancerMap.clear();
+        clearLoadBalancer();
       }
     }
     this.policy = policy;
@@ -114,6 +114,13 @@ public class LoadbalanceHandler implements Handler {
     } else {
       sendWithRetry(invocation, asyncResp, loadBalancer);
     }
+  }
+
+  private void clearLoadBalancer() {
+    for (LoadBalancer loadBalancer : loadBalancerMap.values()) {
+      loadBalancer.shutdown();
+    }
+    loadBalancerMap.clear();
   }
 
   protected void setIsolationFilter(LoadBalancer lb, String microserviceName) {
@@ -141,6 +148,7 @@ public class LoadbalanceHandler implements Handler {
       }
       TransactionControlFilter transactionControlFilter = (TransactionControlFilter) policyCls.newInstance();
       transactionControlFilter.setLoadBalancerStats(lb.getLoadBalancerStats());
+      transactionControlFilter.setMicroserviceName(microserviceName);
       lb.putFilter(filterName, transactionControlFilter);
     } catch (Throwable e) {
       String errMsg = "Fail to create instance of class: " + policyClsName;
