@@ -37,7 +37,7 @@ public class SimpleTransactionControlFilter extends TransactionControlFilter {
   public List<Server> getFilteredListOfServers(List<Server> servers) {
     List<Server> filteredServers = new ArrayList<>();
     Map<String, String> filterOptions =
-        Configuration.INSTANCE.getFlowsplitFilterOptions(getInvocation().getMicroserviceName());
+        Configuration.INSTANCE.getFlowsplitFilterOptions(this.microserviceName);
     for (Server server : servers) {
       if (allowVisit((CseServer) server, filterOptions)) {
         filteredServers.add(server);
