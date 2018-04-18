@@ -71,6 +71,21 @@ public class TestFilePart {
 
     part.write(destFile.getPath());
     Assert.assertEquals(content, FileUtils.readFileToString(destFile));
-    destFile.delete();
+
+    FilePart destPart = new FilePart(null, destFile);
+    destPart.delete();
+    Assert.assertFalse(destFile.exists());
+  }
+
+  @Test
+  public void deleteAfterFinished() {
+    Assert.assertFalse(part.isDeleteAfterFinished());
+
+    Assert.assertTrue(part.setDeleteAfterFinished(true).isDeleteAfterFinished());
+  }
+
+  @Test
+  public void getAbsolutePath() {
+    Assert.assertEquals(file.getAbsolutePath(), part.getAbsolutePath());
   }
 }
