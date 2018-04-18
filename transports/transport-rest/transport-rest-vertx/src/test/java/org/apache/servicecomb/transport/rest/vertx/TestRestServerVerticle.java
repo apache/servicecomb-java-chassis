@@ -110,6 +110,38 @@ public class TestRestServerVerticle {
   }
 
   @Test
+  public void testRestServerVerticleWithHttp2(@Mocked Transport transport, @Mocked Vertx vertx,
+      @Mocked Context context,
+      @Mocked JsonObject jsonObject, @Mocked Future<Void> startFuture) throws Exception {
+    URIEndpointObject endpointObject = new URIEndpointObject("http://127.0.0.1:8080?protocol=h2");
+    new Expectations() {
+      {
+        transport.parseAddress("http://127.0.0.1:8080?protocol=h2");
+        result = endpointObject;
+      }
+    };
+    Endpoint endpiont = new Endpoint(transport, "http://127.0.0.1:8080?protocol=h2");
+
+    new Expectations() {
+      {
+        context.config();
+        result = jsonObject;
+        jsonObject.getValue(AbstractTransport.ENDPOINT_KEY);
+        result = endpiont;
+      }
+    };
+    RestServerVerticle server = new RestServerVerticle();
+    boolean status = false;
+    try {
+      server.init(vertx, context);
+      server.start(startFuture);
+    } catch (Exception e) {
+      status = true;
+    }
+    Assert.assertFalse(status);
+  }
+
+  @Test
   public void testStartFutureAddressEmpty() {
     boolean status = false;
     try {
