@@ -21,12 +21,16 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.util.UUID;
 
+import javax.servlet.http.Part;
+
+import org.apache.commons.io.FileUtils;
+import org.apache.servicecomb.foundation.common.part.FilePart;
 import org.apache.servicecomb.provider.rest.common.RestSchema;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -35,8 +39,44 @@ import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 
 @RestSchema(schemaId = "download")
-@RequestMapping(path = "/download", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
+@RequestMapping(path = "/download")
 public class DownloadSchema {
+  File tempDir = new File("downloadTemp");
+
+  public DownloadSchema() throws IOException {
+    FileUtils.forceMkdir(tempDir);
+  }
+
+  // content is file name
+  protected File createTempFile() throws IOException {
+    String name = "download-" + UUID.randomUUID().toString() + ".txt";
+    File file = new File(tempDir, name);
+    FileUtils.write(file, name);
+    return file;
+  }
+
+  // customize HttpHeaders.CONTENT_DISPOSITION to be "attachment;filename=tempFileEntity.txt"
+  @GetMapping(path = "/tempFileEntity")
+  public ResponseEntity<Part> downloadTempFileEntity() throws IOException {
+    File file = createTempFile();
+
+    return ResponseEntity
+        .ok()
+        .header(HttpHeaders.CONTENT_DISPOSITION, "attachment;filename=tempFileEntity.txt")
+        .body(new FilePart(null, file)
+            .setDeleteAfterFinished(true));
+  }
+
+  // generate HttpHeaders.CONTENT_DISPOSITION to be "attachment;filename=tempFilePart.txt" automatically
+  @GetMapping(path = "/tempFilePart")
+  public Part downloadTempFilePart() throws IOException {
+    File file = createTempFile();
+
+    return new FilePart(null, file)
+        .setDeleteAfterFinished(true)
+        .setSubmittedFileName("tempFilePart.txt");
+  }
+
   @GetMapping(path = "/file")
   public File downloadFile() throws IOException {
     return new File(this.getClass().getClassLoader().getResource("microservice.yaml").getFile());
