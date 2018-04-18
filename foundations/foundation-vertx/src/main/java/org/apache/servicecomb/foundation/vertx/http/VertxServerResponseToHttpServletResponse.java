@@ -29,7 +29,10 @@ import javax.ws.rs.core.Response.StatusType;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.servicecomb.foundation.common.http.HttpStatus;
+import org.apache.servicecomb.foundation.common.part.FilePartForSend;
 import org.apache.servicecomb.foundation.vertx.stream.InputStreamToReadStream;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import io.vertx.core.Context;
 import io.vertx.core.Vertx;
@@ -37,6 +40,8 @@ import io.vertx.core.http.HttpServerResponse;
 import io.vertx.core.streams.Pump;
 
 public class VertxServerResponseToHttpServletResponse extends AbstractHttpServletResponse {
+  private static final Logger LOGGER = LoggerFactory.getLogger(VertxServerResponseToHttpServletResponse.class);
+
   private Context context;
 
   private HttpServerResponse serverResponse;
@@ -169,5 +174,12 @@ public class VertxServerResponseToHttpServletResponse extends AbstractHttpServle
 
   protected void clearPartResource(Part part, InputStream is) {
     IOUtils.closeQuietly(is);
+    if (FilePartForSend.class.isInstance(part) && ((FilePartForSend) part).isDeleteAfterFinished()) {
+      try {
+        part.delete();
+      } catch (IOException e) {
+        LOGGER.error("Failed to delete temp file: {}.", ((FilePartForSend) part).getAbsolutePath(), e);
+      }
+    }
   }
 }
