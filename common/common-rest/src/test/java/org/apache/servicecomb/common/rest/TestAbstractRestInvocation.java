@@ -445,7 +445,7 @@ public class TestAbstractRestInvocation {
         response.getReasonPhrase();
         result = "reason";
         response.getResult();
-        result = new Error("stop");
+        result = "result";
       }
     };
 
@@ -482,12 +482,8 @@ public class TestAbstractRestInvocation {
 
     initRestInvocation();
 
-    try {
-      restInvocation.sendResponse(response);
-      Assert.fail("must throw exception");
-    } catch (Error e) {
-      Assert.assertEquals(expected, result);
-    }
+    restInvocation.sendResponse(response);
+    Assert.assertEquals(expected, result);
   }
 
   @Test
