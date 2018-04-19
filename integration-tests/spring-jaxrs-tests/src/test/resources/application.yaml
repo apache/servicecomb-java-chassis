@@ -15,8 +15,7 @@
 # limitations under the License.
 #
 
-spring.main.web-environment=true
-
-property.test0=from_properties
-property.test4=from_properties
-property.test5=from_properties
+property:
+  test0: from_yaml
+  test1: from_yaml
+  test2: from_yaml_${property.test1}

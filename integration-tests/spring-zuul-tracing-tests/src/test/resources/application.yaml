@@ -27,3 +27,8 @@ ribbon:
 
 server:
   port: 0
+
+property:
+  test0: from_yaml
+  test1: from_yaml
+  test2: from_yaml_${property.test1}

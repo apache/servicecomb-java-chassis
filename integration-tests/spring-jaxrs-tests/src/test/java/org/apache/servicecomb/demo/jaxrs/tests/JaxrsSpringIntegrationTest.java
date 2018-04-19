@@ -17,12 +17,43 @@
 
 package org.apache.servicecomb.demo.jaxrs.tests;
 
+import static org.junit.Assert.assertEquals;
+
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
+import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import com.netflix.config.DynamicProperty;
+
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = JaxrsSpringMain.class)
 public class JaxrsSpringIntegrationTest extends JaxrsIntegrationTestBase {
+  @BeforeClass
+  public static void setUp() {
+    System.setProperty("property.test5", "from_system_property");
+  }
 
+  @AfterClass
+  public static void tearDown() {
+    System.clearProperty("property.test5");
+  }
+
+  @Test
+  public void testGetConfigFromSpringBoot() {
+    DynamicProperty dynamicProperty = DynamicProperty.getInstance("property.test0");
+    assertEquals("from_properties", dynamicProperty.getString());
+    dynamicProperty = DynamicProperty.getInstance("property.test1");
+    assertEquals("from_yml", dynamicProperty.getString());
+    dynamicProperty = DynamicProperty.getInstance("property.test2");
+    assertEquals("from_yaml_from_yml", dynamicProperty.getString());
+    dynamicProperty = DynamicProperty.getInstance("property.test3");
+    assertEquals("from_yaml_dev_from_properties", dynamicProperty.getString());
+    dynamicProperty = DynamicProperty.getInstance("property.test4");
+    assertEquals("from_microservice_yaml", dynamicProperty.getString());
+    dynamicProperty = DynamicProperty.getInstance("property.test5");
+    assertEquals("from_system_property", dynamicProperty.getString());
+  }
 }
