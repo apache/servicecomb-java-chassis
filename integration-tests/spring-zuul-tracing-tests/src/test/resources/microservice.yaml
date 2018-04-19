@@ -36,3 +36,7 @@ servicecomb:
   tracing:
     collector:
       address: http://localhost:9411/
+
+property:
+  test4: from_microservice_yaml
+  test5: from_microservice_yaml
