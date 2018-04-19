@@ -175,19 +175,9 @@ public final class ConfigCenterConfig {
     String[] result = finalConfig.getStringArray(SERVER_URL_KEY);
     List<String> configCenterUris = new ArrayList<>(result.length);
     for (int i = 0; i < result.length; i++) {
-      if (!result[i].substring(result[i].indexOf(":") + 1, result[i].length()).contains(":")) {
-        configCenterUris.add(useDefaultPort(result[i]));
-      } else {
-        configCenterUris.add(result[i]);
-      }
+      configCenterUris.add(result[i]);
     }
     return configCenterUris;
-  }
-
-  private String useDefaultPort(String result) {
-    if (result.startsWith("https"))
-      return new StringBuffer(result).append(":443").toString();
-    return new StringBuffer(result).append(":80").toString();
   }
 
   public boolean getAutoDiscoveryEnabled() {
