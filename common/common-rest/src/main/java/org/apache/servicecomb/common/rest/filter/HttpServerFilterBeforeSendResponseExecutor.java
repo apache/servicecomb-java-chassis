@@ -48,7 +48,7 @@ public class HttpServerFilterBeforeSendResponseExecutor {
 
   protected CompletableFuture<Void> safeInvoke(HttpServerFilter httpServerFilter) {
     try {
-      return httpServerFilter.asyncBeforeSendResponse(invocation, responseEx);
+      return httpServerFilter.beforeSendResponseAsync(invocation, responseEx);
     } catch (Throwable e) {
       CompletableFuture<Void> eFuture = new CompletableFuture<Void>();
       eFuture.completeExceptionally(e);

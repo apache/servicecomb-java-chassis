@@ -41,7 +41,7 @@ public interface HttpServerFilter {
   /**
    * @param invocation maybe null
    */
-  default CompletableFuture<Void> asyncBeforeSendResponse(Invocation invocation, HttpServletResponseEx responseEx) {
+  default CompletableFuture<Void> beforeSendResponseAsync(Invocation invocation, HttpServletResponseEx responseEx) {
     CompletableFuture<Void> future = new CompletableFuture<>();
     try {
       beforeSendResponse(invocation, responseEx);

@@ -63,7 +63,7 @@ public class TestHttpServerFilterBeforeSendResponseExecutor {
   public void runFail() throws InterruptedException, ExecutionException {
     httpServerFilters.add(new HttpServerFilterBaseForTest() {
       @Override
-      public CompletableFuture<Void> asyncBeforeSendResponse(Invocation invocation, HttpServletResponseEx responseEx) {
+      public CompletableFuture<Void> beforeSendResponseAsync(Invocation invocation, HttpServletResponseEx responseEx) {
         throw new Error("");
       }
     });

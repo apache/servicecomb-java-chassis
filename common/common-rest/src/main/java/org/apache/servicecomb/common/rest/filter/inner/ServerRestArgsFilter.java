@@ -54,7 +54,7 @@ public class ServerRestArgsFilter implements HttpServerFilter {
   }
 
   @Override
-  public CompletableFuture<Void> asyncBeforeSendResponse(Invocation invocation, HttpServletResponseEx responseEx) {
+  public CompletableFuture<Void> beforeSendResponseAsync(Invocation invocation, HttpServletResponseEx responseEx) {
     Response response = (Response) responseEx.getAttribute(RestConst.INVOCATION_HANDLER_RESPONSE);
     ProduceProcessor produceProcessor =
         (ProduceProcessor) responseEx.getAttribute(RestConst.INVOCATION_HANDLER_PROCESSOR);
