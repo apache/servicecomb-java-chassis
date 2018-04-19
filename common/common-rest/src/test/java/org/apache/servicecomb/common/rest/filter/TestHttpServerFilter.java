@@ -35,7 +35,7 @@ public class TestHttpServerFilter {
   public void asyncSucc() throws InterruptedException, ExecutionException {
     HttpServerFilter filter = new HttpServerFilterBaseForTest();
 
-    CompletableFuture<Void> future = filter.asyncBeforeSendResponse(null, null);
+    CompletableFuture<Void> future = filter.beforeSendResponseAsync(null, null);
     Assert.assertNull(future.get());
   }
 
@@ -51,7 +51,7 @@ public class TestHttpServerFilter {
     expectedException.expect(ExecutionException.class);
     expectedException.expectCause(Matchers.instanceOf(Error.class));
 
-    CompletableFuture<Void> future = filter.asyncBeforeSendResponse(null, null);
+    CompletableFuture<Void> future = filter.beforeSendResponseAsync(null, null);
     future.get();
   }
 }

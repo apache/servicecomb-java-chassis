@@ -67,7 +67,7 @@ public class TestServerRestArgsFilter {
       }
     };
 
-    Assert.assertNull(filter.asyncBeforeSendResponse(invocation, responseEx));
+    Assert.assertNull(filter.beforeSendResponseAsync(invocation, responseEx));
     Assert.assertTrue(invokedSendPart);
   }
 }
