@@ -158,10 +158,10 @@ public final class NetUtils {
     if (idx != -1)
       return parseIpPort(authority);
     if (scheme.equals("http"))
-      return parseIpPort(new StringBuffer(authority).append(":80").toString());
+      return new IpPort(authority, 80);
     if (scheme.equals("https"))
-      return parseIpPort(new StringBuffer(authority).append(":443").toString());
-    return parseIpPort(authority);
+      return new IpPort(authority, 443);
+    return null;
   }
 
   /**
