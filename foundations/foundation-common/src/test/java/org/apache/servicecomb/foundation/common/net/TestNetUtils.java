@@ -49,6 +49,10 @@ public class TestNetUtils {
     Assert.assertEquals(NetUtils.parseIpPortFromURI(null), null);
     Assert.assertEquals(NetUtils.parseIpPortFromURI("ss"), null);
     Assert.assertEquals(NetUtils.parseIpPortFromURI("rest://127.0.0.1:8080").getHostOrIp(), "127.0.0.1");
+    Assert.assertEquals(NetUtils.parseIpPortFromURI("http://127.0.0.1:8080").getPort(), 8080);
+    Assert.assertEquals(NetUtils.parseIpPortFromURI("http://127.0.0.1").getPort(), 80);
+    Assert.assertEquals(NetUtils.parseIpPortFromURI("https://127.0.0.1:8080").getPort(), 8080);
+    Assert.assertEquals(NetUtils.parseIpPortFromURI("https://127.0.0.1").getPort(), 443);
   }
 
   @Test
