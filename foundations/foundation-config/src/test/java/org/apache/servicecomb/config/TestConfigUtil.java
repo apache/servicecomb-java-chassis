@@ -25,22 +25,27 @@ import static org.junit.Assert.assertThat;
 import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.HashMap;
 
-import com.netflix.config.*;
 import org.apache.commons.configuration.AbstractConfiguration;
 import org.apache.commons.configuration.Configuration;
 import org.apache.servicecomb.config.archaius.sources.ConfigModel;
 import org.apache.servicecomb.config.archaius.sources.MicroserviceConfigLoader;
 import org.apache.servicecomb.config.spi.ConfigCenterConfigurationSource;
+import org.apache.servicecomb.foundation.common.concurrent.ConcurrentHashMapEx;
 import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
+
+import com.netflix.config.ConcurrentCompositeConfiguration;
+import com.netflix.config.DynamicConfiguration;
+import com.netflix.config.DynamicPropertyFactory;
+import com.netflix.config.DynamicWatchedConfiguration;
 
 import mockit.Deencapsulation;
 import mockit.Expectations;
@@ -73,13 +78,13 @@ public class TestConfigUtil {
   }
 
   @AfterClass
-  public static void tearDown() throws Exception {
+  public static void tearDown() {
     ArchaiusUtils.resetConfig();
   }
 
   @Test
   public void testAddConfig() {
-    Map config = new HashMap<String, Object>();
+    Map<String, Object> config = new HashMap<>();
     config.put("service_description.name", "service_name_test");
     ConfigUtil.setConfigs(config);
     ConfigUtil.addConfig("service_description.version", "1.0.2");
@@ -87,7 +92,7 @@ public class TestConfigUtil {
     ConfigUtil.addConfig("cse.test.num", 10);
     AbstractConfiguration configuration = ConfigUtil.createDynamicConfig();
     Assert.assertEquals(configuration.getString("service_description.name"), "service_name_test");
-    Assert.assertEquals(configuration.getBoolean("cse.test.enabled"), true);
+    Assert.assertTrue(configuration.getBoolean("cse.test.enabled"));
     Assert.assertEquals(configuration.getInt("cse.test.num"), 10);
   }
 
@@ -116,8 +121,7 @@ public class TestConfigUtil {
   }
 
   @Test
-  public void testCreateDynamicConfigHasConfigCenter(
-      @Mocked ConfigCenterConfigurationSource configCenterConfigurationSource) {
+  public void testCreateDynamicConfigHasConfigCenter() {
     AbstractConfiguration dynamicConfig = ConfigUtil.createDynamicConfig();
     Assert.assertEquals(DynamicWatchedConfiguration.class,
         ((ConcurrentCompositeConfiguration) dynamicConfig).getConfiguration(0).getClass());
@@ -130,54 +134,54 @@ public class TestConfigUtil {
   }
 
   @Test
-  public void propertiesFromFileIsDuplicatedToCse() throws Exception {
+  public void propertiesFromFileIsDuplicatedToCse() {
     String expected = "value";
 
     assertThat(DynamicPropertyFactory
-        .getInstance()
-        .getStringProperty("servicecomb.cse.servicecomb.file", null)
-        .get(),
+            .getInstance()
+            .getStringProperty("servicecomb.cse.servicecomb.file", null)
+            .get(),
         equalTo(expected));
 
     assertThat(DynamicPropertyFactory
-        .getInstance()
-        .getStringProperty("cse.cse.servicecomb.file", null)
-        .get(),
+            .getInstance()
+            .getStringProperty("cse.cse.servicecomb.file", null)
+            .get(),
         equalTo(expected));
   }
 
   @Test
-  public void propertiesFromSystemIsDuplicatedToCse() throws Exception {
+  public void propertiesFromSystemIsDuplicatedToCse() {
     assertThat(DynamicPropertyFactory
-        .getInstance()
-        .getStringProperty(systemPropertyName, null)
-        .get(),
+            .getInstance()
+            .getStringProperty(systemPropertyName, null)
+            .get(),
         equalTo(systemExpected));
 
     assertThat(DynamicPropertyFactory
-        .getInstance()
-        .getStringProperty("servicecomb.cse.servicecomb.system.setting", null)
-        .get(),
+            .getInstance()
+            .getStringProperty("servicecomb.cse.servicecomb.system.setting", null)
+            .get(),
         equalTo(systemExpected));
   }
 
   @Test
-  public void propertiesFromEnvironmentIsDuplicatedToCse() throws Exception {
+  public void propertiesFromEnvironmentIsDuplicatedToCse() {
     assertThat(DynamicPropertyFactory
-        .getInstance()
-        .getStringProperty(environmentPropertyName, null)
-        .get(),
+            .getInstance()
+            .getStringProperty(environmentPropertyName, null)
+            .get(),
         equalTo(environmentExpected));
 
     assertThat(DynamicPropertyFactory
-        .getInstance()
-        .getStringProperty("servicecomb.cse.servicecomb.environment.setting", null)
-        .get(),
+            .getInstance()
+            .getStringProperty("servicecomb.cse.servicecomb.environment.setting", null)
+            .get(),
         equalTo(environmentExpected));
   }
 
   @Test
-  public void duplicateServiceCombConfigToCseListValue() throws Exception {
+  public void duplicateServiceCombConfigToCseListValue() {
     List<String> list = Arrays.asList("a", "b");
 
     AbstractConfiguration config = new DynamicConfiguration();
@@ -190,7 +194,7 @@ public class TestConfigUtil {
   }
 
   @Test
-  public void propertiesAddFromDynamicConfigSourceIsDuplicated() throws Exception {
+  public void propertiesAddFromDynamicConfigSourceIsDuplicated() {
     String expected = uniquify("ran");
     String someProperty = "servicecomb.cse.servicecomb.add";
     String injectProperty = "cse.cse.servicecomb.add";
@@ -231,7 +235,7 @@ public class TestConfigUtil {
   }
 
   @Test
-  public void propertiesChangeFromDynamicConfigSourceIsDuplicated() throws Exception {
+  public void propertiesChangeFromDynamicConfigSourceIsDuplicated() {
     String expected = uniquify("ran");
     String someProperty = "servicecomb.cse.servicecomb.change";
     String injectProperty = "cse.cse.servicecomb.change";
@@ -269,7 +273,7 @@ public class TestConfigUtil {
   }
 
   @Test
-  public void propertiesDeleteFromDynamicConfigSourceIsDuplicated() throws Exception {
+  public void propertiesDeleteFromDynamicConfigSourceIsDuplicated() {
     String expected = uniquify("ran");
     String someProperty = "servicecomb.cse.servicecomb.delete";
     String injectProperty = "cse.cse.servicecomb.delete";
@@ -313,6 +317,23 @@ public class TestConfigUtil {
     AbstractConfiguration result = ConfigUtil.convertEnvVariable(config);
     assertThat(result.getString("cse.service.registry.address"), equalTo("testing"));
     assertThat(result.getString("cse_service_registry_address"), equalTo("testing"));
+  }
+
+  @Test
+  public void testCreateLocalConfigWithExtraConfig() {
+    Map<String, Object> extraConfig = new ConcurrentHashMapEx<>(1);
+    String extraConfigKey = "extraConfigKey";
+    String extraConfigValue = "value";
+    String overriddenConfigKey = "servicecomb.cse.servicecomb.file";
+    extraConfig.put(extraConfigKey, extraConfigValue);
+    extraConfig.put(overriddenConfigKey, "should_be_overridden");
+
+    ConfigUtil.addExtraConfig("testExtraConfig", extraConfig);
+
+    ConcurrentCompositeConfiguration localConfiguration = ConfigUtil.createLocalConfig();
+
+    Assert.assertEquals(extraConfigValue, localConfiguration.getProperty(extraConfigKey));
+    Assert.assertEquals("value", localConfiguration.getString(overriddenConfigKey));
   }
 
   @SuppressWarnings("unchecked")
