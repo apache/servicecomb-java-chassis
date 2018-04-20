@@ -19,7 +19,9 @@ package org.apache.servicecomb.foundation.metrics;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ThreadFactory;
 
 import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
 import org.hamcrest.Matchers;
@@ -29,6 +31,7 @@ import org.junit.Test;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import com.netflix.spectator.api.CompositeRegistry;
+import com.netflix.spectator.api.Measurement;
 import com.netflix.spectator.api.Meter;
 
 import mockit.Deencapsulation;
@@ -66,22 +69,27 @@ public class TestMetricsBootstrap {
   }
 
   @Test
-  public void pollMeters() {
-    bootstrap.start(globalRegistry, eventBus);
-
-    List<Meter> meters = new ArrayList<>();
-    new Expectations() {
+  public void pollMeters(@Mocked Meter meter, @Mocked Measurement measurement,
+      @Mocked ScheduledExecutorService executor) {
+    List<Meter> meters = Arrays.asList(meter);
+    new Expectations(Executors.class) {
       {
+        Executors.newScheduledThreadPool(1, (ThreadFactory) any);
+        result = executor;
         globalRegistry.iterator();
         result = meters.iterator();
+        meter.measure();
+        result = Arrays.asList(measurement);
       }
     };
+    bootstrap.start(globalRegistry, eventBus);
 
-    PolledEvent result = new PolledEvent(null);
+    PolledEvent result = new PolledEvent(null, null);
     eventBus.register(new Object() {
       @Subscribe
       public void onEvent(PolledEvent event) {
         result.setMeters(event.getMeters());
+        result.setMeasurements(event.getMeasurements());
       }
     });
 
@@ -89,6 +97,7 @@ public class TestMetricsBootstrap {
     bootstrap.shutdown();
 
     Assert.assertEquals(meters, result.getMeters());
+    Assert.assertThat(result.getMeasurements(), Matchers.contains(measurement));
   }
 
   @Test

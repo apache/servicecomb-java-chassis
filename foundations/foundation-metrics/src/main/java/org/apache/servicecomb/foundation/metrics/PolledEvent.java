@@ -18,13 +18,17 @@ package org.apache.servicecomb.foundation.metrics;
 
 import java.util.List;
 
+import com.netflix.spectator.api.Measurement;
 import com.netflix.spectator.api.Meter;
 
 public class PolledEvent {
   private List<Meter> meters;
 
-  public PolledEvent(List<Meter> meters) {
+  private List<Measurement> measurements;
+
+  public PolledEvent(List<Meter> meters, List<Measurement> measurements) {
     this.meters = meters;
+    this.measurements = measurements;
   }
 
   public List<Meter> getMeters() {
@@ -33,5 +37,13 @@ public class PolledEvent {
 
   public void setMeters(List<Meter> meters) {
     this.meters = meters;
+  }
+
+  public List<Measurement> getMeasurements() {
+    return measurements;
+  }
+
+  public void setMeasurements(List<Measurement> measurements) {
+    this.measurements = measurements;
   }
 }
