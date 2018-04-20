@@ -14,30 +14,43 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.servicecomb.bizkeeper.event;
+package org.apache.servicecomb.foundation.common.event;
 
 import java.util.HashMap;
 
-import org.apache.servicecomb.bizkeeper.FallbackPolicy;
-import org.apache.servicecomb.core.Invocation;
-import org.apache.servicecomb.foundation.common.event.AlarmEvent;
+public class AlarmEvent {
 
-public class FallbackEvent extends AlarmEvent {
+  Type type;
 
-  private static int id = 1002;
+  private int id;
 
-  /**
-   * msg部分字段说明：
-   * invocationQualifiedName:当前调用的接口
-   * policy:当前容错策略
-   */
-  public FallbackEvent(FallbackPolicy policy, Invocation invocation, Type type) {
-    super(type, id);
-    HashMap<String, Object> msg = new HashMap<>();
-    msg.put("microserviceName", invocation.getMicroserviceName());
-    msg.put("invocationQualifiedName", invocation.getInvocationQualifiedName());
-    msg.put("policy", policy.name());
-    super.setMsg(msg);
+  private HashMap<String, Object> msg;
+
+  public AlarmEvent(Type type, int id) {
+    this.type = type;
+    this.id = id;
   }
 
+  public Type getType() {
+    return this.type;
+  }
+
+  public int getId() {
+    return id;
+  }
+
+  public HashMap<String, Object> getMsg() {
+    return msg;
+  }
+
+  public void setMsg(HashMap<String, Object> msg2) {
+    this.msg = msg2;
+  }
+
+  public enum Type {
+    OPEN,
+    CLOSE,
+    SUCCED,
+    FAILD
+  };
 }

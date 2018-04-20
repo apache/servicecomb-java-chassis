@@ -20,7 +20,6 @@ package org.apache.servicecomb.loadbalance.filter;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.foundation.common.event.AlarmEvent.Type;
 import org.apache.servicecomb.foundation.common.event.EventManager;
 import org.apache.servicecomb.loadbalance.Configuration;
@@ -50,13 +49,7 @@ public final class IsolationServerListFilter implements ServerListFilterExt {
 
   private int continuousFailureThreshold;
 
-  private Invocation invocation;
-
   private LoadBalancerStats stats;
-
-  public void setInvocation(Invocation invocation) {
-    this.invocation = invocation;
-  }
 
   public void setLoadBalancerStats(LoadBalancerStats stats) {
     this.stats = stats;
@@ -76,7 +69,7 @@ public final class IsolationServerListFilter implements ServerListFilterExt {
 
   @Override
   public List<Server> getFilteredListOfServers(List<Server> servers) {
-    if (!Configuration.INSTANCE.isIsolationFilterOpen(invocation.getMicroserviceName())) {
+    if (!Configuration.INSTANCE.isIsolationFilterOpen(microserviceName)) {
       return servers;
     }
 
