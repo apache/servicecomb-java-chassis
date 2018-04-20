@@ -16,17 +16,39 @@
  */
 package org.apache.servicecomb.bizkeeper;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.definition.OperationMeta;
 import org.apache.servicecomb.core.exception.CseException;
+import org.apache.servicecomb.foundation.common.event.AlarmEvent;
+import org.apache.servicecomb.foundation.common.event.EventManager;
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
+
+import com.google.common.eventbus.Subscribe;
 
 import mockit.Expectations;
 import mockit.Mocked;
 
 public class TestFallbackPolicyManager {
+
+  private List<AlarmEvent> taskList;
+
+  @Before
+  public void setUp() throws Exception {
+    taskList = new ArrayList<>();
+    EventManager.register(new Object() {
+      @Subscribe
+      public void onEvent(AlarmEvent fallbackPolicyEvent) {
+        taskList.add(fallbackPolicyEvent);
+      }
+    });
+  }
+
   @Test
   public void testFallbackPolicyManager(final @Mocked Configuration config, final @Mocked Invocation invocation,
       final @Mocked OperationMeta operation) {
@@ -48,7 +70,7 @@ public class TestFallbackPolicyManager {
     };
 
     Assert.assertEquals((String) null, FallbackPolicyManager.getFallbackResponse("Consumer", null, invocation).getResult());
-
+    Assert.assertEquals(1, taskList.size());
     new Expectations() {
       {
         invocation.getMicroserviceName();
