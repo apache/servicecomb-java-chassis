@@ -21,7 +21,9 @@ import static org.apache.servicecomb.foundation.common.base.ServiceCombConstants
 import static org.apache.servicecomb.foundation.common.base.ServiceCombConstants.CONFIG_KEY_SPLITER;
 import static org.apache.servicecomb.foundation.common.base.ServiceCombConstants.CONFIG_SERVICECOMB_PREFIX;
 
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -52,7 +54,27 @@ public final class ConfigUtil {
 
   private static final String MICROSERVICE_CONFIG_LOADER_KEY = "cse-microservice-config-loader";
 
+  private static Map<String, Object> localConfig = new HashMap<>();
+
+  /**
+   * <p>The configurations not read by ServiceComb.</p>
+   * <p>
+   * For example, this map can store the configurations read by SpringBoot from application.properties,
+   * If users write the configurations of ServiceComb into application.yml instead of microservice.yaml,
+   * this can help {@link ConfigUtil} load config correctly.
+   * </p>
+   */
+  private static final Map<String, Map<String, Object>> EXTRA_CONFIG_MAP = new LinkedHashMap<>();
+
   private ConfigUtil() {
+  }
+
+  public static void setConfigs(Map<String, Object> config) {
+    localConfig = config;
+  }
+
+  public static void addConfig(String key, Object value) {
+    localConfig.put(key, value);
   }
 
   public static Object getProperty(String key) {
@@ -83,6 +105,11 @@ public final class ConfigUtil {
   public static ConcurrentCompositeConfiguration createLocalConfig() {
     MicroserviceConfigLoader loader = new MicroserviceConfigLoader();
     loader.loadAndSort();
+    if (localConfig.size() > 0) {
+      ConfigModel model = new ConfigModel();
+      model.setConfig(localConfig);
+      loader.getConfigModels().add(model);
+    }
 
     LOGGER.info("create local config:");
     for (ConfigModel configModel : loader.getConfigModels()) {
@@ -107,6 +134,13 @@ public final class ConfigUtil {
         new DynamicConfiguration(
             new MicroserviceConfigurationSource(configModelList), new NeverStartPollingScheduler()),
         "configFromYamlFile");
+    // If there is extra configurations, add it into config. Extra config has lowest priority.
+    EXTRA_CONFIG_MAP.entrySet().stream()
+        .filter(mapEntry -> !mapEntry.getValue().isEmpty())
+        .forEachOrdered(configMapEntry ->
+            duplicateServiceCombConfigToCse(config,
+                new ConcurrentMapConfiguration(configMapEntry.getValue()),
+                configMapEntry.getKey()));
 
     return config;
   }
@@ -190,6 +224,14 @@ public final class ConfigUtil {
 
     AbstractConfiguration dynamicConfig = ConfigUtil.createDynamicConfig();
     ConfigurationManager.install(dynamicConfig);
+  }
+
+  public static void addExtraConfig(String extraConfigName, Map<String, Object> extraConfig) {
+    EXTRA_CONFIG_MAP.put(extraConfigName, extraConfig);
+  }
+
+  public static void clearExtraConfig() {
+    EXTRA_CONFIG_MAP.clear();
   }
 
   private static class ServiceCombPropertyUpdateListener implements WatchedUpdateListener {

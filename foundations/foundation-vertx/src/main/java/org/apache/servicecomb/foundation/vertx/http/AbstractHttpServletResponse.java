@@ -23,9 +23,11 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.Cookie;
+import javax.servlet.http.Part;
 import javax.ws.rs.core.Response.StatusType;
 
 public abstract class AbstractHttpServletResponse extends BodyBufferSupportImpl implements HttpServletResponseEx {
@@ -229,5 +231,10 @@ public abstract class AbstractHttpServletResponse extends BodyBufferSupportImpl 
   @Override
   public Object getAttribute(String key) {
     return this.attributes.get(key);
+  }
+
+  @Override
+  public CompletableFuture<Void> sendPart(Part body) {
+    throw new Error("not supported method");
   }
 }

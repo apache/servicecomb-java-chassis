@@ -73,7 +73,7 @@ public class TestDefaultLogPublisher {
 
   @Test
   public void init_enabled_default() {
-    Holder<Boolean> registered = new Holder<>();
+    Holder<Boolean> registered = new Holder<>(false);
     new MockUp<EventBus>(eventBus) {
       @Mock
       void register(Object object) {
@@ -82,7 +82,7 @@ public class TestDefaultLogPublisher {
     };
 
     publisher.init(globalRegistry, eventBus, new MetricsBootstrapConfig());
-    Assert.assertTrue(registered.value);
+    Assert.assertFalse(registered.value);
   }
 
   @Test

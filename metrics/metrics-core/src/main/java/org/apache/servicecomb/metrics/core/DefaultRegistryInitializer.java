@@ -26,10 +26,6 @@ import com.netflix.spectator.api.Registry;
 import com.netflix.spectator.servo.ServoRegistry;
 
 public class DefaultRegistryInitializer implements MetricsInitializer {
-  public static final String METRICS_WINDOW_TIME = "servicecomb.metrics.window_time";
-
-  public static final int DEFAULT_METRICS_WINDOW_TIME = 5000;
-
   public static final String SERVO_POLLERS = "servo.pollers";
 
   private CompositeRegistry globalRegistry;

@@ -24,29 +24,51 @@ For detail information please refer to [Doc](http://servicecomb.incubator.apache
 
 2. Start the codefirst-provider service
 
-   - Start provider service by maven
+   - Start provider service via maven
 
-     Compile the source code at root directory of ServiceComb Java Chassis, which is `incubator-servicecomb-java-chassis/`, and use `mvn exec` to execute the main class `CodeFirstProviderMain`.
+      Compile the source code at root directory of ServiceComb Java Chassis, which is `incubator-servicecomb-java-chassis/`, and use `mvn exec` to execute the main class `CodeFirstProviderMain`.
 
-     ```bash
-     cd incubator-servicecomb-java-chassis/
-     mvn clean install -Psamples -DskipTests			#only need to install at first time.
-     cd samples/codefirst-sample/codefirst-provider/
-     mvn exec:java -Dexec.mainClass="org.apache.servicecomb.samples.codefirst.provider.CodeFirstProviderMain"
-     ```
+      ```bash
+      cd incubator-servicecomb-java-chassis/
+      mvn clean install -Psamples -DskipTests			#only need to install at first time.
+      cd samples/codefirst-sample/codefirst-provider/
+      mvn exec:java -Dexec.mainClass="org.apache.servicecomb.samples.codefirst.provider.CodeFirstProviderMain"
+      ```
 
-   - Start provider service by IDE
+   - Start provider service via gradle
 
-     Import the project by InteliJ IDEA or Eclipse, add sample module to pom.xml file in root module `incubator-servicecomb-java-chassis/pom.xml`, and add `<module>samples</module>` to `<modules></modules>` block, Then find `main` function `CodeFirstProviderMain` of provider service and `RUN` it like any other Java program.
+      Compile the source code at root directory of ServiceComb Java Chassis, which is `incubator-servicecomb-java-chassis/`, and use `mvn exec` to execute the main class `CodeFirstProviderMain`.
+
+      ```bash
+      cd incubator-servicecomb-java-chassis/
+      mvn clean install -Psamples -DskipTests			#only need to install at first time.
+      cd samples/codefirst-sample/codefirst-provider/
+      gradle clean run
+      ```
+
+   - Start provider service via IDE
+
+      Import the project by InteliJ IDEA or Eclipse, add sample module to pom.xml file in root module `incubator-servicecomb-java-chassis/pom.xml`, and add `<module>samples</module>` to `<modules></modules>` block, Then find `main` function `CodeFirstProviderMain` of provider service and `RUN` it like any other Java program.
 
 3. Start the codefirst-consumer service
 
-   Just like how to start codefirst-provider service. But the main class of codefirst-consumer service is `CodeFirstConsumerMain`. 
-
    ```bash
    cd samples/codefirst-sample/codefirst-consumer/
-   mvn exec:java -Dexec.mainClass="org.apache.servicecomb.samples.codefirst.consumer.CodeFirstConsumerMain"
    ```
+
+   - Start consumer service via maven
+
+      Just like how to start codefirst-provider service. But the main class of codefirst-consumer service is `CodeFirstConsumerMain`.
+
+      ```bash
+      mvn exec:java -Dexec.mainClass="org.apache.servicecomb.samples.codefirst.consumer.CodeFirstConsumerMain"
+      ```
+
+   - Start consumer service via gradle
+
+      ```bash
+      gradle clean run
+      ```
 
 4. How to verify
    On the producer side, the output should contain the following stuffs if the producer starts up successfully:

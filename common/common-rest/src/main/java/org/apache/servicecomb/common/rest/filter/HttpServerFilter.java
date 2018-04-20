@@ -17,6 +17,8 @@
 
 package org.apache.servicecomb.common.rest.filter;
 
+import java.util.concurrent.CompletableFuture;
+
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.definition.OperationMeta;
 import org.apache.servicecomb.foundation.vertx.http.HttpServletRequestEx;
@@ -30,10 +32,30 @@ public interface HttpServerFilter {
     return false;
   }
 
-  // if finished, then return a none null response
-  // if return a null response, then sdk will call next filter.afterReceiveRequest
+  /**
+   * @return if finished, then return a none null response<br>
+   * if return a null response, then sdk will call next filter.afterReceiveRequest
+   */
   Response afterReceiveRequest(Invocation invocation, HttpServletRequestEx requestEx);
 
-  // invocation maybe null
-  void beforeSendResponse(Invocation invocation, HttpServletResponseEx responseEx);
+  /**
+   * @param invocation maybe null
+   */
+  default CompletableFuture<Void> beforeSendResponseAsync(Invocation invocation, HttpServletResponseEx responseEx) {
+    CompletableFuture<Void> future = new CompletableFuture<>();
+    try {
+      beforeSendResponse(invocation, responseEx);
+      future.complete(null);
+    } catch (Throwable e) {
+      future.completeExceptionally(e);
+    }
+    return future;
+  }
+
+  /**
+   * @param invocation maybe null
+   */
+  default void beforeSendResponse(Invocation invocation, HttpServletResponseEx responseEx) {
+
+  }
 }
