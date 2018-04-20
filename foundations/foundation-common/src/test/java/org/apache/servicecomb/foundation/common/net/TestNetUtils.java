@@ -46,13 +46,13 @@ public class TestNetUtils {
     Assert.assertEquals(8080, NetUtils.parseIpPort("127.0.0.1:8080").getPort());
     Assert.assertEquals(null, NetUtils.parseIpPort(null));
     Assert.assertEquals(null, NetUtils.parseIpPort("127.0.0.18080"));
-    Assert.assertEquals(NetUtils.parseIpPortFromURI(null), null);
-    Assert.assertEquals(NetUtils.parseIpPortFromURI("ss"), null);
-    Assert.assertEquals(NetUtils.parseIpPortFromURI("rest://127.0.0.1:8080").getHostOrIp(), "127.0.0.1");
-    Assert.assertEquals(NetUtils.parseIpPortFromURI("http://127.0.0.1:8080").getPort(), 8080);
-    Assert.assertEquals(NetUtils.parseIpPortFromURI("http://127.0.0.1").getPort(), 80);
-    Assert.assertEquals(NetUtils.parseIpPortFromURI("https://127.0.0.1:8080").getPort(), 8080);
-    Assert.assertEquals(NetUtils.parseIpPortFromURI("https://127.0.0.1").getPort(), 443);
+    Assert.assertEquals(null, NetUtils.parseIpPortFromURI(null));
+    Assert.assertEquals(null, NetUtils.parseIpPortFromURI("ss"));
+    Assert.assertEquals("127.0.0.1", NetUtils.parseIpPortFromURI("rest://127.0.0.1:8080").getHostOrIp());
+    Assert.assertEquals(8080, NetUtils.parseIpPortFromURI("http://127.0.0.1:8080").getPort());
+    Assert.assertEquals(80, NetUtils.parseIpPortFromURI("http://127.0.0.1").getPort());
+    Assert.assertEquals(8080, NetUtils.parseIpPortFromURI("https://127.0.0.1:8080").getPort());
+    Assert.assertEquals(443, NetUtils.parseIpPortFromURI("https://127.0.0.1").getPort());
   }
 
   @Test
