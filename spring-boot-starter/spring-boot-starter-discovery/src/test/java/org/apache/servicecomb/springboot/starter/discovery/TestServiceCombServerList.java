@@ -19,15 +19,11 @@ package org.apache.servicecomb.springboot.starter.discovery;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.servicecomb.core.Endpoint;
-import org.apache.servicecomb.core.Invocation;
-import org.apache.servicecomb.core.Transport;
 import org.apache.servicecomb.serviceregistry.RegistryUtils;
 import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
 import org.apache.servicecomb.serviceregistry.discovery.DiscoveryContext;
 import org.apache.servicecomb.serviceregistry.discovery.DiscoveryTree;
 import org.apache.servicecomb.serviceregistry.discovery.DiscoveryTreeNode;
-import org.apache.servicecomb.swagger.invocation.AsyncResponse;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -63,37 +59,7 @@ public class TestServiceCombServerList {
         discoveryTree.discovery((DiscoveryContext) any, anyString, anyString, anyString);
         result = versionedCache;
         versionedCache.data();
-        result = Lists.newArrayList(new Endpoint(new Transport() {
-          @Override
-          public String getName() {
-            return null;
-          }
-
-          @Override
-          public boolean init() {
-            return false;
-          }
-
-          @Override
-          public Object parseAddress(String endpoint) {
-            return null;
-          }
-
-          @Override
-          public Endpoint getEndpoint() {
-            return null;
-          }
-
-          @Override
-          public Endpoint getPublishEndpoint() {
-            return null;
-          }
-
-          @Override
-          public void send(Invocation invocation, AsyncResponse asyncResp) {
-
-          }
-        }, "rest://localhost:3333"));
+        result = Lists.newArrayList(new Server("localhost", 3333));
       }
     };
 

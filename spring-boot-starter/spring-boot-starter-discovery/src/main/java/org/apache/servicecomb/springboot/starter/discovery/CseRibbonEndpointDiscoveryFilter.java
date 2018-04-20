@@ -17,14 +17,29 @@
 
 package org.apache.servicecomb.springboot.starter.discovery;
 
-import org.apache.servicecomb.core.filter.EndpointDiscoveryFilter;
+import org.apache.servicecomb.foundation.common.net.URIEndpointObject;
+import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
+import org.apache.servicecomb.serviceregistry.discovery.AbstractEndpointDiscoveryFilter;
 import org.apache.servicecomb.serviceregistry.discovery.DiscoveryContext;
 import org.apache.servicecomb.serviceregistry.discovery.DiscoveryTreeNode;
 
-public class CseRibbonEndpointDiscoveryFilter extends EndpointDiscoveryFilter {
+import com.netflix.loadbalancer.Server;
+
+public class CseRibbonEndpointDiscoveryFilter extends AbstractEndpointDiscoveryFilter {
   @Override
   protected String findTransportName(DiscoveryContext context, DiscoveryTreeNode parent) {
     //only need rest endpoints
     return "rest";
+  }
+
+  @Override
+  protected Object createEndpoint(String transportName, String endpoint, MicroserviceInstance instance) {
+    URIEndpointObject uri = new URIEndpointObject(endpoint);
+    return new Server(uri.getHostOrIp(), uri.getPort());
+  }
+
+  @Override
+  public int getOrder() {
+    return (int) Short.MAX_VALUE - 1;
   }
 }

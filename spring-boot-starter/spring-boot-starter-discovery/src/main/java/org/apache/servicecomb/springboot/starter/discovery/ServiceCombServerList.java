@@ -16,12 +16,9 @@
  */
 package org.apache.servicecomb.springboot.starter.discovery;
 
-import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.servicecomb.core.Endpoint;
 import org.apache.servicecomb.foundation.common.cache.VersionedCache;
-import org.apache.servicecomb.foundation.common.net.URIEndpointObject;
 import org.apache.servicecomb.serviceregistry.RegistryUtils;
 import org.apache.servicecomb.serviceregistry.definition.DefinitionConst;
 import org.apache.servicecomb.serviceregistry.discovery.DiscoveryContext;
@@ -49,13 +46,7 @@ public class ServiceCombServerList extends AbstractServerList<Server> {
         RegistryUtils.getAppId(),
         serviceId,
         DefinitionConst.VERSION_RULE_ALL);
-    ArrayList<Endpoint> endpoints = serversVersionedCache.data();
-    List<Server> instances = new ArrayList<>(endpoints.size());
-    for (Endpoint endpoint : endpoints) {
-      URIEndpointObject uri = new URIEndpointObject(endpoint.getEndpoint());
-      instances.add(new Server(uri.getHostOrIp(), uri.getPort()));
-    }
-    return instances;
+    return serversVersionedCache.data();
   }
 
   @Override
