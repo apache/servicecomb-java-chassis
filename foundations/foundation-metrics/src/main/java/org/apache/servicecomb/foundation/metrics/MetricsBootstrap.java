@@ -29,6 +29,7 @@ import com.google.common.collect.Lists;
 import com.google.common.eventbus.EventBus;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.netflix.spectator.api.CompositeRegistry;
+import com.netflix.spectator.api.Measurement;
 import com.netflix.spectator.api.Meter;
 
 public class MetricsBootstrap {
@@ -77,7 +78,13 @@ public class MetricsBootstrap {
 
   protected void pollMeters() {
     List<Meter> meters = Lists.newArrayList(globalRegistry.iterator());
-    PolledEvent event = new PolledEvent(meters);
+    // must collect measurements
+    // otherwise if there is no any period publisher, normal publisher maybe get NaN values 
+    List<Measurement> measurements = new ArrayList<>();
+    for (Meter meter : meters) {
+      meter.measure().forEach(measurements::add);
+    }
+    PolledEvent event = new PolledEvent(meters, measurements);
 
     eventBus.post(event);
   }

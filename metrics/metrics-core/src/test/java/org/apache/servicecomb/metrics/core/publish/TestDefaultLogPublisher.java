@@ -167,7 +167,7 @@ public class TestDefaultLogPublisher {
       }
     };
 
-    publisher.onPolledEvent(new PolledEvent(Collections.emptyList()));
+    publisher.onPolledEvent(new PolledEvent(Collections.emptyList(), Collections.emptyList()));
 
     List<LoggingEvent> events = collector.getEvents().stream().filter(e -> {
       return DefaultLogPublisher.class.getName().equals(e.getLoggerName());
