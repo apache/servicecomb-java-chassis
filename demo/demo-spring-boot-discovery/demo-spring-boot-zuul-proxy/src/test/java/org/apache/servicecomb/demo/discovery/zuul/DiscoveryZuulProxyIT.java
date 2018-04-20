@@ -40,13 +40,16 @@ public class DiscoveryZuulProxyIT {
   private TestRestTemplate restTemplate;
 
   @Test
-  public void getsRemoteServiceThroughGateway() throws Exception {
-    String response = restTemplate.getForObject(
-        "/gateway/greeting/sayhello/{name}",
-        String.class,
-        "Mike");
+  public void getsRemoteServiceThroughGateway() {
+    //loop three time to insure only rest endpoint get
+    for (int i = 0; i < 3; i++) {
+      String response = restTemplate.getForObject(
+          "/gateway/greeting/sayhello/{name}",
+          String.class,
+          "Mike");
 
-    assertThat(response).isEqualTo("hello Mike");
+      assertThat(response).isEqualTo("hello Mike");
+    }
   }
 
   @SpringBootApplication
@@ -55,7 +58,7 @@ public class DiscoveryZuulProxyIT {
   @EnableServiceComb
   static class DiscoveryZuulProxy {
 
-    public static void main(String[] args) throws Exception {
+    public static void main(String[] args) {
       SpringApplication.run(DiscoveryZuulProxy.class, args);
     }
   }

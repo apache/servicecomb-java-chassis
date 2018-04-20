@@ -17,8 +17,10 @@
 
 package org.apache.servicecomb.foundation.vertx.http;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
@@ -26,7 +28,9 @@ import javax.servlet.http.Part;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Response.StatusType;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.servicecomb.foundation.common.http.HttpStatus;
+import org.apache.servicecomb.foundation.common.part.FilePart;
 import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Before;
@@ -377,5 +381,29 @@ public class TestVertxServerResponseToHttpServletResponse {
     CompletableFuture<Void> future = response.sendPart(part);
 
     Assert.assertNull(future.get());
+  }
+
+  @Test
+  public void clearPartResource_deleteFile() throws IOException {
+    File file = new File("target", UUID.randomUUID().toString() + ".txt");
+    FileUtils.write(file, "content");
+    FilePart part = new FilePart(null, file).setDeleteAfterFinished(true);
+
+    Assert.assertTrue(file.exists());
+    response.clearPartResource(part, part.getInputStream());
+    Assert.assertFalse(file.exists());
+  }
+
+  @Test
+  public void clearPartResource_notDeleteFile() throws IOException {
+    File file = new File("target", UUID.randomUUID().toString() + ".txt");
+    FileUtils.write(file, "content");
+    FilePart part = new FilePart(null, file);
+
+    Assert.assertTrue(file.exists());
+    response.clearPartResource(part, part.getInputStream());
+    Assert.assertTrue(file.exists());
+
+    file.delete();
   }
 }

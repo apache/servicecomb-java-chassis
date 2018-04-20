@@ -16,14 +16,10 @@
  */
 package org.apache.servicecomb.springboot.starter.discovery;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.servicecomb.foundation.common.cache.VersionedCache;
-import org.apache.servicecomb.foundation.common.net.URIEndpointObject;
 import org.apache.servicecomb.serviceregistry.RegistryUtils;
-import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
 import org.apache.servicecomb.serviceregistry.definition.DefinitionConst;
 import org.apache.servicecomb.serviceregistry.discovery.DiscoveryContext;
 import org.apache.servicecomb.serviceregistry.discovery.DiscoveryTree;
@@ -39,6 +35,7 @@ public class ServiceCombServerList extends AbstractServerList<Server> {
   private String serviceId;
 
   public ServiceCombServerList() {
+    discoveryTree.addFilter(new CseRibbonEndpointDiscoveryFilter());
   }
 
   @Override
@@ -49,15 +46,7 @@ public class ServiceCombServerList extends AbstractServerList<Server> {
         RegistryUtils.getAppId(),
         serviceId,
         DefinitionConst.VERSION_RULE_ALL);
-    Map<String, MicroserviceInstance> servers = serversVersionedCache.data();
-    List<Server> instances = new ArrayList<>(servers.size());
-    for (MicroserviceInstance s : servers.values()) {
-      for (String endpoint : s.getEndpoints()) {
-        URIEndpointObject uri = new URIEndpointObject(endpoint);
-        instances.add(new Server(uri.getHostOrIp(), uri.getPort()));
-      }
-    }
-    return instances;
+    return serversVersionedCache.data();
   }
 
   @Override

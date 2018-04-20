@@ -17,9 +17,7 @@
 package org.apache.servicecomb.springboot.starter.discovery;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.servicecomb.serviceregistry.RegistryUtils;
 import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
@@ -29,6 +27,7 @@ import org.apache.servicecomb.serviceregistry.discovery.DiscoveryTreeNode;
 import org.junit.Assert;
 import org.junit.Test;
 
+import com.google.common.collect.Lists;
 import com.netflix.client.config.IClientConfig;
 import com.netflix.loadbalancer.Server;
 
@@ -42,15 +41,13 @@ public class TestServiceCombServerList {
       @Mocked RegistryUtils registryUtils,
       @Mocked DiscoveryTree discoveryTree,
       @Injectable DiscoveryTreeNode versionedCache) {
-    Map<String, MicroserviceInstance> servers = new HashMap<>();
     List<String> endpoints = new ArrayList<>();
     endpoints.add("rest://localhost:3333");
-    endpoints.add("rest://localhost:4444");
+    endpoints.add("highway://localhost:4444");
     MicroserviceInstance instance1 = new MicroserviceInstance();
     instance1.setServiceId("service1");
     instance1.setInstanceId("service1-instance1");
     instance1.setEndpoints(endpoints);
-    servers.put("service1-instance1", instance1);
 
     new Expectations() {
       {
@@ -62,15 +59,15 @@ public class TestServiceCombServerList {
         discoveryTree.discovery((DiscoveryContext) any, anyString, anyString, anyString);
         result = versionedCache;
         versionedCache.data();
-        result = servers;
+        result = Lists.newArrayList(new Server("localhost", 3333));
       }
     };
 
     ServiceCombServerList list = new ServiceCombServerList();
     list.initWithNiwsConfig(iClientConfig);
     List<Server> serverList = list.getInitialListOfServers();
-    Assert.assertEquals(2, serverList.size());
-    Assert.assertEquals(4444, serverList.get(1).getPort());
+    Assert.assertEquals(1, serverList.size());
+    Assert.assertEquals(3333, serverList.get(0).getPort());
     Assert.assertEquals(serverList.size(), list.getUpdatedListOfServers().size());
   }
 }
