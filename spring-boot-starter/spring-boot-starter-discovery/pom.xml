@@ -73,7 +73,7 @@
 		</dependency>
 		<dependency>
 			<groupId>org.apache.servicecomb</groupId>
-			<artifactId>java-chassis-core</artifactId>
+			<artifactId>service-registry</artifactId>
 		</dependency>
 	</dependencies>
 </project>
