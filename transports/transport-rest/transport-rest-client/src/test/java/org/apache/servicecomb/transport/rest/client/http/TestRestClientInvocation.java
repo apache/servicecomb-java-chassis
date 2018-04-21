@@ -58,6 +58,8 @@ import io.vertx.core.http.HttpClientRequest;
 import io.vertx.core.http.HttpClientResponse;
 import io.vertx.core.http.HttpMethod;
 import io.vertx.core.http.RequestOptions;
+import io.vertx.core.net.NetSocket;
+import io.vertx.core.net.SocketAddress;
 import mockit.Deencapsulation;
 import mockit.Mock;
 import mockit.MockUp;
@@ -207,6 +209,27 @@ public class TestRestClientInvocation {
     bodyHandler.handle(buf);
 
     Assert.assertSame(buf, response.getResult());
+  }
+
+  @SuppressWarnings("unchecked")
+  @Test
+  public void handleResponse_responseException() {
+    HttpClientResponse httpClientResponse = mock(HttpClientResponse.class);
+
+    NetSocket netSocket = mock(NetSocket.class);
+    when(httpClientResponse.netSocket()).thenReturn(netSocket);
+    when(netSocket.remoteAddress()).thenReturn(mock(SocketAddress.class));
+
+    doAnswer(a -> {
+      exceptionHandler = (Handler<Throwable>) a.getArguments()[0];
+      return httpClientResponse;
+    }).when(httpClientResponse).exceptionHandler(any());
+
+    restClientInvocation.handleResponse(httpClientResponse);
+    Error error = new Error();
+    exceptionHandler.handle(error);
+
+    Assert.assertThat(((InvocationException) response.getResult()).getCause(), Matchers.sameInstance(error));
   }
 
   @Test
