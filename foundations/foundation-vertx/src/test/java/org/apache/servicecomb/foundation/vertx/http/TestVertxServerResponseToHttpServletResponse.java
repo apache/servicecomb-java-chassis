@@ -47,6 +47,7 @@ import io.vertx.core.Vertx;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.http.HttpServerResponse;
 import io.vertx.core.impl.VertxImpl;
+import io.vertx.core.streams.WriteStream;
 import mockit.Deencapsulation;
 import mockit.Expectations;
 import mockit.Mock;
@@ -364,6 +365,21 @@ public class TestVertxServerResponseToHttpServletResponse {
     expectedException.expectCause(Matchers.sameInstance(ioException));
 
     future.get();
+  }
+
+  @SuppressWarnings("unchecked")
+  @Test
+  public void sendPart_ReadStreamPart(@Mocked ReadStreamPart part)
+      throws IOException, InterruptedException, ExecutionException {
+    CompletableFuture<Void> future = new CompletableFuture<>();
+    new Expectations() {
+      {
+        part.saveToWriteStream((WriteStream<Buffer>) any);
+        result = future;
+      }
+    };
+
+    Assert.assertSame(future, response.sendPart(part));
   }
 
   @Test
