@@ -37,14 +37,18 @@ import io.vertx.core.DeploymentOptions;
 import io.vertx.core.Vertx;
 import io.vertx.core.http.HttpClientOptions;
 
-public final class RestTransportClient {
+public class RestTransportClient {
   private static final Logger LOGGER = LoggerFactory.getLogger(RestTransportClient.class);
 
   private static final String SSL_KEY = "rest.consumer";
 
-  private ClientPoolManager<HttpClientWithContext> clientMgr;
+  protected ClientPoolManager<HttpClientWithContext> clientMgr;
 
   private List<HttpClientFilter> httpClientFilters;
+
+  public ClientPoolManager<HttpClientWithContext> getClientMgr() {
+    return clientMgr;
+  }
 
   public void init(Vertx vertx) throws Exception {
     httpClientFilters = SPIServiceUtils.getSortedService(HttpClientFilter.class);
@@ -69,7 +73,7 @@ public final class RestTransportClient {
   }
 
   public void send(Invocation invocation, AsyncResponse asyncResp) {
-    HttpClientWithContext httpClientWithContext = clientMgr.findClientPool(invocation.isSync());
+    HttpClientWithContext httpClientWithContext = findHttpClientPool(invocation);
     RestClientInvocation restClientInvocation = new RestClientInvocation(httpClientWithContext, httpClientFilters);
     try {
       restClientInvocation.invoke(invocation, asyncResp);
@@ -77,5 +81,9 @@ public final class RestTransportClient {
       asyncResp.fail(invocation.getInvocationType(), e);
       LOGGER.error("vertx rest transport send error.", e);
     }
+  }
+
+  protected HttpClientWithContext findHttpClientPool(Invocation invocation) {
+    return clientMgr.findClientPool(invocation.isSync());
   }
 }
