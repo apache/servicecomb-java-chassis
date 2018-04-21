@@ -149,6 +149,11 @@ public class RestClientInvocation {
   protected void handleResponse(HttpClientResponse httpClientResponse) {
     this.clientResponse = httpClientResponse;
 
+    httpClientResponse.exceptionHandler(e -> {
+      LOGGER.error("Failed to receive response from {}.", httpClientResponse.netSocket().remoteAddress(), e);
+      asyncResp.fail(invocation.getInvocationType(), e);
+    });
+
     clientResponse.bodyHandler(responseBuf -> {
       processResponseBody(responseBuf);
     });
