@@ -36,13 +36,11 @@ public class TestAbstractTcpClientPoolFactory {
   public void createClientPool(@Mocked Vertx vertx, @Mocked Context context) {
     new Expectations(VertxImpl.class) {
       {
-        VertxImpl.context();
-        result = context;
         context.owner();
         result = vertx;
       }
     };
-    TcpClientConnectionPool pool = factory.createClientPool();
+    TcpClientConnectionPool pool = factory.createClientPool(context);
 
     Assert.assertSame(normalClientConfig, pool.netClientWrapper.getClientConfig(false));
     Assert.assertSame(sslClientConfig, pool.netClientWrapper.getClientConfig(true));

@@ -37,6 +37,7 @@ import io.netty.buffer.ByteBuf;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Context;
 import io.vertx.core.DeploymentOptions;
+import io.vertx.core.Verticle;
 import io.vertx.core.Vertx;
 import io.vertx.core.VertxOptions;
 import io.vertx.core.buffer.Buffer;
@@ -88,7 +89,7 @@ public final class VertxUtils {
   }
 
   // deploy Verticle and wait for its success. do not call this method in event-loop thread
-  public static <VERTICLE extends AbstractVerticle> boolean blockDeploy(Vertx vertx,
+  public static <VERTICLE extends Verticle> boolean blockDeploy(Vertx vertx,
       Class<VERTICLE> cls,
       DeploymentOptions options) throws InterruptedException {
     Holder<Boolean> result = new Holder<>();

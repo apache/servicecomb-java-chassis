@@ -17,6 +17,8 @@
 
 package org.apache.servicecomb.foundation.vertx.client;
 
+import io.vertx.core.Context;
+
 public interface ClientPoolFactory<CLIENT_POOL> {
-  CLIENT_POOL createClientPool();
+  CLIENT_POOL createClientPool(Context context);
 }
