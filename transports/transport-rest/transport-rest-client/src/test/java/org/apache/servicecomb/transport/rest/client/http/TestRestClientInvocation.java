@@ -22,11 +22,14 @@ import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import javax.servlet.http.Part;
 
 import org.apache.log4j.Level;
 import org.apache.servicecomb.common.rest.RestConst;
@@ -38,8 +41,10 @@ import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.definition.OperationMeta;
 import org.apache.servicecomb.core.executor.ReactiveExecutor;
 import org.apache.servicecomb.foundation.common.net.URIEndpointObject;
+import org.apache.servicecomb.foundation.common.utils.ReflectUtils;
 import org.apache.servicecomb.foundation.test.scaffolding.log.LogCollector;
 import org.apache.servicecomb.foundation.vertx.client.http.HttpClientWithContext;
+import org.apache.servicecomb.foundation.vertx.http.ReadStreamPart;
 import org.apache.servicecomb.serviceregistry.api.Const;
 import org.apache.servicecomb.swagger.invocation.AsyncResponse;
 import org.apache.servicecomb.swagger.invocation.Response;
@@ -209,6 +214,27 @@ public class TestRestClientInvocation {
     bodyHandler.handle(buf);
 
     Assert.assertSame(buf, response.getResult());
+  }
+
+  public Part returnPart() {
+    return null;
+  }
+
+  @Test
+  public void handleResponse_readStreamPart() {
+    HttpClientResponse httpClientResponse = mock(HttpClientResponse.class);
+    when(httpClientResponse.statusCode()).thenReturn(200);
+    Method method = ReflectUtils.findMethod(this.getClass(), "returnPart");
+    when(operationMeta.getMethod()).thenReturn(method);
+    new MockUp<RestClientInvocation>(restClientInvocation) {
+      @Mock
+      void processResponseBody(Buffer responseBuf) {
+      }
+    };
+
+    restClientInvocation.handleResponse(httpClientResponse);
+
+    Assert.assertThat(handlerContext.get(RestConst.READ_STREAM_PART), Matchers.instanceOf(ReadStreamPart.class));
   }
 
   @SuppressWarnings("unchecked")

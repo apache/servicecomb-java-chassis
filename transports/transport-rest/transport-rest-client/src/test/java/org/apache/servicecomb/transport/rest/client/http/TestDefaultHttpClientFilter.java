@@ -18,6 +18,8 @@
 package org.apache.servicecomb.transport.rest.client.http;
 
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Response.Status;
@@ -28,6 +30,7 @@ import org.apache.servicecomb.common.rest.definition.RestOperationMeta;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.definition.OperationMeta;
 import org.apache.servicecomb.foundation.vertx.http.HttpServletResponseEx;
+import org.apache.servicecomb.foundation.vertx.http.ReadStreamPart;
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.apache.servicecomb.swagger.invocation.exception.CommonExceptionData;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
@@ -90,6 +93,20 @@ public class TestDefaultHttpClientFilter {
     };
 
     Assert.assertSame(produceProcessor, filter.findProduceProcessor(restOperation, responseEx));
+  }
+
+  @Test
+  public void extractResult_readStreamPart(@Mocked Invocation invocation, @Mocked ReadStreamPart part) {
+    Map<String, Object> handlerContext = new HashMap<>();
+    handlerContext.put(RestConst.READ_STREAM_PART, part);
+    new Expectations() {
+      {
+        invocation.getHandlerContext();
+        result = handlerContext;
+      }
+    };
+
+    Assert.assertSame(part, filter.extractResult(invocation, null));
   }
 
   @Test
