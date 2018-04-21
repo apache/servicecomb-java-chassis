@@ -21,6 +21,8 @@ import com.netflix.config.DynamicIntProperty;
 import com.netflix.config.DynamicPropertyFactory;
 import com.netflix.config.DynamicStringProperty;
 
+import io.vertx.core.Verticle;
+
 public final class TransportConfig {
 
   public static final int DEFAULT_SERVER_THREAD_COUNT = 1;
@@ -32,7 +34,17 @@ public final class TransportConfig {
   // 32K
   public static final int DEFAULT_SERVER_MAX_HEADER_SIZE = 32 * 1024;
 
+  private static Class<? extends Verticle> restServerVerticle = RestServerVerticle.class;
+
   private TransportConfig() {
+  }
+
+  public static Class<? extends Verticle> getRestServerVerticle() {
+    return restServerVerticle;
+  }
+
+  public static void setRestServerVerticle(Class<? extends Verticle> restServerVerticle) {
+    TransportConfig.restServerVerticle = restServerVerticle;
   }
 
   public static String getAddress() {
