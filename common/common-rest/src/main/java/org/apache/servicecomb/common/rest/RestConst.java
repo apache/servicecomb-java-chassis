@@ -54,4 +54,6 @@ public final class RestConst {
   public static final String REST_REQUEST = "servicecomb-rest-request";
 
   public static final String CONSUMER_HEADER = "servicecomb-rest-consumer-header";
+
+  public static final String READ_STREAM_PART = "servicecomb-readStreamPart";
 }

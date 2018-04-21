@@ -19,6 +19,8 @@ package org.apache.servicecomb.transport.rest.client.http;
 
 import java.util.List;
 
+import javax.servlet.http.Part;
+
 import org.apache.servicecomb.common.rest.RestConst;
 import org.apache.servicecomb.common.rest.codec.param.RestClientRequestImpl;
 import org.apache.servicecomb.common.rest.definition.RestOperationMeta;
@@ -26,12 +28,14 @@ import org.apache.servicecomb.common.rest.filter.HttpClientFilter;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.definition.OperationMeta;
 import org.apache.servicecomb.core.transport.AbstractTransport;
+import org.apache.servicecomb.foundation.common.http.HttpStatus;
 import org.apache.servicecomb.foundation.common.net.IpPort;
 import org.apache.servicecomb.foundation.common.net.URIEndpointObject;
 import org.apache.servicecomb.foundation.common.utils.JsonUtils;
 import org.apache.servicecomb.foundation.vertx.client.http.HttpClientWithContext;
 import org.apache.servicecomb.foundation.vertx.http.HttpServletRequestEx;
 import org.apache.servicecomb.foundation.vertx.http.HttpServletResponseEx;
+import org.apache.servicecomb.foundation.vertx.http.ReadStreamPart;
 import org.apache.servicecomb.foundation.vertx.http.VertxClientRequestToHttpServletRequest;
 import org.apache.servicecomb.foundation.vertx.http.VertxClientResponseToHttpServletResponse;
 import org.apache.servicecomb.serviceregistry.api.Const;
@@ -148,6 +152,14 @@ public class RestClientInvocation {
 
   protected void handleResponse(HttpClientResponse httpClientResponse) {
     this.clientResponse = httpClientResponse;
+
+    if (HttpStatus.isSuccess(clientResponse.statusCode())
+        && Part.class.equals(invocation.getOperationMeta().getMethod().getReturnType())) {
+      ReadStreamPart part = new ReadStreamPart(httpClientResponse);
+      invocation.getHandlerContext().put(RestConst.READ_STREAM_PART, part);
+      processResponseBody(null);
+      return;
+    }
 
     httpClientResponse.exceptionHandler(e -> {
       LOGGER.error("Failed to receive response from {}.", httpClientResponse.netSocket().remoteAddress(), e);
