@@ -100,6 +100,12 @@ public class TestTcpClientConnection {
         result = byteBuf;
       }
     };
+
+    new MockUp<Context>(context) {
+      @Mock
+      void runOnContext(Handler<Void> action) {
+      }
+    };
     tcpClientConnection.send(tcpClientPackage, ar -> {
     });
 

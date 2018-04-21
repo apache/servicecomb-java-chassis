@@ -32,8 +32,7 @@ public abstract class AbstractTcpClientPoolFactory<CLIENT_POOL> implements Clien
   }
 
   @Override
-  public CLIENT_POOL createClientPool() {
-    Context context = Vertx.currentContext();
+  public CLIENT_POOL createClientPool(Context context) {
     Vertx vertx = context.owner();
 
     NetClientWrapper netClientWrapper = new NetClientWrapper(vertx, normalClientConfig, sslClientConfig);

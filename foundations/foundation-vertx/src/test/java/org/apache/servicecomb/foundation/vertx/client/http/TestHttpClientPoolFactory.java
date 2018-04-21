@@ -36,15 +36,13 @@ public class TestHttpClientPoolFactory {
   public void createClientPool(@Mocked Vertx vertx, @Mocked Context context, @Mocked HttpClient httpClient) {
     new Expectations(VertxImpl.class) {
       {
-        VertxImpl.context();
-        result = context;
         context.owner();
         result = vertx;
         vertx.createHttpClient(httpClientOptions);
         result = httpClient;
       }
     };
-    HttpClientWithContext pool = factory.createClientPool();
+    HttpClientWithContext pool = factory.createClientPool(context);
 
     Assert.assertSame(context, pool.context());
     Assert.assertSame(httpClient, pool.getHttpClient());
