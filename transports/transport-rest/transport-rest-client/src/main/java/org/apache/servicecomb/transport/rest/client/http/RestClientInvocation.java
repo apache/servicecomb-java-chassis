@@ -29,7 +29,6 @@ import org.apache.servicecomb.core.transport.AbstractTransport;
 import org.apache.servicecomb.foundation.common.net.IpPort;
 import org.apache.servicecomb.foundation.common.net.URIEndpointObject;
 import org.apache.servicecomb.foundation.common.utils.JsonUtils;
-import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
 import org.apache.servicecomb.foundation.vertx.client.http.HttpClientWithContext;
 import org.apache.servicecomb.foundation.vertx.http.HttpServletRequestEx;
 import org.apache.servicecomb.foundation.vertx.http.HttpServletResponseEx;
@@ -43,33 +42,42 @@ import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
 
 import io.vertx.core.buffer.Buffer;
-import io.vertx.core.http.HttpClient;
 import io.vertx.core.http.HttpClientRequest;
 import io.vertx.core.http.HttpClientResponse;
 import io.vertx.core.http.HttpMethod;
 import io.vertx.core.http.RequestOptions;
 
-public class VertxHttpMethod {
-  private static final Logger LOGGER = LoggerFactory.getLogger(VertxHttpMethod.class);
+public class RestClientInvocation {
+  private static final Logger LOGGER = LoggerFactory.getLogger(RestClientInvocation.class);
 
-  public static final VertxHttpMethod INSTANCE = new VertxHttpMethod();
+  private HttpClientWithContext httpClientWithContext;
 
-  static List<HttpClientFilter> httpClientFilters = SPIServiceUtils.getSortedService(HttpClientFilter.class);
+  private Invocation invocation;
 
-  public void doMethod(HttpClientWithContext httpClientWithContext, Invocation invocation,
-      AsyncResponse asyncResp) throws Exception {
+  private AsyncResponse asyncResp;
+
+  private List<HttpClientFilter> httpClientFilters;
+
+  private HttpClientRequest clientRequest;
+
+  private HttpClientResponse clientResponse;
+
+  public RestClientInvocation(HttpClientWithContext httpClientWithContext, List<HttpClientFilter> httpClientFilters) {
+    this.httpClientWithContext = httpClientWithContext;
+    this.httpClientFilters = httpClientFilters;
+  }
+
+  public void invoke(Invocation invocation, AsyncResponse asyncResp) throws Exception {
+    this.invocation = invocation;
+    this.asyncResp = asyncResp;
+
     OperationMeta operationMeta = invocation.getOperationMeta();
     RestOperationMeta swaggerRestOperation = operationMeta.getExtData(RestConst.SWAGGER_REST_OPERATION);
 
-    String path = this.createRequestPath(invocation, swaggerRestOperation);
+    String path = this.createRequestPath(swaggerRestOperation);
     IpPort ipPort = (IpPort) invocation.getEndpoint().getAddress();
 
-    HttpClientRequest clientRequest =
-        this.createRequest(httpClientWithContext.getHttpClient(),
-            invocation,
-            ipPort,
-            path,
-            asyncResp);
+    createRequest(ipPort, path);
     clientRequest.putHeader(org.apache.servicecomb.core.Const.TARGET_MICROSERVICE, invocation.getMicroserviceName());
     RestClientRequestImpl restClientRequest =
         new RestClientRequestImpl(clientRequest, httpClientWithContext.context().owner(), asyncResp);
@@ -88,7 +96,7 @@ public class VertxHttpMethod {
 
     // 从业务线程转移到网络线程中去发送
     httpClientWithContext.runOnContext(httpClient -> {
-      this.setCseContext(invocation, clientRequest);
+      this.setCseContext();
       clientRequest.setTimeout(AbstractTransport.getRequestTimeoutProperty().get());
       try {
         restClientRequest.end();
@@ -99,15 +107,14 @@ public class VertxHttpMethod {
     });
   }
 
-  private HttpMethod getMethod(Invocation invocation) {
+  private HttpMethod getMethod() {
     OperationMeta operationMeta = invocation.getOperationMeta();
     RestOperationMeta swaggerRestOperation = operationMeta.getExtData(RestConst.SWAGGER_REST_OPERATION);
     String method = swaggerRestOperation.getHttpMethod();
     return HttpMethod.valueOf(method);
   }
 
-  HttpClientRequest createRequest(HttpClient client, Invocation invocation, IpPort ipPort, String path,
-      AsyncResponse asyncResp) {
+  void createRequest(IpPort ipPort, String path) {
     URIEndpointObject endpoint = (URIEndpointObject) invocation.getEndpoint().getAddress();
     RequestOptions requestOptions = new RequestOptions();
     requestOptions.setHost(ipPort.getHostOrIp())
@@ -115,51 +122,51 @@ public class VertxHttpMethod {
         .setSsl(endpoint.isSslEnabled())
         .setURI(path);
 
-    HttpMethod method = getMethod(invocation);
+    HttpMethod method = getMethod();
     LOGGER.debug("Sending request by rest, method={}, qualifiedName={}, path={}, endpoint={}.",
         method,
         invocation.getMicroserviceQualifiedName(),
         path,
         invocation.getEndpoint().getEndpoint());
-    HttpClientRequest request = client.request(method, requestOptions, response -> {
-      handleResponse(invocation, response, asyncResp);
-    });
-    return request;
+    clientRequest = httpClientWithContext.getHttpClient().request(method, requestOptions, this::handleResponse);
   }
 
-  void handleResponse(Invocation invocation, HttpClientResponse clientResponse,
-      AsyncResponse asyncResp) {
+  protected void handleResponse(HttpClientResponse httpClientResponse) {
+    this.clientResponse = httpClientResponse;
+
     clientResponse.bodyHandler(responseBuf -> {
-      // 此时是在网络线程中，不应该就地处理，通过dispatcher转移线程
-      invocation.getResponseExecutor().execute(() -> {
-        try {
-          HttpServletResponseEx responseEx =
-              new VertxClientResponseToHttpServletResponse(clientResponse, responseBuf);
-          for (HttpClientFilter filter : httpClientFilters) {
-            Response response = filter.afterReceiveResponse(invocation, responseEx);
-            if (response != null) {
-              asyncResp.complete(response);
-              return;
-            }
-          }
-        } catch (Throwable e) {
-          asyncResp.fail(invocation.getInvocationType(), e);
-        }
-      });
+      processResponseBody(responseBuf);
     });
   }
 
-  protected void setCseContext(Invocation invocation, HttpClientRequest request) {
+  protected void processResponseBody(Buffer responseBuf) {
+    invocation.getResponseExecutor().execute(() -> {
+      try {
+        HttpServletResponseEx responseEx =
+            new VertxClientResponseToHttpServletResponse(clientResponse, responseBuf);
+        for (HttpClientFilter filter : httpClientFilters) {
+          Response response = filter.afterReceiveResponse(invocation, responseEx);
+          if (response != null) {
+            asyncResp.complete(response);
+            return;
+          }
+        }
+      } catch (Throwable e) {
+        asyncResp.fail(invocation.getInvocationType(), e);
+      }
+    });
+  }
+
+  protected void setCseContext() {
     try {
       String cseContext = JsonUtils.writeValueAsString(invocation.getContext());
-      request.putHeader(org.apache.servicecomb.core.Const.CSE_CONTEXT, cseContext);
+      clientRequest.putHeader(org.apache.servicecomb.core.Const.CSE_CONTEXT, cseContext);
     } catch (Exception e) {
-      LOGGER.debug(e.toString());
+      LOGGER.debug("Failed to encode and set cseContext.", e);
     }
   }
 
-  protected String createRequestPath(Invocation invocation,
-      RestOperationMeta swaggerRestOperation) throws Exception {
+  protected String createRequestPath(RestOperationMeta swaggerRestOperation) throws Exception {
     URIEndpointObject address = (URIEndpointObject) invocation.getEndpoint().getAddress();
     String urlPrefix = address.getFirst(Const.URL_PREFIX);
 
