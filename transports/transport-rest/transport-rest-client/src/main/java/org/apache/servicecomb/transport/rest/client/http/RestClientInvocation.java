@@ -90,10 +90,25 @@ public class RestClientInvocation {
     }
 
     clientRequest.exceptionHandler(e -> {
-      LOGGER.error(e.toString());
+      LOGGER.error("Failed to send request to {}.", ipPort.getSocketAddress(), e);
       asyncResp.fail(invocation.getInvocationType(), e);
     });
-
+    clientRequest.connectionHandler(connection -> {
+      LOGGER.info("http connection connected, local:{}, remote:{}.",
+          connection.localAddress(),
+          connection.remoteAddress());
+      connection.closeHandler(v -> {
+        LOGGER.info("http connection closed, local:{}, remote:{}.",
+            connection.localAddress(),
+            connection.remoteAddress());
+      });
+      connection.exceptionHandler(e -> {
+        LOGGER.info("http connection exception, local:{}, remote:{}.",
+            connection.localAddress(),
+            connection.remoteAddress(),
+            e);
+      });
+    });
     // 从业务线程转移到网络线程中去发送
     httpClientWithContext.runOnContext(httpClient -> {
       this.setCseContext();
