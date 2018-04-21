@@ -121,6 +121,7 @@ public class EdgeInvocation extends AbstractRestInvocation {
     this.invocation = InvocationFactory.forConsumer(referenceConfig,
         restOperationMeta.getOperationMeta(),
         null);
+    this.invocation.setSync(false);
     this.invocation.setResponseExecutor(new ReactiveResponseExecutor());
   }
 }
