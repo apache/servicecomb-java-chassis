@@ -132,23 +132,26 @@ public class VertxServerResponseToHttpServletResponse extends AbstractHttpServle
 
   @Override
   public CompletableFuture<Void> sendPart(Part part) {
-    CompletableFuture<Void> future = new CompletableFuture<Void>();
-
     prepareSendPartHeader(part);
 
+    if (ReadStreamPart.class.isInstance(part)) {
+      return ((ReadStreamPart) part).saveToWriteStream(this.serverResponse);
+    }
+
+    CompletableFuture<Void> future = new CompletableFuture<Void>();
     try {
       InputStream is = part.getInputStream();
       context.runOnContext(v -> {
-        InputStreamToReadStream aa = new InputStreamToReadStream(context.owner(), is);
-        aa.exceptionHandler(t -> {
+        InputStreamToReadStream inputStreamToReadStream = new InputStreamToReadStream(context.owner(), is);
+        inputStreamToReadStream.exceptionHandler(t -> {
           clearPartResource(part, is);
           future.completeExceptionally(t);
         });
-        aa.endHandler(V -> {
+        inputStreamToReadStream.endHandler(V -> {
           clearPartResource(part, is);
           future.complete(null);
         });
-        Pump.pump(aa, serverResponse).start();
+        Pump.pump(inputStreamToReadStream, serverResponse).start();
       });
     } catch (IOException e) {
       future.completeExceptionally(e);
