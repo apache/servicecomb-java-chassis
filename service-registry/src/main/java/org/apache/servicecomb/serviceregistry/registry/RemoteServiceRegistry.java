@@ -82,11 +82,11 @@ public class RemoteServiceRegistry extends AbstractServiceRegistry {
         serviceRegistryConfig.getHeartbeatInterval(),
         TimeUnit.SECONDS);
 
-      taskPool.scheduleAtFixedRate(
-          () -> eventBus.post(new PeriodicPullEvent()),
-          serviceRegistryConfig.getInstancePullInterval(),
-          serviceRegistryConfig.getInstancePullInterval(),
-          TimeUnit.SECONDS);
+    taskPool.scheduleAtFixedRate(
+        () -> eventBus.post(new PeriodicPullEvent()),
+        serviceRegistryConfig.getInstancePullInterval(),
+        serviceRegistryConfig.getInstancePullInterval(),
+        TimeUnit.SECONDS);
 
   }
 
