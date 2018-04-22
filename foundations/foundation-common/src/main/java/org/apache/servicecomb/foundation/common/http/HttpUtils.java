@@ -17,10 +17,8 @@
 package org.apache.servicecomb.foundation.common.http;
 
 import java.io.File;
-import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
+import java.net.URI;
+import java.net.URISyntaxException;
 
 import org.springframework.util.StringUtils;
 
@@ -52,34 +50,35 @@ public final class HttpUtils {
     return null;
   }
 
-  public static String uriEncode(String value) {
-    return uriEncode(value, StandardCharsets.UTF_8.name());
-  }
-
-  public static String uriEncode(String value, String enc) {
+  public static String uriEncodePath(String path) {
     try {
-      return URLEncoder.encode(value, enc).replace("+", "%20");
-    } catch (UnsupportedEncodingException e) {
-      throw new IllegalStateException(String.format("uriEncode failed, value=\"%s\", enc=\"%s\".", value, enc), e);
+      URI uri = new URI(null, null, path, null);
+      return uri.toASCIIString();
+    } catch (URISyntaxException e) {
+      throw new IllegalArgumentException(String.format("uriEncode failed, path=\"%s\".", path), e);
     }
   }
 
-  public static String uriDecode(String value) {
-    return uriDecode(value, StandardCharsets.UTF_8.name());
-  }
+  public static String uriDecodePath(String path) {
+    if (path == null) {
+      return null;
+    }
 
-  public static String uriDecode(String value, String enc) {
     try {
-      return URLDecoder.decode(value, enc);
-    } catch (UnsupportedEncodingException e) {
-      throw new IllegalStateException(String.format("uriDecode failed, value=\"%s\", enc=\"%s\".", value, enc), e);
+      return new URI(path).getPath();
+    } catch (URISyntaxException e) {
+      throw new IllegalArgumentException(String.format("uriDecode failed, path=\"%s\".", path), e);
     }
   }
 
+  /**
+   * only used by SDK to download from  serviceComb producer<br>
+   * no need to check rtf6266's "filename*" rule.
+   */
   public static String parseFileNameFromHeaderValue(String headerValue) {
     String fileName = parseParamFromHeaderValue(headerValue, "filename");
     fileName = StringUtils.isEmpty(fileName) ? "default" : fileName;
-    fileName = uriDecode(fileName);
+    fileName = uriDecodePath(fileName);
     return new File(fileName).getName();
   }
 }

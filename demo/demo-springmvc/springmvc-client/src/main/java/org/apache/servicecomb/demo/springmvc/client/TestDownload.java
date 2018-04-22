@@ -98,9 +98,15 @@ public class TestDownload {
     futures.add(checkFile(intf.file(content)));
     futures.add(checkFuture(templateGet("file").saveAsString()));
 
-    // fix in next PR
-    //    futures.add(checkFile(intf.chineseAndSpaceFile(content)));
-    //    futures.add(checkFuture(templateGet("chineseAndSpaceFile").saveAsString()));
+    {
+      ReadStreamPart part = intf.chineseAndSpaceFile(content);
+      TestMgr.check("测 试.test.txt", part.getSubmittedFileName());
+      futures.add(checkFile(part));
+
+      part = templateGet("chineseAndSpaceFile");
+      TestMgr.check("测 试.test.txt", part.getSubmittedFileName());
+      futures.add(checkFuture(part.saveAsString()));
+    }
 
     futures.add(checkFile(intf.resource(content)));
     futures.add(checkFuture(templateGet("resource").saveAsString()));

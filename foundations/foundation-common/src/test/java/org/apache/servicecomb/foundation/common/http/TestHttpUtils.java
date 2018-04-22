@@ -16,7 +16,7 @@
  */
 package org.apache.servicecomb.foundation.common.http;
 
-import java.io.UnsupportedEncodingException;
+import java.net.URISyntaxException;
 
 import org.hamcrest.Matchers;
 import org.junit.Assert;
@@ -60,35 +60,45 @@ public class TestHttpUtils {
   }
 
   @Test
+  public void uriEncode_null() {
+    Assert.assertEquals("", HttpUtils.uriEncodePath(null));
+  }
+
+  @Test
+  public void uriDecode_null() {
+    Assert.assertNull(HttpUtils.uriDecodePath(null));
+  }
+
+  @Test
   public void uriEncode_chineseAndSpace() {
-    String encoded = HttpUtils.uriEncode("测 试");
+    String encoded = HttpUtils.uriEncodePath("测 试");
     Assert.assertEquals("%E6%B5%8B%20%E8%AF%95", encoded);
-    Assert.assertEquals("测 试", HttpUtils.uriDecode(encoded));
+    Assert.assertEquals("测 试", HttpUtils.uriDecodePath(encoded));
   }
 
   @Test
   public void uriEncode_failed() {
-    expectedException.expect(IllegalStateException.class);
-    expectedException.expectMessage(Matchers.is("uriEncode failed, value=\"\", enc=\"notExistEnc\"."));
-    expectedException.expectCause(Matchers.instanceOf(UnsupportedEncodingException.class));
+    expectedException.expect(IllegalArgumentException.class);
+    expectedException.expectMessage(Matchers.is("uriEncode failed, path=\":\"."));
+    expectedException.expectCause(Matchers.instanceOf(URISyntaxException.class));
 
-    HttpUtils.uriEncode("", "notExistEnc");
+    HttpUtils.uriEncodePath(":");
   }
 
   @Test
   public void uriDecode_failed() {
-    expectedException.expect(IllegalStateException.class);
+    expectedException.expect(IllegalArgumentException.class);
     expectedException
-        .expectMessage(Matchers.is("uriDecode failed, value=\"%E6%B5%8B%20%E8%AF%95\", enc=\"notExistEnc\"."));
-    expectedException.expectCause(Matchers.instanceOf(UnsupportedEncodingException.class));
+        .expectMessage(Matchers.is("uriDecode failed, path=\":\"."));
+    expectedException.expectCause(Matchers.instanceOf(URISyntaxException.class));
 
-    HttpUtils.uriDecode("%E6%B5%8B%20%E8%AF%95", "notExistEnc");
+    HttpUtils.uriDecodePath(":");
   }
 
   @Test
   public void parseFileNameFromHeaderValue() {
     String fileName = "测 试.txt";
-    String encoded = HttpUtils.uriEncode(fileName);
+    String encoded = HttpUtils.uriEncodePath(fileName);
     Assert.assertEquals(fileName, HttpUtils.parseFileNameFromHeaderValue("xx;filename=" + encoded));
   }
 
