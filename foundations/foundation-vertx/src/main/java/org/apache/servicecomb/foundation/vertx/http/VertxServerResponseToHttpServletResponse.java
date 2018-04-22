@@ -29,6 +29,7 @@ import javax.ws.rs.core.Response.StatusType;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.servicecomb.foundation.common.http.HttpStatus;
+import org.apache.servicecomb.foundation.common.http.HttpUtils;
 import org.apache.servicecomb.foundation.common.part.FilePartForSend;
 import org.apache.servicecomb.foundation.vertx.stream.InputStreamToReadStream;
 import org.slf4j.Logger;
@@ -170,8 +171,11 @@ public class VertxServerResponseToHttpServletResponse extends AbstractHttpServle
     }
 
     if (!serverResponse.headers().contains(HttpHeaders.CONTENT_DISPOSITION)) {
+      // to support chinese and space filename in firefox
+      // must use "filename*", (https://tools.ietf.org/html/rtf6266)
+      String encodedFileName = HttpUtils.uriEncodePath(part.getSubmittedFileName());
       serverResponse.putHeader(HttpHeaders.CONTENT_DISPOSITION,
-          "attachment;filename=" + part.getSubmittedFileName());
+          "attachment;filename=" + encodedFileName + ";filename*=utf-8''" + encodedFileName);
     }
   }
 

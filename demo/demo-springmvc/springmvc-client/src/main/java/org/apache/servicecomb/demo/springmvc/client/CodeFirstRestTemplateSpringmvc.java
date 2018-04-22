@@ -113,7 +113,7 @@ public class CodeFirstRestTemplateSpringmvc extends CodeFirstRestTemplate {
 
   private void testUpload(RestTemplate template, String cseUrlPrefix) throws IOException {
     String file1Content = "hello world";
-    File file1 = File.createTempFile("upload1", ".txt");
+    File file1 = File.createTempFile("测 试", ".txt");
     FileUtils.writeStringToFile(file1, file1Content);
 
     String file2Content = " bonjour";
