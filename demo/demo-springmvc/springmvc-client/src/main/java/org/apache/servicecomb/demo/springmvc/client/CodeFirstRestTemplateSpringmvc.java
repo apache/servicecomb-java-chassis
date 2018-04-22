@@ -70,8 +70,12 @@ public class CodeFirstRestTemplateSpringmvc extends CodeFirstRestTemplate {
 
   private TestGeneric testGeneric = new TestGeneric();
 
+  private TestDownload testDownload = new TestDownload();
+
   @Override
   protected void testOnlyRest(RestTemplate template, String cseUrlPrefix) {
+    testDownload.runRest();
+
     try {
       testUpload(template, cseUrlPrefix);
     } catch (IOException e) {
