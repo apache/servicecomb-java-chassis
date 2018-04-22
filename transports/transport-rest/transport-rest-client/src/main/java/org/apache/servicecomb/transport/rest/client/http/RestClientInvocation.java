@@ -155,7 +155,7 @@ public class RestClientInvocation {
 
     if (HttpStatus.isSuccess(clientResponse.statusCode())
         && Part.class.equals(invocation.getOperationMeta().getMethod().getReturnType())) {
-      ReadStreamPart part = new ReadStreamPart(httpClientResponse);
+      ReadStreamPart part = new ReadStreamPart(httpClientWithContext.context(), httpClientResponse);
       invocation.getHandlerContext().put(RestConst.READ_STREAM_PART, part);
       processResponseBody(null);
       return;
