@@ -19,7 +19,7 @@ APPLICATION_ID: pojotest-it
 service_description:
   name: pojo
   version: 0.0.4
-cse:
+servicecomb:
   service:
     registry:
       address: http://127.0.0.1:30100

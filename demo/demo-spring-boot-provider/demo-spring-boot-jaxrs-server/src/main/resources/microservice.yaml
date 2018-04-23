@@ -20,7 +20,7 @@ APPLICATION_ID: spring-boot-jaxrstest
 service_description:
   name: jaxrs
   version: 0.0.1
-cse:
+servicecomb:
   service:
     registry:
       address: http://127.0.0.1:30100

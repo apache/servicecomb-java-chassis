@@ -22,7 +22,7 @@ service_description:
 # name of the declaring microservice
   name: calculator
   version: 0.0.1
-cse:
+servicecomb:
   service:
     registry:
       address: http://127.0.0.1:30100

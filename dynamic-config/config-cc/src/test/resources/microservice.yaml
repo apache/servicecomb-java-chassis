@@ -42,7 +42,7 @@ eureka:
   client:
     serviceUrl:
       defaultZone: http://172.16.8.8:30100/
-cse:
+servicecomb:
   config:
     client:
       serviceName: testDemo

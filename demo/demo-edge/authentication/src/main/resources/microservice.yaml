@@ -19,7 +19,7 @@ APPLICATION_ID: edge
 service_description:
   name: auth
   version: 0.0.1
-cse:
+servicecomb:
   service:
     registry:
       address: http://127.0.0.1:30100

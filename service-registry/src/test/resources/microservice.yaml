@@ -34,7 +34,7 @@ instance_description:
     key0: value0
   propertyExtentedClass: org.apache.servicecomb.serviceregistry.MicroServicePropertyExtendedStub
 
-cse:
+servicecomb:
   service:
     registry:
       address: http://127.0.0.1:30100
