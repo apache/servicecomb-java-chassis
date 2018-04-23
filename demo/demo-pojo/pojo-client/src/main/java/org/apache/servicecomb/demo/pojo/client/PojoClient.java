@@ -24,7 +24,6 @@ import java.util.Set;
 
 import javax.inject.Inject;
 
-import org.apache.servicecomb.config.ConfigUtil;
 import org.apache.servicecomb.core.Const;
 import org.apache.servicecomb.core.CseContext;
 import org.apache.servicecomb.core.provider.consumer.InvokerUtils;
@@ -100,22 +99,28 @@ public class PojoClient {
       testEmpty(test);
       // This test case shows destroy of WeightedResponseTimeRule timer task. after test finished will not print:
       // "Weight adjusting job started" and thread "NFLoadBalancer-serverWeightTimer-unknown" destroyed.
-      ArchaiusUtils.resetConfig();
-      ConfigUtil.addConfig("cse.loadbalance.strategy.name", "WeightedResponse");
-      ConfigUtil.installDynamicConfig();
+      ArchaiusUtils.setProperty("cse.loadbalance.strategy.name", "WeightedResponse");
       testStringArray(test);
-      ArchaiusUtils.resetConfig();
-      ConfigUtil.addConfig("cse.loadbalance.strategy.name", "RoundRobin");
-      ConfigUtil.installDynamicConfig();
-      testStringArray(test);
+      boolean checkerStated = false;
       Set<Thread> allThreads = Thread.getAllStackTraces().keySet();
-      boolean destroyed = true;
       for (Thread t : allThreads) {
         if (t.getName().equals("NFLoadBalancer-serverWeightTimer-unknown")) {
-          destroyed = false;
+          checkerStated = true;
         }
       }
-      TestMgr.check(destroyed, true);
+      TestMgr.check(checkerStated, true);
+      
+      ArchaiusUtils.setProperty("cse.loadbalance.strategy.name", "RoundRobin");
+      testStringArray(test);
+      
+      allThreads = Thread.getAllStackTraces().keySet();
+      boolean checkerDestroyed = true;
+      for (Thread t : allThreads) {
+        if (t.getName().equals("NFLoadBalancer-serverWeightTimer-unknown")) {
+          checkerDestroyed = false;
+        }
+      }
+      TestMgr.check(checkerDestroyed, true);
 
       testChinese(test);
       testStringHaveSpace(test);
