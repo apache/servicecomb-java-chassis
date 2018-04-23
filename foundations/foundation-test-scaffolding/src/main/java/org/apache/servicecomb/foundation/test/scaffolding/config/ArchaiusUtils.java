@@ -19,9 +19,9 @@ package org.apache.servicecomb.foundation.test.scaffolding.config;
 
 import java.lang.reflect.Field;
 
-import org.apache.commons.configuration.Configuration;
 import org.springframework.util.ReflectionUtils;
 
+import com.netflix.config.ConcurrentCompositeConfiguration;
 import com.netflix.config.ConfigurationManager;
 import com.netflix.config.DynamicProperty;
 import com.netflix.config.DynamicPropertyFactory;
@@ -62,7 +62,8 @@ public final class ArchaiusUtils {
   public static void setProperty(String key, Object value) {
     // ensure have instance
     DynamicPropertyFactory.getInstance();
-    Configuration config = (Configuration) DynamicPropertyFactory.getBackingConfigurationSource();
-    config.addProperty(key, value);
+    
+    ConcurrentCompositeConfiguration config = (ConcurrentCompositeConfiguration) DynamicPropertyFactory.getBackingConfigurationSource();
+    config.getConfiguration(0).addProperty(key, value);
   }
 }
