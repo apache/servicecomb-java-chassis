@@ -19,7 +19,8 @@ package org.apache.servicecomb.transport.rest.vertx.accesslog.element.impl;
 
 import java.util.Map;
 
-import org.apache.servicecomb.common.rest.RestProducerInvocation;
+import org.apache.servicecomb.common.rest.AbstractRestInvocation;
+import org.apache.servicecomb.core.Const;
 import org.apache.servicecomb.transport.rest.vertx.accesslog.AccessLogParam;
 import org.apache.servicecomb.transport.rest.vertx.accesslog.element.AccessLogItem;
 import org.springframework.util.StringUtils;
@@ -32,21 +33,34 @@ public class TraceIdItem implements AccessLogItem<RoutingContext> {
 
   @Override
   public String getFormattedItem(AccessLogParam<RoutingContext> accessLogParam) {
-    Map<String, Object> data = accessLogParam.getContextData().data();
-    if (null == data) {
-      return TRACE_ID_NOT_FOUND;
+    String traceId = getTraceIdFromInvocationContext(accessLogParam);
+    if (StringUtils.isEmpty(traceId)) {
+      traceId = accessLogParam.getContextData().request().getHeader(Const.TRACE_ID_NAME);
     }
-
-    RestProducerInvocation restProducerInvocation = (RestProducerInvocation) data
-        .get("servicecomb-rest-producer-invocation");
-    if (null == restProducerInvocation) {
-      return TRACE_ID_NOT_FOUND;
-    }
-
-    String traceId = restProducerInvocation.getContext("X-B3-TraceId");
 
     if (StringUtils.isEmpty(traceId)) {
       return TRACE_ID_NOT_FOUND;
+    }
+
+    return traceId;
+  }
+
+  private String getTraceIdFromInvocationContext(AccessLogParam<RoutingContext> accessLogParam) {
+    Map<String, Object> data = accessLogParam.getContextData().data();
+    if (null == data) {
+      return null;
+    }
+
+    AbstractRestInvocation invocation = (AbstractRestInvocation) data
+        .get("servicecomb-rest-producer-invocation");
+    if (null == invocation) {
+      return null;
+    }
+
+    String traceId = invocation.getContext("X-B3-TraceId");
+
+    if (StringUtils.isEmpty(traceId)) {
+      return null;
     }
     return traceId;
   }
