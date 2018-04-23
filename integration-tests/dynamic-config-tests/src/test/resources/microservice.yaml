@@ -30,7 +30,8 @@ apollo:
     namespace: application
     token: testtoken
     refreshInterval: 2
-cse:
+
+servicecomb:
   config:
     client:
       serverUri: http://apollo.servicecomb.apache.org:8070

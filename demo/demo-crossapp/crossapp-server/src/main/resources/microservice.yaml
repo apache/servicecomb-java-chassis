@@ -25,7 +25,7 @@ instance_description:
   properties:
     tag0: value0
 
-cse:
+servicecomb:
   service:
     registry:
       address: http://127.0.0.1:30100

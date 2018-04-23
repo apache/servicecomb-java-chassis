@@ -19,7 +19,7 @@ APPLICATION_ID: springmvc-sample
 service_description:
   name: springmvcConsumer
   version: 0.0.2
-cse:
+servicecomb:
   service:
     registry:
       address: http://127.0.0.1:30100

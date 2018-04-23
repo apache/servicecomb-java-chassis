@@ -32,7 +32,7 @@ apollo:
     refreshInterval: 30
     firstRefreshInterval: 0
 
-cse:
+servicecomb:
   service:
     registry:
       address: http://127.0.0.1:30100

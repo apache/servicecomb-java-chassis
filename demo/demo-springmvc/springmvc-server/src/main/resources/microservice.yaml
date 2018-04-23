@@ -29,7 +29,7 @@ service_description:
       property:
         checksession: true
 cse.uploads.directory: target
-cse:
+servicecomb:
   service:
     registry:
       address: http://127.0.0.1:30100
