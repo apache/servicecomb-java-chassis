@@ -17,8 +17,12 @@
 
 package org.apache.servicecomb.tracing.zipkin;
 
+import org.apache.servicecomb.core.Const;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.swagger.invocation.Response;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.util.StringUtils;
 
 import brave.Span;
 import brave.Tracing;
@@ -28,12 +32,27 @@ import brave.propagation.Propagation.Getter;
 import brave.propagation.TraceContext.Extractor;
 
 class ZipkinProviderDelegate implements ZipkinTracingDelegate {
+  private static final Logger LOG = LoggerFactory.getLogger(ZipkinProviderDelegate.class);
 
   private final HttpServerHandler<Invocation, Response> handler;
 
   private final HttpTracing httpTracing;
 
   private final Extractor<Invocation> extractor;
+
+  public static final String SPAN_ID_HEADER_NAME = "X-B3-SpanId";
+
+  public static final String TRACE_ID_HEADER_NAME = Const.TRACE_ID_NAME;
+
+  private static final Getter<Invocation, String> INVOCATION_STRING_GETTER = (invocation, key) -> {
+    String extracted = invocation.getContext().get(key);
+    if (StringUtils.isEmpty(extracted) && SPAN_ID_HEADER_NAME.equals(key)) {
+      // use traceId as spanId to avoid brave's recreating traceId
+      extracted = invocation.getContext().get(TRACE_ID_HEADER_NAME);
+      LOG.debug("try to extract X-B3-SpanId, but the value is empty, replace with TraceId = [{}]", extracted);
+    }
+    return extracted;
+  };
 
   @SuppressWarnings("unchecked")
   ZipkinProviderDelegate(HttpTracing httpTracing) {
@@ -63,6 +82,6 @@ class ZipkinProviderDelegate implements ZipkinTracingDelegate {
   }
 
   private Getter<Invocation, String> extractor() {
-    return (invocation, key) -> invocation.getContext().get(key);
+    return INVOCATION_STRING_GETTER;
   }
 }
