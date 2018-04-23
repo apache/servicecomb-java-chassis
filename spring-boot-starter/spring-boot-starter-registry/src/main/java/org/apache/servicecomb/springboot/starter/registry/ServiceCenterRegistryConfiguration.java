@@ -16,12 +16,17 @@
  */
 package org.apache.servicecomb.springboot.starter.registry;
 
+import org.apache.servicecomb.foundation.common.utils.BeanUtils;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.ImportResource;
+
 /**
 * Initialize and Register the services with service center 
 */
-public class CseAutoConfiguration {
-
-  public CseAutoConfiguration() {
+@Configuration
+@ImportResource(BeanUtils.DEFAULT_BEAN_RESOURCE)
+public class ServiceCenterRegistryConfiguration {
+  public ServiceCenterRegistryConfiguration() {
     RegistryIntializer.initRegistry();
   }
 }
