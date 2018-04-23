@@ -24,7 +24,7 @@ public class BraveTraceIdGenerator implements TraceIdGenerator {
 
   @Override
   public String generateStringId() {
-    return String.valueOf(Platform.get().nextTraceIdHigh());
+    return Long.toHexString(Platform.get().nextTraceIdHigh());
   }
 
   private BraveTraceIdGenerator() {
