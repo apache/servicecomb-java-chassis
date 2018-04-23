@@ -40,7 +40,7 @@ public class AccessLogHandler implements Handler<RoutingContext> {
     AccessLogParam<RoutingContext> accessLogParam = new AccessLogParam<>();
     accessLogParam.setStartMillisecond(System.currentTimeMillis()).setContextData(context);
 
-    context.addBodyEndHandler(v -> LOGGER.info(accessLogGenerator.generateLog(accessLogParam)));
+    context.response().endHandler(event -> LOGGER.info(accessLogGenerator.generateLog(accessLogParam)));
 
     context.next();
   }
