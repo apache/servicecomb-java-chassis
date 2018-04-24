@@ -19,7 +19,10 @@ package org.apache.servicecomb.bizkeeper;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.servicecomb.bizkeeper.event.FallbackEvent;
 import org.apache.servicecomb.core.Invocation;
+import org.apache.servicecomb.foundation.common.event.AlarmEvent.Type;
+import org.apache.servicecomb.foundation.common.event.EventManager;
 import org.apache.servicecomb.swagger.invocation.Response;
 
 public class FallbackPolicyManager {
@@ -39,6 +42,7 @@ public class FallbackPolicyManager {
   public static Response getFallbackResponse(String type, Throwable error, Invocation invocation) {
     FallbackPolicy policy = getPolicy(type, invocation);
     if (policy != null) {
+      EventManager.post(new FallbackEvent(policy, invocation, Type.OPEN));
       return policy.getFallbackResponse(invocation);
     } else {
       return Response.failResp(invocation.getInvocationType(),

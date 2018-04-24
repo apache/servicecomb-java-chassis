@@ -17,8 +17,13 @@
 
 package org.apache.servicecomb.bizkeeper;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.definition.OperationMeta;
+import org.apache.servicecomb.foundation.common.event.AlarmEvent;
+import org.apache.servicecomb.foundation.common.event.EventManager;
 import org.apache.servicecomb.swagger.invocation.AsyncResponse;
 import org.apache.servicecomb.swagger.invocation.InvocationType;
 import org.junit.After;
@@ -29,6 +34,7 @@ import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
+import com.google.common.eventbus.Subscribe;
 import com.netflix.hystrix.HystrixCommandProperties;
 import com.netflix.hystrix.HystrixObservableCommand;
 import com.netflix.hystrix.strategy.HystrixPlugins;
@@ -38,6 +44,8 @@ public class TestBizkeeperHandler extends BizkeeperHandler {
   BizkeeperHandler bizkeeperHandler = null;
 
   private static final String GROUP_NAME = "Group_Name";
+
+  private List<AlarmEvent> taskList;
 
   Invocation invocation = null;
 
@@ -49,6 +57,7 @@ public class TestBizkeeperHandler extends BizkeeperHandler {
 
   @Before
   public void setUp() throws Exception {
+    taskList = new ArrayList<>();
     bizkeeperHandler = new TestBizkeeperHandler();
     invocation = Mockito.mock(Invocation.class);
     asyncResp = Mockito.mock(AsyncResponse.class);
@@ -56,6 +65,13 @@ public class TestBizkeeperHandler extends BizkeeperHandler {
     FallbackPolicyManager.addPolicy(new ReturnNullFallbackPolicy());
     FallbackPolicyManager.addPolicy(new ThrowExceptionFallbackPolicy());
     FallbackPolicyManager.addPolicy(new FromCacheFallbackPolicy());
+
+    EventManager.register(new Object() {
+      @Subscribe
+      public void onEvent(AlarmEvent circutBreakerEvent) {
+        taskList.add(circutBreakerEvent);
+      }
+    });
   }
 
   @After
@@ -94,6 +110,7 @@ public class TestBizkeeperHandler extends BizkeeperHandler {
       validAssert = false;
     }
     Assert.assertTrue(validAssert);
+    Assert.assertEquals(1, taskList.size());
   }
 
   @Test

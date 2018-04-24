@@ -17,13 +17,17 @@
 
 package org.apache.servicecomb.bizkeeper;
 
+import org.apache.servicecomb.bizkeeper.event.CircutBreakerEvent;
 import org.apache.servicecomb.core.Handler;
 import org.apache.servicecomb.core.Invocation;
+import org.apache.servicecomb.foundation.common.event.AlarmEvent.Type;
+import org.apache.servicecomb.foundation.common.event.EventManager;
 import org.apache.servicecomb.swagger.invocation.AsyncResponse;
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.netflix.hystrix.HystrixCircuitBreaker;
 import com.netflix.hystrix.HystrixCommandProperties;
 import com.netflix.hystrix.HystrixInvokable;
 import com.netflix.hystrix.HystrixObservable;
@@ -72,8 +76,14 @@ public abstract class BizkeeperHandler implements Handler {
   @Override
   public void handle(Invocation invocation, AsyncResponse asyncResp) {
     HystrixObservable<Response> command = delegate.createBizkeeperCommand(invocation);
-
     Observable<Response> observable = command.toObservable();
+    HystrixCircuitBreaker circuitBreaker =
+        HystrixCircuitBreaker.Factory.getInstance(CommandKey.toHystrixCommandKey(groupname, invocation));
+    if (circuitBreaker != null && circuitBreaker.isOpen()) {
+      EventManager.post(new CircutBreakerEvent(invocation, this.groupname, Type.OPEN));
+    }else {
+      EventManager.post(new CircutBreakerEvent(invocation, this.groupname, Type.CLOSE));
+    }
     observable.subscribe(asyncResp::complete, error -> {
       LOG.warn("catch error in bizkeeper:" + error.getMessage());
       asyncResp.fail(invocation.getInvocationType(), error);

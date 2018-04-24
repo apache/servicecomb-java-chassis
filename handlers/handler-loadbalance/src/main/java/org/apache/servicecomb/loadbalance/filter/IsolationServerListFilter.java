@@ -20,9 +20,13 @@ package org.apache.servicecomb.loadbalance.filter;
 import java.util.ArrayList;
 import java.util.List;
 
+
+import org.apache.servicecomb.foundation.common.event.AlarmEvent.Type;
+import org.apache.servicecomb.foundation.common.event.EventManager;
 import org.apache.servicecomb.loadbalance.Configuration;
 import org.apache.servicecomb.loadbalance.CseServer;
 import org.apache.servicecomb.loadbalance.ServerListFilterExt;
+import org.apache.servicecomb.loadbalance.event.IsolationServerEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -91,19 +95,20 @@ public final class IsolationServerListFilter implements ServerListFilterExt {
     ServerStats serverStats = stats.getSingleServerStat(server);
     long totalRequest = serverStats.getTotalRequestsCount();
     long failureRequest = serverStats.getSuccessiveConnectionFailureCount();
-
+    int currentCountinuousFailureCount = ((CseServer) server).getCountinuousFailureCount();
+    double currentErrorThresholdPercentage = (failureRequest / (double) totalRequest) * PERCENT;
     if (totalRequest < enableRequestThreshold) {
       return true;
     }
 
     if (continuousFailureThreshold > 0) {
       // continuousFailureThreshold has higher priority to decide the result
-      if (((CseServer) server).getCountinuousFailureCount() < continuousFailureThreshold) {
+      if (currentCountinuousFailureCount < continuousFailureThreshold) {
         return true;
       }
     } else {
       // if continuousFailureThreshold, then check error percentage
-      if ((failureRequest / (double) totalRequest) * PERCENT < errorThresholdPercentage) {
+      if (currentErrorThresholdPercentage < errorThresholdPercentage) {
         return true;
       }
     }
@@ -112,10 +117,18 @@ public final class IsolationServerListFilter implements ServerListFilterExt {
       LOGGER.info("The Service {}'s instance {} has been break, will give a single test opportunity.",
           microserviceName,
           server);
+      EventManager.post(new IsolationServerEvent(microserviceName, totalRequest, currentCountinuousFailureCount,
+          currentErrorThresholdPercentage,
+          continuousFailureThreshold, errorThresholdPercentage, enableRequestThreshold,
+          singleTestTime, Type.CLOSE));
       return true;
     }
 
     LOGGER.warn("The Service {}'s instance {} has been break!", microserviceName, server);
+    EventManager.post(new IsolationServerEvent(microserviceName, totalRequest, currentCountinuousFailureCount,
+        currentErrorThresholdPercentage,
+        continuousFailureThreshold, errorThresholdPercentage, enableRequestThreshold,
+        singleTestTime, Type.OPEN));
     return false;
   }
 }
