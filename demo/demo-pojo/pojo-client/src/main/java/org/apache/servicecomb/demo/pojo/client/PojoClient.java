@@ -20,6 +20,7 @@ package org.apache.servicecomb.demo.pojo.client;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 
 import javax.inject.Inject;
 
@@ -36,6 +37,7 @@ import org.apache.servicecomb.demo.smartcare.Group;
 import org.apache.servicecomb.demo.smartcare.SmartCare;
 import org.apache.servicecomb.foundation.common.utils.BeanUtils;
 import org.apache.servicecomb.foundation.common.utils.Log4jUtils;
+import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.apache.servicecomb.provider.pojo.RpcReference;
 import org.apache.servicecomb.swagger.invocation.context.ContextUtils;
 import org.apache.servicecomb.swagger.invocation.context.InvocationContext;
@@ -95,7 +97,31 @@ public class PojoClient {
       testNull(testFromXml);
       testNull(test);
       testEmpty(test);
+      // This test case shows destroy of WeightedResponseTimeRule timer task. after test finished will not print:
+      // "Weight adjusting job started" and thread "NFLoadBalancer-serverWeightTimer-unknown" destroyed.
+      ArchaiusUtils.setProperty("cse.loadbalance.strategy.name", "WeightedResponse");
       testStringArray(test);
+      boolean checkerStated = false;
+      Set<Thread> allThreads = Thread.getAllStackTraces().keySet();
+      for (Thread t : allThreads) {
+        if (t.getName().equals("NFLoadBalancer-serverWeightTimer-unknown")) {
+          checkerStated = true;
+        }
+      }
+      TestMgr.check(checkerStated, true);
+      
+      ArchaiusUtils.setProperty("cse.loadbalance.strategy.name", "RoundRobin");
+      testStringArray(test);
+      
+      allThreads = Thread.getAllStackTraces().keySet();
+      boolean checkerDestroyed = true;
+      for (Thread t : allThreads) {
+        if (t.getName().equals("NFLoadBalancer-serverWeightTimer-unknown")) {
+          checkerDestroyed = false;
+        }
+      }
+      TestMgr.check(checkerDestroyed, true);
+
       testChinese(test);
       testStringHaveSpace(test);
       testWrapParam(test);

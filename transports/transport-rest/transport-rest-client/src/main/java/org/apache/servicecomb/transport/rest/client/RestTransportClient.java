@@ -17,7 +17,11 @@
 
 package org.apache.servicecomb.transport.rest.client;
 
+import java.util.List;
+
+import org.apache.servicecomb.common.rest.filter.HttpClientFilter;
 import org.apache.servicecomb.core.Invocation;
+import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
 import org.apache.servicecomb.foundation.vertx.VertxTLSBuilder;
 import org.apache.servicecomb.foundation.vertx.VertxUtils;
 import org.apache.servicecomb.foundation.vertx.client.ClientPoolManager;
@@ -25,7 +29,7 @@ import org.apache.servicecomb.foundation.vertx.client.ClientVerticle;
 import org.apache.servicecomb.foundation.vertx.client.http.HttpClientPoolFactory;
 import org.apache.servicecomb.foundation.vertx.client.http.HttpClientWithContext;
 import org.apache.servicecomb.swagger.invocation.AsyncResponse;
-import org.apache.servicecomb.transport.rest.client.http.VertxHttpMethod;
+import org.apache.servicecomb.transport.rest.client.http.RestClientInvocation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,15 +37,22 @@ import io.vertx.core.DeploymentOptions;
 import io.vertx.core.Vertx;
 import io.vertx.core.http.HttpClientOptions;
 
-public final class RestTransportClient {
+public class RestTransportClient {
   private static final Logger LOGGER = LoggerFactory.getLogger(RestTransportClient.class);
 
   private static final String SSL_KEY = "rest.consumer";
 
-  private ClientPoolManager<HttpClientWithContext> clientMgr;
+  protected ClientPoolManager<HttpClientWithContext> clientMgr;
 
+  private List<HttpClientFilter> httpClientFilters;
+
+  public ClientPoolManager<HttpClientWithContext> getClientMgr() {
+    return clientMgr;
+  }
 
   public void init(Vertx vertx) throws Exception {
+    httpClientFilters = SPIServiceUtils.getSortedService(HttpClientFilter.class);
+
     HttpClientOptions httpClientOptions = createHttpClientOptions();
     clientMgr = new ClientPoolManager<>(vertx, new HttpClientPoolFactory(httpClientOptions));
 
@@ -61,13 +72,18 @@ public final class RestTransportClient {
     return httpClientOptions;
   }
 
-  public void send(Invocation invocation, AsyncResponse asyncResp) throws Exception {
-    HttpClientWithContext httpClientWithContext = clientMgr.findClientPool(invocation.isSync());
+  public void send(Invocation invocation, AsyncResponse asyncResp) {
+    HttpClientWithContext httpClientWithContext = findHttpClientPool(invocation);
+    RestClientInvocation restClientInvocation = new RestClientInvocation(httpClientWithContext, httpClientFilters);
     try {
-      VertxHttpMethod.INSTANCE.doMethod(httpClientWithContext, invocation, asyncResp);
-    } catch (Exception e) {
+      restClientInvocation.invoke(invocation, asyncResp);
+    } catch (Throwable e) {
       asyncResp.fail(invocation.getInvocationType(), e);
       LOGGER.error("vertx rest transport send error.", e);
     }
+  }
+
+  protected HttpClientWithContext findHttpClientPool(Invocation invocation) {
+    return clientMgr.findClientPool(invocation.isSync());
   }
 }

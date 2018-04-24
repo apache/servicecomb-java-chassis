@@ -17,11 +17,13 @@
 
 package org.apache.servicecomb.demo.edge.consumer;
 
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.servicecomb.core.Endpoint;
 import org.apache.servicecomb.core.endpoint.EndpointsCache;
@@ -34,6 +36,7 @@ import org.apache.servicecomb.serviceregistry.RegistryUtils;
 import org.apache.servicecomb.serviceregistry.api.registry.Microservice;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.Assert;
@@ -75,6 +78,9 @@ public class Consumer {
   public void run() {
     prepareEdge();
 
+    testDownload();
+    testDownloadBigFile();
+
     invoke("/v1/add", 2, 1, addV1Result);
     invoke("/v1/add", 3, 1, addV1Result);
     invoke("/v1/add", 4, 1, addV1Result);
@@ -98,6 +104,36 @@ public class Consumer {
     checkResult("v1/dec", decV1Result, "1.1.0");
     checkResult("v2/add", addV2Result, "2.0.0");
     checkResult("v2/dec", decV2Result, "2.0.0");
+  }
+
+  protected void testDownloadBigFile() {
+    String url = edgePrefix + "/v2/bigFile";
+    AtomicInteger size = new AtomicInteger();
+
+    template.execute(url, HttpMethod.GET, req -> {
+    }, resp -> {
+      byte[] buf = new byte[1 * 1024 * 1024];
+      try (InputStream is = resp.getBody()) {
+        for (;;) {
+          int len = is.read(buf);
+          if (len == -1) {
+            break;
+          }
+
+          size.addAndGet(len);
+        }
+      }
+      return null;
+    });
+    Assert.isTrue(size.get() == 10 * 1024 * 1024);
+    System.out.println("test download bigFile finished");
+  }
+
+  protected void testDownload() {
+    String url = edgePrefix + "/v2/download";
+    String content = template.getForObject(url, String.class);
+    Assert.isTrue("download".equals(content));
+    System.out.println("test download finished");
   }
 
   private void checkResult(String name, List<ResultWithInstance> results, String... expectedVersions) {

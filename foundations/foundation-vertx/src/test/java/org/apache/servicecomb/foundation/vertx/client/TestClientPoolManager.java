@@ -86,14 +86,12 @@ public class TestClientPoolManager {
   public void createClientPool(@Mocked HttpClientWithContext pool) {
     new Expectations(VertxImpl.class) {
       {
-        factory.createClientPool();
+        factory.createClientPool(context);
         result = pool;
-        VertxImpl.context();
-        result = context;
       }
     };
 
-    Assert.assertSame(pool, poolMgr.createClientPool());
+    Assert.assertSame(pool, poolMgr.createClientPool(context));
     Assert.assertSame(pool, context.get(id));
     Assert.assertThat(pools, Matchers.contains(pool));
   }
@@ -104,7 +102,7 @@ public class TestClientPoolManager {
       {
         poolMgr.findThreadBindClientPool();
         result = pool1;
-        poolMgr.findByContext();
+        poolMgr.findByContext(null);
         result = pool2;
       }
     };
@@ -148,7 +146,7 @@ public class TestClientPoolManager {
 
     new Expectations(VertxImpl.class) {
       {
-        factory.createClientPool();
+        factory.createClientPool(context);
         result = new HttpClientWithContext(null, null);
         VertxImpl.context();
         result = context;

@@ -36,6 +36,11 @@
       <groupId>org.apache.servicecomb</groupId>
       <artifactId>provider-pojo</artifactId>
     </dependency>
+    <dependency>
+      <groupId>org.apache.servicecomb</groupId>
+      <artifactId>foundation-test-scaffolding</artifactId>
+      <scope>compile</scope>
+    </dependency>
   </dependencies>
 
   <properties>

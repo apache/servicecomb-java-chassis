@@ -70,8 +70,12 @@ public class CodeFirstRestTemplateSpringmvc extends CodeFirstRestTemplate {
 
   private TestGeneric testGeneric = new TestGeneric();
 
+  private TestDownload testDownload = new TestDownload();
+
   @Override
   protected void testOnlyRest(RestTemplate template, String cseUrlPrefix) {
+    testDownload.runRest();
+
     try {
       testUpload(template, cseUrlPrefix);
     } catch (IOException e) {
@@ -109,7 +113,7 @@ public class CodeFirstRestTemplateSpringmvc extends CodeFirstRestTemplate {
 
   private void testUpload(RestTemplate template, String cseUrlPrefix) throws IOException {
     String file1Content = "hello world";
-    File file1 = File.createTempFile("upload1", ".txt");
+    File file1 = File.createTempFile("测 试", ".txt");
     FileUtils.writeStringToFile(file1, file1Content);
 
     String file2Content = " bonjour";

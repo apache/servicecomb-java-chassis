@@ -47,6 +47,7 @@ import io.vertx.core.Vertx;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.http.HttpServerResponse;
 import io.vertx.core.impl.VertxImpl;
+import io.vertx.core.streams.WriteStream;
 import mockit.Deencapsulation;
 import mockit.Expectations;
 import mockit.Mock;
@@ -303,14 +304,16 @@ public class TestVertxServerResponseToHttpServletResponse {
         part.getContentType();
         result = "type";
         part.getSubmittedFileName();
-        result = "name";
+        result = "测     试";
       }
     };
     response.prepareSendPartHeader(part);
 
     Assert.assertTrue(serverResponse.isChunked());
     Assert.assertEquals("type", response.getHeader(HttpHeaders.CONTENT_TYPE));
-    Assert.assertEquals("attachment;filename=name", response.getHeader(HttpHeaders.CONTENT_DISPOSITION));
+    Assert.assertEquals(
+        "attachment;filename=%E6%B5%8B%20%20%20%20%20%E8%AF%95;filename*=utf-8''%E6%B5%8B%20%20%20%20%20%E8%AF%95",
+        response.getHeader(HttpHeaders.CONTENT_DISPOSITION));
   }
 
   @Test
@@ -364,6 +367,21 @@ public class TestVertxServerResponseToHttpServletResponse {
     expectedException.expectCause(Matchers.sameInstance(ioException));
 
     future.get();
+  }
+
+  @SuppressWarnings("unchecked")
+  @Test
+  public void sendPart_ReadStreamPart(@Mocked ReadStreamPart part)
+      throws IOException, InterruptedException, ExecutionException {
+    CompletableFuture<Void> future = new CompletableFuture<>();
+    new Expectations() {
+      {
+        part.saveToWriteStream((WriteStream<Buffer>) any);
+        result = future;
+      }
+    };
+
+    Assert.assertSame(future, response.sendPart(part));
   }
 
   @Test

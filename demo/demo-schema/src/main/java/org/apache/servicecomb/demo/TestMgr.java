@@ -40,6 +40,10 @@ public class TestMgr {
   }
 
   public static void check(Object expect, Object real) {
+    check(expect, real, null);
+  }
+
+  public static void check(Object expect, Object real, Throwable error) {
     if (expect == real) {
       return;
     }
@@ -48,7 +52,11 @@ public class TestMgr {
     String strReal = String.valueOf(real);
 
     if (!strExpect.equals(strReal)) {
-      errorList.add(new Error(msg + " | Expect " + strExpect + ", but " + strReal));
+      Error newError = new Error(msg + " | Expect " + strExpect + ", but " + strReal);
+      if (error != null) {
+        newError.setStackTrace(error.getStackTrace());
+      }
+      errorList.add(newError);
     }
   }
 

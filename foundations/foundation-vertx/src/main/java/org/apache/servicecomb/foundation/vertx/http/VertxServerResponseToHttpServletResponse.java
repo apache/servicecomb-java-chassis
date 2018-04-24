@@ -29,6 +29,7 @@ import javax.ws.rs.core.Response.StatusType;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.servicecomb.foundation.common.http.HttpStatus;
+import org.apache.servicecomb.foundation.common.http.HttpUtils;
 import org.apache.servicecomb.foundation.common.part.FilePartForSend;
 import org.apache.servicecomb.foundation.vertx.stream.InputStreamToReadStream;
 import org.slf4j.Logger;
@@ -132,23 +133,26 @@ public class VertxServerResponseToHttpServletResponse extends AbstractHttpServle
 
   @Override
   public CompletableFuture<Void> sendPart(Part part) {
-    CompletableFuture<Void> future = new CompletableFuture<Void>();
-
     prepareSendPartHeader(part);
 
+    if (ReadStreamPart.class.isInstance(part)) {
+      return ((ReadStreamPart) part).saveToWriteStream(this.serverResponse);
+    }
+
+    CompletableFuture<Void> future = new CompletableFuture<Void>();
     try {
       InputStream is = part.getInputStream();
       context.runOnContext(v -> {
-        InputStreamToReadStream aa = new InputStreamToReadStream(context.owner(), is);
-        aa.exceptionHandler(t -> {
+        InputStreamToReadStream inputStreamToReadStream = new InputStreamToReadStream(context.owner(), is);
+        inputStreamToReadStream.exceptionHandler(t -> {
           clearPartResource(part, is);
           future.completeExceptionally(t);
         });
-        aa.endHandler(V -> {
+        inputStreamToReadStream.endHandler(V -> {
           clearPartResource(part, is);
           future.complete(null);
         });
-        Pump.pump(aa, serverResponse).start();
+        Pump.pump(inputStreamToReadStream, serverResponse).start();
       });
     } catch (IOException e) {
       future.completeExceptionally(e);
@@ -167,8 +171,11 @@ public class VertxServerResponseToHttpServletResponse extends AbstractHttpServle
     }
 
     if (!serverResponse.headers().contains(HttpHeaders.CONTENT_DISPOSITION)) {
+      // to support chinese and space filename in firefox
+      // must use "filename*", (https://tools.ietf.org/html/rtf6266)
+      String encodedFileName = HttpUtils.uriEncodePath(part.getSubmittedFileName());
       serverResponse.putHeader(HttpHeaders.CONTENT_DISPOSITION,
-          "attachment;filename=" + part.getSubmittedFileName());
+          "attachment;filename=" + encodedFileName + ";filename*=utf-8''" + encodedFileName);
     }
   }
 

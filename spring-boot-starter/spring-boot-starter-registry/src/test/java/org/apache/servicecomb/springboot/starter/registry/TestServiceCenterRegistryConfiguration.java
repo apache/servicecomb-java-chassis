@@ -25,7 +25,7 @@ import org.mockito.Mockito;
 
 import mockit.Expectations;
 
-public class TestCseAutoConfiguration {
+public class TestServiceCenterRegistryConfiguration {
 
   @Test
   public void testInitRegistry() {
@@ -40,7 +40,7 @@ public class TestCseAutoConfiguration {
       }
     };
     System.setProperty("cse.rest.address", "127.0.0.1:8081");
-    new CseAutoConfiguration();
+    new ServiceCenterRegistryConfiguration();
     Assert.assertEquals("rest://127.0.0.1:8081", RegistryUtils.getPublishAddress("rest", "127.0.0.1:8081"));
   }
 

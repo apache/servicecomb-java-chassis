@@ -17,18 +17,39 @@
 
 package org.apache.servicecomb.demo.edge.business;
 
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.RandomAccessFile;
+import java.nio.charset.StandardCharsets;
+
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.servicecomb.demo.edge.model.AppClientDataRsp;
 import org.apache.servicecomb.demo.edge.model.ChannelRequestBase;
 import org.apache.servicecomb.demo.edge.model.ResultWithInstance;
 import org.apache.servicecomb.provider.rest.common.RestSchema;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
+
 @RestSchema(schemaId = "news-v2")
 @RequestMapping(path = "/business/v2")
 public class Impl {
+  File tempDir = new File("target/downloadTemp");
+
+  public Impl() throws IOException {
+    FileUtils.forceMkdir(tempDir);
+  }
+
   @RequestMapping(path = "/channel/news/subscribe", method = RequestMethod.POST)
   public AppClientDataRsp subscribeNewsColumn(@RequestBody ChannelRequestBase request) {
     AppClientDataRsp response = new AppClientDataRsp();
@@ -45,5 +66,31 @@ public class Impl {
   @RequestMapping(path = "/dec", method = RequestMethod.GET)
   public ResultWithInstance dec(int x, int y) {
     return ResultWithInstance.create(x - y);
+  }
+
+  @GetMapping(path = "/download")
+  @ApiResponses({
+      @ApiResponse(code = 200, response = File.class, message = ""),
+  })
+  public ResponseEntity<InputStream> download() throws IOException {
+    return ResponseEntity
+        .ok()
+        .header(HttpHeaders.CONTENT_TYPE, MediaType.TEXT_PLAIN_VALUE)
+        .header(HttpHeaders.CONTENT_DISPOSITION, "attachment;filename=download.txt")
+        .body(new ByteArrayInputStream("download".getBytes(StandardCharsets.UTF_8)));
+  }
+
+  protected File createBigFile() throws IOException {
+    File file = new File(tempDir, "bigFile.txt");
+    file.delete();
+    RandomAccessFile randomAccessFile = new RandomAccessFile(file, "rw");
+    randomAccessFile.setLength(10 * 1024 * 1024);
+    randomAccessFile.close();
+    return file;
+  }
+
+  @GetMapping(path = "/bigFile")
+  public File bigFile() throws IOException {
+    return createBigFile();
   }
 }

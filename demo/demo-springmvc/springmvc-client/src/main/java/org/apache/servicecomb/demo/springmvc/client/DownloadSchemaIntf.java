@@ -14,14 +14,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.servicecomb.springboot.starter.registry;
+package org.apache.servicecomb.demo.springmvc.client;
 
-/**
-* Initialize and Register the services with service center 
-*/
-public class CseAutoConfiguration {
+import org.apache.servicecomb.foundation.vertx.http.ReadStreamPart;
 
-  public CseAutoConfiguration() {
-    RegistryIntializer.initRegistry();
-  }
+public interface DownloadSchemaIntf {
+  ReadStreamPart tempFileEntity(String content);
+
+  ReadStreamPart tempFilePart(String content);
+
+  ReadStreamPart file(String content);
+
+  ReadStreamPart chineseAndSpaceFile(String content);
+
+  ReadStreamPart resource(String content);
+
+  ReadStreamPart entityResource(String content);
+
+  ReadStreamPart entityInputStream(String content);
+
+  ReadStreamPart netInputStream(String content);
 }

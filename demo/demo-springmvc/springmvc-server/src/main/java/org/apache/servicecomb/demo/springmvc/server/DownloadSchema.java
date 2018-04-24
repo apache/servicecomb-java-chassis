@@ -20,17 +20,26 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.URI;
+import java.net.URL;
+import java.net.URLDecoder;
+import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.UUID;
 
 import javax.servlet.http.Part;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.bootstrap.HttpServer;
+import org.apache.http.impl.bootstrap.ServerBootstrap;
 import org.apache.servicecomb.foundation.common.part.FilePart;
 import org.apache.servicecomb.provider.rest.common.RestSchema;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -41,24 +50,45 @@ import io.swagger.annotations.ApiResponses;
 @RestSchema(schemaId = "download")
 @RequestMapping(path = "/download")
 public class DownloadSchema {
-  File tempDir = new File("downloadTemp");
+  File tempDir = new File("target/downloadTemp");
 
   public DownloadSchema() throws IOException {
+    FileUtils.deleteQuietly(tempDir);
     FileUtils.forceMkdir(tempDir);
+
+    // for download from net stream case
+    HttpServer server = ServerBootstrap
+        .bootstrap()
+        .setListenerPort(9000)
+        .registerHandler("/download/netInputStream", (req, resp, context) -> {
+          String uri = req.getRequestLine().getUri();
+          String query = URI.create(uri).getQuery();
+          int idx = query.indexOf('=');
+          String content = query.substring(idx + 1);
+          content = URLDecoder.decode(content, StandardCharsets.UTF_8.name());
+          resp.setEntity(new StringEntity(content, StandardCharsets.UTF_8.name()));
+        })
+        .create();
+    server.start();
   }
 
-  // content is file name
-  protected File createTempFile() throws IOException {
-    String name = "download-" + UUID.randomUUID().toString() + ".txt";
+  protected File createTempFile(String content) throws IOException {
+    return createTempFile(null, content);
+  }
+
+  protected File createTempFile(String name, String content) throws IOException {
+    if (name == null) {
+      name = "download-" + UUID.randomUUID().toString() + ".txt";
+    }
     File file = new File(tempDir, name);
-    FileUtils.write(file, name);
+    FileUtils.write(file, content);
     return file;
   }
 
   // customize HttpHeaders.CONTENT_DISPOSITION to be "attachment;filename=tempFileEntity.txt"
   @GetMapping(path = "/tempFileEntity")
-  public ResponseEntity<Part> downloadTempFileEntity() throws IOException {
-    File file = createTempFile();
+  public ResponseEntity<Part> tempFileEntity(String content) throws IOException {
+    File file = createTempFile(content);
 
     return ResponseEntity
         .ok()
@@ -69,8 +99,8 @@ public class DownloadSchema {
 
   // generate HttpHeaders.CONTENT_DISPOSITION to be "attachment;filename=tempFilePart.txt" automatically
   @GetMapping(path = "/tempFilePart")
-  public Part downloadTempFilePart() throws IOException {
-    File file = createTempFile();
+  public Part tempFilePart(String content) throws IOException {
+    File file = createTempFile(content);
 
     return new FilePart(null, file)
         .setDeleteAfterFinished(true)
@@ -78,19 +108,27 @@ public class DownloadSchema {
   }
 
   @GetMapping(path = "/file")
-  public File downloadFile() throws IOException {
-    return new File(this.getClass().getClassLoader().getResource("microservice.yaml").getFile());
+  public File file(String content) throws IOException {
+    return createTempFile("file.txt", content);
+  }
+
+  @GetMapping(path = "/chineseAndSpaceFile")
+  public Part chineseAndSpaceFile(String content) throws IOException {
+    File file = createTempFile(content);
+    return new FilePart(null, file)
+        .setDeleteAfterFinished(true)
+        .setSubmittedFileName("测 试.test.txt");
   }
 
   @GetMapping(path = "/resource")
   @ApiResponses({
       @ApiResponse(code = 200, response = File.class, message = ""),
   })
-  public Resource downloadResource() throws IOException {
-    return new ByteArrayResource("abc".getBytes(StandardCharsets.UTF_8)) {
+  public Resource resource(String content) throws IOException {
+    return new ByteArrayResource(content.getBytes(StandardCharsets.UTF_8)) {
       @Override
       public String getFilename() {
-        return "abc.txt";
+        return "resource.txt";
       }
     };
   }
@@ -99,21 +137,38 @@ public class DownloadSchema {
   @ApiResponses({
       @ApiResponse(code = 200, response = File.class, message = ""),
   })
-  public ResponseEntity<Resource> downloadEntityResource() throws IOException {
+  public ResponseEntity<Resource> entityResource(String content) throws IOException {
     return ResponseEntity
         .ok()
+        .header(HttpHeaders.CONTENT_TYPE, MediaType.TEXT_PLAIN_VALUE)
         .header(HttpHeaders.CONTENT_DISPOSITION, "attachment;filename=entityResource.txt")
-        .body(new ByteArrayResource("entityResource".getBytes(StandardCharsets.UTF_8)));
+        .body(new ByteArrayResource(content.getBytes(StandardCharsets.UTF_8)));
   }
 
   @GetMapping(path = "/entityInputStream")
   @ApiResponses({
       @ApiResponse(code = 200, response = File.class, message = ""),
   })
-  public ResponseEntity<InputStream> downloadEntityInputStream() throws IOException {
+  public ResponseEntity<InputStream> entityInputStream(String content) throws IOException {
     return ResponseEntity
         .ok()
+        .header(HttpHeaders.CONTENT_TYPE, MediaType.TEXT_PLAIN_VALUE)
         .header(HttpHeaders.CONTENT_DISPOSITION, "attachment;filename=entityInputStream.txt")
-        .body(new ByteArrayInputStream("entityInputStream".getBytes(StandardCharsets.UTF_8)));
+        .body(new ByteArrayInputStream(content.getBytes(StandardCharsets.UTF_8)));
+  }
+
+  @GetMapping(path = "/netInputStream")
+  @ApiResponses({
+      @ApiResponse(code = 200, response = File.class, message = ""),
+  })
+  public ResponseEntity<InputStream> netInputStream(String content) throws IOException {
+    URL url = new URL("http://localhost:9000/download/netInputStream?content="
+        + URLEncoder.encode(content, StandardCharsets.UTF_8.name()));
+    HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+    return ResponseEntity
+        .ok()
+        .header(HttpHeaders.CONTENT_TYPE, MediaType.TEXT_PLAIN_VALUE)
+        .header(HttpHeaders.CONTENT_DISPOSITION, "attachment;filename=netInputStream.txt")
+        .body(conn.getInputStream());
   }
 }

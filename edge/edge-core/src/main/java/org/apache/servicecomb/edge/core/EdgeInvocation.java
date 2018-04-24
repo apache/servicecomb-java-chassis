@@ -36,9 +36,12 @@ import org.apache.servicecomb.serviceregistry.RegistryUtils;
 import org.apache.servicecomb.serviceregistry.consumer.MicroserviceVersionRule;
 import org.apache.servicecomb.serviceregistry.definition.DefinitionConst;
 
+import io.vertx.core.Vertx;
 import io.vertx.ext.web.RoutingContext;
 
 public class EdgeInvocation extends AbstractRestInvocation {
+  public static final String EDGE_INVOCATION_CONTEXT = "edgeInvocationContext";
+
   protected String microserviceName;
 
   protected MicroserviceVersionRule microserviceVersionRule;
@@ -121,6 +124,8 @@ public class EdgeInvocation extends AbstractRestInvocation {
     this.invocation = InvocationFactory.forConsumer(referenceConfig,
         restOperationMeta.getOperationMeta(),
         null);
+    this.invocation.setSync(false);
+    this.invocation.getHandlerContext().put(EDGE_INVOCATION_CONTEXT, Vertx.currentContext());
     this.invocation.setResponseExecutor(new ReactiveResponseExecutor());
   }
 }

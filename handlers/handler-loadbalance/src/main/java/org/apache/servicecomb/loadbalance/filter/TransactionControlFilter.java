@@ -17,16 +17,18 @@
 
 package org.apache.servicecomb.loadbalance.filter;
 
-import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.loadbalance.ServerListFilterExt;
 
 import com.netflix.loadbalancer.LoadBalancerStats;
 
 public abstract class TransactionControlFilter implements ServerListFilterExt {
-
-  private Invocation invocation;
-
   private LoadBalancerStats stats;
+
+  protected String microserviceName;
+
+  public void setMicroserviceName(String microserviceName) {
+    this.microserviceName = microserviceName;
+  }
 
   public void setLoadBalancerStats(LoadBalancerStats stats) {
     this.stats = stats;
@@ -34,13 +36,5 @@ public abstract class TransactionControlFilter implements ServerListFilterExt {
 
   public LoadBalancerStats getLoadBalancerStats() {
     return stats;
-  }
-
-  public Invocation getInvocation() {
-    return invocation;
-  }
-
-  public void setInvocation(Invocation invocation) {
-    this.invocation = invocation;
   }
 }
