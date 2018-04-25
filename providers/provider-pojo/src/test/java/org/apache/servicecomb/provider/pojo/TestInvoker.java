@@ -211,7 +211,7 @@ public class TestInvoker {
     new MockUp<InvokerUtils>() {
       @Mock
       void reactiveInvoke(Invocation invocation, AsyncResponse asyncResp) {
-        asyncResp.handle(response);;
+        asyncResp.handle(response);
       }
     };
     new Expectations() {
@@ -240,7 +240,7 @@ public class TestInvoker {
     new MockUp<InvokerUtils>() {
       @Mock
       void reactiveInvoke(Invocation invocation, AsyncResponse asyncResp) {
-        asyncResp.handle(response);;
+        asyncResp.handle(response);
       }
     };
 

@@ -169,7 +169,7 @@ public class TestBizkeeperHandler extends BizkeeperHandler {
         asyncRsp.fail(InvocationType.CONSUMER, new Exception("testHandleInError"));
         return null;
       }
-    }).when(invocation).next(Mockito.any(AsyncResponse.class));;
+    }).when(invocation).next(Mockito.any(AsyncResponse.class));
     bizkeeperHandler.handle(invocation, f -> {
       Assert.assertTrue(f.isFailed());
     });
@@ -200,7 +200,7 @@ public class TestBizkeeperHandler extends BizkeeperHandler {
         asyncRsp.success("");
         return null;
       }
-    }).when(invocation).next(Mockito.any(AsyncResponse.class));;
+    }).when(invocation).next(Mockito.any(AsyncResponse.class));
     bizkeeperHandler.handle(invocation, f -> {
       Assert.assertTrue(f.isSuccessed());
     });
