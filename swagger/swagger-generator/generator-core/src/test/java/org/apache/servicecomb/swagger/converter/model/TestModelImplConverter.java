@@ -54,7 +54,7 @@ public class TestModelImplConverter {
 
   @Test
   public void getOrCreateClassName_create() {
-    Assert.assertEquals("pkg.name", converter.getOrCreateClassName("pkg", new ModelImpl().name("name")));;
+    Assert.assertEquals("pkg.name", converter.getOrCreateClassName("pkg", new ModelImpl().name("name")));
   }
 
   @Test
