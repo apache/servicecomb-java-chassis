@@ -17,15 +17,16 @@
 
 package org.apache.servicecomb.archetypes;
 
-import org.apache.servicecomb.provider.springmvc.reference.RestTemplateBuilder;
-import org.springframework.web.client.RestTemplate;
+import org.apache.servicecomb.provider.rest.common.RestSchema;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 
-public class HelloConsumer {
-  private final RestTemplate restTemplate = RestTemplateBuilder.create();
+@RestSchema(schemaId = "helloEndpoint")
+@RequestMapping(path = "/")
+public class HelloEndpoint {
 
-  public void invokeHello(){
-    //service url is : cse://serviceName/operation
-    restTemplate.getForObject("cse://business-service/hello", String.class);
+  @GetMapping(path = "/hello")
+  public String hello() {
+    return "Hello World!";
   }
-
 }

@@ -5,8 +5,13 @@ From http://maven.apache.org/guides/introduction/introduction-to-archetypes.html
 >In short, Archetype is a Maven project templating toolkit. An archetype is defined as an original pattern or model from which all other things of the same kind are made. The name fits as we are trying to provide a system that provides a consistent means of generating Maven projects. Archetype will help authors create Maven project templates for users, and provides users with the means to generate parameterized versions of those project templates.
 
 ### What we provide
-1. business-service-jaxrs  
+1. business-service-jaxrs
+  
   Archetype for create a common microservice using jaxrs provider.
+
+2. business-service-spring-boot-starter
+
+  Archetype for create a common microservice using spring-boot-starter provider.
 
 more coming soon.. 
 
