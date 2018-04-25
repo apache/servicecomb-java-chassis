@@ -191,6 +191,7 @@ public class TestVertxServerResponseToHttpServletResponse {
     Assert.assertEquals("json", headers.get(HttpHeaders.CONTENT_TYPE));
   }
 
+  @SuppressWarnings("deprecation")
   @Test
   public void setStatus() {
     response.setStatus(222, "test");

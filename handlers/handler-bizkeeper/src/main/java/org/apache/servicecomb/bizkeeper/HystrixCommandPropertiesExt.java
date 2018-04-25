@@ -422,6 +422,7 @@ public class HystrixCommandPropertiesExt extends HystrixCommandProperties {
   }
 
   @Override
+  @Deprecated
   public HystrixProperty<Integer> metricsRollingPercentileWindow() {
     return metricsRollingPercentileWindowInMilliseconds;
   }

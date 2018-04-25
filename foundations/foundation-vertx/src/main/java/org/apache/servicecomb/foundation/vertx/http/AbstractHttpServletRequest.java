@@ -171,6 +171,7 @@ public abstract class AbstractHttpServletRequest extends BodyBufferSupportImpl i
   }
 
   @Override
+  @Deprecated
   public String getRealPath(String path) {
     throw new Error("not supported method");
   }
@@ -357,6 +358,7 @@ public abstract class AbstractHttpServletRequest extends BodyBufferSupportImpl i
   }
 
   @Override
+  @Deprecated
   public boolean isRequestedSessionIdFromUrl() {
     throw new Error("not supported method");
   }

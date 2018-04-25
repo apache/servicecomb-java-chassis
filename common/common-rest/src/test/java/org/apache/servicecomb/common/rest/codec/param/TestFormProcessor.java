@@ -33,14 +33,12 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import com.fasterxml.jackson.databind.type.TypeFactory;
-import com.fasterxml.jackson.databind.util.ISO8601Utils;
 
 import mockit.Expectations;
 import mockit.Mock;
 import mockit.MockUp;
 import mockit.Mocked;
 
-@SuppressWarnings("deprecation")
 public class TestFormProcessor {
   @Mocked
   HttpServletRequest request;
@@ -93,10 +91,11 @@ public class TestFormProcessor {
   }
 
 
+  @SuppressWarnings("deprecation")
   @Test
   public void testGetValueNormalDate() throws Exception {
     Date date = new Date();
-    String strDate = ISO8601Utils.format(date);
+    String strDate = com.fasterxml.jackson.databind.util.ISO8601Utils.format(date);
     new Expectations() {
       {
         request.getParameter("name");
@@ -106,7 +105,7 @@ public class TestFormProcessor {
 
     ParamValueProcessor processor = createProcessor("name", Date.class);
     Object value = processor.getValue(request);
-    Assert.assertEquals(strDate, ISO8601Utils.format((Date) value));
+    Assert.assertEquals(strDate, com.fasterxml.jackson.databind.util.ISO8601Utils.format((Date) value));
   }
 
   @Test
