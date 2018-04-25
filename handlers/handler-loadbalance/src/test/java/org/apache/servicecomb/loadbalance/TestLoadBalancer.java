@@ -51,6 +51,7 @@ public class TestLoadBalancer {
     Assert.assertEquals("loadBalancerName", loadBalancer.getName());
   }
 
+  @SuppressWarnings("deprecation")
   @Test
   public void testLoadBalancerFullOperationWithoutException() {
     List<Server> newServers = new ArrayList<>();

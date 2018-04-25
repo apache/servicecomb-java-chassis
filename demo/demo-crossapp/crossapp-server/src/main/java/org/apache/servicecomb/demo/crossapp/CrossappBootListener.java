@@ -18,17 +18,17 @@
 package org.apache.servicecomb.demo.crossapp;
 
 import org.apache.servicecomb.core.BootListener;
-import org.apache.servicecomb.core.definition.loader.DynamicSchemaLoader;
 import org.springframework.stereotype.Component;
 
-@SuppressWarnings("deprecation")
 @Component
 public class CrossappBootListener implements BootListener {
+  @SuppressWarnings("deprecation")
   @Override
   public void onBootEvent(BootEvent event) {
     if (EventType.BEFORE_PRODUCER_PROVIDER.equals(event.getEventType())) {
       // 动态注册schemas目录下面的契约到当前服务
-      DynamicSchemaLoader.INSTANCE.registerSchemas("classpath*:schemas/*.yaml");
+      org.apache.servicecomb.core.definition.loader.DynamicSchemaLoader.INSTANCE
+          .registerSchemas("classpath*:schemas/*.yaml");
     }
   }
 }

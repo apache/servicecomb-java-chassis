@@ -134,11 +134,13 @@ public abstract class AbstractHttpServletResponse extends BodyBufferSupportImpl 
   }
 
   @Override
+  @Deprecated
   public String encodeUrl(String url) {
     throw new Error("not supported method");
   }
 
   @Override
+  @Deprecated
   public String encodeRedirectUrl(String url) {
     throw new Error("not supported method");
   }
@@ -194,6 +196,7 @@ public abstract class AbstractHttpServletResponse extends BodyBufferSupportImpl 
   }
 
   @Override
+  @Deprecated
   public void setStatus(int sc, String sm) {
     throw new Error("not supported method");
   }

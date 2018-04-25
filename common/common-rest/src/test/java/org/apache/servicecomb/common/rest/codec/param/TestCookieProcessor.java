@@ -30,14 +30,12 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import com.fasterxml.jackson.databind.type.TypeFactory;
-import com.fasterxml.jackson.databind.util.ISO8601Utils;
 
 import mockit.Expectations;
 import mockit.Mock;
 import mockit.MockUp;
 import mockit.Mocked;
 
-@SuppressWarnings("deprecation")
 public class TestCookieProcessor {
   @Mocked
   HttpServletRequest request;
@@ -103,10 +101,11 @@ public class TestCookieProcessor {
     Assert.assertEquals("c1v", value);
   }
 
+  @SuppressWarnings("deprecation")
   @Test
   public void testGetValueCookiesDate() throws Exception {
     Date date = new Date();
-    String strDate = ISO8601Utils.format(date);
+    String strDate = com.fasterxml.jackson.databind.util.ISO8601Utils.format(date);
     Cookie[] cookies = new Cookie[] {new Cookie("c1", strDate)};
     new Expectations() {
       {
@@ -117,7 +116,7 @@ public class TestCookieProcessor {
 
     CookieProcessor processor = createProcessor("c1", Date.class);
     Object value = processor.getValue(request);
-    Assert.assertEquals(strDate, ISO8601Utils.format((Date) value));
+    Assert.assertEquals(strDate, com.fasterxml.jackson.databind.util.ISO8601Utils.format((Date) value));
   }
 
   @Test
@@ -132,7 +131,8 @@ public class TestCookieProcessor {
   @Test
   public void testSetValueDate() throws Exception {
     Date date = new Date();
-    String strDate = ISO8601Utils.format(date, true);
+    @SuppressWarnings("deprecation")
+    String strDate = com.fasterxml.jackson.databind.util.ISO8601Utils.format(date, true);
 
     createClientRequest();
 

@@ -92,6 +92,7 @@ public class LoadBalancer extends AbstractLoadBalancer {
   }
 
   @Override
+  @Deprecated
   public List<Server> getServerList(boolean availableOnly) {
     return getAllServers();
   }

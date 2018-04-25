@@ -28,9 +28,6 @@ import org.apache.servicecomb.provider.springmvc.reference.CseRestTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.client.RestTemplate;
 
-import com.fasterxml.jackson.databind.util.ISO8601Utils;
-
-@SuppressWarnings("deprecation")
 public class TestGeneric {
   private CodeFirstSpringmvcIntf intf;
 
@@ -70,16 +67,18 @@ public class TestGeneric {
     TestMgr.check(HttpStatus.class, result.value.getClass());
   }
 
-  @SuppressWarnings("unchecked")
+  @SuppressWarnings({"unchecked", "deprecation"})
   private void testGenericDate_rest() {
     Generic<Date> generic = new Generic<>();
     generic.value = new Date(1001);
     Generic<Date> result = intf.testGenericDate(generic);
-    TestMgr.check("1970-01-01T00:00:01.001Z", ISO8601Utils.format(result.value, true));
+    TestMgr.check("1970-01-01T00:00:01.001Z",
+        com.fasterxml.jackson.databind.util.ISO8601Utils.format(result.value, true));
     TestMgr.check(Date.class, result.value.getClass());
 
     result = restTemplate.postForObject(prefix + "/genericDate", generic, Generic.class);
-    TestMgr.check("1970-01-01T00:00:01.001Z", ISO8601Utils.format(result.value, true));
+    TestMgr.check("1970-01-01T00:00:01.001Z",
+        com.fasterxml.jackson.databind.util.ISO8601Utils.format(result.value, true));
     TestMgr.check(Date.class, result.value.getClass());
   }
 

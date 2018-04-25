@@ -62,6 +62,7 @@ public class VertxServerResponseToHttpServletResponse extends AbstractHttpServle
   }
 
   @Override
+  @Deprecated
   public void setStatus(int sc, String sm) {
     serverResponse.setStatusCode(sc);
     serverResponse.setStatusMessage(sm);
