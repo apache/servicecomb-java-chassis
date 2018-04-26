@@ -42,8 +42,6 @@ public final class ServiceRegistryConfig {
 
   public static final ServiceRegistryConfig INSTANCE = new ServiceRegistryConfig();
 
-  private static final int PROTOCOL_HTTP_PORT = 80;
-
   private static final int DEFAULT_TIMEOUT_IN_MS = 30000;
 
   private static final int DEFAULT_TIMEOUT_IN_SECONDS = 30;
@@ -133,10 +131,8 @@ public final class ServiceRegistryConfig {
     uriList.forEach(anUriList -> {
       try {
         URI uri = new URI(anUriList);
-        StringBuilder sb = new StringBuilder(uri.getHost());
-        sb.append(':').append(uri.getPort() < 0 ? PROTOCOL_HTTP_PORT : uri.getPort());
         this.ssl = uri.getScheme().startsWith("https");
-        ipPortList.add(NetUtils.parseIpPort(sb.toString()));
+        ipPortList.add(NetUtils.parseIpPort(uri.getScheme(), uri.getAuthority()));
       } catch (Exception e) {
         LOGGER.error("cse.service.registry.address invalid : {}", anUriList, e);
       }
