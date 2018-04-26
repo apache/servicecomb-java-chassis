@@ -151,7 +151,7 @@ public final class NetUtils {
     }
   }
 
-  private static IpPort parseIpPort(String scheme, String authority) {
+  public static IpPort parseIpPort(String scheme, String authority) {
     if (authority == null)
       return null;
     int idx = authority.indexOf(':');
