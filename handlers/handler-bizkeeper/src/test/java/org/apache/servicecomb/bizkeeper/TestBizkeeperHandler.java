@@ -17,8 +17,13 @@
 
 package org.apache.servicecomb.bizkeeper;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.definition.OperationMeta;
+import org.apache.servicecomb.foundation.common.event.AlarmEvent;
+import org.apache.servicecomb.foundation.common.event.EventManager;
 import org.apache.servicecomb.swagger.invocation.AsyncResponse;
 import org.apache.servicecomb.swagger.invocation.InvocationType;
 import org.junit.After;
@@ -29,9 +34,15 @@ import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
+import com.google.common.eventbus.Subscribe;
+import com.netflix.hystrix.HystrixCircuitBreaker;
+import com.netflix.hystrix.HystrixCommandKey;
+import com.netflix.hystrix.HystrixCommandMetrics;
 import com.netflix.hystrix.HystrixCommandProperties;
 import com.netflix.hystrix.HystrixObservableCommand;
 import com.netflix.hystrix.strategy.HystrixPlugins;
+
+import mockit.Expectations;
 
 public class TestBizkeeperHandler extends BizkeeperHandler {
 
@@ -39,9 +50,15 @@ public class TestBizkeeperHandler extends BizkeeperHandler {
 
   private static final String GROUP_NAME = "Group_Name";
 
+  private List<AlarmEvent> taskList;
+
   Invocation invocation = null;
 
   AsyncResponse asyncResp = null;
+
+  HystrixCommandKey commandKey = null;
+
+  HystrixCircuitBreaker circuitBreaker = null;
 
   public TestBizkeeperHandler() {
     super(GROUP_NAME);
@@ -49,13 +66,23 @@ public class TestBizkeeperHandler extends BizkeeperHandler {
 
   @Before
   public void setUp() throws Exception {
+    taskList = new ArrayList<>();
     bizkeeperHandler = new TestBizkeeperHandler();
     invocation = Mockito.mock(Invocation.class);
     asyncResp = Mockito.mock(AsyncResponse.class);
+    commandKey = Mockito.mock(HystrixCommandKey.class);
+    circuitBreaker = Mockito.mock(HystrixCircuitBreaker.class);
 
     FallbackPolicyManager.addPolicy(new ReturnNullFallbackPolicy());
     FallbackPolicyManager.addPolicy(new ThrowExceptionFallbackPolicy());
     FallbackPolicyManager.addPolicy(new FromCacheFallbackPolicy());
+
+    EventManager.register(new Object() {
+      @Subscribe
+      public void onEvent(AlarmEvent circutBreakerEvent) {
+        taskList.add(circutBreakerEvent);
+      }
+    });
   }
 
   @After
@@ -63,6 +90,8 @@ public class TestBizkeeperHandler extends BizkeeperHandler {
     bizkeeperHandler = null;
     invocation = null;
     asyncResp = null;
+    commandKey = null;
+    circuitBreaker = null;
   }
 
   @Test
@@ -87,6 +116,28 @@ public class TestBizkeeperHandler extends BizkeeperHandler {
       Mockito.when(invocation.getMicroserviceName()).thenReturn("test1");
       Mockito.when(invocation.getOperationMeta()).thenReturn(Mockito.mock(OperationMeta.class));
       Mockito.when(invocation.getOperationMeta().getMicroserviceQualifiedName()).thenReturn("test1");
+      new Expectations(CommandKey.class) {
+        {
+          CommandKey.toHystrixCommandKey(groupname, invocation);
+          result = commandKey;
+        }
+      };
+
+      new Expectations(HystrixCircuitBreaker.Factory.class) {
+        {
+          HystrixCircuitBreaker.Factory.getInstance(commandKey);
+          result = circuitBreaker;
+        }
+      };
+
+      new Expectations(HystrixCommandMetrics.class) {
+        {
+          HystrixCommandMetrics.getInstance(commandKey);
+          result = null;
+        }
+      };
+
+      Mockito.when(circuitBreaker.isOpen()).thenReturn(true);
       validAssert = true;
 
       bizkeeperHandler.handle(invocation, asyncResp);
@@ -94,6 +145,7 @@ public class TestBizkeeperHandler extends BizkeeperHandler {
       validAssert = false;
     }
     Assert.assertTrue(validAssert);
+    Assert.assertEquals(1, taskList.size());
   }
 
   @Test
@@ -200,7 +252,7 @@ public class TestBizkeeperHandler extends BizkeeperHandler {
         asyncRsp.success("");
         return null;
       }
-    }).when(invocation).next(Mockito.any(AsyncResponse.class));;
+    }).when(invocation).next(Mockito.any(AsyncResponse.class));
     bizkeeperHandler.handle(invocation, f -> {
       Assert.assertTrue(f.isSuccessed());
     });

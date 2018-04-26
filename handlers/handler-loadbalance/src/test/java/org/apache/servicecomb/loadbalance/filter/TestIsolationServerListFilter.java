@@ -23,6 +23,8 @@ import java.util.List;
 import org.apache.commons.configuration.AbstractConfiguration;
 import org.apache.servicecomb.config.ConfigUtil;
 import org.apache.servicecomb.core.Invocation;
+import org.apache.servicecomb.foundation.common.event.AlarmEvent;
+import org.apache.servicecomb.foundation.common.event.EventManager;
 import org.apache.servicecomb.loadbalance.CseServer;
 import org.junit.After;
 import org.junit.AfterClass;
@@ -32,6 +34,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mockito.Mockito;
 
+import com.google.common.eventbus.Subscribe;
 import com.netflix.config.ConfigurationManager;
 import com.netflix.config.DynamicPropertyFactory;
 import com.netflix.loadbalancer.LoadBalancerStats;
@@ -44,6 +47,8 @@ public class TestIsolationServerListFilter {
   IsolationServerListFilter IsolationServerListFilter = null;
 
   LoadBalancerStats loadBalancerStats = null;
+
+  private List<AlarmEvent> taskList;
 
   @BeforeClass
   public static void initConfig() throws Exception {
@@ -70,6 +75,14 @@ public class TestIsolationServerListFilter {
     configuration.clearProperty("cse.loadbalance.isolation.enableRequestThreshold");
     configuration.addProperty("cse.loadbalance.isolation.enableRequestThreshold",
         "3");
+
+    taskList = new ArrayList<>();
+    EventManager.register(new Object() {
+      @Subscribe
+      public void onEvent(AlarmEvent isolationServerEvent) {
+        taskList.add(isolationServerEvent);
+      }
+    });
   }
 
   @After
@@ -139,6 +152,7 @@ public class TestIsolationServerListFilter {
     IsolationServerListFilter.setInvocation(invocation);
     List<Server> returnedServerList = IsolationServerListFilter.getFilteredListOfServers(serverList);
     Assert.assertEquals(0, returnedServerList.size());
+    Assert.assertEquals(1, taskList.size());
   }
 
   @Test

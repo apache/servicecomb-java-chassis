@@ -17,13 +17,20 @@
 
 package org.apache.servicecomb.bizkeeper;
 
+import java.util.HashMap;
+
+import org.apache.servicecomb.bizkeeper.event.CircutBreakerEvent;
 import org.apache.servicecomb.core.Handler;
 import org.apache.servicecomb.core.Invocation;
+import org.apache.servicecomb.foundation.common.event.AlarmEvent.Type;
+import org.apache.servicecomb.foundation.common.event.EventManager;
 import org.apache.servicecomb.swagger.invocation.AsyncResponse;
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.netflix.hystrix.HystrixCircuitBreaker;
+import com.netflix.hystrix.HystrixCommandKey;
 import com.netflix.hystrix.HystrixCommandProperties;
 import com.netflix.hystrix.HystrixInvokable;
 import com.netflix.hystrix.HystrixObservable;
@@ -38,6 +45,8 @@ import rx.Observable;
  */
 public abstract class BizkeeperHandler implements Handler {
   private static final Logger LOG = LoggerFactory.getLogger(BizkeeperHandler.class);
+
+  private static HashMap<String, Boolean> circuitMarker = new HashMap<>();
 
   protected final String groupname;
 
@@ -74,12 +83,32 @@ public abstract class BizkeeperHandler implements Handler {
     HystrixObservable<Response> command = delegate.createBizkeeperCommand(invocation);
 
     Observable<Response> observable = command.toObservable();
+    eventAlarm(invocation);
     observable.subscribe(asyncResp::complete, error -> {
       LOG.warn("catch error in bizkeeper:" + error.getMessage());
       asyncResp.fail(invocation.getInvocationType(), error);
     }, () -> {
 
     });
+  }
+
+  /**
+   * 使用circuitMarker来记录被熔断的接口
+   * 判断熔断开启或关闭，如果之前没有发送过告警信息才会发送告警
+   */
+  private void eventAlarm(Invocation invocation) {
+    HystrixCommandKey commandKey = CommandKey.toHystrixCommandKey(groupname, invocation);
+    HystrixCircuitBreaker circuitBreaker =
+        HystrixCircuitBreaker.Factory.getInstance(commandKey);
+    String microserviceQualifiedName = invocation.getMicroserviceQualifiedName();
+    if (circuitBreaker != null && circuitBreaker.isOpen() && circuitMarker.get(microserviceQualifiedName) == null) {
+      EventManager.post(new CircutBreakerEvent(invocation, commandKey, this.groupname, Type.OPEN));
+      circuitMarker.put(microserviceQualifiedName, true);
+    } else if (circuitBreaker != null && !circuitBreaker.isOpen()
+        && circuitMarker.get(microserviceQualifiedName) != null) {
+      EventManager.post(new CircutBreakerEvent(invocation, commandKey, this.groupname, Type.CLOSE));
+      circuitMarker.remove(microserviceQualifiedName);
+    }
   }
 
   protected void setCommonProperties(Invocation invocation, HystrixCommandProperties.Setter setter) {
