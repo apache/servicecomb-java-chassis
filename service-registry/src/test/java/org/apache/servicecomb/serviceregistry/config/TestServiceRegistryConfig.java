@@ -17,7 +17,11 @@
 
 package org.apache.servicecomb.serviceregistry.config;
 
+import java.util.List;
+
 import org.apache.commons.configuration.Configuration;
+import org.apache.servicecomb.config.ConfigUtil;
+import org.apache.servicecomb.foundation.common.net.IpPort;
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.junit.AfterClass;
 import org.junit.Assert;
@@ -30,6 +34,7 @@ public class TestServiceRegistryConfig {
   @BeforeClass
   public static void initClass() {
     ArchaiusUtils.resetConfig();
+    ConfigUtil.installDynamicConfig();
   }
 
   @AfterClass
@@ -45,7 +50,6 @@ public class TestServiceRegistryConfig {
     Assert.assertNotEquals(null, oConfig.getHeartbeatInterval());
     Assert.assertEquals("HTTP_1_1", oConfig.getHttpVersion().name());
     Assert.assertEquals("rest", oConfig.getTransport());
-    Assert.assertNotEquals(null, oConfig.getIpPort());
     Assert.assertEquals(1, oConfig.getWorkerPoolSize());
     Assert.assertEquals(true, oConfig.isSsl());
     Assert.assertEquals(30000, oConfig.getRequestTimeout());
@@ -57,6 +61,9 @@ public class TestServiceRegistryConfig {
     Assert.assertEquals(ServiceRegistryConfig.NO_TENANT, oConfig.getTenantName());
     Assert.assertEquals(null, oConfig.getSecretKey());
     Assert.assertNull(ServiceRegistryConfig.INSTANCE.getMicroserviceVersionFactory());
+    List<IpPort> ipPorts = oConfig.getIpPort();
+    Assert.assertEquals("127.0.0.1:80", ipPorts.get(0).toString());
+    Assert.assertEquals("127.0.0.1:443", ipPorts.get(1).toString());
   }
 
   @Test

@@ -131,7 +131,7 @@ public final class ServiceRegistryConfig {
     uriList.forEach(anUriList -> {
       try {
         URI uri = new URI(anUriList);
-        this.ssl = uri.getScheme().startsWith("https");
+        this.ssl = "https".equals(uri.getScheme());
         ipPortList.add(NetUtils.parseIpPort(uri.getScheme(), uri.getAuthority()));
       } catch (Exception e) {
         LOGGER.error("cse.service.registry.address invalid : {}", anUriList, e);
