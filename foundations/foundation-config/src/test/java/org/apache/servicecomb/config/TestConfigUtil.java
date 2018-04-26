@@ -326,14 +326,15 @@ public class TestConfigUtil {
     String extraConfigValue = "value";
     String overriddenConfigKey = "servicecomb.cse.servicecomb.file";
     extraConfig.put(extraConfigKey, extraConfigValue);
-    extraConfig.put(overriddenConfigKey, "should_be_overridden");
+    final String propertyHigherPriority = "higher_priority";
+    extraConfig.put(overriddenConfigKey, propertyHigherPriority);
 
     ConfigUtil.addExtraConfig("testExtraConfig", extraConfig);
 
     ConcurrentCompositeConfiguration localConfiguration = ConfigUtil.createLocalConfig();
 
     Assert.assertEquals(extraConfigValue, localConfiguration.getProperty(extraConfigKey));
-    Assert.assertEquals("value", localConfiguration.getString(overriddenConfigKey));
+    Assert.assertEquals(propertyHigherPriority, localConfiguration.getString(overriddenConfigKey));
   }
 
   @SuppressWarnings("unchecked")

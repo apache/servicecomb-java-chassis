@@ -64,4 +64,4 @@ service_description:
 servicecomb:
   cse:
     servicecomb:
-      file: value
+      file: value # this is a config for TestConfigUtil.testCreateLocalConfigWithExtraConfig()

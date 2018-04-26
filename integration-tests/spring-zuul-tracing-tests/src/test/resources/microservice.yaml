@@ -38,5 +38,6 @@ servicecomb:
       address: http://localhost:9411/
 
 property:
+  test2: from_microservice_yaml
   test4: from_microservice_yaml
   test5: from_microservice_yaml
