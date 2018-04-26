@@ -37,7 +37,7 @@ instance_description:
 cse:
   service:
     registry:
-      address: http://127.0.0.1, https://127.0.0.1
+      address: http://127.0.0.1:30100
       client:
         httpVersion: HTTP_1_1
         workerPoolSize: 1
