@@ -57,7 +57,8 @@ public class MicroserviceRegisterTask extends AbstractRegisterTask {
     LOGGER.info("running microservice register task.");
     String serviceId = srClient.getMicroserviceId(microservice.getAppId(),
         microservice.getServiceName(),
-        microservice.getVersion());
+        microservice.getVersion(),
+        microservice.getEnvironment());
     if (!StringUtils.isEmpty(serviceId)) {
       // 已经注册过了，不需要重新注册
       microservice.setServiceId(serviceId);

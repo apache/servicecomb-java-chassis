@@ -229,7 +229,7 @@ public final class ServiceRegistryClientImpl implements ServiceRegistryClient {
   }
 
   @Override
-  public String getMicroserviceId(String appId, String microserviceName, String versionRule) {
+  public String getMicroserviceId(String appId, String microserviceName, String versionRule, String environment) {
     Holder<GetExistenceResponse> holder = new Holder<>();
     IpPort ipPort = ipPortManager.getAvailableAddress();
 
@@ -239,7 +239,8 @@ public final class ServiceRegistryClientImpl implements ServiceRegistryClient {
         new RequestParam().addQueryParam("type", "microservice")
             .addQueryParam("appId", appId)
             .addQueryParam("serviceName", microserviceName)
-            .addQueryParam("version", versionRule),
+            .addQueryParam("version", versionRule)
+            .addQueryParam("env", environment),
         syncHandler(countDownLatch, GetExistenceResponse.class, holder));
     try {
       countDownLatch.await();

@@ -62,7 +62,7 @@ public class TestMicroserviceRegisterTask {
   public void testNewRegisterFailed(@Mocked ServiceRegistryClient srClient) {
     new Expectations() {
       {
-        srClient.getMicroserviceId(anyString, anyString, anyString);
+        srClient.getMicroserviceId(anyString, anyString, anyString, anyString);
         result = null;
         srClient.registerMicroservice((Microservice) any);
         result = null;
@@ -82,7 +82,7 @@ public class TestMicroserviceRegisterTask {
   public void testNewRegisterSuccess(@Mocked ServiceRegistryClient srClient) {
     new Expectations() {
       {
-        srClient.getMicroserviceId(anyString, anyString, anyString);
+        srClient.getMicroserviceId(anyString, anyString, anyString, anyString);
         result = null;
         srClient.registerMicroservice((Microservice) any);
         result = "serviceId";
@@ -108,7 +108,7 @@ public class TestMicroserviceRegisterTask {
     microservice.addSchema("exist", "");
     new Expectations() {
       {
-        srClient.getMicroserviceId(anyString, anyString, anyString);
+        srClient.getMicroserviceId(anyString, anyString, anyString, anyString);
         result = null;
         srClient.registerMicroservice((Microservice) any);
         result = "serviceId";
@@ -136,7 +136,7 @@ public class TestMicroserviceRegisterTask {
     microservice.addSchema("s1", "");
     new Expectations() {
       {
-        srClient.getMicroserviceId(anyString, anyString, anyString);
+        srClient.getMicroserviceId(anyString, anyString, anyString, anyString);
         result = null;
         srClient.registerMicroservice((Microservice) any);
         result = "serviceId";
@@ -161,7 +161,7 @@ public class TestMicroserviceRegisterTask {
   public void testAlreadyRegisteredSchemaIdSetMatch(@Mocked ServiceRegistryClient srClient) {
     new Expectations() {
       {
-        srClient.getMicroserviceId(anyString, anyString, anyString);
+        srClient.getMicroserviceId(anyString, anyString, anyString, anyString);
         result = "serviceId";
         srClient.getMicroservice(anyString);
         result = microservice;
@@ -188,7 +188,7 @@ public class TestMicroserviceRegisterTask {
 
     new Expectations() {
       {
-        srClient.getMicroserviceId(anyString, anyString, anyString);
+        srClient.getMicroserviceId(anyString, anyString, anyString, anyString);
         result = "serviceId";
         srClient.getMicroservice(anyString);
         result = otherMicroservice;
@@ -214,7 +214,7 @@ public class TestMicroserviceRegisterTask {
 
     new Expectations() {
       {
-        srClient.getMicroserviceId(anyString, anyString, anyString);
+        srClient.getMicroserviceId(anyString, anyString, anyString, anyString);
         result = "serviceId";
         srClient.getMicroservice(anyString);
         result = null;

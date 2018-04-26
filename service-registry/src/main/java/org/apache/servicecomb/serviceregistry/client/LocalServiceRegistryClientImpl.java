@@ -146,7 +146,7 @@ public class LocalServiceRegistryClientImpl implements ServiceRegistryClient {
   }
 
   @Override
-  public String getMicroserviceId(String appId, String microserviceName, String strVersionRule) {
+  public String getMicroserviceId(String appId, String microserviceName, String strVersionRule, String environment) {
     VersionRule versionRule = VersionRuleUtils.getOrCreate(strVersionRule);
     Microservice latest = findLatest(appId, microserviceName, versionRule);
     return latest != null ? latest.getServiceId() : null;
