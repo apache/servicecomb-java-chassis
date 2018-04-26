@@ -40,7 +40,7 @@ public interface ServiceRegistryClient {
    *
    * 获取微服务唯一标识
    */
-  String getMicroserviceId(String appId, String microserviceName, String versionRule);
+  String getMicroserviceId(String appId, String microserviceName, String versionRule, String environment);
 
   /**
    *

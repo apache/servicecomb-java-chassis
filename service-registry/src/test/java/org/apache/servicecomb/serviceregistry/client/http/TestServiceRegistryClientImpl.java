@@ -108,7 +108,8 @@ public class TestServiceRegistryClientImpl {
     Assert.assertEquals(null,
         oClient.getMicroserviceId(microservice.getAppId(),
             microservice.getServiceName(),
-            microservice.getVersion()));
+            microservice.getVersion(),
+            microservice.getEnvironment()));
     Assert.assertThat(oClient.getAllMicroservices().isEmpty(), is(true));
     Assert.assertEquals(null, oClient.registerMicroservice(microservice));
     Assert.assertEquals(null, oClient.getMicroservice("microserviceId"));
