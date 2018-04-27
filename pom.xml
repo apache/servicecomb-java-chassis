@@ -112,11 +112,11 @@
       <id>release</id>
       <build>
         <plugins>
-        <plugin>
+          <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-deploy-plugin</artifactId>
-        </plugin>
-	      <plugin>
+          </plugin>
+          <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-gpg-plugin</artifactId>
             <version>1.6</version>
@@ -140,6 +140,25 @@
                 <goals>
                   <goal>jar-no-fork</goal>
                 </goals>
+              </execution>
+            </executions>
+          </plugin>
+          <plugin>
+            <artifactId>maven-remote-resources-plugin</artifactId>
+            <executions>
+              <execution>
+                <goals>
+                  <goal>process</goal>
+                </goals>
+                <configuration>
+                  <resourceBundles>
+                    <resourceBundle>org.apache:apache-jar-resource-bundle:1.4</resourceBundle>
+                    <resourceBundle>org.apache:apache-incubator-disclaimer-resource-bundle:1.1</resourceBundle>
+                  </resourceBundles>
+                  <properties>
+                    <projectName>Apache ServiceComb</projectName>
+                  </properties>
+                </configuration>
               </execution>
             </executions>
           </plugin>
