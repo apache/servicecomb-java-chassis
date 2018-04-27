@@ -30,7 +30,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.configuration.AbstractConfiguration;
-import org.apache.commons.configuration.Configuration;
 import org.apache.servicecomb.config.archaius.sources.ConfigModel;
 import org.apache.servicecomb.config.archaius.sources.MicroserviceConfigLoader;
 import org.apache.servicecomb.config.spi.ConfigCenterConfigurationSource;
@@ -49,7 +48,6 @@ import com.netflix.config.DynamicWatchedConfiguration;
 
 import mockit.Deencapsulation;
 import mockit.Expectations;
-import mockit.Mocked;
 
 public class TestConfigUtil {
 
@@ -94,12 +92,6 @@ public class TestConfigUtil {
     Assert.assertEquals(configuration.getString("service_description.name"), "service_name_test");
     Assert.assertTrue(configuration.getBoolean("cse.test.enabled"));
     Assert.assertEquals(configuration.getInt("cse.test.num"), 10);
-  }
-
-  @Test
-  public void testCreateConfigFromConfigCenterNoUrl(@Mocked Configuration localConfiguration) {
-    AbstractConfiguration configFromConfigCenter = ConfigUtil.createConfigFromConfigCenter(localConfiguration);
-    Assert.assertNull(configFromConfigCenter);
   }
 
   @Test
