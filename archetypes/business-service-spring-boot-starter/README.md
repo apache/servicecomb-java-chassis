@@ -19,10 +19,10 @@ java -jar xxxxxx-{version}-exec.jar
 
 ## Spring Boot and ServiceComb
 ### Why ServiceComb make integration with Spring Boot
-Spring Boot can accelerate develop speed of Spring application, it provider these features:
+Spring Boot can accelerate develop speed of Spring application, it provide these features:
 * Can create independent executable Spring application
 * Tomcat embedded, Jetty as Web server, and do not need package(war)
-* Provider many starter in order to simplify maven dependency
+* Provide many starters in order to simplify maven dependency
 
 Using Spring Boot in microservice development, can greatly simplifying configure and deploy. ServiceComb is a microservice framework with full functionality of service management, focus on rapidly development of microservices, so integration with Spring Boot can obtain greater advantages.
 
@@ -31,6 +31,6 @@ Developers often use Spring Boot in the following way:
 * Java application : import `spring-boot-starter` then develop general application, does not contain WEB
 * Web application : import `spring-boot-starter-web` then develop web application, also include an embedded Tomcat or Jetty server, and use Spring Web MVC framework to develop REST endpoints
 
-The first way, do not need any refactor, dfirect startup ServiceComb via Spring Boot.
+The first way, do not need any refactoring, directly startup ServiceComb via Spring Boot.
 
 The second way is replace `Spring MVC DispatcherServlet` with `ServiceComb RestServlet`.
