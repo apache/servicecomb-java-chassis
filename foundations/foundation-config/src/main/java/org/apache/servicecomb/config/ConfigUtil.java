@@ -181,7 +181,8 @@ public final class ConfigUtil {
     compositeConfiguration.addConfiguration(source, sourceName);
   }
 
-  public static DynamicWatchedConfiguration createConfigFromConfigCenter(Configuration localConfiguration) {
+  private static ConfigCenterConfigurationSource createConfigCenterConfigurationSource(
+      Configuration localConfiguration) {
     ConfigCenterConfigurationSource configCenterConfigurationSource =
         SPIServiceUtils.getTargetService(ConfigCenterConfigurationSource.class);
     if (null == configCenterConfigurationSource) {
@@ -194,26 +195,30 @@ public final class ConfigUtil {
       LOGGER.info("Config Source serverUri is not correctly configured.");
       return null;
     }
+    return configCenterConfigurationSource;
+  }
 
-    configCenterConfigurationSource.init(localConfiguration);
-    return new DynamicWatchedConfiguration(configCenterConfigurationSource);
+  private static void createDynamicWatchedConfiguration(
+      ConcurrentCompositeConfiguration localConfiguration,
+      ConfigCenterConfigurationSource configCenterConfigurationSource) {
+    ConcurrentMapConfiguration injectConfig = new ConcurrentMapConfiguration();
+    localConfiguration.addConfigurationAtFront(injectConfig, "extraInjectConfig");
+    configCenterConfigurationSource.addUpdateListener(new ServiceCombPropertyUpdateListener(injectConfig));
+
+    DynamicWatchedConfiguration configFromConfigCenter =
+        new DynamicWatchedConfiguration(configCenterConfigurationSource);
+    duplicateServiceCombConfigToCse(configFromConfigCenter);
+    localConfiguration.addConfigurationAtFront(configFromConfigCenter, "configCenterConfig");
   }
 
   public static AbstractConfiguration createDynamicConfig() {
-    LOGGER.info("create dynamic config:");
-    ConcurrentCompositeConfiguration config = ConfigUtil.createLocalConfig();
-    DynamicWatchedConfiguration configFromConfigCenter = createConfigFromConfigCenter(config);
-    if (configFromConfigCenter != null) {
-      ConcurrentMapConfiguration injectConfig = new ConcurrentMapConfiguration();
-      config.addConfigurationAtFront(injectConfig, "extraInjectConfig");
-
-      duplicateServiceCombConfigToCse(configFromConfigCenter);
-      config.addConfigurationAtFront(configFromConfigCenter, "configCenterConfig");
-
-      configFromConfigCenter.getSource().addUpdateListener(new ServiceCombPropertyUpdateListener(injectConfig));
+    ConcurrentCompositeConfiguration compositeConfig = ConfigUtil.createLocalConfig();
+    ConfigCenterConfigurationSource configCenterConfigurationSource =
+        createConfigCenterConfigurationSource(compositeConfig);
+    if (configCenterConfigurationSource != null) {
+      createDynamicWatchedConfiguration(compositeConfig, configCenterConfigurationSource);
     }
-
-    return config;
+    return compositeConfig;
   }
 
   public static void installDynamicConfig() {
@@ -222,8 +227,18 @@ public final class ConfigUtil {
       return;
     }
 
-    AbstractConfiguration dynamicConfig = ConfigUtil.createDynamicConfig();
-    ConfigurationManager.install(dynamicConfig);
+    ConcurrentCompositeConfiguration compositeConfig = ConfigUtil.createLocalConfig();
+    ConfigCenterConfigurationSource configCenterConfigurationSource =
+        createConfigCenterConfigurationSource(compositeConfig);
+    if (configCenterConfigurationSource != null) {
+      createDynamicWatchedConfiguration(compositeConfig, configCenterConfigurationSource);
+    }
+
+    ConfigurationManager.install(compositeConfig);
+
+    if (configCenterConfigurationSource != null) {
+      configCenterConfigurationSource.init(compositeConfig);
+    }
   }
 
   public static void addExtraConfig(String extraConfigName, Map<String, Object> extraConfig) {

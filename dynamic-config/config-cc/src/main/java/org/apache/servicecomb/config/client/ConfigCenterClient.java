@@ -86,6 +86,8 @@ public class ConfigCenterClient {
 
   private static final long HEARTBEAT_INTERVAL = 30000;
 
+  private static final long BOOTUP_WAIT_TIME = 10;
+
   private ScheduledExecutorService heartbeatTask = null;
 
   private int refreshMode = CONFIG_CENTER_CONFIG.getRefreshMode();
@@ -128,17 +130,20 @@ public class ConfigCenterClient {
     } catch (InterruptedException e) {
       throw new IllegalStateException(e);
     }
-    refreshMembers(memberDiscovery);
-    EXECUTOR.scheduleWithFixedDelay(new ConfigRefresh(parseConfigUtils, memberDiscovery),
+    refreshMembers(memberDiscovery, true);
+    ConfigRefresh refrestTask = new ConfigRefresh(parseConfigUtils, memberDiscovery);
+    refrestTask.run(true);
+    EXECUTOR.scheduleWithFixedDelay(refrestTask,
         firstRefreshInterval,
         refreshInterval,
         TimeUnit.MILLISECONDS);
   }
 
-  private void refreshMembers(MemberDiscovery memberDiscovery) {
+  private void refreshMembers(MemberDiscovery memberDiscovery, boolean wait) {
     if (CONFIG_CENTER_CONFIG.getAutoDiscoveryEnabled()) {
       String configCenter = memberDiscovery.getConfigServer();
       IpPort ipPort = NetUtils.parseIpPortFromURI(configCenter);
+      CountDownLatch latch = new CountDownLatch(1);
       clientMgr.findThreadBindClientPool().runOnContext(client -> {
         HttpClientRequest request = client.get(ipPort.getPort(), ipPort.getHostOrIp(), URIConst.MEMBERS, rsp -> {
           if (rsp.statusCode() == HttpResponseStatus.OK.code()) {
@@ -146,6 +151,7 @@ public class ConfigCenterClient {
               memberDiscovery.refreshMembers(buf.toJsonObject());
             });
           }
+          latch.countDown();
         });
         SignRequest signReq = createSignRequest(request.method().toString(),
             configCenter + URIConst.MEMBERS,
@@ -155,8 +161,19 @@ public class ConfigCenterClient {
           request.headers().add("X-Auth-Token", ConfigCenterConfig.INSTANCE.getToken());
         }
         authHeaderProviders.forEach(provider -> request.headers().addAll(provider.getSignAuthHeaders(signReq)));
+        request.exceptionHandler(e -> {
+          LOGGER.error("Fetch member from {} failed. Error message is [{}].", configCenter, e.getMessage());
+          latch.countDown();
+        });
         request.end();
       });
+      if (wait) {
+        try {
+          latch.await(BOOTUP_WAIT_TIME, TimeUnit.SECONDS);
+        } catch (InterruptedException e) {
+          LOGGER.warn(e.getMessage());
+        }
+      }
     }
   }
 
@@ -211,23 +228,27 @@ public class ConfigCenterClient {
       this.memberdis = memberdis;
     }
 
-    // 具体动作
-    @Override
-    public void run() {
+    public void run(boolean wait) {
       // this will be single threaded, so we don't care about concurrent
       // staffs
       try {
         String configCenter = memberdis.getConfigServer();
         if (refreshMode == 1) {
-          refreshConfig(configCenter);
+          refreshConfig(configCenter, wait);
         } else if (!isWatching) {
           // 重新监听时需要先加载，避免在断开期间丢失变更
-          refreshConfig(configCenter);
+          refreshConfig(configCenter, wait);
           doWatch(configCenter);
         }
       } catch (Exception e) {
         LOGGER.error("client refresh thread exception", e);
       }
+    }
+
+    // 具体动作
+    @Override
+    public void run() {
+      run(false);
     }
 
     // create watch and wait for done
@@ -270,9 +291,9 @@ public class ConfigCenterClient {
                 LOGGER.info("watching config recieved {}", action);
                 Map<String, Object> mAction = action.toJsonObject().getMap();
                 if ("CREATE".equals(mAction.get("action"))) {
-                  refreshConfig(configCenter);
+                  refreshConfig(configCenter, false);
                 } else if ("MEMBER_CHANGE".equals(mAction.get("action"))) {
-                  refreshMembers(memberdis);
+                  refreshMembers(memberdis, false);
                 } else {
                   parseConfigUtils.refreshConfigItemsIncremental(mAction);
                 }
@@ -282,7 +303,10 @@ public class ConfigCenterClient {
               waiter.countDown();
             },
             e -> {
-              LOGGER.error("watcher connect to config center {} refresh port {} failed. Error message is [{}]", configCenter, refreshPort, e.getMessage());
+              LOGGER.error("watcher connect to config center {} refresh port {} failed. Error message is [{}]",
+                  configCenter,
+                  refreshPort,
+                  e.getMessage());
               waiter.countDown();
             });
       });
@@ -313,7 +337,8 @@ public class ConfigCenterClient {
       }
     }
 
-    public void refreshConfig(String configcenter) {
+    public void refreshConfig(String configcenter, boolean wait) {
+      CountDownLatch latch = new CountDownLatch(1);
       clientMgr.findThreadBindClientPool().runOnContext(client -> {
         String path = URIConst.ITEMS + "?dimensionsInfo=" + StringUtils.deleteWhitespace(serviceName);
         IpPort ipPort = NetUtils.parseIpPortFromURI(configcenter);
@@ -338,6 +363,7 @@ public class ConfigCenterClient {
             EventManager.post(new ConnFailEvent("fetch config fail"));
             LOGGER.error("Config refresh from {} failed.", configcenter);
           }
+          latch.countDown();
         });
         Map<String, String> headers = new HashMap<>();
         headers.put("x-domain-name", tenantName);
@@ -354,9 +380,17 @@ public class ConfigCenterClient {
         request.exceptionHandler(e -> {
           EventManager.post(new ConnFailEvent("fetch config fail"));
           LOGGER.error("Config refresh from {} failed. Error message is [{}].", configcenter, e.getMessage());
+          latch.countDown();
         });
         request.end();
       });
+      if (wait) {
+        try {
+          latch.await(BOOTUP_WAIT_TIME, TimeUnit.SECONDS);
+        } catch (InterruptedException e) {
+          LOGGER.warn(e.getMessage());
+        }
+      }
     }
   }
 
