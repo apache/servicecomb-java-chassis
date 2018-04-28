@@ -15,16 +15,16 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.archetypes;
+package ${groupId};
 
-import org.apache.servicecomb.springboot.starter.provider.EnableServiceComb;
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.apache.servicecomb.provider.springmvc.reference.RestTemplateBuilder;
+import org.springframework.web.client.RestTemplate;
 
-@SpringBootApplication
-@EnableServiceComb
-public class Application {
-  public static void main(String[] args) {
-    SpringApplication.run(Application.class, args);
+public class HelloConsumer {
+  private final RestTemplate restTemplate = RestTemplateBuilder.create();
+
+  public void invokeHello() {
+    //service url is : cse://serviceName/operation
+    restTemplate.getForObject("cse://business-service/hello", String.class);
   }
 }
