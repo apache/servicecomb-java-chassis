@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.archetypes;
+package ${groupId};
 
 public interface Hello {
   String hello();

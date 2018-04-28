@@ -15,14 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.archetypes;
+package ${groupId};
 
-import org.apache.servicecomb.provider.pojo.RpcSchema;
+import org.apache.servicecomb.foundation.common.utils.BeanUtils;
+import org.apache.servicecomb.foundation.common.utils.Log4jUtils;
 
-@RpcSchema(schemaId = "hello")
-public class HelloImpl implements Hello {
-
-  public String hello() {
-    return "Hello World!";
+public class Application {
+  public static void main(String[] args) throws Exception {
+    Log4jUtils.init();
+    BeanUtils.init();
   }
 }
