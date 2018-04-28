@@ -105,6 +105,7 @@
     <module>edge</module>
     <module>metrics</module>
     <module>dynamic-config</module>
+    <module>archetypes</module>
   </modules>
 
   <profiles>

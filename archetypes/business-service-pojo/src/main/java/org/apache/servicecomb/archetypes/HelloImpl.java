@@ -17,15 +17,11 @@
 
 package org.apache.servicecomb.archetypes;
 
-import org.apache.servicecomb.provider.rest.common.RestSchema;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.apache.servicecomb.provider.pojo.RpcSchema;
 
-@RestSchema(schemaId = "helloEndpoint")
-@RequestMapping(path = "/")
-public class HelloEndpoint {
+@RpcSchema(schemaId = "hello")
+public class HelloImpl implements Hello {
 
-  @GetMapping(path = "/hello")
   public String hello() {
     return "Hello World!";
   }

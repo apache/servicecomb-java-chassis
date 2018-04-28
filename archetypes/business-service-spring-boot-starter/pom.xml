@@ -19,10 +19,15 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <groupId>org.apache.servicecomb.archetypes</groupId>
-  <artifactId>business-service-spring-boot-starter</artifactId>
+  <parent>
+    <groupId>org.apache.servicecomb.archetypes</groupId>
+    <artifactId>archetypes</artifactId>
+    <version>1.0.0-m2-SNAPSHOT</version>
+  </parent>
+
+  <name>Java Chassis::Archetypes::Spring Boot Starter</name>
+  <artifactId>business-service-spring-boot-starter-archetype</artifactId>
   <modelVersion>4.0.0</modelVersion>
-  <version>1.0.0-m2-SNAPSHOT</version>
 
   <properties>
     <java-chassis.version>1.0.0-m2-SNAPSHOT</java-chassis.version>

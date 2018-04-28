@@ -1009,6 +1009,28 @@
         <artifactId>metrics-prometheus</artifactId>
         <version>1.0.0-m2-SNAPSHOT</version>
       </dependency>
+
+      <dependency>
+        <groupId>org.apache.servicecomb.archetypes</groupId>
+        <artifactId>business-service-jaxrs-archetype</artifactId>
+        <version>1.0.0-m2-SNAPSHOT</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.servicecomb.archetypes</groupId>
+        <artifactId>business-service-pojo-archetype</artifactId>
+        <version>1.0.0-m2-SNAPSHOT</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.servicecomb.archetypes</groupId>
+        <artifactId>business-service-springmvc-archetype</artifactId>
+        <version>1.0.0-m2-SNAPSHOT</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.servicecomb.archetypes</groupId>
+        <artifactId>business-service-spring-boot-starter-archetype</artifactId>
+        <version>1.0.0-m2-SNAPSHOT</version>
+      </dependency>
+
     </dependencies>
   </dependencyManagement>
 

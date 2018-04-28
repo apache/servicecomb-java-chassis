@@ -30,7 +30,7 @@ service_description:
   name: business-service
 #Indicates a service version
   version: 1.0.0
-cse:
+servicecomb:
   service:
   #Specifies the service center IP address.
     registry:

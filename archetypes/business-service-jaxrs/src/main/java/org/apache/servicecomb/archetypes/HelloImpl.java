@@ -22,9 +22,9 @@ import javax.ws.rs.Path;
 
 import org.apache.servicecomb.provider.rest.common.RestSchema;
 
-@RestSchema(schemaId = "helloEndpoint")
+@RestSchema(schemaId = "hello")
 @Path("/")
-public class HelloEndpoint {
+public class HelloImpl {
 
   @Path("/hello")
   @GET
