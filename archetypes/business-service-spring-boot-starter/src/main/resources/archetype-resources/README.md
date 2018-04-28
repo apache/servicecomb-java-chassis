@@ -1,8 +1,8 @@
 ## Welcome to use ServiceComb Java Chassis
-This project(module) is generate by *org.apache.servicecomb.archetypes:business-service-spring-boot-starter-archetype*, it use **spring-boot-starter-provider** to develop service endpoint.  
+This project(module) is generate by *org.apache.servicecomb.archetypes:business-service-spring-boot-starter-archetype*, it use **spring-boot-starter-provider** to develop service producer.  
 
 ### More works can be done further:
-1. Modify "HelloEndpoint", add your business service logic, or create some new endpoints to provide your services. More details can be found : http://servicecomb.incubator.apache.org/users/develop-with-spring-boot-starter/
+1. Modify "HelloImpl", add your business service logic, or create some new producers to provide your services. More details can be found : http://servicecomb.incubator.apache.org/users/develop-with-spring-boot-starter/
 2. Modify "microservice.yaml", change APPLICATION_ID, service_description.name, version, and service center address, endpoints publish address etc. More details can be found : http://servicecomb.incubator.apache.org/users/service-definition/
 
 ### Package your service
@@ -19,7 +19,7 @@ java -jar xxxxxx-{version}-exec.jar
 
 ## Spring Boot and ServiceComb
 ### Why ServiceComb make integration with Spring Boot
-Spring Boot can accelerate develop speed of Spring application, it provide these features:
+Spring Boot can accelerate develop speed of Spring application, it provides these features:
 * Can create independent executable Spring application
 * Tomcat embedded, Jetty as Web server, and do not need package(war)
 * Provide many starters in order to simplify maven dependency

@@ -9,25 +9,25 @@ From http://maven.apache.org/guides/introduction/introduction-to-archetypes.html
   
   Archetype for create a common microservice using jaxrs provider.
 
-2. business-service-spring-boot-starter
+2. business-service-springmvc
+
+  Archetype for create a common microservice using springmvc provider.
+  
+3. business-service-pojo
+
+  Archetype for create a common microservice using pojo provider.
+  
+4. business-service-spring-boot-starter
 
   Archetype for create a common microservice using spring-boot-starter provider.
 
-more coming soon.. 
-
 ### How to build these archetypes
 We use **business-service-jaxrs** as an example :
+
 ```bash
-cd archetypes/business-service-jaxrs
-mvn archetype:create-from-project
-#Wait until successed, archetype will be generated at target/generated-sources/archetype
-cd target/generated-sources/archetype
-#Install archetype to your local maven repository
+cd archetypes
 mvn install
 ```
-*Notice: The archetype ArtifactId of business-service-jaxrs is business-service-jaxrs-**archetype.***
-
-We will publish these archetypes to maven center repository since 1.0.0-m2.
 
 ### How to use these archetypes to generate a project
 We use **business-service-jaxrs** as an example :
@@ -38,7 +38,14 @@ New Project(Module) -> Maven -> Check "Create from archetype" -> Add Archetype..
 New Project(Module) -> Maven -> Next -> Add Archetype... -> fill *GroupId* with value "org.apache.servicecomb.archetypes", fill *ArtifactId* with value "business-service-jaxrs-archetype", fill *Version* with current archetype version -> select this archetype that had listed, do next steps.
 
 #### Generate via command
+
 ```bash
 mvn archetype:generate -DarchetypeGroupId=org.apache.servicecomb.archetypes -DarchetypeArtifactId=business-service-jaxrs-archetype -DarchetypeVersion=${archetype-version}
 ```
+
 In console Interactive mode, input your GroupId, ArtifactId and Version of new project(module), after a while the new project will be generated.
+
+*Notice: We will publish these archetypes to maven center repository since 1.0.0-m2, if you would like to use an archetype from an unreleased version : *
+```bash
+mvn archetype:generate -DarchetypeGroupId=org.apache.servicecomb.archetypes -DarchetypeArtifactId=business-service-jaxrs-archetype -DarchetypeVersion=${archetype-version} -DarchetypeRepository=https://repository.apache.org/content/groups/snapshots-group
+```
