@@ -20,103 +20,42 @@
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <parent>
-    <groupId>org.apache.servicecomb.archetypes</groupId>
+    <groupId>org.apache.servicecomb</groupId>
     <artifactId>archetypes</artifactId>
     <version>1.0.0-m2-SNAPSHOT</version>
   </parent>
 
+  <groupId>org.apache.servicecomb.archetypes</groupId>
   <name>Java Chassis::Archetypes::JAXRS</name>
   <artifactId>business-service-jaxrs-archetype</artifactId>
+  <packaging>maven-archetype</packaging>
   <modelVersion>4.0.0</modelVersion>
 
   <properties>
-    <java-chassis.version>1.0.0-m2-SNAPSHOT</java-chassis.version>
+    <maven-archetype-packaging-version>2.3</maven-archetype-packaging-version>
   </properties>
 
-  <dependencyManagement>
-    <dependencies>
-      <dependency>
-        <groupId>org.apache.servicecomb</groupId>
-        <artifactId>java-chassis-dependencies</artifactId>
-        <version>${java-chassis.version}</version>
-        <type>pom</type>
-        <scope>import</scope>
-      </dependency>
-    </dependencies>
-  </dependencyManagement>
-
-  <dependencies>
-    <!--for provider-->
-    <dependency>
-      <groupId>org.apache.servicecomb</groupId>
-      <artifactId>transport-rest-vertx</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.servicecomb</groupId>
-      <artifactId>transport-highway</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.servicecomb</groupId>
-      <artifactId>provider-jaxrs</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>slf4j-log4j12</artifactId>
-    </dependency>
-
-    <!--for consumer-->
-    <dependency>
-      <groupId>org.apache.servicecomb</groupId>
-      <artifactId>provider-springmvc</artifactId>
-    </dependency>
-  </dependencies>
-
-  <!--for package and deploy-->
   <build>
-    <plugins>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-jar-plugin</artifactId>
-        <version>2.6</version>
-        <configuration>
-          <archive>
-            <manifest>
-              <addClasspath>true</addClasspath>
-              <classpathPrefix>lib/</classpathPrefix>
-              <!--change to your main class-->
-              <mainClass>${your-package}.Application</mainClass>
-            </manifest>
-            <manifestEntries>
-              <Class-Path>. </Class-Path>
-            </manifestEntries>
-          </archive>
-        </configuration>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-dependency-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>copy-dependencies</id>
-            <phase>package</phase>
-            <goals>
-              <goal>copy-dependencies</goal>
-            </goals>
-            <configuration>
-              <outputDirectory>target/lib</outputDirectory>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-compiler-plugin</artifactId>
-        <version>3.1</version>
-        <configuration>
-          <source>1.8</source>
-          <target>1.8</target>
-        </configuration>
-      </plugin>
-    </plugins>
+    <extensions>
+      <extension>
+        <groupId>org.apache.maven.archetype</groupId>
+        <artifactId>archetype-packaging</artifactId>
+        <version>${maven-archetype-packaging-version}</version>
+      </extension>
+    </extensions>
+
+    <resources>
+      <resource>
+        <directory>src/main/resources</directory>
+        <filtering>false</filtering>
+      </resource>
+      <resource>
+        <directory>src/main/resources-filtered</directory>
+        <filtering>true</filtering>
+        <includes>
+          <include>**/archetype-metadata.xml</include>
+        </includes>
+      </resource>
+    </resources>
   </build>
 </project>

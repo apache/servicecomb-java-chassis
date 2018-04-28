@@ -15,14 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.archetypes;
+package ${groupId};
 
-import org.apache.servicecomb.foundation.common.utils.BeanUtils;
-import org.apache.servicecomb.foundation.common.utils.Log4jUtils;
+import org.apache.servicecomb.provider.springmvc.reference.RestTemplateBuilder;
+import org.springframework.web.client.RestTemplate;
 
-public class Application {
-  public static void main(String[] args) throws Exception {
-    Log4jUtils.init();
-    BeanUtils.init();
+public class HelloConsumer {
+  private final RestTemplate restTemplate = RestTemplateBuilder.create();
+
+  public void invokeHello(){
+    //service url is : cse://serviceName/operation
+    restTemplate.getForObject("cse://business-service/hello", String.class);
   }
+
 }

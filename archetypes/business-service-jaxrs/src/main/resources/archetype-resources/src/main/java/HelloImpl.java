@@ -15,17 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.archetypes;
+package ${groupId};
 
-import org.apache.servicecomb.provider.springmvc.reference.RestTemplateBuilder;
-import org.springframework.web.client.RestTemplate;
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
 
-public class HelloConsumer {
-  private final RestTemplate restTemplate = RestTemplateBuilder.create();
+import org.apache.servicecomb.provider.rest.common.RestSchema;
 
-  public void invokeHello(){
-    //service url is : cse://serviceName/operation
-    restTemplate.getForObject("cse://business-service/hello", String.class);
+@RestSchema(schemaId = "hello")
+@Path("/")
+public class HelloImpl {
+
+  @Path("/hello")
+  @GET
+  public String hello() {
+    return "Hello World!";
   }
-
 }
