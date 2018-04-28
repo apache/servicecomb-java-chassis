@@ -15,21 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.archetypes;
+package ${groupId};
 
-import org.apache.servicecomb.provider.pojo.RpcReference;
-import org.springframework.stereotype.Component;
+import org.apache.servicecomb.provider.pojo.RpcSchema;
 
-@Component
-public class HelloConsumer {
-  @RpcReference(microserviceName = "business-service", schemaId = "helloEndpoint")
-  private Hello hello;
+@RpcSchema(schemaId = "hello")
+public class HelloImpl implements Hello {
 
-  public Hello getHello() {
-    return hello;
-  }
-
-  public void invokeHello() {
-    getHello().hello();
+  public String hello() {
+    return "Hello World!";
   }
 }

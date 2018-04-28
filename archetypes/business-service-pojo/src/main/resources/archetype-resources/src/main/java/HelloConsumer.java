@@ -15,14 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.archetypes;
+package ${groupId};
 
-import org.apache.servicecomb.foundation.common.utils.BeanUtils;
-import org.apache.servicecomb.foundation.common.utils.Log4jUtils;
+import org.apache.servicecomb.provider.pojo.RpcReference;
+import org.springframework.stereotype.Component;
 
-public class Application {
-  public static void main(String[] args) throws Exception {
-    Log4jUtils.init();
-    BeanUtils.init();
+@Component
+public class HelloConsumer {
+  @RpcReference(microserviceName = "business-service", schemaId = "hello")
+  private Hello hello;
+
+  public Hello getHello() {
+    return hello;
+  }
+
+  public void invokeHello() {
+    getHello().hello();
   }
 }
