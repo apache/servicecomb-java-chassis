@@ -23,5 +23,5 @@
 		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd">
 
   <!--change to your endpoint package-->
-  <context:component-scan base-package="org.apache.servicecomb.archetypes"/>
+  <context:component-scan base-package="${groupId}"/>
 </beans>
