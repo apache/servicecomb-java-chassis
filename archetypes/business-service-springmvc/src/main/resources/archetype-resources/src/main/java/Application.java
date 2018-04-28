@@ -15,18 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.archetypes;
+package ${groupId};
 
-import org.apache.servicecomb.provider.rest.common.RestSchema;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.apache.servicecomb.foundation.common.utils.BeanUtils;
+import org.apache.servicecomb.foundation.common.utils.Log4jUtils;
 
-@RestSchema(schemaId = "hello")
-@RequestMapping(path = "/")
-public class HelloImpl {
-
-  @GetMapping(path = "/hello")
-  public String hello() {
-    return "Hello World!";
+public class Application {
+  public static void main(String[] args) throws Exception {
+    Log4jUtils.init();
+    BeanUtils.init();
   }
 }
