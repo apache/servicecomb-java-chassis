@@ -15,20 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.archetypes;
+package ${groupId};
 
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
+import org.apache.servicecomb.foundation.common.utils.BeanUtils;
+import org.apache.servicecomb.foundation.common.utils.Log4jUtils;
 
-import org.apache.servicecomb.provider.rest.common.RestSchema;
-
-@RestSchema(schemaId = "hello")
-@Path("/")
-public class HelloImpl {
-
-  @Path("/hello")
-  @GET
-  public String hello() {
-    return "Hello World!";
+public class Application {
+  public static void main(String[] args) throws Exception {
+    Log4jUtils.init();
+    BeanUtils.init();
   }
 }

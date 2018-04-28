@@ -24,7 +24,7 @@
     <version>1.0.0-m2-SNAPSHOT</version>
     <relativePath>../parent</relativePath>
   </parent>
-  <groupId>org.apache.servicecomb.archetypes</groupId>
+
   <artifactId>archetypes</artifactId>
   <name>Java Chassis::Archetypes</name>
   <packaging>pom</packaging>
