@@ -17,12 +17,12 @@
 
 package org.apache.servicecomb.spring.cloud.zuul.tracing;
 
+import static com.seanyinx.github.unit.scaffolding.AssertUtils.expectFailing;
 import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
-import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 import static org.springframework.http.HttpStatus.OK;
 
 import java.util.Collection;
@@ -82,15 +82,18 @@ public class SpringCloudZuulTracingTest extends TracingTestBase {
   @Test
   public void tracesFailedCallsReceivedByZuul() throws InterruptedException {
     ResponseEntity<String> responseEntity = testRestTemplate.getForEntity("/dummy/rest/oops", String.class);
-
-    assertThat(responseEntity.getStatusCode(), is(INTERNAL_SERVER_ERROR));
-
+    try {
+      int code = responseEntity.getStatusCode().value();
+      assertThat(code, is(590));
+      expectFailing(IllegalArgumentException.class);
+    } catch (Exception ignore) {
+    }
     TimeUnit.MILLISECONDS.sleep(1000);
 
     Collection<String> tracingMessages = appender.pollLogs(".*\\[\\w+/\\w+/\\w*\\]\\s+INFO.*(logged tracing|/oops).*");
     assertThat(tracingMessages.size(), greaterThanOrEqualTo(2));
 
-    assertThatSpansReceivedByZipkin(tracingMessages, "/dummy/rest/oops", "500", "/oops", "590");
+    assertThatSpansReceivedByZipkin(tracingMessages, "/dummy/rest/oops", "/oops", "590");
   }
 
   @Test

@@ -378,26 +378,26 @@ Prometheus Java Simpleclient Common (http://github.com/prometheus/client_java/si
 Prometheus Java Simpleclient Httpserver (http://github.com/prometheus/client_java/simpleclient_httpserver) io.prometheus:simpleclient_httpserver:bundle:0.1.0
 ProtoParser (http://github.com/square/protoparser/) com.squareup:protoparser:jar:4.0.3
 SnakeYAML (http://www.snakeyaml.org) org.yaml:snakeyaml:bundle:1.16
-Spring AOP (https://github.com/spring-projects/spring-framework) org.springframework:spring-aop:jar:4.3.5.RELEASE
-Spring Aspects (https://github.com/spring-projects/spring-framework) org.springframework:spring-aspects:jar:4.3.5.RELEASE
-Spring Beans (https://github.com/spring-projects/spring-framework) org.springframework:spring-beans:jar:4.3.5.RELEASE
-Spring Boot (http://projects.spring.io/spring-boot/) org.springframework.boot:spring-boot:jar:1.4.5.RELEASE
-Spring Boot AOP Starter (http://projects.spring.io/spring-boot/) org.springframework.boot:spring-boot-starter-aop:jar:1.4.5.RELEASE
-Spring Boot Actuator (http://projects.spring.io/spring-boot/) org.springframework.boot:spring-boot-actuator:jar:1.4.5.RELEASE
-Spring Boot Actuator Starter (http://projects.spring.io/spring-boot/) org.springframework.boot:spring-boot-starter-actuator:jar:1.4.5.RELEASE
-Spring Boot AutoConfigure (http://projects.spring.io/spring-boot/) org.springframework.boot:spring-boot-autoconfigure:jar:1.4.5.RELEASE
-Spring Boot Logging Starter (http://projects.spring.io/spring-boot/) org.springframework.boot:spring-boot-starter-logging:jar:1.4.5.RELEASE
-Spring Boot Starter (http://projects.spring.io/spring-boot/) org.springframework.boot:spring-boot-starter:jar:1.4.5.RELEASE
-Spring Boot Tomcat Starter (http://projects.spring.io/spring-boot/) org.springframework.boot:spring-boot-starter-tomcat:jar:1.4.5.RELEASE
-Spring Boot Web Starter (http://projects.spring.io/spring-boot/) org.springframework.boot:spring-boot-starter-web:jar:1.4.5.RELEASE
+Spring AOP (https://github.com/spring-projects/spring-framework) org.springframework:spring-aop:jar:4.3.16.RELEASE
+Spring Aspects (https://github.com/spring-projects/spring-framework) org.springframework:spring-aspects:jar:4.3.16.RELEASE
+Spring Beans (https://github.com/spring-projects/spring-framework) org.springframework:spring-beans:jar:4.3.16.RELEASE
+Spring Boot (http://projects.spring.io/spring-boot/) org.springframework.boot:spring-boot:jar:1.5.12.RELEASE
+Spring Boot AOP Starter (http://projects.spring.io/spring-boot/) org.springframework.boot:spring-boot-starter-aop:jar:1.5.12.RELEASE
+Spring Boot Actuator (http://projects.spring.io/spring-boot/) org.springframework.boot:spring-boot-actuator:jar:1.5.12.RELEASE
+Spring Boot Actuator Starter (http://projects.spring.io/spring-boot/) org.springframework.boot:spring-boot-starter-actuator:jar:1.5.12.RELEASE
+Spring Boot AutoConfigure (http://projects.spring.io/spring-boot/) org.springframework.boot:spring-boot-autoconfigure:jar:1.5.12.RELEASE
+Spring Boot Logging Starter (http://projects.spring.io/spring-boot/) org.springframework.boot:spring-boot-starter-logging:jar:1.5.12.RELEASE
+Spring Boot Starter (http://projects.spring.io/spring-boot/) org.springframework.boot:spring-boot-starter:jar:1.5.12.RELEASE
+Spring Boot Tomcat Starter (http://projects.spring.io/spring-boot/) org.springframework.boot:spring-boot-starter-tomcat:jar:1.5.12.RELEASE
+Spring Boot Web Starter (http://projects.spring.io/spring-boot/) org.springframework.boot:spring-boot-starter-web:jar:1.5.12.RELEASE
 Spring Cloud Commons (https://projects.spring.io/spring-cloud/spring-cloud-commons/) org.springframework.cloud:spring-cloud-commons:jar:1.1.8.RELEASE
 Spring Cloud Context (https://projects.spring.io/spring-cloud/spring-cloud-context/) org.springframework.cloud:spring-cloud-context:jar:1.1.8.RELEASE
 Spring Cloud Netflix Core (https://spring.io/spring-cloud/spring-cloud-netflix/spring-cloud-netflix-core) org.springframework.cloud:spring-cloud-netflix-core:jar:1.2.6.RELEASE
-Spring Context (https://github.com/spring-projects/spring-framework) org.springframework:spring-context:jar:4.3.5.RELEASE
-Spring Core (https://github.com/spring-projects/spring-framework) org.springframework:spring-core:jar:4.3.5.RELEASE
-Spring Expression Language (SpEL) (https://github.com/spring-projects/spring-framework) org.springframework:spring-expression:jar:4.3.5.RELEASE
-Spring Web (https://github.com/spring-projects/spring-framework) org.springframework:spring-web:jar:4.3.5.RELEASE
-Spring Web MVC (https://github.com/spring-projects/spring-framework) org.springframework:spring-webmvc:jar:4.3.5.RELEASE
+Spring Context (https://github.com/spring-projects/spring-framework) org.springframework:spring-context:jar:4.3.16.RELEASE
+Spring Core (https://github.com/spring-projects/spring-framework) org.springframework:spring-core:jar:4.3.16.RELEASE
+Spring Expression Language (SpEL) (https://github.com/spring-projects/spring-framework) org.springframework:spring-expression:jar:4.3.16.RELEASE
+Spring Web (https://github.com/spring-projects/spring-framework) org.springframework:spring-web:jar:4.3.16.RELEASE
+Spring Web MVC (https://github.com/spring-projects/spring-framework) org.springframework:spring-webmvc:jar:4.3.16.RELEASE
 Vert.x Bridge Common (http://nexus.sonatype.org/oss-repository-hosting.html/vertx-parent/vertx-ext/vertx-ext-parent/vertx-bridge-common) io.vertx:vertx-bridge-common:jar:3.5.0
 Vert.x Core (http://nexus.sonatype.org/oss-repository-hosting.html/vertx-parent/vertx-core) io.vertx:vertx-core:jar:3.5.0
 Woodstox (https://github.com/FasterXML/woodstox) com.fasterxml.woodstox:woodstox-core:bundle:5.0.3

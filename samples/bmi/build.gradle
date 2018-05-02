@@ -24,7 +24,7 @@ allprojects  {
 
 buildscript {
     dependencies {
-        classpath("org.springframework.boot:spring-boot-gradle-plugin:1.4.5.RELEASE")
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:1.5.12.RELEASE")
     }
     repositories {
         mavenLocal()
