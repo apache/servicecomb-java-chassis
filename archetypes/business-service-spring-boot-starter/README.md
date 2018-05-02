@@ -15,7 +15,7 @@ Then you can get executable jar in target/bin folder:
 ```bash
 java -jar xxxxxx-{version}-exec.jar
 ```
-*Notice: If you need to modify config setting in "microservice.yaml" like service center address but don't want repackage the executable jar, **you can direct place a new "microservice.yaml" file in same folder, then settings will be overridden.***
+*Notice: If you need to modify configurations in "microservice.yaml" like service center address but don't want repackage the executable jar, **you can directly place a new "microservice.yaml" file under the same folder, then configurations will be overridden.***
 
 ## Spring Boot and ServiceComb
 ### Why ServiceComb make integration with Spring Boot
