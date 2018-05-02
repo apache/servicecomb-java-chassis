@@ -17,14 +17,12 @@
 
 package org.apache.servicecomb.demo.springmvc.tests;
 
-import static com.seanyinx.github.unit.scaffolding.AssertUtils.expectFailing;
 import static java.time.temporal.ChronoUnit.SECONDS;
 import static org.apache.servicecomb.serviceregistry.client.LocalServiceRegistryClientImpl.LOCAL_REGISTRY_FILE_KEY;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.fail;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 import static org.springframework.http.HttpMethod.GET;
 import static org.springframework.http.HttpMethod.POST;
@@ -69,9 +67,7 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.util.concurrent.ListenableFuture;
 import org.springframework.util.concurrent.ListenableFutureCallback;
 import org.springframework.web.client.AsyncRestTemplate;
-import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
-import org.springframework.web.client.UnknownHttpStatusCodeException;
 
 @Ignore
 public class SpringMvcIntegrationTestBase {
@@ -329,14 +325,10 @@ public class SpringMvcIntegrationTestBase {
     HttpHeaders headers = new HttpHeaders();
     headers.setContentType(MediaType.MULTIPART_FORM_DATA);
 
-    try {
-      restTemplate.postForObject(
-          codeFirstUrl + "uploadWithoutAnnotation",
-          new HttpEntity<>(map, headers),
-          String.class);
-      expectFailing(UnknownHttpStatusCodeException.class);
-    } catch (RestClientException ignored) {
-    }
+    String result = restTemplate
+        .postForObject(codeFirstUrl + "uploadWithoutAnnotation", new HttpEntity<>(map, headers), String.class);
+
+    assertThat(result, is("CommonExceptionData [message=Cse Internal Server Error]"));
   }
 
   @Test
@@ -511,7 +503,6 @@ public class SpringMvcIntegrationTestBase {
             params);
     result = listenableFuture.get();
     assertThat(result.getBody(), is(2));
-
   }
 
   @Test
@@ -637,14 +628,8 @@ public class SpringMvcIntegrationTestBase {
 
   @Test
   public void ensureServerBlowsUp() {
-    try {
-      restTemplate.getForObject(
-          controllerUrl + "sayhi?name=throwexception",
-          String.class);
-      fail("Exception expected, but threw nothing");
-    } catch (UnknownHttpStatusCodeException e) {
-      assertThat(e.getRawStatusCode(), is(590));
-    }
+    String response = restTemplate.getForObject(controllerUrl + "sayhi?name=throwexception", String.class);
+    assertThat(response, is("{\"message\":\"Cse Internal Server Error\"}"));
   }
 
   @Test
@@ -678,7 +663,6 @@ public class SpringMvcIntegrationTestBase {
           }
         }
     );
-
   }
 
   private <T> HttpEntity<T> jsonRequest(T body) {

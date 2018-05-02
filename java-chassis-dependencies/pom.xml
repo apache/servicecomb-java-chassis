@@ -34,7 +34,7 @@
     <jackson.version>2.9.5</jackson.version>
     <vertx.version>3.5.0</vertx.version>
     <tec.zkclient.version>0.8</tec.zkclient.version>
-    <spring.version>4.3.5.RELEASE</spring.version>
+    <spring.version>4.3.16.RELEASE</spring.version>
     <slf4j.version>1.7.7</slf4j.version>
     <log4j.version>1.2.17</log4j.version>
     <log4j2.version>2.8.2</log4j2.version>
@@ -655,7 +655,7 @@
       <dependency>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-dependencies</artifactId>
-        <version>1.4.5.RELEASE</version>
+        <version>1.5.12.RELEASE</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>
@@ -663,7 +663,7 @@
       <dependency>
         <groupId>org.springframework.cloud</groupId>
         <artifactId>spring-cloud-dependencies</artifactId>
-        <version>Camden.SR6</version>
+        <version>Edgware.SR3</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>
