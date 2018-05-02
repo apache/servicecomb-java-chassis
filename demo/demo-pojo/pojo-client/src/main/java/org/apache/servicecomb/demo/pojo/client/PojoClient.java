@@ -102,22 +102,32 @@ public class PojoClient {
       ArchaiusUtils.setProperty("cse.loadbalance.strategy.name", "WeightedResponse");
       testStringArray(test);
       boolean checkerStated = false;
-      Set<Thread> allThreads = Thread.getAllStackTraces().keySet();
-      for (Thread t : allThreads) {
-        if (t.getName().equals("NFLoadBalancer-serverWeightTimer-unknown")) {
-          checkerStated = true;
+      // Timer may not start thread very fast so check for 3 times.
+      for (int i = 0; i < 3; i++) {
+        Set<Thread> allThreads = Thread.getAllStackTraces().keySet();
+        for (Thread t : allThreads) {
+          if (t.getName().equals("NFLoadBalancer-serverWeightTimer-unknown")) {
+            checkerStated = true;
+            break;
+          }
         }
+        Thread.sleep(1000);
       }
       TestMgr.check(checkerStated, true);
-      
+
       ArchaiusUtils.setProperty("cse.loadbalance.strategy.name", "RoundRobin");
       testStringArray(test);
-      
-      allThreads = Thread.getAllStackTraces().keySet();
+
       boolean checkerDestroyed = true;
-      for (Thread t : allThreads) {
-        if (t.getName().equals("NFLoadBalancer-serverWeightTimer-unknown")) {
-          checkerDestroyed = false;
+      // Timer cancel may not destroy thread very fast so check for 3 times.
+      for (int i = 0; i < 3; i++) {
+        checkerDestroyed = true;
+        Set<Thread> allThreads = Thread.getAllStackTraces().keySet();
+        for (Thread t : allThreads) {
+          if (t.getName().equals("NFLoadBalancer-serverWeightTimer-unknown")) {
+            checkerDestroyed = false;
+            Thread.sleep(1000);
+          }
         }
       }
       TestMgr.check(checkerDestroyed, true);
