@@ -75,7 +75,6 @@ public class TestCseDiscoveryClient {
 
     DiscoveryClient client = new CseDiscoveryClient();
     Assert.assertEquals("Spring Cloud CSE Discovery Client", client.description());
-    Assert.assertEquals(null, client.getLocalServiceInstance());
     Assert.assertEquals(2, client.getServices().size());
     Assert.assertEquals("server2", client.getServices().get(1));
     Assert.assertEquals(2, client.getInstances("service1-instance1").size());

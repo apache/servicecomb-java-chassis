@@ -19,12 +19,12 @@ package org.apache.servicecomb.springboot.starter.discovery;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.cloud.client.discovery.DiscoveryClient;
-import org.springframework.cloud.client.discovery.noop.NoopDiscoveryClientAutoConfiguration;
+import org.springframework.cloud.client.discovery.simple.SimpleDiscoveryClientAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
 
-@AutoConfigureBefore(NoopDiscoveryClientAutoConfiguration.class)
+@AutoConfigureBefore(SimpleDiscoveryClientAutoConfiguration.class)
 @Configuration
 public class CseDiscoveryClientConfiguration {
   @Bean

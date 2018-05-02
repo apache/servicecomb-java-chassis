@@ -65,6 +65,7 @@ public class CseDiscoveryClient implements DiscoveryClient {
   }
 
   @Override
+  @Deprecated
   public ServiceInstance getLocalServiceInstance() {
     return null;
   }

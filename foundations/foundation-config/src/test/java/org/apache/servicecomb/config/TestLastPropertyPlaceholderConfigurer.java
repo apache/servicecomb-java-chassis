@@ -61,7 +61,7 @@ public class TestLastPropertyPlaceholderConfigurer {
       bean.resolver.resolveStringValue("${b}");
       Assert.fail("must throw exception");
     } catch (IllegalArgumentException e) {
-      Assert.assertEquals("Could not resolve placeholder 'b' in string value \"${b}\"", e.getMessage());
+      Assert.assertEquals("Could not resolve placeholder 'b' in value \"${b}\"", e.getMessage());
     }
 
     context.close();
