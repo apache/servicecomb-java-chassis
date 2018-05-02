@@ -130,7 +130,7 @@ public final class ServiceRegistryConfig {
     ArrayList<IpPort> ipPortList = new ArrayList<>();
     uriList.forEach(anUriList -> {
       try {
-        URI uri = new URI(anUriList);
+        URI uri = new URI(anUriList.trim());
         this.ssl = "https".equals(uri.getScheme());
         ipPortList.add(NetUtils.parseIpPort(uri.getScheme(), uri.getAuthority()));
       } catch (Exception e) {
