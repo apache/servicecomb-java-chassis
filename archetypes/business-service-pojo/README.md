@@ -17,4 +17,4 @@ Then you can get outputs in target folder:
 ```bash
 java -jar xxxxxx-{version}.jar
 ```
-*Notice: If you need to modify config setting in "microservice.yaml" like service center address but don't want repackage the executable jar, **you can direct place a new "microservice.yaml" file in same folder, then settings will be overridden.***
+*Notice: If you need to modify configurations in "microservice.yaml" like service center address but don't want repackage the executable jar, **you can directly place a new "microservice.yaml" file under the same folder, then configurations will be overridden.***
