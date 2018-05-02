@@ -131,9 +131,9 @@ public class ConfigCenterClient {
       throw new IllegalStateException(e);
     }
     refreshMembers(memberDiscovery, true);
-    ConfigRefresh refrestTask = new ConfigRefresh(parseConfigUtils, memberDiscovery);
-    refrestTask.run(true);
-    EXECUTOR.scheduleWithFixedDelay(refrestTask,
+    ConfigRefresh refreshTask = new ConfigRefresh(parseConfigUtils, memberDiscovery);
+    refreshTask.run(true);
+    EXECUTOR.scheduleWithFixedDelay(refreshTask,
         firstRefreshInterval,
         refreshInterval,
         TimeUnit.MILLISECONDS);
@@ -168,11 +168,13 @@ public class ConfigCenterClient {
         request.end();
       });
       if (wait) {
+        LOGGER.info("Refreshing config center members...");
         try {
           latch.await(BOOTUP_WAIT_TIME, TimeUnit.SECONDS);
         } catch (InterruptedException e) {
           LOGGER.warn(e.getMessage());
         }
+        LOGGER.info("Refreshing config center members is done.");
       }
     }
   }
@@ -385,11 +387,13 @@ public class ConfigCenterClient {
         request.end();
       });
       if (wait) {
+        LOGGER.info("Refreshing remote config...");
         try {
           latch.await(BOOTUP_WAIT_TIME, TimeUnit.SECONDS);
         } catch (InterruptedException e) {
           LOGGER.warn(e.getMessage());
         }
+        LOGGER.info("Refreshing remote config is done.");
       }
     }
   }
