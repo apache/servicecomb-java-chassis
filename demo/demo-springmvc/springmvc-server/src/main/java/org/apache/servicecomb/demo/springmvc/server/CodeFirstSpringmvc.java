@@ -85,7 +85,7 @@ public class CodeFirstSpringmvc {
       String content1 = IOUtils.toString(is1);
       String content2 = IOUtils.toString(is2);
       return String.format("%s:%s:%s\n"
-          + "%s:%s:%s",
+              + "%s:%s:%s",
           file1.getOriginalFilename(),
           file1.getContentType(),
           content1,
@@ -310,7 +310,7 @@ public class CodeFirstSpringmvc {
     return new OutputModelForTestIgnore("output_id", input.getInputId(), input.getContent(), input.getInputObject(),
         input.getInputJsonObject(), input.getInputIgnoreInterface(),
         new Person("outputSomeone"), new JsonObject("{\"OutputJsonKey\" : \"OutputJsonValue\"}"), () -> {
-        });
+    });
   }
 
   @SuppressWarnings("unchecked")
@@ -336,7 +336,7 @@ public class CodeFirstSpringmvc {
   public String testform(HttpServletRequest request) {
     String form1 = request.getParameter("form1");
     String form2 = request.getParameter("form2");
-    Assert.notNull(form1);
+    Assert.notNull(form1, "from1 is null");
     return form1 + form2;
   }
 

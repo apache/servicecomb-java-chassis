@@ -114,7 +114,7 @@ public class Consumer {
     }, resp -> {
       byte[] buf = new byte[1 * 1024 * 1024];
       try (InputStream is = resp.getBody()) {
-        for (;;) {
+        for (; ; ) {
           int len = is.read(buf);
           if (len == -1) {
             break;
@@ -125,14 +125,14 @@ public class Consumer {
       }
       return null;
     });
-    Assert.isTrue(size.get() == 10 * 1024 * 1024);
+    Assert.isTrue(size.get() == 10 * 1024 * 1024, "size is : " + String.valueOf(size.get()) + " not 10 * 1024 * 1024");
     System.out.println("test download bigFile finished");
   }
 
   protected void testDownload() {
     String url = edgePrefix + "/v2/download";
     String content = template.getForObject(url, String.class);
-    Assert.isTrue("download".equals(content));
+    Assert.isTrue("download".equals(content), "content is : " + content + " not download");
     System.out.println("test download finished");
   }
 
