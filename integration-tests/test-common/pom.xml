@@ -64,6 +64,10 @@
       <groupId>io.zipkin.brave</groupId>
       <artifactId>brave-context-log4j12</artifactId>
     </dependency>
+    <dependency>
+      <groupId>com.google.code.findbugs</groupId>
+      <artifactId>jsr305</artifactId>
+    </dependency>
   </dependencies>
 
   <build>
