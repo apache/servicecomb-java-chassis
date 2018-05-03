@@ -130,7 +130,7 @@ public class ConfigCenterClient {
     } catch (InterruptedException e) {
       throw new IllegalStateException(e);
     }
-    refreshMembers(memberDiscovery, true);
+    refreshMembers(memberDiscovery);
     ConfigRefresh refreshTask = new ConfigRefresh(parseConfigUtils, memberDiscovery);
     refreshTask.run(true);
     EXECUTOR.scheduleWithFixedDelay(refreshTask,
@@ -139,11 +139,10 @@ public class ConfigCenterClient {
         TimeUnit.MILLISECONDS);
   }
 
-  private void refreshMembers(MemberDiscovery memberDiscovery, boolean wait) {
+  private void refreshMembers(MemberDiscovery memberDiscovery) {
     if (CONFIG_CENTER_CONFIG.getAutoDiscoveryEnabled()) {
       String configCenter = memberDiscovery.getConfigServer();
       IpPort ipPort = NetUtils.parseIpPortFromURI(configCenter);
-      CountDownLatch latch = new CountDownLatch(1);
       clientMgr.findThreadBindClientPool().runOnContext(client -> {
         HttpClientRequest request = client.get(ipPort.getPort(), ipPort.getHostOrIp(), URIConst.MEMBERS, rsp -> {
           if (rsp.statusCode() == HttpResponseStatus.OK.code()) {
@@ -151,7 +150,6 @@ public class ConfigCenterClient {
               memberDiscovery.refreshMembers(buf.toJsonObject());
             });
           }
-          latch.countDown();
         });
         SignRequest signReq = createSignRequest(request.method().toString(),
             configCenter + URIConst.MEMBERS,
@@ -163,19 +161,9 @@ public class ConfigCenterClient {
         authHeaderProviders.forEach(provider -> request.headers().addAll(provider.getSignAuthHeaders(signReq)));
         request.exceptionHandler(e -> {
           LOGGER.error("Fetch member from {} failed. Error message is [{}].", configCenter, e.getMessage());
-          latch.countDown();
         });
         request.end();
       });
-      if (wait) {
-        LOGGER.info("Refreshing config center members...");
-        try {
-          latch.await(BOOTUP_WAIT_TIME, TimeUnit.SECONDS);
-        } catch (InterruptedException e) {
-          LOGGER.warn(e.getMessage());
-        }
-        LOGGER.info("Refreshing config center members is done.");
-      }
     }
   }
 
@@ -295,7 +283,7 @@ public class ConfigCenterClient {
                 if ("CREATE".equals(mAction.get("action"))) {
                   refreshConfig(configCenter, false);
                 } else if ("MEMBER_CHANGE".equals(mAction.get("action"))) {
-                  refreshMembers(memberdis, false);
+                  refreshMembers(memberdis);
                 } else {
                   parseConfigUtils.refreshConfigItemsIncremental(mAction);
                 }
@@ -357,15 +345,16 @@ public class ConfigCenterClient {
                 EventManager.post(new ConnFailEvent("config refresh result parse fail " + e.getMessage()));
                 LOGGER.error("Config refresh from {} failed. Error message is [{}].", configcenter, e.getMessage());
               }
+              latch.countDown();
             });
           } else {
             rsp.bodyHandler(buf -> {
               LOGGER.error("Server error message is [{}].", buf);
+              latch.countDown();
             });
             EventManager.post(new ConnFailEvent("fetch config fail"));
             LOGGER.error("Config refresh from {} failed.", configcenter);
           }
-          latch.countDown();
         });
         Map<String, String> headers = new HashMap<>();
         headers.put("x-domain-name", tenantName);

@@ -41,6 +41,8 @@ public class MemberDiscovery {
 
   private List<String> configServerAddresses = new ArrayList<>();
 
+  private Object lock = new Object();
+
   private AtomicInteger counter = new AtomicInteger(0);
 
   public MemberDiscovery(List<String> configCenterUri) {
@@ -52,11 +54,13 @@ public class MemberDiscovery {
   }
 
   public String getConfigServer() {
-    if(configServerAddresses.isEmpty()) {
-      throw new IllegalStateException("Config center address is not available.");
+    synchronized (lock) {
+      if (configServerAddresses.isEmpty()) {
+        throw new IllegalStateException("Config center address is not available.");
+      }
+      int index = Math.abs(counter.get() % configServerAddresses.size());
+      return configServerAddresses.get(index);
     }
-    int index = Math.abs(counter.get() % configServerAddresses.size());
-    return configServerAddresses.get(index);
   }
 
   @Subscribe
@@ -65,17 +69,22 @@ public class MemberDiscovery {
   }
 
   public void refreshMembers(JsonObject members) {
-    configServerAddresses.clear();
+    List<String> newServerAddresses = new ArrayList<>();
     members.getJsonArray("instances").forEach(m -> {
       JsonObject instance = (JsonObject) m;
       if ("UP".equals(instance.getString("status", "UP"))) {
         String endpoint = instance.getJsonArray("endpoints").getString(0);
         String scheme = instance.getBoolean("isHttps", false) ? "https" : "http";
-        configServerAddresses.add(scheme + SCHEMA_SEPRATOR
+        newServerAddresses.add(scheme + SCHEMA_SEPRATOR
             + endpoint.substring(endpoint.indexOf(SCHEMA_SEPRATOR) + SCHEMA_SEPRATOR.length()));
       }
     });
-    Collections.shuffle(configServerAddresses);
-    LOGGER.info("config center members: {}", configServerAddresses);
+
+    synchronized (lock) {
+      this.configServerAddresses.clear();
+      this.configServerAddresses.addAll(newServerAddresses);
+      Collections.shuffle(this.configServerAddresses);
+    }
+    LOGGER.info("New config center members: {}", this.configServerAddresses);
   }
 }
