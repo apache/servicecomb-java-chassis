@@ -327,7 +327,7 @@ public class SpringMvcIntegrationTestBase {
 
     ResponseEntity<String> response = restTemplate
         .postForEntity(codeFirstUrl + "uploadWithoutAnnotation", new HttpEntity<>(map, headers), String.class);
-    assertThat(response.getStatusCodeValue(), is(response.getStatusCodeValue()));
+    assertThat(response.getStatusCodeValue(), is(590));
     assertThat(response.getBody(), is("CommonExceptionData [message=Cse Internal Server Error]"));
   }
 
