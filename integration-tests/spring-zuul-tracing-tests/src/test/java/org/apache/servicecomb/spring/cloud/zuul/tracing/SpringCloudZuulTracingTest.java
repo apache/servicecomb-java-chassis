@@ -81,13 +81,10 @@ public class SpringCloudZuulTracingTest extends TracingTestBase {
 
   @Test
   public void tracesFailedCallsReceivedByZuul() throws InterruptedException {
-    ResponseEntity<String> responseEntity = testRestTemplate.getForEntity("/dummy/rest/oops", String.class);
-    try {
-      int code = responseEntity.getStatusCode().value();
-      assertThat(code, is(590));
-      expectFailing(IllegalArgumentException.class);
-    } catch (Exception ignore) {
-    }
+    ResponseEntity<String> response = testRestTemplate.getForEntity("/dummy/rest/oops", String.class);
+    assertThat(response.getStatusCodeValue(), is(590));
+    assertThat(response.getBody(), is("CommonExceptionData [message=Cse Internal Server Error]"));
+
     TimeUnit.MILLISECONDS.sleep(1000);
 
     Collection<String> tracingMessages = appender.pollLogs(".*\\[\\w+/\\w+/\\w*\\]\\s+INFO.*(logged tracing|/oops).*");

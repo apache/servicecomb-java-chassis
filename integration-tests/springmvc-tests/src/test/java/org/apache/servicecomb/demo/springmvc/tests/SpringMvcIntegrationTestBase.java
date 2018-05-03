@@ -325,10 +325,10 @@ public class SpringMvcIntegrationTestBase {
     HttpHeaders headers = new HttpHeaders();
     headers.setContentType(MediaType.MULTIPART_FORM_DATA);
 
-    String result = restTemplate
-        .postForObject(codeFirstUrl + "uploadWithoutAnnotation", new HttpEntity<>(map, headers), String.class);
-
-    assertThat(result, is("CommonExceptionData [message=Cse Internal Server Error]"));
+    ResponseEntity<String> response = restTemplate
+        .postForEntity(codeFirstUrl + "uploadWithoutAnnotation", new HttpEntity<>(map, headers), String.class);
+    assertThat(response.getStatusCodeValue(), is(response.getStatusCodeValue()));
+    assertThat(response.getBody(), is("CommonExceptionData [message=Cse Internal Server Error]"));
   }
 
   @Test
@@ -628,8 +628,10 @@ public class SpringMvcIntegrationTestBase {
 
   @Test
   public void ensureServerBlowsUp() {
-    String response = restTemplate.getForObject(controllerUrl + "sayhi?name=throwexception", String.class);
-    assertThat(response, is("{\"message\":\"Cse Internal Server Error\"}"));
+    ResponseEntity<String> response = restTemplate
+        .getForEntity(controllerUrl + "sayhi?name=throwexception", String.class);
+    assertThat(response.getStatusCodeValue(), is(590));
+    assertThat(response.getBody(), is("{\"message\":\"Cse Internal Server Error\"}"));
   }
 
   @Test
