@@ -358,19 +358,19 @@ Jackson-dataformat-XML (http://wiki.fasterxml.com/JacksonExtensionXmlDataBinding
 Jackson-dataformat-YAML (https://github.com/FasterXML/jackson-dataformats-text) com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:bundle:2.9.5
 Javassist (http://www.javassist.org/) org.javassist:javassist:bundle:3.18.1-GA
 Log4j Implemented Over SLF4J (http://www.slf4j.org) org.slf4j:log4j-over-slf4j:jar:1.7.7
-Netty/Buffer (http://netty.io/netty-buffer/) io.netty:netty-buffer:jar:4.1.17.Final
-Netty/Codec (http://netty.io/netty-codec/) io.netty:netty-codec:jar:4.1.17.Final
-Netty/Codec/DNS (http://netty.io/netty-codec-dns/) io.netty:netty-codec-dns:jar:4.1.17.Final
-Netty/Codec/HTTP (http://netty.io/netty-codec-http/) io.netty:netty-codec-http:jar:4.1.17.Final
-Netty/Codec/HTTP2 (http://netty.io/netty-codec-http2/) io.netty:netty-codec-http2:jar:4.1.17.Final
-Netty/Codec/Socks (http://netty.io/netty-codec-socks/) io.netty:netty-codec-socks:jar:4.1.17.Final
-Netty/Common (http://netty.io/netty-common/) io.netty:netty-common:jar:4.1.17.Final
-Netty/Handler (http://netty.io/netty-handler/) io.netty:netty-handler:jar:4.1.17.Final
-Netty/Handler/Proxy (http://netty.io/netty-handler-proxy/) io.netty:netty-handler-proxy:jar:4.1.17.Final
-Netty/Resolver (http://netty.io/netty-resolver/) io.netty:netty-resolver:jar:4.1.17.Final
-Netty/Resolver/DNS (http://netty.io/netty-resolver-dns/) io.netty:netty-resolver-dns:jar:4.1.17.Final
+Netty/Buffer (http://netty.io/netty-buffer/) io.netty:netty-buffer:jar:4.1.24.Final
+Netty/Codec (http://netty.io/netty-codec/) io.netty:netty-codec:jar:4.1.24.Final
+Netty/Codec/DNS (http://netty.io/netty-codec-dns/) io.netty:netty-codec-dns:jar:4.1.24.Final
+Netty/Codec/HTTP (http://netty.io/netty-codec-http/) io.netty:netty-codec-http:jar:4.1.24.Final
+Netty/Codec/HTTP2 (http://netty.io/netty-codec-http2/) io.netty:netty-codec-http2:jar:4.1.24.Final
+Netty/Codec/Socks (http://netty.io/netty-codec-socks/) io.netty:netty-codec-socks:jar:4.1.24.Final
+Netty/Common (http://netty.io/netty-common/) io.netty:netty-common:jar:4.1.24.Final
+Netty/Handler (http://netty.io/netty-handler/) io.netty:netty-handler:jar:4.1.24.Final
+Netty/Handler/Proxy (http://netty.io/netty-handler-proxy/) io.netty:netty-handler-proxy:jar:4.1.24.Final
+Netty/Resolver (http://netty.io/netty-resolver/) io.netty:netty-resolver:jar:4.1.24.Final
+Netty/Resolver/DNS (http://netty.io/netty-resolver-dns/) io.netty:netty-resolver-dns:jar:4.1.24.Final
 Netty/TomcatNative(https://netty.io/wiki/forked-tomcat-native.html) io.netty:netty-tcnative-boringssl-static:2.0.7.Final
-Netty/Transport (http://netty.io/netty-transport/) io.netty:netty-transport:jar:4.1.17.Final
+Netty/Transport (http://netty.io/netty-transport/) io.netty:netty-transport:jar:4.1.24.Final
 OkHttp (https://github.com/square/okhttp/okhttp) com.squareup.okhttp3:okhttp:jar:3.4.1
 Okio (https://github.com/square/okio/okio) com.squareup.okio:okio:jar:1.9.0
 Prometheus Java Simpleclient (http://github.com/prometheus/client_java/simpleclient) io.prometheus:simpleclient:bundle:0.1.0
