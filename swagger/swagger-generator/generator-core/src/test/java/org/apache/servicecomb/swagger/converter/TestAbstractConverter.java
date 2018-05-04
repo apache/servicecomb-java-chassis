@@ -27,7 +27,6 @@ import org.junit.Test;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.type.TypeFactory;
 
-import io.swagger.models.Swagger;
 import mockit.Mocked;
 
 public class TestAbstractConverter {
@@ -38,6 +37,8 @@ public class TestAbstractConverter {
   ClassLoader classLoader = new ClassLoader() {
   };
 
+  SwaggerToClassGenerator swaggerToClassGenerator = new SwaggerToClassGenerator(classLoader, null, null);
+
   AbstractConverter converter = new AbstractConverter() {
     @Override
     protected Map<String, Object> findVendorExtensions(Object def) {
@@ -45,7 +46,7 @@ public class TestAbstractConverter {
     }
 
     @Override
-    protected JavaType doConvert(ClassLoader classLoader, String packageName, Swagger swagger, Object def) {
+    protected JavaType doConvert(SwaggerToClassGenerator swaggerToClassGenerator, Object def) {
       return doConvertResult;
     }
   };
@@ -55,14 +56,14 @@ public class TestAbstractConverter {
     doConvertResult = TypeFactory.defaultInstance().constructType(String.class);
     vendorExtensions.put(SwaggerConst.EXT_JAVA_CLASS, "java.lang.String");
 
-    Assert.assertSame(doConvertResult, converter.convert(classLoader, null, null, null));
+    Assert.assertSame(doConvertResult, converter.convert(swaggerToClassGenerator, null));
   }
 
   @Test
   public void convert_noCanonical(@Mocked JavaType type) {
     doConvertResult = type;
 
-    Assert.assertSame(type, converter.convert(classLoader, null, null, null));
+    Assert.assertSame(type, converter.convert(swaggerToClassGenerator, null));
   }
 
   @Test
@@ -70,7 +71,7 @@ public class TestAbstractConverter {
     doConvertResult = TypeFactory.defaultInstance().constructParametricType(Optional.class, String.class);
     vendorExtensions.put(SwaggerConst.EXT_JAVA_CLASS, "java.util.Optional<java.lang.String>");
 
-    Assert.assertSame(doConvertResult, converter.convert(classLoader, null, null, null));
+    Assert.assertSame(doConvertResult, converter.convert(swaggerToClassGenerator, null));
   }
 
   @Test
@@ -78,6 +79,6 @@ public class TestAbstractConverter {
     doConvertResult = TypeFactory.defaultInstance().constructType(String.class);
     vendorExtensions.put(SwaggerConst.EXT_JAVA_CLASS, "xxx<java.lang.String>");
 
-    Assert.assertSame(doConvertResult, converter.convert(classLoader, null, null, null));
+    Assert.assertSame(doConvertResult, converter.convert(swaggerToClassGenerator, null));
   }
 }

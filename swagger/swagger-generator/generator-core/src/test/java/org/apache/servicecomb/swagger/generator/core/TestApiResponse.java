@@ -17,7 +17,6 @@
 
 package org.apache.servicecomb.swagger.generator.core;
 
-import org.apache.servicecomb.swagger.converter.ConverterMgr;
 import org.apache.servicecomb.swagger.generator.core.unittest.SwaggerGeneratorForTest;
 import org.apache.servicecomb.swagger.generator.pojo.PojoSwaggerGeneratorContext;
 import org.junit.Assert;
@@ -79,7 +78,7 @@ public class TestApiResponse {
 
     Response response = operation.getResponses().get("200");
     Property property = response.getHeaders().get("k1");
-    Assert.assertEquals(Integer.class, ConverterMgr.findJavaType(generator, property).getRawClass());
+    Assert.assertEquals(Integer.class, ClassUtilsForTest.findJavaType(generator, property).getRawClass());
   }
 
   private void checkResponseDesc(SwaggerGenerator generator) {
@@ -103,10 +102,10 @@ public class TestApiResponse {
 
     Response response = operation.getResponses().get("200");
     Property property = response.getHeaders().get("k1");
-    Assert.assertEquals(Integer.class, ConverterMgr.findJavaType(generator, property).getRawClass());
+    Assert.assertEquals(Integer.class, ClassUtilsForTest.findJavaType(generator, property).getRawClass());
 
     property = response.getHeaders().get("k2");
-    Assert.assertEquals(String.class, ConverterMgr.findJavaType(generator, property).getRawClass());
+    Assert.assertEquals(String.class, ClassUtilsForTest.findJavaType(generator, property).getRawClass());
   }
 
   public void checkSingle(SwaggerGenerator generator) {
@@ -117,7 +116,7 @@ public class TestApiResponse {
     Assert.assertEquals("testSingle", operation.getOperationId());
 
     Response response = operation.getResponses().get("200");
-    Assert.assertEquals(Integer.class, ConverterMgr.findJavaType(generator, response.getSchema()).getRawClass());
+    Assert.assertEquals(Integer.class, ClassUtilsForTest.findJavaType(generator, response.getSchema()).getRawClass());
   }
 
   public void checkMulti(SwaggerGenerator generator) {
@@ -129,9 +128,9 @@ public class TestApiResponse {
     Assert.assertEquals("testMulti", operation.getOperationId());
 
     Response response = operation.getResponses().get("200");
-    Assert.assertEquals(Integer.class, ConverterMgr.findJavaType(generator, response.getSchema()).getRawClass());
+    Assert.assertEquals(Integer.class, ClassUtilsForTest.findJavaType(generator, response.getSchema()).getRawClass());
 
     response = operation.getResponses().get("301");
-    Assert.assertEquals(String.class, ConverterMgr.findJavaType(generator, response.getSchema()).getRawClass());
+    Assert.assertEquals(String.class, ClassUtilsForTest.findJavaType(generator, response.getSchema()).getRawClass());
   }
 }

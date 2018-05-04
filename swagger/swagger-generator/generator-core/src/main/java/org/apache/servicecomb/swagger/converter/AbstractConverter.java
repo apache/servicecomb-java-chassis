@@ -19,7 +19,6 @@ package org.apache.servicecomb.swagger.converter;
 
 import java.util.Map;
 
-import org.apache.servicecomb.swagger.generator.core.SwaggerConst;
 import org.apache.servicecomb.swagger.generator.core.utils.ClassUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,25 +27,21 @@ import org.springframework.util.StringUtils;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.type.TypeFactory;
 
-import io.swagger.models.Swagger;
-
 public abstract class AbstractConverter implements Converter {
   private static final Logger LOGGER = LoggerFactory.getLogger(AbstractConverter.class);
 
   protected abstract Map<String, Object> findVendorExtensions(Object def);
 
-  protected abstract JavaType doConvert(ClassLoader classLoader, String packageName, Swagger swagger, Object def);
+  protected abstract JavaType doConvert(SwaggerToClassGenerator swaggerToClassGenerator, Object def);
 
   @Override
-  public JavaType convert(ClassLoader classLoader, String packageName, Swagger swagger, Object def) {
-    TypeFactory typeFactory = TypeFactory
-        .defaultInstance()
-        .withClassLoader(classLoader);
+  public JavaType convert(SwaggerToClassGenerator swaggerToClassGenerator, Object def) {
+    TypeFactory typeFactory = swaggerToClassGenerator.getTypeFactory();
 
     Map<String, Object> vendorExtensions = findVendorExtensions(def);
-    String canonical = ClassUtils.getVendorExtension(vendorExtensions, SwaggerConst.EXT_JAVA_CLASS);
+    String canonical = ClassUtils.getClassName(vendorExtensions);
     if (!StringUtils.isEmpty(canonical)) {
-      Class<?> clsResult = ClassUtils.getClassByName(classLoader, canonical);
+      Class<?> clsResult = ClassUtils.getClassByName(swaggerToClassGenerator.getClassLoader(), canonical);
       if (clsResult != null) {
         return typeFactory.constructType(clsResult);
       }
@@ -54,7 +49,7 @@ public abstract class AbstractConverter implements Converter {
 
     // ensure all depend model exist
     // maybe create dynamic class by canonical
-    JavaType result = doConvert(classLoader, packageName, swagger, def);
+    JavaType result = doConvert(swaggerToClassGenerator, def);
 
     String rawClassName = ClassUtils.getRawClassName(canonical);
     if (StringUtils.isEmpty(rawClassName)) {

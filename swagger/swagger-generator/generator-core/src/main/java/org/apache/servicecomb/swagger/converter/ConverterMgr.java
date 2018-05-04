@@ -38,17 +38,14 @@ import org.apache.servicecomb.swagger.converter.property.RefPropertyConverter;
 import org.apache.servicecomb.swagger.converter.property.StringPropertyConverter;
 import org.apache.servicecomb.swagger.extend.property.ByteProperty;
 import org.apache.servicecomb.swagger.extend.property.ShortProperty;
-import org.apache.servicecomb.swagger.generator.core.SwaggerGenerator;
 
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.type.SimpleType;
 import com.fasterxml.jackson.databind.type.TypeFactory;
 
 import io.swagger.models.ArrayModel;
-import io.swagger.models.Model;
 import io.swagger.models.ModelImpl;
 import io.swagger.models.RefModel;
-import io.swagger.models.Swagger;
 import io.swagger.models.parameters.BodyParameter;
 import io.swagger.models.parameters.CookieParameter;
 import io.swagger.models.parameters.FormParameter;
@@ -167,7 +164,7 @@ public final class ConverterMgr {
       throw new Error("not support inner property class: " + propertyCls.getName());
     }
 
-    converterMap.put(propertyCls, (classLoader, packageName, swagger, def) -> javaType);
+    converterMap.put(propertyCls, (context, def) -> javaType);
   }
 
   public static void addConverter(Class<?> cls, Converter converter) {
@@ -179,16 +176,9 @@ public final class ConverterMgr {
     return TYPE_FORMAT_MAP.get(key);
   }
 
-  public static JavaType findJavaType(SwaggerGenerator generator, Object def) {
-    return findJavaType(generator.getClassLoader(),
-        generator.ensureGetPackageName(),
-        generator.getSwagger(),
-        def);
-  }
-
   // def为null是void的场景
   // def可能是model、property、parameter
-  public static JavaType findJavaType(ClassLoader classLoader, String packageName, Swagger swagger, Object def) {
+  public static JavaType findJavaType(SwaggerToClassGenerator swaggerToClassGenerator, Object def) {
     if (def == null) {
       return VOID_JAVA_TYPE;
     }
@@ -197,14 +187,6 @@ public final class ConverterMgr {
       throw new Error("not support def type: " + def.getClass());
     }
 
-    return converter.convert(classLoader, packageName, swagger, def);
-  }
-
-  public static JavaType findByRef(ClassLoader classLoader, String packageName, Swagger swagger, String refName) {
-    Model ref = swagger.getDefinitions().get(refName);
-    if (ModelImpl.class.isInstance(ref) && ((ModelImpl) ref).getName() == null) {
-      ((ModelImpl) ref).setName(refName);
-    }
-    return findJavaType(classLoader, packageName, swagger, ref);
+    return converter.convert(swaggerToClassGenerator, def);
   }
 }

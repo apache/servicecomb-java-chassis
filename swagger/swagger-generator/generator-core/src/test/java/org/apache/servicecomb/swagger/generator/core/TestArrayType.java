@@ -21,7 +21,6 @@ import java.lang.reflect.Method;
 import org.apache.servicecomb.foundation.common.utils.ReflectUtils;
 import org.apache.servicecomb.swagger.generator.core.schema.ArrayType;
 import org.apache.servicecomb.swagger.generator.core.unittest.UnitTestSwaggerUtils;
-import org.apache.servicecomb.swagger.generator.core.utils.ClassUtils;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -32,7 +31,7 @@ public class TestArrayType {
   @Test
   public void test() throws Exception {
     SwaggerGenerator generator = UnitTestSwaggerUtils.generateSwagger(ArrayType.class);
-    Class<?> cls = ClassUtils.getOrCreateInterface(generator);
+    Class<?> cls = ClassUtilsForTest.getOrCreateInterface(generator);
     Method method = ReflectUtils.findMethod(cls, "testBytes");
 
     Class<?> param = (Class<?>) method.getParameters()[0].getParameterizedType();

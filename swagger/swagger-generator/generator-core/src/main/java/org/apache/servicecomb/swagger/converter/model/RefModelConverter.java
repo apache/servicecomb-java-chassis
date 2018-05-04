@@ -17,18 +17,15 @@
 
 package org.apache.servicecomb.swagger.converter.model;
 
-import org.apache.servicecomb.swagger.converter.ConverterMgr;
+import org.apache.servicecomb.swagger.converter.SwaggerToClassGenerator;
 
 import com.fasterxml.jackson.databind.JavaType;
 
 import io.swagger.models.RefModel;
-import io.swagger.models.Swagger;
 
 public class RefModelConverter extends AbstractModelConverter {
   @Override
-  public JavaType doConvert(ClassLoader classLoader, String packageName, Swagger swagger, Object model) {
-    RefModel refModel = (RefModel) model;
-
-    return ConverterMgr.findByRef(classLoader, packageName, swagger, refModel.getSimpleRef());
+  public JavaType doConvert(SwaggerToClassGenerator swaggerToClassGenerator, Object refModel) {
+    return swaggerToClassGenerator.convertRef(((RefModel) refModel).getSimpleRef());
   }
 }

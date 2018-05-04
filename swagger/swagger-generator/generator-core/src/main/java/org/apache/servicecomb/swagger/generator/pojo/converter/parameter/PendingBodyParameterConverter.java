@@ -18,18 +18,16 @@
 package org.apache.servicecomb.swagger.generator.pojo.converter.parameter;
 
 import org.apache.servicecomb.swagger.converter.Converter;
-import org.apache.servicecomb.swagger.converter.ConverterMgr;
+import org.apache.servicecomb.swagger.converter.SwaggerToClassGenerator;
 import org.apache.servicecomb.swagger.generator.pojo.extend.parameter.PendingBodyParameter;
 
 import com.fasterxml.jackson.databind.JavaType;
 
-import io.swagger.models.Swagger;
-
 public class PendingBodyParameterConverter implements Converter {
 
   @Override
-  public JavaType convert(ClassLoader classLoader, String packageName, Swagger swagger, Object def) {
+  public JavaType convert(SwaggerToClassGenerator swaggerToClassGenerator, Object def) {
     PendingBodyParameter param = (PendingBodyParameter) def;
-    return ConverterMgr.findJavaType(classLoader, packageName, swagger, param.getProperty());
+    return swaggerToClassGenerator.convert(param.getProperty());
   }
 }

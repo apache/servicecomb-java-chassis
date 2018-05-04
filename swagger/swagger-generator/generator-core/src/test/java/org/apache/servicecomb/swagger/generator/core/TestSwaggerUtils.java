@@ -23,55 +23,17 @@ import java.util.Date;
 
 import org.apache.servicecomb.common.javassist.JavassistUtils;
 import org.apache.servicecomb.foundation.common.utils.ReflectUtils;
-import org.apache.servicecomb.swagger.converter.ConverterMgr;
 import org.apache.servicecomb.swagger.generator.core.schema.Color;
 import org.apache.servicecomb.swagger.generator.core.schema.InvalidResponseHeader;
 import org.apache.servicecomb.swagger.generator.core.schema.RepeatOperation;
 import org.apache.servicecomb.swagger.generator.core.schema.Schema;
-import org.apache.servicecomb.swagger.generator.core.schema.User;
-import org.apache.servicecomb.swagger.generator.core.unittest.SwaggerGeneratorForTest;
 import org.apache.servicecomb.swagger.generator.core.unittest.UnitTestSwaggerUtils;
-import org.apache.servicecomb.swagger.generator.core.utils.ClassUtils;
-import org.apache.servicecomb.swagger.generator.core.utils.ParamUtils;
 import org.apache.servicecomb.swagger.generator.pojo.PojoSwaggerGeneratorContext;
 import org.junit.Assert;
 import org.junit.Test;
 
-import com.fasterxml.jackson.databind.JavaType;
-
-import io.swagger.models.Model;
-import io.swagger.models.RefModel;
-import io.swagger.models.Swagger;
-
 public class TestSwaggerUtils {
   SwaggerGeneratorContext context = new PojoSwaggerGeneratorContext();
-
-  @Test
-  public void testConverter() {
-    SwaggerGenerator generator = new SwaggerGeneratorForTest(context, null);
-    Swagger swagger = generator.getSwagger();
-    ParamUtils.addDefinitions(swagger, User.class);
-    Model model = swagger.getDefinitions().get("User");
-    model.getVendorExtensions().clear();
-
-    JavaType javaType = ConverterMgr.findJavaType(generator, model);
-    checkJavaType(swagger, javaType);
-
-    RefModel refModel = new RefModel();
-    refModel.setReference("User");
-    javaType = ConverterMgr.findJavaType(generator, refModel);
-    checkJavaType(swagger, javaType);
-  }
-
-  protected void checkJavaType(Swagger swagger, JavaType javaType) {
-    Class<?> cls = javaType.getRawClass();
-    Field[] fields = cls.getFields();
-    Assert.assertEquals("gen.cse.ms.ut.User", cls.getName());
-    Assert.assertEquals("name", fields[0].getName());
-    Assert.assertEquals(String.class, fields[0].getType());
-    Assert.assertEquals("age", fields[1].getName());
-    Assert.assertEquals(Integer.class, fields[1].getType());
-  }
 
   private SwaggerGenerator testSchemaMethod(String resultName, String... methodNames) {
     return UnitTestSwaggerUtils.testSwagger("schemas/" + resultName + ".yaml",
@@ -126,7 +88,7 @@ public class TestSwaggerUtils {
   public void testEnum() {
     SwaggerGenerator generator = testSchemaMethod("enum", "testEnum");
     JavassistUtils.detach("gen.cse.ms.ut.SchemaIntf");
-    Class<?> intf = ClassUtils.getOrCreateInterface(generator);
+    Class<?> intf = ClassUtilsForTest.getOrCreateInterface(generator);
 
     Method method = ReflectUtils.findMethod(intf, "testEnum");
     Class<?> bodyCls = method.getParameterTypes()[0];
@@ -221,7 +183,7 @@ public class TestSwaggerUtils {
   public void testDate() {
     SwaggerGenerator generator = testSchemaMethod("date", "testDate");
     JavassistUtils.detach("gen.cse.ms.ut.SchemaIntf");
-    Class<?> intf = ClassUtils.getOrCreateInterface(generator);
+    Class<?> intf = ClassUtilsForTest.getOrCreateInterface(generator);
 
     Method method = ReflectUtils.findMethod(intf, "testDate");
     Assert.assertEquals(Date.class, method.getReturnType());

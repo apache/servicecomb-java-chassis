@@ -20,6 +20,7 @@ package org.apache.servicecomb.swagger.generator.core;
 import java.util.Arrays;
 import java.util.List;
 
+import org.apache.servicecomb.swagger.converter.SwaggerToClassGenerator;
 import org.apache.servicecomb.swagger.converter.property.StringPropertyConverter;
 import org.apache.servicecomb.swagger.generator.core.unittest.SwaggerGeneratorForTest;
 import org.apache.servicecomb.swagger.generator.pojo.PojoSwaggerGeneratorContext;
@@ -44,8 +45,10 @@ public class TestProperty {
     sp._enum(enums);
 
     StringPropertyConverter spc = new StringPropertyConverter();
-    JavaType jt =
-        spc.convert(generator.getClassLoader(), generator.ensureGetPackageName(), generator.getSwagger(), sp);
+    JavaType jt = spc.convert(
+        new SwaggerToClassGenerator(generator.getClassLoader(), generator.getSwagger(),
+            generator.ensureGetPackageName()),
+        sp);
 
     StringProperty spNew = (StringProperty) ModelConverters.getInstance().readAsProperty(jt);
     Assert.assertEquals(enums, spNew.getEnum());

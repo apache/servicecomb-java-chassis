@@ -17,16 +17,14 @@
 package org.apache.servicecomb.swagger.converter.property;
 
 import org.apache.servicecomb.swagger.converter.Converter;
+import org.apache.servicecomb.swagger.converter.SwaggerToClassGenerator;
 
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.type.TypeFactory;
 
-import io.swagger.models.Swagger;
-
 public class ObjectPropertyConverter implements Converter {
   @Override
-  public JavaType convert(ClassLoader classLoader, String packageName, Swagger swagger, Object def) {
+  public JavaType convert(SwaggerToClassGenerator swaggerToClassGenerator, Object def) {
     return TypeFactory.defaultInstance().constructType(Object.class);
   }
-
 }
