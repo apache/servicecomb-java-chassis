@@ -83,7 +83,8 @@ public class TestDefinition {
     Info oInfo = new Info();
     oInfo.setVendorExtension("x-java-interface", "java.lang.String");
     oSwagger.setInfo(oInfo);
-    Assert.assertEquals("java.lang.String", (ClassUtils.getJavaInterface(oSwagger)).getName());
+    Assert.assertEquals("java.lang.String",
+        (ClassUtils.getInterfaceName(oSwagger.getInfo().getVendorExtensions())));
     oInfo.setVendorExtension("x-java-class", "java.lang.String");
   }
 }

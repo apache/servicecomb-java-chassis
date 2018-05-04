@@ -79,7 +79,7 @@ public class ProducerSchemaFactory extends AbstractSchemaFactory<ProducerSchemaC
 
     SchemaMeta schemaMeta = getOrCreateSchema(context);
 
-    SwaggerProducer producer = swaggerEnv.createProducer(producerInstance, schemaMeta.getSwagger());
+    SwaggerProducer producer = swaggerEnv.createProducer(producerInstance, schemaMeta.getSwaggerIntf());
     Executor reactiveExecutor = BeanUtils.getBean(ExecutorManager.EXECUTOR_REACTIVE);
     for (OperationMeta operationMeta : schemaMeta.getOperations()) {
       SwaggerProducerOperation producerOperation = producer.findOperation(operationMeta.getOperationId());

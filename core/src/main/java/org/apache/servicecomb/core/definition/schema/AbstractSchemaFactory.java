@@ -30,7 +30,6 @@ import org.apache.servicecomb.serviceregistry.api.Const;
 import org.apache.servicecomb.swagger.generator.core.CompositeSwaggerGeneratorContext;
 import org.apache.servicecomb.swagger.generator.core.SwaggerGenerator;
 import org.apache.servicecomb.swagger.generator.core.SwaggerGeneratorContext;
-import org.apache.servicecomb.swagger.generator.core.utils.ClassUtils;
 
 import io.swagger.models.Swagger;
 
@@ -108,8 +107,6 @@ public abstract class AbstractSchemaFactory<CONTEXT extends SchemaContext> {
         SchemaUtils.generatePackageName(context.getMicroserviceMeta(), context.getSchemaId()));
     generator.generate();
 
-    // 确保接口是存在的
-    ClassUtils.getOrCreateInterface(generator);
     return generator;
   }
 }
