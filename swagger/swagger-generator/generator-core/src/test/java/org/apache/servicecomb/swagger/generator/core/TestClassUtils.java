@@ -50,67 +50,6 @@ import mockit.Deencapsulation;
 
 @SwaggerDefinition
 public class TestClassUtils {
-  // copy from ClassUtils
-  // do not use JAVA_RESERVED_WORDS in ClassUtils directly
-  // because that's the test target.
-  private static final Set<String> JAVA_RESERVED_WORDS = new HashSet<>();
-
-  static {
-    JAVA_RESERVED_WORDS.addAll(Arrays.asList("true",
-        "false",
-        "null",
-        "abstract",
-        "continue",
-        "for",
-        "new",
-        "switch",
-        "assert",
-        "default",
-        "goto",
-        "package",
-        "synchronized",
-        "boolean",
-        "do",
-        "if",
-        "private",
-        "this",
-        "break",
-        "double",
-        "implements",
-        "protected",
-        "throw",
-        "byte",
-        "else",
-        "import",
-        "public",
-        "throws",
-        "case",
-        "enum",
-        "instanceof",
-        "return",
-        "transient",
-        "catch",
-        "extends",
-        "int",
-        "short",
-        "try",
-        "char",
-        "final",
-        "interface",
-        "static",
-        "void",
-        "class",
-        "finally",
-        "long",
-        "strictfp",
-        "volatile",
-        "const",
-        "float",
-        "native",
-        "super",
-        "while"));
-  }
-
   ClassLoader classLoader = new ClassLoader() {
   };
 
@@ -166,7 +105,9 @@ public class TestClassUtils {
   }
 
   @Test
-  public void testCorrectClassNameReservedWords() {
+  public void testCorrectClassNameReservedWords() throws IllegalAccessException {
+    @SuppressWarnings("unchecked")
+    Set<String> JAVA_RESERVED_WORDS = (Set<String>) FieldUtils.readStaticField(SourceVersion.class, "keywords", true);
     String name = String.join(".", JAVA_RESERVED_WORDS);
     String expectResult = "_" + String.join("._", JAVA_RESERVED_WORDS);
 

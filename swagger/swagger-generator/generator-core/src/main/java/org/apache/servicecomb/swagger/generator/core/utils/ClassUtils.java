@@ -45,9 +45,6 @@ import io.swagger.models.parameters.Parameter;
 import io.swagger.models.properties.Property;
 
 public final class ClassUtils {
-  // reference:
-  //  https://docs.oracle.com/javase/tutorial/java/nutsandbolts/_keywords.html
-  //  https://en.wikipedia.org/wiki/List_of_Java_keywords
   private ClassUtils() {
   }
 
