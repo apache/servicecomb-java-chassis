@@ -17,18 +17,15 @@
 
 package org.apache.servicecomb.swagger.converter.property;
 
-import org.apache.servicecomb.swagger.converter.ConverterMgr;
+import org.apache.servicecomb.swagger.converter.SwaggerToClassGenerator;
 
 import com.fasterxml.jackson.databind.JavaType;
 
-import io.swagger.models.Swagger;
 import io.swagger.models.properties.RefProperty;
 
 public class RefPropertyConverter extends AbstractPropertyConverter {
   @Override
-  public JavaType doConvert(ClassLoader classLoader, String packageName, Swagger swagger, Object property) {
-    RefProperty refProperty = (RefProperty) property;
-
-    return ConverterMgr.findByRef(classLoader, packageName, swagger, refProperty.getSimpleRef());
+  public JavaType doConvert(SwaggerToClassGenerator swaggerToClassGenerator, Object refProperty) {
+    return swaggerToClassGenerator.convertRef(((RefProperty) refProperty).getSimpleRef());
   }
 }

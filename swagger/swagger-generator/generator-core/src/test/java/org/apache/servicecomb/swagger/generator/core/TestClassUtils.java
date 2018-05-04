@@ -17,20 +17,17 @@
 
 package org.apache.servicecomb.swagger.generator.core;
 
-import static junit.framework.TestCase.fail;
 import static org.hamcrest.core.Is.is;
 
-import java.lang.reflect.Method;
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.lang.model.SourceVersion;
 import javax.ws.rs.Path;
 
-import org.apache.servicecomb.common.javassist.JavassistUtils;
+import org.apache.commons.lang3.reflect.FieldUtils;
 import org.apache.servicecomb.swagger.generator.core.schema.User;
 import org.apache.servicecomb.swagger.generator.core.unittest.UnitTestSwaggerUtils;
 import org.apache.servicecomb.swagger.generator.core.utils.ClassUtils;
@@ -39,14 +36,9 @@ import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-import org.mockito.Mockito;
 
 import io.swagger.annotations.SwaggerDefinition;
-import io.swagger.models.Swagger;
-import javassist.CannotCompileException;
-import javassist.ClassPool;
-import javassist.CtClass;
-import mockit.Deencapsulation;
+import io.swagger.models.parameters.PathParameter;
 
 @SwaggerDefinition
 public class TestClassUtils {
@@ -57,6 +49,40 @@ public class TestClassUtils {
   public ExpectedException expectedException = ExpectedException.none();
 
   @Test
+  public void getClassByName_exist() {
+    String clsName = String.class.getName();
+
+    Assert.assertSame(String.class, ClassUtils.getClassByName(null, clsName));
+    Assert.assertSame(String.class, ClassUtils.getClassByName(classLoader, clsName));
+  }
+
+  @Test
+  public void getClassByName_notExist() {
+    String clsName = "notExist";
+
+    Assert.assertNull(ClassUtils.getClassByName(null, clsName));
+    Assert.assertNull(ClassUtils.getClassByName(classLoader, clsName));
+  }
+
+  public static class Impl {
+    public List<User> getUser(List<String> p1, List<User> p2) {
+      return null;
+    }
+  }
+
+  @Test
+  public void getOrCreateBodyClass() throws NoSuchFieldException {
+    SwaggerGenerator generator = UnitTestSwaggerUtils.generateSwagger(Impl.class);
+    OperationGenerator operationGenerator = generator.getOperationGeneratorMap().get("getUser");
+
+    Class<?> cls = ClassUtils.getOrCreateBodyClass(operationGenerator, null);
+    Assert.assertEquals("gen.swagger.getUserBody", cls.getName());
+    Assert.assertEquals("java.util.List<java.lang.String>", cls.getField("p1").getGenericType().getTypeName());
+    Assert.assertEquals("java.util.List<org.apache.servicecomb.swagger.generator.core.schema.User>",
+        cls.getField("p2").getGenericType().getTypeName());
+  }
+
+  @Test
   public void testHasAnnotation() {
     Assert.assertEquals(true, ClassUtils.hasAnnotation(TestClassUtils.class, SwaggerDefinition.class));
     Assert.assertEquals(true, ClassUtils.hasAnnotation(TestClassUtils.class, Test.class));
@@ -64,26 +90,29 @@ public class TestClassUtils {
     Assert.assertEquals(false, ClassUtils.hasAnnotation(TestClassUtils.class, Path.class));
   }
 
-  public static class Impl {
-    public List<User> getUser(List<String> names) {
-      return null;
-    }
+  @Test
+  public void isRawJsonType() {
+    PathParameter param = new PathParameter();
+
+    Assert.assertFalse(ClassUtils.isRawJsonType(param));
+
+    param.setVendorExtension(SwaggerConst.EXT_RAW_JSON_TYPE, Boolean.FALSE);
+    Assert.assertFalse(ClassUtils.isRawJsonType(param));
+
+    param.setVendorExtension(SwaggerConst.EXT_RAW_JSON_TYPE, Boolean.TRUE);
+    Assert.assertTrue(ClassUtils.isRawJsonType(param));
   }
 
   @Test
-  public void testCreateInterface() {
-    SwaggerGenerator generator = UnitTestSwaggerUtils.generateSwagger(Impl.class);
-    Class<?> intf = ClassUtils.getOrCreateInterface(generator);
+  public void correctMethodParameterName_normal() {
+    String name = "name";
+    Assert.assertSame(name, ClassUtils.correctMethodParameterName(name));
+  }
 
-    Assert.assertEquals("gen.swagger.ImplIntf", intf.getName());
-    Assert.assertEquals(1, intf.getMethods().length);
-
-    Method method = intf.getMethods()[0];
-    Assert.assertEquals("getUser", method.getName());
-
-    Assert.assertEquals("gen.swagger.getUser.names", method.getGenericParameterTypes()[0].getTypeName());
-    Assert.assertEquals("java.util.List<org.apache.servicecomb.swagger.generator.core.schema.User>",
-        method.getGenericReturnType().getTypeName());
+  @Test
+  public void correctMethodParameterName_update() {
+    String name = "name.-";
+    Assert.assertEquals("name__", ClassUtils.correctMethodParameterName(name));
   }
 
   @Test
@@ -128,64 +157,40 @@ public class TestClassUtils {
   }
 
   @Test
-  public void testGetOrCreateClass() {
-    String className = this.getClass().getCanonicalName();
-
-    Class<?> result = ClassUtils.getOrCreateClass(null, "", new Swagger(), null, className);
-
-    Assert.assertEquals(this.getClass(), result);
+  public void testCorrectClassNameNormal() {
+    String result = ClassUtils.correctClassName("String");
+    Assert.assertThat(result, is("String"));
   }
 
   @Test
-  public void testGetOrCreateClassOnPropertyIsNull() {
-    ClassLoader classLoader = Mockito.mock(ClassLoader.class);
-    String className = this.getClass().getCanonicalName();
-    ClassPool classPool = Mockito.mock(ClassPool.class);
-    CtClass ctClass = Mockito.mock(CtClass.class);
+  public void getClassName_noName() {
+    Assert.assertNull(ClassUtils.getClassName(null));
 
-    Map<ClassLoader, ClassPool> classPoolMap = Deencapsulation.getField(JavassistUtils.class, "CLASSPOOLS");
-    classPoolMap.put(classLoader, classPool);
-
-    try {
-      Mockito.when(classLoader.loadClass(className)).thenReturn(null);
-    } catch (ClassNotFoundException e) {
-      fail("unexpected exception: " + e);
-    }
-    Mockito.when(classPool.getOrNull(className)).thenReturn(ctClass);
-    try {
-      Mockito.when(ctClass.toClass(classLoader, null)).thenReturn(this.getClass());
-    } catch (CannotCompileException e) {
-      fail("unexpected exception: " + e);
-    }
-
-    Class<?> result = ClassUtils.getOrCreateClass(classLoader, "", new Swagger(), null, className);
-    Assert.assertEquals(this.getClass(), result);
-  }
-
-  @Test
-  public void getClassByVendorExtensions_noName() {
     Map<String, Object> vendorExtensions = new HashMap<>();
-
-    Assert
-        .assertNull(ClassUtils.getClassByVendorExtensions(classLoader, vendorExtensions, SwaggerConst.EXT_JAVA_CLASS));
+    Assert.assertNull(ClassUtils.getClassName(vendorExtensions));
   }
 
   @Test
-  public void getClassByVendorExtensions_notExist() {
-    Map<String, Object> vendorExtensions = new HashMap<>();
-    vendorExtensions.put(SwaggerConst.EXT_JAVA_CLASS, "-" + String.class.getName());
-
-    Assert
-        .assertNull(ClassUtils.getClassByVendorExtensions(classLoader, vendorExtensions, SwaggerConst.EXT_JAVA_CLASS));
-  }
-
-  @Test
-  public void getClassByVendorExtensions_normal() {
+  public void getClassName_normal() {
     Map<String, Object> vendorExtensions = new HashMap<>();
     vendorExtensions.put(SwaggerConst.EXT_JAVA_CLASS, String.class.getName());
 
-    Assert.assertSame(String.class,
-        ClassUtils.getClassByVendorExtensions(classLoader, vendorExtensions, SwaggerConst.EXT_JAVA_CLASS));
+    Assert.assertSame(String.class.getName(), ClassUtils.getClassName(vendorExtensions));
+  }
+
+  @Test
+  public void getInterfaceName_noName() {
+    Map<String, Object> vendorExtensions = new HashMap<>();
+
+    Assert.assertNull(ClassUtils.getInterfaceName(vendorExtensions));
+  }
+
+  @Test
+  public void getInterfaceName_normal() {
+    Map<String, Object> vendorExtensions = new HashMap<>();
+    vendorExtensions.put(SwaggerConst.EXT_JAVA_INTF, String.class.getName());
+
+    Assert.assertSame(String.class.getName(), ClassUtils.getInterfaceName(vendorExtensions));
   }
 
   @Test

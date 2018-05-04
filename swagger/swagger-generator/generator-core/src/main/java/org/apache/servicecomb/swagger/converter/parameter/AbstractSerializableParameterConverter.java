@@ -19,12 +19,12 @@ package org.apache.servicecomb.swagger.converter.parameter;
 
 import org.apache.servicecomb.swagger.converter.Converter;
 import org.apache.servicecomb.swagger.converter.ConverterMgr;
+import org.apache.servicecomb.swagger.converter.SwaggerToClassGenerator;
 import org.apache.servicecomb.swagger.converter.property.ArrayPropertyConverter;
 import org.apache.servicecomb.swagger.converter.property.StringPropertyConverter;
 
 import com.fasterxml.jackson.databind.JavaType;
 
-import io.swagger.models.Swagger;
 import io.swagger.models.parameters.AbstractSerializableParameter;
 import io.swagger.models.properties.ArrayProperty;
 import io.swagger.models.properties.StringProperty;
@@ -32,20 +32,16 @@ import io.swagger.models.properties.StringProperty;
 public class AbstractSerializableParameterConverter implements Converter {
 
   @Override
-  public JavaType convert(ClassLoader classLoader, String packageName, Swagger swagger, Object def) {
+  public JavaType convert(SwaggerToClassGenerator swaggerToClassGenerator, Object def) {
     AbstractSerializableParameter<?> param = (AbstractSerializableParameter<?>) def;
 
     switch (param.getType()) {
       case ArrayProperty.TYPE:
-        return ArrayPropertyConverter.findJavaType(classLoader,
-            packageName,
-            swagger,
+        return ArrayPropertyConverter.findJavaType(swaggerToClassGenerator,
             param.getItems(),
             param.isUniqueItems());
       case StringProperty.TYPE:
-        return StringPropertyConverter.findJavaType(classLoader,
-            packageName,
-            swagger,
+        return StringPropertyConverter.findJavaType(swaggerToClassGenerator,
             param.getType(),
             param.getFormat(),
             param.getEnum());

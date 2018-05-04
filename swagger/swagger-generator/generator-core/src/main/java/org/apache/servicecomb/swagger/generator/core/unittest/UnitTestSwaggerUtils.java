@@ -41,8 +41,13 @@ public final class UnitTestSwaggerUtils {
   }
 
   public static SwaggerGenerator generateSwagger(Class<?> cls) {
+    return generateSwagger(Thread.currentThread().getContextClassLoader(), cls);
+  }
+
+  public static SwaggerGenerator generateSwagger(ClassLoader classLoader, Class<?> cls) {
     SwaggerGeneratorContext context = compositeContext.selectContext(cls);
     SwaggerGenerator generator = new SwaggerGenerator(context, cls);
+    generator.setClassLoader(classLoader);
     generator.generate();
 
     return generator;

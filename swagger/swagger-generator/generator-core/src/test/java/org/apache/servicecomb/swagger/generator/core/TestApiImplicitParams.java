@@ -17,7 +17,6 @@
 
 package org.apache.servicecomb.swagger.generator.core;
 
-import org.apache.servicecomb.swagger.converter.ConverterMgr;
 import org.apache.servicecomb.swagger.generator.core.schema.User;
 import org.apache.servicecomb.swagger.generator.core.unittest.SwaggerGeneratorForTest;
 import org.apache.servicecomb.swagger.generator.pojo.PojoSwaggerGeneratorContext;
@@ -56,7 +55,7 @@ public class TestApiImplicitParams {
     Operation operation = path.getOperations().get(0);
     Parameter parameter = operation.getParameters().get(0);
 
-    JavaType javaType = ConverterMgr.findJavaType(swaggerGenerator, parameter);
+    JavaType javaType = ClassUtilsForTest.findJavaType(swaggerGenerator, parameter);
     Assert.assertEquals(User.class, javaType.getRawClass());
   }
 }

@@ -16,8 +16,11 @@
  */
 package org.apache.servicecomb.swagger.converter.model;
 
+import java.util.Map;
+
+import org.apache.servicecomb.swagger.converter.SwaggerToClassGenerator;
 import org.apache.servicecomb.swagger.generator.core.SwaggerConst;
-import org.hamcrest.Matchers;
+import org.apache.servicecomb.swagger.generator.core.utils.ParamUtils;
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
@@ -25,47 +28,100 @@ import org.junit.rules.ExpectedException;
 
 import com.fasterxml.jackson.databind.JavaType;
 
+import io.swagger.models.Model;
 import io.swagger.models.ModelImpl;
 import io.swagger.models.Swagger;
-import mockit.Mocked;
+import io.swagger.models.parameters.BodyParameter;
+import io.swagger.models.properties.IntegerProperty;
+import io.swagger.models.properties.StringProperty;
 
 public class TestModelImplConverter {
-  ModelImplConverter converter = new ModelImplConverter();
-
   @Rule
   public ExpectedException expectedException = ExpectedException.none();
 
+  Swagger swagger = new Swagger();
+
+  ClassLoader classLoader = new ClassLoader() {
+  };
+
+  SwaggerToClassGenerator swaggerToClassGenerator = new SwaggerToClassGenerator(classLoader, swagger, "pkg");
+
   @Test
-  public void getOrCreateClassName_get() {
-    String canonical = "name";
+  public void convert_simple() {
     ModelImpl model = new ModelImpl();
-    model.getVendorExtensions().put(SwaggerConst.EXT_JAVA_CLASS, canonical);
-    Assert.assertEquals(canonical,
-        converter.getOrCreateClassName(null, model));
+    model.setType(StringProperty.TYPE);
+    swagger.addDefinition("string", model);
+
+    swaggerToClassGenerator.convert();
+
+    Assert.assertSame(String.class, swaggerToClassGenerator.convert(model).getRawClass());
   }
 
   @Test
-  public void getOrCreateClassName_create_packageNull() {
-    expectedException.expect(IllegalStateException.class);
-    expectedException.expectMessage(Matchers.is("packageName should not be null"));
-
-    converter.getOrCreateClassName(null, new ModelImpl());
-  }
-
-  @Test
-  public void getOrCreateClassName_create() {
-    Assert.assertEquals("pkg.name", converter.getOrCreateClassName("pkg", new ModelImpl().name("name")));
-  }
-
-  @Test
-  public void getOrCreateType(@Mocked Swagger swagger) {
-    String canonical = "name-";
+  public void convert_ref() {
     ModelImpl model = new ModelImpl();
-    model.getVendorExtensions().put(SwaggerConst.EXT_JAVA_CLASS, canonical);
+    model.setType(StringProperty.TYPE);
+    swagger.addDefinition("string", model);
 
-    JavaType type = converter.getOrCreateType(new ClassLoader() {
-    }, null, swagger, model);
+    ModelImpl refModel = new ModelImpl();
+    refModel.setReference("string");
+    swagger.addDefinition("ref", refModel);
 
-    Assert.assertEquals("name_", type.getRawClass().getName());
+    swaggerToClassGenerator.convert();
+
+    Assert.assertSame(String.class, swaggerToClassGenerator.convert(refModel).getRawClass());
+  }
+
+  @Test
+  public void convert_map() {
+    ModelImpl mapModel = new ModelImpl();
+    mapModel.setAdditionalProperties(new IntegerProperty());
+    swagger.addDefinition("map", mapModel);
+
+    swaggerToClassGenerator.convert();
+
+    JavaType javaType = swaggerToClassGenerator.convert(mapModel);
+    Assert.assertSame(Map.class, javaType.getRawClass());
+    Assert.assertSame(String.class, javaType.getKeyType().getRawClass());
+    Assert.assertSame(Integer.class, javaType.getContentType().getRawClass());
+  }
+
+  static class Empty {
+  }
+
+  @Test
+  public void convert_empty() {
+    ParamUtils.createBodyParameter(swagger, "body", Empty.class);
+    Model model = swagger.getDefinitions().get(Empty.class.getSimpleName());
+    model.getVendorExtensions().put(SwaggerConst.EXT_JAVA_CLASS, "pkg.Empty");
+
+    JavaType javaType = swaggerToClassGenerator.convert(model);
+
+    Assert.assertEquals("pkg.Empty", javaType.getRawClass().getName());
+  }
+
+  @Test
+  public void convert_object() {
+    BodyParameter bodyParameter = ParamUtils.createBodyParameter(swagger, "body", Object.class);
+    Model model = bodyParameter.getSchema();
+
+    JavaType javaType = swaggerToClassGenerator.convert(model);
+
+    Assert.assertSame(Object.class, javaType.getRawClass());
+  }
+
+  @Test
+  public void convert_createClass() throws NoSuchFieldException {
+    ModelImpl model = new ModelImpl();
+    model.addProperty("f1", new StringProperty());
+    model.setVendorExtension(SwaggerConst.EXT_JAVA_CLASS, "pkg.Model");
+
+    swagger.addDefinition("cls", model);
+
+    JavaType javaType = swaggerToClassGenerator.convert(model);
+
+    Class<?> cls = javaType.getRawClass();
+    Assert.assertEquals("pkg.Model", cls.getName());
+    Assert.assertSame(String.class, cls.getField("f1").getType());
   }
 }

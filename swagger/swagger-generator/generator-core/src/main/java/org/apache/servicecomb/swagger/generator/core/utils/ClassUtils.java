@@ -21,14 +21,13 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import javax.lang.model.SourceVersion;
 
 import org.apache.servicecomb.common.javassist.ClassConfig;
 import org.apache.servicecomb.common.javassist.JavassistUtils;
-import org.apache.servicecomb.common.javassist.MethodConfig;
 import org.apache.servicecomb.swagger.converter.ConverterMgr;
+import org.apache.servicecomb.swagger.converter.SwaggerToClassGenerator;
 import org.apache.servicecomb.swagger.generator.core.OperationGenerator;
 import org.apache.servicecomb.swagger.generator.core.SwaggerConst;
 import org.apache.servicecomb.swagger.generator.core.SwaggerGenerator;
@@ -36,13 +35,8 @@ import org.springframework.util.StringUtils;
 
 import com.fasterxml.jackson.databind.JavaType;
 
-import io.swagger.models.Operation;
-import io.swagger.models.Path;
-import io.swagger.models.Response;
-import io.swagger.models.Swagger;
 import io.swagger.models.parameters.BodyParameter;
 import io.swagger.models.parameters.Parameter;
-import io.swagger.models.properties.Property;
 
 public final class ClassUtils {
   private ClassUtils() {
@@ -57,33 +51,6 @@ public final class ClassUtils {
     } catch (ClassNotFoundException e) {
       return null;
     }
-  }
-
-  // 获取modelImpl对应的class
-  public static Class<?> getOrCreateClass(ClassLoader classLoader, String packageName, Swagger swagger,
-      Map<String, Property> properties,
-      String clsName) {
-    Class<?> cls = getClassByName(classLoader, clsName);
-    if (cls != null) {
-      return cls;
-    }
-
-    ClassConfig classConfig = new ClassConfig();
-    classConfig.setClassName(clsName);
-
-    if (null != properties) {
-      for (Entry<String, Property> entry : properties.entrySet()) {
-        JavaType propertyJavaType =
-            ConverterMgr.findJavaType(classLoader,
-                packageName,
-                swagger,
-                entry.getValue());
-        classConfig.addField(entry.getKey(), propertyJavaType);
-      }
-    }
-
-    cls = JavassistUtils.createClass(classLoader, classConfig);
-    return cls;
   }
 
   // 将一系列body parameter包装成一个class
@@ -102,11 +69,10 @@ public final class ClassUtils {
 
     // 1.全是预备body
     // 2.预备body与明确body混合
+    SwaggerToClassGenerator classGenerator = new SwaggerToClassGenerator(swaggerGenerator.getClassLoader(),
+        swaggerGenerator.getSwagger(), swaggerGenerator.ensureGetPackageName());
     for (BodyParameter bp : bodyParameters) {
-      JavaType javaType = ConverterMgr.findJavaType(swaggerGenerator.getClassLoader(),
-          swaggerGenerator.ensureGetPackageName(),
-          swaggerGenerator.getSwagger(),
-          bp);
+      JavaType javaType = ConverterMgr.findJavaType(classGenerator, bp);
       classConfig.addField(bp.getName(), javaType);
     }
 
@@ -135,18 +101,12 @@ public final class ClassUtils {
     return false;
   }
 
-  public static Class<?> getJavaInterface(Swagger swagger) {
-    return getClassByVendorExtensions(null, swagger.getInfo().getVendorExtensions(), SwaggerConst.EXT_JAVA_INTF);
+  public static String getClassName(Map<String, Object> vendorExtensions) {
+    return getVendorExtension(vendorExtensions, SwaggerConst.EXT_JAVA_CLASS);
   }
 
-  public static Class<?> getClassByVendorExtensions(ClassLoader classLoader, Map<String, Object> vendorExtensions,
-      String clsKey) {
-    String clsName = getVendorExtension(vendorExtensions, clsKey);
-    if (StringUtils.isEmpty(clsName)) {
-      return null;
-    }
-
-    return getClassByName(classLoader, clsName);
+  public static String getInterfaceName(Map<String, Object> vendorExtensions) {
+    return getVendorExtension(vendorExtensions, SwaggerConst.EXT_JAVA_INTF);
   }
 
   public static String getRawClassName(String canonical) {
@@ -175,81 +135,20 @@ public final class ClassUtils {
     return (T) vendorExtensions.get(key);
   }
 
-  public static Class<?> getOrCreateInterface(SwaggerGenerator generator) {
-    return getOrCreateInterface(generator.getSwagger(),
-        generator.getClassLoader(),
-        generator.ensureGetPackageName());
-  }
-
-  public static Class<?> getOrCreateInterface(Swagger swagger, ClassLoader classLoader, String packageName) {
-    String intfName =
-        (String) swagger.getInfo().getVendorExtensions().get(SwaggerConst.EXT_JAVA_INTF);
-    Class<?> intf = getClassByName(classLoader, intfName);
-    if (intf != null) {
-      return intf;
-    }
-
-    if (packageName == null) {
-      int idx = intfName.lastIndexOf(".");
-      if (idx == -1) {
-        packageName = "";
-      } else {
-        packageName = intfName.substring(0, idx);
-      }
-    }
-    return createInterface(swagger, classLoader, packageName, intfName);
-  }
-
-  private static Class<?> createInterface(Swagger swagger, ClassLoader classLoader, String packageName,
-      String intfName) {
-    ClassConfig classConfig = new ClassConfig();
-    classConfig.setClassName(intfName);
-    classConfig.setIntf(true);
-
-    for (Path path : swagger.getPaths().values()) {
-      for (Operation operation : path.getOperations()) {
-        // 参数可能重名，所以packageName必须跟operation相关才能隔离
-        String opPackageName = packageName + "." + operation.getOperationId();
-
-        Response result = operation.getResponses().get(SwaggerConst.SUCCESS_KEY);
-        JavaType resultJavaType = ConverterMgr.findJavaType(classLoader,
-            opPackageName,
-            swagger,
-            result.getSchema());
-
-        MethodConfig methodConfig = new MethodConfig();
-        methodConfig.setName(operation.getOperationId());
-        methodConfig.setResult(resultJavaType);
-
-        for (Parameter parameter : operation.getParameters()) {
-          String paramName = parameter.getName();
-          paramName = correctMethodParameterName(paramName);
-
-          JavaType paramJavaType = ConverterMgr.findJavaType(classLoader,
-              opPackageName,
-              swagger,
-              parameter);
-          methodConfig.addParameter(paramName, paramJavaType);
-        }
-
-        classConfig.addMethod(methodConfig);
-      }
-    }
-
-    return JavassistUtils.createClass(classLoader, classConfig);
-  }
-
   public static String correctMethodParameterName(String paramName) {
     if (SourceVersion.isName(paramName)) {
       return paramName;
     }
-    StringBuffer newParam = new StringBuffer();
-    char tempChar;
+
+    StringBuilder newParam = new StringBuilder();
     for (int index = 0; index < paramName.length(); index++) {
-      tempChar = paramName.charAt(index);
+      char tempChar = paramName.charAt(index);
       if (Character.isJavaIdentifierPart(tempChar)) {
         newParam.append(paramName.charAt(index));
-      } else if (tempChar == '.' || tempChar == '-') {
+        continue;
+      }
+
+      if (tempChar == '.' || tempChar == '-') {
         newParam.append('_');
       }
     }

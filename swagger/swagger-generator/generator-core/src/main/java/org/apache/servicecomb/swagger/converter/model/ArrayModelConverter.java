@@ -17,24 +17,20 @@
 
 package org.apache.servicecomb.swagger.converter.model;
 
+import org.apache.servicecomb.swagger.converter.SwaggerToClassGenerator;
 import org.apache.servicecomb.swagger.converter.property.ArrayPropertyConverter;
 
 import com.fasterxml.jackson.databind.JavaType;
 
 import io.swagger.models.ArrayModel;
-import io.swagger.models.Swagger;
 
 public class ArrayModelConverter extends AbstractModelConverter {
   @Override
-  public JavaType doConvert(ClassLoader classLoader, String packageName, Swagger swagger, Object model) {
+  public JavaType doConvert(SwaggerToClassGenerator swaggerToClassGenerator, Object model) {
     ArrayModel arrayModel = (ArrayModel) model;
 
     if (arrayModel.getItems() != null) {
-      return ArrayPropertyConverter.findJavaType(classLoader,
-          packageName,
-          swagger,
-          arrayModel.getItems(),
-          false);
+      return ArrayPropertyConverter.findJavaType(swaggerToClassGenerator, arrayModel.getItems(), false);
     }
 
     // don't know when will this happen.

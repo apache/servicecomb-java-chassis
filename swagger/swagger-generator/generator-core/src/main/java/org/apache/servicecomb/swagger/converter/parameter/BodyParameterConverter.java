@@ -18,18 +18,17 @@
 package org.apache.servicecomb.swagger.converter.parameter;
 
 import org.apache.servicecomb.swagger.converter.Converter;
-import org.apache.servicecomb.swagger.converter.ConverterMgr;
+import org.apache.servicecomb.swagger.converter.SwaggerToClassGenerator;
 
 import com.fasterxml.jackson.databind.JavaType;
 
-import io.swagger.models.Swagger;
 import io.swagger.models.parameters.BodyParameter;
 
 public class BodyParameterConverter implements Converter {
 
   @Override
-  public JavaType convert(ClassLoader classLoader, String packageName, Swagger swagger, Object def) {
+  public JavaType convert(SwaggerToClassGenerator swaggerToClassGenerator, Object def) {
     BodyParameter param = (BodyParameter) def;
-    return ConverterMgr.findJavaType(classLoader, packageName, swagger, param.getSchema());
+    return swaggerToClassGenerator.convert(param.getSchema());
   }
 }
