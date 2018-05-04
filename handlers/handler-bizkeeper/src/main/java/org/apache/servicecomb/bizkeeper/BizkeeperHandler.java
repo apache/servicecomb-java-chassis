@@ -17,7 +17,7 @@
 
 package org.apache.servicecomb.bizkeeper;
 
-import java.util.HashMap;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.servicecomb.bizkeeper.event.CircutBreakerEvent;
 import org.apache.servicecomb.core.Handler;
@@ -46,7 +46,7 @@ import rx.Observable;
 public abstract class BizkeeperHandler implements Handler {
   private static final Logger LOG = LoggerFactory.getLogger(BizkeeperHandler.class);
 
-  private static HashMap<String, Boolean> circuitMarker = new HashMap<>();
+  private static ConcurrentHashMap<String, Boolean> circuitMarker = new ConcurrentHashMap<>();
 
   protected final String groupname;
 

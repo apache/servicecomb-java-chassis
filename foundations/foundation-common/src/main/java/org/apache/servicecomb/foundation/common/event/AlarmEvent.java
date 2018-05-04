@@ -50,7 +50,7 @@ public class AlarmEvent {
   public enum Type {
     OPEN,
     CLOSE,
-    SUCCEDED,
-    FAILD
+    SUCCEEDED,
+    FAILED
   };
 }
