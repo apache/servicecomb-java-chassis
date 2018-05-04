@@ -25,9 +25,6 @@ import javax.inject.Inject;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.foundation.common.utils.BeanUtils;
 import org.apache.servicecomb.foundation.common.utils.ReflectUtils;
-import org.apache.servicecomb.swagger.generator.core.SwaggerGenerator;
-import org.apache.servicecomb.swagger.generator.core.unittest.UnitTestSwaggerUtils;
-import org.apache.servicecomb.swagger.generator.core.utils.ClassUtils;
 import org.apache.servicecomb.swagger.invocation.arguments.consumer.ConsumerArgumentsMapper;
 import org.apache.servicecomb.swagger.invocation.arguments.consumer.ConsumerArgumentsMapperFactory;
 import org.apache.servicecomb.swagger.invocation.arguments.producer.ProducerArgumentsMapper;
@@ -41,7 +38,6 @@ import org.apache.servicecomb.swagger.invocation.response.producer.ProducerRespo
 import org.springframework.stereotype.Component;
 
 import io.swagger.annotations.ApiOperation;
-import io.swagger.models.Swagger;
 
 @Component
 public class SwaggerEnvironment {
@@ -128,10 +124,9 @@ public class SwaggerEnvironment {
     return apiOperationAnnotation.nickname();
   }
 
-  public SwaggerProducer createProducer(Object producerInstance, Swagger swagger) {
+  public SwaggerProducer createProducer(Object producerInstance, Class<?> swaggerIntf) {
     Class<?> producerCls = BeanUtils.getImplClassFromBean(producerInstance);
     Map<String, Method> visibleProducerMethods = retrieveVisibleMethods(producerCls);
-    Class<?> swaggerIntf = ClassUtils.getOrCreateInterface(swagger, null, null);
 
     SwaggerProducer producer = new SwaggerProducer();
     producer.setProducerCls(producerCls);
@@ -167,14 +162,6 @@ public class SwaggerEnvironment {
     }
 
     return producer;
-  }
-
-  public SwaggerProducer createProducer(Object producerInstance) {
-    Class<?> producerCls = BeanUtils.getImplClassFromBean(producerInstance);
-    SwaggerGenerator producerGenerator = UnitTestSwaggerUtils.generateSwagger(producerCls);
-    Swagger swagger = producerGenerator.getSwagger();
-
-    return createProducer(producerInstance, swagger);
   }
 
   private Map<String, Method> retrieveVisibleMethods(Class<?> clazz) {

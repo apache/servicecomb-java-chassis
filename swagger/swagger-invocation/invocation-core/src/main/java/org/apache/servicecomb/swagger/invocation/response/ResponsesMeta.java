@@ -23,6 +23,7 @@ import java.util.Map.Entry;
 
 import javax.ws.rs.core.Response.Status;
 
+import org.apache.servicecomb.swagger.converter.SwaggerToClassGenerator;
 import org.apache.servicecomb.swagger.invocation.context.HttpStatus;
 import org.apache.servicecomb.swagger.invocation.exception.CommonExceptionData;
 
@@ -32,7 +33,6 @@ import com.fasterxml.jackson.databind.type.TypeFactory;
 
 import io.swagger.models.Operation;
 import io.swagger.models.Response;
-import io.swagger.models.Swagger;
 
 public class ResponsesMeta {
   private static final JavaType COMMON_EXCEPTION_JAVATYPE = SimpleType.constructUnsafe(CommonExceptionData.class);
@@ -44,20 +44,19 @@ public class ResponsesMeta {
   // 最后一个参数returnType用于兼容场景
   // 历史版本中swagger中定义的return可能没定义class名，此时consumer与swagger接口是一致的
   // 如果不传return类型进来，完全以swagger为标准，会导致生成的class不等于return
-  public void init(ClassLoader classLoader, String packageName, Swagger swagger, Operation operation,
-      Type returnType) {
+  public void init(SwaggerToClassGenerator swaggerToClassGenerator, Operation operation, Type returnType) {
     initSuccessResponse(returnType);
 
     for (Entry<String, Response> entry : operation.getResponses().entrySet()) {
       if ("default".equals(entry.getKey())) {
         defaultResponse = new ResponseMeta();
-        defaultResponse.init(classLoader, packageName, swagger, entry.getValue());
+        defaultResponse.init(swaggerToClassGenerator, entry.getValue());
         continue;
       }
 
       Integer statusCode = Integer.parseInt(entry.getKey());
       ResponseMeta responseMeta = responseMap.computeIfAbsent(statusCode, k -> new ResponseMeta());
-      responseMeta.init(classLoader, packageName, swagger, entry.getValue());
+      responseMeta.init(swaggerToClassGenerator, entry.getValue());
     }
 
     if (defaultResponse == null) {

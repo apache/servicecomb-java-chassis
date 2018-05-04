@@ -20,12 +20,11 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.apache.servicecomb.swagger.converter.ConverterMgr;
+import org.apache.servicecomb.swagger.converter.SwaggerToClassGenerator;
 
 import com.fasterxml.jackson.databind.JavaType;
 
 import io.swagger.models.Response;
-import io.swagger.models.Swagger;
 import io.swagger.models.properties.Property;
 
 public class ResponseMeta {
@@ -36,17 +35,16 @@ public class ResponseMeta {
 
   private Map<String, JavaType> headers = new HashMap<>();
 
-  public void init(ClassLoader classLoader, String packageName, Swagger swagger, Response response) {
+  public void init(SwaggerToClassGenerator swaggerToClassGenerator, Response response) {
     if (javaType == null) {
-      Property property = response.getSchema();
-      javaType = ConverterMgr.findJavaType(classLoader, packageName, swagger, property);
+      javaType = swaggerToClassGenerator.convert(response.getSchema());
     }
 
     if (response.getHeaders() == null) {
       return;
     }
     for (Entry<String, Property> entry : response.getHeaders().entrySet()) {
-      JavaType headerJavaType = ConverterMgr.findJavaType(classLoader, packageName, swagger, entry.getValue());
+      JavaType headerJavaType = swaggerToClassGenerator.convert(entry.getValue());
       headers.put(entry.getKey(), headerJavaType);
     }
   }
