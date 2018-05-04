@@ -20,10 +20,9 @@ package org.apache.servicecomb.swagger.invocation.arguments;
 import java.util.Arrays;
 import java.util.List;
 
+import org.apache.servicecomb.engine.SwaggerEnvironmentForTest;
 import org.apache.servicecomb.swagger.engine.SwaggerConsumer;
-import org.apache.servicecomb.swagger.engine.SwaggerEnvironment;
 import org.apache.servicecomb.swagger.engine.SwaggerProducer;
-import org.apache.servicecomb.swagger.engine.bootstrap.BootstrapNormal;
 import org.apache.servicecomb.swagger.engine.unittest.LocalProducerInvoker;
 import org.apache.servicecomb.swagger.invocation.context.ContextUtils;
 import org.apache.servicecomb.swagger.invocation.context.InvocationContext;
@@ -35,7 +34,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 public class TestPojoConsumerEqualSwagger {
-  private static SwaggerEnvironment env;
+  private static SwaggerEnvironmentForTest env = new SwaggerEnvironmentForTest();
 
   private static SwaggerProducer producer;
 
@@ -47,9 +46,8 @@ public class TestPojoConsumerEqualSwagger {
 
   @BeforeClass
   public static void init() {
-    env = new BootstrapNormal().boot();
     producer = env.createProducer(new JaxrsImpl());
-    consumer = env.createConsumer(PojoConsumerIntf.class, producer.getSwaggerIntf());
+    consumer = env.getSwaggerEnvironment().createConsumer(PojoConsumerIntf.class, producer.getSwaggerIntf());
     invoker = new LocalProducerInvoker(consumer, producer);
     proxy = invoker.getProxy();
   }

@@ -22,21 +22,18 @@ import static org.hamcrest.core.IsNull.notNullValue;
 import static org.hamcrest.core.IsNull.nullValue;
 import static org.junit.Assert.assertThat;
 
-import org.apache.servicecomb.swagger.engine.SwaggerEnvironment;
 import org.apache.servicecomb.swagger.engine.SwaggerProducer;
-import org.apache.servicecomb.swagger.engine.bootstrap.BootstrapNormal;
 import org.apache.servicecomb.swagger.invocation.models.ProducerImpl;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
 public class TestSwaggerEnvironment {
-  private static SwaggerEnvironment env;
+  private static SwaggerEnvironmentForTest env = new SwaggerEnvironmentForTest();
 
   private static SwaggerProducer producer;
 
   @BeforeClass
   public static void init() {
-    env = new BootstrapNormal().boot();
     producer = env.createProducer(new ProducerImpl());
   }
 

@@ -16,6 +16,7 @@
  */
 package org.apache.servicecomb.swagger.invocation.response;
 
+import org.apache.servicecomb.swagger.converter.SwaggerToClassGenerator;
 import org.apache.servicecomb.swagger.generator.core.SwaggerGenerator;
 import org.apache.servicecomb.swagger.generator.core.unittest.UnitTestSwaggerUtils;
 import org.apache.servicecomb.swagger.invocation.exception.CommonExceptionData;
@@ -48,8 +49,10 @@ public class TestResponsesMeta {
     Swagger swagger = generator.getSwagger();
     Operation operation = swagger.getPath("/add").getPost();
 
+    SwaggerToClassGenerator swaggerToClassGenerator = new SwaggerToClassGenerator(new ClassLoader() {
+    }, swagger, "ms.sid");
     ResponsesMeta meta = new ResponsesMeta();
-    meta.init(null, "gen", swagger, operation, int.class);
+    meta.init(swaggerToClassGenerator, operation, int.class);
 
     ResponseMeta resp = meta.findResponseMeta(200);
     Assert.assertEquals(int.class, resp.getJavaType().getRawClass());
