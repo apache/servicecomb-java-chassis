@@ -116,6 +116,7 @@ public class TestBizkeeperHandler extends BizkeeperHandler {
       Mockito.when(invocation.getMicroserviceName()).thenReturn("test1");
       Mockito.when(invocation.getOperationMeta()).thenReturn(Mockito.mock(OperationMeta.class));
       Mockito.when(invocation.getOperationMeta().getMicroserviceQualifiedName()).thenReturn("test1");
+      Mockito.when(invocation.getMicroserviceQualifiedName()).thenReturn("test1");
       new Expectations(CommandKey.class) {
         {
           CommandKey.toHystrixCommandKey(groupname, invocation);
