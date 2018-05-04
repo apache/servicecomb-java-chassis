@@ -24,7 +24,7 @@ import java.util.Map.Entry;
 import org.apache.servicecomb.core.Handler;
 import org.apache.servicecomb.core.exception.ExceptionUtils;
 import org.apache.servicecomb.foundation.common.utils.ReflectUtils;
-import org.apache.servicecomb.swagger.generator.core.utils.ClassUtils;
+import org.apache.servicecomb.swagger.converter.SwaggerToClassGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -54,6 +54,8 @@ public class SchemaMeta extends CommonService<OperationMeta> {
 
   private List<Handler> providerHandlerChain;
 
+  private SwaggerToClassGenerator swaggerToClassGenerator;
+
   public SchemaMeta(Swagger swagger, MicroserviceMeta microserviceMeta, String schemaId) {
     this.packageName = SchemaUtils.generatePackageName(microserviceMeta, schemaId);
 
@@ -62,13 +64,18 @@ public class SchemaMeta extends CommonService<OperationMeta> {
 
     this.microserviceMeta = microserviceMeta;
     this.microserviceQualifiedName = microserviceMeta.getName() + "." + schemaId;
-    // 确保swagger对应的接口是存在的
-    swaggerIntf = ClassUtils.getOrCreateInterface(swagger, microserviceMeta.getClassLoader(), packageName);
+
+    swaggerToClassGenerator = new SwaggerToClassGenerator(microserviceMeta.getClassLoader(), swagger, packageName);
+    swaggerIntf = swaggerToClassGenerator.convert();
 
     createOperationMgr("schemaMeta " + schemaId + " operation mgr");
     operationMgr.setRegisterErrorFmt("Operation name repeat, schema=%s, operation=%s");
 
     initOperations();
+  }
+
+  public SwaggerToClassGenerator getSwaggerToClassGenerator() {
+    return swaggerToClassGenerator;
   }
 
   public String getPackageName() {
@@ -92,7 +99,7 @@ public class SchemaMeta extends CommonService<OperationMeta> {
         // in this place, do not throw exception when method not exists
         // eg:
         //   swagger interface is a.b.c, and consumer interface is a.b.c too.
-        //   version 1, there are the same
+        //   version 1, they are the same
         //   version 2, producer add a new operation, that means swagger have more operation than consumer interface a.b.c
         //              interface a.b.c in consumer process is the old interface
         //              so for swagger, can not do any valid check here

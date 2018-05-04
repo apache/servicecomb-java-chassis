@@ -68,9 +68,7 @@ public class OperationMeta {
 
     executor = ExecutorManager.findExecutor(this);
 
-    responsesMeta.init(schemaMeta.getMicroserviceMeta().getClassLoader(),
-        schemaMeta.getPackageName(),
-        schemaMeta.getSwagger(),
+    responsesMeta.init(schemaMeta.getSwaggerToClassGenerator(),
         swaggerOperation,
         method.getGenericReturnType());
   }
