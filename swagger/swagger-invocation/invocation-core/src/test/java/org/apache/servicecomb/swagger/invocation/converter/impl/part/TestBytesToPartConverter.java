@@ -14,26 +14,30 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.servicecomb.demo.springmvc.client;
+package org.apache.servicecomb.swagger.invocation.converter.impl.part;
 
-import org.apache.servicecomb.foundation.vertx.http.ReadStreamPart;
+import javax.servlet.http.Part;
 
-public interface DownloadSchemaIntf {
-  ReadStreamPart tempFileEntity(String content);
+import org.hamcrest.Matchers;
+import org.junit.Assert;
+import org.junit.Test;
 
-  ReadStreamPart tempFilePart(String content);
+public class TestBytesToPartConverter {
+  BytesToPartConverter converter = new BytesToPartConverter();
 
-  ReadStreamPart file(String content);
+  @Test
+  public void getSrcType() {
+    Assert.assertSame(byte[].class, converter.getSrcType());
+  }
 
-  ReadStreamPart chineseAndSpaceFile(String content);
+  @Test
+  public void getTargetType() {
+    Assert.assertEquals(Part.class.getName(), converter.getTargetType().getTypeName());
+  }
 
-  ReadStreamPart resource(String content);
-
-  ReadStreamPart entityResource(String content);
-
-  ReadStreamPart entityInputStream(String content);
-
-  ReadStreamPart bytes(String content);
-
-  ReadStreamPart netInputStream(String content);
+  @Test
+  public void convert() {
+    Object part = converter.convert(new byte[] {});
+    Assert.assertThat(part, Matchers.instanceOf(Part.class));
+  }
 }

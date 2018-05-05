@@ -157,6 +157,18 @@ public class DownloadSchema {
         .body(new ByteArrayInputStream(content.getBytes(StandardCharsets.UTF_8)));
   }
 
+  @GetMapping(path = "/bytes")
+  @ApiResponses({
+      @ApiResponse(code = 200, response = File.class, message = ""),
+  })
+  public ResponseEntity<byte[]> bytes(String content) throws IOException {
+    return ResponseEntity
+        .ok()
+        .header(HttpHeaders.CONTENT_TYPE, MediaType.TEXT_PLAIN_VALUE)
+        .header(HttpHeaders.CONTENT_DISPOSITION, "attachment;filename=bytes.txt")
+        .body(content.getBytes(StandardCharsets.UTF_8));
+  }
+
   @GetMapping(path = "/netInputStream")
   @ApiResponses({
       @ApiResponse(code = 200, response = File.class, message = ""),
