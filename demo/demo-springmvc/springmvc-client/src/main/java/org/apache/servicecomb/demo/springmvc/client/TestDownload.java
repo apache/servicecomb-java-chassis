@@ -117,6 +117,9 @@ public class TestDownload {
     futures.add(checkFile(intf.entityInputStream(content)));
     futures.add(checkFuture(templateGet("entityInputStream").saveAsString()));
 
+    futures.add(checkFile(intf.bytes(content)));
+    futures.add(checkFuture(templateGet("bytes").saveAsString()));
+
     futures.add(checkFile(intf.netInputStream(content)));
     futures.add(checkFuture(templateGet("netInputStream").saveAsString()));
 
