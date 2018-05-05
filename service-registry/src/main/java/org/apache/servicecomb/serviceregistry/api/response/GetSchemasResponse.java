@@ -15,26 +15,31 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.serviceregistry.api.request;
+package org.apache.servicecomb.serviceregistry.api.response;
 
-public class CreateSchemaRequest {
-  private String schema;
+import java.util.List;
 
-  private String summary;
+public class GetSchemasResponse {
 
-  public String getSchema() {
+  //to compatible service center interface, cur version return schema, but next version will change to schemas
+  private List<GetSchemaResponse> schema;
+
+  private List<GetSchemaResponse> schemas;
+
+  public List<GetSchemaResponse> getSchema() {
     return schema;
   }
 
-  public void setSchema(String schema) {
+  public void setSchema(List<GetSchemaResponse> schema) {
     this.schema = schema;
   }
 
-  public String getSummary() {
-    return summary;
+  public List<GetSchemaResponse> getSchemas() {
+    return schemas;
   }
 
-  public void setSummary(String summary) {
-    this.summary = summary;
+  public void setSchemas(List<GetSchemaResponse> schemas) {
+    this.schemas = schemas;
   }
+
 }

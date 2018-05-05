@@ -24,6 +24,7 @@ import org.apache.servicecomb.foundation.vertx.AsyncResultCallback;
 import org.apache.servicecomb.serviceregistry.api.registry.Microservice;
 import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
 import org.apache.servicecomb.serviceregistry.api.registry.ServiceCenterInfo;
+import org.apache.servicecomb.serviceregistry.api.response.GetSchemaResponse;
 import org.apache.servicecomb.serviceregistry.api.response.HeartbeatResponse;
 import org.apache.servicecomb.serviceregistry.api.response.MicroserviceInstanceChangedEvent;
 import org.apache.servicecomb.serviceregistry.client.http.MicroserviceInstances;
@@ -76,6 +77,12 @@ public interface ServiceRegistryClient {
    * 获取schema内容
    */
   String getSchema(String microserviceId, String schemaId);
+
+  /**
+  *
+  * 批量获取schemas内容
+  */
+  List<GetSchemaResponse> getSchemas(String microserviceId);
 
   /**
    *
