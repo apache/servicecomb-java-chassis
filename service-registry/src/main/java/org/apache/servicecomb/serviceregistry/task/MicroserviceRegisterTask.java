@@ -17,17 +17,21 @@
 package org.apache.servicecomb.serviceregistry.task;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map.Entry;
 import java.util.Set;
 
 import org.apache.servicecomb.serviceregistry.api.registry.Microservice;
+import org.apache.servicecomb.serviceregistry.api.response.GetSchemaResponse;
 import org.apache.servicecomb.serviceregistry.client.ServiceRegistryClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
 
+import com.google.common.base.Charsets;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
+import com.google.common.hash.Hashing;
 
 public class MicroserviceRegisterTask extends AbstractRegisterTask {
   private static final Logger LOGGER = LoggerFactory.getLogger(MicroserviceRegisterTask.class);
@@ -136,19 +140,48 @@ public class MicroserviceRegisterTask extends AbstractRegisterTask {
   }
 
   private boolean registerSchemas() {
+    List<GetSchemaResponse> existSchemas = srClient.getSchemas(microservice.getServiceId());
     for (Entry<String, String> entry : microservice.getSchemaMap().entrySet()) {
       String schemaId = entry.getKey();
       String content = entry.getValue();
-
-      boolean exists = srClient.isSchemaExist(microservice.getServiceId(), schemaId);
-      LOGGER.info("schemaId {} exists {}", schemaId, exists);
+      GetSchemaResponse existSchema = extractSchema(schemaId, existSchemas);
+      boolean exists = existSchema == null ? false : true;
+      LOGGER.info("schemaId [{}] exists {}", schemaId, exists);
       if (!exists) {
         if (!srClient.registerSchema(microservice.getServiceId(), schemaId, content)) {
           return false;
         }
+      } else {
+        String curSchemaSumary = existSchema.getSummary();
+        String schemaSummary = Hashing.md5().newHasher().putString(content, Charsets.UTF_8).hash().toString();
+        if (!schemaSummary.equals(curSchemaSumary)) {
+          if (microservice.getInstance().getEnvironment().startsWith("dev")) {
+            LOGGER.info(
+                "schemaId [{}]'s content changes and the current enviroment is development, so re-register it!",
+                schemaId);
+            srClient.registerSchema(microservice.getServiceId(), schemaId, content);
+          } else {
+            throw new RuntimeException("schemaId [" + schemaId
+                + "] exists, but schema's content changes and the current enviroment is production, program will stop!\n"
+                + "If you are developing now, you can set -Dinstance_description.environment=prod in program start config!");
+          }
+        }
       }
     }
-
     return true;
+  }
+
+  private GetSchemaResponse extractSchema(String schemaId, List<GetSchemaResponse> schemas) {
+    if (schemas == null || schemas.isEmpty()) {
+      return null;
+    }
+    GetSchemaResponse schema = null;
+    for (GetSchemaResponse tempSchema : schemas) {
+      if (tempSchema.getSchemaId().equals(schemaId)) {
+        schema = tempSchema;
+        break;
+      }
+    }
+    return schema;
   }
 }

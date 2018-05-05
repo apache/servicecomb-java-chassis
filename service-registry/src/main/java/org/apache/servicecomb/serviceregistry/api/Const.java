@@ -119,6 +119,15 @@ public final class Const {
       }
     }
 
+    public static final String MICROSERVICE_ALL_SCHEMAs;
+    static {
+      if (VERSION_V3.equals(CURRENT_VERSION)) {
+        MICROSERVICE_ALL_SCHEMAs = "/registry/v3/microservices/%s/schemas";
+      } else {
+        MICROSERVICE_ALL_SCHEMAs = V4_PREFIX + "/microservices/%s/schemas";
+      }
+    }
+
     public static final String MICROSERVICE_SCHEMA;
     static {
       if (VERSION_V3.equals(CURRENT_VERSION)) {

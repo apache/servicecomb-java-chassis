@@ -35,6 +35,8 @@ import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceFactory;
 import org.apache.servicecomb.serviceregistry.api.registry.ServiceCenterConfig;
 import org.apache.servicecomb.serviceregistry.api.registry.ServiceCenterInfo;
 import org.apache.servicecomb.serviceregistry.api.response.GetExistenceResponse;
+import org.apache.servicecomb.serviceregistry.api.response.GetSchemaResponse;
+import org.apache.servicecomb.serviceregistry.api.response.GetSchemasResponse;
 import org.apache.servicecomb.serviceregistry.client.ClientException;
 import org.apache.servicecomb.serviceregistry.client.IpPortManager;
 import org.apache.servicecomb.serviceregistry.client.http.ServiceRegistryClientImpl.ResponseWrapper;
@@ -48,6 +50,7 @@ import io.vertx.core.Handler;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.http.HttpClientOptions;
 import io.vertx.core.http.HttpClientResponse;
+import io.vertx.core.json.Json;
 import mockit.Deencapsulation;
 import mockit.Expectations;
 import mockit.Mock;
@@ -293,6 +296,46 @@ public class TestServiceRegistryClientImpl {
       }
     };
     Assert.assertFalse(oClient.isSchemaExist(microserviceId, schemaId));
+  }
+
+  @Test
+  public void getSchemas() {
+    String microserviceId = "msId";
+
+    new MockUp<RestUtils>() {
+      @Mock
+      void httpDo(RequestContext requestContext, Handler<RestResponse> responseHandler) {
+        Holder<GetSchemasResponse> holder = Deencapsulation.getField(responseHandler, "arg$4");
+        GetSchemasResponse schemasResp = Json.decodeValue(
+            "{\"schema\":[{\"schemaId\":\"metricsEndpoint\",\"summary\":\"c1188d709631a9038874f9efc6eb894f\"},{\"schemaId\":\"comment\",\"summary\":\"bfa81d625cfbd3a57f38745323e16824\"},"
+                + "{\"schemaId\":\"healthEndpoint\",\"summary\":\"96a0aaaaa454cfa0c716e70c0017fe27\"}]}",
+            GetSchemasResponse.class);
+        holder.value = schemasResp;
+      }
+    };
+    List<GetSchemaResponse> abc = oClient.getSchemas(microserviceId);
+    Assert.assertEquals(3, abc.size());
+    Assert.assertEquals("bfa81d625cfbd3a57f38745323e16824", abc.get(1).getSummary());
+  }
+
+  @Test
+  public void getSchemasForNew() {
+    String microserviceId = "msId";
+
+    new MockUp<RestUtils>() {
+      @Mock
+      void httpDo(RequestContext requestContext, Handler<RestResponse> responseHandler) {
+        Holder<GetSchemasResponse> holder = Deencapsulation.getField(responseHandler, "arg$4");
+        GetSchemasResponse schemasResp = Json.decodeValue(
+            "{\"schemas\":[{\"schemaId\":\"metricsEndpoint\",\"summary\":\"c1188d709631a9038874f9efc6eb894f\"},{\"schemaId\":\"comment\",\"summary\":\"bfa81d625cfbd3a57f38745323e16824\"},"
+                + "{\"schemaId\":\"healthEndpoint\",\"summary\":\"96a0aaaaa454cfa0c716e70c0017fe27\"}]}",
+            GetSchemasResponse.class);
+        holder.value = schemasResp;
+      }
+    };
+    List<GetSchemaResponse> abc = oClient.getSchemas(microserviceId);
+    Assert.assertEquals(3, abc.size());
+    Assert.assertEquals("bfa81d625cfbd3a57f38745323e16824", abc.get(1).getSummary());
   }
 
   @Test

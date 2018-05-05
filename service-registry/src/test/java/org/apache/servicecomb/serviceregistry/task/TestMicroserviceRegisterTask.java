@@ -19,8 +19,10 @@ package org.apache.servicecomb.serviceregistry.task;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.apache.servicecomb.serviceregistry.api.registry.Microservice;
 import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
+import org.apache.servicecomb.serviceregistry.api.response.GetSchemaResponse;
 import org.apache.servicecomb.serviceregistry.client.ServiceRegistryClient;
 import org.junit.Assert;
 import org.junit.Before;
@@ -112,10 +114,6 @@ public class TestMicroserviceRegisterTask {
         result = null;
         srClient.registerMicroservice((Microservice) any);
         result = "serviceId";
-        srClient.isSchemaExist("serviceId", "exist");
-        result = true;
-        srClient.isSchemaExist(anyString, anyString);
-        result = false;
         srClient.registerSchema(anyString, anyString, anyString);
         result = false;
       }
@@ -140,8 +138,6 @@ public class TestMicroserviceRegisterTask {
         result = null;
         srClient.registerMicroservice((Microservice) any);
         result = "serviceId";
-        srClient.isSchemaExist(anyString, anyString);
-        result = false;
         srClient.registerSchema(anyString, anyString, anyString);
         result = true;
       }
@@ -228,5 +224,74 @@ public class TestMicroserviceRegisterTask {
     Assert.assertEquals(false, registerTask.isSchemaIdSetMatch());
     Assert.assertEquals("serviceId", microservice.getServiceId());
     Assert.assertEquals(1, taskList.size());
+  }
+
+  @Test
+  public void testReRegisteredSetForDev(@Mocked ServiceRegistryClient srClient) {
+    ArchaiusUtils.resetConfig();
+    ArchaiusUtils.setProperty("instance_description.environment", "dev");
+    Microservice otherMicroservice = new Microservice();
+    otherMicroservice.setAppId(microservice.getAppId());
+    otherMicroservice.setServiceName("ms1");
+    otherMicroservice.addSchema("s1", "");
+
+    List<GetSchemaResponse> list = new ArrayList<>();
+    GetSchemaResponse resp = new GetSchemaResponse();
+    resp.setSchemaId("s1");
+    resp.setSummary("c1188d709631a9038874f9efc6eb894f");
+    list.add(resp);
+
+    new Expectations() {
+      {
+        srClient.getMicroserviceId(anyString, anyString, anyString, anyString);
+        result = "serviceId";
+        srClient.getMicroservice(anyString);
+        result = otherMicroservice;
+        srClient.getSchemas(anyString);
+        result = list;
+        srClient.registerSchema(microservice.getServiceId(), anyString, anyString);
+        result = true;
+      }
+    };
+
+    microservice.addSchema("s1", "");
+    microservice.getInstance().setEnvironment("dev");
+    MicroserviceRegisterTask registerTask = new MicroserviceRegisterTask(eventBus, srClient, microservice);
+    registerTask.run();
+
+    Assert.assertEquals(true, registerTask.isRegistered());
+    Assert.assertEquals(true, registerTask.isSchemaIdSetMatch());
+    Assert.assertEquals("serviceId", microservice.getServiceId());
+    Assert.assertEquals(1, taskList.size());
+  }
+
+  @Test(expected = RuntimeException.class)
+  public void testReRegisteredSetForProd(@Mocked ServiceRegistryClient srClient) {
+    Microservice otherMicroservice = new Microservice();
+    otherMicroservice.setAppId(microservice.getAppId());
+    otherMicroservice.setServiceName("ms1");
+    otherMicroservice.addSchema("s1", "");
+
+    List<GetSchemaResponse> list = new ArrayList<>();
+    GetSchemaResponse resp = new GetSchemaResponse();
+    resp.setSchemaId("s1");
+    resp.setSummary("c1188d709631a9038874f9efc6eb894f");
+    list.add(resp);
+
+    new Expectations() {
+      {
+        srClient.getMicroserviceId(anyString, anyString, anyString, anyString);
+        result = "serviceId";
+        srClient.getMicroservice(anyString);
+        result = otherMicroservice;
+        srClient.getSchemas(anyString);
+        result = list;
+      }
+    };
+
+    microservice.addSchema("s1", "");
+    microservice.getInstance().setEnvironment("prod");
+    MicroserviceRegisterTask registerTask = new MicroserviceRegisterTask(eventBus, srClient, microservice);
+    registerTask.run();
   }
 }

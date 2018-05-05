@@ -46,6 +46,7 @@ import org.apache.servicecomb.serviceregistry.api.response.GetAllServicesRespons
 import org.apache.servicecomb.serviceregistry.api.response.GetExistenceResponse;
 import org.apache.servicecomb.serviceregistry.api.response.GetInstancesResponse;
 import org.apache.servicecomb.serviceregistry.api.response.GetSchemaResponse;
+import org.apache.servicecomb.serviceregistry.api.response.GetSchemasResponse;
 import org.apache.servicecomb.serviceregistry.api.response.GetServiceResponse;
 import org.apache.servicecomb.serviceregistry.api.response.HeartbeatResponse;
 import org.apache.servicecomb.serviceregistry.api.response.MicroserviceInstanceChangedEvent;
@@ -59,6 +60,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.annotations.VisibleForTesting;
+import com.google.common.base.Charsets;
+import com.google.common.hash.Hashing;
 
 import io.netty.handler.codec.http.HttpStatusClass;
 import io.vertx.core.Handler;
@@ -288,6 +291,7 @@ public final class ServiceRegistryClientImpl implements ServiceRegistryClient {
     try {
       CreateSchemaRequest request = new CreateSchemaRequest();
       request.setSchema(schemaContent);
+      request.setSummary(Hashing.md5().newHasher().putString(schemaContent, Charsets.UTF_8).hash().toString());
       byte[] body = JsonUtils.writeValueAsBytes(request);
 
       CountDownLatch countDownLatch = new CountDownLatch(1);
@@ -345,6 +349,30 @@ public final class ServiceRegistryClientImpl implements ServiceRegistryClient {
     }
     if (holder.value != null) {
       return holder.value.getSchema();
+    }
+
+    return null;
+  }
+
+  @Override
+  public List<GetSchemaResponse> getSchemas(String microserviceId) {
+    Holder<GetSchemasResponse> holder = new Holder<>();
+    IpPort ipPort = ipPortManager.getAvailableAddress();
+
+    CountDownLatch countDownLatch = new CountDownLatch(1);
+    RestUtils.get(ipPort,
+        String.format(Const.REGISTRY_API.MICROSERVICE_ALL_SCHEMAs, microserviceId),
+        new RequestParam(),
+        syncHandler(countDownLatch, GetSchemasResponse.class, holder));
+    try {
+      countDownLatch.await();
+    } catch (Exception e) {
+      LOGGER.error("query all schemas {} failed",
+          microserviceId,
+          e);
+    }
+    if (holder.value != null) {
+      return holder.value.getSchema() != null ? holder.value.getSchema() : holder.value.getSchemas();
     }
 
     return null;

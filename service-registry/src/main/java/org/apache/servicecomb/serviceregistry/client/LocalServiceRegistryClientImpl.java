@@ -37,6 +37,7 @@ import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
 import org.apache.servicecomb.serviceregistry.api.registry.ServiceCenterConfig;
 import org.apache.servicecomb.serviceregistry.api.registry.ServiceCenterInfo;
 import org.apache.servicecomb.serviceregistry.api.response.FindInstancesResponse;
+import org.apache.servicecomb.serviceregistry.api.response.GetSchemaResponse;
 import org.apache.servicecomb.serviceregistry.api.response.HeartbeatResponse;
 import org.apache.servicecomb.serviceregistry.api.response.MicroserviceInstanceChangedEvent;
 import org.apache.servicecomb.serviceregistry.client.http.MicroserviceInstances;
@@ -48,6 +49,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
 import org.yaml.snakeyaml.Yaml;
+
+import com.google.common.base.Charsets;
+import com.google.common.hash.Hashing;
 
 public class LocalServiceRegistryClientImpl implements ServiceRegistryClient {
   private static final Logger LOGGER = LoggerFactory.getLogger(LocalServiceRegistryClientImpl.class);
@@ -333,6 +337,23 @@ public class LocalServiceRegistryClientImpl implements ServiceRegistryClient {
   }
 
   @Override
+  public List<GetSchemaResponse> getSchemas(String microserviceId) {
+    Microservice microservice = microserviceIdMap.get(microserviceId);
+    if (microservice == null) {
+      throw new IllegalArgumentException("Invalid serviceId, serviceId=" + microserviceId);
+    }
+    List<GetSchemaResponse> schemas = new ArrayList<>();
+    microservice.getSchemaMap().forEach((key, val) -> {
+      GetSchemaResponse schema = new GetSchemaResponse();
+      schema.setSchema(val);
+      schema.setSchemaId(key);
+      schema.setSummary(Hashing.md5().newHasher().putString(val, Charsets.UTF_8).hash().toString());
+      schemas.add(schema);
+    });
+    return schemas;
+  }
+
+  @Override
   public boolean updateMicroserviceProperties(String microserviceId, Map<String, String> serviceProperties) {
     Microservice microservice = microserviceIdMap.get(microserviceId);
     if (microservice == null) {
@@ -383,5 +404,4 @@ public class LocalServiceRegistryClientImpl implements ServiceRegistryClient {
     info.setConfig(new ServiceCenterConfig());
     return info;
   }
-
 }
