@@ -45,8 +45,8 @@ public class SwaggerEnvironmentForTest {
     SwaggerGenerator producerGenerator = UnitTestSwaggerUtils.generateSwagger(classLoader, producerCls);
     Swagger swagger = producerGenerator.getSwagger();
 
-    SwaggerToClassGenerator swaggerToClassGenerator = new SwaggerToClassGenerator(new ClassLoader() {
-    }, swagger, null);
+    SwaggerToClassGenerator swaggerToClassGenerator = new SwaggerToClassGenerator(classLoader, swagger,
+        producerInstance.getClass().getPackage().getName());
     return swaggerEnvironment.createProducer(producerInstance, swaggerToClassGenerator.convert());
   }
 }

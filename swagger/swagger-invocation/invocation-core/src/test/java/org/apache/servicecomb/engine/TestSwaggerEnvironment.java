@@ -22,8 +22,10 @@ import static org.hamcrest.core.IsNull.notNullValue;
 import static org.hamcrest.core.IsNull.nullValue;
 import static org.junit.Assert.assertThat;
 
+import org.apache.servicecomb.common.javassist.JavassistUtils;
 import org.apache.servicecomb.swagger.engine.SwaggerProducer;
 import org.apache.servicecomb.swagger.invocation.models.ProducerImpl;
+import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -35,6 +37,11 @@ public class TestSwaggerEnvironment {
   @BeforeClass
   public static void init() {
     producer = env.createProducer(new ProducerImpl());
+  }
+
+  @AfterClass
+  public static void tearDown() {
+    JavassistUtils.clearByClassLoader(env.getClassLoader());
   }
 
   @Test

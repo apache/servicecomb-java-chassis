@@ -29,17 +29,26 @@ import org.apache.servicecomb.swagger.generator.core.schema.RepeatOperation;
 import org.apache.servicecomb.swagger.generator.core.schema.Schema;
 import org.apache.servicecomb.swagger.generator.core.unittest.UnitTestSwaggerUtils;
 import org.apache.servicecomb.swagger.generator.pojo.PojoSwaggerGeneratorContext;
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Test;
 
 public class TestSwaggerUtils {
+  ClassLoader classLoader = new ClassLoader() {
+  };
+
   SwaggerGeneratorContext context = new PojoSwaggerGeneratorContext();
 
   private SwaggerGenerator testSchemaMethod(String resultName, String... methodNames) {
-    return UnitTestSwaggerUtils.testSwagger("schemas/" + resultName + ".yaml",
+    return UnitTestSwaggerUtils.testSwagger(classLoader, "schemas/" + resultName + ".yaml",
         context,
         Schema.class,
         methodNames);
+  }
+
+  @After
+  public void tearDown() {
+    JavassistUtils.clearByClassLoader(classLoader);
   }
 
   @Test
@@ -87,7 +96,6 @@ public class TestSwaggerUtils {
   @Test
   public void testEnum() {
     SwaggerGenerator generator = testSchemaMethod("enum", "testEnum");
-    JavassistUtils.detach("gen.cse.ms.ut.SchemaIntf");
     Class<?> intf = ClassUtilsForTest.getOrCreateInterface(generator);
 
     Method method = ReflectUtils.findMethod(intf, "testEnum");
@@ -182,7 +190,6 @@ public class TestSwaggerUtils {
   @Test
   public void testDate() {
     SwaggerGenerator generator = testSchemaMethod("date", "testDate");
-    JavassistUtils.detach("gen.cse.ms.ut.SchemaIntf");
     Class<?> intf = ClassUtilsForTest.getOrCreateInterface(generator);
 
     Method method = ReflectUtils.findMethod(intf, "testDate");

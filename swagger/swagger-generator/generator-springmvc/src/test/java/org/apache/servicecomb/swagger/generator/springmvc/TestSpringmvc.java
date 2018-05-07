@@ -17,14 +17,24 @@
 
 package org.apache.servicecomb.swagger.generator.springmvc;
 
+import org.apache.servicecomb.common.javassist.JavassistUtils;
 import org.apache.servicecomb.swagger.generator.core.CompositeSwaggerGeneratorContext;
 import org.apache.servicecomb.swagger.generator.core.SwaggerGeneratorContext;
 import org.apache.servicecomb.swagger.generator.core.unittest.UnitTestSwaggerUtils;
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Test;
 
 public class TestSpringmvc {
+  ClassLoader classLoader = new ClassLoader() {
+  };
+
   SwaggerGeneratorContext context = new SpringmvcSwaggerGeneratorContext();
+
+  @After
+  public void tearDown() {
+    JavassistUtils.clearByClassLoader(classLoader);
+  }
 
   @Test
   public void testMultiDefaultPath() {
@@ -36,35 +46,39 @@ public class TestSpringmvc {
 
   @Test
   public void testResponseEntity() {
-    UnitTestSwaggerUtils.testSwagger("schemas/responseEntity.yaml", context, MethodResponseEntity.class);
+    UnitTestSwaggerUtils.testSwagger(classLoader, "schemas/responseEntity.yaml", context, MethodResponseEntity.class);
   }
 
   @Test
   public void testEmptyPath() {
-    UnitTestSwaggerUtils.testSwagger("schemas/emptyPath.yaml", context, Echo.class, "emptyPath");
-    UnitTestSwaggerUtils.testSwagger("schemas/MethodEmptyPath.yaml",
+    UnitTestSwaggerUtils.testSwagger(classLoader, "schemas/emptyPath.yaml", context, Echo.class, "emptyPath");
+    UnitTestSwaggerUtils.testSwagger(classLoader, "schemas/MethodEmptyPath.yaml",
         context,
         MethodEmptyPath.class);
   }
 
   @Test
   public void testMixupAnnotations() {
-    UnitTestSwaggerUtils.testSwagger("schemas/mixupAnnotations.yaml", context, MethodMixupAnnotations.class);
+    UnitTestSwaggerUtils
+        .testSwagger(classLoader, "schemas/mixupAnnotations.yaml", context, MethodMixupAnnotations.class);
   }
 
   @Test
   public void testDefaultParameter() {
-    UnitTestSwaggerUtils.testSwagger("schemas/defaultParameter.yaml", context, MethodDefaultParameter.class);
+    UnitTestSwaggerUtils
+        .testSwagger(classLoader, "schemas/defaultParameter.yaml", context, MethodDefaultParameter.class);
   }
 
   @Test
   public void testInheritHttpMethod() {
-    UnitTestSwaggerUtils.testSwagger("schemas/inheritHttpMethod.yaml", context, Echo.class, "inheritHttpMethod");
+    UnitTestSwaggerUtils
+        .testSwagger(classLoader, "schemas/inheritHttpMethod.yaml", context, Echo.class, "inheritHttpMethod");
   }
 
   @Test
   public void testRawJsonStringMethod() {
-    UnitTestSwaggerUtils.testSwagger("schemas/rawJsonStringMethod.yaml", context, Echo.class, "rawJsonStringMethod");
+    UnitTestSwaggerUtils
+        .testSwagger(classLoader, "schemas/rawJsonStringMethod.yaml", context, Echo.class, "rawJsonStringMethod");
   }
 
   @Test
