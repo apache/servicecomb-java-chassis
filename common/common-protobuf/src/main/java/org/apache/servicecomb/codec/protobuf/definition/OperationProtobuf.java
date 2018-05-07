@@ -33,8 +33,7 @@ public class OperationProtobuf {
 
   private WrapSchema responseSchema;
 
-  public OperationProtobuf(OperationMeta operationMeta)
-      throws Exception {
+  public OperationProtobuf(OperationMeta operationMeta) {
     this.operationMeta = operationMeta;
 
     requestSchema = ProtobufSchemaUtils.getOrCreateArgsSchema(operationMeta);

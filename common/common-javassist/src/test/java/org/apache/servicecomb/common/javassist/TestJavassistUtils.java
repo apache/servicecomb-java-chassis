@@ -109,7 +109,7 @@ public class TestJavassistUtils {
   }
 
   @Test
-  public void testInterface() throws Exception {
+  public void testInterface() {
     ClassConfig classConfig = new ClassConfig();
     classConfig.setIntf(true);
     String intfName = "cse.ut.TestInterface";
@@ -213,7 +213,6 @@ public class TestJavassistUtils {
             .getOrCreateEnumWithPackageName(Thread.currentThread().getContextClassLoader(),
                 packageName,
                 Arrays.asList("a", "b")));
-
   }
 
   @Test

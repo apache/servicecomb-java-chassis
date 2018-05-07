@@ -55,7 +55,7 @@ public class TestProtobufSchemaUtils {
   public void wrapPrimitive() throws Exception {
     Assert.assertNotNull(WrapType.ARGS_WRAP);
     Assert.assertNotNull(WrapType.NORMAL_WRAP);
-    testSchema((int) 1);
+    testSchema(1);
     testSchema("test");
     testSchema(WrapType.ARGS_WRAP);
     Assert.assertTrue(true);
@@ -77,7 +77,7 @@ public class TestProtobufSchemaUtils {
     FieldConfig expect = new FieldConfig();
     expect.setName("test");
 
-    FieldConfig result = (FieldConfig) writeThenRead(expect);
+    FieldConfig result = writeThenRead(expect);
     Assert.assertEquals(expect.getName(), result.getName());
   }
 

@@ -35,12 +35,12 @@ public class TestSpringmvc {
   }
 
   @Test
-  public void testResponseEntity() throws Exception {
+  public void testResponseEntity() {
     UnitTestSwaggerUtils.testSwagger("schemas/responseEntity.yaml", context, MethodResponseEntity.class);
   }
 
   @Test
-  public void testEmptyPath() throws Exception {
+  public void testEmptyPath() {
     UnitTestSwaggerUtils.testSwagger("schemas/emptyPath.yaml", context, Echo.class, "emptyPath");
     UnitTestSwaggerUtils.testSwagger("schemas/MethodEmptyPath.yaml",
         context,
@@ -48,27 +48,27 @@ public class TestSpringmvc {
   }
 
   @Test
-  public void testMixupAnnotations() throws Exception {
+  public void testMixupAnnotations() {
     UnitTestSwaggerUtils.testSwagger("schemas/mixupAnnotations.yaml", context, MethodMixupAnnotations.class);
   }
 
   @Test
-  public void testDefaultParameter() throws Exception {
+  public void testDefaultParameter() {
     UnitTestSwaggerUtils.testSwagger("schemas/defaultParameter.yaml", context, MethodDefaultParameter.class);
   }
 
   @Test
-  public void testInheritHttpMethod() throws Exception {
+  public void testInheritHttpMethod() {
     UnitTestSwaggerUtils.testSwagger("schemas/inheritHttpMethod.yaml", context, Echo.class, "inheritHttpMethod");
   }
 
   @Test
-  public void testRawJsonStringMethod() throws Exception {
+  public void testRawJsonStringMethod() {
     UnitTestSwaggerUtils.testSwagger("schemas/rawJsonStringMethod.yaml", context, Echo.class, "rawJsonStringMethod");
   }
 
   @Test
-  public void testClassMethodNoPath() throws Exception {
+  public void testClassMethodNoPath() {
     UnitTestSwaggerUtils.testException(
         "generate operation swagger failed, org.apache.servicecomb.swagger.generator.springmvc.ClassMethodNoPath:noPath",
         "Path must not both be empty in class and method",
@@ -78,7 +78,7 @@ public class TestSpringmvc {
   }
 
   @Test
-  public void testClassMethodNoHttpMetod() throws Exception {
+  public void testClassMethodNoHttpMetod() {
     UnitTestSwaggerUtils.testException(
         "generate operation swagger failed, org.apache.servicecomb.swagger.generator.springmvc.ClassMethodNoHttpMethod:noHttpMethod",
         "HttpMethod must not both be empty in class and method",
@@ -87,7 +87,7 @@ public class TestSpringmvc {
   }
 
   @Test
-  public void testMethodMultiHttpMethod() throws Exception {
+  public void testMethodMultiHttpMethod() {
     UnitTestSwaggerUtils.testException(
         "generate operation swagger failed, org.apache.servicecomb.swagger.generator.springmvc.Echo:multiHttpMethod",
         "not allowed multi http method for org.apache.servicecomb.swagger.generator.springmvc.Echo:multiHttpMethod",
@@ -97,7 +97,7 @@ public class TestSpringmvc {
   }
 
   @Test
-  public void testClassMultiHttpMethod() throws Exception {
+  public void testClassMultiHttpMethod() {
     UnitTestSwaggerUtils.testException(
         "not allowed multi http method for org.apache.servicecomb.swagger.generator.springmvc.ClassMultiHttpMethod",
         context,
@@ -165,7 +165,7 @@ public class TestSpringmvc {
   }
 
   @Test
-  public void testClassMultiPath() throws Exception {
+  public void testClassMultiPath() {
     UnitTestSwaggerUtils.testException(
         "not support multi path for org.apache.servicecomb.swagger.generator.springmvc.ClassMultiPath",
         context,
