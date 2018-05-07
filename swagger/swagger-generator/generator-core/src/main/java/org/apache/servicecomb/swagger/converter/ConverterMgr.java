@@ -40,7 +40,6 @@ import org.apache.servicecomb.swagger.extend.property.ByteProperty;
 import org.apache.servicecomb.swagger.extend.property.ShortProperty;
 
 import com.fasterxml.jackson.databind.JavaType;
-import com.fasterxml.jackson.databind.type.SimpleType;
 import com.fasterxml.jackson.databind.type.TypeFactory;
 
 import io.swagger.models.ArrayModel;
@@ -108,28 +107,28 @@ public final class ConverterMgr {
   }
 
   private static void initPropertyMap() {
-    PROPERTY_MAP.put(BooleanProperty.class, SimpleType.constructUnsafe(Boolean.class));
+    PROPERTY_MAP.put(BooleanProperty.class, TypeFactory.defaultInstance().constructType(Boolean.class));
 
-    PROPERTY_MAP.put(FloatProperty.class, SimpleType.constructUnsafe(Float.class));
-    PROPERTY_MAP.put(DoubleProperty.class, SimpleType.constructUnsafe(Double.class));
-    PROPERTY_MAP.put(DecimalProperty.class, SimpleType.constructUnsafe(BigDecimal.class));
+    PROPERTY_MAP.put(FloatProperty.class, TypeFactory.defaultInstance().constructType(Float.class));
+    PROPERTY_MAP.put(DoubleProperty.class, TypeFactory.defaultInstance().constructType(Double.class));
+    PROPERTY_MAP.put(DecimalProperty.class, TypeFactory.defaultInstance().constructType(BigDecimal.class));
 
-    PROPERTY_MAP.put(ByteProperty.class, SimpleType.constructUnsafe(Byte.class));
-    PROPERTY_MAP.put(ShortProperty.class, SimpleType.constructUnsafe(Short.class));
-    PROPERTY_MAP.put(IntegerProperty.class, SimpleType.constructUnsafe(Integer.class));
-    PROPERTY_MAP.put(BaseIntegerProperty.class, SimpleType.constructUnsafe(Integer.class));
-    PROPERTY_MAP.put(LongProperty.class, SimpleType.constructUnsafe(Long.class));
+    PROPERTY_MAP.put(ByteProperty.class, TypeFactory.defaultInstance().constructType(Byte.class));
+    PROPERTY_MAP.put(ShortProperty.class, TypeFactory.defaultInstance().constructType(Short.class));
+    PROPERTY_MAP.put(IntegerProperty.class, TypeFactory.defaultInstance().constructType(Integer.class));
+    PROPERTY_MAP.put(BaseIntegerProperty.class, TypeFactory.defaultInstance().constructType(Integer.class));
+    PROPERTY_MAP.put(LongProperty.class, TypeFactory.defaultInstance().constructType(Long.class));
 
     // stringProperty包含了enum的场景，并不一定是转化为string
     // 但是，如果统一走StringPropertyConverter则可以处理enum的场景
-    PROPERTY_MAP.put(StringProperty.class, SimpleType.constructUnsafe(String.class));
+    PROPERTY_MAP.put(StringProperty.class, TypeFactory.defaultInstance().constructType(String.class));
 
-    PROPERTY_MAP.put(DateProperty.class, SimpleType.constructUnsafe(LocalDate.class));
-    PROPERTY_MAP.put(DateTimeProperty.class, SimpleType.constructUnsafe(Date.class));
+    PROPERTY_MAP.put(DateProperty.class, TypeFactory.defaultInstance().constructType(LocalDate.class));
+    PROPERTY_MAP.put(DateTimeProperty.class, TypeFactory.defaultInstance().constructType(Date.class));
 
-    PROPERTY_MAP.put(ByteArrayProperty.class, SimpleType.constructUnsafe(byte[].class));
+    PROPERTY_MAP.put(ByteArrayProperty.class, TypeFactory.defaultInstance().constructType(byte[].class));
 
-    PROPERTY_MAP.put(FileProperty.class, SimpleType.constructUnsafe(Part.class));
+    PROPERTY_MAP.put(FileProperty.class, TypeFactory.defaultInstance().constructType(Part.class));
   }
 
   private static void initConverters() {
