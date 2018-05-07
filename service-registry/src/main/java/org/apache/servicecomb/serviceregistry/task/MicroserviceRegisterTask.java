@@ -24,6 +24,7 @@ import java.util.Set;
 import org.apache.servicecomb.serviceregistry.api.registry.Microservice;
 import org.apache.servicecomb.serviceregistry.api.response.GetSchemaResponse;
 import org.apache.servicecomb.serviceregistry.client.ServiceRegistryClient;
+import org.apache.servicecomb.serviceregistry.task.event.InstanceRegistryFailedEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
@@ -54,6 +55,11 @@ public class MicroserviceRegisterTask extends AbstractRegisterTask {
       this.taskStatus = TaskStatus.READY;
       this.registered = false;
     }
+  }
+
+  @Subscribe
+  public void onInstanceRegistryFailed(InstanceRegistryFailedEvent event) {
+    doRegister();
   }
 
   @Override

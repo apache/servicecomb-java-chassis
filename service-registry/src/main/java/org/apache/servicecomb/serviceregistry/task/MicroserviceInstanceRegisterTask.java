@@ -16,11 +16,13 @@
  */
 package org.apache.servicecomb.serviceregistry.task;
 
+import org.apache.servicecomb.foundation.common.event.EventManager;
 import org.apache.servicecomb.serviceregistry.RegistryUtils;
 import org.apache.servicecomb.serviceregistry.api.registry.Microservice;
 import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
 import org.apache.servicecomb.serviceregistry.client.ServiceRegistryClient;
 import org.apache.servicecomb.serviceregistry.config.ServiceRegistryConfig;
+import org.apache.servicecomb.serviceregistry.task.event.InstanceRegistryFailedEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
@@ -69,8 +71,9 @@ public class MicroserviceInstanceRegisterTask extends AbstractRegisterTask {
 
     String instanceId = srClient.registerMicroserviceInstance(microserviceInstance);
     if (StringUtils.isEmpty(instanceId)) {
-      LOGGER.error("Register microservice instance failed. microserviceId={}",
+      LOGGER.error("Register microservice instance failed,will back to register microservice again. microserviceId={}",
           microserviceInstance.getServiceId());
+      EventManager.post(new InstanceRegistryFailedEvent());
       return false;
     }
     microserviceInstance.setInstanceId(instanceId);
