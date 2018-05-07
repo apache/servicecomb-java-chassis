@@ -22,9 +22,7 @@ import static java.util.Locale.ENGLISH;
 import java.lang.reflect.Modifier;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
-import java.util.IdentityHashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,36 +37,22 @@ import javassist.CtClass;
 import javassist.CtConstructor;
 import javassist.CtField;
 import javassist.CtMethod;
-import javassist.LoaderClassPath;
+import javassist.scopedpool.ScopedClassPoolRepositoryImpl;
 import javassist.NotFoundException;
 
 public final class JavassistUtils {
   private static final Logger LOGGER = LoggerFactory.getLogger(JavassistUtils.class);
 
-  private static final Map<ClassLoader, ClassPool> CLASSPOOLS = new IdentityHashMap<>();
+  static {
+    ScopedClassPoolRepositoryImpl.getInstance().setClassPoolFactory(new StdScopedClassPoolFactory());
+  }
 
-  private static final Object LOCK = new Object();
-
-  private static ClassPool getOrCreateClassPool(ClassLoader classLoader) {
-    ClassPool classPool = CLASSPOOLS.get(classLoader);
-    if (classPool == null) {
-      synchronized (LOCK) {
-        classPool = CLASSPOOLS.get(classLoader);
-        if (classPool == null) {
-          classPool = new ClassPool(null);
-          classPool.appendSystemPath();
-          classPool.appendClassPath(new LoaderClassPath(classLoader));
-
-          CLASSPOOLS.put(classLoader, classPool);
-        }
-      }
-    }
-
-    return classPool;
+  public static ClassPool getOrCreateClassPool(ClassLoader classLoader) {
+    return ScopedClassPoolRepositoryImpl.getInstance().registerClassLoader(classLoader);
   }
 
   public static void clearByClassLoader(ClassLoader classLoader) {
-    CLASSPOOLS.remove(classLoader);
+    ScopedClassPoolRepositoryImpl.getInstance().unregisterClassLoader(classLoader);
   }
 
   private JavassistUtils() {
