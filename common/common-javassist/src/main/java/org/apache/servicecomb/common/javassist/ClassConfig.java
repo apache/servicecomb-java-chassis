@@ -73,9 +73,13 @@ public class ClassConfig {
   }
 
   public FieldConfig addField(String name, JavaType javaType) {
+    return addField(name, new CtType(javaType));
+  }
+
+  public FieldConfig addField(String name, CtType ctType) {
     FieldConfig field = new FieldConfig();
     field.setName(name);
-    field.setType(javaType);
+    field.setType(ctType);
 
     fieldList.add(field);
 

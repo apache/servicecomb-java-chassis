@@ -25,7 +25,7 @@ import com.fasterxml.jackson.databind.JavaType;
 public class MethodConfig {
   private String name;
 
-  private JavaType result;
+  private CtType result;
 
   private List<ParameterConfig> parameterList = new ArrayList<>();
 
@@ -60,14 +60,22 @@ public class MethodConfig {
     this.name = name;
   }
 
-  public void setResult(JavaType result) {
+  public void setResult(JavaType javaType) {
+    this.result = new CtType(javaType);
+  }
+
+  public void setResult(CtType result) {
     this.result = result;
   }
 
-  public void addParameter(String name, JavaType type) {
+  public void addParameter(String name, JavaType javaType) {
+    addParameter(name, new CtType(javaType));
+  }
+
+  public void addParameter(String name, CtType ctType) {
     ParameterConfig parameterConfig = new ParameterConfig();
     parameterConfig.setName(name);
-    parameterConfig.setType(type);
+    parameterConfig.setType(ctType);
     parameterList.add(parameterConfig);
   }
 
@@ -84,17 +92,17 @@ public class MethodConfig {
     StringBuilder sbMethodGenericSignature = new StringBuilder();
 
     sbMethod.append("public ");
-    sbMethod.append(result == null ? "void" : JavassistUtils.getNameForGenerateCode(result));
+    sbMethod.append(result == null ? "void" : result.getCtClass().getName());
     sbMethod.append(" ")
         .append(name)
         .append("(");
     sbMethodGenericSignature.append("(");
 
-    boolean hasGenericSignature = result == null ? false : result.hasGenericTypes();
+    boolean hasGenericSignature = result != null && result.hasGenericTypes();
     for (ParameterConfig parameter : parameterList) {
       hasGenericSignature = hasGenericSignature || parameter.getType().hasGenericTypes();
 
-      String paramTypeName = JavassistUtils.getNameForGenerateCode(parameter.getType());
+      String paramTypeName = parameter.getType().getCtClass().getName();
       String code = String.format("%s %s,", paramTypeName, parameter.getName());
       sbMethod.append(code);
       sbMethodGenericSignature.append(parameter.getType().getGenericSignature());
