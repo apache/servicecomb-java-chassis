@@ -47,6 +47,10 @@ public class PojoImpl {
     return name + " sayhi";
   }
 
+  public List<byte[]> testListBytes(List<byte[]> bytes) {
+    return bytes;
+  }
+
   public byte[] testBytes(byte[] bytes) {
     return bytes;
   }

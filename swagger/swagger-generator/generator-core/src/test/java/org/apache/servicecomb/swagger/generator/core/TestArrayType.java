@@ -18,9 +18,11 @@ package org.apache.servicecomb.swagger.generator.core;
 
 import java.lang.reflect.Method;
 
+import org.apache.servicecomb.common.javassist.JavassistUtils;
 import org.apache.servicecomb.foundation.common.utils.ReflectUtils;
 import org.apache.servicecomb.swagger.generator.core.schema.ArrayType;
 import org.apache.servicecomb.swagger.generator.core.unittest.UnitTestSwaggerUtils;
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -28,9 +30,17 @@ import javassist.CtClass;
 import javassist.CtMethod;
 
 public class TestArrayType {
+  ClassLoader classLoader = new ClassLoader() {
+  };
+
+  @After
+  public void tearDown() {
+    JavassistUtils.clearByClassLoader(classLoader);
+  }
+
   @Test
   public void test() throws Exception {
-    SwaggerGenerator generator = UnitTestSwaggerUtils.generateSwagger(ArrayType.class);
+    SwaggerGenerator generator = UnitTestSwaggerUtils.generateSwagger(classLoader, ArrayType.class);
     Class<?> cls = ClassUtilsForTest.getOrCreateInterface(generator);
     Method method = ReflectUtils.findMethod(cls, "testBytes");
 

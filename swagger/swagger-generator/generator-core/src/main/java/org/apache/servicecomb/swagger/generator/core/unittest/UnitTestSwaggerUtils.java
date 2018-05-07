@@ -83,11 +83,11 @@ public final class UnitTestSwaggerUtils {
     }
   }
 
-  public static SwaggerGenerator testSwagger(String resPath, SwaggerGeneratorContext context, Class<?> cls,
+  public static SwaggerGenerator testSwagger(ClassLoader classLoader, String resPath, SwaggerGeneratorContext context,
+      Class<?> cls,
       String... methods) {
     SwaggerGeneratorForTest generator = new SwaggerGeneratorForTest(context, cls);
-    generator.setClassLoader(new ClassLoader() {
-    });
+    generator.setClassLoader(classLoader);
     generator.replaceMethods(methods);
 
     Swagger swagger = generator.generate();

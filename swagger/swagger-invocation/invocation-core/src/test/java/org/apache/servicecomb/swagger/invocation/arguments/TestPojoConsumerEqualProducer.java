@@ -21,6 +21,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
+import org.apache.servicecomb.common.javassist.JavassistUtils;
 import org.apache.servicecomb.engine.SwaggerEnvironmentForTest;
 import org.apache.servicecomb.swagger.engine.SwaggerConsumer;
 import org.apache.servicecomb.swagger.engine.SwaggerProducer;
@@ -31,6 +32,7 @@ import org.apache.servicecomb.swagger.invocation.context.InvocationContext;
 import org.apache.servicecomb.swagger.invocation.models.Person;
 import org.apache.servicecomb.swagger.invocation.models.PojoConsumerIntf;
 import org.apache.servicecomb.swagger.invocation.models.PojoImpl;
+import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -52,6 +54,11 @@ public class TestPojoConsumerEqualProducer {
     consumer = env.getSwaggerEnvironment().createConsumer(PojoConsumerIntf.class, producer.getSwaggerIntf());
     invoker = new LocalProducerInvoker(consumer, producer);
     proxy = invoker.getProxy();
+  }
+
+  @AfterClass
+  public static void tearDown() {
+    JavassistUtils.clearByClassLoader(env.getClassLoader());
   }
 
   @Test
@@ -138,6 +145,18 @@ public class TestPojoConsumerEqualProducer {
     Assert.assertEquals(bytes, Utils.getFieldValue(body, "bytes"));
 
     Assert.assertArrayEquals(bytes, result);
+  }
+
+  @Test
+  public void testListBytes() {
+    List<byte[]> bytes = Arrays.asList(new byte[] {1, 2});
+
+    List<byte[]> result = proxy.testListBytes(bytes);
+
+    Object body = invoker.getSwaggerArgument(0);
+    Assert.assertEquals(bytes, Utils.getFieldValue(body, "bytes"));
+
+    Assert.assertEquals(bytes, result);
   }
 
   @Test

@@ -68,6 +68,12 @@ public class JaxrsImpl {
     return input;
   }
 
+  @Path("/listBytes")
+  @POST
+  public List<byte[]> testListBytes(List<byte[]> bytes) {
+    return bytes;
+  }
+
   @Path("/testArrayArray")
   @POST
   public String[] testArrayArray(String[] s) {

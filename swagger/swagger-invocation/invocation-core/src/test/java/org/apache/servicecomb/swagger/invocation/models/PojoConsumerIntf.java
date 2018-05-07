@@ -36,6 +36,8 @@ public interface PojoConsumerIntf {
 
   String testContext(InvocationContext context, String name);
 
+  List<byte[]> testListBytes(List<byte[]> bytes);
+
   byte[] testBytes(byte[] bytes);
 
   String[] testArrayArray(String[] s);

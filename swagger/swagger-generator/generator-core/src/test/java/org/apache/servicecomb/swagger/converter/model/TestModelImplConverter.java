@@ -18,9 +18,11 @@ package org.apache.servicecomb.swagger.converter.model;
 
 import java.util.Map;
 
+import org.apache.servicecomb.common.javassist.JavassistUtils;
 import org.apache.servicecomb.swagger.converter.SwaggerToClassGenerator;
 import org.apache.servicecomb.swagger.generator.core.SwaggerConst;
 import org.apache.servicecomb.swagger.generator.core.utils.ParamUtils;
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
@@ -45,6 +47,11 @@ public class TestModelImplConverter {
   };
 
   SwaggerToClassGenerator swaggerToClassGenerator = new SwaggerToClassGenerator(classLoader, swagger, "pkg");
+
+  @After
+  public void teardown() {
+    JavassistUtils.clearByClassLoader(classLoader);
+  }
 
   @Test
   public void convert_simple() {

@@ -17,14 +17,24 @@
 
 package org.apache.servicecomb.swagger.generator.jaxrs;
 
+import org.apache.servicecomb.common.javassist.JavassistUtils;
 import org.apache.servicecomb.swagger.generator.core.CompositeSwaggerGeneratorContext;
 import org.apache.servicecomb.swagger.generator.core.SwaggerGeneratorContext;
 import org.apache.servicecomb.swagger.generator.core.unittest.UnitTestSwaggerUtils;
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Test;
 
 public class TestJaxrs {
+  ClassLoader classLoader = new ClassLoader() {
+  };
+
   SwaggerGeneratorContext context = new JaxrsSwaggerGeneratorContext();
+
+  @After
+  public void tearDown() {
+    JavassistUtils.clearByClassLoader(classLoader);
+  }
 
   @Test
   public void testMultiDefaultPath() {
@@ -36,7 +46,7 @@ public class TestJaxrs {
 
   @Test
   public void testResponse() {
-    UnitTestSwaggerUtils.testSwagger("schemas/response.yaml", context, Echo.class, "response");
+    UnitTestSwaggerUtils.testSwagger(classLoader, "schemas/response.yaml", context, Echo.class, "response");
   }
 
   @Test
@@ -51,17 +61,17 @@ public class TestJaxrs {
 
   @Test
   public void testEcho() {
-    UnitTestSwaggerUtils.testSwagger("schemas/echo.yaml", context, Echo.class, "echo");
+    UnitTestSwaggerUtils.testSwagger(classLoader, "schemas/echo.yaml", context, Echo.class, "echo");
   }
 
   @Test
   public void testForm() {
-    UnitTestSwaggerUtils.testSwagger("schemas/form.yaml", context, Echo.class, "form");
+    UnitTestSwaggerUtils.testSwagger(classLoader, "schemas/form.yaml", context, Echo.class, "form");
   }
 
   @Test
   public void testQuery() {
-    UnitTestSwaggerUtils.testSwagger("schemas/query.yaml", context, Echo.class, "query");
+    UnitTestSwaggerUtils.testSwagger(classLoader, "schemas/query.yaml", context, Echo.class, "query");
   }
 
   @Test
@@ -76,17 +86,18 @@ public class TestJaxrs {
 
   @Test
   public void testCookie() {
-    UnitTestSwaggerUtils.testSwagger("schemas/cookie.yaml", context, Echo.class, "cookie");
+    UnitTestSwaggerUtils.testSwagger(classLoader, "schemas/cookie.yaml", context, Echo.class, "cookie");
   }
 
   @Test
   public void testEmptyPath() {
-    UnitTestSwaggerUtils.testSwagger("schemas/emptyPath.yaml", context, Echo.class, "emptyPath");
+    UnitTestSwaggerUtils.testSwagger(classLoader, "schemas/emptyPath.yaml", context, Echo.class, "emptyPath");
   }
 
   @Test
   public void testNonRestful() {
-    UnitTestSwaggerUtils.testSwagger("schemas/emptyContract.yaml", context, Echo.class, "ignoredNonRestful");
+    UnitTestSwaggerUtils
+        .testSwagger(classLoader, "schemas/emptyContract.yaml", context, Echo.class, "ignoredNonRestful");
   }
 
   @Test
@@ -108,6 +119,7 @@ public class TestJaxrs {
 
   @Test
   public void testRawJsonStringMethod() {
-    UnitTestSwaggerUtils.testSwagger("schemas/rawJsonStringMethod.yaml", context, Echo.class, "rawJsonStringMethod");
+    UnitTestSwaggerUtils
+        .testSwagger(classLoader, "schemas/rawJsonStringMethod.yaml", context, Echo.class, "rawJsonStringMethod");
   }
 }
