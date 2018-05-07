@@ -26,9 +26,7 @@ import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.util.ClassUtils;
 
-import com.fasterxml.jackson.databind.JavaType;
 import com.google.common.hash.Hashing;
 
 import javassist.CannotCompileException;
@@ -38,7 +36,6 @@ import javassist.CtConstructor;
 import javassist.CtField;
 import javassist.CtMethod;
 import javassist.scopedpool.ScopedClassPoolRepositoryImpl;
-import javassist.NotFoundException;
 
 public final class JavassistUtils {
   private static final Logger LOGGER = LoggerFactory.getLogger(JavassistUtils.class);
@@ -163,7 +160,7 @@ public final class JavassistUtils {
       }
 
       for (FieldConfig fieldConfig : config.getFieldList()) {
-        CtField field = createCtField(classPool, ctClass, fieldConfig);
+        CtField field = createCtField(ctClass, fieldConfig);
         ctClass.addField(field);
 
         if (fieldConfig.isGenGetter()) {
@@ -205,9 +202,9 @@ public final class JavassistUtils {
   private static void addFieldGetter(ClassConfig config, FieldConfig fieldConfig) {
     MethodConfig methodConfig = new MethodConfig();
 
-    Class<?> cls = fieldConfig.getRawType();
     String prefix = "get";
-    if (cls.equals(Boolean.class) || cls.equals(boolean.class)) {
+    if (boolean.class.getName().equals(fieldConfig.getType().getCtClass().getName())
+        || Boolean.class.getName().equals(fieldConfig.getType().getCtClass().getName())) {
       prefix = "is";
     }
     methodConfig.setName(prefix + capitalize(fieldConfig.getName()));
@@ -254,7 +251,7 @@ public final class JavassistUtils {
     }
   }
 
-  private static String genReadFieldsMethodSource(List<FieldConfig> fieldList) throws Exception {
+  private static String genReadFieldsMethodSource(List<FieldConfig> fieldList) {
     StringBuilder sb = new StringBuilder();
     sb.append("public Object[] readFields(){");
     sb.append(String.format("Object values[] = new Object[%d];", fieldList.size()));
@@ -273,17 +270,16 @@ public final class JavassistUtils {
     return sb.toString();
   }
 
-  private static String genWriteFieldsMethodSource(List<FieldConfig> fieldList) throws Exception {
+  private static String genWriteFieldsMethodSource(List<FieldConfig> fieldList) {
     StringBuilder sb = new StringBuilder();
     sb.append("public void writeFields(Object[] values){");
     for (int idx = 0; idx < fieldList.size(); idx++) {
       FieldConfig fieldConfig = fieldList.get(idx);
 
       String fieldName = fieldConfig.getName();
-      Class<?> type = fieldConfig.getRawType();
       String code = String.format("    %s = (%s)values[%d];",
           fieldName,
-          type.getTypeName(),
+          fieldConfig.getType().getCtClass().getName(),
           idx);
 
       sb.append(code);
@@ -293,7 +289,7 @@ public final class JavassistUtils {
     return sb.toString();
   }
 
-  private static String genReadFieldMethodSource(List<FieldConfig> fieldList) throws Exception {
+  private static String genReadFieldMethodSource(List<FieldConfig> fieldList) {
     StringBuilder sb = new StringBuilder();
     sb.append("public Object readField(){");
 
@@ -308,7 +304,7 @@ public final class JavassistUtils {
     return sb.toString();
   }
 
-  private static String genWriteFieldMethodSource(List<FieldConfig> fieldList) throws Exception {
+  private static String genWriteFieldMethodSource(List<FieldConfig> fieldList) {
     StringBuilder sb = new StringBuilder();
     sb.append("public void writeField(Object value){");
 
@@ -317,7 +313,7 @@ public final class JavassistUtils {
       sb.append(
           String.format("    %s=(%s)value;",
               fieldConfig.getName(),
-              fieldConfig.getRawType().getTypeName()));
+              fieldConfig.getType().getCtClass().getName()));
     }
 
     sb.append("}");
@@ -325,37 +321,12 @@ public final class JavassistUtils {
     return sb.toString();
   }
 
-  private static CtField createCtField(ClassPool pool, CtClass ctClass, FieldConfig field) throws Exception {
-    Class<?> fieldType = field.getRawType();
-
-    CtField ctField = new CtField(pool.getCtClass(fieldType.getName()), field.getName(), ctClass);
-    if (field.getGenericSignature() != null) {
-      ctField.setGenericSignature(field.getGenericSignature());
+  private static CtField createCtField(CtClass ctClass, FieldConfig field) throws CannotCompileException {
+    CtField ctField = new CtField(field.getType().getCtClass(), field.getName(), ctClass);
+    if (field.getType().hasGenericTypes()) {
+      ctField.setGenericSignature(field.getType().getGenericSignature());
     }
     ctField.setModifiers(Modifier.PUBLIC);
     return ctField;
-  }
-
-  public static String getNameForGenerateCode(JavaType javaType) {
-    if (byte[].class.equals(javaType.getRawClass())) {
-      return "byte[]";
-    }
-
-    if (!javaType.isArrayType()) {
-      Class<?> rawClass = ClassUtils.resolvePrimitiveIfNecessary(javaType.getRawClass());
-      return rawClass.getTypeName();
-    }
-
-    return javaType.getContentType().getRawClass().getName() + "[]";
-  }
-
-  // for test
-  public static void detach(String clsName) {
-    try {
-      ClassPool classPool = getOrCreateClassPool(Thread.currentThread().getContextClassLoader());
-      classPool.getCtClass(clsName).detach();
-    } catch (NotFoundException e) {
-      // do nothing.
-    }
   }
 }

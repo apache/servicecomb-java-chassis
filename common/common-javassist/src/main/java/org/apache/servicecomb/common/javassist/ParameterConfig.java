@@ -16,12 +16,10 @@
  */
 package org.apache.servicecomb.common.javassist;
 
-import com.fasterxml.jackson.databind.JavaType;
-
 public class ParameterConfig {
   private String name;
 
-  private JavaType type;
+  private CtType type;
 
   public String getName() {
     return name;
@@ -31,11 +29,11 @@ public class ParameterConfig {
     this.name = name;
   }
 
-  public JavaType getType() {
+  public CtType getType() {
     return type;
   }
 
-  public void setType(JavaType type) {
+  public void setType(CtType type) {
     this.type = type;
   }
 }
