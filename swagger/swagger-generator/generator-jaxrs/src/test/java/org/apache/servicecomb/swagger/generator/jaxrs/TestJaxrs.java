@@ -35,12 +35,12 @@ public class TestJaxrs {
   }
 
   @Test
-  public void testResponse() throws Exception {
+  public void testResponse() {
     UnitTestSwaggerUtils.testSwagger("schemas/response.yaml", context, Echo.class, "response");
   }
 
   @Test
-  public void testInvalidResponse() throws Exception {
+  public void testInvalidResponse() {
     UnitTestSwaggerUtils.testException(
         "generate operation swagger failed, org.apache.servicecomb.swagger.generator.jaxrs.Echo:invalidResponse",
         "Use ApiOperation or ApiResponses to declare response type",
@@ -50,22 +50,22 @@ public class TestJaxrs {
   }
 
   @Test
-  public void testEcho() throws Exception {
+  public void testEcho() {
     UnitTestSwaggerUtils.testSwagger("schemas/echo.yaml", context, Echo.class, "echo");
   }
 
   @Test
-  public void testForm() throws Exception {
+  public void testForm() {
     UnitTestSwaggerUtils.testSwagger("schemas/form.yaml", context, Echo.class, "form");
   }
 
   @Test
-  public void testQuery() throws Exception {
+  public void testQuery() {
     UnitTestSwaggerUtils.testSwagger("schemas/query.yaml", context, Echo.class, "query");
   }
 
   @Test
-  public void testQueryComplex() throws Exception {
+  public void testQueryComplex() {
     UnitTestSwaggerUtils.testException(
         "generate operation swagger failed, org.apache.servicecomb.swagger.generator.jaxrs.Echo:queryComplex",
         "not allow complex type for query parameter, method=org.apache.servicecomb.swagger.generator.jaxrs.Echo:queryComplex, paramIdx=0, type=java.util.List<org.apache.servicecomb.swagger.generator.jaxrs.User>",
@@ -75,22 +75,22 @@ public class TestJaxrs {
   }
 
   @Test
-  public void testCookie() throws Exception {
+  public void testCookie() {
     UnitTestSwaggerUtils.testSwagger("schemas/cookie.yaml", context, Echo.class, "cookie");
   }
 
   @Test
-  public void testEmptyPath() throws Exception {
+  public void testEmptyPath() {
     UnitTestSwaggerUtils.testSwagger("schemas/emptyPath.yaml", context, Echo.class, "emptyPath");
   }
 
   @Test
-  public void testNonRestful() throws Exception {
+  public void testNonRestful() {
     UnitTestSwaggerUtils.testSwagger("schemas/emptyContract.yaml", context, Echo.class, "ignoredNonRestful");
   }
 
   @Test
-  public void testClassMethodNoPath() throws Exception {
+  public void testClassMethodNoPath() {
     UnitTestSwaggerUtils.testException(
         "generate operation swagger failed, org.apache.servicecomb.swagger.generator.jaxrs.ClassMethodNoPath:p1",
         "Path must not both be empty in class and method",
@@ -107,7 +107,7 @@ public class TestJaxrs {
   }
 
   @Test
-  public void testRawJsonStringMethod() throws Exception {
+  public void testRawJsonStringMethod() {
     UnitTestSwaggerUtils.testSwagger("schemas/rawJsonStringMethod.yaml", context, Echo.class, "rawJsonStringMethod");
   }
 }

@@ -72,7 +72,7 @@ public final class ProtobufSchemaUtils {
       }
 
       @Override
-      public void transfer(Pipe pipe, Input input, Output output, int number, boolean repeated) throws IOException {
+      public void transfer(Pipe pipe, Input input, Output output, int number, boolean repeated) {
         throw new IllegalStateException("not support.");
       }
 
@@ -134,7 +134,7 @@ public final class ProtobufSchemaUtils {
   }
 
   // 为了支持method args的场景，全部实现ProtobufMessageWrapper接口，有的场景有点浪费，不过无关紧要
-  private static WrapSchema createWrapSchema(WrapClassConfig config) throws Exception {
+  private static WrapSchema createWrapSchema(WrapClassConfig config) {
     Class<?> cls = JavassistUtils.createClass(config);
     Schema<?> schema = RuntimeSchema.createFrom(cls);
     return WrapSchemaFactory.createSchema(schema, config.getType());

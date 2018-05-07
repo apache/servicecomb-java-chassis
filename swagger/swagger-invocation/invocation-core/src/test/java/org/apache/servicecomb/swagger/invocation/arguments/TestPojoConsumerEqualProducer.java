@@ -55,7 +55,7 @@ public class TestPojoConsumerEqualProducer {
   }
 
   @Test
-  public void testSimple() throws Exception {
+  public void testSimple() {
     int result = proxy.testSimple(1, 2, 3);
 
     Object body = invoker.getSwaggerArgument(0);
@@ -67,7 +67,7 @@ public class TestPojoConsumerEqualProducer {
   }
 
   @Test
-  public void testObject() throws Exception {
+  public void testObject() {
     Person person = new Person();
     person.setName("abc");
 
@@ -94,7 +94,7 @@ public class TestPojoConsumerEqualProducer {
   }
 
   @Test
-  public void testSimpleAndObject() throws Exception {
+  public void testSimpleAndObject() {
     Person person = new Person();
     person.setName("abc");
 
@@ -108,7 +108,7 @@ public class TestPojoConsumerEqualProducer {
   }
 
   @Test
-  public void testContext() throws Exception {
+  public void testContext() {
     InvocationContext threadContext = new InvocationContext();
     threadContext.addContext("ta", "tvalue");
     ContextUtils.setInvocationContext(threadContext);
@@ -129,7 +129,7 @@ public class TestPojoConsumerEqualProducer {
   }
 
   @Test
-  public void testBytes() throws Exception {
+  public void testBytes() {
     byte[] bytes = new byte[] {1, 2};
 
     byte[] result = proxy.testBytes(bytes);
@@ -137,11 +137,11 @@ public class TestPojoConsumerEqualProducer {
     Object body = invoker.getSwaggerArgument(0);
     Assert.assertEquals(bytes, Utils.getFieldValue(body, "bytes"));
 
-    Assert.assertArrayEquals(bytes, (byte[]) result);
+    Assert.assertArrayEquals(bytes, result);
   }
 
   @Test
-  public void testArrayArray() throws Exception {
+  public void testArrayArray() {
     String[] array = new String[] {"a", "b"};
     List<String> list = Arrays.asList(array);
 
@@ -150,11 +150,11 @@ public class TestPojoConsumerEqualProducer {
     Object body = invoker.getSwaggerArgument(0);
     Assert.assertEquals(list, Utils.getFieldValue(body, "s"));
 
-    Assert.assertArrayEquals(array, (String[]) result);
+    Assert.assertArrayEquals(array, result);
   }
 
   @Test
-  public void testArrayList() throws Exception {
+  public void testArrayList() {
     String[] array = new String[] {"a", "b"};
     List<String> list = Arrays.asList(array);
     List<String> result = proxy.testArrayList(array);
@@ -166,7 +166,7 @@ public class TestPojoConsumerEqualProducer {
   }
 
   @Test
-  public void testListArray() throws Exception {
+  public void testListArray() {
     String[] array = new String[] {"a", "b"};
     List<String> list = Arrays.asList(array);
 
@@ -179,7 +179,7 @@ public class TestPojoConsumerEqualProducer {
   }
 
   @Test
-  public void testListList() throws Exception {
+  public void testListList() {
     List<String> list = Arrays.asList("a", "b");
 
     List<String> result = proxy.testListList(list);

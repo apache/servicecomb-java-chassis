@@ -53,7 +53,7 @@ public class TestPojoConsumerEqualSwagger {
   }
 
   @Test
-  public void testSimple() throws Exception {
+  public void testSimple() {
     int result = proxy.testSimple(1, 2, 3);
 
     Assert.assertEquals(1, (int) invoker.getSwaggerArgument(0));
@@ -64,7 +64,7 @@ public class TestPojoConsumerEqualSwagger {
   }
 
   @Test
-  public void testObject() throws Exception {
+  public void testObject() {
     Person person = new Person();
     person.setName("abc");
 
@@ -77,7 +77,7 @@ public class TestPojoConsumerEqualSwagger {
   }
 
   @Test
-  public void testSimpleAndObject() throws Exception {
+  public void testSimpleAndObject() {
     Person person = new Person();
     person.setName("abc");
 
@@ -90,7 +90,7 @@ public class TestPojoConsumerEqualSwagger {
   }
 
   @Test
-  public void testContext() throws Exception {
+  public void testContext() {
     InvocationContext threadContext = new InvocationContext();
     threadContext.addContext("ta", "tvalue");
     ContextUtils.setInvocationContext(threadContext);
@@ -110,7 +110,7 @@ public class TestPojoConsumerEqualSwagger {
   }
 
   @Test
-  public void testBytes() throws Exception {
+  public void testBytes() {
     byte[] bytes = new byte[] {1, 2};
 
     byte[] result = proxy.testBytes(bytes);
@@ -121,19 +121,19 @@ public class TestPojoConsumerEqualSwagger {
   }
 
   @Test
-  public void testArrayArray() throws Exception {
+  public void testArrayArray() {
     String[] array = new String[] {"a", "b"};
     List<String> list = Arrays.asList(array);
 
     String[] result = proxy.testArrayArray(array);
 
-    Assert.assertEquals(list, (List<?>) invoker.getSwaggerArgument(0));
+    Assert.assertEquals(list, invoker.getSwaggerArgument(0));
 
-    Assert.assertArrayEquals(array, (String[]) result);
+    Assert.assertArrayEquals(array, result);
   }
 
   @Test
-  public void testArrayList() throws Exception {
+  public void testArrayList() {
     String[] array = new String[] {"a", "b"};
     List<String> list = Arrays.asList(array);
     List<String> result = proxy.testArrayList(array);
@@ -144,7 +144,7 @@ public class TestPojoConsumerEqualSwagger {
   }
 
   @Test
-  public void testListArray() throws Exception {
+  public void testListArray() {
     String[] array = new String[] {"a", "b"};
     List<String> list = Arrays.asList(array);
 
@@ -156,7 +156,7 @@ public class TestPojoConsumerEqualSwagger {
   }
 
   @Test
-  public void testListList() throws Exception {
+  public void testListList() {
     List<String> list = Arrays.asList("a", "b");
 
     List<String> result = proxy.testListList(list);
@@ -167,19 +167,19 @@ public class TestPojoConsumerEqualSwagger {
   }
 
   @Test
-  public void testObjectArrayArray() throws Exception {
+  public void testObjectArrayArray() {
     Person[] array = new Person[] {new Person("a"), new Person("b")};
     List<Person> list = Arrays.asList(array);
 
     Person[] result = proxy.testObjectArrayArray(array);
 
-    Assert.assertEquals(list, (List<?>) invoker.getSwaggerArgument(0));
+    Assert.assertEquals(list, invoker.getSwaggerArgument(0));
 
-    Assert.assertArrayEquals(array, (Person[]) result);
+    Assert.assertArrayEquals(array, result);
   }
 
   @Test
-  public void testObjectArrayList() throws Exception {
+  public void testObjectArrayList() {
     Person[] array = new Person[] {new Person("a"), new Person("b")};
     List<Person> list = Arrays.asList(array);
     List<Person> result = proxy.testObjectArrayList(array);
@@ -190,7 +190,7 @@ public class TestPojoConsumerEqualSwagger {
   }
 
   @Test
-  public void testObjectListArray() throws Exception {
+  public void testObjectListArray() {
     Person[] array = new Person[] {new Person("a"), new Person("b")};
     List<Person> list = Arrays.asList(array);
 
@@ -203,7 +203,7 @@ public class TestPojoConsumerEqualSwagger {
   }
 
   @Test
-  public void testObjectListList() throws Exception {
+  public void testObjectListList() {
     Person[] array = new Person[] {new Person("a"), new Person("b")};
     List<Person> list = Arrays.asList(array);
 
