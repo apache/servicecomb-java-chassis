@@ -38,7 +38,6 @@ import io.vertx.core.DeploymentOptions;
 import io.vertx.core.Vertx;
 import io.vertx.core.http.HttpClientOptions;
 import io.vertx.core.http.HttpVersion;
-import io.vertx.core.http.impl.HttpClientImpl;
 
 public class RestTransportClient {
   private static final Logger LOGGER = LoggerFactory.getLogger(RestTransportClient.class);
@@ -65,6 +64,7 @@ public class RestTransportClient {
 
     HttpClientOptions httpClientOptionshttp2 = createHttpClientOptions();
     httpClientOptionshttp2.setUseAlpn(true).setProtocolVersion(HttpVersion.HTTP_2);
+    httpClientOptionshttp2.setHttp2ClearTextUpgrade(false);
 
     clientMgrHttp2 = new ClientPoolManager<>(vertx, new HttpClientPoolFactory(httpClientOptionshttp2));
 
@@ -95,9 +95,6 @@ public class RestTransportClient {
     if (endpoint.isHttp2Enabled()) {
       httpClientWithContext = findHttp2ClientPool(invocation);
 
-      if (!endpoint.isSslEnabled()) {
-        ((HttpClientImpl) httpClientWithContext.getHttpClient()).getOptions().setHttp2ClearTextUpgrade(false);
-      }
     } else {
       httpClientWithContext = findHttpClientPool(invocation);
     }
