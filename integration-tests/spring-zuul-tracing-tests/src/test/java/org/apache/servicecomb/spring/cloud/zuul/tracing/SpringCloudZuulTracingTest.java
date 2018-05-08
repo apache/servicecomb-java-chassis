@@ -17,7 +17,6 @@
 
 package org.apache.servicecomb.spring.cloud.zuul.tracing;
 
-import static com.seanyinx.github.unit.scaffolding.AssertUtils.expectFailing;
 import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertEquals;
