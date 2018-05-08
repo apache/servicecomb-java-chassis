@@ -33,6 +33,7 @@ import org.apache.servicecomb.core.transport.TransportManager;
 import org.apache.servicecomb.foundation.common.event.EventManager;
 import org.apache.servicecomb.foundation.common.utils.BeanUtils;
 import org.apache.servicecomb.foundation.common.utils.FortifyUtils;
+import org.apache.servicecomb.foundation.vertx.VertxUtils;
 import org.apache.servicecomb.serviceregistry.RegistryUtils;
 import org.apache.servicecomb.serviceregistry.task.MicroserviceInstanceRegisterTask;
 import org.slf4j.Logger;
@@ -49,6 +50,8 @@ import org.springframework.core.Ordered;
 import org.springframework.util.StringUtils;
 
 import com.google.common.eventbus.Subscribe;
+
+import io.vertx.core.Vertx;
 
 public class CseApplicationListener
     implements ApplicationListener<ApplicationEvent>, Ordered, ApplicationContextAware {
@@ -135,8 +138,6 @@ public class CseApplicationListener
           RegistryUtils.run();
 
           // 当程序退出时，进行相关清理，注意：kill -9 {pid}下无效
-          // 1. 去注册实例信息
-          // TODO 服务优雅退出
           if (applicationContext instanceof AbstractApplicationContext) {
             ((AbstractApplicationContext) applicationContext).registerShutdownHook();
           }
@@ -148,9 +149,25 @@ public class CseApplicationListener
     } else if (event instanceof ContextClosedEvent) {
       LOGGER.warn("cse is closing now...");
       triggerEvent(EventType.BEFORE_CLOSE);
+
+      //Unregister microservice instance from Service Center
       RegistryUtils.destroy();
+
+      //Stop vertx threads to prevent blocking exit
+      closeVertx("registry");
+      closeVertx("config-center");
+      closeVertx("transport");
+
       triggerEvent(EventType.AFTER_CLOSE);
       isInit = false;
+    }
+  }
+
+  private void closeVertx(String name) {
+    Vertx vertx = VertxUtils.getVertxByName(name);
+    if (vertx != null) {
+      vertx.close();
+      VertxUtils.getVertxMap().remove(name);
     }
   }
 
