@@ -157,6 +157,13 @@ public final class VertxUtils {
     return vertxMap.get(name);
   }
 
+  public static void closeVertxByName(String name) {
+    Vertx vertx = vertxMap.remove(name);
+    if (vertx != null) {
+      vertx.close();
+    }
+  }
+
   public static <T> void runInContext(Context context, AsyncResultCallback<T> callback, T result, Throwable e) {
     if (context == Vertx.currentContext()) {
       complete(callback, result, e);

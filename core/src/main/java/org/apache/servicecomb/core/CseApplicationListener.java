@@ -51,8 +51,6 @@ import org.springframework.util.StringUtils;
 
 import com.google.common.eventbus.Subscribe;
 
-import io.vertx.core.Vertx;
-
 public class CseApplicationListener
     implements ApplicationListener<ApplicationEvent>, Ordered, ApplicationContextAware {
   private static final Logger LOGGER = LoggerFactory.getLogger(CseApplicationListener.class);
@@ -150,26 +148,16 @@ public class CseApplicationListener
       LOGGER.warn("cse is closing now...");
       triggerEvent(EventType.BEFORE_CLOSE);
 
-      //Unregister microservice instance from Service Center
+      //Unregister microservice instance from Service Center and close vertx
+      //We need unregister from service center immediately
       RegistryUtils.destroy();
-
-      //Stop vertx threads to prevent blocking exit
-      closeVertx("registry");
-      closeVertx("config-center");
-      closeVertx("transport");
+      VertxUtils.closeVertxByName("registry");
 
       triggerEvent(EventType.AFTER_CLOSE);
       isInit = false;
     }
   }
 
-  private void closeVertx(String name) {
-    Vertx vertx = VertxUtils.getVertxByName(name);
-    if (vertx != null) {
-      vertx.close();
-      VertxUtils.getVertxMap().remove(name);
-    }
-  }
 
   /**
    * <p>As the process of instance registry is asynchronous, the {@code AFTER_REGISTRY}

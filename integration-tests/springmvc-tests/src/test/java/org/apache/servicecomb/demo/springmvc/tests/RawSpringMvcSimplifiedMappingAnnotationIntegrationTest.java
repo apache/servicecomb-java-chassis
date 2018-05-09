@@ -34,7 +34,7 @@ public class RawSpringMvcSimplifiedMappingAnnotationIntegrationTest extends Spri
   }
 
   @AfterClass
-  public static void shutdown() throws Exception {
+  public static void shutdown() {
     CseApplicationListener cal = BeanUtils.getBean("org.apache.servicecomb.core.CseApplicationListener");
     ContextClosedEvent event = new ContextClosedEvent(BeanUtils.getContext());
     cal.onApplicationEvent(event);
