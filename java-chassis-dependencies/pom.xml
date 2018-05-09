@@ -1028,10 +1028,10 @@
           <configuration>
             <source>1.8</source>
             <target>1.8</target>
-            <compilerArguments>
-              <Werror />
-              <Xlint:all />
-            </compilerArguments>
+            <compilerArgs>
+              <arg>-Werror</arg>
+              <arg>-Xlint:all</arg>
+            </compilerArgs>
           </configuration>
         </plugin>
         <plugin>
