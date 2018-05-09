@@ -25,6 +25,7 @@ import org.apache.servicecomb.config.ConfigUtil;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.foundation.common.event.AlarmEvent;
 import org.apache.servicecomb.foundation.common.event.EventManager;
+import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.apache.servicecomb.loadbalance.CseServer;
 import org.junit.After;
 import org.junit.AfterClass;
@@ -48,7 +49,9 @@ public class TestIsolationServerListFilter {
 
   LoadBalancerStats loadBalancerStats = null;
 
-  private List<AlarmEvent> taskList;
+  private List<AlarmEvent> taskList = null;
+
+  Object receiveEvent = null;
 
   @BeforeClass
   public static void initConfig() throws Exception {
@@ -60,29 +63,26 @@ public class TestIsolationServerListFilter {
     Deencapsulation.setField(ConfigurationManager.class, "instance", null);
     Deencapsulation.setField(ConfigurationManager.class, "customConfigurationInstalled", false);
     Deencapsulation.setField(DynamicPropertyFactory.class, "config", null);
+    ArchaiusUtils.resetConfig();
   }
 
   @Before
   public void setUp() throws Exception {
     IsolationServerListFilter = new IsolationServerListFilter();
     loadBalancerStats = new LoadBalancerStats("loadBalancer");
-
-    AbstractConfiguration configuration =
-        (AbstractConfiguration) DynamicPropertyFactory.getBackingConfigurationSource();
-    configuration.clearProperty("cse.loadbalance.isolation.enabled");
-    configuration.addProperty("cse.loadbalance.isolation.enabled",
+    ArchaiusUtils.setProperty("cse.loadbalance.isolation.enabled",
         "true");
-    configuration.clearProperty("cse.loadbalance.isolation.enableRequestThreshold");
-    configuration.addProperty("cse.loadbalance.isolation.enableRequestThreshold",
+    ArchaiusUtils.setProperty("cse.loadbalance.isolation.enableRequestThreshold",
         "3");
 
     taskList = new ArrayList<>();
-    EventManager.register(new Object() {
+    receiveEvent = new Object() {
       @Subscribe
       public void onEvent(AlarmEvent isolationServerEvent) {
         taskList.add(isolationServerEvent);
       }
-    });
+    };
+    EventManager.register(receiveEvent);
   }
 
   @After

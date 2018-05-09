@@ -18,8 +18,6 @@ package org.apache.servicecomb.bizkeeper.event;
 
 import java.util.HashMap;
 
-import org.apache.servicecomb.bizkeeper.Configuration;
-import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.foundation.common.event.AlarmEvent;
 
 import com.netflix.hystrix.HystrixCommandKey;
@@ -27,41 +25,75 @@ import com.netflix.hystrix.HystrixCommandMetrics;
 
 public class CircutBreakerEvent extends AlarmEvent {
 
-  private static int id = 1001;
+  //当前调用的接口
+  private String invocationName;
 
-  private HashMap<String, Object> msg = new HashMap<>();
+  //当前总请求数
+  private long currentTotalRequest;
 
-  /**
-   * msg部分字段说明：
-   *   invocationQualifiedName:当前调用的接口
-   *   currentTotalRequest:当前总请求数
-   *   currentErrorCount:当前请求出错计数
-   *   currentErrorPercentage:当前请求出错百分比
-   */
-  public CircutBreakerEvent(Invocation invocation, HystrixCommandKey commandKey, String groupname, Type type) {
-    super(type, id);
+  //当前请求出错计数
+  private long currentErrorCount;
+
+  //当前请求出错百分比
+  private long currentErrorPercentage;
+
+  private int requestVolumeThreshold;
+
+  private int sleepWindowInMilliseconds;
+
+  private int errorThresholdPercentage;
+
+  public CircutBreakerEvent(HystrixCommandKey commandKey, Type type) {
+    super(type);
     HystrixCommandMetrics hystrixCommandMetrics =
         HystrixCommandMetrics.getInstance(commandKey);
-    String microserviceName = invocation.getMicroserviceName();
-    String invocationQualifiedName = invocation.getInvocationQualifiedName();
-    msg.put("microserviceName", microserviceName);
-    msg.put("invocationQualifiedName", invocationQualifiedName);
+    HashMap<String, Object> msg = new HashMap<>();
+    this.invocationName = commandKey.name();
+    msg.put("invocationName", invocationName);
     if (hystrixCommandMetrics != null) {
-      msg.put("currentTotalRequest", hystrixCommandMetrics.getHealthCounts().getTotalRequests());
-      msg.put("currentErrorCount", hystrixCommandMetrics.getHealthCounts().getErrorCount());
-      msg.put("currentErrorPercentage", hystrixCommandMetrics.getHealthCounts().getErrorPercentage());
+      this.currentTotalRequest = hystrixCommandMetrics.getHealthCounts().getTotalRequests();
+      this.currentErrorPercentage = hystrixCommandMetrics.getHealthCounts().getErrorCount();
+      this.currentErrorCount = hystrixCommandMetrics.getHealthCounts().getErrorPercentage();
+      this.requestVolumeThreshold = hystrixCommandMetrics.getProperties().circuitBreakerRequestVolumeThreshold().get();
+      this.sleepWindowInMilliseconds =
+          hystrixCommandMetrics.getProperties().circuitBreakerSleepWindowInMilliseconds().get();
+      this.errorThresholdPercentage =
+          hystrixCommandMetrics.getProperties().circuitBreakerErrorThresholdPercentage().get();
+      msg.put("currentTotalRequest", this.currentTotalRequest);
+      msg.put("currentErrorCount", this.currentErrorPercentage);
+      msg.put("currentErrorPercentage", this.currentErrorCount);
+      msg.put("requestVolumeThreshold", this.requestVolumeThreshold);
+      msg.put("sleepWindowInMilliseconds", this.sleepWindowInMilliseconds);
+      msg.put("errorThresholdPercentage", this.errorThresholdPercentage);
     }
-    msg.put("requestVolumeThreshold",
-        Configuration.INSTANCE.getCircuitBreakerRequestVolumeThreshold(groupname,
-            microserviceName,
-            invocationQualifiedName));
-    msg.put("sleepWindowInMilliseconds",
-        Configuration.INSTANCE.getCircuitBreakerSleepWindowInMilliseconds(groupname,
-            microserviceName,
-            invocationQualifiedName));
-    msg.put("errorThresholdPercentage",
-        Configuration.INSTANCE
-            .getCircuitBreakerErrorThresholdPercentage(groupname, microserviceName, invocationQualifiedName));
     super.setMsg(msg);
+  }
+
+  public String getInvocationName() {
+    return invocationName;
+  }
+
+  public long getCurrentTotalRequest() {
+    return currentTotalRequest;
+  }
+
+  public long getCurrentErrorCount() {
+    return currentErrorCount;
+  }
+
+  public long getCurrentErrorPercentage() {
+    return currentErrorPercentage;
+  }
+
+  public int getRequestVolumeThreshold() {
+    return requestVolumeThreshold;
+  }
+
+  public int getSleepWindowInMilliseconds() {
+    return sleepWindowInMilliseconds;
+  }
+
+  public int getErrorThresholdPercentage() {
+    return errorThresholdPercentage;
   }
 }

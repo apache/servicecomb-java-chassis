@@ -22,27 +22,78 @@ import org.apache.servicecomb.foundation.common.event.AlarmEvent;
 
 public class IsolationServerEvent extends AlarmEvent {
 
-  private static int id = 1003;
+  private String microserviceName;
 
-  /**
-   * msg部分字段说明：
-   * currentTotalRequest:当前实例总请求数
-   * currentCountinuousFailureCount:当前实例连续出错次数
-   * currentErrorPercentage:当前实例出错百分比
-   */
+  //当前实例总请求数
+  private long currentTotalRequest;
+
+  //当前实例连续出错次数
+  private int currentCountinuousFailureCount;
+
+  //当前实例出错百分比
+  private double currentErrorPercentage;
+
+  private long enableRequestThreshold;
+
+  private int continuousFailureThreshold;
+
+  private int errorThresholdPercentage;
+
+  private long singleTestTime;
+
   public IsolationServerEvent(String microserviceName, long totalRequest, int currentCountinuousFailureCount,
       double currentErrorPercentage, int continuousFailureThreshold,
       int errorThresholdPercentage, long enableRequestThreshold, long singleTestTime, Type type) {
-    super(type, id);
+    super(type);
     HashMap<String, Object> msg = new HashMap<>();
-    msg.put("microserviceName", microserviceName);
-    msg.put("currentTotalRequest", totalRequest);
-    msg.put("currentCountinuousFailureCount", currentCountinuousFailureCount);
-    msg.put("currentErrorPercentage", currentErrorPercentage);
-    msg.put("continuousFailureThreshold", continuousFailureThreshold);
-    msg.put("errorThresholdPercentage", errorThresholdPercentage);
-    msg.put("enableRequestThreshold", enableRequestThreshold);
-    msg.put("singleTestTime", singleTestTime);
+    this.microserviceName = microserviceName;
+    this.currentTotalRequest = totalRequest;
+    this.currentCountinuousFailureCount = currentCountinuousFailureCount;
+    this.currentErrorPercentage = currentErrorPercentage;
+    this.enableRequestThreshold = enableRequestThreshold;
+    this.continuousFailureThreshold = continuousFailureThreshold;
+    this.errorThresholdPercentage = errorThresholdPercentage;
+    this.singleTestTime = singleTestTime;
+    msg.put("microserviceName", this.microserviceName);
+    msg.put("currentTotalRequest", this.currentTotalRequest);
+    msg.put("currentCountinuousFailureCount", this.currentCountinuousFailureCount);
+    msg.put("currentErrorPercentage", this.currentErrorPercentage);
+    msg.put("continuousFailureThreshold", this.continuousFailureThreshold);
+    msg.put("errorThresholdPercentage", this.errorThresholdPercentage);
+    msg.put("enableRequestThreshold", this.enableRequestThreshold);
+    msg.put("singleTestTime", this.singleTestTime);
     super.setMsg(msg);
+  }
+
+  public String getMicroserviceName() {
+    return microserviceName;
+  }
+
+  public long getCurrentTotalRequest() {
+    return currentTotalRequest;
+  }
+
+  public int getCurrentCountinuousFailureCount() {
+    return currentCountinuousFailureCount;
+  }
+
+  public double getCurrentErrorPercentage() {
+    return currentErrorPercentage;
+  }
+
+  public long getEnableRequestThreshold() {
+    return enableRequestThreshold;
+  }
+
+  public int getContinuousFailureThreshold() {
+    return continuousFailureThreshold;
+  }
+
+  public int getErrorThresholdPercentage() {
+    return errorThresholdPercentage;
+  }
+
+  public long getSingleTestTime() {
+    return singleTestTime;
   }
 }
