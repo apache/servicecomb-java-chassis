@@ -22,6 +22,7 @@ import java.util.concurrent.atomic.AtomicLong;
 
 import org.apache.servicecomb.core.Handler;
 import org.apache.servicecomb.core.Invocation;
+import org.apache.servicecomb.foundation.vertx.VertxUtils;
 import org.apache.servicecomb.swagger.invocation.AsyncResponse;
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.slf4j.Logger;
@@ -56,6 +57,8 @@ public final class ShutdownHookHandler implements Handler, Runnable {
   @Override
   public void handle(Invocation invocation, AsyncResponse asyncResp) throws Exception {
     if (shuttingDown) {
+      System.out.println("shutting down in progress");
+
       asyncResp.handle(Response.createFail(invocation.getInvocationType(),
           "shutting down in progress"));
       return;
@@ -92,6 +95,11 @@ public final class ShutdownHookHandler implements Handler, Runnable {
       time = time + period;
       LOG.warn("waiting invocation to finish in seconds " + time);
     }
+
+    //Stop vertx to prevent blocking exit, this work need do after invocation waiting timeout
+    VertxUtils.closeVertxByName("config-center");
+    VertxUtils.closeVertxByName("transport");
+
     LOG.warn("handler chain is shut down");
   }
 }
