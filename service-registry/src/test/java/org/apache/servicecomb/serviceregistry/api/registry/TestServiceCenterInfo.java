@@ -22,6 +22,7 @@ import org.junit.Test;
 
 public class TestServiceCenterInfo {
   ServiceCenterInfo info = new ServiceCenterInfo();
+
   ServiceCenterConfig config = new ServiceCenterConfig();
 
   @Test

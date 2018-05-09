@@ -35,8 +35,10 @@ public class FrameworkVersions {
     frameworkVersions.forEach(version -> versions.putAll(version.loadVersion()));
     for (Iterator<Entry<String, String>> iterator = versions.entrySet().iterator(); iterator.hasNext();) {
       entry = (Entry<String, String>) iterator.next();
-      sb.append(entry.getKey()).append(":").append(entry.getValue())
-        .append(iterator.hasNext() ? ";" : "");
+      sb.append(entry.getKey())
+          .append(":")
+          .append(entry.getValue())
+          .append(iterator.hasNext() ? ";" : "");
     }
     return sb.toString();
   }
