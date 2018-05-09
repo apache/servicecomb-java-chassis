@@ -229,7 +229,7 @@ public class TestMicroserviceRegisterTask {
   @Test
   public void testReRegisteredSetForDev(@Mocked ServiceRegistryClient srClient) {
     ArchaiusUtils.resetConfig();
-    ArchaiusUtils.setProperty("instance_description.environment", "dev");
+    ArchaiusUtils.setProperty("instance_description.environment", "development");
     Microservice otherMicroservice = new Microservice();
     otherMicroservice.setAppId(microservice.getAppId());
     otherMicroservice.setServiceName("ms1");
@@ -255,7 +255,7 @@ public class TestMicroserviceRegisterTask {
     };
 
     microservice.addSchema("s1", "");
-    microservice.getInstance().setEnvironment("dev");
+    microservice.getInstance().setEnvironment("development");
     MicroserviceRegisterTask registerTask = new MicroserviceRegisterTask(eventBus, srClient, microservice);
     registerTask.run();
 
@@ -265,7 +265,7 @@ public class TestMicroserviceRegisterTask {
     Assert.assertEquals(1, taskList.size());
   }
 
-  @Test(expected = RuntimeException.class)
+  @Test(expected = IllegalStateException.class)
   public void testReRegisteredSetForProd(@Mocked ServiceRegistryClient srClient) {
     Microservice otherMicroservice = new Microservice();
     otherMicroservice.setAppId(microservice.getAppId());

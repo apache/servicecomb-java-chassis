@@ -291,7 +291,7 @@ public final class ServiceRegistryClientImpl implements ServiceRegistryClient {
     try {
       CreateSchemaRequest request = new CreateSchemaRequest();
       request.setSchema(schemaContent);
-      request.setSummary(Hashing.md5().newHasher().putString(schemaContent, Charsets.UTF_8).hash().toString());
+      request.setSummary(Hashing.sha256().newHasher().putString(schemaContent, Charsets.UTF_8).hash().toString());
       byte[] body = JsonUtils.writeValueAsBytes(request);
 
       CountDownLatch countDownLatch = new CountDownLatch(1);
@@ -360,6 +360,7 @@ public final class ServiceRegistryClientImpl implements ServiceRegistryClient {
     IpPort ipPort = ipPortManager.getAvailableAddress();
 
     CountDownLatch countDownLatch = new CountDownLatch(1);
+    // default not return schema content, just return summary!
     RestUtils.get(ipPort,
         String.format(Const.REGISTRY_API.MICROSERVICE_ALL_SCHEMAs, microserviceId),
         new RequestParam(),

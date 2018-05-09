@@ -347,7 +347,7 @@ public class LocalServiceRegistryClientImpl implements ServiceRegistryClient {
       GetSchemaResponse schema = new GetSchemaResponse();
       schema.setSchema(val);
       schema.setSchemaId(key);
-      schema.setSummary(Hashing.md5().newHasher().putString(val, Charsets.UTF_8).hash().toString());
+      schema.setSummary(Hashing.sha256().newHasher().putString(val, Charsets.UTF_8).hash().toString());
       schemas.add(schema);
     });
     return schemas;
