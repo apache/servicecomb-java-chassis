@@ -164,7 +164,7 @@ public class MicroserviceRegisterTask extends AbstractRegisterTask {
         String curSchemaSumary = existSchema.getSummary();
         String schemaSummary = Hashing.sha256().newHasher().putString(content, Charsets.UTF_8).hash().toString();
         if (!schemaSummary.equals(curSchemaSumary)) {
-          if (microservice.getInstance().getEnvironment().equalsIgnoreCase("development")) {
+          if (curSchemaSumary == null || microservice.getInstance().getEnvironment().equalsIgnoreCase("development")) {
             LOGGER.info(
                 "schemaId [{}]'s content changes and the current enviroment is development, so re-register it!",
                 schemaId);

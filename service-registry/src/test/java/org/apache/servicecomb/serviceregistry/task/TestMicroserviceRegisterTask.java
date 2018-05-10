@@ -265,6 +265,43 @@ public class TestMicroserviceRegisterTask {
     Assert.assertEquals(1, taskList.size());
   }
 
+  @Test
+  public void testFirstRegisterForProd(@Mocked ServiceRegistryClient srClient) {
+    Microservice otherMicroservice = new Microservice();
+    otherMicroservice.setAppId(microservice.getAppId());
+    otherMicroservice.setServiceName("ms1");
+    otherMicroservice.addSchema("s1", "");
+
+    List<GetSchemaResponse> list = new ArrayList<>();
+    GetSchemaResponse resp = new GetSchemaResponse();
+    resp.setSchemaId("s1");
+    resp.setSummary(null);
+    list.add(resp);
+
+    new Expectations() {
+      {
+        srClient.getMicroserviceId(anyString, anyString, anyString, anyString);
+        result = "serviceId";
+        srClient.getMicroservice(anyString);
+        result = otherMicroservice;
+        srClient.getSchemas(anyString);
+        result = list;
+        srClient.registerSchema(microservice.getServiceId(), anyString, anyString);
+        result = true;
+      }
+    };
+
+    microservice.addSchema("s1", "");
+    microservice.getInstance().setEnvironment("production");
+    MicroserviceRegisterTask registerTask = new MicroserviceRegisterTask(eventBus, srClient, microservice);
+    registerTask.run();
+
+    Assert.assertEquals(true, registerTask.isRegistered());
+    Assert.assertEquals(true, registerTask.isSchemaIdSetMatch());
+    Assert.assertEquals("serviceId", microservice.getServiceId());
+    Assert.assertEquals(1, taskList.size());
+  }
+
   @Test(expected = IllegalStateException.class)
   public void testReRegisteredSetForProd(@Mocked ServiceRegistryClient srClient) {
     Microservice otherMicroservice = new Microservice();
