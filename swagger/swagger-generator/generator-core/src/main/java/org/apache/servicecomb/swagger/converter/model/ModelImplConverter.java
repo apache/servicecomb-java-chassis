@@ -21,6 +21,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.apache.servicecomb.common.javassist.ClassConfig;
+import org.apache.servicecomb.common.javassist.CtType;
+import org.apache.servicecomb.common.javassist.CtTypeJavaType;
 import org.apache.servicecomb.common.javassist.JavassistUtils;
 import org.apache.servicecomb.swagger.converter.ConverterMgr;
 import org.apache.servicecomb.swagger.converter.SwaggerToClassGenerator;
@@ -33,6 +35,7 @@ import com.fasterxml.jackson.databind.type.TypeFactory;
 import io.swagger.models.ModelImpl;
 import io.swagger.models.properties.ObjectProperty;
 import io.swagger.models.properties.Property;
+import javassist.CtClass;
 
 public class ModelImplConverter extends AbstractModelConverter {
   @Override
@@ -65,17 +68,30 @@ public class ModelImplConverter extends AbstractModelConverter {
     String clsName = ClassUtils.getClassName(findVendorExtensions(modelImpl));
     clsName = ClassUtils.correctClassName(clsName);
 
-    Class<?> cls = getOrCreateClass(swaggerToClassGenerator, modelImpl.getProperties(), clsName);
-    return TypeFactory.defaultInstance().constructType(cls);
+    return getOrCreateType(swaggerToClassGenerator, modelImpl.getProperties(), clsName);
   }
 
-  protected Class<?> getOrCreateClass(SwaggerToClassGenerator swaggerToClassGenerator,
+  protected JavaType getOrCreateType(SwaggerToClassGenerator swaggerToClassGenerator,
       Map<String, Property> properties,
       String clsName) {
     Class<?> cls = ClassUtils.getClassByName(swaggerToClassGenerator.getClassLoader(), clsName);
     if (cls != null) {
-      return cls;
+      return swaggerToClassGenerator.getTypeFactory().constructType(cls);
     }
+
+    CtClass ctClass = getOrCreateCtClass(swaggerToClassGenerator, properties, clsName);
+    return new CtTypeJavaType(new CtType(ctClass));
+  }
+
+  private CtClass getOrCreateCtClass(SwaggerToClassGenerator swaggerToClassGenerator, Map<String, Property> properties,
+      String clsName) {
+    CtClass ctClass = swaggerToClassGenerator.getClassPool().getOrNull(clsName);
+    if (ctClass != null) {
+      return ctClass;
+    }
+
+    // must ensure already create CtClass, otherwise recursive dependency class will create failed.
+    swaggerToClassGenerator.getClassPool().makeClass(clsName);
 
     ClassConfig classConfig = new ClassConfig();
     classConfig.setClassName(clsName);
@@ -87,7 +103,6 @@ public class ModelImplConverter extends AbstractModelConverter {
       }
     }
 
-    cls = JavassistUtils.createClass(swaggerToClassGenerator.getClassLoader(), classConfig);
-    return cls;
+    return JavassistUtils.createCtClass(swaggerToClassGenerator.getClassLoader(), classConfig);
   }
 }
