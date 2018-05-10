@@ -22,6 +22,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.apache.servicecomb.common.javassist.ClassConfig;
+import org.apache.servicecomb.common.javassist.CtTypeJavaType;
 import org.apache.servicecomb.common.javassist.JavassistUtils;
 import org.apache.servicecomb.common.javassist.MethodConfig;
 import org.apache.servicecomb.swagger.generator.core.SwaggerConst;
@@ -39,6 +40,8 @@ import io.swagger.models.Response;
 import io.swagger.models.Swagger;
 import io.swagger.models.parameters.Parameter;
 import io.swagger.models.properties.Property;
+import javassist.ClassPool;
+import javassist.CtClass;
 
 /**
  * generate interface from swagger<br>
@@ -85,6 +88,8 @@ public class SwaggerToClassGenerator {
 
   private TypeFactory typeFactory;
 
+  private ClassPool classPool;
+
   // key is swagger model or property
   @VisibleForTesting
   protected Map<Object, JavaType> swaggerObjectMap = new IdentityHashMap<>();
@@ -101,6 +106,11 @@ public class SwaggerToClassGenerator {
     this.packageName = packageName;
 
     this.typeFactory = TypeFactory.defaultInstance().withClassLoader(classLoader);
+    this.classPool = JavassistUtils.getOrCreateClassPool(classLoader);
+  }
+
+  public ClassPool getClassPool() {
+    return classPool;
   }
 
   public void setInterfaceName(String interfaceName) {
@@ -136,6 +146,7 @@ public class SwaggerToClassGenerator {
     mapDefinitionsToExistingClasses();
     convertDefinitions();
     convertResponses();
+    convertPendingCtClasses();
     convertToInterface();
 
     return interfaceCls;
@@ -232,6 +243,19 @@ public class SwaggerToClassGenerator {
     interfaceCls = JavassistUtils.createClass(classLoader, classConfig);
   }
 
+  protected void convertPendingCtClasses() {
+    for (Entry<Object, JavaType> entry : swaggerObjectMap.entrySet()) {
+      JavaType javaType = entry.getValue();
+      if (!CtTypeJavaType.class.isInstance(javaType)) {
+        continue;
+      }
+
+      CtClass ctClass = ((CtTypeJavaType) javaType).getType().getCtClass();
+      Class<?> cls = JavassistUtils.createClass(classLoader, ctClass);
+      entry.setValue(typeFactory.constructType(cls));
+    }
+  }
+
   public JavaType convert(Object swaggerObject) {
     JavaType javaType = swaggerObjectMap.get(swaggerObject);
     if (javaType == null) {
@@ -239,6 +263,16 @@ public class SwaggerToClassGenerator {
       swaggerObjectMap.put(swaggerObject, javaType);
     }
     return javaType;
+  }
+
+  /**
+   * just only for invoker know that there is no recursive dependency
+   *
+   */
+  public JavaType forceConvert(Object swaggerObject) {
+    convert(swaggerObject);
+    convertPendingCtClasses();
+    return swaggerObjectMap.get(swaggerObject);
   }
 
   protected void updateJavaClassInVendor(Map<String, Object> vendorExtensions, String shortClsName) {

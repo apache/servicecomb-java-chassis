@@ -24,7 +24,6 @@ import java.util.Set;
 import org.apache.servicecomb.swagger.converter.SwaggerToClassGenerator;
 
 import com.fasterxml.jackson.databind.JavaType;
-import com.fasterxml.jackson.databind.type.TypeFactory;
 
 import io.swagger.models.properties.ArrayProperty;
 import io.swagger.models.properties.Property;
@@ -40,7 +39,7 @@ public class ArrayPropertyConverter extends AbstractPropertyConverter {
     if (Boolean.TRUE.equals(uniqueItems)) {
       collectionClass = Set.class;
     }
-    return TypeFactory.defaultInstance().constructCollectionType(collectionClass, itemJavaType);
+    return swaggerToClassGenerator.getTypeFactory().constructCollectionType(collectionClass, itemJavaType);
   }
 
   @Override

@@ -102,7 +102,7 @@ public class TestModelImplConverter {
     Model model = swagger.getDefinitions().get(Empty.class.getSimpleName());
     model.getVendorExtensions().put(SwaggerConst.EXT_JAVA_CLASS, "pkg.Empty");
 
-    JavaType javaType = swaggerToClassGenerator.convert(model);
+    JavaType javaType = swaggerToClassGenerator.forceConvert(model);
 
     Assert.assertEquals("pkg.Empty", javaType.getRawClass().getName());
   }
@@ -125,7 +125,7 @@ public class TestModelImplConverter {
 
     swagger.addDefinition("cls", model);
 
-    JavaType javaType = swaggerToClassGenerator.convert(model);
+    JavaType javaType = swaggerToClassGenerator.forceConvert(model);
 
     Class<?> cls = javaType.getRawClass();
     Assert.assertEquals("pkg.Model", cls.getName());

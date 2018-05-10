@@ -41,9 +41,10 @@ public abstract class AbstractConverter implements Converter {
     Map<String, Object> vendorExtensions = findVendorExtensions(def);
     String canonical = ClassUtils.getClassName(vendorExtensions);
     if (!StringUtils.isEmpty(canonical)) {
-      Class<?> clsResult = ClassUtils.getClassByName(swaggerToClassGenerator.getClassLoader(), canonical);
-      if (clsResult != null) {
-        return typeFactory.constructType(clsResult);
+      try {
+        return swaggerToClassGenerator.getTypeFactory().constructFromCanonical(canonical);
+      } catch (Throwable e) {
+        // ignore this
       }
     }
 
