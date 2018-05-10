@@ -22,6 +22,7 @@ import javassist.ClassPool;
 import javassist.CtClass;
 import javassist.CtPrimitiveType;
 import javassist.NotFoundException;
+import javassist.bytecode.SignatureAttribute.ClassType;
 
 public class CtType {
   private static final ClassPool PRIMITIVE_CLASSPOOL = JavassistUtils.getOrCreateClassPool(int.class.getClassLoader());
@@ -32,11 +33,22 @@ public class CtType {
 
   private String genericSignature;
 
+  public CtType(CtClass ctClass) {
+    ClassType classType = new ClassType(ctClass.getName(), null);
+    init(ctClass, false, classType.encode());
+  }
+
   public CtType(CtClass ctClass, boolean hasGenericTypes, String genericSignature) {
     init(ctClass, hasGenericTypes, genericSignature);
   }
 
   public CtType(JavaType javaType) {
+    if (CtTypeJavaType.class.isInstance(javaType)) {
+      CtType ctType = ((CtTypeJavaType) javaType).getType();
+      init(ctType.ctClass, ctType.hasGenericTypes, ctType.genericSignature);
+      return;
+    }
+
     ClassLoader classLoader = javaType.getRawClass().getClassLoader();
     try {
       ClassPool classPool = JavassistUtils.getOrCreateClassPool(classLoader);

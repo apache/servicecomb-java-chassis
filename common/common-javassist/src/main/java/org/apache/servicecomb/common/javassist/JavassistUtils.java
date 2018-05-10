@@ -139,7 +139,7 @@ public final class JavassistUtils {
     return createClass(null, config);
   }
 
-  public static Class<?> createClass(ClassLoader classLoader, ClassConfig config) {
+  public static CtClass createCtClass(ClassLoader classLoader, ClassConfig config) {
     if (classLoader == null) {
       classLoader = Thread.currentThread().getContextClassLoader();
     }
@@ -185,10 +185,47 @@ public final class JavassistUtils {
         }
       }
 
-      LOGGER.info("generate {} in classLoader {}.", config.getClassName(), classLoader);
-      return ctClass.toClass(classLoader, null);
+      LOGGER.info("create CtClass {} in classLoader {}.", config.getClassName(), classLoader);
+      return ctClass;
     } catch (Throwable e) {
-      throw new Error(String.format("Failed to create %s in classLoader %s.", config.getClassName(), classLoader), e);
+      throw new IllegalStateException(
+          String.format("Failed to create CtClass %s in classLoader %s.", config.getClassName(),
+              classLoader), e);
+    }
+  }
+
+  public static Class<?> createClass(ClassLoader classLoader, ClassConfig config) {
+    if (classLoader == null) {
+      classLoader = Thread.currentThread().getContextClassLoader();
+    }
+
+    CtClass ctClass = createCtClass(classLoader, config);
+    return createClass(classLoader, ctClass);
+  }
+
+  public static Class<?> createClass(ClassLoader classLoader, CtClass ctClass) {
+    if (classLoader == null) {
+      classLoader = Thread.currentThread().getContextClassLoader();
+    }
+
+    String clsName = ctClass.getName();
+    try {
+      // must try load from classloader first
+      // because class A depend on class B
+      // when load class A, will load class B
+      // after this, if CtClass B invoke toClass again, will cause problem.
+      return classLoader.loadClass(clsName);
+    } catch (ClassNotFoundException e) {
+      // ignore it
+    }
+
+    try {
+      Class<?> cls = ctClass.toClass(classLoader, null);
+      LOGGER.info("create class {} in classLoader {}.", clsName, classLoader);
+      return cls;
+    } catch (Throwable e) {
+      throw new IllegalStateException(
+          String.format("Failed to create %s in classLoader %s.", clsName, classLoader), e);
     }
   }
 
