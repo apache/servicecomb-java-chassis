@@ -16,7 +16,6 @@
  */
 package org.apache.servicecomb.serviceregistry.task;
 
-import org.apache.servicecomb.foundation.common.event.EventManager;
 import org.apache.servicecomb.serviceregistry.RegistryUtils;
 import org.apache.servicecomb.serviceregistry.api.registry.Microservice;
 import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
