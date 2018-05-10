@@ -57,8 +57,6 @@ public final class ShutdownHookHandler implements Handler, Runnable {
   @Override
   public void handle(Invocation invocation, AsyncResponse asyncResp) throws Exception {
     if (shuttingDown) {
-      System.out.println("shutting down in progress");
-
       asyncResp.handle(Response.createFail(invocation.getInvocationType(),
           "shutting down in progress"));
       return;
