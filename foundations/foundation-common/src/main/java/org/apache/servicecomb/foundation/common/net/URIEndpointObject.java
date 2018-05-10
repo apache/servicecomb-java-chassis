@@ -35,7 +35,7 @@ public class URIEndpointObject extends IpPort {
 
   private static final String PROTOCOL_KEY = "protocol";
 
-  private static final String HTTP2 = "h2";
+  private static final String HTTP2 = "http2";
 
   private boolean sslEnabled;
 

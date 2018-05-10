@@ -42,7 +42,7 @@ public class TestURIEndpointObject {
     Assert.assertTrue(obj.isSslEnabled());
     Assert.assertNull(obj.getFirst("notExist"));
 
-    obj = new URIEndpointObject("http://127.0.2.0:8080?sslEnabled=true&protocol=h2");
+    obj = new URIEndpointObject("http://127.0.2.0:8080?sslEnabled=true&protocol=http2");
     Assert.assertEquals("127.0.2.0", obj.getHostOrIp());
     Assert.assertEquals(8080, obj.getPort());
     Assert.assertTrue(obj.isSslEnabled());

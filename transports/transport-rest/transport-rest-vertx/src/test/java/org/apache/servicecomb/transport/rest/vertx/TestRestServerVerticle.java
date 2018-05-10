@@ -113,14 +113,14 @@ public class TestRestServerVerticle {
   public void testRestServerVerticleWithHttp2(@Mocked Transport transport, @Mocked Vertx vertx,
       @Mocked Context context,
       @Mocked JsonObject jsonObject, @Mocked Future<Void> startFuture) throws Exception {
-    URIEndpointObject endpointObject = new URIEndpointObject("http://127.0.0.1:8080?protocol=h2");
+    URIEndpointObject endpointObject = new URIEndpointObject("http://127.0.0.1:8080?protocol=http2");
     new Expectations() {
       {
-        transport.parseAddress("http://127.0.0.1:8080?protocol=h2");
+        transport.parseAddress("http://127.0.0.1:8080?protocol=http2");
         result = endpointObject;
       }
     };
-    Endpoint endpiont = new Endpoint(transport, "http://127.0.0.1:8080?protocol=h2");
+    Endpoint endpiont = new Endpoint(transport, "http://127.0.0.1:8080?protocol=http2");
 
     new Expectations() {
       {
