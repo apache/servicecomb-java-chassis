@@ -145,7 +145,7 @@ public class MicroserviceRegisterTask extends AbstractRegisterTask {
       String schemaId = entry.getKey();
       String content = entry.getValue();
       GetSchemaResponse existSchema = extractSchema(schemaId, existSchemas);
-      boolean exists = existSchema != null;
+      boolean exists = existSchema != null && existSchema.getSummary() != null;
       LOGGER.info("schemaId [{}] exists {}", schemaId, exists);
       if (!exists) {
         if (!srClient.registerSchema(microservice.getServiceId(), schemaId, content)) {
@@ -155,7 +155,7 @@ public class MicroserviceRegisterTask extends AbstractRegisterTask {
         String curSchemaSumary = existSchema.getSummary();
         String schemaSummary = Hashing.sha256().newHasher().putString(content, Charsets.UTF_8).hash().toString();
         if (!schemaSummary.equals(curSchemaSumary)) {
-          if (curSchemaSumary == null || microservice.getInstance().getEnvironment().equalsIgnoreCase("development")) {
+          if (microservice.getInstance().getEnvironment().equalsIgnoreCase("development")) {
             LOGGER.info(
                 "schemaId [{}]'s content changes and the current enviroment is development, so re-register it!",
                 schemaId);
