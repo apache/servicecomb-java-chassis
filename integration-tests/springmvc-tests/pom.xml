@@ -27,7 +27,17 @@
   <modelVersion>4.0.0</modelVersion>
 
   <artifactId>springmvc-tests</artifactId>
-  <name>Java Chassis::Integration Tests::Raw Spring MVC</name>
+  <packaging>pom</packaging>
+  <name>Java Chassis::Integration Tests::Spring MVC</name>
+
+  <modules>
+    <module>springmvc-tests-common</module>
+    <module>springmvc-tests-general</module>
+    <module>springmvc-tests-simplified-mapping</module>
+    <module>springmvc-tests-general-with-springboot</module>
+    <module>springmvc-tests-simplified-mapping-with-springboot</module>
+  </modules>
+
   <dependencies>
     <dependency>
       <groupId>org.apache.servicecomb.demo</groupId>
