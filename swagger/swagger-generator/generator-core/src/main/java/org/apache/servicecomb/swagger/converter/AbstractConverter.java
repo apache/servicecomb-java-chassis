@@ -20,24 +20,17 @@ package org.apache.servicecomb.swagger.converter;
 import java.util.Map;
 
 import org.apache.servicecomb.swagger.generator.core.utils.ClassUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
 
 import com.fasterxml.jackson.databind.JavaType;
-import com.fasterxml.jackson.databind.type.TypeFactory;
 
 public abstract class AbstractConverter implements Converter {
-  private static final Logger LOGGER = LoggerFactory.getLogger(AbstractConverter.class);
-
   protected abstract Map<String, Object> findVendorExtensions(Object def);
 
   protected abstract JavaType doConvert(SwaggerToClassGenerator swaggerToClassGenerator, Object def);
 
   @Override
   public JavaType convert(SwaggerToClassGenerator swaggerToClassGenerator, Object def) {
-    TypeFactory typeFactory = swaggerToClassGenerator.getTypeFactory();
-
     Map<String, Object> vendorExtensions = findVendorExtensions(def);
     String canonical = ClassUtils.getClassName(vendorExtensions);
     if (!StringUtils.isEmpty(canonical)) {
@@ -48,29 +41,6 @@ public abstract class AbstractConverter implements Converter {
       }
     }
 
-    // ensure all depend model exist
-    // maybe create dynamic class by canonical
-    JavaType result = doConvert(swaggerToClassGenerator, def);
-
-    String rawClassName = ClassUtils.getRawClassName(canonical);
-    if (StringUtils.isEmpty(rawClassName)) {
-      return result;
-    }
-
-    try {
-      JavaType rawType = typeFactory.constructFromCanonical(rawClassName);
-
-      if (rawType.getRawClass().getTypeParameters().length > 0) {
-        return typeFactory.constructFromCanonical(canonical);
-      }
-
-      return result;
-    } catch (IllegalArgumentException e) {
-      LOGGER.info("failed to load generic class {}, use {}. cause: {}.",
-          rawClassName,
-          result.getGenericSignature(),
-          e.getMessage());
-      return result;
-    }
+    return doConvert(swaggerToClassGenerator, def);
   }
 }
