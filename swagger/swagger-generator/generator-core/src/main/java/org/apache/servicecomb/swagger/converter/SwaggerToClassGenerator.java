@@ -42,24 +42,18 @@ import io.swagger.models.properties.Property;
 
 /**
  * generate interface from swagger<br>
- * specially should support:<br>
+ * specially should support: recursive dependency<br>
  * <pre>
- * 1. recursive dependency:
- *   1). class A {
+ * 1.class A {
  *     A a;
  *   }
- *   2). circular dependency:
- *   class A {
+ * 2.class A {
  *     B b;
  *   }
  *   class B {
  *     A a;
  *   }
- * 2. CustomerGeneric&lt;T1, T2&gt;
- *    should generate 3 classes: CustomerGeneric/T1/T2
- *    this can avoid unnecessary convert between consumer/contract/producer
  * </pre>
- *
  * javassist can create normal dynamic class to classloader<br>
  * but can not create recursive dependency dynamic class to classloader directly<br>
  * to support recursive dependency, must save all class to byte[], and then convert to class<br>
