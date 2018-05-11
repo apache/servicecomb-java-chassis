@@ -17,19 +17,19 @@
 
 package org.apache.servicecomb.core.handler;
 
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.Semaphore;
 import java.util.concurrent.atomic.AtomicLong;
 
 import org.apache.servicecomb.core.Handler;
 import org.apache.servicecomb.core.Invocation;
-import org.apache.servicecomb.foundation.vertx.VertxUtils;
+import org.apache.servicecomb.foundation.common.exceptions.ServiceCombException;
 import org.apache.servicecomb.swagger.invocation.AsyncResponse;
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * 实现调用链的优雅停止： 当调用链没有返回的时候，等待返回或者超时
+ * 实现调用链的优雅停止： 当调用链没有返回的时候，等待返回(由于Consumer存在超时，所以必定能够返回)
  */
 public final class ShutdownHookHandler implements Handler, Runnable {
   private static final Logger LOG = LoggerFactory.getLogger(ShutdownHookHandler.class);
@@ -40,13 +40,16 @@ public final class ShutdownHookHandler implements Handler, Runnable {
 
   private final AtomicLong responseCounter = new AtomicLong(0);
 
-  private final int timeout = 600;
-
-  private final int period = 10;
-
   private volatile boolean shuttingDown = false;
 
+  public final Semaphore ALL_INVOCATION_FINISHED = new Semaphore(1);
+
   private ShutdownHookHandler() {
+    try {
+      ALL_INVOCATION_FINISHED.acquire();
+    } catch (InterruptedException e) {
+      throw new ServiceCombException("init invocation finished semaphore failed", e);
+    }
     Runtime.getRuntime().addShutdownHook(new Thread(this));
   }
 
@@ -63,7 +66,7 @@ public final class ShutdownHookHandler implements Handler, Runnable {
     }
 
     // TODO:统计功能应该独立出来，在链中统计，会有各种bug
-    //      下面的两次catch，可能会导致一次请求，对应2次应答
+    // 下面的两次catch，可能会导致一次请求，对应2次应答
     requestCounter.incrementAndGet();
     try {
       invocation.next(resp -> {
@@ -71,33 +74,26 @@ public final class ShutdownHookHandler implements Handler, Runnable {
           asyncResp.handle(resp);
         } finally {
           responseCounter.incrementAndGet();
+          validAllInvocationFinished();
         }
       });
     } catch (Throwable e) {
       responseCounter.incrementAndGet();
+      validAllInvocationFinished();
       throw e;
+    }
+  }
+
+  private synchronized void validAllInvocationFinished() {
+    if (shuttingDown && getActiveCount() <= 0) {
+      ALL_INVOCATION_FINISHED.release();
     }
   }
 
   @Override
   public void run() {
     shuttingDown = true;
-    LOG.warn("handler chain is shutting down");
-    int time = 0;
-    while (getActiveCount() != 0 && time <= timeout) {
-      try {
-        TimeUnit.SECONDS.sleep(period);
-      } catch (InterruptedException e) {
-        LOG.warn(e.getMessage());
-      }
-      time = time + period;
-      LOG.warn("waiting invocation to finish in seconds " + time);
-    }
-
-    //Stop vertx to prevent blocking exit, this work need do after invocation waiting timeout
-    VertxUtils.closeVertxByName("config-center");
-    VertxUtils.closeVertxByName("transport");
-
-    LOG.warn("handler chain is shut down");
+    LOG.warn("handler chain is shutting down...");
+    validAllInvocationFinished();
   }
 }

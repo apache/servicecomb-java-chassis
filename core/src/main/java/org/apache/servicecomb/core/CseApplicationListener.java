@@ -26,6 +26,7 @@ import org.apache.servicecomb.core.BootListener.EventType;
 import org.apache.servicecomb.core.definition.loader.SchemaListenerManager;
 import org.apache.servicecomb.core.endpoint.AbstractEndpointsCache;
 import org.apache.servicecomb.core.handler.HandlerConfigUtils;
+import org.apache.servicecomb.core.handler.ShutdownHookHandler;
 import org.apache.servicecomb.core.provider.consumer.ConsumerProviderManager;
 import org.apache.servicecomb.core.provider.consumer.ReferenceConfigUtils;
 import org.apache.servicecomb.core.provider.producer.ProducerProviderManager;
@@ -146,16 +147,34 @@ public class CseApplicationListener
       }
     } else if (event instanceof ContextClosedEvent) {
       LOGGER.warn("cse is closing now...");
-      triggerEvent(EventType.BEFORE_CLOSE);
-
-      //Unregister microservice instance from Service Center and close vertx
-      //We need unregister from service center immediately
-      RegistryUtils.destroy();
-      VertxUtils.closeVertxByName("registry");
-
-      triggerEvent(EventType.AFTER_CLOSE);
+      gracefullyShutdown();
       isInit = false;
     }
+  }
+
+  private void gracefullyShutdown() {
+    //Step 1: Unregister microservice instance from Service Center and close vertx
+    //        We need unregister from service center immediately
+    RegistryUtils.destroy();
+    VertxUtils.closeVertxByName("registry");
+
+    //Step 2: wait all invocation finished
+    try {
+      ShutdownHookHandler.INSTANCE.ALL_INVOCATION_FINISHED.acquire();
+      LOGGER.warn("all invocation finished");
+    } catch (InterruptedException e) {
+      LOGGER.error("invocation finished semaphore interrupted", e);
+    }
+
+    //Step 3: notify all component do clean works via Event
+    triggerEvent(EventType.BEFORE_CLOSE);
+
+    //Step 4: Stop vertx to prevent blocking exit
+    VertxUtils.closeVertxByName("config-center");
+    VertxUtils.closeVertxByName("transport");
+
+    triggerEvent(EventType.AFTER_CLOSE);
+    ShutdownHookHandler.INSTANCE.ALL_INVOCATION_FINISHED.release();
   }
 
 
