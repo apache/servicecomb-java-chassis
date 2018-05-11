@@ -153,12 +153,14 @@ public class CseApplicationListener
   }
 
   private void gracefullyShutdown() {
-    //Step 1: Unregister microservice instance from Service Center and close vertx
-    //        We need unregister from service center immediately
+    //Step 1: notify all component stop invoke via BEFORE_CLOSE Event
+    triggerEvent(EventType.BEFORE_CLOSE);
+
+    //Step 2: Unregister microservice instance from Service Center and close vertx
     RegistryUtils.destroy();
     VertxUtils.closeVertxByName("registry");
 
-    //Step 2: wait all invocation finished
+    //Step 3: wait all invocation finished
     try {
       ShutdownHookHandler.INSTANCE.ALL_INVOCATION_FINISHED.acquire();
       LOGGER.warn("all invocation finished");
@@ -166,15 +168,12 @@ public class CseApplicationListener
       LOGGER.error("invocation finished semaphore interrupted", e);
     }
 
-    //Step 3: notify all component do clean works via Event
-    triggerEvent(EventType.BEFORE_CLOSE);
-
     //Step 4: Stop vertx to prevent blocking exit
     VertxUtils.closeVertxByName("config-center");
     VertxUtils.closeVertxByName("transport");
 
+    //Step 5: notify all component do clean works via AFTER_CLOSE Event
     triggerEvent(EventType.AFTER_CLOSE);
-    ShutdownHookHandler.INSTANCE.ALL_INVOCATION_FINISHED.release();
   }
 
 
