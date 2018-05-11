@@ -37,7 +37,6 @@
     <module>test-common</module>
     <module>spring-jaxrs-tests</module>
     <module>pojo-test</module>
-    <module>spring-springmvc-tests</module>
     <module>spring-zuul-tracing-tests</module>
     <module>spring-pojo-tests</module>
     <module>dynamic-config-tests</module>

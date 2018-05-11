@@ -35,6 +35,7 @@ import org.apache.servicecomb.core.BootListener.BootEvent;
 import org.apache.servicecomb.core.BootListener.EventType;
 import org.apache.servicecomb.core.definition.loader.SchemaListenerManager;
 import org.apache.servicecomb.core.endpoint.AbstractEndpointsCache;
+import org.apache.servicecomb.core.handler.ShutdownHookHandler;
 import org.apache.servicecomb.core.provider.consumer.ConsumerProviderManager;
 import org.apache.servicecomb.core.provider.consumer.ReferenceConfigUtils;
 import org.apache.servicecomb.core.provider.producer.ProducerProviderManager;
@@ -166,6 +167,8 @@ public class TestCseApplicationListener {
     };
     CseApplicationListener cal = new CseApplicationListener();
     ContextClosedEvent event = new ContextClosedEvent(context);
+
+    ShutdownHookHandler.INSTANCE.ALL_INVOCATION_FINISHED.release();
 
     List<EventType> eventTypes = new ArrayList<>();
     BootListener bootListener = e -> {
