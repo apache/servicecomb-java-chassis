@@ -41,6 +41,13 @@ public class TestURIEndpointObject {
     Assert.assertEquals(8080, obj.getPort());
     Assert.assertTrue(obj.isSslEnabled());
     Assert.assertNull(obj.getFirst("notExist"));
+
+    obj = new URIEndpointObject("http://127.0.2.0:8080?sslEnabled=true&protocol=http2");
+    Assert.assertEquals("127.0.2.0", obj.getHostOrIp());
+    Assert.assertEquals(8080, obj.getPort());
+    Assert.assertTrue(obj.isSslEnabled());
+    Assert.assertTrue(obj.isHttp2Enabled());
+    Assert.assertNull(obj.getFirst("notExist"));
   }
 
   @Test(expected = IllegalArgumentException.class)

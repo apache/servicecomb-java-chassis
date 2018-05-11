@@ -33,7 +33,13 @@ import org.apache.http.client.utils.URLEncodedUtils;
 public class URIEndpointObject extends IpPort {
   private static final String SSL_ENABLED_KEY = "sslEnabled";
 
+  private static final String PROTOCOL_KEY = "protocol";
+
+  private static final String HTTP2 = "http2";
+
   private boolean sslEnabled;
+
+  private boolean http2Enabled;
 
   private Map<String, List<String>> querys;
 
@@ -47,6 +53,10 @@ public class URIEndpointObject extends IpPort {
     setPort(uri.getPort());
     querys = splitQuery(uri);
     sslEnabled = Boolean.parseBoolean(getFirst(SSL_ENABLED_KEY));
+    String httpversion = getFirst(PROTOCOL_KEY);
+    if (httpversion != null && httpversion.equals(HTTP2)) {
+      http2Enabled = true;
+    }
   }
 
   public static Map<String, List<String>> splitQuery(URI uri) {
@@ -63,6 +73,10 @@ public class URIEndpointObject extends IpPort {
 
   public boolean isSslEnabled() {
     return sslEnabled;
+  }
+
+  public boolean isHttp2Enabled() {
+    return http2Enabled;
   }
 
   public List<String> getQuery(String key) {

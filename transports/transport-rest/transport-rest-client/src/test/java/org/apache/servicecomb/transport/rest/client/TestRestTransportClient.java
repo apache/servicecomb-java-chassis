@@ -17,10 +17,14 @@
 
 package org.apache.servicecomb.transport.rest.client;
 
+import java.lang.reflect.Field;
+
 import org.apache.servicecomb.common.rest.RestConst;
 import org.apache.servicecomb.common.rest.definition.RestOperationMeta;
+import org.apache.servicecomb.core.Endpoint;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.definition.OperationMeta;
+import org.apache.servicecomb.foundation.common.net.URIEndpointObject;
 import org.apache.servicecomb.foundation.vertx.VertxUtils;
 import org.apache.servicecomb.foundation.vertx.client.ClientPoolManager;
 import org.apache.servicecomb.foundation.vertx.client.http.HttpClientWithContext;
@@ -35,6 +39,7 @@ import io.vertx.core.AbstractVerticle;
 import io.vertx.core.DeploymentOptions;
 import io.vertx.core.Vertx;
 import io.vertx.core.http.HttpClientOptions;
+import io.vertx.core.http.impl.HttpClientImpl;
 import mockit.Deencapsulation;
 import mockit.Mock;
 import mockit.MockUp;
@@ -51,6 +56,17 @@ public class TestRestTransportClient {
   OperationMeta operationMeta = Mockito.mock(OperationMeta.class);
 
   RestOperationMeta swaggerRestOperation = Mockito.mock(RestOperationMeta.class);
+
+  URIEndpointObject uriEndpointObject = Mockito.mock(URIEndpointObject.class);
+
+  Endpoint endPoint = Mockito.mock(Endpoint.class);
+
+  HttpClientWithContext httpClientWithContext = Mockito.mock(HttpClientWithContext.class);
+
+  HttpClientImpl httpClient = Mockito.mock(HttpClientImpl.class);
+
+  HttpClientOptions httpClientOptions = Mockito.mock(HttpClientOptions.class);
+
 
   @Before
   public void setUp() throws Exception {
@@ -95,6 +111,43 @@ public class TestRestTransportClient {
       status = false;
     }
     Assert.assertFalse(status);
+  }
+
+
+  @Test
+  public void testRestTransportClientHttp2(@Mocked Vertx vertx, @Mocked VertxUtils utils)
+      throws Exception {
+    boolean status = true;
+    Mockito.when(invocation.getEndpoint()).thenReturn(endPoint);
+    Mockito.when(invocation.isSync()).thenReturn(true);
+    Mockito.when(endPoint.getAddress()).thenReturn(uriEndpointObject);
+    Mockito.when(uriEndpointObject.isHttp2Enabled()).thenReturn(true);
+    Mockito.when(invocation.getOperationMeta()).thenReturn(operationMeta);
+    Mockito.when(operationMeta.getExtData(RestConst.SWAGGER_REST_OPERATION)).thenReturn(operationMeta);
+    Mockito.when(httpClientWithContext.getHttpClient()).thenReturn(httpClient);
+    Mockito.when(httpClient.getOptions()).thenReturn(httpClientOptions);
+
+    instance.init(vertx);
+    Field clientMgrHttp2Field = instance.getClass().getDeclaredField("clientMgrHttp2");
+    clientMgrHttp2Field.setAccessible(true);
+
+
+    ClientPoolManager<HttpClientWithContext> client = new ClientPoolManager<HttpClientWithContext>(vertx, null) {
+      @Mock
+      public HttpClientWithContext findClientPool(boolean sync) {
+        return httpClientWithContext;
+      }
+    };
+
+    clientMgrHttp2Field.set(instance, client);
+
+    try {
+      instance.send(invocation, asyncResp);
+    } catch (Exception e) {
+      status = false;
+    }
+
+    Assert.assertTrue(status);
   }
 
   @Test
