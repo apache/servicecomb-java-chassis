@@ -129,7 +129,8 @@ paths:
         - name: index
           in: query
           required: true
-          type: number
+          type: integer
+          format: int32
         - name: user
           in: body
           schema:
@@ -187,7 +188,7 @@ paths:
 definitions:
   Error:
     type: object
-    x-java-class: org.apache.servicecomb.core.exception.CommonExceptionData
+    x-java-class: org.apache.servicecomb.swagger.invocation.exception.CommonExceptionData
     properties:
       message:
         type: string

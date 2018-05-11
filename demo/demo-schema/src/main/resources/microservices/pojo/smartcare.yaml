@@ -21,7 +21,8 @@ swagger: '2.0'
 info:
   title: smartcare test
   version: 1.0.0
-  x-java-interface: org.apache.servicecomb.demo.smartcare.SmartCare
+# x-java-interface is optional, remove it should works well, but sometimes need to generate more class in memory
+#  x-java-interface: org.apache.servicecomb.demo.smartcare.SmartCare
 
 # the domain of the service
 #host: api.uber.com
