@@ -30,6 +30,7 @@ import javax.ws.rs.core.Response.Status;
 
 import org.apache.servicecomb.swagger.invocation.exception.CommonExceptionData;
 import org.apache.servicecomb.swagger.invocation.exception.ExceptionFactory;
+import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 
 import io.netty.handler.codec.http.HttpHeaderValues;
 import io.netty.handler.codec.http.multipart.HttpPostRequestDecoder.ErrorDataDecoderException;
@@ -195,7 +196,8 @@ public class RestBodyHandler implements BodyHandler {
       uploadSize += buff.length();
       if (bodyLimit != -1 && uploadSize > bodyLimit) {
         failed = true;
-        context.fail(Status.REQUEST_ENTITY_TOO_LARGE.getStatusCode());
+        context.fail(new InvocationException(Status.REQUEST_ENTITY_TOO_LARGE,
+            Status.REQUEST_ENTITY_TOO_LARGE.getReasonPhrase()));
       } else {
         // multipart requests will not end up in the request body
         // url encoded should also not, however jQuery by default
