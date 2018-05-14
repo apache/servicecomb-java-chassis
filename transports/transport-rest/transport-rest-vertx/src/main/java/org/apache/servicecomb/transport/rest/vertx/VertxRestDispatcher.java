@@ -17,6 +17,11 @@
 
 package org.apache.servicecomb.transport.rest.vertx;
 
+import javax.ws.rs.core.HttpHeaders;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response.Status;
+import javax.ws.rs.core.Response.Status.Family;
+
 import org.apache.servicecomb.common.rest.AbstractRestInvocation;
 import org.apache.servicecomb.common.rest.RestConst;
 import org.apache.servicecomb.common.rest.RestProducerInvocation;
@@ -64,9 +69,85 @@ public class VertxRestDispatcher extends AbstractVertxHttpDispatcher {
         e = cause;
       }
     }
-    restProducerInvocation.sendFailResponse(e);
 
-    // 走到这里，应该都是不可控制的异常，直接关闭连接
+    // only when unexpected exception happens, it will run into here.
+    // the connection should be closed.
+    handleFailureAndClose(context, restProducerInvocation, e);
+  }
+
+  /**
+   * Try to find out the failure information and send it in response.
+   */
+  private void handleFailureAndClose(RoutingContext context, AbstractRestInvocation restProducerInvocation,
+      Throwable e) {
+    if (null != restProducerInvocation) {
+      // if there is restProducerInvocation, let it send exception in response. The exception is allowed to be null.
+      sendFailResponseByInvocation(context, restProducerInvocation, e);
+      return;
+    }
+
+    if (null != e) {
+      // if there exists exception, try to send this exception by RoutingContext
+      sendExceptionByRoutingContext(context, e);
+      return;
+    }
+
+    // if there is no exception, the response is determined by status code.
+    sendFailureRespDeterminedByStatus(context);
+  }
+
+  /**
+   * Try to determine response by status code, and send response.
+   */
+  private void sendFailureRespDeterminedByStatus(RoutingContext context) {
+    Family statusFamily = Family.familyOf(context.statusCode());
+    if (Family.CLIENT_ERROR.equals(statusFamily) || Family.SERVER_ERROR.equals(statusFamily) || Family.OTHER
+        .equals(statusFamily)) {
+      context.response().putHeader(HttpHeaders.CONTENT_TYPE, MediaType.WILDCARD)
+          .setStatusCode(context.statusCode()).end();
+    } else {
+      // it seems the status code is not set properly
+      context.response().putHeader(HttpHeaders.CONTENT_TYPE, MediaType.WILDCARD)
+          .setStatusCode(Status.INTERNAL_SERVER_ERROR.getStatusCode())
+          .setStatusMessage(Status.INTERNAL_SERVER_ERROR.getReasonPhrase())
+          .end(wrapResponseBody(Status.INTERNAL_SERVER_ERROR.getReasonPhrase()));
+    }
+    context.response().close();
+  }
+
+  /**
+   * Use routingContext to send failure information in throwable.
+   */
+  private void sendExceptionByRoutingContext(RoutingContext context, Throwable e) {
+    if (InvocationException.class.isInstance(e)) {
+      InvocationException invocationException = (InvocationException) e;
+      context.response().putHeader(HttpHeaders.CONTENT_TYPE, MediaType.WILDCARD)
+          .setStatusCode(invocationException.getStatusCode()).setStatusMessage(invocationException.getReasonPhrase())
+          .end(wrapResponseBody(invocationException.getReasonPhrase()));
+    } else {
+      context.response().putHeader(HttpHeaders.CONTENT_TYPE, MediaType.WILDCARD)
+          .setStatusCode(Status.INTERNAL_SERVER_ERROR.getStatusCode()).end(wrapResponseBody(e.getMessage()));
+    }
+    context.response().close();
+  }
+
+  /**
+   * Consumer will treat the response body as json by default, so it's necessary to wrap response body with ""
+   * to avoid deserialization error.
+   *
+   * @param message response body
+   * @return response body wrapped with ""
+   */
+  private String wrapResponseBody(String message) {
+    return "\"" + message + "\"";
+  }
+
+  /**
+   * Use restProducerInvocation to send failure message. The throwable is allowed to be null.
+   */
+  private void sendFailResponseByInvocation(RoutingContext context, AbstractRestInvocation restProducerInvocation,
+      Throwable e) {
+    restProducerInvocation.sendFailResponse(e);
     context.response().close();
   }
 

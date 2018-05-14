@@ -21,6 +21,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response.Status;
+
+import org.apache.http.HttpHeaders;
 import org.apache.servicecomb.common.rest.RestConst;
 import org.apache.servicecomb.common.rest.RestProducerInvocation;
 import org.apache.servicecomb.common.rest.filter.HttpServerFilter;
@@ -30,14 +34,21 @@ import org.apache.servicecomb.core.transport.TransportManager;
 import org.apache.servicecomb.foundation.vertx.http.HttpServletRequestEx;
 import org.apache.servicecomb.foundation.vertx.http.HttpServletResponseEx;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
+import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
 import io.netty.handler.codec.http.multipart.HttpPostRequestDecoder.ErrorDataDecoderException;
+import io.vertx.core.AsyncResult;
 import io.vertx.core.Context;
+import io.vertx.core.Handler;
+import io.vertx.core.MultiMap;
+import io.vertx.core.buffer.Buffer;
+import io.vertx.core.http.HttpMethod;
 import io.vertx.core.http.HttpServerRequest;
+import io.vertx.core.http.HttpServerResponse;
 import io.vertx.core.impl.VertxImpl;
 import io.vertx.core.net.SocketAddress;
 import io.vertx.ext.web.Router;
@@ -62,7 +73,7 @@ public class TestVertxRestDispatcher {
   boolean invoked;
 
   @Before
-  public void setUp() throws Exception {
+  public void setUp() {
     dispatcher = new VertxRestDispatcher();
     dispatcher.init(mainRouter);
 
@@ -97,18 +108,22 @@ public class TestVertxRestDispatcher {
     RestProducerInvocation restProducerInvocation = new RestProducerInvocation();
 
     Exception e = new Exception();
+    MockHttpServerResponse response = new MockHttpServerResponse();
     new Expectations() {
       {
         context.get(RestConst.REST_PRODUCER_INVOCATION);
         result = restProducerInvocation;
         context.failure();
         returns(e, e);
+        context.response();
+        result = response;
       }
     };
 
     Deencapsulation.invoke(dispatcher, "failureHandler", context);
 
     Assert.assertSame(e, this.throwable);
+    Assert.assertTrue(response.responseClosed);
   }
 
   @Test
@@ -116,18 +131,22 @@ public class TestVertxRestDispatcher {
     RestProducerInvocation restProducerInvocation = new RestProducerInvocation();
 
     ErrorDataDecoderException edde = new ErrorDataDecoderException(e);
+    MockHttpServerResponse response = new MockHttpServerResponse();
     new Expectations() {
       {
         context.get(RestConst.REST_PRODUCER_INVOCATION);
         result = restProducerInvocation;
         context.failure();
         returns(edde, edde);
+        context.response();
+        result = response;
       }
     };
 
     Deencapsulation.invoke(dispatcher, "failureHandler", context);
 
     Assert.assertSame(e, this.throwable);
+    Assert.assertTrue(response.responseClosed);
   }
 
   @Test
@@ -136,18 +155,122 @@ public class TestVertxRestDispatcher {
 
     Exception e = new Exception();
     ErrorDataDecoderException edde = new ErrorDataDecoderException(e);
+    MockHttpServerResponse response = new MockHttpServerResponse();
     new Expectations() {
       {
         context.get(RestConst.REST_PRODUCER_INVOCATION);
         result = restProducerInvocation;
         context.failure();
         returns(edde, edde);
+        context.response();
+        result = response;
       }
     };
 
     Deencapsulation.invoke(dispatcher, "failureHandler", context);
 
     Assert.assertSame(edde, this.throwable);
+    Assert.assertTrue(response.responseClosed);
+  }
+
+  @Test
+  public void failureHandlerWithNoRestProducerInvocationAndInvocationException(@Mocked RoutingContext context) {
+    InvocationException e = new InvocationException(Status.REQUEST_ENTITY_TOO_LARGE, "testMsg");
+    ErrorDataDecoderException edde = new ErrorDataDecoderException(e);
+    MockHttpServerResponse response = new MockHttpServerResponse();
+    new Expectations() {
+      {
+        context.get(RestConst.REST_PRODUCER_INVOCATION);
+        result = null;
+        context.failure();
+        returns(edde, edde);
+        context.response();
+        result = response;
+      }
+    };
+
+    Deencapsulation.invoke(dispatcher, "failureHandler", context);
+
+    Assert.assertThat(response.responseHeader, Matchers.hasEntry(HttpHeaders.CONTENT_TYPE, MediaType.WILDCARD));
+    Assert.assertThat(response.responseStatusCode, Matchers.is(Status.REQUEST_ENTITY_TOO_LARGE.getStatusCode()));
+    Assert.assertThat(response.responseStatusMessage, Matchers.is(Status.REQUEST_ENTITY_TOO_LARGE.getReasonPhrase()));
+    Assert.assertThat(response.responseChunk,
+        Matchers.is("\"" + Status.REQUEST_ENTITY_TOO_LARGE.getReasonPhrase() + "\""));
+    Assert.assertTrue(response.responseEnded);
+  }
+
+  @Test
+  public void failureHandlerWithNoRestProducerInvocationAndOtherException(@Mocked RoutingContext context) {
+    String exceptionMessage = "test exception message";
+    Exception exception = new Exception(exceptionMessage);
+    MockHttpServerResponse response = new MockHttpServerResponse();
+    new Expectations() {
+      {
+        context.get(RestConst.REST_PRODUCER_INVOCATION);
+        result = null;
+        context.failure();
+        returns(exception, exception);
+        context.response();
+        result = response;
+      }
+    };
+
+    Deencapsulation.invoke(dispatcher, "failureHandler", context);
+
+    Assert.assertThat(response.responseHeader, Matchers.hasEntry(HttpHeaders.CONTENT_TYPE, MediaType.WILDCARD));
+    Assert.assertThat(response.responseStatusCode, Matchers.is(Status.INTERNAL_SERVER_ERROR.getStatusCode()));
+    Assert.assertThat(response.responseChunk,
+        Matchers.is("\"" + exceptionMessage + "\""));
+    Assert.assertTrue(response.responseEnded);
+  }
+
+  @Test
+  public void failureHandlerWithNoExceptionAndStatusCodeIsSet(@Mocked RoutingContext context) {
+    MockHttpServerResponse response = new MockHttpServerResponse();
+    new Expectations() {
+      {
+        context.get(RestConst.REST_PRODUCER_INVOCATION);
+        result = null;
+        context.failure();
+        returns(null, null);
+        context.response();
+        result = response;
+        context.statusCode();
+        result = Status.REQUEST_ENTITY_TOO_LARGE.getStatusCode();
+      }
+    };
+
+    Deencapsulation.invoke(dispatcher, "failureHandler", context);
+
+    Assert.assertThat(response.responseHeader, Matchers.hasEntry(HttpHeaders.CONTENT_TYPE, MediaType.WILDCARD));
+    Assert.assertThat(response.responseStatusCode, Matchers.is(Status.REQUEST_ENTITY_TOO_LARGE.getStatusCode()));
+    Assert.assertTrue(response.responseEnded);
+  }
+
+  @Test
+  public void failureHandlerWithNoExceptionAndStatusCodeIsNotSet(@Mocked RoutingContext context) {
+    MockHttpServerResponse response = new MockHttpServerResponse();
+    new Expectations() {
+      {
+        context.get(RestConst.REST_PRODUCER_INVOCATION);
+        result = null;
+        context.failure();
+        returns(null, null);
+        context.response();
+        result = response;
+        context.statusCode();
+        result = Status.OK.getStatusCode();
+      }
+    };
+
+    Deencapsulation.invoke(dispatcher, "failureHandler", context);
+
+    Assert.assertThat(response.responseHeader, Matchers.hasEntry(HttpHeaders.CONTENT_TYPE, MediaType.WILDCARD));
+    Assert.assertThat(response.responseStatusCode, Matchers.is(Status.INTERNAL_SERVER_ERROR.getStatusCode()));
+    Assert.assertThat(response.responseStatusMessage, Matchers.is(Status.INTERNAL_SERVER_ERROR.getReasonPhrase()));
+    Assert.assertThat(response.responseChunk,
+        Matchers.is("\"" + Status.INTERNAL_SERVER_ERROR.getReasonPhrase() + "\""));
+    Assert.assertTrue(response.responseEnded);
   }
 
   @Test
@@ -177,5 +300,257 @@ public class TestVertxRestDispatcher {
 
     Assert.assertEquals(RestProducerInvocation.class, map.get(RestConst.REST_PRODUCER_INVOCATION).getClass());
     Assert.assertTrue(invoked);
+  }
+}
+
+class MockHttpServerResponse implements HttpServerResponse {
+  boolean responseClosed;
+
+  boolean responseEnded;
+
+  Map<String, String> responseHeader = new HashMap<>(1);
+
+  int responseStatusCode;
+
+  String responseStatusMessage;
+
+  String responseChunk;
+
+  @Override
+  public void close() {
+    responseClosed = true;
+  }
+
+  @Override
+  public HttpServerResponse putHeader(String name, String value) {
+    responseHeader.put(name, value);
+    return this;
+  }
+
+  @Override
+  public HttpServerResponse setStatusCode(int statusCode) {
+    responseStatusCode = statusCode;
+    return this;
+  }
+
+  @Override
+  public HttpServerResponse setStatusMessage(String statusMessage) {
+    responseStatusMessage = statusMessage;
+    return this;
+  }
+
+  @Override
+  public void end() {
+    responseEnded = true;
+  }
+
+  @Override
+  public void end(String chunk) {
+    responseEnded = true;
+    responseChunk = chunk;
+  }
+
+  @Override
+  public HttpServerResponse exceptionHandler(Handler<Throwable> handler) {
+    return null;
+  }
+
+  @Override
+  public HttpServerResponse write(Buffer data) {
+    return null;
+  }
+
+  @Override
+  public HttpServerResponse setWriteQueueMaxSize(int maxSize) {
+    return null;
+  }
+
+  @Override
+  public boolean writeQueueFull() {
+    return false;
+  }
+
+  @Override
+  public HttpServerResponse drainHandler(Handler<Void> handler) {
+    return null;
+  }
+
+  @Override
+  public int getStatusCode() {
+    return 0;
+  }
+
+  @Override
+  public String getStatusMessage() {
+    return null;
+  }
+
+  @Override
+  public HttpServerResponse setChunked(boolean chunked) {
+    return null;
+  }
+
+  @Override
+  public boolean isChunked() {
+    return false;
+  }
+
+  @Override
+  public MultiMap headers() {
+    return null;
+  }
+
+  @Override
+  public HttpServerResponse putHeader(CharSequence name, CharSequence value) {
+    return null;
+  }
+
+  @Override
+  public HttpServerResponse putHeader(String name, Iterable<String> values) {
+    return null;
+  }
+
+  @Override
+  public HttpServerResponse putHeader(CharSequence name, Iterable<CharSequence> values) {
+    return null;
+  }
+
+  @Override
+  public MultiMap trailers() {
+    return null;
+  }
+
+  @Override
+  public HttpServerResponse putTrailer(String name, String value) {
+    return null;
+  }
+
+  @Override
+  public HttpServerResponse putTrailer(CharSequence name, CharSequence value) {
+    return null;
+  }
+
+  @Override
+  public HttpServerResponse putTrailer(String name, Iterable<String> values) {
+    return null;
+  }
+
+  @Override
+  public HttpServerResponse putTrailer(CharSequence name, Iterable<CharSequence> value) {
+    return null;
+  }
+
+  @Override
+  public HttpServerResponse closeHandler(Handler<Void> handler) {
+    return null;
+  }
+
+  @Override
+  public HttpServerResponse endHandler(Handler<Void> handler) {
+    return null;
+  }
+
+  @Override
+  public HttpServerResponse write(String chunk, String enc) {
+    return null;
+  }
+
+  @Override
+  public HttpServerResponse write(String chunk) {
+    return null;
+  }
+
+  @Override
+  public HttpServerResponse writeContinue() {
+    return null;
+  }
+
+  @Override
+  public void end(String chunk, String enc) {
+
+  }
+
+  @Override
+  public void end(Buffer chunk) {
+
+  }
+
+  @Override
+  public HttpServerResponse sendFile(String filename, long offset, long length) {
+    return null;
+  }
+
+  @Override
+  public HttpServerResponse sendFile(String filename, long offset, long length,
+      Handler<AsyncResult<Void>> resultHandler) {
+    return null;
+  }
+
+  @Override
+  public boolean ended() {
+    return false;
+  }
+
+  @Override
+  public boolean closed() {
+    return false;
+  }
+
+  @Override
+  public boolean headWritten() {
+    return false;
+  }
+
+  @Override
+  public HttpServerResponse headersEndHandler(Handler<Void> handler) {
+    return null;
+  }
+
+  @Override
+  public HttpServerResponse bodyEndHandler(Handler<Void> handler) {
+    return null;
+  }
+
+  @Override
+  public long bytesWritten() {
+    return 0;
+  }
+
+  @Override
+  public int streamId() {
+    return 0;
+  }
+
+  @Override
+  public HttpServerResponse push(HttpMethod method, String host, String path,
+      Handler<AsyncResult<HttpServerResponse>> handler) {
+    return null;
+  }
+
+  @Override
+  public HttpServerResponse push(HttpMethod method, String path, MultiMap headers,
+      Handler<AsyncResult<HttpServerResponse>> handler) {
+    return null;
+  }
+
+  @Override
+  public HttpServerResponse push(HttpMethod method, String path, Handler<AsyncResult<HttpServerResponse>> handler) {
+    return null;
+  }
+
+  @Override
+  public HttpServerResponse push(HttpMethod method, String host, String path, MultiMap headers,
+      Handler<AsyncResult<HttpServerResponse>> handler) {
+    return null;
+  }
+
+  @Override
+  public void reset(long code) {
+
+  }
+
+  @Override
+  public HttpServerResponse writeCustomFrame(int type, int flags, Buffer payload) {
+    return null;
   }
 }
