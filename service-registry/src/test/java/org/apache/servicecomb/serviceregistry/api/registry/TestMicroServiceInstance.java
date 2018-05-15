@@ -97,6 +97,16 @@ public class TestMicroServiceInstance {
     Assert.assertEquals(MicroserviceInstanceStatus.DOWN, oMicroserviceInstance.getStatus());
     Assert.assertEquals("Test", oMicroserviceInstance.getStage());
     Assert.assertEquals("china", oMicroserviceInstance.getProperties().get("region"));
+
+    Assert.assertEquals(oMicroserviceInstance, oMicroserviceInstance);
+    MicroserviceInstance other = new MicroserviceInstance();
+    other.setInstanceId("testInstanceIDOther");
+    MicroserviceInstance same = new MicroserviceInstance();
+    same.setInstanceId("testInstanceID");
+    Assert.assertNotEquals(oMicroserviceInstance, other);
+    Assert.assertNotEquals(oMicroserviceInstance.hashCode(), other.hashCode());
+    Assert.assertEquals(oMicroserviceInstance, same);
+    Assert.assertEquals(oMicroserviceInstance.hashCode(), same.hashCode());
   }
 
   @SuppressWarnings("deprecation")

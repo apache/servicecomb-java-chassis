@@ -23,6 +23,12 @@ servicecomb:
   service:
     registry:
       address: http://127.0.0.1:30100
+      instance:
+        healthCheck:
+          interval: 2
+        watch: false
+        remove:
+          protection: true
   handler:
     chain:
       Consumer:

@@ -134,6 +134,7 @@ public class LocalServiceRegistryClientImplTest {
     mockRegisterMicroservice(appId, microserviceName, "2.0.0");
 
     MicroserviceInstance instance = new MicroserviceInstance();
+    instance.setInstanceId("testid");
     instance.setServiceId(v1.getServiceId());
     registryClient.registerMicroserviceInstance(instance);
 
