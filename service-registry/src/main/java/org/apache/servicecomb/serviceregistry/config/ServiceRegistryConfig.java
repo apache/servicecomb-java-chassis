@@ -222,6 +222,14 @@ public final class ServiceRegistryConfig {
     return times < 0 ? DEFAULT_CHECK_TIMES : times;
   }
 
+  public boolean isInstanceRemoveProtectionEnabled() {
+    DynamicBooleanProperty property =
+        DynamicPropertyFactory.getInstance()
+            .getBooleanProperty("servicecomb.service.registry.instance.remove.protection",
+                false);
+    return property.get();
+  }
+
   public boolean isPreferIpAddress() {
     DynamicBooleanProperty property =
         DynamicPropertyFactory.getInstance()

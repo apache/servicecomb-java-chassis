@@ -51,7 +51,7 @@ public class TestRestServletInitializer {
 
   private static final String LISTEN_ADDRESS = "127.0.0.1";
 
-  private static final int TEST_PORT = 8080;
+  private static final int TEST_PORT = 8582;
 
   @BeforeClass
   public static void beforeClass() {

@@ -23,12 +23,15 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 import org.apache.servicecomb.foundation.common.concurrent.ConcurrentHashMapEx;
+import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
 import org.apache.servicecomb.serviceregistry.RegistryUtils;
 import org.apache.servicecomb.serviceregistry.api.Const;
 import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
 import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceInstanceStatus;
+import org.apache.servicecomb.serviceregistry.api.registry.ServiceCenterConfig;
 import org.apache.servicecomb.serviceregistry.api.response.MicroserviceInstanceChangedEvent;
 import org.apache.servicecomb.serviceregistry.client.http.MicroserviceInstances;
+import org.apache.servicecomb.serviceregistry.config.ServiceRegistryConfig;
 import org.apache.servicecomb.serviceregistry.definition.DefinitionConst;
 import org.apache.servicecomb.serviceregistry.task.event.PullMicroserviceVersionsInstancesEvent;
 import org.slf4j.Logger;
@@ -144,12 +147,7 @@ public class MicroserviceVersions {
 
   private void setInstances(List<MicroserviceInstance> pulledInstances, String rev) {
     synchronized (lock) {
-      instances = pulledInstances
-          .stream()
-          .filter(instance -> {
-            return MicroserviceInstanceStatus.UP.equals(instance.getStatus());
-          })
-          .collect(Collectors.toList());
+      instances = mergeInstances(pulledInstances, instances);
       for (MicroserviceInstance instance : instances) {
         // ensure microserviceVersion exists
         versions.computeIfAbsent(instance.getServiceId(), microserviceId -> {
@@ -167,6 +165,28 @@ public class MicroserviceVersions {
       }
       revision = rev;
     }
+  }
+
+  private List<MicroserviceInstance> mergeInstances(List<MicroserviceInstance> pulledInstances,
+      List<MicroserviceInstance> inUseInstances) {
+    List<MicroserviceInstance> upInstances = pulledInstances
+        .stream()
+        .filter(instance -> {
+          return MicroserviceInstanceStatus.UP.equals(instance.getStatus());
+        })
+        .collect(Collectors.toList());
+    if (inUseInstances != null && ServiceRegistryConfig.INSTANCE.isInstanceRemoveProtectionEnabled()) {
+      MicroserviceInstancePing ping = SPIServiceUtils.getPriorityHighestService(MicroserviceInstancePing.class);
+      inUseInstances.stream()
+          .forEach(instance -> {
+            if (!upInstances.contains(instance)) {
+              if (ping.ping(instance)) {
+                upInstances.add(instance);
+              }
+            }
+          });
+    }
+    return upInstances;
   }
 
   public MicroserviceVersionRule getOrCreateMicroserviceVersionRule(String versionRule) {

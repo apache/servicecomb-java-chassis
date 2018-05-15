@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.apache.servicecomb.serviceregistry.RegistryUtils;
 import org.apache.servicecomb.serviceregistry.api.Const;
 import org.apache.servicecomb.serviceregistry.api.MicroserviceKey;
@@ -77,6 +78,7 @@ public class TestMicroserviceVersions {
 
   @After
   public void tearDown() throws Exception {
+    ArchaiusUtils.resetConfig();
     findInstancesResponse = null;
     microserviceInstances = null;
   }
@@ -146,6 +148,17 @@ public class TestMicroserviceVersions {
         microserviceVersions.getVersions().get(microserviceId).getMicroservice());
     Assert.assertSame(microservices.get(microserviceId),
         microserviceVersions.getVersion(microserviceId).getMicroservice());
+  }
+
+  @Test
+  public void submitPullProtection() {
+    ArchaiusUtils.setProperty("servicecomb.service.registry.instance.remove.protection", true);
+    String microserviceId = "1";
+    setup(microserviceId);
+    microserviceVersions.submitPull();
+    microserviceVersions.submitPull();
+    MicroserviceVersionRule versionRule = microserviceVersions.getOrCreateMicroserviceVersionRule("0+");
+    Assert.assertSame(versionRule.getInstances().entrySet().size(), 1);
   }
 
   @Test

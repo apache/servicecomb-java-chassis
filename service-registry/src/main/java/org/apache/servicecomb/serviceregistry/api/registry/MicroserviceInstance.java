@@ -139,6 +139,19 @@ public class MicroserviceInstance {
     return dataCenterInfo;
   }
 
+  @Override
+  public int hashCode() {
+    return this.instanceId.hashCode();
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    if (obj instanceof MicroserviceInstance) {
+      return this.instanceId.equals(((MicroserviceInstance) obj).instanceId);
+    }
+    return false;
+  }
+
   public void setDataCenterInfo(DataCenterInfo dataCenterInfo) {
     this.dataCenterInfo = dataCenterInfo;
   }
