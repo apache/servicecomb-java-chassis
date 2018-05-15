@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.lang.management.ManagementFactory;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CountDownLatch;
 
 import javax.xml.ws.Holder;
@@ -157,13 +158,6 @@ public final class VertxUtils {
     return vertxMap.get(name);
   }
 
-  public static void closeVertxByName(String name) {
-    Vertx vertx = vertxMap.remove(name);
-    if (vertx != null) {
-      vertx.close();
-    }
-  }
-
   public static <T> void runInContext(Context context, AsyncResultCallback<T> callback, T result, Throwable e) {
     if (context == Vertx.currentContext()) {
       complete(callback, result, e);
@@ -204,5 +198,36 @@ public final class VertxUtils {
     byte[] arr = new byte[byteBuf.writerIndex()];
     byteBuf.getBytes(0, arr);
     return arr;
+  }
+
+  public static CompletableFuture<Void> closeVertxByName(String name) {
+    LOGGER.info("Closing vertx {}.", name);
+    CompletableFuture<Void> future = new CompletableFuture<>();
+    Vertx vertx = vertxMap.remove(name);
+    if (vertx == null) {
+      LOGGER.info("Vertx {} not exist.", name);
+      future.complete(null);
+      return future;
+    }
+
+    vertx.close(ar -> {
+      if (ar.succeeded()) {
+        LOGGER.info("Success to close vertx {}.", name);
+        future.complete(null);
+        return;
+      }
+
+      future.completeExceptionally(ar.cause());
+    });
+    return future;
+  }
+
+  public static void blockCloseVertxByName(String name) {
+    CompletableFuture<Void> future = closeVertxByName(name);
+    try {
+      future.get();
+    } catch (Throwable e) {
+      LOGGER.error("Failed to close vertx {}.", name, e);
+    }
   }
 }

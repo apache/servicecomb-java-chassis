@@ -27,8 +27,9 @@ import org.apache.servicecomb.common.rest.RestEngineSchemaListener;
 import org.apache.servicecomb.core.BootListener;
 import org.apache.servicecomb.core.CseContext;
 import org.apache.servicecomb.core.Invocation;
+import org.apache.servicecomb.core.SCBEngine;
+import org.apache.servicecomb.core.SCBStatus;
 import org.apache.servicecomb.core.definition.SchemaMeta;
-import org.apache.servicecomb.core.provider.consumer.ReferenceConfigUtils;
 import org.apache.servicecomb.core.unittest.UnitTestMeta;
 import org.apache.servicecomb.provider.springmvc.reference.CseClientHttpResponse;
 import org.apache.servicecomb.serviceregistry.RegistryUtils;
@@ -51,12 +52,12 @@ public class CseAsyncClientHttpRequestTest {
 
   @Before
   public void setup() {
-    ReferenceConfigUtils.setReady(true);
+    SCBEngine.getInstance().setStatus(SCBStatus.UP);
   }
 
   @After
   public void teardown() {
-    ReferenceConfigUtils.setReady(false);
+    SCBEngine.getInstance().setStatus(SCBStatus.DOWN);
   }
 
   @RequestMapping(path = "CseAsyncClientHttpRequestTestSchema")
@@ -73,7 +74,7 @@ public class CseAsyncClientHttpRequestTest {
     String exceptionMessage = "System is not ready for remote calls. "
         + "When beans are making remote calls in initialization, it's better to "
         + "implement " + BootListener.class.getName() + " and do it after EventType.AFTER_REGISTRY.";
-    ReferenceConfigUtils.setReady(false);
+    SCBEngine.getInstance().setStatus(SCBStatus.DOWN);
     CseAsyncClientHttpRequest clientHttpRequest = new CseAsyncClientHttpRequest(URI.create("cse://app:test/"),
         HttpMethod.POST);
     try {
@@ -94,13 +95,15 @@ public class CseAsyncClientHttpRequestTest {
         .getSchemaListenerManager()
         .setSchemaListenerList(Arrays.asList(new RestEngineSchemaListener()));
 
-    SchemaMeta schemaMeta = meta.getOrCreateSchemaMeta(CseAsyncClientHttpRequestTest.CseAsyncClientHttpRequestTestSchema.class);
+    SchemaMeta schemaMeta = meta
+        .getOrCreateSchemaMeta(CseAsyncClientHttpRequestTest.CseAsyncClientHttpRequestTestSchema.class);
     CseContext.getInstance().getSchemaListenerManager().notifySchemaListener(schemaMeta);
 
     Holder<Invocation> holder = new Holder<>();
     CseAsyncClientHttpRequest client =
         new CseAsyncClientHttpRequest(URI.create(
-            "cse://app:test/" + CseAsyncClientHttpRequestTest.CseAsyncClientHttpRequestTestSchema.class.getSimpleName() + "/testbytes"),
+            "cse://app:test/" + CseAsyncClientHttpRequestTest.CseAsyncClientHttpRequestTestSchema.class.getSimpleName()
+                + "/testbytes"),
             HttpMethod.POST) {
           @Override
           protected CompletableFuture<ClientHttpResponse> doAsyncInvoke(Invocation invocation) {
@@ -125,7 +128,8 @@ public class CseAsyncClientHttpRequestTest {
     CseContext.getInstance()
         .getSchemaListenerManager()
         .setSchemaListenerList(Arrays.asList(new RestEngineSchemaListener()));
-    SchemaMeta schemaMeta = meta.getOrCreateSchemaMeta(CseAsyncClientHttpRequestTest.CseAsyncClientHttpRequestTestSchema.class);
+    SchemaMeta schemaMeta = meta
+        .getOrCreateSchemaMeta(CseAsyncClientHttpRequestTest.CseAsyncClientHttpRequestTestSchema.class);
     CseContext.getInstance().getSchemaListenerManager().notifySchemaListener(schemaMeta);
 
     Throwable error = new Error("failed");
@@ -133,7 +137,8 @@ public class CseAsyncClientHttpRequestTest {
 
     CseAsyncClientHttpRequest client =
         new CseAsyncClientHttpRequest(URI.create(
-            "cse://app:test/" + CseAsyncClientHttpRequestTest.CseAsyncClientHttpRequestTestSchema.class.getSimpleName() + "/testbytes"),
+            "cse://app:test/" + CseAsyncClientHttpRequestTest.CseAsyncClientHttpRequestTestSchema.class.getSimpleName()
+                + "/testbytes"),
             HttpMethod.POST) {
           @Override
           protected CompletableFuture<ClientHttpResponse> doAsyncInvoke(Invocation invocation) {

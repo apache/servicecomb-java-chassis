@@ -26,8 +26,9 @@ import org.apache.servicecomb.common.rest.RestEngineSchemaListener;
 import org.apache.servicecomb.core.BootListener;
 import org.apache.servicecomb.core.CseContext;
 import org.apache.servicecomb.core.Invocation;
+import org.apache.servicecomb.core.SCBEngine;
+import org.apache.servicecomb.core.SCBStatus;
 import org.apache.servicecomb.core.definition.SchemaMeta;
-import org.apache.servicecomb.core.provider.consumer.ReferenceConfigUtils;
 import org.apache.servicecomb.core.unittest.UnitTestMeta;
 import org.apache.servicecomb.serviceregistry.RegistryUtils;
 import org.apache.servicecomb.serviceregistry.ServiceRegistry;
@@ -45,12 +46,12 @@ import org.springframework.web.bind.annotation.RequestMethod;
 public class TestCseClientHttpRequest {
   @Before
   public void setup() {
-    ReferenceConfigUtils.setReady(true);
+    SCBEngine.getInstance().setStatus(SCBStatus.UP);
   }
 
   @After
   public void teardown() {
-    ReferenceConfigUtils.setReady(false);
+    SCBEngine.getInstance().setStatus(SCBStatus.DOWN);
   }
 
   @RequestMapping(path = "SpringmvcImpl")
@@ -63,12 +64,13 @@ public class TestCseClientHttpRequest {
   }
 
   @Test
-  public void testNotReady() throws IOException {
+  public void testNotReady() {
     String exceptionMessage = "System is not ready for remote calls. "
         + "When beans are making remote calls in initialization, it's better to "
         + "implement " + BootListener.class.getName() + " and do it after EventType.AFTER_REGISTRY.";
 
-    ReferenceConfigUtils.setReady(false);
+    SCBEngine.getInstance().setStatus(SCBStatus.DOWN);
+
     CseClientHttpRequest client =
         new CseClientHttpRequest(URI.create("cse://app:test/"), HttpMethod.POST);
 
@@ -81,7 +83,7 @@ public class TestCseClientHttpRequest {
   }
 
   @Test
-  public void testNormal() throws IOException {
+  public void testNormal() {
     ServiceRegistry serviceRegistry = ServiceRegistryFactory.createLocal();
     serviceRegistry.init();
     RegistryUtils.setServiceRegistry(serviceRegistry);

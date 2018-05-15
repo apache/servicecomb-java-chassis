@@ -17,12 +17,9 @@
 
 package org.apache.servicecomb.demo.springmvc.tests;
 
-import org.apache.servicecomb.core.CseApplicationListener;
-import org.apache.servicecomb.core.handler.ShutdownHookHandler;
-import org.apache.servicecomb.foundation.common.utils.BeanUtils;
+import org.apache.servicecomb.core.SCBEngine;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
-import org.springframework.context.event.ContextClosedEvent;
 
 public class RawSpringMvcIntegrationTest extends SpringMvcIntegrationTestBase {
 
@@ -35,10 +32,6 @@ public class RawSpringMvcIntegrationTest extends SpringMvcIntegrationTestBase {
 
   @AfterClass
   public static void shutdown() {
-    //sim system.exit(0)
-    ShutdownHookHandler.INSTANCE.ALL_INVOCATION_FINISHED.release();
-    CseApplicationListener cal = BeanUtils.getBean("org.apache.servicecomb.core.CseApplicationListener");
-    ContextClosedEvent event = new ContextClosedEvent(BeanUtils.getContext());
-    cal.onApplicationEvent(event);
+    SCBEngine.getInstance().uninit();
   }
 }

@@ -17,29 +17,24 @@
 
 package org.apache.servicecomb.demo.springmvc.tests;
 
-import org.apache.servicecomb.core.handler.ShutdownHookHandler;
+import org.apache.servicecomb.core.SCBEngine;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.runner.RunWith;
 import org.springframework.boot.SpringApplication;
-import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.test.context.junit4.SpringRunner;
 
 @RunWith(SpringRunner.class)
 public class SpringMvcSpringIntegrationTest extends SpringMvcIntegrationTestBase {
-  private static ConfigurableApplicationContext context;
-
   @BeforeClass
   public static void init() {
     System.setProperty("cse.uploads.directory", "/tmp");
     setUpLocalRegistry();
-    context = SpringApplication.run(SpringMvcSpringMain.class);
+    SpringApplication.run(SpringMvcSpringMain.class);
   }
 
   @AfterClass
   public static void shutdown() {
-    //sim system.exit(0)
-    ShutdownHookHandler.INSTANCE.ALL_INVOCATION_FINISHED.release();
-    context.close();
+    SCBEngine.getInstance().uninit();
   }
 }

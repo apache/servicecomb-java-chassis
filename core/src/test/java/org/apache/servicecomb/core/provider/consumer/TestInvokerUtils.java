@@ -22,6 +22,8 @@ import javax.xml.ws.Holder;
 import org.apache.servicecomb.core.BootListener;
 import org.apache.servicecomb.core.CseContext;
 import org.apache.servicecomb.core.Invocation;
+import org.apache.servicecomb.core.SCBEngine;
+import org.apache.servicecomb.core.SCBStatus;
 import org.apache.servicecomb.core.definition.OperationMeta;
 import org.apache.servicecomb.core.definition.SchemaMeta;
 import org.apache.servicecomb.core.invocation.InvocationFactory;
@@ -43,13 +45,13 @@ import mockit.Mocked;
 public class TestInvokerUtils {
 
   @Test
-  public void testSyncInvokeInvocationWithException() throws InterruptedException {
+  public void testSyncInvokeInvocationWithException() {
     Invocation invocation = Mockito.mock(Invocation.class);
 
     Response response = Mockito.mock(Response.class);
     new MockUp<SyncResponseExecutor>() {
       @Mock
-      public Response waitResponse() throws InterruptedException {
+      public Response waitResponse() {
         return Mockito.mock(Response.class);
       }
     };
@@ -80,7 +82,6 @@ public class TestInvokerUtils {
       }
     };
 
-
     Holder<InvocationContext> holder = new Holder<>();
     InvokerUtils.reactiveInvoke(invocation, ar -> {
       holder.value = ContextUtils.getInvocationContext();
@@ -105,15 +106,16 @@ public class TestInvokerUtils {
 
   @Test
   public void tetSyncInvokeNotReady() {
-    ReferenceConfigUtils.setReady(false);
+
+    SCBEngine.getInstance().setStatus(SCBStatus.DOWN);
 
     try {
       InvokerUtils.syncInvoke("ms", "schemaId", "opName", null);
       Assert.fail("must throw exception");
     } catch (IllegalStateException e) {
       Assert.assertEquals("System is not ready for remote calls. "
-          + "When beans are making remote calls in initialization, it's better to "
-          + "implement " + BootListener.class.getName() + " and do it after EventType.AFTER_REGISTRY.",
+              + "When beans are making remote calls in initialization, it's better to "
+              + "implement " + BootListener.class.getName() + " and do it after EventType.AFTER_REGISTRY.",
           e.getMessage());
     }
 
@@ -122,8 +124,8 @@ public class TestInvokerUtils {
       Assert.fail("must throw exception");
     } catch (IllegalStateException e) {
       Assert.assertEquals("System is not ready for remote calls. "
-          + "When beans are making remote calls in initialization, it's better to "
-          + "implement " + BootListener.class.getName() + " and do it after EventType.AFTER_REGISTRY.",
+              + "When beans are making remote calls in initialization, it's better to "
+              + "implement " + BootListener.class.getName() + " and do it after EventType.AFTER_REGISTRY.",
           e.getMessage());
     }
   }
@@ -131,7 +133,9 @@ public class TestInvokerUtils {
   @Test
   public void tetSyncInvokeReady(@Injectable ConsumerProviderManager consumerProviderManager,
       @Injectable Invocation invocation) {
-    ReferenceConfigUtils.setReady(true);
+
+    SCBEngine.getInstance().setStatus(SCBStatus.UP);
+
     CseContext.getInstance().setConsumerProviderManager(consumerProviderManager);
 
     new Expectations(InvocationFactory.class) {
