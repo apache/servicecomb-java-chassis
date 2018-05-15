@@ -24,6 +24,7 @@ import java.util.concurrent.CompletableFuture;
 
 import org.apache.servicecomb.core.CseContext;
 import org.apache.servicecomb.core.Invocation;
+import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.core.definition.MicroserviceMeta;
 import org.apache.servicecomb.core.definition.SchemaMeta;
 import org.apache.servicecomb.core.invocation.InvocationFactory;
@@ -84,7 +85,7 @@ public class Invoker implements InvocationHandler {
   }
 
   @Override
-  public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+  public Object invoke(Object proxy, Method method, Object[] args) {
     if (swaggerConsumer == null) {
       synchronized (this) {
         if (swaggerConsumer == null) {
@@ -92,6 +93,8 @@ public class Invoker implements InvocationHandler {
         }
       }
     }
+
+    SCBEngine.getInstance().assertIsStopping();
 
     SwaggerConsumerOperation consumerOperation = swaggerConsumer.findOperation(method.getName());
     Invocation invocation =

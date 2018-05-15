@@ -59,11 +59,6 @@ public final class WebsocketUtils {
             });
             ws.closeHandler(v -> {
               onClose.handle(v);
-              try {
-                ws.close();
-              } catch (Exception err) {
-                LOGGER.error("ws close error.", err);
-              }
             });
             ws.handler(onMessage);
           },

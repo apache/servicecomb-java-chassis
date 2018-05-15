@@ -86,8 +86,6 @@ public abstract class AbstractHandlerManager extends AbstractObjectManager<Strin
     List<Class<Handler>> chainClasses = convertToChainClass(chainDef);
 
     List<Handler> handlerList = new ArrayList<>();
-    handlerList.add(ShutdownHookHandler.INSTANCE);
-
     for (Class<Handler> cls : chainClasses) {
       try {
         handlerList.add(cls.newInstance());

@@ -17,38 +17,18 @@
 
 package org.apache.servicecomb.core.provider.consumer;
 
-import org.apache.servicecomb.core.BootListener;
 import org.apache.servicecomb.core.CseContext;
-import org.springframework.stereotype.Component;
+import org.apache.servicecomb.core.SCBEngine;
 
-@Component
 public class ReferenceConfigUtils {
-  private static boolean ready;
-
-  public static void setReady(boolean ready) {
-    ReferenceConfigUtils.ready = ready;
-  }
-
-  private static void assertIsReady() {
-    if (!ready) {
-      throw new IllegalStateException("System is not ready for remote calls. "
-          + "When beans are making remote calls in initialization, it's better to "
-          + "implement " + BootListener.class.getName() + " and do it after EventType.AFTER_REGISTRY.");
-    }
-  }
-
   public static ReferenceConfig getForInvoke(String microserviceName) {
-    assertIsReady();
-
+    SCBEngine.getInstance().assertIsUp();
     return CseContext.getInstance().getConsumerProviderManager().getReferenceConfig(microserviceName);
   }
 
-  public static ReferenceConfig getForInvoke(String microserviceName, String microserviceVersion,
-      String transport) {
-    assertIsReady();
-
+  public static ReferenceConfig getForInvoke(String microserviceName, String microserviceVersion, String transport) {
+    SCBEngine.getInstance().assertIsUp();
     return CseContext.getInstance().getConsumerProviderManager().createReferenceConfig(microserviceName,
-        microserviceVersion,
-        transport);
+        microserviceVersion, transport);
   }
 }

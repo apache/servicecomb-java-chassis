@@ -18,6 +18,8 @@ package org.apache.servicecomb.core.provider.consumer;
 
 import org.apache.servicecomb.core.BootListener;
 import org.apache.servicecomb.core.CseContext;
+import org.apache.servicecomb.core.SCBEngine;
+import org.apache.servicecomb.core.SCBStatus;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -30,7 +32,8 @@ public class TestReferenceConfigUtils {
         + "When beans are making remote calls in initialization, it's better to "
         + "implement " + BootListener.class.getName() + " and do it after EventType.AFTER_REGISTRY.";
 
-    ReferenceConfigUtils.setReady(false);
+    SCBEngine.getInstance().setStatus(SCBStatus.DOWN);
+
     try {
       ReferenceConfigUtils.getForInvoke("abc");
       Assert.fail("must throw exception");
@@ -48,7 +51,9 @@ public class TestReferenceConfigUtils {
 
   @Test
   public void testReady(@Injectable ConsumerProviderManager consumerProviderManager) {
-    ReferenceConfigUtils.setReady(true);
+
+    SCBEngine.getInstance().setStatus(SCBStatus.UP);
+
     CseContext.getInstance().setConsumerProviderManager(consumerProviderManager);
 
     Assert.assertNotNull(ReferenceConfigUtils.getForInvoke("abc"));

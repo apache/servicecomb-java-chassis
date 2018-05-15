@@ -22,12 +22,13 @@ import java.util.concurrent.CompletableFuture;
 import org.apache.servicecomb.core.BootListener;
 import org.apache.servicecomb.core.CseContext;
 import org.apache.servicecomb.core.Invocation;
+import org.apache.servicecomb.core.SCBEngine;
+import org.apache.servicecomb.core.SCBStatus;
 import org.apache.servicecomb.core.definition.MicroserviceMeta;
 import org.apache.servicecomb.core.definition.schema.ConsumerSchemaFactory;
 import org.apache.servicecomb.core.provider.consumer.ConsumerProviderManager;
 import org.apache.servicecomb.core.provider.consumer.InvokerUtils;
 import org.apache.servicecomb.core.provider.consumer.ReferenceConfig;
-import org.apache.servicecomb.core.provider.consumer.ReferenceConfigUtils;
 import org.apache.servicecomb.swagger.engine.SwaggerConsumer;
 import org.apache.servicecomb.swagger.engine.SwaggerConsumerOperation;
 import org.apache.servicecomb.swagger.engine.bootstrap.BootstrapNormal;
@@ -56,12 +57,12 @@ public class TestInvoker {
 
   @Before
   public void setup() {
-    ReferenceConfigUtils.setReady(true);
+    SCBEngine.getInstance().setStatus(SCBStatus.UP);
   }
 
   @After
   public void teardown() {
-    ReferenceConfigUtils.setReady(false);
+    SCBEngine.getInstance().setStatus(SCBStatus.DOWN);
   }
 
   @Test
@@ -70,7 +71,8 @@ public class TestInvoker {
         + "When beans are making remote calls in initialization, it's better to "
         + "implement " + BootListener.class.getName() + " and do it after EventType.AFTER_REGISTRY.";
 
-    ReferenceConfigUtils.setReady(false);
+    SCBEngine.getInstance().setStatus(SCBStatus.DOWN);
+
     Invoker invoker = new Invoker("test", "schemaId", IPerson.class);
 
     try {

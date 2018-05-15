@@ -39,10 +39,10 @@ servicecomb:
       thread-count: 8
   references:
     transport: rest
-servicecomb:
   metrics:
     window_time: 1000
-    
+servicecomb.metrics.publisher.defaultLog.enabled: true
+
 sync-count: 10
 async-count: 20
 sync: false

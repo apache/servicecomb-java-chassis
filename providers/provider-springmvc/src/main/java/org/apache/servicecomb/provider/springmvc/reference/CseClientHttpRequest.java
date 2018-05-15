@@ -30,6 +30,7 @@ import org.apache.servicecomb.common.rest.definition.RestOperationMeta;
 import org.apache.servicecomb.common.rest.locator.OperationLocator;
 import org.apache.servicecomb.common.rest.locator.ServicePathManager;
 import org.apache.servicecomb.core.Invocation;
+import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.core.definition.MicroserviceMeta;
 import org.apache.servicecomb.core.invocation.InvocationFactory;
 import org.apache.servicecomb.core.provider.consumer.InvokerUtils;
@@ -148,6 +149,9 @@ public class CseClientHttpRequest implements ClientHttpRequest {
 
   protected RequestMeta createRequestMeta(String httpMetod, URI uri) {
     String microserviceName = uri.getAuthority();
+
+    SCBEngine.getInstance().assertIsStopping();
+
     ReferenceConfig referenceConfig = ReferenceConfigUtils.getForInvoke(microserviceName);
 
     MicroserviceMeta microserviceMeta = referenceConfig.getMicroserviceMeta();

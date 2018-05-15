@@ -15,27 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.demo.springmvc.tests;
+package org.apache.servicecomb.core;
 
-import org.apache.servicecomb.core.SCBEngine;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.runner.RunWith;
-import org.springframework.boot.SpringApplication;
-import org.springframework.test.context.junit4.SpringRunner;
-
-@RunWith(SpringRunner.class)
-public class SpringMvcSpringSimplifiedMappingAnnotationIntegrationTest extends SpringMvcIntegrationTestBase {
-  @BeforeClass
-  public static void init() {
-    System.setProperty("spring.profiles.active", "SimplifiedMapping");
-    System.setProperty("cse.uploads.directory", "/tmp");
-    setUpLocalRegistry();
-    SpringApplication.run(SpringMvcSpringMain.class);
-  }
-
-  @AfterClass
-  public static void shutdown() {
-    SCBEngine.getInstance().uninit();
-  }
+//DOWN -> STARTING -> UP -> STOPPING -> DOWN
+public enum SCBStatus {
+  //Chassis is Down
+  DOWN,
+  //Chassis is Starting (progressing)
+  STARTING,
+  //Chassis is Running
+  UP,
+  //Chassis is Stopping (progressing)
+  STOPPING,
+  //Chassis Init Failed
+  FAILED
 }
