@@ -1,0 +1,1268 @@
+
+<!DOCTYPE HTML>
+<html lang="zh_CN" >
+    <head>
+        <meta charset="UTF-8">
+        <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+        <title>使用confd和Nginx做边缘服务 · GitBook</title>
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="description" content="">
+        <meta name="generator" content="GitBook 3.2.3">
+        
+        
+        
+    
+    <link rel="stylesheet" href="../../gitbook/style.css">
+
+    
+            
+                
+                <link rel="stylesheet" href="../../gitbook/gitbook-plugin-highlight/website.css">
+                
+            
+                
+                <link rel="stylesheet" href="../../gitbook/gitbook-plugin-search/search.css">
+                
+            
+                
+                <link rel="stylesheet" href="../../gitbook/gitbook-plugin-fontsettings/website.css">
+                
+            
+        
+
+    
+
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+
+        
+    
+    
+    <meta name="HandheldFriendly" content="true"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <link rel="apple-touch-icon-precomposed" sizes="152x152" href="../../gitbook/images/apple-touch-icon-precomposed-152.png">
+    <link rel="shortcut icon" href="../../gitbook/images/favicon.ico" type="image/x-icon">
+
+    
+    <link rel="next" href="zuul.html" />
+    
+    
+    <link rel="prev" href="../catalog/open-service.html" />
+    
+
+    </head>
+    <body>
+        
+<div class="book">
+    <div class="book-summary">
+        
+            
+<div id="book-search-input" role="search">
+    <input type="text" placeholder="Type to search" />
+</div>
+
+            
+                <nav role="navigation">
+                
+
+
+<ul class="summary">
+    
+    
+
+    
+
+    
+        
+        
+    
+        <li class="chapter " data-level="1.1" data-path="../">
+            
+                <a href="../">
+            
+                    
+                    概述
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.2" data-path="../catalog/start.html">
+            
+                <a href="../catalog/start.html">
+            
+                    
+                    入门
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.2.1" data-path="../start/terminology.html">
+            
+                <a href="../start/terminology.html">
+            
+                    
+                    术语表
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.2.2" data-path="../start/architecture.html">
+            
+                <a href="../start/architecture.html">
+            
+                    
+                    微服务系统架构
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.2.3" data-path="../start/development-environment.html">
+            
+                <a href="../start/development-environment.html">
+            
+                    
+                    安装本地开发环境
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.2.4" data-path="../start/first-sample.html">
+            
+                <a href="../start/first-sample.html">
+            
+                    
+                    开发第一个微服务
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3" data-path="../catalog/build-provider.html">
+            
+                <a href="../catalog/build-provider.html">
+            
+                    
+                    开发服务提供者
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.3.1" data-path="../build-provider/definition/service-definition.html">
+            
+                <a href="../build-provider/definition/service-definition.html">
+            
+                    
+                    服务定义
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.2" data-path="../build-provider/define-contract.html">
+            
+                <a href="../build-provider/define-contract.html">
+            
+                    
+                    定义服务契约
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.3" data-path="../build-provider/code-first.html">
+            
+                <a href="../build-provider/code-first.html">
+            
+                    
+                    使用隐式契约
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.4" data-path="../build-provider/swagger-annotation.html">
+            
+                <a href="../build-provider/swagger-annotation.html">
+            
+                    
+                    使用Swagger注解
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.5" data-path="../build-provider/springmvc.html">
+            
+                <a href="../build-provider/springmvc.html">
+            
+                    
+                    用SpringMVC开发微服务
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.6" data-path="../build-provider/jaxrs.html">
+            
+                <a href="../build-provider/jaxrs.html">
+            
+                    
+                    用JAX-RS开发微服务
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.7" data-path="../build-provider/transparent-rpc.html">
+            
+                <a href="../build-provider/transparent-rpc.html">
+            
+                    
+                    用透明RPC开发微服务
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.8" data-path="../build-provider/listen-address-and-publish-address.html">
+            
+                <a href="../build-provider/listen-address-and-publish-address.html">
+            
+                    
+                    服务监听地址和发布地址
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.9" data-path="../build-provider/interface-constraints.html">
+            
+                <a href="../build-provider/interface-constraints.html">
+            
+                    
+                    支持的数据类型
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.10" data-path="../build-provider/service-configuration.html">
+            
+                <a href="../build-provider/service-configuration.html">
+            
+                    
+                    服务配置
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.3.10.1" data-path="../build-provider/configuration/lb-strategy.html">
+            
+                <a href="../build-provider/configuration/lb-strategy.html">
+            
+                    
+                    负载均衡策略
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.10.2" data-path="../build-provider/configuration/ratelimite-strategy.html">
+            
+                <a href="../build-provider/configuration/ratelimite-strategy.html">
+            
+                    
+                    限流策略
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.10.3" data-path="../build-provider/configuration/downgrade-strategy.html">
+            
+                <a href="../build-provider/configuration/downgrade-strategy.html">
+            
+                    
+                    降级策略
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.10.4" data-path="../build-provider/configuration/parameter-validator.html">
+            
+                <a href="../build-provider/configuration/parameter-validator.html">
+            
+                    
+                    参数效验
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.11" data-path="../build-provider/protocol.html">
+            
+                <a href="../build-provider/protocol.html">
+            
+                    
+                    通信协议
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.3.11.1" data-path="../build-provider/protocol/thread-model.html">
+            
+                <a href="../build-provider/protocol/thread-model.html">
+            
+                    
+                    线程模型
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.11.2" data-path="../build-provider/protocol/rest-over-servlet.html">
+            
+                <a href="../build-provider/protocol/rest-over-servlet.html">
+            
+                    
+                    REST over Servlet
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.11.3" data-path="../build-provider/protocol/rest-over-vertx.html">
+            
+                <a href="../build-provider/protocol/rest-over-vertx.html">
+            
+                    
+                    REST over Vertx
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.11.4" data-path="../build-provider/protocol/highway-rpc.html">
+            
+                <a href="../build-provider/protocol/highway-rpc.html">
+            
+                    
+                    Highway RPC协议
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.12" data-path="../build-provider/bootup.html">
+            
+                <a href="../build-provider/bootup.html">
+            
+                    
+                    程序启动逻辑
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.13" data-path="../build-provider/definition/isolate-relationship.html">
+            
+                <a href="../build-provider/definition/isolate-relationship.html">
+            
+                    
+                    微服务实例之间的逻辑隔离关系
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.14" data-path="../build-provider/access-log-configuration.html">
+            
+                <a href="../build-provider/access-log-configuration.html">
+            
+                    
+                    Access Log配置
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4" data-path="../catalog/build-consumer.html">
+            
+                <a href="../catalog/build-consumer.html">
+            
+                    
+                    开发服务消费者
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.4.1" data-path="../build-consumer/using-resttemplate.html">
+            
+                <a href="../build-consumer/using-resttemplate.html">
+            
+                    
+                    使用RestTemplate开发服务消费者
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.2" data-path="../build-consumer/develop-consumer-using-rpc.html">
+            
+                <a href="../build-consumer/develop-consumer-using-rpc.html">
+            
+                    
+                    使用RPC方式开发服务消费者
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.3" data-path="../build-consumer/with-contract.html">
+            
+                <a href="../build-consumer/with-contract.html">
+            
+                    
+                    使用服务契约
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.4" data-path="../build-consumer/invoke-control.html">
+            
+                <a href="../build-consumer/invoke-control.html">
+            
+                    
+                    调用控制
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.4.4.1" data-path="../build-consumer/instance-isolation.html">
+            
+                <a href="../build-consumer/instance-isolation.html">
+            
+                    
+                    实例级故障隔离
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.4.2" data-path="../build-consumer/circuit-breaker.html">
+            
+                <a href="../build-consumer/circuit-breaker.html">
+            
+                    
+                    熔断策略
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.4.3" data-path="../build-consumer/flow-control.html">
+            
+                <a href="../build-consumer/flow-control.html">
+            
+                    
+                    限流策略
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.4.4" data-path="../build-consumer/fault-injection.html">
+            
+                <a href="../build-consumer/fault-injection.html">
+            
+                    
+                    故障注入
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.5" data-path="../catalog/general-develop.html">
+            
+                <a href="../catalog/general-develop.html">
+            
+                    
+                    通用开发
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.5.1" data-path="../general-development/metrics.html">
+            
+                <a href="../general-development/metrics.html">
+            
+                    
+                    应用性能监控
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.5.2" data-path="../general-development/microservice-invocation-chain.html">
+            
+                <a href="../general-development/microservice-invocation-chain.html">
+            
+                    
+                    微服务调用链
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.5.3" data-path="../general-development/customized-tracing.html">
+            
+                <a href="../general-development/customized-tracing.html">
+            
+                    
+                    自定义调用链打点
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.5.4" data-path="../general-development/local-develop-test.html">
+            
+                <a href="../general-development/local-develop-test.html">
+            
+                    
+                    本地开发和测试
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.5.5" data-path="../general-development/visit-sc.html">
+            
+                <a href="../general-development/visit-sc.html">
+            
+                    
+                    访问服务中心
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.5.6" data-path="../general-development/http-filter.html">
+            
+                <a href="../general-development/http-filter.html">
+            
+                    
+                    Http Filter
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.5.7" data-path="../general-development/file-upload.html">
+            
+                <a href="../general-development/file-upload.html">
+            
+                    
+                    文件上传
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.5.8" data-path="../general-development/file-download.html">
+            
+                <a href="../general-development/file-download.html">
+            
+                    
+                    文件下载
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.5.9" data-path="../general-development/reactive.html">
+            
+                <a href="../general-development/reactive.html">
+            
+                    
+                    Reactive
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.5.10" data-path="../general-development/dnsconfig.html">
+            
+                <a href="../general-development/dnsconfig.html">
+            
+                    
+                    DNS自定义配置
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.5.11" data-path="../general-development/dai-li-she-zhi.html">
+            
+                <a href="../general-development/dai-li-she-zhi.html">
+            
+                    
+                    代理设置
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.5.12" data-path="../general-development/report-framework-version.html">
+            
+                <a href="../general-development/report-framework-version.html">
+            
+                    
+                    框架上报版本号
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.6" data-path="../catalog/open-service.html">
+            
+                <a href="../catalog/open-service.html">
+            
+                    
+                    服务能力开放
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter active" data-level="1.6.1" data-path="nginx.html">
+            
+                <a href="nginx.html">
+            
+                    
+                    使用confd和Nginx做边缘服务
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.6.2" data-path="zuul.html">
+            
+                <a href="zuul.html">
+            
+                    
+                    使用zuul做边缘服务
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.6.3" data-path="by-servicecomb-sdk.html">
+            
+                <a href="by-servicecomb-sdk.html">
+            
+                    
+                    使用ServiceComb SDK开发边缘服务
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.6.4" data-path="secret-field.html">
+            
+                <a href="secret-field.html">
+            
+                    
+                    定制序列化和反序列化方法
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.7" data-path="../catalog/service-package-run.html">
+            
+                <a href="../catalog/service-package-run.html">
+            
+                    
+                    服务打包和运行
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.7.1" data-path="../packaging/standalone.html">
+            
+                <a href="../packaging/standalone.html">
+            
+                    
+                    以standalone模式打包
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.7.2" data-path="../packaging/web-container.html">
+            
+                <a href="../packaging/web-container.html">
+            
+                    
+                    以WEB容器模式打包
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.8" data-path="../catalog/security.html">
+            
+                <a href="../catalog/security.html">
+            
+                    
+                    微服务安全
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.8.1" data-path="../security/tls.html">
+            
+                <a href="../security/tls.html">
+            
+                    
+                    使用TLS通信
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.8.2" data-path="../security/shi-yong-rsa-ren-zheng.html">
+            
+                <a href="../security/shi-yong-rsa-ren-zheng.html">
+            
+                    
+                    使用RSA认证
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.9" data-path="../using-java-chassis-in-spring-boot.html">
+            
+                <a href="../using-java-chassis-in-spring-boot.html">
+            
+                    
+                    在Spring Boot中使用java chassis
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.9.1" data-path="../using-java-chassis-in-spring-boot/components-for-spring-boot.html">
+            
+                <a href="../using-java-chassis-in-spring-boot/components-for-spring-boot.html">
+            
+                    
+                    提供的组件说明
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.9.2" data-path="../using-java-chassis-in-spring-boot/java-application.html">
+            
+                <a href="../using-java-chassis-in-spring-boot/java-application.html">
+            
+                    
+                    JAVA应用方式开发步骤
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.9.3" data-path="../using-java-chassis-in-spring-boot/web-application.html">
+            
+                <a href="../using-java-chassis-in-spring-boot/web-application.html">
+            
+                    
+                    Web开发方式开发步骤
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.9.4" data-path="../using-java-chassis-in-spring-boot/diff-between-java-web.html">
+            
+                <a href="../using-java-chassis-in-spring-boot/diff-between-java-web.html">
+            
+                    
+                    JAVA应用方式和Web开发方式的区别
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.9.5" data-path="../using-java-chassis-in-spring-boot/diff-spring-mvc.html">
+            
+                <a href="../using-java-chassis-in-spring-boot/diff-spring-mvc.html">
+            
+                    
+                    Spring MVC模式的差异
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.10" data-path="../question-and-answer/question_answer.html">
+            
+                <a href="../question-and-answer/question_answer.html">
+            
+                    
+                    常见问题
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.10.1" data-path="../question-and-answer/interface-compatibility.html">
+            
+                <a href="../question-and-answer/interface-compatibility.html">
+            
+                    
+                    微服务接口兼容常见问题
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+
+    
+
+    <li class="divider"></li>
+
+    <li>
+        <a href="https://www.gitbook.com" target="blank" class="gitbook-link">
+            Published with GitBook
+        </a>
+    </li>
+</ul>
+
+
+                </nav>
+            
+        
+    </div>
+
+    <div class="book-body">
+        
+            <div class="body-inner">
+                
+                    
+
+<div class="book-header" role="navigation">
+    
+
+    <!-- Title -->
+    <h1>
+        <i class="fa fa-circle-o-notch fa-spin"></i>
+        <a href=".." >使用confd和Nginx做边缘服务</a>
+    </h1>
+</div>
+
+
+
+
+                    <div class="page-wrapper" tabindex="-1" role="main">
+                        <div class="page-inner">
+                            
+<div id="book-search-results">
+    <div class="search-noresults">
+    
+                                <section class="normal markdown-section">
+                                
+                                <h2 id="&#x6982;&#x5FF5;&#x9610;&#x8FF0;">&#x6982;&#x5FF5;&#x9610;&#x8FF0;</h2>
+<h3 id="confd"><strong>confd</strong></h3>
+<p>confd&#x662F;&#x4E00;&#x4E2A;&#x8F7B;&#x91CF;&#x7EA7;&#x7684;&#x914D;&#x7F6E;&#x7BA1;&#x7406;&#x5DE5;&#x5177;&#xFF0C;&#x6E90;&#x7801;&#x5730;&#x5740;&#xFF1A;<a href="https://github.com/kelseyhightower/confd" target="_blank">https://github.com/kelseyhightower/confd</a>&#xFF0C;&#x5B83;&#x53EF;&#x4EE5;&#x5C06;&#x914D;&#x7F6E;&#x4FE1;&#x606F;&#x5B58;&#x50A8;&#x5728;etcd&#x3001;consul&#x3001;dynamodb&#x3001;redis&#x4EE5;&#x53CA;zookeeper&#x7B49;&#x3002;confd&#x5B9A;&#x671F;&#x4F1A;&#x4ECE;&#x8FD9;&#x4E9B;&#x5B58;&#x50A8;&#x8282;&#x70B9;pull&#x6700;&#x65B0;&#x7684;&#x914D;&#x7F6E;&#xFF0C;&#x7136;&#x540E;&#x91CD;&#x65B0;&#x52A0;&#x8F7D;&#x670D;&#x52A1;&#xFF0C;&#x5B8C;&#x6210;&#x914D;&#x7F6E;&#x6587;&#x4EF6;&#x7684;&#x66F4;&#x65B0;&#x3002;</p>
+<h3 id="nginx"><strong>Nginx</strong></h3>
+<p>Nginx (engine x)&#x662F;&#x4E00;&#x4E2A;&#x9AD8;&#x6027;&#x80FD;&#x7684;HTTP&#x548C;&#x53CD;&#x5411;&#x4EE3;&#x7406;&#x670D;&#x52A1;&#x5668;&#xFF0C;&#x5177;&#x6709;&#x8D1F;&#x8F7D;&#x5747;&#x8861;&#x7684;&#x529F;&#x80FD;&#x3002;&#x8BE6;&#x60C5;&#x8BF7;&#x53C2;&#x8003;<a href="http://www.nginx.cn/doc/" target="_blank">http://www.nginx.cn/doc/</a>&#x3002;&#x672C;&#x5C0F;&#x8282;&#x4ECB;&#x7ECD;&#x7684;&#x670D;&#x52A1;&#x4E3B;&#x8981;&#x4F7F;&#x7528;&#x5230;&#x7684;&#x662F;Nginx&#x7684;http&#x4EE3;&#x7406;&#x529F;&#x80FD;&#x3002;</p>
+<h2 id="&#x573A;&#x666F;&#x63CF;&#x8FF0;">&#x573A;&#x666F;&#x63CF;&#x8FF0;</h2>
+<p>&#x672C;&#x5C0F;&#x8282;&#x4ECB;&#x7ECD;&#x7684;&#x6280;&#x672F;&#x662F;&#x4F7F;&#x7528;nginx+confd&#x505A;&#x8FB9;&#x7F18;&#x670D;&#x52A1;&#xFF0C;&#x540C;&#x65F6;&#x53EF;&#x4EE5;&#x5BF9;&#x63A5;Java Chassis&#x5FAE;&#x670D;&#x52A1;&#x6846;&#x67B6;&#x4E2D;&#x7684;&#x670D;&#x52A1;&#x4E2D;&#x5FC3;&#xFF0C;&#x4ECE;&#x670D;&#x52A1;&#x4E2D;&#x5FC3;&#x4E2D;&#x62C9;&#x53BB;&#x670D;&#x52A1;&#x4FE1;&#x606F;&#x901A;&#x8FC7;confd&#x52A8;&#x6001;&#x66F4;&#x65B0;nginx&#x7684;&#x914D;&#x7F6E;&#x3002;</p>
+<p>&#x4F7F;&#x7528;nginx+confd&#x52A8;&#x6001;&#x53CD;&#x5411;&#x4EE3;&#x7406;&#x7684;&#x5B9E;&#x73B0;&#x6B65;&#x9AA4;&#x53EF;&#x53C2;&#x8003;&#x6587;&#x7AE0;<a href="http://www.cnblogs.com/Anker/p/6112022.html" target="_blank">http://www.cnblogs.com/Anker/p/6112022.html</a>&#xFF0C;&#x672C;&#x8282;&#x4E3B;&#x8981;&#x4ECB;&#x7ECD;confd&#x5982;&#x4F55;&#x5BF9;&#x63A5;Java Chassis&#x6846;&#x67B6;&#x7684;&#x670D;&#x52A1;&#x4E2D;&#x5FC3;&#x3002;</p>
+<h2 id="&#x5BF9;&#x63A5;&#x670D;&#x52A1;&#x4E2D;&#x5FC3;">&#x5BF9;&#x63A5;&#x670D;&#x52A1;&#x4E2D;&#x5FC3;</h2>
+<p>&#x672C;&#x8282;&#x4ECB;&#x7ECD;&#x7684;&#x6280;&#x672F;&#x6838;&#x5FC3;&#x5728;&#x4E8E;&#x5982;&#x4F55;&#x4F7F;&#x5F97;confd&#x83B7;&#x53D6;&#x5230;&#x670D;&#x52A1;&#x4E2D;&#x5FC3;&#x7684;&#x670D;&#x52A1;&#x4FE1;&#x606F;&#xFF0C;&#x670D;&#x52A1;&#x4E2D;&#x5FC3;&#x5F00;&#x653E;&#x4E86;&#x4EE5;&#x4E0B;&#x63A5;&#x53E3;&#x4F9B;&#x5916;&#x90E8;&#x8C03;&#x7528;&#xFF1A;</p>
+<h3 id="&#x65B9;&#x6CD5;&#x4E00;&#xFF1A;http&#x8C03;&#x7528;"><strong>&#x65B9;&#x6CD5;&#x4E00;&#xFF1A;http&#x8C03;&#x7528;</strong></h3>
+<p>&#x670D;&#x52A1;&#x4E2D;&#x5FC3;&#x5F00;&#x653E;http&#x63A5;&#x53E3;&#x5747;&#x9700;&#x8981;&#x6DFB;&#x52A0;&#x79DF;&#x6237;&#x5934;&#x90E8;&#x4FE1;&#x606F;&#xFF1A;&#x201C;X-Tenant-Name:tenantName&#x201D;&#xFF0C;tenameName&#x4E3A;&#x79DF;&#x6237;&#x540D;&#xFF0C;&#x9ED8;&#x8BA4;&#x4E3A;default&#xFF0C;&#x4F8B;&#x5982;&quot;X-Tenant-Name:default&quot;&#x3002;</p>
+<ul>
+<li><p>&#x68C0;&#x67E5;&#x670D;&#x52A1;&#x4E2D;&#x5FC3;&#x5065;&#x5EB7;&#x72B6;&#x6001;</p>
+<pre><code> GET 127.0.0.1:30100/health
+</code></pre></li>
+<li><p>&#x83B7;&#x53D6;&#x6240;&#x6709;&#x5FAE;&#x670D;&#x52A1;&#x4FE1;&#x606F;</p>
+<pre><code> GET 127.0.0.1:30100/registry/v3/microservices
+</code></pre></li>
+<li><p>&#x83B7;&#x53D6;&#x6307;&#x5B9A;id&#x7684;&#x5FAE;&#x670D;&#x52A1;&#x4FE1;&#x606F;</p>
+</li>
+</ul>
+<blockquote>
+<ol>
+<li><p>&#x9996;&#x5148;&#x6839;&#x636E;&#x5FAE;&#x670D;&#x52A1;&#x4FE1;&#x606F;&#x83B7;&#x53D6;serviceId</p>
+<pre><code>GET 127.0.0.1:30100/registry/v3/existence?type=microservice&amp;appId={appId}&amp;serviceName={serviceName}&amp;version={version}
+</code></pre></li>
+<li><p>&#x6839;&#x636E;&#x4E0A;&#x8FF0;&#x63A5;&#x53E3;&#x8FD4;&#x56DE;&#x7684;serviceId&#x83B7;&#x53D6;&#x5FAE;&#x670D;&#x52A1;&#x5B8C;&#x6574;&#x4FE1;&#x606F;</p>
+<p>GET 127.0.0.1:30100/registry/v3/microservices/{serviceId}</p>
+</li>
+</ol>
+</blockquote>
+<ul>
+<li><p>&#x83B7;&#x53D6;&#x6307;&#x5B9A;&#x5FAE;&#x670D;&#x52A1;&#x7684;&#x6240;&#x6709;&#x5B9E;&#x4F8B;&#x4FE1;&#x606F;</p>
+<pre><code> GET 127.0.0.1:30100/registry/v3/microservices/{serviceId}/instances
+
+ &#x9700;&#x8981;&#x5728;header&#x4E2D;&#x6DFB;&#x52A0;&#xFF1A;&quot;X-ConsumerId:{serviceId}&quot;&#x3002;
+</code></pre></li>
+<li><p>&#x67E5;&#x627E;&#x5FAE;&#x670D;&#x52A1;&#x5B9E;&#x4F8B;&#x4FE1;&#x606F;</p>
+<pre><code> GET 127.0.0.1:30100/registry/v3/instances?appId={appId}&amp;serviceName={serviceName}&amp;version={version}
+
+ &#x9700;&#x8981;&#x5728;header&#x4E2D;&#x6DFB;&#x52A0;: &quot;X-ConsumerId:{serviceId}&quot;&#x3002;
+</code></pre></li>
+</ul>
+<h4 id="&#x6CE8;&#x610F;&#xFF1A;&#x5728;&#x5B9E;&#x9645;&#x5F00;&#x53D1;&#x4E2D;&#x8BF7;&#x8BBF;&#x95EE;&#x5B9E;&#x9645;&#x7684;service-center&#x8BBF;&#x95EE;&#x5730;&#x5740;&#xFF0C;&#x5E76;&#x5C06;&#x4E0A;&#x8FF0;url&#x4E2D;&#x7684;&#x53D8;&#x91CF;&#x66FF;&#x6362;&#x6210;&#x5177;&#x4F53;&#x503C;&#xFF0C;http&#x8FD4;&#x56DE;&#x7684;&#x6570;&#x636E;&#x5747;&#x4E3A;json&#x683C;&#x5F0F;">&#x6CE8;&#x610F;&#xFF1A;&#x5728;&#x5B9E;&#x9645;&#x5F00;&#x53D1;&#x4E2D;&#x8BF7;&#x8BBF;&#x95EE;&#x5B9E;&#x9645;&#x7684;service-center&#x8BBF;&#x95EE;&#x5730;&#x5740;&#xFF0C;&#x5E76;&#x5C06;&#x4E0A;&#x8FF0;url&#x4E2D;{}&#x7684;&#x53D8;&#x91CF;&#x66FF;&#x6362;&#x6210;&#x5177;&#x4F53;&#x503C;&#xFF0C;http&#x8FD4;&#x56DE;&#x7684;&#x6570;&#x636E;&#x5747;&#x4E3A;json&#x683C;&#x5F0F;</h4>
+<h3 id="&#x65B9;&#x6CD5;&#x4E8C;&#xFF1A;&#x4F7F;&#x7528;servicecomb&#x5F00;&#x6E90;&#x4EE3;&#x7801;&#x63A5;&#x53E3;"><strong>&#x65B9;&#x6CD5;&#x4E8C;&#xFF1A;&#x4F7F;&#x7528;servicecomb&#x5F00;&#x6E90;&#x4EE3;&#x7801;&#x63A5;&#x53E3;</strong></h3>
+<p>&#x5728;&#x5F00;&#x53D1;&#x5FAE;&#x670D;&#x52A1;&#x5E94;&#x7528;&#xFF0C;&#x53EA;&#x9700;&#x8981;&#x8C03;&#x7528;servicecomb&#x6846;&#x67B6;&#x4EE3;&#x7801;&#x4E2D;&#x7684;&#x5DE5;&#x5177;&#x7C7B;RegistryUtil.java&#x4E2D;&#x63D0;&#x4F9B;&#x7684;&#x63A5;&#x53E3;&#xFF0C;&#x5373;&#x53EF;&#x83B7;&#x53D6;&#x670D;&#x52A1;&#x4E2D;&#x5FC3;&#x7684;&#x4FE1;&#x606F;&#xFF0C;&#x63A5;&#x53E3;&#x63CF;&#x8FF0;&#x5982;&#x4E0B;&#xFF1A;</p>
+<ul>
+<li><p>&#x83B7;&#x53D6;&#x6240;&#x6709;&#x5FAE;&#x670D;&#x52A1;&#x4FE1;&#x606F;  </p>
+<pre><code class="lang-java"><span class="hljs-function">List&lt;Microservice&gt; <span class="hljs-title">getAllMicroservices</span><span class="hljs-params">()</span></span>;
+</code></pre>
+</li>
+<li><p>&#x83B7;&#x53D6;&#x5FAE;&#x670D;&#x52A1;&#x552F;&#x4E00;&#x6807;&#x8BC6;  </p>
+<pre><code class="lang-java"><span class="hljs-function">String <span class="hljs-title">getMicroserviceId</span><span class="hljs-params">(String appId, String microserviceName, String versionRule)</span></span>;
+</code></pre>
+</li>
+<li><p>&#x6839;&#x636E;&#x5FAE;&#x670D;&#x52A1;&#x552F;&#x4E00;&#x6807;&#x8BC6;&#x67E5;&#x8BE2;&#x5FAE;&#x670D;&#x52A1;&#x9759;&#x6001;&#x4FE1;&#x606F;  </p>
+<pre><code class="lang-java"><span class="hljs-function">Microservice <span class="hljs-title">getMicroservice</span><span class="hljs-params">(String microserviceId)</span></span>;
+</code></pre>
+</li>
+<li><p>&#x6839;&#x636E;&#x591A;&#x4E2A;&#x5FAE;&#x670D;&#x52A1;&#x552F;&#x4E00;&#x6807;&#x8BC6;&#x67E5;&#x8BE2;&#x6240;&#x6709;&#x5FAE;&#x670D;&#x52A1;&#x5B9E;&#x4F8B;&#x4FE1;&#x606F;  </p>
+<pre><code class="lang-java"><span class="hljs-function">List&lt;MicroserviceInstance&gt; <span class="hljs-title">getMicroserviceInstance</span><span class="hljs-params">(String consumerId, String providerId)</span></span>;
+</code></pre>
+</li>
+<li><p>&#x6309;&#x7167;app+interface+version&#x67E5;&#x8BE2;&#x5B9E;&#x4F8B;endpoints&#x4FE1;&#x606F;  </p>
+<pre><code class="lang-java"><span class="hljs-function">List&lt;MicroserviceInstance&gt; <span class="hljs-title">findServiceInstance</span><span class="hljs-params">(String consumerId, String appId, String serviceName,String versionRule)</span></span>;
+</code></pre>
+</li>
+</ul>
+<p>&#x901A;&#x8FC7;&#x4E0A;&#x8FF0;http&#x63A5;&#x53E3;&#x53EF;&#x83B7;&#x53D6;&#x5230;&#x670D;&#x52A1;&#x4E2D;&#x5FC3;&#x7684;&#x5FAE;&#x670D;&#x52A1;&#x548C;&#x5176;&#x5B9E;&#x4F8B;&#x7684;&#x4FE1;&#x606F;&#xFF0C;&#x4ECE;&#x800C;&#x901A;&#x8FC7;confd&#x52A8;&#x6001;&#x66F4;&#x65B0;nginx&#x914D;&#x7F6E;&#x3002;</p>
+
+                                
+                                </section>
+                            
+    </div>
+    <div class="search-results">
+        <div class="has-results">
+            
+            <h1 class="search-results-title"><span class='search-results-count'></span> results matching "<span class='search-query'></span>"</h1>
+            <ul class="search-results-list"></ul>
+            
+        </div>
+        <div class="no-results">
+            
+            <h1 class="search-results-title">No results matching "<span class='search-query'></span>"</h1>
+            
+        </div>
+    </div>
+</div>
+
+                        </div>
+                    </div>
+                
+            </div>
+
+            
+                
+                <a href="../catalog/open-service.html" class="navigation navigation-prev " aria-label="Previous page: 服务能力开放">
+                    <i class="fa fa-angle-left"></i>
+                </a>
+                
+                
+                <a href="zuul.html" class="navigation navigation-next " aria-label="Next page: 使用zuul做边缘服务">
+                    <i class="fa fa-angle-right"></i>
+                </a>
+                
+            
+        
+    </div>
+
+    <script>
+        var gitbook = gitbook || [];
+        gitbook.push(function() {
+            gitbook.page.hasChanged({"page":{"title":"使用confd和Nginx做边缘服务","level":"1.6.1","depth":2,"next":{"title":"使用zuul做边缘服务","level":"1.6.2","depth":2,"path":"edge/zuul.md","ref":"edge/zuul.md","articles":[]},"previous":{"title":"服务能力开放","level":"1.6","depth":1,"path":"catalog/open-service.md","ref":"catalog/open-service.md","articles":[{"title":"使用confd和Nginx做边缘服务","level":"1.6.1","depth":2,"path":"edge/nginx.md","ref":"edge/nginx.md","articles":[]},{"title":"使用zuul做边缘服务","level":"1.6.2","depth":2,"path":"edge/zuul.md","ref":"edge/zuul.md","articles":[]},{"title":"使用ServiceComb SDK开发边缘服务","level":"1.6.3","depth":2,"path":"edge/by-servicecomb-sdk.md","ref":"edge/by-servicecomb-sdk.md","articles":[]},{"title":"定制序列化和反序列化方法","level":"1.6.4","depth":2,"path":"edge/secret-field.md","ref":"edge/secret-field.md","articles":[]}]},"dir":"ltr"},"config":{"plugins":[],"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"pluginsConfig":{"highlight":{},"search":{},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"sharing":{"facebook":true,"twitter":true,"google":false,"weibo":false,"instapaper":false,"vk":false,"all":["facebook","google","twitter","weibo","instapaper"]},"fontsettings":{"theme":"white","family":"sans","size":2},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false}},"theme":"default","pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Arial","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56}},"structure":{"langs":"LANGS.md","readme":"introduction.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"variables":{},"language":"zh_CN","gitbook":"*"},"file":{"path":"edge/nginx.md","mtime":"2018-05-02T09:21:25.729Z","type":"markdown"},"gitbook":{"version":"3.2.3","time":"2018-05-16T07:28:04.840Z"},"basePath":"..","book":{"language":"zh_CN"}});
+        });
+    </script>
+</div>
+
+        
+    <script src="../../gitbook/gitbook.js"></script>
+    <script src="../../gitbook/theme.js"></script>
+    
+        
+        <script src="../../gitbook/gitbook-plugin-search/search-engine.js"></script>
+        
+    
+        
+        <script src="../../gitbook/gitbook-plugin-search/search.js"></script>
+        
+    
+        
+        <script src="../../gitbook/gitbook-plugin-lunr/lunr.min.js"></script>
+        
+    
+        
+        <script src="../../gitbook/gitbook-plugin-lunr/search-lunr.js"></script>
+        
+    
+        
+        <script src="../../gitbook/gitbook-plugin-sharing/buttons.js"></script>
+        
+    
+        
+        <script src="../../gitbook/gitbook-plugin-fontsettings/fontsettings.js"></script>
+        
+    
+
+    </body>
+</html>
+

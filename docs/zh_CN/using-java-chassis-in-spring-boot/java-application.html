@@ -1,0 +1,1256 @@
+
+<!DOCTYPE HTML>
+<html lang="zh_CN" >
+    <head>
+        <meta charset="UTF-8">
+        <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+        <title>JAVA应用方式开发步骤 · GitBook</title>
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="description" content="">
+        <meta name="generator" content="GitBook 3.2.3">
+        
+        
+        
+    
+    <link rel="stylesheet" href="../../gitbook/style.css">
+
+    
+            
+                
+                <link rel="stylesheet" href="../../gitbook/gitbook-plugin-highlight/website.css">
+                
+            
+                
+                <link rel="stylesheet" href="../../gitbook/gitbook-plugin-search/search.css">
+                
+            
+                
+                <link rel="stylesheet" href="../../gitbook/gitbook-plugin-fontsettings/website.css">
+                
+            
+        
+
+    
+
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+
+        
+    
+    
+    <meta name="HandheldFriendly" content="true"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <link rel="apple-touch-icon-precomposed" sizes="152x152" href="../../gitbook/images/apple-touch-icon-precomposed-152.png">
+    <link rel="shortcut icon" href="../../gitbook/images/favicon.ico" type="image/x-icon">
+
+    
+    <link rel="next" href="web-application.html" />
+    
+    
+    <link rel="prev" href="components-for-spring-boot.html" />
+    
+
+    </head>
+    <body>
+        
+<div class="book">
+    <div class="book-summary">
+        
+            
+<div id="book-search-input" role="search">
+    <input type="text" placeholder="Type to search" />
+</div>
+
+            
+                <nav role="navigation">
+                
+
+
+<ul class="summary">
+    
+    
+
+    
+
+    
+        
+        
+    
+        <li class="chapter " data-level="1.1" data-path="../">
+            
+                <a href="../">
+            
+                    
+                    概述
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.2" data-path="../catalog/start.html">
+            
+                <a href="../catalog/start.html">
+            
+                    
+                    入门
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.2.1" data-path="../start/terminology.html">
+            
+                <a href="../start/terminology.html">
+            
+                    
+                    术语表
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.2.2" data-path="../start/architecture.html">
+            
+                <a href="../start/architecture.html">
+            
+                    
+                    微服务系统架构
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.2.3" data-path="../start/development-environment.html">
+            
+                <a href="../start/development-environment.html">
+            
+                    
+                    安装本地开发环境
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.2.4" data-path="../start/first-sample.html">
+            
+                <a href="../start/first-sample.html">
+            
+                    
+                    开发第一个微服务
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3" data-path="../catalog/build-provider.html">
+            
+                <a href="../catalog/build-provider.html">
+            
+                    
+                    开发服务提供者
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.3.1" data-path="../build-provider/definition/service-definition.html">
+            
+                <a href="../build-provider/definition/service-definition.html">
+            
+                    
+                    服务定义
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.2" data-path="../build-provider/define-contract.html">
+            
+                <a href="../build-provider/define-contract.html">
+            
+                    
+                    定义服务契约
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.3" data-path="../build-provider/code-first.html">
+            
+                <a href="../build-provider/code-first.html">
+            
+                    
+                    使用隐式契约
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.4" data-path="../build-provider/swagger-annotation.html">
+            
+                <a href="../build-provider/swagger-annotation.html">
+            
+                    
+                    使用Swagger注解
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.5" data-path="../build-provider/springmvc.html">
+            
+                <a href="../build-provider/springmvc.html">
+            
+                    
+                    用SpringMVC开发微服务
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.6" data-path="../build-provider/jaxrs.html">
+            
+                <a href="../build-provider/jaxrs.html">
+            
+                    
+                    用JAX-RS开发微服务
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.7" data-path="../build-provider/transparent-rpc.html">
+            
+                <a href="../build-provider/transparent-rpc.html">
+            
+                    
+                    用透明RPC开发微服务
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.8" data-path="../build-provider/listen-address-and-publish-address.html">
+            
+                <a href="../build-provider/listen-address-and-publish-address.html">
+            
+                    
+                    服务监听地址和发布地址
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.9" data-path="../build-provider/interface-constraints.html">
+            
+                <a href="../build-provider/interface-constraints.html">
+            
+                    
+                    支持的数据类型
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.10" data-path="../build-provider/service-configuration.html">
+            
+                <a href="../build-provider/service-configuration.html">
+            
+                    
+                    服务配置
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.3.10.1" data-path="../build-provider/configuration/lb-strategy.html">
+            
+                <a href="../build-provider/configuration/lb-strategy.html">
+            
+                    
+                    负载均衡策略
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.10.2" data-path="../build-provider/configuration/ratelimite-strategy.html">
+            
+                <a href="../build-provider/configuration/ratelimite-strategy.html">
+            
+                    
+                    限流策略
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.10.3" data-path="../build-provider/configuration/downgrade-strategy.html">
+            
+                <a href="../build-provider/configuration/downgrade-strategy.html">
+            
+                    
+                    降级策略
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.10.4" data-path="../build-provider/configuration/parameter-validator.html">
+            
+                <a href="../build-provider/configuration/parameter-validator.html">
+            
+                    
+                    参数效验
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.11" data-path="../build-provider/protocol.html">
+            
+                <a href="../build-provider/protocol.html">
+            
+                    
+                    通信协议
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.3.11.1" data-path="../build-provider/protocol/thread-model.html">
+            
+                <a href="../build-provider/protocol/thread-model.html">
+            
+                    
+                    线程模型
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.11.2" data-path="../build-provider/protocol/rest-over-servlet.html">
+            
+                <a href="../build-provider/protocol/rest-over-servlet.html">
+            
+                    
+                    REST over Servlet
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.11.3" data-path="../build-provider/protocol/rest-over-vertx.html">
+            
+                <a href="../build-provider/protocol/rest-over-vertx.html">
+            
+                    
+                    REST over Vertx
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.11.4" data-path="../build-provider/protocol/highway-rpc.html">
+            
+                <a href="../build-provider/protocol/highway-rpc.html">
+            
+                    
+                    Highway RPC协议
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.12" data-path="../build-provider/bootup.html">
+            
+                <a href="../build-provider/bootup.html">
+            
+                    
+                    程序启动逻辑
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.13" data-path="../build-provider/definition/isolate-relationship.html">
+            
+                <a href="../build-provider/definition/isolate-relationship.html">
+            
+                    
+                    微服务实例之间的逻辑隔离关系
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.14" data-path="../build-provider/access-log-configuration.html">
+            
+                <a href="../build-provider/access-log-configuration.html">
+            
+                    
+                    Access Log配置
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4" data-path="../catalog/build-consumer.html">
+            
+                <a href="../catalog/build-consumer.html">
+            
+                    
+                    开发服务消费者
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.4.1" data-path="../build-consumer/using-resttemplate.html">
+            
+                <a href="../build-consumer/using-resttemplate.html">
+            
+                    
+                    使用RestTemplate开发服务消费者
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.2" data-path="../build-consumer/develop-consumer-using-rpc.html">
+            
+                <a href="../build-consumer/develop-consumer-using-rpc.html">
+            
+                    
+                    使用RPC方式开发服务消费者
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.3" data-path="../build-consumer/with-contract.html">
+            
+                <a href="../build-consumer/with-contract.html">
+            
+                    
+                    使用服务契约
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.4" data-path="../build-consumer/invoke-control.html">
+            
+                <a href="../build-consumer/invoke-control.html">
+            
+                    
+                    调用控制
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.4.4.1" data-path="../build-consumer/instance-isolation.html">
+            
+                <a href="../build-consumer/instance-isolation.html">
+            
+                    
+                    实例级故障隔离
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.4.2" data-path="../build-consumer/circuit-breaker.html">
+            
+                <a href="../build-consumer/circuit-breaker.html">
+            
+                    
+                    熔断策略
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.4.3" data-path="../build-consumer/flow-control.html">
+            
+                <a href="../build-consumer/flow-control.html">
+            
+                    
+                    限流策略
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.4.4" data-path="../build-consumer/fault-injection.html">
+            
+                <a href="../build-consumer/fault-injection.html">
+            
+                    
+                    故障注入
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.5" data-path="../catalog/general-develop.html">
+            
+                <a href="../catalog/general-develop.html">
+            
+                    
+                    通用开发
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.5.1" data-path="../general-development/metrics.html">
+            
+                <a href="../general-development/metrics.html">
+            
+                    
+                    应用性能监控
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.5.2" data-path="../general-development/microservice-invocation-chain.html">
+            
+                <a href="../general-development/microservice-invocation-chain.html">
+            
+                    
+                    微服务调用链
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.5.3" data-path="../general-development/customized-tracing.html">
+            
+                <a href="../general-development/customized-tracing.html">
+            
+                    
+                    自定义调用链打点
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.5.4" data-path="../general-development/local-develop-test.html">
+            
+                <a href="../general-development/local-develop-test.html">
+            
+                    
+                    本地开发和测试
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.5.5" data-path="../general-development/visit-sc.html">
+            
+                <a href="../general-development/visit-sc.html">
+            
+                    
+                    访问服务中心
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.5.6" data-path="../general-development/http-filter.html">
+            
+                <a href="../general-development/http-filter.html">
+            
+                    
+                    Http Filter
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.5.7" data-path="../general-development/file-upload.html">
+            
+                <a href="../general-development/file-upload.html">
+            
+                    
+                    文件上传
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.5.8" data-path="../general-development/file-download.html">
+            
+                <a href="../general-development/file-download.html">
+            
+                    
+                    文件下载
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.5.9" data-path="../general-development/reactive.html">
+            
+                <a href="../general-development/reactive.html">
+            
+                    
+                    Reactive
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.5.10" data-path="../general-development/dnsconfig.html">
+            
+                <a href="../general-development/dnsconfig.html">
+            
+                    
+                    DNS自定义配置
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.5.11" data-path="../general-development/dai-li-she-zhi.html">
+            
+                <a href="../general-development/dai-li-she-zhi.html">
+            
+                    
+                    代理设置
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.5.12" data-path="../general-development/report-framework-version.html">
+            
+                <a href="../general-development/report-framework-version.html">
+            
+                    
+                    框架上报版本号
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.6" data-path="../catalog/open-service.html">
+            
+                <a href="../catalog/open-service.html">
+            
+                    
+                    服务能力开放
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.6.1" data-path="../edge/nginx.html">
+            
+                <a href="../edge/nginx.html">
+            
+                    
+                    使用confd和Nginx做边缘服务
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.6.2" data-path="../edge/zuul.html">
+            
+                <a href="../edge/zuul.html">
+            
+                    
+                    使用zuul做边缘服务
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.6.3" data-path="../edge/by-servicecomb-sdk.html">
+            
+                <a href="../edge/by-servicecomb-sdk.html">
+            
+                    
+                    使用ServiceComb SDK开发边缘服务
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.6.4" data-path="../edge/secret-field.html">
+            
+                <a href="../edge/secret-field.html">
+            
+                    
+                    定制序列化和反序列化方法
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.7" data-path="../catalog/service-package-run.html">
+            
+                <a href="../catalog/service-package-run.html">
+            
+                    
+                    服务打包和运行
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.7.1" data-path="../packaging/standalone.html">
+            
+                <a href="../packaging/standalone.html">
+            
+                    
+                    以standalone模式打包
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.7.2" data-path="../packaging/web-container.html">
+            
+                <a href="../packaging/web-container.html">
+            
+                    
+                    以WEB容器模式打包
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.8" data-path="../catalog/security.html">
+            
+                <a href="../catalog/security.html">
+            
+                    
+                    微服务安全
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.8.1" data-path="../security/tls.html">
+            
+                <a href="../security/tls.html">
+            
+                    
+                    使用TLS通信
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.8.2" data-path="../security/shi-yong-rsa-ren-zheng.html">
+            
+                <a href="../security/shi-yong-rsa-ren-zheng.html">
+            
+                    
+                    使用RSA认证
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.9" data-path="../using-java-chassis-in-spring-boot.html">
+            
+                <a href="../using-java-chassis-in-spring-boot.html">
+            
+                    
+                    在Spring Boot中使用java chassis
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.9.1" data-path="components-for-spring-boot.html">
+            
+                <a href="components-for-spring-boot.html">
+            
+                    
+                    提供的组件说明
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter active" data-level="1.9.2" data-path="java-application.html">
+            
+                <a href="java-application.html">
+            
+                    
+                    JAVA应用方式开发步骤
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.9.3" data-path="web-application.html">
+            
+                <a href="web-application.html">
+            
+                    
+                    Web开发方式开发步骤
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.9.4" data-path="diff-between-java-web.html">
+            
+                <a href="diff-between-java-web.html">
+            
+                    
+                    JAVA应用方式和Web开发方式的区别
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.9.5" data-path="diff-spring-mvc.html">
+            
+                <a href="diff-spring-mvc.html">
+            
+                    
+                    Spring MVC模式的差异
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.10" data-path="../question-and-answer/question_answer.html">
+            
+                <a href="../question-and-answer/question_answer.html">
+            
+                    
+                    常见问题
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.10.1" data-path="../question-and-answer/interface-compatibility.html">
+            
+                <a href="../question-and-answer/interface-compatibility.html">
+            
+                    
+                    微服务接口兼容常见问题
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+
+    
+
+    <li class="divider"></li>
+
+    <li>
+        <a href="https://www.gitbook.com" target="blank" class="gitbook-link">
+            Published with GitBook
+        </a>
+    </li>
+</ul>
+
+
+                </nav>
+            
+        
+    </div>
+
+    <div class="book-body">
+        
+            <div class="body-inner">
+                
+                    
+
+<div class="book-header" role="navigation">
+    
+
+    <!-- Title -->
+    <h1>
+        <i class="fa fa-circle-o-notch fa-spin"></i>
+        <a href=".." >JAVA应用方式开发步骤</a>
+    </h1>
+</div>
+
+
+
+
+                    <div class="page-wrapper" tabindex="-1" role="main">
+                        <div class="page-inner">
+                            
+<div id="book-search-results">
+    <div class="search-noresults">
+    
+                                <section class="normal markdown-section">
+                                
+                                <p>&#x4F7F;&#x7528;JAVA&#x65B9;&#x5F0F;&#x96C6;&#x6210;&#xFF0C;&#x4E3A;Spring Boot&#x5E94;&#x7528;&#x589E;&#x52A0;&#x4E86;&#x4E00;&#x4E2A;&#x9AD8;&#x6548;&#x7684;HTTP&#x670D;&#x52A1;&#x5668;&#x548C;REST&#x5F00;&#x53D1;&#x6846;&#x67B6;&#x3002;&#x8FD9;&#x79CD;&#x65B9;&#x5F0F;&#x96C6;&#x6210;&#x975E;&#x5E38;&#x7B80;&#x5355;&#x3002;&#x53EA;&#x9700;&#x8981;&#x5728;&#x9879;&#x76EE;&#x4E2D;&#x5F15;&#x5165;&#x76F8;&#x5173;&#x4F9D;&#x8D56;&#xFF0C;&#x5E76;&#x4E14;&#x4F7F;&#x7528;@EnableServiceComb&#x6807;&#x7B7E;&#x5373;&#x53EF;&#x3002;</p>
+<p>&#x672C;&#x9879;&#x76EE;<a href="https://github.com/huaweicse/servicecomb-java-chassis-samples/tree/master/spring-boot-simple" target="_blank">&#x4EE3;&#x7801;&#x793A;&#x4F8B;</a></p>
+<ul>
+<li>&#x5F15;&#x5165;&#x4F9D;&#x8D56;</li>
+</ul>
+<p>&#x4F9D;&#x8D56;&#x5173;&#x7CFB;&#x4E2D;&#x589E;&#x52A0;spring-boot-starter-provider&#xFF0C;&#x5373;&#x53EF;&#x5F15;&#x5165;java chassis&#x7684;&#x6838;&#x5FC3;&#x529F;&#x80FD;&#x3002;&#x5F15;&#x5165;hibernate-validator&#x7684;&#x76EE;&#x7684;&#x662F;spring boot&#x4F1A;&#x68C0;&#x6D4B;validation-api&#x7684;&#x5B9E;&#x73B0;&#x7C7B;&#xFF0C;&#x68C0;&#x6D4B;&#x4E0D;&#x5230;&#x4F1A;&#x65E0;&#x6CD5;&#x542F;&#x52A8;&#x3002;</p>
+<pre><code>&lt;dependencyManagement&gt;
+    &lt;dependencies&gt;
+      &lt;dependency&gt;
+        &lt;groupId&gt;org.apache.servicecomb&lt;/groupId&gt;
+        &lt;artifactId&gt;java-chassis-dependencies&lt;/artifactId&gt;
+        &lt;version&gt;1.0.0-m1&lt;/version&gt;
+        &lt;type&gt;pom&lt;/type&gt;
+        &lt;scope&gt;import&lt;/scope&gt;
+      &lt;/dependency&gt;
+    &lt;/dependencies&gt;
+&lt;/dependencyManagement&gt;
+
+&lt;dependencies&gt;
+    &lt;dependency&gt;
+        &lt;groupId&gt;org.apache.servicecomb&lt;/groupId&gt;
+        &lt;artifactId&gt;spring-boot-starter-provider&lt;/artifactId&gt;
+    &lt;/dependency&gt;
+    &lt;dependency&gt;
+        &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+        &lt;artifactId&gt;spring-boot-starter&lt;/artifactId&gt;
+    &lt;/dependency&gt;
+    &lt;dependency&gt;
+        &lt;groupId&gt;org.hibernate&lt;/groupId&gt;
+        &lt;artifactId&gt;hibernate-validator&lt;/artifactId&gt;
+    &lt;/dependency&gt;
+&lt;/dependencies&gt;
+</code></pre><ul>
+<li>&#x542F;&#x7528;java chassis&#x7684;&#x6838;&#x5FC3;&#x529F;&#x80FD;</li>
+</ul>
+<p>&#x5728;&#x542F;&#x52A8;&#x7C7B;&#x524D;&#x9762;&#x589E;&#x52A0;@EnableServiceComb&#x5373;&#x53EF;&#x3002;</p>
+<pre><code>@SpringBootApplication
+@EnableServiceComb
+public class WebsiteMain {
+    public static void main(final String[] args) {
+        SpringApplication.run(WebsiteMain.class, args);
+    }
+}
+</code></pre><p>&#x901A;&#x8FC7;&#x4EE5;&#x4E0A;&#x914D;&#x7F6E;&#xFF0C;&#x5C31;&#x53EF;&#x4EE5;&#x5B8C;&#x6574;&#x4F7F;&#x7528;java chassis&#x63D0;&#x4F9B;&#x7684;&#x6240;&#x6709;&#x529F;&#x80FD;&#xFF0C;&#x4F7F;&#x7528;java chassis&#x5F00;&#x53D1;REST&#x670D;&#x52A1;&#xFF0C;&#x5E76;&#x5F00;&#x542F;&#x5404;&#x79CD;&#x6CBB;&#x7406;&#x529F;&#x80FD;&#x3002;</p>
+<ul>
+<li>&#x914D;&#x7F6E;&#x5FAE;&#x670D;&#x52A1;</li>
+</ul>
+<p>&#x901A;&#x8FC7;microservice.yaml&#x6587;&#x4EF6;&#x53EF;&#x4EE5;&#x5B9A;&#x5236;&#x5FAE;&#x670D;&#x52A1;&#x7684;&#x4FE1;&#x606F;&#xFF0C;&#x5305;&#x62EC;&#x5E94;&#x7528;&#x540D;&#x79F0;&#x3001;&#x5FAE;&#x670D;&#x52A1;&#x540D;&#x79F0;&#x3001;&#x76D1;&#x542C;&#x7684;&#x5730;&#x5740;&#x548C;&#x7AEF;&#x53E3;&#x7B49;&#x3002;</p>
+<p>&#x96C6;&#x6210;java chassis&#x540E;&#xFF0C;&#x53EF;&#x4EE5;&#x901A;&#x8FC7;&#x5B83;&#x7684;&#x65B9;&#x5F0F;&#x5F00;&#x53D1;REST&#x63A5;&#x53E3;&#xFF1A;</p>
+<pre><code>@RestSchema(schemaId = &quot;hello&quot;)
+@RequestMapping(path = &quot;/&quot;)
+public class HelloService {
+    @RequestMapping(path = &quot;hello&quot;, method = RequestMethod.GET)
+    public String sayHello(@RequestParam(name=&quot;name&quot;) String name) {
+        return &quot;Hello &quot; + name;
+    }
+}
+</code></pre><p>&#x7136;&#x540E;&#x53EF;&#x4EE5;&#x901A;&#x8FC7;&#xFF1A;<a href="http://localhost:9093/hello?name=world&#x6765;&#x8BBF;&#x95EE;&#x3002;" target="_blank">http://localhost:9093/hello?name=world&#x6765;&#x8BBF;&#x95EE;&#x3002;</a></p>
+
+                                
+                                </section>
+                            
+    </div>
+    <div class="search-results">
+        <div class="has-results">
+            
+            <h1 class="search-results-title"><span class='search-results-count'></span> results matching "<span class='search-query'></span>"</h1>
+            <ul class="search-results-list"></ul>
+            
+        </div>
+        <div class="no-results">
+            
+            <h1 class="search-results-title">No results matching "<span class='search-query'></span>"</h1>
+            
+        </div>
+    </div>
+</div>
+
+                        </div>
+                    </div>
+                
+            </div>
+
+            
+                
+                <a href="components-for-spring-boot.html" class="navigation navigation-prev " aria-label="Previous page: 提供的组件说明">
+                    <i class="fa fa-angle-left"></i>
+                </a>
+                
+                
+                <a href="web-application.html" class="navigation navigation-next " aria-label="Next page: Web开发方式开发步骤">
+                    <i class="fa fa-angle-right"></i>
+                </a>
+                
+            
+        
+    </div>
+
+    <script>
+        var gitbook = gitbook || [];
+        gitbook.push(function() {
+            gitbook.page.hasChanged({"page":{"title":"JAVA应用方式开发步骤","level":"1.9.2","depth":2,"next":{"title":"Web开发方式开发步骤","level":"1.9.3","depth":2,"path":"using-java-chassis-in-spring-boot/web-application.md","ref":"using-java-chassis-in-spring-boot/web-application.md","articles":[]},"previous":{"title":"提供的组件说明","level":"1.9.1","depth":2,"path":"using-java-chassis-in-spring-boot/components-for-spring-boot.md","ref":"using-java-chassis-in-spring-boot/components-for-spring-boot.md","articles":[]},"dir":"ltr"},"config":{"plugins":[],"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"pluginsConfig":{"highlight":{},"search":{},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"sharing":{"facebook":true,"twitter":true,"google":false,"weibo":false,"instapaper":false,"vk":false,"all":["facebook","google","twitter","weibo","instapaper"]},"fontsettings":{"theme":"white","family":"sans","size":2},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false}},"theme":"default","pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Arial","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56}},"structure":{"langs":"LANGS.md","readme":"introduction.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"variables":{},"language":"zh_CN","gitbook":"*"},"file":{"path":"using-java-chassis-in-spring-boot/java-application.md","mtime":"2018-05-09T09:33:39.159Z","type":"markdown"},"gitbook":{"version":"3.2.3","time":"2018-05-16T07:28:04.840Z"},"basePath":"..","book":{"language":"zh_CN"}});
+        });
+    </script>
+</div>
+
+        
+    <script src="../../gitbook/gitbook.js"></script>
+    <script src="../../gitbook/theme.js"></script>
+    
+        
+        <script src="../../gitbook/gitbook-plugin-search/search-engine.js"></script>
+        
+    
+        
+        <script src="../../gitbook/gitbook-plugin-search/search.js"></script>
+        
+    
+        
+        <script src="../../gitbook/gitbook-plugin-lunr/lunr.min.js"></script>
+        
+    
+        
+        <script src="../../gitbook/gitbook-plugin-lunr/search-lunr.js"></script>
+        
+    
+        
+        <script src="../../gitbook/gitbook-plugin-sharing/buttons.js"></script>
+        
+    
+        
+        <script src="../../gitbook/gitbook-plugin-fontsettings/fontsettings.js"></script>
+        
+    
+
+    </body>
+</html>
+
