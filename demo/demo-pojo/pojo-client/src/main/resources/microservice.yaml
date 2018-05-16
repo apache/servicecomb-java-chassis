@@ -27,7 +27,7 @@ servicecomb:
         healthCheck:
           interval: 2
         watch: false
-        remove:
+        empty:
           protection: true
   handler:
     chain:
