@@ -29,13 +29,12 @@ import org.apache.servicecomb.common.rest.codec.RestCodec;
 import org.apache.servicecomb.common.rest.definition.RestOperationMeta;
 import org.apache.servicecomb.common.rest.locator.OperationLocator;
 import org.apache.servicecomb.common.rest.locator.ServicePathManager;
+import org.apache.servicecomb.core.CseContext;
 import org.apache.servicecomb.core.Invocation;
-import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.core.definition.MicroserviceMeta;
 import org.apache.servicecomb.core.invocation.InvocationFactory;
 import org.apache.servicecomb.core.provider.consumer.InvokerUtils;
 import org.apache.servicecomb.core.provider.consumer.ReferenceConfig;
-import org.apache.servicecomb.core.provider.consumer.ReferenceConfigUtils;
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.apache.servicecomb.swagger.invocation.context.InvocationContext;
 import org.apache.servicecomb.swagger.invocation.exception.ExceptionFactory;
@@ -147,12 +146,11 @@ public class CseClientHttpRequest implements ClientHttpRequest {
     return this.invoke(args);
   }
 
-  protected RequestMeta createRequestMeta(String httpMetod, URI uri) {
+  protected RequestMeta createRequestMeta(String httpMethod, URI uri) {
     String microserviceName = uri.getAuthority();
 
-    SCBEngine.getInstance().assertIsStopping();
-
-    ReferenceConfig referenceConfig = ReferenceConfigUtils.getForInvoke(microserviceName);
+    ReferenceConfig referenceConfig = CseContext.getInstance().getConsumerProviderManager()
+        .getReferenceConfig(microserviceName);
 
     MicroserviceMeta microserviceMeta = referenceConfig.getMicroserviceMeta();
     ServicePathManager servicePathManager = ServicePathManager.getServicePathManager(microserviceMeta);
@@ -162,7 +160,7 @@ public class CseClientHttpRequest implements ClientHttpRequest {
           microserviceMeta.getName()));
     }
 
-    OperationLocator locator = servicePathManager.consumerLocateOperation(path, httpMetod);
+    OperationLocator locator = servicePathManager.consumerLocateOperation(path, httpMethod);
     RestOperationMeta swaggerRestOperation = locator.getOperation();
 
     Map<String, String> pathParams = locator.getPathVarMap();

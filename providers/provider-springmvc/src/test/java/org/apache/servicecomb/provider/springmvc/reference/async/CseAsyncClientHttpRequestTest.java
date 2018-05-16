@@ -18,13 +18,12 @@
 package org.apache.servicecomb.provider.springmvc.reference.async;
 
 import java.net.URI;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.concurrent.CompletableFuture;
 
 import javax.xml.ws.Holder;
 
 import org.apache.servicecomb.common.rest.RestEngineSchemaListener;
-import org.apache.servicecomb.core.BootListener;
 import org.apache.servicecomb.core.CseContext;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.SCBEngine;
@@ -70,21 +69,6 @@ public class CseAsyncClientHttpRequestTest {
   }
 
   @Test
-  public void testNotReady() {
-    String exceptionMessage = "System is not ready for remote calls. "
-        + "When beans are making remote calls in initialization, it's better to "
-        + "implement " + BootListener.class.getName() + " and do it after EventType.AFTER_REGISTRY.";
-    SCBEngine.getInstance().setStatus(SCBStatus.DOWN);
-    CseAsyncClientHttpRequest clientHttpRequest = new CseAsyncClientHttpRequest(URI.create("cse://app:test/"),
-        HttpMethod.POST);
-    try {
-      clientHttpRequest.executeAsync();
-    } catch (IllegalStateException e) {
-      Assert.assertEquals(exceptionMessage, e.getMessage());
-    }
-  }
-
-  @Test
   public void testNormal() {
     ServiceRegistry serviceRegistry = ServiceRegistryFactory.createLocal();
     serviceRegistry.init();
@@ -93,7 +77,7 @@ public class CseAsyncClientHttpRequestTest {
 
     CseContext.getInstance()
         .getSchemaListenerManager()
-        .setSchemaListenerList(Arrays.asList(new RestEngineSchemaListener()));
+        .setSchemaListenerList(Collections.singletonList(new RestEngineSchemaListener()));
 
     SchemaMeta schemaMeta = meta
         .getOrCreateSchemaMeta(CseAsyncClientHttpRequestTest.CseAsyncClientHttpRequestTestSchema.class);
@@ -127,7 +111,7 @@ public class CseAsyncClientHttpRequestTest {
     UnitTestMeta meta = new UnitTestMeta();
     CseContext.getInstance()
         .getSchemaListenerManager()
-        .setSchemaListenerList(Arrays.asList(new RestEngineSchemaListener()));
+        .setSchemaListenerList(Collections.singletonList(new RestEngineSchemaListener()));
     SchemaMeta schemaMeta = meta
         .getOrCreateSchemaMeta(CseAsyncClientHttpRequestTest.CseAsyncClientHttpRequestTestSchema.class);
     CseContext.getInstance().getSchemaListenerManager().notifySchemaListener(schemaMeta);

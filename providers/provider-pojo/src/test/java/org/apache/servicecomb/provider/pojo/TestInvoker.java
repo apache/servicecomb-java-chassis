@@ -19,7 +19,6 @@ package org.apache.servicecomb.provider.pojo;
 
 import java.util.concurrent.CompletableFuture;
 
-import org.apache.servicecomb.core.BootListener;
 import org.apache.servicecomb.core.CseContext;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.SCBEngine;
@@ -63,24 +62,6 @@ public class TestInvoker {
   @After
   public void teardown() {
     SCBEngine.getInstance().setStatus(SCBStatus.DOWN);
-  }
-
-  @Test
-  public void testNotReady() throws Throwable {
-    String exceptionMessage = "System is not ready for remote calls. "
-        + "When beans are making remote calls in initialization, it's better to "
-        + "implement " + BootListener.class.getName() + " and do it after EventType.AFTER_REGISTRY.";
-
-    SCBEngine.getInstance().setStatus(SCBStatus.DOWN);
-
-    Invoker invoker = new Invoker("test", "schemaId", IPerson.class);
-
-    try {
-      invoker.invoke(null, null, null);
-      Assert.fail("must throw exception");
-    } catch (IllegalStateException e) {
-      Assert.assertEquals(exceptionMessage, e.getMessage());
-    }
   }
 
   @Test

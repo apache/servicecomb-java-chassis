@@ -17,7 +17,10 @@
 
 package org.apache.servicecomb.core.provider.consumer;
 
+import org.apache.servicecomb.core.CseContext;
 import org.apache.servicecomb.core.Invocation;
+import org.apache.servicecomb.core.SCBEngine;
+import org.apache.servicecomb.core.SCBStatus;
 import org.apache.servicecomb.core.definition.SchemaMeta;
 import org.apache.servicecomb.core.invocation.InvocationFactory;
 import org.apache.servicecomb.swagger.invocation.AsyncResponse;
@@ -32,31 +35,31 @@ public final class InvokerUtils {
   private static final Logger LOGGER = LoggerFactory.getLogger(InvokerUtils.class);
 
   public static Object syncInvoke(String microserviceName, String schemaId, String operationName, Object[] args) {
-    ReferenceConfig referenceConfig = ReferenceConfigUtils.getForInvoke(microserviceName);
-    SchemaMeta schemaMeta = referenceConfig.getMicroserviceMeta().ensureFindSchemaMeta(schemaId);
-    Invocation invocation = InvocationFactory.forConsumer(referenceConfig, schemaMeta, operationName, args);
-    return syncInvoke(invocation);
+    validCanInvoke();
+    ReferenceConfig referenceConfig = CseContext.getInstance().getConsumerProviderManager()
+        .getReferenceConfig(microserviceName);
+    return syncInvoke(generateInvocation(schemaId, operationName, args, referenceConfig));
   }
 
   public static Object syncInvoke(String microserviceName, String microserviceVersion, String transport,
       String schemaId, String operationName, Object[] args) {
-    ReferenceConfig referenceConfig =
-        ReferenceConfigUtils.getForInvoke(microserviceName, microserviceVersion, transport);
-    SchemaMeta schemaMeta = referenceConfig.getMicroserviceMeta().ensureFindSchemaMeta(schemaId);
-    Invocation invocation = InvocationFactory.forConsumer(referenceConfig, schemaMeta, operationName, args);
-    return syncInvoke(invocation);
+    validCanInvoke();
+    ReferenceConfig referenceConfig = CseContext.getInstance().getConsumerProviderManager()
+        .createReferenceConfig(microserviceName, microserviceVersion, transport);
+    return syncInvoke(generateInvocation(schemaId, operationName, args, referenceConfig));
   }
 
   public static Object syncInvoke(Invocation invocation) throws InvocationException {
+    validCanInvoke();
     Response response = innerSyncInvoke(invocation);
     if (response.isSuccessed()) {
       return response.getResult();
     }
-
     throw ExceptionFactory.convertConsumerException(response.getResult());
   }
 
   public static Response innerSyncInvoke(Invocation invocation) {
+    validCanInvoke();
     try {
       invocation.onStart();
       SyncResponseExecutor respExecutor = new SyncResponseExecutor();
@@ -79,6 +82,7 @@ public final class InvokerUtils {
   }
 
   public static void reactiveInvoke(Invocation invocation, AsyncResponse asyncResp) {
+    validCanInvoke();
     try {
       invocation.onStart();
       invocation.setSync(false);
@@ -104,8 +108,23 @@ public final class InvokerUtils {
     }
   }
 
+  private static Invocation generateInvocation(String schemaId, String operationName, Object[] args,
+      ReferenceConfig referenceConfig) {
+    SchemaMeta schemaMeta = referenceConfig.getMicroserviceMeta().ensureFindSchemaMeta(schemaId);
+    return InvocationFactory.forConsumer(referenceConfig, schemaMeta, operationName, args);
+  }
+
+  private static void validCanInvoke() {
+    if (!SCBStatus.UP.equals(SCBEngine.getInstance().getStatus())) {
+      throw new IllegalStateException(
+          "System is starting and not ready for remote calls or shutting down in progress, STATUS = " + String
+              .valueOf(SCBEngine.getInstance().getStatus()));
+    }
+  }
+
   @Deprecated
   public static Object invoke(Invocation invocation) {
+    validCanInvoke();
     return syncInvoke(invocation);
   }
 }

@@ -19,7 +19,6 @@ package org.apache.servicecomb.core.provider.consumer;
 
 import javax.xml.ws.Holder;
 
-import org.apache.servicecomb.core.BootListener;
 import org.apache.servicecomb.core.CseContext;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.SCBEngine;
@@ -70,6 +69,9 @@ public class TestInvokerUtils {
   @Test
   public void testReactiveInvoke(@Mocked Invocation invocation, @Mocked InvocationContext parentContext,
       @Mocked Response response) {
+
+    SCBEngine.getInstance().setStatus(SCBStatus.UP);
+
     new MockUp<Invocation>(invocation) {
       @Mock
       InvocationContext getParentContext() {
@@ -83,9 +85,7 @@ public class TestInvokerUtils {
     };
 
     Holder<InvocationContext> holder = new Holder<>();
-    InvokerUtils.reactiveInvoke(invocation, ar -> {
-      holder.value = ContextUtils.getInvocationContext();
-    });
+    InvokerUtils.reactiveInvoke(invocation, ar -> holder.value = ContextUtils.getInvocationContext());
 
     Assert.assertNull(ContextUtils.getInvocationContext());
     Assert.assertSame(parentContext, holder.value);
@@ -94,6 +94,9 @@ public class TestInvokerUtils {
   @SuppressWarnings("deprecation")
   @Test
   public void invoke() {
+
+    SCBEngine.getInstance().setStatus(SCBStatus.UP);
+
     new MockUp<InvokerUtils>() {
       @Mock
       Object syncInvoke(Invocation invocation) {
@@ -105,33 +108,68 @@ public class TestInvokerUtils {
   }
 
   @Test
-  public void tetSyncInvokeNotReady() {
+  public void testSyncInvokeNotReady(@Mocked Invocation invocation) {
 
     SCBEngine.getInstance().setStatus(SCBStatus.DOWN);
+
+    try {
+      InvokerUtils.syncInvoke(invocation);
+      Assert.fail("must throw exception");
+    } catch (IllegalStateException e) {
+      Assert
+          .assertEquals("System is starting and not ready for remote calls or shutting down in progress, STATUS = DOWN",
+              e.getMessage());
+    }
 
     try {
       InvokerUtils.syncInvoke("ms", "schemaId", "opName", null);
       Assert.fail("must throw exception");
     } catch (IllegalStateException e) {
-      Assert.assertEquals("System is not ready for remote calls. "
-              + "When beans are making remote calls in initialization, it's better to "
-              + "implement " + BootListener.class.getName() + " and do it after EventType.AFTER_REGISTRY.",
-          e.getMessage());
+      Assert
+          .assertEquals("System is starting and not ready for remote calls or shutting down in progress, STATUS = DOWN",
+              e.getMessage());
     }
 
     try {
       InvokerUtils.syncInvoke("ms", "latest", "rest", "schemaId", "opName", null);
       Assert.fail("must throw exception");
     } catch (IllegalStateException e) {
-      Assert.assertEquals("System is not ready for remote calls. "
-              + "When beans are making remote calls in initialization, it's better to "
-              + "implement " + BootListener.class.getName() + " and do it after EventType.AFTER_REGISTRY.",
-          e.getMessage());
+      Assert
+          .assertEquals("System is starting and not ready for remote calls or shutting down in progress, STATUS = DOWN",
+              e.getMessage());
     }
   }
 
   @Test
-  public void tetSyncInvokeReady(@Injectable ConsumerProviderManager consumerProviderManager,
+  public void testReactiveInvokeNotReady(@Mocked Invocation invocation, @Mocked InvocationContext parentContext,
+      @Mocked Response response) {
+
+    SCBEngine.getInstance().setStatus(SCBStatus.DOWN);
+
+    new MockUp<Invocation>(invocation) {
+      @Mock
+      InvocationContext getParentContext() {
+        return parentContext;
+      }
+
+      @Mock
+      void next(AsyncResponse asyncResp) {
+        asyncResp.handle(response);
+      }
+    };
+
+    Holder<InvocationContext> holder = new Holder<>();
+    try {
+      InvokerUtils.reactiveInvoke(invocation, ar -> holder.value = ContextUtils.getInvocationContext());
+    } catch (IllegalStateException e) {
+      Assert
+          .assertEquals("System is starting and not ready for remote calls or shutting down in progress, STATUS = DOWN",
+              e.getMessage());
+    }
+  }
+
+  @Test
+  public void testSyncInvokeReady(@Injectable ConsumerProviderManager consumerProviderManager,
       @Injectable Invocation invocation) {
 
     SCBEngine.getInstance().setStatus(SCBStatus.UP);
