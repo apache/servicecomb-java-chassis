@@ -224,11 +224,11 @@ public final class ServiceRegistryConfig {
     return times < 0 ? DEFAULT_CHECK_TIMES : times;
   }
 
-  public boolean isInstanceRemoveProtectionEnabled() {
+  public boolean isEmptyInstanceProtectionEnabled() {
     DynamicBooleanProperty property =
         DynamicPropertyFactory.getInstance()
-            .getBooleanProperty("servicecomb.service.registry.instance.remove.protection",
-                false);
+            .getBooleanProperty("servicecomb.service.registry.instance.empty.protection",
+                true);
     return property.get();
   }
 

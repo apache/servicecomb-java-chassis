@@ -28,7 +28,6 @@ import org.apache.servicecomb.serviceregistry.RegistryUtils;
 import org.apache.servicecomb.serviceregistry.api.Const;
 import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
 import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceInstanceStatus;
-import org.apache.servicecomb.serviceregistry.api.registry.ServiceCenterConfig;
 import org.apache.servicecomb.serviceregistry.api.response.MicroserviceInstanceChangedEvent;
 import org.apache.servicecomb.serviceregistry.client.http.MicroserviceInstances;
 import org.apache.servicecomb.serviceregistry.config.ServiceRegistryConfig;
@@ -175,7 +174,7 @@ public class MicroserviceVersions {
           return MicroserviceInstanceStatus.UP.equals(instance.getStatus());
         })
         .collect(Collectors.toList());
-    if (inUseInstances != null && ServiceRegistryConfig.INSTANCE.isInstanceRemoveProtectionEnabled()) {
+    if (upInstances.isEmpty() && inUseInstances != null && ServiceRegistryConfig.INSTANCE.isEmptyInstanceProtectionEnabled()) {
       MicroserviceInstancePing ping = SPIServiceUtils.getPriorityHighestService(MicroserviceInstancePing.class);
       inUseInstances.stream()
           .forEach(instance -> {
