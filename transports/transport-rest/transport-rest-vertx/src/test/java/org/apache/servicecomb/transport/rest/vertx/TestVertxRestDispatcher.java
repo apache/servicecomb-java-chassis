@@ -50,6 +50,7 @@ import io.vertx.core.http.HttpMethod;
 import io.vertx.core.http.HttpServerRequest;
 import io.vertx.core.http.HttpServerResponse;
 import io.vertx.core.impl.VertxImpl;
+import io.vertx.core.json.JsonObject;
 import io.vertx.core.net.SocketAddress;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.RoutingContext;
@@ -195,7 +196,7 @@ public class TestVertxRestDispatcher {
     Assert.assertThat(response.responseStatusCode, Matchers.is(Status.REQUEST_ENTITY_TOO_LARGE.getStatusCode()));
     Assert.assertThat(response.responseStatusMessage, Matchers.is(Status.REQUEST_ENTITY_TOO_LARGE.getReasonPhrase()));
     Assert.assertThat(response.responseChunk,
-        Matchers.is("\"" + Status.REQUEST_ENTITY_TOO_LARGE.getReasonPhrase() + "\""));
+        Matchers.is("{\"message\":\"" + Status.REQUEST_ENTITY_TOO_LARGE.getReasonPhrase() + "\"}"));
     Assert.assertTrue(response.responseEnded);
   }
 
@@ -220,7 +221,7 @@ public class TestVertxRestDispatcher {
     Assert.assertThat(response.responseHeader, Matchers.hasEntry(HttpHeaders.CONTENT_TYPE, MediaType.WILDCARD));
     Assert.assertThat(response.responseStatusCode, Matchers.is(Status.INTERNAL_SERVER_ERROR.getStatusCode()));
     Assert.assertThat(response.responseChunk,
-        Matchers.is("\"" + exceptionMessage + "\""));
+        Matchers.is("{\"message\":\"" + exceptionMessage + "\"}"));
     Assert.assertTrue(response.responseEnded);
   }
 
@@ -269,7 +270,7 @@ public class TestVertxRestDispatcher {
     Assert.assertThat(response.responseStatusCode, Matchers.is(Status.INTERNAL_SERVER_ERROR.getStatusCode()));
     Assert.assertThat(response.responseStatusMessage, Matchers.is(Status.INTERNAL_SERVER_ERROR.getReasonPhrase()));
     Assert.assertThat(response.responseChunk,
-        Matchers.is("\"" + Status.INTERNAL_SERVER_ERROR.getReasonPhrase() + "\""));
+        Matchers.is("{\"message\":\"" + Status.INTERNAL_SERVER_ERROR.getReasonPhrase() + "\"}"));
     Assert.assertTrue(response.responseEnded);
   }
 
@@ -300,6 +301,40 @@ public class TestVertxRestDispatcher {
 
     Assert.assertEquals(RestProducerInvocation.class, map.get(RestConst.REST_PRODUCER_INVOCATION).getClass());
     Assert.assertTrue(invoked);
+  }
+
+  @Test
+  public void testWrapResponseBody() {
+    VertxRestDispatcher vertxRestDispatcher = new VertxRestDispatcher();
+    String message = "abcd";
+    String bodyString = vertxRestDispatcher.wrapResponseBody(message);
+    Assert.assertNotNull(bodyString);
+    Assert.assertEquals("{\"message\":\"abcd\"}", bodyString);
+
+    message = "\"abcd\"";
+    bodyString = vertxRestDispatcher.wrapResponseBody(message);
+    Assert.assertNotNull(bodyString);
+    Assert.assertEquals("{\"message\":\"\\\"abcd\\\"\"}", bodyString);
+
+    message = ".01ab\"!@#$%^&*()'\\cd";
+    bodyString = vertxRestDispatcher.wrapResponseBody(message);
+    Assert.assertNotNull(bodyString);
+    Assert.assertEquals("{\"message\":\".01ab\\\"!@#$%^&*()'\\\\cd\"}", bodyString);
+
+    message = new JsonObject().put("key", new JsonObject().put("k2", "value")).toString();
+    bodyString = vertxRestDispatcher.wrapResponseBody(message);
+    Assert.assertNotNull(bodyString);
+    Assert.assertEquals("{\"key\":{\"k2\":\"value\"}}", bodyString);
+
+    message = "ab\"23\n@!#cd";
+    bodyString = vertxRestDispatcher.wrapResponseBody(message);
+    Assert.assertNotNull(bodyString);
+    Assert.assertEquals("{\"message\":\"ab\\\"23\\n@!#cd\"}", bodyString);
+
+    message = "ab\"23\r\n@!#cd";
+    bodyString = vertxRestDispatcher.wrapResponseBody(message);
+    Assert.assertNotNull(bodyString);
+    Assert.assertEquals("{\"message\":\"ab\\\"23\\r\\n@!#cd\"}", bodyString);
   }
 }
 

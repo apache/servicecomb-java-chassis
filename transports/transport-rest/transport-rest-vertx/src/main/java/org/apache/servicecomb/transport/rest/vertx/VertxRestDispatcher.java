@@ -37,6 +37,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import io.netty.handler.codec.http.multipart.HttpPostRequestDecoder.ErrorDataDecoderException;
+import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.RoutingContext;
 import io.vertx.ext.web.handler.CookieHandler;
@@ -132,14 +133,35 @@ public class VertxRestDispatcher extends AbstractVertxHttpDispatcher {
   }
 
   /**
-   * Consumer will treat the response body as json by default, so it's necessary to wrap response body with ""
+   * Consumer will treat the response body as json by default, so it's necessary to wrap response body as Json string
    * to avoid deserialization error.
    *
    * @param message response body
-   * @return response body wrapped with ""
+   * @return response body wrapped as Json string
    */
-  private String wrapResponseBody(String message) {
-    return "\"" + message + "\"";
+  String wrapResponseBody(String message) {
+    if (isValidJson(message)) {
+      return message;
+    }
+
+    JsonObject jsonObject = new JsonObject();
+    jsonObject.put("message", message);
+
+    return jsonObject.toString();
+  }
+
+  /**
+   * Check if the message is a valid Json string.
+   * @param message the message to be checked.
+   * @return true if message is a valid Json string, otherwise false.
+   */
+  private boolean isValidJson(String message) {
+    try {
+      new JsonObject(message);
+    } catch (Exception ignored) {
+      return false;
+    }
+    return true;
   }
 
   /**
