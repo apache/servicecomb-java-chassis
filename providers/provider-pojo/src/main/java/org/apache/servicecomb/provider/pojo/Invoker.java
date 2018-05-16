@@ -24,13 +24,11 @@ import java.util.concurrent.CompletableFuture;
 
 import org.apache.servicecomb.core.CseContext;
 import org.apache.servicecomb.core.Invocation;
-import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.core.definition.MicroserviceMeta;
 import org.apache.servicecomb.core.definition.SchemaMeta;
 import org.apache.servicecomb.core.invocation.InvocationFactory;
 import org.apache.servicecomb.core.provider.consumer.InvokerUtils;
 import org.apache.servicecomb.core.provider.consumer.ReferenceConfig;
-import org.apache.servicecomb.core.provider.consumer.ReferenceConfigUtils;
 import org.apache.servicecomb.swagger.engine.SwaggerConsumer;
 import org.apache.servicecomb.swagger.engine.SwaggerConsumerOperation;
 import org.apache.servicecomb.swagger.invocation.Response;
@@ -65,7 +63,7 @@ public class Invoker implements InvocationHandler {
   }
 
   protected void prepare() {
-    referenceConfig = ReferenceConfigUtils.getForInvoke(microserviceName);
+    referenceConfig = CseContext.getInstance().getConsumerProviderManager().getReferenceConfig(microserviceName);
     MicroserviceMeta microserviceMeta = referenceConfig.getMicroserviceMeta();
 
     if (StringUtils.isEmpty(schemaId)) {
@@ -94,12 +92,9 @@ public class Invoker implements InvocationHandler {
       }
     }
 
-    SCBEngine.getInstance().assertIsStopping();
-
     SwaggerConsumerOperation consumerOperation = swaggerConsumer.findOperation(method.getName());
-    Invocation invocation =
-        InvocationFactory
-            .forConsumer(referenceConfig, schemaMeta, consumerOperation.getSwaggerMethod().getName(), null);
+    Invocation invocation = InvocationFactory
+        .forConsumer(referenceConfig, schemaMeta, consumerOperation.getSwaggerMethod().getName(), null);
 
     consumerOperation.getArgumentsMapper().toInvocation(args, invocation);
 

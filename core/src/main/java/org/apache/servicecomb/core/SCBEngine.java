@@ -17,7 +17,7 @@
 package org.apache.servicecomb.core;
 
 import java.util.Collection;
-import java.util.concurrent.Semaphore;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 
 import org.apache.servicecomb.core.BootListener.BootEvent;
@@ -60,12 +60,14 @@ public class SCBEngine {
 
   private final AtomicLong invocationFinishedCounter = new AtomicLong();
 
-  private final Semaphore allInvocationFinished = new Semaphore(1);
-
   private volatile SCBStatus status = SCBStatus.DOWN;
 
   public void setStatus(SCBStatus status) {
     this.status = status;
+  }
+
+  public SCBStatus getStatus() {
+    return status;
   }
 
   private EventBus eventBus = EventManager.getEventBus();
@@ -123,7 +125,7 @@ public class SCBEngine {
     for (BootListener listener : bootListenerList) {
       try {
         listener.onBootEvent(event);
-        LOGGER.error("BootListener {} succeed to process {}.", listener.getClass().getName(), eventType);
+        LOGGER.info("BootListener {} succeed to process {}.", listener.getClass().getName(), eventType);
       } catch (Throwable e) {
         LOGGER.error("BootListener {} failed to process {}.", listener.getClass().getName(), eventType, e);
       }
@@ -166,13 +168,10 @@ public class SCBEngine {
   @Subscribe
   public void onInvocationFinish(InvocationFinishEvent event) {
     invocationFinishedCounter.incrementAndGet();
-    if (validIsStopping()) {
-      validAllInvocationFinished();
-    }
   }
 
   public synchronized void init() {
-    if (validIsDown()) {
+    if (SCBStatus.DOWN.equals(status)) {
       try {
         doInit();
         status = SCBStatus.UP;
@@ -189,8 +188,6 @@ public class SCBEngine {
     status = SCBStatus.STARTING;
 
     eventBus.register(this);
-
-    allInvocationFinished.acquire();
 
     AbstractEndpointsCache.init(RegistryUtils.getInstanceCacheManager(), transportManager);
 
@@ -226,7 +223,7 @@ public class SCBEngine {
    * even some step throw exception, must catch it and go on, otherwise shutdown process will be broken.
    */
   public synchronized void uninit() {
-    if (validIsUp()) {
+    if (SCBStatus.UP.equals(status)) {
       LOGGER.info("ServiceComb is closing now...");
       try {
         doUninit();
@@ -252,7 +249,6 @@ public class SCBEngine {
     //Step 3: wait all invocation finished
     // forbit create new consumer invocation
     validAllInvocationFinished();
-    allInvocationFinished.acquire();
 
     //Step 4: Stop vertx to prevent blocking exit
     VertxUtils.blockCloseVertxByName("config-center");
@@ -263,43 +259,14 @@ public class SCBEngine {
 
     //Step 6: Clean flags for re-init
     eventBus.unregister(this);
-    allInvocationFinished.release();
   }
 
-  private void validAllInvocationFinished() {
-    LOGGER.info("valid for all invocation finished, request count: {}, response count: {}.",
-        invocationStartedCounter.get(),
-        invocationFinishedCounter.get());
-    if (invocationFinishedCounter.get() == invocationStartedCounter.get()) {
-      allInvocationFinished.release();
+  private void validAllInvocationFinished() throws InterruptedException {
+    while (true) {
+      if (invocationFinishedCounter.get() == invocationStartedCounter.get()) {
+        return;
+      }
+      TimeUnit.SECONDS.sleep(1);
     }
-  }
-
-  public void assertIsStopping() {
-    if (validIsStopping()) {
-      throw new IllegalStateException(
-          "shutting down in progress, it's better to implement " + BootListener.class.getName()
-              + " and stop ... in EventType.BEFORE_CLOSE.");
-    }
-  }
-
-  private boolean validIsStopping() {
-    return SCBStatus.STOPPING.equals(status);
-  }
-
-  public void assertIsUp() {
-    if (!SCBStatus.UP.equals(status)) {
-      throw new IllegalStateException("System is not ready for remote calls. "
-          + "When beans are making remote calls in initialization, it's better to "
-          + "implement " + BootListener.class.getName() + " and do it after EventType.AFTER_REGISTRY.");
-    }
-  }
-
-  private boolean validIsUp() {
-    return SCBStatus.UP.equals(status);
-  }
-
-  private boolean validIsDown() {
-    return SCBStatus.DOWN.equals(status);
   }
 }
