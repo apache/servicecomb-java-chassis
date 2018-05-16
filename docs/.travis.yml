@@ -1,0 +1,15 @@
+sudo: required
+language: java
+services:
+- docker
+cache:
+  directories:
+  - "$HOME/.m2"
+install: true
+jobs:
+  include:
+  - stage: Compilation and Installation
+    script: scripts/travis.sh install
+  - stage: Deploy on
+    script: if [ "$TRAVIS_PULL_REQUEST" == "false" ]; then bash scripts/travis.sh deploy; 
+      fi
