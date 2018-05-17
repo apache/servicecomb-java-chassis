@@ -24,7 +24,6 @@ import org.apache.commons.configuration.AbstractConfiguration;
 import org.apache.servicecomb.config.ConfigUtil;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.foundation.common.event.AlarmEvent;
-import org.apache.servicecomb.foundation.common.event.EventManager;
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.apache.servicecomb.loadbalance.CseServer;
 import org.junit.After;
@@ -36,16 +35,13 @@ import org.junit.Test;
 import org.mockito.Mockito;
 
 import com.google.common.eventbus.Subscribe;
-import com.netflix.config.ConfigurationManager;
 import com.netflix.config.DynamicPropertyFactory;
 import com.netflix.loadbalancer.LoadBalancerStats;
 import com.netflix.loadbalancer.Server;
 
-import mockit.Deencapsulation;
-
 public class TestIsolationServerListFilter {
 
-  IsolationServerListFilter IsolationServerListFilter = null;
+  IsolationServerListFilter isolationServerListFilter = null;
 
   LoadBalancerStats loadBalancerStats = null;
 
@@ -60,15 +56,13 @@ public class TestIsolationServerListFilter {
 
   @AfterClass
   public static void classTeardown() {
-    Deencapsulation.setField(ConfigurationManager.class, "instance", null);
-    Deencapsulation.setField(ConfigurationManager.class, "customConfigurationInstalled", false);
-    Deencapsulation.setField(DynamicPropertyFactory.class, "config", null);
     ArchaiusUtils.resetConfig();
   }
 
+  @SuppressWarnings("static-access")
   @Before
   public void setUp() throws Exception {
-    IsolationServerListFilter = new IsolationServerListFilter();
+    isolationServerListFilter = new IsolationServerListFilter();
     loadBalancerStats = new LoadBalancerStats("loadBalancer");
     ArchaiusUtils.setProperty("cse.loadbalance.isolation.enabled",
         "true");
@@ -82,12 +76,14 @@ public class TestIsolationServerListFilter {
         taskList.add(isolationServerEvent);
       }
     };
-    EventManager.register(receiveEvent);
+    isolationServerListFilter.eventManager.register(receiveEvent);
   }
 
+  @SuppressWarnings("static-access")
   @After
   public void tearDown() throws Exception {
-    IsolationServerListFilter = null;
+    isolationServerListFilter.eventManager.unregister(receiveEvent);
+    isolationServerListFilter = null;
     loadBalancerStats = null;
 
     AbstractConfiguration configuration =
@@ -97,16 +93,16 @@ public class TestIsolationServerListFilter {
 
   @Test
   public void testSetLoadBalancerStats() {
-    IsolationServerListFilter.setLoadBalancerStats(loadBalancerStats);
-    Assert.assertNotNull(IsolationServerListFilter.getLoadBalancerStats());
-    Assert.assertEquals(loadBalancerStats, IsolationServerListFilter.getLoadBalancerStats());
+    isolationServerListFilter.setLoadBalancerStats(loadBalancerStats);
+    Assert.assertNotNull(isolationServerListFilter.getLoadBalancerStats());
+    Assert.assertEquals(loadBalancerStats, isolationServerListFilter.getLoadBalancerStats());
   }
 
   @Test
   public void testSetMicroserviceName() {
-    IsolationServerListFilter.setMicroserviceName("microserviceName");
-    Assert.assertNotNull(IsolationServerListFilter.getMicroserviceName());
-    Assert.assertEquals("microserviceName", IsolationServerListFilter.getMicroserviceName());
+    isolationServerListFilter.setMicroserviceName("microserviceName");
+    Assert.assertNotNull(isolationServerListFilter.getMicroserviceName());
+    Assert.assertEquals("microserviceName", isolationServerListFilter.getMicroserviceName());
   }
 
   @Test
@@ -118,16 +114,16 @@ public class TestIsolationServerListFilter {
 
     List<Server> serverList = new ArrayList<>();
     serverList.add(testServer);
-    IsolationServerListFilter.setLoadBalancerStats(loadBalancerStats);
-    IsolationServerListFilter.setInvocation(invocation);
-    List<Server> returnedServerList = IsolationServerListFilter.getFilteredListOfServers(serverList);
+    isolationServerListFilter.setLoadBalancerStats(loadBalancerStats);
+    isolationServerListFilter.setInvocation(invocation);
+    List<Server> returnedServerList = isolationServerListFilter.getFilteredListOfServers(serverList);
     Assert.assertEquals(returnedServerList.size(), 1);
 
     loadBalancerStats.incrementNumRequests(testServer);
     loadBalancerStats.incrementNumRequests(testServer);
     loadBalancerStats.incrementNumRequests(testServer);
     loadBalancerStats.incrementSuccessiveConnectionFailureCount(testServer);
-    returnedServerList = IsolationServerListFilter.getFilteredListOfServers(serverList);
+    returnedServerList = isolationServerListFilter.getFilteredListOfServers(serverList);
     Assert.assertEquals(returnedServerList.size(), 0);
   }
 
@@ -148,9 +144,9 @@ public class TestIsolationServerListFilter {
 
     List<Server> serverList = new ArrayList<>();
     serverList.add(testServer);
-    IsolationServerListFilter.setLoadBalancerStats(loadBalancerStats);
-    IsolationServerListFilter.setInvocation(invocation);
-    List<Server> returnedServerList = IsolationServerListFilter.getFilteredListOfServers(serverList);
+    isolationServerListFilter.setLoadBalancerStats(loadBalancerStats);
+    isolationServerListFilter.setInvocation(invocation);
+    List<Server> returnedServerList = isolationServerListFilter.getFilteredListOfServers(serverList);
     Assert.assertEquals(0, returnedServerList.size());
     Assert.assertEquals(1, taskList.size());
   }
@@ -172,9 +168,9 @@ public class TestIsolationServerListFilter {
 
     List<Server> serverList = new ArrayList<>();
     serverList.add(testServer);
-    IsolationServerListFilter.setLoadBalancerStats(loadBalancerStats);
-    IsolationServerListFilter.setInvocation(invocation);
-    List<Server> returnedServerList = IsolationServerListFilter.getFilteredListOfServers(serverList);
+    isolationServerListFilter.setLoadBalancerStats(loadBalancerStats);
+    isolationServerListFilter.setInvocation(invocation);
+    List<Server> returnedServerList = isolationServerListFilter.getFilteredListOfServers(serverList);
     Assert.assertEquals(1, returnedServerList.size());
   }
 }

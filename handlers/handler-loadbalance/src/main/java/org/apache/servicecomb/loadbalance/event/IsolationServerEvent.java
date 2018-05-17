@@ -16,8 +16,6 @@
  */
 package org.apache.servicecomb.loadbalance.event;
 
-import java.util.HashMap;
-
 import org.apache.servicecomb.foundation.common.event.AlarmEvent;
 
 public class IsolationServerEvent extends AlarmEvent {
@@ -45,7 +43,6 @@ public class IsolationServerEvent extends AlarmEvent {
       double currentErrorPercentage, int continuousFailureThreshold,
       int errorThresholdPercentage, long enableRequestThreshold, long singleTestTime, Type type) {
     super(type);
-    HashMap<String, Object> msg = new HashMap<>();
     this.microserviceName = microserviceName;
     this.currentTotalRequest = totalRequest;
     this.currentCountinuousFailureCount = currentCountinuousFailureCount;
@@ -54,15 +51,6 @@ public class IsolationServerEvent extends AlarmEvent {
     this.continuousFailureThreshold = continuousFailureThreshold;
     this.errorThresholdPercentage = errorThresholdPercentage;
     this.singleTestTime = singleTestTime;
-    msg.put("microserviceName", this.microserviceName);
-    msg.put("currentTotalRequest", this.currentTotalRequest);
-    msg.put("currentCountinuousFailureCount", this.currentCountinuousFailureCount);
-    msg.put("currentErrorPercentage", this.currentErrorPercentage);
-    msg.put("continuousFailureThreshold", this.continuousFailureThreshold);
-    msg.put("errorThresholdPercentage", this.errorThresholdPercentage);
-    msg.put("enableRequestThreshold", this.enableRequestThreshold);
-    msg.put("singleTestTime", this.singleTestTime);
-    super.setMsg(msg);
   }
 
   public String getMicroserviceName() {

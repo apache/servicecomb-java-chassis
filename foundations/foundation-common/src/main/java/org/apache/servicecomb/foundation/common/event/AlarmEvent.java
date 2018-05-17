@@ -16,13 +16,9 @@
  */
 package org.apache.servicecomb.foundation.common.event;
 
-import java.util.HashMap;
-
 public class AlarmEvent {
 
   Type type;
-
-  private HashMap<String, Object> msg;
 
   public AlarmEvent(Type type) {
     this.type = type;
@@ -32,18 +28,8 @@ public class AlarmEvent {
     return this.type;
   }
 
-  public HashMap<String, Object> getMsg() {
-    return msg;
-  }
-
-  public void setMsg(HashMap<String, Object> msg2) {
-    this.msg = msg2;
-  }
-
   public enum Type {
     OPEN,
-    CLOSE,
-    SUCCEEDED,
-    FAILED
+    CLOSE
   };
 }
