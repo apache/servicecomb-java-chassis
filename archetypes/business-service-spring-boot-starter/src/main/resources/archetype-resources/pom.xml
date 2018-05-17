@@ -25,6 +25,7 @@
   <modelVersion>4.0.0</modelVersion>
 
   <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <java-chassis.version>1.0.0-m2-SNAPSHOT</java-chassis.version>
     <springboot.version>1.4.5.RELEASE</springboot.version>
   </properties>
