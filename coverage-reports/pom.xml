@@ -52,6 +52,10 @@
     </dependency>
     <dependency>
       <groupId>org.apache.servicecomb</groupId>
+      <artifactId>metrics-core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.servicecomb</groupId>
       <artifactId>java-chassis-core</artifactId>
     </dependency>
     <dependency>
@@ -175,6 +179,14 @@
       <artifactId>config-apollo</artifactId>
     </dependency>
     <dependency>
+      <groupId>org.apache.servicecomb</groupId>
+      <artifactId>config-cc</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.servicecomb</groupId>
+      <artifactId>edge-core</artifactId>
+    </dependency>
+    <dependency>
       <groupId>org.apache.servicecomb.demo</groupId>
       <artifactId>pojo-client</artifactId>
       <version>1.0.0-m2-SNAPSHOT</version>
@@ -257,6 +269,26 @@
     <dependency>
       <groupId>org.apache.servicecomb.tests</groupId>
       <artifactId>springmvc-tests</artifactId>
+      <version>1.0.0-m2-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.servicecomb.tests</groupId>
+      <artifactId>springmvc-tests-general</artifactId>
+      <version>1.0.0-m2-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.servicecomb.tests</groupId>
+      <artifactId>springmvc-tests-general-with-springboot</artifactId>
+      <version>1.0.0-m2-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.servicecomb.tests</groupId>
+      <artifactId>springmvc-tests-simplified-mapping</artifactId>
+      <version>1.0.0-m2-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.servicecomb.tests</groupId>
+      <artifactId>springmvc-tests-simplified-mapping-with-springboot</artifactId>
       <version>1.0.0-m2-SNAPSHOT</version>
     </dependency>
     <dependency>
