@@ -36,7 +36,6 @@ import org.slf4j.LoggerFactory;
 
 import io.netty.buffer.ByteBuf;
 import io.vertx.core.AbstractVerticle;
-import io.vertx.core.Context;
 import io.vertx.core.DeploymentOptions;
 import io.vertx.core.Verticle;
 import io.vertx.core.Vertx;
@@ -112,9 +111,7 @@ public final class VertxUtils {
   }
 
   public static Vertx getOrCreateVertxByName(String name, VertxOptions vertxOptions) {
-    return vertxMap.computeIfAbsent(name, vertxName -> {
-      return (VertxImplEx) init(vertxName, vertxOptions);
-    });
+    return vertxMap.computeIfAbsent(name, vertxName -> (VertxImplEx) init(vertxName, vertxOptions));
   }
 
   public static Vertx init(VertxOptions vertxOptions) {
@@ -126,7 +123,7 @@ public final class VertxUtils {
       vertxOptions = new VertxOptions();
     }
 
-    boolean isDebug = ManagementFactory.getRuntimeMXBean().getInputArguments().toString().indexOf("jdwp") >= 0;
+    boolean isDebug = ManagementFactory.getRuntimeMXBean().getInputArguments().toString().contains("jdwp");
     if (isDebug) {
       vertxOptions.setBlockedThreadCheckInterval(BLOCKED_THREAD_CHECK_INTERVAL);
       LOGGER.info("in debug mode, disable blocked thread check.");
@@ -143,36 +140,6 @@ public final class VertxUtils {
     if (System.getProperty(FileResolver.DISABLE_CP_RESOLVING_PROP_NAME) == null) {
       System.setProperty(FileResolver.DISABLE_CP_RESOLVING_PROP_NAME, "true");
     }
-  }
-
-  public static Vertx currentVertx() {
-    Context context = Vertx.currentContext();
-    if (context == null) {
-      throw new RuntimeException("get currentVertx error, currentContext is null.");
-    }
-
-    return context.owner();
-  }
-
-  public static Vertx getVertxByName(String name) {
-    return vertxMap.get(name);
-  }
-
-  public static <T> void runInContext(Context context, AsyncResultCallback<T> callback, T result, Throwable e) {
-    if (context == Vertx.currentContext()) {
-      complete(callback, result, e);
-    } else {
-      context.runOnContext(v -> complete(callback, result, e));
-    }
-  }
-
-  private static <T> void complete(AsyncResultCallback<T> callback, T result, Throwable e) {
-    if (e != null) {
-      callback.fail(e.getCause());
-      return;
-    }
-
-    callback.success(result);
   }
 
   // try to reference byte[]
