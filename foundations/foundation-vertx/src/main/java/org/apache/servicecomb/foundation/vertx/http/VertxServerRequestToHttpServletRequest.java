@@ -17,7 +17,6 @@
 
 package org.apache.servicecomb.foundation.vertx.http;
 
-import java.io.IOException;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -27,7 +26,6 @@ import java.util.Optional;
 import java.util.Set;
 
 import javax.servlet.AsyncContext;
-import javax.servlet.ServletException;
 import javax.servlet.ServletInputStream;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.Part;
@@ -106,7 +104,6 @@ public class VertxServerRequestToHttpServletRequest extends AbstractHttpServletR
     return this.vertxRequest.getParam(name);
   }
 
-
   @Override
   public String[] getParameterValues(String name) {
     List<String> paramList = this.vertxRequest.params().getAll(name);
@@ -153,7 +150,6 @@ public class VertxServerRequestToHttpServletRequest extends AbstractHttpServletR
   public int getLocalPort() {
     return this.vertxRequest.localAddress().port();
   }
-
 
   @Override
   public String getHeader(String name) {
@@ -203,7 +199,6 @@ public class VertxServerRequestToHttpServletRequest extends AbstractHttpServletR
     return this.path;
   }
 
-
   @Override
   public String getServletPath() {
     return this.getPathInfo();
@@ -215,7 +210,7 @@ public class VertxServerRequestToHttpServletRequest extends AbstractHttpServletR
   }
 
   @Override
-  public ServletInputStream getInputStream() throws IOException {
+  public ServletInputStream getInputStream() {
     if (inputStream == null) {
       inputStream = new BufferInputStream(context.getBody().getByteBuf());
     }
@@ -228,13 +223,13 @@ public class VertxServerRequestToHttpServletRequest extends AbstractHttpServletR
   }
 
   @Override
-  public Part getPart(String name) throws IOException, ServletException {
+  public Part getPart(String name) {
     Optional<FileUpload> upload = context.fileUploads()
         .stream()
         .filter(fileUpload -> fileUpload.name().equals(name))
         .findFirst();
     if (!upload.isPresent()) {
-      LOGGER.error("No such file with name: {}.", name);
+      LOGGER.debug("No such file with name: {}.", name);
       return null;
     }
 

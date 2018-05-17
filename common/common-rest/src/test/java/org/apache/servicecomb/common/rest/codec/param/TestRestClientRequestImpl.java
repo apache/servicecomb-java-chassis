@@ -16,17 +16,22 @@
  */
 package org.apache.servicecomb.common.rest.codec.param;
 
+import java.util.Map;
+
 import javax.servlet.http.Part;
 import javax.ws.rs.core.MediaType;
 
+import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Test;
+import org.mockito.Mockito;
 
 import io.vertx.core.MultiMap;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.http.CaseInsensitiveHeaders;
 import io.vertx.core.http.HttpClientRequest;
 import io.vertx.core.http.HttpHeaders;
+import mockit.Deencapsulation;
 import mockit.Expectations;
 import mockit.Mock;
 import mockit.MockUp;
@@ -34,7 +39,7 @@ import mockit.Mocked;
 
 public class TestRestClientRequestImpl {
   @Mocked
-  HttpClientRequest request;
+  private HttpClientRequest request;
 
   @Test
   public void testForm() throws Exception {
@@ -112,5 +117,28 @@ public class TestRestClientRequestImpl {
         "Content-Type: text/plain\r\n" +
         "Content-Transfer-Encoding: binary\r\n" +
         "\r\n", buffer.toString());
+  }
+
+  @Test
+  public void testAttach() {
+    RestClientRequestImpl restClientRequest = new RestClientRequestImpl(request, null, null);
+    Part part = Mockito.mock(Part.class);
+    String fileName = "fileName";
+
+    restClientRequest.attach(fileName, part);
+
+    Map<String, Part> uploads = Deencapsulation.getField(restClientRequest, "uploads");
+    Assert.assertEquals(1, uploads.size());
+    Assert.assertThat(uploads, Matchers.hasEntry(fileName, part));
+  }
+
+  @Test
+  public void testAttachOnPartIsNull() {
+    RestClientRequestImpl restClientRequest = new RestClientRequestImpl(request, null, null);
+
+    restClientRequest.attach("fileName", null);
+
+    Map<String, Part> uploads = Deencapsulation.getField(restClientRequest, "uploads");
+    Assert.assertTrue(uploads.isEmpty());
   }
 }

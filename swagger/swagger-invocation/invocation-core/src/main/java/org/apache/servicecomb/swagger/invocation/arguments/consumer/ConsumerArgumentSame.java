@@ -20,8 +20,12 @@ package org.apache.servicecomb.swagger.invocation.arguments.consumer;
 import org.apache.servicecomb.swagger.invocation.SwaggerInvocation;
 import org.apache.servicecomb.swagger.invocation.arguments.ArgumentMapper;
 import org.apache.servicecomb.swagger.invocation.converter.Converter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public final class ConsumerArgumentSame implements ArgumentMapper {
+  private static final Logger LOGGER = LoggerFactory.getLogger(ConsumerArgumentSame.class);
+
   private int consumerIdx;
 
   private int swaggerIdx;
@@ -36,6 +40,10 @@ public final class ConsumerArgumentSame implements ArgumentMapper {
 
   @Override
   public void mapArgument(SwaggerInvocation invocation, Object[] consumerArguments) {
+    if (null == consumerArguments[consumerIdx]) {
+      LOGGER.debug("null argument is ignored, consumerIdx = [{}]", consumerIdx);
+      return;
+    }
     Object swaggerParam = converter.convert(consumerArguments[consumerIdx]);
     invocation.setSwaggerArgument(swaggerIdx, swaggerParam);
   }
