@@ -83,6 +83,10 @@ public class RestClientRequestImpl implements RestClientRequest {
 
   @Override
   public void attach(String name, Part part) {
+    if (null == part) {
+      LOGGER.debug("null file is ignored, file name = [{}]", name);
+      return;
+    }
     uploads.put(name, part);
   }
 
