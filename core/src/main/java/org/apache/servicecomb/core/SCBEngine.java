@@ -225,17 +225,13 @@ public class SCBEngine {
   public synchronized void uninit() {
     if (SCBStatus.UP.equals(status)) {
       LOGGER.info("ServiceComb is closing now...");
-      try {
-        doUninit();
-        status = SCBStatus.DOWN;
-      } catch (Exception e) {
-        status = SCBStatus.FAILED;
-        LOGGER.info("ServiceComb failed shutdown", e);
-      }
+      doUninit();
+      status = SCBStatus.DOWN;
+      LOGGER.info("ServiceComb had closed");
     }
   }
 
-  private void doUninit() throws Exception {
+  private void doUninit() {
     //Step 1: notify all component stop invoke via BEFORE_CLOSE Event
     safeTriggerEvent(EventType.BEFORE_CLOSE);
 
@@ -248,7 +244,11 @@ public class SCBEngine {
 
     //Step 3: wait all invocation finished
     // forbit create new consumer invocation
-    validAllInvocationFinished();
+    try {
+      validAllInvocationFinished();
+    } catch (InterruptedException e) {
+      LOGGER.error("wait all invocation finished interrupted", e);
+    }
 
     //Step 4: Stop vertx to prevent blocking exit
     VertxUtils.blockCloseVertxByName("config-center");
@@ -256,9 +256,6 @@ public class SCBEngine {
 
     //Step 5: notify all component do clean works via AFTER_CLOSE Event
     safeTriggerEvent(EventType.AFTER_CLOSE);
-
-    //Step 6: Clean flags for re-init
-    eventBus.unregister(this);
   }
 
   private void validAllInvocationFinished() throws InterruptedException {
