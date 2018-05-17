@@ -181,9 +181,7 @@ public abstract class AbstractServiceRegistry implements ServiceRegistry {
   private void loadFrameworkVersions() {
     Framework framework = new Framework();
     framework.setName(CONFIG_FRAMEWORK_DEFAULT_NAME);
-
     framework.setVersion(FrameworkVersions.allVersions());
-    
     microservice.setFramework(framework);
     microservice.setRegisterBy(CONFIG_DEFAULT_REGISTER_BY);
   }
