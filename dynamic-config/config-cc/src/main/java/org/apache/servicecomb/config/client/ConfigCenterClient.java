@@ -329,8 +329,14 @@ public class ConfigCenterClient {
 
     public void refreshConfig(String configcenter, boolean wait) {
       CountDownLatch latch = new CountDownLatch(1);
+      String encodeServiceName = "";
+      try {
+        encodeServiceName = URLEncoder.encode(serviceName, "UTF-8");
+      } catch (UnsupportedEncodingException e1) {
+        e1.printStackTrace();
+      }
+      String path = URIConst.ITEMS + "?dimensionsInfo=" + StringUtils.deleteWhitespace(encodeServiceName);
       clientMgr.findThreadBindClientPool().runOnContext(client -> {
-        String path = URIConst.ITEMS + "?dimensionsInfo=" + StringUtils.deleteWhitespace(serviceName);
         IpPort ipPort = NetUtils.parseIpPortFromURI(configcenter);
         HttpClientRequest request = client.get(ipPort.getPort(), ipPort.getHostOrIp(), path, rsp -> {
           if (rsp.statusCode() == HttpResponseStatus.OK.code()) {
