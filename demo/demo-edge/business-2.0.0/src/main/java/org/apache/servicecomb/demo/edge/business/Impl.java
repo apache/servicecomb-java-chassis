@@ -28,12 +28,15 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.servicecomb.demo.edge.model.AppClientDataRsp;
 import org.apache.servicecomb.demo.edge.model.ChannelRequestBase;
+import org.apache.servicecomb.demo.edge.model.DependTypeA;
+import org.apache.servicecomb.demo.edge.model.RecursiveSelfType;
 import org.apache.servicecomb.demo.edge.model.ResultWithInstance;
 import org.apache.servicecomb.provider.rest.common.RestSchema;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -92,5 +95,15 @@ public class Impl {
   @GetMapping(path = "/bigFile")
   public File bigFile() throws IOException {
     return createBigFile();
+  }
+
+  @PostMapping(path = "recursiveSelf")
+  public RecursiveSelfType recursiveSelf(@RequestBody RecursiveSelfType value) {
+    return value;
+  }
+
+  @PostMapping(path = "dependType")
+  public DependTypeA dependType(@RequestBody DependTypeA value) {
+    return value;
   }
 }

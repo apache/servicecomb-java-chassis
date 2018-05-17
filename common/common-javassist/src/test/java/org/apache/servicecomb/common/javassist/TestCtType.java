@@ -25,6 +25,7 @@ import org.mockito.Mockito;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.type.TypeFactory;
 
+import javassist.ClassPool;
 import javassist.CtClass;
 import javassist.NotFoundException;
 
@@ -33,6 +34,17 @@ public class TestCtType {
 
   @Test
   public void fromCtClass() {
+    CtClass ctClass = Mockito.mock(CtClass.class);
+    Mockito.when(ctClass.getName()).thenReturn("a.b.c");
+    ctType = new CtType(ctClass);
+
+    Assert.assertSame(ctClass, ctType.getCtClass());
+    Assert.assertFalse(ctType.hasGenericTypes());
+    Assert.assertEquals("La/b/c;", ctType.getGenericSignature());
+  }
+
+  @Test
+  public void fromCtClass_fullInfo() {
     CtClass ctClass = Mockito.mock(CtClass.class);
     ctType = new CtType(ctClass, true, "Ljava/util/List<[B;>;");
 
@@ -86,5 +98,18 @@ public class TestCtType {
         .get(List.class.getCanonicalName()), ctType.getCtClass());
     Assert.assertTrue(ctType.hasGenericTypes());
     Assert.assertEquals("Ljava/util/List<[B>;", ctType.getGenericSignature());
+  }
+
+  @Test
+  public void fromCtTypeJavaType() throws NotFoundException {
+    CtClass ctClass = ClassPool.getDefault().get(String.class.getCanonicalName());
+    CtType otherCtType = new CtType(ctClass, false, "Ljava/lang/String;");
+    CtTypeJavaType ctTypeJavaType = new CtTypeJavaType(otherCtType);
+
+    ctType = new CtType(ctTypeJavaType);
+
+    Assert.assertSame(ctClass, ctType.getCtClass());
+    Assert.assertFalse(ctType.hasGenericTypes());
+    Assert.assertEquals("Ljava/lang/String;", ctType.getGenericSignature());
   }
 }

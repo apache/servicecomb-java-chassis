@@ -29,6 +29,9 @@ import org.apache.servicecomb.core.Endpoint;
 import org.apache.servicecomb.core.endpoint.EndpointsCache;
 import org.apache.servicecomb.demo.edge.model.AppClientDataRsp;
 import org.apache.servicecomb.demo.edge.model.ChannelRequestBase;
+import org.apache.servicecomb.demo.edge.model.DependTypeA;
+import org.apache.servicecomb.demo.edge.model.DependTypeB;
+import org.apache.servicecomb.demo.edge.model.RecursiveSelfType;
 import org.apache.servicecomb.demo.edge.model.ResultWithInstance;
 import org.apache.servicecomb.foundation.common.net.URIEndpointObject;
 import org.apache.servicecomb.provider.springmvc.reference.RestTemplateBuilder;
@@ -78,6 +81,8 @@ public class Consumer {
   public void run() {
     prepareEdge();
 
+    testRecursiveSelf();
+    testDependType();
     testDownload();
     testDownloadBigFile();
 
@@ -104,6 +109,40 @@ public class Consumer {
     checkResult("v1/dec", decV1Result, "1.1.0");
     checkResult("v2/add", addV2Result, "2.0.0");
     checkResult("v2/dec", decV2Result, "2.0.0");
+  }
+
+  protected void testRecursiveSelf() {
+    String url = edgePrefix + "/v2/recursiveSelf";
+
+    HttpHeaders headers = new HttpHeaders();
+    headers.setContentType(MediaType.APPLICATION_JSON);
+
+    RecursiveSelfType recursiveSelfType = new RecursiveSelfType();
+    recursiveSelfType.setField(new RecursiveSelfType());
+    recursiveSelfType.getField().setValue(10);
+
+    HttpEntity<RecursiveSelfType> entity = new HttpEntity<>(recursiveSelfType, headers);
+
+    RecursiveSelfType response = template.postForObject(url, entity, RecursiveSelfType.class);
+    Assert.isTrue(response.getValue() == 0, "default must be 0");
+    Assert.isTrue(response.getField().getValue() == 10, "must be 10");
+    Assert.isNull(response.getField().getField(), "must be null");
+  }
+
+  protected void testDependType() {
+    String url = edgePrefix + "/v2/dependType";
+
+    HttpHeaders headers = new HttpHeaders();
+    headers.setContentType(MediaType.APPLICATION_JSON);
+
+    DependTypeA dependTypeA = new DependTypeA();
+    dependTypeA.setB(new DependTypeB());
+    dependTypeA.getB().setValue(10);
+
+    HttpEntity<DependTypeA> entity = new HttpEntity<>(dependTypeA, headers);
+
+    DependTypeA response = template.postForObject(url, entity, DependTypeA.class);
+    Assert.isTrue(response.getB().getValue() == 10, "must be 10");
   }
 
   protected void testDownloadBigFile() {
@@ -180,7 +219,7 @@ public class Consumer {
     HttpHeaders headers = new HttpHeaders();
     headers.setContentType(MediaType.APPLICATION_JSON);
 
-    HttpEntity<ChannelRequestBase> entity = new HttpEntity<ChannelRequestBase>(request, headers);
+    HttpEntity<ChannelRequestBase> entity = new HttpEntity<>(request, headers);
 
     ResponseEntity<AppClientDataRsp> response = template.postForEntity(url, entity, AppClientDataRsp.class);
     System.out.println("urlPrefix: " + urlPrefix);
