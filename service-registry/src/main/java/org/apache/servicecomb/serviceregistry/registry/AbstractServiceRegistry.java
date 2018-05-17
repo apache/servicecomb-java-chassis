@@ -46,8 +46,6 @@ import org.apache.servicecomb.serviceregistry.definition.MicroserviceDefinition;
 import org.apache.servicecomb.serviceregistry.task.MicroserviceServiceCenterTask;
 import org.apache.servicecomb.serviceregistry.task.ServiceCenterTask;
 import org.apache.servicecomb.serviceregistry.task.event.ShutdownEvent;
-import org.apache.servicecomb.serviceregistry.version.Version;
-import org.apache.servicecomb.serviceregistry.version.VersionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -184,22 +182,10 @@ public abstract class AbstractServiceRegistry implements ServiceRegistry {
     Framework framework = new Framework();
     framework.setName(CONFIG_FRAMEWORK_DEFAULT_NAME);
 
-    if (needSetFrameworkVersion()) {
-      framework.setVersion(FrameworkVersions.allVersions());
-    }
+    framework.setVersion(FrameworkVersions.allVersions());
+    
     microservice.setFramework(framework);
     microservice.setRegisterBy(CONFIG_DEFAULT_REGISTER_BY);
-  }
-
-  private boolean needSetFrameworkVersion() {
-    if (serviceCenterInfo == null) {
-      LOGGER.warn("Server startup when service center not started and cannot retrieve version info, assume latest.");
-      return true;
-    }
-
-    Version scVersion = VersionUtils.getOrCreate(serviceCenterInfo.getVersion());
-    Version frameworkVersion = VersionUtils.getOrCreate(Const.SERVICECENTER_FRAMEWORK_VERSION);
-    return scVersion.compareTo(frameworkVersion) >= 0;
   }
 
   private void loadStaticConfiguration() {
