@@ -189,7 +189,7 @@ public abstract class AbstractServiceRegistry implements ServiceRegistry {
   }
 
 
-private void loadStaticConfiguration() {
+  private void loadStaticConfiguration() {
     // TODO 如果yaml定义了paths规则属性，替换默认值，现需要DynamicPropertyFactory支持数组获取
     List<BasePath> paths = microservice.getPaths();
     for (BasePath path : paths) {
