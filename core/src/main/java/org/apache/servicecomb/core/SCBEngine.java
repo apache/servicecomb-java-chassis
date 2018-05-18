@@ -235,26 +235,26 @@ public class SCBEngine {
     //Step 1: notify all component stop invoke via BEFORE_CLOSE Event
     safeTriggerEvent(EventType.BEFORE_CLOSE);
 
+    //Step 2: forbid create new consumer invocation
     status = SCBStatus.STOPPING;
 
-    //Step 2: Unregister microservice instance from Service Center and close vertx
+    //Step 3: Unregister microservice instance from Service Center and close vertx
     // Forbidden other consumers find me
     RegistryUtils.destroy();
     VertxUtils.blockCloseVertxByName("registry");
 
-    //Step 3: wait all invocation finished
-    // forbit create new consumer invocation
+    //Step 4: wait all invocation finished
     try {
       validAllInvocationFinished();
     } catch (InterruptedException e) {
       LOGGER.error("wait all invocation finished interrupted", e);
     }
 
-    //Step 4: Stop vertx to prevent blocking exit
+    //Step 5: Stop vertx to prevent blocking exit
     VertxUtils.blockCloseVertxByName("config-center");
     VertxUtils.blockCloseVertxByName("transport");
 
-    //Step 5: notify all component do clean works via AFTER_CLOSE Event
+    //Step 6: notify all component do clean works via AFTER_CLOSE Event
     safeTriggerEvent(EventType.AFTER_CLOSE);
   }
 
