@@ -183,14 +183,15 @@ public abstract class AbstractServiceRegistry implements ServiceRegistry {
   private void loadFrameworkVersions() {
     Framework framework = new Framework();
     framework.setName(CONFIG_FRAMEWORK_DEFAULT_NAME);
-
-    framework.setVersion(FrameworkVersions.allVersions());
+    if(ServiceRegistryConfig.getMicroserviceFramework()) {
+    	framework.setVersion(FrameworkVersions.allVersions());
+    }
     microservice.setFramework(framework);
     microservice.setRegisterBy(CONFIG_DEFAULT_REGISTER_BY);
   }
 
 
-  private void loadStaticConfiguration() {
+private void loadStaticConfiguration() {
     // TODO 如果yaml定义了paths规则属性，替换默认值，现需要DynamicPropertyFactory支持数组获取
     List<BasePath> paths = microservice.getPaths();
     for (BasePath path : paths) {

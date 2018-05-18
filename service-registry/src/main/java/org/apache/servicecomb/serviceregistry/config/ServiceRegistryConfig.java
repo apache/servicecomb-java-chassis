@@ -85,9 +85,15 @@ public final class ServiceRegistryConfig {
   public static final String PROXY_USERNAME = PROXY_PRE_NAME + "username";
 
   public static final String PROXY_PASSWD = PROXY_PRE_NAME + "passwd";
+  
+  public static final String FRAMEWORK = "cse.service.registry.framework";
 
   private ServiceRegistryConfig() {
 
+  }
+  
+  public static boolean getMicroserviceFramework() {
+	  return DynamicPropertyFactory.getInstance().getBooleanProperty(FRAMEWORK, true).get();
   }
 
   public String getMicroserviceVersionFactory() {
