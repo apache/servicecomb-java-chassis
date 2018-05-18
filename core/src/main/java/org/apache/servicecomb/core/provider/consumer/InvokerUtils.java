@@ -35,7 +35,7 @@ public final class InvokerUtils {
   private static final Logger LOGGER = LoggerFactory.getLogger(InvokerUtils.class);
 
   public static Object syncInvoke(String microserviceName, String schemaId, String operationName, Object[] args) {
-    validCanInvoke();
+    checkEngineStatus();
     ReferenceConfig referenceConfig = CseContext.getInstance().getConsumerProviderManager()
         .getReferenceConfig(microserviceName);
     return syncInvoke(generateInvocation(schemaId, operationName, args, referenceConfig));
@@ -43,14 +43,14 @@ public final class InvokerUtils {
 
   public static Object syncInvoke(String microserviceName, String microserviceVersion, String transport,
       String schemaId, String operationName, Object[] args) {
-    validCanInvoke();
+    checkEngineStatus();
     ReferenceConfig referenceConfig = CseContext.getInstance().getConsumerProviderManager()
         .createReferenceConfig(microserviceName, microserviceVersion, transport);
     return syncInvoke(generateInvocation(schemaId, operationName, args, referenceConfig));
   }
 
   public static Object syncInvoke(Invocation invocation) throws InvocationException {
-    validCanInvoke();
+    checkEngineStatus();
     Response response = innerSyncInvoke(invocation);
     if (response.isSuccessed()) {
       return response.getResult();
@@ -59,7 +59,7 @@ public final class InvokerUtils {
   }
 
   public static Response innerSyncInvoke(Invocation invocation) {
-    validCanInvoke();
+    checkEngineStatus();
     try {
       invocation.onStart();
       SyncResponseExecutor respExecutor = new SyncResponseExecutor();
@@ -82,7 +82,7 @@ public final class InvokerUtils {
   }
 
   public static void reactiveInvoke(Invocation invocation, AsyncResponse asyncResp) {
-    validCanInvoke();
+    checkEngineStatus();
     try {
       invocation.onStart();
       invocation.setSync(false);
@@ -114,7 +114,7 @@ public final class InvokerUtils {
     return InvocationFactory.forConsumer(referenceConfig, schemaMeta, operationName, args);
   }
 
-  private static void validCanInvoke() {
+  private static void checkEngineStatus() {
     if (!SCBStatus.UP.equals(SCBEngine.getInstance().getStatus())) {
       throw new IllegalStateException(
           "System is starting and not ready for remote calls or shutting down in progress, STATUS = " + String
@@ -124,7 +124,7 @@ public final class InvokerUtils {
 
   @Deprecated
   public static Object invoke(Invocation invocation) {
-    validCanInvoke();
+    checkEngineStatus();
     return syncInvoke(invocation);
   }
 }
