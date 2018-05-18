@@ -184,23 +184,11 @@ public abstract class AbstractServiceRegistry implements ServiceRegistry {
     Framework framework = new Framework();
     framework.setName(CONFIG_FRAMEWORK_DEFAULT_NAME);
 
-    if (needSetFrameworkVersion()) {
-      framework.setVersion(FrameworkVersions.allVersions());
-    }
+    framework.setVersion(FrameworkVersions.allVersions());
     microservice.setFramework(framework);
     microservice.setRegisterBy(CONFIG_DEFAULT_REGISTER_BY);
   }
 
-  private boolean needSetFrameworkVersion() {
-    if (serviceCenterInfo == null) {
-      LOGGER.warn("Server startup when service center not started and cannot retrieve version info, assume latest.");
-      return true;
-    }
-
-    Version scVersion = VersionUtils.getOrCreate(serviceCenterInfo.getVersion());
-    Version frameworkVersion = VersionUtils.getOrCreate(Const.SERVICECENTER_FRAMEWORK_VERSION);
-    return scVersion.compareTo(frameworkVersion) >= 0;
-  }
 
   private void loadStaticConfiguration() {
     // TODO 如果yaml定义了paths规则属性，替换默认值，现需要DynamicPropertyFactory支持数组获取
