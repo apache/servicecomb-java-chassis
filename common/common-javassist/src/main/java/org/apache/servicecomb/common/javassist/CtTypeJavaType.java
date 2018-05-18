@@ -23,6 +23,8 @@ import com.fasterxml.jackson.databind.type.SimpleType;
  * pending create class from CtClass to support recursive dependency class
  */
 public class CtTypeJavaType extends SimpleType {
+  private static final long serialVersionUID = 301147079248607138L;
+
   private CtType type;
 
   public CtTypeJavaType(CtType type) {
