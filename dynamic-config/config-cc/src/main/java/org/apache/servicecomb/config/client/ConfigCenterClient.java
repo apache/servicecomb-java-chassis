@@ -331,11 +331,11 @@ public class ConfigCenterClient {
       CountDownLatch latch = new CountDownLatch(1);
       String encodeServiceName = "";
       try {
-        encodeServiceName = URLEncoder.encode(serviceName, "UTF-8");
-      } catch (UnsupportedEncodingException e1) {
-        e1.printStackTrace();
+        encodeServiceName = URLEncoder.encode(StringUtils.deleteWhitespace(serviceName), "UTF-8");
+      } catch (UnsupportedEncodingException e) {
+        LOGGER.error("encode error: {}",e.getMessage());
       }
-      String path = URIConst.ITEMS + "?dimensionsInfo=" + StringUtils.deleteWhitespace(encodeServiceName);
+      String path = URIConst.ITEMS + "?dimensionsInfo=" + encodeServiceName;
       clientMgr.findThreadBindClientPool().runOnContext(client -> {
         IpPort ipPort = NetUtils.parseIpPortFromURI(configcenter);
         HttpClientRequest request = client.get(ipPort.getPort(), ipPort.getHostOrIp(), path, rsp -> {
