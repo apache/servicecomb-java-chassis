@@ -70,7 +70,7 @@ public final class InvokerUtils {
     } catch (Throwable e) {
       String msg =
           String.format("invoke failed, %s", invocation.getOperationMeta().getMicroserviceQualifiedName());
-      LOGGER.debug(msg, e);
+      LOGGER.error(msg, e);
 
       Response response = Response.createConsumerFail(e);
       invocation.onFinish(response);
