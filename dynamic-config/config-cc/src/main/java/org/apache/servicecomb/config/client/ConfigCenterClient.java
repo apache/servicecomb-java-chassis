@@ -23,6 +23,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -331,9 +332,10 @@ public class ConfigCenterClient {
       CountDownLatch latch = new CountDownLatch(1);
       String encodeServiceName = "";
       try {
-        encodeServiceName = URLEncoder.encode(StringUtils.deleteWhitespace(serviceName), "UTF-8");
+        encodeServiceName = URLEncoder.encode(StringUtils.deleteWhitespace(serviceName), StandardCharsets.UTF_8.name());
       } catch (UnsupportedEncodingException e) {
-        LOGGER.error("encode error: {}",e.getMessage());
+        LOGGER.error("encode failed. Error message: {}", e.getMessage());
+        encodeServiceName = StringUtils.deleteWhitespace(serviceName);
       }
       String path = URIConst.ITEMS + "?dimensionsInfo=" + encodeServiceName;
       clientMgr.findThreadBindClientPool().runOnContext(client -> {
