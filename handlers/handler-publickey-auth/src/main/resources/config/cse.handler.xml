@@ -16,8 +16,8 @@
   -->
 
 <config>
-	<handler id="auth-consumer"
-		class="org.apache.servicecomb.authentication.consumer.ConsumerAuthHandler" />
-	<handler id="auth-provider"
-		class="org.apache.servicecomb.authentication.provider.ProviderAuthHanlder" />
+  <handler id="auth-consumer"
+    class="org.apache.servicecomb.authentication.consumer.ConsumerAuthHandler"/>
+  <handler id="auth-provider"
+    class="org.apache.servicecomb.authentication.provider.ProviderAuthHanlder"/>
 </config>

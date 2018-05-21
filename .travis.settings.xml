@@ -16,27 +16,27 @@
   -->
 
 <settings xmlns="http://maven.apache.org/SETTINGS/1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-          xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0 http://maven.apache.org/xsd/settings-1.0.0.xsd">
-    <servers>
-        <server>
-            <id>apache.snapshots.https</id>
-            <username>${env.SONATYPE_USERNAME}</username>
-            <password>${env.SONATYPE_PASSWORD}</password>
-        </server>
-        <server>
-            <id>apache.releases.https</id>
-            <username>${env.SONATYPE_USERNAME}</username>
-            <password>${env.SONATYPE_PASSWORD}</password>
-        </server>
-    </servers>
-    <profiles>
-        <profile>
-          <id>passphrase</id> <!-- give it the name of your project -->
-          <properties>
-            <gpg.homedir>/home/travis/build/apache/incubator-servicecomb-java-chassis</gpg.homedir>
-            <gpg.keyname>2DE9D2F9</gpg.keyname>
-            <gpg.passphrase>${MYPASSP}</gpg.passphrase>
-          </properties>
-        </profile>
-    </profiles>          
+  xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0 http://maven.apache.org/xsd/settings-1.0.0.xsd">
+  <servers>
+    <server>
+      <id>apache.snapshots.https</id>
+      <username>${env.SONATYPE_USERNAME}</username>
+      <password>${env.SONATYPE_PASSWORD}</password>
+    </server>
+    <server>
+      <id>apache.releases.https</id>
+      <username>${env.SONATYPE_USERNAME}</username>
+      <password>${env.SONATYPE_PASSWORD}</password>
+    </server>
+  </servers>
+  <profiles>
+    <profile>
+      <id>passphrase</id> <!-- give it the name of your project -->
+      <properties>
+        <gpg.homedir>/home/travis/build/apache/incubator-servicecomb-java-chassis</gpg.homedir>
+        <gpg.keyname>2DE9D2F9</gpg.keyname>
+        <gpg.passphrase>${MYPASSP}</gpg.passphrase>
+      </properties>
+    </profile>
+  </profiles>
 </settings>

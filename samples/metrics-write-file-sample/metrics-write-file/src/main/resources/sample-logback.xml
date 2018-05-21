@@ -17,7 +17,7 @@
   -->
 
 <configuration scan="true">
-  <jmxConfigurator />
+  <jmxConfigurator/>
   <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
     <encoder>
       <pattern>%d [%level] [%thread] - %msg (%F:%L\)%n</pattern>
@@ -25,7 +25,7 @@
   </appender>
 
   <root level="INFO">
-    <appender-ref ref="STDOUT" />
+    <appender-ref ref="STDOUT"/>
   </root>
 
   <appender name="cloudEyeAppender" class="ch.qos.logback.classic.sift.SiftingAppender">
@@ -47,6 +47,6 @@
   </appender>
 
   <logger name="cloudEyeLogger" level="info" additivity="false">
-    <appender-ref ref="cloudEyeAppender" />
+    <appender-ref ref="cloudEyeAppender"/>
   </logger>
 </configuration>

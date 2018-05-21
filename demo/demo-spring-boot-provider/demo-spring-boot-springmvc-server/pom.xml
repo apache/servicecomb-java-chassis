@@ -17,21 +17,21 @@
   -->
 
 <project
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
-	xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-	<modelVersion>4.0.0</modelVersion>
-	<groupId>org.apache.servicecomb.springboot.springmvc.server</groupId>
-	<artifactId>demo-spring-boot-springmvc-server</artifactId>
-	<name>Java Chassis::Demo::Spring Boot::Spring MVC Client</name>
-	<parent>
-		<groupId>org.apache.servicecomb.demo</groupId>
-		<artifactId>demo-spring-boot</artifactId>
-		<version>1.0.0-m2-SNAPSHOT</version>
-	</parent>
-	<dependencies>
-		<dependency>
-			<groupId>org.apache.servicecomb.demo</groupId>
-			<artifactId>springmvc-server</artifactId>
-		</dependency>
-	</dependencies>
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
+  xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>org.apache.servicecomb.springboot.springmvc.server</groupId>
+  <artifactId>demo-spring-boot-springmvc-server</artifactId>
+  <name>Java Chassis::Demo::Spring Boot::Spring MVC Client</name>
+  <parent>
+    <groupId>org.apache.servicecomb.demo</groupId>
+    <artifactId>demo-spring-boot</artifactId>
+    <version>1.0.0-m2-SNAPSHOT</version>
+  </parent>
+  <dependencies>
+    <dependency>
+      <groupId>org.apache.servicecomb.demo</groupId>
+      <artifactId>springmvc-server</artifactId>
+    </dependency>
+  </dependencies>
 </project>

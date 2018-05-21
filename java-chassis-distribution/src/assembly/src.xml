@@ -15,46 +15,47 @@
   ~ limitations under the License.
   -->
 
-<assembly xmlns="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.2 http://maven.apache.org/xsd/assembly-1.1.2.xsd">
-    <id>src</id>
-    <includeBaseDirectory>true</includeBaseDirectory>
-    <baseDirectory>${project.build.finalName}-src</baseDirectory>
-    <formats>
-        <format>zip</format>
-    </formats>
-    <fileSets>
-        <fileSet>
-          <directory>..</directory>
-          <includes>
-            <include>**/*</include>
-          </includes>
-          <excludes>
-            <!--exclude the style files which use CC License from source distribution-->
-            <exclude>etc/eclipse-java-google-style.xml</exclude>
-            <exclude>etc/intellij-java-google-style.xml</exclude>
-            <!-- excludes the binary files -->
-            <exclude>**/eclipse-classes/**</exclude>
-            <exclude>**/target/**</exclude>
-            <exclude>**/build/**</exclude>
-            <exclude>**/eclipse-classes/**</exclude>
-            <exclude>**/.*</exclude>
-            <exclude>**/.*/**</exclude>
-            <exclude>*.enc</exclude>
-            <exclude>*.gpg</exclude>
-            <exclude>random_seed</exclude>
-            <exclude>**/surefire*</exclude>
-            <exclude>**/svn-commit*</exclude>
-    
-            <exclude>**/.idea/**</exclude>
-            <exclude>**/*.iml</exclude>
-            <exclude>**/*.ipr</exclude>
-            <exclude>**/*.iws</exclude>
-    
-            <exclude>**/cobertura.ser</exclude>
-    
-            <exclude>**/node_modules/**</exclude>
-          </excludes>
-        </fileSet>
-    </fileSets>
+<assembly xmlns="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.2"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.2 http://maven.apache.org/xsd/assembly-1.1.2.xsd">
+  <id>src</id>
+  <includeBaseDirectory>true</includeBaseDirectory>
+  <baseDirectory>${project.build.finalName}-src</baseDirectory>
+  <formats>
+    <format>zip</format>
+  </formats>
+  <fileSets>
+    <fileSet>
+      <directory>..</directory>
+      <includes>
+        <include>**/*</include>
+      </includes>
+      <excludes>
+        <!--exclude the style files which use CC License from source distribution-->
+        <exclude>etc/eclipse-java-google-style.xml</exclude>
+        <exclude>etc/intellij-java-google-style.xml</exclude>
+        <!-- excludes the binary files -->
+        <exclude>**/eclipse-classes/**</exclude>
+        <exclude>**/target/**</exclude>
+        <exclude>**/build/**</exclude>
+        <exclude>**/eclipse-classes/**</exclude>
+        <exclude>**/.*</exclude>
+        <exclude>**/.*/**</exclude>
+        <exclude>*.enc</exclude>
+        <exclude>*.gpg</exclude>
+        <exclude>random_seed</exclude>
+        <exclude>**/surefire*</exclude>
+        <exclude>**/svn-commit*</exclude>
+
+        <exclude>**/.idea/**</exclude>
+        <exclude>**/*.iml</exclude>
+        <exclude>**/*.ipr</exclude>
+        <exclude>**/*.iws</exclude>
+
+        <exclude>**/cobertura.ser</exclude>
+
+        <exclude>**/node_modules/**</exclude>
+      </excludes>
+    </fileSet>
+  </fileSets>
 </assembly>

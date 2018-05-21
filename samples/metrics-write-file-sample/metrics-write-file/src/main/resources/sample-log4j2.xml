@@ -19,7 +19,7 @@
 <Configuration status="INFO">
   <Appenders>
     <Console name="stdout" target="SYSTEM_OUT">
-      <PatternLayout pattern="%d [%level] [%thread] - %msg (%F:%L\)%n" />
+      <PatternLayout pattern="%d [%level] [%thread] - %msg (%F:%L\)%n"/>
     </Console>
 
     <Routing name="cloudEyeRouting">
@@ -38,11 +38,11 @@
 
   <Loggers>
     <Root level="info">
-      <AppenderRef ref="stdout" />
+      <AppenderRef ref="stdout"/>
     </Root>
 
     <Logger name="cloudEyeLogger" level="info" additivity="false">
-      <Appender-ref ref="cloudEyeRouting" />
+      <Appender-ref ref="cloudEyeRouting"/>
     </Logger>
   </Loggers>
 </Configuration>

@@ -17,75 +17,75 @@
   -->
 
 <project
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
-	xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-	<modelVersion>4.0.0</modelVersion>
-	<parent>
-		<groupId>org.apache.servicecomb.demo</groupId>
-		<artifactId>demo-springmvc</artifactId>
-		<version>1.0.0-m2-SNAPSHOT</version>
-	</parent>
-	<artifactId>springmvc-client</artifactId>
-	<name>Java Chassis::Demo::Spring MVC::Client</name>
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
+  xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>org.apache.servicecomb.demo</groupId>
+    <artifactId>demo-springmvc</artifactId>
+    <version>1.0.0-m2-SNAPSHOT</version>
+  </parent>
+  <artifactId>springmvc-client</artifactId>
+  <name>Java Chassis::Demo::Spring MVC::Client</name>
 
-	<dependencies>
-		<dependency>
-			<groupId>org.apache.servicecomb.demo</groupId>
-			<artifactId>demo-schema</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.servicecomb</groupId>
-			<artifactId>provider-springmvc</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.servicecomb</groupId>
-			<artifactId>provider-pojo</artifactId>
-		</dependency>
-	</dependencies>
+  <dependencies>
+    <dependency>
+      <groupId>org.apache.servicecomb.demo</groupId>
+      <artifactId>demo-schema</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.servicecomb</groupId>
+      <artifactId>provider-springmvc</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.servicecomb</groupId>
+      <artifactId>provider-pojo</artifactId>
+    </dependency>
+  </dependencies>
 
-	<properties>
-		<demo.main>org.apache.servicecomb.demo.springmvc.client.SpringmvcClient</demo.main>
-	</properties>
-	<build>
-		<plugins>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-dependency-plugin</artifactId>
-			</plugin>
-			<plugin>
-				<groupId>com.github.odavid.maven.plugins</groupId>
-				<artifactId>mixin-maven-plugin</artifactId>
-				<configuration>
-					<mixins>
-						<mixin>
-							<groupId>org.apache.servicecomb.demo</groupId>
-							<artifactId>docker-run-config</artifactId>
-							<version>1.0.0-m2-SNAPSHOT</version>
-						</mixin>
-					</mixins>
-				</configuration>
-			</plugin>
-		</plugins>
-	</build>
-	<profiles>
-		<profile>
-			<id>docker</id>
-			<properties>
-				<demo.service.name>springmvc-server</demo.service.name>
-				<demo.vm.options>
-					-Dcse.highway.address=0.0.0.0:7070
-					-Dcse.rest.address=0.0.0.0:8080?sslEnabled=false
-				</demo.vm.options>
-			</properties>
-			<build>
-				<plugins>
-					<plugin>
-						<groupId>io.fabric8</groupId>
-						<artifactId>docker-maven-plugin</artifactId>
-					</plugin>
-				</plugins>
-			</build>
-		</profile>
-	</profiles>
+  <properties>
+    <demo.main>org.apache.servicecomb.demo.springmvc.client.SpringmvcClient</demo.main>
+  </properties>
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-dependency-plugin</artifactId>
+      </plugin>
+      <plugin>
+        <groupId>com.github.odavid.maven.plugins</groupId>
+        <artifactId>mixin-maven-plugin</artifactId>
+        <configuration>
+          <mixins>
+            <mixin>
+              <groupId>org.apache.servicecomb.demo</groupId>
+              <artifactId>docker-run-config</artifactId>
+              <version>1.0.0-m2-SNAPSHOT</version>
+            </mixin>
+          </mixins>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+  <profiles>
+    <profile>
+      <id>docker</id>
+      <properties>
+        <demo.service.name>springmvc-server</demo.service.name>
+        <demo.vm.options>
+          -Dcse.highway.address=0.0.0.0:7070
+          -Dcse.rest.address=0.0.0.0:8080?sslEnabled=false
+        </demo.vm.options>
+      </properties>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>io.fabric8</groupId>
+            <artifactId>docker-maven-plugin</artifactId>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
 
 </project>

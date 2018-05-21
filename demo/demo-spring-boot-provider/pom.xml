@@ -17,35 +17,35 @@
   -->
 
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-	<modelVersion>4.0.0</modelVersion>
-	<parent>
-		<groupId>org.apache.servicecomb.demo</groupId>
-		<artifactId>demo-parent</artifactId>
-		<version>1.0.0-m2-SNAPSHOT</version>
-	</parent>
-	<artifactId>demo-spring-boot</artifactId>
-	<name>Java Chassis::Demo::Spring Boot</name>
-	<packaging>pom</packaging>
-	<modules>
-		<module>demo-spring-boot-jaxrs-server</module>
-		<module>demo-spring-boot-jaxrs-client</module>
-		<module>demo-spring-boot-springmvc-server</module>
-		<module>demo-spring-boot-springmvc-client</module>
-	</modules>
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>org.apache.servicecomb.demo</groupId>
+    <artifactId>demo-parent</artifactId>
+    <version>1.0.0-m2-SNAPSHOT</version>
+  </parent>
+  <artifactId>demo-spring-boot</artifactId>
+  <name>Java Chassis::Demo::Spring Boot</name>
+  <packaging>pom</packaging>
+  <modules>
+    <module>demo-spring-boot-jaxrs-server</module>
+    <module>demo-spring-boot-jaxrs-client</module>
+    <module>demo-spring-boot-springmvc-server</module>
+    <module>demo-spring-boot-springmvc-client</module>
+  </modules>
 
-	<dependencies>
-		<dependency>
-			<groupId>org.apache.servicecomb</groupId>
-			<artifactId>spring-boot-starter-provider</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-web</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-actuator</artifactId>
-		</dependency>
-	</dependencies>
+  <dependencies>
+    <dependency>
+      <groupId>org.apache.servicecomb</groupId>
+      <artifactId>spring-boot-starter-provider</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-web</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-actuator</artifactId>
+    </dependency>
+  </dependencies>
 </project>

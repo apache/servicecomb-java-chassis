@@ -16,11 +16,11 @@
   -->
 
 <configs>
-	<properties id="pTest">
-		<path>classpath*:config/test.ext.properties</path>
-	</properties>
+  <properties id="pTest">
+    <path>classpath*:config/test.ext.properties</path>
+  </properties>
 
-	<xml id="xTest" loader="org.apache.servicecomb.foundation.common.config.impl.IdXmlLoader">
-		<path>classpath*:config/test.ext.xml</path>
-	</xml>
+  <xml id="xTest" loader="org.apache.servicecomb.foundation.common.config.impl.IdXmlLoader">
+    <path>classpath*:config/test.ext.xml</path>
+  </xml>
 </configs>

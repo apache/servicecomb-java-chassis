@@ -16,11 +16,11 @@
   -->
 
 <configs>
-	<properties id="pTest">
-		<path>classpath*:config/test.properties</path>
-	</properties>
+  <properties id="pTest">
+    <path>classpath*:config/test.properties</path>
+  </properties>
 
-	<xml id="xTest">
-		<path>classpath*:config/test.xml</path>
-	</xml>
+  <xml id="xTest">
+    <path>classpath*:config/test.xml</path>
+  </xml>
 </configs>
