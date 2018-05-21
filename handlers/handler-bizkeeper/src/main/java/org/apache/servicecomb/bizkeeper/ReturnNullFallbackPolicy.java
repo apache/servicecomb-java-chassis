@@ -33,5 +33,4 @@ public class ReturnNullFallbackPolicy implements FallbackPolicy {
   public Response getFallbackResponse(Invocation invocation) {
     return Response.succResp(null);
   }
-
 }

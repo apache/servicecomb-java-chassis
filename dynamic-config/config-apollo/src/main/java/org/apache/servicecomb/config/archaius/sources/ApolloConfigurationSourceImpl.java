@@ -58,7 +58,7 @@ public class ApolloConfigurationSourceImpl implements ConfigCenterConfigurationS
 
   @Override
   public boolean isValidSource(Configuration localConfiguration) {
-    if (localConfiguration.getProperty(APOLLO_CONFIG_URL_KEY) == null){
+    if (localConfiguration.getProperty(APOLLO_CONFIG_URL_KEY) == null) {
       LOGGER.warn("Apollo configuration source is not configured!");
       return false;
     }

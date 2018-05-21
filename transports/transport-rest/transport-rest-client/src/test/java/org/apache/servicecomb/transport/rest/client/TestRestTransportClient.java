@@ -131,7 +131,6 @@ public class TestRestTransportClient {
     Field clientMgrHttp2Field = instance.getClass().getDeclaredField("clientMgrHttp2");
     clientMgrHttp2Field.setAccessible(true);
 
-
     ClientPoolManager<HttpClientWithContext> client = new ClientPoolManager<HttpClientWithContext>(vertx, null) {
       @Mock
       public HttpClientWithContext findClientPool(boolean sync) {

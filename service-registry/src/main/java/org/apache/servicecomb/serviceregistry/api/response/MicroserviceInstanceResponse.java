@@ -30,6 +30,4 @@ public class MicroserviceInstanceResponse {
   public void setInstance(MicroserviceInstance instance) {
     this.instance = instance;
   }
-
-
 }

@@ -36,7 +36,6 @@ public class TestServiceCenterRegistryConfiguration {
         RegistryUtils.run();
         RegistryUtils.getMicroserviceInstance();
         result = microserviceInstance;
-
       }
     };
     System.setProperty("cse.rest.address", "127.0.0.1:8081");

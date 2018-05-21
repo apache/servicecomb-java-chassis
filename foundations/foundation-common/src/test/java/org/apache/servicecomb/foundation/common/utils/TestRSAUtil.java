@@ -37,7 +37,6 @@ public class TestRSAUtil {
     String testContent = "instance-id@201711201930@randomstr";
     String signstr = RSAUtils.sign(testContent, rsaKeyPairEntry.getPrivateKey());
     Assert.assertTrue(RSAUtils.verify(rsaKeyPairEntry.getPublicKeyEncoded(), signstr, testContent));
-
   }
 
   @Test
@@ -50,7 +49,5 @@ public class TestRSAUtil {
     String pubKey =
         "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCxKl5TNUTec7fL2degQcCk6vKf3c0wsfNK5V6elKzjWxm0MwbRj/UeR20VSnicBmVIOWrBS9LiERPPvjmmWUOSS2vxwr5XfhBhZ07gCAUNxBOTzgMo5nE45DhhZu5Jzt5qSV6o10Kq7+fCCBlDZ1UoWxZceHkUt5AxcrhEDulFjQIDAQAB";
     Assert.assertTrue(RSAUtils.verify(pubKey, sign, content));
-
   }
-
 }

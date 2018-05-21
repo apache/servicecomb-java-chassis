@@ -41,6 +41,7 @@ public class RestAsyncListener implements AsyncListener {
   private static final Logger LOGGER = LoggerFactory.getLogger(RestAsyncListener.class);
 
   private static String TIMEOUT_MESSAGE;
+
   static {
     try {
       TIMEOUT_MESSAGE = JsonUtils.writeValueAsString(new CommonExceptionData("TimeOut in Processing"));

@@ -88,7 +88,7 @@ public class PerfConsumer {
 
   private void runSyncConsumer() {
     try {
-      for (;;) {
+      for (; ; ) {
         intf.syncQuery(PerfConfiguration.id,
             PerfConfiguration.step,
             PerfConfiguration.all,

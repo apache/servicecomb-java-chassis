@@ -74,7 +74,6 @@ public class TestAbstractDiscoveryFilter {
   }
 
 
-
   @Test
   public void discoveryNotInitedOnce() {
     inited[0] = false;

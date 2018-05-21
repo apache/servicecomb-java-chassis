@@ -26,8 +26,8 @@ public class VertxWorkerExecutor implements Executor {
   @Override
   public void execute(Runnable command) {
     Vertx.currentContext().owner().executeBlocking(future -> {
-      command.run();
-    },
+          command.run();
+        },
         false,
         null);
   }

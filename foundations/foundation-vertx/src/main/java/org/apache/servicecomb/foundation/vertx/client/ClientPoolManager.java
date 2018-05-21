@@ -30,12 +30,12 @@ import io.vertx.core.Vertx;
  * 之所以再包装一层，是因为多个线程使用一个连接池的场景下
  * 会导致多个线程抢连接池的同一把锁
  * 包装之后，允许使用m个网络线程，每个线程中有1个连接池
- * 
+ *
  * support both sync and reactive invoke.
  * 1.sync invoke, bind to a net thread
  * 2.async but not in eventloop, select but not bind to a net thread
  * 3.async and in eventloop, use clientPool in self thread
- * 
+ *
  * sync/async is not about net operation, just about consumer invoke mode.
  */
 public class ClientPoolManager<CLIENT_POOL> {

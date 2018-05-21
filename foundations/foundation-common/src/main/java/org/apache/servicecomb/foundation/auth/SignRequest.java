@@ -195,5 +195,4 @@ public class SignRequest {
   public void setQueryParams(Map<String, String[]> queryParams) {
     this.queryParams = queryParams;
   }
-
 }

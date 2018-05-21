@@ -24,7 +24,7 @@ public interface MetricsInitializer {
     return 0;
   }
 
-  /** 
+  /**
    * if create new registry, must add to globalRegistry
    */
   void init(CompositeRegistry globalRegistry, EventBus eventBus, MetricsBootstrapConfig config);

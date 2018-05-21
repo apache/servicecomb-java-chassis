@@ -62,8 +62,9 @@ public final class ArchaiusUtils {
   public static void setProperty(String key, Object value) {
     // ensure have instance
     DynamicPropertyFactory.getInstance();
-    
-    ConcurrentCompositeConfiguration config = (ConcurrentCompositeConfiguration) DynamicPropertyFactory.getBackingConfigurationSource();
+
+    ConcurrentCompositeConfiguration config = (ConcurrentCompositeConfiguration) DynamicPropertyFactory
+        .getBackingConfigurationSource();
     config.getConfiguration(0).addProperty(key, value);
   }
 }

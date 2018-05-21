@@ -112,6 +112,4 @@ public class RSAAuthenticationToken {
   public int hashCode() {
     return this.plainToken().hashCode() + this.sign.hashCode();
   }
-
-
 }

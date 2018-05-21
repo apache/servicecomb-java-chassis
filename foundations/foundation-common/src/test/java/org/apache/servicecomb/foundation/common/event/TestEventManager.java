@@ -46,6 +46,5 @@ public class TestEventManager {
   public void eventCallBack(TestEventManager lTestEventManager) {
     i++;
   }
-
 }
 

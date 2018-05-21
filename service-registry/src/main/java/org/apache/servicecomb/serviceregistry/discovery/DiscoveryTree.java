@@ -100,7 +100,7 @@ public class DiscoveryTree {
   }
 
   protected DiscoveryTreeNode doDiscovery(DiscoveryContext context, DiscoveryTreeNode parent) {
-    for (int idx = 0; idx < filters.size();) {
+    for (int idx = 0; idx < filters.size(); ) {
       DiscoveryFilter filter = filters.get(idx);
       context.setCurrentNode(parent);
 

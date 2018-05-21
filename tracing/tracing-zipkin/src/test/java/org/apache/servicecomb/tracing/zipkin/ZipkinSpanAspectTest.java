@@ -55,7 +55,7 @@ public class ZipkinSpanAspectTest {
 
   @Autowired
   private SomeSlowTask someSlowTask;
-  
+
   @Autowired
   private CustomSpanTask customSpanTask;
 
@@ -77,16 +77,15 @@ public class ZipkinSpanAspectTest {
     assertThat(span.name(), is("crawl"));
     assertThat(tracedValues(span), contains(SomeSlowTask.class.getMethod("crawl").toString()));
   }
-  
+
   @Test
   public void reportCustomSpanInfomation() throws Exception {
     customSpanTask.invoke();
     await().atMost(2, SECONDS).until(() -> !spans.isEmpty());
-  
+
     zipkin2.Span span = spans.poll();
     assertThat(span.name(), is("transaction1"));
     assertThat(tracedValues(span), contains("startA"));
-    
   }
 
   private List<String> tracedValues(zipkin2.Span spans) {

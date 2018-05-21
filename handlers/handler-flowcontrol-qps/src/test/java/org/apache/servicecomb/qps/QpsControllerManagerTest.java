@@ -76,13 +76,13 @@ public class QpsControllerManagerTest {
     ArchaiusUtils.setProperty("cse.flowcontrol.Consumer.qps.limit.poj.server", 10000);
     qpsController = testQpsControllerManager.getOrCreate("poj", invocation);
     Assert.assertEquals("poj.server", qpsController.getKey());
-    Assert.assertEquals(qpsController.getQpsLimit(), (Integer)10000);
-    
+    Assert.assertEquals(qpsController.getQpsLimit(), (Integer) 10000);
+
     ArchaiusUtils.setProperty("cse.flowcontrol.Consumer.qps.limit.poj.server.test", 20000);
     qpsController = testQpsControllerManager.getOrCreate("poj", invocation);
     Assert.assertEquals("poj.server.test", qpsController.getKey());
-    Assert.assertEquals(qpsController.getQpsLimit(), (Integer)20000);
-    
+    Assert.assertEquals(qpsController.getQpsLimit(), (Integer) 20000);
+
     testGetOrCreateCommon(testQpsControllerManager, invocation, operationMeta);
   }
 
@@ -174,7 +174,6 @@ public class QpsControllerManagerTest {
     qpsController = qpsControllerManager.getOrCreate("test-service", invocation);
     Assert.assertEquals("test-service", qpsController.getKey());
     Assert.assertNull(qpsController.getQpsLimit());
-
 
     new Expectations() {
       {

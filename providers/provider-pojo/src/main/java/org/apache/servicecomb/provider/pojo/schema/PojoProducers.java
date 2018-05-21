@@ -40,7 +40,7 @@ public class PojoProducers implements BeanPostProcessor {
   }
 
   /**
-   * @deprecated  Replaced by {@link #getProducers()}
+   * @deprecated Replaced by {@link #getProducers()}
    */
   @Deprecated
   public Collection<PojoProducerMeta> getProcucers() {

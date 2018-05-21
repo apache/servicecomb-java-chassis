@@ -52,5 +52,4 @@ public class JaxrsHelloImpl implements Hello {
   public String sayBye() {
     return "Bye !";
   }
-
 }

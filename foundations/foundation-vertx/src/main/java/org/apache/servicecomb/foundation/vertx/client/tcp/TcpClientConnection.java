@@ -143,7 +143,7 @@ public class TcpClientConnection extends TcpConnection {
   }
 
   private void writePackageInContext() {
-    for (;;) {
+    for (; ; ) {
       AbstractTcpClientPackage pkg = packageQueue.poll();
       if (pkg == null) {
         break;

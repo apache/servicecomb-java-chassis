@@ -53,8 +53,6 @@ public class TestFileUploadPart {
   @Before
   public void setup() {
     part = new FileUploadPart(fileUpload);
-
-
   }
 
   @Test

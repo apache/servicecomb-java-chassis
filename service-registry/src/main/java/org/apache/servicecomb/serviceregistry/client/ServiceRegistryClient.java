@@ -79,9 +79,9 @@ public interface ServiceRegistryClient {
   String getSchema(String microserviceId, String schemaId);
 
   /**
-  *
-  * 批量获取schemas内容
-  */
+   *
+   * 批量获取schemas内容
+   */
   List<GetSchemaResponse> getSchemas(String microserviceId);
 
   /**
@@ -135,9 +135,9 @@ public interface ServiceRegistryClient {
       String versionRule);
 
   /**
-  *
-  * 按照app+interface+version+revision查询实例endpoints信息
-  */
+   *
+   * 按照app+interface+version+revision查询实例endpoints信息
+   */
   MicroserviceInstances findServiceInstances(String consumerId, String appId, String serviceName,
       String versionRule, String revision);
 

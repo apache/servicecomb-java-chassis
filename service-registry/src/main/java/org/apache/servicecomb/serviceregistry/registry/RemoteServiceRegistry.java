@@ -87,7 +87,6 @@ public class RemoteServiceRegistry extends AbstractServiceRegistry {
         serviceRegistryConfig.getInstancePullInterval(),
         serviceRegistryConfig.getInstancePullInterval(),
         TimeUnit.SECONDS);
-
   }
 
 

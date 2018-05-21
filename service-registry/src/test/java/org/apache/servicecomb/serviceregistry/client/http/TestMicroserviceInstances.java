@@ -73,5 +73,4 @@ public class TestMicroserviceInstances {
     microserviceInstances.setNeedRefresh(false);
     microserviceInstances.setRevision("1");
   }
-
 }

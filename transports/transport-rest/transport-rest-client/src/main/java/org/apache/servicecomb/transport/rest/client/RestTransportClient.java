@@ -61,7 +61,6 @@ public class RestTransportClient {
     HttpClientOptions httpClientOptions = createHttpClientOptions();
     clientMgr = new ClientPoolManager<>(vertx, new HttpClientPoolFactory(httpClientOptions));
 
-
     HttpClientOptions httpClientOptionshttp2 = createHttpClientOptions();
     httpClientOptionshttp2.setUseAlpn(true).setProtocolVersion(HttpVersion.HTTP_2);
     httpClientOptionshttp2.setHttp2ClearTextUpgrade(false);
@@ -94,7 +93,6 @@ public class RestTransportClient {
 
     if (endpoint.isHttp2Enabled()) {
       httpClientWithContext = findHttp2ClientPool(invocation);
-
     } else {
       httpClientWithContext = findHttpClientPool(invocation);
     }

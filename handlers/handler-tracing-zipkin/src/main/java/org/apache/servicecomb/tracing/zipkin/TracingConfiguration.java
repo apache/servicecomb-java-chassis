@@ -17,10 +17,6 @@
 
 package org.apache.servicecomb.tracing.zipkin;
 
-import org.apache.servicecomb.config.DynamicProperties;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-
 import static org.apache.servicecomb.foundation.common.base.ServiceCombConstants.CONFIG_QUALIFIED_MICROSERVICE_NAME_KEY;
 import static org.apache.servicecomb.foundation.common.base.ServiceCombConstants.CONFIG_TRACING_COLLECTOR_ADDRESS;
 import static org.apache.servicecomb.foundation.common.base.ServiceCombConstants.CONFIG_TRACING_COLLECTOR_API_V1;
@@ -31,6 +27,10 @@ import static org.apache.servicecomb.foundation.common.base.ServiceCombConstants
 import static org.apache.servicecomb.foundation.common.base.ServiceCombConstants.DEFAULT_TRACING_COLLECTOR_ADDRESS;
 
 import java.text.MessageFormat;
+
+import org.apache.servicecomb.config.DynamicProperties;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 
 import brave.Tracing;
 import brave.context.log4j12.MDCCurrentTraceContext;
@@ -52,7 +52,7 @@ class TracingConfiguration {
     apiVersion = dynamicProperties.getStringProperty(CONFIG_TRACING_COLLECTOR_API_VERSION,
         CONFIG_TRACING_COLLECTOR_API_V2).toLowerCase();
     // use default value if the user set value is invalid
-    if (apiVersion.compareTo(CONFIG_TRACING_COLLECTOR_API_V1) != 0){
+    if (apiVersion.compareTo(CONFIG_TRACING_COLLECTOR_API_V1) != 0) {
       apiVersion = CONFIG_TRACING_COLLECTOR_API_V2;
     }
 
@@ -68,7 +68,7 @@ class TracingConfiguration {
 
   @Bean
   Reporter<Span> zipkinReporter(Sender sender) {
-    if (apiVersion.compareTo(CONFIG_TRACING_COLLECTOR_API_V1) == 0){
+    if (apiVersion.compareTo(CONFIG_TRACING_COLLECTOR_API_V1) == 0) {
       return AsyncReporter.builder(sender).build(SpanBytesEncoder.JSON_V1);
     }
 

@@ -39,6 +39,7 @@ public final class Const {
     public static final String V4_PREFIX = String.format("/v4/%s/registry", DOMAIN_NAME);
 
     public static final String MICROSERVICE_OPERATION_ALL;
+
     static {
       if (VERSION_V3.equals(CURRENT_VERSION)) {
         MICROSERVICE_OPERATION_ALL = "/registry/v3/microservices";
@@ -48,6 +49,7 @@ public final class Const {
     }
 
     public static final String MICROSERVICE_OPERATION_ONE;
+
     static {
       if (VERSION_V3.equals(CURRENT_VERSION)) {
         MICROSERVICE_OPERATION_ONE = "/registry/v3/microservices/%s";
@@ -57,6 +59,7 @@ public final class Const {
     }
 
     public static final String MICROSERVICE_INSTANCE_OPERATION_ALL;
+
     static {
       if (VERSION_V3.equals(CURRENT_VERSION)) {
         MICROSERVICE_INSTANCE_OPERATION_ALL = "/registry/v3/microservices/%s/instances";
@@ -66,6 +69,7 @@ public final class Const {
     }
 
     public static final String MICROSERVICE_INSTANCE_OPERATION_ONE;
+
     static {
       if (VERSION_V3.equals(CURRENT_VERSION)) {
         MICROSERVICE_INSTANCE_OPERATION_ONE = "/registry/v3/microservices/%s/instances/%s";
@@ -75,6 +79,7 @@ public final class Const {
     }
 
     public static final String MICROSERVICE_INSTANCES;
+
     static {
       if (VERSION_V3.equals(CURRENT_VERSION)) {
         MICROSERVICE_INSTANCES = "/registry/v3/instances";
@@ -84,6 +89,7 @@ public final class Const {
     }
 
     public static final String MICROSERVICE_PROPERTIES;
+
     static {
       if (VERSION_V3.equals(CURRENT_VERSION)) {
         MICROSERVICE_PROPERTIES = "/registry/v3/microservices/%s/properties";
@@ -93,6 +99,7 @@ public final class Const {
     }
 
     public static final String MICROSERVICE_INSTANCE_PROPERTIES;
+
     static {
       if (VERSION_V3.equals(CURRENT_VERSION)) {
         MICROSERVICE_INSTANCE_PROPERTIES = "/registry/v3/microservices/%s/instances/%s/properties";
@@ -102,6 +109,7 @@ public final class Const {
     }
 
     public static final String MICROSERVICE_HEARTBEAT;
+
     static {
       if (VERSION_V3.equals(CURRENT_VERSION)) {
         MICROSERVICE_HEARTBEAT = "/registry/v3/microservices/%s/instances/%s/heartbeat";
@@ -111,6 +119,7 @@ public final class Const {
     }
 
     public static final String MICROSERVICE_EXISTENCE;
+
     static {
       if (VERSION_V3.equals(CURRENT_VERSION)) {
         MICROSERVICE_EXISTENCE = "/registry/v3/existence";
@@ -120,6 +129,7 @@ public final class Const {
     }
 
     public static final String MICROSERVICE_ALL_SCHEMAs;
+
     static {
       if (VERSION_V3.equals(CURRENT_VERSION)) {
         MICROSERVICE_ALL_SCHEMAs = "/registry/v3/microservices/%s/schemas";
@@ -129,6 +139,7 @@ public final class Const {
     }
 
     public static final String MICROSERVICE_SCHEMA;
+
     static {
       if (VERSION_V3.equals(CURRENT_VERSION)) {
         MICROSERVICE_SCHEMA = "/registry/v3/microservices/%s/schemas/%s";
@@ -138,6 +149,7 @@ public final class Const {
     }
 
     public static final String MICROSERVICE_WATCH;
+
     static {
       if (VERSION_V3.equals(CURRENT_VERSION)) {
         MICROSERVICE_WATCH = "/registry/v3/microservices/%s/watcher";
@@ -147,6 +159,7 @@ public final class Const {
     }
 
     public static final String SERVICECENTER_VERSION;
+
     static {
       if (VERSION_V3.equals(CURRENT_VERSION)) {
         SERVICECENTER_VERSION = "/version";

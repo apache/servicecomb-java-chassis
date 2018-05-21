@@ -49,5 +49,4 @@ public class FromCacheFallbackPolicy implements FallbackPolicy {
       cachedResponse.put(invocation.getInvocationQualifiedName(), response);
     }
   }
-
 }

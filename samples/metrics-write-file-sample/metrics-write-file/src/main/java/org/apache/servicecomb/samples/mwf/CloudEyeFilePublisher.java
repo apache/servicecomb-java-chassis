@@ -40,10 +40,10 @@ import com.netflix.spectator.api.Tag;
 
 /**
  * a sample for cloud eye
- * 
+ *
  * related product only used logback or log4j2
  * both logback and log4j2 support write to different log file depend on different MDC value
- * 
+ *
  * reference sample-logback.xml and sample-log4j2.xml
  */
 public class CloudEyeFilePublisher implements MetricsInitializer {

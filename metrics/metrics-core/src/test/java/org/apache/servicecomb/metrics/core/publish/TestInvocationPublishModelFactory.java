@@ -120,7 +120,6 @@ public class TestInvocationPublishModelFactory {
       }
     };
 
-
     new Expectations() {
       {
         response.getStatusCode();

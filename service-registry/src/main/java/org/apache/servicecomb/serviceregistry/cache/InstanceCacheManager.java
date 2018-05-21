@@ -23,5 +23,4 @@ public interface InstanceCacheManager {
   InstanceCache getOrCreate(String appId, String microserviceName, String microserviceVersionRule);
 
   VersionedCache getOrCreateVersionedCache(String appId, String microserviceName, String microserviceVersionRule);
-
 }

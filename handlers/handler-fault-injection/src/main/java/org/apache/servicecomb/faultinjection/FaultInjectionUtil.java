@@ -42,7 +42,7 @@ public class FaultInjectionUtil {
 
   /**
    * Returns total requests per provider for operational level.
-   * 
+   *
    * @param key
    *            transport+operational name
    * @return long total requests
@@ -70,7 +70,7 @@ public class FaultInjectionUtil {
 
   /**
    * Handles the reading fault injection configuration.
-   * 
+   *
    * @param invocation
    *            invocation of request
    * @param key
@@ -132,13 +132,12 @@ public class FaultInjectionUtil {
 
     value = FaultInjectionConfig.getConfigVal(config, FAULT_INJECTION_DEFAULT_VALUE);
     return value;
-
   }
 
   /**
    * It will check the delay/abort condition based on request count and percentage
    * received.
-   * 
+   *
    * @param reqCount
    * @param percentage
    * @param key

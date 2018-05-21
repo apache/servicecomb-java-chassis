@@ -85,7 +85,7 @@ public class RSAUtils {
   }
 
   /**
-   * 
+   *
    * if has performance problem ,change Signature to ThreadLocal instance  
    * @param publicKey public key after base64 encode 
    * @param sign 签名
@@ -109,5 +109,4 @@ public class RSAUtils {
     signature.update(content.getBytes());
     return signature.verify(decoder.decode(sign));
   }
-
 }

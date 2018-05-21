@@ -133,7 +133,7 @@ public class TestHighwayCodec {
     Mockito.when(schemaMeta.getProviderHandlerChain()).thenReturn(Collections.emptyList());
     Object[] args = new Object[] {};
     Mockito.when(schema.readObject(bodyBuffer, null)).thenReturn(args);
-    
+
     Invocation invocation = new Invocation(endpoint, operationMeta, null);
 
     HighwayCodec.decodeRequest(invocation, header, operationProtobuf, bodyBuffer, null);

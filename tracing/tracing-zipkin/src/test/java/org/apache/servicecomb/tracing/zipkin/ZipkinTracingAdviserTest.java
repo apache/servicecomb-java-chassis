@@ -38,7 +38,6 @@ import java.util.concurrent.CyclicBarrier;
 import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 
-import org.apache.servicecomb.tracing.zipkin.ZipkinTracingAdviser;
 import org.apache.servicecomb.tracing.zipkin.ZipkinTracingAdviser.ThrowableSupplier;
 import org.junit.After;
 import org.junit.Test;

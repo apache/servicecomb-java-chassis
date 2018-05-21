@@ -333,7 +333,6 @@ public class TestMicroserviceVersions {
     key.setServiceName(microserviceName);
     checkIsEventAccept(key, false);
 
-
     key.setAppId(appId);
     key.setServiceName(appId + Const.APP_SERVICE_SEPARATOR + microserviceName);
 

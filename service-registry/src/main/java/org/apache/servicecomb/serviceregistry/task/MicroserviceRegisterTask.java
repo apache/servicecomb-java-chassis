@@ -58,7 +58,7 @@ public class MicroserviceRegisterTask extends AbstractRegisterTask {
 
   @Subscribe
   public void onInstanceRegistryFailed(MicroserviceInstanceRegisterTask task) {
-    if (task.taskStatus != TaskStatus.FINISHED){
+    if (task.taskStatus != TaskStatus.FINISHED) {
       LOGGER.info("read MicroserviceInstanceRegisterTask status is {}", task.taskStatus);
       this.taskStatus = TaskStatus.READY;
       this.registered = false;

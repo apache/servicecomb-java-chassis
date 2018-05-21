@@ -92,5 +92,4 @@ public class TestServiceCenterTask {
     eventBus.post(heartBeatEvent);
     Assert.assertTrue(Deencapsulation.getField(serviceCenterTask, "registerInstanceSuccess"));
   }
-
 }

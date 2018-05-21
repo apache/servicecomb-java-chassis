@@ -24,20 +24,26 @@ import io.vertx.core.json.JsonObject;
 public class OutputModelForTestIgnore {
   @JsonIgnore
   private String outputId = null;
+
   private String inputId = null;
+
   private String content = null;
 
   @JsonIgnore
   private Object inputObject = null;
+
   @JsonIgnore
   private JsonObject inputJsonObject = null;
+
   @JsonIgnore
   private IgnoreInterface inputIgnoreInterface = null;
 
   @JsonIgnore
   private Object outputObject = null;
+
   @JsonIgnore
   private JsonObject outputJsonObject = null;
+
   @JsonIgnore
   private IgnoreInterface outputIgnoreInterface = null;
 
