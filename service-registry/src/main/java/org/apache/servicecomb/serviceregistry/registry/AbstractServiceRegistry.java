@@ -46,8 +46,6 @@ import org.apache.servicecomb.serviceregistry.definition.MicroserviceDefinition;
 import org.apache.servicecomb.serviceregistry.task.MicroserviceServiceCenterTask;
 import org.apache.servicecomb.serviceregistry.task.ServiceCenterTask;
 import org.apache.servicecomb.serviceregistry.task.event.ShutdownEvent;
-import org.apache.servicecomb.serviceregistry.version.Version;
-import org.apache.servicecomb.serviceregistry.version.VersionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
