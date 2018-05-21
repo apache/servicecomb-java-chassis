@@ -175,23 +175,23 @@ public class TestDefaultLogPublisher {
 
     LoggingEvent event = events.get(0);
     Assert.assertEquals("\n" +
-        "vertx:\n" +
-        "  name       eventLoopContext-created\n" +
-        "  v          1\n" +
-        "threadPool:\n" +
-        "  corePoolSize maxThreads poolSize currentThreadsBusy queueSize taskCount completedTaskCount name\n" +
-        "  0            0          0        0                  0         0.0       0.0                test\n" +
-        "consumer:\n" +
-        "  tps     latency(ms) max-latency(ms) operation\n" +
-        "  rest.OK:\n" +
-        "  10      10.000      0.000           op\n" +
-        "  10      10.000      0.000           \n" +
-        "producer:\n" +
-        "  tps     latency(ms) max-latency(ms) queue(ms) max-queue(ms) execute(ms) max-execute(ms) operation\n" +
-        "  rest.OK:\n" +
-        "  10      10.000      0.000           10.000    0.000         10.000      0.000           op\n" +
-        "  10      10.000      0.000           10.000    0.000         10.000      0.000           \n" +
-        "",
+            "vertx:\n" +
+            "  name       eventLoopContext-created\n" +
+            "  v          1\n" +
+            "threadPool:\n" +
+            "  corePoolSize maxThreads poolSize currentThreadsBusy queueSize taskCount completedTaskCount name\n" +
+            "  0            0          0        0                  0         0.0       0.0                test\n" +
+            "consumer:\n" +
+            "  tps     latency(ms) max-latency(ms) operation\n" +
+            "  rest.OK:\n" +
+            "  10      10.000      0.000           op\n" +
+            "  10      10.000      0.000           \n" +
+            "producer:\n" +
+            "  tps     latency(ms) max-latency(ms) queue(ms) max-queue(ms) execute(ms) max-execute(ms) operation\n" +
+            "  rest.OK:\n" +
+            "  10      10.000      0.000           10.000    0.000         10.000      0.000           op\n" +
+            "  10      10.000      0.000           10.000    0.000         10.000      0.000           \n" +
+            "",
         event.getMessage());
   }
 }

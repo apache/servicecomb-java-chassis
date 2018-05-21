@@ -266,7 +266,6 @@ public class TestInvocationToHttpServletRequest {
       }
     };
 
-
     try {
       request.getPathInfo();
       Assert.fail("must throw exception");

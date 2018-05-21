@@ -25,9 +25,9 @@ import org.apache.servicecomb.serviceregistry.api.Const;
 import org.springframework.stereotype.Component;
 
 /**
- * 
+ *
  * initialize public and private key pair when system boot before registry instance to service center
- * 
+ *
  *
  */
 @Component
@@ -44,9 +44,5 @@ public class AuthHandlerBoot implements BootListener {
       RegistryUtils.getMicroserviceInstance().getProperties().put(Const.INSTANCE_PUBKEY_PRO,
           rsaKeyPairEntry.getPublicKeyEncoded());
     }
-
   }
-
-
-
 }

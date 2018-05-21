@@ -36,7 +36,5 @@ public class ProviderAuthHanlder implements Handler {
     } else {
       asyncResp.producerFail(new InvocationException(new HttpStatus(401, "UNAUTHORIZED"), "UNAUTHORIZED"));
     }
-
   }
-
 }

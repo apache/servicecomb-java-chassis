@@ -52,7 +52,6 @@ public class MicroserviceInstanceCache {
           logger.debug("get microservice instance from SC");
           return getMicroserviceInstanceFromSC(serviceId, instanceId);
         }
-
       });
     } catch (ExecutionException e) {
       logger.error("get microservice from cache failed:" + String.format("%s@%s", serviceId, instanceId));
@@ -63,5 +62,4 @@ public class MicroserviceInstanceCache {
   private static MicroserviceInstance getMicroserviceInstanceFromSC(String serviceId, String instanceId) {
     return RegistryUtils.getServiceRegistryClient().findServiceInstance(serviceId, instanceId);
   }
-
 }

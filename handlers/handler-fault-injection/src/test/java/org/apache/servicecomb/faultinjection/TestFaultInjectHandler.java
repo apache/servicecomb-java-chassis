@@ -106,7 +106,7 @@ public class TestFaultInjectHandler {
   /**
    * Tests the fault injection handler functionality with default values for
    * highway transport.
-   * 
+   *
    * @throws Exception
    */
   @Test
@@ -118,7 +118,6 @@ public class TestFaultInjectHandler {
     Mockito.when(invocation.getOperationName()).thenReturn("sayHello");
     Mockito.when(invocation.getSchemaId()).thenReturn("sayHelloSchema");
     Mockito.when(invocation.getMicroserviceName()).thenReturn("hello");
-
 
     List<Fault> faultInjectionFeatureList = Arrays.asList(abortFault, delayFault);
     handler.setFaultFeature(faultInjectionFeatureList);
@@ -132,7 +131,7 @@ public class TestFaultInjectHandler {
   /**
    * Tests the fault injection handler functionality with default values for rest
    * transport.
-   * 
+   *
    * @throws Exception
    */
   @Test
@@ -157,7 +156,7 @@ public class TestFaultInjectHandler {
   /**
    * Tests the fault injection handler functionality with global configuration
    * with delay/abort condition.
-   * 
+   *
    * @throws Exception
    */
   @Test
@@ -198,7 +197,7 @@ public class TestFaultInjectHandler {
   /**
    * Tests the fault injection handler functionality with service level configuration
    * with delay/abort condition.
-   * 
+   *
    * @throws Exception
    */
   @Test
@@ -239,7 +238,7 @@ public class TestFaultInjectHandler {
   /**
    * Tests the fault injection handler functionality with schema level configuration
    * with delay/abort condition.
-   * 
+   *
    * @throws Exception
    */
   @Test
@@ -288,7 +287,7 @@ public class TestFaultInjectHandler {
   /**
    * Tests the fault injection handler functionality with operation level configuration
    * with delay/abort condition.
-   * 
+   *
    * @throws Exception
    */
   @Test
@@ -345,7 +344,7 @@ public class TestFaultInjectHandler {
 
   /**
    * Tests the fault injection handler functionality with configuration change event for global level config.
-   * 
+   *
    * @throws Exception
    */
   @Test
@@ -406,12 +405,11 @@ public class TestFaultInjectHandler {
 
     AtomicLong count = FaultInjectionUtil.getOperMetTotalReq("restMicroserviceQualifiedName7");
     assertEquals(3, count.get());
-
   }
 
   /**
    * Tests the fault injection handler functionality with configuration change event for operation level config.
-   * 
+   *
    * @throws Exception
    */
   @Test
@@ -429,7 +427,6 @@ public class TestFaultInjectHandler {
     System.setProperty(
         "cse.governance.Consumer.carts2.schemas.testSchema2.operations.sayBye2.policy.fault.protocols.rest.abort.httpStatus",
         "420");
-
 
     Mockito.when(invocation.getMicroserviceQualifiedName()).thenReturn("MicroserviceQualifiedName8");
     Mockito.when(invocation.getTransport()).thenReturn(transport);
@@ -477,15 +474,13 @@ public class TestFaultInjectHandler {
         .remove(
             "cse.governance.Consumer.carts2.schemas.testSchema2.operations.sayBye2.policy.fault.protocols.rest.abort.httpStatus");
 
-
     AtomicLong count = FaultInjectionUtil.getOperMetTotalReq("restMicroserviceQualifiedName8");
     assertEquals(3, count.get());
-
   }
 
   /**
    * Tests the fault injection handler functionality with configuration change event for schema level config.
-   * 
+   *
    * @throws Exception
    */
   @Test
@@ -546,14 +541,13 @@ public class TestFaultInjectHandler {
     System.getProperties()
         .remove("cse.governance.Consumer.carts3.schemas.testSchema3.policy.fault.protocols.rest.abort.httpStatus");
 
-
     AtomicLong count = FaultInjectionUtil.getOperMetTotalReq("restMicroserviceQualifiedName9");
     assertEquals(3, count.get());
   }
 
   /**
    * Tests the fault injection handler functionality with configuration change event for service level config.
-   * 
+   *
    * @throws Exception
    */
   @Test
@@ -601,7 +595,6 @@ public class TestFaultInjectHandler {
       Assert.assertTrue((timeNow - timeOld) >= 500);
     });
 
-
     System.getProperties()
         .remove("cse.governance.Consumer.carts4.policy.fault.protocols.rest.delay.fixedDelay");
     System.getProperties()
@@ -611,14 +604,13 @@ public class TestFaultInjectHandler {
     System.getProperties()
         .remove("cse.governance.Consumer.carts4.policy.fault.protocols.rest.abort.httpStatus");
 
-
     AtomicLong count = FaultInjectionUtil.getOperMetTotalReq("restMicroserviceQualifiedName10");
     assertEquals(3, count.get());
   }
 
   /**
    * Tests the fault injection handler functionality with configuration change event for service level config.
-   * 
+   *
    * @throws Exception
    */
   @Test
@@ -670,7 +662,7 @@ public class TestFaultInjectHandler {
 
   /**
    * Tests the fault injection handler functionality with configuration change event for service level config.
-   * 
+   *
    * @throws Exception
    */
   @Test
@@ -701,6 +693,5 @@ public class TestFaultInjectHandler {
 
     AtomicLong count = FaultInjectionUtil.getOperMetTotalReq("restMicroserviceQualifiedName12");
     assertEquals(1, count.get());
-
   }
 }

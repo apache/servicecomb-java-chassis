@@ -152,15 +152,19 @@ public final class NetUtils {
   }
 
   public static IpPort parseIpPort(String scheme, String authority) {
-    if (authority == null)
+    if (authority == null) {
       return null;
+    }
     int idx = authority.indexOf(':');
-    if (idx != -1)
+    if (idx != -1) {
       return parseIpPort(authority);
-    if (scheme.equals("http"))
+    }
+    if (scheme.equals("http")) {
       return new IpPort(authority, 80);
-    if (scheme.equals("https"))
+    }
+    if (scheme.equals("https")) {
       return new IpPort(authority, 443);
+    }
     return null;
   }
 

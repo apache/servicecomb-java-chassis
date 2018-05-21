@@ -54,6 +54,5 @@ class ZipkinSpanAspect {
     }
 
     return adviser.invoke(spanName, callPath, joinPoint::proceed);
-
   }
 }

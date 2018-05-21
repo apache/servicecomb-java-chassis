@@ -44,5 +44,4 @@ public final class RSAKeyPairEntry {
   public String getPublicKeyEncoded() {
     return publicKeyEncoded;
   }
-
 }

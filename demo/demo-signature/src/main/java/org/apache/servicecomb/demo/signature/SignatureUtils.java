@@ -18,8 +18,8 @@
 package org.apache.servicecomb.demo.signature;
 
 import java.nio.charset.StandardCharsets;
-import java.util.Comparator;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 
 import org.apache.servicecomb.foundation.vertx.http.HttpServletRequestEx;
@@ -34,6 +34,7 @@ public class SignatureUtils {
       new DynamicStringListProperty("servicecomb.demo.signature.param-names", Arrays.asList("userId"));
 
   private static List<String> paramNames = PARAM_NAMES_PROPERTY.get();
+
   static {
     PARAM_NAMES_PROPERTY.addCallback(() -> {
       List<String> tmpNames = PARAM_NAMES_PROPERTY.get();

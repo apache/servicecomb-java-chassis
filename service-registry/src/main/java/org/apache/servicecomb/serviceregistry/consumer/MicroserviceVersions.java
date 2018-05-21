@@ -174,7 +174,8 @@ public class MicroserviceVersions {
           return MicroserviceInstanceStatus.UP.equals(instance.getStatus());
         })
         .collect(Collectors.toList());
-    if (upInstances.isEmpty() && inUseInstances != null && ServiceRegistryConfig.INSTANCE.isEmptyInstanceProtectionEnabled()) {
+    if (upInstances.isEmpty() && inUseInstances != null && ServiceRegistryConfig.INSTANCE
+        .isEmptyInstanceProtectionEnabled()) {
       MicroserviceInstancePing ping = SPIServiceUtils.getPriorityHighestService(MicroserviceInstancePing.class);
       inUseInstances.stream()
           .forEach(instance -> {

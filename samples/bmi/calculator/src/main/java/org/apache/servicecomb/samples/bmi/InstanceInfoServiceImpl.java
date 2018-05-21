@@ -37,5 +37,4 @@ public class InstanceInfoServiceImpl implements InstanceInfoService {
     }
     return instance.getInstanceId();
   }
-
 }

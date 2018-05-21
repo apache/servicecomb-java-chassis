@@ -54,5 +54,4 @@ public class ClientRestArgsFilter implements HttpClientFilter {
   public Response afterReceiveResponse(Invocation invocation, HttpServletResponseEx responseEx) {
     return null;
   }
-
 }

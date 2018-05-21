@@ -85,12 +85,12 @@ public final class ServiceRegistryConfig {
   public static final String PROXY_USERNAME = PROXY_PRE_NAME + "username";
 
   public static final String PROXY_PASSWD = PROXY_PRE_NAME + "passwd";
-  
-  
+
+
   private ServiceRegistryConfig() {
 
   }
-  
+
 
   public String getMicroserviceVersionFactory() {
     return DynamicPropertyFactory.getInstance().getStringProperty(MICROSERVICE_VERSION_FACTORY, null).get();

@@ -58,7 +58,7 @@ public class TestLocalServiceRegistry {
       Assert.fail("must throw exception");
     } catch (IllegalArgumentException e) {
       Assert.assertEquals("Invalid argument. microserviceId=" + microservice.getServiceId()
-          + ", microserviceInstanceId=notExist.",
+              + ", microserviceInstanceId=notExist.",
           e.getMessage());
     }
 

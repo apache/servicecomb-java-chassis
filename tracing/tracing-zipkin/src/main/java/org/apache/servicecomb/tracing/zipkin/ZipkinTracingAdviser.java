@@ -55,5 +55,4 @@ class ZipkinTracingAdviser {
   interface ThrowableSupplier<T> {
     T get() throws Throwable;
   }
-
 }

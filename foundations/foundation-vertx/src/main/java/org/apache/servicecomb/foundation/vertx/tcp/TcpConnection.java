@@ -101,7 +101,7 @@ public class TcpConnection {
 
   protected void writeInContext() {
     CompositeByteBuf cbb = ByteBufAllocator.DEFAULT.compositeBuffer();
-    for (;;) {
+    for (; ; ) {
       ByteBuf buf = writeQueue.poll();
       if (buf == null) {
         break;

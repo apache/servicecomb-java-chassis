@@ -106,7 +106,6 @@ public class TestStandardHttpServletResponseEx {
       public void write(int b) throws IOException {
         buffer.appendByte((byte) b);
       }
-
     };
     response = new MockUp<HttpServletResponse>() {
       @Mock

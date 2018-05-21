@@ -53,7 +53,6 @@ public class TestMetricsRestPublisher {
     publisher.init(globalRegistry, eventBus, new MetricsBootstrapConfig());
     Map<String, Double> result = publisher.measure();
 
-
     Assert.assertEquals(2, result.size());
     Assert.assertEquals(0, result.get("name(statistic=count,t1=v1,t2=v2)"), 0);
     Assert.assertEquals(0, result.get("name(statistic=totalTime,t1=v1,t2=v2)"), 0);

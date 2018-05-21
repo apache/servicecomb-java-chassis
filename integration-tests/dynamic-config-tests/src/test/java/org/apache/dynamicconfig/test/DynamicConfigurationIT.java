@@ -40,8 +40,11 @@ import com.netflix.config.DynamicPropertyFactory;
 
 public class DynamicConfigurationIT {
   private static String url;
+
   private static String token;
+
   private static final HttpHeaders headers = new HttpHeaders();
+
   private static final RestTemplate rest = new RestTemplate();
 
   @BeforeClass
@@ -60,14 +63,15 @@ public class DynamicConfigurationIT {
   }
 
   public int clearConfiguration() {
-    String delete = url + "/openapi/v1/envs/DEV/apps/SampleApp/clusters/default/namespaces/application/items/loadbalance?operator=apollo";
+    String delete = url
+        + "/openapi/v1/envs/DEV/apps/SampleApp/clusters/default/namespaces/application/items/loadbalance?operator=apollo";
     HttpEntity<?> entity = new HttpEntity<Object>(headers);
     ResponseEntity<String> exchange = rest.exchange(delete, HttpMethod.DELETE, entity, String.class);
     Assert.assertEquals(exchange.getStatusCodeValue(), HttpStatus.OK);
     return releaseConfiguration();
   }
 
-  public int releaseConfiguration(){
+  public int releaseConfiguration() {
     String release = url + "/openapi/v1/envs/DEV/apps/SampleApp/clusters/default/namespaces/application/releases";
     RestTemplate rest = new RestTemplate();
     Map<String, String> body = new HashMap<>();
@@ -81,7 +85,8 @@ public class DynamicConfigurationIT {
   @Test
   public void testDynamicConfiguration() {
     //before
-    Assert.assertEquals(DynamicPropertyFactory.getInstance().getStringProperty("loadbalcance", "default").getValue(), "default");
+    Assert.assertEquals(DynamicPropertyFactory.getInstance().getStringProperty("loadbalcance", "default").getValue(),
+        "default");
 
     String setLoadBalance = url + "/openapi/v1/envs/DEV/apps/SampleApp/clusters/default/namespaces/application/items";
     Map<String, String> body = new HashMap<>();

@@ -122,7 +122,6 @@ public class TestVertxClientRequestToHttpServletRequest {
     request.setHeader("name", "v1");
     request.setHeader("name", "v2");
     Assert.assertThat(headers.getAll("name"), Matchers.contains("v2"));
-
   }
 
   @Test

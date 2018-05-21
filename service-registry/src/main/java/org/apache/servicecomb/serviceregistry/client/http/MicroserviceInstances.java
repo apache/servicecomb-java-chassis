@@ -52,5 +52,4 @@ public class MicroserviceInstances {
   public void setInstancesResponse(FindInstancesResponse instancesResponse) {
     this.instancesResponse = instancesResponse;
   }
-
 }

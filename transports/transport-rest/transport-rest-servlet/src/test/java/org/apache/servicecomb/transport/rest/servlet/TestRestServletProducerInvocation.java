@@ -99,5 +99,4 @@ public class TestRestServletProducerInvocation {
     restInvocation.setHttpServerFilters(httpServerFilters);
     Assert.assertFalse(restInvocation.collectCacheRequest(operationMeta));
   }
-
 }

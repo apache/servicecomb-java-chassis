@@ -21,8 +21,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.ImportResource;
 
 /**
-* Initialize and Register the services with service center 
-*/
+ * Initialize and Register the services with service center
+ */
 @Configuration
 @ImportResource(BeanUtils.DEFAULT_BEAN_RESOURCE)
 public class ServiceCenterRegistryConfiguration {

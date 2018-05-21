@@ -36,6 +36,7 @@ import org.springframework.web.client.RestTemplate;
 @Component
 public class SpringmvcConsumerMain {
   private static final Logger LOG = LoggerFactory.getLogger(SpringmvcConsumerMain.class);
+
   private static RestTemplate restTemplate = RestTemplateBuilder.create();
 
   @RpcReference(microserviceName = "springmvc", schemaId = "springmvcHello")
@@ -76,15 +77,15 @@ public class SpringmvcConsumerMain {
         new ListenableFutureCallback<ResponseEntity<String>>() {
           @Override
           public void onFailure(Throwable ex) {
-            LOG.error("AsyncResTemplate Consumer catched exception when sayHello, ",ex);
+            LOG.error("AsyncResTemplate Consumer catched exception when sayHello, ", ex);
           }
+
           @Override
           public void onSuccess(ResponseEntity<String> result) {
             System.out.println("AsyncRestTemplate Consumer sayHello services: " + result.getBody());
           }
         }
     );
-
   }
 
   public static void init() throws Exception {

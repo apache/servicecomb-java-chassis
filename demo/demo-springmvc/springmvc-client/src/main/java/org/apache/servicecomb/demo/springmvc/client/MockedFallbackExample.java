@@ -33,5 +33,4 @@ public class MockedFallbackExample implements FallbackPolicy {
   public Response getFallbackResponse(Invocation invocation) {
     return Response.succResp("mockedreslut");
   }
-
 }

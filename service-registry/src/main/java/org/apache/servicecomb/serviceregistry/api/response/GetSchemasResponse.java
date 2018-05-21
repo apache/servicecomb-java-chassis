@@ -41,5 +41,4 @@ public class GetSchemasResponse {
   public void setSchemas(List<GetSchemaResponse> schemas) {
     this.schemas = schemas;
   }
-
 }

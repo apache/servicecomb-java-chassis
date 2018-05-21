@@ -23,8 +23,8 @@ import org.slf4j.LoggerFactory;
 import com.netflix.config.DynamicPropertyFactory;
 
 /**
-* Initialize and Register the services with service center 
-*/
+ * Initialize and Register the services with service center
+ */
 public class RegistryIntializer {
   private static final Logger LOG = LoggerFactory.getLogger(RegistryIntializer.class);
 

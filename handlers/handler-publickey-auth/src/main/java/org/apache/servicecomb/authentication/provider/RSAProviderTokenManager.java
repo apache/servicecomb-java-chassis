@@ -64,7 +64,6 @@ public class RSAProviderTokenManager {
 
       LOGGER.error("token verify error");
       return false;
-
     } catch (InvalidKeyException | NoSuchAlgorithmException | InvalidKeySpecException | SignatureException e) {
       LOGGER.error("verfiy error", e);
       return false;
@@ -87,5 +86,4 @@ public class RSAProviderTokenManager {
       return "";
     }
   }
-
 }

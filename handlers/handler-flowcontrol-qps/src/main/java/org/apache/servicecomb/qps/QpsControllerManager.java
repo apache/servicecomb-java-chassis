@@ -61,7 +61,8 @@ public class QpsControllerManager {
     // create "microservice"
     createQpsControllerIfNotExist(microserviceName);
     // create "microservice.schema"
-    createQpsControllerIfNotExist(qualifiedNameKey.substring(0, microserviceName.length() + invocation.getSchemaId().length() + 1));
+    createQpsControllerIfNotExist(
+        qualifiedNameKey.substring(0, microserviceName.length() + invocation.getSchemaId().length() + 1));
     // create "microservice.schema.operation"
     createQpsControllerIfNotExist(qualifiedNameKey);
 

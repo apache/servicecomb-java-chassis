@@ -91,7 +91,6 @@ public class CodeFirstRestTemplate {
 
     // only rest transport will set trace id
     testTraceIdOnNotSetBefore(template, cseUrlPrefix);
-
   }
 
   private void testCodeFirstUserMap(RestTemplate template, String cseUrlPrefix) {
@@ -241,7 +240,7 @@ public class CodeFirstRestTemplate {
   protected void testModelFieldIgnore(RestTemplate template, String cseUrlPrefix) {
     InputModelForTestIgnore input = new InputModelForTestIgnore("input_id_rest", "input_id_content",
         new Person("inputSomeone"), new JsonObject("{\"InputJsonKey\" : \"InputJsonValue\"}"), () -> {
-        });
+    });
     OutputModelForTestIgnore output = template
         .postForObject(cseUrlPrefix + "ignore", input, OutputModelForTestIgnore.class);
 

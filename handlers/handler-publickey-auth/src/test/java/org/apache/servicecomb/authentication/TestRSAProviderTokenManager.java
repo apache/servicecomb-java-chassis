@@ -72,7 +72,6 @@ public class TestRSAProviderTokenManager {
         result = microservice;
         RegistryUtils.getMicroserviceInstance();
         result = microserviceInstance;
-
       }
     };
 
@@ -85,7 +84,6 @@ public class TestRSAProviderTokenManager {
       {
         MicroserviceInstanceCache.getOrCreate(serviceId, instanceId);
         result = microserviceInstance;
-
       }
     };
     RSAProviderTokenManager rsaProviderTokenManager = new RSAProviderTokenManager();
@@ -93,9 +91,5 @@ public class TestRSAProviderTokenManager {
     Assert.assertTrue(rsaProviderTokenManager.valid(token));
     // second validate use validated pool
     Assert.assertTrue(rsaProviderTokenManager.valid(token));
-
   }
-
-
-
 }

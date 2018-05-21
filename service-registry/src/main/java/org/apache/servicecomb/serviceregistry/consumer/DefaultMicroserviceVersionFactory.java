@@ -23,5 +23,4 @@ public class DefaultMicroserviceVersionFactory implements MicroserviceVersionFac
   public MicroserviceVersion create(String microserviceName, String microserviceId) {
     return new MicroserviceVersion(microserviceId);
   }
-
 }

@@ -309,7 +309,6 @@ public class TestVertxServerRequestToHttpServletRequest {
     };
 
     Assert.assertThat(Collections.list(request.getHeaderNames()), Matchers.contains("name"));
-
   }
 
   @Test

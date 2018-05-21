@@ -96,8 +96,8 @@ public class SessionStickinessRule implements IRule {
   private boolean isTimeOut() {
     return Configuration.INSTANCE.getSessionTimeoutInSeconds(microserviceName) > 0
         && System.currentTimeMillis()
-            - this.lastAccessedTime > ((long) Configuration.INSTANCE.getSessionTimeoutInSeconds(microserviceName)
-                * MILLI_COUNT_IN_SECOND);
+        - this.lastAccessedTime > ((long) Configuration.INSTANCE.getSessionTimeoutInSeconds(microserviceName)
+        * MILLI_COUNT_IN_SECOND);
   }
 
   private boolean isErrorThresholdMet() {

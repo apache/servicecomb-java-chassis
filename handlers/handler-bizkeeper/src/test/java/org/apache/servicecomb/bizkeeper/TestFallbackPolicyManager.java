@@ -47,7 +47,8 @@ public class TestFallbackPolicyManager {
       }
     };
 
-    Assert.assertEquals((String) null, FallbackPolicyManager.getFallbackResponse("Consumer", null, invocation).getResult());
+    Assert.assertEquals((String) null,
+        FallbackPolicyManager.getFallbackResponse("Consumer", null, invocation).getResult());
 
     new Expectations() {
       {

@@ -121,7 +121,7 @@ public class TestConsumerQpsFlowControlHandler {
     QpsController qpsController = new QpsController("service", 12);
     Mockito.when(invocation.getMicroserviceName()).thenReturn("service");
     Mockito.when(invocation.getOperationMeta()).thenReturn(operationMeta);
-    
+
     Mockito.when(operationMeta.getSchemaQualifiedName()).thenReturn("schema.id");
     setQpsController(key, qpsController);
 

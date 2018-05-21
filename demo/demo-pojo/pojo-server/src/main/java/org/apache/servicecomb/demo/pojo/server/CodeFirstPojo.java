@@ -87,7 +87,7 @@ public class CodeFirstPojo implements CodeFirstPojoIntf {
     ContextUtils.getInvocationContext().setStatus(202);
     return name + " sayhi, context k: "
         + (ContextUtils.getInvocationContext() == null ? ""
-            : ContextUtils.getInvocationContext().getContext("k"));
+        : ContextUtils.getInvocationContext().getContext("k"));
   }
 
   @ApiOperation(nickname = "sayHi2", value = "")

@@ -23,5 +23,6 @@ import com.netflix.config.WatchedConfigurationSource;
 
 public interface ConfigCenterConfigurationSource extends WatchedConfigurationSource {
   boolean isValidSource(Configuration localConfiguration);
+
   void init(Configuration localConfiguration);
 }

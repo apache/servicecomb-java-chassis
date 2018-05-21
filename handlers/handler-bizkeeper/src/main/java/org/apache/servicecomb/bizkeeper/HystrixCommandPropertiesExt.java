@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-
 // This file is forked from https://github.com/Netflix/Hystrix/blob/master/hystrix-core/src/main/java/com/netflix/hystrix/HystrixCommandProperties.java
 
 package org.apache.servicecomb.bizkeeper;

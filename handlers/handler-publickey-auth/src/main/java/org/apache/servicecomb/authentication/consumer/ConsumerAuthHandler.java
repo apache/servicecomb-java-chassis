@@ -24,7 +24,7 @@ import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.swagger.invocation.AsyncResponse;
 
 /**
- * 
+ *
  * add token to context
  * Provider will get token for authentication
  *
@@ -49,5 +49,4 @@ public class ConsumerAuthHandler implements Handler {
   public void setAuthenticationTokenManager(RSAConsumerTokenManager authenticationTokenManager) {
     this.athenticationTokenManager = authenticationTokenManager;
   }
-
 }

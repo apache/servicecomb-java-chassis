@@ -51,14 +51,11 @@ public class TestConsumerAuthHandler {
     ConsumerAuthHandler consumerAuthHandler = new ConsumerAuthHandler();
     consumerAuthHandler.setAuthenticationTokenManager(tokenManager);
     consumerAuthHandler.handle(invocation, asyncResp);
-
   }
 
   @Before
   public void setUp() throws Exception {
     invocation = Mockito.mock(Invocation.class);
     asyncResp = Mockito.mock(AsyncResponse.class);
-
-
   }
 }

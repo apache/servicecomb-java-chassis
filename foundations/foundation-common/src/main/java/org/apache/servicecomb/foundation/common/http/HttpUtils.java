@@ -29,7 +29,7 @@ public final class HttpUtils {
   /**
    * paramName is not case sensitive
    * @param headerValue example: attachment;filename=a.txt
-   * 
+   *
    */
   // 
   public static String parseParamFromHeaderValue(String headerValue, String paramName) {

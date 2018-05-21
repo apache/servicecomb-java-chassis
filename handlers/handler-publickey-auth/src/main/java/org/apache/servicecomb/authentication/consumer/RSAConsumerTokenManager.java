@@ -48,7 +48,6 @@ public class RSAConsumerTokenManager {
       }
     }
     return token.format();
-
   }
 
   public String createToken() {
@@ -81,6 +80,4 @@ public class RSAConsumerTokenManager {
     long now = System.currentTimeMillis();
     return now > expiredDate;
   }
-
-
 }

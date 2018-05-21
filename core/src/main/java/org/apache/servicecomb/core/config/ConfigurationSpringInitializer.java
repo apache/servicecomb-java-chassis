@@ -25,5 +25,4 @@ public class ConfigurationSpringInitializer extends PaaSPropertyPlaceholderConfi
     setIgnoreUnresolvablePlaceholders(true);
     setOrder(Integer.MAX_VALUE - 1);
   }
-
 }

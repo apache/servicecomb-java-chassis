@@ -51,12 +51,12 @@ public class TestMemberDiscovery {
     EventManager.post(new ConnFailEvent("connect failed."));
     server2 = dc.getConfigServer();
     Assert.assertEquals(server1, server2);
-    
+
     dc.refreshMembers(new JsonObject(
         "{\"instances\":"
-        + "[{\"status\":\"UP\",\"endpoints\":[\"rest://0.0.0.0:30109\"],\"hostName\":\"125292-0.0.0.0\",\"serviceName\":\"configServer\",\"isHttps\":false}"
-        + ",{\"status\":\"UP\",\"endpoints\":[\"rest://0.0.0.0:30108\"],\"hostName\":\"125293-0.0.0.0\",\"serviceName\":\"configServer\",\"isHttps\":false}"
-        + "]}"));
+            + "[{\"status\":\"UP\",\"endpoints\":[\"rest://0.0.0.0:30109\"],\"hostName\":\"125292-0.0.0.0\",\"serviceName\":\"configServer\",\"isHttps\":false}"
+            + ",{\"status\":\"UP\",\"endpoints\":[\"rest://0.0.0.0:30108\"],\"hostName\":\"125293-0.0.0.0\",\"serviceName\":\"configServer\",\"isHttps\":false}"
+            + "]}"));
     server1 = dc.getConfigServer();
     EventManager.post(new ConnFailEvent("connect failed."));
     server2 = dc.getConfigServer();

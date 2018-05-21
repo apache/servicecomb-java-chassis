@@ -22,7 +22,6 @@ import java.util.Map;
 import org.apache.servicecomb.foundation.metrics.health.HealthCheckResult;
 import org.apache.servicecomb.foundation.metrics.health.HealthChecker;
 import org.apache.servicecomb.foundation.metrics.health.HealthCheckerManager;
-import org.apache.servicecomb.metrics.core.publish.HealthCheckerRestPublisher;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;

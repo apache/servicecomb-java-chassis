@@ -55,6 +55,7 @@ public class CodeFirstRestTemplateSpringmvc extends CodeFirstRestTemplate {
   interface UploadPartAndFile {
     String fileUpload(Part file1, File file2);
   }
+
   interface UploadStreamAndResource {
     String fileUpload(InputStream file1, Resource file2);
   }
@@ -121,7 +122,7 @@ public class CodeFirstRestTemplateSpringmvc extends CodeFirstRestTemplate {
     FileUtils.writeStringToFile(someFile, file2Content);
 
     String expect = String.format("%s:%s:%s\n"
-        + "%s:%s:%s",
+            + "%s:%s:%s",
         file1.getName(),
         MediaType.TEXT_PLAIN_VALUE,
         file1Content,
@@ -148,7 +149,7 @@ public class CodeFirstRestTemplateSpringmvc extends CodeFirstRestTemplate {
     TestMgr.check(expect, result);
 
     expect = String.format("null:%s:%s\n"
-        + "%s:%s:%s",
+            + "%s:%s:%s",
         MediaType.APPLICATION_OCTET_STREAM_VALUE,
         file1Content,
         someFile.getName(),
