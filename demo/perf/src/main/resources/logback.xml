@@ -17,13 +17,13 @@
   -->
 
 <configuration scan="true">
-  <jmxConfigurator />
+  <jmxConfigurator/>
   <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
     <encoder>
       <pattern>%d [%level] [%thread] - %msg (%F:%L\)%n</pattern>
     </encoder>
   </appender>
   <root level="INFO">
-    <appender-ref ref="STDOUT" />
+    <appender-ref ref="STDOUT"/>
   </root>
 </configuration>

@@ -16,7 +16,7 @@
   -->
 
 <configs>
-	<properties id="config">
-		<path>classpath*:config/cse.properties</path>
-	</properties>
+  <properties id="config">
+    <path>classpath*:config/cse.properties</path>
+  </properties>
 </configs>

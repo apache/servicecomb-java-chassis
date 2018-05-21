@@ -21,12 +21,12 @@
   xsi:schemaLocation="
 		http://www.springframework.org/schema/beans classpath:org/springframework/beans/factory/xml/spring-beans-3.0.xsd 
 		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd">
-  <context:annotation-config />
-	<!-- <context:spring-configured /> -->
-  <context:component-scan base-package="org.apache.servicecomb" />
+  <context:annotation-config/>
+  <!-- <context:spring-configured /> -->
+  <context:component-scan base-package="org.apache.servicecomb"/>
 
   <bean class="org.apache.servicecomb.core.config.ConfigurationSpringInitializer">
-    <property name="configId" value="config" />
+    <property name="configId" value="config"/>
   </bean>
 
   <bean class="org.apache.servicecomb.core.CseContext" factory-method="getInstance"></bean>
@@ -35,6 +35,6 @@
   </bean>
 
   <bean id="cse.executor.groupThreadPool" class="org.apache.servicecomb.core.executor.FixedThreadExecutor"></bean>
-  <alias name="cse.executor.groupThreadPool" alias="cse.executor.default" />
+  <alias name="cse.executor.groupThreadPool" alias="cse.executor.default"/>
   <bean id="cse.executor.reactive" class="org.apache.servicecomb.core.executor.ReactiveExecutor"></bean>
 </beans>

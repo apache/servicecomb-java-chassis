@@ -26,7 +26,7 @@
   </parent>
   <artifactId>java-chassis-core</artifactId>
   <name>Java Chassis::Core</name>
-  
+
   <dependencies>
     <dependency>
       <groupId>org.apache.servicecomb</groupId>

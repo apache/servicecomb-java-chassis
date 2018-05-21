@@ -14,23 +14,23 @@
   ~ See the License for the specific language governing permissions and
   ~ limitations under the License.
   -->
-  
+
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-	<modelVersion>4.0.0</modelVersion>
-	<parent>
-		<groupId>org.apache.servicecomb</groupId>
-		<artifactId>swagger-invocation</artifactId>
-		<version>1.0.0-m2-SNAPSHOT</version>
-	</parent>
-	<artifactId>swagger-invocation-jaxrs</artifactId>
-	<name>Java Chassis::Swagger::Invocation::JAXRS</name>
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>org.apache.servicecomb</groupId>
+    <artifactId>swagger-invocation</artifactId>
+    <version>1.0.0-m2-SNAPSHOT</version>
+  </parent>
+  <artifactId>swagger-invocation-jaxrs</artifactId>
+  <name>Java Chassis::Swagger::Invocation::JAXRS</name>
 
 
-	<dependencies>
-		<dependency>
-			<groupId>org.apache.servicecomb</groupId>
-			<artifactId>swagger-invocation-core</artifactId>
-		</dependency>
-	</dependencies>
+  <dependencies>
+    <dependency>
+      <groupId>org.apache.servicecomb</groupId>
+      <artifactId>swagger-invocation-core</artifactId>
+    </dependency>
+  </dependencies>
 </project>

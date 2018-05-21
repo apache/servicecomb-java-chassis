@@ -17,18 +17,17 @@
   -->
 
 <beans xmlns="http://www.springframework.org/schema/beans"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:p="http://www.springframework.org/schema/p"
-	xmlns:util="http://www.springframework.org/schema/util"
-	xsi:schemaLocation="
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="
 		http://www.springframework.org/schema/beans
 		classpath:/org/springframework/beans/factory/xml/spring-beans-3.0.xsd">
-	<bean class="org.apache.servicecomb.core.config.ConfigurationSpringInitializer">
-		<property name="configId" value="config" />
-	</bean>
+  <bean class="org.apache.servicecomb.core.config.ConfigurationSpringInitializer">
+    <property name="configId" value="config"/>
+  </bean>
 
-	<bean class="org.apache.servicecomb.core.CseApplicationListener">
-	</bean>
+  <bean class="org.apache.servicecomb.core.CseApplicationListener">
+  </bean>
 
-	<bean id="cse.executor.default" class="org.apache.servicecomb.core.executor.FixedThreadExecutor"></bean>
-	<bean id="cse.executor.reactive" class="org.apache.servicecomb.core.executor.ReactiveExecutor"></bean>
+  <bean id="cse.executor.default" class="org.apache.servicecomb.core.executor.FixedThreadExecutor"></bean>
+  <bean id="cse.executor.reactive" class="org.apache.servicecomb.core.executor.ReactiveExecutor"></bean>
 </beans>

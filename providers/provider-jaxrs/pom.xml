@@ -17,28 +17,28 @@
   -->
 
 <project
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
-	xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-	<modelVersion>4.0.0</modelVersion>
-	<parent>
-		<groupId>org.apache.servicecomb</groupId>
-		<artifactId>providers</artifactId>
-		<version>1.0.0-m2-SNAPSHOT</version>
-	</parent>
-	<artifactId>provider-jaxrs</artifactId>
-	<name>Java Chassis::Providers::JAXRS</name>
-	<dependencies>
-		<dependency>
-			<groupId>org.apache.servicecomb</groupId>
-			<artifactId>provider-rest-common</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.servicecomb</groupId>
-			<artifactId>swagger-invocation-jaxrs</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.servicecomb</groupId>
-			<artifactId>swagger-generator-jaxrs</artifactId>
-		</dependency>
-	</dependencies>
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
+  xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>org.apache.servicecomb</groupId>
+    <artifactId>providers</artifactId>
+    <version>1.0.0-m2-SNAPSHOT</version>
+  </parent>
+  <artifactId>provider-jaxrs</artifactId>
+  <name>Java Chassis::Providers::JAXRS</name>
+  <dependencies>
+    <dependency>
+      <groupId>org.apache.servicecomb</groupId>
+      <artifactId>provider-rest-common</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.servicecomb</groupId>
+      <artifactId>swagger-invocation-jaxrs</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.servicecomb</groupId>
+      <artifactId>swagger-generator-jaxrs</artifactId>
+    </dependency>
+  </dependencies>
 </project>

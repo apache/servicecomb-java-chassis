@@ -17,20 +17,20 @@
   -->
 
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-	<modelVersion>4.0.0</modelVersion>
-	<parent>
-		<groupId>org.apache.servicecomb</groupId>
-		<artifactId>transports</artifactId>
-		<version>1.0.0-m2-SNAPSHOT</version>
-	</parent>
-	<artifactId>transport-rest</artifactId>
-	<name>Java Chassis::Transports::Rest</name>
-	<packaging>pom</packaging>
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>org.apache.servicecomb</groupId>
+    <artifactId>transports</artifactId>
+    <version>1.0.0-m2-SNAPSHOT</version>
+  </parent>
+  <artifactId>transport-rest</artifactId>
+  <name>Java Chassis::Transports::Rest</name>
+  <packaging>pom</packaging>
 
-	<modules>
-		<module>transport-rest-vertx</module>
-		<module>transport-rest-servlet</module>
-		<module>transport-rest-client</module>
-	</modules>
+  <modules>
+    <module>transport-rest-vertx</module>
+    <module>transport-rest-servlet</module>
+    <module>transport-rest-client</module>
+  </modules>
 </project>

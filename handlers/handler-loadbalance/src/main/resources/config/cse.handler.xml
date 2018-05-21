@@ -16,6 +16,6 @@
   -->
 
 <config>
-	<handler id="loadbalance"
-		class="org.apache.servicecomb.loadbalance.LoadbalanceHandler" />	
+  <handler id="loadbalance"
+    class="org.apache.servicecomb.loadbalance.LoadbalanceHandler"/>
 </config>

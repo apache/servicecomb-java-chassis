@@ -16,8 +16,8 @@
   -->
 
 <config>
-	<handler id="qps-flowcontrol-consumer"
-		class="org.apache.servicecomb.qps.ConsumerQpsFlowControlHandler" />
-	<handler id="qps-flowcontrol-provider"
-		class="org.apache.servicecomb.qps.ProviderQpsFlowControlHandler" />
+  <handler id="qps-flowcontrol-consumer"
+    class="org.apache.servicecomb.qps.ConsumerQpsFlowControlHandler"/>
+  <handler id="qps-flowcontrol-provider"
+    class="org.apache.servicecomb.qps.ProviderQpsFlowControlHandler"/>
 </config>

@@ -16,47 +16,47 @@
   ~ limitations under the License.
   -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <modelVersion>4.0.0</modelVersion>
-    <parent>
-        <groupId>org.apache.servicecomb.samples</groupId>
-        <artifactId>jaxrs-sample</artifactId>
-        <version>1.0.0-m2-SNAPSHOT</version>
-    </parent>
-    <artifactId>jaxrs-provider</artifactId>
-    <name>Java Chassis::Samples::JAXRS::Provider</name>
-    <dependencies>
-        <dependency>
-            <groupId>org.apache.servicecomb</groupId>
-            <artifactId>handler-bizkeeper</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.servicecomb</groupId>
-            <artifactId>handler-loadbalance</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.servicecomb</groupId>
-            <artifactId>handler-flowcontrol-qps</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.servicecomb</groupId>
-            <artifactId>transport-highway</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.servicecomb</groupId>
-            <artifactId>transport-rest-vertx</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.servicecomb</groupId>
-            <artifactId>provider-jaxrs</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-log4j12</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.servicecomb.samples</groupId>
-            <artifactId>common-schema</artifactId>
-        </dependency>
-    </dependencies>
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>org.apache.servicecomb.samples</groupId>
+    <artifactId>jaxrs-sample</artifactId>
+    <version>1.0.0-m2-SNAPSHOT</version>
+  </parent>
+  <artifactId>jaxrs-provider</artifactId>
+  <name>Java Chassis::Samples::JAXRS::Provider</name>
+  <dependencies>
+    <dependency>
+      <groupId>org.apache.servicecomb</groupId>
+      <artifactId>handler-bizkeeper</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.servicecomb</groupId>
+      <artifactId>handler-loadbalance</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.servicecomb</groupId>
+      <artifactId>handler-flowcontrol-qps</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.servicecomb</groupId>
+      <artifactId>transport-highway</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.servicecomb</groupId>
+      <artifactId>transport-rest-vertx</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.servicecomb</groupId>
+      <artifactId>provider-jaxrs</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-log4j12</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.servicecomb.samples</groupId>
+      <artifactId>common-schema</artifactId>
+    </dependency>
+  </dependencies>
 </project>

@@ -17,64 +17,64 @@
   -->
 
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-	<modelVersion>4.0.0</modelVersion>
-	<parent>
-		<groupId>org.apache.servicecomb.demo</groupId>
-		<artifactId>demo-multiple</artifactId>
-		<version>1.0.0-m2-SNAPSHOT</version>
-	</parent>
-	<artifactId>multiple-server</artifactId>
-	<name>Java Chassis::Demo::Multiple::Server</name>
-	<dependencies>
-		<dependency>
-			<groupId>org.apache.servicecomb.demo</groupId>
-			<artifactId>a-server</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.servicecomb.demo</groupId>
-			<artifactId>b-server</artifactId>
-		</dependency>
-	</dependencies>
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>org.apache.servicecomb.demo</groupId>
+    <artifactId>demo-multiple</artifactId>
+    <version>1.0.0-m2-SNAPSHOT</version>
+  </parent>
+  <artifactId>multiple-server</artifactId>
+  <name>Java Chassis::Demo::Multiple::Server</name>
+  <dependencies>
+    <dependency>
+      <groupId>org.apache.servicecomb.demo</groupId>
+      <artifactId>a-server</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.servicecomb.demo</groupId>
+      <artifactId>b-server</artifactId>
+    </dependency>
+  </dependencies>
 
-	<properties>
-		<demo.main>org.apache.servicecomb.demo.multiple.server.MultipleServer</demo.main>
-	</properties>
-	<build>
-		<plugins>
-			<plugin>
-				<groupId>com.github.odavid.maven.plugins</groupId>
-				<artifactId>mixin-maven-plugin</artifactId>
-				<configuration>
-					<mixins>
-						<mixin>
-							<groupId>org.apache.servicecomb.demo</groupId>
-							<artifactId>docker-build-config</artifactId>
-							<version>1.0.0-m2-SNAPSHOT</version>
-						</mixin>
-					</mixins>
-				</configuration>
-			</plugin>
+  <properties>
+    <demo.main>org.apache.servicecomb.demo.multiple.server.MultipleServer</demo.main>
+  </properties>
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>com.github.odavid.maven.plugins</groupId>
+        <artifactId>mixin-maven-plugin</artifactId>
+        <configuration>
+          <mixins>
+            <mixin>
+              <groupId>org.apache.servicecomb.demo</groupId>
+              <artifactId>docker-build-config</artifactId>
+              <version>1.0.0-m2-SNAPSHOT</version>
+            </mixin>
+          </mixins>
+        </configuration>
+      </plugin>
 
-		</plugins>
-	</build>
+    </plugins>
+  </build>
 
-	<profiles>
-		<profile>
-			<id>docker</id>
-			<build>
-				<plugins>
-					<plugin>
-						<groupId>io.fabric8</groupId>
-						<artifactId>docker-maven-plugin</artifactId>
-					</plugin>
-					<plugin>
-						<groupId>org.commonjava.maven.plugins</groupId>
-						<artifactId>directory-maven-plugin</artifactId>
-					</plugin>
-				</plugins>
-			</build>
-		</profile>
-	</profiles>
+  <profiles>
+    <profile>
+      <id>docker</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>io.fabric8</groupId>
+            <artifactId>docker-maven-plugin</artifactId>
+          </plugin>
+          <plugin>
+            <groupId>org.commonjava.maven.plugins</groupId>
+            <artifactId>directory-maven-plugin</artifactId>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
 
 </project>
