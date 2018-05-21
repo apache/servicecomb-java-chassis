@@ -25,14 +25,11 @@ public class FrameworkVersions {
 
   public static String allVersions() {
     StringBuffer sb = new StringBuffer();
-    frameworkVersions.forEach(version->version.loadVersion().forEach((key,value)->{
-    	sb.append(key).
-    	append(":").
-    	append(value).
-    	append(";");
-    	}));
-    if(sb.length()>0) {
-    	sb.setLength(sb.length()-1);
+    frameworkVersions.forEach(version -> version.loadVersion().forEach((key, value) -> {
+      sb.append(key).append(":").append(value).append(";");
+    }));
+    if (sb.length() > 0) {
+      sb.setLength(sb.length() - 1);
     }
     return sb.toString();
   }

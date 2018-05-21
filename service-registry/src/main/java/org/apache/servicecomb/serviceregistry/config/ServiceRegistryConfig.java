@@ -92,9 +92,6 @@ public final class ServiceRegistryConfig {
 
   }
   
-  public static boolean getMicroserviceFramework() {
-	  return DynamicPropertyFactory.getInstance().getBooleanProperty(FRAMEWORK, true).get();
-  }
 
   public String getMicroserviceVersionFactory() {
     return DynamicPropertyFactory.getInstance().getStringProperty(MICROSERVICE_VERSION_FACTORY, null).get();
