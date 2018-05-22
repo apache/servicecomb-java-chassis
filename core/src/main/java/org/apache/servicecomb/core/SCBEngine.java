@@ -189,6 +189,7 @@ public class SCBEngine {
 
     eventBus.register(this);
 
+    consumerProviderManager.setAppManager(RegistryUtils.getServiceRegistry().getAppManager());
     AbstractEndpointsCache.init(RegistryUtils.getInstanceCacheManager(), transportManager);
 
     triggerEvent(EventType.BEFORE_HANDLER);

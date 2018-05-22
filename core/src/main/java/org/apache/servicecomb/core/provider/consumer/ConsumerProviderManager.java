@@ -20,32 +20,29 @@ package org.apache.servicecomb.core.provider.consumer;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-
-import javax.inject.Inject;
 
 import org.apache.servicecomb.core.Const;
 import org.apache.servicecomb.core.ConsumerProvider;
-import org.apache.servicecomb.core.definition.schema.ConsumerSchemaFactory;
+import org.apache.servicecomb.foundation.common.concurrent.ConcurrentHashMapEx;
+import org.apache.servicecomb.serviceregistry.consumer.AppManager;
+import org.apache.servicecomb.serviceregistry.definition.DefinitionConst;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.netflix.config.DynamicPropertyFactory;
-import com.netflix.config.DynamicStringProperty;
 
 @Component
 public class ConsumerProviderManager {
   @Autowired(required = false)
   private List<ConsumerProvider> consumerProviderList = Collections.emptyList();
 
-  @Inject
-  private ConsumerSchemaFactory consumerSchemaFactory;
+  private AppManager appManager;
 
   // key为微服务名
-  private volatile Map<String, ReferenceConfig> referenceConfigMap = new ConcurrentHashMap<>();
+  private Map<String, ReferenceConfig> referenceConfigMap = new ConcurrentHashMapEx<>();
 
-  public void setConsumerSchemaFactory(ConsumerSchemaFactory consumerSchemaFactory) {
-    this.consumerSchemaFactory = consumerSchemaFactory;
+  public void setAppManager(AppManager appManager) {
+    this.appManager = appManager;
   }
 
   public void init() throws Exception {
@@ -54,38 +51,32 @@ public class ConsumerProviderManager {
     }
   }
 
-  public ReferenceConfig createReferenceConfig(String microserviceName, String microserviceVersion,
-      String transport) {
-    return new ReferenceConfig(consumerSchemaFactory, microserviceName, microserviceVersion, transport);
+  public ReferenceConfig createReferenceConfig(String microserviceName, String versionRule, String transport) {
+    return new ReferenceConfig(appManager, microserviceName, versionRule, transport);
+  }
+
+  public ReferenceConfig createReferenceConfig(String microserviceName) {
+    String key = "cse.references." + microserviceName;
+
+    String defaultVersionRule = DynamicPropertyFactory.getInstance()
+        .getStringProperty("cse.references.version-rule", DefinitionConst.VERSION_RULE_ALL)
+        .get();
+    String versionRule = DynamicPropertyFactory.getInstance()
+        .getStringProperty(key + ".version-rule", defaultVersionRule)
+        .get();
+
+    String defaultTransport = DynamicPropertyFactory.getInstance()
+        .getStringProperty("cse.references.transport", Const.ANY_TRANSPORT)
+        .get();
+    String transport = DynamicPropertyFactory.getInstance()
+        .getStringProperty(key + ".transport", defaultTransport)
+        .get();
+
+    return new ReferenceConfig(appManager, microserviceName, versionRule, transport);
   }
 
   public ReferenceConfig getReferenceConfig(String microserviceName) {
-    ReferenceConfig config = referenceConfigMap.get(microserviceName);
-    if (config == null) {
-      synchronized (this) {
-        config = referenceConfigMap.get(microserviceName);
-        if (config == null) {
-          String key = "cse.references." + microserviceName;
-          DynamicStringProperty versionRule = DynamicPropertyFactory.getInstance()
-              .getStringProperty(key + ".version-rule",
-                  DynamicPropertyFactory.getInstance()
-                      .getStringProperty("cse.references.version-rule", Const.VERSION_RULE_LATEST)
-                      .getValue());
-          DynamicStringProperty transport =
-              DynamicPropertyFactory.getInstance().getStringProperty(key + ".transport",
-                  DynamicPropertyFactory.getInstance()
-                      .getStringProperty("cse.references.transport",
-                          Const.ANY_TRANSPORT)
-                      .getValue());
-
-          config = new ReferenceConfig(consumerSchemaFactory, microserviceName, versionRule.getValue(),
-              transport.getValue());
-          referenceConfigMap.put(microserviceName, config);
-        }
-      }
-    }
-
-    return config;
+    return referenceConfigMap.computeIfAbsent(microserviceName, this::createReferenceConfig);
   }
 
   // 只用于测试场景

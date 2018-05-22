@@ -120,8 +120,7 @@ public class EdgeInvocation extends AbstractRestInvocation {
   @Override
   protected void createInvocation() {
     ReferenceConfig referenceConfig = new ReferenceConfig();
-    referenceConfig.setMicroserviceMeta(latestMicroserviceVersionMeta.getMicroserviceMeta());
-    referenceConfig.setMicroserviceVersionRule(microserviceVersionRule.getVersionRule().getVersionRule());
+    referenceConfig.setMicroserviceVersionRule(microserviceVersionRule);
     referenceConfig.setTransport(Const.ANY_TRANSPORT);
 
     this.invocation = InvocationFactory.forConsumer(referenceConfig,

@@ -36,4 +36,9 @@ public abstract class VersionRule {
   // latestVersion is only required for "latest" rule
   // it's ugly, but simpler
   public abstract boolean isMatch(Version version, Version latestVersion);
+
+  @Override
+  public String toString() {
+    return versionRule;
+  }
 }

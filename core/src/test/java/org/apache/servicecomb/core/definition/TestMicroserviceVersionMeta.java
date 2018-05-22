@@ -60,8 +60,8 @@ public class TestMicroserviceVersionMeta {
     List<String> logs = new ArrayList<>();
     CseContext.getInstance().setConsumerSchemaFactory(new MockUp<ConsumerSchemaFactory>() {
       @Mock
-      void getOrCreateConsumerSchema(MicroserviceMeta microserviceMeta, Microservice microservice) {
-        logs.add("getOrCreateConsumerSchema");
+      void createConsumerSchema(MicroserviceMeta microserviceMeta, Microservice microservice) {
+        logs.add("createConsumerSchema");
       }
     }.getMockInstance());
     CseContext.getInstance().setSchemaListenerManager(new MockUp<SchemaListenerManager>() {
@@ -74,7 +74,7 @@ public class TestMicroserviceVersionMeta {
     MicroserviceVersionMeta microserviceVersionMeta =
         new MicroserviceVersionMeta(microserviceName, microserviceId, PrivateMicroserviceClassLoaderFactory.INSTANCE);
 
-    Assert.assertThat(logs, Matchers.contains("getOrCreateConsumerSchema", "notifySchemaListener"));
+    Assert.assertThat(logs, Matchers.contains("createConsumerSchema", "notifySchemaListener"));
     Assert.assertEquals(microserviceName, microserviceVersionMeta.getMicroserviceMeta().getName());
     Assert.assertThat(microserviceVersionMeta.getMicroserviceMeta().getClassLoader(),
         Matchers.instanceOf(MicroserviceClassLoader.class));

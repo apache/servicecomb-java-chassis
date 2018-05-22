@@ -19,6 +19,7 @@ package org.apache.servicecomb.serviceregistry.consumer;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
@@ -59,6 +60,14 @@ public class MicroserviceVersionRule {
     this.versionRule = VersionRuleUtils.getOrCreate(strVersionRule);
 
     resetInstanceCache();
+  }
+
+  public String getAppId() {
+    return appId;
+  }
+
+  public String getMicroserviceName() {
+    return microserviceName;
   }
 
   private void resetInstanceCache() {
@@ -102,14 +111,20 @@ public class MicroserviceVersionRule {
   }
 
   protected void resetLatestVersion() {
+    MicroserviceVersion lastLatestVersion = latestVersion;
     latestVersion = null;
-    if (versions.isEmpty()) {
-      return;
+    if (!versions.isEmpty()) {
+      latestVersion = versions.values().stream().max(Comparator.comparing(MicroserviceVersion::getVersion)).get();
     }
 
-    latestVersion = versions.values().stream().sorted((v1, v2) -> {
-      return v2.version.compareTo(v1.version);
-    }).findFirst().get();
+    if (lastLatestVersion != latestVersion) {
+      LOGGER.info("latestVersion changed from {} to {}, appId={}, microserviceName={}, versionRule={}.",
+          lastLatestVersion == null ? "null" : lastLatestVersion.getVersion(),
+          latestVersion == null ? "null" : latestVersion.getVersion(),
+          appId,
+          microserviceName,
+          versionRule.getVersionRule());
+    }
   }
 
   public VersionRule getVersionRule() {
@@ -143,11 +158,13 @@ public class MicroserviceVersionRule {
       boolean isMatch = microserviceVersion != null
           && versionRule.isMatch(microserviceVersion.getVersion(), latestVersion.getVersion());
       if (isMatch) {
-        LOGGER.info("set instances, appId={}, microserviceName={}, versionRule={}, instanceId={}, endpoints={}.",
+        LOGGER.info(
+            "set instances, appId={}, microserviceName={}, versionRule={}, instanceId={}, version={}, endpoints={}.",
             appId,
             microserviceName,
             versionRule.getVersionRule(),
             instance.getInstanceId(),
+            microserviceVersion.getVersion(),
             instance.getEndpoints());
       }
       return isMatch;

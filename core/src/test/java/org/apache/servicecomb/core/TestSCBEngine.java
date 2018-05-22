@@ -25,6 +25,7 @@ import org.apache.servicecomb.core.provider.producer.ProducerProviderManager;
 import org.apache.servicecomb.core.transport.TransportManager;
 import org.apache.servicecomb.foundation.vertx.VertxUtils;
 import org.apache.servicecomb.serviceregistry.RegistryUtils;
+import org.apache.servicecomb.serviceregistry.consumer.AppManager;
 import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -36,10 +37,12 @@ public class TestSCBEngine {
   @Test
   public void test(@Injectable ProducerProviderManager producerProviderManager,
       @Injectable ConsumerProviderManager consumerProviderManager,
-      @Injectable TransportManager transportManager) {
+      @Injectable TransportManager transportManager,
+      @Injectable AppManager appManager) {
 
     new Expectations(RegistryUtils.class) {
       {
+        RegistryUtils.getServiceRegistry().getAppManager();
         RegistryUtils.getInstanceCacheManager();
         RegistryUtils.run();
         RegistryUtils.destroy();

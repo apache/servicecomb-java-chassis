@@ -19,7 +19,10 @@ package org.apache.servicecomb.core.provider.consumer;
 
 import org.apache.servicecomb.core.Const;
 import org.apache.servicecomb.core.definition.MicroserviceMeta;
-import org.apache.servicecomb.core.definition.schema.ConsumerSchemaFactory;
+import org.apache.servicecomb.core.definition.MicroserviceVersionMeta;
+import org.apache.servicecomb.serviceregistry.consumer.AppManager;
+import org.apache.servicecomb.serviceregistry.consumer.MicroserviceVersionRule;
+import org.apache.servicecomb.serviceregistry.definition.DefinitionConst;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -27,13 +30,28 @@ import mockit.Expectations;
 import mockit.Mocked;
 
 public class TestReferenceConfig {
+  @Mocked
+  MicroserviceMeta microserviceMeta;
+
+  @Mocked
+  MicroserviceVersionRule microserviceVersionRule;
+
+  @Mocked
+  MicroserviceVersionMeta microserviceVersionMeta;
+
   @Test
-  public void constructNoParam(@Mocked MicroserviceMeta microserviceMeta) {
-    String microserviceVersionRule = Const.VERSION_RULE_LATEST;
+  public void constructNoParam() {
+    new Expectations() {
+      {
+        microserviceVersionMeta.getMicroserviceMeta();
+        result = microserviceMeta;
+        microserviceVersionRule.getLatestMicroserviceVersion();
+        result = microserviceVersionMeta;
+      }
+    };
     String transport = Const.ANY_TRANSPORT;
 
     ReferenceConfig referenceConfig = new ReferenceConfig();
-    referenceConfig.setMicroserviceMeta(microserviceMeta);
     referenceConfig.setMicroserviceVersionRule(microserviceVersionRule);
     referenceConfig.setTransport(transport);
 
@@ -43,20 +61,26 @@ public class TestReferenceConfig {
   }
 
   @Test
-  public void constructWithParam(@Mocked MicroserviceMeta microserviceMeta,
-      @Mocked ConsumerSchemaFactory consumerSchemaFactory) {
+  public void constructWithParam(@Mocked AppManager appManager,
+      @Mocked MicroserviceMeta microserviceMeta,
+      @Mocked MicroserviceVersionRule microserviceVersionRule,
+      @Mocked MicroserviceVersionMeta microserviceVersionMeta) {
     String microserviceName = "ms";
-    String microserviceVersionRule = Const.VERSION_RULE_LATEST;
     String transport = Const.ANY_TRANSPORT;
     new Expectations() {
       {
-        consumerSchemaFactory.getOrCreateMicroserviceMeta(microserviceName, microserviceVersionRule);
+        appManager.getOrCreateMicroserviceVersionRule(anyString, anyString, anyString);
+        result = microserviceVersionRule;
+        microserviceVersionMeta.getMicroserviceMeta();
         result = microserviceMeta;
+        microserviceVersionRule.getLatestMicroserviceVersion();
+        result = microserviceVersionMeta;
       }
     };
 
-    ReferenceConfig referenceConfig =
-        new ReferenceConfig(consumerSchemaFactory, microserviceName, microserviceVersionRule, transport);
+    ReferenceConfig referenceConfig = new ReferenceConfig(appManager, microserviceName,
+        DefinitionConst.VERSION_RULE_LATEST,
+        transport);
     Assert.assertSame(microserviceMeta, referenceConfig.getMicroserviceMeta());
     Assert.assertSame(microserviceVersionRule, referenceConfig.getMicroserviceVersionRule());
     Assert.assertSame(transport, referenceConfig.getTransport());

@@ -251,11 +251,13 @@ public abstract class AbstractServiceRegistry implements ServiceRegistry {
     }
 
     List<MicroserviceInstance> instances = microserviceInstances.getInstancesResponse().getInstances();
-    LOGGER.info("find instances[{}] from service center success. service={}/{}/{}",
+    LOGGER.info("find instances[{}] from service center success. service={}/{}/{}, old revision={}, new revision={}",
         instances.size(),
         appId,
         serviceName,
-        versionRule);
+        versionRule,
+        revision,
+        microserviceInstances.getRevision());
     for (MicroserviceInstance instance : instances) {
       LOGGER.info("service id={}, instance id={}, endpoints={}",
           instance.getServiceId(),
