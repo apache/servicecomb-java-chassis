@@ -43,8 +43,7 @@ public class TestDynamicSchemaLoader {
 
   @BeforeClass
   public static void init() {
-    UnitTestMeta.init();
-
+    new UnitTestMeta();
     loader.setMicroserviceMetaManager(microserviceMetaManager);
 
     SchemaListenerManager schemaListenerManager = new SchemaListenerManager();

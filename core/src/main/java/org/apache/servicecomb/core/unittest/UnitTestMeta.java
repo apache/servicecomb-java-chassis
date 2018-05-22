@@ -24,6 +24,7 @@ import org.apache.servicecomb.core.CseContext;
 import org.apache.servicecomb.core.Handler;
 import org.apache.servicecomb.core.definition.MicroserviceMeta;
 import org.apache.servicecomb.core.definition.MicroserviceMetaManager;
+import org.apache.servicecomb.core.definition.PrivateMicroserviceVersionMetaFactory;
 import org.apache.servicecomb.core.definition.SchemaMeta;
 import org.apache.servicecomb.core.definition.loader.SchemaListenerManager;
 import org.apache.servicecomb.core.definition.loader.SchemaLoader;
@@ -34,6 +35,14 @@ import org.apache.servicecomb.core.handler.config.Config;
 import org.apache.servicecomb.core.handler.impl.SimpleLoadBalanceHandler;
 import org.apache.servicecomb.core.provider.consumer.ConsumerProviderManager;
 import org.apache.servicecomb.foundation.common.utils.BeanUtils;
+import org.apache.servicecomb.serviceregistry.RegistryUtils;
+import org.apache.servicecomb.serviceregistry.ServiceRegistry;
+import org.apache.servicecomb.serviceregistry.api.registry.Microservice;
+import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
+import org.apache.servicecomb.serviceregistry.registry.ServiceRegistryFactory;
+import org.apache.servicecomb.swagger.SwaggerUtils;
+import org.apache.servicecomb.swagger.generator.core.SwaggerGenerator;
+import org.apache.servicecomb.swagger.generator.core.SwaggerGeneratorContext;
 import org.apache.servicecomb.swagger.generator.core.unittest.UnitTestSwaggerUtils;
 import org.mockito.Mockito;
 import org.springframework.context.ApplicationContext;
@@ -42,26 +51,50 @@ import io.swagger.models.Swagger;
 import mockit.Mock;
 import mockit.MockUp;
 
+/**
+ * when SCBEngine finished, UnitTestMeta will be deleted
+ */
 public class UnitTestMeta {
-  private static boolean inited = false;
+  private MicroserviceMetaManager microserviceMetaManager = new MicroserviceMetaManager();
 
-  private static MicroserviceMetaManager microserviceMetaManager = new MicroserviceMetaManager();
+  private SchemaListenerManager schemaListenerManager = new SchemaListenerManager();
 
-  private static SchemaListenerManager schemaListenerManager = new SchemaListenerManager();
+  private ConsumerProviderManager consumerProviderManager;
+
+  private ConsumerSchemaFactory consumerSchemaFactory;
+
+  private SchemaLoader schemaLoader = new SchemaLoader() {
+    @Override
+    public void putSelfBasePathIfAbsent(String microserviceName, String basePath) {
+    }
+  };
+
+  private ServiceRegistry serviceRegistry;
+
+  public ServiceRegistry getServiceRegistry() {
+    return serviceRegistry;
+  }
+
+  public ConsumerSchemaFactory getConsumerSchemaFactory() {
+    return consumerSchemaFactory;
+  }
 
   @SuppressWarnings("unchecked")
-  public static synchronized void init() {
-    if (inited) {
-      return;
-    }
+  public void init() {
+    serviceRegistry = ServiceRegistryFactory.createLocal();
+    serviceRegistry.init();
+    serviceRegistry.getAppManager().setMicroserviceVersionFactory(new PrivateMicroserviceVersionMetaFactory());
+    RegistryUtils.setServiceRegistry(serviceRegistry);
 
-    ConsumerProviderManager consumerProviderManager = new ConsumerProviderManager();
+    schemaLoader.setMicroserviceMetaManager(microserviceMetaManager);
 
-    ConsumerSchemaFactory consumerSchemaFactory = new ConsumerSchemaFactory();
+    consumerProviderManager = new ConsumerProviderManager();
+
+    consumerSchemaFactory = new ConsumerSchemaFactory();
     consumerSchemaFactory.setMicroserviceMetaManager(microserviceMetaManager);
-    consumerSchemaFactory.setSchemaListenerManager(schemaListenerManager);
+    consumerSchemaFactory.setSchemaLoader(schemaLoader);
 
-    consumerProviderManager.setConsumerSchemaFactory(consumerSchemaFactory);
+    consumerProviderManager.setAppManager(RegistryUtils.getServiceRegistry().getAppManager());
 
     CseContext.getInstance().setConsumerProviderManager(consumerProviderManager);
     CseContext.getInstance().setConsumerSchemaFactory(consumerSchemaFactory);
@@ -76,21 +109,9 @@ public class UnitTestMeta {
     ApplicationContext applicationContext = Mockito.mock(ApplicationContext.class);
     Mockito.when(applicationContext.getBean(Mockito.anyString())).thenReturn(null);
     BeanUtils.setContext(applicationContext);
-    inited = true;
   }
-
-  static {
-    init();
-  }
-
-  private SchemaLoader schemaLoader = new SchemaLoader() {
-    public void putSelfBasePathIfAbsent(String microserviceName, String basePath) {
-    }
-  };
-
 
   public UnitTestMeta() {
-
     new MockUp<ConsumerHandlerManager>() {
       @Mock
       public List<Handler> getOrCreate(String name) {
@@ -104,7 +125,7 @@ public class UnitTestMeta {
       }
     };
 
-    schemaLoader.setMicroserviceMetaManager(microserviceMetaManager);
+    init();
   }
 
 
@@ -126,5 +147,27 @@ public class UnitTestMeta {
 
     Swagger swagger = UnitTestSwaggerUtils.generateSwagger(impl).getSwagger();
     return schemaLoader.registerSchema(microserviceMeta, schemaId, swagger);
+  }
+
+  public void registerSchema(SwaggerGeneratorContext swaggerGeneratorContext, Class<?> schemaCls) {
+    SwaggerGenerator swaggerGenerator = new SwaggerGenerator(swaggerGeneratorContext, schemaCls);
+    swaggerGenerator.setClassLoader(new ClassLoader() {
+    });
+    Swagger swagger = swaggerGenerator.generate();
+
+    Microservice microservice = new Microservice();
+    microservice.setAppId("app");
+    microservice.setServiceName("app:test");
+    microservice.setVersion("1.0.0");
+    microservice.getSchemas().add(schemaCls.getName());
+    microservice.setServiceId(serviceRegistry.getServiceRegistryClient().registerMicroservice(microservice));
+
+    serviceRegistry.getServiceRegistryClient()
+        .registerSchema(microservice.getServiceId(), schemaCls.getName(),
+            SwaggerUtils.swaggerToString(swagger));
+
+    MicroserviceInstance instance = new MicroserviceInstance();
+    instance.setServiceId(microservice.getServiceId());
+    instance.setInstanceId(serviceRegistry.getServiceRegistryClient().registerMicroserviceInstance(instance));
   }
 }
