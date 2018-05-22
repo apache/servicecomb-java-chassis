@@ -31,7 +31,7 @@ public final class Const {
 
   public static final String VERSION_RULE_LATEST = DefinitionConst.VERSION_RULE_LATEST;
 
-  public static final String DEFAULT_VERSION_RULE = VERSION_RULE_LATEST;
+  public static final String DEFAULT_VERSION_RULE = DefinitionConst.VERSION_RULE_ALL;
 
   public static final String PRODUCER_OPERATION = "producer-operation";
 

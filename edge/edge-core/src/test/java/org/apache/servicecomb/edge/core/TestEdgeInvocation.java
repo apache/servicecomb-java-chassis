@@ -50,7 +50,6 @@ import org.junit.rules.ExpectedException;
 import io.vertx.core.Context;
 import io.vertx.core.impl.VertxImpl;
 import io.vertx.ext.web.RoutingContext;
-import io.vertx.ext.web.impl.HttpServerRequestWrapperForTest;
 import mockit.Deencapsulation;
 import mockit.Expectations;
 import mockit.Mocked;
@@ -64,12 +63,12 @@ public class TestEdgeInvocation {
   @Mocked
   Context context;
 
-  @Mocked
-  HttpServerRequestWrapperForTest request;
-
   List<HttpServerFilter> httpServerFilters = Collections.emptyList();
 
   MicroserviceMeta microserviceMeta = new MicroserviceMeta("app:ms");
+
+  MicroserviceVersionRule microserviceVersionRule = new MicroserviceVersionRule(microserviceMeta.getAppId(),
+      microserviceMeta.getName(), DefinitionConst.VERSION_RULE_LATEST);
 
   ReferenceConfig referenceConfig = new ReferenceConfig();
 
@@ -91,8 +90,7 @@ public class TestEdgeInvocation {
       }
     };
 
-    Deencapsulation.setField(referenceConfig, "microserviceMeta", microserviceMeta);
-    referenceConfig.setMicroserviceVersionRule("latest");
+    referenceConfig.setMicroserviceVersionRule(microserviceVersionRule);
     referenceConfig.setTransport("rest");
 
     edgeInvocation.init(microserviceName, routingContext, "/base", httpServerFilters);
@@ -103,6 +101,15 @@ public class TestEdgeInvocation {
 
   @Test
   public void edgeInvoke(@Mocked MicroserviceVersionMeta microserviceVersionMeta) {
+    new Expectations() {
+      {
+        microserviceVersionRule.getLatestMicroserviceVersion();
+        result = microserviceVersionMeta;
+        microserviceVersionMeta.getMicroserviceMeta();
+        result = microserviceMeta;
+      }
+    };
+
     Map<String, Boolean> result = new LinkedHashMap<>();
     edgeInvocation = new EdgeInvocation() {
       @Override

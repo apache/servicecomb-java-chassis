@@ -53,7 +53,7 @@ public class TestConfig {
     Assert.assertEquals("rest", Const.RESTFUL);
     Assert.assertEquals("", Const.ANY_TRANSPORT);
     Assert.assertEquals("latest", Const.VERSION_RULE_LATEST);
-    Assert.assertEquals("latest", Const.DEFAULT_VERSION_RULE);
+    Assert.assertEquals("0.0.0+", Const.DEFAULT_VERSION_RULE);
   }
 
   @Test

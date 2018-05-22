@@ -16,43 +16,18 @@
  */
 package org.apache.servicecomb.core.definition.schema;
 
-import java.util.Arrays;
-
 import org.apache.servicecomb.core.definition.MicroserviceMeta;
-import org.apache.servicecomb.core.definition.MicroserviceMetaManager;
+import org.apache.servicecomb.core.definition.MicroserviceVersionMeta;
 import org.apache.servicecomb.core.definition.OperationMeta;
-import org.apache.servicecomb.core.definition.SchemaMeta;
-import org.apache.servicecomb.core.definition.loader.SchemaListener;
-import org.apache.servicecomb.core.definition.loader.SchemaListenerManager;
-import org.apache.servicecomb.core.definition.loader.SchemaLoader;
 import org.apache.servicecomb.core.unittest.UnitTestMeta;
-import org.apache.servicecomb.foundation.common.utils.ReflectUtils;
-import org.apache.servicecomb.serviceregistry.RegistryUtils;
-import org.apache.servicecomb.serviceregistry.ServiceRegistry;
-import org.apache.servicecomb.serviceregistry.api.registry.Microservice;
-import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
-import org.apache.servicecomb.serviceregistry.registry.ServiceRegistryFactory;
-import org.apache.servicecomb.swagger.generator.core.CompositeSwaggerGeneratorContext;
-import org.apache.servicecomb.swagger.generator.core.unittest.UnitTestSwaggerUtils;
-import org.junit.AfterClass;
+import org.apache.servicecomb.serviceregistry.consumer.MicroserviceVersionRule;
+import org.apache.servicecomb.serviceregistry.definition.DefinitionConst;
+import org.apache.servicecomb.swagger.generator.pojo.PojoSwaggerGeneratorContext;
 import org.junit.Assert;
-import org.junit.BeforeClass;
 import org.junit.Test;
 
 public class TestConsumerSchemaFactory {
-  private static ConsumerSchemaFactory consumerSchemaFactory = new ConsumerSchemaFactory();
-
-  private static SchemaListener schemaListener = new SchemaListener() {
-
-    @Override
-    public void onSchemaLoaded(SchemaMeta... schemaMetas) {
-
-    }
-  };
-
-  static interface Intf {
-    int add(int x, int y);
-  }
+  private static UnitTestMeta meta = new UnitTestMeta();
 
   class TestConsumerSchemaFactoryImpl {
     public int add(int x, int y) {
@@ -60,57 +35,17 @@ public class TestConsumerSchemaFactory {
     }
   }
 
-  @BeforeClass
-  public static void init() {
-    ServiceRegistry serviceRegistry = ServiceRegistryFactory.createLocal();
-    serviceRegistry.init();
-    RegistryUtils.setServiceRegistry(serviceRegistry);
-
-    SchemaListenerManager schemaListenerManager = new SchemaListenerManager();
-    schemaListenerManager.setSchemaListenerList(Arrays.asList(schemaListener));
-
-    MicroserviceMetaManager microserviceMetaManager = new MicroserviceMetaManager();
-    SchemaLoader schemaLoader = new SchemaLoader() {
-      @Override
-      public void putSelfBasePathIfAbsent(String microserviceName, String basePath) {
-      }
-    };
-    CompositeSwaggerGeneratorContext compositeSwaggerGeneratorContext = new CompositeSwaggerGeneratorContext();
-
-    ReflectUtils.setField(consumerSchemaFactory, "schemaListenerManager", schemaListenerManager);
-    ReflectUtils.setField(consumerSchemaFactory, "microserviceMetaManager", microserviceMetaManager);
-    ReflectUtils.setField(consumerSchemaFactory, "schemaLoader", schemaLoader);
-    ReflectUtils.setField(consumerSchemaFactory,
-        "compositeSwaggerGeneratorContext",
-        compositeSwaggerGeneratorContext);
-
-    SchemaMeta schemaMeta = new UnitTestMeta().getOrCreateSchemaMeta(TestConsumerSchemaFactoryImpl.class);
-    String content = UnitTestSwaggerUtils.pretty(schemaMeta.getSwagger());
-
-    Microservice microservice = new Microservice();
-    microservice.setAppId("app");
-    microservice.setServiceId("0");
-    microservice.setServiceName("ms");
-    microservice.setVersion("1.0.0");
-    microservice.addSchema("schema", content);
-    serviceRegistry.getServiceRegistryClient().registerMicroservice(microservice);
-
-    MicroserviceInstance instance = new MicroserviceInstance();
-    instance.setServiceId("0");
-    instance.setInstanceId("0");
-    serviceRegistry.getServiceRegistryClient().registerMicroserviceInstance(instance);
-  }
-
-  @AfterClass
-  public static void teardown() {
-    RegistryUtils.setServiceRegistry(null);
-  }
-
   @Test
-  public void testGetOrCreateConsumer() {
-    MicroserviceMeta microserviceMeta =
-        consumerSchemaFactory.getOrCreateMicroserviceMeta("ms", "latest");
-    OperationMeta operationMeta = microserviceMeta.ensureFindOperation("schema.add");
+  public void createConsumerSchema() {
+    meta.registerSchema(new PojoSwaggerGeneratorContext(), TestConsumerSchemaFactoryImpl.class);
+
+    MicroserviceVersionRule microserviceVersionRule = meta.getServiceRegistry().getAppManager()
+        .getOrCreateMicroserviceVersionRule("app", "app:test", DefinitionConst.VERSION_RULE_ALL);
+    MicroserviceMeta microserviceMeta = ((MicroserviceVersionMeta) microserviceVersionRule
+        .getLatestMicroserviceVersion()).getMicroserviceMeta();
+
+    OperationMeta operationMeta = microserviceMeta
+        .ensureFindOperation(TestConsumerSchemaFactoryImpl.class.getName() + ".add");
     Assert.assertEquals("add", operationMeta.getOperationId());
   }
 }

@@ -17,13 +17,36 @@
 
 package org.apache.servicecomb.core.provider.consumer;
 
+import java.util.Collections;
+
+import org.apache.servicecomb.core.Const;
 import org.apache.servicecomb.core.definition.schema.ConsumerSchemaFactory;
+import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
+import org.apache.servicecomb.serviceregistry.RegistryUtils;
+import org.apache.servicecomb.serviceregistry.consumer.AppManager;
+import org.apache.servicecomb.serviceregistry.definition.DefinitionConst;
+import org.junit.After;
+import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
+import com.google.common.eventbus.EventBus;
+
+import mockit.Expectations;
 import mockit.Mocked;
 
 public class TestConsumerProviderManager {
+  @Before
+  public void setUp() throws Exception {
+    ArchaiusUtils.resetConfig();
+  }
+
+  @After
+  public void tearDown() throws Exception {
+    ArchaiusUtils.resetConfig();
+  }
+
   @Test
   public void allowedNoProvider(@Mocked ConsumerSchemaFactory consumerSchemaFactory) {
     AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
@@ -33,5 +56,44 @@ public class TestConsumerProviderManager {
     context.refresh();
 
     context.close();
+  }
+
+  private ReferenceConfig mockCreateReferenceConfig() {
+    EventBus eventBus = new EventBus();
+    AppManager appManager = new AppManager(eventBus);
+
+    ConsumerProviderManager consumerProviderManager = new ConsumerProviderManager();
+    consumerProviderManager.setAppManager(appManager);
+
+    new Expectations(RegistryUtils.class) {
+      {
+        RegistryUtils.findServiceInstances(anyString, anyString, DefinitionConst.VERSION_RULE_ALL, null);
+        result = Collections.emptyList();
+      }
+    };
+    return consumerProviderManager.createReferenceConfig("app:ms");
+  }
+
+  @Test
+  public void createReferenceConfig_default() {
+    ReferenceConfig referenceConfig = mockCreateReferenceConfig();
+
+    Assert.assertEquals("app", referenceConfig.getMicroserviceVersionRule().getAppId());
+    Assert.assertEquals("app:ms", referenceConfig.getMicroserviceVersionRule().getMicroserviceName());
+    Assert.assertEquals("0.0.0+", referenceConfig.getMicroserviceVersionRule().getVersionRule().getVersionRule());
+    Assert.assertEquals(Const.ANY_TRANSPORT, referenceConfig.getTransport());
+  }
+
+  @Test
+  public void createReferenceConfig_config() {
+    ArchaiusUtils.setProperty("cse.references.app:ms.version-rule", "1.0.0+");
+    ArchaiusUtils.setProperty("cse.references.app:ms.transport", Const.RESTFUL);
+
+    ReferenceConfig referenceConfig = mockCreateReferenceConfig();
+
+    Assert.assertEquals("app", referenceConfig.getMicroserviceVersionRule().getAppId());
+    Assert.assertEquals("app:ms", referenceConfig.getMicroserviceVersionRule().getMicroserviceName());
+    Assert.assertEquals("1.0.0+", referenceConfig.getMicroserviceVersionRule().getVersionRule().getVersionRule());
+    Assert.assertEquals(Const.RESTFUL, referenceConfig.getTransport());
   }
 }

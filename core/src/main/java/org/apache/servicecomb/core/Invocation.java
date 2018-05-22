@@ -177,7 +177,7 @@ public class Invocation extends SwaggerInvocation {
   }
 
   public String getMicroserviceVersionRule() {
-    return referenceConfig.getMicroserviceVersionRule();
+    return referenceConfig.getVersionRule();
   }
 
   public String getInvocationQualifiedName() {

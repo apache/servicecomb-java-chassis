@@ -37,7 +37,7 @@ public class MicroserviceVersionMeta extends MicroserviceVersion {
       return;
     }
 
-    CseContext.getInstance().getConsumerSchemaFactory().getOrCreateConsumerSchema(microserviceMeta, microservice);
+    CseContext.getInstance().getConsumerSchemaFactory().createConsumerSchema(microserviceMeta, microservice);
     CseContext.getInstance().getSchemaListenerManager().notifySchemaListener(microserviceMeta);
   }
 
