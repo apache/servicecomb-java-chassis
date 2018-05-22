@@ -336,7 +336,7 @@ Apache Commons Logging (http://commons.apache.org/proper/commons-logging/) commo
 Apache HttpClient (http://hc.apache.org/httpcomponents-client) org.apache.httpcomponents:httpclient:jar:4.5.2
 Apache HttpCore (http://hc.apache.org/httpcomponents-core-ga) org.apache.httpcomponents:httpcore:jar:4.4.6
 Apache Log4j (http://logging.apache.org/log4j/1.2/) log4j:log4j:bundle:1.2.17
-Bean Validation API (http://beanvalidation.org) javax.validation:validation-api:jar:1.1.0.Final
+Bean Validation API (http://beanvalidation.org) javax.validation:validation-api:jar:2.0.0.Final
 Brave Context: Log4J 1.2 (https://github.com/kristofa/brave/brave-context-parent/brave-context-log4j12) io.zipkin.brave:brave-context-log4j12:jar:4.13.1
 Brave Instrumentation: Http Adapters (https://github.com/kristofa/brave/brave-instrumentation-parent/brave-instrumentation-http) io.zipkin.brave:brave-instrumentation-http:jar:4.13.1
 Brave Instrumentation: Servlet (https://github.com/kristofa/brave/brave-instrumentation-parent/brave-instrumentation-servlet) io.zipkin.brave:brave-instrumentation-servlet:jar:4.13.1
@@ -346,7 +346,7 @@ Commons IO (http://commons.apache.org/io/) commons-io:commons-io:jar:2.4
 Commons Lang (http://commons.apache.org/lang/) commons-lang:commons-lang:jar:2.6
 FindBugs-jsr305 (http://findbugs.sourceforge.net/) com.google.code.findbugs:jsr305:jar:3.0.1
 Guava: Google Core Libraries for Java (http://code.google.com/p/guava-libraries/guava) com.google.guava:guava:bundle:19.0
-Hibernate Validator Engine (http://hibernate.org/validator/hibernate-validator) org.hibernate:hibernate-validator:jar:5.2.4.Final
+Hibernate Validator Engine (http://hibernate.org/validator/hibernate-validator) org.hibernate:hibernate-validator:jar:6.0.2.Final
 JBoss Logging 3 (http://www.jboss.org) org.jboss.logging:jboss-logging:jar:3.3.0.Final
 Jackson dataformat: CBOR (http://github.com/FasterXML/jackson-dataformats-binary) com.fasterxml.jackson.dataformat:jackson-dataformat-cbor:bundle:2.8.7
 Jackson dataformat: protobuf (http://github.com/FasterXML/jackson-dataformats-binary) com.fasterxml.jackson.dataformat:jackson-dataformat-protobuf:bundle:2.9.5
