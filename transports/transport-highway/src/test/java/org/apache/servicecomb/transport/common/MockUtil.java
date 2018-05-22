@@ -18,9 +18,7 @@
 package org.apache.servicecomb.transport.common;
 
 import org.apache.servicecomb.codec.protobuf.definition.OperationProtobuf;
-import org.apache.servicecomb.codec.protobuf.definition.ProtobufManager;
 import org.apache.servicecomb.core.Invocation;
-import org.apache.servicecomb.core.definition.OperationMeta;
 import org.apache.servicecomb.transport.highway.HighwayCodec;
 import org.apache.servicecomb.transport.highway.HighwayConfig;
 import org.apache.servicecomb.transport.highway.message.RequestHeader;
@@ -73,16 +71,6 @@ public class MockUtil {
         }
 
         throw new Error("decode failed");
-      }
-    };
-  }
-
-  public void mockProtobufManager() {
-
-    new MockUp<ProtobufManager>() {
-      @Mock
-      public OperationProtobuf getOrCreateOperation(OperationMeta operationMeta) throws Exception {
-        return Mockito.mock(OperationProtobuf.class);
       }
     };
   }

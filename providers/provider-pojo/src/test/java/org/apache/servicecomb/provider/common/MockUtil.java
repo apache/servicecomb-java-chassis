@@ -17,25 +17,9 @@
 
 package org.apache.servicecomb.provider.common;
 
-import java.lang.reflect.InvocationHandler;
-import java.lang.reflect.Proxy;
-
-import org.apache.servicecomb.core.definition.MicroserviceMeta;
 import org.apache.servicecomb.core.definition.MicroserviceMetaManager;
-import org.apache.servicecomb.core.definition.OperationMeta;
-import org.apache.servicecomb.core.definition.SchemaMeta;
-import org.apache.servicecomb.core.provider.consumer.ConsumerProviderManager;
-import org.apache.servicecomb.core.provider.consumer.ReferenceConfig;
-import org.apache.servicecomb.core.provider.producer.AbstractProducerProvider;
 import org.apache.servicecomb.foundation.common.utils.BeanUtils;
-import org.apache.servicecomb.provider.pojo.PojoConsumerProvider;
-import org.apache.servicecomb.provider.pojo.TestPojoConsumerProvider;
-import org.apache.servicecomb.provider.pojo.instance.PojoInstanceFactory;
-import org.apache.servicecomb.provider.pojo.reference.PojoReferenceMeta;
-import org.apache.servicecomb.provider.pojo.schema.PojoProducerMeta;
 import org.mockito.Mockito;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
 import org.springframework.context.ApplicationContext;
 
 import mockit.Mock;
@@ -52,18 +36,6 @@ public class MockUtil {
 
   public static MockUtil getInstance() {
     return instance;
-  }
-
-  public void mockProxy() {
-
-    new MockUp<Proxy>() {
-      @Mock
-      Object newProxyInstance(ClassLoader loader,
-          Class<?>[] interfaces,
-          InvocationHandler h) throws IllegalArgumentException {
-        return h;
-      }
-    };
   }
 
   public void mockBeanUtils() {
@@ -93,102 +65,6 @@ public class MockUtil {
       @Mock
       <T> T getBean(String name) {
         return (T) new Object();
-      }
-    };
-  }
-
-  public void mockRegisterManager() throws InstantiationException, IllegalAccessException {
-    MicroserviceMeta microserviceMeta = new MicroserviceMeta("app:test");
-    microserviceMetaManager.register("test", microserviceMeta);
-  }
-
-  public void mockMicroserviceMeta() {
-
-    new MockUp<MicroserviceMeta>() {
-      @Mock
-      public SchemaMeta ensureFindSchemaMeta(String schemaId) {
-        SchemaMeta lSchemaMeta = Mockito.mock(SchemaMeta.class);
-        Mockito.when(lSchemaMeta.getSwaggerIntf())
-            .thenAnswer(new Answer<Class<? extends TestPojoConsumerProvider>>() {
-              @Override
-              public Class<? extends TestPojoConsumerProvider> answer(
-                  InvocationOnMock invocation) throws Throwable {
-                return TestPojoConsumerProvider.class;
-              }
-            });
-        return lSchemaMeta;
-      }
-
-      @Mock
-      public SchemaMeta ensureFindSchemaMeta(Class<?> schemaIntf) {
-        return Mockito.mock(SchemaMeta.class);
-      }
-    };
-  }
-
-  public void mockPojoReferenceMeta() {
-
-    new MockUp<PojoReferenceMeta>() {
-      @Mock
-      public void init() {
-
-      }
-
-      @Mock
-      public SchemaMeta getSchemaMeta() {
-        return Mockito.mock(SchemaMeta.class);
-      }
-    };
-  }
-
-  public void mockConsumerProviderManager() {
-    new MockUp<ConsumerProviderManager>() {
-      @Mock
-      public ReferenceConfig getReferenceConfig(String microserviceName) {
-        return null;
-      }
-    };
-  }
-
-  public void mockSchemaMeta() {
-
-    new MockUp<SchemaMeta>() {
-      @Mock
-      public Class<?> getIntf() {
-        return Object.class;
-      }
-    };
-  }
-
-  public void mockPojoInstanceFactory() {
-
-    new MockUp<PojoInstanceFactory>() {
-      @Mock
-      public Object create(String className) {
-        return Object.class;
-      }
-    };
-  }
-
-  public void mockPojoConsumerProvider() {
-
-    new MockUp<PojoConsumerProvider>() {
-      @Mock
-      private void createInvoker(PojoReferenceMeta pojoReference) {
-
-      }
-    };
-  }
-
-  public void mockAbstractServiceProvider() {
-
-    new MockUp<AbstractProducerProvider>() {
-      @SuppressWarnings("unchecked")
-      @Mock
-      protected <T> T findProviderSchema(OperationMeta operationMeta) {
-        PojoProducerMeta lPojoSchemaMeta = Mockito.mock(PojoProducerMeta.class);
-        Mockito.when(lPojoSchemaMeta.getInstance()).thenReturn(lPojoSchemaMeta);
-        return (T) lPojoSchemaMeta;
       }
     };
   }

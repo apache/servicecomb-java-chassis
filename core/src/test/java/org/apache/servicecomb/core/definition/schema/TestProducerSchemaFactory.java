@@ -110,10 +110,6 @@ public class TestProducerSchemaFactory {
       }
     };
 
-    //    ApplicationContext applicationContext = Mockito.mock(ApplicationContext.class);
-    //    BeanUtils.setContext(applicationContext);
-    //    Mockito.when(applicationContext.getBean(ExecutorManager.EXECUTOR_REACTIVE)).thenReturn(new ReactiveExecutor());
-
     UnitTestMeta.init();
 
     schemaMeta = producerSchemaFactory.getOrCreateProducerSchema("app:ms",
