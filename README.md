@@ -40,7 +40,7 @@ Project documentation is available on the [ServiceComb website][servicecomb-webs
 
 You don’t need to build from source to use Java Chassis (binaries in apache nexus ), but if you want to try out the latest and greatest, Java Chassis can be easily built with the maven.  You also need JDK 1.8.
 
-      mvn clean install 
+      mvn clean install
 
 If you want to build the release kits from the source
 
@@ -67,8 +67,4 @@ mailing list: [subscribe](mailto:dev-subscribe@servicecomb.incubator.apache.org)
 
 ## Contributing
 
-See CONTRIBUTING for details on submitting patches and the contribution workflow.
-
-## Reporting Issues
-
-See reporting bugs for details about reporting any issues.
+See [CONTRIBUTING](http://servicecomb.incubator.apache.org/developers/contributing) for details on submitting patches and the contribution workflow.
