@@ -28,16 +28,14 @@ import org.apache.servicecomb.core.CseContext;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.core.SCBStatus;
-import org.apache.servicecomb.core.definition.SchemaMeta;
 import org.apache.servicecomb.core.unittest.UnitTestMeta;
 import org.apache.servicecomb.provider.springmvc.reference.CseClientHttpResponse;
-import org.apache.servicecomb.serviceregistry.RegistryUtils;
-import org.apache.servicecomb.serviceregistry.ServiceRegistry;
-import org.apache.servicecomb.serviceregistry.registry.ServiceRegistryFactory;
+import org.apache.servicecomb.swagger.generator.springmvc.SpringmvcSwaggerGeneratorContext;
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.client.ClientHttpResponse;
@@ -48,6 +46,16 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 public class CseAsyncClientHttpRequestTest {
+  static UnitTestMeta meta = new UnitTestMeta();
+
+  @BeforeClass
+  public static void classSetup() {
+    CseContext.getInstance()
+        .getSchemaListenerManager()
+        .setSchemaListenerList(Collections.singletonList(new RestEngineSchemaListener()));
+
+    meta.registerSchema(new SpringmvcSwaggerGeneratorContext(), CseAsyncClientHttpRequestTestSchema.class);
+  }
 
   @Before
   public void setup() {
@@ -70,19 +78,6 @@ public class CseAsyncClientHttpRequestTest {
 
   @Test
   public void testNormal() {
-    ServiceRegistry serviceRegistry = ServiceRegistryFactory.createLocal();
-    serviceRegistry.init();
-    RegistryUtils.setServiceRegistry(serviceRegistry);
-    UnitTestMeta meta = new UnitTestMeta();
-
-    CseContext.getInstance()
-        .getSchemaListenerManager()
-        .setSchemaListenerList(Collections.singletonList(new RestEngineSchemaListener()));
-
-    SchemaMeta schemaMeta = meta
-        .getOrCreateSchemaMeta(CseAsyncClientHttpRequestTest.CseAsyncClientHttpRequestTestSchema.class);
-    CseContext.getInstance().getSchemaListenerManager().notifySchemaListener(schemaMeta);
-
     Holder<Invocation> holder = new Holder<>();
     CseAsyncClientHttpRequest client =
         new CseAsyncClientHttpRequest(URI.create(
@@ -105,17 +100,6 @@ public class CseAsyncClientHttpRequestTest {
 
   @Test
   public void testFail() {
-    ServiceRegistry serviceRegistry = ServiceRegistryFactory.createLocal();
-    serviceRegistry.init();
-    RegistryUtils.setServiceRegistry(serviceRegistry);
-    UnitTestMeta meta = new UnitTestMeta();
-    CseContext.getInstance()
-        .getSchemaListenerManager()
-        .setSchemaListenerList(Collections.singletonList(new RestEngineSchemaListener()));
-    SchemaMeta schemaMeta = meta
-        .getOrCreateSchemaMeta(CseAsyncClientHttpRequestTest.CseAsyncClientHttpRequestTestSchema.class);
-    CseContext.getInstance().getSchemaListenerManager().notifySchemaListener(schemaMeta);
-
     Throwable error = new Error("failed");
     Response response = Response.createConsumerFail(error);
 

@@ -34,8 +34,6 @@ import org.apache.servicecomb.core.unittest.UnitTestMeta;
 import org.apache.servicecomb.foundation.common.utils.BeanUtils;
 import org.apache.servicecomb.foundation.common.utils.ReflectUtils;
 import org.apache.servicecomb.serviceregistry.RegistryUtils;
-import org.apache.servicecomb.serviceregistry.ServiceRegistry;
-import org.apache.servicecomb.serviceregistry.registry.ServiceRegistryFactory;
 import org.apache.servicecomb.swagger.engine.SwaggerEnvironment;
 import org.apache.servicecomb.swagger.engine.SwaggerProducerOperation;
 import org.apache.servicecomb.swagger.engine.bootstrap.BootstrapNormal;
@@ -73,8 +71,7 @@ public class TestProducerSchemaFactory {
 
   @BeforeClass
   public static void init() {
-    ServiceRegistry serviceRegistry = ServiceRegistryFactory.createLocal();
-    RegistryUtils.setServiceRegistry(serviceRegistry);
+    new UnitTestMeta();
 
     ConverterMgr converterMgr = new ConverterMgr();
     ProducerArgumentsMapperFactory producerArgsMapperFactory = new ProducerArgumentsMapperFactory();
@@ -109,8 +106,6 @@ public class TestProducerSchemaFactory {
         return (T) normalExecutor;
       }
     };
-
-    UnitTestMeta.init();
 
     schemaMeta = producerSchemaFactory.getOrCreateProducerSchema("app:ms",
         "schema",

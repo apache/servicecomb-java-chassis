@@ -26,11 +26,8 @@ import org.apache.servicecomb.core.CseContext;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.core.SCBStatus;
-import org.apache.servicecomb.core.definition.SchemaMeta;
 import org.apache.servicecomb.core.unittest.UnitTestMeta;
-import org.apache.servicecomb.serviceregistry.RegistryUtils;
-import org.apache.servicecomb.serviceregistry.ServiceRegistry;
-import org.apache.servicecomb.serviceregistry.registry.ServiceRegistryFactory;
+import org.apache.servicecomb.swagger.generator.springmvc.SpringmvcSwaggerGeneratorContext;
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.junit.After;
 import org.junit.Assert;
@@ -63,18 +60,13 @@ public class TestCseClientHttpRequest {
 
   @Test
   public void testNormal() {
-    ServiceRegistry serviceRegistry = ServiceRegistryFactory.createLocal();
-    serviceRegistry.init();
-    RegistryUtils.setServiceRegistry(serviceRegistry);
-
     UnitTestMeta meta = new UnitTestMeta();
 
     CseContext.getInstance()
         .getSchemaListenerManager()
         .setSchemaListenerList(Collections.singletonList(new RestEngineSchemaListener()));
 
-    SchemaMeta schemaMeta = meta.getOrCreateSchemaMeta(SpringmvcImpl.class);
-    CseContext.getInstance().getSchemaListenerManager().notifySchemaListener(schemaMeta);
+    meta.registerSchema(new SpringmvcSwaggerGeneratorContext(), SpringmvcImpl.class);
 
     Holder<Invocation> holder = new Holder<>();
     CseClientHttpRequest client =
