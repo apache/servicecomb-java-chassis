@@ -98,11 +98,11 @@ public class RestClientInvocation {
       asyncResp.fail(invocation.getInvocationType(), e);
     });
     clientRequest.connectionHandler(connection -> {
-      LOGGER.info("http connection connected, local:{}, remote:{}.",
+      LOGGER.debug("http connection connected, local:{}, remote:{}.",
           connection.localAddress(),
           connection.remoteAddress());
       connection.closeHandler(v -> {
-        LOGGER.info("http connection closed, local:{}, remote:{}.",
+        LOGGER.debug("http connection closed, local:{}, remote:{}.",
             connection.localAddress(),
             connection.remoteAddress());
       });
