@@ -74,7 +74,7 @@ public class QpsControllerManager {
    * Firstly try to search "microservice.schema.operation". If no valid result found, then try "microservice.schema",
    * and then "microservice" or global qpsController(If there is a global qpsController).</p>
    * <p> This method ensures that there is always an existing qpsController returned, as the relevant qpsController has
-   * been created and stored in {@link #create(String)}</p>
+   * been created and stored in {@link #create(String, String, Invocation)}</p>
    *
    * @param qualifiedNameKey qualifiedNameKey in {@link #qualifiedNameControllerMap}
    * @return a qps controller, lower level controllers with valid qpsLimit have priority.
