@@ -24,6 +24,7 @@ import java.util.concurrent.CompletableFuture;
 
 import org.apache.servicecomb.core.CseContext;
 import org.apache.servicecomb.core.Invocation;
+import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.core.definition.MicroserviceMeta;
 import org.apache.servicecomb.core.definition.SchemaMeta;
 import org.apache.servicecomb.core.invocation.InvocationFactory;
@@ -63,7 +64,7 @@ public class Invoker implements InvocationHandler {
   }
 
   protected void prepare() {
-    referenceConfig = CseContext.getInstance().getConsumerProviderManager().getReferenceConfig(microserviceName);
+    referenceConfig = SCBEngine.getInstance().getReferenceConfigForInvoke(microserviceName);
     MicroserviceMeta microserviceMeta = referenceConfig.getMicroserviceMeta();
 
     if (StringUtils.isEmpty(schemaId)) {
